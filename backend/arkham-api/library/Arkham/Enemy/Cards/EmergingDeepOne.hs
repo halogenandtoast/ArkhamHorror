@@ -25,35 +25,38 @@ instance RunMessage EmergingDeepOne where
   runMessage msg e@(EmergingDeepOne attrs) = runQueueT $ case msg of
     Revelation _iid (isSource attrs -> True) -> do
       pure $ EmergingDeepOne $ attrs & delayEngagementL .~ True
-    EnemySpawn details | details.enemy == attrs.id && enemyDelayEngagement attrs -> do
-      let
-        go = \case
-          SpawnEngagedWith imatcher -> do
-            select imatcher >>= \case
-              [iid] -> do
-                mods <- getCombinedModifiers [toTarget attrs, toTarget attrs.cardId]
-                let
-                  getModifiedSpawnAt [] = Nothing
-                  getModifiedSpawnAt (ChangeSpawnWith iid' m : _) | iid' == iid = Just m
-                  getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
-                maybe (getLocationOf iid) go (getModifiedSpawnAt mods)
+    EnemySpawn details
+      | details.enemy == attrs.id
+      , not (spawnDetailsExhausted details)
+      , enemyDelayEngagement attrs -> do
+          let
+            go = \case
+              SpawnEngagedWith imatcher -> do
+                select imatcher >>= \case
+                  [iid] -> do
+                    mods <- getCombinedModifiers [toTarget attrs, toTarget attrs.cardId]
+                    let
+                      getModifiedSpawnAt [] = Nothing
+                      getModifiedSpawnAt (ChangeSpawnWith iid' m : _) | iid' == iid = Just m
+                      getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
+                    maybe (getLocationOf iid) go (getModifiedSpawnAt mods)
+                  _ -> pure Nothing
+              SpawnAt lm ->
+                select lm <&> \case
+                  [lid] -> Just lid
+                  _ -> Nothing
+              SpawnAtLocation lid -> pure (Just lid)
+              SpawnPlaced p -> placementLocation p
               _ -> pure Nothing
-          SpawnAt lm ->
-            select lm <&> \case
-              [lid] -> Just lid
-              _ -> Nothing
-          SpawnAtLocation lid -> pure (Just lid)
-          SpawnPlaced p -> placementLocation p
-          _ -> pure Nothing
 
-      msg' <-
-        go details.spawnAt >>= \case
-          Nothing -> pure msg
-          Just lid ->
-            getFloodLevel lid <&> \case
-              FullyFlooded -> msg
-              _ -> EnemySpawn details {spawnDetailsExhausted = True, spawnDetailsUnengaged = True}
-      EmergingDeepOne <$> liftRunMessage msg' attrs
+          msg' <-
+            go details.spawnAt >>= \case
+              Nothing -> pure msg
+              Just lid ->
+                getFloodLevel lid <&> \case
+                  FullyFlooded -> msg
+                  _ -> EnemySpawn details {spawnDetailsExhausted = True, spawnDetailsUnengaged = True}
+          EmergingDeepOne <$> liftRunMessage msg' attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e

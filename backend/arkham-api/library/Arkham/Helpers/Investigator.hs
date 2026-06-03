@@ -31,7 +31,10 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned, matchTarget)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message (
-  Message (CheckWindows, Do, HealDamageDirectly, HealHorrorDirectly, InvestigatorMulligan),
+  Message (CheckWindows, Do, HealDamageDirectly, HealHorrorDirectly),
+  pattern HealDamage,
+  pattern HealHorror,
+  pattern InvestigatorMulligan,
  )
 import Arkham.Name
 import Arkham.Placement
@@ -584,12 +587,6 @@ eliminationWindow iid = OrWindowMatcher [GameEnds #when, InvestigatorEliminated 
 check
   :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m) => a -> InvestigatorMatcher -> m Bool
 check (toId -> iid) capability = iid <=~> capability
-
-checkAll
-  :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m)
-  => a -> [InvestigatorMatcher] -> m Bool
-checkAll (toId -> iid) capabilities = iid <=~> fold capabilities
-
 searchBonded
   :: (HasGame m, Tracing m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m [Card]
 searchBonded (asId -> iid) def = fieldMap InvestigatorBondedCards (filter ((== def) . toCardDef)) iid
@@ -650,65 +647,57 @@ setMeta meta attrs = attrs & metaL .~ toJSON meta
 healAdditional
   :: (Sourceable source, HasQueue Message m) => source -> DamageType -> [Window] -> Int -> m ()
 healAdditional (toSource -> source) dType ws' additional = do
-  -- this is meant to heal additional so we'd directly heal one more
-  -- (without triggering a window), and then overwrite the original window
-  -- to heal for one more
+  -- This is meant to make the triggering healing effect heal additional damage/horror.
+  -- For a `when` window, the original healing may not be in the queue yet, so apply
+  -- the additional healing directly without opening another healing window.
   let
     updateHealed = \case
       Window timing (Healed dType' t s n) mBatchId
         | dType == dType' ->
             Window timing (Healed dType' t s (n + additional)) mBatchId
       other -> other
-    getHealedTarget = \case
-      (windowType -> Healed dType' t _ _) | dType == dType' -> Just t
+    getHealed = \case
+      Window timing (Healed dType' t s _) _ | dType == dType' -> Just (timing, t, s)
       _ -> Nothing
-    healedTarget = fromJustNote "wrong call" $ getFirst $ foldMap (First . getHealedTarget) ws'
+    (healedTiming, healedTarget, healedSource) =
+      fromJustNote "wrong call" $ getFirst $ foldMap (First . getHealed) ws'
+    updateHealingMessage = \case
+      Do (HealDamage t s n) | dType == DamageType && t == healedTarget && s == healedSource ->
+        Do $ HealDamage t s (n + additional)
+      HealDamage t s n | dType == DamageType && t == healedTarget && s == healedSource ->
+        HealDamage t s (n + additional)
+      Do (HealHorror t s n) | dType == HorrorType && t == healedTarget && s == healedSource ->
+        Do $ HealHorror t s (n + additional)
+      HealHorror t s n | dType == HorrorType && t == healedTarget && s == healedSource ->
+        HealHorror t s (n + additional)
+      other -> other
 
-  replaceMessageMatching
-    \case
-      CheckWindows ws -> ws == ws'
-      Do (CheckWindows ws) -> ws == ws'
-      _ -> False
-    \case
-      CheckWindows ws -> [CheckWindows $ map updateHealed ws]
-      Do (CheckWindows ws) -> [Do (CheckWindows $ map updateHealed ws)]
-      _ -> error "invalid window"
-  case dType of
-    HorrorType -> push $ HealHorrorDirectly healedTarget source 1
-    DamageType -> push $ HealDamageDirectly healedTarget source 1
+  if healedTiming == #when
+    then do
+      mapQueue updateHealingMessage
+      case dType of
+        HorrorType -> push $ HealHorrorDirectly healedTarget source additional
+        DamageType -> push $ HealDamageDirectly healedTarget source additional
+    else do
+      replaceMessageMatching
+        \case
+          CheckWindows ws -> ws == ws'
+          Do (CheckWindows ws) -> ws == ws'
+          _ -> False
+        \case
+          CheckWindows ws -> [CheckWindows $ map updateHealed ws]
+          Do (CheckWindows ws) -> [Do (CheckWindows $ map updateHealed ws)]
+          _ -> error "invalid window"
+      case dType of
+        HorrorType -> push $ HealHorrorDirectly healedTarget source additional
+        DamageType -> push $ HealDamageDirectly healedTarget source additional
 
-getAsIfInHandCardsNotForPlay :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m [Card]
+getAsIfInHandCardsNotForPlay :: HasGame m => InvestigatorId -> m [Card]
 getAsIfInHandCardsNotForPlay iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  let
-    modifiersPermitPlayOfDiscard discard c =
-      any (modifierPermitsPlayOfDiscard discard c) modifiers
-    modifierPermitsPlayOfDiscard discard (c, _) = \case
-      CanPlayFromDiscard cardMatcher -> c `cardMatch` cardMatcher && c `elem` discard
-      CanPlayTopmostOfDiscard (mType, traits) ->
-        let cardMatcher = maybe AnyCard CardWithType mType <> foldMap CardWithTrait traits
-            allMatches = filter (`cardMatch` cardMatcher) discard
-         in case allMatches of
-              (topmost : _) -> topmost == c
-              _ -> False
-      _ -> False
-    modifiersPermitPlayOfDeck c = any (modifierPermitsPlayOfDeck c) modifiers
-    modifierPermitsPlayOfDeck (c, depth) = \case
-      CanPlayTopOfDeck cardMatcher | depth == 0 -> cardMatch c cardMatcher
-      _ -> False
-  cardsAddedViaModifiers <- flip mapMaybeM modifiers $ \case
+  flip mapMaybeM modifiers $ \case
     AsIfInHand c -> pure $ Just c
     _ -> pure Nothing
-  discard <- field InvestigatorDiscard iid
-  deck <- fieldMap InvestigatorDeck unDeck iid
-  pure
-    $ map
-      (PlayerCard . fst)
-      (filter (modifiersPermitPlayOfDiscard discard) (zip discard [0 :: Int ..]))
-    <> map
-      (PlayerCard . fst)
-      (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))
-    <> cardsAddedViaModifiers
 
 getAsIfInHandCards :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m [Card]
 getAsIfInHandCards = getAsIfInHandCardsFor ForPlay
@@ -741,14 +730,17 @@ getAsIfInHandCardsFor forPlay iid = do
     _ -> pure Nothing
   discard <- field InvestigatorDiscard iid
   deck <- fieldMap InvestigatorDeck unDeck iid
-  pure
-    $ map
-      (PlayerCard . fst)
-      (filter (modifiersPermitPlayOfDiscard discard) (zip discard [0 :: Int ..]))
-    <> map
-      (PlayerCard . fst)
-      (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))
-    <> cardsAddedViaModifiers
+  let
+    playableFromOutOfHand = case forPlay of
+      ForPlay ->
+        map
+          (PlayerCard . fst)
+          (filter (modifiersPermitPlayOfDiscard discard) (zip discard [0 :: Int ..]))
+          <> map
+            (PlayerCard . fst)
+            (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))
+      NotForPlay -> []
+  pure $ playableFromOutOfHand <> cardsAddedViaModifiers
 
 matchWho
   :: (HasGame m, Tracing m)

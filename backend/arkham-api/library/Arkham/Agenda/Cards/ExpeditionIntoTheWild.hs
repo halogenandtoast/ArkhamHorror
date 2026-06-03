@@ -27,7 +27,7 @@ instance RunMessage ExpeditionIntoTheWild where
       eachInvestigator \iid -> do
         sid <- getRandom
         beginSkillTest sid iid attrs iid #willpower (Fixed 3)
-      advanceAgendaDeck attrs
+      advanceAgendaDeckAfterSkillTest attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       becomePoisonedOr iid $ assignDamageAndHorror iid attrs 1 1

@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.DukeSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Location.Cards qualified as Locations
-import TestImport.New hiding (EnemyDamage)
+import TestImport.New
 
 spec :: Spec
 spec = describe "Duke" $ do

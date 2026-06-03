@@ -37,7 +37,7 @@ instance RunMessage LitUp where
       eachInvestigator \iid -> do
         sid <- getRandom
         beginSkillTest sid iid attrs iid #agility (Fixed 3)
-      advanceAgendaDeck attrs
+      advanceAgendaDeckAfterSkillTest attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignDamage iid attrs 1

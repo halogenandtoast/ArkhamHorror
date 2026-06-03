@@ -40,7 +40,7 @@ instance RunMessage BloodstainedDagger where
       skillTestModifiers sid (attrs.ability 2) iid [SkillModifier #combat 2, DamageDealt 1]
       chooseFightEnemy sid iid (attrs.ability 2)
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 2 -> True) _ -> do
       for_ attrs.controller \iid -> drawCards iid (attrs.ability 2) 1
       pure a
     _ -> BloodstainedDagger <$> liftRunMessage msg attrs

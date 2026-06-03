@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.I18n
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Placement
 
@@ -33,8 +34,9 @@ instance RunMessage Pitchfork where
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withLocationOf iid \lid -> do
-        push $ PlaceAsset attrs.id $ AttachedToLocation lid
-        afterSkillTestQuiet $ push $ LoseControlOfAsset attrs.id
+        whenM (lid <=~> LocationCanHaveAttachments) do
+          push $ PlaceAsset attrs.id $ AttachedToLocation lid
+          afterSkillTestQuiet $ push $ LoseControlOfAsset attrs.id
       pure a
     UseThisAbility iid (isProxySource attrs -> True) 2 -> do
       push $ TakeControlOfAsset iid attrs.id

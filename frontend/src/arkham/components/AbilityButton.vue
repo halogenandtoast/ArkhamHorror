@@ -4,7 +4,8 @@ import type { Game } from '@/arkham/types/Game';
 import type { Cost } from '@/arkham/types/Cost';
 import type { AbilityLabel, FightLabel, FightLabelWithSkill, EvadeLabel, EvadeLabelWithSkill, EngageLabel } from '@/arkham/types/Message';
 import { SkillType } from '@/arkham/types/SkillType';
-import type { Ability, AbilitySkills } from '@/arkham/types/Ability';
+import type { Ability, AbilitySkills, AbilityType } from '@/arkham/types/Ability';
+import { sourceKey } from '@/arkham/types/Source';
 import type { Action } from '@/arkham/types/Action';
 import { actionsToList } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
@@ -42,12 +43,15 @@ const tooltip = computed(() => {
 })
 
 const modifiers = computed(() => {
-  return props.game.modifiers.filter((m) => {
-    if (m[0].tag === "AbilityRef") {
-      return m[0].contents.ability.source.contents === ability.value?.source?.contents
-        && m[0].contents.ability.index === ability.value?.index
+  return props.game.modifiers.filter(([target]) => {
+    const contents = target.contents
+    if (target.tag !== "AbilityRef" || typeof contents !== 'object' || contents === null || !('ability' in contents)) {
+      return false
     }
-    return false
+
+    if (!ability.value) return false
+    return sourceKey(contents.ability.source) === sourceKey(ability.value.source)
+      && contents.ability.index === ability.value.index
   })
 })
 
@@ -113,14 +117,30 @@ function totalActionCost(cost: Cost): number {
     const contents = (cost as { contents: Cost[] }).contents
     return contents.reduce<number>((acc, v) => v.tag === "ActionCost" ? acc + Number((v as { contents: number }).contents) : acc, 0)
   } else if (cost.tag === "ActionCost") {
-    const setActions = modifiers.value.find((m) => m[1][0].type.tag === "ActionCostSetToModifier")
-    if (setActions) {
-      return setActions[1][0].type.contents
+    const setActions = modifiers.value.find((m) => m[1][0]?.type.tag === "ActionCostSetToModifier")
+    const modifierType = setActions?.[1][0]?.type
+    if (modifierType?.tag === "ActionCostSetToModifier") {
+      return modifierType.contents
     }
     return Number((cost as { contents: number }).contents)
   }
 
   return 0
+}
+
+function abilityTypeCost(type: AbilityType): Cost | null {
+  switch (type.tag) {
+    case 'FastAbility':
+    case 'ReactionAbility':
+    case 'CustomizationReaction':
+    case 'ConstantReaction':
+    case 'ActionAbility':
+    case 'ForcedAbilityWithCost':
+    case 'AbilityEffect':
+      return type.cost
+    default:
+      return null
+  }
 }
 
 const isInvestigate = computed(() => isAction("Investigate"))
@@ -141,11 +161,11 @@ const abilityLabel = computed(() => {
 
   if (props.ability.tag === MessageType.ABILITY_LABEL) {
     if (props.ability.ability.displayAs === 'DisplayAsAction') {
-      const { cost } = ability.value.type
-      return replaceIcons("{action}".repeat(totalActionCost(cost)))
+      const cost = ability.value ? abilityTypeCost(ability.value.type) : null
+      return cost ? replaceIcons("{action}".repeat(totalActionCost(cost))) : ''
     }
     if (props.ability.ability.displayAs === 'DisplayAsCard') {
-      return formatContent(maybeFormat(props.ability.ability.tooltip))
+      return props.ability.ability.tooltip ? formatContent(maybeFormat(props.ability.ability.tooltip)) : ''
     }
   }
 
@@ -169,6 +189,10 @@ const abilityLabel = computed(() => {
     return t('Engage')
   }
 
+  if (isDelayedAbility.value === true) {
+    return t('Delayed')
+  }
+
   if (labelType.value?.tag === "ForcedAbility") {
     return t('Forced')
   }
@@ -190,7 +214,7 @@ const abilityLabel = computed(() => {
   }
 
   if (labelType.value?.tag === "ReactionAbility") {
-    return ""
+    return t('Reaction')
   }
 
   if (labelType.value?.tag === "ActionAbility") {
@@ -218,7 +242,7 @@ const abilityLabel = computed(() => {
 
   return ""
 })
-const display = computed(() => !(isAction("Move") && ability.value.index === 102) || props.showMove)
+const display = computed(() => !(isAction("Move") && ability.value?.index === 104) || props.showMove)
 
 const isZeroedActionAbility = computed(() => {
   if (!ability.value) {
@@ -233,7 +257,7 @@ const isZeroedActionAbility = computed(() => {
   return totalActionCost(cost) === 0
 })
 
-const abilitySkills = computed(() => {
+const abilitySkills = computed<AbilitySkills | null>(() => {
   if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
     return { tag: "AbilitySkill", contents: props.ability.skillType }
   }
@@ -261,16 +285,18 @@ const abilitySkills = computed(() => {
   return null
 })
 
-function isSkill(skillType: string) {
-  if (!abilitySkills.value) {
-    return false
+function abilitySkillsContain(skills: AbilitySkills, skillType: SkillType): boolean {
+  switch (skills.tag) {
+    case 'AbilitySkill':
+      return skills.contents === skillType
+    case 'AndAbilitySkills':
+    case 'OrAbilitySkills':
+      return skills.contents.some((s) => abilitySkillsContain(s, skillType))
   }
+}
 
-  if (abilitySkills.value.tag === "AbilitySkill") {
-    return abilitySkills.value.contents === skillType
-  }
-
-  return abilitySkills.value.contents.indexOf(skillType) !== -1
+function isSkill(skillType: SkillType) {
+  return abilitySkills.value ? abilitySkillsContain(abilitySkills.value, skillType) : false
 }
 
 const abilityString = computed(() => {
@@ -278,7 +304,7 @@ const abilityString = computed(() => {
     return null
   }
 
-  const toString = (a: AbilitySkills) => {
+  const toString = (a: AbilitySkills): string | null => {
     switch (a.tag) {
       case "AbilitySkill": {
         return toSkill(a.contents)
@@ -497,11 +523,6 @@ const classObject = computed(() => {
 
 .engage-button {
   background-color: #555;
-  &:before {
-    font-family: "Arkham";
-    content: "\0048";
-    margin-right: 5px;
-  }
 }
 
 .ability-button {

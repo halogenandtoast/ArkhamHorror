@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.DecoratedSkull (decoratedSkull) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (AssetDefeated, EnemyDefeated, InvestigatorDefeated)
+import Arkham.Asset.Import.Lifted hiding (AssetDefeated, InvestigatorDefeated)
 import Arkham.Asset.Uses
 import Arkham.Matcher
 
@@ -18,7 +18,7 @@ instance HasAbilities DecoratedSkull where
     [ controlled_ a 1
         $ freeReaction
         $ oneOf
-          [ IfEnemyDefeated #after Anyone ByAny (EnemyAt YourLocation)
+          [ IfEnemyDefeated #after Anyone ByAny (EnemyWasAt YourLocation)
           , InvestigatorDefeated #after ByAny (colocatedWithMatch You)
           , AssetDefeated #after ByAny (AllyAsset <> AssetAt YourLocation)
           ]

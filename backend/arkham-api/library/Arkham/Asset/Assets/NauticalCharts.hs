@@ -19,8 +19,8 @@ nauticalCharts = asset NauticalCharts Cards.nauticalCharts
 
 instance HasAbilities NauticalCharts where
   getAbilities (NauticalCharts x) =
-    [ restricted x 1 InYourHand $ investigateAction (DiscardCardCost (toCard x))
-    , controlled x 1 (not_ InYourHand) $ investigateAction (exhaust x)
+    [ investigateAbility x 1 (DiscardCardCost (toCard x)) InYourHand
+    , investigateAbility x 1 (exhaust x) (ControlsThis <> not_ InYourHand)
     ]
 
 -- TODO: We need a way to know if additional clues can be discovered
@@ -37,7 +37,7 @@ instance RunMessage NauticalCharts where
         guard $ notNull hand
         lift $ withSkillTest \sid -> do
           chooseOneM iid do
-            questionLabeled "$label.cards.nauticalCharts.discard1CardFromYourHandToDiscover1AdditionalClue"
+            questionLabeled "$label.cards.nauticalCharts.discard1CardFrom"
             labeledI "doNotDiscardCard" nothing
             targets hand \card -> do
               discardCard iid (attrs.ability 1) card

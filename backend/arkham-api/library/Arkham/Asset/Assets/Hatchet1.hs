@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest.Target
 import Arkham.I18n
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
 import Arkham.Placement
@@ -36,7 +36,7 @@ instance RunMessage Hatchet1 where
       skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       case attrs.controller of
         Just iid -> toDiscardBy iid (attrs.ability 1) attrs
         Nothing -> toDiscard (attrs.ability 1) attrs

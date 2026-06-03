@@ -5,6 +5,7 @@ import type { Game } from '@/arkham/types/Game'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType} from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
+import { cardImage } from '@/arkham/cardImages'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { IsMobile } from '@/arkham/isMobile'
@@ -69,6 +70,7 @@ function isAbility(v: Message): v is AbilityLabel {
     if (source.contents === id.value) {
       return true
     }
+    if (!source.contents) return false
     const asset = props.game.assets[source.contents]
     if (asset) {
       return asset.cardId === id.value && asset.placement.tag === 'StillInHand'
@@ -102,8 +104,7 @@ const cardBack = computed(() => {
 
 const image = computed(() => {
   const { cardCode, mutated } = cardContents.value;
-  const mutatedSuffix = mutated ? `_${mutated}` : ''
-  return imgsrc(`cards/${cardCode.replace('c', '')}${mutatedSuffix}.avif`);
+  return cardImage(cardCode, mutated ? `_${mutated}` : '')
 })
 
 
@@ -244,7 +245,7 @@ function oilPaintEffect(canvas, radius, intensity) {
       :class="classObject"
       class="card in-hand"
       :src="image"
-      :data-customizations="JSON.stringify(card.contents.customizations)"
+      :data-customizations="JSON.stringify(cardContents.customizations)"
       :data-playability-game-id="cardAction === -1 ? game.id : undefined"
       :data-playability-investigator-id="cardAction === -1 ? investigatorId : undefined"
       :data-playability-card-id="cardAction === -1 ? id : undefined"

@@ -13,7 +13,6 @@ import Arkham.Location.Locations
 import Arkham.Location.Runner
 import Arkham.Location.Types as X (Location)
 import Arkham.Prelude
-import Arkham.Tracing
 
 createLocation :: IsCard a => a -> LocationId -> Location
 createLocation a lid = lookupLocation (toCardCode a) lid (toCardId a)
@@ -30,7 +29,7 @@ instance RunMessage Location where
       $ overAttrs
         (\y -> y {locationLabel = locationLabel a, locationDirections = locationDirections a})
         (lookupLocation (toCardCode a) a.id (toCardId a))
-  runMessage msg x@(Location l) = withSpan_ ("Location[" <> unCardCode (toCardCode x) <> "].runMessage") do
+  runMessage msg x@(Location l) = do
     modifiers' <- getModifiers (toTarget x)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Location <$> runMessage msg' l
@@ -911,6 +910,50 @@ allLocations =
     , SomeLocationCard sunkenRailB
     , SomeLocationCard forkedRail
     , SomeLocationCard railBridge
+    , --- Hemlock House
+      SomeLocationCard bedroomHemlockHouse32
+    , SomeLocationCard bedroomHemlockHouse33
+    , SomeLocationCard bedroomHemlockHouse34
+    , SomeLocationCard bedroomHemlockHouse35
+    , SomeLocationCard washroomHemlockHouse36
+    , SomeLocationCard washroomHemlockHouse37
+    , SomeLocationCard washroomHemlockHouse38
+    , SomeLocationCard libraryHemlockHouse39
+    , SomeLocationCard libraryHemlockHouse40
+    , SomeLocationCard parlorHemlockHouse
+    , SomeLocationCard diningRoomHemlockHouse
+    , SomeLocationCard foyerHemlockHouse
+    , --- The Silent Heath
+      SomeLocationCard crystalGrove
+    , SomeLocationCard pearlEstateRuins
+    , SomeLocationCard ashenSlope
+    , SomeLocationCard saltChamber
+    , SomeLocationCard larvalTunnel
+    , SomeLocationCard crystalNursery
+    , --- The Lost Sister
+      SomeLocationCard akwan
+    , SomeLocationCard suspendedGraveyard
+    , SomeLocationCard hiddenCoveTheLostSister
+    , SomeLocationCard weedChokedBeach
+    , SomeLocationCard rockyShoreline
+    , SomeLocationCard undergroundPools
+    , SomeLocationCard openCave
+    , SomeLocationCard fungalCave
+    , --- The Thing in the Depths
+      SomeLocationCard muddyFen
+    , SomeLocationCard openWater10593b
+    , SomeLocationCard tangledThicket
+    , SomeLocationCard openWater10594b
+    , SomeLocationCard fetidPool
+    , SomeLocationCard openWater10595b
+    , SomeLocationCard floodedPath
+    , SomeLocationCard openWater10596b
+    , SomeLocationCard abandonedShack
+    , SomeLocationCard openWater10597b
+    , SomeLocationCard rottenDock
+    , SomeLocationCard openWater10598b
+    , SomeLocationCard coveredBridge
+    , SomeLocationCard openWater10599b
     , --- The Twisted Hollow
       SomeLocationCard glimmeringMeadow
     , SomeLocationCard blightedGlade
@@ -922,6 +965,23 @@ allLocations =
     , SomeLocationCard corpseGrove
     , SomeLocationCard bearDen
     , SomeLocationCard theTwistedHollow
+    , --- The Longest Night
+      SomeLocationCard theFarmhouse
+    , SomeLocationCard milkhouse
+    , SomeLocationCard mirrorNest_166
+    , SomeLocationCard mirrorNest_167
+    , SomeLocationCard mirrorNest_168
+    , SomeLocationCard mirrorNest_169
+    , SomeLocationCard theAbyssSpiralingOblivion
+    , SomeLocationCard vineyard
+    , SomeLocationCard coop
+    , SomeLocationCard barn
+    , SomeLocationCard pasture
+    , SomeLocationCard outerFieldsBloodiedPaths
+    , SomeLocationCard outerFieldsDesolateHills
+    , SomeLocationCard outerFieldsBlightedCornfields
+    , SomeLocationCard outerFieldsScorchedKnoll
+    , SomeLocationCard outerFieldsRancidCrops
     , --- The Vale
       SomeLocationCard boardingHouseDay
     , SomeLocationCard boardingHouseNight
@@ -939,6 +999,11 @@ allLocations =
     , SomeLocationCard valeSchoolhouseNight
     , SomeLocationCard theCommonsDay
     , SomeLocationCard theCommonsNight
+    , --- Day of the Feast
+      SomeLocationCard theCrossroadsMorning
+    , SomeLocationCard theCrossroadsEvening
+    , SomeLocationCard theOldMillMorning
+    , SomeLocationCard theOldMillEvening
     , --- Horrors in the Rock
       SomeLocationCard dryBurrow
     , SomeLocationCard alkalineForest
@@ -1189,14 +1254,14 @@ allLocations =
     , --- Core 2026
       --- Spreading Flames
       SomeLocationCard yourFriendsRoom
-      --- Miskatonic University
-    , SomeLocationCard miskatonicQuad_MiskatonicUniversity
+    , --- Miskatonic University
+      SomeLocationCard miskatonicQuad_MiskatonicUniversity
     , SomeLocationCard dormitories_MiskatonicUniversity
     , SomeLocationCard scienceHall
     , SomeLocationCard warrenObservatory_MiskatonicUniversity
     , SomeLocationCard orneLibrary_MiskatonicUniversity
-      --- Arkham
-    , SomeLocationCard downtownFirstBankOfArkham_Arkham
+    , --- Arkham
+      SomeLocationCard downtownFirstBankOfArkham_Arkham
     , SomeLocationCard downtownArkhamSanatorium
     , SomeLocationCard uptownStMarysHospital
     , SomeLocationCard uptownYeOldeMagickShoppe
@@ -1208,8 +1273,8 @@ allLocations =
     , SomeLocationCard frenchHill_Arkham
     , SomeLocationCard miskatonicUniversityInFlames
     , SomeLocationCard miskatonicUniversityQuietCampus
-      --- Queen of Flames
-    , SomeLocationCard sewerCulvert
+    , --- Queen of Flames
+      SomeLocationCard sewerCulvert
     , SomeLocationCard sewerTunnelsInfestedPipes
     , SomeLocationCard sewerTunnelsOvergrownTunnels
     , SomeLocationCard sewerTunnelsFloodedCrypt

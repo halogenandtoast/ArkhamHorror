@@ -93,6 +93,7 @@ data ModifierType
   | AsIfNotEngagedWith EnemyId
   | AsIfInHand Card
   | AsIfInHandFor ForPlay CardId
+  | AsIfResourcePool AssetId
   | AsIfUnderControlOf InvestigatorId
   | AsIfTurn InvestigatorId
   | EnemyAttacksOverride InvestigatorMatcher
@@ -214,7 +215,6 @@ data ModifierType
   | CannotMove
   | CancelMovement MovementId
   | CannotMoveExceptByScenarioCardEffects
-  | CannotMoveMoreThanOnceEachTurn -- DEPRECATED
   | CannotMulligan
   | CannotParleyWith EnemyMatcher
   | CannotPerformSkillTest
@@ -318,7 +318,6 @@ data ModifierType
   | MaxHandSize Int
   | HandSizeCardCount Int
   | HealHorrorAsIfOnInvestigator Target Int
-  | HealHorrorOnThisAsIfInvestigator InvestigatorId -- DEPRECATED
   | HealingTaken Int
   | HealthModifier Int
   | HealthModifierWithMin Int (Min Int)
@@ -331,7 +330,6 @@ data ModifierType
   | IgnoreAllCosts
   | IgnoreAloof
   | IgnoreAttacksOfOpportunity
-  | IgnoreBarriers
   | IgnoreChaosToken
   | IgnoreChaosTokenEffects
   | IgnoreChaosTokenModifier
@@ -475,6 +473,7 @@ data UIModifier
   | ImportantToScenario Text
   | OverlayCheckmark {left :: Double, top :: Double} -- See The Stakeout for example
   | Rotated Int
+  | Positioned {x :: Double, y :: Double} -- player-driven location drag offset (un-zoomed CSS px)
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "combat" (Int -> ModifierType) where

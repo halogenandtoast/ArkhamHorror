@@ -79,5 +79,6 @@ instance FromJSON Game where
     gameUndoPhaseStep <- o .:? "gameUndoPhaseStep" .!= Nothing
     gameUndoRoundStep <- o .:? "gameUndoRoundStep" .!= Nothing
     let gameAsIfAtIgnored = mempty
+    gameLocationOffsets <- o .:? "gameLocationOffsets" .!= mempty
 
     pure Game {..}

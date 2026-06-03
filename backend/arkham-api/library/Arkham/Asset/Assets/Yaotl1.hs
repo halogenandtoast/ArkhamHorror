@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.Yaotl1 (yaotl1, yaotl1Effect) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
@@ -22,14 +23,14 @@ yaotl1 = ally Yaotl1 Cards.yaotl1 (2, 2)
 
 instance HasAbilities Yaotl1 where
   getAbilities (Yaotl1 a) =
-    [ (cardI18n $ withI18nTooltip "yaotl1.fastExhaustYaotl")
+    [ cardI18n (withI18nTooltip "yaotl1.fastExhaustYaotl")
         $ wantsSkillTest (YourSkillTest #any)
         $ controlled a 1 DuringAnySkillTest
         $ FastAbility
         $ exhaust a
-    , (cardI18n $ withI18nTooltip "yaotl1.fastDiscardThe")
+    , cardI18n (withI18nTooltip "yaotl1.fastDiscardThe")
         $ playerLimit PerPhase
-        $ controlled a 2 CanManipulateDeck
+        $ controlled a 2 (youExist $ can.manipulate.deck <> not_ DeckIsEmpty)
         $ FastAbility Free
     ]
 

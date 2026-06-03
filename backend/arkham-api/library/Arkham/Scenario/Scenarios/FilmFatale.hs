@@ -3,15 +3,18 @@ module Arkham.Scenario.Scenarios.FilmFatale (filmFatale) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Types (Field (..))
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
 import Arkham.Helpers.Agenda
+import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message (pattern SetCampaignChaosBag)
 import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -56,6 +59,13 @@ hardTokens =
   ]
 {- FOURMOLU_ENABLE -}
 
+scenarioTokens :: Difficulty -> [ChaosTokenFace]
+scenarioTokens = \case
+  Easy -> standardTokens
+  Standard -> standardTokens
+  Hard -> hardTokens
+  Expert -> hardTokens
+
 instance RunMessage FilmFatale where
   runMessage msg s@(FilmFatale attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
@@ -65,11 +75,7 @@ instance RunMessage FilmFatale where
         unscoped $ p.right "proceedToSetup"
       pure s
     StandaloneSetup -> do
-      setChaosTokens $ case attrs.difficulty of
-        Easy -> standardTokens
-        Standard -> standardTokens
-        Hard -> hardTokens
-        Expert -> hardTokens
+      setChaosTokens $ scenarioTokens attrs.difficulty
       pure s
     Setup -> runScenarioSetup FilmFatale attrs do
       setup $ ul do
@@ -82,6 +88,10 @@ instance RunMessage FilmFatale where
         unscoped $ li "shuffleRemainder"
         li "note"
         li "begin"
+      unlessStandalone do
+        bag <- campaignField CampaignChaosBag
+        setGlobal CampaignTarget "filmFataleSavedChaosBag" bag
+        setChaosTokens $ scenarioTokens attrs.difficulty
       gather Set.FilmFatale
       for_ [Set.CosmicJourney, Set.ForgottenIsland, Set.AbominableContessa] gatherAndSetAside
 
@@ -149,6 +159,10 @@ instance RunMessage FilmFatale where
       when controlled do
         investigators <- allInvestigators
         addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.andrePatelMadeForTheSpotlight
+
+      unlessStandalone do
+        stored @[ChaosTokenFace] "filmFataleSavedChaosBag"
+          >>= traverse_ (push . SetCampaignChaosBag)
 
       endOfScenario
       pure s

@@ -185,26 +185,6 @@ cosmosToGrid c =
       yRange = reverse [-belowBy .. aboveBy]
    in [GridTemplateRow $ T.unwords [cosmicLabel (Pos x y) | x <- xRange] | y <- yRange]
 
-cosmosRowToGrid :: CosmosRow a b -> GridTemplateRow
-cosmosRowToGrid (CosmosRow left center right) =
-  GridTemplateRow
-    . T.unwords
-    $ toList (fmap (maybe "." cosmosCellToGrid) left)
-    <> [maybe "." cosmosCellToGrid center]
-    <> toList (fmap (maybe "." cosmosCellToGrid) right)
-
-cosmosCellToGrid :: CosmosLocation a b -> Text
-cosmosCellToGrid (EmptySpace pos _) = cosmicLabel pos
-cosmosCellToGrid (CosmosLocation pos _) = cosmicLabel pos
-
-clearCosmos :: Pos -> Cosmos a b -> Cosmos a b
-clearCosmos (Pos x y) (Cosmos above center below) =
-  case compare y 0 of
-    LT -> Cosmos above center (Seq.adjust (setCosmosRow x Nothing) (abs y - 1) below)
-    GT ->
-      Cosmos (Seq.adjust (setCosmosRow x Nothing) (Seq.length above - y) above) center below
-    EQ -> Cosmos above (setCosmosRow x Nothing center) below
-
 isEmpty :: Maybe (CosmosLocation a b) -> Bool
 isEmpty Nothing = True
 isEmpty (Just (EmptySpace _ _)) = True

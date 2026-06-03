@@ -365,13 +365,38 @@ allActs =
       --- Written in Stone
       SomeActCard descentIntoTheMines
     , SomeActCard theUndergroundMaze
+    , --- Hemlock House
+      SomeActCard strangeInfestation
+    , SomeActCard againstTheHouse
+    , SomeActCard theHeartOfTheHouse
+    , --- The Silent Heath
+      SomeActCard aLostLegacy
+    , SomeActCard searchingTheHeath
+    , --- The Lost Sister
+      SomeActCard theMissingSibling
+    , SomeActCard onTheTrail
+    , SomeActCard faceToCarapace
+    , --- The Thing in the Depths
+      SomeActCard aBotanicalSurvey
+    , SomeActCard discoveryOfALifetime
     , --- The Twisted Hollow
       SomeActCard desperateSearch
     , SomeActCard wheresBertie
+    , --- The Longest Night
+      SomeActCard theLongestNight
     , --- Day of Rest
       SomeActCard dawnOfTheFirstDay
     , --- Day of Rain
       SomeActCard dawnOfTheSecondDay
+    , --- Day of the Feast
+      SomeActCard dawnOfTheFinalDay
+    , --- Fate of the Vale
+      SomeActCard shatteredMemories
+    , SomeActCard lostSelf
+    , SomeActCard fateOfTheValeV1
+    , SomeActCard fateOfTheValeV2
+    , SomeActCard fateOfTheValeV3
+    , SomeActCard fateOfTheValeV4
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway
@@ -445,9 +470,9 @@ allActs =
     , SomeActCard escapeTheDorms
     , SomeActCard searchingForDrArmitage
     , SomeActCard blazeOfGlory
-      --- Smoke And Mirrors
-    , SomeActCard augursOfFlame
-      --- Queen of Ash
-    , SomeActCard searchTheSewers
+    , --- Smoke And Mirrors
+      SomeActCard augursOfFlame
+    , --- Queen of Ash
+      SomeActCard searchTheSewers
     , SomeActCard stopTheRite
     ]

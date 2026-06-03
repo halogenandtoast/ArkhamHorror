@@ -10,7 +10,7 @@ import Arkham.Helpers.Scenario (scenarioFieldMap)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher hiding (EnemyDrawnFrom)
-import Arkham.Message (Message (..))
+import Arkham.Message (Message (..), pattern InvestigatorDrawEnemy)
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Projection

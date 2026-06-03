@@ -5,13 +5,12 @@ import { useDebug } from '@/arkham/debug'
 import { computed } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import * as Cards from '@/arkham/types/Card';
-import { chaosTokenImage } from '@/arkham/types/ChaosToken';
+import { chaosTokenImage, type TokenFace } from '@/arkham/types/ChaosToken';
 import { scenarioToI18n } from '@/arkham/types/Scenario';
 import { Game } from '@/arkham/types/Game';
 import { Enemy } from '@/arkham/types/Enemy';
 import { Modifier, cannotCommitCardsToWords } from '@/arkham/types/Modifier';
 import { SkillTest } from '@/arkham/types/SkillTest';
-import { Source } from '@/arkham/types/Source';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import Draggable from '@/components/Draggable.vue';
 import Card from '@/arkham/components/Card.vue'
@@ -19,10 +18,11 @@ import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import { MessageType, StartSkillTestButton } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { imgsrc, formatContent } from '@/arkham/helpers';
+import { cardArt, portraitImage, sourceCardCode } from '@/arkham/cardImages';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
 import { useI18n } from 'vue-i18n';
-import { useMenu } from '@/composeable/menu';
-import { useSettingsFocus } from '@/composeable/settingsFocus';
+import { useMenu } from '@/composable/menu';
+import { useSettingsFocus } from '@/composable/settingsFocus';
 
 const debug = useDebug()
 const { t } = useI18n()
@@ -109,30 +109,18 @@ const investigatorPortrait = computed(() => {
   const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
     const player = props.game.investigators[choice.investigatorId]
-
-    if (player.form.tag === "YithianForm") {
-      return imgsrc(`portraits/${choice.investigatorId.replace('c', '')}.jpg`)
-    }
-
-    if (player.form.tag === "HomunculusForm") {
-      return imgsrc(`portraits/${choice.investigatorId.replace('c', '')}.jpg`)
-    }
-
-    return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
+    const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm" || player.form.tag === "ShatteredForm")
+      ? choice.investigatorId
+      : player.cardCode
+    return portraitImage(code)
   }
 
   if (props.skillTest) {
     const player = props.game.investigators[props.skillTest.investigator]
-
-    if (player.form.tag === "YithianForm") {
-      return imgsrc(`portraits/${props.skillTest.investigator.replace('c', '')}.jpg`)
-    }
-
-    if (player.form.tag === "HomunculusForm") {
-      return imgsrc(`portraits/${props.skillTest.investigator.replace('c', '')}.jpg`)
-    }
-
-    return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
+    const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm" || player.form.tag === "ShatteredForm")
+      ? props.skillTest.investigator
+      : player.cardCode
+    return portraitImage(code)
   }
 
   return null;
@@ -165,82 +153,12 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
-function sourceCardCode(source: Source) {
-  if (source.tag === 'LocationSource') {
-    const location = props.game.locations[source.contents]
-    if (!location) return null
-    const { cardCode, revealed } = location
-    const suffix = revealed ? '' : 'b'
-
-    return `${cardCode.replace('c', '')}${suffix}`
-  }
-
-  if (source.tag === 'AssetSource') {
-    const asset = props.game.assets[source.contents]
-    if (!asset) return null
-
-    const mutated = asset.mutated ? `_${asset.mutated}` : ''
-    if (asset.flipped) {
-      if (asset.cardCode === "c90052") return "90052b"
-      return null
-    }
-    return `${asset.cardCode.replace('c', '')}${mutated}`
-  }
-
-  if (source.tag === 'TreacherySource') {
-    const treachery = props.game.treacheries[source.contents]
-    if (!treachery) return null
-    return `${treachery.cardCode.replace('c', '')}`
-  }
-
-  if (source.tag === 'EnemySource') {
-    const enemy = props.game.enemies[source.contents]
-    if (!enemy) return null
-
-    const { cardCode, flipped } = enemy
-    const suffix = flipped ? 'b' : ''
-    return `${cardCode.replace('c', '')}${suffix}`
-  }
-
-  if (source.tag === 'AbilitySource') {
-    const [inner,] = source.contents
-    return sourceCardCode(inner)
-  }
-
-  if (source.tag === 'EventSource') {
-    const event = props.game.events[source.contents]
-    if (!event) return null
-
-    const mutated = event.mutated ? `_${event.mutated}` : ''
-    return `${event.cardCode.replace('c', '')}${mutated}`
-  }
-
-  if (source.tag === 'InvestigatorSource') {
-    return `${source.contents.replace('c', '')}`
-  }
-
-  if (source.tag === 'AgendaSource') {
-    const agenda = props.game.agendas[source.contents]
-    if (!agenda) return null
-    const id = agenda.id
-    if (agenda.flipped) {
-      if (["c03276a", "c03279a"].includes(id)) {
-        return `${id.replace(/^c/, '')}b`
-      }
-      return `${id.replace(/^c/, '').replace(/a$/, '')}b`
-    }
-    return `${id.replace(/^c/, '')}`
-  }
-
-  return null
-}
-
 function modifierSource(mod: Modifier) {
   if(mod.card) {
-    return mod.card.contents.cardCode.replace(/^c/, '')
+    return cardArt(Cards.toCardContents(mod.card).cardCode)
   }
 
-  return sourceCardCode(mod.source)
+  return sourceCardCode(mod.source, props.game)
 }
 
 const targetCard = computed(() => {
@@ -262,7 +180,7 @@ type SwarmEnemy = Omit<Enemy, "placement"> & {
 const swarmEnemy = computed<SwarmEnemy | null>(() => {
   let enemy = Object.values(props.game.enemies).find((e): e is SwarmEnemy => {
     if (e.placement.tag !== 'AsSwarm') return false
-    return e.placement.swarmCard.contents.id === props.skillTest.targetCard
+    return Cards.toCardContents(e.placement.swarmCard).id === props.skillTest.targetCard
   })
   if (!enemy) return null
   return {...enemy}
@@ -329,13 +247,13 @@ const tokenEffects = computed(() => {
       : ''
 
 
-  return ["Skull", "Cultist", "Tablet", "ElderThing"].filter((face) => faces.includes(face)).map((face) => 
+  return (["Skull", "Cultist", "Tablet", "ElderThing"] as TokenFace[]).filter((face) => faces.includes(face)).map((face) => 
     `<img src='${chaosTokenImage(face)}' /><span>`
           + formatContent(t(`${scenarioToI18n(scenario)}${tokenScope}.tokens.${difficulty}.${lowerFirst(face)}`)) + `</span>`
           )
 })
 
-const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: any}) => 
+const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: unknown}) => 
   debug.send(props.game.id,
     { tag: 'CreateWindowModifierEffect'
     , contents:
@@ -381,7 +299,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           <div class="swarm">
             <img :src="imgsrc('player_back.jpg')" class="card" />
           </div>
-          <div class="host">
+          <div v-if="swarmHost" class="host">
             <Card :game="game" :card="swarmHost" :revealed="true" playerId="" />
           </div>
         </div>
@@ -446,9 +364,9 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
       <div v-if="tokenEffects.length > 0" class="token-effects">
         <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
       </div>
-      <div v-if="debug.active && skillTest.result.tag == 'Unrun' && !['SkillTestFastWindow1', 'SkillTestFastWindow2'].includes(skillTest.step)">
-        <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">{{ $t('skillTestActions.passSkillTest') }}</button>
-        <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">{{ $t('skillTestActions.failSkillTest') }}</button>
+      <div v-if="debug.active && skillTest.result?.tag == 'Unrun' && !['SkillTestFastWindow1', 'SkillTestFastWindow2'].includes(skillTest.step)">
+        <button @click="debug.send(game.id, {tag: 'SkillTestMessage', contents: {tag: 'PassSkillTest_'}})">{{ $t('skillTestActions.passSkillTest') }}</button>
+        <button @click="debug.send(game.id, {tag: 'SkillTestMessage', contents: {tag: 'FailSkillTest_'}})">{{ $t('skillTestActions.failSkillTest') }}</button>
       </div>
       <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
         <template v-if="skillTest.step === 'CommitCardsFromHandToSkillTestStep'">

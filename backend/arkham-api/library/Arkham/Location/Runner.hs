@@ -3,6 +3,7 @@
 module Arkham.Location.Runner (module Arkham.Location.Runner, module X) where
 
 import Arkham.Ability as X hiding (PaidCost)
+import Arkham.Behavior.Investigate qualified as Investigate
 import Arkham.Calculation as X
 import Arkham.Card.CardDef as X
 import Arkham.Classes as X
@@ -13,8 +14,6 @@ import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Location as X
 import Arkham.Helpers.Message as X hiding (
   DiscoverClues,
-  EnemyDamage,
-  EnemyDefeated,
   EnemyEvaded,
   MoveAction,
   RevealLocation,
@@ -45,7 +44,6 @@ import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame, window
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.History
 import Arkham.I18n
-import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.BreachStatus qualified as Breach
@@ -108,12 +106,6 @@ extendUnrevealed = withUnrevealedAbilities
 
 extendUnrevealed1 :: LocationAttrs -> Ability -> [Ability]
 extendUnrevealed1 attrs ability = extendUnrevealed attrs [ability]
-
-getModifiedRevealClueCount :: (Tracing m, HasGame m) => LocationAttrs -> m Int
-getModifiedRevealClueCount attrs = do
-  mods <- getModifiers attrs
-  getModifiedRevealClueCountWithMods mods attrs
-
 getModifiedRevealClueCountWithMods
   :: (HasGame m, Tracing m) => [ModifierType] -> LocationAttrs -> m Int
 getModifiedRevealClueCountWithMods mods attrs =
@@ -161,13 +153,9 @@ instance RunMessage LocationAttrs where
       let flipCount = min n $ locationDoom a
       pure $ a & tokensL %~ flipDoom n & withoutCluesL &&~ (flipCount == 0)
     Investigate investigation | investigation.location == locationId && not investigation.isAction -> do
-      let iid = investigation.investigator
-      allowed <- getInvestigateAllowed iid a
-      when allowed $ do
-        let target = maybe (toTarget a) (ProxyTarget (toTarget a)) investigation.target
-        push
-          $ investigate investigation.skillTest iid investigation.source target investigation.skillType
-          $ LocationMaybeFieldCalculation a.id LocationShroud
+      allowed <- getInvestigateAllowed investigation.investigator a
+      when allowed
+        $ Investigate.resolveInvestigate a (LocationMaybeFieldCalculation a.id LocationShroud) investigation
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       push
@@ -400,11 +388,10 @@ instance RunMessage LocationAttrs where
         else do
           when (tType == Doom && a.doom == 0) do
             pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
-          when (tType == Damage) do
-            pushAll $ windows [Window.PlacedDamage source (toTarget a) n]
-          when (tType == Resource) do
-            pushAll $ windows [Window.PlacedResources source (toTarget a) n]
-          pushM $ checkAfter $ Window.PlacedToken source target tType n
+          case tType of
+            Damage -> pushAll $ windows [Window.PlacedDamage source (toTarget a) n]
+            Resource -> pushAll $ windows [Window.PlacedResources source (toTarget a) n]
+            _ -> pushM $ checkAfter $ Window.PlacedToken source target tType n
           pure $ a & tokensL %~ addTokens tType n
     MoveTokens s source _ tType n | isSource a source -> liftRunMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
@@ -568,16 +555,15 @@ instance RunMessage LocationAttrs where
             $ "Not expecting a player card or empty set, but got "
             <> tshow locationCardsUnderneath
     Blanked msg' -> liftRunMessage msg' a
-    UseCardAbility iid source 101 _ _ | isSource a source -> do
+    UseCardAbility iid source AbilityInvestigate _ _ | isSource a source -> do
       let
         triggerSource = case source of
           ProxySource _ s -> s
           IndexedSource _ s -> s
-          _ -> a.ability 101
-      sid <- getRandom
-      pushM $ mkInvestigateLocation sid iid triggerSource (toId a)
+          _ -> a.ability AbilityInvestigate
+      Investigate.pushInvestigateAbility (toId a) iid triggerSource
       pure a
-    UseCardAbility iid source 102 _ _ | isSource a source -> do
+    UseCardAbility iid source AbilityMove _ _ | isSource a source -> do
       -- free because already paid for by ability
       push $ MoveAction iid locationId Free False
       pure a
@@ -657,11 +643,11 @@ withDrawCardUnderneathAction x =
 
 instance HasAbilities LocationAttrs where
   getAbilities l =
-    [ basicAbility $ investigateAbility l 101 mempty (onLocation l)
+    [ basicAbility $ investigateAbility l AbilityInvestigate mempty (onLocation l)
     , basicAbility
         $ restricted
           l
-          102
+          AbilityMove
           ( CanMoveTo (LocationWithId l.id)
               <> OnLocation (IncludeEmptySpace $ accessibleTo ForMovement l)
               <> exists (You <> can.move <> noModifier (CannotEnter l.id))
@@ -692,10 +678,6 @@ getShouldSpawnNonEliteAtConnectingInstead attrs = do
   pure $ flip any modifiers' $ \case
     SpawnNonEliteAtConnectingInstead {} -> True
     _ -> False
-
-enemyAtLocation :: (HasGame m, Tracing m) => EnemyId -> LocationAttrs -> m Bool
-enemyAtLocation eid attrs = elem eid <$> select (enemyAt $ toId attrs)
-
 locationEnemiesWithTrait :: (HasGame m, Tracing m) => LocationAttrs -> Trait -> m [EnemyId]
 locationEnemiesWithTrait attrs trait = select $ enemyAt (toId attrs) <> EnemyWithTrait trait
 

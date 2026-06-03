@@ -15,6 +15,7 @@ import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
+import Arkham.Location.Grid
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
@@ -87,16 +88,6 @@ leadChooseOrRunOneM :: ReverseQueue m => ChooseT m a -> m ()
 leadChooseOrRunOneM choices = do
   lead <- getLead
   chooseOrRunOneM lead choices
-
-playerChooseOneM :: ReverseQueue m => PlayerId -> ChooseT m a -> m ()
-playerChooseOneM pid choices = do
-  ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices
-  unless (shouldSkipQuestion choices') do
-    case label of
-      Nothing -> push $ Msg.chooseOne pid choices'
-      Just l -> case labelCardCode of
-        Nothing -> push $ Msg.Ask pid (QuestionLabel l Nothing $ ChooseOne choices')
-        Just cCode -> push $ Msg.Ask pid (QuestionLabel l (Just cCode) $ ChooseOne choices')
 
 isInvalidChoice :: UI Message -> Bool
 isInvalidChoice (InvalidLabel {}) = True
@@ -309,6 +300,9 @@ gridLabeled label action = unterminated do
   msgs <- lift $ capture action
   tell [GridLabel label msgs]
 
+gridLabeled_ :: ReverseQueue m => Pos -> QueueT Message m () -> ChooseT m ()
+gridLabeled_ (gridLabel -> label) = gridLabeled label
+
 portraitLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 portraitLabeled iid action = unterminated do
   msgs <- lift $ capture action
@@ -415,13 +409,6 @@ skillLabeled :: ReverseQueue m => SkillType -> QueueT Message m () -> ChooseT m 
 skillLabeled skillType action = unterminated do
   msgs <- lift $ capture action
   tell [SkillLabel skillType msgs]
-
-skillsLabeled :: ReverseQueue m => [SkillType] -> (SkillType -> QueueT Message m ()) -> ChooseT m ()
-skillsLabeled skills action = unterminated do
-  for_ skills \skillType -> do
-    msgs <- lift $ capture (action skillType)
-    tell [SkillLabel skillType msgs]
-
 targeting :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> ChooseT m ()
 targeting target action = unterminated do
   msgs <- lift $ capture action
@@ -523,7 +510,7 @@ storyWithContinue txt button = storyWithChooseOneM txt $ labeled button nothing
 storyWithChooseOneM :: ReverseQueue m => FlavorText -> ChooseT m a -> m ()
 storyWithChooseOneM txt choices = do
   (_, choices') <- runChooseT choices
-  unless (null choices') $ storyWithChooseOne txt choices'
+  unless (shouldSkipQuestion choices') $ storyWithChooseOne txt choices'
 
 storyWithContinue' :: (HasI18n, ReverseQueue m) => FlavorTextBuilder () -> m ()
 storyWithContinue' builder = storyWithChooseOneM' builder $ unscoped $ labeled' "continue" nothing
@@ -531,7 +518,7 @@ storyWithContinue' builder = storyWithChooseOneM' builder $ unscoped $ labeled' 
 storyWithChooseOneM' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m a -> m ()
 storyWithChooseOneM' builder choices = do
   (_, choices') <- runChooseT choices
-  unless (null choices') $ storyWithChooseOne (buildFlavor builder) choices'
+  unless (shouldSkipQuestion choices') $ storyWithChooseOne (buildFlavor builder) choices'
 
 investigatorStoryWithChooseOneM'
   :: ReverseQueue m => InvestigatorId -> FlavorTextBuilder () -> ChooseT m a -> m ()

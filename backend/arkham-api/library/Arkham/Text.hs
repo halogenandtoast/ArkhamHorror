@@ -6,6 +6,7 @@
 module Arkham.Text where
 
 import Arkham.Card.CardCode
+import Arkham.ChaosToken.Types (ChaosTokenFace)
 import Arkham.I18n
 import Arkham.Json
 import Arkham.Prelude
@@ -33,6 +34,7 @@ data FlavorTextModifier
   | NestedEntry
   | NoUnderline
   | CodexEntry
+  | HauntedEntry
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry
@@ -58,6 +60,8 @@ data FlavorTextEntry
   | ListEntry {list :: [ListItemEntry]}
   | CardEntry {cardCode :: CardCode, imageModifiers :: [ImageModifier]}
   | TarotEntry {tarot :: TarotCardArcana}
+  | ChaosTokenEntry {chaosTokenFace :: ChaosTokenFace}
+  | ChaosTokenMorphEntry {morphFrom :: ChaosTokenFace, morphTo :: ChaosTokenFace}
   | EntrySplit
   deriving stock (Show, Eq, Ord, Data)
 
@@ -76,11 +80,6 @@ data FlavorText = FlavorText
   , flavorBody :: [FlavorTextEntry]
   }
   deriving stock (Show, Eq, Ord, Data)
-
-mapFlavorText :: (FlavorTextEntry -> FlavorTextEntry) -> FlavorText -> FlavorText
-mapFlavorText f (FlavorText title entries) =
-  FlavorText title (map f entries)
-
 addFlavorEntry :: FlavorText -> FlavorTextEntry -> FlavorText
 addFlavorEntry (FlavorText title entries) entry' =
   FlavorText title (entries <> [entry'])

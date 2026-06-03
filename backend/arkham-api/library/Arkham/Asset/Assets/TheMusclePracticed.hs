@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.TheMusclePracticed (theMusclePracticed) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Window (defeatedEnemy)
 import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Scenarios.FortuneAndFolly.Helpers

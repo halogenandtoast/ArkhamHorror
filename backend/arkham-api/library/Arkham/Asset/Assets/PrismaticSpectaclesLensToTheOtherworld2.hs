@@ -25,8 +25,7 @@ prismaticSpectaclesLensToTheOtherworld2 = asset PrismaticSpectaclesLensToTheOthe
 
 instance HasAbilities PrismaticSpectaclesLensToTheOtherworld2 where
   getAbilities (PrismaticSpectaclesLensToTheOtherworld2 x) =
-    [ restrictedAbility x 1 ControlsThis $ investigateAction (AddCurseTokenCost 1)
-    ]
+    [investigateAbility x 1 (AddCurseTokenCost 1) ControlsThis]
 
 instance RunMessage PrismaticSpectaclesLensToTheOtherworld2 where
   runMessage msg a@(PrismaticSpectaclesLensToTheOtherworld2 attrs) = runQueueT $ case msg of

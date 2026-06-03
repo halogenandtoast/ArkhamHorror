@@ -130,7 +130,10 @@ data GetGameJson = GetGameJson
   , game :: PublicGame ArkhamGameId
   }
   deriving stock (Show, Generic)
-  deriving anyclass ToJSON
+
+instance ToJSON GetGameJson where
+  toJSON = genericToJSON defaultOptions
+  toEncoding = genericToEncoding defaultOptions
 
 data InvestigatorDetails = InvestigatorDetails
   { id :: InvestigatorId

@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.DeepOneHatchling (deepOneHatchling, DeepOneHatchling (
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Investigator.Projection ()
 import Arkham.Keyword
 import Arkham.Matcher
@@ -27,7 +27,7 @@ instance HasAbilities DeepOneHatchling where
       [ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)
       , restricted a 2 (exists $ not_ (be a) <> EnemyWithTrait DeepOne <> UnengagedEnemy <> ReadyEnemy)
           $ forced
-          $ IfEnemyDefeated #after You ByAny (be a)
+          $ EnemyDefeated #after You ByAny (be a)
       ]
 
 instance RunMessage DeepOneHatchling where

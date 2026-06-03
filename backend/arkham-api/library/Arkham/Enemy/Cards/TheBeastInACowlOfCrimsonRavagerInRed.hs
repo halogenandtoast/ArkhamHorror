@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.TheBeastInACowlOfCrimsonRavagerInRed (theBeastInACowlO
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Enemy (disengageEnemyFromAll)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 
@@ -27,6 +28,7 @@ instance RunMessage TheBeastInACowlOfCrimsonRavagerInRed where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       cancelEnemyDefeat attrs
       healAllDamage (attrs.ability 1) attrs
+      disengageEnemyFromAll attrs
       exhaustThis attrs
       selectEach (location_ "Catacombs of Kom el Shoqafa") (enemyMoveTo (attrs.ability 1) attrs)
       pure e

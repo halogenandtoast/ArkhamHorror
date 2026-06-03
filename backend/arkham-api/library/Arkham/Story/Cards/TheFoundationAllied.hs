@@ -9,7 +9,7 @@ import Arkham.Helpers.Window (defeatedEnemy)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Story.Import.Lifted
 
 newtype TheFoundationAllied = TheFoundationAllied StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor)

@@ -26,7 +26,7 @@ truthAndLies :: ActCard TruthAndLies
 truthAndLies = act (4, A) TruthAndLies Cards.truthAndLies Nothing
 
 instance HasAbilities TruthAndLies where
-  getAbilities (TruthAndLies attrs) =
+  getAbilities = actAbilities \attrs ->
     [ mkAbility attrs 1 $ actionAbilityWithCost (ClueCost $ Static 1)
     , restricted attrs 2 (InVictoryDisplay "Nyarlathotep" (EqualTo $ StaticWithPerPlayer 1 1))
         $ Objective

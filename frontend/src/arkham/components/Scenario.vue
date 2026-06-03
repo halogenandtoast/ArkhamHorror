@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
-import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon, ArrowPathIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon, ArrowPathIcon, LockClosedIcon, LockOpenIcon, ArrowUturnLeftIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
   watch,
@@ -15,6 +15,7 @@ import {
   provide
 } from 'vue';
 import { type Game } from '@/arkham/types/Game';
+import { type Scenario } from '@/arkham/types/Scenario';
 import { type Enemy } from '@/arkham/types/Enemy';
 import { type ConcealedCard } from '@/arkham/types/ConcealedCard';
 import ConcealedCardView from '@/arkham/components/ConcealedCard.vue';
@@ -26,8 +27,9 @@ import { ModifierType, Hollow } from '@/arkham/types/Modifier';
 import { Source } from '@/arkham/types/Source';
 import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
-import { waitForImagesToLoad, imgsrc, pluralize, groupBy } from '@/arkham/helpers';
-import { useMenu } from '@/composeable/menu';
+import { waitForImagesToLoad, imgsrc, groupBy } from '@/arkham/helpers';
+import { cardImage as cardCodeImage } from '@/arkham/cardImages';
+import { useMenu } from '@/composable/menu';
 import { useSettings } from '@/stores/settings';
 import { keyToId } from '@/arkham/types/Key'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -47,11 +49,13 @@ import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
+import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import Story from '@/arkham/components/Story.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Location from '@/arkham/components/Location.vue';
 import TreacheryView from '@/arkham/components/Treachery.vue';
-import * as ArkhamGame from '@/arkham/types/Game';
+import { useGameChoices } from '@/arkham/composables/useGameChoices';
+import { setLocationOffset, resetLocationOffsets } from '@/arkham/api';
 import { useDebug } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
@@ -91,6 +95,7 @@ const showOutOfPlay = ref(false)
 const forcedShowOutOfPlay = ref(false)
 const forcedShowDiscard = ref(false)
 const forcedShowHollowed = ref(false)
+const encounterDiscardPopoverShown = ref(false)
 const locationMap = ref<Element | null>(null)
 const scrollerRef = ref<HTMLElement | null>(null)
 const viewingDiscard = ref(false)
@@ -100,6 +105,49 @@ const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 let legObserver: MutationObserver | null = null
+let cosmicEmissaryObserver: MutationObserver | null = null
+let cosmicEmissaryResizeObserver: ResizeObserver | null = null
+let cosmicEmissaryCompactRequest: number | null = null
+let cosmicEmissaryCompactForce = false
+
+function readStyleMapCache(key: string): Record<string, Record<string, string>> {
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(key) ?? '{}') as Record<string, Record<string, string>>
+    for (const style of Object.values(cached)) {
+      const match = style.transform?.match(/^translate\(([^,]+),\s*([^\)]+)\)$/)
+      if (match) {
+        style.translate = `${match[1]} ${match[2]}`
+        delete style.transform
+      }
+    }
+    return cached
+  } catch {
+    return {}
+  }
+}
+
+function writeStyleMapCache(key: string, value: Record<string, Record<string, string>>) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // Ignore storage failures; the in-memory ref still prevents normal update hops.
+  }
+}
+
+const cosmicEmissaryEnemyStylesCacheKey = `game:${props.game.id}:cosmicEmissaryEnemyStyles`
+const cosmicEmissaryLocationCellStylesCacheKey = `game:${props.game.id}:cosmicEmissaryLocationCellStyles`
+const cosmicEmissaryAnimationSettingKey = `game:${props.game.id}:enableCosmicEmissaryAnimation`
+const legacyDisableCosmicEmissaryAnimationSettingKey = `game:${props.game.id}:disableCosmicEmissaryAnimation`
+const cachedCosmicEmissaryEnemyStyles = readStyleMapCache(cosmicEmissaryEnemyStylesCacheKey)
+const cachedCosmicEmissaryLocationCellStyles = readStyleMapCache(cosmicEmissaryLocationCellStylesCacheKey)
+const cosmicEmissaryEnemyStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryEnemyStyles)
+const cosmicEmissaryLocationCellStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryLocationCellStyles)
+const cosmicEmissaryFormationHasMeasured = ref(Object.keys(cachedCosmicEmissaryEnemyStyles).length > 0)
+const enableCosmicEmissaryAnimation = ref(
+  localStorage.getItem(cosmicEmissaryAnimationSettingKey) === null
+    ? localStorage.getItem(legacyDisableCosmicEmissaryAnimationSettingKey) !== 'true'
+    : localStorage.getItem(cosmicEmissaryAnimationSettingKey) !== 'false'
+)
 const locationsZoom = ref(parseFloat(localStorage.getItem(`game:${props.game.id}:locationsZoom`) ?? '1'))
 const doubleZoomActive = ref(false)
 const doubleZoomPrevValue = ref(1)
@@ -126,6 +174,303 @@ function decreaseZoom() {
   locationsZoom.value = parseFloat(Math.max(0.01, locationsZoom.value - zoomStep(locationsZoom.value)).toFixed(3))
 }
 
+const locationsUnlocked = ref(false)
+const draggingLocationId = ref<string | null>(null)
+// Optimistic offsets after a drop, kept until the server echoes them back.
+// Stored in canonical (rotationSteps=0) coordinates, same as the backend.
+const pendingOffsets = ref<Record<string, { x: number, y: number }>>({})
+
+// Plain (non-reactive) drag state. Mutated on every pointermove without
+// triggering Vue re-renders; the live drag visual is applied via direct DOM.
+type DragInternal = {
+  locationId: string
+  element: HTMLElement
+  pointerId: number
+  startX: number
+  startY: number
+  // Canonical base offset (matches what's stored on the backend).
+  baseCanonicalX: number
+  baseCanonicalY: number
+  // Pre-drag screen-space offset = displayOffset(base).
+  baseScreenX: number
+  baseScreenY: number
+  // Updated canonical offset after current drag delta (used by Vue fallback
+  // path if a mid-drag render happens).
+  canonicalFinalX: number
+  canonicalFinalY: number
+  // Capture rotation at start so mid-drag rotation changes don't desync.
+  rotationAtStart: number
+  moved: boolean
+}
+let dragInternal: DragInternal | null = null
+const DRAG_THRESHOLD_PX = 3
+
+// Measured location-cell dimensions (in unscaled CSS px). Updated after layout
+// changes so the rotation math can compensate for non-square cells: the grid
+// reshuffles via grid-template-areas (cells don't visually rotate), so a
+// "1 cell right" displacement before rotation isn't the same pixel distance as
+// "1 cell down" after rotation when cells aren't square.
+const cellDimensions = ref<{ w: number, h: number }>({ w: 1, h: 1 })
+
+function updateCellDimensions() {
+  nextTick(() => {
+    const cell = document.querySelector('.location-cell') as HTMLElement | null
+    if (!cell) return
+    const rect = cell.getBoundingClientRect()
+    const zoom = locationsZoom.value || 1
+    if (rect.width > 0 && rect.height > 0) {
+      cellDimensions.value = { w: rect.width / zoom, h: rect.height / zoom }
+    }
+  })
+}
+
+// Screen-space 90° CW rotation in pixels, with aspect-ratio correction so
+// "N cells worth of horizontal pixels" maps to "N cells worth of vertical
+// pixels" after rotation (and vice versa). For square cells this reduces to
+// the plain (-y, x) matrix; for rectangular cells it preserves the visual
+// relationship between cells across rotations. 180° always yields (-x, -y)
+// regardless of aspect ratio, which is why 180° looked right with the naive
+// matrix while 90°/270° looked off.
+function rotateOffset(off: { x: number, y: number }, steps: number): { x: number, y: number } {
+  const k = ((steps % 4) + 4) % 4
+  const { w, h } = cellDimensions.value
+  const ratio = w > 0 && h > 0 ? w / h : 1
+  let { x, y } = off
+  for (let i = 0; i < k; i++) {
+    const nx = -y * ratio
+    const ny = x / ratio
+    x = nx; y = ny
+  }
+  return { x, y }
+}
+
+const locationOffsets = computed<Record<string, { x: number, y: number }>>(() => {
+  // Iterate props.game.locations directly so this computed doesn't depend on
+  // the `locations` ref (which is declared later in this setup script and
+  // would otherwise TDZ when the watch below registers its source eagerly).
+  const offsets: Record<string, { x: number, y: number }> = {}
+  for (const loc of Object.values(props.game.locations)) {
+    for (const m of loc.modifiers ?? []) {
+      if (m.type.tag !== 'UIModifier') continue
+      const c = m.type.contents as any
+      if (c && typeof c === 'object' && c.tag === 'Positioned') {
+        offsets[loc.id] = { x: c.x, y: c.y }
+      }
+    }
+  }
+  return offsets
+})
+
+const hasAnyOffset = computed(() =>
+  Object.keys(locationOffsets.value).length > 0
+    || Object.keys(pendingOffsets.value).length > 0
+)
+
+// Padding to extend the scroll area so dragged locations near the edges
+// aren't clipped. Transforms don't expand the parent's layout box, so we
+// measure each moved cell's actual displaced position against the grid's
+// content bounds and only add padding for real overflow — a location moved
+// "into" the grid (e.g. a bottom-row cell nudged up) shouldn't grow padding.
+const layoutPadding = ref({ left: 0, right: 0, top: 0, bottom: 0 })
+
+async function updateLayoutPadding() {
+  await nextTick()
+  const grid = (locationMap.value as any)?.$el ?? locationMap.value as HTMLElement | null
+  if (!grid) return
+
+  const current = layoutPadding.value
+  const allOffsets: Record<string, { x: number, y: number }> = {
+    ...locationOffsets.value,
+    ...pendingOffsets.value,
+  }
+
+  if (Object.keys(allOffsets).length === 0) {
+    if (current.left || current.right || current.top || current.bottom) {
+      layoutPadding.value = { left: 0, right: 0, top: 0, bottom: 0 }
+    }
+    return
+  }
+
+  const contentWidth = grid.clientWidth - current.left - current.right
+  const contentHeight = grid.clientHeight - current.top - current.bottom
+
+  let left = 0, right = 0, top = 0, bottom = 0
+  const cells = grid.querySelectorAll('.location-cell[data-location-id]') as NodeListOf<HTMLElement>
+  for (const cell of cells) {
+    const id = cell.dataset.locationId
+    if (!id) continue
+    const offset = allOffsets[id]
+    if (!offset) continue
+
+    const rot = rotateOffset(offset, rotationSteps.value)
+    // offsetLeft/offsetTop are relative to the offset parent's border box and
+    // ignore CSS transforms, so they give us the cell's natural grid position
+    // *including* the grid's current padding — subtract it to get content-area
+    // coords, which are stable across padding updates.
+    const cellLeft = cell.offsetLeft - current.left + rot.x
+    const cellTop = cell.offsetTop - current.top + rot.y
+    const cellRight = cellLeft + cell.offsetWidth
+    const cellBottom = cellTop + cell.offsetHeight
+
+    if (cellLeft < 0) left = Math.max(left, -cellLeft)
+    if (cellTop < 0) top = Math.max(top, -cellTop)
+    if (cellRight > contentWidth) right = Math.max(right, cellRight - contentWidth)
+    if (cellBottom > contentHeight) bottom = Math.max(bottom, cellBottom - contentHeight)
+  }
+
+  if (left !== current.left || right !== current.right || top !== current.top || bottom !== current.bottom) {
+    layoutPadding.value = { left, right, top, bottom }
+  }
+}
+
+// Returns the CANONICAL offset for a location (server-side coordinate frame).
+function effectiveOffset(locationId: string): { x: number, y: number } {
+  if (dragInternal && dragInternal.locationId === locationId && dragInternal.moved) {
+    return { x: dragInternal.canonicalFinalX, y: dragInternal.canonicalFinalY }
+  }
+  return pendingOffsets.value[locationId] ?? locationOffsets.value[locationId] ?? { x: 0, y: 0 }
+}
+
+// Returns only the user-offset transform. Grid placement lives on the wrapper
+// `.location-cell` so Vue's TransitionGroup FLIP can animate the wrapper
+// without clobbering this transform during rotation reshuffles.
+function locationOffsetStyle(location: { id: string }) {
+  const canonical = effectiveOffset(location.id)
+  // Apply the user's current rotation so the offset moves with the rotated
+  // layout instead of staying in absolute screen space.
+  const off = rotateOffset(canonical, rotationSteps.value)
+  const style: Record<string, string> = {}
+  if (off.x !== 0 || off.y !== 0) {
+    style.transform = `translate(${off.x}px, ${off.y}px)`
+  }
+  return style
+}
+
+function onLocationPointerDown(event: PointerEvent, location: { id: string }) {
+  if (!locationsUnlocked.value) return
+  event.preventDefault()
+  event.stopPropagation()
+  const element = event.currentTarget as HTMLElement | null
+  if (!element) return
+  const baseCanonical = effectiveOffset(location.id)
+  const baseScreen = rotateOffset(baseCanonical, rotationSteps.value)
+  dragInternal = {
+    locationId: location.id,
+    element,
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    baseCanonicalX: baseCanonical.x,
+    baseCanonicalY: baseCanonical.y,
+    baseScreenX: baseScreen.x,
+    baseScreenY: baseScreen.y,
+    canonicalFinalX: baseCanonical.x,
+    canonicalFinalY: baseCanonical.y,
+    rotationAtStart: rotationSteps.value,
+    moved: false,
+  }
+  window.addEventListener('pointermove', onWindowPointerMove)
+  window.addEventListener('pointerup', onWindowPointerUp)
+  window.addEventListener('pointercancel', onWindowPointerUp)
+}
+
+function onWindowPointerMove(event: PointerEvent) {
+  if (!dragInternal || dragInternal.pointerId !== event.pointerId) return
+  const zoom = locationsZoom.value || 1
+  const screenDx = (event.clientX - dragInternal.startX) / zoom
+  const screenDy = (event.clientY - dragInternal.startY) / zoom
+  if (!dragInternal.moved
+    && Math.hypot(event.clientX - dragInternal.startX, event.clientY - dragInternal.startY) > DRAG_THRESHOLD_PX) {
+    dragInternal.moved = true
+    draggingLocationId.value = dragInternal.locationId
+  }
+  if (dragInternal.moved) {
+    // Live visual: screen-space delta on top of pre-drag screen position.
+    const screenX = dragInternal.baseScreenX + screenDx
+    const screenY = dragInternal.baseScreenY + screenDy
+    dragInternal.element.style.transform = `translate(${screenX}px, ${screenY}px)`
+    // Mirror it in canonical coords (inverse rotation) for commit + fallback.
+    const canonicalDelta = rotateOffset({ x: screenDx, y: screenDy }, -dragInternal.rotationAtStart)
+    dragInternal.canonicalFinalX = dragInternal.baseCanonicalX + canonicalDelta.x
+    dragInternal.canonicalFinalY = dragInternal.baseCanonicalY + canonicalDelta.y
+  }
+}
+
+function onWindowPointerUp(event: PointerEvent) {
+  if (!dragInternal || dragInternal.pointerId !== event.pointerId) return
+  const drag = dragInternal
+  dragInternal = null
+  window.removeEventListener('pointermove', onWindowPointerMove)
+  window.removeEventListener('pointerup', onWindowPointerUp)
+  window.removeEventListener('pointercancel', onWindowPointerUp)
+  draggingLocationId.value = null
+  if (!drag.moved) return
+  // Stash the drop position before the next render so the inline style stays
+  // at the drop point until the server echoes the new modifier back.
+  pendingOffsets.value = {
+    ...pendingOffsets.value,
+    [drag.locationId]: { x: drag.canonicalFinalX, y: drag.canonicalFinalY },
+  }
+  nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
+  void setLocationOffset(props.game.id, drag.locationId, drag.canonicalFinalX, drag.canonicalFinalY)
+    .finally(() => nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change'))))
+}
+
+// Drop a pending entry once the server's modifier confirms it.
+watch(locationOffsets, (newServer) => {
+  if (Object.keys(pendingOffsets.value).length === 0) return
+  const next = { ...pendingOffsets.value }
+  let changed = false
+  for (const id of Object.keys(next)) {
+    const server = newServer[id]
+    if (server && Math.abs(server.x - next[id].x) < 0.5 && Math.abs(server.y - next[id].y) < 0.5) {
+      delete next[id]
+      changed = true
+    }
+  }
+  if (changed) {
+    pendingOffsets.value = next
+    nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
+  }
+}, { deep: true })
+
+function cancelActiveDrag() {
+  if (!dragInternal) return
+  window.removeEventListener('pointermove', onWindowPointerMove)
+  window.removeEventListener('pointerup', onWindowPointerUp)
+  window.removeEventListener('pointercancel', onWindowPointerUp)
+  dragInternal.element.style.transform = ''
+  dragInternal = null
+  draggingLocationId.value = null
+}
+
+function toggleLocationsUnlocked() {
+  locationsUnlocked.value = !locationsUnlocked.value
+  if (!locationsUnlocked.value) cancelActiveDrag()
+  nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
+}
+
+function clearCosmicEmissaryCompactStyles() {
+  cosmicEmissaryEnemyStyles.value = {}
+  cosmicEmissaryLocationCellStyles.value = {}
+  sessionStorage.removeItem(cosmicEmissaryEnemyStylesCacheKey)
+  sessionStorage.removeItem(cosmicEmissaryLocationCellStylesCacheKey)
+  cosmicEmissaryFormationHasMeasured.value = false
+}
+
+function resetLocationsLayout() {
+  if (!hasAnyOffset.value) return
+  pendingOffsets.value = {}
+  if (props.scenario.id === 'c10651') clearCosmicEmissaryCompactStyles()
+  void resetLocationOffsets(props.game.id).finally(() => {
+    if (props.scenario.id === 'c10651') {
+      requestCosmicEmissaryCompact(true)
+      setTimeout(() => requestCosmicEmissaryCompact(true), 100)
+      setTimeout(() => requestCosmicEmissaryCompact(true), 500)
+    }
+  })
+}
+
 let holdTimer: ReturnType<typeof setTimeout> | null = null
 let holdInterval: ReturnType<typeof setInterval> | null = null
 
@@ -141,12 +486,66 @@ function stopHold() {
   if (holdInterval !== null) { clearInterval(holdInterval); holdInterval = null }
 }
 
+function requestCosmicEmissaryCompact(force = false) {
+  cosmicEmissaryCompactForce = cosmicEmissaryCompactForce || force
+  if (cosmicEmissaryCompactRequest !== null) return
+  cosmicEmissaryCompactRequest = requestAnimationFrame(() => {
+    const shouldForce = cosmicEmissaryCompactForce
+    cosmicEmissaryCompactForce = false
+    cosmicEmissaryCompactRequest = null
+    compactCosmicEmissaryFormation(shouldForce)
+  })
+}
+
 const { isMobile } = IsMobile();
+
+function updateCosmicEmissaryAnimationSetting(value: string | null) {
+  enableCosmicEmissaryAnimation.value = value !== 'false'
+  nextTick(() => compactCosmicEmissaryFormation())
+}
+
+const onCosmicEmissaryStorage = (event: StorageEvent) => {
+  if (event.key === cosmicEmissaryAnimationSettingKey) updateCosmicEmissaryAnimationSetting(event.newValue)
+}
+
+const onCosmicEmissarySettingChange = (event: Event) => {
+  const detail = (event as CustomEvent<{ key?: string, value?: string }>).detail
+  if (detail?.key === cosmicEmissaryAnimationSettingKey) updateCosmicEmissaryAnimationSetting(detail.value ?? null)
+}
 
 // callbacks
 onMounted(() => {
   setGameId(props.game.id)
+  window.addEventListener('storage', onCosmicEmissaryStorage)
+  window.addEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
   updateScrollMargins()
+  updateCellDimensions()
+  updateLayoutPadding()
+  if(props.scenario.id === "c10651") {
+    nextTick(requestCosmicEmissaryCompact)
+    setTimeout(requestCosmicEmissaryCompact, 100)
+    setTimeout(requestCosmicEmissaryCompact, 500)
+    setTimeout(requestCosmicEmissaryCompact, 1500)
+
+    const setupCosmicEmissaryObservers = () => {
+      const locationCards = document.querySelector('.location-cards') as HTMLElement | null
+      if (!locationCards || cosmicEmissaryObserver) return
+
+      cosmicEmissaryObserver = new MutationObserver(() => nextTick(requestCosmicEmissaryCompact))
+      cosmicEmissaryObserver.observe(locationCards, { childList: true, subtree: true })
+
+      cosmicEmissaryResizeObserver = new ResizeObserver(() => requestCosmicEmissaryCompact())
+      cosmicEmissaryResizeObserver.observe(locationCards)
+      locationCards.querySelectorAll<HTMLElement>('[data-label]').forEach((el) => cosmicEmissaryResizeObserver?.observe(el))
+    }
+
+    nextTick(setupCosmicEmissaryObservers)
+    waitForImagesToLoad(() => {
+      setupCosmicEmissaryObservers()
+      requestCosmicEmissaryCompact()
+    })
+  }
+
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
       nextTick(() => rotateImages(true));
@@ -210,8 +609,17 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('storage', onCosmicEmissaryStorage)
+  window.removeEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
   legObserver?.disconnect()
   legObserver = null
+  cosmicEmissaryObserver?.disconnect()
+  cosmicEmissaryObserver = null
+  cosmicEmissaryResizeObserver?.disconnect()
+  cosmicEmissaryResizeObserver = null
+  if (cosmicEmissaryCompactRequest !== null) cancelAnimationFrame(cosmicEmissaryCompactRequest)
+  cosmicEmissaryCompactRequest = null
+  cancelActiveDrag()
 })
 
 onUpdated(() => {
@@ -272,20 +680,26 @@ addEntry({
 // Computed
 const scenarioGuide = computed(() => {
   const { reference, difficulty } = props.scenario
-  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
-    ? 'b'
-    : ''
-  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.avif`)
+  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert' ? 'b' : ''
+  return cardCodeImage(reference, difficultySuffix)
 })
 
 const additionalReferences = computed(() => {
-  const { additionalReferences } = props.scenario
-  return additionalReferences.map((s) => imgsrc(`cards/${s.replace('c', '')}.avif`))
+  return props.scenario.additionalReferences.map((s) => cardCodeImage(s))
 })
 const scenarioDecks = computed(() => {
   if (!props.scenario.decks) return null
   return Object.entries(props.scenario.decks)
 })
+
+const hideEncounterDeck = computed(() => props.scenario.id === 'c10651')
+
+const scenarioDeckDiscard = (key: string) => {
+  const discards = props.scenario.deckDiscards
+  if (!discards) return undefined
+  const entry = discards.find(([k]) => k === key)
+  return entry ? entry[1] : undefined
+}
 
 const isVertical = function(area: string) {
   const [start, end] = area.split('--')
@@ -394,13 +808,20 @@ const gridAreas = computed(()=>{
 // transform: scale() is used rather than CSS zoom because it is handled consistently
 // by getBoundingClientRect() in all browsers. The scroll area doesn't follow transform
 // automatically, so we set margins after each render to compensate.
-const locationStyles = computed(() => ({
-  display: 'grid',
-  gap: '20px',
-  'grid-template-areas': gridAreas.value ?? '',
-  transform: `scale(${locationsZoom.value})`,
-  transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
-}))
+const locationStyles = computed(() => {
+  const pad = layoutPadding.value
+  return {
+    display: 'grid',
+    gap: '20px',
+    'grid-template-areas': gridAreas.value ?? '',
+    transform: `scale(${locationsZoom.value})`,
+    transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
+    paddingLeft: `${pad.left}px`,
+    paddingRight: `${pad.right}px`,
+    paddingTop: `${pad.top}px`,
+    paddingBottom: `${pad.bottom}px`,
+  }
+})
 
 async function updateScrollMargins() {
   await nextTick()
@@ -454,14 +875,15 @@ const outOfPlayEnemies = computed(() => enemyGroups.value.outOfPlay)
 const pursuit = computed(() => enemyGroups.value.pursuit)
 const globalEnemies = computed(() => enemyGroups.value.global)
 const inTheShadows = computed(() => Object.values(props.game.enemies).filter((e) => e.placement.tag === "InTheShadows"))
-const inTheShadowLocations = computed(() => {
-  if(!props.scenario.meta) return null
-  return props.scenario.meta.locationsInShadows
+type InTheShadowLocations = { left?: string; middle?: string; right?: string }
+const inTheShadowLocations = computed<InTheShadowLocations>(() => {
+  const locations = props.scenario.meta?.locationsInShadows
+  if (!locations || typeof locations !== 'object') return {}
+  return locations as InTheShadowLocations
 })
 
 const anyInTheShadowLocations = computed(() => {
   const locations = inTheShadowLocations.value
-  if(!locations) return false
   return locations.left || locations.right || locations.middle
 })
 const inTheShadowsInvestigators = computed(() => Object.values(props.game.investigators).filter((e) => e.placement.tag === "InTheShadows"))
@@ -523,18 +945,15 @@ const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
 const viewUnderScenarioReference = computed(() => t('cardsUnderneath', cardsUnderScenarioReference.value.length))
-const viewDiscardLabel = computed(() => pluralize(t('scenario.discardCard'), discards.value.length))
 const topOfEncounterDiscard = computed(() => {
   if (!props.scenario.discard[0]) return null
-  const { cardCode } = props.scenario.discard[0]
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`)
+  return cardCodeImage(props.scenario.discard[0].cardCode)
 })
 const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
 const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
 const topOfSpectralDiscard = computed(() => {
   if (!spectralDiscard.value || !spectralDiscard.value[0]) return null
-  const { cardCode } = spectralDiscard.value[0]
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`)
+  return cardCodeImage(spectralDiscard.value[0].cardCode)
 })
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
 const globalStories = computed(() => Object.values(props.game.stories).filter((story) =>
@@ -559,13 +978,41 @@ const spentKeys = computed(() => props.scenario.keys)
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.placement === null && a.label !== "cosmos"))
 watch(locations, updateScrollMargins, { flush: 'post' })
+watch(layoutPadding, updateScrollMargins, { flush: 'post' })
+watch([locations, rotationSteps, locationsZoom], updateCellDimensions, { flush: 'post' })
+const cosmicEmissaryLayoutSignature = computed(() => {
+  if (props.scenario.id !== 'c10651') return ''
+  return [
+    locations.value.map((l) => `${l.id}:${l.label}`).join('|'),
+    enemiesAsLocations.value.map((e) => `${e.id}:${e.asSelfLocation}`).join('|'),
+  ].join('::')
+})
+watch([cosmicEmissaryLayoutSignature, rotationSteps, locationsZoom], () => nextTick(requestCosmicEmissaryCompact), { flush: 'post' })
+watch(
+  [locationOffsets, pendingOffsets, rotationSteps, locationsZoom, locations, cellDimensions],
+  updateLayoutPadding,
+  { flush: 'post', deep: true },
+)
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {
   const { locationLayout, usesGrid } = props.scenario;
   if (!locationLayout || !usesGrid) return []
   return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
 })
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = useGameChoices(() => props.game, () => props.playerId)
+
+const isEncounterDiscardChoice = (c: Message) => {
+  if (c.tag !== "TargetLabel") return false
+  if (c.target.tag === "EnemyTarget") {
+    const enemy = props.game.enemies[c.target.contents as string]
+    if (!enemy) return false
+    return discards.value.some(card => cardId(card) === enemy.cardId)
+  }
+  if (c.target.tag !== "CardIdTarget") return false
+  return discards.value.some(card => cardId(card) === c.target.contents)
+}
+const encounterDiscardCardsAction = computed(() => choices.value.some(isEncounterDiscardChoice))
+
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
 const damage = computed(() => props.scenario.tokens[TokenType.Damage])
 const targets = computed(() => props.scenario.tokens[TokenType.Target])
@@ -646,24 +1093,16 @@ watchEffect(() => {
   }
   forcedShowOutOfPlay.value = choices.value.some(isOutOfPlayChoice)
 
-  const isDiscardChoice = (c: Message) => {
-    if (c.tag !== "TargetLabel") return false
-    if (c.tag === "TargetLabel" && c.target.tag === "EnemyTarget") {
-      let enemyCardId = props.game.enemies[c.target.contents as string].cardId
-      return discards.value.some(card => cardId(card) === enemyCardId)
-    }
-    if (c.target.tag !== "CardIdTarget") return false
-    return discards.value.some(card => cardId(card) === c.target.contents)
-  }
   const isHollowedChoice = (c: Message) => {
     if (c.tag !== "TargetLabel") return false
     if (c.target.tag !== "CardIdTarget") return false
     return hollowed.value.some(card => cardId(card) === c.target.contents)
   }
-  const showDiscard = choices.value.some(isDiscardChoice)
+  const showDiscard = choices.value.some(isEncounterDiscardChoice)
   const showHollowedCards = choices.value.some(isHollowedChoice)
   if (showDiscard) {
-    showDiscards();
+    encounterDiscardPopoverShown.value = true
+    hideCards()
     forcedShowDiscard.value = true
     forcedShowHollowed.value = false
   } else if (showHollowedCards) {
@@ -679,6 +1118,174 @@ watchEffect(() => {
 
 
 // Helpers
+const cosmicEmissaryLabels = [
+  'cosmicEmissaryPhantasm',
+  'cosmicEmissaryAbyss',
+  'cosmicEmissaryBrilliance',
+  'cosmicEmissaryMiasma',
+] as const
+
+type CosmicEmissaryLabel = typeof cosmicEmissaryLabels[number]
+
+const cosmicEmissaryLocationLabels: Record<CosmicEmissaryLabel, string> = {
+  cosmicEmissaryPhantasm: 'mirrorNestLeft',
+  cosmicEmissaryAbyss: 'mirrorNestTop',
+  cosmicEmissaryBrilliance: 'mirrorNestBottom',
+  cosmicEmissaryMiasma: 'mirrorNestRight',
+}
+
+function locationHasManualOffset(el: HTMLElement): boolean {
+  const locationId = el.dataset.locationId
+  if (!locationId) return false
+  return locationId in locationOffsets.value
+    || locationId in pendingOffsets.value
+    || dragInternal?.locationId === locationId
+}
+
+function transformTranslate(el: HTMLElement): { x: number, y: number } {
+  const style = getComputedStyle(el)
+  const translate = style.translate
+  if (translate && translate !== 'none') {
+    const [x = '0px', y = '0px'] = translate.split(/\s+/)
+    return { x: parseFloat(x) || 0, y: parseFloat(y) || 0 }
+  }
+
+  const transform = style.transform
+  if (!transform || transform === 'none') return { x: 0, y: 0 }
+  const matrix = new DOMMatrixReadOnly(transform)
+  return { x: matrix.e, y: matrix.f }
+}
+
+function styleMapsEqual(a: Record<string, Record<string, string>>, b: Record<string, Record<string, string>>): boolean {
+  const aKeys = Object.keys(a)
+  const bKeys = Object.keys(b)
+  if (aKeys.length !== bKeys.length) return false
+  return aKeys.every((key) => {
+    const aStyle = a[key]
+    const bStyle = b[key]
+    if (!bStyle) return false
+    const aStyleKeys = Object.keys(aStyle)
+    const bStyleKeys = Object.keys(bStyle)
+    return aStyleKeys.length === bStyleKeys.length
+      && aStyleKeys.every((styleKey) => aStyle[styleKey] === bStyle[styleKey])
+  })
+}
+
+function compactCosmicEmissaryFormation(force = false) {
+  if (props.scenario.id !== 'c10651' || (locationsUnlocked.value && !force)) return
+
+  const entries = cosmicEmissaryLabels.map((label) => {
+    const el = document.querySelector(`[data-label=${label}]`) as HTMLElement | null
+    return el ? [label, el] as const : null
+  })
+
+  if (entries.some((entry) => entry === null)) return
+
+  const elements = Object.fromEntries(entries as [CosmicEmissaryLabel, HTMLElement][]) as Record<CosmicEmissaryLabel, HTMLElement>
+
+  const locationElements = Object.fromEntries(
+    cosmicEmissaryLabels.map((label) => [
+      label,
+      document.querySelector(`.location-cell[data-label=${cosmicEmissaryLocationLabels[label]}]`) as HTMLElement | null,
+    ])
+  ) as Record<CosmicEmissaryLabel, HTMLElement | null>
+
+  requestAnimationFrame(() => {
+    const locationCards = document.querySelector('.location-cards') as HTMLElement | null
+    const visualScale = locationCards
+      ? (new DOMMatrixReadOnly(getComputedStyle(locationCards).transform).a || 1)
+      : 1
+    const rectFor = (el: HTMLElement) => {
+      const rectEl = (el.querySelector('img.card') ?? el) as HTMLElement
+      const rect = rectEl.getBoundingClientRect()
+      const existing = transformTranslate(el)
+      // Measure the element's natural grid position without removing its current
+      // transform. This keeps the compacted positions in the VDOM between game
+      // updates, so cards don't snap outward before this rAF runs again.
+      return {
+        left: rect.left - existing.x * visualScale,
+        top: rect.top - existing.y * visualScale,
+        width: rect.width,
+        height: rect.height,
+      }
+    }
+    const rects = Object.fromEntries(
+      Object.entries(elements).map(([label, el]) => [label, rectFor(el as HTMLElement)])
+    ) as Record<CosmicEmissaryLabel, { left: number, top: number, width: number, height: number }>
+
+    const centerX = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].left + rects[label].width / 2, 0) / cosmicEmissaryLabels.length
+    const centerY = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].top + rects[label].height / 2, 0) / cosmicEmissaryLabels.length
+
+    const targets: Record<CosmicEmissaryLabel, { left: number; top: number }> = {
+      cosmicEmissaryPhantasm: {
+        left: centerX - rects.cosmicEmissaryPhantasm.width,
+        top: centerY - rects.cosmicEmissaryPhantasm.height,
+      },
+      cosmicEmissaryAbyss: {
+        left: centerX,
+        top: centerY - rects.cosmicEmissaryAbyss.height,
+      },
+      cosmicEmissaryBrilliance: {
+        left: centerX - rects.cosmicEmissaryBrilliance.width,
+        top: centerY,
+      },
+      cosmicEmissaryMiasma: {
+        left: centerX,
+        top: centerY,
+      },
+    }
+
+    const nextEnemyStyles: Record<string, Record<string, string>> = {}
+    const nextLocationCellStyles: Record<string, Record<string, string>> = {}
+    const transition = (!enableCosmicEmissaryAnimation.value || cosmicEmissaryFormationHasMeasured.value) ? 'none' : 'transform 0.2s ease'
+
+    for (const label of cosmicEmissaryLabels) {
+      const rect = rects[label]
+      const target = targets[label]
+      const dx = Math.round(((target.left - rect.left) / visualScale) * 10) / 10
+      const dy = Math.round(((target.top - rect.top) / visualScale) * 10) / 10
+      nextEnemyStyles[label] = {
+        translate: `${dx}px ${dy}px`,
+        transition,
+        zIndex: '20',
+      }
+
+      const locationEl = locationElements[label]
+      const locationLabel = cosmicEmissaryLocationLabels[label]
+      if (locationEl && locationHasManualOffset(locationEl)) {
+        const existing = cosmicEmissaryLocationCellStyles.value[locationLabel]
+        if (existing) nextLocationCellStyles[locationLabel] = existing
+      } else if (locationEl) {
+        const shouldAlignVerticalMidpoint = label === 'cosmicEmissaryPhantasm' || label === 'cosmicEmissaryMiasma'
+        const locationDy = shouldAlignVerticalMidpoint
+          ? (() => {
+              const locationRect = rectFor(locationEl)
+              const enemyCenterY = rect.top + rect.height / 2
+              const locationCenterY = locationRect.top + locationRect.height / 2
+              return Math.round((dy + (enemyCenterY - locationCenterY) / visualScale) * 10) / 10
+            })()
+          : dy
+
+        nextLocationCellStyles[locationLabel] = {
+          translate: `${dx}px ${locationDy}px`,
+          transition,
+          zIndex: '10',
+        }
+      }
+    }
+
+    if (!styleMapsEqual(cosmicEmissaryEnemyStyles.value, nextEnemyStyles)) {
+      cosmicEmissaryEnemyStyles.value = nextEnemyStyles
+      writeStyleMapCache(cosmicEmissaryEnemyStylesCacheKey, nextEnemyStyles)
+    }
+    if (!styleMapsEqual(cosmicEmissaryLocationCellStyles.value, nextLocationCellStyles)) {
+      cosmicEmissaryLocationCellStyles.value = nextLocationCellStyles
+      writeStyleMapCache(cosmicEmissaryLocationCellStylesCacheKey, nextLocationCellStyles)
+    }
+    cosmicEmissaryFormationHasMeasured.value = true
+  })
+}
+
 function rotateImages(init: boolean) {
   const atlachNacha = document.querySelector('[data-label=atlachNacha]') as HTMLElement
   const locationCards = document.querySelector('.location-cards')
@@ -722,11 +1329,14 @@ function rotateImages(init: boolean) {
     const oX = middleCardImgRect.left + middleCardImgRect.width / 2
     const oY = middleCardImgRect.top + middleCardImgRect.height / 2
 
-    document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img: HTMLElement) => {
+    document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((el) => {
+      const img = el as HTMLElement
+      const label = img.dataset.label
+      if (!label) return
 
-      if (init || !legsSet.value.includes(img.dataset.label)) {
-        if(!legsSet.value.includes(img.dataset.label)) {
-          legsSet.value = [...legsSet.value, img.dataset.label]
+      if (init || !legsSet.value.includes(label)) {
+        if(!legsSet.value.includes(label)) {
+          legsSet.value = [...legsSet.value, label]
         }
         const thisRect = img.getBoundingClientRect()
         const thisX = thisRect.left
@@ -742,7 +1352,8 @@ function rotateImages(init: boolean) {
         requestAnimationFrame(() => {
           atlachNacha.style.transform = `rotate(${previousRotation.value}deg)`
           atlachNacha.style.transition = 'transform 0.5s'
-          document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img) => {
+          document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((el) => {
+            const img = el as HTMLElement
             img.style.transition = 'transform 0.5s'
             img.style.transform = `rotate(${degrees}deg)`
           })
@@ -858,7 +1469,7 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
 const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'FrostToken').length)
 
 async function removeChaosToken(face: any){
-  debug.send(props.game.id, {tag: 'RemoveChaosToken', contents: face})
+  debug.send(props.game.id, {tag: 'ChaosBagMessage', contents: {tag: 'RemoveChaosToken_', contents: face}})
 }
 
 async function addChaosToken(face: any){
@@ -1073,6 +1684,7 @@ async function addChaosToken(face: any){
           v-for="[,scenarioDeck] in scenarioDecks"
           :key="scenarioDeck[0]"
           :deck="scenarioDeck"
+          :discardPile="scenarioDeckDiscard(scenarioDeck[0])"
           :game="game"
           :playerId="playerId"
           @choose="choose"
@@ -1085,14 +1697,25 @@ async function addChaosToken(face: any){
               <img
                 :src="topOfEncounterDiscard"
                 class="card"
-                @click="showDiscards"
               />
               <span class="deck-size">{{discards.length}}</span>
             </div>
 
 
             <div v-if="discards.length > 0" class="buttons">
-              <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
+              <CardsUnderIndicator
+                v-if="discards.length > 0"
+                v-model:shown="encounterDiscardPopoverShown"
+                class="view-discard-button"
+                :cards="discards"
+                :game="game"
+                :playerId="playerId"
+                :label="t('scenario.discards')"
+                :isDiscards="true"
+                :highlighted="encounterDiscardCardsAction"
+                :fullWidth="true"
+                @choose="choose"
+              />
               <template v-if="debug.active">
                 <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackIn'})">{{ $t('scenarioComponent.shuffleBackIn') }}</button>
               </template>
@@ -1104,7 +1727,7 @@ async function addChaosToken(face: any){
             :playerId="playerId"
             @choose="choose"
             style="grid-area: encounterDeck"
-            v-if="props.scenario.hasEncounterDeck"
+            v-if="props.scenario.hasEncounterDeck && !hideEncounterDeck"
           />
 
           <div v-if="topOfSpectralDiscard" class="discard" style="grid-area: spectralDiscard"
@@ -1133,6 +1756,8 @@ async function addChaosToken(face: any){
               :agenda="agenda"
               :cardsUnder="cardsUnderAgenda"
               :cardsNextTo="cardsNextToAgenda"
+              :remainingStack="scenario.agendaStack[agenda.deckId] || []"
+              :completedStack="scenario.completedAgendaStack[agenda.deckId] || []"
               :game="game"
               :playerId="playerId"
               :style="{ 'grid-area': `agenda${agenda.deckId}`, 'justify-self': 'center' }"
@@ -1160,6 +1785,8 @@ async function addChaosToken(face: any){
             :act="act"
             :cardsUnder="cardsUnderAct"
             :cardsNextTo="cardsNextToAct"
+            :remainingStack="scenario.actStack[act.deckId] || []"
+            :completedStack="scenario.completedActStack[act.deckId] || []"
             :game="game"
             :playerId="playerId"
             :style="{ 'grid-area': `act${act.deckId}`, 'justify-self': 'center' }"
@@ -1287,20 +1914,32 @@ async function addChaosToken(face: any){
 
 
       <div class="location-cards-container" @dblclick.passive="toggleZoom">
-        <Connections :game="game" :playerId="playerId" />
+        <Connections :game="game" :playerId="playerId" :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation" />
         <div class="location-cards-scroller" ref="scrollerRef">
-        <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
-          <Location
+        <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :css="props.scenario.id !== 'c10651'" :style="locationStyles" @before-leave="beforeLeave">
+          <div
             v-for="location in locations"
-            class="location"
             :key="location.label"
-            :game="game"
-            :playerId="playerId"
-            :location="location"
-            :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
-            @choose="choose"
-            @show="doShowCards"
-          />
+            class="location-cell"
+            :data-location-id="location.id"
+            :data-label="location.label"
+            :style="[
+              { 'grid-area': location.label, 'justify-self': 'center' },
+              cosmicEmissaryLocationCellStyles[location.label] ?? {},
+            ]"
+          >
+            <Location
+              class="location"
+              :class="{ 'location--unlocked': locationsUnlocked, 'location--dragging': draggingLocationId === location.id }"
+              :game="game"
+              :playerId="playerId"
+              :location="location"
+              :style="locationOffsetStyle(location)"
+              @pointerdown.capture="onLocationPointerDown($event, location)"
+              @choose="choose"
+              @show="doShowCards"
+            />
+          </div>
           <EnemyView
             v-for="enemy in enemiesAsLocations"
             :key="enemy.id"
@@ -1309,7 +1948,10 @@ async function addChaosToken(face: any){
             :playerId="playerId"
             :data-label="enemy.asSelfLocation"
             :data-rotation="enemy.meta?.rotation ?? null"
-            :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center', 'align-items': 'center' }"
+            :style="[
+              { 'grid-area': enemy.asSelfLocation, 'justify-self': 'center', 'align-items': 'center' },
+              enemy.asSelfLocation ? (cosmicEmissaryEnemyStyles[enemy.asSelfLocation] ?? {}) : {},
+            ]"
             @choose="choose"
           />
           <div
@@ -1362,6 +2004,23 @@ async function addChaosToken(face: any){
             <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
             <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
             <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>
+            <button
+              class="zoom-btn"
+              :class="{ 'zoom-btn--active': locationsUnlocked }"
+              @click.stop="toggleLocationsUnlocked"
+              v-tooltip="locationsUnlocked ? 'Lock locations' : 'Unlock locations to drag'"
+            >
+              <LockOpenIcon v-if="locationsUnlocked" class="zoom-btn__icon" />
+              <LockClosedIcon v-else class="zoom-btn__icon" />
+            </button>
+            <button
+              v-if="hasAnyOffset"
+              class="zoom-btn"
+              @click.stop="resetLocationsLayout"
+              v-tooltip="'Reset location positions'"
+            >
+              <ArrowUturnLeftIcon class="zoom-btn__icon" />
+            </button>
           </div>
         </PlayerTabs>
         <div id="totals">
@@ -1464,8 +2123,15 @@ async function addChaosToken(face: any){
   @media (max-width: 800px) and (orientation: portrait) {
     padding-top: 10px;
     padding-bottom: 0;
-    height: calc(var(--card-height) + 10px);
+    min-height: calc(var(--card-height) + 10px);
   }
+}
+
+/* A revealed (slid-out) treachery extends down into the board's region; lift the
+   whole scenario-cards layer above the board (normally z-index: -2, behind it) so
+   the revealed card and its buttons stay clickable. */
+.scenario-cards:has(.treachery-group.is-revealed) {
+  z-index: 1;
 }
 
 .clue {
@@ -1614,9 +2280,6 @@ async function addChaosToken(face: any){
     display: flex;
     flex-direction: column;
     gap: 5px;
-    @media (max-width: 800px) and (orientation: portrait) {
-      display: none;
-    }
   }
 }
 
@@ -2057,6 +2720,44 @@ async function addChaosToken(face: any){
     background: var(--button-1-highlight);
     color: white;
   }
+}
+
+.zoom-btn--active {
+  background: var(--button-1-highlight);
+  color: white;
+}
+
+.zoom-btn__icon {
+  width: 14px;
+  height: 14px;
+}
+
+.location-cell {
+  /* Grid placement + TransitionGroup FLIP target. The inner .location carries
+     the user's drag offset transform, so rotation reshuffles (which FLIP-
+     animate the wrapper) don't wipe that offset. */
+  display: block;
+}
+
+.location-cell > .location {
+  /* Animate the offset along with the wrapper's FLIP move during rotation so
+     the offset doesn't snap to its rotated value before the wrapper slides
+     into place. Same easing/duration as .map-move keeps them in sync. */
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.location--unlocked {
+  cursor: grab;
+  outline: 1px dashed var(--spooky-green);
+  outline-offset: 4px;
+  border-radius: 6px;
+  touch-action: none;
+}
+
+.location--dragging {
+  cursor: grabbing;
+  z-index: 50;
+  transition: none !important;
 }
 
 .zoom-slider {

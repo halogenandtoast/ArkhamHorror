@@ -9,9 +9,7 @@ import Arkham.Prelude
 import Arkham.Calculation as X
 import Arkham.Event.Types as X
 import Arkham.Helpers.Effect as X
-import Arkham.Helpers.Event as X
 import Arkham.Helpers.Message as X hiding (
-  EnemyDefeated,
   InvestigatorEliminated,
   PlayCard,
   RevealLocation,
@@ -123,9 +121,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
         push $ toDiscard GameSource a
       _ -> pure ()
     pure a
-  ReadyExhausted -> do
-    push (Ready $ toTarget a)
-    pure a
+  ReadyExhausted -> pure $ a & exhaustedL .~ False
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
   Exhaust ea | a `isTarget` ea.target -> do
     unless eventExhausted $ pushAll ea.thenMsgs
@@ -215,7 +211,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
             c <- field EventCard a.id
             push $ Devoured iid' c
             push $ RemovedFromPlay (toSource a)
-          _ -> when (isNothing eventPlacement.attachedTo) $ pushAll [after] -- Changed to allow Fast Cards to be played
+          _ -> pushAll [after]
     pure a
   After (Revelation _iid (isSource a -> True)) -> do
     result <- liftRunMessage (FinishedEvent a.id) a

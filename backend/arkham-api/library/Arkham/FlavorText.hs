@@ -14,6 +14,8 @@ module Arkham.FlavorText (
   p,
   cols,
   img,
+  chaosTokenImg,
+  chaosTokenMorph,
   UlItems,
 )
 where
@@ -22,6 +24,7 @@ import Arkham.I18n as X
 import Arkham.Text as X
 
 import Arkham.Card.CardCode
+import Arkham.ChaosToken.Types (ChaosTokenFace)
 import Arkham.Prelude
 import Control.Monad.Writer.Strict
 import Data.Text qualified as T
@@ -52,6 +55,12 @@ cols = ColumnEntry
 
 img :: CardCode -> FlavorTextEntry
 img = (`CardEntry` [])
+
+chaosTokenImg :: ChaosTokenFace -> FlavorTextEntry
+chaosTokenImg = ChaosTokenEntry
+
+chaosTokenMorph :: ChaosTokenFace -> ChaosTokenFace -> FlavorTextEntry
+chaosTokenMorph = ChaosTokenMorphEntry
 
 hr :: FlavorTextEntry
 hr = EntrySplit

@@ -55,6 +55,9 @@ import Arkham.Distance
 import Arkham.Effect.Types
 import Arkham.Enemy (lookupEnemy)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), enemyClues, enemyDamage, enemyDoom)
+import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
+import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
+import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..), enemyLocationAsEnemyId)
 import Arkham.Entities
 import Arkham.Event.Types
 import Arkham.ForMovement
@@ -86,7 +89,7 @@ import Arkham.Helpers.Cost
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization (hasCustomization)
 import Arkham.Helpers.Doom
-import Arkham.Helpers.Enemy (enemyEngagedInvestigators)
+import Arkham.Helpers.Enemy (enemyEngagedInvestigators, getModifiedKeywords)
 import Arkham.Helpers.Game
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator hiding (investigator)
@@ -94,7 +97,6 @@ import Arkham.Helpers.Location hiding (getConnectedMatcher)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Message hiding (
-  EnemyDamage,
   InvestigatorDamage,
   InvestigatorDefeated,
   InvestigatorResigned,
@@ -163,7 +165,6 @@ import Arkham.Matcher hiding (
   DuringTurn,
   EncounterCardSource,
   EnemyAttacks,
-  EnemyDefeated,
   EventCard,
   FastPlayerWindow,
   InvestigatorDefeated,
@@ -177,7 +178,9 @@ import Arkham.Matcher hiding (
  )
 import Arkham.Matcher qualified as M
 import Arkham.Message qualified as Msg
+import Arkham.Metrics (messageTag)
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
+import Arkham.Modifier.Builder (buildModifiers)
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
@@ -201,7 +204,6 @@ import Arkham.Spawn (SpawnAt (..))
 import Arkham.Story
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
-import Arkham.Metrics (messageTag)
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Tracing
@@ -240,7 +242,6 @@ import Data.Set qualified as Set
 import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
-import Debug.Trace (trace)
 import OpenTelemetry.Trace.Monad (MonadTracer)
 import Text.Pretty.Simple
 
@@ -316,6 +317,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameUndoPhaseStep = Nothing
         , gameUndoRoundStep = Nothing
         , gameAsIfAtIgnored = mempty
+        , gameLocationOffsets = mempty
         }
  where
   mode = case scenarioOrCampaignId of
@@ -380,12 +382,6 @@ withTreacheryMetadata a = do
       _ -> Keyword.Peril `member` card.keywords
   tmModifiers <- getModifiers' (toTarget a)
   pure $ a `with` TreacheryMetadata {..}
-
-withStoryMetadata :: HasGame m => Story -> m (With Story StoryMetadata)
-withStoryMetadata a = do
-  smModifiers <- getModifiers' (toTarget a)
-  pure $ a `with` StoryMetadata {..}
-
 withEnemyMetadata :: (HasGame m, Tracing m) => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
   emModifiers <- getModifiers' (toTarget a)
@@ -451,6 +447,80 @@ withLocationConnectionData inner@(With target _) = do
         , ScarletKeyWithPlacement $ AttachedToLocation $ toId target
         ]
   pure $ inner `with` LocationMetadata {..}
+
+withEnemyLocationAsLocationData :: (HasGame m, Tracing m) => EnemyLocation -> m Value
+withEnemyLocationAsLocationData el = do
+  let lid = toId el
+      attrs = toAttrs el :: EnemyLocationAttrs
+  -- InvestigatorAt (LocationWithId lid) fails because enemy locations aren't in locationsL;
+  -- check each investigator's location directly instead.
+  lInvestigators <-
+    filterM (\iid -> (== Just lid) <$> field InvestigatorLocation iid)
+      =<< select UneliminatedInvestigator
+  -- EnemyAt (LocationWithId lid) has the same problem; use EnemyWithPlacement directly.
+  lEnemies <-
+    select
+      $ IncludeOmnipotent
+      $ oneOf
+        [ EnemyWithPlacement $ AtLocation lid
+        , EnemyWithPlacement $ AttachedToLocation lid
+        ]
+  lTreacheries <-
+    select
+      $ oneOf
+        [ TreacheryWithPlacement $ AtLocation lid
+        , TreacheryWithPlacement $ AttachedToLocation lid
+        ]
+  lAssets <-
+    select
+      $ IgnoreVisibility
+      $ oneOf
+        [ AssetWithPlacement $ AtLocation lid
+        , AssetWithPlacement $ AttachedToLocation lid
+        ]
+  lEvents <-
+    select
+      $ oneOf
+        [ EventWithPlacement $ AtLocation lid
+        , EventWithPlacement $ AttachedToLocation lid
+        ]
+  -- Enemy locations are always revealed. Connections come from two sources:
+  -- (1) explicit revealed matchers, and (2) directional connections stored in
+  -- enemyLocationDirections (the grid-based mechanism used by most scenarios).
+  let directionConnectedIds = concatMap snd $ mapToList attrs.directions
+      connectedMatchers =
+        attrs.revealedConnectedMatchers
+          <> map LocationWithId directionConnectedIds
+  lConnectedLocations <- select $ LocationMatchAny connectedMatchers
+  pure
+    $ object
+      [ "id" .= lid
+      , "cardId" .= toCardId el
+      , "cardCode" .= toCardCode el
+      , "label" .= attrs.label
+      , "tokens" .= attrs.tokens
+      , "shroud" .= attrs.shroud
+      , "revealed" .= True
+      , "enemyLocation" .= True
+      , "exhausted" .= attrs.exhausted
+      , "investigators" .= lInvestigators
+      , "enemies" .= lEnemies
+      , "treacheries" .= lTreacheries
+      , "assets" .= lAssets
+      , "events" .= lEvents
+      , "scarletKeys" .= emptyArray
+      , "cardsUnderneath" .= emptyArray
+      , "modifiers" .= emptyArray
+      , "connectedLocations" .= lConnectedLocations
+      , "placement" .= attrs.placement
+      , "brazier" .= (Nothing :: Maybe Text)
+      , "breaches" .= (Nothing :: Maybe Text)
+      , "floodLevel" .= (Nothing :: Maybe Text)
+      , "keys" .= emptyArray
+      , "seals" .= emptyArray
+      , "sealedChaosTokens" .= emptyArray
+      , "concealedCards" .= emptyArray
+      ]
 
 withAssetMetadata :: (HasGame m, Tracing m) => Asset -> m (With Asset AssetMetadata)
 withAssetMetadata a = do
@@ -565,6 +635,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     locations <-
       traverse withLocationConnectionData
         =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
+    enemyLocationViews <- traverse withEnemyLocationAsLocationData (entitiesEnemyLocations gameEntities)
+    let allLocations' = Map.map toJSON locations <> enemyLocationViews
     investigators <-
       traverse withInvestigatorConnectionData
         =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
@@ -591,7 +663,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("mode" .= gameMode)
       <> ("modifiers" .= Map.filter notNull gameModifiers)
       <> ("encounterDeckSize" .= maybe 0 (length . attr scenarioEncounterDeck) (modeScenario gameMode))
-      <> ("locations" .= locations)
+      <> ("locations" .= allLocations')
       <> ("investigators" .= investigators)
       <> ("otherInvestigators" .= otherInvestigators)
       <> ("killedInvestigators" .= killedInvestigators)
@@ -632,6 +704,9 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("undoTurnStep" .= gameUndoTurnStep)
       <> ("undoPhaseStep" .= gameUndoPhaseStep)
       <> ("undoRoundStep" .= gameUndoRoundStep)
+      <> ("roundHistory" .= gameRoundHistory)
+      <> ("phaseHistory" .= gamePhaseHistory)
+      <> ("turnHistory" .= gameTurnHistory)
    where
     emptyAdditionalData =
       object
@@ -690,6 +765,9 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     locations <-
       traverse withLocationConnectionData
         =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
+    enemyLocationViews' <-
+      traverse withEnemyLocationAsLocationData (entitiesEnemyLocations gameEntities)
+    let allLocations' = Map.map toJSON locations <> enemyLocationViews'
     investigators <-
       traverse withInvestigatorConnectionData
         =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
@@ -717,7 +795,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "modifiers" .= toJSON (Map.filter notNull gameModifiers)
         , "encounterDeckSize"
             .= toJSON (maybe 0 (length . attr scenarioEncounterDeck) $ modeScenario gameMode)
-        , "locations" .= toJSON locations
+        , "locations" .= toJSON allLocations'
         , "investigators" .= toJSON investigators
         , "otherInvestigators" .= toJSON otherInvestigators
         , "killedInvestigators" .= toJSON killedInvestigators
@@ -758,6 +836,9 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "undoTurnStep" .= toJSON gameUndoTurnStep
         , "undoPhaseStep" .= toJSON gameUndoPhaseStep
         , "undoRoundStep" .= toJSON gameUndoRoundStep
+        , "roundHistory" .= toJSON gameRoundHistory
+        , "phaseHistory" .= toJSON gamePhaseHistory
+        , "turnHistory" .= toJSON gameTurnHistory
         ]
    where
     emptyAdditionalData =
@@ -816,14 +897,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
                 )
             )
           $ deadIids
-
-getPlayerInvestigator :: (HasCallStack, HasGame m) => PlayerId -> m Investigator
-getPlayerInvestigator pid = do
-  investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
-  case find ((== pid) . attr investigatorPlayerId) investigators of
-    Nothing -> error "Unknown player"
-    Just i -> pure i
-
 getEffectsMatching :: (HasGame m, Tracing m) => EffectMatcher -> m [Effect]
 getEffectsMatching matcher = do
   effects <- toList . view (entitiesL . effectsL) <$> getGame
@@ -1159,10 +1232,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
       flip runMatchesM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
-    InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as \i -> do
-      t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
+    InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as \i ->
       gameValueMatches
-        (attr investigatorHealthDamage i + attr investigatorAssignedHealthDamage i + t)
+        (attr investigatorHealthDamage i + attr investigatorAssignedHealthDamage i)
         gameValueMatcher
     InvestigatorWithHealableHorror source -> flip runMatchesM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
@@ -1184,8 +1256,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       foolishness <- maybe (pure False) (fieldMap AssetHorror (> 0)) mFoolishness
       pure $ onSelf || foolishness
     InvestigatorWithHorror gameValueMatcher -> flip runMatchesM as $ \i -> do
-      t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
-      onSelf <- (attr investigatorSanityDamage i + t) `gameValueMatches` gameValueMatcher
+      onSelf <- attr investigatorSanityDamage i `gameValueMatches` gameValueMatcher
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
@@ -1340,28 +1411,47 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
           skillTestCount <- count (`elem` skillIcons) <$> concatMapM iconsForCard cards
           gameValueMatches skillTestCount valueMatcher
     HealableInvestigator source damageType matcher' -> do
-      mods <- getActiveInvestigatorModifiers
-      let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher dType <- mods, dType == damageType]
-      canHealAtFull <-
-        if null canHealAtFullSources
-          then pure False
-          else anyM (sourceMatches source) canHealAtFullSources
-      let
-        healGuardMatcher =
-          case damageType of
-            HorrorType -> InvestigatorWithAnyHorror <> InvestigatorWithoutModifier CannotHaveHorrorHealed
-            DamageType -> InvestigatorWithAnyDamage <> InvestigatorWithoutModifier CannotHaveDamageHealed
-      let healGuard = if canHealAtFull then id else (<> healGuardMatcher)
-      as & runMatchesM \i -> do
-        case damageType of
-          DamageType -> do
-            if CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `elem` mods
-              then elem (toId i) <$> select (healGuard $ matcher' <> You)
-              else elem (toId i) <$> select (healGuard matcher')
-          HorrorType -> do
-            if CannotHealHorror `elem` mods
-              then elem (toId i) <$> select (healGuard $ matcher' <> You)
-              else elem (toId i) <$> select (healGuard matcher')
+      sourceBlocked <- case damageType of
+        DamageType ->
+          getSourceController source >>= \case
+            Just performerId -> hasModifier performerId CannotHealDamage
+            Nothing -> pure False
+        HorrorType -> pure False
+      if sourceBlocked
+        then pure noMatch
+        else do
+          mods <- getActiveInvestigatorModifiers
+          let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher dType <- mods, dType == damageType]
+          canHealAtFull <-
+            if null canHealAtFullSources
+              then pure False
+              else anyM (sourceMatches source) canHealAtFullSources
+          let
+            healGuardMatcher =
+              case damageType of
+                HorrorType ->
+                  oneOf
+                    [ InvestigatorWithAnyHorror
+                    , HasMatchingTreachery (TreacheryWithModifier IsPointOfHorror)
+                    ]
+                    <> InvestigatorWithoutModifier CannotHaveHorrorHealed
+                DamageType ->
+                  oneOf
+                    [ InvestigatorWithAnyDamage
+                    , HasMatchingTreachery (TreacheryWithModifier IsPointOfDamage)
+                    ]
+                    <> InvestigatorWithoutModifier CannotHaveDamageHealed
+          let healGuard = if canHealAtFull then id else (<> healGuardMatcher)
+          as & runMatchesM \i -> do
+            case damageType of
+              DamageType -> do
+                if CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `elem` mods
+                  then elem (toId i) <$> select (healGuard $ matcher' <> You)
+                  else elem (toId i) <$> select (healGuard matcher')
+              HorrorType -> do
+                if CannotHealHorror `elem` mods
+                  then elem (toId i) <$> select (healGuard $ matcher' <> You)
+                  else elem (toId i) <$> select (healGuard matcher')
     InvestigatorWithMostCardsInPlayArea -> flip runMatchesM as $ \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithPhysicalTrauma -> pure $ runMatches ((> 0) . attr investigatorPhysicalTrauma) as
@@ -1557,6 +1647,7 @@ getActsMatching matcher = do
     ActWithDeckId n -> pure . (== n) . attr actDeckId
     ActWithTreachery treacheryMatcher -> \act ->
       selectAny $ TreacheryIsAttachedTo (toTarget act.id) <> treacheryMatcher
+    ActWithModifier modifier -> \act -> elem modifier <$> getModifiers (toTarget act)
     ActCanWheelOfFortuneX -> pure . not . attr actUsedWheelOfFortuneX
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
@@ -1578,6 +1669,7 @@ getRemainingActsMatching matcher = do
     ActWithId _ -> pure . const False
     ActWithStep _ -> pure . const False
     ActWithTreachery _ -> pure . const False
+    ActWithModifier _ -> pure . const False
     ActWithSide _ -> error "Can't check side, since not on def"
     ActWithDeckId _ -> error "Can't check side, since not on def"
     ActCanWheelOfFortuneX -> pure . const True
@@ -1751,7 +1843,7 @@ abilityMatches a@Ability {..} = \case
     _ -> pure False
   AbilityIsAction Action.Activate -> pure $ abilityIsActivate a
   AbilityIsAction action -> pure $ action `elem` abilityActions a
-  AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 102)
+  AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 105)
   AbilityIsFastAbility -> pure $ abilityIsFastAbility a
   AbilityIsForcedAbility -> pure $ abilityIsForcedAbility a
   AbilityIsReactionAbility -> pure $ abilityIsReactionAbility a
@@ -1843,7 +1935,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityIsAction Action.Activate -> pure $ filter abilityIsActivate as
     AbilityIsAction action -> pure $ filter (elem action . abilityActions) as
     AbilityIsActionAbility ->
-      pure $ filter (\a -> abilityIsActionAbility a && not (a.index >= 100 && a.index <= 102)) as
+      pure $ filter (\a -> abilityIsActionAbility a && not (a.index >= 100 && a.index <= 105)) as
     AbilityIsFastAbility -> pure $ filter abilityIsFastAbility as
     AbilityIsForcedAbility -> pure $ filter abilityIsForcedAbility as
     AbilityIsReactionAbility -> pure $ filter abilityIsReactionAbility as
@@ -1880,6 +1972,8 @@ getGameAbilities = do
   locationAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities locationsL)
   blankedLocationAbilities <-
     concatMap (getAbilities . toAttrs) <$> filterM blanked (findEntities locationsL)
+  enemyLocationAbilities <-
+    concatMap getAbilities <$> filterM unblanked (findEntities enemyLocationsL)
   assetAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities assetsL)
   treacheryAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities treacheriesL)
   actAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities actsL)
@@ -1903,6 +1997,7 @@ getGameAbilities = do
     <> blankedEnemyAbilities
     <> locationAbilities
     <> blankedLocationAbilities
+    <> enemyLocationAbilities
     <> assetAbilities
     <> treacheryAbilities
     <> eventAbilities
@@ -1947,12 +2042,18 @@ getLocationsMatching lmatcher = do
       IncludeEmptySpace inner -> (True, inner, const True)
       _ -> (allowEmpty, lmatcher, if allowEmpty then const True else (/= "xempty") . toCardCode)
 
-  ls <-
-    filter (not . attr locationOutOfGame)
-      . filter isEmptySpaceFilter
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
+  let regularLs =
+        filter (not . attr locationOutOfGame)
+          . filter isEmptySpaceFilter
+          . toList
+          . view (entitiesL . locationsL)
+          $ g
+  let enemyProxies =
+        map (toEnemyLocationProxy . toAttrs)
+          . toList
+          . view (entitiesL . enemyLocationsL)
+          $ g
+  let ls = regularLs <> enemyProxies
   flip runReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) $ go ls lmatcher'
  where
   go [] = const (pure [])
@@ -2144,6 +2245,9 @@ getLocationsMatching lmatcher = do
     LocationWithMostEnemies locationMatcher enemyMatcher -> do
       matches' <- go ls locationMatcher
       maxes <$> forToSnd matches' (selectCount . (enemyMatcher <>) . enemyAt . toId)
+    LocationWithFewestEnemies locationMatcher enemyMatcher -> do
+      matches' <- go ls locationMatcher
+      mins <$> forToSnd matches' (selectCount . (enemyMatcher <>) . enemyAt . toId)
     LocationWithMostClues locationMatcher -> do
       matches' <- go ls locationMatcher
       maxes <$> forToSnd matches' (pure . attr locationClues)
@@ -2442,6 +2546,26 @@ getLocationsMatching lmatcher = do
             matchingLocationIds <- map toId <$> getLocationsMatching matcher
             getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
       pure $ filter ((`elem` matches') . toId) ls
+    NearestLocationToMost matcher -> do
+      -- Mirror of FarthestLocationFromAll: among candidates, return the
+      -- location(s) whose maximum distance to any reachable investigator is the
+      -- smallest. Unreachable investigators contribute no distance for that
+      -- candidate, which lets locations in disconnected components still
+      -- qualify (and tie across components).
+      iids <- getInvestigators
+      candidates <- map toId <$> getLocationsMatching matcher
+      distances <- for iids \iid -> do
+        distanceSingletons . getMonoidalMap <$> execWriterT do
+          mloc <- getMaybeLocation iid
+          for_ mloc \start -> do
+            for_ candidates \candidate -> do
+              mDistance <- getDistance start candidate
+              for_ mDistance \(Distance distance) -> do
+                tell $ MonoidalMap.singleton distance [candidate]
+      let
+        overallDistances = distanceAggregates $ foldr (unionWith max) mempty distances
+        resultIds = maybe [] coerce . headMay . map snd . sortOn fst . mapToList $ overallDistances
+      pure $ filter ((`elem` resultIds) . toId) ls
     NearestLocationToAny matcher -> do
       iids <- getInvestigators
       candidates <- map toId <$> getLocationsMatching matcher
@@ -3328,10 +3452,6 @@ getMaybeOutOfPlayEnemy outOfPlayZone eid = do
   isCorrectOutOfPlay e = case e.placement of
     OutOfPlay zone -> zone == outOfPlayZone
     _ -> False
-
-getEnemyMatching :: (HasCallStack, HasGame m, Tracing m) => EnemyMatcher -> m (Maybe Enemy)
-getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
-
 getEnemiesMatching :: (HasCallStack, HasGame m, Tracing m) => EnemyMatcher -> m [Enemy]
 getEnemiesMatching matcher' = do
   case matcher' of
@@ -3347,7 +3467,15 @@ getEnemiesMatching matcher' = do
       enemyMatcherFilter allGameEnemies matcher
     matcher -> do
       let isOutOfGame e = e.placement.outOfGame
-      allGameEnemies <- filter (not . isOutOfGame) . toList . view (entitiesL . enemiesL) <$> getGame
+      g <- getGame
+      let regularEnemies = filter (not . isOutOfGame) . toList . view (entitiesL . enemiesL) $ g
+      let enemyLocationProxies =
+            map (toEnemyLocationEnemyProxy . toAttrs)
+              . filter (not . (.defeated))
+              . toList
+              . view (entitiesL . enemyLocationsL)
+              $ g
+      let allGameEnemies = regularEnemies <> enemyLocationProxies
       enemyMatcherFilter allGameEnemies (matcher <> EnemyWithoutModifier Omnipotent)
 
 enemyMatcherFilter :: (HasCallStack, HasGame m, Tracing m) => [Enemy] -> EnemyMatcher -> m [Enemy]
@@ -3727,7 +3855,8 @@ enemyMatcherFilter es matcher' = do
       iids <- select investigatorMatcher
       es & filterM \enemy -> do
         emods <- getModifiers (toId enemy)
-        if CannotBeEngaged `elem` emods
+        kws <- getModifiedKeywords enemy
+        if CannotBeEngaged `elem` emods || Keyword.Massive `elem` kws
           then pure False
           else do
             let
@@ -3847,29 +3976,35 @@ enemyMatcherFilter es matcher' = do
           -- Dirty Fighting has to fight the evaded enemy, we are saying this is
           -- the one that must be fought
           pure $ filter ((== eid) . toId) es'
-        Nothing ->
+        Nothing -> do
+          -- Hoist loop-invariants out of the per-enemy filter: the source's
+          -- modifiers and the set of enemies that cannot be attacked do not
+          -- depend on the enemy being tested, but were being recomputed (and
+          -- re-looked-up in the query cache) once per enemy.
+          sourceModifiers <- case source of
+            AbilitySource abSource idx -> do
+              abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+              foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
+            UseAbilitySource _ abSource idx -> do
+              abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+              foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
+            _ -> pure []
+          let
+            isOverride = \case
+              EnemyFightActionCriteria override -> Just override
+              CanModify (EnemyFightActionCriteria override) -> Just override
+              _ -> Nothing
+            enemyFilters = mapMaybe (preview _CannotFight) modifiers'
+            window = mkWindow #when Window.NonFast
+          cannotBeAttacked <- select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
           es' & filterM \enemy -> do
             enemyModifiers <- getModifiers enemy.id
-            sourceModifiers <- case source of
-              AbilitySource abSource idx -> do
-                abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-                foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
-              UseAbilitySource _ abSource idx -> do
-                abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-                foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
-              _ -> pure []
             let
-              isOverride = \case
-                EnemyFightActionCriteria override -> Just override
-                CanModify (EnemyFightActionCriteria override) -> Just override
-                _ -> Nothing
               overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
-              enemyFilters = mapMaybe (preview _CannotFight) modifiers'
-              window = mkWindow #when Window.NonFast
               overrideFunc = case nonEmpty overrides of
                 Nothing -> id
                 Just os -> overrideAbilityCriteria $ combineOverrides os
-            excluded <- elem (toId enemy) <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
+              excluded = toId enemy `elem` cannotBeAttacked
             sourceIsExcluded <- flip anyM enemyModifiers \case
               CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of
                 Just aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
@@ -3954,6 +4089,8 @@ enemyMatcherFilter es matcher' = do
             )
             modifiers'
         window = mkWindow #when (Window.DuringTurn iid)
+      -- Hoist the loop-invariant "cannot be evaded" set out of the per-enemy filter.
+      cannotBeEvaded <- select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
       flip filterM es \enemy -> do
         enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
         let
@@ -3962,7 +4099,7 @@ enemyMatcherFilter es matcher' = do
             [] -> id
             [o] -> overrideAbilityCriteria o
             _ -> error "multiple overrides found"
-        excluded <- elem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
+          excluded = toId enemy `elem` cannotBeEvaded
         sourceIsExcluded <- flip anyM enemyModifiers \case
           CannotBeEvadedByPlayerSourcesExcept sourceMatcher ->
             not <$> sourceMatches source sourceMatcher
@@ -4268,7 +4405,12 @@ instance Projection Location where
       LocationCardDef -> pure $ toCardDef attrs
       LocationCard -> do
         let card = lookupCard locationCardCode locationCardId
-        pure $ if locationRevealed && not card.singleSided then flipCard card else card
+        let shouldFlip =
+              toCardType card
+                /= EnemyLocationCardType
+                && locationRevealed
+                && not card.singleSided
+        pure $ if shouldFlip then flipCard card else card
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure $ if locationRevealed then locationRevealedSymbol else locationSymbol
       UnsafeLocationRevealedSymbol -> pure locationRevealedSymbol
@@ -4599,9 +4741,13 @@ getEnemyField f e = do
       setFromList
         <$> ( keywords' & mapMaybeM \case
                 Keyword.ScenarioModifierKeyword k v kw -> do
-                  selectAny (ScenarioWithModifier (ScenarioModifierValue k v)) <&> \case
-                    True -> Just kw
-                    False -> Nothing
+                  ok <- selectAny (ScenarioWithModifier (ScenarioModifierValue k v))
+                  if ok
+                    then pure $ Just kw
+                    else
+                      selectAny (EnemyWithModifier (ScenarioModifierValue k v)) <&> \case
+                        True -> Just kw
+                        False -> Nothing
                 other -> pure $ Just other
             )
     EnemyAbilities -> pure $ getAbilities e
@@ -4636,14 +4782,22 @@ instance Projection Investigator where
         let
           applyModifier (HealthModifier m) n = max 0 (n + m)
           applyModifier _ n = n
+          baseHealth = case investigatorForm of
+            TransfiguredForm inner ->
+              (toAttrs (lookupInvestigator (InvestigatorId inner) investigatorPlayerId)).health
+            _ -> investigatorHealth
 
-        foldr applyModifier investigatorHealth <$> getModifiers attrs
+        foldr applyModifier baseHealth <$> getModifiers attrs
       InvestigatorSanity -> do
         let
           applyModifier (SanityModifier m) n = max 0 (n + m)
           applyModifier _ n = n
+          baseSanity = case investigatorForm of
+            TransfiguredForm inner ->
+              (toAttrs (lookupInvestigator (InvestigatorId inner) investigatorPlayerId)).sanity
+            _ -> investigatorSanity
 
-        foldr applyModifier investigatorSanity <$> getModifiers attrs
+        foldr applyModifier baseSanity <$> getModifiers attrs
       InvestigatorRemainingSanity -> do
         sanity <- field InvestigatorSanity (toId attrs)
         pure $ max 0 (sanity - investigatorSanityDamage attrs)
@@ -4790,11 +4944,21 @@ instance Query KeyMatcher where
 instance Query TargetMatcher where
   toSomeQuery = TargetQuery
   select_ matcher = do
+    g <- getGame
+    let entities = view entitiesL g
+    -- EnemyLocation's `toTarget` only produces LocationTarget, but the runtime
+    -- treats the entity as an Enemy too (via the on-the-fly proxy). Without
+    -- exposing that EnemyTarget here, the `validChoice` filter for ChooseOne
+    -- silently strips any TargetLabel referring to an enemy-location's proxy
+    -- enemy id.
+    let enemyLocationProxyTargets =
+          map
+            (EnemyTarget . enemyLocationAsEnemyId . EnemyLocationId . toId)
+            (toList $ view enemyLocationsL entities)
     filterM (`targetMatches` matcher)
-      . (ScenarioTarget :)
-      . overEntities ((: []) . toTarget)
-      . view entitiesL
-      =<< getGame
+      $ ScenarioTarget
+      : enemyLocationProxyTargets
+        <> overEntities ((: []) . toTarget) entities
 
 instance Query SourceMatcher where
   toSomeQuery = SourceQuery
@@ -5001,9 +5165,6 @@ instance Query PreyMatcher where
         Nothing -> error $ "Invalid bearer situation: " <> prettyCallStack callStack
 
 -- Helper function to measure time and trace call stack
-showBS :: (HasCallStack, Monad m) => m ()
-showBS = Debug.Trace.trace (prettyCallStack callStack) () `seq` pure ()
-
 instance Query ExtendedCardMatcher where
   toSomeQuery = ExtendedCardQuery
   select_ matcher = do
@@ -5373,6 +5534,7 @@ instance HasModifiersFor Entities where
     traverse_ getModifiersFor (e ^. agendasL)
     traverse_ getModifiersFor (e ^. actsL)
     traverse_ getModifiersFor (e ^. locationsL)
+    traverse_ getModifiersFor (e ^. enemyLocationsL)
     traverse_ getModifiersFor (e ^. effectsL)
     traverse_ getModifiersFor (e ^. eventsL)
     traverse_ getModifiersFor (e ^. skillsL)
@@ -5721,6 +5883,7 @@ instance Projection Scenario where
       ScenarioEncounterDecks -> pure scenarioEncounterDecks
       ScenarioDifficulty -> pure scenarioDifficulty
       ScenarioDecks -> pure scenarioDecks
+      ScenarioDeckDiscards -> pure scenarioDeckDiscards
       ScenarioVictoryDisplay -> do
         enemies <- selectField EnemyCard $ EnemyWithPlacement (OutOfPlay VictoryDisplayZone)
         pure $ nubOrdOn (.id) (scenarioVictoryDisplay <> enemies)
@@ -5869,10 +6032,6 @@ putGame g = do
   g' <- readGame
   atomicWriteIORef ref
     $ g {gameCards = if null (gameCards g) then mempty else gameCards g' <> gameCards g}
-
-overGameReader :: (MonadIO m, HasGame m) => Reader Game a -> m a
-overGameReader body = runReader body <$> getGame
-
 overGame :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> Game) -> m ()
 overGame f = do
   g <- readGame
@@ -5883,10 +6042,6 @@ overGameM f = withGameM f >>= putGame
 
 withGameM :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m a) -> m a
 withGameM f = readGame >>= f
-
-withGameM_ :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m a) -> m ()
-withGameM_ f = withGameM (void . f)
-
 getEvadedEnemy :: [Window] -> Maybe EnemyId
 getEvadedEnemy [] = Nothing
 getEvadedEnemy ((windowType -> Window.EnemyEvaded _ eid) : _) = Just eid
@@ -6039,8 +6194,12 @@ runMessages gameId mLogger = do
             BeginAction {} -> False
             CheckAttackOfOpportunity {} -> False
             CheckEnemyEngagement {} -> False
+            CheckWindows {} -> False
             Do (CheckWindows {}) -> False
             ClearUI {} -> False
+            ExhaustMessage {} -> False
+            After {} -> False
+            DoBatch {} -> False
             CreatedCost {} -> False
             EndCheckWindow {} -> False
             PaidAllCosts {} -> False
@@ -6054,6 +6213,14 @@ runMessages gameId mLogger = do
             When {} -> False
             WhenCanMove {} -> False
             Would {} -> False
+            SetLayout {} -> False
+            SetLocationLabel {} -> False
+            PlaceGrid {} -> False
+            PlacedLocation {} -> False
+            PlacedLocationDirection {} -> False
+            LocationMoved {} -> False
+            SetActivePlayer {} -> False
+            Arkham.Helpers.Message.PhaseStep {} -> False
             _ -> True
           go = \case
             Priority msg' -> push msg' >> runMessages gameId mLogger
@@ -6110,11 +6277,25 @@ runMessages gameId mLogger = do
                   whenBeingQuestioned (pid, Read _ (LeadInvestigatorMustDecide choices) _) = guard (notNull choices) $> pid
                   whenBeingQuestioned (pid, _) = Just pid
               let activePids = mapMaybe whenBeingQuestioned $ mapToList askMap
-              let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
-              runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1) askMap)
-                >>= putGame
+              case activePids of
+                -- No one can answer (only stale empty-choice Reads left over from a
+                -- previous storyWithChooseOne). Skip rather than parking on an
+                -- unanswerable question.
+                [] -> runMessages gameId mLogger
+                _ -> do
+                  let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
+                  runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1) askMap)
+                    >>= putGame
             CheckWindows {} | not (gameRunWindows g) -> runMessages gameId mLogger
             Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId mLogger
+            -- Setup pushes a CheckWindows for every location placed and every
+            -- clue placed. No triggered ability can resolve during setup, so
+            -- the entire preload + runWindow pipeline for those windows is
+            -- pure waste. Skip them outright while gameInSetup is True.
+            CheckWindows ws | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
+            Do (CheckWindows ws) | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
+            CheckWindows ws | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
+            Do (CheckWindows ws) | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
             Simultaneously [] -> runMessages gameId mLogger
             Simultaneously msgs -> do
               -- Save the rest of the queue so we can restore it after collecting results
@@ -6136,13 +6317,11 @@ runMessages gameId mLogger = do
                           then do
                             overGameM
                               $ runMessage m
-                              >=> withSpan_ "preloadModifiers"
-                              . preloadModifiers
+                              >=> preloadModifiers
                             overGameM
                               $ handleAsIfChanges asIfLocations'
                               >=> handleAloofChanges aloofEnemies'
-                              >=> withSpan_ "handleTraitRestrictedModifiers"
-                              . handleTraitRestrictedModifiers
+                              >=> handleTraitRestrictedModifiers
                               >=> handleBlanked
                               >=> handleDefeatedByModifiers investigatorSanityHealth'
                           else overGameM $ runMessage m
@@ -6299,16 +6478,27 @@ preloadModifiers g = case gameMode g of
   This _ -> pure g
   _ -> flip runReaderT g $ do
     let modifierFilter = if gameInSetup g then modifierActiveDuringSetup else const True
-    allModifiers <-
-      traverse (foldMapM expandForEach . foldMap handleMoving) =<< execWriterT do
-        getModifiersFor $ gameEntities g
-        traverse_ getModifiersFor $ gameInHandEntities g
-        traverse_ getModifiersFor $ gameInDiscardEntities g
-        for_ (modeScenario (gameMode g)) getModifiersFor
-        for_ (modeCampaign (gameMode g)) getModifiersFor
+    -- Collect every entity's modifiers in a single pass with a scoped query
+    -- cache (see 'buildModifiers'); de-duplicates identical select/exist
+    -- queries across entities (huge with many same-type entities, e.g. swarms).
+    let rawModifiers = buildModifiers g do
+          getModifiersFor $ gameEntities g
+          traverse_ getModifiersFor $ gameInHandEntities g
+          traverse_ getModifiersFor $ gameInDiscardEntities g
+          for_ (modeScenario (gameMode g)) getModifiersFor
+          for_ (modeCampaign (gameMode g)) getModifiersFor
+    allModifiers <- traverse (foldMapM expandForEach . foldMap handleMoving) rawModifiers
+    let offsetModifiers =
+          Map.fromList
+            [ (LocationTarget lid, [Modifier GameSource (UIModifier (Positioned x y)) True Nothing])
+            | (lid, (x, y)) <- mapToList (gameLocationOffsets g)
+            ]
     pure
       $ g
-        { gameModifiers = Map.filter notNull $ Map.map (filter modifierFilter) (getMonoidalMap allModifiers)
+        { gameModifiers =
+            Map.filter notNull
+              $ Map.map (filter modifierFilter)
+              $ Map.unionWith (<>) offsetModifiers (getMonoidalMap allModifiers)
         }
  where
   expandForEach x@(modifierType -> ForEach calc ms) = do
@@ -6364,6 +6554,14 @@ applyBlank s = do
         Modifier s' _ _ _ | s == s' -> Nothing
         other -> Just other
     modify $ insertMap target modifiers'
+
+hasEnemyReadyAbilities :: Game -> Bool
+hasEnemyReadyAbilities g =
+  any ((`elem` enemyReadyCodes) . toCardCode) (gameEntities g ^. assetsL)
+    || any ((`elem` enemyReadyCodes) . toCardCode) (gameEntities g ^. eventsL)
+ where
+  enemyReadyCodes :: [CardCode]
+  enemyReadyCodes = ["90038", "02031", "03199"]
 
 delve :: Game -> Game
 delve = over depthLockL (+ 1)

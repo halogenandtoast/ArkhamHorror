@@ -10,16 +10,13 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
-import Arkham.Tracing
 
 createEnemy :: (HasCallStack, IsCard a) => a -> EnemyId -> Enemy
 createEnemy a eid = lookupEnemy (toCardCode a) eid (toCardId a)
 
 instance RunMessage Enemy where
-  runMessage (SendMessage target msg) e | e `is` target =
-    withSpan_ ("Enemy[" <> unCardCode (toCardCode e) <> "].runMessage") do
-      runMessage msg e
-  runMessage msg e@(Enemy x) = withSpan_ ("Enemy[" <> unCardCode (toCardCode e) <> "].runMessage") do
+  runMessage (SendMessage target msg) e | e `is` target = runMessage msg e
+  runMessage msg e@(Enemy x) = do
     -- we must check that an enemy exists when grabbing modifiers
     -- as some messages are not masked when targetting cards in the
     -- discard.
@@ -581,11 +578,63 @@ allEnemies =
         SomeEnemyCard subterraneanBeast
       , SomeEnemyCard burrowingHybrid
       , SomeEnemyCard frenziedMiner
+      , --- Hemlock House [fhv]
+        SomeEnemyCard grapplingSpawn
+      , --- The Silent Heath [fhv]
+        SomeEnemyCard colorlessLarva
+      , SomeEnemyCard broodSoldier
+      , SomeEnemyCard broodQueenDyingMother
+      , --- The Lost Sister [fhv]
+        SomeEnemyCard limulusHybridInTheLight
+      , SomeEnemyCard limulusHybridInTheDark
+      , SomeEnemyCard crustaceanHybridInTheLight
+      , SomeEnemyCard crustaceanHybridInTheDark
+      , SomeEnemyCard cosmicEmissaryTheAbyss
+      , SomeEnemyCard cosmicEmissaryTheAbyssShattered
+      , SomeEnemyCard cosmicEmissaryThePhantasm
+      , SomeEnemyCard cosmicEmissaryThePhantasmShattered
+      , SomeEnemyCard cosmicEmissaryTheMiasma
+      , SomeEnemyCard cosmicEmissaryTheMiasmaShattered
+      , SomeEnemyCard cosmicEmissaryTheBrilliance
+      , SomeEnemyCard cosmicEmissaryTheBrillianceShattered
+      , SomeEnemyCard crystalMimic
+      , SomeEnemyCard cavernMoss
+      , --- The Thing in the Depths [fhv]
+        SomeEnemyCard thingInTheDepths
+      , SomeEnemyCard chelydranHybrid
+      , SomeEnemyCard graspingTendril
+      , --- The Longest Night [fhv]
+        SomeEnemyCard ursineHybridStarvingAbomination
+      , SomeEnemyCard moltingHybridA
+      , SomeEnemyCard moltingHybridB
+      , SomeEnemyCard moltingHybridC
+      , SomeEnemyCard lupineHybridA
+      , SomeEnemyCard lupineHybridB
+      , SomeEnemyCard lupineHybridC
+      , SomeEnemyCard capraHybrid
+      , SomeEnemyCard equineHybridA
+      , SomeEnemyCard equineHybridB
+      , SomeEnemyCard equineHybridC
+      , SomeEnemyCard slitheringHybrid
       , --- The Twisted Hollow [fhv]
         SomeEnemyCard ursineHybridGlowingAbomination
       , SomeEnemyCard stalkingHybrid
       , --- Horrors in the Rock [fhv]
         SomeEnemyCard crystalParasite
+      , --- Agents of the Colour [fhv]
+        SomeEnemyCard miasmaticShadow
+      , --- Day of the Feast [fhv]
+        SomeEnemyCard frenziedReveler
+      , --- Residents [fhv]
+        SomeEnemyCard motherRachelStarbornHerald
+      , SomeEnemyCard leahAtwood
+      , SomeEnemyCard simeonAtwood
+      , SomeEnemyCard williamHemlock
+      , SomeEnemyCard riverHawthorne
+      , SomeEnemyCard gideonMizrah
+      , SomeEnemyCard judithPark
+      , SomeEnemyCard theoPeters
+      , SomeEnemyCard bertieMusgrave
       , --- The Forest [fhv]
         SomeEnemyCard poisonblossom
       , SomeEnemyCard forestWatcher

@@ -1082,6 +1082,12 @@ allAssets =
       , --- Written in Rock [fhv]
         SomeAssetCard mineCartReliableButBroken
       , SomeAssetCard prismaticShardAlienMeteorite
+      , --- Hemlock House [fhv]
+        SomeAssetCard littleSylvie
+      , --- The Silent Heath [fhv]
+        SomeAssetCard crystalRemainsTheChild
+      , SomeAssetCard crystalRemainsTheFather
+      , SomeAssetCard crystalRemainsTheMother
       , --- The Twisted Hollow [fhv]
         SomeAssetCard valeLanternBeaconOfHope
       , SomeAssetCard valeLanternExtinguishedLightBoon
@@ -1099,9 +1105,16 @@ allAssets =
       , SomeAssetCard bertieMusgraveATrueAesthete
       , SomeAssetCard drRosaMarquezBestInHerField
       , SomeAssetCard helenPetersTheEldestSister
+      , SomeAssetCard littleSylvie
       , --- Heirlooms [fhv]
         SomeAssetCard worryRockTokenOfSafety
       , SomeAssetCard cornHuskDoll
+      , SomeAssetCard thePearlDiaryAGrimAccount
+      , --- The Longest Night [fhv]
+        SomeAssetCard theCaptives
+      , SomeAssetCard ajax
+      , --- Fate of the Vale [fhv]
+        SomeAssetCard oldMemory
       , -- The Drowned City
         --- signature [tdc]
         SomeAssetCard bookOfVerseUnCommonplaceBook

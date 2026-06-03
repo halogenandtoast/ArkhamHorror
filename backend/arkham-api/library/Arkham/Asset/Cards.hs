@@ -1,8 +1,11 @@
 module Arkham.Asset.Cards (module Arkham.Asset.Cards, module X) where
 
 import Arkham.Asset.Cards.AndrePatel as X
+import Arkham.Asset.Cards.CarolynFern2 as X
 import Arkham.Asset.Cards.Core2026 as X
 import Arkham.Asset.Cards.EdgeOfTheEarth as X
+import Arkham.Asset.Cards.MarieLambeau2 as X
+import Arkham.Asset.Cards.MiguelDeLaCruz as X
 import Arkham.Asset.Cards.NightOfTheZealot as X
 import Arkham.Asset.Cards.Parallel as X
 import Arkham.Asset.Cards.Promo as X
@@ -19,13 +22,9 @@ import Arkham.Asset.Cards.TheInnsmouthConspiracy as X
 import Arkham.Asset.Cards.ThePathToCarcosa as X
 import Arkham.Asset.Cards.TheScarletKeys as X
 import Arkham.Asset.Cards.TommyMuldoon2 as X
-import Arkham.Asset.Cards.CarolynFern2 as X
-import Arkham.Asset.Cards.MarieLambeau2 as X
-import Arkham.Asset.Cards.MiguelDeLaCruz as X
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
-
 
 allPlayerAssetCards :: Map CardCode CardDef
 allPlayerAssetCards =
@@ -40,6 +39,7 @@ allPlayerAssetCards =
       , adaptable1
       , agentAriQuinnFoundationResearcher
       , agencyBackup5
+      , ajax
       , alchemicalDistillation
       , alchemicalTransmutation
       , alchemicalTransmutation2
@@ -565,6 +565,7 @@ allPlayerAssetCards =
       , liquidCourage
       , liquidCourage1
       , litaChantler
+      , littleSylvie
       , livingInk
       , livreDeibon
       , localMap
@@ -681,6 +682,7 @@ allPlayerAssetCards =
       , ofuda
       , oldBookOfLore
       , oldBookOfLore3
+      , oldMemory
       , oldCompass2
       , oldHuntingRifle3
       , oldKeyring
@@ -961,6 +963,7 @@ allPlayerAssetCards =
       , thePaleLanternBeguilingAura
       , thePaleLanternHypnoticGlow
       , thePallidMask
+      , thePearlDiaryAGrimAccount
       , theRedClockBrokenButReliable2
       , theRedClockBrokenButReliable5
       , theRedGlovedMan5
@@ -1100,6 +1103,10 @@ allEncounterAssetCards =
       , theRedGlovedManHeWasAlwaysThere
       , alikiZoniUperetriaTheMaidWithTheScarletSash
       , mineCartReliableButBroken
+      , crystalRemainsTheChild
+      , crystalRemainsTheFather
+      , crystalRemainsTheMother
+      , theCaptives
       , valeLanternBeaconOfHope
       , valeLanternExtinguishedLightBoon
       , valeLanternAFaintHope

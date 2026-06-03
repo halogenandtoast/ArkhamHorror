@@ -8,6 +8,7 @@ import Arkham.Asset.Uses
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
 import Arkham.Fight
+import Arkham.Helpers.ChaosBag (getChaosBagChoice, getSteps)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window
 import Arkham.Matcher
@@ -45,9 +46,20 @@ instance RunMessage BreathOfTheSleeper where
         withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 2)
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (getDrawSource -> drawSource) (totalUsesPayment -> n) -> do
+      -- Compose with any prior reactor on this WouldRevealChaosTokens window
+      -- (e.g. Jacqueline Fine, Eyes of the Dreamer) by preserving the
+      -- existing draw chain and nested choice; otherwise firing Breath of
+      -- the Sleeper second would replace their structure wholesale.
+      mchoice <- getChaosBagChoice
+      let steps = maybe [Undecided Draw] getSteps mchoice
+      let nested = mchoice >>= \case
+            Resolved {} -> Nothing
+            Decided s -> guard (s /= Draw) $> s
+            Undecided s -> guard (s /= Draw) $> s
+            Deciding s -> guard (s /= Draw) $> s
       push
         $ ReplaceCurrentDraw drawSource iid
-        $ Choose (toSource attrs) 1 ResolveChoice (Undecided Draw : replicate n (Undecided Draw)) [] Nothing
+        $ Choose (toSource attrs) 1 ResolveChoice (steps <> replicate n (Undecided Draw)) [] nested
       cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
       pure a
     ChaosTokenSelected _ (isSource attrs -> True) chaosToken -> do

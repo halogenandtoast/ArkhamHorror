@@ -16,10 +16,9 @@ scrollOfThePharaohsWordsOfSet4 = asset ScrollOfThePharaohsWordsOfSet4 Cards.scro
 
 instance HasAbilities ScrollOfThePharaohsWordsOfSet4 where
   getAbilities (ScrollOfThePharaohsWordsOfSet4 a) =
-    [ controlled_ a 1
-        $ investigateAction
-        $ HorrorCost (toSource a) YouTarget 1
-        <> UseCostUpTo (be a) Secret 1 2
+    [ investigateAbility a 1
+        (HorrorCost (toSource a) YouTarget 1 <> UseCostUpTo (be a) Secret 1 2)
+        ControlsThis
     ]
 
 instance RunMessage ScrollOfThePharaohsWordsOfSet4 where

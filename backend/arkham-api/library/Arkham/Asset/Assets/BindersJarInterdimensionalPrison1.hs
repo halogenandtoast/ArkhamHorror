@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.BindersJarInterdimensionalPrison1 (bindersJarInterdim
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (EnemyAttacks, EnemyDefeated)
+import Arkham.Asset.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Attack.Types
 import Arkham.Card
 import Arkham.Enemy.Types (Field (EnemyCard))

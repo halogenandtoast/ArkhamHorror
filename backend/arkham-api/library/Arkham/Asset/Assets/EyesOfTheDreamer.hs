@@ -7,6 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
+import Arkham.Helpers.ChaosBag (getChaosBagChoice, getSteps)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window
 import Arkham.Investigate
@@ -22,7 +23,7 @@ eyesOfTheDreamer = asset EyesOfTheDreamer Cards.eyesOfTheDreamer
 
 instance HasAbilities EyesOfTheDreamer where
   getAbilities (EyesOfTheDreamer a) =
-    [ controlled_ a 1 $ investigateActionWith_ #willpower
+    [ controlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWith_ #willpower
     , controlled a 2 (DuringSkillTest $ SkillTestOnAsset (be a))
         $ ConstantReaction "Spend Charges" (WouldRevealChaosTokens #when You) (UseCostUpTo (be a) Charge 1 3)
     ]
@@ -45,9 +46,20 @@ instance RunMessage EyesOfTheDreamer where
         withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (getDrawSource -> drawSource) (totalUsesPayment -> n) -> do
+      -- Compose with any prior reactor on this WouldRevealChaosTokens window
+      -- (e.g. Jacqueline Fine) by preserving the existing draw chain and
+      -- nested choice. Without this, firing Eyes after another reactor would
+      -- replace its structure wholesale and discard its effect.
+      mchoice <- getChaosBagChoice
+      let steps = maybe [Undecided Draw] getSteps mchoice
+      let nested = mchoice >>= \case
+            Resolved {} -> Nothing
+            Decided s -> guard (s /= Draw) $> s
+            Undecided s -> guard (s /= Draw) $> s
+            Deciding s -> guard (s /= Draw) $> s
       push
         $ ReplaceCurrentDraw drawSource iid
-        $ Choose (toSource attrs) 1 ResolveChoice (Undecided Draw : replicate n (Undecided Draw)) [] Nothing
+        $ Choose (toSource attrs) 1 ResolveChoice (steps <> replicate n (Undecided Draw)) [] nested
       cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
       pure a
     ChaosTokenSelected _ (isSource attrs -> True) chaosToken -> do

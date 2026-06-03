@@ -24,7 +24,7 @@ const revealedTokenAction = computed(() => {
 
   return choices.value.findIndex((c) => {
     if (c.tag === "ChaosTokenGroupChoice") {
-      if (c.step.tag === 'Draw') {
+      if (!('tokenGroups' in c.step)) {
         return false
       }
       return c.step.tokenGroups.some((g) => g.some((t) => t.id === props.token.id))

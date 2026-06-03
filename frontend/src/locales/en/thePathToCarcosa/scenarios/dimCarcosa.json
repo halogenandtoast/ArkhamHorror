@@ -1,5 +1,11 @@
 {
   "heading": "Scenario VIII",
+  "specialRules": [
+    {
+      "title": "Sanity in the Realm of Carcosa",
+      "body": "<p class='basic'>In the twisted and madness-inducing realm of Carcosa, insanity is an inevitability. But even with your mind fractured and broken, your investigation does not end here. During this scenario, investigators are not defeated when they have horror on them equal to or greater than their sanity. Investigators may continue to take horror even in excess of their sanity. While an investigator has more horror on them than sanity, their “remaining sanity” is considered to be 0.</p>"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-2 (-4 instead if you have no sanity remaining).",

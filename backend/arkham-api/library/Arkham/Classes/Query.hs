@@ -65,15 +65,6 @@ selectField
   -> a
   -> m [typ]
 selectField fld = traverse (field fld) <=< select
-
-selectRandom
-  :: (HasCallStack, Query a, Tracing m, HasGame m, MonadRandom m)
-  => a
-  -> m (Maybe (QueryElement a))
-selectRandom matcher = do
-  results <- select matcher
-  maybe (pure Nothing) (fmap Just . sample) (nonEmpty results)
-
 selectRandomJust
   :: (HasCallStack, Query a, Tracing m, HasGame m, MonadRandom m)
   => String

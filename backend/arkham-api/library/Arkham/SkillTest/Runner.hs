@@ -10,6 +10,7 @@ import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes hiding (matches)
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
@@ -55,6 +56,19 @@ autoFailSkillTestResultsData s = do
   mods <- getModifiers s
   let x = getSum $ mconcat [Sum n | SkillTestResultValueModifier n <- mods]
   pure $ SkillTestResultsData 0 0 0 modifiedSkillTestDifficulty (guard (x /= 0) $> x) False
+
+computeCommitCosts :: HasGame m => InvestigatorId -> [Card] -> m [Cost]
+computeCommitCosts iid cards = do
+  modifiers' <- getModifiers iid
+  cardsAdditionalCosts <-
+    cards & concatMapM \c -> do
+      cardModifiers <- getModifiers c
+      let noAdditionalCosts = NoAdditionalCosts `elem` cardModifiers
+      pure $ cardModifiers & mapMaybe \case
+        AdditionalCostToCommit iid' cst | iid' == iid && not noAdditionalCosts -> Just cst
+        _ -> Nothing
+  let playerCommitCosts = [c | CommitCost c <- modifiers']
+  pure (cardsAdditionalCosts <> playerCommitCosts)
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
@@ -284,7 +298,10 @@ instance RunMessage SkillTest where
           then
             CommitToSkillTest
               s.id
-              (Label "$label.doneCommitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
+              ( Label
+                  "$label.doneCommitting"
+                  [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid]
+              )
           else RevealSkillTestChaosTokens iid
       for_ chaosTokens $ \chaosToken -> do
         let revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosToken
@@ -405,7 +422,7 @@ instance RunMessage SkillTest where
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
         pure
-          [ ChaosTokenTarget (token {chaosTokenFace = face})
+          [ ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face})
           | face <- faces
           ]
 
@@ -422,15 +439,19 @@ instance RunMessage SkillTest where
                   CheckWindows ws ->
                     any
                       ( \w ->
-                          windowTiming w == Timing.After
-                            && windowType w == Window.SkillTestStep ResolveChaosSymbolEffectsStep
+                          windowTiming w
+                            == Timing.After
+                            && windowType w
+                            == Window.SkillTestStep ResolveChaosSymbolEffectsStep
                       )
                       ws
                   Do (CheckWindows ws) ->
                     any
                       ( \w ->
-                          windowTiming w == Timing.After
-                            && windowType w == Window.SkillTestStep ResolveChaosSymbolEffectsStep
+                          windowTiming w
+                            == Timing.After
+                            && windowType w
+                            == Window.SkillTestStep ResolveChaosSymbolEffectsStep
                       )
                       ws
                   _ -> False
@@ -445,12 +466,12 @@ instance RunMessage SkillTest where
           let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType difficulty
            in preEndMsgs
                 <> ( SkillTestResults resultsData
-                      : [Will (failed target) | target <- skillTestSubscribers <> tokenSubscribers]
-                        <> [ Will (failed (SkillTestInitiatorTarget skillTestTarget))
-                           , chooseOne player [SkillTestApplyResultsButton]
-                           , SkillTestEnds skillTestId resolver skillTestSource
-                           , Do (SkillTestEnds skillTestId resolver skillTestSource)
-                           ]
+                       : [Will (failed target) | target <- skillTestSubscribers <> tokenSubscribers]
+                         <> [ Will (failed (SkillTestInitiatorTarget skillTestTarget))
+                            , chooseOne player [SkillTestApplyResultsButton]
+                            , SkillTestEnds skillTestId resolver skillTestSource
+                            , Do (SkillTestEnds skillTestId resolver skillTestSource)
+                            ]
                    )
 
       if needsChoice
@@ -476,21 +497,59 @@ instance RunMessage SkillTest where
       pushAll [CheckAllAdditionalCommitCosts, windowMsg, TriggerSkillTest skillTestInvestigator]
       pure $ s & stepL .~ SkillTestFastWindow2
     CheckAllAdditionalCommitCosts -> do
-      pushAll $ Map.foldMapWithKey (\i cs -> [CheckAdditionalCommitCosts i cs]) skillTestCommittedCards
+      let perInvestigator = Map.toList skillTestCommittedCards
+      payable <- flip filterM perInvestigator $ \(iid, cards) -> do
+        additionalCosts <- computeCommitCosts iid cards
+        if null additionalCosts
+          then pure True
+          else getCanAffordCost iid (toSource s) [] [mkWhen Window.NonFast] (mconcat additionalCosts)
+      case payable of
+        [] -> pure ()
+        _ -> do
+          afterMsgs <- for payable \(iid, cards) ->
+            checkWindows [mkAfter $ Window.CommittedCards iid cards]
+          whenMsgs <- for payable \(iid, cards) ->
+            checkWindows [mkWhen $ Window.CommittedCards iid cards]
+          pushAll $ whenMsgs <> afterMsgs
+          let allCommits = [(i, c) | (i, cs) <- payable, c <- cs]
+          let (triggerCommits, noTriggerCommits) =
+                partition (cdCommitTrigger . toCardDef . snd) allCommits
+          -- Plain icon-only commits do nothing on `Do (CommitCard)`; run them
+          -- silently so the player isn't prompted with a meaningless choice.
+          unless (null noTriggerCommits)
+            $ pushAll [CommitCard i c | (i, c) <- noTriggerCommits]
+          -- Trigger cards may have effects whose ordering matters (e.g. Promise
+          -- of Power adds a curse that Unrelenting should be able to seal).
+          -- chooseOrRunOneAtATimeWithLabel auto-runs a single choice without
+          -- prompting; with 2+ it shows the label so the player understands
+          -- they're picking the order of on-commit effects.
+          case triggerCommits of
+            [] -> pure ()
+            _ -> do
+              player <- getPlayer skillTestInvestigator
+              push
+                $ Msg.chooseOrRunOneAtATimeWithLabel
+                  "$label.chooseCommitOrder"
+                  player
+                  [targetLabel (toCardId c) [CommitCard i c] | (i, c) <- triggerCommits]
+          pushAll [PayCommitCosts i cs | (i, cs) <- payable]
+      pure s
+    PayCommitCosts iid cards -> do
+      additionalCosts <- computeCommitCosts iid cards
+      unless (null additionalCosts) do
+        iid' <- getActiveInvestigatorId
+        pushAll
+          $ [SetActiveInvestigator iid | iid /= iid']
+          <> [ PayForAbility
+                 (abilityEffect (SourceableWithCardCode (CardCode "skilltest") s) [] $ mconcat additionalCosts)
+                 []
+             ]
+          <> [SetActiveInvestigator iid' | iid /= iid']
       pure s
     CheckAdditionalCommitCosts iid cards -> do
-      modifiers' <- getModifiers iid
+      -- Single-card path for post-test commits (e.g. CanCommitAfterRevealingTokens); pays and commits together since there's no batch to interleave.
+      additionalCosts <- computeCommitCosts iid cards
       let msgs = map (CommitCard iid) cards
-      cardsAdditionalCosts <-
-        cards & concatMapM \c -> do
-          cardModifiers <- getModifiers c
-          let noAdditionalCosts = NoAdditionalCosts `elem` cardModifiers
-          pure $ cardModifiers & mapMaybe \case
-            AdditionalCostToCommit iid' cst | iid' == iid && not noAdditionalCosts -> Just cst
-            _ -> Nothing
-
-      let playerCommitCosts = [c | CommitCost c <- modifiers']
-      let additionalCosts = cardsAdditionalCosts <> playerCommitCosts
       afterMsg <- checkWindows [mkAfter $ Window.CommittedCards iid cards]
       whenMsg <- checkWindows [mkWhen $ Window.CommittedCards iid cards]
       if null additionalCosts
@@ -612,7 +671,7 @@ instance RunMessage SkillTest where
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
         pure
-          [ ChaosTokenTarget (token {chaosTokenFace = face})
+          [ ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face})
           | face <- faces
           ]
 
@@ -671,7 +730,7 @@ instance RunMessage SkillTest where
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
         pure
-          [ ChaosTokenTarget (token {chaosTokenFace = face})
+          [ ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face})
           | face <- faces
           ]
 
@@ -769,10 +828,12 @@ instance RunMessage SkillTest where
         modifySkillTestResult r _ = r
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
-        pure [ChaosTokenTarget (token {chaosTokenFace = face}) | face <- faces]
+        pure [ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face}) | face <- faces]
       case modifiedSkillTestResult of
         SucceededBy _ n -> do
-          let passed target = Priority $ PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
+          let passed target =
+                Priority
+                  $ PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
           pushAll
             $ cycleN
               successTimes
@@ -826,7 +887,7 @@ instance RunMessage SkillTest where
 
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
-        pure [ChaosTokenTarget (token {chaosTokenFace = face}) | face <- faces]
+        pure [ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face}) | face <- faces]
       case modifiedSkillTestResult of
         SucceededBy _ n -> do
           let passed target = PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
@@ -959,4 +1020,3 @@ instance RunMessage SkillTest where
     SetSkillTestResolveFailureInvestigator iid -> do
       pure $ s & resolveFailureInvestigatorL .~ iid
     _ -> pure s
-

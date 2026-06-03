@@ -69,13 +69,6 @@ limitType f ability = case ability.abilityLimit of
 
 overAbilityActions :: ([Action] -> [Action]) -> Ability -> Ability
 overAbilityActions f ab = ab {Arkham.Ability.Types.abilityType = overAbilityTypeActions f ab.kind}
-
-buildFightAbility :: (Sourceable source, HasCardCode source) => source -> Int -> Ability
-buildFightAbility source idx =
-  (buildAbility source idx (ActionAbility #fight #combat Free))
-    { abilityDoesNotProvokeAttacksOfOpportunity = Just AnyEnemy
-    }
-
 buildAbility :: (Sourceable source, HasCardCode source) => source -> Int -> AbilityType -> Ability
 buildAbility source idx abilityType =
   Ability
@@ -168,10 +161,6 @@ instance Sourceable AbilityRef where
 
 abilityToRef :: Ability -> AbilityRef
 abilityToRef a = AbilityRef a.source a.index
-
-isAbilityRef :: Sourceable source => source -> Int -> AbilityRef -> Bool
-isAbilityRef a idx' (AbilityRef s idx) = isSource a s && idx == idx'
-
 instance HasField "source" AbilityRef Source where
   getField (AbilityRef s _) = s
 
@@ -200,10 +189,6 @@ instance Sourceable Ability where
 
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m {abilityLimit = x}
-
-abilityTypeL :: Lens' Ability AbilityType
-abilityTypeL = lens abilityType $ \m x -> m {Arkham.Ability.Types.abilityType = x}
-
 abilityMetadataL :: Lens' Ability (Maybe AbilityMetadata)
 abilityMetadataL = lens abilityMetadata $ \m x -> m {abilityMetadata = x}
 
@@ -226,10 +211,6 @@ abilityDisplayAsL = lens abilityDisplayAs $ \m x -> m {abilityDisplayAs = x}
 
 abilityDelayAdditionalCostsL :: Lens' Ability (Maybe AdditionalCostDelay)
 abilityDelayAdditionalCostsL = lens abilityDelayAdditionalCosts $ \m x -> m {abilityDelayAdditionalCosts = x}
-
-delayAdditionalCosts :: Ability -> Ability
-delayAdditionalCosts = abilityDelayAdditionalCostsL ?~ DelayAdditionalCosts
-
 delayAdditionalCostsWhen :: Criterion -> Ability -> Ability
 delayAdditionalCostsWhen c = abilityDelayAdditionalCostsL ?~ DelayAdditionalCostsWhen c
 
@@ -292,6 +273,8 @@ instance Eq DifferentAbility where
       100 -> b.index == 100 && sameSource
       101 -> b.index == 101 && sameSource
       102 -> b.index == 102 && sameSource
+      103 -> b.index == 103 && sameSource
+      104 -> b.index == 104 && sameSource
       _ -> (a.source == b.source) && (a.index == b.index)
    where
     sameSource = case a.source of

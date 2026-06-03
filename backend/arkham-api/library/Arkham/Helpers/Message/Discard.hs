@@ -3,11 +3,15 @@ module Arkham.Helpers.Message.Discard where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Classes.HasQueue
 import Arkham.Discard
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
+import Arkham.Window (Window (..))
+import Arkham.Window qualified as Window
+import Control.Monad.Trans.Class
 
 discardFromHand
   :: Sourceable source
@@ -25,6 +29,7 @@ discardFromHand iid (toSource -> source) strategy amount =
     , discardThen = Nothing
     , discardTarget = Nothing
     , discardInvestigator = iid
+    , discardDestination = ToDiscardPile
     }
 
 chooseAndDiscardCard
@@ -72,4 +77,28 @@ discardAll iid (toSource -> source) matcher =
     , discardThen = Nothing
     , discardTarget = Nothing
     , discardInvestigator = iid
+    , discardDestination = ToDiscardPile
     }
+
+-- | Walk a list of windows and, for each `WouldDiscardFromHand` window
+-- targeting `iid`, rewrite the queued `Do (DiscardFromHand ...)` via `f`.
+-- Use this to react to a discard the game is about to do — for example,
+-- redirect it to the top of the deck, change its amount, or otherwise
+-- rewrite the discard before it resolves.
+updateWouldDiscardFromHand
+  :: (MonadTrans t, HasQueue Message m)
+  => InvestigatorId
+  -> [Window]
+  -> (HandDiscard Message -> HandDiscard Message)
+  -> t m ()
+updateWouldDiscardFromHand iid ws f = lift $ for_ ws \w -> case windowType w of
+  Window.WouldDiscardFromHand iid' source | iid == iid' ->
+    replaceMessageMatching
+      \case
+        Do (DiscardFromHand handDiscard) ->
+          handDiscard.investigator == iid && handDiscard.source == source
+        _ -> False
+      \case
+        Do (DiscardFromHand handDiscard) -> [Do (DiscardFromHand (f handDiscard))]
+        _ -> []
+  _ -> pure ()

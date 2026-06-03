@@ -5,7 +5,6 @@ module Arkham.Placement (
   IsPlacement (..),
   placementToAttached,
   isOutOfPlayPlacement,
-  isOutOfPlayZonePlacement,
   isInPlayPlacement,
   isHiddenPlacement,
   isInPlayArea,
@@ -188,10 +187,6 @@ mconcat
   [ deriveToJSON defaultOptions ''Placement
   , makePrisms ''Placement
   ]
-
-isOutOfPlayZonePlacement :: Placement -> Bool
-isOutOfPlayZonePlacement = isJust . preview _OutOfPlay
-
 class IsPlacement a where
   toPlacement :: a -> Placement
 

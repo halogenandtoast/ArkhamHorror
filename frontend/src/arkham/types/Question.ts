@@ -6,7 +6,14 @@ import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard';
 import { Token, tokenDecoder } from '@/arkham/types/Token';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question =
+type QuestionCommon = {
+  choices?: Message[]
+  question?: Question
+  readCards?: string[] | null
+  label?: string
+}
+
+export type Question = QuestionCommon & (
   | ChooseOne 
   | ChooseUpToN 
   | ChooseSome 
@@ -20,6 +27,7 @@ export type Question =
   | ChooseAmounts 
   | QuestionLabel
   | PayCostQuestion
+  | QuestionWithSource
   | Read
   | PickSupplies 
   | DropDown 
@@ -30,6 +38,7 @@ export type Question =
   | PickCampaignSpecific
   | ChooseExchangeAmounts
   | ContinueCampaign
+)
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -47,6 +56,7 @@ export enum QuestionType {
   CHOOSE_AMOUNTS = 'ChooseAmounts',
   QUESTION_LABEL = 'QuestionLabel',
   PAY_COST_QUESTION = 'PayCostQuestion',
+  QUESTION_WITH_SOURCE = 'QuestionWithSource',
   READ = 'Read',
   PICK_SUPPLIES = 'PickSupplies',
   PICK_DESTINY = 'PickDestiny',
@@ -101,6 +111,13 @@ export type QuestionLabel = {
 export type PayCostQuestion = {
   tag: QuestionType.PAY_COST_QUESTION
   cost: Cost
+  question: Question
+}
+
+export type QuestionWithSource = {
+  tag: QuestionType.QUESTION_WITH_SOURCE
+  source: Source
+  tooltip: string | null
   question: Question
 }
 
@@ -168,7 +185,7 @@ export type PickDestiny = {
 
 export type PickCampaignSpecific = {
   tag: QuestionType.PICK_CAMPAIGN_SPECIFIC
-  contents: any
+  contents: unknown
 }
 
 export type DropDown = {
@@ -221,6 +238,23 @@ export type AmountTarget
   | { tag: 'TotalAmountTarget', contents: number }
   | { tag: "MinAmountTarget", contents: number }
   | { tag: 'AmountOneOf', contents: number[] }
+
+// Returns true when `total` violates `target`'s constraint, or false when it
+// satisfies (or the target is absent/zero). Centralises the logic that used
+// to be three identical switch blocks in Question.vue.
+export function amountTargetUnmet(target: AmountTarget | null | undefined, total: number): boolean {
+  if (!target) return false
+  switch (target.tag) {
+    case 'MaxAmountTarget':
+      return target.contents ? total > target.contents : false
+    case 'MinAmountTarget':
+      return target.contents ? total < target.contents : false
+    case 'TotalAmountTarget':
+      return target.contents ? total !== target.contents : false
+    case 'AmountOneOf':
+      return target.contents.length > 0 ? !target.contents.includes(total) : false
+  }
+}
 
 export type ChooseAmounts = {
   tag: QuestionType.CHOOSE_AMOUNTS
@@ -351,6 +385,16 @@ export const payCostQuestionDecoder: JsonDecoder.Decoder<PayCostQuestion> = Json
     question: JsonDecoder.lazy(() => questionDecoder)
   },
   'PayCostQuestion',
+);
+
+export const questionWithSourceDecoder: JsonDecoder.Decoder<QuestionWithSource> = JsonDecoder.object<QuestionWithSource>(
+  {
+    tag: JsonDecoder.literal(QuestionType.QUESTION_WITH_SOURCE),
+    source: sourceDecoder,
+    tooltip: JsonDecoder.nullable(JsonDecoder.string()),
+    question: JsonDecoder.lazy(() => questionDecoder)
+  },
+  'QuestionWithSource',
 );
 
 
@@ -521,6 +565,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseExchangeAmountsDecoder,
     questionLabelDecoder,
     payCostQuestionDecoder,
+    questionWithSourceDecoder,
     readDecoder,
     pickSuppliesDecoder,
     pickDestinyDecoder,

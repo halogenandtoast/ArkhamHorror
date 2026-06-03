@@ -2,6 +2,7 @@ module Arkham.Location.Cards.EmptySpace (emptySpace) where
 
 import Arkham.Ability
 import Arkham.Capability
+import Arkham.Constants
 import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
@@ -29,7 +30,7 @@ instance HasAbilities EmptySpace where
     [ basicAbility
         $ restricted
           l
-          102
+          AbilityMove
           ( CanMoveTo (IncludeEmptySpace $ LocationWithId l.id)
               <> OnLocation (IncludeEmptySpace $ accessibleTo ForMovement l)
               <> exists

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount, useId } from 'vue'
-import { IsMobile } from '@/arkham/isMobile';
+import { nextTick, ref, onMounted, onBeforeUnmount, useId } from 'vue'
 
 const id = useId()
 const draggable = ref<HTMLElement | null>(null)
@@ -9,7 +8,9 @@ const initialMouseX = ref(0)
 const initialMouseY = ref(0)
 const initialLeft = ref(0)
 const initialTop = ref(0)
-const { isMobile } = IsMobile()
+const viewportMargin = 16
+const anchorX = ref(0)
+const anchorY = ref(0)
 
 // Variables to store the modal's position and size before minimizing
 const originalLeft = ref(0)
@@ -22,9 +23,59 @@ let raf = 0
 let lastClientX = 0
 let lastClientY = 0
 let dragPointerId: number | null = null
+let resizeObserver: ResizeObserver | null = null
+const hasBeenDragged = ref(false)
+const isDragging = ref(false)
 
 function clamp(v: number, min: number, max: number) {
   return Math.min(Math.max(v, min), max)
+}
+
+function viewportBounds(el: HTMLElement) {
+  const windowWidth = window.innerWidth
+  const windowHeight = window.innerHeight
+  const modalWidth = el.offsetWidth
+  const modalHeight = el.offsetHeight
+
+  return {
+    maxLeft: Math.max(viewportMargin, windowWidth - modalWidth - viewportMargin),
+    maxTop: Math.max(viewportMargin, windowHeight - modalHeight - viewportMargin),
+    modalWidth,
+    modalHeight,
+    windowWidth,
+    windowHeight,
+  }
+}
+
+function setAnchorFromRect(rect: DOMRect) {
+  anchorX.value = rect.left + rect.width / 2
+  anchorY.value = rect.top + rect.height / 2
+}
+
+function setAnchorToViewportCenter() {
+  anchorX.value = window.innerWidth / 2
+  anchorY.value = window.innerHeight / 2
+}
+
+function placeModal({ resetAnchor = false } = {}) {
+  const el = draggable.value
+  if (!el || isMinimized.value || isDragging.value) return
+
+  const { maxLeft, maxTop, modalWidth, modalHeight } = viewportBounds(el)
+
+  if (resetAnchor || !hasBeenDragged.value) {
+    setAnchorToViewportCenter()
+  }
+
+  // Position from the modal center, not its top edge. This keeps the modal
+  // visually oriented around the same point as its contents grow or shrink.
+  const nextLeft = clamp(anchorX.value - modalWidth / 2, viewportMargin, maxLeft)
+  const nextTop = clamp(anchorY.value - modalHeight / 2, viewportMargin, maxTop)
+
+  el.style.left = `${nextLeft}px`
+  el.style.top = `${nextTop}px`
+  el.style.position = 'absolute'
+  el.style.transform = 'none'
 }
 
 function drag(e: PointerEvent) {
@@ -36,6 +87,7 @@ function drag(e: PointerEvent) {
   if (!el) return
 
   e.preventDefault()
+  isDragging.value = true
   dragPointerId = e.pointerId
   el.setPointerCapture(e.pointerId)
 
@@ -67,17 +119,10 @@ function elementDrag(e: PointerEvent) {
     const deltaX = lastClientX - initialMouseX.value
     const deltaY = lastClientY - initialMouseY.value
 
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
+    const { maxLeft, maxTop } = viewportBounds(el)
 
-    const modalWidth = el.offsetWidth
-    const modalHeight = el.offsetHeight
-
-    const maxLeft = Math.max(0, windowWidth - modalWidth)
-    const maxTop  = Math.max(0, windowHeight - modalHeight)
-
-    const newLeft = clamp(initialLeft.value + deltaX, 0, maxLeft)
-    const newTop  = clamp(initialTop.value + deltaY, 0, maxTop)
+    const newLeft = clamp(initialLeft.value + deltaX, viewportMargin, maxLeft)
+    const newTop  = clamp(initialTop.value + deltaY, viewportMargin, maxTop)
 
     el.style.left = `${newLeft}px`
     el.style.top = `${newTop}px`
@@ -85,14 +130,17 @@ function elementDrag(e: PointerEvent) {
 }
 
 function stopDrag() {
+  hasBeenDragged.value = true
   const el = draggable.value
   if (el) {
     el.style.transition = ''
+    setAnchorFromRect(el.getBoundingClientRect())
     el.removeEventListener('pointermove', elementDrag as any)
     if (dragPointerId !== null) {
       try { el.releasePointerCapture(dragPointerId) } catch {}
     }
   }
+  isDragging.value = false
   dragPointerId = null
   if (raf) {
     cancelAnimationFrame(raf)
@@ -158,31 +206,32 @@ function minimize() {
   document.startViewTransition(() => doMinimize())
 }
 
-onMounted(() => {
+onMounted(async () => {
   const el = draggable.value
   if (el) {
-    const rect = el.getBoundingClientRect()
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
-
-    const initialLeftPosition = (windowWidth - rect.width) / 2
-    let initialTopPosition = (windowHeight - rect.height) / 2
-    if (isMobile.value) {
-      initialTopPosition = 60
-    }
-    el.style.left = `${initialLeftPosition}px`
-    el.style.top = `${initialTopPosition}px`
-    el.style.position = 'absolute'
-    el.style.transform = 'none'
+    await nextTick()
+    placeModal({ resetAnchor: true })
     moveUp()
+
+    resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(() => placeModal())
+    })
+    resizeObserver.observe(el)
+    window.addEventListener('resize', handleWindowResize)
   }
 })
+
+function handleWindowResize() {
+  placeModal()
+}
 
 onBeforeUnmount(() => {
   const el = draggable.value
   if (el) {
     el.removeEventListener('pointermove', elementDrag as any)
   }
+  resizeObserver?.disconnect()
+  window.removeEventListener('resize', handleWindowResize)
   document.body.style.userSelect = ''
   if (raf) {
     cancelAnimationFrame(raf)
@@ -192,7 +241,7 @@ onBeforeUnmount(() => {
 
 function moveUp() {
   const modals = document.querySelectorAll('.draggable')
-  modals.forEach(modal => modal.style.zIndex = 99)
+  modals.forEach(modal => { (modal as HTMLElement).style.zIndex = '99' })
 
   const el = draggable.value
   if (el) {
@@ -237,7 +286,7 @@ function moveUp() {
   -webkit-backdrop-filter: blur(5px);
   width: clamp(300px, 50vw, 80%);
   max-width: fit-content;
-  max-height: 80%;
+  max-height: calc(100dvh - 32px);
   display: flex;
   flex-direction: column;
 
@@ -415,6 +464,36 @@ function moveUp() {
     }
     &:has(.bug-form) {
       margin: 0px;
+    }
+    &:has(.haunted) {
+      margin: 0;
+      border-radius: 0 0 16px 16px;
+      overflow: hidden;
+    }
+  }
+
+  &:has(.haunted) {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.85);
+    max-width: min(900px, 92vw);
+    width: min(900px, 92vw);
+
+    > header {
+      border-radius: 16px 16px 0 0;
+      background: #0a0d10;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+
+      :deep(h1) {
+        color: #c9d2a8;
+        text-shadow:
+          0 0 6px rgba(131, 137, 56, 0.55),
+          0 1px 2px rgba(0, 0, 0, 0.9);
+      }
     }
   }
 }

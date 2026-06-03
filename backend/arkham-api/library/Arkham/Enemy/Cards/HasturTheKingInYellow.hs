@@ -5,14 +5,20 @@ import Arkham.Attack.Types (EnemyAttackDetails (..))
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Enemy.Types (Field (EnemyFight))
+import Arkham.Enemy.Types qualified as Field
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Placement (Placement (Global))
 import Arkham.Strategy
 
 newtype HasturTheKingInYellow = HasturTheKingInYellow EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor HasturTheKingInYellow where
+  getModifiersFor (HasturTheKingInYellow a) =
+    modifySelfWhen a (a.placement == Global) [CannotBeAttacked]
 
 hasturTheKingInYellow :: EnemyCard HasturTheKingInYellow
 hasturTheKingInYellow =
@@ -37,14 +43,14 @@ instance RunMessage HasturTheKingInYellow where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       beginSkillTest sid iid (toAbilitySource attrs 2) attrs #willpower
-        $ EnemyMaybeFieldCalculation attrs.id EnemyFight
+        $ EnemyMaybeFieldCalculation attrs.id Field.EnemyFight
       pure e
     PassedThisSkillTest _ (isSource attrs -> True) -> do
       exhaustThis attrs
       pure e
-    Msg.EnemyDamage eid assignment
+    Msg.DealDamage (EnemyTarget eid) assignment
       | eid == toId attrs
       , damageAssignmentDamageEffect assignment == StoryCardDamageEffect -> do
           HasturTheKingInYellow <$> liftRunMessage msg attrs
-    Msg.EnemyDamage eid _ | eid == toId attrs -> pure e
+    Msg.DealDamage (EnemyTarget eid) _ | eid == toId attrs -> pure e
     _ -> HasturTheKingInYellow <$> liftRunMessage msg attrs

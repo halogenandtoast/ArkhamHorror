@@ -36,10 +36,6 @@ additionalActionType (AdditionalAction _ _ aType) = aType
 
 additionalActionSource :: AdditionalAction -> Source
 additionalActionSource (AdditionalAction _ aSource _) = aSource
-
-additionalActionLabel :: AdditionalAction -> Text
-additionalActionLabel (AdditionalAction aLabel _ _) = aLabel
-
 instance IsLabel "evade" AdditionalActionType where
   fromLabel = ActionRestrictedAdditionalAction #evade
 

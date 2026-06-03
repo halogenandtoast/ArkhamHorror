@@ -112,17 +112,11 @@ export const syncDeck = async (deckId: string): Promise<Deck> => {
   return deckDecoder.decodePromise(data)
 }
 
-export const fileBug = (gameId: string): Promise<void> =>
+export const fileBug = (gameId: string): Promise<{ data: string }> =>
   api.post(`arkham/games/${gameId}/file-bug`)
 
 export const updateGame = (gameId: string, choice: number, investigatorId: string | null): Promise<void> =>
   api.put(`arkham/games/${gameId}`,  {tag: 'Answer', contents: { choice, investigatorId }})
-
-export const updateGamePaymentAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> =>
-  api.put(`arkham/games/${gameId}`, {tag: 'PaymentAmountsAnswer', contents: { amounts } })
-
-export const updateGameAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> =>
-  api.put(`arkham/games/${gameId}`, {tag: 'AmountsAnswer', contents: { amounts } })
 
 export const upgradeDeck = (gameId: string, investigatorId: string, deckUrl?: string, deckList?: ArkhamDbDecklist | null): Promise<void> =>
   api.put(`arkham/games/${gameId}/decks`, { deckUrl, investigatorId, deckList });
@@ -152,6 +146,12 @@ export const deleteGame = (gameId: string): Promise<void> =>
 
 export const updateGameRaw = (gameId: string, gameMessage: any): Promise<void> =>
   api.put(`arkham/games/${gameId}/raw`, { gameMessage })
+
+export const setLocationOffset = (gameId: string, locationId: string, x: number, y: number): Promise<void> =>
+  updateGameRaw(gameId, { tag: 'SetLocationOffset', contents: [locationId, x, y] })
+
+export const resetLocationOffsets = (gameId: string): Promise<void> =>
+  updateGameRaw(gameId, { tag: 'ResetLocationOffsets' })
 
 export interface PlayabilityResponse {
   cardId: string

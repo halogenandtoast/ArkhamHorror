@@ -11,8 +11,12 @@
   },
   "activeGames": "Active Games",
   "cancel": "Cancel",
+  "checkCampaignLog": "Check your Campaign Log.",
   "continue": "Continue",
   "debugGame": "Debug Game",
+  "elusive": {
+    "flee": "Elusive: choose a connecting location for this enemy to flee to."
+  },
   "doDeleteGame": "Are you sure you want to delete this game?",
   "email": "Email",
   "finishedGames": "Finished Games",
@@ -39,6 +43,7 @@
     "takeSeal": "Take Seal"
   },
   "name": "{name}",
+  "waitingForPlayer": "Waiting for {name}…",
   "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck.",
   "readyToBegin": "You are now ready to begin.",
   "Yes": "Yes",
@@ -55,6 +60,7 @@
   "Fight": "Fight",
   "Engage": "Engage",
   "Forced": "Forced",
+  "Reaction": "Reaction",
   "Delayed": "Delayed",
   "Objective": "Objective",
   "Haunted": "Haunted",
@@ -242,6 +248,9 @@
     "couldNotClaimSeat": "Could not claim this seat. It may have already been taken.",
     "waitingForMorePlayers": "Waiting for {remaining} more player | Waiting for {remaining} more players"
   },
+  "waitingOn": {
+    "label": "Waiting on this investigator"
+  },
   "game": {
     "areYouSureUndoScenario": "Are you sure you wish to undo to the beginning of the scenario?",
     "playabilityChecks": "Playability Checks",
@@ -305,6 +314,14 @@
   "campaignLog": {
     "chaosBag": "Chaos Bag",
     "remembered": "Remembered",
+    "specialRules": "Special Rules",
+    "campaignRules": "Campaign Rules",
+    "noRules": "No special rules for the current scenario or campaign.",
+    "tabs": {
+      "log": "Campaign Log",
+      "investigators": "Investigators",
+      "rules": "Rules"
+    },
     "campaignNotes": "Campaign Notes"
   },
   "campaignLogView": {
@@ -519,6 +536,11 @@
       "removeClues": "Remove Clues",
       "placeClue": "Place Clue",
       "reset": "Reset"
+    },
+    "story": {
+      "title": "Debug Story",
+      "inspectBag": "Inspect Bag",
+      "empty": "No bag contents to display."
     },
     "common": {
       "place": "Place",

@@ -238,19 +238,6 @@ treacheryOnAgenda = flip treacheryOn
 
 treacheryOnAct :: ActId -> TreacheryAttrs -> Bool
 treacheryOnAct = flip treacheryOn
-
-withTreacheryEnemy :: HasCallStack => TreacheryAttrs -> (EnemyId -> m a) -> m a
-withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of
-  Just (EnemyTarget eid) -> f eid
-  _ ->
-    error $ show (cdName $ toCardDef attrs) <> " must be attached to an enemy"
-
-withTreacheryLocation :: HasCallStack => TreacheryAttrs -> (LocationId -> m a) -> m a
-withTreacheryLocation attrs f = case treacheryAttachedTarget attrs of
-  Just (LocationTarget lid) -> f lid
-  _ ->
-    error $ show (cdName $ toCardDef attrs) <> " must be attached to a location"
-
 withTreacheryInvestigator :: HasCallStack => TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryInvestigator attrs f = case attrs.inThreatAreaOf of
   Just iid -> f iid
@@ -258,15 +245,6 @@ withTreacheryInvestigator attrs f = case attrs.inThreatAreaOf of
     error
       $ show (cdName $ toCardDef attrs)
       <> " must be in the threat area of an investigator"
-
-withTreacheryOwner :: HasCallStack => TreacheryAttrs -> (InvestigatorId -> m a) -> m a
-withTreacheryOwner attrs f = case treacheryOwner attrs of
-  Just iid -> f iid
-  _ ->
-    error
-      $ show (cdName $ toCardDef attrs)
-      <> " must be owned by an investigator"
-
 treachery
   :: (TreacheryAttrs -> a)
   -> CardDef
@@ -380,14 +358,6 @@ data SomeTreacheryCard
     IsTreachery a =>
     SomeTreacheryCard
       (TreacheryCard a)
-
-liftSomeTreacheryCard
-  :: (forall a. TreacheryCard a -> b) -> SomeTreacheryCard -> b
-liftSomeTreacheryCard f (SomeTreacheryCard a) = f a
-
-someTreacheryCardCode :: SomeTreacheryCard -> CardCode
-someTreacheryCardCode = liftSomeTreacheryCard toCardCode
-
 someTreacheryCardCodes :: SomeTreacheryCard -> [(CardCode, SomeTreacheryCard)]
 someTreacheryCardCodes (SomeTreacheryCard CardBuilder {..}) =
   [ ( code

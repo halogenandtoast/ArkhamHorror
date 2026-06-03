@@ -76,6 +76,10 @@ newtype LocationId = LocationId {unLocationId :: UUID}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
+newtype EnemyLocationId = EnemyLocationId LocationId
+  deriving stock Data
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
+
 newtype ScenarioId = ScenarioId {unScenarioId :: CardCode}
   deriving stock Data
   deriving newtype (Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey, HasCardCode)

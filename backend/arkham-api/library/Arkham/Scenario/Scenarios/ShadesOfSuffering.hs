@@ -133,7 +133,7 @@ instance RunMessage ShadesOfSuffering where
       uncannyShadow <-
         pickFrom (Enemies.uncannyShadowPlayfulShadows, Enemies.uncannyShadowTimorousShadows)
       buriedMiner <- pickFrom (Enemies.buriedMinerALostMemento, Enemies.buriedMinerExhumeTheBones)
-      slainForeman <- pickFrom (Enemies.slainForemanSympathyPain, Enemies.slainForemanSympathyPain)
+      slainForeman <- pickFrom (Enemies.slainForemanSympathyPain, Enemies.slainForemanFamilialPain)
       setAside [uncannyShadow, buriedMiner, slainForeman]
 
       lead <- getLead

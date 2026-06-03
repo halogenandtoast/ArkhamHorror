@@ -9,6 +9,7 @@ import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Card
 import Arkham.ClassSymbol
+import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Query
@@ -17,6 +18,7 @@ import Arkham.Helpers.SkillTest
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Label (mkLabel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -264,7 +266,8 @@ instance RunMessage BeyondTheGatesOfSleep where
     DoStep n (SearchFound iid (LabeledTarget "Veteran" ScenarioTarget) deck cards) | notNull cards -> do
       focusCards cards do
         chooseOneM iid do
-          questionLabeled (withI18n $ countVar n $ ikey' "theDreamEaters.beyondTheGatesOfSleep.label.chooseUpToTacticSupply")
+          questionLabeled
+            (withI18n $ countVar n $ ikey' "theDreamEaters.beyondTheGatesOfSleep.label.chooseUpToTacticSupply")
           labeled "$theDreamEaters.beyondTheGatesOfSleep.label.doNotTakeAny" unfocusCards
           targets cards \card -> do
             unfocusCards
@@ -305,4 +308,25 @@ instance RunMessage BeyondTheGatesOfSleep where
       allGainXp attrs
       endOfScenario
       pure s
+    Do (DrawCards _ drawing) | drawing.deck == Deck.EncounterDeck -> do
+      -- Self-heal phantom Enchanted Woods locations left behind by the
+      -- previously-fixed The Final Descent infinite advance loop. Idempotent —
+      -- becomes a no-op once duplicates are gone.
+      duplicates <- foldMapM phantomEnchantedWoodsForLabel [1 .. 6 :: Int]
+      case duplicates of
+        [] -> BeyondTheGatesOfSleep <$> liftRunMessage msg attrs
+        _ -> do
+          pushAll $ map RemoveLocation duplicates <> [msg]
+          pure s
+     where
+      phantomEnchantedWoodsForLabel n = do
+        let lbl = mkLabel $ "enchantedWoods" <> tshow n
+        select (LocationWithLabel lbl) >>= \case
+          x : rest@(_ : _) -> do
+            revealed <- select $ RevealedLocation <> LocationWithLabel lbl
+            let keep = case revealed of
+                  r : _ -> r
+                  [] -> x
+            pure $ filter (/= keep) (x : rest)
+          _ -> pure []
     _ -> BeyondTheGatesOfSleep <$> liftRunMessage msg attrs

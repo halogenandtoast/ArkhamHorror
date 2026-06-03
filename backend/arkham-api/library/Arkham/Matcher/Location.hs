@@ -96,6 +96,7 @@ data LocationMatcher
   | LocationWithMostClues LocationMatcher
   | LocationWithMostInvestigators LocationMatcher
   | LocationWithMostEnemies LocationMatcher EnemyMatcher
+  | LocationWithFewestEnemies LocationMatcher EnemyMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId
   | LocationWithAsset AssetMatcher
@@ -117,6 +118,7 @@ data LocationMatcher
   | --                           ^ start
     FarthestLocationFromInvestigator InvestigatorMatcher LocationMatcher
   | FarthestLocationFromAll LocationMatcher
+  | NearestLocationToMost LocationMatcher
   | NearestLocationToYou LocationMatcher
   | NearestLocationTo InvestigatorId LocationMatcher
   | NearestLocationToAny LocationMatcher

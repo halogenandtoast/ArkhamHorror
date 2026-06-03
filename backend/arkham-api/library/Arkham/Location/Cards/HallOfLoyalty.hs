@@ -41,8 +41,9 @@ instance RunMessage HallOfLoyalty where
   runMessage msg l@(HallOfLoyalty attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseNM iid 3 $ scenarioI18n $ scope "hallOfLoyalty" do
-        whenM (canHaveHorrorHealed (attrs.ability 1) iid) do
-          countVar 1 $ labeledI "healDamage" $ healDamage iid (attrs.ability 1) 1
+        let healSource = UseAbilitySource iid (toSource attrs) 1
+        whenM (canHaveHorrorHealed healSource iid) do
+          countVar 1 $ labeledI "healDamage" $ healDamage iid healSource 1
         whenM (can.draw.cards iid) do
           countVar 2 $ labeledI "drawCards" $ drawCardsIfCan iid (attrs.ability 1) 2
         whenM (can.gain.resources iid) do

@@ -25,7 +25,7 @@ import Arkham.Message.Lifted qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
-import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
+import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Trait qualified as Trait

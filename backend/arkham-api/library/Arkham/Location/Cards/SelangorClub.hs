@@ -39,7 +39,7 @@ instance HasAbilities SelangorClub where
 instance RunMessage SelangorClub where
   runMessage msg l@(SelangorClub attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
+      let source = UseAbilitySource iid (toSource attrs) 1
 
       assets <-
         select

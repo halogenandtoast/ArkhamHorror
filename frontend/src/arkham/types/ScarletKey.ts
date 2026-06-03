@@ -13,6 +13,7 @@ export type ScarletKey = {
   placement: Placement
   tokens: Tokens;
   stability: Stability
+  meta?: Record<string, unknown>
 }
 
 
@@ -25,4 +26,5 @@ export const scarletKeyDecoder = JsonDecoder.object<ScarletKey>({
     JsonDecoder.literal('Stable'),
     JsonDecoder.literal('Unstable'),
   ], 'Stability'),
+  meta: v2Optional(JsonDecoder.succeed()),
 }, 'ScarletKey');

@@ -1,5 +1,5 @@
 {
-    "fastPlayerWindow": "{'{fast}'} 플레이어 행동 기회",
+    "fastPlayerWindow": "{'{'}fast{'}'} 플레이어 행동 기회",
 
     "determineSkillOfTestStep": "테스트할 능력을 정합니다. 해당 능력 테스트를 시작합니다.",
     "commitCardsFromHandToSkillTestStep": "손에 든 카드를 선택해 능력 테스트에 소모합니다.",

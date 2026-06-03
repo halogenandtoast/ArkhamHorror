@@ -408,7 +408,7 @@ instance RunMessage TheMidwinterGala where
         _ -> throw $ UnknownResolution r
       pure s
     ForTarget (InvestigatorTarget iid) (ScenarioResolution (Resolution 1)) -> scope "resolutions" do
-      guests <- selectWithField Field.AssetCard $ AssetWithTrait Guest <> AssetControlledBy Anyone
+      guests <- selectWithField Field.AssetCard $ AssetWithTrait Guest <> AssetControlledBy Anyone <> SingleSidedAsset
       when (notNull guests) do
         chooseOneM iid do
           questionLabeled' "chooseGuest"

@@ -16,7 +16,7 @@ const emits = defineEmits<{
 }>()
 
 export interface Props {
-  choices: Message[]
+  choices: readonly Message[]
   investigator: Arkham.Investigator
   game: Game
   portrait?: boolean
@@ -33,7 +33,7 @@ function findInvestigatorComponentIndex(tokenType: "DamageToken" | "HorrorToken"
   return computed(() =>
     props.choices.findIndex((c) =>
       c.tag === tag
-      && c.component.tag === "InvestigatorComponent"
+      && c.component?.tag === "InvestigatorComponent"
       && c.component.tokenType === tokenType
       && c.component.investigatorId === iid.value
     )
@@ -47,7 +47,7 @@ const sanityAuxAction = findInvestigatorComponentIndex("HorrorToken", MessageTyp
 const takeResourceAction = computed(() =>
   props.choices.findIndex((c) =>
     c.tag === MessageType.COMPONENT_LABEL
-    && c.component.tag === "InvestigatorComponent"
+    && c.component?.tag === "InvestigatorComponent"
     && c.component.tokenType === "ResourceToken"
     && c.component.investigatorId === iid.value
   )
@@ -56,7 +56,7 @@ const takeResourceAction = computed(() =>
 const spendCluesAction = computed(() =>
   props.choices.findIndex((c) =>
     c.tag === MessageType.COMPONENT_LABEL
-    && c.component.tag === "InvestigatorComponent"
+    && c.component?.tag === "InvestigatorComponent"
     && c.component.tokenType === "ClueToken"
     && c.component.investigatorId === iid.value
   )
@@ -160,7 +160,7 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
     <template v-if="debug.active">
       <button
         @click.exact="debug.send(game.id, {tag: 'GainClues', contents: [iid, {tag: 'GameSource' }, -1]})"
-        @click.shift="debug.send(game.id, {tag: 'InvestigatorDiscardAllClues', contents: [{tag: 'GameSource' }, iid]})"
+        @click.shift="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDiscardAllClues_', contents: [{tag: 'GameSource' }, iid]}})"
       >-</button>
     </template>
 
@@ -196,15 +196,15 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
     <template v-if="debug.active">
       <button
         class="plus-button"
-        @click.exact="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [iid, {tag: 'TestSource', contents: []}, 1, 0]})"
-        @click.shift="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [iid, {tag: 'TestSource', contents: []}, 5, 0]})"
+        @click.exact="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDirectDamage_', contents: [iid, {tag: 'TestSource', contents: []}, 1, 0]}})"
+        @click.shift="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDirectDamage_', contents: [iid, {tag: 'TestSource', contents: []}, 5, 0]}})"
       >+</button>
     </template>
 
     <template v-if="debug.active">
       <button
-        @click.exact="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: iid}, {tag: 'TestSource', contents: []}, 1]})"
-        @click.shift="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: iid}, {tag: 'TestSource', contents: []}, investigator.tokens['Horror'] ?? 0]})"
+        @click.exact="debug.send(game.id, {tag: 'HorrorMessage', contents: {tag: 'HealHorror_', contents: [{tag: 'InvestigatorTarget', contents: iid}, {tag: 'TestSource', contents: []}, 1]}})"
+        @click.shift="debug.send(game.id, {tag: 'HorrorMessage', contents: {tag: 'HealHorror_', contents: [{tag: 'InvestigatorTarget', contents: iid}, {tag: 'TestSource', contents: []}, investigator.tokens['Horror'] ?? 0]}})"
       >-</button>
     </template>
 
@@ -265,8 +265,8 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
     <template v-if="debug.active">
       <button
         class="plus-button"
-        @click.exact="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [iid, {tag: 'TestSource', contents: []}, 0, 1]})"
-        @click.shift="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [iid, {tag: 'TestSource', contents: []}, 0, 5]})"
+        @click.exact="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDirectDamage_', contents: [iid, {tag: 'TestSource', contents: []}, 0, 1]}})"
+        @click.shift="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDirectDamage_', contents: [iid, {tag: 'TestSource', contents: []}, 0, 5]}})"
       >+</button>
     </template>
 

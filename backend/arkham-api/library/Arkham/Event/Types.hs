@@ -330,10 +330,6 @@ instance IsCard Event where
     ec -> ec
   toCardOwner = toCardOwner . toAttrs
   toCustomizations = toCustomizations . toAttrs
-
-getEventId :: Event -> EventId
-getEventId = eventId . toAttrs
-
 ownerOfEvent :: Event -> InvestigatorId
 ownerOfEvent = eventOwner . toAttrs
 
@@ -341,13 +337,6 @@ instance HasField "owner" Event InvestigatorId where
   getField = attr eventOwner
 
 data SomeEventCard = forall a. IsEvent a => SomeEventCard (EventCard a)
-
-liftSomeEventCard :: (forall a. EventCard a -> b) -> SomeEventCard -> b
-liftSomeEventCard f (SomeEventCard a) = f a
-
-someEventCardCode :: SomeEventCard -> CardCode
-someEventCardCode = liftSomeEventCard toCardCode
-
 someEventCardCodes :: SomeEventCard -> [(CardCode, SomeEventCard)]
 someEventCardCodes (SomeEventCard CardBuilder {..}) =
   [ ( code

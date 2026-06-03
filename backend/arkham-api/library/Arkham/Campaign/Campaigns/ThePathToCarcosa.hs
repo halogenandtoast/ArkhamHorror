@@ -10,10 +10,11 @@ import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Xp
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Target
 
 newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
@@ -143,7 +144,7 @@ instance RunMessage ThePathToCarcosa where
         p "body"
       gameOver
       pure c
-    EnemyDefeated _ cardId _ _ -> do
+    Defeated (EnemyTarget _) cardId _ _ -> do
       card <- getCard cardId
       when (card `cardMatch` cardIs Enemies.theManInThePallidMask) do
         n <- getRecordCount ChasingTheStranger

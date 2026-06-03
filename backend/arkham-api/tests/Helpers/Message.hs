@@ -86,6 +86,7 @@ investigate i l =
       , investigateSource = TestSource mempty
       , investigateTarget = Nothing
       , investigateIsAction = False
+      , investigatePayCost = False
       , investigateSkillTest = SkillTestId nil
       }
 

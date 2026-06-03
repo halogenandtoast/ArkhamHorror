@@ -24,7 +24,7 @@ sparrowMaskTheWanderersCompanion = asset SparrowMaskTheWanderersCompanion Cards.
 
 instance HasAbilities SparrowMaskTheWanderersCompanion where
   getAbilities (SparrowMaskTheWanderersCompanion a) =
-    [ playerLimit PerTestOrAbility
+    [ playerLimit PerTest
         $ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#willpower, #agility])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility

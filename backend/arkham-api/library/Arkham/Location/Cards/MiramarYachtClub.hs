@@ -5,6 +5,7 @@ import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Matcher
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
 
@@ -17,7 +18,7 @@ miramarYachtClub = symbolLabel $ location MiramarYachtClub Cards.miramarYachtClu
 
 instance HasAbilities MiramarYachtClub where
   getAbilities (MiramarYachtClub a) =
-    extendRevealed1 a $ restricted a 1 Here investigateAction_
+    extendRevealed1 a $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
 
 instance RunMessage MiramarYachtClub where
   runMessage msg l@(MiramarYachtClub attrs) = runQueueT $ case msg of

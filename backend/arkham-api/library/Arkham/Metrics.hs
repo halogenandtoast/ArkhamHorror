@@ -3,7 +3,6 @@ module Arkham.Metrics (
   Metrics,
   newMetrics,
   enableMetrics,
-  disableMetrics,
   isMetricsEnabled,
   resetMetrics,
   recordSpan,
@@ -65,10 +64,6 @@ enableMetrics = do
   m <- newMetrics
   writeIORef globalMetricsRef (Just m)
   pure m
-
-disableMetrics :: IO ()
-disableMetrics = writeIORef globalMetricsRef Nothing
-
 isMetricsEnabled :: IO (Maybe Metrics)
 isMetricsEnabled = readIORef globalMetricsRef
 

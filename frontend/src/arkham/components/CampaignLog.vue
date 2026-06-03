@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
 import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log'
-import { toCapitalizedWords } from '@/arkham/helpers'
+import { toCapitalizedWords, formatContent } from '@/arkham/helpers'
+import { cardArt } from '@/arkham/cardImages'
 import { computed, ref, onMounted, watch, type Component } from 'vue'
 import { fetchCard } from '@/arkham/api'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { type Name, simpleName } from '@/arkham/types/Name'
-import { scenarioToI18n, type Remembered } from '@/arkham/types/Scenario'
+import { scenarioToI18n, scenarioToKeyI18n, campaignIdToI18n, type Remembered } from '@/arkham/types/Scenario'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import Calendar from '@/arkham/components/TheScarletKeys/Calendar.vue'
 import KeysStatus from '@/arkham/components/TheScarletKeys/KeysStatus.vue'
@@ -16,6 +17,7 @@ import XpBreakdown from '@/arkham/components/XpBreakdown.vue'
 import type { XpBreakdownStep } from '@/arkham/types/Xp'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
+import CampaignLogSpecialRules from '@/arkham/components/CampaignLogSpecialRules.vue'
 import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
 import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
@@ -25,6 +27,7 @@ import { useDbCardStore } from '@/stores/dbCards'
 
 import ResidentNotes from '@/arkham/components/TheFeastOfHemlockVale/ResidentNotes.vue'
 import AreasSurveyed from '@/arkham/components/TheFeastOfHemlockVale/AreasSurveyed.vue'
+import DayTimeTracker from '@/arkham/components/TheFeastOfHemlockVale/DayTimeTracker.vue'
 
 export interface Props {
   game: Arkham.Game
@@ -34,7 +37,10 @@ export interface Props {
 
 const props = defineProps<Props>()
 const store = useDbCardStore()
-const { t } = useI18n()
+const { t, tm } = useI18n()
+
+type LogTab = 'log' | 'investigators' | 'rules'
+const activeTab = ref<LogTab>('log')
 
 const sectionComponentById: Record<string, Component> = {
   motherRachelNotes: ResidentNotes,
@@ -49,19 +55,36 @@ const sectionComponentById: Record<string, Component> = {
 }
 
 // --- Utilities -----------------------------------------------------------------
-const EMPTY_LOG: LogContents = { recorded: [], recordedSets: {} as any, recordedCounts: [], partners: {} as any }
+const EMPTY_LOG: LogContents = { recorded: [], recordedSets: {}, recordedCounts: [], partners: {}, options: [] }
 
 const fullName = (name: Name): string => (name.subtitle ? `${name.title}: ${name.subtitle}` : name.title)
 
 
 const time = computed(() =>
-  selectedLog.value.recordedCounts.find((r) => r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')
+  selectedLog.value.recordedCounts.find((r) => r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')?.[1] ?? null
 )
 
 const theta = computed(() => props.game.campaign?.meta?.theta)
 const delta = computed(() => props.game.campaign?.meta?.delta)
 const psi = computed(() => props.game.campaign?.meta?.psi)
 const scarletKeys = computed(() => props.game.campaign?.meta?.keyStatus)
+
+const hemlockDayTime = computed(() => {
+  if (props.game.campaign?.id !== '10') return null
+  const meta = props.game.campaign?.meta
+  if (!meta?.day || !meta?.time) return null
+  return { day: meta.day as string, time: meta.time as string }
+})
+
+const hemlockAreasSurveyedSection = computed(() => {
+  if (props.game.campaign?.id !== '10') return null
+  return sections.value.find((s) => s.id === 'areasSurveyed') ?? null
+})
+
+const visibleSections = computed(() => {
+  if (props.game.campaign?.id !== '10') return sections.value
+  return sections.value.filter((s) => s.id !== 'areasSurveyed')
+})
 
 // --- Determine available logs & titles -----------------------------------------
 const mainLog = computed<LogContents>(() => props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || EMPTY_LOG)
@@ -126,13 +149,83 @@ const remembered = computed(() => {
   const toKey = (s: string) => (s.charAt(0).toLowerCase() + s.slice(1)).replace(/'/g, '')
   return log.map((record: Remembered) => {
     if (record.tag == 'YouOweBiancaResources') return `You owe Bianca resources (${record.contents})`
-    if (record.tag === 'RememberedName') {
+    if (record.tag === 'RememberedName' && record.actualTag && record.name) {
       return t(`${prefix}.remembered.${toKey(record.actualTag)}`, {
         name: simpleName(record.name),
       })
     }
     return t(`${prefix}.remembered.${toKey(record.tag)}`)
   })
+})
+
+// --- Special Rules (scenario-only) ----------------------------------------------
+// Scenarios with printed special rules store them as an array of `{ title?, body }`
+// blocks under `<scenarioI18n>.specialRules` in their locale files. Values may use
+// vue-i18n linked messages (`@:path.to.key`) to reuse existing setup text rather than
+// duplicating it. The section is shown only while that scenario is in play.
+type SpecialRule = { title?: string; bodyKey: string }
+
+const rulesAtScope = (scope: string | null): SpecialRule[] => {
+  if (!scope) return []
+  const key = `${scope}.specialRules`
+  const raw = tm(key) as unknown
+  if (!Array.isArray(raw)) return []
+  return raw.map((rule: any, i: number) => ({
+    title: rule.title ? formatContent(t(`${key}[${i}].title`)) : undefined,
+    bodyKey: `${key}[${i}].body`,
+  }))
+}
+
+const specialRules = computed<SpecialRule[]>(() =>
+  rulesAtScope(props.game.scenario ? scenarioToI18n(props.game.scenario) : null)
+)
+
+// Campaign-wide rules live at the campaign's i18n scope root (`<campaign>.specialRules`)
+// and are shown for the entire campaign, regardless of which scenario is active.
+const campaignSpecialRulesScope = computed(() => {
+  if (props.game.scenario) return scenarioToKeyI18n(props.game.scenario)
+  if (props.game.campaign) return campaignIdToI18n(props.game.campaign.id)
+  return null
+})
+
+const campaignSpecialRules = computed<SpecialRule[]>(() =>
+  rulesAtScope(campaignSpecialRulesScope.value)
+)
+
+// Keywords and Concepts live at the scenario's i18n scope as
+// `<scenario>.keywordsAndConcepts = { title, entries: [{ title, body }] }` and are
+// shown while that scenario is in play. The title is per-scenario (e.g. some scenarios
+// introduce "New Keywords and Concepts"), so it travels with the data.
+type KeywordsSection = { title: string; rules: SpecialRule[] }
+
+const keywordsAtScope = (scope: string | null): KeywordsSection | null => {
+  if (!scope) return null
+  const key = `${scope}.keywordsAndConcepts`
+  const raw = tm(key) as unknown
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const entries = (raw as any).entries
+  if (!Array.isArray(entries) || entries.length === 0) return null
+  return {
+    title: t(`${key}.title`),
+    rules: entries.map((rule: any, i: number) => ({
+      title: rule.title ? formatContent(t(`${key}.entries[${i}].title`)) : undefined,
+      bodyKey: `${key}.entries[${i}].body`,
+    })),
+  }
+}
+
+const keywordsAndConcepts = computed<KeywordsSection | null>(() =>
+  keywordsAtScope(props.game.scenario ? scenarioToI18n(props.game.scenario) : null)
+)
+
+const hasRules = computed(() =>
+  campaignSpecialRules.value.length > 0 ||
+  specialRules.value.length > 0 ||
+  (keywordsAndConcepts.value?.rules.length ?? 0) > 0
+)
+
+watch(hasRules, (has) => {
+  if (!has && activeTab.value === 'rules') activeTab.value = 'log'
 })
 
 const allGameInvestigators = computed(() => ({
@@ -192,9 +285,9 @@ const relationshipLevelBySectionId = computed<Record<string, number>>(() => {
   const m: Record<string, number> = {}
 
   for (const [k, value] of selectedLog.value.recordedCounts) {
-    const sectionTag = k?.contents?.tag
-    const leafTag = k?.contents?.contents
-    if (!sectionTag || !leafTag) continue
+    if (!isSection(k)) continue
+    const sectionTag = k.contents.tag
+    const leafTag = k.contents.contents
 
     const sectionId = lowerFirst(sectionTag)
     if (!/RelationshipLevel$/.test(leafTag)) continue
@@ -210,8 +303,8 @@ const sectionsFromCounts = computed<Record<string, { baseKey: string; id: string
     const m: Record<string, { baseKey: string; id: string; titleKey: string; orderKey: string }> = {}
 
     for (const [k] of selectedLog.value.recordedCounts) {
-      const sectionTag = k?.contents?.tag
-      if (!sectionTag) continue
+      if (!isRecord(k.contents) || typeof k.contents.tag !== 'string') continue
+      const sectionTag = k.contents.tag
 
       const baseKey = lowerFirst(k.tag.replace(/Key$/, ''))
       const sectionId = lowerFirst(sectionTag)
@@ -427,7 +520,7 @@ const cardCodeToTitle = (cardCode: string): string => {
   const language = localStorage.getItem('language') || 'en'
 
   if (language !== 'en') {
-    const code = card ? card.art : cardCode.replace(/^c/, '')
+    const code = card ? card.art : cardArt(cardCode)
     const dbCard = store.getDbCard(code)
     if (dbCard) return dbCard.subname ? `${dbCard.name}: ${dbCard.subname}` : dbCard.name
   }
@@ -454,13 +547,9 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
 const mapData = computed(() => {
   const current = props.game.campaign?.meta?.currentLocation || 'London'
   const unlocked = props.game.campaign?.meta?.unlockedLocations || []
-  return {
-    current,
-    hasTicket: false,
-    available: unlocked,
-    locations: [
-      ['Alexandria', { unlocked: false }],
-      ['Anchorage', { unlocked: false }],
+  const locations: [string, { unlocked: boolean }][] = [
+    ['Alexandria', { unlocked: false }],
+    ['Anchorage', { unlocked: false }],
       ['Arkham', { unlocked: false }],
       ['Bermuda', { unlocked: false }],
       ['BermudaTriangle', { unlocked: false }],
@@ -494,8 +583,13 @@ const mapData = computed(() => {
       ['Tokyo', { unlocked: false }],
       ['Tunguska', { unlocked: false }],
       ['Venice', { unlocked: false }],
-      ['YborCity', { unlocked: false }],
-    ],
+    ['YborCity', { unlocked: false }],
+  ]
+  return {
+    current,
+    hasTicket: false,
+    available: unlocked,
+    locations,
   }
 })
 </script>
@@ -505,9 +599,31 @@ const mapData = computed(() => {
   <div class="content column">
     <div class="log-column">
       <div class="campaign-log column">
-        <h1>Campaign Log: {{ game.name }}</h1>
+        <div class="campaign-log-header">
+          <slot name="header-leading" />
+          <h1>{{ game.name }}</h1>
+        </div>
 
-        <div class="investigators-log">
+        <nav class="log-tabs">
+          <button
+            type="button"
+            :class="{ active: activeTab === 'log' }"
+            @click="activeTab = 'log'"
+          >{{ t('campaignLog.tabs.log') }}</button>
+          <button
+            type="button"
+            :class="{ active: activeTab === 'investigators' }"
+            @click="activeTab = 'investigators'"
+          >{{ t('campaignLog.tabs.investigators') }}</button>
+          <button
+            v-if="hasRules"
+            type="button"
+            :class="{ active: activeTab === 'rules' }"
+            @click="activeTab = 'rules'"
+          >{{ t('campaignLog.tabs.rules') }}</button>
+        </nav>
+
+        <div v-show="activeTab === 'investigators'" class="investigators-log">
           <InvestigatorRow
             v-for="investigator in investigators"
             :key="investigator.id"
@@ -517,6 +633,27 @@ const mapData = computed(() => {
           />
         </div>
 
+        <template v-if="activeTab === 'rules'">
+          <CampaignLogSpecialRules
+            v-if="campaignSpecialRules.length > 0"
+            :title="t('campaignLog.campaignRules')"
+            :rules="campaignSpecialRules"
+          />
+
+          <CampaignLogSpecialRules
+            v-if="specialRules.length > 0"
+            :title="t('campaignLog.specialRules')"
+            :rules="specialRules"
+          />
+
+          <CampaignLogSpecialRules
+            v-if="keywordsAndConcepts"
+            :title="keywordsAndConcepts.title"
+            :rules="keywordsAndConcepts.rules"
+          />
+        </template>
+
+        <template v-if="activeTab === 'log'">
         <div v-if="time || scarletKeys" class="scarlet-keys-row">
           <div class="scarlet-keys-sidebar">
             <Calendar v-if="time" :time="time" :theta="theta" :delta="delta" :psi="psi" />
@@ -565,6 +702,23 @@ const mapData = computed(() => {
             </div>
           </div>
 
+          <div v-if="hemlockDayTime || hemlockAreasSurveyedSection" class="hemlock-overview">
+            <DayTimeTracker
+              v-if="hemlockDayTime"
+              :day="hemlockDayTime.day"
+              :time="hemlockDayTime.time"
+            />
+            <component
+              v-if="hemlockAreasSurveyedSection"
+              :is="hemlockAreasSurveyedSection.component"
+              class="hemlock-overview-grow"
+              :sectionId="hemlockAreasSurveyedSection.id"
+              :prefix="hemlockAreasSurveyedSection.titleKey.split('.').slice(0, 1).join('.')"
+              :records="hemlockAreasSurveyedSection.records"
+              :relationshipLevel="hemlockAreasSurveyedSection.relationshipLevel"
+            />
+          </div>
+
           <CampaignLogChaosBag
             v-if="chaosBag.length > 0"
             :chaosBag="chaosBag"
@@ -577,7 +731,7 @@ const mapData = computed(() => {
           />
 
           <!-- Campaign sections -->
-          <template v-for="section in sections" :key="section.key">
+          <template v-for="section in visibleSections" :key="section.key">
             <component
               v-if="section.component"
               :is="section.component"
@@ -616,19 +770,22 @@ const mapData = computed(() => {
             :cardCodeToTitle="cardCodeToTitle"
           />
         </div>
+        </template>
       </div>
 
-      <XpBreakdown
-        v-for="(breakdown, idx) in breakdowns"
-        :key="idx"
-        :game="game"
-        :step="breakdown.step"
-        :entries="breakdown.entries"
-        :playerId="playerId"
-        :showAll="true"
-        :investigators="breakdownInvestigators(breakdown)"
-        :defaultCollapsed="idx > 0"
-      />
+      <template v-if="activeTab === 'log'">
+        <XpBreakdown
+          v-for="(breakdown, idx) in breakdowns"
+          :key="idx"
+          :game="game"
+          :step="breakdown.step"
+          :entries="breakdown.entries"
+          :playerId="playerId"
+          :showAll="true"
+          :investigators="breakdownInvestigators(breakdown)"
+          :defaultCollapsed="idx > 0"
+        />
+      </template>
     </div>
   </div>
 </template>
@@ -640,6 +797,40 @@ const mapData = computed(() => {
   overflow: auto;
   width: 100%;
   padding-bottom: 60px;
+}
+
+/* ── Tabs ────────────────────────────────────────────────── */
+
+.log-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.log-tabs button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 10px 18px;
+  font-family: teutonic, sans-serif;
+  font-size: 1.05em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.log-tabs button:hover {
+  color: rgba(255,255,255,0.85);
+}
+
+.log-tabs button.active {
+  color: var(--title);
+  border-bottom-color: var(--select, #6E8640);
 }
 
 /* ── Investigators ───────────────────────────────────────── */
@@ -668,15 +859,23 @@ const mapData = computed(() => {
   color: var(--title);
 }
 
+.campaign-log-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 20px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
 h1 {
   font-family: teutonic, sans-serif;
   font-size: 2.2em;
-  margin: 0 0 20px;
-  padding: 0 0 14px;
+  margin: 0;
+  padding: 0;
   color: var(--title);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 /* ── Empty state ─────────────────────────────────────────── */
@@ -698,6 +897,19 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.hemlock-overview {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hemlock-overview-grow {
+  flex: 1 1 320px;
+  min-width: 0;
 }
 
 /* ── Log tabs (Dream Eaters split) ───────────────────────── */

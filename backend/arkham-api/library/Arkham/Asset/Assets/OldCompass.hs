@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.I18n
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -17,7 +18,7 @@ oldCompass :: AssetCard OldCompass
 oldCompass = asset OldCompass Cards.oldCompass
 
 instance HasAbilities OldCompass where
-  getAbilities (OldCompass a) = [controlled_ a 1 investigateAction_]
+  getAbilities (OldCompass a) = [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) investigateAction_]
 
 instance RunMessage OldCompass where
   runMessage msg a@(OldCompass attrs) = runQueueT $ case msg of

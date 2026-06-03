@@ -105,7 +105,7 @@ instance HasAbilities HyperphysicalShotcasterTheoreticalDevice where
       _ -> error "Invalid manifest ability"
     manifestCriteria = \case
       Railshooter -> NoRestriction
-      Telescanner -> NoRestriction
+      Telescanner -> exists $ YourLocation <> InvestigatableLocation
       Translocator -> NoRestriction
       Realitycollapser -> NoRestriction
       Matterweaver -> exists (PlayableCardWithNoCost NoAction $ InHandOf ForPlay You <> #asset)
@@ -273,7 +273,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
         [ SkillLabel sType [toMessage $ Evade.withSkillType sType doEvade]
         | sType <- [#willpower, #agility, #intellect, #combat]
         ]
-      push $ DoStep 2 msg'
+      when (n == 1) $ push $ DoStep 2 msg'
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       canMoveEnemyToUs :: [EnemyId] <-

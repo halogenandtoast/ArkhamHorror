@@ -8,6 +8,7 @@ import {
   watchEffect,
   onMounted,
   onUnmounted,
+  type VNodeRef,
 } from 'vue'
 import { imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
@@ -53,20 +54,46 @@ const isMobile = ref(false)
 
 const playabilityData = ref<PlayabilityResponse | null>(null)
 let playabilityTimer: number | null = null
+let cosmicEmissaryTimer: number | null = null
+const COSMIC_EMISSARY_CARD_CODES = new Set([
+  '10662a',
+  '10662b',
+  '10663a',
+  '10663b',
+  '10664a',
+  '10664b',
+  '10665a',
+  '10665b',
+])
+const COSMIC_EMISSARY_STARE_MS = 15000
+
+const normalizedCardCode = (value: string | undefined) => value?.replace(/^c/, '') ?? null
 
 watch(hoveredElement, (el) => {
   playabilityData.value = null
   if (playabilityTimer !== null) { clearTimeout(playabilityTimer); playabilityTimer = null }
+  if (cosmicEmissaryTimer !== null) { clearTimeout(cosmicEmissaryTimer); cosmicEmissaryTimer = null }
+
+  const code = normalizedCardCode(el?.dataset.cardCode ?? el?.dataset.imageId)
+  const gameId = el?.dataset.gameId
+  const playerId = el?.dataset.playerId
+  if (el && code && COSMIC_EMISSARY_CARD_CODES.has(code) && gameId && playerId) {
+    cosmicEmissaryTimer = window.setTimeout(() => {
+      if (hoveredElement.value === el) {
+        debug.send(gameId, { tag: 'KonamiCode', contents: playerId })
+      }
+    }, COSMIC_EMISSARY_STARE_MS)
+  }
+
   if (!debug.active || !el) return
-  const gameId = el.dataset.playabilityGameId
+  const playabilityGameId = el.dataset.playabilityGameId
   const investigatorId = el.dataset.playabilityInvestigatorId
   const cardId = el.dataset.playabilityCardId
-  if (!gameId || !investigatorId || !cardId) return
-  const code = cardCode.value
+  if (!playabilityGameId || !investigatorId || !cardId) return
   if (code && store.getDbCard(code)?.type_code === 'skill') return
   playabilityTimer = window.setTimeout(async () => {
     try {
-      const result = await fetchPlayability(gameId, investigatorId, cardId)
+      const result = await fetchPlayability(playabilityGameId, investigatorId, cardId)
       if (hoveredElement.value === el) playabilityData.value = result
     } catch { /* ignore */ }
   }, 300)
@@ -92,7 +119,28 @@ const clearTimer = (t: number | null) => (t !== null ? (clearTimeout(t), null) :
 
 const targetFromEvent = (e: Event): HTMLElement | null => {
   const raw = e.target as HTMLElement | null
-  return raw ? (raw.closest(CARD_SELECTOR) as HTMLElement | null) : null
+  const closest = raw ? (raw.closest(CARD_SELECTOR) as HTMLElement | null) : null
+  if (closest) return closest
+
+  // Transformed cards can visually extend outside their untransformed layout
+  // box (notably rotated enemy-as-location cards). In that case normal event
+  // targeting may hit the map/background instead of the image even though the
+  // pointer is over the rendered card. Fall back to a geometry check using the
+  // transformed bounding rects so the full visual card surface opens overlays.
+  if (!(e instanceof MouseEvent)) return null
+  const { clientX, clientY } = e
+  const candidates = Array.from(document.querySelectorAll<HTMLElement>('img.card,[data-image-id],[data-target],[data-image]'))
+    .reverse()
+  return candidates.find((el) => {
+    if (el.classList.contains('dragging') || el.classList.contains('no-overlay')) return false
+    const rect = el.getBoundingClientRect()
+    return rect.width > 0
+      && rect.height > 0
+      && clientX >= rect.left
+      && clientX <= rect.right
+      && clientY >= rect.top
+      && clientY <= rect.bottom
+  }) ?? null
 }
 
 const queueHover = (el: HTMLElement) => {
@@ -170,6 +218,8 @@ onUnmounted(() => {
   document.removeEventListener('mouseleave', onMouseLeave)
   hoverTimer = clearTimer(hoverTimer)
   pressTimer = clearTimer(pressTimer)
+  playabilityTimer = clearTimer(playabilityTimer)
+  cosmicEmissaryTimer = clearTimer(cosmicEmissaryTimer)
 })
 
 /* =============================================================================
@@ -600,14 +650,15 @@ const queueFit = () => {
   })
 }
 
-const setLabelRef = (id: string, deps: () => string) => (el: SVGTextElement | null) => {
-  if (!el) {
+const setLabelRef = (id: string, deps: () => string): VNodeRef => (el) => {
+  const textEl = el instanceof SVGTextElement ? el : null
+  if (!textEl) {
     labelRefs.delete(id)
     labelFits.delete(id)
     labelDepsSig.delete(id)
     return
   }
-  labelRefs.set(id, el)
+  labelRefs.set(id, textEl)
   const sig = deps()
   if (labelDepsSig.get(id) !== sig) {
     labelDepsSig.set(id, sig)
@@ -1230,7 +1281,7 @@ watchEffect(() => {
 
 .card-overlay {
   position: absolute;
-  z-index: 1000;
+  z-index: 20000;
   display: flex;
   width: max-content;
   height: auto;

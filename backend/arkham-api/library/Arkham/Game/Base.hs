@@ -103,6 +103,7 @@ data Game = Game
   , gameUndoPhaseStep :: Maybe Int
   , gameUndoRoundStep :: Maybe Int
   , gameAsIfAtIgnored :: Set InvestigatorId -- transient: investigators with AsIfAt suppressed during window processing
+  , gameLocationOffsets :: Map LocationId (Double, Double) -- player-driven board layout overrides; shared across players
   }
   deriving stock (Eq, Show)
 

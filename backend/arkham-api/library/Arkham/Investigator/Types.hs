@@ -269,6 +269,7 @@ data InvestigatorForm
   = RegularForm
   | YithianForm
   | HomunculusForm
+  | ShatteredForm
   | TransfiguredForm CardCode
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
@@ -508,6 +509,12 @@ instance HasField "combat" InvestigatorAttrs Int where
 instance HasField "agility" InvestigatorAttrs Int where
   getField = investigatorAgility
 
+instance HasField "health" InvestigatorAttrs Int where
+  getField = investigatorHealth
+
+instance HasField "sanity" InvestigatorAttrs Int where
+  getField = investigatorSanity
+
 instance HasField "classSymbol" InvestigatorAttrs ClassSymbol where
   getField = investigatorClass
 
@@ -564,7 +571,11 @@ instance HasModifiersFor Investigator where
       _ -> getModifiersFor a
 
 instance HasChaosTokenValue Investigator where
-  getChaosTokenValue iid chaosTokenFace (Investigator a) = getChaosTokenValue iid chaosTokenFace a
+  getChaosTokenValue iid chaosTokenFace (Investigator a) =
+    case investigatorForm (toAttrs a) of
+      TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
+        getChaosTokenValue iid chaosTokenFace (investigatorFromAttrs @a (toAttrs a))
+      _ -> getChaosTokenValue iid chaosTokenFace a
 
 data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator
 
@@ -738,4 +749,5 @@ instance FromJSON InvestigatorForm where
   parseJSON (String "RegularForm") = pure RegularForm
   parseJSON (String "YithianForm") = pure YithianForm
   parseJSON (String "HomunculusForm") = pure HomunculusForm
+  parseJSON (String "ShatteredForm") = pure ShatteredForm
   parseJSON v = $(mkParseJSON defaultOptions ''InvestigatorForm) v

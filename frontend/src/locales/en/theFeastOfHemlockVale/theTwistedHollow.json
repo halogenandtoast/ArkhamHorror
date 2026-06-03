@@ -1,4 +1,18 @@
 {
+  "specialRules": [
+    {
+      "title": "Darkness Level",
+      "body": "<p class='basic'>Throughout this scenario, the number of resources under “Darkness Level” on the scenario reference card indicate the current stage of night. As time ticks down, resources are added to the current darkness level, and play continues until the investigators reach a certain darkness level, or are defeated. The darker the forest, the deadlier its snares. The current darkness level has no game effect on its own; however, some encounter card effects may change or become stronger depending on the current darkness level.</p>"
+    },
+    {
+      "title": "Location Adjacency in The Twisted Hollow",
+      "body": "<p class='basic'>During this scenario, locations will be arranged in a set pattern, with new locations from the Woods deck emerging adjacent to existing locations, unrevealed side faceup. During this scenario, adjacent locations are connected to one another.</p><ul><li>If a location ever has no shared edges with another location, slide it vertically or horizontally until it is adjacent to the nearest location.</li></ul>"
+    },
+    {
+      "title": "Pursuit",
+      "body": "<p class='basic'>Some cards in this scenario reference an area called the “pursuit area.” The pursuit area is an out-of-play area next to the act and agenda deck which enemies can enter and leave via card effects. Generally speaking, enemies in play will move to the pursuit area as the night progresses. Although the pursuit area is out of play, whenever an enemy moves to or from the pursuit area, it keeps all tokens and attachments.</p><p class='basic'>Enemies in the pursuit area are considered to be “in pursuit.” Enemies that are in pursuit are considered to be out of play, and cannot be affected by player cards or investigator actions. However, enemies that are in pursuit can re-enter play by a variety of card abilities.</p><p class='basic'>(While enemies are in pursuit, ignore all forced effects on those enemies. Doom on enemies in pursuit is out of play and does not count toward the doom threshold.)</p>"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the current darkness level.",
@@ -89,7 +103,7 @@
     },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p>_Resolution 1_: Long, spindly branches stretch like grasping hands as you emerge from the forest into a meadow glowing with shimmering blue wildflowers. The sight of the brilliant carpet of blue and white nearly takes your breath away after the oppressive darkness. Perhaps it is just your tired mind, but the heather and flowers seem to pulse. “Look,” Bertie points with a trembling hand. A dozen luminous stalks rise like floating lamps over the meadow, glimmering in the moonlight. “I feel almost as though we are walking amidst the cosmos. That each of us is a little god.” He plucks a glowing bud from its stalk. “And each of these, an even smaller star.”</p><p>Dr. Marquez slaps the flower out of his hand. “That poetic drivel is what got you lost in the woods. We risked life and limb for you! You’ll be lucky if I leave this incident out of the survey report.” Bertie hangs his head in shame as the professor lists a litany of woes and misdemeanors. But still, you can’t help but note the concern in Dr. Marquez’s voice as she excoriates her assistant. As you return to the Vale, the sky stirs with the coming dawn.</p><ul><li>In your Campaign Log, record 8Bertie was rescued*.</li><li>Skip to _Resolution 3_.</li></ul>"
+      "body": "<p>_Resolution 1_: Long, spindly branches stretch like grasping hands as you emerge from the forest into a meadow glowing with shimmering blue wildflowers. The sight of the brilliant carpet of blue and white nearly takes your breath away after the oppressive darkness. Perhaps it is just your tired mind, but the heather and flowers seem to pulse. “Look,” Bertie points with a trembling hand. A dozen luminous stalks rise like floating lamps over the meadow, glimmering in the moonlight. “I feel almost as though we are walking amidst the cosmos. That each of us is a little god.” He plucks a glowing bud from its stalk. “And each of these, an even smaller star.”</p><p>Dr. Marquez slaps the flower out of his hand. “That poetic drivel is what got you lost in the woods. We risked life and limb for you! You’ll be lucky if I leave this incident out of the survey report.” Bertie hangs his head in shame as the professor lists a litany of woes and misdemeanors. But still, you can’t help but note the concern in Dr. Marquez’s voice as she excoriates her assistant. As you return to the Vale, the sky stirs with the coming dawn.</p><ul><li>In your Campaign Log, record *Bertie was rescued*.</li><li>Skip to _Resolution 3_.</li></ul>"
     },
     "resolution2": {
       "title": "Resolution 2",

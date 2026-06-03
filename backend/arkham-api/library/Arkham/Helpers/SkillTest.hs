@@ -37,12 +37,18 @@ import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (IgnoreChaosToken)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message (Message (..), pattern BeginSkillTest)
+import Arkham.Message (
+  Message (..),
+  pattern BeginSkillTest,
+  pattern NextChaosBagStep,
+  pattern RevelationSkillTest,
+  pattern RunBag,
+  pattern SkillTestEnds,
+ )
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Question
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult
@@ -121,14 +127,6 @@ getSkillTestAbilitySource = runMaybeT do
 
 isSkillTestSource :: (HasGame m, Sourceable source) => source -> m Bool
 isSkillTestSource source = maybe False (isSource source) <$> getSkillTestSource
-
-getSkillTestBaseSkill :: (HasGame m, Tracing m) => InvestigatorId -> m (Maybe Int)
-getSkillTestBaseSkill iid = do
-  mSkillTest <- getSkillTest
-  case mSkillTest of
-    Nothing -> pure Nothing
-    Just sTest -> Just <$> getSkillTestBaseSkillForSkillTest iid sTest
-
 getSkillTestBaseSkillForSkillTest :: (HasGame m, Tracing m) => InvestigatorId -> SkillTest -> m Int
 getSkillTestBaseSkillForSkillTest iid sTest =
   getBaseValueForSkillTestType iid (skillTestAction sTest) (skillTestType sTest)
@@ -387,9 +385,12 @@ getIsPerilous skillTest = case skillTestSource skillTest of
 getSkillTestModifiedSkillValue :: (HasGame m, Tracing m) => m Int
 getSkillTestModifiedSkillValue = do
   st <- getJustSkillTest
+  modifiers' <- getModifiers (SkillTestTarget st.id)
+  let cancelSkills = any (`elem` modifiers') [CancelSkills, CancelEachCommittedCard]
   currentSkillValue <- getCurrentSkillValue st
-  iconCount <- skillIconCount st
-  pure $ max 0 (currentSkillValue + iconCount)
+  iconCount <- if cancelSkills then pure 0 else skillIconCount st
+  subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount st
+  pure $ max 0 (currentSkillValue + iconCount - subtractIconCount)
 
 getModifiedSkillValue :: (HasGame m, Tracing m) => m Int
 getModifiedSkillValue = do
@@ -551,19 +552,6 @@ getBaseSkillTestDifficulty :: (HasGame m, Tracing m, HasCallStack) => SkillTest 
 getBaseSkillTestDifficulty s = go (skillTestDifficulty s)
  where
   go (SkillTestDifficulty c) = calculate c
-
-skillTestLabel
-  :: (Sourceable source, Targetable target)
-  => Text
-  -> SkillType
-  -> SkillTestId
-  -> InvestigatorId
-  -> source
-  -> target
-  -> GameCalculation
-  -> UI Message
-skillTestLabel lbl sType sid iid source target n = SkillLabelWithLabel lbl sType [beginSkillTest sid iid source target sType n]
-
 pushAfterSkillTest :: HasQueue Message m => Message -> m ()
 pushAfterSkillTest = pushAfter \case
   SkillTestEnds {} -> True

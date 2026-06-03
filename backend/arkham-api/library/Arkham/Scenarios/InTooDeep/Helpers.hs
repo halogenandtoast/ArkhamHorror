@@ -32,12 +32,6 @@ removeBarrierBetweenConnected iid lid = do
 placeBarrier :: ReverseQueue m => LocationId -> LocationId -> m ()
 placeBarrier l1 l2 = push $ ScenarioCountIncrementBy (Barriers l1 l2) 1
 
-insertBarrier :: LocationId -> LocationId -> Meta -> Meta
-insertBarrier = incrementBarriers 1
-
-removeBarrier :: LocationId -> LocationId -> Meta -> Meta
-removeBarrier = decrementBarriers 1
-
 incrementBarriers :: Int -> LocationId -> LocationId -> Meta -> Meta
 incrementBarriers n a b (Meta barriers) =
   Meta $ Map.insertWith (+) (sortedPair a b) n barriers

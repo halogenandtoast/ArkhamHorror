@@ -61,6 +61,7 @@ data CardLimit
   | LimitInPlay Int
   | LimitPerTrait Trait Int
   | MaxPerGame Int
+  | MaxPerGamePerInvestigator Int
   | MaxPerRound Int
   | LimitPerRound Int
   | MaxPerTurn Int
@@ -184,6 +185,10 @@ data CardDef = CardDef
   , cdOtherSide :: Maybe CardCode
   , cdWhenDiscarded :: DiscardType
   , cdCanCommitWhenNoIcons :: Bool
+  , cdCommitTrigger :: Bool
+  -- ^ True for cards whose RunMessage reacts to `Do (CommitCard …)` or
+  -- `InvestigatorCommittedSkill`; used in CheckAllAdditionalCommitCosts to
+  -- decide whether to prompt the active player for ordering.
   , cdMeta :: Map Text Value
   , cdTags :: [Text]
   , cdOutOfPlayEffects :: [OutOfPlayEffect]
@@ -321,6 +326,7 @@ emptyCardDef cCode name cType =
     , cdOtherSide = Nothing
     , cdWhenDiscarded = ToDiscard
     , cdCanCommitWhenNoIcons = False
+    , cdCommitTrigger = False
     , cdMeta = mempty
     , cdTags = []
     , cdOutOfPlayEffects = []
@@ -343,16 +349,6 @@ isSignature = any isSignatureDeckRestriction . cdDeckRestrictions . toCardDef
 
 instance Named CardDef where
   toName = cdName
-
-subTypeL :: Lens' CardDef (Maybe CardSubType)
-subTypeL = lens cdCardSubType $ \m x -> m {cdCardSubType = x}
-
-keywordsL :: Lens' CardDef (Set Keyword)
-keywordsL = lens cdKeywords $ \m x -> m {cdKeywords = x}
-
-cardTraitsL :: Lens' CardDef (Set Trait)
-cardTraitsL = lens cdCardTraits $ \m x -> m {cdCardTraits = x}
-
 class HasCardDef a where
   toCardDef :: HasCallStack => a -> CardDef
 
@@ -447,6 +443,7 @@ instance FromJSON CardDef where
     cdWhenDiscarded <- o .: "whenDiscarded"
     cdCanCommitWhenNoIcons <-
       o .:? "canCommitWhenNoIcons" .!= (null cdSkills && cdCardType == SkillType)
+    cdCommitTrigger <- o .:? "commitTrigger" .!= False
     cdMeta <- o .:? "meta" .!= mempty
     cdTags <- o .:? "tags" .!= []
     inHandEffects <- o .:? "cardInHandEffects" .!= False

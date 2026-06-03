@@ -35,6 +35,8 @@ import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
 import Arkham.Enemy.Runner (getPreyMatcher)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), delayEngagementL)
+import Arkham.EnemyLocation hiding (EnemyLocation)
+import Arkham.EnemyLocation.Types (EnemyLocationAttrs (..))
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Types
@@ -51,7 +53,6 @@ import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Message hiding (
-  EnemyDamage,
   InvestigatorDamage,
   InvestigatorDefeated,
   InvestigatorResigned,
@@ -71,6 +72,7 @@ import Arkham.Id
 import Arkham.Investigator (
   InvestigatorForm (..),
   becomeHomunculus,
+  becomeShatteredSelf,
   becomeYithian,
   lookupInvestigator,
   returnToBody,
@@ -89,7 +91,6 @@ import Arkham.Matcher hiding (
   DuringTurn,
   EncounterCardSource,
   EnemyAttacks,
-  EnemyDefeated,
   EventCard,
   FastPlayerWindow,
   InvestigatorDefeated,
@@ -157,7 +158,7 @@ getInvestigatorsInOrder = do
   pure $ g ^. playerOrderL
 
 runGameMessage :: Runner Game
-runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
+runGameMessage msg g = case msg of
   AfterThisTestResolves _sid msgs -> do
     insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
     pure g
@@ -166,6 +167,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure g
   SetAsIfAtIgnored iid True -> pure $ g & asIfAtIgnoredL %~ insertSet iid
   SetAsIfAtIgnored iid False -> pure $ g & asIfAtIgnoredL %~ deleteSet iid
+  SetLocationOffset lid x y -> pure $ g & locationOffsetsL %~ insertMap lid (x, y)
+  ResetLocationOffsets -> pure $ g & locationOffsetsL .~ mempty
   SetGameRunWindows b -> pure $ g & runWindowsL .~ b
   SetGameState s -> pure $ g & gameStateL .~ s
   ChoosingDecks -> pure $ g & entitiesL . investigatorsL .~ mempty & gameStateL .~ IsChooseDecks (g ^. playersL)
@@ -773,7 +776,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  Arkham.Helpers.Message.EnemyDefeated eid _ source _ -> do
+  Arkham.Helpers.Message.Defeated (EnemyTarget eid) _ source _ -> do
     attrs <- toAttrs <$> getEnemy eid
     mlid <- field EnemyLocation eid
     miid <- getSourceController source
@@ -830,6 +833,98 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         push (PlacedLocation (toName location) (toCardCode card) lid)
         pure $ g & entitiesL . locationsL . at lid ?~ location
       else pure g
+  -- Place an enemy-location card directly into play as an enemy-location entity.
+  PlaceEnemyLocation lid card ->
+    if isNothing $ g ^. entitiesL . enemyLocationsL . at lid
+      then do
+        let el = lookupEnemyLocation (toCardCode card) lid (toCardId card)
+        push (PlacedLocation (toName el) (toCardCode card) lid)
+        pure $ g & entitiesL . enemyLocationsL . at lid ?~ el
+      else pure g
+  -- Flip a location to its enemy-location side.
+  -- Removes the location entity and adds an enemy-location entity with the same ID.
+  -- All investigators, enemies, attachments, and tokens are kept per the rules.
+  FlipToEnemyLocation lid card -> do
+    mLocation <- maybeLocation lid
+    let
+      inheritLocationData = case mLocation of
+        Nothing -> id
+        Just location ->
+          let la = toAttrs location
+          in overAttrs \a ->
+                a
+                  { enemyLocationBase = (enemyLocationBase a)
+                      { locationId = locationId la
+                      , locationCardId = locationCardId la
+                      , locationTokens = locationTokens la
+                      , locationLabel = locationLabel la
+                      , locationPosition = locationPosition la
+                      , locationPlacement = locationPlacement la
+                      , locationConnectedMatchers = locationConnectedMatchers la
+                      , locationConnectsTo = locationConnectsTo la
+                      , locationDirections = locationDirections la
+                      , locationRevealedConnectedMatchers = locationRevealedConnectedMatchers la
+                      }
+                  }
+      el = inheritLocationData $ lookupEnemyLocation (flippedCardCode $ toCardCode card) lid (toCardId card)
+
+    replaceCard card.id (forceFlipCard card)
+
+    -- Surface the flip as a FlipLocation window so card-level forced/reactive
+    -- abilities ("when this enemy-location is revealed") can hook in via the
+    -- existing FlipLocation matcher.
+    lead <- getLead
+    pushAll
+      [ PlacedLocation (toName el) (toCardCode el) lid
+      , Msg.CheckWindows [mkWhen (Window.FlipLocation lead lid)]
+      , Msg.CheckWindows [mkAfter (Window.FlipLocation lead lid)]
+      ]
+    pure
+      $ g
+      & (entitiesL . locationsL %~ deleteMap lid)
+      & (entitiesL . enemyLocationsL . at lid ?~ el)
+  -- Flip an enemy-location back to its location side.
+  -- Removes the enemy-location entity and adds a location entity with the same ID.
+  -- All investigators, enemies, attachments, and tokens are kept per the rules.
+  FlipToLocation lid card -> do
+    let
+      mEnemyLocation = preview (entitiesL . enemyLocationsL . ix lid) g
+      inheritEnemyLocationData = case mEnemyLocation of
+        Nothing -> id
+        Just el ->
+          let la = enemyLocationBase (toAttrs el)
+          in overAttrs \a ->
+                a
+                  { locationId = locationId la
+                  , locationCardId = locationCardId la
+                  , locationTokens = locationTokens la
+                  , locationLabel = locationLabel la
+                  , locationPosition = locationPosition la
+                  , locationPlacement = locationPlacement la
+                  , locationConnectedMatchers = locationConnectedMatchers la
+                  , locationConnectsTo = locationConnectsTo la
+                  , locationDirections = locationDirections la
+                  , locationRevealedConnectedMatchers = locationRevealedConnectedMatchers la
+                  }
+      location = inheritEnemyLocationData $ lookupLocation (flippedCardCode $ toCardCode card) lid (toCardId card)
+
+    replaceCard card.id (forceFlipCard card)
+
+    -- Surface the flip as a FlipLocation window so card-level forced/reactive
+    -- abilities can hook in via the existing FlipLocation matcher.
+    lead <- getLead
+    pushAll
+      [ PlacedLocation (toName location) (toCardCode location) lid
+      , Msg.CheckWindows [mkWhen (Window.FlipLocation lead lid)]
+      , Msg.CheckWindows [mkAfter (Window.FlipLocation lead lid)]
+      ]
+    pure
+      $ g
+      & (entitiesL . enemyLocationsL %~ deleteMap lid)
+      & (entitiesL . locationsL . at lid ?~ location)
+  -- Remove an enemy-location from play (e.g. after defeat).
+  RemoveEnemyLocation lid -> do
+    pure $ g & entitiesL . enemyLocationsL %~ deleteMap lid
   ReplaceLocation lid card replaceStrategy -> do
     -- if replaceStrategy is swap we also want to copy over revealed, all tokens
     location <- getLocation lid
@@ -863,6 +958,10 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                     orKey "replacedIsWithoutClues" (locationWithoutClues oldAttrs) && oldAttrs.clues == 0
                 , locationGlobalMeta =
                     Map.insert "replacedLocation" (toJSON oldAttrs.cardCode) (locationGlobalMeta oldAttrs)
+                , locationPosition = locationPosition oldAttrs
+                , locationLabel = locationLabel oldAttrs
+                , locationDirections = locationDirections oldAttrs
+                , locationConnectsTo = locationConnectsTo oldAttrs
                 }
     -- todo: should we just run this in place?
     enemies <- select $ enemyAt lid
@@ -939,7 +1038,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (actionRemovedEntitiesL . eventsL %~ insertEntity event')
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
-      Arkham.Helpers.Message.EnemyDefeated eid' _ _ _ -> eid == eid'
+      Arkham.Helpers.Message.Defeated (EnemyTarget eid') _ _ _ -> eid == eid'
       _ -> False
     popMessageMatching_ $ \case
       Discard _ _ (EnemyTarget eid') -> eid == eid'
@@ -1430,6 +1529,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerGamePerInvestigator _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTurn _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
@@ -2133,10 +2233,17 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pushAll $ RemoveTreachery tid : windows [Window.AddedToVictory miid card]
     pure g
   AddToVictory miid (LocationTarget lid) -> do
-    card <- field LocationCard lid
-    pushM $ checkWindows [mkAfter (Window.LeavePlay $ toTarget lid)]
-    pushAll $ RemoveLocation lid : windows [Window.AddedToVictory miid card]
-    pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
+    case preview (entitiesL . enemyLocationsL . ix lid) g of
+      Just el -> do
+        let card = toCard el
+        pushM $ checkWindows [mkAfter (Window.LeavePlay $ toTarget lid)]
+        pushAll $ RemoveEnemyLocation lid : windows [Window.AddedToVictory miid card]
+        pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
+      Nothing -> do
+        card <- field LocationCard lid
+        pushM $ checkWindows [mkAfter (Window.LeavePlay $ toTarget lid)]
+        pushAll $ RemoveLocation lid : windows [Window.AddedToVictory miid card]
+        pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
     pure g
   PlayerWindow iid _ _ _ -> do
     player <- getPlayer iid
@@ -2775,7 +2882,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
         pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  Msg.EnemyDamage eid assignment@(damageAssignmentAmount -> n) | n > 0 -> do
+  Msg.DealDamage (EnemyTarget eid) assignment@(damageAssignmentAmount -> n) | n > 0 -> do
     let source = damageAssignmentSource assignment
     miid <- getSourceController source
     lead <- getLead
@@ -2878,6 +2985,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerGamePerInvestigator _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTurn _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
@@ -3300,6 +3408,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   BecomeYithian iid -> do
     yithian <- becomeYithian <$> getInvestigator iid
     pure $ g & (entitiesL . investigatorsL . at iid ?~ yithian)
+  BecomeShatteredSelf iid -> do
+    shatteredSelf <- becomeShatteredSelf <$> getInvestigator iid
+    pure $ g & (entitiesL . investigatorsL . at iid ?~ shatteredSelf)
   BecomeHomunculus iid -> do
     findCard (`cardMatch` cardIs Assets.theGreatWorkDivideAndUnite) >>= \case
       Nothing -> error "The Great Work not found"
@@ -3446,8 +3557,6 @@ preloadEntities g = do
 -- too late.
 instance RunMessage Game where
   runMessage msg g =
-    withSpan' "Game.runMessage" \currentSpan -> do
-      addAttribute currentSpan "message" (tshow msg)
       ( (modeL . here) (runMessage msg) g
           >>= (modeL . there) (runMessage msg)
           >>= entitiesL (runMessage msg)
@@ -3464,7 +3573,7 @@ instance RunMessage Game where
         <&> handleActionDiff g
 
 runPreGameMessage :: Runner Game
-runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
+runPreGameMessage msg g = case msg of
   ForInvestigator iid _ -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player

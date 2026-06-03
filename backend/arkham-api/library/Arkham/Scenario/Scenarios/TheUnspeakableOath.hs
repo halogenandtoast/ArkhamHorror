@@ -221,7 +221,7 @@ instance RunMessage TheUnspeakableOath where
       case attrs.deck MonstersDeck of
         [] -> failSkillTest
         (x : xs) -> do
-          monster <- sample (x :| xs)
+          monster <- setFacedown True =<< sample (x :| xs)
           chooseOneM iid do
             labeled' "placeMonsterUnderActDeck"
               $ placeUnderneath ActDeckTarget [monster]
@@ -232,7 +232,7 @@ instance RunMessage TheUnspeakableOath where
         Skull -> case attrs.deck MonstersDeck of
           [] -> pure ()
           (x : xs) -> do
-            monster <- sample (x :| xs)
+            monster <- setFacedown True =<< sample (x :| xs)
             placeUnderneath ActDeckTarget [monster]
         Cultist | isHardExpert attrs -> assignHorror iid Cultist 1
         Tablet | isHardExpert attrs -> assignHorror iid Tablet 1

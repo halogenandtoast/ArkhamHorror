@@ -48,14 +48,6 @@ increaseActionCost (Costs (a : as)) y = case a of
   ActionCost x -> Costs (ActionCost (x + y) : as)
   _ -> a <> increaseActionCost (Costs as) y
 increaseActionCost other _ = other
-
-increaseResourceCost :: Cost -> Int -> Cost
-increaseResourceCost (ResourceCost x) y = ResourceCost $ max 0 (x + y)
-increaseResourceCost (Costs (a : as)) y = case a of
-  ResourceCost x -> Costs (ResourceCost (x + y) : as)
-  _ -> a <> increaseResourceCost (Costs as) y
-increaseResourceCost other _ = other
-
 decreaseResourceCost :: Cost -> Int -> Cost
 decreaseResourceCost (ResourceCost x) y = ResourceCost $ max 0 (x - y)
 decreaseResourceCost (Costs (a : as)) y = case a of
@@ -116,7 +108,7 @@ data Cost
   | GroupClueCost GameValue LocationMatcher
   | SameLocationGroupClueCost GameValue LocationMatcher
   | GroupClueCostRange (Int, Int) LocationMatcher
-  | PlaceClueOnLocationCost Int
+  | PlaceClueOnLocationCost GameValue
   | ExhaustCost Target
   | ShuffleTopOfScenarioDeckIntoYourDeck Int ScenarioDeckKey
   | ChooseEnemyCost EnemyMatcher
@@ -324,6 +316,10 @@ instance FromJSON Cost where
       "GroupClueCostX" -> do
         mcontents <- o .:? "contents"
         pure $ GroupClueCostX $ fromMaybe Anywhere mcontents
+      "PlaceClueOnLocationCost" -> do
+        contents <- o .: "contents"
+        gv <- parseJSON contents <|> (Static <$> parseJSON contents)
+        pure $ PlaceClueOnLocationCost gv
       _ -> $(mkParseJSON defaultOptions ''Cost) (Object o)
 
 totalActionCost :: Cost -> Int

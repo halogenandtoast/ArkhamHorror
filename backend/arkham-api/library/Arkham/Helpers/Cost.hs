@@ -2,7 +2,6 @@ module Arkham.Helpers.Cost where
 
 import Arkham.Ability
 import Arkham.Action (Action)
-import Arkham.Asset.Cards.TheCircleUndone qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
@@ -156,6 +155,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         targets <- select tm
         targets & anyM \case
           ScenarioTarget -> scenarioFieldMap ScenarioTokens ((> 0) . countTokens tkn)
+          LocationTarget lid -> fieldMap LocationTokens ((> 0) . countTokens tkn) lid
           _ -> pure False
       PlaceKeyCost _ k -> fieldMap InvestigatorKeys (elem k) iid
       GroupSpendKeyCost k lm -> selectAny (Matcher.InvestigatorAt lm <> Matcher.InvestigatorWithKey k)
@@ -422,7 +422,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         n <- perPlayer 1
         pure $ spendableClues >= n
       DiscoveredCluesCost -> pure True
-      PlaceClueOnLocationCost n -> do
+      PlaceClueOnLocationCost gv -> do
+        n <- getPlayerCountValue gv
         canParallelRex <- iid <=~> Matcher.InvestigatorIs "90078"
         z <-
           if canParallelRex
@@ -638,9 +639,8 @@ getSpendableResources :: (HasGame m, Tracing m) => InvestigatorId -> m Int
 getSpendableResources iid = do
   mods <- getModifiers iid
   let extraResources = sum [x | ExtraResources x <- mods]
-  familyInheritanceResources <-
-    selectSum AssetResources $ Matcher.assetIs Assets.familyInheritance <> Matcher.assetControlledBy iid
-  fieldMap InvestigatorResources (+ (familyInheritanceResources + extraResources)) iid
+  pooledResources <- sum <$> traverse (field AssetResources) [aid | AsIfResourcePool aid <- mods]
+  fieldMap InvestigatorResources (+ (pooledResources + extraResources)) iid
 
 getSpendableClueCount :: (HasGame m, Tracing m) => [InvestigatorId] -> m Int
 getSpendableClueCount investigatorIds =

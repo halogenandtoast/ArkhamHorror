@@ -70,18 +70,11 @@ noUpgrade cs = cs {canUpgradeDecks = False}
 noSideStory :: Continuation -> Continuation
 noSideStory cs = cs {canChooseSideStory = False}
 
-noOptions :: Continuation -> Continuation
-noOptions cs = cs {canUpgradeDecks = False, canChooseSideStory = False}
-
 allowOptions :: Continuation -> Continuation
 allowOptions cs = cs {canUpgradeDecks = True, canChooseSideStory = True}
 
 continueNoUpgrade :: CampaignStep -> Maybe CampaignStep
 continueNoUpgrade ns = continueEdit ns noUpgrade
-
-continueNoSideScenario :: CampaignStep -> Maybe CampaignStep
-continueNoSideScenario ns = continueEdit ns noSideStory
-
 instance HasField "normalize" CampaignStep CampaignStep where
   getField = normalizedCampaignStep
 

@@ -69,6 +69,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
   runMessage msg s@(PreludeDawnOfTheSecondDay attrs) = runQueueT $ campaignI18n $ scope "prelude2" $ case msg of
     PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "body"
+      replaceFatigueChaosTokens
       (finishedTheirMeal, others) <-
         partitionM (`matches` investigatorWithRecord FinishedTheirMeal) =<< getInvestigators
       storyOnly finishedTheirMeal $ buildFlavor $ h "title" >> p "theHemlockCurse"

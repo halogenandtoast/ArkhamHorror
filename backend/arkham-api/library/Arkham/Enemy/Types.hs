@@ -17,6 +17,7 @@ import Arkham.Constants
 import Arkham.Deck
 import Arkham.Enemy.Cards
 import Arkham.Enemy.Types.Attrs as X
+import Arkham.EnemyLocation.Cards (allEnemyLocationCards)
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Key
@@ -118,7 +119,9 @@ instance FromJSON (SomeField Enemy) where
     "EnemyDoom" -> pure $ SomeField EnemyDoom
     "EnemyExactDoom" -> pure $ SomeField EnemyExactDoom
     "EnemyEvade" -> pure $ SomeField Arkham.Enemy.Types.EnemyEvade
+    "EnemyEvadeActual" -> pure $ SomeField EnemyEvadeActual
     "EnemyFight" -> pure $ SomeField Arkham.Enemy.Types.EnemyFight
+    "EnemyFightActual" -> pure $ SomeField EnemyFightActual
     "EnemyTokens" -> pure $ SomeField EnemyTokens
     "EnemyClues" -> pure $ SomeField EnemyClues
     "EnemyDamage" -> pure $ SomeField EnemyDamage
@@ -142,6 +145,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemySpawnedBy" -> pure $ SomeField EnemySpawnedBy
     "EnemySpawnDetails" -> pure $ SomeField EnemySpawnDetails
     "EnemyAttacking" -> pure $ SomeField EnemyAttacking
+    "EnemyWantsToAttack" -> pure $ SomeField EnemyWantsToAttack
     "EnemyBearer" -> pure $ SomeField EnemyBearer
     "EnemyCardsUnderneath" -> pure $ SomeField EnemyCardsUnderneath
     "EnemyLastKnownLocation" -> pure $ SomeField EnemyLastKnownLocation
@@ -164,9 +168,10 @@ instance IsCard EnemyAttrs where
   toCardOwner = enemyBearer
 
 instance HasCardDef EnemyAttrs where
-  toCardDef e = case lookup (enemyCardCode e) allEnemyCards of
-    Just def -> def
-    Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
+  toCardDef e =
+    case lookup (enemyCardCode e) allEnemyCards <|> lookup (enemyCardCode e) allEnemyLocationCards of
+      Just def -> def
+      Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
 
 enemy
   :: (EnemyAttrs -> a)
@@ -459,13 +464,6 @@ instance Sourceable Enemy where
   isSource = isSource . toAttrs
 
 data SomeEnemyCard = forall a. IsEnemy a => SomeEnemyCard (EnemyCard a)
-
-liftSomeEnemyCard :: (forall a. EnemyCard a -> b) -> SomeEnemyCard -> b
-liftSomeEnemyCard f (SomeEnemyCard a) = f a
-
-someEnemyCardCode :: SomeEnemyCard -> CardCode
-someEnemyCardCode = liftSomeEnemyCard toCardCode
-
 someEnemyCardCodes :: SomeEnemyCard -> [(CardCode, SomeEnemyCard)]
 someEnemyCardCodes (SomeEnemyCard CardBuilder {..}) =
   [ ( code

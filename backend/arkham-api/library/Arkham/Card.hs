@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Card (
   module Arkham.Card,
@@ -117,16 +117,8 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toTabooList _ = Nothing
   toMutated :: a -> Maybe Text
   toMutated _ = Nothing
-
-toCards :: (IsCard a, Functor f) => f a -> f Card
-toCards = fmap toCard
-
 sameCard :: (IsCard a, IsCard b) => a -> b -> Bool
 sameCard a b = toCardId a == toCardId b
-
-cardIds :: IsCard a => [a] -> [CardId]
-cardIds = map toCardId
-
 class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
@@ -200,12 +192,6 @@ genFlippedCard a = flipCard <$> genCard a
 
 genCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t Card)
 genCards = traverse genCard
-
-genSetAsideCards :: (HasCardDef a, CardGen m) => [a] -> m [Card]
-genSetAsideCards cards = traverse genCard $ concatMap splay cards
- where
-  splay card = replicate (fromMaybe 0 $ cdEncounterSetQuantity $ toCardDef card) card
-
 genPlayerCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t PlayerCard)
 genPlayerCards = traverse genPlayerCard
 
@@ -292,7 +278,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   NotCard m -> not (cardMatch a m)
   CardWithAction action -> elem action $ actionsToList $ cdActions $ toCardDef a
   CardWithoutAction -> null $ actionsToList $ cdActions $ toCardDef a
-  CardIsStoryAsset -> and [isJust $ cdEncounterSet (toCardDef a),  toCardType a == AssetType]
+  CardIsStoryAsset -> and [isJust $ cdEncounterSet (toCardDef a), toCardType a == AssetType]
   CardWithPrintedLocationSymbol sym ->
     (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
   CardWithPrintedLocationConnection sym ->
@@ -490,15 +476,28 @@ instance Eq Card where
 
 flipCard :: Card -> Card
 flipCard (EncounterCard ec) =
-  if cdDoubleSided (toCardDef ec)
-    then case cdOtherSide (toCardDef ec) of
-      Just otherSideCode -> EncounterCard $ ec {ecCardCode = otherSideCode, ecOriginalCardCode = otherSideCode}
-      Nothing -> EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
-    else EncounterCard ec {ecIsFlipped = Just False}
+  let
+    def = toCardDef ec
+   in
+    if cdDoubleSided def
+      then case cdOtherSide def of
+        Just otherSideCode -> EncounterCard $ ec {ecCardCode = otherSideCode, ecOriginalCardCode = otherSideCode}
+        Nothing -> EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
+      else EncounterCard ec {ecIsFlipped = Just False}
 flipCard (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
   Just otherSide -> PlayerCard $ pc {pcCardCode = otherSide}
   Nothing -> PlayerCard pc
 flipCard (VengeanceCard c) = VengeanceCard c
+
+forceFlipCard :: Card -> Card
+forceFlipCard (EncounterCard ec) =
+  case cdOtherSide (toCardDef ec) of
+    Just otherSideCode -> EncounterCard $ ec {ecCardCode = otherSideCode, ecOriginalCardCode = otherSideCode}
+    Nothing -> EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
+forceFlipCard (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
+  Just otherSide -> PlayerCard $ pc {pcCardCode = otherSide}
+  Nothing -> PlayerCard pc
+forceFlipCard (VengeanceCard c) = VengeanceCard c
 
 showRevealed :: Card -> Card
 showRevealed card@(EncounterCard ec) =

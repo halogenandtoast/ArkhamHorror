@@ -1,0 +1,152 @@
+{
+  "specialRules": [
+    {
+      "title": "Sinking Locations",
+      "body": "<p class='basic'>During this scenario, damage tokens are placed on locations, as sinkholes, to represent the sinking of the bog. When a location has three or more sinkholes on it, it will flip via the agenda’s forced effect.</p><ul><li>When instructed to flip a location, discard all damage tokens on that location (not on investigators or enemies). Then, flip it, keeping all investigators, enemies, attached treacheries, and clues on that location. Discard all player card attachments from that location.</li></ul>"
+    }
+  ],
+  "intro": {
+    "title": "Scenario: The Thing in the Depths",
+    "body": "<p class='basic unindented'>Check your Campaign Log.</p>",
+    "nightSkip": "If it is _Night 1_ or _Night 2_, skip to _Intro 8_. Otherwise:",
+    "day1": "If it is _Day 1_, proceed to _Intro 1_.",
+    "day2": "If it is _Day 2_, skip to _Intro 4_.",
+    "day3": "If it is _Day 3_, skip to _Intro 7_.",
+    "intro1": {
+      "title": "Intro 1",
+      "body": "<p>_Intro 1_: The road to Eastwick Bog branches sharply off from the same road you took in from Akwan. The landscape is incredibly vibrant, almost tropical, with rainbow-patterned tree trunks standing guard at the edge of black mirrored ponds. Dr. Marquez and Judith trade friendly barbs in the truckbed, occasionally swatting away gnats. As the conversation turns sour, you attempt to break the tension by asking Judith for a hunting story.</p>"
+    },
+    "checkJudith": "<p class='basic unindented'>Check your Campaign Log.</p>",
+    "judithHigh": "If Judith Park's Relationship Level is 1 or higher, proceed to _Intro 2_.",
+    "judithLow": "Otherwise, skip to _Intro 3_.",
+    "intro2": {
+      "title": "Intro 2",
+      "body": "<p>_Intro 2_: Judith doesn't miss a beat. \"See this scar? I got it in a fight at a speakeasy. Some rich kid cut me with a broken bottle. A friendly scuffle, y'know. His family was from this area, and very rich, I'll add again, and they were so afraid a scandal'd break out that they offered me a job. Not that I woulda ratted on him.\"</p><p>\"I don't know what I expected to hear from a bodyguard, but it wasn't that,\" says Dr. Marquez, possibly annoyed. An acrid breeze, smelling sweetly of death, blows off the bog and ends the conversation. The truck comes to a stop. Judith rolls her eyes, pulls on a pair of old waders, and walks out onto the bog, rifle slung over her shoulder.</p><p>\"Believe me or don't. I'm just here for the money.\"</p><ul><li>Increase Judith Park's Relationship Level. Each investigator earns 1 bonus experience.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro3": {
+      "title": "Intro 3",
+      "body": "<p>_Intro 3_: The young woman's steely demeanor relaxes. \"Something big lives in Eastwick Bog. An apex predator the size of a killer whale, with razor sharp teeth and too many eyes. Smells like rotten seaweed.\" You tell her it sounds like she has personal experience with the creature, and she nods. \"I owe it. Or it owes me. See this?\" She points to the wicked scar on her cheek. \"That thing almost took my eye. I plan to settle the score.\" Dr. Marquez is nonplussed. \"I guess you think an academic will buy up any story, but if you expect me to believe—\" An acrid breeze, smelling sweetly of death, blows off the bog and stops Judith mid-retort. The truck comes to a stop. Judith pulls a bandana over her nose and mouth, slides into a pair of old waders and walks out onto the bog, rifle slung over her shoulder.</p><p>\"Maybe if you meet it, you'll think differently.\"</p><ul><li>In Judith Park's Notes, record <i>Judith shared a grudge</i>.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro4": {
+      "title": "Intro 4",
+      "body": "<p>_Intro 4_: \"I really didn't get what everyone else liked about Journey to the Center of the Earth. A hollow earth? It sounds insane,\" Theo chatters as rain hammers down on the truck cabin. The landscape is incredibly vibrant, almost tropical, with rainbow-patterned tree trunks standing guard at the edge of black mirrored ponds. The truck suddenly hits a patch of deep mud and squelches to a halt. \"I think I need some help,\" Theo says.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>*\"We can push!\"* Proceed to _Intro 5_.</li><li>*\"We'll rev the engine.\"* Skip to _Intro 6_.</li></ul>"
+    },
+    "label": {
+      "push": "\"We can push!\"",
+      "rev": "\"We'll rev the engine.\""
+    },
+    "intro5": {
+      "title": "Intro 5",
+      "body": "<p>_Intro 5_: After some struggle, you coax the truck out of the pothole and point Theo through a mess of other potholes onto a rocky bank. Several bags of supplies fall out of the truckbed. Theo waves dismissively. \"I can get those on the way back. I've got some family stuff back in Akwan to take care of.\" Theo leaves you at the edge of the bog, wreathed in mist in the chill rain.</p><ul><li>Each investigator begins the next scenario with 2 fewer resources.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro6": {
+      "title": "Intro 6",
+      "body": "<p>_Intro 6_: Theo presses his shoulder to the rear of the truck as you rev the gas. The vehicle lurches forward only to bury the front tire in another pothole. Theo jumps into the truck next to you and lets out an exasperated sigh. \"I think you'll have to continue on foot from here. It's not that far.\"</p><ul><li>Each investigator begins the next scenario with 1 fewer action.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro7": {
+      "title": "Intro 7",
+      "body": "<p>_Intro 7_: The road to Eastwick Bog is covered in rough potholes that reflect a brilliant, prismatic sheen in the sky above. Theo stops the truck as the road grows treacherous. \"I'm sorry to do this, but this old girl can't make the trip through all that mud,\" Theo says. You step off the truckbed, say goodbye to Theo, and walk down the muddy road past a close thicket of gaudy, colored trees riven with cracks of light.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro8": {
+      "title": "Intro 8",
+      "body": "<p>_Intro 8_: The moonlight is as bright as day, illuminating the desolate landscape around the truck like something in a Grimm fairy tale. An acrid breeze blows off the bog, smelling sweetly of death, as you pull to a stop on the shoreline and look up at the moon, veiled in gathering clouds. A single thin tree stands silhouetted against the moon, reaching up like a grasping hand. You hoist your supplies out of the truck and look back. The thin tree has disappeared, leaving a dark ripple in its wake.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "xp": {
+      "bonus": "Bonus experience"
+    }
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Thing in the Depths*, *Blight*, *The Forest*, and *Mutations*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-thing-in-the-depths.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/the-forest.png' /><img src='{setImgPath}/mutations.png' /></section>",
+    "gatherResidents": "If it is (_Day {'{'}day{'}'}_), gather each story asset from the *Residents* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "currentDaySet": "In addition, check the Campaign Log for the current day and gather its corresponding encounter set for *The First Day*, *The Second Day*, or *The Final Day*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Check your Campaign Log for the current day and time. Put the Time Marker card into play on its corresponding (_Day {'{'}day{'}'}_) or (_Night {'{'}night{'}'}_) side.",
+    "doomDay2": "If it is _Day 2_ or _Night 2_, place 1 doom on the agenda.",
+    "doomDay3": "If it is _Day 3_, place 2 doom on the agenda.",
+    "locations": "Gather the 10 double-sided locations and shuffle them. Remove one of these locations from the game at random. Put the remaining 9 locations into play in a 3×3 grid with their _Bog_ side facing up.",
+    "shuffleLocations": "See Location Adjacency below.",
+    "startingLocation": "Each investigator begins play at the \"Starting Location.\"",
+    "residents": "Residents:",
+    "judithDay1": "If it is _Day 1_, place Judith Park at the North Shore location. Put Dr. Rosa Marquez into play under the control of an investigator. She does not take up an ally slot during this scenario.",
+    "drMarquez": "Put Dr. Rosa Marquez into play under the control of an investigator. She does not take up an ally slot during this scenario.",
+    "riverDay2Day3": "If it is _Day 2_ or _Day 3_, place River Hawthorne at the North Shore location.",
+    "removeResidents": "Remove each other card in the *Residents* encounter set from the game.",
+    "setAsideEnemies": "Set the following cards aside, out of play: the Thing in the Depths enemy, the Chelydran Hybrid enemy, and all five copies of the Grasping Tendril enemy."
+  },
+  "sinkingLocations": {
+    "title": "Sinking Locations",
+    "body": "<h3>Sinking Locations</h3><p class='basic'>During this scenario, damage tokens are placed on locations, as sinkholes, to represent the sinking of the bog. When a location has three or more sinkholes on it, it will flip via the agenda's forced effect.</p><ul><li>When instructed to flip a location, discard all damage tokens on that location (not on investigators or enemies). Then, flip it, keeping all investigators, enemies, attached treacheries, and clues on that location. Discard all player card attachments from that location.</li></ul>"
+  },
+  "ui": {
+    "northShore": "North Shore",
+    "startingLocation": "Starting Location",
+    "cranberryBog": "Cranberry Bog"
+  },
+  "label": {
+    "groundDisturbance": {
+      "placeSinkhole": "Place 1 damage on the nearest _Bog_ location, as a sinkhole"
+    }
+  },
+  "codex": {
+    "riverHawthorne": {
+      "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+      "uncontrolled": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.riverHawthorne.title </h3><p>_If you do not control River Hawthorne:_</p><p>\"I hate this bog. I assume that everyone who's gone missing from the Vale was sent here, it's so dangerous. Yet still, Mother Rachel told me to come here. I wish I were back in New York,\" River says, looking out of place in their oversized waders. They press a basket into your arms. \"Get me to some cranberries and be quick about it.\"</p><p class='basic right'>Remember that \"River 'asked' for help.\" Take control of River Hawthorne. You may trigger this codex again at the Cranberry Bog location (see the Location Placement diagram on page 28).</p>",
+      "controlled": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.riverHawthorne.title </h3><p>_If you control River Hawthorne and are at the Cranberry Bog location (see the Location Placement diagram on page 28):_</p><p>\"Thank you. I probably could have done this on my own, but I appreciate the gesture,\" River says, gathering a bundle of cranberry flowers. \"Who wants cranberry flowers? Mother Rachel. I assume she sends people she doesn't like out here in hopes they'll 'disappear.' I've tried so hard to curry favor with that old badger. Once I've taken this island back from the Atwoods, she'll be first to go.\"</p><p class='basic right'>Increase River Hawthorne's Relationship Level. Each investigator earns 1 bonus experience. Remove River Hawthorne from the game.</p>"
+    },
+    "judithPark": {
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "grudge": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.judithPark.title </h3><p>_If Judith shared a grudge:_</p><p>\"Get down!\" Judith shouts. You duck as the compact woman hoists her rifle, takes aim, and fires where your head just was. A shriek follows, then a loud splash. Judith helps you to your feet with a smirk. \"You'd better help me kill that thing in the depths. Today.\"</p><p class='basic right'>Choose a non-Elite enemy in play. Defeat that enemy. Take control of Judith Park.</p>",
+      "noGrudge": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.judithPark.title </h3><p>_Otherwise:_</p><p>Judith grabs on to a tree branch to steady herself. \"This whole bog is sinking. It wasn't always be this bad. Feels like something shifted down in the deep. Something big. I guess we should stick together. Y'know. So I can protect you,\" she flashes a smile.</p><p class='basic right'>Take control of Judith Park.</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<h3>@:theFeastOfHemlockVale.theThingInTheDepths.codex.drRosaMarquez.title </h3><p>\"Take a look at this,\" Dr. Marquez beckons you to a striped trunk. \"It's impossible. Five different species in one. I can't think of a grafting method that could produce something like this.\" She taps the trunk with her cane, reaches down, and pulls up a thick many-colored bundle of roots that look like angel's hair. \"They're sturdy, though. Their roots resemble the mycelia network of a mushroom colony, but are much thicker. Stick to the trees, and you won't sink.\"</p><p class='basic right'>Choose any location in play. If it is a _Bog_ location, remove all sinkholes from it. If it is a _Sunken_ location, flip it, keeping all tokens and attachments.</p>"
+    },
+    "xp": {
+      "bonus": "Bonus experience"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of Sunken locations in play (rounded up).",
+      "cultist": "-1. You may remove 1 sinkhole from the nearest Bog location.",
+      "tablet": "-3. If you fail, place 1 damage on the nearest Bog location, as a sinkhole.",
+      "elderThing": "-4. If you fail, search the encounter deck and discard pile for a Grasping Tendril enemy and draw it, ignoring its surge keyword."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of Sunken locations in play (rounded up).",
+      "cultist": "-3. If you succeed, you may remove 1 sinkhole from the nearest Bog location.",
+      "tablet": "-5. Place 1 damage on the nearest Bog location, as a sinkhole.",
+      "elderThing": "-5. Search the encounter deck and discard pile for a Grasping Tendril enemy and draw it, ignoring its surge keyword."
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator was defeated)_: You awaken in a glade near the bog shore with Theo sitting nearby. Before you can say anything, the young man shushes you and points to a break in the trees. Silhouetted against a sliver of light is a magnificent stag. Its long, looping antlers are covered in moss and fungal growths and it glows with a pale incandescence. Theo grins. \"Isn't it beautiful? I mean, I'm sure it'd kill us if it saw us. But, well,\" he waves his hand. \"I'm glad I found you. There was something moving down on the shore, but I didn't bother checking. I'm just glad you're okay.\"</p><ul><li>Each investigator earns 1 bonus experience as they gain insight into the unique ecosystem of Hemlock Isle.</li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: You can tell from the moment your clippers cut the stem that something is wrong. The reptile moans as you lift the glowing gray blossom from its back, then opens its mouth to expose rows of serrated teeth as it snaps at you. Arsenic white fluid spurts from the hollow stem, coating you with a stinking secretion that burns your skin. You nearly drop the blossom as you stumble back, realizing your mistake. The vapors from the fluid make you dizzy and lend the forest an exaggerated fluorescence. The poor reptilian creature flails in pain and sinks, leaving swirls of milky blood on the surface. A sharp pain forces you to drop the alkaloid blossom, and you examine your hand to find a sharp cut on your palm. The shape of the wound suggests the stem had begun to penetrate the flesh. You put the sample in a specimen jar and head for the southern shore.</p><ul><li>In your Campaign Log, record <i>the Chelydran Hybrid perished</i>.</li><li>Each investigator earns 1 bonus experience as they study a part of Eastwick Bog's unique flora and fauna.</li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: A gun clicks behind you. \"Hold back,\" Judith says emerging from the undergrowth. She takes aim at the reptilian hybrid. \"Keep clear of that thing.\"</p><p>Dr. Marquez steps between Judith and the creature. \"With all due respect, that 'thing' is completely harmless.\" As if to underscore her point, the creature chews a flowering branch.</p><p>\"Nothing on this island is harmless,\" Judith retorts. \"Everything, even the sweet turtles and the cute deer and the damn rabbits are deadly. I don't know why the villagers aren't more afraid. I can guarantee you this turtle…thing doesn't just munch flowers.\"</p><p>\"If you shoot the thing I came here to survey, you will not be paid,\" Dr. Marquez says coldly. The professor pulls out a notebook and begins sketching the creature. A hush falls over the group as a pair of frogs swim across the pond in front of the creature. In an instant, the chelydran hybrid opens its mouth to expose 4 separate rows of teeth lining the back of its throat, then snaps up both frogs.</p><p>Dr. Marquez puts down her sketchbook. \"What in the hell—\"</p><ul><li>In your Campaign Log, record <i>the Chelydran Hybrid lived</i>.</li><li>Each investigator earns 3 bonus experience, as they witness a part of Eastwick Bog's unique flora and fauna.</li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: You find the blossoming reptile in a black mirrored pond. Before you can so much as move, a spined tentacle raises the hybrid into the air over a charnel maw. The creature lets out one last pitiful groan as it is dropped into the fanged mouth. Your stomach turns when you hear its shell crack between the abomination's powerful jaws. A low, satisfied rumble follows as the Thing sinks beneath the bog.</p><ul><li>In your Campaign Log, record <i>the Chelydran Hybrid was devoured</i>.</li><li>Each investigator suffers 1 mental trauma.</li><li>Each investigator earns 1 bonus experience, as they gain insight into the unique ecosystem of Hemlock Isle.</li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: The Thing roars in pain as it flails its many limbs. Shockwaves ripple through the soft, wet ground, reducing groves of trees to tinder. You scramble for purchase as two sharp pops punctuate the air. The monstrous creature gurgles as its deflating air bladders struggle to buoy it up. Its last roar is cut short as the Thing sinks below the fetid marsh.</p><ul><li>In your Campaign Log, record <i>The Thing in the Depths was defeated</i>.</li><li>Proceed to _Resolution 5_.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_Resolution 5_: \"Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. Area surveyed: Eastwick Bog. Numerous abnormally sized flora, parasitic variety capable of controlling its host. Oppressively abundant ecosystem. Aggressive water life. More jungle than forest. Not your average bog. Will need to return with more funding.\"</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display ({xp}). _Each investigator may now spend the experience recorded under \"Unspent Experience\" in your Campaign Log._</li><li>In the \"Areas Surveyed\" section of your Campaign Log, check off *Eastwick Bog*.</li></ul>"
+    },
+    "xp": {
+      "bonus": "Bonus experience",
+      "bonusJudith": "Bonus experience"
+    }
+  }
+}

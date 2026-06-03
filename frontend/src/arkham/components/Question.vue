@@ -2,13 +2,14 @@
 import { useDbCardStore } from '@/stores/dbCards'
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
-import { useDebouncedRef } from '@/composeable/debouncedRef';
+import { useDebouncedRef } from '@/composable/debouncedRef';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { formatCost } from '@/arkham/cost';
-import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel } from '@/arkham/types/Message';
+import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel, type Message, type TargetLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
-import { AmountChoice, QuestionType } from '@/arkham/types/Question';
+import { cardArt, cardImage as cardCodeImage, investigatorPortrait } from '@/arkham/cardImages';
+import { AmountChoice, QuestionType, amountTargetUnmet } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
@@ -20,6 +21,7 @@ import ExchangeTokens from '@/arkham/components/ExchangeTokens.vue';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import QuestionChoices from '@/arkham/components/QuestionChoices.vue';
+import CardImage from '@/arkham/components/CardImage.vue';
 
 export interface Props {
   game: Game
@@ -46,12 +48,13 @@ function zoneToLabel(s: string) {
 }
 const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const toChoiceEntry = (c: Message, idx: number): [Message, number] => [c, idx]
 const questionChoices = computed(() => {
-  const withoutDone = choices.value.map((c, idx) => [c, idx]).filter(([choice, _]) => {
+  const withoutDone = choices.value.map(toChoiceEntry).filter(([choice, _]) => {
     const { tag } = choice
-    if (tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)) return true
+    if (tag === MessageType.ABILITY_LABEL) return !abilityLabelHandledElsewhere(choice)
+    if (tag === MessageType.TARGET_LABEL) return !targetLabelHandledElsewhere(choice)
     if (tag === MessageType.TOOLTIP_LABEL) return true
-    if (tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction') return true
     if (tag === MessageType.LABEL) return true
     if (tag === MessageType.INFO) return true
     if (tag === MessageType.INVALID_LABEL) return true
@@ -65,7 +68,7 @@ const questionChoices = computed(() => {
   // When Done appears alongside regular label choices, include it so it renders
   // with the same button style instead of the modal-footer style
   if (withoutDone.length > 0 && doneLabel.value) {
-    const doneEntry = choices.value.map((c, idx) => [c, idx]).find(([c]) => c.tag === MessageType.DONE)
+    const doneEntry = choices.value.map(toChoiceEntry).find(([c]) => c.tag === MessageType.DONE)
     if (doneEntry) return [...withoutDone, doneEntry]
   }
 
@@ -97,9 +100,77 @@ const focusedCards = computed(() => {
   return props.game.focusedCards
 })
 
+const visibleCardIds = computed(() => new Set([
+  ...(investigator.value?.hand ?? []).map((card) => toCardContents(card).id),
+  ...focusedCards.value.map((card) => toCardContents(card).id),
+  ...searchedCards.value.flatMap(([, cards]) => cards.map((card) => toCardContents(card).id)),
+]))
+
+function abilityLabelHandledElsewhere(choice: Message) {
+  if (choice.tag !== MessageType.ABILITY_LABEL) return false
+
+  const source = choice.ability.source
+  if (source.sourceTag === 'ProxySource') {
+    return source.source.tag === 'CardCodeSource'
+      ? abilitySourceHandledElsewhere(source.originalSource)
+      : abilitySourceHandledElsewhere(source.source)
+  }
+
+  return abilitySourceHandledElsewhere(source)
+}
+
+function abilitySourceHandledElsewhere(source: any) {
+  if (typeof source.contents !== 'string') return false
+
+  switch (source.tag) {
+    case 'AssetSource': return source.contents in props.game.assets
+    case 'LocationSource': return source.contents in props.game.locations
+    case 'EnemySource': return source.contents in props.game.enemies
+    case 'TreacherySource': return source.contents in props.game.treacheries
+    case 'ActSource': return source.contents in props.game.acts
+    case 'AgendaSource': return source.contents in props.game.agendas
+    case 'EventSource': return source.contents in props.game.events
+    case 'StorySource': return source.contents in props.game.stories
+    case 'InvestigatorSource': return source.contents in props.game.investigators || source.contents in props.game.otherInvestigators
+    default: return false
+  }
+}
+
+function targetLabelHandledElsewhere(choice: TargetLabel) {
+  const target = choice.target
+  const contents = target.contents
+
+  if (typeof contents === 'string') {
+    switch (target.tag) {
+      case 'AssetTarget': return contents in props.game.assets
+      case 'LocationTarget': return contents in props.game.locations
+      case 'EnemyTarget': return contents in props.game.enemies
+      case 'TreacheryTarget': return contents in props.game.treacheries
+      case 'ActTarget': return contents in props.game.acts
+      case 'AgendaTarget': return contents in props.game.agendas
+      case 'EventTarget': return contents in props.game.events
+      case 'StoryTarget': return contents in props.game.stories
+      case 'SkillTarget': return contents in props.game.skills
+      case 'InvestigatorTarget': return contents in props.game.investigators || contents in props.game.otherInvestigators
+      case 'ScarletKeyTarget': return contents in props.game.scarletKeys
+      case 'ConcealedTarget': return contents in props.game.concealed
+      case 'CardIdTarget': return visibleCardIds.value.has(contents)
+      case 'ChaosTokenFaceTarget': return props.game.focusedChaosTokens.some((token) => token.face === contents)
+      default: return false
+    }
+  }
+
+  if (target.tag === 'ChaosTokenTarget' && typeof contents === 'object' && contents !== null && 'id' in contents) {
+    return props.game.focusedChaosTokens.some((token) => token.id === contents.id)
+  }
+
+  return false
+}
+
+const isRead = computed(() => question.value?.tag === QuestionType.READ)
 
 const showChoices = computed(() => {
-  if (props.game.skillTest && !props.isSkillTest) {
+  if (props.game.skillTest && !props.isSkillTest && !isRead.value) {
     return false
   }
   if (choices.value.some(choiceRequiresModal)) {
@@ -150,6 +221,8 @@ const paymentAmountsChoices = computed(() => {
 
 const readCards = computed(() => question.value?.readCards || [])
 
+const suppressReadInSkillTest = computed(() => props.isSkillTest && isRead.value)
+
 const chooseAmountsChoices = computed<AmountChoice[]>(() => {
   if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
     return question.value.amountChoices
@@ -176,7 +249,8 @@ const doneLabel = computed(() => {
   const doneIndex = choices.value.findIndex((c) => c.tag === MessageType.DONE)
 
   if (doneIndex !== -1) {
-    return { label: choices.value[doneIndex].label, index: doneIndex } // choices.value[doneIndex].label
+    const choice = choices.value[doneIndex]
+    return choice.tag === MessageType.DONE ? { label: choice.label, index: doneIndex } : null
   }
 
   return null
@@ -208,139 +282,22 @@ watch(
   setInitialAmounts)
 
 const unmetAmountRequirements = computed(() => {
-  const paymentAmountsQ = question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS
-    ? question.value
-    : (question.value?.tag === QuestionType.PAY_COST_QUESTION && question.value.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS
-        ? question.value.question
-        : null)
-  if (paymentAmountsQ) {
-    const target = paymentAmountsQ.paymentAmountTargetValue
-    if (target) {
-      switch(target.tag) {
-        case 'MaxAmountTarget':
-          {
-            const maxBound = target.contents
-            if (maxBound) {
-              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-              return total > maxBound
-            }
-            break
-          }
-        case 'MinAmountTarget':
-          {
-            const minBound = target.contents
-            if (minBound) {
-              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-              return total < minBound
-            }
-            break
-          }
-        case 'TotalAmountTarget':
-          {
-            const requiredTotal = target.contents
-            if (requiredTotal) {
-              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-              return total !== requiredTotal
-            }
-            break
-          }
-        case 'AmountOneOf':
-          {
-            const totals = target.contents
-            if (totals.length > 0) {
-              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-              return totals.indexOf(total) === -1
-            }
-            break
-          }
-      }
-    }
-    return false
-  } else if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    switch(question.value.amountTargetValue.tag) {
-      case 'MaxAmountTarget':
-        {
-          const maxBound = question.value.amountTargetValue.contents
-          if (maxBound) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total > maxBound
-          }
-          break
-        }
-      case 'MinAmountTarget':
-        {
-          const minBound = question.value.amountTargetValue.contents
-          if (minBound) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total < minBound
-          }
-          break
-        }
-      case 'TotalAmountTarget':
-        {
-          const requiredTotal = question.value.amountTargetValue.contents
-          if (requiredTotal) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total !== requiredTotal
-          }
-          break
-        }
-      case 'AmountOneOf':
-        {
-          const totals = question.value.amountTargetValue.contents
-          if (totals.length > 0) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return totals.indexOf(total) === -1
-          }
-          break
-        }
-    }
+  const q = question.value
+  if (!q) return true
+  const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
 
-    return false
-  } else if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question.tag === QuestionType.CHOOSE_AMOUNTS) {
-    const actual = question.value.question
-    switch(actual.amountTargetValue.tag) {
-      case 'MaxAmountTarget':
-        {
-          const maxBound = actual.amountTargetValue.contents
-          if (maxBound) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total > maxBound
-          }
-          break
-        }
-      case 'MinAmountTarget':
-        {
-          const minBound = actual.amountTargetValue.contents
-          if (minBound) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total < minBound
-          }
-          break
-        }
-      case 'TotalAmountTarget':
-        {
-          const requiredTotal = actual.amountTargetValue.contents
-          if (requiredTotal) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total !== requiredTotal
-          }
-          break
-        }
-      case 'AmountOneOf':
-        {
-          const totals = actual.amountTargetValue.contents
-          if (totals.length > 0) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return totals.indexOf(total) === -1
-          }
-          break
-        }
-    }
-
-    return false
+  if (q.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
+    return amountTargetUnmet(q.paymentAmountTargetValue, total)
   }
-
+  if (q.tag === QuestionType.PAY_COST_QUESTION && q.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
+    return amountTargetUnmet(q.question.paymentAmountTargetValue, total)
+  }
+  if (q.tag === QuestionType.CHOOSE_AMOUNTS) {
+    return amountTargetUnmet(q.amountTargetValue, total)
+  }
+  if (q.tag === QuestionType.QUESTION_LABEL && q.question.tag === QuestionType.CHOOSE_AMOUNTS) {
+    return amountTargetUnmet(q.question.amountTargetValue, total)
+  }
   return true
 })
 
@@ -356,9 +313,7 @@ const submitAmounts = async () => {
   }
 }
 
-const cardLabelImage = (cardCode: string) => {
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
-}
+const cardLabelImage = (cardCode: string) => cardCodeImage(cardCode)
 
 const questionImage = computed(() => {
   if (!question.value) {
@@ -377,24 +332,13 @@ const questionImage = computed(() => {
 })
 
 const cardIdImage = (cardId: string) => {
-  return (imgsrc(cardImage(props.game.cards[cardId])))
+  const card = props.game.cards[cardId]
+  return card ? imgsrc(cardImage(card)) : ''
 }
 
-const portraitLabelImage = (investigatorId: string) => {
-  const player = props.game.investigators[investigatorId]
+const portraitLabelImage = (investigatorId: string) => investigatorPortrait(props.game, investigatorId)
 
-  if (player.form.tag == "YithianForm") {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  if (player.form.tag == "HomunculusForm") {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
-}
-
-const portraits = computed<[Message, number]>(() =>
+const portraits = computed<[Message, number][]>(() =>
   choices.value.map((x: Message, i: number) => [x, i] as [Message, number]).filter(([choice,]) => choice.tag === "PortraitLabel")
 )
 
@@ -456,13 +400,14 @@ const flippableCard = (cardCode: string) => {
     doubleSided: true,
     classSymbols: [],
     cardType: 'UnknownType',
-    art: cardCode.replace('c', ''),
+    art: cardArt(cardCode),
     level: 0,
-    traits: [],
-    name: "",
+    cardTraits: [],
+    name: { title: '', subtitle: null },
     skills: [],
     cost: null,
-    otherSide: `${cardCode}b`
+    otherSide: `${cardCode}b`,
+    meta: {}
   }
 }
 
@@ -474,7 +419,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
   if (q === '') return cardLabels.value
 
   return cardLabels.value.filter(({ choice }) => {
-    const card = store.getDbCard(choice.cardCode.replace(/^c/, ''))
+    const card = store.getDbCard(cardArt(choice.cardCode))
     if (!card) return false
     return card.name.toLowerCase().includes(q)
   })
@@ -486,8 +431,8 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
   <div class='question-wrapper'>
     <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
     <div v-if="cardPiles.length > 0" class="cardPiles">
-      <div v-for="{pile, index} in cardPiles" :key="pile" class="card-pile" @click="choose(index)">
-        <div v-for="card in pile" :key="card" class="pile-card">
+      <div v-for="{pile, index} in cardPiles" :key="index" class="card-pile" @click="choose(index)">
+        <div v-for="card in pile" :key="`${card.cardId}-${card.cardOwner ?? ''}`" class="pile-card">
           <img class="card" :src="cardIdImage(card.cardId)" />
           <img v-if="card.cardOwner" class="portrait" :src="portraitLabelImage(card.cardOwner)" />
         </div>
@@ -523,9 +468,9 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
       </template>
     </div>
 
-    <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
+    <div class="intro-text" v-if="question && question.tag === QuestionType.READ && !suppressReadInSkillTest">
       <div v-if="readCards.length > 0" class="story-with-card">
-        <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" :key="cardCode" class="card no-overlay" />
+        <img :src="cardCodeImage(cardCode)" v-for="cardCode in readCards" :key="cardCode" class="card no-overlay" />
         <div>
           <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
         </div>
@@ -844,6 +789,65 @@ section {
       content: "";
     }
   }
+  &:has(.haunted) {
+    background: #0e0f06;
+    color: #c1c49c;
+    border: 0;
+    border-radius: 0;
+    max-width: none;
+    max-height: none;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    margin: 0;
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -120px;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 40%, #3a3d16 0%, #1f2110 55%, #0e0f06 80%);
+      background-image: v-bind(grunge), radial-gradient(ellipse at 50% 40%, #3a3d16 0%, #1f2110 55%, #0e0f06 80%);
+      background-blend-mode: overlay;
+      background-size: cover;
+      z-index: 0;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -120px;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 25% 75%, rgba(131, 137, 56, 0.16), transparent 55%),
+        radial-gradient(circle at 75% 25%, rgba(131, 137, 56, 0.12), transparent 55%);
+      z-index: 0;
+      animation: haunted-flicker 7s ease-in-out infinite;
+    }
+
+    .intro-text-body, &:deep(.intro-text-body) {
+      position: relative;
+      z-index: 1;
+      margin: -40px;
+    }
+  }
+}
+
+@keyframes haunted-flicker {
+  0%, 100% { filter: brightness(1); }
+  3% { filter: brightness(0.78); }
+  6% { filter: brightness(1.05); }
+  9% { filter: brightness(0.85); }
+  12% { filter: brightness(1); }
+  62% { filter: brightness(1); }
+  64% { filter: brightness(0.7); }
+  66% { filter: brightness(1.02); }
+  68% { filter: brightness(1); }
 }
 
 .status-bar {
@@ -1483,6 +1487,43 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.question-wrapper:has(.haunted) {
+  gap: 0;
+
+  :deep(.question-choices) {
+    gap: 0;
+    padding: 0 !important;
+  }
+
+  :deep(.message-label) {
+    margin: 0;
+    padding: 0;
+  }
+
+  .done,
+  :deep(.question-choices button),
+  :deep(.question-choices a.button) {
+    background:
+      linear-gradient(180deg, #14181b 0%, #0a0d10 100%);
+    color: #c9d2a8;
+    border: 0;
+    border-radius: 0 0 16px 16px;
+    margin: 0;
+    text-shadow:
+      0 0 6px rgba(135, 156, 90, 0.55),
+      0 1px 2px rgba(0, 0, 0, 0.9);
+    letter-spacing: 0.08em;
+    font-family: Teutonic, "Noto Sans", sans-serif;
+    transition: background 200ms ease, color 200ms ease;
+
+    &:hover {
+      background:
+        linear-gradient(180deg, #1a2620 0%, #0a0d10 100%);
+      color: #dfe6c4;
+    }
+  }
 }
 
 .question-wrapper:has(> .question-image) .question-image{

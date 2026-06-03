@@ -20,7 +20,7 @@ instance HasAbilities SpiresOfCarcosa where
     [investigateAbility a 1 mempty OnSameLocation]
       <> case a.attached.location of
         Just lid
-          | toResultDefault False a.meta ->
+          | toResultDefault True a.meta ->
               [restricted a 2 (exists $ LocationWithId lid <> LocationWithoutDoom) Anytime]
         _ -> []
 
@@ -40,5 +40,5 @@ instance RunMessage SpiresOfCarcosa where
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs
-      pure $ SpiresOfCarcosa $ attrs & setMeta True
+      pure $ SpiresOfCarcosa $ attrs & setMeta False
     _ -> SpiresOfCarcosa <$> liftRunMessage msg attrs

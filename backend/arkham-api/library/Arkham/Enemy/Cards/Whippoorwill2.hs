@@ -14,4 +14,11 @@ whippoorwill2 = enemy Whippoorwill2 Cards.whippoorwill2 (2, Static 1, 4) (0, 1)
 
 instance HasModifiersFor Whippoorwill2 where
   getModifiersFor (Whippoorwill2 a) = do
-    modifySelect a (InvestigatorAt $ locationWithEnemy a) [AnySkillValue (-1)]
+    modifySelect
+      a
+      (InvestigatorAt $ locationWithEnemy a)
+      [ SkillModifier #willpower (-1)
+      , SkillModifier #intellect (-1)
+      , SkillModifier #combat (-1)
+      , SkillModifier #agility (-1)
+      ]

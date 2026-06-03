@@ -16,6 +16,7 @@ arkhamWoodsLakeside = location ArkhamWoodsLakeside Cards.arkhamWoodsLakeside 2 (
 instance HasAbilities ArkhamWoodsLakeside where
   getAbilities (ArkhamWoodsLakeside a) =
     extendRevealed1 a
+      $ playerLimit PerTest
       $ restricted a 1 (Here <> DuringSkillTest (WhileInvestigating $ be a))
       $ forced
       $ RevealChaosToken #after You AnyChaosToken

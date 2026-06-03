@@ -24,7 +24,7 @@ const setModifiers = ref(false);
 const placeTokenType = ref<Token>(
   (Object.
     entries(props.asset.tokens).
-    filter(([k, v]) => isUse(k) && v > 0)[0] ?? [])[0]
+    filter(([k, v]) => isUse(k) && (v ?? 0) > 0)[0] ?? [])[0]
   ?? "Evidence"
 );
 
@@ -44,7 +44,7 @@ const keys = computed(() => props.asset.keys)
 const debug = useDebug()
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
-const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && v > 0))
+const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && (v ?? 0) > 0))
 const formatUse = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2')
 const damage = computed(() => props.asset.tokens[TokenType.Damage])
 const horror = computed(() => props.asset.tokens[TokenType.Horror])
@@ -69,7 +69,7 @@ const hasPool = computed(() => {
     keys,
   } = props.asset;
 
-  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || sanity || health)
+  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => (v ?? 0) > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || sanity || health)
 })
 </script>
 
@@ -88,7 +88,7 @@ const hasPool = computed(() => {
             </div>
             <template v-for="[use, amount] in uses" :key="use">
               <PoolItem
-                v-if="amount > 0"
+                v-if="(amount ?? 0) > 0"
                 type="resource"
                 :tooltip="formatUse(use)"
                 :amount="amount"
@@ -114,7 +114,7 @@ const hasPool = computed(() => {
         <select v-model="placeTokenType">
           <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
         </select>
-        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]})">{{ $t('debug.common.place') }}</button>
+        <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]}})">{{ $t('debug.common.place') }}</button>
       </div>
       <div v-if="showSlots" class="buttons">
         <div class="slots">{{slots}}</div>
@@ -126,7 +126,7 @@ const hasPool = computed(() => {
       </div>
       <div v-else class="buttons">
         <button @click="placeTokens = true">{{ $t('debug.common.placeTokens') }}</button>
-        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.common.removeAllTokens') }}</button>
+        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'ClearTokens_', contents: { tag: 'AssetTarget', contents: id}}})">{{ $t('debug.common.removeAllTokens') }}</button>
         <button v-if="asset.owner !== investigatorId" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">{{ $t('debug.asset.takeControl') }}</button>
         <button v-if="exhausted" @click="debug.send(game.id, {tag: 'Ready', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.asset.ready') }}</button>
         <button v-else @click="debug.send(game.id, {tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.asset.exhaust') }}</button>

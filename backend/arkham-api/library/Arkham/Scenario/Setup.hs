@@ -159,12 +159,14 @@ gatherOneOf = sampleOneOf >=> gather
 setAsideKeys :: ReverseQueue m => [ArkhamKey] -> ScenarioBuilderT m ()
 setAsideKeys ks = attrsL . setAsideKeysL %= (<> setFromList ks)
 
-setAsideKey :: ReverseQueue m => ArkhamKey -> ScenarioBuilderT m ()
-setAsideKey k = attrsL . setAsideKeysL %= (<> singleton k)
-
+setAsideEvery :: ReverseQueue m => CardMatcher -> ScenarioBuilderT m ()
+setAsideEvery matcher = do
+  cards <- fromGathered matcher
+  attrsL . setAsideCardsL %= (<> cards)
 placeStory :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
 placeStory def = do
   card <- genCard def
+  removeEvery [def]
   push $ StoryMessage $ PlaceStory card Global
 
 setAside :: (ReverseQueue m, FindInEncounterDeck a, HasCallStack) => [a] -> ScenarioBuilderT m ()
@@ -196,10 +198,6 @@ setAsideWith f as = do
   cards' <- traverse f cards
   attrsL . setAsideCardsL %= (<> cards')
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck (map toCardDef cards)
-
-setAsideEvery :: (ReverseQueue m, HasCallStack) => CardMatcher -> ScenarioBuilderT m ()
-setAsideEvery = amongGathered >=> setAside
-
 -- setAside :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 -- setAside defs = do
 --   setAsideCards defs
@@ -577,12 +575,6 @@ orSampleIfReturnTo b as =
 
 getIsReturnTo :: ReverseQueue m => ScenarioBuilderT m Bool
 getIsReturnTo = use isReturnToL
-
-ifReturnTo :: ReverseQueue m => ScenarioBuilderT m a -> ScenarioBuilderT m a -> ScenarioBuilderT m a
-ifReturnTo a b = do
-  isReturnTo' <- use isReturnToL
-  if isReturnTo' then a else b
-
 setMeta :: (ReverseQueue m, ToJSON a) => a -> ScenarioBuilderT m ()
 setMeta = (attrsL . metaL .=) . toJSON
 

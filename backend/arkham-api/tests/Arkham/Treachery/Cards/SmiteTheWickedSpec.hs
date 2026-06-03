@@ -44,8 +44,8 @@ spec = describe "Smite the Wicked" $ do
     drawCards investigator 1
     enemyId <- selectJust AnyEnemy
     pushAndRunAll
-      [ Msg.EnemyDefeated
-          enemyId
+      [ Msg.Defeated
+          (EnemyTarget enemyId)
           (toCardId enemy)
           (toSource investigator)
           []

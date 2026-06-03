@@ -1,6 +1,7 @@
 module Arkham.Helpers.FlavorText (module Arkham.Helpers.FlavorText, module X) where
 
 import Arkham.Card.CardCode
+import Arkham.ChaosToken.Types (ChaosTokenFace)
 import Arkham.Classes.HasQueue (push)
 import Arkham.FlavorText as X (li)
 import Arkham.FlavorText qualified as FT
@@ -46,6 +47,15 @@ resolutionFlavor builder = story do
         , flavorBody = [ModifyEntry [ResolutionEntry] $ CompositeEntry flavorBody]
         }
 
+hauntedFlavor :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
+hauntedFlavor builder = story do
+  case buildFlavor builder of
+    FlavorText {..} ->
+      FlavorText
+        { flavorTitle
+        , flavorBody = [ModifyEntry [HauntedEntry] $ CompositeEntry flavorBody]
+        }
+
 flavor :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 flavor builder = story $ buildFlavor builder
 
@@ -83,6 +93,13 @@ hr = addEntry FT.hr
 
 img :: HasCardCode a => a -> FlavorTextBuilder ()
 img = addEntry . FT.img . toCardCode
+
+chaosTokenImg :: ChaosTokenFace -> FlavorTextBuilder ()
+chaosTokenImg = addEntry . FT.chaosTokenImg
+
+-- | Render a chaos token that animates in place from one face to another.
+chaosTokenMorph :: ChaosTokenFace -> ChaosTokenFace -> FlavorTextBuilder ()
+chaosTokenMorph from to_ = addEntry (FT.chaosTokenMorph from to_)
 
 tarot :: TarotCardArcana -> FlavorTextBuilder ()
 tarot = addEntry . TarotEntry
@@ -180,6 +197,16 @@ instance
   getField f builder = for_ (buildFlavor $ f builder).flavorBody \case
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (GreenEntry : mods) inner'
     inner' -> addEntry $ ModifyEntry [GreenEntry] inner'
+
+instance
+  HasField
+    "validate"
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+    (Bool -> FlavorTextBuilder () -> FlavorTextBuilder ())
+  where
+  getField f cond builder = for_ (buildFlavor $ f builder).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry ((if cond then ValidEntry else InvalidEntry) : mods) inner'
+    inner' -> addEntry $ ModifyEntry [if cond then ValidEntry else InvalidEntry] inner'
 
 instance
   HasField

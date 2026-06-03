@@ -2,6 +2,7 @@ module Arkham.Agenda.Cards.LockedInside (lockedInside) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
+import Arkham.Card (setFacedown)
 import Arkham.Helpers.Choose
 import Arkham.Helpers.Query
 import Arkham.Scenario.Deck
@@ -23,6 +24,7 @@ instance RunMessage LockedInside where
       advanceAgendaDeck attrs
       pure a
     ChoseCards _ chose | isTarget attrs chose.target -> do
-      placeUnderneath ActDeckTarget chose.cards
+      facedown <- traverse (setFacedown True) chose.cards
+      placeUnderneath ActDeckTarget facedown
       pure a
     _ -> LockedInside <$> liftRunMessage msg attrs

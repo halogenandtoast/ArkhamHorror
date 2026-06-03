@@ -31,18 +31,4 @@ fromTabooId = \case
   Just 9 -> Just TabooList24
   Just 10 -> Just TabooList25
   _ -> Nothing
-
-displayTabooList :: TabooList -> Text
-displayTabooList = \case
-  TabooList15 -> "1.5 (Apr 23, 2019)"
-  TabooList16 -> "1.6 (Sep 27, 2019)"
-  TabooList18 -> "1.8 (Oct 15, 2020)"
-  TabooList19 -> "1.9 (Jun 28, 2021)"
-  TabooList20 -> "2.0 (Aug 26, 2022)"
-  TabooList21 -> "2.1 (Aug 30, 2023)"
-  TabooList22 -> "2.2 (Feb 20, 2024)"
-  TabooList23 -> "2.3 (Oct 24, 2024)"
-  TabooList24 -> "2.4 (Jul 11, 2025)"
-  TabooList25 -> "2.5 (Feb 21, 2026)"
-
 $(deriveJSON (defaultOptions {tagSingleConstructors = True}) ''TabooList)

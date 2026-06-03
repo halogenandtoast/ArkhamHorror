@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Effect.Runner (intFromMetadata, module X) where
+module Arkham.Effect.Runner (module X) where
 
 import Arkham.Prelude
 
@@ -22,12 +22,6 @@ import Arkham.Matcher.Scenario
 import Arkham.Modifier
 import Arkham.Window (Window)
 import Arkham.Window qualified as Window
-
-intFromMetadata :: EffectMetadata a -> Int
-intFromMetadata = \case
-  EffectInt n -> n
-  _ -> 0
-
 isTakeDamage :: EffectAttrs -> Window -> Bool
 isTakeDamage attrs window = case attrs.target of
   EnemyTarget eid -> go eid
@@ -141,7 +135,7 @@ instance RunMessage EffectAttrs where
                 _ -> False
           when (any isMovement ws) $ push (DisableEffect effectId)
       pure a
-    EnemyDefeated eid _ _ _ | isEndOfWindow a (EffectDefeatWindow eid) -> do
+    Defeated (EnemyTarget eid) _ _ _ | isEndOfWindow a (EffectDefeatWindow eid) -> do
       a <$ push (DisableEffect effectId)
     WhenCanMove iid _ -> do
       -- We've killed the entire batch at this point so we can resume

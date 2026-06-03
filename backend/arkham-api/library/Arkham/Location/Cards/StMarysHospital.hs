@@ -22,6 +22,6 @@ instance HasAbilities StMarysHospital where
 instance RunMessage StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      healDamage iid (attrs.ability 1) 3
+      healDamage iid (UseAbilitySource iid (toSource attrs) 1) 3
       pure l
     _ -> StMarysHospital <$> liftRunMessage msg attrs

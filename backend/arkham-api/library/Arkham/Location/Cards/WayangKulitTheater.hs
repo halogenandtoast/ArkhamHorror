@@ -24,7 +24,7 @@ instance HasModifiersFor WayangKulitTheater where
   getModifiersFor (WayangKulitTheater a) = do
     mTheShadeReaper <- selectOne $ scarletKeyIs Keys.theShadeReaper
     for_ mTheShadeReaper \theShadeReaper -> do
-      x <- min 8 <$> fieldMap ScarletKeyTokens (countTokens #charge) theShadeReaper
+      x <- min 8 . (`div` 2) . (+ 1) <$> fieldMap ScarletKeyTokens (countTokens #charge) theShadeReaper
       modifySelf a [ShroudModifier x]
 
 instance HasAbilities WayangKulitTheater where
@@ -39,7 +39,7 @@ instance HasAbilities WayangKulitTheater where
 instance RunMessage WayangKulitTheater where
   runMessage msg l@(WayangKulitTheater attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      healDamage iid (attrs.ability 1) 2
+      healDamage iid (UseAbilitySource iid (toSource attrs) 1) 2
       remember SharedADeepPain
       pure l
     _ -> WayangKulitTheater <$> liftRunMessage msg attrs

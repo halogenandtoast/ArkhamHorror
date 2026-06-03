@@ -6,13 +6,6 @@ import Arkham.Field
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Tracing
-
-withMaxField :: (HasGame m, Tracing m, Projection a, b ~ EntityId a) => Field a Int -> [b] -> m [b]
-withMaxField f ids = do
-  fieldPairs <- forToSnd ids (field f)
-  let maxVal = getMax0 $ foldMap (Max0 . snd) fieldPairs
-  pure $ map fst $ filter ((== maxVal) . snd) fieldPairs
-
 withMaybeMaxField
   :: (HasGame m, Tracing m, Projection a, b ~ EntityId a) => Field a (Maybe Int) -> [b] -> m [b]
 withMaybeMaxField f ids = do

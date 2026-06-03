@@ -52,7 +52,7 @@ const gainedVictory = computed(() => {
 })
 
 const health = computed(() => {
-  return props.enemy.health?.tag == "Static" ? props.enemy.health.contents : null
+  return props.enemy.health?.tag == "Fixed" ? props.enemy.health.contents : null
 })
 
 
@@ -68,11 +68,11 @@ const debug = useDebug()
 const damage = computed(() => props.enemy.tokens[TokenType.Damage])
 
 const hasPool = computed(() => {
-  const { sanity, health, } = props.enemy;
-  return cardCode.value == 'c07189' || sanity || health
+  const { health } = props.enemy;
+  return cardCode.value == 'c07189' || health
 })
 
-const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: any}) => 
+const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: unknown}) => 
   debug.send(props.game.id,
     { tag: 'CreateWindowModifierEffect'
     , contents:
@@ -124,7 +124,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <select v-model="placeTokenType">
           <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
         </select>
-        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'EnemyTarget', contents: id}, placeTokenType, 1]})">{{ $t('debug.common.place') }}</button>
+        <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{ tag: 'GameSource' }, { tag: 'EnemyTarget', contents: id}, placeTokenType, 1]}})">{{ $t('debug.common.place') }}</button>
         <button @click="placeTokens = false">{{ $t('debug.common.back') }}</button>
       </div>
       <div v-else-if="setModifiers" class="buttons">
@@ -132,16 +132,16 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <button @click="createModifier({tag: 'EnemyTarget', contents: id}, {tag: 'AddKeyword', contents: {tag: 'Hunter'}})">{{ $t('debug.enemy.addHunter') }}</button>
         <button @click="createModifier({tag: 'EnemyTarget', contents: id}, {tag: 'HealthModifier', contents: 1})">{{ $t('debug.enemy.increaseHealth') }}</button>
         <button @click="setModifiers = false">{{ $t('debug.common.back') }}</button>
-        <Modifier :modifier="modifier" v-for="(modifier, idx) in enemy.modifiers" :key="idx" />
+        <Modifier :modifier="modifier" :game="game" v-for="(modifier, idx) in enemy.modifiers" :key="idx" />
       </div>
       <div v-else class="buttons">
         <button v-if="!enemy.exhausted" @click="debug.send(game.id, {tag: 'Exhaust', contents: {tag: 'EnemyTarget', contents: id}})">{{ $t('debug.enemy.exhaust') }}</button>
         <button v-else @click="debug.send(game.id, {tag: 'Ready', contents: {tag: 'EnemyTarget', contents: id}})">{{ $t('debug.enemy.ready') }}</button>
         <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'InvestigatorSource', contents:investigatorId}]})">{{ $t('debug.enemy.defeat') }}</button>
         <button @click="debug.send(game.id, {tag: 'EnemyEvaded', contents: [investigatorId, id]})">{{ $t('debug.enemy.evade') }}</button>
-        <button @click="debug.send(game.id, {tag: 'EnemyDamage', contents: [id, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 1, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]})">{{ $t('debug.enemy.addDamage') }}</button>
+        <button @click="debug.send(game.id, {tag: 'DamageMessage', contents: {tag: 'DealDamage_', contents: [{tag: 'EnemyTarget', contents: id}, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 1, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]}})">{{ $t('debug.enemy.addDamage') }}</button>
         <button @click="placeTokens = true">{{ $t('debug.common.placeTokens') }}</button>
-        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'EnemyTarget', contents: id}})">{{ $t('debug.common.removeAllTokens') }}</button>
+        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'ClearTokens_', contents: { tag: 'EnemyTarget', contents: id}}})">{{ $t('debug.common.removeAllTokens') }}</button>
         <button @click="setModifiers = true">{{ $t('debug.common.modifiers') }}</button>
         <button @click="emit('close')">{{ $t('debug.common.close') }}</button>
       </div>

@@ -1,4 +1,18 @@
 {
+  "specialRules": [
+    {
+      "title": "Haunted",
+      "body": "<p class='basic'>Haunted is a new ability that appears on some locations. Each time an investigator fails a skill test while investigating a location, after applying all results for that skill test, that investigator must resolve all “Haunted –” abilities on that location.</p><p class='basic'>A location is “haunted” for the purposes of other card effects if it has at least one “Haunted –” ability (printed or otherwise).</p>"
+    },
+    {
+      "title": "Alert",
+      "body": "<p class='basic'>Each time an investigator fails a skill test while attempting to evade an enemy with the “alert” keyword, after applying all results for that skill test, that enemy performs an attack against the evading investigator. An enemy does not exhaust after performing an alert attack. This attack occurs whether the enemy is engaged with the evading investigator or not.</p>"
+    },
+    {
+      "title": "Story Cards",
+      "body": "<p class='basic'>Story cards are a new cardtype in The Circle Undone campaign. These cards serve as an avenue for additional narrative and typically appear as the reverse side of another scenario card. When you are instructed to resolve a story card, simply read its story text and resolve its game text.</p>"
+    }
+  ],
   "interludes": {
     "1": "A Record of Those Lost",
     "2": "The Price of Progress",

@@ -47,6 +47,7 @@ export type ModifierType
   | CannotEnter
   | Hollow
   | CannotDiscoverCluesAt
+  | CannotBeDamaged
   | DamageDealt
   | DiscoveredClues
   | SkillTestResultValueModifier
@@ -213,6 +214,10 @@ export type CannotDiscoverCluesAt = {
   contents: string
 }
 
+export type CannotBeDamaged = {
+  tag: "CannotBeDamaged"
+}
+
 export type CannotEnter = {
   tag: "CannotEnter"
   contents: string
@@ -235,6 +240,7 @@ type UIModifierType =
   | { tag: 'ImportantToScenario', contents: string }
   | { tag: 'OverlayCheckmark', top: number, left: number }
   | { tag: 'Rotated', contents: number}
+  | { tag: 'Positioned', x: number, y: number }
 
 export type UIModifier = {
   tag: "UIModifier"
@@ -416,6 +422,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
           left: JsonDecoder.number()
         }, 'OverlayCheckmark'),
         JsonDecoder.object({ tag: JsonDecoder.literal('Rotated'), contents: JsonDecoder.number() }, 'Rotated'),
+        JsonDecoder.object({
+          tag: JsonDecoder.literal('Positioned'),
+          x: JsonDecoder.number(),
+          y: JsonDecoder.number()
+        }, 'Positioned'),
       ], 'UIModifierType')
     }, 'UIModifier'),
   JsonDecoder.object({

@@ -38,6 +38,12 @@
     "title": "The Hidden Chamber",
     "body": "<p class='basic'>This scenario includes a single-sided location (The Hidden Chamber) which has been dealt facedown underneath a random location. The Hidden Chamber only has a revealed side, and has a _Revelation_ effect that puts it into play when drawn.</p><p class='basic'>When put into play, a single-sided location is put into play with its revealed side faceup, because it has no unrevealed side. Otherwise, it functions as a normal location in every other way.</p>"
   },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.bloodOnTheAltar.hiddenChamber.title",
+      "body": "@:theDunwichLegacy.bloodOnTheAltar.hiddenChamber.body"
+    }
+  ],
   "resolutions": {
     "noResolution": {
       "title": "No Resolution",

@@ -1,5 +1,15 @@
 {
   "heading": "Scenario VII",
+  "specialRules": [
+    {
+      "title": "@:theForgottenAge.theDepthsOfYoth.depthLevel.title",
+      "body": "@:theForgottenAge.theDepthsOfYoth.depthLevel.body"
+    },
+    {
+      "title": "@:theForgottenAge.theDepthsOfYoth.pursuit.title",
+      "body": "@:theForgottenAge.theDepthsOfYoth.pursuit.body"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the current depth level.",

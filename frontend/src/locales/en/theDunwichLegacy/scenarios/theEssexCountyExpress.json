@@ -29,6 +29,12 @@
     "title": "Moving on the Train: “Left” and “Right”",
     "body": "<p class='basic'>During this scenario, locations are lined up from left to right, with the Engine Car as the rightmost location. Whenever a card effect refers to “the location to the left,” or “the location to the right,” it refers to the location immediately to your location’s left or right.</p><p class='basic'>Any card effects that reference a direction (left or right) should be interpreted from the perspective of the diagram on the previous page.</p>"
   },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.theEssexCountyExpress.moving.title",
+      "body": "@:theDunwichLegacy.theEssexCountyExpress.moving.body"
+    }
+  ],
   "xp": {
     "bonus": "Granted insight into the cosmos"
   },

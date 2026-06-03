@@ -7,7 +7,6 @@ import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Id
 import Arkham.Prelude
-import Arkham.Tracing
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Treacheries
 
@@ -24,7 +23,7 @@ createTreachery a iid tid =
     _ -> Nothing
 
 instance RunMessage Treachery where
-  runMessage msg t@(Treachery a) = withSpan_ ("Treachery[" <> unCardCode (toCardCode t) <> "].runMessage") do
+  runMessage msg t@(Treachery a) = do
     if t.placement.outOfGame
       then case msg of
         ReturnLocationToGame _ -> Treachery <$> runMessage msg a
@@ -530,6 +529,8 @@ allTreacheries =
       , --- The Heart of Madness [eote]
         SomeTreacheryCard primevalTerror
       , SomeTreacheryCard rootsOfTheEarth
+      , --- The Great Seal [eote]
+        SomeTreacheryCard electrostaticDischarge
       , --- Agents of the Unknown [eote]
         SomeTreacheryCard theMadnessWithin
       , --- Creatures in the Ice [eote]
@@ -639,6 +640,18 @@ allTreacheries =
       , --- Written in Rock [fhv]
         SomeTreacheryCard caveIn
       , SomeTreacheryCard wildRide
+      , --- Hemlock House [fhv]
+        SomeTreacheryCard outOfTheWalls
+      , SomeTreacheryCard pulledIn
+      , --- The Silent Heath [fhv]
+        SomeTreacheryCard commandingResonance
+      , SomeTreacheryCard defendTheNest
+      , --- The Lost Sister [fhv]
+        SomeTreacheryCard reclaimedByNature
+      , SomeTreacheryCard luminousGrowth
+      , --- The Thing in the Depths [fhv]
+        SomeTreacheryCard groundDisturbance
+      , SomeTreacheryCard sinkingSludge
       , --- The Twisted Hollow [fhv]
         SomeTreacheryCard deepShadows
       , SomeTreacheryCard lurkingFear
@@ -647,10 +660,20 @@ allTreacheries =
         SomeTreacheryCard swarm
       , --- The Second Day [fhv]
         SomeTreacheryCard downpour
+      , --- The Final Day [fhv]
+        SomeTreacheryCard otherworldlyVisions
       , --- Horrors in the Rock [fhv]
         SomeTreacheryCard chromaBlight
       , SomeTreacheryCard calcification
-      , --- Horrors in the Rock [fhv]
+      , --- Agents of the Colour [fhv]
+        SomeTreacheryCard alienWhispers
+      , --- Transfiguration [fhv]
+        SomeTreacheryCard strangeMutations
+      , SomeTreacheryCard fungalRot
+      , --- Blight [fhv]
+        SomeTreacheryCard enervation
+      , SomeTreacheryCard desiccation
+      , --- Refractions [fhv]
         SomeTreacheryCard empyreanBrilliance
       , SomeTreacheryCard captivatingGleam
       , --- The Forest [fhv]
@@ -659,6 +682,18 @@ allTreacheries =
       , SomeTreacheryCard callOfTheWild
       , --- Myconids [fhv]
         SomeTreacheryCard psychotropicSpores
+      , --- Mutations [fhv]
+        SomeTreacheryCard suddenMutation
+      , SomeTreacheryCard unnaturalGrowth
+      , --- The Longest Night [fhv]
+        SomeTreacheryCard endlessNight
+      , SomeTreacheryCard incursion
+      , --- Fate of the Vale [fhv]
+        SomeTreacheryCard sublimation
+      , SomeTreacheryCard fragmentation
+      , SomeTreacheryCard euphoria
+      , --- Fire [fhv]
+        SomeTreacheryCard fire
       , -- The Drowned City
         -- signature [tdc]
         SomeTreacheryCard illDoItMyself

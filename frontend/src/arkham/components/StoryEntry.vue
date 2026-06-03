@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
+import { cardArt, cardImage } from '@/arkham/cardImages';
 import { Game } from '@/arkham/types/Game';
 import type { Read } from '@/arkham/types/Question';
 import type { FlavorText } from '@/arkham/types/FlavorText';
@@ -33,12 +34,13 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
 
 const readCards = computed(() => props.question.readCards ?? [])
 
-const pickCards = computed(() => props.question.readChoices.contents.reduce((acc, v, i) => {
-  if ("cardCode" in v) {
-    return [...acc, { cardCode: v.cardCode, flippable: "flippable" in v ? v.flippable : false, index: i }]
+type PickCardChoice = { cardCode: string; flippable: boolean; index: number }
+const pickCards = computed(() => props.question.readChoices.contents.reduce<PickCardChoice[]>((acc, v, i) => {
+  if ("cardCode" in v && typeof v.cardCode === 'string') {
+    return [...acc, { cardCode: v.cardCode, flippable: "flippable" in v ? Boolean(v.flippable) : false, index: i }]
   }
   return acc
-}, [] as { cardCode: string, index: number }[]))
+}, []))
 
 type ReadChoice =
   | { tag: "Label", label: string, index: number }
@@ -57,8 +59,8 @@ const readChoices = computed(() => {
             return [...acc, { tag: "InvalidLabel", label: v.label, index: i }]
           }
         }
-        if ("flavorText" in v) {
-          return [...acc, { tag: "Info", flavor: v.flavorText }]
+        if (v.tag === MessageType.INFO) {
+          return [...acc, { tag: "Info", flavor: v.flavor }]
         }
         return acc
       }, [] as ReadChoice[])
@@ -73,8 +75,8 @@ const readChoices = computed(() => {
             return [...acc, { tag: "InvalidLabel", label: v.label, index: i }]
           }
         }
-        if ("flavorText" in v) {
-          return [...acc, { tag: "Info", flavor: v.flavorText }]
+        if (v.tag === MessageType.INFO) {
+          return [...acc, { tag: "Info", flavor: v.flavor }]
         }
         return acc
       }, [] as ReadChoice[])
@@ -89,13 +91,14 @@ const flippableCard = (cardCode: string) => {
     doubleSided: true,
     classSymbols: [],
     cardType: 'UnknownType',
-    art: cardCode.replace('c', ''),
+    art: cardArt(cardCode),
     level: 0,
-    traits: [],
-    name: "",
+    cardTraits: [],
+    name: { title: '', subtitle: null },
     skills: [],
     cost: null,
-    otherSide: `${cardCode}b`
+    otherSide: `${cardCode}b`,
+    meta: {}
   }
 }
 </script>
@@ -107,18 +110,18 @@ const flippableCard = (cardCode: string) => {
         <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
       </section>
       <div class="entry-body">
-        <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
+        <img :src="cardImage(cardCode)" v-for="cardCode in readCards" class="card no-overlay" />
         <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
       </div>
       <div class="pick-cards" v-if="pickCards.length > 0">
         <template v-for="card in pickCards" :key="card.index">
           <CardImage v-if="card.flippable" :card="flippableCard(card.cardCode)" class="no-overlay pick" @click="choose(card.index)" />
-          <img v-else :src="imgsrc(`cards/${card.cardCode.replace('c', '')}.avif`)" class="card no-overlay pick" @click="choose(card.index)" />
+          <img v-else :src="cardImage(card.cardCode)" class="card no-overlay pick" @click="choose(card.index)" />
         </template>
       </div>
     </div>
     <div class="options">
-      <template v-for="readChoice in readChoices" :key="readChoice.index">
+      <template v-for="(readChoice, choiceIndex) in readChoices" :key="readChoice.tag === 'Info' ? `info-${choiceIndex}` : readChoice.index">
         <button
           v-if="readChoice.tag === 'InvalidLabel'"
           disabled
@@ -204,6 +207,97 @@ const flippableCard = (cardCode: string) => {
     background-image: v-bind(grunge);
     background-size: cover;
     max-height: min-content;
+  }
+  &:has(.haunted) {
+    background:
+      radial-gradient(ellipse at 50% 30%, #838938 0%, #5a5e22 70%, #3a3d16 100%);
+    background-image: v-bind(grunge), radial-gradient(ellipse at 50% 30%, #838938 0%, #5a5e22 70%, #3a3d16 100%);
+    background-blend-mode: overlay;
+    background-size: cover;
+    box-shadow:
+      inset 0 0 120px rgba(31, 33, 12, 0.55),
+      inset 0 0 60px rgba(66, 69, 28, 0.35),
+      0 0 40px rgba(66, 69, 28, 0.45),
+      0 0 80px rgba(66, 69, 28, 0.25);
+    color: #c1c49c;
+    border: 1px solid rgba(66, 69, 28, 0.5);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    animation: haunted-flicker 7s ease-in-out infinite;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 80%, rgba(131, 137, 56, 0.12), transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(131, 137, 56, 0.08), transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.7), transparent 60%);
+      z-index: 0;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      pointer-events: none;
+      border: 1px solid rgba(131, 137, 56, 0.25);
+      box-shadow:
+        inset 0 0 40px rgba(131, 137, 56, 0.15),
+        inset 0 0 4px rgba(131, 137, 56, 0.35);
+      z-index: 0;
+    }
+
+    h1 {
+      color: #c9d2a8;
+      text-shadow:
+        0 0 8px rgba(131, 137, 56, 0.65),
+        0 0 18px rgba(66, 69, 28, 0.55),
+        0 2px 2px rgba(0, 0, 0, 0.9);
+      letter-spacing: 0.08em;
+      border-bottom-color: rgba(131, 137, 56, 0.4) !important;
+      animation: haunted-title-pulse 4.5s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+      &::after {
+        border-bottom-color: rgba(131, 137, 56, 0.4) !important;
+      }
+    }
+
+    .entry-body {
+      position: relative;
+      z-index: 1;
+    }
+  }
+}
+
+@keyframes haunted-flicker {
+  0%, 100% { filter: brightness(1); }
+  3% { filter: brightness(0.78); }
+  6% { filter: brightness(1.05); }
+  9% { filter: brightness(0.85); }
+  12% { filter: brightness(1); }
+  62% { filter: brightness(1); }
+  64% { filter: brightness(0.7); }
+  66% { filter: brightness(1.02); }
+  68% { filter: brightness(1); }
+}
+
+@keyframes haunted-title-pulse {
+  0%, 100% {
+    text-shadow:
+      0 0 8px rgba(131, 137, 56, 0.65),
+      0 0 18px rgba(66, 69, 28, 0.55),
+      0 2px 2px rgba(0, 0, 0, 0.9);
+  }
+  50% {
+    text-shadow:
+      0 0 14px rgba(131, 137, 56, 0.95),
+      0 0 28px rgba(66, 69, 28, 0.85),
+      0 0 50px rgba(66, 69, 28, 0.45),
+      0 2px 2px rgba(0, 0, 0, 0.9);
   }
 }
 
@@ -386,21 +480,6 @@ a.button {
   flex-shrink: 0;
   height: fit-content;
   border-radius: 15px;
-}
-
-.entry-text {
-  flex: 1;
-  &:deep(.right) {
-    text-align: right;
-  }
-  &:deep(.basic) {
-    font-style: normal;
-    font-family: auto;
-  }
-
-  &:deep(i) {
-    font-style: italic;
-  }
 }
 
 .entry-body {

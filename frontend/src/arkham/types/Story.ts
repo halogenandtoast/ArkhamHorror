@@ -18,8 +18,25 @@ export const infestationAsChaosToken = (infestationToken: InfestationToken): Cha
   }
 }
 
+export type PredationToken = {
+  predationTokenId: string
+  predationTokenFace: TokenFace
+}
+
+export const predationAsChaosToken = (predationToken: PredationToken): ChaosToken => {
+  return {
+    id: predationToken.predationTokenId,
+    face: predationToken.predationTokenFace
+  }
+}
+
 type StoryMeta = {
+  infestationTokens?: InfestationToken[]
   infestationSetAside?: InfestationToken[]
+  infestationCurrentToken?: InfestationToken | null
+  predationTokens?: PredationToken[]
+  predationSetAside?: PredationToken[]
+  predationCurrentToken?: PredationToken | null
   crossedOff?: string[]
 }
 
@@ -28,8 +45,18 @@ export const infestationTokenDecoder = JsonDecoder.object<InfestationToken>({
   infestationTokenId: JsonDecoder.string()
 }, 'InfestationToken');
 
+export const predationTokenDecoder = JsonDecoder.object<PredationToken>({
+  predationTokenFace: tokenFaceDecoder,
+  predationTokenId: JsonDecoder.string()
+}, 'PredationToken');
+
 export const storyMetaDecoder = JsonDecoder.object<StoryMeta>({
+  infestationTokens: v2Optional(JsonDecoder.array<InfestationToken>(infestationTokenDecoder, 'InfestationToken[]')),
   infestationSetAside: v2Optional(JsonDecoder.array<InfestationToken>(infestationTokenDecoder, 'InfestationToken[]')),
+  infestationCurrentToken: v2Optional(JsonDecoder.nullable(infestationTokenDecoder)),
+  predationTokens: v2Optional(JsonDecoder.array<PredationToken>(predationTokenDecoder, 'PredationToken[]')),
+  predationSetAside: v2Optional(JsonDecoder.array<PredationToken>(predationTokenDecoder, 'PredationToken[]')),
+  predationCurrentToken: v2Optional(JsonDecoder.nullable(predationTokenDecoder)),
   crossedOff: v2Optional(JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'))
 }, 'StoryMeta');
 

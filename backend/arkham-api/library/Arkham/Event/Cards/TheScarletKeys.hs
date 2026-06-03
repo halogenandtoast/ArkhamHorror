@@ -60,6 +60,7 @@ breachTheDoor =
   (event "09026" "Breach the Door" 2 Guardian)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Insight, Tactic, Police]
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }
 
 grievousWound :: CardDef
@@ -178,6 +179,7 @@ mapTheArea =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Insight, Tactic]
     , cdActions = #investigate
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }
 
 existentialRiddle1 :: CardDef
@@ -571,6 +573,7 @@ refine =
     , cdCardTraits = setFromList [Supply, Double]
     , cdCriteria = Just $ exists $ OwnedBy You <> basic CardWithAvailableCustomization
     , cdAdditionalCost = Just (ActionCost 1)
+    , cdLimits = [MaxPerGamePerInvestigator 1]
     }
 
 quantumParadox :: CardDef

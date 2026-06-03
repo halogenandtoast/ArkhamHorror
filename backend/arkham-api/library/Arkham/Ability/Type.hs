@@ -21,14 +21,8 @@ evadeAction cost = ActionAbility #evade #agility (ActionCost 1 <> cost)
 evadeAction_ :: AbilityType
 evadeAction_ = ActionAbility #evade #agility $ ActionCost 1
 
-evadeActionWithAlternate :: AbilitySkills -> Cost -> AbilityType
-evadeActionWithAlternate stype cost = ActionAbility #evade (Just $ OrAbilitySkills [#agility, stype]) (ActionCost 1 <> cost)
-
 evadeActionWithAlternate_ :: AbilitySkills -> AbilityType
 evadeActionWithAlternate_ stype = ActionAbility #evade (Just $ OrAbilitySkills [#agility, stype]) (ActionCost 1)
-
-evadeActionWith :: SkillType -> Cost -> AbilityType
-evadeActionWith stype cost = ActionAbility #evade (Just $ AbilitySkill stype) (ActionCost 1 <> cost)
 
 evadeActionWith_ :: SkillType -> AbilityType
 evadeActionWith_ stype = ActionAbility #evade (Just $ AbilitySkill stype) (ActionCost 1)
@@ -250,27 +244,6 @@ isFastAbilityType = \case
   Cosmos {} -> False
   ForcedWhen _ aType -> isFastAbilityType aType
   ConstantAbility -> False
-
-abilityTypeCostL :: Traversal' AbilityType Cost
-abilityTypeCostL f = \case
-  FastAbility' cost action -> (`FastAbility'` action) <$> f cost
-  ReactionAbility window cost actions -> ReactionAbility window <$> f cost <*> pure actions
-  CustomizationReaction label window cost -> CustomizationReaction label window <$> f cost
-  ConstantReaction label window cost -> ConstantReaction label window <$> f cost
-  ActionAbility action skillTypes cost -> ActionAbility action skillTypes <$> f cost
-  SilentForcedAbility window -> SilentForcedAbility window <$ f mempty
-  ForcedAbility window -> ForcedAbility window <$ f mempty
-  ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window <$> f cost
-  AbilityEffect as cost -> AbilityEffect as <$> f cost
-  Objective abilityType -> Objective <$> abilityTypeCostL f abilityType
-  DelayedAbility abilityType -> DelayedAbility <$> abilityTypeCostL f abilityType
-  ServitorAbility action -> pure $ ServitorAbility action
-  Haunted -> pure Haunted
-  Cosmos -> pure Cosmos
-  ForcedWhen criteria abilityType ->
-    ForcedWhen criteria <$> abilityTypeCostL f abilityType
-  ConstantAbility -> pure ConstantAbility
-
 mconcat
   [ deriveToJSON defaultOptions ''AbilityType
   , deriveJSON defaultOptions ''AbilitySkills

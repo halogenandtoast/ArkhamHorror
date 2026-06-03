@@ -32,7 +32,7 @@ instance RunMessage StirThePot5 where
         Just (EnemyTarget eid) -> do
           x <- liftA2 (+) (field EnemyHealthDamage eid) (field EnemySanityDamage eid)
           enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
-          chooseOrRunOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) attrs x
+          simultaneously $ for_ enemies (nonAttackEnemyDamage (Just iid) attrs x)
           doStep 1 msg
         _ -> error "invalid target"
       pure e

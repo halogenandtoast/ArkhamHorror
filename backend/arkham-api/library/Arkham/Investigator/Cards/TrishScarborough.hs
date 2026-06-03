@@ -51,7 +51,7 @@ instance RunMessage TrishScarborough where
       concealed <- getConcealedIds (ForExpose $ toSource iid) iid
       chooseOrRunOneM iid do
         when ok do
-          withI18n $ countVar 1 $ labeled' "discoverAdditionalClues" $ discoverAt NotInvestigate iid source 1 lid
+          withI18n $ countVar 1 $ labeled' "discoverAdditionalClues" $ discoverAt IsInvestigate iid source 1 lid
         when (notNull enemies || notNull concealed) do
           labeledI "automaticallyEvadeThatEnemy" do
             chooseAutomaticallyEvadeAt iid iid (LocationWithId lid) AnyEnemy

@@ -52,6 +52,12 @@
     "theSpectralWatcher": "Put The Spectral Watcher enemy into play in the Entry Hall.",
     "investigatorSetup": "Each player follows the setup instructions on the back of his or her investigator card."
   },
+  "specialRules": [
+    {
+      "title": "@:theCircleUndone.disappearanceAtTheTwilightEstate.noWayOut.title",
+      "body": "@:theCircleUndone.disappearanceAtTheTwilightEstate.noWayOut.body"
+    }
+  ],
   "noWayOut": {
     "title": "No Way Out",
     "body": "<p class='basic'>There is no positive resolution for this scenario. Investigators should strive to last as long as they can and gather as many clues as they can before their inevitable demise. Note that while cards can still be added to the victory display during this scenario, experience and victory points will not be gathered for this scenario.</p><p class='basic'>Since these investigators do not have decks, ignore any instruction or effect that would cause them to draw cards or interact with player decks. Additionally, since these investigators do not have discard piles, _each player card that would be placed in their discard pile is removed from the game, instead_.</p><p class='basic'>Good luck. You’ll need it.</p>"

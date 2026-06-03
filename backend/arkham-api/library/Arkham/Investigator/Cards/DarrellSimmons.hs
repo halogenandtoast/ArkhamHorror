@@ -22,7 +22,7 @@ darrellSimmons =
 
 instance HasAbilities DarrellSimmons where
   getAbilities (DarrellSimmons a) =
-    [ playerLimit PerTestOrAbility
+    [ playerLimit PerTest
         $ restrictedAbility a 1 (Self <> DuringSkillTest SkillTestAtYourLocation)
         $ FastAbility (UseCost (AssetControlledBy You) Evidence 1)
     ]

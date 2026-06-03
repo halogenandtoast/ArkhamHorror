@@ -33,18 +33,6 @@ isIchtacasPrey eid = scenarioFieldMap ScenarioRemembered $ any $ \case
   IchtacasPrey (Labeled _ eid' `With` _) -> eid == eid'
   _ -> False
 
-getIchtacasPrey :: (HasGame m, Tracing m) => m [EnemyId]
-getIchtacasPrey = do
-  xs <- scenarioField ScenarioRemembered
-  pure $ flip mapMaybe (toList xs) \case
-    IchtacasPrey (Labeled _ eid' `With` _) -> Just eid'
-    _ -> Nothing
-
-isIchtacasDestination :: (HasGame m, Tracing m) => LocationId -> m Bool
-isIchtacasDestination lid = scenarioFieldMap ScenarioRemembered $ any $ \case
-  IchtacasDestination (Labeled _ lid' `With` _) -> lid == lid'
-  _ -> False
-
 rememberIchtacasPrey :: (ReverseQueue m, HasCardDef card) => EnemyId -> card -> m ()
 rememberIchtacasPrey eid (toCardDef -> card) = do
   scenarioI18n

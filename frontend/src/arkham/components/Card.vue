@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
+import { cardImage } from '@/arkham/cardImages';
 import type { Modifier } from '@/arkham/types/Modifier';
 import { TokenType } from '@/arkham/types/Token';
 import { cardFacedown, type Card, type CardContents } from '@/arkham/types/Card';
@@ -26,6 +27,11 @@ const cardContents = computed<CardContents>(() => {
   return props.card.tag === "CardContents" ? props.card : ( props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents)
 })
 
+const isEnemyLocationCard = computed(() => {
+  const id = cardContents.value.id
+  return Object.values(props.game.locations).some(loc => loc.enemyLocation && loc.cardId === id)
+})
+
 const image = computed(() => {
   if (props.card.tag === 'VengeanceCard') {
     const back = props.card.contents.tag === 'PlayerCard' ? 'player_back' : 'encounter_back'
@@ -37,27 +43,18 @@ const image = computed(() => {
     const back = props.card.tag === 'PlayerCard' ? 'player_back' : 'encounter_back'
     return imgsrc(`${back}.jpg`);
   }
-  if (cardCode === "c05178b" && !isFlipped) {
-    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/b$/, 'a')}.avif`)
+  // c05178 has 6 pairs of (front,back) variants — when not flipped, render the front.
+  const sleeperPair: Record<string, string> = {
+    c05178b: 'a', c05178d: 'c', c05178f: 'e',
+    c05178h: 'g', c05178j: 'i', c05178l: 'k',
   }
-  if (cardCode === "c05178d" && !isFlipped) {
-    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/d$/, 'c')}.avif`)
+  if (!isFlipped && cardCode in sleeperPair) {
+    return cardImage(cardCode.slice(0, -1), sleeperPair[cardCode])
   }
-  if (cardCode === "c05178f" && !isFlipped) {
-    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/f$/, 'e')}.avif`)
-  }
-  if (cardCode === "c05178h" && !isFlipped) {
-    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/h$/, 'g')}.avif`)
-  }
-  if (cardCode === "c05178j" && !isFlipped) {
-    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/j$/, 'i')}.avif`)
-  }
-  if (cardCode === "c05178l" && !isFlipped) {
-    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/l$/, 'k')}.avif`)
-  }
-  const suffix = !props.revealed && isFlipped ? 'b' : ''
+  const revealed = props.revealed && !isEnemyLocationCard.value
+  const suffix = !revealed && isFlipped ? 'b' : ''
   const mutatedSuffix = mutated ? `_${mutated}` : ''
-  return imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}${mutatedSuffix}.avif`)
+  return cardImage(cardCode, `${suffix}${mutatedSuffix}`)
 })
 
 const id = computed(() => props.card.tag === 'VengeanceCard' ? props.card.contents.contents.id : cardContents.value.id)
@@ -71,8 +68,11 @@ function canInteract(c: Message): boolean {
       }
     }
     if (c.target.tag === 'EnemyTarget') {
-      if (typeof c.target.contents === 'string' && props.game.enemies[c.target.contents].cardId == id.value) {
-        return true
+      if (typeof c.target.contents === 'string') {
+        const enemy = props.game.enemies[c.target.contents]
+        if (enemy && enemy.cardId == id.value) {
+          return true
+        }
       }
     }
     return c.target.contents === id.value
@@ -102,14 +102,14 @@ function isAbility(v: Message): v is AbilityLabel {
     }
   }
 
-  if (source.tag === 'AssetSource') {
+  if (source.tag === 'AssetSource' && source.contents) {
     const asset = props.game.assets[source.contents]
     if (asset) {
       return asset.cardId === id.value && asset.placement.tag === 'StillInHand'
     }
   }
 
-  return source.contents === id.value
+  return 'contents' in source && source.contents === id.value
 }
 
 const abilities = computed<AbilityMessage[]>(() => {

@@ -27,6 +27,12 @@
     "title": "Locations in the Encounter Deck",
     "body": "<p class='basic'>This scenario includes several single-sided locations that are shuffled into the encounter deck along with the rest of the gathered encounter sets. These locations only have a revealed side, and have a _Revelation_ effect that puts them into play when drawn.</p><p class='basic'>When put into play, a single-sided location is put into play with its revealed side faceup, because it has no unrevealed side. Otherwise, it functions as a normal location in every other way.</p>"
   },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.lostInTimeAndSpace.locationsInTheEncounterDeck.title",
+      "body": "@:theDunwichLegacy.lostInTimeAndSpace.locationsInTheEncounterDeck.body"
+    }
+  ],
   "resolutions": {
     "defeated": "<div class='resolution'><p class='basic'>_Before resolving any other resolution, if at least 1 investigator was defeated_: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_: Where did you come from? Why are you here? Are you dreaming, or is this place real? Now that you think about it, haven’t you been here before? Or perhaps you’ve been here all along. Now you remember. This is your real home. The path you now walk is but one ledge, with many more below. You only have to fall and you will be where you belong. One more step…</p><ul><li>Each defeated investigator is _killed_.</li><li>If another resolution was reached, the other investigators read that resolution.</li><li>If no resolution was reached (each investigator was defeated) and the investigators were at Act 4 when the scenario ended, go to _Resolution 2_.</li><li>If no resolution was reached (each investigator was defeated) and the investigators were at Act 1, 2, or 3 when the scenario ended, go to _Resolution 4_.</li></ul></div>",
     "resolution1": {

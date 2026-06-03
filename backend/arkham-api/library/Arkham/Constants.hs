@@ -12,16 +12,6 @@ pattern AbilityAttack <- 100
   where
     AbilityAttack = 100
 
-pattern AbilityInvestigate :: Int
-pattern AbilityInvestigate <- 101
-  where
-    AbilityInvestigate = 101
-
-pattern AbilityMove :: Int
-pattern AbilityMove <- 102
-  where
-    AbilityMove = 102
-
 pattern AbilityEvade :: Int
 pattern AbilityEvade <- 101
   where
@@ -31,6 +21,16 @@ pattern AbilityEngage :: Int
 pattern AbilityEngage <- 102
   where
     AbilityEngage = 102
+
+pattern AbilityInvestigate :: Int
+pattern AbilityInvestigate <- 103
+  where
+    AbilityInvestigate = 103
+
+pattern AbilityMove :: Int
+pattern AbilityMove <- 104
+  where
+    AbilityMove = 104
 
 pattern VeiledAbility :: Int
 pattern VeiledAbility <- 199

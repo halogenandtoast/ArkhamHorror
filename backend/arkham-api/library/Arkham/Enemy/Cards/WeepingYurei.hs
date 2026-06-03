@@ -15,7 +15,7 @@ weepingYurei = enemyWith WeepingYurei Cards.weepingYurei (2, Static 2, 2) (0, 2)
 instance HasAbilities WeepingYurei where
   getAbilities (WeepingYurei a) =
     extend1 a
-      $ groupLimit PerTestOrAbility
+      $ groupLimit PerTest
       $ restricted a 1 (DuringSkillTest (at_ $ locationWithEnemy a.id) <> thisIs a (EnemyCanAttack You))
       $ forced
       $ RevealChaosToken #after You (IncludeTokenPool $ oneOf [#bless, #curse])

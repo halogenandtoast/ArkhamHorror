@@ -32,6 +32,7 @@ data Trait
   | Blight
   | Blunder
   | Boat
+  | Bog
   | Bold
   | Boon
   | Bridge
@@ -84,6 +85,7 @@ data Trait
   | Dhole
   | Dilemma
   | Dinosaur
+  | Dormant
   | Double
   | Dreamer
   | Dreamlands
@@ -93,6 +95,7 @@ data Trait
   | ElderThing
   | Eldritch
   | Elite
+  | Emissary
   | Endtimes
   | Entrepreneur
   | Evidence
@@ -104,8 +107,10 @@ data Trait
   | Eztli
   | FalconPoint
   | Familiar
+  | Farm
   | Fated
   | Favor
+  | Field
   | Firearm
   | Flaw
   | Flora
@@ -234,6 +239,7 @@ data Trait
   | Riverside
   | Road
   | Role
+  | Room
   | Rot
   | Ruins
   | Salem
@@ -270,6 +276,7 @@ data Trait
   | Station
   | Steps
   | Summon
+  | Sunken
   | Supply
   | Surface
   | Suspect

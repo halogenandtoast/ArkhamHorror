@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.ServantOfFlameAWillingSacrifice (servantOfFlameAWillin
 import Arkham.Ability
 import Arkham.Campaigns.BrethrenOfAsh.Helpers
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 
 newtype ServantOfFlameAWillingSacrifice = ServantOfFlameAWillingSacrifice EnemyAttrs

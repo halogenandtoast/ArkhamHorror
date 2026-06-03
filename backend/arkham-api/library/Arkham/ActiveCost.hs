@@ -104,10 +104,6 @@ activeCostActions ac = case ac.target of
 
 instance HasField "actions" ActiveCost [Action] where
   getField = activeCostActions
-
-addActiveCostCost :: Cost -> ActiveCost -> ActiveCost
-addActiveCostCost cost ac = ac & costsL <>~ cost
-
 activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
   ForAbility a -> toSource a
@@ -122,10 +118,6 @@ instance HasField "canModify" ActiveCost Bool where
   getField c = case c.target of
     ForCard {} -> False
     _ -> True
-
-costsL :: Lens' ActiveCost Cost
-costsL = lens activeCostCosts $ \m x -> m {activeCostCosts = x}
-
 costPaymentsL :: Lens' ActiveCost Payment
 costPaymentsL = lens activeCostPayments $ \m x -> m {activeCostPayments = x}
 
@@ -291,6 +283,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       ts <-
         select tm >>= filterM \case
           ScenarioTarget -> scenarioFieldMap ScenarioTokens ((> 0) . Token.countTokens tkn)
+          LocationTarget lid -> fieldMap LocationTokens ((> 0) . Token.countTokens tkn) lid
           _ -> pure False
       case ts of
         [] -> error "Empty list for SpendTokenCost"
@@ -617,8 +610,15 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ chooseOne player $ targetLabels assets $ only . pay . discardCost
       pure c
     DiscardRandomCardCost -> do
-      push $ toMessage $ randomDiscard iid source
-      pure c
+      hand <- field InvestigatorHand iid
+      candidates <- filterM (`matches` CardWithoutModifier CannotLeaveYourHand) hand
+      case nonEmpty candidates of
+        Nothing -> pure c
+        Just cards -> do
+          card <- sample cards
+          wouldDiscard <- checkWhen (Window.WouldDiscardFromHand iid source)
+          pushAll [wouldDiscard, DiscardCard iid source (toCardId card)]
+          withPayment $ DiscardCardPayment [card]
     DiscardCardCost card -> do
       push $ toMessage $ discardCard iid source card
       withPayment $ DiscardCardPayment [card]
@@ -738,18 +738,20 @@ payCost msg c iid skipAdditionalCosts cost = do
           withPayment $ DirectDamagePayment x <> DirectHorrorPayment y
         _ -> error "exactly one investigator expected for direct damage"
     InvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
+      let damageStrategy' = if damageStrategy == DamageAny then DamageAnyDeferred else damageStrategy
       investigators <- select investigatorMatcher
       push
         $ chooseOrRunOne
           player
-          [ targetLabel iid' [InvestigatorAssignDamage iid' source' damageStrategy x 0]
+          [ targetLabel iid' [InvestigatorAssignDamage iid' source' damageStrategy' x 0]
           | iid' <- investigators
           ]
       withPayment $ InvestigatorDamagePayment x
     EachInvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
+      let damageStrategy' = if damageStrategy == DamageAny then DamageAnyDeferred else damageStrategy
       investigators <- select investigatorMatcher
       for_ investigators $ \iid' ->
-        push $ InvestigatorAssignDamage iid' source' damageStrategy x 0
+        push $ InvestigatorAssignDamage iid' source' damageStrategy' x 0
       withPayment $ InvestigatorDamagePayment (x * length investigators)
     FieldResourceCost (FieldCost mtchr fld) -> do
       ns <- nub <$> selectFields fld mtchr
@@ -1164,8 +1166,9 @@ payCost msg c iid skipAdditionalCosts cost = do
               ]
       pure c
     PlaceClueOnLocationCost x -> do
-      push $ InvestigatorPlaceCluesOnLocation iid source x
-      withPayment $ CluePayment iid x
+      n <- getPlayerCountValue x
+      push $ InvestigatorPlaceCluesOnLocation iid source n
+      withPayment $ CluePayment iid n
     GroupClueCostRange (sVal, eVal) locationMatcher -> do
       let lm = replaceYouMatcher iid locationMatcher
       mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt lm)

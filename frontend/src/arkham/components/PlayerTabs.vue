@@ -5,8 +5,10 @@ import type { Ref } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
+import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { Message, AbilityLabel } from '@/arkham/types/Message';
+import { Message, AbilityLabel, type TargetLabel } from '@/arkham/types/Message';
+import type { Target } from '@/arkham/types/Target';
 import type { Investigator } from '@/arkham/types/Investigator';
 import type { TarotCard } from '@/arkham/types/TarotCard';
 import type { Placement } from '@/arkham/types/Placement';
@@ -33,6 +35,7 @@ const userPicked = ref(false)
 const solo = inject<Ref<boolean>>('solo')
 const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
+const isWaiting = (investigator: Investigator) => props.playerOrder.length > 1 && investigator.playerId in props.game.question
 const investigators = computed(() => 
   props.playerOrder.filter(iid => !props.game.investigators[iid]?.eliminated).map(iid => props.players[iid])
 )
@@ -124,12 +127,18 @@ const targetToPlacement = (target: Target): Placement | null => {
     case "EnemyTarget":
       {
         const { contents } = target
-        if (contents) return props.game.enemies[contents].placement
+        if (typeof contents === 'string') {
+          const enemy = props.game.enemies[contents]
+          if (enemy) return enemy.placement
+        }
       }
     case "TreacheryTarget":
       {
         const { contents } = target
-        if (contents) return props.game.treacheries[contents].placement
+        if (typeof contents === 'string') {
+          const treachery = props.game.treacheries[contents]
+          if (treachery) return treachery.placement
+        }
       }
     default:
   }
@@ -204,6 +213,11 @@ watchEffect(() => {
           :disabled="investigator.playerId === props.playerId"
           class="switch-investigators"
           @click="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
+        <span
+          v-else-if="isWaiting(investigator)"
+          class="waiting-indicator"
+          v-tooltip="$t('waitingOn.label')"
+        ><ArrowPathIcon class="waiting-spinner" aria-hidden="true" /></span>
       </li>
       <li v-for='investigator in inactiveInvestigators'
         :key='investigator.name.title'
@@ -218,6 +232,11 @@ watchEffect(() => {
           :disabled="investigator.playerId === props.playerId"
           class="switch-investigators"
           @click="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
+        <span
+          v-else-if="isWaiting(investigator)"
+          class="waiting-indicator"
+          v-tooltip="$t('waitingOn.label')"
+        ><ArrowPathIcon class="waiting-spinner" aria-hidden="true" /></span>
       </li>
     </ul>
     <slot />
@@ -380,6 +399,30 @@ ul.tabs__header > li.tab--selected {
 
 .fa-icon {
   animation: glow 1.5s infinite alternate;
+}
+
+.waiting-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 4px 8px;
+  border-left: 1px solid rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0 2px 0 0;
+  color: var(--select);
+}
+
+.waiting-spinner {
+  width: 0.85em;
+  height: 0.85em;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--select) 60%, transparent));
+  animation: waiting-on-spin 5s linear infinite;
+}
+
+@keyframes waiting-on-spin {
+  to { transform: rotate(360deg); }
 }
 
 @keyframes glow {

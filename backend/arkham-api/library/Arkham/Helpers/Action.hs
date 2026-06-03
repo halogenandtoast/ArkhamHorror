@@ -10,6 +10,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.GameEnv (getAllAbilities)
 import Arkham.Helpers.Ability (getCanAffordAbility, getCanPerformAbility, isForcedAbility)
+import Arkham.Helpers.CombatTarget
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
   getModifiers,
@@ -19,8 +20,10 @@ import Arkham.Helpers.Modifiers (
 import {-# SOURCE #-} Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.Source (sourceTraits)
+import {-# SOURCE #-} Arkham.Helpers.Window (windowMatches)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..), Investigator, InvestigatorAttrs (..))
+import Arkham.Matcher (replaceThisLocation)
 import Arkham.Matcher.Ability
 import Arkham.Matcher.Action
 import Arkham.Matcher.Card
@@ -30,7 +33,6 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Helpers.CombatTarget
 import Arkham.Tracing
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
@@ -170,7 +172,7 @@ getActionsWith
   -> [Window]
   -> (Ability -> Ability)
   -> m [Ability]
-getActionsWith iid ws f = withSpan_ "getActions" do
+getActionsWith iid ws f = do
   investigatorModifiers <- getModifiers iid
   let
     abilityFilters =
@@ -205,18 +207,42 @@ getActionsWith iid ws f = withSpan_ "getActions" do
           pure $ sources & map \source -> action {abilitySource = ProxySource source base}
         _ -> pure [action]
 
+  actionsMatchingWindow <-
+    if null ws
+      then pure actionsWithSources
+      else flip filterM actionsWithSources \ability -> do
+        let abWindow = case (abilitySource ability).location of
+              Nothing -> abilityWindow ability
+              Just lid -> replaceThisLocation lid (abilityWindow ability)
+        anyM
+          (\w -> windowMatches iid (abilitySource ability) w abWindow)
+          ws
+
   let bountiesOnly = BountiesOnly `elem` investigatorModifiers
+
+  let uniqueSources = nub (map abilitySource actionsMatchingWindow)
+  sourceModifierMap :: Map Source [ModifierType] <-
+    fmap mapFromList $ for uniqueSources $ \src ->
+      (src,) <$> getModifiers (sourceToTarget src)
+  sourceClassesMap :: Map Source (Set ClassSymbol) <-
+    fmap mapFromList $ for uniqueSources $ \src -> case src of
+      AssetSource aid -> (src,) <$> field Field.AssetClasses aid
+      _ -> pure (src, singleton Neutral)
+  sourceBountyMap :: Map Source Bool <-
+    fmap mapFromList $ for uniqueSources $ \src -> case src of
+      EnemySource eid -> (src,) <$> (eid <=~> EnemyWithBounty)
+      _ -> pure (src, True)
+  let
+    lookupModifiers src = findWithDefault [] src sourceModifierMap
+    lookupClasses src = findWithDefault (singleton Neutral) src sourceClassesMap
+    lookupBounty src = findWithDefault True src sourceBountyMap
   actions'' <-
-    catMaybes <$> for actionsWithSources \ability -> do
-      modifiers' <- getModifiers (sourceToTarget $ abilitySource ability)
-      cardClasses <- case abilitySource ability of
-        AssetSource aid -> field Field.AssetClasses aid
-        _ -> pure $ singleton Neutral
+    catMaybes <$> for actionsMatchingWindow \ability -> do
+      let modifiers' = lookupModifiers (abilitySource ability)
+      let cardClasses = lookupClasses (abilitySource ability)
 
       -- if enemy only bounty enemies
-      sourceIsBounty <- case abilitySource ability of
-        EnemySource eid -> eid <=~> EnemyWithBounty
-        _ -> pure True
+      let sourceIsBounty = lookupBounty (abilitySource ability)
 
       isForced <- isForcedAbility iid ability
       let

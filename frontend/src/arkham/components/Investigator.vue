@@ -8,27 +8,26 @@ import CardView from '@/arkham/components/Card.vue';
 import Modifiers from '@/arkham/components/Modifiers.vue';
 import { useDebug } from '@/arkham/debug'
 import { ForwardIcon, PaperClipIcon } from '@heroicons/vue/20/solid'
-import type { Source } from '@/arkham/types/Source'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
-import * as ArkhamGame from '@/arkham/types/Game';
+import { cardArt, cardImage, portraitImage, sourceCardCode } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Investigator'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
-import { cardId } from '@/arkham/types/Card'
+import { cardId, toCardContents } from '@/arkham/types/Card'
 import Token from '@/arkham/components/Token.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import { useMenu } from '@/composeable/menu';
+import { useMenu } from '@/composable/menu';
 import { useI18n } from 'vue-i18n';
-import useEmitter from '@/composeable/useEmitter';
-import useHighlighter from '@/composeable/useHighlighter';
+import useEmitter from '@/composable/useEmitter';
+import useHighlighter from '@/composable/useHighlighter';
 import Resources from '@/arkham/components/Resources.vue';
 import Draw from '@/arkham/components/Draw.vue';
 import { IsMobile } from '@/arkham/isMobile';
 const { t } = useI18n();
 
 export interface Props {
-  choices: Message[]
+  choices: readonly Message[]
   investigator: Arkham.Investigator
   playerId: string
   game: Game
@@ -95,7 +94,7 @@ const investigatorAction = computed(() => {
   return activateAbilityAction.value
 })
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = computed(() => props.choices)
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
@@ -154,26 +153,26 @@ const image = computed(() => {
     return imgsrc("cards/11068b.avif");
   }
 
+  if (props.investigator.form.tag === 'ShatteredForm') {
+    return imgsrc("cards/10661.avif");
+  }
+
   if (props.investigator.form.tag === "TransfiguredForm") {
-    return imgsrc(`cards/${props.investigator.form.contents.replace('c', '')}.avif`)
+    return cardImage(props.investigator.form.contents)
   }
 
   const mutated = props.investigator.mutated ? `_${props.investigator.mutated}` : ''
   const classVariant = ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.meta !== 'Neutral' ? (props.investigator.meta ? `_${props.investigator.meta}` : '') : ''
-  return imgsrc(`cards/${props.investigator.art.replace('c', '')}${classVariant}${mutated}.avif`);
+  return cardImage(props.investigator.art, `${classVariant}${mutated}`)
 })
 
-const portraitImage = computed(() => {
+const investigatorPortraitImage = computed(() => {
   const suffix = props.investigator.endedTurn ? 'b' : ''
-  if (props.investigator.form.tag === "YithianForm") {
-    return imgsrc(`portraits/${id.value.replace('c', '')}${suffix}.jpg`)
+  if (props.investigator.form.tag === "YithianForm" || props.investigator.form.tag === "HomunculusForm" || props.investigator.form.tag === "ShatteredForm") {
+    return portraitImage(id.value, suffix)
   }
 
-  if (props.investigator.form.tag === "HomunculusForm") {
-    return imgsrc(`portraits/${id.value.replace('c', '')}${suffix}.jpg`)
-  }
-
-  return imgsrc(`portraits/${props.investigator.cardCode.replace('c', '')}${suffix}.jpg`)
+  return portraitImage(props.investigator.cardCode, suffix)
 })
 
 const emitter = useEmitter()
@@ -227,38 +226,11 @@ const blankedModifier = computed(() => {
 
 const isBlanked = computed(() => blankedModifier.value !== null)
 
-function blankedSourceCardCode(source: Source): string | null {
-  if (source.tag === 'AbilitySource') return blankedSourceCardCode(source.source)
-  if (source.tag === 'AssetSource') {
-    const asset = props.game.assets[source.contents]
-    if (!asset) return null
-    const mutated = asset.mutated ? `_${asset.mutated}` : ''
-    return `${asset.cardCode.replace('c', '')}${mutated}`
-  }
-  if (source.tag === 'TreacherySource') {
-    const treachery = props.game.treacheries[source.contents]
-    return treachery ? treachery.cardCode.replace('c', '') : null
-  }
-  if (source.tag === 'EnemySource') {
-    const enemy = props.game.enemies[source.contents]
-    if (!enemy) return null
-    return `${enemy.cardCode.replace('c', '')}${enemy.flipped ? 'b' : ''}`
-  }
-  if (source.tag === 'EventSource') {
-    const event = props.game.events[source.contents]
-    if (!event) return null
-    const mutated = event.mutated ? `_${event.mutated}` : ''
-    return `${event.cardCode.replace('c', '')}${mutated}`
-  }
-  if (source.tag === 'InvestigatorSource') return source.contents.replace('c', '')
-  return null
-}
-
 const blankedCardCode = computed<string | null>(() => {
   const m = blankedModifier.value
   if (!m) return null
-  if (m.card) return m.card.contents.cardCode.replace(/^c/, '')
-  return blankedSourceCardCode(m.source)
+  if (m.card) return cardArt(toCardContents(m.card).cardCode)
+  return sourceCardCode(m.source, props.game)
 })
 
 const captured = computed(() => {
@@ -370,7 +342,7 @@ function onDrop(event: DragEvent) {
       }
 
       if (json.tag === "EnemyTarget") {
-        debug.send(props.game.id, {tag: 'EnemyEngageInvestigator', contents: [json.contents, id.value]})
+        debug.send(props.game.id, {tag: 'EngageMessage', contents: {tag: 'EnemyEngageInvestigator_', contents: [json.contents, id.value]}})
       }
     }
   }
@@ -405,7 +377,7 @@ const spadeInjury = computed(() => {
       </template>
     </span>
     <img
-      :src="portraitImage"
+      :src="investigatorPortraitImage"
       class="portrait"
       :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1, ethereal, dragging, captured }"
       :draggable="debug.active"

@@ -4,8 +4,10 @@ import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vu
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
+import { cardImage } from '@/arkham/cardImages';
 import { keyToId } from '@/arkham/types/Key'
-import * as ArkhamGame from '@/arkham/types/Game';
+import { useGameChoices } from '@/arkham/composables/useGameChoices';
+import { useGameIndexes } from '@/arkham/composables/useGameIndexes';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
 import { actionsToList } from '@/arkham/types/Action';
@@ -26,7 +28,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 import { TokenType } from '@/arkham/types/Token';
 import { Card } from '../types/Card';
-import useHighlighter from '@/composeable/useHighlighter';
+import useHighlighter from '@/composable/useHighlighter';
 
 export interface Props {
   game: Game
@@ -58,14 +60,15 @@ const emits = defineEmits<{
 const choose = (n: number) => emits('choose', n)
 
 const image = computed(() => {
-  const { cardCode, revealed } = props.location
-  const suffix = revealed ? '' : 'b'
-
-  return imgsrc(`cards/${cardCode.replace('c', '')}${suffix}.avif`)
+  const { cardCode, revealed, enemyLocation } = props.location
+  if (enemyLocation) return cardImage(cardCode)
+  return cardImage(cardCode, revealed ? '' : 'b')
 })
 
 const id = computed(() => props.location.id)
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const isExhausted = computed(() => props.location.enemyLocation && props.location.exhausted)
+const choices = useGameChoices(() => props.game, () => props.playerId)
+const gameIndexes = useGameIndexes(() => props.game)
 
 const locationStory = computed(() => {
   const { stories } = props.game
@@ -97,7 +100,7 @@ function isCardAction(c: Message): boolean {
 
   // we also allow the move action to cause card interaction
   if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
-    return c.ability.type.tag === "ActionAbility" && actionsToList(c.ability.type.actions).includes("Move") && c.ability.source.contents === id.value && c.ability.index === 102 && abilities.value.length == 1
+    return c.ability.type.tag === "ActionAbility" && actionsToList(c.ability.type.actions).includes("Move") && c.ability.source.contents === id.value && c.ability.index === 104 && abilities.value.length == 1
   }
 
   return false
@@ -155,6 +158,10 @@ async function chooseAbility(ability: number) {
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
+    return true
+  }
+
+  if (v.tag === MessageType.FIGHT_LABEL_WITH_SKILL && v.enemyId === id.value) {
     return true
   }
 
@@ -219,20 +226,7 @@ const attachedKeys = computed(() => {
     .filter((e) => props.game.scarletKeys[e].placement.tag === 'AttachedToLocation')
 })
 
-const stories = computed(() => {
-  return Object.values(props.game.stories)
-    .filter((s) => {
-      const { assets, enemies } = props.game
-      if (Object.values(enemies).find((e) => s.otherSide?.contents === e.id)) {
-        return false
-      }
-      if (Object.values(assets).find((a) => s.otherSide?.contents === a.id)) {
-        return false
-      }
-      return s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id && s.otherSide?.contents !== props.location.id
-    })
-    .map((s) => s.id)
-})
+const stories = computed(() => gameIndexes.value.storyIdsByLocation.get(props.location.id) ?? [])
 
 const treacheries = computed(() => {
   const treacheryIds = props.location.treacheries;
@@ -279,7 +273,7 @@ const hasPool = computed(() => {
 })
 
 const blocked = computed(() => {
-  const inv = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
+  const inv = gameIndexes.value.investigatorByPlayerId.get(props.playerId)
   const invMods = inv?.modifiers ?? []
   const locMods = props.location.modifiers
 
@@ -350,7 +344,7 @@ function onDrop(event: DragEvent) {
       const json = JSON.parse(data)
       if (json.tag === "EnemyTarget") {
         if (enemies.value.some(e => e === json.contents)) return false
-        debug.send(props.game.id, {tag: 'EnemyMove', contents: [json.contents, id.value]})
+        debug.send(props.game.id, {tag: 'HuntMessage', contents: {tag: 'EnemyMove_', contents: [json.contents, id.value]}})
       }
 
       if (json.tag === "AssetTarget") {
@@ -398,7 +392,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
             <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
           </span>
 
-          <div class="card-frame-inner" :class="{ highlighted, blocked }">
+          <div class="card-frame-inner" :class="{ highlighted, blocked, exhausted: isExhausted }">
             <Story v-if="locationStory" :story="locationStory" :game="game" :playerId="playerId" @choose="choose"/>
             <template v-else>
               <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
@@ -735,6 +729,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   }
 }
 
+
 .pool.location-pool {
   position: absolute;
   top: 50%;
@@ -790,6 +785,10 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     }
     &.highlighted {
       transform: scale(1.1);
+    }
+
+    &.exhausted {
+      transform: rotate(90deg) translateX(-10px);
     }
     &.blocked {
       filter: grayscale(0.5) brightness(0.85);

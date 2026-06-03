@@ -92,6 +92,10 @@ data ScenarioLogKey
   | FoundHiddenBones
   | -- | Prelude Dawn of the SecondDay
     YouAreRunningAnErrand
+  | -- | Prelude Dawn of the Final Day
+    YouAreDeliveringAPackage
+  | -- | Prelude The Final Evening
+    TheHemlocksAreHashingItOut
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen
@@ -122,6 +126,15 @@ data ScenarioLogKey
     TheInvestigatorsMadeTheirCallTime
   | -- Investigator Cards
     YouOweBiancaResources (Labeled InvestigatorId) Int
+  | -- | Hemlock House
+    JudithIsRemodeling
+  | FoundLittleSylvie
+  | YouAreHelpingGideon
+  | -- | The Lost Sister
+    FoundATornDogLeash
+  | FoundASetOfFootprints
+  | TheoIsArguingWithHelen
+  | GideonIsSearchingForAnHeirloom
   deriving stock (Eq, Show, Ord, Data)
 
 data ScenarioCountKey

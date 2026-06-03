@@ -21,11 +21,13 @@ journeyThroughTheGates = agenda (1, A) JourneyThroughTheGates Cards.journeyThrou
 
 instance HasAbilities JourneyThroughTheGates where
   getAbilities (JourneyThroughTheGates a) =
-    [ restrictedAbility a 1 (exists $ InvestigatorAt $ LocationWithTrait Steps)
+    [ restricted
+        a
+        1
+        (youExist LeadInvestigator <> exists (InvestigatorAt $ LocationWithTrait Steps))
         $ forced
-        $ PlacedDoomCounter #when AnySource
-        $ TargetIs
-        $ toTarget a
+        $ WouldPlaceDoomCounter #when (NotSource $ SourceIsAbility $ AbilityIs (toSource a) 1)
+        $ TargetIs (toTarget a)
     ]
 
 instance RunMessage JourneyThroughTheGates where

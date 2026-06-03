@@ -3,7 +3,6 @@
 module Arkham.Scenario.Runner (runScenarioAttrs, module X) where
 
 import Arkham.Helpers.Message as X hiding (
-  EnemyDamage,
   InvestigatorDamage,
   addToHand,
   chooseN,
@@ -481,8 +480,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   ScenarioResolution _ ->
     error "The scenario should specify what to do for no resolution"
-  LookAtTopOfDeck _ (ScenarioDeckTarget _) _ ->
-    error "The scenario should handle looking at the top of the scenario deck"
+  LookAtTopOfDeck iid (ScenarioDeckTarget dkey) n -> do
+    let cards = take n $ fromMaybe [] $ lookup dkey scenarioDecks
+    focusCards (map flipCard cards) $ continue_ iid
+    pure a
   ChooseFrom iid choices | Just key <- collectionToScenarioDeckKey choices.collection ->
     case lookup key scenarioDecks of
       Just [] -> pure a
@@ -665,16 +666,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   Discarded (EnemyTarget eid) _ _ -> do
     getEnemyField EnemyPlacement eid >>= \case
       Just (AsSwarm {}) -> pure a
-      _ ->
-        convertToCard eid >>= \case
-          PlayerCard _ -> pure a
-          card@(EncounterCard ec) -> do
-            if card.singleSided
-              then do
-                handler <- getEncounterDeckHandler card.id
-                pure $ a & discardLens handler %~ (ec :)
-              else pure a
-          VengeanceCard _ -> error "vengeance card"
+      _ -> do
+        mDrawnFrom <- fieldMayJoin EnemyDrawnFrom eid
+        case mDrawnFrom >>= Deck.deckSignifierToScenarioDeckKey of
+          Just key -> do
+            card <- convertToCard eid
+            pure $ a & deckDiscardsL . at key . non [] %~ (card :)
+          Nothing ->
+            convertToCard eid >>= \case
+              PlayerCard _ -> pure a
+              card@(EncounterCard ec) -> do
+                if card.singleSided
+                  then do
+                    handler <- getEncounterDeckHandler card.id
+                    pure $ a & discardLens handler %~ (ec :)
+                  else pure a
+              VengeanceCard _ -> error "vengeance card"
   Discarded (LocationTarget lid) _ _ -> do
     convertToCard lid >>= \case
       PlayerCard _ -> pure a
@@ -838,7 +845,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   Do (DrawCards iid drawing) | Just key <- Deck.deckSignifierToScenarioDeckKey drawing.deck -> do
     case lookup key scenarioDecks of
-      Just [] -> pure a
+      Just [] -> do
+        let discardPile = findWithDefault [] key scenarioDeckDiscards
+        if notNull discardPile
+          then do
+            shuffled <- shuffleM discardPile
+            push $ Do (DrawCards iid drawing)
+            pure $ a & decksL . at key ?~ shuffled & deckDiscardsL . at key .~ Nothing
+          else pure a
       Just xs -> do
         let (drew, rest) = splitAt drawing.amount xs
         push $ DrewCards iid $ finalizeDraw drawing drew
@@ -909,17 +923,21 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       ) -> do
       mods <- getModifiers iid
       let
+        isScenarioDeck = case t of
+          ScenarioDeckTarget _ -> True
+          _ -> False
+        flipForDisplay c = if searchType == Looking && isScenarioDeck then flipCard c else c
         additionalDepth =
           sum [x | searchType == Searching, SearchDepth x <- mods]
             + sum [x | searchType == Looking, LookAtDepth x <- mods]
         foundCards :: Map Zone [Card] =
           foldl'
             ( \hmap (cardSource, _) -> case cardSource of
-                Zone.FromDeck -> insertWith (<>) Zone.FromDeck (deckGet a) hmap
+                Zone.FromDeck -> insertWith (<>) Zone.FromDeck (map flipForDisplay $ deckGet a) hmap
                 Zone.FromTopOfDeck n ->
-                  insertWith (<>) Zone.FromDeck (take (n + additionalDepth) $ deckGet a) hmap
+                  insertWith (<>) Zone.FromDeck (map flipForDisplay . take (n + additionalDepth) $ deckGet a) hmap
                 Zone.FromBottomOfDeck n ->
-                  insertWith (<>) Zone.FromDeck (take (n + additionalDepth) . reverse $ deckGet a) hmap
+                  insertWith (<>) Zone.FromDeck (map flipForDisplay . take (n + additionalDepth) . reverse $ deckGet a) hmap
                 Zone.FromDiscard ->
                   insertWith (<>) Zone.FromDiscard (map EncounterCard scenarioDiscard) hmap
                 other -> error $ mconcat ["Zone ", show other, " not yet handled"]
@@ -1207,6 +1225,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     case scenarioSearch of
       Nothing -> pure a
       Just s -> pure $ a & searchL ?~ s {searchZones = map updateZone (searchZones s)}
+  AddFocusedToTopOfDeck iid (ScenarioDeckTarget dkey) cardId -> do
+    let
+      card =
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (fromMaybe [] $ lookup dkey scenarioDecks)
+      foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
+    push $ PutCardOnTopOfDeck iid (Deck.ScenarioDeckByKey dkey) card
+    pure $ a & foundCardsL .~ foundCards
   AddFocusedToTopOfDeck iid EncounterDeckTarget cardId -> do
     let
       card =
@@ -1223,6 +1249,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           $ find ((== cardId) . toCardId) (concat $ toList $ a ^. foundCardsL)
           >>= toEncounterCard
       foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
+    addToHand iid (only card)
+    pure $ a & foundCardsL .~ foundCards
+  AddFocusedToHand iid (ScenarioDeckTarget dkey) _cardSource cardId -> do
+    let
+      card =
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (fromMaybe [] $ lookup dkey scenarioDecks)
+      foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
+    push $ RemoveCardFromScenarioDeck dkey card
     addToHand iid (only card)
     pure $ a & foundCardsL .~ foundCards
   Discarded (AssetTarget _) _ card@(EncounterCard ec) -> do
@@ -1596,6 +1631,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         investigatorIds
     push $ RemovedLocation lid
     pure $ a & gridL %~ deleteInGrid lid
+  RemoveEnemyLocation lid ->
+    pure $ a & gridL %~ deleteInGrid lid
   RemoveAllDoomFromPlay matchers -> do
     let Matcher.RemoveDoomMatchers {..} = matchers
     xs <-
@@ -1751,11 +1788,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         TarotCard Reversed arcana' | arcana' == arcana -> TarotCard Upright arcana'
         c -> c
     pure $ a & tarotCardsL . each %~ map rotate
-  Do (X.EnemyDefeated eid _ _ _) -> do
-    eattrs <- getAttrs @Enemy eid
-    printedHealth <- calculatePrinted (enemyHealth eattrs)
-    enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
-    pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
+  Do (X.Defeated (EnemyTarget eid) _ _ _) -> do
+    project @Enemy eid >>= \case
+      Nothing -> pure a
+      Just enemy -> do
+        let eattrs = toAttrs enemy
+        printedHealth <- calculatePrinted (enemyHealth eattrs)
+        enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
+        pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
   SetAsideCards cards -> do
     for_ cards obtainCard
     do_ msg
@@ -1778,7 +1818,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   ReportXp breakdown -> do
     pure $ a & xpBreakdownL ?~ breakdown
   PlaceGrid gloc@(GridLocation pos lid) -> do
-    let grid = insertGrid gloc scenarioGrid
+    let gridCleared = case findInGrid lid scenarioGrid of
+          Nothing -> scenarioGrid
+          Just oldPos -> clearGrid oldPos scenarioGrid
+        grid = insertGrid gloc gridCleared
     let getAdjacent = selectOne . Matcher.LocationWithLabel . mkLabel . gridLabel . updatePosition pos
     mTopLocation <- getAdjacent GridUp
     mBottomLocation <- getAdjacent GridDown

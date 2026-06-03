@@ -17,15 +17,23 @@ api.watch:
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec arkham-api &\"" \
 
+.PHONY: api.build
+api.build:
+	cd arkham-api && \
+	stack build --test --no-run-tests --pedantic --fast arkham-api \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+		$(EXTRA_STACK_FLAGS)
+
 .PHONY: api.watch.test
 api.watch.test:
 	cd arkham-api && \
-	stack build --test --pedantic --fast arkham-api \
+	stack build --test --no-run-tests --pedantic --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 	  --file-watch \
 		$(EXTRA_STACK_FLAGS) \
-	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec arkham-api &\"" \
+	  --exec "bash -c \"pkill arkham-api || true; DEVELOPMENT=true stack exec arkham-api & stack build --test --pedantic --fast arkham-api --ghc-options '-DDEVELOPMENT $(GHC_OPTIONS)' --interleaved-output $(EXTRA_STACK_FLAGS) || echo 'Tests failed; server left running.'\"" \
 
 .PHONY: test
 test:

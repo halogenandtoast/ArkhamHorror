@@ -1,17 +1,14 @@
 <script lang="ts" setup>
 import type { Game } from '@/arkham/types/Game';
 import type { CardContents } from '@/arkham/types/Card';
-import { imgsrc } from '@/arkham/helpers'
+import { cardImage } from '@/arkham/cardImages'
 
 defineProps<{
   game: Game
   cards: CardContents[]
 }>()
 
-const image = (card: CardContents) => {
-  const { cardCode } = card;
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
-}
+const image = (card: CardContents) => cardImage(card.cardCode)
 </script>
 
 <template>

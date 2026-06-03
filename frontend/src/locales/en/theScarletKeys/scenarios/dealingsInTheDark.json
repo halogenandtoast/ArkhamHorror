@@ -1,5 +1,15 @@
 {
   "heading": "File #21–F",
+  "specialRules": [
+    {
+      "title": "Location Adjacency in the Grand Bazaar",
+      "body": "<p class='basic'>This scenario’s 4 starting locations are arranged as shown above, and are connected through their connection symbols. Later during the scenario, the investigators will be instructed to put Grand Bazaar locations into play. Each Grand Bazaar location is connected to each Grand Bazaar location adjacent to it.</p><ul><li>Adjacent locations share a side in common (left, right, above, or below). Locations that share only a corner are not adjacent.</li></ul>"
+    },
+    {
+      "title": "Acolyte Concealed Mini-cards",
+      "body": "<p class='basic'>The first agenda of this scenario causes each Cultist enemy, including those from the Core Set, to gain the concealed keyword. Since the three Acolytes from the Core Set are not labeled as A, B and C, when resolving their concealed keyword, use any of the Acolyte (any) mini-cards along with their decoy. Likewise, when an “Acolyte (any)” mini-card is exposed, the exposing investigator may choose any Acolyte in the shadows to engage.</p>"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the highest number of clues on a _Cultist_ enemy in play, to a maximum of 3. (If it is act 3, X is 3.)",

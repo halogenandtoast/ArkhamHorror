@@ -25,6 +25,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Metrics qualified as Metrics
 import Arkham.Modifier
+import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
@@ -73,26 +74,28 @@ getCanPerformAbility !iid !ws !ability = do
 
 preventedByInvestigatorModifiers
   :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
-preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigatorModifiers" do
+preventedByInvestigatorModifiers iid ability = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  -- Forced abilities trigger automatically and are not "triggered" by the
-  -- investigator, so `CannotTriggerAbilityMatching` does not suppress them.
-  -- This also avoids self-locks like Narcolepsy, whose constant modifier
-  -- would otherwise block its own forced discard ability.
   isForced <- isForcedAbility iid ability
-  if isForced
-    then pure False
-    else do
-      let cannotTriggerMatchers =
-            modifiers & mapMaybe \case
-              CannotTriggerAbilityMatching m -> Just m
-              _ -> Nothing
-      suppressedByMatcher <-
-        if null cannotTriggerMatchers
-          then pure False
-          else elem ability <$> select (Matcher.AbilityOneOf cannotTriggerMatchers)
-      if suppressedByMatcher
-        then pure True
+  let cannotTriggerMatchers =
+        modifiers & mapMaybe \case
+          CannotTriggerAbilityMatching m -> Just m
+          _ -> Nothing
+      -- For forced abilities, only apply matchers that explicitly target them
+      -- (e.g. Vale Lantern). Generic matchers like AnyAbility are skipped to
+      -- avoid self-locks (e.g. Narcolepsy blocking its own forced discard).
+      effectiveMatchers
+        | isForced = filter explicitlyTargetsForcedAbilities cannotTriggerMatchers
+        | otherwise = cannotTriggerMatchers
+  suppressedByMatcher <-
+    if null effectiveMatchers
+      then pure False
+      else elem ability <$> select (Matcher.AbilityOneOf effectiveMatchers)
+  if suppressedByMatcher
+    then pure True
+    else
+      if isForced
+        then pure False
         else anyM (prevents modifiers) modifiers
  where
   prevents modifiers = \case
@@ -118,9 +121,16 @@ preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigato
         if a `elem` abilityActions ability then eid <=~> matcher else pure False
       _ -> pure False
 
+explicitlyTargetsForcedAbilities :: Matcher.AbilityMatcher -> Bool
+explicitlyTargetsForcedAbilities = \case
+  Matcher.AbilityIsForcedAbility -> True
+  Matcher.AbilityMatches ms -> any explicitlyTargetsForcedAbilities ms
+  Matcher.AbilityOneOf ms -> any explicitlyTargetsForcedAbilities ms
+  _ -> False
+
 meetsActionRestrictions
   :: (Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
-meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictions" $ go abilityType
+meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
  where
   go = \case
     Haunted -> pure False
@@ -147,7 +157,8 @@ meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictio
 canDoAction :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab a = withSpan_ ("canDoAction/" <> Metrics.messageTag a) $ canDoAction' iid ab a
 
-canDoAction' :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
+canDoAction'
+  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
@@ -199,6 +210,7 @@ canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \ca
       pure $ enemies || locations || concealed || assets
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
+    LocationSource _ -> pure True
     ConcealedCardSource _ -> pure True
     _ -> do
       modifiers <- getModifiers (AbilityTarget iid ab.ref)
@@ -468,7 +480,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         let traitMatchingUsedAbilities = filter (elem trait . usedAbilityTraits) usedAbilities
         let usedCount = sum $ map usedTimes traitMatchingUsedAbilities
         pure $ usedCount < n
-      PlayerLimit PerTestOrAbility n ->
+      PlayerLimit lType n | lType `elem` [PerTest, PerTestOrAbility] ->
         pure
           . (< n)
           . maybe 0 usedTimes
@@ -507,7 +519,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           . getSum
           . foldMap (Sum . usedTimes)
           $ filter
-            ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
+            ((Just cardDef.title ==) . fmap toTitle . abilityCardDef . abilityLimit . usedAbility)
             usedAbilities'
       MaxPer cardDef _ n -> do
         let
@@ -534,7 +546,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           . getSum
           . foldMap (Sum . usedTimes)
           $ filter
-            ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
+            ((Just cardDef.title ==) . fmap toTitle . abilityCardDef . abilityLimit . usedAbility)
             usedAbilities'
       PerInvestigatorLimit _ n -> do
         -- This is difficult and based on the window, so we need to match out the
@@ -559,8 +571,10 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         usedAbilities' <- getPerCampaignUsedAbilities
         let
           sameAbility u =
-            abilityCardCode (usedAbility u) == abilityCardCode ability
-              && abilityIndex (usedAbility u) == abilityIndex ability
+            abilityCardCode (usedAbility u)
+              == abilityCardCode ability
+              && abilityIndex (usedAbility u)
+              == abilityIndex ability
         let total = sum $ map usedTimes $ filter sameAbility usedAbilities'
         pure $ total < n
       GroupLimit PerWindow n -> do

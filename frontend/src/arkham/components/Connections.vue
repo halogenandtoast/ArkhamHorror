@@ -5,6 +5,7 @@ import type {Game} from '@/arkham/types/Game'
 export interface Props {
   game: Game
   playerId: string
+  enableCosmicEmissaryAnimation?: boolean
 }
 
 const props = defineProps<Props>()
@@ -16,6 +17,13 @@ const locations = computed(() =>
 const enemies = computed(() =>
   Object.values(props.game.enemies).filter(a => a.asSelfLocation && a.placement.tag === "AtLocation")
 )
+
+const fateOfTheValeEnemyLocations: Record<string, string> = {
+  cosmicEmissaryPhantasm: 'mirrorNestLeft',
+  cosmicEmissaryAbyss: 'mirrorNestTop',
+  cosmicEmissaryBrilliance: 'mirrorNestBottom',
+  cosmicEmissaryMiasma: 'mirrorNestRight',
+}
 
 const sortByDataId = (a: HTMLElement, b: HTMLElement) => {
   const aId = a.dataset.id, bId = b.dataset.id
@@ -31,15 +39,19 @@ const toConnection = (div1: HTMLElement, div2: HTMLElement): string | undefined 
 
 const svgRef = ref<SVGSVGElement | null>(null)
 const protoRef = ref<SVGLineElement | null>(null)
+const chevronProtoRef = ref<SVGPathElement | null>(null)
 let svgEl: SVGSVGElement | null = null
+let defsEl: SVGDefsElement | null = null
 let lineProto: SVGLineElement | null = null
+let chevronProto: SVGPathElement | null = null
 
 const EPS = 0.5
 const close = (a: number, b: number) => Math.abs(a - b) < EPS
 const linesByConn = new Map<string, SVGLineElement>()
+const chevronsByConn = new Map<string, SVGPathElement>()
 
-function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: string) {
-  const [leftDiv, rightDiv] = [div1, div2].sort(sortByDataId)
+function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: string, preserveDirection = false) {
+  const [leftDiv, rightDiv] = preserveDirection ? [div1, div2] : [div1, div2].sort(sortByDataId)
   const leftDivId = leftDiv.dataset.id
   const rightDivId = rightDiv.dataset.id
   if (!leftDivId || !rightDivId || !svgEl || !lineProto) return
@@ -84,13 +96,167 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: stri
   if (!close(ex2, x2)) line.setAttribute('x2', String(x2))
   if (!close(ey2, y2)) line.setAttribute('y2', String(y2))
 
+  if (className === 'fate-of-the-vale-enemy-line') {
+    if (props.enableCosmicEmissaryAnimation === false) {
+      line.removeAttribute('style')
+    } else {
+      updateFateOfTheValeEnemyLineGradient(line, connection, x1, y1, x2, y2)
+    }
+  }
+
   if (activeLine) line.classList.add('active')
   else line.classList.remove('active')
 }
 
-function handleConnections() {
+function updateFateOfTheValeEnemyLineGradient(line: SVGLineElement, connection: string, x1: number, y1: number, x2: number, y2: number) {
+  if (!defsEl) return
+
+  const gradientId = `fate-of-the-vale-enemy-line-gradient-${connection.replace(/[^a-zA-Z0-9_-]/g, '-')}`
+  let gradient = defsEl.querySelector<SVGLinearGradientElement>(`#${gradientId}`)
+  if (!gradient) {
+    gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient')
+    gradient.id = gradientId
+    gradient.setAttribute('gradientUnits', 'userSpaceOnUse')
+    gradient.setAttribute('spreadMethod', 'repeat')
+    gradient.innerHTML = `
+      <stop offset="0%" stop-color="#88ADA4" stop-opacity="1" />
+      <stop offset="25%" stop-color="#366672" stop-opacity="1" />
+      <stop offset="50%" stop-color="#DDF2EB" stop-opacity="1" />
+      <stop offset="75%" stop-color="#84CAC7" stop-opacity="1" />
+      <stop offset="100%" stop-color="#88ADA4" stop-opacity="1" />
+      <animateTransform attributeName="gradientTransform" type="translate" dur="7s" repeatCount="indefinite" />
+    `
+    defsEl.appendChild(gradient)
+  }
+
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const dist = Math.hypot(dx, dy)
+  if (dist < 1) return
+  const ux = dx / dist
+  const uy = dy / dist
+  const patternLength = 96
+
+  gradient.setAttribute('x1', String(x1))
+  gradient.setAttribute('y1', String(y1))
+  gradient.setAttribute('x2', String(x1 + ux * patternLength))
+  gradient.setAttribute('y2', String(y1 + uy * patternLength))
+  gradient.querySelector('animateTransform')?.setAttribute('from', '0 0')
+  gradient.querySelector('animateTransform')?.setAttribute('to', `${ux * patternLength} ${uy * patternLength}`)
+  line.setAttribute('stroke', `url(#${gradientId})`)
+}
+
+// Renders a one-way connection as a stream of filled chevron polygons
+// (silhouette with V-notch back, like a chevron-right glyph) pointing from
+// source to destination. Chevrons are placed in the visible band between the
+// two cards (clipped to each card's actual bounding rect), with a fixed
+// spacing so they never get stretched to land on the card edges.
+const CHEVRON_SPACING = 10   // px between chevron centers along the line
+const CHEVRON_LEN = 8        // along-axis depth (back of polygon to outer tip)
+const CHEVRON_HEIGHT = 10    // total perpendicular height (wing tip to wing tip)
+const CHEVRON_EDGE_PAD = 8   // extra px past each card edge before drawing
+function makeOrUpdateChevrons(srcDiv: HTMLElement, dstDiv: HTMLElement, connection: string) {
+  if (!svgEl || !chevronProto) return
+  const svgRect = svgEl.getBoundingClientRect()
+  const sRect = srcDiv.getBoundingClientRect()
+  const dRect = dstDiv.getBoundingClientRect()
+
+  const x1 = (sRect.left - svgRect.left) + (sRect.width / 2)
+  const y1 = (sRect.top - svgRect.top) + (sRect.height / 2)
+  const x2 = (dRect.left - svgRect.left) + (dRect.width / 2)
+  const y2 = (dRect.top - svgRect.top) + (dRect.height / 2)
+
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const dist = Math.hypot(dx, dy)
+  if (dist < 1) return
+  const ux = dx / dist
+  const uy = dy / dist
+  const px = -uy
+  const py = ux
+
+  // Distance from each card center to where the center-line exits that card's
+  // bounding rect, so chevrons start past the card art rather than under it.
+  const exitDist = (halfW: number, halfH: number) => {
+    const tx = Math.abs(ux) > 1e-6 ? halfW / Math.abs(ux) : Infinity
+    const ty = Math.abs(uy) > 1e-6 ? halfH / Math.abs(uy) : Infinity
+    return Math.min(tx, ty)
+  }
+  const startD = exitDist(sRect.width / 2, sRect.height / 2) + CHEVRON_EDGE_PAD
+  const endD = dist - exitDist(dRect.width / 2, dRect.height / 2) - CHEVRON_EDGE_PAD
+  const span = endD - startD
+  if (span < 0) return // cards overlap or are flush
+
+  // Fixed spacing, centered in the visible band — never stretches chevrons
+  // to the boundary.
+  const count = Math.max(1, Math.round(span / CHEVRON_SPACING) + 1)
+  const usedSpan = (count - 1) * CHEVRON_SPACING
+  const offset = (span - usedSpan) / 2
+  const segments: string[] = []
+  for (let i = 0; i < count; i++) {
+    const d = startD + offset + i * CHEVRON_SPACING
+    const cx = x1 + ux * d
+    const cy = y1 + uy * d
+    segments.push(chevronPath(cx, cy, ux, uy, px, py))
+  }
+  const pathD = segments.join(' ')
+
+  const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
+  const activeLine =
+    !!investigator &&
+    srcDiv.dataset.id === investigator.location &&
+    !!dstDiv.dataset.id &&
+    investigator.connectedLocations.includes(dstDiv.dataset.id)
+
+  let path = chevronsByConn.get(connection)
+  if (!path) {
+    path = chevronProto.cloneNode(true) as SVGPathElement
+    path.classList.remove('original')
+    path.classList.add('chevrons')
+    path.removeAttribute('id')
+    path.dataset.connection = connection
+    svgEl.appendChild(path)
+    chevronsByConn.set(connection, path)
+  }
+
+  if (path.getAttribute('d') !== pathD) path.setAttribute('d', pathD)
+  if (activeLine) path.classList.add('active')
+  else path.classList.remove('active')
+}
+
+function chevronPath(cx: number, cy: number, ux: number, uy: number, px: number, py: number): string {
+  // Filled chevron polygon, 6 vertices, ratios pulled from the chevron-right
+  // reference SVG. Going clockwise from the tip:
+  //   F (tip) -> A (top wing) -> B (top outer back) -> C (notch tip)
+  //   -> D (bottom outer back) -> E (bottom wing) -> close.
+  const L = CHEVRON_LEN
+  const H = CHEVRON_HEIGHT / 2
+  // Local-to-world projection: lx along (ux,uy), ly perpendicular along (px,py).
+  const toWorld = (lx: number, ly: number) =>
+    `${(cx + lx * ux + ly * px).toFixed(1)},${(cy + lx * uy + ly * py).toFixed(1)}`
+  const f = toWorld(L / 2, 0)
+  const a = toWorld(-0.227 * L, -H)
+  const b = toWorld(-L / 2, -0.625 * H)
+  const c = toWorld(-0.045 * L, 0)
+  const d = toWorld(-L / 2, 0.625 * H)
+  const e = toWorld(-0.227 * L, H)
+  return `M${f} L${a} L${b} L${c} L${d} L${e} Z`
+}
+
+function handleConnections(includeFateOfTheVale = true) {
   if(!svgEl) return
   const live = new Set<string>()
+
+  // Build directed edge set so we can detect one-way connections by absence of
+  // the reverse edge. connectedLocations is symmetric for normal connections
+  // but asymmetric when a location's connectedMatchers don't match back.
+  const directed = new Set<string>()
+  for (const loc of locations.value) {
+    const cs = Array.isArray(loc.connectedLocations)
+      ? loc.connectedLocations
+      : Object.values(loc.connectedLocations)
+    for (const dst of cs) directed.add(`${loc.id}->${dst}`)
+  }
 
   for (const location of locations.value) {
     const { id, connectedLocations } = location
@@ -105,21 +271,48 @@ function handleConnections() {
       const end = document.querySelector<HTMLElement>(`[data-id="${dst}"]`)
       if (!end) continue
 
-      const conn = toConnection(start, end)
-      if (!conn) continue
+      const reverseExists = directed.has(`${dst}->${id}`)
 
-      if (location.modifiers?.some(m =>
-        m.type?.tag === 'DoNotDrawConnection' &&
-        conn === `${m.type.contents?.[0]}:${m.type.contents?.[1]}`
-      )) continue
+      if (reverseExists) {
+        const conn = toConnection(start, end)
+        if (!conn) continue
+        if (location.modifiers?.some(m =>
+          m.type?.tag === 'DoNotDrawConnection' &&
+          conn === `${m.type.contents?.[0]}:${m.type.contents?.[1]}`
+        )) continue
+        live.add(conn)
+        makeOrUpdateLine(start, end)
+      } else {
+        const conn = `${id}->${dst}`
+        if (location.modifiers?.some(m =>
+          m.type?.tag === 'DoNotDrawConnection' &&
+          (
+            (m.type.contents?.[0] === id && m.type.contents?.[1] === dst) ||
+            (m.type.contents?.[0] === dst && m.type.contents?.[1] === id)
+          )
+        )) continue
+        live.add(conn)
+        makeOrUpdateChevrons(start, end, conn)
+      }
+    }
+  }
 
+  const isFateOfTheVale = props.game.scenario?.id === 'c10651'
+  if (includeFateOfTheVale && isFateOfTheVale) {
+    for (const [enemyLabel, locationLabel] of Object.entries(fateOfTheValeEnemyLocations)) {
+      const start = document.querySelector<HTMLElement>(`[data-label="${enemyLabel}"] [data-id]`)
+      const end = document.querySelector<HTMLElement>(`.location-cell[data-label="${locationLabel}"] [data-id]`)
+      if (!start || !end) continue
+
+      const conn = `${start.dataset.id}:${end.dataset.id}`
       live.add(conn)
-      makeOrUpdateLine(start, end)
+      makeOrUpdateLine(start, end, "fate-of-the-vale-enemy-line", true)
     }
   }
 
   for (const enemy of enemies.value) {
-    const { id, placement } = enemy
+    const { id, placement, asSelfLocation } = enemy
+    if (isFateOfTheVale && asSelfLocation && asSelfLocation in fateOfTheValeEnemyLocations) continue
     if (placement.tag !== "AtLocation") continue
 
     const start = document.querySelector<HTMLElement>(`[data-id="${id}"]`)
@@ -137,21 +330,39 @@ function handleConnections() {
 
   for (const [conn, el] of linesByConn) {
     if (!live.has(conn)) {
+      if (!includeFateOfTheVale && el.classList.contains('fate-of-the-vale-enemy-line')) continue
       el.remove()
       linesByConn.delete(conn)
+    }
+  }
+  for (const [conn, el] of chevronsByConn) {
+    if (!live.has(conn)) {
+      el.remove()
+      chevronsByConn.delete(conn)
     }
   }
 }
 
 const requestId = ref<number | null>(null)
+const connectionUpdateRequestId = ref<number | null>(null)
+let connectionObserver: MutationObserver | null = null
+let resizeObserver: ResizeObserver | null = null
 let lastTime = 0
-const FRAME_MS = 1000 / 30 // 30fps
+const FRAME_MS = 1000 / 30 // 30fps for normal/enemy connection following only
+
+function requestConnectionUpdate() {
+  if (connectionUpdateRequestId.value !== null) return
+  connectionUpdateRequestId.value = window.requestAnimationFrame(() => {
+    connectionUpdateRequestId.value = null
+    handleConnections(true)
+  })
+}
 
 function tick(ts: number) {
   requestId.value = null
   if (ts - lastTime >= FRAME_MS) {
     lastTime = ts
-    handleConnections()
+    handleConnections(false)
   }
   requestId.value = window.requestAnimationFrame(tick)
 }
@@ -159,28 +370,73 @@ function tick(ts: number) {
 onMounted(async () => {
   await nextTick() // ensure template is in DOM
   svgEl = svgRef.value
+  defsEl = svgEl?.querySelector('defs') ?? null
   lineProto = protoRef.value
+  chevronProto = chevronProtoRef.value
   // first draw immediately so a cold refresh shows lines at once
-  handleConnections()
+  handleConnections(true)
   requestId.value = window.requestAnimationFrame(tick)
+
+  window.addEventListener('resize', requestConnectionUpdate)
+  window.addEventListener('scroll', requestConnectionUpdate, true)
+  window.addEventListener('arkham-location-layout-change', requestConnectionUpdate)
+
+  const locationCards = document.querySelector('.location-cards') as HTMLElement | null
+  if (locationCards) {
+    connectionObserver = new MutationObserver(requestConnectionUpdate)
+    connectionObserver.observe(locationCards, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class', 'data-id', 'data-label'],
+    })
+
+    resizeObserver = new ResizeObserver(requestConnectionUpdate)
+    resizeObserver.observe(locationCards)
+  }
 })
 
 // keep lines fresh if the set of locations changes
-watch(locations, ()=> { handleConnections() }, { flush: 'post' })
+watch(locations, ()=> { requestConnectionUpdate() }, { flush: 'post' })
+watch(enemies, ()=> { requestConnectionUpdate() }, { flush: 'post' })
+watch(() => props.enableCosmicEmissaryAnimation, () => { requestConnectionUpdate() }, { flush: 'post' })
 
 onBeforeUnmount(()=> {
+  window.removeEventListener('resize', requestConnectionUpdate)
+  window.removeEventListener('scroll', requestConnectionUpdate, true)
+  window.removeEventListener('arkham-location-layout-change', requestConnectionUpdate)
+  connectionObserver?.disconnect()
+  connectionObserver = null
+  resizeObserver?.disconnect()
+  resizeObserver = null
   if(requestId.value !== null) cancelAnimationFrame(requestId.value)
   requestId.value = null
+  if(connectionUpdateRequestId.value !== null) cancelAnimationFrame(connectionUpdateRequestId.value)
+  connectionUpdateRequestId.value = null
   for (const [,el] of linesByConn) el.remove()
   linesByConn.clear()
+  for (const [,el] of chevronsByConn) el.remove()
+  chevronsByConn.clear()
   svgEl = null
+  defsEl = null
   lineProto = null
+  chevronProto = null
 })
 </script>
 
 <template>
-  <svg ref="svgRef" class="connections-svg">
+  <svg ref="svgRef" class="connections-svg" :class="{ 'cosmic-emissary-animation-disabled': props.enableCosmicEmissaryAnimation === false }">
+    <defs>
+      <filter id="fate-of-the-vale-smoke-filter" x="-1000" y="-1000" width="4000" height="4000" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="17" result="smokeNoise">
+          <animate v-if="props.enableCosmicEmissaryAnimation !== false" attributeName="baseFrequency" values="0.024;0.036;0.024" dur="9s" repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="smokeNoise" scale="5" xChannelSelector="R" yChannelSelector="G" result="distorted" />
+        <feGaussianBlur in="distorted" stdDeviation="1.9" />
+      </filter>
+    </defs>
     <line ref="protoRef" class="line original" stroke-dasharray="5, 5"/>
+    <path ref="chevronProtoRef" class="chevrons original"/>
   </svg>
 </template>
 
@@ -201,12 +457,46 @@ onBeforeUnmount(()=> {
   stroke-width: 6px;
   stroke: rgba(255, 255, 255, 0.2);
 }
-.active{
+.line.active{
   stroke: rgba(255, 255, 255, 0.7) !important;
+}
+
+.chevrons{
+  fill: rgba(255, 255, 255, 0.2);
+  stroke: none;
+}
+.chevrons.active{
+  fill: rgba(255, 255, 255, 0.7);
 }
 
 .enemy-line{
   stroke: rgba(255 0 0 / 0.4);
   stroke-dasharray: unset;
+}
+
+.fate-of-the-vale-enemy-line{
+  stroke-width: 10px;
+  stroke-dasharray: 86 10;
+  stroke-linecap: round;
+  stroke-opacity: 1;
+  vector-effect: non-scaling-stroke;
+  animation: fate-of-the-vale-smoke-flow 7.5s linear infinite;
+  filter:
+    url(#fate-of-the-vale-smoke-filter)
+    drop-shadow(0 0 4px rgba(221 242 235 / 0.9))
+    drop-shadow(0 0 10px rgba(132 202 199 / 0.95))
+    drop-shadow(0 0 18px rgba(54 102 114 / 0.85));
+}
+
+.cosmic-emissary-animation-disabled .fate-of-the-vale-enemy-line {
+  animation: none;
+  filter: none;
+  stroke: rgba(132 202 199 / 0.7);
+  stroke-dasharray: unset;
+}
+
+@keyframes fate-of-the-vale-smoke-flow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -96; }
 }
 </style>

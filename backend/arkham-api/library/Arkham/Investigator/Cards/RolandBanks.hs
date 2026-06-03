@@ -3,7 +3,7 @@ module Arkham.Investigator.Cards.RolandBanks (rolandBanks) where
 import Arkham.Ability hiding (you)
 import Arkham.Calculation
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Investigator.Import.Lifted
 import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Script

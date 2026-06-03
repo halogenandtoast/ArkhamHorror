@@ -10,14 +10,6 @@ type UseType = Token
 data Uses n = NoUses | Uses UseType n | UsesWithLimit UseType n n
   deriving stock (Show, Eq, Ord, Data, Functor)
 
-use :: Uses Int -> Uses Int
-use = useN 1
-
-useN :: Int -> Uses Int -> Uses Int
-useN _ NoUses = NoUses
-useN n (Uses useType' m) = Uses useType' (max 0 (m - n))
-useN n (UsesWithLimit useType' m l) = UsesWithLimit useType' (max 0 (m - n)) l
-
 useType :: Uses n -> Maybe UseType
 useType NoUses = Nothing
 useType (Uses useType' _) = Just useType'
@@ -27,12 +19,6 @@ useCount :: Uses Int -> Int
 useCount NoUses = 0
 useCount (Uses _ n) = n
 useCount (UsesWithLimit _ n _) = n
-
-useTypeCount :: UseType -> Uses Int -> Int
-useTypeCount _ NoUses = 0
-useTypeCount u (Uses v n) = if u == v then n else 0
-useTypeCount u (UsesWithLimit v n _) = if u == v then n else 0
-
 instance ToJSON n => ToJSON (Uses n) where
   toJSON NoUses = Null
   toJSON (Uses t n) = object ["type" .= toJSON t, "amount" .= toJSON n]

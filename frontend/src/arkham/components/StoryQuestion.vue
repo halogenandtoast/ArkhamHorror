@@ -3,9 +3,10 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import type { Game } from '@/arkham/types/Game';
-import { QuestionType } from '@/arkham/types/Question';
-import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel, ScenarioLabel } from '@/arkham/types/Message';
+import { QuestionType, type Question } from '@/arkham/types/Question';
+import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel, ScenarioLabel, Info, type Message } from '@/arkham/types/Message';
 import { imgsrc, formatContent } from '@/arkham/helpers';
+import { cardArt, cardImage, investigatorPortrait } from '@/arkham/cardImages';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
@@ -13,99 +14,96 @@ import PickDestiny from '@/arkham/components/PickDestiny.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
-import WorldMap from '@/arkham/components/TheScarletKeys/WorldMap.vue';
+import WorldMap, { type MapData } from '@/arkham/components/TheScarletKeys/WorldMap.vue';
 
 export interface Props {
   game: Game
   playerId: string
 }
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
-const question = computed(() => props.game.question[props.playerId])
+
+const ownQuestion = computed(() => props.game.question[props.playerId])
+
+const viewerEntry = computed<[string, Question] | null>(() => {
+  if (ownQuestion.value) return null
+  const entries = Object.entries(props.game.question) as [string, Question][]
+  return entries.length > 0 ? entries[0] : null
+})
+
+const viewOnly = computed(() => !ownQuestion.value && viewerEntry.value !== null)
+const effectivePlayerId = computed(() => viewerEntry.value?.[0] ?? props.playerId)
+
+const choices = computed(() => ArkhamGame.choices(props.game, effectivePlayerId.value))
+const question = computed(() => props.game.question[effectivePlayerId.value])
+
+const viewerInvestigatorName = computed(() => {
+  if (!viewOnly.value) return ''
+  const targetPlayerId = effectivePlayerId.value
+  const inv = Object.values(props.game.investigators).find(i => i.playerId === targetPlayerId)
+  return inv?.name.title ?? ''
+})
+
 const { t } = useI18n()
-const cardLabelImage = (cardCode: string) => {
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
-}
+const cardLabelImage = (cardCode: string) => cardImage(cardCode)
 const label = function(body: string) {
   return formatContent(handleEmbeddedI18n(body, t))
 }
 
-const portraitLabelImage = (investigatorId: string) => {
-  const player = props.game.investigators[investigatorId]
+const portraitLabelImage = (investigatorId: string) => investigatorPortrait(props.game, investigatorId)
 
-  if (player.form.tag === 'YithianForm') {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
+const portraitChoices = computed<[PortraitLabel, number][]>(() => {
+  const q = question.value
+  if (!q) return []
+
+  if (q.tag === QuestionType.CHOOSE_ONE) {
+    return q.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
   }
 
-  if (player.form.tag === 'HomunculusForm') {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
+  if (q.tag === QuestionType.QUESTION_LABEL && q.question.tag === QuestionType.CHOOSE_ONE) {
+    return q.question.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
   }
 
-  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
-}
-
-const portraitChoices = computed(() => {
-  if (!question.value) return
-
-  if (!['QuestionLabel', 'ChooseOne'].includes(question.value.tag)) {
-    return []
-  }
-
-  if (question.value.tag !== 'ChooseOne' && question.value.question.tag !== 'ChooseOne') {
-    return []
-  }
-
-  if (question.value.tag === 'ChooseOne') {
-    return question.value.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
-  }
-
-  return question.value.question.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
+  return []
 })
 
-const labelChoices = computed(() => {
-  if (!question.value) return
+type StoryLabelChoice = Label | TooltipLabel | ChaosTokenLabel | CardLabel | Done | Info
+const isStoryLabelChoice = (c: Message): c is StoryLabelChoice =>
+  c.tag === MessageType.LABEL ||
+  c.tag === MessageType.INFO ||
+  c.tag === MessageType.TOOLTIP_LABEL ||
+  c.tag === MessageType.CARD_LABEL ||
+  c.tag === MessageType.DONE ||
+  c.tag === MessageType.CHAOS_TOKEN_LABEL
 
-  if (question.value.tag === 'QuestionLabel') {
-    if (!['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.question.tag)) {
-      return []
-    }
+const labelChoices = computed<[StoryLabelChoice, number][]>(() => {
+  const q = question.value
+  if (!q) return []
 
-    return question.value.question.choices.flatMap<[Label | TooltipLabel | ChaosTokenLabel | CardLabel | Done, number]>((c, idx) => {
-      if ([MessageType.LABEL, MessageType.INFO, MessageType.TOOLTIP_LABEL, MessageType.CARD_LABEL, MessageType.DONE, MessageType.CHAOS_TOKEN_LABEL].includes(c.tag)) {
-        return [[c, idx]]
-      } else {
-        return []
-      }
-    })
+  if (q.tag === QuestionType.QUESTION_LABEL) {
+    const inner = q.question
+    if (inner.tag !== QuestionType.CHOOSE_ONE && inner.tag !== QuestionType.CHOOSE_UP_TO_N && inner.tag !== QuestionType.CHOOSE_N) return []
+    return inner.choices.flatMap<[StoryLabelChoice, number]>((c, idx) => isStoryLabelChoice(c) ? [[c, idx]] : [])
   }
 
-  if (['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.tag)) {
-    return question.value.choices.flatMap<[Label | TooltipLabel | CardLabel | ChaosTokenLabel | Done, number]>((c, idx) => {
-      if ([MessageType.LABEL, MessageType.TOOLTIP_LABEL, MessageType.CHAOS_TOKEN_LABEL, MessageType.CARD_LABEL, MessageType.DONE].includes(c.tag)) {
-        return [[c, idx]]
-      } else {
-        return []
-      }
-    })
+  if (q.tag === QuestionType.CHOOSE_ONE || q.tag === QuestionType.CHOOSE_UP_TO_N || q.tag === QuestionType.CHOOSE_N) {
+    return q.choices.flatMap<[StoryLabelChoice, number]>((c, idx) => isStoryLabelChoice(c) ? [[c, idx]] : [])
   }
+
+  return []
 })
 
 const questionImage = computed(() => {
-
-  if (question.value.tag !== 'QuestionLabel') {
-    return null
-  }
-
-  if(question.value.card) {
-    return cardLabelImage(question.value.card)
-  }
-
-  return null
+  const q = question.value
+  if (!q || q.tag !== QuestionType.QUESTION_LABEL) return null
+  return q.card ? cardLabelImage(q.card) : null
 })
 
-const choose = (idx: number) => emit('choose', idx)
+const choose = (idx: number) => {
+  if (viewOnly.value) return
+  emit('choose', idx)
+}
 
 const flippableCard = (cardCode: string) => {
   return {
@@ -113,7 +111,7 @@ const flippableCard = (cardCode: string) => {
     doubleSided: true,
     classSymbols: [],
     cardType: 'UnknownType',
-    art: cardCode.replace('c', ''),
+    art: cardArt(cardCode),
     level: 0,
     traits: [],
     name: "",
@@ -123,31 +121,18 @@ const flippableCard = (cardCode: string) => {
   }
 }
 
-const scenarioChoices = computed(() => {
-  if (!question.value) return []
+const scenarioChoices = computed<[ScenarioLabel, number][]>(() => {
+  const q = question.value
+  if (!q) return []
 
-  if (question.value.tag === 'QuestionLabel') {
-    if (!['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.question.tag)) {
-      return []
-    }
-
-    return question.value.question.choices.flatMap<[ScenarioLabel, number]>((c, idx) => {
-      if (c.tag === MessageType.SCENARIO_LABEL) {
-        return [[c, idx]]
-      } else {
-        return []
-      }
-    })
+  if (q.tag === QuestionType.QUESTION_LABEL) {
+    const inner = q.question
+    if (inner.tag !== QuestionType.CHOOSE_ONE && inner.tag !== QuestionType.CHOOSE_UP_TO_N && inner.tag !== QuestionType.CHOOSE_N) return []
+    return inner.choices.flatMap<[ScenarioLabel, number]>((c, idx) => c.tag === MessageType.SCENARIO_LABEL ? [[c, idx]] : [])
   }
 
-  if (['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.tag)) {
-    return question.value.choices.flatMap<[ScenarioLabel, number]>((c, idx) => {
-      if (c.tag === MessageType.SCENARIO_LABEL) {
-        return [[c, idx]]
-      } else {
-        return []
-      }
-    })
+  if (q.tag === QuestionType.CHOOSE_ONE || q.tag === QuestionType.CHOOSE_UP_TO_N || q.tag === QuestionType.CHOOSE_N) {
+    return q.choices.flatMap<[ScenarioLabel, number]>((c, idx) => c.tag === MessageType.SCENARIO_LABEL ? [[c, idx]] : [])
   }
 
   return []
@@ -156,44 +141,100 @@ const scenarioChoices = computed(() => {
 const scenarioBoxImage = (scenarioId: string) => {
   return imgsrc(`boxes/${scenarioId}.jpg`)
 }
+
+const isEmbarkQuestion = (q: Question): q is Question & { tag: QuestionType.PICK_CAMPAIGN_SPECIFIC; contents: ['embark', MapData] } =>
+  q.tag === QuestionType.PICK_CAMPAIGN_SPECIFIC &&
+  Array.isArray(q.contents) &&
+  q.contents[0] === 'embark'
 </script>
 
 <template>
-  <template v-if="question && question.tag === QuestionType.READ">
-    <StoryEntry
-      :game="game"
-      :playerId="playerId"
-      :question="question"
-      @choose="choose"
-    />
-  </template>
-  <div class="question-label" v-else-if="question && question.tag === 'QuestionLabel'">
-    <div v-if="questionImage" class="question-image">
-      <img :src="questionImage" class="card" />
+  <div :class="['story-question-root', { 'view-only': viewOnly }]">
+    <div v-if="viewOnly" class="waiting-banner">
+      {{ t('waitingForPlayer', { name: viewerInvestigatorName }) }}
     </div>
-    <div class="question-content">
-      <h2 v-html="label(question.label)"></h2>
+    <template v-if="question && question.tag === QuestionType.READ">
+      <StoryEntry
+        :game="game"
+        :playerId="effectivePlayerId"
+        :question="question"
+        @choose="choose"
+      />
+    </template>
+    <div class="question-label" v-else-if="question && question.tag === QuestionType.QUESTION_LABEL">
+      <div v-if="questionImage" class="question-image">
+        <img :src="questionImage" class="card" />
+      </div>
+      <div class="question-content">
+        <h2 v-html="label(question.label)"></h2>
 
-      <div class="portrait-choices" v-if="portraitChoices.length > 0">
-        <template v-for="[choice, index] in portraitChoices" :key="index">
-          <template v-if="choice.tag === MessageType.PORTRAIT_LABEL">
-            <a href='#' @click.prevent="choose(index)">
-              <img class="portrait card active no-overlay active" :src="portraitLabelImage(choice.investigatorId)"/>
-            </a>
+        <div class="portrait-choices" v-if="portraitChoices.length > 0">
+          <template v-for="[choice, index] in portraitChoices" :key="index">
+            <template v-if="choice.tag === MessageType.PORTRAIT_LABEL">
+              <a href='#' @click.prevent="choose(index)">
+                <img class="portrait card active no-overlay active" :src="portraitLabelImage(choice.investigatorId)"/>
+              </a>
+            </template>
           </template>
-        </template>
-      </div>
+        </div>
 
-      <div class="scenario-choices" v-if="scenarioChoices.length > 0">
-        <template v-for="[choice, index] in scenarioChoices" :key="index">
-          <button class="scenario-tile button" @click="choose(index)">
-            <img :src="scenarioBoxImage(choice.scenarioId)" :alt="`Scenario ${choice.scenarioId}`" />
-            <span v-html="label(choice.label)"></span>
-          </button>
-        </template>
-      </div>
+        <div class="scenario-choices" v-if="scenarioChoices.length > 0">
+          <template v-for="[choice, index] in scenarioChoices" :key="index">
+            <button class="scenario-tile button" @click="choose(index)">
+              <img :src="scenarioBoxImage(choice.scenarioId)" :alt="`Scenario ${choice.scenarioId}`" />
+              <span v-html="label(choice.label)"></span>
+            </button>
+          </template>
+        </div>
 
-      <div class="label-choices" v-if="labelChoices.length > 0">
+        <div class="label-choices" v-if="labelChoices.length > 0">
+          <div class="card-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CARD_LABEL)">
+            <template v-for="[choice, index] in labelChoices" :key="index">
+              <template v-if="choice.tag === MessageType.CARD_LABEL">
+                <a href='#' @click.prevent="choose(index)">
+                  <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />
+                  <img v-else class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
+                </a>
+              </template>
+            </template>
+          </div>
+          <div class="token-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CHAOS_TOKEN_LABEL)">
+            <template v-for="[choice, index] in labelChoices" :key="index">
+              <div v-if="choice.tag === MessageType.CHAOS_TOKEN_LABEL">
+                <img class="token front" :src="chaosTokenImage(choice.face)" @click="choose(index)">
+              </div>
+            </template>
+          </div>
+          <div class="other-labels" v-for="[choice, index] in labelChoices" :key="index">
+            <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
+              <button @click="choose(index)" v-tooltip="choice.tooltip">{{label(choice.label)}}</button>
+            </template>
+            <template v-if="choice.tag === MessageType.LABEL">
+              <button @click="choose(index)"><span v-html="formatContent(label(choice.label))"></span></button>
+            </template>
+            <template v-if="choice.tag === MessageType.INFO">
+              <FormattedEntry :entry="entry" v-for="entry in choice.flavor.body" />
+            </template>
+            <template v-if="choice.tag === MessageType.DONE">
+              <button @click="choose(index)">{{$t(choice.label)}}</button>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-label" v-else-if="question && isEmbarkQuestion(question)">
+      <WorldMap :game="game" :playerId="effectivePlayerId" :mapData="question.contents[1]" @choose="choose" :embark="true" />
+    </div>
+
+    <div class="question-label" v-else-if="question && question.tag === QuestionType.PICK_SUPPLIES">
+      <PickSupplies :game="game" :playerId="effectivePlayerId" :question="question" @choose="choose" />
+    </div>
+    <div class="question-label" v-else-if="question && question.tag === QuestionType.PICK_DESTINY">
+      <PickDestiny :game="game" :playerId="effectivePlayerId" :question="question" @choose="choose" />
+    </div>
+    <template v-else-if="choices.length > 0">
+      <div class="choices box">
         <div class="card-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CARD_LABEL)">
           <template v-for="[choice, index] in labelChoices" :key="index">
             <template v-if="choice.tag === MessageType.CARD_LABEL">
@@ -211,85 +252,77 @@ const scenarioBoxImage = (scenarioId: string) => {
             </div>
           </template>
         </div>
-        <div class="other-labels" v-for="[choice, index] in labelChoices" :key="index">
-          <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-            <button @click="choose(index)" v-tooltip="choice.tooltip">{{label(choice.label)}}</button>
-          </template>
-          <template v-if="choice.tag === MessageType.LABEL">
+
+        <template v-for="(choice, index) in choices" :key="index">
+          <div v-if="choice.tag === 'Done'">
+            <button @click="choose(index)">{{label(choice.label)}}</button>
+          </div>
+          <div v-if="choice.tag === 'Label'" class="choice-label">
             <button @click="choose(index)"><span v-html="formatContent(label(choice.label))"></span></button>
-          </template>
-          <template v-if="choice.tag === MessageType.INFO">
-            <FormattedEntry :entry="entry" v-for="entry in choice.flavor.body" />
-          </template>
-          <template v-if="choice.tag === MessageType.DONE">
-            <button @click="choose(index)">{{$t(choice.label)}}</button>
-          </template>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="question-label" v-else-if="question && question.tag === 'PickCampaignSpecific'">
-    <WorldMap v-if="question.contents[0] === 'embark'" :game="game" :playerId="playerId" :mapData="question.contents[1]" @choose="choose" :embark="true" />
-  </div>
-
-  <div class="question-label" v-else-if="question && question.tag === 'PickSupplies'">
-    <PickSupplies :game="game" :playerId="playerId" :question="question" @choose="choose" />
-  </div>
-  <div class="question-label" v-else-if="question && question.tag === 'PickDestiny'">
-    <PickDestiny :game="game" :playerId="playerId" :question="question" @choose="choose" />
-  </div>
-  <template v-else-if="choices.length > 0">
-    <div class="choices box">
-      <div class="card-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CARD_LABEL)">
-        <template v-for="[choice, index] in labelChoices" :key="index">
-          <template v-if="choice.tag === MessageType.CARD_LABEL">
-            <a href='#' @click.prevent="choose(index)">
-              <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />
-              <img v-else class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
-            </a>
-          </template>
-        </template>
-      </div>
-      <div class="token-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CHAOS_TOKEN_LABEL)">
-        <template v-for="[choice, index] in labelChoices" :key="index">
-          <div v-if="choice.tag === MessageType.CHAOS_TOKEN_LABEL">
-            <img class="token front" :src="chaosTokenImage(choice.face)" @click="choose(index)">
           </div>
         </template>
-      </div>
 
-      <template v-for="(choice, index) in choices" :key="index">
-        <div v-if="choice.tag === 'Done'">
-          <button @click="choose(index)">{{label(choice.label)}}</button>
-        </div>
-        <div v-if="choice.tag === 'Label'" class="choice-label">
-          <button @click="choose(index)"><span v-html="formatContent(label(choice.label))"></span></button>
-        </div>
-      </template>
-
-      <div class="portrait-choices" v-if="portraitChoices.length > 0">
-        <template v-for="[choice, index] in portraitChoices" :key="index">
-          <template v-if="choice.tag === MessageType.PORTRAIT_LABEL">
-            <a href='#' @click.prevent="choose(index)">
-              <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
-            </a>
+        <div class="portrait-choices" v-if="portraitChoices.length > 0">
+          <template v-for="[choice, index] in portraitChoices" :key="index">
+            <template v-if="choice.tag === MessageType.PORTRAIT_LABEL">
+              <a href='#' @click.prevent="choose(index)">
+                <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
+              </a>
+            </template>
           </template>
-        </template>
+        </div>
       </div>
-    </div>
-  </template>
+    </template>
 
-  <ChoiceModal
-    :game="game"
-    :playerId="playerId"
-    :noStory="true"
-    v-else-if="!question || (question.tag !== 'PickSupplies' && question.tag !== 'PickDestiny')"
-    @choose="$emit('choose', $event)"
-  />
+    <ChoiceModal
+      :game="game"
+      :playerId="effectivePlayerId"
+      :noStory="true"
+      v-else
+      @choose="choose"
+    />
+  </div>
 </template>
 
 <style scoped>
+.story-question-root {
+  display: contents;
+}
+
+.story-question-root.view-only {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.story-question-root.view-only :is(button, a, .scenario-tile, .token-labels img, .portrait, .clickable) {
+  cursor: default;
+}
+
+.story-question-root.view-only .active,
+.story-question-root.view-only .portrait,
+.story-question-root.view-only .token-labels img {
+  border-color: transparent;
+}
+
+.story-question-root.view-only .scenario-tile {
+  outline-color: transparent;
+}
+
+.waiting-banner {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  color: #BBB;
+  padding: 6px 16px;
+  text-align: center;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 0.85em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
 .question-content {
   width: 60%;
   background: rgba(0, 0, 0, 0.3);
@@ -374,8 +407,26 @@ button {
 }
 
 .question-label:not(:has(> .question-image)) {
+  justify-content: center;
   h2 {
     padding: 10px 20px;
+  }
+  > .question-content {
+    width: fit-content;
+    max-width: min(60%, 700px);
+    padding: 16px 20px;
+  }
+  .portrait-choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 16px;
+    img.portrait {
+      aspect-ratio: 750 / 1050;
+      object-fit: cover;
+      object-position: top center;
+    }
   }
 }
 .question-label:has(> .question-image) {

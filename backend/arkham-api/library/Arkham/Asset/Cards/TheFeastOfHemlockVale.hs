@@ -595,6 +595,45 @@ prismaticShardAlienMeteorite =
     , cdUses = uses Brilliance 4
     }
 
+littleSylvie :: CardDef
+littleSylvie =
+  (storyAsset "10548" ("Little Sylvie" <:> "A Cracked Memento") 1 HemlockHouse)
+    { cdCardTraits = setFromList [Item, Charm, Cursed]
+    , cdUnique = True
+    , cdSlots = [#accessory]
+    , cdOutOfPlayEffects = [InDiscardEffect]
+    }
+
+crystalRemainsTheChild :: CardDef
+crystalRemainsTheChild =
+  (storyAsset "10566" ("Crystal Remains" <:> "The Child") 1 TheSilentHeath)
+    { cdCardTraits = setFromList [Humanoid, Trait.Blight]
+    , cdCardType = EncounterAssetType
+    , cdCost = Nothing
+    , cdVictoryPoints = Just 1
+    , cdRevelation = IsRevelation
+    }
+
+crystalRemainsTheFather :: CardDef
+crystalRemainsTheFather =
+  (storyAsset "10567" ("Crystal Remains" <:> "The Father") 1 TheSilentHeath)
+    { cdCardTraits = setFromList [Humanoid, Trait.Blight]
+    , cdCardType = EncounterAssetType
+    , cdCost = Nothing
+    , cdVictoryPoints = Just 1
+    , cdRevelation = IsRevelation
+    }
+
+crystalRemainsTheMother :: CardDef
+crystalRemainsTheMother =
+  (storyAsset "10568" ("Crystal Remains" <:> "The Mother") 1 TheSilentHeath)
+    { cdCardTraits = setFromList [Humanoid, Trait.Blight]
+    , cdCardType = EncounterAssetType
+    , cdCost = Nothing
+    , cdVictoryPoints = Just 1
+    , cdRevelation = IsRevelation
+    }
+
 valeLanternBeaconOfHope :: CardDef
 valeLanternBeaconOfHope =
   (storyAsset "10610a" ("Vale Lantern" <:> "Beacon of Hope") 2 TheTwistedHollow)
@@ -735,3 +774,35 @@ cornHuskDoll =
       , cdUses = uses Wish 3
       , cdSkills = [#willpower, #agility]
       }
+
+thePearlDiaryAGrimAccount :: CardDef
+thePearlDiaryAGrimAccount =
+  (storyAsset "10715" ("The Pearl Diary" <:> "A Grim Account") 1 Heirlooms)
+    { cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdSkills = [#intellect, #agility]
+    , cdUnique = True
+    }
+
+theCaptives :: CardDef
+theCaptives =
+  (storyAsset_ "10641" ("The Captives" <:> "Star Children") TheLongestNight)
+    { cdCardTraits = setFromList [Trait.Innocent, Mutated]
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    }
+
+ajax :: CardDef
+ajax =
+  (storyAsset "10642" ("Ajax" <:> "Faithful Steed") 2 TheLongestNight)
+    { cdCardTraits = setFromList [Ally, Creature]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    }
+
+oldMemory :: CardDef
+oldMemory =
+  (storyAsset_ "10661b" "Old Memory" FateOfTheVale)
+    { cdCardTraits = setFromList [Trait.Condition, Trait.Innate]
+    , cdCardType = EncounterAssetType
+    }

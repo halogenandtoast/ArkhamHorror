@@ -21,11 +21,13 @@ export type CardDef = {
   cardType: string;
   art: string;
   level: number | null;
+  stage?: number | null;
   name: Name;
   cardTraits: string[];
   skills: SkillIcon[];
   cost: CardCost | null;
   otherSide: string | null;
+  meta: Record<string, any>;
 }
 
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
@@ -48,6 +50,11 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
   {
     art: JsonDecoder.string(),
     level: JsonDecoder.nullable(JsonDecoder.number()),
+    stage: JsonDecoder.oneOf([
+      JsonDecoder.number(),
+      JsonDecoder.null().map(() => undefined),
+      JsonDecoder.undefined(),
+    ], 'optional stage'),
     otherSide: JsonDecoder.nullable(JsonDecoder.string()),
     cardType: JsonDecoder.string(),
     cardCode: JsonDecoder.string(),
@@ -57,6 +64,7 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     skills: JsonDecoder.array<SkillIcon>(skillIconDecoder, 'SkillIcon[]'),
     name: nameDecoder,
     cost: JsonDecoder.nullable(cardCostDecoder),
+    meta: JsonDecoder.succeed(),
   },
   'CardDef',
 );

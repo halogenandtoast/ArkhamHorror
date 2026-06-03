@@ -143,7 +143,6 @@ uiAnd ui msg = case ui of
   Info flavor -> Info flavor
   ScenarioLabel label scenarioId msgs -> ScenarioLabel label scenarioId (msgs <> [msg])
 
-
 data PileCard = PileCard
   { cardId :: CardId
   , cardOwner :: Maybe InvestigatorId
@@ -205,6 +204,10 @@ data Question msg
   | -- | Wraps any Question with a header that the frontend renders as
     -- "Pay <cost>", using its own Cost rendering.
     PayCostQuestion {cost :: Cost, question :: Question msg}
+  | -- | Wraps any Question with the Source that prompted it, which the frontend
+    -- highlights on the board while the question is pending (e.g. an enemy
+    -- fleeing via Elusive), plus an optional tooltip shown on that source.
+    QuestionWithSource {source :: Source, tooltip :: Maybe Tooltip, question :: Question msg}
   | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg, readCards :: Maybe [CardCode]}
   | PickSupplies
       {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg], resupply :: Bool}
@@ -246,30 +249,12 @@ evadeLabel
   -> t msg
   -> UI msg
 evadeLabel (asId -> enemy) (toList -> msgs) = EvadeLabel enemy msgs
-
-evadeLabelWith
-  :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
-  => SkillType
-  -> enemy
-  -> t msg
-  -> UI msg
-evadeLabelWith sType (asId -> enemy) (toList -> msgs) = EvadeLabelWithSkill enemy sType msgs
-
 fightLabel
   :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
   => enemy
   -> t msg
   -> UI msg
 fightLabel (asId -> enemy) (toList -> msgs) = FightLabel enemy msgs
-
-fightLabelWith
-  :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
-  => SkillType
-  -> enemy
-  -> t msg
-  -> UI msg
-fightLabelWith sType (asId -> enemy) (toList -> msgs) = FightLabelWithSkill enemy sType msgs
-
 targetLabel
   :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))
   => target

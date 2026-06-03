@@ -7,7 +7,6 @@ import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Prelude
-import Arkham.Tracing
 
 lookupAgenda :: AgendaId -> Int -> CardId -> Agenda
 lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
@@ -15,9 +14,7 @@ lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
   Just (SomeAgendaCard a) -> \i cardId -> Agenda $ cbCardBuilder a cardId (i, agendaId)
 
 instance RunMessage Agenda where
-  runMessage msg x@(Agenda a) =
-    withSpan_ ("Agenda[" <> unCardCode (toCardCode x) <> "].runMessage") do
-      Agenda <$> runMessage msg a
+  runMessage msg (Agenda a) = Agenda <$> runMessage msg a
 
 instance FromJSON Agenda where
   parseJSON = withObject "Agenda" $ \o -> do
@@ -324,13 +321,38 @@ allAgendas =
       --- Written in Rock
       SomeAgendaCard undergroundSurvey
     , SomeAgendaCard dangerousRide
+    , --- Hemlock House
+      SomeAgendaCard eerieSilence
+    , SomeAgendaCard theHouseStirsV1
+    , SomeAgendaCard theHouseStirsV2
+    , SomeAgendaCard livingWalls
+    , --- The Silent Heath
+      SomeAgendaCard unsettlingSilence
+    , SomeAgendaCard desolationV1
+    , SomeAgendaCard desolationV2
+    , --- The Lost Sister
+      SomeAgendaCard intoTheCaves
+    , SomeAgendaCard darknessClosesIn
+    , --- The Thing in the Depths
+      SomeAgendaCard sinkingGround
+    , SomeAgendaCard theThingInTheBog
     , --- The Twisted Hollow
       SomeAgendaCard deepeningDark
     , SomeAgendaCard backToTheVale
+    , --- The Longest Night
+      SomeAgendaCard theOnslaught
     , --- Day of Rest
       SomeAgendaCard welcomeToHemlockVale
     , --- Day of Rain
       SomeAgendaCard darkClouds
+    , --- Day of the Feast
+      SomeAgendaCard allIsFullOfLove
+    , SomeAgendaCard aroundTheTable
+    , SomeAgendaCard lambsToTheSlaughter
+    , --- Fate of the Vale
+      SomeAgendaCard theSilence
+    , SomeAgendaCard theMiasma
+    , SomeAgendaCard theSpiral
     , -- Return to the Night of the Zealot
       --- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

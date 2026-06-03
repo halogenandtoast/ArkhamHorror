@@ -5,7 +5,6 @@ import Arkham.Queue
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
 import Data.Tuple.Extra (dupe)
-import Text.Pretty.Simple
 
 runQueueT :: HasQueue msg m => QueueT msg m a -> m a
 runQueueT body = do
@@ -14,10 +13,6 @@ runQueueT body = do
   msgs <- readIORef inbox
   pushAll $ reverse msgs
   pure a
-
-hoistMessage :: HasQueue msg m => msg -> QueueT msg m ()
-hoistMessage = push
-
 evalQueueT :: MonadIO m => QueueT msg m a -> m [msg]
 evalQueueT body = do
   inbox <- newIORef []
@@ -52,10 +47,6 @@ instance HasQueue msg m => HasQueue msg (ReaderT r m) where
 instance (Monoid w, HasQueue msg m) => HasQueue msg (WriterT w m) where
   messageQueue = lift messageQueue
   pushAll = lift . pushAll
-
-dumpQueue :: (HasQueue msg m, Show msg) => m ()
-dumpQueue = pPrint =<< readIORef . queueToRef =<< messageQueue
-
 newQueue :: MonadIO m => [msg] -> m (Queue msg)
 newQueue msgs = Queue <$> newIORef msgs
 
@@ -133,19 +124,11 @@ replaceAllMessagesMatching
   :: HasQueue msg m => (msg -> Bool) -> (msg -> [msg]) -> m ()
 replaceAllMessagesMatching matcher replacer = withQueue_ \queue ->
   flip concatMap queue \msg -> if matcher msg then replacer msg else [msg]
-
-overMessages_ :: HasQueue msg m => (msg -> msg) -> m ()
-overMessages_ replacer = peekQueue >>= setQueue . map replacer
-
 overMessagesM :: HasQueue msg m => (msg -> m [msg]) -> m ()
 overMessagesM replacer = peekQueue >>= concatMapM replacer >>= setQueue
 
 pushAfter :: HasQueue msg m => (msg -> Bool) -> msg -> m ()
 pushAfter matcher msg = replaceMessageMatching matcher (\m -> [m, msg])
-
-pushAllAfter :: HasQueue msg m => (msg -> Bool) -> [msg] -> m ()
-pushAllAfter matcher msgs = replaceMessageMatching matcher (\m -> m : msgs)
-
 popMessageMatching
   :: HasQueue msg m => (msg -> Bool) -> m (Maybe msg)
 popMessageMatching matcher = withQueue \queue ->

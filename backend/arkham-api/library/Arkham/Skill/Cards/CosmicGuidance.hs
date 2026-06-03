@@ -13,6 +13,6 @@ cosmicGuidance = skill CosmicGuidance Cards.cosmicGuidance
 instance RunMessage CosmicGuidance where
   runMessage msg s@(CosmicGuidance attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      healDamage iid attrs 1
+      skillTestCardOption attrs $ healDamage iid attrs 1
       pure s
     _ -> CosmicGuidance <$> liftRunMessage msg attrs

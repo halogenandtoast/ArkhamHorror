@@ -22,7 +22,7 @@ instance HasAbilities Infirmary where
 instance RunMessage Infirmary where
   runMessage msg l@(Infirmary attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
+      let source = UseAbilitySource iid (toSource attrs) 1
       canHealDamage <- canHaveDamageHealed source iid
       canHealHorror <- canHaveHorrorHealed source iid
       chooseOneM iid $ scenarioI18n do

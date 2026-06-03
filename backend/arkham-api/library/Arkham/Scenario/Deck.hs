@@ -22,6 +22,9 @@ data ScenarioDeckKey
   | TekeliliDeck -- Edge of the Earth
   | OtherworldDeck -- Without a Trace
   | WoodsDeck -- The Twisted Hollow
+  | CavernsDeck -- The Lost Sister
+  | EnemyDeck -- The Longest Night
+  | AbyssDeck -- Fate of the Vale
   | ReelDeck -- FilmFatale
   deriving stock (Show, Ord, Eq, Data)
 
@@ -43,6 +46,9 @@ instance ToDisplay ScenarioDeckKey where
     TekeliliDeck -> "Tekeli-li"
     OtherworldDeck -> "Otherworld"
     WoodsDeck -> "Woods"
+    CavernsDeck -> "Caverns"
+    EnemyDeck -> "Enemy"
+    AbyssDeck -> "The Abyss"
     ReelDeck -> "Reel"
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)

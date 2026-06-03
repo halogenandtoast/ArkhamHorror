@@ -40,11 +40,14 @@ instance HasModifiersFor NormanWithers where
   getModifiersFor (NormanWithers a) = do
     let metadata = getMetadata a
     canReveal <- withoutModifier a CannotRevealCards
+    let canPlayTop = canReveal && not (playedFromTopOfDeck metadata)
     modifySelfWhen a canReveal
       $ TopCardOfDeckIsRevealed
-      : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
+      : [CanPlayTopOfDeck AnyCard | canPlayTop]
     case unDeck (investigatorDeck a) of
-      x : _ -> modifiedWhen_ a canReveal x [ReduceCostOf (CardWithId x.id) 1]
+      x : _ -> do
+        modifiedWhen_ a canReveal x [ReduceCostOf (CardWithId x.id) 1]
+        modifySelfWhen a canPlayTop [AsIfInHandFor NotForPlay x.id]
       _ -> pure ()
 
 instance HasAbilities NormanWithers where
@@ -79,7 +82,7 @@ instance RunMessage NormanWithers where
       pure $ NormanWithers $ a & setMeta (metadata {drawingForcedWeakness = True})
     When (RevealChaosToken _ iid token) | iid == toId a -> do
       faces <- getModifiedChaosTokenFace token
-      when (ElderSign `elem` faces) $ do
+      when (ElderSign `elem` faces && not (null (unDeck (investigatorDeck a)))) $ do
         hand <- field InvestigatorHand iid
         player <- getPlayer iid
         push

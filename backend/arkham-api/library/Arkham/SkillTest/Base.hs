@@ -100,10 +100,6 @@ instance HasField "step" SkillTest SkillTestStep where
 
 setIsRevelation :: SkillTest -> SkillTest
 setIsRevelation st = st {skillTestIsRevelation = True}
-
-allSkillTestChaosTokens :: SkillTest -> [ChaosToken]
-allSkillTestChaosTokens SkillTest {..} = skillTestSetAsideChaosTokens
-
 instance Targetable SkillTest where
   toTarget s = SkillTestTarget s.id
   isTarget s (SkillTestTarget sid) = s.id == sid

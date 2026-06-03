@@ -136,6 +136,7 @@ archibaldHudson :: CardDef
 archibaldHudson =
   (storyAsset "71017" ("Archibald Hudson" <:> "Astute Agent") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Agency]
+    , cdClassSymbols = singleton Guardian
     , cdSkills = [#willpower, #willpower, #intellect, #intellect]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -145,6 +146,7 @@ specialAgentCallahan :: CardDef
 specialAgentCallahan =
   (storyAsset "71018" ("Special Agent Callahan" <:> "Weapons Expert") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Agency]
+    , cdClassSymbols = singleton Guardian
     , cdSkills = [#intellect, #intellect, #combat, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -154,6 +156,7 @@ horacioMartinez :: CardDef
 horacioMartinez =
   (storyAsset "71019" ("Horacio Martinez" <:> "Brash Bodyguard") 3 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Agency]
+    , cdClassSymbols = singleton Guardian
     , cdSkills = [#combat, #combat, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -174,6 +177,7 @@ drMyaBadry :: CardDef
 drMyaBadry =
   (storyAsset "71023" ("Dr. Mya Badry" <:> "Medical Examiner") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Miskatonic]
+    , cdClassSymbols = singleton Seeker
     , cdSkills = [#intellect, #intellect, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -183,6 +187,7 @@ lucasTetlow :: CardDef
 lucasTetlow =
   (storyAsset "71024" ("Lucas Tetlow" <:> "Faculty Curator") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Miskatonic]
+    , cdClassSymbols = singleton Seeker
     , cdSkills = [#intellect, #intellect, #combat, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -192,6 +197,7 @@ elizabethConrad :: CardDef
 elizabethConrad =
   (storyAsset "71025" ("Elizabeth Conrad" <:> "Completely Zozzled") 3 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Miskatonic]
+    , cdClassSymbols = singleton Seeker
     , cdSkills = [#willpower, #willpower, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -212,6 +218,7 @@ mirandaKeeper :: CardDef
 mirandaKeeper =
   (storyAsset "71029" ("Miranda Keeper" <:> "Antiquities \"Trader\"") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Syndicate]
+    , cdClassSymbols = singleton Rogue
     , cdSkills = [#intellect, #intellect, #combat, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -222,6 +229,7 @@ arseneRenard :: CardDef
 arseneRenard =
   (storyAsset "71030" ("Ars\xE8ne Renard" <:> "Gentleman Thief") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Syndicate]
+    , cdClassSymbols = singleton Rogue
     , cdSkills = [#intellect, #intellect, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -231,6 +239,7 @@ novaMalone :: CardDef
 novaMalone =
   (storyAsset "71031" ("Nova Malone" <:> "Commanding Gangster") 3 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Syndicate]
+    , cdClassSymbols = singleton Rogue
     , cdSkills = [#willpower, #willpower, #combat, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -251,6 +260,7 @@ prudenceDouglas :: CardDef
 prudenceDouglas =
   (storyAsset "71035" ("Prudence Douglas" <:> "Pragmatic Occultist") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Sorcerer, SilverTwilight]
+    , cdClassSymbols = singleton Mystic
     , cdSkills = [#willpower, #willpower, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -261,6 +271,7 @@ sarahVanShaw :: CardDef
 sarahVanShaw =
   (storyAsset "71036" ("Sarah Van Shaw" <:> "Lodge Warden") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, SilverTwilight]
+    , cdClassSymbols = singleton Mystic
     , cdSkills = [#combat, #combat, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -270,6 +281,7 @@ raymondLoggins :: CardDef
 raymondLoggins =
   (storyAsset "71037" ("Raymond Loggins" <:> "Mysterious Benefactor") 3 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Sorcerer, SilverTwilight]
+    , cdClassSymbols = singleton Mystic
     , cdSkills = [#willpower, #willpower, #intellect, #intellect]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -291,6 +303,7 @@ deloresGadling :: CardDef
 deloresGadling =
   (storyAsset "71041" ("Delores Gadling" <:> "Lantern Club Infiltrator") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Kingsport]
+    , cdClassSymbols = singleton Survivor
     , cdSkills = [#combat, #combat, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -300,6 +313,7 @@ thomasOlney :: CardDef
 thomasOlney =
   (storyAsset "71042" ("Thomas Olney" <:> "Inquisitive Adventurer") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Wayfarer]
+    , cdClassSymbols = singleton Survivor
     , cdSkills = [#willpower, #willpower, #intellect, #intellect]
     , cdSlots = [#ally]
     , cdUnique = True
@@ -309,6 +323,7 @@ claireWilson :: CardDef
 claireWilson =
   (storyAsset "71043" ("Claire Wilson" <:> "Entirely Unimpressed") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Kingsport]
+    , cdClassSymbols = singleton Survivor
     , cdSkills = [#willpower, #willpower, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True

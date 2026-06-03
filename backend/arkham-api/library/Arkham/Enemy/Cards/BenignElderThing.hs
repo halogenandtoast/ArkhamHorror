@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.BenignElderThing (benignElderThing) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 import Arkham.Token

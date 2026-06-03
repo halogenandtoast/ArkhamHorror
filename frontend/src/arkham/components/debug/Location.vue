@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import { useMenu } from '@/composeable/menu';
+import { useMenu } from '@/composable/menu';
 import Draggable from '@/components/Draggable.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { computed, ref } from 'vue';
@@ -8,7 +8,7 @@ import { useDebug } from '@/arkham/debug';
 import type { Game } from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Location';
 import { imgsrc } from '@/arkham/helpers';
-import { TokenType } from '@/arkham/types/Token';
+import { TokenType, type Token } from '@/arkham/types/Token';
 
 type Props = {
   game: Game
@@ -44,10 +44,10 @@ const image = computed(() => {
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 
 const hasPool = computed(() => {
-  return clues.value > 0;
+  return (clues.value ?? 0) > 0;
 })
 
-const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: any}) => 
+const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: unknown}) => 
   debug.send(props.game.id,
     { tag: 'CreateWindowModifierEffect'
     , contents:
@@ -77,7 +77,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
             <img :src="image" class="card-no-overlay" />
           </div>
           <div v-if="hasPool" class="pool">
-            <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
+            <PoolItem v-if="(clues ?? 0) > 0" type="clue" :amount="clues ?? 0" />
           </div>
         </div>
       </div>
@@ -85,17 +85,17 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <select v-model="placeTokenType">
           <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
         </select>
-        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'LocationTarget', contents: id}, placeTokenType, 1]})">{{ $t('debug.common.place') }}</button>
+        <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{ tag: 'GameSource' }, { tag: 'LocationTarget', contents: id}, placeTokenType, 1]}})">{{ $t('debug.common.place') }}</button>
         <button @click="placeTokens = false">{{ $t('debug.common.back') }}</button>
       </div>
       <div v-else class="buttons">
         <button v-if="location.cardCode == 'c03139'" @click="createModifier({tag: 'LocationTarget', contents: id}, {tag: 'AddTrait', contents: 'Passageway'})">{{ $t('debug.location.addPassageway') }}</button>
         <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">{{ $t('debug.location.reveal') }}</button>
-        <button v-if="clues && clues > 0" @click="debug.send(game.id, {tag: 'RemoveTokens', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', clues]})">{{ $t('debug.location.removeClues') }}</button>
-        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', 1]})">{{ $t('debug.location.placeClue') }}</button>
+        <button v-if="clues && clues > 0" @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'RemoveTokens_', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', clues]}})">{{ $t('debug.location.removeClues') }}</button>
+        <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', 1]}})">{{ $t('debug.location.placeClue') }}</button>
         <button v-if="location.revealed" @click="debug.send(game.id, {tag: 'Reset', contents: { 'tag': 'LocationTarget', contents: id }})">{{ $t('debug.location.reset') }}</button>
         <button @click="placeTokens = true">{{ $t('debug.common.placeTokens') }}</button>
-        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'LocationTarget', contents: id}})">{{ $t('debug.common.removeAllTokens') }}</button>
+        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'ClearTokens_', contents: { tag: 'LocationTarget', contents: id}}})">{{ $t('debug.common.removeAllTokens') }}</button>
         <button @click="emit('close')">{{ $t('debug.common.close') }}</button>
       </div>
     </div>

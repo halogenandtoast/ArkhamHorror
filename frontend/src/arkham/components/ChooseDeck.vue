@@ -3,7 +3,8 @@ import { displayTabooId, displayTabooList } from '@/arkham/taboo';
 import { computed, ref, inject } from 'vue'
 import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
-import { imgsrc } from '@/arkham/helpers'
+import { imgsrc, type InvestigatorClass } from '@/arkham/helpers'
+import { portraitImage as portraitImageHelper } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Deck'
 import {deckClass} from '@/arkham/types/Deck'
 import type { ArkhamDbDecklist } from '@/arkham/types/Deck'
@@ -22,12 +23,12 @@ type DeckType = "UseExistingDeck" | "LoadNewDeck" | "UnsavedDeck"
 const deckType = ref<DeckType>("UseExistingDeck")
 
 const searchText = ref('')
-const filterClasses = ref<string[]>([])
+const filterClasses = ref<InvestigatorClass[]>([])
 const sortBy = ref<'name' | 'class'>('name')
 const CLASS_ORDER: Record<string, number> = {
   guardian: 0, seeker: 1, rogue: 2, mystic: 3, survivor: 4, neutral: 5
 }
-const allClasses = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
+const allClasses: InvestigatorClass[] = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
 
 function deckInvestigatorCode(deck: Arkham.Deck): string {
   if (deck.list.meta) {
@@ -57,8 +58,8 @@ const filteredDecks = computed(() => {
     result = [...result].sort((a, b) => a.name.localeCompare(b.name))
   } else if (sortBy.value === 'class') {
     result = [...result].sort((a, b) => {
-      const ca = allClasses.find(k => (deckClass(a) as any)[k]) ?? 'neutral'
-      const cb = allClasses.find(k => (deckClass(b) as any)[k]) ?? 'neutral'
+      const ca = allClasses.find(k => deckClass(a)[k]) ?? 'neutral'
+      const cb = allClasses.find(k => deckClass(b)[k]) ?? 'neutral'
       return (CLASS_ORDER[ca] ?? 5) - (CLASS_ORDER[cb] ?? 5)
     })
   }
@@ -166,7 +167,7 @@ const players = computed<Player[]>(() => {
   if (props.game.gameState.tag === 'IsChooseDecks') {
     return props.game.gameState.contents.map((p) => {
       const maybeInvestigator = Object.values(investigators.value).find((i) => i.playerId === p)
-      return maybeInvestigator ? { tag: "Chosen", investigator: maybeInvestigator, id: p } : { tag: "EmptyPlayer", id: p }
+      return maybeInvestigator ? { tag: "Chosen", contents: maybeInvestigator, id: p } : { tag: "EmptyPlayer", id: p }
     })
   }
 
@@ -174,7 +175,7 @@ const players = computed<Player[]>(() => {
 })
 
 function portraitImage(investigator: Investigator) {
-  return imgsrc(`portraits/${investigator.cardCode.replace('c', '')}.jpg`)
+  return portraitImageHelper(investigator.cardCode)
 }
 
 const needsReply = computed(() => {
@@ -198,15 +199,15 @@ const needsReply = computed(() => {
         <div class="investigator-row" v-for="player in players" :key="player.id">
           <template v-if="player.tag === 'Chosen'">
             <div class="portrait">
-              <img :src="portraitImage(player.investigator)" />
+              <img :src="portraitImage(player.contents)" />
             </div>
-            <div v-if="question && playerId == player.investigator.playerId" class="question">
+            <div v-if="question && playerId == player.contents.playerId" class="question">
               <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
               <Question :game="game" :playerId="playerId" @choose="chooseChoice" />
             </div>
             <div v-else>
-              <div v-if="tabooList(player.investigator)" class="taboo-list">
-                {{$t('create.tabooList', {tabooList: tabooList(player.investigator)})}}
+              <div v-if="tabooList(player.contents)" class="taboo-list">
+                {{$t('create.tabooList', {tabooList: tabooList(player.contents)})}}
               </div>
             </div>
           </template>

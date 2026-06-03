@@ -27,7 +27,7 @@ import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type
 import Arkham.Source (Source (GameSource))
 import Arkham.Strategy (DamageStrategy)
-import Arkham.Target (Target)
+import Arkham.Target (Target (EnemyTarget))
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
@@ -68,10 +68,6 @@ mkAtIf windowType = Window #at windowType Nothing
 
 mkAfter :: WindowType -> Window
 mkAfter windowType = Window #after windowType Nothing
-
-windowTypes :: [Window] -> [WindowType]
-windowTypes = map windowType
-
 getBatchId :: [Window] -> BatchId
 getBatchId ws = case getMaybeBatchId ws of
   Just batchId -> batchId
@@ -96,6 +92,23 @@ hasEliminatedWindow :: [Window] -> Bool
 hasEliminatedWindow = any $ \case
   (windowType -> InvestigatorEliminated {}) -> True
   (windowType -> EndOfGame {}) -> True
+  _ -> False
+
+-- | Windows that fire constantly during scenario setup as locations and clues
+-- are placed, but which cannot trigger any abilities while @gameInSetup@ is
+-- @True@. Used by 'Arkham.Game.runMessages' to drop their CheckWindows before
+-- the heavy modifier preload pipeline.
+isSetupSkippableWindow :: Window -> Bool
+isSetupSkippableWindow w = case windowType w of
+  PutLocationIntoPlay {} -> True
+  LocationEntersPlay {} -> True
+  PlacedToken _ _ Clue _ -> True
+  _ -> False
+
+isEnemyReadyWindow :: Window -> Bool
+isEnemyReadyWindow w = case windowType w of
+  WouldReady (EnemyTarget _) -> True
+  Readies (EnemyTarget _) -> True
   _ -> False
 
 primaryWindowTarget :: WindowType -> Maybe Target
@@ -190,7 +203,9 @@ data WindowType
   | EncounterDeckRunsOutOfCards
   | Discarded (Maybe InvestigatorId) Source Card
   | DiscardedFromHand InvestigatorId Source Card
+  | DiscardedFromDeck InvestigatorId Source Card
   | WouldDiscardFromHand InvestigatorId Source
+  | WouldDiscardFromDeck InvestigatorId Source
   | DiscoverClues InvestigatorId LocationId Source Int
   | WouldDiscoverClues InvestigatorId LocationId DiscoverId Source Int
   | SpentClues InvestigatorId Int
@@ -227,6 +242,7 @@ data WindowType
   | EnemyLeaves EnemyId LocationId
   | EnemyWouldSpawnAt EnemyId LocationId
   | EnemySpawns EnemyId LocationId
+  | EnemyFlipped EnemyId
   | EnemyPlaced EnemyId Placement
   | EnemyWouldAttack EnemyAttackDetails
   | EnemyWouldBeDefeated EnemyId

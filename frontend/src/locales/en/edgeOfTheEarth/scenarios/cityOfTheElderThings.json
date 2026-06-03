@@ -1,5 +1,11 @@
 {
   "heading": "Scenario III",
+  "specialRules": [
+    {
+      "title": "Keys",
+      "body": "<p class='basic'>The setup of this scenario instructs the players to place a random chaos token on each of the 16 City Landscape locations, as keys. These keys are never placed in the chaos bag and do not act as traditional chaos tokens. Instead, they represent keys which investigators can recover and use throughout the scenario.</p><p class='basic'>Keys can be acquired in one of two ways:</p><ul><li>If a location with a key on it has no clues, an investigator can take control of its key as a {'{'}fast{'}'} ability.</li><li>Some card effects may allow investigators to take control of keys in other ways.</li></ul><p class='basic'>When an investigator takes control of a key, they place that key on their investigator card. If an investigator who controls one or more keys is eliminated, place each of those keys on their location. As an {'{'}action{'}'} ability, an investigator may give any number of their keys to another investigator at the same location.</p>"
+    }
+  ],
   "label": {
     "v1": "Proceed to _Setup (v. I)_",
     "v2": "Proceed to _Setup (v. II)_",

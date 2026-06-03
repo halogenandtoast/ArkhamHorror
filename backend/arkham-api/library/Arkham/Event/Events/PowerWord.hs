@@ -239,7 +239,7 @@ instance RunMessage PowerWord where
               when (notNull enemies) do
                 chooseOrRunOne
                   iid
-                  [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (attrs.ability 1) 1] | enemy <- enemies
+                  [ targetLabel enemy [DealDamage (EnemyTarget enemy) $ nonAttack (Just iid) (attrs.ability 1) 1] | enemy <- enemies
                   ]
             MercyCommand -> do
               let source = attrs.ability 1

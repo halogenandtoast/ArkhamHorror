@@ -1,5 +1,5 @@
 {
-    "fastPlayerWindow": "{'{fast}'} 玩家时间段",
+    "fastPlayerWindow": "{'{'}fast{'}'} 玩家时间段",
 
     "determineSkillOfTestStep": "决定检定所用的技能。检定开始。",
     "commitCardsFromHandToSkillTestStep": "从手牌中投入卡牌。",

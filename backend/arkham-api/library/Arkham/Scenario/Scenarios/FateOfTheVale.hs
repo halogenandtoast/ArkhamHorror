@@ -2,7 +2,10 @@ module Arkham.Scenario.Scenarios.FateOfTheVale (fateOfTheVale) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignStep (CampaignStep (EpilogueStep))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types (finalizeDraw)
@@ -10,6 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers (draw, unDeck)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Xp (toBonus)
 import Arkham.Helpers.Location (connectBothWays)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
 import Arkham.Helpers.Query (allInvestigators)
@@ -19,11 +23,14 @@ import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (Discarded, enemyAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (record)
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier (UIModifier (..), setActiveDuringSetup)
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Deck (ScenarioDeckKey (..))
 import Arkham.Scenario.Import.Lifted hiding ((.=))
+import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.Scenarios.FateOfTheVale.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Control.Lens (use, (%=), (.=))
@@ -50,6 +57,23 @@ cosmicEmissaryLayout =
   , ". cosmicEmissaryBrilliance cosmicEmissaryMiasma mirrorNestRight"
   , ". mirrorNestBottom . ."
   ]
+
+-- | Cross out the name of each resident that was not under control of an
+-- investigator at the end of the game.
+crossOutUncontrolledResidents :: ReverseQueue m => m ()
+crossOutUncontrolledResidents =
+  for_ [minBound .. maxBound] \resident -> do
+    controlled <- selectAny (assetIs resident <> AssetControlledBy Anyone)
+    unless controlled $ record (crossedOutKey resident)
+
+-- | Cross out the name of each resident that was in the victory display at the
+-- end of the game.
+crossOutResidentsInVictoryDisplay :: ReverseQueue m => m ()
+crossOutResidentsInVictoryDisplay = do
+  victoryDisplay <- scenarioField ScenarioVictoryDisplay
+  for_ [minBound .. maxBound] \resident ->
+    when (any ((== toCardCode resident) . toCardCode) victoryDisplay)
+      $ record (crossedOutKey resident)
 
 instance HasModifiersFor FateOfTheVale where
   getModifiersFor (FateOfTheVale attrs) = do
@@ -252,5 +276,46 @@ instance RunMessage FateOfTheVale where
       pure $ FateOfTheVale $ attrs & decksL . at AbyssDeck %~ fmap (filter (/= EncounterCard ec))
     KonamiCode pid -> do
       selectEach (InvestigatorIsPlayer pid) drivenInsane
+      pure s
+    ScenarioResolution res -> scope "resolutions" do
+      case res of
+        NoResolution -> do
+          resolution "noResolution"
+          record TheInvestigatorsBecameTheTrueFeastOfHemlockVale
+          eachInvestigator $ kill attrs
+          gameOver
+        Resolution 1 -> do
+          crossOutUncontrolledResidents
+          record DrMarquezSacrificedHerselfForTheVale
+          eachInvestigator \iid -> do
+            inDeck <- selectAny $ inDeckOf iid <> basic (cardIs Assets.drRosaMarquezBestInHerField)
+            when inDeck $ removeCampaignCardFromDeck iid Assets.drRosaMarquezBestInHerField
+          eachInvestigator \iid -> sufferTrauma iid 1 1
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs (toBonus "cosmicEmissary" 5)
+          endOfScenarioThen EpilogueStep
+        Resolution 2 -> do
+          record TheInvestigatorsSacrificedThemselvesForTheVale
+          resolution "resolution2"
+          eachInvestigator $ kill attrs
+          endOfScenarioThen EpilogueStep
+        Resolution 3 -> do
+          crossOutResidentsInVictoryDisplay
+          record TheValeWasSaved
+          eachInvestigator \iid -> sufferTrauma iid 2 2
+          resolutionWithXp "resolution3" $ allGainXpWithBonus' attrs (toBonus "savedTheVale" 3)
+          endOfScenarioThen EpilogueStep
+        Resolution 4 -> do
+          crossOutUncontrolledResidents
+          record TheValeBurned
+          eachInvestigator \iid -> sufferTrauma iid 2 2
+          resolutionWithXp "resolution4" $ allGainXpWithBonus' attrs (toBonus "eradicatedTheColour" 3)
+          endOfScenarioThen EpilogueStep
+        Resolution 5 -> do
+          crossOutUncontrolledResidents
+          record TheInvestigatorsBarelySurvivedTheFeastOfHemlockVale
+          eachInvestigator \iid -> sufferTrauma iid 3 3
+          resolutionWithXp "resolution5" $ allGainXpWithBonus' attrs (toBonus "survivedTheFeast" 2)
+          endOfScenarioThen EpilogueStep
+        _ -> error "invalid resolution"
       pure s
     _ -> FateOfTheVale <$> liftRunMessage msg attrs

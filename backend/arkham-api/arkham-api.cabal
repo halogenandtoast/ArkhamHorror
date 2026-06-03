@@ -4768,6 +4768,7 @@ library
       Arkham.Scenarios.EchoesOfThePast.Helpers
       Arkham.Scenarios.ExtracurricularActivity.Helpers
       Arkham.Scenarios.FatalMirage.Helpers
+      Arkham.Scenarios.FateOfTheVale.CosmicEmissary
       Arkham.Scenarios.FateOfTheVale.Helpers
       Arkham.Scenarios.FilmFatale.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Helpers

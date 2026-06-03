@@ -216,7 +216,7 @@ instance RunMessage FateOfTheVale where
         cardCode <- field InvestigatorCardCode iid
         case lookup cardCode InvestigatorCards.allInvestigatorCards of
           Nothing -> error $ "Could not find investigator card: " <> show cardCode
-          Just def -> genCard def
+          Just def -> setOwner iid =<< genCard def
       shuffledDeck <- shuffle $ map EncounterCard (unDeck encounterDeck) <> playerCards
       let (bottomHalf, topHalf) = splitAt (length shuffledDeck `div` 2) shuffledDeck
       topHalfWithTrueSelves <- shuffle $ trueInvestigatorCards <> topHalf

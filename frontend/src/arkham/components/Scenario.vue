@@ -1274,13 +1274,18 @@ function compactCosmicEmissaryFormation(force = false) {
       }
     }
 
-    if (!styleMapsEqual(cosmicEmissaryEnemyStyles.value, nextEnemyStyles)) {
+    const enemyStylesChanged = !styleMapsEqual(cosmicEmissaryEnemyStyles.value, nextEnemyStyles)
+    const locationCellStylesChanged = !styleMapsEqual(cosmicEmissaryLocationCellStyles.value, nextLocationCellStyles)
+    if (enemyStylesChanged) {
       cosmicEmissaryEnemyStyles.value = nextEnemyStyles
       writeStyleMapCache(cosmicEmissaryEnemyStylesCacheKey, nextEnemyStyles)
     }
-    if (!styleMapsEqual(cosmicEmissaryLocationCellStyles.value, nextLocationCellStyles)) {
+    if (locationCellStylesChanged) {
       cosmicEmissaryLocationCellStyles.value = nextLocationCellStyles
       writeStyleMapCache(cosmicEmissaryLocationCellStylesCacheKey, nextLocationCellStyles)
+    }
+    if (enemyStylesChanged || locationCellStylesChanged) {
+      nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
     }
     cosmicEmissaryFormationHasMeasured.value = true
   })

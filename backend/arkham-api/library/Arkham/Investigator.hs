@@ -224,6 +224,13 @@ becomeShatteredSelf (Investigator a) =
       , investigatorDiscarding = Nothing
       }
 
+shatteredSelfOriginalCardCode :: Investigator -> Maybe CardCode
+shatteredSelfOriginalCardCode (Investigator a) = case cast a of
+  Just (ShatteredSelf (_ `With` meta)) -> case fromJSON @Investigator meta.originalBody of
+    Success x -> Just $ investigatorCardCode $ toAttrs x
+    _ -> Nothing
+  Nothing -> Nothing
+
 returnFromShatteredSelf :: Investigator -> Investigator
 returnFromShatteredSelf = flip handleInvestigator \(ShatteredSelf (attrs `With` meta)) ->
   case fromJSON meta.originalBody of

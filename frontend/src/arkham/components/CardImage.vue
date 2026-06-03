@@ -16,6 +16,7 @@ const props = defineProps<{ card: CardDef }>()
 const flipped = ref(false)
 const vertical = computed(() => {
   if(!flipped.value) return false
+  console.log(props.card.cardCode)
 
   return [
     "c01121a",
@@ -41,6 +42,7 @@ const vertical = computed(() => {
     "c07199",
     "c09615",
     "c10607a",
+    "c10661",
     "c50026a",
     "c53029",
     "c53030",

@@ -271,6 +271,7 @@ shatteredSelf =
       [Shattered]
   )
     { cdUnique = False
+    , cdOtherSide = Just "10661b"
     }
 
 carolynFern :: CardDef

@@ -682,7 +682,6 @@ allPlayerAssetCards =
       , ofuda
       , oldBookOfLore
       , oldBookOfLore3
-      , oldMemory
       , oldCompass2
       , oldHuntingRifle3
       , oldKeyring
@@ -1107,6 +1106,7 @@ allEncounterAssetCards =
       , crystalRemainsTheFather
       , crystalRemainsTheMother
       , theCaptives
+      , oldMemory
       , valeLanternBeaconOfHope
       , valeLanternExtinguishedLightBoon
       , valeLanternAFaintHope

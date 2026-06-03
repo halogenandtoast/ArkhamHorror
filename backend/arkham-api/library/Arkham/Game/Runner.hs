@@ -75,6 +75,7 @@ import Arkham.Investigator (
   becomeShatteredSelf,
   becomeYithian,
   lookupInvestigator,
+  returnFromShatteredSelf,
   returnToBody,
  )
 import Arkham.Investigator.Cards qualified as Investigators
@@ -3411,6 +3412,10 @@ runGameMessage msg g = case msg of
   BecomeShatteredSelf iid -> do
     shatteredSelf <- becomeShatteredSelf <$> getInvestigator iid
     pure $ g & (entitiesL . investigatorsL . at iid ?~ shatteredSelf)
+  ScenarioSpecific "returnFromShatteredSelf" v -> do
+    let iid = toResult v :: InvestigatorId
+    investigator <- returnFromShatteredSelf <$> getInvestigator iid
+    pure $ g & (entitiesL . investigatorsL . at iid ?~ investigator)
   BecomeHomunculus iid -> do
     findCard (`cardMatch` cardIs Assets.theGreatWorkDivideAndUnite) >>= \case
       Nothing -> error "The Great Work not found"

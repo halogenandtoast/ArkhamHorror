@@ -347,6 +347,7 @@ const requestId = ref<number | null>(null)
 const connectionUpdateRequestId = ref<number | null>(null)
 let connectionObserver: MutationObserver | null = null
 let resizeObserver: ResizeObserver | null = null
+let connectionUpdateTimeouts: number[] = []
 let lastTime = 0
 const FRAME_MS = 1000 / 30 // 30fps for normal/enemy connection following only
 
@@ -373,8 +374,13 @@ onMounted(async () => {
   defsEl = svgEl?.querySelector('defs') ?? null
   lineProto = protoRef.value
   chevronProto = chevronProtoRef.value
-  // first draw immediately so a cold refresh shows lines at once
+  // First draw immediately so a cold refresh shows lines at once, then redraw
+  // after layout/images/cached Cosmic Emissary transforms settle. The normal
+  // animation tick intentionally skips Fate of the Vale enemy lines, so without
+  // these delayed full updates they can remain at the initial pre-layout
+  // positions after leaving and re-entering a game.
   handleConnections(true)
+  connectionUpdateTimeouts = [50, 150, 500, 1500].map((delay) => window.setTimeout(requestConnectionUpdate, delay))
   requestId.value = window.requestAnimationFrame(tick)
 
   window.addEventListener('resize', requestConnectionUpdate)
@@ -409,6 +415,8 @@ onBeforeUnmount(()=> {
   connectionObserver = null
   resizeObserver?.disconnect()
   resizeObserver = null
+  connectionUpdateTimeouts.forEach((timeoutId) => clearTimeout(timeoutId))
+  connectionUpdateTimeouts = []
   if(requestId.value !== null) cancelAnimationFrame(requestId.value)
   requestId.value = null
   if(connectionUpdateRequestId.value !== null) cancelAnimationFrame(connectionUpdateRequestId.value)

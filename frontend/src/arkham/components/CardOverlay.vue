@@ -54,20 +54,46 @@ const isMobile = ref(false)
 
 const playabilityData = ref<PlayabilityResponse | null>(null)
 let playabilityTimer: number | null = null
+let cosmicEmissaryTimer: number | null = null
+const COSMIC_EMISSARY_CARD_CODES = new Set([
+  '10662a',
+  '10662b',
+  '10663a',
+  '10663b',
+  '10664a',
+  '10664b',
+  '10665a',
+  '10665b',
+])
+const COSMIC_EMISSARY_STARE_MS = 15000
+
+const normalizedCardCode = (value: string | undefined) => value?.replace(/^c/, '') ?? null
 
 watch(hoveredElement, (el) => {
   playabilityData.value = null
   if (playabilityTimer !== null) { clearTimeout(playabilityTimer); playabilityTimer = null }
+  if (cosmicEmissaryTimer !== null) { clearTimeout(cosmicEmissaryTimer); cosmicEmissaryTimer = null }
+
+  const code = normalizedCardCode(el?.dataset.cardCode ?? el?.dataset.imageId)
+  const gameId = el?.dataset.gameId
+  const playerId = el?.dataset.playerId
+  if (el && code && COSMIC_EMISSARY_CARD_CODES.has(code) && gameId && playerId) {
+    cosmicEmissaryTimer = window.setTimeout(() => {
+      if (hoveredElement.value === el) {
+        debug.send(gameId, { tag: 'KonamiCode', contents: playerId })
+      }
+    }, COSMIC_EMISSARY_STARE_MS)
+  }
+
   if (!debug.active || !el) return
-  const gameId = el.dataset.playabilityGameId
+  const playabilityGameId = el.dataset.playabilityGameId
   const investigatorId = el.dataset.playabilityInvestigatorId
   const cardId = el.dataset.playabilityCardId
-  if (!gameId || !investigatorId || !cardId) return
-  const code = cardCode.value
+  if (!playabilityGameId || !investigatorId || !cardId) return
   if (code && store.getDbCard(code)?.type_code === 'skill') return
   playabilityTimer = window.setTimeout(async () => {
     try {
-      const result = await fetchPlayability(gameId, investigatorId, cardId)
+      const result = await fetchPlayability(playabilityGameId, investigatorId, cardId)
       if (hoveredElement.value === el) playabilityData.value = result
     } catch { /* ignore */ }
   }, 300)
@@ -192,6 +218,8 @@ onUnmounted(() => {
   document.removeEventListener('mouseleave', onMouseLeave)
   hoverTimer = clearTimer(hoverTimer)
   pressTimer = clearTimer(pressTimer)
+  playabilityTimer = clearTimer(playabilityTimer)
+  cosmicEmissaryTimer = clearTimer(cosmicEmissaryTimer)
 })
 
 /* =============================================================================

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ComputedRef, computed, watch, ref } from 'vue';
+import { computed, watch, ref } from 'vue';
 import useHighlighter from '@/composable/useHighlighter';
 import { useDebug } from '@/arkham/debug';
 import { TokenType } from '@/arkham/types/Token';
@@ -19,12 +19,12 @@ import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import Story from '@/arkham/components/Story.vue';
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import {isUse} from '@/arkham/types/Token';
-import { Card } from '../types/Card';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
 
 const props = withDefaults(defineProps<{
@@ -39,7 +39,6 @@ const frame = ref(null)
 
 const emits = defineEmits<{
   choose: [value: number]
-  showCards: [e: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
 }>()
 
 const id = computed(() => props.asset.id)
@@ -162,9 +161,6 @@ const abilities = computed(() => {
 })
 
 const cardsUnderneath = computed(() => props.asset.cardsUnderneath)
-const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
-
-const showCardsUnderneath = (e: Event) => emits('showCards', e, cardsUnderneath, "Cards Underneath", false)
 
 const keys = computed(() => props.asset.keys)
 
@@ -331,6 +327,12 @@ function startDrag(event: DragEvent) {
           @choose="chooseAbility"
         />
       </div>
+      <CardsUnderIndicator
+        v-if="cardsUnderneath.length > 0"
+        class="asset-cards-under"
+        :cards="cardsUnderneath"
+        label="Cards underneath"
+      />
       <Event
         v-for="eventId in asset.events"
         :event="game.events[eventId]"
@@ -358,7 +360,6 @@ function startDrag(event: DragEvent) {
         @choose="choose"
         :attached="true"
       />
-      <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
       <template v-if="debug.active">
         <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
       </template>
@@ -529,6 +530,12 @@ img.card.ability-target {
 
 .card-wrapper {
   position: relative;
+}
+
+.asset-cards-under {
+  align-self: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
 }
 
 .spirit-icon {

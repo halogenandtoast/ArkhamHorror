@@ -6165,6 +6165,7 @@ test-suite spec
       Arkham.Asset.Assets.DrMilanChristopherSpec
       Arkham.Asset.Assets.DukeSpec
       Arkham.Asset.Assets.ElderSignAmulet3Spec
+      Arkham.Asset.Assets.EmbezzledTreasureSpec
       Arkham.Asset.Assets.Encyclopedia2Spec
       Arkham.Asset.Assets.FireAxeSpec
       Arkham.Asset.Assets.FirstAidSpec

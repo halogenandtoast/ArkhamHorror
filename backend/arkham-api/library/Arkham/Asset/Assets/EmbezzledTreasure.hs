@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.EmbezzledTreasure (embezzledTreasure) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (InvestigatorEliminated)
-import Arkham.Investigator.Types (Field (InvestigatorResources))
+import Arkham.Investigator.Types (Field (InvestigatorName, InvestigatorResources))
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
+import Arkham.Name (toTitle)
 import Arkham.Projection
 import Arkham.Token
 
@@ -41,11 +41,21 @@ instance RunMessage EmbezzledTreasure where
       moveTokens (attrs.ability 1) (ResourceSource iid) attrs #resource n
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
+      let total = attrs.use Resource `div` 2
       investigators <- select $ affectsOthers Anyone
-      chooseOrRunOneM iid $ targets investigators $ handleTarget iid (attrs.ability 2)
+      named <- forToSnd investigators \i -> toTitle <$> field InvestigatorName i
+      chooseAmounts
+        iid
+        "Distribute starting resources"
+        (TotalAmountTarget total)
+        [(name, (0, total)) | (_, name) <- named]
+        (ProxyTarget (toTarget attrs) (toTarget attrs))
       pure a
-    HandleTargetChoice _ (isAbilitySource attrs 2 -> True) (InvestigatorTarget iid) -> do
-      let n = attrs.use Resource `div` 2
-      setupModifier (attrs.ability 2) iid (StartingResources n)
+    ResolveAmounts _ choices (ProxyTarget (isTarget attrs -> True) _) -> do
+      investigators <- select $ affectsOthers Anyone
+      named <- forToSnd investigators \i -> toTitle <$> field InvestigatorName i
+      for_ named \(iid', name) -> do
+        let n = getChoiceAmount name choices
+        when (n > 0) $ setupModifier (attrs.ability 2) iid' (StartingResources n)
       pure a
     _ -> EmbezzledTreasure <$> liftRunMessage msg attrs

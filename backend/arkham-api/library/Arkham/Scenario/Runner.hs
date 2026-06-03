@@ -1251,6 +1251,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
     addToHand iid (only card)
     pure $ a & foundCardsL .~ foundCards
+  AddFocusedToHand iid (ScenarioDeckTarget dkey) _cardSource cardId -> do
+    let
+      card =
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (fromMaybe [] $ lookup dkey scenarioDecks)
+      foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
+    push $ RemoveCardFromScenarioDeck dkey card
+    addToHand iid (only card)
+    pure $ a & foundCardsL .~ foundCards
   Discarded (AssetTarget _) _ card@(EncounterCard ec) -> do
     handler <- getEncounterDeckHandler $ toCardId card
     -- TODO: determine why this was only specified for Asset

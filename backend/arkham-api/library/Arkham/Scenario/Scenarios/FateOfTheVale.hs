@@ -37,10 +37,10 @@ fateOfTheVale difficulty = scenario FateOfTheVale "10651" "Fate of the Vale" dif
 
 cosmicEmissaryFormation :: [(Text, CardDef, CardDef)]
 cosmicEmissaryFormation =
-  [ ("mirrorNestTop", Enemies.cosmicEmissaryTheAbyss, Locations.mirrorNest10666)
-  , ("mirrorNestRight", Enemies.cosmicEmissaryTheMiasma, Locations.mirrorNest10667)
-  , ("mirrorNestBottom", Enemies.cosmicEmissaryTheBrilliance, Locations.mirrorNest10668)
-  , ("mirrorNestLeft", Enemies.cosmicEmissaryThePhantasm, Locations.mirrorNest10669)
+  [ ("mirrorNestTop", Enemies.cosmicEmissaryTheAbyss, Locations.mirrorNest_166)
+  , ("mirrorNestRight", Enemies.cosmicEmissaryTheMiasma, Locations.mirrorNest_167)
+  , ("mirrorNestBottom", Enemies.cosmicEmissaryTheBrilliance, Locations.mirrorNest_168)
+  , ("mirrorNestLeft", Enemies.cosmicEmissaryThePhantasm, Locations.mirrorNest_169)
   ]
 
 cosmicEmissaryLayout :: [GridTemplateRow]
@@ -250,4 +250,7 @@ instance RunMessage FateOfTheVale where
       pure $ FateOfTheVale $ attrs & decksL . at AbyssDeck %~ fmap (filter (/= EncounterCard ec))
     InvestigatorDrewEncounterCardFrom _ ec _ -> do
       pure $ FateOfTheVale $ attrs & decksL . at AbyssDeck %~ fmap (filter (/= EncounterCard ec))
+    KonamiCode pid -> do
+      selectEach (InvestigatorIsPlayer pid) drivenInsane
+      pure s
     _ -> FateOfTheVale <$> liftRunMessage msg attrs

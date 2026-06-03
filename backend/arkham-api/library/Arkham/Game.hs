@@ -1647,6 +1647,7 @@ getActsMatching matcher = do
     ActWithDeckId n -> pure . (== n) . attr actDeckId
     ActWithTreachery treacheryMatcher -> \act ->
       selectAny $ TreacheryIsAttachedTo (toTarget act.id) <> treacheryMatcher
+    ActWithModifier modifier -> \act -> elem modifier <$> getModifiers (toTarget act)
     ActCanWheelOfFortuneX -> pure . not . attr actUsedWheelOfFortuneX
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
@@ -1668,6 +1669,7 @@ getRemainingActsMatching matcher = do
     ActWithId _ -> pure . const False
     ActWithStep _ -> pure . const False
     ActWithTreachery _ -> pure . const False
+    ActWithModifier _ -> pure . const False
     ActWithSide _ -> error "Can't check side, since not on def"
     ActWithDeckId _ -> error "Can't check side, since not on def"
     ActCanWheelOfFortuneX -> pure . const True

@@ -623,20 +623,20 @@ openWater10599b =
     $ otherSideIs "10599a"
     $ location_ "10599b" "Open Water" [Sunken] TheThingInTheDepths
 
-mirrorNest10666 :: CardDef
-mirrorNest10666 =
+mirrorNest_166 :: CardDef
+mirrorNest_166 =
   locationWithUnrevealed_ "10666" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
 
-mirrorNest10667 :: CardDef
-mirrorNest10667 =
+mirrorNest_167 :: CardDef
+mirrorNest_167 =
   locationWithUnrevealed_ "10667" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
 
-mirrorNest10668 :: CardDef
-mirrorNest10668 =
+mirrorNest_168 :: CardDef
+mirrorNest_168 =
   locationWithUnrevealed_ "10668" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
 
-mirrorNest10669 :: CardDef
-mirrorNest10669 =
+mirrorNest_169 :: CardDef
+mirrorNest_169 =
   locationWithUnrevealed_ "10669" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
 
 theAbyssSpiralingOblivion :: CardDef

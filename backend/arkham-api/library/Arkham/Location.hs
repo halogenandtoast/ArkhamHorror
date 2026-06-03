@@ -968,10 +968,10 @@ allLocations =
     , --- The Longest Night
       SomeLocationCard theFarmhouse
     , SomeLocationCard milkhouse
-    , SomeLocationCard mirrorNest10666
-    , SomeLocationCard mirrorNest10667
-    , SomeLocationCard mirrorNest10668
-    , SomeLocationCard mirrorNest10669
+    , SomeLocationCard mirrorNest_166
+    , SomeLocationCard mirrorNest_167
+    , SomeLocationCard mirrorNest_168
+    , SomeLocationCard mirrorNest_169
     , SomeLocationCard theAbyssSpiralingOblivion
     , SomeLocationCard vineyard
     , SomeLocationCard coop

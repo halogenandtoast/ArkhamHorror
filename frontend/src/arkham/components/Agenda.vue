@@ -196,7 +196,12 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
       />
       <div v-if="groupedTreacheries.length > 0" class="treacheries">
         <div v-for="([cCode, treacheries], idx) in groupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: (groupedTreacheries.length - idx) * 10 }">
-          <div v-for="treacheryId in treacheries" class="treachery-card" :key="treacheryId" >
+          <div
+            v-for="(treacheryId, cardIdx) in treacheries"
+            class="treachery-card"
+            :key="treacheryId"
+            :style="{ '--attachment-index': cardIdx }"
+          >
             <Treachery
               :treachery="game.treacheries[treacheryId]"
               :game="game"
@@ -300,15 +305,20 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
   gap: 5px;
   flex-direction: row;
   margin-top: -50px;
-  /*position: inherit;*/
-  transition: margin-top 0.3s;
   position: relative;
+  transition: transform 0.3s;
+  will-change: transform;
 
   &:hover {
-    margin-top: 0px;
+    transform: translateY(50px);
+
     .treachery-card {
-      margin-left: 0;
+      transform: translateX(calc(var(--attachment-index, 0) * 50px));
     }
+  }
+
+  &:hover ~ .treachery-group {
+    transform: translateY(50px);
   }
 }
 
@@ -318,7 +328,9 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 
 .treachery-card {
   margin-left: -50px;
-  transition: margin-left 0.3s;
+  transition: transform 0.3s;
+  will-change: transform;
+
   &:first-of-type {
     margin-left: 0;
   }

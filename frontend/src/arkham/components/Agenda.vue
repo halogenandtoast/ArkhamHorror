@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { TokenType } from '@/arkham/types/Token';
 import { ComputedRef, computed, ref } from 'vue';
+import { useCardStore } from '@/stores/cards';
 import { useDebug } from '@/arkham/debug';
 import { useI18n } from 'vue-i18n';
 import { imgsrc, groupBy } from '@/arkham/helpers';
@@ -35,6 +36,7 @@ const emit = defineEmits<{
 
 const id = computed(() => props.agenda.id)
 const debug = useDebug()
+const cardStore = useCardStore()
 
 const canViewUnder = computed(() => {
   if (debug.active) return true
@@ -104,7 +106,88 @@ const cardsUnder = computed(() => props.cardsUnder)
 const showCardsUnderAgenda = () => emit('show', cardsUnder, 'Cards Under Agenda', false)
 
 const futureStack = computed(() => props.remainingStack.filter(c => asCardCode(c) !== props.agenda.id))
-const totalAgendas = computed(() => props.completedStack.length + props.remainingStack.length)
+
+const cardStage = (card: Card): number | null => {
+  const code = asCardCode(card)
+  return cardStore.cards.find((cardDef) =>
+    cardDef.cardCode === code || cardDef.cardCode === code.replace(/^c/, '')
+  )?.stage ?? null
+}
+
+type StackIndicatorGroup = {
+  label: string
+  state: 'completed' | 'current' | 'remaining'
+  images: {
+    src: string
+    current?: boolean
+    passed?: boolean
+  }[]
+}
+
+type AgendaStackGroup = StackIndicatorGroup & {
+  stage: number | null
+  firstIndex: number
+}
+
+const groupedAgendaStack = computed<StackIndicatorGroup[]>(() => {
+  const groups: AgendaStackGroup[] = []
+
+  const addToGroup = (
+    stage: number | null,
+    fallbackKey: string,
+    cardImage: StackIndicatorGroup['images'][number],
+    preferredState: StackIndicatorGroup['state'],
+    firstIndex: number,
+  ) => {
+    const group = groups.find((g) => stage !== null ? g.stage === stage : g.label === fallbackKey)
+
+    if (group) {
+      group.images.push(cardImage)
+      if (preferredState === 'current') group.state = 'current'
+      return
+    }
+
+    groups.push({
+      label: stage === null ? fallbackKey : `Agenda ${stage}`,
+      stage,
+      firstIndex,
+      state: preferredState,
+      images: [cardImage],
+    })
+  }
+
+  props.completedStack.forEach((card, i) => {
+    const stage = cardStage(card)
+    addToGroup(stage, `Agenda ${i + 1}`, { src: imgsrc(cardImage(card)), passed: true }, 'completed', i)
+  })
+
+  addToGroup(
+    props.agenda.sequence.step,
+    `Agenda ${props.agenda.sequence.step}`,
+    { src: image.value, current: true },
+    'current',
+    props.completedStack.length,
+  )
+
+  futureStack.value.forEach((card, i) => {
+    const stage = cardStage(card)
+    addToGroup(
+      stage,
+      `Agenda ${props.completedStack.length + i + 2}`,
+      { src: imgsrc(cardImage(card)) },
+      stage === props.agenda.sequence.step ? 'current' : 'remaining',
+      props.completedStack.length + i + 1,
+    )
+  })
+
+  return groups.sort((a, b) => {
+    if (a.stage !== null && b.stage !== null) return a.stage - b.stage
+    return a.firstIndex - b.firstIndex
+  })
+})
+
+const totalAgendas = computed(() => groupedAgendaStack.value.length)
+const currentAgendaPosition = computed(() => groupedAgendaStack.value.findIndex((group) => group.state === 'current') + 1 || props.agenda.sequence.step)
 
 const nextToTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "NextToAgenda").
@@ -147,11 +230,12 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
   <div class="agenda-container">
     <StackIndicator
       label="Agenda"
-      :current="agenda.sequence.step"
+      :current="currentAgendaPosition"
       :total="totalAgendas"
       :completedCards="completedStack"
       :currentImage="image"
       :remainingCards="futureStack"
+      :groups="groupedAgendaStack"
     />
     <div class="agenda-main">
       <div class="agenda-card">

@@ -133,7 +133,8 @@ watch(hoveredElement, (el) => {
       cosmicEmissaryTimer = window.setTimeout(() => {
         const currentCosmic = cosmicEmissaryData(hoveredElement.value)
         if (sameCosmicEmissaryContext(currentCosmic, cosmicEmissaryTimerContext)) {
-          showCosmicEmissaryPrompt(cosmic.gameId, cosmic.playerId)
+          clearOverlay()
+          debug.send(cosmic.gameId, { tag: 'KonamiCode', contents: cosmic.playerId })
         }
         cosmicEmissaryTimer = null
         cosmicEmissaryTimerContext = null
@@ -257,12 +258,23 @@ const onPointerUp = () => {
   }
 }
 
+const clearOverlay = () => {
+  hoverTimer = clearTimer(hoverTimer)
+  pressTimer = clearTimer(pressTimer)
+  playabilityTimer = clearTimer(playabilityTimer)
+  cosmicEmissaryTimer = clearTimer(cosmicEmissaryTimer)
+  cosmicEmissaryTimerContext = null
+  cosmicEmissaryPrompt.value = null
+  hoveredElement.value = null
+}
+
 onMounted(() => {
   document.addEventListener('pointerdown', onPointerDown, { passive: true })
   document.addEventListener('pointermove', onPointerMove, { passive: true })
   document.addEventListener('pointerup', onPointerUp, { passive: true })
   document.addEventListener('mouseover', onMouseOver)
   document.addEventListener('mouseleave', onMouseLeave)
+  document.addEventListener('arkham:clear-card-overlay', clearOverlay)
   // only block context menu inside the overlay, not globally
   cardOverlay.value?.addEventListener('contextmenu', (e) => {
     const t = e.target as HTMLElement
@@ -275,10 +287,8 @@ onUnmounted(() => {
   document.removeEventListener('pointerup', onPointerUp)
   document.removeEventListener('mouseover', onMouseOver)
   document.removeEventListener('mouseleave', onMouseLeave)
-  hoverTimer = clearTimer(hoverTimer)
-  pressTimer = clearTimer(pressTimer)
-  playabilityTimer = clearTimer(playabilityTimer)
-  cosmicEmissaryTimer = clearTimer(cosmicEmissaryTimer)
+  document.removeEventListener('arkham:clear-card-overlay', clearOverlay)
+  clearOverlay()
 })
 
 /* =============================================================================

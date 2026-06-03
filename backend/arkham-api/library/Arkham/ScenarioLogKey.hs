@@ -96,6 +96,8 @@ data ScenarioLogKey
     YouAreDeliveringAPackage
   | -- | Prelude The Final Evening
     TheHemlocksAreHashingItOut
+  | -- | Fate of the Vale
+    BertieIsFleeing
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen

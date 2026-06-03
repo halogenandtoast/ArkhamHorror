@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
@@ -19,12 +20,16 @@ theSilence = agenda (1, A) TheSilence Cards.theSilence (Static 6)
 
 instance RunMessage TheSilence where
   runMessage msg a@(TheSilence attrs) = runQueueT $ case msg of
+    KonamiCode pid -> do
+      f <- getLogger
+      selectEach (InvestigatorIsPlayer pid) \iid -> do
+        liftIO $ f (ClientUI $ "theSilence:" <> tshow pid)
+        drivenInsane iid
+      pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> do
         sid <- getRandom
-        chooseOneM iid do
-          for_ [#willpower, #intellect] \skill ->
-            skillLabeled skill $ beginSkillTest sid iid attrs iid skill (Fixed 4)
+        chooseBeginSkillTest sid iid attrs iid [#willpower, #intellect] (Fixed 4)
       advanceAgendaDeckAfterSkillTest attrs
       pure a
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do

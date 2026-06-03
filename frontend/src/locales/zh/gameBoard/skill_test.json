@@ -8,6 +8,8 @@
     "determineInvestigatorsModifiedSkillValueStep": "计算调查员修正后的技能值。",
     "determineSuccessOrFailureOfSkillTestStep": "决定检定成功/失败。",
     "applySkillTestResultsStep": "执行技能检定结果。",
-    "skillTestEndsStep": "技能检定结束。"
+    "skillTestEndsStep": "技能检定结束。",
 
+    "skipTriggersActiveNotice": "已开启‘跳过触发器’：与本次检定无关的快速触发效果已被隐藏。",
+    "skipTriggersAdjust": "更改"
 }

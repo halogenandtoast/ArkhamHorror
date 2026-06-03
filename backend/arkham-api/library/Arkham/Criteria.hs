@@ -445,7 +445,9 @@ data EnemyCriterion
   deriving stock (Show, Eq, Ord, Data)
 
 canFightAtAnyLocation :: Criterion
-canFightAtAnyLocation = EnemyCriteria (ThisEnemy $ CanBeAttackedBy You) <> CanAttack
+canFightAtAnyLocation =
+  EnemyCriteria (ThisEnemy $ CanBeAttackedBy You <> EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone])
+    <> CanAttack
 
 canEvadeAtAnyLocation :: Criterion
 canEvadeAtAnyLocation = EnemyCriteria (ThisEnemy EnemyWithEvade)

@@ -6252,6 +6252,7 @@ test-suite spec
       Arkham.Event.Events.EvidenceSpec
       Arkham.Event.Events.ExtraAmmunition1Spec
       Arkham.Event.Events.HotStreak4Spec
+      Arkham.Event.Events.LieInWaitSpec
       Arkham.Event.Events.LookWhatIFoundSpec
       Arkham.Event.Events.Lucky2Spec
       Arkham.Event.Events.LuckySpec

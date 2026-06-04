@@ -331,7 +331,10 @@ function startDrag(event: DragEvent) {
         v-if="cardsUnderneath.length > 0"
         class="asset-cards-under"
         :cards="cardsUnderneath"
+        :game="game"
+        :playerId="playerId"
         label="Cards underneath"
+        @choose="$emit('choose', $event)"
       />
       <Event
         v-for="eventId in asset.events"

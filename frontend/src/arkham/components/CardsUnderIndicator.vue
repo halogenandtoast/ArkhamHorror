@@ -46,6 +46,9 @@ function isCardInChoices(card: ArkhamCard | CardContents): boolean {
   const cardId = toCardContents(card).id
   return choices.value.some(choice => choice.tag === 'TargetLabel' && cardId === choice.target.contents)
 }
+
+const hasCardChoice = computed(() => props.cards.some(isCardInChoices))
+const isHighlighted = computed(() => props.highlighted || hasCardChoice.value)
 </script>
 
 <template>
@@ -61,7 +64,7 @@ function isCardInChoices(card: ArkhamCard | CardContents): boolean {
     <button
       type="button"
       class="cards-under-indicator"
-      :class="{ 'cards-under-indicator--highlighted': highlighted, 'cards-under-indicator--with-label': showLabel, 'cards-under-indicator--full-width': fullWidth }"
+      :class="{ 'cards-under-indicator--highlighted': isHighlighted, 'cards-under-indicator--with-label': showLabel, 'cards-under-indicator--full-width': fullWidth }"
       :aria-label="tooltip"
       v-tooltip="tooltip"
     >
@@ -128,8 +131,15 @@ function isCardInChoices(card: ArkhamCard | CardContents): boolean {
 }
 
 .cards-under-indicator--highlighted {
-  border-color: var(--select);
-  box-shadow: 0 0 0 1px var(--select), 0 0 10px color-mix(in srgb, var(--select) 65%, transparent);
+  border-color: color-mix(in srgb, var(--select) 65%, black);
+  background: color-mix(in srgb, var(--select) 55%, black);
+  color: #fff;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--select) 45%, transparent);
+}
+
+.cards-under-indicator--highlighted:hover {
+  background: color-mix(in srgb, var(--select) 65%, black);
+  border-color: color-mix(in srgb, var(--select) 75%, black);
 }
 
 .cards-under-indicator--with-label {

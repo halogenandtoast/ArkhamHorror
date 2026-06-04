@@ -63,9 +63,26 @@ instance HasAbilities LostSelf where
 residentAssetDefs :: [CardDef]
 residentAssetDefs = map toCardDef [minBound .. maxBound :: Resident]
 
+hemlockValeLayout :: [GridTemplateRow]
+hemlockValeLayout =
+  [ ".     triangle square"
+  , "moon  triangle square"
+  , "moon  diamond  star"
+  , "heart diamond  star"
+  , "heart circle   spade"
+  , ".     circle   spade"
+  ]
+
+placeSetAsideNightLocation :: ReverseQueue m => CardDef -> m LocationId
+placeSetAsideNightLocation def = do
+  mcard <- getSetAsideCardMaybe def
+  case mcard of
+    Just card -> placeLocation card
+    Nothing -> placeLocation def
+
 {- | Shared "Hemlock Vale (Night)" setup (Fate of the Vale 2 and 5): remove the
 Mirror Nest and Cave locations along with the Cosmic Emissary enemies, put each
-Hemlock Vale location into play on its (Night) side, and gather the
+set-aside Hemlock Vale location into play on its (Night) side, and gather the
 investigators at The Crossroads. The new village locations are only in play on
 the following step, so callers that need to query them should do so from a
 subsequent @DoStep@.
@@ -73,8 +90,10 @@ subsequent @DoStep@.
 setupNightVale :: ReverseQueue m => ActAttrs -> m ()
 setupNightVale attrs = do
   selectEach (EnemyWithTrait Emissary) removeFromGame
-  crossroads <- placeLocation Locations.theCrossroadsNight
-  placeLocationCards
+  push $ SetLayout hemlockValeLayout
+  crossroads <- placeSetAsideNightLocation Locations.theCrossroadsNight
+  traverse_
+    placeSetAsideNightLocation
     [ Locations.boardingHouseNight
     , Locations.hemlockChapelNight
     , Locations.theOldMillNight
@@ -83,7 +102,6 @@ setupNightVale attrs = do
     , Locations.valeSchoolhouseNight
     , Locations.theCommonsNight
     ]
-  push $ SetLayout []
   eachInvestigator \iid -> moveTo attrs iid crossroads
   selectEach (LocationWithTitle "Mirror Nest") removeLocation
   selectEach (LocationWithTrait Cave) removeLocation
@@ -94,8 +112,12 @@ shuffled, at The Boarding House, The Commons, and The Atwood House.
 -}
 flipEmissariesAtVillage :: ReverseQueue m => m ()
 flipEmissariesAtVillage = do
+  let createBrokenFormationEmissary emissary lid = do
+        eid <- createEnemyAt emissary lid
+        scenarioSpecific "disableAsSelfLocation" eid
+
   crossroads <- selectJust $ locationIs Locations.theCrossroadsNight
-  createEnemyAt_ Enemies.cosmicEmissaryTheAbyssShattered crossroads
+  createBrokenFormationEmissary Enemies.cosmicEmissaryTheAbyssShattered crossroads
   others <-
     shuffle
       [ Enemies.cosmicEmissaryTheMiasmaShattered
@@ -106,12 +128,32 @@ flipEmissariesAtVillage = do
     traverse
       (selectJust . locationIs)
       [Locations.boardingHouseNight, Locations.theCommonsNight, Locations.theAtwoodHouseNight]
-  for_ (zip others houses) \(emissary, lid) -> createEnemyAt_ emissary lid
+  for_ (zip others houses) (uncurry createBrokenFormationEmissary)
+
+placeEnemySideAt :: ReverseQueue m => Card -> LocationId -> m ()
+placeEnemySideAt card lid = do
+  obtainCard card
+  case residentFromCardDef (toCardDef card) of
+    Just resident -> createEnemyAt_ (residentEnemyDef resident) lid
+    Nothing -> createEnemyAt_ card lid
+
+chooseEnemyPlacements :: ReverseQueue m => InvestigatorId -> [Card] -> [LocationId] -> m ()
+chooseEnemyPlacements _ [] _ = pure ()
+chooseEnemyPlacements _ _ [] = pure ()
+chooseEnemyPlacements lead (card : cards) locs =
+  focusCards [card] do
+    chooseTargetM lead locs \lid -> do
+      unfocusCards
+      placeEnemySideAt card lid
+      chooseEnemyPlacements lead cards (filter (/= lid) locs)
 
 {- | Search the Day of the Feast set for 2 Frenzied Revelers, shuffle them with
 each set-aside Resident card, and place them, enemy side faceup, beneath each
-location except The Crossroads, distributed as evenly as possible. When
-@onlyEmpty@ is set (Fate of the Vale 5) only empty locations are used.
+location except The Crossroads, distributed as evenly as possible.
+
+For Fate of the Vale 5, cards are placed at empty locations. Stop once there are
+no empty locations remaining; if there are too few cards for every empty
+location, the lead investigator chooses which empty locations receive them.
 -}
 seedResidentsBeneath :: ReverseQueue m => Bool -> m ()
 seedResidentsBeneath onlyEmpty = do
@@ -123,8 +165,13 @@ seedResidentsBeneath onlyEmpty = do
   revelers <- take 2 <$> getSetAsideCardsMatching (cardIs Enemies.frenziedReveler)
   residents <- getSetAsideCardsMatching (mapOneOf cardIs residentAssetDefs)
   cards <- shuffle (revelers <> residents)
-  unless (null locs || null cards)
-    $ for_ (zip cards (cycle locs)) \(card, lid) -> placeUnderneath lid [card]
+  unless (null locs || null cards) do
+    if onlyEmpty
+      then
+        if length cards >= length locs
+          then for_ (zip cards locs) (uncurry placeEnemySideAt)
+          else getLead >>= \lead -> chooseEnemyPlacements lead cards locs
+      else for_ (zip cards (cycle locs)) \(card, lid) -> placeUnderneath lid [card]
 
 {- | Put a story ally into play under the lead investigator's control from the
 set-aside pile, unless it is already in play.
@@ -239,7 +286,7 @@ instance RunMessage LostSelf where
       pure a
     -- Fate of the Vale 1: "Let's end this."
     DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      scope "fateOfTheVale1" $ storyWithContinue' $ p "body"
+      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale1"
 
       -- If Dr. Marquez is not already in play, search each investigator's deck
       -- and all out-of-play areas for her and put her into play.
@@ -268,7 +315,7 @@ instance RunMessage LostSelf where
       pure a
     -- Fate of the Vale 2: "Save the Vale!"
     DoStep 2 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      scope "fateOfTheVale2" $ storyWithContinue' $ p "body"
+      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale2"
       setupNightVale attrs
 
       lead <- getLead
@@ -290,7 +337,7 @@ instance RunMessage LostSelf where
       pure a
     -- Fate of the Vale 3: "Burn it all."
     DoStep 3 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      scope "fateOfTheVale3" $ storyWithContinue' $ p "body"
+      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale3"
       -- Skip to Fate of the Vale 5; advance the act after that shared step has
       -- been queued so this act is still in play to handle it.
       doStep 5 adv
@@ -298,13 +345,13 @@ instance RunMessage LostSelf where
       pure a
     -- Fate of the Vale 4: "Escape with our lives."
     DoStep 4 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      scope "fateOfTheVale4" $ storyWithContinue' $ p "body"
+      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale4"
       doStep 5 adv
       advanceToAct attrs Cards.fateOfTheValeV4 A
       pure a
     -- Fate of the Vale 5: shared resolution for v.III and v.IV.
     DoStep 5 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      scope "fateOfTheVale5" $ storyWithContinue' $ p "body"
+      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale5"
       setupNightVale attrs
       doStep 105 adv
       pure a

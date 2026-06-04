@@ -139,7 +139,10 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <button v-else @click="debug.send(game.id, {tag: 'Ready', contents: {tag: 'EnemyTarget', contents: id}})">{{ $t('debug.enemy.ready') }}</button>
         <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'InvestigatorSource', contents:investigatorId}]})">{{ $t('debug.enemy.defeat') }}</button>
         <button @click="debug.send(game.id, {tag: 'EnemyEvaded', contents: [investigatorId, id]})">{{ $t('debug.enemy.evade') }}</button>
-        <button @click="debug.send(game.id, {tag: 'DamageMessage', contents: {tag: 'DealDamage_', contents: [{tag: 'EnemyTarget', contents: id}, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 1, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]}})">{{ $t('debug.enemy.addDamage') }}</button>
+        <button
+          @click.exact="debug.send(game.id, {tag: 'DamageMessage', contents: {tag: 'DealDamage_', contents: [{tag: 'EnemyTarget', contents: id}, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 1, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]}})"
+          @click.shift="debug.send(game.id, {tag: 'DamageMessage', contents: {tag: 'DealDamage_', contents: [{tag: 'EnemyTarget', contents: id}, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 5, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]}})"
+        >{{ $t('debug.enemy.addDamage') }}</button>
         <button @click="placeTokens = true">{{ $t('debug.common.placeTokens') }}</button>
         <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'ClearTokens_', contents: { tag: 'EnemyTarget', contents: id}}})">{{ $t('debug.common.removeAllTokens') }}</button>
         <button @click="setModifiers = true">{{ $t('debug.common.modifiers') }}</button>

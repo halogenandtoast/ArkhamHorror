@@ -2764,6 +2764,27 @@ async function addChaosToken(face: any){
      the user's drag offset transform, so rotation reshuffles (which FLIP-
      animate the wrapper) don't wipe that offset. */
   display: block;
+  position: relative;
+}
+
+.abyss-location-count {
+  position: absolute;
+  top: 4%;
+  right: 6%;
+  min-width: 1.6em;
+  height: 1.6em;
+  padding: 0 0.35em;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 13, 25, 0.9);
+  border: 1px solid rgba(111, 225, 210, 0.8);
+  box-shadow: 0 0 8px rgba(111, 225, 210, 0.45);
+  color: white;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 30;
 }
 
 .location-cell > .location {

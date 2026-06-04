@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.Outbreak (outbreak, Outbreak (..)) where
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.WakingNightmare.Helpers
 import Arkham.Story.Cards qualified as Stories
@@ -18,8 +19,10 @@ outbreak = treachery Outbreak Cards.outbreak
 
 instance HasModifiersFor Outbreak where
   getModifiersFor (Outbreak attrs) = do
-    modified_
+    atInfested <- attrs.drawnBy <=~> InvestigatorAt InfestedLocation
+    modifiedWhen_
       attrs
+      atInfested
       (StoryTarget $ StoryId $ Stories.theInfestationBegins.cardCode)
       [MetaModifier $ object ["treatTabletAsSkill" .= True]]
 

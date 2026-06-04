@@ -6242,6 +6242,7 @@ test-suite spec
       Arkham.Event.Events.BarricadeSpec
       Arkham.Event.Events.BlindingLight2Spec
       Arkham.Event.Events.BlindingLightSpec
+      Arkham.Event.Events.BuryThemDeepSpec
       Arkham.Event.Events.CloseCall2Spec
       Arkham.Event.Events.CrypticResearch4Spec
       Arkham.Event.Events.CunningDistractionSpec

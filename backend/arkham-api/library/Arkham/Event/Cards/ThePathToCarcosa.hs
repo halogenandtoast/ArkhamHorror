@@ -26,7 +26,7 @@ buryThemDeep =
     $ (event "03016" "Bury Them Deep" 0 Neutral)
       { cdSkills = [#willpower, #combat, #wild]
       , cdCardTraits = singleton Task
-      , cdFastWindow = Just $ IfEnemyDefeated #after Anyone ByAny $ NonEliteEnemy <> EnemyWasAt YourLocation
+      , cdFastWindow = Just $ EnemyDefeated #after Anyone ByAny $ NonEliteEnemy <> EnemyWasAt YourLocation
       , cdVictoryPoints = Just 1
       }
 

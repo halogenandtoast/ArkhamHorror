@@ -211,6 +211,8 @@ instance RunMessage WrittenInRock where
 
       flavor $ setTitle "theCaveIn" >> p (if isDay then "theCaveIn2" else "theCaveIn3")
       flavor $ setTitle "theCaveIn" >> p "theCaveIn4"
+      scope "slidingAndSwappingLocations" $ flavor $ setTitle "title" >> p "body"
+      scope "theMineCart" $ flavor $ setTitle "title" >> p "body"
       controlStation <- selectJust $ locationIs Locations.controlStation
       push $ PlaceGrid (GridLocation (Pos 1 1) controlStation)
       placeLocationInGrid_ (Pos 5 5) =<< fetchCard Locations.railExit

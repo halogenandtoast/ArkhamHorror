@@ -13,6 +13,7 @@ import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (
   allInvestigators,
   getInvestigators,
@@ -217,6 +218,22 @@ instance RunMessage TheTwistedHollow where
             dealAssetHorror aid ScenarioSource 2
           record TheoDistractedTheBear
           entry "theoPeters"
+        Theta -> scope "drRosaMarquez" do
+          flavor $ setTitle "title" >> p.green "body"
+          locations <- select UnrevealedLocation
+          chooseOneM iid do
+            labeled' "doNotRevealLocation" nothing
+            targets locations \loc ->
+              temporaryModifier
+                iid
+                source
+                (CannotTriggerAbilityMatching $ AbilityIsForcedAbility <> AbilityOnLocation (LocationWithId loc))
+                (reveal loc)
+        Omega -> scope "bertieMusgrave" do
+          flavor $ setTitle "title" >> p.green "body"
+          chooseOneM iid do
+            labeled' "gainClues" $ eachInvestigator \iid' -> gainClues iid' source 1
+            labeled' "readyValeLantern" $ selectEach (AssetWithTitle "Vale Lantern") readyThis
         Sigma -> scope "sigma" do
           mjudith <- getSetAsideCardMaybe Assets.judithParkTheMuscle
           mtheo <- getSetAsideCardMaybe Assets.theoPetersJackOfAllTrades

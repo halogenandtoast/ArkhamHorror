@@ -14,9 +14,7 @@ import Arkham.Effect.Builder
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location (getCanMoveToLocations)
-import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getPlayerCount)
 import Arkham.I18n
@@ -368,20 +366,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           push R3
         Resolution 3 -> do
           resolution "resolution3"
-          eachInvestigator \iid -> do
-            assets <- select $ assetControlledBy iid
-            chooseOrRunOneM iid do
-              for_ (eachWithRest assets) \(asset, rest) ->
-                targeting asset do
-                  setupModifier ScenarioSource asset Persist
-                  for_ rest $ toDiscard ScenarioSource
-            handSize <- getHandSize iid
-            cs <- fieldMap InvestigatorHand length iid
-            when (cs > handSize) $ chooseAndDiscardCards iid ScenarioSource (cs - handSize)
-            shuffleDiscardBackIn iid
-            rs <- getStartingResources iid
-            n <- field InvestigatorResources iid
-            when (n > rs) $ loseResources iid ScenarioSource (n - rs)
+          eachInvestigator makePreparationsForNextSurvey
           keepCardCache
           endOfScenario
         _ -> error "invalid resolution"

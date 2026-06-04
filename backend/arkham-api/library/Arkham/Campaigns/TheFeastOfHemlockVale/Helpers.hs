@@ -4,6 +4,7 @@
 module Arkham.Campaigns.TheFeastOfHemlockVale.Helpers where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types qualified as Asset
 import Arkham.Campaign.Types (Field (CampaignChaosBag))
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -13,23 +14,27 @@ import Arkham.Card.CardDef
 import Arkham.ChaosToken.Types (ChaosTokenFace (..), isSymbolChaosToken)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
+import Arkham.Classes.Query
 import Arkham.Criteria
 import Arkham.Enemy.Types.Attrs
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText (chaosTokenMorph, p, setTitle, storyBuild)
+import Arkham.Helpers.Investigator (getHandSize, getStartingResources)
 import Arkham.Helpers.Log
+import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCards)
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Location.Base
-import Arkham.Matcher.Enemy
-import Arkham.Matcher.Investigator
-import Arkham.Matcher.Scenario
+import Arkham.Matcher
 import Arkham.Message (Message (NextCampaignStep), pattern SetCampaignChaosBag)
 import Arkham.Message.Lifted hiding (continue)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (decrementRecordCount, incrementRecordCount, recordCount)
 import Arkham.Modifier
 import Arkham.Prelude hiding (Day)
+import Arkham.Projection
 import Arkham.Scenario.Options
 import Arkham.Source
 import Arkham.Target
@@ -43,6 +48,29 @@ codex :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int 
 codex iid (toSource -> source) n = do
   cannotTriggerCodex <- elem (ScenarioModifier "cannotTriggerCodex") <$> getModifiers ScenarioTarget
   unless cannotTriggerCodex $ scenarioSpecific "codex" (iid, source, n)
+
+makePreparationsForNextSurvey :: ReverseQueue m => InvestigatorId -> m ()
+makePreparationsForNextSurvey iid = do
+  iattrs <- getAttrs @Investigator.Investigator iid
+  let startingAssetCodes = map toCardCode iattrs.investigatorStartsWith
+  assets <- selectWithField Asset.AssetCardCode $ assetControlledBy iid
+  let (startingAssets, otherAssets) = partition ((`elem` startingAssetCodes) . snd) assets
+
+  for_ startingAssets \(asset, _) -> setupModifier ScenarioSource asset Persist
+  unless (null otherAssets) $ chooseOrRunOneM iid do
+    for_ (eachWithRest (map fst otherAssets)) \(asset, rest) ->
+      targeting asset do
+        setupModifier ScenarioSource asset Persist
+        for_ rest $ toDiscard ScenarioSource
+
+  handSize <- getHandSize iid
+  cardsInHand <- fieldMap Investigator.InvestigatorHand length iid
+  when (cardsInHand > handSize) $ chooseAndDiscardCards iid ScenarioSource (cardsInHand - handSize)
+  shuffleDiscardBackIn iid
+  startingResources <- getStartingResources iid
+  resources <- field Investigator.InvestigatorResources iid
+  when (resources > startingResources)
+    $ loseResources iid ScenarioSource (resources - startingResources)
 
 data Day = Day1 | Day2 | Day3
   deriving stock (Show, Eq, Generic)

@@ -13,9 +13,8 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Investigator (getHandSize, getStartingResources)
 import Arkham.Helpers.Log (getRecordCount)
-import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCards, randomDiscard)
+import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getLead, getPlayerCount)
 import Arkham.I18n
 import Arkham.Id (InvestigatorId, PlayerId, getPlayer)
@@ -26,7 +25,6 @@ import Arkham.Message (pattern PassedThisSkillTest)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (incrementRecordCount, record, remember, remembered)
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -450,20 +448,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           when (fireworks >= n) $ record TheValeIsFullOfFireworks
           -- Make preparations for the final survey: keep one non-starting asset,
           -- discard the rest, trim to opening hand size and starting resources.
-          eachInvestigator \iid -> do
-            assets <- select $ assetControlledBy iid
-            chooseOrRunOneM iid do
-              for_ (eachWithRest assets) \(asset, rest) ->
-                targeting asset do
-                  setupModifier ScenarioSource asset Persist
-                  for_ rest $ toDiscard ScenarioSource
-            handSize <- getHandSize iid
-            cs <- fieldMap InvestigatorHand length iid
-            when (cs > handSize) $ chooseAndDiscardCards iid ScenarioSource (cs - handSize)
-            shuffleDiscardBackIn iid
-            rs <- getStartingResources iid
-            resources <- field InvestigatorResources iid
-            when (resources > rs) $ loseResources iid ScenarioSource (resources - rs)
+          eachInvestigator makePreparationsForNextSurvey
           keepCardCache
           endOfScenario
         _ -> error "invalid resolution"

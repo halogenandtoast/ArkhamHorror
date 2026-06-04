@@ -13,19 +13,15 @@ import Arkham.Cost.Status qualified as Cost
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location (getCanMoveToLocations)
-import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount)
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Story.Cards qualified as Stories
@@ -273,20 +269,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
       case r of
         Resolution 1 -> do
           resolution "resolution1"
-          eachInvestigator \iid -> do
-            assets <- select $ assetControlledBy iid
-            chooseOrRunOneM iid do
-              for_ (eachWithRest assets) \(asset, rest) ->
-                targeting asset do
-                  setupModifier ScenarioSource asset Persist
-                  for_ rest $ toDiscard ScenarioSource
-            handSize <- getHandSize iid
-            cs <- fieldMap InvestigatorHand length iid
-            when (cs > handSize) $ chooseAndDiscardCards iid ScenarioSource (cs - handSize)
-            shuffleDiscardBackIn iid
-            rs <- getStartingResources iid
-            n <- field InvestigatorResources iid
-            when (n > rs) $ loseResources iid ScenarioSource (n - rs)
+          eachInvestigator makePreparationsForNextSurvey
           addChaosToken AutoFail
           keepCardCache
           endOfScenario

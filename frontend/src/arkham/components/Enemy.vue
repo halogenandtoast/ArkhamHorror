@@ -536,11 +536,6 @@ img.card.source-highlight {
   }
 }
 
-.exhausted {
-  --exhaust-rotation: 90deg;
-  transform: rotate(calc(var(--ui-rotation) + var(--exhaust-rotation))) translateX(-10px);
-}
-
 .card-wrapper {
   --ui-rotation: 0deg;
   --exhaust-rotation: 0deg;
@@ -548,6 +543,11 @@ img.card.source-highlight {
   transition: transform 0.2s linear;
   transform: rotate(calc(var(--ui-rotation) + var(--exhaust-rotation)));
   transform-origin: center;
+}
+
+.card-wrapper.exhausted {
+  --exhaust-rotation: 90deg;
+  transform: rotate(calc(var(--ui-rotation) + var(--exhaust-rotation))) translateX(-10px);
 }
 
 .spirit-icon {

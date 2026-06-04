@@ -17,6 +17,7 @@ import Arkham.Helpers.Location (getCanMoveToLocations)
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount)
+import Arkham.Helpers.SkillTest (isParley, withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -53,10 +54,22 @@ preludeWelcomeToHemlockVale difficulty =
 
 instance HasChaosTokenValue PreludeWelcomeToHemlockVale where
   getChaosTokenValue iid tokenFace (PreludeWelcomeToHemlockVale attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      currentDay <- dayNumber <$> getCampaignDay
+      pure $ toChaosTokenValue attrs Skull currentDay (currentDay + 1)
+    Cultist -> do
+      parley <- isParley
+      pure
+        $ ChaosTokenValue Cultist
+        $ if isEasyStandard attrs || parley then PositiveModifier 1 else NegativeModifier 1
+    Tablet -> do
+      cardsInHand <- fieldMap InvestigatorHand length iid
+      pure
+        $ ChaosTokenValue Tablet
+        $ if isEasyStandard attrs
+          then if cardsInHand < 3 then NoModifier else NegativeModifier 2
+          else if cardsInHand < 2 then NegativeModifier 2 else NegativeModifier 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 1 3
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage PreludeWelcomeToHemlockVale where
@@ -78,6 +91,12 @@ instance RunMessage PreludeWelcomeToHemlockVale where
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "intro4"
+      pure s
+    ResolveChaosToken token Cultist _iid | isEasyStandard attrs -> do
+      whenM isParley $ withSkillTest \sid -> skillTestModifier sid Cultist token SkillTestAutomaticallySucceeds
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      whenM isParley $ drawAnotherChaosToken iid
       pure s
     Setup -> runScenarioSetup PreludeWelcomeToHemlockVale attrs do
       setup $ ul do

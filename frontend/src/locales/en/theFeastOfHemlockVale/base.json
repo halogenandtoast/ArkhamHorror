@@ -33,6 +33,20 @@
       "body": "<p class='basic'>Some enemies in this campaign have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated location (as described in parentheses next to the word patrol).</p><ul><li>If there are multiple locations that qualify as the designated location, the lead investigator may choose which location the enemy moves toward.</li><li>If an enemy with patrol would be compelled to move to a location via a path that is blocked by a card ability, the enemy does not move.</li></ul>"
     }
   ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current day number.",
+      "cultist": "+1. If this is a parley attempt, you automatically succeed.",
+      "tablet": "-2. If you have fewer than 3 cards in hand, treat this token's modifier as 0 instead.",
+      "elderThing": "-1. If this is a parley attempt, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current day number.",
+      "cultist": "-1. If this is a parley attempt, treat this token's modifier as a +1, instead.",
+      "tablet": "-4. If you have fewer than 2 cards in hand, treat this token's modifier as -2 instead.",
+      "elderThing": "-3. If this is a parley attempt, reveal another token."
+    }
+  },
   "headings": {
     "preludeTheFirstEvening": "Prelude: The First Evening",
     "preludeTheSecondEvening": "Prelude: The Second Evening",

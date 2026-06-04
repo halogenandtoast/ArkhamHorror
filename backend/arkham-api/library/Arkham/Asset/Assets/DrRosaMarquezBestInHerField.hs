@@ -12,7 +12,7 @@ newtype DrRosaMarquezBestInHerField = DrRosaMarquezBestInHerField AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drRosaMarquezBestInHerField :: AssetCard DrRosaMarquezBestInHerField
-drRosaMarquezBestInHerField = asset DrRosaMarquezBestInHerField Cards.drRosaMarquezBestInHerField
+drRosaMarquezBestInHerField = ally DrRosaMarquezBestInHerField Cards.drRosaMarquezBestInHerField (2, 2)
 
 instance HasModifiersFor DrRosaMarquezBestInHerField where
   getModifiersFor (DrRosaMarquezBestInHerField a) =

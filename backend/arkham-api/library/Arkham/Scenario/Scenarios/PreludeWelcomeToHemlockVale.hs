@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps hiding (PreludeWelcomeToHemlockVale)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Campaigns.TheFeastOfHemlockVale.TokenHelpers
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasQueue (clearQueue)
@@ -17,7 +18,6 @@ import Arkham.Helpers.Location (getCanMoveToLocations)
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount)
-import Arkham.Helpers.SkillTest (isParley, withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -53,24 +53,8 @@ preludeWelcomeToHemlockVale difficulty =
     (hasEncounterDeckL .~ False)
 
 instance HasChaosTokenValue PreludeWelcomeToHemlockVale where
-  getChaosTokenValue iid tokenFace (PreludeWelcomeToHemlockVale attrs) = case tokenFace of
-    Skull -> do
-      currentDay <- dayNumber <$> getCampaignDay
-      pure $ toChaosTokenValue attrs Skull currentDay (currentDay + 1)
-    Cultist -> do
-      parley <- isParley
-      pure
-        $ ChaosTokenValue Cultist
-        $ if isEasyStandard attrs || parley then PositiveModifier 1 else NegativeModifier 1
-    Tablet -> do
-      cardsInHand <- fieldMap InvestigatorHand length iid
-      pure
-        $ ChaosTokenValue Tablet
-        $ if isEasyStandard attrs
-          then if cardsInHand < 3 then NoModifier else NegativeModifier 2
-          else if cardsInHand < 2 then NegativeModifier 2 else NegativeModifier 4
-    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 1 3
-    otherFace -> getChaosTokenValue iid otherFace attrs
+  getChaosTokenValue iid tokenFace (PreludeWelcomeToHemlockVale attrs) =
+    hemlockPreludeChaosTokenValue iid tokenFace attrs
 
 instance RunMessage PreludeWelcomeToHemlockVale where
   runMessage msg s@(PreludeWelcomeToHemlockVale attrs) = runQueueT $ campaignI18n $ scope "prelude1" $ case msg of
@@ -92,11 +76,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
     DoStep 4 PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "intro4"
       pure s
-    ResolveChaosToken token Cultist _iid | isEasyStandard attrs -> do
-      whenM isParley $ withSkillTest \sid -> skillTestModifier sid Cultist token SkillTestAutomaticallySucceeds
-      pure s
-    ResolveChaosToken _ ElderThing iid -> do
-      whenM isParley $ drawAnotherChaosToken iid
+    ResolveChaosToken token face iid | face `elem` [Cultist, ElderThing] -> do
+      hemlockPreludeResolveChaosToken attrs token face iid
       pure s
     Setup -> runScenarioSetup PreludeWelcomeToHemlockVale attrs do
       setup $ ul do

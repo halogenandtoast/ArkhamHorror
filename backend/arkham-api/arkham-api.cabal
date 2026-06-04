@@ -1882,6 +1882,7 @@ library
       Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps
       Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
       Arkham.Campaigns.TheFeastOfHemlockVale.Key
+      Arkham.Campaigns.TheFeastOfHemlockVale.TokenHelpers
       Arkham.Campaigns.TheForgottenAge.CampaignSteps
       Arkham.Campaigns.TheForgottenAge.ChaosBag
       Arkham.Campaigns.TheForgottenAge.Helpers

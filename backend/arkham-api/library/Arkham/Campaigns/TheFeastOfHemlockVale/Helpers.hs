@@ -4,7 +4,7 @@
 module Arkham.Campaigns.TheFeastOfHemlockVale.Helpers where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaign.Types (Field (..))
+import Arkham.Campaign.Types (Field (CampaignChaosBag))
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key

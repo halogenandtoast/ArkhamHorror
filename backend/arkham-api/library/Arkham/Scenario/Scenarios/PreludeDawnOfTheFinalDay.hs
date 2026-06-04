@@ -7,6 +7,7 @@ import Arkham.Calculation
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps hiding (PreludeDawnOfTheFinalDay)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
+import Arkham.Campaigns.TheFeastOfHemlockVale.TokenHelpers
 import Arkham.Classes.HasQueue (clearQueue)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -56,12 +57,8 @@ preludeDawnOfTheFinalDay difficulty =
     . (referenceL .~ "10704")
 
 instance HasChaosTokenValue PreludeDawnOfTheFinalDay where
-  getChaosTokenValue iid tokenFace (PreludeDawnOfTheFinalDay attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
-    otherFace -> getChaosTokenValue iid otherFace attrs
+  getChaosTokenValue iid tokenFace (PreludeDawnOfTheFinalDay attrs) =
+    hemlockPreludeChaosTokenValue iid tokenFace attrs
 
 instance RunMessage PreludeDawnOfTheFinalDay where
   runMessage msg s@(PreludeDawnOfTheFinalDay attrs) = runQueueT $ campaignI18n $ scope "prelude3" $ case msg of
@@ -102,6 +99,9 @@ instance RunMessage PreludeDawnOfTheFinalDay where
       for_ halfXp \(pid, n) -> when (n > 0) do
         selectOne (InvestigatorIsPlayer pid) >>= traverse_ \iid ->
           gainXp iid ScenarioSource (ikey "xp.survivor") n
+      pure s
+    ResolveChaosToken token face iid | face `elem` [Cultist, ElderThing] -> do
+      hemlockPreludeResolveChaosToken attrs token face iid
       pure s
     Setup -> runScenarioSetup PreludeDawnOfTheFinalDay attrs do
       setup $ ul do

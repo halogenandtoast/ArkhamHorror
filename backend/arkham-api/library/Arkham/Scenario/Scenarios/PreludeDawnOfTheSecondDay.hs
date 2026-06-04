@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps hiding (PreludeDawnOfTheSecondDay)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
+import Arkham.Campaigns.TheFeastOfHemlockVale.TokenHelpers
 import Arkham.Card
 import Arkham.Classes.HasQueue (clearQueue)
 import Arkham.Cost.Status qualified as Cost
@@ -58,12 +59,8 @@ preludeDawnOfTheSecondDay difficulty =
     . (referenceL .~ "10704")
 
 instance HasChaosTokenValue PreludeDawnOfTheSecondDay where
-  getChaosTokenValue iid tokenFace (PreludeDawnOfTheSecondDay attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
-    otherFace -> getChaosTokenValue iid otherFace attrs
+  getChaosTokenValue iid tokenFace (PreludeDawnOfTheSecondDay attrs) =
+    hemlockPreludeChaosTokenValue iid tokenFace attrs
 
 instance RunMessage PreludeDawnOfTheSecondDay where
   runMessage msg s@(PreludeDawnOfTheSecondDay attrs) = runQueueT $ campaignI18n $ scope "prelude2" $ case msg of
@@ -75,6 +72,9 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       storyOnly finishedTheirMeal $ buildFlavor $ h "title" >> p "theHemlockCurse"
       for_ finishedTheirMeal \iid -> addCampaignCardToDeck iid ShuffleIn Skills.theHemlockCurse
       storyOnly others $ buildFlavor $ h "title" >> p "gnawingHunger"
+      pure s
+    ResolveChaosToken token face iid | face `elem` [Cultist, ElderThing] -> do
+      hemlockPreludeResolveChaosToken attrs token face iid
       pure s
     Setup -> runScenarioSetup PreludeDawnOfTheSecondDay attrs do
       setup $ ul do

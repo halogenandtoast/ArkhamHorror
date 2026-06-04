@@ -7,6 +7,7 @@ import Arkham.Calculation
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps qualified as Steps
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
+import Arkham.Campaigns.TheFeastOfHemlockVale.TokenHelpers
 import Arkham.Card.CardDef (CardDef, toCardDef)
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
@@ -64,12 +65,8 @@ preludeTheFinalEvening difficulty =
     . (referenceL .~ "10704")
 
 instance HasChaosTokenValue PreludeTheFinalEvening where
-  getChaosTokenValue iid tokenFace (PreludeTheFinalEvening attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
-    otherFace -> getChaosTokenValue iid otherFace attrs
+  getChaosTokenValue iid tokenFace (PreludeTheFinalEvening attrs) =
+    hemlockPreludeChaosTokenValue iid tokenFace attrs
 
 {- | The enemy-side card def for each resident. Residents are double-sided in
 the physical game; in the engine the asset side and enemy side are separate
@@ -112,6 +109,9 @@ instance RunMessage PreludeTheFinalEvening where
               labeled' "doneNothingWrongLie" intro4
             labeled' "sentencedToDeath" intro5
         else intro5
+      pure s
+    ResolveChaosToken token face iid | face `elem` [Cultist, ElderThing] -> do
+      hemlockPreludeResolveChaosToken attrs token face iid
       pure s
     Setup -> runScenarioSetup PreludeTheFinalEvening attrs do
       setup $ ul do

@@ -687,9 +687,19 @@ const scenarioGuide = computed(() => {
 const additionalReferences = computed(() => {
   return props.scenario.additionalReferences.map((s) => cardCodeImage(s))
 })
+const abyssIsLocation = computed(() =>
+  props.scenario.id === 'c10651' && props.scenario.meta?.abyssIsLocation === true
+)
+
+const abyssDeckCount = computed(() =>
+  props.scenario.decks?.find(([key]) => key === 'AbyssDeck')?.[1]?.length ?? 0
+)
+
 const scenarioDecks = computed(() => {
   if (!props.scenario.decks) return null
-  return Object.entries(props.scenario.decks)
+  return Object.entries(props.scenario.decks).filter(([, scenarioDeck]) =>
+    !(abyssIsLocation.value && scenarioDeck[0] === 'AbyssDeck')
+  )
 })
 
 const hideEncounterDeck = computed(() => props.scenario.id === 'c10651')
@@ -1179,7 +1189,12 @@ function compactCosmicEmissaryFormation(force = false) {
     return el ? [label, el] as const : null
   })
 
-  if (entries.some((entry) => entry === null)) return
+  if (entries.some((entry) => entry === null)) {
+    if (Object.keys(cosmicEmissaryEnemyStyles.value).length > 0 || Object.keys(cosmicEmissaryLocationCellStyles.value).length > 0) {
+      clearCosmicEmissaryCompactStyles()
+    }
+    return
+  }
 
   const elements = Object.fromEntries(entries as [CosmicEmissaryLabel, HTMLElement][]) as Record<CosmicEmissaryLabel, HTMLElement>
 
@@ -1944,6 +1959,13 @@ async function addChaosToken(face: any){
               @choose="choose"
               @show="doShowCards"
             />
+            <div
+              v-if="abyssIsLocation && location.label === 'theAbyss'"
+              class="abyss-location-count"
+              v-tooltip="'Cards in The Abyss'"
+            >
+              {{ abyssDeckCount }}
+            </div>
           </div>
           <EnemyView
             v-for="enemy in enemiesAsLocations"

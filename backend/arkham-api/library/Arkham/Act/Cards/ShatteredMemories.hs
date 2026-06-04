@@ -19,6 +19,7 @@ import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.FateOfTheVale.Helpers (scenarioI18n)
 import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.Trait (Trait (Cave, Lair))
@@ -106,7 +107,7 @@ instance RunMessage ShatteredMemories where
         pure $ guard (level >= 4) *> fmap (\card -> (resident, card)) mSetAside
       when (notNull choices) do
         chooseOneM iid do
-          labeled "Do not take control of a resident" nothing
+          scenarioI18n $ labeled' "shatteredMemories.doNotTakeControl" nothing
           for_ choices \(_resident, card) -> cardLabeled card $ takeControlOfSetAsideAsset iid card
       pure a
     _ -> ShatteredMemories <$> liftRunMessage msg attrs

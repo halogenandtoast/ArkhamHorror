@@ -8,11 +8,13 @@ import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Helpers
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.FateOfTheVale.Helpers (scenarioI18n)
 
 newtype TheSilence = TheSilence AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -38,19 +40,19 @@ revealEncounterCardFromAbyss source iid = do
       let revealed = nonEncounter <> [EncounterCard ec]
       focusCards revealed do
         chooseOneM iid do
-          labeled "Continue" do
+          withI18n $ labeled' "continue" do
             unfocusCards
             for_ revealed \card -> scenarioSpecific "removeFromAbyss" (toCardId card)
-            for_ (reverse nonEncounter) \card -> push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
+            for_ (reverse nonEncounter) \card -> push $ PutCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck) card
             push $ DrewCards iid $ finalizeDraw (newCardDraw source Deck.EncounterDeck 1) [EncounterCard ec]
     _ -> pure ()
   when (null rest && notNull nonEncounter) do
     focusCards nonEncounter do
       chooseOneM iid do
-        labeled "Continue" do
+        withI18n $ labeled' "continue" do
           unfocusCards
           for_ nonEncounter \card -> scenarioSpecific "removeFromAbyss" (toCardId card)
-          for_ (reverse nonEncounter) \card -> push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
+          for_ (reverse nonEncounter) \card -> push $ PutCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck) card
 
 instance RunMessage TheSilence where
   runMessage msg a@(TheSilence attrs) = runQueueT $ case msg of
@@ -75,12 +77,12 @@ instance RunMessage TheSilence where
       pure a
     DoStep n inner@(FailedThisSkillTestBy iid (isSource attrs -> True) _) | n > 0 -> do
       hasCards <- fieldMap InvestigatorDeck (notNull . unDeck) iid
-      chooseOneM iid do
-        labeled "Take 1 horror" do
+      chooseOneM iid $ scenarioI18n do
+        unscoped $ countVar 1 $ labeled' "takeHorror" do
           assignHorror iid attrs 1
           doStep (n - 1) inner
         when hasCards do
-          labeled "Shuffle the top card of your deck into The Abyss" do
+          labeled' "theSilence.shuffleTopCardIntoAbyss" do
             (map toCard -> cards, _) <- fieldMap InvestigatorDeck (draw 1) iid
             for_ (take 1 cards) \card -> do
               obtainCard card

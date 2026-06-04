@@ -3415,6 +3415,9 @@ runGameMessage msg g = case msg of
     let iid = toResult v :: InvestigatorId
     investigator <- returnFromShatteredSelf <$> getInvestigator iid
     pure $ g & (entitiesL . investigatorsL . at iid ?~ investigator)
+  ScenarioSpecific "disableAsSelfLocation" v -> do
+    let eid = toResult v :: EnemyId
+    pure $ g & entitiesL . enemiesL . ix eid %~ overAttrs (\x -> x {enemyAsSelfLocation = Nothing})
   BecomeHomunculus iid -> do
     findCard (`cardMatch` cardIs Assets.theGreatWorkDivideAndUnite) >>= \case
       Nothing -> error "The Great Work not found"

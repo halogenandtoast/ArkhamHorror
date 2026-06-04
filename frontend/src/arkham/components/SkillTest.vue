@@ -270,6 +270,14 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
       , target
       ]
     })
+
+const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
+  const amount = event.shiftKey ? 5 : 1
+  createModifier(
+    { tag: 'InvestigatorTarget', contents: props.skillTest.investigator },
+    { tag: 'AnySkillValue', contents: direction * amount },
+  )
+}
 </script>
 
 <template>
@@ -336,12 +344,12 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           <div class="modified-skill">
             <button
                 v-if="debug.active"
-                @click="createModifier({tag: 'InvestigatorTarget', contents: skillTest.investigator}, {tag: 'AnySkillValue', contents: -1})"
+                @click="adjustDebugSkillValue($event, -1)"
             >-</button>
             <span class="skill">{{skillValue}}</span>
             <button
                 v-if="debug.active"
-                @click="createModifier({tag: 'InvestigatorTarget', contents: skillTest.investigator}, {tag: 'AnySkillValue', contents: 1})"
+                @click="adjustDebugSkillValue($event, 1)"
             >+</button>
           </div>
         </div>

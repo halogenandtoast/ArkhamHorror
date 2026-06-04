@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.ForMovement
 import Arkham.Helpers (draw, unDeck)
 import Arkham.Helpers.Act (getCurrentAct, getCurrentActStep)
 import Arkham.Helpers.FlavorText
@@ -25,7 +26,7 @@ import Arkham.Investigator.Cards qualified as InvestigatorCards
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types (Field (LocationCardsUnderneath))
+import Arkham.Location.Types (Field (LocationCardsUnderneath, LocationLabel))
 import Arkham.Matcher hiding (Discarded, enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record, remember)
@@ -41,7 +42,7 @@ import Arkham.Scenarios.FateOfTheVale.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Strategy (FoundCardsStrategy (..), ZoneReturnStrategy (..), fromDeck, fromDiscard)
 import Arkham.Token (Token (Resource))
-import Arkham.Trait (Trait (Colour, Emissary))
+import Arkham.Trait (Trait (Cave, Colour, Emissary))
 import Arkham.Zone (OutOfPlayZone (..), Zone (..))
 import Control.Lens (use, (%=), (.=))
 
@@ -62,10 +63,20 @@ cosmicEmissaryFormation =
 
 cosmicEmissaryLayout :: [GridTemplateRow]
 cosmicEmissaryLayout =
-  [ ". . mirrorNestTop ."
-  , "mirrorNestLeft cosmicEmissaryPhantasm cosmicEmissaryAbyss ."
-  , ". cosmicEmissaryBrilliance cosmicEmissaryMiasma mirrorNestRight"
-  , ". mirrorNestBottom . ."
+  [ ". . caveTop1 caveTop2 . ."
+  , ". . . mirrorNestTop . ."
+  , "caveLeft1 mirrorNestLeft cosmicEmissaryPhantasm cosmicEmissaryAbyss . ."
+  , "caveLeft2 . cosmicEmissaryBrilliance cosmicEmissaryMiasma mirrorNestRight caveRight1"
+  , ". . mirrorNestBottom . . caveRight2"
+  , ". . caveBottom1 caveBottom2 . ."
+  ]
+
+cosmicEmissaryCaveLabels :: [(Text, [Text])]
+cosmicEmissaryCaveLabels =
+  [ ("mirrorNestTop", ["caveTop1", "caveTop2"])
+  , ("mirrorNestRight", ["caveRight1", "caveRight2"])
+  , ("mirrorNestBottom", ["caveBottom1", "caveBottom2"])
+  , ("mirrorNestLeft", ["caveLeft1", "caveLeft2"])
   ]
 
 {- | Cross out the name of each resident that was not under control of an
@@ -87,20 +98,6 @@ crossOutResidentsInVictoryDisplay = do
     when (any ((== toCardCode resident) . toCardCode) victoryDisplay)
       $ record (crossedOutKey resident)
 
-{- | The enemy-side card def for each resident. Residents are double-sided; the
-asset side and enemy side are separate cards in the engine.
--}
-residentEnemyDef :: Resident -> CardDef
-residentEnemyDef = \case
-  WilliamHemlock -> Enemies.williamHemlock
-  RiverHawthorne -> Enemies.riverHawthorne
-  MotherRachel -> Enemies.motherRachelStarbornHerald
-  SimeonAtwood -> Enemies.simeonAtwood
-  LeahAtwood -> Enemies.leahAtwood
-  TheoPeters -> Enemies.theoPeters
-  GideonMizrah -> Enemies.gideonMizrah
-  JudithPark -> Enemies.judithPark
-
 {- | "Draw a Resident card underneath any location and put it into play at that
 location, exhausted, enemy side faceup." (Codex 4/Codex 5, Act 3a v.II)
 -}
@@ -116,6 +113,15 @@ drawResidentUnderneath iid source = do
       eid <- createEnemyAt (residentEnemyDef r) lid
       exhaustEnemy source eid
 
+openCaveLabelFor :: ReverseQueue m => LocationId -> m (Maybe Text)
+openCaveLabelFor nest = do
+  nestLabel <- field LocationLabel nest
+  occupied <- selectField LocationLabel Anywhere
+  let openForNest = find (`notElem` occupied) =<< lookup nestLabel cosmicEmissaryCaveLabels
+  case openForNest of
+    Just label -> pure (Just label)
+    Nothing -> pure $ find (`notElem` occupied) (concatMap snd cosmicEmissaryCaveLabels)
+
 {- | Resolve drawing a card from The Abyss. Resident cards have special text on
 The Abyss: flip them to their enemy side, they attack without engaging, then
 are discarded instead of going to hand.
@@ -123,32 +129,57 @@ are discarded instead of going to hand.
 drawCardFromAbyss :: ReverseQueue m => InvestigatorId -> Source -> Card -> m ()
 drawCardFromAbyss iid source card = do
   scenarioSpecific "removeFromAbyss" (toCardId card)
-  case residentFromCardDef (toCardDef card) of
-    Just resident -> do
-      enemyCard <- fetchCard (residentEnemyDef resident)
-      focusCards [enemyCard] do
-        chooseOneM iid do
-          labeled "Continue" do
-            unfocusCards
-            obtainCard card
-            withLocationOf iid \lid -> do
-              eid <- createEnemyAt enemyCard lid
-              initiateEnemyAttack eid source iid
-              toDiscard source eid
-    Nothing -> addToHand iid [card]
+  if toCardType card == LocationType
+    then do
+      let mirrorNest = LocationWithTitle "Mirror Nest"
+      preferred <-
+        select
+          $ NearestLocationTo iid
+          $ mirrorNest
+          <> not_ (ConnectedTo NotForMovement (LocationWithTrait Cave))
+      fallback <- select $ NearestLocationTo iid mirrorNest
+      let choices = if null preferred then fallback else preferred
+      let
+        placeAndConnect :: ReverseQueue m => LocationId -> m ()
+        placeAndConnect nest = do
+          lid <- placeLocation card
+          openCaveLabelFor nest >>= traverse_ (setLocationLabel lid)
+          connectBothWays nest lid
+      case choices of
+        [] -> void $ placeLocation card
+        [nest] -> placeAndConnect nest
+        nests -> chooseTargetM iid nests placeAndConnect
+    else case residentFromCardDef (toCardDef card) of
+      Just resident -> do
+        enemyCard <- fetchCard (residentEnemyDef resident)
+        focusCards [enemyCard] do
+          chooseOneM iid do
+            labeled "Continue" do
+              unfocusCards
+              obtainCard card
+              withLocationOf iid \lid -> do
+                eid <- createEnemyAt enemyCard lid
+                initiateEnemyAttack eid source iid
+                toDiscard source eid
+      Nothing -> addToHand iid [card]
 
 instance HasModifiersFor FateOfTheVale where
   getModifiersFor (FateOfTheVale attrs) = do
     modifySelectWith
       attrs
-      (mapOneOf enemyIs [Enemies.cosmicEmissaryThePhantasm, Enemies.cosmicEmissaryThePhantasmShattered])
+      (enemyIsExact Enemies.cosmicEmissaryThePhantasm)
       setActiveDuringSetup
       [UIModifier $ Rotated 90]
     modifySelectWith
       attrs
-      (mapOneOf enemyIs [Enemies.cosmicEmissaryTheMiasma, Enemies.cosmicEmissaryTheMiasmaShattered])
+      (enemyIsExact Enemies.cosmicEmissaryTheMiasma)
       setActiveDuringSetup
       [UIModifier $ Rotated 270]
+    modifySelectWith
+      attrs
+      (assetIs Assets.drRosaMarquezBestInHerField)
+      setActiveDuringSetup
+      [DoNotTakeUpSlot #ally]
 
 instance HasChaosTokenValue FateOfTheVale where
   getChaosTokenValue iid tokenFace (FateOfTheVale attrs) = case tokenFace of
@@ -225,6 +256,7 @@ instance RunMessage FateOfTheVale where
         , Acts.fateOfTheValeV3
         , Acts.fateOfTheValeV4
         , Stories.theAbyss
+        , Locations.theAbyssSpiralingOblivion
         ]
       setAsideEvery (CardFromEncounterSet Set.TheVale <> #location)
       setAsideEvery (CardFromEncounterSet Set.HorrorsInTheRock <> #location)
@@ -532,6 +564,8 @@ instance RunMessage FateOfTheVale where
       let (iid, card) = toResult v :: (InvestigatorId, Card)
       drawCardFromAbyss iid ScenarioSource card
       pure s
+    ScenarioSpecific "theAbyssBecameLocation" _ -> do
+      pure $ FateOfTheVale $ attrs & setMetaKey "abyssIsLocation" True
     ScenarioSpecific "removeFromAbyss" v -> do
       let cid = toResult v :: CardId
       pure $ FateOfTheVale $ attrs & decksL . at AbyssDeck %~ fmap (filter ((/= cid) . toCardId))

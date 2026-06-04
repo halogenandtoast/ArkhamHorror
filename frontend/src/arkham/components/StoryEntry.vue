@@ -508,6 +508,10 @@ a.button {
     }
   }
 
+  :deep(p.indent) {
+    margin-left: 2em;
+  }
+
   :deep(span.wolgast) {
     font-family: "Wolgast";
   }

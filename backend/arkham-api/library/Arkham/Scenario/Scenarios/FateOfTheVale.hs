@@ -418,12 +418,17 @@ instance RunMessage FateOfTheVale where
       actStep <- getCurrentActStep
       actCard <- field ActCard =<< getCurrentAct
       let isVersion def = toCardCode actCard == toCardCode def
-      let say sub = scope sub $ flavor $ setTitle "title" >> p.green "body"
       case n of
         2 -> scope "leahAtwood" do
-          if actStep == 2
+          let isAct2 = actStep == 2
+          flavor do
+            setTitle "title"
+            compose.green do
+              p.validate isAct2 "act2"
+              hr
+              p.validate (not isAct2) "act3"
+          if isAct2
             then do
-              say "act2"
               -- Search all out-of-play areas for an Item asset and draw it.
               search
                 iid
@@ -436,72 +441,109 @@ instance RunMessage FateOfTheVale where
                 (basic (#item <> #asset))
                 (DrawFound iid 1)
             else do
-              say "act3"
               eachInvestigator \iid' -> chooseOneM iid' do
                 labeled' "drawTwo" $ drawCards iid' source 2
                 labeled' "healHorror" $ healHorror iid' source 1
         3 -> scope "simeonAtwood" do
-          if actStep == 2
-            then do
-              say "act2"
-              selectEach (EnemyWithTrait Emissary) (automaticallyEvadeEnemy iid)
+          let isAct2 = actStep == 2
+              isFateOfTheValeV3 = not isAct2 && isVersion Acts.fateOfTheValeV3
+              isOtherwise = not isAct2 && not isFateOfTheValeV3
+          flavor do
+            setTitle "title"
+            compose.green do
+              p.validate isAct2 "act2"
+              hr
+              p.validate isFateOfTheValeV3 "act3"
+              hr
+              p.validate isOtherwise "otherwise"
+          if isAct2
+            then selectEach (EnemyWithTrait Emissary) (automaticallyEvadeEnemy iid)
             else
-              if isVersion Acts.fateOfTheValeV3
+              if isFateOfTheValeV3
                 then do
-                  say "fateOfTheValeV3"
                   locs <- select Anywhere
                   chooseTargetM iid locs \lid -> placeTokens source lid Resource 3
                 else do
-                  say "otherwise"
                   eachInvestigator \iid' -> chooseOneM iid' do
                     labeled' "drawOne" $ drawCards iid' source 1
                     labeled' "gainResources" $ gainResources iid' source 2
         4 -> scope "williamHemlock" do
-          if actStep == 2
-            then do
-              say "act2"
-              eachInvestigator \iid' -> gainClues iid' source 1
+          let isAct2 = actStep == 2
+              isFateOfTheValeV2 = not isAct2 && isVersion Acts.fateOfTheValeV2
+              isOtherwise = not isAct2 && not isFateOfTheValeV2
+          flavor do
+            setTitle "title"
+            compose.green do
+              p.validate isAct2 "act2"
+              hr
+              p.validate isFateOfTheValeV2 "act3"
+              hr
+              p.validate isOtherwise "otherwise"
+          if isAct2
+            then eachInvestigator \iid' -> gainClues iid' source 1
             else
-              if isVersion Acts.fateOfTheValeV2
-                then say "fateOfTheValeV2" >> drawResidentUnderneath iid source
+              if isFateOfTheValeV2
+                then drawResidentUnderneath iid source
                 else do
-                  say "otherwise"
                   eachInvestigator \iid' -> chooseOneM iid' do
                     labeled' "drawNone" nothing
                     labeled' "drawOne" $ drawCards iid' source 1
                     labeled' "drawTwo" $ drawCards iid' source 2
         5 -> scope "riverHawthorne" do
-          if actStep == 2
+          let isAct2 = actStep == 2
+              isFateOfTheValeV2 = not isAct2 && isVersion Acts.fateOfTheValeV2
+              isOtherwise = not isAct2 && not isFateOfTheValeV2
+          flavor do
+            setTitle "title"
+            compose.green do
+              p.validate isAct2 "act2"
+              hr
+              p.validate isFateOfTheValeV2 "act3"
+              hr
+              p.validate isOtherwise "otherwise"
+          if isAct2
             then do
-              say "act2"
               -- Play an Item card from your hand, ignoring all costs.
               search iid source iid [(FromHand, PutBack)] (basic #item) (PlayFoundNoCost iid 1)
             else
-              if isVersion Acts.fateOfTheValeV2
-                then say "fateOfTheValeV2" >> drawResidentUnderneath iid source
-                else say "otherwise" >> gainResources iid source 4
+              if isFateOfTheValeV2
+                then drawResidentUnderneath iid source
+                else gainResources iid source 4
         6 -> scope "gideonMizrah" do
-          if actStep == 2
+          let isAct2 = actStep == 2
+              isFateOfTheValeV1 = not isAct2 && isVersion Acts.fateOfTheValeV1
+              isOtherwise = not isAct2 && not isFateOfTheValeV1
+          flavor do
+            setTitle "title"
+            compose.green do
+              p.validate isAct2 "act2"
+              hr
+              p.validate isFateOfTheValeV1 "act3"
+              hr
+              p.validate isOtherwise "otherwise"
+          if isAct2
             then do
-              say "act2"
               eachInvestigator \iid' ->
                 nextTurnModifier iid' source iid' (AdditionalActions "Gideon Mizrah" source 1)
             else
-              if isVersion Acts.fateOfTheValeV1
+              if isFateOfTheValeV1
                 then do
-                  say "fateOfTheValeV1"
                   selectEach (EnemyWithTrait Emissary <> enemyAtLocationWith iid) (automaticallyEvadeEnemy iid)
                 else do
-                  say "otherwise"
                   selectJust AnyAgenda >>= \agenda -> removeDoom source agenda 1
         7 -> scope "judithPark" do
-          if actStep == 2
+          let isAct2 = actStep == 2
+          flavor do
+            setTitle "title"
+            compose.green do
+              p.validate isAct2 "act2"
+              hr
+              p.validate (not isAct2) "act3"
+          if isAct2
             then do
-              say "act2"
               enemies <- select AnyEnemy
               chooseTargetM iid enemies (automaticallyEvadeEnemy iid)
             else do
-              say "act3"
               -- Search your deck, hand, and discard pile for a Weapon and play it, ignoring all costs.
               search
                 iid
@@ -511,9 +553,15 @@ instance RunMessage FateOfTheVale where
                 (basic #weapon)
                 (PlayFoundNoCost iid 1)
         8 -> scope "theoPeters" do
-          if actStep == 2
+          let isAct2 = actStep == 2
+          flavor do
+            setTitle "title"
+            compose.green do
+              p.validate isAct2 "act2"
+              hr
+              p.validate (not isAct2) "otherwise"
+          if isAct2
             then do
-              say "act2"
               -- Search The Abyss for a location, put it into play, and move to it.
               let abyss = findWithDefault [] AbyssDeck attrs.decks
               let locationCards = filter ((== LocationType) . toCardType) abyss
@@ -526,14 +574,23 @@ instance RunMessage FateOfTheVale where
                     moveTo source iid lid
                     scenarioSpecific "removeFromAbyss" (toCardId card)
             else do
-              say "otherwise"
               selectEach (enemyEngagedWith iid) (disengageEnemy iid)
               locs <- select Anywhere
               chooseTargetM iid locs (moveTo source iid)
         Theta -> scope "drRosaMarquez" do
-          if actStep == 1
+          let isAct1 = actStep == 1
+              isFateOfTheValeV1 = not isAct1 && isVersion Acts.fateOfTheValeV1
+              isOtherwise = not isAct1 && not isFateOfTheValeV1
+          flavor do
+            setTitle "title"
+            compose.green do
+              p.validate isAct1 "act1"
+              hr
+              p.validate isFateOfTheValeV1 "act3"
+              hr
+              p.validate isOtherwise "otherwise"
+          if isAct1
             then do
-              say "act1"
               -- Reveal the bottom 6 cards of The Abyss; you may draw any of them.
               let abyss = findWithDefault [] AbyssDeck attrs.decks
               let bottom6 = drop (max 0 (length abyss - 6)) abyss
@@ -541,9 +598,7 @@ instance RunMessage FateOfTheVale where
                 chooseOneAtATimeM iid do
                   labeled' "doneDrawing" unfocusCards
                   targets bottom6 $ drawCardFromAbyss iid source
-            else do
-              if isVersion Acts.fateOfTheValeV1 then say "fateOfTheValeV1" else say "otherwise"
-              eachInvestigator \iid' -> gainClues iid' source 1
+            else eachInvestigator \iid' -> gainClues iid' source 1
         Omega -> scope "bertieMusgrave" do
           flavor $ setTitle "title" >> p.green "body"
           selectOne (assetIs Assets.bertieMusgraveATrueAesthete) >>= \case

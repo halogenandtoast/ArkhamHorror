@@ -1670,6 +1670,16 @@ drawEncounterCardAndThen i source andThenDo = do
   msgs <- capture andThenDo
   drawEncounterCardsEdit i source 1 \d -> d `andThen` Run msgs
 
+drawCardAndThen
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> QueueT Message m () -> m ()
+drawCardAndThen i source = drawCardsAndThen i source 1
+
+drawCardsAndThen
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> QueueT Message m () -> m ()
+drawCardsAndThen i source n andThenDo = do
+  msgs <- capture andThenDo
+  drawCardsEdit i source n \d -> d `andThen` Run msgs
+
 drawEncounterCardEdit
   :: (ReverseQueue m, Sourceable source)
   => InvestigatorId -> source -> (CardDraw Message -> CardDraw Message) -> m ()

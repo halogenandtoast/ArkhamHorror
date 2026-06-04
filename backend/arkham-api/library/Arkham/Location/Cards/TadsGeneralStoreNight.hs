@@ -12,7 +12,7 @@ newtype TadsGeneralStoreNight = TadsGeneralStoreNight LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tadsGeneralStoreNight :: LocationCard TadsGeneralStoreNight
-tadsGeneralStoreNight = symbolLabel $ location TadsGeneralStoreNight Cards.tadsGeneralStoreNight 0 (Static 0)
+tadsGeneralStoreNight = symbolLabel $ location TadsGeneralStoreNight Cards.tadsGeneralStoreNight 4 (Static 0)
 
 instance HasModifiersFor TadsGeneralStoreNight where
   getModifiersFor (TadsGeneralStoreNight attrs) =

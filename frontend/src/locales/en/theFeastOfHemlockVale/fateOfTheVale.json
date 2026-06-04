@@ -136,50 +136,29 @@
   },
   "codex": {
     "leahAtwood": {
-      "act2": {
-        "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.leahAtwood.act2.title </h3><p>\"What on earth?\" Leah gasps in awe and holds one hand up against the light, as if pressing it to a pane of glass. \"It's so incredible.\"</p><p class='basic right'>Search all out-of-play areas for an Item asset and draw it. An investigator may trigger this codex again during a different act.</p>"
-      },
-      "act3": {
-        "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.leahAtwood.act3.title </h3><p>\"This was our home,\" Leah weeps. \"Rachel, what were you thinking? This is all my fault. I stood by and let this happen.\"</p><p class='basic right'>Each investigator may either draw 2 cards or heal 1 horror.</p>"
-      },
+      "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.leahAtwood.title</h3><p>_If it is Act 2:_</p><p>\"What on earth?\" Leah gasps in awe and holds one hand up against the light, as if pressing it to a pane of glass. \"It's so incredible.\"</p><p class='basic right'>Search all out-of-play areas for an Item asset and draw it. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_Otherwise:_</p><p>\"This was our home,\" Leah weeps. \"Rachel, what were you thinking? This is all my fault. I stood by and let this happen.\"</p><p class='basic right'>Each investigator may either draw 2 cards or heal 1 horror.</p>",
       "label": {
         "drawTwo": "Draw 2 cards",
         "healHorror": "Heal 1 horror"
       }
     },
     "simeonAtwood": {
-      "act2": {
-        "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.simeonAtwood.act2.title </h3><p>Simeon looks at the dazzling light with wide eyes. \"This is more beautiful than any fireworks,\" he says, mesmerized.</p><p class='basic right'>Automatically evade each Cosmic Emissary enemy in play. An investigator may trigger this codex again during a different act.</p>"
-      },
-      "fateOfTheValeV3": {
-        "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.simeonAtwood.fateOfTheValeV3.title </h3><p>Simeon jumps on top of a smoldering hay bale, cackling. \"This is amazing! Take that, Auntie Rachel!\" He lobs a firecracker.</p><p class='basic right'>Choose a location and place 3 resources on it, as kindling.</p>"
-      },
-      "otherwise": {
-        "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.simeonAtwood.otherwise.title </h3><p>\"Have you seen Digby?\" Simeon looks around, seemingly lost.</p><p class='basic right'>Each investigator may either draw 1 card or gain 2 resources.</p>"
-      },
+      "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.simeonAtwood.title</h3><p>_If it is Act 2:_</p><p>Simeon looks at the dazzling light with wide eyes. \"This is more beautiful than any fireworks,\" he says, mesmerized.</p><p class='basic right'>Automatically evade each Cosmic Emissary enemy in play. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.III):_</p><p>Simeon jumps on top of a smoldering hay bale, cackling. \"This is amazing! Take that, Auntie Rachel!\" He lobs a firecracker.</p><p class='basic right'>Choose a location and place 3 resources on it, as kindling.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"Have you seen Digby?\" Simeon looks around, seemingly lost.</p><p class='basic right'>Each investigator may either draw 1 card or gain 2 resources.</p>",
       "label": {
         "drawOne": "Draw 1 card",
         "gainResources": "Gain 2 resources"
       }
     },
     "williamHemlock": {
-      "act2": {
-        "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.williamHemlock.act2.title </h3><p>\"I never imagined something so transcendent and terrible could exist.\" The Hemlock heir stares, transfixed, at the swirling light.</p><p class='basic right'>Each investigator gains 1 clue (from the token pool). An investigator may trigger this codex again during a different act.</p>"
-      },
-      "fateOfTheValeV2": {
-        "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.williamHemlock.fateOfTheValeV2.title </h3><p>\"Get them all to safety!\" William shouts, brandishing a table leg.</p><p class='basic right'>Draw a Resident card underneath any location and put it into play at that location, exhausted, enemy side faceup.</p>"
-      },
-      "otherwise": {
-        "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.williamHemlock.otherwise.title </h3><p>William jots another purple verse in his pocketbook. \"My family's legacy is so like the cup of Socrates. Death lies therein, but so does freedom and release…Oh, and. And…release rhymes with 'feast'…\"</p><p class='basic right'>Each investigator may draw up to 2 cards.</p>"
-      },
+      "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.williamHemlock.title</h3><p>_If it is Act 2:_</p><p>\"I never imagined something so transcendent and terrible could exist.\" The Hemlock heir stares, transfixed, at the swirling light.</p><p class='basic right'>Each investigator gains 1 clue (from the token pool). An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.II):_</p><p>\"Get them all to safety!\" William shouts, brandishing a table leg.</p><p class='basic right'>Draw a Resident card underneath any location and put it into play at that location, exhausted, enemy side faceup.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>William jots another purple verse in his pocketbook. \"My family's legacy is so like the cup of Socrates. Death lies therein, but so does freedom and release…Oh, and. And…release rhymes with 'feast'…\"</p><p class='basic right'>Each investigator may draw up to 2 cards.</p>",
       "label": {
         "drawNone": "Draw no cards",
         "drawOne": "Draw 1 card",
@@ -187,66 +166,32 @@
       }
     },
     "riverHawthorne": {
-      "act2": {
-        "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.riverHawthorne.act2.title </h3><p>\"Oh, my stars—\" River stares at the glimmering horror at the center of the chamber. For once, they are at a loss for words.</p><p class='basic right'>You may play an Item card from your hand, ignoring all costs. An investigator may trigger this codex again during a different act.</p>"
-      },
-      "fateOfTheValeV2": {
-        "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.riverHawthorne.fateOfTheValeV2.title </h3><p>\"Hurry up. You're slower than an evening with my extended family,\" River herds a local toward you. \"Here, take them!\"</p><p class='basic right'>Draw a Resident card underneath any location and put it into play at that location, exhausted, enemy side faceup.</p>"
-      },
-      "otherwise": {
-        "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.riverHawthorne.otherwise.title </h3><p>\"Well, this whole thing was a wash.\" River looks at you glumly. \"But I suppose this miserable rock was always a lost cause.\" Their expression turns mischievous. \"At least the Hemlock fortune is where it belongs.\"</p><p class='basic right'>Gain 4 resources.</p>"
-      }
+      "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.riverHawthorne.title</h3><p>_If it is Act 2:_</p><p>\"Oh, my stars—\" River stares at the glimmering horror at the center of the chamber. For once, they are at a loss for words.</p><p class='basic right'>You may play an Item card from your hand, ignoring all costs. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.II):_</p><p>\"Hurry up. You're slower than an evening with my extended family,\" River herds a local toward you. \"Here, take them!\"</p><p class='basic right'>Draw a Resident card underneath any location and put it into play at that location, exhausted, enemy side faceup.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"Well, this whole thing was a wash.\" River looks at you glumly. \"But I suppose this miserable rock was always a lost cause.\" Their expression turns mischievous. \"At least the Hemlock fortune is where it belongs.\"</p><p class='basic right'>Gain 4 resources.</p>"
     },
     "gideonMizrah": {
-      "act2": {
-        "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.gideonMizrah.act2.title </h3><p>The many-colored abyss is reflected in the old sailor's eyes. \"T'ain't the first time I seen this,\" he says soberly, but says nothing more.</p><p class='basic right'>Each investigator may take an additional action during their next turn. An investigator may trigger this codex again during a different act.</p>"
-      },
-      "fateOfTheValeV1": {
-        "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.gideonMizrah.fateOfTheValeV1.title </h3><p>Gideon holds up a glassy shard. \"It came from the rock. The one the captain threw down the well. But we weren't rid of it. Ne'er were.\"</p><p class='basic right'>Automatically evade the Cosmic Emissary enemy at your location.</p>"
-      },
-      "otherwise": {
-        "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.gideonMizrah.otherwise.title </h3><p>\"If I don' make it out of here, find my niece an' give 'er this. She's all I have left,\" Gideon says, handing you a salt-stained journal.</p><p class='basic right'>Remove 1 doom from the current agenda.</p>"
-      }
+      "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.gideonMizrah.title</h3><p>_If it is Act 2:_</p><p>The many-colored abyss is reflected in the old sailor's eyes. \"T'ain't the first time I seen this,\" he says soberly, but says nothing more.</p><p class='basic right'>Each investigator may take an additional action during their next turn. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.I):_</p><p>Gideon holds up a glassy shard. \"It came from the rock. The one the captain threw down the well. But we weren't rid of it. Ne'er were.\"</p><p class='basic right'>Automatically evade the Cosmic Emissary enemy at your location.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"If I don' make it out of here, find my niece an' give 'er this. She's all I have left,\" Gideon says, handing you a salt-stained journal.</p><p class='basic right'>Remove 1 doom from the current agenda.</p>"
     },
     "judithPark": {
-      "act2": {
-        "title": "{'{'}codex{'}'} Codex 7: Judith Park",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.judithPark.act2.title </h3><p>Judith fires at the shining void, then lowers her rifle and stares at the spirals of light and color. \"What the hell is this thing?\"</p><p class='basic right'>Choose an enemy at any location and automatically evade it. An investigator may trigger this codex again during a different act.</p>"
-      },
-      "act3": {
-        "title": "{'{'}codex{'}'} Codex 7: Judith Park",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.judithPark.act3.title </h3><p>\"If we make it out of this alive, you're buying me a drink. There's a speakeasy in Boston that makes the best hooch.\" She locks eyes with you. \"And no, I'm not taking no for an answer.\"</p><p class='basic right'>Search your deck, hand, and discard pile for a Weapon card and play it, ignoring all costs.</p>"
-      }
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.judithPark.title</h3><p>_If it is Act 2:_</p><p>Judith fires at the shining void, then lowers her rifle and stares at the spirals of light and color. \"What the hell is this thing?\"</p><p class='basic right'>Choose an enemy at any location and automatically evade it. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_Otherwise:_</p><p>\"If we make it out of this alive, you're buying me a drink. There's a speakeasy in Boston that makes the best hooch.\" She locks eyes with you. \"And no, I'm not taking no for an answer.\"</p><p class='basic right'>Search your deck, hand, and discard pile for a Weapon card and play it, ignoring all costs.</p>"
     },
     "theoPeters": {
-      "act2": {
-        "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.theoPeters.act2.title </h3><p>\"It's so beautiful,\" Theo looks up at the shimmering light and holds one hand out, as if to touch it. \"Like at least five sunsets' worth of beautiful. I wish Lizzie could see this.\" He pauses. \"Actually, I'm glad she can't.\"</p><p class='basic right'>You may search The Abyss for a location, put it into play, and immediately move to it. An investigator may trigger this codex again during a different act.</p>"
-      },
-      "otherwise": {
-        "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.theoPeters.otherwise.title </h3><p>\"My sister was right,\" Theo says soberly. \"She was right about everything. I just hope I get to see her again.\"</p><p class='basic right'>Disengage from each enemy and move to any location.</p>"
-      }
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.theoPeters.title</h3><p>_If it is Act 2:_</p><p>\"It's so beautiful,\" Theo looks up at the shimmering light and holds one hand out, as if to touch it. \"Like at least five sunsets' worth of beautiful. I wish Lizzie could see this.\" He pauses. \"Actually, I'm glad she can't.\"</p><p class='basic right'>You may search The Abyss for a location, put it into play, and immediately move to it. An investigator may trigger this codex again during a different act.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"My sister was right,\" Theo says soberly. \"She was right about everything. I just hope I get to see her again.\"</p><p class='basic right'>Disengage from each enemy and move to any location.</p>"
     },
     "drRosaMarquez": {
-      "act1": {
-        "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.drRosaMarquez.act1.title </h3><p>\"Marika?\" The woman with the dark hair looks at you, dazed. You can't remember your name, but Marika doesn't sound right…does it? \"I forgot something, Marika. But I remembered you.\"</p><p class='basic right'>Reveal the bottom 6 cards of The Abyss. You may draw any of them. Place the rest back on top of The Abyss in any order. An investigator may trigger this codex again during a different act.</p>"
-      },
-      "fateOfTheValeV1": {
-        "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.drRosaMarquez.fateOfTheValeV1.title </h3><p>\"I understand what it is,\" Dr. Marquez says. \"It's a living being. Some primal species, or something not of this world. It was brought here—perhaps by Captain Hemlock—and burrowed deep underground, where it permeated water, soil, crops. Everything. It is inherently poisonous to everything around it. Sort of a living miasma. A barely sentient numbing sickness. It emerged from Pearl Ridge 20 years ago, but it wasn't ready to…to leave.\" The professor pulls out a phosphorescent shard. \"I think it came from this. One of the original shards that brought it to the island. The being drains its host like a parasite and leaves a crystallized husk behind. Freezes it in time. And then the parasite hatches as a gas from the 'shell,' joining…It.\" She sighs. \"The grant committee is never going to believe this.\"</p><p class='basic right'>Each investigator gains 1 clue (from the token pool).</p>"
-      },
-      "otherwise": {
-        "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
-        "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.drRosaMarquez.otherwise.title </h3><p>\"We never should have come here. This is all my fault.\" Dr. Marquez says despondently.</p><p class='basic right'>Each investigator gains 1 clue (from the token pool). An investigator may trigger this codex again during a different act.</p>"
-      },
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "act1": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.drRosaMarque.title</h3><p>_If it is Act 1:_</p><p>\"Marika?\" The woman with the dark hair looks at you, dazed. You can't remember your name, but Marika doesn't sound right…does it? \"I forgot something, Marika. But I remembered you.\"</p><p class='basic right'>Reveal the bottom 6 cards of The Abyss. You may draw any of them. Place the rest back on top of The Abyss in any order. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.I):_</p><p>\"I understand what it is,\" Dr. Marquez says. \"It's a living being. Some primal species, or something not of this world. It was brought here—perhaps by Captain Hemlock—and burrowed deep underground, where it permeated water, soil, crops. Everything. It is inherently poisonous to everything around it. Sort of a living miasma. A barely sentient numbing sickness. It emerged from Pearl Ridge 20 years ago, but it wasn't ready to…to leave.\" The professor pulls out a phosphorescent shard. \"I think it came from this. One of the original shards that brought it to the island. The being drains its host like a parasite and leaves a crystallized husk behind. Freezes it in time. And then the parasite hatches as a gas from the 'shell,' joining…It.\" She sighs. \"The grant committee is never going to believe this.\"</p><p class='basic right'>Each investigator gains 1 clue (from the token pool).</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"We never should have come here. This is all my fault.\" Dr. Marquez says despondently.</p><p class='basic right'>Each investigator gains 1 clue (from the token pool). An investigator may trigger this codex again during a different act.</p>",
       "label": {
         "doneDrawing": "Done drawing"
       }

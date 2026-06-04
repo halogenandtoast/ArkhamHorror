@@ -12,7 +12,7 @@ newtype ValeSchoolhouseNight = ValeSchoolhouseNight LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 valeSchoolhouseNight :: LocationCard ValeSchoolhouseNight
-valeSchoolhouseNight = symbolLabel $ location ValeSchoolhouseNight Cards.valeSchoolhouseNight 0 (Static 0)
+valeSchoolhouseNight = symbolLabel $ location ValeSchoolhouseNight Cards.valeSchoolhouseNight 4 (Static 0)
 
 instance HasModifiersFor ValeSchoolhouseNight where
   getModifiersFor (ValeSchoolhouseNight attrs) =

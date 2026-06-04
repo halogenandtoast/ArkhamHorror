@@ -9,6 +9,7 @@ import Arkham.ChaosToken
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
+import Arkham.Matcher.Investigator
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Source
@@ -418,4 +419,79 @@ instance RunMessage TheFeastOfHemlockVale where
             _ -> meta
       TheFeastOfHemlockVale attrs' <- lift $ defaultCampaignRunner msg c
       pure $ TheFeastOfHemlockVale $ attrs' & metaL .~ toJSON meta'
+    CampaignStep EpilogueStep -> scope "epilogue" do
+      anyAliveInvestigators <- selectAny AliveInvestigator
+      let meta = toResultDefault initMeta attrs.meta
+      marquezSacrificedHerself <- getHasRecord DrMarquezSacrificedHerselfForTheVale
+      investigatorsSacrificedThemselves <- getHasRecord TheInvestigatorsSacrificedThemselvesForTheVale
+      flavor do
+        setTitle "title"
+        p "body"
+        ul do
+          li.validate marquezSacrificedHerself "marquezSacrificedHerself"
+          li.validate investigatorsSacrificedThemselves "investigatorsSacrificedThemselves"
+          li.validate (not marquezSacrificedHerself && not investigatorsSacrificedThemselves) "otherwise"
+      flavor do
+        setTitle "title"
+        p
+          $ if
+            | marquezSacrificedHerself -> "epilogue1"
+            | investigatorsSacrificedThemselves -> "epilogue2"
+            | otherwise -> "epilogue3"
+      when (anyAliveInvestigators && not investigatorsSacrificedThemselves) do
+        push $ CampaignStep $ CampaignSpecificStep "epilogueCodex" Nothing
+      gameOver
+      pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON (meta {chosenCodexEntries = []})
+    CampaignStep (CampaignSpecificStep "epilogueCodex" Nothing) -> scope "epilogue" do
+      let meta = toResultDefault initMeta attrs.meta
+      leahCrossedOut <- getHasRecord LeahCrossedOut
+      simeonCrossedOut <- getHasRecord SimeonCrossedOut
+      hemlocksMadeATruce <- getHasRecord TheHemlocksMadeATruce
+      williamCrossedOut <- getHasRecord WilliamCrossedOut
+      riverCrossedOut <- getHasRecord RiverCrossedOut
+      judithCrossedOut <- getHasRecord JudithCrossedOut
+      theoCrossedOut <- getHasRecord TheoCrossedOut
+      judithLevel <- getRelationshipLevel JudithPark
+      theoLevel <- getRelationshipLevel TheoPeters
+      let atwoods = not leahCrossedOut && not simeonCrossedOut && "atwoods" `notElem` meta.chosenCodexEntries
+      let hemlocks =
+            hemlocksMadeATruce
+              && not williamCrossedOut
+              && not riverCrossedOut
+              && "hemlocks"
+              `notElem` meta.chosenCodexEntries
+
+      let judith = judithLevel >= 5 && not judithCrossedOut && "judith" `notElem` meta.chosenCodexEntries
+      let theo = theoLevel >= 5 && not theoCrossedOut && "theo" `notElem` meta.chosenCodexEntries
+      when (atwoods || hemlocks || judith || theo) do
+        leadChooseOneM do
+          labeledValidate' atwoods "atwoods"
+            $ push
+            $ CampaignStep
+            $ CampaignSpecificStep "epilogueCodex" (Just "atwoods")
+          labeledValidate' hemlocks "hemlocks"
+            $ push
+            $ CampaignStep
+            $ CampaignSpecificStep "epilogueCodex" (Just "hemlocks")
+          labeledValidate' judith "judith"
+            $ push
+            $ CampaignStep
+            $ CampaignSpecificStep "epilogueCodex" (Just "judith")
+          labeledValidate' theo "theo"
+            $ push
+            $ CampaignStep
+            $ CampaignSpecificStep "epilogueCodex" (Just "theo")
+          unscoped skip_
+      pure c
+    CampaignStep (CampaignSpecificStep "epilogueCodex" (Just entry)) -> scope "epilogue.codex" do
+      case entry of
+        "atwoods" -> scope "atwoods" $ flavor $ setTitle "title" >> p "body"
+        "hemlocks" -> scope "hemlocks" $ flavor $ setTitle "title" >> p "body"
+        "judith" -> scope "judith" $ flavor $ setTitle "title" >> p "body"
+        "theo" -> scope "theo" $ flavor $ setTitle "title" >> p "body"
+        _ -> error "Unknown epilogue codex"
+      push $ CampaignStep $ CampaignSpecificStep "epilogueCodex" Nothing
+      let meta = toResultDefault initMeta attrs.meta
+      let meta' = meta {chosenCodexEntries = entry : meta.chosenCodexEntries}
+      pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
     _ -> lift $ defaultCampaignRunner msg c

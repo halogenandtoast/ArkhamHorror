@@ -1,30 +1,20 @@
 module Arkham.Location.Cards.TheOldMillNight (theOldMillNight) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
-import Arkham.Act.Types (Field (ActCard))
-import Arkham.Card (toCardCode)
-import Arkham.Helpers.Act (getCurrentAct)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (remember)
-import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.FateOfTheVale.Helpers
 
 newtype TheOldMillNight = TheOldMillNight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theOldMillNight :: LocationCard TheOldMillNight
-theOldMillNight = symbolLabel $ location TheOldMillNight Cards.theOldMillNight 0 (Static 0)
-
-whenFateOfTheValeV4 :: ReverseQueue m => m () -> m ()
-whenFateOfTheValeV4 body = do
-  act <- getCurrentAct
-  actCard <- field ActCard act
-  when (toCardCode actCard == toCardCode Acts.fateOfTheValeV4) body
+theOldMillNight = symbolLabel $ location TheOldMillNight Cards.theOldMillNight 4 (PerPlayer 1)
 
 oldMillReward :: ReverseQueue m => TheOldMillNight -> InvestigatorId -> m TheOldMillNight
 oldMillReward l@(TheOldMillNight attrs) iid = do

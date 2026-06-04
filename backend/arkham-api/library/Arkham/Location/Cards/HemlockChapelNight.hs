@@ -11,7 +11,7 @@ newtype HemlockChapelNight = HemlockChapelNight LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hemlockChapelNight :: LocationCard HemlockChapelNight
-hemlockChapelNight = symbolLabel $ location HemlockChapelNight Cards.hemlockChapelNight 0 (Static 0)
+hemlockChapelNight = symbolLabel $ location HemlockChapelNight Cards.hemlockChapelNight 4 (PerPlayer 1)
 
 instance HasAbilities HemlockChapelNight where
   getAbilities (HemlockChapelNight a) =
@@ -22,8 +22,7 @@ instance HasAbilities HemlockChapelNight where
           $ forced
           $ DiscoverClues #after Anyone (be a) AnyValue
       , playerLimit PerGame
-          $ restricted a 2 (Here <> youExist (HealableInvestigator (a.ability 2) #horror You))
-          $ actionAbility
+          $ restricted a 2 (Here <> youExist (HealableInvestigator (a.ability 2) #horror You)) actionAbility
       ]
 
 instance RunMessage HemlockChapelNight where

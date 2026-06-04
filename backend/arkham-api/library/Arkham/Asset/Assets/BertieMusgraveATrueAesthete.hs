@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.BertieMusgraveATrueAesthete (bertieMusgraveATrueAesth
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
@@ -12,14 +13,15 @@ newtype BertieMusgraveATrueAesthete = BertieMusgraveATrueAesthete AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bertieMusgraveATrueAesthete :: AssetCard BertieMusgraveATrueAesthete
-bertieMusgraveATrueAesthete = assetWith BertieMusgraveATrueAesthete Cards.bertieMusgraveATrueAesthete $ (healthL ?~ 2) . (sanityL ?~ 1)
+bertieMusgraveATrueAesthete =
+  allyWith BertieMusgraveATrueAesthete Cards.bertieMusgraveATrueAesthete (2, 1) noSlots
 
 instance HasModifiersFor BertieMusgraveATrueAesthete where
   getModifiersFor (BertieMusgraveATrueAesthete a) = controllerGets a [HealthModifier 1, SanityModifier 1]
 
 instance HasAbilities BertieMusgraveATrueAesthete where
   getAbilities (BertieMusgraveATrueAesthete a) =
-    [ controlled a 1 ControlsThis
+    [ restricted a 1 OnSameLocation
         $ FastAbility'
           (OrCost [DamageCost (a.ability 1) YouTarget 1, HorrorCost (a.ability 1) YouTarget 1] <> exhaust a)
           #parley
@@ -30,6 +32,7 @@ instance RunMessage BertieMusgraveATrueAesthete where
   runMessage msg a@(BertieMusgraveATrueAesthete attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       drawCards iid (attrs.ability 1) 1
+      codex iid (attrs.ability 1) Omega
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
       cancelWindowBatch ws

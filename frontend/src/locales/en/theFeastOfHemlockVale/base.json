@@ -1051,5 +1051,40 @@
         "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.bertieMusgrave.title </h3><p>“Why don’t you believe Mother Rachel?” Bertie huffs. The dancing and revelry continue around, unabated. Everyone seems lost in a separate reverie, oblivious to the young man’s pain. You feel a pang of regret as you hold him. Bertie reaches out toward the effigy, glimmering with many lights. “I can see it coming. Can you feel it? Welling up from the ground underneath…” Bertie’s eyes roll back in his head, a broad smile on his face.</p><p class='basic right'>Choose and discard 3 cards from your hand.</p><p class='basic right'>In your Campaign Log, record <i>Bertie perished</i>.</p>"
       }
     }
+  },
+  "epilogue": {
+    "title": "Epilogue",
+    "body": "<p class='basic'>Check your Campaign Log. If there are any surviving investigators remaining, you may read any codex entry in the epilogue for which you meet the requirements.</p>",
+    "label": {
+      "atwoods": "Codex 2 & 3: The Atwoods",
+      "hemlocks": "Codex 4 & 5: The Hemlocks",
+      "judith": "Codex 7: Judith Park",
+      "theo": "Codex 8: Theo Peters",
+      "continue": "Continue to the epilogue"
+    },
+    "codex": {
+      "atwoods": {
+        "title": "{'{'}codex{'}'} Codex 2 & 3: The Atwoods",
+        "body": "<h3>@:theFeastOfHemlockVale.epilogue.codex.atwoods.title</h3><p>Simeon and Leah are bent over studying a tense game of marbles. “Stop cheating,” Leah slaps her son’s hand. Simeon protests, and the pair look up to you. “Thank you for all your help,” the former Vale cook says. “We’re headed to Kingsport. I hear it’s nice in the winter.” Simeon flicks a marble into the ring and looks up at you. “I changed the name of my club. We’re the Botanists’ Secret Order of Mischief now!”</p>"
+      },
+      "hemlocks": {
+        "title": "{'{'}codex{'}'} Codex 4 & 5: The Hemlocks",
+        "body": "<h3>@:theFeastOfHemlockVale.epilogue.codex.hemlocks.title</h3><p>The two cousins sit on the shoreline, staring out across the causeway toward the mainland. Gulls fly low over the choppy gray waves. “Hemlock Isle would have made an awful getaway. My friends in New York are already whispering about my fall from grace,” River says bitterly. William regards his cousin. “I think it’s time I returned to society. I’m sure I can set your friends right.” River pauses, then smirks as an idea comes to them. “Oh, William. My friends will love you. All you need to do is share one of your poems. I’m sure they’ll find it utterly captivating.”</p>"
+      },
+      "judith": {
+        "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+        "body": "<h3>@:theFeastOfHemlockVale.epilogue.codex.judith.title</h3><p>Judith’s hunting jacket is splattered with blood and her hair is a mess as she approaches you, rifle slung over her shoulder. She looks down at her jacket when she sees your concern. “Oh, don’t worry. You should see the other guy,” she winks. You ask if she’s still going to Boston, and she shrugs. “Maybe, maybe not. I was gonna ask where you’re headed next.”</p><p>You tell her you’re headed to Arkham, and she suppresses a snort of disbelief. “Arkham, huh? The city that’s in the news with weird shit every other week? You’re really headed back there?” She goes quiet for a moment as if considering something. “You’re going to need someone to watch your back,” she ventures. You tell her you plan to take a long rest, and she smirks. “I’ve got a buddy who runs a speakeasy somewhere in Easttown. After everything we’ve been through, I’d say I owe you a drink.”</p>"
+      },
+      "theo": {
+        "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+        "body": "<h3>@:theFeastOfHemlockVale.epilogue.codex.theo.title</h3><p>Theo grins sheepishly as you approach, then wraps you in a bear hug. As he pulls away, you see he is crying. When you ask him why, he looks down. “I really don’t know why.” He pauses to think, then goes on. “I always wanted a place that…that felt like home again. After mom and pop passed, Helen got—she got tough. And then I started to help out around the Vale, and they didn’t care how tough I was. It felt like home. And now that’s gone too.” He blinks tears from his eyes. “I guess home is what you make it. You should come visit us in Portland some time. I know you’ll love it,” he smiles.</p>"
+      }
+    },
+    "epilogue1": "<p>_Epilogue 1_: <span class='wolgast'>June 1926</span></p><p class='indent'>To the office of Dr. Henry Armitage,</p><p class='indent'>The survey of Hemlock Isle has concluded without Dr. Marquez. What we found there on that desolate island defies reason. An alien presence dominated the local ecosystem, warping the physical and mental wellbeing of every living thing in its proximity. We witnessed species that have never been documented before, and likely never will be again. The locals coexisted with this presence for decades, seemingly or intentionally unaware of its degenerative effects. Some even worshiped it. We count ourselves lucky to have survived.</p><p class='indent'>Dr. Marquez, unfortunately, was not so lucky. Enclosed with this letter is a comprehensive account detailing her observations of this unique ecosystem. What it does not contain is the story of how—and how bravely—she gave her life. That is a story we wish to share with you in person. We ask, out of respect for her memory, that you not dismiss these records as mere fantasy. Faithfully yours,</p><p class='right'><span class='wolgast'>The Miskatonic Survey</span></p>",
+    "epilogue2": "<p>_Epilogue 2_: <span class='wolgast'>June 1926</span></p><p class='indent'>To the office of Dr. Henry Armitage,</p><p class='indent'>The survey of Hemlock Isle has concluded at great cost. Over the course of our three day excursion, we witnessed horrors and wonders that defy all reason. A parasitic life form unlike any other fed on the local ecosystem, warping the biology of every living thing around it. I have enclosed a comprehensive account of the phenomena we witnessed, along with samples, notes, and sketches.</p><p class='indent'>Although I was initially wary of your contacts, they provided invaluable support throughout the survey. Ultimately, the strange gaseous entity we discovered took their lives. Without their sacrifice, I would have perished, along with most of Hemlock Isle.</p><p class='indent'>I will explain everything in further detail upon my return.</p><p class='right'><span class='wolgast'>Dr. Rosa Marquez</span></p>",
+    "epilogue3": "<p>_Epilogue 3_: <span class='wolgast'>June 1926</span></p><p class='indent'>To the office of Dr. Henry Armitage,</p><p class='indent'>The survey of Hemlock Isle has concluded. Over the course of our three day excursion, we witnessed horrors and wonders that defy all reason. A parasitic life form unlike any other fed on the local ecosystem, warping the biology of every living thing around it. I have enclosed a comprehensive account of the phenomena we witnessed, along with samples, notes, and sketches.</p><p class='indent'>Although I was initially wary of your contacts, they proved to be an incredible asset throughout the survey. Without their help, I have no doubt I would have perished, along with many others. I’ve half a mind to invite them along on my next survey.</p><p class='indent'>I will explain everything in further detail upon my return. Until then, the survey team and I plan to take a long-deserved rest.</p><p class='right'><span class='wolgast'>Dr. Rosa Marquez</span></p>",
+    "marquezSacrificedHerself": "If Dr. Marquez sacrificed herself for the Vale, proceed to _Epilogue 1_.",
+    "investigatorsSacrificedThemselves": "If the investigators sacrificed themselves for the Vale, skip to _Epilogue 2_.",
+    "otherwise": "Otherwise, skip to _Epilogue 3_."
   }
 }

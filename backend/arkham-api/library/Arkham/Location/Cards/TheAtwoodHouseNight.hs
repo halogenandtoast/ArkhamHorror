@@ -1,30 +1,20 @@
 module Arkham.Location.Cards.TheAtwoodHouseNight (theAtwoodHouseNight) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
-import Arkham.Act.Types (Field (ActCard))
-import Arkham.Card (toCardCode)
-import Arkham.Helpers.Act (getCurrentAct)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (remember)
-import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.FateOfTheVale.Helpers
 
 newtype TheAtwoodHouseNight = TheAtwoodHouseNight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theAtwoodHouseNight :: LocationCard TheAtwoodHouseNight
-theAtwoodHouseNight = symbolLabel $ location TheAtwoodHouseNight Cards.theAtwoodHouseNight 0 (Static 0)
-
-whenFateOfTheValeV4 :: ReverseQueue m => m () -> m ()
-whenFateOfTheValeV4 body = do
-  act <- getCurrentAct
-  actCard <- field ActCard act
-  when (toCardCode actCard == toCardCode Acts.fateOfTheValeV4) body
+theAtwoodHouseNight = symbolLabel $ location TheAtwoodHouseNight Cards.theAtwoodHouseNight 3 (PerPlayer 1)
 
 atwoodReward :: ReverseQueue m => TheAtwoodHouseNight -> InvestigatorId -> m TheAtwoodHouseNight
 atwoodReward l@(TheAtwoodHouseNight attrs) iid = do

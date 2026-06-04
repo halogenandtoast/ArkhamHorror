@@ -1,18 +1,14 @@
 module Arkham.Location.Cards.TheCrossroadsNight (theCrossroadsNight) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
-import Arkham.Act.Types (Field (ActCard))
-import Arkham.Card (toCardCode)
-import Arkham.Helpers.Act (getCurrentAct)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (remember)
-import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.FateOfTheVale.Helpers
 import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.Trait (Trait (Shattered))
@@ -22,17 +18,14 @@ newtype TheCrossroadsNight = TheCrossroadsNight LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCrossroadsNight :: LocationCard TheCrossroadsNight
-theCrossroadsNight = symbolLabel $ location TheCrossroadsNight Cards.theCrossroadsNight 0 (Static 0)
-
-whenFateOfTheValeV4 :: ReverseQueue m => m () -> m ()
-whenFateOfTheValeV4 body = do
-  act <- getCurrentAct
-  actCard <- field ActCard act
-  when (toCardCode actCard == toCardCode Acts.fateOfTheValeV4) body
+theCrossroadsNight = symbolLabel $ location TheCrossroadsNight Cards.theCrossroadsNight 2 (PerPlayer 2)
 
 instance HasModifiersFor TheCrossroadsNight where
   getModifiersFor (TheCrossroadsNight attrs) =
-    modifySelect attrs (EnemyAt (be attrs) <> EnemyWithTrait Shattered) [CriteriaModifier (DuringPhase IsEnemyPhase) $ RemoveKeyword Aloof]
+    modifySelect
+      attrs
+      (EnemyAt (be attrs) <> EnemyWithTrait Shattered)
+      [CriteriaModifier (DuringPhase IsEnemyPhase) $ RemoveKeyword Aloof]
 
 instance HasAbilities TheCrossroadsNight where
   getAbilities (TheCrossroadsNight a) =
@@ -43,7 +36,8 @@ instance HasAbilities TheCrossroadsNight where
         (exists $ EnemyAt (be a) <> EnemyWithTrait Shattered)
       $ freeReaction
       $ EnemyEvadedSuccessfully #after You AnySource
-      $ EnemyAt (be a) <> EnemyWithTrait Shattered
+      $ EnemyAt (be a)
+      <> EnemyWithTrait Shattered
 
 instance RunMessage TheCrossroadsNight where
   runMessage msg l@(TheCrossroadsNight attrs) = runQueueT $ case msg of

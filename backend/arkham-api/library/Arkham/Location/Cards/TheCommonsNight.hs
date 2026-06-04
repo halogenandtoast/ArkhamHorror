@@ -1,30 +1,21 @@
 module Arkham.Location.Cards.TheCommonsNight (theCommonsNight) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
-import Arkham.Act.Types (Field (ActCard))
-import Arkham.Card (toCardCode)
-import Arkham.Helpers.Act (getCurrentAct)
+import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (remember)
-import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.FateOfTheVale.Helpers
 
 newtype TheCommonsNight = TheCommonsNight LocationAttrs
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCommonsNight :: LocationCard TheCommonsNight
-theCommonsNight = symbolLabel $ location TheCommonsNight Cards.theCommonsNight 0 (Static 0)
-
-whenFateOfTheValeV4 :: ReverseQueue m => m () -> m ()
-whenFateOfTheValeV4 body = do
-  act <- getCurrentAct
-  actCard <- field ActCard act
-  when (toCardCode actCard == toCardCode Acts.fateOfTheValeV4) body
+theCommonsNight = symbolLabel $ location TheCommonsNight Cards.theCommonsNight 2 (PerPlayer 1)
 
 instance HasModifiersFor TheCommonsNight where
   getModifiersFor (TheCommonsNight attrs) = do
@@ -49,7 +40,8 @@ instance RunMessage TheCommonsNight where
       beginSkillTest sid iid (IndexedSource 3 $ attrs.ability 1) iid #agility (Fixed 1)
       pure l
     PassedThisSkillTest iid (IndexedSource 3 (isAbilitySource attrs 1 -> True)) -> do
-      gainResources iid (attrs.ability 1) 5
-      whenFateOfTheValeV4 $ remember TheInvestigatorsFoundTheosTruck
+      whenM (can.gain.resources iid) do
+        gainResources iid (attrs.ability 1) 5
+        whenFateOfTheValeV4 $ remember TheInvestigatorsFoundTheosTruck
       pure l
     _ -> TheCommonsNight <$> liftRunMessage msg attrs

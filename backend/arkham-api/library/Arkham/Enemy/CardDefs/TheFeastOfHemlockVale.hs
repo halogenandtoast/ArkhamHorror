@@ -449,6 +449,7 @@ cosmicEmissaryTheAbyssShattered =
     $ (enemy "10662b" ("Cosmic Emissary" <:> "The Abyss") FateOfTheVale 1)
       { cdCardTraits = setFromList [Emissary, Shattered, Elite]
       , cdKeywords = singleton Keyword.Massive
+      , cdVictoryPoints = Just 5
       }
 
 cosmicEmissaryThePhantasm :: CardDef
@@ -465,6 +466,7 @@ cosmicEmissaryThePhantasmShattered =
     $ (enemy "10663b" ("Cosmic Emissary" <:> "The Phantasm") FateOfTheVale 1)
       { cdCardTraits = setFromList [Emissary, Shattered, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter, Keyword.Retaliate]
+      , cdVictoryPoints = Just 1
       }
 
 cosmicEmissaryTheMiasma :: CardDef
@@ -481,6 +483,7 @@ cosmicEmissaryTheMiasmaShattered =
     $ (enemy "10664b" ("Cosmic Emissary" <:> "The Miasma") FateOfTheVale 1)
       { cdCardTraits = setFromList [Emissary, Shattered, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter, Keyword.Alert]
+      , cdVictoryPoints = Just 1
       }
 
 cosmicEmissaryTheBrilliance :: CardDef
@@ -497,6 +500,7 @@ cosmicEmissaryTheBrillianceShattered =
     $ (enemy "10665b" ("Cosmic Emissary" <:> "The Brilliance") FateOfTheVale 1)
       { cdCardTraits = setFromList [Emissary, Shattered, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Elusive, Keyword.Hunter]
+      , cdVictoryPoints = Just 1
       }
 
 crystalMimic :: CardDef

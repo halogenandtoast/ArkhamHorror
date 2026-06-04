@@ -5098,7 +5098,11 @@ instance Query ChaosTokenMatcher where
       FirstChaosTokenRevealedThisSkillTest -> \t ->
         getSkillTest <&> \case
           Nothing -> False
-          Just st -> st.revealedChaosTokensCount == 1 && t `elem` st.revealedChaosTokens
+          Just st ->
+            -- At the #cancel/#when window the reveal isn't recorded yet
+            -- (revealedChaosTokensCount == 0); at #after it is 1.
+            st.revealedChaosTokensCount == 0
+              || (st.revealedChaosTokensCount == 1 && t `elem` st.revealedChaosTokens)
 
 instance Query AssetMatcher where
   toSomeQuery = AssetQuery

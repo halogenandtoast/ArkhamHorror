@@ -9,8 +9,10 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const allLocations = computed(() => Object.values(props.game.locations))
+
 const locations = computed(() =>
-  Object.values(props.game.locations).filter(a => a.placement === null && a.label !== 'cosmos')
+  allLocations.value.filter(a => a.placement === null && a.label !== 'cosmos')
 )
 
 
@@ -251,7 +253,7 @@ function handleConnections(includeFateOfTheVale = true) {
   // the reverse edge. connectedLocations is symmetric for normal connections
   // but asymmetric when a location's connectedMatchers don't match back.
   const directed = new Set<string>()
-  for (const loc of locations.value) {
+  for (const loc of allLocations.value) {
     const cs = Array.isArray(loc.connectedLocations)
       ? loc.connectedLocations
       : Object.values(loc.connectedLocations)

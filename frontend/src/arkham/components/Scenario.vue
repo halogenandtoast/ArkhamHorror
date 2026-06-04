@@ -29,6 +29,7 @@ import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, groupBy } from '@/arkham/helpers';
 import { cardImage as cardCodeImage } from '@/arkham/cardImages';
+import { fullName } from '@/arkham/types/Name';
 import { useMenu } from '@/composable/menu';
 import { useSettings } from '@/stores/settings';
 import { keyToId } from '@/arkham/types/Key'
@@ -859,6 +860,21 @@ const scenarioDeckStyles = computed(() => {
 const players = computed(() => props.game.investigators)
 const playerOrder = computed(() => props.game.playerOrder)
 const discards = computed<Card[]>(() => props.scenario.discard.map(c => ({ tag: 'EncounterCard', contents: c })))
+const playerLocationZones = computed(() => props.game.playerOrder.flatMap((investigatorId) => {
+  const investigator = props.game.investigators[investigatorId]
+  if (!investigator) return []
+
+  const playerLocations = Object.values(props.game.locations).filter((location) =>
+    location.placement?.tag === 'InPlayArea' && location.placement.contents === investigator.id
+  )
+
+  if (playerLocations.length === 0) return []
+  return [{
+    investigatorId,
+    name: fullName(investigator.name),
+    locations: playerLocations,
+  }]
+}))
 
 const enemyGroups = computed(()=>{
   const all = Object.values(props.game.enemies)
@@ -1948,23 +1964,27 @@ async function addChaosToken(face: any){
               cosmicEmissaryLocationCellStyles[location.label] ?? {},
             ]"
           >
-            <Location
-              class="location"
-              :class="{ 'location--unlocked': locationsUnlocked, 'location--dragging': draggingLocationId === location.id }"
-              :game="game"
-              :playerId="playerId"
-              :location="location"
+            <div
+              class="location-wrapper"
               :style="locationOffsetStyle(location)"
               @pointerdown.capture="onLocationPointerDown($event, location)"
-              @choose="choose"
-              @show="doShowCards"
-            />
-            <div
-              v-if="abyssIsLocation && location.label === 'theAbyss'"
-              class="abyss-location-count"
-              v-tooltip="'Cards in The Abyss'"
             >
-              {{ abyssDeckCount }}
+              <div
+                v-if="abyssIsLocation && location.label === 'theAbyss'"
+                class="abyss-location-count"
+                v-tooltip="`${abyssDeckCount} cards in The Abyss`"
+              >
+                {{ abyssDeckCount }}
+              </div>
+              <Location
+                class="location"
+                :class="{ 'location--unlocked': locationsUnlocked, 'location--dragging': draggingLocationId === location.id }"
+                :game="game"
+                :playerId="playerId"
+                :location="location"
+                @choose="choose"
+                @show="doShowCards"
+              />
             </div>
           </div>
           <EnemyView
@@ -2014,6 +2034,27 @@ async function addChaosToken(face: any){
             </template>
           </template>
         </transition-group>
+        <div v-if="playerLocationZones.length > 0" class="player-location-zones">
+          <section
+            v-for="zone in playerLocationZones"
+            :key="zone.investigatorId"
+            class="player-location-zone"
+          >
+            <h3>{{ zone.name }}</h3>
+            <div class="player-location-zone__cards">
+              <Location
+                v-for="location in zone.locations"
+                :key="location.id"
+                class="player-area-location"
+                :game="game"
+                :playerId="playerId"
+                :location="location"
+                @choose="choose"
+                @show="doShowCards"
+              />
+            </div>
+          </section>
+        </div>
         </div>
       </div>
 
@@ -2253,8 +2294,50 @@ async function addChaosToken(face: any){
   scrollbar-gutter: stable both-edges;
   scroll-padding: 30%;
   display: flex;
+  flex-direction: column;
+  gap: 16px;
   align-items: safe center;
   justify-content: safe center;
+}
+
+.player-location-zones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  flex-shrink: 0;
+  max-width: 100%;
+  padding: 0 12px 12px;
+}
+
+.player-location-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+
+  h3 {
+    margin: 0;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
+.player-location-zone__cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+
+  &:deep(.location) {
+    min-width: calc(var(--card-width) + 120px);
+  }
 }
 
 .location-cards {
@@ -2767,27 +2850,26 @@ async function addChaosToken(face: any){
   position: relative;
 }
 
+.location-wrapper {
+  width: fit-content;
+}
+
 .abyss-location-count {
-  position: absolute;
-  top: 4%;
-  right: 6%;
-  min-width: 1.6em;
-  height: 1.6em;
-  padding: 0 0.35em;
+  display: block;
+  width: fit-content;
+  margin: 0 auto 6px;
+  padding: 2px 8px;
   border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: rgba(10, 13, 25, 0.9);
   border: 1px solid rgba(111, 225, 210, 0.8);
   box-shadow: 0 0 8px rgba(111, 225, 210, 0.45);
   color: white;
+  font-size: 0.85rem;
   font-weight: bold;
-  pointer-events: none;
-  z-index: 30;
+  cursor: help;
 }
 
-.location-cell > .location {
+.location-cell > .location-wrapper {
   /* Animate the offset along with the wrapper's FLIP move during rotation so
      the offset doesn't snap to its rotated value before the wrapper slides
      into place. Same easing/duration as .map-move keeps them in sync. */

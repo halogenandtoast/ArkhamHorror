@@ -77,7 +77,13 @@ placeSetAsideNightLocation :: ReverseQueue m => CardDef -> m LocationId
 placeSetAsideNightLocation def = do
   mcard <- getSetAsideCardMaybe def
   case mcard of
-    Just card -> placeLocation card
+    Just card -> do
+      -- getSetAsideCardMaybe can return the requested side with the original
+      -- card id, but the global card cache may still know that id as the Day
+      -- side. Replace the cached card so skill test windows show the Night
+      -- side when these locations are the source of tests.
+      push $ ReplaceCard (toCardId card) card
+      placeLocation card
     Nothing -> placeLocation def
 
 {- | Shared "Hemlock Vale (Night)" setup (Fate of the Vale 2 and 5): remove the

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Matcher
+import Arkham.ScenarioLogKey
 
 newtype FateOfTheValeV4 = FateOfTheValeV4 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -12,11 +13,22 @@ newtype FateOfTheValeV4 = FateOfTheValeV4 ActAttrs
 fateOfTheValeV4 :: ActCard FateOfTheValeV4
 fateOfTheValeV4 = act (3, A) FateOfTheValeV4 Cards.fateOfTheValeV4 Nothing
 
+fateOfTheValeV4ResignKeys :: [ScenarioLogKey]
+fateOfTheValeV4ResignKeys =
+  [ TheInvestigatorsFoundGas
+  , TheInvestigatorsFoundTheosTruck
+  , TheRoadIsClear
+  , TheSurveyNotesWereRecovered
+  , BertieIsFleeing
+  , TheSamplesWereFound
+  ]
+
 instance HasAbilities FateOfTheValeV4 where
   getAbilities (FateOfTheValeV4 a) =
     extend
       a
-      [ mkAbility a 1 $ ActionAbility #resign Nothing (ActionCost 1)
+      [ restricted a 1 (RememberedAtLeast (Static 5) fateOfTheValeV4ResignKeys)
+          $ ActionAbility #resign Nothing (ActionCost 1)
       , onlyOnce $ restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
       ]
 

@@ -12,7 +12,7 @@ newtype BertieMusgraveATrueAesthete = BertieMusgraveATrueAesthete AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bertieMusgraveATrueAesthete :: AssetCard BertieMusgraveATrueAesthete
-bertieMusgraveATrueAesthete = asset BertieMusgraveATrueAesthete Cards.bertieMusgraveATrueAesthete
+bertieMusgraveATrueAesthete = assetWith BertieMusgraveATrueAesthete Cards.bertieMusgraveATrueAesthete $ (healthL ?~ 2) . (sanityL ?~ 1)
 
 instance HasModifiersFor BertieMusgraveATrueAesthete where
   getModifiersFor (BertieMusgraveATrueAesthete a) = controllerGets a [HealthModifier 1, SanityModifier 1]

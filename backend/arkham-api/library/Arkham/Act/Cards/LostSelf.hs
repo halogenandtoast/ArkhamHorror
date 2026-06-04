@@ -152,6 +152,7 @@ flipTheAbyssStoryToLocation = do
     Just lid -> do
       setLocationLabel lid "theAbyss"
       unsafeReveal lid
+      scenarioSpecific "theAbyssBecameLocation" Null
       pure lid
     Nothing -> do
       -- The Abyss deck remains the scenario deck keyed by AbyssDeck; do not move

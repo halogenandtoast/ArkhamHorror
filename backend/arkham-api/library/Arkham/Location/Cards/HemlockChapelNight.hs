@@ -1,7 +1,10 @@
 module Arkham.Location.Cards.HemlockChapelNight (hemlockChapelNight) where
 
+import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Strategy
 
 newtype HemlockChapelNight = HemlockChapelNight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -12,8 +15,24 @@ hemlockChapelNight = symbolLabel $ location HemlockChapelNight Cards.hemlockChap
 
 instance HasAbilities HemlockChapelNight where
   getAbilities (HemlockChapelNight a) =
-    extendRevealed a []
+    extendRevealed
+      a
+      [ groupLimit PerGame
+          $ restricted a 1 (thisExists a LocationWithoutClues)
+          $ forced
+          $ DiscoverClues #after Anyone (be a) AnyValue
+      , playerLimit PerGame
+          $ restricted a 2 (Here <> youExist (HealableInvestigator (a.ability 2) #horror You))
+          $ actionAbility
+      ]
 
 instance RunMessage HemlockChapelNight where
-  runMessage msg (HemlockChapelNight attrs) = runQueueT $ case msg of
+  runMessage msg l@(HemlockChapelNight attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      selectEach Anywhere \lid -> placeClues (attrs.ability 1) lid 1
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      healHorror iid (attrs.ability 2) 1
+      search iid (attrs.ability 2) iid [fromDiscard] (basic #spell) (AddFoundToHand iid 1)
+      pure l
     _ -> HemlockChapelNight <$> liftRunMessage msg attrs

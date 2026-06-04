@@ -98,6 +98,11 @@ data ScenarioLogKey
     TheHemlocksAreHashingItOut
   | -- | Fate of the Vale
     BertieIsFleeing
+  | TheInvestigatorsFoundGas
+  | TheRoadIsClear
+  | TheSamplesWereFound
+  | TheSurveyNotesWereRecovered
+  | TheInvestigatorsFoundTheosTruck
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen

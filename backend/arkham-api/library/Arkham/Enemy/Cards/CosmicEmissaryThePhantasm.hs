@@ -12,10 +12,11 @@ newtype CosmicEmissaryThePhantasm = CosmicEmissaryThePhantasm EnemyAttrs
 cosmicEmissaryThePhantasm :: EnemyCard CosmicEmissaryThePhantasm
 cosmicEmissaryThePhantasm =
   enemyWith CosmicEmissaryThePhantasm Cards.cosmicEmissaryThePhantasm (2, Static 0, 4) (1, 1)
-    $ (healthL .~ Nothing) . (asSelfLocationL ?~ "cosmicEmissaryPhantasm")
+    $ (healthL .~ Nothing)
+    . (asSelfLocationL ?~ "cosmicEmissaryPhantasm")
 
 instance HasModifiersFor CosmicEmissaryThePhantasm where
-  getModifiersFor (CosmicEmissaryThePhantasm attrs) = modifySelf attrs [CannotMakeAttacksOfOpportunity]
+  getModifiersFor (CosmicEmissaryThePhantasm attrs) = modifySelf attrs [CannotMakeAttacksOfOpportunity, CannotBeDamaged]
 
 instance HasAbilities CosmicEmissaryThePhantasm where
   getAbilities (CosmicEmissaryThePhantasm attrs) = cosmicEmissaryColourAbilities attrs

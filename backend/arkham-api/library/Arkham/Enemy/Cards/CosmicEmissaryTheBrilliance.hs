@@ -12,10 +12,11 @@ newtype CosmicEmissaryTheBrilliance = CosmicEmissaryTheBrilliance EnemyAttrs
 cosmicEmissaryTheBrilliance :: EnemyCard CosmicEmissaryTheBrilliance
 cosmicEmissaryTheBrilliance =
   enemyWith CosmicEmissaryTheBrilliance Cards.cosmicEmissaryTheBrilliance (3, Static 0, 3) (1, 1)
-    $ (healthL .~ Nothing) . (asSelfLocationL ?~ "cosmicEmissaryBrilliance")
+    $ (healthL .~ Nothing)
+    . (asSelfLocationL ?~ "cosmicEmissaryBrilliance")
 
 instance HasModifiersFor CosmicEmissaryTheBrilliance where
-  getModifiersFor (CosmicEmissaryTheBrilliance attrs) = modifySelf attrs [CannotMakeAttacksOfOpportunity]
+  getModifiersFor (CosmicEmissaryTheBrilliance attrs) = modifySelf attrs [CannotMakeAttacksOfOpportunity, CannotBeDamaged]
 
 instance HasAbilities CosmicEmissaryTheBrilliance where
   getAbilities (CosmicEmissaryTheBrilliance attrs) = cosmicEmissaryColourAbilities attrs

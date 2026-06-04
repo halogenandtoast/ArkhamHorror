@@ -22,6 +22,8 @@ import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
 import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
 import CampaignLogChaosBag from '@/arkham/components/CampaignLogChaosBag.vue'
+import CampaignLogAdditionalSection from '@/arkham/components/CampaignLogAdditionalSection.vue'
+import campaignJSON from '@/arkham/data/campaigns.json'
 import { useI18n } from 'vue-i18n'
 import { useDbCardStore } from '@/stores/dbCards'
 
@@ -39,7 +41,7 @@ const props = defineProps<Props>()
 const store = useDbCardStore()
 const { t, tm } = useI18n()
 
-type LogTab = 'log' | 'investigators' | 'rules'
+type LogTab = 'log' | 'investigators' | 'rules' | `additional:${number}`
 const activeTab = ref<LogTab>('log')
 
 const sectionComponentById: Record<string, Component> = {
@@ -68,6 +70,19 @@ const theta = computed(() => props.game.campaign?.meta?.theta)
 const delta = computed(() => props.game.campaign?.meta?.delta)
 const psi = computed(() => props.game.campaign?.meta?.psi)
 const scarletKeys = computed(() => props.game.campaign?.meta?.keyStatus)
+
+type AdditionalLogSection = { title: string; body: string }
+type CampaignDefinition = { id: string; additional?: AdditionalLogSection[] }
+
+const campaignDefinition = computed<CampaignDefinition | null>(() => {
+  const campaignId = props.game.campaign?.id
+  if (!campaignId) return null
+  return (campaignJSON as CampaignDefinition[]).find((c) => c.id === campaignId) ?? null
+})
+
+const additionalLogSections = computed(() => campaignDefinition.value?.additional ?? [])
+const additionalTabId = (index: number): `additional:${number}` => `additional:${index}`
+const isAdditionalTab = (tab: LogTab): tab is `additional:${number}` => tab.startsWith('additional:')
 
 const hemlockDayTime = computed(() => {
   if (props.game.campaign?.id !== '10') return null
@@ -226,6 +241,12 @@ const hasRules = computed(() =>
 
 watch(hasRules, (has) => {
   if (!has && activeTab.value === 'rules') activeTab.value = 'log'
+})
+
+watch(additionalLogSections, (sections) => {
+  if (!isAdditionalTab(activeTab.value)) return
+  const index = Number(activeTab.value.split(':')[1])
+  if (!Number.isInteger(index) || index < 0 || index >= sections.length) activeTab.value = 'log'
 })
 
 const allGameInvestigators = computed(() => ({
@@ -621,6 +642,13 @@ const mapData = computed(() => {
             :class="{ active: activeTab === 'rules' }"
             @click="activeTab = 'rules'"
           >{{ t('campaignLog.tabs.rules') }}</button>
+          <button
+            v-for="(section, index) in additionalLogSections"
+            :key="section.title"
+            type="button"
+            :class="{ active: activeTab === additionalTabId(index) }"
+            @click="activeTab = additionalTabId(index)"
+          >{{ t(section.title) }}</button>
         </nav>
 
         <div v-show="activeTab === 'investigators'" class="investigators-log">
@@ -650,6 +678,14 @@ const mapData = computed(() => {
             v-if="keywordsAndConcepts"
             :title="keywordsAndConcepts.title"
             :rules="keywordsAndConcepts.rules"
+          />
+        </template>
+
+        <template v-for="(section, index) in additionalLogSections" :key="section.title">
+          <CampaignLogAdditionalSection
+            v-if="activeTab === additionalTabId(index)"
+            :title="t(section.title)"
+            :bodyKey="section.body"
           />
         </template>
 

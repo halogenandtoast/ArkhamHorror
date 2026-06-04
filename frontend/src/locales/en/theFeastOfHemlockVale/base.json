@@ -48,6 +48,10 @@
     },
     "dayTime": {
       "title": "Day / Time"
+    },
+    "map": {
+      "title": "Map",
+      "body": "<div class='hemlock-vale-map'><img alt='Map of Hemlock Isle' src='{setImgPath}/../extra/the-feast-of-hemlock-vale/map.jpg' /></div>"
     }
   },
   "label": {
@@ -780,7 +784,8 @@
       "orderKey": "b",
       "name": "Mother Rachel",
       "motherRachelIntervened": "Mother Rachel Intervened",
-      "motherRachelSharedHerDoubts": "Mother Rachel Shared Her Doubts"
+      "motherRachelSharedHerDoubts": "Mother Rachel Shared Her Doubts",
+      "motherRachelCrossedOut": "Mother Rachel Crossed Out"
     },
     "[leahAtwoodNotes]": {
       "orderKey": "c",
@@ -792,7 +797,8 @@
       "leahAndSimeonWereReunited": "Leah And Simeon Were Reunited",
       "leahSearchedThePearlRuins": "Leah Searched The Pearl Ruins",
       "leahStoodByYou": "Leah Stood By You",
-      "leahSacrificedThemselvesForTheInvestigators": "Leah Sacrificed Themselves For The Investigators"
+      "leahSacrificedThemselvesForTheInvestigators": "Leah Sacrificed Themselves For The Investigators",
+      "leahCrossedOut": "Leah Crossed Out"
     },
     "[simeonAtwoodNotes]": {
       "orderKey": "d",
@@ -803,7 +809,8 @@
       "thePlanIsUnderway": "The Plan Is Underway",
       "simeonSharedADance": "Simeon Shared A Dance",
       "simeonStoodByYou": "Simeon Stood By You",
-      "simeonSacrificedThemselvesForTheInvestigators": "Simeon Sacrificed Themselves For The Investigators"
+      "simeonSacrificedThemselvesForTheInvestigators": "Simeon Sacrificed Themselves For The Investigators",
+      "simeonCrossedOut": "Simeon Crossed Out"
     },
     "[williamHemlockNotes]": {
       "orderKey": "e",
@@ -813,7 +820,8 @@
       "williamSharedADance": "William Shared A Dance",
       "williamStoodByYou": "William Stood By You",
       "williamIsResolved": "William Is Resolved",
-      "williamSacrificedThemselvesForTheInvestigators": "William Sacrificed Themselves For The Investigators"
+      "williamSacrificedThemselvesForTheInvestigators": "William Sacrificed Themselves For The Investigators",
+      "williamCrossedOut": "William Crossed Out"
     },
     "[riverHawthorneNotes]": {
       "orderKey": "f",
@@ -824,7 +832,8 @@
       "riverSharedADance": "River Shared A Dance",
       "riverStoodByYou": "River Stood By You",
       "riverIsReclaimingTheirLegacy": "River Is Reclaiming Their Legacy",
-      "riverSacrificedThemselvesForTheInvestigators": "River Sacrificed Themselves For The Investigators"
+      "riverSacrificedThemselvesForTheInvestigators": "River Sacrificed Themselves For The Investigators",
+      "riverCrossedOut": "River Crossed Out"
     },
     "[gideonMizrahNotes]": {
       "orderKey": "g",
@@ -834,7 +843,8 @@
       "gideonFoundHisTreasure": "Gideon Found His Treasure",
       "gideonSharedADance": "Gideon Shared A Dance",
       "gideonStoodByYou": "Gideon Stood By You",
-      "gideonSacrificedThemselvesForTheInvestigators": "Gideon Sacrificed Themselves For The Investigators"
+      "gideonSacrificedThemselvesForTheInvestigators": "Gideon Sacrificed Themselves For The Investigators",
+      "gideonCrossedOut": "Gideon Crossed Out"
     },
     "[judithParkNotes]": {
       "orderKey": "h",
@@ -844,7 +854,8 @@
       "judithSharedADance": "Judith Shared A Dance",
       "judithStoodByYou": "Judith Stood By You",
       "youBackedJudithUp": "You Backed Judith Up",
-      "judithSacrificedThemselvesForTheInvestigators": "Judith Sacrificed Themselves For The Investigators"
+      "judithSacrificedThemselvesForTheInvestigators": "Judith Sacrificed Themselves For The Investigators",
+      "judithCrossedOut": "Judith Crossed Out"
     },
     "[theoPetersNotes]": {
       "orderKey": "i",
@@ -855,7 +866,8 @@
       "theoRejectedHisFamily": "Theo Rejected His Family",
       "theoStoodByYou": "Theo Stood By You",
       "theoIsHavingSecondThoughts": "Theo Is Having Second Thoughts",
-      "theoSacrificedThemselvesForTheInvestigators": "Theo Sacrificed Themselves For The Investigators"
+      "theoSacrificedThemselvesForTheInvestigators": "Theo Sacrificed Themselves For The Investigators",
+      "theoCrossedOut": "Theo Crossed Out"
     },
     "helenSharedADance": "Helen Shared A Dance",
     "helenPetersJoinedTheSurvey": "Helen Peters Joined The Survey",
@@ -868,7 +880,27 @@
     "drMarquezHasAPlan": "Dr. Marquez Has A Plan",
     "theInvestigatorsLearnedTheirPlace": "The Investigators Learned Their Place",
     "drMarquesHasAHunch": "Dr. Marquez Has A Hunch",
-    "theInvestigatorsInterruptedTheFeast": "The Investigators Interrupted the Feast"
+    "theInvestigatorsInterruptedTheFeast": "The Investigators Interrupted the Feast",
+    "theInvestigatorsSurvivedTheHorrorsInTheRock": "The Investigators Survived the Horrors in the Rock",
+    "theRemainsWerePartiallyRecovered": "The Remains Were Partially Recovered",
+    "thePetersFamilyWereReunited": "The Peters Family Were Reunited",
+    "theChelydranHybridPerished": "The Chelydran Hybrid Perished",
+    "theChelydranHybridLived": "The Chelydran Hybrid Lived",
+    "theChelydranHybridWasDevoured": "The Chelydran Hybrid Was Devoured",
+    "theInvestigatorsLostThePath": "The Investigators Lost the Path",
+    "theValeIsFullOfFireworks": "The Vale Is Full of Fireworks",
+    "theInvestigatorsBelieved": "The Investigators Believed",
+    "theInvestigatorsLiedToMotherRachel": "The Investigators Lied to Mother Rachel",
+    "gideonFinishedTheTaleOfAnnabelleLee": "Gideon Finished the Tale of the Annabelle Lee",
+    "theHemlocksMadeATruce": "The Hemlocks Made a Truce",
+    "bertiePerished": "Bertie Perished",
+    "theInvestigatorsBecameTheTrueFeastOfHemlockVale": "The Investigators Became the True Feast of Hemlock Vale",
+    "drMarquezSacrificedHerselfForTheVale": "Dr. Marquez Sacrificed Herself for the Vale",
+    "theInvestigatorsSacrificedThemselvesForTheVale": "The Investigators Sacrificed Themselves for the Vale",
+    "theValeWasSaved": "The Vale Was Saved",
+    "theValeBurned": "The Vale Burned",
+    "theInvestigatorsBarelySurvivedTheFeastOfHemlockVale": "The Investigators Barely Survived the Feast of Hemlock Vale",
+    "helenSacrificedThemselvesForTheInvestigators": "Helen Sacrificed Themselves for the Investigators"
   },
   "prelude4": {
     "intro": {

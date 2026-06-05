@@ -250,7 +250,7 @@ instance RunMessage PreludeTheFinalEvening where
       let
         awardXp :: ReverseQueue m => Text -> Int -> m ()
         awardXp xpKey xpAmount =
-          eachInvestigator \i -> gainXp i attrs (ikey ("xp." <> xpKey)) xpAmount
+          popScope $ eachInvestigator \i -> gainXp i attrs (ikey ("xp." <> xpKey)) xpAmount
       let recruitResident resident xpKey relIncrease xpAmount = do
             increaseRelationshipLevel resident relIncrease
             awardXp xpKey xpAmount

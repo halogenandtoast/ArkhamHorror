@@ -209,11 +209,11 @@ instance RunMessage PreludeDawnOfTheFinalDay where
                 flavor $ setTitle "title" >> p.green "motherRachel3"
                 record TheInvestigatorsLearnedTheirPlace
                 increaseRelationshipLevel MotherRachel 1
-                eachInvestigator \i -> gainXp i attrs (ikey "xp.motherRachel") 1
+                popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.motherRachel") 1
               labeled' "iSeeYou" do
                 flavor $ setTitle "title" >> p.green "motherRachel4"
                 decreaseRelationshipLevel MotherRachel 1
-                eachInvestigator \i -> gainXp i attrs (ikey "xp.motherRachel") 1
+                popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.motherRachel") 1
         2 -> scope "leahAtwood" do
           simeonCrossedOut <- getHasRecord SimeonCrossedOut
           flavor do
@@ -224,7 +224,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
               p.validate (not simeonCrossedOut) "notCrossedOut"
           let x = if simeonCrossedOut then 1 else 2
           increaseRelationshipLevel LeahAtwood x
-          eachInvestigator \i -> gainXp i attrs (ikey "xp.leahAtwood") n
+          popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.leahAtwood") x
         4 -> scope "williamHemlock" do
           stood <- getHasRecord WilliamStoodByYou
           flavor do
@@ -245,7 +245,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
               when tookHeart $ record WilliamIsResolved
             else flavor $ setTitle "title" >> p.green "william3"
           increaseRelationshipLevel WilliamHemlock 1
-          eachInvestigator \i -> gainXp i attrs (ikey "xp.williamHemlock") 1
+          popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.williamHemlock") 1
         5 -> scope "riverHawthorne" do
           stood <- getHasRecord RiverStoodByYou
           scheme <- getHasRecord TheSchemeIsInMotion
@@ -259,7 +259,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
             then do
               record RiverIsReclaimingTheirLegacy
               increaseRelationshipLevel RiverHawthorne 1
-              eachInvestigator \i -> gainXp i attrs (ikey "xp.riverHawthorne") 1
+              popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.riverHawthorne") 1
             else do
               gainResources iid source 3
         6 -> scope "gideonMizrah" do
@@ -273,7 +273,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           if stood
             then do
               increaseRelationshipLevel GideonMizrah 1
-              eachInvestigator \i -> gainXp i attrs (ikey "xp.gideonMizrah") 1
+              popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.gideonMizrah") 1
             else do
               drawCards iid source 3
         7 -> scope "judithPark" do
@@ -299,7 +299,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
               flavor $ setTitle "title" >> p.green "judith3"
               randomDiscard iid source
           increaseRelationshipLevel JudithPark 1
-          eachInvestigator \i -> gainXp i attrs (ikey "xp.judithPark") 1
+          popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.judithPark") 1
         8 -> scope "theoPeters" do
           stood <- getHasRecord TheoStoodByYou
           flavor do
@@ -312,7 +312,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
             then do
               record TheoIsHavingSecondThoughts
               increaseRelationshipLevel TheoPeters 1
-              eachInvestigator \i -> gainXp i attrs (ikey "xp.theoPeters") 1
+              popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.theoPeters") 1
             else do
               remember YouAreDeliveringAPackage
         9 -> do
@@ -398,7 +398,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
               p "regardless"
           when delivering do
             increaseRelationshipLevel TheoPeters 1
-            eachInvestigator \i -> gainXp i attrs (ikey "xp.theoPeters") 1
+            popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.theoPeters") 1
           iids <- getInvestigators
           residents <- filterM (fmap (<= 2) . getRelationshipLevel) [WilliamHemlock ..]
           chooseOrRunOneM iid do
@@ -419,7 +419,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
                           for_ residents \resident -> do
                             cardLabeled resident do
                               increaseRelationshipLevel resident 1
-                              eachInvestigator \iid'' -> gainXp iid'' attrs (ikey "xp.theCommons") 1
+                              popScope $ eachInvestigator \iid'' -> gainXp iid'' attrs (ikey "xp.theCommons") 1
         _ -> error "invalid codex entry"
       pure s
     PassedThisSkillTest _iid (isSource attrs -> True) -> scope "codex" do

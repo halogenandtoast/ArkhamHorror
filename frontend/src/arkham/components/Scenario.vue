@@ -451,6 +451,13 @@ function toggleLocationsUnlocked() {
   nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
 }
 
+function suppressLocationInteractionWhenUnlocked(event: MouseEvent) {
+  if (!locationsUnlocked.value) return
+  event.preventDefault()
+  event.stopPropagation()
+  event.stopImmediatePropagation()
+}
+
 function clearCosmicEmissaryCompactStyles() {
   cosmicEmissaryEnemyStyles.value = {}
   cosmicEmissaryLocationCellStyles.value = {}
@@ -1049,7 +1056,7 @@ const isLocationChoice = (c: Message, location: LocationLike): boolean => {
 }
 
 const locationCanInteract = (location: LocationLike): boolean =>
-  choices.value.some((choice) => isLocationChoice(choice, location))
+  !locationsUnlocked.value && choices.value.some((choice) => isLocationChoice(choice, location))
 
 const isEncounterDiscardChoice = (c: Message) => {
   if (c.tag !== "TargetLabel") return false
@@ -1993,6 +2000,7 @@ async function addChaosToken(face: any){
               class="location-wrapper"
               :style="locationOffsetStyle(location)"
               @pointerdown.capture="onLocationPointerDown($event, location)"
+              @click.capture="suppressLocationInteractionWhenUnlocked"
             >
               <div
                 v-if="abyssIsLocation && location.label === 'theAbyss'"

@@ -315,12 +315,15 @@
         "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theCurse.title </h3><p>As you lean on the stack of mirrors, you look down and see your own reflection staring back. Your features are stretched and different somehow: you look gaunt and exhausted. As you stand up, gray, flaking skin sloughs off of your forearm.</p><p class='basic right'>If it is not already in your deck, search the set-aside *Day of Rain* encounter set for the Hemlock Curse weakness and add it to your deck. It does not count toward your deck size. Otherwise, during setup for the next scenario, search your deck and discard pile for the Hemlock Curse weakness and add it to your opening hand.</p><p class='basic right'>You (*and only you*) earn 2 bonus experience.</p>"
       },
       "xp": {
+        "motherRachel": "Mother Rachel",
         "tadsGeneralStore": "Tad's General Store",
         "theCommons": "The Commons",
+        "theCurse": "The Curse",
         "judithPark": "Judith Park",
         "gideonMizrah": "Gideon Mizrah",
         "riverHawthorne": "River Hawthorne",
-        "williamHemlock": "William Hemlock"
+        "williamHemlock": "William Hemlock",
+        "theoPeters": "Theo Peters"
       }
     },
     "xp": {

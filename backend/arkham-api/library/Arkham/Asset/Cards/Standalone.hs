@@ -614,3 +614,55 @@ ravenousUncontrolledHunger =
       { cdCardTraits = setFromList [Flaw]
       , cdOtherSide = Just "89002"
       }
+
+-- Mi-Go Incursion
+
+universityChemist :: CardDef
+universityChemist =
+  (storyAsset "85025" "University Chemist" 0 MiGoIncursion)
+    { cdCardTraits = setFromList [Bystander, Miskatonic]
+    , cdCost = Nothing
+    , cdUnique = True
+    }
+
+meteoriteSample :: CardDef
+meteoriteSample =
+  (storyAsset "85026" "Meteorite Sample" 0 MiGoIncursion)
+    { cdCardTraits = setFromList [Item]
+    , cdCost = Nothing
+    }
+
+theMilitarysPlan :: CardDef
+theMilitarysPlan =
+  (storyAsset "85028" "The Military's Plan" 0 MiGoIncursion)
+    { cdCost = Nothing
+    , cdUnique = True
+    }
+
+universalSolvent :: CardDef
+universalSolvent =
+  (storyAsset "85029" "Universal Solvent" 2 MiGoIncursion)
+    { cdCardTraits = setFromList [Item, Science]
+    }
+
+petOozeling :: CardDef
+petOozeling =
+  (storyAsset "85030" "Pet Oozeling" 2 MiGoIncursion)
+    { cdCardTraits = setFromList [Ally, Monster, Ooze]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+miGoWeapon :: CardDef
+miGoWeapon =
+  (storyAsset "85031" "Mi-Go Weapon" 2 MiGoIncursion)
+    { cdCardTraits = setFromList [Weapon, Science]
+    }
+
+ltWilsonStewart :: CardDef
+ltWilsonStewart =
+  (storyAsset "85032" "Lt. Wilson Stewart" 2 MiGoIncursion)
+    { cdCardTraits = setFromList [Ally, Agency, Veteran]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }

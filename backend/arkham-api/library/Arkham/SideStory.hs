@@ -7,6 +7,7 @@ getSideStoryCost :: ScenarioId -> Int
 getSideStoryCost = \case
   "81001" -> 1
   "82001" -> 3
+  "85001" -> 2
   "84001" -> 3
   "88001" -> 3
   "71001" -> 2

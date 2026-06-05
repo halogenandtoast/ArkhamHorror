@@ -344,4 +344,10 @@ allActCards =
       , --- Queen of Ash
         searchTheSewers
       , stopTheRite
+      , --- The Blob That Ate Everything
+        exposeTheAnomaly
+      , extraterrestrialPhysiology
+      , blackwatersBane
+      , exposeTheAnomalyEpicMultiplayer
+      , blackwatersBaneEpicMultiplayer
       ]

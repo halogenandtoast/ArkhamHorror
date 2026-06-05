@@ -691,4 +691,15 @@ allEncounterTreacheryCards =
       , ashenRebirth
       , sinkingSludge
       , groundDisturbance
+      , --- The Blob That Ate Everything
+        realityAcid
+      , devouringOoze
+      , corrosiveSlime
+      , consumingMaw
+      , waveOfOoze
+      , causticDissemination
+      , stickyFeet
+      , replication
+      , itsGotMe
+      , alienFoodChain
       ]

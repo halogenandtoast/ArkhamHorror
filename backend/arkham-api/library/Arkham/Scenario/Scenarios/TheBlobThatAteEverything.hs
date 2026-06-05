@@ -1,0 +1,201 @@
+module Arkham.Scenario.Scenarios.TheBlobThatAteEverything (theBlobThatAteEverything) where
+
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
+import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
+import Arkham.Helpers.SkillTest (getCommittedCards, withSkillTest)
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Grid
+import Arkham.Message.Lifted.Choose
+import Arkham.Placement (Placement (Global))
+import Arkham.Projection
+import Arkham.Resolution
+import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
+
+newtype TheBlobThatAteEverything = TheBlobThatAteEverything ScenarioAttrs
+  deriving stock Generic
+  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+
+theBlobThatAteEverything :: Difficulty -> TheBlobThatAteEverything
+theBlobThatAteEverything difficulty =
+  sideStory TheBlobThatAteEverything "85001" "The Blob That Ate Everything" difficulty []
+
+instance HasChaosTokenValue TheBlobThatAteEverything where
+  getChaosTokenValue iid face (TheBlobThatAteEverything attrs) = case face of
+    Skull -> do
+      devoured <- getDevouredCount
+      let divisor = if isEasyStandard attrs then 5 else 3
+      pure $ ChaosTokenValue Skull (NegativeModifier $ devoured `div` divisor)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 5 7
+    otherFace -> getChaosTokenValue iid otherFace attrs
+
+instance RunMessage TheBlobThatAteEverything where
+  runMessage msg s@(TheBlobThatAteEverything attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "body"
+      pure s
+    Setup -> runScenarioSetup TheBlobThatAteEverything attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "setAsideMiGo"
+        li "setAside"
+        li "subject"
+        li.nested "placeLocations" do
+          li "shuffleQuarantine"
+          li "placeCrater"
+          li "innerRing"
+          li "outerRing"
+          li "remaining"
+          li "startAt"
+        li "countermeasures"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
+
+      setUsesGrid
+
+      gather Set.TheBlobThatAteEverything
+      gatherAndSetAside Set.MiGoIncursion
+
+      -- Subject 8L-08 is put into play next to the agenda deck. It is not at any
+      -- location.
+      void $ placeEnemy Enemies.subject8L08 Global
+
+      -- Set aside Vulnerable Heart, 1 Grasping Ooze, 1 Cubic Ooze, both Oozewraith.
+      setAside
+        [ Enemies.vulnerableHeart
+        , Enemies.graspingOoze
+        , Enemies.cubicOoze
+        , Enemies.oozewraith
+        , Enemies.oozewraith
+        ]
+
+      -- Locations. The Crater is at the center; an inner ring of orthogonally
+      -- connected locations surrounds it, with an outer ring beyond that.
+      quarantine <-
+        shuffleM
+          [ Locations.sewer
+          , Locations.bridge
+          , Locations.waterTower
+          , Locations.church
+          , Locations.oozyLakebed
+          , Locations.oozyLakebed
+          , Locations.slimyStreets
+          , Locations.slimyStreets
+          , Locations.desiccatedFarmland
+          , Locations.desiccatedFarmland
+          ]
+
+      let
+        quarantine' = drop 1 quarantine -- remove 1 at random
+        (innerQuarantine, rest1) = splitAt 2 quarantine'
+        (outerQuarantine, remainingQuarantine) = splitAt 3 rest1
+
+      placeInGrid_ (Pos 0 0) Locations.theCrater
+
+      innerDefs <-
+        shuffleM
+          $ Locations.researchSiteTheBlobThatAteEverything
+          : Locations.temporaryHQ
+          : innerQuarantine
+      innerIds <- for (zip [Pos 0 1, Pos 0 (-1), Pos 1 0, Pos (-1) 0] innerDefs) \(pos, def) -> do
+        lid <- placeInGrid pos def
+        pure (def, lid)
+
+      outerDefs <- shuffleM $ Locations.fungusMound : outerQuarantine
+      for_ (zip [Pos 0 2, Pos 0 (-2), Pos 2 0, Pos (-2) 0] outerDefs) (uncurry placeInGrid_)
+
+      for_
+        (zip [Pos 1 1, Pos 1 (-1), Pos (-1) 1, Pos (-1) (-1)] remainingQuarantine)
+        (uncurry placeInGrid_)
+
+      for_ (lookup Locations.temporaryHQ innerIds) startAt
+
+      -- Countermeasures: 1 resource on the scenario reference card, or 2 with
+      -- 3 or 4 investigators.
+      playerCount <- getPlayerCount
+      placeTokens ScenarioSource ScenarioTarget #resource (if playerCount >= 3 then 2 else 1)
+
+      setAgendaDeck [Agendas.theAnomalySpreads, Agendas.theAnomalySwells, Agendas.theAnomalyConsumes]
+      setActDeck [Acts.exposeTheAnomaly, Acts.extraterrestrialPhysiology, Acts.blackwatersBane]
+    SetChaosTokensForScenario -> do
+      setChaosTokens
+        $ if isEasyStandard attrs
+          then
+            [ PlusOne
+            , Zero
+            , Zero
+            , Zero
+            , MinusOne
+            , MinusTwo
+            , MinusTwo
+            , MinusThree
+            , MinusFour
+            , MinusFive
+            , Skull
+            , Skull
+            , Cultist
+            , Tablet
+            , ElderThing
+            , AutoFail
+            , ElderSign
+            ]
+          else
+            [ Zero
+            , Zero
+            , Zero
+            , MinusOne
+            , MinusOne
+            , MinusTwo
+            , MinusThree
+            , MinusFour
+            , MinusFive
+            , MinusSix
+            , Skull
+            , Skull
+            , Cultist
+            , Tablet
+            , ElderThing
+            , AutoFail
+            , ElderSign
+            ]
+      pure s
+    ResolveChaosToken _ Tablet _ -> do
+      -- After this skill test ends, Subject 8L-08 devours each committed card.
+      afterSkillTestQuiet do
+        iids <- allInvestigators
+        cards <- concatMapM getCommittedCards iids
+        devour cards
+      pure s
+    ResolveChaosToken _token ElderThing iid -> do
+      -- Choose up to N cards from your hand. Subject 8L-08 devours each of them.
+      -- You get +1 skill value for this test for each card devoured this way.
+      withSkillTest \sid -> do
+        let n = if isEasyStandard attrs then 5 else 7
+        hand <- field InvestigatorHand iid
+        chooseUpToNM iid n "doneDevouring" do
+          for_ hand \card -> cardLabeled card do
+            devour [card]
+            skillTestModifier sid ElderThing iid (AnySkillValue 1)
+      pure s
+    ScenarioResolution NoResolution -> do
+      push R1
+      pure s
+    ScenarioResolution (Resolution 1) -> scope "resolutions" do
+      resolution "resolution1"
+      push GameOver
+      endOfScenario
+      pure s
+    ScenarioResolution (Resolution 2) -> scope "resolutions" do
+      resolutionWithXp "resolution2" $ allGainXp' attrs
+      endOfScenario
+      pure s
+    _ -> TheBlobThatAteEverything <$> liftRunMessage msg attrs

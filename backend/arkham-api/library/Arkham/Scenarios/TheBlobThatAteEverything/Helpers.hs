@@ -1,0 +1,37 @@
+module Arkham.Scenarios.TheBlobThatAteEverything.Helpers where
+
+import Arkham.Card
+import Arkham.Classes.HasGame
+import Arkham.Classes.Query
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Scenario (standaloneI18n)
+import Arkham.I18n
+import Arkham.Id
+import Arkham.Matcher
+import Arkham.Message.Lifted
+import Arkham.Prelude
+import Arkham.Projection
+import Arkham.Tracing
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = withI18n $ standaloneI18n "theBlobThatAteEverything" a
+
+-- | Subject 8L-08 (Single Group variant). The anomaly itself.
+getSubject8L08 :: (HasGame m, Tracing m) => m (Maybe EnemyId)
+getSubject8L08 = selectOne $ enemyIs Cards.subject8L08
+
+-- | The number of cards Subject 8L-08 has devoured (placed beneath it).
+getDevouredCount :: (HasGame m, Tracing m) => m Int
+getDevouredCount =
+  getSubject8L08 >>= \case
+    Nothing -> pure 0
+    Just s -> length <$> field EnemyCardsUnderneath s
+
+{- | Subject 8L-08 devours the given cards: they are placed beneath it and are
+considered out of play.
+-}
+devour :: ReverseQueue m => [Card] -> m ()
+devour [] = pure ()
+devour cards =
+  getSubject8L08 >>= traverse_ \s -> placeUnderneath s cards

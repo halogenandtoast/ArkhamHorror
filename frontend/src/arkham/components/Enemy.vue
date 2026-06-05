@@ -171,6 +171,11 @@ const important = computed(() => {
   return modifiers.some((m) => m.type.tag === "UIModifier" && typeof m.type.contents === 'object' && m.type.contents.tag === "ImportantToScenario") ?? false
 })
 
+const oversized = computed(() => {
+  const {modifiers} = props.enemy
+  return modifiers.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Oversized")
+})
+
 const uiRotation = computed(() => {
   const modifier = props.enemy.modifiers.find((m) => {
     const t = m.type
@@ -298,7 +303,7 @@ function onDrop(event: DragEvent) {
 </script>
 
 <template>
-  <div class="enemy--outer" :class="{showAbilities}">
+  <div class="enemy--outer" :class="{showAbilities, oversized}">
     <div class="enemy">
       <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
@@ -689,5 +694,10 @@ img.card.source-highlight {
     width: 1em;
     height: 1em;
   }
+}
+
+.oversized img {
+  width: calc(var(--card-width) * 3);
+  max-width: calc(var(--card-width) * 3);
 }
 </style>

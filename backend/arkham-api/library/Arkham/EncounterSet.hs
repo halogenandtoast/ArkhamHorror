@@ -290,6 +290,10 @@ data EncounterSet
   | VileExperiments
   | SinsOfThePast
   | TheBlobThatAteEverythingELSE
+  | TheBlobThatAteEverything
+  | MiGoIncursion
+  | BlobEpicMultiplayer
+  | BlobSingleGroup
   | FortuneAndFolly
   | FortunesChosen
   | PlanInShambles

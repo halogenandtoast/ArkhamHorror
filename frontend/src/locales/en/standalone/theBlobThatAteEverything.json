@@ -1,0 +1,47 @@
+{
+  "intro": {
+    "title": "It Came from Outer Space",
+    "body": "<p>Incident Report: 8L-08. Thursday, 07/05/1928. Blackwater, MA.</p><p>0312 hours – Impact event just outside of Blackwater. Intercepted police call, agents sent to investigate. Interviewed local farmer, Ron Graham; claims meteor was several feet wide, greenish hue. Crater roughly 100 yards in diameter. Radiation detected in outlying area. Recommend immediate quarantine and further observation by research team. Situation under control.</p><p><i>It wasn't under control.</i></p><p>When the anomaly emerged, the first thing it did was devour the team of researchers who had been sent to study the meteor. Then it devoured their equipment. Then Ron Graham's tractor. Then his house. It continued to grow and spread, devouring everything in its path. When the army arrived, they thought they could kill it with bullets and shells. Everything they threw at the creature was devoured. Then it split into hundreds of smaller pieces of itself, and the army was quickly overwhelmed.</p><p>The quarantine still holds, and we're stuck in the middle of it. It won't be long before the anomaly has grown large enough to devour everything in Blackwater. And if that happens, who could possibly stop its rampage?</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the The Blob That Ate Everything and Single Group encounter sets.",
+    "setAsideMiGo": "Set all cards from the Mi-Go Incursion encounter set aside, out of play.",
+    "setAside": "Search the The Blob That Ate Everything encounter set for Vulnerable Heart, 1 copy of Grasping Ooze, 1 copy of Cubic Ooze, and both copies of Oozewraith, and set them aside, out of play.",
+    "subject": "Put the Subject 8L-08 enemy into play next to the agenda deck. It is not at any location.",
+    "placeLocations": "Set up the locations according to the guidelines below:",
+    "shuffleQuarantine": "Shuffle the Quarantine Zone locations together and remove 1 of them from the game.",
+    "placeCrater": "Put The Crater into play.",
+    "innerRing": "Take the Research Site, the Temporary HQ, and 2 random Quarantine Zone locations. Shuffle them and place each connected to The Crater, in a random order.",
+    "outerRing": "Take the Fungus Mound and 3 random Quarantine Zone locations. Shuffle them and place each in 1 of the 4 positions in the outer ring, farthest from The Crater.",
+    "remaining": "Put the remaining Quarantine Zone locations into play.",
+    "startAt": "Each investigator begins play at the Temporary HQ.",
+    "countermeasures": "Place 1 resource on the scenario reference card, as a countermeasure (2 resources instead if there are 3 or 4 investigators in the game)."
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Nothing is left of Blackwater now. The quarantine is broken. The anomaly cannot be contained. First it will spread throughout the countryside, devouring all in its path. Soon all of Massachusetts will be devoured. Then the entirety of New England. It has burrowed beneath the ground and cannot be stopped even by the oceans. No continent is safe. Every living organism on the planet will be devoured. And then, so too will the Earth… but that won't be the end. Not even the void of space can stop the creature's growth. In time, it will continue to expand and devour until there is nothing left but the cold emptiness of space and the blob that ate everything.</p><ul><li>In your Campaign Log, record that *Subject 8L-08 devoured the entire universe*.</li><li>The investigators lose the campaign.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Subject eliminated by third party. As per operational protocol, samples have been collected and sent for further study. Agents are currently scrubbing the remainder of the subject's presence from the quarantine zone.</p><ul><li>In your Campaign Log, record that *the anomaly was contained*.</li><li>For each of the following assets that are in play (Universal Solvent, Pet Oozeling, Mi-Go Weapon, and Lt. Wilson Stewart), any one investigator may choose to add that asset to his or her deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 3 bonus experience as he or she has saved the fabric of existence.</li></ul>"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for every 5 cards Subject 8L-08 has devoured.",
+      "cultist": "-2. If this token is revealed during an attack against an enemy, that enemy gains retaliate for this attack.",
+      "tablet": "-3. After this skill test ends, Subject 8L-08 devours each card that was committed to the test.",
+      "elderThing": "-5. Choose up to 5 cards from your hand. Subject 8L-08 devours each of those cards. You get +1 skill value for this test for each card devoured in this way."
+    },
+    "hardExpert": {
+      "skull": "-1 for every 3 cards Subject 8L-08 has devoured.",
+      "cultist": "-3. If this token is revealed during an attack against an enemy, it gains retaliate for this test.",
+      "tablet": "-4. After this skill test ends, Subject 8L-08 devours each card that was committed to the test.",
+      "elderThing": "-7. Choose up to 7 cards from your hand. Subject 8L-08 devours each of those cards. You get +1 skill value for this test for each card devoured in this way."
+    }
+  },
+  "label": {
+    "doneDevouring": "Done devouring cards"
+  }
+}

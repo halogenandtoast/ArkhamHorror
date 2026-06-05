@@ -474,6 +474,7 @@ data UIModifier
   | OverlayCheckmark {left :: Double, top :: Double} -- See The Stakeout for example
   | Rotated Int
   | Positioned {x :: Double, y :: Double} -- player-driven location drag offset (un-zoomed CSS px)
+  | Oversized
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "combat" (Int -> ModifierType) where

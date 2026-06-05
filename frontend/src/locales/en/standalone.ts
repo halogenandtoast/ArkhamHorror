@@ -4,6 +4,7 @@ import murderAtTheExcelsiorHotel from '@/locales/en/standalone/murderAtTheExcels
 import fortuneAndFolly from '@/locales/en/standalone/fortuneAndFolly.json'
 import theMidwinterGala from '@/locales/en/standalone/theMidwinterGala.json'
 import filmFatale from '@/locales/en/standalone/filmFatale.json'
+import theBlobThatAteEverything from '@/locales/en/standalone/theBlobThatAteEverything.json'
 
 export default {
   curseOfTheRougarou,
@@ -11,5 +12,6 @@ export default {
   murderAtTheExcelsiorHotel,
   fortuneAndFolly,
   theMidwinterGala,
-  filmFatale
+  filmFatale,
+  theBlobThatAteEverything
 }

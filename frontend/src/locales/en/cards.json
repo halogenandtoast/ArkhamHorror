@@ -296,6 +296,10 @@
       "moveToDoppelganger": "Move to location of doppelganger",
       "evadeEnemy": "Evade enemy"
     },
+    "doppelganger1": {
+      "moveToLocationOfDoppelganger": "Move to location of doppelganger",
+      "evadeEnemy": "Evade enemy"
+    },
     "dowsingRod": {
       "exhaustForBoost": "Exhaust Dowsing Rod and place 1 doom on it to move to a connecting location.",
       "onLastClue": "If this investigation discovers the last clue at a location, remove 1 doom from Dowsing Rod."
@@ -477,7 +481,8 @@
       "failBy1More": "Fail by 1 more"
     },
     "grannyOrne3": {
-      "get1SkillValue": "Get -1 skill value"
+      "getPlus1SkillValue": "Get +1 skill value",
+      "getMinus1SkillValue": "Get -1 skill value"
     },
     "graysAnatomyTheDoctorsBible5": {
       "damagePlus": "The next time that card would be dealt damage this round, deal +1 damage/horror (to a maximum of +3",
@@ -830,7 +835,7 @@
       "tonguetwisterSkip": "Do not use second command (Tonguetwister)"
     },
     "predatorOrPrey": {
-      "enemiesMove": "Each unengaged enemy moves once toward the nearest investigator.",
+      "enemiesMove": "Each unengaged non-Elite enemy moves once toward the nearest investigator.",
       "investigatorsMove": "Each investigator disengages from each enemy engaged with them and moves once away from the nearest enemy."
     },
     "prescient": {
@@ -1298,10 +1303,6 @@
     "digDeep2": {
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
       "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
-    },
-    "doppelganger1": {
-      "moveToLocationOfDoppelganger": "Move to location of doppelganger",
-      "evadeEnemy": "Evade enemy"
     },
     "elinaHarpersCarRunning": {
       "ifYouAre": "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)",

@@ -1,5 +1,15 @@
 {
   "heading": "Scenario VIII",
+  "specialRules": [
+    {
+      "title": "@:theCircleUndone.beforeTheBlackThrone.theCosmos.title",
+      "body": "@:theCircleUndone.beforeTheBlackThrone.theCosmos.body"
+    },
+    {
+      "title": "@:theCircleUndone.beforeTheBlackThrone.emptySpace.title",
+      "body": "@:theCircleUndone.beforeTheBlackThrone.emptySpace.body"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half of the doom on Azathoth (rounded up), to a minimum of 2.",

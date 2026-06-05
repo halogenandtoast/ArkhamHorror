@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composable/debouncedRef';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { formatCost } from '@/arkham/cost';
-import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel } from '@/arkham/types/Message';
+import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel, type Message, type TargetLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { cardArt, cardImage as cardCodeImage, investigatorPortrait } from '@/arkham/cardImages';
@@ -48,12 +48,13 @@ function zoneToLabel(s: string) {
 }
 const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const toChoiceEntry = (c: Message, idx: number): [Message, number] => [c, idx]
 const questionChoices = computed(() => {
-  const withoutDone = choices.value.map((c, idx) => [c, idx]).filter(([choice, _]) => {
+  const withoutDone = choices.value.map(toChoiceEntry).filter(([choice, _]) => {
     const { tag } = choice
-    if (tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)) return true
+    if (tag === MessageType.ABILITY_LABEL) return !abilityLabelHandledElsewhere(choice)
+    if (tag === MessageType.TARGET_LABEL) return !targetLabelHandledElsewhere(choice)
     if (tag === MessageType.TOOLTIP_LABEL) return true
-    if (tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction') return true
     if (tag === MessageType.LABEL) return true
     if (tag === MessageType.INFO) return true
     if (tag === MessageType.INVALID_LABEL) return true
@@ -67,7 +68,7 @@ const questionChoices = computed(() => {
   // When Done appears alongside regular label choices, include it so it renders
   // with the same button style instead of the modal-footer style
   if (withoutDone.length > 0 && doneLabel.value) {
-    const doneEntry = choices.value.map((c, idx) => [c, idx]).find(([c]) => c.tag === MessageType.DONE)
+    const doneEntry = choices.value.map(toChoiceEntry).find(([c]) => c.tag === MessageType.DONE)
     if (doneEntry) return [...withoutDone, doneEntry]
   }
 
@@ -99,6 +100,72 @@ const focusedCards = computed(() => {
   return props.game.focusedCards
 })
 
+const visibleCardIds = computed(() => new Set([
+  ...(investigator.value?.hand ?? []).map((card) => toCardContents(card).id),
+  ...focusedCards.value.map((card) => toCardContents(card).id),
+  ...searchedCards.value.flatMap(([, cards]) => cards.map((card) => toCardContents(card).id)),
+]))
+
+function abilityLabelHandledElsewhere(choice: Message) {
+  if (choice.tag !== MessageType.ABILITY_LABEL) return false
+
+  const source = choice.ability.source
+  if (source.sourceTag === 'ProxySource') {
+    return source.source.tag === 'CardCodeSource'
+      ? abilitySourceHandledElsewhere(source.originalSource)
+      : abilitySourceHandledElsewhere(source.source)
+  }
+
+  return abilitySourceHandledElsewhere(source)
+}
+
+function abilitySourceHandledElsewhere(source: any) {
+  if (typeof source.contents !== 'string') return false
+
+  switch (source.tag) {
+    case 'AssetSource': return source.contents in props.game.assets
+    case 'LocationSource': return source.contents in props.game.locations
+    case 'EnemySource': return source.contents in props.game.enemies
+    case 'TreacherySource': return source.contents in props.game.treacheries
+    case 'ActSource': return source.contents in props.game.acts
+    case 'AgendaSource': return source.contents in props.game.agendas
+    case 'EventSource': return source.contents in props.game.events
+    case 'StorySource': return source.contents in props.game.stories
+    case 'InvestigatorSource': return source.contents in props.game.investigators || source.contents in props.game.otherInvestigators
+    default: return false
+  }
+}
+
+function targetLabelHandledElsewhere(choice: TargetLabel) {
+  const target = choice.target
+  const contents = target.contents
+
+  if (typeof contents === 'string') {
+    switch (target.tag) {
+      case 'AssetTarget': return contents in props.game.assets
+      case 'LocationTarget': return contents in props.game.locations
+      case 'EnemyTarget': return contents in props.game.enemies
+      case 'TreacheryTarget': return contents in props.game.treacheries
+      case 'ActTarget': return contents in props.game.acts
+      case 'AgendaTarget': return contents in props.game.agendas
+      case 'EventTarget': return contents in props.game.events
+      case 'StoryTarget': return contents in props.game.stories
+      case 'SkillTarget': return contents in props.game.skills
+      case 'InvestigatorTarget': return contents in props.game.investigators || contents in props.game.otherInvestigators
+      case 'ScarletKeyTarget': return contents in props.game.scarletKeys
+      case 'ConcealedTarget': return contents in props.game.concealed
+      case 'CardIdTarget': return visibleCardIds.value.has(contents)
+      case 'ChaosTokenFaceTarget': return props.game.focusedChaosTokens.some((token) => token.face === contents)
+      default: return false
+    }
+  }
+
+  if (target.tag === 'ChaosTokenTarget' && typeof contents === 'object' && contents !== null && 'id' in contents) {
+    return props.game.focusedChaosTokens.some((token) => token.id === contents.id)
+  }
+
+  return false
+}
 
 const isRead = computed(() => question.value?.tag === QuestionType.READ)
 
@@ -182,7 +249,8 @@ const doneLabel = computed(() => {
   const doneIndex = choices.value.findIndex((c) => c.tag === MessageType.DONE)
 
   if (doneIndex !== -1) {
-    return { label: choices.value[doneIndex].label, index: doneIndex } // choices.value[doneIndex].label
+    const choice = choices.value[doneIndex]
+    return choice.tag === MessageType.DONE ? { label: choice.label, index: doneIndex } : null
   }
 
   return null
@@ -264,12 +332,13 @@ const questionImage = computed(() => {
 })
 
 const cardIdImage = (cardId: string) => {
-  return (imgsrc(cardImage(props.game.cards[cardId])))
+  const card = props.game.cards[cardId]
+  return card ? imgsrc(cardImage(card)) : ''
 }
 
 const portraitLabelImage = (investigatorId: string) => investigatorPortrait(props.game, investigatorId)
 
-const portraits = computed<[Message, number]>(() =>
+const portraits = computed<[Message, number][]>(() =>
   choices.value.map((x: Message, i: number) => [x, i] as [Message, number]).filter(([choice,]) => choice.tag === "PortraitLabel")
 )
 
@@ -333,11 +402,12 @@ const flippableCard = (cardCode: string) => {
     cardType: 'UnknownType',
     art: cardArt(cardCode),
     level: 0,
-    traits: [],
-    name: "",
+    cardTraits: [],
+    name: { title: '', subtitle: null },
     skills: [],
     cost: null,
-    otherSide: `${cardCode}b`
+    otherSide: `${cardCode}b`,
+    meta: {}
   }
 }
 
@@ -361,8 +431,8 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
   <div class='question-wrapper'>
     <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
     <div v-if="cardPiles.length > 0" class="cardPiles">
-      <div v-for="{pile, index} in cardPiles" :key="pile" class="card-pile" @click="choose(index)">
-        <div v-for="card in pile" :key="card" class="pile-card">
+      <div v-for="{pile, index} in cardPiles" :key="index" class="card-pile" @click="choose(index)">
+        <div v-for="card in pile" :key="`${card.cardId}-${card.cardOwner ?? ''}`" class="pile-card">
           <img class="card" :src="cardIdImage(card.cardId)" />
           <img v-if="card.cardOwner" class="portrait" :src="portraitLabelImage(card.cardOwner)" />
         </div>

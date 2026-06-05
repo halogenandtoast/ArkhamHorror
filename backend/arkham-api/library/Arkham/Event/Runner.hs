@@ -121,9 +121,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
         push $ toDiscard GameSource a
       _ -> pure ()
     pure a
-  ReadyExhausted -> do
-    push (Ready $ toTarget a)
-    pure a
+  ReadyExhausted -> pure $ a & exhaustedL .~ False
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
   Exhaust ea | a `isTarget` ea.target -> do
     unless eventExhausted $ pushAll ea.thenMsgs

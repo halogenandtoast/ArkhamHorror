@@ -12,6 +12,7 @@ import Arkham.Card.Id
 import Arkham.Customization
 import Arkham.Enemy.Cards (allSpecialEnemyCards)
 import Arkham.Id
+import Arkham.Investigator.Cards qualified as InvestigatorCards
 import Arkham.Json
 import Arkham.Name
 import Arkham.PlayerCard
@@ -30,6 +31,7 @@ data PlayerCard = MkPlayerCard
   , pcCustomizations :: Customizations
   , pcTabooList :: Maybe TabooList
   , pcMutated :: Maybe Text
+  , pcMeta :: Maybe (Map Text [CardCode])
   }
   deriving stock (Show, Ord, Data)
 
@@ -82,12 +84,14 @@ instance HasCardDef PlayerCard where
     Just def -> maybe def (`tabooListModify` def) (pcTabooList c)
     Nothing -> case lookup (pcCardCode c) allEncounterAssetCards of
       Just def -> def
-      Nothing ->
-        error
-          $ "missing card def for player card "
-          <> show (pcCardCode c)
-          <> "\n"
-          <> prettyCallStack callStack
+      Nothing -> case lookup (pcCardCode c) InvestigatorCards.allInvestigatorCards of
+        Just def -> def
+        Nothing ->
+          error
+            $ "missing card def for player card "
+            <> show (pcCardCode c)
+            <> "\n"
+            <> prettyCallStack callStack
 
 instance Named PlayerCard where
   toName = toName . toCardDef
@@ -106,6 +110,7 @@ lookupPlayerCard cardDef cardId =
     , pcCustomizations = mempty
     , pcTabooList = Nothing
     , pcMutated = Nothing
+    , pcMeta = Nothing
     }
 
 setPlayerCardOwner :: InvestigatorId -> PlayerCard -> PlayerCard

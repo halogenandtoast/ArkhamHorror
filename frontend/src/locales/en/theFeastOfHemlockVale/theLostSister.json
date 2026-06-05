@@ -1,4 +1,14 @@
 {
+  "specialRules": [
+    {
+      "title": "Dark Locations",
+      "body": "<p class='basic'>Day and Night effects function differently during The Lost Sister scenario. During this scenario, cards at a Dark location (including the location itself) only use (Night {'{'}night{'}'}) effects. Cards at all other locations (including the location itself) only use (Day {'{'}day{'}'}) effects. This rule is in effect regardless of whether this scenario is played during the (Day {'{'}day{'}'}) or (Night {'{'}night{'}'}).</p><ul><li>During the evening, the moonlight is as bright as the sun. Unlike in other scenarios in this campaign, the Time Marker card has no mechanical effect during The Lost Sister scenario.</li></ul>"
+    },
+    {
+      "title": "Double-Sided Enemies",
+      "body": "<p class='basic'>The Lost Sister encounter set features 3 double-sided enemies. These enemies have a (Day {'{'}day{'}'}) side and a (Night {'{'}night{'}'}) side and are considered to be the same enemy. If these enemies are at a Dark location, flip them to their (Night {'{'}night{'}'}) side. Conversely, if these enemies are at a location without the Dark trait, flip them to their (Day {'{'}day{'}'}) side. Flipping from one side to another is an immediate effect that cannot be interrupted. When a double-sided enemy flips, it keeps all tokens and attachments. (Note that some enemies have Forced– effects that activate after they flip to one side or the other.)</p>"
+    }
+  ],
   "remembered": {
     "foundATornDogLeash": "Found a torn dog leash.",
     "foundASetOfFootprints": "Found a set of footprints.",

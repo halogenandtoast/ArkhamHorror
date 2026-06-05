@@ -1,5 +1,5 @@
 {
-    "fastPlayerWindow": "{'{fast}'} PLAYER WINDOW",
+    "fastPlayerWindow": "{'{'}fast{'}'} PLAYER WINDOW",
 
     "determineSkillOfTestStep": "Determine skill of test. Skill test of that type begins.",
     "commitCardsFromHandToSkillTestStep": "Commit cards from hand to skill test.",

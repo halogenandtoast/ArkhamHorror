@@ -5,6 +5,7 @@ module Arkham.Matcher.Act where
 import Arkham.Act.Sequence
 import Arkham.Id
 import Arkham.Matcher.Treachery
+import {-# SOURCE #-} Arkham.Modifier
 import Arkham.Prelude
 import Data.Aeson.TH
 
@@ -15,6 +16,7 @@ data ActMatcher
   | ActWithStep Int
   | ActWithTreachery TreacheryMatcher
   | ActWithDeckId Int
+  | ActWithModifier ModifierType
   | NotAct ActMatcher
   | ActOneOf [ActMatcher]
   | ActCanWheelOfFortuneX

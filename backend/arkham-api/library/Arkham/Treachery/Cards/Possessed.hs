@@ -19,7 +19,7 @@ instance HasModifiersFor Possessed where
 
 instance HasAbilities Possessed where
   getAbilities (Possessed a) =
-    [ playerLimit PerTestOrAbility
+    [ playerLimit PerTest
         $ restricted a 1 (InThreatAreaOf You <> DuringSkillTest AnySkillTest)
         $ forced
         $ RevealChaosToken #when You #frost

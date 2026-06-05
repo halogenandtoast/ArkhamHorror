@@ -11,7 +11,6 @@ import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import EnemyView from '@/arkham/components/Enemy.vue';
 import Story from '@/arkham/components/Story.vue';
-import Location from '@/arkham/components/Location.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -216,9 +215,6 @@ const committedIdSet = computed(() => new Set((props.game.skillTest?.committedCa
 const playerHand = computed(() =>
   props.investigator.hand.filter(card => !committedIdSet.value.has(toCardContents(card).id))
 )
-
-const locations = computed(() => Object.values(props.game.locations).
-  filter((a) => a.placement && a.placement.tag === "InPlayArea" && a.placement.contents === props.investigator.id))
 
 const debug = useDebug()
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
@@ -516,17 +512,6 @@ function closeHand() {
             <img :src="slotImg(slot)" />
           </div>
 
-          <Location
-            v-for="(location, key) in locations"
-            class="location"
-            :key="key"
-            :game="game"
-            :playerId="playerId"
-            :location="location"
-            :data-index="location.cardId"
-            :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
-            @choose="$emit('choose', $event)"
-          />
         </transition-group>
       </section>
     </transition>

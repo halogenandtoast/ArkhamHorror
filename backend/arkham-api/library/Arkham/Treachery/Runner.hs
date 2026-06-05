@@ -170,11 +170,8 @@ instance RunMessage TreacheryAttrs where
       pure a
     Exhaust ea | a `isTarget` ea.target -> do
       pure $ a & exhaustedL .~ True
-    ReadyExhausted -> do
-      push $ Ready $ toTarget a
-      pure a
-    Ready (isTarget a -> True) -> do
-      pure $ a & exhaustedL .~ False
+    ReadyExhausted -> pure $ a & exhaustedL .~ False
+    Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
     Do (AfterRevelation _ tid) | tid == treacheryId -> do
       pure $ a & waitingL .~ False
     UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do

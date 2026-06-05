@@ -9,6 +9,7 @@ import DeckToolbar from '@/arkham/components/DeckToolbar.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import { useToast } from "vue-toastification";
 import { useI18n } from 'vue-i18n'
+import type { InvestigatorClass } from '@/arkham/helpers'
 
 const { t } = useI18n()
 
@@ -18,12 +19,12 @@ const toast = useToast()
 const showNewDeck = ref(false)
 const searchText = ref('')
 const sortBy = ref<'name' | 'class'>('name')
-const filterClasses = ref<string[]>([])
+const filterClasses = ref<InvestigatorClass[]>([])
 
 const CLASS_ORDER: Record<string, number> = {
   guardian: 0, seeker: 1, rogue: 2, mystic: 3, survivor: 4, neutral: 5
 }
-const allClasses = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
+const allClasses: InvestigatorClass[] = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
 
 async function addDeck(d: Arkham.Deck) {
   allDecks.value.push(d)

@@ -77,9 +77,9 @@ export type Scenario = {
   encounterDeck: CardContents[];
   tarotCards: TarotCard[];
   xpBreakdown?: XpEntry[];
-  meta: any;
+  meta: Record<string, unknown>;
   log: Remembered[];
-  storyCards: { [key: string]: CardContents[] };
+  storyCards: { [key: string]: Card[] };
   campaignStep: CampaignStep | null;
 }
 
@@ -97,8 +97,8 @@ export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
 
 export type Remembered=
     { tag: "YouOweBiancaResources", contents: number } |
-    { tag: "RememberNamed", actualTag: string, name: Name } |
-    { tag: string }
+    { tag: "RememberNamed" | "RememberedName", actualTag: string, name: Name } |
+    { tag: string, contents?: undefined, actualTag?: undefined, name?: undefined }
 
 const rememberedDecoder = JsonDecoder.oneOf([
   JsonDecoder.object<Remembered>(
@@ -116,8 +116,8 @@ const rememberedDecoder = JsonDecoder.oneOf([
       tag: JsonDecoder.string(),
       contents: JsonDecoder.object({ getLabel: nameDecoder, unLabel: JsonDecoder.string() }, 'labeled').map(res => res.getLabel)
     },
-    'Remembered').map(({tag, contents}) => ({ tag: "RememberedName", actualTag: tag, name: contents })),
-  JsonDecoder.object<Remembered>( { tag: JsonDecoder.string() }, 'Remembered')
+    'Remembered').map<Remembered>(({tag, contents}) => ({ tag: "RememberedName", actualTag: tag, name: contents })),
+  JsonDecoder.object( { tag: JsonDecoder.string() }, 'Remembered').map<Remembered>(({ tag }) => ({ tag }))
 ], 'Remembered');
 
 
@@ -138,10 +138,12 @@ function intMapOfCardsDecoder(name: string) {
   )
 }
 
-export const scenarioDecoder = JsonDecoder.object<Scenario>({
+type DecodedScenario = Omit<Scenario, 'foundCards'> & { search: Record<string, Card[]> }
+
+export const scenarioDecoder = JsonDecoder.object<DecodedScenario>({
   name: scenarioNameDecoder,
   id: JsonDecoder.string(),
-  meta: JsonDecoder.succeed(),
+  meta: JsonDecoder.succeed().map((meta: unknown) => meta as Record<string, unknown>),
   reference: JsonDecoder.string(),
   additionalReferences: JsonDecoder.array(JsonDecoder.string(), 'string[]'),
   log: JsonDecoder.array(rememberedDecoder, 'remembered[]'),
@@ -152,7 +154,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
   deckDiscards: JsonDecoder.oneOf<[string, Card[]][]>([
     JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
-    JsonDecoder.succeed<[string, Card[]][]>([]),
+    JsonDecoder.constant([] as [string, Card[]][]),
   ], 'deckDiscards'),
   cardsUnderScenarioReference: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
@@ -162,7 +164,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
       JsonDecoder.tuple([tarotScopeDecoder, JsonDecoder.array(tarotCardDecoder, 'TarotCard[]')], '[TarotScope, TarotCard[]]'),
       '[TarotScope, TarotCard[]][]'
     ).map(res => res.reduce<TarotCard[]>((acc, [k, vs]) => [...acc, ...vs.map(v => ({ ...v, scope: k }))], [])),
-  search: v2Optional(searchDecoder).map((search: Search) => search?.searchFoundCards || {}),
+  search: v2Optional(searchDecoder).map((search?: Search) => search?.searchFoundCards || {}),
   counts:
     JsonDecoder.array<[string, number]>(
       JsonDecoder.oneOf([
@@ -215,11 +217,30 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
     }),
   storyCards: JsonDecoder.record(JsonDecoder.array(cardDecoder, 'CardDef[]'), 'CardDef[]'),
   campaignStep: JsonDecoder.nullable(campaignStepDecoder),
-}, 'Scenario').map(({search, ...rest}) => ({...rest, foundCards: search}));
+}, 'Scenario').map<Scenario>(({search, ...rest}) => ({...rest, foundCards: search}));
 
 export function scenarioToKeyI18n(scenario: Scenario): string {
   const full = scenarioToI18n(scenario);
   return full.split('.')[0] || "base"
+}
+
+// Maps a campaign id (e.g. "07" or "7") to its i18n scope root, so campaign-wide
+// content can be looked up even when no scenario is currently active.
+export function campaignIdToI18n(campaignId: string): string | null {
+  switch (campaignId.replace(/^0+/, '')) {
+    case "1": return "nightOfTheZealot"
+    case "2": return "theDunwichLegacy"
+    case "3": return "thePathToCarcosa"
+    case "4": return "theForgottenAge"
+    case "5": return "theCircleUndone"
+    case "6": return "theDreamEaters"
+    case "7": return "theInnsmouthConspiracy"
+    case "8": return "edgeOfTheEarth"
+    case "9": return "theScarletKeys"
+    case "10": return "theFeastOfHemlockVale"
+    case "12": return "brethrenOfAsh"
+    default: return null
+  }
 }
 
 export function scenarioToI18n(scenario: Scenario): string {
@@ -303,6 +324,7 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "09694": return "theScarletKeys.congressOfTheKeys"
     case "10677a": return "theFeastOfHemlockVale"
     case "10679a": return "theFeastOfHemlockVale"
+    case "10679b": return "theFeastOfHemlockVale"
     case "10501": return "theFeastOfHemlockVale.writtenInRock"
     case "10523": return "theFeastOfHemlockVale.hemlockHouse"
     case "10549": return "theFeastOfHemlockVale.theSilentHeath"
@@ -310,7 +332,7 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "10588": return "theFeastOfHemlockVale.theThingInTheDepths"
     case "10605": return "theFeastOfHemlockVale.theTwistedHollow"
     case "10626": return "theFeastOfHemlockVale.theLongestNight"
-    case "10651": return "theFeastOfHemlockVale.theFateOfTheVale"
+    case "10651": return "theFeastOfHemlockVale.fateOfTheVale"
     case "10704": return "theFeastOfHemlockVale"
     case "50011": return "nightOfTheZealot.theGathering"
     case "50025": return "nightOfTheZealot.theMidnightMasks"

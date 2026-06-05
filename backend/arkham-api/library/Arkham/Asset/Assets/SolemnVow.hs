@@ -6,7 +6,6 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Projection
 
 newtype SolemnVow = SolemnVow AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,11 +24,9 @@ instance HasAbilities SolemnVow where
 instance RunMessage SolemnVow where
   runMessage msg a@(SolemnVow attrs) = case msg of
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
-      owner <- field AssetOwner (toId attrs)
       player <- getPlayer iid
-      when (Just iid == owner) $ do
-        iids <- select $ colocatedWith iid <> NotInvestigator (be iid)
-        push $ chooseOrRunOne player $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
+      iids <- select $ colocatedWith iid <> NotInvestigator (be iid)
+      push $ chooseOrRunOne player $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
       SolemnVow <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasDamage <- iid <=~> InvestigatorHasCardWithDamage

@@ -54,7 +54,9 @@ const killedInvestigators = computed(() => {
   if (!campaign) { return [] }
   const {recordedSets} = campaign.log
   const toInvestigators = (k: string) => {
-    return (recordedSets[baseKey(k)] ?? []).map((r: {contents: string}) => r.contents)
+    return (recordedSets[baseKey(k)] ?? []).flatMap((r) =>
+      typeof r === 'object' && r !== null && 'contents' in r && typeof r.contents === 'string' ? [r.contents] : []
+    )
   }
   return [...toInvestigators('KilledInvestigators'), ...toInvestigators('DrivenInsaneInvestigators')]
 })

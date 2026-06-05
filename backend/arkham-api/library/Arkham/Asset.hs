@@ -1113,6 +1113,8 @@ allAssets =
       , --- The Longest Night [fhv]
         SomeAssetCard theCaptives
       , SomeAssetCard ajax
+      , --- Fate of the Vale [fhv]
+        SomeAssetCard oldMemory
       , -- The Drowned City
         --- signature [tdc]
         SomeAssetCard bookOfVerseUnCommonplaceBook

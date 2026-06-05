@@ -16,7 +16,7 @@ grimMemoir :: AssetCard GrimMemoir
 grimMemoir = asset GrimMemoir Cards.grimMemoir
 
 instance HasAbilities GrimMemoir where
-  getAbilities (GrimMemoir a) = [restrictedAbility a 1 ControlsThis $ investigateAction $ assetUseCost a Secret 1]
+  getAbilities (GrimMemoir a) = [investigateAbility a 1 (assetUseCost a Secret 1) ControlsThis]
 
 instance RunMessage GrimMemoir where
   runMessage msg a@(GrimMemoir attrs) = runQueueT $ case msg of

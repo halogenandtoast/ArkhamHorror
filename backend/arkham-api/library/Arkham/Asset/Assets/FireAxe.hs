@@ -29,7 +29,7 @@ instance HasModifiersFor FireAxe where
 instance HasAbilities FireAxe where
   getAbilities (FireAxe a) =
     [ fightAbility a 1 mempty ControlsThis
-    , limited (PlayerLimit PerTestOrAbility 3)
+    , limited (PlayerLimit PerTest 3)
         $ fastAbility a 2 (ResourceCost 1)
         $ ControlsThis
         <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)

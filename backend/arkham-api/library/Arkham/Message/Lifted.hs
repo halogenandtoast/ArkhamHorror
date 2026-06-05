@@ -79,8 +79,14 @@ import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (DealtDamage, PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
-import Arkham.Message.Lifted.Queue as X
 import Arkham.Message.Lifted.Base as X
+import Arkham.Message.Lifted.Card as X
+import Arkham.Message.Lifted.Damage as X
+import Arkham.Message.Lifted.Location as X
+import Arkham.Message.Lifted.Prompt as X
+import Arkham.Message.Lifted.Prompt qualified
+import Arkham.Message.Lifted.Queue as X
+import Arkham.Message.Lifted.Scenario as X
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -108,13 +114,6 @@ import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
 import Data.Typeable
-import Arkham.Message.Lifted.Location as X
-import Arkham.Message.Lifted.Scenario as X
-import Arkham.Message.Lifted.Damage as X
-import Arkham.Message.Lifted.Prompt as X
-import Arkham.Message.Lifted.Prompt qualified
-import Arkham.Message.Lifted.Card as X
-
 
 withoutRunWindows :: ReverseQueue m => QueueT Message m () -> m ()
 withoutRunWindows body = do
@@ -590,7 +589,6 @@ removeChaosToken = push . RemoveChaosToken
 removeAllChaosTokens :: ReverseQueue m => ChaosTokenFace -> m ()
 removeAllChaosTokens = push . RemoveAllChaosTokens
 
-
 placeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 placeClues source target n = push $ PlaceClues (toSource source) (toTarget target) n
@@ -773,7 +771,6 @@ forEachInvestigator body = eachInvestigator (`forInvestigator'` body)
 
 forInvestigator' :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
 forInvestigator' iid = capture >=> traverse_ (forInvestigator iid)
-
 
 selectEachDiscardable
   :: (HasCardCode a, HasGame m, Tracing m)
@@ -1287,7 +1284,6 @@ turnModifiers
   -> m ()
 turnModifiers iid source target modifiers = Msg.pushM $ Msg.turnModifiers iid source target modifiers
 
-
 scenarioSetupModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => ScenarioId
@@ -1670,6 +1666,17 @@ drawEncounterCardAndThen i source andThenDo = do
   msgs <- capture andThenDo
   drawEncounterCardsEdit i source 1 \d -> d `andThen` Run msgs
 
+drawCardAndThen
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> QueueT Message m () -> m ()
+drawCardAndThen i source = drawCardsAndThen i source 1
+
+drawCardsAndThen
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId -> source -> Int -> QueueT Message m () -> m ()
+drawCardsAndThen i source n andThenDo = do
+  msgs <- capture andThenDo
+  drawCardsEdit i source n \d -> d `andThen` Run msgs
+
 drawEncounterCardEdit
   :: (ReverseQueue m, Sourceable source)
   => InvestigatorId -> source -> (CardDraw Message -> CardDraw Message) -> m ()
@@ -1762,9 +1769,6 @@ focusCards cards body = do
 
 focusCard :: (ReverseQueue m, IsCard a) => a -> StateT Unfocus m () -> m ()
 focusCard card = focusCards [card]
-
-
-
 
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
@@ -1878,7 +1882,6 @@ revealingEdit
   -> m ()
 revealingEdit iid (toSource -> source) (toTarget -> target) zone f = Msg.push $ Msg.revealingEdit iid source target zone f
 
-
 shuffleCardsIntoTopOfDeck
   :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
   => deck
@@ -1890,7 +1893,6 @@ shuffleCardsIntoTopOfDeck deck n cards =
     0 -> pure ()
     1 -> guardPlayerDeckIsNotEmpty deck $ push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
     _ -> push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
-
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = Msg.pushM $ Msg.reduceCostOf source card n
@@ -2072,7 +2074,6 @@ addToVictoryIfNeeded (asId -> enemy) = doNow \case
 fromQueue :: (MonadTrans t, HasQueue Message m) => ([Message] -> r) -> t m r
 fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
 
-
 allMatchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 allMatchingDon't f = lift $ removeAllMessagesMatching f
 
@@ -2105,11 +2106,6 @@ abilityModifier
   -> ModifierType
   -> m ()
 abilityModifier ab source target modifier = Msg.pushM $ Msg.abilityModifier ab source target modifier
-
-
-
-
-
 
 oncePerAbility
   :: (ReverseQueue m, Sourceable attrs, Targetable attrs) => attrs -> Int -> m () -> m ()
@@ -2384,6 +2380,12 @@ nonAttackEnemyDamage miid source damage enemy = do
     then push $ Msg.DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
     else whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
       push $ Msg.DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
+
+nonAttackEnemyDamage_
+  :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a)
+  => Maybe InvestigatorId -> a -> Int -> enemy -> m ()
+nonAttackEnemyDamage_ miid source damage enemy =
+  push $ Msg.DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
 
 skillTestAutomaticallySucceeds
   :: (ReverseQueue m, Sourceable source) => source -> SkillTestId -> m ()
@@ -2766,7 +2768,6 @@ loseControlOfAsset asset = push $ Msg.LoseControlOfAsset (asId asset)
 takeControlOfSetAsideAsset :: ReverseQueue m => InvestigatorId -> Card -> m ()
 takeControlOfSetAsideAsset iid card = push $ Msg.TakeControlOfSetAsideAsset iid card
 
-
 enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
 enemyCheckEngagement = push . EnemyCheckEngagement
 
@@ -3132,7 +3133,6 @@ resolveChaosTokens iid source tokens = do
            $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
        ]
 
-
 loseActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 loseActions iid source n = push $ LoseActions iid (toSource source) n
 
@@ -3146,8 +3146,6 @@ requestChaosTokens iid source n = do
 
 resetChaosTokens :: (ReverseQueue m, Sourceable source) => source -> m ()
 resetChaosTokens source = push $ ResetChaosTokens (toSource source)
-
-
 
 don'tRemove
   :: (Sourceable source, MonadTrans t, HasQueue Message m, ReverseQueue (t m))

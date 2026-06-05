@@ -1,4 +1,30 @@
 {
+  "specialRules": [
+    {
+      "title": "@:standalone.theMidwinterGala.intro.score.title",
+      "body": "@:standalone.theMidwinterGala.intro.score.body"
+    },
+    {
+      "title": "Story Cards",
+      "body": "<p class='basic'>Story cards are a cardtype used in this scenario. These cards provide additional narrative and game text. Abilities on story cards in play can be triggered by any investigator.</p>"
+    },
+    {
+      "title": "@:standalone.theMidwinterGala.intro.guestStoryAssets.title",
+      "body": "@:standalone.theMidwinterGala.intro.guestStoryAssets.body"
+    },
+    {
+      "title": "@:standalone.theMidwinterGala.intro.spellbound.title",
+      "body": "@:standalone.theMidwinterGala.intro.spellbound.body"
+    },
+    {
+      "title": "Alert",
+      "body": "<p class='basic'>Each time an investigator fails a skill test while attempting to evade an enemy with the alert keyword, after applying all results for that skill test, that enemy performs an attack against the evading investigator. An enemy does not exhaust after performing an alert attack. This attack occurs whether the enemy is engaged with the evading investigator or not.</p>"
+    },
+    {
+      "title": "Patrol",
+      "body": "<p class='basic'>Some enemies have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated location (as described in parentheses next to the word patrol).</p><ul><li>If there are multiple locations that qualify as the designated location, the lead investigator may choose which location the enemy moves toward.</li><li>If an enemy with patrol would be compelled to move to a location that is blocked by a card ability, the enemy does not move.</li></ul>"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the current agenda number.",

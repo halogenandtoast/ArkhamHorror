@@ -219,6 +219,7 @@ data Criterion
   | AssetCount Int AssetMatcher
   | EnemyCount ValueMatcher EnemyMatcher
   | EventCount ValueMatcher EventMatcher
+  | TreacheryCount ValueMatcher TreacheryMatcher
   | LocationCount Int LocationMatcher
   | KeyCount ValueMatcher KeyMatcher
   | ExtendedCardCount ValueMatcher ExtendedCardMatcher
@@ -445,7 +446,9 @@ data EnemyCriterion
   deriving stock (Show, Eq, Ord, Data)
 
 canFightAtAnyLocation :: Criterion
-canFightAtAnyLocation = EnemyCriteria (ThisEnemy $ CanBeAttackedBy You) <> CanAttack
+canFightAtAnyLocation =
+  EnemyCriteria (ThisEnemy $ CanBeAttackedBy You <> EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone])
+    <> CanAttack
 
 canEvadeAtAnyLocation :: Criterion
 canEvadeAtAnyLocation = EnemyCriteria (ThisEnemy EnemyWithEvade)

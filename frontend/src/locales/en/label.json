@@ -44,6 +44,7 @@
   "damageEnemy": "Damage enemy",
   "dealDamage": "Deal {count} damage",
   "dealAdditionalDamage": "Deal +{count} damage",
+  "dealDirectDamageAndHorror": "Deal {damage} direct damage and {horror} direct horror",
   "discard": "Discard",
   "discardAssets": "Discard an asset you control | Discard {count} assets you control",
   "discardAllyAssetFromPlay": "Discard an Ally asset you control from play",

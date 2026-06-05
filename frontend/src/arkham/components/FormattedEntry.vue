@@ -3,10 +3,11 @@ import { defineComponent, h } from 'vue'
 import { type FlavorTextEntry, type FlavorTextModifier, type ImageModifier, type ListItemEntry } from '@/arkham/types/FlavorText'
 import { baseUrl, formatContent, imgsrc } from '@/arkham/helpers'
 import { cardImage } from '@/arkham/cardImages'
-import { I18n, useI18n } from 'vue-i18n'
+import { type ComposerTranslation, useI18n } from 'vue-i18n'
 import { tarotArcanaImage } from '@/arkham/types/TarotCard'
 import { chaosTokenImage } from '@/arkham/types/ChaosToken'
 import CodexEntry from '@/arkham/components/CodexEntry.vue'
+import ChaosTokenMorph from '@/arkham/components/ChaosTokenMorph.vue'
 
 function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
   switch (entry.tag) {
@@ -59,12 +60,12 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
   }
 }
 
-function formatListEntry(t: I18n, entry: { tag: 'ListEntry', list: ListItemEntry[] }): any {
+function formatListEntry(t: ComposerTranslation, entry: ListItemEntry): ReturnType<typeof h> {
   const inner = formatEntry(t, entry.entry)
-  return h('li',  entry.nested.length == 0 ? inner : [inner, h('ul', entry.nested.map((e) => formatListEntry(t, e)))])
+  return h('li',  entry.nested.length == 0 ? inner : [inner, h('ul', entry.nested.map((e: ListItemEntry) => formatListEntry(t, e)))])
 }
 
-function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: boolean } = {}): any {
+function formatEntry(t: ComposerTranslation, entry: FlavorTextEntry, classes: { [key: string]: boolean } = {}): ReturnType<typeof h> {
   switch (entry.tag) {
     case 'BasicEntry': return h('p', { innerHTML: formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text) })
     case 'HeaderEntry': if (entry.level == 1) {
@@ -88,6 +89,7 @@ function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: 
     case 'CardEntry': return h('div', [h('img', { class: entryStyles(entry), src: cardImage(entry.cardCode)})])
     case 'TarotEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`tarot/${tarotArcanaImage(entry.tarot)}`)})])
     case 'ChaosTokenEntry': return h('div', [h('img', { class: entryStyles(entry), src: chaosTokenImage(entry.chaosTokenFace)})])
+    case 'ChaosTokenMorphEntry': return h(ChaosTokenMorph, { from: entry.morphFrom, to: entry.morphTo })
     case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")
   }
@@ -451,6 +453,22 @@ p.billenia, :deep(p.billenia) {
     background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636l4.95 4.95z"/%3E%3C/svg%3E');
   }
 
+  &:has(> .composite),
+  &:has(> ul) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  &:has(> .composite)::before,
+  &:has(> ul)::before {
+    margin-top: 10px;
+  }
+
+  > .composite {
+    display: block;
+  }
+
   &.right::after {
     content: '';
     display: inline-block;
@@ -499,6 +517,22 @@ h3, :deep(h3) {
     background-repeat: no-repeat;
     background-color: green;
     background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M9 19l-6-6 1.414-1.414L9 16.172l10.586-10.586L21 7.586z"/%3E%3C/svg%3E');
+  }
+
+  &:has(> .composite),
+  &:has(> ul) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  &:has(> .composite)::before,
+  &:has(> ul)::before {
+    margin-top: 10px;
+  }
+
+  > .composite {
+    display: block;
   }
 
   &.right::after {

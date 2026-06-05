@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ComputedRef, computed, watch, ref } from 'vue';
+import { computed, watch, ref } from 'vue';
 import useHighlighter from '@/composable/useHighlighter';
 import { useDebug } from '@/arkham/debug';
 import { TokenType } from '@/arkham/types/Token';
@@ -7,7 +7,7 @@ import { imgsrc } from '@/arkham/helpers';
 import { cardImage } from '@/arkham/cardImages';
 import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
-import * as ArkhamGame from '@/arkham/types/Game';
+import { useGameChoices } from '@/arkham/composables/useGameChoices';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import type { AbilityType } from '@/arkham/types/Ability';
 import { MessageType } from '@/arkham/types/Message';
@@ -19,12 +19,12 @@ import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import Story from '@/arkham/components/Story.vue';
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import {isUse} from '@/arkham/types/Token';
-import { Card } from '../types/Card';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
 
 const props = withDefaults(defineProps<{
@@ -39,7 +39,6 @@ const frame = ref(null)
 
 const emits = defineEmits<{
   choose: [value: number]
-  showCards: [e: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
 }>()
 
 const id = computed(() => props.asset.id)
@@ -83,7 +82,7 @@ const dataImage = computed(() => {
   }
   return cardCode.value.replace('c', '') + mutated
 })
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = useGameChoices(() => props.game, () => props.playerId)
 
 function isCardAction(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL) {
@@ -137,7 +136,7 @@ function isAbility(v: Message): v is AbilityLabel {
 
   if (source.sourceTag === 'ProxySource') {
     if (source.source.tag === 'CardCodeSource') {
-      return source.originalSource.contents === id.value
+      return 'contents' in source.originalSource && source.originalSource.contents === id.value
     }
     if ("contents" in source.source) {
       return source.source.contents === id.value
@@ -162,9 +161,6 @@ const abilities = computed(() => {
 })
 
 const cardsUnderneath = computed(() => props.asset.cardsUnderneath)
-const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
-
-const showCardsUnderneath = (e: Event) => emits('showCards', e, cardsUnderneath, "Cards Underneath", false)
 
 const keys = computed(() => props.asset.keys)
 
@@ -173,7 +169,7 @@ const dragging = ref(false)
 
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
-const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && v > 0))
+const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && (v ?? 0) > 0))
 const formatUse = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2')
 
 const damage = computed(() => (props.asset.tokens[TokenType.Damage] || 0) - props.asset.assignedHealthHeal)
@@ -188,7 +184,7 @@ const hasPool = computed(() => {
     keys,
   } = props.asset;
 
-  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || sanity || health)
+  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => (v ?? 0) > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || sanity || health)
 })
 
 const choose = (idx: number) => emits('choose', idx)
@@ -299,7 +295,7 @@ function startDrag(event: DragEvent) {
           </div>
           <template v-for="[use, amount] in uses" :key="use">
             <PoolItem
-              v-if="amount > 0"
+              v-if="(amount ?? 0) > 0"
               type="resource"
               :tooltip="formatUse(use)"
               :amount="amount"
@@ -331,6 +327,15 @@ function startDrag(event: DragEvent) {
           @choose="chooseAbility"
         />
       </div>
+      <CardsUnderIndicator
+        v-if="cardsUnderneath.length > 0"
+        class="asset-cards-under"
+        :cards="cardsUnderneath"
+        :game="game"
+        :playerId="playerId"
+        label="Cards underneath"
+        @choose="$emit('choose', $event)"
+      />
       <Event
         v-for="eventId in asset.events"
         :event="game.events[eventId]"
@@ -358,7 +363,6 @@ function startDrag(event: DragEvent) {
         @choose="choose"
         :attached="true"
       />
-      <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
       <template v-if="debug.active">
         <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
       </template>
@@ -529,6 +533,12 @@ img.card.ability-target {
 
 .card-wrapper {
   position: relative;
+}
+
+.asset-cards-under {
+  align-self: center;
+  margin-top: 1px;
+  margin-bottom: 1px;
 }
 
 .spirit-icon {

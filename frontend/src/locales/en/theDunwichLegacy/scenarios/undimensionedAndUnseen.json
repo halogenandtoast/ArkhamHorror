@@ -53,6 +53,12 @@
     "title": "Choosing a Random Location",
     "body": "During this scenario, you will often be instructed to choose a random location. This should be done by shuffling together the 6 locations removed from the game during setup (the versions of each location in play not currently being used) and drawing 1 at random."
   },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.undimensionedAndUnseen.choosingARandomLocation.title",
+      "body": "@:theDunwichLegacy.undimensionedAndUnseen.choosingARandomLocation.body"
+    }
+  ],
   "resolutions": {
     "noResolution": {
       "title": "No Resolution",

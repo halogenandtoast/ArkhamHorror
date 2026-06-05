@@ -55,3 +55,21 @@ welcomeToHemlockVale = agenda "10681" "Welcome to Hemlock Vale" 1 DayOfRest
 
 darkClouds :: CardDef
 darkClouds = agenda "10683" "Dark Clouds" 1 DayOfRain
+
+allIsFullOfLove :: CardDef
+allIsFullOfLove = agenda "10686" "All is Full of Love" 1 DayOfTheFeast
+
+aroundTheTable :: CardDef
+aroundTheTable = agenda "10688" "Around the Table" 1 DayOfTheFeast
+
+lambsToTheSlaughter :: CardDef
+lambsToTheSlaughter = agenda "10689" "Lambs to the Slaughter" 3 DayOfTheFeast
+
+theSilence :: CardDef
+theSilence = agenda "10652" "The Silence" 1 FateOfTheVale
+
+theMiasma :: CardDef
+theMiasma = agenda "10653" "The Miasma" 2 FateOfTheVale
+
+theSpiral :: CardDef
+theSpiral = agenda "10654" "The Spiral" 3 FateOfTheVale

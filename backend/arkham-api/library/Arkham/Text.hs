@@ -61,6 +61,7 @@ data FlavorTextEntry
   | CardEntry {cardCode :: CardCode, imageModifiers :: [ImageModifier]}
   | TarotEntry {tarot :: TarotCardArcana}
   | ChaosTokenEntry {chaosTokenFace :: ChaosTokenFace}
+  | ChaosTokenMorphEntry {morphFrom :: ChaosTokenFace, morphTo :: ChaosTokenFace}
   | EntrySplit
   deriving stock (Show, Eq, Ord, Data)
 

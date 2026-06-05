@@ -166,7 +166,7 @@ instance RunMessage CongressOfTheKeys where
       eceDoesNotTrustTheCell <- getHasRecord EceDoesNotTrustTheCell
       youHaventSeenTheLastOfAmaranth <- getHasRecord YouHaventSeenTheLastOfAmaranth
       theLoversAreReunited <- getHasRecord TheLoversAreReunited
-      amaranthHasLeftTheCoterie <- getHasRecord TheRedCoterieWasDestroyedFromWithin
+      amaranthHasLeftTheCoterie <- getHasRecord AmaranthHasLeftTheCoterie
       youHaventSeenTheLastOfThorne <- getHasRecord YouHaventSeenTheLastOfThorne
       theCellMadeADealWithThorne <- getHasRecord TheCellMadeADealWithThorne
       thorneDisappeared <- getHasRecord ThorneDisappeared
@@ -200,6 +200,7 @@ instance RunMessage CongressOfTheKeys where
           | theDogsAreAtWar = 0
           | otherwise = 1
         yea1
+          | theCellAidedTheKnight = 0
           | theCellFailedToFendOffTheBeast = 1
           | youHaventSeenTheLastOfTheClaretKnight = 2
           | theDogsAreAtWar = 0
@@ -435,8 +436,16 @@ instance RunMessage CongressOfTheKeys where
               if finalYea >= finalNay
                 then labeled' "deemedALiability" $ doStep 2 PreScenarioSetup
                 else do
-                  let canOverthrow = laChicaRojaVotedNay && eceTrustsTheCell && desiIsGood
-                  let canJoin = canOverthrow && tuwileMasaiIsOnYourSide && theCellMadeADealWithThorne && theCellAidedTheKnight
+                  let claretKnightVotedNay =
+                        theCellAidedTheKnight
+                          || not
+                            ( theCellFailedToFendOffTheBeast
+                                || youHaventSeenTheLastOfTheClaretKnight
+                                || theDogsAreAtWar
+                            )
+                  let eceVotedNay = not eceDoesNotTrustTheCell
+                  let canOverthrow = laChicaRojaVotedNay && eceVotedNay && desiIsGood
+                  let canJoin = claretKnightVotedNay && tuwileMasaiIsOnYourSide && theCellMadeADealWithThorne
                   labeledValidate' canOverthrow "overthrow" $ doStep 3 PreScenarioSetup
                   labeledValidate' canJoin "join" $ doStep 4 PreScenarioSetup
                   labeled' "deemedAnAsset" $ doStep 5 PreScenarioSetup

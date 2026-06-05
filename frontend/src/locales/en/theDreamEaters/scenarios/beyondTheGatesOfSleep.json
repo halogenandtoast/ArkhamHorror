@@ -1,5 +1,11 @@
 {
   "heading": "Scenario I-A",
+  "specialRules": [
+    {
+      "title": "Steps of Slumber",
+      "body": "<p class='basic'>At the start of this scenario, there is no encounter deck. This means that the investigators cannot use abilities that interact with the encounter deck in any way. (For example, effects such as those that search the encounter deck, draw cards from the encounter deck, or look at cards in the encounter deck all fail.)</p><p class='basic'>Additionally, act 1a has the text: “Do not draw cards from the encounter deck during the mythos phase.”</p><p class='basic'>At a certain point in the scenario, the investigators will be instructed to form the encounter deck, and this text will no longer be active. From that point onward, the investigators can interact with the encounter deck as normal.</p>"
+    }
+  ],
   "thePath": {
     "label": {
       "stepBack": "Step back and watch this surreal scene play out.",

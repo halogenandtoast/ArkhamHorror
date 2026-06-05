@@ -79,12 +79,12 @@ const perInvestigator = computed<Record<string, PerInvestigator>>(() => {
   }, {} as Record<string, PerInvestigator>)
 })
 
-const headerInvestigators = computed(() => {
+const headerInvestigators = computed<[Investigator, number][]>(() => {
   if (unspendableXp.value) {
-    return props.investigators.map(i => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value]))
+    return props.investigators.map((i): [Investigator, number] => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value]))
   }
   return props.investigators
-    .map(i => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value]))
+    .map((i): [Investigator, number] => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value]))
     .filter(([_i, t]) => t !== 0)
 })
 

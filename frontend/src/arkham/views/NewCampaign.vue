@@ -82,7 +82,7 @@ const selectedCampaignReturnTo = computed(() => {
 
 const campaignScenarios = computed(() =>
   selectedCampaign.value
-    ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value && s.show !== false)
+    ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value && s.show !== false && s.standalone !== false)
     : []
 )
 

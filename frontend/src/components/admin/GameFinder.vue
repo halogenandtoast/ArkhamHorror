@@ -2,12 +2,12 @@
 import { ref } from 'vue'
 import { findGame } from '@/arkham/api'
 import GameRow from '@/arkham/components/GameRow.vue'
-import type { GameDetails } from '@/arkham/types/Game'
+import type { GameDetailsEntry } from '@/arkham/types/Game'
 
 const dragging = ref(false)
 const playerIds = ref<string[]>([])
 const errorMsg = ref<string | null>(null)
-const gameDetails = ref<GameDetails | null>(null)
+const gameDetails = ref<GameDetailsEntry | null>(null)
 
 function onDragOver(e: DragEvent) {
   e.preventDefault()
@@ -51,8 +51,9 @@ async function processFile(file: File) {
 
     gameDetails.value = await findGame(playerIds.value[0])
 
-  } catch (e: any) {
-    errorMsg.value = `Failed to parse JSON: ${e?.message ?? e}`
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : String(e)
+    errorMsg.value = `Failed to parse JSON: ${message}`
   }
 }
 
@@ -100,7 +101,8 @@ function collectPlayerIds(node: unknown): string[] {
     <div v-if="errorMsg" class="error">{{ errorMsg }}</div>
 
     <div v-if="gameDetails" class="results">
-      <GameRow :key="gameDetails.id" :game="gameDetails" :admin="true" />
+      <GameRow v-if="gameDetails.tag === 'game'" :key="gameDetails.id" :game="gameDetails" :admin="true" />
+      <div v-else class="error">{{ gameDetails.error }}</div>
     </div>
   </div>
 </template>

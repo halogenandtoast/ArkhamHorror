@@ -30,9 +30,9 @@ interface UnimplementedCardError {
 }
 
 interface ArkhamDBCard {
-  name: string
-  code: string
-  xp?: string
+  name: { title: string; subtitle: string | null }
+  cardCode: string
+  xp?: string | number | null
 }
 
 const errors = ref<string[]>([])
@@ -122,7 +122,7 @@ async function loadDeck() {
 const normalizeCode = (code: string) => code.replace(/^c/, '')
 const cardByCode = computed(() => {
   const m = new Map<string, ArkhamDBCard>()
-  for (const c of cards.value) m.set(normalizeCode(c.code), c)
+  for (const c of cards.value) m.set(normalizeCode(c.cardCode), c)
   return m
 })
 
@@ -130,14 +130,16 @@ async function runValidations() {
   valid.value = false
   errors.value = []
   try {
+    if (!deckList.value) return
     await validateDeck(deckList.value)
     valid.value = true
-  } catch (err: any) {
-    const payload: UnimplementedCardError[] = err?.response?.data ?? []
+  } catch (err: unknown) {
+    const response = err as { response?: { data?: UnimplementedCardError[] } }
+    const payload: UnimplementedCardError[] = response.response?.data ?? []
     errors.value = payload.map((e) => {
       const key = normalizeCode(e.contents)
       const hit = cardByCode.value.get(key)
-      if (hit) return hit.xp ? `${hit.name} (${hit.xp})` : hit.name
+      if (hit) return hit.xp ? `${hit.name.title} (${hit.xp})` : hit.name.title
       return `Unknown card: ${e.contents}`
     })
   }
@@ -159,6 +161,7 @@ async function createDeck() {
   }
 
   try {
+    if (!deckList.value) return
     const created = await newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value)
     deckId.value = null
     deckName.value = null
@@ -166,12 +169,13 @@ async function createDeck() {
     investigator.value = null
     deck.value = null
     emit('newDeck', created)
-  } catch (err: any) {
-    const payload: UnimplementedCardError[] = err?.response?.data ?? []
+  } catch (err: unknown) {
+    const response = err as { response?: { data?: UnimplementedCardError[] } }
+    const payload: UnimplementedCardError[] = response.response?.data ?? []
     errors.value = payload.map((e) => {
       const key = normalizeCode(e.contents)
       const hit = cardByCode.value.get(key)
-      if (hit) return hit.xp ? `${hit.name} (${hit.xp})` : hit.name
+      if (hit) return hit.xp ? `${hit.name.title} (${hit.xp})` : hit.name.title
       return 'Unknown card'
     })
   }

@@ -170,6 +170,7 @@ allStoryCards =
       , nightTwo
       , dayThree
       , nightThree
+      , theAbyss
       , returnToSickeningReality_23
       , returnToSickeningReality_24
       , returnToUnfinishedBusiness_38
@@ -570,10 +571,13 @@ nightTwo :: CardDef
 nightTwo = story "10677b" "Night Two" TheSecondDay & otherSideIs "10677"
 
 dayThree :: CardDef
-dayThree = story "10679" "Day One" TheFinalDay & otherSideIs "10679b"
+dayThree = story "10679" "Day Three" TheFinalDay & otherSideIs "10679b"
 
 nightThree :: CardDef
 nightThree = story "10679b" "Night Three" TheFinalDay & otherSideIs "10679"
+
+theAbyss :: CardDef
+theAbyss = story "10670b" "The Abyss" FateOfTheVale
 
 returnToSickeningReality_23 :: CardDef
 returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing

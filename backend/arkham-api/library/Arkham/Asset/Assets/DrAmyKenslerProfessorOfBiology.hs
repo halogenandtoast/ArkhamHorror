@@ -19,7 +19,7 @@ drAmyKenslerProfessorOfBiology = allyWith DrAmyKenslerProfessorOfBiology Cards.d
 
 instance HasAbilities DrAmyKenslerProfessorOfBiology where
   getAbilities (DrAmyKenslerProfessorOfBiology a) =
-    [restricted a 1 ControlsThis $ investigateAction (assetUseCost a Secret 1 <> exhaust a)]
+    [investigateAbility a 1 (assetUseCost a Secret 1 <> exhaust a) ControlsThis]
 
 instance RunMessage DrAmyKenslerProfessorOfBiology where
   runMessage msg a@(DrAmyKenslerProfessorOfBiology attrs) = runQueueT $ case msg of

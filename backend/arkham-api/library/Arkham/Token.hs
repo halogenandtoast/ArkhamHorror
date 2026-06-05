@@ -30,6 +30,7 @@ data Token
   | Horror
   | Inspiration
   | Key
+  | Kindling
   | Lead
   | Leyline
   | Lock

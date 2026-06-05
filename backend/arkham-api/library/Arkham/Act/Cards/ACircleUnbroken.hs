@@ -4,12 +4,25 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Projection
 
 newtype ACircleUnbroken = ACircleUnbroken ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor ACircleUnbroken where
+  getModifiersFor (ACircleUnbroken a) = do
+    modifySelectMaybe a (LocationIsInFrontOf Anyone) \lid -> do
+      iid <- MaybeT $ field LocationInFrontOf lid
+      pure
+        [ ConnectedToWhen (LocationWithId lid)
+            $ not_ (LocationWithId lid)
+            <> LocationIsInFrontOf (InvestigatorWithId iid)
+        ]
 
 aCircleUnbroken :: ActCard ACircleUnbroken
 aCircleUnbroken = act (4, A) ACircleUnbroken Cards.aCircleUnbroken Nothing

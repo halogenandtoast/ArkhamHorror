@@ -8,6 +8,7 @@ export interface Scenario {
   beta?: boolean
   alpha?: boolean
   standaloneDifficulties?: Difficulty[]
+  standalone?: boolean
   show?: boolean
   campaign?: string
 }

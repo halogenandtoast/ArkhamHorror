@@ -1,0 +1,204 @@
+{
+  "intro": {
+    "title": "Scenario: Fate of the Vale",
+    "body": "<p>Head spinning, you stand up in an iridescent cavern. Smooth polished walls flicker with cool blue light, reflecting nightmarish images. Twisted stalagmites furl and unfurl into spirals, reaching up toward the ceiling like the stalks of some antediluvian flora. Screams fill the air: the cavern floor is covered in revelers clutching their limbs or heads. Cracks of shining light form on their skin and grow in intensity. Everything in the shining chamber is distorted by a gelid phosphorescence. You feel as though you are breathing heavy smoke in the thick warm air.</p><p>Ephemeral forms whorl around an empyrean brilliance at the center of the chamber. Silhouetted in front of the core of pure white light is Mother Rachel, her hair unbound and floating as if in deep water. Your head pounds as you stare into the brilliance, and you look down at the cavern floor. The injured revelers have stopped moving, and have gone gray and powdery. A few are clear as glass, refracting the clear light of the abyss into prismatic arrays. Others stand, petrified, holding their arms out toward the brilliance, each face frozen in a ghoulish smile.</p><p>The sound of Mother Rachel's laughter echoes through the chamber as the matron stares into the abyss, holding her arms up overhead. Smoke gathers around her as her body dissolves into gas. Unsure of what is happening, you run up a hill of petrified human forms toward Mother Rachel and the abyss. Bones and dessicated corpses crack underfoot as you clamber to the top. Mother Rachel looks at you, exultant, before her body sublimates into pale fire.</p><p>An all-too-familiar euphoria floods your senses as the alien light pulses and bends the chamber around it. You feel an invisible hand on your shoulder; you brush it away. Something feels different. You hold up one hand to see a small, spidery crack of light form on your palm. The fissure lengthens to creep up your wrist, then your arm. The accompanying pain sends you into a dead faint.</p><p>You wake up and you see yo urs e lfst an d in ga ttheed geo fab road chasms ta rin g dOwn yoU sEe y our sel Fin the bod yof abl ack ca Tan dAsaq UeEnaswim Mi nGth Inga CrAwlIngchA otIc dA rkNes Sw Hoare youaNdWHYaRe yOuhEre?</p><p class='basic right'>Proceed to _Setup_.</p>"
+  },
+  "remembered": {
+    "bertieIsFleeing": "Bertie is fleeing",
+    "theInvestigatorsFoundGas": "The investigators found gas",
+    "theInvestigatorsFoundTheosTruck": "The investigators found Theo's truck",
+    "theRoadIsClear": "The road is clear",
+    "theSamplesWereFound": "The samples were found",
+    "theSurveyNotesWereRecovered": "The survey notes were recovered"
+  },
+  "interlude": {
+    "title": "Scenario Interlude: Fate of the Vale",
+    "label": {
+      "letsEndThis": "Let's end this.",
+      "saveTheVale": "Save the Vale!",
+      "burnItAll": "Burn it all.",
+      "escape": "Escape with our lives."
+    },
+    "fateOfTheVale1": "<p>_Fate of the Vale 1:_ Dr. Marquez stares at the delicate filigree patterns that form and fade in the glassy chamber. \"It's devouring us. If we don't do something, it'll destroy this island, and everything on it. But I have an idea,\" she holds up an iridescent shard and smiles cockily. \"Do you trust me?\"</p><ul><li>If the Dr. Marquez story asset is not in play, search each investigator's deck and all out-of-play areas for Dr. Marquez and put her into play under the control of an investigator. She does not take up an ally slot for the remainder of this scenario.</li><li>Flip The Abyss story card to its location side.</li><li>Flip each Cosmic Emissary enemy to its _Shattered_ side (*breaking their formation*). Place the Cosmic Emissary (*The Abyss*) enemy at The Abyss location. Place each other Cosmic Emissary enemy at the Mirror Nest location it was physically bordering.</li><li>Put Act 3a—Fate of the Vale (v.I) into play. Remove each other act from the game.</li><li>Resume playing.</li></ul>",
+    "fateOfTheVale2": "<p>_Fate of the Vale 2:_ With Dr. Marquez's help, you clamber out of the sinkhole to find Hemlock Vale engulfed in blood-red mist. After scouring the village for survivors, you find several friends. \"We have to save as many people as we can,\" Dr. Marquez says. As you begin your search, the shining entity emerges from the sinkhole, refracted like shattered glass.</p><ul><li>Remove each Mirror Nest and _Cave_ location from the game.</li><li>Put each set-aside *Hemlock Vale* location into play on its (*Night*) side.<ul><li>Move each investigator to The Crossroads.</li></ul></li><li>Check your Campaign Log.<ul><li>*If the Peters family was reunited*, search all in- and out-of-play areas for Helen Peters and Theo Peters and put each into play under the control of any investigator(s), asset side faceup.</li><li>*If The Hemlocks made a truce*, search all in- and out-of-play areas for River Hawthorne and William Hemlock and put each into play under the control of any investigator(s), asset side faceup.</li></ul></li><li>Put Act 3a—Fate of the Vale (v.II) into play. Remove each other act from the game.</li><li>Search the *Day of the Feast* encounter set for 2 copies of Frenzied Reveler, shuffle them with each set-aside _Resident_ card, and place them, enemy side faceup, beneath each location except The Crossroads, distributed as evenly as possible.</li><li>Flip each Cosmic Emissary enemy to its _Shattered_ side. Place Cosmic Emissary (*The Abyss*) at The Crossroads. Shuffle the remaining Cosmic Emissary enemies and place one of each at The Boarding House, The Commons, and The Atwood House.</li><li>Resume playing.</li></ul>",
+    "fateOfTheVale3": "<p>_Fate of the Vale 3:_ With Dr. Marquez's help, you clamber out of the sinkhole to find Hemlock Vale engulfed in blood-red mist. If this alien presence is feeding off the people, flora, and fauna of the island, you may still be able to deprive it of a meal. The village is full of fireworks. Perhaps it is enough to set the island ablaze…</p><ul><li>Put Act 3a—Fate of the Vale (v.III) into play. Remove each other act from the game.</li><li>Skip to _Fate of the Vale 5._</li></ul>",
+    "fateOfTheVale4": "<p>_Fate of the Vale 4:_ With Dr. Marquez's help, you clamber out of the sinkhole to find Hemlock Vale engulfed in blood-red mist. The professor presses her hands to her temples as she takes stock. \"We need to find my notes. And Bertie, if he's still alive. I—I don't like it, but we have to escape. South Point Lighthouse might just be far enough away. Maybe we'll be safe there.\"</p><ul><li>Put Act 3a—Fate of the Vale (v.IV) into play. Remove each other act from the game.</li><li>Proceed to _Fate of the Vale 5._</li></ul>",
+    "fateOfTheVale5": "<p>_Fate of the Vale 5:_ Silver light shines through the mist, casting strange shadows. Some of them are figures of frenzied villagers.</p><ul><li>Remove each Mirror Nest and _Cave_ location from the game.</li><li>Put each set-aside _Hemlock Vale_ location into play on its (*Night*) side.<ul><li>Move each investigator to The Crossroads.</li></ul></li><li>Check your Campaign Log.<ul><li>*If Bertie perished*, remove the set-aside Bertie Musgrave story asset from the game. Otherwise, put him into play at The Boarding House, asset side faceup.</li><li>Search the *Day of the Feast* encounter set for 2 copies of Frenzied Reveler, shuffle them with each set-aside _Resident_ card, and place them, enemy side faceup, at each empty location except The Crossroads, distributed as evenly as possible. (If there are no empty locations remaining, immediately stop.)</li><li>Remove each remaining _Resident_ card from the game.</li></ul></li><li>Flip each Cosmic Emissary enemy to its _Shattered_ side (*breaking their formation*). Place Cosmic Emissary (*The Abyss*) at The Crossroads. Shuffle the remaining Cosmic Emissary enemies and place one of each at The Boarding House, The Commons, and The Atwood House.</li><li>Resume playing.</li></ul>"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is 1 more than the current act number.",
+      "cultist": "-4. If you fail, discard 1 card at random from your hand.",
+      "tablet": "-5. You may place 1 doom on your investigator card to treat this token's modifier as 0, instead.",
+      "elderThing": "-2. If this is a fight or evasion attempt against Cosmic Emissary, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of _Colour_ enemies in play.",
+      "cultist": "-6. Discard 1 card at random from your hand.",
+      "tablet": "-8. You may place 1 doom on your investigator card to treat this token's modifier as -3, instead.",
+      "elderThing": "-5. If this is a fight or evasion attempt against Cosmic Emissary, you automatically fail instead."
+    }
+  },
+  "label": {
+    "tablet": {
+      "easyStandard": "Place 1 doom on your investigator card to treat this token's modifier as 0, instead",
+      "hardExpert": "Place 1 doom on your investigator card to treat this token's modifier as -3, instead"
+    },
+    "euphoria": {
+      "placeAssetOnAbyss": "Place a non-story asset you control on top of The Abyss"
+    },
+    "fragmentation": {
+      "placeAssetOnAbyss": "Place your highest printed cost asset on top of The Abyss",
+      "nearestEmissaryAttacks": "The nearest Cosmic Emissary attacks you"
+    },
+    "sublimation": {
+      "placeHandOnAbyss": "Place cards in your hand on top of The Abyss",
+      "nearestEmissaryAttacks": "The nearest Cosmic Emissary attacks you"
+    },
+    "theSilence": {
+      "shuffleTopCardIntoAbyss": "Shuffle the top card of your deck into The Abyss"
+    },
+    "theMiasma": {
+      "shuffleTopCardIntoAbyss": "Shuffle the top card of your deck into The Abyss"
+    },
+    "fateOfTheValeV1": {
+      "letMarquezCarryOutPlan": "Let Dr. Marquez carry out her plan",
+      "doItOurselves": "Do it ourselves"
+    },
+    "shatteredMemories": {
+      "doNotTakeControl": "Do not take control of a resident"
+    }
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Final Day*, *Fate of the Vale*, *Day of the Feast*, *Agents of the Colour*, *Fire!*, *Horrors in the Rock*, *Refractions*, *Residents*, *Transfiguration*, and *The Vale*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-final-day.png' /><img src='{setImgPath}/fate-of-the-vale.png' /><img src='{setImgPath}/day-of-the-feast.png' /><img src='{setImgPath}/agents-of-the-colour.png' /><img src='{setImgPath}/fire.png' /><img src='{setImgPath}/horrors-in-the-rock.png' /><img src='{setImgPath}/refractions.png' /><img src='{setImgPath}/residents.png' /><img src='{setImgPath}/transfiguration.png' /><img src='{setImgPath}/the-vale.png' /></section>",
+    "nightThree": "Put the _Night Three_ Time Marker card into play. You are not alone.",
+    "shatteredSelf": "Replace each player's investigator card with a Shattered Self investigator card (*see* _Shattered Self_). Remove each other Shattered Self card from the game.",
+    "mirrorNests": "Gather each location from the *Fate of the Vale* encounter set along with each copy of the double-sided Cosmic Emissary enemy.",
+    "shuffleMirrorNests": "Shuffle the 4 Mirror Nest locations so you do not know which is which and put them into play, unrevealed, along with the Cosmic Emissary enemies according to the placement diagram. Each Cosmic Emissary enemy begins play with its _Colour_ side faceup.",
+    "connections": "Not that each Mirror Nest location is connected to the location clockwise and counter-clockwise from it.",
+    "startingLocation": "Each investigator begins play at a different Mirror Nest location of their choice.",
+    "setAside": "Set the following cards aside, out of play: The Abyss story card, each location from The Vale and Horrors in the Rock encounter sets, the Day of the Feast, Residents, and Fire! encounter sets, each copy of Act 3a—Fate of the Vale (v.I-IV), and both Crystal Parasite enemies.",
+    "removeScenarioReference": "Remove the scenario reference card from *The Vale* encounter set from the game.",
+    "createTheAbyss": "After drawing opening hands, create The Abyss (*see* _The Abyss_).",
+    "seedAbyssDeck": "Shuffle each remaining encounter card along with the top 5 cards of each investigator’s deck together.",
+    "shuffleTrueSelves": "Split the shuffled deck in half and set one half aside. Shuffle each “true” investigator card into one half, and place this half on top of the other half. This is The Abyss.",
+    "placeTheAbyss": "Place the double-sided The Abyss card on top of The Abyss, story card side faceup."
+  },
+  "theAbyss": {
+    "title": "The Abyss",
+    "body": "<h3>The Abyss</h3><p class='basic'>The double-sided The Abyss card always covers the top of The Abyss, and is never shuffled in. If 1 or more cards are placed on top of The Abyss, they are placed just beneath The Abyss card, on top of all other cards in The Abyss. If 1 or more cards are shuffled into The Abyss, remove The Abyss card, shuffle the cards into The Abyss, then place The Abyss card back on top.</p><p class='basic'>Whenever an investigator would draw 1 or more cards from the encounter deck (e.g. during the mythos phase, or via a card effect), they instead reveal cards from the bottom of The Abyss until a card with an encounter card back is revealed, and draw that card. Each other revealed card is shuffled and placed back on top of The Abyss (beneath The Abyss card).</p><ul><li>Whenever a card is drawn from The Abyss, refer to the double-sided The Abyss story card to determine how to resolve it.</li><li>_Player card and weakness effects that look at, search, add cards to, or discard cards from the encounter deck cannot interact with The Abyss and all fail._</li><li>_When an encounter card would be discarded in this scenario, it is always placed on top of The Abyss._</li></ul>"
+  },
+  "cosmicEmissary": {
+    "title": "The Cosmic Emissary",
+    "body": "<h3>The Cosmic Emissary</h3><p class='basic'>The Cosmic Emissary is made of multiple Cosmic Emissary enemies.</p><ul><li>Each Cosmic Emissary enemy enters play \"in formation\" as shown in the placement diagram.</li><li>Each Cosmic Emissary enemy must always stay in formation unless otherwise instructed. If the Cosmic Emissary ever breaks formation, each enemy will move independently from one another.</li><li>Each Cosmic Emissary enemy can be fought and evaded separately. (Unless they have a health value, no damage can be dealt to these enemies.)</li><li>While in formation, each Cosmic Emissary enemy is considered to be at the Mirror Nest its card is physically bordering.</li></ul>",
+    "prompt": {
+      "title": "The Cosmic Emissary stares back",
+      "body": "You have looked at the Cosmic Emissary enemy for more than 15 seconds. You are driven insane.",
+      "continue": "Continue",
+      "agendaAlt": "Current agenda card"
+    }
+  },
+  "shatteredSelf": {
+    "title": "Shattered Self",
+    "body": "<h3>Shattered Self</h3><p class='basic'>During setup for this scenario, each investigator is instructed to replace their investigator card with a Shattered Self investigator card included in the *Fate of the Vale* encounter set.</p><ul><li>Each investigator's deck remains the same. For a portion of this scenario, investigators must use the Shattered Self investigator card, and cannot use any of their investigator's abilities. Each investigator should still use their investigator mini-card so they can tell who is who. Any effects on your investigator card that direct you to begin play with a specific asset are resolved prior to swapping your investigator card for a Shattered Self investigator card.</li><li>Any trauma that would normally be placed on your investigator is transferred to your Shattered Self investigator card.</li><li>Any cards that were attached or placed underneath your investigator card are attached to or placed underneath your Shattered Self card.</li><li>Any card effects that refer to your \"true\" investigator card refer to your original investigator card and not your Shattered Self card.</li><li>Your Shattered Self card has the same card title as your \"true\" investigator card. (*e.g: If you are playing Kōhaku Narukami, treat the Shattered Self card as if its title were “Kōhaku Narukami.”*)</li><li>If your Shattered Self is defeated during this scenario, you are _driven insane_.</li></ul>"
+  },
+  "resolutions": {
+    "xp": {
+      "cosmicEmissary": "Defeated the Cosmic Emissary and the Colour Out of Space.",
+      "savedTheVale": "Saved the people of Hemlock Isle from a terrible fate.",
+      "eradicatedTheColour": "Eradicated the Colour Out of Space…right?",
+      "survivedTheFeast": "Survived the Feast."
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator resigned or was defeated)_: Your surroundings are swallowed by an unspeakable brilliance. A familiar euphoria grips you as reality itself shatters around you, and you catch a fleeting glimpse of other faces: human, alien, animal. The bliss turns to excruciating pain as your body sublimates into red gas. As you scream, the thousand other faces scream with you in your mind: you realize each of them is another you in other times, other realities. The other faces refract, split in two, and fracture like a broken mirror again, as every version of you is remade into something new. And then, a warmth. A wholeness. There is no you anymore. Only color and light. At last, you have found your place.</p><ul><li>In your Campaign Log, record *the investigators became the true Feast of Hemlock Vale*.</li><li>The investigators are devoured (each investigator is killed).</li><li>The investigators lose the campaign.</li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: \"Don't forget me.\" Dr. Marquez climbs up to the cusp of the brilliant void and looks down at you with measured resolve before she flings herself into the corona of light. The smoky human shape within the brilliant ring wavers, then merges into an undimensioned rainbow that shoots upward out of the dying fluorescence. A small shockwave knocks you prone.</p><p>In darkness, the massive undergound chamber feels like a grave. You clamber to the top of the mound and look up through the sinkhole at a sky full of stars. The silver light spirals weakly off into the distance. Your heart is heavy as you clutch Dr. Marquez's satchel: all that is left of the professor, as far as you know.</p><p>\"Is anyone down there?\" calls a shaky voice. You look up to see the silhouette of one of the Vale residents, wearing a tattered white-gold cloak. They have the look of someone who has awoken from a bad dream. You hesitate, but then call back. After a minute, a thick rope drops down, and you are hauled up to stand in the splintered wreckage of Hemlock Vale. The survivors gather around you.</p><p>\"Please, if you can find it in your heart, forgive us,\" one says. Another sheds their mask and tattered cloak. Past the edge of the crowd, you think you see a familiar rabbit mask peeking out from the shadows, but when you turn your head to look, it has already vanished.</p><ul><li>Update your Campaign Log.<ul><li>Cross out the name of each resident that was not under control of an investigator at the end of the game.</li><li>In your Campaign Log, record *Dr. Marquez sacrificed herself for the Vale*.</li></ul></li><li>If Dr. Rosa Marquez is part of an investigator's deck, remove her from that investigator's deck.</li><li>Each investigator suffers 1 physical trauma and 1 mental trauma as they grieve the loss of Dr. Marquez and recover from the degenerative effects of the Colour.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as they have defeated the Cosmic Emissary and the Colour Out of Space.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li><li>Proceed to _Epilogue_.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: Realizing the professor's intention, you press her satchel back into her arms clamber up the petrified pile of bodies to stand before the blinding abyss. You clutch the prismatic shard in your hand and look back one last time. The professor stares up at you with a look of utter disbelief. She shouts your name as you turn to face the brilliant spiraling maw. Holding the prismatic shard to your chest, you fling yourself into the infinite void.</p><p>A feeling of intense euphoria greets you. Folded into the spiraling light are faces: human, animal, alien. You smile, and a thousand mouths smile along with you: each of them a reflection of you in another time, another place, another reality. You feel a warm kinship with these other selves as you sink deeper into the void. The bliss gives way to calm, then to numbness. The other faces refract, split in two, and refract again, as your very being is sundered.</p><p>A wordless scream registers in your splintered mind, accompanied by excruciating pain. You feel yourself dissolve, along with the abyss. And then, oblivion.</p><ul><li>In your Campaign Log, record *the investigators sacrificed themselves for the Vale*.</li><li>The investigators are devoured (each investigator is killed).</li><li>The investigators win the campaign, but are annihilated.</li><li>Proceed to _Epilogue_.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<div class='resolution'><p>_Resolution 3_: You nearly collapse from exhaustion as soon as you enter the derelict lighthouse. Your motley crew of survivors is composed of many dazed locals, mariners from Akwan, and confused tourists. As you dress their wounds, they look at you helplessly. Outside, the sun colors the sky in vivid hues.</p><p>You step out into the clean morning light and draw your first easy breath in days. The entirety of Hemlock Isle is buried under white snowy ash, giving it the look of early winter. All that remains of the fecund western woods is the great, knotted hollow of an ancient tree, its tangled branches clawing at the sky.</p><p>\"We have plenty to tell the board at Miskatonic University,\" Dr. Marquez sidles up next to you, then lets out a weary sigh. \"But I doubt they'll understand what really happened here.\" You nod, distracted. Across the bay, a brief, gossamer wisp of cloud catches the sunlight. When you blink, it has vanished.</p><ul><li>Update your Campaign Log.<ul><li>Cross out the name of each resident that was in the victory display at the end of the game.</li><li>Record *the Vale was saved*.</li></ul></li><li>Each investigator suffers 2 physical trauma and 2 mental trauma as they grapple with the profound loss of life and the terror that still lives beneath Hemlock Isle.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 3 bonus experience, as they have saved the people of Hemlock Isle from a terrible fate.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li><li>Proceed to _Epilogue_.</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<div class='resolution'><p>_Resolution 4_: The lighthouse is wreathed in a murky gray smoke. You and the remaining survivors try to sleep through the night, but you are plagued by nightmares. A burning tree. A falling star. The ghostly outline of Mother Rachel, pointing accusingly at you with a long ceremonial knife.</p><p>In the morning, you step out into the gray, featureless landscape. Nothing was spared from the blaze. The island is covered in fine gray ash, broken only by a few bent trees.</p><p>\"We have plenty to tell the board at Miskatonic University,\" Dr. Marquez sidles up next to you, then lets out a weary sigh. \"But I doubt they'll understand what really happened here.\" You nod, distracted. Across the bay, a brief, gossamer wisp of cloud catches the sunlight. When you blink, it has vanished.</p><ul><li>Update your Campaign Log.<ul><li>Cross out the name of each resident that was not under control of an investigator at the end of the game.</li><li>In your Campaign Log, record *the Vale burned*.</li></ul></li><li>Each investigator suffers 2 physical trauma and 2 mental trauma as they grapple with the profound loss of life and the terror that still lives beneath Hemlock Isle.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 3 bonus experience for eradicating the Colour Out of Space…right?<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign?</li><li>Proceed to _Epilogue_.</li></ul></div>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<div class='resolution'><p>_Resolution 5_: Dr. Marquez shakes you awake. \"You were talking in your sleep. It didn't sound like you, though. It wasn't any language I've ever heard.\" Your mind is flooded with unfamiliar memories. You, in a smoky speakeasy, speaking in someone else's voice. Skirting the shadows of a street corner as a tabby cat. Drinking in sunlight as a lilac blossom. Weeping into your hands in a chapel.</p><p>Rather than share, you follow the professor outside into the painful mid-morning sun. The light itself reminds you of the spiraling abyss deep below the Vale, and makes you queasy. The entirety of Hemlock Isle is buried under white snowy ash, giving it the look of early winter.</p><p>\"We have plenty to tell the board at Miskatonic University,\" Dr. Marquez sidles up next to you, then lets out a weary sigh. \"But I doubt they'll understand what really happened here.\" You nod along, your vision swirling. Even when you close your eyes, you can still see the impossible brilliance.</p><p>\"Are you alright?\" Dr. Marquez repeats your name. The more you hear it, the more absurd it sounds. You say it back to her, giggling. The world around you shines with a horrible incandescence.</p><p>Try as you might, you can't stop laughing.</p><ul><li>Update your Campaign Log.<ul><li>Cross out the name of each resident that was not under control of an investigator at the end of the game.</li><li>Record *the investigators barely survived the Feast of Hemlock Vale*.</li></ul></li><li>Each investigator suffers 3 physical trauma and 3 mental trauma as they are haunted by the brilliant, maddening effects of the Colour Out of Space.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 bonus experience for surviving the Feast.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign…but nobody else did.</li><li>Proceed to _Epilogue_.</li></ul></div>"
+    }
+  },
+  "codex": {
+    "leahAtwood": {
+      "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.leahAtwood.title </h3><p>_If it is Act 2:_</p><p>\"What on earth?\" Leah gasps in awe and holds one hand up against the light, as if pressing it to a pane of glass. \"It's so incredible.\"</p><p class='basic right'>Search all out-of-play areas for an Item asset and draw it. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_Otherwise:_</p><p>\"This was our home,\" Leah weeps. \"Rachel, what were you thinking? This is all my fault. I stood by and let this happen.\"</p><p class='basic right'>Each investigator may either draw 2 cards or heal 1 horror.</p>",
+      "label": {
+        "drawTwo": "Draw 2 cards",
+        "healHorror": "Heal 1 horror"
+      }
+    },
+    "simeonAtwood": {
+      "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.simeonAtwood.title </h3><p>_If it is Act 2:_</p><p>Simeon looks at the dazzling light with wide eyes. \"This is more beautiful than any fireworks,\" he says, mesmerized.</p><p class='basic right'>Automatically evade each Cosmic Emissary enemy in play. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.III):_</p><p>Simeon jumps on top of a smoldering hay bale, cackling. \"This is amazing! Take that, Auntie Rachel!\" He lobs a firecracker.</p><p class='basic right'>Choose a location and place 3 resources on it, as kindling.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"Have you seen Digby?\" Simeon looks around, seemingly lost.</p><p class='basic right'>Each investigator may either draw 1 card or gain 2 resources.</p>",
+      "label": {
+        "drawOne": "Draw 1 card",
+        "gainResources": "Gain 2 resources"
+      }
+    },
+    "williamHemlock": {
+      "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.williamHemlock.title </h3><p>_If it is Act 2:_</p><p>\"I never imagined something so transcendent and terrible could exist.\" The Hemlock heir stares, transfixed, at the swirling light.</p><p class='basic right'>Each investigator gains 1 clue (from the token pool). An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.II):_</p><p>\"Get them all to safety!\" William shouts, brandishing a table leg.</p><p class='basic right'>Draw a Resident card underneath any location and put it into play at that location, exhausted, enemy side faceup.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>William jots another purple verse in his pocketbook. \"My family's legacy is so like the cup of Socrates. Death lies therein, but so does freedom and release…Oh, and. And…release rhymes with 'feast'…\"</p><p class='basic right'>Each investigator may draw up to 2 cards.</p>",
+      "label": {
+        "drawNone": "Draw no cards",
+        "drawOne": "Draw 1 card",
+        "drawTwo": "Draw 2 cards"
+      }
+    },
+    "riverHawthorne": {
+      "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.riverHawthorne.title </h3><p>_If it is Act 2:_</p><p>\"Oh, my stars—\" River stares at the glimmering horror at the center of the chamber. For once, they are at a loss for words.</p><p class='basic right'>You may play an Item card from your hand, ignoring all costs. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.II):_</p><p>\"Hurry up. You're slower than an evening with my extended family,\" River herds a local toward you. \"Here, take them!\"</p><p class='basic right'>Draw a Resident card underneath any location and put it into play at that location, exhausted, enemy side faceup.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"Well, this whole thing was a wash.\" River looks at you glumly. \"But I suppose this miserable rock was always a lost cause.\" Their expression turns mischievous. \"At least the Hemlock fortune is where it belongs.\"</p><p class='basic right'>Gain 4 resources.</p>"
+    },
+    "gideonMizrah": {
+      "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.gideonMizrah.title </h3><p>_If it is Act 2:_</p><p>The many-colored abyss is reflected in the old sailor's eyes. \"T'ain't the first time I seen this,\" he says soberly, but says nothing more.</p><p class='basic right'>Each investigator may take an additional action during their next turn. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.I):_</p><p>Gideon holds up a glassy shard. \"It came from the rock. The one the captain threw down the well. But we weren't rid of it. Ne'er were.\"</p><p class='basic right'>Automatically evade the Cosmic Emissary enemy at your location.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"If I don' make it out of here, find my niece an' give 'er this. She's all I have left,\" Gideon says, handing you a salt-stained journal.</p><p class='basic right'>Remove 1 doom from the current agenda.</p>"
+    },
+    "judithPark": {
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.judithPark.title </h3><p>_If it is Act 2:_</p><p>Judith fires at the shining void, then lowers her rifle and stares at the spirals of light and color. \"What the hell is this thing?\"</p><p class='basic right'>Choose an enemy at any location and automatically evade it. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_Otherwise:_</p><p>\"If we make it out of this alive, you're buying me a drink. There's a speakeasy in Boston that makes the best hooch.\" She locks eyes with you. \"And no, I'm not taking no for an answer.\"</p><p class='basic right'>Search your deck, hand, and discard pile for a Weapon card and play it, ignoring all costs.</p>"
+    },
+    "theoPeters": {
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.theoPeters.title </h3><p>_If it is Act 2:_</p><p>\"It's so beautiful,\" Theo looks up at the shimmering light and holds one hand out, as if to touch it. \"Like at least five sunsets' worth of beautiful. I wish Lizzie could see this.\" He pauses. \"Actually, I'm glad she can't.\"</p><p class='basic right'>You may search The Abyss for a location, put it into play, and immediately move to it. An investigator may trigger this codex again during a different act.</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"My sister was right,\" Theo says soberly. \"She was right about everything. I just hope I get to see her again.\"</p><p class='basic right'>Disengage from each enemy and move to any location.</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "act1": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.drRosaMarque.title </h3><p>_If it is Act 1:_</p><p>\"Marika?\" The woman with the dark hair looks at you, dazed. You can't remember your name, but Marika doesn't sound right…does it? \"I forgot something, Marika. But I remembered you.\"</p><p class='basic right'>Reveal the bottom 6 cards of The Abyss. You may draw any of them. Place the rest back on top of The Abyss in any order. An investigator may trigger this codex again during a different act.</p>",
+      "act3": "<p>_If it is Act 3a: Fate of the Vale (v.I):_</p><p>\"I understand what it is,\" Dr. Marquez says. \"It's a living being. Some primal species, or something not of this world. It was brought here—perhaps by Captain Hemlock—and burrowed deep underground, where it permeated water, soil, crops. Everything. It is inherently poisonous to everything around it. Sort of a living miasma. A barely sentient numbing sickness. It emerged from Pearl Ridge 20 years ago, but it wasn't ready to…to leave.\" The professor pulls out a phosphorescent shard. \"I think it came from this. One of the original shards that brought it to the island. The being drains its host like a parasite and leaves a crystallized husk behind. Freezes it in time. And then the parasite hatches as a gas from the 'shell,' joining…It.\" She sighs. \"The grant committee is never going to believe this.\"</p><p class='basic right'>Each investigator gains 1 clue (from the token pool).</p>",
+      "otherwise": "<p>_Otherwise:_</p><p>\"We never should have come here. This is all my fault.\" Dr. Marquez says despondently.</p><p class='basic right'>Each investigator gains 1 clue (from the token pool). An investigator may trigger this codex again during a different act.</p>",
+      "label": {
+        "doneDrawing": "Done drawing"
+      }
+    },
+    "bertieMusgrave": {
+      "title": "{'{'}codex{'}'} Codex Ω: Bertie Musgrave",
+      "body": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.bertieMusgrave.title </h3><p>\"It was rather like a trap, wasn't it?\" The young man looks grave at the devastation unfolding throughout the village. \"The infectious bliss was a way for this invisible predator to keep its victims docile.\" He laughs emptily. \"I am a scientist. I suppose I should be jotting notes and taking samples. But all I want to do is go somewhere warm and safe.\"</p><p class='basic right'>Take control of Bertie Musgrave. If it is Act 3a: Fate of the Vale (v.IV), remember that \"Bertie is fleeing.\"</p>"
+    }
+  }
+}

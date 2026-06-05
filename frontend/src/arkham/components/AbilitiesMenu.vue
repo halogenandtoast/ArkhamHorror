@@ -32,25 +32,38 @@ const positionClass = computed(() => props.position || 'top');
 function calculatePosition() {
   if (props.frame) {
     const rect = props.frame.getBoundingClientRect();
+    const menuRect = abilitiesRef.value?.getBoundingClientRect();
+    const menuWidth = menuRect?.width ?? 160;
+    const margin = 8;
+    const maxLeft = Math.max(margin, window.innerWidth - menuWidth - margin);
+    const clampedLeft = (left: number) => `${Math.min(Math.max(left, margin), maxLeft) + window.scrollX}px`;
     const positionStyle: Record<string, string> = {};
 
     switch (positionClass.value) {
       case 'bottom':
         positionStyle.top = `${rect.bottom + window.scrollY}px`;
-        positionStyle.left = `${rect.left + window.scrollX}px`;
+        positionStyle.left = clampedLeft(rect.left);
         break;
       case 'left':
         positionStyle.top = `${rect.top + window.scrollY}px`;
-        positionStyle.right = `${window.innerWidth - rect.left}px`;
+        if (rect.left - menuWidth - margin < 0) {
+          positionStyle.left = clampedLeft(rect.right + margin);
+        } else {
+          positionStyle.right = `${window.innerWidth - rect.left + window.scrollX}px`;
+        }
         break;
       case 'right':
         positionStyle.top = `${rect.top + window.scrollY}px`;
-        positionStyle.left = `${rect.right}px`;
+        if (rect.right + menuWidth + margin > window.innerWidth) {
+          positionStyle.right = `${window.innerWidth - rect.left + margin + window.scrollX}px`;
+        } else {
+          positionStyle.left = clampedLeft(rect.right + margin);
+        }
         break;
       case 'top':
       default:
-        positionStyle.bottom = `${window.innerHeight - rect.top}px`;
-        positionStyle.left = `${rect.left + window.scrollX}px`;
+        positionStyle.bottom = `${window.innerHeight - rect.top - window.scrollY}px`;
+        positionStyle.left = clampedLeft(rect.left);
         break;
     }
 

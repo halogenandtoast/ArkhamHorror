@@ -172,7 +172,7 @@ getActionsWith
   -> [Window]
   -> (Ability -> Ability)
   -> m [Ability]
-getActionsWith iid ws f = withSpan_ "getActions" do
+getActionsWith iid ws f = do
   investigatorModifiers <- getModifiers iid
   let
     abilityFilters =

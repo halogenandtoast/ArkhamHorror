@@ -180,6 +180,7 @@ import Arkham.Matcher qualified as M
 import Arkham.Message qualified as Msg
 import Arkham.Metrics (messageTag)
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
+import Arkham.Modifier.Builder (buildModifiers)
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
@@ -1231,10 +1232,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
       flip runMatchesM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
-    InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as \i -> do
-      t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
+    InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as \i ->
       gameValueMatches
-        (attr investigatorHealthDamage i + attr investigatorAssignedHealthDamage i + t)
+        (attr investigatorHealthDamage i + attr investigatorAssignedHealthDamage i)
         gameValueMatcher
     InvestigatorWithHealableHorror source -> flip runMatchesM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
@@ -1256,8 +1256,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       foolishness <- maybe (pure False) (fieldMap AssetHorror (> 0)) mFoolishness
       pure $ onSelf || foolishness
     InvestigatorWithHorror gameValueMatcher -> flip runMatchesM as $ \i -> do
-      t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
-      onSelf <- (attr investigatorSanityDamage i + t) `gameValueMatches` gameValueMatcher
+      onSelf <- attr investigatorSanityDamage i `gameValueMatches` gameValueMatcher
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
@@ -1430,8 +1429,18 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
           let
             healGuardMatcher =
               case damageType of
-                HorrorType -> InvestigatorWithAnyHorror <> InvestigatorWithoutModifier CannotHaveHorrorHealed
-                DamageType -> InvestigatorWithAnyDamage <> InvestigatorWithoutModifier CannotHaveDamageHealed
+                HorrorType ->
+                  oneOf
+                    [ InvestigatorWithAnyHorror
+                    , HasMatchingTreachery (TreacheryWithModifier IsPointOfHorror)
+                    ]
+                    <> InvestigatorWithoutModifier CannotHaveHorrorHealed
+                DamageType ->
+                  oneOf
+                    [ InvestigatorWithAnyDamage
+                    , HasMatchingTreachery (TreacheryWithModifier IsPointOfDamage)
+                    ]
+                    <> InvestigatorWithoutModifier CannotHaveDamageHealed
           let healGuard = if canHealAtFull then id else (<> healGuardMatcher)
           as & runMatchesM \i -> do
             case damageType of
@@ -1638,6 +1647,7 @@ getActsMatching matcher = do
     ActWithDeckId n -> pure . (== n) . attr actDeckId
     ActWithTreachery treacheryMatcher -> \act ->
       selectAny $ TreacheryIsAttachedTo (toTarget act.id) <> treacheryMatcher
+    ActWithModifier modifier -> \act -> elem modifier <$> getModifiers (toTarget act)
     ActCanWheelOfFortuneX -> pure . not . attr actUsedWheelOfFortuneX
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
@@ -1659,6 +1669,7 @@ getRemainingActsMatching matcher = do
     ActWithId _ -> pure . const False
     ActWithStep _ -> pure . const False
     ActWithTreachery _ -> pure . const False
+    ActWithModifier _ -> pure . const False
     ActWithSide _ -> error "Can't check side, since not on def"
     ActWithDeckId _ -> error "Can't check side, since not on def"
     ActCanWheelOfFortuneX -> pure . const True
@@ -3965,29 +3976,35 @@ enemyMatcherFilter es matcher' = do
           -- Dirty Fighting has to fight the evaded enemy, we are saying this is
           -- the one that must be fought
           pure $ filter ((== eid) . toId) es'
-        Nothing ->
+        Nothing -> do
+          -- Hoist loop-invariants out of the per-enemy filter: the source's
+          -- modifiers and the set of enemies that cannot be attacked do not
+          -- depend on the enemy being tested, but were being recomputed (and
+          -- re-looked-up in the query cache) once per enemy.
+          sourceModifiers <- case source of
+            AbilitySource abSource idx -> do
+              abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+              foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
+            UseAbilitySource _ abSource idx -> do
+              abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+              foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
+            _ -> pure []
+          let
+            isOverride = \case
+              EnemyFightActionCriteria override -> Just override
+              CanModify (EnemyFightActionCriteria override) -> Just override
+              _ -> Nothing
+            enemyFilters = mapMaybe (preview _CannotFight) modifiers'
+            window = mkWindow #when Window.NonFast
+          cannotBeAttacked <- select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
           es' & filterM \enemy -> do
             enemyModifiers <- getModifiers enemy.id
-            sourceModifiers <- case source of
-              AbilitySource abSource idx -> do
-                abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-                foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
-              UseAbilitySource _ abSource idx -> do
-                abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-                foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
-              _ -> pure []
             let
-              isOverride = \case
-                EnemyFightActionCriteria override -> Just override
-                CanModify (EnemyFightActionCriteria override) -> Just override
-                _ -> Nothing
               overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
-              enemyFilters = mapMaybe (preview _CannotFight) modifiers'
-              window = mkWindow #when Window.NonFast
               overrideFunc = case nonEmpty overrides of
                 Nothing -> id
                 Just os -> overrideAbilityCriteria $ combineOverrides os
-            excluded <- elem (toId enemy) <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
+              excluded = toId enemy `elem` cannotBeAttacked
             sourceIsExcluded <- flip anyM enemyModifiers \case
               CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of
                 Just aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
@@ -4072,6 +4089,8 @@ enemyMatcherFilter es matcher' = do
             )
             modifiers'
         window = mkWindow #when (Window.DuringTurn iid)
+      -- Hoist the loop-invariant "cannot be evaded" set out of the per-enemy filter.
+      cannotBeEvaded <- select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
       flip filterM es \enemy -> do
         enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
         let
@@ -4080,7 +4099,7 @@ enemyMatcherFilter es matcher' = do
             [] -> id
             [o] -> overrideAbilityCriteria o
             _ -> error "multiple overrides found"
-        excluded <- elem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
+          excluded = toId enemy `elem` cannotBeEvaded
         sourceIsExcluded <- flip anyM enemyModifiers \case
           CannotBeEvadedByPlayerSourcesExcept sourceMatcher ->
             not <$> sourceMatches source sourceMatcher
@@ -4763,14 +4782,22 @@ instance Projection Investigator where
         let
           applyModifier (HealthModifier m) n = max 0 (n + m)
           applyModifier _ n = n
+          baseHealth = case investigatorForm of
+            TransfiguredForm inner ->
+              (toAttrs (lookupInvestigator (InvestigatorId inner) investigatorPlayerId)).health
+            _ -> investigatorHealth
 
-        foldr applyModifier investigatorHealth <$> getModifiers attrs
+        foldr applyModifier baseHealth <$> getModifiers attrs
       InvestigatorSanity -> do
         let
           applyModifier (SanityModifier m) n = max 0 (n + m)
           applyModifier _ n = n
+          baseSanity = case investigatorForm of
+            TransfiguredForm inner ->
+              (toAttrs (lookupInvestigator (InvestigatorId inner) investigatorPlayerId)).sanity
+            _ -> investigatorSanity
 
-        foldr applyModifier investigatorSanity <$> getModifiers attrs
+        foldr applyModifier baseSanity <$> getModifiers attrs
       InvestigatorRemainingSanity -> do
         sanity <- field InvestigatorSanity (toId attrs)
         pure $ max 0 (sanity - investigatorSanityDamage attrs)
@@ -5071,7 +5098,11 @@ instance Query ChaosTokenMatcher where
       FirstChaosTokenRevealedThisSkillTest -> \t ->
         getSkillTest <&> \case
           Nothing -> False
-          Just st -> st.revealedChaosTokensCount == 1 && t `elem` st.revealedChaosTokens
+          Just st ->
+            -- At the #cancel/#when window the reveal isn't recorded yet
+            -- (revealedChaosTokensCount == 0); at #after it is 1.
+            st.revealedChaosTokensCount == 0
+              || (st.revealedChaosTokensCount == 1 && t `elem` st.revealedChaosTokens)
 
 instance Query AssetMatcher where
   toSomeQuery = AssetQuery
@@ -6170,6 +6201,9 @@ runMessages gameId mLogger = do
             CheckWindows {} -> False
             Do (CheckWindows {}) -> False
             ClearUI {} -> False
+            ExhaustMessage {} -> False
+            After {} -> False
+            DoBatch {} -> False
             CreatedCost {} -> False
             EndCheckWindow {} -> False
             PaidAllCosts {} -> False
@@ -6264,6 +6298,8 @@ runMessages gameId mLogger = do
             -- pure waste. Skip them outright while gameInSetup is True.
             CheckWindows ws | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
             Do (CheckWindows ws) | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
+            CheckWindows ws | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
+            Do (CheckWindows ws) | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
             Simultaneously [] -> runMessages gameId mLogger
             Simultaneously msgs -> do
               -- Save the rest of the queue so we can restore it after collecting results
@@ -6285,13 +6321,11 @@ runMessages gameId mLogger = do
                           then do
                             overGameM
                               $ runMessage m
-                              >=> withSpan_ "preloadModifiers"
-                              . preloadModifiers
+                              >=> preloadModifiers
                             overGameM
                               $ handleAsIfChanges asIfLocations'
                               >=> handleAloofChanges aloofEnemies'
-                              >=> withSpan_ "handleTraitRestrictedModifiers"
-                              . handleTraitRestrictedModifiers
+                              >=> handleTraitRestrictedModifiers
                               >=> handleBlanked
                               >=> handleDefeatedByModifiers investigatorSanityHealth'
                           else overGameM $ runMessage m
@@ -6448,13 +6482,16 @@ preloadModifiers g = case gameMode g of
   This _ -> pure g
   _ -> flip runReaderT g $ do
     let modifierFilter = if gameInSetup g then modifierActiveDuringSetup else const True
-    allModifiers <-
-      traverse (foldMapM expandForEach . foldMap handleMoving) =<< execWriterT do
-        getModifiersFor $ gameEntities g
-        traverse_ getModifiersFor $ gameInHandEntities g
-        traverse_ getModifiersFor $ gameInDiscardEntities g
-        for_ (modeScenario (gameMode g)) getModifiersFor
-        for_ (modeCampaign (gameMode g)) getModifiersFor
+    -- Collect every entity's modifiers in a single pass with a scoped query
+    -- cache (see 'buildModifiers'); de-duplicates identical select/exist
+    -- queries across entities (huge with many same-type entities, e.g. swarms).
+    let rawModifiers = buildModifiers g do
+          getModifiersFor $ gameEntities g
+          traverse_ getModifiersFor $ gameInHandEntities g
+          traverse_ getModifiersFor $ gameInDiscardEntities g
+          for_ (modeScenario (gameMode g)) getModifiersFor
+          for_ (modeCampaign (gameMode g)) getModifiersFor
+    allModifiers <- traverse (foldMapM expandForEach . foldMap handleMoving) rawModifiers
     let offsetModifiers =
           Map.fromList
             [ (LocationTarget lid, [Modifier GameSource (UIModifier (Positioned x y)) True Nothing])
@@ -6521,6 +6558,14 @@ applyBlank s = do
         Modifier s' _ _ _ | s == s' -> Nothing
         other -> Just other
     modify $ insertMap target modifiers'
+
+hasEnemyReadyAbilities :: Game -> Bool
+hasEnemyReadyAbilities g =
+  any ((`elem` enemyReadyCodes) . toCardCode) (gameEntities g ^. assetsL)
+    || any ((`elem` enemyReadyCodes) . toCardCode) (gameEntities g ^. eventsL)
+ where
+  enemyReadyCodes :: [CardCode]
+  enemyReadyCodes = ["90038", "02031", "03199"]
 
 delve :: Game -> Game
 delve = over depthLockL (+ 1)

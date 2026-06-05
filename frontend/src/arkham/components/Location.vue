@@ -1,33 +1,35 @@
 <script lang="ts" setup>
-import { useI18n } from 'vue-i18n'; 
-import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vue';
-import { useDebug } from '@/arkham/debug';
-import { Game } from '@/arkham/types/Game';
-import { imgsrc } from '@/arkham/helpers';
-import { cardImage } from '@/arkham/cardImages';
+import { useI18n } from 'vue-i18n'
+import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vue'
+import { useDebug } from '@/arkham/debug'
+import { Game } from '@/arkham/types/Game'
+import { imgsrc } from '@/arkham/helpers'
+import { cardImage } from '@/arkham/cardImages'
 import { keyToId } from '@/arkham/types/Key'
-import * as ArkhamGame from '@/arkham/types/Game';
-import DebugLocation from '@/arkham/components/debug/Location.vue';
-import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
-import { actionsToList } from '@/arkham/types/Action';
-import ConcealedCard from '@/arkham/components/ConcealedCard.vue';
-import KeyToken from '@/arkham/components/Key.vue';
-import Seal from '@/arkham/components/Seal.vue';
-import Locus from '@/arkham/components/Locus.vue';
-import Enemy from '@/arkham/components/Enemy.vue';
-import Investigator from '@/arkham/components/Investigator.vue';
-import Asset from '@/arkham/components/Asset.vue';
-import Event from '@/arkham/components/Event.vue';
-import Story from '@/arkham/components/Story.vue';
-import ScarletKey from '@/arkham/components/ScarletKey.vue';
-import Treachery from '@/arkham/components/Treachery.vue';
+import { useGameChoices } from '@/arkham/composables/useGameChoices'
+import { useGameIndexes } from '@/arkham/composables/useGameIndexes'
+import DebugLocation from '@/arkham/components/debug/Location.vue'
+import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
+import { actionsToList } from '@/arkham/types/Action'
+import ConcealedCard from '@/arkham/components/ConcealedCard.vue'
+import KeyToken from '@/arkham/components/Key.vue'
+import Seal from '@/arkham/components/Seal.vue'
+import Locus from '@/arkham/components/Locus.vue'
+import Enemy from '@/arkham/components/Enemy.vue'
+import Investigator from '@/arkham/components/Investigator.vue'
+import Asset from '@/arkham/components/Asset.vue'
+import Event from '@/arkham/components/Event.vue'
+import Story from '@/arkham/components/Story.vue'
+import ScarletKey from '@/arkham/components/ScarletKey.vue'
+import Treachery from '@/arkham/components/Treachery.vue'
 import Token from '@/arkham/components/Token.vue'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
-import PoolItem from '@/arkham/components/PoolItem.vue';
-import * as Arkham from '@/arkham/types/Location';
-import { TokenType } from '@/arkham/types/Token';
-import { Card } from '../types/Card';
-import useHighlighter from '@/composable/useHighlighter';
+import PoolItem from '@/arkham/components/PoolItem.vue'
+import * as Arkham from '@/arkham/types/Location'
+import { TokenType } from '@/arkham/types/Token'
+import { Card } from '../types/Card'
+import useHighlighter from '@/composable/useHighlighter'
+import { IsMobile } from '@/arkham/isMobile'
 
 export interface Props {
   game: Game
@@ -42,6 +44,7 @@ const debugging = ref(false)
 const showAbilities = ref<boolean>(false)
 const abilitiesEl = ref<HTMLElement | null>(null)
 const highlighter = useHighlighter()
+const { isMobile } = IsMobile()
 
 const dragover = (e: DragEvent) => {
   e.preventDefault()
@@ -66,7 +69,11 @@ const image = computed(() => {
 
 const id = computed(() => props.location.id)
 const isExhausted = computed(() => props.location.enemyLocation && props.location.exhausted)
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = useGameChoices(
+  () => props.game,
+  () => props.playerId,
+)
+const gameIndexes = useGameIndexes(() => props.game)
 
 const locationStory = computed(() => {
   const { stories } = props.game
@@ -74,18 +81,19 @@ const locationStory = computed(() => {
 })
 
 const locus = computed(() => {
-  return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Locus") ?? false
+  return (
+    modifiers.value?.some((m) => m.type.tag === 'UIModifier' && m.type.contents === 'Locus') ??
+    false
+  )
 })
 
 type Important = string
 
-
-
 const important = computed<Important[]>(() => {
   return (modifiers.value ?? []).reduce<Important[]>((acc, m) => {
-    if (m.type.tag !== "UIModifier") return acc
-    if (typeof m.type.contents === "string") return acc
-    if (m.type.contents.tag !== "ImportantToScenario") return acc
+    if (m.type.tag !== 'UIModifier') return acc
+    if (typeof m.type.contents === 'string') return acc
+    if (m.type.contents.tag !== 'ImportantToScenario') return acc
     const { contents } = m.type.contents
     const text = contents.startsWith('$') ? t(contents.slice(1)) : contents
     return [...acc, text as Important]
@@ -93,20 +101,28 @@ const important = computed<Important[]>(() => {
 })
 
 function isCardAction(c: Message): boolean {
-  if (c.tag === "TargetLabel") return c.target.contents === id.value
-  if (c.tag === "GridLabel") return c.gridLabel === props.location.label
+  if (c.tag === 'TargetLabel') return c.target.contents === id.value
+  if (c.tag === 'GridLabel') return c.gridLabel === props.location.label
 
   // we also allow the move action to cause card interaction
-  if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
-    return c.ability.type.tag === "ActionAbility" && actionsToList(c.ability.type.actions).includes("Move") && c.ability.source.contents === id.value && c.ability.index === 104 && abilities.value.length == 1
+  if (c.tag == 'AbilityLabel' && 'contents' in c.ability.source) {
+    return (
+      c.ability.type.tag === 'ActionAbility' &&
+      actionsToList(c.ability.type.actions).includes('Move') &&
+      c.ability.source.contents === id.value &&
+      c.ability.index === 104 &&
+      abilities.value.length == 1
+    )
   }
 
   return false
 }
 
-const concealed = computed(() => Object.values(props.game.concealed).filter((c) => props.location.concealedCards.includes(c.id)))
-const unknownConcealed = computed(() => concealed.value.filter(c => !c.known))
-const knownConcealed = computed(() => concealed.value.filter(c => c.known))
+const concealed = computed(() =>
+  Object.values(props.game.concealed).filter((c) => props.location.concealedCards.includes(c.id)),
+)
+const unknownConcealed = computed(() => concealed.value.filter((c) => !c.known))
+const knownConcealed = computed(() => concealed.value.filter((c) => c.known))
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 let clickTimeout: number | null = null
@@ -122,14 +138,14 @@ onBeforeUnmount(() => {
 })
 
 async function clicked(e: MouseEvent) {
-  clickCount++;
+  clickCount++
   if (clickTimeout) {
-    clearTimeout(clickTimeout);
-  }  
+    clearTimeout(clickTimeout)
+  }
   clickTimeout = setTimeout(async () => {
     // Ensure this does not conflict with the double-click zoom-in functionality (toggleZoom in Scenario.vue)
-    if (clickCount === 1){
-      if(cardAction.value !== -1) {
+    if (clickCount === 1) {
+      if (cardAction.value !== -1) {
         choose(cardAction.value)
       } else if (abilities.value.length > 0) {
         showAbilities.value = !showAbilities.value
@@ -143,9 +159,9 @@ async function clicked(e: MouseEvent) {
     }
 
     // Reset click count and timeout
-    clickCount = 0;
-    clickTimeout = null;
-  }, 300);
+    clickCount = 0
+    clickTimeout = null
+  }, 300)
 }
 
 async function chooseAbility(ability: number) {
@@ -167,10 +183,10 @@ function isAbility(v: Message): v is AbilityLabel {
     return false
   }
 
-  const { source } = v.ability;
+  const { source } = v.ability
 
   if (source.sourceTag === 'ProxySource') {
-    if ("contents" in source.source) {
+    if ('contents' in source.source) {
       return source.source.contents === id.value
     }
   } else if (source.tag === 'LocationSource') {
@@ -181,20 +197,22 @@ function isAbility(v: Message): v is AbilityLabel {
 }
 
 const abilities = computed(() => {
-   return choices
-     .value
-     .reduce<AbilityMessage[]>((acc, v, i) => {
-       if (isAbility(v)) {
-         return [...acc, { contents: v, displayAsAction: false, index: i}];
-       }
+  return choices.value.reduce<AbilityMessage[]>((acc, v, i) => {
+    if (isAbility(v)) {
+      return [...acc, { contents: v, displayAsAction: false, index: i }]
+    }
 
-       return acc;
-     }, []);
+    return acc
+  }, [])
 })
 
 watch(abilities, (abilities) => {
   // ability is forced we must show
-  if (abilities.some(a => "ability" in a.contents && a.contents.ability.type.tag === "ForcedAbility")) {
+  if (
+    abilities.some(
+      (a) => 'ability' in a.contents && a.contents.ability.type.tag === 'ForcedAbility',
+    )
+  ) {
     showAbilities.value = true
   }
 
@@ -204,68 +222,67 @@ watch(abilities, (abilities) => {
 })
 
 const enemies = computed(() => {
-  const enemyIds = props.location.enemies;
+  const enemyIds = props.location.enemies
 
-  return enemyIds
-    .filter((e) => props.game.enemies[e].placement.tag === 'AtLocation' && props.game.enemies[e].placement.contents !== "AttachedToAsset" && props.game.enemies[e].asSelfLocation === null)
+  return enemyIds.filter(
+    (e) =>
+      props.game.enemies[e].placement.tag === 'AtLocation' &&
+      props.game.enemies[e].placement.contents !== 'AttachedToAsset' &&
+      props.game.enemies[e].asSelfLocation === null,
+  )
 })
 
 const attachedEnemies = computed(() => {
-  const enemyIds = props.location.enemies;
+  const enemyIds = props.location.enemies
 
-  return enemyIds
-    .filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation')
+  return enemyIds.filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation')
 })
 
 const attachedKeys = computed(() => {
-  const scarletKeyIds = props.location.scarletKeys;
+  const scarletKeyIds = props.location.scarletKeys
 
-  return scarletKeyIds
-    .filter((e) => props.game.scarletKeys[e].placement.tag === 'AttachedToLocation')
+  return scarletKeyIds.filter(
+    (e) => props.game.scarletKeys[e].placement.tag === 'AttachedToLocation',
+  )
 })
 
-const stories = computed(() => {
-  return Object.values(props.game.stories)
-    .filter((s) => {
-      const { assets, enemies } = props.game
-      if (Object.values(enemies).find((e) => s.otherSide?.contents === e.id)) {
-        return false
-      }
-      if (Object.values(assets).find((a) => s.otherSide?.contents === a.id)) {
-        return false
-      }
-      return s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id && s.otherSide?.contents !== props.location.id
-    })
-    .map((s) => s.id)
-})
+const stories = computed(() => gameIndexes.value.storyIdsByLocation.get(props.location.id) ?? [])
 
 const treacheries = computed(() => {
-  const treacheryIds = props.location.treacheries;
+  const treacheryIds = props.location.treacheries
 
-  return treacheryIds
-    .filter((e) => props.game.treacheries[e].placement.tag === 'AttachedToLocation')
+  return treacheryIds.filter(
+    (e) => props.game.treacheries[e].placement.tag === 'AttachedToLocation',
+  )
 })
 
 const hasAttachments = computed(() => {
-  return treacheries.value.length > 0 || props.location.events.length > 0 || attachedEnemies.value.length > 0 || attachedKeys.value.length > 0
+  return (
+    treacheries.value.length > 0 ||
+    props.location.events.length > 0 ||
+    attachedEnemies.value.length > 0 ||
+    attachedKeys.value.length > 0
+  )
 })
 
 const encounterCardsUnderneath = computed(() => {
-  return props.location.cardsUnderneath.filter(c => c.tag === 'EncounterCard')
+  return props.location.cardsUnderneath.filter((c) => c.tag === 'EncounterCard')
 })
 
 const playerCardsUnderneath = computed(() => {
-  return props.location.cardsUnderneath.filter(c => c.tag === 'PlayerCard')
+  return props.location.cardsUnderneath.filter((c) => c.tag === 'PlayerCard')
 })
 
 const hasPool = computed(() => {
-  return keys.value.length > 0 ||
+  return (
+    keys.value.length > 0 ||
     seals.value.length > 0 ||
     (doom.value && doom.value > 0) ||
     (horror.value && horror.value > 0) ||
     (damage.value && damage.value > 0) ||
     (resources.value && resources.value > 0) ||
     (pillars.value && pillars.value > 0) ||
+    (kindling.value && kindling.value > 0) ||
     (leylines.value && leylines.value > 0) ||
     (antiquities.value && antiquities.value > 0) ||
     (civilians.value && civilians.value > 0) ||
@@ -279,16 +296,17 @@ const hasPool = computed(() => {
     (scraps.value && scraps.value > 0) ||
     (depletion.value && depletion.value > 0) ||
     (props.location.brazier && props.location.brazier === 'Lit') ||
-    (props.location.cardsUnderneath.length > 0) ||
-    (props.location.sealedChaosTokens.length > 0)
+    props.location.cardsUnderneath.length > 0 ||
+    props.location.sealedChaosTokens.length > 0
+  )
 })
 
 const blocked = computed(() => {
-  const inv = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
+  const inv = gameIndexes.value.investigatorByPlayerId.get(props.playerId)
   const invMods = inv?.modifiers ?? []
   const locMods = props.location.modifiers
 
-  const isBlocked = (m:any) =>
+  const isBlocked = (m: any) =>
     (m.type.tag === 'CannotEnter' && m.type.contents === props.location.id) ||
     (m.type.tag === 'OtherModifier' && m.type.contents === 'Blocked')
 
@@ -298,9 +316,11 @@ const blocked = computed(() => {
 const modifiers = computed(() => props.location.modifiers)
 
 const explosion = computed(() => {
-  return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Explosion") ?? false
+  return (
+    modifiers.value?.some((m) => m.type.tag === 'UIModifier' && m.type.contents === 'Explosion') ??
+    false
+  )
 })
-
 
 const keys = computed(() => props.location.keys)
 const seals = computed(() => props.location.seals)
@@ -310,6 +330,7 @@ const clues = computed(() => props.location.tokens[TokenType.Clue])
 const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
 const pillars = computed(() => props.location.tokens[TokenType.Pillar])
+const kindling = computed(() => props.location.tokens[TokenType.Kindling])
 const depth = computed(() => props.location.tokens[TokenType.Depth])
 const leylines = computed(() => props.location.tokens[TokenType.Leyline])
 const shards = computed(() => props.location.tokens[TokenType.Shard])
@@ -321,7 +342,7 @@ const civilians = computed(() => props.location.tokens[TokenType.Civilian])
 const study = computed(() => props.location.tokens[TokenType.Study])
 const targets = computed(() => props.location.tokens[TokenType.Target])
 const breaches = computed(() => {
-  const {breaches} = props.location
+  const { breaches } = props.location
   if (breaches) {
     return breaches.contents
   }
@@ -329,19 +350,23 @@ const breaches = computed(() => {
   return 0
 })
 const investigators = computed(() => {
-  return props.location.investigators.
-    map((i) => props.game.investigators[i]).
-    filter(i => i.placement.tag === 'AtLocation')
+  return props.location.investigators
+    .map((i) => props.game.investigators[i])
+    .filter((i) => i.placement.tag === 'AtLocation')
 })
 const horror = computed(() => props.location.tokens[TokenType.Horror])
 const damage = computed(() => props.location.tokens[TokenType.Damage])
 const floodLevel = computed(() => {
   if (!props.location.floodLevel) return
   switch (props.location.floodLevel) {
-    case "Unflooded": return null
-    case "PartiallyFlooded": return imgsrc('partially-flooded.png')
-    case "FullyFlooded": return imgsrc('fully-flooded.png')
-    default: return null
+    case 'Unflooded':
+      return null
+    case 'PartiallyFlooded':
+      return imgsrc('partially-flooded.png')
+    case 'FullyFlooded':
+      return imgsrc('fully-flooded.png')
+    default:
+      return null
   }
 })
 
@@ -353,25 +378,42 @@ function onDrop(event: DragEvent) {
     const data = event.dataTransfer.getData('text/plain')
     if (data) {
       const json = JSON.parse(data)
-      if (json.tag === "EnemyTarget") {
-        if (enemies.value.some(e => e === json.contents)) return false
-        debug.send(props.game.id, {tag: 'HuntMessage', contents: {tag: 'EnemyMove_', contents: [json.contents, id.value]}})
+      if (json.tag === 'EnemyTarget') {
+        if (enemies.value.some((e) => e === json.contents)) return false
+        debug.send(props.game.id, {
+          tag: 'HuntMessage',
+          contents: { tag: 'EnemyMove_', contents: [json.contents, id.value] },
+        })
       }
 
-      if (json.tag === "AssetTarget") {
+      if (json.tag === 'AssetTarget') {
         //if (assets.value.some(e => e === json.contents)) return false
-        debug.send(props.game.id, {tag: 'PlaceAsset', contents: [json.contents, { tag: "AtLocation", contents: id.value}]})
+        debug.send(props.game.id, {
+          tag: 'PlaceAsset',
+          contents: [json.contents, { tag: 'AtLocation', contents: id.value }],
+        })
       }
 
-      if (json.tag === "InvestigatorTarget") {
-        if (enemies.value.some(e => e === json.contents)) return false
-        debug.send(props.game.id, {tag: 'Move', contents: {moveSource: {tag:"GameSource"}, moveTarget: json, moveDestination: {tag:"ToLocation", contents: id.value}, moveMeans: "Direct", moveCancelable: false, movePayAdditionalCosts: false, moveAfter: []}})
+      if (json.tag === 'InvestigatorTarget') {
+        if (enemies.value.some((e) => e === json.contents)) return false
+        debug.send(props.game.id, {
+          tag: 'Move',
+          contents: {
+            moveSource: { tag: 'GameSource' },
+            moveTarget: json,
+            moveDestination: { tag: 'ToLocation', contents: id.value },
+            moveMeans: 'Direct',
+            moveCancelable: false,
+            movePayAdditionalCosts: false,
+            moveAfter: [],
+          },
+        })
       }
     }
   }
 }
 
-const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Underneath", false)
+const showCardsUnderneath = () => emits('show', playerCardsUnderneath, 'Cards Underneath', false)
 const highlighted = computed(() => highlighter.highlighted.value === props.location.id)
 </script>
 
@@ -379,10 +421,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   <div>
     <div class="location-container">
       <div class="location-investigator-column">
-        <div
-          v-for="investigator in investigators"
-          :key="investigator.cardCode"
-        >
+        <div v-for="investigator in investigators" :key="investigator.cardCode">
           <Investigator
             :game="game"
             :choices="choices"
@@ -390,7 +429,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
             :portrait="true"
             :investigator="investigator"
             @choose="choose"
-            />
+          />
         </div>
       </div>
       <div class="location-column">
@@ -399,14 +438,29 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
           <span v-if="blocked" class="status-icon" v-tooltip="'Blocked'">
             <font-awesome-icon :icon="['fab', 'expeditedssl']" />
           </span>
-            <span v-for="ui in important" class="important" :class="{ 'important--can-interact': canInteract }" v-tooltip="ui">
+          <span
+            v-for="ui in important"
+            class="important"
+            :class="{ 'important--can-interact': canInteract }"
+            v-tooltip="ui"
+          >
             <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
           </span>
 
           <div class="card-frame-inner" :class="{ highlighted, blocked, exhausted: isExhausted }">
-            <Story v-if="locationStory" :story="locationStory" :game="game" :playerId="playerId" @choose="choose"/>
+            <Story
+              v-if="locationStory"
+              :story="locationStory"
+              :game="game"
+              :playerId="playerId"
+              @choose="choose"
+            />
             <template v-else>
-              <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
+              <div
+                class="wave"
+                v-if="location.floodLevel"
+                :class="{ [location.floodLevel]: true }"
+              ></div>
               <img
                 :data-id="id"
                 class="card card--locations"
@@ -426,29 +480,99 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
           </div>
 
           <div class="pool location-pool" v-if="hasPool">
-            <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
+            <KeyToken
+              v-for="k in keys"
+              :key="keyToId(k)"
+              :keyToken="k"
+              :game="game"
+              :playerId="playerId"
+              @choose="choose"
+            />
             <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
             <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
             <PoolItem v-if="damage && damage > 0" type="health" :amount="damage" />
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
             <PoolItem v-if="pillars && pillars > 0" type="resource" :amount="pillars" />
-            <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
-            <PoolItem v-if="shards && shards > 0" type="resource" tooltip="Shard" :amount="shards" />
-            <PoolItem v-if="scoutingReports && scoutingReports > 0" type="resource" tooltip="Scouting Report" :amount="scoutingReports" />
-            <PoolItem v-if="scraps && scraps > 0" type="resource" tooltip="Scrap" :amount="scraps" />
-            <PoolItem v-if="depletion && depletion > 0" type="resource" tooltip="Scouting Report" :amount="depletion" />
-            <PoolItem v-if="antiquities && antiquities > 0" type="resource" tooltip="Antiquity" :amount="antiquities" />
-            <PoolItem v-if="civilians && civilians > 0" type="resource" tooltip="Civilian" :amount="civilians" />
-            <PoolItem v-if="study && study > 0" type="resource" tooltip="Civilian" :amount="study" />
-            <PoolItem v-if="targets && targets > 0" type="resource" tooltip="Target" :amount="targets" />
-            <PoolItem v-if="sealTokens && sealTokens > 0" type="resource" tooltip="Seal" :amount="sealTokens" />
+            <PoolItem v-if="kindling && kindling > 0" type="resource" :amount="kindling" />
+            <PoolItem
+              v-if="leylines && leylines > 0"
+              type="resource"
+              tooltip="Leyline"
+              :amount="leylines"
+            />
+            <PoolItem
+              v-if="shards && shards > 0"
+              type="resource"
+              tooltip="Shard"
+              :amount="shards"
+            />
+            <PoolItem
+              v-if="scoutingReports && scoutingReports > 0"
+              type="resource"
+              tooltip="Scouting Report"
+              :amount="scoutingReports"
+            />
+            <PoolItem
+              v-if="scraps && scraps > 0"
+              type="resource"
+              tooltip="Scrap"
+              :amount="scraps"
+            />
+            <PoolItem
+              v-if="depletion && depletion > 0"
+              type="resource"
+              tooltip="Scouting Report"
+              :amount="depletion"
+            />
+            <PoolItem
+              v-if="antiquities && antiquities > 0"
+              type="resource"
+              tooltip="Antiquity"
+              :amount="antiquities"
+            />
+            <PoolItem
+              v-if="civilians && civilians > 0"
+              type="resource"
+              tooltip="Civilian"
+              :amount="civilians"
+            />
+            <PoolItem
+              v-if="study && study > 0"
+              type="resource"
+              tooltip="Civilian"
+              :amount="study"
+            />
+            <PoolItem
+              v-if="targets && targets > 0"
+              type="resource"
+              tooltip="Target"
+              :amount="targets"
+            />
+            <PoolItem
+              v-if="sealTokens && sealTokens > 0"
+              type="resource"
+              tooltip="Seal"
+              :amount="sealTokens"
+            />
 
             <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />
             <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
-            <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
-            <PoolItem v-if="encounterCardsUnderneath.length > 0" type="card" :amount="encounterCardsUnderneath.length" />
-            <PoolItem v-if="playerCardsUnderneath.length > 0" type="player_card" :amount="playerCardsUnderneath.length" />
+            <PoolItem
+              v-if="location.brazier && location.brazier === 'Lit'"
+              type="resource"
+              :amount="1"
+            />
+            <PoolItem
+              v-if="encounterCardsUnderneath.length > 0"
+              type="card"
+              :amount="encounterCardsUnderneath.length"
+            />
+            <PoolItem
+              v-if="playerCardsUnderneath.length > 0"
+              type="player_card"
+              :amount="playerCardsUnderneath.length"
+            />
 
             <Token
               v-for="(sealedToken, index) in location.sealedChaosTokens"
@@ -468,12 +592,13 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
           :frame="frame"
           :show-move="abilities.length > 1"
           :game="game"
-          position="left"
+          :position="isMobile ? 'top' : 'left'"
           @choose="chooseAbility"
         />
 
-
-        <button v-if="playerCardsUnderneath.length > 0" @click="showCardsUnderneath">{{ $t('location.under', { count: playerCardsUnderneath.length }) }}</button>
+        <button v-if="playerCardsUnderneath.length > 0" @click="showCardsUnderneath">
+          {{ $t('location.under', { count: playerCardsUnderneath.length }) }}
+        </button>
 
         <template v-if="debug.active">
           <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
@@ -545,14 +670,32 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
           :atLocation="true"
           @choose="choose"
         />
-        <div v-if="unknownConcealed.length > 0" class='concealed-card-stack'>
-          <ConcealedCard :card="unknownConcealed[0]" :game="game" :playerId="playerId" @choose="choose" />
-          <span class='count'>{{unknownConcealed.length}}</span>
+        <div v-if="unknownConcealed.length > 0" class="concealed-card-stack">
+          <ConcealedCard
+            :card="unknownConcealed[0]"
+            :game="game"
+            :playerId="playerId"
+            @choose="choose"
+          />
+          <span class="count">{{ unknownConcealed.length }}</span>
         </div>
-        <ConcealedCard v-for="card in knownConcealed" :key="card.id" :card="card" :game="game" :playerId="playerId" @choose="choose" />
+        <ConcealedCard
+          v-for="card in knownConcealed"
+          :key="card.id"
+          :card="card"
+          :game="game"
+          :playerId="playerId"
+          @choose="choose"
+        />
       </div>
     </div>
-    <DebugLocation v-if="debugging" :game="game" :location="location" :playerId="playerId" @close="debugging = false" />
+    <DebugLocation
+      v-if="debugging"
+      :game="game"
+      :location="location"
+      :playerId="playerId"
+      @close="debugging = false"
+    />
   </div>
 </template>
 
@@ -574,7 +717,6 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
 
 .location-column :deep(.enemy) {
   width: calc(var(--card-width) * 0.8);
-
 }
 
 .location-column :deep(.treachery) {
@@ -596,7 +738,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   position: relative;
 }
 
-.button{
+.button {
   margin-top: 2px;
   border: 0;
   color: #fff;
@@ -678,7 +820,6 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   border-radius: 5px;
 }
 
-
 .location-investigator-column {
   grid-area: investigators;
   justify-self: end;
@@ -713,8 +854,8 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   }
   &:deep(.pool) {
     height: fit-content;
-    top:1em;
-    font-size: .5em;
+    top: 1em;
+    font-size: 0.5em;
     flex-direction: row;
     align-items: center;
     justify-content: center;
@@ -723,13 +864,13 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     width: calc(var(--card-width) * 0.4) !important;
   }
   &:hover {
-    animation-fill-mode:forwards;
+    animation-fill-mode: forwards;
     > div:not(:last-child) {
       margin-top: 10px;
     }
   }
 
-  animation-fill-mode:fowards;
+  animation-fill-mode: fowards;
 
   div {
     transition: all 0.2s;
@@ -755,6 +896,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     top: 10%;
     @media (max-width: 800px) and (orientation: portrait) {
       top: 35% !important;
+      left: 50% !important;
     }
   }
   @media (max-width: 800px) and (orientation: portrait) {
@@ -803,10 +945,9 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     &.blocked {
       filter: grayscale(0.5) brightness(0.85);
     }
-    --gradient-glow: #BDE038, rebeccapurple, rebeccapurple, #BDE038;
+    --gradient-glow: #bde038, rebeccapurple, rebeccapurple, #bde038;
   }
 }
-
 
 @keyframes explosion {
   from {
@@ -841,7 +982,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   display: flex;
   flex-direction: column;
   gap: 5px;
-  right:100%;
+  right: 100%;
   top: 0;
   outline: 0;
   z-index: 10;
@@ -853,7 +994,6 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   &:deep(.exhausted) {
     padding: 0;
   }
-
 }
 
 .location:has(.abilities) {
@@ -871,7 +1011,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   left: 0;
   right: 0;
   text-align: center;
-  z-index:10000000;
+  z-index: 10000000;
 
   :deep(path) {
     stroke-dasharray: var(--line-length);
@@ -879,7 +1019,6 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     transition: stroke-dashoffset 1.5s linear;
     animation: draw-locus 1.5s linear forwards;
   }
-
 
   animation: locus 3s linear forwards;
 }
@@ -902,25 +1041,19 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
 
 @keyframes locus {
   0% {
-    filter: drop-shadow(0px 0px 0px #fff)
-    drop-shadow(0px 0px 0px #fff)
-    drop-shadow(0px 0px 0px #ff80b3)
-    drop-shadow(0px 0px 0px #ff4d94)
-    drop-shadow(0px 0px 0px #ff0066);
+    filter: drop-shadow(0px 0px 0px #fff) drop-shadow(0px 0px 0px #fff)
+      drop-shadow(0px 0px 0px #ff80b3) drop-shadow(0px 0px 0px #ff4d94)
+      drop-shadow(0px 0px 0px #ff0066);
   }
   25% {
-    filter: drop-shadow(0px 0px 0px #fff)
-    drop-shadow(0px 0px 0px #fff)
-    drop-shadow(0px 0px 0px #ff80b3)
-    drop-shadow(0px 0px 0px #ff4d94)
-    drop-shadow(0px 0px 0px #ff0066);
+    filter: drop-shadow(0px 0px 0px #fff) drop-shadow(0px 0px 0px #fff)
+      drop-shadow(0px 0px 0px #ff80b3) drop-shadow(0px 0px 0px #ff4d94)
+      drop-shadow(0px 0px 0px #ff0066);
   }
   100% {
-    filter: drop-shadow(0px 0px 1px #fff)
-    drop-shadow(0px 0px 1px #fff)
-    drop-shadow(0px 0px 3px #ff80b3)
-    drop-shadow(0px 0px 10px #ff4d94)
-    drop-shadow(0px 0px 15px #ff0066);
+    filter: drop-shadow(0px 0px 1px #fff) drop-shadow(0px 0px 1px #fff)
+      drop-shadow(0px 0px 3px #ff80b3) drop-shadow(0px 0px 10px #ff4d94)
+      drop-shadow(0px 0px 15px #ff0066);
   }
 }
 
@@ -932,12 +1065,12 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   min-height: calc(var(--card-width) / var(--card-aspect) + 40px);
   display: grid;
   grid-template-areas:
-    "investigators location    assetsAndEnemies"
-    "investigators attachments assetsAndEnemies";
+    'investigators location    assetsAndEnemies'
+    'investigators attachments assetsAndEnemies';
   grid-template-columns: 60px 1fr 60px;
   grid-column-gap: 10px;
   @media (max-width: 800px) and (orientation: portrait) {
-    grid-column-gap: .5px;
+    grid-column-gap: 0.5px;
   }
 }
 
@@ -955,7 +1088,10 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   pointer-events: none;
   position: absolute;
   top: 120%;
-  transition: top 10s linear, height 10s linear, border-radius 10s linear;
+  transition:
+    top 10s linear,
+    height 10s linear,
+    border-radius 10s linear;
   width: 200%;
 }
 
@@ -989,8 +1125,12 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
 }
 
 @keyframes wave {
-  from { transform: rotate(0deg)}
-  to { transform: rotate(360deg)}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 :deep(.token) {
@@ -1005,7 +1145,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
 .concealed-card-stack {
   position: relative;
   display: grid;
-  grid-template-areas: "stack";
+  grid-template-areas: 'stack';
   align-items: center;
   justify-items: center;
   > * {

@@ -5,6 +5,7 @@ import Arkham.Action qualified as Action
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Scenarios.DogsOfWar.Helpers
@@ -22,7 +23,7 @@ instance HasAbilities TheBourseCommercialCenter where
       $ scenarioI18n
       $ withI18nTooltip "theBourse.investigate"
       $ groupLimit PerRound
-      $ restricted a 1 Here investigateAction_
+      $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
 
 instance RunMessage TheBourseCommercialCenter where
   runMessage msg l@(TheBourseCommercialCenter attrs) = runQueueT $ case msg of

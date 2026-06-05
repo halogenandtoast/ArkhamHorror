@@ -20,7 +20,7 @@ forensicKit = asset ForensicKit Cards.forensicKit
 
 instance HasAbilities ForensicKit where
   getAbilities (ForensicKit a) =
-    [controlled_ a 1 $ investigateActionWithAlternate #agility $ assetUseCost a Supply 1]
+    [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWithAlternate #agility $ assetUseCost a Supply 1]
 
 instance RunMessage ForensicKit where
   runMessage msg a@(ForensicKit attrs) = runQueueT $ case msg of

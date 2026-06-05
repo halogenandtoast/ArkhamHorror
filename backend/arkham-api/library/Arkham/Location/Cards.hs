@@ -571,6 +571,11 @@ allLocationCards =
       , messHall
       , metropolitanCathedral
       , milkhouse
+      , mirrorNest_166
+      , mirrorNest_167
+      , mirrorNest_168
+      , mirrorNest_169
+      , theAbyssSpiralingOblivion
       , mineralTunnel
       , miramarYachtClub
       , miskatonicQuad
@@ -918,6 +923,8 @@ allLocationCards =
       , theCommonsNight
       , theCorniche
       , theCrossroadsDay
+      , theCrossroadsMorning
+      , theCrossroadsEvening
       , theCrossroadsNight
       , theDarkCrater
       , theEdgeOfTheUniverse
@@ -948,6 +955,8 @@ allLocationCards =
       , theLittleBookshopInTooDeep
       , theMoonRoom
       , theOldMillDay
+      , theOldMillMorning
+      , theOldMillEvening
       , theOldMillNight
       , theOnyxCastle
       , thePriceManor

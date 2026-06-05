@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps hiding (PreludeWelcomeToHemlockVale)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Campaigns.TheFeastOfHemlockVale.TokenHelpers
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasQueue (clearQueue)
@@ -12,19 +13,15 @@ import Arkham.Cost.Status qualified as Cost
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location (getCanMoveToLocations)
-import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount)
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Story.Cards qualified as Stories
@@ -52,12 +49,8 @@ preludeWelcomeToHemlockVale difficulty =
     (hasEncounterDeckL .~ False)
 
 instance HasChaosTokenValue PreludeWelcomeToHemlockVale where
-  getChaosTokenValue iid tokenFace (PreludeWelcomeToHemlockVale attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
-    otherFace -> getChaosTokenValue iid otherFace attrs
+  getChaosTokenValue iid tokenFace (PreludeWelcomeToHemlockVale attrs) =
+    hemlockPreludeChaosTokenValue iid tokenFace attrs
 
 instance RunMessage PreludeWelcomeToHemlockVale where
   runMessage msg s@(PreludeWelcomeToHemlockVale attrs) = runQueueT $ campaignI18n $ scope "prelude1" $ case msg of
@@ -78,6 +71,9 @@ instance RunMessage PreludeWelcomeToHemlockVale where
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "intro4"
+      pure s
+    ResolveChaosToken token face iid | face `elem` [Cultist, ElderThing] -> do
+      hemlockPreludeResolveChaosToken attrs token face iid
       pure s
     Setup -> runScenarioSetup PreludeWelcomeToHemlockVale attrs do
       setup $ ul do
@@ -273,20 +269,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
       case r of
         Resolution 1 -> do
           resolution "resolution1"
-          eachInvestigator \iid -> do
-            assets <- select $ assetControlledBy iid
-            chooseOrRunOneM iid do
-              for_ (eachWithRest assets) \(asset, rest) ->
-                targeting asset do
-                  setupModifier ScenarioSource asset Persist
-                  for_ rest $ toDiscard ScenarioSource
-            handSize <- getHandSize iid
-            cs <- fieldMap InvestigatorHand length iid
-            when (cs > handSize) $ chooseAndDiscardCards iid ScenarioSource (cs - handSize)
-            shuffleDiscardBackIn iid
-            rs <- getStartingResources iid
-            n <- field InvestigatorResources iid
-            when (n > rs) $ loseResources iid ScenarioSource (n - rs)
+          eachInvestigator makePreparationsForNextSurvey
           addChaosToken AutoFail
           keepCardCache
           endOfScenario

@@ -380,6 +380,78 @@ handleInvestigatorAssignDamage a@InvestigatorAttrs{..} iid source strategy damag
           <> [InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror' [] []]
   pure a
 
+handleInvestigatorDoAssignDamageDeferred a@InvestigatorAttrs{..} iid source damageStrategy damageTargets horrorTargets = do
+  let
+    assetDamageMap = Map.fromListWith (+) [(aid, 1 :: Int) | AssetTarget aid <- damageTargets]
+    assetHorrorMap = Map.fromListWith (+) [(aid, 1 :: Int) | AssetTarget aid <- horrorTargets]
+    affectedAssets = nub $ Map.keys assetDamageMap <> Map.keys assetHorrorMap
+    placementMessages =
+      [ Msg.AssignAssetDamageWithCheck aid source damage horror False
+      | aid <- affectedAssets
+      , let damage = findWithDefault 0 aid assetDamageMap
+      , let horror = findWithDefault 0 aid assetHorrorMap
+      , damage > 0 || horror > 0
+      ]
+    damageEffect = case source of
+      EnemyAttackSource _ -> AttackDamageEffect
+      _ -> NonAttackDamageEffect
+    damageMap = frequencies damageTargets
+    horrorMap = frequencies horrorTargets
+    placedWindows =
+      [ Window.PlacedDamage source target damage
+      | (target, damage) <- mapToList damageMap
+      ]
+        <> [ Window.PlacedHorror source target horror
+           | (target, horror) <- mapToList horrorMap
+           ]
+    checkAssets = nub $ keys horrorMap <> keys damageMap
+  whenPlacedWindowMsg <- checkWindows $ map mkWhen placedWindows
+  whenAssignedWindowMsg <- checkWhen $ Window.AssignedHorror source iid horrorTargets
+  let assignedHorror = count (== toTarget a) horrorTargets
+  when
+    ( (damageStrategy == DamageFromHastur)
+        && (toTarget a `elem` horrorTargets)
+        && (investigatorSanityDamage a + assignedHorror > investigatorSanity)
+    )
+    do
+      push $ InvestigatorDirectDamage iid source 1 0
+
+  let totalDamage = length damageTargets
+  let totalHorror = length horrorTargets
+
+  pushAll
+    $ placementMessages
+      <> [ whenPlacedWindowMsg
+         , CheckWindows
+             $ [mkWhen (Window.TakeDamage source damageEffect (toTarget iid) totalDamage) | totalDamage > 0]
+             <> [mkWhen (Window.TakeHorror source (toTarget iid) totalHorror) | totalHorror > 0]
+             <> [ mkWhen (Window.DealtDamage source damageEffect target damage)
+                | target <- nub damageTargets
+                , let damage = count (== target) damageTargets
+                ]
+             <> [ mkWhen (Window.DealtHorror source target horror)
+                | target <- nub horrorTargets
+                , let horror = count (== target) horrorTargets
+                ]
+         ]
+      <> [whenAssignedWindowMsg | notNull horrorTargets]
+      <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
+      <> [ CheckWindows
+             $ map mkAfter placedWindows
+             <> [mkAfter (Window.TakeDamage source damageEffect (toTarget iid) totalDamage) | totalDamage > 0]
+             <> [mkAfter (Window.TakeHorror source (toTarget iid) totalHorror) | totalHorror > 0]
+             <> [ mkAfter (Window.DealtDamage source damageEffect target damage)
+                | target <- nub damageTargets
+                , let damage = count (== target) damageTargets
+                ]
+             <> [ mkAfter (Window.DealtHorror source target horror)
+                | target <- nub horrorTargets
+                , let horror = count (== target) horrorTargets
+                ]
+             <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
+         ]
+  pure a
+
 handleInvestigatorDoAssignDamage a@InvestigatorAttrs{..} iid source damageStrategy damageTargets horrorTargets = do
   let
     damageEffect = case source of
@@ -632,12 +704,20 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
           damageAsset aid applyAll =
             AssetDamageLabel
               aid
-              [ Msg.AssignAssetDamageWithCheck aid source (if applyAll then health else 1) 0 False
-              , assignRestOfHealthDamage
-                  (if applyAll then 0 else health - 1)
-                  ((if applyAll then replicate health else pure) (AssetTarget aid) <> damageTargets)
-                  horrorTargets
-              ]
+              $ if strategy == DamageAnyDeferred
+                then
+                  [ assignRestOfHealthDamage
+                      (if applyAll then 0 else health - 1)
+                      ((if applyAll then replicate health else pure) (AssetTarget aid) <> damageTargets)
+                      horrorTargets
+                  ]
+                else
+                  [ Msg.AssignAssetDamageWithCheck aid source (if applyAll then health else 1) 0 False
+                  , assignRestOfHealthDamage
+                      (if applyAll then 0 else health - 1)
+                      ((if applyAll then replicate health else pure) (AssetTarget aid) <> damageTargets)
+                      horrorTargets
+                  ]
           damageInvestigator iid' applyAll =
             DamageLabel
               iid'
@@ -679,6 +759,7 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
                 <> map (`damageAsset` applyAll) healthDamageableAssets
             DamageDirect -> pure [damageInvestigator iid True]
             DamageFromHastur -> go DamageAny
+            DamageAnyDeferred -> go DamageAny
             DamageAny -> do
               healthDamageableAssets' <-
                 mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd healthDamageableAssets (field AssetRemainingHealth)
@@ -758,12 +839,20 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
           damageAsset aid applyAll =
             AssetHorrorLabel
               aid
-              [ Msg.AssignAssetDamageWithCheck aid source 0 (if applyAll then sanity else 1) False
-              , assignRestOfSanityDamage
-                  (if applyAll then 0 else sanity - 1)
-                  damageTargets
-                  ((if applyAll then replicate sanity else pure) (toTarget aid) <> horrorTargets)
-              ]
+              $ if strategy == DamageAnyDeferred
+                then
+                  [ assignRestOfSanityDamage
+                      (if applyAll then 0 else sanity - 1)
+                      damageTargets
+                      ((if applyAll then replicate sanity else pure) (toTarget aid) <> horrorTargets)
+                  ]
+                else
+                  [ Msg.AssignAssetDamageWithCheck aid source 0 (if applyAll then sanity else 1) False
+                  , assignRestOfSanityDamage
+                      (if applyAll then 0 else sanity - 1)
+                      damageTargets
+                      ((if applyAll then replicate sanity else pure) (toTarget aid) <> horrorTargets)
+                  ]
         let
           go = \case
             AmongInvestigators imatcher -> do
@@ -796,6 +885,7 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
                 <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
             DamageDirect -> pure [damageInvestigator iid True]
             DamageFromHastur -> go DamageAny
+            DamageAnyDeferred -> go DamageAny
             DamageAny -> do
               mustBeAssignedHorrorFirstBeforeInvestigator <- flip filterM sanityDamageableAssets \aid -> do
                 mods <- getModifiers aid

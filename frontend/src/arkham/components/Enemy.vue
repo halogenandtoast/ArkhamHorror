@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { handleEmbeddedI18n } from '@/arkham/i18n'
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
 import { keyToId } from '@/arkham/types/Key'
 import { TokenType } from '@/arkham/types/Token'
 import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage, sourceCardCode } from '@/arkham/cardImages'
-import * as ArkhamGame from '@/arkham/types/Game'
+import { useGameChoices, useGameChoicesSource, useGameChoicesTooltip } from '@/arkham/composables/useGameChoices'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
@@ -22,6 +24,7 @@ import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 import { Source } from '@/arkham/types/Source'
 import { isManifestedSpiritEnemy } from '@/arkham/spiritVisuals';
+import { toCardContents } from '@/arkham/types/Card';
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -55,7 +58,19 @@ const image = computed(() => cardImage(props.enemy.cardCode, props.enemy.flipped
 
 const id = computed(() => props.enemy.id)
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choicesSource = useGameChoicesSource(() => props.game, () => props.playerId)
+const isHighlighted = computed(() => {
+  const source = choicesSource.value
+  return source !== null && 'contents' in source && source.contents === props.enemy.id
+})
+const { t } = useI18n()
+const choicesTooltip = useGameChoicesTooltip(() => props.game, () => props.playerId)
+const sourceTooltip = computed<string | false>(() => {
+  const raw = isHighlighted.value ? choicesTooltip.value : null
+  return raw ? handleEmbeddedI18n(raw, t as (key: string, params: { [key: string]: any }) => string) : false
+})
+
+const choices = useGameChoices(() => props.game, () => props.playerId)
 
 function isCardAction(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
@@ -153,11 +168,22 @@ const omnipotent = computed(() => {
 
 const important = computed(() => {
   const {modifiers} = props.enemy
-  return modifiers.some((m) => m.type.tag === "UIModifier" && m.type.contents.tag === "ImportantToScenario") ?? false
+  return modifiers.some((m) => m.type.tag === "UIModifier" && typeof m.type.contents === 'object' && m.type.contents.tag === "ImportantToScenario") ?? false
+})
+
+const uiRotation = computed(() => {
+  const modifier = props.enemy.modifiers.find((m) => {
+    const t = m.type
+    return t.tag === 'UIModifier' && typeof t.contents === 'object' && t.contents.tag === 'Rotated'
+  })
+
+  if (!modifier || modifier.type.tag !== 'UIModifier' || typeof modifier.type.contents !== 'object') return 0
+  if (modifier.type.contents.tag !== 'Rotated') return 0
+  return modifier.type.contents.contents
 })
 
 function sourceIsSelf(source: Source): boolean {
-  if (source.tag === 'ProxySource') return sourceIsSelf(source.source)
+  if (source.sourceTag === 'ProxySource') return sourceIsSelf(source.source)
   if (source.tag === 'AbilitySource') {
     const [inner] = (source.contents as unknown) as [Source, number]
     return sourceIsSelf(inner)
@@ -181,7 +207,7 @@ const isCannotBeDamaged = computed(() => cannotBeDamagedModifier.value !== null)
 const cannotBeDamagedCardCode = computed<string | null>(() => {
   const m = cannotBeDamagedModifier.value
   if (!m) return null
-  if (m.card) return cardArt(m.card.contents.cardCode)
+  if (m.card) return cardArt(toCardContents(m.card).cardCode)
   return sourceCardCode(m.source, props.game)
 })
 
@@ -277,7 +303,11 @@ function onDrop(event: DragEvent) {
       <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
         <div class="card-frame" ref="frame">
-          <div class="card-wrapper" :class="{ exhausted: isExhausted }">
+          <div
+            class="card-wrapper"
+            :class="{ exhausted: isExhausted }"
+            :style="{ '--ui-rotation': `${uiRotation}deg` }"
+          >
             <font-awesome-icon v-if="hasSpiritAura" :icon="['fas', 'ghost']" class="spirit-icon" />
             <span class="important" v-if="important">
               <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
@@ -287,8 +317,12 @@ function onDrop(event: DragEvent) {
             </span>
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
-              :class="{ dragging, 'enemy--can-interact': canInteract, attached}"
+              v-tooltip="sourceTooltip"
+              :class="{ dragging, 'enemy--can-interact': canInteract, attached, 'source-highlight': isHighlighted }"
               :data-id="id"
+              :data-card-code="enemy.cardCode"
+              :data-game-id="game.id"
+              :data-player-id="playerId"
               :data-is-spirit="hasSpiritAura || undefined"
               :data-fight="fight"
               :data-evade="evade"
@@ -305,8 +339,12 @@ function onDrop(event: DragEvent) {
               @dragstart="startDrag($event, enemy)"
               :src="isSwarm ? imgsrc('player_back.jpg') : image"
               class="card enemy"
-              :class="{ 'enemy--can-interact': canInteract, attached}"
+              v-tooltip="sourceTooltip"
+              :class="{ 'enemy--can-interact': canInteract, attached, 'source-highlight': isHighlighted }"
               :data-id="id"
+              :data-card-code="enemy.cardCode"
+              :data-game-id="game.id"
+              :data-player-id="playerId"
               :data-is-spirit="hasSpiritAura || undefined"
               :data-image-id="imageId"
               :data-swarm="isSwarm || undefined"
@@ -457,6 +495,10 @@ function onDrop(event: DragEvent) {
   cursor: pointer;
 }
 
+img.card.source-highlight {
+  box-shadow: 0 0 0 2px var(--important), 0 0 6px 1px var(--important), var(--card-shadow);
+}
+
 .enemy {
   display: flex;
   flex-direction: column;
@@ -494,13 +536,18 @@ function onDrop(event: DragEvent) {
   }
 }
 
-.exhausted {
+.card-wrapper {
+  --ui-rotation: 0deg;
+  --exhaust-rotation: 0deg;
+  position: relative;
   transition: transform 0.2s linear;
-  transform: rotate(90deg) translateX(-10px);
+  transform: rotate(calc(var(--ui-rotation) + var(--exhaust-rotation)));
+  transform-origin: center;
 }
 
-.card-wrapper {
-  position: relative;
+.card-wrapper.exhausted {
+  --exhaust-rotation: 90deg;
+  transform: rotate(calc(var(--ui-rotation) + var(--exhaust-rotation))) translateX(-10px);
 }
 
 .spirit-icon {

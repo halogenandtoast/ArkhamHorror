@@ -5,13 +5,14 @@ import { Modifier } from '@/arkham/types/Modifier';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import { cardArt, sourceCardCode } from '@/arkham/cardImages';
+import { toCardContents } from '@/arkham/types/Card';
 
 const { t } = useI18n()
 const props = defineProps<{ modifier: Modifier, game: Game }>()
 
 const modifierSource = computed(() => {
   if(props.modifier.card) {
-    return cardArt(props.modifier.card.contents.cardCode)
+    return cardArt(toCardContents(props.modifier.card).cardCode)
   }
 
   return sourceCardCode(props.modifier.source, props.game)

@@ -16,7 +16,7 @@ crowbar = asset Crowbar Cards.crowbar
 
 instance HasAbilities Crowbar where
   getAbilities (Crowbar a) =
-    [ investigateAbility a 1 (exhaust a) ControlsThis
+    [ investigateAbilityWith a 1 #combat (exhaust a) ControlsThis
     , fightAbility a 2 (exhaust a) ControlsThis
     ]
 

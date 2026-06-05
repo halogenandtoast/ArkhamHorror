@@ -16,7 +16,7 @@ correlateAllItsContents = event CorrelateAllItsContents Cards.correlateAllItsCon
 
 instance HasAbilities CorrelateAllItsContents where
   getAbilities (CorrelateAllItsContents a) =
-    [ displayAsAction
+    [ limited (PlayerLimit PerTest 1)
         $ restricted a 1 OwnsThis
         $ ConstantReaction
           "Cancel Token"

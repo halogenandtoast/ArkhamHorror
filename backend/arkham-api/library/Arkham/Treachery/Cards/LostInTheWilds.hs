@@ -17,7 +17,7 @@ instance HasModifiersFor LostInTheWilds where
   getModifiersFor (LostInTheWilds attrs) = inThreatAreaGets attrs [CannotMove, CannotExplore]
 
 instance HasAbilities LostInTheWilds where
-  getAbilities (LostInTheWilds a) = [restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
+  getAbilities (LostInTheWilds a) = [restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #at You]
 
 instance RunMessage LostInTheWilds where
   runMessage msg t@(LostInTheWilds attrs) = runQueueT $ case msg of

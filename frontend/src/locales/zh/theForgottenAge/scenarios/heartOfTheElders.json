@@ -1,101 +1,110 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (如果你位于 _洞穴_ 地点上，改为-3)。",
-      "cultist": "-2. 如果你失败，将1个毁灭标记放到你所在地点。",
-      "tablet": "-2. 如果你已中毒，本检定改为自动失败。",
-      "elderThing": "-3. 如果你失败，受到1点恐惧。"
+      "skull": "-1 (如果你位于_洞穴_地点，改为-3)。",
+      "cultist": "-2。如果你检定失败，在你所在地点放置1个毁灭标记。",
+      "tablet": "-2。如果你已中毒，改为本次检定自动失败。",
+      "elderThing": "-3。如果你检定失败，受到1点恐惧。"
     },
     "hardExpert": {
-      "skull": "-2 (如果你位于 _洞穴_ 地点上，改为-4)。",
-      "cultist": "-3. 如果你失败，将1个毁灭标记放到你所在地点。",
-      "tablet": "-3. 如果你已中毒，本检定改为自动失败。如果你未中毒且检定失败，将放在一边的一张中毒弱点卡放置到你的威胁区域。",
-      "elderThing": "-4. 如果你失败，受到1点恐惧。"
+      "skull": "-2 (如果你位于_洞穴_地点，改为-4)。",
+      "cultist": "-3。如果你检定失败，在你所在地点放置1个毁灭标记。",
+      "tablet": "-3。如果你已中毒，改为本次检定自动失败。如果你未中毒且检定失败，将放在一边的一张中毒弱点卡牌放置入场，放到你的威胁区域。",
+      "elderThing": "-4。如果你检定失败，受到1点恐惧。"
     }
   },
   "label": {
     "pitfall": {
-      "jumpTheGap": "檢定{agility}(3)來嘗試跳過這條裂隙。你失敗且每低於難度1點，受到1點傷害。",
-      "shuffle": "將落入陷阱陷入探索排堆。落入陷阱如果是從探索牌堆抽出的，你不能選擇這個選項。"
+      "jumpTheGap": "检定{agility}(3)来尝试跳过这条裂隙。你检定失败且每低于难度1点，受到1点伤害。",
+      "shuffle": "将落入陷阱洗入探索牌库。落入陷阱如果是从探索牌库抽出的，你不能选择这个选项。"
     },
     "descentToYoth": {
-      "placeDoom": "在深入幽嘶上放置1個毀滅標記",
-      "draw": "抽取遭遇牌堆頂部的2張卡牌"
+      "placeDoom": "在深入幽嘶上放置1个毁灭标记",
+      "draw": "抽取遭遇牌库顶2张卡牌"
     }
   },
   "tooltips": {
     "mouthOfKnYanTheCavernsMaw": {
-      "resign": "\"我們搭帳棚吧，明天再解開這個謎團。\""
+      "resign": "“我们搭帐篷吧，明天再解开这个谜团。”"
     },
     "featheredSerpent": {
-      "evade": "Check your supplies. If you have a mysterious scepter, you automatically evade the serpent and command it to deal its damage to another enemy at its location."
+      "evade": "检查你的补给品。如果你带有神秘权杖，你自动躲避鲜翎蛇族，并命令它对其所在地点的另一个敌人造成它的伤害。"
     }
   },
   "part1": {
-    "intro": {
-      "title": "冒險V-A: 久遠腹地，第一章",
-      "intro1": "<p>_Intro 1_: 自從你的隊伍再度勇闖叢林，已經好幾天了。你們愈發頻繁地遭遇危機，危險程度也與日俱增。想保持糧食和物資足夠支撐旅途，已經很不容易，更別提動不動就會受到叢林住民的滋擾。萬幸的是，你們至今還沒發現上次來襲的蛇族蹤跡。但你確定，他們就在叢林裡盯著你們伺機而動。</p><p>在第六天早晨，你們找到了入口。這是一個巨大的洞穴，在樹木、灌木叢和藤蔓的遮擋下，儘管洞口是如此龐大，你仍差點完全錯過了它。洞口周圍有六根石柱，每根石柱表面均有古怪的凹槽，和發出黯淡紅光的雕文。或許你的嚮導之中有人會知道那代表什麼意思?</p><ul><li>調查員必須決定以下一項:<ul><li>*問問伊塔卡*。只有伊塔卡在調查員牌組中，才能選擇此項。進入_引言2_。</li><li>*問問亞歷山卓*。只有亞歷山卓在調查員牌組中，才能選擇此項。進入_引言3_。</li><li>*查閱探險日誌*。只有探險日誌在調查員牌組中，才能選擇此項。進入_引言4_。.</li><li>*I wish we knew more about this...* Skip to _Setup_.</li></ul></li>",
+    "standalone": {
       "label": {
-        "ichtaca": "*問問伊塔卡*",
-        "alejandro": "*問問亞歷山卓*",
-        "expeditionJournal": "*查閱探險日誌*",
-        "else": "*I wish we knew more about this...*"
+        "paths": "调查员可以选择*你知道了X条道路*(X为0到5之间的1个数字)。你知道的道路越多，你就能更快更轻松地进行本场冒险。"
+      }
+    },
+    "intro": {
+      "title": "冒险V–A: 久远腹地，第一章",
+      "intro1": "<p>自从你的队伍再次进入丛林探险以来，已经过了好几天，你们愈发频繁地遭遇危机，危险程度也与日俱增。努力保障此次旅程的食粮和补给品数量充足，这已经不容易，更别提还时常受到丛林住民的滋扰。万幸的是，你至今还没发现上次探险来袭的蛇族的踪迹，但你确定它们就在那里。它们在盯着你们，伺机而动。</p><p>在第六天的早晨，你找到了入口。这是一个巨大的洞穴入口，被树木、灌木丛和藤蔓遮挡着。你差点完全错过了这整个巨大的洞穴入口，尽管它是如此地庞大。洞穴入口周围的是六根石柱，每根石柱均覆盖着古怪的凹槽和闪着黯淡红光的雕文。或许你的向导之中有人会知道这是什么含义？</p><ul><li>调查员必须決定(选择一项)：<ul><li>*问问伊塔卡*。只有当伊塔卡在一位调查员的牌库中，才能选择这个选项</li><li>*问问亚历山卓*。只有当亚历山卓·维拉在一位调查员的牌库中，才能选择这个选项</li><li>*查阅探险日志*。只有当探险日志在一位调查员的牌库中，才能选择这个选项</li><li>*我们要是能对这知道多些信息就好了……*进入_冒险设置_。</li></ul></li>",
+      "label": {
+        "ichtaca": "*问问伊塔卡*",
+        "alejandro": "*问问亚历山卓*",
+        "expeditionJournal": "*查阅探险日志*",
+        "else": "*我们要是能对这知道多些信息就好了……*"
       },
-      "intro2": "<p>_引言2_: 「洞口有人看守，防止入侵者擅闖。」伊塔卡神祕地說道，合上雙眼，彷彿在用超感官來探測洞穴。「這些石柱就是鑰匙。每根石柱都是對智慧和意志的考驗。」她向其中一根柱子踏近一步，並伸手觸碰，柱身的光芒隨之變亮。你發現柱子底部的凹痕，形成了眼熟的圖案。既然伊塔卡認為此地有人看守，而你也認同她的說法———那就有方法能夠進去才對.......</p><p class='basic right'>本場冒險開始時，將伊塔卡放置入場。跳到_冒險設置_。</p>",
-      "intro3": "<p>_引言3_: 亞歷山卓仔細查看每根石柱後說:「這些柱子應該是某種門鎖。你看這裡，看到了嗎?凹槽沒有連成一線。」他轉動其中一根石柱，隨後你看見石柱橫向轉動時顯示的圖案。「我敢說，要是不先把這些石柱排好就進山洞，我們是走不遠的。我的直覺告訴我......我們必須仔細研究過這個區域以後再進去。」你現在很了解亞歷山卓，知道他的直覺往往是對的。</p><p class='basic right'>本場冒險開始時，將亞歷山卓放置入場。跳到_冒險設置_。</p>",
-      "intro4": "<p>_引言4_: 上一次探險的日誌並不足以解答一切，但當你翻動書頁時，一個熟悉的圖案吸引了你的注意——那是由先前喪生的探險隊員羅倫佐，從埃兹特里遺跡其中一片石牆上精心臨摹的雕文。你從摹畫下來的圖案中見到許多圖案和象形文字，與這些石柱上的一致。這不是個單純的巧合。這些石柱無疑就是關鍵，能帶你找到恩凱之路.......</p><p class='basic right'>本場冒險開始時，將探險日誌放置入場。跳到_冒險設置_。</p>"
+      "intro2": "<p>“那个入口有结界，防止入侵者进入。”伊塔卡神秘地说道，合上双眼，仿佛用灵感来探索整个洞穴一般，“这些柱子就是钥匙。每根石柱都代表着一次对智慧和意志的考验。”她向其中一根柱子踏近一步并伸出手掌触碰，柱身的光芒开始变亮。你发现这根柱子底下带有的凹槽形成一种图案，你曾在某个地方见过这图案。如果伊塔卡认为此地有结界，那么你也认同她的观点——肯定有方法打破结界……</p><p class='basic right'>本场冒险开始时，将伊塔卡放置在场。</p><p class='basic right'>你在时间界限彼端的旅程使你领悟到了如何进入昆场。</p>",
+      "intro3": "<p>亚历山卓仔细地查看每根石柱。 “这些柱子的作用应该和门锁差不多。看这儿，看到了吗？凹槽没有刚好连成一线。”他转动其中一根石柱，随后你看见石柱向侧转动时显示的图案。“我敢打赌，要是没有把这些石柱正确排列就进洞的话，我们是走不远的。这只是我的直觉……但我认为我们应该更加仔细地检查这个区域，再进入洞穴。”你现在很了解亚历山卓，知道他的直觉往往是对的。</p><p class='basic right'>本场冒险开始时，将亚历山卓·维拉放置在场。</p><p class='basic right'>你在时间界限彼端的旅程使你领悟到了如何进入昆场。</p>",
+      "intro4": "<p>在上一次探险的日志内并不能找到所有的答案，但当你翻动书页的时候，一个熟悉的图样吸引了你的注意力——由此前丧生的探险队员洛伦佐所绘制的一个图样。这是从其中一处埃兹特里遗迹的石壁上细致摹画的雕纹。你从摹画下来的图样忠看到了许多图案和象形文字，与这些石柱上的一致。这部是个单纯的巧合。这些石柱无疑就是关键，能够令你找到恩凯之路……</p><p class='basic right'>本场冒险开始时，将探险日志放置在场。</p><p class='basic right'>你在时间界限彼端的旅程使你领悟到了如何进入昆场。</p>"
     },
     "setup": {
-      "pathsKnownToYou": "查看冒險日誌。如果「你知道了6條道路」，跳過本場冒險，立即進入_結局1_。",
-      "gatherSets": "收齊下列遭遇組所有卡牌: *審判之柱*、*久遠腹地*、*雨林*、*蛇族*、*探險*、*毒藥*。這些遭遇組的圖示為:<section class='encounter-sets'><img src='{setImgPath}/pillars-of-judgement.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/rainforest.png' /><img src='{setImgPath}/serpents.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/poison.png' /></section>",
-      "placeLocations": "將昆揚之口放置入場，(洞穴的巨口)面朝上，每位調查員由此開始遊戲。",
-      "insightIntoHowToEnterKnYan": "查看冒險日誌。你在時空界限另一端的經歷，告訴了你進入昆揚的方法。你每「知道1條道路」，就在昆揚之口上放置1資源，視為石柱標記。",
-      "playedBefore": "在本劇本期間，如果你已進行過本場冒險，並已到達場景2，則將場景1a翻面，置於昆揚之口上。",
-      "explorationDeck": "將6張單面的叢林地點與下列遭遇牌各1張混洗，組成探索牌堆: 落入陷阱、蟻群纏身、迷失荒野、補給短缺。",
-      "chooseLocations": "從下列3個遺跡地點隨機選擇1個:雜草叢生的遺跡、毒牙神殿、石板祭壇。將所選地點洗入探索牌堆，其他2個移出遊戲。",
-      "mappedOutTheWayForward": "查看冒險日誌。如果「找到了前進的道路」，不將隨機選擇的地點洗入探索牌堆，而是直接放置入場。",
-      "poisoned": "將不在調查員牌組中的所有中毒弱點卡置於場外備用。"
+      "pathsKnownToYou": "检查剧本日志。如果*你知道了6条道路*，跳过本场冒险，立即进入_结局1_。",
+      "gatherSets": "收齐以下遭遇组的所有卡牌：*审判之柱*、*久远腹地*、*雨林*、*蛇族*、*探险*、*毒药*。这些遭遇组的图标为：<section class='encounter-sets'><img src='{setImgPath}/pillars-of-judgement.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/rainforest.png' /><img src='{setImgPath}/serpents.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/poison.png' /></section>",
+      "placeLocations": "将昆扬之口放置入场，*(洞穴的巨口)*面朝上。每位调查员从昆扬之口*(洞穴的巨口)*开始游戏。",
+      "insightIntoHowToEnterKnYan": "检查剧本日志。得益于你在时空界限另一端的经历，你得知了进入昆扬的方法。*你每知道了1条道路*，在昆扬之口上放置1资源，视作1个石柱标记。",
+      "playedBefore": "在这个剧本期间，如果你之前已进行过本场冒险，并且之前已到达场景2，则将场景1a翻面并放置在昆扬之口上。",
+      "explorationDeck": "构建探索牌库。收取6张单面的_丛林_地点卡牌，并与以下遭遇卡牌每种一张混洗：落入陷阱、蚁群缠身、迷失荒野、补给短缺。",
+      "chooseLocations": "随机从以下3个_遗迹_地点中选择一个：杂草丛生的遗迹、毒牙神庙、石板祭坛。将所选地点洗入探索牌库。将其他2个地点从游戏中移除。",
+      "mappedOutTheWayForward": "检查剧本日志。如果*调查员找到了前进的道路*，不将随机选择的地点洗入探索牌库，而是将其放置入场。",
+      "poisoned": "将不在调查员牌库中的所有中毒弱点放在一边。"
     },
     "resolutions": {
       "noResolution": {
         "label": {
-          "replay": "Replay _Scenario V-A: Heart of the Elders, Part 1_",
-          "resolution2": "Proceed to _Resolution 2_"
+          "replay": "重玩_冒险V–A: 久远腹地，第一章_",
+          "resolution2": "进入_结局2_"
         },
-        "title": "未達成任何結局",
-        "body": "<p>_如果未達成任何結局(所有調查員都撤退或被擊敗)_: 叢林實在過於危險，不能再探索下去。要是繼續逗留這些怪異石柱將成為你的墓碑。於是你決定立刻逃跑回到數英里外那熟悉的空地休整隊伍。你知道自己終究得回到石柱那裡去，分析那些圖案，以開啟前進的道路但就現在而言，至少你保住了性命。</p><ul><li>如果昆揚之口上的石柱標記數，大於冒險日誌中「你知道了X條道路」的X，則將X改為昆揚之口上的石柱標記數。</li><li>調查員必須重玩〈冒險V-A:久遠腹地，第一章〉。重置遊戲至本場冒險的設置階段。除了在這局遊戲中受到的創傷，不要在冒險日誌記錄其他任何資訊。你們在這局遊戲不獲得經驗點數。任何玩家的調查員若陣亡或發瘋，則他必須如常選擇一位新調查員入場。</li></ul>"
+        "title": "未达成任何结局",
+        "body": "<p>_如果未达成任何结局(每位调查员撤退或者被击败)：_丛林实在过于危险，你无法继续探索。要是你再逗留下去，这些怪异石柱的所在将成为你的坟墓。你决定立即逃跑，回到数英里外一片熟悉的空地并修整队伍。你知道自己终究还是得回到石柱那去，搞懂那些图案才能开启前进的道路……但就现在而言，至少你保住了性命。</p><ul><li>如果昆扬之口上的石柱标记多于冒险日志中记录的冒险开始时的石柱标记数，则划掉了*你知道了……条道路*的数量。然后，记录下*你知道了X条道路*，其中X为昆扬之口上的石柱标记的数量。</li><li>调查员必须重玩本冒险。重置游戏，至本场冒险的设置阶段。除了在上一局游戏中承受的任何创伤以外，不要在剧本日志记录其他任何信息。你们在上一局游戏不获得经验点数。任何调查员阵亡或发疯的玩家必须如常选择一位新的调查员进行游戏。</li></ul>"
       },
       "resolution1": {
-        "title": "結局1",
-        "body": "<p>_結局1_: :你壓抑心中恐懼，走進了洞穴......</p><ul><li>在冒險日誌中記錄: *叢林監視著你(X)*。X為勝利牌區中每張有復仇點數的卡牌名稱，不要在「伊格之怒」下作任何記錄。</li><li>每位調查員獲得等同於勝利牌區中勝利點數總值的經驗。</li><li>調查員不可以花費經驗值，也不可以在冒險V-A和V-B之間更改牌組。立即推進到〈冒險V-B:久遠腹地，第二章〉。</li></ul>"
+        "title": "结局1",
+        "body": "<p>_结局1：_你压抑着心中的恐惧，走进了洞穴……</p><ul><li>在冒险日志中，记录下*丛林监视着你*。在其旁边的括号内，记录下胜利牌区内带有“复仇X”字样的每张卡牌名称。不要在“伊格之怒”下方作任何记录。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的胜利X数值之和。</li><li>调查员不可以花费经验值，也不可以更改自己的牌库。立即进入_冒险V–A: 久远腹地，第二章_。</li></ul>"
       },
       "resolution2": {
-        "title": "Resolution 2",
-        "body": "<p>_Resolution 2_: You haven’t yet completed the puzzle of the six pillars that serve as the entrance to K’n-yan, but you don’t wish to tarry any further in this hostile jungle. You decide to enter the cavern anyway, hoping that whatever “wards” the pillars represent are nothing but ancient superstition…</p><ul><li>You have trespassed in a hostile land. Place pillar tokens on the Mouth of K’n-yan until there are exactly 6 pillar tokens. Then, for every pillar token added in this way, record two tally marks under “Yig’s Fury” in your Campaign Log.</li><li>As you pass by the pillars, intense pain wrenches its way through your body, and you are afflicted with a terrible curse. Each investigator who is poisoned takes 1 mental trauma. Each investigator who is not poisoned adds a set‑aside Poisoned weakness to their deck.</li><li>Proceed to _Resolution 1_.</li></ul>"
+        "title": "结局2",
+        "body": "<p>_结局2：_You haven’t yet completed the puzzle of the six pillars that serve as the entrance to K’n-yan, but you don’t wish to tarry any further in this hostile jungle. You decide to enter the cavern anyway, hoping that whatever “wards” the pillars represent are nothing but ancient superstition…</p><ul><li>You have trespassed in a hostile land. Place pillar tokens on the Mouth of K’n-yan until there are exactly 6 pillar tokens. Then, for every pillar token added in this way, record two tally marks under “Yig’s Fury” in your Campaign Log.</li><li>As you pass by the pillars, intense pain wrenches its way through your body, and you are afflicted with a terrible curse. Each investigator who is poisoned takes 1 mental trauma. Each investigator who is not poisoned adds a set‑aside Poisoned weakness to their deck.</li><li>Proceed to _Resolution 1_.</li></ul>"
       }
     }
   },
   "part2": {
+    "intro": {
+      "title": "冒险V–A: 久远腹地，第二章",
+      "intro1": "<p>你沿着陡峭而冰冷的石块一路下行了好几英里。隧道一开始窄得令人窒息，满是碎石。最后，你到达了一个平层，在你面前是这座洞穴的真实面貌。地面以下彷佛曾经有着一个完整的世界；洞顶就像悬在你头顶的石质天穹。在这条岩石裂缝和古老桥梁的彼端，你下方的无尽深渊广无边际，令人生怖。这个地下领域像是向四面八方延伸到你视线以外；你想知道它到底到达了多远的地方。或许地球上已知的整个地表，不过是另一个世界的顶层。</p><p class='basic right'>进入_冒险设置_。</p>"
+    },
     "setup": {
-      "gatherSets": "收齊下列遭遇組所有卡牌: *昆揚*、*久遠腹地*、*伊格的使徒*、*伊格的毒液*、*失落遺跡*、*致死陷阱*、*毒藥*。這些遭遇組的圖示為:<section class='encounter-sets'><img src='{setImgPath}/knyan.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/deadly-traps.png' /><img src='{setImgPath}/poison.png' /></section>",
-      "placeLocations": "將昆揚之口放置入場，*(下有深淵)* 面朝上，每位調查員由此開始遊戲。",
-      "theJungleWatches": "查看冒險日誌中「叢林監視著你」旁括號內所列卡牌，從收藏找出這些卡牌，加入勝利牌區。",
-      "setAside": "將深入幽嘶地點置於場外備用。",
-      "explorationDeck": "拿取昆場遭遇組剩餘的5張單面地點，與下列遭遇牌各1張混洗，組成探索牌堆: 落入陷阱、無路可退、一片漆黑、致命錯誤。",
-      "poisoned": "將不在調查員牌組中的所有中毒弱點卡置於場外備用。"
+      "gatherSets": "收齐以下遭遇组的所有卡牌：*昆扬*、*久远腹地*、*伊格的使徒*、*伊格的毒液*、*失落遗迹*、*致死陷阱*、*毒药*。这些遭遇组的图标为：<section class='encounter-sets'><img src='{setImgPath}/knyan.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/deadly-traps.png' /><img src='{setImgPath}/poison.png' /></section>",
+      "placeLocations": "将昆扬之口放置入场，*(下有深渊)*面朝上。每位调查员从昆扬之口*(下有深渊)*开始游戏。",
+      "theJungleWatches": "查找收藏，找出你的剧本日志中“*丛林监视着你*”旁边的括号内列出的卡牌。将这些卡牌加入胜利区。",
+      "setAside": "将深入幽嘶地点放在一边，位于场外。",
+      "explorationDeck": "构建探索牌库。收取*昆扬*遭遇组剩余的5张单面地点卡牌，并与以下遭遇卡牌每种一张混洗：落入陷阱、无路可退、一片漆黑、致命错误。",
+      "poisoned": "将不在调查员牌库中的所有中毒弱点放在一边。"
     },
     "resolutions": {
       "noResolution": {
-        "title": "未達成任何結局",
-        "body": "<p>_如果未達成任何結局(所有調查員都被擊敗):_ 你甦醒過來，發現自己處在更加寒冷、更深入的地方，躺在粗糙的石塊上。你站起身來環視周遭，注意到一抹紅光，似乎是從你左側的洞穴發出的。你跟著光芒走了好幾分鐘，在其引領下來到一座石柱林立的明亮門廊。門廊遠端，有扇精雕細琢的大門——一塊巨大石盤。它滾到了一旁，顯露出其後地獄般的界域。</p><ul><li>查看冒險日誌:<ul><li>如果「解救了亞歷山卓」，進入_結局1_。</li><li>如果「亞歷山卓失蹤」，跳到_結局2_。</li></ul></li></ul>"
+        "title": "未达成任何结局",
+        "body": "<p>_如果未达成任何结局(每位调查员被击败)：_你苏醒过来，发现自己处在一个更加寒冷、更深入的地方，躺在一块粗糙的石块上。你站起身来，环视周围环境，注意到一抹红光，它似乎是从你离开的洞穴发出的。你跟着光芒走了好几分钟，最后在其引领下来到一个亮堂的门廊，其中布满了石柱。在这间石室遥远的后方，有着一扇华丽而精致的大门，一块石盘被滚到了一旁，开启彼端如炼狱般的领域。</p><ul><li>检查剧本日志：<ul><li>如果*调查员解救了亚历山卓*，进入_结局1_。</li><li>如果*亚历山卓已失踪*，进入_结局2_。</li></ul></li></ul>"
       },
       "resolution1": {
-        "title": "結局1",
-        "body": "<p>_結局1_: 「踏破鐵鞋無覓處!萬蛇之穴幽嘶!瓦盧西亞覆滅之災的倖存者，被詛咒的蛇族!」亞歷山卓查看著大門，雙眼驚奇四溢，興奮得高舉雙臂。你聽不懂他在說些什麼，但心裡開始緊張起來。因為就在剛才，身後傳來了急奔的腳步聲，還有咔咔的聲響，彷彿會有一隻巨鉗突然抓住你。幾個怪異的生物從黑暗中現身你從未見過那種東西—————它們足足有十呎高，圓錐狀軀幹末端有四根長短不一的怪異附肢。「你們來啦。」亞歷山卓平靜地說。其中一個生物有規律地擊打自己的兩隻鉗子，像是在回答。亞歷山卓對這群生物下令:「奪走他們的意識。這些人沒用了。」而這也是你身為人類最後的記憶。</p><ul><li>如果瓦盧西亞的預示者曾在本場冒險中入場:<ul><li>如果其位於勝利牌區，劃掉冒險日誌中的「預示者還活著」。</li><li>如果其仍在場上或場外，更新冒險日誌中「預示者還活著」旁括號內的傷害。</li></ul></li><li>勝利牌區每有1點復仇點數，在冒險日誌的「伊格之怒」下作1次記錄。</li><li>每位調查員獲得等同於勝利牌區中勝利點數總值的經驗。</li></ul>"
+        "title": "结局1",
+        "body": "<p>_结局1:_“踏破铁鞋无觅处！幽嘶，万蛇之穴！从瓦卢西亚的灭顶之灾下逃离的、被诅咒的蛇族！”亚历山卓检查着大门，双眼流露出惊奇的神色，兴奋地举起双臂。你听不懂他在说些什么，但你开始有点担心。就在刚才，你身后传来急奔的脚步声，还有一阵咔㗳咔㗳的声音，彷佛你会突然被一支巨钳抓住。几个怪异的生物从你身后的黑暗中现身，你从未见过类似的生物：它们高逾十英呎，有着锥状的身体，躯干末尾还有着四根长短不一的奇异附肢。“你们来了。”亚历山卓平静地说道。其中一个生物以一种刻意的方式击打着自己的两个钳子，作为应答。“夺走他们的意识。”亚历山卓指挥这些生物，“我们已经不需要他们了。”这是你作为人类最后的记忆。</p><ul><li>如果瓦卢西亚的预示者在本场冒险期间入场：<ul><li>如果其在于胜利区，划掉剧本日志中的“*预示者还活着*”。</li><li>如果其仍在场上或被放在一边，在剧本日志中记录的“*预示着还活着*”旁边的括号内记录瓦卢西亚的预示者上的伤害点数，替代括号内原本记录的数字。</li></ul></li><li>胜利区每有1点复仇点数，在你剧本日志的“伊格之怒”下方作1次记录。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的胜利X数值之和。</li></ul>"
       },
       "resolution2": {
-        "title": "結局2",
-        "body": "<p>_結局2_: 在你進入洞穴的下一層之前，一陣咔咔像鉗螯敲打的聲響嚇住了你。幾個異形生物從你身後的黑暗中現身，你從未見過類似的東西它們足足有十呎高，圓錐狀軀幹末端有四根長短不一的怪異附肢。當你看見這群生物的人類首領，你更是震驚。那不正是亞歷山卓·維拉嗎?亞歷山卓下令:「奪走他們的意識。這些人沒用了。」而這也是你身為人類最後的記憶。</p><ul><li>如果瓦盧西亞的預示者曾在本場冒險中入場:<ul><li>如果其位於勝利牌區，劃掉冒險日誌中的「預示者還活著」。</li><li>如果其仍在場上或場外，更新冒險日誌中「預示者還活著」旁括號內的傷害。</li></ul></li><li>勝利牌區每有1點復仇點數，在冒險日誌的「伊格之怒」下作1次記錄。</li><li>每位調查員獲得等同於勝利牌區中勝利點數總值的經驗。</li></ul>"
+        "title": "结局2",
+        "body": "<p>_结局2:_直到你进入洞穴的下一层之前，一阵咔㗳咔㗳的声音跟随着你，彷佛你会突然被一支巨钳抓住。几个怪异的生物从你身后的黑暗中现身，你从未见过类似的生物：它们高逾十英尺，有着锥状的身体，躯干末尾还有着四根长短不一的奇异附肢。当你看见这群生物的人类首领时，你十分震惊：那人正是亚历山卓·维拉。“夺走他们的意识。”亚历山卓指挥这些生物，“我们已经不需要他们了。”这是你作为人类最后的记忆。</p><ul><li>如果瓦卢西亚的预示者在本场冒险期间入场：<ul><li>如果其在于胜利区，划掉剧本日志中的“*预示者还活着*”。</li><li>如果其仍在场上或被放在一边，在剧本日志中记录的“*预示着还活着*”旁边的括号内记录瓦卢西亚的预示者上的伤害点数，替代括号内原本记录的数字。</li></ul></li><li>胜利区每有1点复仇点数，在你剧本日志的“伊格之怒”下方作1次记录。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的胜利X数值之和。</li></ul>"
       }
     }
   }

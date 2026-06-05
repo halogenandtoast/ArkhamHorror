@@ -26,7 +26,7 @@ instance HasAbilities DissectionTools where
     [ restricted a 1 ControlsThis
         $ freeReaction
         $ IfEnemyDefeated #after Anyone ByAny
-        $ EnemyAt YourLocation
+        $ EnemyWasAt YourLocation
     ]
 
 instance RunMessage DissectionTools where

@@ -1106,6 +1106,7 @@ allEncounterAssetCards =
       , crystalRemainsTheFather
       , crystalRemainsTheMother
       , theCaptives
+      , oldMemory
       , valeLanternBeaconOfHope
       , valeLanternExtinguishedLightBoon
       , valeLanternAFaintHope

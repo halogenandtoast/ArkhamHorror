@@ -19,7 +19,7 @@ undergroundCistern = location UndergroundCistern Cards.undergroundCistern 4 (Per
 instance HasModifiersFor UndergroundCistern where
   getModifiersFor (UndergroundCistern attrs) = do
     when attrs.unrevealed
-      $ modifySelf attrs [AdditionalCostToEnter $ GroupClueCost (PerPlayer 3) YourLocation]
+      $ modifySelf attrs [AdditionalCostToEnter $ GroupClueCost (PerPlayer 3) Anywhere]
 
 instance HasAbilities UndergroundCistern where
   getAbilities (UndergroundCistern a) =

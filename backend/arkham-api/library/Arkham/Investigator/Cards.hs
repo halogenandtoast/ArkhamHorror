@@ -122,7 +122,7 @@ allEncounterInvestigatorCards =
   mapFromList
     $ concatMap
       toCardCodePairs
-      [bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite]
+      [bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite, shatteredSelf]
 
 withAlternate :: CardCode -> CardDef -> CardDef
 withAlternate ccode = withAlternates [ccode]
@@ -260,6 +260,18 @@ bodyOfAYithian =
       [Monster, Yithian]
   )
     { cdUnique = False
+    }
+
+shatteredSelf :: CardDef
+shatteredSelf =
+  ( investigator
+      "10661"
+      ("Shattered Self" <:> "Who Are You?")
+      Neutral
+      [Shattered]
+  )
+    { cdUnique = False
+    , cdOtherSide = Just "10661b"
     }
 
 carolynFern :: CardDef

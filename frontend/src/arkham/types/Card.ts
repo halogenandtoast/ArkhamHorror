@@ -5,8 +5,10 @@ import { v2Optional } from '@/arkham/parser';
 
 export type Card = PlayerCard | EncounterCard | VengeanceCard;
 
-function cardIsFlipped(card: Card) {
+function cardIsFlipped(card: Card | CardContents) {
   switch (card.tag) {
+    case 'CardContents':
+      return card.isFlipped ?? false;
     case 'PlayerCard':
       return card.contents.isFlipped ?? false;
     case 'EncounterCard':
@@ -28,8 +30,10 @@ export function cardFacedown(card: Card | CardContents): boolean {
   }
 }
 
-function cardArt(card: Card): string | undefined {
+function cardArt(card: Card | CardContents): string | undefined {
   switch (card.tag) {
+    case 'CardContents':
+      return card.art
     case 'PlayerCard':
       return card.contents.art
     case 'EncounterCard':
@@ -39,8 +43,10 @@ function cardArt(card: Card): string | undefined {
   }
 }
 
-export function asCardCode(card: Card): string {
+export function asCardCode(card: Card | CardContents): string {
   switch (card.tag) {
+    case 'CardContents':
+      return card.cardCode
     case 'PlayerCard':
       return card.contents.cardCode
     case 'EncounterCard':
@@ -50,13 +56,13 @@ export function asCardCode(card: Card): string {
   }
 }
 
-export function cardId(card: Card): string {
+export function cardId(card: Card | CardContents): string {
   return toCardContents(card).id
 }
 
-export function cardImage(card: Card) {
+export function cardImage(card: Card | CardContents) {
   if (cardFacedown(card)) {
-    return card.tag === 'PlayerCard' ? 'player_back.jpg' : 'encounter_back.jpg'
+    return card.tag === 'PlayerCard' || card.tag === 'CardContents' ? 'player_back.jpg' : 'encounter_back.jpg'
   }
   const side = cardIsFlipped(card) ? 'b' : ''
   // TODO, send art with cards next to
@@ -89,6 +95,7 @@ export type CardContents = {
   art?: string
   customizations?: Customization[]
   mutated?: string
+  meta?: Record<string, any>
 }
 
 export type VengeanceCard = {
@@ -117,6 +124,7 @@ export const cardContentsDecoder = JsonDecoder.object<CardContents>(
     art: v2Optional(JsonDecoder.string()),
     customizations: v2Optional(customizationsDecoder),
     mutated: v2Optional(JsonDecoder.string()),
+    meta: v2Optional(JsonDecoder.succeed()),
   },
   'CardContents',
 );

@@ -14,6 +14,7 @@ import Data.Aeson.TH
 
 data DamageStrategy
   = DamageAny
+  | DamageAnyDeferred
   | DamageDirect
   | DamageAssetsFirst AssetMatcher
   | HorrorAssetsFirst AssetMatcher

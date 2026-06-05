@@ -65,7 +65,8 @@ loadDecklistCards f decklist =
   fold <$> for (Map.toList $ f decklist) \(cardCode, count') ->
     replicateM count' do
       genPlayerCardWith (lookupPlayerCardDef cardCode)
-        $ applyCustomizations decklist
+        $ applyDecklistCardMeta decklist
+        . applyCustomizations decklist
         . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
         . setTaboo (fromTabooId $ taboo_id decklist)
 
@@ -82,10 +83,16 @@ loadExtraDeck decklist = do
     Nothing -> loadDecklistCards sideSlots decklist
     Just codes -> do
       let convert =
-            applyCustomizations decklist
+            applyDecklistCardMeta decklist
+              . applyCustomizations decklist
               . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
               . setTaboo (fromTabooId $ taboo_id decklist)
       traverse ((`genPlayerCardWith` convert) . lookupPlayerCardDef . CardCode) codes
+
+applyDecklistCardMeta :: ArkhamDBDecklist -> PlayerCard -> PlayerCard
+applyDecklistCardMeta decklist pCard = case Map.lookup pCard.cardCode (decklistAttachments decklist) of
+  Nothing -> pCard
+  Just attachments -> pCard {pcMeta = Just $ Map.singleton "attachments" attachments}
 
 -- things we can choose: cards, traits, skills
 applyCustomizations :: ArkhamDBDecklist -> PlayerCard -> PlayerCard
@@ -146,6 +153,6 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
 decklistAttachments :: ArkhamDBDecklist -> Map CardCode [CardCode]
 decklistAttachments decklist = fromMaybe mempty do
   meta' <- meta decklist
-  ArkhamDBDecklistMeta {attachments_11080} <- decode (encodeUtf8 $ fromStrict meta')
-  codes <- T.splitOn "," <$> attachments_11080
-  pure $ Map.fromList [(CardCode "11080", map CardCode codes)]
+  ArkhamDBDecklistMeta {attachments_09077, attachments_11080} <- decode (encodeUtf8 $ fromStrict meta')
+  let parseAttachments cardCode = maybe [] (\codes -> [(CardCode cardCode, map CardCode $ filter (/= "") $ T.splitOn "," codes)])
+  pure $ Map.fromList $ parseAttachments "09077" attachments_09077 <> parseAttachments "11080" attachments_11080

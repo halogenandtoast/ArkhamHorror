@@ -12,7 +12,7 @@ newtype DrRosaMarquezBestInHerField = DrRosaMarquezBestInHerField AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drRosaMarquezBestInHerField :: AssetCard DrRosaMarquezBestInHerField
-drRosaMarquezBestInHerField = asset DrRosaMarquezBestInHerField Cards.drRosaMarquezBestInHerField
+drRosaMarquezBestInHerField = ally DrRosaMarquezBestInHerField Cards.drRosaMarquezBestInHerField (2, 2)
 
 instance HasModifiersFor DrRosaMarquezBestInHerField where
   getModifiersFor (DrRosaMarquezBestInHerField a) =
@@ -21,7 +21,10 @@ instance HasModifiersFor DrRosaMarquezBestInHerField where
 instance HasAbilities DrRosaMarquezBestInHerField where
   getAbilities (DrRosaMarquezBestInHerField a) =
     [ groupLimit PerGame
-        $ controlled_ a 1
+        $ restricted
+          a
+          1
+          (oneOf [ControlsThis, thisExists a (not_ $ AssetControlledBy Anyone) <> OnSameLocation])
         $ freeReaction
         $ DiscoveringLastClue #after You YourLocation
     ]

@@ -39,9 +39,9 @@ instance RunMessage CharlieKane where
       CharlieKane <$> liftRunMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 _ p -> do
       icons <- getSkillTestMatchingSkillIcons
-      n <- case p.exhausted of
-        [AssetTarget aid] -> fieldMap AssetCard (count (`elem` icons) . (.skills)) aid
-        _ -> error "Unhandled for Charlie Kane"
+      n <- case [assetId | AssetTarget assetId <- p.exhausted] of
+        (assetId : _) -> fieldMap AssetCard (count (`elem` icons) . (.skills)) assetId
+        [] -> pure 0
       withSkillTest \sid ->
         skillTestModifier sid (attrs.ability 1) iid (AnySkillValue (1 + n))
       pure i

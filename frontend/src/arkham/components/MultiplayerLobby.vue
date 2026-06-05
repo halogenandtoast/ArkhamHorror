@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { fetchOpenSeats, claimSeat } from '@/arkham/api'
 import { useClipboard } from '@vueuse/core'
 import { imgsrc } from '@/arkham/helpers'
+import { getGameLocalStorageItem } from '@/arkham/localStorage'
 import type { Game } from '@/arkham/types/Game'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
@@ -23,7 +24,10 @@ const myClaimed = ref<string | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const isHost = computed(() => localStorage.getItem(`gameHost_${props.gameId}`) === 'true')
+const isHost = computed(() =>
+  getGameLocalStorageItem(props.gameId, 'host') === 'true'
+  || localStorage.getItem(`gameHost_${props.gameId}`) === 'true'
+)
 const allClaimed = computed(() => openSeats.value.length === 0)
 const hasPlayerClaimed = computed(() =>
   isHost.value || myClaimed.value !== null || (props.playerId !== null && props.playerId in props.game.investigators)

@@ -18,7 +18,7 @@ bangleOfJinxes1 = asset BangleOfJinxes1 Cards.bangleOfJinxes1
 instance HasAbilities BangleOfJinxes1 where
   getAbilities (BangleOfJinxes1 a) =
     [ wantsSkillTest (YourSkillTest AnySkillTest)
-        $ playerLimit PerTestOrAbility
+        $ playerLimit PerTest
         $ controlledAbility a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility
         $ assetUseCost a Charge 1

@@ -24,7 +24,7 @@ const choose = (value: number) => {
   emits('choose', value)
 }
 
-function skillId(card: Card) {
+function skillId(card: CardContents) {
   const skill = Object.values(props.game.skills).find(s => s.cardId === card.id)
   if (skill) {
     return skill.id
@@ -38,7 +38,7 @@ function skillId(card: Card) {
   <div class="card-row-cards">
     <div class="card-row-cards--inner">
       <div v-for="card in cardContents" :key="card.id" class="card-row-card">
-        <Skill v-if="skillId(card)" :game="props.game" :skill="game.skills[skillId(card)]" :playerId="playerId" @choose="choose" />
+        <Skill v-if="skillId(card)" :game="props.game" :skill="game.skills[skillId(card)!]" :playerId="playerId" @choose="choose" />
         <CardView v-else :game="game" :card="card" :playerId="playerId" @choose="choose" />
       </div>
     </div>

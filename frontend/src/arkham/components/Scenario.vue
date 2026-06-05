@@ -15,6 +15,7 @@ import {
   provide
 } from 'vue';
 import { type Game } from '@/arkham/types/Game';
+import { type Scenario } from '@/arkham/types/Scenario';
 import { type Enemy } from '@/arkham/types/Enemy';
 import { type ConcealedCard } from '@/arkham/types/ConcealedCard';
 import ConcealedCardView from '@/arkham/components/ConcealedCard.vue';
@@ -26,8 +27,10 @@ import { ModifierType, Hollow } from '@/arkham/types/Modifier';
 import { Source } from '@/arkham/types/Source';
 import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
-import { waitForImagesToLoad, imgsrc, pluralize, groupBy } from '@/arkham/helpers';
+import { waitForImagesToLoad, imgsrc, groupBy } from '@/arkham/helpers';
+import { gameLocalStorageKey, getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage';
 import { cardImage as cardCodeImage } from '@/arkham/cardImages';
+import { fullName } from '@/arkham/types/Name';
 import { useMenu } from '@/composable/menu';
 import { useSettings } from '@/stores/settings';
 import { keyToId } from '@/arkham/types/Key'
@@ -48,11 +51,12 @@ import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
+import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import Story from '@/arkham/components/Story.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Location from '@/arkham/components/Location.vue';
 import TreacheryView from '@/arkham/components/Treachery.vue';
-import * as ArkhamGame from '@/arkham/types/Game';
+import { useGameChoices } from '@/arkham/composables/useGameChoices';
 import { setLocationOffset, resetLocationOffsets } from '@/arkham/api';
 import { useDebug } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
@@ -93,6 +97,7 @@ const showOutOfPlay = ref(false)
 const forcedShowOutOfPlay = ref(false)
 const forcedShowDiscard = ref(false)
 const forcedShowHollowed = ref(false)
+const encounterDiscardPopoverShown = ref(false)
 const locationMap = ref<Element | null>(null)
 const scrollerRef = ref<HTMLElement | null>(null)
 const viewingDiscard = ref(false)
@@ -102,13 +107,55 @@ const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 let legObserver: MutationObserver | null = null
-const locationsZoom = ref(parseFloat(localStorage.getItem(`game:${props.game.id}:locationsZoom`) ?? '1'))
+let cosmicEmissaryObserver: MutationObserver | null = null
+let cosmicEmissaryResizeObserver: ResizeObserver | null = null
+let cosmicEmissaryCompactRequest: number | null = null
+let cosmicEmissaryCompactForce = false
+
+function readStyleMapCache(key: string): Record<string, Record<string, string>> {
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(key) ?? '{}') as Record<string, Record<string, string>>
+    for (const style of Object.values(cached)) {
+      const match = style.transform?.match(/^translate\(([^,]+),\s*([^\)]+)\)$/)
+      if (match) {
+        style.translate = `${match[1]} ${match[2]}`
+        delete style.transform
+      }
+    }
+    return cached
+  } catch {
+    return {}
+  }
+}
+
+function writeStyleMapCache(key: string, value: Record<string, Record<string, string>>) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // Ignore storage failures; the in-memory ref still prevents normal update hops.
+  }
+}
+
+const cosmicEmissaryEnemyStylesCacheKey = gameLocalStorageKey(props.game.id, 'cosmicEmissaryEnemyStyles')
+const cosmicEmissaryLocationCellStylesCacheKey = gameLocalStorageKey(props.game.id, 'cosmicEmissaryLocationCellStyles')
+const cosmicEmissaryAnimationSettingKey = gameLocalStorageKey(props.game.id, 'enableCosmicEmissaryAnimation')
+const cachedCosmicEmissaryEnemyStyles = readStyleMapCache(cosmicEmissaryEnemyStylesCacheKey)
+const cachedCosmicEmissaryLocationCellStyles = readStyleMapCache(cosmicEmissaryLocationCellStylesCacheKey)
+const cosmicEmissaryEnemyStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryEnemyStyles)
+const cosmicEmissaryLocationCellStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryLocationCellStyles)
+const cosmicEmissaryFormationHasMeasured = ref(Object.keys(cachedCosmicEmissaryEnemyStyles).length > 0)
+const enableCosmicEmissaryAnimation = ref(
+  getGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation') === null
+    ? getGameLocalStorageItem(props.game.id, 'disableCosmicEmissaryAnimation') !== 'true'
+    : getGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation') !== 'false'
+)
+const locationsZoom = ref(parseFloat(getGameLocalStorageItem(props.game.id, 'locationsZoom') ?? '1'))
 const doubleZoomActive = ref(false)
 const doubleZoomPrevValue = ref(1)
 const doubleZoomPrevScroll = { left: 0, top: 0 }
 const DOUBLE_ZOOM_LEVEL = 3
 watch(locationsZoom, async (value) => {
-  localStorage.setItem(`game:${props.game.id}:locationsZoom`, String(value))
+  setGameLocalStorageItem(props.game.id, 'locationsZoom', String(value))
   await updateScrollMargins()
 })
 
@@ -249,7 +296,7 @@ async function updateLayoutPadding() {
   const contentHeight = grid.clientHeight - current.top - current.bottom
 
   let left = 0, right = 0, top = 0, bottom = 0
-  const cells = grid.querySelectorAll<HTMLElement>('.location-cell[data-location-id]')
+  const cells = grid.querySelectorAll('.location-cell[data-location-id]') as NodeListOf<HTMLElement>
   for (const cell of cells) {
     const id = cell.dataset.locationId
     if (!id) continue
@@ -365,7 +412,9 @@ function onWindowPointerUp(event: PointerEvent) {
     ...pendingOffsets.value,
     [drag.locationId]: { x: drag.canonicalFinalX, y: drag.canonicalFinalY },
   }
+  nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
   void setLocationOffset(props.game.id, drag.locationId, drag.canonicalFinalX, drag.canonicalFinalY)
+    .finally(() => nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change'))))
 }
 
 // Drop a pending entry once the server's modifier confirms it.
@@ -380,7 +429,10 @@ watch(locationOffsets, (newServer) => {
       changed = true
     }
   }
-  if (changed) pendingOffsets.value = next
+  if (changed) {
+    pendingOffsets.value = next
+    nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
+  }
 }, { deep: true })
 
 function cancelActiveDrag() {
@@ -396,12 +448,35 @@ function cancelActiveDrag() {
 function toggleLocationsUnlocked() {
   locationsUnlocked.value = !locationsUnlocked.value
   if (!locationsUnlocked.value) cancelActiveDrag()
+  nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
+}
+
+function suppressLocationInteractionWhenUnlocked(event: MouseEvent) {
+  if (!locationsUnlocked.value) return
+  event.preventDefault()
+  event.stopPropagation()
+  event.stopImmediatePropagation()
+}
+
+function clearCosmicEmissaryCompactStyles() {
+  cosmicEmissaryEnemyStyles.value = {}
+  cosmicEmissaryLocationCellStyles.value = {}
+  sessionStorage.removeItem(cosmicEmissaryEnemyStylesCacheKey)
+  sessionStorage.removeItem(cosmicEmissaryLocationCellStylesCacheKey)
+  cosmicEmissaryFormationHasMeasured.value = false
 }
 
 function resetLocationsLayout() {
   if (!hasAnyOffset.value) return
   pendingOffsets.value = {}
-  void resetLocationOffsets(props.game.id)
+  if (props.scenario.id === 'c10651') clearCosmicEmissaryCompactStyles()
+  void resetLocationOffsets(props.game.id).finally(() => {
+    if (props.scenario.id === 'c10651') {
+      requestCosmicEmissaryCompact(true)
+      setTimeout(() => requestCosmicEmissaryCompact(true), 100)
+      setTimeout(() => requestCosmicEmissaryCompact(true), 500)
+    }
+  })
 }
 
 let holdTimer: ReturnType<typeof setTimeout> | null = null
@@ -419,14 +494,66 @@ function stopHold() {
   if (holdInterval !== null) { clearInterval(holdInterval); holdInterval = null }
 }
 
+function requestCosmicEmissaryCompact(force = false) {
+  cosmicEmissaryCompactForce = cosmicEmissaryCompactForce || force
+  if (cosmicEmissaryCompactRequest !== null) return
+  cosmicEmissaryCompactRequest = requestAnimationFrame(() => {
+    const shouldForce = cosmicEmissaryCompactForce
+    cosmicEmissaryCompactForce = false
+    cosmicEmissaryCompactRequest = null
+    compactCosmicEmissaryFormation(shouldForce)
+  })
+}
+
 const { isMobile } = IsMobile();
+
+function updateCosmicEmissaryAnimationSetting(value: string | null) {
+  enableCosmicEmissaryAnimation.value = value !== 'false'
+  nextTick(() => compactCosmicEmissaryFormation())
+}
+
+const onCosmicEmissaryStorage = (event: StorageEvent) => {
+  if (event.key === cosmicEmissaryAnimationSettingKey) updateCosmicEmissaryAnimationSetting(event.newValue)
+}
+
+const onCosmicEmissarySettingChange = (event: Event) => {
+  const detail = (event as CustomEvent<{ key?: string, value?: string }>).detail
+  if (detail?.key === cosmicEmissaryAnimationSettingKey) updateCosmicEmissaryAnimationSetting(detail.value ?? null)
+}
 
 // callbacks
 onMounted(() => {
   setGameId(props.game.id)
+  window.addEventListener('storage', onCosmicEmissaryStorage)
+  window.addEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
   updateScrollMargins()
   updateCellDimensions()
   updateLayoutPadding()
+  if(props.scenario.id === "c10651") {
+    nextTick(requestCosmicEmissaryCompact)
+    setTimeout(requestCosmicEmissaryCompact, 100)
+    setTimeout(requestCosmicEmissaryCompact, 500)
+    setTimeout(requestCosmicEmissaryCompact, 1500)
+
+    const setupCosmicEmissaryObservers = () => {
+      const locationCards = document.querySelector('.location-cards') as HTMLElement | null
+      if (!locationCards || cosmicEmissaryObserver) return
+
+      cosmicEmissaryObserver = new MutationObserver(() => nextTick(requestCosmicEmissaryCompact))
+      cosmicEmissaryObserver.observe(locationCards, { childList: true, subtree: true })
+
+      cosmicEmissaryResizeObserver = new ResizeObserver(() => requestCosmicEmissaryCompact())
+      cosmicEmissaryResizeObserver.observe(locationCards)
+      locationCards.querySelectorAll<HTMLElement>('[data-label]').forEach((el) => cosmicEmissaryResizeObserver?.observe(el))
+    }
+
+    nextTick(setupCosmicEmissaryObservers)
+    waitForImagesToLoad(() => {
+      setupCosmicEmissaryObservers()
+      requestCosmicEmissaryCompact()
+    })
+  }
+
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
       nextTick(() => rotateImages(true));
@@ -490,8 +617,16 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('storage', onCosmicEmissaryStorage)
+  window.removeEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
   legObserver?.disconnect()
   legObserver = null
+  cosmicEmissaryObserver?.disconnect()
+  cosmicEmissaryObserver = null
+  cosmicEmissaryResizeObserver?.disconnect()
+  cosmicEmissaryResizeObserver = null
+  if (cosmicEmissaryCompactRequest !== null) cancelAnimationFrame(cosmicEmissaryCompactRequest)
+  cosmicEmissaryCompactRequest = null
   cancelActiveDrag()
 })
 
@@ -560,10 +695,22 @@ const scenarioGuide = computed(() => {
 const additionalReferences = computed(() => {
   return props.scenario.additionalReferences.map((s) => cardCodeImage(s))
 })
+const abyssIsLocation = computed(() =>
+  props.scenario.id === 'c10651' && props.scenario.meta?.abyssIsLocation === true
+)
+
+const abyssDeckCount = computed(() =>
+  props.scenario.decks?.find(([key]) => key === 'AbyssDeck')?.[1]?.length ?? 0
+)
+
 const scenarioDecks = computed(() => {
   if (!props.scenario.decks) return null
-  return Object.entries(props.scenario.decks)
+  return Object.entries(props.scenario.decks).filter(([, scenarioDeck]) =>
+    !(abyssIsLocation.value && scenarioDeck[0] === 'AbyssDeck')
+  )
 })
+
+const hideEncounterDeck = computed(() => props.scenario.id === 'c10651')
 
 const scenarioDeckDiscard = (key: string) => {
   const discards = props.scenario.deckDiscards
@@ -681,14 +828,17 @@ const gridAreas = computed(()=>{
 // automatically, so we set margins after each render to compensate.
 const locationStyles = computed(() => {
   const pad = layoutPadding.value
+  const mobileEdgePadding = isMobile.value ? 140 : 0
   return {
     display: 'grid',
     gap: '20px',
     'grid-template-areas': gridAreas.value ?? '',
+    gridAutoColumns: 'max-content',
+    gridAutoRows: 'max-content',
     transform: `scale(${locationsZoom.value})`,
     transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
-    paddingLeft: `${pad.left}px`,
-    paddingRight: `${pad.right}px`,
+    paddingLeft: `${pad.left + mobileEdgePadding}px`,
+    paddingRight: `${pad.right + mobileEdgePadding}px`,
     paddingTop: `${pad.top}px`,
     paddingBottom: `${pad.bottom}px`,
   }
@@ -720,6 +870,21 @@ const scenarioDeckStyles = computed(() => {
 const players = computed(() => props.game.investigators)
 const playerOrder = computed(() => props.game.playerOrder)
 const discards = computed<Card[]>(() => props.scenario.discard.map(c => ({ tag: 'EncounterCard', contents: c })))
+const playerLocationZones = computed(() => props.game.playerOrder.flatMap((investigatorId) => {
+  const investigator = props.game.investigators[investigatorId]
+  if (!investigator) return []
+
+  const playerLocations = Object.values(props.game.locations).filter((location) =>
+    location.placement?.tag === 'InPlayArea' && location.placement.contents === investigator.id
+  )
+
+  if (playerLocations.length === 0) return []
+  return [{
+    investigatorId,
+    name: fullName(investigator.name),
+    locations: playerLocations,
+  }]
+}))
 
 const enemyGroups = computed(()=>{
   const all = Object.values(props.game.enemies)
@@ -746,14 +911,15 @@ const outOfPlayEnemies = computed(() => enemyGroups.value.outOfPlay)
 const pursuit = computed(() => enemyGroups.value.pursuit)
 const globalEnemies = computed(() => enemyGroups.value.global)
 const inTheShadows = computed(() => Object.values(props.game.enemies).filter((e) => e.placement.tag === "InTheShadows"))
-const inTheShadowLocations = computed(() => {
-  if(!props.scenario.meta) return null
-  return props.scenario.meta.locationsInShadows
+type InTheShadowLocations = { left?: string; middle?: string; right?: string }
+const inTheShadowLocations = computed<InTheShadowLocations>(() => {
+  const locations = props.scenario.meta?.locationsInShadows
+  if (!locations || typeof locations !== 'object') return {}
+  return locations as InTheShadowLocations
 })
 
 const anyInTheShadowLocations = computed(() => {
   const locations = inTheShadowLocations.value
-  if(!locations) return false
   return locations.left || locations.right || locations.middle
 })
 const inTheShadowsInvestigators = computed(() => Object.values(props.game.investigators).filter((e) => e.placement.tag === "InTheShadows"))
@@ -815,7 +981,6 @@ const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
 const viewUnderScenarioReference = computed(() => t('cardsUnderneath', cardsUnderScenarioReference.value.length))
-const viewDiscardLabel = computed(() => pluralize(t('scenario.discardCard'), discards.value.length))
 const topOfEncounterDiscard = computed(() => {
   if (!props.scenario.discard[0]) return null
   return cardCodeImage(props.scenario.discard[0].cardCode)
@@ -851,6 +1016,14 @@ const locations = computed(() => Object.values(props.game.locations).
 watch(locations, updateScrollMargins, { flush: 'post' })
 watch(layoutPadding, updateScrollMargins, { flush: 'post' })
 watch([locations, rotationSteps, locationsZoom], updateCellDimensions, { flush: 'post' })
+const cosmicEmissaryLayoutSignature = computed(() => {
+  if (props.scenario.id !== 'c10651') return ''
+  return [
+    locations.value.map((l) => `${l.id}:${l.label}`).join('|'),
+    enemiesAsLocations.value.map((e) => `${e.id}:${e.asSelfLocation}`).join('|'),
+  ].join('::')
+})
+watch([cosmicEmissaryLayoutSignature, rotationSteps, locationsZoom], () => nextTick(requestCosmicEmissaryCompact), { flush: 'post' })
 watch(
   [locationOffsets, pendingOffsets, rotationSteps, locationsZoom, locations, cellDimensions],
   updateLayoutPadding,
@@ -862,7 +1035,41 @@ const unusedLabels = computed(() => {
   if (!locationLayout || !usesGrid) return []
   return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
 })
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = useGameChoices(() => props.game, () => props.playerId)
+
+type LocationLike = { id: string, label: string }
+
+const isLocationChoice = (c: Message, location: LocationLike): boolean => {
+  if (c.tag === "TargetLabel") return c.target.contents === location.id
+  if (c.tag === "GridLabel") return c.gridLabel === location.label
+
+  if (c.tag !== "AbilityLabel") return false
+  const { source } = c.ability
+
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) return source.source.contents === location.id
+  } else if (source.tag === 'LocationSource') {
+    return source.contents === location.id
+  }
+
+  return false
+}
+
+const locationCanInteract = (location: LocationLike): boolean =>
+  !locationsUnlocked.value && choices.value.some((choice) => isLocationChoice(choice, location))
+
+const isEncounterDiscardChoice = (c: Message) => {
+  if (c.tag !== "TargetLabel") return false
+  if (c.target.tag === "EnemyTarget") {
+    const enemy = props.game.enemies[c.target.contents as string]
+    if (!enemy) return false
+    return discards.value.some(card => cardId(card) === enemy.cardId)
+  }
+  if (c.target.tag !== "CardIdTarget") return false
+  return discards.value.some(card => cardId(card) === c.target.contents)
+}
+const encounterDiscardCardsAction = computed(() => choices.value.some(isEncounterDiscardChoice))
+
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
 const damage = computed(() => props.scenario.tokens[TokenType.Damage])
 const targets = computed(() => props.scenario.tokens[TokenType.Target])
@@ -943,25 +1150,16 @@ watchEffect(() => {
   }
   forcedShowOutOfPlay.value = choices.value.some(isOutOfPlayChoice)
 
-  const isDiscardChoice = (c: Message) => {
-    if (c.tag !== "TargetLabel") return false
-    if (c.tag === "TargetLabel" && c.target.tag === "EnemyTarget") {
-      const enemy = props.game.enemies[c.target.contents as string]
-      if (!enemy) return false
-      return discards.value.some(card => cardId(card) === enemy.cardId)
-    }
-    if (c.target.tag !== "CardIdTarget") return false
-    return discards.value.some(card => cardId(card) === c.target.contents)
-  }
   const isHollowedChoice = (c: Message) => {
     if (c.tag !== "TargetLabel") return false
     if (c.target.tag !== "CardIdTarget") return false
     return hollowed.value.some(card => cardId(card) === c.target.contents)
   }
-  const showDiscard = choices.value.some(isDiscardChoice)
+  const showDiscard = choices.value.some(isEncounterDiscardChoice)
   const showHollowedCards = choices.value.some(isHollowedChoice)
   if (showDiscard) {
-    showDiscards();
+    encounterDiscardPopoverShown.value = true
+    hideCards()
     forcedShowDiscard.value = true
     forcedShowHollowed.value = false
   } else if (showHollowedCards) {
@@ -977,6 +1175,184 @@ watchEffect(() => {
 
 
 // Helpers
+const cosmicEmissaryLabels = [
+  'cosmicEmissaryPhantasm',
+  'cosmicEmissaryAbyss',
+  'cosmicEmissaryBrilliance',
+  'cosmicEmissaryMiasma',
+] as const
+
+type CosmicEmissaryLabel = typeof cosmicEmissaryLabels[number]
+
+const cosmicEmissaryLocationLabels: Record<CosmicEmissaryLabel, string> = {
+  cosmicEmissaryPhantasm: 'mirrorNestLeft',
+  cosmicEmissaryAbyss: 'mirrorNestTop',
+  cosmicEmissaryBrilliance: 'mirrorNestBottom',
+  cosmicEmissaryMiasma: 'mirrorNestRight',
+}
+
+function locationHasManualOffset(el: HTMLElement): boolean {
+  const locationId = el.dataset.locationId
+  if (!locationId) return false
+  return locationId in locationOffsets.value
+    || locationId in pendingOffsets.value
+    || dragInternal?.locationId === locationId
+}
+
+function transformTranslate(el: HTMLElement): { x: number, y: number } {
+  const style = getComputedStyle(el)
+  const translate = style.translate
+  if (translate && translate !== 'none') {
+    const [x = '0px', y = '0px'] = translate.split(/\s+/)
+    return { x: parseFloat(x) || 0, y: parseFloat(y) || 0 }
+  }
+
+  const transform = style.transform
+  if (!transform || transform === 'none') return { x: 0, y: 0 }
+  const matrix = new DOMMatrixReadOnly(transform)
+  return { x: matrix.e, y: matrix.f }
+}
+
+function styleMapsEqual(a: Record<string, Record<string, string>>, b: Record<string, Record<string, string>>): boolean {
+  const aKeys = Object.keys(a)
+  const bKeys = Object.keys(b)
+  if (aKeys.length !== bKeys.length) return false
+  return aKeys.every((key) => {
+    const aStyle = a[key]
+    const bStyle = b[key]
+    if (!bStyle) return false
+    const aStyleKeys = Object.keys(aStyle)
+    const bStyleKeys = Object.keys(bStyle)
+    return aStyleKeys.length === bStyleKeys.length
+      && aStyleKeys.every((styleKey) => aStyle[styleKey] === bStyle[styleKey])
+  })
+}
+
+function compactCosmicEmissaryFormation(force = false) {
+  if (props.scenario.id !== 'c10651' || (locationsUnlocked.value && !force)) return
+
+  const entries = cosmicEmissaryLabels.map((label) => {
+    const el = document.querySelector(`[data-label=${label}]`) as HTMLElement | null
+    return el ? [label, el] as const : null
+  })
+
+  if (entries.some((entry) => entry === null)) {
+    if (Object.keys(cosmicEmissaryEnemyStyles.value).length > 0 || Object.keys(cosmicEmissaryLocationCellStyles.value).length > 0) {
+      clearCosmicEmissaryCompactStyles()
+    }
+    return
+  }
+
+  const elements = Object.fromEntries(entries as [CosmicEmissaryLabel, HTMLElement][]) as Record<CosmicEmissaryLabel, HTMLElement>
+
+  const locationElements = Object.fromEntries(
+    cosmicEmissaryLabels.map((label) => [
+      label,
+      document.querySelector(`.location-cell[data-label=${cosmicEmissaryLocationLabels[label]}]`) as HTMLElement | null,
+    ])
+  ) as Record<CosmicEmissaryLabel, HTMLElement | null>
+
+  requestAnimationFrame(() => {
+    const locationCards = document.querySelector('.location-cards') as HTMLElement | null
+    const visualScale = locationCards
+      ? (new DOMMatrixReadOnly(getComputedStyle(locationCards).transform).a || 1)
+      : 1
+    const rectFor = (el: HTMLElement) => {
+      const rectEl = (el.querySelector('img.card') ?? el) as HTMLElement
+      const rect = rectEl.getBoundingClientRect()
+      const existing = transformTranslate(el)
+      // Measure the element's natural grid position without removing its current
+      // transform. This keeps the compacted positions in the VDOM between game
+      // updates, so cards don't snap outward before this rAF runs again.
+      return {
+        left: rect.left - existing.x * visualScale,
+        top: rect.top - existing.y * visualScale,
+        width: rect.width,
+        height: rect.height,
+      }
+    }
+    const rects = Object.fromEntries(
+      Object.entries(elements).map(([label, el]) => [label, rectFor(el as HTMLElement)])
+    ) as Record<CosmicEmissaryLabel, { left: number, top: number, width: number, height: number }>
+
+    const centerX = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].left + rects[label].width / 2, 0) / cosmicEmissaryLabels.length
+    const centerY = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].top + rects[label].height / 2, 0) / cosmicEmissaryLabels.length
+
+    const targets: Record<CosmicEmissaryLabel, { left: number; top: number }> = {
+      cosmicEmissaryPhantasm: {
+        left: centerX - rects.cosmicEmissaryPhantasm.width,
+        top: centerY - rects.cosmicEmissaryPhantasm.height,
+      },
+      cosmicEmissaryAbyss: {
+        left: centerX,
+        top: centerY - rects.cosmicEmissaryAbyss.height,
+      },
+      cosmicEmissaryBrilliance: {
+        left: centerX - rects.cosmicEmissaryBrilliance.width,
+        top: centerY,
+      },
+      cosmicEmissaryMiasma: {
+        left: centerX,
+        top: centerY,
+      },
+    }
+
+    const nextEnemyStyles: Record<string, Record<string, string>> = {}
+    const nextLocationCellStyles: Record<string, Record<string, string>> = {}
+    const transition = (!enableCosmicEmissaryAnimation.value || cosmicEmissaryFormationHasMeasured.value) ? 'none' : 'transform 0.2s ease'
+
+    for (const label of cosmicEmissaryLabels) {
+      const rect = rects[label]
+      const target = targets[label]
+      const dx = Math.round(((target.left - rect.left) / visualScale) * 10) / 10
+      const dy = Math.round(((target.top - rect.top) / visualScale) * 10) / 10
+      nextEnemyStyles[label] = {
+        translate: `${dx}px ${dy}px`,
+        transition,
+        zIndex: '20',
+      }
+
+      const locationEl = locationElements[label]
+      const locationLabel = cosmicEmissaryLocationLabels[label]
+      if (locationEl && locationHasManualOffset(locationEl)) {
+        const existing = cosmicEmissaryLocationCellStyles.value[locationLabel]
+        if (existing) nextLocationCellStyles[locationLabel] = existing
+      } else if (locationEl) {
+        const shouldAlignVerticalMidpoint = label === 'cosmicEmissaryPhantasm' || label === 'cosmicEmissaryMiasma'
+        const locationDy = shouldAlignVerticalMidpoint
+          ? (() => {
+              const locationRect = rectFor(locationEl)
+              const enemyCenterY = rect.top + rect.height / 2
+              const locationCenterY = locationRect.top + locationRect.height / 2
+              return Math.round((dy + (enemyCenterY - locationCenterY) / visualScale) * 10) / 10
+            })()
+          : dy
+
+        nextLocationCellStyles[locationLabel] = {
+          translate: `${dx}px ${locationDy}px`,
+          transition,
+          zIndex: '10',
+        }
+      }
+    }
+
+    const enemyStylesChanged = !styleMapsEqual(cosmicEmissaryEnemyStyles.value, nextEnemyStyles)
+    const locationCellStylesChanged = !styleMapsEqual(cosmicEmissaryLocationCellStyles.value, nextLocationCellStyles)
+    if (enemyStylesChanged) {
+      cosmicEmissaryEnemyStyles.value = nextEnemyStyles
+      writeStyleMapCache(cosmicEmissaryEnemyStylesCacheKey, nextEnemyStyles)
+    }
+    if (locationCellStylesChanged) {
+      cosmicEmissaryLocationCellStyles.value = nextLocationCellStyles
+      writeStyleMapCache(cosmicEmissaryLocationCellStylesCacheKey, nextLocationCellStyles)
+    }
+    if (enemyStylesChanged || locationCellStylesChanged) {
+      nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
+    }
+    cosmicEmissaryFormationHasMeasured.value = true
+  })
+}
+
 function rotateImages(init: boolean) {
   const atlachNacha = document.querySelector('[data-label=atlachNacha]') as HTMLElement
   const locationCards = document.querySelector('.location-cards')
@@ -1020,11 +1396,14 @@ function rotateImages(init: boolean) {
     const oX = middleCardImgRect.left + middleCardImgRect.width / 2
     const oY = middleCardImgRect.top + middleCardImgRect.height / 2
 
-    document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img: HTMLElement) => {
+    document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((el) => {
+      const img = el as HTMLElement
+      const label = img.dataset.label
+      if (!label) return
 
-      if (init || !legsSet.value.includes(img.dataset.label)) {
-        if(!legsSet.value.includes(img.dataset.label)) {
-          legsSet.value = [...legsSet.value, img.dataset.label]
+      if (init || !legsSet.value.includes(label)) {
+        if(!legsSet.value.includes(label)) {
+          legsSet.value = [...legsSet.value, label]
         }
         const thisRect = img.getBoundingClientRect()
         const thisX = thisRect.left
@@ -1040,7 +1419,8 @@ function rotateImages(init: boolean) {
         requestAnimationFrame(() => {
           atlachNacha.style.transform = `rotate(${previousRotation.value}deg)`
           atlachNacha.style.transition = 'transform 0.5s'
-          document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img) => {
+          document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((el) => {
+            const img = el as HTMLElement
             img.style.transition = 'transform 0.5s'
             img.style.transform = `rotate(${degrees}deg)`
           })
@@ -1384,14 +1764,25 @@ async function addChaosToken(face: any){
               <img
                 :src="topOfEncounterDiscard"
                 class="card"
-                @click="showDiscards"
               />
               <span class="deck-size">{{discards.length}}</span>
             </div>
 
 
             <div v-if="discards.length > 0" class="buttons">
-              <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
+              <CardsUnderIndicator
+                v-if="discards.length > 0"
+                v-model:shown="encounterDiscardPopoverShown"
+                class="view-discard-button"
+                :cards="discards"
+                :game="game"
+                :playerId="playerId"
+                :label="t('scenario.discards')"
+                :isDiscards="true"
+                :highlighted="encounterDiscardCardsAction"
+                :fullWidth="true"
+                @choose="choose"
+              />
               <template v-if="debug.active">
                 <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackIn'})">{{ $t('scenarioComponent.shuffleBackIn') }}</button>
               </template>
@@ -1403,7 +1794,7 @@ async function addChaosToken(face: any){
             :playerId="playerId"
             @choose="choose"
             style="grid-area: encounterDeck"
-            v-if="props.scenario.hasEncounterDeck"
+            v-if="props.scenario.hasEncounterDeck && !hideEncounterDeck"
           />
 
           <div v-if="topOfSpectralDiscard" class="discard" style="grid-area: spectralDiscard"
@@ -1590,27 +1981,44 @@ async function addChaosToken(face: any){
 
 
       <div class="location-cards-container" @dblclick.passive="toggleZoom">
-        <Connections :game="game" :playerId="playerId" />
+        <Connections :game="game" :playerId="playerId" :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation" />
         <div class="location-cards-scroller" ref="scrollerRef">
-        <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
+        <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :css="props.scenario.id !== 'c10651'" :style="locationStyles" @before-leave="beforeLeave">
           <div
             v-for="location in locations"
             :key="location.label"
             class="location-cell"
+            :class="{ 'location-cell--can-interact': locationCanInteract(location) }"
             :data-location-id="location.id"
-            :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
+            :data-label="location.label"
+            :style="[
+              { 'grid-area': location.label, 'justify-self': 'center' },
+              cosmicEmissaryLocationCellStyles[location.label] ?? {},
+            ]"
           >
-            <Location
-              class="location"
-              :class="{ 'location--unlocked': locationsUnlocked, 'location--dragging': draggingLocationId === location.id }"
-              :game="game"
-              :playerId="playerId"
-              :location="location"
+            <div
+              class="location-wrapper"
               :style="locationOffsetStyle(location)"
               @pointerdown.capture="onLocationPointerDown($event, location)"
-              @choose="choose"
-              @show="doShowCards"
-            />
+              @click.capture="suppressLocationInteractionWhenUnlocked"
+            >
+              <div
+                v-if="abyssIsLocation && location.label === 'theAbyss'"
+                class="abyss-location-count"
+                v-tooltip="`${abyssDeckCount} cards in The Abyss`"
+              >
+                {{ abyssDeckCount }}
+              </div>
+              <Location
+                class="location"
+                :class="{ 'location--unlocked': locationsUnlocked, 'location--dragging': draggingLocationId === location.id }"
+                :game="game"
+                :playerId="playerId"
+                :location="location"
+                @choose="choose"
+                @show="doShowCards"
+              />
+            </div>
           </div>
           <EnemyView
             v-for="enemy in enemiesAsLocations"
@@ -1620,7 +2028,10 @@ async function addChaosToken(face: any){
             :playerId="playerId"
             :data-label="enemy.asSelfLocation"
             :data-rotation="enemy.meta?.rotation ?? null"
-            :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center', 'align-items': 'center' }"
+            :style="[
+              { 'grid-area': enemy.asSelfLocation, 'justify-self': 'center', 'align-items': 'center' },
+              enemy.asSelfLocation ? (cosmicEmissaryEnemyStyles[enemy.asSelfLocation] ?? {}) : {},
+            ]"
             @choose="choose"
           />
           <div
@@ -1656,6 +2067,27 @@ async function addChaosToken(face: any){
             </template>
           </template>
         </transition-group>
+        <div v-if="playerLocationZones.length > 0" class="player-location-zones">
+          <section
+            v-for="zone in playerLocationZones"
+            :key="zone.investigatorId"
+            class="player-location-zone"
+          >
+            <h3>{{ zone.name }}</h3>
+            <div class="player-location-zone__cards">
+              <Location
+                v-for="location in zone.locations"
+                :key="location.id"
+                class="player-area-location"
+                :game="game"
+                :playerId="playerId"
+                :location="location"
+                @choose="choose"
+                @show="doShowCards"
+              />
+            </div>
+          </section>
+        </div>
         </div>
       </div>
 
@@ -1796,6 +2228,13 @@ async function addChaosToken(face: any){
   }
 }
 
+/* A revealed (slid-out) treachery extends down into the board's region; lift the
+   whole scenario-cards layer above the board (normally z-index: -2, behind it) so
+   the revealed card and its buttons stay clickable. */
+.scenario-cards:has(.treachery-group.is-revealed) {
+  z-index: 1;
+}
+
 .clue {
   position: relative;
   width: 57px;
@@ -1888,8 +2327,50 @@ async function addChaosToken(face: any){
   scrollbar-gutter: stable both-edges;
   scroll-padding: 30%;
   display: flex;
+  flex-direction: column;
+  gap: 16px;
   align-items: safe center;
   justify-content: safe center;
+}
+
+.player-location-zones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  flex-shrink: 0;
+  max-width: 100%;
+  padding: 0 12px 12px;
+}
+
+.player-location-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+
+  h3 {
+    margin: 0;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
+.player-location-zone__cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+
+  &:deep(.location) {
+    min-width: calc(var(--card-width) + 120px);
+  }
 }
 
 .location-cards {
@@ -1942,9 +2423,6 @@ async function addChaosToken(face: any){
     display: flex;
     flex-direction: column;
     gap: 5px;
-    @media (max-width: 800px) and (orientation: portrait) {
-      display: none;
-    }
   }
 }
 
@@ -2402,9 +2880,33 @@ async function addChaosToken(face: any){
      the user's drag offset transform, so rotation reshuffles (which FLIP-
      animate the wrapper) don't wipe that offset. */
   display: block;
+  position: relative;
 }
 
-.location-cell > .location {
+.location-cell--can-interact {
+  z-index: 20;
+}
+
+.location-wrapper {
+  width: fit-content;
+}
+
+.abyss-location-count {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(10, 13, 25, 0.9);
+  border: 1px solid rgba(111, 225, 210, 0.8);
+  box-shadow: 0 0 8px rgba(111, 225, 210, 0.45);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: help;
+}
+
+.location-cell > .location-wrapper {
   /* Animate the offset along with the wrapper's FLIP move during rotation so
      the offset doesn't snap to its rotated value before the wrapper slides
      into place. Same easing/duration as .map-move keeps them in sync. */

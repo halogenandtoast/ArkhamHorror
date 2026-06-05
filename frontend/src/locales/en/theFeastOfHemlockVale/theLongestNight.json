@@ -1,4 +1,22 @@
 {
+  "specialRules": [
+    {
+      "title": "Barriers",
+      "body": "<p class='basic'>Some card abilities allow the investigators to put up barriers around the farm. Barriers block the movement of enemies.</p><ul><li>To put up a barrier, place 1 resource token (from the token pool) between your location and a connecting location, as a barrier. If a card effect instructs you to place a barrier “at” your location, choose an adjacent location and place the barrier between your location and the chosen location. This barrier is considered to be “at” both locations for the purposes of card effects.</li><li>There is no limit to the number of barriers between locations.</li><li>When an enemy would move via a keyword (i.e. hunter or patrol) and one or more barriers are between its location and the location it is moving to, remove one of those barriers, then cancel the effects of the move instead.</li><li>Enemies that ignore barriers do not resolve any of the above effects (including removing the barrier).</li></ul>"
+    },
+    {
+      "title": "Decoys",
+      "body": "<p class='basic'>Some card abilities set up decoys around the farm to stall enemies.</p><ul><li>To set up a decoy, place 1 horror token (from the token pool) on your location, as a decoy. Limit 1 decoy per location.</li><li>When an enemy enters a location with a decoy, remove the decoy, deal 1 damage to that enemy, disengage it from all investigators, and exhaust it. That enemy cannot ready for the remainder of the round.</li><li>Enemies that ignore decoys do not resolve any of the above effects (including removing the decoy).</li></ul>"
+    },
+    {
+      "title": "Traps",
+      "body": "<p class='basic'>Some card abilities lay traps around the farm for enemies to fall into.</p><ul><li>To lay a trap, place 1 damage token (from the token pool) on your location, as a trap. Limit 1 trap per location.</li><li>When an enemy enters a location with a trap, remove the trap and deal 2 damage to that enemy.</li><li>Enemies that ignore traps do not resolve any of the above effects (including removing the trap).</li></ul>"
+    },
+    {
+      "title": "The Enemy Deck",
+      "body": "<p class='basic'>During the setup of this scenario, a second deck with a different encounter back is constructed: the Enemy deck. This deck is a separate deck made up of only enemies, and represents the relentless horde of frenzied beasts coming for the captives. During the mythos phase, the agenda’s forced effect prompts each investigator to draw the top card of the Enemy deck. The Enemy deck has its own discard pile and is immune to player card effects. Non-weakness enemies in this scenario are discarded to the Enemy discard pile. If the Enemy deck is empty, shuffle the Enemy discard pile back into the Enemy deck.</p>"
+    }
+  ],
   "intro": {
     "title": "Scenario: The Longest Night",
     "intro1": {
@@ -11,11 +29,11 @@
     },
     "intro2": {
       "title": "Intro 2",
-      "body": "<p>_Intro 2_: You step out from your hiding place with Dr. Marquez. \"This is barbaric. These people belong in a hospital!\" The professor snarls at the matron.</p><ul><li>Add 1 {tablet} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 4_.</p>"
+      "body": "<p>_Intro 2_: You step out from your hiding place with Dr. Marquez. \"This is barbaric. These people belong in a hospital!\" The professor snarls at the matron.</p><ul><li>Add 1 {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 4_.</p>"
     },
     "intro3": {
       "title": "Intro 3",
-      "body": "<p>_Intro 3_: You wait in silence as a fetid breeze stirs the heavy air. Tad saunters forward to address Mother Rachel. \"The witnesses are here,\" he gestures to your hiding place. In moments, you and the professor are dragged roughly out into the open.</p><ul><li>Add 1 {skull} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Proceed to _Intro 4_.</p>"
+      "body": "<p>_Intro 3_: You wait in silence as a fetid breeze stirs the heavy air. Tad saunters forward to address Mother Rachel. \"The witnesses are here,\" he gestures to your hiding place. In moments, you and the professor are dragged roughly out into the open.</p><ul><li>Add 1 {'{'}skull{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Proceed to _Intro 4_.</p>"
     },
     "intro4": {
       "title": "Intro 4",
@@ -27,15 +45,15 @@
     "danceNone": "Otherwise, skip to _Intro 7_.",
     "intro5": {
       "title": "Intro 5",
-      "body": "<p>_Intro 5:_ Several hooded figures pull back their hoods and stand behind you: they are the friends you danced with just hours ago. Mother Rachel regards you each in turn. \"So be it, then. We are the wheat; you the chaff.\"</p><ul><li>Add 1 {cultist} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 8_.</p>"
+      "body": "<p>_Intro 5:_ Several hooded figures pull back their hoods and stand behind you: they are the friends you danced with just hours ago. Mother Rachel regards you each in turn. \"So be it, then. We are the wheat; you the chaff.\"</p><ul><li>Add 1 {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 8_.</p>"
     },
     "intro6": {
       "title": "Intro 6",
-      "body": "<p>_Intro 6:_ A single figure steps out from behind Mother Rachel and comes to your side. It is the friend you danced with just hours ago. Mother Rachel regards them bitterly. \"So be it, then. We are the wheat, and you the chaff.\"</p><ul><li>Add 1 {cultist} token and 1 {elderThing} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 8_.</p>"
+      "body": "<p>_Intro 6:_ A single figure steps out from behind Mother Rachel and comes to your side. It is the friend you danced with just hours ago. Mother Rachel regards them bitterly. \"So be it, then. We are the wheat, and you the chaff.\"</p><ul><li>Add 1 {'{'}cultist{'}'} token and 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 8_.</p>"
     },
     "intro7": {
       "title": "Intro 7",
-      "body": "<p>_Intro 7:_ Dr. Marquez's plea hangs in the air, unanswered. The captives and the hooded figures remain silent as Mother Rachel regards you with a careworn smile. \"Oh, my children. The people of the Vale are family. We each know our place. You may yet learn yours.\"</p><ul><li>In your Campaign Log, record <i>The investigators faced the longest night alone</i>.</li><li>Add 1 {elderThing} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Proceed to _Intro 8_.</p>"
+      "body": "<p>_Intro 7:_ Dr. Marquez's plea hangs in the air, unanswered. The captives and the hooded figures remain silent as Mother Rachel regards you with a careworn smile. \"Oh, my children. The people of the Vale are family. We each know our place. You may yet learn yours.\"</p><ul><li>In your Campaign Log, record <i>The investigators faced the longest night alone</i>.</li><li>Add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Proceed to _Intro 8_.</p>"
     },
     "intro8": {
       "title": "Intro 8",

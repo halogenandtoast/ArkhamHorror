@@ -9,6 +9,10 @@
     "prebuild": "node ./scripts/slim-cards.cjs",
     "build": "vite build",
     "tc": "vue-tsc --noEmit -p tsconfig.json --composite false",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{ts,vue}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,vue}\"",
     "digest": "node ./scripts/digest.cjs",
     "slim-cards": "node ./scripts/slim-cards.cjs"
   },

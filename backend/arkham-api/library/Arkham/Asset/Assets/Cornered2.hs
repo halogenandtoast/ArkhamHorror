@@ -16,7 +16,7 @@ cornered2 = asset Cornered2 Cards.cornered2
 
 instance HasAbilities Cornered2 where
   getAbilities (Cornered2 a) =
-    [ playerLimit PerTestOrAbility
+    [ playerLimit PerTest
         $ wantsSkillTest (YourSkillTest AnySkillTest)
         $ controlled a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility

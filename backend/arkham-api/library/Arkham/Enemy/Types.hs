@@ -119,7 +119,9 @@ instance FromJSON (SomeField Enemy) where
     "EnemyDoom" -> pure $ SomeField EnemyDoom
     "EnemyExactDoom" -> pure $ SomeField EnemyExactDoom
     "EnemyEvade" -> pure $ SomeField Arkham.Enemy.Types.EnemyEvade
+    "EnemyEvadeActual" -> pure $ SomeField EnemyEvadeActual
     "EnemyFight" -> pure $ SomeField Arkham.Enemy.Types.EnemyFight
+    "EnemyFightActual" -> pure $ SomeField EnemyFightActual
     "EnemyTokens" -> pure $ SomeField EnemyTokens
     "EnemyClues" -> pure $ SomeField EnemyClues
     "EnemyDamage" -> pure $ SomeField EnemyDamage
@@ -143,6 +145,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemySpawnedBy" -> pure $ SomeField EnemySpawnedBy
     "EnemySpawnDetails" -> pure $ SomeField EnemySpawnDetails
     "EnemyAttacking" -> pure $ SomeField EnemyAttacking
+    "EnemyWantsToAttack" -> pure $ SomeField EnemyWantsToAttack
     "EnemyBearer" -> pure $ SomeField EnemyBearer
     "EnemyCardsUnderneath" -> pure $ SomeField EnemyCardsUnderneath
     "EnemyLastKnownLocation" -> pure $ SomeField EnemyLastKnownLocation

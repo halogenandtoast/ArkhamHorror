@@ -2,6 +2,7 @@ module Arkham.Asset.Assets.SolemnVowSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards (rolandBanks)
+import Arkham.Matcher.Asset
 import TestImport.New
 
 data MoveType = MoveDamage | MoveHorror
@@ -27,7 +28,10 @@ instance Show TargetType where
 
 testPermutations :: [(MoveType, SourceType, TargetType)]
 testPermutations =
-  [ (dType, sType, tType) | dType <- [MoveDamage, MoveHorror], sType <- [You, AssetYouControl], tType <- [Owner, AssetOwnerControls]
+  [ (dType, sType, tType)
+  | dType <- [MoveDamage, MoveHorror]
+  , sType <- [You, AssetYouControl]
+  , tType <- [Owner, AssetOwnerControls]
   ]
 
 spec :: Spec
@@ -41,6 +45,23 @@ spec = describe "Solemn Vow" do
 
     solemnVow.controller `shouldReturn` Just (toId roland)
     solemnVow.owner `shouldReturn` Just (toId self)
+
+  it
+    "enters under the control of an investigator other than the one playing it, even when played by a non-owner" . gameTest $ \self -> do
+    roland <- addInvestigator rolandBanks
+    location <- testLocation
+    self `moveTo` location
+    roland `moveTo` location
+    -- self plays a Solemn Vow owned by roland (e.g. via "You Owe Me One")
+    card <- genCard Assets.solemnVow
+    let card' = case card of
+          PlayerCard pc -> PlayerCard pc {pcOwner = Just (toId roland)}
+          other -> other
+    run $ PutCardIntoPlay (toId self) card' Nothing NoPayment []
+    solemnVow <- selectJust $ AssetWithCardId (toCardId card)
+
+    solemnVow.controller `shouldReturn` Just (toId roland)
+    solemnVow.owner `shouldReturn` Just (toId roland)
 
   context "if the owner of Solemn Vow is at your location" do
     context

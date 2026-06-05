@@ -34,12 +34,13 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
 
 const readCards = computed(() => props.question.readCards ?? [])
 
-const pickCards = computed(() => props.question.readChoices.contents.reduce((acc, v, i) => {
-  if ("cardCode" in v) {
-    return [...acc, { cardCode: v.cardCode, flippable: "flippable" in v ? v.flippable : false, index: i }]
+type PickCardChoice = { cardCode: string; flippable: boolean; index: number }
+const pickCards = computed(() => props.question.readChoices.contents.reduce<PickCardChoice[]>((acc, v, i) => {
+  if ("cardCode" in v && typeof v.cardCode === 'string') {
+    return [...acc, { cardCode: v.cardCode, flippable: "flippable" in v ? Boolean(v.flippable) : false, index: i }]
   }
   return acc
-}, [] as { cardCode: string, index: number }[]))
+}, []))
 
 type ReadChoice =
   | { tag: "Label", label: string, index: number }
@@ -58,8 +59,8 @@ const readChoices = computed(() => {
             return [...acc, { tag: "InvalidLabel", label: v.label, index: i }]
           }
         }
-        if ("flavorText" in v) {
-          return [...acc, { tag: "Info", flavor: v.flavorText }]
+        if (v.tag === MessageType.INFO) {
+          return [...acc, { tag: "Info", flavor: v.flavor }]
         }
         return acc
       }, [] as ReadChoice[])
@@ -74,8 +75,8 @@ const readChoices = computed(() => {
             return [...acc, { tag: "InvalidLabel", label: v.label, index: i }]
           }
         }
-        if ("flavorText" in v) {
-          return [...acc, { tag: "Info", flavor: v.flavorText }]
+        if (v.tag === MessageType.INFO) {
+          return [...acc, { tag: "Info", flavor: v.flavor }]
         }
         return acc
       }, [] as ReadChoice[])
@@ -92,11 +93,12 @@ const flippableCard = (cardCode: string) => {
     cardType: 'UnknownType',
     art: cardArt(cardCode),
     level: 0,
-    traits: [],
-    name: "",
+    cardTraits: [],
+    name: { title: '', subtitle: null },
     skills: [],
     cost: null,
-    otherSide: `${cardCode}b`
+    otherSide: `${cardCode}b`,
+    meta: {}
   }
 }
 </script>
@@ -119,7 +121,7 @@ const flippableCard = (cardCode: string) => {
       </div>
     </div>
     <div class="options">
-      <template v-for="readChoice in readChoices" :key="readChoice.index">
+      <template v-for="(readChoice, choiceIndex) in readChoices" :key="readChoice.tag === 'Info' ? `info-${choiceIndex}` : readChoice.index">
         <button
           v-if="readChoice.tag === 'InvalidLabel'"
           disabled
@@ -504,6 +506,10 @@ a.button {
       align-items: center;
       gap: 20px;
     }
+  }
+
+  :deep(p.indent) {
+    margin-left: 2em;
   }
 
   :deep(span.wolgast) {

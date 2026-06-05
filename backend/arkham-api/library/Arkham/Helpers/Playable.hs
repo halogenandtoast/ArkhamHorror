@@ -57,15 +57,12 @@ getPlayableCards
      , IdOf investigator ~ InvestigatorId
      )
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
-getPlayableCards source investigator costStatus windows' = withSpan_ "getPlayableCards" do
+getPlayableCards source investigator costStatus windows' = do
   let iid = asId investigator
   cached (PlayableCardsKey iid (toSource source) costStatus windows') do
-    asIfInHandCards <- withSpan_ "getAsIfInHandCards" $ getAsIfInHandCards iid
-    otherPlayersPlayableCards <-
-      withSpan_ "getOtherPlayersPlayableCards"
-        $ getOtherPlayersPlayableCards iid costStatus windows'
-    playableDiscards <-
-      withSpan_ "getPlayableDiscards" $ getPlayableDiscards source iid costStatus windows'
+    asIfInHandCards <- getAsIfInHandCards iid
+    otherPlayersPlayableCards <- getOtherPlayersPlayableCards iid costStatus windows'
+    playableDiscards <- getPlayableDiscards source iid costStatus windows'
     hand <- field InvestigatorHand iid
     playableHandCards <-
       filterPlayable investigator source costStatus windows' (hand <> asIfInHandCards)
@@ -123,7 +120,7 @@ filterPlayable
   -> [Window]
   -> [Card]
   -> m [Card]
-filterPlayable investigator source costStatus windows' cards = withSpan_ "filterPlayable" do
+filterPlayable investigator source costStatus windows' cards =
   filterM (getIsPlayable investigator source costStatus windows') cards
 
 getIsPlayable
@@ -140,10 +137,9 @@ getIsPlayable
   -> [Window]
   -> Card
   -> m Bool
-getIsPlayable (asId -> iid) source costStatus windows' c =
-  withSpan_ ("getIsPlayable[ " <> unCardCode c.cardCode <> "]") do
-    availableResources <- getSpendableResources iid
-    getIsPlayableWithResources iid source availableResources costStatus windows' c
+getIsPlayable (asId -> iid) source costStatus windows' c = do
+  availableResources <- getSpendableResources iid
+  getIsPlayableWithResources iid source availableResources costStatus windows' c
 
 withReducedCost
   :: ( Tracing m
@@ -189,7 +185,11 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
   go :: forall n. (Tracing n, HasGame n) => n Bool
   go =
     all (isNothing . snd)
-      <$> getPlayabilityChecksWithResources iid source availableResources costStatus windows' c
+      -- Boolean path: short-circuit. A card rejected by a cheap check (type,
+      -- cost, play window, ...) must not pay for the expensive criteria /
+      -- fight-evade checks. The diagnostic path (getPlayabilityChecks) passes
+      -- False to compute every reason.
+      <$> getPlayabilityChecksWithResources True iid source availableResources costStatus windows' c
 
 getOtherPlayersPlayableCards
   :: (Tracing m, HasGame m) => InvestigatorId -> CostStatus -> [Window] -> m [Card]
@@ -212,7 +212,8 @@ getPlayabilityChecks
   => investigator -> source -> CostStatus -> [Window] -> Card -> m [(Text, Maybe Text)]
 getPlayabilityChecks (asId -> iid) source costStatus windows' c = do
   availableResources <- getSpendableResources iid
-  getPlayabilityChecksWithResources iid source availableResources costStatus windows' c
+  -- Diagnostic path: compute every check so the UI can report all reasons.
+  getPlayabilityChecksWithResources False iid source availableResources costStatus windows' c
 
 getPlayabilityChecksWithResources
   :: forall m source
@@ -221,18 +222,22 @@ getPlayabilityChecksWithResources
      , HasGame m
      , Sourceable source
      )
-  => InvestigatorId
+  => Bool
+  -- ^ Short-circuit: stop at the first failed (cheap) check instead of
+  -- computing every check. Used by the boolean playability path; the
+  -- diagnostic path passes False to gather all failure reasons.
+  -> InvestigatorId
   -> source
   -> Int
   -> CostStatus
   -> [Window]
   -> Card
   -> m [(Text, Maybe Text)]
-getPlayabilityChecksWithResources _ _ _ _ _ (VengeanceCard _) =
+getPlayabilityChecksWithResources _ _ _ _ _ _ (VengeanceCard _) =
   pure [("Card type", Just "Vengeance cards are not playable")]
-getPlayabilityChecksWithResources _ _ _ _ _ (EncounterCard _) =
+getPlayabilityChecksWithResources _ _ _ _ _ _ (EncounterCard _) =
   pure [("Card type", Just "Encounter cards are not playable")]
-getPlayabilityChecksWithResources iid (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) =
+getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) =
   withDepthGuard 3 [] $ do
     let pcDef = toCardDef c
 
@@ -349,35 +354,12 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
             let need = maybe 0 (+ auxiliaryResourceCosts) mModifiedCardCost
              in Just $ "Need " <> tshow need <> " resources, have " <> tshow totalAvailable
 
-    -- Criteria check
     cardModifiers <- getModifiers c
-    let
-      handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
-      handleCriteriaReplacement m _ = m
-      resolvedCriteria =
-        foldl'
-          handleCriteriaReplacement
-          (replaceYouMatcher iid $ over biplate (replaceThisCard' c) $ cdCriteria pcDef)
-          cardModifiers
-    criteriaOk <-
-      maybe
-        (pure True)
-        (passesCriteria iid (Just (c, costStatus)) source (CardIdSource c.id) windows')
-        resolvedCriteria
-    criteriaDetail <-
-      if criteriaOk
-        then pure Nothing
-        else case resolvedCriteria of
-          Nothing -> pure (Just "No criteria defined but check failed")
-          Just (Criteria.Criteria items) -> do
-            failed <-
-              filterM
-                (\ctr -> not <$> passesCriteria iid (Just (c, costStatus)) source (CardIdSource c.id) windows' ctr)
-                items
-            pure $ Just $ "Failed: " <> mconcat (intersperse ", " (map tshow failed))
-          Just ctr -> pure $ Just $ "Not met: " <> tshow ctr
 
-    -- Play window check
+    -- Play window check (moved ahead of the criteria check so the cheap-check
+    -- gate below can skip the expensive criteria / fight / evade work for cards
+    -- that cannot be played in the current window — the common case while
+    -- resolving forced/reaction windows).
     let
       goNoAction = \case
         UnpaidCost NoAction -> True
@@ -418,6 +400,53 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
               then Just "Fast card: not in a valid fast window"
               else Just "Not in a valid play window (not during your turn)"
 
+    -- Cheap-check short-circuit gate. If any cheap check has already failed the
+    -- card is unplayable regardless of criteria/actions, so skip the expensive
+    -- criteria and fight/evade/investigate checks. Only active on the boolean
+    -- playability path; the diagnostic path passes shortCircuit=False and so
+    -- still computes (and reports) every check.
+    let
+      cheapFail =
+        shortCircuit
+          && any
+            isJust
+            [ cardTypeDetail
+            , uniquenessDetail
+            , playRestrictionsDetail
+            , resourceCostDetail
+            , playWindowDetail
+            ]
+
+    -- Criteria check (skipped when a cheap check already failed)
+    criteriaDetail <-
+      if cheapFail
+        then pure Nothing
+        else do
+          let
+            handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
+            handleCriteriaReplacement m _ = m
+            resolvedCriteria =
+              foldl'
+                handleCriteriaReplacement
+                (replaceYouMatcher iid $ over biplate (replaceThisCard' c) $ cdCriteria pcDef)
+                cardModifiers
+          criteriaOk <-
+            maybe
+              (pure True)
+              (passesCriteria iid (Just (c, costStatus)) source (CardIdSource c.id) windows')
+              resolvedCriteria
+          if criteriaOk
+            then pure Nothing
+            else case resolvedCriteria of
+              Nothing -> pure (Just "No criteria defined but check failed")
+              Just (Criteria.Criteria items) -> do
+                failed <-
+                  filterM
+                    (\ctr -> not <$> passesCriteria iid (Just (c, costStatus)) source (CardIdSource c.id) windows' ctr)
+                    items
+                pure $ Just $ "Failed: " <> mconcat (intersperse ", " (map tshow failed))
+              Just ctr -> pure $ Just $ "Not met: " <> tshow ctr
+
     -- Limits check
     limitsOk <- passesLimits (if isBobJenkins then fromMaybe iid c.owner else iid) c
     let limitsDetail = if limitsOk then Nothing else Just "Per-round or per-game limit has been reached"
@@ -445,7 +474,7 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
         _ -> False
       doAsIfTurn = any isDuringTurnWindow windows'
     evadeOk <-
-      if hasEvade
+      if hasEvade && not cheapFail
         then withGrantedActions iid GameSource ac do
           if inFastWindow || doAsIfTurn
             then
@@ -462,7 +491,7 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
             `elem` pcDef.actions
             && not (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` pcDef.actions)
     fightOk <-
-      if hasFight
+      if hasFight && not cheapFail
         then withGrantedActions iid GameSource ac do
           if inFastWindow || doAsIfTurn
             then
@@ -476,7 +505,7 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
     -- Investigate check (only if card has investigate action)
     let hasInvestigate = #investigate `elem` pcDef.actions && not cardHasOrActions
     investigateOk <-
-      if hasInvestigate
+      if hasInvestigate && not cheapFail
         then do
           mloc <- getLocationOf iid
           case mloc of
@@ -530,15 +559,18 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
       mods <- lift $ getModifiers lid
       pure [m | AdditionalCostToResign m <- mods]
     actionCostOk <-
-      getCanAffordCost_ iid (CardIdSource c.id) c.actions windows' False
-        $ fold
-        $ [ActionCost actionCost | actionCost > 0 && not inFastWindow && costStatus /= PaidCost]
-        <> additionalCosts
-        <> investigateCosts
-        <> auxiliaryCosts
-        <> resignCosts
-        <> sealedChaosTokenCost
-        <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]
+      if cheapFail
+        then pure True
+        else
+          getCanAffordCost_ iid (CardIdSource c.id) c.actions windows' False
+            $ fold
+            $ [ActionCost actionCost | actionCost > 0 && not inFastWindow && costStatus /= PaidCost]
+            <> additionalCosts
+            <> investigateCosts
+            <> auxiliaryCosts
+            <> resignCosts
+            <> sealedChaosTokenCost
+            <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]
     let actionCostDetail =
           if actionCostOk
             then Nothing

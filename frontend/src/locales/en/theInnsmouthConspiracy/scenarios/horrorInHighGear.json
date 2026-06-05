@@ -1,5 +1,19 @@
 {
   "heading": "Scenario V",
+  "specialRules": [
+    {
+      "title": "Vehicles",
+      "body": "<p class='basic'>An asset with the vehicle keyword represents a vehicle that the investigators may enter or leave. An asset with this keyword is called a vehicle, and follows these rules:</p><ul><li>While an investigator’s mini-card is placed overlapping a vehicle, that investigator is in that vehicle. While an investigator’s mini-card is placed overlapping their location, that investigator is instead not in a vehicle (even if they are at the same location as a vehicle).<ul><li>As a {'{'}action{'}'} ability, an investigator may enter or leave a vehicle at their location. Move that investigator’s mini-card onto the vehicle or off of the vehicle and onto their location to indicate their new position. Each investigator may perform this ability only once each round.</li><li>An investigator who is in a vehicle is also at that vehicle’s location.</li><li>While an investigator is in a vehicle, that investigator cannot move independently of the vehicle.</li></ul></li><li>Vehicles generally have one or more abilities that allow them to move to a connecting location. As a vehicle moves from one location to another, all investigators in the vehicle also move with the vehicle.</li><li>Vehicles do not alter enemy movement or enemy engagement in any way unless otherwise noted.</li></ul>"
+    },
+    {
+      "title": "Running / Stopped",
+      "body": "<p class='basic'>Vehicles in this scenario can either be “running” or “stopped,” as indicated by their two sides. The differences between a running vehicle and a stopped vehicle is indicated by the game text on each side. A vehicle’s engine can be started or stopped using the ability on that vehicle, flipping it over to its other side.</p><ul><li>Generally speaking, investigators will only be able to make swift progress in a running vehicle. However, it may sometimes be a good idea to briefly stop your vehicle if you are approaching a dangerous location, such as a Cliffside Road or a Tight Turn. Be careful!</li></ul>"
+    },
+    {
+      "title": "Road X",
+      "body": "<p class='basic'>During this scenario, the investigators are traveling the Old Innsmouth Road from Innsmouth to Falcon Point. This road is generally a straight line from left to right, but occasionally contains branching paths.</p><p class='basic'>Each time a location with the Road X keyword is revealed, if there are no locations ahead of the just revealed location, put X new locations into play in a new column in front of it, Old Innsmouth Road side faceup. The first of these locations must be the top location of the Road deck. Each of the remaining locations to be put into play are taken from among the set-aside Long Way Around locations (if there are not enough Long Way Around locations, use as many as you can). Shuffle each of those locations so that the players do not know which is which.</p><p>*For example: Trish is the driver of Elina Harper’s Car, and has just moved that car forward to an unrevealed location. It is a Fork in the Road with the “Road 2” keyword. Since there are currently no locations in front of Fork in the Road, she must therefore place 2 Old Innsmouth Road locations in front of Fork in the Road. She takes the top card of the Road deck and one of the set-aside Long Way Around locations, puts both of them into play in a new column in front of Fork in the Road, and shuffles them so that the players do not know which is which.*</p><ul><li>Generally, it is wise to avoid taking a Long Way Around, since it will slow you down and reduce the amount of time you have to reach Falcon Point.</li><li>During this scenario, each location is connected to each location behind or ahead of it, but not to any other location on its column.</li></ul>"
+    }
+  ],
   "label": {
     "discardAsset": "Discard an asset you control",
     "whichVehicle": "Which vehicle will you start in?",

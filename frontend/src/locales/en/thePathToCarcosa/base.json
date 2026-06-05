@@ -1,4 +1,18 @@
 {
+  "specialRules": [
+    {
+      "title": "New Keyword: Hidden",
+      "body": "<p class='basic'>Some encounter cards in The Path to Carcosa campaign have the “hidden” keyword. Hidden cards have Revelation abilities that secretly add them to your hand. This should be done without revealing that card or its text to the other investigators. While a hidden card is in your hand, treat it as if it were in your threat area. Its Constant abilities are active, and abilities on it can be triggered, but only by you. A hidden card counts toward your hand size, but it cannot be discarded from your hand by any means except those described on the card. When discarded, hidden cards are placed in the encounter discard pile. They do not remain a part of your deck like weaknesses do. For the best experience, players are encouraged to stay “in character” and not share information about hidden cards in their hand.</p>"
+    },
+    {
+      "title": "Doubt and Conviction",
+      "body": "<p class='basic'>Some story resolutions and interludes in The Path to Carcosa campaign instruct the players to “Mark one Doubt” or “Mark one Conviction” in their Campaign Log. This is done by filling in one of the boxes next to “Doubt” or “Conviction” at the bottom of the Campaign Log.</p><p class='basic'>Later in the campaign, some scenarios may be changed or altered depending on whether the investigators “have more Doubt than Conviction” or “have more Conviction than Doubt.” The investigators have more Doubt than Conviction if the number of boxes filled in next to Doubt is greater than the number of boxes filled in next to Conviction (and vice versa). Doubt and Conviction are shared among all of the investigators, and they are not tied to any specific investigator. Doubt and Conviction have no game effect except when explicitly referenced by the Campaign Guide or by a card effect.</p>"
+    },
+    {
+      "title": "Story Cards",
+      "body": "<p class='basic'>Story cards are a new cardtype in The Path to Carcosa campaign. These cards serve as an avenue for additional narrative and typically appear as the reverse side of another scenario card. When you are instructed to resolve a story card, simply read its story text and resolve its game text, if any.</p>"
+    }
+  ],
   "interludes": {
     "1": "Lunacy’s Reward",
     "2": "Lost Soul"

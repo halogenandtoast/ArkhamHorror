@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.ControlStation (controlStation) where
 
 import Arkham.Ability
+import Arkham.ForMovement
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
@@ -16,7 +17,10 @@ newtype ControlStation = ControlStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 controlStation :: LocationCard ControlStation
-controlStation = locationWith ControlStation Cards.controlStation 1 (PerPlayer 2) connectsToAdjacent
+controlStation =
+  locationWith ControlStation Cards.controlStation 1 (PerPlayer 2)
+    $ connectsToAdjacent
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 2) (ConnectedTo NotForMovement ThisLocation))
 
 instance HasAbilities ControlStation where
   getAbilities (ControlStation a) =
@@ -38,8 +42,7 @@ instance RunMessage ControlStation where
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
       pos <- fieldJust LocationPosition lid
-      locations <-
-        select $ mapOneOf LocationInPosition (adjacentPositions pos) <> LocationCanBeSwapped
+      locations <- select $ mapOneOf LocationInPosition (adjacentPositions pos) <> LocationCanBeSwapped
       chooseTargetM iid locations (swapLocations lid)
       pure l
     _ -> ControlStation <$> liftRunMessage msg attrs

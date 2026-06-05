@@ -170,6 +170,7 @@ allStories =
     , SomeStoryCard nightTwo
     , SomeStoryCard dayThree
     , SomeStoryCard nightThree
+    , SomeStoryCard theAbyss
     , -- Return to The Path to Carcosa
       --- Return to The Last King
       SomeStoryCard returnToSickeningReality_23

@@ -27,7 +27,7 @@ instance RunMessage Hemophobia where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      directHorror iid (attrs.ability 1) 1
+      assignHorror iid (attrs.ability 1) 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs

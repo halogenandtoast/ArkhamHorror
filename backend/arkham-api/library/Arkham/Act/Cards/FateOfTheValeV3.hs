@@ -31,11 +31,6 @@ instance HasModifiersFor FateOfTheValeV3 where
 fateOfTheValeV3 :: ActCard FateOfTheValeV3
 fateOfTheValeV3 = act (3, A) FateOfTheValeV3 Cards.fateOfTheValeV3 Nothing
 
-getClueCount :: Payment -> Int
-getClueCount (CluePayment _ n) = n
-getClueCount (Payments ps) = sum $ map getClueCount ps
-getClueCount _ = 0
-
 instance HasAbilities FateOfTheValeV3 where
   getAbilities (FateOfTheValeV3 a) =
     extend
@@ -54,7 +49,7 @@ instance HasAbilities FateOfTheValeV3 where
 
 instance RunMessage FateOfTheValeV3 where
   runMessage msg a@(FateOfTheValeV3 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ (getClueCount -> cluesSpent) -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalCluePayment -> cluesSpent) -> do
       field InvestigatorLocation iid >>= traverse_ \lid -> do
         playerCount <- getPlayerCount
         let kindling = cluesSpent `div` playerCount

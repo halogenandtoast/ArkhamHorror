@@ -4,6 +4,7 @@ import { type Game } from '@/arkham/types/Game'
 import { useDebug } from '@/arkham/debug'
 import { useI18n } from 'vue-i18n';
 import { updateGameRaw } from '@/arkham/api'
+import { gameLocalStorageKey, getGameLocalStorageItem, removeGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useSettingsFocus } from '@/composable/settingsFocus'
@@ -40,13 +41,12 @@ const investigator = computed(() => {
 })
 
 const skipTriggers = ref(investigator.value?.settings.globalSettings.ignoreUnrelatedSkillTestTriggers ?? false)
-const cosmicEmissaryAnimationKey = computed(() => `game:${props.game.id}:enableCosmicEmissaryAnimation`)
-const legacyDisableCosmicEmissaryAnimationKey = computed(() => `game:${props.game.id}:disableCosmicEmissaryAnimation`)
+const cosmicEmissaryAnimationKey = computed(() => gameLocalStorageKey(props.game.id, 'enableCosmicEmissaryAnimation'))
 const showCosmicEmissaryAnimationSetting = computed(() => props.game.scenario?.id === 'c10651')
 const enableCosmicEmissaryAnimation = ref(
-  localStorage.getItem(cosmicEmissaryAnimationKey.value) === null
-    ? localStorage.getItem(legacyDisableCosmicEmissaryAnimationKey.value) !== 'true'
-    : localStorage.getItem(cosmicEmissaryAnimationKey.value) !== 'false'
+  getGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation') === null
+    ? getGameLocalStorageItem(props.game.id, 'disableCosmicEmissaryAnimation') !== 'true'
+    : getGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation') !== 'false'
 )
 
 watch(() => skipTriggers.value, (value) => {
@@ -61,8 +61,8 @@ watch(() => skipTriggers.value, (value) => {
 })
 
 watch(enableCosmicEmissaryAnimation, (value) => {
-  localStorage.setItem(cosmicEmissaryAnimationKey.value, value ? 'true' : 'false')
-  localStorage.removeItem(legacyDisableCosmicEmissaryAnimationKey.value)
+  setGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation', value ? 'true' : 'false')
+  removeGameLocalStorageItem(props.game.id, 'disableCosmicEmissaryAnimation')
   window.dispatchEvent(new CustomEvent('arkham-setting-change', {
     detail: { key: cosmicEmissaryAnimationKey.value, value: value ? 'true' : 'false' }
   }))

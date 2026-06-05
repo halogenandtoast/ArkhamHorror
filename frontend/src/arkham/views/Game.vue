@@ -52,6 +52,7 @@ import useEmitter from '@/composable/useEmitter'
 import { useDebug } from '@/arkham/debug'
 import { imgsrc } from '@/arkham/helpers'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
+import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
 import * as Arkham from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import {
@@ -140,14 +141,14 @@ const showShortcuts = ref(false)
 const isMobileViewport = () =>
   typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches
 const showSidebar = ref(
-  isMobileViewport() ? false : JSON.parse(localStorage.getItem('showSidebar') ?? 'true'),
+  isMobileViewport() ? false : JSON.parse(getGameLocalStorageItem(props.gameId, 'showSidebar') ?? 'true'),
 )
 const socketError = ref(false)
 const error = ref<string | null>(null)
 const solo = ref(false)
-const showOtherPlayersHands = ref(localStorage.getItem('showOtherPlayersHands') === 'true')
+const showOtherPlayersHands = ref(getGameLocalStorageItem(props.gameId, 'showOtherPlayersHands') === 'true')
 watch(showOtherPlayersHands, (v) => {
-  localStorage.setItem('showOtherPlayersHands', v ? 'true' : 'false')
+  setGameLocalStorageItem(props.gameId, 'showOtherPlayersHands', v ? 'true' : 'false')
 })
 const tarotCards = ref<TarotCard[]>([])
 const uiLock = ref<boolean>(false)
@@ -839,7 +840,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
 const toggleSidebar = function () {
   showSidebar.value = !showSidebar.value
   if (!isMobileViewport()) {
-    localStorage.setItem('showSidebar', JSON.stringify(showSidebar.value))
+    setGameLocalStorageItem(props.gameId, 'showSidebar', JSON.stringify(showSidebar.value))
   }
 }
 
@@ -1116,9 +1117,6 @@ onMounted(() => {
   ;(window as any).debugChoose = choose
   document.addEventListener('mousemove', onMove, { passive: true })
   document.addEventListener('keydown', handleKeyPress)
-  for (var key in localStorage) {
-    if (key.startsWith('selected-tab:')) localStorage.removeItem(key)
-  }
 })
 
 onBeforeRouteLeave(() => close())

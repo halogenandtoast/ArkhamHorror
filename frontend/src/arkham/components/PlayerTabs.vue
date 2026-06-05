@@ -14,6 +14,7 @@ import type { TarotCard } from '@/arkham/types/TarotCard';
 import type { Placement } from '@/arkham/types/Placement';
 import type { Source } from '@/arkham/types/Source';
 import { imgsrc } from '@/arkham/helpers';
+import { gameLocalStorageKey } from '@/arkham/localStorage';
 import { IsMobile } from '@/arkham/isMobile';
 import { useDbCardStore } from '@/stores/dbCards'
 
@@ -28,7 +29,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const storageKey = computed(() => `selected-tab:${props.game.id}`)
+const storageKey = computed(() => gameLocalStorageKey(props.game.id, 'selected-tab'))
 const selectedTab = useStorage<string>(storageKey, props.playerId)
 const userPicked = ref(false)
 

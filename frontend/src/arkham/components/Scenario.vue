@@ -28,6 +28,7 @@ import { Source } from '@/arkham/types/Source';
 import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, groupBy } from '@/arkham/helpers';
+import { gameLocalStorageKey, getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage';
 import { cardImage as cardCodeImage } from '@/arkham/cardImages';
 import { fullName } from '@/arkham/types/Name';
 import { useMenu } from '@/composable/menu';
@@ -135,27 +136,26 @@ function writeStyleMapCache(key: string, value: Record<string, Record<string, st
   }
 }
 
-const cosmicEmissaryEnemyStylesCacheKey = `game:${props.game.id}:cosmicEmissaryEnemyStyles`
-const cosmicEmissaryLocationCellStylesCacheKey = `game:${props.game.id}:cosmicEmissaryLocationCellStyles`
-const cosmicEmissaryAnimationSettingKey = `game:${props.game.id}:enableCosmicEmissaryAnimation`
-const legacyDisableCosmicEmissaryAnimationSettingKey = `game:${props.game.id}:disableCosmicEmissaryAnimation`
+const cosmicEmissaryEnemyStylesCacheKey = gameLocalStorageKey(props.game.id, 'cosmicEmissaryEnemyStyles')
+const cosmicEmissaryLocationCellStylesCacheKey = gameLocalStorageKey(props.game.id, 'cosmicEmissaryLocationCellStyles')
+const cosmicEmissaryAnimationSettingKey = gameLocalStorageKey(props.game.id, 'enableCosmicEmissaryAnimation')
 const cachedCosmicEmissaryEnemyStyles = readStyleMapCache(cosmicEmissaryEnemyStylesCacheKey)
 const cachedCosmicEmissaryLocationCellStyles = readStyleMapCache(cosmicEmissaryLocationCellStylesCacheKey)
 const cosmicEmissaryEnemyStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryEnemyStyles)
 const cosmicEmissaryLocationCellStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryLocationCellStyles)
 const cosmicEmissaryFormationHasMeasured = ref(Object.keys(cachedCosmicEmissaryEnemyStyles).length > 0)
 const enableCosmicEmissaryAnimation = ref(
-  localStorage.getItem(cosmicEmissaryAnimationSettingKey) === null
-    ? localStorage.getItem(legacyDisableCosmicEmissaryAnimationSettingKey) !== 'true'
-    : localStorage.getItem(cosmicEmissaryAnimationSettingKey) !== 'false'
+  getGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation') === null
+    ? getGameLocalStorageItem(props.game.id, 'disableCosmicEmissaryAnimation') !== 'true'
+    : getGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation') !== 'false'
 )
-const locationsZoom = ref(parseFloat(localStorage.getItem(`game:${props.game.id}:locationsZoom`) ?? '1'))
+const locationsZoom = ref(parseFloat(getGameLocalStorageItem(props.game.id, 'locationsZoom') ?? '1'))
 const doubleZoomActive = ref(false)
 const doubleZoomPrevValue = ref(1)
 const doubleZoomPrevScroll = { left: 0, top: 0 }
 const DOUBLE_ZOOM_LEVEL = 3
 watch(locationsZoom, async (value) => {
-  localStorage.setItem(`game:${props.game.id}:locationsZoom`, String(value))
+  setGameLocalStorageItem(props.game.id, 'locationsZoom', String(value))
   await updateScrollMargins()
 })
 

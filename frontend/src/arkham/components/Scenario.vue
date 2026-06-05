@@ -821,14 +821,17 @@ const gridAreas = computed(()=>{
 // automatically, so we set margins after each render to compensate.
 const locationStyles = computed(() => {
   const pad = layoutPadding.value
+  const mobileEdgePadding = isMobile.value ? 140 : 0
   return {
     display: 'grid',
     gap: '20px',
     'grid-template-areas': gridAreas.value ?? '',
+    gridAutoColumns: 'max-content',
+    gridAutoRows: 'max-content',
     transform: `scale(${locationsZoom.value})`,
     transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
-    paddingLeft: `${pad.left}px`,
-    paddingRight: `${pad.right}px`,
+    paddingLeft: `${pad.left + mobileEdgePadding}px`,
+    paddingRight: `${pad.right + mobileEdgePadding}px`,
     paddingTop: `${pad.top}px`,
     paddingBottom: `${pad.bottom}px`,
   }
@@ -1026,6 +1029,27 @@ const unusedLabels = computed(() => {
   return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
 })
 const choices = useGameChoices(() => props.game, () => props.playerId)
+
+type LocationLike = { id: string, label: string }
+
+const isLocationChoice = (c: Message, location: LocationLike): boolean => {
+  if (c.tag === "TargetLabel") return c.target.contents === location.id
+  if (c.tag === "GridLabel") return c.gridLabel === location.label
+
+  if (c.tag !== "AbilityLabel") return false
+  const { source } = c.ability
+
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) return source.source.contents === location.id
+  } else if (source.tag === 'LocationSource') {
+    return source.contents === location.id
+  }
+
+  return false
+}
+
+const locationCanInteract = (location: LocationLike): boolean =>
+  choices.value.some((choice) => isLocationChoice(choice, location))
 
 const isEncounterDiscardChoice = (c: Message) => {
   if (c.tag !== "TargetLabel") return false
@@ -1957,6 +1981,7 @@ async function addChaosToken(face: any){
             v-for="location in locations"
             :key="location.label"
             class="location-cell"
+            :class="{ 'location-cell--can-interact': locationCanInteract(location) }"
             :data-location-id="location.id"
             :data-label="location.label"
             :style="[
@@ -2848,6 +2873,10 @@ async function addChaosToken(face: any){
      animate the wrapper) don't wipe that offset. */
   display: block;
   position: relative;
+}
+
+.location-cell--can-interact {
+  z-index: 20;
 }
 
 .location-wrapper {

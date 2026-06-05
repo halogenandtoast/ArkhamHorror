@@ -29,6 +29,7 @@ import * as Arkham from '@/arkham/types/Location';
 import { TokenType } from '@/arkham/types/Token';
 import { Card } from '../types/Card';
 import useHighlighter from '@/composable/useHighlighter';
+import { IsMobile } from '@/arkham/isMobile';
 
 export interface Props {
   game: Game
@@ -43,6 +44,7 @@ const debugging = ref(false)
 const showAbilities = ref<boolean>(false)
 const abilitiesEl = ref<HTMLElement | null>(null)
 const highlighter = useHighlighter()
+const { isMobile } = IsMobile()
 
 const dragover = (e: DragEvent) => {
   e.preventDefault()
@@ -457,7 +459,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
           :frame="frame"
           :show-move="abilities.length > 1"
           :game="game"
-          position="left"
+          :position="isMobile ? 'top' : 'left'"
           @choose="chooseAbility"
         />
 
@@ -584,6 +586,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   display: flex;
   position: relative;
 }
+
 
 .button{
   margin-top: 2px;
@@ -745,6 +748,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     top: 10%;
     @media (max-width: 800px) and (orientation: portrait) {
       top: 35% !important;
+      left: 50% !important;
     }
   }
   @media (max-width: 800px) and (orientation: portrait) {

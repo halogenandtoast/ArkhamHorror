@@ -24,6 +24,7 @@ export const TOKENS = [
   "Horror",
   "Inspiration",
   "Key",
+  "Kindling",
   "Lead",
   "Leyline",
   "Lock",

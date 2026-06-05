@@ -450,11 +450,11 @@ instance RunMessage PreludeTheFinalEvening where
             targets locations \loc -> do
               moveTo attrs iid loc
               gainActions iid attrs 1
-        100 -> scope "drRosaMarquez" do
+        Theta -> scope "drRosaMarquez" do
           flavor $ setTitle "title" >> p.green "body"
           investigators <- getInvestigators
           chooseOneM iid $ for_ investigators \i -> targeting i $ drawCards i source 5
-        101 -> scope "bertieMusgrave" do
+        Omega -> scope "bertieMusgrave" do
           flavor $ setTitle "title" >> p.green "body"
           chooseAndDiscardCards iid source 3
           record BertiePerished

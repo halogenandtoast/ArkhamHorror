@@ -219,6 +219,7 @@ data Criterion
   | AssetCount Int AssetMatcher
   | EnemyCount ValueMatcher EnemyMatcher
   | EventCount ValueMatcher EventMatcher
+  | TreacheryCount ValueMatcher TreacheryMatcher
   | LocationCount Int LocationMatcher
   | KeyCount ValueMatcher KeyMatcher
   | ExtendedCardCount ValueMatcher ExtendedCardMatcher

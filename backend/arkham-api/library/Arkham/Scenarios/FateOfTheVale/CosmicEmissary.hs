@@ -14,14 +14,13 @@ import Arkham.Window (Window, getBatchId)
 
 cosmicEmissaryColourAbilities :: EnemyAttrs -> [Ability]
 cosmicEmissaryColourAbilities attrs =
-  [ forcedAbility attrs 1 $ EnemyAttackedSuccessfully #when Anyone AnySource (be attrs)
-  , forcedAbility attrs 2 $ EnemyEvaded #when Anyone (be attrs)
-  ]
+  [ forcedAbility attrs 1 $ oneOf [EnemyAttackedSuccessfully #when Anyone AnySource (be attrs), EnemyEvadedSuccessfully #when Anyone AnySource (be attrs)
+  ]]
 
-handleCosmicEmissaryColour :: ReverseQueue m => EnemyAttrs -> Int -> [Window] -> m ()
-handleCosmicEmissaryColour attrs n (getBatchId -> batchId) = do
+handleCosmicEmissaryColour :: ReverseQueue m => EnemyAttrs -> [Window] -> m ()
+handleCosmicEmissaryColour attrs (getBatchId -> batchId) = do
   push $ IgnoreBatch batchId
-  roundModifier (attrs.ability n) attrs CannotAttack
+  roundModifier (attrs.ability 1) attrs CannotAttack
 
 cosmicEmissaryShatteredAbility :: EnemyAttrs -> ChaosTokenMatcher -> [Ability]
 cosmicEmissaryShatteredAbility attrs token =

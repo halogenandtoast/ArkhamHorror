@@ -10,6 +10,8 @@ module Arkham.FlavorText (
   compose,
   h,
   h_,
+  h1,
+  h3,
   hr,
   p,
   cols,
@@ -39,10 +41,16 @@ ul :: UlItems -> FlavorTextEntry
 ul = ListEntry . execWriter
 
 h :: HasI18n => Scope -> FlavorTextEntry
-h t = HeaderEntry 1 (intercalate "." (?scope <> [t]))
+h = h_ 1
 
 h_ :: HasI18n => Int -> Scope -> FlavorTextEntry
 h_ n t = HeaderEntry n (intercalate "." (?scope <> [t]))
+
+h1 :: HasI18n => Scope -> FlavorTextEntry
+h1 = h_ 1
+
+h3 :: HasI18n => Scope -> FlavorTextEntry
+h3 = h_ 3
 
 p :: HasI18n => Scope -> FlavorTextEntry
 p = i18nEntry

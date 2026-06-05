@@ -259,9 +259,18 @@ instance RunMessage PreludeTheFinalEvening where
         1 -> scope "motherRachel" do
           believed <- getHasRecord TheInvestigatorsBelieved
           lied <- getHasRecord TheInvestigatorsLiedToMotherRachel
+          let otherwise' = not believed && not lied
+          flavor do
+            setTitle "title"
+            compose.green do
+              h3 "header"
+              p.validate believed "believed"
+              hr
+              p.validate lied "lied"
+              hr
+              p.validate otherwise' "otherwise"
           if
             | believed -> do
-                flavor $ setTitle "title" >> p.green "believed"
                 traverse_
                   flipResidentToEnemy
                   [LeahAtwood, SimeonAtwood, GideonMizrah, JudithPark, TheoPeters]
@@ -275,12 +284,8 @@ instance RunMessage PreludeTheFinalEvening where
                 getSetAsideCardMaybe Agendas.lambsToTheSlaughter >>= traverse_ \lambs ->
                   setCurrentAgendaDeck [lambs]
             | lied -> do
-                flavor $ setTitle "title" >> p.green "lied"
-                flipResidentToEnemy MotherRachel >>= traverse_ \eid ->
-                  nonAttackEnemyDamage (Just iid) source 2 eid
-            | otherwise -> do
-                flavor $ setTitle "title" >> p.green "otherwise"
-                void $ flipResidentToEnemy MotherRachel
+                flipResidentToEnemy MotherRachel >>= traverse_ (nonAttackEnemyDamage_ (Just iid) source 2)
+            | otherwise -> void $ flipResidentToEnemy MotherRachel
         2 -> scope "leahAtwood" do
           sawMine <- getHasRecord LeahSawSomethingInTheMine
           if sawMine
@@ -480,13 +485,9 @@ instance RunMessage PreludeTheFinalEvening where
       addChaosToken Tablet
       addChaosToken ElderThing
       record TheInvestigatorsInterruptedTheFeast
-    flipResidentToEnemy resident =
-      selectOne (assetIs (toCardDef resident)) >>= \case
-        Nothing -> pure Nothing
-        Just aid -> do
-          mloc <- field AssetLocation aid
-          case mloc of
-            Nothing -> pure Nothing
-            Just loc -> do
-              removeFromGame aid
-              Just <$> createEnemyAt (residentEnemyDef resident) loc
+    flipResidentToEnemy resident = runMaybeT do
+      aid <- MaybeT $ selectOne (assetIs (toCardDef resident))
+      loc <- MaybeT $ field AssetLocation aid
+      lift do
+        removeFromGame aid
+        createEnemyAt (residentEnemyDef resident) loc

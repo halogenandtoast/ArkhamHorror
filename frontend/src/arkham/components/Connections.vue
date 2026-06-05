@@ -401,6 +401,7 @@ onMounted(async () => {
 
     resizeObserver = new ResizeObserver(requestConnectionUpdate)
     resizeObserver.observe(locationCards)
+    if (svgEl?.parentElement) resizeObserver.observe(svgEl.parentElement)
   }
 })
 

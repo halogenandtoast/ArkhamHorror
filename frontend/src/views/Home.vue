@@ -3,6 +3,7 @@ import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import { deleteGame, fetchGames, fetchNotifications } from '@/arkham/api';
+import { cullGameLocalStorage, removeGameLocalStorage } from '@/arkham/localStorage';
 import type { GameDetails } from '@/arkham/types/Game';
 import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
@@ -23,12 +24,17 @@ const dismissedNotifications = JSON.parse(localStorage.getItem('dismissedNotific
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
 
-fetchGames().then((result) => games.value = result.filter((g) => g.tag === 'game') as GameDetails[])
+fetchGames().then((result) => {
+  const availableGames = result.filter((g) => g.tag === 'game') as GameDetails[]
+  cullGameLocalStorage(availableGames)
+  games.value = availableGames
+})
 
 fetchNotifications().then((result) => notifications.value = result.filter((n: AppNotification) => !dismissedNotifications.includes(n.id)))
 
 async function deleteGameEvent(game: GameDetails) {
   deleteGame(game.id).then(() => {
+    removeGameLocalStorage(game.id)
     games.value = games.value.filter((g) => g.id !== game.id);
   });
 }

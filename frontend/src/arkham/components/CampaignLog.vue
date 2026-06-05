@@ -38,6 +38,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const emit = defineEmits<{ refresh: [] }>()
 const store = useDbCardStore()
 const { t, tm } = useI18n()
 
@@ -752,6 +753,8 @@ const mapData = computed(() => {
               :prefix="hemlockAreasSurveyedSection.titleKey.split('.').slice(0, 1).join('.')"
               :records="hemlockAreasSurveyedSection.records"
               :relationshipLevel="hemlockAreasSurveyedSection.relationshipLevel"
+              :gameId="game.id"
+              @refresh="emit('refresh')"
             />
           </div>
 
@@ -775,6 +778,8 @@ const mapData = computed(() => {
               :prefix="section.titleKey.split('.').slice(0, 1).join('.')"
               :records="section.records"
               :relationshipLevel="section.relationshipLevel"
+              :gameId="game.id"
+              @refresh="emit('refresh')"
             />
             <CampaignLogSection
               v-else

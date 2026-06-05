@@ -136,9 +136,9 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           theCrossroads <- getJustLocationByName "The Crossroads"
           simeon <- selectAny $ SetAsideCardMatch $ cardIs Assets.simeonAtwoodDedicatedTroublemaker
           gideon <- selectAny $ SetAsideCardMatch $ cardIs Assets.gideonMizrahSeasonedSailor
+          iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
           storyWithChooseOneM' (setTitle "title" >> p.green "body") do
-            labeled' "help" do
-              iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
+            labeledValidate' (notNull iids) "help" do
               chooseOrRunOneM iid do
                 targets iids \iid' -> moveTo ScenarioSource iid' theCrossroads
             labeledValidate' simeon "simeon" do

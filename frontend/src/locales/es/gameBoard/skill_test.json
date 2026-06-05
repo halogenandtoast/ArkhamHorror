@@ -1,5 +1,5 @@
 {
-    "fastPlayerWindow": "{'{fast}'} OPORTUNIDAD DE JUGADOR",
+    "fastPlayerWindow": "{'{'}fast{'}'} OPORTUNIDAD DE JUGADOR",
 
     "determineSkillOfTestStep": "Determina la habilidad de la prueba. Comienza la prueba de habilidad de ese tipo.",
     "commitCardsFromHandToSkillTestStep": "Asigna cartas de tu mano a la prueba de habilidad.",

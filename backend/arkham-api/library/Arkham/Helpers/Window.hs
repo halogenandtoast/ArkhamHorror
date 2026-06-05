@@ -371,8 +371,7 @@ windowMatches
   -> Matcher.WindowMatcher
   -> m Bool
 windowMatches _ _ (windowType -> Window.DoNotCheckWindow) _ = pure True
-windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wType)) umtchr = withSpan' "windowMatches" \currentSpan -> do
-  addAttribute currentSpan "window" (tshow window')
+windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wType)) umtchr = do
   (source, mcard) <-
     case rawSource of
       BothSource s (CardIdSource cid) -> do

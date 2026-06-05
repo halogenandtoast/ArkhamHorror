@@ -432,6 +432,38 @@ theOldMillNight =
   otherSideIs "10708a"
     $ location "10708b" "The Old Mill" [HemlockVale] Heart [Diamond, Moon] TheVale
 
+theCrossroadsMorning :: CardDef
+theCrossroadsMorning =
+  otherSideIs "10690b"
+    $ location
+      "10690a"
+      "The Crossroads"
+      [HemlockVale, Central]
+      Diamond
+      [Triangle, Square, Star, Circle, Heart, Moon]
+      DayOfTheFeast
+
+theCrossroadsEvening :: CardDef
+theCrossroadsEvening =
+  otherSideIs "10690a"
+    $ location
+      "10690b"
+      "The Crossroads"
+      [HemlockVale, Central]
+      Diamond
+      [Triangle, Square, Star, Circle, Heart, Moon]
+      DayOfTheFeast
+
+theOldMillMorning :: CardDef
+theOldMillMorning =
+  otherSideIs "10691b"
+    $ location "10691a" "The Old Mill" [HemlockVale] Heart [Diamond, Moon] DayOfTheFeast
+
+theOldMillEvening :: CardDef
+theOldMillEvening =
+  otherSideIs "10691a"
+    $ location "10691b" "The Old Mill" [HemlockVale] Heart [Diamond, Moon] DayOfTheFeast
+
 theAtwoodHouseDay :: CardDef
 theAtwoodHouseDay =
   otherSideIs "10709b"
@@ -590,3 +622,23 @@ openWater10599b =
   victory 1
     $ otherSideIs "10599a"
     $ location_ "10599b" "Open Water" [Sunken] TheThingInTheDepths
+
+mirrorNest_166 :: CardDef
+mirrorNest_166 =
+  locationWithUnrevealed_ "10666" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
+
+mirrorNest_167 :: CardDef
+mirrorNest_167 =
+  locationWithUnrevealed_ "10667" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
+
+mirrorNest_168 :: CardDef
+mirrorNest_168 =
+  locationWithUnrevealed_ "10668" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
+
+mirrorNest_169 :: CardDef
+mirrorNest_169 =
+  locationWithUnrevealed_ "10669" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
+
+theAbyssSpiralingOblivion :: CardDef
+theAbyssSpiralingOblivion =
+  location_ "10670" ("The Abyss" <:> "Spiraling Oblivion") [Extradimensional, Shattered] FateOfTheVale

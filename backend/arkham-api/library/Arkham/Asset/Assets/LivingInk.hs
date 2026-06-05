@@ -56,7 +56,7 @@ instance RunMessage LivingInk where
         then do
           chooseOne
             iid
-            [ Label "$label.cards.livingInk.doNotChargeFromLivingInkAndIgnoreItsAbilityForTheRemainderOf"
+            [ Label "$label.cards.livingInk.doNotCharge"
                 []
             , Label "$label.cards.livingInk.remove1Charge" [RemoveTokens (toSource attrs) (toTarget attrs) Charge 1]
             ]

@@ -466,7 +466,8 @@
       "failBy1More": "检定失败，且检定结果高1点"
     },
     "grannyOrne3": {
-      "get1SkillValue": "得到技能值-1"
+      "getPlus1SkillValue": "得到技能值+1",
+      "getMinus1SkillValue": "得到技能值-1"
     },
     "graysAnatomyTheDoctorsBible5": {
       "damagePlus": "该卡牌本轮下一次将要受到伤害时，受到的伤害+1(最多+3)",

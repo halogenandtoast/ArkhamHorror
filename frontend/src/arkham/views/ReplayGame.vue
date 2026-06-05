@@ -28,7 +28,7 @@ const totalSteps = ref(0)
 const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
 const campaignLog = computed(() => game.value?.campaign?.log)
 const recorded = computed(() => campaignLog.value?.recorded ?? [])
-const recordedSets = computed(() => campaignLog.value?.recordedSets ?? [])
+const recordedSets = computed<[string, unknown[]][]>(() => Object.entries(campaignLog.value?.recordedSets ?? {}))
 const processing = ref(false)
 const play = ref(false)
 
@@ -109,6 +109,7 @@ onUnmounted(() => clearInterval(interval.value))
       <Campaign
         v-if="game.campaign"
         :game="game"
+        :campaign="game.campaign"
         :gameLog="gameLog"
         :playerId="playerId"
       />
@@ -136,12 +137,12 @@ onUnmounted(() => clearInterval(interval.value))
       <div v-if="gameOver">
         <p>{{ $t('game.gameOver') }}</p>
 
-        <div v-for="entry in recorded" :key="entry">
+        <div v-for="entry in recorded" :key="entry.tag">
           {{entry}}
         </div>
 
-        <div v-for="(entry, idx) in recordedSets" :key="idx">
-          {{(entry as any[])[0]}}: {{(entry as any[])[1].join(", ")}}
+        <div v-for="[key, entries] in recordedSets" :key="key">
+          {{key}}: {{entries.join(", ")}}
         </div>
       </div>
     </div>

@@ -4,29 +4,37 @@
 module Arkham.Campaigns.TheFeastOfHemlockVale.Helpers where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types qualified as Asset
+import Arkham.Campaign.Types (Field (CampaignChaosBag))
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.ChaosToken.Types (ChaosTokenFace (..), isSymbolChaosToken)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
+import Arkham.Classes.Query
 import Arkham.Criteria
 import Arkham.Enemy.Types.Attrs
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.FlavorText (chaosTokenMorph, p, setTitle, storyBuild)
+import Arkham.Helpers.Investigator (getHandSize, getStartingResources)
 import Arkham.Helpers.Log
+import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCards)
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Location.Base
-import Arkham.Matcher.Enemy
-import Arkham.Matcher.Investigator
-import Arkham.Matcher.Scenario
-import Arkham.Message (Message (NextCampaignStep))
+import Arkham.Matcher
+import Arkham.Message (Message (NextCampaignStep), pattern SetCampaignChaosBag)
 import Arkham.Message.Lifted hiding (continue)
-import Arkham.Message.Lifted.Log (decrementRecordCount, incrementRecordCount)
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (decrementRecordCount, incrementRecordCount, recordCount)
 import Arkham.Modifier
 import Arkham.Prelude hiding (Day)
+import Arkham.Projection
 import Arkham.Scenario.Options
 import Arkham.Source
 import Arkham.Target
@@ -37,7 +45,32 @@ campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theFeastOfHemlockVale" a
 
 codex :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-codex iid (toSource -> source) n = scenarioSpecific "codex" (iid, source, n)
+codex iid (toSource -> source) n = do
+  cannotTriggerCodex <- elem (ScenarioModifier "cannotTriggerCodex") <$> getModifiers ScenarioTarget
+  unless cannotTriggerCodex $ scenarioSpecific "codex" (iid, source, n)
+
+makePreparationsForNextSurvey :: ReverseQueue m => InvestigatorId -> m ()
+makePreparationsForNextSurvey iid = do
+  iattrs <- getAttrs @Investigator.Investigator iid
+  let startingAssetCodes = map toCardCode iattrs.investigatorStartsWith
+  assets <- selectWithField Asset.AssetCardCode $ assetControlledBy iid
+  let (startingAssets, otherAssets) = partition ((`elem` startingAssetCodes) . snd) assets
+
+  for_ startingAssets \(asset, _) -> setupModifier ScenarioSource asset Persist
+  unless (null otherAssets) $ chooseOrRunOneM iid do
+    for_ (eachWithRest (map fst otherAssets)) \(asset, rest) ->
+      targeting asset do
+        setupModifier ScenarioSource asset Persist
+        for_ rest $ toDiscard ScenarioSource
+
+  handSize <- getHandSize iid
+  cardsInHand <- fieldMap Investigator.InvestigatorHand length iid
+  when (cardsInHand > handSize) $ chooseAndDiscardCards iid ScenarioSource (cardsInHand - handSize)
+  shuffleDiscardBackIn iid
+  startingResources <- getStartingResources iid
+  resources <- field Investigator.InvestigatorResources iid
+  when (resources > startingResources)
+    $ loseResources iid ScenarioSource (resources - startingResources)
 
 data Day = Day1 | Day2 | Day3
   deriving stock (Show, Eq, Generic)
@@ -232,6 +265,9 @@ increaseRelationshipLevel r = incrementRecordCount (relationshipKey r)
 decreaseRelationshipLevel :: ReverseQueue m => Resident -> Int -> m ()
 decreaseRelationshipLevel r = decrementRecordCount (relationshipKey r)
 
+setRelationshipLevel :: ReverseQueue m => Resident -> Int -> m ()
+setRelationshipLevel r = recordCount (relationshipKey r)
+
 crossedOutKey :: Resident -> CampaignLogKey
 crossedOutKey = \case
   WilliamHemlock -> toCampaignLogKey WilliamCrossedOut
@@ -268,3 +304,56 @@ residentFromCardDef def
 
 getAreasSurveyed :: (HasGame m, Tracing m) => m [AreasSurveyed]
 getAreasSurveyed = filterM (getHasRecord . AreasSurveyed) [NorthPointMine ..]
+
+{- | The chaos token of a value one lower, or Nothing if it cannot be lowered
+(i.e. it is a symbol token or already the lowest possible value).
+-}
+lowerChaosTokenValue :: ChaosTokenFace -> Maybe ChaosTokenFace
+lowerChaosTokenValue = \case
+  PlusOne -> Just Zero
+  Zero -> Just MinusOne
+  MinusOne -> Just MinusTwo
+  MinusTwo -> Just MinusThree
+  MinusThree -> Just MinusFour
+  MinusFour -> Just MinusFive
+  MinusFive -> Just MinusSix
+  MinusSix -> Just MinusSeven
+  MinusSeven -> Just MinusEight
+  _ -> Nothing
+
+{- | The fatigue from the long night catches up to you. Draw tokens from the
+chaos bag at random until you have 2 non-symbol tokens. Replace these tokens
+with a chaos token of a value 1 lower for the remainder of the campaign. (If
+you are unable to replace a token, repeat this process until a total of 2
+chaos tokens have been replaced.)
+-}
+replaceFatigueChaosTokens :: ReverseQueue m => m ()
+replaceFatigueChaosTokens = do
+  bag <- campaignField CampaignChaosBag
+  (newBag, replaced) <- go (2 :: Int) bag bag []
+  unless (null replaced) $ campaignI18n $ scope "fatigue" $ storyBuild do
+    -- Render each replaced token as a self-contained morph: the frontend shows
+    -- the original face and then flips it in place to the lowered face. Because
+    -- the whole animation lives in a single story entry (one component mount),
+    -- it is immune to the game-state re-render that happens between prompts.
+    setTitle "title"
+    p "body"
+    for_ replaced (uncurry chaosTokenMorph)
+  push $ SetCampaignChaosBag newBag
+ where
+  -- @bag@ is the running campaign chaos bag we are mutating; @pool@ is the set
+  -- of tokens we have not yet drawn this process (symbol tokens are simply
+  -- returned, so we only ever draw from the non-symbol tokens left in the pool).
+  -- @acc@ collects each (original, lowered) replacement, newest first.
+  go 0 bag _ acc = pure (bag, reverse acc)
+  go n bag pool acc = case nonEmpty (filter (not . isSymbolChaosToken) pool) of
+    Nothing -> pure (bag, reverse acc)
+    Just nonSymbols -> do
+      face <- sample nonSymbols
+      let pool' = deleteFirstMatch (== face) pool
+      case lowerChaosTokenValue face of
+        Just lowered -> go (n - 1) (replaceFirstMatch face lowered bag) pool' ((face, lowered) : acc)
+        Nothing -> go n bag pool' acc
+  replaceFirstMatch :: ChaosTokenFace -> ChaosTokenFace -> [ChaosTokenFace] -> [ChaosTokenFace]
+  replaceFirstMatch _ _ [] = []
+  replaceFirstMatch x x' (y : ys) = if x == y then x' : ys else y : replaceFirstMatch x x' ys

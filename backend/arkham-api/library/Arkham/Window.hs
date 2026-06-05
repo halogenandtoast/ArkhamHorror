@@ -27,7 +27,7 @@ import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type
 import Arkham.Source (Source (GameSource))
 import Arkham.Strategy (DamageStrategy)
-import Arkham.Target (Target)
+import Arkham.Target (Target (EnemyTarget))
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
@@ -103,6 +103,12 @@ isSetupSkippableWindow w = case windowType w of
   PutLocationIntoPlay {} -> True
   LocationEntersPlay {} -> True
   PlacedToken _ _ Clue _ -> True
+  _ -> False
+
+isEnemyReadyWindow :: Window -> Bool
+isEnemyReadyWindow w = case windowType w of
+  WouldReady (EnemyTarget _) -> True
+  Readies (EnemyTarget _) -> True
   _ -> False
 
 primaryWindowTarget :: WindowType -> Maybe Target

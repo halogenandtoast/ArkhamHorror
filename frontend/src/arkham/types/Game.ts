@@ -24,6 +24,7 @@ import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
 import { SkillTest, skillTestDecoder, SkillTestResults, skillTestResultsDecoder } from '@/arkham/types/SkillTest';
 import { Card, cardDecoder, } from '@/arkham/types/Card';
 import { TarotCard, tarotCardDecoder, } from '@/arkham/types/TarotCard';
+export type { TarotCard } from '@/arkham/types/TarotCard';
 import { History, historyDecoder } from '@/arkham/types/History';
 
 type GameState = { tag: 'IsPending', contents: string[] } | { tag: 'IsActive' } | { tag: 'IsOver' } | { tag: 'IsChooseDecks', contents: string[] };
@@ -116,62 +117,90 @@ export type Game = {
   turnHistory: Record<string, History>;
 }
 
-export function choices(game: Game, playerId: string): Message[] {
-  if (!game.question[playerId]) {
-    return [];
+const choicesCache = new WeakMap<Game, Map<string, Message[]>>();
+const choicesSourceCache = new WeakMap<Game, Map<string, Source | null>>();
+const choicesTooltipCache = new WeakMap<Game, Map<string, string | null>>();
+
+function cachedByPlayer<T>(cache: WeakMap<Game, Map<string, T>>, game: Game, playerId: string, build: () => T): T {
+  let gameCache = cache.get(game);
+  if (!gameCache) {
+    gameCache = new Map();
+    cache.set(game, gameCache);
   }
 
-  const question: Question = game.question[playerId];
-
-  const toContents = (q: Question): Message[] => {
-    switch (q.tag) {
-      case 'ChooseOne':
-        return q.choices;
-      case 'ChooseN':
-        return q.choices;
-      case 'ChooseUpToN':
-        return q.choices;
-      case 'ChooseSome':
-        return q.choices;
-      case 'ChooseSome1':
-        return q.choices;
-      case 'ChooseOneAtATime':
-        return q.choices;
-      case 'ChooseOneAtATimeWithAuto':
-        return [{tag: MessageType.LABEL, label: q.label }, ...q.choices];
-      case 'QuestionLabel':
-        return toContents(q.question);
-      case 'Read':
-        return q.readChoices.contents;
-      case 'PickSupplies':
-        return q.choices;
-      case 'PickDestiny':
-        return [];
-      default:
-        return [];
-    }
-  }
-
-  return toContents(question)
+  if (gameCache.has(playerId)) return gameCache.get(playerId) as T;
+  const value = build();
+  gameCache.set(playerId, value);
+  return value;
 }
 
-export function choicesSource(game: Game, investigatorId: string): Source | null {
-  if (!game.question[investigatorId]) {
-    return null;
-  }
-
-  const question = game.question[investigatorId];
-
+function questionChoices(question: Question): Message[] {
   switch (question.tag) {
     case 'ChooseOne':
-      return null;
+      return question.choices;
+    case 'ChooseN':
+      return question.choices;
+    case 'ChooseUpToN':
+      return question.choices;
+    case 'ChooseSome':
+      return question.choices;
+    case 'ChooseSome1':
+      return question.choices;
     case 'ChooseOneAtATime':
-      return null;
+      return question.choices;
     case 'ChooseOneAtATimeWithAuto':
-      return null;
+      return [{ tag: MessageType.LABEL, label: question.label }, ...question.choices];
+    case 'QuestionLabel':
+      return questionChoices(question.question);
+    case 'QuestionWithSource':
+      return questionChoices(question.question);
+    case 'Read':
+      return question.readChoices.contents;
+    case 'PickSupplies':
+      return question.choices;
+    case 'PickDestiny':
+      return [];
     default:
-      return null;
+      return [];
   }
+}
+
+export function choices(game: Game, playerId: string): Message[] {
+  return cachedByPlayer(choicesCache, game, playerId, () => {
+    const question = game.question[playerId];
+    return question ? questionChoices(question) : [];
+  });
+}
+
+// Returns the Source that prompted the player's active question, if any. The
+// engine wraps such questions in `QuestionWithSource` so the frontend can
+// highlight the source entity on the board while the question is pending.
+export function choicesSource(game: Game, playerId: string): Source | null {
+  return cachedByPlayer(choicesSourceCache, game, playerId, () => {
+    let question: Question | undefined = game.question[playerId];
+
+    while (question) {
+      if (question.tag === 'QuestionWithSource') return question.source;
+      question = 'question' in question ? question.question : undefined;
+    }
+
+    return null;
+  });
+}
+
+// Returns the optional tooltip carried by the active `QuestionWithSource`, shown
+// on the highlighted source entity.
+export function choicesTooltip(game: Game, playerId: string): string | null {
+  return cachedByPlayer(choicesTooltipCache, game, playerId, () => {
+    let question: Question | undefined = game.question[playerId];
+
+    while (question) {
+      if (question.tag === 'QuestionWithSource') return question.tooltip;
+      question = 'question' in question ? question.question : undefined;
+    }
+
+    return null;
+  });
 }
 
 type Mode = {

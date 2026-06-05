@@ -1,11 +1,15 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
 import { useDbCardStore } from '@/stores/dbCards'
 import type { ArkhamDBCard } from '@/stores/dbCards'
 import * as Arkham from '@/arkham/types/CardDef'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import sets from '@/arkham/data/sets.json'
 
-defineProps<{ cards: Arkham.CardDef[] }>()
+const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]>, showCounts?: boolean }>(), {
+  attachments: () => ({}),
+  showCounts: true,
+})
 
 const store = useDbCardStore()
 
@@ -79,6 +83,34 @@ const cardSetText = (card: Arkham.CardDef) => {
   if (setName) return `${setName} ${setNumber % 500}`
   return "Unknown"
 }
+
+const groupedCards = computed(() => {
+  return props.cards.reduce<Array<{ card: Arkham.CardDef; count: number }>>((acc, card) => {
+    const existing = acc.find((entry) => entry.card.art === card.art)
+    if (existing) existing.count += 1
+    else acc.push({ card, count: 1 })
+    return acc
+  }, [])
+})
+
+const attachedCards = (card: Arkham.CardDef) => props.attachments[card.art] ?? []
+
+const groupedAttachedCards = (card: Arkham.CardDef) => {
+  return attachedCards(card).reduce<Array<{ card: Arkham.CardDef; count: number }>>((acc, attached) => {
+    const existing = acc.find((entry) => entry.card.art === attached.art)
+    if (existing) existing.count += 1
+    else acc.push({ card: attached, count: 1 })
+    return acc
+  }, [])
+}
+
+const underworldMarketCards = () => props.attachments['09077'] ?? []
+
+const marketCardCount = (card: Arkham.CardDef) => underworldMarketCards().filter((c) => c.art === card.art).length
+
+const marketTooltip = (card: Arkham.CardDef) => `Attached to Market deck (x ${marketCardCount(card)})`
+
+const isUnderworldMarketCard = (card: Arkham.CardDef) => marketCardCount(card) > 0
 </script>
 
 <template>
@@ -96,24 +128,56 @@ const cardSetText = (card: Arkham.CardDef) => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(card, idx) in cards" :key="idx">
-          <td><a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a></td>
-          <td>
-            <span class="class-text">
-              <span v-for="(sym, i) in card.classSymbols" :key="sym" :class="`class-sym ${sym.toLowerCase()}-sym`">{{ sym }}{{ i < card.classSymbols.length - 1 ? ', ' : '' }}</span>
-            </span>
-            <span class="class-icons">
-              <span v-for="sym in card.classSymbols" :key="sym" :class="[`${sym.toLowerCase()}-icon`, `${sym.toLowerCase()}-sym`]"></span>
-            </span>
-          </td>
-          <td>{{ cardCost(card) }}</td>
-          <td>{{ cardType(card) }}</td>
-          <td>
-            <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]"></i>
-          </td>
-          <td class="traits-col">{{ cardTraits(card) }}</td>
-          <td class="set-col">{{ cardSetText(card) }}</td>
-        </tr>
+        <template v-for="{ card, count } in groupedCards" :key="card.art">
+          <tr>
+            <td>
+              <div class="card-name-cell">
+                <span v-if="showCounts" class="deck-card-count">x {{ count }}</span>
+                <a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a>
+                <span v-if="isUnderworldMarketCard(card)" class="market-badge" v-tooltip="marketTooltip(card)" :aria-label="marketTooltip(card)">
+                  <font-awesome-icon icon="store" />
+                  <span>x {{ marketCardCount(card) }}</span>
+                </span>
+              </div>
+            </td>
+            <td>
+              <span class="class-text">
+                <span v-for="(sym, i) in card.classSymbols" :key="sym" :class="`class-sym ${sym.toLowerCase()}-sym`">{{ sym }}{{ i < card.classSymbols.length - 1 ? ', ' : '' }}</span>
+              </span>
+              <span class="class-icons">
+                <span v-for="sym in card.classSymbols" :key="sym" :class="[`${sym.toLowerCase()}-icon`, `${sym.toLowerCase()}-sym`]"></span>
+              </span>
+            </td>
+            <td>{{ cardCost(card) }}</td>
+            <td>{{ cardType(card) }}</td>
+            <td>
+              <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]"></i>
+            </td>
+            <td class="traits-col">{{ cardTraits(card) }}</td>
+            <td class="set-col">{{ cardSetText(card) }}</td>
+          </tr>
+          <tr v-if="attachedCards(card).length > 0" class="attachments-row">
+            <td colspan="7">
+              <div class="attachments-list">
+                <div class="attachments-heading">
+                  <font-awesome-icon icon="paperclip" /> Attached cards for {{ cardName(card) }}
+                </div>
+                <div class="attachment-pills">
+                  <a
+                    v-for="entry in groupedAttachedCards(card)"
+                    :key="entry.card.art"
+                    class="attachment-pill"
+                    target="_blank"
+                    :href="`${localizeArkhamDBBaseUrl()}/card/${entry.card.art}`"
+                  >
+                    <span class="attachment-name">{{ cardName(entry.card) }}{{ levelText(entry.card) }}</span>
+                    <span class="attachment-count">x {{ entry.count }}</span>
+                  </a>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </div>
@@ -195,6 +259,119 @@ a {
   text-decoration: none;
   font-weight: 500;
   &:hover { opacity: 0.8; }
+}
+
+.card-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.deck-card-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 20px;
+  padding: 0 6px;
+  color: #cfcfcf;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.market-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  color: #c8a96e;
+  background: rgba(200, 169, 110, 0.14);
+  border: 1px solid rgba(200, 169, 110, 0.32);
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.attachments-row td {
+  padding-top: 0;
+  padding-bottom: 10px;
+  background: rgba(200, 169, 110, 0.035);
+}
+
+.attachments-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  padding: 9px 10px;
+  background: linear-gradient(135deg, rgba(200, 169, 110, 0.14), rgba(255, 255, 255, 0.035));
+  border: 1px solid rgba(200, 169, 110, 0.24);
+  border-radius: 9px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.attachments-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 3px;
+  color: #c8a96e;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.attachment-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.attachment-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  max-width: 240px;
+  padding: 3px 5px 3px 8px;
+  color: #f0e2c0;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  &:hover { background: rgba(200, 169, 110, 0.16); opacity: 1; }
+}
+
+.attachment-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  height: 16px;
+  padding: 0 5px;
+  color: #1d170f;
+  background: #c8a96e;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  white-space: nowrap;
 }
 
 .class-icons {

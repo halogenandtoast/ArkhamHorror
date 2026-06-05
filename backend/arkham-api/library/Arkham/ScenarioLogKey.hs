@@ -92,6 +92,17 @@ data ScenarioLogKey
   | FoundHiddenBones
   | -- | Prelude Dawn of the SecondDay
     YouAreRunningAnErrand
+  | -- | Prelude Dawn of the Final Day
+    YouAreDeliveringAPackage
+  | -- | Prelude The Final Evening
+    TheHemlocksAreHashingItOut
+  | -- | Fate of the Vale
+    BertieIsFleeing
+  | TheInvestigatorsFoundGas
+  | TheRoadIsClear
+  | TheSamplesWereFound
+  | TheSurveyNotesWereRecovered
+  | TheInvestigatorsFoundTheosTruck
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen

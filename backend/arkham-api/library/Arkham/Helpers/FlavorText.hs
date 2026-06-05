@@ -97,6 +97,10 @@ img = addEntry . FT.img . toCardCode
 chaosTokenImg :: ChaosTokenFace -> FlavorTextBuilder ()
 chaosTokenImg = addEntry . FT.chaosTokenImg
 
+-- | Render a chaos token that animates in place from one face to another.
+chaosTokenMorph :: ChaosTokenFace -> ChaosTokenFace -> FlavorTextBuilder ()
+chaosTokenMorph from to_ = addEntry (FT.chaosTokenMorph from to_)
+
 tarot :: TarotCardArcana -> FlavorTextBuilder ()
 tarot = addEntry . TarotEntry
 
@@ -193,6 +197,16 @@ instance
   getField f builder = for_ (buildFlavor $ f builder).flavorBody \case
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (GreenEntry : mods) inner'
     inner' -> addEntry $ ModifyEntry [GreenEntry] inner'
+
+instance
+  HasField
+    "validate"
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+    (Bool -> FlavorTextBuilder () -> FlavorTextBuilder ())
+  where
+  getField f cond builder = for_ (buildFlavor $ f builder).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry ((if cond then ValidEntry else InvalidEntry) : mods) inner'
+    inner' -> addEntry $ ModifyEntry [if cond then ValidEntry else InvalidEntry] inner'
 
 instance
   HasField

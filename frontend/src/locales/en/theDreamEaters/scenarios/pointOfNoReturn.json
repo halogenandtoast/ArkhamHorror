@@ -1,5 +1,15 @@
 {
   "heading": "Scenario III–B",
+  "specialRules": [
+    {
+      "title": "Locations in Point of No Return",
+      "body": "<p class='basic'>Each of the locations in this scenario have no unrevealed side, and therefore they enter play with their revealed side faceup. Instead of an unrevealed side, these locations have story cards on their reverse sides. Whenever a location in this scenario enters play (including during setup), place clues on that location equal to its clue value, as normal.</p><p class='basic'>Locations can be flipped over in one of two ways. Most are flipped over by the _veiled_ keyword, as described below. Some locations are instead flipped over by an ability printed on that location.</p><p class='basic'>Once a location has been flipped over and its story text has been read, it cannot be flipped over again for the remainder of the game unless otherwise noted.</p>"
+    },
+    {
+      "title": "Veiled",
+      "body": "<p class='basic'>Many of the locations in this scenario have the _veiled_ keyword. This keyword represents that a location contains unknown lore or assistance that must be sought out by the investigators before it can be of use to them.</p><p class='basic'>As a {'{'}action{'}'} ability, an investigator at a _veiled_ location with no clues on it may flip that location over, resolving the text on its other side.</p>"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the amount of damage on this card.",

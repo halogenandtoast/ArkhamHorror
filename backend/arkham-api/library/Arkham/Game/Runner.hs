@@ -72,8 +72,10 @@ import Arkham.Id
 import Arkham.Investigator (
   InvestigatorForm (..),
   becomeHomunculus,
+  becomeShatteredSelf,
   becomeYithian,
   lookupInvestigator,
+  returnFromShatteredSelf,
   returnToBody,
  )
 import Arkham.Investigator.Cards qualified as Investigators
@@ -157,7 +159,7 @@ getInvestigatorsInOrder = do
   pure $ g ^. playerOrderL
 
 runGameMessage :: Runner Game
-runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
+runGameMessage msg g = case msg of
   AfterThisTestResolves _sid msgs -> do
     insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
     pure g
@@ -2517,8 +2519,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   ForInvestigator iid AllDrawEncounterCard -> do
     iid' <- fromMaybe iid <$> selectOne (InvestigatorWithModifier DrawsEachEncounterCard)
     whenM (not <$> isEliminated iid) do
-      player <- getPlayer iid'
-      push $ chooseOne player [TargetLabel EncounterDeckTarget [drawEncounterCard iid' GameSource]]
+      push $ drawEncounterCard iid' GameSource
     pure $ g & activeInvestigatorIdL .~ iid'
   EndMythos -> do
     pushAll
@@ -3407,6 +3408,16 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   BecomeYithian iid -> do
     yithian <- becomeYithian <$> getInvestigator iid
     pure $ g & (entitiesL . investigatorsL . at iid ?~ yithian)
+  BecomeShatteredSelf iid -> do
+    shatteredSelf <- becomeShatteredSelf <$> getInvestigator iid
+    pure $ g & (entitiesL . investigatorsL . at iid ?~ shatteredSelf)
+  ScenarioSpecific "returnFromShatteredSelf" v -> do
+    let iid = toResult v :: InvestigatorId
+    investigator <- returnFromShatteredSelf <$> getInvestigator iid
+    pure $ g & (entitiesL . investigatorsL . at iid ?~ investigator)
+  ScenarioSpecific "disableAsSelfLocation" v -> do
+    let eid = toResult v :: EnemyId
+    pure $ g & entitiesL . enemiesL . ix eid %~ overAttrs (\x -> x {enemyAsSelfLocation = Nothing})
   BecomeHomunculus iid -> do
     findCard (`cardMatch` cardIs Assets.theGreatWorkDivideAndUnite) >>= \case
       Nothing -> error "The Great Work not found"
@@ -3553,8 +3564,6 @@ preloadEntities g = do
 -- too late.
 instance RunMessage Game where
   runMessage msg g =
-    withSpan' "Game.runMessage" \currentSpan -> do
-      addAttribute currentSpan "message" (tshow msg)
       ( (modeL . here) (runMessage msg) g
           >>= (modeL . there) (runMessage msg)
           >>= entitiesL (runMessage msg)
@@ -3571,7 +3580,7 @@ instance RunMessage Game where
         <&> handleActionDiff g
 
 runPreGameMessage :: Runner Game
-runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
+runPreGameMessage msg g = case msg of
   ForInvestigator iid _ -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player

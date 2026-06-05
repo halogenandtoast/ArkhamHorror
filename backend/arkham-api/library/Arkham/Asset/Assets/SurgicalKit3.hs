@@ -6,6 +6,8 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.Investigator (canHaveHorrorHealed, healAdditional)
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 
 newtype SurgicalKit3 = SurgicalKit3 AssetAttrs
@@ -44,7 +46,11 @@ instance RunMessage SurgicalKit3 where
           | isJust mDraw || canHeal
           ]
       pure a
-    DoStep 1 (UseCardAbility _iid (isSource attrs -> True) 1 ws' _) -> do
+    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 ws' _) -> do
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) iid
+          $ CannotTriggerAbilityMatching
+          $ AbilityIs (toSource attrs) 1
       healAdditional (attrs.ability 1) #damage ws' 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

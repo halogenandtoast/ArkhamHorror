@@ -5,20 +5,16 @@ import * as ArkhamCard from '@/arkham/types/Card';
 import * as Arkham from '@/arkham/types/Investigator'
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Game } from '@/arkham/types/Game'
-import {computed, ComputedRef, ref, reactive, watch} from 'vue'
-import { imgsrc, pluralize } from '@/arkham/helpers';
+import {computed, ref, watch} from 'vue'
+import { imgsrc } from '@/arkham/helpers';
 import { cardImage } from '@/arkham/cardImages';
 import { useI18n } from 'vue-i18n';
 import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import Card from '@/arkham/components/Card.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
-import CardRow from '@/arkham/components/CardRow.vue';
+import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 
 const { t } = useI18n();
-
-interface RefWrapper<T> {
-  ref: ComputedRef<T>
-}
 
 export interface Props {
   game: Game
@@ -88,9 +84,6 @@ const topOfDeckAbilities = computed<AbilityMessage[]>(() => {
   }, [])
 })
 
-const viewingDiscard = ref(false)
-const viewDiscardLabel = computed(() => viewingDiscard.value ? t('close') : pluralize(t('scenario.discardCard'), discards.value.length))
-
 const drawCardsAction = computed(() => {
   if(props.playerId !== props.investigator.playerId) {
     return -1
@@ -111,15 +104,10 @@ const discardCardsAction = computed(() => {
     .some(choice => 
       discards
         .value
-        .some(discardItem => discardItem.contents.id === choice.target?.contents)
+        .some(discardItem => choice.tag === 'TargetLabel' && ArkhamCard.toCardContents(discardItem).id === choice.target.contents)
     )
 })
 
-const noCards = computed<ArkhamCard.Card[]>(() => [])
-
-// eslint-disable-next-line
-const showCards = reactive<RefWrapper<any>>({ ref: noCards })
-const cardRowTitle = ref("")
 
 const topOfDeckTreachery = computed(() => {
   const mTreacheryId = Object.values(props.game.treacheries).
@@ -127,11 +115,6 @@ const topOfDeckTreachery = computed(() => {
     map((t) => t.id)[0]
   return mTreacheryId ? props.game.treacheries[mTreacheryId] : null
 })
-
-const hideCards = () => {
-  showCards.ref = noCards
-  viewingDiscard.value = false
-}
 
 function onDropDiscard(event: DragEvent) {
   event.preventDefault()
@@ -176,15 +159,9 @@ const canSelectDraw = computed(() => {
   return Object.entries(props.investigator.foundCards).length == 0
 })
 
-const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title: string, isDiscards: boolean) => {
-  cardRowTitle.value = title
-  showCards.ref = cards
-  viewingDiscard.value = isDiscards
-}
-const showDiscards = (e: Event) => doShowCards(e, discards, t('investigator.discards'), true)
 const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
+const discardPopoverShown = ref(false)
 
-const forcedShowDiscard = ref(false)
 watch(choices, async (newChoices) => {
   const isDiscardChoice = (c: Message) => {
     if (c.tag === "TargetLabel") {
@@ -200,14 +177,9 @@ watch(choices, async (newChoices) => {
     }
     return false
   }
-  const showDiscard = newChoices.length > 0 && newChoices.every(isDiscardChoice)
-  if (showDiscard) {
-    showDiscards(new CustomEvent('showDiscards'))
-    forcedShowDiscard.value = true
-  } else {
-    if (!forcedShowDiscard.value) return
-    showCards.ref = noCards
-    forcedShowDiscard.value = false
+
+  if (newChoices.length > 0 && newChoices.every(isDiscardChoice)) {
+    discardPopoverShown.value = true
   }
 }, { immediate: true })
 
@@ -218,22 +190,23 @@ watch(choices, async (newChoices) => {
     @drop="onDropDiscard($event)"
     @dragover.prevent="dragover($event)"
     @dragenter.prevent
-    @click="showDiscards"
   >
     <Card v-if="topOfDiscard" :class="{'discard--can-use': discardCardsAction === true}" :game="game" :card="topOfDiscard" :playerId="playerId" />
-    <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
+    <CardsUnderIndicator
+      v-if="discards.length > 0"
+      class="view-discard-button"
+      :cards="discards"
+      :game="game"
+      :playerId="playerId"
+      v-model:shown="discardPopoverShown"
+      :label="t('investigator.discards')"
+      :isDiscards="true"
+      :highlighted="discardCardsAction"
+      :fullWidth="true"
+      @choose="emit('choose', $event)"
+    />
     <button v-if="debug.active && discards.length > 0" class="view-discard-button" @click="debug.send(game.id, {tag: 'ShuffleDiscardBackIn', contents: investigatorId})">{{ $t('draw.shuffleBackIn') }}</button>
   </div>
-  <CardRow
-    v-if="showCards.ref.length > 0"
-    :game="game"
-    :playerId="playerId"
-    :cards="showCards.ref"
-    :isDiscards="viewingDiscard"
-    :title="cardRowTitle"
-    @choose="emit('choose', $event)"
-    @close="hideCards"
-  />
   <div class="deck-container">
     <div
       class="top-of-deck"
@@ -349,6 +322,17 @@ watch(choices, async (newChoices) => {
   width: 100%;
   @media (max-width: 800px) and (orientation: portrait) {
     width: fit-content;
+  }
+}
+
+.view-discard-button.cards-under-indicator {
+  display: flex;
+  width: var(--card-width);
+  max-width: var(--card-width);
+
+  @media (max-width: 800px) and (orientation: portrait) {
+    width: calc(var(--pool-token-width)*1.2);
+    max-width: calc(var(--pool-token-width)*1.2);
   }
 }
 

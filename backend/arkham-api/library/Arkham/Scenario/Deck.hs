@@ -24,6 +24,7 @@ data ScenarioDeckKey
   | WoodsDeck -- The Twisted Hollow
   | CavernsDeck -- The Lost Sister
   | EnemyDeck -- The Longest Night
+  | AbyssDeck -- Fate of the Vale
   | ReelDeck -- FilmFatale
   deriving stock (Show, Ord, Eq, Data)
 
@@ -47,6 +48,7 @@ instance ToDisplay ScenarioDeckKey where
     WoodsDeck -> "Woods"
     CavernsDeck -> "Caverns"
     EnemyDeck -> "Enemy"
+    AbyssDeck -> "The Abyss"
     ReelDeck -> "Reel"
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)

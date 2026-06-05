@@ -27,6 +27,6 @@ instance RunMessage BilliardsRoomSpectral where
       chooseOrRunOneM iid $ withI18n do
         countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
         unless (null assets) do
-          countVar 1 $ labeled' "discardsAssets" $ chooseAndDiscardAsset iid (attrs.ability 1)
+          countVar 1 $ labeled' "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 1)
       pure l
     _ -> BilliardsRoomSpectral <$> liftRunMessage msg attrs

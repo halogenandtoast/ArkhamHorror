@@ -6,7 +6,7 @@ import Room from '@/components/admin/Room.vue'
 
 interface RoomData {
   roomClients: number
-  roomLastUpdateAt: string
+  roomLastUpdateAt: string | null
   roomArkhamGameId: string
 }
 
@@ -17,7 +17,7 @@ const data = computed(() => request.data)
 <template>
   <AdminUI :selected="'rooms'">
     <header class="topbar">
-      <button class="hamburger" @click="toggleSidebar" aria-label="Open menu">
+      <button class="hamburger" aria-label="Open menu">
         <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 10h18v2H3v-2zm0-5h18v2H3v-2z" fill="currentColor"/></svg>
       </button>
       <h1>Rooms</h1>

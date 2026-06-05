@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps hiding (PreludeDawnOfTheSecondDay)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
+import Arkham.Campaigns.TheFeastOfHemlockVale.TokenHelpers
 import Arkham.Card
 import Arkham.Classes.HasQueue (clearQueue)
 import Arkham.Cost.Status qualified as Cost
@@ -13,9 +14,7 @@ import Arkham.Effect.Builder
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location (getCanMoveToLocations)
-import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getPlayerCount)
 import Arkham.I18n
@@ -58,22 +57,22 @@ preludeDawnOfTheSecondDay difficulty =
     . (referenceL .~ "10704")
 
 instance HasChaosTokenValue PreludeDawnOfTheSecondDay where
-  getChaosTokenValue iid tokenFace (PreludeDawnOfTheSecondDay attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
-    otherFace -> getChaosTokenValue iid otherFace attrs
+  getChaosTokenValue iid tokenFace (PreludeDawnOfTheSecondDay attrs) =
+    hemlockPreludeChaosTokenValue iid tokenFace attrs
 
 instance RunMessage PreludeDawnOfTheSecondDay where
   runMessage msg s@(PreludeDawnOfTheSecondDay attrs) = runQueueT $ campaignI18n $ scope "prelude2" $ case msg of
     PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "body"
+      replaceFatigueChaosTokens
       (finishedTheirMeal, others) <-
         partitionM (`matches` investigatorWithRecord FinishedTheirMeal) =<< getInvestigators
       storyOnly finishedTheirMeal $ buildFlavor $ h "title" >> p "theHemlockCurse"
       for_ finishedTheirMeal \iid -> addCampaignCardToDeck iid ShuffleIn Skills.theHemlockCurse
       storyOnly others $ buildFlavor $ h "title" >> p "gnawingHunger"
+      pure s
+    ResolveChaosToken token face iid | face `elem` [Cultist, ElderThing] -> do
+      hemlockPreludeResolveChaosToken attrs token face iid
       pure s
     Setup -> runScenarioSetup PreludeDawnOfTheSecondDay attrs do
       setup $ ul do
@@ -137,9 +136,9 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           theCrossroads <- getJustLocationByName "The Crossroads"
           simeon <- selectAny $ SetAsideCardMatch $ cardIs Assets.simeonAtwoodDedicatedTroublemaker
           gideon <- selectAny $ SetAsideCardMatch $ cardIs Assets.gideonMizrahSeasonedSailor
+          iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
           storyWithChooseOneM' (setTitle "title" >> p.green "body") do
-            labeled' "help" do
-              iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
+            labeledValidate' (notNull iids) "help" do
               chooseOrRunOneM iid do
                 targets iids \iid' -> moveTo ScenarioSource iid' theCrossroads
             labeledValidate' simeon "simeon" do
@@ -367,20 +366,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           push R3
         Resolution 3 -> do
           resolution "resolution3"
-          eachInvestigator \iid -> do
-            assets <- select $ assetControlledBy iid
-            chooseOrRunOneM iid do
-              for_ (eachWithRest assets) \(asset, rest) ->
-                targeting asset do
-                  setupModifier ScenarioSource asset Persist
-                  for_ rest $ toDiscard ScenarioSource
-            handSize <- getHandSize iid
-            cs <- fieldMap InvestigatorHand length iid
-            when (cs > handSize) $ chooseAndDiscardCards iid ScenarioSource (cs - handSize)
-            shuffleDiscardBackIn iid
-            rs <- getStartingResources iid
-            n <- field InvestigatorResources iid
-            when (n > rs) $ loseResources iid ScenarioSource (n - rs)
+          eachInvestigator makePreparationsForNextSurvey
           keepCardCache
           endOfScenario
         _ -> error "invalid resolution"

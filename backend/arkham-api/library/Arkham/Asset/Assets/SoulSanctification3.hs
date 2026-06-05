@@ -24,7 +24,7 @@ instance HasModifiersFor SoulSanctification3 where
 instance HasAbilities SoulSanctification3 where
   getAbilities (SoulSanctification3 a) =
     [ wantsSkillTest (YourSkillTest AnySkillTest)
-        $ limitedAbility (PlayerLimit PerTestOrAbility 2)
+        $ limitedAbility (PlayerLimit PerTest 2)
         $ controlled a 1 DuringAnySkillTest
         $ FastAbility (assetUseCost a Offering 1)
     ]

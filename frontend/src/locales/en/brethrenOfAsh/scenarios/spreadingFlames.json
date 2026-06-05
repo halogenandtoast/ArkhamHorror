@@ -1,4 +1,33 @@
 {
+  "keywordsAndConcepts": {
+    "title": "Keywords and Concepts",
+    "entries": [
+      {
+        "title": "Doomed",
+        "body": "<p>Doomed is a keyword ability. When an enemy with the doomed keyword is defeated (either by an investigator or a scenario effect), place 1 doom on the current agenda. This effect can cause the current agenda to advance.</p><ul><li>An effect that “discards” an enemy is not considered to defeat that enemy and does not trigger the doomed keyword.</li></ul>"
+      },
+      {
+        "title": "Hunter",
+        "body": "<p>Hunter is a keyword ability. At the start of the enemy phase, each ready, unengaged enemy with the hunter keyword moves to a connecting location, along the shortest path towards the nearest investigator. Enemies at a location with one or more investigators do not move.</p><ul><li>Some enemies may target specific prey. (See “Prey.”)</li><li>If there are multiple equidistant investigators who qualify as “the nearest investigator,” the hunter enemy moves towards the one who best meets its designated target. If none do, or if the enemy has no prey keyword, the lead investigator decides.</li><li>If a hunter enemy would be compelled to move into a location but is blocked by a card ability, that enemy does not move.</li></ul>"
+      },
+      {
+        "title": "Peril",
+        "body": "<p>Peril is a keyword ability. While an investigator is resolving an encounter card with the peril keyword, they cannot confer with the other players. Other players cannot play cards, trigger abilities, or commit cards to that investigator’s skill test(s) while the peril encounter card is being resolved.</p>"
+      },
+      {
+        "title": "Prey",
+        "body": "<p>Prey is a keyword ability. Given the opportunity, some enemies will pursue a defined investigator. These enemies are identified with the keyword Prey in their text box, followed by instructions on whom they should engage, in parentheses.</p><ul><li>Given the choice between multiple equidistant investigators (or between investigators at its location), an enemy with the prey keyword targets the investigator who best meets its prey instructions.</li></ul>"
+      },
+      {
+        "title": "Retaliate",
+        "body": "<p>Retaliate is a keyword ability. Each time an investigator fails a skill test while attacking a ready enemy with the retaliate keyword, after applying all results for that skill test, that enemy performs an attack against the attacking investigator. An enemy does not exhaust after performing a retaliate attack.</p><ul><li>This attack occurs whether or not the enemy is engaged with the attacking investigator.</li></ul>"
+      },
+      {
+        "title": "Surge",
+        "body": "<p>Surge is a keyword ability. After an investigator draws and resolves an encounter card that has the surge keyword, that investigator must draw and resolve another card.</p><ul><li>If an investigator draws a card with the surge keyword during setup, the surge keyword still resolves.</li></ul>"
+      }
+    ]
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the current act number.",

@@ -26,7 +26,7 @@ const amount2 = computed(() => props.investigator2Amount + amount.value)
 
 const portraitLabelImage = (investigatorId: string) => {
   const player = props.game.investigators[investigatorId]
-  const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm")
+  const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm" || player.form.tag === "ShatteredForm")
     ? investigatorId
     : player.cardCode
   return portraitImage(code)

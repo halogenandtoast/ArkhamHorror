@@ -5,7 +5,7 @@ import api from '@/api'
 
 interface RoomData {
   roomClients: number
-  roomLastUpdateAt: string
+  roomLastUpdateAt: string | null
   roomArkhamGameId: string
 }
 
@@ -13,7 +13,7 @@ const props = defineProps<{
   room: RoomData
 }>()
 
-const lastUpdated = computed(() => props.room.roomLastUpdatedAt ? props.room.roomLastUpdatedAt : 'deleted')
+const lastUpdated = computed(() => props.room.roomLastUpdateAt ? props.room.roomLastUpdateAt : 'deleted')
 const deleted = computed(() => lastUpdated.value === 'deleted')
 
 async function deleteRoom() {

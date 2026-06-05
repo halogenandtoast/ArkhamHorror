@@ -259,10 +259,6 @@ instance RunMessage DeadHeat where
           chooseTargetM iid enemies \enemy -> do
             readyThis enemy
             initiateEnemyAttack enemy Cultist iid
-        Tablet | isEasyStandard attrs -> do
-          chooseOneM iid do
-            unscoped $ countVar 1 $ labeled' "takeDamage" $ assignDamage iid Tablet 1
-            labeled' "tablet.doNotTakeDamage" $ withLocationOf iid slayCivilian
         ElderThing | isEasyStandard attrs -> chooseAndDiscardCard iid ElderThing
         ElderThing | isHardExpert attrs -> randomDiscard iid ElderThing
         _ -> pure ()
@@ -272,6 +268,11 @@ instance RunMessage DeadHeat where
       chooseTargetM iid enemies \enemy -> do
         readyThis enemy
         initiateEnemyAttack enemy Cultist iid
+      pure s
+    ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
+      chooseOneM iid do
+        unscoped $ countVar 1 $ labeled' "takeDamage" $ assignDamage iid Tablet 1
+        labeled' "tablet.doNotTakeDamage" $ withLocationOf iid slayCivilian
       pure s
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       assignDamage iid Tablet 1

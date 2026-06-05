@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.I18n
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -17,7 +18,7 @@ handCrankFlashlight :: AssetCard HandCrankFlashlight
 handCrankFlashlight = asset HandCrankFlashlight Cards.handCrankFlashlight
 
 instance HasAbilities HandCrankFlashlight where
-  getAbilities (HandCrankFlashlight a) = [controlled_ a 1 investigateAction_]
+  getAbilities (HandCrankFlashlight a) = [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) investigateAction_]
 
 instance RunMessage HandCrankFlashlight where
   runMessage msg a@(HandCrankFlashlight attrs) = runQueueT $ case msg of

@@ -21,6 +21,7 @@ export type CardDef = {
   cardType: string;
   art: string;
   level: number | null;
+  stage?: number | null;
   name: Name;
   cardTraits: string[];
   skills: SkillIcon[];
@@ -49,6 +50,11 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
   {
     art: JsonDecoder.string(),
     level: JsonDecoder.nullable(JsonDecoder.number()),
+    stage: JsonDecoder.oneOf([
+      JsonDecoder.number(),
+      JsonDecoder.null().map(() => undefined),
+      JsonDecoder.undefined(),
+    ], 'optional stage'),
     otherSide: JsonDecoder.nullable(JsonDecoder.string()),
     cardType: JsonDecoder.string(),
     cardCode: JsonDecoder.string(),

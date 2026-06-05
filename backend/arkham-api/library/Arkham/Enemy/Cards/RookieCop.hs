@@ -23,7 +23,7 @@ instance HasAbilities RookieCop where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ EnemyAttacked #after (InvestigatorAt YourLocation) AnySource (NotEnemy $ be a)
+      $ EnemyAttacked #after (InvestigatorAt (locationWithEnemy a)) AnySource (NotEnemy $ be a)
 
 instance RunMessage RookieCop where
   runMessage msg e@(RookieCop attrs) = runQueueT $ case msg of

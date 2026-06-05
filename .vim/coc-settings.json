@@ -1,0 +1,6 @@
+{
+  "tsserver.tsdk": "frontend/node_modules/typescript/lib",
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.validate": ["javascript", "typescript", "vue"],
+  "prettier.requireConfig": true
+}

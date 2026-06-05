@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<{
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 function isCardInChoices(card: CardContents): boolean {
-  return choices.value.some(choice => card.contents?.id === choice.target?.contents)
+  return choices.value.some(choice => choice.tag === 'TargetLabel' && card.id === choice.target.contents)
 }
 
 const emit = defineEmits<{

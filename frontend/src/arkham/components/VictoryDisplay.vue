@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
-import type { Card } from '@/arkham/types/Card';
+import { type Card, toCardContents } from '@/arkham/types/Card';
 import CardView from '@/arkham/components/Card.vue'
 import Enemy from '@/arkham/components/Enemy.vue';
 import { pluralize } from '@/arkham/helpers';
@@ -24,7 +24,7 @@ const enemiesInVictoryDisplay = computed(() => {
 })
 const topOfVictoryDisplay = computed(() => {
   const enemyCardIds = enemiesInVictoryDisplay.value.map(e => e.cardId)
-  return props.victoryDisplay.filter((c) => !enemyCardIds.includes(c.contents.id))[0]
+  return props.victoryDisplay.filter((c) => !enemyCardIds.includes(toCardContents(c).id))[0]
 })
 
 const viewVictoryDisplayLabel = computed(() => pluralize(t('scenario.discardCard'), props.victoryDisplay.length))

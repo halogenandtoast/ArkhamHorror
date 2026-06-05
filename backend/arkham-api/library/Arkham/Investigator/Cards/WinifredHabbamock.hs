@@ -25,7 +25,7 @@ winifredHabbamock =
 instance HasAbilities WinifredHabbamock where
   getAbilities (WinifredHabbamock a) =
     [ wantsSkillTest AnySkillTest
-        $ playerLimit PerTestOrAbility
+        $ playerLimit PerTest
         $ restricted
           a
           1

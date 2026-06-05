@@ -21,7 +21,7 @@ guidedByTheUnseen3 = asset GuidedByTheUnseen3 Cards.guidedByTheUnseen3
 
 instance HasAbilities GuidedByTheUnseen3 where
   getAbilities (GuidedByTheUnseen3 x) =
-    [ playerLimit PerTestOrAbility
+    [ playerLimit PerTest
         $ controlled
           x
           1

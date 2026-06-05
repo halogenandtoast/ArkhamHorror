@@ -33,10 +33,22 @@ const sendOnce = (payload: unknown) => {
   send(JSON.stringify(payload))
 }
 const normalizedContents = (step: CampaignStep): string => {
-  if (step.tag === 'ScenarioStepWithOptions') {
-    return step.contents[0]
+  switch (step.tag) {
+    case 'ScenarioStep':
+    case 'InterludeStepPart':
+    case 'CheckpointStep':
+      return String(step.contents)
+    case 'ScenarioStepWithOptions':
+    case 'StandaloneScenarioStep':
+    case 'StandaloneScenarioStepWithOptions':
+    case 'InterludeStep':
+    case 'CampaignSpecificStep':
+      return JSON.stringify(step.contents)
+    case 'ContinueCampaignStep':
+      return normalizedContents(step.contents.nextStep)
+    default:
+      return step.tag
   }
-  return step.contents
 }
 // reset the lock on a "fresh update" of the step (new step name/kind)
 onMounted(() => { hasSent.value = false })
@@ -119,7 +131,7 @@ const kind = computed(() => {
         return t(key)
       }
     }
-    return t('headings.interlude', { number: numToRomanNumeral(parseInt(props.step.contents[0])) })
+    return t('headings.interlude', { number: numToRomanNumeral(props.step.contents[0]) })
   }
 
   if (props.step.tag === 'CampaignSpecificStep') {
@@ -141,13 +153,10 @@ const minXp = computed<number>(() => {
   if(!props.campaign) return 0
   const time = props.campaign.log.recordedCounts.find(([c, v]) => c.tag === 'TheScarletKeysKey' && c.contents === 'Time')
   if (time) return (35 - time[1])
-  return investigators.value.reduce((acc: number | null, investigator: Investigator) => {
+  return investigators.value.reduce((acc: number, investigator: Investigator) => {
     const currentXp = investigator.xp
-    if (acc === null) {
-      return currentXp
-    }
     return Math.min(acc, currentXp)
-  }, null)  
+  }, Infinity)
 })
 
 const canUpgrade = computed(() => {
@@ -155,7 +164,7 @@ const canUpgrade = computed(() => {
   if (!props.canUpgradeDecks) return false
   if (props.step.tag === "CampaignSpecificStep" && props.canUpgradeDecks) return true
   if (!["ScenarioStep", "ScenarioStepWithOptions", "StandaloneScenarioStep"].includes(props.step.tag)) return false
-  return props.campaign.completedSteps.some((step: CampaignStep) => ['ScenarioStep', 'ScenarioStepWithOptions', 'StandaloneScenarioStep'].includes(step.tag))
+  return (props.campaign.completedSteps ?? []).some((step: CampaignStep) => ['ScenarioStep', 'ScenarioStepWithOptions', 'StandaloneScenarioStep'].includes(step.tag))
 })
 
 const isScenario = computed(() =>  {
@@ -168,7 +177,7 @@ const isScenario = computed(() =>  {
 const standalones = computed(() => {
   if (!props.campaign) return []
   if (!props.canChooseSideStory) return []
-  const completed = props.campaign.completedSteps.reduce((acc: string[], step: CampaignStep) => {
+  const completed = (props.campaign.completedSteps ?? []).reduce((acc: string[], step: CampaignStep) => {
     if (step.tag === 'StandaloneScenarioStep') {
       acc.push(step.contents[0].replace(/^c/, ''))
     }
@@ -229,7 +238,7 @@ async function startStep() {
       // inform the server of the lead investigator
       sendOnce({
         tag: 'CampaignStepAnswer',
-        contents: extendWithOptions(props.step, { scenarioOptionsLeadInvestigator: leadInvestigatorId.value })
+        contents: extendWithOptions(props.step as Parameters<typeof extendWithOptions>[0], { scenarioOptionsLeadInvestigator: leadInvestigatorId.value })
       })
       return
     }

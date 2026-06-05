@@ -799,3 +799,11 @@ ajax =
     , cdUnique = True
     , cdSlots = [#ally]
     }
+
+oldMemory :: CardDef
+oldMemory =
+  (storyAsset_ "10661b" "Old Memory" FateOfTheVale)
+    { cdCardTraits = setFromList [Trait.Condition, Trait.Innate]
+    , cdCardType = EncounterAssetType
+    , cdOtherSide = Just "10661"
+    }

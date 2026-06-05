@@ -60,6 +60,12 @@
     "placeLocations": "Put the three Halls of Pnakotus locations into play Set each remaining location aside, out of play.",
     "setAside": "Set The Custodian aside, out of play."
   },
+  "specialRules": [
+    {
+      "title": "@:theForgottenAge.theCityOfArchives.bodyOfAYithian.title",
+      "body": "@:theForgottenAge.theCityOfArchives.bodyOfAYithian.body"
+    }
+  ],
   "bodyOfAYithian": {
     "title": "Body of a Yithian",
     "body": "<p class='basic'>During the setup for this scenario, each investigator is instructed to replace their investigator card with one of the Body of a Yithian investigator cards provided in this Mythos Pack.</p><ul><li>Each investigator’s deck remains the same, but for the duration of this scenario, they must use a Body of a Yithian investigator card, and therefore cannot use any of their investigator’s abilities.<ul><li>Each investigator should still use their investigator mini-card so they can tell who is who.</li></ul></li><li>Any trauma that would normally be placed on your investigator is transferred to your Body of a Yithian investigator card.</li><li>Any cards that were attached to or placed underneath your investigator card are attached to or placed underneath your Body of a Yithian card.</li><li>For the duration of the scenario, your Body of a Yithian card has the same card title as your former investigator card. *For example: If you were playing as Wendy Adams, treat the Body of a Yithian card as if its title were “Wendy Adams” for the duration of this scenario.*</li><li>The Body of a Yithian card bears the encounter set icon for *The City of Archives*, and therefore cannot be used in any scenario other than *The City of Archives* unless otherwise noted.</li></ul>"

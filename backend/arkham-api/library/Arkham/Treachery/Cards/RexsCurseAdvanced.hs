@@ -18,7 +18,7 @@ rexsCurseAdvanced = treachery (RexsCurseAdvanced . (`with` Metadata False)) Card
 
 instance HasAbilities RexsCurseAdvanced where
   getAbilities (RexsCurseAdvanced (x `With` _)) =
-    [ playerLimit PerTestOrAbility
+    [ playerLimit PerTest
         $ restrictedAbility x 1 (InThreatAreaOf You)
         $ forced
         $ WouldHaveSkillTestResult #when You AnySkillTest #success

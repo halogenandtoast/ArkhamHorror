@@ -8,6 +8,7 @@ import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers hiding (drawCard)
 import Arkham.Helpers.Cost (getSpendableResources)
+import Arkham.Helpers.Investigator (getCardAttachments)
 import Arkham.I18n
 import Arkham.Investigator.Deck qualified as DeckKey
 import Arkham.Investigator.Types (Field (..))
@@ -22,6 +23,14 @@ newtype Meta = Meta {marketDeck :: [Card]}
 newtype UnderworldMarket2 = UnderworldMarket2 (AssetAttrs `With` Meta)
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+pickCardsByCodes :: [CardCode] -> [Card] -> Maybe [Card]
+pickCardsByCodes [] _ = Just []
+pickCardsByCodes (code : codes) cards = do
+  let (before, rest) = break ((== code) . (.cardCode)) cards
+  case rest of
+    [] -> Nothing
+    card : after -> (card :) <$> pickCardsByCodes codes (before <> after)
 
 underworldMarket2 :: AssetCard UnderworldMarket2
 underworldMarket2 = asset (UnderworldMarket2 . (`with` Meta [])) Cards.underworldMarket2
@@ -38,8 +47,15 @@ instance RunMessage UnderworldMarket2 where
   runMessage msg a@(UnderworldMarket2 (With attrs meta)) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       xs <- filterCards (card_ #illicit) <$> fieldMap InvestigatorDeck (map toCard . unDeck) iid
-      focusCards xs $ chooseNM iid 10 $ targets xs $ handleTarget iid (attrs.ability 1)
-      pure a
+      attachments <- getCardAttachments iid attrs
+      case pickCardsByCodes attachments xs of
+        Just selected | length selected == 10 -> do
+          traverse_ obtainCard selected
+          deck' <- shuffle (selected <> marketDeck meta)
+          pure . UnderworldMarket2 . (`with` Meta deck') $ attrs
+        _ -> do
+          focusCards xs $ chooseOrRunNM iid 10 $ targets xs $ handleTarget iid (attrs.ability 1)
+          pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
       obtainCard card

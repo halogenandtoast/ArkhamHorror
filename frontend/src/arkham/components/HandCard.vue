@@ -70,6 +70,7 @@ function isAbility(v: Message): v is AbilityLabel {
     if (source.contents === id.value) {
       return true
     }
+    if (!source.contents) return false
     const asset = props.game.assets[source.contents]
     if (asset) {
       return asset.cardId === id.value && asset.placement.tag === 'StillInHand'
@@ -244,7 +245,7 @@ function oilPaintEffect(canvas, radius, intensity) {
       :class="classObject"
       class="card in-hand"
       :src="image"
-      :data-customizations="JSON.stringify(card.contents.customizations)"
+      :data-customizations="JSON.stringify(cardContents.customizations)"
       :data-playability-game-id="cardAction === -1 ? game.id : undefined"
       :data-playability-investigator-id="cardAction === -1 ? investigatorId : undefined"
       :data-playability-card-id="cardAction === -1 ? id : undefined"

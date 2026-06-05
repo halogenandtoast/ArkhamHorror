@@ -1,5 +1,19 @@
 {
   "heading": "Scenario IV",
+  "specialRules": [
+    {
+      "title": "Ancient Facility Locations",
+      "body": "<p class='basic'>Ancient Facility locations exist in multiple encounter sets. (For example, in this scenario, both The Heart of Madness encounter set and The Great Seal encounter set contain Ancient Facility locations.) Because these locations can come from different encounter sets, they have no encounter set icon on their unrevealed side. To see which encounter set an Ancient Facility location belongs to, check its revealed side.</p>"
+    },
+    {
+      "title": "Seals",
+      "body": "<p class='basic'>This scenario introduces five seal tokens that represent important technological artifacts that are needed to contain the madness within The Gate of Y’quaa. Each seal token has its own symbol, as follows: {'{'}sealA{'}'} {'{'}sealB{'}'} {'{'}sealC{'}'} {'{'}sealD{'}'} {'{'}sealE{'}'}</p><p class='basic'>Each of these seal tokens has a dormant side and an activated side. The activated side is indicated by the glowing highlight around its symbol.</p><p class='basic'>Investigators will be instructed when to put seals into play, and whether they are dormant or activated. Seals have no inherent game effect. Investigators must discover how to take control of, activate, and utilize these seals to put an end to this madness.</p><p class='basic'>When an investigator takes control of a seal, they place it on their investigator card. If an investigator who controls one or more seals is eliminated (except by resignation), remove those seals from the game. Those seals are lost forever.</p><p class='basic'>As an {'{'}action{'}'} ability, an investigator may give control of a seal to another investigator at the same location or take control of a seal controlled by another investigator at the same location.</p>"
+    },
+    {
+      "title": "Location Adjacency in The Heart of Madness",
+      "body": "<p class='basic'>During this scenario, locations are arranged in a pattern of spokes and rings. There are three rings with five locations on each ring, and five spokes with three locations on each spoke.</p><ul><li>During this scenario, each location is connected to the locations next to it on its spoke as well as the locations next to it on its ring.</li></ul>"
+    }
+  ],
   "titanicRamp": {
     "label": {
       "spendClueToAutoSucceed": "Any investigator at your location or a connecting location may spend 1 clue to have you automatically succeed at this test."

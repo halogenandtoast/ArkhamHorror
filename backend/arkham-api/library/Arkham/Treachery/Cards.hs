@@ -304,6 +304,9 @@ allEncounterTreacheryCards =
       , encephalonSignal
       , endlessDescent
       , endlessNight
+      , sublimation
+      , fragmentation
+      , euphoria
       , endlessWeaving
       , enervation
       , entombed

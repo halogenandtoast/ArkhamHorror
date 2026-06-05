@@ -17,13 +17,14 @@ import Arkham.Duration as X
 
 import Arkham.Ability.Types qualified
 import Arkham.Action
-import Arkham.Card.CardCode
 import Arkham.Actions
+import Arkham.Card.CardCode
 import Arkham.Constants
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
+import Arkham.SkillType
 import Arkham.Source
 import Arkham.Text (toI18n)
 import Control.Lens (over, set, toListOf, transform)
@@ -133,6 +134,9 @@ limited = limitedAbility
 playerLimit :: AbilityLimitType -> Ability -> Ability
 playerLimit lType = limitedAbility (PlayerLimit lType 1)
 
+perTest :: Ability -> Ability
+perTest = playerLimit PerTest
+
 perTestOrAbility :: Ability -> Ability
 perTestOrAbility = playerLimit PerTestOrAbility
 
@@ -225,6 +229,13 @@ evadeAbility entity idx cost criteria =
 investigateAbility :: (Sourceable a, HasCardCode a) => a -> Int -> Cost -> Criterion -> Ability
 investigateAbility entity idx cost criteria =
   (mkAbility entity idx (investigateAction cost))
+    { abilityCriteria = criteria <> exists (YourLocation <> InvestigatableLocation)
+    }
+
+investigateAbilityWith
+  :: (Sourceable a, HasCardCode a) => a -> Int -> SkillType -> Cost -> Criterion -> Ability
+investigateAbilityWith entity idx stype cost criteria =
+  (mkAbility entity idx (investigateActionWith stype cost))
     { abilityCriteria = criteria <> exists (YourLocation <> InvestigatableLocation)
     }
 

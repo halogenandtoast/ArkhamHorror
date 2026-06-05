@@ -43,7 +43,7 @@ export default function useHighlighter() {
   function handlePointerMove(e: PointerEvent) {
     const el = (e.target as HTMLElement)?.closest('[data-highlight-id]')
     const id = el?.getAttribute('data-highlight-id') ?? null
-    updateHighlight(id, el)
+    updateHighlight(id, el instanceof HTMLElement ? el : null)
   }
 
   onMounted(() => {

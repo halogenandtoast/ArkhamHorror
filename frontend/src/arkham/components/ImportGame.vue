@@ -7,6 +7,7 @@ import type { Game } from '@/arkham/types/Game'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import { imgsrc } from '@/arkham/helpers'
+import { setGameLocalStorageItem } from '@/arkham/localStorage'
 
 const router = useRouter()
 
@@ -26,7 +27,7 @@ const isMultiplayer = ref(false)
 const importMode = ref<'Solo' | 'WithFriends'>('Solo')
 const selectedInvestigator = ref<string | null>(null)
 const gamePreview = ref<GamePreview | null>(null)
-const gameStub = { campaign: null, scenario: null } as Partial<Game>
+const gameStub = { campaign: null, scenario: null } as Game
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -96,7 +97,7 @@ async function submit() {
   try {
     const game = await importGame(formData, importMode.value)
     if (importMode.value === 'WithFriends' && investigators.value.length > 1) {
-      localStorage.setItem(`gameHost_${game.id}`, 'true')
+      setGameLocalStorageItem(game.id, 'host', 'true')
       router.push(`/games/${game.id}/claim-seat`)
     } else {
       router.push(`/games/${game.id}`)

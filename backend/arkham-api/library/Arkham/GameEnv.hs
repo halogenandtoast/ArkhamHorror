@@ -188,7 +188,7 @@ getDepthLock :: HasGame m => m Int
 getDepthLock = gameDepthLock <$> getGame
 
 getAllAbilities :: HasGame m => m [Ability]
-getAllAbilities = getAbilities <$> getGame
+getAllAbilities = cached GetAllAbilitiesKey $ getAbilities <$> getGame
 
 getSettings :: HasGame m => m Settings
 getSettings = gameSettings <$> getGame

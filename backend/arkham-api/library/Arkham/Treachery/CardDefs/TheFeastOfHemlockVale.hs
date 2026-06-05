@@ -229,3 +229,21 @@ incursion =
   (treachery "10650" "Incursion" TheLongestNight 4)
     { cdCardTraits = singleton Scheme
     }
+
+sublimation :: CardDef
+sublimation =
+  (treachery "10672" "Sublimation" FateOfTheVale 2)
+    { cdCardTraits = singleton Power
+    }
+
+fragmentation :: CardDef
+fragmentation =
+  (treachery "10673" "Fragmentation" FateOfTheVale 2)
+    { cdCardTraits = singleton Power
+    }
+
+euphoria :: CardDef
+euphoria =
+  (treachery "10674" "Euphoria" FateOfTheVale 2)
+    { cdCardTraits = singleton Terror
+    }

@@ -1,7 +1,56 @@
 {
+  "specialRules": [
+    {
+      "title": "The Codex",
+      "body": "<p class='basic'>The Feast of Hemlock Vale campaign features a new gameplay concept: The Codex. During this campaign, some card effects may direct players to read a specific codex entry. While playing, keep the Campaign Guide on hand for easy reference.</p><p class='basic'>Certain locations, characters, or enemies in The Feast of Hemlock Vale have codex entries, marked with ({'{'}codex{'}'} X). To read a character or location’s codex entry, you must pay all costs on that ability first, then turn to the current scenario or prelude’s Codex in this Campaign Guide and resolve all text.</p><ul><li>Each codex entry cannot be resolved more than once per scenario or prelude unless otherwise stated.</li><li>When resolving a codex entry, the player who triggered that entry resolves all effects (resolving a test, dealing damage, paying resources, etc.). If it is unclear who triggered the codex entry, the lead investigator resolves the entry.</li><li>If a codex entry instructs players to put a named set-aside resident into play, put that character into play with their story asset side faceup unless otherwise stated.</li><li>A resident whose name is crossed out in your Campaign Log cannot enter play during preludes or scenarios. If a resident’s name is crossed out, so are all entries in that resident’s Notes.</li><li>While resolving a codex entry for a specific character, you may only read a single section for which you meet the requirements. If you do not meet the requirements for the first section of a codex entry, skip to the following section. Only refer to that character’s Notes and Relationship Level in your Campaign Log unless otherwise stated. (e.g. “In River Hawthorne’s Notes, record River is a dreamboat” directs players to change the “Notes” section in River’s Campaign Log entry.)</li><li>After resolving a codex entry and making any changes in your Campaign Log, resume play.</li></ul>"
+    },
+    {
+      "title": "Three Days, Three Nights",
+      "body": "<p class='basic'>The Feast of Hemlock Vale campaign gives players just three days in-game to play out its story. This campaign also contains playable preludes in which investigators may interact with the residents of Hemlock Vale, learn the secrets of Hemlock Isle, and make preparations for the next scenario. Preludes are non-confrontational segments that are set up with locations and a scenario reference, act, and agenda. The end of each prelude provides several choices on which scenario to play next. Depending on the day and time, some scenarios may provide new story options or challenges. Players will not have time to play every scenario or befriend each resident on a single playthrough of this campaign.</p><ul><li>Players may earn experience when playing preludes and interludes. Record this experience under “Unspent Experience,” but do not spend it until instructed to by the campaign guide.</li><li>To keep track of the current day/time, you may refer to and update the “Day/Time” section in the Campaign Log.</li></ul>"
+    },
+    {
+      "title": "Residents & Relationship Levels",
+      "body": "<p class='basic'>At times, story text may instruct investigators to increase their Relationship Level with a particular resident. If instructed to do so, check the Campaign Log and find the specified resident’s entry.</p><ul><li>When referring to a resident’s Relationship Level, the number of checked boxes in their entry is that resident’s Relationship Level.</li><li>To increase a resident’s Relationship Level, check the leftmost unchecked box in that resident’s entry.</li><li>To decrease a resident’s Relationship Level, erase the rightmost checked box in that resident’s entry.</li><li>Unless otherwise stated, you should increase or decrease a resident’s Relationship Level by 1 box at a time.</li><li>If instructed to set a resident’s Relationship Level to 0, erase all checked boxes in that resident’s entry.</li><li>A resident whose name is crossed out in your Campaign Log cannot enter play during preludes or scenarios.</li></ul>"
+    },
+    {
+      "title": "Location Adjacency in this Campaign",
+      "body": "<p class='basic'>Most scenarios in this campaign are arranged in a set grid pattern. During these scenarios, each location is connected to each location adjacent to it, in addition to any connection icons.</p><ul><li>Adjacent locations share a side (left, right, above, or below). Locations that share only a corner are not considered adjacent.</li><li>When instructed to put a location into play, place it in an adjacent empty space above, below, or to the left or right of your location.</li><li>You cannot put a location into play where an existing location already is. When choosing where to put a new location, you must choose a spot unoccupied by a location, if able. If you cannot, no new locations are put into play.</li><li>Note that during preludes and scenarios that utilize The Vale encounter set, locations are only connected via their icons.</li></ul>"
+    },
+    {
+      "title": "Alert",
+      "body": "<p class='basic'>Some enemies in this campaign have the alert keyword. Each time an investigator fails a skill test while attempting to evade an enemy with the alert keyword, after applying all results for that skill test, that enemy performs an attack against the evading investigator. An enemy does not exhaust after performing an alert attack. This attack occurs whether the enemy is engaged with the evading investigator or not.</p>"
+    },
+    {
+      "title": "Day {'{'}day{'}'} and Night {'{'}night{'}'}",
+      "body": "<p class='basic'>During setup during this campaign, players may be instructed to put the Time Marker card into play. To do so, find the Time Marker card in the The First Day, The Second Day, or The Final Day encounter sets that corresponds to the current day and place it next to the agenda deck. This is the current day and time.</p><p class='basic'>Some cards have different effects depending on whether the scenario takes place during the Day or Night. Text following a (Day {'{'}day{'}'}) or (Night {'{'}night{'}'}) keyword is only active if the scenario or prelude being played is during the Day or Night, respectively. Any other ability not preceded by these keywords is active regardless of the time period.</p><p class='basic'>Setup instructions may have specific instructions depending on the current day and time. (e.g. “If it is Day 2, put River Hawthorne into play at the Cranberry Bog” only applies when playing that scenario as a Day 2 scenario and not a Night 2 scenario).</p>"
+    },
+    {
+      "title": "Elusive",
+      "body": "<p class='basic'>Some enemies in this campaign have the elusive keyword. Elusive enemies represent enemies who want to avoid the investigators for their own survival or to accomplish their own goals.</p><p class='basic'>If a ready enemy with the elusive keyword attacks or is attacked, after that attack resolves, that enemy immediately disengages from all investigators, moves to a connecting location (with no investigators, if able), and exhausts. This effect occurs whether the enemy was engaged with the attacking investigator or not.</p>"
+    },
+    {
+      "title": "Patrol",
+      "body": "<p class='basic'>Some enemies in this campaign have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated location (as described in parentheses next to the word patrol).</p><ul><li>If there are multiple locations that qualify as the designated location, the lead investigator may choose which location the enemy moves toward.</li><li>If an enemy with patrol would be compelled to move to a location via a path that is blocked by a card ability, the enemy does not move.</li></ul>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current day number.",
+      "cultist": "+1. If this is a parley attempt, you automatically succeed.",
+      "tablet": "-2. If you have fewer than 3 cards in hand, treat this token's modifier as 0 instead.",
+      "elderThing": "-1. If this is a parley attempt, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current day number.",
+      "cultist": "-1. If this is a parley attempt, treat this token's modifier as a +1, instead.",
+      "tablet": "-4. If you have fewer than 2 cards in hand, treat this token's modifier as -2 instead.",
+      "elderThing": "-3. If this is a parley attempt, reveal another token."
+    }
+  },
   "headings": {
     "preludeTheFirstEvening": "Prelude: The First Evening",
-    "preludeTheSecondEvening": "Prelude: The Second Evening"
+    "preludeTheSecondEvening": "Prelude: The Second Evening",
+    "preludeTheFinalEvening": "Prelude: The Final Evening"
   },
   "campaignLog": {
     "residents": {
@@ -13,6 +62,10 @@
     },
     "dayTime": {
       "title": "Day / Time"
+    },
+    "map": {
+      "title": "Map",
+      "body": "<div class='hemlock-vale-map'><img alt='Map of Hemlock Isle' src='{setImgPath}/../extra/the-feast-of-hemlock-vale/map.jpg' /></div>"
     }
   },
   "label": {
@@ -28,7 +81,8 @@
     }
   },
   "remembered": {
-    "youAreRunningAnErrand": "You are running an errand"
+    "youAreRunningAnErrand": "You are running an errand",
+    "youAreDeliveringAPackage": "You are delivering a package"
   },
   "prologue": {
     "title": "Against Nature",
@@ -236,7 +290,7 @@
           "fight": "Let them fight it out."
         },
         "title": "{'{'}codex{'}'} Codex 13: The Atwood House",
-        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theAtwoodHouse.title </h3><p>You hear William and River arguing. “This is all we have left. We can’t turn our back on our past. Our legacy,” William insists. River cuts in with a scathing look. “The Hemlock legacy is dead. And I know several buyers in Harlem who would turn this soggy island into a paradise.”</p><p class='basic'>You must decide (*choose one*):</p><ul><li>“William has a point.” (You may only choose this option if William Hemlock’s Relationship Level is 2 or higher.) Search the set-aside Residents encounter set for William Hemlock and put him into play at The Atwood House, asset side faceup.</li><li>“River has a point.” (You may only choose this option if River Hawthorne’s Relationship Level is 2 or higher.) Search the set-aside Residents encounter set for River Hawthorne and put them into play at The Atwood House, asset side faceup.</li><li>Let them fight it out. Continue reading.</li></ul>",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theAtwoodHouse.title </h3><p>You hear William and River arguing. “This is all we have left. We can’t turn our back on our past. Our legacy,” William insists. River cuts in with a scathing look. “The Hemlock legacy is dead. And I know several buyers in Harlem who would turn this soggy island into a paradise.”</p><p class='basic'>You must decide (*choose one*):</p><ul><li>“William has a point.” (You may only choose this option if William Hemlock’s Relationship Level is 2 or higher.) Search the set-aside *Residents* encounter set for William Hemlock and put him into play at The Atwood House, asset side faceup.</li><li>“River has a point.” (You may only choose this option if River Hawthorne’s Relationship Level is 2 or higher.) Search the set-aside *Residents* encounter set for River Hawthorne and put them into play at The Atwood House, asset side faceup.</li><li>Let them fight it out. Continue reading.</li></ul>",
         "body2": "@:theFeastOfHemlockVale.prelude2.codex.theAtwoodHouse.body <p>As the pair sling incredibly personal insults back and forth, a peal of thunder silences them both. William’s brow furrows when he sees you; River turns and grimaces as well. An uneasy silence follows, and you realize you just eavesdropped on a very sensitive conversation.</p><p class='basic right'>Decrease both William Hemlock and River Hawthorne’s Relationship Levels.</p>"
       },
       "tadsGeneralStore": {
@@ -261,12 +315,15 @@
         "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theCurse.title </h3><p>As you lean on the stack of mirrors, you look down and see your own reflection staring back. Your features are stretched and different somehow: you look gaunt and exhausted. As you stand up, gray, flaking skin sloughs off of your forearm.</p><p class='basic right'>If it is not already in your deck, search the set-aside *Day of Rain* encounter set for the Hemlock Curse weakness and add it to your deck. It does not count toward your deck size. Otherwise, during setup for the next scenario, search your deck and discard pile for the Hemlock Curse weakness and add it to your opening hand.</p><p class='basic right'>You (*and only you*) earn 2 bonus experience.</p>"
       },
       "xp": {
+        "motherRachel": "Mother Rachel",
         "tadsGeneralStore": "Tad's General Store",
         "theCommons": "The Commons",
+        "theCurse": "The Curse",
         "judithPark": "Judith Park",
         "gideonMizrah": "Gideon Mizrah",
         "riverHawthorne": "River Hawthorne",
-        "williamHemlock": "William Hemlock"
+        "williamHemlock": "William Hemlock",
+        "theoPeters": "Theo Peters"
       }
     },
     "xp": {
@@ -313,6 +370,171 @@
         "title": "Resolution 3",
         "body": "<p>_Resolution 3_: Dr. Marquez pours herself a strong cup of coffee. “I’m going to take advantage of the cooling rain and head up to Pearl Ridge. Join me if you like,” she takes a bite of her eggs and wrinkles her nose. “Is that a metal taste?” She discretely spits the eggs into a handkerchief as Ms. Olmstead emerges from the kitchen with a stack of flapjacks and serves several hungry guests.</p><ul><li>Do not record the Victory X value of each card in the victory display. Each investigator earns the bonus experience awarded during this prelude. Record each bonus experience earned under “Unspent Experience” in your Campaign Log, _but do not spend any of it until the end of the next scenario_.</li><li>Make preparations for your next survey.<ul><li>Choose 1 asset in your play area to keep for the next scenario. It must be one that does not normally start in play. Discard each other asset and attachment in your play area, except for those that start each game in play.</li><li>Discard down to your opening hand size. Shuffle your discard pile into your deck. (*Your current hand is your opening hand for the next scenario; you will not draw a new opening hand or take a mulligan.8)</li><li>Discard down to your starting resources.</li></ul></li><li>When setting up the next scenario, skip steps 1-8 of ‘Setting Up the Game” on page 27 of the Rules Reference.</li></ul><p class='basic'>Check the “Areas Surveyed” section of your Campaign Log and choose a scenario that has not yet been checked off.</p><ul><li>To brave the decaying North Point Mine in Written in Rock, turn to page 10.</li><li>To investigate the long-abandoned Hemlock House, turn to page 14.</li><li>To explore the eerily quiet Pearl Ridge in The Silent Heath, turn to page 19.</li><li>To explore the Akwan Shoreline up north in The Lost Sister, turn to page 23.</li><li>To survey Eastwick Bog and risk an encounter with The Thing in the Depths, turn to page 27.</li></ul>"
       }
+    }
+  },
+  "fatigue": {
+    "title": "Fatigue",
+    "body": "The fatigue from the long night catches up to you. Two non-symbol tokens drawn at random are replaced with a chaos token of a value 1 lower for the remainder of the campaign:"
+  },
+  "prelude3": {
+    "xp": {
+      "survivor": "Survey assistance"
+    },
+    "intro": {
+      "title": "Prelude: Dawn of the Final Day",
+      "checkCampaignLog": "Check your Campaign Log.",
+      "proceedToIntro1": "If <i>Dr. Marquez has a plan</i>, proceed to _Intro 1_.",
+      "skipToIntro2": "Otherwise, skip to _Intro 2_.",
+      "intro1": "<p>_Intro 1_: After a few scant hours of sleep, you emerge from your room to find Dr. Marquez groggily sipping hot black coffee. “You look like death,” she says darkly. You tell her she looks the same, and she laughs emptily. “I’ve had worse. Not much worse. But worse.”</p><p class='basic'>Skip to _Intro 3_.</p>",
+      "intro2": "<p>_Intro 2_: You awaken to the sound of singing outside your window. You head downstairs to find Dr. Marquez groggily sipping black coffee, her expression grim. When you ask about the events of last night, she looks at you wearily. “Whatever happened last night is not going into the report, is all I’ll say.” Further questions are met with a stony silence.</p><p class='basic'>Proceed to _Intro 3_.</p>",
+      "intro3": "<p>_Intro 3_: After a quick breakfast, you emerge from the Boarding House into an almost fairy tale atmosphere: locals dancing in circles, singing lilting melodies, and reclining on quilts. Dozens of outsiders in everyday clothes mingle with the locals, laughing. Fully aware of the danger ahead, you make preparations for one last survey.</p><ul><li>More survey assistance has arrived. Any player whose investigator was _killed_ in The Longest Night scenario may select a new investigator and upgrade their new deck to half the earned experience of their previous investigator (*rounded up*).</li><li>The fatigue from the long night catches up to you. Draw tokens from the chaos bag at random until you have 2 non-symbol tokens. Replace these tokens with a chaos token of a value 1 lower for the remainder of the campaign. (If you are unable to replace a token, repeat this process until a total of 2 chaos tokens have been replaced.)</li></ul>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *The Final Day*, *Day of the Feast*, *Agents of the Colour*, *Residents*, and *The Vale*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-final-day.png' /><img src='{setImgPath}/day-of-the-feast.png' /><img src='{setImgPath}/agents-of-the-colour.png' /><img src='{setImgPath}/residents.png' /><img src='{setImgPath}/the-vale.png' /></section>",
+      "dayThree": "Put the _Day Three_ Time Marker card into play. Are you hungry yet?",
+      "buildActAgenda": "Build the act and agenda deck using All is Full of Love and Dawn of the Final Day. Remove each other act and agenda from the game.",
+      "placeLocations": "Put each location except for The Crossroads and The Old Mill into play on its _(Day 3)_ side according to the map on page 6.",
+      "crossroadsAndOldMill": "Use The Crossroads and The Old Mill locations from the *Day of the Feast* encounter set, _(Morning)_ side faceup. Remove the other The Crossroads and The Old Mill locations from the game.",
+      "startAt": "Each investigator begins play at The Boarding House.",
+      "residents": "Gather the *Residents* encounter set and check the Campaign Log.",
+      "removeResidents": "Remove each resident whose name is crossed off from the game.",
+      "motherRachelAndJudith": "Put Mother Rachel and Judith Park into play at The Crossroads, asset side faceup.",
+      "setOutOfPlay": "Set each remaining card from the *Residents* encounter set aside, out of play.",
+      "setAsideAgents": "Set the *Agents of the Colour* encounter set aside, out of play.",
+      "placeDoom": "Place doom on the agenda equal to the number of investigators."
+    },
+    "codex": {
+      "label": {
+        "additionalActions": "Any number of Actions",
+        "combat": "Test {'{'}combat{'}'}",
+        "agility": "Test {'{'}agility{'}'}",
+        "draw": "Draw 1 card",
+        "gainResource": "Gain 1 resource"
+      },
+      "fireworksHidden": "<p class='basic right'>You hide the cluster of fireworks. Mark 1 tally next to <i>The plan is underway</i> in Simeon Atwood's Notes.</p>",
+      "motherRachel": {
+        "title": "{'{'}codex{'}'} Codex 1: Mother Rachel",
+        "label": {
+          "thankYou": "“Thank you for your prayers.”",
+          "iSeeYou": "“I see you for what you really are.”"
+        },
+        "motherRachel1": "<h3>@:theFeastOfHemlockVale.prelude3.codex.motherRachel.title </h3><p>_Mother Rachel 1:_ A crowd of tourists and locals in white-gold cloaks gathers around the effigy in the center of Hemlock Vale. Mother Rachel stands in their midst, regarding each and every one of them with an exultant smile.</p><p class='basic'>Check the Areas Surveyed section of your Campaign Log:</p>",
+        "proceedTo2": "If the box next to Southern Fields is checked, proceed to _Mother Rachel 2_.",
+        "cannotReach": "Otherwise, you cannot reach the matron. Continue playing.",
+        "motherRachel2": "<h3>@:theFeastOfHemlockVale.prelude3.codex.motherRachel.title </h3><p>_Mother Rachel 2:_ Feeling bold, you cut through the crowd. The matron’s eyes brim with tears when she sees you. “Oh, my child. I prayed for your safe return.” She takes your hand as the crowd disperses. “It was not my place to interfere, although I was wracked with guilt. I am so thankful you are alive.”</p><p class='basic'>You must decide (choose one):<p><ul><li>*“Thank you for your prayers.”* Proceed to _Mother Rachel 3_.</li><li>*“I see you for what you really are.”* Skip to _Mother Rachel 4_.</li></ul>",
+        "motherRachel3": "<h3>@:theFeastOfHemlockVale.prelude3.codex.motherRachel.title </h3><p>_Mother Rachel 3:_ The matron smiles warmly. “I hope you will stand by me at the Feast tonight, as a guest of honor.” Before you can reply, you are pulled into the dancing circle around the effigy.</p><p class='basic right'>In your Campaign Log, record <i>The investigators learned their place</i>.</p><p class='basic right'>Increase Mother Rachel’s Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "motherRachel4": "<h3>@:theFeastOfHemlockVale.prelude3.codex.motherRachel.title </h3><p>_Mother Rachel 4:_ The matron replies with a cold stare. “And I, too, see you for what you are. I hope you join us for the Feast.” Before you can reply, you are pulled into the dancing circle around the effigy.</p><p class='basic right'>Decrease Mother Rachel’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
+      "leahAtwood": {
+        "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+        "crossedOut": "<h3>@:theFeastOfHemlockVale.prelude3.codex.leahAtwood.title </h3><p>_If Simeon Atwood’s name is crossed out:_</p><p>Leah sits on the front porch, head cradled in her hands. She looks up as you approach. “Simeon was always talking about his ‘Secret Order of Miners.’ And he was—he was always talking about the mines. He said he’d been practicing for something. A ‘journey to the center of the earth’ or whatever nonsense he’s been talking about with that boy Theo.”</p><p class='basic right'>Increase Leah Atwood’s Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "notCrossedOut": "<p>_If Simeon Atwood’s name is not crossed out:_</p><p>The front door of the Atwood House slams, and Leah makes a beeline for you. “Simeon told me what you did for him. I can’t believe he—” She raises one hand to her head. “I’m just glad you were there to help. Thank you, from the bottom of my heart. If there’s anything we can do for you, please, don’t hesitate to ask.”</p><p class='basic right'>Increase Leah Atwood’s Relationship Level by 2. Each investigator earns 2 bonus experience.</p>"
+      },
+      "williamHemlock": {
+        "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+        "william1": "<h3>@:theFeastOfHemlockVale.prelude3.codex.williamHemlock.title </h3><p>_William 1:_ You find William scratching notes in his commonplace book. “I wonder if I should quote Socrates. No, it would be rather gauche…” When you ask him to explain, he shows you a handsome poem written in flowing script:</p><p class='center'><span class='wolgast'>I tarry amidst violet blooms<br>Celebrating the advent of what I assume you presume:<br>An effulgent fledgling joy.</span></p><p class='basic'>Check your Campaign Log:</p>",
+        "proceedTo2": "If <i>William stood by you</i>, proceed to _William 2_.",
+        "skipTo3": "Otherwise, skip to _William 3_.",
+        "william2": "<h3>@:theFeastOfHemlockVale.prelude3.codex.williamHemlock.title </h3><p>_William 2:_ William looks grave as you hand back his book. “Last night’s events have cast a pall on the Feast. I do not know Mother Rachel’s true intentions, but I think it’s time the Hemlocks dug in. Perhaps it would be better if River and I stood as one …”</p><p class='basic right'>Increase William Hemlock’s Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "isResolved": "If <i>William took heart</i>, in William Hemlock’s Notes, record <i>William is resolved</i>.",
+        "william3": "<h3>@:theFeastOfHemlockVale.prelude3.codex.williamHemlock.title </h3><p>_William 3:_ “Ah! I’ve got it,” William exclaims. After a minute of furious scribbling, he shares more:</p><p class='center'><span class='wolgast'>The brilliance that burns<br>Turns wholly my heart to the sky.<br>My vision brims<br>For our glorious ascension is nigh.</span></p><p class='basic right'>Increase William Hemlock’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
+      "riverHawthorne": {
+        "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+        "stoodByYou": "<h3>@:theFeastOfHemlockVale.prelude3.codex.riverHawthorne.title </h3><p>_If River stood by you and the scheme is in motion:_</p><p>River breaks from the crowd and takes you aside. “I helped you last night, so now I need something in return. During the Feast tonight, I need you to distract my sweet William using any means necessary. If he threatens violence, I expect your help!”</p><p class='basic right'>In River Hawthorne’s Notes, record <i>River is reclaiming their legacy</i>.</p><p class='basic right'>Increase River Hawthorne’s Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "otherwise": "<h3>@:theFeastOfHemlockVale.prelude3.codex.riverHawthorne.title </h3><p>_Otherwise:_</p><p>“I’ll have you all know that I risked life and limb for all of the cranberry sauce at today’s feast,” River looks imperiously at their entourage, who listen attentively. “So I expect each and every one of you to not only vote for my sauce in the competition, but also to eat a double helping of it. If I don’t get my prize, I’ll go straight to Langston and ask him to write a very unflattering poem about each of you.”</p><p class='basic right'>Gain 3 resources.</p>"
+      },
+      "gideonMizrah": {
+        "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+        "stoodByYou": "<h3>@:theFeastOfHemlockVale.prelude3.codex.gideonMizrah.title </h3><p>_If Gideon stood by you:_</p><p>Gideon sits at the back of the chapel, hat in his hands. He smiles at your approach. “I weren’t much for religion, but I’d ne’er heard a sermon like Mother Rachel’s. Nothin’ like the New Church Green in Innsmouth. They were always beggin’ fer coin. An’ the sermons were a mite fishy.”</p><p class='basic right'>Increase Gideon Mizrah’s Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "otherwise": "<h3>@:theFeastOfHemlockVale.prelude3.codex.gideonMizrah.title </h3><p>_Otherwise:_</p><p>Gideon sits at the back of the sanctuary, either praying or asleep. Rather than disturb him, you stop to admire several wooden spiral sculptures.</p><p class='basic right'>Draw 3 cards.</p>"
+      },
+      "judithPark": {
+        "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+        "judith1": "<h3>@:theFeastOfHemlockVale.prelude3.codex.judithPark.title </h3><p>_Judith 1:_ “Something’s off,” Judith stares up at the sun, one hand on the holster of her gun. Above, a dark patch of sky flits and then descends as a cloud of smoke, dispersing a gaggle of tourists. Judith raises her gun and prepares to fire into the smoke.</p><p class='basic'>Search the set-aside *Agents of the Colour* encounter set for 1 copy of the Miasmatic Shadow enemy and spawn it at The Crossroads.</p><p class='basic'>Check your Campaign Log:</p>",
+        "proceedTo2": "If <i>Judith stood by you</i>, and/or <i>The Thing in the Depths was defeated</i>, and/or Judith Park is at Relationship Level 4 or higher, proceed to _Judith 2_.",
+        "skipTo3": "Otherwise, skip to _Judith 3_.",
+        "judith2": "<h3>@:theFeastOfHemlockVale.prelude3.codex.judithPark.title </h3><p>_Judith 2:_ You shout at the bodyguard to stop. She lowers her gun as the roiling cloud flickers like a mirage. “With me!” Judith beckons you.</p><p class='basic right'>Take control of Judith Park.</p><p class='basic right'>In Judith Park’s Notes, record <i>You backed Judith up</i>.</p><p class='basic right'>Increase Judith Park’s Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "judith3": "<h3>@:theFeastOfHemlockVale.prelude3.codex.judithPark.title </h3><p>_Judith 3:_ The bodyguard fires blindly into the cloud. Shouts of alarm ring through the Crossroads as tourists dive for cover. The roiling cloud flickers like a mirage. “Son of a—” Judith exclaims, thunderstruck.</p><p class='basic right'>Discard 1 card at random from your hand.</p><p class='basic right'>Increase Judith Park’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
+      "theoPeters": {
+        "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+        "stoodByYou": "<h3>@:theFeastOfHemlockVale.prelude3.codex.theoPeters.title </h3><p>_If Theo stood by you:_</p><p>“I’ll get you that dog mask right away, Mr. Sanders!” Theo shouts. The young man is inundated by requests from locals and tourists alike, but when he sees you, his face lights up. “Stay there! I wanted to talk to you about last night,” he takes a break and leads you to a small dark room at the back of the store. “I know the Vale has taken care of me. Mother Rachel’s taken care of me. But I…I don’t know anymore. What if my sister was right? What does Mother Rachel think she’s doing?” He bites his lip. “You’re the only one I can talk to about this.”</p><p class='basic right'>In Theo Peters’ Notes, record <i>Theo is having second thoughts</i>.</p><p class='basic right'>Increase Theo Peters’ Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "otherwise": "<h3>@:theFeastOfHemlockVale.prelude3.codex.theoPeters.title </h3><p>_Otherwise:_</p><p>“I’ll get you that dog mask right away, Mr. Sanders!” Theo shouts. “Do you mind delivering this to the Commons for me?” He hands you a package. “It’s for my cousins in Portland.”</p><p class='basic right'>Remember that “you are delivering a package.”</p>"
+      },
+      "boardingHouse": {
+        "title": "{'{'}codex{'}'} Codex 9: Boarding House",
+        "label": {
+          "william": "“I think William had something to do at the Old Mill.”",
+          "theo": "“Theo was supposed to manage Tad’s Store today.”",
+          "river": "“I think I saw River vamping with some of their friends here in the study.”"
+        },
+        "body": "<h3>@:theFeastOfHemlockVale.prelude3.codex.boardingHouse.title </h3><p>Ms. Olmstead can’t stop laughing as you ask her about the festivities and who is at work around the Vale.</p><p class='basic'>Choose one of the options below to resolve. Investigators at Boarding House may spend any number of actions, as a group, to choose that many additional options. An investigator may trigger this codex again.</p><ul><li>“I think William had something to do at the Old Mill.” Search the set-aside *Residents* encounter set for William Hemlock and put him into play at The Old Mill, asset side faceup.</li><li>“Theo was supposed to manage Tad’s Store today.” Search the set-aside *Residents* encounter set for Theo Peters and put him into play at Tad’s General Store, asset side faceup.</li><li>“I think I saw River vamping with some of their friends here in the study.” Search the set-aside *Residents* encounter set for River Hawthorne and put them into play at Boarding House, asset side faceup.</li></ul>"
+      },
+      "theCrossroads": {
+        "title": "{'{'}codex{'}'} Codex 10: The Crossroads",
+        "planUnderway": "<h3>@:theFeastOfHemlockVale.prelude3.codex.theCrossroads.title </h3><p>_Check Simeon Atwood’s Notes. If The plan is underway:_</p><p>The Crossroads thrum with activity. You carefully jam some fireworks in the mortar of a flowering fence.</p><p class='basic right'>Test {'{'}combat{'}'} or {'{'}agility{'}'} (3) to hide the fireworks. If you succeed, mark 1 tally next to “The plan is underway.” (*Hint: You need to hide 1 {'{'}perPlayer{'}'} fireworks to help Simeon.*) If you fail, an investigator may trigger this codex again.</p>",
+        "otherwise": "<h3>@:theFeastOfHemlockVale.prelude3.codex.theCrossroads.title </h3><p>_Otherwise:_</p><p>The Crossroads thrum with activity. Mother Rachel watches the proceedings as the colorful ribbons are hung from the towering effigy.</p><p class='basic right'>You may either draw 1 card or gain 1 resource.</p>"
+      },
+      "hemlockChapel": {
+        "title": "{'{'}codex{'}'} Codex 11: Hemlock Chapel",
+        "planUnderway": "<h3>@:theFeastOfHemlockVale.prelude3.codex.hemlockChapel.title </h3><p>_Check Simeon Atwood’s Notes. If The plan is underway:_</p><p>As a kind of wedding ceremony unfolds in a grove nearby, you attempt to discretely hide a cluster of fireworks in the chapel eaves.</p><p class='basic right'>If he is not already in play, search the set-aside *Residents* encounter set for Gideon Mizrah and put him into play at Hemlock Chapel, asset side faceup.</p><p class='basic right'>Test {'{'}agility{'}'} (2) to hide the fireworks. If you succeed, mark 1 tally next to “The plan is underway.” (*Hint: You need to hide 1 {'{'}perPlayer{'}'} fireworks to help Simeon.*) If you fail, an investigator may trigger this codex again.</p>",
+        "otherwise": "<h3>@:theFeastOfHemlockVale.prelude3.codex.hemlockChapel.title </h3><p>_Otherwise:_</p><p>A throng of people stand watching a kind of wedding ceremony in front of the chapel. The couple smile and begin to dance.</p><p class='basic right'>Search the set-aside *Residents* encounter set for Gideon Mizrah and put him into play at Hemlock Chapel, asset side faceup.</p>"
+      },
+      "theAtwoodHouse": {
+        "title": "{'{'}codex{'}'} Codex 13: The Atwood House",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude3.codex.theAtwoodHouse.title </h3><p>The Atwood House’s dour façade sticks out like an ugly sore in the sea of bright flowers and garlands.</p><p class='basic right'>Search the set-aside *Residents* encounter set for Leah Atwood and put her into play at The Atwood House, asset side faceup.</p>"
+      },
+      "tadsGeneralStore": {
+        "title": "{'{'}codex{'}'} Codex 14: Tad’s General Store",
+        "label": {
+          "item": "Spend 5 resources to search your deck for an Item card and play it, ignoring its cost."
+        },
+        "planUnderway": "<h3>@:theFeastOfHemlockVale.prelude3.codex.tadsGeneralStore.title </h3><p>_Check Simeon Atwood’s Notes. If The plan is underway:_</p><p>The rooftop of Tad’s is the perfect place to stick some fireworks. The morning sun is already burning hot as you climb up.</p><p class='basic right'>Test {'{'}combat{'}'} or {'{'}agility{'}'} (3) to hide the fireworks. If you succeed, mark 1 tally next to “The plan is underway.” (*Hint: You need to hide 1 {'{'}perPlayer{'}'} fireworks to help Simeon.*) If you fail, an investigator may trigger this codex again.</p>",
+        "otherwise": "<h3>@:theFeastOfHemlockVale.prelude3.codex.tadsGeneralStore.title </h3><p>_Otherwise:_</p><p>The general store is swamped with visitors, buying flower wreaths and bright quilts as workers come and go.</p><p class='basic right'>You may spend 5 resources to search your deck for an _Item_ card and play it, ignoring its cost. Any other investigator may trigger this codex again.</p>"
+      },
+      "valeSchoolhouse": {
+        "title": "{'{'}codex{'}'} Codex 15: Vale Schoolhouse",
+        "planUnderway": "<h3>@:theFeastOfHemlockVale.prelude3.codex.valeSchoolhouse.title </h3><p>_Check Simeon Atwood’s Notes. If The plan is underway:_</p><p>The schoolhouse is deserted. You find a large empty barrel behind the outhouse and try to plant the fireworks.</p><p class='basic right'>Test {'{'}combat{'}'} or {'{'}agility{'}'} (3) to hide the fireworks. If you succeed, mark 1 tally next to “The plan is underway.” (*Hint: You need to hide 1 {'{'}perPlayer{'}'} fireworks to help Simeon.*) If you fail, an investigator may trigger this codex again.</p>",
+        "otherwise": "<h3>@:theFeastOfHemlockVale.prelude3.codex.valeSchoolhouse.title </h3><p>_Otherwise:_</p><p>The schoolhouse is empty today. Several hand-drawn pictures on the wall depict dozens of bright, many-colored creatures.</p><p class='basic right'>You may either draw 1 card or gain 1 resource.</p>"
+      },
+      "theCommons": {
+        "title": "{'{'}codex{'}'} Codex 16: The Commons",
+        "delivering": "<h3>@:theFeastOfHemlockVale.prelude3.codex.theCommons.title </h3><p>_If “you are delivering a package”:_</p><p>You hand the package across the counter to Martha Jean, who regards you with a long smile. A teacup lies shattered on the floor nearby.</p><p class='basic right'>Increase Theo Peters’ Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "regardless": "<p>_Regardless:_</p><p>“Got a gift for a special someone?” Martha Jean slurs, staring. “Why didn’t you ask me to dance last night? I would have said yes.”</p><p class='basic right'>An investigator may remove 1 earned Item story asset from their deck, discard pile, or hand. If they do, choose a resident with a Relationship Level of 2 or lower. Increase that resident’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
+      "xp": {
+        "motherRachel": "Mother Rachel",
+        "leahAtwood": "Leah Atwood",
+        "williamHemlock": "William Hemlock",
+        "riverHawthorne": "River Hawthorne",
+        "gideonMizrah": "Gideon Mizrah",
+        "judithPark": "Judith Park",
+        "theoPeters": "Theo Peters",
+        "theCommons": "The Commons"
+      }
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p>_If no resolution was reached (each investigator was defeated):_ A ring of villagers wearing animal masks pulls you to your feet. As you stand, you can’t help but grin as a soothing bliss washes over you. A woman wearing a deer mask helps you back to the Boarding House to reconvene with the survey.</p><ul><li>Place 1 doom on the lead investigator’s investigator card.</li><li>Skip to _Resolution 2_.</li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1:_ Dr. Marquez nods along to Bertie’s observation. “You’re onto something. The bliss is almost a kind of lure. Draw in prey, numb them to pain and drain them of their faculties, then devour what remains.” The professor arches an eyebrow. “It would have to be a highly advanced apex predator. Although I’m still suspicious the odd behavior is due to toxic gas.”</p><ul><li>In your Campaign Log, record <i>Dr. Marquez has a hunch</i>.</li><li>Proceed to _Resolution 2_.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2:_ Dr. Marquez looks utterly exhausted as she hefts her pack into the back of Theo’s blue truck. “Today’s the last day,” she says. “Let’s make the most of it.”</p><ul><li>Update your Campaign Log. In Simeon Atwood’s Notes, if there are at least 1 {'{'}perPlayer{'}'} tallies next to <i>The plan is underway</i>: In your Campaign Log (*not* in Simeon Atwood’s Notes), record <i>The Vale is full of fireworks</i>.</li><li>Each investigator earns the bonus experience awarded during this prelude. Record each bonus experience earned under “Unspent Experience” in your Campaign Log, but do not spend any of it until the end of the next scenario.</li><li>Make preparations for your final survey.<ul><li>Choose 1 asset in your play area to keep for the next scenario. It must be one that does not normally start in play. Discard each other asset and attachment in your play area, except for those that start each game in play.</li><li>Discard down to your opening hand size. Shuffle your discard pile into your deck. (*Your current hand is your opening hand for the next scenario; you will not draw a new opening hand or take a mulligan.*)</li><li>Discard down to your starting resources.</li></ul></li><li>When setting up the next scenario, skip steps 1-8 of ‘Setting Up the Game’ on page 27 of the Rules Reference. Check the “Areas Surveyed” section of your Campaign Log and choose a scenario that has not yet been checked off.</li></ul>"
+      }
+    },
+    "label": {
+      "survey": "The investigators must choose where to survey today! You will have the opportunity to survey multiple areas over the course of the campaign.",
+      "writtenInRock": "Brave the decaying North Point Mine in _Written in Rock_",
+      "hemlockHouse": "Investigate the long-abandoned _Hemlock House_",
+      "theSilentHeath": "Explore the eerily quiet Pearl Ridge in _The Silent Heath_",
+      "theLostSister": "Explore the Akwan Shoreline up north in _The Lost Sister_",
+      "theThingInTheDepths": "Survey Eastwick Bog and risk an encounter with _The Thing in the Depths_"
     }
   },
   "prelude": {
@@ -579,7 +801,8 @@
       "orderKey": "b",
       "name": "Mother Rachel",
       "motherRachelIntervened": "Mother Rachel Intervened",
-      "motherRachelSharedHerDoubts": "Mother Rachel Shared Her Doubts"
+      "motherRachelSharedHerDoubts": "Mother Rachel Shared Her Doubts",
+      "motherRachelCrossedOut": "Mother Rachel Crossed Out"
     },
     "[leahAtwoodNotes]": {
       "orderKey": "c",
@@ -591,7 +814,8 @@
       "leahAndSimeonWereReunited": "Leah And Simeon Were Reunited",
       "leahSearchedThePearlRuins": "Leah Searched The Pearl Ruins",
       "leahStoodByYou": "Leah Stood By You",
-      "leahSacrificedThemselvesForTheInvestigators": "Leah Sacrificed Themselves For The Investigators"
+      "leahSacrificedThemselvesForTheInvestigators": "Leah Sacrificed Themselves For The Investigators",
+      "leahCrossedOut": "Leah Crossed Out"
     },
     "[simeonAtwoodNotes]": {
       "orderKey": "d",
@@ -602,7 +826,8 @@
       "thePlanIsUnderway": "The Plan Is Underway",
       "simeonSharedADance": "Simeon Shared A Dance",
       "simeonStoodByYou": "Simeon Stood By You",
-      "simeonSacrificedThemselvesForTheInvestigators": "Simeon Sacrificed Themselves For The Investigators"
+      "simeonSacrificedThemselvesForTheInvestigators": "Simeon Sacrificed Themselves For The Investigators",
+      "simeonCrossedOut": "Simeon Crossed Out"
     },
     "[williamHemlockNotes]": {
       "orderKey": "e",
@@ -612,7 +837,8 @@
       "williamSharedADance": "William Shared A Dance",
       "williamStoodByYou": "William Stood By You",
       "williamIsResolved": "William Is Resolved",
-      "williamSacrificedThemselvesForTheInvestigators": "William Sacrificed Themselves For The Investigators"
+      "williamSacrificedThemselvesForTheInvestigators": "William Sacrificed Themselves For The Investigators",
+      "williamCrossedOut": "William Crossed Out"
     },
     "[riverHawthorneNotes]": {
       "orderKey": "f",
@@ -623,7 +849,8 @@
       "riverSharedADance": "River Shared A Dance",
       "riverStoodByYou": "River Stood By You",
       "riverIsReclaimingTheirLegacy": "River Is Reclaiming Their Legacy",
-      "riverSacrificedThemselvesForTheInvestigators": "River Sacrificed Themselves For The Investigators"
+      "riverSacrificedThemselvesForTheInvestigators": "River Sacrificed Themselves For The Investigators",
+      "riverCrossedOut": "River Crossed Out"
     },
     "[gideonMizrahNotes]": {
       "orderKey": "g",
@@ -633,7 +860,8 @@
       "gideonFoundHisTreasure": "Gideon Found His Treasure",
       "gideonSharedADance": "Gideon Shared A Dance",
       "gideonStoodByYou": "Gideon Stood By You",
-      "gideonSacrificedThemselvesForTheInvestigators": "Gideon Sacrificed Themselves For The Investigators"
+      "gideonSacrificedThemselvesForTheInvestigators": "Gideon Sacrificed Themselves For The Investigators",
+      "gideonCrossedOut": "Gideon Crossed Out"
     },
     "[judithParkNotes]": {
       "orderKey": "h",
@@ -643,7 +871,8 @@
       "judithSharedADance": "Judith Shared A Dance",
       "judithStoodByYou": "Judith Stood By You",
       "youBackedJudithUp": "You Backed Judith Up",
-      "judithSacrificedThemselvesForTheInvestigators": "Judith Sacrificed Themselves For The Investigators"
+      "judithSacrificedThemselvesForTheInvestigators": "Judith Sacrificed Themselves For The Investigators",
+      "judithCrossedOut": "Judith Crossed Out"
     },
     "[theoPetersNotes]": {
       "orderKey": "i",
@@ -654,7 +883,8 @@
       "theoRejectedHisFamily": "Theo Rejected His Family",
       "theoStoodByYou": "Theo Stood By You",
       "theoIsHavingSecondThoughts": "Theo Is Having Second Thoughts",
-      "theoSacrificedThemselvesForTheInvestigators": "Theo Sacrificed Themselves For The Investigators"
+      "theoSacrificedThemselvesForTheInvestigators": "Theo Sacrificed Themselves For The Investigators",
+      "theoCrossedOut": "Theo Crossed Out"
     },
     "helenSharedADance": "Helen Shared A Dance",
     "helenPetersJoinedTheSurvey": "Helen Peters Joined The Survey",
@@ -663,6 +893,247 @@
     "theCaptivesWereSaved": "The Captives Were Saved",
     "manyCaptivesWereLost": "Many Captives Were Lost",
     "allTheCaptivesWereLost": "All The Captives Were Lost",
-    "drMarquezHasAPlan": "Dr. Marquez Has A Plan"
+    "theThingInTheDepthsWasDefeated": "The Thing in the Depths Was Defeated",
+    "drMarquezHasAPlan": "Dr. Marquez Has A Plan",
+    "theInvestigatorsLearnedTheirPlace": "The Investigators Learned Their Place",
+    "drMarquesHasAHunch": "Dr. Marquez Has A Hunch",
+    "theInvestigatorsInterruptedTheFeast": "The Investigators Interrupted the Feast",
+    "theInvestigatorsSurvivedTheHorrorsInTheRock": "The Investigators Survived the Horrors in the Rock",
+    "theRemainsWerePartiallyRecovered": "The Remains Were Partially Recovered",
+    "thePetersFamilyWereReunited": "The Peters Family Were Reunited",
+    "theChelydranHybridPerished": "The Chelydran Hybrid Perished",
+    "theChelydranHybridLived": "The Chelydran Hybrid Lived",
+    "theChelydranHybridWasDevoured": "The Chelydran Hybrid Was Devoured",
+    "theInvestigatorsLostThePath": "The Investigators Lost the Path",
+    "theValeIsFullOfFireworks": "The Vale Is Full of Fireworks",
+    "theInvestigatorsBelieved": "The Investigators Believed",
+    "theInvestigatorsLiedToMotherRachel": "The Investigators Lied to Mother Rachel",
+    "gideonFinishedTheTaleOfAnnabelleLee": "Gideon Finished the Tale of the Annabelle Lee",
+    "theHemlocksMadeATruce": "The Hemlocks Made a Truce",
+    "bertiePerished": "Bertie Perished",
+    "theInvestigatorsBecameTheTrueFeastOfHemlockVale": "The Investigators Became the True Feast of Hemlock Vale",
+    "drMarquezSacrificedHerselfForTheVale": "Dr. Marquez Sacrificed Herself for the Vale",
+    "theInvestigatorsSacrificedThemselvesForTheVale": "The Investigators Sacrificed Themselves for the Vale",
+    "theValeWasSaved": "The Vale Was Saved",
+    "theValeBurned": "The Vale Burned",
+    "theInvestigatorsBarelySurvivedTheFeastOfHemlockVale": "The Investigators Barely Survived the Feast of Hemlock Vale",
+    "helenSacrificedThemselvesForTheInvestigators": "Helen Sacrificed Themselves for the Investigators"
+  },
+  "prelude4": {
+    "intro": {
+      "title": "Prelude: The Final Evening",
+      "label": {
+        "doneNothingWrongTruth": "“You have done nothing wrong.”",
+        "doneNothingWrongLie": "“You have done nothing wrong.” (*You are lying.*)",
+        "sentencedToDeath": "“You have sentenced this village to death.”"
+      },
+      "intro1": "<p>_Intro 1:_ A flowering procession filled with riotous, gaudy colors files through the village toward the Crossroads. There must be several hundred people here tonight, if not more. You keep pace with Dr. Marquez toward the ghoulish effigy, spinning with reflected lights. Mother Rachel stands at the center of the crowd, holding her arms out like branches before the mirrored tree.</p><p class='basic'>Check your Campaign Log.</p>",
+      "proceedToIntro2": "If <i>Dr. Marquez has a plan</i>, proceed to _Intro 2_.",
+      "skipToIntro5": "Otherwise, skip to _Intro 5_.",
+      "intro2": "<p>_Intro 2:_ The professor strides forward, holding Rebecca’s hand. All festivities cease as Mother Rachel turns around. “Everyone listen! Last night, Mother Rachel condemned a house full of sick people to death. I was there. They were not in their right mind.” Dr. Marquez entreats the revelers. “But that’s not all. There’s something living underneath this island. It’s sucking the life out of everything around it, and could devastate this entire village. We need to leave the island at once!” Mother Rachel looks at you, wounded. “What do you accuse me of? I gave my daughter as a sacrifice, and she was given back to me.”</p><p class='basic'>Check your Campaign Log. The investigators must decide (*choose one*):</p>",
+      "doneNothingWrongTruth": "“You have done nothing wrong.” Proceed to _Intro 3_. (*You may only choose this if Mother Rachel’s Relationship Level is 3 or higher.*)",
+      "doneNothingWrongLie": "“You have done nothing wrong.” (*You are lying.*) Skip to _Intro 4_. (*You may only choose this if Mother Rachel’s Relationship Level is 3 or higher.*)",
+      "sentencedToDeath": "“You have sentenced this village to death.” Skip to _Intro 5_.",
+      "intro3": "<p>_Intro 3:_ Dr. Marquez lets out an audible gasp as you step forward and lay yourself at Mother Rachel’s feet. The matron regards you warmly. “You are more than welcome to join us around the table. You may sit at my right hand so that you see what miracle awaits us on this day.” She grasps your hands firmly in an iron grip to lead you to the feast. You follow her dutifully.</p><p class='basic right'>Add 1 {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</p><p class='basic right'>Search each investigator’s deck for the Dr. Rosa Marquez story asset and remove it from the game.</p><p class='basic right'>In your Campaign Log, record <i>the investigators believed</i>.</p>",
+      "intro4": "<p>_Intro 4:_ You give a signal to Dr. Marquez before stepping forward to bow before Mother Rachel. The matron regards you warmly. “You are more than welcome to join us around the table. You may sit at my right hand so that you see what miracle awaits us on this day.” She grasps your hands firmly in an iron grip to lead you to the feast. You follow her warily.</p><p class='basic right'>Add 1 {'{'}cultist{'}'} token and 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</p><p class='basic right'>In your Campaign Log, record <i>the investigators lied to Mother Rachel</i>.</p>",
+      "intro5": "<p>_Intro 5:_ The professor strides forward and shouts above the revelry. “The food here is poison! You’re all in grave danger: whatever this is, it’s changing everything around it. See?” Dr. Marquez tears mask after mask off each reveler, exposing frenzied, grinning faces. The surrounding crowd goes silent. Then, a clapping sounds, along with the sound of laughter. Mother Rachel raises her arms to silence them. “Cast out these slanderers! But let it not keep us from our celebration. The heavens beckon us! Let us feast!”</p><p>The last thing you see as you are pushed away from the clamor is the matron’s triumphant smile.</p><p class='basic right'>Add 1 {'{'}tablet{'}'} token and 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</p><p class='basic right'>In your Campaign Log, record <i>the investigators interrupted the Feast</i>.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *The Final Day*, *Day of the Feast*, *Residents*, and *The Vale*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-final-day.png' /><img src='{setImgPath}/day-of-the-feast.png' /><img src='{setImgPath}/residents.png' /><img src='{setImgPath}/the-vale.png' /></section>",
+      "dayThree": "Put the _Day Three_ Time Marker card into play. Are you ready?",
+      "buildActAgenda": "Build the act and agenda deck using Around the Table. It is both the current act and current agenda. Set aside the Lambs to the Slaughter special agenda. Remove each other act and agenda from the game.",
+      "placeLocations": "Put each location except for The Crossroads and The Old Mill into play on its _(Day 3)_ side according to the map on page 6.",
+      "crossroadsAndOldMill": "Use The Crossroads and The Old Mill locations from the *Day of the Feast* encounter set, _(Evening)_ side faceup. Remove the other The Crossroads and The Old Mill locations from the game.",
+      "frenziedRevelers": "Put 1 copy of the Frenzied Reveler enemy into play at The Commons. If there are 3 or 4 investigators in the game, put the other copy of Frenzied Reveler into play at Hemlock Chapel.",
+      "residents": "Gather the *Residents* encounter set and check the Campaign Log.",
+      "removeResidents": "If North Point Mine is not checked off under “Areas Surveyed”, cross out Leah Atwood’s name. Then remove each resident whose name is crossed off from the game.",
+      "placeResidents": "Put Mother Rachel into play at The Crossroads, asset side faceup. Put Leah Atwood at Hemlock Chapel, Simeon Atwood at the Vale Schoolhouse, Gideon Mizrah at The Commons, Judith Park at The Old Mill, and Theo Peters at Tad’s General Store, asset side faceup (flipping each to their enemy side if their Relationship Level is at or below the listed threshold). If Bertie had an epiphany, put Bertie Musgrave into play at The Crossroads, enemy side faceup. If the investigators interrupted the Feast, put Dr. Marquez into play under an investigator’s control.",
+      "setOutOfPlay": "Set each other resident aside, out of play.",
+      "startAt": "If the investigators interrupted the feast, each investigator begins play at The Boarding House. Otherwise, each investigator begins play at The Crossroads.",
+      "placeDoom": "Place doom on the agenda equal to the number of investigators."
+    },
+    "resolutions": {
+      "label": {
+        "replay": "*Replay this prelude.* Cross out <i>the investigators believed</i> and restart this prelude.",
+        "loseTheCampaign": "*The investigators lose the campaign.*"
+      },
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p>_If no resolution was reached (each investigator resigned or was defeated):_ You awaken to a crowd of smiling faces and silent animal masks staring at you, swaying in the evening air. You are tied to the effigy by barbed wire. Mother Rachel wipes blood from a long sharp knife and stands before you, smiling warmly. “I’m so glad you’re awake.”</p><p class='basic'>Check your Campaign Log.</p><ul><li>If <i>the investigators believed</i>, skip to _Resolution 2_.</li><li>Otherwise, skip to _Resolution 4_.</li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1:_ Mother Rachel staggers back, clutching her side. “Don’t you see our true purpose? We are light coiled in flesh. And the flesh longs to join an even greater light: an infinite and eternal brilliance.” The matron casts off her cloak, flecked with blood, to bare her shoulder. Her skin is knotted like bark with glowing nodes and alien patterns. Suddenly, the moon darkens in a total lunar eclipse, casting everything in crimson.</p><p>“My children, the hour is at hand,” Mother Rachel says rapturously. She raises her arms up to mimic the many-faced effigy. A hush falls over the crowd as each of the revelers mimics her pose in turn.</p><ul><li>Skip to _Resolution 4_.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2:_ You stammer an apology, but Mother Rachel holds one hand up to silence you and says dispassionately, “You failed me. But I suppose I was wrong to ask so much of you. All things move toward their end. You were called to witness the final miracle. The heavenly ascendance. And witness it you shall.”</p><ul><li>Proceed to _Resolution 3_.</li></ul>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p>_Resolution 3:_ Mother Rachel stands before the effigy in the crossroads, her arms unfurled like branches toward the sky. The ground around her is littered with the bones and the corpses of her followers. The crowd sighs in unison as a rush of euphoria spreads through the room. “It is here!” the matron shouts. The moon darkens in a total lunar eclipse, casting everything in crimson.</p><p>The earth around the effigy cracks as it collapses into a sinkhole. Your bliss gives way to nausea and acute pain as your skin sloughs off in patches. As you freefall into a crystalline abyss, you are accompanied by Mother Rachel’s voice singing a reverent hymn, accompanied by a rush of joy, of anger and emptiness—sorrow—curiosity—longing—despair.</p><p>Your breath stops as you feel yourself transfigured into a hundred other versions of yourself: human and inhuman, alive and dead, young and old. As you stare upward at a roiling, miasmic cloud, you see Mother Rachel tranfigured into an effulgent, glassy shape wreathed in mist. This is your place. Your purpose. As your flesh hardens into gray rock, then glassy crystal, you reach up, straining to touch her divine shape.</p><p>And then, a cold and quiet emptiness.</p><ul><li>Each investigator is devoured by the Colour Out of Space.</li><li>Or at least, this version of each investigator is devoured. As you ascend, you see other versions of yourself. You may replay this prelude to try for a different outcome.</li></ul>"
+      },
+      "resolution4": {
+        "title": "Resolution 4",
+        "body": "<p>_Resolution 4:_ “That’s enough,” Dr. Marquez strides past the grinning revelers and strikes Mother Rachel with her cane. She turns to exhort the crowd. “It’s not too late! We can still leave!” You shout your support. Mother Rachel lurches to her feet, drunkenly holding the ceremonial knife, and swings weakly at the professor. Marquez pushes her away with a well-timed kick.</p><p>The earth around the effigy cracks with prismatic light, then turns blindingly bright as the pillar collapses into crystalline shards. A blinding pillar of light shoots out of the nearby well. All you hear as the crossroads collapse is Mother Rachel’s empty laughter.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display, along with any bonus experience awarded during this prelude ({xp}). Each investigator may now spend the experience recorded under \"Unspent Experience\" in your Campaign Log.</li><li>Proceed to _Fate of the Vale_.</li></ul>"
+      }
+    },
+    "codex": {
+      "label": {
+        "draw1": "Draw 1 card",
+        "draw3": "Draw 3 cards",
+        "gainResource1": "Gain 1 resource",
+        "gainResource3": "Gain 3 resources"
+      },
+      "xp": {
+        "leahAtwood": "Leah Atwood",
+        "simeonAtwood": "Simeon Atwood",
+        "williamHemlock": "William Hemlock",
+        "riverHawthorne": "River Hawthorne",
+        "gideonMizrah": "Gideon Mizrah",
+        "judithPark": "Judith Park",
+        "theoPeters": "Theo Peters",
+        "theAtwoodHouse": "The Atwood House"
+      },
+      "motherRachel": {
+        "title": "{'{'}codex{'}'} Codex 1: Mother Rachel",
+        "header": "@:theFeastOfHemlockVale.prelude4.codex.motherRachel.title",
+        "believed": "<p>_If the investigators believed:_</p><p>Mother Rachel stands up as you approach. The succulent spread of roasted meats and grilled vegetables makes your mouth water. Everything is so beautiful. The matron addresses you: “I had a dream last night. A vision. In this dream, I was not myself. I was a reflection. An Other Rachel. A Rachel who has known neither pain nor regret. I was myself as I ought to be: a transfiguration of this tired earthly self. Transformed. Remade in paradise. For paradise is creation as it was always meant to be.”</p><p>The matron draws a long ceremonial knife. “But there are some who do not yet believe. They must be taught their place. I need you to help each of them understand.”</p><p class='basic right'>Flip each _Resident_ card except Mother Rachel to its enemy side.</p><p class='basic right'>Gather each set-aside _Resident_ card and put each into play, one at a time, at an empty location, enemy side faceup.</p><p class='basic right'>Remove all doom from the current agenda and swap it with the set-aside Lambs to the Slaughter agenda.</p>",
+        "lied": "<p>_If the investigators lied to Mother Rachel:_</p><p>Mother Rachel stands up as your approach. Flies buzz around the feast: a ghastly display of two-headed creatures and what look like roast chickens with massively swollen organs. The matron addresses the crowd. “I had a dream last night. In it, I was not myself but a reflection. An Other Rachel. A Rachel who has known neither pain nor regret. I was myself as I ought to be. Remade in paradise—”</p><p>You interrupt her reverie with a perfectly-timed strike. Mother Rachel staggers back, but then, with an almost unnatural strength, she steadies herself. Her composure broken, she draws a long ceremonial knife and glowers wickedly.</p><p>“You will regret that, my little lamb.”</p><p class='basic right'>Flip Mother Rachel to her enemy side and deal 2 damage to her.</p>",
+        "otherwise": "<p>_Otherwise:_</p><p>Mother Rachel stands up from her place at the table. Flies buzz around the feast as the matron draws a long ceremonial knife and buries it in the chest of one of her followers. The rest barely take notice as they shovel food into their hungry mouths. “There can be no miracle without an equal measure of sacrifice,” she says, then looks at you, eyes full of pity. “And it is your place to witness the Feast.”</p><p class='basic right'>Flip Mother Rachel to her enemy side.</p>"
+      },
+      "leahAtwood": {
+        "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude4.codex.leahAtwood.title </h3>",
+        "label": {
+          "askMine": "“What did you see in North Point Mine?”",
+          "sayNothing": "Say nothing."
+        },
+        "leah1": "<p>_Leah 1:_ Leah is seated on a bench at the back of the chapel. “I helped build this chapel with my sister,” Leah says, her eyes glassy—she seems unaffected by the odd bliss that grips the Vale.</p><p class='basic'>You must decide (*choose one*):</p>",
+        "leah2": "<p>_Leah 2:_ Leah’s hand shakes as she tucks a stray hair behind one ear. “I—I don’t know. There was something that looked like Simeon. But it wasn’t him. Or maybe it was part—” Her expression hardens. “Of course, you and your survey are just here to record the facts. I don’t want this published in your ‘research.’ Don’t ever talk to me again.”</p><p class='basic right'>Set Leah Atwood’s Relationship Level to 0.</p>",
+        "leah3": "<p>_Leah 3:_ Rather than press the Vale cook for any details, you sit on a nearby bench in the stillness. The forest thrums with beating insect wings, now sinister. Leah buries her head in her hands. The sound of singing from a group of revelers drowns out the sound of soft weeping.</p><p class='basic right'>Increase Leah Atwood’s Relationship Level. Each investigator earns 1 bonus experience.</p><p class='basic right'>Take control of Leah Atwood.</p>",
+        "otherwise": "<p>“I helped build this chapel with my sister,” Leah smiles warmly. Her eyes are glazed over as she stares into the sunset. “It’s all so beautiful. Don’t you feel it? We are on the edge of infinity. Waiting to cross over. Maybe Rachel was right…”</p><p class='basic right'>Increase Leah Atwood’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
+      "simeonAtwood": {
+        "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude4.codex.simeonAtwood.title </h3>",
+        "fireworks": "<p>“Welcome to the most important meeting of the Miner’s Secret Order of Mischief,” Simeon draws you underneath the eaves of the schoolhouse. “Now that the fireworks are all placed, we just have to wait for the right moment to set them off. Aunt Rachel is gonna be so mad!” He grins mischievously. “You’ve done well for an expendable grunt. Keep it up and I may give you a promotion.”</p><p class='basic right'>Increase Simeon Atwood’s Relationship Level by 2. Each investigator earns 2 bonus experience.</p><p class='basic right'>Take control of Simeon Atwood.</p>",
+        "otherwise": "<p>“Prepare for trouble!” Simeon jumps out of the bushes holding what looks to be a lit stick of dynamite. Reacting quickly, you dive for cover as the ‘dynamite’ bursts into a shower of sparks. Simeon cackles at you as you stand up.</p><p class='basic right'>Increase Simeon Atwood’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
+      "williamHemlock": {
+        "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.williamHemlock.title </h3><p>You keep River at bay as William gathers the documents. His cheeks flush as he holds the documents in his hands, and then he begins to weep. “What have I done? The island is ruined. And it’s all that damned Rachel’s fault.”</p><p>“It’s not too late,” River stands up, snarling. “You can still give me what’s mine.”</p><p class='basic right'>Increase William Hemlock’s Relationship Level. Each investigator earns 2 bonus experience.</p><p class='basic right'>Take control of William Hemlock.</p><p class='basic right'>Set River Hawthorne’s Relationship Level to 0.</p><p class='basic right'>Search the set-aside *Residents* encounter set for River Hawthorne and put them into play at The Atwood House on their enemy side.</p>"
+      },
+      "riverHawthorne": {
+        "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.riverHawthorne.title </h3><p>You keep William at bay as River snatches up the last of the documents. “That didn’t go exactly according to plan,” they say. “But that’s still check and mate. I’ll have these notarized back in New York and you can believe I’ll be back. I think we’ll drain the bog first,” they smirk.</p><p>“Like hell you will!” William roars, raising his fists.</p><p class='basic right'>Increase River Hawthorne’s Relationship Level. Each investigator earns 2 bonus experience.</p><p class='basic right'>Take control of River Hawthorne.</p><p class='basic right'>Set William Hemlock’s Relationship Level to 0.</p><p class='basic right'>Search the set-aside *Residents* encounter set for William Hemlock and put him into play at The Atwood House on his enemy side.</p>"
+      },
+      "gideonMizrah": {
+        "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude4.codex.gideonMizrah.title </h3>",
+        "toldTale": "<p>As the revelry unfolds outside, you enter the commons to find Gideon seated at a table across from Dr. Marquez. “We ne’er should have taken anythin’ from that wreck. Ne’er shoulda brought it back. My crewmates grew so sick an’ died one by one.” He blinks away a few tears and produces a small shard of glassy rock. “All of ‘em ‘cept us who had pieces of the rock. The guilt haunted Captain Hemlock to the end of his days. One day, the cap’n threw his accursed rock down the well in the village center. That were afore all the strange happenin’s.”</p><p>The professor listens intently, saying nothing. Gideon reaches into his old coat and hands her a shining, rainbow shard. “I’m still a bit superstitious,” he says bashfully. “So I kep’ mine hid down on the shore. I’d rather ye made use of it.”</p><p>You and Dr. Marquez thank the old sailor, then head outside. She holds the shard up to the light, to refract strange bands of color. “Only the crewmates with the shards were protected from the…the sickness. I wonder if the crystals and these strange phenomena are linked.”</p><p class='basic right'>In your Campaign Log, record <i>Gideon finished the tale of the Annabelle Lee</i>.</p><p class='basic right'>Increase Gideon Mizrah’s Relationship Level. Each investigator earns 2 bonus experience.</p><p class='basic right'>Take control of Gideon Mizrah.</p>",
+        "otherwise": "<p>Gideon sits at a long table, an untouched plate of food in front of him. He reacts with a start when you seat yourself beside him. “Ah, sorry,” he says. “I were miles away. Everything that’s happenin’ on the island, it makes me think back to our sailors after the wreck of the Annabelle Lee…” he trails off, lost in thought.</p><p class='basic right'>Increase Gideon Mizrah’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
+      "judithPark": {
+        "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude4.codex.judithPark.title </h3>",
+        "backedUp": "<p>A small many-limbed shadow leaps out at you as you approach Judith. Before you can react, a gunshot echoes through the air and what looks like a porcupine crossed with a wolverine collapses in a burst of blood. Judith steps forward and looks over the corpse, smoking rifle in hand. “Ol’ Jomo saves your ass again,” she says as she slings the rifle over her shoulder. “My contract’s up after today. Soon as it is, I’m leaving this place.” She looks you over. “I hope you do, too.”</p><p class='basic right'>You may play a Weapon card from your hand, ignoring its cost.</p><p class='basic right'>Increase Judith Park’s Relationship Level. Each investigator earns 2 bonus experience. Take control of Judith Park.</p>",
+        "otherwise": "<p>As you approach, a thorn-covered rodent erupts from the underbrush, lunging at you and latching onto your leg. Judith casually emerges from around the side of the mill. You finally kick the creature free, and there’s an echoing gunshot as Judith draws her .45 and shoots the creature dead faster than you can blink.</p><p>“This party is getting crazy,” she says. “Once it’s over, I’m out of here.”</p><p class='basic right'>Increase Judith Park’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
+      "theoPeters": {
+        "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude4.codex.theoPeters.title </h3>",
+        "both": "<p>You find Theo folding his white-gold cloak next to the general store. “I’ve gotta go back to Akwan. If I hurry, the causeway’ll be open. Mother Rachel. She—she—” he holds one hand to his bruised cheek. “I have to help Helen. Gotta find my truck. I think they used it to carry the tables.”</p><p class='basic right'>Increase Theo Peters’ Relationship Level. Each investigator earns 2 bonus experience.</p><p class='basic right'>Take control of Theo Peters.</p>",
+        "secondThoughts": "<p>You find Theo folding his white-gold cloak next to the general store, nursing a bruise on his right cheek. When you ask him what happened, he winces. “I just asked Mother Rachel some questions. And she—she—” he stops. “I gotta find my truck. The tide might still be low.”</p><p class='basic right'>Increase Theo Peters’ Relationship Level. Each investigator earns 1 bonus experience.</p><p class='basic right'>Take control of Theo Peters.</p>",
+        "otherwise": "<p>You find Theo donning his white-gold cloak behind the general store, grinning from ear to ear. “I never thought things could get any better, but I was wrong!” he exclaims, then pulls out a new copy of The Lost World by Doyle. “I saw one of the visitors reading this and they just gave it to me! For free!” The young man won’t stop laughing as he scratches a red patch of skin on his neck.</p><p class='basic right'>Take control of Theo Peters.</p>"
+      },
+      "boardingHouse": {
+        "title": "{'{'}codex{'}'} Codex 9: Boarding House",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.boardingHouse.title </h3><p>The long table in the Boarding House is covered in greasy bones and gutted fruit skins. An antlered skull—not quite a deer’s—rests in the center of the table, garnished with bright wildflowers.</p><p class='basic'>Either draw 3 cards or gain 3 resources.</p>"
+      },
+      "theCrossroads": {
+        "title": "{'{'}codex{'}'} Codex 10: The Crossroads",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.theCrossroads.title </h3><p>“Join the dance!” A giddy reveler grabs your hand to dance around a bonfire. Nearby tables are piled with decaying food, warped meats, and grey, powdery fruit. Revelers pile the food in heaps on their plates and shovel portions into their mouths, seemingly oblivious.</p><p class='basic'>Choose any enemy in play. Disengage the chosen enemy from all investigators, move it to The Crossroads, and exhaust it.</p>"
+      },
+      "hemlockChapel": {
+        "title": "{'{'}codex{'}'} Codex 11: Hemlock Chapel",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.hemlockChapel.title </h3><p>A couple in bright wedding clothes embrace in front of the chapel as several revelers dance in a circle around them. As you approach, you see they are bound with tight red ribbon at the waist and are giggling incessantly.</p><p class='basic'>Either draw 1 card or gain 1 resource.</p>"
+      },
+      "theOldMill": {
+        "title": "{'{'}codex{'}'} Codex 12: The Old Mill",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.theOldMill.title </h3><p>The sails of the mill are completely overgrown with creeping vines and riotous flowers. Something rustles in the undergrowth.</p><p class='basic'>Choose a _Resident_ enemy at this location or a connecting location and test any skill (2). If you succeed, automatically evade the chosen enemy.</p>"
+      },
+      "theAtwoodHouse": {
+        "title": "{'{'}codex{'}'} Codex 13: The Atwood House",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude4.codex.theAtwoodHouse.title </h3>",
+        "label": {
+          "william": "William Hemlock",
+          "river": "River Hawthorne",
+          "sideRiver": "Side with River.",
+          "sideWilliam": "Side with William.",
+          "letFight": "Let them fight it out."
+        },
+        "hashingItOut": "<h3>@:theFeastOfHemlockVale.prelude4.codex.theAtwoodHouse.title </h3><p>The two heirs sit in the grass, winded. “What would Mother think of us?” William sighs. River stares at the stack of papers between them. “I don’t believe she thinks much anymore, dear William,” River says. Before William can retort, they go on. “But you’re right. There’s no use fighting with one another.” River looks as though they might choke as they force out an apology. William magnanimously accepts.</p><p class='basic right'>In your Campaign Log, record <i>The Hemlocks made a truce</i>.</p><p class='basic right'>Increase both William Hemlock’s and River Hawthorne’s Relationship Levels. Each investigator earns 2 bonus experience.</p><p class='basic right'>Search the set-aside *Residents* encounter set for either William Hemlock or River Hawthorne and put 1 of them into play under your control.</p>",
+        "otherwise": "<p>You find William and River locked in a struggle in front of the old Atwood House. River holds one side of a bundle of old documents, and William holds the other. “This is our legacy. We must preserve it!” William says through clenched teeth. “Like hell it’s a legacy,” says River. “I could make this island the toast of New England!” The sheaf of documents splits with a sharp rip, scattering papers in the grass. The pair immediately drop to their knees to gather up the mess.</p><p class='basic'>You must decide (*choose one*):</p>",
+        "sideRiver": "Side with River. (*You may only choose this option if River is reclaiming their legacy is recorded in River Hawthorne’s Notes.*) Search the set-aside *Residents* encounter set for River Hawthorne and put them into play at The Atwood House on their asset side.",
+        "sideWilliam": "Side with William. (*You may only choose this option if William is resolved is recorded in William Hemlock’s Notes.*) Search the set-aside *Residents* encounter set for William Hemlock and put him into play at The Atwood House on his asset side.",
+        "letFight": "Let them fight it out. If either William is resolved or River is reclaiming their legacy is recorded in William Hemlock or River Hawthorne’s Notes, remember “the Hemlocks are hashing it out.” You may trigger this codex again."
+      },
+      "tadsGeneralStore": {
+        "title": "{'{'}codex{'}'} Codex 14: Tad’s General Store",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.tadsGeneralStore.title </h3><p>You arrive at the general store to find it locked up. A trio of tourists standing out front join a train of revelers headed to the Crossroads. One of them laughs at you drunkenly before tripping and falling. They continue laughing even as you help them up.</p><p class='basic right'>Gain 3 resources.</p>"
+      },
+      "valeSchoolhouse": {
+        "title": "{'{'}codex{'}'} Codex 15: Vale Schoolhouse",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.valeSchoolhouse.title </h3><p>The schoolhouse is deadly quiet. A ring of bonfires flicker from the distant Crossroads, and beautiful music fills the evening air. Several children in animal masks silently peer out at you from the shadows.</p><p class='basic'>Choose a _Resident_ enemy at this location and test any skill (2). If you succeed, automatically evade the chosen enemy.</p>"
+      },
+      "theCommons": {
+        "title": "{'{'}codex{'}'} Codex 16: The Commons",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.theCommons.title </h3><p>“I don’t know why you’d wanna send anything anywhere,” Martha Jean leans over the counter. Her eyes are wide, and a thin line of drool trails down her chin. She presses her face to the wooden counter and looks up at you. “Sorry, but I’m about to head to the Feast. Have you seen the postman? I haven’t seen him in days…” The young woman laughs as she scratches a flaking gray patch of skin on her forearms.</p><p class='basic'>You may immediately move to any other location. If you do, you may take an additional action this turn.</p>"
+      },
+      "drRosaMarquez": {
+        "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.drRosaMarquez.title </h3><p>“Has everyone gone mad?” Dr. Marquez stares at the throngs of dancers spinning in circles or speaking to empty air. A cloud of glowing spores rises from the surrounding forest and trees. The professor holds a cloth to her mouth to hold back a sneeze. “Don’t breathe in whatever it is,” she signals.</p><p class='basic'>Choose an investigator at any location to draw 5 cards.</p>"
+      },
+      "bertieMusgrave": {
+        "title": "{'{'}codex{'}'} Codex Ω: Bertie Musgrave",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude4.codex.bertieMusgrave.title </h3><p>“Why don’t you believe Mother Rachel?” Bertie huffs. The dancing and revelry continue around, unabated. Everyone seems lost in a separate reverie, oblivious to the young man’s pain. You feel a pang of regret as you hold him. Bertie reaches out toward the effigy, glimmering with many lights. “I can see it coming. Can you feel it? Welling up from the ground underneath…” Bertie’s eyes roll back in his head, a broad smile on his face.</p><p class='basic right'>Choose and discard 3 cards from your hand.</p><p class='basic right'>In your Campaign Log, record <i>Bertie perished</i>.</p>"
+      }
+    }
+  },
+  "epilogue": {
+    "title": "Epilogue",
+    "body": "<p class='basic'>Check your Campaign Log. If there are any surviving investigators remaining, you may read any codex entry in the epilogue for which you meet the requirements.</p>",
+    "label": {
+      "atwoods": "Codex 2 & 3: The Atwoods",
+      "hemlocks": "Codex 4 & 5: The Hemlocks",
+      "judith": "Codex 7: Judith Park",
+      "theo": "Codex 8: Theo Peters",
+      "continue": "Continue to the epilogue"
+    },
+    "codex": {
+      "atwoods": {
+        "title": "{'{'}codex{'}'} Codex 2 & 3: The Atwoods",
+        "body": "<h3>@:theFeastOfHemlockVale.epilogue.codex.atwoods.title</h3><p>Simeon and Leah are bent over studying a tense game of marbles. “Stop cheating,” Leah slaps her son’s hand. Simeon protests, and the pair look up to you. “Thank you for all your help,” the former Vale cook says. “We’re headed to Kingsport. I hear it’s nice in the winter.” Simeon flicks a marble into the ring and looks up at you. “I changed the name of my club. We’re the Botanists’ Secret Order of Mischief now!”</p>"
+      },
+      "hemlocks": {
+        "title": "{'{'}codex{'}'} Codex 4 & 5: The Hemlocks",
+        "body": "<h3>@:theFeastOfHemlockVale.epilogue.codex.hemlocks.title</h3><p>The two cousins sit on the shoreline, staring out across the causeway toward the mainland. Gulls fly low over the choppy gray waves. “Hemlock Isle would have made an awful getaway. My friends in New York are already whispering about my fall from grace,” River says bitterly. William regards his cousin. “I think it’s time I returned to society. I’m sure I can set your friends right.” River pauses, then smirks as an idea comes to them. “Oh, William. My friends will love you. All you need to do is share one of your poems. I’m sure they’ll find it utterly captivating.”</p>"
+      },
+      "judith": {
+        "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+        "body": "<h3>@:theFeastOfHemlockVale.epilogue.codex.judith.title</h3><p>Judith’s hunting jacket is splattered with blood and her hair is a mess as she approaches you, rifle slung over her shoulder. She looks down at her jacket when she sees your concern. “Oh, don’t worry. You should see the other guy,” she winks. You ask if she’s still going to Boston, and she shrugs. “Maybe, maybe not. I was gonna ask where you’re headed next.”</p><p>You tell her you’re headed to Arkham, and she suppresses a snort of disbelief. “Arkham, huh? The city that’s in the news with weird shit every other week? You’re really headed back there?” She goes quiet for a moment as if considering something. “You’re going to need someone to watch your back,” she ventures. You tell her you plan to take a long rest, and she smirks. “I’ve got a buddy who runs a speakeasy somewhere in Easttown. After everything we’ve been through, I’d say I owe you a drink.”</p>"
+      },
+      "theo": {
+        "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+        "body": "<h3>@:theFeastOfHemlockVale.epilogue.codex.theo.title</h3><p>Theo grins sheepishly as you approach, then wraps you in a bear hug. As he pulls away, you see he is crying. When you ask him why, he looks down. “I really don’t know why.” He pauses to think, then goes on. “I always wanted a place that…that felt like home again. After mom and pop passed, Helen got—she got tough. And then I started to help out around the Vale, and they didn’t care how tough I was. It felt like home. And now that’s gone too.” He blinks tears from his eyes. “I guess home is what you make it. You should come visit us in Portland some time. I know you’ll love it,” he smiles.</p>"
+      }
+    },
+    "epilogue1": "<p>_Epilogue 1_: <span class='wolgast'>June 1926</span></p><p class='indent'>To the office of Dr. Henry Armitage,</p><p class='indent'>The survey of Hemlock Isle has concluded without Dr. Marquez. What we found there on that desolate island defies reason. An alien presence dominated the local ecosystem, warping the physical and mental wellbeing of every living thing in its proximity. We witnessed species that have never been documented before, and likely never will be again. The locals coexisted with this presence for decades, seemingly or intentionally unaware of its degenerative effects. Some even worshiped it. We count ourselves lucky to have survived.</p><p class='indent'>Dr. Marquez, unfortunately, was not so lucky. Enclosed with this letter is a comprehensive account detailing her observations of this unique ecosystem. What it does not contain is the story of how—and how bravely—she gave her life. That is a story we wish to share with you in person. We ask, out of respect for her memory, that you not dismiss these records as mere fantasy. Faithfully yours,</p><p class='right'><span class='wolgast'>The Miskatonic Survey</span></p>",
+    "epilogue2": "<p>_Epilogue 2_: <span class='wolgast'>June 1926</span></p><p class='indent'>To the office of Dr. Henry Armitage,</p><p class='indent'>The survey of Hemlock Isle has concluded at great cost. Over the course of our three day excursion, we witnessed horrors and wonders that defy all reason. A parasitic life form unlike any other fed on the local ecosystem, warping the biology of every living thing around it. I have enclosed a comprehensive account of the phenomena we witnessed, along with samples, notes, and sketches.</p><p class='indent'>Although I was initially wary of your contacts, they provided invaluable support throughout the survey. Ultimately, the strange gaseous entity we discovered took their lives. Without their sacrifice, I would have perished, along with most of Hemlock Isle.</p><p class='indent'>I will explain everything in further detail upon my return.</p><p class='right'><span class='wolgast'>Dr. Rosa Marquez</span></p>",
+    "epilogue3": "<p>_Epilogue 3_: <span class='wolgast'>June 1926</span></p><p class='indent'>To the office of Dr. Henry Armitage,</p><p class='indent'>The survey of Hemlock Isle has concluded. Over the course of our three day excursion, we witnessed horrors and wonders that defy all reason. A parasitic life form unlike any other fed on the local ecosystem, warping the biology of every living thing around it. I have enclosed a comprehensive account of the phenomena we witnessed, along with samples, notes, and sketches.</p><p class='indent'>Although I was initially wary of your contacts, they proved to be an incredible asset throughout the survey. Without their help, I have no doubt I would have perished, along with many others. I’ve half a mind to invite them along on my next survey.</p><p class='indent'>I will explain everything in further detail upon my return. Until then, the survey team and I plan to take a long-deserved rest.</p><p class='right'><span class='wolgast'>Dr. Rosa Marquez</span></p>",
+    "marquezSacrificedHerself": "If Dr. Marquez sacrificed herself for the Vale, proceed to _Epilogue 1_.",
+    "investigatorsSacrificedThemselves": "If the investigators sacrificed themselves for the Vale, skip to _Epilogue 2_.",
+    "otherwise": "Otherwise, skip to _Epilogue 3_."
   }
 }

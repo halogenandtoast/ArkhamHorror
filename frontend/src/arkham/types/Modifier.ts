@@ -47,6 +47,7 @@ export type ModifierType
   | CannotEnter
   | Hollow
   | CannotDiscoverCluesAt
+  | CannotBeDamaged
   | DamageDealt
   | DiscoveredClues
   | SkillTestResultValueModifier
@@ -211,6 +212,10 @@ export type CannotCommitCards = {
 export type CannotDiscoverCluesAt = {
   tag: "CannotDiscoverCluesAt"
   contents: string
+}
+
+export type CannotBeDamaged = {
+  tag: "CannotBeDamaged"
 }
 
 export type CannotEnter = {

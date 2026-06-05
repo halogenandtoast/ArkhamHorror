@@ -52,7 +52,7 @@ const questionLabel = computed(() => {
     question = Object.values(props.game.question)[0]
   }
 
-  return question.tag === 'QuestionLabel' ? question.label : null
+  return question?.tag === 'QuestionLabel' ? question.label : null
 })
 
 const questionHash = computed(() => {
@@ -65,12 +65,12 @@ const questionHash = computed(() => {
 })
 
 const continueCampaign = computed(() => {
-  if (props.game.scenario.campaignStep?.tag === 'ContinueCampaignStep') return props.game.scenario.campaignStep.contents
+  if (props.game.scenario?.campaignStep?.tag === 'ContinueCampaignStep') return props.game.scenario.campaignStep.contents
   return null
 })
 
 const inStep = computed(() => {
-  return !!props.game.scenario.campaignStep
+  return !!props.game.scenario?.campaignStep
 })
 </script>
 
@@ -98,7 +98,7 @@ const inStep = computed(() => {
       @update="update"
     />
     <template v-else>
-      <StoryQuestion :game="game" :key="questionHash" :playerId="playerId" @choose="choose" />
+      <StoryQuestion :game="game" :key="questionHash ?? 'no-question'" :playerId="playerId" @choose="choose" />
     </template>
   </div>
 </template>

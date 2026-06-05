@@ -36,10 +36,12 @@ instance RunMessage SummonedHound1 where
         when canFight do
           labeledI "fight" do
             skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
-            chooseFightEnemyEdit sid iid (attrs.ability 1) \cf -> cf {chooseFightIsAction = True}
+            chooseFightEnemyEdit sid iid (attrs.ability 1) \cf ->
+              cf {chooseFightIsAction = True, chooseFightPayCost = False}
         when canInvestigate do
           labeledI "investigate" do
             skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
-            investigateEdit_ sid iid (attrs.ability 1) \i -> i {investigateIsAction = True}
+            investigateEdit_ sid iid (attrs.ability 1) \i ->
+              i {investigateIsAction = True, investigatePayCost = False}
       pure a
     _ -> SummonedHound1 <$> liftRunMessage msg attrs

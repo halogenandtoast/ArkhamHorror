@@ -1,5 +1,15 @@
 {
   "heading": "Scenario III",
+  "specialRules": [
+    {
+      "title": "Barriers",
+      "body": "<p class='basic'>In this scenario, barriers have been set up around the various streets of Innsmouth. Each barrier is represented by a resource token placed between two locations. Barriers block the movement of investigators along that path.</p><ul><li>If there are 1 or more barriers placed directly between two locations, investigators cannot move from one of those locations to the other, even if they are connected.</li><li>Barriers can be removed using some location abilities, or the ability on act 1a. The more barriers placed between two locations, the more times such an ability must be used in order to clear the path.</li><li>When a hunter enemy moves, after determining which investigator it moves toward, it follows the shortest path not blocked by barriers. If no such path exists, it ignores barriers. All other enemy movement ignores barriers.</li></ul>"
+    },
+    {
+      "title": "Keys",
+      "body": "<div class='red bordered'><p class='basic'>During this scenario, keys represent the following:</p><ul><li>Red/Blue/Green/Yellow/Purple/White: Information from the still-human citizens of Innsmouth regarding the state of the town.</li><li>Black: Information regarding the suspect who kidnapped Agent Harper.</li></ul></div>"
+    }
+  ],
   "label": {
     "doNotTakeTeachings": "Do not take Teachings of the Order",
     "removeCultist": "Remove {'{'}cultist{'}'}",

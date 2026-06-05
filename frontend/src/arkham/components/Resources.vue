@@ -16,7 +16,7 @@ const emits = defineEmits<{
 }>()
 
 export interface Props {
-  choices: Message[]
+  choices: readonly Message[]
   investigator: Arkham.Investigator
   game: Game
   portrait?: boolean
@@ -33,7 +33,7 @@ function findInvestigatorComponentIndex(tokenType: "DamageToken" | "HorrorToken"
   return computed(() =>
     props.choices.findIndex((c) =>
       c.tag === tag
-      && c.component.tag === "InvestigatorComponent"
+      && c.component?.tag === "InvestigatorComponent"
       && c.component.tokenType === tokenType
       && c.component.investigatorId === iid.value
     )
@@ -47,7 +47,7 @@ const sanityAuxAction = findInvestigatorComponentIndex("HorrorToken", MessageTyp
 const takeResourceAction = computed(() =>
   props.choices.findIndex((c) =>
     c.tag === MessageType.COMPONENT_LABEL
-    && c.component.tag === "InvestigatorComponent"
+    && c.component?.tag === "InvestigatorComponent"
     && c.component.tokenType === "ResourceToken"
     && c.component.investigatorId === iid.value
   )
@@ -56,7 +56,7 @@ const takeResourceAction = computed(() =>
 const spendCluesAction = computed(() =>
   props.choices.findIndex((c) =>
     c.tag === MessageType.COMPONENT_LABEL
-    && c.component.tag === "InvestigatorComponent"
+    && c.component?.tag === "InvestigatorComponent"
     && c.component.tokenType === "ClueToken"
     && c.component.investigatorId === iid.value
   )

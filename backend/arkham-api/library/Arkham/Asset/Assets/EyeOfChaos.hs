@@ -22,7 +22,7 @@ eyeOfChaos :: AssetCard EyeOfChaos
 eyeOfChaos = asset EyeOfChaos Cards.eyeOfChaos
 
 instance HasAbilities EyeOfChaos where
-  getAbilities (EyeOfChaos a) = [restricted a 1 ControlsThis $ investigateAction $ assetUseCost a Charge 1]
+  getAbilities (EyeOfChaos a) = [investigateAbility a 1 (assetUseCost a Charge 1) ControlsThis]
 
 instance RunMessage EyeOfChaos where
   runMessage msg a@(EyeOfChaos attrs) = runQueueT $ case msg of

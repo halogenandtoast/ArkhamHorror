@@ -32,7 +32,7 @@ instance RunMessage RandallCho where
               [HealDamage (InvestigatorTarget iid) (toSource attrs) 3]
               <$ guard damage
           , Just
-              $ Label "$label.cards.randallCho.searchYourDeckAndDiscardPileForAWeaponAssetPlayItPayingItsCo"
+              $ Label "$label.cards.randallCho.searchDeck"
                 [ search
                     iid
                     (attrs.ability 1)

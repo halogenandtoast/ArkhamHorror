@@ -1,4 +1,9 @@
 {
+  "tooltips": {
+    "pearlEstateRuins": {
+      "resign": "You leave the heath behind"
+    }
+  },
   "intro": {
     "title": "Scenario: The Silent Heath",
     "body": "<p class='basic unindented'>Check your Campaign Log.</p>",

@@ -23,9 +23,8 @@ instance HasAbilities Augur where
     [ controlledAbility a 1 (exists $ oneOf [assetIs Cards.zeal, assetIs Cards.hope])
         $ forced
         $ AssetEntersPlay #when (be a)
-    , controlledAbility a 2 (exists $ AssetWithId (toId a) <> AssetReady)
-        $ investigateAction
-        $ OrCost [exhaust a, discardCost a]
+    , investigateAbility a 2 (OrCost [exhaust a, discardCost a])
+        $ exists (AssetWithId (toId a) <> AssetReady)
     ]
 
 instance RunMessage Augur where

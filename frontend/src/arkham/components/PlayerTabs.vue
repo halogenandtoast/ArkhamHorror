@@ -7,12 +7,14 @@ import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
 import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { Message, AbilityLabel } from '@/arkham/types/Message';
+import { Message, AbilityLabel, type TargetLabel } from '@/arkham/types/Message';
+import type { Target } from '@/arkham/types/Target';
 import type { Investigator } from '@/arkham/types/Investigator';
 import type { TarotCard } from '@/arkham/types/TarotCard';
 import type { Placement } from '@/arkham/types/Placement';
 import type { Source } from '@/arkham/types/Source';
 import { imgsrc } from '@/arkham/helpers';
+import { gameLocalStorageKey } from '@/arkham/localStorage';
 import { IsMobile } from '@/arkham/isMobile';
 import { useDbCardStore } from '@/stores/dbCards'
 
@@ -27,7 +29,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const storageKey = computed(() => `selected-tab:${props.game.id}`)
+const storageKey = computed(() => gameLocalStorageKey(props.game.id, 'selected-tab'))
 const selectedTab = useStorage<string>(storageKey, props.playerId)
 const userPicked = ref(false)
 
@@ -126,7 +128,7 @@ const targetToPlacement = (target: Target): Placement | null => {
     case "EnemyTarget":
       {
         const { contents } = target
-        if (contents) {
+        if (typeof contents === 'string') {
           const enemy = props.game.enemies[contents]
           if (enemy) return enemy.placement
         }
@@ -134,7 +136,7 @@ const targetToPlacement = (target: Target): Placement | null => {
     case "TreacheryTarget":
       {
         const { contents } = target
-        if (contents) {
+        if (typeof contents === 'string') {
           const treachery = props.game.treacheries[contents]
           if (treachery) return treachery.placement
         }

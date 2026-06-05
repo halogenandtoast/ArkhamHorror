@@ -38,7 +38,6 @@ import Arkham.Skill.Types (Skill)
 import Arkham.Source
 import Arkham.Story
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Zone
@@ -247,7 +246,7 @@ addEntity a e =
     | otherwise -> e
 
 instance RunMessage Entities where
-  runMessage msg entities = withSpan_ "Entities.runMessage" do
+  runMessage msg entities = do
     let
       runEntities :: (a ~ RunType a, RunMessage a) => Lens' Entities (EntityMap a) -> GameT (EntityMap a)
       runEntities lensL = traverse (runMessage msg) (entities ^. lensL)

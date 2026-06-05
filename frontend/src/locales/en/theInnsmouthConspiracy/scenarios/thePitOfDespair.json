@@ -1,5 +1,27 @@
 {
   "heading": "Scenario I",
+  "specialRules": [
+    {
+      "title": "Tidal Tunnels",
+      "body": "<p class='basic'>Locations with unrevealed Tidal Tunnel sides exist in multiple encounter sets. (For example, in this scenario, both the Flooded Caverns encounter set and The Pit of Despair encounter set contain unrevealed Tidal Tunnel locations.) Because these locations can come from multiple different encounter sets, they have no encounter set icon on their unrevealed side. To see which encounter set a Tidal Tunnel location belongs to, check its revealed side.</p>"
+    },
+    {
+      "title": "The Depths",
+      "body": "<p class='basic'>Some cards in this scenario refer to an area called “the depths.” The depths is an out-of-play area next to the act and agenda decks that The Amalgam enemy can enter and leave via card effects. While The Amalgam is in the depths, it is out of play and cannot be affected by player cards or investigator actions.</p><ul><li>When The Amalgam moves from play to the depths, remove all tokens from it except for its key tokens. Key tokens are not removed from The Amalgam when it enters the depths unless it was defeated by an investigator, in which case that investigator takes control of each of its keys.</li></ul>"
+    },
+    {
+      "title": "Location Adjacency in the Pit",
+      "body": "<p class='basic'>During this scenario, locations are arranged in a set pattern, with new locations from the Tidal Tunnel deck emerging below, to the left, or to the right of existing locations. (*Note: The Tidal Tunnel deck does not exist at the beginning of this scenario. You will be instructed when and how to create it at a later time during the scenario.*)</p><ul><li>During this scenario, adjacent locations are considered to be connected to one another.</li><li>A location that is put into play below or to the left or right of another location should be set next to that location in the indicated position, with no other locations between them. A location that is next to another location in this manner is considered “_adjacent_.”</li><li>Locations are only adjacent orthogonally (left, right, above, or below); they are not adjacent diagonally.</li><li>You cannot put a location into play where an existing location already is. If you are instructed to place a new location from the Tidal Tunnel deck in a spot that is already occupied by an existing location, the new location does not enter play.</li></ul>"
+    },
+    {
+      "title": "Flashbacks",
+      "body": "<p class='basic'>Throughout The Innsmouth Conspiracy campaign, you will occasionally be instructed to read “flashback” sequences such as the ones below and on the next page. Each flashback contains a piece of your fractured memories. If you glimpse enough of these memories, perhaps you can cobble together a greater understanding of the events that have led you to this point. Some flashbacks might also provide additional benefits in the form of additional experience or the removal of harmful symbols from the chaos bag.</p>"
+    },
+    {
+      "title": "Keys",
+      "body": "<div class='red bordered'><p class='basic'>In this scenario, keys represent the following:</p><ul><li>Blue: An idol of a malformed aquatic creature.</li><li>Green: An emerald key with four prongs.</li><li>Red: A piece of amber in the shape of a fish’s heart that whispers something alien to you when you hold it.</li><li>Yellow: A calcified piece of chitin in the shape of a tentacle.</li><li>Purple: A jagged key of twisted marble and onyx.</li></ul></div>"
+    }
+  ],
   "intro": {
     "title": "Scenario I: The Pit of Despair",
     "body": "<p>Your eyes flutter open with the languor of one who has slept for days on end. Your senses are in no hurry to return. You blink and struggle to see through the inky black surrounding you. Every inch of you aches with dull, throbbing pain. Your skin is cold and numb, and your clothes are waterlogged. Your mind swims with half-articulated thoughts and tangled memories. You have no idea where you are or how you got here.</p><p>You snap to attention, heart racing in your chest. You lie on a jagged stone floor in a shallow pool of dark, ice-cold water. Knowing panic will only make the situation worse, you take a series of deep, meditative breaths. You try to remember something—anything—that might allow you to retrace your steps, but your mind is blank. You remember who you are, but nothing whatsoever from the recent past. You steady yourself and examine your surroundings.</p><p>The chamber appears to be a natural cave formation. Kelp dangles from the ceiling. The stone walls and floor are wet and slimy. A rhythmic drip, drip, drip echoes throughout the otherwise silent cave. This cavern has been underwater, and not too long ago. A result of the tides, perhaps? You swallow your fear like a lump of cold iron. If it is low tide now…A cold shudder ripples up your spine. You examine the ceiling and are surprised to see a slab of metal set into the rough stone overhead. Its polished surface is alien to the rest of the natural cavern. You call out for help, hoping somebody can hear.</p><p>Your dread deepens at the reply: an awful croaking and gurgling that permeates the tunnels—a sound no human could make.</p>"

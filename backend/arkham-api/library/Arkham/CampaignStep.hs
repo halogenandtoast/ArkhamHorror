@@ -69,6 +69,7 @@ noUpgrade cs = cs {canUpgradeDecks = False}
 
 noSideStory :: Continuation -> Continuation
 noSideStory cs = cs {canChooseSideStory = False}
+
 allowOptions :: Continuation -> Continuation
 allowOptions cs = cs {canUpgradeDecks = True, canChooseSideStory = True}
 

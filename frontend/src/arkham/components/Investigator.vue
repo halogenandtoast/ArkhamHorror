@@ -11,11 +11,10 @@ import { ForwardIcon, PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage, portraitImage, sourceCardCode } from '@/arkham/cardImages'
-import * as ArkhamGame from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Investigator'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
-import { cardId } from '@/arkham/types/Card'
+import { cardId, toCardContents } from '@/arkham/types/Card'
 import Token from '@/arkham/components/Token.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composable/menu';
@@ -28,7 +27,7 @@ import { IsMobile } from '@/arkham/isMobile';
 const { t } = useI18n();
 
 export interface Props {
-  choices: Message[]
+  choices: readonly Message[]
   investigator: Arkham.Investigator
   playerId: string
   game: Game
@@ -95,7 +94,7 @@ const investigatorAction = computed(() => {
   return activateAbilityAction.value
 })
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = computed(() => props.choices)
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
@@ -154,6 +153,10 @@ const image = computed(() => {
     return imgsrc("cards/11068b.avif");
   }
 
+  if (props.investigator.form.tag === 'ShatteredForm') {
+    return imgsrc("cards/10661.avif");
+  }
+
   if (props.investigator.form.tag === "TransfiguredForm") {
     return cardImage(props.investigator.form.contents)
   }
@@ -165,7 +168,7 @@ const image = computed(() => {
 
 const investigatorPortraitImage = computed(() => {
   const suffix = props.investigator.endedTurn ? 'b' : ''
-  if (props.investigator.form.tag === "YithianForm" || props.investigator.form.tag === "HomunculusForm") {
+  if (props.investigator.form.tag === "YithianForm" || props.investigator.form.tag === "HomunculusForm" || props.investigator.form.tag === "ShatteredForm") {
     return portraitImage(id.value, suffix)
   }
 
@@ -226,7 +229,7 @@ const isBlanked = computed(() => blankedModifier.value !== null)
 const blankedCardCode = computed<string | null>(() => {
   const m = blankedModifier.value
   if (!m) return null
-  if (m.card) return cardArt(m.card.contents.cardCode)
+  if (m.card) return cardArt(toCardContents(m.card).cardCode)
   return sourceCardCode(m.source, props.game)
 })
 

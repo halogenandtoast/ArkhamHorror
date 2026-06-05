@@ -2,7 +2,7 @@ export interface User {
   username: string;
   email: string;
   beta: boolean;
-  admi: boolean;
+  admin: boolean;
 }
 
 export interface Authentication {

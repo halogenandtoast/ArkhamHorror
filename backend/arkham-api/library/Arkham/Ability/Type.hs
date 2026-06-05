@@ -20,8 +20,10 @@ evadeAction cost = ActionAbility #evade #agility (ActionCost 1 <> cost)
 
 evadeAction_ :: AbilityType
 evadeAction_ = ActionAbility #evade #agility $ ActionCost 1
+
 evadeActionWithAlternate_ :: AbilitySkills -> AbilityType
 evadeActionWithAlternate_ stype = ActionAbility #evade (Just $ OrAbilitySkills [#agility, stype]) (ActionCost 1)
+
 evadeActionWith_ :: SkillType -> AbilityType
 evadeActionWith_ stype = ActionAbility #evade (Just $ AbilitySkill stype) (ActionCost 1)
 

@@ -78,7 +78,7 @@ hasUses :: AssetAttrs -> Bool
 hasUses = any (> 0) . toList . assetUses
 
 instance RunMessage Asset where
-  runMessage msg x@(Asset a) = withSpan_ ("Asset[" <> unCardCode (toCardCode x) <> "].runMessage") do
+  runMessage msg x@(Asset a) = do
     if x.placement.outOfGame
       then case msg of
         ReturnLocationToGame _ -> Asset <$> runMessage msg a
@@ -136,7 +136,7 @@ instance RunMessage AssetAttrs where
                   horrorAsset =
                     AssetHorrorLabel
                       aid
-                      [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
+                      [ Msg.AssignAssetDamageWithCheck aid source 0 1 False
                       , assignRestOfSanityDamage
                       ]
                   horrorInvestigator iid' =
@@ -159,35 +159,42 @@ instance RunMessage AssetAttrs where
       when canDamage do
         mods <- getModifiers a
         let n = sum [x | DamageTaken x <- mods]
+            extraHealth = sum [x | HealthModifier x <- mods]
+            extraSanity = sum [x | SanityModifier x <- mods]
+            remainingHealth = maybe 0 (max 0 . subtract (assetDamage a) . (+ extraHealth)) assetHealth
+            remainingSanity = maybe 0 (max 0 . subtract (assetHorror a) . (+ extraSanity)) assetSanity
+            damage' = min (max 0 $ damage + n) remainingHealth
+            horror' = min (max 0 horror) remainingSanity
         let
           damageEffect = case source of
             EnemyAttackSource _ -> AttackDamageEffect
             _ -> NonAttackDamageEffect
-        pushAll
-          $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
-          <> [PlaceHorror source (toTarget a) horror | horror > 0]
-          <> [ CheckWindows
-                 $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
-                   | damage > 0
-                   ]
-                 <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
-                    | horror > 0
-                    ]
-                 <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
-                    | damage > 0 || horror > 0
-                    ]
-             , checkDefeated source aid
-             , CheckWindows
-                 $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
-                   | damage > 0
-                   ]
-                 <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
-                    | horror > 0
-                    ]
-                 <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
-                    | damage > 0 || horror > 0
-                    ]
-             ]
+        when (damage' > 0 || horror' > 0) do
+          pushAll
+            $ [PlaceDamage source (toTarget a) damage' | damage' > 0]
+            <> [PlaceHorror source (toTarget a) horror' | horror' > 0]
+            <> [ CheckWindows
+                   $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage')
+                     | damage' > 0
+                     ]
+                   <> [ mkWhen (Window.DealtHorror source (toTarget a) horror')
+                      | horror' > 0
+                      ]
+                   <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage' horror')
+                      | damage' > 0 || horror' > 0
+                      ]
+               , checkDefeated source aid
+               , CheckWindows
+                   $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage')
+                     | damage' > 0
+                     ]
+                   <> [ mkAfter (Window.DealtHorror source (toTarget a) horror')
+                      | horror' > 0
+                      ]
+                   <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage' horror')
+                      | damage' > 0 || horror' > 0
+                      ]
+               ]
       pure a
     Msg.AssignAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
       canDamage <- matches a.id (AssetCanBeDamagedBySource source)
@@ -225,13 +232,14 @@ instance RunMessage AssetAttrs where
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     ReadyExhausted -> do
       mods <- getModifiers a
-      phase <- getPhase
-      unless (CannotReady `elem` mods || (phase == #upkeep && DoesNotReadyDuringUpkeep `elem` mods)) do
-        case a.controller of
-          Just iid -> do
-            modifiers <- getModifiers iid
-            pushWhen (ControlledAssetsCannotReady `notElem` modifiers) (Ready $ toTarget a)
-          _ -> push (Ready $ toTarget a)
+      runMaybeT_ do
+        guard $ CannotReady `notElem` mods
+        phase <- lift getPhase
+        guard $ not $ phase == #upkeep && DoesNotReadyDuringUpkeep `elem` mods
+        for_ a.controller \iid -> do
+          modifiers <- getModifiers iid
+          guard $ ControlledAssetsCannotReady `notElem` modifiers
+        lift $ push $ Ready (toTarget a)
       pure a
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     PlaceTokens source target tType n | isTarget a target -> runQueueT do
@@ -394,9 +402,13 @@ instance RunMessage AssetAttrs where
       when (sanity > 0) $ Heal.pushHealedAfter HorrorType (toTarget a) source sanity
       pure
         $ a
-        & tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity
-        & assignedHealthHealL %~ deleteMap source
-        & assignedSanityHealL %~ deleteMap source
+        & tokensL
+        %~ subtractTokens Token.Damage health
+        . subtractTokens Token.Horror sanity
+        & assignedHealthHealL
+        %~ deleteMap source
+        & assignedSanityHealL
+        %~ deleteMap source
     HealDamage (isTarget a -> True) source amount -> do
       mods <- getModifiers a
       let n = sum [x | HealingTaken x <- mods]

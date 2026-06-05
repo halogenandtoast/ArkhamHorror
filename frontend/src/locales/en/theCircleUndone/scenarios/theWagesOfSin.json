@@ -63,7 +63,7 @@
   "label": {
     "ominousPortents": {
       "spectral": "Draw the top card of the spectral encounter deck. That card gains peril, and its effects cannot be canceled.",
-      "test": "Test {willpower} (3). If you fail take 2 horror."
+      "test": "Test {'{'}willpower{'}'} (3). If you fail take 2 horror."
     },
     "baneOfTheLiving": {
       "unfinishedBusiness": "Choose an Unfinished Business card in play, flip it to its Heretic side, and place damage on it equal to half its health.",
@@ -90,6 +90,12 @@
     "spectralDeck": "Separate each of the remaining cards with the _Spectral_ trait and shuffle them together to build the spectral encounter deck (*see “The Spectral Encounter Deck,” below*).",
     "standardDeck": "Shuffle each of the remaining non-_Spectral_ cards together to build the standard encounter deck."
   },
+  "specialRules": [
+    {
+      "title": "@:theCircleUndone.theWagesOfSin.theSpectralEncounterDeck.title",
+      "body": "@:theCircleUndone.theWagesOfSin.theSpectralEncounterDeck.body"
+    }
+  ],
   "theSpectralEncounterDeck": {
     "title": "The Spectral Encounter Deck",
     "body": "<p class='basic'>During the setup of this scenario, two encounter decks are constructed: a “standard” encounter deck and a “spectral” encounter deck. Generally speaking, whenever an investigator would interact with the encounter deck, that investigator should use the standard encounter deck.</p><p class='basic'>However, at a certain point during this scenario, locations may flip over to their _Spectral_ side. While an investigator is at a location with the _Spectral_ trait, that investigator should use the spectral encounter deck instead of the standard encounter deck for all purposes, unless otherwise noted. This includes drawing cards from the encounter deck, as well as searching, looking at, revealing, or otherwise interacting with the encounter deck (or encounter discard pile) in any way. This also includes abilities that trigger when the encounter deck runs out of cards. If an effect specifically refers to the standard encounter deck or spectral encounter deck, it interacts with the specified deck regardless of the investigator’s location.</p><p class='basic'>Each of the two encounter decks have their own discard pile. Whenever a card with the _Spectral_ trait would be discarded, it is placed in the discard pile for the spectral encounter deck. All other encounter cards are discarded to the discard pile for the standard encounter deck.</p><p class='basic'>*Note: Flipping a location over from one side to another during this scenario does not “reveal” the new location.*</p>"

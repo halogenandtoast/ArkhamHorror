@@ -31,8 +31,11 @@ allAgendaCards =
       , aHarshWindBlows
       , aKillerParty
       , allBetsDown
+      , allIsFullOfLove
       , allIsOne
       , annihilation
+      , aroundTheTable
+      , lambsToTheSlaughter
       , aSinisterRealm
       , aTearInReality
       , aTearInRealityV2
@@ -222,6 +225,9 @@ allAgendaCards =
       , theNightHowls
       , theOldOnesHunger
       , theOnslaught
+      , theSilence
+      , theMiasma
+      , theSpiral
       , theRedDepths
       , theRitualAdvances
       , theRitualBegins

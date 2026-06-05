@@ -19,7 +19,7 @@ function symbolForDay(day: number): string | null {
     <div class='calendar'>
       <!-- we need 35 cells each with an empty div a div with a number and another empty div -->
       <div class='day' v-for="n in 35" :key="n">
-        <div class='checkbox' :class="{ checked: n <= time[1] }">{{n <= time[1] ? 'x' : null}}</div><div class='numeral'>{{n}}</div><div class='symbol'>{{symbolForDay(n)}}{{ n == theta ? 'Θ' : '' }}{{ n == delta ? 'δ' : '' }}{{ n == psi ? 'ψ' : '' }}</div>
+        <div class='checkbox' :class="{ checked: n <= time }">{{n <= time ? 'x' : null}}</div><div class='numeral'>{{n}}</div><div class='symbol'>{{symbolForDay(n)}}{{ n == theta ? 'Θ' : '' }}{{ n == delta ? 'δ' : '' }}{{ n == psi ? 'ψ' : '' }}</div>
       </div>
     </div>
   </div>

@@ -24,18 +24,18 @@ interface AdminData {
 const request = await api.get<AdminData>('admin')
 const data = computed(() => request.data)
 
-const activeGames   = data.value.activeGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
-const finishedGames = data.value.activeGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
+const activeGames = data.value.activeGames.filter(g => g.gameState.tag !== 'IsOver')
+const finishedGames = data.value.activeGames.filter(g => g.gameState.tag === 'IsOver')
 
-const recentActiveGames   = data.value.recentGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
-const recentFinishedGames = data.value.recentGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
+const recentActiveGames = data.value.recentGames.filter(g => g.gameState.tag !== 'IsOver')
+const recentFinishedGames = data.value.recentGames.filter(g => g.gameState.tag === 'IsOver')
 
 </script>
 
 <template>
   <AdminUI :selected="'dashboard'">
     <header class="topbar">
-      <button class="hamburger" @click="toggleSidebar" aria-label="Open menu">
+      <button class="hamburger" aria-label="Open menu">
         <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 10h18v2H3v-2zm0-5h18v2H3v-2z" fill="currentColor"/></svg>
       </button>
       <h1>Dashboard</h1>

@@ -170,6 +170,15 @@ allEncounterEnemyCards =
       , crystalParasite
       , crustaceanHybridInTheDark
       , crustaceanHybridInTheLight
+      , cosmicEmissaryTheAbyss
+      , cosmicEmissaryTheAbyssShattered
+      , cosmicEmissaryThePhantasm
+      , cosmicEmissaryThePhantasmShattered
+      , cosmicEmissaryTheMiasma
+      , cosmicEmissaryTheMiasmaShattered
+      , cosmicEmissaryTheBrilliance
+      , cosmicEmissaryTheBrillianceShattered
+      , crystalMimic
       , cultistOfTheEnclave
       , curiousMoonNosyNuisance
       , dagonAwakenedAndEnraged
@@ -349,6 +358,17 @@ allEncounterEnemyCards =
       , memoryOfAnUnrequitedLove
       , memoryOfAnUnspeakableEvil
       , miasmaticShadow
+      , -- Day of the Feast / Residents [fhv]
+        frenziedReveler
+      , motherRachelStarbornHerald
+      , leahAtwood
+      , simeonAtwood
+      , williamHemlock
+      , riverHawthorne
+      , gideonMizrah
+      , judithPark
+      , theoPeters
+      , bertieMusgrave
       , mimeticNemesisInfiltratorOfRealities
       , mimeticNemesisOtherworldlySubjugator
       , mindlessDancer

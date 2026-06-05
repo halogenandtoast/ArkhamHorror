@@ -105,7 +105,7 @@ instance HasAbilities HyperphysicalShotcasterTheoreticalDevice where
       _ -> error "Invalid manifest ability"
     manifestCriteria = \case
       Railshooter -> NoRestriction
-      Telescanner -> NoRestriction
+      Telescanner -> exists $ YourLocation <> InvestigatableLocation
       Translocator -> NoRestriction
       Realitycollapser -> NoRestriction
       Matterweaver -> exists (PlayableCardWithNoCost NoAction $ InHandOf ForPlay You <> #asset)

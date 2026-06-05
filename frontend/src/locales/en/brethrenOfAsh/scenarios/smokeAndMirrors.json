@@ -1,4 +1,25 @@
 {
+  "keywordsAndConcepts": {
+    "title": "New Keywords and Concepts",
+    "entries": [
+      {
+        "title": "The Codex",
+        "body": "<p>Some cards have the codex symbol on them. During a scenario, some card effects and abilities may direct players to read a specific codex entry. While playing, keep the campaign guide on hand for easy reference. Certain locations, characters, and enemies have codex entries. To read a codex entry, pay all costs and/or resolve all effects associated with its triggering ability, then read the corresponding entry for the current scenario in the campaign guide and resolve its text.</p><ul><li>Each codex entry cannot be resolved more than once per scenario unless otherwise stated.</li><li>When resolving a codex entry, the player who triggered that entry resolves all effects (resolving a test, dealing damage, paying resources, etc). If it is unclear who triggered the codex entry, the lead investigator resolves the entry.</li><li>Codex entries that are triggered via a specific action type (such as Fight, Evade, Parley, etc.) are considered to be that action type throughout the resolution of that codex entry.</li><li>While resolving a codex entry, a player only reads the section for which they meet the requirements. If they do not meet the requirements to resolve the first section of a codex entry, skip to the following section.</li><li>If a card effect directs players to resolve a codex entry that does not exist for the scenario being played, that effect fails.</li><li>After resolving a codex entry and making any changes to the game and/or in the campaign log, resume play.</li></ul>"
+      },
+      {
+        "title": "Alert",
+        "body": "<p>Alert is a keyword ability. Each time an investigator fails a skill test while attempting to evade a ready enemy with the alert keyword, after applying all results for that skill test, that enemy performs an attack against the evading investigator. An enemy does not exhaust after performing an alert attack.</p><ul><li>This attack occurs whether or not the enemy is engaged with the evading investigator.</li></ul>"
+      },
+      {
+        "title": "Aloof",
+        "body": "<p>Aloof is a keyword ability. An enemy with the aloof keyword does not automatically engage investigators at its location.</p><ul><li>When an aloof enemy spawns, it spawns unengaged.</li><li>An investigator may use an engage action or a card ability to engage an aloof enemy.</li><li>An investigator cannot attack or evade an aloof enemy while that enemy is not engaged with an investigator.</li></ul>"
+      },
+      {
+        "title": "Elusive",
+        "body": "<p>Elusive is a keyword ability. Elusive enemies represent enemies who want to avoid the investigators for their own survival or to accomplish their own goals. If a ready enemy with the elusive keyword attacks or is attacked, after that attack resolves, that enemy immediately disengages from all investigators, moves to a connecting location (with no investigators if able), and exhausts.</p><ul><li>This effect occurs whether or not the enemy was engaged with the attacking investigator.</li></ul>"
+      }
+    ]
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the total number of _Elite_ enemies in the victory display and under the act.",

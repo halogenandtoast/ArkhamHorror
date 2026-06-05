@@ -49,6 +49,7 @@ instance RunMessage WishEater where
       pushAll
         $ [HealDamage (InvestigatorTarget iid) source 1 | healDamage]
         <> [HealHorror (InvestigatorTarget iid) source 1 | healHorror]
+        <> [ChaosTokenCanceled iid source token]
       cancelChaosToken token
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

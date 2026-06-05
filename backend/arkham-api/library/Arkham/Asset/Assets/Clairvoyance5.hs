@@ -18,7 +18,7 @@ clairvoyance5 = asset Clairvoyance5 Cards.clairvoyance5
 
 instance HasAbilities Clairvoyance5 where
   getAbilities (Clairvoyance5 a) =
-    [controlled_ a 1 $ investigateActionWith #willpower (assetUseCost a Charge 1)]
+    [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWith #willpower (assetUseCost a Charge 1)]
 
 instance RunMessage Clairvoyance5 where
   runMessage msg a@(Clairvoyance5 attrs) = runQueueT $ case msg of

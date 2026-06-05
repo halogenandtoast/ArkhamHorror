@@ -1,5 +1,15 @@
 {
   "heading": "Scenario IV",
+  "specialRules": [
+    {
+      "title": "Vehicles",
+      "body": "<p class='basic'>An asset with the vehicle keyword represents a vehicle that the investigators may enter or leave. An asset with this keyword is called a vehicle, and follows these rules:</p><ul><li>While an investigator’s mini-card is placed overlapping a vehicle, that investigator is in that vehicle. While an investigator’s mini-card is placed overlapping their location, that investigator is instead not in a vehicle (even if they are at the same location as a vehicle).<ul><li>As a {'{'}action{'}'} ability, an investigator may enter or leave a vehicle at their location. Move that investigator’s mini-card onto the vehicle or off of the vehicle and onto their location to indicate their new position. Each investigator may perform this ability only once each round.</li><li>An investigator who is in a vehicle is also at that vehicle’s location.</li><li>While an investigator is in a vehicle, that investigator cannot move independently of the vehicle.</li></ul></li><li>Vehicles generally have one or more abilities that allow them to move to a connecting location. As a vehicle moves from one location to another, all investigators in the vehicle also move with the vehicle.</li><li>Vehicles do not alter enemy movement or enemy engagement in any way unless otherwise noted.</li></ul>"
+    },
+    {
+      "title": "Keys",
+      "body": "<div class='red bordered'><p class='basic'>During this scenario, keys represent the following:</p><ul><li>Red / Blue / Green / Yellow: Various devices used to gain entrance into the deeper parts of Devil Reef.</li><li>Purple: A strange idol.</li><li>Black: A mystical headdress.</li><li>White: An unholy mantle.</li></ul></div>"
+    }
+  ],
   "deepOnePredator": {
     "label": {
       "moveKey": "Move {key} key to Deep One Predator",

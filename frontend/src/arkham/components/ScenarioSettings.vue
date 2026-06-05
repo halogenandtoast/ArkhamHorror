@@ -41,8 +41,8 @@ const findSetting = (key: string) => {
 // when we change standaloneSettings they are "cached" so to avoid this we deep copy the
 // standaloneSettings in order to never alter its original value.
 const computedStandaloneSettings = computed<StandaloneSetting[]>(() => {
-  const s = scenarioJSON.find((s) => s.id === props.scenario.id.replace(/^c/, ''))
-  return s?.settings ? s.settings as StandaloneSetting[] : []
+  const s = scenarioJSON.find((s) => s.id === props.scenario.id.replace(/^c/, '')) as { settings?: StandaloneSetting[] } | undefined
+  return s?.settings ?? []
 })
 
 watch(computedStandaloneSettings, (newSettings) => {

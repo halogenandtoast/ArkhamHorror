@@ -7,6 +7,7 @@ import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Investigate
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.BlackStarsRise.Helpers
@@ -23,7 +24,7 @@ instance HasAbilities KnightsHall where
     extendRevealed1 a
       $ scenarioI18n
       $ withI18nTooltip "knightsHall.investigate"
-      $ restricted a 1 (Here <> NoCluesOnThis) investigateAction_
+      $ restricted a 1 (Here <> NoCluesOnThis <> thisExists a InvestigatableLocation) investigateAction_
 
 instance RunMessage KnightsHall where
   runMessage msg l@(KnightsHall attrs) = runQueueT $ case msg of

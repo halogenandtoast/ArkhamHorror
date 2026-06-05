@@ -2,13 +2,13 @@
 import { computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc, pluralize } from '@/arkham/helpers';
-import { ChaosBagStep } from '@/arkham/types/ChaosBag';
+import { ChaosBagStep, type ChaosBagStepState } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token.vue';
 
 const props = defineProps<{
   game: Game
   playerId: string
-  choice: ChaosBagStep
+  choice: ChaosBagStep | ChaosBagStepState
 }>()
 
 const emit = defineEmits<{
@@ -20,11 +20,15 @@ const tokenChoices = computed(() => {
     case 'ChooseMatch': return props.choice.steps
     case 'ChooseMatchChoice': return props.choice.steps
     case 'Choose': return props.choice.steps
-    case 'Deciding': {
+    case 'Deciding':
+    case 'Decided':
+    case 'Undecided': {
       const { step } = props.choice
       if ("steps" in step) return step.steps
-      return props.choice.step
+      return [step]
     }
+    case 'Resolved':
+      return [props.choice]
     default: {
       return [props.choice]
     }

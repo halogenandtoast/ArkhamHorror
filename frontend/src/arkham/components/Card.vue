@@ -102,14 +102,14 @@ function isAbility(v: Message): v is AbilityLabel {
     }
   }
 
-  if (source.tag === 'AssetSource') {
+  if (source.tag === 'AssetSource' && source.contents) {
     const asset = props.game.assets[source.contents]
     if (asset) {
       return asset.cardId === id.value && asset.placement.tag === 'StillInHand'
     }
   }
 
-  return source.contents === id.value
+  return 'contents' in source && source.contents === id.value
 }
 
 const abilities = computed<AbilityMessage[]>(() => {

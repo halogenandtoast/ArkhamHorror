@@ -348,6 +348,7 @@ handleAnswerPure Game {..} playerId = \case
       unwrap = \case
         QuestionLabel _ _ q' -> unwrap q'
         PayCostQuestion _ q' -> unwrap q'
+        QuestionWithSource _ _ q' -> unwrap q'
         q' -> q'
     case unwrap <$> Map.lookup playerId gameQuestion of
       Just (PickCampaignSpecific {}) -> do
@@ -464,6 +465,7 @@ handleAnswerPure Game {..} playerId = \case
   go f q response = case q of
     QuestionLabel lbl mCard q' -> go (QuestionLabel lbl mCard) q' response
     PayCostQuestion cost q' -> go (PayCostQuestion cost) q' response
+    QuestionWithSource s tt q' -> go (QuestionWithSource s tt) q' response
     Read t (BasicReadChoices qs) mcs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ Read t (BasicReadChoices qs) mcs]
       Just msg -> [uiToRun msg]

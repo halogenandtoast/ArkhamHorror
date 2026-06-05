@@ -88,6 +88,7 @@ leadChooseOrRunOneM :: ReverseQueue m => ChooseT m a -> m ()
 leadChooseOrRunOneM choices = do
   lead <- getLead
   chooseOrRunOneM lead choices
+
 isInvalidChoice :: UI Message -> Bool
 isInvalidChoice (InvalidLabel {}) = True
 isInvalidChoice _ = False
@@ -509,7 +510,7 @@ storyWithContinue txt button = storyWithChooseOneM txt $ labeled button nothing
 storyWithChooseOneM :: ReverseQueue m => FlavorText -> ChooseT m a -> m ()
 storyWithChooseOneM txt choices = do
   (_, choices') <- runChooseT choices
-  unless (null choices') $ storyWithChooseOne txt choices'
+  unless (shouldSkipQuestion choices') $ storyWithChooseOne txt choices'
 
 storyWithContinue' :: (HasI18n, ReverseQueue m) => FlavorTextBuilder () -> m ()
 storyWithContinue' builder = storyWithChooseOneM' builder $ unscoped $ labeled' "continue" nothing
@@ -517,7 +518,7 @@ storyWithContinue' builder = storyWithChooseOneM' builder $ unscoped $ labeled' 
 storyWithChooseOneM' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m a -> m ()
 storyWithChooseOneM' builder choices = do
   (_, choices') <- runChooseT choices
-  unless (null choices') $ storyWithChooseOne (buildFlavor builder) choices'
+  unless (shouldSkipQuestion choices') $ storyWithChooseOne (buildFlavor builder) choices'
 
 investigatorStoryWithChooseOneM'
   :: ReverseQueue m => InvestigatorId -> FlavorTextBuilder () -> ChooseT m a -> m ()

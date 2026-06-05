@@ -67,6 +67,12 @@
     "explorationDeck": "Create the exploration deck. This is done by taking the 3 remaining single-sided locations and shuffling them together, along with 1 copy each of the following encounter cards: Wracked by Time, Between Worlds, and Ancient Evils.",
     "yigsFury": "Check Campaign Log. For every 10 tally marks under “Yig’s Fury,” place the top card of the lead investigator’s deck in the victory display, facedown. For the remainder of the scenario, treat each of those cards as if it has _Vengeance 1_."
   },
+  "specialRules": [
+    {
+      "title": "@:theForgottenAge.shatteredAeons.storyCards.title",
+      "body": "@:theForgottenAge.shatteredAeons.storyCards.body"
+    }
+  ],
   "storyCards": {
     "title": "Story Cards",
     "body": "Story cards are a new cardtype that appears in this Mythos Pack. These cards serve as an avenue for additional narrative and typically appear as the reverse side of another scenario card. When you are instructed to resolve a story card, simply read its story text and resolve its game text, if any."

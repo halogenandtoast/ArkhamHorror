@@ -31,7 +31,7 @@ instance HasModifiersFor BodyOfAYithian where
 
 instance HasAbilities BodyOfAYithian where
   getAbilities (BodyOfAYithian a) =
-    [ playerLimit PerTestOrAbility
+    [ playerLimit PerTest
         $ selfAbility a 1 DuringYourSkillTest
         $ freeReaction
         $ CommittedCard #after You #any

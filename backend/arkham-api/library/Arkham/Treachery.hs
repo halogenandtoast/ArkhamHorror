@@ -7,7 +7,6 @@ import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Id
 import Arkham.Prelude
-import Arkham.Tracing
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Treacheries
 
@@ -24,7 +23,7 @@ createTreachery a iid tid =
     _ -> Nothing
 
 instance RunMessage Treachery where
-  runMessage msg t@(Treachery a) = withSpan_ ("Treachery[" <> unCardCode (toCardCode t) <> "].runMessage") do
+  runMessage msg t@(Treachery a) = do
     if t.placement.outOfGame
       then case msg of
         ReturnLocationToGame _ -> Treachery <$> runMessage msg a
@@ -689,6 +688,10 @@ allTreacheries =
       , --- The Longest Night [fhv]
         SomeTreacheryCard endlessNight
       , SomeTreacheryCard incursion
+      , --- Fate of the Vale [fhv]
+        SomeTreacheryCard sublimation
+      , SomeTreacheryCard fragmentation
+      , SomeTreacheryCard euphoria
       , --- Fire [fhv]
         SomeTreacheryCard fire
       , -- The Drowned City

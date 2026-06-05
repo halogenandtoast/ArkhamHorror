@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest (getSkillTestDifficulty, withSkillTest)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 
@@ -17,7 +18,7 @@ ancientStone1 :: AssetCard AncientStone1
 ancientStone1 = asset AncientStone1 Cards.ancientStone1
 
 instance HasAbilities AncientStone1 where
-  getAbilities (AncientStone1 a) = [controlled_ a 1 investigateAction_]
+  getAbilities (AncientStone1 a) = [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) investigateAction_]
 
 instance RunMessage AncientStone1 where
   runMessage msg a@(AncientStone1 attrs) = runQueueT $ case msg of

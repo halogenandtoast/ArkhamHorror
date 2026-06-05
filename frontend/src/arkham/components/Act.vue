@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, ref } from 'vue'
+import { useCardStore } from '@/stores/cards'
 import { type Game } from '@/arkham/types/Game'
-import { type Card, cardImage, asCardCode } from '@/arkham/types/Card'
+import { type Card, cardImage, asCardCode, cardFacedown } from '@/arkham/types/Card'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
+import { useDebug } from '@/arkham/debug';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import KeyToken from '@/arkham/components/Key.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
@@ -32,6 +34,8 @@ const emits = defineEmits<{
 
 const showAbilities = ref(false)
 const frame = ref(null)
+const debug = useDebug()
+const cardStore = useCardStore()
 
 const id = computed(() => props.act.id)
 
@@ -120,12 +124,110 @@ const hasObjective = computed(() =>
   )
 )
 
-const cardsUnder = computed(() => props.cardsUnder)
+function revealFacedownCard(card: Card): Card {
+  switch (card.tag) {
+    case 'PlayerCard':
+    case 'EncounterCard':
+      return { ...card, contents: { ...card.contents, facedown: false } }
+    case 'VengeanceCard': {
+      const contents = card.contents
+      return { ...card, contents: { ...contents, contents: { ...contents.contents, facedown: false } } }
+    }
+  }
+}
 
-const showCardsUnderAct = () => emits('show', cardsUnder, 'Cards Under Act', false)
+const cardsUnder = computed(() => props.cardsUnder)
+const visibleCardsUnder = computed(() => {
+  if (debug.active) return props.cardsUnder.map(revealFacedownCard)
+  return props.cardsUnder.filter((card) => !cardFacedown(card))
+})
+const canViewUnder = computed(() => visibleCardsUnder.value.length > 0)
+
+const showCardsUnderAct = () => emits('show', visibleCardsUnder, 'Cards Under Act', false)
 
 const futureStack = computed(() => props.remainingStack.filter(c => asCardCode(c) !== props.act.id))
-const totalActs = computed(() => props.completedStack.length + props.remainingStack.length)
+
+const cardStage = (card: Card): number | null => {
+  const code = asCardCode(card)
+  return cardStore.cards.find((cardDef) =>
+    cardDef.cardCode === code || cardDef.cardCode === code.replace(/^c/, '')
+  )?.stage ?? null
+}
+
+type StackIndicatorGroup = {
+  label: string
+  state: 'completed' | 'current' | 'remaining'
+  images: {
+    src: string
+    current?: boolean
+    passed?: boolean
+  }[]
+}
+
+type ActStackGroup = StackIndicatorGroup & {
+  stage: number | null
+  firstIndex: number
+}
+
+const groupedActStack = computed<StackIndicatorGroup[]>(() => {
+  const groups: ActStackGroup[] = []
+
+  const addToGroup = (
+    stage: number | null,
+    fallbackKey: string,
+    image: StackIndicatorGroup['images'][number],
+    preferredState: StackIndicatorGroup['state'],
+    firstIndex: number,
+  ) => {
+    const group = groups.find((g) => stage !== null ? g.stage === stage : g.label === fallbackKey)
+
+    if (group) {
+      group.images.push(image)
+      if (preferredState === 'current') group.state = 'current'
+      return
+    }
+
+    groups.push({
+      label: stage === null ? fallbackKey : `Act ${stage}`,
+      stage,
+      firstIndex,
+      state: preferredState,
+      images: [image],
+    })
+  }
+
+  props.completedStack.forEach((card, i) => {
+    const stage = cardStage(card)
+    addToGroup(stage, `Act ${i + 1}`, { src: imgsrc(cardImage(card)), passed: true }, 'completed', i)
+  })
+
+  addToGroup(
+    props.act.sequence.number,
+    `Act ${props.act.sequence.number}`,
+    { src: image.value, current: true },
+    'current',
+    props.completedStack.length,
+  )
+
+  futureStack.value.forEach((card, i) => {
+    const stage = cardStage(card)
+    addToGroup(
+      stage,
+      `Act ${props.completedStack.length + i + 2}`,
+      { src: imgsrc(cardImage(card)) },
+      stage === props.act.sequence.number ? 'current' : 'remaining',
+      props.completedStack.length + i + 1,
+    )
+  })
+
+  return groups.sort((a, b) => {
+    if (a.stage !== null && b.stage !== null) return a.stage - b.stage
+    return a.firstIndex - b.firstIndex
+  })
+})
+
+const totalActs = computed(() => groupedActStack.value.length)
+const currentActPosition = computed(() => groupedActStack.value.findIndex((group) => group.state === 'current') + 1 || props.act.sequence.number)
 
 async function clicked() {
   if (interactAction.value !== -1) {
@@ -173,11 +275,12 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
       </div>
       <StackIndicator
         label="Act"
-        :current="act.sequence.number"
+        :current="currentActPosition"
         :total="totalActs"
         :completedCards="completedStack"
         :currentImage="image"
         :remainingCards="futureStack"
+        :groups="groupedActStack"
       />
     </div>
     <AbilitiesMenu
@@ -188,7 +291,8 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
       position="bottom"
       @choose="chooseAbility"
       />
-    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
+    <button v-if="cardsUnder.length > 0 && canViewUnder" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
+    <button v-else-if="cardsUnder.length > 0" class="view-cards-under-button" disabled>{{viewUnderLabel}}</button>
     <div class="card-container" v-for="(card, idx) in cardsNextTo" :key="idx">
       <img
         class="card card--sideways"

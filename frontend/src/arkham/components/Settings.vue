@@ -4,6 +4,7 @@ import { type Game } from '@/arkham/types/Game'
 import { useDebug } from '@/arkham/debug'
 import { useI18n } from 'vue-i18n';
 import { updateGameRaw } from '@/arkham/api'
+import { gameLocalStorageKey, getGameLocalStorageItem, removeGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useSettingsFocus } from '@/composable/settingsFocus'
@@ -39,7 +40,14 @@ const investigator = computed(() => {
   return Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
 })
 
-const skipTriggers = ref(investigator.value.settings.globalSettings.ignoreUnrelatedSkillTestTriggers)
+const skipTriggers = ref(investigator.value?.settings.globalSettings.ignoreUnrelatedSkillTestTriggers ?? false)
+const cosmicEmissaryAnimationKey = computed(() => gameLocalStorageKey(props.game.id, 'enableCosmicEmissaryAnimation'))
+const showCosmicEmissaryAnimationSetting = computed(() => props.game.scenario?.id === 'c10651')
+const enableCosmicEmissaryAnimation = ref(
+  getGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation') === null
+    ? getGameLocalStorageItem(props.game.id, 'disableCosmicEmissaryAnimation') !== 'true'
+    : getGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation') !== 'false'
+)
 
 watch(() => skipTriggers.value, (value) => {
   if (investigator.value) {
@@ -50,6 +58,14 @@ watch(() => skipTriggers.value, (value) => {
       )
     )
   }
+})
+
+watch(enableCosmicEmissaryAnimation, (value) => {
+  setGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation', value ? 'true' : 'false')
+  removeGameLocalStorageItem(props.game.id, 'disableCosmicEmissaryAnimation')
+  window.dispatchEvent(new CustomEvent('arkham-setting-change', {
+    detail: { key: cosmicEmissaryAnimationKey.value, value: value ? 'true' : 'false' }
+  }))
 })
 
 type RecommendedToggle = {
@@ -144,7 +160,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="settings">
     <div class="settings-header" :style="headerStyle">
-      <h2 class="settings-title">{{$t('gameBar.viewSettingTitle', {investigator: investigator.name.title})}}</h2>
+      <h2 class="settings-title">{{$t('gameBar.viewSettingTitle', {investigator: investigator?.name.title ?? ''})}}</h2>
     </div>
 
     <div class="settings-body">
@@ -175,6 +191,19 @@ onBeforeUnmount(() => {
               <label for="opt-showHands-on">{{ $t('On') }}</label>
               <input type="radio" id="opt-showHands-off" name="opt-showHands" :checked="!showOtherHands" @change="showOtherHands = false" />
               <label for="opt-showHands-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row" v-if="showCosmicEmissaryAnimationSetting">
+            <div class="toggle-text">
+              <div class="toggle-name">Enable Cosmic Emissary Animation</div>
+              <div class="toggle-desc">Shows animated Cosmic Emissary connection effects for Fate of the Vale.</div>
+            </div>
+            <div class="segmented segmented-2 toggle-control">
+              <input type="radio" id="opt-cosmicEmissaryAnimation-on" name="opt-cosmicEmissaryAnimation" :checked="enableCosmicEmissaryAnimation" @change="enableCosmicEmissaryAnimation = true" />
+              <label for="opt-cosmicEmissaryAnimation-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-cosmicEmissaryAnimation-off" name="opt-cosmicEmissaryAnimation" :checked="!enableCosmicEmissaryAnimation" @change="enableCosmicEmissaryAnimation = false" />
+              <label for="opt-cosmicEmissaryAnimation-off">{{ $t('Off') }}</label>
             </div>
           </div>
         </div>

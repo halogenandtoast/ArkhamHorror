@@ -25,7 +25,7 @@ const emits = defineEmits<{
   showCards: [e: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
 }>()
 
-const uses = computed(() => Object.entries(props.event.tokens).filter(([k, v]) => isUse(k) && v > 0))
+const uses = computed(() => Object.entries(props.event.tokens).filter(([k, v]) => isUse(k) && (v ?? 0) > 0))
 
 const id = computed(() => props.event.id)
 const hasPool = computed(() => {
@@ -107,7 +107,7 @@ const choose = (index: number) => emits('choose', index)
       <PoolItem v-if="event.doom > 0" type="doom" :amount="event.doom" />
       <template v-for="[use, amount] in uses" :key="use">
         <PoolItem
-          v-if="amount > 0"
+          v-if="(amount ?? 0) > 0"
           type="resource"
           :tooltip="use"
           :amount="amount"

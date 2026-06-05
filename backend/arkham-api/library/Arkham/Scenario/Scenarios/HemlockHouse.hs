@@ -486,14 +486,13 @@ instance RunMessage HemlockHouse where
         Resolution 2 -> do
           resolution "resolution2"
 
-          -- "Remove 1 [tablet] token from the predation bag. Return any
-          -- remaining [tablet] tokens in the predation bag to the chaos bag
+          -- "Remove 1 [elder_thing] token from the predation bag. Return any
+          -- remaining [elder_thing] tokens in the predation bag to the chaos bag
           -- for the remainder of the campaign."
-          -- TODO add a "predationCleanup" handler in ThePredatoryHouse that
-          -- consumes this message, drops one tablet, and pushes AddChaosToken
-          -- for the rest.
-          predatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
-          sendMessage predatoryHouse $ ScenarioSpecific "predationCleanup" Null
+          -- If The Predatory House never entered play, there is no predation
+          -- bag to clean up.
+          whenJustM (selectOne $ storyIs Stories.thePredatoryHouse) \predatoryHouse ->
+            sendMessage predatoryHouse $ ScenarioSpecific "predationCleanup" Null
 
           whenM (remembered FoundLittleSylvie) $ addCampaignCardToDeckChoice_ Assets.littleSylvie
 

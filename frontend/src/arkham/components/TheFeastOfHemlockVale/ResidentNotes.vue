@@ -8,6 +8,7 @@ const props = defineProps<{
   sectionId: string
   prefix: string
   records: string[]
+  recordCounts?: Record<string, number>
   relationshipLevel: number
   gameId?: string
 }>()
@@ -114,14 +115,27 @@ const presentRecordKeys = computed(() => new Set(props.records))
 
 const validRecords = computed(() => props.records.filter(rk => !rk.endsWith('CrossedOut')))
 
-const noteOptions = computed(() => {
-  if (!isDebugging.value || !meta.value) return validRecords.value.map((key) => ({ key, tag: '', checked: true }))
+type NoteOption = { key: string; tag: string; checked: boolean; count?: number }
+
+const noteCountEntries = computed(() => Object.entries(props.recordCounts ?? {}).filter(([key]) => !key.endsWith('CrossedOut')))
+
+const noteOptions = computed<NoteOption[]>(() => {
+  if (!isDebugging.value || !meta.value) {
+    const notes = new Map<string, NoteOption>()
+    for (const key of validRecords.value) notes.set(key, { key, tag: '', checked: true })
+    for (const [key, count] of noteCountEntries.value) {
+      notes.set(key, { ...(notes.get(key) ?? { key, tag: '', checked: true }), count })
+    }
+    return Array.from(notes.values())
+  }
 
   return meta.value.notes.map((tag) => {
     const key = recordKey(tag)
-    return { key, tag, checked: presentRecordKeys.value.has(key) }
+    return { key, tag, checked: presentRecordKeys.value.has(key) || key in (props.recordCounts ?? {}), count: props.recordCounts?.[key] }
   })
 })
+
+const noteText = (note: NoteOption) => note.count == null ? t(note.key) : `${t(note.key)}: ${note.count}`
 
 const crossedOut = computed(() => props.records.some(rk => rk.endsWith('CrossedOut')))
 
@@ -188,9 +202,9 @@ async function changeRelationship(delta: 1 | -1) {
           >
             <label v-if="isDebugging && note.tag" class="debug-note-toggle">
               <input type="checkbox" :checked="note.checked" @change="toggleNote(note.tag, note.checked)" />
-              <span>{{ t(note.key) }}</span>
+              <span>{{ noteText(note) }}</span>
             </label>
-            <template v-else>{{ t(note.key) }}</template>
+            <template v-else>{{ noteText(note) }}</template>
           </li>
         </ul>
       </div>

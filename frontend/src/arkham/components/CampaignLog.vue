@@ -299,6 +299,7 @@ type SectionModel = {
   titleKey: string
   orderKey: string
   records: string[]
+  recordCounts: Record<string, number>
   relationshipLevel: number
   component?: Component
 }
@@ -315,6 +316,26 @@ const relationshipLevelBySectionId = computed<Record<string, number>>(() => {
     if (!/RelationshipLevel$/.test(leafTag)) continue
 
     m[sectionId] = clamp6(value)
+  }
+
+  return m
+})
+
+const recordCountsBySectionId = computed<Record<string, Record<string, number>>>(() => {
+  const m: Record<string, Record<string, number>> = {}
+
+  for (const [k, value] of selectedLog.value.recordedCounts) {
+    if (!isSection(k)) continue
+    const sectionTag = k.contents.tag
+    const leafTag = k.contents.contents
+    if (/RelationshipLevel$/.test(leafTag)) continue
+
+    const baseKey = lowerFirst(k.tag.replace(/Key$/, ''))
+    const sectionId = lowerFirst(sectionTag)
+    const leaf = lowerFirst(leafTag)
+    const recordKey = `${baseKey}.key['[${sectionId}]'].${leaf}`
+
+    m[sectionId] = { ...(m[sectionId] ?? {}), [recordKey]: value }
   }
 
   return m
@@ -371,6 +392,7 @@ const sections = computed<SectionModel[]>(() => {
       titleKey,
       orderKey,
       records: [recordKey],
+      recordCounts: recordCountsBySectionId.value[sectionId] ?? {},
       relationshipLevel: relationshipLevelBySectionId.value[sectionId] ?? 0,
       component: sectionComponentById[sectionId],
     }
@@ -379,6 +401,7 @@ const sections = computed<SectionModel[]>(() => {
   for (const [key, meta] of Object.entries(sectionsFromCounts.value)) {
     const existing = byKey[key]
     if (existing) {
+      existing.recordCounts = recordCountsBySectionId.value[existing.id] ?? existing.recordCounts
       existing.relationshipLevel = relationshipLevelBySectionId.value[existing.id] ?? existing.relationshipLevel
       continue
     }
@@ -389,6 +412,7 @@ const sections = computed<SectionModel[]>(() => {
       titleKey: meta.titleKey,
       orderKey: meta.orderKey,
       records: [],
+      recordCounts: recordCountsBySectionId.value[meta.id] ?? {},
       relationshipLevel: relationshipLevelBySectionId.value[meta.id] ?? 0,
       component: sectionComponentById[meta.id],
     }
@@ -752,6 +776,7 @@ const mapData = computed(() => {
               :sectionId="hemlockAreasSurveyedSection.id"
               :prefix="hemlockAreasSurveyedSection.titleKey.split('.').slice(0, 1).join('.')"
               :records="hemlockAreasSurveyedSection.records"
+              :recordCounts="hemlockAreasSurveyedSection.recordCounts"
               :relationshipLevel="hemlockAreasSurveyedSection.relationshipLevel"
               :gameId="game.id"
               @refresh="emit('refresh')"
@@ -777,6 +802,7 @@ const mapData = computed(() => {
               :sectionId="section.id"
               :prefix="section.titleKey.split('.').slice(0, 1).join('.')"
               :records="section.records"
+              :recordCounts="section.recordCounts"
               :relationshipLevel="section.relationshipLevel"
               :gameId="game.id"
               @refresh="emit('refresh')"

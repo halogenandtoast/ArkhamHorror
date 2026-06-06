@@ -28,7 +28,10 @@ instance RunMessage Transfiguration2 where
       let
         allCards = toList allInvestigatorCards
         names = map toName $ filter (any (`elem` unavailable) . (.cardCodes)) allCards
-        canBeChosen card = toName card `notElem` names
+        -- bonded investigator cards (Resolute Hank Samson, The Lost
+        -- Homunculus) are not collection choices
+        bonded = ["10016a", "10016b", "11068b"]
+        canBeChosen card = toName card `notElem` names && card.cardCode `notElem` bonded
         cards = filter canBeChosen allCards
 
       chooseOneM iid do

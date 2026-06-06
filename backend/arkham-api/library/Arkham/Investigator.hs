@@ -128,6 +128,8 @@ allInvestigators =
       , SomeInvestigatorCard alessandraZorzi
       , SomeInvestigatorCard kohakuNarukami
       , SomeInvestigatorCard hankSamson
+      , SomeInvestigatorCard hankSamsonResoluteAssistant
+      , SomeInvestigatorCard hankSamsonResoluteWarden
       , SomeInvestigatorCard marionTavares
       , SomeInvestigatorCard luciusGalloway
       , SomeInvestigatorCard agathaCrane_Seeker

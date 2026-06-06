@@ -6323,6 +6323,7 @@ test-suite spec
       Arkham.Event.Events.SearchForTheTruthSpec
       Arkham.Event.Events.SneakAttackSpec
       Arkham.Event.Events.SureGamble3Spec
+      Arkham.Event.Events.Transfiguration2Spec
       Arkham.Event.Events.WardOfProtectionSpec
       Arkham.Event.Events.WillToSurvive3Spec
       Arkham.Event.Events.WorkingAHunchSpec

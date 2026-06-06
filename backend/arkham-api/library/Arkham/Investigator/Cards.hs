@@ -77,7 +77,8 @@ allInvestigatorCards =
       , alessandraZorzi
       , kohakuNarukami
       , hankSamson
-      , hankSamsonB
+      , hankSamsonResoluteAssistant
+      , hankSamsonResoluteWarden
       , marionTavares
       , luciusGalloway
       , agathaCrane_Seeker
@@ -567,13 +568,21 @@ hankSamson =
     Survivor
     [Assistant, Warden]
 
-hankSamsonB :: CardDef
-hankSamsonB =
+hankSamsonResoluteAssistant :: CardDef
+hankSamsonResoluteAssistant =
   investigator
     "10016a"
     ("Hank Samson" <:> "The Farmhand")
     Survivor
     [Assistant, Resolute]
+
+hankSamsonResoluteWarden :: CardDef
+hankSamsonResoluteWarden =
+  investigator
+    "10016b"
+    ("Hank Samson" <:> "The Farmhand")
+    Survivor
+    [Warden, Resolute]
 
 marionTavares :: CardDef
 marionTavares =

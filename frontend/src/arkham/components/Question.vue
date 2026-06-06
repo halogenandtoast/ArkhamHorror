@@ -275,7 +275,10 @@ const hasInnerContent = computed(() => {
     || (portraits.value.length > 0)
 })
 
-onMounted(setInitialAmounts)
+onMounted(() => {
+  setInitialAmounts()
+  void store.initDbCards()
+})
 
 watch(
   () => props.game.question[props.playerId],

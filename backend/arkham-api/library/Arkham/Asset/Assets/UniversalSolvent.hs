@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Token (Token (Supply))
 import Arkham.Asset.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyRemainingHealth))
-import Arkham.Helpers.SkillTest (getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
@@ -45,6 +45,6 @@ instance RunMessage UniversalSolvent where
         beginSkillTest sid iid (attrs.ability 2) eid #intellect (Fixed $ x + 1)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      getSkillTestTarget >>= traverse_ (toDiscardBy iid (attrs.ability 2))
+      getSkillTestTargetedEnemy >>= traverse_ \eid -> defeatEnemy eid iid (attrs.ability 2)
       pure a
     _ -> UniversalSolvent <$> liftRunMessage msg attrs

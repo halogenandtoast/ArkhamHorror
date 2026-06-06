@@ -34,9 +34,7 @@ instance RunMessage StickyFeet where
   runMessage msg t@(StickyFeet attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       locations <- select $ NearestLocationTo iid (LocationWithTrait Oozified)
-      if null locations
-        then gainSurge attrs
-        else chooseOrRunOneM iid $ targets locations (attachTreachery attrs)
+      unless (null locations) $ chooseOrRunOneM iid $ targets locations (attachTreachery attrs)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs

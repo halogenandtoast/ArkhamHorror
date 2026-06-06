@@ -21,7 +21,7 @@ instance RunMessage MiGoAbductor where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       atChemist <- selectAny $ assetIs Assets.universityChemist <> AssetAt (locationWithEnemy attrs)
       if atChemist
-        then selectEach (assetIs Assets.universityChemist) \aid -> dealAssetDamage aid (attrs.ability 1) 1
+        then selectEach (assetIs Assets.universityChemist) \aid -> dealAssetDirectDamage aid (attrs.ability 1) 1
         else push $ MoveToward (toTarget attrs) (LocationWithAsset $ assetIs Assets.universityChemist)
       pure e
     _ -> MiGoAbductor <$> liftRunMessage msg attrs

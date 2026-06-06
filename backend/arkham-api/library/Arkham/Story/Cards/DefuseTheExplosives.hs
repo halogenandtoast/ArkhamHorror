@@ -42,11 +42,11 @@ instance RunMessage DefuseTheExplosives where
       doStep (1 + n) msg
       pure $ DefuseTheExplosives $ attrs & placementL .~ Global
     DoStep n msg'@(ResolveThisStory _ (is attrs -> True)) | n > 1 -> do
-      fungusMound <- getJustLocationByName "Fungus Mound"
+      crater <- getJustLocationByName "The Crater"
       locations <-
         select
           $ FarthestLocationFromLocation
-            fungusMound
+            crater
             (LocationWithTrait Oozified <> LocationCanHaveAttachments <> not_ (LocationWithToken #horror))
       if length locations <= n
         then do

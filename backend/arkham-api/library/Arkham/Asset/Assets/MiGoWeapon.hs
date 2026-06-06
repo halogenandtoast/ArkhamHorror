@@ -34,5 +34,16 @@ instance RunMessage MiGoWeapon where
         unless defeated do
           choices <- select $ connectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemy
           chooseOrRunOneM iid $ targets choices (push . EnemyMove enemy)
+          -- Succeeding by 3+ moves the enemy an additional location away (after
+          -- the first move resolves, from its new location, not back toward you).
+          when (n >= 3) $ push $ HandleTargetChoice iid (attrs.ability 1) (EnemyTarget enemy)
+      pure a
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget enemy) -> do
+      choices <-
+        select
+          $ connectedFrom (locationWithEnemy enemy)
+          <> LocationCanBeEnteredBy enemy
+          <> not_ (locationWithInvestigator iid)
+      chooseOrRunOneM iid $ targets choices (push . EnemyMove enemy)
       pure a
     _ -> MiGoWeapon <$> liftRunMessage msg attrs

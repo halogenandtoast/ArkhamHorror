@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card (flipCard, toCard)
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Matcher
@@ -24,7 +25,12 @@ driveOffTheMiGo = story DriveOffTheMiGo Cards.driveOffTheMiGo & persistStory
 instance HasAbilities DriveOffTheMiGo where
   getAbilities (DriveOffTheMiGo a) =
     [ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny (enemyIs Enemies.miGoGeneral)
-    , restricted a 2 (not_ $ exists $ LocationWithTitle "Fungus Mound" <> LocationWithAnyClues)
+    , restricted a 2 (exists $ LocationWithTitle "Fungus Mound" <> LocationWithoutClues)
+        $ forced AnyWindow
+    , restricted
+        a
+        3
+        (exists $ LocationWithTitle "Fungus Mound" <> LocationWithClues (GreaterThanOrEqualTo $ PerPlayer 4))
         $ forced AnyWindow
     ]
 
@@ -36,11 +42,11 @@ instance RunMessage DriveOffTheMiGo where
       n <- getPlayerCount
       placeClues (toSource attrs) fungusMound n
       pure $ DriveOffTheMiGo $ attrs & placementL .~ Global
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) n | n `elem` [1, 2] -> do
       remember TheMiGoWereDrivenOff
       flipOver iid attrs
       pure s
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
       remember TheSecretOfTheOozeWasStolen
       flipOver iid attrs
       pure s

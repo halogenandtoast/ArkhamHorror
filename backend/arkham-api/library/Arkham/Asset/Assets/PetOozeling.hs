@@ -28,7 +28,7 @@ instance RunMessage PetOozeling where
       enemies <- select $ EnemyAt (locationWithInvestigator iid) <> NonEliteEnemy
       enemies' <- filterM (fieldMap EnemyRemainingHealth (maybe False (<= 2))) enemies
       chooseTargetM iid enemies' \eid -> do
-        toDiscardBy iid (attrs.ability 1) eid
+        defeatEnemy eid iid (attrs.ability 1)
         healAllDamage (attrs.ability 1) attrs
         placeTokens (attrs.ability 1) attrs #resource 1
         push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal $ attrs.token #resource + 1) SetAside

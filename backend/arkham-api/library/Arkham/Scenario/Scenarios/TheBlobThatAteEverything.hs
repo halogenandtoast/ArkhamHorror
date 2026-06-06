@@ -9,7 +9,7 @@ import Arkham.Helpers.Enemy (getModifiedKeywords)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
-import Arkham.Helpers.SkillTest (getCommittedCards, withSkillTest)
+import Arkham.Helpers.SkillTest (getCommittedCards, getSkillTestAction, getSkillTestTargetedEnemy, withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
@@ -165,6 +165,13 @@ instance RunMessage TheBlobThatAteEverything where
             , AutoFail
             , ElderSign
             ]
+      pure s
+    ResolveChaosToken _ Cultist _ -> do
+      -- If revealed during an attack against an enemy, that enemy gains
+      -- retaliate for this attack.
+      whenM ((== Just #fight) <$> getSkillTestAction) do
+        whenJustM getSkillTestTargetedEnemy \enemy ->
+          withSkillTest \sid -> skillTestModifier sid Cultist enemy (AddKeyword Keyword.Retaliate)
       pure s
     ResolveChaosToken _ Tablet _ -> do
       -- After this skill test ends, Subject 8L-08 devours each committed card.

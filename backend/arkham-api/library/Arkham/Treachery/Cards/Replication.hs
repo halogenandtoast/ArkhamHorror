@@ -24,9 +24,7 @@ replication = treachery Replication Cards.replication
 getMostDamagedManifold :: (HasGame m, Tracing m) => m (Maybe EnemyId)
 getMostDamagedManifold = do
   manifolds <- selectWithField EnemyDamage $ EnemyWithTrait Manifold
-  pure $ case sortOn snd manifolds of
-    [] -> Nothing
-    xs -> Just $ fst $ last xs
+  pure $ fst <$> headMay (sortOn (Down . snd) manifolds)
 
 instance RunMessage Replication where
   runMessage msg t@(Replication attrs) = runQueueT $ case msg of

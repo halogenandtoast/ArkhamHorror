@@ -26,7 +26,11 @@ instance RunMessage MiGoHarvester where
         then push $ MoveToward (toTarget attrs) (LocationWithTitle "Fungus Mound")
         else do
           push $ MoveToward (toTarget attrs) (LocationWithAsset $ assetIs Assets.meteoriteSample)
-          whenM (selectAny $ assetIs Assets.meteoriteSample <> AssetAt (locationWithEnemy attrs)) do
-            selectEach (assetIs Assets.meteoriteSample) (`place` AttachedToEnemy attrs.id)
+          -- Check co-location for the attach *after* the move resolves.
+          doStep 1 msg
+      pure e
+    DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1) -> do
+      whenM (selectAny $ assetIs Assets.meteoriteSample <> AssetAt (locationWithEnemy attrs)) do
+        selectEach (assetIs Assets.meteoriteSample) (`place` AttachedToEnemy attrs.id)
       pure e
     _ -> MiGoHarvester <$> liftRunMessage msg attrs

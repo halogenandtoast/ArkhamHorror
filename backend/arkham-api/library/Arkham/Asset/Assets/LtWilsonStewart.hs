@@ -20,7 +20,8 @@ ltWilsonStewart :: AssetCard LtWilsonStewart
 ltWilsonStewart = ally LtWilsonStewart Cards.ltWilsonStewart (2, 2)
 
 instance HasAbilities LtWilsonStewart where
-  getAbilities (LtWilsonStewart a) = [controlled a 1 (exists $ HandWith AnyCards) $ FastAbility (exhaust a)]
+  getAbilities (LtWilsonStewart a) =
+    [controlled a 1 (exists $ You <> oneOf [HandWith AnyCards, not_ DeckIsEmpty]) $ FastAbility (exhaust a)]
 
 instance RunMessage LtWilsonStewart where
   runMessage msg a@(LtWilsonStewart attrs) = runQueueT $ case msg of

@@ -35,10 +35,14 @@ instance RunMessage BlackwatersBane where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      shuffleSetAsideIntoEncounterDeck $ cardIs Enemies.miGoDrone
-      shuffleEncounterDiscardBackIn
+      -- Only on the first advance: shuffle the set-aside Mi-Go Drones into the
+      -- encounter deck along with the encounter discard pile.
+      drones <- getSetAsideCardsMatching (cardIs Enemies.miGoDrone)
+      unless (null drones) do
+        shuffleSetAsideIntoEncounterDeck $ cardIs Enemies.miGoDrone
+        shuffleEncounterDiscardBackIn
       n <- perPlayer 1
-      selectEach (LocationWithTrait Oozified <> LocationNotAtClueLimit) \loc -> do
+      selectEach (RevealedLocation <> LocationWithTrait Oozified <> LocationNotAtClueLimit) \loc -> do
         push $ PlaceCluesUpToClueValue loc (toSource attrs) n
 
       stories <- getSetAsideCardsMatching (CardWithType StoryType)

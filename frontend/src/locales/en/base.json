@@ -40,7 +40,11 @@
     "takeControlOfKey": "Take control of {key} key",
     "name": "{name}",
     "giveSeal": "Give Seal",
-    "takeSeal": "Take Seal"
+    "takeSeal": "Take Seal",
+    "takeHorror": "Take {count} horror",
+    "discardTopOfEncounterDeck": "Discard the top card of the encounter deck | Discard the top {count} cards of the encounter deck",
+    "takeDamageAndHorror": "Take {damage} damage and {horror} horror",
+    "loseActions": "Lose 1 action | Lose {count} actions"
   },
   "name": "{name}",
   "waitingForPlayer": "Waiting for {name}…",

@@ -697,6 +697,7 @@ img.card.source-highlight {
 }
 
 .oversized img {
+  transition: width 0.8s ease;
   width: calc(var(--card-width) * 3);
   max-width: calc(var(--card-width) * 3);
 }

@@ -1,19 +1,22 @@
 module Arkham.Enemy.Cards.Subject8L08 (subject8L08) where
 
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Modifier (UIModifier (Oversized))
 
 newtype Subject8L08 = Subject8L08 EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor Subject8L08 where
   getModifiersFor (Subject8L08 a) = modifySelf a [UIModifier Oversized, HealthModifier 15]
 
--- Subject 8L-08 has no fight, evade, damage, or horror values. Its health is
--- 15 per investigator (Single Group mode).
+instance HasAbilities Subject8L08 where
+  getAbilities (Subject8L08 a) = [mkAbility a 1 $ Objective $ forced $ EnemyDefeated #when Anyone ByAny (be a)]
+
 subject8L08 :: EnemyCard Subject8L08
 subject8L08 =
   enemyWith Subject8L08 Cards.subject8L08 (0, PerPlayer 15, 0) (0, 0)
@@ -29,5 +32,8 @@ instance RunMessage Subject8L08 where
           obtainCard card
           placeUnderneath attrs [card]
         _ -> pure ()
+      pure e
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      push R2
       pure e
     _ -> Subject8L08 <$> liftRunMessage msg attrs

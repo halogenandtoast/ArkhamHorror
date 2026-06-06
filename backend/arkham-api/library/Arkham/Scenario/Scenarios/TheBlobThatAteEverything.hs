@@ -185,11 +185,14 @@ instance RunMessage TheBlobThatAteEverything where
             skillTestModifier sid ElderThing iid (AnySkillValue 1)
       pure s
     Defeated (EnemyTarget eid) _ _ _ -> do
-      keywords <- getModifiedKeywords eid
-      let blobX = [x | Keyword.ScenarioKeywordX "Blob" x <- toList keywords]
-      for_ (listToMaybe blobX) \x -> do
-        subjects <- select $ enemyIs Enemies.subject8L08
-        for_ subjects \subject -> push $ DealDamage (EnemyTarget subject) (nonAttack Nothing attrs x)
+      modifiers <- getModifiers eid
+      unless (ScenarioModifier "noBlob" `elem` modifiers) do
+        keywords <- getModifiedKeywords eid
+        let blobX = [x | Keyword.ScenarioKeywordX "Blob" x <- toList keywords]
+        for_ (listToMaybe blobX) \x -> do
+          let extra = sum [n | ScenarioModifierValue "Blob" (maybeResult -> Just n) <- modifiers]
+          subject <- selectJust $ enemyIs Enemies.subject8L08
+          push $ DealDamage (EnemyTarget subject) (nonAttack Nothing attrs (x + extra))
       pure s
     ScenarioResolution NoResolution -> do
       push R1

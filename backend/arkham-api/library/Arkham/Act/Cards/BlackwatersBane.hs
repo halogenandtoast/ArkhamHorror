@@ -16,11 +16,7 @@ blackwatersBane = act (3, A) BlackwatersBane Cards.blackwatersBane Nothing
 
 instance HasModifiersFor BlackwatersBane where
   getModifiersFor (BlackwatersBane a) =
-    modifySelect
-      a
-      (EnemyWithTrait Ooze)
-      $ AddKeyword Keyword.Retaliate
-      : [RemoveKeyword (Keyword.ScenarioKeywordX "Blob" x) | x <- [1 .. 5]]
+    modifySelect a (EnemyWithTrait Ooze) [AddKeyword Keyword.Retaliate, ScenarioModifier "noBlob"]
 
 instance RunMessage BlackwatersBane where
   runMessage msg (BlackwatersBane attrs) = BlackwatersBane <$> runMessage msg attrs

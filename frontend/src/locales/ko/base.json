@@ -36,7 +36,9 @@
     "takeHorror": "공포를 {count}만큼 받기",
     "discardTopOfEncounterDeck": "조우 덱 최상단의 카드를 1장 버립니다. | 조우 덱 최상단의 카드를  {count}장 버립니다.",
     "takeDamageAndHorror": "피해를 {damage}, 공포를 {horror}만큼 받기",
-    "loseActions": "행동을 1회 잃습니다. | 행동을 {count}회 잃습니다."
+    "loseActions": "행동을 1회 잃습니다. | 행동을 {count}회 잃습니다.",
+    "loseResources": "자원을 1개 잃습니다. | 자원을 {count}개 잃습니다.",
+    "attacksYou": "{name} 적이 당신을 공격합니다."
   },
   "shuffleRemainder": "남은 조우 카드를 함께 섞어, 조우 덱을 만듭니다.",
   "readyToBegin": "이제 시작할 준비가 되었습니다.",

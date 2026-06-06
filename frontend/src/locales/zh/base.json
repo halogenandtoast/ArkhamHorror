@@ -40,7 +40,8 @@
     "takeHorror": "受到{count}点恐惧",
     "discardTopOfEncounterDeck": "弃掉遭遇牌堆顶的牌 | 弃掉遭遇牌堆顶的{count}张牌",
     "takeDamageAndHorror": "受到{damage}点伤害和{horror}点恐惧",
-    "loseActions": "失去1个行动 | 失去{count}个行动"
+    "loseActions": "失去1个行动 | 失去{count}个行动",
+    "loseResources": "失去1资源 | 失去{count}资源"
   },
   "name": "{name}",
   "shuffleRemainder": "将剩余的遭遇牌混洗，形成遭遇牌库。",

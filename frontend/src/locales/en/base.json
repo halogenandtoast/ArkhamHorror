@@ -44,7 +44,8 @@
     "takeHorror": "Take {count} horror",
     "discardTopOfEncounterDeck": "Discard the top card of the encounter deck | Discard the top {count} cards of the encounter deck",
     "takeDamageAndHorror": "Take {damage} damage and {horror} horror",
-    "loseActions": "Lose 1 action | Lose {count} actions"
+    "loseActions": "Lose 1 action | Lose {count} actions",
+    "loseResources": "Lose 1 resource | Lose {count} resources"
   },
   "name": "{name}",
   "waitingForPlayer": "Waiting for {name}…",

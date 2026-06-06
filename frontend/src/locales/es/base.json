@@ -36,7 +36,9 @@
     "takeHorror": "Recibe {count} horror",
     "discardTopOfEncounterDeck": "Descarta la carta superior del mazo de Encuentro | Descarta las {count} cartas superiores del mazo de Encuentro",
     "takeDamageAndHorror": "Recibe {damage} daño y {horror} horror",
-    "loseActions": "Pierde 1 acción | Pierde {count} acciones"
+    "loseActions": "Pierde 1 acción | Pierde {count} acciones",
+    "loseResources": "Pierde 1 recurso | Pierde {count} recursos",
+    "attacksYou": "{name} te ataca"
   },
   "shuffleRemainder": "Baraja el resto de las cartas de encuentro para construir el mazo de Encuentro.",
   "readyToBegin": "Ahora estás listo para comenzar.",

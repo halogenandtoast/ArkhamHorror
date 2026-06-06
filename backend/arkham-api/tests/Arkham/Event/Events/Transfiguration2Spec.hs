@@ -22,6 +22,16 @@ spec = describe "Transfiguration (2)" do
     self.combat `shouldReturn` 5
     self.agility `shouldReturn` 3
 
+  it "only lasts until the end of the game" . gameTest $ \self -> do
+    self `playEvent` Events.transfiguration2
+    chooseHankSamson
+    self.combat `shouldReturn` 5
+    run $ EndOfGame Nothing
+    self.willpower `shouldReturn` 3
+    self.intellect `shouldReturn` 3
+    self.combat `shouldReturn` 3
+    self.agility `shouldReturn` 3
+
 offeredInvestigators :: TestAppT [CardCode]
 offeredInvestigators = do
   questionMap <- gameQuestion <$> getGame

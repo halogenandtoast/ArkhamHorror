@@ -63,6 +63,11 @@
     "img/arkham/tsk-map.jpg",
     "img/arkham/world-map.jpg"
   ],
+  "img/arkham/backs": [
+    "img/arkham/backs/back_artifact.jpg",
+    "img/arkham/backs/back_cthulhu_deck.jpg",
+    "img/arkham/backs/back_the_longest_night.jpg"
+  ],
   "img/arkham/boxes": [
     "img/arkham/boxes/01.jpg",
     "img/arkham/boxes/01104.jpg",
@@ -200,6 +205,7 @@
     "img/arkham/boxes/81001.jpg",
     "img/arkham/boxes/82001.jpg",
     "img/arkham/boxes/84001.jpg",
+    "img/arkham/boxes/85001.jpg",
     "img/arkham/boxes/88001.jpg"
   ],
   "img/arkham/cards": [
@@ -12283,6 +12289,9 @@
     "img/arkham/extra/fortune-and-folly/game-icons.png",
     "img/arkham/extra/fortune-and-folly/patrol-public.avif",
     "img/arkham/extra/fortune-and-folly/patrol-restricted.avif"
+  ],
+  "img/arkham/extra/the-feast-of-hemlock-vale": [
+    "img/arkham/extra/the-feast-of-hemlock-vale/map.jpg"
   ],
   "img/arkham/fr/cards": [
     "img/arkham/fr/cards/01001.avif",
@@ -25074,6 +25083,8 @@
     "img/arkham/sets/10626.png",
     "img/arkham/sets/10651.png",
     "img/arkham/sets/10677a.png",
+    "img/arkham/sets/10679a.png",
+    "img/arkham/sets/10679b.png",
     "img/arkham/sets/10704.png",
     "img/arkham/sets/12.png",
     "img/arkham/sets/12105.png",
@@ -25130,6 +25141,7 @@
     "img/arkham/sets/82001.png",
     "img/arkham/sets/84.png",
     "img/arkham/sets/84001.png",
+    "img/arkham/sets/85001.png",
     "img/arkham/sets/88001.png",
     "img/arkham/sets/88001b.png"
   ],
@@ -27023,7 +27035,6 @@
     "img/arkham/zh/cards/05053b.avif",
     "img/arkham/zh/cards/05054.avif",
     "img/arkham/zh/cards/05054b.avif",
-    "img/arkham/zh/cards/05055.avif",
     "img/arkham/zh/cards/05055b.avif",
     "img/arkham/zh/cards/05056.avif",
     "img/arkham/zh/cards/05056b.avif",

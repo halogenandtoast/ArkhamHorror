@@ -7,7 +7,6 @@ import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Placement
 
 newtype Lantern2 = Lantern2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -32,12 +31,8 @@ instance RunMessage Lantern2 where
       withLocationOf iid \lid -> skillTestModifier sid source lid (ShroudModifier (-1))
       investigate sid iid source
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let
-        n =
-          case assetPlacement attrs of
-            OutOfPlay RemovedZone -> 2
-            _ -> 1
+    UseCardAbility iid (isSource attrs -> True) 2 _ (removedPayments -> removed) -> do
+      let n = if any (isTarget attrs) removed then 2 else 1
       chooseDamageEnemy iid (attrs.ability 2) (locationWithInvestigator iid) AnyEnemy n
       pure a
     _ -> Lantern2 <$> liftRunMessage msg attrs

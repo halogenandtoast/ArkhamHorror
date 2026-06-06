@@ -31,6 +31,11 @@ instance RunMessage Subject8L08 where
           removeLocation lid
           obtainCard card
           placeUnderneath attrs [card]
+        AssetTarget aid -> do
+          card <- fetchCard aid
+          removeAsset aid
+          obtainCard card
+          placeUnderneath attrs [card]
         _ -> pure ()
       pure e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

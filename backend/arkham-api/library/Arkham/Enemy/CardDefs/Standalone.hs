@@ -697,6 +697,7 @@ cubicOoze =
   (enemy "85041" "Cubic Ooze" TheBlobThatAteEverything 2)
     { cdCardTraits = setFromList [Monster, Ooze, Manifold]
     , cdKeywords = setFromList [Keyword.ScenarioKeywordX "Blob" 2]
+    , cdRevelation = IsRevelation
     }
 
 oozewraith :: CardDef

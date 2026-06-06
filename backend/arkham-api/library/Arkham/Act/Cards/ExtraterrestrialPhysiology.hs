@@ -44,16 +44,15 @@ manifoldHealth card
   | card `cardMatch` cardIs Enemies.oozewraith = 7
   | otherwise = 0
 
-discardUntilManifoldsHaveTotalHealthAtLeast
-  :: Int -> [EncounterCard] -> ([EncounterCard], [EncounterCard])
-discardUntilManifoldsHaveTotalHealthAtLeast x = go 0 [] []
+discardUntilManifoldsHaveTotalHealthAtLeast :: Int -> [EncounterCard] -> [EncounterCard]
+discardUntilManifoldsHaveTotalHealthAtLeast x = go 0 []
  where
-  go _ discarded manifolds [] = (reverse discarded, reverse manifolds)
-  go n discarded manifolds _ | n >= x = (reverse discarded, reverse manifolds)
-  go n discarded manifolds (card : cards)
+  go _ discarded [] = discarded
+  go n discarded _ | n >= x = discarded
+  go n discarded (card : cards)
     | toCard card `cardMatch` CardWithTrait Manifold =
-        go (n + manifoldHealth (toCard card)) (card : discarded) (card : manifolds) cards
-    | otherwise = go n (card : discarded) manifolds cards
+        go (n + manifoldHealth (toCard card)) (card : discarded) cards
+    | otherwise = go n (card : discarded) cards
 
 instance RunMessage ExtraterrestrialPhysiology where
   runMessage msg a@(ExtraterrestrialPhysiology attrs) = runQueueT $ case msg of
@@ -76,11 +75,11 @@ instance RunMessage ExtraterrestrialPhysiology where
       when (x >= 1) do
         shuffleEncounterDiscardBackIn
         push $ DoStep x msg
+      advanceActDeck attrs
       pure a
     DoStep x (AdvanceAct (isSide B attrs -> True) _ _) -> do
       lead <- getLead
-      encounterDeck <- unDeck <$> getEncounterDeck
-      let (discarded, _) = discardUntilManifoldsHaveTotalHealthAtLeast x encounterDeck
+      discarded <- discardUntilManifoldsHaveTotalHealthAtLeast x . unDeck <$> getEncounterDeck
       push $ DiscardTopOfEncounterDeck lead (length discarded) (attrs.ability 3) (Just $ toTarget attrs)
       pure a
     DiscardedTopOfEncounterDeck _ cards _ (isTarget attrs -> True) -> do

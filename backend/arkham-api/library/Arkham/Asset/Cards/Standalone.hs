@@ -643,6 +643,7 @@ universalSolvent :: CardDef
 universalSolvent =
   (storyAsset "85029" "Universal Solvent" 2 MiGoIncursion)
     { cdCardTraits = setFromList [Item, Science]
+    , cdUses = uses Supply 4
     }
 
 petOozeling :: CardDef
@@ -657,6 +658,7 @@ miGoWeapon :: CardDef
 miGoWeapon =
   (storyAsset "85031" "Mi-Go Weapon" 2 MiGoIncursion)
     { cdCardTraits = setFromList [Weapon, Science]
+    , cdUses = uses Ammo 3
     }
 
 ltWilsonStewart :: CardDef

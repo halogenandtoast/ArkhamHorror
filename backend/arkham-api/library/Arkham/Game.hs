@@ -5982,6 +5982,7 @@ instance Projection Story where
       StoryPlacement -> pure storyPlacement
       StoryClues -> pure $ Token.countTokens Token.Clue storyTokens
       StoryTokens -> pure storyTokens
+      StoryFlipped -> pure storyFlipped
       StoryOtherSide -> pure storyOtherSide
       StoryCardsUnderneath -> pure storyCardsUnderneath
 

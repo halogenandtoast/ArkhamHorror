@@ -2226,9 +2226,14 @@ runGameMessage msg g = case msg of
     pushAll $ windows [Window.AddedToVictory miid card]
     pure $ g & (entitiesL . actsL %~ deleteMap aid) -- we might not want to remove here?
   AddToVictory miid (StoryTarget sid) -> do
-    card <- field StoryCard sid
-    pushAll $ windows [Window.AddedToVictory miid card]
-    pure $ g & (entitiesL . storiesL %~ deleteMap sid)
+    maybeStory sid >>= \case
+      Nothing -> pure g
+      Just s -> do
+        let attrs = toAttrs s
+        let card = lookupCard (toCardCode attrs) (storyCardId attrs)
+        let card' = if storyFlipped attrs then flipCard card else card'
+        pushAll $ windows [Window.AddedToVictory miid card']
+        pure $ g & (entitiesL . storiesL %~ deleteMap sid)
   AddToVictory miid (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
     pushAll $ RemoveTreachery tid : windows [Window.AddedToVictory miid card]

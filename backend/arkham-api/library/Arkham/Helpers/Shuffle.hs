@@ -18,6 +18,7 @@ class CanShuffleIn a where
 
 instance CanShuffleIn Card
 instance CanShuffleIn a => CanShuffleIn (Only a)
+instance CanShuffleIn a => CanShuffleIn (NonEmpty a)
 instance CanShuffleIn EncounterCard
 instance CanShuffleIn PlayerCard
 instance CanShuffleIn DrawnCard

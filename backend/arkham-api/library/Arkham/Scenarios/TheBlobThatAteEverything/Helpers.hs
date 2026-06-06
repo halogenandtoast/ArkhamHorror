@@ -5,6 +5,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Location (getConnectedLocations)
 import Arkham.Helpers.Scenario (standaloneI18n)
 import Arkham.I18n
 import Arkham.Id
@@ -27,6 +28,17 @@ getDevouredCount =
   getSubject8L08 >>= \case
     Nothing -> pure 0
     Just s -> length <$> field EnemyCardsUnderneath s
+
+-- | A location cannot be devoured if removing it would cause another location
+-- to have no valid connections.
+canDevourLocation :: (HasGame m, Tracing m) => LocationId -> m Bool
+canDevourLocation lid = do
+  otherLocations <- select $ Anywhere <> not_ (LocationWithId lid)
+  not <$> anyM wouldOrphan otherLocations
+ where
+  wouldOrphan otherLid = do
+    connected <- getConnectedLocations otherLid
+    pure $ lid `elem` connected && all (== lid) connected
 
 {- | Subject 8L-08 devours the given cards: they are placed beneath it and are
 considered out of play.

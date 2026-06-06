@@ -682,26 +682,29 @@ oozeling :: CardDef
 oozeling =
   (enemy "85039" "Oozeling" TheBlobThatAteEverything 4)
     { cdCardTraits = setFromList [Monster, Ooze, Manifold]
+    , cdKeywords = setFromList [Keyword.ScenarioKeywordX "Blob" 1]
     }
 
 graspingOoze :: CardDef
 graspingOoze =
   (enemy "85040" "Grasping Ooze" TheBlobThatAteEverything 2)
     { cdCardTraits = setFromList [Monster, Ooze, Manifold]
-    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.ScenarioKeywordX "Blob" 3]
     }
 
 cubicOoze :: CardDef
 cubicOoze =
   (enemy "85041" "Cubic Ooze" TheBlobThatAteEverything 2)
     { cdCardTraits = setFromList [Monster, Ooze, Manifold]
+    , cdKeywords = setFromList [Keyword.ScenarioKeywordX "Blob" 2]
     }
 
 oozewraith :: CardDef
 oozewraith =
   (enemy "85042" "Oozewraith" TheBlobThatAteEverything 2)
     { cdCardTraits = setFromList [Monster, Ooze, Manifold]
-    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
+    , cdKeywords =
+        setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate, Keyword.ScenarioKeywordX "Blob" 5]
     , cdVictoryPoints = Just 1
     }
 

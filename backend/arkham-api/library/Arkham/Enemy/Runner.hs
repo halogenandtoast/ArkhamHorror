@@ -2066,7 +2066,9 @@ instance RunMessage EnemyAttrs where
         else do
           case token of
             Clue -> pushAll $ windows [Window.PlacedClues source (toTarget a) n]
-            Damage -> push $ CheckDefeated source (toTarget a)
+            Damage -> do
+              let (before, _, after) = frame $ Window.PlacedToken source (toTarget a) token n
+              pushAll [before, after, CheckDefeated source (toTarget a)]
             _ -> pushAll $ windows [Window.PlacedToken source (toTarget a) token n]
           pure $ a & tokensL %~ addTokens token n
     PlaceKey (isTarget a -> True) k -> do

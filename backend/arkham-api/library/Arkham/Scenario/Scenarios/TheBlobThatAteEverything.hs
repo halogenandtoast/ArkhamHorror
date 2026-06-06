@@ -2,15 +2,19 @@ module Arkham.Scenario.Scenarios.TheBlobThatAteEverything (theBlobThatAteEveryth
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.DamageEffect (nonAttack)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Enemy (getModifiedKeywords)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
 import Arkham.Helpers.SkillTest (getCommittedCards, withSkillTest)
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement (Placement (Global))
 import Arkham.Projection
@@ -46,6 +50,8 @@ instance RunMessage TheBlobThatAteEverything where
     Setup -> runScenarioSetup TheBlobThatAteEverything attrs do
       setup $ ul do
         li "gatherSets"
+        li.validate False "epicMultiplayer"
+        li.validate True "singleGroup"
         li "setAsideMiGo"
         li "setAside"
         li "subject"
@@ -56,20 +62,16 @@ instance RunMessage TheBlobThatAteEverything where
           li "outerRing"
           li "remaining"
           li "startAt"
-        li "countermeasures"
+        li.validate True "countermeasures"
         unscoped $ li "shuffleRemainder"
-        unscoped $ li "readyToBegin"
 
       setUsesGrid
 
       gather Set.TheBlobThatAteEverything
       gatherAndSetAside Set.MiGoIncursion
 
-      -- Subject 8L-08 is put into play next to the agenda deck. It is not at any
-      -- location.
-      void $ placeEnemy Enemies.subject8L08 Global
+      placeEnemy Enemies.subject8L08 Global
 
-      -- Set aside Vulnerable Heart, 1 Grasping Ooze, 1 Cubic Ooze, both Oozewraith.
       setAside
         [ Enemies.vulnerableHeart
         , Enemies.graspingOoze
@@ -78,10 +80,11 @@ instance RunMessage TheBlobThatAteEverything where
         , Enemies.oozewraith
         ]
 
-      -- Locations. The Crater is at the center; an inner ring of orthogonally
-      -- connected locations surrounds it, with an outer ring beyond that.
+      setAgendaDeck [Agendas.theAnomalySpreads, Agendas.theAnomalySwells, Agendas.theAnomalyConsumes]
+      setActDeck [Acts.exposeTheAnomaly, Acts.extraterrestrialPhysiology, Acts.blackwatersBane]
+
       quarantine <-
-        shuffleM
+        shuffle
           [ Locations.sewer
           , Locations.bridge
           , Locations.waterTower
@@ -102,7 +105,7 @@ instance RunMessage TheBlobThatAteEverything where
       placeInGrid_ (Pos 0 0) Locations.theCrater
 
       innerDefs <-
-        shuffleM
+        shuffle
           $ Locations.researchSiteTheBlobThatAteEverything
           : Locations.temporaryHQ
           : innerQuarantine
@@ -110,7 +113,7 @@ instance RunMessage TheBlobThatAteEverything where
         lid <- placeInGrid pos def
         pure (def, lid)
 
-      outerDefs <- shuffleM $ Locations.fungusMound : outerQuarantine
+      outerDefs <- shuffle $ Locations.fungusMound : outerQuarantine
       for_ (zip [Pos 0 2, Pos 0 (-2), Pos 2 0, Pos (-2) 0] outerDefs) (uncurry placeInGrid_)
 
       for_
@@ -119,13 +122,8 @@ instance RunMessage TheBlobThatAteEverything where
 
       for_ (lookup Locations.temporaryHQ innerIds) startAt
 
-      -- Countermeasures: 1 resource on the scenario reference card, or 2 with
-      -- 3 or 4 investigators.
       playerCount <- getPlayerCount
       placeTokens ScenarioSource ScenarioTarget #resource (if playerCount >= 3 then 2 else 1)
-
-      setAgendaDeck [Agendas.theAnomalySpreads, Agendas.theAnomalySwells, Agendas.theAnomalyConsumes]
-      setActDeck [Acts.exposeTheAnomaly, Acts.extraterrestrialPhysiology, Acts.blackwatersBane]
     SetChaosTokensForScenario -> do
       setChaosTokens
         $ if isEasyStandard attrs
@@ -185,6 +183,13 @@ instance RunMessage TheBlobThatAteEverything where
           for_ hand \card -> cardLabeled card do
             devour [card]
             skillTestModifier sid ElderThing iid (AnySkillValue 1)
+      pure s
+    Defeated (EnemyTarget eid) _ _ _ -> do
+      keywords <- getModifiedKeywords eid
+      let blobX = [x | Keyword.ScenarioKeywordX "Blob" x <- toList keywords]
+      for_ (listToMaybe blobX) \x -> do
+        subjects <- select $ enemyIs Enemies.subject8L08
+        for_ subjects \subject -> push $ DealDamage (EnemyTarget subject) (nonAttack Nothing attrs x)
       pure s
     ScenarioResolution NoResolution -> do
       push R1

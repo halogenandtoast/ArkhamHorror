@@ -2927,6 +2927,9 @@ forTargets targets f =
     [msg] -> push $ ForTargets (map toTarget targets) msg
     msgs -> push $ ForTargets (map toTarget targets) (Run msgs)
 
+forTargets_ :: (LiftMessage m body, Targetable target) => [target] -> Message -> m ()
+forTargets_ (map toTarget -> targets) = push . ForTargets targets
+
 searchCollectionForRandom
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> CardMatcher -> m ()
 searchCollectionForRandom iid source matcher = do

@@ -3464,7 +3464,16 @@ getEnemiesMatching matcher' = do
         wrapEnemy (defeatedEnemyAttrs -> a) =
           overAttrs (const a) $ lookupEnemy (toCardCode a) (toId a) (toCardId a)
       allDefeatedEnemies <- map wrapEnemy . toList <$> scenarioField ScenarioDefeatedEnemies
-      enemyMatcherFilter allDefeatedEnemies matcher
+      -- Defeated enemies may be fully removed from play by the time this query
+      -- runs (e.g. the IfEnemyDefeated window resolves post-discard), so field
+      -- projections by id (EnemyTraits, keywords, ...) would miss. Re-insert the
+      -- wrapped attrs into the game env (left-biased: never shadow a live
+      -- entity) so submatchers like NonEliteEnemy resolve. Inverse of withoutEnemy.
+      g <- getGame
+      let
+        reinsert e = Map.insertWith (\_ old -> old) (toId e) e
+        g' = g & entitiesL . enemiesL %~ \live -> foldr reinsert live allDefeatedEnemies
+      runReaderT (enemyMatcherFilter allDefeatedEnemies matcher) g'
     IncludeOmnipotent matcher -> do
       let isOutOfGame e = e.placement.outOfGame
       allGameEnemies <- filter (not . isOutOfGame) . toList . view (entitiesL . enemiesL) <$> getGame
@@ -5490,6 +5499,15 @@ instance Query ExtendedCardMatcher where
       NotExtendedCard matcher' -> do
         cards <- go cs matcher'
         pure $ filter (`notElem` cards) cs
+      CardWithoutUniqueCopyInPlay -> do
+        cs & filterM \c -> do
+          let def = toCardDef c
+          if cdUnique def && cdCardType def == AssetType
+            then
+              not <$> case nameSubtitle (cdName def) of
+                Nothing -> selectAny (AssetWithTitle $ nameTitle $ cdName def)
+                Just subtitle -> selectAny (AssetWithFullTitle (nameTitle $ cdName def) subtitle)
+            else pure True
       WillGoIntoSlot s -> do
         flip filterM cs \c -> do
           mods <- getModifiers c

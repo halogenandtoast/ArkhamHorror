@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
 import Arkham.Helpers.Window (getPlayedEvent)
 import Arkham.Matcher
+import Arkham.Strategy (DamageStrategy (DamageAny))
 import Arkham.Trait (Trait (Spell))
 
 newtype RitualDagger3 = RitualDagger3 AssetAttrs
@@ -20,7 +21,7 @@ instance HasAbilities RitualDagger3 where
     , controlled_ a 2
         $ triggered
           (PlayEventDiscarding #after You (EventWithTrait Spell))
-          (DirectDamageCost (toSource a) You 1 <> exhaust a)
+          (InvestigatorDamageCost (toSource a) You DamageAny 1 <> exhaust a)
     ]
 
 instance RunMessage RitualDagger3 where

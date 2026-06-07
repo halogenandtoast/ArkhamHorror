@@ -166,8 +166,8 @@ shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> t
 shuffleIntoDeck deck target = whenCanShuffleIn deck (toTarget target) do
   push $ Msg.shuffleIntoDeck deck target
 
-shuffleDeck :: (ReverseQueue m, IsDeck deck, HasCallStack) => deck -> m ()
-shuffleDeck deck = guardPlayerDeckIsNotEmpty deck $ push $ ShuffleDeck (toDeck deck)
+shuffleDeck :: (ReverseQueue m, IsDeck deck) => deck -> m ()
+shuffleDeck deck = push $ ShuffleDeck (toDeck deck)
 
 don'tAddToVictory :: (MonadTrans t, HasQueue Message m) => EnemyId -> t m ()
 don'tAddToVictory eid = matchingDon't \case

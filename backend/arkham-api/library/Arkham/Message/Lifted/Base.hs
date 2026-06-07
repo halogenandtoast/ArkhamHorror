@@ -33,8 +33,7 @@ import Arkham.Classes.HasQueue hiding (insertAfterMatching)
 import Arkham.Classes.HasQueue as X (runQueueT)
 import Arkham.Classes.Query
 import Arkham.DamageEffect
-import Arkham.Deck (IsDeck (..))
-import Arkham.Deck qualified as Deck
+import Arkham.Deck (IsDeck)
 import Arkham.Discover as X (IsInvestigate (..))
 import Arkham.Discover qualified as Msg
 import Arkham.Draw.Types
@@ -119,19 +118,10 @@ import Arkham.Xp
 import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
-import Data.Map.Strict qualified as Map
 import Data.Typeable
 
 capture :: MonadIO m => QueueT msg m a -> m [msg]
 capture = evalQueueT
-
-guardPlayerDeckIsNotEmpty :: (HasCallStack, ReverseQueue m, IsDeck deck) => deck -> m () -> m ()
-guardPlayerDeckIsNotEmpty deck body = case toDeck deck of
-  Deck.InvestigatorDeck iid -> whenM (fieldMap InvestigatorDeck (not . null) iid) body
-  Deck.InvestigatorDeckByKey iid deckKey -> do
-    mdeck <- Map.lookup deckKey <$> field InvestigatorDecks iid
-    when (maybe False (not . null) mdeck) body
-  _ -> body
 
 matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 matchingDon't f = lift $ popMessageMatching_ f

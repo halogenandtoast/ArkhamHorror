@@ -6273,6 +6273,7 @@ test-suite spec
       Arkham.Event.Events.WillToSurvive3Spec
       Arkham.Event.Events.WorkingAHunchSpec
       Arkham.GameSpec
+      Arkham.Helpers.ShuffleSpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec
       Arkham.Investigator.Cards.DaisyWalkerSpec

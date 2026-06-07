@@ -4,7 +4,6 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Deck
 import Arkham.Helpers.Window (DrawnCard)
 import Arkham.Id
 import Arkham.Prelude
@@ -14,7 +13,7 @@ import Arkham.Tracing
 class CanShuffleIn a where
   getCanShuffleIn :: (HasGame m, Tracing m, Deck.IsDeck deck) => deck -> a -> m Bool
   getCanShuffleIn (Deck.toDeck -> deck) _a =
-    andM [not <$> isDeckEmpty deck, maybe (pure True) getCanShuffleDeckX deck.investigator]
+    maybe (pure True) getCanShuffleDeckX deck.investigator
 
 instance CanShuffleIn Card
 instance CanShuffleIn a => CanShuffleIn (Only a)

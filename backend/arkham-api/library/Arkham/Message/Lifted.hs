@@ -64,6 +64,7 @@ import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolution)
+import Arkham.Helpers.Shuffle
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.UI qualified as Msg
 import Arkham.Helpers.Xp
@@ -1890,16 +1891,19 @@ revealingEdit iid (toSource -> source) (toTarget -> target) zone f = Msg.push $ 
 
 
 shuffleCardsIntoTopOfDeck
-  :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
+  :: ( ReverseQueue m
+     , IsDeck deck
+     , MonoFoldable cards
+     , Element cards ~ card
+     , IsCard card
+     , CanShuffleIn cards
+     )
   => deck
   -> Int
   -> cards
   -> m ()
-shuffleCardsIntoTopOfDeck deck n cards =
-  case length cards of
-    0 -> pure ()
-    1 -> guardPlayerDeckIsNotEmpty deck $ push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
-    _ -> push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
+shuffleCardsIntoTopOfDeck deck n cards = whenCanShuffleIn deck cards do
+  push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
 
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()

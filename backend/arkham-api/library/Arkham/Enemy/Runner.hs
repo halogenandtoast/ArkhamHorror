@@ -741,8 +741,16 @@ instance RunMessage EnemyAttrs where
               <> [EnemyEntered eid lid, Do msg]
               <> leaveWindows
               <> [afterWindow, EnemyCheckEngagement eid]
-          else push (EnemyCheckEngagement eid)
-        pure a
+            -- A moving enemy is no longer mid-spawn. Without clearing spawn
+            -- details, a move nested inside the spawn's after-window (e.g.
+            -- The Unsealing cancelling Acolyte's doom into a hunter move)
+            -- causes After (EnemyEntered) to re-emit the after-EnemySpawns
+            -- window at the new location, re-firing enters-play abilities
+            -- in an infinite loop.
+            pure $ a & spawnDetailsL .~ Nothing
+          else do
+            push (EnemyCheckEngagement eid)
+            pure a
     Do (EnemyMove eid lid) | eid == enemyId -> do
       -- Want to make sure if the enemy is already at the location we don't
       -- adjust the placement as it will affect engagement (such as Knight of

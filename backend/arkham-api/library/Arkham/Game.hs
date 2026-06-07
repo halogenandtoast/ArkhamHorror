@@ -660,6 +660,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("id" .= gid)
       <> ("log" .= glog)
       <> ("git" .= gameGitRevision)
+      <> ("settings" .= gameSettings)
+      <> ("gameSettings" .= gameSettings)
       <> ("mode" .= gameMode)
       <> ("modifiers" .= Map.filter notNull gameModifiers)
       <> ("encounterDeckSize" .= maybe 0 (length . attr scenarioEncounterDeck) (modeScenario gameMode))
@@ -791,6 +793,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "id" .= toJSON gid
         , "log" .= toJSON glog
         , "git" .= toJSON gameGitRevision
+        , "settings" .= toJSON gameSettings
+        , "gameSettings" .= toJSON gameSettings
         , "mode" .= toJSON gameMode
         , "modifiers" .= toJSON (Map.filter notNull gameModifiers)
         , "encounterDeckSize"

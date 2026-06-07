@@ -47,6 +47,7 @@ import Arkham.DefeatedBy
 import Arkham.Exhaust (Exhaustion (..), mkExhaustion)
 import Arkham.Fight
 import Arkham.ForMovement
+import Arkham.Game.Settings (settingsStrictAsIfAt)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.GameLog
@@ -61,6 +62,7 @@ import Arkham.Helpers.Source
 import Arkham.Helpers.Window
 import Arkham.History
 import Arkham.I18n
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher (
@@ -120,6 +122,21 @@ import Data.List.Extra (firstJust)
 import Data.Map.Strict qualified as Map
 import Data.Monoid (Any (..), First (..))
 import Data.Set qualified as Set
+
+{- | Where a disengaging enemy is physically placed. Under the Chapter 2 "as
+if" ruling (settingsStrictAsIfAt) the actual game state is never altered by
+AsIfAt, so use the investigator's physical placement; under Chapter 1 rules
+AsIfAt applies for the duration of the ability.
+-}
+disengageLocation
+  :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m LocationId
+disengageLocation iid = do
+  settings <- getSettings
+  mlid <-
+    if settingsStrictAsIfAt settings
+      then field InvestigatorPlacement iid >>= placementLocation
+      else field InvestigatorLocation iid
+  pure $ fromJustNote ("disengaging investigator " <> show iid <> " has no location") mlid
 
 {- | Handle when enemy no longer exists
 When an enemy is defeated we need to remove related messages from choices
@@ -1864,7 +1881,7 @@ instance RunMessage EnemyAttrs where
       -- grouped with the investigator's own entry inside a `Simultaneously`
       -- block. Nothing for the Enemy runner to do here.
       pure a
-    InvestigatorDamage iid (EnemyAttackSource eid) x y | eid == enemyId -> do
+    Msg.InvestigatorDamage iid (EnemyAttackSource eid) x y | eid == enemyId -> do
       pure $ a & attackingL . _Just . damagedL . at (toTarget iid) . non (0, 0) %~ bimap (+ x) (+ y)
     AssignAssetDamageWithCheck aid (EnemyAttackSource eid) x y _ | eid == enemyId -> do
       pure $ a & attackingL . _Just . damagedL . at (toTarget aid) . non (0, 0) %~ bimap (+ x) (+ y)
@@ -2010,7 +2027,7 @@ instance RunMessage EnemyAttrs where
         if canDisengage
           then do
             pushM $ checkAfter $ Window.EnemyDisengaged iid enemyId
-            lid <- getJustLocation iid
+            lid <- disengageLocation iid
             pure $ a & placementL .~ AtLocation lid
           else pure a
       AsSwarm eid' _ -> do
@@ -2022,7 +2039,7 @@ instance RunMessage EnemyAttrs where
         canDisengage <- iid <=~> InvestigatorCanDisengage
         if canDisengage
           then do
-            lid <- getJustLocation iid
+            lid <- disengageLocation iid
             pushM $ checkAfter $ Window.EnemyDisengaged iid enemyId
             pure $ a & placementL .~ AtLocation lid
           else pure a

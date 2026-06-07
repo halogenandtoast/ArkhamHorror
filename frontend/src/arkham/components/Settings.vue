@@ -41,6 +41,7 @@ const investigator = computed(() => {
 })
 
 const skipTriggers = ref(investigator.value?.settings.globalSettings.ignoreUnrelatedSkillTestTriggers ?? false)
+const asIfRuling = ref(props.game.settings.settingsAsIfRuling)
 const cosmicEmissaryAnimationKey = computed(() => gameLocalStorageKey(props.game.id, 'enableCosmicEmissaryAnimation'))
 const showCosmicEmissaryAnimationSetting = computed(() => props.game.scenario?.id === 'c10651')
 const enableCosmicEmissaryAnimation = ref(
@@ -58,6 +59,15 @@ watch(() => skipTriggers.value, (value) => {
       )
     )
   }
+})
+
+watch(() => props.game.settings.settingsAsIfRuling, (value) => {
+  asIfRuling.value = value
+})
+
+watch(asIfRuling, async (value) => {
+  if (value === props.game.settings.settingsAsIfRuling) return
+  await updateGameRaw(props.game.id, { tag: 'SetAsIfRuling', contents: value })
 })
 
 watch(enableCosmicEmissaryAnimation, (value) => {
@@ -204,6 +214,24 @@ onBeforeUnmount(() => {
               <label for="opt-cosmicEmissaryAnimation-on">{{ $t('On') }}</label>
               <input type="radio" id="opt-cosmicEmissaryAnimation-off" name="opt-cosmicEmissaryAnimation" :checked="!enableCosmicEmissaryAnimation" @change="enableCosmicEmissaryAnimation = false" />
               <label for="opt-cosmicEmissaryAnimation-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h3 class="section-title">Rules Settings</h3>
+        <div class="toggle-list">
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">"As If" Ruling</div>
+              <div class="toggle-desc">Swap between Chapter 1 and Chapter 2 handling for "as if" effects during nested window checks.</div>
+            </div>
+            <div class="segmented segmented-2 toggle-control">
+              <input type="radio" id="opt-asIfRuling-chapter1" name="opt-asIfRuling" :checked="asIfRuling === 'chapter1'" @change="asIfRuling = 'chapter1'" />
+              <label for="opt-asIfRuling-chapter1">Chapter 1</label>
+              <input type="radio" id="opt-asIfRuling-chapter2" name="opt-asIfRuling" :checked="asIfRuling === 'chapter2'" @change="asIfRuling = 'chapter2'" />
+              <label for="opt-asIfRuling-chapter2">Chapter 2</label>
             </div>
           </div>
         </div>

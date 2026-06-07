@@ -186,7 +186,8 @@ export const newGame = async (
     multiplayerVariant,
     includeTarotReadings,
     options,
-    strictAsIfAt
+    strictAsIfAt,
+    asIfRuling: strictAsIfAt == null ? undefined : strictAsIfAt ? 'chapter2' : 'chapter1'
   })
   return gameDecoder.decodePromise(data)
 }

@@ -29,6 +29,23 @@ import { History, historyDecoder } from '@/arkham/types/History';
 
 type GameState = { tag: 'IsPending', contents: string[] } | { tag: 'IsActive' } | { tag: 'IsOver' } | { tag: 'IsChooseDecks', contents: string[] };
 
+type AsIfRuling = 'chapter1' | 'chapter2'
+
+type GameSettings = {
+  settingsAbilitiesCannotReactToThemselves: boolean
+  settingsAsIfRuling: AsIfRuling
+  settingsStrictAsIfAt: boolean
+}
+
+const gameSettingsDecoder = JsonDecoder.object<GameSettings>({
+  settingsAbilitiesCannotReactToThemselves: JsonDecoder.boolean(),
+  settingsAsIfRuling: JsonDecoder.oneOf<AsIfRuling>([
+    JsonDecoder.literal('chapter1'),
+    JsonDecoder.literal('chapter2'),
+  ], 'AsIfRuling'),
+  settingsStrictAsIfAt: JsonDecoder.boolean(),
+}, 'GameSettings')
+
 export const gameStateDecoder = JsonDecoder.oneOf<GameState>(
   [
     JsonDecoder.object({ tag: JsonDecoder.literal('IsPending'), contents: JsonDecoder.array(JsonDecoder.string(), 'string[]') }, 'IsPending'),
@@ -67,6 +84,7 @@ export type Game = {
   id: string;
   name: string;
   log: string[];
+  settings: GameSettings;
 
   activeInvestigatorId: string;
   acts: Record<string, Act>;
@@ -244,6 +262,8 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     id: JsonDecoder.string(),
     name: JsonDecoder.string(),
     log: JsonDecoder.array(JsonDecoder.string(), 'LogEntry[]'),
+    settings: v2Optional(gameSettingsDecoder),
+    gameSettings: v2Optional(gameSettingsDecoder),
 
     activeInvestigatorId: JsonDecoder.string(),
     acts: JsonDecoder.record<Act>(actDecoder, 'Dict<UUID, Act>'),
@@ -293,10 +313,15 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     turnHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
   },
   'Game',
-).map(({mode, killedInvestigators, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, roundHistory, phaseHistory, turnHistory, ...game}) => ({
+).map(({mode, killedInvestigators, settings, gameSettings, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, roundHistory, phaseHistory, turnHistory, ...game}) => ({
   scenario: mode?.That ?? null,
   campaign: mode?.This ?? null,
   killedInvestigators: killedInvestigators ?? {},
+  settings: settings ?? gameSettings ?? {
+    settingsAbilitiesCannotReactToThemselves: true,
+    settingsAsIfRuling: 'chapter1',
+    settingsStrictAsIfAt: false,
+  },
   undoActionStep: undoActionStep ?? null,
   undoTurnStep: undoTurnStep ?? null,
   undoPhaseStep: undoPhaseStep ?? null,

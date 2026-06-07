@@ -6272,6 +6272,7 @@ test-suite spec
       Arkham.Asset.Assets.SwitchbladeSpec
       Arkham.Asset.Assets.TheBlackFan3Spec
       Arkham.Asset.Assets.TheHungeringBlade1Spec
+      Arkham.Asset.Assets.TheMuscleUnpracticedSpec
       Arkham.Asset.Assets.TheNecronomiconSpec
       Arkham.Asset.Assets.Tonys38LongColtSpec
       Arkham.Asset.Assets.WendysAmuletSpec

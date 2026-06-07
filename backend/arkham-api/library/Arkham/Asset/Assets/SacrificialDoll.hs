@@ -9,6 +9,7 @@ import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
+import Arkham.Strategy (DamageStrategy (DamageAny))
 
 newtype SacrificialDoll = SacrificialDoll AssetAttrs
   deriving anyclass IsAsset
@@ -28,7 +29,7 @@ instance HasAbilities SacrificialDoll where
     [ controlled a 1 (DuringSkillTest $ YourSkillTest AnySkillTest)
         $ triggered
           (RevealChaosToken #cancel You (not_ #autofail))
-          (DirectDamageCost (toSource a) You 1 <> exhaust a)
+          (InvestigatorDamageCost (toSource a) You DamageAny 1 <> exhaust a)
     ]
 
 instance RunMessage SacrificialDoll where

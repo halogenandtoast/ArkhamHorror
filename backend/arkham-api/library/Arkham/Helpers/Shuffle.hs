@@ -14,7 +14,20 @@ import Arkham.Tracing
 class CanShuffleIn a where
   getCanShuffleIn :: (HasGame m, Tracing m, Deck.IsDeck deck) => deck -> a -> m Bool
   getCanShuffleIn (Deck.toDeck -> deck) _a =
-    andM [not <$> isDeckEmpty deck, maybe (pure True) getCanShuffleDeckX deck.investigator]
+    andM [emptyDeckCanBeShuffledInto deck, maybe (pure True) getCanShuffleDeckX deck.investigator]
+
+emptyDeckCanBeShuffledInto :: (HasGame m, Tracing m) => Deck.DeckSignifier -> m Bool
+emptyDeckCanBeShuffledInto Deck.NoDeck = pure False
+emptyDeckCanBeShuffledInto deck
+  | preventsShuffleIntoEmptyDeck deck = not <$> isDeckEmpty deck
+  | otherwise = pure True
+
+preventsShuffleIntoEmptyDeck :: Deck.DeckSignifier -> Bool
+preventsShuffleIntoEmptyDeck = \case
+  Deck.InvestigatorDeck _ -> True
+  Deck.EncounterDeck -> True
+  Deck.EncounterDeckByKey _ -> True
+  _ -> False
 
 instance CanShuffleIn Card
 instance CanShuffleIn a => CanShuffleIn (Only a)

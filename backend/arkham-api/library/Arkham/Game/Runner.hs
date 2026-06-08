@@ -2237,7 +2237,7 @@ runGameMessage msg g = case msg of
       Just s -> do
         let attrs = toAttrs s
         let card = lookupCard (toCardCode attrs) (storyCardId attrs)
-        let card' = if storyFlipped attrs then flipCard card else card'
+        let card' = if storyFlipped attrs then flipCard card else card
         pushAll $ windows [Window.AddedToVictory miid card']
         pure $ g & (entitiesL . storiesL %~ deleteMap sid)
   AddToVictory miid (TreacheryTarget tid) -> do

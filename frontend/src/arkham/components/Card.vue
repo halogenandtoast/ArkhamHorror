@@ -11,6 +11,7 @@ import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Messa
 import { MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import { useDebug } from '@/arkham/debug'
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -22,6 +23,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   choose: [value: number]
 }>()
+const debug = useDebug()
 
 const cardContents = computed<CardContents>(() => {
   return props.card.tag === "CardContents" ? props.card : ( props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents)
@@ -167,6 +169,18 @@ const modifiedPlayingCard = computed(() => {
 
 })
 
+function startDrag(event: DragEvent) {
+  if (!debug.active) {
+    event.preventDefault()
+    return
+  }
+
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'copy'
+    event.dataTransfer.setData('text/plain', JSON.stringify({ tag: 'CardTarget', contents: id.value }))
+  }
+}
+
 </script>
 
 <template>
@@ -182,6 +196,8 @@ const modifiedPlayingCard = computed(() => {
       :src="image"
       :data-customizations="JSON.stringify(cardContents.customizations)"
       :data-pc="modifiedPlayingCard ? modifiedPlayingCard : null"
+      :draggable="debug.active"
+      @dragstart="startDrag"
       @click="emit('choose', cardAction)"
     />
     <span class="vengeance" v-if="card.tag === 'VengeanceCard'">{{$t('card.vengeance', {value: 1})}}</span>

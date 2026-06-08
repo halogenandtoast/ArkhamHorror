@@ -328,7 +328,11 @@ aChanceEncounter2 =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = singleton Fortune
     , cdCost =
-        Just $ AnyMatchingCardCost $ InDiscardOf (affectsOthers can.have.cards.leaveDiscard) <> #ally
+        Just
+          $ AnyMatchingCardCost
+          $ InDiscardOf (affectsOthers can.have.cards.leaveDiscard)
+          <> #ally
+          <> CardWithoutUniqueCopyInPlay
     , cdLevel = Just 2
     }
 

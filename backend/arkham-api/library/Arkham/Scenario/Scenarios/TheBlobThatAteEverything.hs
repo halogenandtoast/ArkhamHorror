@@ -19,8 +19,11 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Placement (Placement (Global))
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Card (Card)
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (difficultyL)
 import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
+import Data.Aeson.Key qualified as Key
 
 newtype TheBlobThatAteEverything = TheBlobThatAteEverything ScenarioAttrs
   deriving stock Generic
@@ -201,6 +204,25 @@ instance RunMessage TheBlobThatAteEverything where
           subject <- selectJust $ enemyIs Enemies.subject8L08
           push $ DealDamage (EnemyTarget subject) (nonAttack Nothing attrs (x + extra))
       pure s
+    EndRound ->
+      pure $ TheBlobThatAteEverything $ attrs & setMetaKey "lightActive" (False :: Bool)
+    -- Reality Acid records which one-time "aspects of reality" have already
+    -- been devoured (per investigator or per group) in the scenario meta.
+    ScenarioSpecific "blobSetMeta" (maybeResult -> Just (key, value)) ->
+      pure $ TheBlobThatAteEverything $ attrs & setMetaKey (Key.fromText key) (value :: Value)
+    -- Track every card exiled during the scenario so Reality Acid can devour
+    -- "all cards that have been exiled".
+    Exiled _ card -> do
+      exiled <- getScenarioMetaKeyDefault "exiledCards" []
+      pure $ TheBlobThatAteEverything $ attrs & setMetaKey "exiledCards" (card : exiled :: [Card])
+    -- Reality Acid's "concept of easiness": flip the scenario reference card to
+    -- its Hard/Expert side.
+    ScenarioSpecific "blobFlipToHard" _ -> do
+      let harder = case attrs ^. difficultyL of
+            Easy -> Hard
+            Standard -> Expert
+            d -> d
+      pure $ TheBlobThatAteEverything $ attrs & difficultyL .~ harder
     ScenarioResolution NoResolution -> do
       push R1
       pure s

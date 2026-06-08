@@ -197,6 +197,7 @@ data CardMatcher
   | CardWithCardCode CardCode
   | CardWithCardCodeExact CardCodeExact
   | CardWithTitle Text
+  | CardWithTitleContaining Text
   | CardWithTrait Trait
   | CardWithId CardId
   | CardWithLevel Int

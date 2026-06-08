@@ -781,7 +781,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         | card <- viable
         ]
     pure a
-  AddToDiscard iid pc | iid == investigatorId -> handleAddToDiscard a iid pc
+  AddToDiscard iid pc | iid == investigatorId -> do
+    modifiers' <- getModifiers a
+    case [target | PlaceUnderneathInsteadOfDiscard target <- modifiers'] of
+      (target : _) -> do
+        pushAll [ObtainCard (toCard pc).id, PlaceUnderneath target [toCard pc]]
+        pure a
+      [] -> handleAddToDiscard a iid pc
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> handleDiscardFromHand a handDiscard msg
   Do (DiscardFromHand handDiscard) | handDiscard.investigator == investigatorId -> handleDoDiscardFromHand a handDiscard
   Discard _ source (CardIdTarget cardId) | isJust (find ((== cardId) . toCardId) investigatorHand) -> handleDiscard a source cardId

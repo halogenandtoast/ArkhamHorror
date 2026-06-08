@@ -1660,6 +1660,16 @@ runGameMessage msg g = case msg of
           let treachery = createTreachery card iid tid
           pushAll [CardEnteredPlay iid card, PlaceTreachery tid (InThreatArea iid), ResolvedCard iid card]
           pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
+        AssetType -> do
+          -- asset might have been put into play via revelation
+          mAid <- selectOne $ AssetWithCardId cardId
+          aid <- maybe getRandom pure mAid
+          let asset = overAttrs (\attrs -> attrs {assetController = Just iid}) $ createAsset card aid
+          pushAll
+            [ InvestigatorPlayAsset iid aid
+            , ResolvedCard iid card
+            ]
+          pure $ g & entitiesL . assetsL %~ insertMap aid asset
         EncounterAssetType -> do
           -- asset might have been put into play via revelation
           mAid <- selectOne $ AssetWithCardId cardId
@@ -3080,6 +3090,7 @@ runGameMessage msg g = case msg of
                 sendEnemyOnly pid (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
               else sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
           TreacheryType -> uiRevelation
+          AssetType -> uiRevelation
           EncounterAssetType -> uiRevelation
           EncounterEventType -> uiRevelation
           LocationType -> uiRevelation
@@ -3143,6 +3154,13 @@ runGameMessage msg g = case msg of
           -- handles draw windows
           pushAll [DrewTreachery iid (mdeck <|> Just Deck.EncounterDeck) (toCard card)]
           pure g'
+        AssetType -> do
+          assetId <- getRandom
+          let asset = createAsset card assetId
+          -- Story assets can be drawn from encounter decks while still having AssetType.
+          pushAll $ afterDraw
+            : (guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId))
+          pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
         EncounterAssetType -> do
           assetId <- getRandom
           let asset = createAsset card assetId
@@ -3202,6 +3220,12 @@ runGameMessage msg g = case msg of
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ guard (not ignoreRevelation) *> resolve (Revelation iid $ TreacherySource treacheryId)
         pure $ g' & (entitiesL . treacheriesL . at treacheryId ?~ treachery)
+      AssetType -> do
+        assetId <- getRandom
+        let asset = createAsset card assetId
+        -- Story assets can be resolved from encounter decks while still having AssetType.
+        pushAll $ guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId)
+        pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       EncounterAssetType -> do
         assetId <- getRandom
         let asset = createAsset card assetId

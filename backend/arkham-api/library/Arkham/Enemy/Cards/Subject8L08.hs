@@ -22,20 +22,27 @@ subject8L08 =
   enemyWith Subject8L08 Cards.subject8L08 (0, PerPlayer 15, 0) (0, 0)
     $ \a -> a {enemyFight = Nothing, enemyEvade = Nothing}
 
+-- Subject 8L-08 devours the card behind the given reference: the entity (if any)
+-- is removed from play, the card is pulled from wherever it is, and placed
+-- beneath the subject (out of play, returned to its owner at the end of the
+-- game). `remove` is the message that takes the entity off the table; for a card
+-- that is not in play (in a deck/hand/discard) it is a no-op.
+devourRef :: (ReverseQueue m, FetchCard ref) => EnemyAttrs -> m () -> ref -> m ()
+devourRef attrs remove ref = do
+  card <- fetchCard ref
+  remove
+  obtainCard card
+  placeUnderneath attrs [card]
+
 instance RunMessage Subject8L08 where
   runMessage msg e@(Subject8L08 attrs) = runQueueT $ case msg of
     ScenarioSpecific "devour" (maybeResult -> Just target) -> do
       case target of
-        LocationTarget lid -> do
-          card <- fetchCard lid
-          removeLocation lid
-          obtainCard card
-          placeUnderneath attrs [card]
-        AssetTarget aid -> do
-          card <- fetchCard aid
-          removeAsset aid
-          obtainCard card
-          placeUnderneath attrs [card]
+        LocationTarget lid -> devourRef attrs (removeLocation lid) lid
+        AssetTarget aid -> devourRef attrs (removeAsset aid) aid
+        EnemyTarget eid -> devourRef attrs (removeEnemy eid) eid
+        TreacheryTarget tid -> devourRef attrs (removeTreachery tid) tid
+        CardIdTarget cid -> devourRef attrs (pure ()) cid
         _ -> pure ()
       pure e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

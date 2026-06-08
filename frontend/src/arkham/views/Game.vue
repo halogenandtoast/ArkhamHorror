@@ -119,6 +119,8 @@ const { addEntry, menuItems } = useMenu()
 const preloaded = new Set<string>()
 let mouseX = 0
 let mouseY = 0
+const flashlightX = ref(0)
+const flashlightY = ref(0)
 
 store.fetchCards()
 
@@ -227,6 +229,10 @@ const choices = computed(() => {
 })
 const gameOver = computed(() => game.value?.gameState.tag === 'IsOver')
 const question = computed(() => (playerId.value ? game.value?.question[playerId.value] : null))
+const realityAcidLightActive = computed(() => {
+  const scenario = game.value?.scenario
+  return scenario?.id === 'c85001' && scenario.meta?.lightActive === true
+})
 
 function skipTriggerEntries(g: Arkham.Game): { playerId: string; choiceIdx: number }[] {
   const result: { playerId: string; choiceIdx: number }[] = []
@@ -1096,6 +1102,8 @@ provide('showOtherPlayersHands', showOtherPlayersHands)
 const onMove = (event: MouseEvent) => {
   mouseX = event.clientX
   mouseY = event.clientY
+  flashlightX.value = event.clientX
+  flashlightY.value = event.clientY
 }
 
 // callbacks
@@ -1110,6 +1118,8 @@ const onPlayabilityResult = (result: any) => {
 emitter.on('playabilityResult', onPlayabilityResult)
 
 onMounted(() => {
+  flashlightX.value = window.innerWidth / 2
+  flashlightY.value = window.innerHeight / 2
   ;(window as any).sendDebug = async (msg: any) => {
     if (game.value) await debug.send(game.value.id, msg)
   }
@@ -1162,6 +1172,12 @@ onUnmounted(() => {
       />
     </div>
     <CardOverlay />
+    <div
+      v-if="realityAcidLightActive"
+      class="reality-acid-flashlight"
+      :style="{ '--flashlight-x': `${flashlightX}px`, '--flashlight-y': `${flashlightY}px` }"
+      aria-hidden="true"
+    ></div>
     <Draggable v-if="showShortcuts">
       <div class="shortcuts-modal">
         <div class="shortcuts-header">
@@ -1607,6 +1623,22 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.reality-acid-flashlight {
+  --flashlight-x: 50vw;
+  --flashlight-y: 50vh;
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 190px at var(--flashlight-x) var(--flashlight-y),
+    rgba(0, 0, 0, 0) 0 42%,
+    rgba(0, 0, 0, 0.45) 58%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  mix-blend-mode: multiply;
+}
+
 .action {
   border: 5px solid var(--select);
   border-radius: 15px;

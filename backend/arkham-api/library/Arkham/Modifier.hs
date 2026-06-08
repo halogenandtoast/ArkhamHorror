@@ -199,6 +199,7 @@ data ModifierType
   | CannotEvade EnemyMatcher
   | CannotExplore
   | CannotFight EnemyMatcher
+  | CannotGainAdditionalActions
   | CannotGainResources
   | CannotGainResourcesFromPlayerCardEffects
   | CannotGainXP
@@ -388,6 +389,8 @@ data ModifierType
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | OtherDoomSubtracts
   | PlaceOnBottomOfDeckInsteadOfDiscard
+  | -- | Player cards that would be discarded are placed beneath the target instead
+    PlaceUnderneathInsteadOfDiscard Target
   | PlaySource Source
   | PlayUnderControlOf InvestigatorId
   | PlayableCardOf InvestigatorId Card
@@ -435,6 +438,8 @@ data ModifierType
   | SkillModifiersAffectOtherSkill SkillType SkillType
   | SkillTestAutomaticallySucceeds
   | SkillTestAutomaticallyFails
+  | -- | If the test would succeed by at least this much, it fails instead
+    AutomaticallyFailIfSucceedByAtLeast Int
   | SkillTestResultValueModifier Int
   | SkipMythosPhaseStep MythosPhaseStep
   | SlotCanBe SlotType SlotType

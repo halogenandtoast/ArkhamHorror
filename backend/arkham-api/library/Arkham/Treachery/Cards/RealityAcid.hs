@@ -11,13 +11,12 @@ import Arkham.Effect.Import
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText (chaosTokenImg, cols, flavor, p, scope, setTitle)
 import Arkham.Helpers.Modifiers (modifyEach)
-import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Helpers.Scenario (getDifficulty, getScenarioMetaKeyDefault, scenarioFieldMap)
-import Arkham.Location.Cards qualified as Locations
-import Arkham.PlayerCard (allPlayerCards)
+import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Investigator.Types (
   Field (InvestigatorClass, InvestigatorDeck, InvestigatorDiscard, InvestigatorHand),
  )
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message (pattern LoseAllResources)
@@ -25,6 +24,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record)
 import Arkham.Modifier
 import Arkham.Phase
+import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Projection
 import Arkham.Queue (QueueT)
 import Arkham.RequestedChaosTokenStrategy
@@ -125,7 +125,14 @@ instance RunMessage RealityAcid where
                 devourTarget c
                 push $ ShuffleDeck (Deck.InvestigatorDeck iid)
               done
-      let healFromInvestigator = showOutcome "heal" >> healDamage iid source 1 >> healHorror iid source 1 >> done
+      let
+        healFromInvestigator = do
+          showOutcome "heal"
+          ok <-
+            selectAny $ InvestigatorWithId iid <> oneOf [InvestigatorWithAnyHorror, InvestigatorWithAnyDamage]
+          removeTokens source iid #damage 1
+          removeTokens source iid #horror 1
+          if ok then done else again
 
       -- Several aspects on the chart have no game state to devour ("your voice",
       -- "your house", etc). Rather than rerolling forever, each can be devoured a

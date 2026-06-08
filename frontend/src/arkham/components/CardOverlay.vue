@@ -170,6 +170,7 @@ onUnmounted(() => mq.removeEventListener?.('change', updateIsMobile))
  * ========================================================================== */
 
 const CARD_SELECTOR = '.card,[data-image-id],[data-target],[data-image]'
+const OVERLAY_BLOCKER_SELECTOR = '.draggable,.intro-text,.choice-modal-wrapper'
 let hoverTimer: number | null = null
 let pressTimer: number | null = null
 let canDisablePress = false
@@ -182,6 +183,11 @@ const targetFromEvent = (e: Event): HTMLElement | null => {
   const raw = e.target as HTMLElement | null
   const closest = raw ? (raw.closest(CARD_SELECTOR) as HTMLElement | null) : null
   if (closest) return closest
+
+  // Do not fall through to the geometry fallback when a modal/story entry is
+  // over the board. Otherwise hovering resolution text can still find cards
+  // underneath the modal by bounding-rect and show their card overlay.
+  if (raw?.closest(OVERLAY_BLOCKER_SELECTOR)) return null
 
   // Transformed cards can visually extend outside their untransformed layout
   // box (notably rotated enemy-as-location cards). In that case normal event

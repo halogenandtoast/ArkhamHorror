@@ -282,6 +282,13 @@ export default defineComponent({
   font-family: auto !important;
 }
 
+.censor, :deep(.censor) {
+  background-color: black;
+  color: black;
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
 :deep(b), :deep(i), :deep(strong) {
   display: contents;
 }

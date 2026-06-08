@@ -29,11 +29,11 @@ instance RunMessage SolemnVow where
       push $ chooseOrRunOne player $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
       SolemnVow <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      hasDamage <- iid <=~> InvestigatorHasCardWithDamage
-      hasHorror <- iid <=~> InvestigatorHasCardWithHorror
+      hasDamage <- iid <=~> InvestigatorWithAnyDamage
+      hasHorror <- iid <=~> InvestigatorWithAnyHorror
 
-      damageAssets <- select $ assetControlledBy iid <> AssetWithHealth
-      horrorAssets <- select $ assetControlledBy iid <> AssetWithSanity
+      damageAssets <- select $ assetControlledBy iid <> AssetWithDamage
+      horrorAssets <- select $ assetControlledBy iid <> AssetWithHorror
 
       iid' <- selectJust $ OwnsAsset (be attrs)
       damageAssets' <- select $ assetControlledBy iid' <> AssetWithHealth

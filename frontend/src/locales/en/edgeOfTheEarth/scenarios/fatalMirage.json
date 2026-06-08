@@ -6,15 +6,13 @@
       "body": "<p class='basic'>The mirage keyword represents locations that are manifestations of your memories and the memories of your companions. These locations have no unrevealed side and therefore enter play with their revealed side faceup. Instead of an unrevealed side, these locations have story cards on their reverse sides. These story cards allow investigators to travel deeper into the strange mirage and unlock new memories in the form of locations or encounter cards. The number indicated by the mirage keyword represents how many clues are required to flip it over, while the card titles in parentheses indicate what memories might appear as a result.</p><ul><li>As a {'{'}action{'}'} ability, investigators at a mirage location may spend the indicated number of clues, as a group, to flip it over and resolve the story card on its other side.</li><li>When a location with the mirage keyword enters play (including during setup), for each card indicated by its mirage keyword that is already in play or in the victory display, reduce the location’s clue value by its mirage value.<ul><li>*Note: This is less likely to occur the first time you play Fatal Mirage, but is much more likely during subsequent playthroughs.*</li><li>*For example: Prison of Memories has a clue value of 3 {'{'}perPlayer{'}'} and has the following text: “Mirage 1 {'{'}perPlayer{'}'} (Base Camp, Deck of the Theodosia, University Halls).” When Prison of Memories enters play, the investigators check which of the three cards indicated by its mirage keyword are already in play or in the victory display. Both University Halls and Deck of the Theodosia are already in play, but Base Camp is still set aside. Therefore, the clue value of Prison of Memories is reduced by 2 {'{'}perPlayer{'}'}, meaning only 1 {'{'}perPlayer{'}'} clues are placed on it when it enters play.*</li></ul></li><li>A location is “cleared of mirages” if every card indicated by its mirage keyword is already either in play or in the victory display. A location that is cleared of mirages cannot be flipped over again.</li></ul>"
     }
   ],
-  "label": {
-    "keepPlaying": "Keep playing",
-    "moveToPrisonOfMemories": "Move to the Prison of Memories",
-    "shuffleTekeliliIntoYourDeck": "Shuffle the top card of the Tekeli-li deck into your deck without looking at it."
-  },
   "tooltips": {
     "mirage": "Mirage"
   },
   "label": {
+    "keepPlaying": "Keep playing",
+    "moveToPrisonOfMemories": "Move to the Prison of Memories",
+    "shuffleTekeliliIntoYourDeck": "Shuffle the top card of the Tekeli-li deck into your deck without looking at it.",
     "averyClaypoolAntarcticGuideResolute": {
       "revealANewChaosToken": "Reveal a new chaos token",
       "spend1Supply": "Spend 1 Supply"

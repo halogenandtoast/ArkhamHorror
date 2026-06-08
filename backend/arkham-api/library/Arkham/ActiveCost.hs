@@ -422,8 +422,14 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) target
       pure c
     ShuffleBondedCost n cCode -> do
-      bondedCards <- fieldMap InvestigatorBondedCards (take n . filter ((== cCode) . toCardCode)) iid
-      push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) bondedCards
+      -- bonded cards belong to the owner of the card being played, which can
+      -- differ from the payer (e.g. Bob Jenkins playing a teammate's Item)
+      let owner = case activeCostTarget c of
+            ForCard _ card -> fromMaybe iid card.owner
+            ForCost card -> fromMaybe iid card.owner
+            _ -> iid
+      bondedCards <- fieldMap InvestigatorBondedCards (take n . filter ((== cCode) . toCardCode)) owner
+      push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) bondedCards
       pure c
     ResolveEachHauntedAbility lid -> do
       hauntedAbilities <- select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)

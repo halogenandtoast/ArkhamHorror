@@ -4,6 +4,7 @@ import { useDebug } from '@/arkham/debug';
 import type { Card } from '@/arkham/types/Card';
 import { cardImage } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
+import { investigatorPortrait as portraitFor } from '@/arkham/cardImages';
 import { MessageType } from '@/arkham/types/Message'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Game } from '@/arkham/types/Game'
@@ -32,6 +33,18 @@ const deckAction = computed(() => {
     if (props.deck[0] === 'AbyssDeck') return c.target.tag === "EncounterDeckTarget"
     return c.target.tag === "ScenarioDeckTarget"
   })
+})
+
+// When the Abyss deck stands in for the encounter deck (Fate of the Vale), show
+// the portrait of the investigator whose turn it is to draw, like EncounterDeck.
+const investigator = computed(() =>
+  Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
+)
+
+const investigatorPortrait = computed(() => {
+  if (props.deck[0] !== 'AbyssDeck') return null
+  if (deckAction.value === -1 || !investigator.value) return null
+  return portraitFor(props.game, investigator.value.id)
 })
 
 const revealedCards = computed(() => props.deck[1].map(card => {
@@ -117,6 +130,11 @@ const deckLabel = computed(() => {
       />
       <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
       <span class="deck-size" :class="{ 'abyss-deck-size': deck[0] === 'AbyssDeck' }">{{deck[1].length}}</span>
+      <img
+        v-if="investigatorPortrait"
+        class="portrait"
+        :src="investigatorPortrait"
+      />
     </div>
     <button v-if="debug.active" @click="showCards">{{ $t('scenarioDeck.showCards') }}</button>
   </div>
@@ -221,5 +239,16 @@ const deckLabel = computed(() => {
 .can-interact {
   border: 3px solid var(--select);
   cursor: pointer;
+}
+
+.portrait {
+  width: calc(var(--card-width) * 0.55);
+  position: absolute;
+  opacity: 0.8;
+  border-radius: 5px;
+  left: 50%;
+  top: 10%;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 </style>

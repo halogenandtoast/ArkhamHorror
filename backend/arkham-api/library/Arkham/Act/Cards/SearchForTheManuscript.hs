@@ -6,6 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.ChaosToken.Types
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Location.Grid
@@ -53,6 +54,17 @@ instance RunMessage SearchForTheManuscript where
       shuffleEncounterDiscardBackIn
 
       -- Act 2 Setup
+      scenarioI18n $ scope "act2Setup" $ flavor do
+        h "title"
+        p "instructions"
+        ul do
+          li "setAsideLocations"
+          li "shuffleGrandBazaar"
+          li "revealToken"
+          li "putIntoPlay"
+          li "moveToEntrance"
+          li "divideMiniCards"
+          li "proceed"
       eachInvestigator (`place` Unplaced)
       requestChaosTokens lead attrs 1
       advanceActDeck attrs

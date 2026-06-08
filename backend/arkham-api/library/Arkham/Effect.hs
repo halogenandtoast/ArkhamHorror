@@ -196,6 +196,7 @@ import Arkham.Treachery.Treacheries (
   mysteriesOfTheLodgeEffect,
   pushedIntoTheBeyondEffect,
   realityAcid5U21Effect,
+  realityAcidEffect,
   restlessJourneyFallacyEffect,
   restlessJourneyHardshipEffect,
   restlessJourneyLiesEffect,
@@ -611,6 +612,7 @@ allEffects =
     , ("82035", SomeEffect mesmerizeEffect)
     , ("84014", SomeEffect restaurantEffect)
     , ("84042", SomeEffect chillingPresenceEffect)
+    , ("85044", SomeEffect realityAcidEffect)
     , ("88043", SomeEffect deckOfPossibilitiesTychokineticImplementEffect)
     , ("88044", SomeEffect isamaraOrdonezTheTorchSingerEffect)
     , ("88045", SomeEffect theWellspringOfFortuneEffect)

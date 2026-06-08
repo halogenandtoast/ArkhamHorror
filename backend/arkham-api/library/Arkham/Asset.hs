@@ -1590,4 +1590,12 @@ allAssets =
       , SomeAssetCard longbow3
       , -- Misc
         SomeAssetCard courage
+      , -- Mi-Go Incursion
+        SomeAssetCard universityChemist
+      , SomeAssetCard meteoriteSample
+      , SomeAssetCard theMilitarysPlan
+      , SomeAssetCard universalSolvent
+      , SomeAssetCard petOozeling
+      , SomeAssetCard miGoWeapon
+      , SomeAssetCard ltWilsonStewart
       ]

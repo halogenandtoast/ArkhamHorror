@@ -14,11 +14,6 @@
       "body": "<p class='basic'>During this scenario, locations are arranged in a pattern of spokes and rings. There are three rings with five locations on each ring, and five spokes with three locations on each spoke.</p><ul><li>During this scenario, each location is connected to the locations next to it on its spoke as well as the locations next to it on its ring.</li></ul>"
     }
   ],
-  "titanicRamp": {
-    "label": {
-      "spendClueToAutoSucceed": "Any investigator at your location or a connecting location may spend 1 clue to have you automatically succeed at this test."
-    }
-  },
   "tokens": {
     "easyStandard": {
       "skull": "–1 (–3 instead if there is an _Ancient One_ enemy at your location).",
@@ -189,6 +184,7 @@
   },
   "titanicRamp": {
     "label": {
+      "spendClueToAutoSucceed": "Any investigator at your location or a connecting location may spend 1 clue to have you automatically succeed at this test.",
       "spendClue": "Any investigator at your location or a connecting location may spend 1 clue to have you automatically succeed at this test."
     }
   },

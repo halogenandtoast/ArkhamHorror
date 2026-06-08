@@ -21,6 +21,7 @@ data Trait
   | Armor
   | Artist
   | Assistant
+  | Attack
   | Augury
   | Avatar
   | Bane
@@ -202,12 +203,15 @@ data Trait
   | Ocean
   | Omen
   | OothNargai
+  | Ooze
+  | Oozified
   | Oriab
   | Otherworld
   | Outsider
   | Pact
   | Paradox
   | Paris
+  | Part1
   | Passageway
   | Patron
   | Performer

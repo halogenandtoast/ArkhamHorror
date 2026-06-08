@@ -197,6 +197,11 @@ allStoryCards =
       , fortunesDisfavor27
       , personalEntaglement
       , deckOfPossibilities
+      , --- Mi-Go Incursion
+        rescueTheChemist
+      , recoverTheSample
+      , driveOffTheMiGo
+      , defuseTheExplosives
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -673,3 +678,21 @@ personalEntaglement = doubleSided $ story "88027b" "Personal Entanglement" Fortu
 
 deckOfPossibilities :: CardDef
 deckOfPossibilities = doubleSided $ story "88043b" "Deck of Possibilities" FortuneAndFolly
+
+-- Mi-Go Incursion
+
+rescueTheChemist :: CardDef
+rescueTheChemist =
+  victory 1 $ addTrait Part1 $ doubleSided $ story "85021" "Rescue the Chemist" MiGoIncursion
+
+recoverTheSample :: CardDef
+recoverTheSample =
+  victory 1 $ addTrait Part1 $ doubleSided $ story "85022" "Recover the Sample" MiGoIncursion
+
+driveOffTheMiGo :: CardDef
+driveOffTheMiGo =
+  victory 1 $ addTrait Part1 $ doubleSided $ story "85023" "Drive Off the Mi-Go" MiGoIncursion
+
+defuseTheExplosives :: CardDef
+defuseTheExplosives =
+  victory 1 $ addTrait Part1 $ doubleSided $ story "85024" "Defuse the Explosives" MiGoIncursion

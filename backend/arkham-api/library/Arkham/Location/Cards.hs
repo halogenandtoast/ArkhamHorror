@@ -1117,6 +1117,18 @@ allLocationCards =
       , --- Queen of Ash
         undergroundCistern
       , sluiceControl
+      , --- The Blob That Ate Everything
+        theCrater
+      , researchSiteTheBlobThatAteEverything
+      , temporaryHQ
+      , fungusMound
+      , sewer
+      , bridge
+      , waterTower
+      , church
+      , oozyLakebed
+      , slimyStreets
+      , desiccatedFarmland
       ]
 
 allSpecialLocationCards :: Map CardCode CardDef

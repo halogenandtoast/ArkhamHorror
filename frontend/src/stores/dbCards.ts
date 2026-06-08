@@ -46,8 +46,7 @@ export const useDbCardStore = defineStore("dbCards", {
   actions: {
     getDbCard(code: string): ArkhamDBCard | null {
       if (this.dbCards.length < 1) {
-        const language = localStorage.getItem('language') || 'en'
-        if (language !== 'en') void this.initDbCards()
+        void this.initDbCards()
       }
 
       return this.dbCardsIndex.get(code) ?? null
@@ -84,14 +83,6 @@ export const useDbCardStore = defineStore("dbCards", {
 
     async initDbCards() {
       const language = localStorage.getItem('language') || 'en'
-
-      if (language === 'en') {
-        this.lang = language
-        this.loadingLang = null
-        this.dbCards = []
-        this.dbCardsIndex = new Map()
-        return
-      }
 
       if (this.lang === language && this.dbCards.length > 0) return
       if (this.loadingLang === language) return

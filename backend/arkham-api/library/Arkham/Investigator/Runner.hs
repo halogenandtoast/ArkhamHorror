@@ -409,7 +409,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   UpdateCardSetting iid cCode s | iid == a.id -> do
     pure $ a & settingsL %~ updateCardSetting cCode s
   EndOfGame _ -> do
-    pure $ a & placementL .~ Unplaced
+    -- Transfiguration (and Hank Samson's resolute flip) last "until the end
+    -- of the game", so the form must revert before interludes check traits
+    let resetForm = \case
+          TransfiguredForm _ -> RegularForm
+          form -> form
+    pure $ a & placementL .~ Unplaced & formL %~ resetForm
   RecordForInvestigator iid key | iid == toId a -> do
     send $ "Record \"" <> format investigatorName <> " " <> format key <> "\""
     pure $ a & (logL . recordedL %~ insertSet key) . (logL . orderedKeysL %~ (<> [key]))
@@ -776,7 +781,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         | card <- viable
         ]
     pure a
-  AddToDiscard iid pc | iid == investigatorId -> handleAddToDiscard a iid pc
+  AddToDiscard iid pc | iid == investigatorId -> do
+    modifiers' <- getModifiers a
+    case [target | PlaceUnderneathInsteadOfDiscard target <- modifiers'] of
+      (target : _) -> do
+        pushAll [ObtainCard (toCard pc).id, PlaceUnderneath target [toCard pc]]
+        pure a
+      [] -> handleAddToDiscard a iid pc
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> handleDiscardFromHand a handDiscard msg
   Do (DiscardFromHand handDiscard) | handDiscard.investigator == investigatorId -> handleDoDiscardFromHand a handDiscard
   Discard _ source (CardIdTarget cardId) | isJust (find ((== cardId) . toCardId) investigatorHand) -> handleDiscard a source cardId

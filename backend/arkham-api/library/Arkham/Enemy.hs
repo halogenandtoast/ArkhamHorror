@@ -859,4 +859,18 @@ allEnemies =
       , SomeEnemyCard heraldOfFlame
       , SomeEnemyCard elokossFaintEmbers
       , SomeEnemyCard elokossMotherOfFlame
+      , -- The Blob That Ate Everything
+        SomeEnemyCard oozeling
+      , SomeEnemyCard graspingOoze
+      , SomeEnemyCard cubicOoze
+      , SomeEnemyCard oozewraith
+      , SomeEnemyCard vulnerableHeart
+      , SomeEnemyCard subject8L08
+      , SomeEnemyCard subject8L08EpicMultiplayer
+      , -- Mi-Go Incursion
+        SomeEnemyCard miGoGeneral
+      , SomeEnemyCard miGoDrone
+      , SomeEnemyCard miGoHarvester
+      , SomeEnemyCard miGoMeddler
+      , SomeEnemyCard miGoAbductor
       ]

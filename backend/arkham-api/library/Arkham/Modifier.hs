@@ -199,6 +199,7 @@ data ModifierType
   | CannotEvade EnemyMatcher
   | CannotExplore
   | CannotFight EnemyMatcher
+  | CannotGainAdditionalActions
   | CannotGainResources
   | CannotGainResourcesFromPlayerCardEffects
   | CannotGainXP
@@ -388,6 +389,8 @@ data ModifierType
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | OtherDoomSubtracts
   | PlaceOnBottomOfDeckInsteadOfDiscard
+  | -- | Player cards that would be discarded are placed beneath the target instead
+    PlaceUnderneathInsteadOfDiscard Target
   | PlaySource Source
   | PlayUnderControlOf InvestigatorId
   | PlayableCardOf InvestigatorId Card
@@ -435,6 +438,8 @@ data ModifierType
   | SkillModifiersAffectOtherSkill SkillType SkillType
   | SkillTestAutomaticallySucceeds
   | SkillTestAutomaticallyFails
+  | -- | If the test would succeed by at least this much, it fails instead
+    AutomaticallyFailIfSucceedByAtLeast Int
   | SkillTestResultValueModifier Int
   | SkipMythosPhaseStep MythosPhaseStep
   | SlotCanBe SlotType SlotType
@@ -474,6 +479,7 @@ data UIModifier
   | OverlayCheckmark {left :: Double, top :: Double} -- See The Stakeout for example
   | Rotated Int
   | Positioned {x :: Double, y :: Double} -- player-driven location drag offset (un-zoomed CSS px)
+  | Oversized
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "combat" (Int -> ModifierType) where

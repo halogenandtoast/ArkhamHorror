@@ -23,7 +23,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Cost.Status
 import Arkham.Difficulty
 import Arkham.Game
-import Arkham.Game.Settings (settingsStrictAsIfAt)
+import Arkham.Game.Settings (AsIfRuling, asIfRulingFromStrictAsIfAt, defaultAsIfRulingForCampaign, settingsAsIfRuling)
 import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Playable (getPlayabilityChecks)
 import Arkham.Id
@@ -111,6 +111,7 @@ data CreateGamePost = CreateGamePost
   , includeTarotReadings :: Bool
   , options :: Set CampaignOption
   , strictAsIfAt :: Maybe Bool
+  , asIfRuling :: Maybe AsIfRuling
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -126,16 +127,16 @@ postApiV1ArkhamGamesR = do
   now <- liftIO getCurrentTime
 
   let
-    defaultStrictAsIfAt = case campaignId of
-      Just (CampaignId cid) -> cid >= "11"
-      Nothing -> False
-    strictAsIfAtValue = fromMaybe defaultStrictAsIfAt strictAsIfAt
+    defaultAsIfRuling = defaultAsIfRulingForCampaign $ case campaignId of
+      Just (CampaignId cid) -> Just cid
+      Nothing -> Nothing
+    asIfRulingValue = fromMaybe defaultAsIfRuling $ asIfRuling <|> fmap asIfRulingFromStrictAsIfAt strictAsIfAt
     baseGame = case campaignId of
       Just cid -> newCampaign cid scenarioId newGameSeed playerCount difficulty includeTarotReadings
       Nothing -> case scenarioId of
         Just sid -> newScenario sid newGameSeed playerCount difficulty includeTarotReadings
         Nothing -> error "missing either a campign id or a scenario id"
-    game = baseGame {gameSettings = baseGame.gameSettings {settingsStrictAsIfAt = strictAsIfAtValue}}
+    game = baseGame {gameSettings = baseGame.gameSettings {settingsAsIfRuling = asIfRulingValue}}
     ag = ArkhamGame campaignName game 0 multiplayerVariant now now
     repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
 

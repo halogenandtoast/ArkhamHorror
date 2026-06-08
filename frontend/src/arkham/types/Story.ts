@@ -60,6 +60,14 @@ export const storyMetaDecoder = JsonDecoder.object<StoryMeta>({
   crossedOff: v2Optional(JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'))
 }, 'StoryMeta');
 
+const optionalStoryMetaDecoder: JsonDecoder.Decoder<StoryMeta | undefined> = JsonDecoder.succeed().flatMap((value: unknown) => {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return storyMetaDecoder
+  }
+
+  return JsonDecoder.constant(undefined)
+})
+
 export type Story = {
   id: string
   art: string
@@ -81,7 +89,7 @@ export const storyDecoder = JsonDecoder.object<Story>({
   placement: placementDecoder,
   otherSide: JsonDecoder.nullable(targetDecoder),
   flipped: JsonDecoder.boolean(),
-  meta: v2Optional(storyMetaDecoder),
+  meta: optionalStoryMetaDecoder,
   tokens: tokensDecoder,
   modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
 }, 'Story');

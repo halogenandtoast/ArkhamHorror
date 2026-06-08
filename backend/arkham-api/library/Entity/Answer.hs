@@ -441,6 +441,7 @@ handleAnswerPure Game {..} playerId = \case
         -- skip the stale AskMap so it doesn't clobber the regenerated one.
         UpdateGlobalSetting {} | inFastWindow -> handled [message]
         UpdateCardSetting {} | inFastWindow -> handled [message]
+        SetAsIfRuling {} | inFastWindow -> handled [message]
         _ -> handled [message, AskMap gameQuestion]
       else handled [message]
   Answer response ->

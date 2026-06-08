@@ -44,7 +44,7 @@ readStory
   -> m ()
 readStory investigator a storyDef = do
   flipThis (asId investigator) a
-  storyCard <- genCard storyDef
+  storyCard <- fetchCard storyDef
   push $ ReadStory (asId investigator) storyCard ResolveIt (Just $ toTarget a)
 
 readStoryWithPlacement
@@ -56,5 +56,15 @@ readStoryWithPlacement
   -> m ()
 readStoryWithPlacement investigator a storyDef placement = do
   flipThis (asId investigator) a
-  storyCard <- genCard storyDef
+  storyCard <- fetchCard storyDef
   push $ ReadStoryWithPlacement (asId investigator) storyCard ResolveIt (Just $ toTarget a) placement
+
+readStoryWithPlacement_
+  :: (ReverseQueue m, ToId investigator InvestigatorId)
+  => investigator
+  -> CardDef
+  -> Placement
+  -> m ()
+readStoryWithPlacement_ investigator storyDef placement = do
+  storyCard <- fetchCard storyDef
+  push $ ReadStoryWithPlacement (asId investigator) storyCard ResolveIt Nothing placement

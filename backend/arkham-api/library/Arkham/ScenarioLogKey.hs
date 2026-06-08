@@ -96,6 +96,15 @@ data ScenarioLogKey
     YouAreDeliveringAPackage
   | -- | Prelude The Final Evening
     TheHemlocksAreHashingItOut
+  | -- | Hemlock House
+    JudithIsRemodeling
+  | FoundLittleSylvie
+  | YouAreHelpingGideon
+  | -- | The Lost Sister
+    FoundATornDogLeash
+  | FoundASetOfFootprints
+  | TheoIsArguingWithHelen
+  | GideonIsSearchingForAnHeirloom
   | -- | Fate of the Vale
     BertieIsFleeing
   | TheInvestigatorsFoundGas
@@ -106,6 +115,15 @@ data ScenarioLogKey
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen
+  | -- | The Blob That Ate Everything
+    TheChemistWasSaved
+  | TheFormulaWasNotCompleted
+  | TheSampleWasRecovered
+  | TheSampleWasLost
+  | TheMiGoWereDrivenOff
+  | TheSecretOfTheOozeWasStolen
+  | TheExplosivesWereDiffused
+  | TheExplosivesWereDetonated
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody
@@ -133,15 +151,6 @@ data ScenarioLogKey
     TheInvestigatorsMadeTheirCallTime
   | -- Investigator Cards
     YouOweBiancaResources (Labeled InvestigatorId) Int
-  | -- | Hemlock House
-    JudithIsRemodeling
-  | FoundLittleSylvie
-  | YouAreHelpingGideon
-  | -- | The Lost Sister
-    FoundATornDogLeash
-  | FoundASetOfFootprints
-  | TheoIsArguingWithHelen
-  | GideonIsSearchingForAnHeirloom
   deriving stock (Eq, Show, Ord, Data)
 
 data ScenarioCountKey

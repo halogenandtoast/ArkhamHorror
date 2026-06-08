@@ -83,6 +83,7 @@ data ExtendedCardMatcher
   | ChosenViaCustomization ExtendedCardMatcher
   | PassesCommitRestrictions ExtendedCardMatcher
   | CardWithSharedTraitToAttackingEnemy
+  | CardWithoutUniqueCopyInPlay
   | CardIdentifiedByScenarioMetaKey Key
   | ActiveCard
   | ResolvingCard
@@ -196,6 +197,7 @@ data CardMatcher
   | CardWithCardCode CardCode
   | CardWithCardCodeExact CardCodeExact
   | CardWithTitle Text
+  | CardWithTitleContaining Text
   | CardWithTrait Trait
   | CardWithId CardId
   | CardWithLevel Int

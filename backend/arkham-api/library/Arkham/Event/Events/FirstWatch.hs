@@ -5,6 +5,7 @@ import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Query (getInvestigators, getPlayerCount)
+import Arkham.Strategy
 
 newtype FirstWatchMetadata = FirstWatchMetadata {firstWatchPairings :: [(InvestigatorId, EncounterCard)]}
   deriving newtype (Show, Eq, Generic)
@@ -19,10 +20,10 @@ firstWatch = event (FirstWatch . (`with` FirstWatchMetadata [])) Cards.firstWatc
 
 instance RunMessage FirstWatch where
   runMessage msg e@(FirstWatch (attrs `With` meta)) = runQueueT $ case msg of
-    PlayThisEvent _ (is attrs -> True) -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       don't AllDrawEncounterCard
       playerCount <- getPlayerCount
-      push $ DrawEncounterCards (toTarget attrs) playerCount
+      lookAt iid attrs EncounterDeckTarget [(FromTopOfDeck playerCount, PutBack)] #any (defer attrs IsNotDraw)
       pure e
     UseCardAbilityChoice iid (isSource attrs -> True) 1 (EncounterCardMetadata card) [] _ -> do
       investigators <- getInvestigators
@@ -34,14 +35,16 @@ instance RunMessage FirstWatch where
     UseCardAbilityChoice iid (isSource attrs -> True) 2 (EncounterCardMetadata card) _ _ -> do
       pure
         $ FirstWatch (attrs `with` meta {firstWatchPairings = (iid, card) : firstWatchPairings meta})
-    RequestedEncounterCards (isTarget attrs -> True) cards -> do
+    SearchFound _ (isTarget attrs -> True) _ (onlyEncounterCards -> cards) | notNull cards -> do
       focusCards cards do
         chooseOneAtATimeM attrs.owner do
           targets cards \card -> do
             push $ UseCardAbilityChoice attrs.owner (toSource attrs) 1 (EncounterCardMetadata card) [] NoPayment
       doStep 2 msg
       pure e
-    DoStep 2 (RequestedEncounterCards (isTarget attrs -> True) _) -> do
+    DoStep 2 (SearchFound _ (isTarget attrs -> True) _ _) -> do
+      -- FAQ v2.5: cards dealt by First Watch are no longer in the encounter deck
+      for_ (firstWatchPairings meta) (obtainCard . snd)
       for_ (firstWatchPairings meta) (uncurry drawCard)
       pure e
     _ -> FirstWatch . (`with` meta) <$> liftRunMessage msg attrs

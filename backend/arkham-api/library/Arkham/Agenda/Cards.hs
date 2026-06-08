@@ -295,4 +295,8 @@ allAgendaCards =
       , aGathering
       , aRitual
       , brethrenOfAsh
+      , --- The Blob That Ate Everything
+        theAnomalySpreads
+      , theAnomalySwells
+      , theAnomalyConsumes
       ]

@@ -675,3 +675,92 @@ bloodDrinker =
     { cdCardTraits = setFromList [Humanoid, Monster]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
+
+-- The Blob That Ate Everything
+
+oozeling :: CardDef
+oozeling =
+  (enemy "85039" "Oozeling" TheBlobThatAteEverything 4)
+    { cdCardTraits = setFromList [Monster, Ooze, Manifold]
+    , cdKeywords = setFromList [Keyword.ScenarioKeywordX "Blob" 1]
+    }
+
+graspingOoze :: CardDef
+graspingOoze =
+  (enemy "85040" "Grasping Ooze" TheBlobThatAteEverything 2)
+    { cdCardTraits = setFromList [Monster, Ooze, Manifold]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.ScenarioKeywordX "Blob" 3]
+    }
+
+cubicOoze :: CardDef
+cubicOoze =
+  (enemy "85041" "Cubic Ooze" TheBlobThatAteEverything 2)
+    { cdCardTraits = setFromList [Monster, Ooze, Manifold]
+    , cdKeywords = setFromList [Keyword.ScenarioKeywordX "Blob" 2]
+    , cdRevelation = IsRevelation
+    }
+
+oozewraith :: CardDef
+oozewraith =
+  (enemy "85042" "Oozewraith" TheBlobThatAteEverything 2)
+    { cdCardTraits = setFromList [Monster, Ooze, Manifold]
+    , cdKeywords =
+        setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate, Keyword.ScenarioKeywordX "Blob" 5]
+    , cdVictoryPoints = Just 1
+    }
+
+vulnerableHeart :: CardDef
+vulnerableHeart =
+  (enemy "85043" "Vulnerable Heart" TheBlobThatAteEverything 1)
+    { cdCardTraits = setFromList [Monster, Ooze, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate]
+    }
+
+subject8L08 :: CardDef
+subject8L08 =
+  (enemy "85038" "Subject 8L-08" BlobSingleGroup 1)
+    { cdCardTraits = setFromList [Monster, Ooze, Elite]
+    }
+
+subject8L08EpicMultiplayer :: CardDef
+subject8L08EpicMultiplayer =
+  (enemy "85037" "Subject 8L-08" BlobEpicMultiplayer 1)
+    { cdCardTraits = setFromList [Monster, Ooze, Elite]
+    }
+
+-- Mi-Go Incursion
+
+miGoGeneral :: CardDef
+miGoGeneral =
+  (enemy "85027" "Mi-Go General" MiGoIncursion 1)
+    { cdCardTraits = setFromList [Monster, Servitor, MiGo, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+miGoDrone :: CardDef
+miGoDrone =
+  (enemy "85033" "Mi-Go Drone" MiGoIncursion 3)
+    { cdCardTraits = setFromList [Monster, MiGo]
+    , cdKeywords = setFromList [Keyword.Surge]
+    }
+
+miGoHarvester :: CardDef
+miGoHarvester =
+  (enemy "85034" "Mi-Go Harvester" MiGoIncursion 1)
+    { cdCardTraits = setFromList [Monster, MiGo, Elite]
+    , cdVictoryPoints = Just 1
+    }
+
+miGoMeddler :: CardDef
+miGoMeddler =
+  (enemy "85035" "Mi-Go Meddler" MiGoIncursion 1)
+    { cdCardTraits = setFromList [Monster, MiGo, Elite]
+    , cdVictoryPoints = Just 1
+    }
+
+miGoAbductor :: CardDef
+miGoAbductor =
+  (enemy "85036" "Mi-Go Abductor" MiGoIncursion 1)
+    { cdCardTraits = setFromList [Monster, MiGo, Elite]
+    , cdVictoryPoints = Just 1
+    }

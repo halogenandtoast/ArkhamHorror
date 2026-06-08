@@ -45,6 +45,7 @@ data instance Field Story :: Type -> Type where
   StoryClues :: Field Story Int
   StoryTokens :: Field Story Tokens
   StoryPlacement :: Field Story Placement
+  StoryFlipped :: Field Story Bool
   StoryOtherSide :: Field Story (Maybe Target)
   StoryCardsUnderneath :: Field Story [Card]
 

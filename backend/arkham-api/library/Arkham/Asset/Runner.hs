@@ -642,14 +642,19 @@ instance RunMessage AssetAttrs where
       runMessage (PlaceAsset aid placement) a
     TakeControlOfAsset iid aid | aid == assetId -> do
       pushM $ checkWindows $ (`mkWindow` Window.TookControlOfAsset iid aid) <$> [#when, #after]
-      when (isOutOfPlayPlacement a.placement) do
+      let entersPlay = isOutOfPlayPlacement a.placement
+      uses <-
+        if entersPlay && Map.null (Map.filterWithKey (\k _ -> tokenIsUse k) assetTokens)
+          then toModifiedStartingUses a assetPrintedUses
+          else pure mempty
+      when entersPlay do
         whenEnterMsg <- checkWindows [mkWhen (Window.EnterPlay $ toTarget a)]
         afterEnterMsg <- checkWindows [mkAfter (Window.EnterPlay $ toTarget a)]
 
         pushAll
           $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
           <> [whenEnterMsg, CardEnteredPlay iid (toCard a), afterEnterMsg]
-      pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
+      pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid & (tokensL %~ Map.unionWith (+) uses . coerce)
     LoseControlOfAsset aid | aid == assetId -> do
       pure $ a & controllerL .~ Nothing
     ReplacedInvestigatorAsset iid aid | aid == assetId -> do

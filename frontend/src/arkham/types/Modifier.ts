@@ -237,6 +237,7 @@ type UIModifierType =
   | 'Locus'
   | 'Ethereal'
   | 'Explosion'
+  | 'Oversized'
   | { tag: 'ImportantToScenario', contents: string }
   | { tag: 'OverlayCheckmark', top: number, left: number }
   | { tag: 'Rotated', contents: number}
@@ -412,9 +413,10 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
     {
       tag: JsonDecoder.literal('UIModifier'),
       contents: JsonDecoder.oneOf<UIModifierType>([
-        JsonDecoder.literal('Locus'),
-        JsonDecoder.literal('Ethereal'),
-        JsonDecoder.literal('Explosion'),
+        JsonDecoder.object({ tag: JsonDecoder.literal('Locus') }, 'Locus').map(() => "Locus"),
+        JsonDecoder.object({ tag: JsonDecoder.literal('Ethereal') }, 'Ethereal').map(() => "Ethereal"),
+        JsonDecoder.object({ tag: JsonDecoder.literal('Explosion') }, 'Explosion').map(() => "Explosion"),
+        JsonDecoder.object({ tag: JsonDecoder.literal('Oversized') }, 'Oversized').map(() => "Oversized"),
         JsonDecoder.object({ tag: JsonDecoder.literal('ImportantToScenario'), contents: JsonDecoder.string() }, 'ImportantToScenario'),
         JsonDecoder.object({
           tag: JsonDecoder.literal('OverlayCheckmark'),

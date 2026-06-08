@@ -73,6 +73,17 @@
     "miniCards": "Gather each decoy mini-card and each of the following mini- cards: 3x Acolyte (any), Wizard of the Order, Sinister Aspirants (A, B and C), and Emissary from Yuggoth. Set them aside, out of play.",
     "cultists": "One at a time, in player order, each investigator discards cards from the top of the encounter deck until they discard a Cultist enemy. Each investigator draws the enemy they discarded, resolving its concealed keyword (as granted by agenda 1a). After all investigators have performed this step, shuffle each other discarded card back into the encounter deck."
   },
+  "act2Setup": {
+    "title": "Act 2 Setup",
+    "instructions": "_When you are instructed to do so during act 1b, follow these instructions to set up the play area for act 2._",
+    "setAsideLocations": "Set each of the current locations aside, without discarding any cards or tokens at those locations. Those locations (along with cards and tokens at those locations) are not considered to be in play during act 2, but will re-enter play later in the same state. (*Investigators are not defeated during this process.*)",
+    "shuffleGrandBazaar": "Shuffle the seven Grand Bazaar locations and remove one of them from the game at random, without looking at it.",
+    "revealToken": "Reveal a random token from the chaos bag, and find the diagram that matches the revealed chaos token (if none match, retry).",
+    "putIntoPlay": "Put the remaining six Grand Bazaar locations into play, arranged in a pattern of rows and columns according to the randomly chosen diagram. Note that one of these locations is designated as the “entrance” and one is designated as the “east gate.”",
+    "moveToEntrance": "Move each investigator to the Grand Bazaar location marked in the randomly chosen diagram as the “entrance.”",
+    "divideMiniCards": "Shuffle together each of the concealed mini-cards on the four locations from act 1, and divide them as evenly as possible among the Grand Bazaar locations in play.",
+    "proceed": "You are now ready to proceed to act 2."
+  },
   "resolutions": {
     "checkCampaignLog": "Check the Campaign Log.",
     "noResolution": {

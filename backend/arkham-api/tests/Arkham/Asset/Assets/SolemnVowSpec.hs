@@ -110,6 +110,25 @@ spec = describe "Solemn Vow" do
             leoDeLuca.horror
               `shouldReturn` (if (dType, tType) == (MoveHorror, AssetOwnerControls) then 1 else 0)
 
+    it "does not offer to move damage or horror from cards that have none" . gameTest $ \self -> do
+      roland <- addInvestigator rolandBanks & prop @"horror" 1
+      beatCop2 <- roland `putAssetIntoPlay` Assets.beatCop2
+      location <- testLocation
+      self `moveTo` location
+      roland `moveTo` location
+      solemnVow <- self `putAssetIntoPlay` Assets.solemnVow
+      setActive roland
+      [useSolemnVow] <- roland `getActionsFrom` solemnVow
+      roland `useAbility` useSolemnVow
+
+      -- roland has no damage and Beat Cop has no damage or horror, so moving
+      -- roland's horror to the owner is the only legal choice and runs
+      -- automatically without asking
+      roland.horror `shouldReturn` 0
+      self.horror `shouldReturn` 1
+      beatCop2.damage `shouldReturn` 0
+      beatCop2.horror `shouldReturn` 0
+
   context "if the owner of Solemn Vow is not at your location" do
     it "can't be used" . gameTest $ \self -> do
       roland <- addInvestigator rolandBanks & prop @"damage" 1

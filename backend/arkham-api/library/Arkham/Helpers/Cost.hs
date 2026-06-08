@@ -304,11 +304,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
             ]
         _ -> error "Unhandled shuffle into deck cost"
       ShuffleBondedCost n cardCode -> do
-        -- bonded cards belong to the owner of the card being played, which can
-        -- differ from the payer (e.g. Bob Jenkins playing a teammate's Item)
-        mCard <- sourceToMaybeCard source
-        let iid' = fromMaybe iid (mCard >>= (.owner))
-        bondedCards <- field InvestigatorBondedCards iid'
+        bondedCards <- field InvestigatorBondedCards iid
         pure $ count ((== cardCode) . toCardCode) bondedCards >= n
       DiscardHandCost {} -> pure True
       DiscardTopOfDeckCost {} -> can.manipulate.deck iid

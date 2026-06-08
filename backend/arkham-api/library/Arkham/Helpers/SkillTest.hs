@@ -443,7 +443,10 @@ calculateSkillTestResultsData s = do
     modifiedSkillValue' =
       max 0 (currentSkillValue + chaosTokenValues + iconCount - subtractIconCount)
     op = if FailTies `elem` modifiers' then (>) else (>=)
-    isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
+    baseSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
+    succeedByAmount = modifiedSkillValue' - modifiedSkillTestDifficulty
+    failThresholds = [t | AutomaticallyFailIfSucceedByAtLeast t <- modifiers']
+    isSuccess = baseSuccess && not (any (succeedByAmount >=) failThresholds)
   pure
     $ SkillTestResultsData
       currentSkillValue

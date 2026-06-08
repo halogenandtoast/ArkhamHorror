@@ -47,6 +47,7 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Card
 import Arkham.Card.Settings
+import Arkham.Game.Settings (AsIfRuling)
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
@@ -453,6 +454,7 @@ data Message
   | ClearAbilityUse AbilityRef
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
+  | SetAsIfRuling AsIfRuling
   | SetLocationOffset LocationId Double Double
   | ResetLocationOffsets
   | SetAsIfAtIgnored InvestigatorId Bool

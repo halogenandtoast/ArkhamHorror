@@ -6,6 +6,7 @@ import Arkham.Capability
 import Arkham.Card
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf, withModifiersOf)
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Id
@@ -70,7 +71,16 @@ instance RunMessage BobJenkins where
         if iid == iid'
           then getPlayableCardsMatch attrs iid (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
           else withModifiersOf iid attrs [CanSpendResourcesOnCardFromInvestigator (be iid') (#asset <> #item)] do
-            getPlayableCardsMatch attrs iid' (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
+            cards <- getPlayableCardsMatch attrs iid' (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
+            -- Bob may share the *resource* cost of a teammate's Item (his
+            -- ability only allows resources), but any additional cost is paid
+            -- by Bob, the investigator actually playing the card. Exclude cards
+            -- whose additional cost Bob cannot pay himself -- e.g. Crystallizer
+            -- of Dreams, whose ShuffleBondedCost searches Bob's own bonded cards
+            -- (which never contain Guardian of the Crystallizer).
+            flip filterM cards \c -> case cdAdditionalCost (toCardDef c) of
+              Nothing -> pure True
+              Just cost -> getCanAffordCost iid (CardIdSource (toCardId c)) [] windows' cost
 
       -- playableCards <- concatForM investigators \iid' -> do
       --   cards <- select $ inHandOf ForPlay iid' <> basic (#asset <> #item)

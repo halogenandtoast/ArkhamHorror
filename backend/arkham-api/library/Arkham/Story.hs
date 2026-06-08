@@ -208,4 +208,9 @@ allStories =
     , SomeStoryCard localsOfKingsportRival
     , -- The Blob that ate Everything ELSE!
       SomeStoryCard realityAcid
+    , -- Mi-Go Incursion
+      SomeStoryCard rescueTheChemist
+    , SomeStoryCard recoverTheSample
+    , SomeStoryCard driveOffTheMiGo
+    , SomeStoryCard defuseTheExplosives
     ]

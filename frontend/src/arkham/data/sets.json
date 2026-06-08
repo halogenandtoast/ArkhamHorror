@@ -87,7 +87,7 @@
   { "name": "The Blob That Ate Everything", "min": 85001, "max": 85053, "playerCards": 0, "code": "blob", "cycle": 70 },
   { "name": "War of the Outer Gods", "min": 86001, "max": 86055, "playerCards": 0, "code": "wog", "cycle": 70 },
   { "name": "Machinations Through Time", "min": 87001, "max": 87057, "playerCards": 0, "code": "mtt", "cycle": 70 },
-  { "name": "Fortune and Folly", "min": 88001, "max": 88053, "playerCards": 0, "code": "faf", "cycle": 70 },
+  { "name": "Fortune and Folly", "min": 88001, "max": 88053, "playerCards": 0, "code": "faf", "cycle": 70, "encounterDuplicates": 25 },
 
   { "name": "The Blob That Ate Everything ELSE!", "min": 89001, "max": 89021, "playerCards": 5, "code": "blbe", "cycle": 70 },
   { "name": "The Midwinter Gala", "min": 71001, "max": 71062, "playerCards": 0, "code": "tmg", "cycle": 70 },

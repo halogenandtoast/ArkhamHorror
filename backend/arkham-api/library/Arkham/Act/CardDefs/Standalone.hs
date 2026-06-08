@@ -59,3 +59,21 @@ theAbominableContessa = act "72048" "The Abominable Contessa" 2 AbominableContes
 
 bloodbath :: CardDef
 bloodbath = act "72049" "Bloodbath" 3 AbominableContessa
+
+-- The Blob That Ate Everything
+
+exposeTheAnomaly :: CardDef
+exposeTheAnomaly = act "85006" "Expose the Anomaly" 1 BlobSingleGroup
+
+extraterrestrialPhysiology :: CardDef
+extraterrestrialPhysiology =
+  act "85007" "Extraterrestrial Physiology" 2 TheBlobThatAteEverything
+
+blackwatersBane :: CardDef
+blackwatersBane = act "85009" "Blackwater's Bane" 3 BlobSingleGroup
+
+exposeTheAnomalyEpicMultiplayer :: CardDef
+exposeTheAnomalyEpicMultiplayer = act "85005" "Expose the Anomaly" 1 BlobEpicMultiplayer
+
+blackwatersBaneEpicMultiplayer :: CardDef
+blackwatersBaneEpicMultiplayer = act "85008" "Blackwater's Bane" 3 BlobEpicMultiplayer

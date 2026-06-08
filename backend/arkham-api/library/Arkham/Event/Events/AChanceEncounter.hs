@@ -16,7 +16,11 @@ aChanceEncounter = event AChanceEncounter Cards.aChanceEncounter
 instance RunMessage AChanceEncounter where
   runMessage msg e@(AChanceEncounter attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      discards <- select $ #ally <> InDiscardOf (affectsOthers can.have.cards.leaveDiscard)
+      discards <-
+        select
+          $ #ally
+          <> InDiscardOf (affectsOthers can.have.cards.leaveDiscard)
+          <> CardWithoutUniqueCopyInPlay
       focusCards discards do
         chooseTargetM iid discards \card -> do
           putCardIntoPlay iid card

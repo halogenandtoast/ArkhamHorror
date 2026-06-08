@@ -48,6 +48,24 @@
     "xp": 3
   },
   {
+    "id": "85001",
+    "name": "The Blob That Ate Everything",
+    "standaloneDifficulties": ["Standard", "Hard"],
+    "difficultyLevels": {
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour", "MinusFive"
+        , "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusThree", "MinusFour", "MinusFive", "MinusSix"
+        , "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ]
+    },
+    "xp": 2,
+    "alpha": true,
+    "dev": true
+  },
+  {
     "id": "88001",
     "name": "Fortune and Folly",
     "standaloneDifficulties": ["Standard", "Hard"],
@@ -61,8 +79,7 @@
         , "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
         ]
     },
-    "xp": 3,
-    "beta": true
+    "xp": 3
   },
   {
     "id": "71001",

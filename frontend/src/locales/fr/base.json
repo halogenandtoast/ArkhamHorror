@@ -32,7 +32,13 @@
   "username": "Identifiant",
   "usernameOrEmailAlreadyTaken": "Identifiant ou email non disponible",
   "tooltips": {
-    "takeControlOfKey": "Prendre le contrôle de la clef {key}"
+    "takeControlOfKey": "Prendre le contrôle de la clef {key}",
+    "takeHorror": "Subir {count} horreurs",
+    "discardTopOfEncounterDeck": "Défausser la carte au sommet du deck Rencontre | Défausser les {count} premières cartes au sommet du deck Rencontre",
+    "takeDamageAndHorror": "Subir {damage} dégâts et {horror} horreurs",
+    "loseActions": "Perdre 1 action | Perdre {count} actions",
+    "loseResources": "Perdre 1 ressource | Perdre {count} ressources",
+    "attacksYou": "{name} vous attaque"
   },
   "shuffleRemainder": "Mélangez les cartes Rencontre restantes pour former le deck Rencontre.",
   "readyToBegin": "Vous êtes maintenant prêt à démarrer.",

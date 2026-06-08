@@ -1282,4 +1282,16 @@ allLocations =
     , SomeLocationCard sewerTunnelsToxicWastePit
     , SomeLocationCard undergroundCistern
     , SomeLocationCard sluiceControl
+    , -- The Blob That Ate Everything
+      SomeLocationCard theCrater
+    , SomeLocationCard researchSiteTheBlobThatAteEverything
+    , SomeLocationCard temporaryHQ
+    , SomeLocationCard fungusMound
+    , SomeLocationCard sewer
+    , SomeLocationCard bridge
+    , SomeLocationCard waterTower
+    , SomeLocationCard church
+    , SomeLocationCard oozyLakebed
+    , SomeLocationCard slimyStreets
+    , SomeLocationCard desiccatedFarmland
     ]

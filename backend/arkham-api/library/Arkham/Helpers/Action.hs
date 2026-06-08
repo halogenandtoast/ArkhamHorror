@@ -141,7 +141,9 @@ getAdditionalActions attrs = do
       _ -> []
     additionalActions = concatMap toAdditionalAction mods
 
-  pure $ filter (`notElem` investigatorUsedAdditionalActions attrs) additionalActions
+  if CannotGainAdditionalActions `elem` mods
+    then pure []
+    else pure $ filter (`notElem` investigatorUsedAdditionalActions attrs) additionalActions
 
 getActionCost :: HasGame m => InvestigatorAttrs -> [Action] -> m Int
 getActionCost attrs as = do

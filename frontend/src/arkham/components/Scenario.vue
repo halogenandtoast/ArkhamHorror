@@ -25,6 +25,7 @@ import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { ModifierType, Hollow } from '@/arkham/types/Modifier';
 import { Source } from '@/arkham/types/Source';
+import { type Target } from '@/arkham/types/Target';
 import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, groupBy } from '@/arkham/helpers';
@@ -1144,11 +1145,34 @@ watchEffect(() => {
       default: return false
     }
   }
-  const isOutOfPlayChoice = (c: Message) => {
-    if (c.tag !== "AbilityLabel") return false
-    return isOutOfPlaySource(c.ability.source)
+  const isOutOfPlayCardId = (id: string) => outOfPlay.value.some(card => cardId(card) === id)
+
+  const isOutOfPlayTarget = (target: Target) => {
+    const contents = target.contents
+    if (typeof contents !== 'string') return false
+
+    switch (target.tag) {
+      case "CardIdTarget": return isOutOfPlayCardId(contents)
+      case "EnemyTarget": return outOfPlayEnemies.value.some((e) => e.id === contents)
+      case "TreacheryTarget": {
+        return outOfPlayEnemies.value.some((e) => e.treacheries.includes(contents))
+      }
+      case "EventTarget": {
+        return outOfPlayEnemies.value.some((e) => e.events.includes(contents))
+      }
+      default: return false
+    }
   }
-  forcedShowOutOfPlay.value = choices.value.some(isOutOfPlayChoice)
+
+  const isOutOfPlayChoice = (c: Message) => {
+    if (c.tag === "AbilityLabel") return isOutOfPlaySource(c.ability.source)
+    if (c.tag === "TargetLabel") return isOutOfPlayTarget(c.target)
+    return false
+  }
+
+  const isActionableChoice = (c: Message) => !["Info", "InvalidLabel", "TooltipLabel"].includes(c.tag)
+  const actionableChoices = choices.value.filter(isActionableChoice)
+  forcedShowOutOfPlay.value = actionableChoices.length > 0 && actionableChoices.every(isOutOfPlayChoice)
 
   const isHollowedChoice = (c: Message) => {
     if (c.tag !== "TargetLabel") return false

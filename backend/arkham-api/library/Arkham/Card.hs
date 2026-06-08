@@ -252,6 +252,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithCardCodeExact cardCode -> CardCodeExact (toCardCode a) == cardCode
   CardWithId cardId -> toCardId a == cardId
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
+  CardWithTitleContaining sub -> T.toLower sub `T.isInfixOf` T.toLower (nameTitle . cdName $ toCardDef a)
   CardWithTrait trait -> trait `member` toTraits a
   CardWithClass role -> role `member` cdClassSymbols (toCardDef a)
   CardWithLevel n -> Just n == (toCard a).level

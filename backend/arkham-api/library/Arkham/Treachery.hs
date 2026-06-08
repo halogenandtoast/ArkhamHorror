@@ -1007,4 +1007,15 @@ allTreacheries =
       , SomeTreacheryCard torment
       , SomeTreacheryCard markOfElokoss
       , SomeTreacheryCard ashenRebirth
+      , -- The Blob That Ate Everything
+        SomeTreacheryCard realityAcid
+      , SomeTreacheryCard devouringOoze
+      , SomeTreacheryCard corrosiveSlime
+      , SomeTreacheryCard consumingMaw
+      , SomeTreacheryCard waveOfOoze
+      , SomeTreacheryCard causticDissemination
+      , SomeTreacheryCard stickyFeet
+      , SomeTreacheryCard replication
+      , SomeTreacheryCard itsGotMe
+      , SomeTreacheryCard alienFoodChain
       ]

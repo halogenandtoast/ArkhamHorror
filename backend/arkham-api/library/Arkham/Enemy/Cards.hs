@@ -597,6 +597,20 @@ allEncounterEnemyCards =
       , sgtEarlMonroeDirtyCop
       , abigailForemanWaryLibrarian
       , margaretLiuBeguilingLoungeSinger
+      , --- The Blob That Ate Everything
+        oozeling
+      , graspingOoze
+      , cubicOoze
+      , oozewraith
+      , vulnerableHeart
+      , subject8L08
+      , subject8L08EpicMultiplayer
+      , --- Mi-Go Incursion
+        miGoGeneral
+      , miGoDrone
+      , miGoHarvester
+      , miGoMeddler
+      , miGoAbductor
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

@@ -1131,6 +1131,14 @@ allEncounterAssetCards =
       , accursedCapeShroudOfChaos
       , rocketShipRattlingWithEnergy
       , cashCart
+      , --- Mi-Go Incursion
+        universityChemist
+      , meteoriteSample
+      , theMilitarysPlan
+      , universalSolvent
+      , petOozeling
+      , miGoWeapon
+      , ltWilsonStewart
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

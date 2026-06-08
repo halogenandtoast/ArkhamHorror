@@ -23,7 +23,10 @@ instance RunMessage TheMuscleUnpracticed where
   runMessage msg a@(TheMuscleUnpracticed attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (defeatedEnemy -> eid) _ -> do
       byTwo <-
-        selectNone $ EnemyAt (orConnected_ (locationWithInvestigator iid)) <> not_ (EnemyWithId eid)
+        selectNone
+          $ EnemyWithTrait Casino
+          <> EnemyAt (orConnected_ (locationWithInvestigator iid))
+          <> not_ (EnemyWithId eid)
       reduceAlarmLevelBy (if byTwo then 2 else 1) (attrs.ability 1) iid
       pure a
     InvestigatorEliminated _ -> pure a

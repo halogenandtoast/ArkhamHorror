@@ -1,0 +1,166 @@
+{
+  "intro": {
+    "title": "The Blog That Ate Everything",
+    "body": "<p class='basic'>Incident Report: 8L-08.<br>Thursday, 07/05/1928.<br>Blackwater, MA.</p><p class='basic'>0312 hours – Impact event just outside of Blackwater. Intercepted police call, agents sent to investigate. Interviewed local farmer, Ron Graham; claims meteor was several feet wide, greenish hue. Crater roughly 100 yards in diameter. Radiation detected in outlying area. Recommend immediate quarantine and further observation by research team. Situation under control.</p><p>It wasn't under control.</p><p>That was the report the G-men took when they first arrived. For the next few days, the town of Blackwater was on lockdown. The impact was all that was talked about in the papers, but not much was known aside from the enormous crater and the effect it had on the countryside. Nobody was allowed to leave the town, and only those approved by the shadowy government agency were allowed to enter. Those unfortunate few included high-ranking government agents, and a team of researchers from the nearby Miskatonic University, who were summoned to investigate the meteor itself. For the rest of the town’s inhabitants, it was a strange occurrence, nothing more… that is, until the meteor hatched.</p><p>I saw it with my own eyes. When the anomaly emerged, the first thing it did was devour the team of researchers who had been sent to collect and study samples from the meteor. The next thing it did was devour their lab equipment. Then Ron Graham’s tractor. Then his house, in its entirety. It continued to grow and spread, devouring everything in its path. I barely escaped with my life.</p><p>When the army arrived, they thought they could kill it with bullets and shells. Everything they threw at the creature was devoured, one round after the next. Then it split into hundreds of smaller pieces of itself, and the army was quickly overwhelmed. While the battle raged on, myself and others back in town saw lights and shapes in the sky above. Something was up there, waiting. Biding time.</p><p>The quarantine still holds, and we’re stuck in the middle of it. It won’t be long before the anomaly has grown large enough to devour everything in Blackwater. And if that happens, who could possibly stop its rampage?</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from *The Blob That Ate Everything* encounter set. This set is indicated by this icon:<section class='encounter-sets'><img src='{setImgPath}/the-blob-that-ate-everything.png' /></section>",
+    "epicMultiplayer": "If you are playing in *Epic Multiplayer Mode*, gather all cards from the Epic Multiplayer encounter set, indicated by this icon. (Remove all cards from the Single Group encounter set from the game.)<section class='encounter-sets'><img src='{setImgPath}/epic-multiplayer.png' /></section>",
+    "singleGroup": "If you are playing in *Single Group Mode*, gather all cards from the Single Group encounter set, indicated by this icon. (Remove all cards from the Epic Multiplayer encounter set from the game.)<section class='encounter-sets'><img src='{setImgPath}/single-group.png' /></section>",
+    "setAsideMiGo": "Set all cards from the Mi-Go Incursion encounter set aside, out of play. This set is indicated by this icon:<section class='encounter-sets'><img src='{setImgPath}/migo.png' /></section>",
+    "setAside": "Search the *The Blob That Ate Everything* encounter set for Vulnerable Heart, 1 copy of Grasping Ooze, 1 copy of Cubic Ooze, and both copies of Oozewraith, and set them aside, out of play.",
+    "subject": "Put the Subject 8L-08 enemy into play next to the agenda deck. It is not at any location.",
+    "placeLocations": "Set up the locations according to the guidelines below:",
+    "shuffleQuarantine": "Shuffle the Quarantine Zone locations together and remove 1 of them from the game.",
+    "placeCrater": "Put The Crater into play.",
+    "innerRing": "Take the Research Site, the Temporary HQ, and 2 random Quarantine Zone locations. Shuffle them and place each connected to The Crater, in a random order.",
+    "outerRing": "Take the Fungus Mound and 3 random Quarantine Zone locations. Shuffle them and place each in 1 of the 4 positions in the outer ring, farthest from The Crater.",
+    "remaining": "Put the remaining Quarantine Zone locations into play.",
+    "startAt": "Each investigator begins play at the Temporary HQ.",
+    "countermeasures": "If you are playing in *Single Group Mode*, place 1 resource on the scenario reference card, as a countermeasure (2 resources instead if there are 3 or 4 investigators in the game)."
+  },
+  "tooltips": {
+    "theCrater": {
+      "deal": "{'{'}action{'}'} Spend 1 countermeasure: Deal 3 damage to Subject 8L-08 or a Manifold enemy at any location."
+    },
+    "researchSite": {
+      "gainCountermeasure": "{'{'}action{'}'} Spend 2 clues: Gain 1 countermeasure.",
+      "placeClues": "{'{'}action{'}'} Spend 1 countermeasure: Place 2 clues on Research Site _(from the token pool)_."
+    },
+    "temporaryHQ": {
+      "action": "{'{'}action{'}'} Spend 1 countermeasure: Choose one – Heal 3 damage, Heal 3 horror, Gain 5 resources, or Draw 3 cards."
+    },
+    "fungusMound": {
+      "test": "{'{'}action{'}'} Spend 1 countermeasure: Choose a Mi-Go enemy at any location and test {'{'}intellect{'}'} (0). For each point you succeed by, deal 1 damage to the chosen enemy (to a maximum of 5)."
+    },
+    "sewer": {
+      "move": "{'{'}action{'}'} Test {'{'}intellect{'}'} (1). If you succeed, move to a location up to X connections away from Sewer, where X is the amount you succeeded by."
+    },
+    "bridge": {
+      "defeat": "{'{'}fast{'}'} Choose an exhausted Manifold enemy at Bridge and test {'{'}intellect{'}'} (X), where X is that enemy's evade value. If you succeed, defeat the chosen enemy. (Max one success per game.)"
+    },
+    "waterTower": {
+      "damage": "{'{'}action{'}'} If there are no clues on Water Tower: Test {'{'}intellect{'}'} (3). If you succeed, deal 3 damage to each Ooze enemy at Water Tower and at each connecting location. (Max one success per game.)"
+    },
+    "church": {
+      "evade": "{'{'}action{'}'} If there are no clues on Church: Choose an Ooze enemy at Church, or a connecting location. Move the chosen enemy one location away from Church and automatically evade it. (Group limit once per game.)"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "Blob X",
+      "body": "<p class='basic'>Many of the enemies in this scenario are pieces of the anomaly which have broken apart and have their own sentience. Defeating these enemies damages the anomaly. As an enemy with _Blob X_ is defeated, deal X damage to Subject 8L-08.</p><ul><li>Enemies with _Blob X_ are not placed in the victory display when they are defeated unless they also have _Victory X_.</li></ul>"
+    },
+    {
+      "title": "Devour",
+      "body": "<p class='basic'>During this scenario, Subject 8L-08 can “devour” a variety of things.</p><ul><li>If a card is devoured, it is placed beneath Subject 8L-08. Cards beneath Subject 8L-08 are considered out of play. Each devoured card is returned to its owner’s deck at the end of the game. If an investigator is devoured, he or she is killed.</li><li>If a token is devoured, it is placed in the token pool.</li><li>When choosing a location to be devoured, you cannot choose to devour a location if it causes another location to have no valid connections.</li><li>Subject 8L-08 can also devour certain aspects of reality or metaphysical objects. If it does so, you will be instructed of the consequences.</li></ul>"
+    },
+    {
+      "title": "Countermeasures",
+      "body": "<p class='basic'>Countermeasures represent supplies, research, or military equipment which may aid the investigators in their survival. Countermeasures may be spent via certain card abilities in order to trigger powerful effects. However, gaining new countermeasures is rare, so be careful how you spend them!</p>"
+    },
+    {
+      "title": "Story Cards",
+      "body": "<p class='basic'>Story cards are a new cardtype in this scenario. These cards serve as an avenue for additional narrative and typically appear as the reverse side of another scenario card. When you are instructed to resolve a story card, simply read its story text and resolve its game text, if any.</p>"
+    },
+    {
+      "title": "Reality Acid",
+      "body": "<style>.reality-acid-table{width:100%;border-collapse:collapse;font-size:.82em;line-height:1.25;background:#BEC5B1;color:#1f1a12}.reality-acid-table th{background:#A2B695;color:#1f1a12;text-transform:uppercase;letter-spacing:.04em;border:1px solid #7f9273;padding:4px 6px;font-weight:bold}.reality-acid-table td{border:1px solid #8f9b86;padding:4px 6px;vertical-align:top;font-weight:normal}.reality-acid-table tbody tr:nth-child(odd){background:#BEC5B1}.reality-acid-table tbody tr:nth-child(even){background:#CDD0C3}.reality-acid-table .token{width:13%;text-align:center;color:#1f1a12;white-space:nowrap}.reality-acid-table .aspect{width:74%}</style><p class='basic'>Subject 8L-08 opens its maw, and devours… If the combination of chaos tokens revealed is not listed, or if the listed aspect cannot be devoured, reveal two new chaos tokens and consult the chart again. Chaos tokens are in any order.</p><table class='reality-acid-table'><thead><tr><th colspan='2'>Chaos Tokens</th><th>Aspect of Reality Devoured</th></tr></thead><tbody><tr><td class='token'>{autoFail}</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>…The non-_Elite_ enemy nearest to you.</td></tr><tr><td class='token'>{autoFail}</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>…A treachery at your location.</td></tr><tr><td class='token'>{autoFail}</td><td class='token'>–1 to –8</td><td class='aspect'>…1 horror and 1 damage from your investigator card.</td></tr><tr><td class='token'>{autoFail}</td><td class='token'>+0/+1</td><td class='aspect'>…Your greatest flaw. Search your deck for any 1 weakness card. It is devoured.</td></tr><tr><td class='token'>{autoFail}</td><td class='token'>{elderSign}</td><td class='aspect'>…The {autoFail} token just revealed.</td></tr><tr><td class='token'>+1</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>…Your caution. Resolve Reality Acid three more times, ignoring this result.</td></tr><tr><td class='token'>+1</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>…Your ignorance. Discover 1 clue at your location.</td></tr><tr><td class='token'>+1</td><td class='token'>–1 to –8</td><td class='aspect'>…Friendships. Until the end of the round, investigators cannot commit cards to each others’ skill tests.</td></tr><tr><td class='token'>+1</td><td class='token'>0</td><td class='aspect'>…Your player reference card.</td></tr><tr><td class='token'>0</td><td class='token'>0</td><td class='aspect'>…1 per-investigator clues from your location.</td></tr><tr><td class='token'>0</td><td class='token'>{skull}</td><td class='aspect'>…Your voice. Until the end of the round, you cannot speak or make noise.</td></tr><tr><td class='token'>0</td><td class='token'>{cultist}</td><td class='aspect'>…Your group’s food and drinks. It cannot be consumed until your group has dealt at least 3 damage to Subject 8L-08.</td></tr><tr><td class='token'>0</td><td class='token'>{tablet}</td><td class='aspect'>…The concept of language. Until the end of the investigation phase, you can only speak in gibberish.</td></tr><tr><td class='token'>0</td><td class='token'>{elderThing}</td><td class='aspect'>…Light. Until the end of the round, investigators must play with all nearby light sources turned off or covered (except for flashlights).</td></tr><tr><td class='token'>0</td><td class='token'>–1/–2</td><td class='aspect'>…Itself, and then regurgitates itself. Deal 1 damage to Subject 8L-08.</td></tr><tr><td class='token'>0</td><td class='token'>–3</td><td class='aspect'>…All damage from each _Manifold_ enemy.</td></tr><tr><td class='token'>0</td><td class='token'>–4 to –8</td><td class='aspect'>…All of the supplies, ammo, charges, and secrets among assets you control.</td></tr><tr><td class='token'>–1</td><td class='token'>{skull}</td><td class='aspect'>…Your hope. Until the end of the next mythos phase, set your base willpower to 0.</td></tr><tr><td class='token'>–1</td><td class='token'>{cultist}</td><td class='aspect'>…Your curiosity. Until the end of the next mythos phase, set your base intellect to 0.</td></tr><tr><td class='token'>–1</td><td class='token'>{tablet}</td><td class='aspect'>…Your precision. Until the end of the next mythos phase, set your base combat to 0.</td></tr><tr><td class='token'>–1</td><td class='token'>{elderThing}</td><td class='aspect'>…Your attention. Until the end of the next mythos phase, set your base agility to 0.</td></tr><tr><td class='token'>–1</td><td class='token'>–1</td><td class='aspect'>…Your versatility. Until the end of the round, you cannot play or use cards that do not match your investigator’s class.</td></tr><tr><td class='token'>–1</td><td class='token'>–2</td><td class='aspect'>…Your cell phone.</td></tr><tr><td class='token'>–1</td><td class='token'>–3</td><td class='aspect'>…The chaos bag. Remove all tokens from it and place them in a different container.</td></tr><tr><td class='token'>–1</td><td class='token'>–4 to –8</td><td class='aspect'>…Level 1–5 cards of your choice with at least 5 total levels from among your deck, discard pile, hand, and play area.</td></tr><tr><td class='token'>–2</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>…The top 3 cards of your deck.</td></tr><tr><td class='token'>–2</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>…The top 3 cards of your discard pile.</td></tr><tr><td class='token'>–2</td><td class='token'>–2</td><td class='aspect'>…The deckbox you store your deck in.</td></tr><tr><td class='token'>–2</td><td class='token'>–3</td><td class='aspect'>…Your investigator’s card sleeve.</td></tr><tr><td class='token'>–2</td><td class='token'>–4 to –8</td><td class='aspect'>…Your party’s teamwork. Each investigator loses 1 action.</td></tr><tr><td class='token'>–3</td><td class='token'>{skull}/{cultist}/{tablet}/{elderThing}</td><td class='aspect'>…A _Talent_, _Connection_, or _Condition_ asset you control.</td></tr><tr><td class='token'>–3</td><td class='token'>–4 to –8</td><td class='aspect'>…Your sense of time. Until you advance the agenda, investigators cannot use time-keeping devices, ask about the time, or trigger abilities on any card with “time,” “watch,” or “chrono” in its title.</td></tr><tr><td class='token'>–4 to –8</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>…Your investigator mini card. (Use something else to mark your location.)</td></tr><tr><td class='token'>–4 to –8</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>…Your house. Search the collection for Your House (Core #124); it is devoured.</td></tr><tr><td class='token'>–4 to –8</td><td class='token'>–4 to –8</td><td class='aspect'>…Your soul. Record in your Campaign Log that you have no soul.</td></tr><tr><td class='token'>{skull}</td><td class='token'>{skull}</td><td class='aspect'>…The highest-cost _Ally_ asset you control.</td></tr><tr><td class='token'>{skull}</td><td class='token'>{cultist}</td><td class='aspect'>…All event cards in your hand.</td></tr><tr><td class='token'>{skull}</td><td class='token'>{tablet}</td><td class='aspect'>…All of your resources.</td></tr><tr><td class='token'>{skull}</td><td class='token'>{elderThing}</td><td class='aspect'>…All skill cards in your hand.</td></tr><tr><td class='token'>{cultist}</td><td class='token'>{cultist}</td><td class='aspect'>…All cards that have been exiled.</td></tr><tr><td class='token'>{cultist}</td><td class='token'>{tablet}</td><td class='aspect'>…Your identity. Until the end of the round, treat your investigator’s text box as if it were blank (including _Traits_).</td></tr><tr><td class='token'>{cultist}</td><td class='token'>{elderThing}</td><td class='aspect'>…The concept of speed. Until the end of the round, investigators cannot gain or take additional actions.</td></tr><tr><td class='token'>{tablet}</td><td class='token'>{tablet}</td><td class='aspect'>…Your sense of urgency. Until the end of the round, you cannot move.</td></tr><tr><td class='token'>{tablet}</td><td class='token'>{elderThing}</td><td class='aspect'>…Your potential. Until the end of the round, your skills cannot be increased.</td></tr><tr><td class='token'>{elderThing}</td><td class='token'>{elderThing}</td><td class='aspect'>…Your patience. Place 1 doom on the current agenda.</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>…All _Spell_ and _Ritual_ assets you control.</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>…All _Item_ assets you control.</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>+1</td><td class='aspect'>…The concept of a “discard pile.” Until the end of the next mythos phase, each card that would be placed in any investigator’s discard pile is instead devoured.</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>0</td><td class='aspect'>…One of your hands. For the remainder of the game, you have 1 fewer hand slot.</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>–1</td><td class='aspect'>…The concept of success. The next time an investigator would succeed at a test by 2 or more, that investigator instead automatically fails.</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>–2/–3</td><td class='aspect'>…1 countermeasure.</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>–4 to –8</td><td class='aspect'>…The concept of easiness. Until the end of the game, flip the scenario reference card to its Hard/Expert side.</td></tr></tbody></table>"
+    }
+  ],
+  "resolutions": {
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Nothing is left of Blackwater now. The quarantine is broken. The anomaly cannot be contained. First it will spread throughout the countryside, devouring all in its path. Soon all of Massachusetts will be devoured. Then the entirety of New England. It has burrowed beneath the ground and cannot be stopped even by the oceans. No continent is safe. Every living organism on the planet will be devoured. And then, so too will the Earth… but that won't be the end. Not even the void of space can stop the creature's growth. In time, it will continue to expand and devour until there is nothing left but the cold emptiness of space and the blob that ate everything.</p><ul><li>In your Campaign Log, record that *Subject 8L-08 devoured the entire universe*.</li><li>The investigators lose the campaign.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Subject eliminated by third party. As per operational protocol, samples have been collected and sent for further study. Agents are currently scrubbing the remainder of the subject's presence from the quarantine zone.</p><ul><li>In your Campaign Log, record that *the anomaly was contained*.</li><li>For each of the following assets that are in play (Universal Solvent, Pet Oozeling, Mi-Go Weapon, and Lt. Wilson Stewart), any one investigator may choose to add that asset to his or her deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 3 bonus experience as he or she has saved the fabric of existence.</li></ul>"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for every 5 cards Subject 8L-08 has devoured.",
+      "cultist": "-2. If this token is revealed during an attack against an enemy, that enemy gains retaliate for this attack.",
+      "tablet": "-3. After this skill test ends, Subject 8L-08 devours each card that was committed to the test.",
+      "elderThing": "-5. Choose up to 5 cards from your hand. Subject 8L-08 devours each of those cards. You get +1 skill value for this test for each card devoured in this way."
+    },
+    "hardExpert": {
+      "skull": "-1 for every 3 cards Subject 8L-08 has devoured.",
+      "cultist": "-3. If this token is revealed during an attack against an enemy, it gains retaliate for this test.",
+      "tablet": "-4. After this skill test ends, Subject 8L-08 devours each card that was committed to the test.",
+      "elderThing": "-7. Choose up to 7 cards from your hand. Subject 8L-08 devours each of those cards. You get +1 skill value for this test for each card devoured in this way."
+    }
+  },
+  "label": {
+    "doneDevouring": "Done devouring cards",
+    "temporaryHQ": {
+      "healDamage": "Heal 3 damage",
+      "healHorror": "Heal 3 horror",
+      "gainResources": "Gain 5 resources",
+      "drawCards": "Draw 3 cards"
+    },
+    "slimyStreets": {
+      "takeDamage": "Take 1 damage",
+      "takeHorror": "Take 1 horror"
+    }
+  },
+  "realityAcid": {
+    "title": "Reality Acid",
+    "devours": "Subject 8L-08 opens its maw, and devours…",
+    "outcomes": {
+      "nearestEnemy": "…The non-_Elite_ enemy nearest to you.",
+      "treachery": "…A treachery at your location.",
+      "heal": "…1 horror and 1 damage from your investigator card.",
+      "greatestFlaw": "…Your greatest flaw. Search your deck for any 1 weakness card. It is devoured.",
+      "elderSignToken": "…The {elderSign} token just revealed.",
+      "caution": "…Your caution. Resolve Reality Acid three more times, ignoring this result.",
+      "ignorance": "…Your ignorance. Discover 1 clue at your location.",
+      "friendships": "…Friendships. Until the end of the round, investigators cannot commit cards to each others’ skill tests.",
+      "playerReferenceCard": "…Your player reference card.",
+      "locationClues": "…1 per player clues from your location.",
+      "voice": "…Your voice. Until the end of the round, you cannot speak or make noise.",
+      "foodAndDrinks": "…Your group’s food and drinks. It cannot be consumed until your group has dealt at least 3 damage to Subject 8L-08.",
+      "language": "…The concept of language. Until the end of the investigation phase, you can only speak in gibberish.",
+      "light": "…Light. Until the end of the round, investigators must play with all nearby light sources turned off or covered (except for flashlights).",
+      "regurgitate": "…Itself, and then regurgitates itself. Deal 1 damage to Subject 8L-08.",
+      "manifold": "…All damage from each _Manifold_ enemy.",
+      "uses": "…All of the supplies, ammo, charges, and secrets among assets you control.",
+      "willpower": "…Your hope. Until the end of the next mythos phase, set your base willpower to 0.",
+      "intellect": "…Your curiosity. Until the end of the next mythos phase, set your base intellect to 0.",
+      "combat": "…Your precision. Until the end of the next mythos phase, set your base combat to 0.",
+      "agility": "…Your attention. Until the end of the next mythos phase, set your base agility to 0.",
+      "versatility": "…Your versatility. Until the end of the round, you cannot play or use cards that do not match your investigator’s class.",
+      "cellPhone": "…Your cell phone.",
+      "chaosBag": "…The chaos bag. Remove all tokens from it and place them in a different container.",
+      "levelCards": "…Level 1–5 cards of your choice with at least 5 total levels from among your deck, discard pile, hand, and play area.",
+      "top3Deck": "…The top 3 cards of your deck.",
+      "top3Discard": "…The top 3 cards of your discard pile.",
+      "deckbox": "…The deckbox you store your deck in.",
+      "cardSleeve": "…Your investigator’s card sleeve.",
+      "teamwork": "…Your party’s teamwork. Each investigator loses 1 action.",
+      "talentAsset": "…A _Talent_, _Connection_, or _Condition_ asset you control.",
+      "senseOfTime": "…Your sense of time. Until you advance the agenda, investigators cannot use time-keeping devices, ask about the time, or trigger abilities on any card with “time,” “watch,” or “chrono” in its title.",
+      "miniCard": "…Your investigator mini card. (Use something else to mark your location.)",
+      "yourHouse": "…Your house. Search the collection for Your House (Core #124); it is devoured.",
+      "noSoul": "…Your soul. Record in your Campaign Log that you have no soul.",
+      "ally": "…The highest-cost _Ally_ asset you control.",
+      "events": "…All event cards in your hand.",
+      "resources": "…All of your resources.",
+      "skills": "…All skill cards in your hand.",
+      "exiledCards": "…All cards that have been exiled.",
+      "identity": "…Your identity. Until the end of the round, treat your investigator’s text box as if it were blank (including _Traits_).",
+      "speed": "…The concept of speed. Until the end of the round, investigators cannot gain or take additional actions.",
+      "cannotMove": "…Your sense of urgency. Until the end of the round, you cannot move.",
+      "potential": "…Your potential. Until the end of the round, your skills cannot be increased.",
+      "doom": "…Your patience. Place 1 doom on the current agenda.",
+      "spellRitual": "…All _Spell_ and _Ritual_ assets you control.",
+      "item": "…All _Item_ assets you control.",
+      "discardPile": "…The concept of a “discard pile.” Until the end of the next mythos phase, each card that would be placed in any investigator’s discard pile is instead devoured.",
+      "handSlot": "…One of your hands. For the remainder of the game, you have 1 fewer hand slot.",
+      "success": "…The concept of success. The next time an investigator would succeed at a test by 2 or more, that investigator instead automatically fails.",
+      "countermeasure": "…1 countermeasure.",
+      "easiness": "…The concept of easiness. Until the end of the game, flip the scenario reference card to its Hard/Expert side."
+    }
+  }
+}

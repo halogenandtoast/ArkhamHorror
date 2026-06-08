@@ -626,8 +626,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     card <- field EventCard eid
     pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory _ (StoryTarget eid) -> do
+    flipped <- field StoryFlipped eid
     card <- field StoryCard eid
-    pure $ a & (victoryDisplayL %~ nub . (card :))
+    let card' = if flipped then flipCard card else card
+    pure $ a & (victoryDisplayL %~ nub . (card' :))
   AddToVictory _ (AssetTarget tid) -> do
     card <- field AssetCard tid
     pure $ a & (victoryDisplayL %~ nub . (card :))
@@ -753,6 +755,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & cardsNextToActDeckL <>~ cards
   PlaceNextTo AgendaDeckTarget cards -> do
     pure $ a & cardsNextToAgendaDeckL <>~ cards
+  PlaceNextTo ScenarioTarget cards -> do
+    pure $ a & cardsUnderScenarioReferenceL <>~ cards
   ShuffleCardsIntoDeck Deck.EncounterDeck cards -> do
     push $ ShuffleCardsIntoDeck (Deck.EncounterDeckByKey RegularEncounterDeck) cards
     pure $ a & decksL . each %~ filter (`notElem` cards)

@@ -1221,6 +1221,10 @@
     },
     "zeal": {
       "putIntoPlayFromDiscard": "Put into play from discard"
+    },
+    "corrosiveSlime": {
+      "devourResource": "Subject 8L-08 devours one of your resources",
+      "devourRandomCardFromHand": "Subject 8L-08 devours a random card from your hand"
     }
   },
   "tooltips": {

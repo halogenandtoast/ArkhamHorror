@@ -58,6 +58,8 @@ data CampaignLogKey
   | TheInvestigatorsWereDefeatedAtTheMidwinterGala
   | -- | Fortune and Folly
     PracticedRoles
+  | -- | The Blob That Ate Everything
+    YouHaveNoSoul
   | -- | Player Cards
     YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs

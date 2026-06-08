@@ -1,13 +1,19 @@
-module Arkham.Investigator.Cards.HankSamson (hankSamson) where
+module Arkham.Investigator.Cards.HankSamson (
+  hankSamson,
+  hankSamsonResoluteAssistant,
+  hankSamsonResoluteWarden,
+) where
 
 import Arkham.Ability
 import Arkham.Capability
+import Arkham.Card.CardCode (CardCodeExact (..))
 import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelfWhen)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (InvestigatorForm (..))
 import Arkham.Matcher
 
 newtype HankSamson = HankSamson InvestigatorAttrs
@@ -19,6 +25,24 @@ hankSamson :: InvestigatorCard HankSamson
 hankSamson =
   investigator HankSamson Cards.hankSamson
     $ Stats {health = 5, sanity = 5, willpower = 3, intellect = 1, combat = 5, agility = 3}
+
+hankSamsonResoluteAssistant :: InvestigatorCard HankSamson
+hankSamsonResoluteAssistant =
+  investigator HankSamson Cards.hankSamsonResoluteAssistant
+    $ Stats {health = 4, sanity = 6, willpower = 3, intellect = 3, combat = 4, agility = 4}
+
+hankSamsonResoluteWarden :: InvestigatorCard HankSamson
+hankSamsonResoluteWarden =
+  investigator HankSamson Cards.hankSamsonResoluteWarden
+    $ Stats {health = 6, sanity = 4, willpower = 4, intellect = 1, combat = 6, agility = 3}
+
+-- Which side of Hank's card is showing. Real Hank tracks this via
+-- investigatorArt; a host transfigured into Hank (Transfiguration (2))
+-- tracks it via the form's card code.
+hankSide :: InvestigatorAttrs -> CardCodeExact
+hankSide a = case investigatorForm a of
+  TransfiguredForm c -> CardCodeExact c
+  _ -> investigatorArt a
 
 instance HasModifiersFor HankSamson where
   getModifiersFor (HankSamson a) = do
@@ -32,12 +56,11 @@ instance HasModifiersFor HankSamson where
       [CanAssignDamageToInvestigator (toId a), CanAssignHorrorToInvestigator (toId a)]
     modifySelfWhen
       a
-      (investigatorArt a /= "10015")
+      (hankSide a /= "10015")
       [CannotHaveHorrorHealed, CannotHaveDamageHealed]
 
 instance HasAbilities HankSamson where
-  getAbilities (HankSamson a) = case investigatorArt a of
-    "10015" -> [restrictedAbility a 1 Self $ freeReaction $ InvestigatorWouldBeDefeated #when ByAny You]
+  getAbilities (HankSamson a) = case hankSide a of
     "10016a" ->
       [ restricted a 1 (Self <> can.draw.cards You)
           $ freeReaction
@@ -48,7 +71,7 @@ instance HasAbilities HankSamson where
           $ freeReaction
           $ PlacedCounter #when You AnySource DamageCounter (atLeast 1)
       ]
-    _ -> error "HankSamson: Impossible"
+    _ -> [restrictedAbility a 1 Self $ freeReaction $ InvestigatorWouldBeDefeated #when ByAny You]
 
 instance HasChaosTokenValue HankSamson where
   getChaosTokenValue iid ElderSign (HankSamson attrs) | iid == toId attrs = do
@@ -57,7 +80,7 @@ instance HasChaosTokenValue HankSamson where
 
 instance RunMessage HankSamson where
   runMessage msg i@(HankSamson attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 | investigatorArt attrs == "10015" -> do
+    UseThisAbility iid (isSource attrs -> True) 1 | hankSide attrs == "10015" -> do
       lift do
         replaceMessageMatching
           (\case InvestigatorWhenDefeated _ iid' -> iid == iid'; _ -> False)
@@ -75,34 +98,42 @@ instance RunMessage HankSamson where
         . HankSamson
         $ attrs {investigatorAssignedHealthDamage = 0, investigatorAssignedSanityDamage = 0}
     DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
-      pure
-        . HankSamson
-        $ attrs
-          { investigatorArt = "10016a"
-          , investigatorHealth = 4
-          , investigatorSanity = 6
-          , investigatorIntellect = 3
-          , investigatorCombat = 4
-          , investigatorAgility = 4
-          }
+      case investigatorForm attrs of
+        TransfiguredForm _ ->
+          pure . HankSamson $ attrs {investigatorForm = TransfiguredForm "10016a"}
+        _ ->
+          pure
+            . HankSamson
+            $ attrs
+              { investigatorArt = "10016a"
+              , investigatorHealth = 4
+              , investigatorSanity = 6
+              , investigatorIntellect = 3
+              , investigatorCombat = 4
+              , investigatorAgility = 4
+              }
     DoStep 2 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
-      pure
-        . HankSamson
-        $ attrs
-          { investigatorArt = "10016b"
-          , investigatorHealth = 6
-          , investigatorSanity = 4
-          , investigatorWillpower = 4
-          , investigatorCombat = 6
-          }
-    UseThisAbility iid (isSource attrs -> True) 1 | investigatorArt attrs == "10016a" -> do
+      case investigatorForm attrs of
+        TransfiguredForm _ ->
+          pure . HankSamson $ attrs {investigatorForm = TransfiguredForm "10016b"}
+        _ ->
+          pure
+            . HankSamson
+            $ attrs
+              { investigatorArt = "10016b"
+              , investigatorHealth = 6
+              , investigatorSanity = 4
+              , investigatorWillpower = 4
+              , investigatorCombat = 6
+              }
+    UseThisAbility iid (isSource attrs -> True) 1 | hankSide attrs == "10016a" -> do
       drawCards iid attrs 1
       pure i
-    UseThisAbility iid (isSource attrs -> True) 1 | investigatorArt attrs == "10016b" -> do
+    UseThisAbility iid (isSource attrs -> True) 1 | hankSide attrs == "10016b" -> do
       gainResources iid attrs 2
       pure i
     ElderSignEffect iid | iid == attrs.id -> do
-      case investigatorArt attrs of
+      case hankSide attrs of
         "10016a" | attrs.sanityDamage > 0 -> do
           canHorrorAssets <- select $ assetControlledBy iid <> AssetWithAnyRemainingSanity
           unless (null canHorrorAssets) do
@@ -121,7 +152,7 @@ instance RunMessage HankSamson where
               ]
         _ -> pure ()
       pure i
-    ForInvestigators _ ResetGame -> do
+    ForInvestigators _ ResetGame | investigatorCardCode attrs == "10015" -> do
       HankSamson
         <$> liftRunMessage
           msg

@@ -21,7 +21,7 @@ lightsOut = persistStory $ story LightsOut Cards.lightsOut
 instance HasModifiersFor LightsOut where
   getModifiersFor (LightsOut a) = do
     modifySelect a (LocationWithToken #damage) [ShroudModifier 1]
-    selectEach (AbilityOnLocation (LocationWithToken #damage)) \ab -> do
+    selectEach (TriggeredAbility <> AbilityOnLocation (LocationWithToken #damage) <> not_ BasicAbility) \ab -> do
       eachInvestigator \iid -> do
         modified_
           a

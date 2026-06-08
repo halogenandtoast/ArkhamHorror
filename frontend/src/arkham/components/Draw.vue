@@ -129,8 +129,30 @@ function onDropDiscard(event: DragEvent) {
   }
 }
 
+type DeckDropMode = 'shuffle' | 'top' | 'bottom'
+
+const deckDropMode = ref<DeckDropMode | null>(null)
+const deckDropPosition = ref<{ x: number; y: number } | null>(null)
+
+function deckModeFromEvent(event: DragEvent): DeckDropMode {
+  if (event.shiftKey) return 'top'
+  if (event.altKey) return 'bottom'
+  return 'shuffle'
+}
+
+const deckDropIndicator = computed(() => {
+  switch (deckDropMode.value) {
+    case 'top': return { icon: '↑', label: 'Place on top' }
+    case 'bottom': return { icon: '↓', label: 'Place on bottom' }
+    case 'shuffle': return { icon: '↻', label: 'Shuffle in' }
+    default: return null
+  }
+})
+
 function onDropDeck(event: DragEvent) {
   event.preventDefault()
+  deckDropMode.value = null
+  deckDropPosition.value = null
   if (!debug.active) return
   if (!event.dataTransfer) return
   const data = event.dataTransfer.getData('text/plain')
@@ -139,9 +161,10 @@ function onDropDeck(event: DragEvent) {
   if (json.tag !== 'CardTarget') return
   const target = { tag: 'CardIdTarget', contents: json.contents }
   const deckSig = { tag: 'InvestigatorDeck', contents: id.value }
-  if (event.shiftKey) {
+  const mode = deckModeFromEvent(event)
+  if (mode === 'top') {
     debug.send(props.game.id, { tag: 'PutOnTopOfDeck', contents: [id.value, deckSig, target] })
-  } else if (event.altKey) {
+  } else if (mode === 'bottom') {
     debug.send(props.game.id, { tag: 'PutOnBottomOfDeck', contents: [id.value, deckSig, target] })
   } else {
     debug.send(props.game.id, { tag: 'ShuffleIntoDeck', contents: [deckSig, target] })
@@ -153,6 +176,22 @@ const dragover = (e: DragEvent) => {
   if (e.dataTransfer) {
     e.dataTransfer.dropEffect = 'copy'
   }
+}
+
+function onDragOverDeck(event: DragEvent) {
+  dragover(event)
+  if (debug.active) {
+    deckDropMode.value = deckModeFromEvent(event)
+    deckDropPosition.value = { x: event.clientX, y: event.clientY }
+  }
+}
+
+function onDragLeaveDeck(event: DragEvent) {
+  const target = event.currentTarget
+  const related = event.relatedTarget
+  if (target instanceof Node && related instanceof Node && target.contains(related)) return
+  deckDropMode.value = null
+  deckDropPosition.value = null
 }
 
 const canSelectDraw = computed(() => {
@@ -210,9 +249,12 @@ watch(choices, async (newChoices) => {
   <div class="deck-container">
     <div
       class="top-of-deck"
+      :class="{ 'top-of-deck--drop-target': deckDropIndicator }"
       @drop="onDropDeck($event)"
-      @dragover.prevent="dragover($event)"
-      @dragenter.prevent
+      @dragover.prevent="onDragOverDeck($event)"
+      @dragleave="onDragLeaveDeck($event)"
+      @dragend="deckDropMode = null; deckDropPosition = null"
+      @dragenter.prevent="onDragOverDeck($event)"
     >
       <Treachery
         v-if="topOfDeckTreachery"
@@ -232,6 +274,15 @@ watch(choices, async (newChoices) => {
         @click="emit('choose', drawCardsAction)"
       />
       <span class="deck-size">{{investigator.deckSize}}</span>
+      <div
+        v-if="deckDropIndicator && deckDropPosition"
+        class="deck-drop-indicator"
+        :class="`deck-drop-indicator--${deckDropMode}`"
+        :style="{ left: `${deckDropPosition.x}px`, top: `${deckDropPosition.y}px` }"
+      >
+        <span class="deck-drop-indicator__icon">{{ deckDropIndicator.icon }}</span>
+        <span class="deck-drop-indicator__label">{{ deckDropIndicator.label }}</span>
+      </div>
       <button v-if="playTopOfDeckAction !== -1" @click="emit('choose', playTopOfDeckAction)">{{ $t('label.play') }}</button>
       <AbilityButton
         v-for="ability in topOfDeckAbilities"
@@ -372,6 +423,53 @@ watch(choices, async (newChoices) => {
   display: flex;
   flex-direction: column;
   width: fit-content;
+}
+
+.top-of-deck--drop-target .deck {
+  outline: 3px solid var(--select);
+  outline-offset: 3px;
+}
+
+.deck-drop-indicator {
+  position: fixed;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--select) 45%, rgba(255, 255, 255, 0.3));
+  background: rgba(0, 0, 0, 0.46);
+  color: rgba(255, 255, 255, 0.92);
+  pointer-events: none;
+  z-index: 2147483647;
+  transform: translate(18px, -50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(2px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+.deck-drop-indicator__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--select) 45%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+}
+
+.deck-drop-indicator__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 </style>

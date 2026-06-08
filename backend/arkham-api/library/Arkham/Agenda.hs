@@ -410,4 +410,8 @@ allAgendas =
     , SomeAgendaCard aGathering
     , SomeAgendaCard aRitual
     , SomeAgendaCard brethrenOfAsh
+    , -- The Blob That Ate Everything
+      SomeAgendaCard theAnomalySpreads
+    , SomeAgendaCard theAnomalySwells
+    , SomeAgendaCard theAnomalyConsumes
     ]

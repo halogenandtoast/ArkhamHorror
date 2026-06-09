@@ -1,6 +1,5 @@
 module Arkham.Treachery.Cards.GroundDisturbance (groundDisturbance) where
 
-import Arkham.Helpers.SkillTest.Lifted
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

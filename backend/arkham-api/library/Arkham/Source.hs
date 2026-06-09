@@ -6,6 +6,7 @@ module Arkham.Source where
 
 import Arkham.Campaigns.TheScarletKeys.Key.Id (ScarletKeyId)
 import {-# SOURCE #-} Arkham.Card
+import Arkham.Card.CardType (playerCardTypes)
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
 import Arkham.Id
@@ -204,6 +205,11 @@ allowsPlayerCardSource = \case
   SourceIsPlayerCardAbility -> True
   AnySource -> True
   SourceIsAbility BasicAbility -> True
+  SourceIsAsset _ -> True
+  SourceIsEvent _ -> True
+  SourceWithTrait _ -> True
+  SourceWithCard _ -> True
+  SourceIsType t -> t `elem` playerCardTypes
   SourceMatchesAny ms -> any allowsPlayerCardSource ms
   SourceMatches ms -> all allowsPlayerCardSource ms
   NotSource m -> not (allowsPlayerCardSource m)

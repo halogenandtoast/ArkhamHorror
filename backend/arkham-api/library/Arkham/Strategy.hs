@@ -26,6 +26,15 @@ data DamageStrategy
     DamageFromHastur
   deriving stock (Show, Eq, Ord, Data)
 
+-- | Strategies whose asset assignment accumulates (via AssignAssetDamageDeferred)
+-- and places all at once at the end, rather than placing each point immediately.
+-- DamageEvenly and SingleTarget still place per choice and so are excluded.
+isDeferredStrategy :: DamageStrategy -> Bool
+isDeferredStrategy = \case
+  DamageEvenly -> False
+  SingleTarget -> False
+  _ -> True
+
 data ZoneReturnStrategy
   = PutBackInAnyOrder
   | PutBackInAnyOrderBothTopAndBottom

@@ -211,7 +211,18 @@ instance RunMessage AssetAttrs where
             pushAll
               $ [PlaceDamage source (toTarget a) damage' | damage' > 0]
               <> [PlaceHorror source (toTarget a) horror' | horror' > 0]
-      pure a
+      -- This places the real tokens, so clear any damage/horror that was assigned
+      -- (but not yet placed) on this asset during deferred assignment.
+      pure $ a & assignedHealthDamageL .~ 0 & assignedSanityDamageL .~ 0
+    Msg.AssignAssetDamageDeferred aid source damage horror | aid == assetId -> do
+      -- Accumulate assigned-but-unplaced damage/horror so the soaked amount is
+      -- visible while the player is still distributing a source's damage. The
+      -- tokens themselves are placed later by AssignAssetDamageWithCheck.
+      canDamage <- matches a.id (AssetCanBeDamagedBySource source)
+      pure
+        $ if canDamage
+          then a & assignedHealthDamageL +~ damage & assignedSanityDamageL +~ horror
+          else a
     IncreaseCustomization iid cardCode customization choices | toCardCode a == cardCode && a `ownedBy` iid -> do
       case customizationIndex a customization of
         Nothing -> pure a

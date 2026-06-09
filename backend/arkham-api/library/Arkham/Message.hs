@@ -144,6 +144,9 @@ messageType Explore {} = Just ExploreMessage
 messageType DealAssetDamageWithCheck {} = Just AssetDamageMessage
 messageType DealAssetDirectDamage {} = Just AssetDamageMessage
 messageType AssignAssetDamageWithCheck {} = Just AssetDamageMessage
+-- Deliberately NOT AssetDamageMessage: this only accumulates assigned damage; the
+-- real placement (and its amount) is the later AssignAssetDamageWithCheck, which is
+-- what getAssetDamageAmounts / healing previews must read.
 messageType (MoveWithSkillTest msg) = messageType msg
 messageType (MovedWithSkillTest _ msg) = messageType msg
 messageType (Do msg) = messageType msg
@@ -567,6 +570,11 @@ data Message
   | DealAssetDamageWithCheck AssetId Source Int Int Bool
   | DealAssetDirectDamage AssetId Source Int Int
   | AssignAssetDamageWithCheck AssetId Source Int Int Bool
+  | -- Accumulate assigned (but not yet placed) damage/horror on an asset so the
+    -- soaked amount is visible during deferred assignment, mirroring how an
+    -- investigator's assignedHealthDamage is shown before AssignDamage applies it.
+    -- The real tokens are placed (and this is cleared) by AssignAssetDamageWithCheck.
+    AssignAssetDamageDeferred AssetId Source Int Int
   | DamageMessage DamageMessage
   | DefeatMessage DefeatMessage
   | ExhaustMessage ExhaustMessage

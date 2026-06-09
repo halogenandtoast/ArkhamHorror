@@ -701,23 +701,19 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
         let
           assignRestOfHealthDamage rest =
             InvestigatorDoAssignDamage investigatorId source strategy matcher rest sanity
+          -- Accumulate the soaked damage on the asset now (for display + to cap how
+          -- much more it can take), but defer the actual token placement to the end
+          -- so all of a source's damage lands at once -- mirroring how investigator
+          -- damage is deferred via assignedHealthDamage.
           damageAsset aid applyAll =
             AssetDamageLabel
               aid
-              $ if strategy == DamageAnyDeferred
-                then
-                  [ assignRestOfHealthDamage
-                      (if applyAll then 0 else health - 1)
-                      ((if applyAll then replicate health else pure) (AssetTarget aid) <> damageTargets)
-                      horrorTargets
-                  ]
-                else
-                  [ Msg.AssignAssetDamageWithCheck aid source (if applyAll then health else 1) 0 False
-                  , assignRestOfHealthDamage
-                      (if applyAll then 0 else health - 1)
-                      ((if applyAll then replicate health else pure) (AssetTarget aid) <> damageTargets)
-                      horrorTargets
-                  ]
+              [ Msg.AssignAssetDamageDeferred aid source (if applyAll then health else 1) 0
+              , assignRestOfHealthDamage
+                  (if applyAll then 0 else health - 1)
+                  ((if applyAll then replicate health else pure) (AssetTarget aid) <> damageTargets)
+                  horrorTargets
+              ]
           damageInvestigator iid' applyAll =
             DamageLabel
               iid'
@@ -778,8 +774,8 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
                 targetCount =
                   if
                     | null mustBeAssignedDamage && null mustBeAssignedDamageFirstBeforeInvestigator ->
-                        1 + length healthDamageableAssets + length healthDamageableInvestigators
-                    | null mustBeAssignedDamage -> length healthDamageableAssets + length healthDamageableInvestigators
+                        1 + length healthDamageableAssets' + length healthDamageableInvestigators
+                    | null mustBeAssignedDamage -> length healthDamageableAssets' + length healthDamageableInvestigators
                     | otherwise -> length mustBeAssignedDamage
 
               let applyAll = null mustBeAssignedDamage && targetCount == 1
@@ -836,23 +832,17 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
                   $ replicate sanity (toTarget iid')
                   <> horrorTargets
               ]
+          -- See the health branch: accumulate soaked horror now (display + cap),
+          -- defer the actual token placement to the end so it lands all at once.
           damageAsset aid applyAll =
             AssetHorrorLabel
               aid
-              $ if strategy == DamageAnyDeferred
-                then
-                  [ assignRestOfSanityDamage
-                      (if applyAll then 0 else sanity - 1)
-                      damageTargets
-                      ((if applyAll then replicate sanity else pure) (toTarget aid) <> horrorTargets)
-                  ]
-                else
-                  [ Msg.AssignAssetDamageWithCheck aid source 0 (if applyAll then sanity else 1) False
-                  , assignRestOfSanityDamage
-                      (if applyAll then 0 else sanity - 1)
-                      damageTargets
-                      ((if applyAll then replicate sanity else pure) (toTarget aid) <> horrorTargets)
-                  ]
+              [ Msg.AssignAssetDamageDeferred aid source 0 (if applyAll then sanity else 1)
+              , assignRestOfSanityDamage
+                  (if applyAll then 0 else sanity - 1)
+                  damageTargets
+                  ((if applyAll then replicate sanity else pure) (toTarget aid) <> horrorTargets)
+              ]
         let
           go = \case
             AmongInvestigators imatcher -> do
@@ -1266,7 +1256,14 @@ getHealthDamageableAssets iid matcher source _ damageTargets horrorTargets = do
     case excludeMatchers of
       [] -> pure mempty
       xs -> select (AssetOneOf xs)
-  pure $ setFromList $ filter (`notElem` excludes) allAssets
+  -- For deferred assignment the tokens aren't placed yet, so AssetRemainingHealth
+  -- still reads full. Drop assets already filled by damage assigned earlier in this
+  -- same assignment (assigned is 0 for the immediate strategies, so they're unaffected).
+  notFull <- flip filterM allAssets \aid -> do
+    remaining <- fieldMap AssetRemainingHealth (fromMaybe 0) aid
+    assigned <- field AssetAssignedHealthDamage aid
+    pure $ remaining - assigned > 0
+  pure $ setFromList $ filter (`notElem` excludes) notFull
 
 getSanityDamageableAssets
   :: (HasGame m, Tracing m)
@@ -1292,7 +1289,13 @@ getSanityDamageableAssets iid matcher source _ damageTargets horrorTargets = do
     case excludeMatchers of
       [] -> pure mempty
       xs -> select (AssetOneOf xs)
-  pure $ setFromList $ filter (`notElem` excludes) allAssets
+  -- See getHealthDamageableAssets: drop assets already filled by horror assigned
+  -- earlier in this same (deferred) assignment.
+  notFull <- flip filterM allAssets \aid -> do
+    remaining <- fieldMap AssetRemainingSanity (fromMaybe 0) aid
+    assigned <- field AssetAssignedSanityDamage aid
+    pure $ remaining - assigned > 0
+  pure $ setFromList $ filter (`notElem` excludes) notFull
 
 sourcePerformerHasModifier :: (HasGame m, Tracing m) => Source -> ModifierType -> m Bool
 sourcePerformerHasModifier source m =

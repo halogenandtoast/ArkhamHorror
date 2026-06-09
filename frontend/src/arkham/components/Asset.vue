@@ -172,8 +172,8 @@ const clues = computed(() => props.asset.tokens[TokenType.Clue])
 const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && (v ?? 0) > 0))
 const formatUse = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2')
 
-const damage = computed(() => (props.asset.tokens[TokenType.Damage] || 0) - props.asset.assignedHealthHeal)
-const horror = computed(() => (props.asset.tokens[TokenType.Horror] || 0) - props.asset.assignedSanityHeal)
+const damage = computed(() => (props.asset.tokens[TokenType.Damage] || 0) + props.asset.assignedHealthDamage - props.asset.assignedHealthHeal)
+const horror = computed(() => (props.asset.tokens[TokenType.Horror] || 0) + props.asset.assignedSanityDamage - props.asset.assignedSanityHeal)
 
 const hasPool = computed(() => {
   const {

@@ -18,6 +18,8 @@ export type Asset = {
   owner: string | null;
   health: number | null;
   sanity: number | null;
+  assignedHealthDamage: number;
+  assignedSanityDamage: number;
   assignedHealthHeal: number;
   assignedSanityHeal: number;
   tokens: Tokens;
@@ -49,6 +51,8 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   health: JsonDecoder.nullable(JsonDecoder.number()),
   tokens: tokensDecoder,
   sanity: JsonDecoder.nullable(JsonDecoder.number()),
+  assignedHealthDamage: JsonDecoder.number(),
+  assignedSanityDamage: JsonDecoder.number(),
   assignedHealthHeal: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.succeed(), JsonDecoder.number()], '[any, number]'), '[any, number][]').map((arr) => arr.reduce((acc, [_source, heal]) => acc + heal, 0)),
   assignedSanityHeal: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.succeed(), JsonDecoder.number()], '[any, number]'), '[any, number][]').map((arr) => arr.reduce((acc, [_source, heal]) => acc + heal, 0)),
   exhausted: JsonDecoder.boolean(),

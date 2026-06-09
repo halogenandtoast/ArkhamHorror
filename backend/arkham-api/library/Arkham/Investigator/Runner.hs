@@ -1098,7 +1098,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   CancelHorror iid n | iid == investigatorId -> handleCancelHorror a iid n
   InvestigatorDirectDamage iid source damage horror | iid == toId a -> handleInvestigatorDirectDamage a iid source damage horror
   InvestigatorAssignDamage iid source strategy damage horror | iid == toId a -> handleInvestigatorAssignDamage a iid source strategy damage horror
-  InvestigatorDoAssignDamage iid source DamageAnyDeferred _ 0 0 damageTargets horrorTargets | iid == toId a -> handleInvestigatorDoAssignDamageDeferred a iid source DamageAnyDeferred damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets | iid == toId a, isDeferredStrategy damageStrategy -> handleInvestigatorDoAssignDamageDeferred a iid source damageStrategy damageTargets horrorTargets
   InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets | iid == toId a -> handleInvestigatorDoAssignDamage a iid source damageStrategy damageTargets horrorTargets
   InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets horrorTargets | iid == toId a -> handleInvestigatorDoAssignDamageV2 a iid source matcher health damageTargets horrorTargets
   InvestigatorDoAssignDamage iid source DamageEvenly matcher 0 sanity damageTargets horrorTargets | iid == toId a -> handleInvestigatorDoAssignDamageV3 a iid source matcher sanity damageTargets horrorTargets

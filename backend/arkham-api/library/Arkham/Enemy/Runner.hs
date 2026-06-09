@@ -419,10 +419,15 @@ instance RunMessage EnemyAttrs where
                   canSpawn <- canSpawnInLocation enemyId lid
                   if canSpawn
                     then do
-                      pushAll $ EnemyEntered enemyId lid
-                        : [ Will (EnemyEngageInvestigator enemyId iid) | not (spawnDetailsUnengaged details) || forcedEngagement
+                      -- Engage before EnemyEntered so the enemy is already in the
+                      -- threat area when its after-enters windows fire (e.g.
+                      -- Doppelgänger 11058). Placement is AtLocation here so
+                      -- EngageEnemy won't re-emit EnemyEntered, and EnemyEntered
+                      -- then preserves the InThreatArea placement.
+                      pushAll
+                        $ [ Will (EnemyEngageInvestigator enemyId iid) | not (spawnDetailsUnengaged details) || forcedEngagement
                           ]
-                          <> [EnemySpawned details]
+                          <> [EnemyEntered enemyId lid, EnemySpawned details]
                       case swarms of
                         [] -> pure ()
                         [x] -> do
@@ -469,9 +474,9 @@ instance RunMessage EnemyAttrs where
 
               when (#massive `elem` keywords) do
                 investigatorIds <- select $ investigatorAt lid
-                pushAll $ EnemyEntered eid lid
-                  : [Will (EnemyEngageInvestigator eid iid) | iid <- investigatorIds]
-                    <> [EnemySpawned details]
+                pushAll
+                  $ [Will (EnemyEngageInvestigator eid iid) | iid <- investigatorIds]
+                    <> [EnemyEntered eid lid, EnemySpawned details]
 
               if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted) || forcedEngagement
                 then do
@@ -484,10 +489,10 @@ instance RunMessage EnemyAttrs where
                   case miid of
                     Just iid | not onlyPrey || iid `elem` preyIds -> do
                       atSameLocation <- iid <=~> investigatorAt lid
-                      pushAll $ EnemyEntered eid lid
-                        : [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not (spawnDetailsUnengaged details)]
+                      pushAll
+                        $ [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not (spawnDetailsUnengaged details)]
                           <> [EnemyCheckEngagement eid | not atSameLocation && not (spawnDetailsUnengaged details)]
-                          <> [EnemySpawned details]
+                          <> [EnemyEntered eid lid, EnemySpawned details]
                     _ -> do
                       investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
                       lead <- getLeadPlayer
@@ -500,9 +505,9 @@ instance RunMessage EnemyAttrs where
                       case validInvestigatorIds of
                         [] -> pushAll [EnemyEntered eid lid, EnemySpawned details]
                         [iid] -> do
-                          pushAll $ EnemyEntered eid lid
-                            : [Will (EnemyEngageInvestigator eid iid) | not onlyPrey || iid `elem` preyIds]
-                              <> [EnemySpawned details]
+                          pushAll
+                            $ [Will (EnemyEngageInvestigator eid iid) | not onlyPrey || iid `elem` preyIds]
+                              <> [EnemyEntered eid lid, EnemySpawned details]
                         iids -> do
                           let scoped = if not onlyPrey then iids else filter (`elem` preyIds) iids
                           case scoped of
@@ -512,8 +517,8 @@ instance RunMessage EnemyAttrs where
                                 $ chooseOne lead
                                 $ [ targetLabel
                                       iid
-                                      [ EnemyEntered eid lid
-                                      , Will (EnemyEngageInvestigator eid iid)
+                                      [ Will (EnemyEngageInvestigator eid iid)
+                                      , EnemyEntered eid lid
                                       , EnemySpawned details
                                       ]
                                   | iid <- choices
@@ -586,7 +591,11 @@ instance RunMessage EnemyAttrs where
             spawnWindows
               <> [mkAfter (Window.EnemyEnters eid' lid) | eid' <- entries]
               <> [mkAfter (Window.EnemyEntersYourLocation iid' eid' lid) | iid' <- iidsHere, eid' <- entries]
-          push afterWindows
+          -- A moving enemy engages investigators at its destination immediately
+          -- on entering, BEFORE the after-enters reaction window (e.g.
+          -- Doppelgänger 11058). Spawning enemies engage via the EnemySpawn flow
+          -- (Will EnemyEngageInvestigator) and are skipped here.
+          pushAll $ [EnemyCheckEngagement eid | isNothing enemySpawnDetails] <> [afterWindows]
       pure a
     EnemyEnteredFollowing movingIid eid lid | eid == enemyId -> do
       -- Variant of EnemyEntered for an engaged enemy following the moving
@@ -740,7 +749,9 @@ instance RunMessage EnemyAttrs where
               $ maybeToList mRunWouldMove
               <> [EnemyEntered eid lid, Do msg]
               <> leaveWindows
-              <> [afterWindow, EnemyCheckEngagement eid]
+              -- EnemyCheckEngagement is handled in After (EnemyEntered) so the
+              -- enemy engages before its after-enters reaction window fires.
+              <> [afterWindow]
             -- A moving enemy is no longer mid-spawn. Without clearing spawn
             -- details, a move nested inside the spawn's after-window (e.g.
             -- The Unsealing cancelling Acolyte's doom into a hunter move)

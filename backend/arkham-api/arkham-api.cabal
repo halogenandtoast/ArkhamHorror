@@ -6303,6 +6303,7 @@ test-suite spec
       Arkham.Event.Events.CunningDistractionSpec
       Arkham.Event.Events.DarkMemorySpec
       Arkham.Event.Events.DodgeSpec
+      Arkham.Event.Events.Doppelganger1Spec
       Arkham.Event.Events.DrawnToTheFlameSpec
       Arkham.Event.Events.DynamiteBlastSpec
       Arkham.Event.Events.ElusiveSpec

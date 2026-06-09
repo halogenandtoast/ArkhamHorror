@@ -526,9 +526,9 @@ handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
           Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
         afterEntering <- checkAfter $ Window.Entering iid lid
         pushAll $ moveAfter movement
-          <> [afterEntering]
           <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
           <> [CheckEnemyEngagement iid | not movement.skipEngagement]
+          <> [afterEntering]
         pure $ a & movementL .~ Nothing
 
 handleDoWhenWillEnterLocation a@InvestigatorAttrs{..} iid lid = do

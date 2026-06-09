@@ -8,6 +8,7 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Card
+import Arkham.Criteria
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
@@ -293,7 +294,11 @@ instance RunMessage ThreadsOfFate where
         Tablet | isHardExpert attrs -> do
           es <- selectTargets $ NearestEnemyToFallback iid (EnemyWithTrait Trait.Cultist)
           for_ es \target -> placeDoom Tablet target 1
-        ElderThing -> removeTokens ElderThing iid #clue 1
+        ElderThing ->
+          tokenSkillTestOptionWithCriteria
+            (exists $ InvestigatorWithId iid <> InvestigatorWithAnyClues)
+            ElderThing
+            $ removeTokens ElderThing iid #clue 1
         _ -> pure ()
       pure s
     ScenarioResolution _ -> scope "resolutions" do

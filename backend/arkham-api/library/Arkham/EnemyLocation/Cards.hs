@@ -84,7 +84,10 @@ livingLibraryHemlockHouse40 :: CardDef
 livingLibraryHemlockHouse40 = enemyLocation "10540b" "Living Library"
 
 livingParlorHemlockHouse :: CardDef
-livingParlorHemlockHouse = enemyLocation "10541b" "Living Parlor"
+livingParlorHemlockHouse =
+  (enemyLocation "10541b" "Living Parlor")
+    { cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate]
+    }
 
 livingDiningRoomHemlockHouse :: CardDef
 livingDiningRoomHemlockHouse = enemyLocation "10542b" "Living Dining Room"

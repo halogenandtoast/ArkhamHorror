@@ -124,8 +124,10 @@ instance RunMessage ThePredatoryHouse where
               lid <- MaybeT $ getLocationOf iid
               el <- MaybeT $ maybeEnemyLocation lid
               pure (enemyLocationAsEnemyId el, iid)
+          -- Effect-instructed attacks are not gated on the enemy being ready,
+          -- so exhausted enemy-locations still attack here.
           for_ attackPairs \(eid, iid) ->
-            push $ InitiateEnemyAttack $ enemyAttack eid attrs iid
+            push $ EnemyAttack $ enemyAttack eid attrs iid
           when (null attackPairs)
             $ drawEncounterCard lead attrs
           pure $ bag {predationTokens = predationTokens bag <> predationSetAside bag, predationSetAside = []}

@@ -23,7 +23,7 @@ import Arkham.Target as X
 
 import Arkham.Action qualified as Action
 import Arkham.Attack (enemyAttack)
-import Arkham.Attack.Types (AttackTarget (..), EnemyAttackDetails (..))
+import Arkham.Attack.Types (AttackTarget (..), EnemyAttackDetails (..), EnemyAttackType (..))
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -39,6 +39,7 @@ import Arkham.Helpers.Source (getSourceController)
 import Arkham.Helpers.Window (checkAfter, checkWindows, frame)
 import Arkham.History
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Base (directionsL, labelL, positionL, tokensL, withoutCluesL)
 import Arkham.Location.Grid
 import Arkham.Matcher (
@@ -148,6 +149,18 @@ instance RunMessage EnemyLocationAttrs where
       pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isEnemyTarget a target -> do
       Evade.pushSuccessfulEvade iid source (asEnemyId a) n
+      pure a
+    FailedSkillTest iid (Just Action.Fight) _ (Initiator target) _ _ | isEnemyTarget a target -> do
+      mods <- getCombinedModifiers [toTarget iid, toTarget a]
+      let keywords = cdKeywords (toCardDef a)
+      when
+        ( Keyword.Retaliate `member` keywords
+            && IgnoreRetaliate `notElem` mods
+            && (not a.exhausted || CanRetaliateWhileExhausted `elem` mods)
+        )
+        $ push
+        $ EnemyAttack
+        $ (enemyAttack (asEnemyId a) a iid) {attackType = RetaliateAttack}
       pure a
     EnemyEvaded _ eid | eid == asEnemyId a -> pure $ a & exhaustedL .~ True
     Exhaust ea | isEnemyTarget a ea.target -> pure $ a & exhaustedL .~ True

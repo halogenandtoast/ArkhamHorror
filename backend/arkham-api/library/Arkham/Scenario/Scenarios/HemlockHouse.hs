@@ -15,6 +15,7 @@ import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
 import Arkham.Helpers.Agenda (whenCurrentAgendaStepIs)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (MetaModifier))
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
@@ -257,9 +258,10 @@ instance RunMessage HemlockHouse where
           pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _
       | token.face == Tablet -> do
+          n <- if isHardExpert attrs then perPlayer 1 else pure 1
           whenJustM (nearestEnemyLocationTo iid) \lid ->
             whenJustM (maybeEnemyLocation lid) \el ->
-              healDamage (enemyLocationAsEnemyId el) attrs 1
+              healDamage (enemyLocationAsEnemyId el) attrs n
           pure s
     AfterSkillTest (FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _)
       | token.face == ElderThing -> do

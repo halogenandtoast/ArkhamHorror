@@ -17,7 +17,7 @@ livingBedroomHemlockHouse34 =
   enemyLocationWith
     LivingBedroomHemlockHouse34
     Cards.livingBedroomHemlockHouse34
-    (3, Static 3, 3)
+    (3, Static 3, 2)
     (1, 1)
     \la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 3)}}
 
@@ -33,7 +33,9 @@ instance HasAbilities LivingBedroomHemlockHouse34 where
 instance RunMessage LivingBedroomHemlockHouse34 where
   runMessage msg el@(LivingBedroomHemlockHouse34 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      thePredatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
-      sendMessage' thePredatoryHouse $ requestChaosTokens iid (attrs.ability 1) 1
+      -- If The Predatory House is not in play yet (agenda 1b flips before it
+      -- resolves), there is no predation bag and the test fizzles.
+      selectOne (storyIs Stories.thePredatoryHouse) >>= traverse_ \thePredatoryHouse ->
+        sendMessage' thePredatoryHouse $ requestChaosTokens iid (attrs.ability 1) 1
       pure el
     _ -> LivingBedroomHemlockHouse34 <$> liftRunMessage msg attrs

@@ -864,6 +864,7 @@ runGameMessage msg g = case msg of
                       { locationId = locationId la
                       , locationCardId = locationCardId la
                       , locationTokens = locationTokens la
+                      , locationWithoutClues = Token.countTokens Token.Clue (locationTokens la) == 0
                       , locationLabel = locationLabel la
                       , locationPosition = locationPosition la
                       , locationPlacement = locationPlacement la
@@ -879,11 +880,12 @@ runGameMessage msg g = case msg of
 
     -- Surface the flip as a FlipLocation window so card-level forced/reactive
     -- abilities ("when this enemy-location is revealed") can hook in via the
-    -- existing FlipLocation matcher.
+    -- existing FlipLocation matcher. Deliberately no PlacedLocation: a flip is
+    -- not an enters-play event and must not re-place reveal clues or fire
+    -- enters-play windows ("keep all ... tokens on that location").
     lead <- getLead
     pushAll
-      [ PlacedLocation (toName el) (toCardCode el) lid
-      , Msg.CheckWindows [mkWhen (Window.FlipLocation lead lid)]
+      [ Msg.CheckWindows [mkWhen (Window.FlipLocation lead lid)]
       , Msg.CheckWindows [mkAfter (Window.FlipLocation lead lid)]
       ]
     pure
@@ -905,6 +907,7 @@ runGameMessage msg g = case msg of
                   { locationId = locationId la
                   , locationCardId = locationCardId la
                   , locationTokens = locationTokens la
+                  , locationWithoutClues = Token.countTokens Token.Clue (locationTokens la) == 0
                   , locationLabel = locationLabel la
                   , locationPosition = locationPosition la
                   , locationPlacement = locationPlacement la
@@ -918,11 +921,12 @@ runGameMessage msg g = case msg of
     replaceCard card.id (forceFlipCard card)
 
     -- Surface the flip as a FlipLocation window so card-level forced/reactive
-    -- abilities can hook in via the existing FlipLocation matcher.
+    -- abilities can hook in via the existing FlipLocation matcher. Deliberately
+    -- no PlacedLocation: a flip is not an enters-play event and must not
+    -- re-place reveal clues or fire enters-play windows.
     lead <- getLead
     pushAll
-      [ PlacedLocation (toName location) (toCardCode location) lid
-      , Msg.CheckWindows [mkWhen (Window.FlipLocation lead lid)]
+      [ Msg.CheckWindows [mkWhen (Window.FlipLocation lead lid)]
       , Msg.CheckWindows [mkAfter (Window.FlipLocation lead lid)]
       ]
     pure
@@ -930,7 +934,16 @@ runGameMessage msg g = case msg of
       & (entitiesL . enemyLocationsL %~ deleteMap lid)
       & (entitiesL . locationsL . at lid ?~ location)
   -- Remove an enemy-location from play (e.g. after defeat).
+  -- Investigators, story assets, and enemies that were here are relocated by
+  -- the scenario per the enemy-location defeat rules; everything else at the
+  -- location leaves play as it would when a location is removed.
   RemoveEnemyLocation lid -> do
+    treacheries <- select $ TreacheryAt $ LocationWithId lid
+    pushAll $ concatMap (resolve . toDiscard GameSource) treacheries
+    events <- select $ eventAt lid
+    pushAll $ concatMap (resolve . toDiscard GameSource) events
+    assets <- select $ assetAt lid <> NotAsset StoryAsset
+    pushAll $ concatMap (resolve . toDiscard GameSource) assets
     pure $ g & entitiesL . enemyLocationsL %~ deleteMap lid
   ReplaceLocation lid card replaceStrategy -> do
     -- if replaceStrategy is swap we also want to copy over revealed, all tokens

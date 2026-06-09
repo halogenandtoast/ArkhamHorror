@@ -33,7 +33,9 @@ instance HasAbilities LivingDiningRoomHemlockHouse where
 instance RunMessage LivingDiningRoomHemlockHouse where
   runMessage msg el@(LivingDiningRoomHemlockHouse attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      thePredatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
-      sendMessage' thePredatoryHouse $ requestChaosTokens iid (attrs.ability 1) 1
+      -- If The Predatory House is not in play yet (agenda 1b flips before it
+      -- resolves), there is no predation bag and the test fizzles.
+      selectOne (storyIs Stories.thePredatoryHouse) >>= traverse_ \thePredatoryHouse ->
+        sendMessage' thePredatoryHouse $ requestChaosTokens iid (attrs.ability 1) 1
       pure el
     _ -> LivingDiningRoomHemlockHouse <$> liftRunMessage msg attrs

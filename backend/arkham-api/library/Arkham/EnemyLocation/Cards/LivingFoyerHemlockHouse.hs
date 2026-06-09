@@ -12,7 +12,7 @@ newtype LivingFoyerHemlockHouse = LivingFoyerHemlockHouse EnemyLocationAttrs
 
 livingFoyerHemlockHouse :: EnemyLocationCard LivingFoyerHemlockHouse
 livingFoyerHemlockHouse =
-  enemyLocationWith LivingFoyerHemlockHouse Cards.livingFoyerHemlockHouse (2, PerPlayer 3, 3) (1, 1)
+  enemyLocationWith LivingFoyerHemlockHouse Cards.livingFoyerHemlockHouse (2, PerPlayer 3, 3) (2, 0)
     $ baseL
     %~ \la -> la {locationShroud = Just (Static 2)}
 

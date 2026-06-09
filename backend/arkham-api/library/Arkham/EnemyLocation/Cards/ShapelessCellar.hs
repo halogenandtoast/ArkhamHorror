@@ -1,6 +1,7 @@
 module Arkham.EnemyLocation.Cards.ShapelessCellar (shapelessCellar) where
 
 import Arkham.Ability
+import Arkham.Attack (enemyAttack)
 import Arkham.EnemyLocation.Cards qualified as Cards
 import Arkham.EnemyLocation.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
@@ -13,7 +14,7 @@ newtype ShapelessCellar = ShapelessCellar EnemyLocationAttrs
 
 shapelessCellar :: EnemyLocationCard ShapelessCellar
 shapelessCellar =
-  enemyLocationWith ShapelessCellar Cards.shapelessCellar (3, PerPlayer 5, 4) (1, 2) \la ->
+  enemyLocationWith ShapelessCellar Cards.shapelessCellar (3, PerPlayer 5, 2) (1, 2) \la ->
     la
       { enemyLocationBase =
           (enemyLocationBase la)
@@ -42,8 +43,9 @@ instance RunMessage ShapelessCellar where
     PlacedLocation _ _ lid | lid == attrs.id -> do
       placeClues attrs attrs =<< perPlayer 3
       pure el
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      sendMessage attrs $ Do EnemiesAttack
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      -- "Shapeless Cellar attacks you" — only the investigator who failed.
+      push $ EnemyAttack $ enemyAttack (asEnemyId attrs) attrs iid
       pure el
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       addToVictory_ attrs

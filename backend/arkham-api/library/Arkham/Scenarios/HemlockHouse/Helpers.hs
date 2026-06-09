@@ -2,13 +2,15 @@ module Arkham.Scenarios.HemlockHouse.Helpers where
 
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Classes.HasGame (HasGame)
+import Arkham.Distance (Distance (..))
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
+import {-# SOURCE #-} Arkham.GameEnv (getDistance)
 import Arkham.Helpers.Message (push)
 import Arkham.Helpers.Scenario (getGrid)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Grid (GridLocation (..), Pos (..), findInGrid, flattenGrid)
+import Arkham.Location.Grid (GridLocation (..), Pos (..), flattenGrid)
 import Arkham.Location.Types (Field (..))
 import Arkham.Message (Message (FlipToEnemyLocation, FlipToLocation))
 import Arkham.Message.Lifted.Queue (ReverseQueue)
@@ -53,13 +55,10 @@ flipLocationOver lid = do
   isEnemyLoc <- isJust <$> maybeEnemyLocation lid
   push $ if isEnemyLoc then FlipToLocation lid card else FlipToEnemyLocation lid card
 
--- | Manhattan distance between two grid positions.
-manhattan :: Pos -> Pos -> Int
-manhattan (Pos x1 y1) (Pos x2 y2) = abs (x1 - x2) + abs (y1 - y2)
-
-{- | Find the nearest enemy-location to the given investigator on the grid.
-Each location in the grid is adjacent to its orthogonal neighbors, so
-Manhattan distance matches the rules' "nearest" relation here.
+{- | Find the nearest enemy-location to the given investigator.
+Uses real connection-path distance (via 'getDistance') rather than grid
+geometry, so empty spaces left by defeated enemy-locations and extra
+connections (e.g. the Library's secret passage) are accounted for.
 -}
 nearestEnemyLocationTo
   :: (HasGame m, Tracing m) => InvestigatorId -> m (Maybe LocationId)
@@ -69,12 +68,10 @@ nearestEnemyLocationTo iid = do
     Nothing -> pure Nothing
     Just start -> do
       grid <- getGrid
-      case findInGrid start grid of
-        Nothing -> pure Nothing
-        Just startPos -> do
-          let allLocs = [(lid, p) | GridLocation p lid <- flattenGrid grid]
-          enemyLocs <- filterM (fmap isJust . maybeEnemyLocation . fst) allLocs
-          let withDist = [(manhattan startPos p, lid) | (lid, p) <- enemyLocs]
-          pure $ case sortOn fst withDist of
-            [] -> Nothing
-            (_, lid) : _ -> Just lid
+      enemyLocs <-
+        filterM (fmap isJust . maybeEnemyLocation) [lid | GridLocation _ lid <- flattenGrid grid]
+      withDist <- forMaybeM enemyLocs \lid ->
+        fmap ((,lid) . unDistance) <$> getDistance start lid
+      pure $ case sortOn fst withDist of
+        [] -> Nothing
+        (_, lid) : _ -> Just lid

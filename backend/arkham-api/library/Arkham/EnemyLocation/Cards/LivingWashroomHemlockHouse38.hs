@@ -16,7 +16,7 @@ livingWashroomHemlockHouse38 =
     LivingWashroomHemlockHouse38
     Cards.livingWashroomHemlockHouse38
     (3, PerPlayer 3, 3)
-    (2, 0)
+    (1, 1)
     \la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 4)}}
 
 instance HasAbilities LivingWashroomHemlockHouse38 where

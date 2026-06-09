@@ -17,7 +17,7 @@ livingBedroomHemlockHouse32 =
   enemyLocationWith
     LivingBedroomHemlockHouse32
     Cards.livingBedroomHemlockHouse32
-    (3, Static 3, 3)
+    (3, Static 3, 2)
     (2, 0)
     \la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 3)}}
 

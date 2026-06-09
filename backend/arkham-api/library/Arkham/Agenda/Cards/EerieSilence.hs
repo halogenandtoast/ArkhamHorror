@@ -3,10 +3,14 @@ module Arkham.Agenda.Cards.EerieSilence (eerieSilence) where
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
-import Arkham.Matcher
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher hiding (LocationCard)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Story
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Trait (Trait (Dormant))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype EerieSilence = EerieSilence AgendaAttrs
@@ -21,6 +25,12 @@ instance RunMessage EerieSilence where
     AdvanceAgenda (isSide B attrs -> True) -> do
       shuffleSetAsideIntoEncounterDeck $ mapOneOf cardIs [Treacheries.outOfTheWalls, Treacheries.pulledIn]
       shuffleEncounterDiscardBackIn
+      locations <-
+        select $ NearestLocationToMost (LocationWithTrait Dormant <> LocationWithResources (atMost 0))
+      leadChooseOrRunOneM do
+        targets locations \location -> do
+          card <- field LocationCard location
+          push $ FlipToEnemyLocation location card
       lead <- getLead
       predatoryHouses <- getSetAsideCardsMatching (cardIs Stories.thePredatoryHouse)
       for_ (nonEmpty predatoryHouses) \(card :| _) ->

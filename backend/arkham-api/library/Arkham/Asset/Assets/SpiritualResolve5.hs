@@ -1,14 +1,8 @@
-module Arkham.Asset.Assets.SpiritualResolve5 (
-  spiritualResolve5,
-  SpiritualResolve5 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.SpiritualResolve5 (spiritualResolve5) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
 
 newtype SpiritualResolve5 = SpiritualResolve5 AssetAttrs
@@ -20,7 +14,7 @@ spiritualResolve5 = assetWith SpiritualResolve5 Cards.spiritualResolve5 $ (healt
 
 instance HasAbilities SpiritualResolve5 where
   getAbilities (SpiritualResolve5 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
+    [ controlled attrs 1 (thisExists attrs $ oneOf [AssetWithDamage, AssetWithHorror])
         $ FastAbility
         $ HandDiscardCost 1
         $ basic
@@ -28,8 +22,8 @@ instance HasAbilities SpiritualResolve5 where
     ]
 
 instance RunMessage SpiritualResolve5 where
-  runMessage msg a@(SpiritualResolve5 attrs) = case msg of
+  runMessage msg a@(SpiritualResolve5 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ HealAllDamageAndHorror (toTarget attrs) (toAbilitySource attrs 1)
+      healAllDamageAndHorror (attrs.ability 1) attrs
       pure a
-    _ -> SpiritualResolve5 <$> runMessage msg attrs
+    _ -> SpiritualResolve5 <$> liftRunMessage msg attrs

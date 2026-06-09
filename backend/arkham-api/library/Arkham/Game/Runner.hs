@@ -1000,6 +1000,8 @@ runGameMessage msg g = case msg of
                 , enemySpawnedBy = enemySpawnedBy oldAttrs
                 , enemyDiscardedBy = enemyDiscardedBy oldAttrs
                 , enemyCardsUnderneath = enemyCardsUnderneath oldAttrs
+                , enemyAttacking = enemyAttacking oldAttrs
+                , enemyWantsToAttack = enemyWantsToAttack oldAttrs
                 }
 
     pushWhen (replaceStrategy == DefaultReplace) $ EnemyCheckEngagement eid

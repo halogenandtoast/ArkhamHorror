@@ -1,0 +1,67 @@
+h2.title {
+  color: var(--title);
+  font-size: 2em;
+  text-transform: uppercase;
+  font-family: Teutonic;
+}
+
+.box {
+  background-color: var(--box-background);
+  border: 1px solid var(--box-border);
+  color: var(--title);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.card {
+  user-select: none;
+  box-shadow: var(--card-shadow);
+}
+
+.about-dead {
+  font-family: "AboutDead";
+  text-align: center;
+  font-size: 1.5em;
+}
+
+.error-message {
+  margin: 50px;
+  header {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}
+
+.fade-leave-active,
+.fade-enter-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter-active {
+  transition-delay: 0.3s;
+  position: absolute;
+  inset: 0;
+}
+
+.fade-leave-to,
+.fade-enter-from {
+  opacity: 0;
+}
+
+@keyframes glow {
+  from {
+    --glow-rotation: 0deg;
+  }
+  to {
+    --glow-rotation: 360deg;
+  }
+}
+
+.highlighted {
+  border: 2px solid transparent;
+  background: conic-gradient(from var(--glow-rotation), var(--gradient-glow)) border-box;
+  border-style: inset;
+  border-radius: 3px;
+  position: relative;
+  animation: glow 3s linear infinite;
+}

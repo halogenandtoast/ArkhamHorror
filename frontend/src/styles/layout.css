@@ -1,0 +1,40 @@
+.page-container {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  margin-block: 10px;
+}
+
+.page-content {
+  width: 70vw;
+  margin: 0 auto;
+  padding-bottom: 10px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    width: fit-content;
+  }
+}
+
+.router-container {
+  position: relative;
+  overflow-x: clip;
+  overflow-y: auto;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}

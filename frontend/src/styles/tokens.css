@@ -1,0 +1,107 @@
+:root {
+  transition-behavior: allow-discrete;
+
+  --nav-height: 36px;
+
+  --willpower: #2c7fc0;
+  --intellect: #7c3c85;
+  --combat: #ae4236;
+  --agility: #14854d;
+
+  --willpower-light: #C5DEF2;
+  --intellect-light: #EAD5EC;
+  --combat-light: #F1D3D0;
+  --agility-light: #8CEEBD;
+
+  --important: rgba(212, 165, 10, 0.9);
+
+  --wild: #8a7d5a;
+  --guardian: #5cb4fd;
+  --mystic: #ba81f2;
+  --rogue: #48b14f;
+  --seeker: #efa345;
+  --survivor: #ee4a53;
+  --multiclass: #e4d083;
+  --mythos: #d8dee9;
+  --neutral: #d8dee9;
+  --guardian-dark: #1072c2;
+  --guardian-extra-dark: #0c5693;
+  --seeker-dark: #db7c07;
+  --seeker-extra-dark: #aa6005;
+  --seeker-text: #603603;
+  --rogue-dark: #219428;
+  --rogue-extra-dark: #186a1d;
+  --mystic-dark: #7554ab;
+  --mystic-extra-dark: #5e4389;
+  --survivor-dark: #cc3038;
+  --survivor-extra-dark: #a3262d;
+  --neutral-dark: #333;
+  --neutral-extra-dark: #222;
+  --multiclass-dark: #a38c46;
+  --mythos-dark: #434c5e;
+  --taboo: #9869f5;
+  --health: #ae4236;
+  --sanity: #2c7fc0;
+
+  --blessed: #6a5720;
+  --cursed: #270F31;
+  --frost: #39394C;
+  --auto-fail: #4A1216;
+  --elder-sign: #4A6973;
+  --skull: #26110E;
+  --cultist: #172615;
+  --tablet: #1E2A3A;
+  --elder-thing: #2D1F25;
+
+  --delete: #c13131;
+  --background: #2e3440;
+  --background-dark: #242831;
+  --background-mid: #515a68;
+  --background-light: #c9ced8;
+  --box-background: #353b49;
+  --box-border: #434c5e;
+
+  --title: #cecece;
+  --green-title: #38615F;
+  --text: white;
+  --spooky-green: #879C5A;
+  --spooky-green-dark: #3A5144;
+
+  --button: #555;
+  --button-highlight: #444;
+
+  --button-1: #6E8640;
+  --button-1-highlight: #5a6e34;
+
+  --button-2: #532e61;
+  --button-2-highlight: #4d2b61;
+
+  --card-width: min(calc(2.5vw + 20px), 60px);
+  --card-height: min(calc(3.545vw + 28.36px), 85.08px);
+  --card-aspect: 0.705;
+  --tarot-aspec: 0.571429;
+  --card-sideways-aspect: 1.41844;
+  --card-tarot-aspect: 0.571429;
+
+  --card-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+
+  --select: #ff00ff;
+  --select-dark: #d400d4;
+  --select-dark-20: #cc00cc;
+  --select-dark-30: #b200b2;
+
+  --highlight: #2dd4bf;
+
+  --bullet-red: #391714;
+
+  --pool-token-width: min(30px, 4vw);
+  @media (max-width: 800px) and (orientation: portrait) {
+    --pool-token-width: 24px;
+  }
+}
+
+@property --glow-rotation {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}

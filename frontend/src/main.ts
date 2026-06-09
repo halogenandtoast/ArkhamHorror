@@ -1,10 +1,9 @@
+import './styles/index.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import FloatingVue from 'floating-vue'
 import Toast from "vue-toastification";
 import { createVfm } from 'vue-final-modal'
-import "vue-toastification/dist/index.css";
-import 'vue-final-modal/style.css'
 import App from './App.vue'
 import router from './router'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";

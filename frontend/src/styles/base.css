@@ -1,0 +1,88 @@
+html {
+  color-scheme: dark;
+  interpolate-size: allow-keywords;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: #222;
+  min-height: 100vh;
+  background: var(--background);
+  font-size: min(16px, 2vw);
+  @media (max-width: 800px) and (orientation: portrait) {
+    font-size: initial;
+  }
+}
+
+#app {
+  font-family: "Noto Sans", Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  padding: 0px 5px;
+  font-family: Arial;
+  font-size: min(12px, 2vw);
+  i { display: contents; font-style: italic; }
+}
+
+footer {
+  margin: 0 auto;
+  font-size: 0.5em;
+  color: var(--title);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 100;
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: none;
+  }
+}
+
+:nth-child(1) {
+  --index: 1;
+}
+:nth-child(2) {
+  --index: 2;
+}
+:nth-child(3) {
+  --index: 3;
+}
+:nth-child(4) {
+  --index: 4;
+}
+
+:nth-last-child(1) {
+  --rev-index: 1;
+}
+:nth-last-child(2) {
+  --rev-index: 2;
+}
+
+::view-transition-group(selected-game-box) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+}
+
+::view-transition-old(selected-game-box),
+::view-transition-new(selected-game-box) {
+  mix-blend-mode: normal;
+}
+
+::view-transition-group(main-header) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+}
+
+::view-transition-old(main-header),
+::view-transition-new(main-header) {
+  mix-blend-mode: normal;
+}

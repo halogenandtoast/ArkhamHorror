@@ -1,0 +1,96 @@
+@font-face {
+  font-family: "Arkham";
+  src: url("/fonts/arkham.ttf");
+}
+
+@font-face {
+  font-family: "Typewriter";
+  src: url("/fonts/typewriter.ttf");
+}
+
+@font-face {
+  font-family: "MapTypewriter";
+  src: url("/fonts/type.ttf");
+}
+
+@font-face {
+  font-family: "Accountant";
+  src: url("/fonts/accountant.ttf");
+}
+
+@font-face {
+  font-family: "AboutDead";
+  src: url("/fonts/AboutDead.ttf");
+}
+
+@font-face {
+  font-family: "Arno";
+  src: url("/fonts/ArnoPro-Regular.otf");
+}
+
+@font-face {
+  font-family: "Albertus";
+  src: url("/fonts/albertus.ttf");
+}
+
+@font-face {
+  font-family: 'Materials';
+  font-style: normal;
+  font-weight: 200;
+  src: url("/fonts/materials.ttf");
+}
+
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans.ttf");
+}
+
+@font-face {
+  font-family: "Unquiet Spirits";
+  src: url("/fonts/UnquietSpirits.ttf");
+}
+
+@font-face {
+  font-family: "ArkhamIcons";
+  src: url("/fonts/arkhamicons.ttf");
+}
+
+@font-face {
+  font-family: "ArkhamEncounters";
+  src: url("/fonts/encounters.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArkhamSlim";
+  src: url("/fonts/arkhamslim.ttf");
+}
+
+@font-face {
+  font-family: "Teutonic";
+  src: url("/fonts/teutonic.ttf");
+}
+
+@font-face {
+  font-family: "ArkhamCursive";
+  src: url("/fonts/AquilineTwo.ttf");
+}
+
+@font-face {
+  font-family: "Wolgast";
+  src: url("/fonts/WolgastScript.ttf");
+}
+
+@font-face {
+  font-family: "Billenia";
+  src: url("/fonts/billenia.ttf");
+}
+
+@font-face {
+  font-family: "Anke";
+  src: url("/fonts/ankecallig-fg.ttf");
+}
+
+@font-face {
+  font-family: "ArkhamFlavor";
+  src: url("/fonts/ArnoPro-ItalicCaption.ttf");
+}

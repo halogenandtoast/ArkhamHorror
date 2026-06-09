@@ -1,0 +1,272 @@
+.neutral-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0046";
+  }
+}
+
+.guardian-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0051";
+  }
+}
+
+.seeker-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0045";
+  }
+}
+
+.rogue-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0054";
+  }
+}
+
+.mystic-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0057";
+  }
+}
+
+.survivor-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0052";
+  }
+}
+
+.elder-sign {
+  &:before {
+    text-transform: none;
+    font-weight: normal;
+    font-size: 1.3em;
+    font-family: "Arkham";
+    content: "\0058";
+  }
+}
+
+.auto-fail {
+  &:before {
+    text-transform: none;
+    font-weight: normal;
+    font-size: 1.3em;
+    font-family: "Arkham";
+    content: "\005A";
+  }
+}
+
+.action-icon {
+  &:before {
+    text-transform: none;
+    font-family: "arkham";
+    content: "\0049";
+    margin-right: 5px;
+  }
+}
+
+.willpower-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0041";
+    color: inherit;
+  }
+}
+
+.intellect-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0046";
+  }
+}
+
+.combat-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0044";
+  }
+}
+
+.agility-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0053";
+  }
+}
+
+.skull-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamIcons";
+    content: "\e910";
+  }
+}
+
+.cultist-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamIcons";
+    content: "\e911";
+  }
+}
+
+.tablet-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamIcons";
+    content: "\e912";
+  }
+}
+
+.elder-thing-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamIcons";
+    content: "\e913";
+  }
+}
+
+.curse-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamIcons";
+    content: "\e929";
+  }
+}
+
+.bless-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamIcons";
+    content: "\e92a";
+  }
+}
+
+.frost-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0062";
+  }
+}
+
+.seal-a-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0067";
+  }
+}
+
+.seal-b-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0066";
+  }
+}
+
+.seal-c-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0065";
+  }
+}
+
+.seal-d-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0063";
+  }
+}
+
+.seal-e-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0064";
+  }
+}
+
+.codex-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0068";
+  }
+}
+
+.day-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0069";
+  }
+}
+
+.night-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\006a";
+  }
+}
+
+.wild-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Arkham";
+    content: "\0047";
+  }
+}
+
+.fast-icon {
+  &:before {
+    text-transform: none;
+    font-family: "arkham";
+    content: "\0075";
+    margin-right: 5px;
+  }
+}
+
+.free-icon {
+  &:before {
+    text-transform: none;
+    font-family: "arkham";
+    content: "\0075";
+    margin-right: 5px;
+  }
+}
+
+.reaction-icon {
+  &:before {
+    text-transform: none;
+    font-family: "arkham";
+    content: "\0079";
+    margin-right: 5px;
+  }
+}
+
+.per-player {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamIcons";
+    content: "\E915";
+  }
+}

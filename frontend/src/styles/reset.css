@@ -1,0 +1,19 @@
+* {
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  min-width: 0;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+b, strong {
+  font-weight: bold;
+}
+
+img, svg {
+  max-width: 100%;
+  -webkit-touch-callout: none;
+}

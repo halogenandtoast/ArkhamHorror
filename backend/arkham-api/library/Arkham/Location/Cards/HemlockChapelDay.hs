@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.HemlockChapelDay (hemlockChapelDay) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (campaignI18n, codex)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Capability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -20,7 +20,8 @@ instance HasAbilities HemlockChapelDay where
     campaignI18n
       $ extendRevealed
         a
-        [ groupLimit PerGame $ withI18nTooltip "hemlockChapel.day.codex" $ restricted a 1 Here actionAbility
+        [ withI18nTooltip "hemlockChapel.day.codex"
+            $ restricted a 1 (Here <> youCanTriggerCodex 10) actionAbility
         , playerLimit PerGame
             $ withI18nTooltip "hemlockChapel.day.search"
             $ restricted a 2 (Here <> youExist can.search.deck) actionAbility

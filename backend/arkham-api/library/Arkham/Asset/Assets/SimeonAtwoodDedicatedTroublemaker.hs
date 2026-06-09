@@ -3,25 +3,28 @@ module Arkham.Asset.Assets.SimeonAtwoodDedicatedTroublemaker (simeonAtwoodDedica
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
-import Arkham.Card
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (Resident (..), codex, decreaseRelationshipLevel)
 
 newtype SimeonAtwoodDedicatedTroublemaker = SimeonAtwoodDedicatedTroublemaker AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 simeonAtwoodDedicatedTroublemaker :: AssetCard SimeonAtwoodDedicatedTroublemaker
-simeonAtwoodDedicatedTroublemaker = assetWith SimeonAtwoodDedicatedTroublemaker Cards.simeonAtwoodDedicatedTroublemaker $ (healthL ?~ 3) . (sanityL ?~ 2)
+simeonAtwoodDedicatedTroublemaker =
+  assetWith SimeonAtwoodDedicatedTroublemaker Cards.simeonAtwoodDedicatedTroublemaker
+    $ (healthL ?~ 3)
+    . (sanityL ?~ 2)
 
 instance HasModifiersFor SimeonAtwoodDedicatedTroublemaker where
   getModifiersFor (SimeonAtwoodDedicatedTroublemaker a) = controllerGets a [SkillModifier #agility 1]
 
 instance HasAbilities SimeonAtwoodDedicatedTroublemaker where
   getAbilities (SimeonAtwoodDedicatedTroublemaker a) =
-    [ mkAbility a 99 $ forced $ AssetDefeated #when ByAny (be a)
-    ,groupLimit PerGame $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_]
+    [ skillTestAbility $ restricted a 1 (OnSameLocation <> youCanTriggerCodex 3) parleyAction_
+    , mkAbility a 2 $ forced $ AssetDefeated #when ByAny (be a)
+    ]
 
 instance RunMessage SimeonAtwoodDedicatedTroublemaker where
   runMessage msg a@(SimeonAtwoodDedicatedTroublemaker attrs) = runQueueT $ case msg of
@@ -32,10 +35,10 @@ instance RunMessage SimeonAtwoodDedicatedTroublemaker where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       codex iid (attrs.ability 1) 3
       pure a
-    UseCardAbility _ (isSource attrs -> True) 99 ws _ -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
       cancelWindowBatch ws
       removeFromGame attrs
-      push $ SetAsideCards [toCard attrs]
+      setCardAside attrs
       decreaseRelationshipLevel SimeonAtwood 1
       pure a
     _ -> SimeonAtwoodDedicatedTroublemaker <$> liftRunMessage msg attrs

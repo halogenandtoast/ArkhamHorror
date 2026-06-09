@@ -304,23 +304,27 @@ instance RunMessage TheLongestNight where
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         2 -> do
+          codexFinished 2
           entry "leahAtwood"
           record LeahStoodByYou
           enemies <- select $ NearestEnemyTo iid AnyEnemy
           chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) source 3
           pure s
         3 -> do
+          codexFinished 3
           entry "simeonAtwood"
           record SimeonStoodByYou
           decoyLocations <- select $ LocationWithoutModifier CannotHaveDecoys
           chooseTargetM iid decoyLocations \lid -> placeDecoy source lid
           pure s
         4 -> do
+          codexFinished 4
           entry "williamHemlock"
           record WilliamStoodByYou
           eachInvestigator \iid' -> gainClues iid' source 1
           pure s
         5 -> do
+          codexFinished 5
           entry "riverHawthorne"
           record RiverStoodByYou
           enemies <- select $ NonEliteEnemy
@@ -329,28 +333,33 @@ instance RunMessage TheLongestNight where
             chooseTargetM iid allLocations $ enemyMoveTo source eid
           pure s
         6 -> do
+          codexFinished 6
           entry "gideonMizrah"
           record GideonStoodByYou
           let meta = toResultDefault defaultMeta attrs.meta
           pure $ TheLongestNight $ attrs & metaL .~ toJSON meta {discardNextEnemyDraw = True}
         7 -> do
+          codexFinished 7
           entry "judithPark"
           record JudithStoodByYou
           trapLocations <- select $ LocationWithoutModifier CannotHaveTraps
           chooseTargetM iid trapLocations $ placeTrap source
           pure s
         8 -> do
+          codexFinished 8
           entry "theoPeters"
           record TheoStoodByYou
           doStep 1 msg
           pure s
         Theta -> do
+          codexFinished Theta
           entry "drRosaMarquez"
           lid <- selectJust $ locationWithInvestigator iid
           doStep 2 (ForTarget (LocationTarget lid) msg)
           doStep 2 (ForTarget (LocationTarget lid) msg)
           pure s
         Omega -> do
+          codexFinished Omega
           entry "ajax"
           ajax <- selectJust $ assetIs Assets.ajax
           takeControlOfAsset iid ajax

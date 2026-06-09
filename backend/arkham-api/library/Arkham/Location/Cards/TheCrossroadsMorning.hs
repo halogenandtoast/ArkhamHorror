@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheCrossroadsMorning (theCrossroadsMorning) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -20,7 +20,7 @@ instance HasAbilities TheCrossroadsMorning where
   getAbilities (TheCrossroadsMorning a) =
     extendRevealed
       a
-      [ groupLimit PerGame $ restricted a 1 Here actionAbility
+      [ restricted a 1 (Here <> youCanTriggerCodex 10) actionAbility
       , groupLimit PerRound
           $ restricted a 2 (Here <> oneOf (map PlayerCountIs [1, 2]) <> DuringTurn You)
           $ FastAbility' Free #move

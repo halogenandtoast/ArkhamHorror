@@ -416,37 +416,38 @@ instance RunMessage FateOfTheVale where
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
       actStep <- getCurrentActStep
+      let isAct2 = actStep == 2
+      let isAct3 = actStep == 3
       actCard <- field ActCard =<< getCurrentAct
       let isVersion def = toCardCode actCard == toCardCode def
       case n of
         2 -> scope "leahAtwood" do
-          let isAct2 = actStep == 2
           flavor do
             setTitle "title"
             compose.green do
               p.validate isAct2 "act2"
               hr
               p.validate (not isAct2) "act3"
-          if isAct2
-            then do
-              -- Search all out-of-play areas for an Item asset and draw it.
-              search
-                iid
-                source
-                iid
-                [ (FromOutOfPlay SetAsideZone, PutBack)
-                , (FromOutOfPlay VictoryDisplayZone, PutBack)
-                , (FromOutOfPlay VoidZone, PutBack)
-                ]
-                (basic (#item <> #asset))
-                (DrawFound iid 1)
-            else do
-              eachInvestigator \iid' -> chooseOneM iid' do
-                labeled' "drawTwo" $ drawCards iid' source 2
-                labeled' "healHorror" $ healHorror iid' source 1
+          when isAct2 do
+            -- Search all out-of-play areas for an Item asset and draw it.
+            codexFinishedUntilNewAct 2
+            search
+              iid
+              source
+              iid
+              [ (FromOutOfPlay SetAsideZone, PutBack)
+              , (FromOutOfPlay VictoryDisplayZone, PutBack)
+              , (FromOutOfPlay VoidZone, PutBack)
+              ]
+              (basic (#item <> #asset))
+              (DrawFound iid 1)
+          when isAct3 do
+            codexFinished 2
+            eachInvestigator \iid' -> chooseOneM iid' do
+              labeled' "drawTwo" $ drawCards iid' source 2
+              labeled' "healHorror" $ healHorror iid' source 1
         3 -> scope "simeonAtwood" do
-          let isAct2 = actStep == 2
-              isFateOfTheValeV3 = not isAct2 && isVersion Acts.fateOfTheValeV3
+          let isFateOfTheValeV3 = isAct3 && isVersion Acts.fateOfTheValeV3
               isOtherwise = not isAct2 && not isFateOfTheValeV3
           flavor do
             setTitle "title"
@@ -457,8 +458,11 @@ instance RunMessage FateOfTheVale where
               hr
               p.validate isOtherwise "otherwise"
           if isAct2
-            then selectEach (EnemyWithTrait Emissary) (automaticallyEvadeEnemy iid)
-            else
+            then do
+              codexFinishedUntilNewAct 3
+              selectEach (EnemyWithTrait Emissary) (automaticallyEvadeEnemy iid)
+            else do
+              codexFinished 3
               if isFateOfTheValeV3
                 then do
                   locs <- select Anywhere
@@ -468,30 +472,7 @@ instance RunMessage FateOfTheVale where
                     labeled' "drawOne" $ drawCards iid' source 1
                     labeled' "gainResources" $ gainResources iid' source 2
         4 -> scope "williamHemlock" do
-          let isAct2 = actStep == 2
-              isFateOfTheValeV2 = not isAct2 && isVersion Acts.fateOfTheValeV2
-              isOtherwise = not isAct2 && not isFateOfTheValeV2
-          flavor do
-            setTitle "title"
-            compose.green do
-              p.validate isAct2 "act2"
-              hr
-              p.validate isFateOfTheValeV2 "act3"
-              hr
-              p.validate isOtherwise "otherwise"
-          if isAct2
-            then eachInvestigator \iid' -> gainClues iid' source 1
-            else
-              if isFateOfTheValeV2
-                then drawResidentUnderneath iid source
-                else do
-                  eachInvestigator \iid' -> chooseOneM iid' do
-                    labeled' "drawNone" nothing
-                    labeled' "drawOne" $ drawCards iid' source 1
-                    labeled' "drawTwo" $ drawCards iid' source 2
-        5 -> scope "riverHawthorne" do
-          let isAct2 = actStep == 2
-              isFateOfTheValeV2 = not isAct2 && isVersion Acts.fateOfTheValeV2
+          let isFateOfTheValeV2 = isAct3 && isVersion Acts.fateOfTheValeV2
               isOtherwise = not isAct2 && not isFateOfTheValeV2
           flavor do
             setTitle "title"
@@ -503,15 +484,40 @@ instance RunMessage FateOfTheVale where
               p.validate isOtherwise "otherwise"
           if isAct2
             then do
+              codexFinishedUntilNewAct 4
+              eachInvestigator \iid' -> gainClues iid' source 1
+            else do
+              codexFinished 4
+              if isFateOfTheValeV2
+                then drawResidentUnderneath iid source
+                else do
+                  eachInvestigator \iid' -> chooseOneM iid' do
+                    labeled' "drawNone" nothing
+                    labeled' "drawOne" $ drawCards iid' source 1
+                    labeled' "drawTwo" $ drawCards iid' source 2
+        5 -> scope "riverHawthorne" do
+          let isFateOfTheValeV2 = isAct3 && isVersion Acts.fateOfTheValeV2
+              isOtherwise = not isAct2 && not isFateOfTheValeV2
+          flavor do
+            setTitle "title"
+            compose.green do
+              p.validate isAct2 "act2"
+              hr
+              p.validate isFateOfTheValeV2 "act3"
+              hr
+              p.validate isOtherwise "otherwise"
+          if isAct2
+            then do
+              codexFinishedUntilNewAct 5
               -- Play an Item card from your hand, ignoring all costs.
               search iid source iid [(FromHand, PutBack)] (basic #item) (PlayFoundNoCost iid 1)
-            else
+            else do
+              codexFinished 5
               if isFateOfTheValeV2
                 then drawResidentUnderneath iid source
                 else gainResources iid source 4
         6 -> scope "gideonMizrah" do
-          let isAct2 = actStep == 2
-              isFateOfTheValeV1 = not isAct2 && isVersion Acts.fateOfTheValeV1
+          let isFateOfTheValeV1 = isAct3 && isVersion Acts.fateOfTheValeV1
               isOtherwise = not isAct2 && not isFateOfTheValeV1
           flavor do
             setTitle "title"
@@ -523,16 +529,17 @@ instance RunMessage FateOfTheVale where
               p.validate isOtherwise "otherwise"
           if isAct2
             then do
+              codexFinishedUntilNewAct 6
               eachInvestigator \iid' ->
                 nextTurnModifier iid' source iid' (AdditionalActions "Gideon Mizrah" source 1)
-            else
+            else do
+              codexFinished 6
               if isFateOfTheValeV1
                 then do
                   selectEach (EnemyWithTrait Emissary <> enemyAtLocationWith iid) (automaticallyEvadeEnemy iid)
                 else do
                   selectJust AnyAgenda >>= \agenda -> removeDoom source agenda 1
         7 -> scope "judithPark" do
-          let isAct2 = actStep == 2
           flavor do
             setTitle "title"
             compose.green do
@@ -541,9 +548,11 @@ instance RunMessage FateOfTheVale where
               p.validate (not isAct2) "act3"
           if isAct2
             then do
+              codexFinishedUntilNewAct 7
               enemies <- select AnyEnemy
               chooseTargetM iid enemies (automaticallyEvadeEnemy iid)
             else do
+              codexFinished 7
               -- Search your deck, hand, and discard pile for a Weapon and play it, ignoring all costs.
               search
                 iid
@@ -553,7 +562,6 @@ instance RunMessage FateOfTheVale where
                 (basic #weapon)
                 (PlayFoundNoCost iid 1)
         8 -> scope "theoPeters" do
-          let isAct2 = actStep == 2
           flavor do
             setTitle "title"
             compose.green do
@@ -562,6 +570,7 @@ instance RunMessage FateOfTheVale where
               p.validate (not isAct2) "otherwise"
           if isAct2
             then do
+              codexFinishedUntilNewAct 8
               -- Search The Abyss for a location, put it into play, and move to it.
               let abyss = findWithDefault [] AbyssDeck attrs.decks
               let locationCards = filter ((== LocationType) . toCardType) abyss
@@ -574,12 +583,13 @@ instance RunMessage FateOfTheVale where
                     moveTo source iid lid
                     scenarioSpecific "removeFromAbyss" (toCardId card)
             else do
+              codexFinished 8
               selectEach (enemyEngagedWith iid) (disengageEnemy iid)
               locs <- select Anywhere
               chooseTargetM iid locs (moveTo source iid)
         Theta -> scope "drRosaMarquez" do
           let isAct1 = actStep == 1
-              isFateOfTheValeV1 = not isAct1 && isVersion Acts.fateOfTheValeV1
+              isFateOfTheValeV1 = isAct3 && isVersion Acts.fateOfTheValeV1
               isOtherwise = not isAct1 && not isFateOfTheValeV1
           flavor do
             setTitle "title"
@@ -591,6 +601,7 @@ instance RunMessage FateOfTheVale where
               p.validate isOtherwise "otherwise"
           if isAct1
             then do
+              codexFinishedUntilNewAct Theta
               -- Reveal the bottom 6 cards of The Abyss; you may draw any of them.
               let abyss = findWithDefault [] AbyssDeck attrs.decks
               let bottom6 = drop (max 0 (length abyss - 6)) abyss
@@ -598,8 +609,13 @@ instance RunMessage FateOfTheVale where
                 chooseOneAtATimeM iid do
                   labeled' "doneDrawing" unfocusCards
                   targets bottom6 $ drawCardFromAbyss iid source
-            else eachInvestigator \iid' -> gainClues iid' source 1
+            else do
+              if isOtherwise
+                then codexFinishedUntilNewAct Theta
+                else codexFinished Theta
+              eachInvestigator \iid' -> gainClues iid' source 1
         Omega -> scope "bertieMusgrave" do
+          codexFinished Omega
           flavor $ setTitle "title" >> p.green "body"
           selectOne (assetIs Assets.bertieMusgraveATrueAesthete) >>= \case
             Just aid -> takeControlOfAsset iid aid

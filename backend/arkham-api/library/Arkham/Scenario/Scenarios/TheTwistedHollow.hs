@@ -209,16 +209,19 @@ instance RunMessage TheTwistedHollow where
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         7 -> do
+          codexFinished 7
           selectEach (assetIs Assets.judithParkTheMuscle) \aid ->
             dealAssetDamage aid ScenarioSource 2
           record JudithSavedYourAss
           entry "judithPark"
         8 -> do
+          codexFinished 8
           selectEach (assetIs Assets.theoPetersJackOfAllTrades) \aid ->
             dealAssetHorror aid ScenarioSource 2
           record TheoDistractedTheBear
           entry "theoPeters"
         Theta -> scope "drRosaMarquez" do
+          codexFinished Theta
           flavor $ setTitle "title" >> p.green "body"
           locations <- select UnrevealedLocation
           chooseOneM iid do
@@ -230,6 +233,7 @@ instance RunMessage TheTwistedHollow where
                 (CannotTriggerAbilityMatching $ AbilityIsForcedAbility <> AbilityOnLocation (LocationWithId loc))
                 (reveal loc)
         Omega -> scope "bertieMusgrave" do
+          codexFinished Omega
           flavor $ setTitle "title" >> p.green "body"
           chooseOneM iid do
             labeled' "gainClues" $ eachInvestigator \iid' -> gainClues iid' source 1

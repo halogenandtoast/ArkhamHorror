@@ -27,6 +27,6 @@ instance RunMessage DawnOfTheFirstDay where
         semaphore iid do
           gameModifier attrs iid Semaphore
           liftIO $ f (ClientCardOnly pid "The Brilliance" (toJSON $ flipCard $ toCard attrs))
-          gainXp iid attrs (ikey "xp.theBrilliance") 1
+          gainXp iid attrs (ikey "prelude1.xp.theBrilliance") 1
       pure a
     _ -> DawnOfTheFirstDay <$> liftRunMessage msg attrs

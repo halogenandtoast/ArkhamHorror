@@ -1,11 +1,9 @@
 module Arkham.Location.Cards.TadsGeneralStoreDay (tadsGeneralStoreDay) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher
-import Arkham.Modifier
 
 newtype TadsGeneralStoreDay = TadsGeneralStoreDay LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,12 +14,7 @@ tadsGeneralStoreDay = symbolLabel $ location TadsGeneralStoreDay Cards.tadsGener
 
 instance HasAbilities TadsGeneralStoreDay where
   getAbilities (TadsGeneralStoreDay a) =
-    extendRevealed1 a
-      $ restricted
-        a
-        1
-        (Here <> youExist (InvestigatorWithoutModifier $ ScenarioModifier "codex14"))
-        actionAbility
+    extendRevealed1 a $ restricted a 1 (Here <> youCanTriggerCodex 14) actionAbility
 
 instance RunMessage TadsGeneralStoreDay where
   runMessage msg l@(TadsGeneralStoreDay attrs) = runQueueT $ case msg of

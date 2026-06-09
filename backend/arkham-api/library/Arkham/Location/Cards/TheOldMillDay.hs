@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheOldMillDay (theOldMillDay) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -15,7 +15,9 @@ theOldMillDay = symbolLabel $ location TheOldMillDay Cards.theOldMillDay 2 (Stat
 
 instance HasAbilities TheOldMillDay where
   getAbilities (TheOldMillDay a) =
-    extendRevealed1 a $ restricted a 1 Here $ freeReaction (DiscoverClues #after You (be a) (atLeast 1))
+    extendRevealed1 a
+      $ restricted a 1 (Here <> youCanTriggerCodex 12)
+      $ freeReaction (DiscoverClues #after You (be a) (atLeast 1))
 
 instance RunMessage TheOldMillDay where
   runMessage msg l@(TheOldMillDay attrs) = runQueueT $ case msg of

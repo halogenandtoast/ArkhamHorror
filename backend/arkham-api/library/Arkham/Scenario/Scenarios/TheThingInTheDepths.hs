@@ -1,11 +1,13 @@
 module Arkham.Scenario.Scenarios.TheThingInTheDepths (theThingInTheDepths) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
@@ -225,17 +227,15 @@ instance RunMessage TheThingInTheDepths where
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         5 -> do
-          controlled <- selectAny $ assetIs Assets.riverHawthorneBigInNewYork <> AssetControlledBy Anyone
-          if controlled
+          isControlled <- selectAny $ assetIs Assets.riverHawthorneBigInNewYork <> AssetControlledBy Anyone
+          if isControlled
             then do
-              atCranberryBog <-
-                selectAny $ locationWithInvestigator iid <> LocationInPosition cranberryBogPos
-              when atCranberryBog do
-                scope "riverHawthorne" $ flavor $ setTitle "title" >> p.green "controlled"
-                increaseRelationshipLevel RiverHawthorne 1
-                interludeXpAll (toBonus "bonus" 1)
-                selectForMaybeM (assetIs Assets.riverHawthorneBigInNewYork) removeFromGame
+              scope "riverHawthorne" $ flavor $ setTitle "title" >> p.green "controlled"
+              increaseRelationshipLevel RiverHawthorne 1
+              interludeXpAll (toBonus "bonus" 1)
+              selectForMaybeM (assetIs Assets.riverHawthorneBigInNewYork) removeFromGame
             else do
+              codexFinished 5
               scope "riverHawthorne" $ flavor $ setTitle "title" >> p.green "uncontrolled"
               record RiverAskedForHelp
               investigators <- allInvestigators
@@ -246,7 +246,20 @@ instance RunMessage TheThingInTheDepths where
                   $ questionLabeled' "chooseInvestigatorToTakeControlOf"
                 questionLabeledCard Assets.riverHawthorneBigInNewYork
                 portraits investigators (`takeControlOfAsset` river)
+
+                selectAny $ locationWithInvestigator iid <> LocationInPosition cranberryBogPos
+              createAbilityEffect EffectGameWindow
+                $ skillTestAbility
+                $ onlyOnce
+                $ restricted
+                  (SourceableWithCardCode Assets.riverHawthorneBigInNewYork river)
+                  1
+                  ( OnSameLocation
+                      <> youExist (InvestigatorAt (LocationInPosition cranberryBogPos))
+                  )
+                  parleyAction_
         7 -> do
+          codexFinished 7
           judithShared <- getHasRecord JudithSharedAGrudge
           if judithShared
             then do
@@ -265,6 +278,7 @@ instance RunMessage TheThingInTheDepths where
             questionLabeledCard Assets.judithParkTheMuscle
             portraits investigators (`takeControlOfAsset` judith)
         Theta -> do
+          codexFinished Theta
           entry "drRosaMarquez"
           locations <- select Anywhere
           chooseTargetM iid locations \lid -> do

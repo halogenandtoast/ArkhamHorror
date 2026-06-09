@@ -49,6 +49,28 @@ codex iid (toSource -> source) n = do
   cannotTriggerCodex <- elem (ScenarioModifier "cannotTriggerCodex") <$> getModifiers ScenarioTarget
   unless cannotTriggerCodex $ scenarioSpecific "codex" (iid, source, n)
 
+type Codex = Int
+
+youCanTriggerCodex :: Codex -> Criterion
+youCanTriggerCodex entry =
+  youExist
+    ( InvestigatorWithoutModifier (codexDone entry)
+        <> InvestigatorWithoutModifier (ScenarioModifier "cannotTriggerCodex")
+    )
+
+codexDone :: Codex -> ModifierType
+codexDone entry = ScenarioModifierValue "codex:done" (toJSON entry)
+
+codexFinished :: ReverseQueue m => Codex -> m ()
+codexFinished entry = eachInvestigator (codexFinishedFor entry)
+
+codexFinishedUntilNewAct :: ReverseQueue m => Codex -> m ()
+codexFinishedUntilNewAct entry = eachInvestigator \iid ->
+  actModifier ScenarioSource iid $ codexDone entry
+
+codexFinishedFor :: ReverseQueue m => Codex -> InvestigatorId -> m ()
+codexFinishedFor entry iid = gameModifier ScenarioSource iid (ScenarioModifierValue "codex:done" (toJSON entry))
+
 makePreparationsForNextSurvey :: ReverseQueue m => InvestigatorId -> m ()
 makePreparationsForNextSurvey iid = do
   iattrs <- getAttrs @Investigator.Investigator iid

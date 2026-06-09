@@ -81,7 +81,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
         li "dayOne"
         li.nested "placeLocations" do
           li "locationsNote"
-          li "beginPlay"
+          li "startAt"
         li "setOutOfPlay"
         li "placeDoom"
         li "codex"
@@ -114,9 +114,11 @@ instance RunMessage PreludeWelcomeToHemlockVale where
       placeDoomOnAgenda n
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid, source :: Source, n :: Int) = toResult v
-      let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
+      let
+        entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         1 -> do
+          codexFinished 1
           entry "motherRachel"
           cards <-
             getPlayableCardsMatch
@@ -129,6 +131,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             targets cards $ putCardIntoPlay iid
             unscoped skip_
         2 -> do
+          codexFinished 2
           increaseRelationshipLevel LeahAtwood 1
           entry "leahAtwood"
           cards <- getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ #tool)
@@ -136,6 +139,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             targets cards $ putCardIntoPlay iid
             unscoped skip_
         3 -> do
+          codexFinished 3
           increaseRelationshipLevel SimeonAtwood 1
           entry "simeonAtwood"
           search
@@ -146,6 +150,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             (basic $ oneOf [#tactic, #trick])
             (AddFoundToHand iid 1)
         4 -> do
+          codexFinished 4
           entry "williamHemlock"
           increaseRelationshipLevel WilliamHemlock 1
           search
@@ -156,14 +161,17 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             (basic $ oneOf [#tome, #talent])
             (AddFoundToHand iid 1)
         5 -> do
+          codexFinished 5
           increaseRelationshipLevel RiverHawthorne 1
           entry "riverHawthorne"
           gainResources iid source 3
         6 -> do
+          codexFinished 6
           increaseRelationshipLevel GideonMizrah 1
           entry "gideonMizrah"
           drawCards iid source 3
         7 -> do
+          codexFinished 7
           increaseRelationshipLevel JudithPark 1
           entry "judithPark"
           cards <- getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ #weapon)
@@ -171,6 +179,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             targets cards $ putCardIntoPlay iid
             unscoped skip_
         8 -> do
+          codexFinished 8
           increaseRelationshipLevel TheoPeters 1
           entry "theoPeters"
           chooseOneM iid $ unscoped do
@@ -179,6 +188,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
               chooseTargetM iid locations $ moveTo source iid
             skip_
         9 -> do
+          codexFinished 9
           entry "boardingHouse"
           drawOk <- can.draw.cards iid
           resourceOk <- can.gain.resources iid
@@ -191,6 +201,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation boardingHouse)
           eachInvestigator \iid' -> gameModifier source iid' (ScenarioModifier "codex9")
         10 -> do
+          codexFinished 10
           entry "theCrossroads"
           drawOk <- can.draw.cards iid
           resourceOk <- can.gain.resources iid
@@ -202,6 +213,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           theCrossroads <- getJustLocationByName "The Crossroads"
           createAssetAt_ Assets.theoPetersJackOfAllTrades (AtLocation theCrossroads)
         11 -> do
+          codexFinished 11
           entry "hemlockChapel"
           drawOk <- can.draw.cards iid
           resourceOk <- can.gain.resources iid
@@ -213,6 +225,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           hemlockChapel <- getJustLocationByName "Hemlock Chapel"
           createAssetAt_ Assets.motherRachelKindlyMatron (AtLocation hemlockChapel)
         12 -> do
+          codexFinished 12
           entry "theOldMill"
           drawOk <- can.draw.cards iid
           resourceOk <- can.gain.resources iid
@@ -224,6 +237,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           theOldMill <- getJustLocationByName "The Old Mill"
           createAssetAt_ Assets.leahAtwoodTheValeCook (AtLocation theOldMill)
         13 -> do
+          codexFinished 13
           entry "theAtwoodHouse"
           drawOk <- can.draw.cards iid
           resourceOk <- can.gain.resources iid
@@ -240,7 +254,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           when (resources > 0) do
             chooseOneM iid do
               labeled' "tadsGeneralStore.item" do
-                gameModifier source iid (ScenarioModifier "codex14")
+                codexFinishedFor 6 iid
                 spendResources iid 1
                 search iid source iid [fromDeck] (basic #item) (PlayFoundNoCost iid 1)
               unscoped skip_
@@ -248,6 +262,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             tadsGeneralStore <- getJustLocationByName "Tad's General Store"
             createAssetAt_ Assets.judithParkTheMuscle (AtLocation tadsGeneralStore)
         15 -> do
+          codexFinished 15
           entry "valeSchoolhouse"
           drawOk <- can.draw.cards iid
           resourceOk <- can.gain.resources iid
@@ -259,6 +274,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           valeSchoolhouse <- getJustLocationByName "Vale Schoolhouse"
           createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation valeSchoolhouse)
         16 -> do
+          codexFinished 16
           entry "theCommons"
           search iid source iid [fromTopOfDeck 9] (basic #ally) (AddFoundToHand iid 1)
           theCommons <- getJustLocationByName "The Commons"

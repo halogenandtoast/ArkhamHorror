@@ -1,6 +1,5 @@
 module Arkham.Scenario.Scenarios.WrittenInRock (writtenInRock) where
 
-import Arkham.Ability.Types
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -279,11 +278,12 @@ instance RunMessage WrittenInRock where
           entry "leahAtwood"
           controlled <- selectAny $ assetIs Assets.leahAtwoodTheValeCook <> AssetControlledBy Anyone
           if controlled
-            then placeTokens source ScenarioTarget Switch 1
+            then do
+              codexFinished 2
+              placeTokens source ScenarioTarget Switch 1
             else do
               iids <- allInvestigators
               leah <- selectJust $ assetIs Assets.leahAtwoodTheValeCook
-              clearAbilityUse $ AbilityRef (toSource leah) 1
               leadChooseOneM do
                 unscoped $ nameVar Assets.leahAtwoodTheValeCook $ questionLabeled' "takeControlOf"
                 questionLabeledCard Assets.leahAtwoodTheValeCook
@@ -293,16 +293,18 @@ instance RunMessage WrittenInRock where
           controlled <-
             selectAny $ assetIs Assets.simeonAtwoodDedicatedTroublemaker <> AssetControlledBy Anyone
           if controlled
-            then placeTokens source ScenarioTarget Switch 2
+            then do
+              codexFinished 3
+              placeTokens source ScenarioTarget Switch 2
             else do
               iids <- allInvestigators
               simeon <- selectJust $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
-              clearAbilityUse $ AbilityRef (toSource simeon) 1
               leadChooseOneM do
                 unscoped $ nameVar Assets.simeonAtwoodDedicatedTroublemaker $ questionLabeled' "takeControlOf"
                 questionLabeledCard Assets.simeonAtwoodDedicatedTroublemaker
                 portraits iids (`takeControlOfAsset` simeon)
         5 -> do
+          codexFinished 5
           entry "riverHawthorne"
           iids <- allInvestigators
           river <- selectJust $ assetIs Assets.riverHawthorneBigInNewYork
@@ -314,8 +316,11 @@ instance RunMessage WrittenInRock where
           entry "drRosaMarquez"
           step <- getCurrentActStep
           if step == 1
-            then placeTokens source ScenarioTarget Scrap 1
+            then do
+              codexFinishedUntilNewAct Theta
+              placeTokens source ScenarioTarget Scrap 1
             else do
+              codexFinished Theta
               locations <- select LocationCanBeSwapped
               chooseTargetM iid locations $ handleTarget iid attrs
         _ -> error "invalid codex entry"
@@ -363,8 +368,8 @@ instance RunMessage WrittenInRock where
 
           if
             | time == Night -> do
-              record SimeonCrossedOut
-              push R6
+                record SimeonCrossedOut
+                push R6
             | day `elem` [Day1, Day2] -> push R3
             | otherwise -> push R4
         Resolution 1 -> do

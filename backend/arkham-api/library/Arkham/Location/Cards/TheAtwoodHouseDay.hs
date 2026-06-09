@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheAtwoodHouseDay (theAtwoodHouseDay) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
@@ -14,7 +14,7 @@ theAtwoodHouseDay = symbolLabel $ location TheAtwoodHouseDay Cards.theAtwoodHous
 
 instance HasAbilities TheAtwoodHouseDay where
   getAbilities (TheAtwoodHouseDay a) =
-    extendRevealed1 a $ groupLimit PerGame $ restricted a 1 Here actionAbility
+    extendRevealed1 a $ restricted a 1 (Here <> youCanTriggerCodex 13) actionAbility
 
 instance RunMessage TheAtwoodHouseDay where
   runMessage msg l@(TheAtwoodHouseDay attrs) = runQueueT $ case msg of

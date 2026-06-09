@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheCommonsDay (theCommonsDay) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
@@ -14,9 +14,7 @@ theCommonsDay = symbolLabel $ location TheCommonsDay Cards.theCommonsDay 1 (Stat
 
 instance HasAbilities TheCommonsDay where
   getAbilities (TheCommonsDay a) =
-    extendRevealed1 a
-      $ groupLimit PerGame
-      $ restricted a 1 Here actionAbility
+    extendRevealed1 a $ restricted a 1 (Here <> youCanTriggerCodex 16) actionAbility
 
 instance RunMessage TheCommonsDay where
   runMessage msg l@(TheCommonsDay attrs) = runQueueT $ case msg of

@@ -201,10 +201,12 @@ instance RunMessage TheSilentHeath where
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         1 -> do
+          codexFinished 1
           entry "motherRachel"
           increaseRelationshipLevel MotherRachel 1
           interludeXpAll (toBonus "bonus" 1)
         2 -> do
+          codexFinished 2
           entry "leahAtwood"
           record LeahSearchedThePearlRuins
           eachInvestigator \iid' -> gainClues iid' source 1
@@ -212,9 +214,11 @@ instance RunMessage TheSilentHeath where
           step <- getCurrentActStep
           if step == 1
             then do
+              codexFinishedUntilNewAct Theta
               scope "drRosaMarquez" $ flavor $ setTitle "title" >> p.green "act1"
               drawCards iid source 3
             else do
+              codexFinished Theta
               scope "drRosaMarquez" $ flavor $ setTitle "title" >> p.green "act2"
               locations <- select $ LocationWithCardsUnderneath AnyCards
               chooseTargetM iid locations \lid -> do

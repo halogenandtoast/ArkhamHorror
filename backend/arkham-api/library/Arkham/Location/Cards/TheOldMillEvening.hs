@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheOldMillEvening (theOldMillEvening) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
@@ -14,7 +14,7 @@ theOldMillEvening = symbolLabel $ location TheOldMillEvening Cards.theOldMillEve
 
 instance HasAbilities TheOldMillEvening where
   getAbilities (TheOldMillEvening a) =
-    extendRevealed1 a $ onlyOnce $ restricted a 1 Here actionAbility
+    extendRevealed1 a $ restricted a 1 (Here <> youCanTriggerCodex 12) actionAbility
 
 instance RunMessage TheOldMillEvening where
   runMessage msg l@(TheOldMillEvening attrs) = runQueueT $ case msg of

@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.DrRosaMarquezBestInHerField (drRosaMarquezBestInHerFi
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex, pattern Theta)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 
@@ -24,7 +24,9 @@ instance HasAbilities DrRosaMarquezBestInHerField where
         $ restricted
           a
           1
-          (oneOf [ControlsThis, thisExists a (not_ $ AssetControlledBy Anyone) <> OnSameLocation])
+          ( oneOf [ControlsThis, thisExists a (not_ $ AssetControlledBy Anyone) <> OnSameLocation]
+              <> youCanTriggerCodex Theta
+          )
         $ freeReaction
         $ DiscoveringLastClue #after You YourLocation
     ]

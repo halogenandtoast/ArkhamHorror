@@ -153,6 +153,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         1 -> do
+          codexFinished 1
           let motherRachelEntry k = setTitle "title" >> compose.green (p "header" >> p k)
           scope "motherRachel" $ flavor $ motherRachelEntry "motherRachel1"
           increaseRelationshipLevel MotherRachel 1
@@ -172,6 +173,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
                 targets cards $ putCardIntoPlay iid
                 unscoped skip_
         3 -> do
+          codexFinished 3
           hatchedAPlan <- getHasRecord SimeonHatchedAPlan
           scope "simeonAtwood" $ flavor do
             setTitle "title"
@@ -191,6 +193,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
               (basic $ oneOf [#tactic, #trick])
               (AddFoundToHand iid 1)
         4 -> do
+          codexFinished 4
           record WilliamTookHeart
           entry "williamHemlock"
           increaseRelationshipLevel WilliamHemlock 1
@@ -204,6 +207,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
             (basic $ oneOf [#tome, #talent])
             (AddFoundToHand iid 1)
         5 -> do
+          codexFinished 5
           record TheSchemeIsInMotion
           increaseRelationshipLevel RiverHawthorne 2
           decreaseRelationshipLevel WilliamHemlock 1
@@ -211,6 +215,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           entry "riverHawthorne"
           gainResources iid source 3
         6 -> do
+          codexFinished 6
           let gideonEntry k = setTitle "title" >> compose.green (p "header" >> p k)
           scope "gideonMizrah" $ flavor $ gideonEntry "gideon1"
           increaseRelationshipLevel GideonMizrah 1
@@ -225,6 +230,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
 
           drawCards iid source 3
         7 -> do
+          codexFinished 7
           let judithEntry k = setTitle "title" >> compose.green (p "header" >> p k)
           scope "judithPark" $ flavor $ judithEntry "judith1"
 
@@ -246,6 +252,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
                 targets cards $ putCardIntoPlay iid
                 unscoped skip_
         8 -> do
+          codexFinished 8
           theoDistractedTheBear <- getHasRecord TheoDistractedTheBear
           when theoDistractedTheBear do
             incrementRecordCount TheoPetersRelationshipLevel 1
@@ -263,6 +270,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
               chooseTargetM iid locations $ moveTo source iid
             skip_
         9 -> do
+          -- can trigger again
           simeon <- selectAny $ SetAsideCardMatch $ cardIs Assets.simeonAtwoodDedicatedTroublemaker
           gideon <- selectAny $ SetAsideCardMatch $ cardIs Assets.gideonMizrahSeasonedSailor
           let optionCount = 1 + (if simeon then 1 else 0) + (if gideon then 1 else 0)
@@ -275,17 +283,21 @@ instance RunMessage PreludeDawnOfTheSecondDay where
               chooseAmount' iid "additionalActions" "$actions" 0 maxAdditional attrs
             else doStep 1 (ScenarioSpecific "codex" v)
         10 -> do
+          codexFinished 10
           entry "theCrossroads"
           drawCards iid source 1
           remember YouAreRunningAnErrand
         11 -> do
+          codexFinished 11
           entry "hemlockChapel"
           hemlockChapel <- getJustLocationByName "Hemlock Chapel"
           createAssetAt_ Assets.motherRachelKindlyMatron (AtLocation hemlockChapel)
         12 -> do
+          codexFinished 12
           entry "theOldMill"
           drawCards iid source 3
         13 -> do
+          codexFinished 13
           william <- getRelationshipLevel WilliamHemlock
           river <- getRelationshipLevel RiverHawthorne
           theAtwoodHouse <- getJustLocationByName "The Atwood House"
@@ -301,6 +313,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
         14 -> do
           runningAnErrand <- remembered YouAreRunningAnErrand
           when runningAnErrand do
+            codexFinished 14
             incrementRecordCount LeahAtwoodRelationshipLevel 1
             eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.tadsGeneralStore") 1
           scope "tadsGeneralStore" $ flavor do
@@ -320,13 +333,15 @@ instance RunMessage PreludeDawnOfTheSecondDay where
                 unscoped skip_
 
           eachInvestigator \iid' -> effectWithSource source iid' do
-            apply $ ScenarioModifier "codex14"
+            apply $ codexDone 14
             removeOn $ #remembered YouAreRunningAnErrand
         15 -> do
+          codexFinished 15
           entry "valeSchoolhouse"
           valeSchoolhouse <- getJustLocationByName "Vale Schoolhouse"
           createAssetAt_ Assets.theoPetersJackOfAllTrades (AtLocation valeSchoolhouse)
         16 -> do
+          codexFinished 16
           entry "theCommons"
           iids <- getInvestigators
           residents <- filterM (fmap (<= 2) . getRelationshipLevel) [WilliamHemlock ..]
@@ -348,6 +363,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
                               increaseRelationshipLevel resident 1
                               eachInvestigator \iid'' -> gainXp iid'' attrs (ikey "xp.theCommons") 1
         17 -> do
+          codexFinished 17
           entry "theCurse"
           gainXp iid attrs (ikey "xp.theCurse") 2
           cursed <- selectAny $ InDeckOf (InvestigatorWithId iid) <> basic (cardIs Skills.theHemlockCurse)

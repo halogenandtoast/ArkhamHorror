@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheLostSister (theLostSister) where
 
-import Arkham.Ability.Types (AbilityRef (..))
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -9,10 +9,11 @@ import Arkham.Calculation
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
@@ -47,17 +48,6 @@ instance HasModifiersFor TheLostSister where
       (InvestigatorAt $ LocationWithTrait Dark)
       [ScenarioModifierValue "time" (toJSON Night)]
     modifySelect a (EnemyAt $ LocationWithTrait Dark) [ScenarioModifierValue "time" (toJSON Night)]
-    runMaybeT_ do
-      liftGuardM $ remembered TheoIsArguingWithHelen
-      liftGuardM $ not <$> getHasRecord TheoReconciledWithHelen
-      theo <- MaybeT $ selectOne $ assetIs Assets.theoPetersJackOfAllTrades
-      helen <- MaybeT $ selectOne $ assetIs Assets.helenPetersTheEldestSister
-      theoLoc <- MaybeT $ field AssetLocation theo
-      helenLoc <- MaybeT $ field AssetLocation helen
-      guard $ theoLoc == helenLoc
-      lift do
-        selectEach Anyone \iid -> do
-          modified_ a (AbilityTarget iid (AbilityRef (toSource theo) 1)) [IgnoreLimit]
 
 theLostSister :: Difficulty -> TheLostSister
 theLostSister difficulty = scenario TheLostSister "10569" "The Lost Sister" difficulty []
@@ -243,10 +233,12 @@ instance RunMessage TheLostSister where
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         4 -> do
+          codexFinished 4
           entry "williamHemlock"
           increaseRelationshipLevel WilliamHemlock 1
           interludeXpAll (toBonus "bonus" 1)
         6 -> do
+          codexFinished 6
           entry "gideonMizrah"
           remember GideonIsSearchingForAnHeirloom
         8 -> do
@@ -270,6 +262,7 @@ instance RunMessage TheLostSister where
                   sid <- getRandom
                   beginSkillTest sid chosen attrs attrs #willpower (Fixed 4)
             else do
+              codexFinished 8
               scope "theoPeters" $ flavor do
                 setTitle "title"
                 compose.green do
@@ -277,6 +270,25 @@ instance RunMessage TheLostSister where
                   hr
                   p.validate True "otherwise"
               remember TheoIsArguingWithHelen
+
+              day <-
+                getCampaignDay <&> \case
+                  Day1 -> 1
+                  Day2 -> 2
+                  Day3 -> 3
+              createAbilityEffect EffectGameWindow
+                $ skillTestAbility
+                $ onlyOnce
+                $ restricted
+                  (SourceableWithCardCode Assets.theoPetersJackOfAllTrades theo)
+                  1
+                  ( OnSameLocation
+                      <> exists
+                        ( assetIs Assets.theoPetersJackOfAllTrades
+                            <> AssetAt (LocationWithAsset $ assetIs Assets.helenPetersTheEldestSister)
+                        )
+                  )
+                  (parleyAction $ HandDiscardCost day #any)
         Sigma -> do
           theoReconciled <- getHasRecord TheoReconciledWithHelen
           mTheo <- selectOne $ assetIs Assets.theoPetersJackOfAllTrades
@@ -303,6 +315,7 @@ instance RunMessage TheLostSister where
                   p.validate True "otherwise"
               for_ mTheo removeFromGame
         Theta -> do
+          codexFinished Theta
           entry "drRosaMarquez"
           getScenarioDeck CavernsDeck >>= \case
             [] -> pure ()

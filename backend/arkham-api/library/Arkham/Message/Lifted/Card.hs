@@ -128,8 +128,8 @@ setEncounterDeck = push . SetEncounterDeck
 setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards
 
-setCardAside :: ReverseQueue m => Card -> m ()
-setCardAside c = do
+setCardAside :: (ReverseQueue m, IsCard a) => a -> m ()
+setCardAside (toCard -> c) = do
   obtainCard c
   push $ Msg.SetAsideCards [c]
 

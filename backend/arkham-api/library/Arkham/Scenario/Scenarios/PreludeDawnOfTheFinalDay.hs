@@ -187,14 +187,15 @@ instance RunMessage PreludeDawnOfTheFinalDay where
       -- Hiding fireworks (Codex 10/14/15): test Combat or Agility at the given
       -- difficulty. Each success marks 1 tally next to "The plan is underway"
       -- (handled in PassedThisSkillTest below).
-      let hideFireworks skills x = do
+      let hideFireworks idx skills x = do
             sid <- getRandom
-            chooseBeginSkillTest sid iid attrs attrs skills (Fixed x)
+            chooseBeginSkillTest sid iid (IndexedSource idx $ toSource attrs) attrs skills (Fixed x)
       let drawOrResource = chooseOneM iid do
             labeled' "draw" $ drawCards iid source 1
             labeled' "gainResource" $ gainResources iid source 1
       case n of
         1 -> scope "motherRachel" do
+          codexFinished 1
           southernFields <- getHasRecord (AreasSurveyed SouthernFields)
           flavor do
             setTitle "title"
@@ -215,6 +216,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
                 decreaseRelationshipLevel MotherRachel 1
                 popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.motherRachel") 1
         2 -> scope "leahAtwood" do
+          codexFinished 2
           simeonCrossedOut <- getHasRecord SimeonCrossedOut
           flavor do
             setTitle "title"
@@ -226,6 +228,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           increaseRelationshipLevel LeahAtwood x
           popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.leahAtwood") x
         4 -> scope "williamHemlock" do
+          codexFinished 4
           stood <- getHasRecord WilliamStoodByYou
           flavor do
             setTitle "title"
@@ -247,6 +250,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           increaseRelationshipLevel WilliamHemlock 1
           popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.williamHemlock") 1
         5 -> scope "riverHawthorne" do
+          codexFinished 5
           stood <- getHasRecord RiverStoodByYou
           scheme <- getHasRecord TheSchemeIsInMotion
           flavor do
@@ -263,6 +267,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
             else do
               gainResources iid source 3
         6 -> scope "gideonMizrah" do
+          codexFinished 6
           stood <- getHasRecord GideonStoodByYou
           flavor do
             setTitle "title"
@@ -277,6 +282,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
             else do
               drawCards iid source 3
         7 -> scope "judithPark" do
+          codexFinished 7
           theCrossroads <- getJustLocationByName "The Crossroads"
           createEnemyAt_ Enemies.miasmaticShadow theCrossroads
           stood <- getHasRecord JudithStoodByYou
@@ -301,6 +307,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           increaseRelationshipLevel JudithPark 1
           popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.judithPark") 1
         8 -> scope "theoPeters" do
+          codexFinished 8
           stood <- getHasRecord TheoStoodByYou
           flavor do
             setTitle "title"
@@ -337,8 +344,10 @@ instance RunMessage PreludeDawnOfTheFinalDay where
               hr
               p.validate (not planUnderway) "otherwise"
           if planUnderway
-            then hideFireworks [#willpower, #combat] 3
-            else drawOrResource
+            then hideFireworks 10 [#willpower, #combat] 3
+            else do
+              codexFinished 10
+              drawOrResource
         11 -> scope "hemlockChapel" do
           planUnderway <- getHasRecord ThePlanIsUnderway
           gideonSetAside <- selectAny $ SetAsideCardMatch $ cardIs Assets.gideonMizrahSeasonedSailor
@@ -352,8 +361,11 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           when gideonSetAside do
             hemlockChapel <- getJustLocationByName "Hemlock Chapel"
             createAssetAt_ Assets.gideonMizrahSeasonedSailor (AtLocation hemlockChapel)
-          when planUnderway $ hideFireworks [#agility] 2
+          if planUnderway 
+            then hideFireworks 11 [#agility] 2
+            else codexFinished 11
         13 -> scope "theAtwoodHouse" do
+          codexFinished 13
           flavor $ setTitle "title" >> p.green "body"
           leahSetAside <- selectAny $ SetAsideCardMatch $ cardIs Assets.leahAtwoodTheValeCook
           when leahSetAside do
@@ -368,8 +380,9 @@ instance RunMessage PreludeDawnOfTheFinalDay where
               hr
               p.validate (not planUnderway) "otherwise"
           if planUnderway
-            then hideFireworks [#intellect, #agility] 3
+            then hideFireworks 14 [#intellect, #agility] 3
             else do
+              codexFinished 14
               resources <- getSpendableResources iid
               when (resources >= 5) do
                 chooseOneM iid do
@@ -386,9 +399,12 @@ instance RunMessage PreludeDawnOfTheFinalDay where
               hr
               p.validate (not planUnderway) "otherwise"
           if planUnderway
-            then hideFireworks [#combat, #agility] 3
-            else drawOrResource
+            then hideFireworks 15 [#combat, #agility] 3
+            else do
+              codexFinished 15
+              drawOrResource
         16 -> scope "theCommons" do
+          codexFinished 16
           delivering <- remembered YouAreDeliveringAPackage
           flavor do
             setTitle "title"
@@ -422,9 +438,10 @@ instance RunMessage PreludeDawnOfTheFinalDay where
                               popScope $ eachInvestigator \iid'' -> gainXp iid'' attrs (ikey "xp.theCommons") 1
         _ -> error "invalid codex entry"
       pure s
-    PassedThisSkillTest _iid (isSource attrs -> True) -> scope "codex" do
+    PassedThisSkillTest _iid (IndexedSource n (isSource attrs -> True)) -> scope "codex" do
       -- A successfully hidden cluster of fireworks: mark 1 tally next to "The
       -- plan is underway" in Simeon Atwood's Notes.
+      codexFinished n
       flavor $ p.green "fireworksHidden"
       incrementRecordCount ThePlanIsUnderway 1
       pure s

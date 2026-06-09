@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
-import Arkham.Card
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
@@ -21,7 +20,7 @@ instance HasModifiersFor BertieMusgraveATrueAesthete where
 
 instance HasAbilities BertieMusgraveATrueAesthete where
   getAbilities (BertieMusgraveATrueAesthete a) =
-    [ restricted a 1 OnSameLocation
+    [ restricted a 1 (OnSameLocation <> youCanTriggerCodex Omega)
         $ FastAbility'
           (OrCost [DamageCost (a.ability 1) YouTarget 1, HorrorCost (a.ability 1) YouTarget 1] <> exhaust a)
           #parley
@@ -37,6 +36,6 @@ instance RunMessage BertieMusgraveATrueAesthete where
     UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
       cancelWindowBatch ws
       removeFromGame attrs
-      push $ SetAsideCards [toCard attrs]
+      setCardAside attrs
       pure a
     _ -> BertieMusgraveATrueAesthete <$> liftRunMessage msg attrs

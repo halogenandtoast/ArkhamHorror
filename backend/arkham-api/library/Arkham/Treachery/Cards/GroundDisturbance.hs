@@ -21,8 +21,7 @@ instance RunMessage GroundDisturbance where
   runMessage msg t@(GroundDisturbance attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      chooseOneM iid do
-        for_ [#agility, #intellect] \skill -> skillLabeled skill $ revelationSkillTest sid iid attrs skill (Fixed 4)
+      chooseBeginSkillTestEdit sid iid attrs iid [#intellect, #agility] (Fixed 4) setIsRevelation
       pure t
     FailedThisSkillTestBy _ (isSource attrs -> True) n | n > 0 -> do
       doStep n msg

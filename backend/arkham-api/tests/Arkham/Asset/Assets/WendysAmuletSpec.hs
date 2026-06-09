@@ -37,3 +37,24 @@ spec = describe "Wendy's Amulet" $ do
         useForcedAbility
         self.discard `shouldReturn` []
         asDefs self.deck `shouldReturn` [Assets.flashlight, Events.barricade]
+
+  context "playing an event with an \"increase cost\" reaction from the discard" $ do
+    -- Regression for #4764: an event played from the discard (e.g. via Parallel
+    -- Wendy's Amulet) whose reaction cost is "increase its cost" was being
+    -- resolved twice. In-discard entities receive both the InDiscard-wrapped and
+    -- the raw message, so the Event runner's duplicate UseAbility handlers each
+    -- pushed a payment; the second double-applied the cost increase and crashed
+    -- with InvalidState "Can't afford cost". It must resolve exactly once.
+    it "resolves the reaction (and pays its cost) only once" . gameTest $ \self -> do
+      intelReport <- genPlayerCardWith Events.intelReport (setPlayerCardOwner (toId self))
+      withProp @"resources" 4 self
+      withProp @"discard" [intelReport] self
+      self `putCardIntoPlay` Assets.wendysAmuletAdvanced
+      location <- testLocation & prop @"clues" 2
+      self `moveTo` location
+      duringTurn self do
+        self `playCard` toCard intelReport
+        useReaction -- "increase its cost by 2: Change Discover 1 clue to Discover 2 clues"
+        self.clues `shouldReturn` 2
+        self.resources `shouldReturn` 0
+        location.clues `shouldReturn` 0

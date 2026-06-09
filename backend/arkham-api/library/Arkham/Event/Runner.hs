@@ -321,9 +321,10 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
   InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
     push $ Do msg'
     pure a
-  InDiscard iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
-    push $ Do msg'
-    pure a
+  -- NOTE: No InDiscard UseAbility handler here. In-discard entities also receive the raw message
+  -- (see RunMessage Game in Game/Runner.hs), so the bare `UseAbility` handler above already fires
+  -- for them. Adding an InDiscard handler would push `Do (UseAbility)` twice and resolve the
+  -- ability (and pay its cost) twice — see issue #4764 (Parallel Wendy's Amulet + Intel Report).
   InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
     push $ Do msg'
     pure a

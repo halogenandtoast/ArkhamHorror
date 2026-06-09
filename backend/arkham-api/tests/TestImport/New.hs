@@ -916,6 +916,20 @@ assertMaxAmountChoice n = do
     TotalAmountTarget _ -> expectationFailure "expected MaxAmountTarget"
     AmountOneOf _ -> expectationFailure "expected MaxAmountTarget"
 
+-- | Resolve a "spend up to" cost (a 'PayCostQuestion' wrapping a single-choice
+-- 'ChoosePaymentAmounts', e.g. Watch This' additional cost). Asserts the
+-- offered maximum equals @expectedMax@, then pays @amount@ units of it.
+payUpTo :: HasCallStack => Int -> Int -> TestAppT ()
+payUpTo expectedMax amount = do
+  questionMap <- gameQuestion <$> getGame
+  case mapToList questionMap of
+    [(_, PayCostQuestion _ (ChoosePaymentAmounts _ _ [choice]))] -> do
+      choice.maxBound `shouldBe` expectedMax
+      replicateM_ amount (push choice.message)
+      runMessages
+    [(_, question)] -> error $ "expected a PayCostQuestion/ChoosePaymentAmounts, but got: " <> show question
+    _ -> error "expected exactly one question"
+
 beginsWithInPlay :: CardDef -> CardDef -> SpecWith ()
 beginsWithInPlay investigator card = it ("begins with " <> T.unpack (toTitle card) <> " in play") . gameTestWith investigator $ \self -> do
   cards <- testPlayerCards 20

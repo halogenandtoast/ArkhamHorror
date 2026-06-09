@@ -6362,6 +6362,7 @@ test-suite spec
       Arkham.Skill.Cards.SurvivalInstinctSpec
       Arkham.Skill.Cards.UnexpectedCourageSpec
       Arkham.Skill.Cards.ViciousBlowSpec
+      Arkham.Skill.Cards.WatchThisSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.AmnesiaSpec
       Arkham.Treachery.Cards.BloodlustSpec

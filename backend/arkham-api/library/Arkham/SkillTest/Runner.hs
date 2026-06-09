@@ -514,15 +514,13 @@ instance RunMessage SkillTest where
           let allCommits = [(i, c) | (i, cs) <- payable, c <- cs]
           let (triggerCommits, noTriggerCommits) =
                 partition (cdCommitTrigger . toCardDef . snd) allCommits
-          -- Plain icon-only commits do nothing on `Do (CommitCard)`; run them
-          -- silently so the player isn't prompted with a meaningless choice.
-          unless (null noTriggerCommits)
-            $ pushAll [CommitCard i c | (i, c) <- noTriggerCommits]
           -- Trigger cards may have effects whose ordering matters (e.g. Promise
           -- of Power adds a curse that Unrelenting should be able to seal).
           -- chooseOrRunOneAtATimeWithLabel auto-runs a single choice without
           -- prompting; with 2+ it shows the label so the player understands
-          -- they're picking the order of on-commit effects.
+          -- they're picking the order of on-commit effects. Pushed before the
+          -- non-trigger block below so (because pushes prepend) these on-commit
+          -- triggers run *after* the plain/additional-cost commits.
           case triggerCommits of
             [] -> pure ()
             _ -> do
@@ -532,6 +530,13 @@ instance RunMessage SkillTest where
                   "$label.chooseCommitOrder"
                   player
                   [targetLabel (toCardId c) [CommitCard i c] | (i, c) <- triggerCommits]
+          -- Plain icon-only commits do nothing on `Do (CommitCard)`; run them
+          -- silently so the player isn't prompted with a meaningless choice.
+          -- Pushed last (so they run first) to lock in any additional commit
+          -- cost (e.g. Watch This' "spend up to 3 resources") before after-commit
+          -- triggers (e.g. Out the Door) grant resources.
+          unless (null noTriggerCommits)
+            $ pushAll [CommitCard i c | (i, c) <- noTriggerCommits]
           pushAll [PayCommitCosts i cs | (i, cs) <- payable]
       pure s
     PayCommitCosts iid cards -> do

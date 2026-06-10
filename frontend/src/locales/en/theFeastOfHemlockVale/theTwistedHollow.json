@@ -74,6 +74,10 @@
       "title": "{'{'}codex{'}'} Codex 7: Judith Park",
       "body": "<h3>@:theFeastOfHemlockVale.theTwistedHollow.codex.judithPark.title </h3><p>“Eat this, you son of a bitch!” A familiar voice comes from out of the darkness. Several shots impact the bear’s soft, molting body. The bear looks to its right just as another shot cracks its skull. Screeching in pain, it charges into the undergrowth toward the sound. More shots ring out. After what seems like an eternity, Judith Park emerges from the forest clutching a bleeding arm. You rush to dress the wound, but she waves you off. “I’m fine. Just glad you’re alright.” Judith smiles cockily. “Mother Rachel said you might need some help. She also paid me a twenty to come out.”</p><p class='basic right'>Deal 2 damage to Judith Park.</p><p class='basic right'>In Judith Park’s Notes, record *Judith saved your ass*.</p><p class='basic right'>Proceed to _{'{'}codex{'}'} Codex Σ: The Bear 3_</p>"
     },
+    "theoPeters": {
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "body": "<h3>@:theFeastOfHemlockVale.theTwistedHollow.codex.theoPeters.title </h3><p>A barrage of firecrackers fly out of the darkness. “Watch out!” shouts a familiar voice. The bear reels back on its hind legs as more firecrackers follow. Theo emerges from the darkness, grabs your hand, and tears away from the scene. The bear roars somewhere in the dark. “Mother Rachel said you were looking for Billy in the Western Woods,” Theo says breathlessly. “And well, I couldn’t let you go it alone. So I borrowed some of Simeon’s fireworks.” You are too relieved to tell him it’s “Bertie” and not “Billy.”</p><p class='basic right'>Deal 2 horror to Theo Peters.</p><p class='basic right'>In Theo Peters’ Notes, record *Theo distracted the Bear*.</p><p class='basic right'>Proceed to _{'{'}codex{'}'} Codex Σ: The Bear 3_</p>"
+    },
     "drRosaMarquez": {
       "label": {
         "doNotRevealLocation": "Do not reveal a location."

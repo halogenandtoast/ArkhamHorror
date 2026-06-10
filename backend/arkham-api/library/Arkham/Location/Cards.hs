@@ -396,7 +396,7 @@ allLocationCards =
       , gilmanHouse
       , gilmanHouseInTooDeep
       , glacialGrotto
-      , glimmeringMeadow
+      , glimmeringWoods
       , gondola
       , gothicSet
       , grandBazaarBusyWalkway

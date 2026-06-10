@@ -207,13 +207,13 @@ fungalCave =
   victory 1
     $ locationWithUnrevealed_ "10582" "Cavern" [Cave] "Fungal Cave" [Cave, Lair, Dark] TheLostSister
 
-glimmeringMeadow :: CardDef
-glimmeringMeadow =
+glimmeringWoods :: CardDef
+glimmeringWoods =
   locationWithUnrevealed_
     "10612"
     "Western Woods"
     [Forest, Dark]
-    "Glimmering Meadow"
+    "Glimmering Woods"
     [Forest, Dark]
     TheTwistedHollow
 

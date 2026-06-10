@@ -955,7 +955,7 @@ allLocations =
     , SomeLocationCard coveredBridge
     , SomeLocationCard openWater10599b
     , --- The Twisted Hollow
-      SomeLocationCard glimmeringMeadow
+      SomeLocationCard glimmeringWoods
     , SomeLocationCard blightedGlade
     , SomeLocationCard poisonedMarsh
     , SomeLocationCard fecundThicket

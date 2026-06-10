@@ -39,7 +39,7 @@
     "intro3": "<p>_Intro 3_: Mother Rachel nods along to your paper-thin story. “I see. Understand that the Vale is here to help. I wish you the best on your survey.” After more polite conversation, the matron leaves you and Dr. Marquez to scour the shed. Finally, you find a chipped mason jar with just a fifth of oil. “We can make it if we portion every bit,” the professor says. You follow the dim lantern light into the maw of gnarled trees toward a quiet stream, then further up and further into the dark.</p><p>Eventually, you reach a collapsed bridge and overgrown cobblestones in the ruins of an old village. The trees overhead rustle. “Something’s there,” Dr. Marquez raises her lantern. A pair of beady eyes reflect the light, but quickly vanish in the murk.</p><p>“Watch yourself and keep close. There’s no telling what’s out here.”</p><ul><li>In your Campaign Log, record the investigators lost the path.</li><li>Add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
   },
   "tooltips": {
-    "glimmeringMeadow": {
+    "glimmeringWoods": {
       "resign": "\"I'm sure Bertie's fine!\""
     }
   },
@@ -51,15 +51,15 @@
       "showedTheWay": "*If Mother Rachel showed the way*: Find the Vale Lantern story asset _with_ the _Boon_ trait and put it into play under the control of an investigator, _Lit_ side faceup. Remove the other Vale Lantern from the game. If there is only 1 investigator, the Vale Lantern does not take up a hand slot during this scenario.",
       "lostThePath": "*If the investigators lost the path*: Find the Vale Lantern story asset _without_ the _Boon_ trait and put it into play under the control of an investigator, _Lit_ side faceup. Remove the other Vale Lantern from the game. If there is only 1 investigator, the Vale Lantern does not take up a hand slot during this scenario."
     },
-    "removeLocations": "Set the Twisted Hollow and Glimmering Meadow locations aside, out of play (both are the revealed side of a Western Woods location). Then, based on the number of investigators in the game, randomly remove the following from the gathered Western Woods locations:",
+    "removeLocations": "Set the Twisted Hollow and Glimmering Woods locations aside, out of play (both are the revealed side of a Western Woods location). Then, based on the number of investigators in the game, randomly remove the following from the gathered Western Woods locations:",
     "oneOrTwoInvestigators": "If there are 1 or 2 investigators, remove 2 locations from the game.",
     "threeOrFourInvestigators": "If there are 3 or 4 investigators, remove 1 location from the game.",
-    "glimmeringMeadow": {
+    "glimmeringWoods": {
       "checkCampaignLog": "Check your Campaign Log.",
-      "showedTheWay": "*If Mother Rachel showed the way*: Put the Glimmering Meadow location into play. Each investigator begins play at Glimmering Meadow.",
+      "showedTheWay": "*If Mother Rachel showed the way*: Put the Glimmering Woods location into play. Each investigator begins play at Glimmering Woods.",
       "lostThePath": "*If the investigators lost the path*: Put a random Western Woods location that has not been set aside into play, ignoring any forced effects. Each investigator begins play at that location."
     },
-    "woodsDeck": "If it is not already in play, shuffle the set-aside Glimmering Meadow location along with each remaining Western Woods location to form the “Woods deck.” Draw the top 4 cards of the Woods deck and put them into play above, below, and to the right and left of the starting location.",
+    "woodsDeck": "If it is not already in play, shuffle the set-aside Glimmering Woods location along with each remaining Western Woods location to form the “Woods deck.” Draw the top 4 cards of the Woods deck and put them into play above, below, and to the right and left of the starting location.",
     "residents": "Check your Campaign Log and gather each story asset from the *Residents* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
     "theoPeters": "If Theo Peters is at Relationship Level 2 or higher, set him aside, out of play.",
     "judithPark": "If Judith Park is at Relationship Level 2 or higher, set her aside, out of play.",

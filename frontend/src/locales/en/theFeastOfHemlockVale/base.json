@@ -131,7 +131,7 @@
         "body": "<h3>@:theFeastOfHemlockVale.prelude1.codex.williamHemlock.title </h3><p>Outside the Vale schoolhouse, you greet a man who introduces himself as William Hemlock. “I’d heard we had visitors. I just didn’t expect to meet them so soon. And yes, I am the last living heir to the Hemlock Family,” he blusters, although you didn’t ask. “Or perhaps not the very last, if that gatecrasher River has their way,” he snarls. You note the worn copy of Walden under his arm, and ask about any local points of interest. “I know it’s rather unconventional, but my family’s old house has a…peculiar infestation,” he seems to chew his own words. “If you could exterminate whatever it is rather than study it, I think we’d all be in your debt.”</p><p class='basic right'>Search the top 9 cards of your deck for a Tome or Talent card and add it to your hand (shuffle your deck).</p><p class='basic right'>Increase William Hemlock’s Relationship Level.</p>"
       },
       "riverHawthorne": {
-        "title": "{'{'}codex{'}'} Codex 6: River Hawthorne",
+        "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
         "body": "<h3>@:theFeastOfHemlockVale.prelude1.codex.riverHawthorne.title </h3><p>“I’m friends with the Great Profile. You may know him as John Barrymore. We met at a piazza in Rome. Utter serendipity.” River bubbles as they chat with Bertie. “Although my last name is Hawthorne, I’ll have you know I’m a Hemlock through and through. The last heir to the Hemlock fortune. That is, if sweet William actually listens,” they say sourly. Bertie fields several more questions about current goings-on in New York’s high society—of which he knows nothing—before asking River about points of interest. “I hear North Point Mines has some fascinating crystals,” they answer.</p><p class='basic right'>Gain 3 resources.</p><p class='basic right'>Increase River Hawthorne’s Relationship Level.</p>"
       },
       "gideonMizrah": {
@@ -339,7 +339,7 @@
       "writtenInRock": "Brave the decaying North Point Mine in _Written in Rock_",
       "hemlockHouse": "Investigate the long-abandoned _Hemlock House_",
       "theSilentHeath": "Explore the eerily quiet Pearl Ridge in _The Silent Heath_",
-      "theLostSister": "Explore the Awkwan Shoreline up north in _The Lost Sister_",
+      "theLostSister": "Explore the Akwan Shoreline up north in _The Lost Sister_",
       "theThingInTheDepths": "Survey Eastwick Bog and risk an encounter with _The Thing in the Depths_"
     },
     "intro": {
@@ -371,7 +371,7 @@
       },
       "resolution3": {
         "title": "Resolution 3",
-        "body": "<p>_Resolution 3_: Dr. Marquez pours herself a strong cup of coffee. “I’m going to take advantage of the cooling rain and head up to Pearl Ridge. Join me if you like,” she takes a bite of her eggs and wrinkles her nose. “Is that a metal taste?” She discretely spits the eggs into a handkerchief as Ms. Olmstead emerges from the kitchen with a stack of flapjacks and serves several hungry guests.</p><ul><li>Do not record the Victory X value of each card in the victory display. Each investigator earns the bonus experience awarded during this prelude. Record each bonus experience earned under “Unspent Experience” in your Campaign Log, _but do not spend any of it until the end of the next scenario_.</li><li>Make preparations for your next survey.<ul><li>Choose 1 asset in your play area to keep for the next scenario. It must be one that does not normally start in play. Discard each other asset and attachment in your play area, except for those that start each game in play.</li><li>Discard down to your opening hand size. Shuffle your discard pile into your deck. (*Your current hand is your opening hand for the next scenario; you will not draw a new opening hand or take a mulligan.8)</li><li>Discard down to your starting resources.</li></ul></li><li>When setting up the next scenario, skip steps 1-8 of ‘Setting Up the Game” on page 27 of the Rules Reference.</li></ul><p class='basic'>Check the “Areas Surveyed” section of your Campaign Log and choose a scenario that has not yet been checked off.</p><ul><li>To brave the decaying North Point Mine in Written in Rock, turn to page 10.</li><li>To investigate the long-abandoned Hemlock House, turn to page 14.</li><li>To explore the eerily quiet Pearl Ridge in The Silent Heath, turn to page 19.</li><li>To explore the Akwan Shoreline up north in The Lost Sister, turn to page 23.</li><li>To survey Eastwick Bog and risk an encounter with The Thing in the Depths, turn to page 27.</li></ul>"
+        "body": "<p>_Resolution 3_: Dr. Marquez pours herself a strong cup of coffee. “I’m going to take advantage of the cooling rain and head up to Pearl Ridge. Join me if you like,” she takes a bite of her eggs and wrinkles her nose. “Is that a metal taste?” She discretely spits the eggs into a handkerchief as Ms. Olmstead emerges from the kitchen with a stack of flapjacks and serves several hungry guests.</p><ul><li>Do not record the Victory X value of each card in the victory display. Each investigator earns the bonus experience awarded during this prelude. Record each bonus experience earned under “Unspent Experience” in your Campaign Log, _but do not spend any of it until the end of the next scenario_.</li><li>Make preparations for your next survey.<ul><li>Choose 1 asset in your play area to keep for the next scenario. It must be one that does not normally start in play. Discard each other asset and attachment in your play area, except for those that start each game in play.</li><li>Discard down to your opening hand size. Shuffle your discard pile into your deck. (*Your current hand is your opening hand for the next scenario; you will not draw a new opening hand or take a mulligan.*)</li><li>Discard down to your starting resources.</li></ul></li><li>When setting up the next scenario, skip steps 1-8 of ‘Setting Up the Game” on page 27 of the Rules Reference.</li></ul><p class='basic'>Check the “Areas Surveyed” section of your Campaign Log and choose a scenario that has not yet been checked off.</p><ul><li>To brave the decaying North Point Mine in Written in Rock, turn to page 10.</li><li>To investigate the long-abandoned Hemlock House, turn to page 14.</li><li>To explore the eerily quiet Pearl Ridge in The Silent Heath, turn to page 19.</li><li>To explore the Akwan Shoreline up north in The Lost Sister, turn to page 23.</li><li>To survey Eastwick Bog and risk an encounter with The Thing in the Depths, turn to page 27.</li></ul>"
       }
     }
   },
@@ -610,7 +610,7 @@
         "writtenInRock": "Brave the decaying North Point Mine in _Written in Rock_",
         "hemlockHouse": "Investigate the long-abandoned _Hemlock House_",
         "theSilentHeath": "Explore the eerily quiet Pearl Ridge in _The Silent Heath_",
-        "theLostSister": "Explore the Awkwan Shoreline up north in _The Lost Sister_",
+        "theLostSister": "Explore the Akwan Shoreline up north in _The Lost Sister_",
         "theThingInTheDepths": "Survey Eastwick Bog and risk an encounter with _The Thing in the Depths_",
         "motherRachel": "Mother Rachel watches the room ({'{'}codex{'}'} 1).",
         "leah": "Next to the dinner spread, Leah looks utterly exhausted ({'{'}codex{'}'} 2).",
@@ -621,7 +621,7 @@
         "judith": "Standing by the entrance, Judith watches the door ({'{'}codex{'}'} 7).",
         "theo": "Theo bobs his head in rhythm in the crowd ({'{'}codex{'}'} 8).",
         "alone": "Dance by yourself ({'{'}codex{'}'} 9).",
-        "omega": "A woman in hunting clothes stands at the edge of the room ({'{'}codex{'}'} ώ).",
+        "omega": "A woman in hunting clothes stands at the edge of the room ({'{'}codex{'}'} Ω).",
         "theta": "Dr. Marquez eyes you from across the room ({'{'}codex{'}'} Θ).",
         "followDrMarquez": "*Follow Dr. Marquez’s lead out to the Atwood Farm.*",
         "gatherMoreInformation": "*Gather more information on Hemlock Isle’s unique ecosystem at night.*"

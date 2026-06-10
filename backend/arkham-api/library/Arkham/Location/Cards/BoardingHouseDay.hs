@@ -12,7 +12,7 @@ newtype BoardingHouseDay = BoardingHouseDay LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 boardingHouseDay :: LocationCard BoardingHouseDay
-boardingHouseDay = symbolLabel $ location BoardingHouseDay Cards.boardingHouseDay 0 (Static 0)
+boardingHouseDay = symbolLabel $ location BoardingHouseDay Cards.boardingHouseDay 3 (Static 0)
 
 instance HasAbilities BoardingHouseDay where
   getAbilities (BoardingHouseDay a) =

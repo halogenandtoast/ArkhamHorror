@@ -17,7 +17,7 @@ newtype TheFarmhouse = TheFarmhouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theFarmhouse :: LocationCard TheFarmhouse
-theFarmhouse = symbolLabel $ locationWith TheFarmhouse Cards.theFarmhouse 4 (Static 2) connectsToAdjacent
+theFarmhouse = symbolLabel $ locationWith TheFarmhouse Cards.theFarmhouse 4 (PerPlayer 2) connectsToAdjacent
 
 instance HasModifiersFor TheFarmhouse where
   getModifiersFor (TheFarmhouse a) =

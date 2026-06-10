@@ -591,7 +591,7 @@ mineCartReliableButBroken =
 prismaticShardAlienMeteorite :: CardDef
 prismaticShardAlienMeteorite =
   (storyAsset "10522" ("Prismatic Shard" <:> "Alien Meteorite") 2 WrittenInRock)
-    { cdCardTraits = setFromList [Vehicle, Cart]
+    { cdCardTraits = setFromList [Item, Relic, Colour]
     , cdUses = uses Brilliance 4
     }
 
@@ -652,7 +652,7 @@ valeLanternExtinguishedLightBoon =
 
 valeLanternAFaintHope :: CardDef
 valeLanternAFaintHope =
-  (storyAsset "10611a" ("Vale Lantern" <:> "Beacon of Hope") 2 TheTwistedHollow)
+  (storyAsset "10611a" ("Vale Lantern" <:> "A Faint Hope") 2 TheTwistedHollow)
     { cdCardTraits = setFromList [Item, Tool, Lit]
     , cdSlots = [#hand]
     , cdOtherSide = Just "10611b"

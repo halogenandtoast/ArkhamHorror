@@ -15,7 +15,7 @@ newtype CrystalRemainsTheFather = CrystalRemainsTheFather AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crystalRemainsTheFather :: AssetCard CrystalRemainsTheFather
-crystalRemainsTheFather = asset CrystalRemainsTheFather Cards.crystalRemainsTheFather
+crystalRemainsTheFather = assetWith CrystalRemainsTheFather Cards.crystalRemainsTheFather (sanityL ?~ 1)
 
 instance HasAbilities CrystalRemainsTheFather where
   getAbilities (CrystalRemainsTheFather a) =

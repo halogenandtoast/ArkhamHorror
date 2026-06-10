@@ -189,7 +189,7 @@ cochlealStag =
 blackAmanita :: CardDef
 blackAmanita =
   (enemy "10738" "Black Amanita" Myconids 2)
-    { cdCardTraits = setFromList [Creature, Monster, Flora, Mutated]
+    { cdCardTraits = setFromList [Flora, Mutated]
     , cdKeywords =
         setFromList
           [ Keyword.ScenarioModifierKeyword "time" (String "Day") Keyword.Aloof
@@ -211,6 +211,7 @@ chelydranHybrid =
   (enemy "10601" ("Chelydran Hybrid" <:> "Flowering Anomaly") TheThingInTheDepths 1)
     { cdCardTraits = setFromList [Creature, Flora, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Elusive, Keyword.Patrol EmptyLocation]
+    , cdVictoryPoints = Just 0
     }
 
 graspingTendril :: CardDef

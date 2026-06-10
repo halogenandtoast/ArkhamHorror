@@ -15,7 +15,7 @@ againstTheHouse :: CardDef
 againstTheHouse = act "10530" "Against the House" 2 HemlockHouse
 
 theHeartOfTheHouse :: CardDef
-theHeartOfTheHouse = act "10531" "Heart of the House" 2 HemlockHouse
+theHeartOfTheHouse = act "10531" "The Heart of the House" 2 HemlockHouse
 
 aLostLegacy :: CardDef
 aLostLegacy = act "10553" "A Lost Legacy" 1 TheSilentHeath
@@ -42,7 +42,7 @@ desperateSearch :: CardDef
 desperateSearch = (act "10607a" "Desperate Search" 1 TheTwistedHollow) {cdOtherSide = Just "10607b"}
 
 wheresBertie :: CardDef
-wheresBertie = act "10608" "Where's Bertie" 2 TheTwistedHollow
+wheresBertie = act "10608" "Where's Bertie?" 2 TheTwistedHollow
 
 theLongestNight :: CardDef
 theLongestNight = act "10629" "The Longest Night" 1 TheLongestNight

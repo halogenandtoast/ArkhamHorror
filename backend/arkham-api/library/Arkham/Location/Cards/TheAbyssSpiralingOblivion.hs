@@ -17,7 +17,7 @@ newtype TheAbyssSpiralingOblivion = TheAbyssSpiralingOblivion LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theAbyssSpiralingOblivion :: LocationCard TheAbyssSpiralingOblivion
-theAbyssSpiralingOblivion = location TheAbyssSpiralingOblivion Cards.theAbyssSpiralingOblivion 5 (Static 2)
+theAbyssSpiralingOblivion = location TheAbyssSpiralingOblivion Cards.theAbyssSpiralingOblivion 5 (PerPlayer 2)
 
 instance HasModifiersFor TheAbyssSpiralingOblivion where
   getModifiersFor (TheAbyssSpiralingOblivion attrs) = do

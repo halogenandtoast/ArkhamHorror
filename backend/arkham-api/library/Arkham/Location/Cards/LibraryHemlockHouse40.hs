@@ -17,7 +17,7 @@ newtype LibraryHemlockHouse40 = LibraryHemlockHouse40 LocationAttrs
 
 libraryHemlockHouse40 :: LocationCard LibraryHemlockHouse40
 libraryHemlockHouse40 =
-  locationWith LibraryHemlockHouse40 Cards.libraryHemlockHouse40 4 (PerPlayer 1)
+  locationWith LibraryHemlockHouse40 Cards.libraryHemlockHouse40 3 (PerPlayer 1)
     $ connectsToAdjacent
     . (canBeFlippedL .~ True)
 

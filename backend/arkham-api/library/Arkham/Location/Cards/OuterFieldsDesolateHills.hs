@@ -22,7 +22,7 @@ newtype OuterFieldsDesolateHills = OuterFieldsDesolateHills (LocationAttrs `With
 
 outerFieldsDesolateHills :: LocationCard OuterFieldsDesolateHills
 outerFieldsDesolateHills =
-  symbolLabel $ locationWith (OuterFieldsDesolateHills . (`with` Meta [])) Cards.outerFieldsDesolateHills 2 (Static 3) connectsToAdjacent
+  symbolLabel $ locationWith (OuterFieldsDesolateHills . (`with` Meta [])) Cards.outerFieldsDesolateHills 2 (PerPlayer 3) connectsToAdjacent
 
 instance HasAbilities OuterFieldsDesolateHills where
   getAbilities (OuterFieldsDesolateHills (With a _)) =

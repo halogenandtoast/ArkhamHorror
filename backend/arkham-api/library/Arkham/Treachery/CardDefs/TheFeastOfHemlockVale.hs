@@ -49,7 +49,7 @@ pulledIn =
 
 commandingResonance :: CardDef
 commandingResonance =
-  (treachery "10561" "Commanding Resonanace" TheSilentHeath 2)
+  (treachery "10561" "Commanding Resonance" TheSilentHeath 2)
     { cdCardTraits = setFromList [Scheme]
     }
 

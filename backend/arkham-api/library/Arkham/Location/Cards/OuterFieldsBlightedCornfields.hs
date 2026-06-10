@@ -19,7 +19,7 @@ outerFieldsBlightedCornfields =
       OuterFieldsBlightedCornfields
       Cards.outerFieldsBlightedCornfields
       3
-      (Static 2)
+      (PerPlayer 2)
       connectsToAdjacent
 
 instance HasAbilities OuterFieldsBlightedCornfields where

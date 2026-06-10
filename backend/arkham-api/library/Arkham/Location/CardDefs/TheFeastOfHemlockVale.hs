@@ -139,13 +139,13 @@ libraryHemlockHouse40 =
 parlorHemlockHouse :: CardDef
 parlorHemlockHouse =
   otherSideIs "10541b"
-    $ victory 0
+    $ victory 1
     $ location_ "10541" "Parlor" [Room, Dormant] HemlockHouse
 
 diningRoomHemlockHouse :: CardDef
 diningRoomHemlockHouse =
   otherSideIs "10542b"
-    $ victory 0
+    $ victory 1
     $ location_ "10542" "Dining Room" [Room, Dormant] HemlockHouse
 
 foyerHemlockHouse :: CardDef
@@ -526,7 +526,7 @@ iridescentPassage =
     "Cavern"
     [Cave, Dark]
     "Iridescent Passage"
-    [Cave, Dark]
+    [Cave]
     HorrorsInTheRock
 
 overgrownTunnel :: CardDef

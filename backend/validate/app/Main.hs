@@ -81,7 +81,7 @@ data CardJson = CardJson
   , clues :: Maybe Int
   , shroud :: Maybe Int
   , xp :: Maybe Int
-  , quantity :: Int
+  , quantity :: Maybe Int
   , type_code :: String
   , pack_code :: String
   }
@@ -248,11 +248,13 @@ getTraits CardJson {..} = case traits of
     error $ show code <> ": " <> err <> " " <> show x <> " from " <> show traits
   normalizeTrait "Human" = "Humanoid"
   normalizeTrait "Possessed" = "Lunatic"
+  normalizeTrait "Inconspicuous" = "Inconspicious" -- enum uses the misspelling
   normalizeTrait x = x
   cleanText = T.dropWhileEnd (\c -> c == '.' || c == ' ')
   isValid = \case
     "Return" -> False -- adb adds the trait Return for some reason
     "???" -> False -- from 52061 (Recesses of Your Own Mind), but no reason to actually parse it
+    "Unlit" -> False -- from 10610b (Vale Lantern), not modeled as a trait
     _ -> True
 
 toGameVal :: Bool -> Int -> GameValue
@@ -378,11 +380,12 @@ getValidationResults cards = runValidateT $ do
 
         -- Masked Carnevale-Goer is split up differently so we say the quantity is 1
         -- ideally we'd add them all up
-        let quantity' = if code == "82017b" then 1 else quantity
+        let quantity' = if code == "82017b" then Just 1 else quantity
 
         invariantWhen
           ( isJust (cdEncounterSet card)
-              && Just quantity'
+              && isJust quantity'
+              && quantity'
                 /= cdEncounterSetQuantity card
               && cdCardType card
                 `notElem` [ActType, AgendaType]
@@ -390,7 +393,7 @@ getValidationResults cards = runValidateT $ do
           $ QuantityMismatch
             code
             (Name name subname)
-            quantity
+            (fromMaybe 0 quantity)
             (cdEncounterSetQuantity card)
 
         let isUnique = if code == "06329" then True else is_unique -- Shining Trapezohedron is unique

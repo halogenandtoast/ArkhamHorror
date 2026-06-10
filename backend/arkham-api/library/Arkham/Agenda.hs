@@ -373,6 +373,13 @@ allAgendas =
       SomeAgendaCard theFestivitiesBegin
     , SomeAgendaCard theShadowOfTheEclipse
     , SomeAgendaCard chaosAtTheCarnevale
+    , -- The Eternal Slumber
+      SomeAgendaCard jessiesRequest
+    , SomeAgendaCard curseOfTheAbyss
+    , SomeAgendaCard gardenOfShadows
+    , -- The Night's Usurper
+      SomeAgendaCard theBrotherhoodBidesTheirTime
+    , SomeAgendaCard schemesInTheDarkBeyond
     , -- Murder at the Excelsior Hotel
       SomeAgendaCard theMurder
     , SomeAgendaCard specialInvestigation

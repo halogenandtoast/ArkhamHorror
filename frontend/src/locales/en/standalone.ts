@@ -1,4 +1,7 @@
 import curseOfTheRougarou from '@/locales/en/standalone/curseOfTheRougarou.json'
+import guardiansOfTheAbyss from '@/locales/en/standalone/guardiansOfTheAbyss.json'
+import theEternalSlumber from '@/locales/en/standalone/theEternalSlumber.json'
+import theNightsUsurper from '@/locales/en/standalone/theNightsUsurper.json'
 import carnevaleOfHorrors from '@/locales/en/standalone/carnevaleOfHorrors.json'
 import murderAtTheExcelsiorHotel from '@/locales/en/standalone/murderAtTheExcelsiorHotel.json'
 import fortuneAndFolly from '@/locales/en/standalone/fortuneAndFolly.json'
@@ -8,6 +11,9 @@ import theBlobThatAteEverything from '@/locales/en/standalone/theBlobThatAteEver
 
 export default {
   curseOfTheRougarou,
+  guardiansOfTheAbyss,
+  theEternalSlumber,
+  theNightsUsurper,
   carnevaleOfHorrors,
   murderAtTheExcelsiorHotel,
   fortuneAndFolly,

@@ -184,7 +184,11 @@ const standalones = computed(() => {
     return acc
   }, [] as string[])
 
-  return sideStories.filter((s: { xp: number, id: string }) => s.xp && s.xp <= minXp.value && !completed.includes(s.id))
+  return sideStories.flatMap((s: { xp: number, id: string, name: string, scenarios?: { id: string, name: string }[] }) => {
+    if (!s.xp || s.xp > minXp.value) return []
+    const parts = s.scenarios ?? [{ id: s.id, name: s.name }]
+    return parts.filter((p) => !completed.includes(p.id)).map((p) => ({ ...s, id: p.id, name: p.name }))
+  })
 })
 
 async function loadSideStory(sideStoryId: string) {

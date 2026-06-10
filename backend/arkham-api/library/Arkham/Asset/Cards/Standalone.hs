@@ -668,3 +668,41 @@ ltWilsonStewart =
     , cdSlots = [#ally]
     , cdUnique = True
     }
+
+johnAndJessieBurke :: CardDef
+johnAndJessieBurke =
+  (storyAsset "83055" ("John & Jessie Burke" <:> "Relentless in Pursuit") 4 AbyssalTribute)
+    { cdSkills = [#combat, #agility, #wild]
+    , cdCardTraits = setFromList [Ally, Government]
+    , cdSlots = [#ally]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }
+
+ancientAnkh :: CardDef
+ancientAnkh =
+  (storyAsset "83056" ("Ancient Ankh" <:> "Aegis of the Harbinger") 3 AbyssalTribute)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdSlots = [#accessory]
+    , cdUses = uses Charge 4
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }
+
+khopeshOfTheAbyss :: CardDef
+khopeshOfTheAbyss =
+  (storyAsset "83057" ("Khopesh of the Abyss" <:> "Manifested Malice") 4 AbyssalGifts)
+    { cdSkills = [#willpower, #combat, #wild]
+    , cdCardTraits = setFromList [Item, Weapon, Relic, Melee]
+    , cdSlots = [#hand, #hand]
+    , cdUnique = True
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }
+
+summonedNightgaunt :: CardDef
+summonedNightgaunt =
+  (storyAsset "83058" ("Summoned Nightgaunt" <:> "Gift from Nodens") 4 AbyssalGifts)
+    { cdSkills = [#intellect, #agility, #wild]
+    , cdCardTraits = setFromList [Monster, Nightgaunt, Power]
+    , cdUses = uses Whistle 3
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }

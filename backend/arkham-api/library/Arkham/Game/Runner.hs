@@ -624,6 +624,7 @@ runGameMessage msg g = case msg of
     let
       -- isMovement = abilityIs ability #move
       isInvestigate = abilityIs ability #investigate
+      isExplore = abilityIs ability #explore
       isResign = abilityIs ability #resign
 
     doDelayAdditionalCosts <- case abilityDelayAdditionalCosts ability of
@@ -638,6 +639,15 @@ runGameMessage msg g = case msg of
             Just lid -> do
               mods' <- getModifiers lid
               pure [c | AdditionalCostToInvestigate c <- mods']
+            _ -> pure []
+        else pure []
+    exploreCosts <-
+      if isExplore && not doDelayAdditionalCosts
+        then do
+          getMaybeLocation iid >>= \case
+            Just lid -> do
+              mods' <- getModifiers lid
+              pure [c | AdditionalCostToExplore c <- mods']
             _ -> pure []
         else pure []
     resignCosts <-
@@ -677,7 +687,7 @@ runGameMessage msg g = case msg of
               fixEnemy
                 $ mconcat
                   ( costF (abilityCost ability)
-                      : additionalCosts ++ investigateCosts ++ resignCosts ++ [ActionCost 0]
+                      : additionalCosts ++ investigateCosts ++ exploreCosts ++ resignCosts ++ [ActionCost 0]
                   )
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability

@@ -239,6 +239,7 @@ export function campaignIdToI18n(campaignId: string): string | null {
     case "9": return "theScarletKeys"
     case "10": return "theFeastOfHemlockVale"
     case "12": return "brethrenOfAsh"
+    case "83": return "standalone.guardiansOfTheAbyss"
     default: return null
   }
 }
@@ -376,6 +377,8 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "72001": return "standalone.filmFatale"
     case "81001": return "standalone.curseOfTheRougarou"
     case "82001": return "standalone.carnevaleOfHorrors"
+    case "83001": return "standalone.theEternalSlumber"
+    case "83016": return "standalone.theNightsUsurper"
     case "85001": return "standalone.theBlobThatAteEverything"
     case "84001": return "standalone.murderAtTheExcelsiorHotel"
     case "88001": return "standalone.fortuneAndFolly"

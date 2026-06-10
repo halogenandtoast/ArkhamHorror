@@ -96,3 +96,18 @@ theAnomalySwells = agenda "85003" "The Anomaly Swells" 2 TheBlobThatAteEverythin
 
 theAnomalyConsumes :: CardDef
 theAnomalyConsumes = agenda "85004" "The Anomaly Consumes" 3 TheBlobThatAteEverything
+
+jessiesRequest :: CardDef
+jessiesRequest = agenda "83002" "Jessie's Request" 1 TheEternalSlumber
+
+curseOfTheAbyss :: CardDef
+curseOfTheAbyss = agenda "83003" "Curse of the Abyss" 2 TheEternalSlumber
+
+gardenOfShadows :: CardDef
+gardenOfShadows = agenda "83004" "Garden of Shadows" 3 TheEternalSlumber
+
+theBrotherhoodBidesTheirTime :: CardDef
+theBrotherhoodBidesTheirTime = agenda "83017" "The Brotherhood Bides Their Time" 1 TheNightsUsurper
+
+schemesInTheDarkBeyond :: CardDef
+schemesInTheDarkBeyond = agenda "83018" "Schemes in the Dark Beyond" 2 TheNightsUsurper

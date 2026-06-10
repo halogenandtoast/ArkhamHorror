@@ -1,0 +1,93 @@
+{
+  "label": {
+    "lookAtExplorationDeck": "Look at the top cards of the exploration deck",
+    "lookAtEncounterDeck": "Look at the top cards of the encounter deck",
+    "nassor": {
+      "addStrength": "Add 1 strength to the abyss",
+      "extraDamage": "Nassor deals +{count} damage and +{count} horror for this attack"
+    },
+    "theBlackWind": {
+      "addStrength": "Add 1 strength to the abyss and add The Black Wind to the victory display.",
+      "discard": "Discard The Black Wind and draw the top card of the encounter deck to replace it. You get -1 to all skills for the remainder of this round."
+    },
+    "fateOfTheDreamers": {
+      "removeStrength": "Remove 2 strength from the abyss.",
+      "addStrength": "Add 2 strength to the abyss."
+    },
+    "prisonersOfConquest": {
+      "freeTheCreatures": "Test {agility} (4) to free the creatures.",
+      "slayTheCreatures": "Test {combat} (4) to slay the creatures."
+    },
+    "ruinsOfSarkomand": {
+      "speakToTheDenizens": "Test {intellect} (3) to speak to the almost-humanoid creatures that dwell in these ruins.",
+      "blockTheTrapdoor": "Test {combat} (3) to block the trapdoor."
+    },
+    "effigyOfNodens": {
+      "entreatForAid": "Test {willpower} (2) to entreat the entity depicted in this statue for aid.",
+      "overthrowTheStatue": "Test {combat} (2) to overthrow the statue."
+    },
+    "usurpTheNight": {
+      "proceed": "Proceed to Resolution 3",
+      "flipBack": "Flip this card back to its enemy side",
+      "acceptMercy": "Accept Xzharah's mercy and immediately resign",
+      "refuse": "Refuse"
+    },
+    "theHourOfJudgment": {
+      "destroyNeith": "Destroy Neith once and for all. By choosing this option, you believe those still under the curse of eternal slumber will be freed.",
+      "spareNeith": "Spare Neith and listen to what she has to say. By choosing this option, you believe you can learn more about the one Neith refers to as Xzharah."
+    },
+    "defeatingXzharah": {
+      "proceed": "Proceed to Resolution 2",
+      "flipBack": "Flip this act back to its \"a\" side"
+    }
+  },
+  "intoTheGate": {
+    "ankh": "<p>*Your Ankh amulet glows with a blinding light, causing Xzharah to recoil. \"So, Neith has abandoned us!\" Xzharah hisses.*</p>"
+  },
+  "theTranslatorsEvidence": {
+    "benefit": "<p>*You bring the tablet to Dr. El Masri, and she translates it to the best of her ability. \"When the Choice is made, He shall be empowered by a thousand sacrifices from the sacred land.\" She blinks a few times, trying to process what it means. \"How many coma patients are there right now?\" she asks, wide-eyed.*</p>"
+  },
+  "theSupplicantsEvidence": {
+    "benefit": "<p>*You manage to corner Dr. Moore as he tries to escape the city on foot. \"Very clever,\" he admits. \"But you're already out of time. Lock me up, it doesn't matter. The dreamers will be sacrificed, and our Chosen will lead us to a new age.\" But after several hours, he is begging to be let out of the city. \"Please, the reaper is coming! Neith is coming for us all. We'll all be sacrificed, don't you understand? You and me both! All of us need to flee the city while we still can!\"*</p>"
+  },
+  "thePriestesssEvidence": {
+    "benefit": "<p>*Using the key Nadia gave you, you enter the marked residence. To your surprise, there is nobody inside - only the faint stench of rot and aged leather. The basement of the residence is littered with old books, records kept by the Brotherhood and its many agents. They will take some time to peruse, but a lead is a lead.*</p>"
+  },
+  "theSalesmansEvidence": {
+    "benefit": "<p>*Farid grins wide as he scoops golden idols into his rucksack. You press him for information before he gets too excited. \"Look, they promised me wealth beyond my wildest dreams. Even I have my price, you know?\" He throws up his hands, resigned. \"Let me show you my records. I've done a lot of 'business' in the last few months. That'll point you in the right direction.\"*</p>"
+  },
+  "theAssassinsEvidence": {
+    "benefit": "<p>*Despite his mortal wounds, the assassin grins wickedly. \"The Day is coming,\" he says between a fit of coughs. \"You think killing me will stop it? Fools! The Beast will devour you all!\" He cackles with his final breath, then falls silent.*</p><p>*You are quick to search his belongings before any bystanders spot the body. Among the many strange curios on his person, you find a small leather-bound journal with a cryptic inscription:*</p><p>*Our tribute soaks the abyssal blade<br/>A thousand souls never to wake<br/>With this our Chosen shall arise<br/>And the day is ever nigh!*</p>"
+  },
+  "theProfessorsEvidence": {
+    "benefit": "<p>*You set the trinket down on the professor's desk. He puts on his monocle and examines it carefully. \"Intriguing!\" he exclaims. \"This could only have come from a particular tomb in the royal crypts. Most scholars don't believe it exists.\" He rises to his feet and shakes your hand. \"Give me some time to study this further. Perhaps if we both make it out of this alive, I can resubmit my thesis,\" he says with a morbid chuckle.*</p>"
+  },
+  "rules": {
+    "storyCards": {
+      "title": "Story Cards",
+      "body": "<p class='basic'>Story cards are a new cardtype in this scenario. These cards serve as an avenue for additional narrative and typically appear as the reverse side of another scenario card. When you are instructed to resolve a story card, simply read its story text and resolve its game text, if any.</p><p class='basic'>(Note: When a location or enemy that is in play is flipped over to a story card on its other side, that location or enemy is still considered to be in play while that story card is being resolved.)</p>"
+    },
+    "strengthOfTheAbyss": {
+      "title": "Strength of the Abyss",
+      "body": "<p class='basic'>During this scenario, resources on the scenario reference card represent the current strength of the abyss. When you are instructed to add strength to the abyss or remove strength from the abyss, adjust the number of resource tokens on the scenario reference card accordingly. The strength of the abyss has no inherent game effect on its own, though certain encounter card effects may grow stronger or change depending on the current strength of the abyss. Beware—as the abyss grows in strength, so too will the forces set against you. Should it grow too powerful, you will surely fail as Guardians of the Abyss.</p>"
+    },
+    "takenByTheAbyss": {
+      "title": "\"Taken by the Abyss\"",
+      "body": "<p class='basic'>If an effect states that a defeated investigator or _Ally_ asset has been \"taken by the abyss,\" that character has been afflicted by a curse which puts them in a comatose state. When an investigator or _Ally_ asset is taken by the abyss, first add 1 strength to the abyss. Then, if that card was unique, record in the campaign log that \"(card name) was taken by the abyss.\" An investigator who has been taken by the abyss is treated as if he or she was killed or driven insane. Additionally, for the remainder of the campaign, players cannot play copies of any unique _Ally_ asset who has been taken by the abyss.</p>"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.storyCards.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.storyCards.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.body"
+    }
+  ]
+}

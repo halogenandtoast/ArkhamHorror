@@ -291,6 +291,8 @@ data WindowMatcher
   | EnemyExhausts Timing EnemyMatcher
   | EntersThreatArea Timing Who CardMatcher
   | ScenarioCountIncremented Timing ScenarioCountKey
+  | ScenarioCountDecremented Timing ScenarioCountKey
+  | RememberedLogKey Timing ScenarioLogKey
   | IncreasedAlarmLevel Timing Who
   | WindowWhen Criterion WindowMatcher
   | ScenarioEvent Timing (Maybe InvestigatorMatcher) Text

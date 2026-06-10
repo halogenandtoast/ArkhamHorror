@@ -315,6 +315,15 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
                 pure [m | not doDelayAdditionalCosts, AdditionalCostToInvestigate m <- mods]
               _ -> pure []
       else pure []
+  exploreCosts <-
+    if #explore `elem` abilityActions a
+      then do
+        field InvestigatorLocation iid >>= \case
+          Just lid -> do
+            mods <- getModifiers lid
+            pure [m | not doDelayAdditionalCosts, AdditionalCostToExplore m <- mods]
+          _ -> pure []
+      else pure []
   enterCosts <-
     if #move `elem` abilityActions a
       then case a.source.location of
@@ -349,8 +358,8 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
     costF =
       case find isSetCost modifiers of
-        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> resignCosts <> enterCosts <> leaveCosts) . const c
-        _ -> fixEnemy . fold . (: investigateCosts <> resignCosts <> enterCosts <> leaveCosts)
+        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts) . const c
+        _ -> fixEnemy . fold . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts)
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False

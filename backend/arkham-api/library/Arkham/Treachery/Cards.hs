@@ -170,6 +170,7 @@ allEncounterTreacheryCards =
       , abandonedByTheGods
       , abandonedToMadness
       , abduction
+      , abyssalReach
       , accosted
       , acridMiasma
       , action
@@ -267,6 +268,7 @@ allEncounterTreacheryCards =
       , danceOfTheYellowKing
       , darkAurora
       , darkBidding
+      , darkSacrifice
       , dawningOfTheTruth
       , deadlyFate
       , deathApproaches
@@ -299,6 +301,7 @@ allEncounterTreacheryCards =
       , eagerForDeath
       , eagerForDeath2
       , eagerForDeathUnionAndDisillusion
+      , eclipse
       , eldritchAccord
       , empyreanBrilliance
       , encephalonSignal
@@ -513,6 +516,7 @@ allEncounterTreacheryCards =
       , rottingRemains
       , rottingRemainsBloodOnTheAltar
       , ruinAndDestruction
+      , sandstorm
       , secretDoor
       , secretDoorTheMidwinterGala
       , secretGathering
@@ -532,6 +536,7 @@ allEncounterTreacheryCards =
       , shockingDisplay
       , sickeningWebs
       , slitheringBehindYou
+      , slumber
       , snakeBite
       , snakescourge
       , snowfall
@@ -560,6 +565,7 @@ allEncounterTreacheryCards =
       , suspiciousGazeB
       , suspiciousGazeC
       , swarm
+      , swarmOfLocusts
       , swiftRetreat
       , syzygy
       , takenCaptive
@@ -568,8 +574,10 @@ allEncounterTreacheryCards =
       , terrorFromBeyond
       , terrorGate
       , terrorInTheNight
+      , terrorUnderThePyramids
       , terrorUnleashed
       , thalassophobia
+      , theBlackWind
       , theCreaturesTracks
       , theCultsSearch
       , theEndIsNigh

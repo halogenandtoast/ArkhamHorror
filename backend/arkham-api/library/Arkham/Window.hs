@@ -374,6 +374,8 @@ data WindowType
   | EntersThreatArea InvestigatorId Card
   | CancelledOrIgnoredCardOrGameEffect Source (Maybe CardId) -- Diana Stanley
   | ScenarioCountIncremented ScenarioCountKey
+  | ScenarioCountDecremented ScenarioCountKey
+  | RememberedLogKey ScenarioLogKey
   | IncreasedAlarmLevel InvestigatorId
   | ScenarioEvent Text (Maybe InvestigatorId) Value
   | CampaignEvent Text (Maybe InvestigatorId) Value

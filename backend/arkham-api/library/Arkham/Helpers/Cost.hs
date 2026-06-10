@@ -532,6 +532,14 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
         let total = sum $ map (count countF . cdSkills . toCardDef) handCards
         pure $ total >= n
+      GroupSkillIconCost n skillTypes locationMatcher -> do
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        iids <- select $ Matcher.InvestigatorAt lm
+        let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
+        total <- sum <$> for iids \iid' -> do
+          handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid'
+          pure $ sum $ map (count countF . cdSkills . toCardDef) handCards
+        pure $ total >= n
       SameSkillIconCost n -> do
         handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
         let total = unionsWith (+) $ map (frequencies . cdSkills . toCardDef) handCards

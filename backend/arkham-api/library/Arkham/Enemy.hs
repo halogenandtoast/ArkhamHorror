@@ -744,6 +744,24 @@ allEnemies =
       , SomeEnemyCard poleman
       , SomeEnemyCard carnevaleSentinel
       , SomeEnemyCard writhingAppendage
+      , -- The Eternal Slumber
+        SomeEnemyCard neith
+      , SomeEnemyCard humbleSupplicant
+      , SomeEnemyCard creatureFromTheAbyss
+      , -- The Night's Usurper
+        SomeEnemyCard xzharah
+      , SomeEnemyCard dreadedShantak
+      , SomeEnemyCard speakerForTheDarkPharaoh
+      , -- Brotherhood of the Beast
+        SomeEnemyCard drLaylaElMasri
+      , SomeEnemyCard drWentworthMoore
+      , SomeEnemyCard nadiaNimr
+      , SomeEnemyCard farid
+      , SomeEnemyCard nassor
+      , SomeEnemyCard professorNathanielTaylor
+      , -- Sands of Egypt
+        SomeEnemyCard abyssalRevenant
+      , SomeEnemyCard thingInTheSarcophagus
       , -- Murder at the Excelsior Hotel
         SomeEnemyCard arkhamOfficer
       , SomeEnemyCard mrTrombly

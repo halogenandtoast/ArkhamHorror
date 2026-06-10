@@ -283,6 +283,12 @@ data EncounterSet
   | TheBayou
   | CurseOfTheRougarou
   | CarnevaleOfHorrors
+  | TheEternalSlumber
+  | TheNightsUsurper
+  | BrotherhoodOfTheBeast
+  | SandsOfEgypt
+  | AbyssalTribute
+  | AbyssalGifts
   | MurderAtTheExcelsiorHotel
   | AlienInterference
   | ExcelsiorManagement

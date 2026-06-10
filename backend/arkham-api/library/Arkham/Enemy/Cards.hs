@@ -72,6 +72,7 @@ allEncounterEnemyCards =
       [ abarranArrigorriagakoaAbarranUnleashed
       , abarranArrigorriagakoaTheManWithTheRubyRing
       , abhorrentMoonBeast
+      , abyssalRevenant
       , acolyte
       , acolyteOfUmordhoth
       , agentOfTheKing
@@ -166,6 +167,7 @@ allEncounterEnemyCards =
       , covenInitiate
       , crazedGuest
       , crazedShoggoth
+      , creatureFromTheAbyss
       , creatureOutOfDemhe
       , crystalParasite
       , crustaceanHybridInTheDark
@@ -214,8 +216,11 @@ allEncounterEnemyCards =
       , discipleOfTheDevourer
       , donLagorio
       , drAmyKenslerProfessorOfBiology
+      , dreadedShantak
+      , drLaylaElMasri
       , drMalaSinhaDaringPhysician
       , dromaeosaurus
+      , drWentworthMoore
       , eaterOfTheDepths
       , elderThingScavenger
       , elisabettaMagro
@@ -232,6 +237,7 @@ allEncounterEnemyCards =
       , eztliGuardian
       , fanatic
       , fangOfYig
+      , farid
       , featheredSerpent
       , fleshEater
       , forestWatcher
@@ -286,6 +292,7 @@ allEncounterEnemyCards =
       , hotelSecurity
       , houseDealerA
       , houseDealerB
+      , humbleSupplicant
       , huntingDeepOne
       , huntingGhast
       , huntingHorror
@@ -380,11 +387,14 @@ allEncounterEnemyCards =
       , moonBeast
       , moonLizard
       , moonboundByakhee
+      , nadiaNimr
       , nahab
       , narogath
       , nasht
+      , nassor
       , nathanWickMasterOfIndoctrination
       , nathanWickMasterOfInitiation
+      , neith
       , netherMist
       , nightriders
       , nyarlathotepGodOfAThousandForms
@@ -419,6 +429,7 @@ allEncounterEnemyCards =
       , priestOfDagon
       , priestessOfTheCoven
       , primordialEvil
+      , professorNathanielTaylor
       , professorWilliamDyerProfessorOfGeology
       , protoplasmicMass
       , protoplasmicReassembler
@@ -476,6 +487,7 @@ allEncounterEnemyCards =
       , slitheringDhole
       , slitheringHybrid
       , spawnOfHali
+      , speakerForTheDarkPharaoh
       , specterOfDeath
       , spectralRaven
       , spiderOfLeng
@@ -527,6 +539,7 @@ allEncounterEnemyCards =
       , theWingedSerpent
       , theWingedSerpentTheFuryOfYig
       , thingInTheDepths
+      , thingInTheSarcophagus
       , thorneOpenToNegotiation
       , thorneTheOneWithTheRedCravat
       , thrall
@@ -569,6 +582,7 @@ allEncounterEnemyCards =
       , wolfManDrew
       , wraith
       , writhingAppendage
+      , xzharah
       , yig
       , yithianObserver
       , yithianStarseeker

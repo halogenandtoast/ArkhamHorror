@@ -54,6 +54,7 @@ allPlayerAssetCards =
       , ancestralKnowledge3
       , ancestralToken
       , anchorChain
+      , ancientAnkh
       , ancientCovenant2
       , ancientStone1
       , ancientStoneKnowledgeOfTheElders4
@@ -529,6 +530,7 @@ allPlayerAssetCards =
       , joeSargentRattletrapBusDriver
       , joeyTheRatVigil
       , joeyTheRatVigil3
+      , johnAndJessieBurke
       , johnnyValoneReadyToMakeADeal
       , johnnyValoneReadyToMakeADeal
       , jumpsuit
@@ -541,6 +543,7 @@ allPlayerAssetCards =
       , kenslersLog
       , kerosene1
       , keyOfYs
+      , khopeshOfTheAbyss
       , kleptomania
       , knife
       , knightOfSwords3
@@ -911,6 +914,7 @@ allPlayerAssetCards =
       , suggestion1
       , suggestion4
       , summonedHound1
+      , summonedNightgaunt
       , summonedServitor
       , surgicalKit3
       , survivalKnife

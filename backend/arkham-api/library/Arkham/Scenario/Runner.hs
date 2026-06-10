@@ -443,6 +443,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   Remember logKey -> do
     send $ "Remember \"" <> format logKey <> "\""
+    unless (logKey `member` (a ^. logL)) do
+      checkAfter $ Window.RememberedLogKey logKey
     pure $ a & logL %~ insertSet logKey
   Forget logKey -> do
     send $ "Forgot \"" <> format logKey <> "\""
@@ -453,7 +455,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   ScenarioCountIncrementBy logKey n -> do
     checkAfter $ Window.ScenarioCountIncremented logKey
     pure $ a & countsL %~ Map.alter (Just . maybe n (+ n)) logKey
-  ScenarioCountDecrementBy logKey n ->
+  ScenarioCountDecrementBy logKey n -> do
+    when (n > 0 && findWithDefault 0 logKey (a ^. countsL) > 0) do
+      checkAfter $ Window.ScenarioCountDecremented logKey
     pure
       $ a
       & countsL

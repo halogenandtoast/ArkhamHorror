@@ -1380,6 +1380,31 @@ payCost msg c iid skipAdditionalCosts cost = do
           | (zone', card) <- cards
           ]
       pure c
+    GroupSkillIconCost x skillTypes locationMatcher -> do
+      let lm = replaceYouMatcher iid locationMatcher
+      iids <- select $ InvestigatorAt lm
+      options <- concatForM iids \iid' -> do
+        handCards <-
+          mapMaybe (preview _PlayerCard) <$> select (inHandOf NotForPlay iid' <> basic DiscardableCard)
+        let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
+        pure
+          [ (iid', n, card)
+          | (n, card) <- map (toFst (count countF . cdSkills . toCardDef)) handCards
+          , n > 0
+          ]
+      lead <- getLeadPlayer
+      let
+        cardMsgs =
+          map
+            ( \(iid', n, card) ->
+                targetLabel (toCardId card)
+                  $ toMessage (discardCard iid' source card)
+                  : PaidAbilityCost iid' Nothing (SkillIconPayment card.skills)
+                  : [pay (GroupSkillIconCost (x - n) skillTypes locationMatcher) | n < x]
+            )
+            options
+      push $ chooseOne lead cardMsgs
+      pure c
     SkillIconCost x skillTypes -> do
       handCards <-
         mapMaybe (preview _PlayerCard) <$> select (inHandOf NotForPlay iid <> basic DiscardableCard)

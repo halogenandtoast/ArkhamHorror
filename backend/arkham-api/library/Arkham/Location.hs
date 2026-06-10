@@ -1187,6 +1187,28 @@ allLocations =
     , SomeLocationCard floodedSquare
     , SomeLocationCard accademiaBridge
     , SomeLocationCard theGuardian
+    , -- The Eternal Slumber
+      SomeLocationCard streetsOfCairo
+    , SomeLocationCard cairoBazaar
+    , SomeLocationCard museumOfEgyptianAntiquities
+    , SomeLocationCard outskirtsOfCairo
+    , SomeLocationCard templeCourtyard
+    , -- The Night's Usurper
+      SomeLocationCard aDreamBetwixt
+    , SomeLocationCard theGreatAbyss
+    , SomeLocationCard tunnelsUnderNgranek
+    , SomeLocationCard stairwayToSarkomand
+    , SomeLocationCard mistFilledCaverns
+    , SomeLocationCard eldritchGate
+    , -- Sands of Egypt
+      SomeLocationCard expeditionCampGuardiansOfTheAbyss
+    , SomeLocationCard nileRiver
+    , SomeLocationCard sandsOfDashur
+    , SomeLocationCard dunesOfTheSahara
+    , SomeLocationCard untouchedVault
+    , SomeLocationCard facelessSphinx
+    , SomeLocationCard desertOasis
+    , SomeLocationCard sandsweptRuins
     , -- Murder at the Excelsior Hotel
       SomeLocationCard room225
     , SomeLocationCard suiteBalcony

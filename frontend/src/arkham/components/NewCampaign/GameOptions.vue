@@ -45,6 +45,11 @@ const selectedDifficulty = defineModel<Difficulty>('selectedDifficulty', { requi
 const includeTarotReadings = defineModel<boolean>('includeTarotReadings', { required: true })
 const campaignName = defineModel<string | null>('campaignName', { required: true })
 const fullCampaignOptionKey = defineModel<string | null>('fullCampaignOptionKey', { required: true })
+const sideStoryMode = defineModel<string>('sideStoryMode', { required: true })
+
+const sideStoryScenarios = computed(() =>
+  props.gameMode === 'SideStory' ? props.scenario?.scenarios ?? [] : []
+)
 
 const showAlphaWarning = computed(() => {
   if (props.gameMode === 'Campaign' && props.campaign) {
@@ -100,16 +105,25 @@ const selectionSummary = computed(() => {
     return {
       kind: 'SideStory' as const,
       id: props.chosenSideStoryId,
-      title: props.scenario?.name ?? ''
+      title: selectedSideStoryPart.value?.name ?? props.scenario?.name ?? ''
     }
   }
 
   return null
 })
 
-const selectionBoxSrc = computed(() =>
-  selectionSummary.value ? imgsrc(`boxes/${selectionSummary.value.id}.jpg`) : null
-)
+const selectedSideStoryPart = computed(() => {
+  if (props.gameMode !== 'SideStory') return null
+  if (sideStoryMode.value === 'campaign') return null
+  return props.scenario?.scenarios?.find((s) => s.id === sideStoryMode.value) ?? null
+})
+
+const selectionBoxSrc = computed(() => {
+  if (!selectionSummary.value) return null
+  const part = selectedSideStoryPart.value
+  const id = part ? part.box ?? part.id : selectionSummary.value.id
+  return imgsrc(`boxes/${id}.jpg`)
+})
 
 const selectionKind = computed(() => selectionSummary.value?.kind ?? null)
 
@@ -282,6 +296,19 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
             <div class="callout-body" v-html="$t('create.switchingPerspectivesDescription')"></div>
           </div>
         </transition>
+      </div>
+
+      <div v-if="sideStoryScenarios.length > 0" class="card">
+        <div class="card-title">{{ $t('create.scenarios') }}</div>
+        <div class="segmented" :class="`segmented-${sideStoryScenarios.length + 1}`">
+          <input type="radio" v-model="sideStoryMode" value="campaign" id="sideStoryBoth" />
+          <label for="sideStoryBoth">{{ $t('create.bothScenarios') }}</label>
+
+          <template v-for="s in sideStoryScenarios" :key="s.id">
+            <input type="radio" v-model="sideStoryMode" :value="s.id" :id="`sideStoryPart-${s.id}`" />
+            <label :for="`sideStoryPart-${s.id}`">{{ s.name }}</label>
+          </template>
+        </div>
       </div>
 
       <div v-if="showReturnToToggle" class="card">

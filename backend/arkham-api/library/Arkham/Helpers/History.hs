@@ -4,10 +4,14 @@ import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.GameEnv as X (getHistoryField)
 import Arkham.Helpers.GameValue (gameValueMatches)
+import Arkham.Card (toCardDef)
+import Arkham.Card.CardDef (cdCardTraits)
 import Arkham.Helpers.Query
 import Arkham.History as X
+import Arkham.Enemy.Types (enemyLastKnownLocation, enemyPlacement)
 import Arkham.Id
 import Arkham.Matcher qualified as Matcher
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Tracing
 
@@ -15,6 +19,17 @@ historyMatches :: (HasGame m, Tracing m) => Matcher.HistoryMatcher -> History ->
 historyMatches = \case
   Matcher.DefeatedEnemiesWithTotalHealth vMatcher ->
     (`gameValueMatches` vMatcher) . sum . map defeatedEnemyHealth . historyEnemiesDefeated
+  Matcher.DefeatedEnemyWithTraitAt trait lid ->
+    pure
+      . any
+        ( \defeated ->
+            let attrs = defeatedEnemyAttrs defeated
+                mloc = case enemyPlacement attrs of
+                  AtLocation lid' -> Just lid'
+                  _ -> enemyLastKnownLocation attrs
+             in trait `member` cdCardTraits (toCardDef attrs) && mloc == Just lid
+        )
+      . historyEnemiesDefeated
   Matcher.AttackedByAnyEnemies -> pure . notNull . historyEnemiesAttackedBy
 
 getAllHistoryField :: (HasGame m, Tracing m, Monoid k) => HistoryType -> HistoryField k -> m k

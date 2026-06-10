@@ -1,0 +1,72 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the strength of the abyss.",
+      "cultist": "Reveal another token. If you fail and the strength of the abyss is 3 or lower, add 1 strength to the abyss.",
+      "tablet": "0. For this skill test, ignore all bonuses to your skill value.",
+      "elderThing": "-5. You may add 1 strength to the abyss to automatically succeed, instead."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the strength of the abyss.",
+      "cultist": "Reveal another token. If you fail and the strength of the abyss is 5 or lower, add 1 strength to the abyss.",
+      "tablet": "-2. For this skill test, ignore all bonuses to your skill value.",
+      "elderThing": "-6. You may add 1 strength to the abyss to automatically succeed, instead."
+    }
+  },
+  "label": {
+    "elderThing": {
+      "addStrength": "Add 1 strength to the abyss to automatically succeed"
+    }
+  },
+  "remembered": {
+    "foundADoorMarkedWithBlood": "Found a door marked with blood",
+    "boughtAnOddTrinket": "Bought an odd trinket",
+    "discoveredAnAncientTablet": "Discovered an ancient tablet",
+    "sabotagedTheTrain": "Sabotaged the train",
+    "brokenIntoADesertedTemple": "Broken into a deserted temple"
+  },
+  "intro": {
+    "title": "The Eternal Slumber",
+    "body": "<p class='billenia'>*Greetings,*</p><p class='billenia'>*I'm sorry, I know it has been some time since my last correspondence. I am writing to you now because there is nobody I can trust here in Cairo. I don't even know if this letter will make it to you safely. I can only hope it does, for all our sakes.*</p><p class='billenia'>*There's something wrong in this city. It started a few weeks ago. The head curator of the Museum of Egyptian Antiquities fell asleep and simply never awoke. I thought nothing of it at first; just a medical curiosity, a mystery the doctors would solve in due time. But then it happened again… And again. More and more people all across the city started falling into comas. Now it's happening every night… And as I write to you, they are taking my husband John to the hospital.*</p><p class='billenia'>*I'm scared. I don't want to fall asleep and never wake up again. But more than that, I'm worried that there are people purposely inflicting this curse on others. And if so, why?*</p><p class='billenia'>*Please, I am begging you. I need your help.*</p><p class='billenia'>*Yours sincerely,*</p><p class='billenia'>*Jessie Burke*</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather the following encounter sets: *The Eternal Slumber*, *Sands of Egypt*, *Brotherhood of the Beast*, and *Abyssal Tribute*. These sets are indicated by the following icons, respectively: <section class='encounter-sets'><img src='{setImgPath}/eternal-slumber.png' /><img src='{setImgPath}/sands-of-egypt.png' /><img src='{setImgPath}/brotherhood-of-the-beast.png' /><img src='{setImgPath}/abyssal-tribute.png' /></section>",
+    "placeLocations": "Put the following locations into play: Streets of Cairo, Outskirts of Cairo, Temple Courtyard, Museum of Egyptian Antiquities, Cairo Bazaar, and Expedition Camp.",
+    "startAt": "Each investigator begins play in the Streets of Cairo.",
+    "setAside": "Set the following cards aside, out of play: Neith, John & Jessie Burke, Ancient Ankh, both copies of Abyssal Revenant, and each of the 7 single-sided locations (Nile River, Sands of Dashur, Dunes of the Sahara, Untouched Vault, Faceless Sphinx, Desert Oasis, and Sandswept Ruins).",
+    "brotherhood": "Find the 6 double-sided _Brotherhood_ enemies (Professor Nathaniel Taylor, Dr. Layla El Masri, Dr. Wentworth Moore, Nadia Nimr, Farid, and Nassor). These enemies have story cards on their reverse sides. For the best experience, do not look at the story cards on their reverse sides. Shuffle these 6 enemies together and place them beneath the scenario reference card.",
+    "strengthOfTheAbyss": "For each investigator in the game, place 1 resource token on the scenario reference card, under \"Strength of the Abyss.\" For the remainder of this scenario, resources on the scenario reference card represent the current strength of the abyss."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>*If no resolution was reached (each investigator resigned or was defeated)*: The city of Cairo sleeps and will never wake. In the west, the Brotherhood rejoices, for their prophecy is about to be fulfilled. And deep in the land of dreams, their Chosen grips his weapon for the first time.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>In your Campaign Log, record *dreamers in the abyss (X)*. X is the strength of the abyss when the scenario ended.</li><li>In your Campaign Log, record *Brotherhood Agents Who Escaped*: and list the names of each unique _Cultist_ enemy that was in play or beneath the scenario reference card when the game ended.</li><li>In your Campaign Log, record that *the Brotherhood's schemes continue unabated*.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>*Resolution 1*: Jessie Burke cries with joy as her husband opens his eyes for the first time in weeks. \"J… Jessie?\" John trembles as he tries and fails to stand. His wife places a hand on his shoulder to steady him. \"I thought you would never wake,\" she admits, wiping tears from her eyes. \"If it weren't for our friends here, you'd still be under.\" John turns to you, his expression dire. \"Then you're the only ones who can stop what is coming,\" he says cryptically. \"In my dreams, I saw him. The one they called Xzharah.\" He swallows hard. \"And he is like nothing we've ever seen before.\"</p><ul><li>In your Campaign Log, record that *the curse of slumber was lifted*. Cross off all *\"(card name) was taken by the abyss\"* notes in your Campaign Log.</li><li>Any one investigator may choose to add John & Jessie Burke to his or her deck. This card does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>In your Campaign Log, record *dreamers in the abyss (X)*. X is the strength of the abyss when the scenario ended.</li><li>In your Campaign Log, record *Brotherhood Agents Who Escaped*: and list the names of each unique _Cultist_ enemy that was in play or beneath the scenario reference card when the game ended.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>*Resolution 2*: Neith rises to her feet. Most of her power has been drained, but the strength of several dreamers still sustains her. \"They have planned for centuries. Their day of reckoning is coming. Nothing can stop that. Not I. Certainly not you.\" You notice she speaks as if she were a third party, and you press further. \"Do you think I had a choice?\" She scoffs. \"None can withstand Xzharah. You will see. He will bend your will just as he did mine.\" Her shadow grows and warps, misshapen. \"It is the Abyss he wants. If you wish to stop him, head west. Xzharah awaits beyond the Gate.\" Neith's shadow consumes her body whole, and she vanishes from sight. Only her amulet remains.</p><ul><li>In your Campaign Log, record that *you are aware of Xzharah's plans*.</li><li>Any one investigator may choose to add the Ancient Ankh to his or her deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>In your Campaign Log, record *dreamers in the abyss (X)*. X is the strength of the abyss when the scenario ended.</li><li>In your Campaign Log, record *Brotherhood Agents Who Escaped*: and list the names of each unique _Cultist_ enemy that was in play or beneath the scenario reference card when the game ended.</li></ul>"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.storyCards.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.storyCards.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.body"
+    },
+    {
+      "title": "Explore",
+      "body": "<p class='basic'>Some abilities in *Guardians of the Abyss* are identified with an _Explore_ action designator. Such abilities are generally used to find new locations to put into play, and are initiated using the \"activate\" action.</p><p class='basic'>_Explore_ abilities instruct you to draw the top card of the \"exploration deck,\" which is a separate deck that will be constructed during this scenario. This deck consists of several single-sided locations and treachery cards.</p><ul><li>Each _Explore_ ability indicates a particular type of location that you are seeking to draw. _If a location of that type is drawn, it is put into play, and you move to that location._ This is considered a \"successful\" exploration.</li><li>If any other location is drawn, place it next to the exploration deck, and draw the next card from the exploration deck. Repeat this process until a location of the indicated type is drawn, or a treachery is drawn. After this action has ended, shuffle each location next to the exploration deck back into the exploration deck.</li><li>If a treachery card is drawn, it is resolved as normal. If it is discarded, place it in the encounter discard pile as you would normally. There is no discard pile for the exploration deck. This is considered an \"unsuccessful\" exploration.</li><li>When a single-sided location is put into play from the exploration deck, place clues on that location equal to its clue value.</li></ul>"
+    }
+  ]
+}

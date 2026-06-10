@@ -764,3 +764,115 @@ miGoAbductor =
     { cdCardTraits = setFromList [Monster, MiGo, Elite]
     , cdVictoryPoints = Just 1
     }
+neith :: CardDef
+neith =
+  unique
+    $ (enemy "83013" ("Neith" <:> "Harbinger of the Abyss") TheEternalSlumber 1)
+      { cdCardTraits = setFromList [Humanoid, Brotherhood, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+      , cdVictoryPoints = Just 1
+      }
+
+humbleSupplicant :: CardDef
+humbleSupplicant =
+  (enemy "83014" "Humble Supplicant" TheEternalSlumber 3)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Aloof]
+    }
+
+creatureFromTheAbyss :: CardDef
+creatureFromTheAbyss =
+  (enemy "83015" "Creature from the Abyss" TheEternalSlumber 2)
+    { cdCardTraits = setFromList [Monster, Dreamlands]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    }
+
+xzharah :: CardDef
+xzharah =
+  unique
+    $ doubleSided "83027b"
+    $ (enemy "83027a" ("Xzharah" <:> "Chosen of the Beast") TheNightsUsurper 1)
+      { cdCardTraits = setFromList [Servitor, Dreamlands, Conspirator, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+      }
+
+dreadedShantak :: CardDef
+dreadedShantak =
+  (enemy "83029" "Dreaded Shantak" TheNightsUsurper 2)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Shantak]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    }
+
+speakerForTheDarkPharaoh :: CardDef
+speakerForTheDarkPharaoh =
+  (enemy "83030" "Speaker for the Dark Pharaoh" TheNightsUsurper 2)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    }
+
+drLaylaElMasri :: CardDef
+drLaylaElMasri =
+  unique
+    $ doubleSided "83031b"
+    $ (enemy "83031a" ("Dr. Layla El Masri" <:> "Hieratic Translator") BrotherhoodOfTheBeast 1)
+      { cdCardTraits = setFromList [Humanoid, Cultist, Brotherhood]
+      , cdVictoryPoints = Just 1
+      }
+
+drWentworthMoore :: CardDef
+drWentworthMoore =
+  unique
+    $ doubleSided "83032b"
+    $ (enemy "83032a" ("Dr. Wentworth Moore" <:> "Dark Supplicant") BrotherhoodOfTheBeast 1)
+      { cdCardTraits = setFromList [Humanoid, Cultist, Brotherhood]
+      , cdVictoryPoints = Just 1
+      }
+
+nadiaNimr :: CardDef
+nadiaNimr =
+  unique
+    $ doubleSided "83033b"
+    $ (enemy "83033a" ("Nadia Nimr" <:> "Priestess of the Beast") BrotherhoodOfTheBeast 1)
+      { cdCardTraits = setFromList [Humanoid, Cultist, Brotherhood]
+      , cdVictoryPoints = Just 1
+      }
+
+farid :: CardDef
+farid =
+  unique
+    $ doubleSided "83034b"
+    $ (enemy "83034a" ("Farid" <:> "Seedy Salesman") BrotherhoodOfTheBeast 1)
+      { cdCardTraits = setFromList [Humanoid, Cultist, Brotherhood]
+      , cdVictoryPoints = Just 1
+      }
+
+nassor :: CardDef
+nassor =
+  unique
+    $ doubleSided "83035b"
+    $ (enemy "83035a" ("Nassor" <:> "Brotherhood Operative") BrotherhoodOfTheBeast 1)
+      { cdCardTraits = setFromList [Humanoid, Cultist, Brotherhood]
+      , cdKeywords = setFromList [Keyword.Retaliate]
+      , cdVictoryPoints = Just 1
+      }
+
+professorNathanielTaylor :: CardDef
+professorNathanielTaylor =
+  unique
+    $ doubleSided "83036b"
+    $ (enemy "83036a" ("Professor Nathaniel Taylor" <:> "Keeper of Antiquities") BrotherhoodOfTheBeast 1)
+      { cdCardTraits = setFromList [Humanoid, Cultist, Brotherhood]
+      , cdVictoryPoints = Just 1
+      }
+
+abyssalRevenant :: CardDef
+abyssalRevenant =
+  (enemy "83045" "Abyssal Revenant" SandsOfEgypt 2)
+    { cdCardTraits = setFromList [Monster, Dreamlands]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+thingInTheSarcophagus :: CardDef
+thingInTheSarcophagus =
+  (enemy "83046" "Thing in the Sarcophagus" SandsOfEgypt 2)
+    { cdCardTraits = setFromList [Monster]
+    }

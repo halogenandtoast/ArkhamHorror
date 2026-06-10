@@ -149,6 +149,18 @@ data ScenarioLogKey
   | TheVentIsOpen
   | -- | Film Fatale
     TheInvestigatorsMadeTheirCallTime
+  | -- | Guardians of the Abyss
+    FoundADoorMarkedWithBlood
+  | BoughtAnOddTrinket
+  | DiscoveredAnAncientTablet
+  | SabotagedTheTrain
+  | BrokenIntoADesertedTemple
+  | FreedTheNightgaunts
+  | ExecutedTheNightgaunts
+  | WarnedTheDenizensOfSarkomand
+  | CutOffAllEscape
+  | PledForHelp
+  | AffrontedTheRulerOfThisRealm
   | -- Investigator Cards
     YouOweBiancaResources (Labeled InvestigatorId) Int
   deriving stock (Eq, Show, Ord, Data)
@@ -159,6 +171,7 @@ data ScenarioCountKey
   | Distortion
   | Barriers LocationId LocationId
   | CiviliansSlain
+  | StrengthOfTheAbyss
   deriving stock (Eq, Show, Ord, Data)
 
 instance ToGameLoggerFormat ScenarioLogKey where
@@ -215,6 +228,7 @@ instance FromJSON ScenarioCountKey where
     String "CurrentDepth" -> pure CurrentDepth
     String "SignOfTheGods" -> pure SignOfTheGods
     String "Distortion" -> pure Distortion
+    String "StrengthOfTheAbyss" -> pure StrengthOfTheAbyss
     Object o -> do
       tag :: Text <- o .: "tag"
       case tag of
@@ -225,6 +239,7 @@ instance FromJSON ScenarioCountKey where
         "SignOfTheGods" -> pure SignOfTheGods
         "Distortion" -> pure Distortion
         "CiviliansSlain" -> pure CiviliansSlain
+        "StrengthOfTheAbyss" -> pure StrengthOfTheAbyss
         _ -> fail "Unknown tag"
     _ -> fail "Expected String or Object"
 

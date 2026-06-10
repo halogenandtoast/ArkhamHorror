@@ -870,6 +870,15 @@ allTreacheries =
       , SomeTreacheryCard mesmerize
       , SomeTreacheryCard abduction
       , SomeTreacheryCard acridMiasma
+      , --- Sands of Egypt
+        SomeTreacheryCard eclipse
+      , SomeTreacheryCard sandstorm
+      , SomeTreacheryCard terrorUnderThePyramids
+      , SomeTreacheryCard swarmOfLocusts
+      , SomeTreacheryCard slumber
+      , SomeTreacheryCard darkSacrifice
+      , SomeTreacheryCard theBlackWind
+      , SomeTreacheryCard abyssalReach
       , --- Murder at the Excelsior Hotel
         SomeTreacheryCard whatHaveYouDone
       , SomeTreacheryCard noxiousFumes

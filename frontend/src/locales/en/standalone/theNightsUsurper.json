@@ -1,0 +1,76 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the strength of the abyss.",
+      "cultist": "Reveal another token. If you fail and the strength of the abyss is 3 or lower, add 1 strength to the abyss.",
+      "tablet": "-1. For this skill test, ignore all bonuses to your skill value.",
+      "elderThing": "-4. If you succeed and the strength of the abyss is 4 or more, remove 1 strength from the abyss."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the strength of the abyss.",
+      "cultist": "Reveal another token. If you fail and the strength of the abyss is 5 or lower, add 1 strength to the abyss.",
+      "tablet": "-3. For this skill test, ignore all bonuses to your skill value.",
+      "elderThing": "-5. If you succeed and the strength of the abyss is 4 or more, remove 1 strength from the abyss."
+    }
+  },
+  "remembered": {
+    "freedTheNightgaunts": "Freed the nightgaunts",
+    "executedTheNightgaunts": "Executed the nightgaunts",
+    "warnedTheDenizensOfSarkomand": "Warned the denizens of Sarkomand",
+    "cutOffAllEscape": "Cut off all escape",
+    "pledForHelp": "Pled for help",
+    "affrontedTheRulerOfThisRealm": "Affronted the ruler of this realm"
+  },
+  "intro": {
+    "title": "The Night's Usurper",
+    "body": "<p>Winlock fiddles with his mustache for a moment while he considers your words. As the leader of the expedition currently scouring through Dashur, the decision of whether or not to let you join the expedition is up to him. \"Look, I read through the evidence you gathered. I know about what happened in Cairo. I believe your story. But, still…\" He lets out an exasperated sigh. \"I just don't know how I'm going to convince the rest of the expedition crew. Ancient temples is one thing, but a gate to another dimension? This 'Xzharah' fellow? None of this can be real, right?\"</p><p>Your research and your experience says otherwise. The threat is real. There is a secret organization operating within Egypt—The Brotherhood of the Beast—and if they are not stopped, their newfound \"Chosen One\" will begin a campaign of destruction that ends with the Earth.</p><p>You insist one last time to be allowed access to the expedition's resources. \"Alright, alright,\" Winlock relents. \"I don't know what it is you're looking for out there in the desert, but I hope you find it.\" You shake your head in reply. You'd rather come up empty-handed.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather the following encounter sets: *The Night's Usurper*, *Sands of Egypt*, *Brotherhood of the Beast*, and *Abyssal Gifts*. These sets are indicated by the following icons, respectively: <section class='encounter-sets'><img src='{setImgPath}/nights-usurper.png' /><img src='{setImgPath}/sands-of-egypt.png' /><img src='{setImgPath}/brotherhood-of-the-beast.png' /><img src='{setImgPath}/abyssal-gifts.png' /></section>",
+    "placeLocations": "Put the Expedition Camp into play. Each investigator begins play in the Expedition Camp.",
+    "setAside": "Set the following cards aside, out of play: Khopesh of the Abyss, Summoned Nightgaunt, the single-sided Eldritch Gate location, the double-sided Xzharah enemy, each of the 5 double-sided _Otherworld_ locations, and both copies of Dreaded Shantak. Xzharah and the _Otherworld_ locations have story cards on their reverse sides. For the best experience, do not look at the story cards on their reverse sides.",
+    "explorationDeck": "Create the exploration deck. This is done by shuffling together each of the 7 remaining single-sided locations, along with 1 copy each of the following treachery cards: Abyssal Reach, The Black Wind, Terror Under the Pyramids, and Swarm of Locusts.",
+    "brotherhood": "Find the 6 double-sided _Brotherhood_ enemies. These enemies have story cards on their reverse sides. Some of these enemies are placed beneath the scenario reference card, as follows. The rest are removed from the game.",
+    "brotherhoodCampaign": "If you are playing in Campaign Mode, place each of the enemies listed next to \"Brotherhood Agents Who Escaped\" in your Campaign Log beneath the scenario reference card.",
+    "brotherhoodStandalone": "If you are playing in Standalone mode, shuffle these 6 enemies together and place 3 of them beneath the scenario reference card without looking at them.",
+    "strengthOfTheAbyss": "Place a number of resource tokens on the scenario reference card (under \"Strength of the Abyss\"), as follows.",
+    "strengthCampaign": "If you are playing in Campaign Mode, place resources equal to the number listed in parentheses next to \"dreamers in the abyss\" in your Campaign Log.",
+    "strengthStandalone": "If you are playing in Standalone Mode, place 1 resource for each investigator in the game."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>*If no resolution was reached (each investigator resigned or was defeated)*: Go to *Resolution 1*.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>*Resolution 1*: \"It's just an arch. Why're you so worked up, boss?\" Winlock crossed his arms. Something about all of this felt wrong. He was sure that this was the place those folks from Arkham were looking for—a delicately patterned archway that led nowhere at all—and yet, Winlock was certain there was something on the other side. \"It's not Egyptian,\" he noted, staring at the thing with narrow eyes. \"It doesn't even look… human.\"</p><p>\"You believed those loons? Look boss, it's nothing!\" one of his men laughed.</p><p>\"Is it?\" Winlock snapped, eyes wide. \"Is it?\"</p><ul><li>In your Campaign Log, record that *the Day of Reckoning is coming*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>*Resolution 2*: The essence fades from Xzharah's body. Swirling clouds of mist surround him and force him to his knees. Creatures of the abyss appear wordlessly at your side, surrounding Xzharah with a quiet, expressionless hate. Xzharah's sword betrays him and falls from his grip, the blade fracturing as it clatters to the ground. \"…The prophecy must be fulfilled…\" It is the last of his vile whispers. His physical form vanishes into the realm's ethereal mist, and all is silent in the Great Abyss.</p><ul><li>In your Campaign Log, record that *the Abyss was saved*. Cross off all *\"(card name) was taken by the abyss\"* notes in your Campaign Log.</li><li>Any one investigator may choose to add Summoned Nightgaunt to his or her deck. This card does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>*Resolution 3*: Xzharah places an ice-cold hand on your shoulder as you kneel before him. \"You have proven your loyalty,\" he decrees. Creatures of the abyss surround you, heads bowed in reverence to their new master. There are none left to oppose him. \"Few of your kind have the wit or the will to see beyond the present. To see our prophecy fulfilled. But you are worthy enough to have your eyes opened. Far worthier than the fools I have trusted in the past.\" He bids you to stand, and places the handle of his blood-soaked sword in your hands. \"Now arise, Servant of the Beast, and take your place among us.\"</p><ul><li>In your Campaign Log, record that *you joined forces with Xzharah*.</li><li>Any one investigator may choose to add the Khopesh of the Abyss to his or her deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.storyCards.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.storyCards.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.body"
+    },
+    {
+      "title": "Explore",
+      "body": "<p class='basic'>Some abilities in *Guardians of the Abyss* are identified with an _Explore_ action designator. Such abilities are generally used to find new locations to put into play, and are initiated using the \"activate\" action.</p><p class='basic'>_Explore_ abilities instruct you to draw the top card of the \"exploration deck,\" which is a separate deck that will be constructed during this scenario. This deck consists of several single-sided locations and treachery cards.</p><ul><li>Each _Explore_ ability indicates a particular type of location that you are seeking to draw. _If a location of that type is drawn, it is put into play, and you move to that location._ This is considered a \"successful\" exploration.</li><li>If any other location is drawn, place it next to the exploration deck, and draw the next card from the exploration deck. Repeat this process until a location of the indicated type is drawn, or a treachery is drawn. After this action has ended, shuffle each location next to the exploration deck back into the exploration deck.</li><li>If a treachery card is drawn, it is resolved as normal. If it is discarded, place it in the encounter discard pile as you would normally. There is no discard pile for the exploration deck. This is considered an \"unsuccessful\" exploration.</li><li>When a single-sided location is put into play from the exploration deck, place clues on that location equal to its clue value.</li></ul>"
+    }
+  ]
+}

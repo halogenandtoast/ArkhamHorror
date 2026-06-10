@@ -61,4 +61,5 @@ allCampaigns =
     , ("54", SomeCampaign returnToTheCircleUndone)
     , ("00", SomeCampaign standaloneCampaign)
     , ("12", SomeCampaign brethrenOfAsh)
+    , ("83", SomeCampaign guardiansOfTheAbyss)
     ]

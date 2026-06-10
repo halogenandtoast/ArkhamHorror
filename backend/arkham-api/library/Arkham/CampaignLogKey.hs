@@ -48,6 +48,16 @@ data CampaignLogKey
     ManyWereSacrificedToCnidathquaDuringTheCarnivale
   | TheSunBanishedCnidathquaIntoTheDepths
   | CnidathquaRetreatedToNurseItsWounds
+  | -- | Guardians of the Abyss
+    TheCurseOfSlumberWasLifted
+  | YouAreAwareOfXzharahsPlans
+  | TheBrotherhoodsSchemesContinueUnabated
+  | TheDayOfReckoningIsComing
+  | TheAbyssWasSaved
+  | YouJoinedForcesWithXzharah
+  | DreamersInTheAbyss
+  | BrotherhoodAgentsWhoEscaped
+  | WasTakenByTheAbyss
   | -- | Murder at the Excelsior Hotel
     TheExcelsiorClaimsAnotherVictim
   | TheInvestigatorsFledTheSceneOfTheCrime
@@ -108,6 +118,15 @@ parseStringKey = withText "CampaignLogKey" $ \case
     pure ManyWereSacrificedToCnidathquaDuringTheCarnivale
   "TheSunBanishedCnidathquaIntoTheDepths" -> pure TheSunBanishedCnidathquaIntoTheDepths
   "CnidathquaRetreatedToNurseItsWounds" -> pure CnidathquaRetreatedToNurseItsWounds
+  "TheCurseOfSlumberWasLifted" -> pure TheCurseOfSlumberWasLifted
+  "YouAreAwareOfXzharahsPlans" -> pure YouAreAwareOfXzharahsPlans
+  "TheBrotherhoodsSchemesContinueUnabated" -> pure TheBrotherhoodsSchemesContinueUnabated
+  "TheDayOfReckoningIsComing" -> pure TheDayOfReckoningIsComing
+  "TheAbyssWasSaved" -> pure TheAbyssWasSaved
+  "YouJoinedForcesWithXzharah" -> pure YouJoinedForcesWithXzharah
+  "DreamersInTheAbyss" -> pure DreamersInTheAbyss
+  "BrotherhoodAgentsWhoEscaped" -> pure BrotherhoodAgentsWhoEscaped
+  "WasTakenByTheAbyss" -> pure WasTakenByTheAbyss
   "TheExcelsiorIsQuietForNow" -> pure TheExcelsiorIsQuietForNow
   "TheInvestigatorsFledTheSceneOfTheCrime" -> pure TheInvestigatorsFledTheSceneOfTheCrime
   "TheExcelsiorClaimsAnotherVictim" -> pure TheExcelsiorClaimsAnotherVictim

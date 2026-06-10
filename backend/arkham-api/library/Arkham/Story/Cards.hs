@@ -202,6 +202,19 @@ allStoryCards =
       , recoverTheSample
       , driveOffTheMiGo
       , defuseTheExplosives
+      , --- Guardians of the Abyss
+        toTheDreamlands
+      , fateOfTheDreamers
+      , prisonersOfConquest
+      , ruinsOfSarkomand
+      , effigyOfNodens
+      , usurpTheNight
+      , theTranslatorsEvidence
+      , theSupplicantsEvidence
+      , thePriestesssEvidence
+      , theSalesmansEvidence
+      , theAssassinsEvidence
+      , theProfessorsEvidence
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -696,3 +709,45 @@ driveOffTheMiGo =
 defuseTheExplosives :: CardDef
 defuseTheExplosives =
   victory 1 $ addTrait Part1 $ doubleSided $ story "85024" "Defuse the Explosives" MiGoIncursion
+
+toTheDreamlands :: CardDef
+toTheDreamlands = otherSideIs "83022a" $ story "83022b" "To the Dreamlands" TheNightsUsurper
+
+fateOfTheDreamers :: CardDef
+fateOfTheDreamers = otherSideIs "83023a" $ story "83023b" "Fate of the Dreamers" TheNightsUsurper
+
+prisonersOfConquest :: CardDef
+prisonersOfConquest = otherSideIs "83024a" $ story "83024b" "Prisoners of Conquest" TheNightsUsurper
+
+ruinsOfSarkomand :: CardDef
+ruinsOfSarkomand = otherSideIs "83025a" $ story "83025b" "Ruins of Sarkomand" TheNightsUsurper
+
+effigyOfNodens :: CardDef
+effigyOfNodens = otherSideIs "83026a" $ story "83026b" "Effigy of Nodens" TheNightsUsurper
+
+usurpTheNight :: CardDef
+usurpTheNight = otherSideIs "83027a" $ story "83027b" "Usurp the Night" TheNightsUsurper
+
+theTranslatorsEvidence :: CardDef
+theTranslatorsEvidence =
+  victory 1 $ addTrait Evidence $ otherSideIs "83031a" $ story "83031b" "The Translator's Evidence" BrotherhoodOfTheBeast
+
+theSupplicantsEvidence :: CardDef
+theSupplicantsEvidence =
+  victory 1 $ addTrait Evidence $ otherSideIs "83032a" $ story "83032b" "The Supplicant's Evidence" BrotherhoodOfTheBeast
+
+thePriestesssEvidence :: CardDef
+thePriestesssEvidence =
+  victory 1 $ addTrait Evidence $ otherSideIs "83033a" $ story "83033b" "The Priestess's Evidence" BrotherhoodOfTheBeast
+
+theSalesmansEvidence :: CardDef
+theSalesmansEvidence =
+  victory 1 $ addTrait Evidence $ otherSideIs "83034a" $ story "83034b" "The Salesman's Evidence" BrotherhoodOfTheBeast
+
+theAssassinsEvidence :: CardDef
+theAssassinsEvidence =
+  victory 1 $ addTrait Evidence $ otherSideIs "83035a" $ story "83035b" "The Assassin's Evidence" BrotherhoodOfTheBeast
+
+theProfessorsEvidence :: CardDef
+theProfessorsEvidence =
+  victory 1 $ addTrait Evidence $ otherSideIs "83036a" $ story "83036b" "The Professor's Evidence" BrotherhoodOfTheBeast

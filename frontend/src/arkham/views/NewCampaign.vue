@@ -49,6 +49,7 @@ const selectedDifficulty = ref<Difficulty>('Easy')
 const deckIds = ref<(string | null)[]>([null, null, null, null])
 
 const fullCampaign = ref<CampaignType>('FullCampaign')
+const sideStoryMode = ref<string>('campaign')
 const selectedCampaign = ref<string | null>(null)
 const selectedScenario = ref<string | null>(null)
 const campaignName = ref<string | null>(null)
@@ -114,6 +115,10 @@ const defaultCampaignName = computed(() => {
   }
 
   if (gameMode.value === 'SideStory' && scenario.value) {
+    if (scenario.value.scenarios && sideStoryMode.value !== 'campaign') {
+      const part = scenario.value.scenarios.find((s) => s.id === sideStoryMode.value)
+      if (part) return part.name
+    }
     return `${scenario.value.name}`
   }
 
@@ -195,6 +200,7 @@ watch(difficulties, (ds) => {
 watch(gameMode, (mode) => {
   returnTo.value = false
   campaignName.value = null
+  sideStoryMode.value = 'campaign'
 
   if (mode === 'SideStory') {
     selectedCampaign.value = null
@@ -204,6 +210,10 @@ watch(gameMode, (mode) => {
   }
 
   step.value = 'ChooseMode'
+})
+
+watch(selectedScenario, () => {
+  if (gameMode.value === 'SideStory') sideStoryMode.value = 'campaign'
 })
 
 watch(selectedCampaign, (id) => {
@@ -256,13 +266,23 @@ async function start() {
 
   if (fullCampaign.value === 'Standalone' || gameMode.value === 'SideStory') {
     if (scenario.value && currentCampaignName.value) {
-      const scenarioId =
+      let scenarioId: string | null =
         returnTo.value && (scenario.value as any).returnTo ? (scenario.value as any).returnTo : scenario.value.id
+      let campaignId: string | null = null
+
+      if (gameMode.value === 'SideStory' && scenario.value.scenarios) {
+        if (sideStoryMode.value === 'campaign' && scenario.value.campaign) {
+          campaignId = scenario.value.campaign
+          scenarioId = null
+        } else {
+          scenarioId = sideStoryMode.value
+        }
+      }
 
       newGame(
         deckIds.value,
         playerCount.value,
-        null,
+        campaignId,
         scenarioId,
         selectedDifficulty.value,
         currentCampaignName.value,
@@ -317,6 +337,7 @@ async function start() {
         <GameOptions
           v-else
           v-model:playerCount="playerCount"
+          v-model:sideStoryMode="sideStoryMode"
           v-model:multiplayerVariant="multiplayerVariant"
           v-model:returnTo="returnTo"
           v-model:fullCampaign="fullCampaign"

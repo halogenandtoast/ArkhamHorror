@@ -68,6 +68,7 @@ data ModifierType
   | AdditionalCostToCommit InvestigatorId Cost
   | AdditionalCostToEnter Cost
   | AdditionalCostToEnterMatching LocationMatcher Cost
+  | AdditionalCostToExplore Cost
   | AdditionalCostToInvestigate Cost
   | AdditionalCostToLeave Cost
   | AdditionalCostToResign Cost

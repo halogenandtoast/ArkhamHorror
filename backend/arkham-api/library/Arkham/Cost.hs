@@ -105,6 +105,7 @@ data Cost
   | DiscoveredCluesCost
   | GroupResourceCost GameValue LocationMatcher
   | GroupDiscardCost GameValue ExtendedCardMatcher LocationMatcher
+  | GroupSkillIconCost Int (Set SkillIcon) LocationMatcher
   | GroupClueCost GameValue LocationMatcher
   | SameLocationGroupClueCost GameValue LocationMatcher
   | GroupClueCostRange (Int, Int) LocationMatcher

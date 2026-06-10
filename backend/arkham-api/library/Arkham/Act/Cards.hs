@@ -69,6 +69,7 @@ allActCards =
       , collapseThePylons
       , containingTheOutbreak
       , crossingTheThreshold
+      , curseOfEndlessSleep
       , curtainCall
       , darkKnowledgeV1
       , darkKnowledgeV2
@@ -143,6 +144,7 @@ allActCards =
       , intoTheBeyond
       , intoTheBeyondV2
       , intoTheDarkness
+      , intoTheGate
       , intoTheRuins
       , intoTheRuinsOnceAgain
       , investigatingTheTrail
@@ -201,6 +203,7 @@ allActCards =
       , searchForACampSite
       , searchForAlejandro
       , searchForTheBrotherhood
+      , searchForTheGate
       , searchForTheManuscript
       , searchForTheMeaning
       , searchForThePatient
@@ -218,6 +221,7 @@ allActCards =
       , secretsAndLiesV1
       , secretsAndLiesV2
       , secretsAndLiesV3
+      , secretsInTheSand
       , seekOutTheNight
       , seekingTroubleLoadingDocks
       , seekingTroubleSentFromAnotherTime
@@ -266,6 +270,7 @@ allActCards =
       , theGuardedRuins
       , theGuardiansInquiry
       , theHeartOfTheHouse
+      , theHourOfJudgment
       , theIsleOfOriab
       , theLadyWithTheRedParasol
       , theLighthouse
@@ -275,6 +280,7 @@ allActCards =
       , theKingsDecree
       , theMoonsCore
       , theMissingSibling
+      , theNightsUsurper
       , theOath
       , theOvergrownEstateClintonFreeman
       , theOvergrownEstateSentFromAnotherTime

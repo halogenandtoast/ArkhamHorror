@@ -7,6 +7,7 @@ newtype EnemyTrait = EnemyTrait {unEnemyTrait :: Trait}
 data Trait
   = Abandoned
   | Abomination
+  | Abyss
   | Agency
   | Alchemy
   | Alexandria
@@ -38,9 +39,11 @@ data Trait
   | Boon
   | Bridge
   | Broken
+  | Brotherhood
   | BuenosAires
   | Byakhee
   | Bystander
+  | Cairo
   | Campsite
   | Carnevale
   | Cart
@@ -80,6 +83,7 @@ data Trait
   | DarkYoung
   | DeepOne
   | Depths
+  | Desert
   | Desperate
   | Detective
   | Developed
@@ -127,6 +131,7 @@ data Trait
   | Ghast
   | Ghoul
   | Glacier
+  | Government
   | Grant
   | Graveyard
   | GroundFloor

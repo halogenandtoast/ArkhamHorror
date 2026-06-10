@@ -486,6 +486,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.ScenarioCountIncremented timing k -> guardTiming timing \case
       Window.ScenarioCountIncremented k' -> pure $ k == k'
       _ -> noMatch
+    Matcher.ScenarioCountDecremented timing k -> guardTiming timing \case
+      Window.ScenarioCountDecremented k' -> pure $ k == k'
+      _ -> noMatch
+    Matcher.RememberedLogKey timing k -> guardTiming timing \case
+      Window.RememberedLogKey k' -> pure $ k == k'
+      _ -> noMatch
     Matcher.IncreasedAlarmLevel timing whoMatcher -> guardTiming timing \case
       Window.IncreasedAlarmLevel who -> matchWho iid who whoMatcher
       _ -> noMatch

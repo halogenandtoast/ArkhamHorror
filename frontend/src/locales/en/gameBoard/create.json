@@ -19,6 +19,8 @@
     "returnTo": "Return to...",
     
     "fullCampaign": "Full Campaign",
+    "bothScenarios": "Both Scenarios (Campaign)",
+    "scenarios": "Scenarios",
     "partialCampaign": "Partial Campaign",
     "multiplayerVariant": "Multiplayer Variant",
     "campaignType": "Campaign Type",

@@ -15,7 +15,7 @@ newtype TempleCourtyard = TempleCourtyard LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 templeCourtyard :: LocationCard TempleCourtyard
-templeCourtyard = location TempleCourtyard Cards.templeCourtyard 3 (PerPlayer 1)
+templeCourtyard = symbolLabel $ location TempleCourtyard Cards.templeCourtyard 3 (PerPlayer 1)
 
 instance HasModifiersFor TempleCourtyard where
   getModifiersFor (TempleCourtyard a) = do

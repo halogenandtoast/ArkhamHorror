@@ -11,7 +11,7 @@ newtype OutskirtsOfCairo = OutskirtsOfCairo LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outskirtsOfCairo :: LocationCard OutskirtsOfCairo
-outskirtsOfCairo = location OutskirtsOfCairo Cards.outskirtsOfCairo 4 (PerPlayer 1)
+outskirtsOfCairo = symbolLabel $ location OutskirtsOfCairo Cards.outskirtsOfCairo 4 (PerPlayer 1)
 
 instance HasAbilities OutskirtsOfCairo where
   getAbilities (OutskirtsOfCairo a) =

@@ -14,7 +14,7 @@ newtype CairoBazaar = CairoBazaar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cairoBazaar :: LocationCard CairoBazaar
-cairoBazaar = location CairoBazaar Cards.cairoBazaar 2 (PerPlayer 1)
+cairoBazaar = symbolLabel $ location CairoBazaar Cards.cairoBazaar 2 (PerPlayer 1)
 
 instance HasModifiersFor CairoBazaar where
   getModifiersFor (CairoBazaar a) = do

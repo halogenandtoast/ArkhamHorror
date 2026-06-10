@@ -15,7 +15,7 @@ newtype StreetsOfCairo = StreetsOfCairo LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 streetsOfCairo :: LocationCard StreetsOfCairo
-streetsOfCairo = location StreetsOfCairo Cards.streetsOfCairo 3 (PerPlayer 2)
+streetsOfCairo = symbolLabel $ location StreetsOfCairo Cards.streetsOfCairo 3 (PerPlayer 2)
 
 instance HasAbilities StreetsOfCairo where
   getAbilities (StreetsOfCairo a) =

@@ -34,11 +34,10 @@ theEternalSlumber difficulty =
     "83001"
     "The Eternal Slumber"
     difficulty
-    [ ".           templeCourtyard             .                .      ."
-    , "cairoBazaar streetsOfCairo              outskirtsOfCairo circle ."
-    , ".           museumOfEgyptianAntiquities .                .      ."
-    , ".           moon                        hourglass        plus   ."
-    , "star        heart                       droplet          t      ."
+    [ ".      trefoil  .       .         .    ."
+    , "square equals   diamond circle    .    ."
+    , ".      triangle moon    hourglass plus ."
+    , ".      star     heart   droplet   t    squiggle"
     ]
 
 {- FOURMOLU_DISABLE -}

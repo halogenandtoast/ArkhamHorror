@@ -12,7 +12,8 @@ newtype MuseumOfEgyptianAntiquities = MuseumOfEgyptianAntiquities LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumOfEgyptianAntiquities :: LocationCard MuseumOfEgyptianAntiquities
-museumOfEgyptianAntiquities = location MuseumOfEgyptianAntiquities Cards.museumOfEgyptianAntiquities 1 (PerPlayer 1)
+museumOfEgyptianAntiquities =
+  symbolLabel $ location MuseumOfEgyptianAntiquities Cards.museumOfEgyptianAntiquities 1 (PerPlayer 1)
 
 instance HasAbilities MuseumOfEgyptianAntiquities where
   getAbilities (MuseumOfEgyptianAntiquities a) =

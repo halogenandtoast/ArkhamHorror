@@ -12,7 +12,7 @@ newtype DesertOasis = DesertOasis LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 desertOasis :: LocationCard DesertOasis
-desertOasis = location DesertOasis Cards.desertOasis 5 (PerPlayer 1)
+desertOasis = symbolLabel $ location DesertOasis Cards.desertOasis 5 (PerPlayer 1)
 
 instance HasAbilities DesertOasis where
   getAbilities (DesertOasis a) =

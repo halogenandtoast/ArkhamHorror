@@ -13,7 +13,7 @@ newtype NileRiver = NileRiver LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nileRiver :: LocationCard NileRiver
-nileRiver = location NileRiver Cards.nileRiver 2 (PerPlayer 1)
+nileRiver = symbolLabel $ location NileRiver Cards.nileRiver 2 (PerPlayer 1)
 
 instance HasAbilities NileRiver where
   getAbilities (NileRiver a) =

@@ -19,7 +19,7 @@ newtype ExpeditionCampGuardiansOfTheAbyss = ExpeditionCampGuardiansOfTheAbyss Lo
 
 expeditionCampGuardiansOfTheAbyss :: LocationCard ExpeditionCampGuardiansOfTheAbyss
 expeditionCampGuardiansOfTheAbyss =
-  location ExpeditionCampGuardiansOfTheAbyss Cards.expeditionCampGuardiansOfTheAbyss 2 (Static 0)
+  symbolLabel $ location ExpeditionCampGuardiansOfTheAbyss Cards.expeditionCampGuardiansOfTheAbyss 2 (Static 0)
 
 instance HasAbilities ExpeditionCampGuardiansOfTheAbyss where
   getAbilities (ExpeditionCampGuardiansOfTheAbyss a) =

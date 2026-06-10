@@ -41,6 +41,12 @@ instance RunMessage IntoTheGate where
       advancedWithClues attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push
+        $ SetLayout
+          [ ".                 tunnelsUnderNgranek ."
+          , "mistFilledCaverns theGreatAbyss       stairwayToSarkomand"
+          , ".                 aDreamBetwixt       ."
+          ]
       aDreamBetwixt <- placeSetAsideLocation Locations.aDreamBetwixt
       reveal aDreamBetwixt
       eachInvestigator \iid -> moveTo attrs iid aDreamBetwixt

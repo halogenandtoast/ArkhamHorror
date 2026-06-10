@@ -10,7 +10,7 @@ newtype SandsOfDashur = SandsOfDashur LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sandsOfDashur :: LocationCard SandsOfDashur
-sandsOfDashur = location SandsOfDashur Cards.sandsOfDashur 7 (Static 0)
+sandsOfDashur = symbolLabel $ location SandsOfDashur Cards.sandsOfDashur 7 (Static 0)
 
 instance HasModifiersFor SandsOfDashur where
   getModifiersFor (SandsOfDashur a) = do

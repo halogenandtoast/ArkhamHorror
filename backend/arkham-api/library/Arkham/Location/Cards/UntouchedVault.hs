@@ -14,7 +14,7 @@ newtype UntouchedVault = UntouchedVault LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 untouchedVault :: LocationCard UntouchedVault
-untouchedVault = location UntouchedVault Cards.untouchedVault 4 (PerPlayer 1)
+untouchedVault = symbolLabel $ location UntouchedVault Cards.untouchedVault 4 (PerPlayer 1)
 
 instance HasModifiersFor UntouchedVault where
   getModifiersFor (UntouchedVault a) = do

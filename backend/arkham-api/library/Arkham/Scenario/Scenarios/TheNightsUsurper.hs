@@ -6,6 +6,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card (toCardCode)
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
+import Arkham.Campaigns.TheForgottenAge.Helpers (ExploreRule (PlaceExplored), explore)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
@@ -22,6 +24,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheNightsUsurper.Helpers
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window qualified as Window
 
 newtype TheNightsUsurper = TheNightsUsurper ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -34,10 +37,9 @@ theNightsUsurper difficulty =
     "83016"
     "The Night's Usurper"
     difficulty
-    [ "nileRiver      sandsOfDashur stairwayToSarkomand dunesOfTheSahara untouchedVault"
-    , "facelessSphinx desertOasis   expeditionCamp      sandsweptRuins   eldritchGate"
-    , ".              tunnelsUnderNgranek theGreatAbyss mistFilledCaverns ."
-    , ".              .             aDreamBetwixt       .                ."
+    [ ".    .     circle    .    ."
+    , ".    moon  hourglass plus ."
+    , "star heart droplet   t    squiggle"
     ]
 
 {- FOURMOLU_DISABLE -}
@@ -153,6 +155,14 @@ instance RunMessage TheNightsUsurper where
           then getPlayerCount
           else getRecordCount DreamersInTheAbyss
       push $ ScenarioCountSet StrengthOfTheAbyss n
+    Explore iid source _ -> do
+      mloc <- runMaybeT $ asum [hoistMaybe source.location, MaybeT $ getLocationOf iid]
+      checkWhen $ Window.AttemptExplore iid mloc
+      do_ msg
+      pure s
+    Do (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher PlaceExplored 1
+      pure s
     ResolveChaosToken _ Cultist iid -> do
       drawAnotherChaosToken iid
       pure s
@@ -184,14 +194,14 @@ instance RunMessage TheNightsUsurper where
           record TheAbyssWasSaved
           crossOutTakenByTheAbyss
           investigators <- allInvestigators
-          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.summonedNightgaunt
           resolutionWithXp "resolution2" $ allGainXp' attrs
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.summonedNightgaunt
           endOfScenario
         Resolution 3 -> do
           record YouJoinedForcesWithXzharah
+          resolutionWithXp "resolution3" $ allGainXp' attrs
           investigators <- allInvestigators
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.khopeshOfTheAbyss
-          resolutionWithXp "resolution3" $ allGainXp' attrs
           killRemainingTakenByTheAbyss ScenarioSource
           endOfScenario
         _ -> error "invalid resolution"

@@ -12,7 +12,7 @@ newtype DunesOfTheSahara = DunesOfTheSahara LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dunesOfTheSahara :: LocationCard DunesOfTheSahara
-dunesOfTheSahara = location DunesOfTheSahara Cards.dunesOfTheSahara 3 (PerPlayer 1)
+dunesOfTheSahara = symbolLabel $ location DunesOfTheSahara Cards.dunesOfTheSahara 3 (PerPlayer 1)
 
 instance HasAbilities DunesOfTheSahara where
   getAbilities (DunesOfTheSahara a) =

@@ -5,6 +5,8 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
+import Arkham.Campaigns.TheForgottenAge.Helpers (ExploreRule (PlaceExplored), explore)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
@@ -19,6 +21,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheEternalSlumber.Helpers
 import Arkham.SkillType
+import Arkham.Window qualified as Window
 
 newtype TheEternalSlumber = TheEternalSlumber ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -31,11 +34,11 @@ theEternalSlumber difficulty =
     "83001"
     "The Eternal Slumber"
     difficulty
-    [ ".              templeCourtyard             .                .              ."
-    , "cairoBazaar    streetsOfCairo              outskirtsOfCairo expeditionCamp ."
-    , ".              museumOfEgyptianAntiquities .                .              ."
-    , "nileRiver      sandsOfDashur               dunesOfTheSahara untouchedVault ."
-    , "facelessSphinx desertOasis                 sandsweptRuins   .              ."
+    [ ".           templeCourtyard             .                .      ."
+    , "cairoBazaar streetsOfCairo              outskirtsOfCairo circle ."
+    , ".           museumOfEgyptianAntiquities .                .      ."
+    , ".           moon                        hourglass        plus   ."
+    , "star        heart                       droplet          t      ."
     ]
 
 {- FOURMOLU_DISABLE -}
@@ -117,6 +120,14 @@ instance RunMessage TheEternalSlumber where
 
       n <- getPlayerCount
       push $ ScenarioCountSet StrengthOfTheAbyss n
+    Explore iid source _ -> do
+      mloc <- runMaybeT $ asum [hoistMaybe source.location, MaybeT $ getLocationOf iid]
+      checkWhen $ Window.AttemptExplore iid mloc
+      do_ msg
+      pure s
+    Do (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher PlaceExplored 1
+      pure s
     ResolveChaosToken _ Cultist iid -> do
       drawAnotherChaosToken iid
       pure s

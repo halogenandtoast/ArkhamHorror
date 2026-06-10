@@ -12,7 +12,7 @@ newtype FacelessSphinx = FacelessSphinx LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 facelessSphinx :: LocationCard FacelessSphinx
-facelessSphinx = location FacelessSphinx Cards.facelessSphinx 0 (PerPlayer 1)
+facelessSphinx = symbolLabel $ location FacelessSphinx Cards.facelessSphinx 0 (PerPlayer 1)
 
 instance HasModifiersFor FacelessSphinx where
   getModifiersFor (FacelessSphinx a) = do

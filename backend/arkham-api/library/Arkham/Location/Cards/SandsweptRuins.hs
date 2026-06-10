@@ -16,7 +16,7 @@ newtype SandsweptRuins = SandsweptRuins LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sandsweptRuins :: LocationCard SandsweptRuins
-sandsweptRuins = location SandsweptRuins Cards.sandsweptRuins 3 (PerPlayer 1)
+sandsweptRuins = symbolLabel $ location SandsweptRuins Cards.sandsweptRuins 3 (PerPlayer 1)
 
 instance HasModifiersFor SandsweptRuins where
   getModifiersFor (SandsweptRuins a) = do

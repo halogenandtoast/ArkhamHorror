@@ -125,7 +125,10 @@
       {
         "id": "83001",
         "name": "The Eternal Slumber",
-        "box": "83001b"
+        "box": "83001b",
+        "notAfter": [
+          "83016"
+        ]
       },
       {
         "id": "83016",

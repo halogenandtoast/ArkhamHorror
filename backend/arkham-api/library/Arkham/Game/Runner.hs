@@ -2680,7 +2680,13 @@ runGameMessage msg g = case msg of
               player
               [ targetLabel
                   (toCardId card)
-                  [StoryMessage (ResolveStory iid storyMode storyId), StoryMessage (ResolvedStory storyMode storyId)]
+                  [ StoryMessage (ResolveStory iid storyMode storyId)
+                  , -- If resolving the story kicks off a skill test while another
+                    -- test is active, the new test is relocated to after the current
+                    -- one. ResolvedStory (which removes the story) must travel with
+                    -- it, or the story is removed before its own test resolves.
+                    MoveWithSkillTest (StoryMessage (ResolvedStory storyMode storyId))
+                  ]
               ]
           ]
       _ ->
@@ -2689,7 +2695,9 @@ runGameMessage msg g = case msg of
             player
             [ targetLabel
                 (toTarget storyId)
-                [StoryMessage (ResolveStory iid storyMode storyId), StoryMessage (ResolvedStory storyMode storyId)]
+                [ StoryMessage (ResolveStory iid storyMode storyId)
+                , MoveWithSkillTest (StoryMessage (ResolvedStory storyMode storyId))
+                ]
             ]
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
   StoryMessage (PlaceStory card placement) -> do

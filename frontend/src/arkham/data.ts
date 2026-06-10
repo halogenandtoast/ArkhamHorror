@@ -11,7 +11,7 @@ export interface Scenario {
   standalone?: boolean
   show?: boolean
   campaign?: string
-  scenarios?: { id: string, name: string, box?: string }[]
+  scenarios?: { id: string, name: string, box?: string, notAfter?: string[] }[]
 }
 
 export interface Campaign {

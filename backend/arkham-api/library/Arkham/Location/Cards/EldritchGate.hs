@@ -8,7 +8,7 @@ newtype EldritchGate = EldritchGate LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eldritchGate :: LocationCard EldritchGate
-eldritchGate = location EldritchGate Cards.eldritchGate 4 (Static 1)
+eldritchGate = symbolLabel $ location EldritchGate Cards.eldritchGate 4 (Static 1)
 
 instance RunMessage EldritchGate where
   runMessage msg (EldritchGate attrs) = EldritchGate <$> runMessage msg attrs

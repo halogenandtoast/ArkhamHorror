@@ -706,3 +706,50 @@ summonedNightgaunt =
     , cdUses = uses Whistle 3
     , cdDeckRestrictions = [PerDeckLimit 1]
     }
+
+cloakOfTheOuterRealm :: CardDef
+cloakOfTheOuterRealm =
+  (storyAsset "86051" ("Cloak of the Outer Realm" <:> "Interwoven Distortion") 1 WarOfTheOuterGods)
+    { cdSkills = [#agility, #agility, #wild]
+    , cdCardTraits = setFromList [Item, Relic, Clothing]
+    , cdSlots = [#body]
+    , cdUses = uses Charge 4
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }
+
+pocketPortal :: CardDef
+pocketPortal =
+  fast
+    $ (storyAsset "86052" ("Pocket Portal" <:> "Doorway to Another World") 2 WarOfTheOuterGods)
+      { cdSkills = [#wild, #wild]
+      , cdCardTraits = setFromList [Spell]
+      , cdDeckRestrictions = [PerDeckLimit 1]
+      }
+
+dreadedEnd :: CardDef
+dreadedEnd =
+  (storyAsset "86053" ("Dreaded End" <:> "Gift of the Void") 1 WarOfTheOuterGods)
+    { cdSkills = [#willpower, #willpower, #wild]
+    , cdCardTraits = setFromList [Spell]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 3
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }
+
+bladeOfArkat :: CardDef
+bladeOfArkat =
+  (storyAsset "86054" ("Blade of Ark'at" <:> "Shellblade Tribute") 1 WarOfTheOuterGods)
+    { cdSkills = [#combat, #combat, #wild]
+    , cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+    , cdSlots = [#hand]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }
+
+enchantedSkull :: CardDef
+enchantedSkull =
+  (storyAsset "86055" ("Enchanted Skull" <:> "Mask of the Burning Pit") 1 WarOfTheOuterGods)
+    { cdSkills = [#intellect, #intellect, #wild]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdSlots = [#arcane, #accessory]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }

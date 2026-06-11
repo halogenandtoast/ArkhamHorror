@@ -240,6 +240,7 @@ getTraits CardJson {..} = case traits of
       . normalizeTrait
       . cleanText
       $ T.replace "á" "a"
+      $ T.replace "é" "e"
       $ T.replace "-" ""
       $ T.replace "'" ""
       $ T.replace " " "" x
@@ -326,6 +327,9 @@ normalizeEnemyStats
 normalizeEnemyStats "05085" (fight, _, evade) = (fight, Just (GameValueCalculation $ Static 3), evade) -- ADB incorrectly has this as 2 health
 normalizeEnemyStats "08609" (fight, _, evade) = (fight, Just (GameValueCalculation $ Static 1), evade) -- We leave the health as 1 since it is the min
 normalizeEnemyStats "08679" _ = (Just (GameValueCalculation (PerPlayer 1)), Just (GameValueCalculation $ Static 3), Just (GameValueCalculation (PerPlayer 1))) -- ADB says fight and evade are 1
+normalizeEnemyStats "86035" (fight, _, evade) = (fight, Just (GameValueCalculation $ PerPlayer 8), evade) -- global health pool of 8 per investigator
+normalizeEnemyStats "86041" (fight, _, evade) = (fight, Just (GameValueCalculation $ PerPlayer 8), evade) -- global health pool of 8 per investigator
+normalizeEnemyStats "86047" (fight, _, evade) = (fight, Just (GameValueCalculation $ PerPlayer 7), evade) -- global health pool of 7 per investigator
 normalizeEnemyStats _ stats = stats
 
 normalizeEnemyDamage :: CardCode -> (Int, Int) -> (Int, Int)
@@ -338,7 +342,7 @@ normalizeEnemyDamage _ damage = damage
 ignoreCardCode :: CardCode -> Bool
 ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
  where
-  ignoredCardCodes = []
+  ignoredCardCodes = ["86038a", "86044a", "86049a"]
 
 runValidations :: Map CardCode CardJson -> IO ()
 runValidations cards = do
@@ -380,7 +384,15 @@ getValidationResults cards = runValidateT $ do
 
         -- Masked Carnevale-Goer is split up differently so we say the quantity is 1
         -- ideally we'd add them all up
-        let quantity' = if code == "82017b" then Just 1 else quantity
+        -- For War of the Outer Gods, ArkhamDB merges the copies from the core
+        -- encounter set into the faction sets, but we model them separately
+        let
+          quantity' = case code of
+            "82017b" -> Just 1
+            "86038" -> Just 2
+            "86044" -> Just 2
+            "86049" -> Just 4
+            _ -> quantity
 
         invariantWhen
           ( isJust (cdEncounterSet card)

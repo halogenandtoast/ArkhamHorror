@@ -220,10 +220,4 @@ allStories =
     , SomeStoryCard ruinsOfSarkomand
     , SomeStoryCard effigyOfNodens
     , SomeStoryCard usurpTheNight
-    , SomeStoryCard theTranslatorsEvidence
-    , SomeStoryCard theSupplicantsEvidence
-    , SomeStoryCard thePriestesssEvidence
-    , SomeStoryCard theSalesmansEvidence
-    , SomeStoryCard theAssassinsEvidence
-    , SomeStoryCard theProfessorsEvidence
     ]

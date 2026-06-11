@@ -44,6 +44,7 @@
   "intoTheGate": {
     "ankh": "<p>*Your Ankh amulet glows with a blinding light, causing Xzharah to recoil. \"So, Neith has abandoned us!\" Xzharah hisses.*</p>"
   },
+  "removeStrengthFromTheAbyss": "Remove 1 strength from the abyss.",
   "theTranslatorsEvidence": {
     "benefit": "<p>*You bring the tablet to Dr. El Masri, and she translates it to the best of her ability. \"When the Choice is made, He shall be empowered by a thousand sacrifices from the sacred land.\" She blinks a few times, trying to process what it means. \"How many coma patients are there right now?\" she asks, wide-eyed.*</p>"
   },

@@ -1428,6 +1428,12 @@ allAssets =
       , --- Abyssal Gifts
         SomeAssetCard khopeshOfTheAbyss
       , SomeAssetCard summonedNightgaunt
+      , -- War of the Outer Gods
+        SomeAssetCard cloakOfTheOuterRealm
+      , SomeAssetCard pocketPortal
+      , SomeAssetCard dreadedEnd
+      , SomeAssetCard bladeOfArkat
+      , SomeAssetCard enchantedSkull
       , -- Murder at the Excelsior Hotel
         --- story [hotel]
         SomeAssetCard bloodstainedDagger

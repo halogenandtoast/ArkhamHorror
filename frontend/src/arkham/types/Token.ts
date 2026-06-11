@@ -51,6 +51,7 @@ export const TOKENS = [
   "Time",
   "Truth",
   "Try",
+  "Ward",
   "Warning",
   "Whistle",
   "Wish",

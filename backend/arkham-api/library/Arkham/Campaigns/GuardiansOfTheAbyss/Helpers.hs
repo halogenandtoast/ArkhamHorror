@@ -15,8 +15,7 @@ import Arkham.Helpers.Scenario (scenarioField, standaloneI18n)
 import Arkham.I18n ()
 import Arkham.Id
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Message (pattern InvestigatorKilled, Message (ScenarioCountDecrementBy, ScenarioCountIncrementBy), toMessage)
-import Arkham.Message.Story (StoryMessage (RemoveStory))
+import Arkham.Message (pattern InvestigatorKilled, Message (ScenarioCountDecrementBy, ScenarioCountIncrementBy))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Log
 import Arkham.Prelude
@@ -65,15 +64,29 @@ brotherhoodEnemies =
   , Enemies.professorNathanielTaylor
   ]
 
--- | The story card on the reverse side of each [[Brotherhood]] enemy.
-evidenceFor :: CardCode -> Maybe CardDef
-evidenceFor = \case
-  "83031a" -> Just Stories.theTranslatorsEvidence
-  "83032a" -> Just Stories.theSupplicantsEvidence
-  "83033a" -> Just Stories.thePriestesssEvidence
-  "83034a" -> Just Stories.theSalesmansEvidence
-  "83035a" -> Just Stories.theAssassinsEvidence
-  "83036a" -> Just Stories.theProfessorsEvidence
+-- | The [[Evidence]] story card on the reverse side of each [[Brotherhood]]
+-- enemy. Used (alongside 'brotherhoodEnemies') to count progress regardless of
+-- which side each card is currently showing in the victory display.
+evidenceCards :: [CardDef]
+evidenceCards =
+  [ Stories.theTranslatorsEvidence
+  , Stories.theSupplicantsEvidence
+  , Stories.thePriestesssEvidence
+  , Stories.theSalesmansEvidence
+  , Stories.theAssassinsEvidence
+  , Stories.theProfessorsEvidence
+  ]
+
+-- | The i18n flavor key holding the benefit text on each Evidence story card,
+-- keyed by the story-side card code.
+evidenceBenefitKey :: CardCode -> Maybe Text
+evidenceBenefitKey = \case
+  "83031b" -> Just "theTranslatorsEvidence.benefit"
+  "83032b" -> Just "theSupplicantsEvidence.benefit"
+  "83033b" -> Just "thePriestesssEvidence.benefit"
+  "83034b" -> Just "theSalesmansEvidence.benefit"
+  "83035b" -> Just "theAssassinsEvidence.benefit"
+  "83036b" -> Just "theProfessorsEvidence.benefit"
   _ -> Nothing
 
 -- | The task an investigator must complete before the indicated Evidence
@@ -88,14 +101,17 @@ evidenceTask = \case
   "83036b" -> Just BoughtAnOddTrinket
   _ -> Nothing
 
--- | Read an Evidence story card's benefit, remove 1 strength from the abyss,
--- and remove the story from play.
-resolveEvidence
-  :: (ReverseQueue m, AsId story, IdOf story ~ StoryId) => story -> Text -> m ()
-resolveEvidence s key = do
-  campaignI18n $ flavor $ p key
+-- | Read the indicated Evidence card's benefit: its card image alongside the
+-- benefit text (card on the left, text on the right), with the instruction to
+-- remove 1 strength from the abyss as a plain text entry, then remove it.
+readEvidence :: ReverseQueue m => CardCode -> m ()
+readEvidence code = for_ (evidenceBenefitKey code) \key -> do
+  campaignI18n $ flavor $ cols do
+    img code
+    compose do
+      p key
+      p.basic "removeStrengthFromTheAbyss"
   removeStrengthOfTheAbyss 1
-  push $ toMessage $ RemoveStory (asId s)
 
 -- | Each unique [[Cultist]] enemy that was in play or beneath the scenario
 -- reference card when the game ended.

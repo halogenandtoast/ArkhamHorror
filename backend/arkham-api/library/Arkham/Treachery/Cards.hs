@@ -517,6 +517,15 @@ allEncounterTreacheryCards =
       , rottingRemainsBloodOnTheAltar
       , ruinAndDestruction
       , sandstorm
+      , deathAndDecay
+      , predatorsCall
+      , feastOfLocusts
+      , hellfireWarOfTheOuterGods
+      , ravagesOfWar
+      , whileTheySleep
+      , inevitableEnd
+      , huntDown
+      , transmogrify
       , secretDoor
       , secretDoorTheMidwinterGala
       , secretGathering

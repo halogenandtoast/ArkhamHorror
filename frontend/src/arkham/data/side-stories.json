@@ -291,6 +291,88 @@
     "dev": true
   },
   {
+    "id": "86001",
+    "name": "War of the Outer Gods",
+    "standaloneDifficulties": [
+      "Easy",
+      "Standard",
+      "Hard",
+      "Expert"
+    ],
+    "difficultyLevels": {
+      "Easy": [
+        "PlusOne",
+        "PlusOne",
+        "Zero",
+        "Zero",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusTwo",
+        "Skull",
+        "Skull",
+        "Skull",
+        "AutoFail",
+        "ElderSign"
+      ],
+      "Standard": [
+        "PlusOne",
+        "Zero",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "Skull",
+        "Skull",
+        "Skull",
+        "AutoFail",
+        "ElderSign"
+      ],
+      "Hard": [
+        "Zero",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "MinusFive",
+        "MinusSix",
+        "Skull",
+        "Skull",
+        "Skull",
+        "AutoFail",
+        "ElderSign"
+      ],
+      "Expert": [
+        "Zero",
+        "MinusOne",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "MinusFive",
+        "MinusSix",
+        "MinusSeven",
+        "MinusEight",
+        "Skull",
+        "Skull",
+        "Skull",
+        "AutoFail",
+        "ElderSign"
+      ]
+    },
+    "xp": 3,
+    "alpha": true,
+    "dev": true
+  },
+  {
     "id": "88001",
     "name": "Fortune and Folly",
     "standaloneDifficulties": [

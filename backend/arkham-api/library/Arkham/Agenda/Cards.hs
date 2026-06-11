@@ -118,6 +118,18 @@ allAgendaCards =
       , intruders
       , itAwaits
       , jessiesRequest
+      , theSummoningOfSilenus
+      , theSummoningProgresses
+      , theSummoningNearsCompletion
+      , theIncubationOfTheEgg
+      , theIncubationProgresses
+      , theIncubationNearsCompletion
+      , theProliferationOfTheSwarm
+      , theProliferationProgresses
+      , theProliferationNearsCompletion
+      , silenusDescends
+      , theEggHatches
+      , ezelZenRezlEmerges
       , journeyAcrossTheDreamlands
       , journeyThroughTheGates
       , judgementXX

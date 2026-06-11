@@ -95,3 +95,12 @@ intoTheGate = act "83020" "Into the Gate" 2 TheNightsUsurper
 
 theNightsUsurper :: CardDef
 theNightsUsurper = act "83021" "The Night's Usurper" 3 TheNightsUsurper
+
+warOfTheOuterGods :: CardDef
+warOfTheOuterGods = act "86011" "War of the Outer Gods" 1 WarOfTheOuterGods
+
+closeThePortal :: CardDef
+closeThePortal = act "86012" "Close the Portal" 2 WarOfTheOuterGods
+
+closeAllPortals :: CardDef
+closeAllPortals = act "86013" "Close All Portals" 3 WarOfTheOuterGods

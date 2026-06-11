@@ -4,7 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import { type Card, toCardContents } from '@/arkham/types/Card';
 import CardView from '@/arkham/components/Card.vue'
 import Enemy from '@/arkham/components/Enemy.vue';
-import { pluralize } from '@/arkham/helpers';
+import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
@@ -15,7 +15,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits(['show', 'choose'])
+const emit = defineEmits(['choose'])
 
 const choose = async (idx: number) => emit('choose', idx)
 
@@ -27,10 +27,8 @@ const topOfVictoryDisplay = computed(() => {
   return props.victoryDisplay.filter((c) => !enemyCardIds.includes(toCardContents(c).id))[0]
 })
 
-const viewVictoryDisplayLabel = computed(() => pluralize(t('scenario.discardCard'), props.victoryDisplay.length))
-const showVictoryDisplay = () => emit('show')
+const viewVictoryDisplayLabel = computed(() => t('scenario.victoryDisplay'))
 </script>
-i
 <template>
   <div v-if="topOfVictoryDisplay || enemiesInVictoryDisplay.length > 0" class="victory-display">
     <div v-if="topOfVictoryDisplay" class="victory-display-card">
@@ -47,7 +45,17 @@ i
     />
 
 
-    <button v-if="topOfVictoryDisplay" @click="showVictoryDisplay">{{viewVictoryDisplayLabel}}</button>
+    <CardsUnderIndicator
+      v-if="victoryDisplay.length > 0"
+      :cards="victoryDisplay"
+      :label="viewVictoryDisplayLabel"
+      :game="game"
+      :playerId="playerId"
+      :isDiscards="true"
+      :fullWidth="true"
+      placement="right"
+      @choose="choose"
+    />
   </div>
 </template>
 

@@ -22,6 +22,7 @@ import Arkham.Target
 import Arkham.Tracing
 
 import Arkham.Act.Acts (
+  curseOfEndlessSleepEffect,
   infiltratingTheLodgeEffect,
   theStrangerACityAflameEffect,
   theStrangerAlaranMistsEffect,
@@ -610,6 +611,7 @@ allEffects =
     , ("81007", SomeEffect cursedShoresEffect)
     , ("82026", SomeEffect gildedVoltoEffect)
     , ("82035", SomeEffect mesmerizeEffect)
+    , ("83005", SomeEffect curseOfEndlessSleepEffect)
     , ("84014", SomeEffect restaurantEffect)
     , ("84042", SomeEffect chillingPresenceEffect)
     , ("85044", SomeEffect realityAcidEffect)

@@ -762,6 +762,27 @@ allEnemies =
       , -- Sands of Egypt
         SomeEnemyCard abyssalRevenant
       , SomeEnemyCard thingInTheSarcophagus
+      , -- War of the Outer Gods
+        SomeEnemyCard nihilisticStargazer
+      , SomeEnemyCard zealotOfParadise
+      , SomeEnemyCard discipleOfTheSwarm
+      , SomeEnemyCard etherealEntityWarOfTheOuterGods
+      , SomeEnemyCard bringerOfParadiseWarOfTheOuterGods
+      , SomeEnemyCard trylogogWarOfTheOuterGods
+      , -- Death of Stars
+        SomeEnemyCard silenus
+      , SomeEnemyCard theInescapableMaw
+      , SomeEnemyCard huneStitchedHerald
+      , SomeEnemyCard etherealEntity
+      , -- Children of Paradise
+        SomeEnemyCard maghanArkat
+      , SomeEnemyCard vileBroodmaster
+      , SomeEnemyCard horrificShoggoth
+      , SomeEnemyCard bringerOfParadise
+      , -- Swarm of Assimilation
+        SomeEnemyCard ezelZenRezl
+      , SomeEnemyCard droningHorde
+      , SomeEnemyCard trylogog
       , -- Murder at the Excelsior Hotel
         SomeEnemyCard arkhamOfficer
       , SomeEnemyCard mrTrombly

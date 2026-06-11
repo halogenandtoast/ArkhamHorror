@@ -1543,8 +1543,6 @@ const tarotCardAbility = (card: TarotCard) => {
 
 const victoryDisplay = computed(() => props.scenario.victoryDisplay)
 
-const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victoryDisplay'), true)
-
 const isMinimized_SkillTest = ref(false)
 provide('isMinimized_SkillTest', isMinimized_SkillTest)
 function minimize_SkillTest(isMinimized:boolean){
@@ -1780,7 +1778,7 @@ async function addChaosToken(face: any){
           @choose="choose"
           @show="doShowCards"
         />
-        <VictoryDisplay :game="game" :victoryDisplay="victoryDisplay" @show="showVictoryDisplay" @choose="choose" :playerId="playerId" />
+        <VictoryDisplay :game="game" :victoryDisplay="victoryDisplay" @choose="choose" :playerId="playerId" />
         <div class="scenario-encounter-decks">
           <div v-if="topOfEncounterDiscard" class="discard" style="grid-area: encounterDiscard">
             <div class="discard-card">

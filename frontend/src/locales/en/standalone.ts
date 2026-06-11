@@ -8,6 +8,7 @@ import fortuneAndFolly from '@/locales/en/standalone/fortuneAndFolly.json'
 import theMidwinterGala from '@/locales/en/standalone/theMidwinterGala.json'
 import filmFatale from '@/locales/en/standalone/filmFatale.json'
 import theBlobThatAteEverything from '@/locales/en/standalone/theBlobThatAteEverything.json'
+import warOfTheOuterGods from '@/locales/en/standalone/warOfTheOuterGods.json'
 
 export default {
   curseOfTheRougarou,
@@ -19,5 +20,6 @@ export default {
   fortuneAndFolly,
   theMidwinterGala,
   filmFatale,
-  theBlobThatAteEverything
+  theBlobThatAteEverything,
+  warOfTheOuterGods
 }

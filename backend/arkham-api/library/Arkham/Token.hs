@@ -57,6 +57,7 @@ data Token
   | Time
   | Truth
   | Try
+  | Ward
   | Warning
   | Whistle
   | Wish

@@ -130,4 +130,6 @@ instance RunMessage AgendaAttrs where
       pure a
     PlaceTokens _source target tType n | isTarget a target -> do
       pure $ a & tokensL . at tType . non 0 %~ (+ n)
+    RemoveTokens _source target tType n | isTarget a target -> do
+      pure $ a & tokensL . at tType . non 0 %~ max 0 . subtract n
     _ -> pure a

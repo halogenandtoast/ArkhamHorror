@@ -140,6 +140,7 @@ allPlayerAssetCards =
       , blackjack
       , blackjack2
       , blackmailFile
+      , bladeOfArkat
       , bladeOfYothTheFathersIre
       , blasphemousCovenant2
       , blessedBlade
@@ -212,6 +213,7 @@ allPlayerAssetCards =
       , cleaningKit3
       , clintonFreemanShouldHaveStayedHome
       , cloakOfResonance
+      , cloakOfTheOuterRealm
       , closeTheCircle1
       , collectedWorksOfPoe
       , coltVestPocket
@@ -304,6 +306,7 @@ allPlayerAssetCards =
       , dreamDiaryDreamsOfAMadman3
       , dreamDiaryDreamsOfAnExplorer3
       , dreadCurseOfAzathoth3
+      , dreadedEnd
       , dreamersChronicle
       , dreamEnhancingSerum
       , drDewiIrawanCryptozoologist
@@ -345,6 +348,7 @@ allPlayerAssetCards =
       , enchantedBladeGuardian3
       , enchantedBladeMystic3
       , enchantedBow2
+      , enchantedSkull
       , encyclopedia
       , encyclopedia2
       , endurance
@@ -723,6 +727,7 @@ allPlayerAssetCards =
       , plucky3
       , pnakoticManuscripts5
       , pocketMultiTool
+      , pocketPortal
       , pocketTelescope
       , policeBadge2
       , policeDog

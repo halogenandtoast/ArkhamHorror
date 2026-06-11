@@ -380,6 +380,22 @@ allAgendas =
     , -- The Night's Usurper
       SomeAgendaCard theBrotherhoodBidesTheirTime
     , SomeAgendaCard schemesInTheDarkBeyond
+    , -- War of the Outer Gods
+      SomeAgendaCard theSummoningOfSilenus
+    , SomeAgendaCard theSummoningProgresses
+    , SomeAgendaCard theSummoningNearsCompletion
+    , SomeAgendaCard theIncubationOfTheEgg
+    , SomeAgendaCard theIncubationProgresses
+    , SomeAgendaCard theIncubationNearsCompletion
+    , SomeAgendaCard theProliferationOfTheSwarm
+    , SomeAgendaCard theProliferationProgresses
+    , SomeAgendaCard theProliferationNearsCompletion
+    , -- Death of Stars
+      SomeAgendaCard silenusDescends
+    , -- Children of Paradise
+      SomeAgendaCard theEggHatches
+    , -- Swarm of Assimilation
+      SomeAgendaCard ezelZenRezlEmerges
     , -- Murder at the Excelsior Hotel
       SomeAgendaCard theMurder
     , SomeAgendaCard specialInvestigation

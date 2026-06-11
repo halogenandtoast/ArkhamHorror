@@ -767,3 +767,57 @@ abyssalReach =
   (treachery "83054" "Abyssal Reach" SandsOfEgypt 3)
     { cdCardTraits = setFromList [Trait.Curse, Trait.Abyss]
     }
+
+deathAndDecay :: CardDef
+deathAndDecay =
+  (treachery "86026" "Death and Decay" WarOfTheOuterGods 2)
+    { cdCardTraits = singleton Hex
+    }
+
+predatorsCall :: CardDef
+predatorsCall =
+  (treachery "86028" "Predator's Call" WarOfTheOuterGods 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+feastOfLocusts :: CardDef
+feastOfLocusts =
+  (treachery "86030" "Feast of Locusts" WarOfTheOuterGods 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+hellfireWarOfTheOuterGods :: CardDef
+hellfireWarOfTheOuterGods =
+  (treachery "86031" "Hellfire" WarOfTheOuterGods 3)
+    { cdCardTraits = singleton Hazard
+    }
+
+ravagesOfWar :: CardDef
+ravagesOfWar =
+  (treachery "86032" "Ravages of War" WarOfTheOuterGods 2)
+    { cdCardTraits = singleton Terror
+    }
+
+whileTheySleep :: CardDef
+whileTheySleep =
+  (treachery "86033" "While They Sleep" WarOfTheOuterGods 2)
+    { cdCardTraits = singleton Omen
+    }
+
+inevitableEnd :: CardDef
+inevitableEnd =
+  (treachery "86039" "Inevitable End" DeathOfStars 3)
+    { cdCardTraits = singleton Hex
+    }
+
+huntDown :: CardDef
+huntDown =
+  (treachery "86045" "Hunt Down" ChildrenOfParadise 3)
+    { cdCardTraits = singleton Hazard
+    }
+
+transmogrify :: CardDef
+transmogrify =
+  (treachery "86050" "Transmogrify" SwarmOfAssimilation 2)
+    { cdCardTraits = singleton Curse
+    }

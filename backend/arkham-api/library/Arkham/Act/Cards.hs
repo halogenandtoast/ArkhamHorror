@@ -64,6 +64,8 @@ allActCards =
       , cityOfTheDeepV1
       , cityOfTheDeepV2
       , cityOfTheDeepV3
+      , closeAllPortals
+      , closeThePortal
       , closeTheRift
       , cluesAndCapers
       , collapseThePylons
@@ -331,6 +333,7 @@ allActCards =
       , unexpectedRescue
       , unrestrictedAccess
       , warmWelcome
+      , warOfTheOuterGods
       , whatHappened
       , whatHaveYouDone
       , whatMustBeDone

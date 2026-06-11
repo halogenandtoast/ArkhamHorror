@@ -85,7 +85,7 @@
   { "name": "Guardians of the Abyss", "min": 83001, "max": 83058, "playerCards": 0, "code": "guardians", "cycle": 70 },
   { "name": "Murder at the Excelsior Hotel", "min": 84001, "max": 84052, "playerCards": 0, "code": "hotel", "cycle": 70 },
   { "name": "The Blob That Ate Everything", "min": 85001, "max": 85053, "playerCards": 0, "code": "blob", "cycle": 70 },
-  { "name": "War of the Outer Gods", "min": 86001, "max": 86055, "playerCards": 0, "code": "wog", "cycle": 70 },
+  { "name": "War of the Outer Gods", "min": 86001, "max": 86055, "playerCards": 0, "code": "wog", "cycle": 70, "encounterDuplicates": 3 },
   { "name": "Machinations Through Time", "min": 87001, "max": 87057, "playerCards": 0, "code": "mtt", "cycle": 70 },
   { "name": "Fortune and Folly", "min": 88001, "max": 88053, "playerCards": 0, "code": "faf", "cycle": 70, "encounterDuplicates": 25 },
 

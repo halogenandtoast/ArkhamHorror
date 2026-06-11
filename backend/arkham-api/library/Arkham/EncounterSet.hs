@@ -289,6 +289,10 @@ data EncounterSet
   | SandsOfEgypt
   | AbyssalTribute
   | AbyssalGifts
+  | WarOfTheOuterGods
+  | DeathOfStars
+  | ChildrenOfParadise
+  | SwarmOfAssimilation
   | MurderAtTheExcelsiorHotel
   | AlienInterference
   | ExcelsiorManagement

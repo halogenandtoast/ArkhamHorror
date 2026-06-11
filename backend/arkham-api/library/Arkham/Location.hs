@@ -1316,4 +1316,16 @@ allLocations =
     , SomeLocationCard oozyLakebed
     , SomeLocationCard slimyStreets
     , SomeLocationCard desiccatedFarmland
+    , -- War of the Outer Gods
+      SomeLocationCard arkham
+    , SomeLocationCard streetsOfProvidence
+    , SomeLocationCard athenaeumOfTheEmptySky
+    , SomeLocationCard theArcade
+    , SomeLocationCard streetsOfMontreal
+    , SomeLocationCard chateauRamezay
+    , SomeLocationCard shrineOfMaghanArkat
+    , SomeLocationCard streetsOfNewYorkCity
+    , SomeLocationCard theBurningPit
+    , SomeLocationCard thePenthouse
+    , SomeLocationCard hubDimension
     ]

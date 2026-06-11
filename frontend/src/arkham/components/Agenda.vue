@@ -224,6 +224,7 @@ const isVertical = computed(() => {
 })
 
 const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
+const wards = computed(() => props.agenda.tokens[TokenType.Ward])
 </script>
 
 <template>
@@ -255,6 +256,7 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
             :amount="agenda.doom"
           />
           <PoolItem class="eclipse" v-if="eclipses" type="resource" :amount="eclipses" />
+          <PoolItem class="ward" v-if="wards" type="resource" :amount="wards" />
 
           <template v-if="debug.active">
             <button

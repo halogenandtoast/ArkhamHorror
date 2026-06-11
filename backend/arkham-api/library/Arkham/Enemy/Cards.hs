@@ -293,6 +293,23 @@ allEncounterEnemyCards =
       , houseDealerA
       , houseDealerB
       , humbleSupplicant
+      , nihilisticStargazer
+      , zealotOfParadise
+      , discipleOfTheSwarm
+      , etherealEntityWarOfTheOuterGods
+      , bringerOfParadiseWarOfTheOuterGods
+      , trylogogWarOfTheOuterGods
+      , silenus
+      , theInescapableMaw
+      , huneStitchedHerald
+      , etherealEntity
+      , maghanArkat
+      , vileBroodmaster
+      , horrificShoggoth
+      , bringerOfParadise
+      , ezelZenRezl
+      , droningHorde
+      , trylogog
       , huntingDeepOne
       , huntingGhast
       , huntingHorror

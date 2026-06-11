@@ -153,6 +153,17 @@ allLocationCards =
       , cafeLunaBastionOfRemembrance
       , cafeLunaCoterieHaunt
       , cairoBazaar
+      , arkham
+      , streetsOfProvidence
+      , athenaeumOfTheEmptySky
+      , theArcade
+      , streetsOfMontreal
+      , chateauRamezay
+      , shrineOfMaghanArkat
+      , streetsOfNewYorkCity
+      , theBurningPit
+      , thePenthouse
+      , hubDimension
       , canalSaintMartin
       , canalSide
       , canalsOfTenochtitlan_180

@@ -450,6 +450,10 @@ allActs =
       SomeActCard searchForTheGate
     , SomeActCard intoTheGate
     , SomeActCard theNightsUsurper
+    , -- War of the Outer Gods
+      SomeActCard warOfTheOuterGods
+    , SomeActCard closeThePortal
+    , SomeActCard closeAllPortals
     , -- Murder at the Excelsior Hotel
       SomeActCard whatHappened
     , SomeActCard followingLeads

@@ -1961,6 +1961,9 @@ runGameMessage msg g = case msg of
                       prey <- select m
                       matches eid (#ready <> not_ (EnemyAt $ LocationWithInvestigator $ mapOneOf InvestigatorWithId prey))
                     _ -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
+                -- War of the Outer Gods: warring enemies move during this
+                -- step and are batched with hunters
+                Keyword.ScenarioKeyword "Warring" -> matches eid (ReadyEnemy <> UnengagedEnemy)
                 _ -> pure False
               pure (target, msgs)
           FailSkillTestGroup -> pure targetMap
@@ -2022,6 +2025,9 @@ runGameMessage msg g = case msg of
     let
       toUI msg' = case msg' of
         EnemyAttack details -> targetLabel (attackEnemy details) [msg']
+        -- scenario-specific attacks (e.g. warring) carry the attacking
+        -- enemy's id as their payload
+        ScenarioSpecific _ v | Just eid <- maybeResult @EnemyId v -> targetLabel eid [msg']
         _ -> error "unhandled"
       attackedInvestigator = \case
         EnemyAttack details -> details.investigator
@@ -2029,6 +2035,7 @@ runGameMessage msg g = case msg of
       attackingEnemies = nub $ mapMaybe attackingEnemy as
       attackingEnemy = \case
         EnemyAttack details -> Just details.enemy
+        ScenarioSpecific _ v -> maybeResult @EnemyId v
         _ -> Nothing
     case mNextMessage of
       Just (EnemyAttacks as2) -> do

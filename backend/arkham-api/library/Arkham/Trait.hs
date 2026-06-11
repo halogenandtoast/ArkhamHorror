@@ -196,12 +196,14 @@ data Trait
   | Miskatonic
   | Mnar
   | Monster
+  | Montreal
   | Mountain
   | Mountains
   | Mutated
   | Mutation
   | Mystery
   | NewOrleans
+  | NewYorkCity
   | Nightgaunt
   | Obstacle
   | Occult
@@ -224,6 +226,7 @@ data Trait
   | Poison
   | Police
   | Port
+  | Portal
   | Possessed
   | Power
   | Practiced
@@ -231,6 +234,7 @@ data Trait
   | PresentDay
   | Private
   | Prop
+  | Providence
   | Public
   | Rail
   | Ranged
@@ -304,6 +308,7 @@ data Trait
   | Tome
   | Tool
   | Tower
+  | Town
   | Train
   | Trap
   | Trick

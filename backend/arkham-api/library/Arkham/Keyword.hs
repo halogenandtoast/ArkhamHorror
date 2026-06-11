@@ -49,6 +49,7 @@ data Keyword
   | Partner
   | Concealed ConcealedCardKind GameValue
   | Starting
+  | ScenarioKeyword Text
   | ScenarioModifierKeyword Text Value Keyword
   | ScenarioKeywordX Text Int
   deriving stock (Show, Eq, Ord, Data)
@@ -79,5 +80,8 @@ instance IsLabel "massive" Keyword where
 
 instance IsLabel "hunter" Keyword where
   fromLabel = Hunter
+
+instance IsLabel "warring" Keyword where
+  fromLabel = ScenarioKeyword "Warring"
 
 $(deriveJSON defaultOptions ''Keyword)

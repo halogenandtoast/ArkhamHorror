@@ -172,6 +172,7 @@ data ScenarioCountKey
   | Barriers LocationId LocationId
   | CiviliansSlain
   | StrengthOfTheAbyss
+  | CluesAroundHubDimension
   deriving stock (Eq, Show, Ord, Data)
 
 instance ToGameLoggerFormat ScenarioLogKey where
@@ -229,6 +230,7 @@ instance FromJSON ScenarioCountKey where
     String "SignOfTheGods" -> pure SignOfTheGods
     String "Distortion" -> pure Distortion
     String "StrengthOfTheAbyss" -> pure StrengthOfTheAbyss
+    String "CluesAroundHubDimension" -> pure CluesAroundHubDimension
     Object o -> do
       tag :: Text <- o .: "tag"
       case tag of
@@ -240,6 +242,7 @@ instance FromJSON ScenarioCountKey where
         "Distortion" -> pure Distortion
         "CiviliansSlain" -> pure CiviliansSlain
         "StrengthOfTheAbyss" -> pure StrengthOfTheAbyss
+        "CluesAroundHubDimension" -> pure CluesAroundHubDimension
         _ -> fail "Unknown tag"
     _ -> fail "Expected String or Object"
 

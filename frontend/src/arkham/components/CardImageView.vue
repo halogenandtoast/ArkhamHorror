@@ -9,9 +9,13 @@ const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: 
   showCounts: true,
 })
 
+const ungroupedWarOfTheOuterGodsCards = new Set(['c86038a', 'c86044a', 'c86049a'])
+
+const groupKey = (card: Arkham.CardDef) => ungroupedWarOfTheOuterGodsCards.has(card.cardCode) ? card.cardCode : card.art
+
 const groupedCards = computed(() => {
   return props.cards.reduce<Array<{ card: Arkham.CardDef; count: number }>>((acc, card) => {
-    const existing = acc.find((entry) => entry.card.art === card.art)
+    const existing = acc.find((entry) => groupKey(entry.card) === groupKey(card))
     if (existing) existing.count += 1
     else acc.push({ card, count: 1 })
     return acc
@@ -22,7 +26,7 @@ const attachedCards = (card: Arkham.CardDef) => props.attachments[card.art] ?? [
 
 const groupedAttachedCards = (card: Arkham.CardDef) => {
   return attachedCards(card).reduce<Array<{ card: Arkham.CardDef; count: number }>>((acc, attached) => {
-    const existing = acc.find((entry) => entry.card.art === attached.art)
+    const existing = acc.find((entry) => groupKey(entry.card) === groupKey(attached))
     if (existing) existing.count += 1
     else acc.push({ card: attached, count: 1 })
     return acc
@@ -47,7 +51,7 @@ const cardName = (card: Arkham.CardDef) => {
   <div class="cards">
     <div
       v-for="{ card, count } in groupedCards"
-      :key="card.art"
+      :key="groupKey(card)"
       class="card-tile"
       :class="{ 'has-attachments': attachedCards(card).length > 0 }"
     >
@@ -66,7 +70,7 @@ const cardName = (card: Arkham.CardDef) => {
         <div class="attachment-grid">
           <a
             v-for="entry in groupedAttachedCards(card)"
-            :key="entry.card.art"
+            :key="groupKey(entry.card)"
             class="attachment-card"
             target="_blank"
             :href="`${localizeArkhamDBBaseUrl()}/card/${entry.card.art}`"

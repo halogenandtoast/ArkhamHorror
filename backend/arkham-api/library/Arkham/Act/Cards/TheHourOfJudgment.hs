@@ -6,7 +6,6 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.I18n
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
@@ -33,9 +32,7 @@ instance RunMessage TheHourOfJudgment where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       n <- getStrengthOfTheAbyss
-      withI18n $ chooseOneM iid do
-        labeled' "chooseWillpower" $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed n)
-        labeled' "chooseIntellect" $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed n)
+      chooseBeginSkillTest sid iid (attrs.ability 1) iid [#willpower, #intellect] (Fixed n)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withLocationOf iid \loc -> do

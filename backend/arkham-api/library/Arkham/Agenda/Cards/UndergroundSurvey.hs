@@ -1,10 +1,8 @@
 module Arkham.Agenda.Cards.UndergroundSurvey (undergroundSurvey) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Location.Cards qualified as Locations
@@ -39,6 +37,9 @@ instance RunMessage UndergroundSurvey where
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       withLocationOf iid \loc -> do
         moveTokens (attrs.ability 2) loc ScenarioTarget Scrap 1
+      doStep 2 msg
+      pure a
+    DoStep 2 (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
       when (getMetaDefault False attrs) do
         gainResources iid (attrs.ability 2) 5
       pure $ UndergroundSurvey $ attrs & setMeta False
@@ -51,10 +52,8 @@ instance RunMessage UndergroundSurvey where
       controlStation <- selectJust $ locationIs Locations.controlStation
       reveal controlStation
       moveAllTo attrs controlStation
-      advanceToActA attrs Acts.theUndergroundMaze
+      advanceTheAct attrs
       advanceAgendaDeck attrs
       placeDoomOnAgenda attrs.doom
-      selectEach (assetIs Assets.drRosaMarquezBestInHerField) \asset -> do
-        clearAbilityUse $ AbilityRef (toSource asset) 1
       pure a
     _ -> UndergroundSurvey <$> liftRunMessage msg attrs

@@ -45,6 +45,7 @@ import Arkham.Cost qualified as Cost
 import Arkham.Cost.Status
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
+import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.EncounterCard.Source
@@ -100,6 +101,7 @@ import Data.IntMap.Strict qualified as IntMap
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
 import Data.Monoid (First (..))
+import Data.Text qualified as T
 
 instance HasChaosTokenValue ScenarioAttrs where
   getChaosTokenValue iid chaosTokenFace _ = case chaosTokenFace of
@@ -120,6 +122,15 @@ instance HasChaosTokenValue ScenarioAttrs where
 instance RunMessage ScenarioAttrs where
   runMessage msg a =
     runScenarioAttrs msg a >>= traverseOf chaosBagL (runMessage msg)
+
+scenarioReferenceForDifficulty :: Difficulty -> ScenarioAttrs -> CardCode
+scenarioReferenceForDifficulty difficulty attrs
+  | scenarioId attrs == "10501" =
+      let CardCode currentReference = scenarioReference attrs
+          referenceSide = if "b" `T.isSuffixOf` currentReference then "b" else ""
+          referenceBase = if difficulty `elem` [Easy, Standard] then "10501" else "10502"
+       in CardCode $ referenceBase <> referenceSide
+  | otherwise = scenarioReference attrs
 
 toScenarioHandleDeck :: Target -> Maybe (Deck.DeckSignifier, ScenarioAttrs -> [Card])
 toScenarioHandleDeck = \case
@@ -180,6 +191,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   BeginRound -> do
     push $ Do BeginRound
     pure $ a & turnL +~ 1
+  SetScenarioDifficulty difficulty -> do
+    pure
+      $ a
+      & difficultyL .~ difficulty
+      & referenceL .~ scenarioReferenceForDifficulty difficulty a
   StartCampaign -> do
     standalone <- getIsStandalone
     when standalone $ do

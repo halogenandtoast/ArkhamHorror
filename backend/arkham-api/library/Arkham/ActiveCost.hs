@@ -402,7 +402,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ toMessage $ (enemyAttack eid source iid) {attackCanBeCanceled = False}
       pure c
     DrawEncounterCardsCost n -> do
-      pushAll $ replicate n $ drawEncounterCard iid source
+      push $ drawEncounterCards iid source n
       pure c
     SkillTestCost stsource sType n -> do
       sid <- getRandom

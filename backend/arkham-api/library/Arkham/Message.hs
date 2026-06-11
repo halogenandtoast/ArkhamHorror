@@ -59,6 +59,7 @@ import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.DeckBuilding.Adjustment
 import Arkham.Decklist.Type
+import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.Discard
 import Arkham.Discover
@@ -1092,6 +1093,7 @@ data Message
   | -- Debug
     ClearQueue
   | DebugAddToHand InvestigatorId CardId
+  | SetScenarioDifficulty Difficulty
   | SetCampaignStep CampaignStep
   | CreateCard CardId CardCode
   deriving stock (Show, Eq, Ord, Data)

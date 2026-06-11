@@ -7,7 +7,7 @@ data Difficulty
   | Standard
   | Hard
   | Expert
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Show, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 fromDifficulty :: a -> a -> a -> a -> Difficulty -> a

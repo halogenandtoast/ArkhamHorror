@@ -687,11 +687,34 @@ addEntry({
 })
 
 // Computed
+const pendingScenarioDifficulty = ref<string | null>(null)
+const displayedScenarioDifficulty = computed(() => pendingScenarioDifficulty.value ?? props.scenario.difficulty)
+
+watch(() => props.scenario.difficulty, (difficulty) => {
+  if (pendingScenarioDifficulty.value === difficulty) pendingScenarioDifficulty.value = null
+})
+
 const scenarioGuide = computed(() => {
-  const { reference, difficulty } = props.scenario
+  const { reference } = props.scenario
+  const difficulty = displayedScenarioDifficulty.value
+  const referenceCode = reference.replace(/^c/, '')
+  const referenceBase = referenceCode.replace(/b$/, '')
+
+  if (props.scenario.id === 'c10501' || referenceBase === '10501' || referenceBase === '10502') {
+    const referenceSide = referenceCode.endsWith('b') ? 'b' : ''
+    const writtenInRockReference = difficulty === 'Hard' || difficulty === 'Expert' ? '10502' : '10501'
+    return cardCodeImage(`${writtenInRockReference}${referenceSide}`)
+  }
+
   const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert' ? 'b' : ''
   return cardCodeImage(reference, difficultySuffix)
 })
+
+const changeScenarioDifficulty = (event: Event) => {
+  const difficulty = (event.target as HTMLSelectElement).value
+  pendingScenarioDifficulty.value = difficulty
+  debug.send(props.game.id, { tag: 'SetScenarioDifficulty', contents: difficulty })
+}
 
 const additionalReferences = computed(() => {
   return props.scenario.additionalReferences.map((s) => cardCodeImage(s))
@@ -1973,6 +1996,15 @@ async function addChaosToken(face: any){
           <div class="keys" v-if="keys.length > 0">
             <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
+          <label v-if="debug.active" class="debug-difficulty">
+            <span>Difficulty</span>
+            <select :value="displayedScenarioDifficulty" @change="changeScenarioDifficulty">
+              <option value="Easy">Easy</option>
+              <option value="Standard">Standard</option>
+              <option value="Hard">Hard</option>
+              <option value="Expert">Expert</option>
+            </select>
+          </label>
           <CardsUnderIndicator
             v-if="cardsUnderScenarioReference.length > 0"
             class="scenario-cards-under"
@@ -2855,6 +2887,29 @@ async function addChaosToken(face: any){
 
 .scenario-guide-card {
   position: relative;
+}
+
+.debug-difficulty {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  gap: 2px;
+  margin-top: 2px;
+  width: var(--card-width);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.debug-difficulty select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  font-size: 0.75rem;
 }
 
 .spent-keys {

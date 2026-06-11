@@ -799,7 +799,15 @@ advanceAgendaDeck :: ReverseQueue m => AgendaAttrs -> m ()
 advanceAgendaDeck attrs = push $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
 
 advanceActDeck :: ReverseQueue m => ActAttrs -> m ()
-advanceActDeck attrs = push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
+advanceActDeck attrs = advanceActDeckN attrs (actDeckId attrs)
+
+advanceTheAct :: (Sourceable source, ReverseQueue m) => source -> m ()
+advanceTheAct source =
+  selectOne AnyAct >>= traverse_ \act ->
+    push $ AdvanceAct act (toSource source) AdvancedWithOther
+
+advanceActDeckN :: (Sourceable source, ReverseQueue m) => source -> Int -> m ()
+advanceActDeckN source n = push $ AdvanceActDeck n (toSource source)
 
 advanceToAct :: ReverseQueue m => ActAttrs -> CardDef -> Act.ActSide -> m ()
 advanceToAct attrs nextAct actSide = push $ AdvanceToAct (actDeckId attrs) nextAct actSide (toSource attrs)

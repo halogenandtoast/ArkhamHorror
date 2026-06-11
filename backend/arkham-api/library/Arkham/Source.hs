@@ -288,6 +288,7 @@ toAbilitySource a n = case toSource a of
 
 isAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
 isAbilitySource a idx (AbilitySource b idx') | idx == idx' = isSource a b
+isAbilitySource a idx (PaymentSource inner) = isAbilitySource a idx inner
 isAbilitySource a idx (UseAbilitySource _ b idx') | idx == idx' = isSource a b
 isAbilitySource _ _ _ = False
 

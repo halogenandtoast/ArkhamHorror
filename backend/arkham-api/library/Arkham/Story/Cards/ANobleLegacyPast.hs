@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.ANobleLegacyPast (aNobleLegacyPast) where
 
 import Arkham.Ability
+import Arkham.GameValue
 import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -47,7 +48,7 @@ instance HasAbilities ANobleLegacyPast where
           )
 
 instance RunMessage ANobleLegacyPast where
-  runMessage msg s@(ANobleLegacyPast attrs) = runQueueT $ case msg of
+  runMessage msg (ANobleLegacyPast attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) n | n `elem` [1, 2, 3] -> do
       case n of
         1 -> remember ThomasAndMaryHaveMet

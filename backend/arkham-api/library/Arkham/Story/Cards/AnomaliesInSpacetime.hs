@@ -3,7 +3,7 @@ module Arkham.Story.Cards.AnomaliesInSpacetime (anomaliesInSpacetime) where
 import Arkham.Ability
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, nextSkillTestModifier)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Log (remembered)
 import Arkham.Helpers.Query (getLead)
 import Arkham.I18n

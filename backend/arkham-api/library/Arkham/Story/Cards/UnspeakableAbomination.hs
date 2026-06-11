@@ -2,6 +2,7 @@ module Arkham.Story.Cards.UnspeakableAbomination (unspeakableAbomination) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.GameValue
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

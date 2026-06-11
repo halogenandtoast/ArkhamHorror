@@ -2,10 +2,10 @@ module Arkham.Agenda.Cards.TimeMarchesOn (timeMarchesOn) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted
+import Arkham.Agenda.Import.Lifted hiding (AssetDefeated)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Query (getInvestigators)
-import Arkham.Matcher
+import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Scenarios.MachinationsThroughTime.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Scientist))

@@ -2,7 +2,8 @@ module Arkham.Story.Cards.ABitterRivalry (aBitterRivalry) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.GameValue (getPlayerCount)
+import Arkham.GameValue
+import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
@@ -28,7 +29,7 @@ instance HasAbilities ABitterRivalry where
   getAbilities (ABitterRivalry a) =
     if a ^. flippedL
       then
-        [ restricted a 1 (exists edwin) $ ActionAbility [] (ActionCost 2)
+        [ restricted a 1 (exists edwin) $ actionAbilityWithCost (ActionCost 1)
         , groupLimit PerRound
             $ restricted a 2 (exists (edwin <> EnemyAt YourLocation)) actionAbility
         , restricted
@@ -53,7 +54,7 @@ instance RunMessage ABitterRivalry where
           labeled' "fight" $ fightEnemy sid iid (attrs.ability 2) edwin'
           labeled' "evade" $ chooseEvadeEnemyMatch sid iid (attrs.ability 2) (EnemyWithId edwin')
       pure s
-    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+    PassedThisSkillTest _iid (isAbilitySource attrs 2 -> True) -> do
       total <- getPlayerCount
       investigatorClues <- selectWithField InvestigatorClues UneliminatedInvestigator
       let totalClues = sum (map snd investigatorClues)

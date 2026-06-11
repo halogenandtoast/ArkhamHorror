@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.ANobleLegacyPresent (aNobleLegacyPresent) where
 
 import Arkham.Ability
+import Arkham.GameValue
 import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -51,7 +52,7 @@ instance HasAbilities ANobleLegacyPresent where
         <> exists (AssetWithTitle "Mary Zielinski" <> AssetAt (locationIs Locations.yeOldeMagickShoppe))
 
 instance RunMessage ANobleLegacyPresent where
-  runMessage msg s@(ANobleLegacyPresent attrs) = runQueueT $ case msg of
+  runMessage msg (ANobleLegacyPresent attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) n | n `elem` [1, 2, 3] -> do
       case n of
         1 -> remember TheObservatoryIsBuilt

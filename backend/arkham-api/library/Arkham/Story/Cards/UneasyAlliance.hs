@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
@@ -36,11 +37,9 @@ instance HasAbilities UneasyAlliance where
         a
         4
         ( Remembered ThomasAndMaryHaveWonANobelPrize
-            <> notExists
-              ( mapOneOf
-                  storyIs
-                  [Cards.anomaliesInSpacetime, Cards.mobTroubles, Cards.unspeakableAbomination]
-              )
+            <> notExists (storyIs Cards.anomaliesInSpacetime)
+            <> notExists (storyIs Cards.mobTroubles)
+            <> notExists (storyIs Cards.unspeakableAbomination)
         )
         (forced AnyWindow)
     ]
@@ -51,7 +50,7 @@ instance RunMessage UneasyAlliance where
       selectForMaybeM (edwin <> AssetAt (locationWithInvestigator iid)) \edwin' -> do
         clues <- iid.clues
         when (clues > 0) do
-          push $ RemoveClues (attrs.ability 1) (toTarget iid) 1
+          removeClues (attrs.ability 1) iid 1
           placeTokens (attrs.ability 1) edwin' #clue 1
         sid <- getRandom
         chooseOneM iid $ withI18n do
@@ -64,7 +63,7 @@ instance RunMessage UneasyAlliance where
       selectForMaybeM edwin \edwin' -> do
         clues <- iid.clues
         when (clues > 0) do
-          push $ RemoveClues (attrs.ability 1) (toTarget iid) 1
+          removeClues (attrs.ability 1) iid 1
           placeTokens (attrs.ability 1) edwin' #clue 1
       pure s
     FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

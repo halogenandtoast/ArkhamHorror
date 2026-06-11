@@ -82,7 +82,7 @@ instance RunMessage ANobleLegacyFuture where
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 2) iid #intellect (Fixed 3)
       pure s
-    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+    PassedThisSkillTest _iid (isAbilitySource attrs 2 -> True) -> do
       total <- perPlayer 2
       investigatorClues <- selectWithField InvestigatorClues UneliminatedInvestigator
       let totalClues = sum (map snd investigatorClues)

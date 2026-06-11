@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.OldSadieSheldon (oldSadieSheldon) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead)

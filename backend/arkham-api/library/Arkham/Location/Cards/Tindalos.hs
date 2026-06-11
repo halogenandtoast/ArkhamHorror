@@ -5,7 +5,8 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenarios.MachinationsThroughTime.Helpers
@@ -47,10 +48,10 @@ instance RunMessage Tindalos where
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       scientists <- getAbductedScientists
-      focusCards scientists \unfocus -> do
+      focusCards scientists do
         chooseOneM iid do
           for_ scientists \card -> cardLabeled card do
-            unfocus
+            unfocusCards
             aid <- createAssetAt card (AtLocation attrs.id)
             exhaustThis aid
       pure l

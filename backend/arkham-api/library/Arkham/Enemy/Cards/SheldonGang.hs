@@ -3,7 +3,8 @@ module Arkham.Enemy.Cards.SheldonGang (sheldonGang) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Import.Lifted hiding (PlayCard)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
@@ -26,7 +27,7 @@ instance HasAbilities SheldonGang where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ PlayCard #after (InvestigatorAt $ locationWithEnemy a.id) AnyCard
+      $ PlayCard #after (InvestigatorAt $ locationWithEnemy a.id) (basic AnyCard)
 
 instance RunMessage SheldonGang where
   runMessage msg e@(SheldonGang attrs) = runQueueT $ case msg of

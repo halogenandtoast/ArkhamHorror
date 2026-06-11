@@ -3,7 +3,9 @@ module Arkham.Asset.Assets.DimensionalBeamMachine (dimensionalBeamMachine) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Matcher
+import Arkham.Asset.Uses
+import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.MachinationsThroughTime.Helpers
 

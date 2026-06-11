@@ -10,10 +10,9 @@ import Arkham.Exception
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query
-import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution

@@ -3,7 +3,9 @@ module Arkham.Story.Cards.RedeemAFormerColleague (redeemAFormerColleague) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.GameValue (getPlayerCount)
+import Arkham.GameValue
+import Arkham.Helpers.Query (getPlayerCount)
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
@@ -28,7 +30,7 @@ edwin = enemyIs Enemies.edwinBennetBitterAdversary
 
 instance HasAbilities RedeemAFormerColleague where
   getAbilities (RedeemAFormerColleague a) =
-    [ restricted a 1 (exists edwin) $ ActionAbility [] (ActionCost 2)
+    [ restricted a 1 (exists edwin) $ actionAbilityWithCost (ActionCost 1)
     , restricted a 2 (exists (edwin <> EnemyAt YourLocation)) parleyAction_
     , restricted
         a

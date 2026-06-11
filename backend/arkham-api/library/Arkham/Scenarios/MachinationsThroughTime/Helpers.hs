@@ -2,10 +2,8 @@ module Arkham.Scenarios.MachinationsThroughTime.Helpers where
 
 import Arkham.Asset.Types (AssetAttrs)
 import Arkham.Card
-import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
-import Arkham.Classes.Query
-import Arkham.Helpers.Scenario (standaloneI18n)
+import Arkham.Helpers.Scenario (scenarioField, standaloneI18n)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
@@ -13,7 +11,6 @@ import Arkham.Message.Lifted (ReverseQueue, removeFromGame, setCardAside)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Source
 import Arkham.Target
 import Arkham.Tracing
 import Arkham.Trait (Trait (Future, Item, Past, Present, Scientist))

@@ -30,7 +30,7 @@ instance HasAbilities ChildhoodHome where
           actionAbility
       , groupLimit PerGame
           $ restricted a 2 (Here <> Remembered CorriganIndustriesHasBeenFounded)
-          $ ActionAbility [] (ActionCost 2)
+          $ actionAbilityWithCost (ActionCost 1)
       ]
 
 instance RunMessage ChildhoodHome where

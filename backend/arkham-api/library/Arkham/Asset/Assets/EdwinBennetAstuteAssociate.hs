@@ -4,7 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message.Lifted.Move
 import Arkham.Trait (Trait (Portal))
 
 newtype EdwinBennetAstuteAssociate = EdwinBennetAstuteAssociate AssetAttrs

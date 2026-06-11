@@ -15,12 +15,11 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Location (placeSetAsideLocation, reveal)
-import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (ScenarioAttrs (..))
 import Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers
 import Arkham.Scenarios.TheLabyrinthsOfLunacy.Meta
 
@@ -95,20 +94,20 @@ instance RunMessage TheLabyrinthsOfLunacy where
       pure s
     Setup -> runScenarioSetup TheLabyrinthsOfLunacy attrs do
       let meta = toResult attrs.meta
-      let group = currentGroup meta
+      let grp = currentGroup meta
       setup $ ul do
         li "gatherSets"
         li.validate False "epicMultiplayer"
         li.validate True "singleGroup"
-        li.validate (group == GroupA) "actDeckGroupA"
-        li.validate (group == GroupB) "actDeckGroupB"
-        li.validate (group == GroupC) "actDeckGroupC"
-        li.validate (group == GroupA) "chamberOfSecrets"
-        li.validate (group == GroupB) "chamberOfRainAndSorrows"
-        li.validate (group == GroupC) "chamberOfNightAndRegret"
+        li.validate (grp == GroupA) "actDeckGroupA"
+        li.validate (grp == GroupB) "actDeckGroupB"
+        li.validate (grp == GroupC) "actDeckGroupC"
+        li.validate (grp == GroupA) "chamberOfSecrets"
+        li.validate (grp == GroupB) "chamberOfRainAndSorrows"
+        li.validate (grp == GroupC) "chamberOfNightAndRegret"
         li "setAside"
-        li.validate (group == GroupA) "keyOfMysteries"
-        li.validate (group == GroupC) "hiddenChamberOfSecrets"
+        li.validate (grp == GroupA) "keyOfMysteries"
+        li.validate (grp == GroupC) "hiddenChamberOfSecrets"
         li "eixodolonsNote"
         li "addTokens"
         unscoped $ li "shuffleRemainder"
@@ -143,10 +142,10 @@ instance RunMessage TheLabyrinthsOfLunacy where
         , Locations.abandonedWarehouse
         ]
 
-      addChaosToken $ groupChaosToken group
-      addChaosToken $ groupChaosToken group
+      addChaosToken $ groupChaosToken grp
+      addChaosToken $ groupChaosToken grp
 
-      case group of
+      case grp of
         GroupA -> do
           setActDeck
             [Acts.sealedInGroupA, Acts.distortionsInTimeGroupA, Acts.theEscapeTheLabyrinthsOfLunacy]
@@ -242,11 +241,11 @@ instance RunMessage TheLabyrinthsOfLunacy where
       pure s
     ScenarioResolution r -> scope "resolutions" do
       let meta = toResult attrs.meta
-      let group = currentGroup meta
+      let grp = currentGroup meta
       case r of
         NoResolution -> push R1
         Resolution 1 -> do
-          let meta' = meta {playedGroups = group : playedGroups meta}
+          let meta' = meta {playedGroups = grp : playedGroups meta}
           push $ SetScenarioMeta $ toJSON meta'
           if length (playedGroups meta') >= 3
             then do_ (ScenarioResolutionStep 1 (Resolution 1))
@@ -262,8 +261,8 @@ instance RunMessage TheLabyrinthsOfLunacy where
         Resolution 2 -> do
           let meta' =
                 meta
-                  { playedGroups = group : playedGroups meta
-                  , survivedGroups = group : survivedGroups meta
+                  { playedGroups = grp : playedGroups meta
+                  , survivedGroups = grp : survivedGroups meta
                   }
           push $ SetScenarioMeta $ toJSON meta'
           if length (playedGroups meta') >= 3

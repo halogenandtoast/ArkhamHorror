@@ -3,6 +3,7 @@ module Arkham.Location.Cards.ArkhamGazette (arkhamGazette) where
 import Arkham.Ability
 import Arkham.Card (toCardId)
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Scenario (getEncounterDeck)
 import Arkham.I18n
@@ -42,22 +43,22 @@ instance RunMessage ArkhamGazette where
       n <- perPlayer 1
       placeClues (attrs.ability 2) attrs n
       cards <- take 5 . unDeck <$> getEncounterDeck
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseOneM iid do
           for_ cards \card -> cardLabeled card do
-            unfocus
+            unfocusCards
             obtainCard card
             push $ AddToVictory (Just iid) (CardIdTarget $ toCardId card)
             doStep 1 msg
       pure l
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 2) -> do
       cards <- take 4 . unDeck <$> getEncounterDeck
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseOneAtATimeM iid do
           for_ cards \card -> cardLabeled card do
             chooseOneM iid $ withI18n do
               labeled' "putOnTopOfEncounterDeck" $ putCardOnTopOfDeck iid Deck.EncounterDeck card
               labeled' "putOnBottomOfEncounterDeck" $ putCardOnBottomOfDeck iid Deck.EncounterDeck card
-        unfocus
+        unfocusCards
       pure l
     _ -> ArkhamGazette <$> liftRunMessage msg attrs

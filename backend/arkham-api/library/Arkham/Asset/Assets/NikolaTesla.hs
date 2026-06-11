@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.I18n
-import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
 newtype NikolaTesla = NikolaTesla AssetAttrs

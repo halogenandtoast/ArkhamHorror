@@ -3,8 +3,7 @@ module Arkham.Asset.Assets.EzraGraves (ezraGraves) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Matcher
-import Arkham.Message.Lifted.Card (putCardIntoPlay)
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Ally))
 
@@ -34,10 +33,10 @@ instance RunMessage EzraGraves where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       allies <- select $ InDiscardOf (InvestigatorWithId iid) <> basic (CardWithTrait Ally)
-      focusCards allies \unfocus -> do
+      focusCards allies do
         chooseOneM iid do
           for_ allies \card -> cardLabeled card do
-            unfocus
+            unfocusCards
             putCardIntoPlay iid card
       pure a
     _ -> EzraGraves <$> liftRunMessage msg attrs

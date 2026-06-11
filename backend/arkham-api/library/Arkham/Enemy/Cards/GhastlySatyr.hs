@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.GhastlySatyr (ghastlySatyr) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Past, Present, Scientist))

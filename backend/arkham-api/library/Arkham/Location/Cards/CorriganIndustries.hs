@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.CorriganIndustries (corriganIndustries) where
 
 import Arkham.Ability
+import Arkham.Card (toCard)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -25,17 +26,17 @@ instance HasAbilities CorriganIndustries where
           $ actionAbilityWithCost (SpendTokenCost Token.TimeCapsule (TargetIs $ toTarget a))
       , groupLimit PerGame
           $ restricted a 2 (Here <> Remembered ThomasAndMaryHaveMarried)
-          $ ActionAbility [] (ActionCost 2)
+          $ actionAbilityWithCost (ActionCost 1)
       ]
 
 instance RunMessage CorriganIndustries where
   runMessage msg l@(CorriganIndustries attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       discards <- fieldMap InvestigatorDiscard (map toCard) iid
-      focusCards discards \unfocus -> do
+      focusCards discards do
         chooseUpToNM iid 4 "Done choosing cards" do
           for_ discards \card -> cardLabeled card $ addToHand iid (only card)
-        unfocus
+        unfocusCards
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       gainResources iid (attrs.ability 2) 10

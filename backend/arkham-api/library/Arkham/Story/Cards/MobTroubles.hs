@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.MobTroubles (mobTroubles) where
 
 import Arkham.Ability
+import Arkham.GameValue
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies

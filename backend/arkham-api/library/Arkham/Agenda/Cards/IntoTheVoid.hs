@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.IntoTheVoid (intoTheVoid) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted
+import Arkham.Agenda.Import.Lifted hiding (AssetDefeated)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query (getLead)
@@ -66,7 +66,7 @@ abductDefeatedScientist source aid = do
   if isEdwin && uneasyAllianceInPlay
     then do
       healAllDamageAndHorror source aid
-      agenda <- selectJust AnyAgenda
-      placeDoom source agenda 2
+      agendaId <- selectJust AnyAgenda
+      placeDoom source agendaId 2
       push AdvanceAgendaIfThresholdSatisfied
     else abductById aid

@@ -34,7 +34,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Tracing
-import Arkham.Trait
+import Arkham.Trait hiding (Script)
 import Arkham.Window (Window)
 import Arkham.Window qualified as Window
 import Control.Monad.Reader

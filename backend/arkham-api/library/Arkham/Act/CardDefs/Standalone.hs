@@ -104,3 +104,27 @@ closeThePortal = act "86012" "Close the Portal" 2 WarOfTheOuterGods
 
 closeAllPortals :: CardDef
 closeAllPortals = act "86013" "Close All Portals" 3 WarOfTheOuterGods
+
+walkingThroughTime :: CardDef
+walkingThroughTime = act "87004" "Walking Through Time" 1 MachinationsThroughTime
+
+sealedInGroupA :: CardDef
+sealedInGroupA = act "70007" "Sealed In (Group A)" 1 TheLabyrinthsOfLunacy
+
+wateryGraveGroupB :: CardDef
+wateryGraveGroupB = act "70008" "Watery Grave (Group B)" 1 TheLabyrinthsOfLunacy
+
+theLeversGroupC :: CardDef
+theLeversGroupC = act "70010" "The Levers (Group C)" 1 LabyrinthsOfLunacySingleGroup
+
+distortionsInTimeGroupA :: CardDef
+distortionsInTimeGroupA = act "70011" "Distortions in Time (Group A)" 2 TheLabyrinthsOfLunacy
+
+seepingDeathGroupB :: CardDef
+seepingDeathGroupB = act "70012" "Seeping Death (Group B)" 2 TheLabyrinthsOfLunacy
+
+thePetGroupC :: CardDef
+thePetGroupC = act "70013" "The Pet (Group C)" 2 TheLabyrinthsOfLunacy
+
+theEscapeTheLabyrinthsOfLunacy :: CardDef
+theEscapeTheLabyrinthsOfLunacy = act "70015" "The Escape" 3 LabyrinthsOfLunacySingleGroup

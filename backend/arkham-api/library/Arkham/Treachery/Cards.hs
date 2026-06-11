@@ -169,6 +169,7 @@ allEncounterTreacheryCards =
       [ aBalefulWelcome
       , abandonedByTheGods
       , abandonedToMadness
+      , abducted
       , abduction
       , abyssalReach
       , accosted
@@ -190,6 +191,7 @@ allEncounterTreacheryCards =
       , arousingSuspicions
       , arrowsFromTheTrees
       , aTearInTime
+      , aTearInTimeMachinationsThroughTime
       , attractingAttention
       , avalanche
       , avariceCallsA
@@ -212,6 +214,7 @@ allEncounterTreacheryCards =
       , bleedingWallsTheMidwinterGala
       , bleedingWallsTheMidwinterGala
       , blindsense
+      , bloodAndRust
       , bloodOnYourHands
       , bloodthirstySpirits
       , bloom
@@ -220,6 +223,7 @@ allEncounterTreacheryCards =
       , brazierEnchantment
       , breakALeg
       , brokenRails
+      , brokenSpace
       , bumpyRide
       , burdensOfThePast
       , calcification
@@ -285,6 +289,7 @@ allEncounterTreacheryCards =
       , despoiled
       , dholeTunnel
       , diabolicVoices
+      , dimensionalBreach
       , dimensionalHypnosisA
       , dimensionalHypnosisB
       , dimensionalHypnosisC
@@ -294,6 +299,7 @@ allEncounterTreacheryCards =
       , distortedReasoning
       , draggedUnder
       , draggedUnderDevilReef
+      , dreadfulMechanism
       , dreamersCurse
       , dreamlandsEclipse
       , dreamsOfRlyeh
@@ -307,6 +313,9 @@ allEncounterTreacheryCards =
       , encephalonSignal
       , endlessDescent
       , endlessNight
+      , harvestedPain
+      , paradoxEffect
+      , poisonousGas
       , sublimation
       , fragmentation
       , euphoria
@@ -338,6 +347,7 @@ allEncounterTreacheryCards =
       , foundFootage
       , fracturedConsciousness
       , fragileThoughts
+      , fromAllAngles
       , fromAnotherTime
       , fromTheDepths
       , fromTheOtherSide
@@ -416,6 +426,7 @@ allEncounterTreacheryCards =
       , lostInTheWilds
       , lostInTheWoods
       , lostInTime
+      , lostInTimeMachinationsThroughTime
       , lostInVenice
       , lowOnSupplies
       , lunarPatrol
@@ -437,6 +448,7 @@ allEncounterTreacheryCards =
       , memoryOfOblivion
       , memoryVariant
       , mergingTimelines
+      , mergingTimelinesMachinationsThroughTime
       , mesmerize
       , miasmaticTorment
       , mindExtraction
@@ -463,6 +475,7 @@ allEncounterTreacheryCards =
       , onTheProwl
       , onWingsOfDarkness
       , oozeAndFilth
+      , openPortal
       , oppressiveMists
       , otherworldlyVisions
       , outOfTheWalls
@@ -522,6 +535,7 @@ allEncounterTreacheryCards =
       , feastOfLocusts
       , hellfireWarOfTheOuterGods
       , ravagesOfWar
+      , unnaturalWeariness
       , whileTheySleep
       , inevitableEnd
       , huntDown
@@ -579,6 +593,7 @@ allEncounterTreacheryCards =
       , syzygy
       , takenCaptive
       , tasteOfLifeblood
+      , temporalDistortion
       , tenebrousEclipse
       , terrorFromBeyond
       , terrorGate
@@ -633,6 +648,7 @@ allEncounterTreacheryCards =
       , unstableEnergies
       , unnaturalGrowth
       , vampiresKiss
+      , vanishingHistory
       , vastExpanse
       , vaultOfEarthlyDemise
       , viceAndVillainy

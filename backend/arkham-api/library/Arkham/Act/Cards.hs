@@ -86,6 +86,7 @@ allActCards =
       , discoveringTheTruth
       , discoveryOfALifetime
       , disruptingTheRitual
+      , distortionsInTimeGroupA
       , dormancy
       , enteringTheDreamlands
       , enteringTheUnderworldV1
@@ -98,6 +99,8 @@ allActCards =
       , exploringTheRainforest
       , eyesInTheTower
       , faceToCarapace
+      , sealedInGroupA
+      , seepingDeathGroupB
       , shatteredMemories
       , lostSelf
       , fateOfTheValeV1
@@ -259,6 +262,7 @@ allActCards =
       , theDreamEaters
       , theEndlessStairs
       , theEscape
+      , theEscapeTheLabyrinthsOfLunacy
       , theExit
       , theFinalErr
       , theFinalDescent
@@ -275,6 +279,7 @@ allActCards =
       , theHourOfJudgment
       , theIsleOfOriab
       , theLadyWithTheRedParasol
+      , theLeversGroupC
       , theLighthouse
       , theLongestNight
       , theLostExpedition
@@ -291,6 +296,7 @@ allActCards =
       , thePath
       , thePathIsBarred
       , thePathToTheHill
+      , thePetGroupC
       , thePit
       , theReallyBadOnesV1
       , theReallyBadOnesV2
@@ -332,8 +338,10 @@ allActCards =
       , underAttack
       , unexpectedRescue
       , unrestrictedAccess
+      , walkingThroughTime
       , warmWelcome
       , warOfTheOuterGods
+      , wateryGraveGroupB
       , whatHappened
       , whatHaveYouDone
       , whatMustBeDone

@@ -90,6 +90,7 @@ data Trait
   | Dhole
   | Dilemma
   | Dinosaur
+  | Distortion
   | Dormant
   | Double
   | Dreamer
@@ -180,6 +181,7 @@ data Trait
   | Lodge
   | London
   | Lunatic
+  | Machination
   | Madness
   | Mainland
   | Manifold
@@ -220,8 +222,10 @@ data Trait
   | Paris
   | Part1
   | Passageway
+  | Past
   | Patron
   | Performer
+  | Plot
   | Pnakotus
   | Poison
   | Police
@@ -230,6 +234,8 @@ data Trait
   | Possessed
   | Power
   | Practiced
+  | Present
+  | Prison
   | Profession
   | PresentDay
   | Private
@@ -262,7 +268,9 @@ data Trait
   | Scheme
   | Scholar
   | Science
+  | Scientist
   | Scion
+  | Script
   | SecondFloor
   | SentinelHill
   | Serpent

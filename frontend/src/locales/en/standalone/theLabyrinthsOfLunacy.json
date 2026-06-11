@@ -1,0 +1,127 @@
+{
+  "intro": {
+    "title": "The Labyrinths of Lunacy",
+    "chooseGroup": "<p>When played in <i>Single Group Mode</i>, <i>The Labyrinths of Lunacy</i> can be played in one of two ways—as a single standalone scenario, or over a series of three games, like a mini-campaign.</p><p>When played as a single standalone scenario, you may play as either Group A, B, or C. When played as a mini-campaign, play three consecutive games—one for each group—in an order of your choosing. Which group is trapped in this part of the labyrinth?</p>",
+    "groupA": "<p>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight.</p><p>For the first time since awakening, you study your surroundings. You have been sealed in a windowless chamber, which is filled with copper pipes. The faint whistling of escaping air surrounds you on all sides. You are a prisoner here, with no means of escape. There is a note lying on the ground nearby.</p>",
+    "groupB": "<p>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight.</p><p>For the first time since awakening, you study your surroundings. You have been sealed in a tall glass tank, and water fills the chamber to your ankles. Outside the dull glass, you can see many more tanks like yours, wreathed in mist. You are a prisoner here, with no means of escape. There is a note lying on the ground just outside the tank.</p>",
+    "groupC": "<p>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight.</p><p>For the first time since awakening, you study your surroundings. You are in a dark chamber, lit only by a few candles. Old barrels, crates and rotten storage shelves fill the cramped chamber. You cannot see any windows or doors leading out. You are a prisoner here, with no means of escape. There is a note lying on the ground nearby.</p>",
+    "note": "<p><i>It reads:</i></p><blockquote><i>Greetings.</i><br/><i>I have gathered you here as an experiment. Think of this as a test of human will. You will survive. Or you will die.</i><br/><i>You are not alone. Two other groups share in your fate. Will you risk your lives to aid them? Or will you find freedom upon the backs of their corpses?</i><br/><i>I will allow you to escape, should you prove strong of will and quick of wit. If not, your pain and anguish shall serve as a reminder that humans are not the inheritors of Earth.</i></blockquote>"
+  },
+  "group": {
+    "groupA": "Group A",
+    "groupB": "Group B",
+    "groupC": "Group C"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from <i>The Labyrinths of Lunacy</i> encounter set. This set is indicated by this icon:<section class='encounter-sets'><img src='{setImgPath}/in-the-labyrinths-of-lunacy.png'></section>",
+    "epicMultiplayer": "If you were playing in <i>Epic Multiplayer Mode</i>, you would gather all cards from the <i>Epic Multiplayer</i> encounter set instead. <i>(Epic Multiplayer Mode is not supported.)</i>",
+    "singleGroup": "Because you are playing in <i>Single Group Mode</i>, gather all cards from the <i>Single Group</i> encounter set, indicated by this icon:<section class='encounter-sets'><img src='{setImgPath}/single-group.png'></section> Remove all cards from the <i>Epic Multiplayer</i> encounter set from the game.",
+    "actDeckGroupA": "Construct the act deck using only the (Group A) versions of acts 1 and 2. Remove each other version of those acts from the game.",
+    "actDeckGroupB": "Construct the act deck using only the (Group B) versions of acts 1 and 2. Remove each other version of those acts from the game.",
+    "actDeckGroupC": "Construct the act deck using only the (Group C) versions of acts 1 and 2. Remove each other version of those acts from the game.",
+    "chamberOfSecrets": "Randomly choose 1 of the 3 copies of Chamber of Secrets to put into play. Remove the other 2 copies from the game. Each investigator begins play in the Chamber of Secrets.",
+    "chamberOfRainAndSorrows": "Put the Chamber of Rain and Chamber of Sorrows locations into play. Randomly choose an investigator to begin play in the Chamber of Rain. Each other investigator begins play in the Chamber of Sorrows.",
+    "chamberOfNightAndRegret": "Put the Chamber of Night and Chamber of Regret locations into play. Each investigator begins play at the Chamber of Night.",
+    "setAside": "Set the following cards aside, out of play: Key of Mysteries, Mysterious Syringe, Eixodolon, Eixodolon's Pet, Rot Diagram, Hunger Diagram, Decay Diagram, both copies of Faceless Abductor, and each other location.",
+    "keyOfMysteries": "Because you are playing in <i>Single Group Mode</i>, put the set-aside Key of Mysteries into play in the Chamber of Secrets.",
+    "hiddenChamberOfSecrets": "Because you are playing in <i>Single Group Mode</i>, randomly choose 1 of the 3 set-aside copies of Chamber of Secrets and place it underneath the scenario reference card, without looking at its revealed side.",
+    "eixodolonsNote": "The lead investigator takes control of Eixodolon's Note.",
+    "addTokens": "Add 2 of this group's chaos tokens to the chaos bag (Group A: Elder Thing, Group B: Tablet, Group C: Cultist)."
+  },
+  "skull": {
+    "takeDamage": "Take 1 damage",
+    "takeHorror": "Take 1 horror"
+  },
+  "chamberOfSecrets": {
+    "poundFists": "You pound your fists on the wall of the chamber. Nobody responds."
+  },
+  "chamberOfSorrows": {
+    "takeClue": "Take control of 1 clue on an investigator in either Chamber of Sorrows or Chamber of Rain (or from that location if you are the only investigator in the game)."
+  },
+  "chamberOfRegret": {
+    "whichLever": "You pull one of the 3 levers (choose one): left, middle, or right. As soon as you do, the gate slams shut behind you. You cannot leave the Chamber of Regret for the remainder of the current act.",
+    "left": "Pull the left lever",
+    "middle": "Pull the middle lever",
+    "right": "Pull the right lever"
+  },
+  "labyrinthineHalls": {
+    "chooseDrawCards": "You find an old lockbox in a pile of refuse, and decide to leave something behind. Choose an investigator to draw 2 cards.",
+    "chooseGainResources": "You find the corpse of someone you think you once knew, and wish you could have saved them. Choose an investigator to gain 4 resources.",
+    "chooseAdditionalActions": "You peer through an overgrown mirror and see an unfamiliar reflection. Choose an investigator to take 2 additional actions during their next turn."
+  },
+  "torturedVictim": {
+    "discardRandomCard": "Discard a random card from your hand",
+    "takeAttack": "Tortured Victim makes an immediate attack against you"
+  },
+  "unnaturalWeariness": {
+    "loseResources": "Lose 3 resources",
+    "loseAction": "Lose 1 action",
+    "discardRandomCard": "Discard a random card from your hand"
+  },
+  "sealedIn": {
+    "title": "Success… Or Death",
+    "success": "<p><i>You push the key into the lock, and the wall of the chamber opens up, leading into a dark, narrow corridor of corrugated metal and concrete. The whistling of the pipes all around you dampens to a faint whimper.</i></p><p>The investigators spend 2 clues per investigator, as a group. Remove the Key of Mysteries from the game. Resolve <b>Act 2 Setup</b>.</p>",
+    "failure": "<p><i>A powerful, noxious gas spews forth from the vents and fills the room. Your vision grows hazy and you collapse to the ground. \"The fate that inevitably awaits us all,\" a sinister voice explains. Everything goes dark.</i></p><p>Each investigator in this group is killed.</p>"
+  },
+  "wateryGrave": {
+    "title": "A Slow Death",
+    "success": "<p><i>You breathe a sigh of relief as the water drains harmlessly.</i></p><p>Investigators at the same location spend 2 clues per investigator, as a group. Resolve <b>Act 2 Setup</b>.</p>",
+    "failure": "<p><i>The water level continues to rise. It fills the tank and then your lungs. You struggle in futility against the glass. Freedom is so close, and yet so far.</i></p><p>Each investigator loses each of his or her clues. The investigator in the Chamber of Rain is killed. Resolve <b>Act 2 Setup</b>.</p>"
+  },
+  "theLevers": {
+    "title": "Which Lever?",
+    "match": "<p>The investigator who pulled the lever examines the Chamber of Secrets underneath the scenario reference card. It matches! The gate ascends, and the door in the Chamber of Night opens. Resolve <b>Act 2 Setup</b>.</p>",
+    "noMatch": "<p>The investigator who pulled the lever examines the Chamber of Secrets underneath the scenario reference card. It does not match. Rows of razor-sharp blades emerge from the walls of the chamber, dissecting you with horrifying precision. You are killed. Resolve <b>Act 2 Setup</b>.</p>",
+    "noLever": "<p><i>Time is up. You rush to the levers, but you are too late. Rows of razor-sharp blades emerge from the walls of the chamber, dissecting you with horrifying precision.</i></p><p>The investigator nearest to the Chamber of Regret is killed. <i>(In the event of a tie, the investigators decide.)</i> Resolve <b>Act 2 Setup</b>.</p>"
+  },
+  "distortionsInTime": {
+    "title": "Reverse Rhythm",
+    "success": "<p><i>You spin the dial on the device to its maximum value, struggling to keep hold of it as your muscles tighten and you begin to decay. The dial stops with a click, then slowly you are able to continue turning it in the same direction. You are in intense pain as it slowly turns, round and round, finally making its way back where it began. The air thins, and time returns to its original pace.</i></p><p>Resolve <b>Act 3 Setup</b>.</p>",
+    "failure": "<p><i>Your muscles and skin tighten, and you feel your body draining of energy. You try to scream, but no air escapes your throat. Your organs shrivel and decay. \"The fate that inevitably awaits us all,\" a sinister voice explains. Within minutes, you are naught but dust.</i></p><p>Each investigator in this group is killed.</p>"
+  },
+  "seepingDeath": {
+    "title": "The Pit of Poison",
+    "injected": "<p>You have \"been injected\"—the sludge is disgusting but harmless. Resolve <b>Act 3 Setup</b>.</p>",
+    "notInjected": "<p>You have not \"been injected\"—the poison seeps through your skin, devouring your organs from inside. You are killed. Resolve <b>Act 3 Setup</b>.</p>",
+    "noValve": "<p><i>The floors and walls of the entire labyrinth shift and turn, and you lose your balance. Sliding along the floor as gravity twists, you are knocked into the poisonous pit.</i></p><p>Move each investigator to the Chamber of Poison. Each investigator in this group who has not \"been injected\" is killed. Resolve <b>Act 3 Setup</b>.</p>"
+  },
+  "thePet": {
+    "title": "Endless Hunger",
+    "victory": "<p><i>You breathe a sigh of relief as the creature crumples lifelessly to the ground.</i></p><p>Resolve <b>Act 3 Setup</b>.</p>",
+    "breaksFree": "<p><i>The creature smashes through the glass of its terrarium and lashes out hungrily at anyone nearby.</i></p><p>Move Eixodolon's Pet to Chamber of Hunger. It attacks each investigator in the Chamber of Hunger, in player order. Resolve <b>Act 3 Setup</b>.</p>"
+  },
+  "resolutions": {
+    "endScenario": "End the scenario here",
+    "playAnotherGroup": "Continue the mini-campaign as another group",
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p><b>Resolution 1</b>: <i>In the wrong hands, your anguish is a powerful weapon. Your blood fuels the arcane glyph carved into the cement floor at the labyrinth's core. For the cruel mastermind who trapped you here, it is a moment of triumph and vindication. The entire world will feel this pain. This fear. This despair.</i></p><p>The investigators lose.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p><b>Resolution 2</b>: <i>The mastermind falls to his knees, his mask cracked. Blood drips from his open wounds onto the cement floor. \"Do you really think you can escape?\" he wheezes. His distorted voice is pained but triumphant. \"Do you really think… I would ever let you leave this place?\" His body collapses to the ground. Seeing an opportunity to escape, you rush to the iron doors sealing you in the warehouse. With a desperate effort, you are finally able to break the padlock and push open the heavy doors.</i></p><p><i>A sudden gust of cold evening air sweeps over you. You are surprised to see wooden docks on the side of the Miskatonic River. A few ducks quack in surprise and swim away from the nearest dock. Water sloshes along the shore. You hear dockworkers going about their business, their work day almost finished as the sun sets to your left. After taking a few steps, you collapse to the ground. You are too exhausted and injured to go on. \"Who's that?\" a dockworker calls out. \"Someone is hurt—quick, let's get them to St. Mary's!\" You drift into unconsciousness just as a muscled man lifts you into his arms.</i></p><p><i>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight. A note on the ground nearby reads:</i></p><blockquote><i>Greetings. I have gathered you here as an experiment. Think of this as a test of human will. You will survive. Or you will die…</i></blockquote><p>The investigators survived, but in another timeline, the labyrinth has a new guest.</p>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p><b>Resolution 3</b>: <i>The mastermind falls to his knees, his mask cracked. Blood drips from his open wounds onto the cement floor. \"Do you really think you can kill me?\" he wheezes. His distorted voice is pained but proud. \"I am everywhere and everywhen. This vessel is but one. There are others. And if even one of them is proven right, I will never truly die.\" His body falls limply to the ground. Seeing an opportunity to escape, you rush to the iron doors sealing you in the warehouse. With a desperate effort, you are finally able to break the padlock and push open the heavy doors.</i></p><p><i>You have somehow made it out of your captor's hellish labyrinth, but his dying words haunt your thoughts. What did he mean by \"others\"? You recall the strange visions you saw in his maze, and a terrible thought seeps into your mind. The kidnapper had mentioned other groups, but you were never able to find them, and you have no idea if they made it out alive. You tell the police there are others and insist that they search the docks, but there is no trace of the warehouse you had escaped, nor of the mastermind who trapped you there…</i></p><p>The investigators survived, but Eixodolon lives on.</p>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p><b>Resolution 4</b>: <i>The mastermind falls to his knees, his mask cracked. Blood drips from his open wounds onto the cement floor. The outline of his body twists and blurs, like a wrinkle in the fabric of space and time. \"So, the ritual has failed!\" His bitter cackle descends into a cry of pain. \"Perhaps humanity has a chance after all. This agony, this suffering! Such power is not meant for humans to wield. It is for the ones beyond!\" He gasps and wheezes, collapsing to the ground. \"Do not follow the path I followed,\" he begs, \"it leads only to… despair.\" His breathing stops.</i></p><p><i>You have somehow defeated your captor, but many questions remain. Deciding to explore the labyrinth further, you find a way to break open the iron doors leading into the other sections of the complex. To your surprise, you find no other victims trapped in the labyrinth—only signs of their struggles, and of their survival.</i></p><p><i>It takes only one solid strike to break open the padlock sealing the warehouse's iron doors. The sound of metal slamming against metal is tripled in its volume. You do not believe your kidnapper meant for you to ever leave, but somehow you have defied the odds stacked against you. You wonder if the others are opening these heavy doors at this very moment, too.</i></p><p><i>A sudden gust of cold evening air sweeps over you. You are surprised to see wooden docks on the side of the Miskatonic River. A few ducks quack in surprise and swim away from the nearest dock. Water sloshes along the shore. You hear dockworkers going about their business, their work day almost finished as the sun sets to your left. You watch the sun disappear under the horizon, and the others watch in turn.</i></p><p>The investigators win!</p>"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1. Reveal another token.",
+      "cultist": "-3. If you fail, place 1 of your clues on your location.",
+      "tablet": "-4. If you fail, lose 2 resources.",
+      "elderThing": "-4. If you fail, discard a random card from your hand."
+    },
+    "hardExpert": {
+      "skull": "-1. Reveal another token. If you fail, you must either take 1 damage or 1 horror.",
+      "cultist": "-3. Place 1 of your clues on your location.",
+      "tablet": "-4. Lose 2 resources.",
+      "elderThing": "-4. Discard a random card from your hand."
+    }
+  }
+}

@@ -283,6 +283,9 @@ data EncounterSet
   | TheBayou
   | CurseOfTheRougarou
   | CarnevaleOfHorrors
+  | TheLabyrinthsOfLunacy
+  | LabyrinthsOfLunacySingleGroup
+  | LabyrinthsOfLunacyEpicMultiplayer
   | TheEternalSlumber
   | TheNightsUsurper
   | BrotherhoodOfTheBeast
@@ -308,6 +311,9 @@ data EncounterSet
   | FortunesChosen
   | PlanInShambles
   | TheMidwinterGala
+  | MachinationsThroughTime
+  | MachinationsThroughTimeSingleGroup
+  | MachinationsThroughTimeEpicMultiplayer
   | FilmFatale
   | CosmicJourney
   | ForgottenIsland

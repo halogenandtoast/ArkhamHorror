@@ -198,6 +198,11 @@ allEncounterEnemyCards =
       , dmitriKonstantinovTakingTheLongView
       , caldwellPhilipsCompelledByDreams
       , carlSanfordIntimidatingPresence
+      , eixodolon
+      , eixodolonsPet
+      , facelessAbductor
+      , miGoGuard
+      , torturedVictim
       , valeriyaAntonovaDontMessWithHer
       , deepOneBull
       , deepOneHatchling
@@ -222,6 +227,7 @@ allEncounterEnemyCards =
       , dromaeosaurus
       , drWentworthMoore
       , eaterOfTheDepths
+      , edwinBennetBitterAdversary
       , elderThingScavenger
       , elisabettaMagro
       , eliyahAshevakDogHandler
@@ -251,6 +257,7 @@ allEncounterEnemyCards =
       , frenziedMiner
       , furtiveZoog
       , gavriellaMizrah
+      , ghastlySatyr
       , ghostLight
       , ghoulFromTheDepths
       , ghoulMinion
@@ -286,6 +293,7 @@ allEncounterEnemyCards =
       , hitVan
       , hordeOfNight
       , horrifyingShade
+      , houndOfTindalos
       , hostOfInsanity
       , hotelGuest
       , hotelManager
@@ -370,6 +378,7 @@ allEncounterEnemyCards =
       , malformedSkeleton
       , maniac
       , manifestationOfMadness
+      , manyAngledThing
       , mariaDeSilvaKnowsMoreThanSheLetsOn
       , marshGug
       , memoryOfAHuntGoneAwry
@@ -421,6 +430,7 @@ allEncounterEnemyCards =
       , nyarlathotepTheFacelessWhisperer
       , oBannionsThug
       , oceirosMarsh
+      , oldSadieSheldon
       , otheraGilmanProprietessOfTheHotel
       , otherworldlyMeddler
       , otherworldlyMimic
@@ -493,6 +503,7 @@ allEncounterEnemyCards =
       , sethBishop
       , sethBishopThrallOfYogSothoth
       , shadowHound
+      , sheldonGang
       , silasBishop
       , sinisterAspirantA
       , sinisterAspirantB
@@ -563,6 +574,8 @@ allEncounterEnemyCards =
       , thrallDeadHeat
       , tidalTerror
       , tindalosAlpha
+      , tindalosAlphaMachinationsThroughTime
+      , tyrthrha
       , tzuSanNiangAWhisperInYourEar
       , tzuSanNiangOutForBlood
       , tzuSanNiangTheLadyWithTheRedParasol

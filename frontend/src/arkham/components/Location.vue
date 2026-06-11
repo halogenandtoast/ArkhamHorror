@@ -295,6 +295,11 @@ const hasPool = computed(() => {
     (scoutingReports.value && scoutingReports.value > 0) ||
     (scraps.value && scraps.value > 0) ||
     (depletion.value && depletion.value > 0) ||
+    (time.value && time.value > 0) ||
+    (newspapers.value && newspapers.value > 0) ||
+    (shipments.value && shipments.value > 0) ||
+    (seeds.value && seeds.value > 0) ||
+    (timeCapsules.value && timeCapsules.value > 0) ||
     (props.location.brazier && props.location.brazier === 'Lit') ||
     props.location.cardsUnderneath.length > 0 ||
     props.location.sealedChaosTokens.length > 0
@@ -363,6 +368,11 @@ const antiquities = computed(() => props.location.tokens[TokenType.Antiquity])
 const civilians = computed(() => props.location.tokens[TokenType.Civilian])
 const study = computed(() => props.location.tokens[TokenType.Study])
 const targets = computed(() => props.location.tokens[TokenType.Target])
+const time = computed(() => props.location.tokens[TokenType.Time])
+const newspapers = computed(() => props.location.tokens[TokenType.Newspaper])
+const shipments = computed(() => props.location.tokens[TokenType.Shipment])
+const seeds = computed(() => props.location.tokens[TokenType.Seed])
+const timeCapsules = computed(() => props.location.tokens[TokenType.TimeCapsule])
 const breaches = computed(() => {
   const { breaches } = props.location
   if (breaches) {
@@ -580,6 +590,36 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
               type="resource"
               tooltip="Target"
               :amount="targets"
+            />
+            <PoolItem
+              v-if="time && time > 0"
+              type="resource"
+              tooltip="Time"
+              :amount="time"
+            />
+            <PoolItem
+              v-if="newspapers && newspapers > 0"
+              type="resource"
+              tooltip="Newspaper"
+              :amount="newspapers"
+            />
+            <PoolItem
+              v-if="shipments && shipments > 0"
+              type="resource"
+              tooltip="Shipment"
+              :amount="shipments"
+            />
+            <PoolItem
+              v-if="seeds && seeds > 0"
+              type="resource"
+              tooltip="Seed"
+              :amount="seeds"
+            />
+            <PoolItem
+              v-if="timeCapsules && timeCapsules > 0"
+              type="resource"
+              tooltip="Time Capsule"
+              :amount="timeCapsules"
             />
             <PoolItem
               v-if="sealTokens && sealTokens > 0"

@@ -381,6 +381,7 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "83016": return "standalone.theNightsUsurper"
     case "85001": return "standalone.theBlobThatAteEverything"
     case "86001": return "standalone.warOfTheOuterGods"
+    case "87001": return "standalone.machinationsThroughTime"
     case "84001": return "standalone.murderAtTheExcelsiorHotel"
     case "88001": return "standalone.fortuneAndFolly"
     case "88001b": return "standalone.fortuneAndFolly"

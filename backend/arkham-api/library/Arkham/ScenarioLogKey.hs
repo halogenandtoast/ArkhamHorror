@@ -149,6 +149,24 @@ data ScenarioLogKey
   | TheVentIsOpen
   | -- | Film Fatale
     TheInvestigatorsMadeTheirCallTime
+  | -- | Machinations Through Time
+    ThomasAndMaryHaveMet
+  | ThomasAndMaryAreInspiredByNikolaTesla
+  | FundingForAnObservatoryHasBegun
+  | TheObservatoryIsBuilt
+  | TeleportationResearchHasBegun
+  | CorriganIndustriesHasBeenFounded
+  | ThomasAndMaryHaveMadeAHistoricDiscovery
+  | ThomasAndMaryHaveWonANobelPrize
+  | ATreeSeedHasBeenPlanted
+  | ThomasAndMaryHaveMarried
+  | TheDebtHasBeenPaid
+  | -- | The Labyrinths of Lunacy
+    BeenInjected (Labeled InvestigatorId)
+  | PulledTheLeftLever (Labeled InvestigatorId)
+  | PulledTheMiddleLever (Labeled InvestigatorId)
+  | PulledTheRightLever (Labeled InvestigatorId)
+  | TurnedTheValve (Labeled InvestigatorId)
   | -- | Guardians of the Abyss
     FoundADoorMarkedWithBlood
   | BoughtAnOddTrinket
@@ -198,6 +216,11 @@ instance ToGameLoggerFormat ScenarioLogKey where
     HadADrink (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} had a drink"
     Cheated (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} cheated"
     MeddledWithThePast (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} meddled with the past"
+    BeenInjected (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} has been injected"
+    PulledTheLeftLever (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} pulled the left lever"
+    PulledTheMiddleLever (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} pulled the middle lever"
+    PulledTheRightLever (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} pulled the right lever"
+    TurnedTheValve (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} turned the valve"
     other -> pack . go $ show other
    where
     go :: String -> String

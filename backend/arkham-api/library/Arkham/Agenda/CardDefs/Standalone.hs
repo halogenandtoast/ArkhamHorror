@@ -147,3 +147,18 @@ theEggHatches = agenda "86040" "The Egg Hatches" 4 ChildrenOfParadise
 
 ezelZenRezlEmerges :: CardDef
 ezelZenRezlEmerges = agenda "86046" "Ezel-zen-rezl Emerges" 4 SwarmOfAssimilation
+
+intoTheVoid :: CardDef
+intoTheVoid = agenda "87002" "Into the Void" 1 MachinationsThroughTime
+
+timeMarchesOn :: CardDef
+timeMarchesOn = agenda "87003" "Time Marches On" 2 MachinationsThroughTime
+
+awakeningTheLabyrinthsOfLunacy :: CardDef
+awakeningTheLabyrinthsOfLunacy = agenda "70003" "Awakening" 1 LabyrinthsOfLunacySingleGroup
+
+agonyAndDespair :: CardDef
+agonyAndDespair = agenda "70005" "Agony and Despair" 2 LabyrinthsOfLunacySingleGroup
+
+theMastermind :: CardDef
+theMastermind = agenda "70006" "The Mastermind" 3 TheLabyrinthsOfLunacy

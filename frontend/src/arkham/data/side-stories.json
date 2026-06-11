@@ -1,5 +1,53 @@
 [
   {
+    "id": "70001",
+    "name": "The Labyrinths of Lunacy",
+    "standaloneDifficulties": [
+      "Standard",
+      "Hard"
+    ],
+    "difficultyLevels": {
+      "Standard": [
+        "PlusOne",
+        "Zero",
+        "Zero",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "MinusFive",
+        "Skull",
+        "Skull",
+        "AutoFail",
+        "ElderSign"
+      ],
+      "Hard": [
+        "PlusOne",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusTwo",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "MinusFive",
+        "MinusSix",
+        "Skull",
+        "Skull",
+        "AutoFail",
+        "ElderSign"
+      ]
+    },
+    "xp": 2,
+    "alpha": true
+  },
+  {
     "id": "81001",
     "name": "Curse of the Rougarou",
     "standaloneDifficulties": [
@@ -369,6 +417,98 @@
       ]
     },
     "xp": 3,
+    "alpha": true,
+    "dev": true
+  },
+  {
+    "id": "87001",
+    "name": "Machinations Through Time",
+    "standaloneDifficulties": [
+      "Easy",
+      "Standard",
+      "Hard",
+      "Expert"
+    ],
+    "difficultyLevels": {
+      "Easy": [
+        "PlusOne",
+        "PlusOne",
+        "PlusOne",
+        "Zero",
+        "Zero",
+        "Zero",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusTwo",
+        "Skull",
+        "Cultist",
+        "Tablet",
+        "ElderThing",
+        "AutoFail",
+        "ElderSign"
+      ],
+      "Standard": [
+        "PlusOne",
+        "Zero",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "Skull",
+        "Skull",
+        "Cultist",
+        "Tablet",
+        "ElderThing",
+        "AutoFail",
+        "ElderSign"
+      ],
+      "Hard": [
+        "Zero",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "MinusSix",
+        "Skull",
+        "Skull",
+        "Cultist",
+        "Tablet",
+        "ElderThing",
+        "ElderThing",
+        "AutoFail",
+        "ElderSign"
+      ],
+      "Expert": [
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "MinusFive",
+        "MinusSix",
+        "MinusEight",
+        "Skull",
+        "Skull",
+        "Cultist",
+        "Tablet",
+        "ElderThing",
+        "ElderThing",
+        "AutoFail",
+        "ElderSign"
+      ]
+    },
+    "xp": 2,
     "alpha": true,
     "dev": true
   },

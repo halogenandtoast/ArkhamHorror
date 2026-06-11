@@ -28,6 +28,7 @@ allAgendaCards =
       , aCreatureOfTheBayou
       , agentsOfTheDark
       , agentsOfTheOuterGods
+      , agonyAndDespair
       , aHarshWindBlows
       , aKillerParty
       , allBetsDown
@@ -41,6 +42,7 @@ allAgendaCards =
       , aTearInRealityV2
       , aTrailOfTwists
       , awakening
+      , awakeningTheLabyrinthsOfLunacy
       , backToTheVale
       , barricadedStreets
       , beckoningForPower
@@ -114,10 +116,12 @@ allAgendaCards =
       , icyDepths
       , inEveryShadow
       , intoTheCaves
+      , intoTheVoid
       , intoTheWhite
       , intruders
       , itAwaits
       , jessiesRequest
+      , theMastermind
       , theSummoningOfSilenus
       , theSummoningProgresses
       , theSummoningNearsCompletion
@@ -283,6 +287,7 @@ allAgendaCards =
       , threeFates
       , timeCollapsing
       , timeIsRunningShort
+      , timeMarchesOn
       , torturousDescent
       , unchangingAsTheSea
       , undergroundMuscle

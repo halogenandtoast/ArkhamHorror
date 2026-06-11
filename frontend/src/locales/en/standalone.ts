@@ -9,6 +9,8 @@ import theMidwinterGala from '@/locales/en/standalone/theMidwinterGala.json'
 import filmFatale from '@/locales/en/standalone/filmFatale.json'
 import theBlobThatAteEverything from '@/locales/en/standalone/theBlobThatAteEverything.json'
 import warOfTheOuterGods from '@/locales/en/standalone/warOfTheOuterGods.json'
+import machinationsThroughTime from '@/locales/en/standalone/machinationsThroughTime.json'
+import theLabyrinthsOfLunacy from '@/locales/en/standalone/theLabyrinthsOfLunacy.json'
 
 export default {
   curseOfTheRougarou,
@@ -21,5 +23,7 @@ export default {
   theMidwinterGala,
   filmFatale,
   theBlobThatAteEverything,
-  warOfTheOuterGods
+  warOfTheOuterGods,
+  machinationsThroughTime,
+  theLabyrinthsOfLunacy
 }

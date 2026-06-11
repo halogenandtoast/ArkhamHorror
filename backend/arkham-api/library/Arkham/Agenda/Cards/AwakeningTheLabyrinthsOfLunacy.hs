@@ -1,0 +1,41 @@
+module Arkham.Agenda.Cards.AwakeningTheLabyrinthsOfLunacy (awakeningTheLabyrinthsOfLunacy) where
+
+import Arkham.Ability
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Agenda.Import.Lifted
+import Arkham.Helpers.Doom (getDoomCount)
+import Arkham.Helpers.GameValue (getGameValue)
+import Arkham.Helpers.Query (getLead)
+import Arkham.Matcher
+
+newtype AwakeningTheLabyrinthsOfLunacy = AwakeningTheLabyrinthsOfLunacy AgendaAttrs
+  deriving anyclass (IsAgenda, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+awakeningTheLabyrinthsOfLunacy :: AgendaCard AwakeningTheLabyrinthsOfLunacy
+awakeningTheLabyrinthsOfLunacy =
+  agenda (1, A) AwakeningTheLabyrinthsOfLunacy Cards.awakeningTheLabyrinthsOfLunacy (Static 6)
+
+-- In Single Group Mode, if the investigators feel that they have completed
+-- their objective with time to spare, they may add doom to the agenda until
+-- its doom threshold is satisfied during the mythos phase.
+instance HasAbilities AwakeningTheLabyrinthsOfLunacy where
+  getAbilities (AwakeningTheLabyrinthsOfLunacy a) =
+    guard (onSide A a) *> [restricted a 1 (DuringPhase #mythos) (FastAbility Free)]
+
+instance RunMessage AwakeningTheLabyrinthsOfLunacy where
+  runMessage msg a@(AwakeningTheLabyrinthsOfLunacy attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      let mThreshold = agendaDoomThreshold attrs
+      for_ mThreshold \gv -> do
+        threshold <- getGameValue gv
+        doom <- getDoomCount
+        when (threshold > doom) $ placeDoom (attrs.ability 1) attrs (threshold - doom)
+      pure a
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      lead <- getLead
+      actId <- selectJust AnyAct
+      push $ AdvanceAct actId (toSource lead) #other
+      advanceAgendaDeck attrs
+      pure a
+    _ -> AwakeningTheLabyrinthsOfLunacy <$> liftRunMessage msg attrs

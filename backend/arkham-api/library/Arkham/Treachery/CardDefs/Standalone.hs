@@ -821,3 +821,102 @@ transmogrify =
   (treachery "86050" "Transmogrify" SwarmOfAssimilation 2)
     { cdCardTraits = singleton Curse
     }
+
+aTearInTimeMachinationsThroughTime :: CardDef
+aTearInTimeMachinationsThroughTime =
+  (treachery "87048" "A Tear in Time" MachinationsThroughTime 2)
+    { cdCardTraits = singleton Hex
+    }
+
+abducted :: CardDef
+abducted =
+  (treachery "87049" "Abducted" MachinationsThroughTime 3)
+    { cdCardTraits = singleton Scheme
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+brokenSpace :: CardDef
+brokenSpace =
+  (treachery "87050" "Broken Space" MachinationsThroughTime 3)
+    { cdCardTraits = singleton Hex
+    }
+
+dimensionalBreach :: CardDef
+dimensionalBreach =
+  (treachery "87051" "Dimensional Breach" MachinationsThroughTime 2)
+    { cdCardTraits = setFromList [Hazard, Power]
+    }
+
+fromAllAngles :: CardDef
+fromAllAngles =
+  (treachery "87052" "From All Angles" MachinationsThroughTime 3)
+    { cdCardTraits = singleton Terror
+    }
+
+lostInTimeMachinationsThroughTime :: CardDef
+lostInTimeMachinationsThroughTime =
+  (treachery "87053" "Lost in Time" MachinationsThroughTime 1)
+    { cdCardTraits = singleton Hex
+    }
+
+mergingTimelinesMachinationsThroughTime :: CardDef
+mergingTimelinesMachinationsThroughTime =
+  (treachery "87054" "Merging Timelines" MachinationsThroughTime 2)
+    { cdCardTraits = singleton Hex
+    }
+
+openPortal :: CardDef
+openPortal =
+  (treachery "87055" "Open Portal" MachinationsThroughTime 3)
+    { cdCardTraits = singleton Hazard
+    }
+
+temporalDistortion :: CardDef
+temporalDistortion =
+  (treachery "87056" "Temporal Distortion" MachinationsThroughTime 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+vanishingHistory :: CardDef
+vanishingHistory =
+  (treachery "87057" "Vanishing History" MachinationsThroughTime 3)
+    { cdCardTraits = singleton Hex
+    }
+
+unnaturalWeariness :: CardDef
+unnaturalWeariness =
+  (treachery "70055" "Unnatural Weariness" TheLabyrinthsOfLunacy 3)
+    { cdCardTraits = setFromList [Trait.Injury, Trait.Poison]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+poisonousGas :: CardDef
+poisonousGas =
+  (treachery "70056" "Poisonous Gas" TheLabyrinthsOfLunacy 3)
+    { cdCardTraits = setFromList [Trait.Trap, Trait.Poison]
+    }
+
+dreadfulMechanism :: CardDef
+dreadfulMechanism =
+  (treachery "70057" "Dreadful Mechanism" TheLabyrinthsOfLunacy 3)
+    { cdCardTraits = setFromList [Trait.Trap]
+    }
+
+bloodAndRust :: CardDef
+bloodAndRust =
+  (treachery "70058" "Blood and Rust" TheLabyrinthsOfLunacy 3)
+    { cdCardTraits = setFromList [Trait.Trap]
+    }
+
+paradoxEffect :: CardDef
+paradoxEffect =
+  (treachery "70060" "Paradox Effect" LabyrinthsOfLunacySingleGroup 3)
+    { cdCardTraits = setFromList [Trait.Hazard]
+    }
+
+harvestedPain :: CardDef
+harvestedPain =
+  (treachery "70061" "Harvested Pain" TheLabyrinthsOfLunacy 3)
+    { cdCardTraits = setFromList [Trait.Hex]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }

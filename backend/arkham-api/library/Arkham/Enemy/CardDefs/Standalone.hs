@@ -1009,3 +1009,120 @@ trylogog =
     { cdCardTraits = setFromList [Creature, Insect]
     , cdKeywords = setFromList [Keyword.Swarming (Static 2), #warring]
     }
+
+edwinBennetBitterAdversary :: CardDef
+edwinBennetBitterAdversary =
+  unique
+    $ (enemy "87036a" ("Edwin Bennet" <:> "Bitter Adversary") MachinationsThroughTimeSingleGroup 1)
+      { cdCardTraits = setFromList [Humanoid, Elite]
+      , cdKeywords =
+          setFromList [Keyword.Patrol (LocationWithAsset $ AssetWithTrait Scientist)]
+      , cdDoubleSided = True
+      , cdOtherSide = Just "87036b"
+      , cdArt = "87036"
+      }
+
+oldSadieSheldon :: CardDef
+oldSadieSheldon =
+  unique
+    $ (enemy "87040" ("Old Sadie Sheldon" <:> "Bootlegging Kingpin") MachinationsThroughTime 1)
+      { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+      , cdKeywords = setFromList [Keyword.Aloof]
+      , cdVictoryPoints = Just 0
+      }
+
+sheldonGang :: CardDef
+sheldonGang =
+  (enemy "87041" "Sheldon Gang" MachinationsThroughTime 3)
+    { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate, Elite]
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 0
+    }
+
+tyrthrha :: CardDef
+tyrthrha =
+  unique
+    $ (enemy "87043" ("Tyr'thrha" <:> "Arch-Lord of Tindalos") MachinationsThroughTime 1)
+      { cdCardTraits = setFromList [AncientOne, Tindalos, Elite]
+      , cdKeywords =
+          setFromList
+            [ Keyword.Massive
+            , Keyword.Retaliate
+            , Keyword.Patrol (LocationWithAsset $ AssetWithTrait Scientist)
+            ]
+      , cdVictoryPoints = Just 0
+      }
+
+ghastlySatyr :: CardDef
+ghastlySatyr =
+  (enemy "87044" "Ghastly Satyr" MachinationsThroughTime 3)
+    { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
+    , cdKeywords =
+        setFromList [Keyword.Patrol (LocationWithAsset $ AssetWithTrait Scientist)]
+    }
+
+houndOfTindalos :: CardDef
+houndOfTindalos =
+  (enemy "87045" "Hound of Tindalos" MachinationsThroughTime 4)
+    { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
+    , cdKeywords =
+        setFromList [Keyword.Patrol (LocationWithAsset $ AssetWithTrait Scientist)]
+    }
+
+manyAngledThing :: CardDef
+manyAngledThing =
+  (enemy "87046" "Many-Angled Thing" MachinationsThroughTime 1)
+    { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 1
+    }
+
+tindalosAlphaMachinationsThroughTime :: CardDef
+tindalosAlphaMachinationsThroughTime =
+  (enemy "87047" "Tindalos Alpha" MachinationsThroughTime 1)
+    { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+    }
+
+eixodolon :: CardDef
+eixodolon =
+  unique
+    $ (enemy "70048" ("Eixodolon" <:> "Your Anguish Is My Power") TheLabyrinthsOfLunacy 1)
+      { cdCardTraits = setFromList [Humanoid, Servitor, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+      , cdVictoryPoints = Just 3
+      }
+
+eixodolonsPet :: CardDef
+eixodolonsPet =
+  unique
+    $ ( enemy
+          "70050"
+          ("Eixodolon's Pet" <:> "You Are Not Its First Victim, Or Its Last")
+          LabyrinthsOfLunacySingleGroup
+          1
+      )
+      { cdCardTraits = setFromList [Monster, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+      , cdVictoryPoints = Just 2
+      }
+
+facelessAbductor :: CardDef
+facelessAbductor =
+  (enemy "70052" "Faceless Abductor" TheLabyrinthsOfLunacy 2)
+    { cdCardTraits = setFromList [Monster, Nightgaunt]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+torturedVictim :: CardDef
+torturedVictim =
+  (enemy "70053" "Tortured Victim" TheLabyrinthsOfLunacy 3)
+    { cdCardTraits = setFromList [Humanoid, Extradimensional]
+    , cdRevelation = IsRevelation
+    }
+
+miGoGuard :: CardDef
+miGoGuard =
+  (enemy "70054" "Mi-Go Guard" TheLabyrinthsOfLunacy 3)
+    { cdCardTraits = setFromList [Monster, MiGo]
+    }

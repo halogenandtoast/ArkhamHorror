@@ -33,6 +33,7 @@ allLocationCards =
       , abandonedChapelSpectral
       , abandonedShack
       , abandonedSite
+      , abandonedWarehouse
       , abbeyChurch
       , abbeyTowerSpiresForbidden
       , abbeyTowerThePathIsOpen
@@ -57,6 +58,9 @@ allLocationCards =
       , ancientHallRearrangedByTime
       , ancientPlanetarium
       , anotherDimension
+      , arkhamAdvertiserFuture
+      , arkhamAdvertiserPresent
+      , arkhamGazette
       , arkhamPoliceStation
       , arkhamWoodsBootleggingOperation
       , arkhamWoodsCliffside
@@ -154,6 +158,20 @@ allLocationCards =
       , cafeLunaCoterieHaunt
       , cairoBazaar
       , arkham
+      , chamberOfDecay
+      , chamberOfHunger
+      , chamberOfNight
+      , chamberOfPoison
+      , chamberOfRain
+      , chamberOfRegret
+      , chamberOfRot
+      , chamberOfSecretsBloodyPrison
+      , chamberOfSecretsEnshroudedPrison
+      , chamberOfSecretsMysteriousPrison
+      , chamberOfSorrows
+      , labyrinthineHallsCorpseFilledPath
+      , labyrinthineHallsFoulSmellingPath
+      , labyrinthineHallsOvergrownPath
       , streetsOfProvidence
       , athenaeumOfTheEmptySky
       , theArcade
@@ -203,6 +221,7 @@ allLocationCards =
       , chapultepecHill_178
       , chapultepecHill_179
       , chapultepecPark
+      , childhoodHome
       , choeurGothique_292
       , choeurGothique_293
       , chthonianDepths
@@ -237,6 +256,7 @@ allLocationCards =
       , controlStation
       , coop
       , corpseGrove
+      , corriganIndustries
       , cosmicGate
       , cosmicIngress
       , coterieLibraryLair
@@ -599,7 +619,10 @@ allLocationCards =
       , miskatonicQuad
       , miskatonicRiver
       , miskatonicUniversity
+      , miskatonicUniversityFuture
       , miskatonicUniversityMiskatonicMuseum
+      , miskatonicUniversityPast
+      , miskatonicUniversityPresent
       , mistFilledCaverns
       , mistPylon_174
       , mistPylon_175
@@ -650,6 +673,7 @@ allLocationCards =
       , northTower_288
       , notreDame
       , obeliskOfTheodosius
+      , oMalleysWatchShop
       , office
       , officeMurderAtTheExcelsiorHotel
       , officeSpectral
@@ -785,6 +809,9 @@ allLocationCards =
       , ritualSiteTeetawn
       , ritualSiteTothis
       , riverCanyon
+      , riverDocksFuture
+      , riverDocksPast
+      , riverDocksPresent
       , riversideTemple
       , rivertown
       , rivertown_292
@@ -996,12 +1023,15 @@ allLocationCards =
       , theWhiteShip
       , throneOfBloodRedAsBloodBlackAsNight
       , throneRoom
+      , tickTockClubFuture
+      , tickTockClubPresent
       , tidalPool
       , tightTurn_a
       , tightTurn_b
       , tightTurn_c
       , timeWrackedWoods
       , tinMine
+      , tindalos
       , titanicRamp_182
       , titanicRamp_183
       , titanicRamp_184
@@ -1109,6 +1139,7 @@ allLocationCards =
       , witchHouseRuins
       , xochimilco
       , yard
+      , yeOldeMagickShoppe
       , yithianOrrery
       , yourHouse
       , yuggoth

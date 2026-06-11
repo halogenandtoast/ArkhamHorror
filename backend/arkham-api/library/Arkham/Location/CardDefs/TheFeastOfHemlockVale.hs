@@ -183,15 +183,15 @@ suspendedGraveyard =
 
 hiddenCoveTheLostSister :: CardDef
 hiddenCoveTheLostSister =
-  locationWithUnrevealed_ "10577" "Cavern" [Cave] "Hidden Cove" [Coastal] TheLostSister
+  locationWithUnrevealed_ "10577" "Cavern" [Cave, Dark] "Hidden Cove" [Coastal] TheLostSister
 
 weedChokedBeach :: CardDef
 weedChokedBeach =
-  locationWithUnrevealed_ "10578" "Cavern" [Cave] "Weed-Choked Beach" [Coastal] TheLostSister
+  locationWithUnrevealed_ "10578" "Cavern" [Cave, Dark] "Weed-Choked Beach" [Coastal, Cave] TheLostSister
 
 rockyShoreline :: CardDef
 rockyShoreline =
-  locationWithUnrevealed_ "10579" "Cavern" [Cave] "Rocky Shoreline" [Coastal] TheLostSister
+  locationWithUnrevealed_ "10579" "Cavern" [Cave, Dark] "Rocky Shoreline" [Coastal] TheLostSister
 
 undergroundPools :: CardDef
 undergroundPools =

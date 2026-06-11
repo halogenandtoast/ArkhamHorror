@@ -22,13 +22,13 @@ instance HasAbilities BlightedGlade where
       $ restricted
         a
         1
-        (exists $ OutOfPlayEnemy PursuitZone EnemyWithEvade)
+        (exists $ OutOfPlayEnemy PursuitZone EnemyWithFight)
         (forced $ RevealLocation #after You $ be a)
 
 instance RunMessage BlightedGlade where
   runMessage msg l@(BlightedGlade attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- pursuitEnemiesWithLowestEvade
+      enemies <- pursuitEnemiesWithLowestFight
       chooseTargetM iid enemies \e -> spawnAt e Nothing (SpawnAtLocation attrs.id)
       pure l
     _ -> BlightedGlade <$> liftRunMessage msg attrs

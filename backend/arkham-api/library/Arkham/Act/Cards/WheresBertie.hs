@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Types (Field (..))
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card.CardDef
@@ -16,6 +17,7 @@ import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
+import Arkham.Projection
 import Arkham.Scenario.Deck
 
 newtype WheresBertie = WheresBertie ActAttrs
@@ -57,9 +59,11 @@ instance RunMessage WheresBertie where
       doStep 2 msg
       doStep 3 msg
 
+      doom <- field AgendaDoom =<< selectJust AnyAgenda
       backToTheVale <- getSetAsideCard Agendas.backToTheVale
       removeActDeck
       setCurrentAgendaDeck [backToTheVale]
+      placeDoomOnAgenda doom
       selectEach AnyAct (toDiscard attrs)
       pure a
     DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do

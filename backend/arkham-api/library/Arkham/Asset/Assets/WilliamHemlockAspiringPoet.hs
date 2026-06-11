@@ -28,17 +28,14 @@ instance HasAbilities WilliamHemlockAspiringPoet where
 
 instance RunMessage WilliamHemlockAspiringPoet where
   runMessage msg a@(WilliamHemlockAspiringPoet attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) n | n == 1 || n == 2 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability n) attrs #intellect (Fixed 2)
+      beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       codex iid (attrs.ability 1) 4
       pure a
-    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      codex iid (attrs.ability 2) 4
-      pure a
-    UseCardAbility _ (isSource attrs -> True) 99 ws _ -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
       cancelWindowBatch ws
       removeFromGame attrs
       setCardAside attrs

@@ -105,7 +105,10 @@
     "placeTrap": "Place a trap",
     "moveBarrier": "Move a barrier",
     "moveDecoy": "Move a decoy",
-    "moveTrap": "Move a trap"
+    "moveTrap": "Move a trap",
+    "removeBarrier": "Remove a barrier",
+    "removeDecoy": "Remove a decoy",
+    "removeTrap": "Remove a trap"
   },
   "codex": {
     "leahAtwood": {

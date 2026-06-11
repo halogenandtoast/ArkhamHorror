@@ -18,7 +18,6 @@ instance HasAbilities WarpedRailB where
   getAbilities (WarpedRailB a) =
     extendRevealed1 a
       $ mkAbility a 1
-      $ Objective
       $ forced
       $ VehicleEnters
         #after

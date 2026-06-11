@@ -4,15 +4,19 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card
-import Arkham.Helpers.Modifiers (ModifierType (..), semaphore)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, semaphore)
 import Arkham.Matcher
 
 newtype DawnOfTheSecondDay = DawnOfTheSecondDay ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 dawnOfTheSecondDay :: ActCard DawnOfTheSecondDay
 dawnOfTheSecondDay = act (1, A) DawnOfTheSecondDay Cards.dawnOfTheSecondDay Nothing
+
+instance HasModifiersFor DawnOfTheSecondDay where
+  getModifiersFor (DawnOfTheSecondDay attrs) =
+    modifySelect attrs Anyone [CannotBeDamaged, CannotBeDefeated]
 
 instance RunMessage DawnOfTheSecondDay where
   runMessage msg a@(DawnOfTheSecondDay attrs) = runQueueT $ case msg of

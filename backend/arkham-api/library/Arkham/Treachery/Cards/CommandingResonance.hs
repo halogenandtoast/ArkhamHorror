@@ -11,6 +11,7 @@ import Arkham.Projection
 import Arkham.Trait (Trait (Insect))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
+import Data.Bits (setBit, testBit)
 
 newtype CommandingResonance = CommandingResonance TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -26,16 +27,26 @@ instance RunMessage CommandingResonance where
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
-      doStep n msg
+      doStep n (DoStep 0 msg)
       pure t
-    DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
+    DoStep n (DoStep used msg'@(FailedThisSkillTest iid (isSource attrs -> True))) | n > 0 -> do
       hasCards <- fieldMap InvestigatorHand notNull iid
       hasInsects <- selectAny $ NearestEnemyTo iid (EnemyWithTrait Insect)
-      chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
-        countVar 1 $ labeledValidate' hasCards "discardRandomCardsFromHand" $ randomDiscard iid attrs
-        labeledValidate' hasInsects "nearestInsectEnemyAttacks" $ do_ msg'
-      doStep (n - 1) msg'
+      let canDamage = not (testBit used 0)
+          canDiscard = hasCards && not (testBit used 1)
+          canInsect = hasInsects && not (testBit used 2)
+          chooseAgain b = doStep (n - 1) (DoStep (setBit used b) msg')
+      when (canDamage || canDiscard || canInsect) do
+        chooseOneM iid $ withI18n do
+          countVar 1 $ labeledValidate' canDamage "takeDamage" do
+            assignDamage iid attrs 1
+            chooseAgain 0
+          countVar 1 $ labeledValidate' canDiscard "discardRandomCardsFromHand" do
+            randomDiscard iid attrs
+            chooseAgain 1
+          labeledValidate' canInsect "nearestInsectEnemyAttacks" do
+            do_ msg'
+            chooseAgain 2
       pure t
     Do msg'@(FailedThisSkillTest iid (isSource attrs -> True)) -> do
       nearestInsects <- select $ NearestEnemyTo iid (EnemyWithTrait Insect)

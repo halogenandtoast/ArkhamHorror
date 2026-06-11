@@ -45,7 +45,7 @@ deepeningDark :: CardDef
 deepeningDark = agenda "10606" "Deepening Dark" 1 TheTwistedHollow
 
 backToTheVale :: CardDef
-backToTheVale = agenda "10609" "Back to the Vale!" 2 TheTwistedHollow
+backToTheVale = agenda "10609" "Back to the Vale!" 3 TheTwistedHollow
 
 theOnslaught :: CardDef
 theOnslaught = agenda "10628" "The Onslaught" 1 TheLongestNight

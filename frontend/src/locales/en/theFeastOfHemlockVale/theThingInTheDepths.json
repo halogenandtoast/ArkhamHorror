@@ -84,7 +84,9 @@
   "label": {
     "groundDisturbance": {
       "placeSinkhole": "Place 1 damage on the nearest _Bog_ location, as a sinkhole"
-    }
+    },
+    "removeSinkhole": "Remove 1 sinkhole from the nearest _Bog_ location",
+    "doNotRemoveSinkhole": "Do not remove a sinkhole"
   },
   "codex": {
     "riverHawthorne": {

@@ -34,6 +34,9 @@ instance RunMessage DescentIntoTheMines where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       selectEach (location_ $ withTrait Cave) removeLocation
+      selectForMaybeM
+        (assetIs Assets.riverHawthorneBigInNewYork <> not_ (AssetControlledBy Anyone))
+        removeFromGame
       eachInvestigator \iid -> do
         push $ LoseTokens iid (toSource attrs) Clue (AllLostBut 2)
 

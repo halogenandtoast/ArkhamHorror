@@ -21,7 +21,7 @@ instance HasAbilities HemlockChapelDay where
       $ extendRevealed
         a
         [ withI18nTooltip "hemlockChapel.day.codex"
-            $ restricted a 1 (Here <> youCanTriggerCodex 10) actionAbility
+            $ restricted a 1 (Here <> youCanTriggerCodex 11) actionAbility
         , playerLimit PerGame
             $ withI18nTooltip "hemlockChapel.day.search"
             $ restricted a 2 (Here <> youExist can.search.deck) actionAbility

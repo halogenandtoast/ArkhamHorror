@@ -6,6 +6,8 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Scenarios.FateOfTheVale.Helpers
 import Arkham.Card
+import Arkham.Helpers.Cost (getSpendableClueCount)
+import Arkham.Helpers.GameValue (getPlayerCountValue)
 import Arkham.I18n
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Location.Types (Field (LocationCardsUnderneath))
@@ -27,7 +29,12 @@ instance HasAbilities FateOfTheValeV2 where
       a
       [ skillTestAbility $ restricted a 1 (DuringTurn You) $ parleyAction (HandDiscardCost 1 #any)
       , onlyOnce
-          $ restricted a 2 (notExists $ EnemyWithTrait Trait.Resident)
+          $ restricted
+            a
+            2
+            ( notExists (EnemyWithTrait Trait.Resident)
+                <> notExists (LocationWithCardsUnderneath $ HasCard $ CardWithTrait Trait.Resident)
+            )
           $ Objective
           $ FastAbility (GroupClueCost (PerPlayer 3) Anywhere)
       ]
@@ -51,11 +58,16 @@ instance RunMessage FateOfTheValeV2 where
           \(card, resident) -> do
             focusCards [card] do
               chooseOneM iid $ withI18n do
-                labeled' "continue" do
-                  unfocusCards
-                  obtainCard card
-                  eid <- createEnemyAt (residentEnemyDef resident) lid
-                  exhaustEnemy (attrs.ability 1) eid
+                labeled' "continue" $ unfocusCards >> obtainCard card
+              cluesNeeded <- getPlayerCountValue (PerPlayer 1)
+              spendable <- getSpendableClueCount [iid]
+              when (spendable >= cluesNeeded) do
+                chooseOrRunOneM iid $ withI18n do
+                  countVar cluesNeeded $ labeled' "spendClues" do
+                    spendClues iid cluesNeeded
+                    eid <- createEnemyAt (residentEnemyDef resident) lid
+                    exhaustEnemy (attrs.ability 1) eid
+                  labeled' "doNotPutItIntoPlay" nothing
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceVia #other attrs (attrs.ability 2)

@@ -34,7 +34,7 @@ instance RunMessage FecundThicket where
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed x)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      enemies <- pursuitEnemiesWithHighestEvade
+      enemies <- pursuitEnemiesWithHighestHealth
       chooseTargetM iid enemies \e -> spawnAt e Nothing (SpawnAtLocation attrs.id)
       pure l
     _ -> FecundThicket <$> liftRunMessage msg attrs

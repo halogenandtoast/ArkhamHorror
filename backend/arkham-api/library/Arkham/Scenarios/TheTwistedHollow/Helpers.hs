@@ -40,6 +40,36 @@ pursuitEnemiesWithHighestFight = do
     )
     enemies
 
+pursuitEnemiesWithLowestFight :: (HasGame m, Tracing m) => m [EnemyId]
+pursuitEnemiesWithLowestFight = do
+  enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithFight
+  fightValue <-
+    selectAgg' @(OutOfPlayEntity 'PursuitZone Enemy)
+      (Min . fromMaybe 0)
+      (OutOfPlayEnemyField PursuitZone EnemyFight)
+      (OutOfPlayEnemy PursuitZone EnemyWithFight)
+  filterM
+    ( fieldMap @(OutOfPlayEntity 'PursuitZone Enemy)
+        (OutOfPlayEnemyField PursuitZone EnemyFight)
+        (== Just fightValue)
+    )
+    enemies
+
+pursuitEnemiesWithHighestHealth :: (HasGame m, Tracing m) => m [EnemyId]
+pursuitEnemiesWithHighestHealth = do
+  enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithHealth
+  healthValue <-
+    selectAgg' @(OutOfPlayEntity 'PursuitZone Enemy)
+      (Max0 . fromMaybe 0)
+      (OutOfPlayEnemyField PursuitZone EnemyHealth)
+      (OutOfPlayEnemy PursuitZone EnemyWithHealth)
+  filterM
+    ( fieldMap @(OutOfPlayEntity 'PursuitZone Enemy)
+        (OutOfPlayEnemyField PursuitZone EnemyHealth)
+        (== Just healthValue)
+    )
+    enemies
+
 pursuitEnemiesWithHighestEvade :: (HasGame m, Tracing m) => m [EnemyId]
 pursuitEnemiesWithHighestEvade = do
   enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithEvade

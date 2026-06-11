@@ -2,7 +2,6 @@ module Arkham.Agenda.Cards.DangerousRide (dangerousRide) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMapM)
 import Arkham.I18n
 import Arkham.Keyword qualified as Keyword
@@ -23,14 +22,16 @@ dangerousRide = agenda (2, A) DangerousRide Cards.dangerousRide (Static 14)
 instance HasModifiersFor DangerousRide where
   getModifiersFor (DangerousRide a) = do
     modifySelect a (LocationWithAsset StoryAsset) [CannotBeSlidOrSwapped]
-    modifySelectMapM a (InPlayEnemy AnyEnemy) \enemy -> do
+    modifySelect a (InPlayEnemy AnyEnemy) [AddKeyword Keyword.Hunter, ResolveHunterTwice]
+    modifySelectMapM a Anywhere \loc -> do
       connections <- runDefaultMaybeT [] do
-        loc <- MaybeT $ getLocationOf enemy
         pos <- MaybeT $ field LocationPosition loc
-        locations <- select $ mapOneOf LocationInPosition (adjacentPositions pos)
-        pure $ map HunterConnectedTo locations
+        select $ mapOneOf LocationInPosition (adjacentPositions pos)
 
-      pure $ AddKeyword Keyword.Hunter : ResolveHunterTwice : connections
+      pure
+        [ ConnectedToWhen (LocationWithId loc) (mapOneOf LocationWithId connections)
+        | notNull connections
+        ]
 
 instance RunMessage DangerousRide where
   runMessage msg a@(DangerousRide attrs) = runQueueT $ case msg of

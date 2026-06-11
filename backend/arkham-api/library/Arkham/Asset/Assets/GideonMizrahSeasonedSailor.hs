@@ -22,7 +22,7 @@ instance HasModifiersFor GideonMizrahSeasonedSailor where
 
 instance HasAbilities GideonMizrahSeasonedSailor where
   getAbilities (GideonMizrahSeasonedSailor a) =
-    [ restricted a 1 (OnSameLocation <> youCanTriggerCodex 6) doubleActionAbility
+    [ restricted a 1 (OnSameLocation <> youCanTriggerCodex 6) (parleyAction (ActionCost 1))
     , mkAbility a 2 $ forced $ AssetDefeated #when ByAny (be a)
     ]
 

@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.PsychotropicSpores (psychotropicSpores) where
 import Arkham.Ability
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Helpers.Cost
+import Arkham.Helpers.History
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -30,7 +31,12 @@ instance RunMessage PsychotropicSpores where
         placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      directHorror iid (attrs.ability 1) 1
+      -- The DrewCardsFromOwnDeck window fires on the first draw of each phase, but
+      -- this ability should only resolve once per round. RoundHistory aggregates
+      -- prior phases' draws, so a value of 0 means this is the first draw this round.
+      drawnThisRound <- getHistoryField RoundHistory iid HistoryCardsDrawn
+      when (drawnThisRound == 0) do
+        directHorror iid (attrs.ability 1) 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

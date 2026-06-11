@@ -29,7 +29,7 @@ deepeningDark = agenda (1, A) DeepeningDark Cards.deepeningDark (Static 3)
 
 instance HasModifiersFor DeepeningDark where
   getModifiersFor (DeepeningDark a) =
-    modifySelect a Anyone [CannotCancelHorrorFrom (a.ability 2)]
+    modifySelect a Anyone [CannotCancelHorrorFrom (a.ability 1)]
 
 instance HasAbilities DeepeningDark where
   getAbilities (DeepeningDark x) =
@@ -59,7 +59,7 @@ instance RunMessage DeepeningDark where
           unrevealed <- selectField LocationCard $ UnrevealedLocation <> LocationWithTrait Dark
           unless (null unrevealed) do
             shuffleCardsIntoTopOfDeck WoodsDeck 2 unrevealed
-          selectEach (RevealedLocation <> EmptyLocation) \loc -> do
+          selectEach (RevealedLocation <> EmptyLocation <> LocationWithTrait Dark) \loc -> do
             push $ RemoveAllTokens (toSource attrs) (toTarget loc)
             push $ UnrevealLocation loc
           doStep 2 msg'

@@ -12,6 +12,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
+import Arkham.Trait (Trait (Resident))
 
 newtype CaveIn = CaveIn TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -46,7 +47,7 @@ instance RunMessage CaveIn where
       cancelWindowBatch ws
       investigators <- select $ InVehicleMatching $ assetIs Assets.mineCartReliableButBroken
       for_ investigators $ assignDamageTo (attrs.ability 1) 2
-      selectEach (AssetControlledBy $ mapOneOf InvestigatorWithId investigators) \a ->
+      selectEach (AssetControlledBy (mapOneOf InvestigatorWithId investigators) <> withTrait Resident) \a ->
         dealAssetDirectDamage a (attrs.ability 1) 2
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

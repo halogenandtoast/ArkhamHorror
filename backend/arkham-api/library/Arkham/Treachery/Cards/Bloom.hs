@@ -20,7 +20,7 @@ instance RunMessage Bloom where
     Revelation iid (isSource attrs -> True) -> do
       enemies <- select $ NearestEnemyToFallback iid (EnemyWithTrait Flora <> EnemyWithAnyDamage)
       if null enemies
-        then discardUntilFirst iid attrs Deck.EncounterDeck $ basic $ #enemy <> CardWithTrait Flora
+        then discardUntilFirst iid attrs Deck.EncounterDeck $ basic $ CardWithTrait Flora
         else chooseTargetM iid enemies (handleTarget iid attrs)
       pure t
     RequestedEncounterCard (isSource attrs -> True) (Just iid) mcard -> do

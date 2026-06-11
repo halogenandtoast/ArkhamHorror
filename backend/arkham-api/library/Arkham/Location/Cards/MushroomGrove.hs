@@ -1,18 +1,24 @@
 module Arkham.Location.Cards.MushroomGrove (mushroomGrove) where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhenM)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Trait (Trait (Dark))
 
 newtype MushroomGrove = MushroomGrove LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mushroomGrove :: LocationCard MushroomGrove
 mushroomGrove = locationWith MushroomGrove Cards.mushroomGrove 2 (PerPlayer 1) connectsToAdjacent
+
+instance HasModifiersFor MushroomGrove where
+  getModifiersFor (MushroomGrove a) =
+    modifySelfWhenM a (selectNone (be a <> LocationWithTrait Dark)) [ShroudModifier 2]
 
 instance HasAbilities MushroomGrove where
   getAbilities (MushroomGrove a) =

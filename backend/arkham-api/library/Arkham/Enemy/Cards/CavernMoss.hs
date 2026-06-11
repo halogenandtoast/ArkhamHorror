@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.CavernMoss (cavernMoss) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect, modifySelf)
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -30,6 +30,7 @@ instance HasModifiersFor CavernMoss where
         , RemoveKeyword Aloof
         ]
       modified_ a aid [Blank]
+      modifySelect a (InvestigatorAt (locationWithEnemy a)) [AsIfEngagedWith a.id]
     _ -> pure ()
 
 instance HasAbilities CavernMoss where

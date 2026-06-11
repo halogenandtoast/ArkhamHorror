@@ -17,14 +17,17 @@ import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Grid
+import Arkham.Location.Types (Field (LocationTokens))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier (UIModifier (..))
+import Arkham.Projection (fieldMap)
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheThingInTheDepths.Helpers
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Token (countTokens)
 import Arkham.Trait (Trait (Bog, Sunken))
 import Data.Maybe (fromJust)
 
@@ -41,10 +44,12 @@ theThingInTheDepths difficulty = scenario TheThingInTheDepths "10588" "The Thing
 
 instance HasChaosTokenValue TheThingInTheDepths where
   getChaosTokenValue iid tokenFace (TheThingInTheDepths attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      sunken <- selectCount $ LocationWithTrait Sunken
+      pure $ toChaosTokenValue attrs Skull (ceiling @Double $ fromIntegral sunken / 2.0) sunken
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 1 3
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 5
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheThingInTheDepths where
@@ -222,6 +227,27 @@ instance RunMessage TheThingInTheDepths where
         , Enemies.graspingTendril
         , Enemies.graspingTendril
         ]
+    ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
+      mayRemoveSinkhole iid
+      pure s
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | token.face == Cultist, isHardExpert attrs -> do
+      mayRemoveSinkhole iid
+      pure s
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
+      placeSinkhole iid Tablet
+      pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      drawGraspingTendril iid attrs
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Tablet | isEasyStandard attrs -> placeSinkhole iid Tablet
+        ElderThing | isEasyStandard attrs -> drawGraspingTendril iid attrs
+        _ -> pure ()
+      pure s
+    FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) -> do
+      temporaryModifier card ElderThing NoSurge $ drawCard iid card
+      pure s
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
@@ -335,3 +361,23 @@ instance RunMessage TheThingInTheDepths where
         _ -> error "invalid resolution"
       pure s
     _ -> TheThingInTheDepths <$> liftRunMessage msg attrs
+
+mayRemoveSinkhole :: ReverseQueue m => InvestigatorId -> m ()
+mayRemoveSinkhole iid = do
+  bogs <-
+    select (NearestLocationTo iid (LocationWithTrait Bog))
+      >>= filterM (fieldMap LocationTokens (\ts -> countTokens #damage ts > 0))
+  when (notNull bogs) $ scenarioI18n $ chooseOneM iid do
+    labeled' "removeSinkhole" $ chooseOrRunOneM iid do
+      targets bogs \lid -> removeTokens Cultist lid #damage 1
+    labeled' "doNotRemoveSinkhole" nothing
+
+placeSinkhole :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
+placeSinkhole iid source = do
+  bogs <- select (NearestLocationTo iid (LocationWithTrait Bog))
+  when (notNull bogs) $ scenarioI18n $ chooseOrRunOneM iid do
+    targets bogs \lid -> placeTokens source lid #damage 1
+
+drawGraspingTendril :: ReverseQueue m => InvestigatorId -> ScenarioAttrs -> m ()
+drawGraspingTendril iid attrs =
+  findEncounterCard iid attrs (#enemy <> cardIs Enemies.graspingTendril)

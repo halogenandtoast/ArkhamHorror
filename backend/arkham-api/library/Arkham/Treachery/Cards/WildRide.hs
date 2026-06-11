@@ -37,7 +37,7 @@ instance RunMessage WildRide where
         labeled' "wildRide.damage" do
           eachInvestigator \iid' -> do
             directDamageAndHorror iid' (attrs.ability 1) 1 1
-            selectEach (assetControlledBy iid <> hasAnyTrait [Resident, Ally]) \a ->
+            selectEach (assetControlledBy iid' <> hasAnyTrait [Resident, Ally]) \a ->
               dealAssetDirectDamageAndHorror a (attrs.ability 1) 1 1
       toDiscardBy iid (attrs.ability 1) attrs
       pure t

@@ -22,7 +22,7 @@ instance HasAbilities PoisonedMarsh where
 instance RunMessage PoisonedMarsh where
   runMessage msg l@(PoisonedMarsh attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assets <- select $ assetControlledBy iid
+      assets <- select $ assetControlledBy iid <> #ally
       chooseOrRunOneM iid $ scenarioI18n $ scope "poisonedMarsh" do
         countVar 1 $ labeledI "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
         unless (null assets) do

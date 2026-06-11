@@ -16,7 +16,7 @@ newtype CrookedPath = CrookedPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crookedPath :: LocationCard CrookedPath
-crookedPath = locationWith CrookedPath Cards.crookedPath 0 (Static 1) connectsToAdjacent
+crookedPath = locationWith CrookedPath Cards.crookedPath (-2) (Static 1) connectsToAdjacent
 
 instance HasModifiersFor CrookedPath where
   getModifiersFor (CrookedPath a) = do

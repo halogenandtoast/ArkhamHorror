@@ -10,7 +10,9 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Window (wouldDo)
@@ -62,10 +64,12 @@ theLongestNight difficulty = scenario TheLongestNight "10626" "The Longest Night
 
 instance HasChaosTokenValue TheLongestNight where
   getChaosTokenValue iid tokenFace (TheLongestNight attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      doom <- getDoomCount
+      pure $ toChaosTokenValue attrs Skull ((doom + 1) `div` 2) doom
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 1 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheLongestNight where
@@ -298,6 +302,70 @@ instance RunMessage TheLongestNight where
       connected <- select $ connectedTo (LocationWithId lid)
       chooseTargetM lead connected \lid2 ->
         push $ ScenarioCountIncrementBy (Barriers lid lid2) 1
+      pure s
+    ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
+      withLocationOf iid \lid -> doStep 1 (ForTarget (LocationTarget lid) (ScenarioSpecific "placeBarrierAt" (toJSON iid)))
+      pure s
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist | isHardExpert attrs -> do
+          withLocationOf iid \lid -> doStep 1 (ForTarget (LocationTarget lid) (ScenarioSpecific "placeBarrierAt" (toJSON iid)))
+        _ -> pure ()
+      pure s
+    DoStep 1 (ForTarget (LocationTarget lid) (ScenarioSpecific "placeBarrierAt" v)) -> do
+      let iid :: InvestigatorId = toResult v
+      connected <- select $ connectedTo (LocationWithId lid)
+      chooseTargetM iid connected \lid2 ->
+        push $ ScenarioCountIncrementBy (Barriers lid lid2) 1
+      pure s
+    ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
+      drawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
+      doStep 1 (ScenarioSpecific "nearestEnemyAttacks" (toJSON iid))
+      pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      withLocationOf iid \lid -> doStep 1 (ForTarget (LocationTarget lid) (ScenarioSpecific "removeDefenseAt" (toJSON iid)))
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Tablet | isEasyStandard attrs -> doStep 1 (ScenarioSpecific "nearestEnemyAttacks" (toJSON iid))
+        ElderThing | isEasyStandard attrs ->
+          withLocationOf iid \lid -> doStep 1 (ForTarget (LocationTarget lid) (ScenarioSpecific "removeDefenseAt" (toJSON iid)))
+        _ -> pure ()
+      pure s
+    DoStep 1 (ScenarioSpecific "nearestEnemyAttacks" v) -> do
+      let iid :: InvestigatorId = toResult v
+      enemies <- select $ NearestEnemyTo iid AnyEnemy
+      chooseTargetM iid enemies \eid -> do
+        ready eid
+        resolveHunterKeyword eid
+        doStep 2 (ForTarget (EnemyTarget eid) (ScenarioSpecific "nearestEnemyAttacks" v))
+      pure s
+    DoStep 2 (ForTarget (EnemyTarget eid) (ScenarioSpecific "nearestEnemyAttacks" v)) -> do
+      let iid :: InvestigatorId = toResult v
+      whenMatch eid (enemyEngagedWith iid) $ initiateEnemyAttack eid ScenarioSource iid
+      pure s
+    DoStep 1 (ForTarget (LocationTarget lid) (ScenarioSpecific "removeDefenseAt" v)) -> do
+      let iid :: InvestigatorId = toResult v
+      hasDecoy <- lid <=~> LocationWithHorror (atLeast 1)
+      hasTrap <- lid <=~> LocationWithDamage (atLeast 1)
+      connected <- select $ connectedTo (LocationWithId lid)
+      let meta = toResultDefault defaultMeta attrs.meta
+      let barrierPairs =
+            filter
+              (\lid2 -> Map.findWithDefault 0 (sortedPair lid lid2) meta.barriers > 0)
+              connected
+      when (hasDecoy || hasTrap || notNull barrierPairs) do
+        chooseOneM iid do
+          when hasDecoy do
+            labeled' "removeDecoy" $ removeTokens ScenarioSource lid Horror 1
+          when hasTrap do
+            labeled' "removeTrap" $ removeTokens ScenarioSource lid Damage 1
+          when (notNull barrierPairs) do
+            labeled' "removeBarrier" do
+              chooseTargetM iid barrierPairs \lid2 ->
+                push $ ScenarioCountDecrementBy (Barriers lid lid2) 1
       pure s
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v

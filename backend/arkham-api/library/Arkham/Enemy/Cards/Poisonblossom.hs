@@ -20,8 +20,8 @@ instance HasModifiersFor Poisonblossom where
     let overgrowth = a.token Overgrowth
     when (overgrowth > 0) do
       getCampaignTime >>= \case
-        Day -> modifySelf a [HealthModifier overgrowth, DamageDealt 1]
-        Night -> modifySelf a [EnemyFight 1, DamageDealt 1]
+        Day -> modifySelf a [HealthModifier overgrowth, DamageDealt overgrowth]
+        Night -> modifySelf a [EnemyFight overgrowth, DamageDealt overgrowth]
 
 instance HasAbilities Poisonblossom where
   getAbilities (Poisonblossom a) = extend a [mkAbility a 1 $ forced $ RoundEnds #when]

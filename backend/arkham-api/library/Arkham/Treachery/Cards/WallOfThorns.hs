@@ -19,6 +19,7 @@ instance HasAbilities WallOfThorns where
   getAbilities (WallOfThorns a) =
     [ restricted a 1 (isDayFor You) $ forced $ Enters #when You (locationWithTreachery a)
     , restricted a 2 (isNightFor You) $ forced $ Enters #when You (locationWithTreachery a)
+    , restricted a 3 (isNightFor You) $ forced $ Leaves #when You (locationWithTreachery a)
     ]
 
 instance RunMessage WallOfThorns where
@@ -32,6 +33,9 @@ instance RunMessage WallOfThorns where
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      assignDamage iid (attrs.ability 1) 1
+      assignDamage iid (attrs.ability 2) 1
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      assignDamage iid (attrs.ability 3) 1
       pure t
     _ -> WallOfThorns <$> liftRunMessage msg attrs

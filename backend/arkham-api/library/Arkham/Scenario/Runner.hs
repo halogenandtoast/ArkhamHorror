@@ -710,6 +710,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== card))
       & (victoryDisplayL %~ filter (/= card))
+      & (cardsUnderScenarioReferenceL %~ filter (/= card))
       & (encounterDeckL %~ withDeck (filter ((/= card) . EncounterCard)))
       & (discardL %~ filter ((/= card) . EncounterCard))
   PlaceUnderneath AgendaDeckTarget cards -> do

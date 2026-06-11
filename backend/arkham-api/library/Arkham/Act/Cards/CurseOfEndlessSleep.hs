@@ -29,7 +29,7 @@ instance HasAbilities CurseOfEndlessSleep where
     , restricted
         a
         2
-        (InVictoryDisplay (mapOneOf cardIs (brotherhoodEnemies <> evidenceCards)) (EqualTo $ Static 6))
+        (InVictoryDisplay (mapOneOf cardIs evidenceCards) (EqualTo $ Static 6))
         $ Objective
         $ forced AnyWindow
     ]
@@ -38,17 +38,9 @@ instance RunMessage CurseOfEndlessSleep where
   runMessage msg a@(CurseOfEndlessSleep attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 ws _ -> do
       for_ [c | (windowType -> Window.AddedToVictory _ c) <- ws] \card -> do
-        -- Flip the [[Brotherhood]] enemy over to its [[Evidence]] side while it
-        -- sits in the victory display. This must run *after* the enemy is fully
-        -- removed: adding an enemy to victory ends with a RemoveEnemy that
-        -- re-adds its (un-flipped) card to the victory display, which would
-        -- clobber an earlier flip. pushEnd defers the replacement past it.
         let evidence = flipCard card
         lift $ pushEnd $ ReplaceCard card.id evidence
         let code = toCardCode evidence
-        -- If the Evidence has no task, or its task is already complete, resolve
-        -- its benefit immediately. Otherwise leave a lingering effect that
-        -- resolves it the moment the task is completed.
         readNow <- maybe (pure True) remembered (evidenceTask code)
         if readNow
           then readEvidence code
@@ -70,8 +62,8 @@ instance RunMessage CurseOfEndlessSleep where
           ]
       setExplorationDeck =<< shuffle (expedition <> treacheries)
       shuffleEncounterDiscardBackIn
-      eachInvestigator \iid -> removeAllClues attrs iid
-      selectEach (LocationWithTrait Cairo) \loc -> removeAllClues attrs loc
+      eachInvestigator (removeAllClues attrs)
+      selectEach (LocationWithTrait Cairo) (removeAllClues attrs)
       advanceActDeck attrs
       pure a
     _ -> CurseOfEndlessSleep <$> liftRunMessage msg attrs

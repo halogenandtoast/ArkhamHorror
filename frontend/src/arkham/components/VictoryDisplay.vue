@@ -30,7 +30,7 @@ const topOfVictoryDisplay = computed(() => {
 const viewVictoryDisplayLabel = computed(() => t('scenario.victoryDisplay'))
 </script>
 <template>
-  <div v-if="topOfVictoryDisplay || enemiesInVictoryDisplay.length > 0" class="victory-display">
+  <div v-if="topOfVictoryDisplay || enemiesInVictoryDisplay.length > 0" class="victory-display" :aria-label="viewVictoryDisplayLabel" :title="viewVictoryDisplayLabel">
     <div v-if="topOfVictoryDisplay" class="victory-display-card">
       <CardView :game="game" :card="topOfVictoryDisplay" :playerId="playerId" />
 
@@ -67,9 +67,17 @@ const viewVictoryDisplayLabel = computed(() => t('scenario.victoryDisplay'))
 }
 
 .victory-display {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  align-items: center;
+  padding: 5px;
+  border: 1px solid rgba(214, 178, 92, 0.55);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(89, 67, 24, 0.38), rgba(0, 0, 0, 0.22));
+  box-shadow: inset 0 0 10px rgba(214, 178, 92, 0.12);
+
 
   &:deep(.card-wrapper) {
     &::after {

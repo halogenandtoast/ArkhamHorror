@@ -25,7 +25,9 @@ jessiesRequest = agenda (1, A) JessiesRequest Cards.jessiesRequest (Static 7)
 
 instance HasAbilities JessiesRequest where
   getAbilities (JessiesRequest a) =
-    [mkAbility a 1 $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)]
+    [ restricted a 1 (exists $ UnderScenarioReferenceMatch AnyCard)
+        $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
+    ]
 
 instance RunMessage JessiesRequest where
   runMessage msg a@(JessiesRequest attrs) = runQueueT $ case msg of

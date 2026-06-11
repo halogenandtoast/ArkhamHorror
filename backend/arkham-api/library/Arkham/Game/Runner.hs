@@ -412,6 +412,7 @@ runGameMessage msg g = case msg of
       & (inActionL .~ True)
       & (actionCanBeUndoneL .~ True)
       & (actionDiffL .~ [])
+      & (actionSnapshotL .~ Transient Nothing)
       & (undoActionStepL ?~ gameScenarioSteps g)
   FinishAction -> do
     iid <- getActiveInvestigatorId
@@ -425,6 +426,7 @@ runGameMessage msg g = case msg of
       & (inActionL .~ False)
       & (actionCanBeUndoneL .~ False)
       & (actionDiffL .~ [])
+      & (actionSnapshotL .~ Transient Nothing)
       & (inDiscardEntitiesL .~ mempty)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
@@ -3715,10 +3717,37 @@ runPreGameMessage msg g = case msg of
   BeginRound -> pure $ g & undoRoundStepL ?~ (gameScenarioSteps g + 1)
   _ -> pure g
 
+{- | Maintain the revert information for the in-flight action.
+
+While an action resolves, 'gameActionDiff' holds a single lazy revert diff
+from the current state back to the snapshot the action started from (kept in
+the runtime-only 'gameActionSnapshot'). Replacing one unforced thunk per
+message costs nothing; the diff is only computed if the game is saved
+mid-action or the action is undone. This previously consed a fully-computed
+diff per processed message — two whole-game serializations plus a tree diff,
+times hundreds of messages, all forced at every mid-action save.
+
+The snapshot is reconstructed on the first message after a mid-action load by
+folding the saved revert patches into the just-loaded state — which also
+covers mid-action saves written by older builds (one patch per message), so
+'UndoAction' keeps working across the format change.
+-}
 handleActionDiff :: Game -> Game -> Game
 handleActionDiff old new
-  | gameInAction new = new & actionDiffL %~ (diff new old :)
-  | otherwise = new
+  | not (gameInAction new) = new
+  | otherwise = case getTransient (gameActionSnapshot new) of
+      Just snap -> new & actionDiffL .~ [diff new snap]
+      Nothing ->
+        let snap = case gameActionDiff new of
+              -- action began with this message; the pre-message state is the
+              -- action start
+              [] -> old
+              -- resumed from a mid-action save: fold the saved revert patches
+              -- into the just-loaded state to recover the action start
+              ps -> (foldl' unsafePatch old ps) {gameActionDiff = []}
+         in new
+              & (actionSnapshotL .~ Transient (Just snap))
+              & (actionDiffL .~ [diff new snap])
 
 rewriteUsedAbilityWindows
   :: (Window.WindowType -> Bool)

@@ -29,6 +29,27 @@ import GHC.Records
 
 type GameMode = These Campaign Scenario
 
+{- | A field that exists only at runtime: never serialized (omitField is True
+so the TH-derived ToJSON drops it entirely), always 'Nothing' after parsing,
+invisible to Eq/Show. JSON output is byte-identical to a record without the
+field.
+-}
+newtype Transient a = Transient {getTransient :: Maybe a}
+
+instance ToJSON (Transient a) where
+  toJSON _ = Null
+  omitField _ = True
+
+instance FromJSON (Transient a) where
+  parseJSON _ = pure (Transient Nothing)
+  omittedField = Just (Transient Nothing)
+
+instance Eq (Transient a) where
+  _ == _ = True
+
+instance Show (Transient a) where
+  show _ = "Transient"
+
 data Game = Game
   { gamePhaseHistory :: Map InvestigatorId History
   , gameTurnHistory :: Map InvestigatorId History
@@ -83,6 +104,11 @@ data Game = Game
   , -- handling time warp
     gameActionCanBeUndone :: Bool
   , gameActionDiff :: [Diff.Patch]
+  , -- runtime-only snapshot of the state the in-flight action started from;
+    -- gameActionDiff always holds a single (lazy) revert diff against it.
+    -- Reconstructed from gameActionDiff on the first message after a
+    -- mid-action load (see handleActionDiff).
+    gameActionSnapshot :: Transient Game
   , gameInAction :: Bool
   , gameCards :: Map CardId Card
   , gameCardUses :: Map CardCode [InvestigatorId]

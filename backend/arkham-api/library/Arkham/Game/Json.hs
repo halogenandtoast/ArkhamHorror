@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game.Json where
@@ -6,7 +5,6 @@ module Arkham.Game.Json where
 import Arkham.Game.Base
 import Arkham.Game.Settings (defaultSettings)
 import Arkham.Prelude
-import Data.Aeson.TH
 import Data.Map.Strict qualified as Map
 
 -- bring json instances into scope
@@ -16,7 +14,136 @@ import Arkham.Entities ()
 import Arkham.Investigator ()
 import Arkham.Scenario ()
 
-$(deriveToJSON (defaultOptions {allowOmittedFields = True}) ''Game)
+-- Hand-written (rather than TH-derived) so the runtime-only
+-- gameActionSnapshot field is omitted from the serialized form entirely; the
+-- output is otherwise identical to the previously derived instance and is
+-- mirrored by the hand-written FromJSON below.
+instance ToJSON Game where
+  toJSON g =
+    object
+      [ "gamePhaseHistory" .= gamePhaseHistory g
+      , "gameTurnHistory" .= gameTurnHistory g
+      , "gameRoundHistory" .= gameRoundHistory g
+      , "gameInitialSeed" .= gameInitialSeed g
+      , "gameSettings" .= gameSettings g
+      , "gameSeed" .= gameSeed g
+      , "gameWindowDepth" .= gameWindowDepth g
+      , "gameWindowStack" .= gameWindowStack g
+      , "gameRunWindows" .= gameRunWindows g
+      , "gameDepthLock" .= gameDepthLock g
+      , "gameIgnoreCanModifiers" .= gameIgnoreCanModifiers g
+      , "gameMode" .= gameMode g
+      , "gameEntities" .= gameEntities g
+      , "gameActionRemovedEntities" .= gameActionRemovedEntities g
+      , "gamePlayers" .= gamePlayers g
+      , "gameModifiers" .= gameModifiers g
+      , "gameEncounterDiscardEntities" .= gameEncounterDiscardEntities g
+      , "gameInHandEntities" .= gameInHandEntities g
+      , "gameInDiscardEntities" .= gameInDiscardEntities g
+      , "gameInSearchEntities" .= gameInSearchEntities g
+      , "gamePlayerCount" .= gamePlayerCount g
+      , "gameActiveInvestigatorId" .= gameActiveInvestigatorId g
+      , "gameActivePlayerId" .= gameActivePlayerId g
+      , "gameTurnPlayerInvestigatorId" .= gameTurnPlayerInvestigatorId g
+      , "gameLeadInvestigatorId" .= gameLeadInvestigatorId g
+      , "gamePlayerOrder" .= gamePlayerOrder g
+      , "gamePhase" .= gamePhase g
+      , "gamePhaseStep" .= gamePhaseStep g
+      , "gameSkillTest" .= gameSkillTest g
+      , "gameFocusedCards" .= gameFocusedCards g
+      , "gameFocusedTarotCards" .= gameFocusedTarotCards g
+      , "gameFoundCards" .= gameFoundCards g
+      , "gameFocusedChaosTokens" .= gameFocusedChaosTokens g
+      , "gameActiveCard" .= gameActiveCard g
+      , "gameResolvingCard" .= gameResolvingCard g
+      , "gameActiveAbilities" .= gameActiveAbilities g
+      , "gameRemovedFromPlay" .= gameRemovedFromPlay g
+      , "gameInSetup" .= gameInSetup g
+      , "gameGameState" .= gameGameState g
+      , "gameSkillTestResults" .= gameSkillTestResults g
+      , "gameEnemyMoving" .= gameEnemyMoving g
+      , "gameEnemyEvading" .= gameEnemyEvading g
+      , "gameQuestion" .= gameQuestion g
+      , "gameActionCanBeUndone" .= gameActionCanBeUndone g
+      , "gameActionDiff" .= gameActionDiff g
+      , "gameInAction" .= gameInAction g
+      , "gameCards" .= gameCards g
+      , "gameCardUses" .= gameCardUses g
+      , "gameActiveCost" .= gameActiveCost g
+      , "gameGitRevision" .= gameGitRevision g
+      , "gameAllowEmptySpaces" .= gameAllowEmptySpaces g
+      , "gamePerformTarotReadings" .= gamePerformTarotReadings g
+      , "gameCurrentBatchId" .= gameCurrentBatchId g
+      , "gameScenarioSteps" .= gameScenarioSteps g
+      , "gameUndoActionStep" .= gameUndoActionStep g
+      , "gameUndoTurnStep" .= gameUndoTurnStep g
+      , "gameUndoPhaseStep" .= gameUndoPhaseStep g
+      , "gameUndoRoundStep" .= gameUndoRoundStep g
+      , "gameAsIfAtIgnored" .= gameAsIfAtIgnored g
+      , "gameLocationOffsets" .= gameLocationOffsets g
+      ]
+  toEncoding g =
+    pairs
+      $ ("gamePhaseHistory" .= gamePhaseHistory g)
+      <> ("gameTurnHistory" .= gameTurnHistory g)
+      <> ("gameRoundHistory" .= gameRoundHistory g)
+      <> ("gameInitialSeed" .= gameInitialSeed g)
+      <> ("gameSettings" .= gameSettings g)
+      <> ("gameSeed" .= gameSeed g)
+      <> ("gameWindowDepth" .= gameWindowDepth g)
+      <> ("gameWindowStack" .= gameWindowStack g)
+      <> ("gameRunWindows" .= gameRunWindows g)
+      <> ("gameDepthLock" .= gameDepthLock g)
+      <> ("gameIgnoreCanModifiers" .= gameIgnoreCanModifiers g)
+      <> ("gameMode" .= gameMode g)
+      <> ("gameEntities" .= gameEntities g)
+      <> ("gameActionRemovedEntities" .= gameActionRemovedEntities g)
+      <> ("gamePlayers" .= gamePlayers g)
+      <> ("gameModifiers" .= gameModifiers g)
+      <> ("gameEncounterDiscardEntities" .= gameEncounterDiscardEntities g)
+      <> ("gameInHandEntities" .= gameInHandEntities g)
+      <> ("gameInDiscardEntities" .= gameInDiscardEntities g)
+      <> ("gameInSearchEntities" .= gameInSearchEntities g)
+      <> ("gamePlayerCount" .= gamePlayerCount g)
+      <> ("gameActiveInvestigatorId" .= gameActiveInvestigatorId g)
+      <> ("gameActivePlayerId" .= gameActivePlayerId g)
+      <> ("gameTurnPlayerInvestigatorId" .= gameTurnPlayerInvestigatorId g)
+      <> ("gameLeadInvestigatorId" .= gameLeadInvestigatorId g)
+      <> ("gamePlayerOrder" .= gamePlayerOrder g)
+      <> ("gamePhase" .= gamePhase g)
+      <> ("gamePhaseStep" .= gamePhaseStep g)
+      <> ("gameSkillTest" .= gameSkillTest g)
+      <> ("gameFocusedCards" .= gameFocusedCards g)
+      <> ("gameFocusedTarotCards" .= gameFocusedTarotCards g)
+      <> ("gameFoundCards" .= gameFoundCards g)
+      <> ("gameFocusedChaosTokens" .= gameFocusedChaosTokens g)
+      <> ("gameActiveCard" .= gameActiveCard g)
+      <> ("gameResolvingCard" .= gameResolvingCard g)
+      <> ("gameActiveAbilities" .= gameActiveAbilities g)
+      <> ("gameRemovedFromPlay" .= gameRemovedFromPlay g)
+      <> ("gameInSetup" .= gameInSetup g)
+      <> ("gameGameState" .= gameGameState g)
+      <> ("gameSkillTestResults" .= gameSkillTestResults g)
+      <> ("gameEnemyMoving" .= gameEnemyMoving g)
+      <> ("gameEnemyEvading" .= gameEnemyEvading g)
+      <> ("gameQuestion" .= gameQuestion g)
+      <> ("gameActionCanBeUndone" .= gameActionCanBeUndone g)
+      <> ("gameActionDiff" .= gameActionDiff g)
+      <> ("gameInAction" .= gameInAction g)
+      <> ("gameCards" .= gameCards g)
+      <> ("gameCardUses" .= gameCardUses g)
+      <> ("gameActiveCost" .= gameActiveCost g)
+      <> ("gameGitRevision" .= gameGitRevision g)
+      <> ("gameAllowEmptySpaces" .= gameAllowEmptySpaces g)
+      <> ("gamePerformTarotReadings" .= gamePerformTarotReadings g)
+      <> ("gameCurrentBatchId" .= gameCurrentBatchId g)
+      <> ("gameScenarioSteps" .= gameScenarioSteps g)
+      <> ("gameUndoActionStep" .= gameUndoActionStep g)
+      <> ("gameUndoTurnStep" .= gameUndoTurnStep g)
+      <> ("gameUndoPhaseStep" .= gameUndoPhaseStep g)
+      <> ("gameUndoRoundStep" .= gameUndoRoundStep g)
+      <> ("gameAsIfAtIgnored" .= gameAsIfAtIgnored g)
+      <> ("gameLocationOffsets" .= gameLocationOffsets g)
 
 instance FromJSON Game where
   parseJSON = withObject "Game" \o -> do
@@ -65,6 +192,7 @@ instance FromJSON Game where
     gameQuestion <- o .: "gameQuestion"
     gameActionCanBeUndone <- o .: "gameActionCanBeUndone"
     gameActionDiff <- o .: "gameActionDiff"
+    let gameActionSnapshot = Transient Nothing
     gameInAction <- o .: "gameInAction"
     gameCards <- o .: "gameCards"
     gameCardUses <- o .: "gameCardUses" <|> (Map.map (`replicate` gameLeadInvestigatorId) <$> o .: "gameCardUses")

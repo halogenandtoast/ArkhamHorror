@@ -17,14 +17,16 @@ import Api.Arkham.Export
   )
 import Api.Arkham.Helpers (GameApp (..), runGameApp)
 import Arkham.Classes.HasQueue (newQueue, pushAll)
-import Arkham.Game (Game (..), runMessages)
-import Arkham.Game.Diff (patchValueWithRecovery)
+import Arkham.Game (Game (..), PublicGame (..), runMessages)
+import Arkham.Game.Diff (diff, patchValueWithRecovery)
+import Arkham.Game.Runner (handleActionDiff)
 import Arkham.Message (Message (ClearUI, SetActivePlayer))
-import Arkham.Metrics (dumpMetricsTo, enableMetrics)
+import Arkham.Metrics (dumpMetricsTo, enableMetrics, withMetric)
+import Control.Exception (evaluate)
 import GHC.Clock (getMonotonicTimeNSec)
 import Control.Monad (forM, forM_, when)
 import Control.Monad.Random (mkStdGen)
-import Data.Aeson (Result (..), Value, eitherDecodeFileStrict', encode, fromJSON, toJSON)
+import Data.Aeson (Result (..), Value, eitherDecodeFileStrict', eitherDecode, encode, fromJSON, toJSON)
 import Data.ByteString.Lazy qualified as BSL
 import Data.ByteString.Lazy.Char8 qualified as BL8
 import Data.IORef (newIORef, readIORef)
@@ -41,7 +43,7 @@ import OpenTelemetry.Trace
   , tracerOptions
   )
 import System.Environment (getArgs)
-import System.Exit (die)
+import System.Exit (die, exitSuccess)
 import System.IO (hPutStrLn, stderr)
 import Prelude
 
@@ -57,10 +59,12 @@ data Opts = Opts
   , optReplayAll :: Bool
   , optPerStepReport :: Maybe FilePath
   , optPerStepTopN :: Int
+  , optSimulateServer :: Bool
+  , optBenchActionDiff :: Int
   }
 
 defaultOpts :: Opts
-defaultOpts = Opts "" Nothing Nothing False 0 Nothing 50 False Nothing 30
+defaultOpts = Opts "" Nothing Nothing False 0 Nothing 50 False Nothing 30 False 0
 
 usage :: String
 usage =
@@ -78,10 +82,17 @@ usage =
     , "  --metrics [FILE]   Record per-span wall-clock timings; dump table to FILE (or stderr)"
     , "  --metrics-top N    Show top-N spans in the metrics table (default 50)"
     , "  --replay-all       Undo to step 0 then replay every step forward, timing each one."
+    , "                     With --undo N, only undo N steps and replay those N forward."
     , "                     Top slowest steps are printed to stderr; combine with --metrics for"
     , "                     per-span breakdown across the whole replay."
-    , "  --per-step-report FILE  Write step,duration_ms,messages CSV (works with --replay-all)"
+    , "  --per-step-report FILE  Write step,duration_ms,server_ms,messages CSV (works with --replay-all)"
     , "  --per-step-top N   Show top-N slowest steps on stderr (default 30)"
+    , "  --simulate-server  After each replayed step, perform the same JSON work the real"
+    , "                     handler does per answer: force the accumulated action diffs,"
+    , "                     compute the step's undo diff, encode the game for the DB write,"
+    , "                     re-parse it (DB row load), and encode the PublicGame broadcast."
+    , "                     Timings appear as server/* spans in --metrics and server_ms in"
+    , "                     the per-step report."
     ]
 
 parseArgs :: [String] -> IO Opts
@@ -103,6 +114,10 @@ parseArgs = go defaultOpts
     [(k, "")] -> go o {optMetricsTopN = k} rest
     _ -> die $ "--metrics-top expects an integer, got: " <> n
   go o ("--replay-all" : rest) = go o {optReplayAll = True} rest
+  go o ("--simulate-server" : rest) = go o {optSimulateServer = True} rest
+  go o ("--bench-action-diff" : n : rest) = case reads n of
+    [(k, "")] -> go o {optBenchActionDiff = k} rest
+    _ -> die $ "--bench-action-diff expects an integer, got: " <> n
   go o ("--per-step-report" : f : rest) = go o {optPerStepReport = Just f} rest
   go o ("--per-step-top" : n : rest) = case reads n of
     [(k, "")] -> go o {optPerStepTopN = k} rest
@@ -131,8 +146,11 @@ main = do
   -- replaying their choicePatchDown patches (most-recent-step first).
   -- agedSteps is ordered by desc step (see generateExport), so the first
   -- N entries are exactly the steps to undo.
+  -- With --replay-all --undo N, only undo (and then replay) the last N steps;
+  -- some exports cannot be unwound to step 0 (e.g. across scenario
+  -- transitions), and a recent window is usually what you want to time anyway.
   let undoCount =
-        if optReplayAll opts
+        if optReplayAll opts && optUndo opts == 0
           then length agedSteps
           else optUndo opts
   let stepsToUndo = take undoCount (sortOn (Down . arkhamStepStep) agedSteps)
@@ -143,6 +161,29 @@ main = do
       Right v -> case fromJSON v of
         Error e -> die $ "undo result deserialise failed: " <> e
         Success g -> pure (g :: Game)
+
+  -- Isolated benchmark of the in-action diff bookkeeping: run K minimal
+  -- in-action messages through handleActionDiff on the loaded game, then
+  -- force the accumulated gameActionDiff exactly like the per-answer save
+  -- (ActionDiff $ view actionDiffL ge) does. This is the work a real save
+  -- performs after K messages of an action have resolved.
+  when (optBenchActionDiff opts > 0) $ do
+    let k = optBenchActionDiff opts
+    let g0 = currentData {gameInAction = True, gameActionDiff = []}
+    t0 <- getMonotonicTimeNSec
+    let stepG g i = handleActionDiff g (g {gameSeed = gameSeed g + i})
+    let gk = foldl' stepG g0 [1 .. k]
+    bytes <- evaluate (BSL.length (encode (gameActionDiff gk)))
+    t1 <- getMonotonicTimeNSec
+    hPutStrLn stderr
+      $ "bench-action-diff: "
+      <> show k
+      <> " in-action messages; forcing the save cost took "
+      <> printfMs (fromIntegral (t1 - t0) / 1_000_000)
+      <> " ms ("
+      <> show bytes
+      <> " bytes of actionDiff JSON)"
+    exitSuccess
 
   -- The queue waiting at the resume step.
   let resumeQueue =
@@ -189,11 +230,38 @@ main = do
           let msgs = choiceMessages (arkhamStepChoice step)
           when (idx `mod` 100 == 0)
             $ hPutStrLn stderr ("  step " <> show idx <> "/" <> show total)
+          gBefore <- readIORef gameRef
           runGameApp app (pushAll (ClearUI : msgs))
           t0 <- getMonotonicTimeNSec
           runGameApp app (runMessages "headless" tracerCallback)
           t1 <- getMonotonicTimeNSec
-          pure (arkhamStepStep step, t1 - t0, length msgs)
+          serverNs <-
+            if optSimulateServer opts
+              then do
+                ge <- readIORef gameRef
+                s0 <- getMonotonicTimeNSec
+                -- Mirror Api.Handler.Arkham.Games.Shared.updateGame, in order:
+                -- 1. force the per-message action diffs saved into ArkhamStep
+                _ <- withMetric "server/forceActionDiff" $ evaluate (BSL.length (encode (gameActionDiff ge)))
+                -- 2. the step's undo patch (diff new state vs state at answer start)
+                _ <- withMetric "server/diffDown" $ evaluate (BSL.length (encode (diff ge gBefore)))
+                -- 3. encode the full game for the DB write (replace gameId g')
+                gameBytes <- withMetric "server/encodeGame" $ do
+                  let bs = encode ge
+                  _ <- evaluate (BSL.length bs)
+                  pure bs
+                -- 4. parse the full game back (every answer re-reads the row)
+                _ <- withMetric "server/parseGame" $ evaluate $ case eitherDecode @Game gameBytes of
+                  Left e -> error ("simulate-server: game failed to re-parse: " <> e)
+                  Right (g :: Game) -> gameSeed g
+                -- 5. encode the PublicGame broadcast sent to every subscriber
+                _ <-
+                  withMetric "server/encodePublicGame"
+                    $ evaluate (BSL.length (encode (PublicGame ("headless" :: T.Text) "bench" [] ge)))
+                s1 <- getMonotonicTimeNSec
+                pure (s1 - s0)
+              else pure 0
+          pure (arkhamStepStep step, t1 - t0, serverNs, length msgs)
         pure timings
       else do
         forM_ (zip [(0 :: Int) ..] answers) $ \(idx, ans) -> do
@@ -234,26 +302,48 @@ main = do
 
   when (not (null perStepTimings)) $ do
     let toMs ns = fromIntegral ns / (1_000_000 :: Double)
-        sortedDesc = sortOn (Down . (\(_, dur, _) -> dur)) perStepTimings
+        totalNs (_, drainNs, serverNs, _) = drainNs + serverNs
+        sortedDesc = sortOn (Down . totalNs) perStepTimings
         slowest = take (optPerStepTopN opts) sortedDesc
+        sumDrain = sum [d | (_, d, _, _) <- perStepTimings]
+        sumServer = sum [s | (_, _, s, _) <- perStepTimings]
     hPutStrLn stderr ""
-    hPutStrLn stderr "Top slowest steps (descending by drain time):"
-    hPutStrLn stderr "  step      duration_ms   messages_pushed"
-    forM_ slowest $ \(step, ns, msgs) ->
+    hPutStrLn stderr
+      $ "Aggregate: drain "
+      <> printfMs (toMs sumDrain)
+      <> " ms, server-sim "
+      <> printfMs (toMs sumServer)
+      <> " ms over "
+      <> show (length perStepTimings)
+      <> " steps"
+    hPutStrLn stderr "Top slowest steps (descending by drain+server time):"
+    hPutStrLn stderr "  step      duration_ms     server_ms   messages_pushed"
+    forM_ slowest $ \(step, ns, serverNs, msgs) ->
       hPutStrLn stderr
         $ "  "
         <> padLeft 8 (show step)
         <> "  "
         <> padLeft 11 (printfMs (toMs ns))
         <> "  "
+        <> padLeft 12 (printfMs (toMs serverNs))
+        <> "  "
         <> padLeft 5 (show msgs)
     case optPerStepReport opts of
       Nothing -> pure ()
       Just path -> do
         let rows =
-              "step,duration_ms,messages_pushed\n"
+              "step,duration_ms,server_ms,messages_pushed\n"
                 <> concatMap
-                  (\(s, ns, m) -> show s <> "," <> printfMs (toMs ns) <> "," <> show m <> "\n")
+                  ( \(s, ns, serverNs, m) ->
+                      show s
+                        <> ","
+                        <> printfMs (toMs ns)
+                        <> ","
+                        <> printfMs (toMs serverNs)
+                        <> ","
+                        <> show m
+                        <> "\n"
+                  )
                   perStepTimings
         writeFile path rows
         hPutStrLn stderr $ "Per-step CSV written to " <> path

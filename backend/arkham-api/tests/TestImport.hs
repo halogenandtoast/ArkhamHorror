@@ -903,6 +903,7 @@ newGame scenario' investigator = do
         , gameQuestion = mempty
         , gameActionCanBeUndone = False
         , gameActionDiff = []
+        , gameActionSnapshot = Transient Nothing
         , gameInAction = False
         , gameCards = mempty
         , gameActiveCost = mempty

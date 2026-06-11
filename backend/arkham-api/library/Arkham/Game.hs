@@ -302,6 +302,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameEnemyEvading = Nothing
         , gameActionCanBeUndone = False
         , gameActionDiff = []
+        , gameActionSnapshot = Transient Nothing
         , gameInAction = False
         , gameActiveCost = mempty
         , gameInSetup = True

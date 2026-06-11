@@ -493,4 +493,14 @@ allActs =
     , SomeActCard blackwatersBane
     , SomeActCard exposeTheAnomalyEpicMultiplayer
     , SomeActCard blackwatersBaneEpicMultiplayer
+    , -- The Labyrinths of Lunacy
+      SomeActCard sealedInGroupA
+    , SomeActCard wateryGraveGroupB
+    , SomeActCard theLeversGroupC
+    , SomeActCard distortionsInTimeGroupA
+    , SomeActCard seepingDeathGroupB
+    , SomeActCard thePetGroupC
+    , SomeActCard theEscapeTheLabyrinthsOfLunacy
+    , -- Machinations Through Time
+      SomeActCard walkingThroughTime
     ]

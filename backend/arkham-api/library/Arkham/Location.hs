@@ -1328,4 +1328,37 @@ allLocations =
     , SomeLocationCard theBurningPit
     , SomeLocationCard thePenthouse
     , SomeLocationCard hubDimension
+    , -- The Labyrinths of Lunacy
+      SomeLocationCard chamberOfSecretsBloodyPrison
+    , SomeLocationCard chamberOfSecretsMysteriousPrison
+    , SomeLocationCard chamberOfSecretsEnshroudedPrison
+    , SomeLocationCard chamberOfRain
+    , SomeLocationCard chamberOfSorrows
+    , SomeLocationCard chamberOfNight
+    , SomeLocationCard chamberOfRegret
+    , SomeLocationCard labyrinthineHallsFoulSmellingPath
+    , SomeLocationCard labyrinthineHallsCorpseFilledPath
+    , SomeLocationCard labyrinthineHallsOvergrownPath
+    , SomeLocationCard chamberOfHunger
+    , SomeLocationCard chamberOfDecay
+    , SomeLocationCard chamberOfRot
+    , SomeLocationCard chamberOfPoison
+    , SomeLocationCard abandonedWarehouse
+    , -- Machinations Through Time
+      SomeLocationCard tindalos
+    , SomeLocationCard arkhamGazette
+    , SomeLocationCard oMalleysWatchShop
+    , SomeLocationCard riverDocksPast
+    , SomeLocationCard miskatonicUniversityPast
+    , SomeLocationCard childhoodHome
+    , SomeLocationCard arkhamAdvertiserPresent
+    , SomeLocationCard tickTockClubPresent
+    , SomeLocationCard riverDocksPresent
+    , SomeLocationCard miskatonicUniversityPresent
+    , SomeLocationCard yeOldeMagickShoppe
+    , SomeLocationCard arkhamAdvertiserFuture
+    , SomeLocationCard tickTockClubFuture
+    , SomeLocationCard riverDocksFuture
+    , SomeLocationCard miskatonicUniversityFuture
+    , SomeLocationCard corriganIndustries
     ]

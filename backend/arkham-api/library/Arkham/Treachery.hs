@@ -1034,6 +1034,24 @@ allTreacheries =
       , SomeTreacheryCard hellfireWarOfTheOuterGods
       , SomeTreacheryCard ravagesOfWar
       , SomeTreacheryCard whileTheySleep
+      , -- The Labyrinths of Lunacy
+        SomeTreacheryCard unnaturalWeariness
+      , SomeTreacheryCard poisonousGas
+      , SomeTreacheryCard dreadfulMechanism
+      , SomeTreacheryCard bloodAndRust
+      , SomeTreacheryCard paradoxEffect
+      , SomeTreacheryCard harvestedPain
+      , -- Machinations Through Time
+        SomeTreacheryCard aTearInTimeMachinationsThroughTime
+      , SomeTreacheryCard abducted
+      , SomeTreacheryCard brokenSpace
+      , SomeTreacheryCard dimensionalBreach
+      , SomeTreacheryCard fromAllAngles
+      , SomeTreacheryCard lostInTimeMachinationsThroughTime
+      , SomeTreacheryCard mergingTimelinesMachinationsThroughTime
+      , SomeTreacheryCard openPortal
+      , SomeTreacheryCard temporalDistortion
+      , SomeTreacheryCard vanishingHistory
       , -- Death of Stars
         SomeTreacheryCard inevitableEnd
       , -- Children of Paradise

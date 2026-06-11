@@ -912,4 +912,19 @@ allEnemies =
       , SomeEnemyCard miGoHarvester
       , SomeEnemyCard miGoMeddler
       , SomeEnemyCard miGoAbductor
+      , -- The Labyrinths of Lunacy
+        SomeEnemyCard eixodolon
+      , SomeEnemyCard eixodolonsPet
+      , SomeEnemyCard facelessAbductor
+      , SomeEnemyCard torturedVictim
+      , SomeEnemyCard miGoGuard
+      , -- Machinations Through Time
+        SomeEnemyCard edwinBennetBitterAdversary
+      , SomeEnemyCard oldSadieSheldon
+      , SomeEnemyCard sheldonGang
+      , SomeEnemyCard tyrthrha
+      , SomeEnemyCard ghastlySatyr
+      , SomeEnemyCard houndOfTindalos
+      , SomeEnemyCard manyAngledThing
+      , SomeEnemyCard tindalosAlphaMachinationsThroughTime
       ]

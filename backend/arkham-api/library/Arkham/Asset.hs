@@ -1611,4 +1611,22 @@ allAssets =
       , SomeAssetCard petOozeling
       , SomeAssetCard miGoWeapon
       , SomeAssetCard ltWilsonStewart
+      , -- The Labyrinths of Lunacy
+        SomeAssetCard eixodolonsNote
+      , SomeAssetCard keyOfMysteries
+      , SomeAssetCard mysteriousSyringe
+      , SomeAssetCard rotDiagram
+      , SomeAssetCard hungerDiagram
+      , SomeAssetCard decayDiagram
+      , -- Machinations Through Time
+        SomeAssetCard thomasCorriganPast
+      , SomeAssetCard maryZielinskiPast
+      , SomeAssetCard nikolaTesla
+      , SomeAssetCard thomasCorriganPresent
+      , SomeAssetCard maryZielinskiPresent
+      , SomeAssetCard ezraGraves
+      , SomeAssetCard thomasCorriganFuture
+      , SomeAssetCard maryZielinskiFuture
+      , SomeAssetCard dimensionalBeamMachine
+      , SomeAssetCard edwinBennetAstuteAssociate
       ]

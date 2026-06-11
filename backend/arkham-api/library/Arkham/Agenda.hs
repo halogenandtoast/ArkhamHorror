@@ -437,4 +437,11 @@ allAgendas =
       SomeAgendaCard theAnomalySpreads
     , SomeAgendaCard theAnomalySwells
     , SomeAgendaCard theAnomalyConsumes
+    , -- The Labyrinths of Lunacy
+      SomeAgendaCard awakeningTheLabyrinthsOfLunacy
+    , SomeAgendaCard agonyAndDespair
+    , SomeAgendaCard theMastermind
+    , -- Machinations Through Time
+      SomeAgendaCard intoTheVoid
+    , SomeAgendaCard timeMarchesOn
     ]

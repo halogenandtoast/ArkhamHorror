@@ -12,6 +12,7 @@ data HistoryMatcher
   = DefeatedEnemiesWithTotalHealth ValueMatcher
   | DefeatedEnemyWithTraitAt Trait LocationId
   | AttackedByAnyEnemies
+  | CluesDiscoveredAt ValueMatcher LocationId
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''HistoryMatcher)

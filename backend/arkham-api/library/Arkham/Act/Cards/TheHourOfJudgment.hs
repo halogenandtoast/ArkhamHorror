@@ -44,6 +44,7 @@ instance RunMessage TheHourOfJudgment where
           nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 neith
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
+      selectEach (enemyIs Enemies.neith) addToVictory_
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do

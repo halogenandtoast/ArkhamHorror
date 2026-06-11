@@ -31,6 +31,8 @@ historyMatches = \case
         )
       . historyEnemiesDefeated
   Matcher.AttackedByAnyEnemies -> pure . notNull . historyEnemiesAttackedBy
+  Matcher.CluesDiscoveredAt vMatcher lid ->
+    (`gameValueMatches` vMatcher) . findWithDefault 0 lid . historyCluesDiscovered
 
 getAllHistoryField :: (HasGame m, Tracing m, Monoid k) => HistoryType -> HistoryField k -> m k
 getAllHistoryField htype fld = concatMap (viewHistoryField fld) <$> (traverse (getHistory htype) =<< getInvestigators)

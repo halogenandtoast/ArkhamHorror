@@ -11,7 +11,7 @@ import Arkham.Effect.Import
 import Arkham.Helpers.Log (remembered)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher
-import Arkham.Trait (Trait (Brotherhood, Cairo, Expedition))
+import Arkham.Trait (Trait (Brotherhood, Cairo, Evidence, Expedition))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (windowType)
 import Arkham.Window qualified as Window
@@ -26,10 +26,8 @@ curseOfEndlessSleep = act (1, A) CurseOfEndlessSleep Cards.curseOfEndlessSleep N
 instance HasAbilities CurseOfEndlessSleep where
   getAbilities (CurseOfEndlessSleep a) =
     [ mkAbility a 1 $ forced $ AddedToVictory #after Nothing (CardWithTrait Brotherhood)
-    , restricted
-        a
-        2
-        (InVictoryDisplay (mapOneOf cardIs evidenceCards) (EqualTo $ Static 6))
+    , onlyOnce
+        $ restricted a 2 (InVictoryDisplay (CardWithTrait Evidence) (static 6))
         $ Objective
         $ forced AnyWindow
     ]

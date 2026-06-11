@@ -23,7 +23,6 @@ import Arkham.Projection
 import Arkham.Scenario.Types (Field (ScenarioCardsUnderScenarioReference))
 import Arkham.ScenarioLogKey
 import Arkham.Source
-import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Cultist))
 import Arkham.Tracing
 
@@ -62,19 +61,6 @@ brotherhoodEnemies =
   , Enemies.farid
   , Enemies.nassor
   , Enemies.professorNathanielTaylor
-  ]
-
--- | The [[Evidence]] story card on the reverse side of each [[Brotherhood]]
--- enemy. Used (alongside 'brotherhoodEnemies') to count progress regardless of
--- which side each card is currently showing in the victory display.
-evidenceCards :: [CardDef]
-evidenceCards =
-  [ Stories.theTranslatorsEvidence
-  , Stories.theSupplicantsEvidence
-  , Stories.thePriestesssEvidence
-  , Stories.theSalesmansEvidence
-  , Stories.theAssassinsEvidence
-  , Stories.theProfessorsEvidence
   ]
 
 -- | The i18n flavor key holding the benefit text on each Evidence story card,

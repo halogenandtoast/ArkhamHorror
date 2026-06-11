@@ -149,30 +149,27 @@ instance RunMessage TheEternalSlumber where
         when (n <= threshold) $ addStrengthOfTheAbyss 1
       pure s
     ScenarioResolution r -> scope "resolutions" do
+      investigators <- allInvestigators
+      recordBrotherhoodAgentsWhoEscaped
       case r of
         NoResolution -> do
-          resolutionWithXp "noResolution" $ allGainXp' attrs
           recordCountM DreamersInTheAbyss getStrengthOfTheAbyss
-          recordBrotherhoodAgentsWhoEscaped
           record TheBrotherhoodsSchemesContinueUnabated
+          resolutionWithXp "noResolution" $ allGainXp' attrs
           killRemainingTakenByTheAbyss ScenarioSource
           endOfScenario
         Resolution 1 -> do
           record TheCurseOfSlumberWasLifted
-          crossOutTakenByTheAbyss
-          investigators <- allInvestigators
-          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.johnAndJessieBurke
-          resolutionWithXp "resolution1" $ allGainXp' attrs
           recordCountM DreamersInTheAbyss getStrengthOfTheAbyss
-          recordBrotherhoodAgentsWhoEscaped
+          crossOutTakenByTheAbyss
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.johnAndJessieBurke
           endOfScenario
         Resolution 2 -> do
           record YouAreAwareOfXzharahsPlans
-          investigators <- allInvestigators
-          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.ancientAnkh
-          resolutionWithXp "resolution2" $ allGainXp' attrs
           recordCountM DreamersInTheAbyss getStrengthOfTheAbyss
-          recordBrotherhoodAgentsWhoEscaped
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.ancientAnkh
           killRemainingTakenByTheAbyss ScenarioSource
           endOfScenario
         _ -> error "invalid resolution"

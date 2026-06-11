@@ -362,11 +362,16 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
   --objective-border-width: 2px;
   --objective-border-outset: 2px;
 
+  > .card {
+    position: relative;
+    z-index: 1;
+  }
+
   &::before {
     content: "";
     position: absolute;
     inset: calc(-1 * var(--objective-border-outset));
-    z-index: 2;
+    z-index: 0;
     padding: var(--objective-border-width);
     border-radius: calc(6px + var(--objective-border-outset));
     background: conic-gradient(

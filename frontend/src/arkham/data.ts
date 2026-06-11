@@ -7,6 +7,7 @@ export interface Scenario {
   returnToName?: string
   beta?: boolean
   alpha?: boolean
+  dev?: boolean
   standaloneDifficulties?: Difficulty[]
   standalone?: boolean
   show?: boolean

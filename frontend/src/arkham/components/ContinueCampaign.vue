@@ -12,6 +12,10 @@ import { useI18n } from 'vue-i18n'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import sideStories from '@/arkham/data/side-stories.json'
+import { useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia'
+import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
 
 const props = defineProps<{
   game: Game
@@ -24,9 +28,16 @@ const props = defineProps<{
 }>();
 
 const { t, te } = useI18n()
+const route = useRoute()
+const store = useUserStore()
+const { currentUser } = storeToRefs(store)
 const send = inject<(msg: string) => void>('send', () => {})
 const addSideStory = ref(false)
 const hasSent = ref(false)
+const alpha = ref(false)
+const dev = isDevBuild()
+const isBetaUser = computed(() => !!currentUser.value?.beta)
+const displayRuleOptions = computed(() => ({ alpha: alpha.value, beta: isBetaUser.value, dev }))
 const sendOnce = (payload: unknown) => {
   if (hasSent.value) return
   hasSent.value = true
@@ -51,7 +62,11 @@ const normalizedContents = (step: CampaignStep): string => {
   }
 }
 // reset the lock on a "fresh update" of the step (new step name/kind)
-onMounted(() => { hasSent.value = false })
+onMounted(() => {
+  hasSent.value = false
+  alpha.value = route.query.alpha !== undefined || localStorage.getItem('alpha') === 'true'
+  if (route.query.alpha !== undefined) localStorage.setItem('alpha', 'true')
+})
 const stepKey = computed(() => `${props.step.tag}:${JSON.stringify(normalizedContents(props.step))}`)
 watch(stepKey, () => { hasSent.value = false })
 const bonusXp = computed(() => props.campaign?.meta?.bonusXp ?? null)
@@ -184,7 +199,7 @@ const standalones = computed(() => {
     return acc
   }, [] as string[])
 
-  return sideStories.flatMap((s: { xp: number, id: string, name: string, scenarios?: { id: string, name: string, notAfter?: string[] }[] }) => {
+  return filterDisplayable(sideStories, displayRuleOptions.value).flatMap((s: { xp: number, id: string, name: string, scenarios?: { id: string, name: string, notAfter?: string[] }[] }) => {
     if (!s.xp || s.xp > minXp.value) return []
     const parts = s.scenarios ?? [{ id: s.id, name: s.name }]
     return parts

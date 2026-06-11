@@ -343,6 +343,7 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
   --gradient-angle: 0deg;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   position: relative;
+  isolation: isolate;
   border-radius: 6px;
   height: var(--card-width);
   width: fit-content;
@@ -358,12 +359,16 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
   --clr-1: #198891;
   --clr-2: #2d8f85;
   --clr-3: #73fb22;
+  --objective-border-width: 2px;
+  --objective-border-outset: 2px;
 
-  &::before, &::after {
+  &::before {
     content: "";
     position: absolute;
-    inset: -0.1rem;
-    z-index: -1;
+    inset: calc(-1 * var(--objective-border-outset));
+    z-index: 2;
+    padding: var(--objective-border-width);
+    border-radius: calc(6px + var(--objective-border-outset));
     background: conic-gradient(
       from var(--gradient-angle),
       var(--clr-1),
@@ -371,12 +376,31 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
       var(--clr-3),
       var(--clr-2),
       var(--clr-1));
-    border-radius: inherit;
+    pointer-events: none;
     animation: rotation 1s linear infinite;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
   }
 
   &::after {
-    filter: blur(3.5rem);
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--objective-border-outset));
+    z-index: -1;
+    border-radius: calc(6px + var(--objective-border-outset));
+    background: conic-gradient(
+      from var(--gradient-angle),
+      var(--clr-1),
+      var(--clr-2),
+      var(--clr-3),
+      var(--clr-2),
+      var(--clr-1));
+    filter: blur(10px);
+    opacity: 0.75;
+    pointer-events: none;
+    animation: rotation 1s linear infinite;
   }
 }
 

@@ -221,7 +221,7 @@ maybeEnemy eid = do
 getSkill :: (HasCallStack, HasGame m) => SkillId -> m Skill
 getSkill sid = fromJustNote missingSkill <$> maybeSkill sid
  where
-  missingSkill = "Unknown skill: " <> show sid
+  missingSkill = "Unknown skill: " <> show sid <> "\n\n" <> prettyCallStack callStack
 
 maybeSkill :: HasGame m => SkillId -> m (Maybe Skill)
 maybeSkill sid = do

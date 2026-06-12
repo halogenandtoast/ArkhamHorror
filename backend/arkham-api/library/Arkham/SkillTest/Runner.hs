@@ -189,10 +189,10 @@ instance RunMessage SkillTest where
           ]
       pure s
     RemovedFromPlay (SkillSource sid) -> do
-      card <- field Field.SkillCard sid
+      mCard <- fieldMay Field.SkillCard sid
       pure
         $ s
-        & (committedCardsL . each %~ filter ((/= card.id) . toCardId))
+        & (committedCardsL . each %~ maybe id (\card -> filter ((/= card.id) . toCardId)) mCard)
         & (subscribersL %~ filter (not . isTarget sid))
     RemoveFromGame target | target == skillTestTarget -> do
       when (skillTestStep < RevealChaosTokenStep) do
@@ -622,8 +622,8 @@ instance RunMessage SkillTest where
       push $ ResetChaosTokens (toSource s)
       pure $ s & (setAsideChaosTokensL .~ mempty)
     AddToVictory _ (SkillTarget sid) -> do
-      card <- field Field.SkillCard sid
-      pure $ s & committedCardsL . each %~ filter (/= card)
+      mCard <- fieldMay Field.SkillCard sid
+      pure $ s & committedCardsL . each %~ maybe id (\card -> filter (/= card)) mCard
     Do (SkillTestEnds _ _ _) -> do
       -- Skill Cards are in the environment and will be discarded normally
       -- However, all other cards need to be discarded here.
@@ -706,10 +706,14 @@ instance RunMessage SkillTest where
              ]
       pure $ s & stepL .~ SkillTestEndsStep
     ReturnToHand _ (SkillTarget sid) -> do
-      card <- field Field.SkillCard sid
+      -- The skill may already be gone (e.g. a doubled "if this test succeeds"
+      -- return from Double or Nothing returning Arrogance a second time), in
+      -- which case it was already removed from the committed cards by the first
+      -- return. Guard the lookup so we don't crash re-fetching it.
+      mCard <- fieldMay Field.SkillCard sid
       pure
         $ s
-        & (committedCardsL . each %~ filter ((/= card.id) . toCardId))
+        & (committedCardsL . each %~ maybe id (\card -> filter ((/= card.id) . toCardId)) mCard)
         & (subscribersL %~ filter (not . isTarget sid))
     ReturnToHand _ (CardIdTarget cardId) -> do
       pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)

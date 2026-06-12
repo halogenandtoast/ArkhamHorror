@@ -927,8 +927,19 @@ allEnemies =
       , SomeEnemyCard houndOfTindalos
       , SomeEnemyCard manyAngledThing
       , SomeEnemyCard tindalosAlphaMachinationsThroughTime
+      , -- Read or Die
+        SomeEnemyCard namerOfTheDead
+      , -- All or Nothing
+        SomeEnemyCard siobhanRiley
+      , SomeEnemyCard cloverClubBouncer
       , -- Bad Blood
         SomeEnemyCard elspethBaudin
+      , -- By the Book
+        SomeEnemyCard mrGrey
+      , -- Laid to Rest
+        SomeEnemyCard jeanDevereuxSeekingClosure
+      , SomeEnemyCard jeanDevereuxPossessed
+      , SomeEnemyCard ravenousSpirit
       , -- Enthralling Encore
         SomeEnemyCard sinisterSoloist
       ]

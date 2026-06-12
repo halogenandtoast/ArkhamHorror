@@ -503,8 +503,17 @@ allActs =
     , SomeActCard theEscapeTheLabyrinthsOfLunacy
     , -- Machinations Through Time
       SomeActCard walkingThroughTime
+    , -- Read or Die
+      SomeActCard speedReading
+    , -- All or Nothing
+      SomeActCard playingCards
+    , SomeActCard hotOnYourTail
     , -- Bad Blood
       SomeActCard aWalkDownMemoryLane
+    , -- By the Book
+      SomeActCard captureTheConspirators
+    , -- Laid to Rest
+      SomeActCard laidToRest
     , -- Enthralling Encore
       SomeActCard breakFreeFromThePast
     ]

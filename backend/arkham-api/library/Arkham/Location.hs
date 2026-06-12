@@ -1361,4 +1361,6 @@ allLocations =
     , SomeLocationCard riverDocksFuture
     , SomeLocationCard miskatonicUniversityFuture
     , SomeLocationCard corriganIndustries
+    , -- By the Book
+      SomeLocationCard arkhamPoliceStationByTheBook
     ]

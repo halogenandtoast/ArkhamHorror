@@ -24,12 +24,13 @@ getSideStoryCost = \case
   "90041" -> 3
   "90054" -> 3
   "90065" -> 3
-  "90094" -> 3
+  "90094" -> 2
   sid -> error $ "Unknown standalone scenario for spending xp: " <> show sid
 
 -- | Challenge scenarios center on a specific investigator who must be chosen
 -- when playing the scenario. As a side-story that investigator pays the full
--- cost while each other investigator pays only 1 xp.
+-- cost while each other investigator pays only 1 xp. Enthralling Encore is the
+-- exception: it only requires parallel content and costs everyone 2 xp.
 challengeScenarioInvestigator :: ScenarioId -> Maybe Text
 challengeScenarioInvestigator = \case
   "90004" -> Just "Daisy Walker"
@@ -39,5 +40,4 @@ challengeScenarioInvestigator = \case
   "90041" -> Just "Wendy Adams"
   "90054" -> Just "Jim Culver"
   "90065" -> Just "Monterey Jack"
-  "90094" -> Just "Lola Hayes"
   _ -> Nothing

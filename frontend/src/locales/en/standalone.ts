@@ -11,6 +11,12 @@ import theBlobThatAteEverything from '@/locales/en/standalone/theBlobThatAteEver
 import warOfTheOuterGods from '@/locales/en/standalone/warOfTheOuterGods.json'
 import machinationsThroughTime from '@/locales/en/standalone/machinationsThroughTime.json'
 import theLabyrinthsOfLunacy from '@/locales/en/standalone/theLabyrinthsOfLunacy.json'
+import readOrDie from '@/locales/en/standalone/readOrDie.json'
+import allOrNothing from '@/locales/en/standalone/allOrNothing.json'
+import badBlood from '@/locales/en/standalone/badBlood.json'
+import byTheBook from '@/locales/en/standalone/byTheBook.json'
+import laidToRest from '@/locales/en/standalone/laidToRest.json'
+import enthrallingEncore from '@/locales/en/standalone/enthrallingEncore.json'
 
 export default {
   curseOfTheRougarou,
@@ -25,5 +31,11 @@ export default {
   theBlobThatAteEverything,
   warOfTheOuterGods,
   machinationsThroughTime,
-  theLabyrinthsOfLunacy
+  theLabyrinthsOfLunacy,
+  readOrDie,
+  allOrNothing,
+  badBlood,
+  byTheBook,
+  laidToRest,
+  enthrallingEncore
 }

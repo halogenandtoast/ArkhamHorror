@@ -444,8 +444,17 @@ allAgendas =
     , -- Machinations Through Time
       SomeAgendaCard intoTheVoid
     , SomeAgendaCard timeMarchesOn
+    , -- Read or Die
+      SomeAgendaCard mortalInquiry
+    , -- All or Nothing
+      SomeAgendaCard eyesAllAroundYou
     , -- Bad Blood
       SomeAgendaCard hyperboreanBlood
+    , -- By the Book
+      SomeAgendaCard aCovertConspiracy
+    , SomeAgendaCard yourDeadlineNears
+    , -- Laid to Rest
+      SomeAgendaCard gatheringMists
     , -- Enthralling Encore
       SomeAgendaCard theHauntingOfTheWardTheatre
     ]

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
 import Arkham.Helpers.SkillTest.Lifted
 
 newtype ZadokAllenDrunkAndDisorderly = ZadokAllenDrunkAndDisorderly EnemyAttrs
@@ -31,6 +32,7 @@ instance RunMessage ZadokAllenDrunkAndDisorderly where
       doStep 2 msg
       pure e
     DoStep 2 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
-      when (attrs.token #clue == 0) $ addToVictory iid attrs
+      whenM (withoutModifier attrs (ScenarioModifier "victoryRequiresMysteriousPhoto")) do
+        when (attrs.token #clue == 0) $ addToVictory iid attrs
       pure e
     _ -> ZadokAllenDrunkAndDisorderly <$> liftRunMessage msg attrs

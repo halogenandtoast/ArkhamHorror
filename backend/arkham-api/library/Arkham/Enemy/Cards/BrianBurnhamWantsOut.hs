@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
 
 newtype BrianBurnhamWantsOut = BrianBurnhamWantsOut EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -26,6 +27,7 @@ instance RunMessage BrianBurnhamWantsOut where
       doStep 2 msg
       pure e
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      when (attrs.token #clue == 0) $ addToVictory iid attrs
+      whenM (withoutModifier attrs (ScenarioModifier "victoryRequiresMysteriousPhoto")) do
+        when (attrs.token #clue == 0) $ addToVictory iid attrs
       pure e
     _ -> BrianBurnhamWantsOut <$> liftRunMessage msg attrs

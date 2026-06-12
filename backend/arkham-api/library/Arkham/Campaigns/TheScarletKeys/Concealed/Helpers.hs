@@ -21,6 +21,7 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Query (getLead)
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
+import Arkham.Matcher.Enemy
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
 import Arkham.Matcher.Window
@@ -121,7 +122,9 @@ makeDecoyAt' decoy iid loc = do
 placeConcealed :: ReverseQueue m => InvestigatorId -> ConcealedCardKind -> [ConcealedCard] -> m ()
 placeConcealed iid kind cards = do
   locations <-
-    select $ LocationWithoutModifier $ CampaignModifier ("noConcealed[" <> tshow kind <> "]")
+    select
+      $ LocationWithoutModifier (CampaignModifier ("noConcealed[" <> tshow kind <> "]"))
+      <> LocationWithoutModifier (CannotBeEnteredBy AnyEnemy)
   for_ cards $ push . Msg.CreateConcealedCard
   push $ Msg.PlaceConcealedCards iid (map toId cards) locations
 

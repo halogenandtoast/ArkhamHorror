@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards.BrownJenkin (brownJenkin) where
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
@@ -30,10 +31,18 @@ instance RunMessage BrownJenkin where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       investigators <- select $ investigator_ $ at_ (locationWithEnemy attrs)
       for_ investigators \iid -> do
-        handCount <- selectCount $ inHandOf NotForPlay iid <> not_ HiddenInHandCard
-        when (handCount > 0) do
+        -- Brown Jenkin discards the investigator's entire hand, including
+        -- non-hidden weaknesses. Hidden cards remain in hand. We discard the
+        -- cards directly rather than via DiscardHand, because DiscardHand
+        -- (like any player-facing discard) skips weaknesses.
+        cards <-
+          select
+            $ inHandOf NotForPlay iid
+            <> not_ HiddenInHandCard
+            <> CardWithoutModifier CannotLeaveYourHand
+        when (notNull cards) do
           batched \_ -> do
-            push $ DiscardHand iid (toSource attrs)
-            drawCards iid (attrs.ability 1) handCount
+            for_ cards \card -> push $ DiscardCard iid (toSource attrs) (toCardId card)
+            drawCards iid (attrs.ability 1) (length cards)
       pure e
     _ -> BrownJenkin <$> liftRunMessage msg attrs

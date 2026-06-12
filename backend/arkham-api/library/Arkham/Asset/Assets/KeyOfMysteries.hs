@@ -35,6 +35,7 @@ instance RunMessage KeyOfMysteries where
       investigateEdit_ sid iid (attrs.ability 2) (setTarget attrs)
       pure a
     SuccessfulInvestigationWith iid (isTarget attrs -> True) -> do
-      insteadOfDiscoveringClues iid \_ -> takeControlOfAsset iid attrs.id
+      insteadOfDiscoveringClues iid \_ -> pure ()
+      takeControlOfAsset iid attrs.id
       pure a
     _ -> KeyOfMysteries <$> liftRunMessage msg attrs

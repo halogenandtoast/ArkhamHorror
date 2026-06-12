@@ -6468,6 +6468,7 @@ test-suite spec
       Arkham.Asset.Assets.HyperawarenessSpec
       Arkham.Asset.Assets.JennysTwin45sSpec
       Arkham.Asset.Assets.JimsTrumpetSpec
+      Arkham.Asset.Assets.KeyOfMysteriesSpec
       Arkham.Asset.Assets.KnifeSpec
       Arkham.Asset.Assets.LeatherCoatSpec
       Arkham.Asset.Assets.LeoDeLuca1Spec

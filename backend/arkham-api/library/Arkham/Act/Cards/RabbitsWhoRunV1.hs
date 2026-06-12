@@ -3,7 +3,6 @@ module Arkham.Act.Cards.RabbitsWhoRunV1 (rabbitsWhoRunV1) where
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Projection
@@ -30,7 +29,7 @@ instance RunMessage RabbitsWhoRunV1 where
       pure a
     ScenarioSpecific "enemyAttacked" v -> do
       let enemy :: EnemyId = toResult v
-      withLocationOf enemy \lid -> do
+      selectOne (locationWithEnemy enemy) >>= traverse_ \lid -> do
         dmg <- field EnemyHealthDamage enemy
         hrr <- field EnemySanityDamage enemy
         let total = dmg + hrr

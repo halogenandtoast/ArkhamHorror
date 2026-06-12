@@ -721,6 +721,7 @@ allScenarios =
     , ("12105", SomeScenario spreadingFlames)
     , ("12133", SomeScenario smokeAndMirrors)
     , ("12168", SomeScenario queenOfAsh)
+    , ("90054", SomeScenario laidToRest)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -867,4 +868,5 @@ scenarioEncounterSets =
     , ("12105", EncounterSet.SpreadingFlames)
     , ("12133", EncounterSet.SmokeAndMirrors)
     , ("12168", EncounterSet.QueenOfAsh)
+    , ("90054", EncounterSet.LaidToRest)
     ]

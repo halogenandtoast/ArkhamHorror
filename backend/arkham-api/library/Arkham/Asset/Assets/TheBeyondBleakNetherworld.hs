@@ -6,7 +6,9 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
+import Arkham.Classes.GameLogger (format, send)
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
 import Arkham.Helpers.Message (createEnemyWithPlacement_)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
@@ -19,7 +21,11 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 
-data Meta = Meta {spiritDeck :: [Card], selectedSpirit :: Maybe AssetId}
+data Meta = Meta
+  { spiritDeck :: [Card]
+  , selectedSpirit :: Maybe AssetId
+  , selectedEnemySpirit :: Maybe EnemyId
+  }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -28,7 +34,8 @@ newtype TheBeyondBleakNetherworld = TheBeyondBleakNetherworld (AssetAttrs `With`
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBeyondBleakNetherworld :: AssetCard TheBeyondBleakNetherworld
-theBeyondBleakNetherworld = asset (TheBeyondBleakNetherworld . (`with` Meta [] Nothing)) Cards.theBeyondBleakNetherworld
+theBeyondBleakNetherworld =
+  asset (TheBeyondBleakNetherworld . (`with` Meta [] Nothing Nothing)) Cards.theBeyondBleakNetherworld
 
 instance HasAbilities TheBeyondBleakNetherworld where
   getAbilities (TheBeyondBleakNetherworld (With attrs _)) =
@@ -56,27 +63,33 @@ instance RunMessage TheBeyondBleakNetherworld where
                 cs' <- traverse (Arkham.Card.setTaboo taboo <=< setOwner iid) cs
                 for_ cs' (push . PlaceInBonded iid)
 
-          pure . TheBeyondBleakNetherworld $ attrs `with` Meta spiritDeck' Nothing
+          pure . TheBeyondBleakNetherworld $ attrs `with` Meta spiritDeck' Nothing Nothing
     UseThisAbility iid (isSource attrs -> True) 1 -> case spiritDeck meta of
       [] -> pure a
       card : rest -> do
-        case card.kind of
-          AssetType -> do
-            mustDiscard <- select $ AssetWithTitle (toTitle card) <> UniqueAsset
-            for_ mustDiscard (toDiscard GameSource)
+        let
+          triggerVengefulShade = do
             mVengefulShade <- selectOne $ enemyIs Enemies.vengefulShade
             for_ mVengefulShade \vengefulShade -> chooseOneM iid do
               abilityLabeled
                 iid
                 (mkAbility (SourceableWithCardCode @CardCode "90053" vengefulShade) 1 $ forced NotAnyWindow)
                 nothing
+        case card.kind of
+          AssetType -> do
+            mustDiscard <- select $ AssetWithTitle (toTitle card) <> UniqueAsset
+            for_ mustDiscard (toDiscard GameSource)
+            triggerVengefulShade
             assetId <- getRandom
             push $ CreateAssetAt assetId card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
           PlayerEnemyType -> do
             pushM $ createEnemyWithPlacement_ card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
+          EnemyType -> do
+            triggerVengefulShade
+            pushM $ createEnemyWithPlacement_ card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
           _ -> error "Invalid card type"
         doStep 1 msg
-        pure . TheBeyondBleakNetherworld $ attrs `with` Meta rest Nothing
+        pure . TheBeyondBleakNetherworld $ attrs `with` Meta rest Nothing Nothing
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       n <-
         (+)
@@ -87,15 +100,34 @@ instance RunMessage TheBeyondBleakNetherworld where
     Flip iid _ (isTarget attrs -> True) -> do
       unless attrs.flipped do
         assets <- select $ AssetAttachedToAsset (be attrs) <> NonWeaknessAsset
-        handleOneAtATime iid (attrs.ability 1) assets
+        enemies <- select $ EnemyAttachedToAsset (be attrs) <> NonWeaknessEnemy
+        handleOneAtATime iid (attrs.ability 1) (map toTarget assets <> map toTarget enemies)
         flipOver iid attrs
       pure . TheBeyondBleakNetherworld . (`with` meta) $ attrs & flippedL %~ not
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (AssetTarget aid) -> do
       push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 1) SetAside
       push $ ResetChaosTokens (attrs.ability 1)
-      pure . TheBeyondBleakNetherworld $ attrs `with` Meta (spiritDeck meta) (Just aid)
+      pure
+        . TheBeyondBleakNetherworld
+        $ attrs
+        `with` meta {selectedSpirit = Just aid, selectedEnemySpirit = Nothing}
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget eid) -> do
+      push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 1) SetAside
+      push $ ResetChaosTokens (attrs.ability 1)
+      pure
+        . TheBeyondBleakNetherworld
+        $ attrs
+        `with` meta {selectedSpirit = Nothing, selectedEnemySpirit = Just eid}
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
-      for_ (selectedSpirit meta) \aid -> do
+      let mSpirit = (Left <$> selectedSpirit meta) <|> (Right <$> selectedEnemySpirit meta)
+      for_ mSpirit \spirit -> do
+        discardSpirit <- case spirit of
+          Left aid -> pure $ toDiscardBy iid attrs aid
+          Right eid -> do
+            card <- field Field.EnemyCard eid
+            pure do
+              push $ RemoveEnemy eid
+              push $ ScenarioSpecific "theBeyond:returnSpirit" (toJSON card)
         for_ (map (.face) tokens) \case
           ElderSign -> do
             canHeal <- canHaveHorrorHealed attrs iid
@@ -106,33 +138,48 @@ instance RunMessage TheBeyondBleakNetherworld where
                 $ doStep 1 msg
               labeledI "doNothing" nothing
           AutoFail -> do
-            toDiscardBy iid attrs aid
+            discardSpirit
             chooseOneM iid $ cardI18n $ scope "theBeyondBleakNetherworld" do
               labeled' "takeDirectDamage" $ directDamage iid attrs 1
               labeled' "takeDirectHorror" $ directHorror iid attrs 1
           Skull -> do
-            toDiscardBy iid attrs aid
+            discardSpirit
             whenM (canHaveHorrorHealed attrs iid) do
               healHorror iid attrs 1
           other | other `elem` [Cultist, ElderThing, Tablet, CurseToken] -> do
             chooseOneM iid $ cardI18n $ scope "theBeyondBleakNetherworld" do
-              labeled' "discardSpirit" $ toDiscardBy iid attrs aid
+              labeled' "discardSpirit" discardSpirit
               labeled' "takeDirectDamage" $ directDamage iid attrs 1
-          _ -> toDiscardBy iid attrs aid
+          _ -> discardSpirit
       pure a
     DoStep 1 (RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) _) -> do
       case spiritDeck meta of
         [] -> pure a
         card : rest -> do
-          assetId <- getRandom
-          push $ CreateAssetAt assetId card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
-          pure . TheBeyondBleakNetherworld $ attrs `with` Meta rest Nothing
+          case card.kind of
+            AssetType -> do
+              assetId <- getRandom
+              push $ CreateAssetAt assetId card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
+            t | t `elem` [PlayerEnemyType, EnemyType] -> do
+              pushM $ createEnemyWithPlacement_ card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
+            _ -> error "Invalid card type"
+          pure . TheBeyondBleakNetherworld $ attrs `with` Meta rest Nothing Nothing
+    ScenarioSpecific "theBeyond:addToSpiritDeck" v -> do
+      spiritDeck' <- shuffleM (spiritDeck meta <> toResult v)
+      pure . TheBeyondBleakNetherworld $ attrs `with` meta {spiritDeck = spiritDeck'}
+    ScenarioSpecific "theBeyond:banishTop" _ -> case spiritDeck meta of
+      [] -> pure a
+      card : rest -> do
+        send $ format card <> " is \"banished\""
+        pure . TheBeyondBleakNetherworld $ attrs `with` meta {spiritDeck = rest <> [card]}
+    ScenarioSpecific "theBeyond:returnSpirit" v -> do
+      pure . TheBeyondBleakNetherworld $ attrs `with` meta {spiritDeck = spiritDeck meta <> [toResult v]}
     Discarded _ _ card@(PlayerCard pc) -> case attrs.controller of
       Nothing -> pure a
       Just iid ->
         field InvestigatorSideDeck iid >>= \case
           Just cards | pc `elem` cards -> do
             obtainCard card
-            pure . TheBeyondBleakNetherworld $ attrs `with` Meta (spiritDeck meta <> [card]) Nothing
+            pure . TheBeyondBleakNetherworld $ attrs `with` meta {spiritDeck = spiritDeck meta <> [card]}
           _ -> pure a
     _ -> TheBeyondBleakNetherworld . (`with` meta) <$> liftRunMessage msg attrs

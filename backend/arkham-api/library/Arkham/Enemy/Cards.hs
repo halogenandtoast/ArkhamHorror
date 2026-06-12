@@ -15,6 +15,7 @@ import Arkham.Enemy.CardDefs.TheForgottenAge as X
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Enemy.CardDefs.ThePathToCarcosa as X
 import Arkham.Enemy.CardDefs.TheScarletKeys as X
+import Arkham.Enemy.CardDefs.LaidToRest as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -658,6 +659,10 @@ allEncounterEnemyCards =
       , miGoHarvester
       , miGoMeddler
       , miGoAbductor
+      , --- Laid to Rest
+        jeanDevereuxSeekingClosure
+      , jeanDevereuxPossessed
+      , ravenousSpirit
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

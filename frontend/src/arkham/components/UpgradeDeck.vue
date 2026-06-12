@@ -11,6 +11,7 @@ import Prompt from '@/components/Prompt.vue';
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
 import type { XpBreakdownStep } from '@/arkham/types/Xp';
 import Question from '@/arkham/components/Question.vue';
+import { loadUpgradeDeckFromJsonText } from '@/arkham/upgradeDeckUpload';
 
 // TODO should we pass in the investigator
 export interface Props {
@@ -40,7 +41,6 @@ const investigator = computed(() => {
   })
 })
 const investigatorId = computed(() => !solo && deckInvestigator.value ? `c${deckInvestigator.value}` : investigator.value?.id)
-const investigators = computed(() => Object.values(props.game.investigators))
 const originalInvestigatorId = computed(() => investigator.value?.id)
 const xp = computed(() => {
   const inv = investigator.value
@@ -148,7 +148,7 @@ async function syncUpgrade() {
           } else {
             nextUrl = null;
           }
-        } catch (error) {
+        } catch {
           nextUrl = null;
         }
       } while (nextUrl);
@@ -180,7 +180,7 @@ async function syncUpgrade() {
           } else {
             nextUrl = null;
           }
-        } catch (error) {
+        } catch {
           nextUrl = null;
         }
       } while (nextUrl);
@@ -243,16 +243,14 @@ function loadDeckFromFile(e: Event) {
   const reader = new FileReader()
   reader.onloadend = (e1: ProgressEvent<FileReader>) => {
     if (!e1?.target?.result) return
-    try {
-      const data = JSON.parse(e1.target.result.toString()) as ArkhamDbDecklist
-      model.value = data
-      deckList.value = data
-      deckUrl.value = data.url ?? null
-      deck.value = data.url ?? null
-      deckInvestigator.value = data.investigator_code
-    } catch {
-      // ignore invalid json
-    }
+    loadUpgradeDeckFromJsonText(e1.target.result.toString(), {
+      setModel: (data) => { model.value = data },
+      setDeckList: (data) => { deckList.value = data },
+      setDeckUrl: (url) => { deckUrl.value = url },
+      setDeck: (url) => { deck.value = url },
+      setDeckInvestigator: (investigatorCode) => { deckInvestigator.value = investigatorCode },
+      upgrade,
+    })
   }
   reader.readAsText(file)
   ;(e.target as HTMLInputElement).value = ''

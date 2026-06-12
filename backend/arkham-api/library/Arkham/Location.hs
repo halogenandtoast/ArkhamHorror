@@ -1363,4 +1363,8 @@ allLocations =
     , SomeLocationCard corriganIndustries
     , -- By the Book
       SomeLocationCard arkhamPoliceStationByTheBook
+    , -- Relics of the Past
+      SomeLocationCard secretPassageRelicsOfThePast
+    , SomeLocationCard innerChamber
+    , SomeLocationCard ancientHallRelicsOfThePast
     ]

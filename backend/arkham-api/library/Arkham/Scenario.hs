@@ -728,6 +728,7 @@ allScenarios =
     , ("90094", SomeScenario enthrallingEncore)
     , ("90004", SomeScenario readOrDie)
     , ("90041", SomeScenario redTideRising)
+    , ("90065", SomeScenario relicsOfThePast)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -881,4 +882,5 @@ scenarioEncounterSets =
     , ("90094", EncounterSet.EnthrallingEncore)
     , ("90004", EncounterSet.ReadOrDie)
     , ("90041", EncounterSet.RedTideRising)
+    , ("90065", EncounterSet.RelicsOfThePast)
     ]

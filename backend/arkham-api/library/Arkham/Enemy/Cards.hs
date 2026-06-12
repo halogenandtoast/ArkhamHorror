@@ -21,6 +21,7 @@ import Arkham.Enemy.CardDefs.BadBlood as X
 import Arkham.Enemy.CardDefs.LaidToRest as X
 import Arkham.Enemy.CardDefs.EnthrallingEncore as X
 import Arkham.Enemy.CardDefs.ReadOrDie as X
+import Arkham.Enemy.CardDefs.RelicsOfThePast as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -679,6 +680,8 @@ allEncounterEnemyCards =
         sinisterSoloist
       , --- Read or Die
         namerOfTheDead
+      , --- Relics of the Past
+        dwellerInThePit
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

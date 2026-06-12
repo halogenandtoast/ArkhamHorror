@@ -942,4 +942,6 @@ allEnemies =
       , SomeEnemyCard ravenousSpirit
       , -- Enthralling Encore
         SomeEnemyCard sinisterSoloist
+      , -- Relics of the Past
+        SomeEnemyCard dwellerInThePit
       ]

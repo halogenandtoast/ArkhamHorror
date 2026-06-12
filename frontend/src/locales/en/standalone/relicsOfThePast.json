@@ -1,0 +1,91 @@
+{
+  "specialRules": [
+    {
+      "title": "Challenge Scenario",
+      "body": "<p class='basic'>Challenge scenarios are special print-and-play scenarios that utilize existing products in the Arkham Horror: The Card Game collection, along with additional print-and-play cards, to create new content. These scenarios are designed with certain prerequisites in mind, in order to craft a challenging puzzle-like experience.</p><p class='basic'><i>Relics of the Past</i> centers around the investigator Monterey Jack, and therefore has the following prerequisite: Monterey Jack must be chosen as one of the investigators when playing this scenario.</p>"
+    },
+    {
+      "title": "Explore",
+      "body": "<p class='basic'>Some abilities in this scenario are identified with an <b>Explore</b> action designator. Such abilities are generally used to find new locations to put into play, and are initiated using the \"activate\" action.</p><ul><li>When resolving <b>Explore</b> abilities found in this challenge scenario, follow all of the rules as outlined on page 3 of <i>The Forgotten Age</i> campaign guide, with the following exceptions:</li><li>If an enemy is drawn from the exploration deck, it is resolved as normal. If it is discarded, place it in the encounter discard pile as you would normally. This is considered an \"unsuccessful\" exploration.</li><li>If a story asset is drawn from the exploration deck, resolve its revelation effect. This is considered a \"successful\" exploration.</li></ul>"
+    },
+    {
+      "title": "Supplies",
+      "body": "<p class='basic'><i>Relics of the Past</i> uses a list of supplies unique to this scenario. Supplies have no inherent effect, but may be referenced by card abilities. Each investigator may choose one of the supplies listed below to bring for the expedition (if there is only one investigator, they may choose two supplies instead).</p><ul><li><b>Chalk:</b> For writing on stone surfaces.</li><li><b>Compass:</b> Can help keep your bearings.</li><li><b>Journal:</b> To keep a record of the events of the expedition.</li><li><b>Satchel:</b> A safe place to store anything you find in the tomb.</li><li><b>Torches:</b> Can light up dark areas, or set sconces alight.</li></ul><p class='basic'>If playing <i>Relics of the Past</i> as a side-story in part of a larger campaign, supplies from <i>Relics of the Past</i> are not carried over into following scenarios. Additionally, if playing <i>Relics of the Past</i> as part of a side-story in <i>The Forgotten Age</i> campaign, any supplies used in the campaign are not available for use while playing <i>Relics of the Past</i>.</p>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of locations with 1 or more doom on them.",
+      "cultist": "-1. If you are poisoned, reveal another token.",
+      "tablet": "-3. If you fail, place 1 doom on your location.",
+      "elderThing": "-3. If you fail, the nearest ready unengaged _Serpent_ enemy moves once toward your location."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of locations with 1 or more doom on them.",
+      "cultist": "-2. If you are poisoned, reveal another token.",
+      "tablet": "-4. Place 1 doom on your location.",
+      "elderThing": "-5. After this test resolves, the nearest ready unengaged _Serpent_ enemy moves once toward your location."
+    }
+  },
+  "intro": {
+    "title": "Challenge Scenario: Relics of the Past",
+    "body": "<p><i>To better understand our future, we must first understand our past. It didn't take long for the reports of Miskatonic University's failed expedition to the jungles of Mexico to reach your ears. Stories of step pyramids, mythical serpent-people, and otherworldly artifacts in places previously thought uninhabited have piqued your interest. It didn't take you long to pack your bags and make plans to head down and investigate it yourself. The Miskatonic University expedition made it into the ruins but struggled to make any progress. Your heart races as you begin to consider what other forgotten treasures lie undiscovered in the heart of the tomb.</i></p>",
+    "supplies": {
+      "title": "Supplies",
+      "body": "<p><i>Relics of the Past</i> uses a list of supplies unique to this scenario. Supplies have no inherent effect, but may be referenced by card abilities. Each investigator may choose one of the supplies listed below to bring for the expedition (if there is only one investigator, they may choose two supplies instead).</p>"
+    }
+  },
+  "supplies": {
+    "question": "Choose a supply to bring for the expedition",
+    "chalk": "Chalk: For writing on stone surfaces.",
+    "compass": "Compass: Can help keep your bearings.",
+    "journal": "Journal: To keep a record of the events of the expedition.",
+    "satchel": "Satchel: A safe place to store anything you find in the tomb.",
+    "torches": "Torches: Can light up dark areas, or set sconces alight."
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Relics of the Past*, *The Doom of Eztli*, *Agents of Yig*, *Deadly Traps*, *Forgotten Ruins*, *Poison*, *Serpents*, *Yig's Venom*, *Chilling Cold*, *Locked Doors*, and *Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/relics-of-the-past.png' /><img src='{setImgPath}/the-doom-of-eztli.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/deadly-traps.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/poison.png' /><img src='{setImgPath}/serpents.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/midnight-masks.png' /></section>When gathering *The Midnight Masks* encounter set, only gather the 5 treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather the locations, act, agenda, and scenario reference cards from that set.",
+    "removeCards": "Remove the original scenario reference card, acts, and agendas from *The Doom of Eztli* encounter set from the game. Use the new scenario reference card, acts, and agendas provided in the *Relics of the Past* encounter set. Additionally, remove the following cards from *The Doom of Eztli* encounter set from the game: the Relic of Ages asset, the Harbinger of Valusia enemy, and the Secret Passage, Ancient Hall, and Chamber of Time locations.",
+    "explorationDeck": "Build the exploration deck. This is done by taking the five single-sided locations and shuffling them together with each of the following: one copy each of the Deep Dark and Final Mistake treacheries, and three copies of Pit Viper. If playing on Hard or Expert difficulty, also shuffle in one copy of Locked Door and one copy of Entombed.",
+    "setAside": "Set the following cards aside, out of play: the Vengeant Past treachery, the Inner Chamber location, the three Brood of Yig enemies, and each of the four _*Ancient*_ story assets.",
+    "placeEntryway": "Put the Entryway into play. Each investigator begins play in the Entryway.",
+    "poisoned": "Set aside each Poisoned weakness that is not already in an investigator's deck."
+  },
+  "placeDoomOnYourLocation": "Place 1 doom on your location",
+  "nearestEnemyAttacksYou": "The nearest enemy attacks you",
+  "vengeantPast": {
+    "question": "{name}: choose one",
+    "dealDamage": "Deal 1 damage to that asset's controller",
+    "dealHorror": "Deal 1 horror to that asset's controller",
+    "shuffleAsset": "Shuffle that asset into the exploration deck"
+  },
+  "innerChamber": {
+    "doNotDrawAnother": "Do not draw an additional card"
+  },
+  "ancientHall": {
+    "question": "Any investigator at Ancient Hall may spend 3 resources to cancel this effect",
+    "doNotCancel": "Shuffle the top card of the encounter deck into the exploration deck"
+  },
+  "swap": {
+    "question": "Monterey Jack may either upgrade Trusty Bullwhip to its advanced version, or downgrade the advanced version of Buried Secrets to its original version",
+    "questionMust": "Monterey Jack must either upgrade Buried Secrets to its advanced version, or downgrade the advanced version of Trusty Bullwhip to its original version",
+    "upgradeTrustyBullwhip": "Upgrade Trusty Bullwhip to its advanced version",
+    "downgradeBuriedSecrets": "Downgrade Buried Secrets to its original version",
+    "upgradeBuriedSecrets": "Upgrade Buried Secrets to its advanced version",
+    "downgradeTrustyBullwhip": "Downgrade Trusty Bullwhip to its original version",
+    "doNotSwap": "Do not swap"
+  },
+  "resolutions": {
+    "xp": {
+      "journal": "The investigator with the journal resigned"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: With a lash of your whip you swing over the final gap, and a quick roll gets you under the closing stone door before it seals behind you. You rise to your feet, looking out over the jungle before you, breathing the humid air once more. Checking your gear one last time, you see a scaly, serpentine stowaway has found its way into your bag. Grabbing it behind the head, you toss it softly into the grass and watch as it slithers away with a hiss.</p><p>You'll have to be satisfied with what you've learned, and what you've found, in the Ruins of Eztli. Time to put the jungle behind you.</p><ul><li>Monterey Jack earns experience equal to the combined Victory X value of each _Ancient_ story asset in the victory display.<ul><li>_Experience_: {montereyXp}</li></ul></li><li>Each other investigator earns experience equal to the combined Victory X value of each enemy and location in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Check the supplies of each investigator who resigned. If the investigator with the journal resigned, each investigator earns 1 bonus experience.</li><li>Monterey Jack may either upgrade Trusty Bullwhip to its advanced version, or downgrade the advanced version of Buried Secrets to its original version.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: You race down the ruined corridor, the hissing of pursuing snake monstrosities echoing off the stone behind you. Your path leads you to a deep pit, and you are faced with a choice: try to cross the gap, or turn around to face your pursuers. You reach to your belt and retrieve your bullwhip, deciding to use it to cross the chasm. You lash the whip at an exposed tree root near the ceiling, and start your swing.</p><p>With a heart-wrenching crack, the root snaps under your weight and you plummet into the chasm. You bounce off of sharp rocks as you tumble down, eventually landing in a shallow stream at the bottom. You spit blood, and then look up to see the eyes of the serpent-people peering down at you from far above, before they retreat back the way they came.</p><p>You struggle to stand, and consider the stream at your feet. You stumble along, following its path, hoping it will eventually lead you out.</p><ul><li>Each investigator earns experience equal to the combined Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Monterey Jack must either upgrade Buried Secrets to its advanced version, or downgrade the advanced version of Trusty Bullwhip to its original version.</li></ul>"
+    }
+  }
+}

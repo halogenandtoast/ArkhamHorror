@@ -514,6 +514,11 @@ allActs =
       SomeActCard captureTheConspirators
     , -- Laid to Rest
       SomeActCard laidToRest
+    , -- Red Tide Rising
+      SomeActCard searchingForDad
     , -- Enthralling Encore
       SomeActCard breakFreeFromThePast
+    , -- Relics of the Past
+      SomeActCard crumblingRuin
+    , SomeActCard findTheWayOut
     ]

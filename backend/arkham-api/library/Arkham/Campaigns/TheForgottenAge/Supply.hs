@@ -23,6 +23,8 @@ data Supply
   | KeyOfEztli
   | MysteriousScepter
   | StickyGoop
+  | Journal
+  | Satchel
   deriving stock (Show, Eq, Bounded, Enum, Ord, Data)
 
 prologueSupplies :: [Supply]
@@ -75,3 +77,5 @@ supplyCost = \case
   KeyOfEztli -> 0
   MysteriousScepter -> 0
   StickyGoop -> 0
+  Journal -> 0
+  Satchel -> 0

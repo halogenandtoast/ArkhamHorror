@@ -21,6 +21,7 @@ import Arkham.Agenda.CardDefs.LaidToRest as X
 import Arkham.Agenda.CardDefs.EnthrallingEncore as X
 import Arkham.Agenda.CardDefs.ReadOrDie as X
 import Arkham.Agenda.CardDefs.RedTideRising as X
+import Arkham.Agenda.CardDefs.RelicsOfThePast as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -345,4 +346,7 @@ allAgendaCards =
         mortalInquiry
       , theNewGirl
       , trailGoesCold
+      , --- Relics of the Past
+        somethingElseStirs
+      , guardianOfTheRelics
       ]

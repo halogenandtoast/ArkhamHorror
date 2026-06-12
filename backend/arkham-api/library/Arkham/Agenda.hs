@@ -455,6 +455,12 @@ allAgendas =
     , SomeAgendaCard yourDeadlineNears
     , -- Laid to Rest
       SomeAgendaCard gatheringMists
+    , -- Red Tide Rising
+      SomeAgendaCard theNewGirl
+    , SomeAgendaCard trailGoesCold
     , -- Enthralling Encore
       SomeAgendaCard theHauntingOfTheWardTheatre
+    , -- Relics of the Past
+      SomeAgendaCard somethingElseStirs
+    , SomeAgendaCard guardianOfTheRelics
     ]

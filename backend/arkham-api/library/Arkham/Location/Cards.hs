@@ -15,6 +15,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Location.CardDefs.ThePathToCarcosa as X
 import Arkham.Location.CardDefs.TheScarletKeys as X
 import Arkham.Location.CardDefs.ByTheBook as X
+import Arkham.Location.CardDefs.RelicsOfThePast as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -1195,6 +1196,10 @@ allLocationCards =
       , desiccatedFarmland
       , --- By the Book
         arkhamPoliceStationByTheBook
+      , --- Relics of the Past
+        secretPassageRelicsOfThePast
+      , innerChamber
+      , ancientHallRelicsOfThePast
       ]
 
 allSpecialLocationCards :: Map CardCode CardDef

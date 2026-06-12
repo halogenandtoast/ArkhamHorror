@@ -21,6 +21,7 @@ import Arkham.Act.CardDefs.LaidToRest as X
 import Arkham.Act.CardDefs.EnthrallingEncore as X
 import Arkham.Act.CardDefs.ReadOrDie as X
 import Arkham.Act.CardDefs.RedTideRising as X
+import Arkham.Act.CardDefs.RelicsOfThePast as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -390,4 +391,7 @@ allActCards =
       , --- Read or Die
         speedReading
       , searchingForDad
+      , --- Relics of the Past
+        crumblingRuin
+      , findTheWayOut
       ]

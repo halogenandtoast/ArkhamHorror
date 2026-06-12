@@ -47,6 +47,17 @@ instance HasChaosTokenValue FatherMateoParallel where
 
 instance RunMessage FatherMateoParallel where
   runMessage msg i@(FatherMateoParallel attrs) = runQueueT $ case msg of
+    -- The "father_mateo_pending" guard only needs to prevent ability 2 from
+    -- offering the same sealed bless twice within a single reveal sequence. It
+    -- is normally cleared when the revealed token is revealed/resolved, but
+    -- those messages are not guaranteed to fire (e.g. an interrupted reveal),
+    -- which can leak an entry into the meta and permanently disable the
+    -- reaction (issue #4774). The start of a skill test is a safe reset point:
+    -- nothing is mid-reveal yet, so clearing it here cannot drop a live token
+    -- and self-heals any stale state.
+    BeginSkillTestWithPreMessages' {} -> do
+      attrs' <- liftRunMessage msg attrs
+      pure . FatherMateoParallel $ attrs' & setMetaKey "father_mateo_pending" ([] :: [ChaosToken])
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       do_ msg
       pure i

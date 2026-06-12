@@ -179,4 +179,8 @@ applyWithRecovery v op =
 unsafePatch :: Game -> Diff.Patch -> Game
 unsafePatch g p = case patchWithRecovery g p of
   Success a -> a
-  _ -> error "Could not patch safely"
+  -- Stale/diverged revert diff (e.g. saved mid-action across a scenario
+  -- teardown that removed the entities the diff references). The snapshot only
+  -- backs mid-action undo, so fall back to the current state rather than
+  -- crashing the game/save.
+  Error _ -> g

@@ -6738,6 +6738,7 @@ test-suite spec
       cards-discover:cards-discover
   build-depends:
       aeson
+    , aeson-diff
     , arkham-api
     , async
     , base

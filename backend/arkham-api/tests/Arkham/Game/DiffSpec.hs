@@ -1,8 +1,10 @@
 module Arkham.Game.DiffSpec (spec) where
 
 import Arkham.Classes.HasGame (getGame)
-import Arkham.Game.Diff (patchWithRecovery)
+import Arkham.Game.Diff (patchWithRecovery, unsafePatch)
 import Data.Aeson qualified as Aeson
+import Data.Aeson.Patch (Operation (..), Patch (..))
+import Data.Aeson.Pointer (Key (..), Pointer (..))
 import TestImport.New
 
 -- gain a resource without going through the action pipeline (which would
@@ -55,3 +57,14 @@ spec = describe "action undo bookkeeping" $ do
     Aeson.toJSON (g2 {gameActionDiff = []})
       `shouldBe` Aeson.toJSON (g0 {gameActionDiff = []})
     self.resources `shouldReturn` 0
+
+  -- Regression for "Could not patch safely": a stale revert diff (e.g. one
+  -- saved mid-action across a scenario teardown that removed the entities it
+  -- references) must not crash the game on reload. unsafePatch should fall
+  -- back to the current state instead of throwing.
+  it "unsafePatch returns the game unchanged when the patch cannot apply" . gameTest $ \_ -> do
+    g <- getGame
+    -- replacing gameInAction with a non-Bool applies at the Value level but
+    -- fails to parse back into a Game, so patchWithRecovery errors
+    let badPatch = Patch [Rep (Pointer [OKey "gameInAction"]) (Aeson.String "not a bool")]
+    Aeson.toJSON (unsafePatch g badPatch) `shouldBe` Aeson.toJSON g

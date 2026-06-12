@@ -193,6 +193,7 @@ tests:
     dependencies:
       - arkham-api
       - aeson
+      - aeson-diff
       - async
       - exceptions
       - hspec

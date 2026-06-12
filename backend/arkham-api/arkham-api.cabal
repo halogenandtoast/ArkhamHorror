@@ -6561,6 +6561,7 @@ test-suite spec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec
       Arkham.Investigator.Cards.DaisyWalkerSpec
+      Arkham.Investigator.Cards.FatherMateoParallelSpec
       Arkham.Investigator.Cards.JennyBarnesSpec
       Arkham.Investigator.Cards.JimCulverSpec
       Arkham.Investigator.Cards.KymaniJonesSpec

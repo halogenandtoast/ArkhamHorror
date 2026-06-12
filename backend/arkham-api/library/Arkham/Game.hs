@@ -549,7 +549,7 @@ withInvestigatorConnectionData
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator' -> do
     additionalActions <- getAdditionalActions (toAttrs investigator')
-    engagedEnemies <- select (enemyEngagedWith $ toId investigator')
+    engagedEnemies <- select (EnemyIsEngagedWith $ IncludeEliminated $ InvestigatorWithId $ toId investigator')
     assets <- select (AssetWithPlacement $ InPlayArea $ toId investigator')
     assets' <- select (AssetWithPlacement $ InThreatArea $ toId investigator')
     skills <- select (SkillWithPlacement $ InPlayArea $ toId investigator')

@@ -759,7 +759,9 @@
         "ElderSign"
       ]
     },
-    "xp": 3
+    "xp": 3,
+    "alpha": true,
+    "dev": true
   },
   {
     "id": "90011",
@@ -848,7 +850,9 @@
         "ElderSign"
       ]
     },
-    "xp": 3
+    "xp": 3,
+    "alpha": true,
+    "dev": true
   },
   {
     "id": "90020",
@@ -937,7 +941,9 @@
         "ElderSign"
       ]
     },
-    "xp": 3
+    "xp": 3,
+    "alpha": true,
+    "dev": true
   },
   {
     "id": "90032",
@@ -1026,7 +1032,9 @@
         "ElderSign"
       ]
     },
-    "xp": 3
+    "xp": 3,
+    "alpha": true,
+    "dev": true
   },
   {
     "id": "90041",
@@ -1119,7 +1127,9 @@
         "ElderSign"
       ]
     },
-    "xp": 3
+    "xp": 3,
+    "alpha": true,
+    "dev": true
   },
   {
     "id": "90054",
@@ -1212,7 +1222,9 @@
         "ElderSign"
       ]
     },
-    "xp": 3
+    "xp": 3,
+    "alpha": true,
+    "dev": true
   },
   {
     "id": "90065",
@@ -1299,7 +1311,9 @@
         "ElderSign"
       ]
     },
-    "xp": 3
+    "xp": 3,
+    "alpha": true,
+    "dev": true
   },
   {
     "id": "90094",
@@ -1399,6 +1413,8 @@
         "ElderSign"
       ]
     },
-    "xp": 2
+    "xp": 2,
+    "alpha": true,
+    "dev": true
   }
 ]

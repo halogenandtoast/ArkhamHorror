@@ -104,6 +104,7 @@ const visibleCardIds = computed(() => new Set([
   ...(investigator.value?.hand ?? []).map((card) => toCardContents(card).id),
   ...focusedCards.value.map((card) => toCardContents(card).id),
   ...searchedCards.value.flatMap(([, cards]) => cards.map((card) => toCardContents(card).id)),
+  ...Object.values(props.game.assets).flatMap((asset) => asset.cardsUnderneath.map((card) => toCardContents(card).id)),
 ]))
 
 function abilityLabelHandledElsewhere(choice: Message) {

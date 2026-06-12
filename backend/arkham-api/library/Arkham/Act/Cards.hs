@@ -262,6 +262,7 @@ allActCards =
       , theDreamEaters
       , theEndlessStairs
       , theEscape
+      , theEscapeTheLabyrinthsOfLunacyEpicMultiplayer
       , theEscapeTheLabyrinthsOfLunacy
       , theExit
       , theFinalErr
@@ -279,6 +280,7 @@ allActCards =
       , theHourOfJudgment
       , theIsleOfOriab
       , theLadyWithTheRedParasol
+      , theLeversGroupCEpicMultiplayer
       , theLeversGroupC
       , theLighthouse
       , theLongestNight

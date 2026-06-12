@@ -199,7 +199,9 @@ allEncounterEnemyCards =
       , caldwellPhilipsCompelledByDreams
       , carlSanfordIntimidatingPresence
       , eixodolon
+      , eixodolonsPetEpicMultiplayer
       , eixodolonsPet
+      , theJailor
       , facelessAbductor
       , miGoGuard
       , torturedVictim
@@ -228,6 +230,7 @@ allEncounterEnemyCards =
       , drWentworthMoore
       , eaterOfTheDepths
       , edwinBennetBitterAdversary
+      , edwinBennetEnviousRival
       , elderThingScavenger
       , elisabettaMagro
       , eliyahAshevakDogHandler

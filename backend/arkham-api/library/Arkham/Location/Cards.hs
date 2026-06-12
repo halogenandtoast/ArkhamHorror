@@ -160,6 +160,7 @@ allLocationCards =
       , arkham
       , chamberOfDecay
       , chamberOfHunger
+      , chamberOfNightEpicMultiplayer
       , chamberOfNight
       , chamberOfPoison
       , chamberOfRain
@@ -168,6 +169,7 @@ allLocationCards =
       , chamberOfSecretsBloodyPrison
       , chamberOfSecretsEnshroudedPrison
       , chamberOfSecretsMysteriousPrison
+      , chamberOfSorrowsEpicMultiplayer
       , chamberOfSorrows
       , labyrinthineHallsCorpseFilledPath
       , labyrinthineHallsFoulSmellingPath

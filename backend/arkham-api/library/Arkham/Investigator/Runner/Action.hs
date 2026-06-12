@@ -419,6 +419,11 @@ handlePlayerWindow a@InvestigatorAttrs{..} iid additionalActions isAdditional im
   let
     windows =
       map (mkWhen . Window.DuringTurn) mTurnInvestigator
+        -- An "immediate" window is a granted/extra action (e.g. Quick Thinking,
+        -- Swift Reflexes, "as if it were your turn" effects). These do not open a
+        -- fast player window, so fast/[free] abilities -- including taking
+        -- control of a key -- cannot be used during the granted action itself;
+        -- they remain available in the normal player window.
         <> [mkWhen Window.FastPlayerWindow | not immediate]
         <> [mkWhen Window.NonFast]
 

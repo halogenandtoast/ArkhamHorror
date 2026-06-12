@@ -908,6 +908,12 @@ bloodAndRust =
     { cdCardTraits = setFromList [Trait.Trap]
     }
 
+paradoxEffectEpicMultiplayer :: CardDef
+paradoxEffectEpicMultiplayer =
+  (treachery "70059" "Paradox Effect" LabyrinthsOfLunacyEpicMultiplayer 3)
+    { cdCardTraits = setFromList [Trait.Hazard]
+    }
+
 paradoxEffect :: CardDef
 paradoxEffect =
   (treachery "70060" "Paradox Effect" LabyrinthsOfLunacySingleGroup 3)

@@ -327,6 +327,7 @@ allPlayerAssetCards =
       , earthlySerenity1
       , earthlySerenity4
       , edwinBennetAstuteAssociate
+      , edwinBennetEsteemedColleague
       , eighteenDerringer
       , eighteenDerringer2
       , elderSignAmulet3
@@ -1082,12 +1083,14 @@ allEncounterAssetCards =
       [ adamLynch
       , alchemicalConcoction
       , bearTrap
+      , decayDiagramEpicMultiplayer
       , decayDiagram
       , divingSuit
       , eixodolonsNote
       , fishingNet
       , haroldWalsted
       , helplessPassenger
+      , hungerDiagramEpicMultiplayer
       , hungerDiagram
       , jazzMulligan
       , keyOfMysteries
@@ -1097,6 +1100,7 @@ allEncounterAssetCards =
       , constanceDumaine
       , jordanPerry
       , ishimaruHaruko
+      , rotDiagramEpicMultiplayer
       , rotDiagram
       , sebastienMoreau
       , ashleighClarke

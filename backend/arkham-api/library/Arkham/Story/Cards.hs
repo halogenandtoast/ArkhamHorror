@@ -215,6 +215,12 @@ allStoryCards =
       , theSalesmansEvidence
       , theAssassinsEvidence
       , theProfessorsEvidence
+      , arcaneRunes
+      , theRift
+      , theVent
+      , theDilemma
+      , theGate
+      , encryptedGlyphs
       , aNobleLegacyPast
       , aNobleLegacyPresent
       , aNobleLegacyFuture
@@ -760,6 +766,24 @@ theAssassinsEvidence =
 theProfessorsEvidence :: CardDef
 theProfessorsEvidence =
   victory 1 $ addTrait Evidence $ otherSideIs "83036a" $ story "83036b" "The Professor's Evidence" BrotherhoodOfTheBeast
+
+arcaneRunes :: CardDef
+arcaneRunes = doubleSided $ story "70033" "Arcane Runes" LabyrinthsOfLunacyEpicMultiplayer
+
+theRift :: CardDef
+theRift = doubleSided $ story "70034" "The Rift" LabyrinthsOfLunacyEpicMultiplayer
+
+theVent :: CardDef
+theVent = doubleSided $ story "70035" "The Vent" LabyrinthsOfLunacyEpicMultiplayer
+
+theDilemma :: CardDef
+theDilemma = doubleSided $ story "70036" "The Dilemma" LabyrinthsOfLunacyEpicMultiplayer
+
+theGate :: CardDef
+theGate = doubleSided $ story "70037" "The Gate" LabyrinthsOfLunacyEpicMultiplayer
+
+encryptedGlyphs :: CardDef
+encryptedGlyphs = doubleSided $ story "70038" "Encrypted Glyphs" LabyrinthsOfLunacyEpicMultiplayer
 
 aNobleLegacyPast :: CardDef
 aNobleLegacyPast = doubleSided $ story "87006" "A Noble Legacy (Past)" MachinationsThroughTime

@@ -1150,6 +1150,16 @@ chamberOfRain :: CardDef
 chamberOfRain =
   location "70019" "Chamber of Rain" [Distortion] Hourglass [Heart] TheLabyrinthsOfLunacy
 
+chamberOfSorrowsEpicMultiplayer :: CardDef
+chamberOfSorrowsEpicMultiplayer =
+  location
+    "70020"
+    "Chamber of Sorrows"
+    [Prison]
+    Heart
+    [Hourglass, Equals]
+    LabyrinthsOfLunacyEpicMultiplayer
+
 chamberOfSorrows :: CardDef
 chamberOfSorrows =
   location
@@ -1159,6 +1169,16 @@ chamberOfSorrows =
     Heart
     [Hourglass, Equals]
     LabyrinthsOfLunacySingleGroup
+
+chamberOfNightEpicMultiplayer :: CardDef
+chamberOfNightEpicMultiplayer =
+  location
+    "70022"
+    "Chamber of Night"
+    [Prison]
+    Square
+    [Triangle, Equals]
+    LabyrinthsOfLunacyEpicMultiplayer
 
 chamberOfNight :: CardDef
 chamberOfNight =

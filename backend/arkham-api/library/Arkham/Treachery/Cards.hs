@@ -314,6 +314,7 @@ allEncounterTreacheryCards =
       , endlessDescent
       , endlessNight
       , harvestedPain
+      , paradoxEffectEpicMultiplayer
       , paradoxEffect
       , poisonousGas
       , sublimation

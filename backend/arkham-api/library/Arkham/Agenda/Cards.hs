@@ -28,6 +28,7 @@ allAgendaCards =
       , aCreatureOfTheBayou
       , agentsOfTheDark
       , agentsOfTheOuterGods
+      , agonyAndDespairEpicMultiplayer
       , agonyAndDespair
       , aHarshWindBlows
       , aKillerParty
@@ -42,6 +43,7 @@ allAgendaCards =
       , aTearInRealityV2
       , aTrailOfTwists
       , awakening
+      , awakeningTheLabyrinthsOfLunacyEpicMultiplayer
       , awakeningTheLabyrinthsOfLunacy
       , backToTheVale
       , barricadedStreets

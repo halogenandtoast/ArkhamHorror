@@ -827,6 +827,16 @@ edwinBennetAstuteAssociate =
     , cdOtherSide = Just "87036a"
     }
 
+edwinBennetEsteemedColleague :: CardDef
+edwinBennetEsteemedColleague =
+  (storyAsset "87037b" ("Edwin Bennet" <:> "Esteemed Colleague") 0 MachinationsThroughTimeEpicMultiplayer)
+    { cdCardTraits = setFromList [Scientist, Ally]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "87037a"
+    }
+
 eixodolonsNote :: CardDef
 eixodolonsNote =
   (storyAsset "70039" "Eixodolon's Note" 0 TheLabyrinthsOfLunacy)
@@ -851,6 +861,14 @@ mysteriousSyringe =
     , cdCardType = EncounterAssetType
     }
 
+rotDiagramEpicMultiplayer :: CardDef
+rotDiagramEpicMultiplayer =
+  (storyAsset "70042" "Rot Diagram" 0 LabyrinthsOfLunacyEpicMultiplayer)
+    { cdCardTraits = setFromList [Item, Script]
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    }
+
 rotDiagram :: CardDef
 rotDiagram =
   (storyAsset "70043" "Rot Diagram" 0 LabyrinthsOfLunacySingleGroup)
@@ -859,9 +877,25 @@ rotDiagram =
     , cdCardType = EncounterAssetType
     }
 
+hungerDiagramEpicMultiplayer :: CardDef
+hungerDiagramEpicMultiplayer =
+  (storyAsset "70044" "Hunger Diagram" 0 LabyrinthsOfLunacyEpicMultiplayer)
+    { cdCardTraits = setFromList [Item, Script]
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    }
+
 hungerDiagram :: CardDef
 hungerDiagram =
   (storyAsset "70045" "Hunger Diagram" 0 LabyrinthsOfLunacySingleGroup)
+    { cdCardTraits = setFromList [Item, Script]
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    }
+
+decayDiagramEpicMultiplayer :: CardDef
+decayDiagramEpicMultiplayer =
+  (storyAsset "70046" "Decay Diagram" 0 LabyrinthsOfLunacyEpicMultiplayer)
     { cdCardTraits = setFromList [Item, Script]
     , cdCost = Nothing
     , cdCardType = EncounterAssetType

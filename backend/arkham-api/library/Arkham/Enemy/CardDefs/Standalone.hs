@@ -1022,6 +1022,18 @@ edwinBennetBitterAdversary =
       , cdArt = "87036"
       }
 
+edwinBennetEnviousRival :: CardDef
+edwinBennetEnviousRival =
+  unique
+    $ (enemy "87037a" ("Edwin Bennet" <:> "Envious Rival") MachinationsThroughTimeEpicMultiplayer 1)
+      { cdCardTraits = setFromList [Humanoid, Elite]
+      , cdKeywords =
+          setFromList [Keyword.Patrol (LocationWithAsset $ AssetWithTrait Scientist)]
+      , cdDoubleSided = True
+      , cdOtherSide = Just "87037b"
+      , cdArt = "87037"
+      }
+
 oldSadieSheldon :: CardDef
 oldSadieSheldon =
   unique
@@ -1093,6 +1105,20 @@ eixodolon =
       , cdVictoryPoints = Just 3
       }
 
+eixodolonsPetEpicMultiplayer :: CardDef
+eixodolonsPetEpicMultiplayer =
+  unique
+    $ ( enemy
+          "70049"
+          ("Eixodolon's Pet" <:> "You Are Not Its First Victim, Or Its Last")
+          LabyrinthsOfLunacyEpicMultiplayer
+          1
+      )
+      { cdCardTraits = setFromList [Monster, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+      , cdVictoryPoints = Just 2
+      }
+
 eixodolonsPet :: CardDef
 eixodolonsPet =
   unique
@@ -1105,6 +1131,15 @@ eixodolonsPet =
       { cdCardTraits = setFromList [Monster, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       , cdVictoryPoints = Just 2
+      }
+
+theJailor :: CardDef
+theJailor =
+  unique
+    $ (enemy "70051" "The Jailor" LabyrinthsOfLunacyEpicMultiplayer 1)
+      { cdCardTraits = setFromList [Monster, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter]
+      , cdVictoryPoints = Just 5
       }
 
 facelessAbductor :: CardDef

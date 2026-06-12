@@ -304,7 +304,9 @@
     "title": "Campaign Settings"
   },
   "sideStory": {
-    "selectSideScenario": "Select a side scenario to add"
+    "selectSideScenario": "Select a side scenario to add",
+    "requiresInvestigator": "Requires {name}",
+    "xpAsymmetric": "({signatureXp} XP for {name}, {otherXp} XP each other investigator)"
   },
   "partners": {
     "expeditionTeam": "Expedition Team",

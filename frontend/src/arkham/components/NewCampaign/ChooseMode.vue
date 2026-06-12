@@ -56,6 +56,9 @@ const chapter2Campaigns = computed(() =>
             @click="selectedScenario = s.id; emits('go')"
           />
         </div>
+        <span v-if="s.requiredInvestigator" class="requires-investigator">
+          {{ $t('create.requiresInvestigator', { name: s.requiredInvestigator }) }}
+        </span>
       </div>
     </div>
   </template>

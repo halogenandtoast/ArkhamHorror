@@ -70,6 +70,9 @@ data CampaignLogKey
     PracticedRoles
   | -- | The Blob That Ate Everything
     YouHaveNoSoul
+  | -- | Challenge Scenarios
+    AllOrNothingBonusResources
+  | ByTheBookBonusCards
   | -- | Player Cards
     YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs

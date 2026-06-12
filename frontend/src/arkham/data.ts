@@ -11,6 +11,7 @@ export interface Scenario {
   standaloneDifficulties?: Difficulty[]
   standalone?: boolean
   show?: boolean
+  requiredInvestigator?: string
   campaign?: string
   scenarios?: { id: string, name: string, box?: string, notAfter?: string[] }[]
 }

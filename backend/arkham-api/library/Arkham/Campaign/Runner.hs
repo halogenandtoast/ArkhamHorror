@@ -22,10 +22,13 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers (setupModifier)
 import Arkham.Helpers.Query
+import Arkham.Modifier (Modifier (StartingHand, StartingResources))
 import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.GameT
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Name
@@ -69,6 +72,23 @@ defaultCampaignRunner msg a = case msg of
       [] -> pure ()
       xs -> push . chooseUpgradeDecks =<< traverse getPlayer xs
     pure a
+  SetupInvestigators -> do
+    -- Challenge scenario rewards that apply to the next scenario only
+    let counts = campaignLogRecordedCounts $ campaignLog $ toAttrs a
+    let bonusResources = fromMaybe 0 $ lookup AllOrNothingBonusResources counts
+    let bonusCards = fromMaybe 0 $ lookup ByTheBookBonusCards counts
+    when (bonusResources > 0) do
+      select (InvestigatorWithTitle "\"Skids\" O'Toole") >>= traverse_ \iid ->
+        setupModifier CampaignSource iid (StartingResources bonusResources)
+    when (bonusCards > 0) do
+      select (InvestigatorWithTitle "Roland Banks") >>= traverse_ \iid ->
+        setupModifier CampaignSource iid (StartingHand bonusCards)
+    pure
+      $ updateAttrs a
+      $ ( logL
+            . recordedCountsL
+            %~ (deleteMap AllOrNothingBonusResources . deleteMap ByTheBookBonusCards)
+        )
   CampaignStep (ScenarioStepWithOptions sid opts) -> do
     pushAll
       $ [ ResetInvestigators
@@ -110,7 +130,6 @@ defaultCampaignRunner msg a = case msg of
     push $ Ask lead ContinueCampaign
     pure a
   CampaignStep (StandaloneScenarioStep sid _) -> do
-    let xp = getSideStoryCost sid
     pushAll
       [ ResetInvestigators
       , ResetGame
@@ -118,10 +137,9 @@ defaultCampaignRunner msg a = case msg of
       , ForInvestigators [] ResetGame
       , StartScenario sid Nothing
       ]
-    select Anyone >>= traverse_ \iid -> push $ SpendXP iid xp
+    spendSideStoryXp sid
     pure a
   CampaignStep (StandaloneScenarioStepWithOptions sid _ opts) -> do
-    let xp = getSideStoryCost sid
     pushAll
       [ ResetInvestigators
       , ResetGame
@@ -129,7 +147,7 @@ defaultCampaignRunner msg a = case msg of
       , ForInvestigators [] ResetGame
       , StartScenario sid (Just opts)
       ]
-    select Anyone >>= traverse_ \iid -> push $ SpendXP iid xp
+    spendSideStoryXp sid
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
   SetCampaignChaosBag tokens' -> pure $ updateAttrs a (chaosBagL .~ tokens')
@@ -485,3 +503,22 @@ defaultCampaignRunner msg a = case msg of
     push $ DoStep (n - 1) RunDestiny
     pure a
   _ -> pure a
+
+-- | Side-stories cost each investigator xp to play. Challenge scenarios only
+-- charge their required investigator the full cost; everyone else pays 1.
+spendSideStoryXp :: ScenarioId -> GameT ()
+spendSideStoryXp sid = do
+  let baseCost = getSideStoryCost sid
+  investigators <- select Anyone
+  case challengeScenarioInvestigator sid of
+    Nothing -> for_ investigators \iid -> push $ SpendXP iid baseCost
+    Just title -> do
+      signatures <- select $ InvestigatorWithTitle title
+      when (null signatures)
+        $ error
+        $ "Cannot play challenge scenario "
+        <> show sid
+        <> " without "
+        <> unpack title
+      for_ investigators \iid ->
+        push $ SpendXP iid $ if iid `elem` signatures then baseCost else 1

@@ -164,6 +164,11 @@ const investigators = computed(() => {
   return Object.values(props.game.investigators)
 })
 
+const usesTime = computed<boolean>(() => {
+  if(!props.campaign) return false
+  return props.campaign.log.recordedCounts.some(([c, _v]: [any, number]) => c.tag === 'TheScarletKeysKey' && c.contents === 'Time')
+})
+
 const minXp = computed<number>(() => {
   if(!props.campaign) return 0
   const time = props.campaign.log.recordedCounts.find(([c, v]) => c.tag === 'TheScarletKeysKey' && c.contents === 'Time')
@@ -199,8 +204,19 @@ const standalones = computed(() => {
     return acc
   }, [] as string[])
 
-  return filterDisplayable(sideStories, displayRuleOptions.value).flatMap((s: { xp: number, id: string, name: string, scenarios?: { id: string, name: string, notAfter?: string[] }[] }) => {
-    if (!s.xp || s.xp > minXp.value) return []
+  return filterDisplayable(sideStories, displayRuleOptions.value).flatMap((s: { xp: number, id: string, name: string, requiredInvestigator?: string, scenarios?: { id: string, name: string, notAfter?: string[] }[] }) => {
+    if (!s.xp) return []
+    if (s.requiredInvestigator) {
+      // challenge scenarios require their investigator; they pay the full
+      // cost while each other investigator only pays 1 xp
+      const signature = investigators.value.find((i) => i.name.title === s.requiredInvestigator)
+      if (!signature) return []
+      if (usesTime.value) {
+        if (s.xp > minXp.value) return []
+      } else if (signature.xp < s.xp || investigators.value.some((i) => i.id !== signature.id && i.xp < 1)) {
+        return []
+      }
+    } else if (s.xp > minXp.value) return []
     const parts = s.scenarios ?? [{ id: s.id, name: s.name }]
     return parts
       .filter((p) => !completed.includes(p.id))
@@ -290,7 +306,8 @@ const expeditionLeader = computed(() => {
         </div>
         <div class="scenario-info">
           <h2>{{ sideStory.name }}</h2>
-          <h3>({{ sideStory.xp }} XP)</h3>
+          <h3 v-if="sideStory.requiredInvestigator">{{ $t('sideStory.xpAsymmetric', { signatureXp: sideStory.xp, name: sideStory.requiredInvestigator, otherXp: 1 }) }}</h3>
+          <h3 v-else>({{ sideStory.xp }} XP)</h3>
         </div>
 
         <button class="add" @click="loadSideStory(sideStory.id)" :disabled="hasSent">+</button>

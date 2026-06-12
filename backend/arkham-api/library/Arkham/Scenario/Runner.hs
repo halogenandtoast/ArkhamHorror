@@ -87,6 +87,7 @@ import Arkham.Search hiding (drawnCardsL, foundCardsL)
 import Arkham.Search qualified as Search
 import Arkham.Skill.Types qualified as Field
 import Arkham.Story.Types (Field (..))
+import Arkham.SideStory (challengeScenarioInvestigator)
 import Arkham.Tarot
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -1686,6 +1687,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     do_ EnemiesAttack
     pure a
   LoadScenario opts -> do
+    for_ (challengeScenarioInvestigator scenarioId) \title -> do
+      hasSignature <- selectAny $ Matcher.InvestigatorWithTitle title
+      unless hasSignature
+        $ error
+        $ "Cannot play this challenge scenario without "
+        <> unpack title
     unless opts.delayChoosingLead do
       push $ maybe ChooseLeadInvestigator (`ChoosePlayer` SetLeadInvestigator) opts.leadInvestigator
       push SetPlayerOrder

@@ -22,7 +22,7 @@ instance RunMessage OnTheBrink where
       getSkillTest >>= traverse_ \st -> do
         for_ (Map.assocs st.committedCards) \(iid, cards) -> do
           addToHand iid $ filter ((/= toCardId attrs) . toCardId) cards
-        selectEach (NotSkill $ SkillWithId attrs.id) \x -> do
+        selectEach (NotSkill (SkillWithId attrs.id) <> SkillNotRemoved) \x -> do
           owner <- field SkillOwner x
           returnToHand owner x
       pure s

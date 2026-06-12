@@ -503,4 +503,6 @@ allActs =
     , SomeActCard theEscapeTheLabyrinthsOfLunacy
     , -- Machinations Through Time
       SomeActCard walkingThroughTime
+    , -- Bad Blood
+      SomeActCard aWalkDownMemoryLane
     ]

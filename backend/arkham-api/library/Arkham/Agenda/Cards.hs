@@ -14,6 +14,7 @@ import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale as X
 import Arkham.Agenda.CardDefs.Core2026 as X
 import Arkham.Agenda.CardDefs.ReturnTo as X
 import Arkham.Agenda.CardDefs.Standalone as X
+import Arkham.Agenda.CardDefs.ReadOrDie as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -323,4 +324,6 @@ allAgendaCards =
         theAnomalySpreads
       , theAnomalySwells
       , theAnomalyConsumes
+      , --- Read or Die
+        mortalInquiry
       ]

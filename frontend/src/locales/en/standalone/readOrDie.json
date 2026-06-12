@@ -1,0 +1,80 @@
+{
+  "specialRules": [
+    {
+      "title": "Challenge Scenario",
+      "body": "<p class='basic'>Challenge scenarios are special print-and-play scenarios that utilize existing products in the Arkham Horror: The Card Game collection, along with additional print-and-play cards, to create new content. The Read or Die challenge scenario centers around the investigator Daisy Walker, and therefore has the following prerequisites:</p><ul><li>Daisy Walker must be chosen as one of the investigators when playing this scenario.</li><li>Daisy Walker's deck must include at least 4 _Tome_ assets. _Tome_ weaknesses do not count toward this total.</li></ul>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of _Tome_ assets Daisy Walker controls.",
+      "cultist": "Reveal another token. If you fail, discard the top 2 cards of your deck.",
+      "tablet": "-2. If this is an attack or evasion attempt against Namer of the Dead and you do not succeed by at least 2, it attacks you.",
+      "elderThing": "-3. If you fail, Daisy Walker takes 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of _Tome_ assets Daisy Walker controls.",
+      "cultist": "Reveal another token. If you fail, discard the top 3 cards of your deck.",
+      "tablet": "-3. If this is an attack or evasion attempt against Namer of the Dead and you do not succeed by at least 3, it attacks you.",
+      "elderThing": "-5. If you fail, Daisy Walker takes 1 horror."
+    }
+  },
+  "intro": {
+    "title": "Challenge Scenario: Read or Die",
+    "body": "<p>You've spent your entire life reading. As a child, it was but a simple interest in harmless stories. Grisly stories, to be sure, but harmless nonetheless. Your fascination with horror and the macabre earned you the nickname \"Spooks\" among your friends and classmates. But as you grew, so too did this fascination, until it bordered on obsession. Your appetite for horror evolved from mystery and make-believe to something more. Something real.</p><p>When you discovered John Dee's translation of The Necronomicon, you knew you'd finally found the true horror you had been secretly yearning for. If only you'd known what would be in store for you once you'd read that dreadful tome. You would have locked it back up in Henry Armitage's restricted collection in the Orne Library and never opened it again.</p><p>Or so you like to think. But even you cannot doubt the allure of the Kitab al-Azif. The Book of the Dead. That is why, when Dr. Armitage summoned you to the Orne Library, the dread in your bones predicted precisely what had occurred.</p><p>\"I don't understand how this could have happened,\" Dr. Armitage says as he surveys the destruction. The entire restricted collection is in tattered disarray. The Necronomicon lies open on a nearby table, its metal clasps broken apart. You run your fingers along its leathery, skin-like pages. Your eyes flit along the words in a familiar dance:</p><p>\"They walk unseen and foul in lonely places where the Words have been spoken and the Rites howled through at their Seasons. The wind gibbers with Their voices, and the earth mutters with Their consciousness.\"</p><p>Your throat tightens as you realize what must have occurred. Something has been unleashed, and you are the only one who can figure out how to stop it…</p>"
+  },
+  "investigatorSetup": {
+    "title": "Investigator Setup",
+    "body": "<p>Remove each non-weakness _Tome_ asset from Daisy Walker's deck. Set each of these assets aside, out of play.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Read or Die*, *Extracurricular Activity*, *Sorcery*, *The Beyond*, *Bishop's Thralls*, *Whippoorwills*, *Ancient Evils*, *Locked Doors*, *Agents of Yog-Sothoth*, and *Armitage's Fate*. Each of these sets except for Read or Die can be found in The Dunwich Legacy Deluxe Expansion. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/extracurricular-activity.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/bishops-thralls.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/agents-of-yog.png' /><img src='{setImgPath}/armitages-fate.png' /></section>",
+    "newCards": "Remove the original scenario reference card, act deck, and agenda deck from the *Extracurricular Activity* encounter set from the game. Use the new scenario reference card, agenda card, and act card provided in the downloadable *Read or Die* encounter set.",
+    "removeCards": "Remove the Faculty Offices (*The Hour is Late*) location, the Alchemy Labs location, the Alchemical Concoction story asset, The Experiment enemy, and the Professor Warren Rice story asset from the game. These cards are not used in this challenge scenario.",
+    "placeLocations": "Put each of the remaining locations into play: Miskatonic Quad, Orne Library, Humanities Building, Student Union, Science Building, Administration Building, Dormitories, and Faculty Offices (*The Night is Still Young*).",
+    "daisyWalker": "Daisy Walker begins play at the Orne Library.",
+    "otherInvestigators": "Each other investigator begins play at the Miskatonic Quad.",
+    "ignoreForced": "Since Dormitories and Faculty Offices start the game in play and Alchemy Labs is removed from the game, ignore any Forced abilities that would put these locations into play.",
+    "placeTomes": "Shuffle each of the set-aside _Tome_ assets previously removed from Daisy Walker's deck and place 1 of them facedown beneath each location except for the Miskatonic Quad, starting with the locations farthest from the Orne Library. Place each remaining set-aside _Tome_ asset facedown beneath the Orne Library.",
+    "jazzMulligan": "Put the \"Jazz\" Mulligan story asset into play at the Science Building.",
+    "namerOfTheDead": "Place the Namer of the Dead enemy (provided in the downloadable *Read or Die* encounter set) into play at the Orne Library, unengaged and exhausted.",
+    "drHenryArmitage": "Daisy Walker takes control of the Dr. Henry Armitage story asset. (If Dr. Henry Armitage is already part of an investigator's deck, search that investigator's deck for Dr. Henry Armitage and put him into play under Daisy Walker's control.)"
+  },
+  "tooltips": {
+    "speedReading": {
+      "takeTome": "{'{'}fast{'}'} If you are Daisy Walker, investigators at your location spend 1{'{'}perPlayer{'}'} clues: Shuffle 1 facedown player card beneath this location into your deck."
+    },
+    "mortalInquiry": {
+      "moveJazz": "{'{'}action{'}'}: Move to a _Miskatonic_ location up to 3 connections away."
+    },
+    "namerOfTheDead": {
+      "parley": "{'{'}action{'}'} If you are Daisy Walker and you control at least 4 non-weakness _Tome_ assets: _Parley._ Test {'{'}willpower{'}'} (18). This test gets -2 difficulty for each _Tome_ asset you control. If you succeed, advance the act."
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<div class='resolution'><p>_If no resolution was reached because each investigator was defeated:_ Proceed to _Resolution 2_.</p></div>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: When you wake, the floor of the library is a mess of scattered paper and torn books. The Necronomicon lies in front of you, its metal clasp sealing it shut once more. Hopefully, whatever presence had been unleashed is safely stored within. But you can't risk the grimoire staying here—it is far too dangerous to be left alone. You stuff the tome into your tote bag, knowing only you can keep it safe…or keep others safe from it.</p><ul><li>Daisy Walker earns experience equal to either the combined Victory X value of each card in the victory display, or equal to the number of _Tome_ assets she had in play at the end of the game, whichever is higher.</li><li>Each other investigator only earns experience equal to the combined Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Daisy Walker may either upgrade Daisy's Tote Bag to its advanced version, or downgrade the advanced version of The Necronomicon (*John Dee Translation*) to its original version.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: You stuff the tome back into your tote bag. You can only hope that the entity that was unleashed won't cause further harm…</p><ul><li>Daisy Walker earns experience equal to either the combined Victory X value of each card in the victory display, or equal to the number of _Tome_ assets she had in play at the end of the game, whichever is higher.</li><li>Each other investigator only earns experience equal to the combined Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Daisy Walker must either upgrade The Necronomicon (*John Dee Translation*) to its advanced version, or downgrade the advanced version of Daisy's Tote Bag to its original version.</li></ul></div>"
+    },
+    "xp": {
+      "tomes": "Tome assets Daisy Walker had in play at the end of the game"
+    },
+    "label": {
+      "maySwapSignatureCards": "Daisy Walker may either upgrade Daisy's Tote Bag to its advanced version, or downgrade the advanced version of The Necronomicon to its original version",
+      "mustSwapSignatureCards": "Daisy Walker must either upgrade The Necronomicon to its advanced version, or downgrade the advanced version of Daisy's Tote Bag to its original version",
+      "upgradeDaisysToteBag": "Upgrade Daisy's Tote Bag to its advanced version",
+      "downgradeTheNecronomicon": "Downgrade The Necronomicon to its original version",
+      "upgradeTheNecronomicon": "Upgrade The Necronomicon to its advanced version",
+      "downgradeDaisysToteBag": "Downgrade Daisy's Tote Bag to its original version",
+      "doNotSwap": "Do not swap"
+    }
+  }
+}

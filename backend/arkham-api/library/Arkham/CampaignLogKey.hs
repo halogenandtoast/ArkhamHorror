@@ -86,6 +86,8 @@ data CampaignLogKey
   | Teachings3
   | YouHaveCalculatedTheDayOfReckoning
   | YouHaveUnearthedTheSecretsOfThePharaohs
+  | -- | All or Nothing
+    AllOrNothingBonusResources
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveToJSON defaultOptions ''CampaignLogKey)

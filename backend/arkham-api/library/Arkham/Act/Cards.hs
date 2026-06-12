@@ -14,6 +14,7 @@ import Arkham.Act.CardDefs.TheForgottenAge as X
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Act.CardDefs.ThePathToCarcosa as X
 import Arkham.Act.CardDefs.TheScarletKeys as X
+import Arkham.Act.CardDefs.RelicsOfThePast as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -369,4 +370,7 @@ allActCards =
       , blackwatersBane
       , exposeTheAnomalyEpicMultiplayer
       , blackwatersBaneEpicMultiplayer
+      , --- Relics of the Past
+        crumblingRuin
+      , findTheWayOut
       ]

@@ -330,6 +330,8 @@ supplyLabel s = case s of
   KeyOfEztli -> go "keyOfEztli"
   MysteriousScepter -> go "mysteriousScepter"
   StickyGoop -> go "stickyGoop"
+  Journal -> go "journal"
+  Satchel -> go "satchel"
  where
   go label =
     campaignI18n

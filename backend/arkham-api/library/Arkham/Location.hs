@@ -1361,4 +1361,8 @@ allLocations =
     , SomeLocationCard riverDocksFuture
     , SomeLocationCard miskatonicUniversityFuture
     , SomeLocationCard corriganIndustries
+    , -- Relics of the Past
+      SomeLocationCard secretPassageRelicsOfThePast
+    , SomeLocationCard innerChamber
+    , SomeLocationCard ancientHallRelicsOfThePast
     ]

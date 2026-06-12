@@ -364,6 +364,18 @@
     "stickyGoop": {
       "name": "Sticky Goop",
       "count": "@:theForgottenAge.supplies.stickyGoop.name | @:theForgottenAge.supplies.stickyGoop.name ({count})"
+    },
+    "journal": {
+      "name": "Journal",
+      "description": "To keep a record of the events of the expedition.",
+      "tooltip": "@:theForgottenAge.supplies.journal.description",
+      "count": "@:theForgottenAge.supplies.journal.name | @:theForgottenAge.supplies.journal.name ({count})"
+    },
+    "satchel": {
+      "name": "Satchel",
+      "description": "A safe place to store anything you find in the tomb.",
+      "tooltip": "@:theForgottenAge.supplies.satchel.description",
+      "count": "@:theForgottenAge.supplies.satchel.name | @:theForgottenAge.supplies.satchel.name ({count})"
     }
   }
 }

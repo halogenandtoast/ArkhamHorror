@@ -1058,4 +1058,6 @@ allTreacheries =
         SomeTreacheryCard huntDown
       , -- Swarm of Assimilation
         SomeTreacheryCard transmogrify
+      , -- Relics of the Past
+        SomeTreacheryCard vengeantPast
       ]

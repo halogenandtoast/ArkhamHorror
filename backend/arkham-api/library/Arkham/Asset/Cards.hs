@@ -22,6 +22,7 @@ import Arkham.Asset.Cards.TheInnsmouthConspiracy as X
 import Arkham.Asset.Cards.ThePathToCarcosa as X
 import Arkham.Asset.Cards.TheScarletKeys as X
 import Arkham.Asset.Cards.TommyMuldoon2 as X
+import Arkham.Asset.Cards.RelicsOfThePast as X
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
@@ -1168,6 +1169,11 @@ allEncounterAssetCards =
       , petOozeling
       , miGoWeapon
       , ltWilsonStewart
+      , --- Relics of the Past
+        jadeCrocodile
+      , obsidianJaguar
+      , citrineSnake
+      , turquoiseEagle
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

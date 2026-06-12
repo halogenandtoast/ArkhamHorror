@@ -17,6 +17,7 @@ import Arkham.Treachery.CardDefs.TheForgottenAge as X
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Treachery.CardDefs.ThePathToCarcosa as X
 import Arkham.Treachery.CardDefs.TheScarletKeys as X
+import Arkham.Treachery.CardDefs.RelicsOfThePast as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -736,4 +737,6 @@ allEncounterTreacheryCards =
       , replication
       , itsGotMe
       , alienFoodChain
+      , --- Relics of the Past
+        vengeantPast
       ]

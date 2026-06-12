@@ -1629,4 +1629,9 @@ allAssets =
       , SomeAssetCard maryZielinskiFuture
       , SomeAssetCard dimensionalBeamMachine
       , SomeAssetCard edwinBennetAstuteAssociate
+      , -- Relics of the Past
+        SomeAssetCard jadeCrocodile
+      , SomeAssetCard obsidianJaguar
+      , SomeAssetCard citrineSnake
+      , SomeAssetCard turquoiseEagle
       ]

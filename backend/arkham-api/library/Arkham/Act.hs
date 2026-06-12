@@ -503,4 +503,7 @@ allActs =
     , SomeActCard theEscapeTheLabyrinthsOfLunacy
     , -- Machinations Through Time
       SomeActCard walkingThroughTime
+    , -- Relics of the Past
+      SomeActCard crumblingRuin
+    , SomeActCard findTheWayOut
     ]

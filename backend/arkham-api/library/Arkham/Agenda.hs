@@ -444,4 +444,7 @@ allAgendas =
     , -- Machinations Through Time
       SomeAgendaCard intoTheVoid
     , SomeAgendaCard timeMarchesOn
+    , -- Relics of the Past
+      SomeAgendaCard somethingElseStirs
+    , SomeAgendaCard guardianOfTheRelics
     ]

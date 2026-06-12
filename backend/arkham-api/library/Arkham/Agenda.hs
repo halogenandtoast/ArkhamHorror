@@ -446,4 +446,6 @@ allAgendas =
     , SomeAgendaCard timeMarchesOn
     , -- Bad Blood
       SomeAgendaCard hyperboreanBlood
+    , -- Enthralling Encore
+      SomeAgendaCard theHauntingOfTheWardTheatre
     ]

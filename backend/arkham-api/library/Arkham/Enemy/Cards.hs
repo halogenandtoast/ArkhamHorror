@@ -19,6 +19,7 @@ import Arkham.Enemy.CardDefs.ByTheBook as X
 import Arkham.Enemy.CardDefs.AllOrNothing as X
 import Arkham.Enemy.CardDefs.BadBlood as X
 import Arkham.Enemy.CardDefs.LaidToRest as X
+import Arkham.Enemy.CardDefs.EnthrallingEncore as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -673,6 +674,8 @@ allEncounterEnemyCards =
         jeanDevereuxSeekingClosure
       , jeanDevereuxPossessed
       , ravenousSpirit
+      , --- Enthralling Encore
+        sinisterSoloist
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

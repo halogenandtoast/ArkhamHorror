@@ -929,4 +929,6 @@ allEnemies =
       , SomeEnemyCard tindalosAlphaMachinationsThroughTime
       , -- Bad Blood
         SomeEnemyCard elspethBaudin
+      , -- Enthralling Encore
+        SomeEnemyCard sinisterSoloist
       ]

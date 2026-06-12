@@ -26,6 +26,7 @@ data ScenarioDeckKey
   | EnemyDeck -- The Longest Night
   | AbyssDeck -- Fate of the Vale
   | ReelDeck -- FilmFatale
+  | PropsDeck -- Enthralling Encore
   deriving stock (Show, Ord, Eq, Data)
 
 instance ToDisplay ScenarioDeckKey where
@@ -50,6 +51,7 @@ instance ToDisplay ScenarioDeckKey where
     EnemyDeck -> "Enemy"
     AbyssDeck -> "The Abyss"
     ReelDeck -> "Reel"
+    PropsDeck -> "Props"
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)
 

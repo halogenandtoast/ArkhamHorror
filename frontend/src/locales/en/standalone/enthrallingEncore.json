@@ -1,0 +1,62 @@
+{
+  "intro": {
+    "title": "Enthralling Encore",
+    "body": "<p>Everyone has their role to play in the performance of life. You're not sure how long it has been since <i>The King in Yellow</i> came to Arkham's Ward Theatre. Since then, you've put it out of your mind, dismissing it as an unexplained, and incredibly vivid, hallucination. But then you heard it. At first it came to you in your dreams, the haunting melody of the production's orchestral score, now presented by a single violin. It has led you to a corner of Arkham you had been avoiding: the Ward Theatre. The Theatre is dark and quiet, save for that melody only you can hear...</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Enthralling Encore*, *Curtain Call*, *Decay and Filth*, *Delusions*, *Hauntings*, *Ghouls*, *Striking Fear*, and *Rats*. Each of these sets except for *Enthralling Encore* can be found in the Core Set and The Path to Carcosa Campaign Expansion. The original scenario reference card, acts, and agendas from the *Curtain Call* encounter set are removed from the game.<section class='encounter-sets'><img src='{setImgPath}/curtain-call.png' /><img src='{setImgPath}/decay-and-filth.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/hauntings.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "propsDeck": "Build the Props deck. This is done by searching your collection for 3 level 0 non-Ally assets from each class ({'{'}guardian{'}'}, {'{'}seeker{'}'}, {'{'}rogue{'}'}, {'{'}mystic{'}'}, and {'{'}survivor{'}'}), for a total of 15 cards (no duplicates, if possible). Shuffle these cards together to form the Props deck. Place this deck near the scenario reference card. (The suggested list from the rules insert is used: Physical Training, First Aid, Machete, Old Book of Lore, Hyperawareness, Medical Texts, Burglary, Pickpocketing, Hard Knocks, Holy Rosary, Scrying, Arcane Studies, Baseball Bat, Rabbit's Foot, and Dig Deep.)",
+    "removeCards": "Remove The Man in the Pallid Mask and Royal Emissary from the game.",
+    "setAside": "Set each copy of Lobby Doorway and each copy of Backstage Doorway aside, out of play.",
+    "placeLocations": "Put the Theatre, Lobby, Balcony, and Backstage locations into play.",
+    "startAt": "Each investigator begins play at Theatre.",
+    "sinisterSoloist": "Put the Sinister Soloist enemy into play at Backstage."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of measures.",
+      "cultist": "-2. If you fail, you must either spend 1 clue or take 1 damage.",
+      "tablet": "-3 (-5 instead if there are 3 or more classes among cards you control).",
+      "elderThing": "-2. If Sinister Soloist is at your location, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of measures.",
+      "cultist": "-3. If you fail, you must spend 1 clue and take 1 damage.",
+      "tablet": "-4 (-6 instead if there are 3 or more classes among cards you control).",
+      "elderThing": "-3. If Sinister Soloist is at your location, you automatically fail instead."
+    }
+  },
+  "label": {
+    "cultist": {
+      "spendClue": "Spend 1 clue",
+      "takeDamage": "Take 1 damage"
+    },
+    "chooseInvestigator": "Choose an investigator to draw 1 of the revealed Props cards",
+    "chooseProp": "Choose a Props card to draw. The remaining cards will be shuffled and placed on the bottom of the Props deck"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>If no resolution was reached because each investigator was defeated: Skip to <b>Resolution 2</b>.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: With the violinist defeated, you can only hope that the last specter of that unholy production is finally put to rest. Every day following the events at the Ward Theatre, your nerves are coiled tight, always expecting to hear the melody. The days pass, the melody never returns, and it would seem you are allowed to continue your life as if the events surrounding <i>The King in Yellow</i> had never truly happened. But they did, didn't they?</p><ul><li>Each investigator earns experience equal to the combined Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Each investigator may either upgrade their signature card to its advanced version, or downgrade the advanced version of their weakness to its original version (if able).<ul><li>Each investigator unable to upgrade their advanced signature card or downgrade their advanced weakness earns 2 bonus experience, instead.</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: Unable to withstand the soloist any longer, you drop to your knees, letting the overwhelming power of the melody wash over you like an unstoppable flood. The notes fill your ears, drowning out every other thought. Your vision fades, the reality of the Ward Theatre growing dark, warping and stretching at odd angles.</p><p>You squeeze your eyes shut, trying to focus on what you can feel, to keep yourself grounded. Your hands are pressed into coarse sand, and every few seconds you feel cold water lapping at your fingertips. After what feels like minutes you open your eyes again to see the tall spires of that ancient city, reaching up to a sky lit with black stars. The violin is now joined by an unseen orchestra, reaching a deafening crescendo. You try to rise from your knees, but your shaking legs give out, and you fall onto your back…</p><p>…and land on the dusty wooden boards of a stage. The sound of your collapse echoes off of the cavernous walls of the Ward Theatre. You stare up at the dark ceiling above as you lie on the proscenium. The soloist is gone. The monsters are gone. The Theatre is dark and seemingly abandoned, save for you.</p><p>You rise slowly, then turn and flee, not wanting to look for any signs of your experience. You are convinced that this place is cursed, that the production is cursed, and that this curse will haunt you for the rest of your days.</p><p>As you push through the front doors of the theatre and back out into the street, you hear the haunting melody in your head once more…</p><ul><li>Each investigator earns experience equal to the combined Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Each investigator must either upgrade their weakness to its advanced version, or downgrade the advanced version of their signature to its original version, if able.<ul><li>Each investigator unable to upgrade their advanced signature card or downgrade their advanced weakness suffers 1 mental trauma, instead.</li></ul></li></ul></div>"
+    },
+    "label": {
+      "swapSignature": "Upgrade or downgrade signature cards",
+      "upgradeSignature": "Upgrade your signature card to its advanced version",
+      "downgradeWeakness": "Downgrade your advanced weakness to its original version",
+      "upgradeWeakness": "Upgrade your weakness to its advanced version",
+      "downgradeSignature": "Downgrade your advanced signature card to its original version",
+      "doNotSwap": "Do not swap"
+    },
+    "xp": {
+      "unableToSwap": "Unable to upgrade or downgrade signature cards"
+    }
+  }
+}

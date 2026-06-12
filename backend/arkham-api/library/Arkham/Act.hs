@@ -505,4 +505,6 @@ allActs =
       SomeActCard walkingThroughTime
     , -- Bad Blood
       SomeActCard aWalkDownMemoryLane
+    , -- Enthralling Encore
+      SomeActCard breakFreeFromThePast
     ]

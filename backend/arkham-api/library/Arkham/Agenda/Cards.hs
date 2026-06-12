@@ -18,6 +18,7 @@ import Arkham.Agenda.CardDefs.ByTheBook as X
 import Arkham.Agenda.CardDefs.AllOrNothing as X
 import Arkham.Agenda.CardDefs.BadBlood as X
 import Arkham.Agenda.CardDefs.LaidToRest as X
+import Arkham.Agenda.CardDefs.EnthrallingEncore as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -336,4 +337,6 @@ allAgendaCards =
         hyperboreanBlood
       , --- Laid to Rest
         gatheringMists
+      , --- Enthralling Encore
+        theHauntingOfTheWardTheatre
       ]

@@ -5,7 +5,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator (getJustLocation)
-import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose

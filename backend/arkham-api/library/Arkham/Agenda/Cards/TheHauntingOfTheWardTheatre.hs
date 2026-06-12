@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.ClassSymbol
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Modifiers (ModifierType (..), roundModifier)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck

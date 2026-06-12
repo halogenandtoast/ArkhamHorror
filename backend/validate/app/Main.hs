@@ -256,6 +256,8 @@ getTraits CardJson {..} = case traits of
     "Return" -> False -- adb adds the trait Return for some reason
     "???" -> False -- from 52061 (Recesses of Your Own Mind), but no reason to actually parse it
     "Unlit" -> False -- from 10610b (Vale Lantern), not modeled as a trait
+    "Act 1" -> False -- from 70033-70038 (Midwinter Gala guests), act indicators not modeled as traits
+    "Act 2" -> False -- from 70033-70038 (Midwinter Gala guests), act indicators not modeled as traits
     _ -> True
 
 toGameVal :: Bool -> Int -> GameValue

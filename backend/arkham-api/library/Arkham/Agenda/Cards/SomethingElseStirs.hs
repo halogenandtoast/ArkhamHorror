@@ -3,6 +3,7 @@ module Arkham.Agenda.Cards.SomethingElseStirs (somethingElseStirs) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
+import Arkham.Card (genCard)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreationMethod (SpawnEngagedWith))
 import Arkham.Helpers.Location (withLocationOf)

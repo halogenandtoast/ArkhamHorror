@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted hiding (InvestigatorResigned)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Investigator.Types (Field (InvestigatorResources))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Projection

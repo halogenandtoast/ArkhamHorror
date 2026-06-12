@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.EnthrallingEncore (enthrallingEncore) where
 
+import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.EncounterSet qualified as Set
@@ -156,7 +157,7 @@ instance RunMessage EnthrallingEncore where
     _ -> EnthrallingEncore <$> liftRunMessage msg attrs
 
 resolveSignatureSwap :: (HasI18n, ReverseQueue m) => InvestigatorId -> Bool -> m ()
-resolveSignatureSwap iid optional = do
+resolveSignatureSwap iid isOptional = do
   mswap <- getSignatureSwap iid
   owned <- getOwnedCardDefs iid
   let
@@ -170,7 +171,7 @@ resolveSignatureSwap iid optional = do
     swapCard (old, new) = do
       removeCampaignCardFromDeck iid old
       addCampaignCardToDeck iid DoNotShuffleIn new
-  if optional
+  if isOptional
     then case (upgradeSignature, downgradeWeakness) of
       (Nothing, Nothing) -> gainXp iid ScenarioSource (ikey "xp.unableToSwap") 2
       (mUpgrade, mDowngrade) -> chooseOneM iid do

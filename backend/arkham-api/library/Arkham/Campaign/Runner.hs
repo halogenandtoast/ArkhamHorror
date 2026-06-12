@@ -24,7 +24,7 @@ import Arkham.Helpers.Deck
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers (setupModifier)
 import Arkham.Helpers.Query
-import Arkham.Modifier (Modifier (StartingHand, StartingResources))
+import Arkham.Modifier (ModifierType (StartingHand, StartingResources))
 import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))

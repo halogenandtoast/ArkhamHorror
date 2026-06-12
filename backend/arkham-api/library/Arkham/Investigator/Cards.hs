@@ -779,7 +779,7 @@ zoeySamarasParallel =
 
 montereyJackParallel :: CardDef
 montereyJackParallel =
-  investigator "90062" ("Monterey Jack" <:> "The Archeologist") Rogue [Wayfarer]
+  investigator "90062" ("Monterey Jack" <:> "The Archaeologist") Rogue [Wayfarer]
 
 rexMurphyParallel :: CardDef
 rexMurphyParallel =

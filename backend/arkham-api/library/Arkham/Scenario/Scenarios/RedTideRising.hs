@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.RedTideRising (redTideRising) where
 
+import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -20,6 +21,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier (ModifierType (..))
+import Arkham.Placement (Placement (AtLocation))
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted

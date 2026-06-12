@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted hiding (InvestigatorDefeated)
 import Arkham.Helpers.FlavorText
-import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Scenarios.BadBlood.Helpers
 import Arkham.Scenarios.BadBlood.Meta

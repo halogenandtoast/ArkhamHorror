@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.ReadOrDie (readOrDie, ReadOrDie (..)) where
 
+import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -23,7 +24,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Import.Lifted hiding ((.=))
 import Arkham.Scenario.Types (setAsideCardsL)
 import Arkham.Scenarios.ReadOrDie.Helpers
 import Arkham.Trait (Trait (Tome))

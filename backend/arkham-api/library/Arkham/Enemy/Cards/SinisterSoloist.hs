@@ -16,7 +16,7 @@ sinisterSoloist = enemy SinisterSoloist Cards.sinisterSoloist (4, PerPlayer 6, 5
 
 instance HasModifiersFor SinisterSoloist where
   getModifiersFor (SinisterSoloist a) = do
-    modifySelectMap a (at_ $ locationWithEnemy a) \iid ->
+    modifySelectMap a (InvestigatorAt $ locationWithEnemy a) \iid ->
       [AdditionalPlayCostOf (basic $ not_ (CardWithClass Neutral)) (HorrorCost (toSource a) (toTarget iid) 1)]
 
 instance HasAbilities SinisterSoloist where
@@ -29,7 +29,7 @@ instance HasAbilities SinisterSoloist where
 instance RunMessage SinisterSoloist where
   runMessage msg e@(SinisterSoloist attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      selectEach (at_ (orConnected_ $ locationWithEnemy attrs)) \iid ->
+      selectEach (InvestigatorAt (orConnected_ $ locationWithEnemy attrs)) \iid ->
         directHorror iid (attrs.ability 1) 1
       pure e
     _ -> SinisterSoloist <$> liftRunMessage msg attrs

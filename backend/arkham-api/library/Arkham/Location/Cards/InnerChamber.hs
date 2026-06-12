@@ -43,7 +43,8 @@ instance RunMessage InnerChamber where
       let cards = drewCards.cards
       let nonLocations = filter (not . (`cardMatch` CardWithType LocationType)) cards
       let
-        drawCard card =
+        drawSelected :: ReverseQueue n => Card -> n ()
+        drawSelected card =
           push
             $ DrewCards iid
             $ CardDrew
@@ -69,15 +70,15 @@ instance RunMessage InnerChamber where
                   labeled' "innerChamber.doNotDrawAnother" do
                     unfocusCards
                     shuffleCardsIntoDeck ExplorationDeck rest
-                    drawCard card
+                    drawSelected card
                   targets restNonLocations \extra -> do
                     unfocusCards
                     shuffleCardsIntoDeck ExplorationDeck (deleteFirst extra rest)
-                    drawCard card
-                    drawCard extra
+                    drawSelected card
+                    drawSelected extra
                 else do
                   unfocusCards
                   shuffleCardsIntoDeck ExplorationDeck rest
-                  drawCard card
+                  drawSelected card
       pure l
     _ -> InnerChamber <$> liftRunMessage msg attrs

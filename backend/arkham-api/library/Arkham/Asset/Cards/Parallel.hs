@@ -117,15 +117,16 @@ theBeyondBleakNetherworld :: CardDef
 theBeyondBleakNetherworld =
   signature "90049"
     $ permanent
-    $ (asset "90052" ("The Beyond" <:> "Bleak Netherworld") 0 Neutral)
+    $ (asset "90052" ("The Beyond" <:> "Black Netherworld") 0 Neutral)
       { cdCardTraits = setFromList [Sanctum, Spectral]
+      , cdUnique = True
       , cdOtherSide = Just "90052b"
       }
 
 zoeysCrossAdvanced :: CardDef
 zoeysCrossAdvanced =
   signature "90059"
-    $ (asset "90060" ("Zoey's Cross" <:> "Symbol of Conviction") 1 Neutral)
+    $ (asset "90060" ("Zoey's Cross" <:> "Symbol of Righteousness") 1 Neutral)
       { cdSkills = [#combat, #combat, #wild]
       , cdCardTraits = setFromList [Item, Charm]
       , cdUnique = True
@@ -175,6 +176,7 @@ samuelBlakeObsessiveProducer :: CardDef
 samuelBlakeObsessiveProducer =
   (weakness "90093" ("Samuel Blake" <:> "Obsessive Producer"))
     { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdUnique = True
     , cdSlots = [#ally]
     , cdCost = Just (StaticCost 3)
     , cdKeywords = setFromList [Keyword.Replacement, Keyword.Peril, Keyword.Hidden]

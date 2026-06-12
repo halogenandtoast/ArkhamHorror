@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.BadBlood (badBlood) where
 
+import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -167,7 +168,7 @@ instance RunMessage BadBlood where
       for_ ([velmasDiner, curiositieShoppe, randomLocation] <> fixedLocations) \lid ->
         placeTokens attrs lid #resource 1
     ScenarioSpecific "agnesCollectsMemory" v -> do
-      let lid = toResult v
+      let lid = toResult @LocationId v
       removeTokens ScenarioSource lid #resource 1
       meta <- getBadBloodMeta
       let n = meta.agnesMemories + 1
@@ -176,7 +177,7 @@ instance RunMessage BadBlood where
       checkAfter $ Window.ScenarioEvent "memoryCollected" Nothing Null
       pure . BadBlood $ attrs & metaL .~ toJSON meta {agnesMemories = n}
     ScenarioSpecific "elspethCollectsMemory" v -> do
-      let lid = toResult v
+      let lid = toResult @LocationId v
       removeTokens ScenarioSource lid #resource 1
       meta <- getBadBloodMeta
       let n = meta.elspethMemories + 1

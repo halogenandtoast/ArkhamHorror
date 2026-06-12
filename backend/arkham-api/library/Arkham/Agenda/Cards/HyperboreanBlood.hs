@@ -7,7 +7,6 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.I18n
 import Arkham.Matcher
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Scenarios.BadBlood.Helpers

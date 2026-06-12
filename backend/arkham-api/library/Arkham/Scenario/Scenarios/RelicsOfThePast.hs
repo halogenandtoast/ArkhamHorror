@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.RelicsOfThePast (relicsOfThePast) where
 
+import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

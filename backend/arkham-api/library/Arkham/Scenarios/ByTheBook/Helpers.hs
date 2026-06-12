@@ -2,6 +2,8 @@ module Arkham.Scenarios.ByTheBook.Helpers where
 
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue (push)
+import Arkham.Enemy.Helpers (cancelEnemyDefeat)
 import Arkham.Classes.Query
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
@@ -14,7 +16,7 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Message.Lifted
+import Arkham.Message.Lifted hiding (cancelEnemyDefeat)
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Prelude
@@ -70,11 +72,11 @@ swapCampaignCard iid old new = do
 gainByTheBookXp :: forall m. ReverseQueue m => Source -> m (Int, Int)
 gainByTheBookXp source = do
   victoryDisplay <- scenarioField ScenarioVictoryDisplay
-  enemyEntries <- toEntries $ filterCards #enemy victoryDisplay
+  enemyEntries <- toEntries $ filterCards (CardWithType EnemyType) victoryDisplay
   inPlayLocations <- select $ RevealedLocation <> LocationWithoutClues
   locationEntries <-
     (<>)
-      <$> toEntries (filterCards #location victoryDisplay)
+      <$> toEntries (filterCards (CardWithType LocationType) victoryDisplay)
       <*> toEntries inPlayLocations
   mRoland <- selectOne $ IncludeEliminated rolandBanks
   investigators <- select InvestigatorCanGainXp

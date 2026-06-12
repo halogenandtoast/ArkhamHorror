@@ -118,7 +118,7 @@ instance RunMessage ByTheBook where
 
       cultOfUmordhoth <- gatherEncounterSet Set.CultOfUmordhoth
       darkCult <- gatherEncounterSet Set.DarkCult
-      let darkCultEnemies = filterCards #enemy (map toCard darkCult)
+      let darkCultEnemies = filterCards (CardWithType EnemyType) (map toCard darkCult)
       conspirators <-
         traverse (setFacedown True) =<< shuffle (map toCard cultOfUmordhoth <> darkCultEnemies)
       zipWithM_

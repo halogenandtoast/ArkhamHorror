@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.LaidToRest (laidToRest, LaidToRest (..)) where
 
+import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -13,7 +14,6 @@ import Arkham.Helpers.Card (ConvertToCard (..), getVictoryPoints)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers hiding (roundModifiers)
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -128,7 +128,7 @@ gainLaidToRestXp attrs = do
   for_ others \other -> push $ GainXP other (toSource attrs) otherXp
   pure (jimXp, otherXp)
  where
-  toVictoryEntries :: (ConvertToCard c, HasGame m, Tracing m) => [c] -> m [(Text, Int)]
+  toVictoryEntries :: ConvertToCard c => [c] -> m [(Text, Int)]
   toVictoryEntries = mapMaybeM \c -> do
     card <- convertToCard c
     mvp <- getVictoryPoints c

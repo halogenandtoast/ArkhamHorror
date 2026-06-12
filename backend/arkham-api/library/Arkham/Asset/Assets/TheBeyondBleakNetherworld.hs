@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Classes.GameLogger (format, send)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
@@ -148,7 +147,7 @@ instance RunMessage TheBeyondBleakNetherworld where
               healHorror iid attrs 1
           other | other `elem` [Cultist, ElderThing, Tablet, CurseToken] -> do
             chooseOneM iid $ cardI18n $ scope "theBeyondBleakNetherworld" do
-              labeled' "discardSpirit" discardSpirit
+              labeled' "discardSpirit" (lift discardSpirit)
               labeled' "takeDirectDamage" $ directDamage iid attrs 1
           _ -> discardSpirit
       pure a

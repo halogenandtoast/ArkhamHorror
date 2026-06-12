@@ -9,7 +9,6 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Scenarios.RelicsOfThePast.Helpers
-import Arkham.Spawn
 
 newtype DwellerInThePit = DwellerInThePit EnemyAttrs
   deriving anyclass IsEnemy

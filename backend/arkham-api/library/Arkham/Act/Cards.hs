@@ -16,6 +16,7 @@ import Arkham.Act.CardDefs.ThePathToCarcosa as X
 import Arkham.Act.CardDefs.TheScarletKeys as X
 import Arkham.Act.CardDefs.ByTheBook as X
 import Arkham.Act.CardDefs.AllOrNothing as X
+import Arkham.Act.CardDefs.BadBlood as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -376,4 +377,6 @@ allActCards =
       , --- All or Nothing
         playingCards
       , hotOnYourTail
+      , --- Bad Blood
+        aWalkDownMemoryLane
       ]

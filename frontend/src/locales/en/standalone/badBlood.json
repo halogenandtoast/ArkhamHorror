@@ -1,0 +1,94 @@
+{
+  "specialRules": [
+    {
+      "title": "Patrol",
+      "body": "<p class='basic'>Some enemies have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated location (as described in parentheses next to the word patrol).</p><ul><li>If there are multiple locations that qualify as the designated location, the lead investigator may choose which location the enemy moves toward.</li><li>If an enemy with patrol would be compelled to move to a location which is blocked by a card ability, the enemy does not move.</li></ul>"
+    },
+    {
+      "title": "Collecting Memories",
+      "body": "<p class='basic'>In this scenario, Agnes and Elspeth are racing to collect memories.</p><ul><li>Agnes can collect memories using the {'{'}fast{'}'} ability on act 1a.</li><li>Elspeth collects memories automatically via the <b>Forced</b> abilities on agenda 1a; when the combined modifier of chaos tokens on her location is 6 or more (ignoring +/–).<ul><li>For the purposes of counting their modifiers only, treat these chaos tokens as having been revealed during a skill test.</li></ul></li></ul>"
+    },
+    {
+      "title": "Alert",
+      "body": "<p class='basic'>Each time an investigator fails a skill test while attempting to evade an enemy with the alert keyword, after applying all results for that skill test, that enemy performs an attack against the evading investigator. An enemy does not exhaust after performing an alert attack. This attack occurs whether the enemy is engaged with the evading investigator or not.</p>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of memories Agnes Baker has collected.",
+      "cultist": "-2. Ready Elspeth Baudin and resolve her patrol keyword.",
+      "tablet": "-3. If you fail and there is a memory at Elspeth Baudin's location, place this token on that location.",
+      "elderThing": "-6. Agnes Baker may take up to 3 damage to increase your skill value by 2 for each damage taken."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of memories Agnes Baker has collected.",
+      "cultist": "-3. Ready Elspeth Baudin and resolve her patrol keyword. If she is engaged with an investigator, she makes an attack.",
+      "tablet": "-5. If you fail and there is a memory at Elspeth Baudin's location, place this token on that location.",
+      "elderThing": "-8. Agnes Baker may take up to 3 damage to increase your skill value by 2 for each damage taken."
+    }
+  },
+  "label": {
+    "collectMemoryFromElspeth": "Agnes Baker collects 1 memory from Elspeth Baudin",
+    "gainCluesFromTokenBank": "Agnes Baker gains {count} clues from the token bank",
+    "elderThingDamage": "Agnes Baker may take up to 3 damage to increase your skill value by 2 for each damage taken"
+  },
+  "intro": {
+    "title": "Challenge Scenario: Bad Blood",
+    "part1": "<p>You've always known there was something…different…about you. From a young age, in your dreams, you saw another realm. Another life. One of magick and majesty, of conquest and persecution. The moment you found that strange, old key—the moment you recognized the filigree along its handle, the pattern of its teeth—you knew those dreams weren't dreams at all, but memories. Memories of another life. Of a place called \"Hyperborea.\" And as the memories returned, the magic did, too.</p><p>For months you practiced in secret, delving into your memories and honing your powers. But lately, your dreams have turned dark and grisly. Your former self was not as caring or forgiving as you. She was ruthless. Power-hungry. Terrible to behold. You've taken it upon yourself to wield these strange powers only to help others, and not to hurt them.</p><p>But you're not the only one whose memories have started to return. Elspeth Baudin first visited the diner a few weeks ago. In the beginning, she was just a patron like any other. She ordered eggs, bacon and a black coffee, not unlike many of the other customers at Velma's. But there was something in her eyes—some spark of recognition or curiosity—that made you wary of her.</p><p>Then came the questions.</p><p>First, she asked about the key you wore on a chain around your neck. You gave her your best smile and told her your usual lie—that it was a family heirloom, a harmless trinket with no worth but its sentimental value. But that didn't deter her. She started prying about your life, about your family…about your dreams.</p><p>Elspeth was no normal patron. She wasn't making small talk. She was looking for answers, just the same as you. So you did some digging of your own. But there were no records of Elspeth being a resident of Arkham, and the few people you found who knew of her spoke only in hushed, frightened voices, and gave you very little to work with.</p>",
+    "part2": "<p>Then came a call from the Curiositie Shoppe in Northside. Elspeth had been searching for more artifacts like your own \"heirloom,\" even going so far as to utter the name Hyperborea. She is searching for something that can unlock more of her memories, just like you…but she is not like you. That sinister smirk of hers, the way her contacts trembled with fear at the mention of her name—you shudder to think what somebody with foul intentions could do with the sort of powers your memories hold…</p><p class='basic right'>Proceed to <b>Setup</b>.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: <i>Bad Blood</i>, <i>Threads of Fate</i>, <i>Pnakotic Brotherhood</i>, <i>The Midnight Masks</i>, <i>Locked Doors</i>, <i>Nightgaunts</i>, and <i>Dark Cult</i>. When gathering <i>The Midnight Masks</i> encounter set, only gather the 5 treachery cards (2x False Lead and 3x Hunting Shadow) and the following locations: Northside, Downtown (<i>First Bank of Arkham</i>), Easttown, Miskatonic University, and Rivertown. Do not gather the rest of the locations or the act, agenda, and scenario reference cards from that set.",
+    "scenarioReference": "Remove the original scenario reference card from the <i>Threads of Fate</i> encounter set from the game. Use the new scenario reference card provided in the <i>Bad Blood</i> encounter set.",
+    "placeLocations": "Put Northside, Downtown, Easttown, Miskatonic University, Rivertown, Town Hall, Velma's Diner, and Curiositie Shoppe into play.",
+    "startAt": "Each investigator begins play in Velma's Diner.",
+    "randomLocation": "Search the reverse sides of the original act deck from the <i>Threads of Fate</i> encounter set for the following locations: Eztli Exhibit, Black Cave, Train Tracks, and Arkham Police Station. Choose one at random and put it into play, ignoring its <b>revelation</b> ability. Remove the remainder of the original act and agenda cards from the <i>Threads of Fate</i> encounter set from the game.",
+    "actAgendaDecks": "Build the act and agenda decks using only the new act and agenda cards provided in the <i>Bad Blood</i> encounter set.",
+    "removeStoryAssets": "Remove the Ichtaca (<i>The Forgotten Guardian</i>) story asset and the Expedition Journal story asset from the game.",
+    "placeElspeth": "Place the Elspeth Baudin enemy into play at the Curiositie Shoppe.",
+    "placeMemories": "Place 1 resource on each location in play, as a \"memory.\""
+  },
+  "agendas": {
+    "outForBlood": {
+      "title": "Out For Blood",
+      "body": "<p><i>A crackle of arcane power lashes throughout the sky, seeking out you and your companions. For a brief moment, the torment is unbearable. The pain forks through your body like poison in your veins. A flash of light in the back of your vision blinds you. Then, just as suddenly, it is over. But there is something missing. Something lost. Is she trying to steal your memories?</i></p><p>Elspeth Baudin attacks each investigator in player order, regardless of their current location <i>(even if she is exhausted)</i>.</p><p>Flip this agenda back over.</p>"
+    }
+  },
+  "acts": {
+    "memoryOfEternalConquest": {
+      "title": "Memory of Eternal Conquest",
+      "agnesWins": "<p><b>If Agnes collected more memories than Elspeth:</b></p><p><i>Elspeth falls before you, pain coursing through her body. \"Go on, then. Finish it,\" she hisses through her teeth, glaring up at you with seething hatred. Arcane power crackles in your hand. She is your enemy. Your conquest. Her life, her memories, they are in your hands. You should take what is rightfully yours.</i></p><p class='basic right'><b>(→R1)</b></p>",
+      "elspethWins": "<p><b>If Elspeth collected more memories than Agnes:</b></p><p><i>You fall to your knees, overcome by pain. Elspeth looms over you, her hands crackling with arcane energy. \"You are weak,\" she taunts. \"You are not deserving of this power. But I...\" she grins. \"I will be so much better.\"</i></p><p class='basic right'><b>(→R2)</b></p>"
+    }
+  },
+  "elspethBaudin": {
+    "title": "Triumph and Subjugation",
+    "body": "<p><i>Light crashes against the night sky as your magic and Elspeth's intersect. A blaring peal - like an otherworldly siren, calling for judgment - sends you and Elspeth both to your knees. She reels in pain, digging her nails into her temples. You reach out with your power, grasp at her memories, and pull with all your strength.</i></p><p>Agnes Baker must decide (choose one):</p><ul><li>Agnes Baker collects 1 memory from Elspeth Baudin.</li><li>Agnes Baker gains 2 {'{'}perPlayer{'}'} clues from the token bank.</li></ul><p>Then, flip this card over, exhausted and unengaged.</p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p class='basic'>If no resolution was reached because each investigator was defeated: Proceed to <b>Resolution 2</b>.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p><i>It would be so simple. You could end her right now. Prevent her from menacing others with her powers...But then, would you be any different? You lower your hand, and the magic disperses into the cold air. \"Why?\" she asks, her voice cracked with pain. You shake your head and tell her that she is wrong. True power is the ability to make peace, not the ability to wage war. \"Fool,\" she barks, clambering to her feet. \"You are a weakling, after all. And you will regret letting me live.\" You watch her amble off with only fragments of her former life in her head. Her powers are considerably drained, but she still poses a problem. Perhaps you should have dealt with her, as she said. Still, you breathe a sigh of relief. You don't want this power to change who you are. You won't let yourself become like her. No matter what.</i></p><ul><li>Agnes Baker earns experience equal to either the combined Victory X value of each card in the victory display, or equal to the number of memories she had collected at the end of the game, whichever is higher.</li><li>Each other investigator only earns experience equal to the combined Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Agnes Baker <b>may</b> either upgrade Heirloom of Hyperborea to its advanced version, or downgrade the advanced version of Dark Memory to its original version.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p><i>Elspeth has you at her mercy. She raises her hand, her magic threatening to tear you apart. She smirks. You close your eyes and brace yourself...but no killing blow comes. Instead, she yanks you to your feet and wipes dust off your apron. \"Come now,\" she purrs with a devilish grin. \"You are no whimpering animal. Don't you remember what you truly are? What we truly are?\" Then, without any further punishment, she departs, leaving you with only fragments of your former life.</i></p><ul><li>Agnes Baker earns experience equal to either the combined Victory X value of each card in the victory display, or equal to the number of memories she had collected at the end of the game, whichever is higher.</li><li>Each other investigator only earns experience equal to the combined Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Agnes Baker <b>must</b> either upgrade Dark Memory to its advanced version, or downgrade the advanced version of Heirloom of Hyperborea to its original version.</li></ul>"
+    },
+    "label": {
+      "chooseSwap": "Agnes Baker may either upgrade Heirloom of Hyperborea to its advanced version, or downgrade the advanced version of Dark Memory to its original version",
+      "mustSwap": "Agnes Baker must either upgrade Dark Memory to its advanced version, or downgrade the advanced version of Heirloom of Hyperborea to its original version",
+      "upgradeHeirloomOfHyperborea": "Upgrade Heirloom of Hyperborea to its advanced version",
+      "downgradeHeirloomOfHyperborea": "Downgrade the advanced version of Heirloom of Hyperborea to its original version",
+      "upgradeDarkMemory": "Upgrade Dark Memory to its advanced version",
+      "downgradeDarkMemory": "Downgrade the advanced version of Dark Memory to its original version",
+      "doNotSwap": "Do not swap"
+    },
+    "xp": {
+      "memories": "Memories Agnes Baker collected"
+    }
+  }
+}

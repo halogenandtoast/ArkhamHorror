@@ -16,6 +16,7 @@ import Arkham.Agenda.CardDefs.ReturnTo as X
 import Arkham.Agenda.CardDefs.Standalone as X
 import Arkham.Agenda.CardDefs.ByTheBook as X
 import Arkham.Agenda.CardDefs.AllOrNothing as X
+import Arkham.Agenda.CardDefs.BadBlood as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -330,4 +331,6 @@ allAgendaCards =
       , yourDeadlineNears
       , --- All or Nothing
         eyesAllAroundYou
+      , --- Bad Blood
+        hyperboreanBlood
       ]

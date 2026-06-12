@@ -927,4 +927,6 @@ allEnemies =
       , SomeEnemyCard houndOfTindalos
       , SomeEnemyCard manyAngledThing
       , SomeEnemyCard tindalosAlphaMachinationsThroughTime
+      , -- Bad Blood
+        SomeEnemyCard elspethBaudin
       ]

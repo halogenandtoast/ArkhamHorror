@@ -723,6 +723,7 @@ allScenarios =
     , ("12168", SomeScenario queenOfAsh)
     , ("90032", SomeScenario byTheBook)
     , ("90011", SomeScenario allOrNothing)
+    , ("90020", SomeScenario badBlood)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -871,4 +872,5 @@ scenarioEncounterSets =
     , ("12168", EncounterSet.QueenOfAsh)
     , ("90032", EncounterSet.ByTheBook)
     , ("90011", EncounterSet.AllOrNothing)
+    , ("90020", EncounterSet.BadBlood)
     ]

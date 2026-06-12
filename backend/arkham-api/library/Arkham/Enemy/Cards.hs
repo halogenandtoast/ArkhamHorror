@@ -17,6 +17,7 @@ import Arkham.Enemy.CardDefs.ThePathToCarcosa as X
 import Arkham.Enemy.CardDefs.TheScarletKeys as X
 import Arkham.Enemy.CardDefs.ByTheBook as X
 import Arkham.Enemy.CardDefs.AllOrNothing as X
+import Arkham.Enemy.CardDefs.BadBlood as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -665,6 +666,8 @@ allEncounterEnemyCards =
       , --- All or Nothing
         siobhanRiley
       , cloverClubBouncer
+      , --- Bad Blood
+        elspethBaudin
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

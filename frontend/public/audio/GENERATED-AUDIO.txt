@@ -1,0 +1,5 @@
+Generated audio assets
+
+turnIndicator.ogg
+- Generated for this project with ffmpeg sine wave filters.
+- No third-party source material used.

@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.ChamberOfSecretsBloodyPrison (chamberOfSecretsBloodyPrison) where
 
 import Arkham.Ability
-import Arkham.Helpers.FlavorText
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers
@@ -20,6 +19,6 @@ instance HasAbilities ChamberOfSecretsBloodyPrison where
 instance RunMessage ChamberOfSecretsBloodyPrison where
   runMessage msg l@(ChamberOfSecretsBloodyPrison attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      flavor $ scope "chamberOfSecrets" $ p "poundFists"
+      sendAudio "impactPunch_heavy_000.ogg"
       pure l
     _ -> ChamberOfSecretsBloodyPrison <$> liftRunMessage msg attrs

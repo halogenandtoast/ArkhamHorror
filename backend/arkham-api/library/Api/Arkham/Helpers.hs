@@ -71,6 +71,7 @@ data ApiResponse
   | GameMessage Text
   | GameError Text
   | GameUI Text
+  | GameAudio Text
   | GameCard {title :: Text, card :: Aeson.Value}
   | GameCardOnly {player :: PlayerId, title :: Text, card :: Aeson.Value}
   | GameTarot Aeson.Value

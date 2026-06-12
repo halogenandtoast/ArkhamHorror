@@ -102,6 +102,7 @@ type ServerResult =
   | { tag: 'GameShowDiscard'; contents: string }
   | { tag: 'GameShowUnder'; contents: string }
   | { tag: 'GameUI'; contents: string }
+  | { tag: 'GameAudio'; contents: string }
 
 export interface Props {
   gameId: string
@@ -148,6 +149,7 @@ const showSidebar = ref(
 const socketError = ref(false)
 const error = ref<string | null>(null)
 const solo = ref(false)
+const soundsDisabled = ref(localStorage.getItem('arkhamSoundsDisabled') === 'true')
 const showOtherPlayersHands = ref(getGameLocalStorageItem(props.gameId, 'showOtherPlayersHands') === 'true')
 watch(showOtherPlayersHands, (v) => {
   setGameLocalStorageItem(props.gameId, 'showOtherPlayersHands', v ? 'true' : 'false')
@@ -163,6 +165,13 @@ const { t } = useI18n()
 
 const format = (str: string) => {
   return handleEmbeddedI18n(str, t)
+}
+
+function handleSettingChange(event: Event) {
+  const detail = (event as CustomEvent<{ key?: string; value?: string }>).detail
+  if (detail?.key === 'arkhamSoundsDisabled') {
+    soundsDisabled.value = detail.value === 'true'
+  }
 }
 
 function updateGameLog(nextLog: readonly string[]) {
@@ -232,6 +241,24 @@ const question = computed(() => (playerId.value ? game.value?.question[playerId.
 const realityAcidLightActive = computed(() => {
   const scenario = game.value?.scenario
   return scenario?.id === 'c85001' && scenario.meta?.lightActive === true
+})
+
+const activePlayerId = computed(() => game.value?.activePlayerId ?? null)
+
+function activePlayerBelongsToCurrentPlayer(g: Arkham.Game, currentPlayerId: string) {
+  if (g.activePlayerId === currentPlayerId) return true
+  return Object.values(g.investigators).some(
+    (investigator) => investigator.id === g.activePlayerId && investigator.playerId === currentPlayerId,
+  )
+}
+
+watch(activePlayerId, (newActivePlayerId, oldActivePlayerId) => {
+  if (!newActivePlayerId || !oldActivePlayerId || newActivePlayerId === oldActivePlayerId) return
+  if (props.spectate || solo.value) return
+  if (!game.value || game.value.playerCount < 2 || !playerId.value) return
+  if (!activePlayerBelongsToCurrentPlayer(game.value, playerId.value)) return
+
+  playAudioFile('turnIndicator.ogg')
 })
 
 function skipTriggerEntries(g: Arkham.Game): { playerId: string; choiceIdx: number }[] {
@@ -376,6 +403,15 @@ function scheduleApplyUpdate(payload: string) {
     })
 }
 
+function playAudioFile(fileName: string) {
+  if (soundsDisabled.value) return
+  // Only allow simple filenames from the server; audio files live under public/audio.
+  if (!/^[a-zA-Z0-9_.-]+\.(ogg|mp3|wav)$/i.test(fileName)) return
+
+  const audio = new Audio(`/audio/${fileName}`)
+  audio.play().catch((error) => console.warn(`Unable to play audio file: ${fileName}`, error))
+}
+
 function continueSkipAll() {
   if (skipAllPending.value.size === 0) return
   if (!game.value) return
@@ -434,6 +470,9 @@ const handleResult = (result: ServerResult) => {
       return
     case 'GameShowUnder':
       emitter.emit('showUnder', result.contents)
+      return
+    case 'GameAudio':
+      playAudioFile(result.contents)
       return
     case 'GameUI':
       if (result.contents.startsWith('theSilence:')) {
@@ -1127,12 +1166,14 @@ onMounted(() => {
   ;(window as any).debugChoose = choose
   document.addEventListener('mousemove', onMove, { passive: true })
   document.addEventListener('keydown', handleKeyPress)
+  window.addEventListener('arkham-setting-change', handleSettingChange)
 })
 
 onBeforeRouteLeave(() => close())
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyPress)
   document.removeEventListener('mousemove', onMove)
+  window.removeEventListener('arkham-setting-change', handleSettingChange)
   delete (window as any).sendDebug
   delete (window as any).undo
   delete (window as any).debugChoose

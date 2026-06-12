@@ -12,6 +12,11 @@
     "groupB": "Group B",
     "groupC": "Group C"
   },
+  "label": {
+    "groupA": "Group A",
+    "groupB": "Group B",
+    "groupC": "Group C"
+  },
   "setup": {
     "gatherSets": "Gather all cards from <i>The Labyrinths of Lunacy</i> encounter set. This set is indicated by this icon:<section class='encounter-sets'><img src='{setImgPath}/in-the-labyrinths-of-lunacy.png'></section>",
     "epicMultiplayer": "If you were playing in <i>Epic Multiplayer Mode</i>, you would gather all cards from the <i>Epic Multiplayer</i> encounter set instead. <i>(Epic Multiplayer Mode is not supported.)</i>",
@@ -31,9 +36,6 @@
   "skull": {
     "takeDamage": "Take 1 damage",
     "takeHorror": "Take 1 horror"
-  },
-  "chamberOfSecrets": {
-    "poundFists": "You pound your fists on the wall of the chamber. Nobody responds."
   },
   "chamberOfSorrows": {
     "takeClue": "Take control of 1 clue on an investigator in either Chamber of Sorrows or Chamber of Rain (or from that location if you are the only investigator in the game)."

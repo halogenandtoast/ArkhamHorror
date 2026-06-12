@@ -342,6 +342,7 @@ handleMessageLog logRef broadcast msg = liftIO $ do
     ClientText txt -> GameMessage txt
     ClientError txt -> GameError txt
     ClientUI txt -> GameUI txt
+    ClientAudio txt -> GameAudio txt
     ClientCard t v -> GameCard t v
     ClientCardOnly i t v -> GameCardOnly i t v
     ClientTarot v -> GameTarot v
@@ -352,6 +353,7 @@ handleMessageLog logRef broadcast msg = liftIO $ do
     ClientText txt -> Just txt
     ClientError {} -> Nothing
     ClientUI {} -> Nothing
+    ClientAudio {} -> Nothing
     ClientCard {} -> Nothing
     ClientCardOnly {} -> Nothing
     ClientTarot {} -> Nothing

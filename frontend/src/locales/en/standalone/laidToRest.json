@@ -1,0 +1,98 @@
+{
+  "heading": "Challenge Scenario",
+  "specialRules": [
+    {
+      "title": "@:standalone.laidToRest.theSpectralEncounterDeck.title",
+      "body": "@:standalone.laidToRest.theSpectralEncounterDeck.body"
+    },
+    {
+      "title": "Haunted",
+      "body": "<p class='basic'>Haunted is an ability that appears on some locations. Each time an investigator fails a skill test while investigating a location, after applying all results for that skill test, that investigator must resolve all “Haunted –” abilities on that location. A location is “haunted” for the purposes of other card effects if it has at least one “Haunted –” ability (printed or otherwise).</p>"
+    },
+    {
+      "title": "@:standalone.laidToRest.theBeyondAndTheSpiritDeck.title",
+      "body": "@:standalone.laidToRest.theBeyondAndTheSpiritDeck.body"
+    },
+    {
+      "title": "Patrol",
+      "body": "<p class='basic'>Some enemies have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated location (as described in parentheses next to the word patrol).</p><ul><li>If there are multiple locations that qualify as the designated location, the lead investigator may choose which location the enemy moves toward.</li><li>If an enemy with patrol would be compelled to move to a location that is blocked by a card ability, the enemy does not move.</li></ul>"
+    }
+  ],
+  "theSpectralEncounterDeck": {
+    "title": "The Spectral Encounter Deck",
+    "body": "<p class='basic'>During the setup of this scenario, two encounter decks are constructed: a “standard” encounter deck and a “spectral” encounter deck. Generally speaking, whenever an investigator would interact with the encounter deck, that investigator should use the standard encounter deck.</p><p class='basic'>However, during this scenario, locations may flip over to their _Spectral_ side. While an investigator is at a location with the _Spectral_ trait, that investigator should use the spectral encounter deck instead of the standard encounter deck for all purposes, unless otherwise noted. This includes drawing cards from the encounter deck, as well as searching, looking at, revealing, or otherwise interacting with the encounter deck (or encounter discard pile) in any way. This also includes abilities that trigger when the encounter deck runs out of cards. If an effect specifically refers to the standard encounter deck or spectral encounter deck, it interacts with the specified deck regardless of the investigator’s location.</p><p class='basic'>Each of the two encounter decks has its own discard pile. Whenever an encounter card with the _Spectral_ trait would be discarded, it is placed in the discard pile for the spectral encounter deck. All other encounter cards are discarded to the discard pile for the standard encounter deck.</p>"
+  },
+  "theBeyondAndTheSpiritDeck": {
+    "title": "The Beyond and The Spirit Deck",
+    "body": "<p class='basic'>The double-sided The Beyond signature asset included in this set allows Jim Culver to attach _Ally_ assets from the spirit deck to it, as spirits. The spirit deck is a separate deck that is shuffled facedown next to The Beyond when the game begins. It is immune to all player card effects except for the forced effect on The Beyond.</p><p class='basic'>Spirits are in play but only retain their names and text boxes. Spirits do not take up any slots and do not have health or sanity values. When a unique spirit enters play, discard any assets that share its name. If an attached spirit would be discarded, it is placed on the <b>bottom</b> of the spirit deck, instead.</p>"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is 1 more than the number of copies of Unfinished Business in the victory display.",
+      "cultist": "-X. X is the number of cards attached to The Beyond.",
+      "tablet": "-X. X is the number of _Spectral_ locations in play.",
+      "elderThing": "-2. If there is a _Geist_ enemy at your location, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 2 more than the number of copies of Unfinished Business in the victory display.",
+      "cultist": "-X. X is twice the number of cards attached to The Beyond.",
+      "tablet": "-X. X is twice the number of _Spectral_ locations in play.",
+      "elderThing": "-3. If there is a _Geist_ enemy at your location, you automatically fail."
+    }
+  },
+  "label": {
+    "upgradeJimsTrumpet": "Upgrade Jim's Trumpet to its advanced version",
+    "downgradeFinalRhapsody": "Downgrade the advanced version of Final Rhapsody to its original version",
+    "upgradeFinalRhapsody": "Upgrade Final Rhapsody to its advanced version",
+    "downgradeJimsTrumpet": "Downgrade the advanced version of Jim's Trumpet to its original version",
+    "doNotSwap": "Do not swap"
+  },
+  "tooltips": {
+    "jeanDevereuxSeekingClosure": {
+      "parley": "Draw a facedown card beneath Jean Devereux's location and choose a Heretic attached to The Beyond: <b>Parley.</b> Jim Culver draws the chosen Heretic, flips it, and resolves its text."
+    },
+    "jeanDevereuxPossessed": {
+      "parley": "<b>Parley.</b> Test {'{'}willpower{'}'} (3). This test gets +1 difficulty for each copy of Unfinished Business in the victory display. If you succeed, heal all damage from Jean Devereux and flip him (he is no longer engaged)."
+    },
+    "gatheringMists": {
+      "parley": "Spend 2{'{'}perPlayer{'}'} clues, as a group: <b>Parley.</b> You banish a spirit. Discard the top card of the Spirit deck. (Hint: Draw Heretics out of the Beyond and summon them with Jean's help!)"
+    },
+    "laidToRest": {
+      "moveEnemy": "Either exhaust Jim's Trumpet, or spend 1{'{'}perPlayer{'}'} clues, as a group: Choose an enemy to move once toward Jim Culver's location.",
+      "flipLocation": "Spend 1{'{'}perPlayer{'}'} clues, as a group: Flip your location. (Group limit once per round per location.)"
+    }
+  },
+  "intro": {
+    "title": "Challenge Scenario: Laid to Rest",
+    "body": "<p><i>The dead don't rest. No matter where you go, you hear them talking, whispering, weeping, screaming. Sometimes to each other, sometimes alone. They ramble on about the people they loved, or their job, or the money they hid under the floorboards before they died. Usually it's about food or drink. The dead are always hungry. Sometimes when they realize you can hear them, they crowd 'round real close and whisper in your ear. Last wishes and such. You try to help when you can, but usually the folks they want you to take care of are dead, too. You make a lot of empty promises, but at least it keeps them quiet.</i></p><p><i>It wasn't always this way. The dead started talking the day your father died in his shotgun house in the French Quarter. You saw him standing over his own body in the living room when you came home; he vanished before you could say a word. From then on, whenever you played your father's trumpet, you could hear a cacophany of voices. Some of them were human. But there were others, too. Piercing wails from inhuman lips. Gutteral cries. And a crowd of shimmering, spectral faces peering out from the shadows.</i></p><p><i>Jean helped you make sense of it all. He stopped to listen to you busking on a Bourbon Street corner and noticed the long look you gave to the ghost lying at your feet. He saw it too. Jean introduced himself as a medium and told you to meet him at his shop in Broadmoor. He told you all about the dead, and the things beyond the grave, and the price you'd pay if you kept company with 'em for too long.</i></p><p><i>It was the dead who led you to Arkham. You eke out a living playing your father's trumpet. The dead get louder when you play. Sometimes they even compliment your music. Last night, Jean found you busking outside the Clover Club, almost like the first time you met. You could tell something was wrong: his face was haggard, and he looked like he hadn't slept for days. Jean tells you that your father wants to see you, and that you need to go where the boundary between here and thereafter is thin. You tell him you know just the place. Hangman's Hill is rife with spirits. Maybe if you do them a few favors, they'll do you one in return.</i></p><p class='basic right'>Proceed to <b>Setup</b>.</p>"
+  },
+  "setup": {
+    "spiritDeck": "Regardless of which version of Jim Culver is being played in this scenario, construct the spirit deck using the deckbuilding requirements on the parallel version of Jim Culver's investigator card. Put The Beyond signature asset along with the spirit deck into play in Jim Culver's play area.",
+    "gatherSets": "Gather all cards from the following encounter sets: *Laid to Rest*, *The Wages of Sin*, *Anette's Coven*, *City of Sins*, *Inexorable Fate*, *Realm of Death*, *Trapped Spirits*, and *Witchcraft*. Each of these sets except for *Laid to Rest* can be found in The Circle Undone Campaign Expansion.",
+    "removeCards": "Remove the original scenario reference card, acts, agendas, and Spectral Web story assets from *The Wages of Sin* encounter set from the game. Use the new scenario reference card, acts, and agendas provided in the downloadable *Laid to Rest* encounter set when setting up the game.",
+    "placeLocations": "Randomly choose one of the two The Gallows locations, one of the two Heretics' Graves locations, and one of the two Chapel Crypt locations and put them into play, along with Chapel Attic (176a). Remove the other versions of The Gallows, Heretics' Graves, Chapel Crypt, and Chapel Attic (175a) from the game. Then, put Haunted Fields, Abandoned Chapel, and Hangman's Brook into play.",
+    "nonSpectral": "Put each location into play on its non-_Spectral_ side. Note: Flipping a location over from one side to another during this scenario does not “reveal” the new location.",
+    "clues": "Place clues on each location without clues until each location has at least 1{'{'}perPlayer{'}'} clues on it.",
+    "startAt": "Each investigator begins play in Hangman's Brook.",
+    "heretics": "Remove two of the Heretic enemies from the game at random. Shuffle each remaining Heretic enemy into the spirit deck, enemy side faceup.",
+    "jeanDevereux": "Spawn the double-sided Jean Devereux enemy at Hangman's Brook, (Seeking Closure) side faceup.",
+    "ravenousSpirits": "Place a Ravenous Spirit enemy facedown beneath the following locations: The Gallows, Heretics' Graves, Chapel Attic, and Chapel Crypt.",
+    "encounterDecks": "This scenario utilizes two separate encounter decks.",
+    "spectralDeck": "Separate each of the remaining cards with the _Spectral_ trait and shuffle them together to build the spectral encounter deck.",
+    "standardDeck": "Shuffle each of the remaining cards without the _Spectral_ trait together to build the standard encounter deck."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p class='basic'>_If no resolution was reached (each investigator resigned or was defeated)_: Proceed to _Resolution 2_.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Phantasmagoric shapes form and recede in the mist around you. As you take Jean's hands, the medium falls into a dead faint. In the dark, you glimpse your father's face: his laugh lines, his kind eyes, his smile. Your father is with you at last.</p><p>The moment is broken by a sudden, gasping breath as Jean awakens. Before you can react, your father's face winks out of sight, leaving you alone. Despite the knot in your stomach, you feel a sense of relief in knowing that your father was here, however briefly, and that he saw you. As you help Jean to his feet, you hear your father's voice in your ear, whispering encouragement over the riot of ghosts bickering in your ears. You hope he never goes quiet.</p><ul><li>Jim Culver earns {jimXp} experience, equal to the combined Victory X value of each enemy in the victory display.</li><li>Each other investigator earns {xp} experience, equal to the combined Victory X value of each location in the victory display.</li><li>Jim Culver may either upgrade Jim's Trumpet to its advanced version, or downgrade the advanced version of Final Rhapsody to its original version.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Jean cusses as you stumble away from Hangman's Hill, head hung low. “Sorry, my friend,” he says. “The dead speak, but they don't always listen.” A mordant call from inhuman lips sweeps across the expanse, underscoring the medium's words.</p><ul><li>Jim Culver earns {jimXp} experience, equal to the combined Victory X value of each enemy in the victory display.</li><li>Each other investigator earns {xp} experience, equal to the combined Victory X value of each location in the victory display.</li><li>Jim Culver must either upgrade Final Rhapsody to its advanced version, or downgrade the advanced version of Jim's Trumpet to its original version.</li></ul>"
+    }
+  }
+}

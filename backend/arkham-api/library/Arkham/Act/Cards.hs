@@ -17,6 +17,7 @@ import Arkham.Act.CardDefs.TheScarletKeys as X
 import Arkham.Act.CardDefs.ByTheBook as X
 import Arkham.Act.CardDefs.AllOrNothing as X
 import Arkham.Act.CardDefs.BadBlood as X
+import Arkham.Act.CardDefs.LaidToRest as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -379,4 +380,6 @@ allActCards =
       , hotOnYourTail
       , --- Bad Blood
         aWalkDownMemoryLane
+      , --- Laid to Rest
+        laidToRest
       ]

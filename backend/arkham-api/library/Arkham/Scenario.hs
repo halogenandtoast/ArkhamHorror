@@ -724,6 +724,7 @@ allScenarios =
     , ("90032", SomeScenario byTheBook)
     , ("90011", SomeScenario allOrNothing)
     , ("90020", SomeScenario badBlood)
+    , ("90054", SomeScenario laidToRest)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -873,4 +874,5 @@ scenarioEncounterSets =
     , ("90032", EncounterSet.ByTheBook)
     , ("90011", EncounterSet.AllOrNothing)
     , ("90020", EncounterSet.BadBlood)
+    , ("90054", EncounterSet.LaidToRest)
     ]

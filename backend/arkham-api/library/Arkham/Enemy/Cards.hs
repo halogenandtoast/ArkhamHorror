@@ -18,6 +18,7 @@ import Arkham.Enemy.CardDefs.TheScarletKeys as X
 import Arkham.Enemy.CardDefs.ByTheBook as X
 import Arkham.Enemy.CardDefs.AllOrNothing as X
 import Arkham.Enemy.CardDefs.BadBlood as X
+import Arkham.Enemy.CardDefs.LaidToRest as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -668,6 +669,10 @@ allEncounterEnemyCards =
       , cloverClubBouncer
       , --- Bad Blood
         elspethBaudin
+      , --- Laid to Rest
+        jeanDevereuxSeekingClosure
+      , jeanDevereuxPossessed
+      , ravenousSpirit
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

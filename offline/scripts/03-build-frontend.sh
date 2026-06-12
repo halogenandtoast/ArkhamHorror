@@ -324,9 +324,10 @@ PYEOF
 (function(){
   var KEY='arkham_card_hover_zoom';
   var OPTIONS=[0,10,15,20,30,40,50,70];
+  var DEFAULT=70;
 
   function applyZoom(){
-    var v=+(localStorage.getItem(KEY)||0);
+    var v=+(localStorage.getItem(KEY)||DEFAULT);
     var s=v>0?(1+v/100):1;
     document.documentElement.style.setProperty('--card-hover-zoom',String(s));
   }
@@ -419,7 +420,7 @@ PYEOF
     if(sections.length<1)return;
 
     // --- Card Hover Zoom section ---
-    var current=+(localStorage.getItem(KEY)||0);
+    var current=+(localStorage.getItem(KEY)||DEFAULT);
     var section=document.createElement('section');
     section.id='zoom-settings';
     section.className='box column';

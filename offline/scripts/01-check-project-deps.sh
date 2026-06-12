@@ -328,6 +328,8 @@ install_postgresql() {
     verify_cmd "PostgreSQL" "${DEPS_DIR}/postgres/bin/postgres" "--version"
     verify_cmd "initdb"      "${DEPS_DIR}/postgres/bin/initdb"    "--version"
     verify_cmd "pg_ctl"      "${DEPS_DIR}/postgres/bin/pg_ctl"    "--version"
+    verify_cmd "pg_dump"     "${DEPS_DIR}/postgres/bin/pg_dump"   "--version"
+    verify_cmd "pg_restore"  "${DEPS_DIR}/postgres/bin/pg_restore" "--version"
     substep "pg_config: $(pg_config --version 2>/dev/null)"
     [ -x "${DEPS_DIR}/postgres/bin/createdb" ] && substep "createdb available" || warn "createdb not found"
 
@@ -379,7 +381,6 @@ install_nginx() {
     ./configure \
         --prefix="${DEPS_DIR}/nginx" \
         --without-http_gzip_module \
-        --without-http_rewrite_module \
         --without-http_fastcgi_module \
         --without-http_uwsgi_module \
         --without-http_scgi_module \

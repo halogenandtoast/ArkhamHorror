@@ -52,7 +52,7 @@ The generated distribution does not depend on Docker and can run directly after 
      ├── lib/                    # Runtime dynamic libraries (libpq, libpcre, ...)
      ├── frontend/dist/          # Frontend static files (Vite build)
      ├── pgsql/                  # PostgreSQL 14.15 (built from source)
-     │   ├── bin/  (postgres, initdb, pg_ctl, pg_isready, psql)
+     │   ├── bin/  (postgres, initdb, pg_ctl, pg_isready, psql, pg_dump, pg_restore)
      │   ├── lib/
      │   └── share/
      ├── config/
@@ -153,7 +153,7 @@ High-level first-start flow for Windows users:
 8. Start PostgreSQL → `arkham-api` → Nginx.
 9. Open the browser automatically at `http://localhost:3000`.
 10. Keep the cmd window open to keep the WSL foreground session alive.
-11. Closing the window or pressing Ctrl+C automatically stops services, backs up `pgdata`, and clears logs.
+11. Closing the window or pressing Ctrl+C automatically stops services, exports a logical backup, and clears logs.
 
 ```text
 Windows first-run flow
@@ -185,8 +185,10 @@ Windows first-run flow
        ▼
   pgdata lives in the OS user data dir
   (~/.local/share/ArkhamHorror/)
-  First start migrates data/pgdata automatically
-  or does a fresh initdb on ext4 (no NTFS permission issue)
+  First start prefers the live cluster in the OS data dir
+  then restores from data/backup/latest.dump
+  then migrates legacy data/pgdata
+  then falls back to fresh initdb on ext4
   Error codes 1xxx~3xxx
        │
        ▼
@@ -205,24 +207,26 @@ Windows first-run flow
        │
        ▼
   Close window / Ctrl+C
-  -> auto stop + pgdata backup + log cleanup
+  -> auto stop + logical backup + log cleanup
 ```
 
 
 How it works:
 
 1. `start.bat` is the Windows-side entry point. It checks/installs WSL + Ubuntu, creates the `arkham` user, and invokes `start.sh` with `-u arkham`.
-2. `start.sh` is the Linux-side entry point. It migrates or initializes `pgdata`, starts all services, and opens the browser automatically.
+2. `start.sh` is the Linux-side entry point. It validates the live cluster, restores from a logical backup when needed, starts all services, and opens the browser automatically.
 3. `pgdata` is stored in the OS user data directory:
    - macOS: `~/Library/Application Support/ArkhamHorror/`
    - Linux / WSL: `~/.local/share/ArkhamHorror/`
-4. On first start, if `data/pgdata` already exists inside the package, it is migrated automatically to the OS user data directory.
-5. On every normal shutdown, `pgdata` is copied back into `data/pgdata` so backups are easier for end users.
-6. `pgdata_version` stores a timestamp to help track data version changes.
-7. After successful startup, the cmd window intentionally remains open so WSL 2 does not terminate background services due to idle timeout.
-8. Closing the cmd window or pressing Ctrl+C stops services automatically through the `trap` logic in `start.sh`.
-9. If startup fails, cleanup is automatic: `start.sh` uses an EXIT trap to call `do_stop()`, and `start.bat` also falls back to `start.sh --stop` on the failure path.
-10. Everything always runs as user `arkham`, avoiding PostgreSQL refusal to run as root.
+4. On first start, if `data/backup/latest.dump` exists and the live cluster is missing or invalid, it is restored automatically into a fresh cluster.
+5. Legacy package-side physical backups under `data/pgdata` are still migrated automatically for compatibility with older builds.
+6. On every normal shutdown, a logical backup is exported to `data/backup/latest.dump`.
+7. `pgdata_version` stores a timestamp to help track data version changes.
+8. After successful startup, the cmd window intentionally remains open so WSL 2 does not terminate background services due to idle timeout.
+9. Closing the cmd window or pressing Ctrl+C stops services automatically through the `trap` logic in `start.sh`.
+10. If startup fails, cleanup is automatic: `start.sh` uses an EXIT trap to call `do_stop()`, and `start.bat` also falls back to `start.sh --stop` on the failure path.
+11. Everything always runs as user `arkham`, avoiding PostgreSQL refusal to run as root.
+12. Concurrent launches are serialized with a startup lock so a second launcher does not race with initialization or attach a second controlling window.
 
 Data backup:
 
@@ -231,7 +235,7 @@ Actual game data lives in the OS user data directory:
 - macOS: `~/Library/Application Support/ArkhamHorror/pgdata/`
 - Linux / WSL: `~/.local/share/ArkhamHorror/pgdata/`
 
-On every normal shutdown, a copy is also written to `data/pgdata/` inside the distribution package. Copying either `data/` or the OS data directory is enough for a full backup.
+On every normal shutdown, a logical backup is also written to `data/backup/latest.dump` inside the distribution package. Copying either the OS data directory or the `data/backup/` folder is enough for recovery. Older builds may still contain `data/pgdata/`; the launcher migrates that legacy physical backup automatically on first run.
 
 ## Error Code Quick Reference
 
@@ -262,6 +266,9 @@ On every normal shutdown, a copy is also written to `data/pgdata/` inside the di
 | 2005 | `pg_ready` wait timed out | `pg.log` |
 | 2006 | `CREATE DATABASE` failed | `psql.log` |
 | 2007 | `setup.sql` import failed | `psql.log` |
+| 2008 | Invalid PostgreSQL cluster cleanup failed | — |
+| 2009 | Logical backup restore failed | `pg_restore.log` |
+| 2010 | Another startup is already in progress | — |
 
 ### `start.sh` (3xxx: application services)
 
@@ -278,7 +285,8 @@ On every normal shutdown, a copy is also written to `data/pgdata/` inside the di
 | Code | Meaning |
 | --- | --- |
 | 4004 | Ports still occupied after shutdown (forced cleanup with SIGKILL) |
-| 4005 | `pgdata` backup failed |
+| 4005 | Legacy `pgdata` backup warning |
+| 4006 | Logical backup export failed |
 
 Log file locations:
 
@@ -287,6 +295,8 @@ All logs live under the distribution package `data/` directory:
 - `pg.log` (PostgreSQL)
 - `initdb.log` (initialization)
 - `psql.log` (SQL import)
+- `pg_dump.log` (logical backup export)
+- `pg_restore.log` (logical backup restore)
 - `arkham-api.log` (backend API)
 - `error.log` (nginx errors)
 - `access.log` (nginx access log)
@@ -297,18 +307,48 @@ Logs are cleared automatically after a normal Ctrl+C shutdown. They are preserve
 
 **Q: Where are image assets loaded from?**
 
-A: nginx implements a hybrid strategy: local-first with CDN fallback. Requests under `/img/` are served from disk if the file exists locally; otherwise nginx transparently proxies the request to the CDN. Local images live under `frontend/dist/img/` inside the distribution package.
+A: nginx implements a hybrid strategy: local-first with CDN fallback. Requests under `/img/` are served from disk if the file exists locally; otherwise nginx transparently proxies the request to the CDN. Local images live under `frontend/dist/img/` inside the distribution package, and user-supplied card overrides live under `cards/` and `cards_en/`.
 
 ```text
+cards/
+└── ...              # User-supplied language-agnostic card overrides (highest priority)
+
+cards_en/
+└── ...              # User-supplied English fallback card overrides
+
 frontend/dist/img/arkham/
 ├── cards/            # English cards (for example 01116.avif)
 ├── zh/cards/         # Chinese translated cards
+├── fr/cards/         # French translated cards
+├── es/cards/         # Spanish translated cards
+├── ko/cards/         # Korean translated cards
+├── ita/cards/        # Italian translated cards
+├── xx/cards/         # Other built-in translated cards, if the frontend adds them later
 ├── portraits/        # Investigator portraits
 ├── encounter-sets/   # Encounter cards
 ├── icons/            # Icons
 ├── tokens/           # Tokens
 └── ...
 ```
+
+The offline package keeps nginx minimal, but now leaves the regex-related support enabled so card routes can stay simple. Card image requests are resolved in this order:
+
+1. `cards/`
+2. `cards_en/`
+3. `frontend/dist/img/arkham/<language>/cards/`
+4. `frontend/dist/img/arkham/cards/`
+5. CDN fallback
+
+The current frontend generates these card image request forms:
+
+- `/img/arkham/cards/...` for English or when no translated card image is available
+- `/img/arkham/zh/cards/...`
+- `/img/arkham/fr/cards/...`
+- `/img/arkham/es/cards/...`
+- `/img/arkham/ko/cards/...`
+- `/img/arkham/ita/cards/...`
+
+nginx matches those paths with regex locations in `start.sh` and applies the local-first fallback chain directly.
 
 To fetch images, run `scripts/fetch-assets.sh en` (English, about 1.3 GB) or `scripts/fetch-assets.sh en+zh` (English + Chinese, about 1.5 GB) from the repository root, then copy `frontend/public/img/` into `frontend/dist/img/` in the distribution package. You do not have to download everything; nginx automatically falls back to the CDN for missing files.
 
@@ -331,4 +371,3 @@ A: Normally no. Because `pgdata` is now stored under WSL ext4 instead of NTFS, s
 **Q: Why does the cmd window stay open after double-clicking `start.bat`?**
 
 A: This is expected. The cmd window stays open to keep a foreground WSL session alive; otherwise WSL 2 may reclaim the virtual machine after an idle timeout and kill background services. Closing the window or pressing Ctrl+C stops all services automatically.
-

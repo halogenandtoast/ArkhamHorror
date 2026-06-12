@@ -20,6 +20,7 @@ import Arkham.Agenda.CardDefs.BadBlood as X
 import Arkham.Agenda.CardDefs.LaidToRest as X
 import Arkham.Agenda.CardDefs.EnthrallingEncore as X
 import Arkham.Agenda.CardDefs.ReadOrDie as X
+import Arkham.Agenda.CardDefs.RedTideRising as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -342,4 +343,6 @@ allAgendaCards =
         theHauntingOfTheWardTheatre
       , --- Read or Die
         mortalInquiry
+      , theNewGirl
+      , trailGoesCold
       ]

@@ -727,6 +727,7 @@ allScenarios =
     , ("90054", SomeScenario laidToRest)
     , ("90094", SomeScenario enthrallingEncore)
     , ("90004", SomeScenario readOrDie)
+    , ("90041", SomeScenario redTideRising)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -879,4 +880,5 @@ scenarioEncounterSets =
     , ("90054", EncounterSet.LaidToRest)
     , ("90094", EncounterSet.EnthrallingEncore)
     , ("90004", EncounterSet.ReadOrDie)
+    , ("90041", EncounterSet.RedTideRising)
     ]

@@ -1,0 +1,80 @@
+{
+  "specialRules": [
+    {
+      "title": "Searching for Dad",
+      "body": "<p class='basic'>In this scenario, Wendy is searching Innsmouth for any sign of her father. The Leads deck contains each of the 6 _Suspect_ enemies and the 6 _Hideout_ locations. As _Suspect_ and _Hideout_ cards leave play, Wendy must draw new leads from the Leads deck. The objective is to empty the Leads deck before agenda 2b is reached. The fewer cards that remain in the Leads deck, the better.</p>"
+    },
+    {
+      "title": "Mysterious Photo",
+      "body": "<p class='basic'>_Suspect_ and _Hideout_ cards cannot be added to the victory display except by using the double-sided Mysterious Photo story asset under Wendy's control. Its front side lets Wendy parley with _Suspect_ enemies and add clueless _Suspects_ at her location to the victory display by spending clues as a group. Its back side does the same for _Hideout_ locations via investigation. Each card added to the victory display this way improves the experience gained at the end of the scenario.</p>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of _Suspect_ and _Hideout_ cards in the victory display (rounded up).",
+      "cultist": "-2. (-4 instead if you are parleying with a _Suspect_ enemy or investigating a _Hideout_ location).",
+      "tablet": "-3. If you succeed, look at the top card of the Leads deck. You may choose to shuffle the Leads deck.",
+      "elderThing": "-1. If you fail, shuffle the top card of the encounter deck into the Leads deck."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of _Suspect_ and _Hideout_ cards in the victory display.",
+      "cultist": "-3. (-5 instead if you are parleying with a _Suspect_ enemy or investigating a _Hideout_ location).",
+      "tablet": "-4. If you succeed, look at the top card of the Leads deck. You may choose to shuffle the Leads deck.",
+      "elderThing": "-2. If you fail, shuffle the top card of the encounter deck into the Leads deck."
+    }
+  },
+  "intro": {
+    "title": "Challenge Scenario: Red Tide Rising",
+    "body1": "People don't care about the ones who get left behind. That's the first thing you learned on the street, after you left the orphanage. You've had to fend for yourself, do whatever you can to scrape by. So far, with just your wits and the amulet Mama left you before they took her away, you've managed to survive. Occasionally, someone will show some compassion and throw a coin or two into your cup. One glorious morning, a nice lady leaving Velma's gave you her leftover sausage and eggs. But for the most part, you've only had yourself to rely on. The other street rats might be in the same boat as you, but you would hesitate to call any of them friends, save for maybe James, and that is a stretch. No—hunger, loneliness, boredom, and doubt are your best and only friends. And despite all that, it's still somehow better than the orphanage.",
+    "body2": "Then the fateful day arrived. It began like any other, with you and James working your way through Rivertown, \"collecting\" anything you might be able to sell to Oliver Thomas. The rest would surely go to Marvin's gang—a bunch of street kids who banded together to bully the rest—but there is one trinket among your earnings that sparks your eye: a photograph. Not just any photograph, but one of your father.",
+    "body3": "It is unmistakable. There is no doubt in your mind. In the photo, your father stands in front of a building you don't recognize. The sign behind him looks to be in a different language, so probably someplace far, far away. There's no way of telling how recently the photo was taken. It is worn, dirty, and nicked in several places. You turn it over and there, scrawled in familiar handwriting, you read: \"Soon the Red Tide rises. Stay safe, my little girl.\"",
+    "body4": "You beg James to tell you where the photo came from, and he claims a man in a long wool coat and a dark brown derby dropped it in your cup sometime before you ran into Marvin's gang. You set off at once, asking around to find the man in the derby. Your only lead is that he hopped on a bus near Easttown. The decrepit, unmarked bus that runs to the harbor town of Innsmouth. You scrounge up as many coins as you can and board the only bus to the old, forsaken seaport. If Dad is still out there, you have to find him. You have to!"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Red Tide Rising*, *The Vanishing of Elina Harper*, *Agents of Dagon*, *Fog over Innsmouth*, *The Locals*, *Chilling Cold*, *Locked Doors*, *Nightgaunts*, and *The Midnight Masks*.",
+    "midnightMasks": "When gathering *The Midnight Masks* encounter set, only gather the five treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather any of the other cards from that encounter set.",
+    "scenarioReference": "Remove the scenario reference card from *The Vanishing of Elina Harper* encounter set from the game. Use the new scenario reference card provided in the *Red Tide Rising* encounter set.",
+    "actAgendaDeck": "Remove all of the acts and agendas from *The Vanishing of Elina Harper* encounter set from the game. Build the act and agenda decks using only the new act and agenda cards provided in the *Red Tide Rising* encounter set.",
+    "placeLocations": "Put the following locations into play: Innsmouth Square, Marsh Refinery, Innsmouth Harbour, Fish Street Bridge, First National Grocery, Gilman House, and The Little Bookshop.",
+    "leadsDeck": "Prepare the Leads deck: find the 6 unique enemies with the _Suspect_ trait and the 6 single-sided locations with the _Hideout_ trait, and shuffle these 12 cards together to form the Leads deck. Place it near the scenario reference card.",
+    "drawLead": "Draw the top card of the Leads deck, resolving its revelation ability. If it is a location, Wendy Adams begins play at that location. If it is an enemy, Wendy Adams begins play at that enemy's location. Each other investigator begins play at Innsmouth Square.",
+    "setAsideMonsters": "Set each of the following _Monster_ enemies aside, out of play: Winged One and both copies of Hunting Nightgaunt.",
+    "setAsideAngryMob": "Set Angry Mob aside, out of play.",
+    "adjustments": "Depending on the number of investigators (treat the number of investigators as 1 higher if playing Hard difficulty, and 2 higher if playing Expert): 2 investigators, begin with 1 doom on agenda 1; 3 investigators, begin with 2 doom on agenda 1; 4 investigators, shuffle 1 random set-aside _Monster_ enemy into the Leads deck.",
+    "removeStoryAssets": "Remove the Thomas Dawson and Elina Harper story assets from the game.",
+    "mysteriousPhoto": "Put the double-sided Mysterious Photo story asset into play, under the control of Wendy Adams. Wendy Adams may choose which side it enters play on. Mysterious Photo cannot leave play except if Wendy Adams is eliminated.",
+    "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck."
+  },
+  "label": {
+    "mysteriousPhotoSuspects": "Mysterious Photo enters play with its _Suspect_ side faceup",
+    "mysteriousPhotoHideouts": "Mysterious Photo enters play with its _Hideout_ side faceup",
+    "flipMysteriousPhoto": "Flip Mysterious Photo over",
+    "shuffleLeadsDeck": "Shuffle the Leads deck",
+    "doNotShuffleLeadsDeck": "Do not shuffle the Leads deck"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>If no resolution was reached because each investigator resigned: Proceed to _Resolution 1_.</p><p>If no resolution was reached because each investigator was defeated: Proceed to _Resolution 2_.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1:_ You didn't find Dad, but you were able to find the next best thing: the man in the brown derby. You approach casually, hoping he'll ignore you like everyone else tends to do, so you can confront him. You follow him into a dark alley and immediately realize he's leading you somewhere hidden away from prying eyes. \"Didn't think you'd follow me,\" he says once you're alone.</p><p>The questions come pouring out of you. Does he know your father? Where is he? Why the photo? What is the Red Tide? But he simply holds up a finger to his lips. \"Shhh, kid. You're gonna get me killed.\" He sighs, removes his cap, and runs his trembling fingers through oily hair. \"Look, all I can tell you is...your Dad, he fell in with some bad people. Some real scary people. But he wanted out. And the only way out...\" he grimaces and shakes his head. \"You gotta understand. He can't come home. You'd be in danger. So would he. But...he still wanted you to know that he loves you. So...\"</p><p>You wipe a stray tear that threatens to crawl down your cheek. The man looks terrified. He's either a world-class actor, or he's telling the truth. You ask him one last question—who are the bad people Dad fell in with?—but the moment you ask, he shakes his head and backs away. \"I've already said too much!\" is the last thing he says before he flees.</p><ul><li>Ignore the Victory X value of each _Suspect_ and _Hideout_ card in the victory display. Instead, Wendy Adams earns 1 experience for each card in the victory display beyond the 3rd, and each other investigator earns 1 experience for each card in the victory display beyond the 5th.</li><li>If Wendy Adams was defeated, she must either upgrade Abandoned and Alone to its advanced version, or downgrade the advanced version of Wendy's Amulet to its original version.</li><li>If Wendy Adams was not defeated, she may either upgrade Wendy's Amulet to its advanced version, or downgrade the advanced version of Abandoned and Alone to its original version.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2:_ You wait for your pursuers to round the corner before making your way stealthily back to the bus stop and getting on the next bus to Arkham. You crumple the sides of Dad's photo in anger. A stray teardrop trails down your cheek. You still have no real leads. Who was the man in the derby and the wool coat that morning? What have you gotten yourself mixed up with? But, glancing once more at the photo, one hope still lingers in your mind: Dad is alive. He has to be.</p><ul><li>Ignore the Victory X value of each _Suspect_ and _Hideout_ card in the victory display. Instead, Wendy Adams earns 1 experience for each card in the victory display beyond the 3rd, and each other investigator earns 1 experience for each card in the victory display beyond the 5th.</li><li>Wendy Adams must either upgrade Abandoned and Alone to its advanced version, or downgrade the advanced version of Wendy's Amulet to its original version.</li></ul>"
+    },
+    "xp": {
+      "wendy": "Victory display (1 experience for each card beyond the 3rd)",
+      "other": "Victory display (1 experience for each card beyond the 5th)"
+    },
+    "label": {
+      "upgradeWendysAmulet": "Upgrade Wendy's Amulet to its advanced version",
+      "downgradeWendysAmulet": "Downgrade the advanced version of Wendy's Amulet to its original version",
+      "upgradeAbandonedAndAlone": "Upgrade Abandoned and Alone to its advanced version",
+      "downgradeAbandonedAndAlone": "Downgrade the advanced version of Abandoned and Alone to its original version",
+      "doNotSwap": "Do not swap any cards"
+    }
+  }
+}

@@ -20,6 +20,7 @@ import Arkham.Act.CardDefs.BadBlood as X
 import Arkham.Act.CardDefs.LaidToRest as X
 import Arkham.Act.CardDefs.EnthrallingEncore as X
 import Arkham.Act.CardDefs.ReadOrDie as X
+import Arkham.Act.CardDefs.RedTideRising as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -388,4 +389,5 @@ allActCards =
         breakFreeFromThePast
       , --- Read or Die
         speedReading
+      , searchingForDad
       ]

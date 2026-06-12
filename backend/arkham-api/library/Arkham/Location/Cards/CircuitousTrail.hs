@@ -18,7 +18,10 @@ circuitousTrail = symbolLabel $ location CircuitousTrail Cards.circuitousTrail 1
 instance HasModifiersFor CircuitousTrail where
   getModifiersFor (CircuitousTrail a) = do
     noCompass <- selectNone $ InvestigatorWithSupply Compass <> at_ (be a)
-    modifySelfWhen a noCompass [AdditionalCostToInvestigate (ResourceCost 3)]
+    modifySelfWhen
+      a
+      noCompass
+      [AdditionalCostToInvestigate (ResourceCost 3), AdditionalCostToExplore (ResourceCost 3)]
 
 instance RunMessage CircuitousTrail where
   runMessage msg (CircuitousTrail attrs) = CircuitousTrail <$> runMessage msg attrs

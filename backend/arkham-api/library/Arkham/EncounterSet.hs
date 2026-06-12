@@ -341,6 +341,14 @@ data EncounterSet
   | Sewers
   | SmokeAndMirrors
   | QueenOfAsh
+  | ReadOrDie
+  | AllOrNothing
+  | BadBlood
+  | ByTheBook
+  | RedTideRising
+  | LaidToRest
+  | RelicsOfThePast
+  | EnthrallingEncore
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 

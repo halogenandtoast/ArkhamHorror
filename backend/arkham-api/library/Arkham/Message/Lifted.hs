@@ -2376,6 +2376,10 @@ takeActionAsIfTurn iid (toSource -> source) = do
   mactive <- selectOne ActiveInvestigator
   temporaryModifier iid source (AsIfTurn iid) do
     push $ SetActiveInvestigator iid
+    -- The granted action runs in an "immediate" PlayerWindow (immediate = True),
+    -- which has no fast window: fast/[free] abilities (e.g. taking control of a
+    -- key) cannot be taken during this granted action. They remain available in
+    -- the normal player window.
     push $ PlayerWindow iid [] False True
     for_ mactive $ push . SetActiveInvestigator
 

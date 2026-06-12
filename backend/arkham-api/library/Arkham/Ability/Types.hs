@@ -214,6 +214,9 @@ abilityDelayAdditionalCostsL = lens abilityDelayAdditionalCosts $ \m x -> m {abi
 delayAdditionalCostsWhen :: Criterion -> Ability -> Ability
 delayAdditionalCostsWhen c = abilityDelayAdditionalCostsL ?~ DelayAdditionalCostsWhen c
 
+delayAdditionalCosts :: Ability -> Ability
+delayAdditionalCosts = abilityDelayAdditionalCostsL ?~ DelayAdditionalCosts
+
 mconcat
   [ deriveJSON defaultOptions ''AdditionalCostDelay
   , deriveJSON defaultOptions ''AbilityMetadata

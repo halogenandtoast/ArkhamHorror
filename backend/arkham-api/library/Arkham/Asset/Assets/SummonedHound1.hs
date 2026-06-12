@@ -6,8 +6,8 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Actions (orActions)
 import Arkham.Fight
 import Arkham.Helpers.CombatTarget
-import Arkham.Helpers.Investigator (getMaybeLocation)
-import Arkham.Helpers.SkillTest.Lifted (investigateEdit_)
+import Arkham.Helpers.Investigator (getJustLocation, getMaybeLocation)
+import Arkham.Investigate (mkInvestigateLocation)
 import Arkham.Investigate.Types
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
@@ -22,7 +22,8 @@ summonedHound1 = assetWith SummonedHound1 Cards.summonedHound1 $ healthL ?~ 3
 
 instance HasAbilities SummonedHound1 where
   getAbilities (SummonedHound1 attrs) =
-    [ controlled attrs 1 (not_ DuringAction <> DuringTurn You)
+    [ delayAdditionalCosts
+        $ controlled attrs 1 (not_ DuringAction <> DuringTurn You)
         $ FastAbility' (exhaust attrs) (orActions [#fight, #investigate])
     ]
 
@@ -40,8 +41,11 @@ instance RunMessage SummonedHound1 where
               cf {chooseFightIsAction = True, chooseFightPayCost = False}
         when canInvestigate do
           labeledI "investigate" do
+            lid <- getJustLocation iid
             skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
-            investigateEdit_ sid iid (attrs.ability 1) \i ->
-              i {investigateIsAction = True, investigatePayCost = False}
+            investigate' <- mkInvestigateLocation sid iid (attrs.ability 1) lid
+            push
+              $ CheckAdditionalActionCosts iid (toTarget lid) #investigate
+                [toMessage investigate' {investigateIsAction = True, investigatePayCost = False}]
       pure a
     _ -> SummonedHound1 <$> liftRunMessage msg attrs

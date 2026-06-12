@@ -76,19 +76,19 @@ instance HasChaosTokenValue LaidToRest where
 easyTokens, standardTokens, hardTokens, expertTokens :: [ChaosTokenFace]
 easyTokens =
   [ PlusOne , PlusOne , Zero , Zero , Zero , MinusOne , MinusOne , MinusOne , MinusTwo , MinusTwo
-  , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
+  , Skull , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
   ]
 standardTokens =
   [ PlusOne , Zero , Zero , MinusOne , MinusOne , MinusOne , MinusTwo , MinusTwo , MinusThree
-  , MinusFour , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
+  , MinusFour , Skull , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
   ]
 hardTokens =
   [ Zero , Zero , MinusOne , MinusOne , MinusTwo , MinusTwo , MinusThree , MinusFour , MinusFive
-  , MinusSix , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
+  , MinusSix , Skull , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
   ]
 expertTokens =
   [ Zero , MinusOne , MinusTwo , MinusThree , MinusFour , MinusFive , MinusSix , MinusSeven
-  , MinusEight , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
+  , MinusEight , Skull , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
   ]
 {- FOURMOLU_ENABLE -}
 

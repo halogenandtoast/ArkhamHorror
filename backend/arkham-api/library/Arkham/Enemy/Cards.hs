@@ -16,6 +16,7 @@ import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Enemy.CardDefs.ThePathToCarcosa as X
 import Arkham.Enemy.CardDefs.TheScarletKeys as X
 import Arkham.Enemy.CardDefs.ByTheBook as X
+import Arkham.Enemy.CardDefs.AllOrNothing as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -661,6 +662,9 @@ allEncounterEnemyCards =
       , miGoAbductor
       , --- By the Book
         mrGrey
+      , --- All or Nothing
+        siobhanRiley
+      , cloverClubBouncer
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

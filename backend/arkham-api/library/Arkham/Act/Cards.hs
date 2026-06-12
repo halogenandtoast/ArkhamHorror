@@ -15,6 +15,7 @@ import Arkham.Act.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Act.CardDefs.ThePathToCarcosa as X
 import Arkham.Act.CardDefs.TheScarletKeys as X
 import Arkham.Act.CardDefs.ByTheBook as X
+import Arkham.Act.CardDefs.AllOrNothing as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -372,4 +373,7 @@ allActCards =
       , blackwatersBaneEpicMultiplayer
       , --- By the Book
         captureTheConspirators
+      , --- All or Nothing
+        playingCards
+      , hotOnYourTail
       ]

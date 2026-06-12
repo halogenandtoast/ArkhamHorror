@@ -722,6 +722,7 @@ allScenarios =
     , ("12133", SomeScenario smokeAndMirrors)
     , ("12168", SomeScenario queenOfAsh)
     , ("90032", SomeScenario byTheBook)
+    , ("90011", SomeScenario allOrNothing)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -869,4 +870,5 @@ scenarioEncounterSets =
     , ("12133", EncounterSet.SmokeAndMirrors)
     , ("12168", EncounterSet.QueenOfAsh)
     , ("90032", EncounterSet.ByTheBook)
+    , ("90011", EncounterSet.AllOrNothing)
     ]

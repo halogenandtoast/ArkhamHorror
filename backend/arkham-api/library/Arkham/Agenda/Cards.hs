@@ -15,6 +15,7 @@ import Arkham.Agenda.CardDefs.Core2026 as X
 import Arkham.Agenda.CardDefs.ReturnTo as X
 import Arkham.Agenda.CardDefs.Standalone as X
 import Arkham.Agenda.CardDefs.ByTheBook as X
+import Arkham.Agenda.CardDefs.AllOrNothing as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -327,4 +328,6 @@ allAgendaCards =
       , --- By the Book
         aCovertConspiracy
       , yourDeadlineNears
+      , --- All or Nothing
+        eyesAllAroundYou
       ]

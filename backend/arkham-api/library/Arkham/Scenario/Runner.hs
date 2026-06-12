@@ -1852,7 +1852,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       [] -> pure ()
     pure a
   ReportXp breakdown -> do
-    pure $ a & xpBreakdownL ?~ breakdown
+    pure $ a & xpBreakdownL %~ \case
+      Nothing -> Just breakdown
+      Just existing -> Just (existing <> breakdown)
   PlaceGrid gloc@(GridLocation pos lid) -> do
     let gridCleared = case findInGrid lid scenarioGrid of
           Nothing -> scenarioGrid

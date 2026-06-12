@@ -20,6 +20,7 @@ import Arkham.Enemy.CardDefs.AllOrNothing as X
 import Arkham.Enemy.CardDefs.BadBlood as X
 import Arkham.Enemy.CardDefs.LaidToRest as X
 import Arkham.Enemy.CardDefs.EnthrallingEncore as X
+import Arkham.Enemy.CardDefs.ReadOrDie as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -676,6 +677,8 @@ allEncounterEnemyCards =
       , ravenousSpirit
       , --- Enthralling Encore
         sinisterSoloist
+      , --- Read or Die
+        namerOfTheDead
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

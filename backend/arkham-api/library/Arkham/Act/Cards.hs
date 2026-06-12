@@ -19,6 +19,7 @@ import Arkham.Act.CardDefs.AllOrNothing as X
 import Arkham.Act.CardDefs.BadBlood as X
 import Arkham.Act.CardDefs.LaidToRest as X
 import Arkham.Act.CardDefs.EnthrallingEncore as X
+import Arkham.Act.CardDefs.ReadOrDie as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -385,4 +386,6 @@ allActCards =
         laidToRest
       , --- Enthralling Encore
         breakFreeFromThePast
+      , --- Read or Die
+        speedReading
       ]

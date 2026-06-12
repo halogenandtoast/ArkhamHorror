@@ -726,6 +726,7 @@ allScenarios =
     , ("90020", SomeScenario badBlood)
     , ("90054", SomeScenario laidToRest)
     , ("90094", SomeScenario enthrallingEncore)
+    , ("90004", SomeScenario readOrDie)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -877,4 +878,5 @@ scenarioEncounterSets =
     , ("90020", EncounterSet.BadBlood)
     , ("90054", EncounterSet.LaidToRest)
     , ("90094", EncounterSet.EnthrallingEncore)
+    , ("90004", EncounterSet.ReadOrDie)
     ]

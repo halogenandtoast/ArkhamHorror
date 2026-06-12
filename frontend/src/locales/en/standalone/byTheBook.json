@@ -1,0 +1,56 @@
+{
+  "specialRules": "Each location in play has a Cultist enemy facedown beneath it, as a conspirator. The act allows the investigators to spend clues as a group to flip a conspirator at their location faceup and put it into play, and conspirators can be captured at the Arkham Police Station by spending clues equal to their remaining health.",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of [[Cultist]] enemies in the victory display, to a maximum of 5.",
+      "cultist": "-2. If a [[Cultist]] enemy is engaged with you, reveal an additional chaos token.",
+      "tablet": "-3. Ready each [[Cultist]] enemy engaged with you.",
+      "elderThing": "-4. If you fail, Roland Banks takes 1 damage."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 plus the number of [[Cultist]] enemies in the victory display.",
+      "cultist": "-3. If a [[Cultist]] enemy is engaged with you, reveal an additional chaos token.",
+      "tablet": "-4. Ready each [[Cultist]] enemy engaged with you.",
+      "elderThing": "-5. If you fail, Roland Banks takes 1 damage."
+    }
+  },
+  "intro": {
+    "title": "Challenge Scenario: By the Book",
+    "body": "<p>Red tape is stifling. Ever since you arrived in Arkham, your cases have gotten harder and harder to navigate. You thought you would be tracking down smugglers and mobsters, not imaginary monsters. But the longer your absurd cases remain open, the more you begin to think maybe they aren't so absurd, after all. And perhaps that means the monsters aren't imaginary, either.</p><p>The Bureau has countless guidelines for handling cases of all sorts, but it is eerily silent on the matter of human sacrifices. So when you were told about the bodies found inside the Black Cave, you weren't sure where to begin. Questioning the locals and loved ones of the deceased yielded nothing of value. The evidence left behind in the cave was unhelpful, to say the least—offerings and writings proclaiming the sacrifices to be gifts, along with depictions of a monstrous tree. So you did what you do best: you put your nose to the ground and found the thread connecting all of the deaths.</p><p>One man lies at the center of all of the victims: Mr. Damien Grey. The congressman is not from Arkham, has no relatives or loved ones in the area, and is on no committee that would require his presence in town. And yet, he's been staying in Arkham for the past few months, his purpose unknown. And he is connected to each of the victims through no more than two degrees of separation, which smells fishy to you. Fishier still is the police escort that follows Mr. Grey through town 24/7, despite the fact that there have been no threats on the congressman's well-being.</p><p>You have to get to the bottom of this mystery, and soon. Now you see that damned tree everywhere. More people go missing by the day, and some have even claimed to see goatlike monsters prowling the alleyways. But if Mr. Grey is indeed behind this, you'll have to be careful. Falsely accusing a politician would certainly spell the end of your career. Time to do what you came to do: dig up the proof, discover the truth, and bring the culprits in for questioning. Every \"i\" dotted, every \"t\" crossed.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: <i>By the Book</i>, <i>The Midnight Masks</i>, <i>Agents of Shub-Niggurath</i>, <i>Cult of Umôrdhoth</i>, <i>Chilling Cold</i>, <i>Dark Cult</i>, <i>Nightgaunts</i>, and <i>Striking Fear</i>.",
+    "removeCards": "Remove the original scenario reference card, act deck, and agenda deck from <i>The Midnight Masks</i> encounter set from the game, along with the Your House location and both copies of the Mysterious Chanting treachery. Use the new scenario reference, act, and agenda cards provided in the <i>By the Book</i> encounter set.",
+    "chooseLocations": "Choose one of the two Downtown locations and one of the two Southside locations at random and put them into play. Remove the other versions of Downtown and Southside from the game.",
+    "placeLocations": "Put the Northside, Easttown, Rivertown, St. Mary's Hospital, Graveyard, Miskatonic University, and Arkham Police Station locations into play.",
+    "startAt": "Each investigator begins play at the Arkham Police Station.",
+    "conspirators": "Shuffle the 9 [[Cultist]] enemies from the <i>Cult of Umôrdhoth</i> and <i>Dark Cult</i> encounter sets together, then place one of those enemies facedown underneath each location in play, as a conspirator.",
+    "rolandClue": "Roland Banks begins the game with 1 clue (from the token pool)."
+  },
+  "secretsUncovered": {
+    "title": "Secrets Uncovered",
+    "body": "<p>Mr. Grey paces the length of his cell, glaring at you from behind the bars. \"You're going to regret this, Agent Banks,\" he snarls. \"You'll be begging for my mercy when this is over.\"</p><p>You politely remind Mr. Grey that threatening a federal agent is a felony.</p><p>\"There are worse things to be afraid of than the likes of you,\" he replies, before slumping into the corner of his cell, defeated.</p><p>The true culprit is behind bars, but you still don't know what his real purpose was in aiding the conspirators behind the murders. What could possibly compel one to take the lives of so many? You don't know—but you intend to find out.</p>"
+  },
+  "timeHasRunOut": {
+    "title": "Time Has Run Out",
+    "body": "<p>\"It's not enough,\" your superior scolds you. \"I'm sorry, but it's just too contrived for me to believe. And if I don't believe it, the courts won't, either. I mean, honestly. Cults? Human sacrifices?\"</p><p>You grit your teeth and slam your hand down on the myriad documents and evidence you've collected. It's all there, you insist.</p><p>\"It's been weeks and you don't have a real case here. Just a lot of circumstantial mumbo-jumbo,\" he deflects. \"And besides, Mr. Grey is a cornerstone of this community. That you would disparage him with these accusations...\" The hint of derision towards you in his voice gives him away. Is he on Grey's payroll? Or worse? Either way, it's clear arguing won't get you anywhere. You know better than to make a fuss. You'll have to keep your head down and do things your own way if you want to make a difference in Arkham.</p><p>Remove a [[Cultist]] enemy in the victory display from the game (Mr. Grey, if able).</p>"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1:_ Your evidence presented and the case closed, you return to your typical day-to-day of investigating bootleggers and common criminals. Those responsible for the murders—those you could catch, anyway—are safely behind bars. With the proof you collected, not even Mr. Grey's extensive influence can pardon their crimes.</p><p>But returning to your usual cases has proven difficult. Nagging worries pull at your thoughts. Something compelled Mr. Grey and the others to commit these heinous crimes. To sacrifice human lives in the pursuit of some dark, sinister purpose.</p><p>A rot lies beneath the surface of this town like mold hides in the foundations of an old, rotting house. With so much left unknown, how can you be sure the guidelines of the Bureau account for what you've seen? What if next time, you have to break the rules to get to the truth? What will you do then?</p><ul><li>Roland Banks earns {rolandXp} experience, equal to the combined Victory X value of each enemy in the victory display.</li><li>Each other investigator earns {otherXp} experience, equal to the combined Victory X value of each location in the victory display.</li><li>If the number of [[Cultist]] enemies in the victory display is 4-5, Roland Banks begins the next scenario with 1 additional card in hand. If 6-7, 2 additional cards. If 8-9, 3 additional cards. If 10, 3 additional cards, and choose and remove any non-symbol token from the chaos bag, for the remainder of the campaign.</li><li>If Mr. Grey is in the victory display, Roland Banks may either upgrade Roland's .38 Special to its advanced version, or downgrade the advanced version of Cover Up to its original version.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2:_ No amount of procedure or training could have prepared you for the monsters that emerged during your investigation—both the human ones and the literal ones. Despite your best efforts, you were forced to close the case and lay low. Any further involvement might have been the very end of you. Mr. Grey and his goons may never face the proper consequences for their heinous acts. But at least now you know of the true rot that lies beneath the surface of this town. You'll be better prepared next time. Rules or no rules.</p><ul><li>Roland Banks earns {rolandXp} experience, equal to the combined Victory X value of each enemy in the victory display.</li><li>Each other investigator earns {otherXp} experience, equal to the combined Victory X value of each location in the victory display.</li><li>Roland Banks must either upgrade Cover Up to its advanced version, or downgrade the advanced version of Roland's .38 Special to its original version.</li></ul>"
+    },
+    "removeChaosToken": "Choose and remove any non-symbol token from the chaos bag, for the remainder of the campaign",
+    "advancedReward": "Mr. Grey is in the victory display. Roland Banks may either upgrade Roland's .38 Special to its advanced version, or downgrade the advanced version of Cover Up to its original version",
+    "advancedPenalty": "Roland Banks must either upgrade Cover Up to its advanced version, or downgrade the advanced version of Roland's .38 Special to its original version",
+    "doNotSwap": "Do not swap any cards",
+    "upgradeRolands38Special": "Upgrade Roland's .38 Special to its advanced version",
+    "downgradeCoverUp": "Downgrade the advanced version of Cover Up to its original version",
+    "upgradeCoverUp": "Upgrade Cover Up to its advanced version",
+    "downgradeRolands38Special": "Downgrade the advanced version of Roland's .38 Special to its original version"
+  }
+}

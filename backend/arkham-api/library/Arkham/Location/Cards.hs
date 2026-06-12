@@ -14,6 +14,7 @@ import Arkham.Location.CardDefs.TheForgottenAge as X
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Location.CardDefs.ThePathToCarcosa as X
 import Arkham.Location.CardDefs.TheScarletKeys as X
+import Arkham.Location.CardDefs.ByTheBook as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -1192,6 +1193,8 @@ allLocationCards =
       , oozyLakebed
       , slimyStreets
       , desiccatedFarmland
+      , --- By the Book
+        arkhamPoliceStationByTheBook
       ]
 
 allSpecialLocationCards :: Map CardCode CardDef

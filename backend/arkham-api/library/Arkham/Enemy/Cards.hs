@@ -15,6 +15,7 @@ import Arkham.Enemy.CardDefs.TheForgottenAge as X
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Enemy.CardDefs.ThePathToCarcosa as X
 import Arkham.Enemy.CardDefs.TheScarletKeys as X
+import Arkham.Enemy.CardDefs.ByTheBook as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -658,6 +659,8 @@ allEncounterEnemyCards =
       , miGoHarvester
       , miGoMeddler
       , miGoAbductor
+      , --- By the Book
+        mrGrey
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

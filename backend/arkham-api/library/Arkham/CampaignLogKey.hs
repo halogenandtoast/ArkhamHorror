@@ -86,6 +86,7 @@ data CampaignLogKey
   | Teachings3
   | YouHaveCalculatedTheDayOfReckoning
   | YouHaveUnearthedTheSecretsOfThePharaohs
+  | ByTheBookBonusCards
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveToJSON defaultOptions ''CampaignLogKey)

@@ -927,4 +927,6 @@ allEnemies =
       , SomeEnemyCard houndOfTindalos
       , SomeEnemyCard manyAngledThing
       , SomeEnemyCard tindalosAlphaMachinationsThroughTime
+      , -- Enthralling Encore
+        SomeEnemyCard sinisterSoloist
       ]

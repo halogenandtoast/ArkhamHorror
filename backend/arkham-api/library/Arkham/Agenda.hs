@@ -444,4 +444,6 @@ allAgendas =
     , -- Machinations Through Time
       SomeAgendaCard intoTheVoid
     , SomeAgendaCard timeMarchesOn
+    , -- Enthralling Encore
+      SomeAgendaCard theHauntingOfTheWardTheatre
     ]

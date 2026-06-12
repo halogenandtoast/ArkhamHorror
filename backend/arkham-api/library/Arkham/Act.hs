@@ -503,4 +503,6 @@ allActs =
     , SomeActCard theEscapeTheLabyrinthsOfLunacy
     , -- Machinations Through Time
       SomeActCard walkingThroughTime
+    , -- Enthralling Encore
+      SomeActCard breakFreeFromThePast
     ]

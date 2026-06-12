@@ -10,13 +10,20 @@ export interface UpgradeDeckUploadActions {
 }
 
 function isUploadableUpgradeDeck(data: unknown): data is ArkhamDbDecklist {
-  return (
-    typeof data === 'object' &&
-    data !== null &&
-    'investigator_code' in data &&
-    typeof data.investigator_code === 'string' &&
-    data.investigator_code.length > 0
-  )
+  if (typeof data !== 'object' || data === null || Array.isArray(data)) return false
+  const d = data as Record<string, unknown>
+
+  if (typeof d.id !== 'string') return false
+  if (typeof d.name !== 'string') return false
+  if (typeof d.investigator_name !== 'string') return false
+  if (typeof d.investigator_code !== 'string' || d.investigator_code.length === 0) return false
+
+  if (!('url' in d) || (d.url !== null && typeof d.url !== 'string')) return false
+
+  if (typeof d.slots !== 'object' || d.slots === null || Array.isArray(d.slots)) return false
+  if (!Object.values(d.slots as Record<string, unknown>).every((v) => typeof v === 'number')) return false
+
+  return true
 }
 
 export function loadUpgradeDeckFromJsonText(

@@ -244,7 +244,10 @@ const ethereal = computed(() => {
 // While taking an immediate (granted) action there is no fast player window, so
 // fast/free abilities can't be used. The engine marks this with AsIfTurn (see
 // handlePlayerWindow), which reaches the client as an OtherModifier.
+// Once the game is resolving an action (gameInAction), the choice has already
+// been made, so there's nothing to warn about — hide the indicator then.
 const isTakingImmediateAction = computed(() => {
+  if (props.game.inAction) return false
   return modifiers.value?.some(
     (m) => m.type.tag === "OtherModifier" && m.type.contents === "AsIfTurn"
   ) ?? false

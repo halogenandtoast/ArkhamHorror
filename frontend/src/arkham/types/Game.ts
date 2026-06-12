@@ -104,6 +104,7 @@ export type Game = {
   concealed: Record<string, ConcealedCard>;
   phase: Phase;
   phaseStep: PhaseStep | null;
+  inAction: boolean;
   playerOrder: string[];
   playerCount: number;
   question: Record<string, Question>;
@@ -283,6 +284,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     concealed: JsonDecoder.record<ConcealedCard>(concealedCardDecoder, 'Dict<UUID, ConcealedCard>'),
     phase: phaseDecoder,
     phaseStep: JsonDecoder.nullable(phaseStepDecoder),
+    inAction: v2Optional(JsonDecoder.boolean()),
     playerOrder: JsonDecoder.array(JsonDecoder.string(), 'PlayerOrder[]'),
     playerCount: JsonDecoder.number(),
     question: JsonDecoder.record<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
@@ -313,10 +315,11 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     turnHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
   },
   'Game',
-).map(({mode, killedInvestigators, settings, gameSettings, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, roundHistory, phaseHistory, turnHistory, ...game}) => ({
+).map(({mode, killedInvestigators, settings, gameSettings, inAction, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, roundHistory, phaseHistory, turnHistory, ...game}) => ({
   scenario: mode?.That ?? null,
   campaign: mode?.This ?? null,
   killedInvestigators: killedInvestigators ?? {},
+  inAction: inAction ?? false,
   settings: settings ?? gameSettings ?? {
     settingsAbilitiesCannotReactToThemselves: true,
     settingsAsIfRuling: 'chapter1',

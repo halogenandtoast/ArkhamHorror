@@ -241,6 +241,15 @@ const ethereal = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Ethereal") ?? false
 })
 
+// While taking an immediate (granted) action there is no fast player window, so
+// fast/free abilities can't be used. The engine marks this with AsIfTurn (see
+// handlePlayerWindow), which reaches the client as an OtherModifier.
+const isTakingImmediateAction = computed(() => {
+  return modifiers.value?.some(
+    (m) => m.type.tag === "OtherModifier" && m.type.contents === "AsIfTurn"
+  ) ?? false
+})
+
 function useEffectAction(action: { contents: string[] }) {
   const choice = choices.value.findIndex((c) => c.tag === 'EffectActionButton' && c.effectId == action.contents[1])
   if (choice !== -1) {
@@ -376,6 +385,17 @@ const spadeInjury = computed(() => {
         <i v-else class="action" :class="`${investigatorClass.toLowerCase()}Action`"></i>
       </template>
     </span>
+    <span
+      v-if="isMobile && isTakingImmediateAction"
+      class="no-free-abilities"
+      v-tooltip="{ content: $t('investigator.freeAbilitiesUnavailable'), html: true }"
+    >
+      <span class="fast-icon"></span>
+      <svg class="no-sign" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="5" y1="5" x2="19" y2="19" />
+      </svg>
+    </span>
     <img
       :src="investigatorPortraitImage"
       class="portrait"
@@ -421,6 +441,17 @@ const spadeInjury = computed(() => {
               <i class="diamond" v-if="diamondInjury"></i>
               <i class="club" v-if="clubInjury"></i>
               <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
+              <span
+                v-if="isTakingImmediateAction"
+                class="no-free-abilities"
+                v-tooltip="{ content: $t('investigator.freeAbilitiesUnavailable'), html: true }"
+              >
+                <span class="fast-icon"></span>
+                <svg class="no-sign" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="5" y1="5" x2="19" y2="19" />
+                </svg>
+              </span>
             </span>
             <span v-if="investigator.additionalActions.length > 0">
               <template v-for="action in investigator.additionalActions" :key="action">
@@ -535,6 +566,43 @@ i.action {
   }
 }
 
+/* "no free abilities" indicator: the fast/free trigger glyph with a red
+   prohibition slash, shown while taking an immediate (granted) action. */
+.no-free-abilities {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  cursor: help;
+  line-height: 1;
+}
+
+.no-free-abilities :deep(.fast-icon) {
+  font-size: 15px;
+  color: #cfcfd6;
+}
+
+.no-free-abilities :deep(.fast-icon)::before {
+  margin-right: 0;
+}
+
+.no-free-abilities .no-sign {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translate(-55%, -50%);
+  pointer-events: none;
+}
+
+.no-free-abilities .no-sign circle,
+.no-free-abilities .no-sign line {
+  fill: none;
+  stroke: #e0454d;
+  stroke-width: 2.2;
+}
+
 .turn-info {
   display: flex;
   align-self: center;
@@ -627,13 +695,18 @@ i.action {
 .player-card {
   display: flex;
   flex-direction: column;
-  width: calc(var(--card-width) * var(--card-sideways-aspect));
+  align-items: flex-start;
+  gap: 2px;
+  width: min-content;
+
   @media (max-width: 800px) and (orientation: portrait) {
     width: 48%;
     display: flex;
     flex-direction: row;
-    gap: 1px;
+    gap: 2px;
+
     :deep(.card) {
+      width: auto;
       height: calc(var(--card-width) * 3);
     }
   }
@@ -670,12 +743,48 @@ i.action {
 }
 
 .stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  display: inline-flex;
+  width: max-content;
+  border-radius: 5px;
+  overflow: hidden;
+
+  > div {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.06rem;
+    padding-inline: 0.36rem;
+    white-space: nowrap;
+  }
+
+  > div + div::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.22);
+  }
+
   @media (max-width: 800px) and (orientation: portrait) {
     display: flex;
     flex-direction: column;
-    width:6.8vw;
+    width: max-content;
+
+    > div {
+      padding-inline: 0.36rem;
+    }
+
+    > div + div::after {
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: auto;
+      width: auto;
+      height: 1px;
+    }
   }
 
 }
@@ -685,6 +794,10 @@ i.action {
   color: white;
   text-align: center;
   border-top-left-radius: 5px;
+
+  @media (max-width: 800px) and (orientation: portrait) {
+    border-top-right-radius: 5px;
+  }
 }
 
 .intellect {
@@ -704,6 +817,12 @@ i.action {
   color: white;
   text-align: center;
   border-top-right-radius: 5px;
+
+  @media (max-width: 800px) and (orientation: portrait) {
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
 }
 
 .activeButton {
@@ -745,6 +864,10 @@ i.action {
 }
 
 .player-container{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
   @media (max-width: 800px) and (orientation: portrait) {
     width: 100%;
   }
@@ -841,6 +964,26 @@ i.action {
 
 .investigator-image {
   position: relative;
+  align-self: stretch;
+  min-width: 0;
+
+  > .card {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    border-radius: 5px;
+  }
+
+  @media (max-width: 800px) and (orientation: portrait) {
+    width: auto;
+
+    > .card {
+      width: auto;
+      min-width: 0;
+      height: calc(var(--card-width) * 3);
+    }
+  }
 }
 
 .blanked-badge {

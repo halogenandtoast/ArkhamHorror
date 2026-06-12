@@ -5,6 +5,7 @@
     "skipTriggers": "Skip Triggers",
     "skipAllTriggers": "Skip Triggers for All Investigators",
     "devouredCards": "Devoured ({count})",
-    "underneathCards": "Underneath ({count})"
+    "underneathCards": "Underneath ({count})",
+    "freeAbilitiesUnavailable": "<strong>Free abilities unavailable</strong><br>Fast and free abilities can't be used during an immediate action."
 
 }

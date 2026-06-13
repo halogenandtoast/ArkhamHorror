@@ -7,6 +7,7 @@ import { imgsrc, type InvestigatorClass } from '@/arkham/helpers'
 import { portraitImage as portraitImageHelper } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Deck'
 import {deckClass} from '@/arkham/types/Deck'
+import { deckInvestigatorCode, deckRestrictionError, type SelectableDeckList } from '@/arkham/deckRestrictions'
 import type { ArkhamDbDecklist } from '@/arkham/types/Deck'
 import type { Investigator } from '@/arkham/types/Investigator'
 import Question from '@/arkham/components/Question.vue';
@@ -20,6 +21,7 @@ const unsavedDeckList = ref<ArkhamDbDecklist | null>(null)
 const createdPortrait = ref<string | null>(null)
 
 type DeckType = "UseExistingDeck" | "LoadNewDeck" | "UnsavedDeck"
+
 const deckType = ref<DeckType>("UseExistingDeck")
 
 const searchText = ref('')
@@ -30,14 +32,8 @@ const CLASS_ORDER: Record<string, number> = {
 }
 const allClasses: InvestigatorClass[] = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
 
-function deckInvestigatorCode(deck: Arkham.Deck): string {
-  if (deck.list.meta) {
-    try {
-      const result = JSON.parse(deck.list.meta)
-      if (result?.alternate_front) return result.alternate_front.replace('c', '')
-    } catch (e) {}
-  }
-  return deck.list.investigator_code.replace('c', '')
+function deckPortraitCode(deck: Arkham.Deck): string {
+  return deckInvestigatorCode(deck.list)
 }
 
 function deckTaboo(deck: Arkham.Deck): string | null {
@@ -98,18 +94,13 @@ async function addUnsavedDeck(dl: ArkhamDbDecklist) {
   deckType.value = "UnsavedDeck"
 }
 
-const error = computed(() => {
-  if(!deckId.value) {
-    return null
-  }
+function deckError(deckList: SelectableDeckList): string | null {
+  const scenarioError = deckRestrictionError(props.game.scenario?.id, deckList)
+  if (scenarioError) return scenarioError
 
-  const deck = decks.value.find((d) => d.id === deckId.value)
-  if (!deck) {
-    return null
-  }
-
+  const investigator = deckInvestigatorCode(deckList)
   const alreadyTaken = Object.values(props.game.investigators).some((i) => {
-    return i.id === deck.list.investigator_code
+    return i.id === investigator
   })
 
   if (alreadyTaken) {
@@ -117,7 +108,7 @@ const error = computed(() => {
   }
 
   const inOtherScenario = Object.values(props.game.otherInvestigators).some((i) => {
-    return i.id === deck.list.investigator_code
+    return i.id === investigator
   })
 
   if (inOtherScenario) {
@@ -125,6 +116,19 @@ const error = computed(() => {
   }
 
   return null
+}
+
+const error = computed(() => {
+  if(!deckId.value) {
+    return null
+  }
+
+  const deck = decks.value.find((d) => d.id === deckId.value)
+  return deck ? deckError(deck.list) : null
+})
+
+const unsavedDeckError = computed(() => {
+  return unsavedDeckList.value ? deckError(unsavedDeckList.value) : null
 })
 
 const investigators = computed(() => props.game.investigators)
@@ -142,7 +146,7 @@ const emit = defineEmits(['choose'])
 const chooseChoice = (idx: number) => emit('choose', idx)
 
 async function choose() {
-  if (unsavedDeckList.value && chooseDeckList) {
+  if (unsavedDeckList.value && chooseDeckList && unsavedDeckError.value === null) {
     await chooseDeckList(unsavedDeckList.value)
   } else if (deckId.value && error.value === null) {
     if (chooseDeck) {
@@ -238,7 +242,7 @@ const needsReply = computed(() => {
                     :class="[deckClass(deck), { selected: deckId === deck.id, 'has-error': deckId === deck.id && error }]"
                     @click.prevent="deckId = deck.id"
                   >
-                    <img class="deck-item-portrait" :src="imgsrc(`cards/${deckInvestigatorCode(deck)}.avif`)" />
+                    <img class="deck-item-portrait" :src="imgsrc(`cards/${deckPortraitCode(deck)}.avif`)" />
                     <div class="deck-item-info">
                       <span class="deck-item-name">{{ deck.name }}</span>
                       <span v-if="deckTaboo(deck)" class="deck-item-taboo">
@@ -264,7 +268,8 @@ const needsReply = computed(() => {
                 <div class="load-deck-content">
                   <form v-if="deckType == 'UnsavedDeck'" class="deck-form" @submit.prevent="choose">
                     <p class="unsaved-deck-name">{{ unsavedDeckList?.name }}</p>
-                    <button type="submit" class="primary-action">{{$t('create.choose')}}</button>
+                    <p v-if="unsavedDeckError" class="deck-form-error">{{ unsavedDeckError }}</p>
+                    <button type="submit" class="primary-action" :disabled="!!unsavedDeckError">{{$t('create.choose')}}</button>
                   </form>
                   <NewDeck v-else @new-deck="addDeck" @new-deck-list="addUnsavedDeck" :no-portrait="true" :set-portrait="setPortrait" />
                 </div>
@@ -590,6 +595,18 @@ const needsReply = computed(() => {
     font-weight: 600;
     letter-spacing: 0.04em;
     font-size: 0.92em;
+  }
+
+  p.deck-form-error {
+    color: #ff8080;
+    padding: 10px 12px;
+    background: rgba(160, 25, 25, 0.15);
+    border: 1px solid rgba(200, 50, 50, 0.5);
+    border-radius: 6px;
+    font-size: 0.82em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 }
 

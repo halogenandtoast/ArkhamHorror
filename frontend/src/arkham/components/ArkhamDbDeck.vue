@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import {imgsrc, localizeArkhamDBBaseUrl, processArkhamBuildDeck} from '@/arkham/helpers';
+import { fetchDeckList } from '@/arkham/api';
 
 const model = defineModel()
 const deck = ref<string | null>(null)
@@ -8,8 +9,9 @@ const deckUrl = ref<string | null>(null)
 const error = ref<string | null>(null)
 
 const arkhamDbRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
-const arkhamBuildRegex = /https:\/\/arkham\.build\/(deck(list)?|share)(\/view)?\/([^/]+)/
-const isArkhamBuild = computed(() => deck.value && deck.value.match(arkhamBuildRegex))
+const arkhamBuildShareRegex = /https:\/\/arkham\.build\/(?:deck\/view|share(?:\/view)?)\/([^/]+)/
+const arkhamBuildDecklistRegex = /https:\/\/arkham\.build\/decklist(?:\/view)?\/([^/]+)/
+const isArkhamBuild = computed(() => deck.value && (deck.value.match(arkhamBuildShareRegex) || deck.value.match(arkhamBuildDecklistRegex)))
 
 async function loadDeck() {
   if (!deck.value) return
@@ -22,8 +24,8 @@ async function loadDeck() {
     const response = await fetch(deckUrl.value)
     const data = await response.json()
     model.value = {...data, url: deckUrl.value}
-  } else if (matches = deck.value.match(arkhamBuildRegex)) {
-    deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[4]}`
+  } else if (matches = deck.value.match(arkhamBuildShareRegex)) {
+    deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}`
     const response = await fetch(deckUrl.value)
     if (response.ok) {
       const data = await response.json()
@@ -35,6 +37,19 @@ async function loadDeck() {
       }
     } else {
       error.value = "Could not find deck, please make sure you have created a public share."
+    }
+  } else if (matches = deck.value.match(arkhamBuildDecklistRegex)) {
+    deckUrl.value = null
+    try {
+      const data = await fetchDeckList(deck.value)
+      const deckData = processArkhamBuildDeck(data, null)
+      if (Object.keys(deckData.slots).length === 0) {
+        error.value = "Is this deck empty?"
+      } else{
+        model.value = deckData
+      }
+    } catch {
+      error.value = "Could not find decklist."
     }
   }
 }

@@ -32,6 +32,7 @@ data PlayerCard = MkPlayerCard
   , pcTabooList :: Maybe TabooList
   , pcMutated :: Maybe Text
   , pcMeta :: Maybe (Map Text [CardCode])
+  , pcFacedown :: Maybe Bool
   }
   deriving stock (Show, Ord, Data)
 
@@ -111,6 +112,7 @@ lookupPlayerCard cardDef cardId =
     , pcTabooList = Nothing
     , pcMutated = Nothing
     , pcMeta = Nothing
+    , pcFacedown = Nothing
     }
 
 setPlayerCardOwner :: InvestigatorId -> PlayerCard -> PlayerCard

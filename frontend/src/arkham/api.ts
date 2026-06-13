@@ -104,6 +104,11 @@ export const newDeck = async (
 export const validateDeck = ( deckList: ArkhamDbDecklist): Promise<void> =>
   api.post('arkham/decks/validate', deckList)
 
+export const fetchDeckList = async (url: string): Promise<ArkhamDbDecklist> => {
+  const { data } = await api.post('arkham/decks/fetch', { url })
+  return data
+}
+
 export const deleteDeck = (deckId: string): Promise<void> =>
   api.delete(`arkham/decks/${deckId}`);
 

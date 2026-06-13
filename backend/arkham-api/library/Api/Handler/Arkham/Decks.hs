@@ -2,6 +2,7 @@ module Api.Handler.Arkham.Decks (
   getApiV1ArkhamDecksR,
   getApiV1ArkhamDeckR,
   postApiV1ArkhamDecksR,
+  postApiV1ArkhamDecksFetchR,
   postApiV1ArkhamDecksValidateR,
   deleteApiV1ArkhamDeckR,
   putApiV1ArkhamGameDecksR,
@@ -24,13 +25,14 @@ import Arkham.PlayerCard
 import Arkham.Queue
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
+import Data.ByteString.Lazy qualified as BL
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (isNothing, (<&>))
 import Entity.Arkham.Step
 import Json hiding (Success)
-import Network.HTTP.Conduit (simpleHttp)
+import Network.HTTP.Conduit (httpLbs, newManager, parseRequest, requestHeaders, responseBody, simpleHttp, tlsManagerSettings)
 import Network.HTTP.Types
 import Network.HTTP.Types.Status qualified as Status
 import OpenTelemetry.Trace.Monad (MonadTracer (..))
@@ -57,6 +59,14 @@ newtype ValidateDeckPost = ValidateDeckPost
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
+
+newtype FetchDeckPost = FetchDeckPost
+  { fetchDeckUrl :: Text
+  }
+  deriving stock (Show, Generic)
+
+instance FromJSON FetchDeckPost where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "fetchDeck"
 
 data UpgradeDeckPost = UpgradeDeckPost
   { udpInvestigatorId :: InvestigatorId
@@ -99,6 +109,14 @@ postApiV1ArkhamDecksValidateR = do
   case toDeckErrors decklist of
     [] -> sendStatusJSON status200 ()
     err -> sendStatusJSON status400 err
+
+postApiV1ArkhamDecksFetchR :: Handler ArkhamDBDecklist
+postApiV1ArkhamDecksFetchR = do
+  _ <- getRequestUserId
+  FetchDeckPost {..} <- requireCheckJsonBody
+  getDeckList fetchDeckUrl >>= \case
+    Right decklist -> pure decklist
+    Left err -> sendStatusJSON Status.status400 (JSONError $ T.pack err)
 
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
@@ -170,8 +188,33 @@ fromPostData userId CreateDeckPost {..} = do
     , arkhamDeckList = deckList
     }
 
+arkhamBuildDecklistUrl :: Text -> Maybe Text
+arkhamBuildDecklistUrl url = do
+  rest <- asum $ map (`T.stripPrefix` url)
+    [ "https://arkham.build/decklist/view/"
+    , "https://arkham.build/decklist/"
+    , "http://arkham.build/decklist/view/"
+    , "http://arkham.build/decklist/"
+    ]
+  let decklistId = T.takeWhile (/= '?') $ T.takeWhile (/= '/') rest
+  guard $ not $ T.null decklistId
+  pure $ "https://api.arkham.build/v1/public/arkhamdb/decklist/" <> decklistId
+
+decodeDeckList :: BL.ByteString -> Either String ArkhamDBDecklist
+decodeDeckList bytes = case eitherDecode bytes of
+  Right decklist -> Right decklist
+  Left _ -> do
+    decklists <- eitherDecode bytes
+    maybe (Left "No decklist found") Right (listToMaybe decklists)
+
 getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
-getDeckList url = liftIO $ second (\d -> d {url = Just url}) . eitherDecode <$> simpleHttp (T.unpack url)
+getDeckList url = liftIO case arkhamBuildDecklistUrl url of
+  Just fetchUrl -> do
+    request <- parseRequest $ T.unpack fetchUrl
+    manager <- newManager tlsManagerSettings
+    let request' = request {requestHeaders = ("X-Client-Id", "arkham-horror") : requestHeaders request}
+    second (\d -> d {url = Nothing}) . decodeDeckList . responseBody <$> httpLbs request' manager
+  Nothing -> second (\d -> d {url = Just url}) . decodeDeckList <$> simpleHttp (T.unpack url)
 
 getApiV1ArkhamDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 getApiV1ArkhamDeckR deckId = do

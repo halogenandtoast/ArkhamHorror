@@ -18,6 +18,7 @@
       /investigators ApiV1ArkhamInvestigatorsR GET
       /decks ApiV1ArkhamDecksP:
         / ApiV1ArkhamDecksR GET POST
+        !/fetch ApiV1ArkhamDecksFetchR POST
         !/validate ApiV1ArkhamDecksValidateR POST
         /#ArkhamDeckId ApiV1ArkhamDeckP:
           / ApiV1ArkhamDeckR GET DELETE

@@ -268,8 +268,8 @@ export function localizeArkhamDBBaseUrl() {
 
 export function processArkhamBuildDeck<T extends { slots?: Record<string, number> }>(
   data: T,
-  url: string,
-): T & { slots: Record<string, number>; url: string } {
+  url: string | null,
+): T & { slots: Record<string, number>; url: string | null } {
   const rawMeta = (data as { meta?: unknown }).meta
   const meta: { hidden_slots?: Record<string, unknown> } =
     typeof rawMeta === 'string' ? JSON.parse(rawMeta) : {}

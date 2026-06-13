@@ -27,7 +27,7 @@ import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import * as Arkham from '@/arkham/types/Location'
 import { TokenType } from '@/arkham/types/Token'
-import { Card } from '../types/Card'
+import { cardFacedown, Card } from '../types/Card'
 import useHighlighter from '@/composable/useHighlighter'
 import { IsMobile } from '@/arkham/isMobile'
 
@@ -56,7 +56,7 @@ const dragover = (e: DragEvent) => {
 const props = defineProps<Props>()
 const emits = defineEmits<{
   choose: [value: number]
-  show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
+  show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean, revealed?: boolean]
 }>()
 
 const choose = (n: number) => emits('choose', n)
@@ -445,7 +445,13 @@ function onDrop(event: DragEvent) {
   }
 }
 
-const showCardsUnderneath = () => emits('show', playerCardsUnderneath, 'Cards Underneath', false)
+const cardsUnderneathToShow = computed(() => debug.active ? props.location.cardsUnderneath : playerCardsUnderneath.value)
+const hasFacedownCardsUnderneath = computed(() => props.location.cardsUnderneath.some(cardFacedown))
+const canShowCardsUnderneath = computed(() => {
+  if (debug.active) return props.location.cardsUnderneath.length > 0
+  return playerCardsUnderneath.value.length > 0 && !hasFacedownCardsUnderneath.value
+})
+const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, 'Cards Underneath', false, debug.active)
 const highlighted = computed(() => highlighter.highlighted.value === props.location.id)
 </script>
 
@@ -668,8 +674,8 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
           @choose="chooseAbility"
         />
 
-        <button v-if="playerCardsUnderneath.length > 0" @click="showCardsUnderneath">
-          {{ $t('location.under', { count: playerCardsUnderneath.length }) }}
+        <button v-if="canShowCardsUnderneath" @click="showCardsUnderneath">
+          {{ $t('location.under', { count: cardsUnderneathToShow.length }) }}
         </button>
 
         <template v-if="debug.active">

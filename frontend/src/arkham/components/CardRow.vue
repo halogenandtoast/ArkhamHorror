@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Game } from '@/arkham/types/Game';
-import type { CardContents } from '@/arkham/types/Card';
+import type { Card as ArkhamCard, CardContents } from '@/arkham/types/Card';
 import * as CardT from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
@@ -12,15 +12,17 @@ const debug = useDebug()
 
 const props = withDefaults(defineProps<{
   game: Game
-  cards: CardContents[]
+  cards: (ArkhamCard | CardContents)[]
   playerId: string
   isDiscards?: boolean
   title: string
-}>(), { isDiscards: false })
+  revealed?: boolean
+}>(), { isDiscards: false, revealed: false })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
-function isCardInChoices(card: CardContents): boolean {
-  return choices.value.some(choice => choice.tag === 'TargetLabel' && card.id === choice.target.contents)
+function isCardInChoices(card: ArkhamCard | CardContents): boolean {
+  const cardId = CardT.toCardContents(card).id
+  return choices.value.some(choice => choice.tag === 'TargetLabel' && cardId === choice.target.contents)
 }
 
 const emit = defineEmits<{
@@ -48,11 +50,11 @@ function startDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
     </template>
     <div class="card-row-container">
       <div class="card-row-cards">
-        <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards && !isCardInChoices(card)}">
+        <div v-for="card in cards" :key="CardT.toCardContents(card).id" class="card-row-card" :class="{ discard: isDiscards && !isCardInChoices(card)}">
           <Card 
             :draggable="debug.active"
             @dragstart="startDrag($event, card)"
-            :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
+            :game="game" :card="card" :playerId="playerId" :revealed="revealed" @choose="emit('choose', $event)" />
         </div>
       </div>
       <button class="button close" @click="emit('close')">{{ $t('close') }}</button>

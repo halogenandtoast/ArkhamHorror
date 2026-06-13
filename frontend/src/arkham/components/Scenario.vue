@@ -102,6 +102,7 @@ const encounterDiscardPopoverShown = ref(false)
 const locationMap = ref<Element | null>(null)
 const scrollerRef = ref<HTMLElement | null>(null)
 const viewingDiscard = ref(false)
+const revealingCards = ref(false)
 const cardRowTitle = ref("")
 // Atlach Nacha specific refs
 const previousRotation = ref(0)
@@ -1149,10 +1150,11 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 // Reactive
 const showCards = reactive<RefWrapper<any>>({ ref: noCards })
-const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
+const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean, revealed = false) => {
   cardRowTitle.value = title
   showCards.ref = cards
   viewingDiscard.value = isDiscards
+  revealingCards.value = revealed
 }
 const showRemovedFromPlay = () => doShowCards(removedFromPlay, t('scenario.removedFromPlay'), true)
 const showDiscards = () => doShowCards(discards, t('scenario.discards'), true)
@@ -1164,7 +1166,10 @@ const handleHollowedChoose = (idx: number) => {
     choose(idx)
   }
 }
-const hideCards = () => showCards.ref = noCards
+const hideCards = () => {
+  showCards.ref = noCards
+  revealingCards.value = false
+}
 
 // Watchers
 watchEffect(() => {
@@ -1757,6 +1762,7 @@ async function addChaosToken(face: any){
         :isDiscards="viewingDiscard"
         :title="cardRowTitle"
         :playerId="playerId"
+        :revealed="revealingCards"
         @choose="choose"
         @close="hideCards"
       />

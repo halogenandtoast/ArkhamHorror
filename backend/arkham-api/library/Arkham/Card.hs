@@ -347,9 +347,9 @@ setFacedown b card = do
   pure result
  where
   go = \case
+    PlayerCard pc -> PlayerCard pc {pcFacedown = Just b}
     EncounterCard ec -> EncounterCard ec {ecFacedown = Just b}
     VengeanceCard vc -> VengeanceCard (go vc)
-    other -> other
 
 data Card
   = PlayerCard PlayerCard

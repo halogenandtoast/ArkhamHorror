@@ -192,7 +192,7 @@ instance RunMessage ReadOrDie where
             reveal quad
             for_ quadInvestigators \iid -> moveTo_ attrs iid quad
 
-      tomes <- shuffle =<< use (attrsL . setAsideCardsL)
+      tomes <- shuffle =<< traverse (setFacedown True) =<< use (attrsL . setAsideCardsL)
       attrsL . setAsideCardsL .= []
       unless (null tomes) do
         -- These locations have only been queued for placement, so connection

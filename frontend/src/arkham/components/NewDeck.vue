@@ -147,9 +147,9 @@ async function runValidations() {
 
 async function createDeck() {
   errors.value = []
-  if (!(deckId.value && deckName.value && valid.value)) return
+  if (!valid.value || !deckList.value) return
 
-  if (!saveDeck.value && deckList.value) {
+  if (!saveDeck.value) {
     const dl = deckList.value
     deckId.value = null
     deckName.value = null
@@ -160,8 +160,9 @@ async function createDeck() {
     return
   }
 
+  if (!(deckId.value && deckName.value)) return
+
   try {
-    if (!deckList.value) return
     const created = await newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value)
     deckId.value = null
     deckName.value = null

@@ -68,21 +68,32 @@ CREATE FUNCTION public.enforce_step_order_per_game() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    -- Enforce that the step being inserted follows the chronological order
+    -- Step 0 always starts a chain.
     IF NEW.step = 0 THEN
         RETURN NEW;
     END IF;
 
-    -- Ensure the previous step exists for the same game
-    IF NOT EXISTS (
+    -- Normal case: the immediately preceding step exists.
+    IF EXISTS (
         SELECT 1 FROM arkham_steps
         WHERE arkham_game_id = NEW.arkham_game_id
           AND step = NEW.step - 1
     ) THEN
-        RAISE EXCEPTION 'Cannot insert step % for game % without step %', NEW.step, NEW.arkham_game_id, NEW.step - 1;
+        RETURN NEW;
     END IF;
 
-    RETURN NEW;  -- Allow the insertion to proceed if the previous step exists
+    -- Recovery case: the game has no recorded steps at all (its undo history
+    -- was pruned or never persisted). Allow this insert to start a fresh
+    -- contiguous chain from the game's current step instead of wedging the
+    -- game so no action can ever be taken again.
+    IF NOT EXISTS (
+        SELECT 1 FROM arkham_steps
+        WHERE arkham_game_id = NEW.arkham_game_id
+    ) THEN
+        RETURN NEW;
+    END IF;
+
+    RAISE EXCEPTION 'Cannot insert step % for game % without step %', NEW.step, NEW.arkham_game_id, NEW.step - 1;
 END;
 $$;
 

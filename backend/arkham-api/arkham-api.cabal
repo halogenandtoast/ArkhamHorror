@@ -6584,6 +6584,7 @@ test-suite spec
       Arkham.Asset.Assets.ShrivellingSpec
       Arkham.Asset.Assets.SolemnVowSpec
       Arkham.Asset.Assets.StrayCatSpec
+      Arkham.Asset.Assets.SummonedHound1Spec
       Arkham.Asset.Assets.SwitchbladeSpec
       Arkham.Asset.Assets.TheBlackFan3Spec
       Arkham.Asset.Assets.TheHungeringBlade1Spec
@@ -6679,6 +6680,7 @@ test-suite spec
       Arkham.Skill.Cards.PerceptionSpec
       Arkham.Skill.Cards.SurvivalInstinctSpec
       Arkham.Skill.Cards.UnexpectedCourageSpec
+      Arkham.Skill.Cards.Unrelenting1Spec
       Arkham.Skill.Cards.ViciousBlowSpec
       Arkham.Skill.Cards.WatchThisSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec

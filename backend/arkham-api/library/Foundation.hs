@@ -297,7 +297,9 @@ instance Yesod App where
   makeLogger = pure . appLogger
 
   maximumContentLength :: App -> Maybe (Route App) -> Maybe Word64
-  maximumContentLength _ _ = Just $ 200 * 1024 * 1024
+  maximumContentLength app _
+    | appReloadTemplates (appSettings app) = Nothing
+    | otherwise = Just $ 200 * 1024 * 1024
 
 class Monad m => CanRunDB m where
   runDB :: SqlPersistT m a -> m a

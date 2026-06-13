@@ -298,13 +298,15 @@ sourceMatches s = \case
         PaymentSource source' -> check source'
         AbilitySource source' _ -> check source'
         UseAbilitySource _ source' _ -> check source'
-        AssetSource _ -> True
-        EventSource _ -> True
-        SkillSource _ -> True
-        InvestigatorSource _ -> True
-        _ -> False
+        AssetSource _ -> pure True
+        EventSource _ -> pure True
+        SkillSource _ -> pure True
+        InvestigatorSource _ -> pure True
+        CardCostSource cid -> not . isEncounterCard <$> getCard cid
+        CardIdSource cid -> not . isEncounterCard <$> getCard cid
+        _ -> pure False
      in
-      pure $ check s
+      check s
   Matcher.SourceIsPlayerCardAbility ->
     case s of
       PaymentSource s' -> sourceMatches s' Matcher.SourceIsPlayerCardAbility

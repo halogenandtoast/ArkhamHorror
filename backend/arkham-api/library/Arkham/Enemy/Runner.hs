@@ -193,6 +193,10 @@ filterOutEnemyMessages eid msg = case msg of
   Discarded (EnemyTarget eid') _ _ | eid == eid' -> Nothing
   Do (Discarded (EnemyTarget eid') _ _) | eid == eid' -> Nothing
   PlaceEnemy eid' _ | eid' == eid -> Nothing
+  EnemyEntered eid' _ | eid' == eid -> Nothing
+  EnemyEnteredFollowing _ eid' _ | eid' == eid -> Nothing
+  EnemySpawn details | details.enemy == eid -> Nothing
+  EnemySpawned details | details.enemy == eid -> Nothing
   m -> Just m
 
 filterOutEnemyUiMessages :: EnemyId -> UI Message -> Maybe (UI Message)
@@ -541,7 +545,7 @@ instance RunMessage EnemyAttrs where
       unless (null details.after) do
         pushAll details.after
       pure $ a & spawnDetailsL .~ Nothing
-    EnemyEntered eid lid | eid == enemyId -> do
+    EnemyEntered eid lid | eid == enemyId && not enemyDefeated -> do
       case enemyPlacement of
         AsSwarm eid' _ -> do
           push $ EnemyEntered eid' lid
@@ -597,7 +601,7 @@ instance RunMessage EnemyAttrs where
           -- (Will EnemyEngageInvestigator) and are skipped here.
           pushAll $ [EnemyCheckEngagement eid | isNothing enemySpawnDetails] <> [afterWindows]
       pure a
-    EnemyEnteredFollowing movingIid eid lid | eid == enemyId -> do
+    EnemyEnteredFollowing movingIid eid lid | eid == enemyId && not enemyDefeated -> do
       -- Variant of EnemyEntered for an engaged enemy following the moving
       -- investigator. `iidsHere` excludes `movingIid` so the "your location"
       -- flavour of EnemyEnters does not fire for the investigator the enemy

@@ -16,7 +16,11 @@ import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
 import Arkham.Game
 import Arkham.Id
+import Codec.Compression.GZip qualified as GZip
 import Conduit
+import Control.Exception (evaluate)
+import Data.ByteString qualified as BS
+import Data.ByteString.Lazy qualified as BSL
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update)
@@ -31,6 +35,60 @@ import UnliftIO.Exception (catch, try)
 
 normalizeJsonInvestigatorId :: Text -> Text
 normalizeJsonInvestigatorId iid = if "c" `T.isPrefixOf` iid then iid else "c" <> iid
+
+isGzipped :: BS.ByteString -> Bool
+isGzipped bs = BS.take 2 bs == BS.pack [0x1f, 0x8b]
+
+decodeExportBytes :: BS.ByteString -> Handler (Either String ArkhamExport)
+decodeExportBytes bytes
+  | isGzipped bytes = do
+      eDecompressed <- liftIO $ try @_ @SomeException $ evaluate $ BSL.toStrict $ GZip.decompress $ BSL.fromStrict bytes
+      pure $ case eDecompressed of
+        Left err -> Left $ displayException err
+        Right decompressed -> eitherDecodeStrict' decompressed
+  | otherwise = pure $ eitherDecodeStrict' bytes
+
+-- Compress each emitted JSON chunk as its own gzip member. Gzip readers are
+-- required to handle concatenated members, and this guarantees we keep sending
+-- bytes throughout the export instead of buffering until the whole response is
+-- compressed.
+gzipConduit :: Monad m => ConduitT BS.ByteString BS.ByteString m ()
+gzipConduit = awaitForever $ yield . BSL.toStrict . GZip.compress . BSL.fromStrict
+
+generateFullExportSource :: ArkhamGameId -> ConduitT () BS.ByteString Handler ()
+generateFullExportSource gameId = do
+  (ge, players) <- lift $ runDB do
+    ge <- get404 gameId
+    players <- select do
+      p <- from $ table @ArkhamPlayer
+      where_ $ p.arkhamGameId ==. val gameId
+      pure p
+    pure (ge, players)
+  let campaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
+  yieldBS "{\"campaignPlayers\":"
+  yieldLBS $ encode campaignPlayers
+  yieldBS ",\"campaignData\":{\"name\":"
+  yieldLBS $ encode ge.name
+  yieldBS ",\"currentData\":"
+  yieldLBS $ encode ge.currentData
+  yieldBS ",\"step\":"
+  yieldLBS $ encode ge.step
+  yieldBS ",\"steps\":["
+  isFirstRef <- liftIO $ newIORef True
+  stepsAcquire <-
+    lift $ runDB $ Persist.selectSourceRes [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
+  (_, stepSource) <- allocateAcquire stepsAcquire
+  stepSource .| awaitForever \(Entity _ s) -> do
+    isFirst <- liftIO $ readIORef isFirstRef
+    unless isFirst $ yieldBS ","
+    liftIO $ writeIORef isFirstRef False
+    yieldLBS $ encode s
+  yieldBS "],\"log\":[],\"multiplayerVariant\":"
+  yieldLBS $ encode ge.multiplayerVariant
+  yieldBS "}}"
+ where
+  yieldBS = yield
+  yieldLBS = mapM_ yield . BSL.toChunks
 
 -- Swap the investigator's original player UUID for the new one by doing a
 -- text-level replace on the stored JSONB, then casting back.
@@ -66,45 +124,16 @@ getApiV1ArkhamGameScenarioExportR gameId = do
 
 getApiV1ArkhamGameFullExportR :: ArkhamGameId -> Handler TypedContent
 getApiV1ArkhamGameFullExportR gameId = do
-  (ge, players) <- runDB do
-    ge <- get404 gameId
-    players <- select do
-      p <- from $ table @ArkhamPlayer
-      where_ $ p.arkhamGameId ==. val gameId
-      pure p
-    pure (ge, players)
-  let campaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
-  respondSource "application/json" $ do
-    sendChunkLBS "{\"campaignPlayers\":"
-    sendChunkLBS $ encode campaignPlayers
-    sendChunkLBS ",\"campaignData\":{\"name\":"
-    sendChunkLBS $ encode ge.name
-    sendChunkLBS ",\"currentData\":"
-    sendChunkLBS $ encode ge.currentData
-    sendChunkLBS ",\"step\":"
-    sendChunkLBS $ encode ge.step
-    sendChunkLBS ",\"steps\":["
-    sendFlush
-    isFirstRef <- liftIO $ newIORef True
-    -- Stream steps straight from the database one row at a time instead of
-    -- materializing every step (each carrying a potentially large actionDiff)
-    -- up front. selectSourceRes opens its own resource-safe cursor, so memory
-    -- stays flat and each row flushes a chunk -- which keeps Warp's response
-    -- timeout from firing mid-stream and tearing the connection down (the
-    -- cause of ERR_INCOMPLETE_CHUNKED_ENCODING on large exports).
-    stepsAcquire <-
-      lift $ runDB $ Persist.selectSourceRes [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
-    (_, stepSource) <- allocateAcquire stepsAcquire
-    stepSource .| awaitForever \(Entity _ s) -> do
-      isFirst <- liftIO $ readIORef isFirstRef
-      unless isFirst $ sendChunkBS ","
-      liftIO $ writeIORef isFirstRef False
-      sendChunkLBS $ encode s
-      sendFlush
-    sendChunkLBS "],\"log\":[],\"multiplayerVariant\":"
-    sendChunkLBS $ encode ge.multiplayerVariant
-    sendChunkLBS "}}"
-    sendFlush
+  gzip <- (== Just "true") <$> lookupGetParam "gzip"
+  if gzip
+    then do
+      addHeader "Content-Disposition" $ "attachment; filename=arkham-full-export-" <> toPathPiece gameId <> ".json.gz"
+      respondSource "application/gzip" $
+        generateFullExportSource gameId .| gzipConduit .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
+    else do
+      addHeader "Content-Disposition" $ "attachment; filename=arkham-full-export-" <> toPathPiece gameId <> ".json"
+      respondSource "application/json" $
+        generateFullExportSource gameId .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
 
 postApiV1ArkhamGamesFixR :: Handler ()
 postApiV1ArkhamGamesFixR = do
@@ -140,12 +169,13 @@ postApiV1ArkhamGamesImportR = do
   let
     mInvestigatorId = fmap normalizeJsonInvestigatorId $ snd <$> find ((== "investigatorId") . fst) params
   eExportData :: Either String ArkhamExport <-
-    fmap eitherDecodeStrict'
-      . fileSourceByteString
-      . snd
-      . fromJustNote "No export file uploaded"
-      . headMay
-      $ files
+    decodeExportBytes
+      =<< ( fileSourceByteString
+              . snd
+              . fromJustNote "No export file uploaded"
+              . headMay
+              $ files
+          )
   now <- liftIO getCurrentTime
 
   case eExportData of

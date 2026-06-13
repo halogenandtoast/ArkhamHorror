@@ -6,7 +6,6 @@ import { imgsrc } from '@/arkham/helpers'
 type GameMode = 'Campaign' | 'SideStory'
 
 const CHAPTER_2_CAMPAIGN_IDS = new Set(['12'])
-const CHALLENGE_SCENARIO_IDS = new Set(['90094'])
 
 const props = defineProps<{
   campaigns: Campaign[]
@@ -28,7 +27,7 @@ const chapter2Campaigns = computed(() =>
   props.campaigns.filter((c) => CHAPTER_2_CAMPAIGN_IDS.has(c.id))
 )
 const isChallengeScenario = (scenario: Scenario) =>
-  Boolean(scenario.requiredInvestigator) || CHALLENGE_SCENARIO_IDS.has(scenario.id)
+  Boolean(scenario.requiredInvestigator) || Boolean(scenario.deckRequirements?.length)
 
 const sideStoryScenarios = computed(() =>
   props.sideStories.filter((s) => !isChallengeScenario(s))
@@ -102,6 +101,9 @@ const challengeScenarios = computed(() =>
           </div>
           <span v-if="s.requiredInvestigator" class="requires-investigator">
             {{ $t('create.requiresInvestigator', { name: s.requiredInvestigator }) }}
+          </span>
+          <span v-for="requirement in s.deckRequirements" :key="requirement" class="requires-investigator">
+            {{ requirement }}
           </span>
         </div>
       </div>

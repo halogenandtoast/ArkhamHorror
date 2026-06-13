@@ -7,9 +7,11 @@ export type SelectableDeckList = {
 type DeckRestrictionContext = {
   scenarioId: string | null | undefined
   deckList: SelectableDeckList
+  chosenInvestigatorCodes: string[]
 }
 
 type DeckRestriction = {
+  description?: string
   validate: (context: DeckRestrictionContext) => string | null
 }
 
@@ -29,6 +31,22 @@ const NON_WEAKNESS_TOME_ASSET_CODES = new Set([
   '60279', '60280', '60281', '60506', '84034', '90082',
 ])
 
+const PARALLEL_CONTENT_INVESTIGATOR_CODES = new Set([
+  '01001', '01501', '90024', '98004', // Roland Banks
+  '01002', '01502', '90001', // Daisy Walker
+  '01003', '01503', '90008', // "Skids" O'Toole
+  '01004', '01504', '90017', // Agnes Baker
+  '01005', '01505', '90037', // Wendy Adams
+  '02001', '90059', // Zoey Samaras
+  '02002', '90078', // Rex Murphy
+  '02003', '90084', '98001', // Jenny Barnes
+  '02004', '90049', // Jim Culver
+  '02005', '90046', // "Ashcan" Pete
+  '03006', '90087', // Lola Hayes
+  '04004', '90081', // Father Mateo
+  '08007', '90062', // Monterey Jack
+])
+
 const challengeScenarioInvestigators: Record<string, RequiredInvestigatorRestriction> = {
   '90004': requiredInvestigator('Daisy Walker', ['01002', '01502', '90001']),
   '90011': requiredInvestigator('"Skids" O\'Toole', ['01003', '01503', '90008']),
@@ -44,8 +62,10 @@ const scenarioDeckRestrictions: Record<string, DeckRestriction[]> = {
     cardCodes: NON_WEAKNESS_TOME_ASSET_CODES,
     minimum: 4,
     label: 'non-weakness Tome assets',
+    description: "Daisy Walker's deck must include at least 4 non-weakness Tome assets.",
     error: (count, minimum) => `Daisy Walker's deck must include at least ${minimum} non-weakness Tome assets (${count}/${minimum})`,
   })],
+  '90094': [requiresAnyParallelContentInvestigator()],
 }
 
 function requiredInvestigator(name: string, codes: string[]): RequiredInvestigatorRestriction {
@@ -59,18 +79,32 @@ function requiredInvestigator(name: string, codes: string[]): RequiredInvestigat
   }
 }
 
+function requiresAnyParallelContentInvestigator(): DeckRestriction {
+  return {
+    description: 'At least 1 investigator with parallel content must be chosen.',
+    validate: ({ deckList, chosenInvestigatorCodes }) => {
+      const hasChosenParallel = chosenInvestigatorCodes.some(hasParallelContent)
+      if (hasChosenParallel || hasParallelContent(deckInvestigatorCode(deckList))) return null
+      return 'Enthralling Encore requires at least 1 investigator with parallel content'
+    },
+  }
+}
+
 function minimumCardCount({
   cardCodes,
   minimum,
   label,
+  description,
   error,
 }: {
   cardCodes: Set<string>
   minimum: number
   label: string
+  description?: string
   error?: (count: number, minimum: number) => string
 }): DeckRestriction {
   return {
+    description,
     validate: ({ deckList }) => {
       const count = countDeckSlots(deckList, cardCodes)
       if (count >= minimum) return null
@@ -99,7 +133,22 @@ export function deckInvestigatorCode(deckList: SelectableDeckList): string {
   return normalizeCardCode(deckList.investigator_code)
 }
 
-export function deckRestrictionError(scenarioId: string | null | undefined, deckList: SelectableDeckList): string | null {
+export function deckRequirementDescriptions(scenarioId: string | null | undefined): string[] {
+  if (!scenarioId) return []
+
+  const normalizedScenarioId = normalizeCardCode(scenarioId)
+  return (scenarioDeckRestrictions[normalizedScenarioId] ?? []).flatMap((r) => r.description ? [r.description] : [])
+}
+
+export function hasParallelContent(investigatorCode: string): boolean {
+  return PARALLEL_CONTENT_INVESTIGATOR_CODES.has(normalizeCardCode(investigatorCode))
+}
+
+export function deckRestrictionError(
+  scenarioId: string | null | undefined,
+  deckList: SelectableDeckList,
+  chosenInvestigatorCodes: string[] = [],
+): string | null {
   if (!scenarioId) return null
 
   const normalizedScenarioId = normalizeCardCode(scenarioId)
@@ -109,7 +158,7 @@ export function deckRestrictionError(scenarioId: string | null | undefined, deck
   ].filter((r): r is DeckRestriction => r !== undefined)
 
   for (const restriction of restrictions) {
-    const error = restriction.validate({ scenarioId, deckList })
+    const error = restriction.validate({ scenarioId, deckList, chosenInvestigatorCodes })
     if (error) return error
   }
 

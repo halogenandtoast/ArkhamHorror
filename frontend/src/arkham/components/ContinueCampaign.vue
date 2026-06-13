@@ -16,6 +16,7 @@ import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
+import { hasParallelContent } from '@/arkham/deckRestrictions'
 
 const props = defineProps<{
   game: Game
@@ -204,8 +205,9 @@ const standalones = computed(() => {
     return acc
   }, [] as string[])
 
-  return filterDisplayable(sideStories, displayRuleOptions.value).flatMap((s: { xp: number, id: string, name: string, requiredInvestigator?: string, scenarios?: { id: string, name: string, notAfter?: string[] }[] }) => {
+  return filterDisplayable(sideStories, displayRuleOptions.value).flatMap((s: { xp: number, id: string, name: string, requiredInvestigator?: string, deckRequirements?: string[], scenarios?: { id: string, name: string, notAfter?: string[] }[] }) => {
     if (!s.xp) return []
+    if (s.id === '90094' && !investigators.value.some((i) => hasParallelContent(i.cardCode))) return []
     if (s.requiredInvestigator) {
       // challenge scenarios require their investigator; they pay the full
       // cost while each other investigator only pays 1 xp
@@ -307,7 +309,10 @@ const expeditionLeader = computed(() => {
         <div class="scenario-info">
           <h2>{{ sideStory.name }}</h2>
           <h3 v-if="sideStory.requiredInvestigator">{{ $t('sideStory.xpAsymmetric', { signatureXp: sideStory.xp, name: sideStory.requiredInvestigator, otherXp: 1 }) }}</h3>
-          <h3 v-else>({{ sideStory.xp }} XP)</h3>
+          <template v-else>
+            <h3>({{ sideStory.xp }} XP)</h3>
+            <h3 v-for="requirement in sideStory.deckRequirements" :key="requirement">{{ requirement }}</h3>
+          </template>
         </div>
 
         <button class="add" @click="loadSideStory(sideStory.id)" :disabled="hasSent">+</button>

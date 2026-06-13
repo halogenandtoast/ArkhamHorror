@@ -676,6 +676,9 @@
     "id": "90004",
     "name": "Read or Die",
     "requiredInvestigator": "Daisy Walker",
+    "deckRequirements": [
+      "Daisy Walker's deck must include at least 4 non-weakness Tome assets."
+    ],
     "standaloneDifficulties": [
       "Easy",
       "Standard",
@@ -1415,6 +1418,9 @@
     },
     "xp": 2,
     "alpha": true,
-    "dev": true
+    "dev": true,
+    "deckRequirements": [
+      "Requires investigator with parallel content"
+    ]
   }
 ]

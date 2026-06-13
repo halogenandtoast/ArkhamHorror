@@ -5,11 +5,9 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Distance
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
-import {-# SOURCE #-} Arkham.GameEnv (getDistance)
 import Arkham.Helpers
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.FlavorText
@@ -169,13 +167,11 @@ instance RunMessage ReadOrDie where
       quad <- place Locations.miskatonicQuad
       orneLibrary <- place Locations.orneLibrary
       scienceBuilding <- place Locations.scienceBuilding
-      placeAll
-        [ Locations.humanitiesBuilding
-        , Locations.studentUnion
-        , Locations.administrationBuilding
-        , Locations.dormitories
-        , Locations.facultyOfficesTheNightIsStillYoung
-        ]
+      humanitiesBuilding <- place Locations.humanitiesBuilding
+      studentUnion <- place Locations.studentUnion
+      administrationBuilding <- place Locations.administrationBuilding
+      dormitories <- place Locations.dormitories
+      facultyOffices <- place Locations.facultyOfficesTheNightIsStillYoung
 
       namer <- enemyAt Enemies.namerOfTheDead orneLibrary
       exhaustWith attrs namer
@@ -199,10 +195,16 @@ instance RunMessage ReadOrDie where
       tomes <- shuffle =<< use (attrsL . setAsideCardsL)
       attrsL . setAsideCardsL .= []
       unless (null tomes) do
-        others <- shuffle =<< select (not_ $ mapOneOf LocationWithId [quad, orneLibrary])
-        withDistance <- forMaybeM others \lid ->
-          fmap (\d -> (unDistance d, lid)) <$> getDistance orneLibrary lid
-        let ordered = map snd $ sortOn (negate . fst) withDistance
+        -- These locations have only been queued for placement, so connection
+        -- based distance queries cannot see them yet. Use the printed layout to
+        -- order locations by distance from the Orne Library (farthest first),
+        -- randomizing within ties.
+        ordered <-
+          concat <$> traverse shuffle
+            [ [dormitories, facultyOffices]
+            , [scienceBuilding, studentUnion, administrationBuilding]
+            , [humanitiesBuilding]
+            ]
         let (perLocation, rest) = splitAt (length ordered) tomes
         for_ (zip ordered perLocation) \(lid, card) -> placeUnderneath lid [card]
         unless (null rest) $ placeUnderneath orneLibrary rest

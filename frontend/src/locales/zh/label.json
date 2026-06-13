@@ -356,8 +356,10 @@
     }
   },
   "doNotExhaust": "不消耗",
+  "doNotExhaustName": "不消耗{name}",
   "doNotDiscardCard": "不弃掉卡牌",
   "discardThis": "弃掉{name}",
+  "exhaustName": "消耗{name}",
   "exhaustThis": "消耗{name}",
   "readyThis": "准备{name}",
   "getPlus": "获得 +{count}{'{'}{skill}{'}'}",

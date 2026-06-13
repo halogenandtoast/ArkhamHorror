@@ -420,8 +420,10 @@
     }
   },
   "doNotExhaust": "Do not exhaust",
+  "doNotExhaustName": "Do not exhaust {name}",
   "doNotDiscardCard": "Do not discard card",
   "discardThis": "Discard {name}",
+  "exhaustName": "Exhaust {name}",
   "exhaustThis": "Exhaust {name}",
   "readyThis": "Ready {name}",
   "getPlus": "Get +{count} {'{'}{skill}{'}'}",

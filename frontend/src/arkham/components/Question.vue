@@ -267,6 +267,30 @@ const paymentChoiceLabel = function(text: string): string {
   return formatContent(text)
 }
 
+const traumaKind = (text: string) => {
+  const normalized = text.toLowerCase()
+  if (normalized.includes('physical')) return 'health'
+  if (normalized.includes('mental')) return 'horror'
+  return null
+}
+
+const traumaIcon = (text: string) => {
+  switch (traumaKind(text)) {
+    case 'health': return imgsrc('health-icon.png')
+    case 'horror': return imgsrc('horror-icon.png')
+    default: return null
+  }
+}
+
+const traumaIconStyle = (text: string) => {
+  const icon = traumaIcon(text)
+  if (!icon) return {}
+  return {
+    maskImage: `url(${icon})`,
+    WebkitMaskImage: `url(${icon})`,
+  }
+}
+
 const hasInnerContent = computed(() => {
   return questionImage.value
     || (focusedCards.value.length > 0 && choices.value.length > 0)
@@ -568,21 +592,34 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
           </div>
           <div v-if="paymentAmountsLabel" class="modal amount-modal">
             <div class="modal-contents amount-contents">
-              <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
+              <form class="amount-form" @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
                 <legend v-html="paymentAmountsLabel"></legend>
-                <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
-                  <div v-if="amountChoice.maxBound !== 0">
-                    {{ amountChoice.title }}
-                    <input
-                      type="number"
-                      :min="amountChoice.minBound"
-                      :max="amountChoice.maxBound"
-                      v-model.number="amountSelections[amountChoice.choiceId]"
-                      onclick="this.select()"
-                    />
-                  </div>
-                </template>
-                <button :disabled="unmetAmountRequirements">{{ t('submit') }}</button>
+                <div class="amount-choice-list">
+                  <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.choiceId">
+                    <div v-if="amountChoice.maxBound !== 0" class="amount-choice">
+                      <label :for="`payment-choice-${amountChoice.choiceId}`">{{ amountChoice.title }}</label>
+                      <span class="amount-input-wrapper">
+                        <span
+                          v-if="traumaIcon(amountChoice.title)"
+                          class="amount-input-icon"
+                          :class="`amount-input-icon--${traumaKind(amountChoice.title)}`"
+                          :style="traumaIconStyle(amountChoice.title)"
+                        ></span>
+                        <input
+                          :id="`payment-choice-${amountChoice.choiceId}`"
+                          class="amount-input"
+                          :class="{ 'with-icon': traumaIcon(amountChoice.title) }"
+                          type="number"
+                          :min="amountChoice.minBound"
+                          :max="amountChoice.maxBound"
+                          v-model.number="amountSelections[amountChoice.choiceId]"
+                          onclick="this.select()"
+                        />
+                      </span>
+                    </div>
+                  </template>
+                </div>
+                <button class="amount-submit" :disabled="unmetAmountRequirements">{{ t('submit') }}</button>
               </form>
             </div>
           </div>
@@ -603,14 +640,35 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
               </div>
             </div>
             <div class="modal-contents amount-contents">
-              <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
+              <form class="amount-form" @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
                 <legend v-html="amountsLabel"></legend>
-                <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
-                  <div v-if="paymentChoice.maxBound !== 0">
-                    <label :for="`choice-${paymentChoice.choiceId}`" v-html="paymentChoiceLabel(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
-                  </div>
-                </template>
-                <button :disabled="unmetAmountRequirements">{{ t('submit') }}</button>
+                <div class="amount-choice-list">
+                  <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
+                    <div v-if="paymentChoice.maxBound !== 0" class="amount-choice">
+                      <label :for="`choice-${paymentChoice.choiceId}`" v-html="paymentChoiceLabel(paymentChoice.label)"></label>
+                      <span class="amount-input-wrapper">
+                        <span
+                          v-if="traumaIcon(paymentChoice.label)"
+                          class="amount-input-icon"
+                          :class="`amount-input-icon--${traumaKind(paymentChoice.label)}`"
+                          :style="traumaIconStyle(paymentChoice.label)"
+                        ></span>
+                        <input
+                          :id="`choice-${paymentChoice.choiceId}`"
+                          class="amount-input"
+                          :class="{ 'with-icon': traumaIcon(paymentChoice.label) }"
+                          type="number"
+                          :min="paymentChoice.minBound"
+                          :max="paymentChoice.maxBound"
+                          v-model.number="amountSelections[paymentChoice.choiceId]"
+                          :name="`choice-${paymentChoice.choiceId}`"
+                          onclick="this.select()"
+                        />
+                      </span>
+                    </div>
+                  </template>
+                </div>
+                <button class="amount-submit" :disabled="unmetAmountRequirements">{{ t('submit') }}</button>
               </form>
             </div>
           </div>
@@ -1079,50 +1137,156 @@ h2 {
   flex-wrap: wrap;
 }
 
-.amount-contents {
-  background: #735e7b;
-  padding: 0px;
-  padding-top: 10px;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
+.question-label:has(.amount-modal),
+.question-content:has(.amount-modal) {
   width: 100%;
-  form {
-    flex: 1;
-  }
+  box-sizing: border-box;
 }
 
-.amount-contents div {
-  display: inline;
+.amount-modal {
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.amount-contents button {
-  background: #4a3d50;
-  display: inline;
-  border: 0;
-  color: white;
-  padding: 0.5em;
-  margin-top: 0.5em;
+.amount-contents {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  overflow: hidden;
+  align-items: stretch;
+  background: #735e7b;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
 }
 
-.amount-contents button[disabled] {
-  cursor: not-allowed;
-}
-
-.amount-contents input {
-  padding: 0.5em;
+.amount-form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  padding: 22px;
+  box-sizing: border-box;
 }
 
 .amount-contents legend {
-  font-size: 1.2em;
-  font-weight: bold;
+  width: 100%;
+  color: #fff;
+  font-size: 1.25em;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  text-wrap: balance;
+  margin: 0;
+  padding: 0 6px 6px;
 }
 
-.amount-contents .selection {
-  margin-left: 50px;
+.amount-choice-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
 }
 
-.amount-contents .selection:nth-of-type(1) {
-  margin-left: 0;
+.amount-choice {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 5.5rem;
+  flex: 0 0 calc(50% - 5px);
+  max-width: calc(50% - 5px);
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.11);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  box-sizing: border-box;
+}
+
+.amount-choice label {
+  color: #f6edf8;
+  font-size: 1.05em;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.amount-input-wrapper {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.amount-input-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.55em;
+  width: 1.1em;
+  height: 1.1em;
+  transform: translateY(-50%);
+  pointer-events: none;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.amount-input-icon--health {
+  background-color: #d44;
+}
+
+.amount-input-icon--horror {
+  background-color: #1f6fbf;
+}
+
+.amount-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.55em 0.65em;
+  color: #241a29;
+  background: #f7f0f8;
+  border: 1px solid rgba(36, 26, 41, 0.25);
+  border-radius: 11px;
+  font-size: 1.05em;
+  font-weight: 800;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.amount-input.with-icon {
+  padding-left: 2em;
+}
+
+.amount-input::-webkit-inner-spin-button,
+.amount-input::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+.amount-input:focus {
+  outline: 2px solid #d7b7df;
+  outline-offset: 2px;
+}
+
+.amount-submit {
+  width: 100%;
+  margin-top: 2px;
+  padding: 0.8em 1em;
+  background: #3f2f48;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 13px;
+  color: white;
+  text-align: center;
+}
+
+.amount-submit:hover {
+  background: #2f2238;
+}
+
+.amount-submit[disabled] {
+  cursor: not-allowed;
 }
 
 .choices {

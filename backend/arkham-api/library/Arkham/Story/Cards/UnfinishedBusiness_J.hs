@@ -39,6 +39,7 @@ instance RunMessage UnfinishedBusiness_J where
             push $ ReplaceCard attrs.cardId (toCard attrs)
             addToVictory iid attrs
         else do
+          for_ mEnemy (push . RemoveEnemy)
           let card = lookupCard Enemies.heretic_I (toCardId attrs)
           enemy <- createEnemy card attrs.placement
           createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)

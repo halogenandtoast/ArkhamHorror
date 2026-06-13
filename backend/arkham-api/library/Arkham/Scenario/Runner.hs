@@ -22,6 +22,7 @@ import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (Field (..))
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Types (Field (..))
 import Arkham.CampaignLog hiding (optionsL)
@@ -60,6 +61,7 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Log (getHasRecord)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers hiding (cardResolutionModifiers)
 import Arkham.Helpers.Playable
@@ -253,6 +255,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   EndSetup -> do
     pushAll [BeginGame, BeginRound, Begin InvestigationPhase]
+    whenM (getHasRecord TheInvestigatorsSurvivedTheMidwinterGala) do
+      lead <- getLead
+      jewel <- genCard Assets.jewelOfSarnath
+      questionLabel' "label.shuffleJewelOfSarnath" lead
+        $ ChooseOne
+          [ Label "$label.shuffleIn" [ShuffleCardsIntoDeck Deck.EncounterDeck [jewel]]
+          , Label "$label.dontShuffle" []
+          ]
     pure a
   ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" (isTarget a -> True)) -> do
     let physical = getChoiceAmount "$physical" choiceMap

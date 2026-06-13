@@ -30,6 +30,7 @@ import Arkham.Investigator.Types (
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (record)
 import Arkham.Message.Lifted.Placement qualified as Placement
 import Arkham.Message.Lifted.Story
 import Arkham.Placement
@@ -331,6 +332,7 @@ instance RunMessage TheMidwinterGala where
     Do msg'@(ScenarioResolution r) -> scope "resolutions" do
       case r of
         NoResolution -> do
+          unlessStandalone $ record TheInvestigatorsWereDefeatedAtTheMidwinterGala
           resolution "noResolution" >> do_ R7
         Resolution 1 -> do
           let Meta {ally} = toResult attrs.meta
@@ -341,6 +343,7 @@ instance RunMessage TheMidwinterGala where
               li "chooseGuest"
               li "jewelOfSarnath"
               for_ [minBound ..] \faction -> li.validate (ally == faction) (unpack $ factionLabel faction)
+          unlessStandalone $ record TheInvestigatorsSurvivedTheMidwinterGala
           eachInvestigator (`forTarget` msg')
           do_ case ally of
             TheFoundation -> R2

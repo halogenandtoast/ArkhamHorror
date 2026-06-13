@@ -1,6 +1,13 @@
 <script lang="ts" setup>
 import { nextTick, ref, onMounted, onBeforeUnmount, useId } from 'vue'
 
+const props = withDefaults(defineProps<{
+  centerInSelector?: string
+  avoidSelector?: string
+  avoidPadding?: number
+  clickThroughChrome?: boolean
+}>(), { avoidPadding: 8, clickThroughChrome: false })
+
 const id = useId()
 const draggable = ref<HTMLElement | null>(null)
 const isMinimized = ref(false)
@@ -52,9 +59,74 @@ function setAnchorFromRect(rect: DOMRect) {
   anchorY.value = rect.top + rect.height / 2
 }
 
+function preferredBounds() {
+  if (props.centerInSelector) {
+    const el = document.querySelector(props.centerInSelector) as HTMLElement | null
+    const rect = el?.getBoundingClientRect()
+    if (rect && rect.width > 0 && rect.height > 0) return rect
+  }
+
+  return new DOMRect(0, 0, window.innerWidth, window.innerHeight)
+}
+
 function setAnchorToViewportCenter() {
-  anchorX.value = window.innerWidth / 2
-  anchorY.value = window.innerHeight / 2
+  const bounds = preferredBounds()
+  anchorX.value = bounds.left + bounds.width / 2
+  anchorY.value = bounds.top + bounds.height / 2
+}
+
+function overlapArea(a: { left: number; top: number; right: number; bottom: number }, b: DOMRect) {
+  const padding = props.avoidPadding
+  const left = Math.max(a.left, b.left - padding)
+  const right = Math.min(a.right, b.right + padding)
+  const top = Math.max(a.top, b.top - padding)
+  const bottom = Math.min(a.bottom, b.bottom + padding)
+
+  return Math.max(0, right - left) * Math.max(0, bottom - top)
+}
+
+function avoidOverlapPosition(modalWidth: number, modalHeight: number, maxLeft: number, maxTop: number) {
+  if (!props.avoidSelector) return null
+
+  const avoided = [...document.querySelectorAll(props.avoidSelector)]
+    .map((el) => el.getBoundingClientRect())
+    .filter((rect) => rect.width > 0 && rect.height > 0)
+
+  if (avoided.length === 0) return null
+
+  const bounds = preferredBounds()
+  const centerLeft = bounds.left + (bounds.width - modalWidth) / 2
+  const centerTop = bounds.top + (bounds.height - modalHeight) / 2
+  const candidates = [
+    [centerLeft, centerTop],
+    [bounds.left + viewportMargin, bounds.top + viewportMargin],
+    [bounds.right - modalWidth - viewportMargin, bounds.top + viewportMargin],
+    [bounds.left + viewportMargin, bounds.bottom - modalHeight - viewportMargin],
+    [bounds.right - modalWidth - viewportMargin, bounds.bottom - modalHeight - viewportMargin],
+    [centerLeft, bounds.top + viewportMargin],
+    [centerLeft, bounds.bottom - modalHeight - viewportMargin],
+    [bounds.left + viewportMargin, centerTop],
+    [bounds.right - modalWidth - viewportMargin, centerTop],
+  ].map(([left, top]) => ({
+    left: clamp(left, viewportMargin, maxLeft),
+    top: clamp(top, viewportMargin, maxTop),
+  }))
+
+  let best: { left: number; top: number; score: number } | null = null
+  for (const candidate of candidates) {
+    const rect = {
+      left: candidate.left,
+      top: candidate.top,
+      right: candidate.left + modalWidth,
+      bottom: candidate.top + modalHeight,
+    }
+    const overlap = avoided.reduce((total, avoidedRect) => total + overlapArea(rect, avoidedRect), 0)
+    const distance = Math.hypot(candidate.left - centerLeft, candidate.top - centerTop)
+    const score = overlap * 1000 + distance
+    if (!best || score < best.score) best = { ...candidate, score }
+  }
+
+  return best
 }
 
 function placeModal({ resetAnchor = false } = {}) {
@@ -69,8 +141,18 @@ function placeModal({ resetAnchor = false } = {}) {
 
   // Position from the modal center, not its top edge. This keeps the modal
   // visually oriented around the same point as its contents grow or shrink.
-  const nextLeft = clamp(anchorX.value - modalWidth / 2, viewportMargin, maxLeft)
-  const nextTop = clamp(anchorY.value - modalHeight / 2, viewportMargin, maxTop)
+  let nextLeft = clamp(anchorX.value - modalWidth / 2, viewportMargin, maxLeft)
+  let nextTop = clamp(anchorY.value - modalHeight / 2, viewportMargin, maxTop)
+
+  if (!hasBeenDragged.value) {
+    const avoidedPosition = avoidOverlapPosition(modalWidth, modalHeight, maxLeft, maxTop)
+    if (avoidedPosition) {
+      nextLeft = avoidedPosition.left
+      nextTop = avoidedPosition.top
+      anchorX.value = nextLeft + modalWidth / 2
+      anchorY.value = nextTop + modalHeight / 2
+    }
+  }
 
   el.style.left = `${nextLeft}px`
   el.style.top = `${nextTop}px`
@@ -252,7 +334,14 @@ function moveUp() {
 
 <template>
   <Teleport to="#modal">
-  <div @pointerdown="moveUp" class="draggable" ref="draggable" :id="id" :style="{ 'view-transition-name': id }">
+  <div
+    @pointerdown="moveUp"
+    class="draggable"
+    :class="{ 'click-through-chrome': props.clickThroughChrome }"
+    ref="draggable"
+    :id="id"
+    :style="{ 'view-transition-name': id }"
+  >
     <header @pointerdown="drag" @click.stop="isMinimized && minimize()">
         <span class="header-title">
           <slot name="handle"></slot>
@@ -292,6 +381,22 @@ function moveUp() {
 
   @media (max-width: 768px) {
     max-width: 100%;
+  }
+
+  &.click-through-chrome {
+    pointer-events: none;
+
+    > .content {
+      pointer-events: auto;
+    }
+
+    header {
+      pointer-events: none;
+
+      .minimize-btn {
+        pointer-events: auto;
+      }
+    }
   }
 
   &:has(> .content > .settings),

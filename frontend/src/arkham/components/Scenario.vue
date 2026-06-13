@@ -522,11 +522,47 @@ const onCosmicEmissarySettingChange = (event: Event) => {
   if (detail?.key === cosmicEmissaryAnimationSettingKey) updateCosmicEmissaryAnimationSetting(detail.value ?? null)
 }
 
+function proxyClippedLocationClick(event: MouseEvent) {
+  if (event.defaultPrevented || event.button !== 0) return
+
+  const target = event.target as HTMLElement | null
+  if (target?.closest('.location-cell, .draggable, button, a, input, select, textarea, [role="button"]')) return
+
+  const cell = [...document.querySelectorAll<HTMLElement>('.location-cell--can-interact')]
+    .find((el) => {
+      const rects = [el, ...el.querySelectorAll<HTMLElement>('.location-wrapper, .location, .card-frame')]
+        .map((node) => node.getBoundingClientRect())
+        .filter((rect) => rect.width > 0 && rect.height > 0)
+
+      return rects.some((rect) => event.clientX >= rect.left
+        && event.clientX <= rect.right
+        && event.clientY >= rect.top
+        && event.clientY <= rect.bottom)
+    })
+
+  if (!cell) return
+
+  const clickTarget = cell.querySelector<HTMLElement>('.card-frame') ?? cell.querySelector<HTMLElement>('.location') ?? cell
+  event.preventDefault()
+  event.stopPropagation()
+  clickTarget.dispatchEvent(new MouseEvent('click', {
+    bubbles: true,
+    cancelable: true,
+    clientX: event.clientX,
+    clientY: event.clientY,
+    ctrlKey: event.ctrlKey,
+    shiftKey: event.shiftKey,
+    altKey: event.altKey,
+    metaKey: event.metaKey,
+  }))
+}
+
 // callbacks
 onMounted(() => {
   setGameId(props.game.id)
   window.addEventListener('storage', onCosmicEmissaryStorage)
   window.addEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
+  document.addEventListener('click', proxyClippedLocationClick, true)
   updateScrollMargins()
   updateCellDimensions()
   updateLayoutPadding()
@@ -620,6 +656,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('storage', onCosmicEmissaryStorage)
   window.removeEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
+  document.removeEventListener('click', proxyClippedLocationClick, true)
   legObserver?.disconnect()
   legObserver = null
   cosmicEmissaryObserver?.disconnect()
@@ -2981,9 +3018,14 @@ async function addChaosToken(face: any){
 .location-cell {
   /* Grid placement + TransitionGroup FLIP target. The inner .location carries
      the user's drag offset transform, so rotation reshuffles (which FLIP-
-     animate the wrapper) don't wipe that offset. */
+     animate the wrapper) don't wipe that offset.
+
+     The cell's untransformed grid box can overlap a different translated
+     location. Do not let that invisible/original box win hit-testing; only the
+     translated visible wrapper should receive pointer events. */
   display: block;
   position: relative;
+  pointer-events: none;
 }
 
 .location-cell--can-interact {
@@ -3010,6 +3052,8 @@ async function addChaosToken(face: any){
 }
 
 .location-cell > .location-wrapper {
+  pointer-events: auto;
+
   /* Animate the offset along with the wrapper's FLIP move during rotation so
      the offset doesn't snap to its rotated value before the wrapper slides
      into place. Same easing/duration as .map-move keeps them in sync. */

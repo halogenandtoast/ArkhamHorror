@@ -1624,6 +1624,7 @@ onUnmounted(() => {
         />
         <div
           class="sidebar"
+          :class="{ 'sidebar--empty-log': gameLog.length === 0 }"
           v-if="
             showSidebar &&
             game.scenario !== null &&
@@ -1886,6 +1887,10 @@ onUnmounted(() => {
   @media (prefers-color-scheme: dark) {
     background: #1c1c1c;
   }
+}
+
+.sidebar--empty-log {
+  pointer-events: none;
 }
 
 .sidebar-backdrop {

@@ -141,7 +141,12 @@ const title = computed(() => {
 </script>
 
 <template>
-  <Draggable v-if="requiresModal">
+  <Draggable
+    v-if="requiresModal"
+    center-in-selector=".scenario-body"
+    avoid-selector=".location-cell--can-interact, .location-cell--can-interact .location-wrapper, .location-cell--can-interact .card-frame"
+    click-through-chrome
+  >
     <template #handle><h1 v-html="label(title)"></h1></template>
     <div class='choice-modal-wrapper'>
       <p class="body" v-if="body" v-html="label(body)"></p>

@@ -86,9 +86,16 @@ getApiV1ArkhamGameFullExportR gameId = do
     sendChunkLBS ",\"steps\":["
     sendFlush
     isFirstRef <- liftIO $ newIORef True
-    steps <-
-      lift $ runDB $ Persist.selectList [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
-    for_ steps $ \(Entity _ s) -> do
+    -- Stream steps straight from the database one row at a time instead of
+    -- materializing every step (each carrying a potentially large actionDiff)
+    -- up front. selectSourceRes opens its own resource-safe cursor, so memory
+    -- stays flat and each row flushes a chunk -- which keeps Warp's response
+    -- timeout from firing mid-stream and tearing the connection down (the
+    -- cause of ERR_INCOMPLETE_CHUNKED_ENCODING on large exports).
+    stepsAcquire <-
+      lift $ runDB $ Persist.selectSourceRes [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
+    (_, stepSource) <- allocateAcquire stepsAcquire
+    stepSource .| awaitForever \(Entity _ s) -> do
       isFirst <- liftIO $ readIORef isFirstRef
       unless isFirst $ sendChunkBS ","
       liftIO $ writeIORef isFirstRef False

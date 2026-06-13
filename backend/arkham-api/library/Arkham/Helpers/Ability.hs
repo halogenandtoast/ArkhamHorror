@@ -101,7 +101,10 @@ preventedByInvestigatorModifiers iid ability = do
   prevents modifiers = \case
     CannotPerformAction x -> preventsAbility x
     CannotTakeAction x | not (isFastAbility ability || ActionsAreFree `elem` modifiers) -> preventsAbility x
-    MustTakeAction x -> not <$> preventsAbility x -- reads a little weird but we want only thing things x would prevent with cannot take action
+    MustTakeAction x
+      | isActionAbility ability && not (isFastAbility ability || isReactionAbility ability) ->
+          not <$> preventsAbility x -- reads a little weird but we want only thing things x would prevent with cannot take action
+    MustTakeAction _ -> pure False
     _ -> pure False
   preventsAbility = \case
     IsAnyAction -> pure True

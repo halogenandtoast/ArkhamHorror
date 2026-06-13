@@ -34,3 +34,18 @@ spec = describe "Marie Lambeau (2)" do
       chooseTarget drop_
       self.hand `shouldMatchListM` [toCard keep]
       self.discard `shouldMatchListM` [drop_]
+
+    it "is not suppressed by a \"next action must be Investigate\" restriction" . gameTestWith marieLambeau2 $ \self -> do
+      -- Regression (#4799): the Court of the Great Old Ones (A Not-Too-Distant
+      -- Future) Haunted ability applies MustTakeAction #investigate. That only
+      -- constrains the next *action*, but it was wrongly suppressing free
+      -- reaction abilities (which are not actions), locking Marie out of her
+      -- "zap" reaction windows.
+      [keep, drop_] <- replicateM 2 $ genPlayerCard Assets.flashlight
+      withProp @"deck" (Deck [keep, drop_]) self
+      run =<< gameModifier (TestSource mempty) (toTarget self) (MustTakeAction #investigate)
+      self `addDamage` 1
+      useReaction
+      chooseTarget drop_
+      self.hand `shouldMatchListM` [toCard keep]
+      self.discard `shouldMatchListM` [drop_]

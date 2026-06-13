@@ -86,7 +86,8 @@ canDo iid action isFast = do
     prevents = \case
       CannotPerformAction x -> preventsAction x
       CannotTakeAction x | isFast == NotFast && ActionsAreFree `notElem` mods -> preventsAction x
-      MustTakeAction x -> not <$> preventsAction x -- reads a little weird but we want only thing things x would prevent with cannot take action
+      MustTakeAction x | isFast == NotFast -> not <$> preventsAction x -- reads a little weird but we want only thing things x would prevent with cannot take action
+      MustTakeAction _ -> pure False
       CannotDrawCards -> pure $ action == #draw
       CannotDrawCardsFromPlayerCardEffects -> pure $ action == #draw
       CannotManipulateDeck -> pure $ action == #draw

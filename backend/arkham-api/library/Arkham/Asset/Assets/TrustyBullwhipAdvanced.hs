@@ -5,7 +5,7 @@ import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, withSkillTest)
 import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
@@ -33,15 +33,14 @@ instance RunMessage TrustyBullwhipAdvanced where
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       withSkillTest \sid -> do
         when attrs.ready do
-          getSkillTestTarget >>= \case
-            Just (EnemyTarget eid) -> do
-              canEvade <- eid <=~> EnemyCanBeEvadedBy (attrs.ability 1)
-              chooseOneM iid $ cardI18n $ scope "trustyBullwhipAdvanced" do
-                labeled' "dealDamageAndEvade" do
-                  exhaustThis attrs
-                  skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-                  pushWhen canEvade $ EnemyEvaded iid eid
-                labeledI "doNothing" nothing
-            _ -> error "TrustyBullwhipAdvanced: impossible"
+          mEnemy <- getSkillTestTargetedEnemy
+          for_ mEnemy \eid -> do
+            canEvade <- eid <=~> EnemyCanBeEvadedBy (attrs.ability 1)
+            chooseOneM iid $ cardI18n $ scope "trustyBullwhipAdvanced" do
+              labeled' "dealDamageAndEvade" do
+                exhaustThis attrs
+                skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+                pushWhen canEvade $ EnemyEvaded iid eid
+              labeledI "doNothing" nothing
       pure a
     _ -> TrustyBullwhipAdvanced <$> liftRunMessage msg attrs

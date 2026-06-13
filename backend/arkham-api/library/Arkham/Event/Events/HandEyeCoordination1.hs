@@ -18,13 +18,16 @@ instance RunMessage HandEyeCoordination1 where
   runMessage msg e@(HandEyeCoordination1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       let
+        isMutated = tabooed TabooList24 attrs
         tabooModify =
-          if tabooed TabooList24 attrs
+          if isMutated
             then (<> AssetCardMatch (mapOneOf CardWithLevel [0 .. 3]))
             else id
+        ignoredCost = if isMutated then IgnoreAllCosts else IgnoreActionCost
+        adjust ab = doesNotProvokeAttacksOfOpportunity $ applyAbilityModifiers ab [ignoredCost]
       abilities <-
-        selectMap ignoreActionCost
-          $ PerformableAbility [IgnoreActionCost]
+        selectMap adjust
+          $ PerformableAbility [ignoredCost]
           <> #action
           <> AbilityOnAsset (tabooModify $ assetControlledBy iid <> oneOf [#tool, #weapon])
       chooseOrRunOneM iid $ for_ abilities \ab -> abilityLabeled iid ab nothing

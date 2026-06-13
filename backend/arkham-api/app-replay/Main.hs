@@ -149,9 +149,17 @@ main = do
   -- With --replay-all --undo N, only undo (and then replay) the last N steps;
   -- some exports cannot be unwound to step 0 (e.g. across scenario
   -- transitions), and a recent window is usually what you want to time anyway.
+  -- For a full replay-all we unwind to the EARLIEST retained step, not past
+  -- it. An export keeps only the most recent N steps, so unwinding all N lands
+  -- at (minStep - 1) — a step that isn't retained and may predate the current
+  -- scenario (the mode collapses to campaign-only `This`). Replaying forward
+  -- then can't rebuild the scenario from queued messages (a campaign->scenario
+  -- transition isn't message-reconstructable), so `scenarioField` throws. Stop
+  -- one step short to resume from a retained, scenario-consistent state; that
+  -- earliest step's queue is still executed as the resume queue below.
   let undoCount =
         if optReplayAll opts && optUndo opts == 0
-          then length agedSteps
+          then max 0 (length agedSteps - 1)
           else optUndo opts
   let stepsToUndo = take undoCount (sortOn (Down . arkhamStepStep) agedSteps)
   let targetStep = agedStep - length stepsToUndo

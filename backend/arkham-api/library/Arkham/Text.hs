@@ -129,18 +129,18 @@ mconcat
         parseJSON (String s) = pure $ BasicEntry s
 
         parseJSON v@(Object obj) = do
+          let addDefaultLevel c =
+                case Data.Aeson.KeyMap.lookup "level" c of
+                  Nothing -> Data.Aeson.KeyMap.insert "level" (Number 1) c
+                  Just _ -> c
           case Data.Aeson.KeyMap.lookup "tag" obj of
             Just (String "HeaderEntry") ->
               case Data.Aeson.KeyMap.lookup "contents" obj of
                 Just (Object c) ->
-                  let c' =
-                        case Data.Aeson.KeyMap.lookup "level" c of
-                          Nothing -> Data.Aeson.KeyMap.insert "level" (Number 1) c
-                          Just _  -> c
-                      obj' = Data.Aeson.KeyMap.insert "contents" (Object c') obj
+                  let obj' = Data.Aeson.KeyMap.insert "contents" (Object $ addDefaultLevel c) obj
                   in $(mkParseJSON defaultOptions ''FlavorTextEntry) (Object obj')
                 _ ->
-                  $(mkParseJSON defaultOptions ''FlavorTextEntry) v
+                  $(mkParseJSON defaultOptions ''FlavorTextEntry) (Object $ addDefaultLevel obj)
 
             _ ->
               $(mkParseJSON defaultOptions ''FlavorTextEntry) v

@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import api from '@/api'
 import GameRow from '@/arkham/components/GameRow.vue'
 import GameFinder from '@/components/admin/GameFinder.vue'
-import type { GameDetails } from '@/arkham/types/Game'
+import type { GameDetails, GameDetailsEntry } from '@/arkham/types/Game'
 import AdminUI from '@/arkham/components/Admin/UI.vue'
 import Room from '@/components/admin/Room.vue'
 
@@ -17,18 +17,23 @@ interface AdminData {
   currentUsers: number
   activeUsers: number
   roomData: RoomData[]
-  recentGames: GameDetails[]
-  activeGames: GameDetails[]
+  recentGames: GameDetailsEntry[]
+  activeGames: GameDetailsEntry[]
 }
 
 const request = await api.get<AdminData>('admin')
 const data = computed(() => request.data)
 
-const activeGames = data.value.activeGames.filter(g => g.gameState.tag !== 'IsOver')
-const finishedGames = data.value.activeGames.filter(g => g.gameState.tag === 'IsOver')
+const isGameDetails = (entry: GameDetailsEntry): entry is GameDetails & { tag: 'game' } => entry.tag === 'game'
 
-const recentActiveGames = data.value.recentGames.filter(g => g.gameState.tag !== 'IsOver')
-const recentFinishedGames = data.value.recentGames.filter(g => g.gameState.tag === 'IsOver')
+const activeGameEntries = data.value.activeGames.filter(isGameDetails)
+const recentGameEntries = data.value.recentGames.filter(isGameDetails)
+
+const activeGames = activeGameEntries.filter(g => g.gameState.tag !== 'IsOver')
+const finishedGames = activeGameEntries.filter(g => g.gameState.tag === 'IsOver')
+
+const recentActiveGames = recentGameEntries.filter(g => g.gameState.tag !== 'IsOver')
+const recentFinishedGames = recentGameEntries.filter(g => g.gameState.tag === 'IsOver')
 
 </script>
 

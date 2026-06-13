@@ -34,13 +34,14 @@ h2.title {
 
 .fade-leave-active,
 .fade-enter-active {
+  position: absolute;
+  inset: 0;
+  width: 100%;
   transition: opacity 0.3s;
 }
 
 .fade-enter-active {
   transition-delay: 0.3s;
-  position: absolute;
-  inset: 0;
 }
 
 .fade-leave-to,

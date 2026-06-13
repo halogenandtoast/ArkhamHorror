@@ -379,8 +379,8 @@ const spadeInjury = computed(() => {
 
 <template>
   <div v-if="portrait" class="portrait-container">
-    <span v-if="isMobile"><i class="action" v-for="n in investigator.remainingActions" :key="n"></i></span>
-    <span v-if="isMobile && investigator.additionalActions.length > 0">
+    <span v-if="isMobile">
+      <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
       <template v-for="action in investigator.additionalActions" :key="action">
         <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
           <i class="action"></i>
@@ -444,6 +444,12 @@ const spadeInjury = computed(() => {
               <i class="diamond" v-if="diamondInjury"></i>
               <i class="club" v-if="clubInjury"></i>
               <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
+              <template v-for="action in investigator.additionalActions" :key="action">
+                <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
+                  <i class="action"></i>
+                </button>
+                <i v-else class="action" :class="`${investigatorClass.toLowerCase()}Action`"></i>
+              </template>
               <span
                 v-if="isTakingImmediateAction"
                 class="no-free-abilities"
@@ -455,14 +461,6 @@ const spadeInjury = computed(() => {
                   <line x1="5" y1="5" x2="19" y2="19" />
                 </svg>
               </span>
-            </span>
-            <span v-if="investigator.additionalActions.length > 0">
-              <template v-for="action in investigator.additionalActions" :key="action">
-              <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
-                <i class="action"></i>
-              </button>
-              <i v-else class="action" :class="`${investigatorClass.toLowerCase()}Action`"></i>
-              </template>
             </span>
             <template v-if="debug.active">
               <button

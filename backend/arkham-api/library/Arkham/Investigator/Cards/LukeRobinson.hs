@@ -5,6 +5,7 @@ import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Cost
+import Arkham.Cost.Status qualified as CostStatus
 import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Action (canDo_, getActions)
@@ -122,14 +123,29 @@ instance RunMessage LukeRobinson where
         playCard :: ReverseQueue m => QueueT Message m ()
         playCard = unless shouldSkip $ push $ PlayCard iid card mtarget payment windows' asAction
 
-      lukePlayable <- getLukePlayable attrs windows'
       let mCardId = maybeResult attrs.meta
 
       engaged <- select $ enemyEngagedWith attrs.id
 
-      if card `elem` concatMap snd lukePlayable && Just card.id /= mCardId
+      -- N.B. we derive the connecting-location options from this specific card via
+      -- getIsPlayable rather than re-enumerating getLukePlayable. The latter is driven by
+      -- getPlayableCards and misses events played from another zone by a third-party effect
+      -- (e.g. De Vermis Mysteriis playing a Fight event from the discard), which would
+      -- otherwise resolve at the current location and crash if no enemy is here. We use
+      -- PaidCost because by the time we initiate the play the cost has already been settled;
+      -- checking UnpaidCost here would spuriously fail affordability after resources were spent.
+      connecting <- select (ConnectedLocation NotForMovement)
+      lids <-
+        if card `cardMatch` CardWithType EventType
+          then flip filterM connecting \lid -> do
+            enemies <- select $ enemyAt lid
+            withoutModifiersFrom iid
+              $ withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies)
+              $ getIsPlayable iid (toSource attrs) CostStatus.PaidCost windows' card
+          else pure []
+
+      if notNull lids && Just card.id /= mCardId
         then do
-          let lids = map fst $ filter (elem card . snd) lukePlayable
           chooseOrRunOneM iid do
             when playable do
               labeledI "playAtCurrentLocation" do

@@ -1358,7 +1358,19 @@ runGameMessage msg g = case msg of
                 )
               DeferDiscard -> (Noop, Nothing)
 
-    pushAll $ map fst skillPairs
+    -- A committed skill leaving the test must return any chaos tokens it
+    -- sealed (e.g. Unrelenting (1)) to the bag. The discard/return dispositions
+    -- above do not route through RemoveFromPlay, so unseal here explicitly;
+    -- this mirrors Skill.Runner's RemoveFromPlay handler and is idempotent with
+    -- any card-level afterSkillTest unseal. Without this, sealed tokens are lost
+    -- permanently when the skill is cleaned up without a RemoveFromPlay.
+    let
+      sealedTokenUnseals =
+        [ UnsealChaosToken token
+        | (_, skill) <- mapToList skills'
+        , token <- skillSealedChaosTokens (toAttrs skill)
+        ]
+    pushAll $ sealedTokenUnseals <> map fst skillPairs
 
     let
       skillTypes = case skillTestType <$> g ^. skillTestL of

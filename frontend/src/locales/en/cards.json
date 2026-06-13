@@ -1053,7 +1053,8 @@
       "exhaust": "Exhaust Storm Ruler to deal {count} damage to an enemy at your location"
     },
     "stouthearted": {
-      "done": "Done moving damage/horror"
+      "done": "Done moving damage/horror",
+      "doneMovingDamageHorror": "Done moving damage/horror"
     },
     "strokeOfLuck": {
       "exile": "Exile Stroke of Luck to automatically succeed",

@@ -1038,7 +1038,8 @@
       "exhaust": "横置风暴御主，对你所在地点的一个敌人造成额外{count}点伤害"
     },
     "stouthearted": {
-      "done": "结束移动伤害/恐惧"
+      "done": "结束移动伤害/恐惧",
+      "doneMovingDamageHorror": "结束移动伤害/恐惧"
     },
     "strokeOfLuck": {
       "exile": "放逐鸿运当头，本次检定自动成功",

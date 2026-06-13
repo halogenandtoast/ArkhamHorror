@@ -375,15 +375,15 @@ onBeforeUnmount(() => {
 }
 
 .toggle-row--highlighted {
-  border-color: #FF00FF;
-  box-shadow: 0 0 0 1px #FF00FF, 0 0 12px rgba(255, 0, 255, 0.6);
+  border-color: var(--select);
+  box-shadow: 0 0 0 1px var(--select), 0 0 12px rgba(255, 0, 255, 0.6);
   animation: settingsFocusPulse 1.2s ease-out 2;
 }
 
 @keyframes settingsFocusPulse {
-  0% { box-shadow: 0 0 0 1px #FF00FF, 0 0 4px rgba(255, 0, 255, 0.3); }
-  50% { box-shadow: 0 0 0 1px #FF00FF, 0 0 18px rgba(255, 0, 255, 0.85); }
-  100% { box-shadow: 0 0 0 1px #FF00FF, 0 0 4px rgba(255, 0, 255, 0.3); }
+  0% { box-shadow: 0 0 0 1px var(--select), 0 0 4px rgba(255, 0, 255, 0.3); }
+  50% { box-shadow: 0 0 0 1px var(--select), 0 0 18px rgba(255, 0, 255, 0.85); }
+  100% { box-shadow: 0 0 0 1px var(--select), 0 0 4px rgba(255, 0, 255, 0.3); }
 }
 
 .toggle-text {

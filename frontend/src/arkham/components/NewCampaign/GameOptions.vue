@@ -759,11 +759,11 @@ input[type='radio']:checked + label {
 @keyframes glow {
   from {
     color: #000;
-    text-shadow: 0 0 0px #ff00ff;
+    text-shadow: 0 0 0px var(--select);
   }
   to {
-    color: #ff00ff; /* Glowing color */
-    text-shadow: 0 0 10px #ff00ff;
+    color: var(--select); /* Glowing color */
+    text-shadow: 0 0 10px var(--select);
   }
 }
 

@@ -570,8 +570,8 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: min(30px, 4vw);
-  height: min(30px, 4vw);
+  width: var(--pool-token-width);
+  height: var(--pool-token-width);
   border-radius: 50%;
 }
 
@@ -582,8 +582,8 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: min(30px, 4vw);
-  height: min(30px, 4vw);
+  width: var(--pool-token-width);
+  height: var(--pool-token-width);
   border-radius: 50%;
 }
 
@@ -658,7 +658,7 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
   transition: all 0.3s ease-in;
   border: 0;
   padding: 10px;
-  background-color: #532e61;
+  background-color: var(--button-2);
   color: #EEE;
 }
 
@@ -762,7 +762,7 @@ i.iconSkillAgility {
   display: inline-block;
   padding: 5px 10px;
   margin: 2px;
-  background-color: #333;
+  background-color: var(--neutral-dark);
   color: white;
   border: 1px solid #666;
   cursor: pointer;
@@ -1003,7 +1003,7 @@ i.iconSkillAgility {
 }
 
 .note {
-  background: #222;
+  background: var(--neutral-extra-dark);
   color: #888;
   padding: 5px;
 }

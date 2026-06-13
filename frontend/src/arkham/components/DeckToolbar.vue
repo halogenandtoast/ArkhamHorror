@@ -95,7 +95,7 @@ function toggleClass(c: string) {
   transition: background 0.12s, color 0.12s, border-color 0.12s;
   user-select: none;
 
-  &:hover { color: #aaa; border-color: #444; }
+  &:hover { color: #aaa; border-color: var(--button-highlight); }
 
   &.active.guardian { background: var(--guardian-extra-dark); border-color: var(--guardian-dark); color: #fff; }
   &.active.seeker   { background: var(--seeker-extra-dark);   border-color: var(--seeker-dark);   color: #fff; }
@@ -156,8 +156,8 @@ function toggleClass(c: string) {
   width: 180px;
   transition: border-color 0.12s;
 
-  &::placeholder { color: #444; }
-  &:focus { border-color: #444; }
+  &::placeholder { color: var(--button-highlight); }
+  &:focus { border-color: var(--button-highlight); }
 
   @media (max-width: 768px) {
     flex: 1;
@@ -171,7 +171,7 @@ function toggleClass(c: string) {
   color: #ccc;
   width: 140px;
 
-  &::placeholder { color: #555; }
+  &::placeholder { color: var(--button); }
   &:focus { border-color: rgba(255,255,255,0.2); }
 }
 

@@ -124,7 +124,7 @@ const choose = (idx: number) => emit('choose', idx)
 
 <style scoped>
 .token--can-draw {
-  border: min(5px, 1vw) solid #ff00ff;
+  border: min(5px, 1vw) solid var(--select);
   border-radius: 500px;
   cursor: pointer;
 }
@@ -218,7 +218,7 @@ const choose = (idx: number) => emit('choose', idx)
   display: inline;
   img {
     cursor: pointer;
-    border: 1px solid #ff00ff;
+    border: 1px solid var(--select);
     border-radius: 30px;
     width: 30px;
     &.token-big {

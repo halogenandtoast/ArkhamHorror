@@ -91,7 +91,7 @@ const label = function(body: string) {
 
 a.button {
   display: block;
-  background-color: #333;
+  background-color: var(--neutral-dark);
   color: white;
   border: 1px solid #666;
   cursor: pointer;
@@ -129,7 +129,7 @@ a.button:active {
 }
 
 button, a.button {
-  background-color: #532e61;
+  background-color: var(--button-2);
   border-radius: 0.6em;
   border: 0;
   color: #DDD;

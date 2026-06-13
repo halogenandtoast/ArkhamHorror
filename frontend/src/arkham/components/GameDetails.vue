@@ -72,7 +72,7 @@ h2 {
 .game {
   display: flex;
   background-color: #15192C;
-  border-left: 10px solid #6e8640;
+  border-left: 10px solid var(--button-1);
   color: #f0f0f0;
   border-radius: 3px;
   margin-bottom: 10px;
@@ -231,7 +231,7 @@ h2 {
 
 .finished-game {
   border-left: 10px solid #999;
-  background: #222;
+  background: var(--neutral-extra-dark);
   color: #999;
 
   a {

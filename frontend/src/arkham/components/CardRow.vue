@@ -97,7 +97,7 @@ button {
   border: 0;
   padding: 10px;
   text-transform: uppercase;
-  background-color: #532e61;
+  background-color: var(--button-2);
   font-weight: bold;
   border-radius: 0.6em;
   border-top-left-radius: 0;
@@ -106,7 +106,7 @@ button {
   font: Arial, sans-serif;
   width: 100%;
   &:hover {
-    background-color: #4d2b61;
+    background-color: var(--button-2-highlight);
   }
 }
 

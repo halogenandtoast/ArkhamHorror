@@ -373,7 +373,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
 }
 
 .agenda--can-progress {
-  border: 3px solid #ff00ff;
+  border: 3px solid var(--select);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -394,7 +394,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
   border: 0;
   color: #fff;
   border-radius: 4px;
-  border: 1px solid #ff00ff;
+  border: 1px solid var(--select);
 }
 
 .treacheries {

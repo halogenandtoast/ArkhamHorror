@@ -114,7 +114,7 @@ button.close {
   border: 0;
   padding: 10px;
   text-transform: uppercase;
-  background-color: #532e61;
+  background-color: var(--button-2);
   font-weight: bold;
   border-radius: 0.6em;
   border-top-left-radius: 0;
@@ -123,7 +123,7 @@ button.close {
   width: 100%;
   cursor: pointer;
   &:hover {
-    background-color: #4d2b61;
+    background-color: var(--button-2-highlight);
   }
 }
 

@@ -114,7 +114,7 @@ async function adjustAmount(delta: number) {
   padding-bottom: 20px;
   img {
     border: 2px solid transparent;
-    background: linear-gradient(#999 0%, #444 100%) border-box;
+    background: linear-gradient(#999 0%, var(--button-highlight) 100%) border-box;
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -150,8 +150,8 @@ async function adjustAmount(delta: number) {
   button {
     position: absolute;
     font-size: 1.1em;
-    background: #333;
-    color: #555;
+    background: var(--neutral-dark);
+    color: var(--button);
     border: none;
     padding: 2px 10px;
     cursor: pointer;
@@ -178,7 +178,7 @@ async function adjustAmount(delta: number) {
     padding: 0.8em;
     font-size: 1em;
     font-weight: bold;
-    background-color: #222;
+    background-color: var(--neutral-extra-dark);
     color: #CCC;
     border: none;
     border-radius: 0.6em;
@@ -196,7 +196,7 @@ async function adjustAmount(delta: number) {
 
 .item {
   padding: 10px;
-  background-color: #333;
+  background-color: var(--neutral-dark);
   border-radius: 100vw;
   width: fit-content;
   height: auto;

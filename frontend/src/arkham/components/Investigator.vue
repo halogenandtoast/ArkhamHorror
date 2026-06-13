@@ -827,7 +827,7 @@ i.action {
 }
 
 .activeButton {
-  border: 1px solid #FF00FF;
+  border: 1px solid var(--select);
 }
 
 @keyframes become-ghost {

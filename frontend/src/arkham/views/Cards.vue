@@ -691,7 +691,7 @@ const showSidebar = ref(false)
   .count {
     flex-shrink: 0;
     font-size: 0.72rem;
-    color: #555;
+    color: var(--button);
     white-space: nowrap;
   }
 }
@@ -769,7 +769,7 @@ header {
       color: #ddd;
       font-size: 0.88rem;
 
-      &::placeholder { color: #555; }
+      &::placeholder { color: var(--button); }
     }
 
     button {

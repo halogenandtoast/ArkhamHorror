@@ -189,7 +189,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
   border: 0;
   color: #fff;
   border-radius: 4px;
-  border: 1px solid #ff00ff;
+  border: 1px solid var(--select);
 }
 
 .card-frame {

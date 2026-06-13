@@ -590,7 +590,7 @@ ul, :deep(ul) {
     padding: 0;
     text-align: center;
     gap: 0;
-    border-bottom: 2px solid #333;
+    border-bottom: 2px solid var(--neutral-dark);
 
     > .composite {
       padding: 0;
@@ -603,7 +603,7 @@ ul, :deep(ul) {
 
       &:has(.yea) {
         background-color: lightcoral;
-        border-left: 2px solid #333;
+        border-left: 2px solid var(--neutral-dark);
       }
     }
     h3 {
@@ -797,12 +797,12 @@ ul, :deep(ul) {
 :deep(h1) {
   font-family: "Teutonic";
   font-weight: 500;
-  color: #38615F;
+  color: var(--green-title);
   padding-bottom: 2px;
   &:not(.no-underline) {
-    border-bottom: 1px solid #38615f;
+    border-bottom: 1px solid var(--green-title);
     &::after {
-      border-bottom: 1px solid #38615f;
+      border-bottom: 1px solid var(--green-title);
     }
   }
   font-size: 2em;
@@ -817,7 +817,7 @@ ul, :deep(ul) {
   font-family: "Teutonic";
   font-weight: 500;
   font-size: 1.5em;
-  color: #222;
+  color: var(--neutral-extra-dark);
 }
 
 

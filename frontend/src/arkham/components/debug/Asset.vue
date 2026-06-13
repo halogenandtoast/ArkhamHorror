@@ -200,7 +200,7 @@ const hasPool = computed(() => {
   border: 0;
   color: #fff;
   border-radius: 4px;
-  border: 1px solid #ff00ff;
+  border: 1px solid var(--select);
 }
 
 :deep(.token) {

@@ -433,7 +433,7 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
 }
 
 .act--can-progress {
-  border: 2px solid #ff00ff;
+  border: 2px solid var(--select);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -446,7 +446,7 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
 }
 
 .ability-button {
-  background-color: #555;
+  background-color: var(--button);
   &:before {
     font-family: "arkham";
     content: "\0049";

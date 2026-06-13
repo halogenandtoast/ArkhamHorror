@@ -394,7 +394,7 @@ async function start() {
 #new-campaign button {
   outline: 0;
   padding: 15px;
-  background: #6e8640;
+  background: var(--button-1);
   text-transform: uppercase;
   color: white;
   border: 0;
@@ -432,7 +432,7 @@ async function start() {
 }
 
 h2 {
-  color: #cecece;
+  color: var(--title);
   margin-left: 10px;
   text-transform: uppercase;
   font-family: Teutonic;
@@ -468,7 +468,7 @@ input[type='radio'] + label:hover {
 }
 
 input[type='radio']:checked + label {
-  background: #6e8640;
+  background: var(--button-1);
 }
 
 input[type='image'] {

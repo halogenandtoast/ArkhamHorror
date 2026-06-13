@@ -125,7 +125,7 @@ const inStep = computed(() => {
 }
 
 .clue--can-investigate {
-  border: 3px solid #ff00ff;
+  border: 3px solid var(--select);
   border-radius: 100px;
   cursor: pointer;
 }

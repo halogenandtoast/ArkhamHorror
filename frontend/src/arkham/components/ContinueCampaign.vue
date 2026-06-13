@@ -540,7 +540,7 @@ button {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: #333;
+    background: var(--neutral-dark);
     transform: scale(0);
     opacity: 0;
     transition:

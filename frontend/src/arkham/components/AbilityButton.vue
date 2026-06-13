@@ -419,7 +419,7 @@ const classObject = computed(() => {
   color: #fff;
   cursor: pointer;
   border-radius: 4px;
-  background-color: #555;
+  background-color: var(--button);
   z-index: 1000;
   width: 100%;
   min-width: max-content;
@@ -522,11 +522,11 @@ const classObject = computed(() => {
 
 
 .engage-button {
-  background-color: #555;
+  background-color: var(--button);
 }
 
 .ability-button {
-  background-color: #555;
+  background-color: var(--button);
   &:before {
     font-family: "arkham";
     content: "\0049";
@@ -535,7 +535,7 @@ const classObject = computed(() => {
 }
 
 .zeroed-ability-button {
-  background-color: #555;
+  background-color: var(--button);
   &:before {
     font-family: "arkham";
     content: "\0049";
@@ -545,7 +545,7 @@ const classObject = computed(() => {
 }
 
 .fast-ability-button {
-  background-color: #555;
+  background-color: var(--button);
   &:before {
     font-family: "arkham";
     content: "\0075";
@@ -554,13 +554,13 @@ const classObject = computed(() => {
 }
 
 .forced-ability-button, button.forced-ability-button {
-  background-color: #222;
+  background-color: var(--neutral-extra-dark);
   border: 2px solid var(--select);
   color: #fff;
 }
 
 .delayed-ability-button {
-  background-color: #222;
+  background-color: var(--neutral-extra-dark);
   border: 2px solid var(--select);
   color: #fff;
 }

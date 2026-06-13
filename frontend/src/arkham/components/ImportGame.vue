@@ -390,7 +390,7 @@ const canSubmit = computed(() => {
   }
 
   &:disabled {
-    background: #555;
+    background: var(--button);
     cursor: not-allowed;
   }
 }

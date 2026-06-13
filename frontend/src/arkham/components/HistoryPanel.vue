@@ -582,7 +582,7 @@ function damagedFallbackText(view: DamagedTargetView): string {
 
 .history-panel {
   background: #1a1a2e;
-  border: 1px solid #444;
+  border: 1px solid var(--button-highlight);
   border-radius: 8px;
   padding: 1rem 1.25rem 1.25rem;
   width: min(90vw, 900px);
@@ -624,7 +624,7 @@ function damagedFallbackText(view: DamagedTargetView): string {
 
 .scope-tab, .investigator-tab {
   background: #232346;
-  border: 1px solid #333;
+  border: 1px solid var(--neutral-dark);
   color: #ccc;
   padding: 0.35rem 0.75rem;
   border-radius: 4px;
@@ -740,7 +740,7 @@ function damagedFallbackText(view: DamagedTargetView): string {
 
 .pills li, .chips li {
   background: #232346;
-  border: 1px solid #333;
+  border: 1px solid var(--neutral-dark);
   border-radius: 999px;
   padding: 0.2rem 0.65rem;
   font-size: 0.85rem;
@@ -751,7 +751,7 @@ function damagedFallbackText(view: DamagedTargetView): string {
 
 .rows li {
   background: #232346;
-  border: 1px solid #333;
+  border: 1px solid var(--neutral-dark);
   border-radius: 4px;
   padding: 0.2rem 0.5rem;
   font-size: 0.85rem;
@@ -921,7 +921,7 @@ function damagedFallbackText(view: DamagedTargetView): string {
 
 .chip {
   background: #232346;
-  border: 1px solid #333;
+  border: 1px solid var(--neutral-dark);
   border-radius: 999px;
   padding: 0.2rem 0.65rem;
   font-size: 0.85rem;

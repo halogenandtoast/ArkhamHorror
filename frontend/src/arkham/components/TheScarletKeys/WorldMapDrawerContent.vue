@@ -163,7 +163,7 @@ h3 {
 
 .action.secondary {
   background: #e2dfcc;
-  color: #222;
+  color: var(--neutral-extra-dark);
   &:hover { background: #ccc9b3; }
 }
 
@@ -185,7 +185,7 @@ p.locked {
   margin-top: 1.5em;
   padding: 1em;
   background: #F9F1DE;
-  color: #222;
+  color: var(--neutral-extra-dark);
   font-family: 'Typewriter', serif;
   border-radius: 8px;
   font-size: 0.8em;

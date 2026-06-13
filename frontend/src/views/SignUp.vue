@@ -94,7 +94,7 @@ input {
 button {
   outline: 0;
   padding: 15px;
-  background: #6E8640;
+  background: var(--button-1);
   text-transform: uppercase;
   color: white;
   border: 0;

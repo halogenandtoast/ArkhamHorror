@@ -2253,7 +2253,7 @@ header {
     border: 0;
     padding: 10px;
     text-transform: uppercase;
-    background-color: #532e61;
+    background-color: var(--button-2);
     font-weight: bold;
     color: #eee;
     font: Arial, sans-serif;
@@ -2843,7 +2843,7 @@ dialog {
 
 .debug-playability-modal {
   background: #1a1a2e;
-  border: 1px solid #444;
+  border: 1px solid var(--button-highlight);
   border-radius: 8px;
   padding: 1.5rem;
   min-width: 300px;

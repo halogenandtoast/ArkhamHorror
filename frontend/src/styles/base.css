@@ -6,7 +6,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  color: #222;
+  color: var(--neutral-extra-dark);
   min-height: 100vh;
   background: var(--background);
   font-size: min(16px, 2vw);

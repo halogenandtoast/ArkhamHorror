@@ -125,7 +125,7 @@ h2 {
 }
 .game {
   display: flex;
-  color: #cecece;
+  color: var(--title);
   background-color: var(--box-background);
   border: 1px solid var(--box-border);
   border-radius: 3px;
@@ -210,7 +210,7 @@ h2 {
   }
 
   &:hover {
-    color: #cecece;
+    color: var(--title);
   }
 }
 

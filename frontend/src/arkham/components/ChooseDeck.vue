@@ -326,7 +326,7 @@ const needsReply = computed(() => {
   margin: 0 0 12px 0;
   padding: 0;
   text-transform: uppercase;
-  color: #cecece;
+  color: var(--title);
   font-family: Teutonic;
   font-size: 1.8em;
   letter-spacing: 0.04em;
@@ -537,7 +537,7 @@ const needsReply = computed(() => {
 .deck-list-empty {
   padding: 24px;
   text-align: center;
-  color: #555;
+  color: var(--button);
   font-size: 0.85em;
 }
 

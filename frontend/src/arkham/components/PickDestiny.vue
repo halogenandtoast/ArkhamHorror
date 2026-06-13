@@ -124,7 +124,7 @@ button {
   margin: 0 10px;
   padding: 10px;
   text-transform: uppercase;
-  background-color: #532e61;
+  background-color: var(--button-2);
   font-weight: bold;
   border-radius: 0.6em;
   color: #EEE;
@@ -146,7 +146,7 @@ button {
   padding: 10px;
   text-transform: uppercase;
   border-radius: 0;
-  background-color: #532e61;
+  background-color: var(--button-2);
   font-weight: bold;
   color: #EEE;
   font: Arial, sans-serif;

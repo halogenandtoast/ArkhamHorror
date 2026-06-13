@@ -2635,7 +2635,7 @@ async function addChaosToken(face: any){
       position: absolute;
       right: 100%;
       z-index: 100000;
-      background: #222;
+      background: var(--neutral-extra-dark);
       height: 100%;
       display: flex;
       align-items: center;
@@ -2916,7 +2916,7 @@ async function addChaosToken(face: any){
   color: #fff;
   cursor: pointer;
   border-radius: 4px;
-  background-color: #555;
+  background-color: var(--button);
   z-index: 1000;
   width: 100%;
   min-width: max-content;
@@ -3218,7 +3218,7 @@ async function addChaosToken(face: any){
 }
 
 .tri-button {
-  background-color: #555;
+  background-color: var(--button);
   color: white;
   padding: 0;
   display: flex;

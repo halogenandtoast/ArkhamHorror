@@ -72,7 +72,7 @@ const classObject = computed(() => ({
 
 <style scoped>
 .active-token {
-  border: 5px solid #ff00ff;
+  border: 5px solid var(--select);
   border-radius: 500px;
   cursor: pointer;
 }
@@ -121,8 +121,8 @@ const classObject = computed(() => ({
   animation-direction: reverse;
   animation-fill-mode: forwards;
   animation-iteration-count: 2;
-  -webkit-filter: drop-shadow(1px 1px 6px #222);
-  filter: drop-shadow(1px 1px 6px #222);
+  -webkit-filter: drop-shadow(1px 1px 6px var(--neutral-extra-dark));
+  filter: drop-shadow(1px 1px 6px var(--neutral-extra-dark));
 }
 
 .front {
@@ -132,8 +132,8 @@ const classObject = computed(() => ({
   animation: flip 0.2s linear;
   animation-fill-mode: forwards;
   animation-iteration-count: 2;
-  -webkit-filter: drop-shadow(1px 1px 6px #222);
-  filter: drop-shadow(1px 1px 6px #222);
+  -webkit-filter: drop-shadow(1px 1px 6px var(--neutral-extra-dark));
+  filter: drop-shadow(1px 1px 6px var(--neutral-extra-dark));
 }
 
 .token-container {

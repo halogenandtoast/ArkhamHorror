@@ -48,7 +48,7 @@ const grunge = `url(${imgsrc('grunge.png')})`
 }
 
 .intro-text {
-  color: #222;
+  color: var(--neutral-extra-dark);
   text-align: justify;
   background: linear-gradient(#DFDAD8, #c9c4c2);
   background-image: v-bind(grunge);

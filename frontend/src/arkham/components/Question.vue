@@ -756,7 +756,7 @@ section {
   display: inline-block;
   padding: 5px 10px;
   margin: 2px;
-  background-color: #333;
+  background-color: var(--neutral-dark);
   color: white;
   border: 1px solid #666;
   cursor: pointer;
@@ -781,7 +781,7 @@ section {
     padding-bottom: 20px;
   }
 
-  color: #222;
+  color: var(--neutral-extra-dark);
   max-width: 50vw;
   text-align: justify;
   background: linear-gradient(#DFDAD8, #c9c4c2);
@@ -920,7 +920,7 @@ button {
   transition: all 0.3s ease-in;
   border: 0;
   padding: 10px;
-  background-color: #532e61;
+  background-color: var(--button-2);
   text-align: justify;
   border-radius: 0.6em;
   color: #EEE;
@@ -1046,7 +1046,7 @@ h2 {
 .standalone-label {
   text-transform: uppercase;
   color: white;
-  background-color: #222;
+  background-color: var(--neutral-extra-dark);
   padding: 10px;
 }
 
@@ -1082,7 +1082,7 @@ h2 {
       transition: all 0.3s ease-in;
       border: 0;
       padding: 10px;
-      background-color: #532e61;
+      background-color: var(--button-2);
       border-radius: 0.6em;
       color: #EEE;
       font: Arial, sans-serif;
@@ -1298,7 +1298,7 @@ h2 {
   border: 0;
   padding: 10px;
   text-transform: uppercase;
-  background-color: #532e61;
+  background-color: var(--button-2);
   font-weight: bold;
   border-radius: 0.6em;
   color: #EEE;
@@ -1331,7 +1331,7 @@ h2 {
   margin: 0;
   padding: 10px;
   text-transform: uppercase;
-  background-color: #532e61;
+  background-color: var(--button-2);
   font-weight: bold;
   border-radius: 0 0 1.2em 1.2em;
   color: #EEE;
@@ -1645,10 +1645,10 @@ h2 {
   gap: 10px;
   padding: 10px;
   button {
-    border: 1px solid #444;
+    border: 1px solid var(--button-highlight);
   }
   border-radius: inherit;
-  border: 1px solid #444;
+  border: 1px solid var(--button-highlight);
 }
 
 .question-wrapper {

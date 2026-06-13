@@ -498,7 +498,7 @@ watch(deckRef, (el) => {
   }
 
   tbody tr {
-    color: #cecece;
+    color: var(--title);
     border-bottom: 1px solid rgba(255,255,255,0.04);
     transition: background 0.1s;
 

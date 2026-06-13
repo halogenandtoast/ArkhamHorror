@@ -388,7 +388,7 @@ const flippableCard = (cardCode: string) => {
 }
 
 .intro-text {
-  color: #333;
+  color: var(--neutral-dark);
   font-size: 1.5em;
   overflow: auto;
   height: 100%;
@@ -397,16 +397,16 @@ const flippableCard = (cardCode: string) => {
   :deep(h1) {
     font-family: "Teutonic";
     font-weight: 500;
-    color: #38615F;
+    color: var(--green-title);
     margin: 0;
     padding-bottom: 2px;
     margin-bottom: 10px;
-    border-bottom: 1px solid #38615f;
+    border-bottom: 1px solid var(--green-title);
     &::after {
       display: block;
       content: " ";
       margin-top: 2px;
-      border-bottom: 1px solid #38615f;
+      border-bottom: 1px solid var(--green-title);
     }
   }
 
@@ -436,7 +436,7 @@ button, a.button {
   text-align: left;
   padding: 10px;
   text-transform: uppercase;
-  background-color: #532e61;
+  background-color: var(--button-2);
   font-weight: bold;
   color: #CFCFCF;
   font: Arial, sans-serif;

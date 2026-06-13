@@ -207,7 +207,7 @@ input[type=radio] + label {
 }
 
 input[type=radio]:checked + label {
-  background: #6E8640;
+  background: var(--button-1);
 }
 
 input[type=checkbox] {
@@ -224,25 +224,25 @@ input[type=checkbox] + label {
   }
 
   &.invert {
-    background: #6E8640;
+    background: var(--button-1);
     &:hover {
-      background: #6E8640;
+      background: var(--button-1);
     }
   }
   border-color: #ddd;
 }
 
 input[type=checkbox]:checked + label {
-  background: #6E8640;
+  background: var(--button-1);
   &.invert {
     background-color: hsl(80, 5%, 39%);
   }
 }
 
 .invert[type=checkbox] + label {
-    background: #6E8640;
+    background: var(--button-1);
     &:hover {
-      background: #6E8640;
+      background: var(--button-1);
     }
 }
 

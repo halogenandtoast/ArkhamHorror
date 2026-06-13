@@ -1149,7 +1149,7 @@ watchEffect(() => {
           </template>
 
           <template v-for="s in skillItems" :key="`skill-09079-${s.name}`">
-            <circle :cx="s.cx" :cy="s.cy" :r="s.r" fill="rgba(0,0,0,0.4)" stroke="#222" stroke-width="2" />
+            <circle :cx="s.cx" :cy="s.cy" :r="s.r" fill="rgba(0,0,0,0.4)" stroke="var(--neutral-extra-dark)" stroke-width="2" />
           </template>
         </g>
       </svg>

@@ -167,7 +167,7 @@ async function sync(deck: Arkham.Deck) {
 .empty-state {
   padding: 40px;
   text-align: center;
-  color: #555;
+  color: var(--button);
   font-size: 0.9rem;
 }
 

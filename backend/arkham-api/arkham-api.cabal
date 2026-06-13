@@ -5234,6 +5234,7 @@ library
       Arkham.Scenario.Scenarios.TheUntamedWilds
       Arkham.Scenario.Scenarios.TheVanishingOfElinaHarper
       Arkham.Scenario.Scenarios.TheWagesOfSin
+      Arkham.Scenario.Scenarios.TheWesternWall
       Arkham.Scenario.Scenarios.TheWitchingHour
       Arkham.Scenario.Scenarios.ThreadsOfFate
       Arkham.Scenario.Scenarios.ToTheForbiddenPeaks
@@ -5350,6 +5351,7 @@ library
       Arkham.Scenarios.TheUntamedWilds.Helpers
       Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
       Arkham.Scenarios.TheWagesOfSin.Helpers
+      Arkham.Scenarios.TheWesternWall.Helpers
       Arkham.Scenarios.TheWitchingHour.Helpers
       Arkham.Scenarios.ThreadsOfFate.Helpers
       Arkham.Scenarios.ToTheForbiddenPeaks.Helpers

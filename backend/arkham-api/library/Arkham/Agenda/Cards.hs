@@ -7,6 +7,7 @@ import Arkham.Agenda.CardDefs.ThePathToCarcosa as X
 import Arkham.Agenda.CardDefs.TheForgottenAge as X
 import Arkham.Agenda.CardDefs.TheCircleUndone as X
 import Arkham.Agenda.CardDefs.TheDreamEaters as X
+import Arkham.Agenda.CardDefs.TheDrownedCity as X
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Agenda.CardDefs.EdgeOfTheEarth as X
 import Arkham.Agenda.CardDefs.TheScarletKeys as X
@@ -349,4 +350,25 @@ allAgendaCards =
       , --- Relics of the Past
         somethingElseStirs
       , guardianOfTheRelics
+      , --- The Drowned City
+        arkhamNightlife
+      , longNight
+      , floodedPaths
+      , theSunkenRuins
+      , collapsingDome
+      , stirringInTheDark
+      , loathsomeParasites
+      , bowelsOfTheCity
+      , devilInTheMachine
+      , everShiftingWalls
+      , ruinedArchives
+      , floodedArchives
+      , unstableFoundations
+      , otherworldlyStorms
+      , encroachingStorms
+      , beneathTheCity
+      , cthulhuAwakened
+      , theComingStorm
+      , theDoomOfArkham
+      , theFinalSeal
       ]

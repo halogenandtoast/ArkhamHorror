@@ -463,4 +463,25 @@ allAgendas =
     , -- Relics of the Past
       SomeAgendaCard somethingElseStirs
     , SomeAgendaCard guardianOfTheRelics
+    , --- The Drowned City
+      SomeAgendaCard arkhamNightlife
+    , SomeAgendaCard longNight
+    , SomeAgendaCard floodedPaths
+    , SomeAgendaCard theSunkenRuins
+    , SomeAgendaCard collapsingDome
+    , SomeAgendaCard stirringInTheDark
+    , SomeAgendaCard loathsomeParasites
+    , SomeAgendaCard bowelsOfTheCity
+    , SomeAgendaCard devilInTheMachine
+    , SomeAgendaCard everShiftingWalls
+    , SomeAgendaCard ruinedArchives
+    , SomeAgendaCard floodedArchives
+    , SomeAgendaCard unstableFoundations
+    , SomeAgendaCard otherworldlyStorms
+    , SomeAgendaCard encroachingStorms
+    , SomeAgendaCard beneathTheCity
+    , SomeAgendaCard cthulhuAwakened
+    , SomeAgendaCard theComingStorm
+    , SomeAgendaCard theDoomOfArkham
+    , SomeAgendaCard theFinalSeal
     ]

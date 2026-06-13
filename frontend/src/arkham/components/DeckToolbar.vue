@@ -8,7 +8,8 @@ const { t } = useI18n()
 const props = withDefaults(defineProps<{
   compact?: boolean
   searchPlaceholder?: string
-}>(), { compact: false, searchPlaceholder: '' })
+  showValidFilter?: boolean
+}>(), { compact: false, searchPlaceholder: '', showValidFilter: false })
 
 const effectivePlaceholder = computed(() => props.searchPlaceholder || t('deckToolbar.searchDecks'))
 
@@ -17,6 +18,7 @@ const allClasses = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutra
 const search = defineModel<string>('search', { default: '' })
 const filterClasses = defineModel<string[]>('filterClasses', { default: () => [] })
 const sortBy = defineModel<'name' | 'class'>('sortBy', { default: 'name' })
+const validOnly = defineModel<boolean>('validOnly', { default: false })
 
 function toggleClass(c: string) {
   const idx = filterClasses.value.indexOf(c)
@@ -42,6 +44,15 @@ function toggleClass(c: string) {
       </button>
     </div>
     <div class="toolbar-right">
+      <button
+        v-if="showValidFilter"
+        type="button"
+        class="valid-filter"
+        :class="{ active: validOnly }"
+        @click.prevent="validOnly = !validOnly"
+      >
+        Valid decks
+      </button>
       <input
         v-model="search"
         class="search-input"
@@ -142,6 +153,37 @@ function toggleClass(c: string) {
   gap: 8px;
   @media (max-width: 768px) {
     width: 100%;
+  }
+}
+
+.valid-filter {
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #888;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover { color: #aaa; border-color: var(--button-highlight); }
+  &.active {
+    color: #fff;
+    background: rgba(110, 134, 64, 0.85);
+    border-color: rgba(154, 196, 78, 0.45);
+  }
+}
+
+.compact .valid-filter {
+  background: rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.08);
+
+  &.active {
+    background: rgba(110, 134, 64, 0.85);
+    border-color: rgba(154, 196, 78, 0.45);
   }
 }
 

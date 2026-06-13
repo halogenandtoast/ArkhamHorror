@@ -739,4 +739,50 @@ allEncounterTreacheryCards =
       , alienFoodChain
       , --- Relics of the Past
         vengeantPast
+      , --- The Drowned City
+        caughtInTheCrossfire
+      , endOfNegotiations
+      , torturedVisions
+      , drawnToDarkness
+      , seafloorFrieze
+      , lookOut
+      , hungryWalls
+      , dangerousCuriosity
+      , alienEggs
+      , parasiticTransformation
+      , deadlyMechanisms
+      , ancientVaultO
+      , ancientVaultN
+      , ancientVaultP
+      , ancientVaultG
+      , ancientVaultI
+      , ruinedOrrery
+      , cosmicOmen
+      , erodedFrieze
+      , stElmosFire
+      , acrophobia
+      , wingsOfTerror
+      , lostInTheClouds
+      , layWaste
+      , eyesOfYchlecht
+      , grossPlasticity
+      , arkhamUnderAssault
+      , infected
+      , eyeOfTheDeep
+      , cunningMimicry
+      , elderMist
+      , corrosiveFog
+      , dreamingMigration
+      , underseaHunt
+      , deadlyTorrent
+      , somethingInTheWater
+      , ominousSilence
+      , cyclopeanArchitecture
+      , crumblingMasonry
+      , cthulhuFhtagn
+      , oppressiveInfluence
+      , domination
+      , stillBehindYou
+      , deepOneAmbush
+      , infernalMachinery
       ]

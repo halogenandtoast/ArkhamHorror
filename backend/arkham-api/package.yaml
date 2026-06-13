@@ -138,6 +138,7 @@ library:
     - yaml
     - yesod-core
     - yesod-persistent
+    - zlib
     - yesod-test
     - yesod-websockets
 

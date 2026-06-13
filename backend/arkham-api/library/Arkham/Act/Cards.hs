@@ -8,6 +8,7 @@ import Arkham.Act.CardDefs.ReturnTo as X
 import Arkham.Act.CardDefs.Standalone as X
 import Arkham.Act.CardDefs.TheCircleUndone as X
 import Arkham.Act.CardDefs.TheDreamEaters as X
+import Arkham.Act.CardDefs.TheDrownedCity as X
 import Arkham.Act.CardDefs.TheDunwichLegacy as X
 import Arkham.Act.CardDefs.TheFeastOfHemlockVale as X
 import Arkham.Act.CardDefs.TheForgottenAge as X
@@ -394,4 +395,29 @@ allActCards =
       , --- Relics of the Past
         crumblingRuin
       , findTheWayOut
+      , --- The Drowned City
+        questioningTheGangsV1
+      , questioningTheGangsV2
+      , theSheldonGang
+      , theOBannionGang
+      , faceTheMusic
+      , descendIntoTheAbyss
+      , ascendTheWall
+      , reactivateTheCore
+      , unsettlingSigns
+      , lostPilgrims
+      , theHiveMind
+      , carefulNavigation
+      , backThroughTheMachine
+      , stepsOfGiants
+      , escapeTheTowerV1
+      , escapeTheTowerV2
+      , searchingTheSpires
+      , toTheAncientDome
+      , scouringTheSpires
+      , deadlySkies
+      , returnToTheShoreline
+      , thePhantomShop
+      , fightBack
+      , banishHim
       ]

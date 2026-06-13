@@ -349,6 +349,32 @@ data EncounterSet
   | LaidToRest
   | RelicsOfThePast
   | EnthrallingEncore
+  | -- The Drowned City
+    OneLastJob
+  | TheWesternWall
+  | TheDrownedQuarter
+  | TheApiary
+  | TheGrandVault
+  | CourtOfTheAncients
+  | ObsidianCanyons
+  | SepulchreOfTheSleeper
+  | TheDoomOfArkhamPartI
+  | TheDoomOfArkhamPartII
+  | Tasks
+  | TdcExpedition
+  | StarSpawn
+  | UnderseaCreatures
+  | Flood
+  | Domination
+  | DeepOnes
+  | Stowaways
+  | Pilgrims
+  | CosmicLegacy
+  | ElderMist
+  | Rlyeh
+  | TheInescapable
+  | Dreams
+  | AlienMachinery
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 

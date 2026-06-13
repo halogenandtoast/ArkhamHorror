@@ -1,0 +1,46 @@
+{
+  "prologue": {
+    "title": "The Risen Deep",
+    "body": "<p class='basic right'>“…the nightmare corpse-city of R’lyeh, that was built in measureless aeons behind history by the vast, loathsome shapes that seeped down from the dark stars. There lay great Cthulhu and his hordes, hidden in green slimy vaults and sending out at last, after cycles incalculable, the thoughts that spread fear to the dreams of the sensitive and called imperiously to the faithful to come on a pilgrimage of liberation and restoration.”</p><p class='basic right'>– H. P. Lovecraft, “The Call of Cthulhu”</p><h3>April 15</h3><p>Something hasn’t seemed right for a while. It has been an unusually cold year, with heavy snow, rain, and fog keeping the New England sky in a state of perpetual melancholy. A restive nervousness seems to have crept into all aspects of domestic life. Small arguments on street corners come to blows. Muffled shouts and screams resound behind closed doors. A not-insignificant number of students have simply stopped attending classes at Miskatonic University. The people of Arkham feel it in their bones: Something is different. Something feels wrong.</p>"
+  },
+  "additionalRulesAndClarifications": {
+    "title": "Additional Rules and Clarifications",
+    "floodTokens": "<h3>Flood Tokens</h3><p class='basic'>Throughout this campaign, scenario card effects can flood locations. Each location can be at one of three different flood levels: it is either unflooded, partially flooded, or fully flooded. A location’s flood level has no inherent game effect. However, some card effects may change or become stronger while you are at a flooded location, particularly if that location is fully flooded.</p><ul><li class='basic'>A location with no flood token is unflooded.</li><li class='basic'>If a location’s flood level is “increased,” it changes from unflooded to partially flooded, or from partially flooded to fully flooded. A fully flooded location cannot have its flood level increased.</li><li class='basic'>If a location’s flood level is “decreased,” it changes from fully flooded to partially flooded, or from partially flooded to unflooded. An unflooded location cannot have its flood level decreased.</li><li class='basic'>For the purposes of card effects, both partially flooded locations and fully flooded locations are considered to be “flooded.”</li></ul>",
+    "artifacts": "<h3>Artifacts</h3><p class='basic'>Investigators may acquire certain Artifact story assets (also referred to as simply “artifacts”) through the course of *The Drowned City* campaign. Artifacts function like any other asset, except for the following:</p><ul><li class='basic'>Artifacts are never added to investigator decks. After resolution of a scenario, return any artifacts in play to the box.</li><li class='basic'>When setting up a scenario, investigators may be instructed to begin play with an earned Artifact story asset. Only artifacts that have been checked off in the “Artifacts Earned” section of the Campaign Log may be chosen during this process.</li><li class='basic'>Artifacts have a unique card back, have no cost, cannot leave play, and cannot be chosen to be discarded via scenario effects.</li><li class='basic'>Some artifacts contain alien glyphs. Any text below these glyphs is considered to be blank unless investigators have translated each alien glyph on the artifact.</li><li class='basic'>If any investigator in control of an artifact is defeated, give control of it to the nearest surviving investigator instead of removing it from the game.</li></ul>",
+    "alienGlyphs": "<h3>Alien Glyphs</h3><p class='basic'>Throughout the campaign, investigators may be directed to translate a glyph on the second page of the Campaign Log. In order to do so, write the translated text in the space directly beneath that glyph, as directed by the game.</p><ul><li class='basic'>A glyph’s meaning has no inherent game effect.</li><li class='basic'>Some artifacts contain alien glyphs. Any text below these glyphs is considered to be blank unless investigators have translated each alien glyph on the artifact.</li><li class='basic'>Most scenarios in *The Drowned City* campaign will instruct players to set Glyph cards aside, out of play.</li></ul>"
+  },
+  "newKeywords": {
+    "title": "New Keywords",
+    "body": "<h3>Alert</h3><p class='basic'>Some enemies in this campaign have the alert keyword. Each time an investigator fails a skill test while attempting to evade an enemy with the alert keyword, after applying all results for that skill test, that enemy performs an attack against the evading investigator. An enemy does not exhaust after performing an alert attack. This attack occurs whether the enemy is engaged with the evading investigator or not.</p><h3>Patrol</h3><p class='basic'>Some enemies in this campaign have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated target (as described in parentheses next to the word “patrol”).</p><h3>Relentless</h3><p class='basic'>Some enemies in this campaign have the relentless keyword. During the enemy phase (after framework step 3.3), each enemy with the relentless keyword that has attacked this phase (even if that attack was canceled) readies and attacks the investigator(s) it is engaged with a second time.</p><h3>Seal</h3><p class='basic'>As an additional cost for a card with the seal keyword to enter play, its controller must search the chaos bag for the specified chaos token and place it on top of the card, thereby sealing the token. A sealed chaos token is not considered to be in the chaos bag, and therefore cannot be revealed from the chaos bag as part of a skill test or ability.</p>"
+  },
+  "key": {
+    "rubyWonTheBet": "Ruby won the bet.",
+    "rubyLostTheBet": "Ruby lost the bet.",
+    "theInvestigatorsDiscoveredAnAlienLanguage": "The investigators discovered an alien language.",
+    "walkInFaith": "Walk in Faith",
+    "toeTheLine": "Toe the Line",
+    "noPlaceLikeHome": "No Place Like Home",
+    "goodMoney": "Good Money",
+    "doNoHarm": "Do No Harm",
+    "proveYourWorth": "Prove Your Worth",
+    "dreamsOfDestruction": "Dreams of Destruction",
+    "plumbTheDepths": "Plumb the Depths",
+    "theExpeditionHeadedWest": "The expedition headed west.",
+    "theExpeditionHeadedEast": "The expedition headed east.",
+    "theExpeditionHelpedThePilgrim": "The expedition helped the pilgrim.",
+    "theExpeditionLeftThePilgrim": "The expedition left the pilgrim.",
+    "barrierNode": "Barrier Node",
+    "obsidianClaw": "Obsidian Claw",
+    "shardOfYchlecht": "Shard of Y’ch’lecht",
+    "tidalTablet": "Tidal Tablet",
+    "grislyMask": "Grisly “Mask”",
+    "horrorInClay": "Horror in Clay",
+    "thePowerWasDiverted": "The power was diverted.",
+    "theInnerSanctumWasUnsealed": "The inner sanctum was unsealed.",
+    "yourAlliesHaveAPlan": "Your allies have a plan.",
+    "theInvestigatorsStoodTogether": "The investigators stood together.",
+    "cthulhuWasDrivenAway": "Cthulhu was driven away.",
+    "cthulhuAnnihilatedTheExpedition": "Cthulhu annihilated the expedition.",
+    "cthulhuWasBanished": "Cthulhu was banished."
+  }
+}

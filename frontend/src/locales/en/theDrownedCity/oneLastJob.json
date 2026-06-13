@@ -1,0 +1,38 @@
+{
+  "intro": {
+    "title": "One Last Job",
+    "body": "<p>You suppress a shiver in the cool spring air as you wait under a flickering street lamp. Tonight is the last night of your employ under Randall Tillinghast, a local curio dealer. The antiquarian’s latest shipment from New Orleans has gone missing, and he has tasked you with its recovery. This is just the latest in a string of risky and often illicit “errands” for the cunning old man. Tonight’s job should pay almost enough to satisfy the rest of your debt to Tillinghast.</p><p>Both of your informants arrive on time. Ruby Standish, infamous jewel thief, approaches with a knowing smirk. The plucky reporter Andy Van Nortwick comes soon after. Between Ruby and Andy’s accounts, you piece together a rough idea of the shipment’s location. The Sheldons and O’Bannions are at it again—the two gangs are in the midst of another turf war, and it’s possible the missing shipment was scooped up with the gangs’ actual mark.</p><p>You shiver as a chill wind stirs the air. Ruby smiles rakishly. “What do you say to a little wager? Double or nothing. The first one to score the shipment gets it all. I hope you’re ready to lose,” she smirks. Before you can reply, she has already melted into the shadows.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: One Last Job, Dreams, Chilling Cold, Locked Doors, Rats, and Striking Fear. Also gather the location cards from The Midnight Masks set (only the locations).",
+    "placeLocations": "Put Northside, Downtown, Easttown, Rivertown, and Miskatonic University into play. Then place Tillinghast Esoterica, connected to Miskatonic University.",
+    "startAt": "Each investigator begins play at Tillinghast Esoterica.",
+    "actDeck": "Construct the act deck using one of the two copies of act 1a—“Questioning the Gangs,” chosen at random. Set each copy of act 2 and act 3 aside, out of play.",
+    "setAside": "Set aside Sadie Sheldon, Naomi O’Bannion, and both copies of Gang Enforcer."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of [[Criminal]] enemies in play (to a maximum of 4).",
+      "tablet": "-2 (-4 instead if there is a [[Criminal]] enemy at your location).",
+      "elderThing": "-3. If you fail, discard the top 3 cards of the encounter deck. Choose 1 [[Criminal]] enemy discarded by this effect and spawn it engaged with you."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of [[Criminal]] enemies in play.",
+      "tablet": "-3 (-5 instead if there is a [[Criminal]] enemy at your location).",
+      "elderThing": "-4. If you fail, discard the top 6 cards of the encounter deck. Choose 1 [[Criminal]] enemy discarded by this effect and spawn it engaged with you. It makes an immediate attack."
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "as they reflect on the night’s work"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: You return to Tillinghast Esoterica with both the shipment and Ruby Standish. The jewel thief sulkily admits you beat her little wager, and promises you a drink afterward with no mention of the “double or nothing” she proposed. Within moments, Randall has the box open on his desk. Inside it is a small jade-green idol wrapped in cloth. “I could not be more impressed,” Tillinghast says, his eyes glittering. “My suspicions have been confirmed: the relic is genuine. Well done. What if I told you I had an offer too good to refuse?”</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: You drag yourself, battered and bruised, back to Tillinghast Esoterica. Inside, you find Ruby and Andy gathered around Randall’s desk, appraising a small green figurine. Randall leans forward and peers at you over steepled fingers. “Better late than never, I suppose. My suspicions have been confirmed: the relic is genuine. Well done. What if I told you I had an offer too good to refuse?”</p>"
+    }
+  }
+}

@@ -1,53 +1,5 @@
 [
   {
-    "id": "70001",
-    "name": "The Labyrinths of Lunacy",
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard"
-    ],
-    "difficultyLevels": {
-      "Standard": [
-        "PlusOne",
-        "Zero",
-        "Zero",
-        "Zero",
-        "MinusOne",
-        "MinusOne",
-        "MinusOne",
-        "MinusTwo",
-        "MinusTwo",
-        "MinusThree",
-        "MinusFour",
-        "MinusFive",
-        "Skull",
-        "Skull",
-        "AutoFail",
-        "ElderSign"
-      ],
-      "Hard": [
-        "PlusOne",
-        "Zero",
-        "MinusOne",
-        "MinusOne",
-        "MinusOne",
-        "MinusTwo",
-        "MinusTwo",
-        "MinusTwo",
-        "MinusThree",
-        "MinusFour",
-        "MinusFive",
-        "MinusSix",
-        "Skull",
-        "Skull",
-        "AutoFail",
-        "ElderSign"
-      ]
-    },
-    "xp": 2,
-    "alpha": true
-  },
-  {
     "id": "81001",
     "name": "Curse of the Rougarou",
     "standaloneDifficulties": [
@@ -164,6 +116,54 @@
       ]
     },
     "xp": 3
+  },
+  {
+    "id": "70001",
+    "name": "The Labyrinths of Lunacy",
+    "standaloneDifficulties": [
+      "Standard",
+      "Hard"
+    ],
+    "difficultyLevels": {
+      "Standard": [
+        "PlusOne",
+        "Zero",
+        "Zero",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "MinusFive",
+        "Skull",
+        "Skull",
+        "AutoFail",
+        "ElderSign"
+      ],
+      "Hard": [
+        "PlusOne",
+        "Zero",
+        "MinusOne",
+        "MinusOne",
+        "MinusOne",
+        "MinusTwo",
+        "MinusTwo",
+        "MinusTwo",
+        "MinusThree",
+        "MinusFour",
+        "MinusFive",
+        "MinusSix",
+        "Skull",
+        "Skull",
+        "AutoFail",
+        "ElderSign"
+      ]
+    },
+    "xp": 2,
+    "alpha": true
   },
   {
     "id": "83001",

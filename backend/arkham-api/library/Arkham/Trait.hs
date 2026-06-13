@@ -16,10 +16,12 @@ data Trait
   | Altered
   | Ancient
   | AncientOne
+  | Apiary
   | Apparel
   | Arkham
   | ArkhamAsylum
   | Armor
+  | Artifact
   | Artist
   | Assistant
   | Attack
@@ -62,6 +64,7 @@ data Trait
   | CloverClub
   | Coastal
   | Colour
+  | Completed
   | Composure
   | Condition
   | Connection
@@ -76,6 +79,7 @@ data Trait
   | Crew
   | CrimeScene
   | Criminal
+  | Cthulhu
   | Cultist
   | Curse
   | Cursed
@@ -102,7 +106,9 @@ data Trait
   | Eldritch
   | Elite
   | Emissary
+  | Enclave
   | Endtimes
+  | Enraged
   | Entrepreneur
   | Evidence
   | Exhibit
@@ -128,10 +134,12 @@ data Trait
   | Future
   | Gambit
   | Game
+  | Front
   | Geist
   | Ghast
   | Ghoul
   | Glacier
+  | Glyph
   | Government
   | Grant
   | Graveyard
@@ -168,6 +176,7 @@ data Trait
   | Job
   | Jungle
   | Kadath
+  | Keeper
   | Key
   | Kingsport
   | KualaLumpur
@@ -176,6 +185,7 @@ data Trait
   | Lead
   | Leader
   | Leng
+  | Lift
   | Lit
   | LocusSite
   | Lodge
@@ -204,6 +214,7 @@ data Trait
   | Mutated
   | Mutation
   | Mystery
+  | Nest
   | NewOrleans
   | NewYorkCity
   | Nightgaunt
@@ -251,6 +262,7 @@ data Trait
   | Resolute
   | Restricted
   | Risen
+  | Rlyeh
   | Ritual
   | RitualSite
   | Rival
@@ -259,7 +271,9 @@ data Trait
   | Road
   | Role
   | Room
+  | Rooftop
   | Rot
+  | Ruined
   | Ruins
   | Salem
   | Sanctum
@@ -271,6 +285,7 @@ data Trait
   | Scientist
   | Scion
   | Script
+  | Seafloor
   | SecondFloor
   | SentinelHill
   | Serpent
@@ -294,8 +309,11 @@ data Trait
   | StMarys
   | Stable
   | Staff
+  | StarSpawn
   | Station
   | Steps
+  | Stowaway
+  | Summit
   | Summon
   | Sunken
   | Supply
@@ -307,6 +325,7 @@ data Trait
   | Talent
   | Tarot
   | Task
+  | Incomplete
   | Temple
   | Tenochtitlan
   | Tentacle
@@ -327,10 +346,12 @@ data Trait
   | Unstable
   | Upgrade
   | Vale
+  | Vault
   | Vehicle
   | Venice
   | Veteran
   | Void
+  | Walkway
   | Warden
   | Wastes
   | Wayfarer

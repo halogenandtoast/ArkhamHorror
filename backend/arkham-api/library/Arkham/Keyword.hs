@@ -23,6 +23,7 @@ data Sealing
 
 data Keyword
   = Alert
+  | Relentless
   | Aloof
   | Doomed
   | Elusive

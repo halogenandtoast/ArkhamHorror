@@ -15,6 +15,7 @@ import edgeOfTheEarth from '@/locales/en/edgeOfTheEarth'
 import theScarletKeys from '@/locales/en/theScarletKeys'
 import theFeastOfHemlockVale from '@/locales/en/theFeastOfHemlockVale'
 import brethrenOfAsh from '@/locales/en/brethrenOfAsh'
+import theDrownedCity from '@/locales/en/theDrownedCity'
 import standalone from '@/locales/en/standalone'
 import gameBoard from '@/locales/en/gameBoard/gameBoard'
 import xp from '@/locales/en/xp.json'
@@ -40,5 +41,6 @@ export default
   , theScarletKeys
   , theFeastOfHemlockVale
   , brethrenOfAsh
+  , theDrownedCity
   , standalone
   }

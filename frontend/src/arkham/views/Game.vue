@@ -238,6 +238,28 @@ const choices = computed(() => {
 })
 const gameOver = computed(() => game.value?.gameState.tag === 'IsOver')
 const question = computed(() => (playerId.value ? game.value?.question[playerId.value] : null))
+
+function questionTag(q: Question | null | undefined): string | null {
+  if (!q) return null
+  if (q.tag === 'QuestionLabel') return q.question.tag
+  return q.tag
+}
+
+const isActualScenarioView = computed(() => {
+  const g = game.value
+  if (!g?.scenario) return false
+  if (g.gameState.tag !== 'IsActive' && g.gameState.tag !== 'IsOver') return false
+  if (!g.scenario.started || g.scenario.campaignStep) return false
+  if (Object.entries(g.investigators).length === 0) return false
+
+  const activeQuestionTag = questionTag(question.value)
+  return activeQuestionTag !== 'ChooseUpgradeDeck'
+    && activeQuestionTag !== 'ChooseDeck'
+    && activeQuestionTag !== 'PickScenarioSettings'
+    && activeQuestionTag !== 'PickCampaignSettings'
+    && activeQuestionTag !== 'ContinueCampaign'
+})
+
 const realityAcidLightActive = computed(() => {
   const scenario = game.value?.scenario
   return scenario?.id === 'c85001' && scenario.meta?.lightActive === true
@@ -1100,10 +1122,11 @@ function switchInvestigator(newPlayerId: string) {
 }
 type ExportType = 'basic' | 'full' | 'scenario'
 function debugExport(exportType: ExportType) {
+  const isFullExport = exportType === 'full'
   api
     .get(
-      `arkham/games/${props.gameId}/${exportType == 'full' ? 'full-' : exportType == 'scenario' ? 'scenario-' : ''}export`,
-      { responseType: 'blob' },
+      `arkham/games/${props.gameId}/${isFullExport ? 'full-' : exportType == 'scenario' ? 'scenario-' : ''}export`,
+      { responseType: 'blob', params: isFullExport ? { gzip: true } : undefined },
     )
     .then((resp) => {
       const url = window.URL.createObjectURL(resp.data)
@@ -1111,7 +1134,7 @@ function debugExport(exportType: ExportType) {
       a.style.display = 'none'
       a.href = url
       // the filename you want
-      a.download = 'arkham-debug.json'
+      a.download = isFullExport ? 'arkham-debug.json.gz' : 'arkham-debug.json'
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
@@ -1483,7 +1506,7 @@ onUnmounted(() => {
         </template>
       </div>
       <div class="right">
-        <button @click="toggleSidebar">
+        <button v-if="isActualScenarioView" @click="toggleSidebar">
           <ArrowsRightLeftIcon aria-hidden="true" /> {{ $t('gameBar.toggleSidebar') }}
         </button>
       </div>
@@ -1627,8 +1650,7 @@ onUnmounted(() => {
           :class="{ 'sidebar--empty-log': gameLog.length === 0 }"
           v-if="
             showSidebar &&
-            game.scenario !== null &&
-            (game.gameState.tag === 'IsActive' || game.gameState.tag === 'IsOver')
+            isActualScenarioView
           "
         >
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
@@ -1643,11 +1665,8 @@ onUnmounted(() => {
           </button>
           <CampaignLog v-if="game !== null" :game="game" :cards="cards" :playerId="playerId" />
         </div>
-        <div class="sidebar" v-if="showSidebar && game.scenario === null">
-          <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
-        </div>
         <div
-          v-if="showSidebar"
+          v-if="showSidebar && isActualScenarioView"
           class="sidebar-backdrop"
           @click="toggleSidebar"
           aria-hidden="true"

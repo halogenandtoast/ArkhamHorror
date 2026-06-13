@@ -944,4 +944,48 @@ allEnemies =
         SomeEnemyCard sinisterSoloist
       , -- Relics of the Past
         SomeEnemyCard dwellerInThePit
+      , --- The Drowned City
+        SomeEnemyCard sadieSheldon
+      , SomeEnemyCard naomiOBannion
+      , SomeEnemyCard gangSoldier
+      , SomeEnemyCard gangEnforcer
+      , SomeEnemyCard gangInformant
+      , SomeEnemyCard deepOneMatron
+      , SomeEnemyCard huntingParasite
+      , SomeEnemyCard seafloorLeviathan
+      , SomeEnemyCard underseaParasite
+      , SomeEnemyCard medusa
+      , SomeEnemyCard mother
+      , SomeEnemyCard grotesqueAmalgam
+      , SomeEnemyCard apiaryTender
+      , SomeEnemyCard squamousParasite
+      , SomeEnemyCard slithererInDarkness
+      , SomeEnemyCard vaultAttendant
+      , SomeEnemyCard courtKeeperObserverOfDreams
+      , SomeEnemyCard courtKeeperWeaverOfNightmares
+      , SomeEnemyCard colossalTyrant
+      , SomeEnemyCard wingedKeeper
+      , SomeEnemyCard primevalTerror
+      , SomeEnemyCard starVampire
+      , SomeEnemyCard cthulhuDeadAndDreaming
+      , SomeEnemyCard randallTillinghast
+      , SomeEnemyCard cthulhuAncientEvil
+      , SomeEnemyCard cthulhuHoaryWings
+      , SomeEnemyCard cthulhuHoaryWingsEnraged
+      , SomeEnemyCard cthulhuFierceVisage
+      , SomeEnemyCard cthulhuFierceVisageEnraged
+      , SomeEnemyCard cthulhuWickedClaw
+      , SomeEnemyCard cthulhuWickedClawEnraged
+      , SomeEnemyCard stowawayDrone
+      , SomeEnemyCard pilgrimAcolyte
+      , SomeEnemyCard pilgrimLeader
+      , SomeEnemyCard monstrousStarSpawn
+      , SomeEnemyCard infectedStarSpawn
+      , SomeEnemyCard coralStarSpawn
+      , SomeEnemyCard starSpawnObserver
+      , SomeEnemyCard voltaicEel
+      , SomeEnemyCard theInescapable
+      , SomeEnemyCard deepOneThrall
+      , SomeEnemyCard elderDeepOne
+      , SomeEnemyCard persistentConstruct
       ]

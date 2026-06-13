@@ -1060,4 +1060,50 @@ allTreacheries =
         SomeTreacheryCard transmogrify
       , -- Relics of the Past
         SomeTreacheryCard vengeantPast
+      , --- The Drowned City
+        SomeTreacheryCard caughtInTheCrossfire
+      , SomeTreacheryCard endOfNegotiations
+      , SomeTreacheryCard torturedVisions
+      , SomeTreacheryCard drawnToDarkness
+      , SomeTreacheryCard seafloorFrieze
+      , SomeTreacheryCard lookOut
+      , SomeTreacheryCard hungryWalls
+      , SomeTreacheryCard dangerousCuriosity
+      , SomeTreacheryCard alienEggs
+      , SomeTreacheryCard parasiticTransformation
+      , SomeTreacheryCard deadlyMechanisms
+      , SomeTreacheryCard ancientVaultO
+      , SomeTreacheryCard ancientVaultN
+      , SomeTreacheryCard ancientVaultP
+      , SomeTreacheryCard ancientVaultG
+      , SomeTreacheryCard ancientVaultI
+      , SomeTreacheryCard ruinedOrrery
+      , SomeTreacheryCard cosmicOmen
+      , SomeTreacheryCard erodedFrieze
+      , SomeTreacheryCard stElmosFire
+      , SomeTreacheryCard acrophobia
+      , SomeTreacheryCard wingsOfTerror
+      , SomeTreacheryCard lostInTheClouds
+      , SomeTreacheryCard layWaste
+      , SomeTreacheryCard eyesOfYchlecht
+      , SomeTreacheryCard grossPlasticity
+      , SomeTreacheryCard arkhamUnderAssault
+      , SomeTreacheryCard infected
+      , SomeTreacheryCard eyeOfTheDeep
+      , SomeTreacheryCard cunningMimicry
+      , SomeTreacheryCard elderMist
+      , SomeTreacheryCard corrosiveFog
+      , SomeTreacheryCard dreamingMigration
+      , SomeTreacheryCard underseaHunt
+      , SomeTreacheryCard deadlyTorrent
+      , SomeTreacheryCard somethingInTheWater
+      , SomeTreacheryCard ominousSilence
+      , SomeTreacheryCard cyclopeanArchitecture
+      , SomeTreacheryCard crumblingMasonry
+      , SomeTreacheryCard cthulhuFhtagn
+      , SomeTreacheryCard oppressiveInfluence
+      , SomeTreacheryCard domination
+      , SomeTreacheryCard stillBehindYou
+      , SomeTreacheryCard deepOneAmbush
+      , SomeTreacheryCard infernalMachinery
       ]

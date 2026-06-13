@@ -675,3 +675,245 @@ sacredOathOathOfWisdom5 =
       , cdKeywords = setFromList [Keyword.Myriad]
       , cdSlots = [#arcane]
       }
+
+-- The Drowned City — Tasks (permanent story assets)
+walkInFaith :: CardDef
+walkInFaith =
+  permanent
+    $ (storyAsset_ "11754a" ("Walk in Faith" <:> "Blind Devotion") Tasks)
+      {cdCardTraits = setFromList [Task, Incomplete]}
+
+toeTheLine :: CardDef
+toeTheLine =
+  permanent
+    $ (storyAsset_ "11755a" ("Toe the Line" <:> "Disavowed and Disgraced") Tasks)
+      {cdCardTraits = setFromList [Task, Incomplete]}
+
+noPlaceLikeHome :: CardDef
+noPlaceLikeHome =
+  permanent
+    $ (storyAsset_ "11753a" ("No Place Like Home" <:> "Lost and Uncertain") Tasks)
+      {cdCardTraits = setFromList [Task, Incomplete]}
+
+goodMoney :: CardDef
+goodMoney =
+  permanent
+    $ (storyAsset_ "11756a" ("Good Money" <:> "The \"Quid\" Part") Tasks)
+      {cdCardTraits = setFromList [Task, Incomplete]}
+
+doNoHarm :: CardDef
+doNoHarm =
+  permanent
+    $ (storyAsset_ "11758a" ("Do No Harm" <:> "Can You Save Them?") Tasks)
+      {cdCardTraits = setFromList [Task, Incomplete]}
+
+proveYourWorth :: CardDef
+proveYourWorth =
+  permanent
+    $ (storyAsset_ "11757a" ("Prove Your Worth" <:> "Are You a Burden?") Tasks)
+      {cdCardTraits = setFromList [Task, Incomplete]}
+
+dreamsOfDestruction :: CardDef
+dreamsOfDestruction =
+  permanent
+    $ (storyAsset_ "11759a" ("Dreams of Destruction" <:> "Visions of a Grim Future") Tasks)
+      {cdCardTraits = setFromList [Task, Incomplete]}
+
+plumbTheDepths :: CardDef
+plumbTheDepths =
+  permanent
+    $ (storyAsset_ "11760a" ("Plumb the Depths" <:> "Compulsive Research") Tasks)
+      {cdCardTraits = setFromList [Task, Incomplete]}
+
+-- The Drowned City — Expedition story assets
+expeditionGear :: CardDef
+expeditionGear =
+  (storyAsset "11761" ("Expedition Gear" <:> "Tough but Reliable") 2 TdcExpedition)
+    { cdCardTraits = setFromList [Item, Trait.Supply]
+    , cdSkills = [#combat, #agility, #wild]
+    }
+
+laudanum :: CardDef
+laudanum =
+  (storyAsset "11762" ("Laudanum" <:> "Desperate Measures") 2 TdcExpedition)
+    { cdCardTraits = setFromList [Item, Trait.Supply]
+    , cdSkills = [#willpower, #willpower]
+    }
+
+alienTablet :: CardDef
+alienTablet =
+  (storyAsset "11763" ("Alien Tablet" <:> "Prehistoric Writings") 3 TdcExpedition)
+    { cdCardTraits = setFromList [Item, Relic, Rlyeh]
+    , cdSkills = [#intellect, #intellect]
+    , cdSlots = [#hand]
+    }
+
+divingSuitTheDrownedCity :: CardDef
+divingSuitTheDrownedCity =
+  (storyAsset "11764" "Diving Suit" 3 TdcExpedition)
+    { cdCardTraits = setFromList [Item, Armor]
+    , cdSkills = [#combat]
+    , cdSlots = [#body]
+    }
+
+rubyStandish :: CardDef
+rubyStandish =
+  (storyAsset "11765" ("Ruby Standish" <:> "Master Thief") 4 TdcExpedition)
+    { cdCardTraits = setFromList [Ally, Criminal]
+    , cdSkills = [#agility, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+andyVanNortwick :: CardDef
+andyVanNortwick =
+  (storyAsset "11766" ("Andy Van Nortwick" <:> "Ambitious Journalist") 4 TdcExpedition)
+    { cdCardTraits = setFromList [Ally, Reporter]
+    , cdSkills = [#intellect, #intellect]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+-- The Drowned City — completed Task back sides
+noPlaceLikeHomeCompleted :: CardDef
+noPlaceLikeHomeCompleted =
+  permanent
+    $ (storyAsset_ "11753b" ("No Place Like Home" <:> "Where Your Heart Is") Tasks)
+      {cdCardTraits = setFromList [Task, Completed]}
+
+walkInFaithCompleted :: CardDef
+walkInFaithCompleted =
+  permanent
+    $ (storyAsset_ "11754b" ("Walk in Faith" <:> "Filled with Spirit") Tasks)
+      {cdCardTraits = setFromList [Task, Completed]}
+
+toeTheLineCompleted :: CardDef
+toeTheLineCompleted =
+  permanent
+    $ (storyAsset_ "11755b" ("Toe the Line" <:> "Restored and Resolved") Tasks)
+      {cdCardTraits = setFromList [Task, Completed]}
+
+goodMoneyCompleted :: CardDef
+goodMoneyCompleted =
+  permanent
+    $ (storyAsset_ "11756b" ("Good Money" <:> "The \"Quo\" Part") Tasks)
+      {cdCardTraits = setFromList [Task, Completed]}
+
+proveYourWorthCompleted :: CardDef
+proveYourWorthCompleted =
+  permanent
+    $ (storyAsset_ "11757b" ("Prove Your Worth" <:> "Standing on Your Own") Tasks)
+      {cdCardTraits = setFromList [Task, Completed]}
+
+doNoHarmCompleted :: CardDef
+doNoHarmCompleted =
+  permanent
+    $ (storyAsset_ "11758b" ("Do No Harm" <:> "Reliable Support") Tasks)
+      {cdCardTraits = setFromList [Task, Completed]}
+
+dreamsOfDestructionCompleted :: CardDef
+dreamsOfDestructionCompleted =
+  permanent
+    $ (storyAsset_ "11759b" ("Dreams of Destruction" <:> "The Future is Not Fixed") Tasks)
+      {cdCardTraits = setFromList [Task, Completed]}
+
+plumbTheDepthsCompleted :: CardDef
+plumbTheDepthsCompleted =
+  permanent
+    $ (storyAsset_ "11760b" ("Plumb the Depths" <:> "Mastered Acumen") Tasks)
+      {cdCardTraits = setFromList [Task, Completed]}
+
+-- The Drowned City — encounter story assets (artifacts / relics / allies)
+obsidianRelic :: CardDef
+obsidianRelic =
+  (storyAsset_ "11550" ("Obsidian Relic" <:> "Puzzling Effigy") TheDrownedQuarter)
+    { cdCardTraits = setFromList [Item, Relic, Glyph]
+    , cdDoubleSided = True
+    , cdOtherSide = Just "11550b"
+    }
+
+barrierNode :: CardDef
+barrierNode =
+  (storyAsset_ "11552" ("Barrier Node" <:> "Energy Shield") TheDrownedQuarter)
+    { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdUnique = True
+    }
+
+mariaRivera :: CardDef
+mariaRivera =
+  (storyAsset "11568" ("Maria Rivera" <:> "Lost Pilgrim") 3 TheApiary)
+    { cdCardTraits = setFromList [Ally, Cultist]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdVictoryPoints = Just 0
+    }
+
+ancientRelic :: CardDef
+ancientRelic =
+  (storyAsset_ "11581" ("Ancient Relic" <:> "Leering Visage") TheApiary)
+    { cdCardTraits = setFromList [Item, Relic, Glyph]
+    , cdDoubleSided = True
+    , cdOtherSide = Just "11581b"
+    }
+
+grislyMask :: CardDef
+grislyMask =
+  (storyAsset_ "11582" ("Grisly \"Mask\"" <:> "Is It Actually Alive?") TheApiary)
+    { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdUnique = True
+    }
+
+tidalTablet :: CardDef
+tidalTablet =
+  (storyAsset_ "11611" ("Tidal Tablet" <:> "Record of Ancient Depths") TheGrandVault)
+    { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdUnique = True
+    }
+
+shardOfYchlecht :: CardDef
+shardOfYchlecht =
+  (storyAsset_ "11638" ("Shard of Y'ch'lecht" <:> "Otherworldly Remnant") CourtOfTheAncients)
+    { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdUnique = True
+    }
+
+skyRelic :: CardDef
+skyRelic =
+  (storyAsset_ "11663" ("Sky Relic" <:> "Eroded by Winds") ObsidianCanyons)
+    { cdCardTraits = setFromList [Item, Relic, Glyph]
+    , cdDoubleSided = True
+    , cdOtherSide = Just "11663b"
+    }
+
+obsidianClaw :: CardDef
+obsidianClaw =
+  (storyAsset_ "11672a" ("Obsidian Claw" <:> "Speed") ObsidianCanyons)
+    { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "11672b"
+    }
+
+obsidianClawPower :: CardDef
+obsidianClawPower =
+  (storyAsset_ "11672b" ("Obsidian Claw" <:> "Power") ObsidianCanyons)
+    { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "11672a"
+    }
+
+johnRaymondLegrasse :: CardDef
+johnRaymondLegrasse =
+  (storyAsset "11687" ("John Raymond Legrasse" <:> "Hunting for Answers") 4 TheDoomOfArkhamPartI)
+    { cdCardTraits = setFromList [Ally, Detective]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+horrorInClay :: CardDef
+horrorInClay =
+  (storyAsset_ "11688" ("Horror in Clay" <:> "Sculpture of Dreams") TheDoomOfArkhamPartI)
+    { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdUnique = True
+    }

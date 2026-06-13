@@ -9,6 +9,7 @@ import Arkham.Enemy.CardDefs.ReturnTo as X
 import Arkham.Enemy.CardDefs.Standalone as X
 import Arkham.Enemy.CardDefs.TheCircleUndone as X
 import Arkham.Enemy.CardDefs.TheDreamEaters as X
+import Arkham.Enemy.CardDefs.TheDrownedCity as X
 import Arkham.Enemy.CardDefs.TheDunwichLegacy as X
 import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale as X
 import Arkham.Enemy.CardDefs.TheForgottenAge as X
@@ -682,6 +683,50 @@ allEncounterEnemyCards =
         namerOfTheDead
       , --- Relics of the Past
         dwellerInThePit
+      , --- The Drowned City
+        sadieSheldon
+      , naomiOBannion
+      , gangSoldier
+      , gangEnforcer
+      , gangInformant
+      , deepOneMatron
+      , huntingParasite
+      , seafloorLeviathan
+      , underseaParasite
+      , medusa
+      , mother
+      , grotesqueAmalgam
+      , apiaryTender
+      , squamousParasite
+      , slithererInDarkness
+      , vaultAttendant
+      , courtKeeperObserverOfDreams
+      , courtKeeperWeaverOfNightmares
+      , colossalTyrant
+      , wingedKeeper
+      , primevalTerror
+      , starVampire
+      , cthulhuDeadAndDreaming
+      , randallTillinghast
+      , cthulhuAncientEvil
+      , cthulhuHoaryWings
+      , cthulhuHoaryWingsEnraged
+      , cthulhuFierceVisage
+      , cthulhuFierceVisageEnraged
+      , cthulhuWickedClaw
+      , cthulhuWickedClawEnraged
+      , stowawayDrone
+      , pilgrimAcolyte
+      , pilgrimLeader
+      , monstrousStarSpawn
+      , infectedStarSpawn
+      , coralStarSpawn
+      , starSpawnObserver
+      , voltaicEel
+      , theInescapable
+      , deepOneThrall
+      , elderDeepOne
+      , persistentConstruct
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

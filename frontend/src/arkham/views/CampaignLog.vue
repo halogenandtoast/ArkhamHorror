@@ -35,7 +35,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown))
 </script>
 
 <template>
-  <div>
+  <div class="campaign-log-view">
     <CampaignLog v-if="game !== null" :game="game" :cards="cards" :player-id="game.activePlayerId" @refresh="refreshGame">
       <template #header-leading>
         <router-link :to="{ name: 'Game', params: { gameId }}" class="back-button">
@@ -48,6 +48,13 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown))
 </template>
 
 <style scoped>
+.campaign-log-view {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
 .back-button {
   display: inline-flex;
   align-items: center;

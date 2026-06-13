@@ -1177,6 +1177,41 @@ allEncounterAssetCards =
       , obsidianJaguar
       , citrineSnake
       , turquoiseEagle
+      , --- The Drowned City
+        walkInFaith
+      , toeTheLine
+      , noPlaceLikeHome
+      , goodMoney
+      , doNoHarm
+      , proveYourWorth
+      , dreamsOfDestruction
+      , plumbTheDepths
+      , expeditionGear
+      , laudanum
+      , alienTablet
+      , divingSuitTheDrownedCity
+      , rubyStandish
+      , andyVanNortwick
+      , noPlaceLikeHomeCompleted
+      , walkInFaithCompleted
+      , toeTheLineCompleted
+      , goodMoneyCompleted
+      , proveYourWorthCompleted
+      , doNoHarmCompleted
+      , dreamsOfDestructionCompleted
+      , plumbTheDepthsCompleted
+      , obsidianRelic
+      , barrierNode
+      , mariaRivera
+      , ancientRelic
+      , grislyMask
+      , tidalTablet
+      , shardOfYchlecht
+      , skyRelic
+      , obsidianClaw
+      , obsidianClawPower
+      , johnRaymondLegrasse
+      , horrorInClay
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

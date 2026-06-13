@@ -8,6 +8,7 @@ import Arkham.Location.CardDefs.ReturnTo as X
 import Arkham.Location.CardDefs.Standalone as X
 import Arkham.Location.CardDefs.TheCircleUndone as X
 import Arkham.Location.CardDefs.TheDreamEaters as X
+import Arkham.Location.CardDefs.TheDrownedCity as X
 import Arkham.Location.CardDefs.TheDunwichLegacy as X
 import Arkham.Location.CardDefs.TheFeastOfHemlockVale as X
 import Arkham.Location.CardDefs.TheForgottenAge as X
@@ -1200,6 +1201,100 @@ allLocationCards =
         secretPassageRelicsOfThePast
       , innerChamber
       , ancientHallRelicsOfThePast
+      , --- The Drowned City
+        tillinghastEsoterica
+      , hibbsRoadhouse
+      , laBellaLunaTheDrownedCity
+      , treacherousPathSlickSteps
+      , treacherousPathErodedShelf
+      , treacherousPathPrecariousClimb
+      , treacherousPathDeadlyPass
+      , treacherousPathShallowDen
+      , sunkenStairway
+      , drownedShanty
+      , shatteredRuins
+      , obsidianFoundations
+      , westernWall_11530
+      , underseaVault
+      , barrierCoreInactive
+      , barrierCoreActive
+      , abyssalTrench
+      , drownedAcropolisEphemeralRuins
+      , drownedAcropolisCollapsedRuins
+      , blastedRuinsSunkenCircle
+      , blastedRuinsCrumblingEdifices
+      , coralReefStatuaryGarden
+      , coralReefFeedingGrounds
+      , ancientGallery
+      , apiaryEntranceBeckoningLight
+      , apiaryEntranceDangerousExit
+      , fleshyPathsEasternBurrows
+      , fleshyPathsWesternBurrows
+      , growingFields
+      , churningChasm
+      , corruptedVault
+      , luminousTunnels
+      , spawningGrounds
+      , lostCampsite
+      , graspingCorridor
+      , starvingCorridor
+      , acidicCoelom
+      , centralChamber
+      , hiddenVault
+      , theGreatStair
+      , movingPlatformObservationStation
+      , coreOfTheVaultHeartOfTheMachine
+      , shroudedCistern
+      , chamberOfRecordsArm
+      , chamberOfRecordsEarth
+      , otherworldlyMechanismsObsidianBulwark
+      , otherworldlyMechanismsSluiceControl
+      , otherworldlyMechanismsGrimeCoveredGears
+      , otherworldlyMechanismsInscrutableApparatus
+      , chamberOfTheTabletUnsealed
+      , westAntechamber
+      , eastAntechamber
+      , twistingCatwalks
+      , greatLiftInactive
+      , greatLiftActive
+      , ancientAltar
+      , ringLibraryArchiveOfTheStars
+      , ringLibraryArchiveOfTheAncients
+      , loftyWalkwayArchiveOfDreams
+      , loftyWalkwayArchiveOfConflict
+      , luminousArchivesArchiveOfHistory
+      , luminousArchivesArchiveOfMemory
+      , rlyehStreets
+      , centralSpire
+      , floatingSpire
+      , westernWall_11651
+      , ancientDome
+      , easternAthenaeum
+      , westernAthenaeum
+      , obsidianCliffs
+      , suspendedReef
+      , hangingShip
+      , ancientCanyons
+      , dazzlingSkyline
+      , aerialWaterfall
+      , magneticSpires
+      , glyphOrrery
+      , dreamersRest
+      , sigilCarvedAlcoveStoryOfAmbition
+      , sigilCarvedAlcoveStoryOfResilience
+      , sigilCarvedAlcoveStoryOfInfinity
+      , sigilCarvedAlcoveStoryOfDefiance
+      , sigilCarvedAlcoveStoryOfTheVoyage
+      , tillinghastEsotericaEphemeralShop
+      , northsideTheDrownedCity
+      , downtown
+      , easttownTheDrownedCity
+      , miskatonicUniversityTheDrownedCity
+      , rivertownTheDrownedCity
+      , stMarysHospitalTheDrownedCity
+      , southside
+      , westernRooftops
+      , easternRooftops
       ]
 
 allSpecialLocationCards :: Map CardCode CardDef

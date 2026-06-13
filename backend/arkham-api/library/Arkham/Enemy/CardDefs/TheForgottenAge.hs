@@ -100,6 +100,7 @@ henryDeveauAlejandrosKidnapper =
     $ (enemy "04130b" ("Henry Deveau" <:> "Alejandro's Kidnapper") ThreadsOfFate 1)
       { cdCardTraits = setFromList [Humanoid, Conspirator, Elite]
       , cdVictoryPoints = Just 1
+      , cdKeywords = singleton Keyword.Retaliate
       }
 
 mariaDeSilvaKnowsMoreThanSheLetsOn :: CardDef

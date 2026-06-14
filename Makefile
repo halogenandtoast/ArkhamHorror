@@ -79,6 +79,31 @@ v2-deploy-multiarch: V2_PLATFORM = linux/amd64,linux/arm64
 v2-deploy-multiarch: v2-deploy
 .PHONY: v2-deploy-multiarch
 
+V2_GIT_REF ?= HEAD
+
+## Build, push, and roll out from committed git contents only (ignores dirty working tree)
+v2-deploy-committed: v2-buildx-setup v2-kubeconfig-ensure
+	@set -e; \
+	  REF="$(V2_GIT_REF)"; \
+	  TAG=$$(git rev-parse --short "$$REF"); \
+	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM)) from committed ref $$REF"; \
+	  git archive --format=tar "$$REF" | docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) \
+	    --tag $(V2_IMAGE):$$TAG \
+	    --tag $(V2_IMAGE):latest \
+	    --file Dockerfile \
+	    --push - ; \
+	  echo ">> rolling $(V2_DEPLOYMENT) (image stays :latest, restart forces pull)"; \
+	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
+	    rollout restart deployment/$(V2_DEPLOYMENT); \
+	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
+	    rollout status deployment/$(V2_DEPLOYMENT) --timeout=10m
+.PHONY: v2-deploy-committed
+
+## Same as v2-deploy-committed, but build+push both linux/amd64 and linux/arm64
+v2-deploy-committed-multiarch: V2_PLATFORM = linux/amd64,linux/arm64
+v2-deploy-committed-multiarch: v2-deploy-committed
+.PHONY: v2-deploy-committed-multiarch
+
 ## Build+push linux/amd64 and linux/arm64 images to Docker Hub (no rollout)
 v2-push-multiarch: v2-buildx-setup
 	@set -e; \

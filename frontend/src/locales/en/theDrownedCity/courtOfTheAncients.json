@@ -1,0 +1,43 @@
+{
+  "additionalActions": "Additional actions to spend",
+  "cosmicOmen": {
+    "shuffleGlyphIntoEncounterDeck": "Shuffle one Glyph card in play into the encounter deck",
+    "takeHorrorAndDiscard": "Take 1 direct horror and discard 1 card at random from your hand"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of Glyph cards in the victory display.",
+      "cultist": "-2 (-4 instead if there is a Stowaway enemy at your location).",
+      "tablet": "-2. If your location is flooded, reveal another token.",
+      "elderThing": "-4. If this token is revealed during an attack or evasion attempt, take 1 damage or 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of Glyph cards in the victory display.",
+      "cultist": "-3 (-5 instead if there is a Stowaway enemy at your location).",
+      "tablet": "-3. If your location is flooded, reveal another token.",
+      "elderThing": "-5. If this token is revealed during an attack or evasion attempt, take 1 damage and 1 horror."
+    }
+  },
+  "greatLift": {
+    "slideUp": "Slide Great Lift up",
+    "slideDown": "Slide Great Lift down",
+    "slideUpAdditional": "Spend 1 clue per investigator to slide Great Lift up",
+    "slideDownAdditional": "Spend 1 clue per investigator to slide Great Lift down",
+    "doNotSlide": "Do not slide Great Lift"
+  },
+  "resolutions": {
+    "xp": { "bonus": "for plumbing the court of the ancients" },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Steeling yourself for another climb, you put one foot in front of the other as the crumbling tower threatens to collapse under you. Eventually you pull yourself up to rejoin the expedition. You all look down at the dazzling skyline of R'lyeh, its spires suspended in the air above collapsed towers.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: After prodding and twisting at every ridge of the crumbling tower, you leave its ancient secrets behind. Making little progress from where you made landfall, you find a climbable path up to the summit. Using your rope and a little climbing gear, you haul yourself onward.</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached_: The rest of the expedition tell you they found you standing at the edge of the towering climb as if sleepwalking. You rub your eyes. You have no memory of the alien court.</p>"
+    }
+  }
+}

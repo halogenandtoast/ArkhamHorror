@@ -1,0 +1,43 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the amount of doom on enemies and assets in play, rounded down (to a max of 4).",
+      "cultist": "-1. If there is a Cultist enemy at your location, reveal another token.",
+      "tablet": "-3. If you fail, place 1 doom on an enemy at your location with no doom on it.",
+      "elderThing": "-4. If you fail, take 1 damage or 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the amount of doom on enemies and assets in play (to a max of 8).",
+      "cultist": "-3. If there is a Cultist enemy at your location, reveal another token.",
+      "tablet": "-5. If you fail, place 1 doom on an enemy at your location (with no doom on it, if able).",
+      "elderThing": "-6. If you fail, take 1 damage or 1 horror."
+    }
+  },
+  "cluesToSpend": "Clues to spend",
+  "centralChamber": {
+    "moveToConnecting": "Move to a connecting location",
+    "motherAttacks": "Mother attacks you"
+  },
+  "apiaryEntranceBeckoningLight": {
+    "resign": "Resign."
+  },
+  "resolutions": {
+    "xp": { "bonus": "for what you learned in the apiary" },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: The last of the survivors emerges from the fetid tunnels. After thanking you, the pilgrims show you the tunnel they took from the \"heart of the city.\" As you leave, Andy wipes ichor off of his camera lens. \"There's another roll of worthless film. One shot could've made my career. I might as well have thrown all my film overboard on the way here.\"</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Shell-shocked, you emerge from the tunnels to find the vast antechamber where you began. If any pilgrims survived, they did not linger. After a long silence, the expedition prepares to move on. Andy narrows his eyes at a trail of blood on the floor, noting that if a pilgrim had been dragged away, it would be much messier. Their trail may lead to \"the city core\" as Maria put it.</p>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: The expedition treks back to the apiary entrance, covered in gore. You scratch a persistent itch on the back of your neck, hoping you weren't infected. Splintered memories from your brief moment as part of the hive mind continue to encroach on your thoughts. You doubt you will ever feel quite the same again.</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached_: You pull a flailing worm from your neck as you escape the putrid tunnels. Hopefully you aren't infected…</p>"
+    }
+  }
+}

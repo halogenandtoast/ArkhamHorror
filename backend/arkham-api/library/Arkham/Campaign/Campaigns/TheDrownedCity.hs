@@ -90,4 +90,14 @@ instance RunMessage TheDrownedCity where
           -- campaign, per the Eastern Expedition setup.
           setNextCampaignStep ObsidianCanyons
       pure c
+    -- Interlude III: The Awakening — the Sleeper rises; both expeditions reunite.
+    CampaignStep (InterludeStep 3 _) -> scope "theAwakening" do
+      flavor $ setTitle "title" >> p "body"
+      setNextCampaignStep ReturnToArkham
+      pure c
+    -- Interlude IV: Return to Arkham — the voyage home and the dreams that follow.
+    CampaignStep (InterludeStep 4 _) -> scope "returnToArkham" do
+      flavor $ setTitle "title" >> p "body"
+      setNextCampaignStep TheDoomOfArkhamPartI
+      pure c
     _ -> lift $ defaultCampaignRunner msg c

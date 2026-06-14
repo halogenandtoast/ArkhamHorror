@@ -1,0 +1,31 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of revealed locations (rounded down).",
+      "cultist": "-2. If you fail and your location is fully flooded, take 1 damage.",
+      "tablet": "-4. If you fail, place 1 of your clues on your location.",
+      "elderThing": "-3 (-5 instead if your location is not flooded)."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of revealed locations.",
+      "cultist": "-3. If your location is flooded, take 1 damage.",
+      "tablet": "-4. For each point you fail by, place 1 of your clues on your location.",
+      "elderThing": "-4 (-6 instead if your location is not flooded)."
+    }
+  },
+  "resolutions": {
+    "xp": { "bonus": "for studying the Drowned Quarter at length" },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: The strange node pulses in your hand, projecting a soft bubble of light that repels the falling debris. You make it to the entrance as the dome bursts like a bubble. The expedition looks on in a mixture of awe and fear as a torrent of seawater reclaims the alien structure. A small prick of pain shoots through your palm, and you look down to see the node bury itself in your palm, sending spidery black hairs radiating out under your skin. They retract painlessly when you pull the node away. Tillinghast will certainly be pleased with this find.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: The reactivated core makes quick work of the flooded dome, draining the water in mere minutes. You survey the perimeter of the sunken ruin with the expedition, marveling at its ancient grandeur. The feeling of walking on a dry ocean floor, with fish flitting beyond the flickering bubble, is like something out of a dream. After several hours, the expedition presses on.</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached_: On the other side of the dome entrance, you look through the gossamer barrier to the ocean floor. The ocean reclaimed the alien dome in mere seconds. It is a minor miracle that you weren’t swept away. Your failure has distracted you from your goals.</p>"
+    }
+  }
+}

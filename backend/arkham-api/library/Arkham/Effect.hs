@@ -93,6 +93,7 @@ import Arkham.Asset.Assets (
   witherEffect,
   yaotl1Effect,
  )
+import Arkham.Campaigns.TheDrownedCity.Effects.StruggleForAir (struggleForAirEffect)
 import Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir (noAirEffect)
 import Arkham.Campaigns.TheScarletKeys.Key.Cards.TheWellspringOfFortune (
   theWellspringOfFortuneEffect,
@@ -633,5 +634,6 @@ allEffects =
     , ("maxef", SomeEffect maxEffect)
     , ("abief", SomeEffect abilityEffect)
     , ("noair", SomeEffect noAirEffect)
+    , ("struggleForAir", SomeEffect struggleForAirEffect)
     , ("genef", SomeEffect genericEffect)
     ]

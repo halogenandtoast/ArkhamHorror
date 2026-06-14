@@ -66,7 +66,7 @@ seafloorLeviathan :: CardDef
 seafloorLeviathan =
   (enemy "11537b" ("Seafloor Leviathan" <:> "Giant Aquatic Medusoid") TheDrownedQuarter 1)
     { cdCardTraits = setFromList [Monster, Abomination, Elite]
-    , cdKeywords = setFromList [Keyword.Massive]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Patrol (not_ FullyFloodedLocation)]
     , cdVictoryPoints = Just 2
     }
 
@@ -82,7 +82,7 @@ medusa :: CardDef
 medusa =
   (enemy "11551" "Medusa" TheDrownedQuarter 3)
     { cdCardTraits = setFromList [Monster]
-    , cdKeywords = setFromList [Keyword.Aloof]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (not_ FullyFloodedLocation)]
     }
 
 -- The Apiary

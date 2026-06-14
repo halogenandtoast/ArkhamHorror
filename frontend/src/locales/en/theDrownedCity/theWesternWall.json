@@ -1,0 +1,31 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is your location's level.",
+      "cultist": "-3. If you fail and your location is fully flooded, take 1 damage.",
+      "tablet": "-3. If you fail, increase the flood level of your location.",
+      "elderThing": "-3 (-5 instead if your location is fully flooded)."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 2 more than your location's level.",
+      "cultist": "-5. If your location is fully flooded, take 1 damage.",
+      "tablet": "-5. Increase the flood level of your location, if able.",
+      "elderThing": "-5 (If your location is fully flooded, you automatically fail instead)."
+    }
+  },
+  "resolutions": {
+    "xp": { "bonus": "as the expedition presses on" },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: The ocean floor is a dreamlike phantasmagoria of sinister flora and nightmarish creatures. A mutated lanternfish that could only be described as antediluvian swims placidly through a forest of deep water seagrass. Another deep sea creature with glowing eyes and a jagged maw swims straight at you, but turns away at the last moment from the shimmering field that keeps the water at bay.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: A tremor shakes the ancient city, knocking you down. Ruby curses as you steady yourself on a fallen pillar. The city of R’lyeh continues to rise. Eventually, the tremors subside. Ruby stands next to you and looks out at the perfect circle of the black water bay. “Damn,” she says. “I made a bet with Andy we’d get back first.” You sigh and lead the way back to the Cassandra. It will be good to return.</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached_: The flooded paths claim you. The weight of the ocean presses in, and the ancient city swallows another expedition whole.</p>"
+    }
+  }
+}

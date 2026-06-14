@@ -1,0 +1,33 @@
+{
+  "blankPrintedText": "Treat this asset's printed text box as if it were blank until the end of the round.",
+  "moveStarSpawn": "Move a Star Spawn enemy once in any direction.",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of locations with no scenario cards beneath them (rounded up).",
+      "cultist": "-3. If this test fails, place 1 doom on the nearest enemy with no doom on it.",
+      "tablet": "-3. If this test fails, place 1 of your clues on your location.",
+      "elderThing": "-2. If your location is flooded, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of locations with no scenario cards beneath them.",
+      "cultist": "-5. If this test fails, place 1 doom on the nearest enemy with no doom on it.",
+      "tablet": "-5. If this test fails, place 1 of your clues on your location.",
+      "elderThing": "-4. If your location is flooded, reveal another token."
+    }
+  },
+  "resolutions": {
+    "xp": { "bonus": "for recovering the artifacts" },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: \"I have worked too hard to see my plans undone,\" Randall seethes. Nightmarish shapes form around the antiquarian's head and shoulders as he grasps at you weakly. Pulse pounding, you run for the shop exit and barrel out into the street. When you turn to look, the shop door has vanished yet again.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: \"You're too late!\" Randall wheezes, clutching his side. \"The destruction of Arkham is at hand and you are powerless to stop it.\" Tchotchkes and ancient tomes fly off the shelves and hang suspended mid-air. Your vision blurs, then you find yourself back on the street. The shop has vanished yet again.</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached_: The phantom shop slips from your grasp, taking its secrets—and the antiquarian—with it. You are left empty-handed in the storm-lashed streets as the doom of Arkham draws near.</p>"
+    }
+  }
+}

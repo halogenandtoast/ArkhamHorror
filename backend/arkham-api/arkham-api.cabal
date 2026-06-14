@@ -2079,6 +2079,7 @@ library
       Arkham.Campaigns.TheDreamEaters.Meta
       Arkham.Campaigns.TheDrownedCity.CampaignSteps
       Arkham.Campaigns.TheDrownedCity.ChaosBag
+      Arkham.Campaigns.TheDrownedCity.Effects.StruggleForAir
       Arkham.Campaigns.TheDrownedCity.Helpers
       Arkham.Campaigns.TheDrownedCity.Import
       Arkham.Campaigns.TheDrownedCity.Key
@@ -5116,6 +5117,7 @@ library
       Arkham.Scenario.Scenarios.CarnevaleOfHorrors
       Arkham.Scenario.Scenarios.CityOfTheElderThings
       Arkham.Scenario.Scenarios.CongressOfTheKeys
+      Arkham.Scenario.Scenarios.CourtOfTheAncients
       Arkham.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Scenario.Scenarios.CurtainCall
       Arkham.Scenario.Scenarios.DancingMad
@@ -5147,6 +5149,7 @@ library
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.MachinationsThroughTime
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
+      Arkham.Scenario.Scenarios.ObsidianCanyons
       Arkham.Scenario.Scenarios.OneLastJob
       Arkham.Scenario.Scenarios.OnThinIce
       Arkham.Scenario.Scenarios.PointOfNoReturn
@@ -5198,19 +5201,25 @@ library
       Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
       Arkham.Scenario.Scenarios.RiddlesAndRain
       Arkham.Scenario.Scenarios.SanguineShadows
+      Arkham.Scenario.Scenarios.SepulchreOfTheSleeper
       Arkham.Scenario.Scenarios.ShadesOfSuffering
       Arkham.Scenario.Scenarios.ShatteredAeons
       Arkham.Scenario.Scenarios.SmokeAndMirrors
       Arkham.Scenario.Scenarios.SpreadingFlames
+      Arkham.Scenario.Scenarios.TheApiary
       Arkham.Scenario.Scenarios.TheBlobThatAteEverything
       Arkham.Scenario.Scenarios.TheBoundaryBeyond
       Arkham.Scenario.Scenarios.TheCityOfArchives
       Arkham.Scenario.Scenarios.TheDepthsOfYoth
       Arkham.Scenario.Scenarios.TheDevourerBelow
+      Arkham.Scenario.Scenarios.TheDoomOfArkhamPartI
+      Arkham.Scenario.Scenarios.TheDoomOfArkhamPartII
       Arkham.Scenario.Scenarios.TheDoomOfEztli
+      Arkham.Scenario.Scenarios.TheDrownedQuarter
       Arkham.Scenario.Scenarios.TheEssexCountyExpress
       Arkham.Scenario.Scenarios.TheEternalSlumber
       Arkham.Scenario.Scenarios.TheGathering
+      Arkham.Scenario.Scenarios.TheGrandVault
       Arkham.Scenario.Scenarios.TheHeartOfMadnessPart1
       Arkham.Scenario.Scenarios.TheHeartOfMadnessPart2
       Arkham.Scenario.Scenarios.TheHouseAlwaysWins
@@ -5270,6 +5279,7 @@ library
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Scenarios.CityOfTheElderThings.Helpers
       Arkham.Scenarios.CongressOfTheKeys.Helpers
+      Arkham.Scenarios.CourtOfTheAncients.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
       Arkham.Scenarios.DancingMad.Helpers
@@ -5302,6 +5312,7 @@ library
       Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MachinationsThroughTime.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
+      Arkham.Scenarios.ObsidianCanyons.Helpers
       Arkham.Scenarios.OneLastJob.Helpers
       Arkham.Scenarios.OnThinIce.Helpers
       Arkham.Scenarios.PointOfNoReturn.Helpers
@@ -5311,19 +5322,25 @@ library
       Arkham.Scenarios.RelicsOfThePast.Helpers
       Arkham.Scenarios.RiddlesAndRain.Helpers
       Arkham.Scenarios.SanguineShadows.Helpers
+      Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
       Arkham.Scenarios.ShadesOfSuffering.Helpers
       Arkham.Scenarios.ShatteredAeons.Helpers
       Arkham.Scenarios.SmokeAndMirrors.Helpers
       Arkham.Scenarios.SpreadingFlames.Helpers
+      Arkham.Scenarios.TheApiary.Helpers
       Arkham.Scenarios.TheBlobThatAteEverything.Helpers
       Arkham.Scenarios.TheBoundaryBeyond.Helpers
       Arkham.Scenarios.TheCityOfArchives.Helpers
       Arkham.Scenarios.TheDepthsOfYoth.Helpers
       Arkham.Scenarios.TheDevourerBelow.Helpers
+      Arkham.Scenarios.TheDoomOfArkhamPartI.Helpers
+      Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
       Arkham.Scenarios.TheDoomOfEztli.Helpers
+      Arkham.Scenarios.TheDrownedQuarter.Helpers
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheEternalSlumber.Helpers
       Arkham.Scenarios.TheGathering.Helpers
+      Arkham.Scenarios.TheGrandVault.Helpers
       Arkham.Scenarios.TheHeartOfMadness.Helpers
       Arkham.Scenarios.TheHeartOfMadness.Pylon
       Arkham.Scenarios.TheHouseAlwaysWins.Helpers

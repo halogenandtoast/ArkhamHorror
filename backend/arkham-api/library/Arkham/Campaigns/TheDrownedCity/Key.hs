@@ -28,6 +28,10 @@ data TheDrownedCityKey
   | TidalTablet
   | GrislyMask
   | HorrorInClay
+  | -- | The Apiary
+    ThePilgrimsWereSaved
+  | ThePilgrimsWereDevoured
+  | TheInvestigatorsExterminatedTheAlienParasites
   | -- | The Drowned Quarter
     ThePowerWasDiverted
   | -- | The Grand Vault

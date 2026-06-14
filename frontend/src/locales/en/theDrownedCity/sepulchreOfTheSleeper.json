@@ -1,0 +1,39 @@
+{
+  "tooltips": {
+    "weakenCthulhu": "During your turn, remove 1 doom from an Artifact asset you control: Cthulhu loses [[Relentless]] and gets -1 fight and -1 evade until the end of the round. Limit once per asset per round."
+  },
+  "placeAdditionalDoom": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Tidal Tablet",
+  "placeAdditionalDoomOnObsidianClaw": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Obsidian Claw",
+  "placeAdditionalDoomOnBarrierNode": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Barrier Node",
+  "placeAdditionalDoomOnShardOfYchlecht": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Shard of Ychlecht",
+  "placeAdditionalDoomOnGrislyMask": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Grisly Mask",
+  "doNotPlaceAdditionalDoom": "Do not place additional doom",
+  "sigilCarvedAlcoveStoryOfDefiance": {
+    "test": "{action}: Test {agility} (5). If you succeed, place 1 doom on the Grisly Mask. Investigators at this location may additionally spend 1 clue per investigator, as a group, to place 1 more doom on it."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current Disturbance (to a maximum of 6).",
+      "cultist": "-4. If you fail, draw the top card of the encounter deck. If you fail by 3 or more, that card gains peril and surge.",
+      "tablet": "-4. For each point you fail by, you must either take 1 horror or discard 1 card from your hand.",
+      "elderThing": "-3. Reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the current Disturbance.",
+      "cultist": "-6. If you fail, draw the top card of the encounter deck. If you fail by 3 or more, that card gains peril and surge.",
+      "tablet": "-6. For each point you fail by, you must either take 1 horror or discard 1 card from your hand.",
+      "elderThing": "-4. Reveal another token."
+    }
+  },
+  "resolutions": {
+    "xp": { "bonus": "for facing the Sleeper" },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: The gargantuan form of Cthulhu falls backwards into the central pool. His flabby clawed hands grasp at the edges of the pool, failing to find purchase, as his form sinks below the black water. The five glowing red eyes, distorted by the water's surface, slowly fade from view. And, just as suddenly as it started, all is quiet and still.</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached_: Broken in both mind and body, you collapse before the great form of Cthulhu. The city quakes, filling your ears with a deafening drone. Cthulhu stares down at you with indifference—you are nothing more than a nuisance, an insignificant pest. Your consciousness folds in on itself as your mind gives way to the unbound freedom of utter insanity.</p>"
+    }
+  }
+}

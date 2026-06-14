@@ -1,4 +1,12 @@
 {
+  "theAwakening": {
+    "title": "Interlude III: The Awakening",
+    "body": "<p>A violent tremor knocks you prone. As you clamber to your feet, the colossal form of Cthulhu rises from the heart of the drowned city, its terrible will pressing against your mind. Struggling against the ancient one, you and the survivors of the expedition flee toward the surface, the city collapsing into the churning sea behind you.</p>"
+  },
+  "returnToArkham": {
+    "title": "Interlude IV: Return to Arkham",
+    "body": "<p>Your sleep on the voyage home is fraught with nightmares of the sleeping god and the drowned city. You wake each morning more certain that what you witnessed was no dream—and that the doom you glimpsed beneath the waves is following you back to Arkham.</p>"
+  },
   "anOfferYouCantRefuse": {
     "title": "Interlude I: An Offer You Can’t Refuse",
     "interlude1": "<p>“What you have recovered is no mere curio,” Randall smirks as you admire the ancient artifact—a vaguely humanoid figure with a heavy, octopoid head and squid-like features. “Through much painstaking research, I have pinpointed the relative coordinates of an ancient city: a stretch of ocean in the South Pacific where many sailing vessels have disappeared with no explanation. I need someone bold and resourceful to lead an expedition to the ancient city. I need that person to be you. Should you accept, I shall absolve you of any remaining debt and provide you enough money to retire comfortably. Very comfortably.”</p><p>Your mind wanders back to those other “concerns.”</p>",

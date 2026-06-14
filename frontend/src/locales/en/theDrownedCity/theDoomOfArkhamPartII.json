@@ -1,0 +1,36 @@
+{
+  "placeSigil": "Spend 1 clue (as a group, per investigator) and place an Artifact asset you control in the victory display: Place 1 sigil on your location.",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is Cthulhu's Rage.",
+      "cultist": "-3. If you fail and your location is flooded, take 1 damage.",
+      "tablet": "-3. If you fail, place 1 of your clues on your location.",
+      "elderThing": "-1. Reveal another token. If you fail, after this test resolves, draw the top card of the Cthulhu deck. (Max one draw per round.)"
+    },
+    "hardExpert": {
+      "skull": "-X. X is 2 more than Cthulhu's Rage.",
+      "cultist": "-5. If your location is flooded, take 1 damage.",
+      "tablet": "-5. If you fail, place 1 of your clues on your location.",
+      "elderThing": "-3. Reveal another token. If you fail, after this test resolves, draw the top card of the Cthulhu deck. (Max one draw per round.)"
+    }
+  },
+  "resolutions": {
+    "xp": { "bonus": "for standing against the Sleeper" },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: With a final, defiant effort you drive the awakened dreamer back. The great form of Cthulhu recoils, and the storm over Arkham begins to break. For now, the Sleeper returns to its dreaming.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: The sigils blaze with stolen power, and the ancient seal closes around Cthulhu like a fist. The dreamer is banished back beneath the waves, and Arkham—battered but standing—falls silent at last.</p>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: You drive Cthulhu away, but the cost is steep. Whole districts of Arkham lie in ruin, swallowed by the rising tide. The Sleeper is gone, for now—but the city will never be the same.</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached_: Arkham drowns beneath the churning sea, and the great dreamer's annihilating gaze sweeps away all who stood against it. The doom of Arkham is complete.</p>"
+    }
+  }
+}

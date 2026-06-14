@@ -1,0 +1,51 @@
+{
+  "cluesToSpend": "Clues to spend",
+  "wingsOfTerror": {
+    "drawEnemy": "Draw that enemy",
+    "attack": "That enemy attacks you"
+  },
+  "westernWall": {
+    "resign": "You retreat to the western wall and descend from the storm-wracked skyline."
+  },
+  "ancientDome": {
+    "resign": "You clamber down from the ancient dome, descending from the storm-wracked skyline."
+  },
+  "hangingShip": {
+    "slide": "Slide Hanging Ship into an adjacent open sky"
+  },
+  "magneticSpires": {
+    "swap": "Choose an open sky up to 2 spaces away and swap Magnetic Spires with it"
+  },
+  "lostInTheClouds": {
+    "eachInvestigatorTakesHorror": "Each investigator takes 2 direct horror"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current Storm Intensity.",
+      "cultist": "-4. If this test fails, place 1 doom on the nearest enemy.",
+      "tablet": "-1 for each open sky adjacent to your current location.",
+      "elderThing": "-2. If there is an enemy at your location, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 2 more than the current Storm Intensity.",
+      "cultist": "-6. Place 1 doom on the nearest enemy.",
+      "tablet": "-2 for each open sky adjacent to your current location.",
+      "elderThing": "-4. If there is an enemy at your location, reveal another token."
+    }
+  },
+  "resolutions": {
+    "xp": { "bonus": "for braving the obsidian canyons" },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Andy sits on a glistening boulder, doing his best not to look shaken. \"Well. I thought this trip was going to make my career. But as it turns out—between alien parasites, magnetic storms, and, you know, the Pacific Ocean—my career didn't stand a chance,\" he sighs. \"At least we're back in one piece. Well, mostly,\" he laughs, favoring his bandaged arm.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: You join Ruby at the crest of the ancient court. As you peer down into the depths, you are stunned by the sheer breadth of the structure. Below, a towering lift stands in the center of a cathedral-like nave, surrounded by spiraling ringed floors. Five long apses radiate outward from the central structure like obsidian claws, dominating the otherworldly skyline.</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached_: The storms scatter the expedition across the obsidian skyline. Battered and disoriented, you eventually regroup at the shoreline, having lost the thread of your purpose among the howling winds.</p>"
+    }
+  }
+}

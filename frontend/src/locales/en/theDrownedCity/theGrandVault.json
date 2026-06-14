@@ -1,0 +1,39 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of activated locations (rounded down).",
+      "cultist": "-3. If you fail, you must either deactivate your location or take 1 damage or 1 horror.",
+      "tablet": "-2 (-3 instead if your location is partially flooded; -4 instead if your location is fully flooded).",
+      "elderThing": "-4. If you fail, search the encounter discard pile for a copy of the Still Behind You treachery and add it to the victory display."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of activated locations.",
+      "cultist": "-4. After this test resolves, you must either deactivate your location or take 1 damage and 1 horror.",
+      "tablet": "-3 (-4 instead if your location is partially flooded; -5 instead if your location is fully flooded).",
+      "elderThing": "-5. If you fail, search the encounter discard pile for a copy of the Still Behind You treachery and draw it."
+    }
+  },
+  "theGreatStair": {
+    "resign": "You ascend the great stair, leaving the drowned depths behind you."
+  },
+  "deadlyMechanisms": {
+    "deactivate": "Deactivate the nearest activated Vault location.",
+    "drawAttendant": "Draw 1 of the set-aside Vault Attendant enemies.",
+    "move": "Move to an adjacent location (flooded if able)."
+  },
+  "resolutions": {
+    "xp": { "bonus": "for braving the grand vault" },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: The expedition members pass the evening sharing stories and cracking jokes. Even in spite of the city's dour atmosphere, spirits seem to be high. You share your findings with Ruby and her companions while Andy attempts to make stew. She describes their difficult route to the vault, and advises you take the path up through the ancient court above, instead of the route she took through the silent factories.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: The expedition members pass the evening sharing stories and cracking jokes. Even in spite of the city's dour atmosphere, spirits seem to be high. While Ruby plays poker with the more impulsive expedition members, you share your findings with Andy. He, in turn, recounts their trek down the sunken western wall and through the ancient foundations of the city.</p>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached_: You are rescued from the churning water battered and bruised, but thankfully still alive. After returning to the towering precipice where you began, you are pleasantly surprised to find Ruby and Andy chatting over a meal of dry rations. Together, you pass the evening cracking jokes and sharing stories, and compile a crude map of the ancient city.</p>"
+    }
+  }
+}

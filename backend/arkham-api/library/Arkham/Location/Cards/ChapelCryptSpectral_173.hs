@@ -33,7 +33,7 @@ instance HasAbilities ChapelCryptSpectral_173 where
 instance RunMessage ChapelCryptSpectral_173 where
   runMessage msg l@(ChapelCryptSpectral_173 attrs) = runQueueT $ case msg of
     FlipThis (isTarget attrs -> True) -> do
-      swapLocation attrs =<< genCard Locations.chapelCryptSpectral_173
+      swapLocation attrs =<< genCard Locations.chapelCrypt_173
       pure l
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mTopCard <- fieldMap InvestigatorDeck (listToMaybe . take 1 . unDeck) iid

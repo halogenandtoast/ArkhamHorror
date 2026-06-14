@@ -39,7 +39,7 @@ instance HasAbilities ChapelAtticSpectral_176 where
 instance RunMessage ChapelAtticSpectral_176 where
   runMessage msg l@(ChapelAtticSpectral_176 attrs) = runQueueT $ case msg of
     FlipThis (isTarget attrs -> True) -> do
-      swapLocation attrs =<< genCard Locations.chapelAtticSpectral_176
+      swapLocation attrs =<< genCard Locations.chapelAttic_176
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       handCount <- fieldMap InvestigatorHand length iid

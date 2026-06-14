@@ -34,7 +34,7 @@ instance HasAbilities ChapelCryptSpectral_174 where
 instance RunMessage ChapelCryptSpectral_174 where
   runMessage msg l@(ChapelCryptSpectral_174 attrs) = runQueueT $ case msg of
     FlipThis (isTarget attrs -> True) -> do
-      swapLocation attrs =<< genCard Locations.chapelCryptSpectral_174
+      swapLocation attrs =<< genCard Locations.chapelCrypt_174
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       mTopHex <- find (`cardMatch` CardWithTrait Hex) <$> scenarioField ScenarioDiscard

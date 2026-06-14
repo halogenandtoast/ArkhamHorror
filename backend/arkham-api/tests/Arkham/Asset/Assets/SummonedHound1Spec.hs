@@ -32,8 +32,10 @@ spec = describe "Summoned Hound (1)" $ do
     it "pays the additional investigate cost after choosing investigate" . gameTest $ \self -> do
       withProp @"remainingActions" 3 self
       hound <- self `putAssetIntoPlay` Assets.summonedHound1
+      enemy <- testEnemy
       orneLibrary <- testLocationWithDef Locations.orneLibrary id
       setChaosTokens [Zero]
+      enemy `spawnAt` orneLibrary
       self `moveTo` orneLibrary
       duringTurn self do
         [useHound] <- self `getActionsFrom` hound

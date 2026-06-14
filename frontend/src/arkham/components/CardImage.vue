@@ -88,6 +88,10 @@ const backImage = computed(() => {
     return imgsrc('encounter_back.jpg')
   }
 
+  // Player-type cards (e.g. earned Artifact assets) may also define a custom back.
+  if (props.card.meta?.customBack)
+    return imgsrc(`backs/${props.card.meta.customBack}`)
+
   return imgsrc('player_back.jpg')
   
 })

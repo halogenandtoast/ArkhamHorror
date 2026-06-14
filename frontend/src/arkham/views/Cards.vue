@@ -101,7 +101,7 @@ const includeEncounter = computed(() => route.query.includeEncounter === "true")
 const store = useDbCardStore()
 
 const CACHE_KEY_PREFIX = 'arkham_cards_cache_'
-const CACHE_VERSION = 'v1'
+const CACHE_VERSION = 'v2'
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
 const getCachedCards = (withEncounter: boolean): Arkham.CardDef[] | null => {
@@ -159,7 +159,15 @@ interface CardSet {
   code: string
   cycle: number
   encounterDuplicates?: number
+  // Unused code numbers within [min, max] that don't correspond to a real card,
+  // so they aren't counted toward the set total.
+  missing?: string[]
 }
+
+// Total card count for an encounter set: every code in [min, max], plus any
+// duplicate-back cards, minus the unused (missing) numbers in that range.
+const encounterSetTotal = (set: CardSet) =>
+  set.max - set.min + 1 + (set.encounterDuplicates ?? 0) - (set.missing?.length ?? 0)
 
 interface CardCycle {
   name: string
@@ -229,7 +237,7 @@ const cycleCountText = (cycle: CardCycle) => {
   if (!allCards.value) return 0
   const implementedCount = cycleCount(cycle)
   const cycleSets = sets.filter((s) => s.cycle == cycle.cycle)
-  const total = cycleSets.reduce((acc, set) => acc + (includeEncounter.value ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards), 0)
+  const total = cycleSets.reduce((acc, set) => acc + (includeEncounter.value ? encounterSetTotal(set) : set.playerCards), 0)
 
   if (implementedCount == total) {
     return ""
@@ -245,7 +253,7 @@ const setCount = (set: CardSet) => {
 
 const setCountText = (set: CardSet) => {
   const implementedCount = setCount(set)
-  const total = includeEncounter.value ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards
+  const total = includeEncounter.value ? encounterSetTotal(set) : set.playerCards
 
   if (implementedCount == total) {
     return ""

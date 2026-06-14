@@ -230,6 +230,19 @@ allStoryCards =
       , anomaliesInSpacetime
       , mobTroubles
       , unspeakableAbomination
+      , -- The Drowned City
+        westernWinds
+      , ruthlessCharge
+      , hurricaneForce
+      , direGale
+      , dreadsight
+      , demolition
+      , fifthEye
+      , seismicStomp
+      , eldritchCall
+      , psychicRebuke
+      , risingTides
+      , hopeFades
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -818,3 +831,49 @@ mobTroubles = doubleSided $ addTrait Plot $ story "87039" "Mob Troubles" Machina
 unspeakableAbomination :: CardDef
 unspeakableAbomination =
   doubleSided $ addTrait Plot $ story "87042" "Unspeakable Abomination" MachinationsThroughTime
+
+-- The Drowned City
+
+-- The modular "Cthulhu deck" of action cards (The Doom of Arkham Pt II) shares a
+-- distinct card back.
+cthulhuDeckBack :: Map Text Value
+cthulhuDeckBack = mapFromList [("customBack", String "back_cthulhu_deck.jpg")]
+
+cthulhuDeckCard :: CardCode -> Name -> EncounterSet -> CardDef
+cthulhuDeckCard cCode name encounterSet = (story cCode name encounterSet) {cdMeta = cthulhuDeckBack}
+
+westernWinds :: CardDef
+westernWinds = doubleSided $ story "11640" "Western Winds" ObsidianCanyons
+
+ruthlessCharge :: CardDef
+ruthlessCharge = cthulhuDeckCard "11705" "Ruthless Charge" TheDoomOfArkhamPartII
+
+hurricaneForce :: CardDef
+hurricaneForce = cthulhuDeckCard "11706" "Hurricane Force" TheDoomOfArkhamPartII
+
+direGale :: CardDef
+direGale = cthulhuDeckCard "11707" "Dire Gale" TheDoomOfArkhamPartII
+
+dreadsight :: CardDef
+dreadsight = cthulhuDeckCard "11708" "Dreadsight" TheDoomOfArkhamPartII
+
+demolition :: CardDef
+demolition = cthulhuDeckCard "11709" "Demolition" TheDoomOfArkhamPartII
+
+fifthEye :: CardDef
+fifthEye = cthulhuDeckCard "11710" "Fifth Eye" TheDoomOfArkhamPartII
+
+seismicStomp :: CardDef
+seismicStomp = cthulhuDeckCard "11711" "Seismic Stomp" TheDoomOfArkhamPartII
+
+eldritchCall :: CardDef
+eldritchCall = cthulhuDeckCard "11712" "Eldritch Call" TheDoomOfArkhamPartII
+
+psychicRebuke :: CardDef
+psychicRebuke = cthulhuDeckCard "11713" "Psychic Rebuke" TheDoomOfArkhamPartII
+
+risingTides :: CardDef
+risingTides = cthulhuDeckCard "11714" "Rising Tides" TheDoomOfArkhamPartII
+
+hopeFades :: CardDef
+hopeFades = cthulhuDeckCard "11715" "Hope Fades" TheDoomOfArkhamPartII

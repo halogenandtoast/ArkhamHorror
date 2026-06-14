@@ -60,7 +60,9 @@ westernWall_11530 =
 -- TODO: back side of double-sided card (11532b)
 underseaVault :: CardDef
 underseaVault =
-  victory 1 $ location_ "11532" "Undersea Vault" [Vault, Glyph] TheWesternWall
+  storyOnBack' "11532b"
+    $ victory 1
+    $ location_ "11532" "Undersea Vault" [Vault, Glyph] TheWesternWall
 
 -- The Drowned Quarter
 -- TODO: back side of double-sided card (11540b)
@@ -180,7 +182,9 @@ centralChamber =
 -- TODO: back side of double-sided card (11579b)
 hiddenVault :: CardDef
 hiddenVault =
-  victory 1 $ location_ "11579" "Hidden Vault" [Apiary, Glyph] TheApiary
+  storyOnBack' "11579b"
+    $ victory 1
+    $ location_ "11579" "Hidden Vault" [Apiary, Glyph] TheApiary
 
 -- The Grand Vault
 theGreatStair :: CardDef
@@ -349,7 +353,9 @@ magneticSpires =
 -- TODO: back side of double-sided card (11662b)
 glyphOrrery :: CardDef
 glyphOrrery =
-  victory 1 $ location_ "11662" "Glyph Orrery" [Rlyeh, Summit, Glyph] ObsidianCanyons
+  storyOnBack' "11662b"
+    $ victory 1
+    $ location_ "11662" "Glyph Orrery" [Rlyeh, Summit, Glyph] ObsidianCanyons
 
 -- Sepulchre of the Sleeper
 dreamersRest :: CardDef

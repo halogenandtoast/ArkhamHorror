@@ -41,7 +41,10 @@ tasks =
 instance RunMessage TheDrownedCity where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> do
-      scope "prologue" $ flavor $ setTitle "title" >> p "body"
+      -- Intro: the epigraph and the April 15 journal entry that open the campaign.
+      scope "intro" $ flavor $ setTitle "title" >> p "body"
+      -- The Prologue, as its own thing after the intro: the campaign's additional
+      -- rules and new keywords, before the first scenario.
       scope "additionalRulesAndClarifications" do
         flavor $ setTitle "title" >> p "floodTokens"
         flavor $ setTitle "title" >> p "artifacts"

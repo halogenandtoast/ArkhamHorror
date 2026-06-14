@@ -59,7 +59,7 @@
   { "name": "The Feast of Hemloch Vale Investigator Expansion", "min": 10001, "max": 10138, "playerCards": 138, "code": "fhvp", "cycle": 10 },
   { "name": "The Feast of Hemloch Vale Campaign Expansion", "min": 10501, "max": 10743, "playerCards": 0, "code": "fhvc", "cycle": 10, "encounterDuplicates": 8 },
   { "name": "The Drowned City Investigator Expansion", "min": 11001, "max": 11129, "playerCards": 129, "code": "tdcp", "cycle": 11 },
-  { "name": "The Drowned City Campaign Expansion", "min": 11501, "max": 11766, "playerCards": 0, "code": "tdcc", "cycle": 11 },
+  { "name": "The Drowned City Campaign Expansion", "min": 11501, "max": 11766, "playerCards": 0, "code": "tdcc", "cycle": 11, "encounterDuplicates": 2, "missing": ["11584", "11585", "11586", "11597", "11668", "11718"] },
   { "name": "Core 2026", "min": 12001, "max": 12195, "playerCards": 104, "code": "core2026", "cycle": 12 },
 
   { "name": "Return to Night of the Zealot", "min": 50001, "max": 50046, "playerCards": 10, "code": "rtnotz", "cycle": 50 },

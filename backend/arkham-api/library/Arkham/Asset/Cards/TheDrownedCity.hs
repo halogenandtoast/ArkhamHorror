@@ -832,10 +832,15 @@ obsidianRelic =
     , cdOtherSide = Just "11550b"
     }
 
+-- Earned Artifact story assets share a distinct card back.
+artifactBack :: Map Text Value
+artifactBack = mapFromList [("customBack", String "back_artifact.jpg")]
+
 barrierNode :: CardDef
 barrierNode =
   (storyAsset_ "11552" ("Barrier Node" <:> "Energy Shield") TheDrownedQuarter)
     { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdMeta = artifactBack
     , cdUnique = True
     }
 
@@ -860,6 +865,7 @@ grislyMask :: CardDef
 grislyMask =
   (storyAsset_ "11582" ("Grisly \"Mask\"" <:> "Is It Actually Alive?") TheApiary)
     { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdMeta = artifactBack
     , cdUnique = True
     }
 
@@ -867,6 +873,7 @@ tidalTablet :: CardDef
 tidalTablet =
   (storyAsset_ "11611" ("Tidal Tablet" <:> "Record of Ancient Depths") TheGrandVault)
     { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdMeta = artifactBack
     , cdUnique = True
     }
 
@@ -874,6 +881,7 @@ shardOfYchlecht :: CardDef
 shardOfYchlecht =
   (storyAsset_ "11638" ("Shard of Y'ch'lecht" <:> "Otherworldly Remnant") CourtOfTheAncients)
     { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdMeta = artifactBack
     , cdUnique = True
     }
 
@@ -889,6 +897,7 @@ obsidianClaw :: CardDef
 obsidianClaw =
   (storyAsset_ "11672a" ("Obsidian Claw" <:> "Speed") ObsidianCanyons)
     { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdMeta = artifactBack
     , cdUnique = True
     , cdDoubleSided = True
     , cdOtherSide = Just "11672b"
@@ -898,6 +907,7 @@ obsidianClawPower :: CardDef
 obsidianClawPower =
   (storyAsset_ "11672b" ("Obsidian Claw" <:> "Power") ObsidianCanyons)
     { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdMeta = artifactBack
     , cdUnique = True
     , cdDoubleSided = True
     , cdOtherSide = Just "11672a"
@@ -915,5 +925,6 @@ horrorInClay :: CardDef
 horrorInClay =
   (storyAsset_ "11688" ("Horror in Clay" <:> "Sculpture of Dreams") TheDoomOfArkhamPartI)
     { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
+    , cdMeta = artifactBack
     , cdUnique = True
     }

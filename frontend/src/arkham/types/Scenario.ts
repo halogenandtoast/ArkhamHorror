@@ -238,6 +238,7 @@ export function campaignIdToI18n(campaignId: string): string | null {
     case "8": return "edgeOfTheEarth"
     case "9": return "theScarletKeys"
     case "10": return "theFeastOfHemlockVale"
+    case "11": return "theDrownedCity"
     case "12": return "brethrenOfAsh"
     case "83": return "standalone.guardiansOfTheAbyss"
     default: return null
@@ -396,6 +397,16 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "12105": return "brethrenOfAsh.spreadingFlames"
     case "12133": return "brethrenOfAsh.smokeAndMirrors"
     case "12168": return "brethrenOfAsh.queenOfAsh"
+    case "11501": return "theDrownedCity.oneLastJob"
+    case "11517": return "theDrownedCity.theWesternWall"
+    case "11536": return "theDrownedCity.theDrownedQuarter"
+    case "11553": return "theDrownedCity.theApiary"
+    case "11587": return "theDrownedCity.theGrandVault"
+    case "11612": return "theDrownedCity.courtOfTheAncients"
+    case "11639": return "theDrownedCity.obsidianCanyons"
+    case "11673": return "theDrownedCity.sepulchreOfTheSleeper"
+    case "11682": return "theDrownedCity.theDoomOfArkhamPartI"
+    case "11688a": return "theDrownedCity.theDoomOfArkhamPartII"
     default: throw new Error(`Unknown scenario id: ${scenarioId}`)
   }
 }

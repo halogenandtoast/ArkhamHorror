@@ -1,6 +1,6 @@
 {
   "noAir": "You did not find air. Take 5 direct damage.",
-  "prologue": {
+  "intro": {
     "title": "The Risen Deep",
     "body": "<p class='basic right'>“…the nightmare corpse-city of R’lyeh, that was built in measureless aeons behind history by the vast, loathsome shapes that seeped down from the dark stars. There lay great Cthulhu and his hordes, hidden in green slimy vaults and sending out at last, after cycles incalculable, the thoughts that spread fear to the dreams of the sensitive and called imperiously to the faithful to come on a pilgrimage of liberation and restoration.”</p><p class='basic right'>– H. P. Lovecraft, “The Call of Cthulhu”</p><h3>April 15</h3><p>Something hasn’t seemed right for a while. It has been an unusually cold year, with heavy snow, rain, and fog keeping the New England sky in a state of perpetual melancholy. A restive nervousness seems to have crept into all aspects of domestic life. Small arguments on street corners come to blows. Muffled shouts and screams resound behind closed doors. A not-insignificant number of students have simply stopped attending classes at Miskatonic University. The people of Arkham feel it in their bones: Something is different. Something feels wrong.</p>"
   },

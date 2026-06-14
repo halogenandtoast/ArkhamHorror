@@ -5616,21 +5616,26 @@ library
       Arkham.Story.Cards.DeckOfPossibilities
       Arkham.Story.Cards.DeckOfTheTheodosia
       Arkham.Story.Cards.DefuseTheExplosives
+      Arkham.Story.Cards.Demolition
       Arkham.Story.Cards.DesertedStation
+      Arkham.Story.Cards.DireGale
       Arkham.Story.Cards.DisappearingFootprints
       Arkham.Story.Cards.DissectedExplorer
+      Arkham.Story.Cards.Dreadsight
       Arkham.Story.Cards.DreamlikeHorrors
       Arkham.Story.Cards.DriveOffTheMiGo
       Arkham.Story.Cards.DrKenslersOffice
       Arkham.Story.Cards.DyersClassroom
       Arkham.Story.Cards.EffigyOfNodens
       Arkham.Story.Cards.ElderChamber
+      Arkham.Story.Cards.EldritchCall
       Arkham.Story.Cards.EndlessSecrets
       Arkham.Story.Cards.EngramsOath
       Arkham.Story.Cards.EvilWithin
       Arkham.Story.Cards.ExhumeTheBones
       Arkham.Story.Cards.FamilialPain
       Arkham.Story.Cards.FateOfTheDreamers
+      Arkham.Story.Cards.FifthEye
       Arkham.Story.Cards.FindingAgentHarper
       Arkham.Story.Cards.FortunesDisfavor25
       Arkham.Story.Cards.FortunesDisfavor26
@@ -5641,6 +5646,8 @@ library
       Arkham.Story.Cards.HastursEnd
       Arkham.Story.Cards.HastursLastStand
       Arkham.Story.Cards.HedgeMaze
+      Arkham.Story.Cards.HopeFades
+      Arkham.Story.Cards.HurricaneForce
       Arkham.Story.Cards.IfTheUniformFits
       Arkham.Story.Cards.Infirmary
       Arkham.Story.Cards.InhabitantOfCarcosa
@@ -5677,6 +5684,7 @@ library
       Arkham.Story.Cards.PlayfulShadows
       Arkham.Story.Cards.PrisonersOfConquest
       Arkham.Story.Cards.PrisonOfMemories
+      Arkham.Story.Cards.PsychicRebuke
       Arkham.Story.Cards.RealityAcid
       Arkham.Story.Cards.RecoverTheSample
       Arkham.Story.Cards.RedeemAFormerColleague
@@ -5685,11 +5693,14 @@ library
       Arkham.Story.Cards.ReturnToSickeningReality_24
       Arkham.Story.Cards.ReturnToUnfinishedBusiness_38
       Arkham.Story.Cards.ReturnToUnfinishedBusiness_39
+      Arkham.Story.Cards.RisingTides
       Arkham.Story.Cards.RiverviewTheatre
       Arkham.Story.Cards.RollingPits
       Arkham.Story.Cards.RuinsOfSarkomand
+      Arkham.Story.Cards.RuthlessCharge
       Arkham.Story.Cards.SaveTheCivilians
       Arkham.Story.Cards.ScoutingTheVale
+      Arkham.Story.Cards.SeismicStomp
       Arkham.Story.Cards.SickeningReality_65
       Arkham.Story.Cards.SickeningReality_66
       Arkham.Story.Cards.SickeningReality_67
@@ -5755,6 +5766,7 @@ library
       Arkham.Story.Cards.UsurpTheNight
       Arkham.Story.Cards.ValentinosFate
       Arkham.Story.Cards.WaresOfBaharna
+      Arkham.Story.Cards.WesternWinds
       Arkham.Story.Cards.WhatRemainsOfTyrrhia
       Arkham.Story.Cards.YigsMercy
       Arkham.Story.Import.Lifted

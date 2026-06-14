@@ -527,7 +527,8 @@ function proxyClippedLocationClick(event: MouseEvent) {
   if (event.defaultPrevented || event.button !== 0) return
 
   const target = event.target as HTMLElement | null
-  if (target?.closest('.location-cell, .draggable, button, a, input, select, textarea, [role="button"]')) return
+  if (!target?.closest('.location-cards-container')) return
+  if (target.closest('.location-cell, .draggable, button, a, input, select, textarea, [role="button"]')) return
 
   const cell = [...document.querySelectorAll<HTMLElement>('.location-cell--can-interact')]
     .find((el) => {

@@ -391,7 +391,7 @@ function moveUp() {
     }
 
     header {
-      pointer-events: none;
+      pointer-events: auto;
 
       .minimize-btn {
         pointer-events: auto;

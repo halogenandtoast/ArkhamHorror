@@ -238,6 +238,10 @@ data WindowMatcher
   | RoundEnds Timing
   | DuringTurn Who
   | Enters Timing Who Where
+  | -- | Matches the @EnteringLocationWithEnemy@ window: the investigator entered
+    -- a location that had 1+ enemies at the moment of entry, evaluated then (not
+    -- re-checked after engagement). See #4813.
+    EntersLocationWithEnemy Timing Who
   | Leaves Timing Who Where
   | WouldMove Timing Who SourceMatcher FromWhere ToWhere
   | EnemyWouldMove Timing EnemyMatcher SourceMatcher FromWhere ToWhere

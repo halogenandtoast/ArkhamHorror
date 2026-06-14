@@ -248,6 +248,14 @@ data WindowType
   | EnemyWouldBeDefeated EnemyId
   | EnterPlay Target
   | Entering InvestigatorId LocationId
+  | -- | Fired alongside the after-@Entering@ window, but only when the
+    -- investigator entered a location that had one or more enemies at the moment
+    -- of entry. Because enemies engage (and can be defeated) before the
+    -- after-entering window resolves, the @Entering@ window's current-state enemy
+    -- check is unreliable for "after you enter a location with 1+ enemies"
+    -- triggers (e.g. On Their Heels). This window snapshots that condition at
+    -- entry. See #4813.
+    EnteringLocationWithEnemy InvestigatorId LocationId
   | Exhausts Target
   | FailAttackEnemy InvestigatorId EnemyId Int
   | FailEvadeEnemy InvestigatorId EnemyId Int

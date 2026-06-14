@@ -106,7 +106,6 @@ import Arkham.Helpers.Slot (
 import Arkham.Helpers.Source (sourceMatches, sourceTraits)
 import Arkham.Helpers.Window (
   batchedTimings,
-  checkAfter,
   checkWhen,
   checkWindows,
   frame,
@@ -325,8 +324,13 @@ handleMove a@InvestigatorAttrs{..} movement = do
               (whenEntering, atIfEntering, _) = batchedTimings batchId (Window.Entering iid destinationLocationId)
 
             -- Windows we need to check as understood:
-            -- according to Empirical Hypothesis ruling the order should be like:
             -- when {leaving} -> atIf {leaving} -> after {leaving} -> before {entering} -> atIf {entering} / when {move} -> atIf {move} -> Reveal Location -> after but before enemy engagement {entering} -> Check Enemy Engagement -> after {entering, move}
+            -- A plain "after you enter a location" reaction (e.g. On Their Heels)
+            -- resolves AFTER enemies engage. This is established by Track Shoes,
+            -- which has to spell out "after you move, but before enemies engage
+            -- you" precisely because the default after-enter timing is post
+            -- engagement (FAQ v2.5 Q&A #034). So the after-entering window fires
+            -- after CheckEnemyEngagement (e.g. Zoey's Cross). See #4813.
             -- move but before enemy engagement is handled in MoveTo
 
             mRunWouldMove <- case mWouldMove of
@@ -524,7 +528,15 @@ handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
 
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
-        afterEntering <- checkAfter $ Window.Entering iid lid
+        -- Snapshot enemy presence at entry (before engagement, before anything can
+        -- defeat them) so "after you enter a location with 1+ enemies" triggers
+        -- survive an enemy being defeated during engagement. The snapshot window is
+        -- offered alongside the regular after-Entering window. See #4813.
+        enteredWithEnemy <- selectAny (EnemyAt (LocationWithId lid))
+        afterEntering <-
+          Helpers.checkWindows
+            $ mkAfter (Window.Entering iid lid)
+            : [mkAfter (Window.EnteringLocationWithEnemy iid lid) | enteredWithEnemy]
         pushAll $ moveAfter movement
           <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
           <> [CheckEnemyEngagement iid | not movement.skipEngagement]

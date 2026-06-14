@@ -21,16 +21,21 @@ onTheirHeels5 = asset OnTheirHeels5 Cards.onTheirHeels5
 
 instance HasAbilities OnTheirHeels5 where
   getAbilities (OnTheirHeels5 a) =
-    [ controlled_ a 1
+    [ controlled
+        a
+        1
+        -- "with 1 or more enemies" is the triggering condition, captured at entry
+        -- by EntersLocationWithEnemy (#4813). The criteria below only gate that an
+        -- effect is still possible at resolution (clue to discover or a damageable
+        -- enemy), so the clue can still be discovered if the enemy was defeated
+        -- during engagement.
+        ( oneOf
+            [ CanDiscoverCluesAt YourLocation
+            , exists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (a.ability 1))
+            ]
+        )
         $ triggered
-          ( Enters
-              #after
-              You
-              ( LocationWithEnemy AnyEnemy
-                  <> oneOf
-                    [LocationWithDiscoverableCluesBy You, LocationWithEnemy (EnemyCanBeDamagedBySource (a.ability 1))]
-              )
-          )
+          (EntersLocationWithEnemy #after You)
           (assetUseCost a Lead 1 <> exhaust a)
     ]
 

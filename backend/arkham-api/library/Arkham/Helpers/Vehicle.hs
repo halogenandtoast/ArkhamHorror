@@ -40,4 +40,9 @@ moveVehicle (asId -> asset) fromLid toLid = do
   iids <- select $ InVehicleMatching (AssetWithId asset)
   checkWindows $ map (\iid' -> Window.mkWhen $ Window.Leaving iid' fromLid) iids
   place asset toLid
-  checkWindows $ map (\iid' -> Window.mkAfter $ Window.Entering iid' toLid) iids
+  -- Snapshot enemy presence at entry so "after you enter a location with 1+
+  -- enemies" triggers fire for carried investigators too. See #4813.
+  toLidHasEnemy <- selectAny (enemyAt toLid)
+  checkWindows
+    $ [Window.mkAfter (Window.Entering iid' toLid) | iid' <- iids]
+    <> [Window.mkAfter (Window.EnteringLocationWithEnemy iid' toLid) | toLidHasEnemy, iid' <- iids]

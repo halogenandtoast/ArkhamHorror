@@ -1204,6 +1204,11 @@ h2 {
   box-sizing: border-box;
 }
 
+.amount-choice:only-child {
+  flex-basis: 100%;
+  max-width: 100%;
+}
+
 .amount-choice label {
   color: #f6edf8;
   font-size: 1.05em;

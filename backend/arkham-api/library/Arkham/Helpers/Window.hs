@@ -1196,6 +1196,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , locationMatches iid source window' lid whereMatcher
           ]
       _ -> noMatch
+    Matcher.EntersLocationWithEnemy timing whoMatcher -> guardTiming timing $ \case
+      Window.EnteringLocationWithEnemy iid' _lid -> matchWho iid iid' whoMatcher
+      _ -> noMatch
     Matcher.Leaves timing whoMatcher whereMatcher -> guardTiming timing $ \case
       Window.Leaving iid' lid ->
         andM

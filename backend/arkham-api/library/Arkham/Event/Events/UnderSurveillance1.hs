@@ -5,10 +5,9 @@ import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location
+import Arkham.Helpers.Window (getEnemies)
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype UnderSurveillance1 = UnderSurveillance1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
@@ -29,7 +28,7 @@ instance RunMessage UnderSurveillance1 where
     PlayThisEvent iid eid | eid == attrs.id -> do
       withLocationOf iid (place attrs . AttachedToLocation)
       pure e
-    UseCardAbility iid (isSource attrs -> True) 1 [windowType -> Window.EnemyEnters enemyId _] _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getEnemies -> enemyId : _) _ -> do
       case attrs.placement of
         AttachedToLocation lid -> do
           toDiscardBy iid (attrs.ability 1) attrs

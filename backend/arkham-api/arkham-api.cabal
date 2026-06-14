@@ -6865,6 +6865,7 @@ test-suite spec
       Arkham.Asset.Assets.MedicalTextsSpec
       Arkham.Asset.Assets.MitchBrownSpec
       Arkham.Asset.Assets.OldBookOfLoreSpec
+      Arkham.Asset.Assets.OnTheirHeels5Spec
       Arkham.Asset.Assets.PatricesViolinSpec
       Arkham.Asset.Assets.PendantOfTheQueenSpec
       Arkham.Asset.Assets.PeterSylvestreSpec
@@ -6996,6 +6997,7 @@ test-suite spec
       Arkham.Treachery.Cards.MysteriousChantingSpec
       Arkham.Treachery.Cards.ParanoiaSpec
       Arkham.Treachery.Cards.PsychosisSpec
+      Arkham.Treachery.Cards.PsychotropicSporesSpec
       Arkham.Treachery.Cards.RexsCurseSpec
       Arkham.Treachery.Cards.RookieMistakeSpec
       Arkham.Treachery.Cards.SearchingForIzzieSpec

@@ -32,10 +32,14 @@ instance RunMessage PsychotropicSpores where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- The DrewCardsFromOwnDeck window fires on the first draw of each phase, but
-      -- this ability should only resolve once per round. RoundHistory aggregates
-      -- prior phases' draws, so a value of 0 means this is the first draw this round.
-      drawnThisRound <- getHistoryField RoundHistory iid HistoryCardsDrawn
-      when (drawnThisRound == 0) do
+      -- this ability should only resolve once per round. By the time it resolves,
+      -- the current draw is already recorded in the phase history, so
+      -- RoundHistory (= roundHistory <> phaseHistory) is never 0. Compare against
+      -- the phase total to isolate prior phases this round: if no earlier phase
+      -- drew cards, this is the round's first draw and we deal horror.
+      roundDrawn <- getHistoryField RoundHistory iid HistoryCardsDrawn
+      phaseDrawn <- getHistoryField PhaseHistory iid HistoryCardsDrawn
+      when (roundDrawn == phaseDrawn) do
         directHorror iid (attrs.ability 1) 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

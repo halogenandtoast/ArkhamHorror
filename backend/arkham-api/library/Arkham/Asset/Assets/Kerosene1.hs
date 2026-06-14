@@ -5,6 +5,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Damage
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
+import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 
@@ -36,23 +38,30 @@ instance HasAbilities Kerosene1 where
 instance RunMessage Kerosene1 where
   runMessage msg a@(Kerosene1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      totalInvestigatorHorror <-
-        getSum
-          <$> selectAgg
-            Sum
-            InvestigatorHorror
-            (HealableInvestigator (attrs.ability 1) #horror $ colocatedWith iid)
-      totalAssetHorror <-
-        getSum
-          <$> selectAgg
-            Sum
-            AssetHorror
-            ( HealableAsset (attrs.ability 1) #horror
-                $ at_ (locationWithInvestigator iid)
-                <> AssetControlledBy (affectsOthers Anyone)
-            )
-
-      let maxHorror = min 2 (totalInvestigatorHorror + totalAssetHorror)
+      let source = attrs.ability 1
+      -- When a source owned by the investigator can heal at full (e.g. Soul
+      -- Sanctification), horror can be "healed" even when there is none to heal,
+      -- so the amount must not be capped by the horror actually present.
+      mods <- getModifiers iid
+      canHealAtFull <-
+        anyM (sourceMatches source) [sm | CanHealAtFull sm dt <- mods, dt == HorrorType]
+      maxHorror <-
+        if canHealAtFull
+          then pure 2
+          else do
+            totalInvestigatorHorror <-
+              getSum
+                <$> selectAgg Sum InvestigatorHorror (HealableInvestigator source #horror $ colocatedWith iid)
+            totalAssetHorror <-
+              getSum
+                <$> selectAgg
+                  Sum
+                  AssetHorror
+                  ( HealableAsset source #horror
+                      $ at_ (locationWithInvestigator iid)
+                      <> AssetControlledBy (affectsOthers Anyone)
+                  )
+            pure $ min 2 (totalInvestigatorHorror + totalAssetHorror)
 
       chooseAmounts
         iid

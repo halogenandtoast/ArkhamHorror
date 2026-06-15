@@ -87,13 +87,21 @@ instance RunMessage HemlockHouse where
         _ -> story $ i18nWithTitle "intro4"
       pure s
     Setup -> runScenarioSetup HemlockHouse attrs do
+      setScenarioDayAndTime
+      day <- getCampaignDay
+      time <- getCampaignTime
+
+      let
+        useV1 = day == Day1 || (time == Day && day == Day3)
+        agenda2 = if useV1 then Agendas.theHouseStirsV2 else Agendas.theHouseStirsV1
+
       setup $ ul do
         li "gatherSets"
         li "currentDaySet"
         li "currentDayMarker"
         li "againstTheHouse"
-        li "houseStirsV2"
-        li "houseStirsV1"
+        li.validate useV1 "houseStirsV1"
+        li.validate (not useV1) "houseStirsV2"
         li.nested "locations" do
           li "firstFloor"
           li "shuffleFloors"
@@ -101,12 +109,20 @@ instance RunMessage HemlockHouse where
           li "removeRemaining"
           li "startAtFoyer"
           li "startAtBedroom"
-        li.nested "residents" do
-          li "gideonAndSylvie"
-          li "william"
-          li "judith"
-          li "theo"
-          li "removeResidents"
+        li.nested.validate (time == Day) "residents" do
+          if time == Day
+            then do
+              li.validate (day == Day1) "gideonAndSylvie"
+              li.validate (day == Day1 || day == Day2) "william"
+              li.validate (day == Day2 || day == Day3) "judith"
+              li.validate (day == Day3) "theo"
+              li "removeResidents"
+            else do
+              li "gideonAndSylvie"
+              li "william"
+              li "judith"
+              li "theo"
+              li "removeResidents"
         li "predatoryHouse"
         li "setOutOfPlay"
         unscoped $ li "shuffleRemainder"
@@ -135,16 +151,6 @@ instance RunMessage HemlockHouse where
       gather Set.Rats
 
       gatherAndSetAside Set.Residents
-
-      setScenarioDayAndTime
-      day <- getCampaignDay
-      time <- getCampaignTime
-
-      let
-        agenda2 =
-          case day of
-            Day2 -> Agendas.theHouseStirsV2
-            _ -> Agendas.theHouseStirsV1
 
       setAgendaDeck [Agendas.eerieSilence, agenda2, Agendas.livingWalls]
       setActDeck [Acts.strangeInfestation, Acts.theHeartOfTheHouse]
@@ -256,20 +262,18 @@ instance RunMessage HemlockHouse where
           whenJustM (field InvestigatorLocation iid) \lid ->
             whenJustM (maybeEnemyLocation lid) $ exhaustEnemy attrs . enemyLocationAsEnemyId
           pure s
-    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _
-      | token.face == Tablet -> do
-          n <- if isHardExpert attrs then perPlayer 1 else pure 1
-          whenJustM (nearestEnemyLocationTo iid) \lid ->
-            whenJustM (maybeEnemyLocation lid) \el ->
-              healDamage (enemyLocationAsEnemyId el) attrs n
-          pure s
-    AfterSkillTest (FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _)
-      | token.face == ElderThing -> do
-          whenCurrentAgendaStepIs (`elem` [2, 3]) do
-            removeChaosToken ElderThing
-            predatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
-            sendMessage predatoryHouse $ AddChaosToken ElderThing
-          pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | token.face == Tablet -> do
+      n <- if isHardExpert attrs then perPlayer 1 else pure 1
+      whenJustM (nearestEnemyLocationTo iid) \lid ->
+        whenJustM (maybeEnemyLocation lid) \el ->
+          healDamage (enemyLocationAsEnemyId el) attrs n
+      pure s
+    AfterSkillTest (FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _) | token.face == ElderThing -> do
+      whenCurrentAgendaStepIs (`elem` [2, 3]) do
+        removeChaosToken ElderThing
+        predatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
+        sendMessage predatoryHouse $ AddChaosToken ElderThing
+      pure s
     AfterSkillTest (PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _)
       | token.face == ElderThing
       , isHardExpert attrs -> do

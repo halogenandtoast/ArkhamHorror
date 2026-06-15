@@ -1188,7 +1188,25 @@
         "title": "theFeastOfHemlockVale.campaignLog.map.title",
         "body": "theFeastOfHemlockVale.campaignLog.map.body"
       }
-    ]
+    ],
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree"
+        , "Skull", "Skull", "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour"
+        , "Skull", "Skull", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFive", "MinusFive", "MinusSeven"
+        , "Skull", "Skull", "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusOne","MinusTwo", "MinusTwo", "MinusThree", "MinusThree","MinusFour", "MinusFive", "MinusFive", "MinusSix", "MinusSeven", "MinusEight"
+        , "Skull", "Skull", "ElderSign"
+        ]
+    }
   },
   {
     "id": "12",

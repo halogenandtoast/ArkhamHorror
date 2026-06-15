@@ -8,8 +8,9 @@ import Arkham.Classes.HasModifiersFor (HasModifiersFor (..))
 import Arkham.Classes.RunMessage.Internal (RunMessage (..))
 import Arkham.EnemyLocation.Cards (allEnemyLocationCards)
 import Arkham.EnemyLocation.Types
-import Arkham.Location.Base (LocationAttrs)
+import Arkham.Location.Base (LocationAttrs (..))
 import Arkham.Location.Types (IsLocation (..), Location, toLocation)
+import Arkham.Matcher.Location (LocationMatcher (LocationWithId))
 import Arkham.Prelude
 
 newtype EnemyLocationProxy = EnemyLocationProxy LocationAttrs
@@ -35,5 +36,21 @@ instance RunMessage EnemyLocationProxy where
 
 instance IsLocation EnemyLocationProxy
 
+-- | Project an enemy-location into a regular 'Location' for the engine's
+-- location queries. Enemy-locations store their grid adjacency in
+-- 'locationDirections' (e.g. Shapeless Cellar connects up to the Foyer) but
+-- leave 'locationConnectsTo'/'locationConnectedMatchers' empty, so the engine's
+-- connectivity (movement, 'NearestLocationTo', etc.) would treat them as
+-- isolated. Mirror 'withEnemyLocationAsLocationData' by surfacing the
+-- directional connections as connected matchers on the proxy.
 toEnemyLocationProxy :: EnemyLocationAttrs -> Location
-toEnemyLocationProxy = toLocation . EnemyLocationProxy . enemyLocationBase
+toEnemyLocationProxy attrs = toLocation $ EnemyLocationProxy base'
+ where
+  base = enemyLocationBase attrs
+  directionConnectedIds = concatMap snd $ mapToList (locationDirections base)
+  extraMatchers = map LocationWithId directionConnectedIds
+  base' =
+    base
+      { locationConnectedMatchers = locationConnectedMatchers base <> extraMatchers
+      , locationRevealedConnectedMatchers = locationRevealedConnectedMatchers base <> extraMatchers
+      }

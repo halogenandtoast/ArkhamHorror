@@ -29,7 +29,10 @@ instance HasModifiersFor TheHeartOfTheHouse where
 
 instance HasAbilities TheHeartOfTheHouse where
   getAbilities (TheHeartOfTheHouse a) =
-    [ restricted a 1 (exists $ YourLocation <> LocationWithTrait Dormant)
+    [ restricted
+        a
+        1
+        (exists $ YourLocation <> LocationWithTrait Dormant <> not_ (LocationWithToken Resource))
         $ actionAbilityWithCost (SameLocationGroupClueCost (PerPlayer 1) YourLocation)
     , mkAbility a 2 $ forced $ EnemyAttacks #after You AnyEnemyAttack (EnemyWithTrait Room)
     , mkAbility a 3
@@ -55,7 +58,8 @@ instance RunMessage TheHeartOfTheHouse where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       grid <- getGrid
       enemyLids <-
-        filterM (fmap isJust . maybeEnemyLocation)
+        filterM
+          (fmap isJust . maybeEnemyLocation)
           [lid | GridLocation _ lid <- flattenGrid grid]
       for_ enemyLids flipLocationOver
       doStep 1 msg

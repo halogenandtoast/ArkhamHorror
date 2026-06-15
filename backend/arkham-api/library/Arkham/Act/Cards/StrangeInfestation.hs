@@ -31,7 +31,7 @@ instance HasAbilities StrangeInfestation where
     [ restricted
         a
         1
-        (exists $ YourLocation <> LocationWithTrait Dormant)
+        (exists $ YourLocation <> LocationWithTrait Dormant <> not_ (LocationWithToken Resource))
         $ actionAbilityWithCost (SameLocationGroupClueCost (PerPlayer 1) YourLocation)
     , restricted
         a

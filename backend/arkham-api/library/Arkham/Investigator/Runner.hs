@@ -781,7 +781,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         | card <- viable
         ]
     pure a
-  AddToDiscard iid pc | iid == investigatorId -> do
+  AddToDiscard iid pc | investigatorOwnsCardCode a iid -> do
     modifiers' <- getModifiers a
     case [target | PlaceUnderneathInsteadOfDiscard target <- modifiers'] of
       (target : _) -> do

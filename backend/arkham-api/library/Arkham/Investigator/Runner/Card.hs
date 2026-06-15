@@ -226,7 +226,12 @@ handleChooseAndDiscardAsset a@InvestigatorAttrs{..} iid source assetMatcher = do
     $ targetLabels discardableAssetIds (Only . toDiscardBy iid source)
   pure a
 
-handleAddToDiscard a@InvestigatorAttrs{..} iid pc = do
+handleAddToDiscard a@InvestigatorAttrs{..} iid pc0 = do
+  -- Normalize ownership to this investigator's canonical id. The card may have
+  -- been imported under an alternate investigator code (e.g. a Revised Core
+  -- printing), which would otherwise leave a mismatched owner on the discarded
+  -- copy and break later owner-routed operations.
+  let pc = pc0 {pcOwner = Just investigatorId}
   let
     discardF = case cdWhenDiscarded (toCardDef pc) of
       ToDiscard -> discardL %~ nub . (pc :)
@@ -411,6 +416,16 @@ handlePutOnBottomOfDeck a@InvestigatorAttrs{..} iid cid = do
   push $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
   pure a
 
+-- | An investigator "owns" a card when its owner is any of the investigator's
+-- card codes (primary or alternate). This matters for alternate printings such
+-- as the Revised Core Set, where a card imported from the Revised decklist
+-- carries the Revised investigator code (e.g. Roland @01501@) while the
+-- investigator entity keeps its canonical id (e.g. @01001@). Plain
+-- 'InvestigatorId' equality treats those as distinct, so without this the
+-- owner-routed discard would never match and the card would be lost.
+investigatorOwnsCardCode :: InvestigatorAttrs -> InvestigatorId -> Bool
+investigatorOwnsCardCode a iid = unInvestigatorId iid `elem` (toCardDef a).cardCodes
+
 handleDiscarded a@InvestigatorAttrs{..} aid card = do
   -- TODO: This message is ugly, we should do something different
   -- TODO: There are a number of messages here that mean the asset is no longer in play, we should consolidate to a singular message
@@ -424,14 +439,16 @@ handleDiscarded a@InvestigatorAttrs{..} aid card = do
       _ -> push $ RefillSlots investigatorId []
 
   let shouldDiscard =
-        pcOwner card
-          == Just investigatorId
+        maybe False (investigatorOwnsCardCode a) (pcOwner card)
           && card
           `notElem` investigatorDiscard
           && card
           `notElem` fromMaybe [] investigatorSideDeck
 
-  pure $ a & (if shouldDiscard then discardL %~ (card :) else id) & (slotsL %~ removeFromSlots aid)
+  -- Normalize ownership to this investigator's canonical id so the discarded
+  -- copy doesn't retain a mismatched alternate-printing owner code.
+  let discardedCard = card {pcOwner = Just investigatorId}
+  pure $ a & (if shouldDiscard then discardL %~ (discardedCard :) else id) & (slotsL %~ removeFromSlots aid)
   -- Discarded _ _ (PlayerCard card) -> do
   --   let shouldDiscard = pcOwner card == Just investigatorId && card `notElem` investigatorDiscard
   --   if shouldDiscard

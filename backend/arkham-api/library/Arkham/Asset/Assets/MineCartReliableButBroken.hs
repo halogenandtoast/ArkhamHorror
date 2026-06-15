@@ -12,6 +12,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement (Placement (..))
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Scenarios.WrittenInRock.Helpers
@@ -80,37 +81,46 @@ instance RunMessage MineCartReliableButBroken where
           Just newLoc -> do
             rails <- getRails newLoc
             if oppositeDirection dir `elem` rails
-              then batched \_ -> do
-                moveVehicle attrs loc newLoc
-                scenarioSpecific_ "mineCartMoved"
+              then batched \_ -> moveVehicle attrs loc newLoc
               else movedOffTheRailLine
       pure a
-    ScenarioSpecific "mineCartMoved" _ -> do
-      withLocationOf attrs \loc -> do
-        rails <- getRails loc
-        let dir = toResultDefault East attrs.meta
-        let
-          turns = filter (`elem` rails)
-            $ case dir of
-              North -> [North, West, East]
-              South -> [South, East, West]
-              East -> [East, North, South]
-              West -> [West, South, North]
-
-        lead <- getLead
-        chooseOrRunOneM lead $ scenarioI18n do
-          questionLabeled' "mineCart.facing"
-          when (North `elem` turns)
-            $ labeled' "mineCart.faceNorth" do
-              when (dir /= North) $ scenarioSpecific "rotate" North
-          when (East `elem` turns)
-            $ labeled' "mineCart.faceEast" do
-              when (dir /= East) $ scenarioSpecific "rotate" East
-          when (South `elem` turns)
-            $ labeled' "mineCart.faceSouth" do
-              when (dir /= South) $ scenarioSpecific "rotate" South
-          when (West `elem` turns)
-            $ labeled' "mineCart.faceWest" do
-              when (dir /= West) $ scenarioSpecific "rotate" West
-      pure a
+    -- The cart picks its new facing the moment it lands. Because locations
+    -- handle PlaceAsset before assets (and pushes prepend), choosing the facing
+    -- here lands it ahead of this location's "after the Mine Cart enters"
+    -- triggers (e.g. Warped Rail) and any other "move again" reaction, while the
+    -- cart is already shown at its new position.
+    PlaceAsset aid (AtLocation newLoc) | aid == attrs.id -> do
+      result <- liftRunMessage msg attrs
+      case attrs.placement of
+        AtLocation oldLoc | oldLoc /= newLoc -> faceMineCart attrs newLoc
+        _ -> pure ()
+      pure $ MineCartReliableButBroken result
     _ -> MineCartReliableButBroken <$> liftRunMessage msg attrs
+
+faceMineCart :: ReverseQueue m => AssetAttrs -> LocationId -> m ()
+faceMineCart attrs newLoc = do
+  rails <- getRails newLoc
+  let dir = toResultDefault East attrs.meta
+  let
+    turns = filter (`elem` rails)
+      $ case dir of
+        North -> [North, West, East]
+        South -> [South, East, West]
+        East -> [East, North, South]
+        West -> [West, South, North]
+
+  lead <- getLead
+  chooseOrRunOneM lead $ scenarioI18n do
+    questionLabeled' "mineCart.facing"
+    when (North `elem` turns)
+      $ labeled' "mineCart.faceNorth" do
+        when (dir /= North) $ scenarioSpecific "rotate" North
+    when (East `elem` turns)
+      $ labeled' "mineCart.faceEast" do
+        when (dir /= East) $ scenarioSpecific "rotate" East
+    when (South `elem` turns)
+      $ labeled' "mineCart.faceSouth" do
+        when (dir /= South) $ scenarioSpecific "rotate" South
+    when (West `elem` turns)
+      $ labeled' "mineCart.faceWest" do
+        when (dir /= West) $ scenarioSpecific "rotate" West

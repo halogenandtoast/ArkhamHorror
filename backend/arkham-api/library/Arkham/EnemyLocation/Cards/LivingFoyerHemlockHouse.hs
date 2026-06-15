@@ -1,6 +1,7 @@
 module Arkham.EnemyLocation.Cards.LivingFoyerHemlockHouse where
 
 import Arkham.Ability
+import Arkham.Constants
 import Arkham.EnemyLocation.Cards qualified as Cards
 import Arkham.EnemyLocation.Import.Lifted
 import Arkham.Location.Helpers qualified as Helpers
@@ -28,5 +29,8 @@ instance RunMessage LivingFoyerHemlockHouse where
   runMessage msg el@(LivingFoyerHemlockHouse attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       sendMessage attrs $ Do EnemiesAttack
+      pure el
+    UseThisAbility iid (isSource attrs -> True) ResignAbility -> do
+      resign iid
       pure el
     _ -> LivingFoyerHemlockHouse <$> liftRunMessage msg attrs

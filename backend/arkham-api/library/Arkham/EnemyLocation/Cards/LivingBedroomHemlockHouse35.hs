@@ -27,7 +27,10 @@ instance HasModifiersFor LivingBedroomHemlockHouse35 where
 
 instance HasAbilities LivingBedroomHemlockHouse35 where
   getAbilities (LivingBedroomHemlockHouse35 a) =
-    extend1 a $ mkAbility a 1 $ forced $ FlipLocation #after Anyone (LocationWithId a.id)
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ FlipLocation #after Anyone (LocationWithId a.id <> LocationWithInvestigator Anyone)
 
 instance RunMessage LivingBedroomHemlockHouse35 where
   runMessage msg el@(LivingBedroomHemlockHouse35 attrs) = runQueueT $ case msg of

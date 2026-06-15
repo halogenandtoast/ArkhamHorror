@@ -28,7 +28,10 @@ instance HasModifiersFor LivingBedroomHemlockHouse34 where
 
 instance HasAbilities LivingBedroomHemlockHouse34 where
   getAbilities (LivingBedroomHemlockHouse34 a) =
-    extend1 a $ mkAbility a 1 $ forced $ FlipLocation #after Anyone (LocationWithId a.id)
+    extend1 a
+      $ restricted a 1 (exists $ storyIs Stories.thePredatoryHouse)
+      $ forced
+      $ FlipLocation #after Anyone (LocationWithId a.id)
 
 instance RunMessage LivingBedroomHemlockHouse34 where
   runMessage msg el@(LivingBedroomHemlockHouse34 attrs) = runQueueT $ case msg of

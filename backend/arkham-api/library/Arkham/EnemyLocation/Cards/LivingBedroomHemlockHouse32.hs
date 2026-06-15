@@ -1,12 +1,12 @@
 module Arkham.EnemyLocation.Cards.LivingBedroomHemlockHouse32 (livingBedroomHemlockHouse32) where
 
 import Arkham.Ability
-import Arkham.Token
 import Arkham.EnemyLocation.Cards qualified as Cards
 import Arkham.EnemyLocation.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
+import Arkham.Token
 
 newtype LivingBedroomHemlockHouse32 = LivingBedroomHemlockHouse32 EnemyLocationAttrs
   deriving anyclass IsEnemyLocation
@@ -28,7 +28,10 @@ instance HasModifiersFor LivingBedroomHemlockHouse32 where
 
 instance HasAbilities LivingBedroomHemlockHouse32 where
   getAbilities (LivingBedroomHemlockHouse32 a) =
-     extend1 a $ mkAbility a 1 $ forced $ FlipLocation #after Anyone (LocationWithId a.id)
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ FlipLocation #after Anyone (LocationWithId a.id <> LocationWithInvestigator Anyone)
 
 instance RunMessage LivingBedroomHemlockHouse32 where
   runMessage msg el@(LivingBedroomHemlockHouse32 attrs) = runQueueT $ case msg of

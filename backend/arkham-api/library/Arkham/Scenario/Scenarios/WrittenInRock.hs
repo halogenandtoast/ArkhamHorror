@@ -179,7 +179,7 @@ instance RunMessage WrittenInRock where
       when (n == 1) $ removeTokens Tablet attrs Scrap 1
       when (n == 2) do
         mineCart <- selectJust $ assetIs Assets.mineCartReliableButBroken
-        whenMatch mineCart (AssetWithModifier CannotMove)
+        whenMatch mineCart (not_ $ AssetWithModifier CannotMove)
           $ scenarioSpecific_ "moveMineCart"
       pure s
     ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
@@ -202,7 +202,7 @@ instance RunMessage WrittenInRock where
           when (n == 1) $ removeTokens Tablet attrs Scrap 1
           when (n == 2) do
             mineCart <- selectJust $ assetIs Assets.mineCartReliableButBroken
-            whenMatch mineCart (AssetWithModifier CannotMove)
+            whenMatch mineCart (not_ $ AssetWithModifier CannotMove)
               $ scenarioSpecific_ "moveMineCart"
         ElderThing | isEasyStandard attrs -> do
           n <- getCurrentActStep

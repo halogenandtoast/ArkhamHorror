@@ -251,8 +251,6 @@ instance RunMessage WrittenInRock where
         questionLabeled' "mineCart.facing"
         labeled' "mineCart.faceNorth" $ scenarioSpecific "rotate" North
         labeled' "mineCart.faceEast" $ scenarioSpecific "rotate" East
-        labeled' "mineCart.faceSouth" $ scenarioSpecific "rotate" South
-        labeled' "mineCart.faceWest" $ scenarioSpecific "rotate" West
 
       doStep 3 msg -- ensure set aside cards are updated
       pure

@@ -98,6 +98,8 @@
   @media (max-width: 800px) and (orientation: portrait) {
     --pool-token-width: 24px;
   }
+
+  --teal: #66C8D6;
 }
 
 @property --glow-rotation {

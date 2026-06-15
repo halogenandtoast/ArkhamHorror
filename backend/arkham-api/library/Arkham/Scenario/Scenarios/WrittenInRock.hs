@@ -88,6 +88,11 @@ instance RunMessage WrittenInRock where
       story $ i18nWithTitle "intro"
       pure s
     Setup -> runScenarioSetup WrittenInRock attrs do
+      setScenarioDayAndTime
+
+      day <- getCampaignDay
+      time <- getCampaignTime
+
       setup $ ul do
         li "gatherSets"
         li "currentDaySet"
@@ -96,12 +101,19 @@ instance RunMessage WrittenInRock where
         li "otherLocations"
         li.nested "scrap" do
           li "startAt"
-        li.nested "residents" do
-          li "riverHawthorne"
-          li "simeonAtwood"
-          li "leahAtwood"
-          li "remainingResidents"
-        li "subterraneanBeast"
+        li.nested.validate (time == Day) "residents" do
+          if time == Day
+            then do
+              li.validate (day == Day1) "riverHawthorne"
+              li.validate (day /= Day3) "simeonAtwood"
+              li.validate (day == Day3) "leahAtwood"
+              li "remainingResidents"
+            else do
+              li "riverHawthorne"
+              li "simeonAtwood"
+              li "leahAtwood"
+              li "remainingResidents"
+        li.validate (time == Day) "subterraneanBeast"
         li "scenarioReference"
         li "setOutOfPlay"
         unscoped $ li "shuffleRemainder"
@@ -116,10 +128,6 @@ instance RunMessage WrittenInRock where
 
       setAgendaDeck [Agendas.undergroundSurvey, Agendas.dangerousRide]
       setActDeck [Acts.descentIntoTheMines, Acts.theUndergroundMaze]
-      setScenarioDayAndTime
-
-      day <- getCampaignDay
-      time <- getCampaignTime
 
       case day of
         Day1 -> do
@@ -127,19 +135,22 @@ instance RunMessage WrittenInRock where
           placeStory $ case time of
             Day -> Stories.dayOne
             Night -> Stories.nightOne
-          setAside [Assets.simeonAtwoodDedicatedTroublemaker]
+          when (time == Day) do
+            setAside [Assets.simeonAtwoodDedicatedTroublemaker]
         Day2 -> do
           gather Set.TheSecondDay
           placeStory $ case time of
             Day -> Stories.dayTwo
             Night -> Stories.nightTwo
-          setAside [Assets.simeonAtwoodDedicatedTroublemaker]
+          when (time == Day) do
+            setAside [Assets.simeonAtwoodDedicatedTroublemaker]
         Day3 -> do
           gather Set.TheFinalDay
           placeStory $ case time of
             Day -> Stories.dayThree
             Night -> Stories.nightThree
-          setAside [Assets.leahAtwoodTheValeCook]
+          when (time == Day) do
+            setAside [Assets.leahAtwoodTheValeCook]
 
       controlStation <- placeInGrid (Pos 5 1) Locations.controlStation
       placeTokens ScenarioSource controlStation Scrap 1
@@ -152,7 +163,7 @@ instance RunMessage WrittenInRock where
         loc <- placeCardInGrid (Pos x 1) cave
         placeTokens ScenarioSource loc Scrap 1
         when (x == 1) $ startAt loc
-        when (x == 3 && day == Day1) $ assetAt_ Assets.riverHawthorneBigInNewYork loc
+        when (x == 3 && day == Day1 && time == Day) $ assetAt_ Assets.riverHawthorneBigInNewYork loc
 
       when (time == Day) $ removeEvery [Enemies.subterraneanBeast]
       setAside =<< fromGathered (CardFromEncounterSet Set.WrittenInRock)

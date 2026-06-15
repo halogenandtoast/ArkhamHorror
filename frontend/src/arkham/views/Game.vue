@@ -6,7 +6,6 @@ import {
   provide,
   ref,
   shallowRef,
-  useTemplateRef,
   watch,
 } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
@@ -79,6 +78,7 @@ import Settings from '@/arkham/components/Settings.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import Draggable from '@/components/Draggable.vue'
 import Menu from '@/components/Menu.vue'
+import Prompt from '@/components/Prompt.vue'
 
 interface GameCard {
   title: string
@@ -618,7 +618,7 @@ watch(uiLock, async () => {
   }
 })
 
-const undoScenarioDialog = useTemplateRef<HTMLDialogElement>('undoScenarioDialog')
+const confirmingUndoScenario = ref(false)
 
 const actionMap = computed<Map<string, () => void>>(() => {
   const map = new Map<string, () => void>()
@@ -767,7 +767,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     }
     if (k === 's' && canUndoScenario.value) {
       clearUndoChord()
-      undoScenarioDialog.value?.showModal()
+      confirmingUndoScenario.value = true
       return
     }
     // Pressing U again while armed = single undo (re-pressing the prefix)
@@ -934,7 +934,7 @@ async function undo() {
 }
 
 async function undoScenario() {
-  undoScenarioDialog.value?.close()
+  confirmingUndoScenario.value = false
   processing.value = true
   if (game.value) setGameQuestion({})
   resultQueue.value = []
@@ -1481,7 +1481,7 @@ onUnmounted(() => {
                 <button
                   class="undo-jump scope-scenario"
                   :class="{ active }"
-                  @click="undoScenarioDialog && undoScenarioDialog.showModal()"
+                  @click="confirmingUndoScenario = true"
                 >
                   <FlagIcon aria-hidden="true" />
                   <span class="undo-jump-label">{{ $t('gameBar.restartScenario') }}</span>
@@ -1673,13 +1673,12 @@ onUnmounted(() => {
         ></div>
       </div>
     </template>
-    <dialog id="undoScenarioDialog" ref="undoScenarioDialog">
-      <p>{{ $t('game.areYouSureUndoScenario') }}</p>
-      <div class="buttons">
-        <button @click="undoScenario()">{{ $t('Yes') }}</button>
-        <button @click="undoScenarioDialog?.close()">{{ $t('No') }}</button>
-      </div>
-    </dialog>
+    <Prompt
+      v-if="confirmingUndoScenario"
+      prompt="$game.areYouSureUndoScenario"
+      :yes="undoScenario"
+      :no="() => confirmingUndoScenario = false"
+    />
   </div>
 </template>
 

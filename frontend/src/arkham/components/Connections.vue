@@ -117,7 +117,7 @@ function mineCartNextConnection(): string | null {
 
 function mineCartInvalidDirection(): { locationId: string; direction: GridDirection } | null {
   const cart = mineCart.value
-  if ((props.game.scenario?.id !== 'c10501' && props.game.scenario?.id !== 'c10502') || cart?.placement.tag !== 'AtLocation') {
+  if (!isWrittenInRockAct2.value || cart?.placement.tag !== 'AtLocation') {
     return null
   }
 

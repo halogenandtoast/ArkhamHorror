@@ -58,6 +58,11 @@ const mineCart = computed(() =>
   Object.values(props.game.assets).find((asset) => asset.cardCode === 'c10507' && asset.placement.tag === 'AtLocation')
 )
 
+const isWrittenInRockAct2 = computed(() =>
+  (props.game.scenario?.id === 'c10501' || props.game.scenario?.id === 'c10502') &&
+  Object.values(props.game.acts).some((act) => act.sequence.number === 2)
+)
+
 function mineCartDirection(): GridDirection {
   let degrees = 0
   const modifiers = mineCart.value?.modifiers ?? []
@@ -143,10 +148,16 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: stri
   const lRect = leftDiv.getBoundingClientRect()
   const rRect = rightDiv.getBoundingClientRect()
 
-  const x1 = (lRect.left - svgRect.left) + (lRect.width / 2)
-  const y1 = (lRect.top - svgRect.top) + (lRect.height / 2)
-  const x2 = (rRect.left - svgRect.left) + (rRect.width / 2)
-  const y2 = (rRect.top - svgRect.top) + (rRect.height / 2)
+  const lCenterX = (lRect.left - svgRect.left) + (lRect.width / 2)
+  const lCenterY = (lRect.top - svgRect.top) + (lRect.height / 2)
+  const rCenterX = (rRect.left - svgRect.left) + (rRect.width / 2)
+  const rCenterY = (rRect.top - svgRect.top) + (rRect.height / 2)
+  const offsetTrackLine = !className && isWrittenInRockAct2.value
+  const vertical = Math.abs(rCenterY - lCenterY) > Math.abs(rCenterX - lCenterX)
+  const x1 = offsetTrackLine && vertical ? (lRect.left - svgRect.left) + (lRect.width * 0.78) : lCenterX
+  const y1 = offsetTrackLine && !vertical ? (lRect.top - svgRect.top) + (lRect.height * 0.8) : lCenterY
+  const x2 = offsetTrackLine && vertical ? (rRect.left - svgRect.left) + (rRect.width * 0.78) : rCenterX
+  const y2 = offsetTrackLine && !vertical ? (rRect.top - svgRect.top) + (rRect.height * 0.8) : rCenterY
 
   const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
   const activeLine =
@@ -201,8 +212,9 @@ function makeOrUpdateMineCartInvalidLine(locationDiv: HTMLElement, direction: Gr
   const svgRect = svgEl.getBoundingClientRect()
   const rect = locationDiv.getBoundingClientRect()
   const { x: dx, y: dy } = directionVector(direction)
-  const x1 = (rect.left - svgRect.left) + (rect.width / 2)
-  const y1 = (rect.top - svgRect.top) + (rect.height / 2)
+  const vertical = direction === 'North' || direction === 'South'
+  const x1 = (rect.left - svgRect.left) + (vertical ? rect.width * 0.78 : rect.width / 2)
+  const y1 = (rect.top - svgRect.top) + (vertical ? rect.height / 2 : rect.height * 0.8)
   const lineDistance = 65
   const xDistance = 76
   const x2 = x1 + dx * lineDistance
@@ -562,6 +574,7 @@ onMounted(async () => {
 // keep lines fresh if the set of locations changes
 watch(locations, ()=> { requestConnectionUpdate() }, { flush: 'post' })
 watch(mineCart, ()=> { requestConnectionUpdate() }, { flush: 'post' })
+watch(isWrittenInRockAct2, ()=> { requestConnectionUpdate() }, { flush: 'post' })
 watch(enemies, ()=> { requestConnectionUpdate() }, { flush: 'post' })
 watch(() => props.enableCosmicEmissaryAnimation, () => { requestConnectionUpdate() }, { flush: 'post' })
 

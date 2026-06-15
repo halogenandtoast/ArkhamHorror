@@ -59,6 +59,7 @@ import Arkham.Matcher (
   enemyAt,
   investigatorAt,
   noModifier,
+  replaceThisLocation,
  )
 import Arkham.Message (Message (MoveAction, RevealLocation))
 import Arkham.Message qualified as Msg
@@ -670,7 +671,9 @@ instance HasAbilities LocationAttrs where
     moveCost =
       if l.revealed
         then ActionCost 1
-        else ActionCost 1 <> NonBlankedCost (CostToEnterUnrevealed $ locationCostToEnterUnrevealed l)
+        else
+          ActionCost 1
+            <> NonBlankedCost (CostToEnterUnrevealed $ replaceThisLocation l.id (locationCostToEnterUnrevealed l))
 
 getShouldSpawnNonEliteAtConnectingInstead :: HasGame m => LocationAttrs -> m Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do

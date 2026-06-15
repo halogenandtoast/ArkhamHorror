@@ -4351,7 +4351,7 @@ instance Projection Location where
     case f of
       LocationCostToEnterUnrevealed -> do
         blank <- hasModifier attrs Blank
-        pure $ if blank then Free else locationCostToEnterUnrevealed
+        pure $ if blank then Free else replaceThisLocation lid locationCostToEnterUnrevealed
       LocationPosition -> pure locationPosition
       LocationInFrontOf -> pure $ case locationPlacement of
         Just (InPlayArea iid) -> Just iid

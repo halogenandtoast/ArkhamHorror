@@ -492,6 +492,11 @@ p.billenia, :deep(p.billenia) {
   }
 }
 
+li:has(> .invalid) > ul,
+:deep(li:has(> .invalid) > ul) {
+  color: #666;
+}
+
 h3, :deep(h3) {
   font-size: 1.3em;
   font-weight: bold;

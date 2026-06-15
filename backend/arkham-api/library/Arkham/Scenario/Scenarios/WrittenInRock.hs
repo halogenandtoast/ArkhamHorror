@@ -85,7 +85,9 @@ instance HasChaosTokenValue WrittenInRock where
 instance RunMessage WrittenInRock where
   runMessage msg s@(WrittenInRock attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      flavor $ scope "intro" do
+        h "title"
+        p "body"
       pure s
     Setup -> runScenarioSetup WrittenInRock attrs do
       setScenarioDayAndTime

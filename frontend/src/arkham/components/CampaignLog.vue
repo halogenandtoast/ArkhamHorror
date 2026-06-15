@@ -768,6 +768,9 @@ const mapData = computed(() => {
               v-if="hemlockDayTime"
               :day="hemlockDayTime.day"
               :time="hemlockDayTime.time"
+              :meta="game.campaign?.meta"
+              :gameId="game.id"
+              @refresh="emit('refresh')"
             />
             <component
               v-if="hemlockAreasSurveyedSection"

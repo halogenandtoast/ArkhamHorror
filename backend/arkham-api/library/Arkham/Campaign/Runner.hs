@@ -54,6 +54,8 @@ defaultCampaignRunner msg a = case msg of
         )
   SetGlobal CampaignTarget k v -> do
     pure $ updateAttrs a (storeL . at (Aeson.toText k) ?~ v)
+  SetCampaignMeta v -> do
+    pure $ updateAttrs a (metaL .~ v)
   StartCampaign -> do
     -- [ALERT] StartCampaign
     players <- allPlayers

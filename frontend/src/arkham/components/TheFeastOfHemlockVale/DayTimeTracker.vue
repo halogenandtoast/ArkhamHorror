@@ -1,13 +1,44 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDebug } from '@/arkham/debug'
 
 const props = defineProps<{
   day?: string | null
   time?: string | null
+  meta?: Record<string, unknown> | null
+  gameId?: string
 }>()
 
+const emit = defineEmits<{ refresh: [] }>()
+
 const { t } = useI18n()
+const debug = useDebug()
+const dayTimeDebug = ref(false)
+const hovering = ref(false)
+const shiftHeld = ref(false)
+
+const showDebugToggle = computed(() => dayTimeDebug.value || (hovering.value && shiftHeld.value))
+const isDebugging = computed(() => dayTimeDebug.value)
+const canDebug = computed(() => isDebugging.value && !!props.gameId)
+
+const onKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Shift') shiftHeld.value = true
+}
+
+const onKeyUp = (event: KeyboardEvent) => {
+  if (event.key === 'Shift') shiftHeld.value = false
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', onKeyDown)
+  window.addEventListener('keyup', onKeyUp)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeyDown)
+  window.removeEventListener('keyup', onKeyUp)
+})
 
 const dayIndex = computed(() => {
   switch (props.day) {
@@ -31,12 +62,38 @@ const cellState = (row: number, col: number): 'past' | 'current' | 'future' => {
 }
 
 const rows = [0, 1, 2]
+
+async function setDayTime(row: number, col: number) {
+  if (!canDebug.value || !props.gameId) return
+  const day = `Day${row + 1}`
+  const time = col === 0 ? 'Day' : 'Night'
+  if (day === props.day && time === props.time) return
+  await debug.send(props.gameId, {
+    tag: 'SetCampaignMeta',
+    contents: { ...(props.meta ?? {}), day, time },
+  })
+  emit('refresh')
+}
 </script>
 
 <template>
-  <div class="sheet">
+  <div
+    class="sheet"
+    :class="{ 'sheet-debugging': isDebugging }"
+    @mouseenter="hovering = true"
+    @mouseleave="hovering = false"
+  >
     <div class="frame">
-      <div class="header">{{ t('theFeastOfHemlockVale.campaignLog.dayTime.title') }}</div>
+      <div class="header">
+        <span>{{ t('theFeastOfHemlockVale.campaignLog.dayTime.title') }}</span>
+        <button
+          v-if="showDebugToggle"
+          type="button"
+          class="daytime-debug-toggle"
+          :class="{ active: isDebugging }"
+          @click="dayTimeDebug = !dayTimeDebug"
+        >Debug</button>
+      </div>
 
       <div class="grid">
         <div class="icon-cell" aria-label="Day">
@@ -78,7 +135,8 @@ const rows = [0, 1, 2]
             v-for="col in [0, 1]"
             :key="col"
             class="cell"
-            :class="[cellState(row, col), `row-${row}`, `col-${col}`]"
+            :class="[cellState(row, col), `row-${row}`, `col-${col}`, { 'cell-debug': isDebugging }]"
+            @click="isDebugging && setDayTime(row, col)"
           >
             <span v-if="col === 0" class="day-number" aria-hidden="true">{{ row + 1 }})</span>
             <span v-if="cellState(row, col) === 'past'" class="check" aria-hidden="true" />
@@ -109,6 +167,7 @@ const rows = [0, 1, 2]
 }
 
 .header {
+  position: relative;
   text-transform: uppercase;
   letter-spacing: 0.18em;
   font-weight: 600;
@@ -118,6 +177,39 @@ const rows = [0, 1, 2]
   padding-bottom: 10px;
   margin-bottom: 12px;
   border-bottom: 1px solid rgba(90, 70, 45, 0.22);
+}
+
+.daytime-debug-toggle {
+  position: absolute;
+  top: -2px;
+  right: 0;
+  appearance: none;
+  border: 1px solid rgba(90, 70, 45, 0.5);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.35);
+  color: rgba(45, 32, 18, 0.9);
+  padding: 2px 7px;
+  font-size: 0.7em;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.daytime-debug-toggle.active {
+  background: #6d1f1f;
+  border-color: #9d3030;
+  color: white;
+}
+
+.sheet-debugging .frame {
+  outline: 2px dashed #6d1f1f;
+}
+
+.cell-debug {
+  cursor: pointer;
+}
+
+.cell-debug:hover {
+  background: rgba(109, 31, 31, 0.12);
 }
 
 .grid {

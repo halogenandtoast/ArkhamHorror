@@ -4,7 +4,7 @@ import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vu
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
-import { cardImage } from '@/arkham/cardImages'
+import { cardArt, cardImage } from '@/arkham/cardImages'
 import { keyToId } from '@/arkham/types/Key'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { useGameIndexes } from '@/arkham/composables/useGameIndexes'
@@ -30,6 +30,7 @@ import { TokenType } from '@/arkham/types/Token'
 import { cardFacedown, Card } from '../types/Card'
 import useHighlighter from '@/composable/useHighlighter'
 import { IsMobile } from '@/arkham/isMobile'
+import { useDbCardStore } from '@/stores/dbCards'
 
 export interface Props {
   game: Game
@@ -45,6 +46,7 @@ const showAbilities = ref<boolean>(false)
 const abilitiesEl = ref<HTMLElement | null>(null)
 const highlighter = useHighlighter()
 const { isMobile } = IsMobile()
+const dbCards = useDbCardStore()
 
 const dragover = (e: DragEvent) => {
   e.preventDefault()
@@ -453,11 +455,25 @@ const canShowCardsUnderneath = computed(() => {
 })
 const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, 'Cards Underneath', false, debug.active)
 const highlighted = computed(() => highlighter.highlighted.value === props.location.id)
+
+function isVehicleAsset(assetId: string): boolean {
+  const asset = props.game.assets[assetId]
+  if (!asset) return false
+  const dbCard = dbCards.getDbCard(cardArt(asset.cardCode))
+  const traits = dbCard?.real_traits ?? dbCard?.traits ?? ''
+  return /(^|\.)\s*Vehicle\s*(\.|$)/i.test(traits)
+}
+
+const vehicleAssetIds = computed(() => props.location.assets.filter(isVehicleAsset))
+const nonVehicleAssetIds = computed(() => props.location.assets.filter((assetId) => !isVehicleAsset(assetId)))
+const hasAnyLocationVehicleAssets = computed(() =>
+  Object.values(props.game.locations).some((location) => location.assets.some(isVehicleAsset))
+)
 </script>
 
 <template>
   <div>
-    <div class="location-container">
+    <div class="location-container" :class="{ 'location-container--has-vehicle-column': hasAnyLocationVehicleAssets }">
       <div class="location-investigator-column">
         <div v-for="investigator in investigators" :key="investigator.cardCode">
           <Investigator
@@ -469,6 +485,17 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
             @choose="choose"
           />
         </div>
+      </div>
+      <div v-if="vehicleAssetIds.length > 0" class="location-vehicle-asset-column">
+        <Asset
+          v-for="assetId in vehicleAssetIds"
+          :asset="game.assets[assetId]"
+          :game="game"
+          :playerId="playerId"
+          :key="assetId"
+          :atLocation="true"
+          @choose="choose"
+        />
       </div>
       <div class="location-column">
         <div class="card-frame" :class="{ explosion }" ref="frame" @click="clicked">
@@ -722,7 +749,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
       </div>
       <div class="location-asset-column">
         <Asset
-          v-for="assetId in location.assets"
+          v-for="assetId in nonVehicleAssetIds"
           :asset="game.assets[assetId]"
           :game="game"
           :playerId="playerId"
@@ -920,8 +947,8 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   }
 }
 
-.location-asset-column {
-  grid-area: assetsAndEnemies;
+.location-asset-column,
+.location-vehicle-asset-column {
   justify-self: start;
   display: flex;
   flex-direction: column-reverse;
@@ -957,6 +984,15 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   > div:not(:last-child) {
     margin-top: -40px;
   }
+}
+
+.location-asset-column {
+  grid-area: assetsAndEnemies;
+}
+
+.location-vehicle-asset-column {
+  grid-area: vehicleAssets;
+  justify-self: end;
 }
 
 .pool.location-pool {
@@ -1161,6 +1197,14 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     'investigators attachments assetsAndEnemies';
   grid-template-columns: 60px 1fr 60px;
   grid-column-gap: 10px;
+
+  &.location-container--has-vehicle-column {
+    grid-template-areas:
+      'investigators vehicleAssets location    assetsAndEnemies'
+      'investigators vehicleAssets attachments assetsAndEnemies';
+    grid-template-columns: 60px 60px 1fr 60px;
+  }
+
   @media (max-width: 800px) and (orientation: portrait) {
     grid-column-gap: 0.5px;
   }

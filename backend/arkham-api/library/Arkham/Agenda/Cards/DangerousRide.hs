@@ -29,7 +29,8 @@ instance HasModifiersFor DangerousRide where
         select $ mapOneOf LocationInPosition (adjacentPositions pos)
 
       pure
-        [ ConnectedToWhen (LocationWithId loc) (mapOneOf LocationWithId connections)
+        [ WhileEnemyMovingModifier
+            $ ConnectedToWhen (LocationWithId loc) (mapOneOf LocationWithId connections)
         | notNull connections
         ]
 

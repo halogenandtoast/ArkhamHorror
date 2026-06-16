@@ -2823,6 +2823,9 @@ initiateEnemyAttack enemy source target = do
   canAttack <- Msg.withoutModifier (asId enemy) CannotAttack
   when canAttack $ push $ InitiateEnemyAttack $ enemyAttack enemy source target
 
+despiteExhausted :: EnemyAttackDetails -> EnemyAttackDetails
+despiteExhausted x = x { attackDespiteExhausted = True }
+
 initiateEnemyAttackEdit
   :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy, ReverseQueue m)
   => enemy

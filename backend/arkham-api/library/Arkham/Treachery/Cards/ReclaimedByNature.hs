@@ -30,9 +30,8 @@ instance RunMessage ReclaimedByNature where
             unscoped $ countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
             when (notNull nearestEnemies) do
               labeled' "reclaimedByNature.nearestEnemyAttacks" do
-                chooseOrRunOneM iid do
-                  targets nearestEnemies \enemy ->
-                    initiateEnemyAttack enemy attrs iid
+                chooseTargetM iid nearestEnemies \enemy ->
+                  initiateEnemyAttackEdit enemy attrs iid despiteExhausted
         Night -> do
           let yourLocation = locationWithInvestigator iid
           enemies <- select $ EnemyAt $ oneOf [yourLocation, connectedTo yourLocation]

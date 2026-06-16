@@ -76,10 +76,12 @@ makePreparationsForNextSurvey :: ReverseQueue m => InvestigatorId -> m ()
 makePreparationsForNextSurvey iid = do
   iattrs <- getAttrs @Investigator.Investigator iid
   let startingAssetCodes = map toCardCode iattrs.investigatorStartsWith
+  permanentAssets <- select $ assetControlledBy iid <> PermanentAsset
   assets <- selectWithField Asset.AssetCardCode $ assetControlledBy iid
-  let (startingAssets, otherAssets) = partition ((`elem` startingAssetCodes) . snd) assets
+  let isPersistent (aid, code) = code `elem` startingAssetCodes || aid `elem` permanentAssets
+  let (persistAssets, otherAssets) = partition isPersistent assets
 
-  for_ startingAssets \(asset, _) -> setupModifier ScenarioSource asset Persist
+  for_ persistAssets \(asset, _) -> setupModifier ScenarioSource asset Persist
   unless (null otherAssets) $ chooseOrRunOneM iid do
     for_ (eachWithRest (map fst otherAssets)) \(asset, rest) ->
       targeting asset do

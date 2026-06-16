@@ -29,7 +29,8 @@ instance HasModifiersFor CrustaceanHybridInTheLight where
 
 instance HasAbilities CrustaceanHybridInTheLight where
   getAbilities (CrustaceanHybridInTheLight a) =
-    extend a
+    extend
+      a
       [ restricted a 1 (isDark a)
           $ SilentForcedAbility
           $ oneOf [EnemyEnters #after Anywhere (be a), EnemySpawns #after Anywhere (be a)]

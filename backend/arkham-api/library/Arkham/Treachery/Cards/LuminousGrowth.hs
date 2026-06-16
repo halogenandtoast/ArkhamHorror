@@ -45,4 +45,13 @@ instance RunMessage LuminousGrowth where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
+    RemoveTreachery tid | tid == attrs.id -> do
+      -- Luminous Growth keeps its location Light; detaching restores the Dark trait,
+      -- so the location's darkness goes from light (False) to dark (True). The
+      -- scenario uses the (before, after) to flip the hybrid enemies to the right side.
+      case attrs.placement of
+        AttachedToLocation lid ->
+          push $ ScenarioSpecific "locationDarknessChanged" (toJSON (lid, False, True))
+        _ -> pure ()
+      pure t
     _ -> LuminousGrowth <$> liftRunMessage msg attrs

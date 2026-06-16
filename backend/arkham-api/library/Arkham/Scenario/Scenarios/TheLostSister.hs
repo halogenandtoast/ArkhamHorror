@@ -14,7 +14,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
 import Arkham.I18n
@@ -393,5 +393,18 @@ instance RunMessage TheLostSister where
           record $ AreasSurveyed AkwanShoreline
           endOfScenario
         _ -> error "invalid resolution"
+      pure s
+    ScenarioSpecific "locationDarknessChanged" v -> do
+      let (lid, before, after) = toResult v :: (LocationId, Bool, Bool)
+      when (before /= after) do
+        lead <- getLead
+        -- "after" is the new darkness of the location; flip the hybrids that are on
+        -- the wrong side onto the side that matches it.
+        let wrongSide =
+              if after
+                then [Enemies.crustaceanHybridInTheLight, Enemies.limulusHybridInTheLight]
+                else [Enemies.crustaceanHybridInTheDark, Enemies.limulusHybridInTheDark]
+        selectEach (EnemyAt (LocationWithId lid) <> mapOneOf enemyIs wrongSide) \eid ->
+          flipOverBy lead attrs eid
       pure s
     _ -> TheLostSister <$> liftRunMessage msg attrs

@@ -289,7 +289,10 @@ pattern EvadeCriteria :: Criterion
 pattern EvadeCriteria =
   Criteria
     [ OnSameLocation
-      , EnemyCriteria (ThisEnemy (EnemyMatchAll [EnemyIsEngagedWith You, EnemyWithEvade]))
+      , EnemyCriteria
+          ( ThisEnemy
+              (EnemyMatchAll [EnemyIsEngagedWith You, EnemyWithEvade, EnemyWithoutModifier CannotBeEvaded])
+          )
       ]
 
 instance HasAbilities EnemyAttrs where

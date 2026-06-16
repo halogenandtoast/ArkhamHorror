@@ -19,12 +19,12 @@ instance RunMessage BreakingPoint where
         directDamage iid attrs 1
         doStep 1 msg
       pure t
-    DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
+    DoStep 1 msg'@(Revelation iid (isSource attrs -> True)) -> do
       remainingSanity <- field InvestigatorRemainingSanity iid
       when (remainingSanity <= 6) do
         batched \_ -> do
           directDamage iid attrs 1
-          doStep 2 msg
+          doStep 2 msg'
       pure t
     DoStep 2 (Revelation iid (isSource attrs -> True)) -> do
       remainingSanity <- field InvestigatorRemainingSanity iid

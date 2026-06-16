@@ -200,7 +200,7 @@ const needsReply = computed(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container scroll-container">
     <div class="investigators">
       <h2 class="page-title">{{$t('create.chooseYourDeck', {s: players.length > 1 ? 's' : ''})}}</h2>
       <div class="portraits">

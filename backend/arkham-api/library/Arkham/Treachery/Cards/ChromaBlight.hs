@@ -21,7 +21,10 @@ instance HasAbilities ChromaBlight where
     , restricted a 2 (InThreatAreaOf You <> criteria) $ forced AnyWindow
     ]
    where
-    criteria = if a.token Brilliance >= 6 then NoRestriction else Never
+    criteria =
+      if a.token Brilliance >= 6 && toResultDefault True a.meta
+        then NoRestriction
+        else Never
 
 instance RunMessage ChromaBlight where
   runMessage msg t@(ChromaBlight attrs) = runQueueT $ case msg of
@@ -35,5 +38,5 @@ instance RunMessage ChromaBlight where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withLocationOf iid $ createSetAsideEnemy_ Enemies.crystalParasite
       removeFromGame attrs
-      pure t
+      pure . ChromaBlight $ attrs & setMeta False
     _ -> ChromaBlight <$> liftRunMessage msg attrs

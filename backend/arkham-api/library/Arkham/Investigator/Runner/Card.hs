@@ -416,15 +416,23 @@ handlePutOnBottomOfDeck a@InvestigatorAttrs{..} iid cid = do
   push $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
   pure a
 
--- | An investigator "owns" a card when its owner is any of the investigator's
--- card codes (primary or alternate). This matters for alternate printings such
--- as the Revised Core Set, where a card imported from the Revised decklist
--- carries the Revised investigator code (e.g. Roland @01501@) while the
--- investigator entity keeps its canonical id (e.g. @01001@). Plain
--- 'InvestigatorId' equality treats those as distinct, so without this the
+-- | An investigator "owns" a card when its owner is the investigator's canonical
+-- id, or any of the investigator's card codes (primary or alternate).
+--
+-- The alternate-code match handles alternate printings such as the Revised Core
+-- Set, where a card imported from the Revised decklist carries the Revised
+-- investigator code (e.g. Roland @01501@) while the investigator entity keeps its
+-- canonical id (e.g. @01001@).
+--
+-- The canonical-id match handles the inverse case, where the investigator's
+-- current form differs from its true identity: in Yithian form 'toCardDef'
+-- resolves to Body of a Yithian (@04244@), so its 'cardCodes' no longer contain
+-- the investigator's own id while the cards remain owned by that canonical id.
+-- Plain 'InvestigatorId' equality treats these as distinct, so without this the
 -- owner-routed discard would never match and the card would be lost.
 investigatorOwnsCardCode :: InvestigatorAttrs -> InvestigatorId -> Bool
-investigatorOwnsCardCode a iid = unInvestigatorId iid `elem` (toCardDef a).cardCodes
+investigatorOwnsCardCode a iid =
+  iid == investigatorId a || unInvestigatorId iid `elem` (toCardDef a).cardCodes
 
 handleDiscarded a@InvestigatorAttrs{..} aid card = do
   -- TODO: This message is ugly, we should do something different

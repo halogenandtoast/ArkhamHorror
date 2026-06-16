@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.I18n
 import Arkham.Matcher
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Story.Cards qualified as Cards
@@ -29,6 +30,7 @@ instance HasAbilities UnfinishedBusiness_B where
             2
             (OnSameLocation <> exists (YourLocation <> "Chapel Crypt" <> LocationWithoutClues))
             actionAbility
+      , restricted x 3 (InThreatAreaOf (IncludeEliminated You)) $ silent $ Matcher.InvestigatorEliminated #when You
       ]
     _ -> []
 
@@ -55,6 +57,9 @@ instance RunMessage UnfinishedBusiness_B where
         checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
         send $ format card <> " is \"banished\""
         addToVictory iid attrs
+      pure s
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      flipOverBy iid (attrs.ability 3) attrs
       pure s
     Flip _ _ (isTarget attrs -> True) -> do
       let heretic = lookupCard Enemies.heretic_A (toCardId attrs)

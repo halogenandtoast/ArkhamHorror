@@ -6983,6 +6983,7 @@ test-suite spec
       Arkham.Skill.Cards.Unrelenting1Spec
       Arkham.Skill.Cards.ViciousBlowSpec
       Arkham.Skill.Cards.WatchThisSpec
+      Arkham.Story.Cards.UnfinishedBusinessSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.AmnesiaSpec
       Arkham.Treachery.Cards.BloodlustSpec

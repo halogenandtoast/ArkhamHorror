@@ -21,7 +21,13 @@ instance HasAbilities SuspendedGraveyard where
   getAbilities (SuspendedGraveyard a) =
     extendRevealed1 a
       $ groupLimit PerGame
-      $ restricted a 1 (Here <> ScenarioDeckWithCard CavernsDeck)
+      $ restricted
+        a
+        1
+        ( Here
+            <> ScenarioDeckWithCard CavernsDeck
+            <> exists (mapOneOf (`LocationWithSpaceInDirection` be a) [minBound ..])
+        )
       $ actionAbilityWithCost (HorrorCost (a.ability 1) YouTarget 1)
 
 instance RunMessage SuspendedGraveyard where

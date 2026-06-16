@@ -45,7 +45,8 @@ instance RunMessage DesolationV2 where
       n <- selectCount $ VictoryDisplayCardMatch $ basic $ #enemy <> CardWithTrait Insect
       when (n > 0) $ requestChaosTokens iid (attrs.ability 1) n
       pure a
-    RequestedChaosTokens (isAbilitySource attrs 1 -> True) _ tokens -> do
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
+      continue_ iid
       faces <- getModifiedChaosTokenFaces tokens
       when (any isSymbolChaosToken faces) do
         lead <- getLead

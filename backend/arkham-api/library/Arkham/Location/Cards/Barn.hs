@@ -22,7 +22,7 @@ instance HasModifiersFor Barn where
 
 instance HasAbilities Barn where
   getAbilities (Barn a) =
-    extendRevealed1 a $ mkAbility a 1 $ triggered_ $ RevealLocation #after Anyone (be a)
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
 
 instance RunMessage Barn where
   runMessage msg l@(Barn attrs) = runQueueT $ case msg of

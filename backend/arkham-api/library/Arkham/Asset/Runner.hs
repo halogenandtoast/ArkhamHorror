@@ -671,7 +671,7 @@ instance RunMessage AssetAttrs where
     ReplacedInvestigatorAsset iid aid | aid == assetId -> do
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     AddToVictory _ (AssetTarget aid) | aid == assetId -> do
-      pure $ a & placementL .~ OutOfPlay Zone.VictoryDisplayZone
+      pure $ a & placementL .~ OutOfPlay Zone.VictoryDisplayZone & controllerL .~ Nothing
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]

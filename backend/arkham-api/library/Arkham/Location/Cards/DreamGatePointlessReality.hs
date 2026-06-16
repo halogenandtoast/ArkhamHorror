@@ -45,9 +45,9 @@ instance RunMessage DreamGatePointlessReality where
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       whenAt iid attrs do
-        revealedLocations <- getCanMoveToMatchingLocations iid (attrs.ability 1) RevealedLocation
+        revealedLocations <- select $ RevealedLocation <> canEnterLocation iid <> not_ (LocationWithId attrs.id)
         chooseTargetM iid revealedLocations \lid -> do
-          moveTo (toSource attrs) iid lid
+          forcedMoveTo (attrs.ability 2) iid lid
           assignHorror iid (toAbilitySource attrs 2) 2
 
       removeLocation attrs

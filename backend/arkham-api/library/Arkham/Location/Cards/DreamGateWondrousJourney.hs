@@ -39,8 +39,8 @@ instance RunMessage DreamGateWondrousJourney where
   runMessage msg l@(DreamGateWondrousJourney attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       whenAt iid attrs do
-        revealedLocations <- getCanMoveToMatchingLocations iid (attrs.ability 1) RevealedLocation
-        chooseTargetM iid revealedLocations $ moveTo (toSource attrs) iid
+        revealedLocations <- select $ RevealedLocation <> canEnterLocation iid <> not_ (LocationWithId attrs.id)
+        chooseTargetM iid revealedLocations $ forcedMoveTo (attrs.ability 1) iid
       removeLocation attrs
       pure l
     _ -> DreamGateWondrousJourney <$> liftRunMessage msg attrs

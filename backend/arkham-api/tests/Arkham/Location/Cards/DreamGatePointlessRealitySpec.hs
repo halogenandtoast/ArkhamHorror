@@ -54,3 +54,38 @@ spec = describe "Dream Gate (Pointless Reality)" do
           self `moveTo` dreamGate
         useForcedAbility
         assert self.defeated
+
+    -- #4822: in The City of Archives, Luke is a "Body of a Yithian" (YithianForm),
+    -- which used to break investigatorIs lukeRobinson and trap him in the gate.
+    it
+      "Luke can still leave even while a Body of a Yithian"
+      . gameTestWith lukeRobinson
+      $ \self -> do
+        (location1, _location2) <- testConnectedLocations id id
+        (dreamGate, placement) <- placeLocationCard Locations.dreamGatePointlessReality
+        run placement
+        run $ BecomeYithian (toId self)
+        self `moveTo` location1
+        duringPhase #investigation $ do
+          self `moveTo` dreamGate
+        useForcedAbility
+        chooseTarget location1
+        self.location `shouldReturn` Just (toId location1)
+
+    -- #4822 / FAQ 071: a "cannot move" effect (e.g. Entombed) must not strand Luke
+    -- at no location; ignore it long enough to place him in a revealed location.
+    it
+      "relocates Luke instead of defeating him when he cannot move"
+      . gameTestWith lukeRobinson
+      $ \self -> do
+        (location1, _location2) <- testConnectedLocations id id
+        (dreamGate, placement) <- placeLocationCard Locations.dreamGatePointlessReality
+        run placement
+        self `moveTo` location1
+        duringPhase #investigation $ do
+          self `moveTo` dreamGate
+        run =<< gameModifier (TestSource mempty) (toTarget self) CannotMove
+        useForcedAbility
+        chooseTarget location1
+        self.location `shouldReturn` Just (toId location1)
+        self.defeated `shouldReturn` False

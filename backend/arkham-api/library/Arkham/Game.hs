@@ -1212,7 +1212,10 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
     InvestigatorIs cardCode -> pure $ flip runMatches as \a ->
       toCardCode a == cardCode || case a.form of
         TransfiguredForm c -> c == cardCode
-        _ -> False
+        YithianForm -> coerce (toId a) == cardCode
+        HomunculusForm -> coerce (toId a) == cardCode
+        ShatteredForm -> coerce (toId a) == cardCode
+        RegularForm -> False
     InvestigatorWithLowestSkill skillType inner -> flip runMatchesM as $ \i ->
       isLowestAmongst (toId i) inner (getSkillValue skillType)
     InvestigatorWithHighestSkill skillType inner -> flip runMatchesM as $ \i ->

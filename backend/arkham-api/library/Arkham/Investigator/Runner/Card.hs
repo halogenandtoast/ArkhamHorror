@@ -274,7 +274,11 @@ handleDoDiscardFromHand a@InvestigatorAttrs{..} handDiscard = do
       DiscardChoose -> do
         case handDiscard.filter of
           CardWithId _ -> do
-            let cs' = filterCards handDiscard.filter cs
+            -- An explicit by-id discard names one specific card, so it must
+            -- bypass the voluntary-weakness restriction baked into
+            -- discardableCards (which otherwise hides weaknesses when the hand
+            -- also holds non-weakness cards).
+            let cs' = filterCards handDiscard.filter investigatorHand
             pushAll [mkMsg c | c <- cs']
             pushDiscardedCards cs'
           _ -> do

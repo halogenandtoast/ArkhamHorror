@@ -519,7 +519,11 @@ instance RunMessage SkillTest where
       pushAll [CheckAllAdditionalCommitCosts, windowMsg, TriggerSkillTest skillTestInvestigator]
       pure $ s & stepL .~ SkillTestFastWindow2
     CheckAllAdditionalCommitCosts -> do
-      let perInvestigator = Map.toList skillTestCommittedCards
+      -- Only investigators who actually committed at least one card incur commit
+      -- costs / fire CommittedCards windows. Un-committing leaves an empty list
+      -- under the investigator's key, and investigator-level CommitCost modifiers
+      -- (e.g. Trapped Spirits) would otherwise still be charged for zero cards.
+      let perInvestigator = filter (not . null . snd) $ Map.toList skillTestCommittedCards
       payable <- flip filterM perInvestigator $ \(iid, cards) -> do
         additionalCosts <- computeCommitCosts iid cards
         if null additionalCosts

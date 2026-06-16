@@ -432,6 +432,21 @@ insteadOfDamage (asId -> eid) body = do
       Damaged (EnemyTarget eid') dmg | eid == eid' -> evalQueueT (body dmg)
       other -> pure [other]
 
+-- | Reduce the amount of the pending 'Damaged' message on this enemy to at most
+-- @n@ (leaving it unchanged if it is already lower). Pair with a forced ability
+-- on an @EnemyTakeDamage #when@ window to implement "reduce that damage to @n@"
+-- effects. See Crustacean Hybrid (In the Light) and Vengeful Specter.
+reduceDamageTakenTo
+  :: (HasQueue Message m, MonadTrans t, ToId enemy EnemyId)
+  => enemy -> Int -> t m ()
+reduceDamageTakenTo (asId -> eid) n =
+  lift
+    $ replaceMessageMatching
+      (\case Damaged (EnemyTarget eid') _ -> eid == eid'; _ -> False)
+      \case
+        Damaged target dmg -> [Damaged target dmg {damageAssignmentAmount = min n dmg.amount}]
+        other -> [other]
+
 patrol :: (ReverseQueue m, ToId enemy EnemyId) => enemy -> m ()
 patrol (asId -> eid) = whenJustM (getPatrolMatcher eid) $ push . PatrolMove eid
 

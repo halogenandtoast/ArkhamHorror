@@ -23,7 +23,7 @@ instance HasAbilities FungalCave where
           $ restricted a 1 Here
           $ freeReaction
           $ DiscoverClues #after You (be a) (atLeast 1)
-      , mkAbility a 2 $ forced $ RoundEnds #when
+      , restricted a 2 (exists $ at_ (be a) <> EnemyWithAnyDamage) $ forced $ RoundEnds #when
       ]
 
 instance RunMessage FungalCave where

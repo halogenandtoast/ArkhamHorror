@@ -68,20 +68,26 @@ instance RunMessage TheLostSister where
       day <- getCampaignDay
       time <- getCampaignTime
       let isNight = time == Night
-      story $ i18nWithTitle "intro1"
       flavor do
+        h "title"
+        p "intro1"
         p.basic "body"
         ul $ li.nested.validate isNight "nightSkip" do
           li.validate (not isNight && day == Day1) "day1"
           li.validate (not isNight && day == Day2) "day2"
           li.validate (not isNight && day == Day3) "day3"
-      case (day, time) of
-        (Day1, Day) -> story $ i18nWithTitle "intro2"
-        (Day2, Day) -> story $ i18nWithTitle "intro3"
-        (Day3, Day) -> story $ i18nWithTitle "intro4"
-        _ -> story $ i18nWithTitle "intro5"
+      flavor do
+        h "title"
+        p $ case (day, time) of
+          (Day1, Day) -> "intro2"
+          (Day2, Day) -> "intro3"
+          (Day3, Day) -> "intro4"
+          _ -> "intro5"
       pure s
     Setup -> runScenarioSetup TheLostSister attrs do
+      day <- getCampaignDay
+      time <- getCampaignTime
+
       setup $ ul do
         li "gatherSets"
         li "currentDaySet"
@@ -93,13 +99,21 @@ instance RunMessage TheLostSister where
           li "removeTwoCaves"
           li "shuffleCavernsDeck"
           li "putTopThree"
-        li.nested "dayResidents" do
-          li "helenPeters"
-          li "theoPeters"
-          li "gideonMizrah"
-          li "williamHemlock"
-          li "removeResidents"
-        li.nested "nightResidents" do
+        li.nested.validate (time == Day) "dayResidents" do
+          if time == Day
+            then do
+              li "helenPeters"
+              li.validate (day == Day1 || day == Day2) "theoPeters"
+              li.validate (day == Day2 || day == Day3) "gideonMizrah"
+              li.validate (day == Day3) "williamHemlock"
+              li "removeResidents"
+            else do
+              li "helenPeters"
+              li "theoPeters"
+              li "gideonMizrah"
+              li "williamHemlock"
+              li "removeResidents"
+        li.nested.validate (time == Night) "nightResidents" do
           li "helenPetersNight"
           li "removeResidentsNight"
         li "setAsideEnemies"
@@ -118,8 +132,6 @@ instance RunMessage TheLostSister where
       gather Set.Myconids
 
       -- do not setScenarioDayAndTime
-      day <- getCampaignDay
-      time <- getCampaignTime
       gameModifier ScenarioSource ScenarioTarget (ScenarioModifierValue "day" (toJSON day))
       -- We default the time to Day, locations will apply Night to enemies/investigators directly
       gameModifier ScenarioSource ScenarioTarget (ScenarioModifierValue "time" (toJSON Day))

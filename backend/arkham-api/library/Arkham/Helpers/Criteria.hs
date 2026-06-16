@@ -108,6 +108,9 @@ passesCriteria
   -> m Bool
 passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCriteria/" <> Metrics.messageTag ctr) \currentSpan ->
   addAttribute currentSpan "criterion" (tshow ctr) >> case ctr of
+    Criteria.IfCriteria p a b -> do
+      pv <- passesCriteria iid mcard source' requestor windows' p
+      passesCriteria iid mcard source' requestor windows' $ if pv then a else b
     Criteria.CanEnterThisVehicle -> do
       case source.asset of
         Just aid -> do

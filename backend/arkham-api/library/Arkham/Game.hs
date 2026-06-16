@@ -549,7 +549,8 @@ withInvestigatorConnectionData
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator' -> do
     additionalActions <- getAdditionalActions (toAttrs investigator')
-    engagedEnemies <- select (EnemyIsEngagedWith $ IncludeEliminated $ InvestigatorWithId $ toId investigator')
+    engagedEnemies <-
+      select (EnemyIsEngagedWith $ IncludeEliminated $ InvestigatorWithId $ toId investigator')
     assets <- select (AssetWithPlacement $ InPlayArea $ toId investigator')
     assets' <- select (AssetWithPlacement $ InThreatArea $ toId investigator')
     skills <- select (SkillWithPlacement $ InPlayArea $ toId investigator')
@@ -1786,6 +1787,7 @@ getScenariosMatching matcher = do
     ScenarioWithModifier modifierType -> \s -> do
       modifiers' <- getModifiers (toTarget s)
       pure $ modifierType `elem` modifiers'
+    ScenarioWithId sid -> \s -> pure $ s.id == sid
 
 abilityMatches :: (HasGame m, Tracing m) => Ability -> AbilityMatcher -> m Bool
 abilityMatches a@Ability {..} = \case
@@ -5120,7 +5122,8 @@ instance Query ChaosTokenMatcher where
           Just st ->
             -- At the #cancel/#when window the reveal isn't recorded yet
             -- (revealedChaosTokensCount == 0); at #after it is 1.
-            st.revealedChaosTokensCount == 0
+            st.revealedChaosTokensCount
+              == 0
               || (st.revealedChaosTokensCount == 1 && t `elem` st.revealedChaosTokens)
 
 instance Query AssetMatcher where

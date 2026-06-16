@@ -169,6 +169,7 @@ overCriteria f = \case
   AnyCriterion cs -> f (AnyCriterion (map f cs))
   Negate c -> f (Negate (f c))
   IfCostsAreIgnored c -> f (IfCostsAreIgnored (f c))
+  IfCriteria a b c -> f (IfCriteria (f a) (f b) (f c))
   c -> f c
 
 data Criterion
@@ -305,6 +306,7 @@ data Criterion
   | IsReturnTo
   | IfCostsAreIgnored Criterion
   | IgnoreModifiersFrom Source Criterion
+  | IfCriteria Criterion Criterion Criterion
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Criterion

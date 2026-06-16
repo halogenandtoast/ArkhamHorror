@@ -39,6 +39,7 @@ import Arkham.Scenario.Options
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tracing
+import Arkham.Trait (Trait (Dark))
 import Data.Monoid (First (..))
 
 campaignI18n :: (HasI18n => a) -> a
@@ -144,20 +145,35 @@ class HasTimeOverride a where
   isLight :: a -> Criterion
   isLight = not_ . isDark
 
+-- | The Lost Sister has no global day/night. Instead it is Day for everything
+-- (locations, enemies, treacheries, investigators) unless the relevant location
+-- has the Dark trait, in which case it is Night there. Every other scenario sets
+-- a single global "time" modifier, so we fall back to that when not in The Lost
+-- Sister.
+inLostSister :: Criterion -> Criterion -> Criterion
+inLostSister = IfCriteria (ScenarioExists $ ScenarioWithId "10569")
+
 instance HasTimeOverride EnemyAttrs where
-  isDark a = thisExists a (EnemyWithModifier $ ScenarioModifierValue "time" (String "Night"))
+  isDark a =
+    inLostSister
+      (thisExists a (EnemyWithModifier $ ScenarioModifierValue "time" (String "Night")))
+      IsNight_
 
 instance HasTimeOverride LocationAttrs where
-  isDark _ = IsNight_
+  isDark a = inLostSister (thisExists a $ LocationWithTrait Dark) IsNight_
+  isLight a = inLostSister (thisExists a $ not_ $ LocationWithTrait Dark) IsDay_
 
 instance HasTimeOverride InvestigatorMatcher where
-  isDark a = exists $ a <> InvestigatorWithModifier (ScenarioModifierValue "time" (String "Night"))
+  isDark a =
+    inLostSister
+      (exists $ a <> InvestigatorWithModifier (ScenarioModifierValue "time" (String "Night")))
+      IsNight_
 
 isDayFor :: HasTimeOverride a => a -> Criterion
-isDayFor a = not_ (isDark a) <> IsDay_
+isDayFor a = isLight a
 
 isNightFor :: HasTimeOverride a => a -> Criterion
-isNightFor a = not_ (isLight a) <> IsNight_
+isNightFor a = isDark a
 
 pattern IsDay_ :: Criterion
 pattern IsDay_ <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Day")))

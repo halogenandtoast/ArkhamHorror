@@ -397,23 +397,29 @@ function scheduleApplyUpdate(payload: string) {
   Arkham.gameDecoder
     .decodePromise(payload)
     .then((updatedGame) => {
-      game.value = updatedGame
+      const locked = uiLock.value
+      // Behind a revelation: refresh the board but keep the question hidden so the
+      // player can't act until they dismiss it. On unlock the queued GameUpdate is
+      // replayed (locked === false) and restores the real question + side effects.
+      game.value = locked ? { ...updatedGame, question: {} } : updatedGame
       updateGameLog(updatedGame.log)
       preloadImages(updatedGame)
-      if (solo.value === true) {
-        if (Object.keys(game.value.question).length == 1) {
-          playerId.value = Object.keys(game.value.question)[0]
-        } else if (game.value.activePlayerId !== playerId.value) {
-          if (playerId.value && Object.keys(game.value.question).includes(playerId.value)) {
-            playerId.value = game.value.activePlayerId
-          } else {
+      if (!locked) {
+        if (solo.value === true) {
+          if (Object.keys(game.value.question).length == 1) {
+            playerId.value = Object.keys(game.value.question)[0]
+          } else if (game.value.activePlayerId !== playerId.value) {
+            if (playerId.value && Object.keys(game.value.question).includes(playerId.value)) {
+              playerId.value = game.value.activePlayerId
+            } else {
+              playerId.value = Object.keys(game.value.question)[0]
+            }
+          } else if (playerId.value && !Object.keys(game.value.question).includes(playerId.value)) {
             playerId.value = Object.keys(game.value.question)[0]
           }
-        } else if (playerId.value && !Object.keys(game.value.question).includes(playerId.value)) {
-          playerId.value = Object.keys(game.value.question)[0]
         }
+        continueSkipAll()
       }
-      continueSkipAll()
     })
     .finally(() => {
       decoding = false
@@ -597,12 +603,12 @@ const handleResult = (result: ServerResult) => {
         })
       return
     case 'GameUpdate':
-      if (uiLock.value) {
-        qPush(result)
-        if (game.value) setGameQuestion({})
-      } else {
-        scheduleApplyUpdate(result.contents)
-      }
+      // Flush the latest state onto the board even while a revelation/modal holds
+      // the UI lock, so the table behind it reflects the current situation instead
+      // of freezing on the pre-revelation state (issue #4817). Keep it queued so
+      // the pending question is only restored once every revelation is dismissed.
+      if (uiLock.value) qPush(result)
+      scheduleApplyUpdate(result.contents)
       return
   }
 }

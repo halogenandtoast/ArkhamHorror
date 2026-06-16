@@ -497,6 +497,11 @@ li:has(> .invalid) > ul,
   color: #666;
 }
 
+li:has(> .invalid) > ul .valid,
+:deep(li:has(> .invalid) > ul .valid) {
+  color: var(--neutral-extra-dark);
+}
+
 h3, :deep(h3) {
   font-size: 1.3em;
   font-weight: bold;

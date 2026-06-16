@@ -38,7 +38,7 @@ theSilentHeath difficulty = scenario TheSilentHeath "10549" "The Silent Heath" d
 instance HasChaosTokenValue TheSilentHeath where
   getChaosTokenValue iid tokenFace (TheSilentHeath attrs) = case tokenFace of
     Skull -> do
-      inPlay <- selectCount $ EnemyWithTrait Insect
+      inPlay <- selectCount $ InPlayEnemy $ EnemyWithTrait Insect
       inVictory <- selectCount $ VictoryDisplayCardMatch $ basic $ #enemy <> CardWithTrait Insect
       let n = inPlay + inVictory
       pure $ toChaosTokenValue attrs Skull ((n + 1) `div` 2) n
@@ -73,22 +73,33 @@ instance RunMessage TheSilentHeath where
         _ -> story $ i18nWithTitle "intro4"
       pure s
     Setup -> runScenarioSetup TheSilentHeath attrs do
+      setScenarioDayAndTime
+      day <- getCampaignDay
+      time <- getCampaignTime
+
       setup $ ul do
         li "gatherSets"
         li "currentDaySet"
         li.nested "currentDayMarker" do
-          li "desolationV1"
-          li "desolationV2"
+          li.validate (day == Day1) "desolationV1"
+          li.validate (day /= Day1) "desolationV2"
         li.nested "locations" do
           li "startAt"
         li "setAside"
         li "crystalRemains"
         li "horrorsInTheRock"
-        li.nested "residents" do
-          li "leahAtwood"
-          li "drRosaMarquez"
-          li "motherRachel"
-          li "removeResidents"
+        li.nested.validate (time == Day) "residents" do
+          if time == Day
+            then do
+              li.validate (day == Day1) "leahAtwood"
+              li.validate (day == Day2) "drRosaMarquez"
+              li.validate (day == Day3) "motherRachel"
+              li "removeResidents"
+            else do
+              li "leahAtwood"
+              li "drRosaMarquez"
+              li "motherRachel"
+              li "removeResidents"
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
 
@@ -101,10 +112,6 @@ instance RunMessage TheSilentHeath where
       gather Set.Refractions
       gather Set.Transfiguration
       gather Set.StrikingFear
-
-      setScenarioDayAndTime
-      day <- getCampaignDay
-      time <- getCampaignTime
 
       case day of
         Day1 -> do

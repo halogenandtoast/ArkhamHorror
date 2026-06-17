@@ -191,6 +191,25 @@ watchEffect(() => {
     if (userPicked.value) return
   }
 
+  // In true multiplayer each player controls their own view and shouldn't be
+  // yanked to another investigator's tab during e.g. a help/commit window where
+  // multiple players have choices. We still follow a forced/target effect into
+  // another tab when this browser's player is the only player with a choice.
+  if (solo?.value !== true) {
+    const playersWithChoices = Object.keys(props.game.question).filter(pid => hasChoices(pid))
+    const onlyThisPlayerHasChoice =
+      playersWithChoices.length === 1 &&
+      playersWithChoices[0] === props.playerId
+
+    if (playerIds.length > 0 && !playerIds.includes(props.playerId) && onlyThisPlayerHasChoice) {
+      selectedTab.value = playerIds[0]
+      return
+    }
+    if (userPicked.value) return
+    selectedTab.value = props.playerId
+    return
+  }
+
   selectedTab.value = playerIds.length > 0 && !playerIds.includes(props.playerId)
     ? playerIds[0]
     : props.playerId

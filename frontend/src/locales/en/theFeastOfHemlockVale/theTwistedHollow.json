@@ -111,6 +111,12 @@
     },
     "deepShadows": {
       "lantern": "The investigator who controls the Vale Lantern flips it to its _Unlit_ side and places it at a connecting location."
+    },
+    "lurkingFear": {
+      "pursuit": "Find the enemy in pursuit with the highest fight and spawn it engaged with you."
+    },
+    "stolenLight": {
+      "lantern": "Flip the Vale Lantern to its _Unlit_ side. Place the Vale Lantern at the empty location farthest from all investigators."
     }
   },
   "resolutions": {

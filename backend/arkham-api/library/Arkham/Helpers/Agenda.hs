@@ -28,3 +28,6 @@ getAgendaStep = fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep)
 
 getCurrentAgenda :: (Tracing m, HasGame m) => m AgendaId
 getCurrentAgenda = selectOnlyOne AnyAgenda
+
+getDoomOnAgenda :: (HasGame m, Tracing m) => m Int
+getDoomOnAgenda = selectJust AnyAgenda >>= field AgendaDoom

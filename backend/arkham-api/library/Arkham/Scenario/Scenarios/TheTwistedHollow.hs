@@ -84,22 +84,28 @@ instance RunMessage TheTwistedHollow where
       pure s
     Setup -> runScenarioSetup TheTwistedHollow attrs do
       setUsesGrid
+      showedTheWay <- getHasRecord MotherRachelShowedTheWay
+      n <- getPlayerCount
+
+      theo <- getRecordCount TheoPetersRelationshipLevel
+      judith <- getRecordCount JudithParkRelationshipLevel
+
       setup $ ul do
         li "gatherSets"
         li "night"
         li.nested "valeLantern.checkCampaignLog" do
-          li "valeLantern.showedTheWay"
-          li "valeLantern.lostThePath"
+          li.validate showedTheWay "valeLantern.showedTheWay"
+          li.validate (not showedTheWay) "valeLantern.lostThePath"
         li.nested "removeLocations" do
-          li "oneOrTwoInvestigators"
-          li "threeOrFourInvestigators"
+          li.validate (n == 1 || n == 2) "oneOrTwoInvestigators"
+          li.validate (n == 3 || n == 4) "threeOrFourInvestigators"
         li.nested "glimmeringWoods.checkCampaignLog" do
-          li "glimmeringWoods.showedTheWay"
-          li "glimmeringWoods.lostThePath"
+          li.validate showedTheWay "glimmeringWoods.showedTheWay"
+          li.validate (not showedTheWay) "glimmeringWoods.lostThePath"
         li "woodsDeck"
         li.nested "residents" do
-          li "theoPeters"
-          li "judithPark"
+          li.validate (theo >= 2) "theoPeters"
+          li.validate (judith >= 2) "judithPark"
           li "drRosaMarquez"
           li "bertieMusgrave"
           li "rest"
@@ -116,8 +122,6 @@ instance RunMessage TheTwistedHollow where
       setScenarioDayAndTime
       placeStory Stories.nightOne
 
-      showedTheWay <- getHasRecord MotherRachelShowedTheWay
-
       let lanternVersion = if showedTheWay then Assets.valeLanternBeaconOfHope else Assets.valeLanternAFaintHope
       removeEvery [if showedTheWay then Assets.valeLanternAFaintHope else Assets.valeLanternBeaconOfHope]
 
@@ -131,7 +135,6 @@ instance RunMessage TheTwistedHollow where
         portraits investigators (`takeControlOfAsset` lantern)
 
       setAside [Locations.theTwistedHollow, Locations.glimmeringWoods]
-      n <- getPlayerCount
       woods <-
         fmap (drop $ if n >= 3 then 1 else 2)
           . shuffle
@@ -150,27 +153,23 @@ instance RunMessage TheTwistedHollow where
                 (uncurry placeCardInGrid_)
               addExtraDeck WoodsDeck rest
             _ -> error "not enough woods"
-        else do
-          case woods of
-            start : rest -> do
-              startAt =<< placeCardInGrid (Pos 0 0) start
-              shuffle (glimmeringWoods : rest) >>= \case
-                north : east : south : west : rest' -> do
-                  for_
-                    [(Pos 0 (-1), north), (Pos 1 0, east), (Pos 0 1, south), (Pos (-1) 0, west)]
-                    (uncurry placeCardInGrid_)
-                  addExtraDeck WoodsDeck rest'
-                _ -> error "not enough woods"
-            _ -> error "not enough woods"
+        else case woods of
+          start : rest -> do
+            startAt =<< placeCardInGrid (Pos 0 0) start
+            shuffle (glimmeringWoods : rest) >>= \case
+              north : east : south : west : rest' -> do
+                for_
+                  [(Pos 0 (-1), north), (Pos 1 0, east), (Pos 0 1, south), (Pos (-1) 0, west)]
+                  (uncurry placeCardInGrid_)
+                addExtraDeck WoodsDeck rest'
+              _ -> error "not enough woods"
+          _ -> error "not enough woods"
 
       -- do this after locations so the reveal does not trigger
       setAgendaDeck [Agendas.deepeningDark]
       setActDeck [Acts.desperateSearch, Acts.wheresBertie]
 
-      theo <- getRecordCount TheoPetersRelationshipLevel
       when (theo >= 2) $ setAside [Assets.theoPetersJackOfAllTrades]
-
-      judith <- getRecordCount JudithParkRelationshipLevel
       when (judith >= 2) $ setAside [Assets.judithParkTheMuscle]
 
       drRosaMarquez <- createAsset =<< fetchCard Assets.drRosaMarquezBestInHerField

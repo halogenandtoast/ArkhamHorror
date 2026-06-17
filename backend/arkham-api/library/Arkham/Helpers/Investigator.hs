@@ -184,6 +184,14 @@ getHandSize (asId -> iid) = do
   applyMaxModifier (MaxHandSize m) n = min m n
   applyMaxModifier _ n = n
 
+getStartingHandSize :: (HasGame m, ToId investigator InvestigatorId) => investigator -> m Int
+getStartingHandSize (asId -> iid) = do
+  modifiers <- getModifiers iid
+  pure $ max 0 $ foldr applyModifier 5 modifiers
+ where
+  applyModifier (StartingHand m) n = n + m
+  applyModifier _ n = n
+
 getExcessInHandCount
   :: (HasGame m, Tracing m, ToId investigator InvestigatorId) => investigator -> m Int
 getExcessInHandCount inv = do

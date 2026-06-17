@@ -19,7 +19,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Types.Attrs
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText (chaosTokenMorph, p, setTitle, storyBuild)
-import Arkham.Helpers.Investigator (getHandSize, getStartingResources)
+import Arkham.Helpers.Investigator (getStartingHandSize, getStartingResources)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCards)
 import Arkham.Helpers.Modifiers (getModifiers)
@@ -92,9 +92,10 @@ makePreparationsForNextSurvey iid = do
         setupModifier ScenarioSource asset Persist
         for_ rest $ toDiscard ScenarioSource
 
-  handSize <- getHandSize iid
+  openingHandSize <- getStartingHandSize iid
   cardsInHand <- fieldMap Investigator.InvestigatorHand length iid
-  when (cardsInHand > handSize) $ chooseAndDiscardCards iid ScenarioSource (cardsInHand - handSize)
+  when (cardsInHand > openingHandSize)
+    $ chooseAndDiscardCards iid ScenarioSource (cardsInHand - openingHandSize)
   shuffleDiscardBackIn iid
   startingResources <- getStartingResources iid
   resources <- field Investigator.InvestigatorResources iid

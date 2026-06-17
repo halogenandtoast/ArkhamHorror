@@ -79,8 +79,8 @@ instance RunMessage TheThingInTheDepths where
             then doStep 2 PreScenarioSetup
             else doStep 3 PreScenarioSetup
         (Day2, Day) -> doStep 4 PreScenarioSetup
-        (Day3, Day) -> story $ i18nWithTitle "intro7"
-        _ -> story $ i18nWithTitle "intro8"
+        (Day3, Day) -> flavor $ setTitle "title" >> p "intro7"
+        _ -> flavor $ setTitle "title" >> p "intro8"
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro2"
@@ -97,11 +97,11 @@ instance RunMessage TheThingInTheDepths where
         labeled' "rev" $ doStep 6 PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
-      story $ i18nWithTitle "intro5"
+      flavor $ setTitle "title" >> p "intro5"
       eachInvestigator \iid -> setupModifier attrs iid (StartingResources (-2))
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
-      story $ i18nWithTitle "intro6"
+      flavor $ setTitle "title" >> p "intro6"
       eachInvestigator \iid -> setupModifier attrs iid (FewerActions 1)
       pure s
     Setup -> runScenarioSetup TheThingInTheDepths attrs do
@@ -110,7 +110,6 @@ instance RunMessage TheThingInTheDepths where
 
       setup $ ul do
         li "gatherSets"
-        li "gatherResidents"
         li "currentDaySet"
         li.nested "currentDayMarker" do
           li.validate (day == Day2) "doomDay2"

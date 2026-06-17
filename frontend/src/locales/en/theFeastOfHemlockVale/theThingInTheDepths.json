@@ -23,29 +23,16 @@
       "push": "\"We can push!\"",
       "rev": "\"We'll rev the engine.\""
     },
-    "intro5": {
-      "title": "Intro 5",
-      "body": "<p>_Intro 5_: After some struggle, you coax the truck out of the pothole and point Theo through a mess of other potholes onto a rocky bank. Several bags of supplies fall out of the truckbed. Theo waves dismissively. \"I can get those on the way back. I've got some family stuff back in Akwan to take care of.\" Theo leaves you at the edge of the bog, wreathed in mist in the chill rain.</p><ul><li>Each investigator begins the next scenario with 2 fewer resources.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
-    },
-    "intro6": {
-      "title": "Intro 6",
-      "body": "<p>_Intro 6_: Theo presses his shoulder to the rear of the truck as you rev the gas. The vehicle lurches forward only to bury the front tire in another pothole. Theo jumps into the truck next to you and lets out an exasperated sigh. \"I think you'll have to continue on foot from here. It's not that far.\"</p><ul><li>Each investigator begins the next scenario with 1 fewer action.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
-    },
-    "intro7": {
-      "title": "Intro 7",
-      "body": "<p>_Intro 7_: The road to Eastwick Bog is covered in rough potholes that reflect a brilliant, prismatic sheen in the sky above. Theo stops the truck as the road grows treacherous. \"I'm sorry to do this, but this old girl can't make the trip through all that mud,\" Theo says. You step off the truckbed, say goodbye to Theo, and walk down the muddy road past a close thicket of gaudy, colored trees riven with cracks of light.</p><p class='basic right'>Proceed to _Setup_.</p>"
-    },
-    "intro8": {
-      "title": "Intro 8",
-      "body": "<p>_Intro 8_: The moonlight is as bright as day, illuminating the desolate landscape around the truck like something in a Grimm fairy tale. An acrid breeze blows off the bog, smelling sweetly of death, as you pull to a stop on the shoreline and look up at the moon, veiled in gathering clouds. A single thin tree stands silhouetted against the moon, reaching up like a grasping hand. You hoist your supplies out of the truck and look back. The thin tree has disappeared, leaving a dark ripple in its wake.</p><p class='basic right'>Proceed to _Setup_.</p>"
-    },
+    "intro5": "<p>_Intro 5_: After some struggle, you coax the truck out of the pothole and point Theo through a mess of other potholes onto a rocky bank. Several bags of supplies fall out of the truckbed. Theo waves dismissively. \"I can get those on the way back. I've got some family stuff back in Akwan to take care of.\" Theo leaves you at the edge of the bog, wreathed in mist in the chill rain.</p><ul><li>Each investigator begins the next scenario with 2 fewer resources.</li></ul><p class='basic right'>Proceed to _Setup_.</p>",
+    "intro6": "<p>_Intro 6_: Theo presses his shoulder to the rear of the truck as you rev the gas. The vehicle lurches forward only to bury the front tire in another pothole. Theo jumps into the truck next to you and lets out an exasperated sigh. \"I think you'll have to continue on foot from here. It's not that far.\"</p><ul><li>Each investigator begins the next scenario with 1 fewer action.</li></ul><p class='basic right'>Proceed to _Setup_.</p>",
+    "intro7": "<p>_Intro 7_: The road to Eastwick Bog is covered in rough potholes that reflect a brilliant, prismatic sheen in the sky above. Theo stops the truck as the road grows treacherous. \"I'm sorry to do this, but this old girl can't make the trip through all that mud,\" Theo says. You step off the truckbed, say goodbye to Theo, and walk down the muddy road past a close thicket of gaudy, colored trees riven with cracks of light.</p><p class='basic right'>Proceed to _Setup_.</p>",
+    "intro8": "<p>_Intro 8_: The moonlight is as bright as day, illuminating the desolate landscape around the truck like something in a Grimm fairy tale. An acrid breeze blows off the bog, smelling sweetly of death, as you pull to a stop on the shoreline and look up at the moon, veiled in gathering clouds. A single thin tree stands silhouetted against the moon, reaching up like a grasping hand. You hoist your supplies out of the truck and look back. The thin tree has disappeared, leaving a dark ripple in its wake.</p><p class='basic right'>Proceed to _Setup_.</p>",
     "xp": {
       "bonus": "Bonus experience"
     }
   },
   "setup": {
     "gatherSets": "Gather all cards from the following encounter sets: *The Thing in the Depths*, *Blight*, *The Forest*, and *Mutations*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-thing-in-the-depths.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/the-forest.png' /><img src='{setImgPath}/mutations.png' /></section>",
-    "gatherResidents": "If it is (_Day {'{'}day{'}'}_), gather each story asset from the *Residents* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
     "currentDaySet": "In addition, check the Campaign Log for the current day and gather its corresponding encounter set for *The First Day*, *The Second Day*, or *The Final Day*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
     "currentDayMarker": "Check your Campaign Log for the current day and time. Put the Time Marker card into play on its corresponding (_Day {'{'}day{'}'}_) or (_Night {'{'}night{'}'}_) side.",
     "doomDay2": "If it is _Day 2_ or _Night 2_, place 1 doom on the agenda.",
@@ -53,7 +40,7 @@
     "locations": "Gather the 10 double-sided locations and shuffle them. Remove one of these locations from the game at random. Put the remaining 9 locations into play in a 3×3 grid with their _Bog_ side facing up.",
     "shuffleLocations": "See Location Adjacency below.",
     "startingLocation": "Each investigator begins play at the \"Starting Location.\"",
-    "residents": "Residents:",
+    "residents": "If it is (_Day {'{'}day{'}'}_), gather each story asset from the *Residents* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
     "residentsDay1": "If it is _Day 1_, place Judith Park at the North Shore location. Put Dr. Rosa Marquez into play under the control of an investigator. She does not take up an ally slot during this scenario.",
     "residentsDay2Or3": "If it is _Day 2_ or _Day 3_, place River Hawthorne at the North Shore location.",
     "removeResidents": "Remove each other card in the *Residents* encounter set from the game.",

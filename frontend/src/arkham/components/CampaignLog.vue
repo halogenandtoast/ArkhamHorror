@@ -73,7 +73,8 @@ const psi = computed(() => props.game.campaign?.meta?.psi)
 const scarletKeys = computed(() => props.game.campaign?.meta?.keyStatus)
 
 type AdditionalLogSection = { title: string; body: string }
-type CampaignDefinition = { id: string; additional?: AdditionalLogSection[] }
+type ConfiguredLogSection = string | { id: string; baseKey?: string }
+type CampaignDefinition = { id: string; additional?: AdditionalLogSection[]; logSections?: ConfiguredLogSection[] }
 
 const campaignDefinition = computed<CampaignDefinition | null>(() => {
   const campaignId = props.game.campaign?.id
@@ -298,6 +299,7 @@ type SectionModel = {
   id: string
   titleKey: string
   orderKey: string
+  prefix: string
   records: string[]
   recordCounts: Record<string, number>
   relationshipLevel: number
@@ -391,6 +393,7 @@ const sections = computed<SectionModel[]>(() => {
       id: sectionId,
       titleKey,
       orderKey,
+      prefix: baseKey,
       records: [recordKey],
       recordCounts: recordCountsBySectionId.value[sectionId] ?? {},
       relationshipLevel: relationshipLevelBySectionId.value[sectionId] ?? 0,
@@ -411,10 +414,34 @@ const sections = computed<SectionModel[]>(() => {
       id: meta.id,
       titleKey: meta.titleKey,
       orderKey: meta.orderKey,
+      prefix: meta.baseKey,
       records: [],
       recordCounts: recordCountsBySectionId.value[meta.id] ?? {},
       relationshipLevel: relationshipLevelBySectionId.value[meta.id] ?? 0,
       component: sectionComponentById[meta.id],
+    }
+  }
+
+  for (const entry of campaignDefinition.value?.logSections ?? []) {
+    const id = typeof entry === 'string' ? entry : entry.id
+    const baseKey = typeof entry === 'string'
+      ? (props.game.campaign ? campaignIdToI18n(props.game.campaign.id) : '')
+      : (entry.baseKey ?? (props.game.campaign ? campaignIdToI18n(props.game.campaign.id) : ''))
+    if (!baseKey) continue
+
+    const key = `${baseKey}:${id}`
+    if (byKey[key]) continue
+
+    byKey[key] = {
+      key,
+      id,
+      titleKey: t(`${baseKey}.key['[${id}]'].title`),
+      orderKey: t(`${baseKey}.key['[${id}]'].orderKey`),
+      prefix: baseKey,
+      records: [],
+      recordCounts: recordCountsBySectionId.value[id] ?? {},
+      relationshipLevel: relationshipLevelBySectionId.value[id] ?? 0,
+      component: sectionComponentById[id],
     }
   }
 
@@ -584,6 +611,7 @@ const emptyLog = computed(() => {
   if (hasSupplies.value) return false
   if (recorded.value.length > 0) return false
   if (remembered.value.length > 0) return false
+  if (visibleSections.value.length > 0) return false
   if (Object.entries(recordedSets.value ?? {}).length > 0) return false
   return true
 })
@@ -777,7 +805,7 @@ const mapData = computed(() => {
               :is="hemlockAreasSurveyedSection.component"
               class="hemlock-overview-grow"
               :sectionId="hemlockAreasSurveyedSection.id"
-              :prefix="hemlockAreasSurveyedSection.titleKey.split('.').slice(0, 1).join('.')"
+              :prefix="hemlockAreasSurveyedSection.prefix"
               :records="hemlockAreasSurveyedSection.records"
               :recordCounts="hemlockAreasSurveyedSection.recordCounts"
               :relationshipLevel="hemlockAreasSurveyedSection.relationshipLevel"
@@ -803,7 +831,7 @@ const mapData = computed(() => {
               v-if="section.component"
               :is="section.component"
               :sectionId="section.id"
-              :prefix="section.titleKey.split('.').slice(0, 1).join('.')"
+              :prefix="section.prefix"
               :records="section.records"
               :recordCounts="section.recordCounts"
               :relationshipLevel="section.relationshipLevel"

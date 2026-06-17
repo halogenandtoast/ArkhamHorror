@@ -29,7 +29,7 @@ instance HasModifiersFor ThingInTheDepths where
 instance HasAbilities ThingInTheDepths where
   getAbilities (ThingInTheDepths a) =
     extend1 a
-      $ restricted a 1 (exists $ be a <> EnemyAt (LocationWithTrait Bog))
+      $ restricted a 1 (exists $ be a <> EnemyAt (LocationWithTrait Bog) <> EnemyWithAnyDamage)
       $ forced
       $ EnemyAttacks #after Anyone AnyEnemyAttack (be a)
 

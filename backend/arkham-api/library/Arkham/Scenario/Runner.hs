@@ -254,7 +254,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
             labeled' "healMentalTrauma" $ push $ HealTrauma iid 0 1
     pure a
   EndSetup -> do
-    pushAll [BeginGame, BeginRound, Begin InvestigationPhase]
+    -- Preludes are the same game as the scenario that follows them, so the
+    -- continuing scenario skips start-of-game windows (and opening-hand
+    -- revelations). See local-faq 2026-06-17_hemlock-vale-preludes-same-game.
+    let skipStartOfGame = maybe False (.skipStartOfGame) scenarioOptions
+    pushAll
+      $ [BeginGame | not skipStartOfGame] <> [BeginRound, Begin InvestigationPhase]
     whenM (getHasRecord TheInvestigatorsSurvivedTheMidwinterGala) do
       lead <- getLead
       jewel <- genCard Assets.jewelOfSarnath

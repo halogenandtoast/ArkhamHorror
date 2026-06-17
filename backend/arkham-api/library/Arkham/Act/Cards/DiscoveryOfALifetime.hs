@@ -26,7 +26,15 @@ instance HasAbilities DiscoveryOfALifetime where
         1
         (GroupClueCost (PerPlayer 1) YourLocation)
         (exists $ You <> at_ (connectedTo (LocationWithEnemy $ enemyIs Enemies.chelydranHybrid)))
-    , mkAbility a 2 $ forced $ PhaseEnds #when #enemy
+    , restricted
+        a
+        2
+        ( exists
+            $ enemyIs Enemies.chelydranHybrid
+            <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination <> ReadyEnemy)
+        )
+        $ forced
+        $ PhaseEnds #when #enemy
     , restricted
         a
         3
@@ -39,8 +47,7 @@ instance RunMessage DiscoveryOfALifetime where
   runMessage msg a@(DiscoveryOfALifetime attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chelydran <- getUniqueEnemy Enemies.chelydranHybrid
-      withLocationOf iid \lid ->
-        roundModifier (attrs.ability 1) chelydran (ForcePatrol (LocationWithId lid))
+      withLocationOf iid $ roundModifier (attrs.ability 1) chelydran . ForcePatrol . LocationWithId
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       chelydran <- getUniqueEnemy Enemies.chelydranHybrid
@@ -53,8 +60,7 @@ instance RunMessage DiscoveryOfALifetime where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      day <- getCampaignDay
-      case day of
+      getCampaignDay >>= \case
         Day1 -> push R2
         _ -> push R1
       pure a

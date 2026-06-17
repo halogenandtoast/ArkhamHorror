@@ -10,6 +10,7 @@ data ScenarioOptions = ScenarioOptions
   , scenarioOptionsLeadInvestigator :: Maybe InvestigatorId
   , scenarioOptionsDelayChoosingLead :: Bool
   , scenarioOptionsSkipInvestigatorSetup :: Bool
+  , scenarioOptionsSkipStartOfGame :: Bool
   }
   deriving stock (Eq, Ord, Show, Generic, Data)
   deriving anyclass ToJSON
@@ -29,6 +30,9 @@ instance HasField "delayChoosingLead" ScenarioOptions Bool where
 instance HasField "skipInvestigatorSetup" ScenarioOptions Bool where
   getField = scenarioOptionsSkipInvestigatorSetup
 
+instance HasField "skipStartOfGame" ScenarioOptions Bool where
+  getField = scenarioOptionsSkipStartOfGame
+
 defaultScenarioOptions :: ScenarioOptions
 defaultScenarioOptions = ScenarioOptions
   { scenarioOptionsStandalone = False
@@ -36,6 +40,7 @@ defaultScenarioOptions = ScenarioOptions
   , scenarioOptionsLeadInvestigator = Nothing
   , scenarioOptionsDelayChoosingLead = False
   , scenarioOptionsSkipInvestigatorSetup = False
+  , scenarioOptionsSkipStartOfGame = False
   }
 
 instance FromJSON ScenarioOptions where
@@ -45,4 +50,5 @@ instance FromJSON ScenarioOptions where
     scenarioOptionsLeadInvestigator <- o .:? "scenarioOptionsLeadInvestigator"
     scenarioOptionsDelayChoosingLead <- o .:? "scenarioOptionsDelayChoosingLead" .!= False
     scenarioOptionsSkipInvestigatorSetup <- o .:? "scenarioOptionsSkipInvestigatorSetup" .!= False
+    scenarioOptionsSkipStartOfGame <- o .:? "scenarioOptionsSkipStartOfGame" .!= False
     pure ScenarioOptions {..}

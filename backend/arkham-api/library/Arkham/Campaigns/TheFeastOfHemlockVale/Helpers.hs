@@ -235,7 +235,12 @@ afterPrelude :: ReverseQueue m => CampaignStep -> m ()
 afterPrelude =
   setNextCampaignStep . \case
     ScenarioStep sid ->
-      ScenarioStepWithOptions sid defaultScenarioOptions {scenarioOptionsSkipInvestigatorSetup = True}
+      ScenarioStepWithOptions
+        sid
+        defaultScenarioOptions
+          { scenarioOptionsSkipInvestigatorSetup = True
+          , scenarioOptionsSkipStartOfGame = True
+          }
     other -> other
  where
   setNextCampaignStep = push . NextCampaignStep . continueNoUpgrade

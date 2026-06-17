@@ -550,6 +550,15 @@ instance RunMessage EnemyAttrs where
         AsSwarm eid' _ -> do
           push $ EnemyEntered eid' lid
           pure a
+        -- The enemy was in play when this move was created but has since left
+        -- play (e.g. an act objective firing on its engagement set it aside).
+        -- Abort the entry so the stale move can't drag it back into play. Spawns
+        -- (which carry enemySpawnDetails) are a legitimate out-of-play entry.
+        _
+          | isNothing enemySpawnDetails
+              && maybe False moveFromInPlay enemyMovement
+              && isOutOfPlayPlacement enemyPlacement ->
+              pure a
         _ -> do
           swarm <- select $ SwarmOf eid
           -- If enemySpawnDetails is present it means this enemy is using the
@@ -731,7 +740,7 @@ instance RunMessage EnemyAttrs where
           push
             $ chooseOrRunOne player
             $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
-      pure $ a & movementL ?~ movement
+      pure $ a & movementL ?~ movement {moveFromInPlay = isInPlayPlacement enemyPlacement}
     EnemyMove eid lid | eid == enemyId -> case enemyPlacement of
       AsSwarm eid' _ -> do
         push $ EnemyMove eid' lid
@@ -771,7 +780,13 @@ instance RunMessage EnemyAttrs where
       -- adjust the placement as it will affect engagement (such as Knight of
       -- the Inner Circle)
       current <- getLocationOf enemyId
-      if current == Just lid
+      -- Don't drag an enemy back into play if it left play (e.g. was set aside)
+      -- after this in-play move was queued.
+      let leftPlayMidMove =
+            isNothing enemySpawnDetails
+              && maybe False moveFromInPlay enemyMovement
+              && isOutOfPlayPlacement enemyPlacement
+      if current == Just lid || leftPlayMidMove
         then pure a
         else pure $ a & placementL .~ AtLocation lid
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)

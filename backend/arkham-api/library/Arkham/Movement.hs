@@ -25,6 +25,10 @@ data Movement = Movement
   , moveSkipEngagement :: Bool
   , moveId :: MovementId
   , moveForced :: Bool
+  , -- Whether the enemy was in play when this move was created. Used to abort
+    -- the move if the enemy leaves play (e.g. is set aside) before the move
+    -- commits its placement, so a stale move can't drag it back into play.
+    moveFromInPlay :: Bool
   }
   deriving stock (Show, Ord, Eq, Data)
 
@@ -102,6 +106,7 @@ move (toSource -> moveSource) (toTarget -> moveTarget) lid = do
       , moveSkipEngagement = False
       , moveId
       , moveForced = False
+      , moveFromInPlay = True
       }
 
 moveToMatch
@@ -125,6 +130,7 @@ moveToMatch (toSource -> moveSource) (toTarget -> moveTarget) matcher = do
       , moveSkipEngagement = False
       , moveId
       , moveForced = False
+      , moveFromInPlay = True
       }
 
 moveTowards
@@ -148,6 +154,7 @@ moveTowards (toSource -> moveSource) (toTarget -> moveTarget) (asId -> locationI
       , moveSkipEngagement = False
       , moveId
       , moveForced = False
+      , moveFromInPlay = True
       }
 
 moveTowardsMatching
@@ -171,6 +178,7 @@ moveTowardsMatching (toSource -> moveSource) (toTarget -> moveTarget) matcher = 
       , moveSkipEngagement = False
       , moveId
       , moveForced = False
+      , moveFromInPlay = True
       }
 $(deriveToJSON defaultOptions ''MovementMeans)
 
@@ -197,5 +205,6 @@ instance FromJSON Movement where
     moveSkipEngagement <- o .:? "moveSkipEngagement" .!= False
     moveId <- o .:? "moveId" .!= MovementId (fromWords64 6128981282234515924 12039885860129472512)
     moveForced <- o .:? "moveForced" .!= False
+    moveFromInPlay <- o .:? "moveFromInPlay" .!= True
 
     pure Movement {..}

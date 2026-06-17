@@ -35,12 +35,11 @@ instance RunMessage ProtoplasmicPool where
       iids <- select $ investigatorAt attrs
       enemies <- select $ EnemyCanBeDamagedBySource (attrs.ability 1)
       totalClues <- getSpendableClueCount iids
-      chooseOneM iid $ withI18n $ countVar targetAmount do
-        when (totalClues >= targetAmount) do
-          labeled' "spendCluesToActivate" do
-            push $ SpendClues targetAmount iids
-            activateSeal SealB
-            chooseOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2
+      chooseOrRunOneM iid $ withI18n $ countVar targetAmount do
+        labeledValidate' (totalClues >= targetAmount) "spendCluesToActivate" do
+          push $ SpendClues targetAmount iids
+          activateSeal SealB
+          chooseOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2
         labeled' "doNotSpendClues" nothing
 
       pure l

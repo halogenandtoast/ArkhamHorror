@@ -36,11 +36,10 @@ instance RunMessage ForsakenTemple where
       totalClues <- getSpendableClueCount iids
       sameSpoke <- getLocationsOnSameSpoke attrs.label UnrevealedLocation
       chooseOneM iid $ withI18n $ countVar targetAmount do
-        when (totalClues >= targetAmount) do
-          labeled' "spendCluesToActivate" do
-            push $ SpendClues targetAmount iids
-            activateSeal SealC
-            chooseOneAtATimeM iid $ targets sameSpoke $ lookAtRevealed iid (attrs.ability 1)
+        labeledValidate' (totalClues >= targetAmount) "spendCluesToActivate" do
+          push $ SpendClues targetAmount iids
+          activateSeal SealC
+          chooseOneAtATimeM iid $ targets sameSpoke $ lookAtRevealed iid (attrs.ability 1)
         labeled' "doNotSpendClues" nothing
 
       pure l

@@ -6949,6 +6949,7 @@ test-suite spec
       Arkham.Event.Events.WorkingAHunchSpec
       Arkham.Game.DiffSpec
       Arkham.GameSpec
+      Arkham.Helpers.InvestigatorSpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec
       Arkham.Investigator.Cards.DaisyWalkerSpec

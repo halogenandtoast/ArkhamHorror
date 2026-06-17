@@ -2,6 +2,7 @@ module Arkham.Location.Cards.ForsakenTemple (forsakenTemple) where
 
 import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
+import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.GameValue
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
@@ -32,12 +33,14 @@ instance RunMessage ForsakenTemple where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       targetAmount <- perPlayer 1
       iids <- select $ investigatorAt attrs
+      totalClues <- getSpendableClueCount iids
       sameSpoke <- getLocationsOnSameSpoke attrs.label UnrevealedLocation
       chooseOneM iid $ withI18n $ countVar targetAmount do
-        labeled' "spendCluesToActivate" do
-          push $ SpendClues targetAmount iids
-          activateSeal SealC
-          chooseOneAtATimeM iid $ targets sameSpoke $ lookAtRevealed iid (attrs.ability 1)
+        when (totalClues >= targetAmount) do
+          labeled' "spendCluesToActivate" do
+            push $ SpendClues targetAmount iids
+            activateSeal SealC
+            chooseOneAtATimeM iid $ targets sameSpoke $ lookAtRevealed iid (attrs.ability 1)
         labeled' "doNotSpendClues" nothing
 
       pure l

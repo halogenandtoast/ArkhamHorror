@@ -85,7 +85,8 @@ makePreparationsForNextSurvey iid = do
   let (persistAssets, otherAssets) = partition isPersistent assets
 
   for_ persistAssets \(asset, _) -> setupModifier ScenarioSource asset Persist
-  unless (null otherAssets) $ chooseOrRunOneM iid do
+  unless (null otherAssets) $ campaignI18n $ chooseOrRunOneM iid do
+    questionLabeled' "chooseAssetToKeepForNextSurvey"
     for_ (eachWithRest (map fst otherAssets)) \(asset, rest) ->
       targeting asset do
         setupModifier ScenarioSource asset Persist

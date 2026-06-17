@@ -75,6 +75,7 @@
     "psychotropicSpores": {
       "pay": "Take 1 direct horror for this test to automatically succeed"
     },
+    "chooseAssetToKeepForNextSurvey": "Choose 1 asset to keep for the next scenario. Each other non-starting asset in your play area will be discarded.",
     "reclaimedByNature": {
       "nearestEnemyAttacks": "Choose the nearest enemy. That enemy attacks you",
       "enemiesHeal": "Each enemy at your location and each connecting location heals 1 damage"

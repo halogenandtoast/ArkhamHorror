@@ -295,7 +295,7 @@ data WindowType
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PerformAction InvestigatorId Action
   | PerformedSameTypeOfAction InvestigatorId [Action]
-  | PerformedDifferentTypesOfActionsInARow InvestigatorId Int [Action]
+  | PerformedDifferentTypesOfActionsInARow InvestigatorId Int [[Action]]
   | PhaseBegins Phase
   | PhaseEnds Phase
   | PlaceUnderneath Target Card
@@ -467,6 +467,14 @@ mconcat
               case contents of
                 Left cs -> pure $ WouldAddChaosTokensToChaosBag Nothing cs
                 Right (i, cs) -> pure $ WouldAddChaosTokensToChaosBag i cs
+            "PerformedDifferentTypesOfActionsInARow" -> do
+              -- New shape carries the per-action type groups ([[Action]]); old
+              -- saves carry a single flattened SDR ([Action]). Treat each legacy
+              -- action as its own singleton group.
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Right (i, n, groups) -> pure $ PerformedDifferentTypesOfActionsInARow i n groups
+                Left (i, n, as) -> pure $ PerformedDifferentTypesOfActionsInARow i n (map (: []) as)
             _ -> $(mkParseJSON defaultOptions ''WindowType) (Object o)
       |]
   , deriveJSON defaultOptions ''Window

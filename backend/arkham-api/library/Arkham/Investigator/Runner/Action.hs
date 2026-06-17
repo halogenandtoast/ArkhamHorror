@@ -71,6 +71,7 @@ import Arkham.Helpers.Action (
   getActionsWith,
   getAdditionalActions,
   getCanAfford,
+  longestUniqueStreak,
  )
 import Arkham.Helpers.Card (
   cardIsFast',
@@ -379,7 +380,6 @@ handleTakenActions a@InvestigatorAttrs{..} iid actions = do
   let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
   let duplicated = actions `List.intersect` previous
   let streak = longestUniqueStreak (actions : reverse investigatorActionsPerformed)
-  let streakTypes = pickSDR streak
 
   when (notNull duplicated)
     $ pushM
@@ -388,7 +388,7 @@ handleTakenActions a@InvestigatorAttrs{..} iid actions = do
   when (length streak > 1)
     $ pushM
     $ checkWindows
-      [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) streakTypes)]
+      [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) streak)]
 
   when (#parley `elem` actions && #parley `notElem` previous)
     $ pushM
@@ -691,22 +691,3 @@ handleResolvedAbility a@InvestigatorAttrs{..} = do
                   _ -> u
             )
       )
-
-longestUniqueStreak :: Eq a => [[a]] -> [[a]]
-longestUniqueStreak = go []
- where
-  go acc [] = acc
-  go acc (xs : xss)
-    | sdrExists (xs : acc) = go (xs : acc) xss
-    | otherwise = acc
-
-sdrExists :: Eq a => [[a]] -> Bool
-sdrExists [] = True
-sdrExists (xs : rest) = any (\x -> sdrExists (map (filter (/= x)) rest)) xs
-
-pickSDR :: Eq a => [[a]] -> [a]
-pickSDR = fromMaybe [] . go
- where
-  go [] = Just []
-  go (xs : rest) = listToMaybe . catMaybes $
-    [fmap (x :) (go (map (filter (/= x)) rest)) | x <- xs]

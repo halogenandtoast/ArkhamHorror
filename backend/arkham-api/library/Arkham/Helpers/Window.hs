@@ -1262,9 +1262,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) actions]
       _ -> noMatch
     Matcher.PerformedDifferentTypesOfActionsInARow timing whoMatcher n actionMatcher -> guardTiming timing $ \case
-      Window.PerformedDifferentTypesOfActionsInARow iid' m actions
+      Window.PerformedDifferentTypesOfActionsInARow iid' m groups
         | m >= n ->
-            andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) actions]
+            andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) (concat groups)]
       _ -> noMatch
     Matcher.WouldHaveSkillTestResult timing whoMatcher skillTestMatcher skillTestResultMatcher -> do
       -- The #when is questionable, but "Would" based timing really is

@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.CaptivatingPerformance3Spec (spec) where
 
 import Arkham.Action (Action (..))
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Runner.Action (longestUniqueStreak, pickSDR)
+import Arkham.Helpers.Action (longestUniqueStreak, pickSDR, sdrExists)
 import TestImport.New
 
 spec :: Spec
@@ -44,6 +44,30 @@ spec = describe "Captivating Performance (3)" do
 
     it "returns [] when no SDR exists" . gameTest $ \_ -> liftIO do
       pickSDR @Action [[#fight], [#fight]] `shouldBe` []
+
+  -- The bonus fourth action is eligible only if it is disjoint from at least
+  -- one complete SDR of the streak, i.e. the streak still admits an SDR once the
+  -- candidate's types are removed from every group. A weapon/spell "[action]:
+  -- Fight" counts as both an activate and a fight action.
+  describe "fourth-action eligibility" do
+    let canTake groups xs = sdrExists (map (filter (`notElem` xs)) groups)
+    it "excludes a multi-type action sharing a type with every SDR (#4834)" . gameTest $ \_ -> liftIO do
+      -- streak Play, Move, Activate
+      let groups = [[#play], [#move], [#activate]] :: [[Action]]
+      canTake groups [#activate, #fight] `shouldBe` False -- Azure Flame
+      canTake groups [#activate, #fight, #evade] `shouldBe` False -- Sword Cane
+      canTake groups [#activate, #parley] `shouldBe` False -- Knight of the Outer Void's Parley
+      canTake groups [#play] `shouldBe` False
+      canTake groups [#fight] `shouldBe` True -- basic Fight
+      canTake groups [#investigate] `shouldBe` True
+      canTake groups [#resource] `shouldBe` True
+
+    it "allows a multi-type action disjoint from one SDR of an ambiguous streak" . gameTest $ \_ -> liftIO do
+      -- two SDR sets: {inv,res,activate} and {inv,res,fight}
+      let groups = [[#investigate], [#resource], [#activate, #fight]] :: [[Action]]
+      canTake groups [#activate, #fight] `shouldBe` False
+      canTake groups [#activate, #evade] `shouldBe` True
+      canTake groups [#move] `shouldBe` True
 
   context "Reaction trigger" do
     it "fires after #fight+#activate, #fight+#activate, #play (three multi-type actions admitting an SDR)" . gameTest $ \self -> do

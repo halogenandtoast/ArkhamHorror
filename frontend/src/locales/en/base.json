@@ -221,6 +221,8 @@
   "fromDeck": "From Deck",
   "fromHand": "From Hand",
   "fromDiscard": "From Discard",
+  "fromEncounterDeck": "From Encounter Deck",
+  "fromEncounterDiscard": "From Encounter Discard",
   "ok": "OK",
   "back": "Back",
   "join": "Join",

@@ -12,25 +12,13 @@
     "day1": "If it is _Day 1_, proceed to _Intro 1_.",
     "day2": "If it is _Day 2_, skip to _Intro 4_.",
     "day3": "If it is _Day 3_, skip to _Intro 7_.",
-    "intro1": {
-      "title": "Intro 1",
-      "body": "<p>_Intro 1_: The road to Eastwick Bog branches sharply off from the same road you took in from Akwan. The landscape is incredibly vibrant, almost tropical, with rainbow-patterned tree trunks standing guard at the edge of black mirrored ponds. Dr. Marquez and Judith trade friendly barbs in the truckbed, occasionally swatting away gnats. As the conversation turns sour, you attempt to break the tension by asking Judith for a hunting story.</p>"
-    },
+    "intro1": "<p>_Intro 1_: The road to Eastwick Bog branches sharply off from the same road you took in from Akwan. The landscape is incredibly vibrant, almost tropical, with rainbow-patterned tree trunks standing guard at the edge of black mirrored ponds. Dr. Marquez and Judith trade friendly barbs in the truckbed, occasionally swatting away gnats. As the conversation turns sour, you attempt to break the tension by asking Judith for a hunting story.</p>",
     "checkJudith": "<p class='basic unindented'>Check your Campaign Log.</p>",
     "judithHigh": "If Judith Park's Relationship Level is 1 or higher, proceed to _Intro 2_.",
     "judithLow": "Otherwise, skip to _Intro 3_.",
-    "intro2": {
-      "title": "Intro 2",
-      "body": "<p>_Intro 2_: Judith doesn't miss a beat. \"See this scar? I got it in a fight at a speakeasy. Some rich kid cut me with a broken bottle. A friendly scuffle, y'know. His family was from this area, and very rich, I'll add again, and they were so afraid a scandal'd break out that they offered me a job. Not that I woulda ratted on him.\"</p><p>\"I don't know what I expected to hear from a bodyguard, but it wasn't that,\" says Dr. Marquez, possibly annoyed. An acrid breeze, smelling sweetly of death, blows off the bog and ends the conversation. The truck comes to a stop. Judith rolls her eyes, pulls on a pair of old waders, and walks out onto the bog, rifle slung over her shoulder.</p><p>\"Believe me or don't. I'm just here for the money.\"</p><ul><li>Increase Judith Park's Relationship Level. Each investigator earns 1 bonus experience.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
-    },
-    "intro3": {
-      "title": "Intro 3",
-      "body": "<p>_Intro 3_: The young woman's steely demeanor relaxes. \"Something big lives in Eastwick Bog. An apex predator the size of a killer whale, with razor sharp teeth and too many eyes. Smells like rotten seaweed.\" You tell her it sounds like she has personal experience with the creature, and she nods. \"I owe it. Or it owes me. See this?\" She points to the wicked scar on her cheek. \"That thing almost took my eye. I plan to settle the score.\" Dr. Marquez is nonplussed. \"I guess you think an academic will buy up any story, but if you expect me to believe—\" An acrid breeze, smelling sweetly of death, blows off the bog and stops Judith mid-retort. The truck comes to a stop. Judith pulls a bandana over her nose and mouth, slides into a pair of old waders and walks out onto the bog, rifle slung over her shoulder.</p><p>\"Maybe if you meet it, you'll think differently.\"</p><ul><li>In Judith Park's Notes, record <i>Judith shared a grudge</i>.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
-    },
-    "intro4": {
-      "title": "Intro 4",
-      "body": "<p>_Intro 4_: \"I really didn't get what everyone else liked about Journey to the Center of the Earth. A hollow earth? It sounds insane,\" Theo chatters as rain hammers down on the truck cabin. The landscape is incredibly vibrant, almost tropical, with rainbow-patterned tree trunks standing guard at the edge of black mirrored ponds. The truck suddenly hits a patch of deep mud and squelches to a halt. \"I think I need some help,\" Theo says.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>*\"We can push!\"* Proceed to _Intro 5_.</li><li>*\"We'll rev the engine.\"* Skip to _Intro 6_.</li></ul>"
-    },
+    "intro2": "<p>_Intro 2_: Judith doesn't miss a beat. \"See this scar? I got it in a fight at a speakeasy. Some rich kid cut me with a broken bottle. A friendly scuffle, y'know. His family was from this area, and very rich, I'll add again, and they were so afraid a scandal'd break out that they offered me a job. Not that I woulda ratted on him.\"</p><p>\"I don't know what I expected to hear from a bodyguard, but it wasn't that,\" says Dr. Marquez, possibly annoyed. An acrid breeze, smelling sweetly of death, blows off the bog and ends the conversation. The truck comes to a stop. Judith rolls her eyes, pulls on a pair of old waders, and walks out onto the bog, rifle slung over her shoulder.</p><p>\"Believe me or don't. I'm just here for the money.\"</p><ul><li>Increase Judith Park's Relationship Level. Each investigator earns 1 bonus experience.</li></ul><p class='basic right'>Proceed to _Setup_.</p>",
+    "intro3": "<p>_Intro 3_: The young woman's steely demeanor relaxes. \"Something big lives in Eastwick Bog. An apex predator the size of a killer whale, with razor sharp teeth and too many eyes. Smells like rotten seaweed.\" You tell her it sounds like she has personal experience with the creature, and she nods. \"I owe it. Or it owes me. See this?\" She points to the wicked scar on her cheek. \"That thing almost took my eye. I plan to settle the score.\" Dr. Marquez is nonplussed. \"I guess you think an academic will buy up any story, but if you expect me to believe—\" An acrid breeze, smelling sweetly of death, blows off the bog and stops Judith mid-retort. The truck comes to a stop. Judith pulls a bandana over her nose and mouth, slides into a pair of old waders and walks out onto the bog, rifle slung over her shoulder.</p><p>\"Maybe if you meet it, you'll think differently.\"</p><ul><li>In Judith Park's Notes, record <i>Judith shared a grudge</i>.</li></ul><p class='basic right'>Proceed to _Setup_.</p>",
+    "intro4": "<p>_Intro 4_: \"I really didn't get what everyone else liked about Journey to the Center of the Earth. A hollow earth? It sounds insane,\" Theo chatters as rain hammers down on the truck cabin. The landscape is incredibly vibrant, almost tropical, with rainbow-patterned tree trunks standing guard at the edge of black mirrored ponds. The truck suddenly hits a patch of deep mud and squelches to a halt. \"I think I need some help,\" Theo says.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>*\"We can push!\"* Proceed to _Intro 5_.</li><li>*\"We'll rev the engine.\"* Skip to _Intro 6_.</li></ul>",
     "label": {
       "push": "\"We can push!\"",
       "rev": "\"We'll rev the engine.\""
@@ -66,9 +54,8 @@
     "shuffleLocations": "See Location Adjacency below.",
     "startingLocation": "Each investigator begins play at the \"Starting Location.\"",
     "residents": "Residents:",
-    "judithDay1": "If it is _Day 1_, place Judith Park at the North Shore location. Put Dr. Rosa Marquez into play under the control of an investigator. She does not take up an ally slot during this scenario.",
-    "drMarquez": "Put Dr. Rosa Marquez into play under the control of an investigator. She does not take up an ally slot during this scenario.",
-    "riverDay2Day3": "If it is _Day 2_ or _Day 3_, place River Hawthorne at the North Shore location.",
+    "residentsDay1": "If it is _Day 1_, place Judith Park at the North Shore location. Put Dr. Rosa Marquez into play under the control of an investigator. She does not take up an ally slot during this scenario.",
+    "residentsDay2Or3": "If it is _Day 2_ or _Day 3_, place River Hawthorne at the North Shore location.",
     "removeResidents": "Remove each other card in the *Residents* encounter set from the game.",
     "setAsideEnemies": "Set the following cards aside, out of play: the Thing in the Depths enemy, the Chelydran Hybrid enemy, and all five copies of the Grasping Tendril enemy."
   },

@@ -163,6 +163,7 @@ setAsideEvery :: ReverseQueue m => CardMatcher -> ScenarioBuilderT m ()
 setAsideEvery matcher = do
   cards <- fromGathered matcher
   attrsL . setAsideCardsL %= (<> cards)
+
 placeStory :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
 placeStory def = do
   card <- genCard def

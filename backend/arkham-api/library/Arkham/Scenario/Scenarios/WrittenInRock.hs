@@ -32,7 +32,6 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WrittenInRock.Helpers
-import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
 import Arkham.Trait (Trait (Cave, Rail))
 
@@ -131,28 +130,11 @@ instance RunMessage WrittenInRock where
       setAgendaDeck [Agendas.undergroundSurvey, Agendas.dangerousRide]
       setActDeck [Acts.descentIntoTheMines, Acts.theUndergroundMaze]
 
-      case day of
-        Day1 -> do
-          gather Set.TheFirstDay
-          placeStory $ case time of
-            Day -> Stories.dayOne
-            Night -> Stories.nightOne
-          when (time == Day) do
-            setAside [Assets.simeonAtwoodDedicatedTroublemaker]
-        Day2 -> do
-          gather Set.TheSecondDay
-          placeStory $ case time of
-            Day -> Stories.dayTwo
-            Night -> Stories.nightTwo
-          when (time == Day) do
-            setAside [Assets.simeonAtwoodDedicatedTroublemaker]
-        Day3 -> do
-          gather Set.TheFinalDay
-          placeStory $ case time of
-            Day -> Stories.dayThree
-            Night -> Stories.nightThree
-          when (time == Day) do
-            setAside [Assets.leahAtwoodTheValeCook]
+      setupHemlockDay day time
+      when (time == Day) $ case day of
+        Day1 -> setAside [Assets.simeonAtwoodDedicatedTroublemaker]
+        Day2 -> setAside [Assets.simeonAtwoodDedicatedTroublemaker]
+        Day3 -> setAside [Assets.leahAtwoodTheValeCook]
 
       controlStation <- placeInGrid (Pos 5 1) Locations.controlStation
       placeTokens ScenarioSource controlStation Scrap 1

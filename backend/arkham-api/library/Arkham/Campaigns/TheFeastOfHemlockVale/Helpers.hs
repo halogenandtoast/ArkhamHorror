@@ -9,13 +9,13 @@ import Arkham.Campaign.Types (Field (CampaignChaosBag))
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
-import Arkham.Card.CardCode
-import Arkham.Card.CardDef
+import Arkham.Card
 import Arkham.ChaosToken.Types (ChaosTokenFace (..), isSymbolChaosToken)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Criteria
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Types.Attrs
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText (chaosTokenMorph, p, setTitle, storyBuild)
@@ -35,8 +35,11 @@ import Arkham.Message.Lifted.Log (decrementRecordCount, incrementRecordCount, re
 import Arkham.Modifier
 import Arkham.Prelude hiding (Day)
 import Arkham.Projection
+import Arkham.Scenario.Import.Lifted (gather, placeStory)
 import Arkham.Scenario.Options
+import Arkham.Scenario.Setup (ScenarioBuilderT)
 import Arkham.Source
+import Arkham.Story.Cards qualified as Stories
 import Arkham.Target
 import Arkham.Tracing
 import Arkham.Trait (Trait (Dark))
@@ -111,6 +114,24 @@ data Time = Night | Day
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
+setupHemlockDay :: ReverseQueue m => Day -> Time -> ScenarioBuilderT m ()
+setupHemlockDay day time = case day of
+  Day1 -> do
+    gather Set.TheFirstDay
+    placeStory $ case time of
+      Day -> Stories.dayOne
+      Night -> Stories.nightOne
+  Day2 -> do
+    gather Set.TheSecondDay
+    placeStory $ case time of
+      Day -> Stories.dayTwo
+      Night -> Stories.nightTwo
+  Day3 -> do
+    gather Set.TheFinalDay
+    placeStory $ case time of
+      Day -> Stories.dayThree
+      Night -> Stories.nightThree
+
 initMeta :: TheFeastOfHemlockValeMeta
 initMeta = TheFeastOfHemlockValeMeta Day1 Day []
 
@@ -147,11 +168,12 @@ class HasTimeOverride a where
   isLight :: a -> Criterion
   isLight = not_ . isDark
 
--- | The Lost Sister has no global day/night. Instead it is Day for everything
--- (locations, enemies, treacheries, investigators) unless the relevant location
--- has the Dark trait, in which case it is Night there. Every other scenario sets
--- a single global "time" modifier, so we fall back to that when not in The Lost
--- Sister.
+{- | The Lost Sister has no global day/night. Instead it is Day for everything
+(locations, enemies, treacheries, investigators) unless the relevant location
+has the Dark trait, in which case it is Night there. Every other scenario sets
+a single global "time" modifier, so we fall back to that when not in The Lost
+Sister.
+-}
 inLostSister :: Criterion -> Criterion -> Criterion
 inLostSister = IfCriteria (ScenarioExists $ ScenarioWithId "10569")
 

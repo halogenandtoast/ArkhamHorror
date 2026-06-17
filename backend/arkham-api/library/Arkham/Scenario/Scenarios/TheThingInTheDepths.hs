@@ -26,7 +26,6 @@ import Arkham.Projection (fieldMap)
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheThingInTheDepths.Helpers
-import Arkham.Story.Cards qualified as Stories
 import Arkham.Token (countTokens)
 import Arkham.Trait (Trait (Bog, Sunken))
 import Data.Maybe (fromJust)
@@ -59,7 +58,7 @@ instance RunMessage TheThingInTheDepths where
       time <- getCampaignTime
       let isNight = time == Night
       flavor do
-        setTitle "title"
+        h "title"
         p.basic "body"
         ul $ li.nested.validate isNight "nightSkip" do
           li.validate (not isNight && day == Day1) "day1"
@@ -67,10 +66,11 @@ instance RunMessage TheThingInTheDepths where
           li.validate (not isNight && day == Day3) "day3"
       case (day, time) of
         (Day1, Day) -> do
-          story $ i18nWithTitle "intro1"
           judithLevel <- getRelationshipLevel JudithPark
           let judithHighEnough = judithLevel >= 1
           flavor do
+            setTitle "title"
+            p "intro1"
             p.basic "checkJudith"
             ul do
               li.validate judithHighEnough "judithHigh"
@@ -83,16 +83,16 @@ instance RunMessage TheThingInTheDepths where
         _ -> story $ i18nWithTitle "intro8"
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      story $ i18nWithTitle "intro2"
+      flavor $ setTitle "title" >> p "intro2"
       increaseRelationshipLevel JudithPark 1
       interludeXpAll (toBonus "bonus" 1)
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      story $ i18nWithTitle "intro3"
+      flavor $ setTitle "title" >> p "intro3"
       record JudithSharedAGrudge
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "intro4.title" >> p "intro4.body") do
+      storyWithChooseOneM' (setTitle "title" >> p "intro4") do
         labeled' "push" $ doStep 5 PreScenarioSetup
         labeled' "rev" $ doStep 6 PreScenarioSetup
       pure s
@@ -105,21 +105,29 @@ instance RunMessage TheThingInTheDepths where
       eachInvestigator \iid -> setupModifier attrs iid (FewerActions 1)
       pure s
     Setup -> runScenarioSetup TheThingInTheDepths attrs do
+      day <- getCampaignDay
+      time <- getCampaignTime
+
       setup $ ul do
         li "gatherSets"
         li "gatherResidents"
         li "currentDaySet"
         li.nested "currentDayMarker" do
-          li "doomDay2"
-          li "doomDay3"
+          li.validate (day == Day2) "doomDay2"
+          li.validate (time == Day && day == Day3) "doomDay3"
         li.nested "locations" do
           li "shuffleLocations"
           li "startingLocation"
-        li.nested "residents" do
-          li "judithDay1"
-          li "drMarquez"
-          li "riverDay2Day3"
-          li "removeResidents"
+        li.nested.validate (time == Day) "residents" do
+          if time == Day
+            then do
+              li.validate (day == Day1) "residentsDay1"
+              li.validate (day /= Day1) "residentsDay2Or3"
+              li "removeResidents"
+            else do
+              li "residentsDay1"
+              li "residentsDay2Or3"
+              li "removeResidents"
         li "setAsideEnemies"
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
@@ -133,25 +141,7 @@ instance RunMessage TheThingInTheDepths where
       gather Set.TheForest
       gather Set.Mutations
 
-      day <- getCampaignDay
-      time <- getCampaignTime
-
-      case day of
-        Day1 -> do
-          gather Set.TheFirstDay
-          placeStory $ case time of
-            Day -> Stories.dayOne
-            Night -> Stories.nightOne
-        Day2 -> do
-          gather Set.TheSecondDay
-          placeStory $ case time of
-            Day -> Stories.dayTwo
-            Night -> Stories.nightTwo
-        Day3 -> do
-          gather Set.TheFinalDay
-          placeStory $ case time of
-            Day -> Stories.dayThree
-            Night -> Stories.nightThree
+      setupHemlockDay day time
 
       setScenarioDayAndTime
 
@@ -159,9 +149,9 @@ instance RunMessage TheThingInTheDepths where
       setActDeck [Acts.aBotanicalSurvey, Acts.discoveryOfALifetime]
 
       case day of
-        Day1 -> pure ()
         Day2 -> placeDoomOnAgenda 1
-        Day3 -> placeDoomOnAgenda 2
+        Day3 -> when (time == Day) $ placeDoomOnAgenda 2
+        _ -> pure ()
 
       bogLocations <-
         drop 1
@@ -171,13 +161,13 @@ instance RunMessage TheThingInTheDepths where
         gridPositions =
           [ Pos (-1) 1
           , Pos 0 1
-          , Pos 1 1
+          , northShorePos -- 1 1
           , Pos (-1) 0
           , Pos 0 0
           , Pos 1 0
-          , Pos (-1) (-1)
+          , startingPos -- -1 -1
           , Pos 0 (-1)
-          , Pos 1 (-1)
+          , cranberryBogPos -- 1 -1
           ]
 
       let
@@ -230,9 +220,11 @@ instance RunMessage TheThingInTheDepths where
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
       mayRemoveSinkhole iid
       pure s
-    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | token.face == Cultist, isHardExpert attrs -> do
-      mayRemoveSinkhole iid
-      pure s
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _
+      | token.face == Cultist
+      , isHardExpert attrs -> do
+          mayRemoveSinkhole iid
+          pure s
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       placeSinkhole iid Tablet
       pure s

@@ -417,6 +417,14 @@
     "search": "Search…",
     "useThisDeck": "Use this deck"
   },
+  "deckRestrictions": {
+    "scarletKeys": {
+      "redGlovedMan": {
+        "description": "The Red-Gloved Man cannot be included.",
+        "error": "The Scarlet Keys campaign cannot include The Red-Gloved Man."
+      }
+    }
+  },
   "deckToolbar": {
     "searchDecks": "Search decks…",
     "sortName": "Sort: Name",

@@ -13,6 +13,9 @@ import type { Investigator } from '@/arkham/types/Investigator'
 import Question from '@/arkham/components/Question.vue';
 import NewDeck from '@/arkham/components/NewDeck.vue'
 import DeckToolbar from '@/arkham/components/DeckToolbar.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
@@ -73,7 +76,10 @@ const props = defineProps<{
 const chooseDeck = inject<(deckId: string) => Promise<void>>('chooseDeck')
 const chooseDeckList = inject<(deckList: ArkhamDbDecklist) => Promise<void>>('chooseDeckList')
 const question = computed(() => props.game.question[props.playerId])
-const deckRequirements = computed(() => deckRequirementDescriptions(props.game.scenario?.id))
+const deckRequirements = computed(() => deckRequirementDescriptions(props.game.scenario?.id, {
+  campaignId: props.game.campaign?.id,
+  campaignLog: props.game.campaign?.log,
+}, t))
 
 const questionLabel = computed(() => {
   if (question.value)
@@ -99,8 +105,11 @@ async function addUnsavedDeck(dl: ArkhamDbDecklist) {
 
 function deckError(deckList: SelectableDeckList): string | null {
   const chosenInvestigatorCodes = Object.values(props.game.investigators).map((i) => i.cardCode)
-  const scenarioError = deckRestrictionError(props.game.scenario?.id, deckList, chosenInvestigatorCodes)
-  if (scenarioError) return scenarioError
+  const restrictionError = deckRestrictionError(props.game.scenario?.id, deckList, chosenInvestigatorCodes, {
+    campaignId: props.game.campaign?.id,
+    campaignLog: props.game.campaign?.log,
+  }, t)
+  if (restrictionError) return restrictionError
 
   const investigator = deckInvestigatorCode(deckList)
   const alreadyTaken = Object.values(props.game.investigators).some((i) => {

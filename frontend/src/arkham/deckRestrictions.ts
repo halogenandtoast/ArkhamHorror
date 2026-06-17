@@ -4,14 +4,22 @@ export type SelectableDeckList = {
   meta?: string | { alternate_front?: string }
 }
 
-type DeckRestrictionContext = {
+type Translate = (key: string, named?: Record<string, unknown>) => string
+
+type CampaignDeckRestrictionContext = {
+  campaignId?: string | null
+  campaignLog?: { recordedSets?: Record<string, unknown[]> } | null
+}
+
+type DeckRestrictionContext = CampaignDeckRestrictionContext & {
   scenarioId: string | null | undefined
   deckList: SelectableDeckList
   chosenInvestigatorCodes: string[]
+  t?: Translate
 }
 
 type DeckRestriction = {
-  description?: string
+  description?: string | ((t: Translate) => string)
   validate: (context: DeckRestrictionContext) => string | null
 }
 
@@ -68,6 +76,15 @@ const scenarioDeckRestrictions: Record<string, DeckRestriction[]> = {
   '90094': [requiresAnyParallelContentInvestigator()],
 }
 
+const campaignDeckRestrictions: Record<string, DeckRestriction[]> = {
+  '09': [forbiddenCardCodes({
+    cardCodes: new Set(['02310']),
+    description: (t) => t('deckRestrictions.scarletKeys.redGlovedMan.description'),
+    error: (_code, { t }) => t?.('deckRestrictions.scarletKeys.redGlovedMan.error')
+      ?? 'The Scarlet Keys campaign cannot include The Red-Gloved Man.',
+  })],
+}
+
 function requiredInvestigator(name: string, codes: string[]): RequiredInvestigatorRestriction {
   const investigatorCodes = new Set(codes)
   return {
@@ -113,6 +130,30 @@ function minimumCardCount({
   }
 }
 
+function forbiddenCardCodes({
+  cardCodes,
+  description,
+  error,
+}: {
+  cardCodes: Set<string> | ((context: DeckRestrictionContext) => Set<string>)
+  description?: DeckRestriction['description']
+  error?: (code: string, context: DeckRestrictionContext) => string
+}): DeckRestriction {
+  return {
+    description,
+    validate: (context) => {
+      const forbidden = typeof cardCodes === 'function' ? cardCodes(context) : cardCodes
+      const invalidCode = Object.entries(context.deckList.slots).find(([code, count]) => {
+        return count > 0 && forbidden.has(normalizeCardCode(code))
+      })?.[0]
+
+      if (!invalidCode) return null
+      const normalizedCode = normalizeCardCode(invalidCode)
+      return error?.(normalizedCode, context) ?? `This deck cannot include ${normalizedCode}`
+    },
+  }
+}
+
 function countDeckSlots(deckList: SelectableDeckList, cardCodes: Set<string>): number {
   return Object.entries(deckList.slots).reduce((total, [code, count]) => {
     return total + (cardCodes.has(normalizeCardCode(code)) ? count : 0)
@@ -133,11 +174,22 @@ export function deckInvestigatorCode(deckList: SelectableDeckList): string {
   return normalizeCardCode(deckList.investigator_code)
 }
 
-export function deckRequirementDescriptions(scenarioId: string | null | undefined): string[] {
-  if (!scenarioId) return []
+export function deckRequirementDescriptions(
+  scenarioId: string | null | undefined,
+  campaign?: CampaignDeckRestrictionContext,
+  t?: Translate,
+): string[] {
+  const normalizedScenarioId = scenarioId ? normalizeCardCode(scenarioId) : null
+  const normalizedCampaignId = campaign?.campaignId ? normalizeCardCode(campaign.campaignId) : null
 
-  const normalizedScenarioId = normalizeCardCode(scenarioId)
-  return (scenarioDeckRestrictions[normalizedScenarioId] ?? []).flatMap((r) => r.description ? [r.description] : [])
+  return [
+    ...(normalizedScenarioId ? (scenarioDeckRestrictions[normalizedScenarioId] ?? []) : []),
+    ...(normalizedCampaignId ? (campaignDeckRestrictions[normalizedCampaignId] ?? []) : []),
+  ].flatMap((r) => {
+    if (!r.description) return []
+    if (typeof r.description === 'function') return t ? [r.description(t)] : []
+    return [r.description]
+  })
 }
 
 export function hasParallelContent(investigatorCode: string): boolean {
@@ -148,17 +200,19 @@ export function deckRestrictionError(
   scenarioId: string | null | undefined,
   deckList: SelectableDeckList,
   chosenInvestigatorCodes: string[] = [],
+  campaign?: CampaignDeckRestrictionContext,
+  t?: Translate,
 ): string | null {
-  if (!scenarioId) return null
-
-  const normalizedScenarioId = normalizeCardCode(scenarioId)
+  const normalizedScenarioId = scenarioId ? normalizeCardCode(scenarioId) : null
+  const normalizedCampaignId = campaign?.campaignId ? normalizeCardCode(campaign.campaignId) : null
   const restrictions = [
-    challengeScenarioInvestigators[normalizedScenarioId],
-    ...(scenarioDeckRestrictions[normalizedScenarioId] ?? []),
+    ...(normalizedScenarioId ? [challengeScenarioInvestigators[normalizedScenarioId]] : []),
+    ...(normalizedScenarioId ? (scenarioDeckRestrictions[normalizedScenarioId] ?? []) : []),
+    ...(normalizedCampaignId ? (campaignDeckRestrictions[normalizedCampaignId] ?? []) : []),
   ].filter((r): r is DeckRestriction => r !== undefined)
 
   for (const restriction of restrictions) {
-    const error = restriction.validate({ scenarioId, deckList, chosenInvestigatorCodes })
+    const error = restriction.validate({ scenarioId, deckList, chosenInvestigatorCodes, ...campaign, t })
     if (error) return error
   }
 

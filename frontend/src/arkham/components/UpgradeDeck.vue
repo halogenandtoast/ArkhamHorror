@@ -12,12 +12,16 @@ import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
 import type { XpBreakdownStep } from '@/arkham/types/Xp';
 import Question from '@/arkham/components/Question.vue';
 import { loadUpgradeDeckFromJsonText } from '@/arkham/upgradeDeckUpload';
+import { deckRestrictionError } from '@/arkham/deckRestrictions';
+import { useI18n } from 'vue-i18n';
 
 // TODO should we pass in the investigator
 export interface Props {
   game: Game
   playerId: string
 }
+
+const { t } = useI18n()
 
 const question = computed(() => props.game.question[props.playerId])
 const questionLabel = computed(() => {
@@ -62,20 +66,28 @@ const killedInvestigators = computed(() => {
 })
 
 const error = computed(() => {
-  if(!deckInvestigator.value) return null
+  if(deckInvestigator.value) {
+    const alreadyTaken = Object.values(props.game.investigators).some((i) => {
+      return i.id === `c${deckInvestigator.value}` && i.playerId !== props.playerId
+    })
 
-  const alreadyTaken = Object.values(props.game.investigators).some((i) => {
-    return i.id === `c${deckInvestigator.value}` && i.playerId !== props.playerId
-  })
+    if (alreadyTaken) {
+      return 'This investigator is already taken'
+    }
 
-  if (alreadyTaken) {
-    return 'This investigator is already taken'
+    const killedOrInsane = killedInvestigators.value.includes(`c${deckInvestigator.value}`)
+
+    if (killedOrInsane) {
+      return 'This investigator was killed or driven insane'
+    }
   }
 
-  const killedOrInsane = killedInvestigators.value.includes(`c${deckInvestigator.value}`)
-
-  if (killedOrInsane) {
-    return 'This investigator was killed or driven insane'
+  if (deckList.value) {
+    const restrictionError = deckRestrictionError(props.game.scenario?.id, deckList.value, [], {
+      campaignId: props.game.campaign?.id,
+      campaignLog: props.game.campaign?.log,
+    }, t)
+    if (restrictionError) return restrictionError
   }
 
   return null

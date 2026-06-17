@@ -6939,6 +6939,7 @@ test-suite spec
       Arkham.Event.Events.OopsSpec
       Arkham.Event.Events.RefineSpec
       Arkham.Event.Events.SearchForTheTruthSpec
+      Arkham.Event.Events.SeekingAnswersSpec
       Arkham.Event.Events.SneakAttackSpec
       Arkham.Event.Events.SureGamble3Spec
       Arkham.Event.Events.Transfiguration2Spec

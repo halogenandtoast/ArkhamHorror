@@ -2018,11 +2018,19 @@ instance RunMessage EnemyAttrs where
                         then do
                           canBeEngaged <- matches iid (InvestigatorCanBeEngagedBy eid)
                           isAloof <- matches eid AloofEnemy
+                          -- An enemy with an exclusive prey ("Prey - X only") never
+                          -- automatically engages a non-prey investigator on spawn. When
+                          -- a non-prey investigator draws it, it spawns unengaged via the
+                          -- prey-aware SpawnAtLocation path (which only engages its prey).
+                          prey <- getPreyMatcher a
+                          onlyPreyAllows <- case prey of
+                            OnlyPrey _ -> (iid `elem`) <$> select prey
+                            _ -> pure True
                           pushAll
                             $ resolve
                             $ EnemySpawn
                             $ ( mkSpawnDetails eid
-                                  $ if canBeEngaged && not isAloof
+                                  $ if canBeEngaged && not isAloof && onlyPreyAllows
                                     then SpawnEngagedWith (InvestigatorWithId iid)
                                     else SpawnAtLocation lid
                               )

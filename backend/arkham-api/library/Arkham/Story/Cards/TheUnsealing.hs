@@ -47,9 +47,8 @@ instance HasAbilities TheUnsealing where
         $ freeReaction
         $ EnemyEvaded #after You (EnemyWithScarletKey (scarletKeyIs ScarletKeys.theTwistedAntiprism))
     , mkAbility a 3
-        $ ForcedWhen NoRestriction
-        $ freeReaction
-        $ IfEnemyDefeated #after You ByAny
+        $ forced
+        $ EnemyDefeated #when You ByAny
         $ EnemyWithScarletKey (scarletKeyIs ScarletKeys.theTwistedAntiprism)
     ]
 

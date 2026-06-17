@@ -228,6 +228,19 @@ instance IsEnemyMatcher EnemyMatcher where
 instance IsEnemyMatcher EnemyId where
   toEnemyMatcher = EnemyWithId
 
+-- | True when knowing an enemy is merely "any in-play enemy" already guarantees it
+-- matches the matcher (the matcher adds no further restriction). Used to decide whether
+-- non-enemy fight targets that are attackable "as if an enemy" (Mist-Pylons, Key Loci)
+-- should be offered -- they only make sense for an unrestricted fight, not one narrowed
+-- by e.g. @EnemyCanAttack You@.
+coveredByAnyInPlayEnemy :: EnemyMatcher -> Bool
+coveredByAnyInPlayEnemy = \case
+  AnyEnemy -> True
+  InPlayEnemy m -> coveredByAnyInPlayEnemy m
+  EnemyOneOf ms -> any coveredByAnyInPlayEnemy ms
+  EnemyMatchAll ms -> all coveredByAnyInPlayEnemy ms
+  _ -> False
+
 data EnemyAttackMatcher
   = AnyEnemyAttack
   | AttackOfOpportunityAttack

@@ -5,9 +5,11 @@ import Arkham.Cost
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Fight
+import Arkham.Fight (mkChooseFightPure)
+import Arkham.Fight.Types
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers (ModifierType (..), getMeta)
+import Arkham.Matcher
 
 newtype ToeToToe = ToeToToe EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -39,7 +41,13 @@ instance RunMessage ToeToToeEffect where
   runMessage msg e@(ToeToToeEffect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ (BothSource (InvestigatorSource iid) cardSource) _target | eid == toId attrs -> do
       sid <- getRandom
-      pushM $ toMessage . setTarget attrs <$> onlyChooseFight (mkChooseFight sid iid cardSource)
+      chooseFightEnemyEdit sid iid cardSource \f ->
+        f
+          { chooseFightOnlyChoose = True
+          , chooseFightEnemyMatcher = chooseFightEnemyMatcher f <> EnemyCanAttack (InvestigatorWithId iid)
+          , chooseFightTarget = Just (toTarget attrs)
+          }
+
       pure e
     ChoseEnemy _sid _iid source enemy -> do
       let

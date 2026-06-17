@@ -107,6 +107,7 @@ import Arkham.Matcher (
   AssetMatcher (..),
   CardMatcher (..),
   EnemyMatcher (..),
+  coveredByAnyInPlayEnemy,
   EventMatcher (..),
   ForPlay (..),
   InvestigatorMatcher (..),
@@ -864,21 +865,31 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     canMoveToConnected <- case source.asset of
       Just aid -> aid <=~> AssetWithCustomization InscriptionOfTheHunt
       _ -> pure False
+    -- Targets that are merely attackable "as if an enemy" (Mist-Pylons, Key Loci) are not
+    -- real enemies. Only offer them when the fight is unrestricted; a fight narrowed by
+    -- the card's matcher (e.g. Toe to Toe's @EnemyCanAttack You@) must not include them.
+    let includeAsIfEnemy = coveredByAnyInPlayEnemy enemyMatcher
     locationIds <-
-      withAlteredGame withoutCanModifiers
-        $ asIfTurn investigatorId
-        $ select
-        $ LocationWithModifier CanBeAttackedAsIfEnemy
-        <> if canMoveToConnected
-          then orConnected ForMovement (locationWithInvestigator investigatorId)
-          else locationWithInvestigator investigatorId
-    concealed <- getConcealedIds NotForExpose investigatorId
+      if includeAsIfEnemy
+        then
+          withAlteredGame withoutCanModifiers
+            $ asIfTurn investigatorId
+            $ select
+            $ LocationWithModifier CanBeAttackedAsIfEnemy
+            <> if canMoveToConnected
+              then orConnected ForMovement (locationWithInvestigator investigatorId)
+              else locationWithInvestigator investigatorId
+        else pure []
+    concealed <- if includeAsIfEnemy then getConcealedIds NotForExpose investigatorId else pure []
     assetIds <-
-      withAlteredGame withoutCanModifiers
-        $ asIfTurn investigatorId
-        $ select
-        $ AssetWithModifier CanBeAttackedAsIfEnemy
-        <> at_ (locationWithInvestigator investigatorId)
+      if includeAsIfEnemy
+        then
+          withAlteredGame withoutCanModifiers
+            $ asIfTurn investigatorId
+            $ select
+            $ AssetWithModifier CanBeAttackedAsIfEnemy
+            <> at_ (locationWithInvestigator investigatorId)
+        else pure []
     player <- getPlayer investigatorId
     let choices = enemyIds <> map coerce locationIds <> map coerce concealed <> map coerce assetIds
     -- we might have killed the enemy via a reaction before getting here

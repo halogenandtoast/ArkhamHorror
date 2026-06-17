@@ -182,6 +182,11 @@ data Criterion
   | EventExists EventMatcher
   | ExcludeWindowAssetExists AssetMatcher
   | EventWindowInvestigatorIs InvestigatorMatcher
+  | -- | True when the card being played in the current `PlayCard` window has an
+    -- actual resource cost greater than 0 (accounting for cost modifiers and
+    -- treating X-cost cards as potentially > 0). Used to suppress cost-reduction
+    -- reactions on cards that already cost 0.
+    PlayedCardHasNonZeroCost
   | AgendaExists AgendaMatcher
   | AbilityExists AbilityMatcher
   | ActExists ActMatcher

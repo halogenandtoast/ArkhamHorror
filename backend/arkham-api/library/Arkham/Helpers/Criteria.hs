@@ -709,6 +709,17 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCrit
         _ -> pure True
     Criteria.EventExists matcher -> do
       selectAny (Matcher.replaceYouMatcher iid matcher)
+    Criteria.PlayedCardHasNonZeroCost -> do
+      let
+        mplayed =
+          listToMaybe [cp.card | w <- windows', Window.PlayCard _ cp <- [windowType w]]
+      case mplayed of
+        Nothing -> pure False
+        Just card
+          | isDynamic card -> case maxDynamic card of
+              Nothing -> pure True -- DynamicCost: player chooses X, can be > 0
+              Just calc -> (> 0) <$> calculate calc -- MaxDynamicCost: suppress only if max payable is 0
+          | otherwise -> maybe False (> 0) <$> getModifiedCardCost iid card
     Criteria.EventWindowInvestigatorIs whoMatcher -> do
       windows'' <- getWindowStack
       case windows'' of

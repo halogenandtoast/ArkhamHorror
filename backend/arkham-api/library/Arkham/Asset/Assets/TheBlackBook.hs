@@ -24,7 +24,7 @@ instance HasModifiersFor TheBlackBook where
 
 instance HasAbilities TheBlackBook where
   getAbilities (TheBlackBook a) =
-    [ restricted a 1 ControlsThis
+    [ restricted a 1 (ControlsThis <> PlayedCardHasNonZeroCost)
         $ triggered (PlayCard #when You #any) (exhaust a <> HorrorCostX (toSource a))
     ]
 

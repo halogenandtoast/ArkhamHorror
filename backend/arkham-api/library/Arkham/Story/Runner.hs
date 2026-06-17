@@ -30,7 +30,10 @@ afterStoryResolution :: HasQueue Message m => StoryAttrs -> [Message] -> m ()
 afterStoryResolution (toId -> storyId) = traverse_ (pushAfter isResolution) . reverse
  where
   isResolution = \case
-    StoryMessage (ResolvedStory _ story') | story' == storyId -> True
+    StoryMessage (ResolvedStory _ story') -> story' == storyId
+    -- ReadStoryWithPlacement queues the ResolvedStory wrapped in MoveWithSkillTest,
+    -- so match that form too or pushAfter silently drops the follow-up messages.
+    MoveWithSkillTest (StoryMessage (ResolvedStory _ story')) -> story' == storyId
     _ -> False
 
 getAlreadyResolved :: (HasGame m, Tracing m) => StoryAttrs -> m Bool

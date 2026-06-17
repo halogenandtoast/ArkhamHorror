@@ -232,7 +232,7 @@ const hasPool = computed(() => {
   gap: 5px;
   bottom:100%;
   left: 0;
-  z-index: 1000;
+  z-index: var(--z-index-1000);
 }
 
 .deck-size {

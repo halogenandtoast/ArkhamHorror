@@ -45,7 +45,7 @@ function symbolForDay(day: number): string | null {
     content: '';
     position: absolute;
     inset: 0;
-    z-index: -1;
+    z-index: var(--z-index-neg-1);
     inset: -10px;
     border: 2px solid var(--neutral-dark);
     background-color: transparent;
@@ -55,7 +55,7 @@ function symbolForDay(day: number): string | null {
     position: absolute;
     border-radius: 6px;
     inset: -20px;
-    z-index: -2;
+    z-index: var(--z-index-neg-2);
     border: 4px solid var(--neutral-dark);
     background-color: var(--time-bg);
     box-shadow: 10px 10px 1px rgba(0,0,0,0.5);

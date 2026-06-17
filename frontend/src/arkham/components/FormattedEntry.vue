@@ -128,7 +128,7 @@ export default defineComponent({
     flex-direction: column;
     flex: 1 1 auto;
     padding: 10px 20px;
-    z-index: 5;
+    z-index: var(--z-index-5);
   }
 
   .composite {
@@ -200,7 +200,7 @@ export default defineComponent({
   background-color: color-mix(in srgb, #3a4a69, transparent 90%);
   padding: 20px;
   position: relative;
-  z-index: 0;
+  z-index: var(--z-index-0);
 
   &.nested {
     border: 0;
@@ -215,7 +215,7 @@ export default defineComponent({
     content: "";
     position: absolute;
     inset: 0;
-    z-index: -1;
+    z-index: var(--z-index-neg-1);
   }
 
   > p:first-child {
@@ -242,7 +242,7 @@ export default defineComponent({
   background-color: color-mix(in srgb, var(--color), transparent 90%);
   padding: 20px;
   position: relative;
-  z-index: 0;
+  z-index: var(--z-index-0);
 
   &:has(.composite > :nth-child(2)) {
     display: flex;
@@ -263,7 +263,7 @@ export default defineComponent({
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: var(--z-index-1);
   }
 
   > p:first-child {
@@ -412,7 +412,7 @@ p.billenia, :deep(p.billenia) {
         mix-blend-mode: multiply;
       }
       &::before {
-        z-index: 2;
+        z-index: var(--z-index-2);
         pointer-events: none;
         position: absolute;
         inset: 10px;
@@ -634,7 +634,7 @@ ul, :deep(ul) {
     isolation: isolate;
     mix-blend-mode: multiply;
     &::before {
-      z-index: -1;
+      z-index: var(--z-index-neg-1);
       content: '';
       position: absolute;
       inset: -10px;
@@ -668,7 +668,7 @@ ul, :deep(ul) {
       content: "";
       position: absolute;
       inset: 0;
-      z-index: 3;
+      z-index: var(--z-index-3);
       border: 3px solid black;
       filter: blur(5px);
     }
@@ -880,7 +880,7 @@ img.remove {
 div:has(> img.remove) {
   position: relative;
   &::before {
-    z-index: 1;
+    z-index: var(--z-index-1);
     content: "";
     display: block;
     inset: 0;
@@ -945,7 +945,7 @@ div:has(> img.remove) {
       translateX(calc(-50% + (var(--i) - (var(--n) - 1)/2) * var(--shift)))
       rotate(calc((var(--i) - (var(--n) - 1)/2) * var(--spread)))
       translateY(var(--lift));
-    z-index: calc(var(--i) + 1);
+    z-index: calc(var(--i) + var(--z-index-1));
   }
 
   /* lift the hovered card and bring it to the top */
@@ -955,7 +955,7 @@ div:has(> img.remove) {
       rotate(calc((var(--i) - (var(--n) - 1)/2) * var(--spread)))
       translateY(var(--hover-lift));
     box-shadow: 0 16px 30px rgba(0,0,0,.35);
-    z-index: 999;
+    z-index: var(--z-index-999);
   }
 
   /* ---- small utility: assign index (--i) with :nth-child rules ---- */
@@ -1008,7 +1008,7 @@ div:has(> img.remove) {
       translateX(calc(-50% + (var(--i) - (var(--n) - 1)/2) * var(--shift)))
       rotate(calc((var(--i) - (var(--n) - 1)/2) * var(--spread)))
       translateY(var(--lift));
-    z-index: calc(100 - var(--i));
+    z-index: calc(var(--z-index-100) - var(--i));
   }
 
   /* lift the hovered card and bring it to the top */
@@ -1018,7 +1018,7 @@ div:has(> img.remove) {
       rotate(calc((var(--i) - (var(--n) - 1)/2) * var(--spread)))
       translateY(var(--hover-lift));
     box-shadow: 0 16px 30px rgba(0,0,0,.35);
-    z-index: 999;
+    z-index: var(--z-index-999);
   }
 
   /* ---- small utility: assign index (--i) with :nth-child rules ---- */

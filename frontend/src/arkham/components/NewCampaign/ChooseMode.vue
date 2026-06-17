@@ -298,7 +298,7 @@ input[type='radio']:checked + label {
 .vt-box.beta:after,
 .vt-box.alpha:after {
   position: absolute;
-  z-index: 1070;
+  z-index: var(--z-index-1070);
   width: 86px;
   height: 26px;
   top: 9px;

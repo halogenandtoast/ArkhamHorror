@@ -827,7 +827,7 @@ section {
       box-sizing: border-box;
       content: "";
       filter: blur(0.25em);
-      z-index: 1;
+      z-index: var(--z-index-1);
     }
     h1 {
       color: #19214F;
@@ -841,7 +841,7 @@ section {
     padding: 50px;
     position: relative;
     &::before {
-      z-index: 2;
+      z-index: var(--z-index-2);
       pointer-events: none;
       position: absolute;
       inset: 10px;
@@ -878,7 +878,7 @@ section {
       background-image: v-bind(grunge), radial-gradient(ellipse at 50% 40%, #3a3d16 0%, #1f2110 55%, #0e0f06 80%);
       background-blend-mode: overlay;
       background-size: cover;
-      z-index: 0;
+      z-index: var(--z-index-0);
     }
 
     &::after {
@@ -889,13 +889,13 @@ section {
       background:
         radial-gradient(circle at 25% 75%, rgba(131, 137, 56, 0.16), transparent 55%),
         radial-gradient(circle at 75% 25%, rgba(131, 137, 56, 0.12), transparent 55%);
-      z-index: 0;
+      z-index: var(--z-index-0);
       animation: haunted-flicker 7s ease-in-out infinite;
     }
 
     .intro-text-body, &:deep(.intro-text-body) {
       position: relative;
-      z-index: 1;
+      z-index: var(--z-index-1);
       margin: -40px;
     }
   }
@@ -1473,7 +1473,7 @@ h2 {
       box-sizing: border-box;
       content: "";
       filter: blur(0.25em);
-      z-index: -2;
+      z-index: var(--z-index-neg-2);
     }
     h1 {
       color: #19214F;
@@ -1485,7 +1485,7 @@ h2 {
       font-weight: 500;
     }
     &::before {
-      z-index: -1;
+      z-index: var(--z-index-neg-1);
       pointer-events: none;
       position: absolute;
       inset: 10px;
@@ -1515,7 +1515,7 @@ h2 {
       box-sizing: border-box;
       content: "";
       filter: blur(0.25em);
-      z-index: 1;
+      z-index: var(--z-index-1);
     }
     h1 {
       color: #19214F;
@@ -1529,7 +1529,7 @@ h2 {
     padding: 50px;
     position: relative;
     &::before {
-      z-index: 2;
+      z-index: var(--z-index-2);
       pointer-events: none;
       position: absolute;
       inset: 10px;

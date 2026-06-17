@@ -123,7 +123,7 @@ const cardName = (card: Arkham.CardDef) => {
   position: absolute;
   left: 10px;
   bottom: 10px;
-  z-index: 1;
+  z-index: var(--z-index-1);
   display: inline-flex;
   align-items: center;
   gap: 5px;

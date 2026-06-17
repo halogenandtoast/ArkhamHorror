@@ -420,7 +420,7 @@ const classObject = computed(() => {
   cursor: pointer;
   border-radius: 4px;
   background-color: var(--button);
-  z-index: 1000;
+  z-index: var(--z-index-1000);
   width: 100%;
   min-width: max-content;
 }

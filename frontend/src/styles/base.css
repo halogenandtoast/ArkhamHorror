@@ -41,7 +41,7 @@ footer {
   bottom: 0;
   width: 100%;
   text-align: center;
-  z-index: 100;
+  z-index: var(--z-index-100);
   @media (max-width: 800px) and (orientation: portrait) {
     display: none;
   }

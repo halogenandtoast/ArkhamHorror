@@ -545,7 +545,7 @@ img.card.ability-target {
   position: absolute;
   bottom: 8%;
   right: 0%;
-  z-index: 3;
+  z-index: var(--z-index-3);
   font-size: 0.9em;
   color: rgba(180, 230, 255, 0.95);
   filter:
@@ -559,7 +559,7 @@ img.card.ability-target {
   position: absolute;
   top: 4px;
   left: 4px;
-  z-index: 3;
+  z-index: var(--z-index-3);
   width: 1.6em;
   height: 1.6em;
   border-radius: 50%;

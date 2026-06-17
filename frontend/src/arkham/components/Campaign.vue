@@ -217,13 +217,13 @@ const inScenarioStep = computed(() => {
     left: 0;
     right: 0;
     margin: auto;
-    z-index: -1;
+    z-index: var(--z-index-neg-1);
   }
 }
 
 .game {
   width: 100%;
-  z-index: 1;
+  z-index: var(--z-index-1);
 }
 
 .location-cards {

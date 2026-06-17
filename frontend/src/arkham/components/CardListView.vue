@@ -207,7 +207,7 @@ const isUnderworldMarketCard = (card: Arkham.CardDef) => marketCardCount(card) >
 .card-table th {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: var(--z-index-1);
   text-align: left;
   padding: 11px 12px;
   color: #a8a8a8;

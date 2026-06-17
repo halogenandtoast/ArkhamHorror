@@ -230,6 +230,6 @@ const hasPool = computed(() => {
   bottom: 0;
   right: 0;
   pointer-events: none;
-  z-index: 10;
+  z-index: var(--z-index-10);
 }
 </style>

@@ -125,7 +125,7 @@ button {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  z-index: 1000000;
+  z-index: var(--z-index-1000000);
 }
 
 </style>

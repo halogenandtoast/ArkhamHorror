@@ -179,7 +179,7 @@ const choose = (index: number) => emits('choose', index)
     width: 20px;
     height: auto;
   }
-  z-index: 1;
+  z-index: var(--z-index-1);
   pointer-events: none;
 }
 

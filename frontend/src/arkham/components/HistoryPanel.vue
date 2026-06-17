@@ -577,7 +577,7 @@ function damagedFallbackText(view: DamagedTargetView): string {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 900;
+  z-index: var(--z-index-900);
 }
 
 .history-panel {

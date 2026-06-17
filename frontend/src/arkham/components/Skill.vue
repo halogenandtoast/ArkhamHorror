@@ -137,7 +137,7 @@ const choose = (index: number) => emits('choose', index)
   display: flex;
   align-self: flex-start;
   align-items: flex-end;
-  z-index: 1;
+  z-index: var(--z-index-1);
   pointer-events: none;
   & :deep(.token-container) {
     width: unset;

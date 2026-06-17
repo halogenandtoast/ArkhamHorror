@@ -891,7 +891,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
   font-size: 1em;
   color: rgba(0, 0, 0, 0.85);
   pointer-events: auto;
-  z-index: 2;
+  z-index: var(--z-index-2);
   width: 1.1em;
   height: 1.1em;
   display: flex;
@@ -907,7 +907,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
   border-radius: 1000px;
   font-size: 2em;
   color: var(--important);
-  z-index: 1;
+  z-index: var(--z-index-1);
   max-width: 40%;
   max-height: min-content;
   aspect-ratio: 1 / 1;
@@ -1037,7 +1037,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
     position: absolute;
     inset: -9px;
     pointer-events: none;
-    z-index: 4;
+    z-index: var(--z-index-4);
 
     .clue-around {
       position: absolute;
@@ -1088,7 +1088,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
 
 .explosion::before {
   animation: explosion 0.5s steps(48, end) forwards;
-  z-index: 100000000000000000000;
+  z-index: var(--z-index-explosion);
   content: ' ';
   position: absolute;
   top: 0;
@@ -1113,7 +1113,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
   right: 100%;
   top: 0;
   outline: 0;
-  z-index: 10;
+  z-index: var(--z-index-10);
 }
 
 .attachments {
@@ -1125,7 +1125,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
 }
 
 .location:has(.abilities) {
-  z-index: 30 !important;
+  z-index: var(--z-index-30) !important;
 }
 
 .locus {
@@ -1139,7 +1139,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
   left: 0;
   right: 0;
   text-align: center;
-  z-index: 10000000;
+  z-index: var(--z-index-10000000);
 
   :deep(path) {
     stroke-dasharray: var(--line-length);

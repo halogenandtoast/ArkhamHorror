@@ -511,7 +511,7 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
   background: #75968600;
   min-width: fit-content;
   text-align: center;
-  z-index: 10;
+  z-index: var(--z-index-10);
   overflow: auto;
 
   .choices, :deep(.choices) {

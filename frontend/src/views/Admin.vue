@@ -166,7 +166,7 @@ const recentFinishedGames = recentGameEntries.filter(g => g.gameState.tag === 'I
     linear-gradient(180deg, var(--panel), var(--panel-2));
   border-right: 1px solid var(--line);
   box-shadow: inset -1px 0 0 var(--line);
-  z-index: 20;
+  z-index: var(--z-index-20);
 }
 
 .brand {
@@ -252,7 +252,7 @@ const recentFinishedGames = recentGameEntries.filter(g => g.gameState.tag === 'I
 
 /* top bar */
 .topbar {
-  position: sticky; top: 0; z-index: 10;
+  position: sticky; top: 0; z-index: var(--z-index-10);
   display: flex; align-items: center; gap: 12px;
   padding: 14px 20px;
   border-bottom: 1px solid var(--line);
@@ -329,7 +329,7 @@ const recentFinishedGames = recentGameEntries.filter(g => g.gameState.tag === 'I
   border-bottom: 1px solid var(--line);
   background: color-mix(in oklab, var(--bg) 85%, transparent);
   backdrop-filter: blur(6px);
-  z-index: 5;
+  z-index: var(--z-index-5);
 }
 .block-header h2 {
   font-size: .95rem; text-transform: uppercase; letter-spacing: .12em;

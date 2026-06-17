@@ -122,7 +122,7 @@ watch(showAbilities, (newValue) => {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  z-index: 1000;
+  z-index: var(--z-index-1000);
   button {
     padding-block: min(3px, 1vw);
     padding-inline: min(6px, 2vw);

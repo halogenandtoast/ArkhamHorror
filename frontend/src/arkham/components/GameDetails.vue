@@ -209,7 +209,7 @@ h2 {
   padding: 10px;
   position: relative;
   * {
-    z-index: 1;
+    z-index: var(--z-index-1);
   }
 
   &:before {
@@ -225,7 +225,7 @@ h2 {
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    z-index: 0;
+    z-index: var(--z-index-0);
   }
 }
 

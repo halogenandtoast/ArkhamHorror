@@ -1398,7 +1398,7 @@ function compactCosmicEmissaryFormation(force = false) {
       nextEnemyStyles[label] = {
         translate: `${dx}px ${dy}px`,
         transition,
-        zIndex: '20',
+        zIndex: 'var(--z-index-20)',
       }
 
       const locationEl = locationElements[label]
@@ -1420,7 +1420,7 @@ function compactCosmicEmissaryFormation(force = false) {
         nextLocationCellStyles[locationLabel] = {
           translate: `${dx}px ${locationDy}px`,
           transition,
-          zIndex: '10',
+          zIndex: 'var(--z-index-10)',
         }
       }
     }
@@ -1921,7 +1921,7 @@ async function addChaosToken(face: any){
             />
           </template>
           <div v-else-if="agendaGroupedTreacheries.length > 0" class="treacheries">
-            <div v-for="([cCode, treacheries], idx) in agendaGroupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: (agendaGroupedTreacheries.length - idx) * 10 }">
+            <div v-for="([cCode, treacheries], idx) in agendaGroupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: `calc(var(--z-index-10) * ${agendaGroupedTreacheries.length - idx})` }">
               <div v-for="treacheryId in treacheries" class="treachery-card" :key="treacheryId" >
                 <TreacheryView
                   :treachery="game.treacheries[treacheryId]"
@@ -2327,7 +2327,7 @@ async function addChaosToken(face: any){
   position: relative;
   width: 100%;
   gap: 10px;
-  z-index: -2;
+  z-index: var(--z-index-neg-2);
   @media (max-width: 800px) and (orientation: portrait) {
     padding-top: 10px;
     padding-bottom: 0;
@@ -2336,10 +2336,10 @@ async function addChaosToken(face: any){
 }
 
 /* A revealed (slid-out) treachery extends down into the board's region; lift the
-   whole scenario-cards layer above the board (normally z-index: -2, behind it) so
+   whole scenario-cards layer above the board (normally z-index: var(--z-index-neg-2), behind it) so
    the revealed card and its buttons stay clickable. */
 .scenario-cards:has(.treachery-group.is-revealed) {
-  z-index: 1;
+  z-index: var(--z-index-1);
 }
 
 .clue {
@@ -2360,13 +2360,13 @@ async function addChaosToken(face: any){
     left: 0;
     right: 0;
     margin: auto;
-    z-index: -1;
+    z-index: var(--z-index-neg-1);
   }
 }
 
 .scenario-body {
   background: var(--background);
-  z-index: 1;
+  z-index: var(--z-index-1);
   width: 100%;
   flex: 1;
   inset: 0;
@@ -2635,7 +2635,7 @@ async function addChaosToken(face: any){
     span {
       position: absolute;
       right: 100%;
-      z-index: 100000;
+      z-index: var(--z-index-100000);
       background: var(--neutral-extra-dark);
       height: 100%;
       display: flex;
@@ -2704,28 +2704,28 @@ async function addChaosToken(face: any){
     align-self: end;
     justify-self: end;
     pointer-events: none;
-    z-index: 10;
+    z-index: var(--z-index-10);
   }
 
   .signOfTheGods {
     align-self: end;
     justify-self: end;
     pointer-events: none;
-    z-index: 10;
+    z-index: var(--z-index-10);
   }
 
   .distortion {
     align-self: end;
     justify-self: end;
     pointer-events: none;
-    z-index: 10;
+    z-index: var(--z-index-10);
   }
 
   .pool {
     align-self: end;
     justify-self: end;
     pointer-events: none;
-    z-index: 10;
+    z-index: var(--z-index-10);
   }
 
   .spent-keys {
@@ -2733,7 +2733,7 @@ async function addChaosToken(face: any){
     justify-self: center;
     margin-bottom: 20px;
     pointer-events: none;
-    z-index: 10;
+    z-index: var(--z-index-10);
   }
 }
 
@@ -2799,7 +2799,7 @@ async function addChaosToken(face: any){
   background-position: center;
   background-size: contain;
   position: absolute;
-  z-index: 1000;
+  z-index: var(--z-index-1000);
   margin: auto;
   inset: 0;
   width: fit-content;
@@ -2907,7 +2907,7 @@ async function addChaosToken(face: any){
 
 .location {
   &:hover {
-    z-index: 100;
+    z-index: var(--z-index-100);
   }
 }
 
@@ -2918,7 +2918,7 @@ async function addChaosToken(face: any){
   cursor: pointer;
   border-radius: 4px;
   background-color: var(--button);
-  z-index: 1000;
+  z-index: var(--z-index-1000);
   width: 100%;
   min-width: max-content;
 }
@@ -3036,7 +3036,7 @@ async function addChaosToken(face: any){
 }
 
 .location-cell--can-interact {
-  z-index: 20;
+  z-index: var(--z-index-20);
 }
 
 .location-wrapper {
@@ -3077,7 +3077,7 @@ async function addChaosToken(face: any){
 
 .location--dragging {
   cursor: grabbing;
-  z-index: 50;
+  z-index: var(--z-index-50);
   transition: none !important;
 }
 
@@ -3184,11 +3184,11 @@ async function addChaosToken(face: any){
   display: flex;
   flex-direction: column;
   img:nth-of-type(1) {
-    z-index: 2;
+    z-index: var(--z-index-2);
   }
 
   img:not(:nth-of-type(1)) {
-    z-index: 1;
+    z-index: var(--z-index-1);
     margin-top: calc((var(--card-width) / (3 / 2)) * -1);
   }
 }

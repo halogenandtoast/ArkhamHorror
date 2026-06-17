@@ -72,7 +72,7 @@ async function logout() {
   height: var(--nav-height);
   flex-shrink: 0;
   position: relative;
-  z-index: 100;
+  z-index: var(--z-index-100);
 }
 
 /* ── Main nav links ─────────────────────────────────────── */

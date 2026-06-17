@@ -89,7 +89,7 @@ const viewVictoryDisplayLabel = computed(() => t('scenario.victoryDisplay'))
       background-color: #FFF;
       opacity: .85;
       mix-blend-mode: saturation;
-      z-index: 20;
+      z-index: var(--z-index-20);
     }
   }
   &:deep(.card) {

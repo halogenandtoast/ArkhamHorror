@@ -351,7 +351,7 @@ watch(choices, async (newChoices) => {
     left: 0;
     right: 0;
     bottom: 0;      
-    z-index: 1;
+    z-index: var(--z-index-1);
     box-shadow: inset 0 0 0 2px var(--select);
   }
 }
@@ -443,7 +443,7 @@ watch(choices, async (newChoices) => {
   background: rgba(0, 0, 0, 0.46);
   color: rgba(255, 255, 255, 0.92);
   pointer-events: none;
-  z-index: 2147483647;
+  z-index: var(--z-index-max);
   transform: translate(18px, -50%);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(2px);

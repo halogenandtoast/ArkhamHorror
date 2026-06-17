@@ -301,7 +301,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
           :key="cCode"
           class="treachery-group"
           :class="{ 'is-revealed': revealedTreacheryGroup === cCode }"
-          :style="{ zIndex: (groupedTreacheries.length - idx) * 10 }"
+          :style="{ zIndex: `calc(var(--z-index-10) * ${groupedTreacheries.length - idx})` }"
           @pointerover="revealTreacheryGroup($event, cCode)"
           @pointerleave="hideTreacheryGroup(cCode)"
         >
@@ -344,7 +344,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
 }
 
 .card--agenda {
-  z-index: 100;
+  z-index: var(--z-index-100);
 }
 
 .agenda-container {
@@ -410,7 +410,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
    making attachments (and their Forced buttons) hard to click.
 
    The slide reveals the card downward into the board's region. The agenda lives
-   in .scenario-cards (z-index: -2), so on its own the slid card would render
+   in .scenario-cards (z-index: var(--z-index-neg-2)), so on its own the slid card would render
    behind the board and be unclickable — Scenario.vue lifts .scenario-cards while
    a treachery is hovered (:has) so the revealed card stays on top. */
 .treachery-group {
@@ -453,10 +453,10 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
   > img {
     box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.8);
   }
-  z-index: 100;
+  z-index: var(--z-index-100);
   position: relative;
   .pool {
-    z-index: 101;
+    z-index: var(--z-index-101);
     position: absolute;
     left: 0;
     top: 0;

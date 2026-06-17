@@ -228,7 +228,7 @@ h2.title {
     padding: 2px 8px;
     margin-left: -5px;
     margin-bottom: 5px;
-    z-index: -1;
+    z-index: var(--z-index-neg-1);
     border-radius: 0 4px 4px 0;
   }
 }

@@ -170,7 +170,7 @@ const deckLabel = computed(() => {
     display: block;
   }
   .deck-size {
-    z-index: 1;
+    z-index: var(--z-index-1);
     width: auto;
     height: auto;
     border-radius: 0;

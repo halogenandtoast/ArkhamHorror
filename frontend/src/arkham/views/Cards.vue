@@ -560,7 +560,7 @@ const showSidebar = ref(false)
     max-height: unset;
     border-right: 1px solid rgba(255,255,255,0.12);
     background: var(--background);
-    z-index: 50;
+    z-index: var(--z-index-50);
     transform: translateX(-100%);
     transition: transform 0.25s ease;
     overflow-y: auto;
@@ -576,7 +576,7 @@ const showSidebar = ref(false)
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.6);
-      z-index: 49;
+      z-index: var(--z-index-49);
     }
   }
 }
@@ -756,7 +756,7 @@ header {
   background: color-mix(in srgb, var(--background) 92%, transparent);
   border-bottom: 1px solid rgba(255,255,255,0.07);
   backdrop-filter: blur(6px);
-  z-index: 1;
+  z-index: var(--z-index-1);
 
   form {
     display: flex;

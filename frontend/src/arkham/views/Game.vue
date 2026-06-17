@@ -1694,7 +1694,7 @@ onUnmounted(() => {
   --flashlight-y: 50vh;
   position: fixed;
   inset: 0;
-  z-index: 9998;
+  z-index: var(--z-index-9998);
   pointer-events: none;
   background: radial-gradient(
     circle 190px at var(--flashlight-x) var(--flashlight-y),
@@ -1873,7 +1873,7 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   display: flex;
-  z-index: 100;
+  z-index: var(--z-index-100);
 
   justify-content: center;
   align-items: center;
@@ -1903,7 +1903,7 @@ onUnmounted(() => {
     height: 100dvh;
     width: min(85vw, 360px);
     max-width: none;
-    z-index: 200;
+    z-index: var(--z-index-200);
     box-shadow: -2px 0 16px rgba(0, 0, 0, 0.45);
     animation: sidebar-slide-in 0.18s ease-out;
   }
@@ -1925,7 +1925,7 @@ onUnmounted(() => {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 199;
+    z-index: var(--z-index-199);
     animation: sidebar-fade-in 0.18s ease-out;
   }
 }
@@ -2002,7 +2002,7 @@ header {
       content: '';
       display: none;
       position: absolute;
-      z-index: 9998;
+      z-index: var(--z-index-9998);
       top: 35px;
       left: 15px;
       width: 0;
@@ -2017,7 +2017,7 @@ header {
       content: 'Copied!';
       display: none;
       position: absolute;
-      z-index: 9999;
+      z-index: var(--z-index-9999);
       top: var(--nav-height);
       left: -37px;
       width: 114px;
@@ -2176,7 +2176,7 @@ header {
 .the-silence-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 30000;
+  z-index: var(--z-index-30000);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2257,7 +2257,7 @@ header {
 .revelation {
   position: absolute;
   transform: all 0.5s;
-  z-index: 1000;
+  z-index: var(--z-index-1000);
   color: white;
   text-align: center;
   margin: auto;
@@ -2717,7 +2717,7 @@ button:hover .shortcut {
   padding-block: 10px;
   width: 50%;
   display: flex;
-  z-index: 100;
+  z-index: var(--z-index-100);
   display: flex;
   flex-direction: column;
   border: 0;
@@ -2764,7 +2764,7 @@ button:hover .shortcut {
   }
 }
 .loader {
-  z-index: 1000;
+  z-index: var(--z-index-1000);
   position: absolute;
   top: 50px;
   left: 20px;
@@ -2793,7 +2793,7 @@ button:hover .shortcut {
 }
 
 .processing {
-  z-index: 1000;
+  z-index: var(--z-index-1000);
   position: absolute;
   top: 5px;
   left: 00px;
@@ -2862,7 +2862,7 @@ dialog {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-index-1000);
 }
 
 .debug-playability-modal {

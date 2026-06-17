@@ -177,7 +177,7 @@ const empowerment = computed(() => props.scarletKey.tokens[TokenType.Empowerment
   flex-wrap: wrap;
   align-self: flex-start;
   align-items: flex-end;
-  z-index: 15;
+  z-index: var(--z-index-15);
   :deep(img) {
     width: 20px;
     height: auto;

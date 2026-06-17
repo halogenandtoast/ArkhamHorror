@@ -104,7 +104,7 @@ const defaults: Required<Pick<
   gravity: 1,
   drift: 0,
   ticks: 200,
-  zIndex: 100,
+  zIndex: cssZIndex('--z-index-100', 100),
   colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'],
   disableForReducedMotion: false,
   scalar: 1,
@@ -118,6 +118,11 @@ function toRgb(hex: string): RGB {
   return { r: toDec(val.slice(0, 2)), g: toDec(val.slice(2, 4)), b: toDec(val.slice(4, 6)) };
 }
 function colorsToRgb(colors: string[]) { return colors.map(toRgb); }
+function cssZIndex(name: string, fallback: number) {
+  if (typeof window === 'undefined') return fallback;
+  const value = window.getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return Number(value) || fallback;
+}
 function onlyPositiveInt(n: number) { return n < 0 ? 0 : Math.floor(n); }
 function randomInt(min: number, max: number) { return Math.floor(Math.random() * (max - min)) + min; }
 function isOk<T>(v: T | null | undefined): v is T { return v !== null && v !== undefined; }

@@ -167,7 +167,7 @@ onUnmounted(() => clearInterval(interval.value))
   width: 100%;
   height: 100%;
   display: flex;
-  z-index: 100;
+  z-index: var(--z-index-100);
 
   justify-content: center;
   align-items: center;
@@ -191,7 +191,7 @@ onUnmounted(() => clearInterval(interval.value))
 }
 
 .processing {
-  z-index: 1000;
+  z-index: var(--z-index-1000);
   position: absolute;
   top: 45px;
   left: 00px;

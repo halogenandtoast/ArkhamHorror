@@ -1,0 +1,61 @@
+/*
+ * Shared z-index scale.
+ *
+ * Keep every literal stacking value here so relative layering is easy to audit.
+ * Prefer semantic aliases for app-wide overlays and use the numeric tokens for
+ * local component layering.
+ */
+:root {
+  /* Behind/background layers */
+  --z-index-neg-2: -2;
+  --z-index-neg-1: -1;
+
+  /* Local component layers */
+  --z-index-0: 0;
+  --z-index-1: 1;
+  --z-index-2: 2;
+  --z-index-3: 3;
+  --z-index-4: 4;
+  --z-index-5: 5;
+  --z-index-6: 6;
+  --z-index-7: 7;
+  --z-index-10: 10;
+  --z-index-15: 15;
+  --z-index-20: 20;
+  --z-index-30: 30;
+  --z-index-49: 49;
+  --z-index-50: 50;
+
+  /* App chrome / panels */
+  --z-index-100: 100;
+  --z-index-101: 101;
+  --z-index-199: 199;
+  --z-index-200: 200;
+  --z-index-900: 900;
+  --z-index-999: 999;
+  --z-index-1000: 1000;
+  --z-index-1070: 1070;
+
+  /* Global overlays */
+  --z-index-9998: 9998;
+  --z-index-9999: 9999;
+  --z-index-20000: 20000;
+  --z-index-25000: 25000;
+  --z-index-30000: 30000;
+  --z-index-100000: 100000;
+  --z-index-1000000: 1000000;
+  --z-index-10000000: 10000000;
+  --z-index-20000000000: 20000000000;
+  --z-index-max: 2147483647;
+  --z-index-explosion: 100000000000000000000;
+
+  /* Semantic aliases */
+  --z-card-hover-overlay: var(--z-index-20000);
+  --z-tooltip: var(--z-index-25000);
+  --z-modal-overlay: var(--z-index-30000);
+}
+
+/* Keep FloatingVue tooltips above the card hover preview overlay. */
+.v-popper__popper {
+  z-index: var(--z-tooltip);
+}

@@ -23,7 +23,7 @@ import { ChevronDownIcon } from '@heroicons/vue/20/solid'
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   position: absolute;
-  z-index: 10;
+  z-index: var(--z-index-10);
   display: flex;
   flex-direction: column;
 }

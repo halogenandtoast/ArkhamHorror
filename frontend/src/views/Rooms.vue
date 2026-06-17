@@ -39,7 +39,7 @@ const data = computed(() => request.data)
 
 /* top bar */
 .topbar {
-  position: sticky; top: 0; z-index: 10;
+  position: sticky; top: 0; z-index: var(--z-index-10);
   display: flex; align-items: center; gap: 12px;
   padding: 14px 20px;
   border-bottom: 1px solid var(--line);

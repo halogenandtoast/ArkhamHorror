@@ -480,7 +480,7 @@ watch(deckRef, (el) => {
   thead {
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: var(--z-index-1);
 
     th {
       text-align: left;
@@ -641,7 +641,7 @@ watch(deckRef, (el) => {
   position: absolute;
   left: 20px;
   bottom: 20px;
-  z-index: 1;
+  z-index: var(--z-index-1);
   display: inline-flex;
   align-items: center;
   gap: 5px;

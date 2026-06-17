@@ -369,7 +369,7 @@ function moveUp() {
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  z-index: 10;
+  z-index: var(--z-index-10);
   overflow: hidden;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
@@ -438,14 +438,14 @@ function moveUp() {
           content: '';
           inset: 0;
           position: absolute;
-          z-index: -1;
+          z-index: var(--z-index-neg-1);
         }
         &::after {
           background-color: #89745D;
           content: '';
           inset: 0;
           position: absolute;
-          z-index: -2;
+          z-index: var(--z-index-neg-2);
           clip-path: polygon(
             0 0,
             calc(100% - 30px) 0,
@@ -472,7 +472,7 @@ function moveUp() {
             content: '';
             position: absolute;
             inset: 0;
-            z-index: -1;
+            z-index: var(--z-index-neg-1);
           }
           isolation: isolate;
           position: relative;

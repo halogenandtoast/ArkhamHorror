@@ -12,6 +12,7 @@
 @import 'vue-toastification/dist/index.css' layer(vendor);
 @import 'vue-final-modal/style.css' layer(vendor);
 @import './tokens.css' layer(tokens);
+@import './z-index.css' layer(tokens);
 @import './fonts.css';
 @import './base.css' layer(base);
 @import './layout.css' layer(layout);

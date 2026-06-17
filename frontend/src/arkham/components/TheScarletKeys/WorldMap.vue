@@ -830,7 +830,7 @@ svg {
   align-items: center;
   justify-content: center;
   opacity: 0.8;
-  z-index: 10;
+  z-index: var(--z-index-10);
   transition: opacity 0.15s, background 0.15s;
 
   &:hover { opacity: 1; background: rgba(0,0,0,0.75); }

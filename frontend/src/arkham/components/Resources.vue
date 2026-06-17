@@ -358,7 +358,7 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
   opacity: 0;
   pointer-events: none;
   padding: 0;
-  z-index: 10;
+  z-index: var(--z-index-10);
   transition: opacity 90ms ease, transform 160ms cubic-bezier(.2,.9,.2,1);
 }
 

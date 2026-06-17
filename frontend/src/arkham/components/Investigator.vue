@@ -723,7 +723,7 @@ i.action {
   :deep(span) {
     height: 0.87rem;
     overflow: visible;
-    z-index: 10;
+    z-index: var(--z-index-10);
   }
   :deep(.action) {
     font-size: 0.35rem;
@@ -996,7 +996,7 @@ i.action {
   color: #e05252;
   filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7));
   cursor: default;
-  z-index: 2;
+  z-index: var(--z-index-2);
   display: flex;
   align-items: center;
   justify-content: center;

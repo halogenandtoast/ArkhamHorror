@@ -1392,7 +1392,7 @@ watchEffect(() => {
 
 .card-overlay {
   position: absolute;
-  z-index: 20000;
+  z-index: var(--z-card-hover-overlay);
   display: flex;
   width: max-content;
   height: auto;
@@ -1429,7 +1429,7 @@ watchEffect(() => {
   position: absolute;
   bottom: 7%;
   right: 5.1%;
-  z-index: 3;
+  z-index: var(--z-index-3);
   font-size: 1.7em;
   color: rgba(180, 230, 255, 0.95);
   filter:
@@ -1528,7 +1528,7 @@ watchEffect(() => {
 .cosmic-emissary-prompt-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 30000;
+  z-index: var(--z-modal-overlay);
   display: flex;
   align-items: center;
   justify-content: center;

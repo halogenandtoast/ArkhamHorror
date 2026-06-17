@@ -508,7 +508,7 @@ img.card.source-highlight {
   display: flex;
   flex-direction: column;
   position: relative;
-  z-index: 5;
+  z-index: var(--z-index-5);
   isolation: isolate;
 }
 
@@ -526,7 +526,7 @@ img.card.source-highlight {
   flex-wrap: wrap;
   align-self: flex-start;
   align-items: flex-end;
-  z-index: 15;
+  z-index: var(--z-index-15);
   :deep(img) {
     width: 20px;
     height: auto;
@@ -559,7 +559,7 @@ img.card.source-highlight {
   position: absolute;
   bottom: 8%;
   right: 6%;
-  z-index: 3;
+  z-index: var(--z-index-3);
   font-size: 0.9em;
   color: rgba(180, 230, 255, 0.95);
   filter:
@@ -574,7 +574,7 @@ img.card.source-highlight {
 }
 
 .card-frame {
-  z-index: 10;
+  z-index: var(--z-index-10);
   isolation: isolate;
   position: relative;
   display: flex;
@@ -591,14 +591,14 @@ img.card.source-highlight {
   gap: 5px;
   bottom:100%;
   left: 0;
-  z-index: 20000000000;
+  z-index: var(--z-index-20000000000);
 
   &.right {
     bottom:50%;
     left: 100%;
     transform: translateY(50%) translateZ(0);
-    z-index: 20000000000;
-    /*z-index: 0;*/
+    z-index: var(--z-index-20000000000);
+    /*z-index: var(--z-index-0);*/
   }
 
   &.left {
@@ -660,14 +660,14 @@ img.card.source-highlight {
   pointer-events: none;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1;
+  z-index: var(--z-index-1);
   max-width: 40%;
   max-height: min-content;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 6;
+  z-index: var(--z-index-6);
 }
 
 .cannot-be-damaged-badge {
@@ -684,7 +684,7 @@ img.card.source-highlight {
     drop-shadow(0 0 2px #000)
     drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
   cursor: default;
-  z-index: 7;
+  z-index: var(--z-index-7);
   display: flex;
   align-items: center;
   justify-content: center;

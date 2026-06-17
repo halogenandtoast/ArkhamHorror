@@ -179,7 +179,7 @@ const flippableCard = (cardCode: string) => {
       box-sizing: border-box;
       content: "";
       filter: blur(0.25em);
-      z-index: 1;
+      z-index: var(--z-index-1);
     }
     h1 {
       color: #19214F;
@@ -192,7 +192,7 @@ const flippableCard = (cardCode: string) => {
     padding: 50px;
     position: relative;
     &::before {
-      z-index: 2;
+      z-index: var(--z-index-2);
       pointer-events: none;
       position: absolute;
       inset: 10px;
@@ -235,7 +235,7 @@ const flippableCard = (cardCode: string) => {
         radial-gradient(circle at 20% 80%, rgba(131, 137, 56, 0.12), transparent 40%),
         radial-gradient(circle at 80% 20%, rgba(131, 137, 56, 0.08), transparent 40%),
         radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.7), transparent 60%);
-      z-index: 0;
+      z-index: var(--z-index-0);
     }
 
     &::after {
@@ -247,7 +247,7 @@ const flippableCard = (cardCode: string) => {
       box-shadow:
         inset 0 0 40px rgba(131, 137, 56, 0.15),
         inset 0 0 4px rgba(131, 137, 56, 0.35);
-      z-index: 0;
+      z-index: var(--z-index-0);
     }
 
     h1 {
@@ -260,7 +260,7 @@ const flippableCard = (cardCode: string) => {
       border-bottom-color: rgba(131, 137, 56, 0.4) !important;
       animation: haunted-title-pulse 4.5s ease-in-out infinite;
       position: relative;
-      z-index: 1;
+      z-index: var(--z-index-1);
       &::after {
         border-bottom-color: rgba(131, 137, 56, 0.4) !important;
       }
@@ -268,7 +268,7 @@ const flippableCard = (cardCode: string) => {
 
     .entry-body {
       position: relative;
-      z-index: 1;
+      z-index: var(--z-index-1);
     }
   }
 }
@@ -357,7 +357,7 @@ const flippableCard = (cardCode: string) => {
     box-sizing: border-box;
     content: "";
     filter: blur(0.25em);
-    z-index: 1;
+    z-index: var(--z-index-1);
   }
   h1 {
     color: #000 !important;
@@ -373,7 +373,7 @@ const flippableCard = (cardCode: string) => {
   padding: 50px;
   position: relative;
   &::before {
-    z-index: 2;
+    z-index: var(--z-index-2);
     pointer-events: none;
     position: absolute;
     inset: 0px;
@@ -569,7 +569,7 @@ a.button {
       box-sizing: border-box;
       content: "";
       filter: blur(0.25em);
-      z-index: -2;
+      z-index: var(--z-index-neg-2);
     }
     h1 {
       color: #19214F;
@@ -581,7 +581,7 @@ a.button {
       font-weight: 500;
     }
     &::before {
-      z-index: -1;
+      z-index: var(--z-index-neg-1);
       pointer-events: none;
       position: absolute;
       inset: 10px;

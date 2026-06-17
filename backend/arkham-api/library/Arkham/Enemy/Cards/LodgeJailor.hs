@@ -44,6 +44,6 @@ instance RunMessage LodgeJailor where
         when (attrs.token #doom > 0) do
           countVar 1 $ labeled' "removeDoom" $ removeDoom (attrs.ability 2) attrs 1
         for_ (setToList $ enemyKeys attrs) \k ->
-          withVar "name" (String $ keyName k) $ labeled' "takeControlOfNamedKey" $ placeKey iid k
+          withVar "name" (String $ keyName k) $ labeled' "takeControlOfSpecificKey" $ placeKey iid k
       pure e
     _ -> LodgeJailor <$> liftRunMessage msg attrs

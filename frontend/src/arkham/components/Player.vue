@@ -28,6 +28,9 @@ import { IsMobile } from '@/arkham/isMobile';
 import { Modifier } from '@/arkham/types/Modifier';
 import { Enemy } from '@/arkham/types/Enemy';
 import { XMarkIcon } from '@heroicons/vue/20/solid';
+import * as Api from '@/arkham/api';
+import type { CardDef } from '@/arkham/types/CardDef';
+import { fullName } from '@/arkham/types/Name';
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -215,6 +218,78 @@ const committedIdSet = computed(() => new Set((props.game.skillTest?.committedCa
 const playerHand = computed(() =>
   props.investigator.hand.filter(card => !committedIdSet.value.has(toCardContents(card).id))
 )
+
+const showDebugAddCard = ref(false)
+const debugPlayerCards = ref<CardDef[]>([])
+const debugCardSearch = ref('')
+const debugAddCardError = ref<string | null>(null)
+const debugAddCardLoading = ref(false)
+
+const filteredDebugPlayerCards = computed(() => {
+  const query = debugCardSearch.value.trim().toLocaleLowerCase()
+  const cards = [...debugPlayerCards.value].sort((a, b) =>
+    debugCardLabel(a).localeCompare(debugCardLabel(b)),
+  )
+
+  if (!query) return cards.slice(0, 50)
+
+  return cards
+    .filter((card) => {
+      const haystack = [
+        card.cardCode,
+        fullName(card.name),
+        card.cardType,
+        ...card.classSymbols,
+        ...card.cardTraits,
+      ]
+        .join(' ')
+        .toLocaleLowerCase()
+
+      return haystack.includes(query)
+    })
+    .slice(0, 50)
+})
+
+function debugCardLabel(card: CardDef) {
+  const level = card.level == null ? '' : ` (${card.level})`
+  return `${fullName(card.name)}${level} [${card.cardCode}]`
+}
+
+async function openDebugAddCard() {
+  if (!debug.active) return
+  showDebugAddCard.value = true
+  debugAddCardError.value = null
+
+  if (debugPlayerCards.value.length === 0) {
+    debugAddCardLoading.value = true
+    try {
+      debugPlayerCards.value = await Api.fetchCards(false)
+    } catch (error) {
+      console.error(error)
+      debugAddCardError.value = 'Unable to load player cards.'
+    } finally {
+      debugAddCardLoading.value = false
+    }
+  }
+}
+
+async function debugAddCardToHand(card: CardDef) {
+  debugAddCardError.value = null
+  const cardId = crypto.randomUUID()
+
+  try {
+    await debug.send(props.game.id, { tag: 'CreateCard', contents: [cardId, card.cardCode] })
+    await debug.send(props.game.id, {
+      tag: 'DebugAddToHand',
+      contents: [props.investigator.id, cardId],
+    })
+    debugCardSearch.value = ''
+    showDebugAddCard.value = false
+  } catch (error) {
+    console.error(error)
+    debugAddCardError.value = `Unable to add ${fullName(card.name)} to hand.`
+  }
+}
 
 const debug = useDebug()
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
@@ -523,6 +598,40 @@ function closeHand() {
       @choose="$emit('choose', $event)"
     />
 
+    <div
+      v-if="debug.active && showDebugAddCard"
+      class="debug-add-card-overlay"
+      @click.self="showDebugAddCard = false"
+    >
+      <div class="debug-add-card-modal">
+        <h3>Add player card to {{ fullName(investigator.name) }}'s hand</h3>
+        <label>
+          Search card
+          <input
+            v-model="debugCardSearch"
+            type="search"
+            autofocus
+            placeholder="Name, code, type, class, or trait"
+            @keydown.stop
+          />
+        </label>
+        <p v-if="debugAddCardLoading" class="debug-add-card-status">Loading player cards…</p>
+        <p v-if="debugAddCardError" class="debug-add-card-error">{{ debugAddCardError }}</p>
+        <div v-else class="debug-add-card-results">
+          <button
+            v-for="card in filteredDebugPlayerCards"
+            :key="card.cardCode"
+            type="button"
+            @click="debugAddCardToHand(card)"
+          >
+            <span>{{ debugCardLabel(card) }}</span>
+            <small>{{ card.cardType }} · {{ card.classSymbols.join(', ') || 'Neutral' }}</small>
+          </button>
+        </div>
+        <button type="button" @click="showDebugAddCard = false">{{ $t('close') }}</button>
+      </div>
+    </div>
+
     <div class="player">
       <div v-if="hunchDeck" class="hunch-deck">
         <div class="top-of-deck">
@@ -610,10 +719,22 @@ function closeHand() {
           </template>
 
         </transition-group>
+        <div class="hand-debug-actions" v-if="debug.active">
+          <button type="button" @click="openDebugAddCard">+ Card to hand</button>
+        </div>
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">{{ t('handSize') }}: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>
     </div>
     <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ bottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
+      <button
+        v-if="debug.active"
+        v-show="handAreaPointerEvents === 'auto'"
+        class="hand-debug-add-button"
+        type="button"
+        @click.stop="openDebugAddCard"
+      >
+        + Card
+      </button>
       <button
         v-show="handAreaPointerEvents === 'auto'"
         class="hand-close-button"
@@ -953,6 +1074,21 @@ function closeHand() {
   max-width: 100%;
 }
 
+.hand-debug-actions button,
+.hand-debug-add-button {
+  border: 1px solid var(--button-highlight);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.hand-debug-actions button:hover,
+.hand-debug-add-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .hand-area-IsMobile {
   position: fixed;
   left: 0;
@@ -969,6 +1105,13 @@ function closeHand() {
     width: calc(var(--card-width) * 4);
     min-width: calc(var(--card-width) * 4);
   }
+}
+
+.hand-debug-add-button {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: var(--z-index-101);
 }
 
 .hand-close-button {
@@ -998,5 +1141,86 @@ function closeHand() {
   width: var(--card-width);
   min-width: var(--card-width);
   border-radius: 2px;
+}
+
+.debug-add-card-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-index-1000);
+}
+
+.debug-add-card-modal {
+  background: #1a1a2e;
+  border: 1px solid var(--button-highlight);
+  border-radius: 8px;
+  color: #eee;
+  max-width: 700px;
+  min-width: 300px;
+  padding: 1.5rem;
+  width: min(700px, 90vw);
+
+  h3 {
+    color: #adf;
+    font-size: 1.1rem;
+    margin: 0 0 1rem;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+
+  input {
+    background: #111827;
+    border: 1px solid #4b5563;
+    border-radius: 4px;
+    color: #eee;
+    padding: 0.5rem;
+  }
+}
+
+.debug-add-card-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 50vh;
+  overflow: auto;
+
+  button {
+    align-items: flex-start;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid transparent;
+    color: #eee;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0.5rem;
+    text-align: left;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--button-highlight);
+    }
+  }
+
+  small {
+    opacity: 0.75;
+  }
+}
+
+.debug-add-card-error {
+  color: #f88;
+}
+
+.debug-add-card-status {
+  opacity: 0.8;
 }
 </style>

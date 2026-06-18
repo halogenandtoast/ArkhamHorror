@@ -8,6 +8,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Creation
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyLocation))
+import Arkham.Helpers.Enemy (insteadOfDiscarding)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
@@ -48,8 +49,8 @@ recreateWraith attrs placement = do
 instance RunMessage Wraith where
   runMessage msg e@(Wraith attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      cancelEnemyDefeatWithWindows attrs
-      recreateWraith attrs . AttachedToLocation =<< fieldJust EnemyLocation attrs.id
+      insteadOfDiscarding attrs do
+        recreateWraith attrs . AttachedToLocation =<< fieldJust EnemyLocation attrs.id
       pure e
     UseThisAbility _iid (isProxySource attrs -> True) 2 -> do
       case attrs.placement of

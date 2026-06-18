@@ -44,8 +44,11 @@ draw context (e.g. "mythos" vs "scenario") so reactors can resolve a redirect
 the right way.
 -}
 abyssDrawWindow :: ReverseQueue m => Text -> InvestigatorId -> Card -> Message -> m ()
-abyssDrawWindow tag iid card resolveMsg =
+abyssDrawWindow tag iid card resolveMsg = do
+  -- Reactors such as Old Memory must not trigger on signature cards drawn from
+  -- The Abyss, so flag those windows with a ":signature" suffix they ignore.
+  let key prefix = prefix <> ":" <> tag <> (if isSignature card then ":signature" else "")
   wouldDo
     resolveMsg
-    (Window.ScenarioEvent ("wouldDrawFromAbyss:" <> tag) (Just iid) (toJSON card))
-    (Window.ScenarioEvent ("drewFromAbyss:" <> tag) (Just iid) (toJSON card))
+    (Window.ScenarioEvent (key "wouldDrawFromAbyss") (Just iid) (toJSON card))
+    (Window.ScenarioEvent (key "drewFromAbyss") (Just iid) (toJSON card))

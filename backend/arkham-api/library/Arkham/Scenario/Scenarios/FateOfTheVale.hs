@@ -170,7 +170,9 @@ resolveAbyssDraw iid source card = do
                 eid <- createEnemyAt enemyCard lid
                 initiateEnemyAttack eid source iid
                 toDiscard source eid
-      Nothing -> addToHand iid [card]
+      Nothing -> case card of
+        PlayerCard _ -> addToHand iid [card]
+        _ -> drawCard iid card
 
 instance HasModifiersFor FateOfTheVale where
   getModifiersFor (FateOfTheVale attrs) = do

@@ -7,6 +7,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck (ScenarioDeckKey (..))
 import Arkham.Strategy
 
@@ -28,7 +29,7 @@ instance HasAbilities MirrorNest_169 where
   getAbilities (MirrorNest_169 a) =
     extendRevealed
       a
-      [ restricted a 1 Here $ forced $ TurnEnds #when You
+      [ restricted a 1 Here $ forced $ TurnEnds #when $ You <> HandWith AnyCards
       , restricted a 2 (Here <> not_ (ActExists (ActWithModifier abyssSearched)))
           $ actionAbilityWithCost (GroupClueCost (PerPlayer 7) Anywhere)
       ]
@@ -41,6 +42,14 @@ instance RunMessage MirrorNest_169 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       currentAct <- getCurrentAct
       gameModifier (attrs.ability 2) currentAct abyssSearched
-      search iid (attrs.ability 2) (ScenarioDeckTarget AbyssDeck) [fromDeck] #any (AddFoundToHand iid 1)
+      -- "draw it" must resolve the card by type (enemies are drawn as enemies,
+      -- treacheries resolve, etc.), so route the chosen card through the
+      -- scenario's Abyss-draw resolution rather than putting it in hand. You may
+      -- not draw another player's signature card.
+      let notOthersSignature = not_ (SignatureCard <> not_ (CardOwnedBy iid))
+      search iid (attrs.ability 2) (ScenarioDeckTarget AbyssDeck) [fromDeck] (basic notOthersSignature) (defer attrs IsDraw)
+      pure l
+    SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
+      chooseTargetM iid cards \card -> scenarioSpecific "drawFromAbyss" (iid, card)
       pure l
     _ -> MirrorNest_169 <$> liftRunMessage msg attrs

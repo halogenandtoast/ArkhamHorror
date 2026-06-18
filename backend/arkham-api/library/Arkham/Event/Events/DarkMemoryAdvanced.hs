@@ -28,6 +28,9 @@ instance RunMessage DarkMemoryAdvanced where
         ]
       pure e
     PlayThisEvent _ eid | attrs `is` eid -> do
-      push placeDoomOnAgendaAndCheckAdvance
+      agendas <- select AnyAgenda
+      pushAll
+        $ map (\agenda -> PlaceDoom (toSource attrs) (toTarget agenda) 1) agendas
+        <> [AdvanceAgendaIfThresholdSatisfied]
       pure e
     _ -> DarkMemoryAdvanced <$> runMessage msg attrs

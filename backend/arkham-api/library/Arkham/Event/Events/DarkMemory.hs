@@ -23,4 +23,4 @@ instance ScriptedAbilities DarkMemory where
         assignHorror you (toCardId this) 2
 
 instance RunMessage DarkMemory where
-  runMessage = withScripted $ onPlay $ placeDoomOnAgendaAndCheckAdvance 1
+  runMessage = withScripted $ onPlay $ placeDoomOnAgendaAndCheckAdvanceBy source 1

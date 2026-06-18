@@ -26,7 +26,7 @@ instance RunMessage FickleFortune3 where
             $ doStep 2 msg
       pure e
     DoStep 1 (Revelation _iid (isSource attrs -> True)) -> do
-      placeDoomOnAgenda 1
+      placeDoomOnAgendaBy attrs 1
       eachInvestigator $ \iid' -> do
         healDamage iid' attrs 3
         healHorror iid' attrs 3

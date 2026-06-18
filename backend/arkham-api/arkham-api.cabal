@@ -6927,6 +6927,7 @@ test-suite spec
       Arkham.Event.Events.EmergencyCacheSpec
       Arkham.Event.Events.EvidenceSpec
       Arkham.Event.Events.ExtraAmmunition1Spec
+      Arkham.Event.Events.FickleFortune3Spec
       Arkham.Event.Events.HotStreak4Spec
       Arkham.Event.Events.LieInWaitSpec
       Arkham.Event.Events.LookWhatIFoundSpec

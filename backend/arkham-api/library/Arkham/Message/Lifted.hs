@@ -833,6 +833,24 @@ placeDoomOnAgenda n = push $ PlaceDoomOnAgenda n CanNotAdvance
 placeDoomOnAgendaAndCheckAdvance :: ReverseQueue m => Int -> m ()
 placeDoomOnAgendaAndCheckAdvance n = push $ PlaceDoomOnAgenda n CanAdvance
 
+-- | Place doom on the current agenda as a /card effect/, attributing it to
+-- @source@. Unlike 'placeDoomOnAgenda' (which routes through the scenario and so
+-- is sourced from the scenario itself), this preserves the placing card's source
+-- so @SourceIsCardEffect@ \"would place doom\" windows fire (e.g. The Onslaught
+-- redirecting doom onto The Captives).
+placeDoomOnAgendaBy :: (ReverseQueue m, Sourceable source) => source -> Int -> m ()
+placeDoomOnAgendaBy _ 0 = pure ()
+placeDoomOnAgendaBy source n = do
+  agendas <- select AnyAgenda
+  for_ agendas \agenda -> placeDoom source agenda n
+
+placeDoomOnAgendaAndCheckAdvanceBy :: (ReverseQueue m, Sourceable source) => source -> Int -> m ()
+placeDoomOnAgendaAndCheckAdvanceBy _ 0 = pure ()
+placeDoomOnAgendaAndCheckAdvanceBy source n = do
+  agendas <- select AnyAgenda
+  for_ agendas \agenda -> placeDoom source agenda n
+  push AdvanceAgendaIfThresholdSatisfied
+
 revertAgenda :: (ReverseQueue m, AsId a, IdOf a ~ AgendaId) => a -> m ()
 revertAgenda a = push $ RevertAgenda (asId a)
 

@@ -489,6 +489,9 @@ data UIModifier
 instance IsLabel "combat" (Int -> ModifierType) where
   fromLabel = SkillModifier #combat
 
+instance IsLabel "combat" (Integer -> ModifierType) where
+  fromLabel = SkillModifier #combat . fromIntegral
+
 instance IsLabel "agility" (Int -> ModifierType) where
   fromLabel = SkillModifier #agility
 
@@ -503,6 +506,9 @@ instance IsLabel "willpower" (Int -> ModifierType) where
 
 instance IsLabel "damage" (Int -> ModifierType) where
   fromLabel = DamageDealt
+
+instance IsLabel "damage" (Integer -> ModifierType) where
+  fromLabel = DamageDealt . fromIntegral
 
 instance IsLabel "noAction" ModifierType where
   fromLabel = ActionCostModifier (-1)

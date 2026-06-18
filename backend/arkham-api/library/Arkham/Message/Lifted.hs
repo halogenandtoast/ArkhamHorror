@@ -429,6 +429,11 @@ createEnemyAtEdit c lid f = do
   push msg
   pure enemyId
 
+createEnemyAtEdit_
+  :: (ReverseQueue m, IsCard card)
+  => card -> LocationId -> (EnemyCreation Message -> EnemyCreation Message) -> m ()
+createEnemyAtEdit_ c lid f = void $ createEnemyAtEdit c lid f
+
 createEnemyAtLocationMatching_
   :: (ReverseQueue m, FetchCard card) => card -> LocationMatcher -> m ()
 createEnemyAtLocationMatching_ c matcher = do

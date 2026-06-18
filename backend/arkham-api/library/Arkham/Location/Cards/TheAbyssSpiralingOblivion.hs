@@ -27,7 +27,10 @@ instance HasModifiersFor TheAbyssSpiralingOblivion where
 
 instance HasAbilities TheAbyssSpiralingOblivion where
   getAbilities (TheAbyssSpiralingOblivion attrs) =
-    extendRevealed1 attrs $ forcedAbility attrs 1 $ Enters #after You (be attrs)
+    extendRevealed1 attrs
+      $ restricted attrs 1 (ScenarioDeckWithCard AbyssDeck)
+      $ forced
+      $ Enters #after You (be attrs)
 
 instance RunMessage TheAbyssSpiralingOblivion where
   runMessage msg l@(TheAbyssSpiralingOblivion attrs) = runQueueT $ case msg of

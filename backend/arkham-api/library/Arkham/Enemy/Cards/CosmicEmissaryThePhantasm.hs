@@ -16,7 +16,7 @@ cosmicEmissaryThePhantasm =
     . (asSelfLocationL ?~ "cosmicEmissaryPhantasm")
 
 instance HasModifiersFor CosmicEmissaryThePhantasm where
-  getModifiersFor (CosmicEmissaryThePhantasm attrs) = modifySelf attrs [CannotMakeAttacksOfOpportunity, CannotBeDamaged]
+  getModifiersFor (CosmicEmissaryThePhantasm attrs) = modifySelf attrs [CannotMakeAttacksOfOpportunity, CannotBeDamaged, DoNotExhaustEvaded]
 
 instance HasAbilities CosmicEmissaryThePhantasm where
   getAbilities (CosmicEmissaryThePhantasm attrs) = cosmicEmissaryColourAbilities attrs

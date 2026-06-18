@@ -6939,6 +6939,7 @@ test-suite spec
       Arkham.Event.Events.OnTheHuntSpec
       Arkham.Event.Events.OnTheLamSpec
       Arkham.Event.Events.OopsSpec
+      Arkham.Event.Events.PredatorOrPreySpec
       Arkham.Event.Events.RefineSpec
       Arkham.Event.Events.SearchForTheTruthSpec
       Arkham.Event.Events.SeekingAnswersSpec

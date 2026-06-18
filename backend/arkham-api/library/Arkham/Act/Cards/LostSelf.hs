@@ -169,7 +169,8 @@ seedResidentsBeneath onlyEmpty = do
       $ (if onlyEmpty then EmptyLocation else Anywhere)
       <> not_ (be crossroads)
   revelers <- take 2 <$> getSetAsideCardsMatching (cardIs Enemies.frenziedReveler)
-  residents <- getSetAsideCardsMatching (mapOneOf cardIs residentAssetDefs)
+  residents <- map flipCard <$> getSetAsideCardsMatching (mapOneOf cardIs residentAssetDefs)
+  for_ residents \card -> replaceCard card.id card
   cards <- shuffle (revelers <> residents)
   unless (null locs || null cards) do
     if onlyEmpty
@@ -321,14 +322,32 @@ instance RunMessage LostSelf where
       pure a
     -- Fate of the Vale 2: "Save the Vale!"
     DoStep 2 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale2"
+      thePetersFamilyWereReunited <- getHasRecord ThePetersFamilyWereReunited
+      theHemlocksMadeATruce <- getHasRecord TheHemlocksMadeATruce
+
+      storyWithContinue' do
+        setTitle "title"
+        p "fateOfTheVale2"
+        ul do
+          li "removeEachMirrorNestAndCave"
+          li.nested "putEachSetAsideHemlockValeLocationIntoPlay" do
+            li "moveEachInvestigatorToTheCrossroads"
+          li.nested "checkYourCampaignLog" do
+            li.validate thePetersFamilyWereReunited "ifThePetersFamilyWasReunited"
+            li.validate theHemlocksMadeATruce "ifTheHemlocksMadeATruce"
+          li "putAct3aFateOfTheValeV1IntoPlay"
+          li "placeCards"
+          li "flipCosmicEmissaryEnemies"
+          li "resumePlaying"
+
       setupNightVale attrs
 
       lead <- getLead
-      whenHasRecord ThePetersFamilyWereReunited do
+      when thePetersFamilyWereReunited do
         putAllyIntoPlay lead Assets.helenPetersTheEldestSister
         putAllyIntoPlay lead Assets.theoPetersJackOfAllTrades
-      whenHasRecord TheHemlocksMadeATruce do
+
+      when theHemlocksMadeATruce do
         putAllyIntoPlay lead Assets.riverHawthorneBigInNewYork
         putAllyIntoPlay lead Assets.williamHemlockAspiringPoet
 

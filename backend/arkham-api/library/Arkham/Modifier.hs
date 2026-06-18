@@ -470,6 +470,9 @@ data ModifierType
   | BecomeHomunculusWhenDefeated
   | BecomeInvestigator InvestigatorId
   | DrawsEachEncounterCard
+  | -- | When drawing encounter cards (e.g. the mythos draw), present this target
+    -- to click instead of the encounter deck. The draw itself is unchanged.
+    DrawEncounterCardsVia TargetMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 data UIModifier

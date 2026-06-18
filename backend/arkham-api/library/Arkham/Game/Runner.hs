@@ -2605,7 +2605,10 @@ runGameMessage msg g = case msg of
     iid' <- fromMaybe iid <$> selectOne (InvestigatorWithModifier DrawsEachEncounterCard)
     whenM (not <$> isEliminated iid) do
       player <- getPlayer iid'
-      push $ chooseOne player [TargetLabel EncounterDeckTarget [drawEncounterCard iid' GameSource]]
+      mods <- getModifiers iid'
+      viaTargets <- nub . concat <$> traverse select [tm | DrawEncounterCardsVia tm <- mods]
+      let drawTargets = if null viaTargets then [EncounterDeckTarget] else viaTargets
+      push $ chooseOne player [TargetLabel t [drawEncounterCard iid' GameSource] | t <- drawTargets]
     pure $ g & activeInvestigatorIdL .~ iid'
   EndMythos -> do
     pushAll

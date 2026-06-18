@@ -17,7 +17,7 @@ import Arkham.Helpers.Act (getCurrentAct, getCurrentActStep)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (connectBothWays, withLocationOf)
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith)
 import Arkham.Helpers.Query (allInvestigators, getSetAsideCardMaybe)
 import Arkham.Helpers.SkillTest (isEvadeWith, isFightWith)
 import Arkham.Helpers.Xp (toBonus)
@@ -180,6 +180,14 @@ instance HasModifiersFor FateOfTheVale where
       (assetIs Assets.drRosaMarquezBestInHerField)
       setActiveDuringSetup
       [DoNotTakeUpSlot #ally]
+    -- Once The Abyss is a location on the map, the encounter deck is gone, so the
+    -- mythos draw must be initiated by clicking The Abyss instead of the (absent)
+    -- encounter deck. The draw still routes through The Silence into the Abyss deck.
+    when (getMetaKeyDefault "abyssIsLocation" False attrs)
+      $ modifySelect
+        attrs
+        Anyone
+        [DrawEncounterCardsVia $ LocationTargetMatches $ locationIs Locations.theAbyssSpiralingOblivion]
 
 instance HasChaosTokenValue FateOfTheVale where
   getChaosTokenValue iid tokenFace (FateOfTheVale attrs) = case tokenFace of
@@ -195,7 +203,7 @@ instance HasChaosTokenValue FateOfTheVale where
 instance RunMessage FateOfTheVale where
   runMessage msg s@(FateOfTheVale attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "body"
+      flavor $ h "title" >> p "body"
       pure s
     Setup -> runScenarioSetup (FateOfTheVale . (encounterDeckL .~ mempty)) attrs do
       setup $ ul do

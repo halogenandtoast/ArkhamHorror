@@ -15,6 +15,7 @@ fluxStabilizerInactive =
       , cdUnique = True
       , cdBondedWith = [(1, "10006"), (1, "10007")]
       , cdOtherSide = Just "10005b"
+      , cdDoubleSided = True
       }
 
 fluxStabilizerActive :: CardDef
@@ -26,6 +27,7 @@ fluxStabilizerActive =
       , cdUnique = True
       , cdBondedWith = [(1, "10006"), (1, "10007")]
       , cdOtherSide = Just "10005"
+      , cdDoubleSided = True
       }
 
 bookOfLivingMythsChronicleOfWonders :: CardDef
@@ -640,6 +642,7 @@ valeLanternBeaconOfHope =
     { cdCardTraits = setFromList [Item, Tool, Lit, Boon]
     , cdSlots = [#hand]
     , cdOtherSide = Just "10610b"
+    , cdDoubleSided = True
     }
 
 valeLanternExtinguishedLightBoon :: CardDef
@@ -648,6 +651,7 @@ valeLanternExtinguishedLightBoon =
     { cdCardTraits = setFromList [Item, Tool, Lit, Boon]
     , cdSlots = [#hand]
     , cdOtherSide = Just "10610a"
+    , cdDoubleSided = True
     }
 
 valeLanternAFaintHope :: CardDef
@@ -656,6 +660,7 @@ valeLanternAFaintHope =
     { cdCardTraits = setFromList [Item, Tool, Lit]
     , cdSlots = [#hand]
     , cdOtherSide = Just "10611b"
+    , cdDoubleSided = True
     }
 
 valeLanternExtinguishedLight :: CardDef
@@ -664,6 +669,7 @@ valeLanternExtinguishedLight =
     { cdCardTraits = setFromList [Item, Tool, Lit]
     , cdSlots = [#hand]
     , cdOtherSide = Just "10611a"
+    , cdDoubleSided = True
     }
 
 motherRachelKindlyMatron :: CardDef
@@ -672,6 +678,7 @@ motherRachelKindlyMatron =
     { cdCardTraits = singleton Resident
     , cdUnique = True
     , cdOtherSide = Just "10693b"
+    , cdDoubleSided = True
     }
 
 leahAtwoodTheValeCook :: CardDef
@@ -680,6 +687,7 @@ leahAtwoodTheValeCook =
     { cdCardTraits = singleton Resident
     , cdUnique = True
     , cdOtherSide = Just "10694b"
+    , cdDoubleSided = True
     }
 
 simeonAtwoodDedicatedTroublemaker :: CardDef
@@ -688,6 +696,7 @@ simeonAtwoodDedicatedTroublemaker =
     { cdCardTraits = singleton Resident
     , cdUnique = True
     , cdOtherSide = Just "10695b"
+    , cdDoubleSided = True
     }
 
 williamHemlockAspiringPoet :: CardDef
@@ -696,6 +705,7 @@ williamHemlockAspiringPoet =
     { cdCardTraits = singleton Resident
     , cdUnique = True
     , cdOtherSide = Just "10696b"
+    , cdDoubleSided = True
     }
 
 riverHawthorneBigInNewYork :: CardDef
@@ -704,6 +714,7 @@ riverHawthorneBigInNewYork =
     { cdCardTraits = singleton Resident
     , cdUnique = True
     , cdOtherSide = Just "10697b"
+    , cdDoubleSided = True
     }
 
 gideonMizrahSeasonedSailor :: CardDef
@@ -712,6 +723,7 @@ gideonMizrahSeasonedSailor =
     { cdCardTraits = singleton Resident
     , cdUnique = True
     , cdOtherSide = Just "10698b"
+    , cdDoubleSided = True
     }
 
 judithParkTheMuscle :: CardDef
@@ -720,6 +732,7 @@ judithParkTheMuscle =
     { cdCardTraits = singleton Resident
     , cdUnique = True
     , cdOtherSide = Just "10699b"
+    , cdDoubleSided = True
     }
 
 theoPetersJackOfAllTrades :: CardDef
@@ -728,6 +741,7 @@ theoPetersJackOfAllTrades =
     { cdCardTraits = singleton Resident
     , cdUnique = True
     , cdOtherSide = Just "10700b"
+    , cdDoubleSided = True
     }
 
 bertieMusgraveATrueAesthete :: CardDef
@@ -736,6 +750,7 @@ bertieMusgraveATrueAesthete =
     { cdCardTraits = setFromList [Ally, Miskatonic, Assistant]
     , cdUnique = True
     , cdOtherSide = Just "10701b"
+    , cdDoubleSided = True
     }
 
 drRosaMarquezBestInHerField :: CardDef
@@ -806,4 +821,5 @@ oldMemory =
     { cdCardTraits = setFromList [Trait.Condition, Trait.Innate]
     , cdCardType = EncounterAssetType
     , cdOtherSide = Just "10661"
+    , cdDoubleSided = True
     }

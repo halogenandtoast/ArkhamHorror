@@ -33,7 +33,11 @@ instance RunMessage Incursion where
           push $ ForTarget (EnemyTarget enemy) msg'
           readyThis enemy
           sendMessage enemy HuntersMove
+          -- Attack as if it were the enemy phase: engaged enemies attack their
+          -- investigator, and a ready/unengaged enemy at The Farmhouse attacks
+          -- The Captives (which reacts to the per-enemy EnemiesAttack below).
           sendMessage enemy (Do EnemiesAttack)
+          push $ ForTarget (EnemyTarget enemy) EnemiesAttack
           doStep (n - 1) msg'
       pure t
     ForTarget (EnemyTarget enemy) (FailedThisSkillTest _ (isSource attrs -> True)) -> do

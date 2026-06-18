@@ -281,6 +281,14 @@ instance RunMessage TheTwistedHollow where
               questionLabeledCard def
               portraits investigators (`takeControlOfAsset` lantern)
 
+          doStep 1 msg
+          doStep 2 msg
+        _ -> pure ()
+      pure s
+    DoStep 1 (ScenarioSpecific "codex" v) -> do
+      let (_iid :: InvestigatorId, _source :: Source, n :: Int) = toResult v
+      case n of
+        Sigma -> do
           emptyWoods <- selectWithField LocationCard $ EmptyLocation <> LocationWithTrait Dark
           woodsDeck <- getScenarioDeck WoodsDeck
           for_ emptyWoods (removeLocation . fst)
@@ -288,10 +296,9 @@ instance RunMessage TheTwistedHollow where
           theTwistedHollowWoods <- getSetAsideCard Locations.theTwistedHollow
           bottom' <- shuffle (theTwistedHollowWoods : bottom)
           push $ SetScenarioDeck WoodsDeck (top <> bottom')
-          doStep 1 msg
         _ -> pure ()
       pure s
-    DoStep 1 (ScenarioSpecific "codex" v) -> do
+    DoStep 2 (ScenarioSpecific "codex" v) -> do
       let (iid :: InvestigatorId, _source :: Source, n :: Int) = toResult v
       case n of
         Sigma -> do

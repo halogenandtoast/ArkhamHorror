@@ -23,7 +23,6 @@ instance HasAbilities TheLongestNight where
   getAbilities = actAbilities \a ->
     [ restricted a 1 (DuringTurn You) $ FastAbility (ClueCost $ Static 1)
     , mkAbility a 2 $ ActionAbility #resign Nothing (ActionCost 1)
-    , onlyOnce $ restricted a 3 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 
 instance RunMessage TheLongestNight where
@@ -49,9 +48,10 @@ instance RunMessage TheLongestNight where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       resign iid
+      doStep 2 msg
       pure a
-    UseThisAbility _ (isSource attrs -> True) 3 -> do
-      push R3
+    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+      whenM (selectNone UneliminatedInvestigator) $ push R3
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       captives <- selectJust $ assetIs Assets.theCaptives

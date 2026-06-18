@@ -73,6 +73,9 @@ spec = describe "Machete" $ do
     click "choose enemy"
     click "start skill test"
     click "apply results"
+    chooseOptionMatching "choose Machete's option" $ \case
+      Label lbl _ -> "name=s:\"Machete\"" `isInfixOf` lbl && not ("exhaustName" `isInfixOf` lbl)
+      _ -> False
     chooseOptionMatching "exhaust machete for +1 damage" $ \case
       Label lbl _ -> "exhaustName" `isInfixOf` lbl
       _ -> False

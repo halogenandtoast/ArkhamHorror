@@ -15,8 +15,12 @@ spec = describe "Toe to Toe" do
     run $ placedLocation location
     enemy `spawnAt` location
     self `moveTo` location
-    self `playEvent` Events.toeToToe
+    toeToToe <- genCard Events.toeToToe
+    self `addToHand` toeToToe
+    self `playCard` toeToToe
     chooseTarget enemy
+    -- the chosen enemy attacks as an additional cost; assign its damage
+    click "assign damage from the forced attack"
     startSkillTest
     applyResults
     self.damage `shouldReturn` 1

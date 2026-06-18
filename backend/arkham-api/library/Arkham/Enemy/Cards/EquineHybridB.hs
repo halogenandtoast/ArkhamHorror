@@ -23,7 +23,7 @@ instance HasAbilities EquineHybridB where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ EnemyTakeDamage #when AnyDamageEffect (be a) AnyValue AnySource
+      $ EnemyTakeDamage #when AnyDamageEffect (be a) (atLeast 2) AnySource
 
 instance RunMessage EquineHybridB where
   runMessage msg e@(EquineHybridB attrs) = runQueueT $ case msg of

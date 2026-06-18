@@ -191,6 +191,21 @@ export function choices(game: Game, playerId: string): Message[] {
   });
 }
 
+// True when the player's active question is a fast/action player window (the
+// backend's `PlayerWindowChooseOne`, normalized to `ChooseOne` with `isPlayerWindow`).
+// Used to distinguish a genuine "play this card" choice from an unrelated prompt that
+// merely happens to offer the same card as a target (e.g. a search popup).
+export function activeQuestionIsPlayerWindow(game: Game, playerId: string): boolean {
+  let question: Question | undefined = game.question[playerId];
+
+  while (question) {
+    if (question.tag === 'ChooseOne') return question.isPlayerWindow === true;
+    question = 'question' in question ? question.question : undefined;
+  }
+
+  return false;
+}
+
 // Returns the Source that prompted the player's active question, if any. The
 // engine wraps such questions in `QuestionWithSource` so the frontend can
 // highlight the source entity on the board while the question is pending.

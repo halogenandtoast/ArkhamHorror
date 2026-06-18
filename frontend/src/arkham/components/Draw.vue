@@ -29,6 +29,7 @@ const debug = useDebug()
 
 const id = computed(() => props.investigator.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const isPlayerWindow = computed(() => ArkhamGame.activeQuestionIsPlayerWindow(props.game, props.playerId))
 
 const topOfDiscard = computed(() => discards.value[0])
 
@@ -46,6 +47,12 @@ const topOfDeck = computed(() => {
 
 const playTopOfDeckAction = computed(() => {
   if(props.playerId !== props.investigator.playerId) {
+    return -1
+  }
+  // Only offer the deck-side play button inside a genuine play window. Other prompts
+  // (e.g. a Lucky Cigarette Case search) can present the top-of-deck card as a plain
+  // target with the same card id, which must not surface as a "Play" button here.
+  if (!isPlayerWindow.value) {
     return -1
   }
   const topOfDeck = props.investigator.deck[0]

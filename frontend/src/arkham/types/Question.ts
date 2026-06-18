@@ -93,6 +93,10 @@ export type PickCampaignSettings = {
 export type ChooseOne = {
   tag: QuestionType.CHOOSE_ONE;
   choices: Message[];
+  // True when the backend produced a `PlayerWindowChooseOne` (a fast/action player
+  // window). We normalize the tag to `ChooseOne` for rendering, but preserve this flag
+  // so consumers can tell a genuine play window from an unrelated single-choice prompt.
+  isPlayerWindow?: boolean;
 }
 
 // The backend represents this as a nest list, but we flatten it and pass the flattened index
@@ -471,16 +475,20 @@ export const dropDownDecoder = JsonDecoder.object<DropDown>(
   'DropDown',
 );
 
-export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
+export const chooseOneDecoder = JsonDecoder.object<{ tag: QuestionType, choices: Message[] }>(
   {
     tag: JsonDecoder.oneOf(
         [JsonDecoder.literal(QuestionType.CHOOSE_ONE)
-        , JsonDecoder.literal(QuestionType.PLAYER_WINDOW_CHOOSE_ONE).map(() => QuestionType.CHOOSE_ONE)
+        , JsonDecoder.literal(QuestionType.PLAYER_WINDOW_CHOOSE_ONE)
         ], "ChooseOne.tag"),
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseOne',
-);
+).map<ChooseOne>(({ tag, choices }) => ({
+  tag: QuestionType.CHOOSE_ONE,
+  choices,
+  isPlayerWindow: tag === QuestionType.PLAYER_WINDOW_CHOOSE_ONE,
+}));
 
 export const chooseOneFromEachDecoder = JsonDecoder.object<ChooseOneFromEach>(
   {

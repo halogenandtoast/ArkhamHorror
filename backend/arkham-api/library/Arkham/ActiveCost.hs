@@ -399,7 +399,7 @@ payCost msg c iid skipAdditionalCosts cost = do
             ]
       pure c
     EnemyAttackCost eid -> do
-      push $ toMessage $ (enemyAttack eid source iid) {attackCanBeCanceled = False}
+      push $ toMessage $ (enemyAttack eid source iid) {attackCanBeCanceled = False, attackDespiteExhausted = True}
       pure c
     DrawEncounterCardsCost n -> do
       push $ drawEncounterCards iid source n

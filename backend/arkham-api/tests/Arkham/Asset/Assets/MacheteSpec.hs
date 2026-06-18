@@ -56,3 +56,46 @@ spec = describe "Machete" $ do
     click "start skill test"
     click "apply results"
     enemy1.damage `shouldReturn` 1
+
+  -- Chapter 2 (card code 12020) replaces the static +1 damage with an optional
+  -- exhaust, available only when the attacked enemy is the only enemy engaged with you.
+  it "[Chapter 2] may exhaust to deal +1 damage if the attacked enemy is the only enemy engaged with you" . gameTest $ \self -> do
+    withProp @"combat" 1 self
+    machete <- self `putAssetIntoPlay` (Assets.machete {cdCardCode = "12020"})
+    enemy <- testEnemy & prop @"fight" 2 & prop @"health" 3
+    location <- testLocation
+    setChaosTokens [Zero]
+    run $ placedLocation location
+    enemy `spawnAt` location
+    self `moveTo` location
+    [doFight] <- machete.abilities
+    self `useAbility` doFight
+    click "choose enemy"
+    click "start skill test"
+    click "apply results"
+    chooseOptionMatching "exhaust machete for +1 damage" $ \case
+      Label lbl _ -> "exhaustName" `isInfixOf` lbl
+      _ -> False
+    enemy.damage `shouldReturn` 2
+    assert machete.exhausted
+
+  it "[Chapter 2] does not offer the exhaust option if the attacked enemy is not the only enemy engaged with you" . gameTest $ \self -> do
+    withProp @"combat" 1 self
+    machete <- self `putAssetIntoPlay` (Assets.machete {cdCardCode = "12020"})
+    enemy1 <- testEnemy & prop @"fight" 2 & prop @"health" 3
+    enemy2 <- testEnemy & prop @"fight" 2 & prop @"health" 3
+    location <- testLocation
+    setChaosTokens [Zero]
+    run $ placedLocation location
+    enemy1 `spawnAt` location
+    enemy2 `spawnAt` location
+    self `moveTo` location
+    [doFight] <- machete.abilities
+    self `useAbility` doFight
+    chooseOptionMatching "choose enemy1" $ \case
+      FightLabel {enemyId} -> enemyId == toId enemy1
+      _ -> False
+    click "start skill test"
+    click "apply results"
+    enemy1.damage `shouldReturn` 1
+    machete.exhausted `shouldReturn` False

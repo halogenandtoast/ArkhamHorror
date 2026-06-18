@@ -6945,6 +6945,7 @@ test-suite spec
       Arkham.Event.Events.SeekingAnswersSpec
       Arkham.Event.Events.SneakAttackSpec
       Arkham.Event.Events.SureGamble3Spec
+      Arkham.Event.Events.ToeToToeSpec
       Arkham.Event.Events.Transfiguration2Spec
       Arkham.Event.Events.WardOfProtectionSpec
       Arkham.Event.Events.WillToSurvive3Spec

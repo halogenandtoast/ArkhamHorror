@@ -43,13 +43,16 @@ instance RunMessage Machete where
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       when (attrs.cardCode.isChapterTwo && attrs.ready) do
-        skillTestCardOptionEdit attrs preOriginalOption do
-          chooseOneM iid $ withI18n $ cardNameVar attrs do
-            labeled' "doNotExhaustName" nothing
-            labeled' "exhaustName" do
-              exhaustThis attrs
-              withSkillTest \sid ->
-                skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+        menemy <- getSkillTestTargetedEnemy
+        isOnly <- maybe (pure False) (<=~> onlyEnemyEngagedWith iid) menemy
+        when isOnly do
+          skillTestCardOptionEdit attrs preOriginalOption do
+            chooseOneM iid $ withI18n $ cardNameVar attrs do
+              labeled' "doNotExhaustName" nothing
+              labeled' "exhaustName" do
+                exhaustThis attrs
+                withSkillTest \sid ->
+                  skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     _ -> Machete <$> liftRunMessage msg attrs
 

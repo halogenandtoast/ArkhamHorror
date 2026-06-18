@@ -49,6 +49,12 @@
       "elderThing": "-5. If this is a fight or evasion attempt against Cosmic Emissary, you automatically fail instead."
     }
   },
+  "tooltips": {
+    "fateOfTheValeV3": {
+      "placeKindling": "{'{'}action{'}'} Spend X {'{'}perPlayer{'}'} clues: Place X resources on your location, as kindling (you may spend 5 resources or discard an _Item_ asset you control to place 1 additional kindling).",
+      "drawFire": "{'{'}action{'}'} If your location has kindling on it equal to or greater than its shroud value, remove all kindling from it: Draw 1 set-aside Fire! treachery. (Group limit once per location.)"
+    }
+  },
   "label": {
     "tablet": {
       "easyStandard": "Place 1 doom on your investigator card to treat this token's modifier as 0, instead",
@@ -77,6 +83,10 @@
     },
     "shatteredMemories": {
       "doNotTakeControl": "Do not take control of a resident"
+    },
+    "oldMemory": {
+      "chooseInvestigator": "Choose an investigator to draw that card",
+      "cancelRevelation": "Cancel that card's revelation effect and remove it from the game"
     }
   },
   "setup": {

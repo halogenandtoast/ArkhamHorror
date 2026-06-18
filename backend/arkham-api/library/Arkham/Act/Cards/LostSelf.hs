@@ -143,42 +143,39 @@ placeEnemySideAt card lid = do
     Just resident -> createEnemyAt_ (residentEnemyDef resident) lid
     Nothing -> createEnemyAt_ card lid
 
-chooseEnemyPlacements :: ReverseQueue m => InvestigatorId -> [Card] -> [LocationId] -> m ()
-chooseEnemyPlacements _ [] _ = pure ()
-chooseEnemyPlacements _ _ [] = pure ()
-chooseEnemyPlacements lead (card : cards) locs =
-  focusCards [card] do
-    chooseTargetM lead locs \lid -> do
-      unfocusCards
-      placeEnemySideAt card lid
-      chooseEnemyPlacements lead cards (filter (/= lid) locs)
-
 {- | Search the Day of the Feast set for 2 Frenzied Revelers, shuffle them with
 each set-aside Resident card, and place them, enemy side faceup, beneath each
 location except The Crossroads, distributed as evenly as possible.
 
 For Fate of the Vale 5, cards are placed at empty locations. Stop once there are
 no empty locations remaining; if there are too few cards for every empty
-location, the lead investigator chooses which empty locations receive them.
+location, the lead investigator chooses which empty locations receive them. That
+last case is resolved one placement at a time via @DoStep 107@ (see below) so we
+never build the entire (factorial) decision tree of placement orders up front.
 -}
-seedResidentsBeneath :: ReverseQueue m => Bool -> m ()
-seedResidentsBeneath onlyEmpty = do
+seedResidentsBeneath :: ReverseQueue m => Bool -> Message -> m ()
+seedResidentsBeneath onlyEmpty adv = do
   crossroads <- selectJust $ locationIs Locations.theCrossroadsNight
   locs <-
     select
       $ (if onlyEmpty then EmptyLocation else Anywhere)
       <> not_ (be crossroads)
   revelers <- take 2 <$> getSetAsideCardsMatching (cardIs Enemies.frenziedReveler)
-  residents <- map flipCard <$> getSetAsideCardsMatching (mapOneOf cardIs residentAssetDefs)
-  for_ residents \card -> replaceCard card.id card
-  cards <- shuffle (revelers <> residents)
-  unless (null locs || null cards) do
-    if onlyEmpty
-      then
-        if length cards >= length locs
+  residentCards <- getSetAsideCardsMatching (mapOneOf cardIs residentAssetDefs)
+  let cardCount = length revelers + length residentCards
+  unless (null locs || cardCount == 0) do
+    -- When the lead must choose which empty locations receive a card, resolve
+    -- one placement at a time via DoStep 107 so the question never expands into
+    -- a nested tree.
+    if onlyEmpty && cardCount < length locs
+      then doStep 107 adv
+      else do
+        let residents = map flipCard residentCards
+        for_ residents \card -> replaceCard card.id card
+        cards <- shuffle (revelers <> residents)
+        if onlyEmpty
           then for_ (zip cards locs) (uncurry placeEnemySideAt)
-          else getLead >>= \lead -> chooseEnemyPlacements lead cards locs
-      else for_ (zip cards (cycle locs)) \(card, lid) -> placeUnderneath lid [card]
+          else for_ (zip cards (cycle locs)) \(card, lid) -> placeUnderneath lid [card]
 
 {- | Put a story ally into play under the lead investigator's control from the
 set-aside pile, unless it is already in play.
@@ -356,8 +353,8 @@ instance RunMessage LostSelf where
       doStep 102 adv
       advanceToAct attrs Cards.fateOfTheValeV2 A
       pure a
-    DoStep 102 (AdvanceAct (isSide B attrs -> True) _ _) -> do
-      seedResidentsBeneath False
+    DoStep 102 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> do
+      seedResidentsBeneath False adv
       flipEmissariesAtVillage
       pure a
     -- Fate of the Vale 3: "Burn it all."
@@ -389,9 +386,31 @@ instance RunMessage LostSelf where
           boardingHouse <- selectJust $ locationIs Locations.boardingHouseNight
           getSetAsideCardMaybe Assets.bertieMusgraveATrueAesthete
             >>= traverse_ \c -> void $ createAssetAt c (AtLocation boardingHouse)
-      seedResidentsBeneath True
+      seedResidentsBeneath True adv
       flipEmissariesAtVillage
       doStep 106 adv
+      pure a
+    -- Fate of the Vale 5: place one resident/reveler at a lead-chosen empty
+    -- location, then re-queue ourselves for the next. Resolving one placement
+    -- per step (instead of recursing inside the choice) keeps the question from
+    -- expanding into the full factorial tree of placement orders. Each step
+    -- re-derives the remaining cards and empty locations from game state, so the
+    -- candidate pools shrink naturally as cards are placed.
+    DoStep 107 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> do
+      crossroads <- selectJust $ locationIs Locations.theCrossroadsNight
+      locs <- select $ EmptyLocation <> not_ (be crossroads)
+      revelers <- take 2 <$> getSetAsideCardsMatching (cardIs Enemies.frenziedReveler)
+      residents <- map flipCard <$> getSetAsideCardsMatching (mapOneOf cardIs residentAssetDefs)
+      cards <- shuffle (revelers <> residents)
+      case cards of
+        [] -> pure ()
+        (card : _) -> unless (null locs) do
+          replaceCard card.id card
+          lead <- getLead
+          focusCards [card] $ chooseTargetM lead locs \lid -> do
+            unfocusCards
+            placeEnemySideAt card lid
+            doStep 107 adv
       pure a
     DoStep 106 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       -- Remove each remaining (unplaced) Resident card from the game.

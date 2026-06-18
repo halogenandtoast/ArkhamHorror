@@ -1,6 +1,8 @@
 module Arkham.Investigator.Cards.ShatteredSelf (ShatteredSelf (..), ShatteredSelfMetadata (..)) where
 
 import Arkham.Ability
+import Arkham.I18n
+import Arkham.Message.Lifted.Choose
 import Arkham.Helpers.Investigator (getHandCount)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
@@ -49,7 +51,9 @@ instance HasChaosTokenValue ShatteredSelf where
 instance RunMessage ShatteredSelf where
   runMessage msg i@(ShatteredSelf (attrs `With` meta)) = runQueueT $ case msg of
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
-      drawCards iid ElderSign 1
+      chooseOneM iid $ withI18n do
+        countVar 1 $ labeled' "drawCards" $ drawCards iid ElderSign 1
+        skip_
       pure i
     UseCardAbility _iid (isSource attrs -> True) 1 (getCommittedCard -> card) _ -> do
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) card DoubleSkillIcons

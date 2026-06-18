@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.FateOfTheVale.Helpers (scenarioI18n)
+import Arkham.Scenarios.FateOfTheVale.Helpers (abyssDrawWindow, scenarioI18n)
 
 newtype TheSilence = TheSilence AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -44,7 +44,10 @@ revealEncounterCardFromAbyss source iid = do
             unfocusCards
             for_ revealed \card -> scenarioSpecific "removeFromAbyss" (toCardId card)
             for_ (reverse nonEncounter) \card -> push $ PutCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck) card
-            push $ DrewCards iid $ finalizeDraw (newCardDraw source Deck.EncounterDeck 1) [EncounterCard ec]
+            -- Old Memory (and any future cards) may react to a card being drawn
+            -- from The Abyss, so route the draw through a cancellable window.
+            let drawMsg = DrewCards iid $ finalizeDraw (newCardDraw source Deck.EncounterDeck 1) [EncounterCard ec]
+            abyssDrawWindow "mythos" iid (EncounterCard ec) (Run [drawMsg])
     _ -> pure ()
   when (null rest && notNull nonEncounter) do
     focusCards nonEncounter do

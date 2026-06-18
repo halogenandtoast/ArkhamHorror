@@ -32,7 +32,7 @@ instance RunMessage Recharge4 where
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <-
         selectTargets
-          $ AssetControlledBy (affectsOthers $ colocatedWith iid)
+          $ AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid)
           <> oneOf [AssetWithTrait Spell, AssetWithTrait Relic]
       player <- getPlayer iid
       push

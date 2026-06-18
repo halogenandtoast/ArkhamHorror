@@ -42,7 +42,7 @@ instance RunMessage LonnieRitter where
         select
           $ HealableAsset (toSource attrs) DamageType
           $ AssetWithTrait Item
-          <> AssetControlledBy (affectsOthers $ InvestigatorAt $ locationWithInvestigator iid)
+          <> AssetControlledBy (affectsOthersKnown iid $ InvestigatorAt $ locationWithInvestigator iid)
       canHealHorror <- selectAny $ HealableAsset (toSource attrs) HorrorType (AssetWithId $ toId attrs)
       player <- getPlayer iid
       push

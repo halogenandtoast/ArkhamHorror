@@ -21,7 +21,7 @@ instance HasAbilities Encyclopedia2 where
 instance RunMessage Encyclopedia2 where
   runMessage msg a@(Encyclopedia2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      investigators <- selectTargets $ affectsOthers $ colocatedWith iid
+      investigators <- selectTargets $ affectsOthersKnown iid $ colocatedWith iid
       chooseOneM iid do
         targets investigators \target ->
           chooseOneM iid do

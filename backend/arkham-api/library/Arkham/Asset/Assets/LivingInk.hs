@@ -48,7 +48,7 @@ instance RunMessage LivingInk where
       pure a
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       when (attrs `hasCustomization` ShiftingInk) do
-        iids <- select $ affectsOthers $ colocatedWith iid
+        iids <- select $ affectsOthersKnown iid $ colocatedWith iid
         chooseOrRunOne iid $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
       LivingInk <$> liftRunMessage msg attrs
     BeginTurn iid | attrs `controlledBy` iid -> do

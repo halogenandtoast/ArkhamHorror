@@ -18,7 +18,7 @@ instance RunMessage EmergencyCache3 where
     PlayThisEvent iid (is attrs -> True) -> do
       supplyAssets <-
         select
-          $ AssetControlledBy (affectsOthers $ colocatedWith iid)
+          $ AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid)
           <> AssetCanHaveUses Supply
           <> AssetNotAtUseLimit
       if null supplyAssets

@@ -36,7 +36,7 @@ instance RunMessage ArchiveOfConduitsGatewayToAldebaran4 where
       chooseTargetM iid enemies $ moveTokensTo (attrs.ability 1) attrs Leyline 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      iids <- select $ affectsOthers $ InvestigatorEngagedWith (EnemyWithToken Token.Leyline)
+      iids <- select $ affectsOthersKnown iid $ InvestigatorEngagedWith (EnemyWithToken Token.Leyline)
       chooseOrRunOneM iid $ targets iids $ handleTarget iid (attrs.ability 2)
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 2 -> True) (InvestigatorTarget iid') -> do

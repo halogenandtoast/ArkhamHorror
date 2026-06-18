@@ -65,7 +65,7 @@ instance RunMessage ProphesiaeProfanaAtlasOfTheUnknowable5 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let locus = toResult attrs.meta
       investigators <-
-        select $ affectsOthers $ InvestigatorCanMoveTo (attrs.ability 2) (LocationWithId locus)
+        select $ affectsOthersKnown iid $ InvestigatorCanMoveTo (attrs.ability 2) (LocationWithId locus)
       chooseOrRunOneM iid do
         targets investigators \investigator -> moveTo (attrs.ability 2) investigator locus
       pure a

@@ -36,7 +36,7 @@ instance RunMessage ArchiveOfConduitsGatewayToTindalos4 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       iids <-
         select
-          $ affectsOthers
+          $ affectsOthersKnown iid
           $ InvestigatorCanMoveTo (attrs.ability 2) (LocationWithEnemy $ EnemyWithToken Token.Leyline)
       chooseOrRunOneM iid $ targets iids $ handleTarget iid (attrs.ability 2)
       pure a

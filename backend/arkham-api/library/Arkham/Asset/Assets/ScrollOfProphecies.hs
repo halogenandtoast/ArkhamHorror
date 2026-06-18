@@ -30,7 +30,7 @@ instance RunMessage ScrollOfProphecies where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       investigators <-
         map (\i -> (i, drawCards i (toAbilitySource attrs 1) 3))
-          <$> select (affectsOthers $ colocatedWith iid)
+          <$> select (affectsOthersKnown iid $ colocatedWith iid)
       player <- getPlayer iid
       push
         $ chooseOne player

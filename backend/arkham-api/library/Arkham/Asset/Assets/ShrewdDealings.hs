@@ -35,7 +35,7 @@ instance RunMessage ShrewdDealings where
   runMessage msg a@(ShrewdDealings attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       investigators <- withoutModifiersOf attrs do
-        filterM (`passesLimits` card) =<< select (affectsOthers $ colocatedWith iid)
+        filterM (`passesLimits` card) =<< select (affectsOthersKnown iid $ colocatedWith iid)
       -- need to ensure card would not exceed limit
       chooseOneM iid do
         targets investigators \investigator -> do

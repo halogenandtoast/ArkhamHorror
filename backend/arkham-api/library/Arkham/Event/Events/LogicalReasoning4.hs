@@ -23,7 +23,7 @@ instance RunMessage LogicalReasoning4 where
       repeated n $ do_ msg
       pure e
     Do (PlayThisEvent iid (is attrs -> True)) -> do
-      iids <- select $ affectsOthers $ colocatedWith iid
+      iids <- select $ affectsOthersKnown iid $ colocatedWith iid
       canHealHorror <- filterM (canHaveHorrorHealed attrs) iids
       terrors <- select $ TreacheryWithTrait Terror <> at_ (locationWithInvestigator iid)
 

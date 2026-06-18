@@ -108,6 +108,6 @@ instance RunMessage BobJenkins where
           handCards <- map toCardId . filterCards (card_ $ #asset <> #item) <$> field InvestigatorHand iid
           pure $ Map.insert iid handCards revealedCards'
 
-      iids <- select $ affectsOthers $ colocatedWith attrs.id <> not_ (be attrs.id) <> can.reveal.cards
+      iids <- select $ affectsOthersKnown attrs.id $ colocatedWith attrs.id <> not_ (be attrs.id) <> can.reveal.cards
       revealedCards' <- foldM addCards revealedCards iids
       BobJenkins <$> liftRunMessage msg (attrs & setMeta (object ["revealedCards" .= revealedCards']))

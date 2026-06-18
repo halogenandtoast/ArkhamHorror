@@ -15,7 +15,7 @@ crypticResearch4 = event CrypticResearch4 Cards.crypticResearch4
 instance RunMessage CrypticResearch4 where
   runMessage msg e@(CrypticResearch4 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      investigators <- select $ affectsOthers $ colocatedWith iid <> can.draw.cards
+      investigators <- select $ affectsOthersKnown iid $ colocatedWith iid <> can.draw.cards
       chooseTargetM iid investigators \iid' -> drawCards iid' attrs 3
       pure e
     _ -> CrypticResearch4 <$> liftRunMessage msg attrs

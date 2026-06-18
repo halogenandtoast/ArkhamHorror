@@ -35,8 +35,8 @@ instance RunMessage GraysAnatomyTheDoctorsBible5 where
             [ selectTargets $ EnemyAt (locationWithInvestigator iid)
             , selectTargets
                 $ AssetAt (locationWithInvestigator iid)
-                <> oneOf [AssetOwnedBy (affectsOthers Anyone), UnownedAsset]
-            , selectTargets $ affectsOthers $ colocatedWith iid
+                <> oneOf [AssetOwnedBy (affectsOthersKnown iid Anyone), UnownedAsset]
+            , selectTargets $ affectsOthersKnown iid $ colocatedWith iid
             ]
 
       sid <- getRandom

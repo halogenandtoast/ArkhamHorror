@@ -23,7 +23,7 @@ instance HasModifiersFor AriadnesTwine3 where
         modifySelectWhen
           a
           (a.use Secret > 0)
-          (not_ (be a) <> AssetControlledBy (affectsOthers $ colocatedWith iid))
+          (not_ (be a) <> AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid))
           [ProvidesUses Secret (toSource a)]
 
 instance HasAbilities AriadnesTwine3 where

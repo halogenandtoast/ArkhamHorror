@@ -44,7 +44,7 @@ instance RunMessage EnchantedArmor2 where
   runMessage msg a@(EnchantedArmor2 attrs) = case msg of
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       player <- getPlayer iid
-      iids <- select $ affectsOthers $ colocatedWith iid
+      iids <- select $ affectsOthersKnown iid $ colocatedWith iid
       push $ chooseOrRunOne player $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
       EnchantedArmor2 <$> runMessage msg attrs
     UseCardAbility _ (isSource attrs -> True) 1 (getTotal attrs -> (x, y)) _ -> do

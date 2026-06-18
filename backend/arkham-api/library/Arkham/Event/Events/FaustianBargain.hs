@@ -24,7 +24,7 @@ instance RunMessage FaustianBargain where
   runMessage msg e@(FaustianBargain attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       lid <- getJustLocation iid
-      iids <- select $ affectsOthers $ investigatorAt lid <> can.gain.resources
+      iids <- select $ affectsOthersKnown iid $ investigatorAt lid <> can.gain.resources
       player <- getPlayer iid
       pushAll
         $ replicate 5

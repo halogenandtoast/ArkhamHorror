@@ -19,7 +19,7 @@ instance RunMessage AChanceEncounter where
       discards <-
         select
           $ #ally
-          <> InDiscardOf (affectsOthers can.have.cards.leaveDiscard)
+          <> InDiscardOf (affectsOthersKnown iid can.have.cards.leaveDiscard)
           <> CardWithoutUniqueCopyInPlay
       focusCards discards do
         chooseTargetM iid discards \card -> do

@@ -17,7 +17,7 @@ motivationalSpeech4 = event MotivationalSpeech4 Cards.motivationalSpeech4
 instance RunMessage MotivationalSpeech4 where
   runMessage msg e@(MotivationalSpeech4 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      ts <- select $ affectsOthers $ colocatedWith iid
+      ts <- select $ affectsOthersKnown iid $ colocatedWith iid
       chooseTargetM iid ts (handleTarget iid attrs)
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do

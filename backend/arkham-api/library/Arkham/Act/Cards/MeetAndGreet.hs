@@ -78,7 +78,7 @@ instance RunMessage MeetAndGreet where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       assets <- select $ AssetWithTrait Guest <> assetControlledBy iid
-      investigators <- select $ affectsOthers (colocatedWith iid) <> not_ (InvestigatorWithId iid)
+      investigators <- select $ affectsOthersKnown iid (colocatedWith iid) <> not_ (InvestigatorWithId iid)
       chooseTargetM iid assets \aid -> do
         chooseTargetM iid investigators (`takeControlOfAsset` aid)
       pure a

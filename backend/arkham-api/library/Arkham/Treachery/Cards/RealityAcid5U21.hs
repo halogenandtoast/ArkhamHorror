@@ -75,7 +75,7 @@ instance RunMessage RealityAcid5U21 where
                   push $ Devoured iid card
             else again
         PlusOne -> do
-          investigators <- select $ affectsOthers Anyone
+          investigators <- select $ affectsOthersKnown iid Anyone
           cs <- concatMapM (fieldMap InvestigatorDiscard (take 1)) investigators
           if (null cs)
             then again
@@ -83,7 +83,7 @@ instance RunMessage RealityAcid5U21 where
               obtainCard c
               push $ Devoured iid (toCard c)
         Zero -> do
-          investigators <- select $ affectsOthers Anyone
+          investigators <- select $ affectsOthersKnown iid Anyone
           cs <- concatMapM (fieldMap InvestigatorDeck (take 1 . unDeck)) investigators
           if (null cs)
             then again
@@ -102,7 +102,7 @@ instance RunMessage RealityAcid5U21 where
           assets <-
             select
               $ AssetNonStory
-              <> AssetControlledBy (affectsOthers $ colocatedWith iid)
+              <> AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid)
               <> NonWeaknessAsset
               <> not_ PermanentAsset
               <> AssetCanLeavePlayByNormalMeans
@@ -128,7 +128,7 @@ instance RunMessage RealityAcid5U21 where
               obtainCard c
               push $ Devoured iid (toCard c)
         MinusFour -> do
-          investigators <- select $ affectsOthers Anyone
+          investigators <- select $ affectsOthersKnown iid Anyone
           cs <- concatMapM (fieldMap InvestigatorDeck (take 2 . unDeck)) investigators
           if (null cs)
             then again
@@ -145,7 +145,7 @@ instance RunMessage RealityAcid5U21 where
                   obtainCard c
                   push $ Devoured iid (toCard c)
         MinusSix -> do
-          investigators <- select $ affectsOthers Anyone
+          investigators <- select $ affectsOthersKnown iid Anyone
           cs <- concatMapM (fieldMap InvestigatorHand (filterCards EventType)) investigators
           if (null cs)
             then again
@@ -153,7 +153,7 @@ instance RunMessage RealityAcid5U21 where
               obtainCard c
               push $ Devoured iid (toCard c)
         MinusSeven -> do
-          investigators <- select $ affectsOthers Anyone
+          investigators <- select $ affectsOthersKnown iid Anyone
           groups <- for investigators \investigator -> do
             select $ assetInPlayAreaOf investigator <> NonWeaknessAsset <> AssetNonStory
           chooseOneFromEachM iid
@@ -164,7 +164,7 @@ instance RunMessage RealityAcid5U21 where
                   push $ RemovedFromPlay (toSource asset)
                   push $ Devoured iid c
         MinusEight -> do
-          investigators <- select $ affectsOthers Anyone
+          investigators <- select $ affectsOthersKnown iid Anyone
           signatures <- forMaybeM investigators \investigator -> do
             inDeck <- select $ inDeckOf investigator <> basic (SignatureCard <> NonWeakness)
             inHand <- select $ inHandOf NotForPlay investigator <> basic (SignatureCard <> NonWeakness)

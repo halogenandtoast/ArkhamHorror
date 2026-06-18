@@ -29,11 +29,11 @@ instance RunMessage TaskForce where
       canUseAbility <-
         (1 `notElem` usedOptions meta &&)
           <$> selectAny
-            (AssetWithPerformableAbilityBy (affectsOthers $ colocatedWith iid) #action [IgnoreActionCost])
+            (AssetWithPerformableAbilityBy (affectsOthersKnown iid $ colocatedWith iid) #action [IgnoreActionCost])
       canMove <-
         (2 `notElem` usedOptions meta &&)
           <$> selectAny
-            ( affectsOthers
+            ( affectsOthersKnown iid
                 $ colocatedWith iid
                 <> InvestigatorCanMoveTo (toSource attrs) (ConnectedFrom ForMovement $ locationWithInvestigator iid)
             )
@@ -41,7 +41,7 @@ instance RunMessage TaskForce where
         (3 `notElem` usedOptions meta &&)
           <$> selectAny
             ( locationWithInvestigator iid
-                <> LocationWithDiscoverableCluesBy (affectsOthers $ colocatedWith iid)
+                <> LocationWithDiscoverableCluesBy (affectsOthersKnown iid $ colocatedWith iid)
             )
 
       when (canUseAbility || canMove || canDiscover) do

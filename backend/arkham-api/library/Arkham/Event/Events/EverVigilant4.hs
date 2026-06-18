@@ -21,7 +21,7 @@ instance RunMessage EverVigilant4 where
       doStep 4 msg
       pure e
     DoStep n msg'@(PlayThisEvent iid (is attrs -> True)) | n > 0 -> do
-      iids <- select $ affectsOthers $ colocatedWith iid
+      iids <- select $ affectsOthersKnown iid $ colocatedWith iid
       hasPlayable <- flip filterM iids \iid' -> do
         withModifiersOf iid' attrs [ReduceCostOf AnyCard 1] do
           anyM

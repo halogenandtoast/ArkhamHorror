@@ -28,7 +28,7 @@ instance RunMessage StrangeSolutionEmpoweringElixir4 where
   runMessage msg a@(StrangeSolutionEmpoweringElixir4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <-
-        select $ affectsOthers $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
+        select $ affectsOthersKnown iid $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
       chooseOrRunOneM iid do
         targets investigators \i -> do
           gainResources i (attrs.ability 1) 2

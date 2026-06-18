@@ -23,7 +23,7 @@ instance HasAbilities OperatingRoom where
 instance RunMessage OperatingRoom where
   runMessage msg l@(OperatingRoom attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- select $ affectsOthers $ investigatorAt attrs.id
+      investigators <- select $ affectsOthersKnown iid $ investigatorAt attrs.id
       player <- getPlayer iid
       sid <- getRandom
       push

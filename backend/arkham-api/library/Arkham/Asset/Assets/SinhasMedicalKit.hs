@@ -33,7 +33,7 @@ instance RunMessage SinhasMedicalKit where
         withCanHealAsset kind =
           selectEach
             ( HealableAsset (attrs.ability 1) kind
-                $ oneOf [UncontrolledAsset, AssetControlledBy (affectsOthers Anyone)]
+                $ oneOf [UncontrolledAsset, AssetControlledBy (affectsOthersKnown iid Anyone)]
                 <> at_ (locationWithInvestigator iid)
             )
       chooseOneM iid do

@@ -179,7 +179,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
             if notNull canEvade
               then
                 select
-                  $ affectsOthers
+                  $ affectsOthersKnown iid
                   $ colocatedWith iid
                   <> InvestigatorCanMoveTo (toSource attrs) (ConnectedFrom ForMovement $ locationWithInvestigator iid)
               else pure []
@@ -216,7 +216,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
             if notNull canEvade
               then
                 select
-                  $ affectsOthers
+                  $ affectsOthersKnown iid
                   $ not_ (InvestigatorWithId iid)
                   <> InvestigatorAt (ConnectedFrom ForMovement $ locationWithInvestigator iid)
                   <> InvestigatorCanMoveTo (toSource attrs) (locationWithInvestigator iid)
@@ -290,7 +290,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
 
       canMoveOtherInvestigatorsAway <-
         select
-          $ affectsOthers
+          $ affectsOthersKnown iid
           $ colocatedWith iid
           <> InvestigatorCanMoveTo (toSource attrs) (ConnectedFrom ForMovement $ locationWithInvestigator iid)
 
@@ -301,7 +301,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
 
       canMoveOtherInvestigatorsToYourLocation <-
         select
-          $ affectsOthers
+          $ affectsOthersKnown iid
           $ not_ (InvestigatorWithId iid)
           <> InvestigatorAt (ConnectedFrom ForMovement $ locationWithInvestigator iid)
           <> InvestigatorCanMoveTo (toSource attrs) (locationWithInvestigator iid)

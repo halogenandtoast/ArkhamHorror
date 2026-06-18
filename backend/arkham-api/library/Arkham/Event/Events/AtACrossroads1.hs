@@ -17,7 +17,7 @@ atACrossroads1 = event AtACrossroads1 Cards.atACrossroads1
 instance RunMessage AtACrossroads1 where
   runMessage msg e@(AtACrossroads1 attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      selectOneToHandle iid attrs $ affectsOthers Anyone
+      selectOneToHandle iid attrs $ affectsOthersKnown iid Anyone
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
       chooseOneM iid $ cardI18n $ scope "atACrossroads" do

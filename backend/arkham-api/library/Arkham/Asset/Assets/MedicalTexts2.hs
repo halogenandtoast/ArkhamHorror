@@ -26,7 +26,7 @@ instance RunMessage MedicalTexts2 where
   runMessage msg a@(MedicalTexts2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let controllerId = getController attrs
-      investigators <- select $ affectsOthers $ colocatedWith controllerId
+      investigators <- select $ affectsOthersKnown controllerId $ colocatedWith controllerId
       sid <- getRandom
       chooseOne iid
         $ targetLabels investigators

@@ -59,7 +59,7 @@ instance RunMessage Kerosene1 where
                   AssetHorror
                   ( HealableAsset source #horror
                       $ at_ (locationWithInvestigator iid)
-                      <> AssetControlledBy (affectsOthers Anyone)
+                      <> AssetControlledBy (affectsOthersKnown iid Anyone)
                   )
             pure $ min 2 (totalInvestigatorHorror + totalAssetHorror)
 
@@ -82,7 +82,7 @@ instance RunMessage Kerosene1 where
         selectTargets
           $ HealableAsset (attrs.ability 1) HorrorType
           $ AssetAt (locationWithInvestigator iid)
-          <> AssetControlledBy (affectsOthers Anyone)
+          <> AssetControlledBy (affectsOthersKnown iid Anyone)
 
       chooseOne iid
         $ [ TargetLabel target [HealHorror target (toSource attrs) 1]

@@ -37,7 +37,7 @@ instance RunMessage ArchiveOfConduitsGatewayToAcheron4 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       iids <-
         select
-          $ affectsOthers
+          $ affectsOthersKnown iid
           $ InvestigatorCanMoveTo (attrs.ability 2) (LocationWithToken Token.Leyline)
       chooseOrRunOneM iid $ targets iids $ handleTarget iid (attrs.ability 2)
       pure a

@@ -27,7 +27,7 @@ instance RunMessage LabyrinthineHallsFoulSmellingPath where
   runMessage msg l@(LabyrinthineHallsFoulSmellingPath attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       atEndOfRound (attrs.ability 1) do
-        investigators <- select $ affectsOthers $ NotInvestigator (InvestigatorWithId iid)
+        investigators <- select $ affectsOthersKnown iid $ NotInvestigator (InvestigatorWithId iid)
         leaveBehind <- if null investigators then pure [iid] else pure investigators
         chooseOrRunOneM iid $ scope "labyrinthineHalls" do
           questionLabeled' "chooseDrawCards"

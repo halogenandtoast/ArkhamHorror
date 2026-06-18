@@ -19,7 +19,7 @@ heedTheDream2 = event HeedTheDream2 Cards.heedTheDream2
 instance RunMessage HeedTheDream2 where
   runMessage msg e@(HeedTheDream2 attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      investigators <- select $ affectsOthers Anyone
+      investigators <- select $ affectsOthersKnown iid Anyone
       cards <- for investigators $ fieldMap InvestigatorDeck (take 3 . unDeck)
 
       for_ (concat cards) (push . ObtainCard . toCardId)

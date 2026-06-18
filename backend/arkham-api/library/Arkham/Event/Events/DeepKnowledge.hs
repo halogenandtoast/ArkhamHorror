@@ -15,7 +15,7 @@ deepKnowledge = event DeepKnowledge Cards.deepKnowledge
 instance RunMessage DeepKnowledge where
   runMessage msg e@(DeepKnowledge attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      iids <- select $ affectsOthers $ colocatedWith iid <> can.draw.cards
+      iids <- select $ affectsOthersKnown iid $ colocatedWith iid <> can.draw.cards
       chooseInvestigatorAmounts iid "Number of cards to draw" 3 iids attrs
       pure e
     ResolveAmounts _ choices (isTarget attrs -> True) -> do

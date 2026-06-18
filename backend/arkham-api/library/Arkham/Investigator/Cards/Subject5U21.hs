@@ -103,7 +103,7 @@ instance RunMessage Subject5U21 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       devourable <-
         select
-          $ ControlledBy (affectsOthers $ colocatedWith iid)
+          $ ControlledBy (affectsOthersKnown iid $ colocatedWith iid)
           <> basic (not_ (CardWithType StoryType) <> not_ PermanentCard)
       chooseOneM iid do
         for_ devourable \card -> do

@@ -69,7 +69,7 @@ instance RunMessage CallForBackup2 where
         andM
           [ control iid chosen Mystic
           , orM
-              [ selectAny (HealableInvestigator (toSource attrs) #horror $ affectsOthers Anyone)
+              [ selectAny (HealableInvestigator (toSource attrs) #horror $ affectsOthersKnown iid Anyone)
               , selectAny (healableAsset attrs #horror)
               ]
           ]
@@ -78,7 +78,7 @@ instance RunMessage CallForBackup2 where
         andM
           [ control iid chosen Survivor
           , orM
-              [ selectAny (HealableInvestigator (toSource attrs) #damage $ affectsOthers Anyone)
+              [ selectAny (HealableInvestigator (toSource attrs) #damage $ affectsOthersKnown iid Anyone)
               , selectAny (healableAsset attrs #damage)
               ]
           ]
@@ -121,7 +121,7 @@ instance RunMessage CallForBackup2 where
       let chosen = toResultDefault [] attrs.meta
       pure $ overAttrs (setMeta (Seeker : chosen)) e
     DoStep 4 (PlayThisEvent iid (is attrs -> True)) -> do
-      investigators <- select (HealableInvestigator (toSource attrs) #horror $ affectsOthers Anyone)
+      investigators <- select (HealableInvestigator (toSource attrs) #horror $ affectsOthersKnown iid Anyone)
       assets <- select (healableAsset attrs #horror)
       chooseOneM iid do
         for_ investigators \iid' -> horrorLabeled iid' $ healHorror iid' attrs 1
@@ -129,7 +129,7 @@ instance RunMessage CallForBackup2 where
       let chosen = toResultDefault [] attrs.meta
       pure $ overAttrs (setMeta (Mystic : chosen)) e
     DoStep 5 (PlayThisEvent iid (is attrs -> True)) -> do
-      investigators <- select (HealableInvestigator (toSource attrs) #damage $ affectsOthers Anyone)
+      investigators <- select (HealableInvestigator (toSource attrs) #damage $ affectsOthersKnown iid Anyone)
       assets <- select (healableAsset attrs #damage)
       chooseOneM iid do
         for_ investigators \iid' -> damageLabeled iid' $ healDamage iid' attrs 1

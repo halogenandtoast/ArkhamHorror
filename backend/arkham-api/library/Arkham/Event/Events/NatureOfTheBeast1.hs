@@ -32,7 +32,7 @@ instance RunMessage NatureOfTheBeast1 where
       push $ DoStep 2 msg
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      investigators <- traverse (traverseToSnd getPlayer) =<< select (affectsOthers Anyone)
+      investigators <- traverse (traverseToSnd getPlayer) =<< select (affectsOthersKnown iid Anyone)
       let choices iid' =
             [ targetLabel card $ map AddToEncounterDiscard rest <> [InvestigatorDrewEncounterCard iid' card]
             | (card, rest) <- eachWithRest (onlyEncounterCards cards)
@@ -42,7 +42,7 @@ instance RunMessage NatureOfTheBeast1 where
         [targetLabel iid' [Msg.chooseOne player (choices iid')] | (iid', player) <- investigators]
       pure e
     DoStep 2 (Revelation owner (isSource attrs -> True)) -> do
-      investigators <- select (affectsOthers Anyone)
+      investigators <- select (affectsOthersKnown owner Anyone)
       did <- getRandom
 
       choices <- forMaybeM investigators \iid -> do

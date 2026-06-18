@@ -18,7 +18,7 @@ illPayYouBack = event IllPayYouBack Cards.illPayYouBack
 instance RunMessage IllPayYouBack where
   runMessage msg e@(IllPayYouBack attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ affectsOthers $ colocatedWith iid <> not_ (InvestigatorWithId iid)
+      selectOneToHandle iid attrs $ affectsOthersKnown iid $ colocatedWith iid <> not_ (InvestigatorWithId iid)
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
       resources <- field InvestigatorResources iid'

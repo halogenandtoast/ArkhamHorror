@@ -22,7 +22,7 @@ instance RunMessage Bounty where
       doStep x msg
       pure e
     DoStep x msg'@(PlayThisEvent iid (is attrs -> True)) | x > 0 -> do
-      iids <- select $ affectsOthers $ colocatedWith iid <> can.gain.resources
+      iids <- select $ affectsOthersKnown iid $ colocatedWith iid <> can.gain.resources
       chooseOrRunOneM iid $ for_ iids \iid' -> resourceLabeled iid' $ gainResources iid' attrs 1
       doStep (x - 1) msg'
       pure e

@@ -23,11 +23,11 @@ instance RunMessage Enraptured2 where
       when (n > 0) do
         chargeAssets <-
           select
-            $ AssetControlledBy (affectsOthers $ colocatedWith attrs.owner)
+            $ AssetControlledBy (affectsOthersKnown attrs.owner $ colocatedWith attrs.owner)
             <> AssetCanHaveUses Uses.Charge
         secretAssets <-
           select
-            $ AssetControlledBy (affectsOthers $ colocatedWith attrs.owner)
+            $ AssetControlledBy (affectsOthersKnown attrs.owner $ colocatedWith attrs.owner)
             <> AssetCanHaveUses Uses.Secret
         unless (null chargeAssets && null secretAssets) do
           chooseOneM attrs.owner do

@@ -15,7 +15,7 @@ bankJob = event BankJob Cards.bankJob
 instance RunMessage BankJob where
   runMessage msg e@(BankJob attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      iids <- select $ affectsOthers $ colocatedWith iid <> can.gain.resources
+      iids <- select $ affectsOthersKnown iid $ colocatedWith iid <> can.gain.resources
       replicateM_ 8 do
         chooseOrRunOne
           iid

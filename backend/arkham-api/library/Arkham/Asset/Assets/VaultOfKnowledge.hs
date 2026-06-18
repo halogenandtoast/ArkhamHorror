@@ -31,7 +31,7 @@ instance RunMessage VaultOfKnowledge where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       investigators <-
         map (\iid' -> (iid', drawCards iid' (toAbilitySource attrs 1) 1))
-          <$> select (affectsOthers $ colocatedWith iid)
+          <$> select (affectsOthersKnown iid $ colocatedWith iid)
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

@@ -29,7 +29,7 @@ instance RunMessage CustomAmmunition3 where
     PlayThisEvent iid (is attrs -> True) -> do
       assets <-
         getUpgradeTargets iid
-          $ AssetControlledBy (affectsOthers $ colocatedWith iid)
+          $ AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid)
           <> #firearm
           <> not_ (AssetWithAttachedEvent $ EventCardMatch $ cardIs Cards.customAmmunition3)
 

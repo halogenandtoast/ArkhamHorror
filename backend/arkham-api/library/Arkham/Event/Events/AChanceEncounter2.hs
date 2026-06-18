@@ -17,7 +17,7 @@ instance RunMessage AChanceEncounter2 where
     PlayThisEvent iid (is attrs -> True) -> do
       discards <-
         select
-          $ InDiscardOf (affectsOthers can.have.cards.leaveDiscard)
+          $ InDiscardOf (affectsOthersKnown iid can.have.cards.leaveDiscard)
           <> basic (#ally <> CardWithCost attrs.payment.resources)
           <> CardWithoutUniqueCopyInPlay
 

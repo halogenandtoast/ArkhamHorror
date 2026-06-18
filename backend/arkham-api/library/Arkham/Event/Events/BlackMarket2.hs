@@ -28,7 +28,7 @@ instance RunMessage BlackMarket2 where
       doStep 5 msg
       pure . BlackMarket2 $ attrs & setMeta @[CardId] []
     DoStep n msg'@(PlayThisEvent iid eid) | eid == attrs.id && n > 0 -> do
-      investigators <- select $ affectsOthers can.manipulate.deck
+      investigators <- select $ affectsOthersKnown iid can.manipulate.deck
       if null investigators
         then doStep 0 msg'
         else do

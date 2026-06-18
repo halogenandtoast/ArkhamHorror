@@ -18,7 +18,7 @@ instance RunMessage ThoroughInquiry where
   runMessage msg e@(ThoroughInquiry attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       investigators <-
-        selectWithField InvestigatorName $ affectsOthers $ colocatedWith iid <> can.draw.cards
+        selectWithField InvestigatorName $ affectsOthersKnown iid $ colocatedWith iid <> can.draw.cards
       case investigators of
         [] -> pure ()
         [(iid', _)] -> drawCardsIfCan iid' attrs 5

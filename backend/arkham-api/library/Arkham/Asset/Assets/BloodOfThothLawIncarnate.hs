@@ -36,7 +36,7 @@ instance RunMessage BloodOfThothLawIncarnate where
       placeTokens (attrs.ability 1) attrs Offering 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      iids <- select $ affectsOthers $ colocatedWith iid
+      iids <- select $ affectsOthersKnown iid $ colocatedWith iid
       chooseTargetM iid iids (`takeActionAsIfTurn` attrs.ability 2)
       pure a
     _ -> BloodOfThothLawIncarnate <$> liftRunMessage msg attrs

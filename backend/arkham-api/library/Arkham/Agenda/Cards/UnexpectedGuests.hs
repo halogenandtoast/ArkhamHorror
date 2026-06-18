@@ -51,7 +51,7 @@ instance RunMessage UnexpectedGuests where
       pure a
     ForInvestigator iid (AdvanceAgenda (isSide B attrs -> True)) -> do
       healableInvestigators <-
-        select $ HealableInvestigator (toSource attrs) #horror (affectsOthers $ colocatedWith iid)
+        select $ HealableInvestigator (toSource attrs) #horror (affectsOthersKnown iid $ colocatedWith iid)
       healableAssets <-
         select $ HealableAsset (toSource attrs) #horror (AssetAt $ locationWithInvestigator iid)
 

@@ -29,7 +29,7 @@ instance RunMessage ManipulateDestiny2 where
             select
               $ HealableAsset (toSource attrs) #damage
               $ at_ (locationWithInvestigator iid)
-              <> AssetControlledBy (affectsOthers Anyone)
+              <> AssetControlledBy (affectsOthersKnown iid Anyone)
 
           let canDamage = any ((`elem` [#curse, #autofail]) . (.face)) tokens && (notNull enemies || notNull concealed)
           let canHeal =

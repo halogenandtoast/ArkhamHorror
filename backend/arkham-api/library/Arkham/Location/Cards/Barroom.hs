@@ -42,7 +42,7 @@ instance RunMessage Barroom where
       investigators <-
         select
           $ oneOf
-            [ HealableInvestigator source kind (affectsOthers $ at_ $ locationWithInvestigator iid)
+            [ HealableInvestigator source kind (affectsOthersKnown iid $ at_ $ locationWithInvestigator iid)
             | kind <- [#damage, #horror]
             ]
       assets <-

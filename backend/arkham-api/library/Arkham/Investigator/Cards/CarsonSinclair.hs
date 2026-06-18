@@ -45,7 +45,7 @@ instance RunMessage CarsonSinclair where
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let invalid = InvestigatorWithId <$> (iid : lookupMetaKeyWithDefault "used" [] attrs)
-      investigators <- select $ affectsOthers $ colocatedWith iid <> notOneOf invalid
+      investigators <- select $ affectsOthersKnown iid $ colocatedWith iid <> notOneOf invalid
       chooseTargetM iid investigators $ handleTarget iid (attrs.ability 1)
       pure i
     HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do

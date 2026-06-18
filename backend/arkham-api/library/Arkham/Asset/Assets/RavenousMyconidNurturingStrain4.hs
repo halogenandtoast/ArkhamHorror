@@ -70,7 +70,7 @@ instance RunMessage RavenousMyconidNurturingStrain4 where
         liftA2
           (||)
           ( selectAny
-              $ affectsOthers
+              $ affectsOthersKnown iid
               $ colocatedWith iid
               <> oneOf [InvestigatorWithAnyDamage, InvestigatorWithAnyHorror]
           )
@@ -114,12 +114,12 @@ instance RunMessage RavenousMyconidNurturingStrain4 where
         if maxDamage == 0
           then pure []
           else
-            selectWithField InvestigatorDamage (affectsOthers $ colocatedWith iid <> InvestigatorWithAnyDamage)
+            selectWithField InvestigatorDamage (affectsOthersKnown iid $ colocatedWith iid <> InvestigatorWithAnyDamage)
       hi <-
         if maxHorror == 0
           then pure []
           else
-            selectWithField InvestigatorHorror (affectsOthers $ colocatedWith iid <> InvestigatorWithAnyHorror)
+            selectWithField InvestigatorHorror (affectsOthersKnown iid $ colocatedWith iid <> InvestigatorWithAnyHorror)
       da <-
         if maxDamage == 0
           then pure []

@@ -39,7 +39,7 @@ instance HasAbilities ArchiveOfConduitsGatewayToParadise4 where
 instance RunMessage ArchiveOfConduitsGatewayToParadise4 where
   runMessage msg a@(ArchiveOfConduitsGatewayToParadise4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- select $ affectsOthers Anyone
+      investigators <- select $ affectsOthersKnown iid Anyone
       chooseOrRunOne
         iid
         [ targetLabel
@@ -51,7 +51,7 @@ instance RunMessage ArchiveOfConduitsGatewayToParadise4 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       iids <-
         select
-          $ affectsOthers
+          $ affectsOthersKnown iid
           $ InvestigatorWithToken Token.Leyline
           <> oneOf
             ( can.draw.cards : [HealableInvestigator (attrs.ability 2) dType Anyone | dType <- [#horror, #damage]]

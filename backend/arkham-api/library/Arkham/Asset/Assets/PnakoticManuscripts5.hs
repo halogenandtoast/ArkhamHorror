@@ -43,7 +43,7 @@ instance RunMessage PnakoticManuscripts5 where
       skillTestModifier sid (attrs.ability 1) iid DoNotDrawChaosTokensForSkillChecks
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      iids <- select $ affectsOthers $ colocatedWith iid
+      iids <- select $ affectsOthersKnown iid $ colocatedWith iid
       chooseOrRunOneM iid do
         targets iids $ createCardEffect Cards.pnakoticManuscripts5 Nothing attrs
       pure a

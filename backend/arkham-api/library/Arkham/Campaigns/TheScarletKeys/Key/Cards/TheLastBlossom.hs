@@ -24,7 +24,7 @@ instance HasAbilities TheLastBlossom where
                   1
                   ( exists
                       ( oneOf
-                          [HealableInvestigator (a.ability 1) k (affectsOthers $ colocatedWith iid) | k <- [#damage, #horror]]
+                          [HealableInvestigator (a.ability 1) k (affectsOthersKnown iid $ colocatedWith iid) | k <- [#damage, #horror]]
                       )
                   )
                   $ FastAbility Free
@@ -43,7 +43,7 @@ instance RunMessage TheLastBlossom where
           unless (null enemies) $ withInvestigatorBearer attrs (`flipOver` attrs)
         when attrs.stable do
           withInvestigatorBearer attrs \iid -> do
-            selectEach (affectsOthers $ colocatedWith iid) \iid' -> do
+            selectEach (affectsOthersKnown iid $ colocatedWith iid) \iid' -> do
               whenM (canHaveDamageHealed attrs iid') do
                 healDamage iid' attrs 1
               whenM (canHaveHorrorHealed attrs iid') do

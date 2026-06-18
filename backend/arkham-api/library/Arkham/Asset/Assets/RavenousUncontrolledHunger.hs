@@ -33,7 +33,7 @@ instance RunMessage RavenousUncontrolledHunger where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       devourable <-
         select
-          $ ControlledBy (affectsOthers $ colocatedWith iid)
+          $ ControlledBy (affectsOthersKnown iid $ colocatedWith iid)
           <> basic (not_ (CardWithType StoryType) <> not_ PermanentCard)
       underneath <- fieldMap AssetCardsUnderneath (filterCards (not_ (CardWithType StoryType))) attrs.id
       chooseOneM iid do

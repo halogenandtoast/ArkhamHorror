@@ -59,12 +59,12 @@ instance RunMessage EldritchSophist where
       chargeChoices <-
         select
           $ not_ (AssetWithId aid)
-          <> AssetControlledBy (affectsOthers $ colocatedWith iid)
+          <> AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid)
           <> oneOf [AssetWithoutUses, AssetWithUseType Charge]
       secretChoices <-
         select
           $ not_ (AssetWithId aid)
-          <> AssetControlledBy (affectsOthers $ colocatedWith iid)
+          <> AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid)
           <> oneOf [AssetWithoutUses, AssetWithUseType Secret]
 
       player <- getPlayer iid

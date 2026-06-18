@@ -32,7 +32,7 @@ instance RunMessage RiverCanyon where
       let source = UseAbilitySource iid (toSource attrs) 1
       hasCanteen <- getHasSupply iid Canteen
       investigators <-
-        select $ HealableInvestigator source #damage (affectsOthers $ investigatorAt attrs)
+        select $ HealableInvestigator source #damage (affectsOthersKnown iid $ investigatorAt attrs)
       chooseOrRunOneM iid do
         targets investigators \iid' -> healDamage iid' source (if hasCanteen then 3 else 1)
       pure l

@@ -44,7 +44,7 @@ instance RunMessage Flare1 where
         Just 2 -> do
           pushAll
             [Will (CheckAttackOfOpportunity iid False Nothing), CheckAttackOfOpportunity iid False Nothing]
-          investigators <- select $ affectsOthers can.manipulate.deck
+          investigators <- select $ affectsOthersKnown iid can.manipulate.deck
           chooseTargetM iid investigators \x -> search x e x [fromTopOfDeck 9] #ally (defer e IsNotDraw)
         _ -> error "Invalid meta"
       pure e

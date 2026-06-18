@@ -24,7 +24,7 @@ instance HasAbilities CollectedWorksOfPoe where
 instance RunMessage CollectedWorksOfPoe where
   runMessage msg a@(CollectedWorksOfPoe attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- select $ affectsOthers $ colocatedWith iid <> can.search.deck
+      investigators <- select $ affectsOthersKnown iid $ colocatedWith iid <> can.search.deck
       chooseTargetM iid investigators \iid' -> do
         search
           iid'

@@ -38,7 +38,7 @@ instance RunMessage TalismanOfProtection where
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       owner <- field AssetOwner (toId attrs)
       when (Just iid == owner) $ do
-        iids <- select $ affectsOthers $ colocatedWith iid
+        iids <- select $ affectsOthersKnown iid $ colocatedWith iid
         chooseOrRunOneM iid $ targets iids \iid' -> do
           if Just iid' == owner then nothing else handleTarget iid attrs iid'
       TalismanOfProtection <$> liftRunMessage msg attrs

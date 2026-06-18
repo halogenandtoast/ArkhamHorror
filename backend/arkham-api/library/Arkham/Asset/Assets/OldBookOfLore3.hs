@@ -34,7 +34,7 @@ instance HasAbilities OldBookOfLore3 where
 instance RunMessage OldBookOfLore3 where
   runMessage msg a@(OldBookOfLore3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- select $ affectsOthers $ colocatedWith iid
+      investigators <- select $ affectsOthersKnown iid $ colocatedWith iid
       chooseOrRunOneM iid do
         targets investigators \iid' -> do
           search iid' (attrs.ability 1) iid' [fromTopOfDeck 3] #any (defer attrs IsDraw)

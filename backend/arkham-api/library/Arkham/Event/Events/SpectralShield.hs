@@ -40,7 +40,7 @@ instance HasAbilities SpectralShield where
 instance RunMessage SpectralShield where
   runMessage msg e@(SpectralShield attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      investigators <- select $ affectsOthers $ colocatedWith iid
+      investigators <- select $ affectsOthersKnown iid $ colocatedWith iid
       assets <- select $ at_ (locationWithInvestigator iid) <> oneOf [AssetWithHealth, AssetWithSanity]
       chooseOneM iid do
         targets investigators $ place attrs . AttachedToInvestigator

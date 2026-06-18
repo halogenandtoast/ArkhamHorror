@@ -38,7 +38,7 @@ instance RunMessage EnchantWeapon3 where
     PlayThisEvent iid (is attrs -> True) -> do
       assets <-
         getUpgradeTargets iid
-          $ AssetControlledBy (affectsOthers $ colocatedWith iid)
+          $ AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid)
           <> #weapon
           <> not_ (AssetWithAttachedEvent $ eventIs Cards.enchantWeapon3)
       chooseOneM iid do

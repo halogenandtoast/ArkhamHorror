@@ -29,7 +29,7 @@ instance RunMessage EarthlySerenity1 where
       pushWhen (n == 0) $ LoseResources iid (attrs.ability 1) 1
       pure a
     DoStep n msg'@(PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) | n > 0 -> do
-      targets <- select $ affectsOthers $ colocatedWith iid
+      targets <- select $ affectsOthersKnown iid $ colocatedWith iid
       choices <- concatForM targets \target -> do
         canHealDamage <- canHaveDamageHealed (attrs.ability 1) target
         canHealHorror <- canHaveHorrorHealed (attrs.ability 1) target

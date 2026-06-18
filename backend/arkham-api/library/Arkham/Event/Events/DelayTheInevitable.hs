@@ -33,7 +33,7 @@ getDamageAndHorror (_ : xs) = getDamageAndHorror xs
 instance RunMessage DelayTheInevitable where
   runMessage msg e@(DelayTheInevitable attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      iids <- select $ affectsOthers $ colocatedWith iid
+      iids <- select $ affectsOthersKnown iid $ colocatedWith iid
       chooseOrRunOne
         iid
         [ targetLabel investigator [PlaceEvent eid $ InPlayArea investigator]

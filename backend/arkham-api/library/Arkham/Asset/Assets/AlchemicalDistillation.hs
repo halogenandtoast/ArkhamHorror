@@ -48,7 +48,7 @@ instance RunMessage AlchemicalDistillation where
         else do_ msg
       pure a
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      choices <- select (affectsOthers $ colocatedWith iid)
+      choices <- select (affectsOthersKnown iid $ colocatedWith iid)
       chooseOrRunOneM iid $ targets choices $ handleTarget iid (attrs.ability 1)
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do

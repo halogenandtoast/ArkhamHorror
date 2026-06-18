@@ -30,7 +30,7 @@ instance HasAbilities ScrollOfSecrets where
 instance RunMessage ScrollOfSecrets where
   runMessage msg a@(ScrollOfSecrets attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      xs <- selectTargets $ affectsOthers can.manipulate.deck
+      xs <- selectTargets $ affectsOthersKnown iid can.manipulate.deck
       hasEncounterDeck <- can.target.encounterDeck iid
       chooseTargetM iid ([EncounterDeckTarget | hasEncounterDeck] <> xs) \target -> do
         lookAt iid attrs target [(FromBottomOfDeck 1, DoNothing)] #any (defer attrs IsNotDraw)

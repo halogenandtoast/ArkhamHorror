@@ -16,7 +16,7 @@ preparedForTheWorst2 = event PreparedForTheWorst2 Cards.preparedForTheWorst2
 instance RunMessage PreparedForTheWorst2 where
   runMessage msg e@(PreparedForTheWorst2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      selectWithNonNull (affectsOthers $ colocatedWith iid <> can.search.deck) $
+      selectWithNonNull (affectsOthersKnown iid $ colocatedWith iid <> can.search.deck) $
         chooseOneToHandle iid attrs
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do

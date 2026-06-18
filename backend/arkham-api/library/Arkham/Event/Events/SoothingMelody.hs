@@ -38,7 +38,7 @@ instance RunMessage SoothingMelody where
       horrorInvestigators <- select $ HealableInvestigator (toSource attrs) #horror (colocatedWith iid)
       let source = toSource attrs
       let assetFor k =
-            select $ HealableAsset source k (at_ location <> #ally <> AssetControlledBy (affectsOthers Anyone))
+            select $ HealableAsset source k (at_ location <> #ally <> AssetControlledBy (affectsOthersKnown iid Anyone))
       damageAssets <- assetFor #damage
       horrorAssets <- assetFor #horror
       treacheryIsDamage <-

@@ -15,7 +15,7 @@ contraband = event Contraband Cards.contraband
 instance RunMessage Contraband where
   runMessage msg e@(Contraband attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      investigators <- select $ affectsOthers $ colocatedWith iid
+      investigators <- select $ affectsOthersKnown iid $ colocatedWith iid
       assets <- concatForM [Ammo, Supply] \k -> do
         select (AssetWithUseType k <> AssetNotAtUseLimit <> mapOneOf assetControlledBy investigators)
           >>= traverse (\aid -> (k,aid,) <$> getAssetUses k aid)

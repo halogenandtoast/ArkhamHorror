@@ -25,7 +25,7 @@ instance RunMessage PatricesViolin where
   runMessage msg a@(PatricesViolin attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <-
-        select $ affectsOthers $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
+        select $ affectsOthersKnown iid $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
       chooseOrRunOneM iid $ targets investigators $ handleTarget iid (attrs.ability 1)
       pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do

@@ -42,7 +42,7 @@ instance RunMessage EmbezzledTreasure where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let total = attrs.use Resource `div` 2
-      investigators <- select $ affectsOthers Anyone
+      investigators <- select $ affectsOthersKnown iid $ IncludeEliminated Anyone <> not_ KilledInvestigator
       named <- forToSnd investigators \i -> toTitle <$> field InvestigatorName i
       chooseAmounts
         iid

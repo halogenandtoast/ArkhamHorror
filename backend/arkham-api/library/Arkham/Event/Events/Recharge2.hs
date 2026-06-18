@@ -23,7 +23,7 @@ instance RunMessage Recharge2 where
   runMessage msg e@(Recharge2 (attrs `With` meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       selectOneToHandle iid attrs
-        $ AssetControlledBy (affectsOthers $ colocatedWith iid)
+        $ AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid)
         <> oneOf [#spell, #relic]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do

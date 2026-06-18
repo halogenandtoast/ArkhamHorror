@@ -66,7 +66,6 @@ allPlayerTreacheryCards =
       , disruptivePoltergeist
       , doomed
       , downAndOut
-      , downpour
       , drawingTheSign
       , dreadCurse
       , dreamsOfTheFlood
@@ -298,6 +297,7 @@ allEncounterTreacheryCards =
       , disquietingDreams
       , dissonantVoices
       , distortedReasoning
+      , downpour
       , draggedUnder
       , draggedUnderDevilReef
       , dreadfulMechanism

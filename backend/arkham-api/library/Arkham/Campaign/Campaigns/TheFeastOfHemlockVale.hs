@@ -25,19 +25,19 @@ campaignChaosBag :: Difficulty -> [ChaosTokenFace]
 campaignChaosBag = \case
   Easy ->
     [ #"+1", #"+1", #"0", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", #"-3"
-    , Skull, Skull, ElderThing
+    , Skull, Skull, ElderSign
     ]
   Standard ->
     [ #"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", #"-3", #"-3", #"-4"
-    , Skull, Skull, ElderThing
+    , Skull, Skull, ElderSign
     ]
   Hard ->
     [ #"0", #"0", #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-3", #"-5", #"-5", #"-7"
-    , Skull, Skull, ElderThing
+    , Skull, Skull, ElderSign
     ]
   Expert ->
     [ #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-3", #"-4", #"-5", #"-5", #"-6", #"-7", #"-8"
-    , Skull, Skull, ElderThing
+    , Skull, Skull, ElderSign
     ]
 {- FOURMOLU_ENABLE -}
 

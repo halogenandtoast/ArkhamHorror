@@ -1426,7 +1426,13 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         DamageType ->
           getSourceController source >>= \case
             Just performerId -> hasModifier performerId CannotHealDamage
-            Nothing -> pure False
+            -- During a playability check `ThisCard` becomes a `CardCostSource`, which
+            -- has no controller; fall back to the active investigator (the would-be
+            -- performer) so cards like Infuse Life are unplayable when the performer
+            -- cannot heal.
+            Nothing -> case source of
+              CardCostSource _ -> elem CannotHealDamage <$> getActiveInvestigatorModifiers
+              _ -> pure False
         HorrorType -> pure False
       if sourceBlocked
         then pure noMatch
@@ -3228,7 +3234,11 @@ getAssetsMatching matcher = do
         $ fieldMapM AssetCardsUnderneath (`cardListMatches` cardListMatcher)
         . toId
     HealableAsset _source damageType matcher' -> case damageType of
-      DamageType -> filterMatcher as (matcher' <> AssetWithDamage <> AssetWithoutModifier CannotHaveDamageHealed)
+      DamageType -> do
+        modifiers' <- getActiveInvestigatorModifiers
+        if CannotHealDamage `elem` modifiers'
+          then pure []
+          else filterMatcher as (matcher' <> AssetWithDamage <> AssetWithoutModifier CannotHaveDamageHealed)
       HorrorType -> do
         let
           isCannotHealHorrorOnOtherCardsModifiers = \case

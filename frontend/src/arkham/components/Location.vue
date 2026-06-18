@@ -208,6 +208,12 @@ const abilities = computed(() => {
   }, [])
 })
 
+const hasObjective = computed(() =>
+  abilities.value.some(
+    ({ contents }) => 'ability' in contents && contents.ability.type.tag === 'Objective',
+  ),
+)
+
 watch(abilities, (abilities) => {
   // ability is forced we must show
   if (
@@ -498,7 +504,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
         />
       </div>
       <div class="location-column">
-        <div class="card-frame" :class="{ explosion }" ref="frame" @click="clicked">
+        <div class="card-frame" :class="{ explosion, 'location--objective': hasObjective, 'objective-ring': hasObjective }" ref="frame" @click="clicked">
           <Locus v-if="locus" class="locus" />
           <span v-if="blocked" class="status-icon" v-tooltip="'Blocked'">
             <font-awesome-icon :icon="['fab', 'expeditedssl']" />
@@ -530,7 +536,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
                 :data-id="id"
                 class="card card--locations"
                 :src="image"
-                :class="{ 'location--can-interact': canInteract }"
+                :class="{ 'location--can-interact': canInteract && !hasObjective, 'location--can-interact-cursor': canInteract }"
                 draggable="false"
                 @drop="onDrop"
                 @dragover.prevent="dragover"
@@ -810,6 +816,10 @@ const hasAnyLocationVehicleAssets = computed(() =>
   cursor: pointer;
 }
 
+.location--can-interact-cursor {
+  cursor: pointer;
+}
+
 .card {
   width: calc(var(--card-width) + 4px);
   min-width: calc(var(--card-width) + 4px);
@@ -1032,6 +1042,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
   display: flex;
   align-items: center;
   justify-content: center;
+  isolation: isolate;
 
   .clues-around {
     position: absolute;

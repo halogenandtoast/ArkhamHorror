@@ -139,6 +139,12 @@ const abilities = computed<AbilityMessage[]>(() => {
     , [])
 })
 
+const hasObjective = computed(() =>
+  abilities.value.some(
+    ({ contents }) => 'ability' in contents && contents.ability.type.tag === 'Objective',
+  ),
+)
+
 const isExhausted = computed(() => props.enemy.exhausted)
 
 const keys = computed(() => props.enemy.keys)
@@ -310,7 +316,7 @@ function onDrop(event: DragEvent) {
         <div class="card-frame" ref="frame">
           <div
             class="card-wrapper"
-            :class="{ exhausted: isExhausted }"
+            :class="{ exhausted: isExhausted, 'enemy--objective': hasObjective, 'objective-ring': hasObjective }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
           >
             <font-awesome-icon v-if="hasSpiritAura" :icon="['fas', 'ghost']" class="spirit-icon" />
@@ -323,7 +329,7 @@ function onDrop(event: DragEvent) {
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
               v-tooltip="sourceTooltip"
-              :class="{ dragging, 'enemy--can-interact': canInteract, attached, 'source-highlight': isHighlighted }"
+              :class="{ dragging, 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted }"
               :data-id="id"
               :data-card-code="enemy.cardCode"
               :data-game-id="game.id"
@@ -345,7 +351,7 @@ function onDrop(event: DragEvent) {
               :src="isSwarm ? imgsrc('player_back.jpg') : image"
               class="card enemy"
               v-tooltip="sourceTooltip"
-              :class="{ 'enemy--can-interact': canInteract, attached, 'source-highlight': isHighlighted }"
+              :class="{ 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted }"
               :data-id="id"
               :data-card-code="enemy.cardCode"
               :data-game-id="game.id"
@@ -500,6 +506,10 @@ function onDrop(event: DragEvent) {
   cursor: pointer;
 }
 
+.enemy--can-interact-cursor {
+  cursor: pointer;
+}
+
 img.card.source-highlight {
   box-shadow: 0 0 0 2px var(--important), 0 0 6px 1px var(--important), var(--card-shadow);
 }
@@ -545,6 +555,9 @@ img.card.source-highlight {
   --ui-rotation: 0deg;
   --exhaust-rotation: 0deg;
   position: relative;
+  isolation: isolate;
+  width: fit-content;
+  border-radius: 5px;
   transition: transform 0.2s linear;
   transform: rotate(calc(var(--ui-rotation) + var(--exhaust-rotation)));
   transform-origin: center;

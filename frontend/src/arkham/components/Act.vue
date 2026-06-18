@@ -264,7 +264,7 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
 <template>
   <div class="act-container">
     <div class="act-row">
-      <div class="card-container" :class="{ 'act--objective': hasObjective }">
+      <div class="card-container" :class="{ 'act--objective': hasObjective, 'objective-ring': hasObjective }">
         <img
           :class="{ 'act--can-progress': interactAction !== -1, 'act--can-interact': canInteract, 'card--sideways': !isVertical}"
           class="card"
@@ -334,79 +334,16 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
   border-radius: inherit;
 }
 
-@keyframes rotation {
-  0% { --gradient-angle: 0deg; }
-  100% { --gradient-angle: 360deg; }
-}
-
 .card-container {
-  --gradient-angle: 0deg;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   position: relative;
-  isolation: isolate;
   border-radius: 6px;
   height: var(--card-width);
   width: fit-content;
 }
 
-@property --gradient-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
 .act--objective {
-  --clr-1: #198891;
-  --clr-2: #2d8f85;
-  --clr-3: #73fb22;
-  --objective-border-width: 2px;
-  --objective-border-outset: 2px;
-
-  > .card {
-    position: relative;
-    z-index: var(--z-index-1);
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: calc(-1 * var(--objective-border-outset));
-    z-index: var(--z-index-0);
-    padding: var(--objective-border-width);
-    border-radius: calc(6px + var(--objective-border-outset));
-    background: conic-gradient(
-      from var(--gradient-angle),
-      var(--clr-1),
-      var(--clr-2),
-      var(--clr-3),
-      var(--clr-2),
-      var(--clr-1));
-    pointer-events: none;
-    animation: rotation 1s linear infinite;
-    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: calc(-1 * var(--objective-border-outset));
-    z-index: var(--z-index-neg-1);
-    border-radius: calc(6px + var(--objective-border-outset));
-    background: conic-gradient(
-      from var(--gradient-angle),
-      var(--clr-1),
-      var(--clr-2),
-      var(--clr-3),
-      var(--clr-2),
-      var(--clr-1));
-    filter: blur(10px);
-    opacity: 0.75;
-    pointer-events: none;
-    animation: rotation 1s linear infinite;
-  }
+  --objective-ring-radius: 6px;
 }
 
 .act-container {

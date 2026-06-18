@@ -9,8 +9,9 @@ import theCircleUndone from '@/locales/ko/theCircleUndone'
 import theDreamEaters from '@/locales/ko/theDreamEaters'
 import theInnsmouthConspiracy from '@/locales/ko/theInnsmouthConspiracy'
 import edgeOfTheEarth from '@/locales/ko/edgeOfTheEarth'
+import theFeastOfHemlockVale from '@/locales/en/theFeastOfHemlockVale'
 import standalone from '@/locales/ko/standalone'
 import gameBoard from '@/locales/ko/gameBoard/gameBoard'
 import xp from '@/locales/ko/xp.json'
 
-export default {...base, ...campaignLog, ...gameBoard, label, xp, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}
+export default {...base, ...campaignLog, ...gameBoard, label, xp, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, theFeastOfHemlockVale, standalone}

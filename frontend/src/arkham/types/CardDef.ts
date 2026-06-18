@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { v2Optional } from '@/arkham/parser';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 
 type CardCost
@@ -28,6 +29,7 @@ export type CardDef = {
   cost: CardCost | null;
   otherSide: string | null;
   meta: Record<string, any>;
+  encounterSet?: any;
 }
 
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
@@ -65,6 +67,7 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     name: nameDecoder,
     cost: JsonDecoder.nullable(cardCostDecoder),
     meta: JsonDecoder.succeed(),
+    encounterSet: v2Optional(JsonDecoder.succeed()),
   },
   'CardDef',
 );

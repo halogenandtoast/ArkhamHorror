@@ -225,6 +225,49 @@ const debugCardSearch = ref('')
 const debugAddCardError = ref<string | null>(null)
 const debugAddCardLoading = ref(false)
 
+const campaignCardPrefixes: Record<string, string[]> = {
+  'nightofthezealot': ['01'],
+  '01': ['01'],
+  'thedunwichlegacy': ['02'],
+  '02': ['02'],
+  'thepathtocarcosa': ['03'],
+  '03': ['03'],
+  'theforgottenage': ['04'],
+  '04': ['04'],
+  'thecircleundone': ['05'],
+  '05': ['05'],
+  'thedreameaters': ['06'],
+  '06': ['06'],
+  'theinnsmouthconspiracy': ['07'],
+  '07': ['07'],
+  'edgeoftheearth': ['08'],
+  '08': ['08'],
+  'thescarletkeys': ['09'],
+  '09': ['09'],
+  'thefeastofhemlockvale': ['10'],
+  '10': ['10'],
+  'thedrownedcity': ['11'],
+  '11': ['11'],
+  'returntonightofthezealot': ['01', '50'],
+  '50': ['01', '50'],
+  'returntothedunwichlegacy': ['02', '51'],
+  '51': ['02', '51'],
+  'returntothepathtocarcosa': ['03', '52'],
+  '52': ['03', '52'],
+  'returntotheforgottenage': ['04', '53'],
+  '53': ['04', '53'],
+  'returntothecircleundone': ['05', '54'],
+  '54': ['05', '54'],
+}
+
+const playerCardTypes = new Set(['AssetType', 'EventType', 'SkillType', 'PlayerTreacheryType', 'PlayerEnemyType'])
+const debugCardTypes = new Set([...playerCardTypes, 'InvestigatorType'])
+
+const currentCampaignPlayerCardCodes = computed(() => new Set([
+  ...Object.values(props.game.campaign?.storyCards ?? {}).flat().map(CardT.asCardCode),
+  ...Object.values(props.game.campaign?.decks ?? {}).flat().map(CardT.asCardCode),
+]))
+
 const filteredDebugPlayerCards = computed(() => {
   const query = debugCardSearch.value.trim().toLocaleLowerCase()
   const cards = [...debugPlayerCards.value].sort((a, b) =>
@@ -250,9 +293,38 @@ const filteredDebugPlayerCards = computed(() => {
     .slice(0, 50)
 })
 
+function debugCardCode(card: CardDef) {
+  return card.cardCode.replace(/^c/, '')
+}
+
 function debugCardLabel(card: CardDef) {
   const level = card.level == null ? '' : ` (${card.level})`
-  return `${fullName(card.name)}${level} [${card.cardCode}]`
+  return `${fullName(card.name)}${level} [${debugCardCode(card)}]`
+}
+
+function campaignKey(value: string) {
+  return value.toLocaleLowerCase().replace(/[^a-z0-9]/g, '')
+}
+
+function currentCampaignPrefixes() {
+  const campaign = props.game.campaign
+  if (!campaign) return []
+
+  return [campaign.id, campaign.name]
+    .map(campaignKey)
+    .flatMap((key) => campaignCardPrefixes[key] ?? [key])
+}
+
+function isCurrentCampaignPlayerCard(card: CardDef) {
+  if (currentCampaignPlayerCardCodes.value.has(card.cardCode)) return true
+  if (!props.game.campaign || card.encounterSet == null || !playerCardTypes.has(card.cardType)) return false
+
+  const cardCode = card.cardCode.replace(/^c/, '')
+  return currentCampaignPrefixes().some((prefix) => cardCode.startsWith(prefix))
+}
+
+function isDebugPlayerCard(card: CardDef) {
+  return (card.encounterSet == null && debugCardTypes.has(card.cardType)) || isCurrentCampaignPlayerCard(card)
 }
 
 async function openDebugAddCard() {
@@ -263,7 +335,8 @@ async function openDebugAddCard() {
   if (debugPlayerCards.value.length === 0) {
     debugAddCardLoading.value = true
     try {
-      debugPlayerCards.value = await Api.fetchCards(false)
+      const allCards = await Api.fetchCards(true)
+      debugPlayerCards.value = allCards.filter(isDebugPlayerCard)
     } catch (error) {
       console.error(error)
       debugAddCardError.value = 'Unable to load player cards.'

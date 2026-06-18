@@ -509,16 +509,16 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       DiscardDrawnCardCost -> pure True -- TODO: Make better
       ExileCost _ -> iid <=~> Matcher.InvestigatorCanRemoveCardsFromDeck -- TODO: Make better
       RemoveCost _ -> pure True -- TODO: Make better
-      HorrorCost _ (InvestigatorTarget iid') _ -> matches iid' (Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
+      HorrorCost _ (InvestigatorTarget iid') _ -> matches iid' Matcher.InvestigatorCanBeDamaged -- TODO: Make better
       HorrorCost {} -> pure True -- TODO: Make better
-      HorrorCostX {} -> matches iid (Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
-      DamageCost _ (InvestigatorTarget iid') _ -> matches iid' (Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
+      HorrorCostX {} -> matches iid Matcher.InvestigatorCanBeDamaged -- TODO: Make better
+      DamageCost _ (InvestigatorTarget iid') _ -> matches iid' Matcher.InvestigatorCanBeDamaged -- TODO: Make better
       DamageCost {} -> pure True -- TODO: Make better
-      DirectDamageCost _ inner _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
-      DirectHorrorCost _ inner _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
-      DirectDamageAndHorrorCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
-      InvestigatorDamageCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
-      EachInvestigatorDamageCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
+      DirectDamageCost _ inner _ -> selectAny (inner <> Matcher.InvestigatorCanBeDamaged) -- TODO: Make better
+      DirectHorrorCost _ inner _ -> selectAny (inner <> Matcher.InvestigatorCanBeDamaged) -- TODO: Make better
+      DirectDamageAndHorrorCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorCanBeDamaged) -- TODO: Make better
+      InvestigatorDamageCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorCanBeDamaged) -- TODO: Make better
+      EachInvestigatorDamageCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorCanBeDamaged) -- TODO: Make better
       DoomCost _ (AgendaMatcherTarget agendaMatcher) _ -> selectAny agendaMatcher
       DoomCost {} -> pure True -- TODO: Make better
       EnemyDoomCost _ enemyMatcher -> selectAny enemyMatcher

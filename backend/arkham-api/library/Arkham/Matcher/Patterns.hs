@@ -142,6 +142,11 @@ pattern InvestigatorCanHealDamage <- InvestigatorWithoutModifier CannotHealDamag
   where
     InvestigatorCanHealDamage = InvestigatorWithoutModifier CannotHealDamage
 
+pattern InvestigatorCanBeDamaged :: InvestigatorMatcher
+pattern InvestigatorCanBeDamaged <- InvestigatorWithoutModifier CannotBeDamaged
+  where
+    InvestigatorCanBeDamaged = InvestigatorWithoutModifier CannotBeDamaged
+
 -- ** Event Patterns **
 
 pattern EventWithAnyDoom :: EventMatcher

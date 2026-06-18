@@ -199,20 +199,28 @@ dealAssetDirectDamageAndHorror asset source damage horror =
 
 assignDamage
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-assignDamage iid (toSource -> source) damage = push $ Msg.assignDamage iid source damage
+assignDamage iid (toSource -> source) damage =
+  whenM (matches iid InvestigatorCanBeDamaged) do
+    push $ Msg.assignDamage iid source damage
 
 assignDamageTo
   :: (ReverseQueue m, Sourceable source) => source -> Int -> InvestigatorId -> m ()
-assignDamageTo source damage iid = assignDamage iid source damage
+assignDamageTo source damage iid = 
+  whenM (matches iid InvestigatorCanBeDamaged) do
+    assignDamage iid source damage
 
 assignDamageWithStrategy
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> DamageStrategy -> Int -> m ()
 assignDamageWithStrategy _ _ _ 0 = pure ()
-assignDamageWithStrategy iid (toSource -> source) strat damage = push $ Msg.assignDamageWithStrategy iid source strat damage
+assignDamageWithStrategy iid (toSource -> source) strat damage = 
+  whenM (matches iid InvestigatorCanBeDamaged) do
+    push $ Msg.assignDamageWithStrategy iid source strat damage
 
 assignHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-assignHorror iid (toSource -> source) horror = push $ Msg.assignHorror iid source horror
+assignHorror iid (toSource -> source) horror = 
+  whenM (matches iid InvestigatorCanBeDamaged) do
+    push $ Msg.assignHorror iid source horror
 
 assignHorrorTo
   :: (ReverseQueue m, Sourceable source) => source -> Int -> InvestigatorId -> m ()
@@ -221,13 +229,17 @@ assignHorrorTo source horror iid = assignHorror iid source horror
 assignDamageAndHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
 assignDamageAndHorror _ _ 0 0 = pure ()
-assignDamageAndHorror iid (toSource -> source) 0 horror = push $ Msg.assignHorror iid source horror
-assignDamageAndHorror iid (toSource -> source) damage 0 = push $ Msg.assignDamage iid source damage
-assignDamageAndHorror iid (toSource -> source) damage horror = push $ Msg.assignDamageAndHorror iid source damage horror
+assignDamageAndHorror iid (toSource -> source) 0 horror = assignHorror iid source horror
+assignDamageAndHorror iid (toSource -> source) damage 0 = assignDamage iid source damage
+assignDamageAndHorror iid (toSource -> source) damage horror = 
+  whenM (matches iid InvestigatorCanBeDamaged) do
+    push $ Msg.assignDamageAndHorror iid source damage horror
 
 directDamageAndHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
-directDamageAndHorror iid source d h = push $ Msg.directDamageAndHorror iid source d h
+directDamageAndHorror iid source d h = 
+  whenM (matches iid InvestigatorCanBeDamaged) do
+    push $ Msg.directDamageAndHorror iid source d h
 
 findAndDrawEncounterCard
   :: (ReverseQueue m, IsCardMatcher a) => InvestigatorId -> a -> m ()

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Clairvoyance (clairvoyance, Clairvoyance (..)) where
+module Arkham.Asset.Assets.Clairvoyance (clairvoyance) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
@@ -18,7 +18,9 @@ clairvoyance = asset Clairvoyance Cards.clairvoyance
 
 instance HasAbilities Clairvoyance where
   getAbilities (Clairvoyance a) =
-    [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWith #willpower (assetUseCost a Charge 1)]
+    [ controlled a 1 (exists $ YourLocation <> InvestigatableLocation)
+        $ investigateActionWith #willpower (assetUseCost a Charge 1)
+    ]
 
 instance RunMessage Clairvoyance where
   runMessage msg a@(Clairvoyance attrs) = runQueueT $ case msg of

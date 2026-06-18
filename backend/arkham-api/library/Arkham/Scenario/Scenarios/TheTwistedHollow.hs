@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
@@ -234,9 +235,12 @@ instance RunMessage TheTwistedHollow where
         Omega -> scope "bertieMusgrave" do
           codexFinished Omega
           flavor $ setTitle "title" >> p.green "body"
+          valeLanternExhausted <- selectAny $ AssetWithTitle "Vale Lantern" <> AssetExhausted
+          cluesOk <- can.gain.clues iid
           chooseOneM iid do
-            labeled' "gainClues" $ eachInvestigator \iid' -> gainClues iid' source 1
-            labeled' "readyValeLantern" $ selectEach (AssetWithTitle "Vale Lantern") readyThis
+            labeledValidate' cluesOk "gainClues" $ eachInvestigator \iid' -> gainClues iid' source 1
+            labeledValidate' valeLanternExhausted "readyValeLantern"
+              $ selectEach (AssetWithTitle "Vale Lantern") readyThis
         Sigma -> scope "sigma" do
           mjudith <- getSetAsideCardMaybe Assets.judithParkTheMuscle
           mtheo <- getSetAsideCardMaybe Assets.theoPetersJackOfAllTrades

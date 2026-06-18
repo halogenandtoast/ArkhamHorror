@@ -316,7 +316,7 @@ theFarmhouse :: CardDef
 theFarmhouse = location_ "10630" "The Farmhouse" [Sanctum] TheLongestNight
 
 milkhouse :: CardDef
-milkhouse = locationWithUnrevealed_ "10631" "Atwood Farm" [Farm] "The Farmhouse" [Farm] TheLongestNight
+milkhouse = locationWithUnrevealed_ "10631" "Atwood Farm" [Farm] "Milkhouse" [Farm] TheLongestNight
 
 vineyard :: CardDef
 vineyard = locationWithUnrevealed_ "10632" "Atwood Farm" [Farm] "Vineyard" [Farm] TheLongestNight

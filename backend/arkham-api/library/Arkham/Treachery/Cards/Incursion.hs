@@ -30,6 +30,7 @@ instance RunMessage Incursion where
       enemies <- select $ NearestEnemyToLocation farmhouse (EnemyWithTrait Mutated <> not_ (EnemyOneOf $ map EnemyWithId chosen))
       unless (null enemies) do
         chooseTargetM iid enemies \enemy -> do
+          push $ ForTarget (EnemyTarget enemy) msg'
           readyThis enemy
           sendMessage enemy HuntersMove
           sendMessage enemy (Do EnemiesAttack)

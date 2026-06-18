@@ -23,7 +23,14 @@ instance HasAbilities OuterFieldsRancidCrops where
       a
       [ mkAbility a 1 $ freeReaction $ DiscoveringLastClue #after You (be a)
       , playerLimit PerTurn
-          $ restricted a 2 (Here <> DuringTurn You <> exists (LocationWithHorror (atLeast 1)))
+          $ restricted
+            a
+            2
+            ( Here
+                <> DuringTurn You
+                <> exists (LocationWithHorror (atLeast 1))
+                <> exists (LocationWithoutModifier CannotHaveDecoys <> not_ (LocationWithHorror (atLeast 1)))
+            )
           $ FastAbility Free
       ]
 
@@ -35,7 +42,11 @@ instance RunMessage OuterFieldsRancidCrops where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       decoyLocations <- select $ LocationWithHorror (atLeast 1)
       chooseTargetM iid decoyLocations \fromLid -> do
-        destinations <- select $ LocationWithoutModifier CannotHaveDecoys <> not_ (LocationWithId fromLid)
+        destinations <-
+          select
+            $ LocationWithoutModifier CannotHaveDecoys
+            <> not_ (LocationWithId fromLid)
+            <> not_ (LocationWithHorror (atLeast 1))
         chooseTargetM iid destinations \toLid ->
           moveTokens (attrs.ability 2) fromLid toLid Horror 1
       pure l

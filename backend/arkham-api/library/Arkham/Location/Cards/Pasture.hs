@@ -2,7 +2,6 @@ module Arkham.Location.Cards.Pasture (pasture) where
 
 import Arkham.Ability
 import Arkham.ForMovement
-import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Helpers.Window (getEnemy, getEnemyMovedVia)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -23,7 +22,7 @@ instance HasAbilities Pasture where
       a
       [ restricted a 1 (Here <> DuringTurn You <> exists (be a <> LocationWithDamage (atLeast 1)))
           $ FastAbility Free
-      , mkAbility a 2
+      , restricted a 2 (not_ $ thisIs a LocationWithAdjacentBarrier)
           $ forced
           $ EnemyMovedTo #after (be a) (MovedViaOneOf [#hunter, #patrol]) (ReadyEnemy <> UnengagedEnemy)
       ]
@@ -35,9 +34,7 @@ instance RunMessage Pasture where
       chooseTargetM iid connected $ moveTo (attrs.ability 1) iid
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 (getEnemyMovedVia &&& getEnemy -> (movedVia, enemy)) _ -> do
-      mods <- getModifiers attrs.id
-      let noBarriers = not $ any (\case Barricades _ -> True; _ -> False) mods
-      when noBarriers $ case movedVia of
+      case movedVia of
         MovedViaHunter -> push $ HunterMove enemy
         MovedViaPatrol -> push $ ForTarget (toTarget enemy) HuntersMove
         _ -> pure ()

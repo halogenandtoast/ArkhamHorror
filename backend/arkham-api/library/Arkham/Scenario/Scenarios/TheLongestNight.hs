@@ -439,26 +439,30 @@ instance RunMessage TheLongestNight where
       lid <- selectJust $ locationWithInvestigator iid
       hasDecoy <- lid <=~> LocationWithHorror (atLeast 1)
       hasTrap <- lid <=~> LocationWithDamage (atLeast 1)
+      decoyDestinations <- select $ LocationWithoutModifier CannotHaveDecoys <> not_ (LocationWithHorror (atLeast 1))
+      trapDestinations <- select $ LocationWithoutModifier CannotHaveTraps <> not_ (LocationWithDamage (atLeast 1))
+      let canMoveDecoy = hasDecoy && notNull decoyDestinations
+      let canMoveTrap = hasTrap && notNull trapDestinations
       connected <- select $ connectedTo (LocationWithId lid)
       let meta = toResultDefault defaultMeta attrs.meta
       let barrierPairs =
             filter
               (\lid2 -> Map.findWithDefault 0 (sortedPair lid lid2) meta.barriers > 0)
               connected
-      let hasOptions = hasDecoy || hasTrap || notNull barrierPairs
+      let hasOptions = canMoveDecoy || canMoveTrap || notNull barrierPairs
       allLocations <- select Anywhere
       when hasOptions do
         chooseOneM iid do
-          when hasDecoy do
+          when canMoveDecoy do
             labeled' "moveDecoy" do
-              chooseTargetM iid allLocations \toLid -> do
+              chooseTargetM iid decoyDestinations \toLid -> do
                 removeTokens source lid Horror 1
                 placeTokens source toLid Horror 1
                 selectEach (enemyEngagedWith iid) $ disengageEnemy iid
                 moveTo_ source iid toLid
-          when hasTrap do
+          when canMoveTrap do
             labeled' "moveTrap" do
-              chooseTargetM iid allLocations \toLid -> do
+              chooseTargetM iid trapDestinations \toLid -> do
                 removeTokens source lid Damage 1
                 placeTokens source toLid Damage 1
                 selectEach (enemyEngagedWith iid) $ disengageEnemy iid

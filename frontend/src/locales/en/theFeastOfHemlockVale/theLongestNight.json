@@ -98,7 +98,10 @@
     "moveTrap": "Move a trap",
     "removeBarrier": "Remove a barrier",
     "removeDecoy": "Remove a decoy",
-    "removeTrap": "Remove a trap"
+    "removeTrap": "Remove a trap",
+    "endlessNight": {
+      "damageCaptives": "Deal 2 damage to The Captives story asset"
+    }
   },
   "codex": {
     "leahAtwood": {
@@ -137,9 +140,6 @@
       "title": "{'{'}codex{'}'} Codex Ω: Ajax",
       "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.ajax.title </h3><p>A braying sound from the barn sets your nerves on edge. You step tentatively toward the barn, expecting to see yet another monstrosity, but instead find a palomino horse standing in a dirty cell. The name Ajax is engraved on a sign next to him. The noble beast lets out an impatient whinny as he tosses his head.</p><p class='basic right'>Take control of the Ajax story asset. He does not take up an ally slot for the remainder of this scenario.</p>"
     }
-  },
-  "endlessNight": {
-    "damageCaptives": "Deal 2 damage to The Captives story asset"
   },
   "enemyDeckRules": {
     "title": "The Enemy Deck",

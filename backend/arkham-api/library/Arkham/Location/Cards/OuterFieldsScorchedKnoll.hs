@@ -28,7 +28,14 @@ instance HasAbilities OuterFieldsScorchedKnoll where
       a
       [ mkAbility a 1 $ freeReaction $ DiscoveringLastClue #after You (be a)
       , playerLimit PerTurn
-          $ restricted a 2 (Here <> DuringTurn You <> exists (LocationWithDamage (atLeast 1)))
+          $ restricted
+            a
+            2
+            ( Here
+                <> DuringTurn You
+                <> exists (LocationWithDamage (atLeast 1))
+                <> exists (LocationWithoutModifier CannotHaveTraps <> not_ (LocationWithDamage (atLeast 1)))
+            )
           $ FastAbility Free
       ]
 
@@ -40,7 +47,11 @@ instance RunMessage OuterFieldsScorchedKnoll where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       trapLocations <- select $ LocationWithDamage (atLeast 1)
       chooseTargetM iid trapLocations \fromLid -> do
-        destinations <- select $ LocationWithoutModifier CannotHaveTraps <> not_ (LocationWithId fromLid)
+        destinations <-
+          select
+            $ LocationWithoutModifier CannotHaveTraps
+            <> not_ (LocationWithId fromLid)
+            <> not_ (LocationWithDamage (atLeast 1))
         chooseTargetM iid destinations \toLid ->
           moveTokens (attrs.ability 2) fromLid toLid Damage 1
       pure l

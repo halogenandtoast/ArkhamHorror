@@ -52,6 +52,10 @@ instance RunMessage PsychotropicSpores where
       beginSkillTest sid iid (attrs.ability 2) iid #intellect (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      toDiscardBy iid (attrs.ability 2) attrs
+      -- Register the discard as a skill-test success option so the player can
+      -- order it relative to other "on success" effects (e.g. Book of Verse
+      -- drawing a card) and discard the spores before such a draw would trigger
+      -- this card's own forced "first draw each round" horror.
+      skillTestCardOptionVariant "discard" attrs $ toDiscardBy iid (attrs.ability 2) attrs
       pure t
     _ -> PsychotropicSpores <$> liftRunMessage msg attrs

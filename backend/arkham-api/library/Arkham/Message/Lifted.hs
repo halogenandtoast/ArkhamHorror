@@ -1839,7 +1839,15 @@ additionalSkillTestOption = skillTestResultOptionEdit AdditionalOptionKind id
 
 skillTestCardOption
   :: (ReverseQueue m, HasCardCode card, Named card) => card -> QueueT Message m () -> m ()
-skillTestCardOption card = withI18n $ additionalSkillTestOption (cardNameVar card $ ikey' "name")
+skillTestCardOption = skillTestCardOptionVariant "name"
+
+-- | Like 'skillTestCardOption' but lets the caller pick the i18n key used to
+-- render the option label (the card name is still passed as the @name@ var).
+-- e.g. @skillTestCardOptionVariant "discard"@ renders "Discard {cardName}".
+skillTestCardOptionVariant
+  :: (ReverseQueue m, HasCardCode card, Named card) => Scope -> card -> QueueT Message m () -> m ()
+skillTestCardOptionVariant variant card =
+  withI18n $ additionalSkillTestOption (cardNameVar card $ ikey' variant)
 
 skillTestCardOptionEdit
   :: (ReverseQueue m, HasCardCode card, Named card)

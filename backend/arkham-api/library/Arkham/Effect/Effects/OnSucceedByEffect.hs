@@ -7,7 +7,9 @@ module Arkham.Effect.Effects.OnSucceedByEffect (
 import Arkham.Classes
 import Arkham.Effect.Runner hiding (onSucceedByEffect)
 import Arkham.Helpers.GameValue (gameValueMatches)
+import Arkham.Helpers.Ref (sourceToMaybeCard)
 import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Message.Lifted (skillTestCardOption)
 import Arkham.Prelude
 
 newtype OnSucceedByEffect = OnSucceedByEffect EffectAttrs
@@ -57,7 +59,13 @@ instance RunMessage OnSucceedByEffect where
         case attrs.metadata of
           Just (EffectMessages msgs) -> lift do
             push $ DisableEffect attrs.id
-            pushAll msgs
+            -- Register the on-success effect as a skill-test option so the player
+            -- can order it relative to other on-success effects (e.g. a treachery
+            -- that discards itself when its own test succeeds) instead of it
+            -- always resolving first.
+            sourceToMaybeCard attrs.source >>= \case
+              Just card -> skillTestCardOption card $ pushAll msgs
+              Nothing -> pushAll msgs
           _ -> pure ()
       pure e
     SkillTestEnds {} -> do

@@ -48,6 +48,7 @@
     "loseResources": "Lose 1 resource | Lose {count} resources"
   },
   "name": "{name}",
+  "discard": "Discard {name}",
   "waitingForPlayer": "Waiting for {name}…",
   "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck.",
   "readyToBegin": "You are now ready to begin.",

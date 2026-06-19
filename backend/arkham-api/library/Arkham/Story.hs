@@ -243,4 +243,6 @@ allStories =
     , SomeStoryCard psychicRebuke
     , SomeStoryCard risingTides
     , SomeStoryCard hopeFades
+    , -- Bad Blood
+      SomeStoryCard triumphAndSubjugation
     ]

@@ -3,7 +3,6 @@ module Arkham.Act.Cards.AWalkDownMemoryLane (aWalkDownMemoryLane) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted hiding (InvestigatorDefeated)
-import Arkham.Helpers.FlavorText
 import Arkham.Matcher
 import Arkham.Scenarios.BadBlood.Helpers
 import Arkham.Scenarios.BadBlood.Meta
@@ -41,10 +40,6 @@ instance RunMessage AWalkDownMemoryLane where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       meta <- getBadBloodMeta
       let agnesWins = meta.agnesMemories > meta.elspethMemories
-      scenarioI18n $ scope "acts.memoryOfEternalConquest" $ flavor do
-        h "title"
-        p.validate agnesWins "agnesWins"
-        p.validate (not agnesWins) "elspethWins"
       push $ if agnesWins then R1 else R2
       pure a
     _ -> AWalkDownMemoryLane <$> liftRunMessage msg attrs

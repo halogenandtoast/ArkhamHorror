@@ -63,12 +63,8 @@ allStoryCards =
       , theArchway
       , theHeightOfTheDepths
       , stepsOfThePalace
-      , theDelusion
-      , theEntity
       , theFall
-      , theWriter
       , hastursEnd
-      , hastursLastStand
       , yigsMercy
       , anotherWay
       , josefsPlan
@@ -164,74 +160,14 @@ allStoryCards =
       , familialPain
       , thePredatoryHouse
       , barriersDecoysAndTraps
+      , theAbyss
       , dayOne
       , nightOne
       , dayTwo
       , nightTwo
       , dayThree
       , nightThree
-      , theAbyss
-      , returnToSickeningReality_23
-      , returnToSickeningReality_24
-      , returnToUnfinishedBusiness_38
-      , returnToUnfinishedBusiness_39
-      , realityAcid
-      , theFoundationAllied
-      , theFoundationRival
-      , theSyndicateAllied
-      , theSyndicateRival
-      , miskatonicUniversityAllied
-      , miskatonicUniversityRival
-      , silverTwilightLodgeAllied
-      , silverTwilightLodgeRival
-      , localsOfKingsportAllied
-      , localsOfKingsportRival
-      , theStakeout
-      , theHeist
-      , ifTheUniformFits
-      , packageDelivery
-      , fortunesDisfavor25
-      , lightsOut
-      , fortunesDisfavor26
-      , unlikelyInjuries
-      , fortunesDisfavor27
-      , personalEntaglement
-      , deckOfPossibilities
-      , --- Mi-Go Incursion
-        rescueTheChemist
-      , recoverTheSample
-      , driveOffTheMiGo
-      , defuseTheExplosives
-      , --- Guardians of the Abyss
-        toTheDreamlands
-      , fateOfTheDreamers
-      , prisonersOfConquest
-      , ruinsOfSarkomand
-      , effigyOfNodens
-      , usurpTheNight
-      , theTranslatorsEvidence
-      , theSupplicantsEvidence
-      , thePriestesssEvidence
-      , theSalesmansEvidence
-      , theAssassinsEvidence
-      , theProfessorsEvidence
-      , arcaneRunes
-      , theRift
-      , theVent
-      , theDilemma
-      , theGate
-      , encryptedGlyphs
-      , aNobleLegacyPast
-      , aNobleLegacyPresent
-      , aNobleLegacyFuture
-      , aBitterRivalry
-      , redeemAFormerColleague
-      , uneasyAlliance
-      , anomaliesInSpacetime
-      , mobTroubles
-      , unspeakableAbomination
-      , -- The Drowned City
-        westernWinds
+      , westernWinds
       , ruthlessCharge
       , hurricaneForce
       , direGale
@@ -243,6 +179,68 @@ allStoryCards =
       , psychicRebuke
       , risingTides
       , hopeFades
+      , returnToSickeningReality_23
+      , returnToSickeningReality_24
+      , hastursLastStand
+      , theWriter
+      , theEntity
+      , theDelusion
+      , returnToUnfinishedBusiness_38
+      , returnToUnfinishedBusiness_39
+      , arcaneRunes
+      , theRift
+      , theVent
+      , theDilemma
+      , theGate
+      , encryptedGlyphs
+      , theFoundationAllied
+      , theFoundationRival
+      , miskatonicUniversityAllied
+      , miskatonicUniversityRival
+      , theSyndicateAllied
+      , theSyndicateRival
+      , silverTwilightLodgeAllied
+      , silverTwilightLodgeRival
+      , localsOfKingsportAllied
+      , localsOfKingsportRival
+      , toTheDreamlands
+      , fateOfTheDreamers
+      , prisonersOfConquest
+      , ruinsOfSarkomand
+      , effigyOfNodens
+      , usurpTheNight
+      , theTranslatorsEvidence
+      , theSupplicantsEvidence
+      , thePriestesssEvidence
+      , theSalesmansEvidence
+      , theAssassinsEvidence
+      , theProfessorsEvidence
+      , rescueTheChemist
+      , recoverTheSample
+      , driveOffTheMiGo
+      , defuseTheExplosives
+      , aNobleLegacyPast
+      , aNobleLegacyPresent
+      , aNobleLegacyFuture
+      , aBitterRivalry
+      , redeemAFormerColleague
+      , uneasyAlliance
+      , anomaliesInSpacetime
+      , mobTroubles
+      , unspeakableAbomination
+      , theStakeout
+      , theHeist
+      , ifTheUniformFits
+      , packageDelivery
+      , fortunesDisfavor25
+      , lightsOut
+      , fortunesDisfavor26
+      , unlikelyInjuries
+      , fortunesDisfavor27
+      , personalEntaglement
+      , deckOfPossibilities
+      , realityAcid
+      , triumphAndSubjugation
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -604,6 +602,9 @@ thePredatoryHouse = story "10524" "The Predatory House" HemlockHouse & otherSide
 barriersDecoysAndTraps :: CardDef
 barriersDecoysAndTraps = story "10627" "Barriers, Decoys, and Traps" TheLongestNight
 
+theAbyss :: CardDef
+theAbyss = story "10670b" "The Abyss" FateOfTheVale
+
 dayOne :: CardDef
 dayOne = story "10675" "Day One" TheFirstDay & otherSideIs "10675b"
 
@@ -622,8 +623,51 @@ dayThree = story "10679" "Day Three" TheFinalDay & otherSideIs "10679b"
 nightThree :: CardDef
 nightThree = story "10679b" "Night Three" TheFinalDay & otherSideIs "10679"
 
-theAbyss :: CardDef
-theAbyss = story "10670b" "The Abyss" FateOfTheVale
+-- The Drowned City
+
+westernWinds :: CardDef
+westernWinds = doubleSided $ story "11640" "Western Winds" ObsidianCanyons
+
+-- The modular "Cthulhu deck" of action cards (The Doom of Arkham Pt II) shares a
+-- distinct card back.
+cthulhuDeckBack :: Map Text Value
+cthulhuDeckBack = mapFromList [("customBack", String "back_cthulhu_deck.jpg")]
+
+cthulhuDeckCard :: CardCode -> Name -> EncounterSet -> CardDef
+cthulhuDeckCard cCode name encounterSet = (story cCode name encounterSet) {cdMeta = cthulhuDeckBack}
+
+ruthlessCharge :: CardDef
+ruthlessCharge = cthulhuDeckCard "11705" "Ruthless Charge" TheDoomOfArkhamPartII
+
+hurricaneForce :: CardDef
+hurricaneForce = cthulhuDeckCard "11706" "Hurricane Force" TheDoomOfArkhamPartII
+
+direGale :: CardDef
+direGale = cthulhuDeckCard "11707" "Dire Gale" TheDoomOfArkhamPartII
+
+dreadsight :: CardDef
+dreadsight = cthulhuDeckCard "11708" "Dreadsight" TheDoomOfArkhamPartII
+
+demolition :: CardDef
+demolition = cthulhuDeckCard "11709" "Demolition" TheDoomOfArkhamPartII
+
+fifthEye :: CardDef
+fifthEye = cthulhuDeckCard "11710" "Fifth Eye" TheDoomOfArkhamPartII
+
+seismicStomp :: CardDef
+seismicStomp = cthulhuDeckCard "11711" "Seismic Stomp" TheDoomOfArkhamPartII
+
+eldritchCall :: CardDef
+eldritchCall = cthulhuDeckCard "11712" "Eldritch Call" TheDoomOfArkhamPartII
+
+psychicRebuke :: CardDef
+psychicRebuke = cthulhuDeckCard "11713" "Psychic Rebuke" TheDoomOfArkhamPartII
+
+risingTides :: CardDef
+risingTides = cthulhuDeckCard "11714" "Rising Tides" TheDoomOfArkhamPartII
+
+hopeFades :: CardDef
+hopeFades = cthulhuDeckCard "11715" "Hope Fades" TheDoomOfArkhamPartII
 
 returnToSickeningReality_23 :: CardDef
 returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing
@@ -649,13 +693,23 @@ returnToUnfinishedBusiness_38 = victory 1 $ doubleSided $ story "54038b" "Unfini
 returnToUnfinishedBusiness_39 :: CardDef
 returnToUnfinishedBusiness_39 = victory 1 $ doubleSided $ story "54039b" "Unfinished Business" ReturnToTheWagesOfSin
 
-realityAcid :: CardDef
-realityAcid =
-  doubleSided
-    $ (story "89005" "Reality Acid" TheBlobThatAteEverythingELSE)
-      { cdEncounterSet = Nothing
-      , cdEncounterSetQuantity = Nothing
-      }
+arcaneRunes :: CardDef
+arcaneRunes = doubleSided $ story "70033" "Arcane Runes" LabyrinthsOfLunacyEpicMultiplayer
+
+theRift :: CardDef
+theRift = doubleSided $ story "70034" "The Rift" LabyrinthsOfLunacyEpicMultiplayer
+
+theVent :: CardDef
+theVent = doubleSided $ story "70035" "The Vent" LabyrinthsOfLunacyEpicMultiplayer
+
+theDilemma :: CardDef
+theDilemma = doubleSided $ story "70036" "The Dilemma" LabyrinthsOfLunacyEpicMultiplayer
+
+theGate :: CardDef
+theGate = doubleSided $ story "70037" "The Gate" LabyrinthsOfLunacyEpicMultiplayer
+
+encryptedGlyphs :: CardDef
+encryptedGlyphs = doubleSided $ story "70038" "Encrypted Glyphs" LabyrinthsOfLunacyEpicMultiplayer
 
 theFoundationAllied :: CardDef
 theFoundationAllied = doubleSided $ addTrait Allied $ story "71015" "The Foundation [guardian]" TheMidwinterGala
@@ -686,57 +740,6 @@ localsOfKingsportAllied = doubleSided $ addTrait Allied $ story "71039" "Locals 
 
 localsOfKingsportRival :: CardDef
 localsOfKingsportRival = doubleSided $ addTrait Rival $ story "71039b" "Locals of Kingsport [survivor]" TheMidwinterGala
-
-theStakeout :: CardDef
-theStakeout = doubleSided $ story "88023" "The Stakeout" FortuneAndFolly
-
-theHeist :: CardDef
-theHeist = doubleSided $ story "88023b" "The Heist" FortuneAndFolly
-
-ifTheUniformFits :: CardDef
-ifTheUniformFits = doubleSided $ story "88024" "If the Uniform Fits…" FortuneAndFolly
-
-packageDelivery :: CardDef
-packageDelivery = doubleSided $ story "88024b" "Package Delivery" FortuneAndFolly
-
-fortunesDisfavor25 :: CardDef
-fortunesDisfavor25 = doubleSided $ story "88025" "Fortune's Disfavor" FortuneAndFolly
-
-lightsOut :: CardDef
-lightsOut = doubleSided $ story "88025b" "Lights Out!" FortuneAndFolly
-
-fortunesDisfavor26 :: CardDef
-fortunesDisfavor26 = doubleSided $ story "88026" "Fortune's Disfavor" FortuneAndFolly
-
-unlikelyInjuries :: CardDef
-unlikelyInjuries = doubleSided $ story "88026b" "Unlikely Injuries" FortuneAndFolly
-
-fortunesDisfavor27 :: CardDef
-fortunesDisfavor27 = doubleSided $ story "88027" "Fortune's Disfavor" FortuneAndFolly
-
-personalEntaglement :: CardDef
-personalEntaglement = doubleSided $ story "88027b" "Personal Entanglement" FortuneAndFolly
-
-deckOfPossibilities :: CardDef
-deckOfPossibilities = doubleSided $ story "88043b" "Deck of Possibilities" FortuneAndFolly
-
--- Mi-Go Incursion
-
-rescueTheChemist :: CardDef
-rescueTheChemist =
-  victory 1 $ addTrait Part1 $ doubleSided $ story "85021" "Rescue the Chemist" MiGoIncursion
-
-recoverTheSample :: CardDef
-recoverTheSample =
-  victory 1 $ addTrait Part1 $ doubleSided $ story "85022" "Recover the Sample" MiGoIncursion
-
-driveOffTheMiGo :: CardDef
-driveOffTheMiGo =
-  victory 1 $ addTrait Part1 $ doubleSided $ story "85023" "Drive Off the Mi-Go" MiGoIncursion
-
-defuseTheExplosives :: CardDef
-defuseTheExplosives =
-  victory 1 $ addTrait Part1 $ doubleSided $ story "85024" "Defuse the Explosives" MiGoIncursion
 
 toTheDreamlands :: CardDef
 toTheDreamlands = otherSideIs "83022a" $ story "83022b" "To the Dreamlands" TheNightsUsurper
@@ -780,23 +783,21 @@ theProfessorsEvidence :: CardDef
 theProfessorsEvidence =
   victory 1 $ addTrait Evidence $ otherSideIs "83036a" $ story "83036b" "The Professor's Evidence" BrotherhoodOfTheBeast
 
-arcaneRunes :: CardDef
-arcaneRunes = doubleSided $ story "70033" "Arcane Runes" LabyrinthsOfLunacyEpicMultiplayer
+rescueTheChemist :: CardDef
+rescueTheChemist =
+  victory 1 $ addTrait Part1 $ doubleSided $ story "85021" "Rescue the Chemist" MiGoIncursion
 
-theRift :: CardDef
-theRift = doubleSided $ story "70034" "The Rift" LabyrinthsOfLunacyEpicMultiplayer
+recoverTheSample :: CardDef
+recoverTheSample =
+  victory 1 $ addTrait Part1 $ doubleSided $ story "85022" "Recover the Sample" MiGoIncursion
 
-theVent :: CardDef
-theVent = doubleSided $ story "70035" "The Vent" LabyrinthsOfLunacyEpicMultiplayer
+driveOffTheMiGo :: CardDef
+driveOffTheMiGo =
+  victory 1 $ addTrait Part1 $ doubleSided $ story "85023" "Drive Off the Mi-Go" MiGoIncursion
 
-theDilemma :: CardDef
-theDilemma = doubleSided $ story "70036" "The Dilemma" LabyrinthsOfLunacyEpicMultiplayer
-
-theGate :: CardDef
-theGate = doubleSided $ story "70037" "The Gate" LabyrinthsOfLunacyEpicMultiplayer
-
-encryptedGlyphs :: CardDef
-encryptedGlyphs = doubleSided $ story "70038" "Encrypted Glyphs" LabyrinthsOfLunacyEpicMultiplayer
+defuseTheExplosives :: CardDef
+defuseTheExplosives =
+  victory 1 $ addTrait Part1 $ doubleSided $ story "85024" "Defuse the Explosives" MiGoIncursion
 
 aNobleLegacyPast :: CardDef
 aNobleLegacyPast = doubleSided $ story "87006" "A Noble Legacy (Past)" MachinationsThroughTime
@@ -832,48 +833,46 @@ unspeakableAbomination :: CardDef
 unspeakableAbomination =
   doubleSided $ addTrait Plot $ story "87042" "Unspeakable Abomination" MachinationsThroughTime
 
--- The Drowned City
+theStakeout :: CardDef
+theStakeout = doubleSided $ story "88023" "The Stakeout" FortuneAndFolly
 
--- The modular "Cthulhu deck" of action cards (The Doom of Arkham Pt II) shares a
--- distinct card back.
-cthulhuDeckBack :: Map Text Value
-cthulhuDeckBack = mapFromList [("customBack", String "back_cthulhu_deck.jpg")]
+theHeist :: CardDef
+theHeist = doubleSided $ story "88023b" "The Heist" FortuneAndFolly
 
-cthulhuDeckCard :: CardCode -> Name -> EncounterSet -> CardDef
-cthulhuDeckCard cCode name encounterSet = (story cCode name encounterSet) {cdMeta = cthulhuDeckBack}
+ifTheUniformFits :: CardDef
+ifTheUniformFits = doubleSided $ story "88024" "If the Uniform Fits…" FortuneAndFolly
 
-westernWinds :: CardDef
-westernWinds = doubleSided $ story "11640" "Western Winds" ObsidianCanyons
+packageDelivery :: CardDef
+packageDelivery = doubleSided $ story "88024b" "Package Delivery" FortuneAndFolly
 
-ruthlessCharge :: CardDef
-ruthlessCharge = cthulhuDeckCard "11705" "Ruthless Charge" TheDoomOfArkhamPartII
+fortunesDisfavor25 :: CardDef
+fortunesDisfavor25 = doubleSided $ story "88025" "Fortune's Disfavor" FortuneAndFolly
 
-hurricaneForce :: CardDef
-hurricaneForce = cthulhuDeckCard "11706" "Hurricane Force" TheDoomOfArkhamPartII
+lightsOut :: CardDef
+lightsOut = doubleSided $ story "88025b" "Lights Out!" FortuneAndFolly
 
-direGale :: CardDef
-direGale = cthulhuDeckCard "11707" "Dire Gale" TheDoomOfArkhamPartII
+fortunesDisfavor26 :: CardDef
+fortunesDisfavor26 = doubleSided $ story "88026" "Fortune's Disfavor" FortuneAndFolly
 
-dreadsight :: CardDef
-dreadsight = cthulhuDeckCard "11708" "Dreadsight" TheDoomOfArkhamPartII
+unlikelyInjuries :: CardDef
+unlikelyInjuries = doubleSided $ story "88026b" "Unlikely Injuries" FortuneAndFolly
 
-demolition :: CardDef
-demolition = cthulhuDeckCard "11709" "Demolition" TheDoomOfArkhamPartII
+fortunesDisfavor27 :: CardDef
+fortunesDisfavor27 = doubleSided $ story "88027" "Fortune's Disfavor" FortuneAndFolly
 
-fifthEye :: CardDef
-fifthEye = cthulhuDeckCard "11710" "Fifth Eye" TheDoomOfArkhamPartII
+personalEntaglement :: CardDef
+personalEntaglement = doubleSided $ story "88027b" "Personal Entanglement" FortuneAndFolly
 
-seismicStomp :: CardDef
-seismicStomp = cthulhuDeckCard "11711" "Seismic Stomp" TheDoomOfArkhamPartII
+deckOfPossibilities :: CardDef
+deckOfPossibilities = doubleSided $ story "88043b" "Deck of Possibilities" FortuneAndFolly
 
-eldritchCall :: CardDef
-eldritchCall = cthulhuDeckCard "11712" "Eldritch Call" TheDoomOfArkhamPartII
+realityAcid :: CardDef
+realityAcid =
+  doubleSided
+    $ (story "89005" "Reality Acid" TheBlobThatAteEverythingELSE)
+      { cdEncounterSet = Nothing
+      , cdEncounterSetQuantity = Nothing
+      }
 
-psychicRebuke :: CardDef
-psychicRebuke = cthulhuDeckCard "11713" "Psychic Rebuke" TheDoomOfArkhamPartII
-
-risingTides :: CardDef
-risingTides = cthulhuDeckCard "11714" "Rising Tides" TheDoomOfArkhamPartII
-
-hopeFades :: CardDef
-hopeFades = cthulhuDeckCard "11715" "Hope Fades" TheDoomOfArkhamPartII
+triumphAndSubjugation :: CardDef
+triumphAndSubjugation = story "90023b" "Triumph and Subjugation" BadBlood & otherSideIs "90023"

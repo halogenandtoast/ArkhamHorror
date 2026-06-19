@@ -8,7 +8,6 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
 
 newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs

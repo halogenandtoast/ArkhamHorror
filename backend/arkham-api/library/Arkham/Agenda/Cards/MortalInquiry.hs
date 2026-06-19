@@ -4,10 +4,10 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Placement
+import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.ReadOrDie.Helpers
 import Arkham.Slot
 import Arkham.Trait (Trait (Miskatonic, Tome))
@@ -20,15 +20,19 @@ mortalInquiry :: AgendaCard MortalInquiry
 mortalInquiry = agenda (1, A) MortalInquiry Cards.mortalInquiry (Static 12)
 
 instance HasModifiersFor MortalInquiry where
-  getModifiersFor (MortalInquiry a) = when (onSide A a) do
-    modifySelect a (assetIs Assets.drHenryArmitage) [DoNotTakeUpSlot #ally]
+  getModifiersFor (MortalInquiry a) = do
+    modifySelectWith a (assetIs Assets.drHenryArmitage) setActiveDuringSetup [DoNotTakeUpSlot #ally]
 
 instance HasAbilities MortalInquiry where
   getAbilities (MortalInquiry a) =
     guard (onSide A a)
       *> [ scenarioI18n
              $ withI18nTooltip "mortalInquiry.moveJazz"
-             $ restricted (proxied (assetIs Assets.jazzMulligan) a) 1 (Uncontrolled <> OnSameLocation) actionAbility
+             $ restricted
+               (proxied (assetIs Assets.jazzMulligan) a)
+               1
+               OnSameLocation
+               actionAbility
          ]
 
 instance RunMessage MortalInquiry where
@@ -38,13 +42,15 @@ instance RunMessage MortalInquiry where
         pushAll $ replicate 2 $ AddSlot iid #hand (TraitRestrictedSlot (AssetSource aid) Tome [])
       MortalInquiry <$> liftRunMessage msg attrs
     UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
-      jazz <- selectJust $ assetIs Assets.jazzMulligan
       locations <-
         select
-          $ LocationWithTrait Miskatonic
-          <> not_ (locationWithAsset jazz)
-          <> LocationWithDistanceFromAtMost 3 (locationWithAsset jazz) (LocationWithTrait Miskatonic)
-      chooseTargetM iid locations \lid -> push $ PlaceAsset jazz (AtLocation lid)
+          $ CanMoveToLocation (InvestigatorWithId iid) (attrs.ability 1)
+          $ LocationWithAccessiblePath
+            (attrs.ability 1)
+            3
+            (InvestigatorWithId iid)
+            (LocationWithTrait Miskatonic)
+      chooseTargetM iid locations $ moveTo (attrs.ability 1) iid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       push R2

@@ -8,7 +8,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Placement
 import Data.List.NonEmpty qualified as NE
 

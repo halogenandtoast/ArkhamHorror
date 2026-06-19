@@ -11,7 +11,6 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..), discardL)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.SkillTest.Base

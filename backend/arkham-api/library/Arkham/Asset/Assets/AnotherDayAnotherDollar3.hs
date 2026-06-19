@@ -3,7 +3,6 @@ module Arkham.Asset.Assets.AnotherDayAnotherDollar3 (anotherDayAnotherDollar3) w
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Modifier
 import Arkham.Prelude
 
 newtype AnotherDayAnotherDollar3 = AnotherDayAnotherDollar3 AssetAttrs

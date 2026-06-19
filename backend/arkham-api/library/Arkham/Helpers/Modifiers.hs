@@ -14,7 +14,11 @@ import Arkham.Id
 import Arkham.Matcher.Types
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Modifier as X (ModifierType (..), pattern CannotMoveExceptByScenarioCardEffects)
+import Arkham.Modifier as X (
+  ModifierType (..),
+  setActiveDuringSetup,
+  pattern CannotMoveExceptByScenarioCardEffects,
+ )
 import Arkham.Phase (Phase)
 import Arkham.Placement
 import Arkham.Prelude
@@ -95,7 +99,15 @@ getModifiers' (toTarget -> target) = do
   let rawMods = findWithDefault [] ThisTarget allMods <> findWithDefault [] target allMods
   if CannotReceiveModifiersFromPlayerSources `notElem` map modifierType rawMods
     then pure rawMods
-    else pure $ filter (\m -> modifierType m == CannotReceiveModifiersFromPlayerSources || not (isPlayerCardSource (modifierSource m))) rawMods
+    else
+      pure
+        $ filter
+          ( \m ->
+              modifierType m
+                == CannotReceiveModifiersFromPlayerSources
+                || not (isPlayerCardSource (modifierSource m))
+          )
+          rawMods
 
 hasModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
@@ -578,7 +590,8 @@ effectModifiers
 effectModifiers source ms = EffectModifiers <$> toModifiers source ms
 
 effectModifiersWith
-  :: (HasGame m, Tracing m, Sourceable a) => (Modifier -> Modifier) -> a -> [ModifierType] -> m (EffectMetadata Message)
+  :: (HasGame m, Tracing m, Sourceable a)
+  => (Modifier -> Modifier) -> a -> [ModifierType] -> m (EffectMetadata Message)
 effectModifiersWith f source ms = EffectModifiers . map f <$> toModifiers source ms
 
 createWindowModifierEffect

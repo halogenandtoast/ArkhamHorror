@@ -48,7 +48,7 @@ instance RunMessage SpeedReading where
       withLocationOf iid \lid -> do
         underneath <- fieldMap LocationCardsUnderneath (filterCards IsPlayerCard) lid
         for_ (nonEmpty underneath) \cards -> do
-          card <- sample cards
+          card <- setFacedown False =<< sample cards
           obtainCard card
           push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
       pure a

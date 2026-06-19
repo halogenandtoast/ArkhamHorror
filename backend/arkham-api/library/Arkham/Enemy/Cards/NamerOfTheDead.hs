@@ -49,7 +49,7 @@ instance RunMessage NamerOfTheDead where
       sid <- getRandom
       let tomes = CountAssets (AssetControlledBy (InvestigatorWithId iid) <> AssetWithTrait Tome)
       parley sid iid (attrs.ability 2) attrs #willpower
-        $ MaxCalculation (Fixed 0)
+        $ MinCalculation (Fixed 0)
         $ SubtractCalculation (Fixed 18) (MultiplyCalculation (Fixed 2) tomes)
       pure e
     PassedThisSkillTest _iid (isAbilitySource attrs 2 -> True) -> do

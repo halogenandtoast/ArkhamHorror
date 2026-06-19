@@ -32,7 +32,6 @@ import Arkham.Investigator.Types qualified as Field
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Message.Lifted qualified as Lifted
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection

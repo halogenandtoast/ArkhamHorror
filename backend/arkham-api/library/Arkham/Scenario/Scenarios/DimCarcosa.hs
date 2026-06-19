@@ -20,7 +20,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted

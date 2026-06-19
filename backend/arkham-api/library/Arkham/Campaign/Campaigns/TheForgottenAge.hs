@@ -22,7 +22,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target

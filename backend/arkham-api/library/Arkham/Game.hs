@@ -2083,6 +2083,18 @@ getLocationsMatching lmatcher = do
     LocationIsInFrontOf investigatorMatcher -> do
       investigators <- select investigatorMatcher
       filterM (fmap (maybe False (`elem` investigators)) . field LocationInFrontOf . toId) ls
+    LocationWithSealedChaosToken chaosTokenMatcher -> do
+      case chaosTokenMatcher of
+        AnyChaosToken -> do
+          ls & filterM \loc -> do
+            fieldMap LocationSealedChaosTokens notNull (toId loc)
+        _ -> do
+          tokens <- select chaosTokenMatcher
+          ls & filterM \loc -> do
+            fieldMap LocationSealedChaosTokens (any (`elem` tokens)) (toId loc)
+    LocationWithPlacedChaosToken chaosTokenMatcher -> do
+      ls & filterM \loc -> do
+        fieldMapM LocationPlacedChaosTokens (anyM (`matches` IncludeSealed chaosTokenMatcher)) (toId loc)
     LocationWithPlacement placement -> do
       filterM (fieldMap LocationPlacement (== Just placement) . toId) ls
     ConnectedToSetAsideLocation -> do
@@ -3317,7 +3329,7 @@ getEventsMatching matcher = case matcher of
       pure $ filter ((`elem` iids) . ownerOfEvent) as
     EventWithoutModifier modifierType -> filterM (fmap (notElem modifierType) . getModifiers . toId) as
     EventWithModifier modifierType -> filterM (fmap (elem modifierType) . getModifiers . toId) as
-    EventWithDoom valueMatcher -> filterM ((`gameValueMatches` valueMatcher) . attr eventDoom) as
+    EventWithDoom valueMatcher -> filterM ((`gameValueMatches` valueMatcher) . (.doom) . toAttrs) as
     EventWithToken tkn -> filterM (fieldMap EventTokens (Token.hasToken tkn) . toId) as
     EventReady -> pure $ filter (not . attr eventExhausted) as
     EventMatches ms -> foldM filterMatcher as ms
@@ -4391,6 +4403,8 @@ instance Projection Location where
         if isRevealed l && isJust locationShroud
           then Just <$> getModifiedShroudValueFor attrs
           else pure Nothing
+      LocationSealedChaosTokens -> pure locationSealedChaosTokens
+      LocationPlacedChaosTokens -> pure locationPlacedChaosTokens
       LocationJustShroud -> getModifiedShroudValueFor attrs
       LocationInvestigateDifficulty -> pure $ LocationMaybeFieldCalculation l.id LocationShroud
       LocationBrazier -> pure locationBrazier
@@ -5827,7 +5841,7 @@ eventField e fld = do
     EventAbilities -> pure $ getAbilities e
     EventOwner -> pure eventOwner
     EventController -> pure eventController
-    EventDoom -> pure eventDoom
+    EventDoom -> pure attrs.doom
     EventCard -> pure $ toCard e
 
 instance Projection Event where

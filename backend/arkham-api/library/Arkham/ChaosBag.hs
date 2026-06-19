@@ -996,9 +996,26 @@ instance RunMessage ChaosBag where
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
         & (tokenPoolL %~ filter (/= token))
+    PlaceChaosToken token ->
+      pure
+        $ c
+        & (chaosTokensL %~ filter (/= token))
+        & (setAsideChaosTokensL %~ filter (/= token))
+        & (revealedChaosTokensL %~ filter (/= token))
+        & (tokenPoolL %~ filter (/= token))
     SetChaosTokenAside token -> do
       pure $ c & setAsideChaosTokensL %~ (<> [token {chaosTokenSealed = False}])
     UnsealChaosToken token -> do
+      pure
+        $ c
+        & ( chaosTokensL
+              %~ sort
+              . (token {chaosTokenCancelled = False, chaosTokenSealed = False} :)
+              . filter (/= token)
+          )
+        & (setAsideChaosTokensL %~ filter (/= token))
+        & (revealedChaosTokensL %~ filter (/= token))
+    RemovePlacedChaosToken token -> do
       pure
         $ c
         & ( chaosTokensL

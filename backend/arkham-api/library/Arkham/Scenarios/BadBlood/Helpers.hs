@@ -11,6 +11,7 @@ import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.BadBlood.Meta
+import Arkham.Token (Token (Memory))
 import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
@@ -23,7 +24,7 @@ agnesBaker :: InvestigatorMatcher
 agnesBaker = InvestigatorWithTitle "Agnes Baker"
 
 memoryLocation :: LocationMatcher
-memoryLocation = LocationWithResources (atLeast 1)
+memoryLocation = LocationWithToken Memory
 
 agnesCollectsMemoryAt :: ReverseQueue m => LocationId -> m ()
 agnesCollectsMemoryAt lid = push $ ScenarioSpecific "agnesCollectsMemory" (toJSON lid)

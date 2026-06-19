@@ -6,11 +6,13 @@ import Arkham.Ability
 import Arkham.Calculation
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Card
+import Arkham.ChaosToken.Types
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Direction
+import Arkham.EnemyLocation.Cards (allEnemyLocationCards)
 import Arkham.Field
 import Arkham.GameValue
 import Arkham.Id
@@ -20,7 +22,6 @@ import Arkham.Label qualified as L
 import Arkham.Location.Base as X
 import Arkham.Location.Brazier
 import Arkham.Location.BreachStatus
-import Arkham.EnemyLocation.Cards (allEnemyLocationCards)
 import Arkham.Location.Cards
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
@@ -103,6 +104,8 @@ data instance Field Location :: Type -> Type where
   LocationCostToEnterUnrevealed :: Field Location Cost
   LocationKeys :: Field Location (Set ArkhamKey)
   LocationSeals :: Field Location (Set Seal)
+  LocationSealedChaosTokens :: Field Location [ChaosToken]
+  LocationPlacedChaosTokens :: Field Location [ChaosToken]
   LocationInvestigateDifficulty :: Field Location GameCalculation
   LocationConcealedCards :: Field Location [ConcealedCardId]
   LocationGlobalMeta :: Field Location (Map Aeson.Key Value)
@@ -117,6 +120,8 @@ fieldLens = \case
   LocationTokens -> tokensL
   LocationKeys -> keysL
   LocationSeals -> sealsL
+  LocationSealedChaosTokens -> sealedChaosTokensL
+  LocationPlacedChaosTokens -> placedChaosTokensL
   LocationClues -> tokensL . at Clue . non 0
   LocationRevealClues -> revealCluesL
   LocationResources -> tokensL . at Resource . non 0
@@ -215,6 +220,8 @@ instance FromJSON (SomeField Location) where
     "LocationTokens" -> pure $ SomeField LocationTokens
     "LocationKeys" -> pure $ SomeField LocationKeys
     "LocationSeals" -> pure $ SomeField LocationSeals
+    "LocationSealedChaosTokens" -> pure $ SomeField LocationSealedChaosTokens
+    "LocationPlacedChaosTokens" -> pure $ SomeField LocationPlacedChaosTokens
     "LocationTraits" -> pure $ SomeField LocationTraits
     "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
     "LocationVengeance" -> pure $ SomeField LocationVengeance
@@ -328,6 +335,7 @@ locationWith f def shroud' revealClues g =
             , locationKeys = mempty
             , locationSeals = mempty
             , locationSealedChaosTokens = mempty
+            , locationPlacedChaosTokens = mempty
             , locationBrazier = Nothing
             , locationBreaches = Nothing
             , locationFloodLevel = Nothing

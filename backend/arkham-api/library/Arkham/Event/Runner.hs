@@ -310,7 +310,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
               <> show tType
       | tType == Doom -> do
           handleWindows
-          pure $ a & doomL %~ max 0 . (+ n)
+          pure $ a & tokensL %~ addTokens Doom n
       | otherwise -> do
           pushWhen (tType == Horror) $ checkDefeated source a
           handleWindows

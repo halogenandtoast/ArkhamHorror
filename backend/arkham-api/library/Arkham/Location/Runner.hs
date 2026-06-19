@@ -31,6 +31,7 @@ import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Capability
 import Arkham.Card
+import Arkham.ChaosToken.Types (ChaosToken (..))
 import Arkham.Classes.HasGame
 import Arkham.Constants
 import Arkham.Direction
@@ -145,8 +146,14 @@ instance RunMessage LocationAttrs where
       pure $ a & sealedChaosTokensL %~ (token :)
     SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
+    PlacedChaosToken token lid | lid == locationId -> do
+      pure $ a & placedChaosTokensL %~ (token {chaosTokenSealed = False} :)
+    PlacedChaosToken token _ -> do
+      pure $ a & placedChaosTokensL %~ filter (/= token)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    RemovePlacedChaosToken token -> pure $ a & placedChaosTokensL %~ filter (/= token)
     RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . (.face))
+    RemoveAllPlacedChaosTokens face -> pure $ a & placedChaosTokensL %~ filter ((/= face) . (.face))
     FlipClues target n | isTarget a target -> do
       let clueCount = max 0 $ subtract n $ locationClues a
       pure $ a & tokensL %~ flipClues n & withoutCluesL .~ (clueCount == 0)
@@ -282,7 +289,7 @@ instance RunMessage LocationAttrs where
         <> resolve (RemoveLocation $ toId a)
       pure a
     RemovedFromPlay (isSource a -> True) -> do
-      pushAll [UnsealChaosToken token | token <- locationSealedChaosTokens]
+      pushAll $ [UnsealChaosToken token | token <- locationSealedChaosTokens] <> [RemovePlacedChaosToken token | token <- locationPlacedChaosTokens]
       pure a
     SetConnections lid connections | lid == locationId -> do
       pure

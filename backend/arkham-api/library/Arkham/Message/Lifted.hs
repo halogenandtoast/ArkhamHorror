@@ -3178,6 +3178,17 @@ sealChaosToken
   :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> ChaosToken -> m ()
 sealChaosToken iid target token = pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget target)]
 
+sealChaosToken_
+  :: (ReverseQueue m, Targetable target) => target -> ChaosToken -> m ()
+sealChaosToken_ target token = pushAll [SealChaosToken token, SealedChaosToken token Nothing (toTarget target)]
+
+placeChaosToken
+  :: ReverseQueue m => LocationId -> ChaosToken -> m ()
+placeChaosToken lid token = pushAll [PlaceChaosToken token, PlacedChaosToken token lid]
+
+removePlacedChaosToken :: ReverseQueue m => ChaosToken -> m ()
+removePlacedChaosToken token = push $ RemovePlacedChaosToken token
+
 unsealChaosToken :: ReverseQueue m => ChaosToken -> m ()
 unsealChaosToken token = push $ UnsealChaosToken token
 

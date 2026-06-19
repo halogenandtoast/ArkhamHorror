@@ -49,6 +49,7 @@ export type Location = {
   keys: ArkhamKey[];
   seals: Seal[];
   sealedChaosTokens: ChaosToken[];
+  placedChaosTokens: ChaosToken[];
   concealedCards: string[];
 }
 
@@ -84,6 +85,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
     seals: JsonDecoder.array<Seal>(sealDecoder, 'Seal[]'),
     sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+    placedChaosTokens: JsonDecoder.optional(JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]')).map(v => v ?? []),
     concealedCards: JsonDecoder.array<string>(JsonDecoder.string(), 'ConcealedCardId[]'),
     enemyLocation: JsonDecoder.optional(JsonDecoder.boolean()).map(v => v ?? false),
     exhausted: JsonDecoder.optional(JsonDecoder.boolean()).map(v => v ?? false),

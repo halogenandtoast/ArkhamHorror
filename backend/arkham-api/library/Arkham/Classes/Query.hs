@@ -389,6 +389,9 @@ selectOne matcher = do
     [] -> Nothing
     x : _ -> Just x
 
+withMatch :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> (QueryElement a -> m ()) -> m ()
+withMatch matcher = whenJustM (selectOne matcher)
+
 selectOrDefault
   :: (HasCallStack, Query a, Tracing m, HasGame m) => QueryElement a -> a -> m (QueryElement a)
 selectOrDefault def matcher = selectMaybe def id matcher

@@ -27,6 +27,11 @@
       "elderThing": "-8. Agnes Baker may take up to 3 damage to increase your skill value by 2 for each damage taken."
     }
   },
+  "log": {
+    "agnesCollectsMemory": "Agnes Baker collects a memory (total: {count})",
+    "elspethCollectsMemory": "Elspeth Baudin collects a memory (total: {count})",
+    "agnesStealsMemory": "Agnes Baker collects a memory from Elspeth Baudin"
+  },
   "label": {
     "collectMemoryFromElspeth": "Agnes Baker collects 1 memory from Elspeth Baudin",
     "gainCluesFromTokenBank": "Agnes Baker gains {count} clues from the token bank",

@@ -29,6 +29,7 @@ export const TOKENS = [
   "Leyline",
   "Lock",
   "LostSoul",
+  "Memory",
   "Newspaper",
   "Offering",
   "Overgrowth",

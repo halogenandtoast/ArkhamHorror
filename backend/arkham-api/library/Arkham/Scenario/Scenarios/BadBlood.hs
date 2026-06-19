@@ -1,6 +1,5 @@
 module Arkham.Scenario.Scenarios.BadBlood (badBlood) where
 
-import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -16,8 +15,9 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, withSkillTest)
 import Arkham.Helpers.Xp
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types (Field (..), Location, locationSealedChaosTokens)
+import Arkham.Location.Types (Field (..), Location, locationPlacedChaosTokens)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -26,6 +26,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.BadBlood.Helpers
 import Arkham.Scenarios.BadBlood.Meta
+import Arkham.Token (Token (Memory), countTokens)
 import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
@@ -166,28 +167,32 @@ instance RunMessage BadBlood where
       enemyAt_ Enemies.elspethBaudin curiositieShoppe
 
       for_ ([velmasDiner, curiositieShoppe, randomLocation] <> fixedLocations) \lid ->
-        placeTokens attrs lid #resource 1
+        placeTokens attrs lid Memory 1
     ScenarioSpecific "agnesCollectsMemory" v -> do
       let lid = toResult @LocationId v
-      removeTokens ScenarioSource lid #resource 1
+      removeTokens ScenarioSource lid Memory 1
       meta <- getBadBloodMeta
       let n = meta.agnesMemories + 1
-      send $ "Agnes Baker collects a memory (total: " <> tshow n <> ")"
-      checkMemoryTokens
+      send $ countVar n $ ikey' "log.agnesCollectsMemory"
+      -- checkMemoryTokens
       checkAfter $ Window.ScenarioEvent "memoryCollected" Nothing Null
       pure . BadBlood $ attrs & metaL .~ toJSON meta {agnesMemories = n}
     ScenarioSpecific "elspethCollectsMemory" v -> do
       let lid = toResult @LocationId v
-      removeTokens ScenarioSource lid #resource 1
+      removeTokens ScenarioSource lid Memory 1
+      whenJustM (selectOne $ enemyIs Enemies.elspethBaudin) \eid ->
+        placeTokens ScenarioSource eid Memory 1
       meta <- getBadBloodMeta
       let n = meta.elspethMemories + 1
-      send $ "Elspeth Baudin collects a memory (total: " <> tshow n <> ")"
-      checkMemoryTokens
+      send $ countVar n $ ikey' "log.elspethCollectsMemory"
+      -- checkMemoryTokens
       checkAfter $ Window.ScenarioEvent "memoryCollected" Nothing Null
       pure . BadBlood $ attrs & metaL .~ toJSON meta {elspethMemories = n}
     ScenarioSpecific "agnesStealsMemory" _ -> do
       meta <- getBadBloodMeta
-      send $ "Agnes Baker collects a memory from Elspeth Baudin"
+      send $ ikey' "log.agnesStealsMemory"
+      whenJustM (selectOne $ enemyIs Enemies.elspethBaudin) \eid ->
+        removeTokens ScenarioSource eid Memory 1
       checkAfter $ Window.ScenarioEvent "memoryCollected" Nothing Null
       pure
         . BadBlood
@@ -199,15 +204,15 @@ instance RunMessage BadBlood where
       lead <- getLead
       locations <- select Anywhere
       for_ locations \lid -> do
-        tokens <- locationSealedChaosTokens <$> getAttrs @Location lid
+        tokens <- locationPlacedChaosTokens <$> getAttrs @Location lid
         unless (null tokens) do
-          hasMemory <- fieldMap LocationResources (> 0) lid
+          hasMemory <- fieldMap LocationTokens ((> 0) . countTokens Memory) lid
           if not hasMemory
-            then for_ tokens (push . UnsealChaosToken)
+            then for_ tokens removePlacedChaosToken
             else do
               total <- sum <$> traverse (tokenMemoryValue lead . (.face)) tokens
               when (total >= 6) do
-                for_ tokens (push . UnsealChaosToken)
+                for_ tokens removePlacedChaosToken
                 elspethCollectsMemoryAt lid
       pure s
     ResolveChaosToken _ Cultist _ -> do
@@ -216,7 +221,7 @@ instance RunMessage BadBlood where
         whenM (elspeth <=~> UnengagedEnemy) $ push $ PatrolMove elspeth memoryLocation
         when (isHardExpert attrs) do
           selectEach (investigatorEngagedWith elspeth) \engaged ->
-            initiateEnemyAttack elspeth Cultist engaged
+            initiateEnemyAttackEdit elspeth Cultist engaged despiteExhausted
       pure s
     ResolveChaosToken _ ElderThing _ -> do
       whenJustM (selectOne agnesBaker) \agnes ->
@@ -228,11 +233,11 @@ instance RunMessage BadBlood where
         getSkillTestInvestigator >>= traverse_ \iid ->
           skillTestModifier sid ElderThing iid (AnySkillValue (2 * n))
       pure s
-    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | token.face == Tablet -> do
+    FailedSkillTest _iid _ _ (ChaosTokenTarget token) _ _ | token.face == Tablet -> do
       selectOne (enemyIs Enemies.elspethBaudin <> EnemyAt memoryLocation) >>= traverse_ \elspeth ->
         selectOne (locationWithEnemy elspeth) >>= traverse_ \lid -> do
-          pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget lid)]
-          checkMemoryTokens
+          placeChaosToken lid token
+      -- checkMemoryTokens
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

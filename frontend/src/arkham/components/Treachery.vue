@@ -3,10 +3,9 @@ import { computed } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { cardImage } from '@/arkham/cardImages';
 import type { Game } from '@/arkham/types/Game';
-import { TokenType } from '@/arkham/types/Token';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
-import PoolItem from '@/arkham/components/PoolItem.vue';
+import TokenPool from '@/arkham/components/TokenPool.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Treachery';
@@ -70,15 +69,7 @@ const abilities = computed(() => {
     }, []);
 })
 
-const doom = computed(() => props.treachery.tokens[TokenType.Doom])
-const brilliance = computed(() => props.treachery.tokens[TokenType.Brilliance])
-const clues = computed(() => props.treachery.tokens[TokenType.Clue])
-const resources = computed(() => props.treachery.tokens[TokenType.Resource])
-const charges = computed(() => props.treachery.tokens[TokenType.Charge])
-const horror = computed(() => props.treachery.tokens[TokenType.Horror])
-const damage = computed(() => props.treachery.tokens[TokenType.Damage])
-const evidence = computed(() => props.treachery.tokens[TokenType.Evidence])
-
+const tokenOverrides = { Damage: { type: 'damage' } }
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 </script>
 <template>
@@ -109,38 +100,7 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
       @click="$emit('choose', ability.index)"
     />
     <div class="pool">
-      <PoolItem
-        v-if="horror && horror > 0"
-        type="horror"
-        :amount="horror"
-      />
-      <PoolItem
-        v-if="damage && damage > 0"
-        type="damage"
-        :amount="damage"
-      />
-      <PoolItem
-        v-if="clues && clues > 0"
-        type="clue"
-        :amount="clues"
-      />
-      <PoolItem
-        v-if="resources && resources > 0"
-        type="resource"
-        :amount="resources"
-      />
-      <PoolItem
-        v-if="charges && charges > 0"
-        type="resource"
-        :amount="charges"
-      />
-      <PoolItem
-        v-if="doom && doom > 0"
-        type="doom"
-        :amount="doom"
-      />
-      <PoolItem v-if="evidence && evidence > 0" type="resource" tooltip="Evidence" :amount="evidence" />
-      <PoolItem v-if="brilliance && brilliance > 0" type="resource" tooltip="Brilliance" :amount="brilliance" />
+      <TokenPool :tokens="treachery.tokens" :overrides="tokenOverrides" />
       <Token v-for="(sealedToken, index) in treachery.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
     </div>
 

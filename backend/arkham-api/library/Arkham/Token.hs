@@ -35,6 +35,7 @@ data Token
   | Leyline
   | Lock
   | LostSoul
+  | Memory
   | Newspaper
   | Offering
   | Overgrowth

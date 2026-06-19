@@ -1780,14 +1780,26 @@ pattern SealChaosToken t = SealMessage (SealChaosToken_ t)
 pattern SealedChaosToken :: ChaosToken -> Maybe InvestigatorId -> Target -> Message
 pattern SealedChaosToken t miid tgt = SealMessage (SealedChaosToken_ t miid tgt)
 
+pattern PlaceChaosToken :: ChaosToken -> Message
+pattern PlaceChaosToken t = SealMessage (PlaceChaosToken_ t)
+
+pattern PlacedChaosToken :: ChaosToken -> LocationId -> Message
+pattern PlacedChaosToken t lid = SealMessage (PlacedChaosToken_ t lid)
+
 pattern SetChaosTokenAside :: ChaosToken -> Message
 pattern SetChaosTokenAside t = SealMessage (SetChaosTokenAside_ t)
 
 pattern UnsealChaosToken :: ChaosToken -> Message
 pattern UnsealChaosToken t = SealMessage (UnsealChaosToken_ t)
 
+pattern RemovePlacedChaosToken :: ChaosToken -> Message
+pattern RemovePlacedChaosToken t = SealMessage (RemovePlacedChaosToken_ t)
+
 pattern RemoveAllChaosTokens :: ChaosTokenFace -> Message
 pattern RemoveAllChaosTokens f = SealMessage (RemoveAllChaosTokens_ f)
+
+pattern RemoveAllPlacedChaosTokens :: ChaosTokenFace -> Message
+pattern RemoveAllPlacedChaosTokens f = SealMessage (RemoveAllPlacedChaosTokens_ f)
 
 -- Bidirectional pattern synonyms preserving the public API for HorrorMessage.
 pattern HealAllHorror :: Target -> Source -> Message
@@ -2371,9 +2383,13 @@ legacySealMessageTags :: [Text]
 legacySealMessageTags =
   [ "SealChaosToken"
   , "SealedChaosToken"
+  , "PlaceChaosToken"
+  , "PlacedChaosToken"
   , "SetChaosTokenAside"
   , "UnsealChaosToken"
+  , "RemovePlacedChaosToken"
   , "RemoveAllChaosTokens"
+  , "RemoveAllPlacedChaosTokens"
   ]
 
 legacySearchMessageTags :: [Text]

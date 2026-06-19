@@ -20,6 +20,7 @@ import Arkham.LocationSymbol
 import {-# SOURCE #-} Arkham.Matcher.Ability
 import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Base
+import Arkham.Matcher.ChaosToken
 import Arkham.Matcher.Card
 import Arkham.Matcher.Enemy
 import {-# SOURCE #-} Arkham.Matcher.Event
@@ -180,6 +181,8 @@ data LocationMatcher
   | LocationWithAbility AbilityMatcher
   | OutOfGameLocation
   | LocationWithPlacement Placement
+  | LocationWithSealedChaosToken ChaosTokenMatcher
+  | LocationWithPlacedChaosToken ChaosTokenMatcher
   | -- | Must be replaced
     ThatLocation
   deriving stock (Show, Eq, Ord, Data)

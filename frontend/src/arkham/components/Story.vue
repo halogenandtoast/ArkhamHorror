@@ -9,7 +9,7 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue'
 import DebugStory from '@/arkham/components/debug/Story.vue'
 import * as Arkham from '@/arkham/types/Story'
-import PoolItem from '@/arkham/components/PoolItem.vue';
+import TokenPool from '@/arkham/components/TokenPool.vue';
 import { TokenType } from '@/arkham/types/Token';
 
 export interface Props {
@@ -107,14 +107,13 @@ const abilities = computed(() => {
     }, []);
 })
 
-const clues = computed(() => props.story.tokens[TokenType.Clue])
-const horror = computed(() => props.story.tokens[TokenType.Horror])
-const resources = computed(() => props.story.tokens[TokenType.Resource])
 const civilians = computed(() => props.story.tokens[TokenType.Civilian])
-
-const hasPool = computed(() => {
-  return (clues.value && clues.value > 0) || (horror.value && horror.value > 0) || (resources.value && resources.value > 0)
+const storyTokens = computed(() => {
+  const { Civilian, ...rest } = props.story.tokens
+  return rest
 })
+
+const hasPool = computed(() => Object.values(storyTokens.value).some((amount) => (amount ?? 0) > 0))
 </script>
 
 <template>
@@ -129,11 +128,9 @@ const hasPool = computed(() => {
           @click="$emit('choose', cardAction)"
         />
         <div class="pool" v-if="hasPool">
-          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-          <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
-          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+          <TokenPool :tokens="storyTokens" />
         </div>
-        <PoolItem class="civilians" v-if="civilians" type="resource" :amount="civilians" />
+        <TokenPool :tokens="{ Civilian: civilians }" :overrides="{ Civilian: { class: 'civilians' } }" />
       </div>
       <AbilityButton
         v-for="ability in abilities"

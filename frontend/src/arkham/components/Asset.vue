@@ -18,13 +18,12 @@ import Investigator from '@/arkham/components/Investigator.vue';
 import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
-import PoolItem from '@/arkham/components/PoolItem.vue';
+import TokenPool, { type TokenPoolItem } from '@/arkham/components/TokenPool.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import Story from '@/arkham/components/Story.vue';
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
-import {isUse} from '@/arkham/types/Token';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
 
 const props = withDefaults(defineProps<{
@@ -167,13 +166,33 @@ const keys = computed(() => props.asset.keys)
 const debug = useDebug()
 const dragging = ref(false)
 
-const doom = computed(() => props.asset.tokens[TokenType.Doom])
-const clues = computed(() => props.asset.tokens[TokenType.Clue])
-const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && (v ?? 0) > 0))
-const formatUse = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2')
-
+const assetTokens = computed(() => {
+  const { Damage, Horror, ...rest } = props.asset.tokens
+  return rest
+})
 const damage = computed(() => (props.asset.tokens[TokenType.Damage] || 0) + props.asset.assignedHealthDamage - props.asset.assignedHealthHeal)
 const horror = computed(() => (props.asset.tokens[TokenType.Horror] || 0) + props.asset.assignedSanityDamage - props.asset.assignedSanityHeal)
+const forcedTokenItems = computed<TokenPoolItem[]>(() => [
+  {
+    key: 'health',
+    type: 'health',
+    amount: damage.value || 0,
+    force: !isSpirit.value && (cardCode.value == 'c07189' || (props.asset.health !== null || (damage.value || 0) > 0)),
+    class: { 'health--can-interact': healthAction.value !== -1 },
+  },
+  {
+    key: 'sanity',
+    type: 'sanity',
+    amount: horror.value || 0,
+    force: !isSpirit.value && (cardCode.value == 'c07189' || (props.asset.sanity !== null || (horror.value || 0) > 0)),
+    class: { 'sanity--can-interact': sanityAction.value !== -1 },
+  },
+])
+
+function chooseTokenPoolItem(key: string) {
+  if (key === 'health') choose(healthAction.value)
+  if (key === 'sanity') choose(sanityAction.value)
+}
 
 const hasPool = computed(() => {
   const {
@@ -293,30 +312,7 @@ function startDrag(event: DragEvent) {
           <div class="keys" v-if="keys.length > 0">
             <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
-          <template v-for="[use, amount] in uses" :key="use">
-            <PoolItem
-              v-if="(amount ?? 0) > 0"
-              type="resource"
-              :tooltip="formatUse(use)"
-              :amount="amount"
-            />
-          </template>
-          <PoolItem
-            v-if="!isSpirit && (cardCode == 'c07189' || (asset.health !== null || (damage || 0) > 0))"
-            type="health"
-            :amount="damage || 0"
-            :class="{ 'health--can-interact': healthAction !== -1 }"
-            @choose="choose(healthAction)"
-          />
-          <PoolItem
-            v-if="!isSpirit && (cardCode == 'c07189' || (asset.sanity !== null || (horror || 0) > 0))"
-            type="sanity"
-            :amount="horror || 0"
-            :class="{ 'sanity--can-interact': sanityAction !== -1 }"
-            @choose="choose(sanityAction)"
-          />
-          <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
-          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+          <TokenPool :tokens="assetTokens" :extra-items="forcedTokenItems" @choose="chooseTokenPoolItem" />
           <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
         </div>
         <AbilitiesMenu

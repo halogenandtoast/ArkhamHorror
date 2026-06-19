@@ -81,7 +81,6 @@ data EventAttrs = EventAttrs
   , eventId :: EventId
   , eventOwner :: InvestigatorId
   , eventController :: InvestigatorId
-  , eventDoom :: Int
   , eventExhausted :: Bool
   , eventBeingPaidFor :: Bool
   , eventPayment :: Payment
@@ -217,7 +216,6 @@ event f cardDef =
             , eventId = eid
             , eventOwner = iid
             , eventController = iid
-            , eventDoom = 0
             , eventExhausted = False
             , -- currently only relevant to time warp
               eventBeingPaidFor = False
@@ -399,7 +397,7 @@ instance FromJSON EventAttrs where
     eventId <- o .: "id"
     eventOwner <- o .: "owner"
     eventController <- o .: "controller"
-    eventDoom <- o .: "doom"
+    eventDoom <- o .:? "doom" .!= 0
     eventExhausted <- o .: "exhausted"
     eventBeingPaidFor <- o .: "beingPaidFor"
     eventPayment <- o .: "payment"
@@ -412,7 +410,7 @@ instance FromJSON EventAttrs where
     eventWindows <- o .: "windows"
     eventTarget <- o .: "target"
     eventMeta <- o .: "meta"
-    eventTokens <- o .: "tokens"
+    eventTokens <- addTokens Doom eventDoom <$> o .: "tokens"
     eventCustomizations <- o .: "customizations"
     eventPrintedUses <- o .: "printedUses"
     eventTaboo <- o .: "taboo"

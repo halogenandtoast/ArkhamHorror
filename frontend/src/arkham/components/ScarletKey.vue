@@ -6,8 +6,7 @@ import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/typ
 import { cardImage } from '@/arkham/cardImages'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as Arkham from '@/arkham/types/ScarletKey'
-import PoolItem from '@/arkham/components/PoolItem.vue';
-import { TokenType } from '@/arkham/types/Token';
+import TokenPool from '@/arkham/components/TokenPool.vue';
 
 export interface Props {
   game: Game
@@ -77,10 +76,6 @@ const abilities = computed(() => {
     }, []);
 })
 
-const clues = computed(() => props.scarletKey.tokens[TokenType.Clue])
-const resources = computed(() => props.scarletKey.tokens[TokenType.Resource])
-const charges = computed(() => props.scarletKey.tokens[TokenType.Charge])
-const empowerment = computed(() => props.scarletKey.tokens[TokenType.Empowerment])
 </script>
 
 <template>
@@ -94,10 +89,7 @@ const empowerment = computed(() => props.scarletKey.tokens[TokenType.Empowerment
           @click="$emit('choose', cardAction)"
         />
         <div class="pool">
-          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-          <PoolItem v-if="charges && charges > 0" type="resource" :amount="charges" />
-          <PoolItem v-if="empowerment && empowerment > 0" type="resource" :amount="empowerment" />
+          <TokenPool :tokens="scarletKey.tokens" />
         </div>
       </div>
       <AbilityButton

@@ -12,9 +12,13 @@ import Data.Aeson.TH
 data SealMessage
   = SealChaosToken_ ChaosToken
   | SealedChaosToken_ ChaosToken (Maybe InvestigatorId) Target
+  | PlaceChaosToken_ ChaosToken
+  | PlacedChaosToken_ ChaosToken LocationId
   | SetChaosTokenAside_ ChaosToken
   | UnsealChaosToken_ ChaosToken
+  | RemovePlacedChaosToken_ ChaosToken
   | RemoveAllChaosTokens_ ChaosTokenFace
+  | RemoveAllPlacedChaosTokens_ ChaosTokenFace
   deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''SealMessage)

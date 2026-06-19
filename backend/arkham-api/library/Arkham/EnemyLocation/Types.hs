@@ -95,6 +95,7 @@ mkEnemyLocationBase lid cardId cardCode label =
     , locationKeys = mempty
     , locationSeals = mempty
     , locationSealedChaosTokens = []
+    , locationPlacedChaosTokens = []
     , locationFloodLevel = Nothing
     , locationBrazier = Nothing
     , locationBreaches = Nothing

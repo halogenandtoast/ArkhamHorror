@@ -170,7 +170,7 @@ onUnmounted(() => mq.removeEventListener?.('change', updateIsMobile))
  * ========================================================================== */
 
 const CARD_SELECTOR = '.card,[data-image-id],[data-target],[data-image]'
-const OVERLAY_BLOCKER_SELECTOR = '.draggable,.intro-text,.choice-modal-wrapper'
+const OVERLAY_BLOCKER_SELECTOR = '.draggable,.intro-text,.choice-modal-wrapper,.no-card-overlay'
 let hoverTimer: number | null = null
 let pressTimer: number | null = null
 let canDisablePress = false

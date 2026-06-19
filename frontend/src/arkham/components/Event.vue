@@ -5,11 +5,10 @@ import { Card } from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
 import { cardImage } from '@/arkham/cardImages';
-import PoolItem from '@/arkham/components/PoolItem.vue';
+import TokenPool from '@/arkham/components/TokenPool.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Event';
-import {isUse} from '@/arkham/types/Token';
 
 export interface Props {
   game: Game
@@ -25,12 +24,10 @@ const emits = defineEmits<{
   showCards: [e: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
 }>()
 
-const uses = computed(() => Object.entries(props.event.tokens).filter(([k, v]) => isUse(k) && (v ?? 0) > 0))
-
 const id = computed(() => props.event.id)
 const hasPool = computed(() => {
-  const { doom, sealedChaosTokens } = props.event
-  return doom > 0 || sealedChaosTokens.length > 0 || uses.value.length > 0
+  const { sealedChaosTokens, tokens } = props.event
+  return sealedChaosTokens.length > 0 || Object.values(tokens).some((amount) => (amount ?? 0) > 0)
 })
 
 const cardCode = computed(() => props.event.cardCode)
@@ -104,15 +101,7 @@ const choose = (index: number) => emits('choose', index)
       :data-customizations="JSON.stringify(event.customizations)"
     />
     <div v-if="hasPool" class="pool">
-      <PoolItem v-if="event.doom > 0" type="doom" :amount="event.doom" />
-      <template v-for="[use, amount] in uses" :key="use">
-        <PoolItem
-          v-if="(amount ?? 0) > 0"
-          type="resource"
-          :tooltip="use"
-          :amount="amount"
-        />
-      </template>
+      <TokenPool :tokens="event.tokens" />
       <Token
         v-for="(sealedToken, index) in event.sealedChaosTokens"
         :key="index"

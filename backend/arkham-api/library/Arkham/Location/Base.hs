@@ -49,6 +49,7 @@ data LocationAttrs = LocationAttrs
   , locationKeys :: Set ArkhamKey
   , locationSeals :: Set Seal
   , locationSealedChaosTokens :: [ChaosToken]
+  , locationPlacedChaosTokens :: [ChaosToken]
   , locationFloodLevel :: Maybe FloodLevel
   , locationBrazier :: Maybe Brazier
   , locationBreaches :: Maybe BreachStatus
@@ -135,6 +136,9 @@ instance HasField "keys" LocationAttrs (Set ArkhamKey) where
 instance HasField "seals" LocationAttrs (Set Seal) where
   getField = locationSeals
 
+instance HasField "placedChaosTokens" LocationAttrs [ChaosToken] where
+  getField = locationPlacedChaosTokens
+
 instance HasField "cardCode" LocationAttrs CardCode where
   getField = locationCardCode
 
@@ -180,6 +184,7 @@ instance FromJSON LocationAttrs where
     locationKeys <- o .: "keys"
     locationSeals <- o .:? "seals" .!= mempty
     locationSealedChaosTokens <- o .:? "sealedChaosTokens" .!= mempty
+    locationPlacedChaosTokens <- o .:? "placedChaosTokens" .!= mempty
     locationFloodLevel <- o .:? "floodLevel"
     locationBrazier <- o .:? "brazier"
     locationBreaches <- o .:? "breaches"

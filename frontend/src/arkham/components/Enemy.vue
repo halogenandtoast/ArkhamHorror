@@ -13,6 +13,7 @@ import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/typ
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import TokenPool from '@/arkham/components/TokenPool.vue'
 import KeyToken from '@/arkham/components/Key.vue'
 import Treachery from '@/arkham/components/Treachery.vue'
 import Asset from '@/arkham/components/Asset.vue'
@@ -152,18 +153,10 @@ const keys = computed(() => props.enemy.keys)
 const debug = useDebug()
 
 const enemyDamage = computed(() => (props.enemy.tokens[TokenType.Damage] || 0) + props.enemy.assignedDamage)
-const doom = computed(() => props.enemy.tokens[TokenType.Doom])
-const clues = computed(() => props.enemy.tokens[TokenType.Clue])
-const resources = computed(() => props.enemy.tokens[TokenType.Resource])
-const leylines = computed(() => props.enemy.tokens[TokenType.Leyline])
-const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
-const overgrowth = computed(() => props.enemy.tokens[TokenType.Overgrowth])
-const bounties = computed(() => props.enemy.tokens[TokenType.Bounty])
-const evidence = computed(() => props.enemy.tokens[TokenType.Evidence])
-const warnings = computed(() => props.enemy.tokens[TokenType.Warning])
-const targets = computed(() => props.enemy.tokens[TokenType.Target])
-const seals = computed(() => props.enemy.tokens[TokenType.Seal])
-
+const enemyTokens = computed(() => {
+  const { Damage, ...rest } = props.enemy.tokens
+  return rest
+})
 const omnipotent = computed(() => {
   const {modifiers} = props.enemy
 
@@ -371,17 +364,7 @@ function onDrop(event: DragEvent) {
               <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
             </div>
             <PoolItem v-if="!omnipotent && !attached" type="health" :amount="enemyDamage" />
-            <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
-            <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-            <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-            <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
-            <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
-            <PoolItem v-if="overgrowth && overgrowth > 0" type="resource" :amount="overgrowth" />
-            <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
-            <PoolItem v-if="evidence && evidence > 0" type="resource" tooltip="Evidence" :amount="evidence" />
-            <PoolItem v-if="warnings && warnings > 0" type="resource" tooltip="Warning" :amount="warnings" />
-            <PoolItem v-if="targets && targets > 0" type="resource" tooltip="Target" :amount="targets" />
-            <PoolItem v-if="seals && seals > 0" type="resource" tooltip="Seal" :amount="seals" />
+            <TokenPool :tokens="enemyTokens" />
             <PoolItem v-if="enemy.cardsUnderneath.length > 0" type="card" :amount="enemy.cardsUnderneath.length" />
             <Token
               v-for="(sealedToken, index) in enemy.sealedChaosTokens"

@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { TokenType } from '@/arkham/types/Token'
 import { keyToId } from '@/arkham/types/Key'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import TokenPool from '@/arkham/components/TokenPool.vue'
 import KeyToken from '@/arkham/components/Key.vue'
 import Seal from '@/arkham/components/Seal.vue'
 import type { Message } from '@/arkham/types/Message'
@@ -64,13 +65,14 @@ const spendCluesAction = computed(() =>
 
 const keys = computed(() => props.investigator.keys)
 const seals = computed(() => props.investigator.seals)
-const doom = computed(() => props.investigator.tokens[TokenType.Doom])
 const clues = computed(() => props.investigator.tokens[TokenType.Clue] || 0)
 const resources = computed(() => props.investigator.tokens[TokenType.Resource] || 0)
 const horror = computed(() => (props.investigator.tokens[TokenType.Horror] || 0) + props.investigator.assignedSanityDamage - props.investigator.assignedSanityHeal)
 const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0) + props.investigator.assignedHealthDamage - props.investigator.assignedHealthHeal)
-const alarmLevel = computed(() => props.investigator.tokens[TokenType.AlarmLevel] || 0)
-const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 0)
+const otherTokens = computed(() => {
+  const { Resource, Clue, Damage, Horror, ...rest } = props.investigator.tokens
+  return rest
+})
 
 function onSanityClickCapture(e: MouseEvent) {
   if (!e.shiftKey) return
@@ -270,21 +272,7 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
       >+</button>
     </template>
 
-    <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
-
-    <PoolItem
-      v-if="alarmLevel > 0"
-      type="doom"
-      :amount="alarmLevel"
-      tooltip="Alarm Level"
-    />
-
-    <PoolItem
-      v-if="leylines > 0"
-      type="resource"
-      :amount="leylines"
-      tooltip="Leyline"
-    />
+    <TokenPool :tokens="otherTokens" />
   </div>
 </template>
 

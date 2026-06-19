@@ -25,7 +25,7 @@ instance HasModifiersFor HotOnYourTail where
 
 instance HasAbilities HotOnYourTail where
   getAbilities = actAbilities \a ->
-    [ mkAbility a 1 $ forced $ InvestigatorResigned #when Anyone
+    [ restricted a 1 Never $ forced $ InvestigatorResigned #when Anyone
     , onlyOnce $ restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 

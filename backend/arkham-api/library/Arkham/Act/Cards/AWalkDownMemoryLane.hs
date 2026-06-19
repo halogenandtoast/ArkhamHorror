@@ -30,8 +30,7 @@ instance HasAbilities AWalkDownMemoryLane where
 instance RunMessage AWalkDownMemoryLane where
   runMessage msg a@(AWalkDownMemoryLane attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      selectOne (memoryLocation <> LocationWithInvestigator agnesBaker)
-        >>= traverse_ agnesCollectsMemoryAt
+      withMatch (memoryLocation <> LocationWithInvestigator agnesBaker) agnesCollectsMemoryAt
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push R2

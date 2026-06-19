@@ -13,7 +13,6 @@ export type Event = {
   id: string;
   cardCode: string;
   cardId: string;
-  doom: number;
   exhausted: boolean;
   sealedChaosTokens: ChaosToken[];
   cardsUnderneath: Card[];
@@ -27,7 +26,6 @@ export const eventDecoder = JsonDecoder.object<Event>({
   id: JsonDecoder.string(),
   cardCode: JsonDecoder.string(),
   cardId: JsonDecoder.string(),
-  doom: JsonDecoder.number(),
   exhausted: JsonDecoder.boolean(),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),

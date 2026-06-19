@@ -337,7 +337,7 @@ const skipAllAvailable = computed(() => {
   if (skipAllPending.value.size > 0) return true
 
   const entries = authorizedSkipTriggerEntries(game.value)
-  return solo.value ? entries.length > 1 : entries.length > 0
+  return new Set(entries.map((entry) => entry.playerId)).size > 1
 })
 
 const skipAllInProgress = computed(() => skipAllPending.value.size > 0)

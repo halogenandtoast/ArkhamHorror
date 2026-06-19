@@ -2,11 +2,13 @@
 
 module Arkham.CampaignLogKey where
 
+import Arkham.Campaigns.BrethrenOfAsh.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheDreamEaters.Key
+import Arkham.Campaigns.TheDrownedCity.Key
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Campaigns.TheForgottenAge.Key
@@ -14,8 +16,6 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Campaigns.TheScarletKeys.Key
-import Arkham.Campaigns.BrethrenOfAsh.Key
-import Arkham.Campaigns.TheDrownedCity.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -73,8 +73,7 @@ data CampaignLogKey
   | -- | The Blob That Ate Everything
     YouHaveNoSoul
   | -- | Challenge Scenarios
-    AllOrNothingBonusResources
-  | ByTheBookBonusCards
+    ByTheBookBonusCards
   | -- | Player Cards
     YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs

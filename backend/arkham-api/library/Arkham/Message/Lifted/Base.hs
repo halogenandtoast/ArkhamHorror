@@ -1,8 +1,6 @@
 {-# OPTIONS_GHC -Wno-unused-imports -Wno-orphans #-}
 
-
 module Arkham.Message.Lifted.Base where
-
 
 import Arkham.Helpers.FetchCard as X
 
@@ -196,6 +194,10 @@ withCost iid cost f = batched \batchId -> payBatchCost batchId iid cost >> f
 setupModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 setupModifier source target modifier = Msg.pushM $ Msg.setupModifier source target modifier
+
+nextScenarioModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+nextScenarioModifier = setupModifier
 
 shuffleCardsIntoDeck
   :: ( ReverseQueue m

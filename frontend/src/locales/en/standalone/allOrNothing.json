@@ -32,7 +32,17 @@
     },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p>_Resolution 1:_ Heart pounding and exhilaration coursing through your veins, you don't know what gives you more of a rush: winning money from the O'Bannions or escaping from them. This night is proof of what you've always thought: \"Skids\" O'Toole always wins...</p><ul><li>Each investigator earns experience equal to the combined _Victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>There were {resources} resources on Act 2a. \"Skids\" O'Toole earns {bonusXp} bonus experience and begins the next scenario with {bonusResources} additional resources.</li><li>\"Skids\" O'Toole may either upgrade On the Lam to its advanced version, or downgrade the advanced version of Hospital Debts to its original version.</li></ul>"
+      "body": "_Resolution 1:_ Heart pounding and exhilaration coursing through your veins, you don't know what gives you more of a rush: winning money from the O'Bannions or escaping from them. This night is proof of what you've always thought: \"Skids\" O'Toole always wins...",
+      "victory": "Each investigator earns experience equal to the combined _Victory X_ value of each card in the victory display.",
+      "experience": "_Experience_: {xp}",
+      "resourcesChoice": "If the number of resources on Act 2a is (choose one)...",
+      "resources10": "10 {'{'}perPlayer{'}'} or more, \"Skids\" O'Toole begins the next scenario with 1 additional resource.",
+      "resources20": "20 {'{'}perPlayer{'}'} or more, \"Skids\" O'Toole begins the next scenario with 2 additional resources.",
+      "resources30": "30 {'{'}perPlayer{'}'} or more, \"Skids\" O'Toole begins the next scenario with 3 additional resources.",
+      "resources40": "40 {'{'}perPlayer{'}'} or more, \"Skids\" O'Toole earns 1 bonus experience and begins the next scenario with 4 additional resources.",
+      "resources50": "50 {'{'}perPlayer{'}'} or more, \"Skids\" O'Toole earns 2 bonus experience and begins the next scenario with 5 additional resources.",
+      "resources60": "60 {'{'}perPlayer{'}'} or more resources, \"Skids\" O'Toole earns 3 bonus experience and begins the next scenario with 6 additional resources.",
+      "skidsMaySwap": "\"Skids\" O'Toole may either upgrade On the Lam to its advanced version, or downgrade the advanced version of Hospital Debts to its original version."
     },
     "resolution2": {
       "title": "Resolution 2",
@@ -41,12 +51,14 @@
     "xp": {
       "gamblersTake": "Resources on Act 2a"
     },
-    "skidsMaySwap": "\"Skids\" O'Toole may either upgrade On the Lam to its advanced version, or downgrade the advanced version of Hospital Debts to its original version.",
-    "skidsMustSwap": "\"Skids\" O'Toole must either upgrade Hospital Debts to its advanced version, or downgrade the advanced version of On the Lam to its original version.",
-    "upgradeOnTheLam": "Upgrade On the Lam to its advanced version",
-    "downgradeHospitalDebts": "Downgrade the advanced version of Hospital Debts to its original version",
-    "upgradeHospitalDebts": "Upgrade Hospital Debts to its advanced version",
-    "downgradeOnTheLam": "Downgrade the advanced version of On the Lam to its original version",
-    "doNotSwap": "Do not swap any cards"
+    "label": {
+      "skidsMaySwap": "\"Skids\" O'Toole may either upgrade On the Lam to its advanced version, or downgrade the advanced version of Hospital Debts to its original version.",
+      "skidsMustSwap": "\"Skids\" O'Toole must either upgrade Hospital Debts to its advanced version, or downgrade the advanced version of On the Lam to its original version.",
+      "upgradeOnTheLam": "Upgrade On the Lam to its advanced version",
+      "downgradeHospitalDebts": "Downgrade the advanced version of Hospital Debts to its original version",
+      "upgradeHospitalDebts": "Upgrade Hospital Debts to its advanced version",
+      "downgradeOnTheLam": "Downgrade the advanced version of On the Lam to its original version",
+      "doNotSwap": "Do not swap any cards"
+    }
   }
 }

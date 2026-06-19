@@ -19,7 +19,7 @@ instance HasAbilities GlimmeringWoods where
       a
       [ scenarioI18n $ withI18nTooltip "glimmeringWoods.resign" $ locationResignAction a
       , playerLimit PerRound
-          $ restricted a 1 (youExist $ HealableInvestigator (a.ability 1) #horror Anyone) actionAbility
+          $ restricted a 1 (Here <> youExist (HealableInvestigator (a.ability 1) #horror Anyone)) actionAbility
       ]
 
 instance RunMessage GlimmeringWoods where

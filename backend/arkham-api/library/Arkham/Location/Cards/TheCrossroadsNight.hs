@@ -1,12 +1,14 @@
 module Arkham.Location.Cards.TheCrossroadsNight (theCrossroadsNight) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (remember)
+import Arkham.Phase
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.FateOfTheVale.Helpers
 import Arkham.SkillTest
@@ -21,11 +23,13 @@ theCrossroadsNight :: LocationCard TheCrossroadsNight
 theCrossroadsNight = symbolLabel $ location TheCrossroadsNight Cards.theCrossroadsNight 2 (PerPlayer 2)
 
 instance HasModifiersFor TheCrossroadsNight where
-  getModifiersFor (TheCrossroadsNight attrs) =
-    modifySelect
+  getModifiersFor (TheCrossroadsNight attrs) = do
+    phase <- getPhase
+    modifySelectWhen
       attrs
+      (phase == EnemyPhase)
       (EnemyAt (be attrs) <> EnemyWithTrait Shattered)
-      [CriteriaModifier (DuringPhase IsEnemyPhase) $ RemoveKeyword Aloof]
+      [RemoveKeyword Aloof]
 
 instance HasAbilities TheCrossroadsNight where
   getAbilities (TheCrossroadsNight a) =

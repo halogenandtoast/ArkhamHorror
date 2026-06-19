@@ -2623,6 +2623,9 @@ getLocationsMatching lmatcher = do
       traits <- Set.unions <$> selectField LocationTraits inner
       let hasMatchingTrait = fieldP LocationTraits (any (`member` traits)) . toId
       filterM hasMatchingTrait ls
+    LocationWithPrintedTrait trait -> do
+      let hasMatchingTrait = fieldP LocationCard (\c -> cardMatch c (CardWithTrait trait)) . toId
+      filterM hasMatchingTrait ls
     LocationWithTrait trait -> do
       let hasMatchingTrait = fieldP LocationTraits (trait `member`) . toId
       filterM hasMatchingTrait ls

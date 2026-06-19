@@ -293,7 +293,7 @@ instance RunMessage TheTwistedHollow where
       let (_iid :: InvestigatorId, _source :: Source, n :: Int) = toResult v
       case n of
         Sigma -> do
-          emptyWoods <- selectWithField LocationCard $ EmptyLocation <> LocationWithTrait Dark
+          emptyWoods <- selectWithField LocationCard $ EmptyLocation <> LocationWithPrintedTrait Dark
           woodsDeck <- getScenarioDeck WoodsDeck
           for_ emptyWoods (removeLocation . fst)
           (bottom, top) <- splitAt 3 <$> shuffle (map snd emptyWoods <> woodsDeck)

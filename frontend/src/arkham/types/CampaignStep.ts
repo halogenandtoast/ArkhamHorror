@@ -369,7 +369,6 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
     if (game.campaign) {
       const [a, b] = step.contents
       const key = `${toCamelCase(game.campaign.name)}.headings.${b ? `${a}.${b}`: a}`
-      console.log(key)
       if (te(key)) return t(key)
     }
   }

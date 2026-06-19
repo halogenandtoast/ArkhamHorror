@@ -124,6 +124,7 @@ data LocationMatcher
   | NearestLocationToAny LocationMatcher
   | LocationSharesTraitWith LocationMatcher
   | LocationWithTrait Trait
+  | LocationWithPrintedTrait Trait
   | LocationWithoutTrait Trait
   | LocationInDirection Direction LocationMatcher
   | LocationWithSpaceInDirection Direction LocationMatcher

@@ -13,22 +13,11 @@ newtype TheCrossroadsEvening = TheCrossroadsEvening LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCrossroadsEvening :: LocationCard TheCrossroadsEvening
-theCrossroadsEvening =
-  symbolLabel
-    $ location TheCrossroadsEvening Cards.theCrossroadsEvening 3 (Static 0)
+theCrossroadsEvening = symbolLabel $ location TheCrossroadsEvening Cards.theCrossroadsEvening 3 (Static 0)
 
 instance HasAbilities TheCrossroadsEvening where
   getAbilities (TheCrossroadsEvening a) =
-    extendRevealed1 a
-      $ skillTestAbility
-      $ restricted
-        a
-        1
-        ( Here
-            <> youExist InvestigatorWithAnyDamage
-            <> exists (EnemyAt (be a) <> withTrait Resident <> EnemyCanBeDamagedBySource (a.ability 1))
-        )
-        parleyAction_
+    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here parleyAction_
 
 instance RunMessage TheCrossroadsEvening where
   runMessage msg l@(TheCrossroadsEvening attrs) = runQueueT $ case msg of

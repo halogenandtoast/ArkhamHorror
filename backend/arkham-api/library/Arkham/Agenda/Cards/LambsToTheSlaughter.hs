@@ -17,13 +17,15 @@ lambsToTheSlaughter :: AgendaCard LambsToTheSlaughter
 lambsToTheSlaughter = agenda (1, A) LambsToTheSlaughter Cards.lambsToTheSlaughter (Static 5)
 
 instance HasModifiersFor LambsToTheSlaughter where
-  getModifiersFor (LambsToTheSlaughter a) =
-    when (onSide A a) $ modified_ a ScenarioTarget [ScenarioModifier "cannotTriggerCodex"]
+  getModifiersFor (LambsToTheSlaughter a) = do
+    modified_ a ScenarioTarget [ScenarioModifier "cannotTriggerCodex"]
+    eachInvestigator \iid -> modified_ a iid [ScenarioModifier "cannotTriggerCodex"]
 
 instance HasAbilities LambsToTheSlaughter where
   getAbilities (LambsToTheSlaughter a) =
     guard (onSide A a)
-      *> [ restricted a 1 (InVictoryDisplay (CardWithTrait Resident) (AtLeast $ StaticWithPerPlayer 1 1))
+      *> [ onlyOnce
+             $ restricted a 1 (InVictoryDisplay (CardWithTrait Resident) (AtLeast $ StaticWithPerPlayer 1 1))
              $ Objective
              $ forced AnyWindow
          , restricted a 2 (exists $ InPlayEnemy $ EnemyWithTrait Resident)

@@ -104,7 +104,7 @@ namerOfTheDeadAttacks iid = void $ runMaybeT do
   guard $ action `elem` [#fight, #evade]
   eid <- MaybeT getSkillTestTargetedEnemy
   liftGuardM $ eid <=~> enemyIs Enemies.namerOfTheDead
-  lift $ initiateEnemyAttack eid Tablet iid
+  lift $ initiateEnemyAttackEdit eid Tablet iid despiteExhausted
 
 instance RunMessage ReadOrDie where
   runMessage msg s@(ReadOrDie attrs) = runQueueT $ scenarioI18n $ case msg of

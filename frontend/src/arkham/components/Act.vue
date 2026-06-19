@@ -255,6 +255,9 @@ const breaches = computed(() => {
   return breaches ?? 0
 })
 
+const clues = computed(() => props.act.tokens.Clue ?? 0)
+const resources = computed(() => props.act.tokens.Resource ?? 0)
+
 const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
   filter((s) => s.placement.tag === "NextToAct").
   map((s) => s.id))
@@ -317,10 +320,11 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
 
     <div class="pool">
       <PoolItem
-        v-if="act.clues && act.clues > 0"
+        v-if="clues > 0"
         type="clue"
-        :amount="act.clues"
+        :amount="clues"
       />
+      <PoolItem v-if="resources > 0" type="resource" :amount="resources" />
       <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
       <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="$emit('choose', $event)" />
     </div>

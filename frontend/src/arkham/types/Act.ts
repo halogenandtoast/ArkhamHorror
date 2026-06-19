@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
+import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
 export type ActSequence = {
   number: number
@@ -8,7 +9,7 @@ export type ActSequence = {
 
 export type Act = {
   id: string
-  clues: number | null
+  tokens: Tokens
   deckId: number
   sequence: ActSequence
   treacheries: string[]
@@ -22,7 +23,7 @@ export const actSequenceDecoder = JsonDecoder.
 
 export const actDecoder = JsonDecoder.object<Act>({
   id: JsonDecoder.string(),
-  clues: JsonDecoder.nullable(JsonDecoder.number()),
+  tokens: tokensDecoder,
   deckId: JsonDecoder.number(),
   sequence: actSequenceDecoder,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),

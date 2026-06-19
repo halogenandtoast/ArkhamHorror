@@ -18,6 +18,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 import Control.Monad.Fail
 import Data.Data
 import GHC.Records
@@ -43,6 +44,8 @@ type ActCard a = CardBuilder (Int, ActId) a
 data instance Field Act :: Type -> Type where
   ActSequence :: Field Act AS.ActSequence
   ActClues :: Field Act Int
+  ActResources :: Field Act Int
+  ActTokens :: Field Act Tokens
   ActFlipped :: Field Act Bool
   ActDeckId :: Field Act Int
   ActAbilities :: Field Act [Ability]
@@ -73,6 +76,8 @@ instance FromJSON (SomeField Act) where
   parseJSON = withText "Field Act" $ \case
     "ActSequence" -> pure $ SomeField ActSequence
     "ActClues" -> pure $ SomeField ActClues
+    "ActResources" -> pure $ SomeField ActResources
+    "ActTokens" -> pure $ SomeField ActTokens
     "ActFlipped" -> pure $ SomeField ActFlipped
     "ActDeckId" -> pure $ SomeField ActDeckId
     "ActAbilities" -> pure $ SomeField ActAbilities
@@ -86,7 +91,7 @@ data ActAttrs = ActAttrs
   , actCardId :: CardId
   , actSequence :: AS.ActSequence
   , actAdvanceCost :: Maybe Cost
-  , actClues :: Int
+  , actTokens :: Tokens
   , actDeckId :: Int
   , actBreaches :: Maybe Int
   , actUsedWheelOfFortuneX :: Bool
@@ -118,10 +123,24 @@ instance HasField "meta" ActAttrs Value where
 instance HasField "ability" ActAttrs (Int -> Source) where
   getField = toAbilitySource
 
+instance HasField "tokens" ActAttrs Tokens where
+  getField = actTokens
+
+instance HasField "token" ActAttrs (Token -> Int) where
+  getField a tkn = countTokens tkn a.tokens
+
+instance HasField "clues" ActAttrs Int where
+  getField a = countTokens Clue a.tokens
+
+instance HasField "resources" ActAttrs Int where
+  getField a = countTokens Resource a.tokens
+
 sequenceL :: Lens' ActAttrs AS.ActSequence
 sequenceL = lens actSequence $ \m x -> m {actSequence = x}
 metaL :: Lens' ActAttrs Value
 metaL = lens actMeta $ \m x -> m {actMeta = x}
+tokensL :: Lens' ActAttrs Tokens
+tokensL = lens actTokens $ \m x -> m {actTokens = x}
 
 keysL :: Lens' ActAttrs (Set ArkhamKey)
 keysL = lens actKeys $ \m x -> m {actKeys = x}
@@ -152,7 +171,7 @@ actWith (n, side) f cardDef mCost g =
             { actId = aid
             , actCardId = cardId
             , actSequence = AS.Sequence n side
-            , actClues = 0
+            , actTokens = mempty
             , actAdvanceCost = mCost
             , actDeckId = deckId
             , actBreaches = Nothing
@@ -187,7 +206,13 @@ instance FromJSON ActAttrs where
     actCardId <- v .: "cardId"
     actSequence <- v .: "sequence"
     actAdvanceCost <- v .:? "advanceCost"
-    actClues <- v .: "clues"
+    actTokens <- v .:? "tokens" >>= \case
+      Just tokens -> pure tokens
+      -- Fallback for games serialized before acts tracked a token map: lift the
+      -- old standalone clue count into the tokens map.
+      Nothing -> do
+        clues <- v .:? "clues" .!= 0
+        pure $ if clues > 0 then singletonMap Clue clues else mempty
     actDeckId <- v .: "deckId"
     actBreaches <- v .:? "breaches"
     actUsedWheelOfFortuneX <- v .: "usedWheelOfFortuneX"

@@ -41,7 +41,7 @@ instance RunMessage QuestioningTheGangsV1 where
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       threshold <- (2 +) <$> getPlayerCount
-      when (actClues attrs >= threshold) $ advancedWithOther attrs
+      when (attrs.clues >= threshold) $ advancedWithOther attrs
       pure a
     AdvanceAct (isSide A attrs -> True) _ _ -> do
       hibbId <- placeLocation =<< genCard Locations.hibbsRoadhouse

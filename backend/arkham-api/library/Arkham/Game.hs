@@ -4603,7 +4603,9 @@ instance Projection Act where
     let ActAttrs {..} = toAttrs a
     case f of
       ActSequence -> pure actSequence
-      ActClues -> pure actClues
+      ActClues -> pure $ Token.countTokens Token.Clue actTokens
+      ActResources -> pure $ Token.countTokens Token.Resource actTokens
+      ActTokens -> pure actTokens
       ActDeckId -> pure actDeckId
       ActAbilities -> pure $ getAbilities a
       ActCard -> pure $ lookupCard (unActId aid) actCardId

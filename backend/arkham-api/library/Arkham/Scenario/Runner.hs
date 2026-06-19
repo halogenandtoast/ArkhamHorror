@@ -1217,28 +1217,32 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         when
           (foundKey cardSource /= Zone.FromDeck)
           (error "Expects a deck: Investigator<PutBackInAnyOrder>")
-        chooseOneAtATime iid
-          $ mapTargetLabelWith
-            toCardId
-            (\c -> [AddFocusedToTopOfDeck iid t (toCardId c)])
-            (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
+        let remaining = findWithDefault [] Zone.FromDeck $ a ^. foundCardsL
+        unless (null remaining) do
+          chooseOneAtATime iid
+            $ mapTargetLabelWith
+              toCardId
+              (\c -> [AddFocusedToTopOfDeck iid t (toCardId c)])
+              remaining
       PutBackInAnyOrderBothTopAndBottom -> do
         when
           (foundKey cardSource /= Zone.FromDeck)
           (error "Expects a deck: Investigator<PutBackInAnyOrderBothTopAndBottom>")
-        player <- getPlayer iid
-        chooseOneAtATime iid
-          $ mapTargetLabelWith
-            toCardId
-            ( \c ->
-                [ Msg.chooseOne
-                    player
-                    [ Label "$label.placeOnTop" [AddFocusedToTopOfDeck iid t (toCardId c)]
-                    , Label "$label.placeOnBottom" [PutCardOnBottomOfDeck iid deck c]
-                    ]
-                ]
-            )
-            (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
+        let remaining = findWithDefault [] Zone.FromDeck $ a ^. foundCardsL
+        unless (null remaining) do
+          player <- getPlayer iid
+          chooseOneAtATime iid
+            $ mapTargetLabelWith
+              toCardId
+              ( \c ->
+                  [ Msg.chooseOne
+                      player
+                      [ Label "$label.placeOnTop" [AddFocusedToTopOfDeck iid t (toCardId c)]
+                      , Label "$label.placeOnBottom" [PutCardOnBottomOfDeck iid deck c]
+                      ]
+                  ]
+              )
+              remaining
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")
         for_ scenarioSearch \MkSearch {searchType} ->

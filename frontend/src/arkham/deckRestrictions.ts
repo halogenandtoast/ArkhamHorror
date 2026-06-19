@@ -90,6 +90,7 @@ function requiredInvestigator(name: string, codes: string[]): RequiredInvestigat
   return {
     name,
     investigatorCodes,
+    description: `This scenario requires ${name}.`,
     validate: ({ deckList }) => {
       return investigatorCodes.has(deckInvestigatorCode(deckList)) ? null : `This scenario requires ${name}`
     },
@@ -183,9 +184,10 @@ export function deckRequirementDescriptions(
   const normalizedCampaignId = campaign?.campaignId ? normalizeCardCode(campaign.campaignId) : null
 
   return [
+    ...(normalizedScenarioId ? [challengeScenarioInvestigators[normalizedScenarioId]] : []),
     ...(normalizedScenarioId ? (scenarioDeckRestrictions[normalizedScenarioId] ?? []) : []),
     ...(normalizedCampaignId ? (campaignDeckRestrictions[normalizedCampaignId] ?? []) : []),
-  ].flatMap((r) => {
+  ].filter((r): r is DeckRestriction => r !== undefined).flatMap((r) => {
     if (!r.description) return []
     if (typeof r.description === 'function') return t ? [r.description(t)] : []
     return [r.description]

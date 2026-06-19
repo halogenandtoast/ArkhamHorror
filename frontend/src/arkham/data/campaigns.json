@@ -1182,7 +1182,7 @@
   {
     "id": "10",
     "name": "The Feast of Hemlock Vale",
-    "alpha": true,
+    "beta": true,
     "additional": [
       {
         "title": "theFeastOfHemlockVale.campaignLog.map.title",

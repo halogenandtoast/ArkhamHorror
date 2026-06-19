@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.HemlockChapelNight (hemlockChapelNight) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -22,7 +23,18 @@ instance HasAbilities HemlockChapelNight where
           $ forced
           $ DiscoverClues #after Anyone (be a) AnyValue
       , playerLimit PerGame
-          $ restricted a 2 (Here <> youExist (HealableInvestigator (a.ability 2) #horror You)) actionAbility
+          $ restricted
+            a
+            2
+            ( Here
+                <> youExist
+                  ( oneOf
+                      [ HealableInvestigator (a.ability 2) #horror You
+                      , DiscardWith (HasCard #spell) <> can.have.cards.leaveDiscard
+                      ]
+                  )
+            )
+            actionAbility
       ]
 
 instance RunMessage HemlockChapelNight where

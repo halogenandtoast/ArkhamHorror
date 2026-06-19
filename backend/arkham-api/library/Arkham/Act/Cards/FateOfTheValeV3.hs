@@ -64,10 +64,10 @@ instance RunMessage FateOfTheValeV3 where
         resources <- getSpendableResources iid
         items <- select $ assetControlledBy iid <> #item <> DiscardableAsset
         when (resources >= 5 || notNull items) do
-          chooseOneM iid do
-            labeled "Done" nothing
+          chooseOneM iid $ scenarioI18n do
+            labeledI "done" nothing
             when (resources >= 5) do
-              labeled "Spend 5 resources to place 1 additional kindling" do
+              labeled' "fateOfTheValeV3.spendResourcesForKindling" do
                 spendResources iid 5
                 placeTokens (attrs.ability 1) lid Kindling 1
             targets items \item -> do

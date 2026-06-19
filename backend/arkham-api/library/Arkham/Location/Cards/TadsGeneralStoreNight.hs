@@ -5,7 +5,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Token (Token (Resource))
+import Arkham.Token (Token (Kindling))
 
 newtype TadsGeneralStoreNight = TadsGeneralStoreNight LocationAttrs
   deriving anyclass IsLocation
@@ -24,11 +24,11 @@ instance HasAbilities TadsGeneralStoreNight where
       $ groupLimit PerRound
       $ mkAbility a 1
       $ freeReaction
-      $ PlacedToken #after AnySource (TargetIs $ toTarget a.id) Resource
+      $ PlacedToken #after AnySource (TargetIs $ toTarget a.id) Kindling
 
 instance RunMessage TadsGeneralStoreNight where
   runMessage msg l@(TadsGeneralStoreNight attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      placeTokens (attrs.ability 1) attrs Resource 1
+      placeTokens (attrs.ability 1) attrs Kindling 1
       pure l
     _ -> TadsGeneralStoreNight <$> liftRunMessage msg attrs

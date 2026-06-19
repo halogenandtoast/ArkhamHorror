@@ -81,6 +81,9 @@
       "letMarquezCarryOutPlan": "Let Dr. Marquez carry out her plan",
       "doItOurselves": "Do it ourselves"
     },
+    "fateOfTheValeV3": {
+      "spendResourcesForKindling": "Spend 5 resources to place 1 additional kindling"
+    },
     "shatteredMemories": {
       "doNotTakeControl": "Do not take control of a resident"
     },

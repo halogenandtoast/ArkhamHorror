@@ -27,11 +27,9 @@ scenarioI18n a = campaignI18n $ scope "hemlockHouse" a
 The Cellar (Shapeless Cellar enemy-location) is at Y<0 → floor 0.
 -}
 getFloorNumber :: (HasGame m, Tracing m) => LocationId -> m Int
-getFloorNumber lid = do
-  mPos <- field LocationPosition lid
-  case mPos of
-    Just (Pos _ y) | y >= 0 -> pure (y + 1)
-    _ -> pure 0
+getFloorNumber lid = fieldMayJoin LocationPosition lid <&> \case
+    Just (Pos _ y) | y >= 0 -> y + 1
+    _ -> 0
 
 {- | Number of seals on a location.
 Seals are modeled as Resource tokens placed by the act/agenda's seal action

@@ -13,18 +13,20 @@ interface RoomData {
   roomArkhamGameId: string
 }
 
+type AdminGameDetailsEntry = GameDetails | GameDetailsEntry | { error: string }
+
 interface AdminData {
   currentUsers: number
   activeUsers: number
   roomData: RoomData[]
-  recentGames: GameDetailsEntry[]
-  activeGames: GameDetailsEntry[]
+  recentGames: AdminGameDetailsEntry[]
+  activeGames: AdminGameDetailsEntry[]
 }
 
 const request = await api.get<AdminData>('admin')
 const data = computed(() => request.data)
 
-const isGameDetails = (entry: GameDetailsEntry): entry is GameDetails & { tag: 'game' } => entry.tag === 'game'
+const isGameDetails = (entry: AdminGameDetailsEntry): entry is GameDetails => !('error' in entry)
 
 const activeGameEntries = data.value.activeGames.filter(isGameDetails)
 const recentGameEntries = data.value.recentGames.filter(isGameDetails)

@@ -163,7 +163,7 @@ resolveAbyssDraw iid source card = do
         enemyCard <- fetchCard (residentEnemyDef resident)
         focusCards [enemyCard] do
           chooseOneM iid do
-            labeled "Continue" do
+            labeledI "continue" do
               unfocusCards
               obtainCard card
               withLocationOf iid \lid -> do

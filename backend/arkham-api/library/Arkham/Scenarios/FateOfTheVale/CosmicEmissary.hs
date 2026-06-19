@@ -44,4 +44,4 @@ resolveCosmicEmissaryShatteredAbility :: ReverseQueue m => EnemyAttrs -> Investi
 resolveCosmicEmissaryShatteredAbility attrs iid = do
   chooseOneM iid do
     labeledI "automaticallyFailTest" failSkillTest
-    labeled "This enemy attacks you" $ initiateEnemyAttack attrs (attrs.ability 1) iid
+    labeledI "thisEnemyAttacksYou" $ initiateEnemyAttack attrs (attrs.ability 1) iid

@@ -7,6 +7,7 @@
   "applyResults": "Apply Results",
   "assets": "Assets",
   "attacksYou": "{name} attacks you",
+  "thisEnemyAttacksYou": "This enemy attacks you",
   "automaticallyEvade": "Automatically evade {name}",
   "automaticallyEvadeAnotherEnemy": "Automatically evade another enemy",
   "automaticallyEvadeThatEnemy": "Automatically evade that enemy",

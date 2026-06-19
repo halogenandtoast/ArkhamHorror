@@ -79,6 +79,13 @@
     "reclaimedByNature": {
       "nearestEnemyAttacks": "Choose the nearest enemy. That enemy attacks you",
       "enemiesHeal": "Each enemy at your location and each connecting location heals 1 damage"
+    },
+    "theOnslaught": {
+      "eachUndefeatedInvestigatorSuffersMentalTrauma": "Each undefeated investigator suffers 1 mental trauma",
+      "chooseResidentToSacrifice": "Choose a resident to sacrifice"
+    },
+    "dawnOfTheFinalDay": {
+      "searchForRandomBasicMadnessWeakness": "Search the collection for a random basic Madness weakness and add it to your deck"
     }
   },
   "remembered": {

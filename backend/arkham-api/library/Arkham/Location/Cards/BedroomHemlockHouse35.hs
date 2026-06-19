@@ -2,6 +2,7 @@ module Arkham.Location.Cards.BedroomHemlockHouse35 (bedroomHemlockHouse35) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -35,8 +36,8 @@ instance HasAbilities BedroomHemlockHouse35 where
 instance RunMessage BedroomHemlockHouse35 where
   runMessage msg l@(BedroomHemlockHouse35 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      chooseOneM iid $ do
-        labeled "Draw 1 card" $ drawCards iid (attrs.ability 1) 1
-        labeled "Gain 2 resources" $ gainResources iid (attrs.ability 1) 2
+      chooseOneM iid $ withI18n do
+        countVar 1 $ labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
+        countVar 2 $ labeled' "gainResources" $ gainResources iid (attrs.ability 1) 2
       pure l
     _ -> BedroomHemlockHouse35 <$> liftRunMessage msg attrs

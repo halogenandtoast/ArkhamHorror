@@ -1,6 +1,8 @@
 module Arkham.Location.Cards.TheOldMillNight (theOldMillNight) where
 
 import Arkham.Ability
+import Arkham.Helpers.GameValue (getPlayerCountValue)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -34,10 +36,11 @@ instance RunMessage TheOldMillNight where
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> oldMillReward l iid
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      chooseOneM iid do
-        labeled "Spend clues to automatically succeed" do
+      clues <- getPlayerCountValue (PerPlayer 2)
+      chooseOneM iid $ scenarioI18n do
+        labeled' "spendCluesToAutomaticallySucceed" do
           withCost iid (GroupClueCost (PerPlayer 2) Anywhere) $ doStep 1 msg
-        labeled "Do not spend clues" nothing
+        unscoped $ countVar clues $ labeled' "doNotSpendClues" nothing
       pure l
     DoStep 1 (FailedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> oldMillReward l iid
     _ -> TheOldMillNight <$> liftRunMessage msg attrs

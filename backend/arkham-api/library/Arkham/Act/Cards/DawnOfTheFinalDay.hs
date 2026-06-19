@@ -26,10 +26,10 @@ instance RunMessage DawnOfTheFinalDay where
           gameModifier attrs iid Semaphore
           liftIO $ f (ClientCardOnly pid "The Bliss" (toJSON $ flipCard $ toCard attrs))
           chooseOneM iid do
-            labeled "Suffer 1 mental trauma" do
+            unscoped (countVar 1 $ labeled' "sufferMentalTrauma") do
               sufferMentalTrauma iid 1
               gainXp iid attrs (ikey "xp.bonus") 2
-            labeled "Search the collection for a random basic Madness weakness and add it to your deck" do
+            labeled' "dawnOfTheFinalDay.searchForRandomBasicMadnessWeakness" do
               searchCollectionForRandomBasicWeakness iid attrs [Madness]
               gainXp iid attrs (ikey "xp.bonus") 2
       pure a

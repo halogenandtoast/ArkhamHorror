@@ -1,6 +1,7 @@
 module Arkham.Asset.Assets.BountyContractsSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyTokens))
 import Arkham.Investigator.Cards (tonyMorgan)
 import Arkham.Projection
@@ -30,6 +31,25 @@ spec = describe "Bounty Contracts" do
       self `moveTo` location
       enemy <- testEnemy & prop @"fight" 1 & prop @"health" 2
       enemy `spawnAt` location
+      useReaction -- place bounty
+      resolveAmounts self [("Bounties", 2)]
+      sid <- self `fightEnemy` enemy
+      run =<< skillTestModifier sid (TestSource mempty) self (DamageDealt 1)
+      startSkillTest
+      applyResults
+      useForcedAbility
+      self.resources `shouldReturn` 2
+
+  context "After you defeat an enemy with victory points (added to the victory display)" do
+    it "still moves its bounties to your resource pool as resources" . gameTestWith tonyMorgan $ \self -> do
+      self `putCardIntoPlay` Assets.bountyContracts
+      location <- testLocation
+      self `moveTo` location
+      -- Flesh-Eater has victory points, so on defeat it is added to the victory
+      -- display rather than discarded.
+      enemy <- testEnemyWithDef Enemies.fleshEater id & prop @"fight" 1 & prop @"health" 2
+      enemy `spawnAt` location
+      setChaosTokens [Zero]
       useReaction -- place bounty
       resolveAmounts self [("Bounties", 2)]
       sid <- self `fightEnemy` enemy

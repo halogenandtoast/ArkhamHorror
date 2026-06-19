@@ -22,7 +22,11 @@ instance HasAbilities BountyContracts where
     [ restricted a 1 (available <> ControlsThis)
         $ freeReaction
         $ EnemyEntersPlay #after EnemyWithHealth
-    , restricted a 2 ControlsThis $ forced $ IfEnemyDefeated #after You ByAny EnemyWithBounty
+    , -- Use the EnemyDefeated window (resolves before the enemy leaves play)
+      -- rather than IfEnemyDefeated. An enemy with victory points is removed to
+      -- the victory display on defeat, which clears its tokens, so by the time
+      -- IfEnemyDefeated resolves the bounty tokens are gone.
+      restricted a 2 ControlsThis $ forced $ EnemyDefeated #after You ByAny EnemyWithBounty
     ]
    where
     available = if hasUses a then mempty else Never

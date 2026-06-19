@@ -198,12 +198,12 @@ aTestOfWill1 =
                 #when
                 (InvestigatorAt YourLocation)
                 (CanCancelRevelationEffect You $ basic $ NonPeril <> NonWeaknessTreachery)
-                EncounterDeck
+                AnyDeck
             , DrawCard
                 #when
                 You
                 (CanCancelRevelationEffect You $ basic NonWeaknessTreachery)
-                EncounterDeck
+                AnyDeck
             ]
     , cdLevel = Just 1
     }

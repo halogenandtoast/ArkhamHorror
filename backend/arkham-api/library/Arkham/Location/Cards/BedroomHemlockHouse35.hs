@@ -28,7 +28,7 @@ instance HasModifiersFor BedroomHemlockHouse35 where
 instance HasAbilities BedroomHemlockHouse35 where
   getAbilities (BedroomHemlockHouse35 a) =
     extendRevealed a
-      [ mkAbility a 1
+      [ restricted a 1 Here
           $ freeReaction
               (PlacedToken #after AnySource (TargetIs $ toTarget a.id) Resource)
       ]

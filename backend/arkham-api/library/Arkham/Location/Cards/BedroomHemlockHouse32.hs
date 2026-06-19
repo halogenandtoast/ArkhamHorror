@@ -33,7 +33,7 @@ instance HasAbilities BedroomHemlockHouse32 where
       [ -- "[reaction] After you place a seal on this location: Draw 1 card or
         -- gain 2 resources." Seals are tracked as Resource tokens placed by the
         -- act ability "Place 1 resource on it, as a seal".
-        mkAbility a 1
+        restricted a 1 Here
           $ freeReaction
               (PlacedToken #after AnySource (TargetIs $ toTarget a.id) Resource)
       ]

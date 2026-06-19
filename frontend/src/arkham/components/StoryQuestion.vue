@@ -434,8 +434,12 @@ button {
   flex-direction: row;
   align-items: flex-start;
   align-self: center;
+  width: min(100%, 1100px);
   height: fit-content;
-  gap: 10px;
+  margin-top: 24px;
+  gap: 24px;
+  padding: 24px;
+  box-sizing: border-box;
   border-radius: 15px;
   h2 {
     color: white;
@@ -456,7 +460,9 @@ button {
     background-color: rgba(0,0,0,0.3);
     border-radius: 15px;
     display: flex;
+    flex: 1 1 0;
     flex-direction: column;
+    min-width: 0;
     height: 100%;
     gap: 10px;
     padding-bottom: 10px;
@@ -471,6 +477,18 @@ button {
   }
   button {
     width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .question-label:has(> .question-image) {
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+
+    > .question-content {
+      width: 100%;
+    }
   }
 }
 

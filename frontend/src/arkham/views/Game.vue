@@ -283,20 +283,64 @@ watch(activePlayerId, (newActivePlayerId, oldActivePlayerId) => {
   playAudioFile('turnIndicator.ogg')
 })
 
-function skipTriggerEntries(g: Arkham.Game): { playerId: string; choiceIdx: number }[] {
-  const result: { playerId: string; choiceIdx: number }[] = []
+type SkipTriggerEntry = { playerId: string; choiceIdx: number; investigatorId: string }
+
+function skipTriggerEntries(g: Arkham.Game): SkipTriggerEntry[] {
+  const result: SkipTriggerEntry[] = []
   for (const pid of Object.keys(g.question)) {
     const cs = ArkhamGame.choices(g, pid)
     const idx = cs.findIndex((c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON)
-    if (idx !== -1) result.push({ playerId: pid, choiceIdx: idx })
+    const choice = idx === -1 ? null : cs[idx]
+    if (choice?.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON) {
+      result.push({ playerId: pid, choiceIdx: idx, investigatorId: choice.investigatorId })
+    }
   }
   return result
 }
 
+function investigatorBelongsToPlayer(g: Arkham.Game, investigatorId: string, targetPlayerId: string) {
+  return g.investigators[investigatorId]?.playerId === targetPlayerId
+}
+
+function isInvestigatorTurn(g: Arkham.Game) {
+  return g.phaseStep?.tag === 'InvestigationPhaseStep'
+    && [
+      'NextInvestigatorsTurnBeginsStep',
+      'NextInvestigatorsTurnBeginsWindow',
+      'InvestigatorTakesActionStep',
+      'InvestigatorsTurnEndsStep',
+    ].includes(g.phaseStep.contents)
+}
+
+function canCurrentPlayerSkipAllWindows(g: Arkham.Game, currentPlayerId: string) {
+  if (solo.value) return true
+
+  if (g.skillTest) {
+    return investigatorBelongsToPlayer(g, g.skillTest.investigator, currentPlayerId)
+  }
+
+  if (isInvestigatorTurn(g)) {
+    return investigatorBelongsToPlayer(g, g.activeInvestigatorId, currentPlayerId)
+  }
+
+  return true
+}
+
+function authorizedSkipTriggerEntries(g: Arkham.Game): SkipTriggerEntry[] {
+  if (!playerId.value) return []
+  if (!canCurrentPlayerSkipAllWindows(g, playerId.value)) return []
+  return skipTriggerEntries(g)
+}
+
 const skipAllAvailable = computed(() => {
-  if (!solo.value || !game.value) return false
-  return skipTriggerEntries(game.value).length > 1
+  if (!game.value) return false
+  if (skipAllPending.value.size > 0) return true
+
+  const entries = authorizedSkipTriggerEntries(game.value)
+  return solo.value ? entries.length > 1 : entries.length > 0
 })
+
+const skipAllInProgress = computed(() => skipAllPending.value.size > 0)
 
 function setGameQuestion(question: Record<string, Question>) {
   if (!game.value) return
@@ -443,7 +487,7 @@ function playAudioFile(fileName: string) {
 function continueSkipAll() {
   if (skipAllPending.value.size === 0) return
   if (!game.value) return
-  const next = skipTriggerEntries(game.value).find((e) => skipAllPending.value.has(e.playerId))
+  const next = authorizedSkipTriggerEntries(game.value).find((e) => skipAllPending.value.has(e.playerId))
   if (!next) {
     skipAllPending.value = new Set()
     return
@@ -467,7 +511,12 @@ function sendSkipFor(targetPlayerId: string, choiceIdx: number) {
 
 function skipAllTriggers() {
   if (!game.value || props.spectate) return
-  const entries = skipTriggerEntries(game.value)
+  if (skipAllPending.value.size > 0) {
+    if (!processing.value) continueSkipAll()
+    return
+  }
+
+  const entries = authorizedSkipTriggerEntries(game.value)
   if (entries.length === 0) return
   skipAllPending.value = new Set(entries.map((e) => e.playerId))
   const first = entries[0]
@@ -1165,6 +1214,7 @@ provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
 provide('skipAllTriggers', skipAllTriggers)
 provide('skipAllAvailable', skipAllAvailable)
+provide('skipAllInProgress', skipAllInProgress)
 provide('showOtherPlayersHands', showOtherPlayersHands)
 
 const onMove = (event: MouseEvent) => {

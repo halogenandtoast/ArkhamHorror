@@ -138,7 +138,16 @@ const skipTriggersAction = computed(() => {
 
 const skipAllTriggers = inject<(() => void)>('skipAllTriggers')
 const skipAllAvailable = inject<Ref<boolean>>('skipAllAvailable')
-const showSkipAll = computed(() => skipTriggersAction.value !== -1 && skipAllAvailable?.value === true)
+const skipAllInProgress = inject<Ref<boolean>>('skipAllInProgress')
+const solo = inject<Ref<boolean>>('solo')
+const isCurrentPlayersInvestigator = computed(() => props.investigator.playerId === props.playerId)
+const showSkipAll = computed(() => {
+  if (solo?.value === true) {
+    return skipTriggersAction.value !== -1 && skipAllAvailable?.value === true
+  }
+
+  return isCurrentPlayersInvestigator.value && skipAllAvailable?.value === true
+})
 
 const investigatorClass = computed(() => {
   return ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.meta !== 'Neutral' ? (props.investigator.meta ?? props.investigator.class) : props.investigator.class
@@ -437,7 +446,7 @@ const spadeInjury = computed(() => {
       </div>
       <div>
         <div class="player-buttons">
-          <div class="button-group">
+          <div class="button-group" :class="{ 'button-group--skip-all-pending': isCurrentPlayersInvestigator && skipAllInProgress }">
             <span v-if="!isMobile" class="action-container">
               <i class="spade" v-if="spadeInjury"></i>
               <i class="heart" v-if="heartInjury"></i>
@@ -488,7 +497,7 @@ const spadeInjury = computed(() => {
 
             <span class="skip-triggers-group" :class="{ 'skip-triggers-group--paired': showSkipAll }">
               <button
-                :disabled="skipTriggersAction == -1"
+                :disabled="skipTriggersAction == -1 || skipAllInProgress"
                 @click="$emit('choose', skipTriggersAction)"
                 class="skip-triggers-button"
               >{{ isMobile ? t('skip') : $t('investigator.skipTriggers') }}</button>
@@ -892,6 +901,17 @@ i.action {
       font-size: small;
     }
   }
+}
+
+.button-group--skip-all-pending > :not(.skip-triggers-group) {
+  opacity: 0.35;
+  filter: grayscale(1);
+  pointer-events: none;
+}
+
+.button-group--skip-all-pending .skip-triggers-button {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .player-buttons {

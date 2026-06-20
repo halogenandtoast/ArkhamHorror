@@ -21,7 +21,7 @@ const choose = (idx: number) => emit('choose', idx)
 
 const { t } = useI18n()
 const label = function(body: string) {
-  return formatContent(handleEmbeddedI18n(t(body), t))
+  return formatContent(handleEmbeddedI18n(body, t))
 }
 </script>
 <template>

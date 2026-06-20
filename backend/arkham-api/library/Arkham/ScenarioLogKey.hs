@@ -122,7 +122,7 @@ data ScenarioLogKey
   | TheSampleWasLost
   | TheMiGoWereDrivenOff
   | TheSecretOfTheOozeWasStolen
-  | TheExplosivesWereDiffused
+  | TheExplosivesWereDefused
   | TheExplosivesWereDetonated
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood

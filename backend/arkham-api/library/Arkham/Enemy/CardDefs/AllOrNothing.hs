@@ -6,13 +6,15 @@ siobhanRiley :: CardDef
 siobhanRiley =
   unique
     $ (enemy "90015" ("Siobhan Riley" <:> "O'Bannion Enforcer") AllOrNothing 1)
-      { cdCardTraits = setFromList [Humanoid, Criminal, Elite]
+      { cdHealth = health 6
+      , cdCardTraits = setFromList [Humanoid, Criminal, Elite]
       , cdVictoryPoints = Just 1
       }
 
 cloverClubBouncer :: CardDef
 cloverClubBouncer =
   (enemy "90016" "Clover Club Bouncer" AllOrNothing 4)
-    { cdCardTraits = setFromList [Humanoid, Criminal]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Criminal]
     , cdVictoryPoints = Just 0
     }

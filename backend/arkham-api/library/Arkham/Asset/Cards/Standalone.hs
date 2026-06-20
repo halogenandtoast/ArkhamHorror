@@ -642,14 +642,16 @@ theMilitarysPlan =
 universalSolvent :: CardDef
 universalSolvent =
   (storyAsset "85029" "Universal Solvent" 2 MiGoIncursion)
-    { cdCardTraits = setFromList [Item, Science]
+    { cdSkills = [#intellect, #wild]
+    , cdCardTraits = setFromList [Item, Science]
     , cdUses = uses Supply 4
     }
 
 petOozeling :: CardDef
 petOozeling =
   (storyAsset "85030" "Pet Oozeling" 2 MiGoIncursion)
-    { cdCardTraits = setFromList [Ally, Monster, Ooze]
+    { cdSkills = [#agility, #wild]
+    , cdCardTraits = setFromList [Ally, Monster, Ooze]
     , cdSlots = [#ally]
     , cdUnique = True
     }
@@ -657,14 +659,17 @@ petOozeling =
 miGoWeapon :: CardDef
 miGoWeapon =
   (storyAsset "85031" "Mi-Go Weapon" 2 MiGoIncursion)
-    { cdCardTraits = setFromList [Weapon, Science]
+    { cdSkills = [#combat, #wild]
+    , cdCardTraits = setFromList [Weapon, Science]
+    , cdSlots = [#hand]
     , cdUses = uses Ammo 3
     }
 
 ltWilsonStewart :: CardDef
 ltWilsonStewart =
   (storyAsset "85032" "Lt. Wilson Stewart" 2 MiGoIncursion)
-    { cdCardTraits = setFromList [Ally, Agency, Veteran]
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Ally, Agency, Veteran]
     , cdSlots = [#ally]
     , cdUnique = True
     }

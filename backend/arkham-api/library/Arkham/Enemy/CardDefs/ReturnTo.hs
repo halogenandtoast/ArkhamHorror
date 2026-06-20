@@ -7,7 +7,8 @@ import Arkham.Keyword qualified as Keyword
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul =
   (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
@@ -15,7 +16,8 @@ corpseHungryGhoul =
 ghoulFromTheDepths :: CardDef
 ghoulFromTheDepths =
   (enemy "50023" "Ghoul from the Depths" ReturnToTheGathering 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
     , cdKeywords = setFromList [Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     }
@@ -33,25 +35,29 @@ narogath =
 graveEater :: CardDef
 graveEater =
   (enemy "50038" "Grave-Eater" GhoulsOfUmordhoth 3)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
     }
 
 acolyteOfUmordhoth :: CardDef
 acolyteOfUmordhoth =
   (enemy "50039" "Acolyte of Umôrdhoth" GhoulsOfUmordhoth 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
     }
 
 discipleOfTheDevourer :: CardDef
 discipleOfTheDevourer =
   (enemy "50041" "Disciple of the Devourer" TheDevourersCult 3)
-    { cdCardTraits = setFromList [Humanoid, Cultist]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Humanoid, Cultist]
     }
 
 corpseTaker :: CardDef
 corpseTaker =
   (enemy "50042" "Corpse-Taker" TheDevourersCult 1)
-    { cdCardTraits = setFromList [Monster, Servitor, Cultist]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Monster, Servitor, Cultist]
     }
 
 jeremiahPierce :: CardDef
@@ -63,7 +69,8 @@ jeremiahPierce =
           ReturnCultOfUmordhoth
           1
       )
-      { cdCardTraits = setFromList [Humanoid, Cultist]
+      { cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
@@ -71,7 +78,8 @@ billyCooper :: CardDef
 billyCooper =
   unique
     $ (enemy "50045" ("Billy Cooper" <:> "The Crooked Cop") ReturnCultOfUmordhoth 1)
-      { cdCardTraits = setFromList [Humanoid, Cultist]
+      { cdHealth = health 4
+      , cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
@@ -84,14 +92,16 @@ almaHill =
           ReturnCultOfUmordhoth
           1
       )
-      { cdCardTraits = setFromList [Humanoid, Cultist]
+      { cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
 enthralledSecurityGuard :: CardDef
 enthralledSecurityGuard =
   (enemy "51014" "Entralled Security Guard" ReturnToExtracurricularActivities 2)
-    { cdCardTraits = setFromList [Humanoid, Abomination]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
@@ -106,13 +116,15 @@ theConductorBeastFromBeyondTheGate =
 hiredGun :: CardDef
 hiredGun =
   (enemy "51040" "Hired Gun" ReturnToBloodOnTheAltar 2)
-    { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
     }
 
 broodOfYogSothothChargingBeast :: CardDef
 broodOfYogSothothChargingBeast =
   (enemy "51042" ("Brood of Yog-Sothoth" <:> "Charging Beast") ReturnToUndimensionedAndUnseen 1)
-    { cdCardTraits = setFromList [Monster, Abomination]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Massive]
     , cdVictoryPoints = Just 1
     }
@@ -120,7 +132,8 @@ broodOfYogSothothChargingBeast =
 broodOfYogSothothSwellingDevourer :: CardDef
 broodOfYogSothothSwellingDevourer =
   (enemy "51043" ("Brood of Yog-Sothoth" <:> "Swelling Devourer") ReturnToUndimensionedAndUnseen 1)
-    { cdCardTraits = setFromList [Monster, Abomination]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Massive]
     , cdVictoryPoints = Just 1
     }
@@ -128,7 +141,8 @@ broodOfYogSothothSwellingDevourer =
 broodOfYogSothothThrashingSpawn :: CardDef
 broodOfYogSothothThrashingSpawn =
   (enemy "51044" ("Brood of Yog-Sothoth" <:> "Thrashing Spawn") ReturnToUndimensionedAndUnseen 1)
-    { cdCardTraits = setFromList [Monster, Abomination]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     }
@@ -136,7 +150,8 @@ broodOfYogSothothThrashingSpawn =
 broodOfYogSothothAmorphousTerror :: CardDef
 broodOfYogSothothAmorphousTerror =
   (enemy "51045" ("Brood of Yog-Sothoth" <:> "Amorphous Terror") ReturnToUndimensionedAndUnseen 1)
-    { cdCardTraits = setFromList [Monster, Abomination]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Massive]
     , cdVictoryPoints = Just 1
     }
@@ -144,7 +159,8 @@ broodOfYogSothothAmorphousTerror =
 sethBishopThrallOfYogSothoth :: CardDef
 sethBishopThrallOfYogSothoth =
   (enemy "51056" ("Seth Bishop" <:> "Thrall of Yog-Sothoth") ReturnToLostInTimeAndSpace 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, Abomination, Elite]
+    { cdHealth = healthPerInvestigator 4
+    , cdCardTraits = setFromList [Humanoid, Monster, Abomination, Elite]
     , cdKeywords = setFromList [Keyword.Retaliate]
     , cdVictoryPoints = Just 2
     }
@@ -152,7 +168,8 @@ sethBishopThrallOfYogSothoth =
 vassalOfTheLurker :: CardDef
 vassalOfTheLurker =
   (enemy "51071" "Vassal of the Lurker" YogSothothsEmissaries 2)
-    { cdCardTraits = setFromList [Monster, Abomination]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
@@ -161,7 +178,8 @@ laComtesseSubverterOfPlans :: CardDef
 laComtesseSubverterOfPlans =
   unique
     $ (enemy "52020" ("La Comtesse" <:> "Subverter of Plans") ReturnToCurtainCall 1)
-      { cdCardTraits = setFromList [Humanoid, Servitor]
+      { cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Servitor]
       , cdKeywords = setFromList [Keyword.Hunter]
       }
 
@@ -187,14 +205,16 @@ crazedGuest =
 keeperOfTheOath :: CardDef
 keeperOfTheOath =
   (enemy "52033" "Keeper of the Oath" ReturnToEchoesOfThePast 2)
-    { cdCardTraits = setFromList [Humanoid, Cultist]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Cultist]
     , cdVictoryPoints = Just 0
     }
 
 hostOfInsanity :: CardDef
 hostOfInsanity =
   (enemy "52037" "Host of Insanity" ReturnToTheUnspeakableOath 1)
-    { cdCardTraits = setFromList [Avatar, Elite]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Avatar, Elite]
     , cdKeywords = setFromList [Keyword.Massive, Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
@@ -202,27 +222,31 @@ hostOfInsanity =
 malformedSkeleton :: CardDef
 malformedSkeleton =
   (enemy "52053" "Malformed Skeleton" ReturnToThePallidMask 1)
-    { cdCardTraits = setFromList [Monster]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Monster]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 highPriestOfHastur :: CardDef
 highPriestOfHastur =
   (enemy "52064" "High Priest of Hastur" ReturnToDimCarcosa 1)
-    { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Cultist, Elite]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 maggotSwarm :: CardDef
 maggotSwarm =
   (enemy "52068" "Maggot Swarm" DecayingReality 2)
-    { cdCardTraits = setFromList [Creature]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Creature]
     }
 
 preyingByakhee :: CardDef
 preyingByakhee =
   (enemy "52069" "Preying Byakhee" HastursEnvoys 2)
-    { cdCardTraits = setFromList [Monster, Byakhee]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Monster, Byakhee]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 
@@ -235,7 +259,8 @@ harbingerOfValusiaTheSleeperReturns =
           ReturnToTheDoomOfEztli
           1
       )
-      { cdCardTraits = setFromList [Humanoid, Serpent, Monster, Elite]
+      { cdHealth = healthPerInvestigator 10
+      , cdCardTraits = setFromList [Humanoid, Serpent, Monster, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
       , cdVengeancePoints = Just 5
       }
@@ -251,42 +276,48 @@ theWingedSerpentTheFuryOfYig =
 featheredSerpent :: CardDef
 featheredSerpent =
   (enemy "53047" "Feathered Serpent" ReturnToPillarsOfJudgement 2)
-    { cdCardTraits = setFromList [Creature, Serpent]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Creature, Serpent]
     , cdVengeancePoints = Just 1
     }
 
 captiveSubjects :: CardDef
 captiveSubjects =
   (enemy "53058" "Captive Subjects" ReturnToTheCityOfArchives 2)
-    { cdCardTraits = singleton Monster
+    { cdHealth = health 5
+    , cdCardTraits = singleton Monster
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
     }
 
 brotherhoodAcolyte :: CardDef
 brotherhoodAcolyte =
   (enemy "53071" "Brotherhood Acolyte" CultOfPnakotus 3)
-    { cdCardTraits = setFromList [Humanoid, Cultist]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Humanoid, Cultist]
     , cdKeywords = setFromList [Keyword.Aloof]
     }
 
 stolenMind :: CardDef
 stolenMind =
   (enemy "53072" "Stolen Mind" CultOfPnakotus 1)
-    { cdCardTraits = setFromList [Humanoid, Cultist]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Cultist]
     , cdKeywords = setFromList [Keyword.Retaliate]
     }
 
 tindalosAlpha :: CardDef
 tindalosAlpha =
   (enemy "53077" "Tindalos Alpha" TemporalHunters 2)
-    { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
     }
 
 vengefulSerpent :: CardDef
 vengefulSerpent =
   (enemy "53078" "Vengeful Serpent" VenomousHate 3)
-    { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Monster, Serpent]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVengeancePoints = Just 0
     }
@@ -294,40 +325,46 @@ vengefulSerpent =
 serpentGuardian :: CardDef
 serpentGuardian =
   (enemy "53079" "Serpent Guardian" VenomousHate 1)
-    { cdCardTraits = setFromList [Construct, Serpent]
+    { cdHealth = health 5
+    , cdCardTraits = setFromList [Construct, Serpent]
     , cdKeywords = setFromList [Keyword.Aloof]
     }
 
 senatorNathanielRhodesAdeptPolitician :: CardDef
 senatorNathanielRhodesAdeptPolitician =
   (enemy "54025" ("Senator Nathanial Rhodes" <:> "Adept Politician") ReturnToAtDeathsDoorstep 1)
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = singleton Keyword.Aloof
     }
 
 dmitriKonstantinovTakingTheLongView :: CardDef
 dmitriKonstantinovTakingTheLongView =
   (enemy "54026" ("Dmitri Konstantinov" <:> "Taking the Long View") ReturnToAtDeathsDoorstep 1)
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     }
 
 returnToHeretic_38 :: CardDef
 returnToHeretic_38 =
   doubleSided "54038b"
     $ (enemy "54038" "Heretic" ReturnToTheWagesOfSin 1)
-      { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
+      { cdHealth = health 2
+      , cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
       }
 
 returnToHeretic_39 :: CardDef
 returnToHeretic_39 =
   doubleSided "54039b"
     $ (enemy "54039" "Heretic" ReturnToTheWagesOfSin 1)
-      { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
+      { cdHealth = health 2
+      , cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
       }
 
 screechingBanshee :: CardDef
 screechingBanshee =
   (enemy "54074" "Screeching Banshee" BloodthirstySpirits 2)
-    { cdCardTraits = setFromList [Monster, Geist, Spectral]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Monster, Geist, Spectral]
     , cdKeywords = singleton Keyword.Hunter
     }

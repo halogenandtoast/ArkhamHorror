@@ -23,7 +23,7 @@ instance HasAbilities FungusMound where
     extendRevealed1 a
       $ scenarioI18n
       $ withI18nTooltip "fungusMound.test"
-      $ restricted a 1 (exists $ EnemyWithTrait MiGo)
+      $ restricted a 1 (Here <> exists (EnemyWithTrait MiGo))
       $ actionAbilityWithCost (SpendTokenCost Token.Resource (TargetIs ScenarioTarget))
 
 instance RunMessage FungusMound where

@@ -8,7 +8,8 @@ elspethBaudin =
   unique
     $ doubleSided "90023b"
     $ (enemy "90023" ("Elspeth Baudin" <:> "Hyperborean Sorceress") BadBlood 1)
-      { cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
+      { cdHealth = healthPerInvestigator 4
+      , cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
       , cdKeywords =
           setFromList
             [ Keyword.Alert

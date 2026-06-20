@@ -37,12 +37,7 @@ instance HasAbilities ExtraterrestrialPhysiology where
     ]
 
 manifoldHealth :: Card -> Int
-manifoldHealth card
-  | card `cardMatch` cardIs Enemies.oozeling = 3
-  | card `cardMatch` cardIs Enemies.graspingOoze = 5
-  | card `cardMatch` cardIs Enemies.cubicOoze = 4
-  | card `cardMatch` cardIs Enemies.oozewraith = 7
-  | otherwise = 0
+manifoldHealth card = fromMaybe 0 (cdHealth (toCardDef card) >>= fixedHealth)
 
 discardUntilManifoldsHaveTotalHealthAtLeast :: Int -> [EncounterCard] -> [EncounterCard]
 discardUntilManifoldsHaveTotalHealthAtLeast x = go 0 []

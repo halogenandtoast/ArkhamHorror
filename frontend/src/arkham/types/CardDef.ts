@@ -1,5 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
-import { v2Optional } from '@/arkham/parser';
+import { v2Optional, withDefault } from '@/arkham/parser';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 
 type CardCost
@@ -51,22 +51,22 @@ const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([
 export const cardDefDecoder = JsonDecoder.object<CardDef>(
   {
     art: JsonDecoder.string(),
-    level: JsonDecoder.nullable(JsonDecoder.number()),
+    level: withDefault(null, JsonDecoder.number()),
     stage: JsonDecoder.oneOf([
       JsonDecoder.number(),
       JsonDecoder.null().map(() => undefined),
       JsonDecoder.undefined(),
     ], 'optional stage'),
-    otherSide: JsonDecoder.nullable(JsonDecoder.string()),
+    otherSide: withDefault(null, JsonDecoder.string()),
     cardType: JsonDecoder.string(),
     cardCode: JsonDecoder.string(),
-    doubleSided: JsonDecoder.boolean(),
-    classSymbols: JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'),
-    cardTraits: JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'),
-    skills: JsonDecoder.array<SkillIcon>(skillIconDecoder, 'SkillIcon[]'),
+    doubleSided: withDefault(false, JsonDecoder.boolean()),
+    classSymbols: withDefault([], JsonDecoder.array<string>(JsonDecoder.string(), 'string[]')),
+    cardTraits: withDefault([], JsonDecoder.array<string>(JsonDecoder.string(), 'string[]')),
+    skills: withDefault([], JsonDecoder.array<SkillIcon>(skillIconDecoder, 'SkillIcon[]')),
     name: nameDecoder,
-    cost: JsonDecoder.nullable(cardCostDecoder),
-    meta: JsonDecoder.succeed(),
+    cost: withDefault(null, cardCostDecoder),
+    meta: JsonDecoder.succeed().map((v: any) => v ?? {}),
     encounterSet: v2Optional(JsonDecoder.succeed()),
   },
   'CardDef',

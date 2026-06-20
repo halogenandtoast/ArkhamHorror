@@ -31,7 +31,12 @@ instance HasAbilities RescueTheChemist where
           AnySource
           Anywhere
           (LocationWithTitle "Temporary HQ")
-    , mkAbility a 2 $ forced $ AssetLeavesPlay #when (assetIs Assets.universityChemist)
+    , -- "defeated or devoured" only matters while the chemist has not been
+      -- saved; without this guard the saved branch's removeFromGame cleanup
+      -- would re-trigger this and wrongly remember "the formula was not completed".
+      restricted a 2 (not_ $ Remembered TheChemistWasSaved)
+        $ forced
+        $ AssetLeavesPlay #when (assetIs Assets.universityChemist)
     ]
 
 instance RunMessage RescueTheChemist where

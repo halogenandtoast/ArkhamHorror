@@ -63,7 +63,7 @@ instance RunMessage DefuseTheExplosives where
     DoStep 0 (ResolveThisStory _ (is attrs -> True)) -> do
       pure $ DefuseTheExplosives $ attrs & metaL .~ toJSON True
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      remember TheExplosivesWereDiffused
+      remember TheExplosivesWereDefused
       flipOver iid attrs
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
@@ -72,7 +72,7 @@ instance RunMessage DefuseTheExplosives where
       pure s
     Flip iid _ (isTarget attrs -> True) -> do
       chooseOneM iid $ targeting attrs nothing
-      whenM (remembered TheExplosivesWereDiffused) do
+      whenM (remembered TheExplosivesWereDefused) do
         stewart <- getSetAsideCard Assets.ltWilsonStewart
         investigators <- getInvestigators
         leadChooseOrRunOneM $ targets investigators (`takeControlOfSetAsideAsset` stewart)
@@ -87,7 +87,7 @@ instance RunMessage DefuseTheExplosives where
         selectEach (assetIs Assets.theMilitarysPlan) removeFromGame
         selectEach (LocationWithAnyHorror <> LocationWithTrait Oozified) \lid -> do
           removeTokens (attrs.ability 2) lid #horror 1
-          selectEach (InvestigatorAt $ LocationWithId lid) $ assignDamageTo attrs 3
+          selectEach (InvestigatorAt $ LocationWithId lid) \iid' -> directDamage iid' attrs 3
           selectEach (AssetAt (LocationWithId lid) <> #ally) \aid -> dealAssetDamage aid (attrs.ability 2) 3
         selectEach (enemyIs Enemies.subject8L08) \eid -> healDamage eid (attrs.ability 2) 5
         removeFromGame attrs

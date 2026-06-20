@@ -7,7 +7,8 @@ import Arkham.Keyword qualified as Keyword
 hoods :: CardDef
 hoods =
   (weakness "05017" "Hoods")
-    { cdCardTraits = setFromList [Humanoid, Cultist]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Cultist]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
     }
 
@@ -15,7 +16,8 @@ anetteMason :: CardDef
 anetteMason =
   unique
     $ (enemy "05057" ("Anette Mason" <:> "The High Priestess") TheWitchingHour 1)
-      { cdCardTraits = setFromList [Humanoid, Witch, Elite]
+      { cdHealth = healthPerInvestigator 4
+      , cdCardTraits = setFromList [Humanoid, Witch, Elite]
       , cdKeywords = singleton Keyword.Retaliate
       , cdVictoryPoints = Just 2
       }
@@ -25,7 +27,8 @@ josefMeiger =
   unique
     $ doubleSided "05085b"
     $ (enemy "05085" ("Josef Meiger" <:> "Lodge Host") AtDeathsDoorstep 1)
-      { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
+      { cdHealth = health 2
+      , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
       , cdKeywords = singleton Keyword.Retaliate
       , cdVictoryPoints = Just 2
       }
@@ -34,14 +37,16 @@ theSpectralWatcher :: CardDef
 theSpectralWatcher =
   unique
     $ (enemy "05086" ("The Spectral Watcher" <:> "You Are Its Prey") TheWatcher 1)
-      { cdCardTraits = setFromList [AncientOne, Spectral, Elite]
+      { cdHealth = health 5
+      , cdCardTraits = setFromList [AncientOne, Spectral, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
       }
 
 piperOfAzathoth :: CardDef
 piperOfAzathoth =
   (enemy "05088" "Piper of Azathoth" AgentsOfAzathoth 1)
-    { cdCardTraits = setFromList [Monster, Elite]
+    { cdHealth = health 7
+    , cdCardTraits = setFromList [Monster, Elite]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 2
     }
@@ -49,35 +54,40 @@ piperOfAzathoth =
 covenInitiate :: CardDef
 covenInitiate =
   (enemy "05090" "Coven Initiate" AnettesCoven 3)
-    { cdCardTraits = setFromList [Humanoid, Witch]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Witch]
     , cdRevelation = IsRevelation
     }
 
 priestessOfTheCoven :: CardDef
 priestessOfTheCoven =
   (enemy "05091" "Priestess of the Coven" AnettesCoven 1)
-    { cdCardTraits = setFromList [Humanoid, Witch]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Witch]
     , cdKeywords = singleton Keyword.Retaliate
     }
 
 lodgeNeophyte :: CardDef
 lodgeNeophyte =
   (enemy "05095" "Lodge Neophyte" SilverTwilightLodge 3)
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = singleton Keyword.Aloof
     }
 
 keeperOfSecrets :: CardDef
 keeperOfSecrets =
   (enemy "05096" "Keeper of Secrets" SilverTwilightLodge 1)
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
     }
 
 netherMist :: CardDef
 netherMist =
   (enemy "05100" "Nether Mist" SpectralPredators 1)
-    { cdCardTraits = setFromList [Monster, Spectral]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Monster, Spectral]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
@@ -85,14 +95,16 @@ netherMist =
 shadowHound :: CardDef
 shadowHound =
   (enemy "05101" "Shadow Hound" SpectralPredators 2)
-    { cdCardTraits = setFromList [Monster, Spectral]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Monster, Spectral]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
 wraith :: CardDef
 wraith =
   (enemy "05103" "Wraith" TrappedSpirits 2)
-    { cdCardTraits = setFromList [Monster, Geist, Spectral]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Monster, Geist, Spectral]
     , cdKeywords = singleton Keyword.Hunter
     }
 
@@ -100,7 +112,8 @@ brownJenkin :: CardDef
 brownJenkin =
   unique
     $ (enemy "05148" ("Brown Jenkin" <:> "The Witch's Familiar") TheSecretName 1)
-      { cdCardTraits = setFromList [Creature, Familiar, Elite]
+      { cdHealth = health 1
+      , cdCardTraits = setFromList [Creature, Familiar, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
       }
 
@@ -108,7 +121,8 @@ nahab :: CardDef
 nahab =
   unique
     $ (enemy "05149" ("Nahab" <:> "She Who Signed the Black Book") TheSecretName 1)
-      { cdCardTraits = setFromList [Monster, Geist, Witch, Elite]
+      { cdHealth = healthPerInvestigator 1
+      , cdCardTraits = setFromList [Monster, Geist, Witch, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       }
 
@@ -116,28 +130,32 @@ heretic_A :: CardDef
 heretic_A =
   doubleSided "05178b"
     $ (enemy "05178a" "Heretic" TheWagesOfSin 1)
-      { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
+      { cdHealth = health 2
+      , cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
       }
 
 heretic_C :: CardDef
 heretic_C =
   doubleSided "05178d"
     $ (enemy "05178c" "Heretic" TheWagesOfSin 1)
-      { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
+      { cdHealth = health 2
+      , cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
       }
 
 heretic_E :: CardDef
 heretic_E =
   doubleSided "05178f"
     $ (enemy "05178e" "Heretic" TheWagesOfSin 1)
-      { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
+      { cdHealth = health 2
+      , cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
       }
 
 heretic_G :: CardDef
 heretic_G =
   doubleSided "05178h"
     $ (enemy "05178g" "Heretic" TheWagesOfSin 1)
-      { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
+      { cdHealth = health 2
+      , cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
       , cdOutOfPlayEffects = [InDiscardEffect]
       }
 
@@ -145,27 +163,31 @@ heretic_I :: CardDef
 heretic_I =
   doubleSided "05178j"
     $ (enemy "05178i" "Heretic" TheWagesOfSin 1)
-      { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
+      { cdHealth = health 2
+      , cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
       }
 
 heretic_K :: CardDef
 heretic_K =
   doubleSided "05178l"
     $ (enemy "05178k" "Heretic" TheWagesOfSin 1)
-      { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
+      { cdHealth = health 2
+      , cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
       }
 
 vengefulWitch :: CardDef
 vengefulWitch =
   (enemy "05179" "Vengeful Witch" TheWagesOfSin 2)
-    { cdCardTraits = setFromList [Humanoid, Witch]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Witch]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
     }
 
 malevolentSpirit :: CardDef
 malevolentSpirit =
   (enemy "05180" "Malevolent Spirit" TheWagesOfSin 2)
-    { cdCardTraits = setFromList [Monster, Geist, Spectral]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Monster, Geist, Spectral]
     }
 
 nathanWickMasterOfInitiation :: CardDef
@@ -191,21 +213,24 @@ nathanWickMasterOfIndoctrination =
 lodgeJailor :: CardDef
 lodgeJailor =
   (enemy "05218" "Lodge Jailor" ForTheGreaterGood 1)
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = singleton Keyword.Aloof
     }
 
 cellKeeper :: CardDef
 cellKeeper =
   (enemy "05219" "Cell Keeper" ForTheGreaterGood 1)
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = singleton Keyword.Alert
     }
 
 summonedBeast :: CardDef
 summonedBeast =
   (enemy "05220" ("Summoned Beast" <:> "Guardian of the Trap") ForTheGreaterGood 1)
-    { cdCardTraits = setFromList [Monster, SilverTwilight, Elite]
+    { cdHealth = healthPerInvestigator 6
+    , cdCardTraits = setFromList [Monster, SilverTwilight, Elite]
     , cdKeywords = setFromList [Keyword.Retaliate, Keyword.Hunter]
     , cdVictoryPoints = Just 2
     }
@@ -213,14 +238,16 @@ summonedBeast =
 knightOfTheInnerCircle :: CardDef
 knightOfTheInnerCircle =
   (enemy "05221" "Knight of the Inner Circle" ForTheGreaterGood 2)
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Aloof, Keyword.Hunter]
     }
 
 knightOfTheOuterVoid :: CardDef
 knightOfTheOuterVoid =
   (enemy "05222" "Knight of the Outer Void" ForTheGreaterGood 2)
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Peril, Keyword.Retaliate]
     , cdRevelation = IsRevelation
     }
@@ -268,14 +295,16 @@ valentinoRivas =
 whippoorwillUnionAndDisillusion :: CardDef
 whippoorwillUnionAndDisillusion =
   (enemy "05266" "Whippoorwill" UnionAndDisillusion 3)
-    { cdCardTraits = setFromList [Creature]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Creature]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
 
 spectralRaven :: CardDef
 spectralRaven =
   (enemy "05267" "Spectral Raven" UnionAndDisillusion 2)
-    { cdCardTraits = setFromList [Creature, Spectral]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Creature, Spectral]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
     }
 
@@ -302,7 +331,8 @@ carlSanfordDeathlessFanatic =
 lodgeEnforcer :: CardDef
 lodgeEnforcer =
   (enemy "05309" "Lodge Enforcer" SecretsOfTheUniverse 2)
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = singleton Keyword.Retaliate
     , cdVictoryPoints = Just 1
     }
@@ -310,7 +340,8 @@ lodgeEnforcer =
 witnessOfChaos :: CardDef
 witnessOfChaos =
   (enemy "05311" "Witness of Chaos" MusicOfTheDamned 2)
-    { cdCardTraits = setFromList [Humanoid, Witch]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Witch]
     , cdKeywords = singleton Keyword.Hunter
     , cdVictoryPoints = Just 1
     }
@@ -318,7 +349,8 @@ witnessOfChaos =
 mindlessDancer :: CardDef
 mindlessDancer =
   (enemy "05341" "Mindless Dancer" BeforeTheBlackThrone 3)
-    { cdCardTraits = singleton Monster
+    { cdHealth = health 5
+    , cdCardTraits = singleton Monster
     , cdKeywords = singleton Keyword.Hunter
     }
 

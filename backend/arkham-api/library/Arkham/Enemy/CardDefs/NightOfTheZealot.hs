@@ -6,7 +6,8 @@ import Arkham.Keyword qualified as Keyword
 mobEnforcer :: CardDef
 mobEnforcer =
   (basicWeakness "01101" "Mob Enforcer")
-    { cdCardTraits = setFromList [Humanoid, Criminal]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Criminal]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdAlternateCardCodes = ["01601"]
     }
@@ -14,7 +15,8 @@ mobEnforcer =
 silverTwilightAcolyte :: CardDef
 silverTwilightAcolyte =
   (basicWeakness "01102" "Silver Twilight Acolyte")
-    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdAlternateCardCodes = ["01602"]
     }
@@ -22,7 +24,8 @@ silverTwilightAcolyte =
 stubbornDetective :: CardDef
 stubbornDetective =
   (basicWeakness "01103" "Stubborn Detective")
-    { cdCardTraits = setFromList [Humanoid, Detective]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Detective]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdAlternateCardCodes = ["01603"]
     }
@@ -30,7 +33,8 @@ stubbornDetective =
 ghoulPriest :: CardDef
 ghoulPriest =
   (enemy "01116" "Ghoul Priest" TheGathering 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul, Elite]
+    { cdHealth = healthPerInvestigator 5
+    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 2
     }
@@ -38,14 +42,16 @@ ghoulPriest =
 fleshEater :: CardDef
 fleshEater =
   (enemy "01118" "Flesh-Eater" TheGathering 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
     , cdVictoryPoints = Just 1
     }
 
 icyGhoul :: CardDef
 icyGhoul =
   (enemy "01119" "Icy Ghoul" TheGathering 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
     , cdVictoryPoints = Just 1
     }
 
@@ -68,7 +74,8 @@ wolfManDrew :: CardDef
 wolfManDrew =
   unique
     $ (enemy "01137" ("\"Wolf-Man\" Drew" <:> "The Cannibal") CultOfUmordhoth 1)
-      { cdCardTraits = setFromList [Humanoid, Cultist]
+      { cdHealth = health 4
+      , cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
@@ -76,7 +83,8 @@ hermanCollins :: CardDef
 hermanCollins =
   unique
     $ (enemy "01138" ("Herman Collins" <:> "The Undertaker") CultOfUmordhoth 1)
-      { cdCardTraits = setFromList [Humanoid, Cultist]
+      { cdHealth = health 4
+      , cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
@@ -84,7 +92,8 @@ peterWarren :: CardDef
 peterWarren =
   unique
     $ (enemy "01139" ("Peter Warren" <:> "The Occult Professor") CultOfUmordhoth 1)
-      { cdCardTraits = setFromList [Humanoid, Cultist]
+      { cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
@@ -92,7 +101,8 @@ victoriaDevereux :: CardDef
 victoriaDevereux =
   unique
     $ (enemy "01140" ("Victoria Devereux" <:> "The Collector") CultOfUmordhoth 1)
-      { cdCardTraits = setFromList [Humanoid, Cultist]
+      { cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
@@ -100,7 +110,8 @@ ruthTurner :: CardDef
 ruthTurner =
   unique
     $ (enemy "01141" ("Ruth Turner" <:> "The Mortician") CultOfUmordhoth 1)
-      { cdCardTraits = setFromList [Humanoid, Cultist]
+      { cdHealth = health 4
+      , cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
@@ -108,53 +119,61 @@ umordhoth :: CardDef
 umordhoth =
   unique
     $ (enemy "01157" ("Umôrdhoth" <:> "The Devourer Below") TheDevourerBelow 1)
-      { cdCardTraits = setFromList [AncientOne, Elite]
+      { cdHealth = health 6
+      , cdCardTraits = setFromList [AncientOne, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
       }
 
 swarmOfRats :: CardDef
 swarmOfRats =
   (enemy "01159" "Swarm of Rats" Rats 3)
-    { cdCardTraits = setFromList [Creature]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Creature]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 ghoulMinion :: CardDef
 ghoulMinion =
   (enemy "01160" "Ghoul Minion" Ghouls 3)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
     }
 
 ravenousGhoul :: CardDef
 ravenousGhoul =
   (enemy "01161" "Ravenous Ghoul" Ghouls 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
     }
 
 acolyte :: CardDef
 acolyte =
   (enemy "01169" "Acolyte" DarkCult 3)
-    { cdCardTraits = setFromList [Humanoid, Cultist]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Humanoid, Cultist]
     }
 
 wizardOfTheOrder :: CardDef
 wizardOfTheOrder =
   (enemy "01170" "Wizard of the Order" DarkCult 1)
-    { cdCardTraits = setFromList [Humanoid, Cultist]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Cultist]
     , cdKeywords = setFromList [Keyword.Retaliate]
     }
 
 huntingNightgaunt :: CardDef
 huntingNightgaunt =
   (enemy "01172" "Hunting Nightgaunt" Nightgaunts 2)
-    { cdCardTraits = setFromList [Monster, Nightgaunt]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Monster, Nightgaunt]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 screechingByakhee :: CardDef
 screechingByakhee =
   (enemy "01175" "Screeching Byakhee" AgentsOfHastur 2)
-    { cdCardTraits = setFromList [Monster, Byakhee]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Monster, Byakhee]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
@@ -162,27 +181,31 @@ screechingByakhee =
 yithianObserver :: CardDef
 yithianObserver =
   (enemy "01177" "Yithian Observer" AgentsOfYogSothoth 2)
-    { cdCardTraits = setFromList [Monster, Yithian]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Monster, Yithian]
     , cdVictoryPoints = Just 1
     }
 
 relentlessDarkYoung :: CardDef
 relentlessDarkYoung =
   (enemy "01179" "Relentless Dark Young" AgentsOfShubNiggurath 1)
-    { cdCardTraits = setFromList [Monster, DarkYoung]
+    { cdHealth = health 5
+    , cdCardTraits = setFromList [Monster, DarkYoung]
     , cdVictoryPoints = Just 1
     }
 
 goatSpawn :: CardDef
 goatSpawn =
   (enemy "01180" "Goat Spawn" AgentsOfShubNiggurath 3)
-    { cdCardTraits = setFromList [Humanoid, Monster]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Monster]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
 youngDeepOne :: CardDef
 youngDeepOne =
   (enemy "01181" "Young Deep One" AgentsOfCthulhu 2)
-    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Hunter]
     }

@@ -1,9 +1,10 @@
 module Arkham.Treachery.Cards.Replication (replication) where
 
 import Arkham.Capability
+import Arkham.Card.CardDef (cdHealth, fixedHealth, toCardDef)
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Types (Field (EnemyDamage, EnemyHealth, EnemyLocation))
+import Arkham.Enemy.Types (Field (EnemyCard, EnemyDamage, EnemyHealth, EnemyLocation))
 import Arkham.Helpers.Scenario (getEncounterDeckKey)
 import Arkham.Matcher
 import Arkham.Message.Lifted.CreateEnemy
@@ -26,45 +27,45 @@ getMostDamagedManifold = do
   manifolds <- selectWithField EnemyDamage $ EnemyWithTrait Manifold
   pure $ fst <$> headMay (sortOn (Down . snd) manifolds)
 
+-- | The enemy's printed health (Nothing if it has variable/special/no health).
+getEnemyPrintedHealth :: (HasGame m, Tracing m) => EnemyId -> m (Maybe Int)
+getEnemyPrintedHealth eid = do
+  card <- field EnemyCard eid
+  pure $ cdHealth (toCardDef card) >>= fixedHealth
+
 instance RunMessage Replication where
   runMessage msg t@(Replication attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      mMostDamaged <- getMostDamagedManifold
-      case mMostDamaged of
+      getMostDamagedManifold >>= \case
         Nothing -> gainSurge attrs
-        Just _ -> do
+        Just mostDamaged -> do
           hasEncounterDeck <- can.target.encounterDeck iid
           if hasEncounterDeck
             then do
               key <- getEncounterDeckKey iid
-              -- NOTE: We cannot express "Manifold enemy with printed health <=
-              -- the most-damaged enemy" in the card matcher, so we discard until
-              -- the FIRST Manifold enemy and validate the printed-health
-              -- constraint when it is found (see RequestedEncounterCard).
+              -- Discard until another Manifold enemy with equal or lower printed
+              -- health than the most-damaged one is discarded.
+              mThreshold <- getEnemyPrintedHealth mostDamaged
+              let withinHealth = maybe AnyCard CardWithMaxPrintedHealth mThreshold
               push
                 $ DiscardUntilFirst
                   iid
                   (toSource attrs)
                   (Deck.EncounterDeckByKey key)
-                  (BasicCardMatch $ #enemy <> CardWithTrait Manifold)
+                  (BasicCardMatch $ #enemy <> CardWithTrait Manifold <> withinHealth)
             else gainSurge attrs
       pure t
     RequestedEncounterCard (isSource attrs -> True) (Just iid) mcard -> do
       mMostDamaged <- getMostDamagedManifold
       case (mcard, mMostDamaged) of
         (Just card, Just mostDamaged) -> do
-          mlid <- field EnemyLocation mostDamaged
-          case mlid of
+          field EnemyLocation mostDamaged >>= \case
             Nothing -> gainSurge attrs
             Just lid -> do
-              -- Spawn the discarded enemy at the same location as the
-              -- most-damaged Manifold enemy. After it is created, redistribute
-              -- damage between the two (see HandleTargetChoice).
-              --
-              -- NOTE: The printed-health (<=) constraint from the card text is
-              -- NOT enforced; we spawn the first Manifold enemy discarded
-              -- regardless of its printed health (the matcher cannot express
-              -- "printed health <= X").
+              -- Spawn the discarded enemy (already constrained to printed health
+              -- <= the most-damaged enemy by the discard matcher) at the same
+              -- location as the most-damaged Manifold enemy. After it is created,
+              -- redistribute damage between the two (see HandleTargetChoice).
               runCreateEnemyT card lid \enemyId -> do
                 setCreationInvestigator iid
                 afterCreate

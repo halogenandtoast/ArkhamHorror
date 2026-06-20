@@ -2,6 +2,7 @@ module Arkham.Scenario.Scenarios.TheBlobThatAteEverything (theBlobThatAteEveryth
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.DamageEffect (nonAttack)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -10,6 +11,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
 import Arkham.Helpers.SkillTest (getCommittedCards, getSkillTestAction, getSkillTestTargetedEnemy, withSkillTest)
+import Arkham.Helpers.Xp (toBonus)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
@@ -232,7 +234,12 @@ instance RunMessage TheBlobThatAteEverything where
       endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> scope "resolutions" do
-      resolutionWithXp "resolution2" $ allGainXp' attrs
+      resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 3
+      -- Any one investigator may add each in-play reward asset to their deck.
+      rewardAssets <-
+        select
+          $ mapOneOf assetIs [Assets.universalSolvent, Assets.petOozeling, Assets.miGoWeapon, Assets.ltWilsonStewart]
+      for_ rewardAssets addCampaignCardToDeckChoice_
       endOfScenario
       pure s
     _ -> TheBlobThatAteEverything <$> liftRunMessage msg attrs

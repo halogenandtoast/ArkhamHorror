@@ -9,7 +9,8 @@ sadieSheldon :: CardDef
 sadieSheldon =
   unique
     $ (enemy "11510" ("Sadie Sheldon" <:> "Runs this Town") OneLastJob 1)
-      { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate, Elite]
+      { cdHealth = health 4
+      , cdCardTraits = setFromList [Humanoid, Criminal, Syndicate, Elite]
       , cdKeywords = setFromList [Keyword.Retaliate]
       , cdVictoryPoints = Just 1
       }
@@ -18,7 +19,8 @@ naomiOBannion :: CardDef
 naomiOBannion =
   unique
     $ (enemy "11511" ("Naomi O'Bannion" <:> "Just Doing Business") OneLastJob 1)
-      { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate, Elite]
+      { cdHealth = health 4
+      , cdCardTraits = setFromList [Humanoid, Criminal, Syndicate, Elite]
       , cdKeywords = setFromList [Keyword.Alert]
       , cdVictoryPoints = Just 1
       }
@@ -26,13 +28,15 @@ naomiOBannion =
 gangSoldier :: CardDef
 gangSoldier =
   (enemy "11512" "Gang Soldier" OneLastJob 3)
-    { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
     }
 
 gangEnforcer :: CardDef
 gangEnforcer =
   (enemy "11513" "Gang Enforcer" OneLastJob 2)
-    { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
@@ -40,7 +44,8 @@ gangEnforcer =
 gangInformant :: CardDef
 gangInformant =
   (enemy "11514" "Gang Informant" OneLastJob 2)
-    { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
     , cdKeywords = setFromList [Keyword.Aloof]
     }
 
@@ -48,7 +53,8 @@ gangInformant =
 deepOneMatron :: CardDef
 deepOneMatron =
   (enemy "11533" "Deep One Matron" TheWesternWall 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    { cdHealth = health 6
+    , cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
@@ -57,7 +63,8 @@ huntingParasite :: CardDef
 huntingParasite =
   unique
     $ (enemy "11535" "Hunting Parasite" TheWesternWall 1)
-      { cdCardTraits = setFromList [Monster, Stowaway]
+      { cdHealth = health 1
+      , cdCardTraits = setFromList [Monster, Stowaway]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
       }
 
@@ -74,14 +81,16 @@ underseaParasite :: CardDef
 underseaParasite =
   doubleSided "11549b"
     $ (enemy "11549" "Undersea Parasite" TheDrownedQuarter 1)
-      { cdCardTraits = setFromList [Monster, Glyph, Elite]
+      { cdHealth = health 1
+      , cdCardTraits = setFromList [Monster, Glyph, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
       }
 
 medusa :: CardDef
 medusa =
   (enemy "11551" "Medusa" TheDrownedQuarter 3)
-    { cdCardTraits = setFromList [Monster]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Monster]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (not_ FullyFloodedLocation)]
     }
 
@@ -90,7 +99,8 @@ mother :: CardDef
 mother =
   unique
     $ (enemy "11573" "Mother" TheApiary 1)
-      { cdCardTraits = setFromList [Abomination, Stowaway, Elite]
+      { cdHealth = healthPerInvestigator 8
+      , cdCardTraits = setFromList [Abomination, Stowaway, Elite]
       , cdKeywords = setFromList [Keyword.Massive, Keyword.Relentless]
       , cdVictoryPoints = Just 2
       }
@@ -98,7 +108,8 @@ mother =
 grotesqueAmalgam :: CardDef
 grotesqueAmalgam =
   (enemy "11574" "Grotesque Amalgam" TheApiary 1)
-    { cdCardTraits = setFromList [Monster, Stowaway]
+    { cdHealth = health 5
+    , cdCardTraits = setFromList [Monster, Stowaway]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     }
@@ -106,7 +117,8 @@ grotesqueAmalgam =
 apiaryTender :: CardDef
 apiaryTender =
   (enemy "11575" "Apiary Tender" TheApiary 3)
-    { cdCardTraits = setFromList [Monster, Stowaway]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Monster, Stowaway]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
 
@@ -114,7 +126,8 @@ squamousParasite :: CardDef
 squamousParasite =
   doubleSided "11580b"
     $ (enemy "11580" "Squamous Parasite" TheApiary 1)
-      { cdCardTraits = setFromList [Monster, Glyph]
+      { cdHealth = healthPerInvestigator 1
+      , cdCardTraits = setFromList [Monster, Glyph]
       , cdKeywords = setFromList [Keyword.Retaliate]
       }
 
@@ -123,14 +136,16 @@ slithererInDarkness :: CardDef
 slithererInDarkness =
   unique
     $ (enemy "11605" ("Slitherer in Darkness" <:> "Lurker From Below") TheGrandVault 1)
-      { cdCardTraits = setFromList [Monster, Stowaway, Elite]
+      { cdHealth = health 5
+      , cdCardTraits = setFromList [Monster, Stowaway, Elite]
       , cdVictoryPoints = Just 1
       }
 
 vaultAttendant :: CardDef
 vaultAttendant =
   (enemy "11606" "Vault Attendant" TheGrandVault 3)
-    { cdCardTraits = setFromList [Monster, Keeper]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Monster, Keeper]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 
@@ -138,14 +153,16 @@ vaultAttendant =
 courtKeeperObserverOfDreams :: CardDef
 courtKeeperObserverOfDreams =
   (enemy "11630" ("Court Keeper" <:> "Observer of Dreams") CourtOfTheAncients 1)
-    { cdCardTraits = setFromList [Monster, Keeper, Glyph, Elite]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Monster, Keeper, Glyph, Elite]
     , cdVictoryPoints = Just 1
     }
 
 courtKeeperWeaverOfNightmares :: CardDef
 courtKeeperWeaverOfNightmares =
   (enemy "11631" ("Court Keeper" <:> "Weaver of Nightmares") CourtOfTheAncients 1)
-    { cdCardTraits = setFromList [Monster, Keeper, Glyph, Elite]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Monster, Keeper, Glyph, Elite]
     , cdVictoryPoints = Just 1
     }
 
@@ -153,7 +170,8 @@ colossalTyrant :: CardDef
 colossalTyrant =
   unique
     $ (enemy "11635" ("Colossal Tyrant" <:> "Trapped in the Tower") CourtOfTheAncients 1)
-      { cdCardTraits = setFromList [Monster, Abomination, Elite]
+      { cdHealth = health 6
+      , cdCardTraits = setFromList [Monster, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Massive]
       , cdVictoryPoints = Just 1
       }
@@ -161,7 +179,8 @@ colossalTyrant =
 wingedKeeper :: CardDef
 wingedKeeper =
   (enemy "11637" "Winged Keeper" CourtOfTheAncients 2)
-    { cdCardTraits = setFromList [Monster, Keeper]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Monster, Keeper]
     , cdKeywords = setFromList [Keyword.Alert]
     }
 
@@ -169,13 +188,15 @@ wingedKeeper =
 primevalTerror :: CardDef
 primevalTerror =
   (enemy "11670" "Primeval Terror" ObsidianCanyons 3)
-    { cdCardTraits = setFromList [Monster]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Monster]
     }
 
 starVampire :: CardDef
 starVampire =
   (enemy "11671" "Star Vampire" ObsidianCanyons 2)
-    { cdCardTraits = setFromList [Monster, Abomination]
+    { cdHealth = health 5
+    , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Relentless]
     , cdVictoryPoints = Just 1
     }
@@ -195,7 +216,8 @@ randallTillinghast :: CardDef
 randallTillinghast =
   unique
     $ (enemy "11686" ("Randall Tillinghast" <:> "Out for Your Blood") TheDoomOfArkhamPartI 1)
-      { cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
+      { cdHealth = healthPerInvestigator 1
+      , cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
       , cdKeywords = setFromList [Keyword.Relentless, Keyword.Retaliate]
       , cdVictoryPoints = Just 1
       }
@@ -205,7 +227,8 @@ cthulhuAncientEvil :: CardDef
 cthulhuAncientEvil =
   unique
     $ (enemy "11701" ("Cthulhu" <:> "Ancient Evil") TheDoomOfArkhamPartII 1)
-      { cdCardTraits = setFromList [AncientOne, Elite]
+      { cdHealth = healthStar
+      , cdCardTraits = setFromList [AncientOne, Elite]
       , cdKeywords = setFromList [Keyword.Massive]
       }
 
@@ -273,7 +296,8 @@ cthulhuWickedClawEnraged =
 stowawayDrone :: CardDef
 stowawayDrone =
   (enemy "11721" "Stowaway Drone" Stowaways 3)
-    { cdCardTraits = setFromList [Monster, Stowaway]
+    { cdHealth = health 1
+    , cdCardTraits = setFromList [Monster, Stowaway]
     , cdKeywords = setFromList [Keyword.Aloof]
     }
 
@@ -281,13 +305,15 @@ stowawayDrone =
 pilgrimAcolyte :: CardDef
 pilgrimAcolyte =
   (enemy "11723" "Pilgrim Acolyte" Pilgrims 3)
-    { cdCardTraits = setFromList [Humanoid, Cultist]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Cultist]
     }
 
 pilgrimLeader :: CardDef
 pilgrimLeader =
   (enemy "11724" "Pilgrim Leader" Pilgrims 1)
-    { cdCardTraits = setFromList [Humanoid, Cultist]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Cultist]
     , cdKeywords = setFromList [Keyword.Aloof]
     }
 
@@ -295,7 +321,8 @@ pilgrimLeader =
 monstrousStarSpawn :: CardDef
 monstrousStarSpawn =
   (enemy "11725" "Monstrous Star Spawn" Set.StarSpawn 1)
-    { cdCardTraits = setFromList [Monster, StarSpawn, Elite]
+    { cdHealth = health 6
+    , cdCardTraits = setFromList [Monster, StarSpawn, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Relentless]
     , cdVictoryPoints = Just 1
     }
@@ -303,7 +330,8 @@ monstrousStarSpawn =
 infectedStarSpawn :: CardDef
 infectedStarSpawn =
   (enemy "11726" "Infected Star Spawn" Set.StarSpawn 1)
-    { cdCardTraits = setFromList [Monster, StarSpawn, Elite]
+    { cdHealth = health 3
+    , cdCardTraits = setFromList [Monster, StarSpawn, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Relentless]
     , cdVictoryPoints = Just 1
     }
@@ -311,7 +339,8 @@ infectedStarSpawn =
 coralStarSpawn :: CardDef
 coralStarSpawn =
   (enemy "11727" "Coral Star Spawn" Set.StarSpawn 1)
-    { cdCardTraits = setFromList [Monster, StarSpawn, Elite]
+    { cdHealth = health 5
+    , cdCardTraits = setFromList [Monster, StarSpawn, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Relentless]
     , cdVictoryPoints = Just 1
     }
@@ -319,7 +348,8 @@ coralStarSpawn =
 starSpawnObserver :: CardDef
 starSpawnObserver =
   (enemy "11728" "Star Spawn Observer" Set.StarSpawn 1)
-    { cdCardTraits = setFromList [Monster, StarSpawn, Elite]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Monster, StarSpawn, Elite]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
@@ -328,7 +358,8 @@ starSpawnObserver =
 voltaicEel :: CardDef
 voltaicEel =
   (enemy "11733" "Voltaic Eel" UnderseaCreatures 1)
-    { cdCardTraits = setFromList [Monster]
+    { cdHealth = health 5
+    , cdCardTraits = setFromList [Monster]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
@@ -338,7 +369,8 @@ theInescapable :: CardDef
 theInescapable =
   unique
     $ (enemy "11744" ("The Inescapable" <:> "Tireless Pursuer") TheInescapable 1)
-      { cdCardTraits = setFromList [Monster, StarSpawn, Elite]
+      { cdHealth = health 6
+      , cdCardTraits = setFromList [Monster, StarSpawn, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Relentless]
       , cdVictoryPoints = Just 0
       }
@@ -347,13 +379,15 @@ theInescapable =
 deepOneThrall :: CardDef
 deepOneThrall =
   (enemy "11746" "Deep One Thrall" DeepOnes 2)
-    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     }
 
 elderDeepOne :: CardDef
 elderDeepOne =
   (enemy "11747" "Elder Deep One" DeepOnes 1)
-    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    { cdHealth = health 4
+    , cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
@@ -361,7 +395,8 @@ elderDeepOne =
 persistentConstruct :: CardDef
 persistentConstruct =
   (enemy "11751" "Persistent Construct" AlienMachinery 3)
-    { cdCardTraits = setFromList [Construct]
+    { cdHealth = health 2
+    , cdCardTraits = setFromList [Construct]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 0
     }

@@ -24,7 +24,7 @@ instance HasAbilities TheCrater where
       a
       [ scenarioI18n
           $ withI18nTooltip "theCrater.deal"
-          $ restricted a 1 (exists targetEnemy)
+          $ restricted a 1 (Here <> exists targetEnemy)
           $ actionAbilityWithCost (SpendTokenCost Token.Resource (TargetIs ScenarioTarget))
       , mkAbility a 2 $ forced $ RoundEnds #when
       ]

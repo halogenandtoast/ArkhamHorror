@@ -5,6 +5,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.EncounterSet hiding (Blight, Byakhee, Dreamlands)
+import Arkham.GameValue
 import Arkham.Name
 import Arkham.Prelude
 
@@ -32,6 +33,19 @@ doubleSided cCode def =
     { cdDoubleSided = True
     , cdOtherSide = Just cCode
     }
+
+-- | Printed-health helpers for the @cdHealth@ field, e.g. @cdHealth = health 1@.
+health :: Int -> Maybe Health
+health = Just . Health . Static
+
+healthPerInvestigator :: Int -> Maybe Health
+healthPerInvestigator = Just . Health . PerPlayer
+
+healthX :: Maybe Health
+healthX = Just (Health ValueX)
+
+healthStar :: Maybe Health
+healthStar = Just (Health ValueStar)
 
 weakness :: CardCode -> Name -> CardDef
 weakness cardCode name = baseEnemy cardCode name Nothing (Just Weakness)

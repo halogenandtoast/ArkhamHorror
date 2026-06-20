@@ -15,6 +15,9 @@ data GameValue
   | PerPlayer Int
   | StaticWithPerPlayer Int Int
   | ByPlayerCount Int Int Int Int
+  | ValueX
+  | ValueStar
+  | ValueUnknown
   deriving stock (Show, Eq, Ord, Data)
 
 class IsGameValue a where
@@ -36,5 +39,8 @@ fromGameValue (ByPlayerCount n1 n2 n3 n4) pc = case pc of
   3 -> n3
   4 -> n4
   _ -> error "Unhandled by player count value"
+fromGameValue ValueX _ = 0
+fromGameValue ValueStar _ = 0
+fromGameValue ValueUnknown _ = 0
 
 $(deriveJSON defaultOptions ''GameValue)

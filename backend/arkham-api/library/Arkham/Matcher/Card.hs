@@ -202,6 +202,10 @@ data CardMatcher
   | CardWithId CardId
   | CardWithLevel Int
   | CardWithMaxLevel Int
+  | -- | Matches a card whose printed enemy health (fixed or per-investigator) is
+    -- at most the given value. Cards with no fixed printed health (X, *, or none)
+    -- never match.
+    CardWithMaxPrintedHealth Int
   | CardWithoutKeyword Keyword
   | CardWithKeyword Keyword
   | CardWithConcealed

@@ -231,7 +231,7 @@ enemyWith
   -> (Int, Int)
   -> (EnemyAttrs -> EnemyAttrs)
   -> CardBuilder EnemyId a
-enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
+enemyWith f cardDef (fight, healthValue, evade) (healthDamage, sanityDamage) g =
   CardBuilder
     { cbCardDef = cardDef
     , cbCardBuilder = \cardId eid ->
@@ -244,7 +244,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyOriginalCardCode = toCardCode cardDef
             , enemyPlacement = Unplaced
             , enemyFight = Just $ Fixed fight
-            , enemyHealth = Just $ GameValueCalculation health
+            , enemyHealth = Just $ GameValueCalculation healthValue
             , enemyEvade = Just $ Fixed evade
             , enemyAssignedDamage = mempty
             , enemyHealthDamage = healthDamage

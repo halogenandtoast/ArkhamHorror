@@ -16,8 +16,6 @@ suspiciousOrderly =
   enemyWith
     SuspiciousOrderly
     Cards.suspiciousOrderly
-    (0, Static 1, 2)
-    (0, 0)
     (\a -> a {enemyFight = Nothing, enemyHealth = Nothing})
 
 instance HasModifiersFor SuspiciousOrderly where

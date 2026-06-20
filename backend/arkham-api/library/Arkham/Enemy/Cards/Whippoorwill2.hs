@@ -10,7 +10,7 @@ newtype Whippoorwill2 = Whippoorwill2 EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 whippoorwill2 :: EnemyCard Whippoorwill2
-whippoorwill2 = enemy Whippoorwill2 Cards.whippoorwill2 (2, Static 1, 4) (0, 1)
+whippoorwill2 = enemy Whippoorwill2 Cards.whippoorwill2
 
 instance HasModifiersFor Whippoorwill2 where
   getModifiersFor (Whippoorwill2 a) = do

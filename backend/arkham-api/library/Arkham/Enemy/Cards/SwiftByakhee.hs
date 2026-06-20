@@ -17,7 +17,7 @@ newtype SwiftByakhee = SwiftByakhee EnemyAttrs
 
 swiftByakhee :: EnemyCard SwiftByakhee
 swiftByakhee =
-  enemy SwiftByakhee Cards.swiftByakhee (2, Static 3, 2) (1, 1)
+  enemy SwiftByakhee Cards.swiftByakhee
     & setPrey LowestRemainingSanity
 
 instance HasAbilities SwiftByakhee where

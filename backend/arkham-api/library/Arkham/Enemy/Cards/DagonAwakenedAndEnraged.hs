@@ -12,7 +12,7 @@ newtype DagonAwakenedAndEnraged = DagonAwakenedAndEnraged EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dagonAwakenedAndEnraged :: EnemyCard DagonAwakenedAndEnraged
-dagonAwakenedAndEnraged = enemy DagonAwakenedAndEnraged Cards.dagonAwakenedAndEnraged (4, Static 6, 4) (2, 3)
+dagonAwakenedAndEnraged = enemy DagonAwakenedAndEnraged Cards.dagonAwakenedAndEnraged
 
 instance HasModifiersFor DagonAwakenedAndEnraged where
   getModifiersFor (DagonAwakenedAndEnraged a) = do

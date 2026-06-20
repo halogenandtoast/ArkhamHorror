@@ -14,8 +14,6 @@ accursedFollower =
   enemyWith
     AccursedFollower
     Cards.accursedFollower
-    (2, Static 2, 2)
-    (1, 1)
     (spawnAtL ?~ SpawnAt (FarthestLocationFromYou Anywhere))
 
 instance HasAbilities AccursedFollower where

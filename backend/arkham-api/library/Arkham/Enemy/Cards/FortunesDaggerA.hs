@@ -12,7 +12,7 @@ newtype FortunesDaggerA = FortunesDaggerA EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortunesDaggerA :: EnemyCard FortunesDaggerA
-fortunesDaggerA = enemy FortunesDaggerA Cards.fortunesDaggerA (4, Static 3, 2) (1, 1)
+fortunesDaggerA = enemy FortunesDaggerA Cards.fortunesDaggerA
 
 instance HasAbilities FortunesDaggerA where
   getAbilities (FortunesDaggerA a) =

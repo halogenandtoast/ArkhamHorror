@@ -13,7 +13,7 @@ newtype TheWingedSerpent = TheWingedSerpent EnemyAttrs
 
 theWingedSerpent :: EnemyCard TheWingedSerpent
 theWingedSerpent =
-  enemyWith TheWingedSerpent Cards.theWingedSerpent (8, Static 0, 5) (1, 1)
+  enemyWith TheWingedSerpent Cards.theWingedSerpent
     $ (spawnAtL ?~ SpawnAt (LocationWithTitle "Mouth of K'n-yan"))
     . (healthL .~ Nothing)
 

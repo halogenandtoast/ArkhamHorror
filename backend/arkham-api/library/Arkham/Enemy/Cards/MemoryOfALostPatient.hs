@@ -15,7 +15,7 @@ newtype MemoryOfALostPatient = MemoryOfALostPatient EnemyAttrs
 
 memoryOfALostPatient :: EnemyCard MemoryOfALostPatient
 memoryOfALostPatient =
-  enemyWith MemoryOfALostPatient Cards.memoryOfALostPatient (3, PerPlayer 4, 4) (1, 1)
+  enemyWith MemoryOfALostPatient Cards.memoryOfALostPatient
     $ preyL
     .~ Prey (ControlsAsset $ assetIs Assets.drMalaSinhaDaringPhysician)
 

@@ -19,8 +19,6 @@ theTerrorOfDevilReefRelentlessMonstrosity =
   enemyWith
     TheTerrorOfDevilReefRelentlessMonstrosity
     Cards.theTerrorOfDevilReefRelentlessMonstrosity
-    (3, Static 6, 3)
-    (2, 2)
     (spawnAtL ?~ SpawnAt RearmostLocation)
 
 instance HasAbilities TheTerrorOfDevilReefRelentlessMonstrosity where

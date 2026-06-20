@@ -12,7 +12,7 @@ newtype ShadowHound = ShadowHound EnemyAttrs
 
 shadowHound :: EnemyCard ShadowHound
 shadowHound =
-  enemy ShadowHound Cards.shadowHound (2, Static 3, 1) (1, 0)
+  enemy ShadowHound Cards.shadowHound
     & setPrey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasAbilities ShadowHound where

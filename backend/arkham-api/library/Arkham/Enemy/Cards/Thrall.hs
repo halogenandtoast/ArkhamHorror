@@ -10,7 +10,7 @@ newtype Thrall = Thrall EnemyAttrs
 
 thrall :: EnemyCard Thrall
 thrall =
-  enemyWith Thrall Cards.thrall (2, Static 2, 2) (1, 1)
+  enemyWith Thrall Cards.thrall
     $ spawnAtL
     ?~ SpawnAt (LocationWithMostClues Anywhere)
 

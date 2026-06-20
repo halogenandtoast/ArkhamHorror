@@ -13,7 +13,7 @@ newtype GhastlySatyr = GhastlySatyr EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ghastlySatyr :: EnemyCard GhastlySatyr
-ghastlySatyr = enemy GhastlySatyr Cards.ghastlySatyr (2, Static 3, 2) (1, 0)
+ghastlySatyr = enemy GhastlySatyr Cards.ghastlySatyr
 
 instance HasModifiersFor GhastlySatyr where
   getModifiersFor (GhastlySatyr a) = do

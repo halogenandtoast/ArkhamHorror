@@ -18,7 +18,6 @@ import Arkham.Deck
 import Arkham.Enemy.Cards
 import Arkham.Enemy.Types.Attrs as X
 import Arkham.EnemyLocation.Cards (allEnemyLocationCards)
-import Arkham.GameValue
 import Arkham.Id
 import Arkham.Key
 import Arkham.Keyword
@@ -176,10 +175,8 @@ instance HasCardDef EnemyAttrs where
 enemy
   :: (EnemyAttrs -> a)
   -> CardDef
-  -> (Int, GameValue, Int)
-  -> (Int, Int)
   -> CardBuilder EnemyId a
-enemy f cardDef stats damageStats = enemyWith f cardDef stats damageStats id
+enemy f cardDef = enemyWith f cardDef id
 
 preyIsBearer :: EnemyAttrs -> EnemyAttrs
 preyIsBearer a = a {enemyPrey = BearerOf (toId a)}
@@ -227,11 +224,9 @@ isConcealed _ = False
 enemyWith
   :: (EnemyAttrs -> a)
   -> CardDef
-  -> (Int, GameValue, Int)
-  -> (Int, Int)
   -> (EnemyAttrs -> EnemyAttrs)
   -> CardBuilder EnemyId a
-enemyWith f cardDef (fight, healthValue, evade) (healthDamage, sanityDamage) g =
+enemyWith f cardDef g =
   CardBuilder
     { cbCardDef = cardDef
     , cbCardBuilder = \cardId eid ->
@@ -243,12 +238,12 @@ enemyWith f cardDef (fight, healthValue, evade) (healthDamage, sanityDamage) g =
             , enemyCardCode = toCardCode cardDef
             , enemyOriginalCardCode = toCardCode cardDef
             , enemyPlacement = Unplaced
-            , enemyFight = Just $ Fixed fight
-            , enemyHealth = Just $ GameValueCalculation healthValue
-            , enemyEvade = Just $ Fixed evade
+            , enemyFight = GameValueCalculation . unFight <$> cdFight cardDef
+            , enemyHealth = GameValueCalculation . unHealth <$> cdHealth cardDef
+            , enemyEvade = GameValueCalculation . unEvade <$> cdEvade cardDef
             , enemyAssignedDamage = mempty
-            , enemyHealthDamage = healthDamage
-            , enemySanityDamage = sanityDamage
+            , enemyHealthDamage = maybe 0 healthDamageInt (cdHealthDamage cardDef)
+            , enemySanityDamage = maybe 0 sanityDamageInt (cdSanityDamage cardDef)
             , enemyPrey = Prey Anyone
             , enemyModifiers = mempty
             , enemyExhausted = False

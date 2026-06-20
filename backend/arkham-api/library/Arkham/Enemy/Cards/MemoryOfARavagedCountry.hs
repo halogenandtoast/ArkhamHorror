@@ -14,7 +14,7 @@ newtype MemoryOfARavagedCountry = MemoryOfARavagedCountry EnemyAttrs
 
 memoryOfARavagedCountry :: EnemyCard MemoryOfARavagedCountry
 memoryOfARavagedCountry =
-  enemyWith MemoryOfARavagedCountry Cards.memoryOfARavagedCountry (5, PerPlayer 3, 3) (2, 1)
+  enemyWith MemoryOfARavagedCountry Cards.memoryOfARavagedCountry
     $ preyL
     .~ Prey (ControlsAsset $ assetIs Assets.jamesCookieFredericksDubiousChoice)
 

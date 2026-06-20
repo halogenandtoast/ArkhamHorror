@@ -13,7 +13,7 @@ newtype Basilisk = Basilisk EnemyAttrs
 
 basilisk :: EnemyCard Basilisk
 basilisk =
-  enemyWith Basilisk Cards.basilisk (4, Static 4, 4) (2, 0)
+  enemyWith Basilisk Cards.basilisk
     $ preyL
     .~ Prey (NearestToLocation $ locationIs Locations.mouthOfKnYanTheCavernsMaw)
 

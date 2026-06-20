@@ -16,7 +16,7 @@ newtype HarbingerOfValusia = HarbingerOfValusia EnemyAttrs
 
 harbingerOfValusia :: EnemyCard HarbingerOfValusia
 harbingerOfValusia =
-  enemy HarbingerOfValusia Cards.harbingerOfValusia (3, PerPlayer 10, 3) (2, 2)
+  enemy HarbingerOfValusia Cards.harbingerOfValusia
 
 instance HasModifiersFor HarbingerOfValusia where
   getModifiersFor (HarbingerOfValusia a) = modifySelf a [CanRetaliateWhileExhausted]

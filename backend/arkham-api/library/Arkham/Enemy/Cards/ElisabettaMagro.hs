@@ -16,7 +16,7 @@ newtype ElisabettaMagro = ElisabettaMagro EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elisabettaMagro :: EnemyCard ElisabettaMagro
-elisabettaMagro = enemy ElisabettaMagro Cards.elisabettaMagro (3, Static 4, 4) (1, 1)
+elisabettaMagro = enemy ElisabettaMagro Cards.elisabettaMagro
 
 {- | Abilities
 The first forced ability is handled by MaskedCarnevaleGoer_18

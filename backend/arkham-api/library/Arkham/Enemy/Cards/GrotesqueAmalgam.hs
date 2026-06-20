@@ -13,7 +13,7 @@ newtype GrotesqueAmalgam = GrotesqueAmalgam EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grotesqueAmalgam :: EnemyCard GrotesqueAmalgam
-grotesqueAmalgam = enemy GrotesqueAmalgam Cards.grotesqueAmalgam (4, Static 5, 2) (1, 1)
+grotesqueAmalgam = enemy GrotesqueAmalgam Cards.grotesqueAmalgam
 
 instance HasAbilities GrotesqueAmalgam where
   getAbilities (GrotesqueAmalgam a) =

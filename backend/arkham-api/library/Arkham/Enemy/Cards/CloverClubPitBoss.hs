@@ -11,7 +11,7 @@ newtype CloverClubPitBoss = CloverClubPitBoss EnemyAttrs
 
 cloverClubPitBoss :: EnemyCard CloverClubPitBoss
 cloverClubPitBoss =
-  enemyWith CloverClubPitBoss Cards.cloverClubPitBoss (3, Static 4, 3) (2, 0)
+  enemyWith CloverClubPitBoss Cards.cloverClubPitBoss
     $ preyL
     .~ Prey (InvestigatorWithHighestSkill #intellect UneliminatedInvestigator)
 

@@ -14,7 +14,7 @@ newtype GuardianOfTheCrystallizer = GuardianOfTheCrystallizer EnemyAttrs
 
 guardianOfTheCrystallizer :: EnemyCard GuardianOfTheCrystallizer
 guardianOfTheCrystallizer =
-  enemyWith GuardianOfTheCrystallizer Cards.guardianOfTheCrystallizer (3, Static 3, 3) (1, 1)
+  enemyWith GuardianOfTheCrystallizer Cards.guardianOfTheCrystallizer
     $ (exhaustedL .~ True)
     . (preyL .~ OnlyPrey (Prey $ HasMatchingAsset $ assetIs Assets.crystallizerOfDreams))
 

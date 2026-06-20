@@ -16,7 +16,7 @@ newtype HasturLordOfCarcosa = HasturLordOfCarcosa EnemyAttrs
 
 hasturLordOfCarcosa :: EnemyCard HasturLordOfCarcosa
 hasturLordOfCarcosa =
-  enemyWith HasturLordOfCarcosa Cards.hasturLordOfCarcosa (3, PerPlayer 9, 3) (0, 2)
+  enemyWith HasturLordOfCarcosa Cards.hasturLordOfCarcosa
     $ (damageStrategyL .~ DamageFromHastur)
     . (preyL .~ Prey MostRemainingSanity)
 

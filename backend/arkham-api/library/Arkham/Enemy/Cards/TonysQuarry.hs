@@ -20,7 +20,7 @@ newtype TonysQuarry = TonysQuarry EnemyAttrs
 
 tonysQuarry :: EnemyCard TonysQuarry
 tonysQuarry =
-  enemyWith TonysQuarry Cards.tonysQuarry (4, Static 3, 1) (1, 2)
+  enemyWith TonysQuarry Cards.tonysQuarry
     $ spawnAtL
     ?~ SpawnAt
       (FarthestLocationFromInvestigator (investigatorIs Investigators.tonyMorgan) Anywhere)

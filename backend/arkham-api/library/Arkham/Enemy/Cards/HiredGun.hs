@@ -15,7 +15,7 @@ newtype HiredGun = HiredGun EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hiredGun :: EnemyCard HiredGun
-hiredGun = enemy HiredGun Cards.hiredGun (3, Static 4, 1) (1, 1)
+hiredGun = enemy HiredGun Cards.hiredGun
 
 instance HasModifiersFor HiredGun where
   getModifiersFor (HiredGun a) = do

@@ -11,7 +11,7 @@ newtype CosmicEmissaryThePhantasmShattered = CosmicEmissaryThePhantasmShattered 
 
 cosmicEmissaryThePhantasmShattered :: EnemyCard CosmicEmissaryThePhantasmShattered
 cosmicEmissaryThePhantasmShattered =
-  enemyWith CosmicEmissaryThePhantasmShattered Cards.cosmicEmissaryThePhantasmShattered (2, Static 10, 4) (0, 3)
+  enemyWith CosmicEmissaryThePhantasmShattered Cards.cosmicEmissaryThePhantasmShattered
     $ (asSelfLocationL ?~ "cosmicEmissaryPhantasm")
     . (preyL .~ Prey (InvestigatorWithHighestSkill #combat UneliminatedInvestigator))
 

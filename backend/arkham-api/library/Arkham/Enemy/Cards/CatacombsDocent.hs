@@ -14,7 +14,7 @@ newtype CatacombsDocent = CatacombsDocent EnemyAttrs
 
 catacombsDocent :: EnemyCard CatacombsDocent
 catacombsDocent =
-  enemyWith CatacombsDocent Cards.catacombsDocent (3, Static 2, 2) (0, 1)
+  enemyWith CatacombsDocent Cards.catacombsDocent
     $ spawnAtL
     ?~ SpawnAt (NearestLocationToYou UnrevealedLocation)
 

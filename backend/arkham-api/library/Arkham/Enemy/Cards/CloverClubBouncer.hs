@@ -14,7 +14,7 @@ newtype CloverClubBouncer = CloverClubBouncer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubBouncer :: EnemyCard CloverClubBouncer
-cloverClubBouncer = enemy CloverClubBouncer Cards.cloverClubBouncer (1, Static 3, 1) (2, 0)
+cloverClubBouncer = enemy CloverClubBouncer Cards.cloverClubBouncer
 
 instance HasModifiersFor CloverClubBouncer where
   getModifiersFor (CloverClubBouncer a) = do

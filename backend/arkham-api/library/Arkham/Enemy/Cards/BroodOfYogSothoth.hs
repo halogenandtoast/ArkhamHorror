@@ -14,7 +14,7 @@ newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
-broodOfYogSothoth = enemy BroodOfYogSothoth Cards.broodOfYogSothoth (6, Static 1, 3) (2, 2)
+broodOfYogSothoth = enemy BroodOfYogSothoth Cards.broodOfYogSothoth
 
 instance HasModifiersFor BroodOfYogSothoth where
   getModifiersFor (BroodOfYogSothoth a) = do

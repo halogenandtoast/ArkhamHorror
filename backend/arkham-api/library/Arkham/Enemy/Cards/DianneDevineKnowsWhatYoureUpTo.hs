@@ -14,7 +14,7 @@ newtype DianneDevineKnowsWhatYoureUpTo = DianneDevineKnowsWhatYoureUpTo EnemyAtt
 
 dianneDevineKnowsWhatYoureUpTo :: EnemyCard DianneDevineKnowsWhatYoureUpTo
 dianneDevineKnowsWhatYoureUpTo =
-  enemy DianneDevineKnowsWhatYoureUpTo Cards.dianneDevineKnowsWhatYoureUpTo (4, Static 3, 2) (1, 1)
+  enemy DianneDevineKnowsWhatYoureUpTo Cards.dianneDevineKnowsWhatYoureUpTo
     & setPrey MostClues
 
 instance HasModifiersFor DianneDevineKnowsWhatYoureUpTo where

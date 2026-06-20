@@ -13,7 +13,7 @@ newtype TheContessaEnraged = TheContessaEnraged EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theContessaEnraged :: EnemyCard TheContessaEnraged
-theContessaEnraged = enemy TheContessaEnraged Cards.theContessaEnraged (4, PerPlayer 4, 4) (1, 1)
+theContessaEnraged = enemy TheContessaEnraged Cards.theContessaEnraged
 
 instance HasModifiersFor TheContessaEnraged where
   getModifiersFor (TheContessaEnraged a) = do

@@ -10,7 +10,7 @@ newtype HuntingNightgaunt = HuntingNightgaunt EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 huntingNightgaunt :: EnemyCard HuntingNightgaunt
-huntingNightgaunt = enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4, 1) (1, 1)
+huntingNightgaunt = enemy HuntingNightgaunt Cards.huntingNightgaunt
 
 instance HasModifiersFor HuntingNightgaunt where
   getModifiersFor (HuntingNightgaunt a) =

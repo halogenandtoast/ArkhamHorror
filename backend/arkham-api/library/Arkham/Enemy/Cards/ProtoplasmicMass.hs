@@ -11,7 +11,7 @@ newtype ProtoplasmicMass = ProtoplasmicMass EnemyAttrs
 
 protoplasmicMass :: EnemyCard ProtoplasmicMass
 protoplasmicMass =
-  enemy ProtoplasmicMass Cards.protoplasmicMass (6, Static 4, 3) (1, 1)
+  enemy ProtoplasmicMass Cards.protoplasmicMass
     & setSpawnAt
       ( FarthestLocationFromYou
           $ mapOneOf LocationWithLabel ["facility1", "facility2", "facility3", "facility14", "facility15"]

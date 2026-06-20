@@ -14,7 +14,7 @@ newtype CarlSanfordDeathlessFanatic = CarlSanfordDeathlessFanatic EnemyAttrs
 
 carlSanfordDeathlessFanatic :: EnemyCard CarlSanfordDeathlessFanatic
 carlSanfordDeathlessFanatic =
-  enemy CarlSanfordDeathlessFanatic Cards.carlSanfordDeathlessFanatic (4, PerPlayer 6, 4) (1, 3)
+  enemy CarlSanfordDeathlessFanatic Cards.carlSanfordDeathlessFanatic
     & setSpawnAt "Silver Twilight Lodge"
 
 instance HasModifiersFor CarlSanfordDeathlessFanatic where

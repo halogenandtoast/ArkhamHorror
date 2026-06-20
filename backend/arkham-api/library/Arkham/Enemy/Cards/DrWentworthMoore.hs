@@ -16,7 +16,7 @@ newtype DrWentworthMoore = DrWentworthMoore EnemyAttrs
 
 drWentworthMoore :: EnemyCard DrWentworthMoore
 drWentworthMoore =
-  enemyWith DrWentworthMoore Cards.drWentworthMoore (3, Static 1, 3) (1, 1)
+  enemyWith DrWentworthMoore Cards.drWentworthMoore
     $ spawnAtL
     ?~ SpawnAt "Museum of Egyptian Antiquities"
 

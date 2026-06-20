@@ -10,7 +10,7 @@ newtype OBannionsThug = OBannionsThug EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 oBannionsThug :: EnemyCard OBannionsThug
-oBannionsThug = enemy OBannionsThug Cards.oBannionsThug (4, Static 2, 2) (2, 0)
+oBannionsThug = enemy OBannionsThug Cards.oBannionsThug
 
 instance HasModifiersFor OBannionsThug where
   getModifiersFor (OBannionsThug a) = do

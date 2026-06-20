@@ -17,7 +17,7 @@ newtype LostResearcher = LostResearcher EnemyAttrs
 
 lostResearcher :: EnemyCard LostResearcher
 lostResearcher =
-  enemyWith LostResearcher Cards.lostResearcher (1, Static 1, 1) (1, 1)
+  enemyWith LostResearcher Cards.lostResearcher
     $ (spawnAtL ?~ SpawnAtFirst [SpawnAt EmptyLocation, SpawnAt Anywhere])
     . (tokensL %~ setTokens #doom 1)
 

@@ -11,7 +11,7 @@ newtype BoaConstrictor = BoaConstrictor EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 boaConstrictor :: EnemyCard BoaConstrictor
-boaConstrictor = enemy BoaConstrictor Cards.boaConstrictor (4, Static 4, 2) (1, 1)
+boaConstrictor = enemy BoaConstrictor Cards.boaConstrictor
 
 instance HasAbilities BoaConstrictor where
   getAbilities (BoaConstrictor a) =

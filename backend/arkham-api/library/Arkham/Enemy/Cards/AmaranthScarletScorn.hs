@@ -14,7 +14,7 @@ newtype AmaranthScarletScorn = AmaranthScarletScorn EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 amaranthScarletScorn :: EnemyCard AmaranthScarletScorn
-amaranthScarletScorn = enemy AmaranthScarletScorn Cards.amaranthScarletScorn (4, Static 3, 4) (2, 1)
+amaranthScarletScorn = enemy AmaranthScarletScorn Cards.amaranthScarletScorn
 
 instance HasAbilities AmaranthScarletScorn where
   getAbilities (AmaranthScarletScorn a) =

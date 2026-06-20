@@ -15,7 +15,7 @@ newtype NyarlathotepTrueShape = NyarlathotepTrueShape EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 nyarlathotepTrueShape :: EnemyCard NyarlathotepTrueShape
-nyarlathotepTrueShape = enemy NyarlathotepTrueShape Cards.nyarlathotepTrueShape (0, Static 1, 0) (0, 0)
+nyarlathotepTrueShape = enemy NyarlathotepTrueShape Cards.nyarlathotepTrueShape
 
 instance RunMessage NyarlathotepTrueShape where
   runMessage msg (NyarlathotepTrueShape attrs) =

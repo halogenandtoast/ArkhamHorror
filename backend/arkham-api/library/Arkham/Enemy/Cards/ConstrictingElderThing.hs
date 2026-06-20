@@ -12,7 +12,7 @@ newtype ConstrictingElderThing = ConstrictingElderThing EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 constrictingElderThing :: EnemyCard ConstrictingElderThing
-constrictingElderThing = enemy ConstrictingElderThing Cards.constrictingElderThing (3, Static 1, 2) (1, 2)
+constrictingElderThing = enemy ConstrictingElderThing Cards.constrictingElderThing
 
 instance HasModifiersFor ConstrictingElderThing where
   getModifiersFor (ConstrictingElderThing a) = do

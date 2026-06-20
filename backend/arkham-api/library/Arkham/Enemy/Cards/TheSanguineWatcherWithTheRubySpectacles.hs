@@ -16,8 +16,6 @@ theSanguineWatcherWithTheRubySpectacles =
   enemy
     TheSanguineWatcherWithTheRubySpectacles
     Cards.theSanguineWatcherWithTheRubySpectacles
-    (4, PerPlayer 5, 4)
-    (2, 2)
 
 instance HasAbilities TheSanguineWatcherWithTheRubySpectacles where
   getAbilities (TheSanguineWatcherWithTheRubySpectacles a) = extend1 a $ restricted a 1 (thisExists a ReadyEnemy) $ forced $ PhaseEnds #when #enemy

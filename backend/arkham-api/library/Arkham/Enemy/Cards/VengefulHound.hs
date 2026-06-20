@@ -13,7 +13,7 @@ newtype VengefulHound = VengefulHound EnemyAttrs
 
 vengefulHound :: EnemyCard VengefulHound
 vengefulHound =
-  enemyWith VengefulHound Cards.vengefulHound (2, Static 2, 3) (1, 1)
+  enemyWith VengefulHound Cards.vengefulHound
     $ \a -> a & preyL .~ BearerOf (toId a)
 
 instance HasModifiersFor VengefulHound where

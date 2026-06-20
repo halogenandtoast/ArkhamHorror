@@ -16,7 +16,7 @@ newtype TheUnnamable = TheUnnamable EnemyAttrs
 
 theUnnamable :: EnemyCard TheUnnamable
 theUnnamable =
-  enemyWith TheUnnamable Cards.theUnnamable (5, Static 1, 5) (2, 2)
+  enemyWith TheUnnamable Cards.theUnnamable
     $ (healthL .~ Nothing)
     . (spawnAtL ?~ SpawnAt (oneOf ["Attic", "Upstairs Hallway"]))
 

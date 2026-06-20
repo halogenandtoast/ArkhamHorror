@@ -13,7 +13,7 @@ newtype RogueGangster = RogueGangster EnemyAttrs
 
 rogueGangster :: EnemyCard RogueGangster
 rogueGangster =
-  enemy RogueGangster Cards.rogueGangster (3, Static 3, 3) (1, 0)
+  enemy RogueGangster Cards.rogueGangster
     & setPrey MostResources
 
 instance HasAbilities RogueGangster where

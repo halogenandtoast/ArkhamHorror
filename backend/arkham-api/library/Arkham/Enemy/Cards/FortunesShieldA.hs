@@ -11,7 +11,7 @@ newtype FortunesShieldA = FortunesShieldA EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortunesShieldA :: EnemyCard FortunesShieldA
-fortunesShieldA = enemy FortunesShieldA Cards.fortunesShieldA (2, Static 4, 3) (1, 1)
+fortunesShieldA = enemy FortunesShieldA Cards.fortunesShieldA
 
 instance HasAbilities FortunesShieldA where
   getAbilities (FortunesShieldA a) =

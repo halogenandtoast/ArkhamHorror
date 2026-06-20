@@ -11,7 +11,7 @@ newtype MiGoAbductor = MiGoAbductor EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miGoAbductor :: EnemyCard MiGoAbductor
-miGoAbductor = enemy MiGoAbductor Cards.miGoAbductor (4, PerPlayer 2, 2) (1, 1)
+miGoAbductor = enemy MiGoAbductor Cards.miGoAbductor
 
 instance HasAbilities MiGoAbductor where
   getAbilities (MiGoAbductor a) = [restricted a 1 (thisIs a ReadyEnemy) $ forced $ PhaseBegins #when #enemy]

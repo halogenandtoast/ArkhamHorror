@@ -11,7 +11,7 @@ newtype Oozeling = Oozeling EnemyAttrs
 
 oozeling :: EnemyCard Oozeling
 oozeling =
-  enemyWith Oozeling Cards.oozeling (2, Static 3, 2) (1, 0)
+  enemyWith Oozeling Cards.oozeling
     $ spawnAtL
     ?~ SpawnAt (EmptyLocation <> LocationWithTrait Oozified)
 

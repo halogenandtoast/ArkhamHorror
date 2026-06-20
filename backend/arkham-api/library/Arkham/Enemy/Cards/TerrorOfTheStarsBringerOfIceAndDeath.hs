@@ -19,8 +19,6 @@ terrorOfTheStarsBringerOfIceAndDeath =
   enemy
     TerrorOfTheStarsBringerOfIceAndDeath
     Cards.terrorOfTheStarsBringerOfIceAndDeath
-    (4, Static 3, 3)
-    (2, 2)
 
 instance HasModifiersFor TerrorOfTheStarsBringerOfIceAndDeath where
   getModifiersFor (TerrorOfTheStarsBringerOfIceAndDeath a) = do

@@ -12,7 +12,7 @@ newtype HorrificShoggoth = HorrificShoggoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 horrificShoggoth :: EnemyCard HorrificShoggoth
-horrificShoggoth = enemy HorrificShoggoth Cards.horrificShoggoth (4, Static 4, 2) (0, 1)
+horrificShoggoth = enemy HorrificShoggoth Cards.horrificShoggoth
 
 instance HasModifiersFor HorrificShoggoth where
   getModifiersFor (HorrificShoggoth a) = do

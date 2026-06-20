@@ -14,7 +14,7 @@ newtype SpiderOfLeng = SpiderOfLeng EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spiderOfLeng :: EnemyCard SpiderOfLeng
-spiderOfLeng = enemy SpiderOfLeng Cards.spiderOfLeng (3, Static 4, 3) (1, 1)
+spiderOfLeng = enemy SpiderOfLeng Cards.spiderOfLeng
 
 instance HasAbilities SpiderOfLeng where
   getAbilities (SpiderOfLeng x) = extend1 x $ mkAbility x 1 $ forced $ PhaseEnds #when #enemy

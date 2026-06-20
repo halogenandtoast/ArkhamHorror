@@ -15,7 +15,7 @@ newtype DarkYoungHost = DarkYoungHost EnemyAttrs
 
 darkYoungHost :: EnemyCard DarkYoungHost
 darkYoungHost =
-  enemy DarkYoungHost Cards.darkYoungHost (4, Static 5, 2) (2, 2)
+  enemy DarkYoungHost Cards.darkYoungHost
     & setSpawnAt (LocationWithTrait Bayou)
 
 instance HasAbilities DarkYoungHost where

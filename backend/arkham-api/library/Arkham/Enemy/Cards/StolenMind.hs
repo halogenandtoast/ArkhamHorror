@@ -12,7 +12,7 @@ newtype StolenMind = StolenMind EnemyAttrs
 
 stolenMind :: EnemyCard StolenMind
 stolenMind =
-  enemy StolenMind Cards.stolenMind (1, Static 4, 3) (2, 0)
+  enemy StolenMind Cards.stolenMind
     & setSpawnAt EmptyLocation
 
 instance HasModifiersFor StolenMind where

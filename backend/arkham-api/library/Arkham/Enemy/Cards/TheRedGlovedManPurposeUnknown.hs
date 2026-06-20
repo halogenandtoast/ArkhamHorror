@@ -18,8 +18,6 @@ theRedGlovedManPurposeUnknown =
   enemy
     TheRedGlovedManPurposeUnknown
     Cards.theRedGlovedManPurposeUnknown
-    (5, Static 3, 5)
-    (1, 1)
 
 instance HasAbilities TheRedGlovedManPurposeUnknown where
   getAbilities (TheRedGlovedManPurposeUnknown a) =

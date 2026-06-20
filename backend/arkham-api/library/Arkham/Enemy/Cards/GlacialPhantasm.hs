@@ -14,7 +14,7 @@ newtype GlacialPhantasm = GlacialPhantasm EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 glacialPhantasm :: EnemyCard GlacialPhantasm
-glacialPhantasm = enemy GlacialPhantasm Cards.glacialPhantasm (4, Static 4, 2) (1, 1)
+glacialPhantasm = enemy GlacialPhantasm Cards.glacialPhantasm
 
 instance HasAbilities GlacialPhantasm where
   getAbilities (GlacialPhantasm a) =

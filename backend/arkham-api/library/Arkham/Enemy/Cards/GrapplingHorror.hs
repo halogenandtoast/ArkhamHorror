@@ -11,7 +11,7 @@ newtype GrapplingHorror = GrapplingHorror EnemyAttrs
 
 grapplingHorror :: EnemyCard GrapplingHorror
 grapplingHorror =
-  enemy GrapplingHorror Cards.grapplingHorror (3, Static 3, 2) (1, 1)
+  enemy GrapplingHorror Cards.grapplingHorror
 
 instance HasModifiersFor GrapplingHorror where
   getModifiersFor (GrapplingHorror a) =

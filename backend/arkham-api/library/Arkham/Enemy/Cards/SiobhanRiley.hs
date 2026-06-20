@@ -12,7 +12,7 @@ newtype SiobhanRiley = SiobhanRiley EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 siobhanRiley :: EnemyCard SiobhanRiley
-siobhanRiley = enemy SiobhanRiley Cards.siobhanRiley (5, Static 6, 2) (1, 1)
+siobhanRiley = enemy SiobhanRiley Cards.siobhanRiley
 
 instance HasAbilities SiobhanRiley where
   getAbilities (SiobhanRiley a) =

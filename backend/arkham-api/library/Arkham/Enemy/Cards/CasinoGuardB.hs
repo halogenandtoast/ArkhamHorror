@@ -11,7 +11,7 @@ newtype CasinoGuardB = CasinoGuardB EnemyAttrs
 
 casinoGuardB :: EnemyCard CasinoGuardB
 casinoGuardB =
-  enemy CasinoGuardB Cards.casinoGuardB (3, Static 3, 2) (2, 0)
+  enemy CasinoGuardB Cards.casinoGuardB
     & setSpawnAt (NearestLocationToYou $ oneOf ["High Roller's Table", "Guard Room"])
 
 instance HasAbilities CasinoGuardB where

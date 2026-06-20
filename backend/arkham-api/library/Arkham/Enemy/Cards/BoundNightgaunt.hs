@@ -10,7 +10,7 @@ newtype BoundNightgaunt = BoundNightgaunt EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 boundNightgaunt :: EnemyCard BoundNightgaunt
-boundNightgaunt = enemy BoundNightgaunt Cards.boundNightgaunt (1, Static 3, 3) (0, 2)
+boundNightgaunt = enemy BoundNightgaunt Cards.boundNightgaunt
 
 instance HasModifiersFor BoundNightgaunt where
   getModifiersFor (BoundNightgaunt a) =

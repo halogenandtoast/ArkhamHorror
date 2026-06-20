@@ -8,7 +8,7 @@ newtype DeepOneThrall = DeepOneThrall EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepOneThrall :: EnemyCard DeepOneThrall
-deepOneThrall = enemy DeepOneThrall Cards.deepOneThrall (3, Static 2, 3) (1, 1)
+deepOneThrall = enemy DeepOneThrall Cards.deepOneThrall
 
 -- TODO: abilities
 instance RunMessage DeepOneThrall where

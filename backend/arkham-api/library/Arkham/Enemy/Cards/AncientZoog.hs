@@ -13,7 +13,7 @@ newtype AncientZoog = AncientZoog EnemyAttrs
 
 ancientZoog :: EnemyCard AncientZoog
 ancientZoog =
-  enemyWith AncientZoog Cards.ancientZoog (3, Static 3, 3) (1, 1)
+  enemyWith AncientZoog Cards.ancientZoog
     $ spawnAtL
     ?~ SpawnAtFirst
       [ SpawnAt $ LocationWithUnrevealedTitle "Enchanted Woods" <> UnrevealedLocation

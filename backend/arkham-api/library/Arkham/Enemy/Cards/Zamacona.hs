@@ -17,7 +17,7 @@ newtype Zamacona = Zamacona (EnemyAttrs `With` Meta)
 
 zamacona :: EnemyCard Zamacona
 zamacona =
-  enemyWith (Zamacona . (`with` Meta True)) Cards.zamacona (3, Static 3, 3) (1, 0)
+  enemyWith (Zamacona . (`with` Meta True)) Cards.zamacona
     $ spawnAtL
     ?~ SpawnAtFirst [SpawnAt (NearestLocationToYou EmptyLocation), SpawnAt YourLocation]
 

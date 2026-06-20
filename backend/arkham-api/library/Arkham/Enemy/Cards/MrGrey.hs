@@ -14,7 +14,7 @@ newtype MrGrey = MrGrey EnemyAttrs
 
 mrGrey :: EnemyCard MrGrey
 mrGrey =
-  enemyWith MrGrey Cards.mrGrey (3, Static 3, 2) (1, 1)
+  enemyWith MrGrey Cards.mrGrey
     $ spawnAtL
     ?~ SpawnEngagedWith rolandBanks
 

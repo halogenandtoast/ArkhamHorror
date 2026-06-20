@@ -21,8 +21,6 @@ lurkerInTheDark =
   enemyWith
     LurkerInTheDark
     Cards.lurkerInTheDark
-    (3, Static 2, 1)
-    (1, 0)
     (spawnAtL ?~ SpawnAt (ConnectedLocation NotForMovement))
 
 instance HasAbilities LurkerInTheDark where

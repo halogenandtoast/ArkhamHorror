@@ -11,7 +11,7 @@ newtype TidalTerror = TidalTerror EnemyAttrs
 
 tidalTerror :: EnemyCard TidalTerror
 tidalTerror =
-  enemy TidalTerror Cards.tidalTerror (4, Static 4, 2) (1, 2)
+  enemy TidalTerror Cards.tidalTerror
     & setSpawnAt (oneOf [locationIs Locations.porteDeLAvancee, "Chapel of St. Aubert"])
 
 instance RunMessage TidalTerror where

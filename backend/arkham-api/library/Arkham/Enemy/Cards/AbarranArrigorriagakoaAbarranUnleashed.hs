@@ -17,8 +17,6 @@ abarranArrigorriagakoaAbarranUnleashed =
   enemy
     AbarranArrigorriagakoaAbarranUnleashed
     Cards.abarranArrigorriagakoaAbarranUnleashed
-    (4, PerPlayer 4, 4)
-    (2, 2)
 
 instance HasModifiersFor AbarranArrigorriagakoaAbarranUnleashed where
   getModifiersFor (AbarranArrigorriagakoaAbarranUnleashed a) = do

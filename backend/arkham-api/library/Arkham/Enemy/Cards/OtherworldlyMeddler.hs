@@ -18,7 +18,7 @@ newtype OtherworldlyMeddler = OtherworldlyMeddler EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 otherworldlyMeddler :: EnemyCard OtherworldlyMeddler
-otherworldlyMeddler = enemy OtherworldlyMeddler Cards.otherworldlyMeddler (4, PerPlayer 5, 3) (2, 2)
+otherworldlyMeddler = enemy OtherworldlyMeddler Cards.otherworldlyMeddler
 
 instance HasAbilities OtherworldlyMeddler where
   getAbilities (OtherworldlyMeddler attrs) =

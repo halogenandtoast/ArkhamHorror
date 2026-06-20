@@ -15,8 +15,6 @@ davidRenfieldDisillusionedEschatologist =
   enemy
     DavidRenfieldDisillusionedEschatologist
     Cards.davidRenfieldDisillusionedEschatologist
-    (1, Static 5, 4)
-    (0, 1)
 
 instance HasAbilities DavidRenfieldDisillusionedEschatologist where
   getAbilities (DavidRenfieldDisillusionedEschatologist a) =

@@ -16,7 +16,7 @@ newtype DwellerInThePit = DwellerInThePit EnemyAttrs
 
 dwellerInThePit :: EnemyCard DwellerInThePit
 dwellerInThePit =
-  enemyWith DwellerInThePit Cards.dwellerInThePit (3, Static 6, 3) (2, 1)
+  enemyWith DwellerInThePit Cards.dwellerInThePit
     $ spawnAtL
     ?~ SpawnEngagedWith (InvestigatorWithTitle "Monterey Jack")
 

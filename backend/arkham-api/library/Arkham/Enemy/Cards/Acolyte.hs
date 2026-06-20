@@ -10,7 +10,7 @@ newtype Acolyte = Acolyte EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 acolyte :: EnemyCard Acolyte
-acolyte = enemyWith Acolyte Cards.acolyte (3, Static 1, 2) (1, 0) (spawnAtL ?~ SpawnAt EmptyLocation)
+acolyte = enemyWith Acolyte Cards.acolyte (spawnAtL ?~ SpawnAt EmptyLocation)
 
 instance HasAbilities Acolyte where
   getAbilities (Acolyte a) =

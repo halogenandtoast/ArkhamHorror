@@ -14,7 +14,7 @@ newtype CourtKeeperWeaverOfNightmares = CourtKeeperWeaverOfNightmares EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 courtKeeperWeaverOfNightmares :: EnemyCard CourtKeeperWeaverOfNightmares
-courtKeeperWeaverOfNightmares = enemy CourtKeeperWeaverOfNightmares Cards.courtKeeperWeaverOfNightmares (3, Static 4, 3) (1, 1)
+courtKeeperWeaverOfNightmares = enemy CourtKeeperWeaverOfNightmares Cards.courtKeeperWeaverOfNightmares
 
 instance HasModifiersFor CourtKeeperWeaverOfNightmares where
   getModifiersFor (CourtKeeperWeaverOfNightmares a) = do

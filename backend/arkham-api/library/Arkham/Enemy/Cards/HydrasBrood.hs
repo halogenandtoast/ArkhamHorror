@@ -15,7 +15,7 @@ newtype HydrasBrood = HydrasBrood EnemyAttrs
 
 hydrasBrood :: EnemyCard HydrasBrood
 hydrasBrood =
-  enemyWith HydrasBrood Cards.hydrasBrood (3, Static 3, 2) (0, 1)
+  enemyWith HydrasBrood Cards.hydrasBrood
     $ spawnAtL
     ?~ SpawnAt
       ( FarthestLocationFromYou

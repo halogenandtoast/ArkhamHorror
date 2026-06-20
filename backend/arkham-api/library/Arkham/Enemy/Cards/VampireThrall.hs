@@ -11,7 +11,7 @@ newtype VampireThrall = VampireThrall EnemyAttrs
 
 vampireThrall :: EnemyCard VampireThrall
 vampireThrall =
-  enemy VampireThrall Cards.vampireThrall (2, Static 3, 2) (1, 0)
+  enemy VampireThrall Cards.vampireThrall
     & setPrey LowestRemainingHealth
 
 instance HasAbilities VampireThrall where

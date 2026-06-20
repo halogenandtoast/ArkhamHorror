@@ -10,7 +10,7 @@ newtype MiGoGeneral = MiGoGeneral EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miGoGeneral :: EnemyCard MiGoGeneral
-miGoGeneral = enemy MiGoGeneral Cards.miGoGeneral (5, PerPlayer 4, 2) (1, 1)
+miGoGeneral = enemy MiGoGeneral Cards.miGoGeneral
 
 instance HasAbilities MiGoGeneral where
   getAbilities (MiGoGeneral a) = [mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be a)]

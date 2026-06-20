@@ -13,7 +13,7 @@ newtype CrystalParasite = CrystalParasite EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crystalParasite :: EnemyCard CrystalParasite
-crystalParasite = enemy CrystalParasite Cards.crystalParasite (2, Static 6, 2) (1, 1)
+crystalParasite = enemy CrystalParasite Cards.crystalParasite
 
 instance HasAbilities CrystalParasite where
   getAbilities (CrystalParasite a) =

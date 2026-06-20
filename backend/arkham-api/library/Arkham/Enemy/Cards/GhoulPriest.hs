@@ -10,7 +10,7 @@ newtype GhoulPriest = GhoulPriest EnemyAttrs
 
 ghoulPriest :: EnemyCard GhoulPriest
 ghoulPriest =
-  enemy GhoulPriest Cards.ghoulPriest (4, PerPlayer 5, 4) (2, 2)
+  enemy GhoulPriest Cards.ghoulPriest
     & setPrey (InvestigatorWithHighestSkill #combat UneliminatedInvestigator)
 
 instance RunMessage GhoulPriest where

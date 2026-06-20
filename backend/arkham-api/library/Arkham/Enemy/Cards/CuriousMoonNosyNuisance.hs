@@ -18,8 +18,6 @@ curiousMoonNosyNuisance =
   enemyWith
     CuriousMoonNosyNuisance
     Cards.curiousMoonNosyNuisance
-    (4, Static 1, 4)
-    (2, 0)
     (healthL .~ Nothing)
 
 instance HasAbilities CuriousMoonNosyNuisance where

@@ -13,7 +13,7 @@ newtype TheThingThatFollows = TheThingThatFollows EnemyAttrs
 
 theThingThatFollows :: EnemyCard TheThingThatFollows
 theThingThatFollows =
-  enemyWith TheThingThatFollows Cards.theThingThatFollows (3, Static 2, 3) (1, 1)
+  enemyWith TheThingThatFollows Cards.theThingThatFollows
     $ (spawnAtL ?~ SpawnAt (FarthestLocationFromYou Anywhere))
     . preyIsOnlyBearer
 

@@ -13,7 +13,7 @@ newtype Poisonblossom = Poisonblossom EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 poisonblossom :: EnemyCard Poisonblossom
-poisonblossom = enemy Poisonblossom Cards.poisonblossom (2, Static 3, 1) (0, 1)
+poisonblossom = enemy Poisonblossom Cards.poisonblossom
 
 instance HasModifiersFor Poisonblossom where
   getModifiersFor (Poisonblossom a) = do

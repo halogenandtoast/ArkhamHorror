@@ -11,7 +11,7 @@ newtype CarlSanfordIntimidatingPresence = CarlSanfordIntimidatingPresence EnemyA
 
 carlSanfordIntimidatingPresence :: EnemyCard CarlSanfordIntimidatingPresence
 carlSanfordIntimidatingPresence =
-  enemy CarlSanfordIntimidatingPresence Cards.carlSanfordIntimidatingPresence (3, Static 3, 3) (0, 1)
+  enemy CarlSanfordIntimidatingPresence Cards.carlSanfordIntimidatingPresence
 
 instance HasModifiersFor CarlSanfordIntimidatingPresence where
   getModifiersFor (CarlSanfordIntimidatingPresence a) = do

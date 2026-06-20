@@ -24,8 +24,6 @@ theOrganistDrapedInMystery =
   enemyWith
     TheOrganistDrapedInMystery
     Cards.theOrganistDrapedInMystery
-    (3, Static 1, 5)
-    (0, 1)
     (healthL .~ Nothing)
 
 instance RunMessage TheOrganistDrapedInMystery where

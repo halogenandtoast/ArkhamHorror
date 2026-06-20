@@ -11,7 +11,7 @@ newtype BrianBurnhamWantsOut = BrianBurnhamWantsOut EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brianBurnhamWantsOut :: EnemyCard BrianBurnhamWantsOut
-brianBurnhamWantsOut = enemy BrianBurnhamWantsOut Cards.brianBurnhamWantsOut (3, Static 3, 5) (1, 0)
+brianBurnhamWantsOut = enemy BrianBurnhamWantsOut Cards.brianBurnhamWantsOut
 
 instance HasAbilities BrianBurnhamWantsOut where
   getAbilities (BrianBurnhamWantsOut a) =

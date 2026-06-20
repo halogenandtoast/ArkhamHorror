@@ -13,7 +13,7 @@ newtype BarnabasMarshTheChangeIsUponHim = BarnabasMarshTheChangeIsUponHim EnemyA
 
 barnabasMarshTheChangeIsUponHim :: EnemyCard BarnabasMarshTheChangeIsUponHim
 barnabasMarshTheChangeIsUponHim =
-  enemy BarnabasMarshTheChangeIsUponHim Cards.barnabasMarshTheChangeIsUponHim (3, Static 4, 2) (1, 2)
+  enemy BarnabasMarshTheChangeIsUponHim Cards.barnabasMarshTheChangeIsUponHim
 
 instance HasAbilities BarnabasMarshTheChangeIsUponHim where
   getAbilities (BarnabasMarshTheChangeIsUponHim a) =

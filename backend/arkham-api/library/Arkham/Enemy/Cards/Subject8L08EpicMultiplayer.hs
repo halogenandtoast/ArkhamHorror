@@ -12,7 +12,7 @@ newtype Subject8L08EpicMultiplayer = Subject8L08EpicMultiplayer EnemyAttrs
 -- horror values in the engine.
 subject8L08EpicMultiplayer :: EnemyCard Subject8L08EpicMultiplayer
 subject8L08EpicMultiplayer =
-  enemyWith Subject8L08EpicMultiplayer Cards.subject8L08EpicMultiplayer (0, Static 1, 0) (0, 0)
+  enemyWith Subject8L08EpicMultiplayer Cards.subject8L08EpicMultiplayer
     $ \a -> a {enemyFight = Nothing, enemyEvade = Nothing, enemyHealth = Nothing}
 
 instance RunMessage Subject8L08EpicMultiplayer where

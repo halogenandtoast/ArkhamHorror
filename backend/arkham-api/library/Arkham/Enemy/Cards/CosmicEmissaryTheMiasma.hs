@@ -11,7 +11,7 @@ newtype CosmicEmissaryTheMiasma = CosmicEmissaryTheMiasma EnemyAttrs
 
 cosmicEmissaryTheMiasma :: EnemyCard CosmicEmissaryTheMiasma
 cosmicEmissaryTheMiasma =
-  enemyWith CosmicEmissaryTheMiasma Cards.cosmicEmissaryTheMiasma (4, Static 0, 2) (2, 0)
+  enemyWith CosmicEmissaryTheMiasma Cards.cosmicEmissaryTheMiasma
     $ (healthL .~ Nothing)
     . (asSelfLocationL ?~ "cosmicEmissaryMiasma")
 

@@ -11,7 +11,7 @@ newtype SpawnOfHali = SpawnOfHali EnemyAttrs
 
 spawnOfHali :: EnemyCard SpawnOfHali
 spawnOfHali =
-  enemy SpawnOfHali Cards.spawnOfHali (4, Static 4, 2) (1, 2)
+  enemy SpawnOfHali Cards.spawnOfHali
     & setPrey MostHorror
 
 instance HasAbilities SpawnOfHali where

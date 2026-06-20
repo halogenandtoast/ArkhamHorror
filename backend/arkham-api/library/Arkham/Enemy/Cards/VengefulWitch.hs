@@ -13,7 +13,7 @@ newtype VengefulWitch = VengefulWitch EnemyAttrs
 
 vengefulWitch :: EnemyCard VengefulWitch
 vengefulWitch =
-  enemy VengefulWitch Cards.vengefulWitch (3, Static 3, 3) (1, 1)
+  enemy VengefulWitch Cards.vengefulWitch
     & setSpawnAt (mapOneOf LocationWithTitle ["The Gallows", "Heretics' Graves"])
 
 instance HasAbilities VengefulWitch where

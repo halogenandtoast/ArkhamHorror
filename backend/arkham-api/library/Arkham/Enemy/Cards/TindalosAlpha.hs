@@ -11,7 +11,7 @@ newtype TindalosAlpha = TindalosAlpha EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tindalosAlpha :: EnemyCard TindalosAlpha
-tindalosAlpha = enemy TindalosAlpha Cards.tindalosAlpha (4, Static 3, 4) (1, 1)
+tindalosAlpha = enemy TindalosAlpha Cards.tindalosAlpha
 
 instance HasAbilities TindalosAlpha where
   getAbilities (TindalosAlpha a) =

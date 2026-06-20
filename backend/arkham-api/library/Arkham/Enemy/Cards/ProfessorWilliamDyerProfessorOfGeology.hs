@@ -19,8 +19,6 @@ professorWilliamDyerProfessorOfGeology =
   enemy
     ProfessorWilliamDyerProfessorOfGeology
     Cards.professorWilliamDyerProfessorOfGeology
-    (4, Static 2, 2)
-    (0, 2)
 
 instance HasAbilities ProfessorWilliamDyerProfessorOfGeology where
   getAbilities (ProfessorWilliamDyerProfessorOfGeology a) =

@@ -12,7 +12,7 @@ newtype TakadaHirokoAeroplaneMechanic = TakadaHirokoAeroplaneMechanic EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 takadaHirokoAeroplaneMechanic :: EnemyCard TakadaHirokoAeroplaneMechanic
-takadaHirokoAeroplaneMechanic = enemy TakadaHirokoAeroplaneMechanic Cards.takadaHirokoAeroplaneMechanic (3, Static 3, 3) (2, 0)
+takadaHirokoAeroplaneMechanic = enemy TakadaHirokoAeroplaneMechanic Cards.takadaHirokoAeroplaneMechanic
 
 instance HasAbilities TakadaHirokoAeroplaneMechanic where
   getAbilities (TakadaHirokoAeroplaneMechanic a) =

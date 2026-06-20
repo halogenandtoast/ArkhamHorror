@@ -17,8 +17,6 @@ abarranArrigorriagakoaTheManWithTheRubyRing =
   enemyWith
     AbarranArrigorriagakoaTheManWithTheRubyRing
     Cards.abarranArrigorriagakoaTheManWithTheRubyRing
-    (0, Static 1, 0)
-    (0, 0)
     (\a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing})
 
 instance HasAbilities AbarranArrigorriagakoaTheManWithTheRubyRing where

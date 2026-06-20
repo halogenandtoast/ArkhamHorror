@@ -15,7 +15,7 @@ newtype RiverHawthorne = RiverHawthorne EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riverHawthorne :: EnemyCard RiverHawthorne
-riverHawthorne = enemy RiverHawthorne Cards.riverHawthorne (1, Static 3, 4) (0, 1)
+riverHawthorne = enemy RiverHawthorne Cards.riverHawthorne
 
 instance HasAbilities RiverHawthorne where
   getAbilities (RiverHawthorne a) =

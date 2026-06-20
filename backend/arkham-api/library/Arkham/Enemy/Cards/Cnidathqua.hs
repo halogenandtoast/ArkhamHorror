@@ -14,7 +14,7 @@ newtype Cnidathqua = Cnidathqua EnemyAttrs
 
 cnidathqua :: EnemyCard Cnidathqua
 cnidathqua =
-  enemyWith Cnidathqua Cards.cnidathqua (4, PerPlayer 8, 0) (2, 2)
+  enemyWith Cnidathqua Cards.cnidathqua
     $ (asSelfLocationL ?~ "cnidathqua")
     . (evadeL .~ Nothing)
 

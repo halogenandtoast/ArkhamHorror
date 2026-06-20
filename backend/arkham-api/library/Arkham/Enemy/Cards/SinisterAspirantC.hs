@@ -10,7 +10,7 @@ newtype SinisterAspirantC = SinisterAspirantC EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sinisterAspirantC :: EnemyCard SinisterAspirantC
-sinisterAspirantC = enemy SinisterAspirantC Cards.sinisterAspirantC (2, Static 3, 4) (0, 1)
+sinisterAspirantC = enemy SinisterAspirantC Cards.sinisterAspirantC
 
 instance HasAbilities SinisterAspirantC where
   getAbilities (SinisterAspirantC a) = extend1 a $ restricted a 1 (thisExists a ReadyEnemy) $ forced $ PhaseEnds #when #enemy

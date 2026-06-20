@@ -10,7 +10,7 @@ newtype Werewolf = Werewolf EnemyAttrs
 
 werewolf :: EnemyCard Werewolf
 werewolf =
-  enemy Werewolf Cards.werewolf (3, Static 6, 3) (2, 0)
+  enemy Werewolf Cards.werewolf
     & setPrey MostRemainingHealth
 
 instance RunMessage Werewolf where

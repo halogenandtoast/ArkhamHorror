@@ -10,7 +10,7 @@ newtype NaomiOBannion = NaomiOBannion EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 naomiOBannion :: EnemyCard NaomiOBannion
-naomiOBannion = enemy NaomiOBannion Cards.naomiOBannion (3, Static 4, 4) (2, 0)
+naomiOBannion = enemy NaomiOBannion Cards.naomiOBannion
 
 instance HasModifiersFor NaomiOBannion where
   getModifiersFor (NaomiOBannion attrs) = do

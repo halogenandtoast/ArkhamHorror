@@ -21,8 +21,6 @@ theBeastInACowlOfCrimsonLeavingATrailOfDestruction =
   enemy
     TheBeastInACowlOfCrimsonLeavingATrailOfDestruction
     Cards.theBeastInACowlOfCrimsonLeavingATrailOfDestruction
-    (3, Static 5, 4)
-    (2, 2)
     & setSpawnAt (FarthestLocationFromYou Anywhere)
 
 instance HasAbilities TheBeastInACowlOfCrimsonLeavingATrailOfDestruction where

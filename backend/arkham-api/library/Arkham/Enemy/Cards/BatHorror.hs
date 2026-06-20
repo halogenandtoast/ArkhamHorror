@@ -8,4 +8,4 @@ newtype BatHorror = BatHorror EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 batHorror :: EnemyCard BatHorror
-batHorror = enemy BatHorror Cards.batHorror (3, Static 4, 4) (1, 1)
+batHorror = enemy BatHorror Cards.batHorror

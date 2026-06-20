@@ -15,7 +15,7 @@ newtype StalkingHybrid = StalkingHybrid EnemyAttrs
 
 stalkingHybrid :: EnemyCard StalkingHybrid
 stalkingHybrid =
-  enemy StalkingHybrid Cards.stalkingHybrid (3, Static 1, 3) (1, 1)
+  enemy StalkingHybrid Cards.stalkingHybrid
     & setOnlyPrey (ControlsAsset $ AssetWithTitle "Vale Lantern")
 
 instance HasModifiersFor StalkingHybrid where

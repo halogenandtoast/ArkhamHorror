@@ -16,7 +16,7 @@ newtype LaChicaRojaHotOnYourTrail = LaChicaRojaHotOnYourTrail EnemyAttrs
 
 laChicaRojaHotOnYourTrail :: EnemyCard LaChicaRojaHotOnYourTrail
 laChicaRojaHotOnYourTrail =
-  enemy LaChicaRojaHotOnYourTrail Cards.laChicaRojaHotOnYourTrail (3, Static 3, 5) (1, 1)
+  enemy LaChicaRojaHotOnYourTrail Cards.laChicaRojaHotOnYourTrail
     & setSpawnAt (FarthestLocationFromYou Anywhere)
 
 instance HasAbilities LaChicaRojaHotOnYourTrail where

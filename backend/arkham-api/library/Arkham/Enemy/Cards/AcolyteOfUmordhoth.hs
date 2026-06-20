@@ -11,7 +11,7 @@ newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
 
 acolyteOfUmordhoth :: EnemyCard AcolyteOfUmordhoth
 acolyteOfUmordhoth =
-  enemy AcolyteOfUmordhoth Cards.acolyteOfUmordhoth (3, Static 3, 2) (1, 1)
+  enemy AcolyteOfUmordhoth Cards.acolyteOfUmordhoth
     & setPrey FewestCardsInHand
 
 instance HasModifiersFor AcolyteOfUmordhoth where

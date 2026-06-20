@@ -12,7 +12,7 @@ newtype Medusa = Medusa EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 medusa :: EnemyCard Medusa
-medusa = enemy Medusa Cards.medusa (3, Static 2, 3) (0, 1)
+medusa = enemy Medusa Cards.medusa
 
 instance HasAbilities Medusa where
   getAbilities (Medusa a) =

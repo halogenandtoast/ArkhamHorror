@@ -16,8 +16,6 @@ theCrawlingMist =
   enemyWith
     TheCrawlingMist
     Cards.theCrawlingMist
-    (3, Static 5, 3)
-    (1, 1)
     (preyL .~ Prey MostCardsInHand)
 
 instance HasModifiersFor TheCrawlingMist where

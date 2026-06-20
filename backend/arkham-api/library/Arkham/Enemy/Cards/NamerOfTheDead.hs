@@ -16,7 +16,7 @@ newtype NamerOfTheDead = NamerOfTheDead EnemyAttrs
 
 namerOfTheDead :: EnemyCard NamerOfTheDead
 namerOfTheDead =
-  enemy NamerOfTheDead Cards.namerOfTheDead (2, Static 3, 2) (1, 1)
+  enemy NamerOfTheDead Cards.namerOfTheDead
     & setOnlyPrey daisyWalker
 
 instance HasAbilities NamerOfTheDead where

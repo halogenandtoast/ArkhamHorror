@@ -21,7 +21,7 @@ instance HasAbilities DrAmyKenslerProfessorOfBiology where
       ]
 
 drAmyKenslerProfessorOfBiology :: EnemyCard DrAmyKenslerProfessorOfBiology
-drAmyKenslerProfessorOfBiology = enemy DrAmyKenslerProfessorOfBiology Cards.drAmyKenslerProfessorOfBiology (4, Static 2, 3) (1, 1)
+drAmyKenslerProfessorOfBiology = enemy DrAmyKenslerProfessorOfBiology Cards.drAmyKenslerProfessorOfBiology
 
 instance RunMessage DrAmyKenslerProfessorOfBiology where
   runMessage msg e@(DrAmyKenslerProfessorOfBiology attrs) = runQueueT $ case msg of

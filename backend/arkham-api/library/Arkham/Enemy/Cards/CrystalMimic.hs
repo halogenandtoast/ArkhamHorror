@@ -15,7 +15,7 @@ newtype CrystalMimic = CrystalMimic EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crystalMimic :: EnemyCard CrystalMimic
-crystalMimic = enemy CrystalMimic Cards.crystalMimic (6, Static 5, 6) (1, 1)
+crystalMimic = enemy CrystalMimic Cards.crystalMimic
 
 instance HasModifiersFor CrystalMimic where
   getModifiersFor (CrystalMimic attrs) = do

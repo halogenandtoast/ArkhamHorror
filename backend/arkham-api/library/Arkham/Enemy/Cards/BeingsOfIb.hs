@@ -11,7 +11,7 @@ newtype BeingsOfIb = BeingsOfIb EnemyAttrs
 
 beingsOfIb :: EnemyCard BeingsOfIb
 beingsOfIb =
-  enemyWith BeingsOfIb Cards.beingsOfIb (4, Static 1, 4) (0, 1) \a ->
+  enemyWith BeingsOfIb Cards.beingsOfIb \a ->
     a
       & (preyL .~ OnlyPrey (Prey $ at_ $ LocationWithTrait Ruins))
       & (attacksL .~ at_ (locationWithEnemy a))

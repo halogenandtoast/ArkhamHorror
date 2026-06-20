@@ -10,7 +10,7 @@ newtype WolfManDrew = WolfManDrew EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wolfManDrew :: EnemyCard WolfManDrew
-wolfManDrew = enemyWith WolfManDrew Cards.wolfManDrew (4, Static 4, 2) (2, 0) (spawnAtL ?~ "Downtown")
+wolfManDrew = enemyWith WolfManDrew Cards.wolfManDrew (spawnAtL ?~ "Downtown")
 
 instance HasAbilities WolfManDrew where
   getAbilities (WolfManDrew a) =

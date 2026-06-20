@@ -15,7 +15,7 @@ newtype DeepOnePredator = DeepOnePredator EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepOnePredator :: EnemyCard DeepOnePredator
-deepOnePredator = enemy DeepOnePredator Cards.deepOnePredator (4, Static 2, 2) (0, 1)
+deepOnePredator = enemy DeepOnePredator Cards.deepOnePredator
 
 instance HasAbilities DeepOnePredator where
   getAbilities (DeepOnePredator a) =

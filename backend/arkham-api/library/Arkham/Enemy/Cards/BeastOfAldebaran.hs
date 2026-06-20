@@ -13,8 +13,6 @@ beastOfAldebaran =
   enemyWith
     BeastOfAldebaran
     Cards.beastOfAldebaran
-    (3, Static 7, 5)
-    (2, 1)
     (damageStrategyL .~ SingleTarget)
 
 instance RunMessage BeastOfAldebaran where

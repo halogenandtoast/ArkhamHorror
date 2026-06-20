@@ -15,7 +15,7 @@ newtype HorrifyingShade = HorrifyingShade EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 horrifyingShade :: EnemyCard HorrifyingShade
-horrifyingShade = enemy HorrifyingShade Cards.horrifyingShade (3, Static 3, 3) (1, 1)
+horrifyingShade = enemy HorrifyingShade Cards.horrifyingShade
 
 instance HasModifiersFor HorrifyingShade where
   getModifiersFor (HorrifyingShade a) = do

@@ -14,7 +14,7 @@ newtype TheWingedSerpentTheFuryOfYig = TheWingedSerpentTheFuryOfYig EnemyAttrs
 
 theWingedSerpentTheFuryOfYig :: EnemyCard TheWingedSerpentTheFuryOfYig
 theWingedSerpentTheFuryOfYig =
-  enemyWith TheWingedSerpentTheFuryOfYig Cards.theWingedSerpentTheFuryOfYig (4, Static 1, 4) (1, 1)
+  enemyWith TheWingedSerpentTheFuryOfYig Cards.theWingedSerpentTheFuryOfYig
     $ (spawnAtL ?~ SpawnAt (LocationWithTitle "Mouth of K'n-yan"))
     . (healthL .~ Nothing)
 

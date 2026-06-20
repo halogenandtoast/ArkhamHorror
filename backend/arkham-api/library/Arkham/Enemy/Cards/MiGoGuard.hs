@@ -13,7 +13,7 @@ newtype MiGoGuard = MiGoGuard EnemyAttrs
 
 miGoGuard :: EnemyCard MiGoGuard
 miGoGuard =
-  enemyWith MiGoGuard Cards.miGoGuard (3, Static 3, 1) (1, 1)
+  enemyWith MiGoGuard Cards.miGoGuard
     $ preyL
     .~ Prey MostRemainingHealth
 

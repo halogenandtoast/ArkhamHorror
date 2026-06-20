@@ -13,7 +13,7 @@ newtype SeepingNightmare = SeepingNightmare EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seepingNightmare :: EnemyCard SeepingNightmare
-seepingNightmare = enemy SeepingNightmare Cards.seepingNightmare (3, Static 6, 3) (2, 2)
+seepingNightmare = enemy SeepingNightmare Cards.seepingNightmare
 
 instance HasModifiersFor SeepingNightmare where
   getModifiersFor (SeepingNightmare a) = do

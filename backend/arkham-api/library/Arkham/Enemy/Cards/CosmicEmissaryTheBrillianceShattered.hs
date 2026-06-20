@@ -11,7 +11,7 @@ newtype CosmicEmissaryTheBrillianceShattered = CosmicEmissaryTheBrillianceShatte
 
 cosmicEmissaryTheBrillianceShattered :: EnemyCard CosmicEmissaryTheBrillianceShattered
 cosmicEmissaryTheBrillianceShattered =
-  enemyWith CosmicEmissaryTheBrillianceShattered Cards.cosmicEmissaryTheBrillianceShattered (3, Static 10, 3) (2, 2)
+  enemyWith CosmicEmissaryTheBrillianceShattered Cards.cosmicEmissaryTheBrillianceShattered
     $ (asSelfLocationL ?~ "cosmicEmissaryBrilliance")
     . (preyL .~ Prey (InvestigatorWithHighestSkill #willpower UneliminatedInvestigator))
 

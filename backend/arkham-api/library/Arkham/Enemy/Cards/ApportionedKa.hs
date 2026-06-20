@@ -13,7 +13,7 @@ newtype ApportionedKa = ApportionedKa EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 apportionedKa :: EnemyCard ApportionedKa
-apportionedKa = enemyWith ApportionedKa Cards.apportionedKa (0, Static 1, 0) (1, 1) \e ->
+apportionedKa = enemyWith ApportionedKa Cards.apportionedKa \e ->
   e {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing}
 
 instance HasAbilities ApportionedKa where

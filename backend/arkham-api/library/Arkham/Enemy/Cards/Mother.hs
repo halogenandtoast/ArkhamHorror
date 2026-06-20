@@ -14,7 +14,7 @@ newtype Mother = Mother EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mother :: EnemyCard Mother
-mother = enemy Mother Cards.mother (4, Static 8, 1) (1, 1)
+mother = enemy Mother Cards.mother
 
 instance HasAbilities Mother where
   getAbilities (Mother a) =

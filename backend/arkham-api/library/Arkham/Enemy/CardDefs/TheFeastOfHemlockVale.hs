@@ -6,7 +6,10 @@ import Arkham.Keyword qualified as Keyword
 zamacona :: CardDef
 zamacona =
   (weakness "10011" "Zamacona")
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Criminal]
     , cdKeywords = setFromList [Keyword.Elusive]
     }
@@ -14,7 +17,10 @@ zamacona =
 weepingYurei :: CardDef
 weepingYurei =
   (weakness "10014" "Weeping Yurei")
-    { cdHealth = health 2
+    { cdSanityDamage = sanityDamage 2
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Monster, Geist]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Elusive, Keyword.Hunter]
     }
@@ -22,7 +28,10 @@ weepingYurei =
 biancaDieKatz :: CardDef
 biancaDieKatz =
   (weakness "10063" "Bianca \"Die Katz\"")
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 2
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Criminal, Socialite]
     , cdKeywords = setFromList [Keyword.Bonded 1 "10062", Keyword.Hunter]
     , cdVictoryPoints = Just 0
@@ -31,7 +40,11 @@ biancaDieKatz =
 subterraneanBeast :: CardDef
 subterraneanBeast =
   (enemy "10517" "Subterranean Beast" WrittenInRock 1)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 4
+    , cdEvade = evade 3
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Abomination, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
     , cdVictoryPoints = Just 2
@@ -40,7 +53,11 @@ subterraneanBeast =
 burrowingHybrid :: CardDef
 burrowingHybrid =
   (enemy "10518" "Burrowing Hybrid" WrittenInRock 3)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Mutated]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
@@ -48,7 +65,10 @@ burrowingHybrid =
 frenziedMiner :: CardDef
 frenziedMiner =
   (enemy "10519" "Frenzied Miner" WrittenInRock 3)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 1
+    , cdFight = fightX
+    , cdEvade = evadeX
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Humanoid]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
@@ -56,7 +76,11 @@ frenziedMiner =
 grapplingSpawn :: CardDef
 grapplingSpawn =
   (enemy "10544" "Grappling Spawn" HemlockHouse 2)
-    { cdHealth = health 2
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 4
+    , cdEvade = evade 2
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Monster, Mutated]
     , cdKeywords =
         setFromList
@@ -66,7 +90,10 @@ grapplingSpawn =
 colorlessLarva :: CardDef
 colorlessLarva =
   (enemy "10563" "Colorless Larva" TheSilentHeath 3)
-    { cdHealth = health 1
+    { cdSanityDamage = sanityDamage 1
+    , cdFight = fight 1
+    , cdEvade = evade 1
+    , cdHealth = health 1
     , cdCardTraits = setFromList [Creature, Insect, Mutated]
     , cdKeywords = setFromList [Keyword.Aloof]
     , cdVictoryPoints = Just 0
@@ -75,7 +102,11 @@ colorlessLarva =
 broodSoldier :: CardDef
 broodSoldier =
   (enemy "10564" "Brood Soldier" TheSilentHeath 3)
-    { cdHealth = health 2
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Creature, Insect, Mutated]
     , cdKeywords =
         setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithTrait Cave <> LocationWithAnyClues)]
@@ -85,7 +116,11 @@ broodSoldier =
 broodQueenDyingMother :: CardDef
 broodQueenDyingMother =
   (enemy "10565" ("Brood Queen" <:> "Dying Mother") TheSilentHeath 1)
-    { cdHealth = health 5
+    { cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 1
+    , cdEvade = evade 3
+    , cdHealth = health 5
     , cdCardTraits = setFromList [Creature, Insect, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Massive, Keyword.Alert]
     , cdVictoryPoints = Just 2
@@ -95,7 +130,11 @@ limulusHybridInTheLight :: CardDef
 limulusHybridInTheLight =
   doubleSided "10583b"
     $ (enemy "10583a" ("Limulus Hybrid" <:> "In the Light") TheLostSister 1)
-      { cdHealth = health 5
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 2
+      , cdFight = fight 3
+      , cdEvade = evade 4
+      , cdHealth = health 5
       , cdCardTraits = setFromList [Monster, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Elusive, Keyword.Massive]
       , cdVictoryPoints = Just 2
@@ -105,7 +144,12 @@ limulusHybridInTheDark :: CardDef
 limulusHybridInTheDark =
   doubleSided "10583a"
     $ (enemy "10583b" ("Limulus Hybrid" <:> "In the Dark") TheLostSister 1)
-      { cdCardTraits = setFromList [Monster, Abomination, Elite]
+      { cdHealthDamage = healthDamage 2
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 4
+      , cdEvade = evade 3
+      , cdHealth = health 5
+      , cdCardTraits = setFromList [Monster, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
       , cdVictoryPoints = Just 2
       }
@@ -114,7 +158,11 @@ crustaceanHybridInTheLight :: CardDef
 crustaceanHybridInTheLight =
   doubleSided "10584b"
     $ (enemy "10584a" ("Crustacean Hybrid" <:> "In the Light") TheLostSister 2)
-      { cdHealth = health 3
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 3
+      , cdEvade = evade 4
+      , cdHealth = health 3
       , cdCardTraits = setFromList [Creature, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
       , cdVictoryPoints = Just 0
@@ -124,7 +172,12 @@ crustaceanHybridInTheDark :: CardDef
 crustaceanHybridInTheDark =
   doubleSided "10584a"
     $ (enemy "10584b" ("Crustacean Hybrid" <:> "In the Dark") TheLostSister 2)
-      { cdCardTraits = setFromList [Creature, Abomination, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 4
+      , cdEvade = evade 3
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Creature, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Hunter]
       , cdVictoryPoints = Just 0
       }
@@ -132,7 +185,10 @@ crustaceanHybridInTheDark =
 cavernMoss :: CardDef
 cavernMoss =
   (enemy "10585" "Cavern Moss" TheLostSister 3)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 1
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Flora, Mutated]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
@@ -141,7 +197,12 @@ ursineHybridGlowingAbomination :: CardDef
 ursineHybridGlowingAbomination =
   doubleSided "10607a"
     $ (enemy "10607b" ("Ursine Hybrid" <:> "Glowing Abomination") TheTwistedHollow 1)
-      { cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
+      { cdHealthDamage = healthDamage 3
+      , cdSanityDamage = sanityDamage 2
+      , cdFight = fight 5
+      , cdEvade = evade 3
+      , cdHealth = health 5
+      , cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       , cdUnique = True
       , cdVictoryPoints = Just 2
@@ -150,7 +211,11 @@ ursineHybridGlowingAbomination =
 stalkingHybrid :: CardDef
 stalkingHybrid =
   (enemy "10625" "Stalking Hybrid" TheTwistedHollow 4)
-    { cdHealth = healthX
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = healthX
     , cdCardTraits = setFromList [Creature, Monster, Mutated]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Alert]
     }
@@ -158,7 +223,11 @@ stalkingHybrid =
 crystalParasite :: CardDef
 crystalParasite =
   (enemy "10721" "Crystal Parasite" HorrorsInTheRock 2)
-    { cdHealth = health 6
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 6
     , cdCardTraits = setFromList [Monster, Insect, Blight]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
@@ -167,7 +236,11 @@ crystalParasite =
 miasmaticShadow :: CardDef
 miasmaticShadow =
   (enemy "10724" "Miasmatic Shadow" AgentsOfTheColour 2)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Monster, Colour]
     , cdKeywords =
         setFromList
@@ -181,7 +254,10 @@ miasmaticShadow =
 poisonblossom :: CardDef
 poisonblossom =
   (enemy "10732" "Poisonblossom" TheForest 2)
-    { cdHealth = health 3
+    { cdSanityDamage = sanityDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 1
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Flora, Mutated]
     , cdKeywords = setFromList [Keyword.Retaliate]
     }
@@ -189,7 +265,10 @@ poisonblossom =
 forestWatcher :: CardDef
 forestWatcher =
   (enemy "10733" "Forest Watcher" TheForest 2)
-    { cdHealth = health 2
+    { cdHealthDamage = healthDamage 1
+    , cdFight = fight 1
+    , cdEvade = evade 3
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Creature, Flora, Mutated]
     , cdKeywords =
         setFromList [Keyword.Aloof, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Elusive]
@@ -198,7 +277,11 @@ forestWatcher =
 cochlealStag :: CardDef
 cochlealStag =
   (enemy "10734" "Cochleal Stag" TheForest 1)
-    { cdHealth = health 5
+    { cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 4
+    , cdHealth = health 5
     , cdCardTraits = setFromList [Creature, Monster, Flora, Mutated]
     , cdKeywords =
         setFromList
@@ -208,7 +291,10 @@ cochlealStag =
 blackAmanita :: CardDef
 blackAmanita =
   (enemy "10738" "Black Amanita" Myconids 2)
-    { cdHealth = health 2
+    { cdSanityDamage = sanityDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 3
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Flora, Mutated]
     , cdKeywords =
         setFromList
@@ -220,7 +306,11 @@ blackAmanita =
 thingInTheDepths :: CardDef
 thingInTheDepths =
   (enemy "10600" ("Thing in the Depths" <:> "Rising from the Deep") TheThingInTheDepths 1)
-    { cdHealth = health 10
+    { cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 4
+    , cdEvade = evade 2
+    , cdHealth = health 10
     , cdCardTraits = setFromList [Abomination, Flora, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
     , cdUnique = True
@@ -230,7 +320,10 @@ thingInTheDepths =
 chelydranHybrid :: CardDef
 chelydranHybrid =
   (enemy "10601" ("Chelydran Hybrid" <:> "Flowering Anomaly") TheThingInTheDepths 1)
-    { cdHealth = health 5
+    { cdHealthDamage = healthDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 5
     , cdCardTraits = setFromList [Creature, Flora, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Elusive, Keyword.Patrol EmptyLocation]
     , cdVictoryPoints = Just 0
@@ -239,7 +332,10 @@ chelydranHybrid =
 graspingTendril :: CardDef
 graspingTendril =
   (enemy "10602" "Grasping Tendril" TheThingInTheDepths 5)
-    { cdHealth = healthX
+    { cdHealthDamage = healthDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 4
+    , cdHealth = healthX
     , cdCardTraits = setFromList [Abomination, Flora, Mutated]
     , cdKeywords =
         setFromList
@@ -251,7 +347,11 @@ graspingTendril =
 corpseLichen :: CardDef
 corpseLichen =
   (enemy "10739" "Corpse Lichen" Myconids 1)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 4
+    , cdEvade = evade 3
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Humanoid, Monster, Flora, Mutated]
     , cdKeywords =
         setFromList
@@ -266,7 +366,11 @@ longestNightBack = mapFromList [("customBack", String "back_the_longest_night.jp
 ursineHybridStarvingAbomination :: CardDef
 ursineHybridStarvingAbomination =
   (enemy "10643" ("Ursine Hybrid" <:> "Starving Abomination") TheLongestNight 1)
-    { cdHealth = health 6
+    { cdHealthDamage = healthDamage 3
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 5
+    , cdEvade = evade 3
+    , cdHealth = health 6
     , cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
     , cdUnique = True
@@ -277,7 +381,10 @@ ursineHybridStarvingAbomination =
 moltingHybridA :: CardDef
 moltingHybridA =
   (enemy "10644a" "Molting Hybrid" TheLongestNight 1)
-    { cdHealth = health 3
+    { cdSanityDamage = sanityDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 4
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Monster, Mutated]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -286,7 +393,10 @@ moltingHybridA =
 moltingHybridB :: CardDef
 moltingHybridB =
   (enemy "10644b" "Molting Hybrid" TheLongestNight 1)
-    { cdHealth = health 3
+    { cdSanityDamage = sanityDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 4
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Monster, Mutated]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -295,7 +405,10 @@ moltingHybridB =
 moltingHybridC :: CardDef
 moltingHybridC =
   (enemy "10644c" "Molting Hybrid" TheLongestNight 1)
-    { cdHealth = health 3
+    { cdSanityDamage = sanityDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 4
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Monster, Mutated]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -304,7 +417,11 @@ moltingHybridC =
 lupineHybridA :: CardDef
 lupineHybridA =
   (enemy "10645a" "Lupine Hybrid" TheLongestNight 1)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 1
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Retaliate, Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -313,7 +430,11 @@ lupineHybridA =
 lupineHybridB :: CardDef
 lupineHybridB =
   (enemy "10645b" "Lupine Hybrid" TheLongestNight 1)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 1
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Retaliate, Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -322,7 +443,11 @@ lupineHybridB =
 lupineHybridC :: CardDef
 lupineHybridC =
   (enemy "10645c" "Lupine Hybrid" TheLongestNight 1)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 1
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Retaliate, Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -331,7 +456,11 @@ lupineHybridC =
 capraHybrid :: CardDef
 capraHybrid =
   (enemy "10646" "Capra Hybrid" TheLongestNight 3)
-    { cdHealth = health 5
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 5
     , cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -340,7 +469,10 @@ capraHybrid =
 equineHybridA :: CardDef
 equineHybridA =
   (enemy "10647a" "Equine Hybrid" TheLongestNight 1)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 2
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Monster, Mutated]
     , cdKeywords = setFromList [Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -349,7 +481,10 @@ equineHybridA =
 equineHybridB :: CardDef
 equineHybridB =
   (enemy "10647b" "Equine Hybrid" TheLongestNight 1)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 2
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Monster, Mutated]
     , cdKeywords = setFromList [Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -358,7 +493,10 @@ equineHybridB =
 equineHybridC :: CardDef
 equineHybridC =
   (enemy "10647c" "Equine Hybrid" TheLongestNight 1)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 2
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Monster, Mutated]
     , cdKeywords = setFromList [Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -367,7 +505,10 @@ equineHybridC =
 slitheringHybrid :: CardDef
 slitheringHybrid =
   (enemy "10648" "Slithering Hybrid" TheLongestNight 2)
-    { cdHealth = health 2
+    { cdSanityDamage = sanityDamage 2
+    , cdFight = fight 3
+    , cdEvade = evade 2
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Creature, Monster, Mutated]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithTitle "The Farmhouse")]
     , cdMeta = longestNightBack
@@ -376,7 +517,10 @@ slitheringHybrid =
 frenziedReveler :: CardDef
 frenziedReveler =
   (enemy "10692" "Frenzied Reveler" DayOfTheFeast 2)
-    { cdHealth = health 2
+    { cdHealthDamage = healthDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Resident]
     }
 
@@ -388,7 +532,12 @@ motherRachelStarbornHerald =
   unique
     $ doubleSided "10693"
     $ (enemy "10693b" "Mother Rachel" Residents 1)
-      { cdCardTraits = setFromList [Humanoid, Resident, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 2
+      , cdFight = fight 4
+      , cdEvade = evade 2
+      , cdHealth = health 2
+      , cdCardTraits = setFromList [Humanoid, Resident, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
       , cdVictoryPoints = Just 1
       }
@@ -398,7 +547,11 @@ leahAtwood =
   unique
     $ doubleSided "10694"
     $ (enemy "10694b" "Leah Atwood" Residents 1)
-      { cdCardTraits = setFromList [Humanoid, Resident, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdFight = fight 4
+      , cdEvade = evade 2
+      , cdHealth = health 4
+      , cdCardTraits = setFromList [Humanoid, Resident, Elite]
       , cdKeywords = setFromList [Keyword.Retaliate]
       , cdVictoryPoints = Just 0
       }
@@ -408,7 +561,11 @@ simeonAtwood =
   unique
     $ doubleSided "10695"
     $ (enemy "10695b" "Simeon Atwood" Residents 1)
-      { cdCardTraits = setFromList [Humanoid, Resident, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdFight = fight 1
+      , cdEvade = evade 4
+      , cdHealth = health 2
+      , cdCardTraits = setFromList [Humanoid, Resident, Elite]
       , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
       , cdVictoryPoints = Just 0
       }
@@ -418,7 +575,11 @@ williamHemlock =
   unique
     $ doubleSided "10696"
     $ (enemy "10696b" "William Hemlock" Residents 1)
-      { cdCardTraits = setFromList [Humanoid, Resident, Elite]
+      { cdSanityDamage = sanityDamage 1
+      , cdFight = fight 1
+      , cdEvade = evade 2
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Resident, Elite]
       , cdKeywords = setFromList [Keyword.Elusive]
       , cdVictoryPoints = Just 0
       }
@@ -428,7 +589,11 @@ riverHawthorne =
   unique
     $ doubleSided "10697"
     $ (enemy "10697b" "River Hawthorne" Residents 1)
-      { cdCardTraits = setFromList [Humanoid, Resident, Elite]
+      { cdSanityDamage = sanityDamage 1
+      , cdFight = fight 1
+      , cdEvade = evade 4
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Resident, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
       , cdVictoryPoints = Just 0
       }
@@ -438,7 +603,11 @@ gideonMizrah =
   unique
     $ doubleSided "10698"
     $ (enemy "10698b" "Gideon Mizrah" Residents 1)
-      { cdCardTraits = setFromList [Humanoid, Resident, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdFight = fight 2
+      , cdEvade = evade 1
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Resident, Elite]
       , cdKeywords = setFromList [Keyword.Retaliate]
       , cdVictoryPoints = Just 0
       }
@@ -448,7 +617,11 @@ judithPark =
   unique
     $ doubleSided "10699"
     $ (enemy "10699b" "Judith Park" Residents 1)
-      { cdCardTraits = setFromList [Humanoid, Resident, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdFight = fight 5
+      , cdEvade = evade 2
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Resident, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       , cdVictoryPoints = Just 0
       }
@@ -458,7 +631,11 @@ theoPeters =
   unique
     $ doubleSided "10700"
     $ (enemy "10700b" "Theo Peters" Residents 1)
-      { cdCardTraits = setFromList [Humanoid, Resident, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdFight = fight 3
+      , cdEvade = evade 3
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Resident, Elite]
       , cdKeywords = setFromList [Keyword.Elusive, Keyword.Alert]
       , cdVictoryPoints = Just 0
       }
@@ -468,7 +645,11 @@ bertieMusgrave =
   unique
     $ doubleSided "10701"
     $ (enemy "10701b" "Bertie Musgrave" Residents 1)
-      { cdCardTraits = setFromList [Humanoid, Miskatonic]
+      { cdHealthDamage = healthDamage 1
+      , cdFight = fight 3
+      , cdEvade = evade 3
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Miskatonic]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithEnemy (EnemyWithTitle "Mother Rachel"))]
       , cdVictoryPoints = Just 0
       }
@@ -477,7 +658,10 @@ cosmicEmissaryTheAbyss :: CardDef
 cosmicEmissaryTheAbyss =
   doubleSided "10662b"
     $ (enemy "10662a" ("Cosmic Emissary" <:> "The Abyss") FateOfTheVale 1)
-      { cdCardTraits = setFromList [Emissary, Colour, Elite]
+      { cdSanityDamage = sanityDamage 2
+      , cdFight = fight 4
+      , cdEvade = evade 4
+      , cdCardTraits = setFromList [Emissary, Colour, Elite]
       , cdKeywords = singleton Keyword.Massive
       }
 
@@ -485,7 +669,12 @@ cosmicEmissaryTheAbyssShattered :: CardDef
 cosmicEmissaryTheAbyssShattered =
   doubleSided "10662a"
     $ (enemy "10662b" ("Cosmic Emissary" <:> "The Abyss") FateOfTheVale 1)
-      { cdCardTraits = setFromList [Emissary, Shattered, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 4
+      , cdEvade = evade 4
+      , cdHealth = health 10
+      , cdCardTraits = setFromList [Emissary, Shattered, Elite]
       , cdKeywords = singleton Keyword.Massive
       , cdVictoryPoints = Just 5
       }
@@ -494,7 +683,11 @@ cosmicEmissaryThePhantasm :: CardDef
 cosmicEmissaryThePhantasm =
   doubleSided "10663b"
     $ (enemy "10663a" ("Cosmic Emissary" <:> "The Phantasm") FateOfTheVale 1)
-      { cdCardTraits = setFromList [Emissary, Colour, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 2
+      , cdEvade = evade 4
+      , cdCardTraits = setFromList [Emissary, Colour, Elite]
       , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate]
       }
 
@@ -502,7 +695,11 @@ cosmicEmissaryThePhantasmShattered :: CardDef
 cosmicEmissaryThePhantasmShattered =
   doubleSided "10663a"
     $ (enemy "10663b" ("Cosmic Emissary" <:> "The Phantasm") FateOfTheVale 1)
-      { cdCardTraits = setFromList [Emissary, Shattered, Elite]
+      { cdSanityDamage = sanityDamage 3
+      , cdFight = fight 2
+      , cdEvade = evade 4
+      , cdHealth = health 10
+      , cdCardTraits = setFromList [Emissary, Shattered, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter, Keyword.Retaliate]
       , cdVictoryPoints = Just 1
       }
@@ -511,7 +708,10 @@ cosmicEmissaryTheMiasma :: CardDef
 cosmicEmissaryTheMiasma =
   doubleSided "10664b"
     $ (enemy "10664a" ("Cosmic Emissary" <:> "The Miasma") FateOfTheVale 1)
-      { cdCardTraits = setFromList [Emissary, Colour, Elite]
+      { cdHealthDamage = healthDamage 2
+      , cdFight = fight 4
+      , cdEvade = evade 2
+      , cdCardTraits = setFromList [Emissary, Colour, Elite]
       , cdKeywords = setFromList [Keyword.Massive, Keyword.Alert]
       }
 
@@ -519,7 +719,11 @@ cosmicEmissaryTheMiasmaShattered :: CardDef
 cosmicEmissaryTheMiasmaShattered =
   doubleSided "10664a"
     $ (enemy "10664b" ("Cosmic Emissary" <:> "The Miasma") FateOfTheVale 1)
-      { cdCardTraits = setFromList [Emissary, Shattered, Elite]
+      { cdHealthDamage = healthDamage 3
+      , cdFight = fight 4
+      , cdEvade = evade 2
+      , cdHealth = health 10
+      , cdCardTraits = setFromList [Emissary, Shattered, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter, Keyword.Alert]
       , cdVictoryPoints = Just 1
       }
@@ -528,7 +732,11 @@ cosmicEmissaryTheBrilliance :: CardDef
 cosmicEmissaryTheBrilliance =
   doubleSided "10665b"
     $ (enemy "10665a" ("Cosmic Emissary" <:> "The Brilliance") FateOfTheVale 1)
-      { cdCardTraits = setFromList [Emissary, Colour, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 3
+      , cdEvade = evade 3
+      , cdCardTraits = setFromList [Emissary, Colour, Elite]
       , cdKeywords = singleton Keyword.Massive
       }
 
@@ -536,7 +744,12 @@ cosmicEmissaryTheBrillianceShattered :: CardDef
 cosmicEmissaryTheBrillianceShattered =
   doubleSided "10665a"
     $ (enemy "10665b" ("Cosmic Emissary" <:> "The Brilliance") FateOfTheVale 1)
-      { cdCardTraits = setFromList [Emissary, Shattered, Elite]
+      { cdHealthDamage = healthDamage 2
+      , cdSanityDamage = sanityDamage 2
+      , cdFight = fight 3
+      , cdEvade = evade 3
+      , cdHealth = health 10
+      , cdCardTraits = setFromList [Emissary, Shattered, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Elusive, Keyword.Hunter]
       , cdVictoryPoints = Just 1
       }
@@ -544,7 +757,11 @@ cosmicEmissaryTheBrillianceShattered =
 crystalMimic :: CardDef
 crystalMimic =
   (enemy "10671" "Crystal Mimic" FateOfTheVale 1)
-    { cdHealth = health 5
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fightX
+    , cdEvade = evadeX
+    , cdHealth = health 5
     , cdCardTraits = setFromList [Humanoid, Colour]
     , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
     }

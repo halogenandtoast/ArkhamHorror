@@ -9,7 +9,7 @@ newtype ConstanceDumaine = ConstanceDumaine EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 constanceDumaine :: EnemyCard ConstanceDumaine
-constanceDumaine = enemy ConstanceDumaine Cards.constanceDumaine (4, Static 6, 1) (2, 0)
+constanceDumaine = enemy ConstanceDumaine Cards.constanceDumaine
 
 instance HasModifiersFor ConstanceDumaine where
   getModifiersFor (ConstanceDumaine a) = modifySelfWhen a a.exhausted [EnemyFight 3]

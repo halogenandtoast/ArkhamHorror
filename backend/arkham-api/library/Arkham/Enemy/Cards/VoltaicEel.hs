@@ -8,7 +8,7 @@ newtype VoltaicEel = VoltaicEel EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 voltaicEel :: EnemyCard VoltaicEel
-voltaicEel = enemy VoltaicEel Cards.voltaicEel (4, Static 5, 2) (1, 1)
+voltaicEel = enemy VoltaicEel Cards.voltaicEel
 
 -- TODO: abilities
 instance RunMessage VoltaicEel where

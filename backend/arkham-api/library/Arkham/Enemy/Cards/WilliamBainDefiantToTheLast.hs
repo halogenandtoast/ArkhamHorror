@@ -11,7 +11,7 @@ newtype WilliamBainDefiantToTheLast = WilliamBainDefiantToTheLast EnemyAttrs
 
 williamBainDefiantToTheLast :: EnemyCard WilliamBainDefiantToTheLast
 williamBainDefiantToTheLast =
-  enemy WilliamBainDefiantToTheLast Cards.williamBainDefiantToTheLast (4, Static 4, 4) (0, 1)
+  enemy WilliamBainDefiantToTheLast Cards.williamBainDefiantToTheLast
 
 instance HasModifiersFor WilliamBainDefiantToTheLast where
   getModifiersFor (WilliamBainDefiantToTheLast a) = do

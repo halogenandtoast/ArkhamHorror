@@ -15,7 +15,7 @@ newtype AllosaurusRampagingPredator = AllosaurusRampagingPredator EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 allosaurusRampagingPredator :: EnemyCard AllosaurusRampagingPredator
-allosaurusRampagingPredator = enemy AllosaurusRampagingPredator Cards.allosaurusRampagingPredator (5, Static 6, 5) (3, 0)
+allosaurusRampagingPredator = enemy AllosaurusRampagingPredator Cards.allosaurusRampagingPredator
 
 instance HasModifiersFor AllosaurusRampagingPredator where
   getModifiersFor (AllosaurusRampagingPredator a) = do

@@ -13,7 +13,7 @@ newtype KnightOfTheInnerCircle = KnightOfTheInnerCircle EnemyAttrs
 
 knightOfTheInnerCircle :: EnemyCard KnightOfTheInnerCircle
 knightOfTheInnerCircle =
-  enemyWith KnightOfTheInnerCircle Cards.knightOfTheInnerCircle (4, Static 4, 2) (2, 0)
+  enemyWith KnightOfTheInnerCircle Cards.knightOfTheInnerCircle
     $ (spawnAtL ?~ SpawnAt (ConnectedLocation NotForMovement))
     . (preyL .~ Prey MostKeys)
 

@@ -13,8 +13,6 @@ mariaDeSilvaKnowsMoreThanSheLetsOn =
   enemy
     MariaDeSilvaKnowsMoreThanSheLetsOn
     Cards.mariaDeSilvaKnowsMoreThanSheLetsOn
-    (3, Static 4, 2)
-    (1, 1)
 
 instance RunMessage MariaDeSilvaKnowsMoreThanSheLetsOn where
   runMessage msg (MariaDeSilvaKnowsMoreThanSheLetsOn attrs) =

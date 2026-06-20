@@ -16,8 +16,6 @@ robertFriendlyDisgruntledDockworker =
   enemy
     RobertFriendlyDisgruntledDockworker
     Cards.robertFriendlyDisgruntledDockworker
-    (4, Static 4, 1)
-    (2, 1)
 
 instance HasAbilities RobertFriendlyDisgruntledDockworker where
   getAbilities (RobertFriendlyDisgruntledDockworker a) =

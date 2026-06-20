@@ -13,7 +13,7 @@ newtype PreyingByakhee = PreyingByakhee EnemyAttrs
 
 preyingByakhee :: EnemyCard PreyingByakhee
 preyingByakhee =
-  enemy PreyingByakhee Cards.preyingByakhee (2, Static 3, 5) (2, 1)
+  enemy PreyingByakhee Cards.preyingByakhee
     & setOnlyPrey LowestRemainingSanity
 
 instance HasModifiersFor PreyingByakhee where

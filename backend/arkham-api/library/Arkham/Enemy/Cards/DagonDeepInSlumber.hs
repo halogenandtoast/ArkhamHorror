@@ -16,7 +16,7 @@ newtype DagonDeepInSlumber = DagonDeepInSlumber EnemyAttrs
 
 dagonDeepInSlumber :: EnemyCard DagonDeepInSlumber
 dagonDeepInSlumber =
-  enemyWith DagonDeepInSlumber Cards.dagonDeepInSlumber (0, Static 1, 0) (0, 0)
+  enemyWith DagonDeepInSlumber Cards.dagonDeepInSlumber
     $ \a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing}
 
 instance HasModifiersFor DagonDeepInSlumber where

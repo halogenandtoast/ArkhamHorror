@@ -11,7 +11,7 @@ newtype ServantOfTheLurker = ServantOfTheLurker EnemyAttrs
 
 servantOfTheLurker :: EnemyCard ServantOfTheLurker
 servantOfTheLurker =
-  enemy ServantOfTheLurker Cards.servantOfTheLurker (4, Static 5, 2) (2, 2)
+  enemy ServantOfTheLurker Cards.servantOfTheLurker
     & setPrey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasAbilities ServantOfTheLurker where

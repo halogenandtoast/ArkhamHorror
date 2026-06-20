@@ -16,7 +16,7 @@ newtype HasturTheTatteredKing = HasturTheTatteredKing EnemyAttrs
 
 hasturTheTatteredKing :: EnemyCard HasturTheTatteredKing
 hasturTheTatteredKing =
-  enemyWith HasturTheTatteredKing Cards.hasturTheTatteredKing (3, PerPlayer 8, 2) (0, 4)
+  enemyWith HasturTheTatteredKing Cards.hasturTheTatteredKing
     $ (damageStrategyL .~ DamageFromHastur)
     . (preyL .~ Prey MostRemainingSanity)
 

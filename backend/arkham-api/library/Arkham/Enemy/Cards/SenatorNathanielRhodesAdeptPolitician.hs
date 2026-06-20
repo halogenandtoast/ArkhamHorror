@@ -16,8 +16,6 @@ senatorNathanielRhodesAdeptPolitician =
   enemy
     SenatorNathanielRhodesAdeptPolitician
     Cards.senatorNathanielRhodesAdeptPolitician
-    (1, Static 2, 1)
-    (0, 1)
 
 instance HasAbilities SenatorNathanielRhodesAdeptPolitician where
   getAbilities (SenatorNathanielRhodesAdeptPolitician a) = extend1 a $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_

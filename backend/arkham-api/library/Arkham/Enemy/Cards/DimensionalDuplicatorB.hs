@@ -8,7 +8,7 @@ newtype DimensionalDuplicatorB = DimensionalDuplicatorB EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 dimensionalDuplicatorB :: EnemyCard DimensionalDuplicatorB
-dimensionalDuplicatorB = enemy DimensionalDuplicatorB Cards.dimensionalDuplicatorB (3, Static 3, 3) (1, 1)
+dimensionalDuplicatorB = enemy DimensionalDuplicatorB Cards.dimensionalDuplicatorB
 
 instance RunMessage DimensionalDuplicatorB where
   runMessage msg (DimensionalDuplicatorB attrs) = runQueueT $ case msg of

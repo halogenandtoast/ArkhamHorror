@@ -14,7 +14,7 @@ newtype BertieMusgrave = BertieMusgrave EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bertieMusgrave :: EnemyCard BertieMusgrave
-bertieMusgrave = enemy BertieMusgrave Cards.bertieMusgrave (3, Static 3, 3) (1, 0)
+bertieMusgrave = enemy BertieMusgrave Cards.bertieMusgrave
 
 getWouldDamageEnemy :: [Window.Window] -> Maybe (Source, EnemyId, Int)
 getWouldDamageEnemy =

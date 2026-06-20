@@ -19,7 +19,7 @@ newtype ThorneOpenToNegotiation = ThorneOpenToNegotiation EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thorneOpenToNegotiation :: EnemyCard ThorneOpenToNegotiation
-thorneOpenToNegotiation = enemy ThorneOpenToNegotiation Cards.thorneOpenToNegotiation (4, Static 4, 4) (1, 1)
+thorneOpenToNegotiation = enemy ThorneOpenToNegotiation Cards.thorneOpenToNegotiation
 
 instance HasAbilities ThorneOpenToNegotiation where
   getAbilities (ThorneOpenToNegotiation a) =

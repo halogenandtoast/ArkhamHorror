@@ -25,8 +25,6 @@ jamesCookieFredericksDubiousChoice =
   enemy
     JamesCookieFredericksDubiousChoice
     Cards.jamesCookieFredericksDubiousChoice
-    (3, Static 4, 1)
-    (2, 0)
 
 instance RunMessage JamesCookieFredericksDubiousChoice where
   runMessage msg e@(JamesCookieFredericksDubiousChoice attrs) = runQueueT $ case msg of

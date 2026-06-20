@@ -12,7 +12,7 @@ newtype PrimordialEvil = PrimordialEvil EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 primordialEvil :: EnemyCard PrimordialEvil
-primordialEvil = enemy PrimordialEvil Cards.primordialEvil (3, Static 5, 1) (2, 1)
+primordialEvil = enemy PrimordialEvil Cards.primordialEvil
 
 instance HasAbilities PrimordialEvil where
   getAbilities (PrimordialEvil a) =

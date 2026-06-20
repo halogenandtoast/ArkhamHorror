@@ -16,8 +16,6 @@ dmitriKonstantinovTakingTheLongView =
   enemy
     DmitriKonstantinovTakingTheLongView
     Cards.dmitriKonstantinovTakingTheLongView
-    (4, Static 3, 2)
-    (1, 0)
     & setSpawnAt
       (FarthestLocationFromInvestigator You $ not_ (LocationWithEnemy $ EnemyWithTrait SilverTwilight))
 

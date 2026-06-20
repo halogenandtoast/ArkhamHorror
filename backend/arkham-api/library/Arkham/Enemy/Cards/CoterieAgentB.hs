@@ -11,7 +11,7 @@ newtype CoterieAgentB = CoterieAgentB EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coterieAgentB :: EnemyCard CoterieAgentB
-coterieAgentB = enemy CoterieAgentB Cards.coterieAgentB (1, Static 1, 1) (1, 0)
+coterieAgentB = enemy CoterieAgentB Cards.coterieAgentB
 
 instance HasAbilities CoterieAgentB where
   getAbilities (CoterieAgentB a) =

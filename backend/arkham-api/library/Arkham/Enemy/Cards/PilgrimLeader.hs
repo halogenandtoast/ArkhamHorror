@@ -8,7 +8,7 @@ newtype PilgrimLeader = PilgrimLeader EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pilgrimLeader :: EnemyCard PilgrimLeader
-pilgrimLeader = enemy PilgrimLeader Cards.pilgrimLeader (3, Static 3, 3) (1, 1)
+pilgrimLeader = enemy PilgrimLeader Cards.pilgrimLeader
 
 -- TODO: abilities
 instance RunMessage PilgrimLeader where

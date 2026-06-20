@@ -21,8 +21,6 @@ conspicuousStaff =
   enemyWith
     ConspicuousStaff
     Cards.conspicuousStaff
-    (3, Static 2, 3)
-    (1, 1)
     ( (preyL .~ Prey MostClues)
         . (spawnAtL ?~ SpawnAt (NearestLocationToYou $ LocationWithTrait CrimeScene))
     )

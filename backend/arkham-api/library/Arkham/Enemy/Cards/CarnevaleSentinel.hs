@@ -15,7 +15,7 @@ newtype CarnevaleSentinel = CarnevaleSentinel EnemyAttrs
 
 -- TODO: Should use spawnAtL for this
 carnevaleSentinel :: EnemyCard CarnevaleSentinel
-carnevaleSentinel = enemy CarnevaleSentinel Cards.carnevaleSentinel (3, Static 3, 3) (2, 0)
+carnevaleSentinel = enemy CarnevaleSentinel Cards.carnevaleSentinel
 
 instance HasModifiersFor CarnevaleSentinel where
   getModifiersFor (CarnevaleSentinel a) =

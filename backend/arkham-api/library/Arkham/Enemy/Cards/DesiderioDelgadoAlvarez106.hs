@@ -14,7 +14,7 @@ newtype DesiderioDelgadoAlvarez106 = DesiderioDelgadoAlvarez106 EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 desiderioDelgadoAlvarez106 :: EnemyCard DesiderioDelgadoAlvarez106
-desiderioDelgadoAlvarez106 = enemy DesiderioDelgadoAlvarez106 Cards.desiderioDelgadoAlvarez106 (4, Static 2, 3) (2, 1)
+desiderioDelgadoAlvarez106 = enemy DesiderioDelgadoAlvarez106 Cards.desiderioDelgadoAlvarez106
 
 instance HasAbilities DesiderioDelgadoAlvarez106 where
   getAbilities (DesiderioDelgadoAlvarez106 a) =

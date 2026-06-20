@@ -14,7 +14,7 @@ newtype TheMaskedHunter = TheMaskedHunter EnemyAttrs
 
 theMaskedHunter :: EnemyCard TheMaskedHunter
 theMaskedHunter =
-  enemyWith TheMaskedHunter Cards.theMaskedHunter (4, Static 4, 2) (2, 1)
+  enemyWith TheMaskedHunter Cards.theMaskedHunter
     $ preyL
     .~ Prey MostClues
 

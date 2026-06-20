@@ -13,7 +13,7 @@ newtype AbigailForemanWaryLibrarian = AbigailForemanWaryLibrarian EnemyAttrs
 
 abigailForemanWaryLibrarian :: EnemyCard AbigailForemanWaryLibrarian
 abigailForemanWaryLibrarian =
-  enemy AbigailForemanWaryLibrarian Cards.abigailForemanWaryLibrarian (2, Static 4, 4) (0, 1)
+  enemy AbigailForemanWaryLibrarian Cards.abigailForemanWaryLibrarian
 
 instance HasAbilities AbigailForemanWaryLibrarian where
   getAbilities (AbigailForemanWaryLibrarian a) =

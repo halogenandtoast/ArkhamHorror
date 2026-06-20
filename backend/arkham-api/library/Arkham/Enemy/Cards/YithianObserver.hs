@@ -15,7 +15,7 @@ newtype YithianObserver = YithianObserver EnemyAttrs
 
 yithianObserver :: EnemyCard YithianObserver
 yithianObserver =
-  enemy YithianObserver Cards.yithianObserver (4, Static 4, 3) (1, 1)
+  enemy YithianObserver Cards.yithianObserver
     & setPrey FewestCardsInHand
 
 instance HasAbilities YithianObserver where

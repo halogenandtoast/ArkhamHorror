@@ -21,8 +21,6 @@ hotelGuest =
   enemyWith
     HotelGuest
     Cards.hotelGuest
-    (1, Static 1, 2)
-    (1, 0)
     (spawnAtL ?~ SpawnAt (NearestLocationToYou $ LocationWithTrait Hall))
 
 instance HasAbilities HotelGuest where

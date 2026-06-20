@@ -11,7 +11,7 @@ newtype LeahAtwood = LeahAtwood EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leahAtwood :: EnemyCard LeahAtwood
-leahAtwood = enemy LeahAtwood Cards.leahAtwood (4, Static 4, 2) (1, 0)
+leahAtwood = enemy LeahAtwood Cards.leahAtwood
 
 instance HasAbilities LeahAtwood where
   getAbilities (LeahAtwood a) =

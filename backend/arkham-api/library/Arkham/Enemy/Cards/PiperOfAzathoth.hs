@@ -11,7 +11,7 @@ newtype PiperOfAzathoth = PiperOfAzathoth EnemyAttrs
 
 piperOfAzathoth :: EnemyCard PiperOfAzathoth
 piperOfAzathoth =
-  enemy PiperOfAzathoth Cards.piperOfAzathoth (5, Static 7, 2) (0, 2)
+  enemy PiperOfAzathoth Cards.piperOfAzathoth
     & setPrey LowestRemainingSanity
 
 instance HasAbilities PiperOfAzathoth where

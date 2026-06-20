@@ -9,7 +9,7 @@ newtype SebastienMoreau = SebastienMoreau EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sebastienMoreau :: EnemyCard SebastienMoreau
-sebastienMoreau = enemy SebastienMoreau Cards.sebastienMoreau (3, Static 5, 3) (2, 2)
+sebastienMoreau = enemy SebastienMoreau Cards.sebastienMoreau
 
 instance HasModifiersFor SebastienMoreau where
   getModifiersFor (SebastienMoreau a) = modifySelf a [AttacksCannotBeCancelled]

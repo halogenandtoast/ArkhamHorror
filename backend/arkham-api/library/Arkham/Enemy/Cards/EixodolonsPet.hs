@@ -17,7 +17,7 @@ newtype EixodolonsPet = EixodolonsPet EnemyAttrs
 -- Being out of any location keeps player cards from reaching it; only the
 -- Hunger Diagram can hurt it.
 eixodolonsPet :: EnemyCard EixodolonsPet
-eixodolonsPet = enemy EixodolonsPet Cards.eixodolonsPet (4, Static 4, 4) (2, 1)
+eixodolonsPet = enemy EixodolonsPet Cards.eixodolonsPet
 
 isLockedAway :: (HasGame m, Tracing m) => EnemyId -> m Bool
 isLockedAway eid =

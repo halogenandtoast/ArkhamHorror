@@ -19,7 +19,7 @@ newtype ProtoplasmicReassembler = ProtoplasmicReassembler EnemyAttrs
 
 protoplasmicReassembler :: EnemyCard ProtoplasmicReassembler
 protoplasmicReassembler =
-  enemy ProtoplasmicReassembler Cards.protoplasmicReassembler (2, Static 6, 2) (1, 2)
+  enemy ProtoplasmicReassembler Cards.protoplasmicReassembler
     & setSpawnAt (FarthestLocationFromAll Anywhere)
 
 instance HasAbilities ProtoplasmicReassembler where

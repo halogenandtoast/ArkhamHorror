@@ -14,7 +14,7 @@ newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
 
 conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres
 conglomerationOfSpheres =
-  enemy ConglomerationOfSpheres Cards.conglomerationOfSpheres (1, Static 6, 4) (1, 1)
+  enemy ConglomerationOfSpheres Cards.conglomerationOfSpheres
     & setPrey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
 
 instance HasAbilities ConglomerationOfSpheres where

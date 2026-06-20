@@ -13,7 +13,7 @@ newtype DrMalaSinhaDaringPhysician = DrMalaSinhaDaringPhysician EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drMalaSinhaDaringPhysician :: EnemyCard DrMalaSinhaDaringPhysician
-drMalaSinhaDaringPhysician = enemy DrMalaSinhaDaringPhysician Cards.drMalaSinhaDaringPhysician (3, Static 2, 4) (1, 1)
+drMalaSinhaDaringPhysician = enemy DrMalaSinhaDaringPhysician Cards.drMalaSinhaDaringPhysician
 
 instance HasAbilities DrMalaSinhaDaringPhysician where
   getAbilities (DrMalaSinhaDaringPhysician a) =

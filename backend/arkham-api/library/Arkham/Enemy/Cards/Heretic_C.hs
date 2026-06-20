@@ -11,7 +11,7 @@ newtype Heretic_C = Heretic_C EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 heretic_C :: EnemyCard Heretic_C
-heretic_C = enemy Heretic_C Cards.heretic_C (4, Static 2, 3) (1, 1)
+heretic_C = enemy Heretic_C Cards.heretic_C
 
 instance HasModifiersFor Heretic_C where
   getModifiersFor = hereticModifiers

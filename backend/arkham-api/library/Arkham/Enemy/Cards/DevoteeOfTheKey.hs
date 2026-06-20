@@ -15,7 +15,7 @@ newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
 
 devoteeOfTheKey :: EnemyCard DevoteeOfTheKey
 devoteeOfTheKey =
-  enemyWith DevoteeOfTheKey Cards.devoteeOfTheKey (3, Static 3, 3) (1, 1)
+  enemyWith DevoteeOfTheKey Cards.devoteeOfTheKey
     $ spawnAtL
     ?~ "Base of the Hill"
 

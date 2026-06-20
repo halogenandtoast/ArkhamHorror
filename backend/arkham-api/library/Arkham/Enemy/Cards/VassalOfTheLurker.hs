@@ -10,7 +10,7 @@ newtype VassalOfTheLurker = VassalOfTheLurker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vassalOfTheLurker :: EnemyCard VassalOfTheLurker
-vassalOfTheLurker = enemy VassalOfTheLurker Cards.vassalOfTheLurker (3, Static 4, 2) (1, 1)
+vassalOfTheLurker = enemy VassalOfTheLurker Cards.vassalOfTheLurker
 
 instance HasAbilities VassalOfTheLurker where
   getAbilities (VassalOfTheLurker a) =

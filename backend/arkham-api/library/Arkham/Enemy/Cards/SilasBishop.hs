@@ -9,7 +9,7 @@ newtype SilasBishop = SilasBishop EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 silasBishop :: EnemyCard SilasBishop
-silasBishop = enemy SilasBishop Cards.silasBishop (3, PerPlayer 6, 7) (2, 2)
+silasBishop = enemy SilasBishop Cards.silasBishop
 
 instance HasModifiersFor SilasBishop where
   getModifiersFor (SilasBishop attrs) = modifySelf attrs [CannotMakeAttacksOfOpportunity]

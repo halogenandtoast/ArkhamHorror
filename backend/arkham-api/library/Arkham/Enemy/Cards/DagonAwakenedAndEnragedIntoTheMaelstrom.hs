@@ -23,8 +23,6 @@ dagonAwakenedAndEnragedIntoTheMaelstrom =
   enemyWith
     DagonAwakenedAndEnragedIntoTheMaelstrom
     Cards.dagonAwakenedAndEnragedIntoTheMaelstrom
-    (7, Static 1, 4)
-    (1, 2)
     (healthL .~ Nothing)
 
 instance HasModifiersFor DagonAwakenedAndEnragedIntoTheMaelstrom where

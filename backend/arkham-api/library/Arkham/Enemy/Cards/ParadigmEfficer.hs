@@ -14,7 +14,7 @@ newtype ParadigmEfficer = ParadigmEfficer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 paradigmEfficer :: EnemyCard ParadigmEfficer
-paradigmEfficer = enemy ParadigmEfficer Cards.paradigmEfficer (3, Static 3, 3) (1, 1)
+paradigmEfficer = enemy ParadigmEfficer Cards.paradigmEfficer
 
 instance HasAbilities ParadigmEfficer where
   getAbilities (ParadigmEfficer a) = extend1 a $ restricted a 1 OnSameLocation $ forced $ TurnEnds #after You

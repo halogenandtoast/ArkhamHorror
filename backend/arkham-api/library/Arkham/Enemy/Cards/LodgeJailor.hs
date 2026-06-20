@@ -17,7 +17,7 @@ newtype LodgeJailor = LodgeJailor EnemyAttrs
 
 lodgeJailor :: EnemyCard LodgeJailor
 lodgeJailor =
-  enemy LodgeJailor Cards.lodgeJailor (2, Static 3, 3) (0, 2)
+  enemy LodgeJailor Cards.lodgeJailor
     & setSpawnAt (LocationWithTrait Sanctum)
 
 instance HasAbilities LodgeJailor where

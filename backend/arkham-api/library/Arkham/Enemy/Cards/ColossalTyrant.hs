@@ -15,7 +15,7 @@ newtype ColossalTyrant = ColossalTyrant EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 colossalTyrant :: EnemyCard ColossalTyrant
-colossalTyrant = enemy ColossalTyrant Cards.colossalTyrant (3, Static 6, 3) (2, 0)
+colossalTyrant = enemy ColossalTyrant Cards.colossalTyrant
 
 instance HasModifiersFor ColossalTyrant where
   getModifiersFor (ColossalTyrant a) = do

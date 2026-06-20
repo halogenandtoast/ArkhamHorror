@@ -16,7 +16,7 @@ newtype Xzharah = Xzharah EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 xzharah :: EnemyCard Xzharah
-xzharah = enemy Xzharah Cards.xzharah (4, Static 5, 4) (2, 2)
+xzharah = enemy Xzharah Cards.xzharah
 
 instance HasModifiersFor Xzharah where
   getModifiersFor (Xzharah a) = do

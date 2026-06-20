@@ -11,7 +11,7 @@ newtype HarlanEarnstoneCrazedByTheCurse = HarlanEarnstoneCrazedByTheCurse EnemyA
 
 harlanEarnstoneCrazedByTheCurse :: EnemyCard HarlanEarnstoneCrazedByTheCurse
 harlanEarnstoneCrazedByTheCurse =
-  enemy HarlanEarnstoneCrazedByTheCurse Cards.harlanEarnstoneCrazedByTheCurse (4, Static 2, 3) (1, 1)
+  enemy HarlanEarnstoneCrazedByTheCurse Cards.harlanEarnstoneCrazedByTheCurse
 
 instance HasAbilities HarlanEarnstoneCrazedByTheCurse where
   getAbilities (HarlanEarnstoneCrazedByTheCurse a) =

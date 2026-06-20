@@ -19,8 +19,6 @@ specterOfDeath =
   enemyWith
     SpecterOfDeath
     Cards.specterOfDeath
-    (3, PerPlayer 5, 3)
-    (2, 2)
     (spawnAtL ?~ SpawnAt (LocationInPosition $ Pos 0 0))
 
 instance HasAbilities SpecterOfDeath where

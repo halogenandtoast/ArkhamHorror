@@ -17,8 +17,6 @@ pursuingMotorcar =
   enemyWith
     PursuingMotorcar
     Cards.pursuingMotorcar
-    (4, Static 4, 2)
-    (2, 0)
     (spawnAtL ?~ SpawnAt RearmostLocation)
 
 instance HasAbilities PursuingMotorcar where

@@ -15,8 +15,6 @@ margaretLiuBeguilingLoungeSinger =
   enemy
     MargaretLiuBeguilingLoungeSinger
     Cards.margaretLiuBeguilingLoungeSinger
-    (1, Static 3, 5)
-    (0, 1)
 
 instance HasAbilities MargaretLiuBeguilingLoungeSinger where
   getAbilities (MargaretLiuBeguilingLoungeSinger a) =

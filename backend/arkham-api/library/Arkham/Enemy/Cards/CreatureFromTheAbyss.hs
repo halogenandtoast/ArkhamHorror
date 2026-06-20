@@ -13,7 +13,7 @@ newtype CreatureFromTheAbyss = CreatureFromTheAbyss EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 creatureFromTheAbyss :: EnemyCard CreatureFromTheAbyss
-creatureFromTheAbyss = enemy CreatureFromTheAbyss Cards.creatureFromTheAbyss (0, Static 3, 3) (0, 1)
+creatureFromTheAbyss = enemy CreatureFromTheAbyss Cards.creatureFromTheAbyss
 
 instance HasModifiersFor CreatureFromTheAbyss where
   getModifiersFor (CreatureFromTheAbyss a) = do

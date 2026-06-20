@@ -13,7 +13,7 @@ newtype InitiateOfDagon = InitiateOfDagon EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 initiateOfDagon :: EnemyCard InitiateOfDagon
-initiateOfDagon = enemyWith InitiateOfDagon Cards.initiateOfDagon (2, Static 1, 2) (0, 1) spawnAtEmptyLocation
+initiateOfDagon = enemyWith InitiateOfDagon Cards.initiateOfDagon spawnAtEmptyLocation
 
 instance HasModifiersFor InitiateOfDagon where
   getModifiersFor (InitiateOfDagon a) = do

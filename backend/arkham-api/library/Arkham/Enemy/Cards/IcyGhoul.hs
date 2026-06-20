@@ -8,7 +8,7 @@ newtype IcyGhoul = IcyGhoul EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 icyGhoul :: EnemyCard IcyGhoul
-icyGhoul = enemyWith IcyGhoul Cards.icyGhoul (3, Static 4, 4) (2, 1) (spawnAtL ?~ "Cellar")
+icyGhoul = enemyWith IcyGhoul Cards.icyGhoul (spawnAtL ?~ "Cellar")
 
 instance RunMessage IcyGhoul where
   runMessage msg (IcyGhoul attrs) = IcyGhoul <$> runMessage msg attrs

@@ -10,7 +10,7 @@ newtype IshimaruHaruko = IshimaruHaruko EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ishimaruHaruko :: EnemyCard IshimaruHaruko
-ishimaruHaruko = enemy IshimaruHaruko Cards.ishimaruHaruko (6, Static 4, 3) (1, 1)
+ishimaruHaruko = enemy IshimaruHaruko Cards.ishimaruHaruko
 
 instance HasAbilities IshimaruHaruko where
   getAbilities (IshimaruHaruko a) =

@@ -13,7 +13,7 @@ newtype CorsairOfLeng = CorsairOfLeng EnemyAttrs
 
 corsairOfLeng :: EnemyCard CorsairOfLeng
 corsairOfLeng =
-  enemyWith CorsairOfLeng Cards.corsairOfLeng (2, Static 4, 5) (1, 0)
+  enemyWith CorsairOfLeng Cards.corsairOfLeng
     $ spawnAtL
     ?~ SpawnAt (NearestLocationToYou $ oneOf [withTrait City, withTrait Surface])
 

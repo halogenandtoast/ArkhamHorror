@@ -11,7 +11,7 @@ newtype AgentOfTheKing = AgentOfTheKing EnemyAttrs
 
 agentOfTheKing :: EnemyCard AgentOfTheKing
 agentOfTheKing =
-  enemy AgentOfTheKing Cards.agentOfTheKing (4, Static 4, 2) (1, 2)
+  enemy AgentOfTheKing Cards.agentOfTheKing
     & setPrey MostClues
 
 instance HasAbilities AgentOfTheKing where

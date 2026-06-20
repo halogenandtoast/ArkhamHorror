@@ -16,7 +16,7 @@ newtype Nasht = Nasht EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nasht :: EnemyCard Nasht
-nasht = enemy Nasht Cards.nasht (2, Static 3, 2) (0, 1)
+nasht = enemy Nasht Cards.nasht
 
 instance HasAbilities Nasht where
   getAbilities (Nasht x) =

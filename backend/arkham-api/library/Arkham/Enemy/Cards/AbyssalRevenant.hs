@@ -16,7 +16,7 @@ newtype AbyssalRevenant = AbyssalRevenant EnemyAttrs
 
 abyssalRevenant :: EnemyCard AbyssalRevenant
 abyssalRevenant =
-  enemyWith AbyssalRevenant Cards.abyssalRevenant (4, Static 4, 2) (1, 0)
+  enemyWith AbyssalRevenant Cards.abyssalRevenant
     $ spawnAtL
     ?~ SpawnAt (FarthestLocationFromYou $ oneOf [LocationWithTrait Desert, LocationWithTrait Otherworld])
 

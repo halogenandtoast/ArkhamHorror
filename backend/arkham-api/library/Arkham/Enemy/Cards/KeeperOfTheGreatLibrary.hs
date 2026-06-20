@@ -13,7 +13,7 @@ newtype KeeperOfTheGreatLibrary = KeeperOfTheGreatLibrary EnemyAttrs
 
 keeperOfTheGreatLibrary :: EnemyCard KeeperOfTheGreatLibrary
 keeperOfTheGreatLibrary =
-  enemy KeeperOfTheGreatLibrary Cards.keeperOfTheGreatLibrary (3, Static 4, 3) (1, 1)
+  enemy KeeperOfTheGreatLibrary Cards.keeperOfTheGreatLibrary
     & setSpawnAt "Great Library"
 
 instance HasModifiersFor KeeperOfTheGreatLibrary where

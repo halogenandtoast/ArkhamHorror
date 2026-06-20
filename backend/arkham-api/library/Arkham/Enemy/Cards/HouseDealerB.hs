@@ -10,7 +10,7 @@ newtype HouseDealerB = HouseDealerB EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 houseDealerB :: EnemyCard HouseDealerB
-houseDealerB = enemy HouseDealerB Cards.houseDealerB (2, Static 1, 2) (0, 1)
+houseDealerB = enemy HouseDealerB Cards.houseDealerB
 
 instance HasModifiersFor HouseDealerB where
   getModifiersFor (HouseDealerB a) = do

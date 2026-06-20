@@ -13,7 +13,7 @@ newtype PackOfVooniths = PackOfVooniths EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 packOfVooniths :: EnemyCard PackOfVooniths
-packOfVooniths = enemy PackOfVooniths Cards.packOfVooniths (1, Static 2, 1) (1, 1)
+packOfVooniths = enemy PackOfVooniths Cards.packOfVooniths
 
 instance HasModifiersFor PackOfVooniths where
   getModifiersFor (PackOfVooniths a) = do

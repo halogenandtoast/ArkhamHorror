@@ -15,7 +15,7 @@ newtype VoidChimeraGorefeaster = VoidChimeraGorefeaster EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 voidChimeraGorefeaster :: EnemyCard VoidChimeraGorefeaster
-voidChimeraGorefeaster = enemy VoidChimeraGorefeaster Cards.voidChimeraGorefeaster (3, Static 4, 3) (1, 2)
+voidChimeraGorefeaster = enemy VoidChimeraGorefeaster Cards.voidChimeraGorefeaster
 
 instance HasModifiersFor VoidChimeraGorefeaster where
   getModifiersFor (VoidChimeraGorefeaster a) = do

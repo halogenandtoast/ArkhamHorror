@@ -12,7 +12,7 @@ newtype CultistOfTheEnclave = CultistOfTheEnclave EnemyAttrs
 
 cultistOfTheEnclave :: EnemyCard CultistOfTheEnclave
 cultistOfTheEnclave =
-  enemy CultistOfTheEnclave Cards.cultistOfTheEnclave (3, Static 2, 3) (1, 0)
+  enemy CultistOfTheEnclave Cards.cultistOfTheEnclave
     & setSpawnAt "Basement"
 
 instance HasAbilities CultistOfTheEnclave where

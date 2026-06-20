@@ -12,7 +12,7 @@ newtype GugSentinel = GugSentinel EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gugSentinel :: EnemyCard GugSentinel
-gugSentinel = enemy GugSentinel Cards.gugSentinel (5, Static 2, 3) (2, 1)
+gugSentinel = enemy GugSentinel Cards.gugSentinel
 
 instance HasModifiersFor GugSentinel where
   getModifiersFor (GugSentinel attrs) = do

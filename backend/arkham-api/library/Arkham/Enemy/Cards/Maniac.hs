@@ -13,7 +13,7 @@ instance HasAbilities Maniac where
   getAbilities (Maniac a) = extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)
 
 maniac :: EnemyCard Maniac
-maniac = enemy Maniac Cards.maniac (3, Static 4, 1) (1, 0)
+maniac = enemy Maniac Cards.maniac
 
 instance RunMessage Maniac where
   runMessage msg e@(Maniac attrs) = runQueueT $ case msg of

@@ -13,7 +13,7 @@ newtype MiGoDrone = MiGoDrone EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miGoDrone :: EnemyCard MiGoDrone
-miGoDrone = enemyWith MiGoDrone Cards.miGoDrone (3, Static 1, 1) (0, 1) (spawnAtL ?~ SpawnAt (LocationWithMostClues $ not_ $ LocationWithTitle "Fungus Mound"))
+miGoDrone = enemyWith MiGoDrone Cards.miGoDrone (spawnAtL ?~ SpawnAt (LocationWithMostClues $ not_ $ LocationWithTitle "Fungus Mound"))
 
 instance HasAbilities MiGoDrone where
   getAbilities (MiGoDrone a) = [restricted a 1 (thisIs a ReadyEnemy) $ forced $ PhaseBegins #when #enemy]

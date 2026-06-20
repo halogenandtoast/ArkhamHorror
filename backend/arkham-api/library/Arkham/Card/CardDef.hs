@@ -87,6 +87,48 @@ fixedHealth (Health gv) = case gv of
   PerPlayer n -> Just n
   _ -> Nothing
 
+-- | An enemy's printed fight value, as a newtype over 'GameValue' (so it can be
+-- matched/queried without building the enemy). The constructor is 'FightValue'
+-- to avoid clashing with the @Fight@ action constructor.
+newtype Fight = FightValue GameValue
+  deriving stock (Show, Eq, Ord, Data)
+  deriving newtype (ToJSON, FromJSON)
+
+-- | An enemy's printed evade value. See 'Fight'.
+newtype Evade = EvadeValue GameValue
+  deriving stock (Show, Eq, Ord, Data)
+  deriving newtype (ToJSON, FromJSON)
+
+-- | An enemy's printed health damage (the damage it deals). See 'Fight'.
+newtype HealthDamage = HealthDamageValue GameValue
+  deriving stock (Show, Eq, Ord, Data)
+  deriving newtype (ToJSON, FromJSON)
+
+-- | An enemy's printed sanity damage (the horror it deals). See 'Fight'.
+newtype SanityDamage = SanityDamageValue GameValue
+  deriving stock (Show, Eq, Ord, Data)
+  deriving newtype (ToJSON, FromJSON)
+
+-- Accessors used by the enemy builder to derive in-play stats from the CardDef.
+unFight :: Fight -> GameValue
+unFight (FightValue gv) = gv
+
+unEvade :: Evade -> GameValue
+unEvade (EvadeValue gv) = gv
+
+unHealth :: Health -> GameValue
+unHealth (Health gv) = gv
+
+-- | Printed health damage as an Int (damage stats are always fixed); 0 otherwise.
+healthDamageInt :: HealthDamage -> Int
+healthDamageInt (HealthDamageValue (Static n)) = n
+healthDamageInt _ = 0
+
+-- | Printed sanity damage as an Int (damage stats are always fixed); 0 otherwise.
+sanityDamageInt :: SanityDamage -> Int
+sanityDamageInt (SanityDamageValue (Static n)) = n
+sanityDamageInt _ = 0
+
 mconcat
   [ deriveJSON defaultOptions ''DeckRestriction
   , deriveJSON defaultOptions ''AttackOfOpportunityModifier
@@ -212,6 +254,10 @@ data CardDef = CardDef
   , cdHealth :: Maybe Health
   -- ^ Printed enemy health (set by the enemy CardDef builders). 'Nothing' for
   -- non-enemy cards and enemies with no printed health.
+  , cdFight :: Maybe Fight
+  , cdEvade :: Maybe Evade
+  , cdHealthDamage :: Maybe HealthDamage
+  , cdSanityDamage :: Maybe SanityDamage
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -351,6 +397,10 @@ emptyCardDef cCode name cType =
     , cdTags = []
     , cdOutOfPlayEffects = []
     , cdHealth = Nothing
+    , cdFight = Nothing
+    , cdEvade = Nothing
+    , cdHealthDamage = Nothing
+    , cdSanityDamage = Nothing
     }
 
 instance IsCardMatcher CardDef where
@@ -474,6 +524,10 @@ cardDefKeyValues CardDef {..} =
         , pairWhen (not $ null cdTags) "tags" cdTags
         , pairWhen (not $ null cdOutOfPlayEffects) "outOfPlayEffects" cdOutOfPlayEffects
         , pairJust "health" cdHealth
+        , pairJust "fight" cdFight
+        , pairJust "evade" cdEvade
+        , pairJust "healthDamage" cdHealthDamage
+        , pairJust "sanityDamage" cdSanityDamage
         ]
   where
     pairWhen :: (KeyValue e kv, ToJSON v) => Bool -> Key -> v -> [kv]
@@ -552,5 +606,9 @@ instance FromJSON CardDef where
                 <> [InSearchEffect | inSearchEffects]
             )
     cdHealth <- o .:? "health"
+    cdFight <- o .:? "fight"
+    cdEvade <- o .:? "evade"
+    cdHealthDamage <- o .:? "healthDamage"
+    cdSanityDamage <- o .:? "sanityDamage"
 
     pure CardDef {..}

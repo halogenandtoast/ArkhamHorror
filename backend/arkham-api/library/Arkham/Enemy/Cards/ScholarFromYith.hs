@@ -14,7 +14,7 @@ newtype ScholarFromYith = ScholarFromYith EnemyAttrs
 
 scholarFromYith :: EnemyCard ScholarFromYith
 scholarFromYith =
-  enemy ScholarFromYith Cards.scholarFromYith (2, Static 2, 2) (0, 1)
+  enemy ScholarFromYith Cards.scholarFromYith
     & setPrey MostCardsInHand
 
 instance HasAbilities ScholarFromYith where

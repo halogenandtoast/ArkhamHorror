@@ -11,7 +11,7 @@ newtype WilliamHemlock = WilliamHemlock EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 williamHemlock :: EnemyCard WilliamHemlock
-williamHemlock = enemy WilliamHemlock Cards.williamHemlock (1, Static 3, 2) (0, 1)
+williamHemlock = enemy WilliamHemlock Cards.williamHemlock
 
 instance HasAbilities WilliamHemlock where
   getAbilities (WilliamHemlock a) =

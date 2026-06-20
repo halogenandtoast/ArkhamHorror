@@ -15,7 +15,7 @@ newtype HuntingParasite = HuntingParasite EnemyAttrs
 
 huntingParasite :: EnemyCard HuntingParasite
 huntingParasite =
-  enemyWith HuntingParasite Cards.huntingParasite (2, Static 1, 2) (1, 0)
+  enemyWith HuntingParasite Cards.huntingParasite
     (spawnAtL ?~ SpawnAtFirst [SpawnAt connectingEmpty, SpawnAt connecting])
     & setPreyIsOnlyBearer
  where

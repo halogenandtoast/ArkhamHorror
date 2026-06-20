@@ -12,7 +12,7 @@ newtype DarkMagician = DarkMagician EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkMagician :: EnemyCard DarkMagician
-darkMagician = enemy DarkMagician Cards.darkMagician (4, Static 4, 2) (1, 1)
+darkMagician = enemy DarkMagician Cards.darkMagician
 
 instance HasAbilities DarkMagician where
   getAbilities (DarkMagician a) =

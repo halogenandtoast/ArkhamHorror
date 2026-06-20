@@ -12,7 +12,7 @@ newtype DanielChesterfield = DanielChesterfield EnemyAttrs
 
 danielChesterfield :: EnemyCard DanielChesterfield
 danielChesterfield =
-  enemy DanielChesterfield Cards.danielChesterfield (3, Static 4, 3) (1, 1)
+  enemy DanielChesterfield Cards.danielChesterfield
     & setPrey (InvestigatorWithHighestSkill #combat UneliminatedInvestigator)
 
 instance HasAbilities DanielChesterfield where

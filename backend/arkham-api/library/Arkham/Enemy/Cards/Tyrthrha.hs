@@ -13,7 +13,7 @@ newtype Tyrthrha = Tyrthrha EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tyrthrha :: EnemyCard Tyrthrha
-tyrthrha = enemy Tyrthrha Cards.tyrthrha (3, PerPlayer 6, 3) (1, 2)
+tyrthrha = enemy Tyrthrha Cards.tyrthrha
 
 instance HasAbilities Tyrthrha where
   getAbilities (Tyrthrha a) =

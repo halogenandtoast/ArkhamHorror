@@ -13,7 +13,7 @@ newtype EztliGuardian = EztliGuardian EnemyAttrs
 
 eztliGuardian :: EnemyCard EztliGuardian
 eztliGuardian =
-  enemyWith EztliGuardian Cards.eztliGuardian (4, Static 2, 2) (1, 0)
+  enemyWith EztliGuardian Cards.eztliGuardian
     $ spawnAtL
     ?~ SpawnAt (FirstLocation [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation])
 

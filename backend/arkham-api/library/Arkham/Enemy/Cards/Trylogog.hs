@@ -12,13 +12,13 @@ newtype Trylogog = Trylogog EnemyAttrs
 
 trylogog :: EnemyCard Trylogog
 trylogog =
-  enemyWith Trylogog Cards.trylogog (3, Static 1, 1) (1, 1)
+  enemyWith Trylogog Cards.trylogog
     $ spawnAtL
     ?~ SpawnAt (locationIs Locations.theBurningPit)
 
 trylogogWarOfTheOuterGods :: EnemyCard Trylogog
 trylogogWarOfTheOuterGods =
-  enemyWith Trylogog Cards.trylogogWarOfTheOuterGods (3, Static 1, 1) (1, 1)
+  enemyWith Trylogog Cards.trylogogWarOfTheOuterGods
     $ spawnAtL
     ?~ SpawnAt (locationIs Locations.theBurningPit)
 

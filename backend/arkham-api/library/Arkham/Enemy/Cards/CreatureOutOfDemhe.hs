@@ -15,7 +15,7 @@ newtype CreatureOutOfDemhe = CreatureOutOfDemhe EnemyAttrs
 
 creatureOutOfDemhe :: EnemyCard CreatureOutOfDemhe
 creatureOutOfDemhe =
-  enemyWith CreatureOutOfDemhe Cards.creatureOutOfDemhe (5, Static 4, 2) (1, 1)
+  enemyWith CreatureOutOfDemhe Cards.creatureOutOfDemhe
     $ spawnAtL
     ?~ SpawnAt "Depths of Demhe"
 

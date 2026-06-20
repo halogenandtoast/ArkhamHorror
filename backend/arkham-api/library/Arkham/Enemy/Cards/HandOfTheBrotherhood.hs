@@ -14,7 +14,7 @@ newtype HandOfTheBrotherhood = HandOfTheBrotherhood EnemyAttrs
 
 handOfTheBrotherhood :: EnemyCard HandOfTheBrotherhood
 handOfTheBrotherhood =
-  enemy HandOfTheBrotherhood Cards.handOfTheBrotherhood (2, Static 2, 2) (0, 1)
+  enemy HandOfTheBrotherhood Cards.handOfTheBrotherhood
     & setSpawnAt EmptyLocation
 
 instance HasModifiersFor HandOfTheBrotherhood where

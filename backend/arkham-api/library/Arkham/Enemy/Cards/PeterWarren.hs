@@ -13,8 +13,6 @@ peterWarren =
   enemyWith
     PeterWarren
     Cards.peterWarren
-    (2, Static 3, 3)
-    (1, 0)
     (spawnAtL ?~ "Miskatonic University")
 
 instance HasAbilities PeterWarren where

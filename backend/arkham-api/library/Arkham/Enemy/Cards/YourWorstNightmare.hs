@@ -11,7 +11,7 @@ newtype YourWorstNightmare = YourWorstNightmare EnemyAttrs
 
 yourWorstNightmare :: EnemyCard YourWorstNightmare
 yourWorstNightmare =
-  enemy YourWorstNightmare Cards.yourWorstNightmare (2, Static 3, 2) (0, 2) & setPreyIsOnlyBearer
+  enemy YourWorstNightmare Cards.yourWorstNightmare & setPreyIsOnlyBearer
 
 instance HasModifiersFor YourWorstNightmare where
   getModifiersFor (YourWorstNightmare a) = do

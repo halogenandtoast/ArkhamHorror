@@ -15,7 +15,7 @@ newtype DroningHorde = DroningHorde EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 droningHorde :: EnemyCard DroningHorde
-droningHorde = enemy DroningHorde Cards.droningHorde (3, Static 1, 3) (1, 1)
+droningHorde = enemy DroningHorde Cards.droningHorde
 
 instance HasModifiersFor DroningHorde where
   getModifiersFor (DroningHorde a) = modifySelf a [AttackDealsEitherDamageOrHorror]

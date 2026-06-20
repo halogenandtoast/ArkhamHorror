@@ -10,7 +10,7 @@ newtype Mobster = Mobster EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mobster :: EnemyCard Mobster
-mobster = enemy Mobster Cards.mobster (2, Static 2, 2) (1, 0)
+mobster = enemy Mobster Cards.mobster
 
 instance HasAbilities Mobster where
   getAbilities (Mobster x) =

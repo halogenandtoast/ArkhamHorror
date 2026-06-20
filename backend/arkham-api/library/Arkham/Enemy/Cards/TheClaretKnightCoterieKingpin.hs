@@ -16,7 +16,7 @@ newtype TheClaretKnightCoterieKingpin = TheClaretKnightCoterieKingpin EnemyAttrs
 
 theClaretKnightCoterieKingpin :: EnemyCard TheClaretKnightCoterieKingpin
 theClaretKnightCoterieKingpin =
-  enemy TheClaretKnightCoterieKingpin Cards.theClaretKnightCoterieKingpin (4, PerPlayer 4, 3) (1, 2)
+  enemy TheClaretKnightCoterieKingpin Cards.theClaretKnightCoterieKingpin
 
 instance HasAbilities TheClaretKnightCoterieKingpin where
   getAbilities (TheClaretKnightCoterieKingpin a) =

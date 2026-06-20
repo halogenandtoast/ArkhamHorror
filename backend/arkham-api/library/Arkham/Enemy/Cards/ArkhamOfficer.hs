@@ -18,7 +18,7 @@ newtype ArkhamOfficer = ArkhamOfficer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamOfficer :: EnemyCard ArkhamOfficer
-arkhamOfficer = enemy ArkhamOfficer Cards.arkhamOfficer (3, Static 3, 2) (1, 0)
+arkhamOfficer = enemy ArkhamOfficer Cards.arkhamOfficer
 
 instance HasAbilities ArkhamOfficer where
   getAbilities (ArkhamOfficer a) =

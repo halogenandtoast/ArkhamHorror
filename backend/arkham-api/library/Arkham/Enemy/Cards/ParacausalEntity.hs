@@ -13,7 +13,7 @@ newtype ParacausalEntity = ParacausalEntity EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 paracausalEntity :: EnemyCard ParacausalEntity
-paracausalEntity = enemy ParacausalEntity Cards.paracausalEntity (3, Static 2, 3) (1, 1)
+paracausalEntity = enemy ParacausalEntity Cards.paracausalEntity
 
 instance HasAbilities ParacausalEntity where
   getAbilities (ParacausalEntity a) = extend1 a $ forcedAbility a 1 $ EnemyEngaged #when You (be a)

@@ -12,7 +12,7 @@ newtype DanforthBrilliantStudent = DanforthBrilliantStudent EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 danforthBrilliantStudent :: EnemyCard DanforthBrilliantStudent
-danforthBrilliantStudent = enemy DanforthBrilliantStudent Cards.danforthBrilliantStudent (2, Static 2, 4) (0, 2)
+danforthBrilliantStudent = enemy DanforthBrilliantStudent Cards.danforthBrilliantStudent
 
 instance HasAbilities DanforthBrilliantStudent where
   getAbilities (DanforthBrilliantStudent a) =

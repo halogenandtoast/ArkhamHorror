@@ -18,7 +18,7 @@ newtype Narogath = Narogath EnemyAttrs
 
 narogath :: EnemyCard Narogath
 narogath =
-  enemyWith Narogath Cards.narogath (3, Static 4, 3) (1, 2)
+  enemyWith Narogath Cards.narogath
     $ preyL
     .~ Prey (NearestToEnemy $ withTrait Trait.Cultist <> not_ (enemyIs Cards.narogath))
 

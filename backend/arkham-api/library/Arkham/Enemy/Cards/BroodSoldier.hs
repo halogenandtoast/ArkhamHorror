@@ -10,7 +10,7 @@ newtype BroodSoldier = BroodSoldier EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 broodSoldier :: EnemyCard BroodSoldier
-broodSoldier = enemy BroodSoldier Cards.broodSoldier (3, Static 2, 3) (1, 1)
+broodSoldier = enemy BroodSoldier Cards.broodSoldier
 
 instance HasModifiersFor BroodSoldier where
   getModifiersFor (BroodSoldier a) = do

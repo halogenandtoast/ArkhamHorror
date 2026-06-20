@@ -21,7 +21,7 @@ newtype FeatheredSerpent = FeatheredSerpent EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 featheredSerpent :: EnemyCard FeatheredSerpent
-featheredSerpent = enemy FeatheredSerpent Cards.featheredSerpent (0, Static 3, 3) (1, 0)
+featheredSerpent = enemy FeatheredSerpent Cards.featheredSerpent
 
 instance HasModifiersFor FeatheredSerpent where
   getModifiersFor (FeatheredSerpent a) = do

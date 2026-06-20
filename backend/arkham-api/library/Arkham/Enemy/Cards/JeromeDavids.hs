@@ -11,7 +11,7 @@ newtype JeromeDavids = JeromeDavids EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeromeDavids :: EnemyCard JeromeDavids
-jeromeDavids = enemy JeromeDavids Cards.jeromeDavids (4, Static 4, 4) (1, 1)
+jeromeDavids = enemy JeromeDavids Cards.jeromeDavids
 
 instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =

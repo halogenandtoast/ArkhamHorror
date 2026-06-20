@@ -13,7 +13,7 @@ newtype GuardianElderThing = GuardianElderThing EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guardianElderThing :: EnemyCard GuardianElderThing
-guardianElderThing = enemy GuardianElderThing Cards.guardianElderThing (3, Static 4, 1) (1, 1)
+guardianElderThing = enemy GuardianElderThing Cards.guardianElderThing
 
 instance HasAbilities GuardianElderThing where
   getAbilities (GuardianElderThing a) =

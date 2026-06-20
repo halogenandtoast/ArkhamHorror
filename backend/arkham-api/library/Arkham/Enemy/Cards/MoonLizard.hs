@@ -15,7 +15,7 @@ newtype MoonLizard = MoonLizard EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 moonLizard :: EnemyCard MoonLizard
-moonLizard = enemy MoonLizard Cards.moonLizard (0, PerPlayer 4, 0) (2, 2)
+moonLizard = enemy MoonLizard Cards.moonLizard
 
 instance HasModifiersFor MoonLizard where
   getModifiersFor (MoonLizard attrs) = do

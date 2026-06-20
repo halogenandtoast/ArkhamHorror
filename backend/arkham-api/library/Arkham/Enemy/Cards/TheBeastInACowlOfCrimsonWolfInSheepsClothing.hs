@@ -21,8 +21,6 @@ theBeastInACowlOfCrimsonWolfInSheepsClothing =
   enemy
     TheBeastInACowlOfCrimsonWolfInSheepsClothing
     Cards.theBeastInACowlOfCrimsonWolfInSheepsClothing
-    (3, PerPlayer 5, 4)
-    (2, 2)
 
 instance HasAbilities TheBeastInACowlOfCrimsonWolfInSheepsClothing where
   getAbilities (TheBeastInACowlOfCrimsonWolfInSheepsClothing a) =

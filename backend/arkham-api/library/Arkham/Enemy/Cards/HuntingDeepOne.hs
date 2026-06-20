@@ -15,7 +15,7 @@ newtype HuntingDeepOne = HuntingDeepOne EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingDeepOne :: EnemyCard HuntingDeepOne
-huntingDeepOne = enemy HuntingDeepOne Cards.huntingDeepOne (3, Static 3, 3) (1, 1)
+huntingDeepOne = enemy HuntingDeepOne Cards.huntingDeepOne
 
 instance HasModifiersFor HuntingDeepOne where
   getModifiersFor (HuntingDeepOne a) =

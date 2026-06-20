@@ -11,7 +11,7 @@ newtype NathanWickMasterOfInitiation = NathanWickMasterOfInitiation EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nathanWickMasterOfInitiation :: EnemyCard NathanWickMasterOfInitiation
-nathanWickMasterOfInitiation = enemy NathanWickMasterOfInitiation Cards.nathanWickMasterOfInitiation (3, Static 5, 4) (1, 1)
+nathanWickMasterOfInitiation = enemy NathanWickMasterOfInitiation Cards.nathanWickMasterOfInitiation
 
 instance HasAbilities NathanWickMasterOfInitiation where
   getAbilities (NathanWickMasterOfInitiation a) =

@@ -18,7 +18,7 @@ newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer EnemyAttrs
 
 discipleOfTheDevourer :: EnemyCard DiscipleOfTheDevourer
 discipleOfTheDevourer =
-  enemy DiscipleOfTheDevourer Cards.discipleOfTheDevourer (3, Static 1, 1) (1, 0)
+  enemy DiscipleOfTheDevourer Cards.discipleOfTheDevourer
     & setSpawnAt (FarthestLocationFromYou EmptyLocation)
 
 instance HasAbilities DiscipleOfTheDevourer where

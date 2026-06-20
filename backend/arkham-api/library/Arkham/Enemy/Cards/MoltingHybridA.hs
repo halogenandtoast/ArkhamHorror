@@ -14,7 +14,7 @@ newtype MoltingHybridA = MoltingHybridA EnemyAttrs
 
 moltingHybridA :: EnemyCard MoltingHybridA
 moltingHybridA =
-  enemy MoltingHybridA Cards.moltingHybridA (2, Static 3, 4) (0, 1)
+  enemy MoltingHybridA Cards.moltingHybridA
     & setSpawnAt (LocationInPosition $ Pos 2 0)
 
 instance HasModifiersFor MoltingHybridA where

@@ -13,7 +13,7 @@ newtype Yig = Yig EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 yig :: EnemyCard Yig
-yig = enemy Yig Cards.yig (4, Static 6, 4) (3, 3)
+yig = enemy Yig Cards.yig
 
 instance HasModifiersFor Yig where
   getModifiersFor (Yig a) = do

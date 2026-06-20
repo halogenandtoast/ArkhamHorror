@@ -14,7 +14,7 @@ newtype RavenousGrizzly = RavenousGrizzly EnemyAttrs
 
 ravenousGrizzly :: EnemyCard RavenousGrizzly
 ravenousGrizzly =
-  enemy RavenousGrizzly Cards.ravenousGrizzly (4, Static 3, 2) (2, 0)
+  enemy RavenousGrizzly Cards.ravenousGrizzly
     & setSpawnAt (NearestLocationToYou $ LocationWithTrait Wilderness)
 
 instance HasModifiersFor RavenousGrizzly where

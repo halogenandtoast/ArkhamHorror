@@ -13,7 +13,7 @@ newtype Umordhoth = Umordhoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 umordhoth :: EnemyCard Umordhoth
-umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
+umordhoth = enemy Umordhoth Cards.umordhoth
 
 instance HasModifiersFor Umordhoth where
   getModifiersFor (Umordhoth a) = do

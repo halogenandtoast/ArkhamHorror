@@ -19,7 +19,7 @@ newtype ThorneTheOneWithTheRedCravat = ThorneTheOneWithTheRedCravat EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thorneTheOneWithTheRedCravat :: EnemyCard ThorneTheOneWithTheRedCravat
-thorneTheOneWithTheRedCravat = enemy ThorneTheOneWithTheRedCravat Cards.thorneTheOneWithTheRedCravat (4, Static 6, 4) (2, 1)
+thorneTheOneWithTheRedCravat = enemy ThorneTheOneWithTheRedCravat Cards.thorneTheOneWithTheRedCravat
 
 instance HasModifiersFor ThorneTheOneWithTheRedCravat where
   getModifiersFor (ThorneTheOneWithTheRedCravat a) = do

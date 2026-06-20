@@ -13,7 +13,7 @@ newtype Dromaeosaurus = Dromaeosaurus EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dromaeosaurus :: EnemyCard Dromaeosaurus
-dromaeosaurus = enemy Dromaeosaurus Cards.dromaeosaurus (3, Static 2, 4) (1, 0)
+dromaeosaurus = enemy Dromaeosaurus Cards.dromaeosaurus
 
 instance HasAbilities Dromaeosaurus where
   getAbilities (Dromaeosaurus a) = extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)

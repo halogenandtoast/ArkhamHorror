@@ -15,7 +15,7 @@ instance HasModifiersFor FelineHybrid where
 
 felineHybrid :: EnemyCard FelineHybrid
 felineHybrid =
-  enemy FelineHybrid Cards.felineHybrid (3, Static 2, 3) (1, 1)
+  enemy FelineHybrid Cards.felineHybrid
     & setOnlyPrey (investigatorIs Investigators.miguelDeLaCruz)
 
 instance RunMessage FelineHybrid where

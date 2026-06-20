@@ -16,7 +16,7 @@ newtype AlikiZoniUperetriaSpeaksInDeath = AlikiZoniUperetriaSpeaksInDeath EnemyA
 
 alikiZoniUperetriaSpeaksInDeath :: EnemyCard AlikiZoniUperetriaSpeaksInDeath
 alikiZoniUperetriaSpeaksInDeath =
-  enemy AlikiZoniUperetriaSpeaksInDeath Cards.alikiZoniUperetriaSpeaksInDeath (2, Static 3, 2) (1, 1)
+  enemy AlikiZoniUperetriaSpeaksInDeath Cards.alikiZoniUperetriaSpeaksInDeath
 
 instance HasAbilities AlikiZoniUperetriaSpeaksInDeath where
   getAbilities (AlikiZoniUperetriaSpeaksInDeath a) = extend1 a $ mkAbility a 1 $ forced $ PhaseEnds #when #enemy

@@ -14,7 +14,7 @@ newtype BlackChamberOperative = BlackChamberOperative EnemyAttrs
 
 blackChamberOperative :: EnemyCard BlackChamberOperative
 blackChamberOperative =
-  enemyWith BlackChamberOperative Cards.blackChamberOperative (4, Static 2, 4) (1, 1) preyIsOnlyBearer
+  enemyWith BlackChamberOperative Cards.blackChamberOperative preyIsOnlyBearer
 
 instance HasAbilities BlackChamberOperative where
   getAbilities (BlackChamberOperative a) = extend a [mkAbility a 1 $ forced $ EnemyEvaded #after You (be a)]

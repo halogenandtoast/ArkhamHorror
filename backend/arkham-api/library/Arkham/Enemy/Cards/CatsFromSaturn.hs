@@ -15,7 +15,7 @@ newtype CatsFromSaturn = CatsFromSaturn EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 catsFromSaturn :: EnemyCard CatsFromSaturn
-catsFromSaturn = enemy CatsFromSaturn Cards.catsFromSaturn (2, Static 2, 2) (1, 0)
+catsFromSaturn = enemy CatsFromSaturn Cards.catsFromSaturn
 
 instance HasModifiersFor CatsFromSaturn where
   getModifiersFor (CatsFromSaturn a) = do

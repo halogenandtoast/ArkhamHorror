@@ -16,7 +16,7 @@ newtype BuriedMinerALostMemento = BuriedMinerALostMemento EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 buriedMinerALostMemento :: EnemyCard BuriedMinerALostMemento
-buriedMinerALostMemento = enemy BuriedMinerALostMemento Cards.buriedMinerALostMemento (2, Static 4, 4) (1, 1)
+buriedMinerALostMemento = enemy BuriedMinerALostMemento Cards.buriedMinerALostMemento
 
 instance HasModifiersFor BuriedMinerALostMemento where
   getModifiersFor (BuriedMinerALostMemento a) = do

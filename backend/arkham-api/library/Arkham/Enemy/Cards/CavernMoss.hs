@@ -14,7 +14,7 @@ newtype CavernMoss = CavernMoss EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cavernMoss :: EnemyCard CavernMoss
-cavernMoss = enemy CavernMoss Cards.cavernMoss (2, Static 3, 1) (1, 0)
+cavernMoss = enemy CavernMoss Cards.cavernMoss
 
 instance HasModifiersFor CavernMoss where
   getModifiersFor (CavernMoss a) = case a.placement of

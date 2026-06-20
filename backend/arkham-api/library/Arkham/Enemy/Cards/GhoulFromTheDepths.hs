@@ -9,7 +9,7 @@ newtype GhoulFromTheDepths = GhoulFromTheDepths EnemyAttrs
 
 ghoulFromTheDepths :: EnemyCard GhoulFromTheDepths
 ghoulFromTheDepths =
-  enemy GhoulFromTheDepths Cards.ghoulFromTheDepths (3, Static 4, 2) (1, 1)
+  enemy GhoulFromTheDepths Cards.ghoulFromTheDepths
     & setSpawnAt "Bathroom"
 
 instance RunMessage GhoulFromTheDepths where

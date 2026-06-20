@@ -12,7 +12,7 @@ newtype TheInescapableMaw = TheInescapableMaw EnemyAttrs
 -- implemented by 'Arkham.Scenarios.WarOfTheOuterGods.Helpers.blueDecide' on
 -- each blue card with such an ability.
 theInescapableMaw :: EnemyCard TheInescapableMaw
-theInescapableMaw = enemy TheInescapableMaw Cards.theInescapableMaw (3, Static 8, 5) (1, 2)
+theInescapableMaw = enemy TheInescapableMaw Cards.theInescapableMaw
 
 instance RunMessage TheInescapableMaw where
   runMessage msg (TheInescapableMaw attrs) = TheInescapableMaw <$> runMessage msg attrs

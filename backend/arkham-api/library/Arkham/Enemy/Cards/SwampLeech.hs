@@ -23,8 +23,6 @@ swampLeech =
   enemyWith
     SwampLeech
     Cards.swampLeech
-    (4, Static 1, 0)
-    (1, 0)
     ((spawnAtL ?~ SpawnAt (LocationWithTrait Bayou)) . (evadeL .~ Nothing))
 
 instance HasAbilities SwampLeech where

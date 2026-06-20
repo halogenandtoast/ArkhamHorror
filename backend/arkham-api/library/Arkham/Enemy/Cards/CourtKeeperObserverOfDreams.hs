@@ -12,7 +12,7 @@ newtype CourtKeeperObserverOfDreams = CourtKeeperObserverOfDreams EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 courtKeeperObserverOfDreams :: EnemyCard CourtKeeperObserverOfDreams
-courtKeeperObserverOfDreams = enemy CourtKeeperObserverOfDreams Cards.courtKeeperObserverOfDreams (3, Static 4, 3) (1, 1)
+courtKeeperObserverOfDreams = enemy CourtKeeperObserverOfDreams Cards.courtKeeperObserverOfDreams
 
 -- TODO: "If the investigators have translated 10+ glyphs, this enemy gains
 -- relentless." The translated-glyph count isn't readable yet (the campaign

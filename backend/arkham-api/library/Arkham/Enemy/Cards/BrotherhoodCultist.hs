@@ -13,7 +13,7 @@ newtype BrotherhoodCultist = BrotherhoodCultist EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brotherhoodCultist :: EnemyCard BrotherhoodCultist
-brotherhoodCultist = enemy BrotherhoodCultist Cards.brotherhoodCultist (2, Static 3, 2) (0, 1)
+brotherhoodCultist = enemy BrotherhoodCultist Cards.brotherhoodCultist
 
 instance HasModifiersFor BrotherhoodCultist where
   getModifiersFor (BrotherhoodCultist a) = do

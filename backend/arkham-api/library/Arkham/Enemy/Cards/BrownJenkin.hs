@@ -13,7 +13,7 @@ newtype BrownJenkin = BrownJenkin EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brownJenkin :: EnemyCard BrownJenkin
-brownJenkin = enemy BrownJenkin Cards.brownJenkin (1, Static 1, 4) (1, 1)
+brownJenkin = enemy BrownJenkin Cards.brownJenkin
 
 instance HasModifiersFor BrownJenkin where
   getModifiersFor (BrownJenkin attrs) =

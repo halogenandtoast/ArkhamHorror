@@ -9,7 +9,7 @@ newtype HermanCollins = HermanCollins EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hermanCollins :: EnemyCard HermanCollins
-hermanCollins = enemyWith HermanCollins Cards.hermanCollins (3, Static 4, 4) (1, 1) (spawnAtL ?~ "Graveyard")
+hermanCollins = enemyWith HermanCollins Cards.hermanCollins (spawnAtL ?~ "Graveyard")
 
 instance HasAbilities HermanCollins where
   getAbilities (HermanCollins a) =

@@ -14,7 +14,7 @@ newtype TzuSanNiangAWhisperInYourEar = TzuSanNiangAWhisperInYourEar EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tzuSanNiangAWhisperInYourEar :: EnemyCard TzuSanNiangAWhisperInYourEar
-tzuSanNiangAWhisperInYourEar = enemy TzuSanNiangAWhisperInYourEar Cards.tzuSanNiangAWhisperInYourEar (4, Static 3, 4) (1, 2)
+tzuSanNiangAWhisperInYourEar = enemy TzuSanNiangAWhisperInYourEar Cards.tzuSanNiangAWhisperInYourEar
 
 instance HasAbilities TzuSanNiangAWhisperInYourEar where
   getAbilities (TzuSanNiangAWhisperInYourEar a) =

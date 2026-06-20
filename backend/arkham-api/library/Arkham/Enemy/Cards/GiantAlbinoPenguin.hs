@@ -11,7 +11,7 @@ newtype GiantAlbinoPenguin = GiantAlbinoPenguin EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 giantAlbinoPenguin :: EnemyCard GiantAlbinoPenguin
-giantAlbinoPenguin = enemy GiantAlbinoPenguin Cards.giantAlbinoPenguin (2, Static 3, 2) (1, 1)
+giantAlbinoPenguin = enemy GiantAlbinoPenguin Cards.giantAlbinoPenguin
 
 instance HasModifiersFor GiantAlbinoPenguin where
   getModifiersFor (GiantAlbinoPenguin a) = do

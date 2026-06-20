@@ -17,7 +17,7 @@ newtype VengefulShade = VengefulShade EnemyAttrs
 
 vengefulShade :: EnemyCard VengefulShade
 vengefulShade =
-  enemy VengefulShade Cards.vengefulShade (5, Static 2, 5) (0, 2)
+  enemy VengefulShade Cards.vengefulShade
     & setNoSpawn
     & setOnlyPrey
       (oneOf [investigatorIs Investigators.jimCulver, investigatorIs Investigators.jimCulverParallel])

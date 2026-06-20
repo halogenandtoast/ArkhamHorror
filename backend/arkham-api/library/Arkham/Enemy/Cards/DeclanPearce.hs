@@ -12,7 +12,7 @@ newtype DeclanPearce = DeclanPearce EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 declanPearce :: EnemyCard DeclanPearce
-declanPearce = enemy DeclanPearce Cards.declanPearce (2, Static 2, 2) (0, 2)
+declanPearce = enemy DeclanPearce Cards.declanPearce
 
 instance HasModifiersFor DeclanPearce where
   getModifiersFor (DeclanPearce a) = do

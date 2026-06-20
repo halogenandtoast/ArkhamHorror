@@ -12,7 +12,7 @@ newtype ZadokAllenDrunkAndDisorderly = ZadokAllenDrunkAndDisorderly EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 zadokAllenDrunkAndDisorderly :: EnemyCard ZadokAllenDrunkAndDisorderly
-zadokAllenDrunkAndDisorderly = enemy ZadokAllenDrunkAndDisorderly Cards.zadokAllenDrunkAndDisorderly (4, Static 5, 2) (2, 0)
+zadokAllenDrunkAndDisorderly = enemy ZadokAllenDrunkAndDisorderly Cards.zadokAllenDrunkAndDisorderly
 
 instance HasAbilities ZadokAllenDrunkAndDisorderly where
   getAbilities (ZadokAllenDrunkAndDisorderly a) =

@@ -8,7 +8,7 @@ newtype InfectedStarSpawn = InfectedStarSpawn EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 infectedStarSpawn :: EnemyCard InfectedStarSpawn
-infectedStarSpawn = enemy InfectedStarSpawn Cards.infectedStarSpawn (2, Static 3, 4) (0, 1)
+infectedStarSpawn = enemy InfectedStarSpawn Cards.infectedStarSpawn
 
 -- TODO: abilities
 instance RunMessage InfectedStarSpawn where

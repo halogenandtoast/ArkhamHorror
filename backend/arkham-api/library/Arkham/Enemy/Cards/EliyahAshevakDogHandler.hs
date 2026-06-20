@@ -13,7 +13,7 @@ newtype EliyahAshevakDogHandler = EliyahAshevakDogHandler EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eliyahAshevakDogHandler :: EnemyCard EliyahAshevakDogHandler
-eliyahAshevakDogHandler = enemy EliyahAshevakDogHandler Cards.eliyahAshevakDogHandler (1, Static 3, 4) (1, 1)
+eliyahAshevakDogHandler = enemy EliyahAshevakDogHandler Cards.eliyahAshevakDogHandler
 
 instance HasAbilities EliyahAshevakDogHandler where
   getAbilities (EliyahAshevakDogHandler a) =

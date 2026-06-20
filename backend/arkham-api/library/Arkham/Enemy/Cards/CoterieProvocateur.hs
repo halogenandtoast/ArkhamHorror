@@ -12,7 +12,7 @@ newtype CoterieProvocateur = CoterieProvocateur EnemyAttrs
 
 coterieProvocateur :: EnemyCard CoterieProvocateur
 coterieProvocateur =
-  enemy CoterieProvocateur Cards.coterieProvocateur (4, Static 2, 3) (0, 1)
+  enemy CoterieProvocateur Cards.coterieProvocateur
     & setSpawnAt (NearestLocationToYou locationWithKeyLocus)
 
 instance HasModifiersFor CoterieProvocateur where

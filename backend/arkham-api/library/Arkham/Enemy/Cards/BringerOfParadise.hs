@@ -13,13 +13,13 @@ newtype BringerOfParadise = BringerOfParadise EnemyAttrs
 
 bringerOfParadise :: EnemyCard BringerOfParadise
 bringerOfParadise =
-  enemyWith BringerOfParadise Cards.bringerOfParadise (3, Static 3, 1) (1, 0)
+  enemyWith BringerOfParadise Cards.bringerOfParadise
     $ spawnAtL
     ?~ SpawnAt (locationIs Locations.shrineOfMaghanArkat)
 
 bringerOfParadiseWarOfTheOuterGods :: EnemyCard BringerOfParadise
 bringerOfParadiseWarOfTheOuterGods =
-  enemyWith BringerOfParadise Cards.bringerOfParadiseWarOfTheOuterGods (3, Static 3, 1) (1, 0)
+  enemyWith BringerOfParadise Cards.bringerOfParadiseWarOfTheOuterGods
     $ spawnAtL
     ?~ SpawnAt (locationIs Locations.shrineOfMaghanArkat)
 

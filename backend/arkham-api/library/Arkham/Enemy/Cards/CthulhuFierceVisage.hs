@@ -14,7 +14,7 @@ newtype CthulhuFierceVisage = CthulhuFierceVisage EnemyAttrs
 -- Keywords Alert and Retaliate are on the card def. Prey - Highest [willpower].
 cthulhuFierceVisage :: EnemyCard CthulhuFierceVisage
 cthulhuFierceVisage =
-  enemy CthulhuFierceVisage Cards.cthulhuFierceVisage (0, Static 1, 0) (0, 1)
+  enemy CthulhuFierceVisage Cards.cthulhuFierceVisage
     & setPrey (InvestigatorWithHighestSkill #willpower UneliminatedInvestigator)
 
 instance HasModifiersFor CthulhuFierceVisage where

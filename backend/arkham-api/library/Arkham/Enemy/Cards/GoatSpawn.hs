@@ -10,7 +10,7 @@ newtype GoatSpawn = GoatSpawn EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 goatSpawn :: EnemyCard GoatSpawn
-goatSpawn = enemy GoatSpawn Cards.goatSpawn (3, Static 3, 2) (1, 0)
+goatSpawn = enemy GoatSpawn Cards.goatSpawn
 
 instance HasAbilities GoatSpawn where
   getAbilities (GoatSpawn a) =

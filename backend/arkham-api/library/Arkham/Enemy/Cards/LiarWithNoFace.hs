@@ -14,7 +14,7 @@ newtype LiarWithNoFace = LiarWithNoFace EnemyAttrs
 
 liarWithNoFace :: EnemyCard LiarWithNoFace
 liarWithNoFace =
-  enemyWith LiarWithNoFace Cards.liarWithNoFace (3, Static 4, 3) (0, 2)
+  enemyWith LiarWithNoFace Cards.liarWithNoFace
     $ preyL
     .~ Prey MostCardsInHand
 

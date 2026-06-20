@@ -11,7 +11,7 @@ newtype FrenziedReveler = FrenziedReveler EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frenziedReveler :: EnemyCard FrenziedReveler
-frenziedReveler = enemy FrenziedReveler Cards.frenziedReveler (2, Static 2, 2) (1, 0)
+frenziedReveler = enemy FrenziedReveler Cards.frenziedReveler
 
 instance HasAbilities FrenziedReveler where
   getAbilities (FrenziedReveler a) =

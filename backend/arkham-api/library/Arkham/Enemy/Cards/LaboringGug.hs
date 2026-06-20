@@ -13,7 +13,7 @@ newtype LaboringGug = LaboringGug EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 laboringGug :: EnemyCard LaboringGug
-laboringGug = enemy LaboringGug Cards.laboringGug (5, Static 5, 2) (3, 1)
+laboringGug = enemy LaboringGug Cards.laboringGug
 
 instance HasModifiersFor LaboringGug where
   getModifiersFor (LaboringGug attrs) = do

@@ -11,7 +11,7 @@ newtype RazinFarhiReanimatedArtificer = RazinFarhiReanimatedArtificer EnemyAttrs
 
 razinFarhiReanimatedArtificer :: EnemyCard RazinFarhiReanimatedArtificer
 razinFarhiReanimatedArtificer =
-  enemy RazinFarhiReanimatedArtificer Cards.razinFarhiReanimatedArtificer (4, PerPlayer 4, 3) (1, 1)
+  enemy RazinFarhiReanimatedArtificer Cards.razinFarhiReanimatedArtificer
 
 instance HasAbilities RazinFarhiReanimatedArtificer where
   getAbilities (RazinFarhiReanimatedArtificer a) = extend1 a $ mkAbility a 1 $ forced $ CampaignEvent #after Nothing "shiftKey"

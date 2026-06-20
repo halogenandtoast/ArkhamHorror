@@ -19,7 +19,7 @@ newtype OceirosMarsh = OceirosMarsh EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oceirosMarsh :: EnemyCard OceirosMarsh
-oceirosMarsh = enemy OceirosMarsh Cards.oceirosMarsh (4, Static 6, 2) (1, 1)
+oceirosMarsh = enemy OceirosMarsh Cards.oceirosMarsh
 
 instance HasModifiersFor OceirosMarsh where
   getModifiersFor (OceirosMarsh a) = do

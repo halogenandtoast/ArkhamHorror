@@ -22,7 +22,7 @@ newtype TheContessaNeedlesslySmug = TheContessaNeedlesslySmug EnemyAttrs
 
 theContessaNeedlesslySmug :: EnemyCard TheContessaNeedlesslySmug
 theContessaNeedlesslySmug =
-  enemy TheContessaNeedlesslySmug Cards.theContessaNeedlesslySmug (4, PerPlayer 4, 4) (1, 1)
+  enemy TheContessaNeedlesslySmug Cards.theContessaNeedlesslySmug
     & setPrey MostRemainingHealth
 
 instance HasAbilities TheContessaNeedlesslySmug where

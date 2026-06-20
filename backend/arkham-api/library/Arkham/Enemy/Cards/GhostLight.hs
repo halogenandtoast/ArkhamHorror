@@ -12,7 +12,7 @@ newtype GhostLight = GhostLight EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ghostLight :: EnemyCard GhostLight
-ghostLight = enemy GhostLight Cards.ghostLight (2, Static 2, 2) (0, 1)
+ghostLight = enemy GhostLight Cards.ghostLight
 
 instance HasModifiersFor GhostLight where
   getModifiersFor (GhostLight a) = do

@@ -19,7 +19,7 @@ newtype BurrowingHybrid = BurrowingHybrid EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burrowingHybrid :: EnemyCard BurrowingHybrid
-burrowingHybrid = enemy BurrowingHybrid Cards.burrowingHybrid (3, Static 3, 3) (1, 1)
+burrowingHybrid = enemy BurrowingHybrid Cards.burrowingHybrid
 
 instance HasModifiersFor BurrowingHybrid where
   getModifiersFor (BurrowingHybrid a) = do

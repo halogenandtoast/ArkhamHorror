@@ -15,7 +15,7 @@ newtype EmergingDeepOne = EmergingDeepOne EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergingDeepOne :: EnemyCard EmergingDeepOne
-emergingDeepOne = enemy EmergingDeepOne Cards.emergingDeepOne (3, Static 2, 1) (1, 1)
+emergingDeepOne = enemy EmergingDeepOne Cards.emergingDeepOne
 
 instance HasAbilities EmergingDeepOne where
   getAbilities (EmergingDeepOne a) =

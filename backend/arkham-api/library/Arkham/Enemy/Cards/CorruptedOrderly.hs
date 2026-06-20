@@ -16,7 +16,7 @@ newtype CorruptedOrderly = CorruptedOrderly EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corruptedOrderly :: EnemyCard CorruptedOrderly
-corruptedOrderly = enemy CorruptedOrderly Cards.corruptedOrderly (2, Static 2, 2) (1, 1)
+corruptedOrderly = enemy CorruptedOrderly Cards.corruptedOrderly
 
 instance HasAbilities CorruptedOrderly where
   getAbilities (CorruptedOrderly x) =

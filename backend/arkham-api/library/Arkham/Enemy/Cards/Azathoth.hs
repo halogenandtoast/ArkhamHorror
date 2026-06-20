@@ -16,8 +16,6 @@ azathoth =
   enemyWith
     Azathoth
     Cards.azathoth
-    (0, Static 1, 0)
-    (3, 3)
     (\a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing})
 
 instance HasAbilities Azathoth where

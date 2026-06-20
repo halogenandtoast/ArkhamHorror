@@ -23,7 +23,7 @@ instance HasAbilities TheOrganistHopelessIDefiedHim where
 
 theOrganistHopelessIDefiedHim :: EnemyCard TheOrganistHopelessIDefiedHim
 theOrganistHopelessIDefiedHim =
-  enemyWith TheOrganistHopelessIDefiedHim Cards.theOrganistHopelessIDefiedHim (5, Static 1, 3) (0, 3)
+  enemyWith TheOrganistHopelessIDefiedHim Cards.theOrganistHopelessIDefiedHim
     $ healthL
     .~ Nothing
 

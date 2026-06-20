@@ -21,8 +21,6 @@ harbingerOfValusiaTheSleeperReturns =
   enemy
     HarbingerOfValusiaTheSleeperReturns
     Cards.harbingerOfValusiaTheSleeperReturns
-    (2, PerPlayer 10, 4)
-    (2, 2)
 
 instance HasModifiersFor HarbingerOfValusiaTheSleeperReturns where
   getModifiersFor (HarbingerOfValusiaTheSleeperReturns a) = do

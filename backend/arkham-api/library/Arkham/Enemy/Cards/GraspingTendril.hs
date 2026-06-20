@@ -12,7 +12,7 @@ newtype GraspingTendril = GraspingTendril EnemyAttrs
 
 graspingTendril :: EnemyCard GraspingTendril
 graspingTendril =
-  enemy GraspingTendril Cards.graspingTendril (2, Static 0, 4) (1, 0)
+  enemy GraspingTendril Cards.graspingTendril
     & setSpawnAt (LocationWithEnemy $ enemyIs Cards.chelydranHybrid)
 
 instance HasModifiersFor GraspingTendril where

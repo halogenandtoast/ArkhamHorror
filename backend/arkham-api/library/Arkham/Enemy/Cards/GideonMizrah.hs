@@ -12,7 +12,7 @@ newtype GideonMizrah = GideonMizrah EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gideonMizrah :: EnemyCard GideonMizrah
-gideonMizrah = enemy GideonMizrah Cards.gideonMizrah (2, Static 3, 1) (1, 0)
+gideonMizrah = enemy GideonMizrah Cards.gideonMizrah
 
 instance HasAbilities GideonMizrah where
   getAbilities (GideonMizrah a) =

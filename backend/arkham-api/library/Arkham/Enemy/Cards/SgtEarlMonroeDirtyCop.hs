@@ -11,7 +11,7 @@ newtype SgtEarlMonroeDirtyCop = SgtEarlMonroeDirtyCop EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sgtEarlMonroeDirtyCop :: EnemyCard SgtEarlMonroeDirtyCop
-sgtEarlMonroeDirtyCop = enemy SgtEarlMonroeDirtyCop Cards.sgtEarlMonroeDirtyCop (3, Static 4, 3) (1, 1)
+sgtEarlMonroeDirtyCop = enemy SgtEarlMonroeDirtyCop Cards.sgtEarlMonroeDirtyCop
 
 instance HasAbilities SgtEarlMonroeDirtyCop where
   getAbilities (SgtEarlMonroeDirtyCop a) =

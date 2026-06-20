@@ -15,7 +15,7 @@ newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingHorror :: EnemyCard HuntingHorror
-huntingHorror = enemy HuntingHorror Cards.huntingHorror (2, Static 3, 2) (1, 1)
+huntingHorror = enemy HuntingHorror Cards.huntingHorror
 
 instance HasAbilities HuntingHorror where
   getAbilities (HuntingHorror x) =

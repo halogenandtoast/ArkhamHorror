@@ -22,7 +22,7 @@ instance HasModifiersFor HasturTheKingInYellow where
 
 hasturTheKingInYellow :: EnemyCard HasturTheKingInYellow
 hasturTheKingInYellow =
-  enemyWith HasturTheKingInYellow Cards.hasturTheKingInYellow (4, PerPlayer 7, 2) (0, 2)
+  enemyWith HasturTheKingInYellow Cards.hasturTheKingInYellow
     $ damageStrategyL
     .~ DamageFromHastur
 

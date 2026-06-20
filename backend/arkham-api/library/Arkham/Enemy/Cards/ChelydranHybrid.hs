@@ -12,7 +12,7 @@ newtype ChelydranHybrid = ChelydranHybrid EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chelydranHybrid :: EnemyCard ChelydranHybrid
-chelydranHybrid = enemy ChelydranHybrid Cards.chelydranHybrid (2, Static 5, 2) (1, 0)
+chelydranHybrid = enemy ChelydranHybrid Cards.chelydranHybrid
 
 instance HasModifiersFor ChelydranHybrid where
   getModifiersFor (ChelydranHybrid a) = do

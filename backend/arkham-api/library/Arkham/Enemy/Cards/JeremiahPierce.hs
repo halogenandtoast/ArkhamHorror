@@ -11,7 +11,7 @@ newtype JeremiahPierce = JeremiahPierce EnemyAttrs
 
 jeremiahPierce :: EnemyCard JeremiahPierce
 jeremiahPierce =
-  enemyWith JeremiahPierce Cards.jeremiahPierce (4, Static 3, 4) (1, 1)
+  enemyWith JeremiahPierce Cards.jeremiahPierce
     $ spawnAtL
     ?~ SpawnAtFirst ["Your House", "Rivertown"]
 

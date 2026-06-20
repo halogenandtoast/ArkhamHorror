@@ -14,7 +14,7 @@ newtype DeepOneNursemaid = DeepOneNursemaid EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepOneNursemaid :: EnemyCard DeepOneNursemaid
-deepOneNursemaid = enemy DeepOneNursemaid Cards.deepOneNursemaid (3, Static 2, 2) (1, 1)
+deepOneNursemaid = enemy DeepOneNursemaid Cards.deepOneNursemaid
 
 instance HasModifiersFor DeepOneNursemaid where
   getModifiersFor (DeepOneNursemaid a) = do

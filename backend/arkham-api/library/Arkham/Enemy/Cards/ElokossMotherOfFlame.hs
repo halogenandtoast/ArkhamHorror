@@ -17,7 +17,7 @@ instance HasModifiersFor ElokossMotherOfFlame where
     modifySelf a [HealthModifier healthModifier]
 
 elokossMotherOfFlame :: EnemyCard ElokossMotherOfFlame
-elokossMotherOfFlame = enemy ElokossMotherOfFlame Cards.elokossMotherOfFlame (5, Static 5, 5) (3, 3)
+elokossMotherOfFlame = enemy ElokossMotherOfFlame Cards.elokossMotherOfFlame
 
 instance HasAbilities ElokossMotherOfFlame where
   getAbilities (ElokossMotherOfFlame a) =

@@ -20,8 +20,6 @@ mimeticNemesisInfiltratorOfRealities =
   enemy
     MimeticNemesisInfiltratorOfRealities
     Cards.mimeticNemesisInfiltratorOfRealities
-    (5, Static 3, 5)
-    (3, 3)
 
 instance HasModifiersFor MimeticNemesisInfiltratorOfRealities where
   getModifiersFor (MimeticNemesisInfiltratorOfRealities a) = do

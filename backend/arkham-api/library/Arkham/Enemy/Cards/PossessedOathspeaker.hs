@@ -15,7 +15,7 @@ newtype PossessedOathspeaker = PossessedOathspeaker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 possessedOathspeaker :: EnemyCard PossessedOathspeaker
-possessedOathspeaker = enemy PossessedOathspeaker Cards.possessedOathspeaker (4, PerPlayer 5, 3) (2, 2)
+possessedOathspeaker = enemy PossessedOathspeaker Cards.possessedOathspeaker
 
 instance HasModifiersFor PossessedOathspeaker where
   getModifiersFor (PossessedOathspeaker attrs) = do

@@ -12,7 +12,7 @@ newtype Farid = Farid EnemyAttrs
 
 farid :: EnemyCard Farid
 farid =
-  enemyWith Farid Cards.farid (3, Static 4, 2) (1, 0)
+  enemyWith Farid Cards.farid
     $ spawnAtL
     ?~ SpawnAt "Cairo Bazaar"
 

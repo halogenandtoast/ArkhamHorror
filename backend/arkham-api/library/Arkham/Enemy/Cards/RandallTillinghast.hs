@@ -14,7 +14,7 @@ newtype RandallTillinghast = RandallTillinghast EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 randallTillinghast :: EnemyCard RandallTillinghast
-randallTillinghast = enemy RandallTillinghast Cards.randallTillinghast (1, Static 1, 3) (1, 1)
+randallTillinghast = enemy RandallTillinghast Cards.randallTillinghast
 
 -- Keywords (Relentless, Retaliate) are defined on the card def.
 instance HasModifiersFor RandallTillinghast where

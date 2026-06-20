@@ -11,7 +11,7 @@ newtype MadPatient = MadPatient EnemyAttrs
 
 madPatient :: EnemyCard MadPatient
 madPatient =
-  enemy MadPatient Cards.madPatient (2, Static 2, 3) (1, 0)
+  enemy MadPatient Cards.madPatient
     & setPrey MostRemainingSanity
     & setSpawnAt (NearestLocationToYou "Asylum Halls")
 

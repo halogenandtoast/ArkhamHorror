@@ -19,8 +19,6 @@ dholeOfTheWastes =
   enemyWith
     DholeOfTheWastes
     Cards.dholeOfTheWastes
-    (6, Static 6, 2)
-    (2, 1)
     $ (spawnAtL ?~ SpawnAt (oneOf ["Cold Wastes", "The Great Hall"]))
     . (preyL .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator))
 

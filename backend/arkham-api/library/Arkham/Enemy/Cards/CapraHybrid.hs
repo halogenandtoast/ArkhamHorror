@@ -12,7 +12,7 @@ newtype CapraHybrid = CapraHybrid EnemyAttrs
 
 capraHybrid :: EnemyCard CapraHybrid
 capraHybrid =
-  enemy CapraHybrid Cards.capraHybrid (3, Static 5, 3) (1, 2)
+  enemy CapraHybrid Cards.capraHybrid
     & setSpawnAt (LocationWithFewestEnemies (LocationWithTitle "Outer Fields") AnyEnemy)
 
 instance HasModifiersFor CapraHybrid where

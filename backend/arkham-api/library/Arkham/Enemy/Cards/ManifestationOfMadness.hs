@@ -13,7 +13,7 @@ newtype ManifestationOfMadness = ManifestationOfMadness EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 manifestationOfMadness :: EnemyCard ManifestationOfMadness
-manifestationOfMadness = enemy ManifestationOfMadness Cards.manifestationOfMadness (3, Static 3, 3) (1, 1)
+manifestationOfMadness = enemy ManifestationOfMadness Cards.manifestationOfMadness
 
 instance HasAbilities ManifestationOfMadness where
   getAbilities (ManifestationOfMadness a) =

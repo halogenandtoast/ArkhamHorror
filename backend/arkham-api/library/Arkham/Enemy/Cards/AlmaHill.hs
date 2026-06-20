@@ -9,7 +9,7 @@ newtype AlmaHill = AlmaHill EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 almaHill :: EnemyCard AlmaHill
-almaHill = enemyWith AlmaHill Cards.almaHill (3, Static 3, 3) (0, 2) $ spawnAtL ?~ "Southside"
+almaHill = enemyWith AlmaHill Cards.almaHill $ spawnAtL ?~ "Southside"
 
 instance HasAbilities AlmaHill where
   getAbilities (AlmaHill attrs) = extend attrs [restricted attrs 1 OnSameLocation parleyAction_]

@@ -15,7 +15,7 @@ newtype RoyalEmissary = RoyalEmissary EnemyAttrs
 
 royalEmissary :: EnemyCard RoyalEmissary
 royalEmissary =
-  enemy RoyalEmissary Cards.royalEmissary (4, Static 4, 2) (2, 0)
+  enemy RoyalEmissary Cards.royalEmissary
     & setPrey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
 
 instance HasModifiersFor RoyalEmissary where

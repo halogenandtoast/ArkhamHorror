@@ -47,6 +47,46 @@ healthX = Just (Health ValueX)
 healthStar :: Maybe Health
 healthStar = Just (Health ValueStar)
 
+-- | Printed-fight helpers for the @cdFight@ field, e.g. @cdFight = fight 3@.
+fight :: Int -> Maybe Fight
+fight = Just . FightValue . Static
+
+fightPerInvestigator :: Int -> Maybe Fight
+fightPerInvestigator = Just . FightValue . PerPlayer
+
+fightX :: Maybe Fight
+fightX = Just (FightValue ValueX)
+
+fightStar :: Maybe Fight
+fightStar = Just (FightValue ValueStar)
+
+fightUnknown :: Maybe Fight
+fightUnknown = Just (FightValue ValueUnknown)
+
+-- | Printed-evade helpers for the @cdEvade@ field, e.g. @cdEvade = evade 2@.
+evade :: Int -> Maybe Evade
+evade = Just . EvadeValue . Static
+
+evadePerInvestigator :: Int -> Maybe Evade
+evadePerInvestigator = Just . EvadeValue . PerPlayer
+
+evadeX :: Maybe Evade
+evadeX = Just (EvadeValue ValueX)
+
+evadeStar :: Maybe Evade
+evadeStar = Just (EvadeValue ValueStar)
+
+evadeUnknown :: Maybe Evade
+evadeUnknown = Just (EvadeValue ValueUnknown)
+
+-- | Printed health-damage helper for @cdHealthDamage@, e.g. @cdHealthDamage = healthDamage 1@.
+healthDamage :: Int -> Maybe HealthDamage
+healthDamage = Just . HealthDamageValue . Static
+
+-- | Printed sanity-damage helper for @cdSanityDamage@, e.g. @cdSanityDamage = sanityDamage 1@.
+sanityDamage :: Int -> Maybe SanityDamage
+sanityDamage = Just . SanityDamageValue . Static
+
 weakness :: CardCode -> Name -> CardDef
 weakness cardCode name = baseEnemy cardCode name Nothing (Just Weakness)
 

@@ -13,7 +13,7 @@ newtype SaturniteMonarchGraciousHost = SaturniteMonarchGraciousHost EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 saturniteMonarchGraciousHost :: EnemyCard SaturniteMonarchGraciousHost
-saturniteMonarchGraciousHost = enemy SaturniteMonarchGraciousHost Cards.saturniteMonarchGraciousHost (2, PerPlayer 4, 4) (2, 2)
+saturniteMonarchGraciousHost = enemy SaturniteMonarchGraciousHost Cards.saturniteMonarchGraciousHost
 
 instance HasAbilities SaturniteMonarchGraciousHost where
   getAbilities (SaturniteMonarchGraciousHost a) = extend1 a $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_

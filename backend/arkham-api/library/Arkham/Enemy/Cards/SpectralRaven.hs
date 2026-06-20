@@ -16,7 +16,7 @@ newtype SpectralRaven = SpectralRaven EnemyAttrs
 
 spectralRaven :: EnemyCard SpectralRaven
 spectralRaven =
-  enemy SpectralRaven Cards.spectralRaven (2, Static 2, 2) (1, 1)
+  enemy SpectralRaven Cards.spectralRaven
     & setPrey (InvestigatorWithLowestSkill #intellect UneliminatedInvestigator)
 
 instance HasAbilities SpectralRaven where

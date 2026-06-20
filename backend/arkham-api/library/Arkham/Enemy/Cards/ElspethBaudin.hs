@@ -17,7 +17,7 @@ newtype ElspethBaudin = ElspethBaudin EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elspethBaudin :: EnemyCard ElspethBaudin
-elspethBaudin = enemy ElspethBaudin Cards.elspethBaudin (8, PerPlayer 4, 8) (2, 2)
+elspethBaudin = enemy ElspethBaudin Cards.elspethBaudin
 
 instance HasModifiersFor ElspethBaudin where
   getModifiersFor (ElspethBaudin a) = do

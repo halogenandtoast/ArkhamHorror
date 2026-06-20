@@ -14,7 +14,7 @@ newtype RoaldEllsworthIntrepidExplorer = RoaldEllsworthIntrepidExplorer EnemyAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 roaldEllsworthIntrepidExplorer :: EnemyCard RoaldEllsworthIntrepidExplorer
-roaldEllsworthIntrepidExplorer = enemy RoaldEllsworthIntrepidExplorer Cards.roaldEllsworthIntrepidExplorer (3, Static 2, 1) (1, 2)
+roaldEllsworthIntrepidExplorer = enemy RoaldEllsworthIntrepidExplorer Cards.roaldEllsworthIntrepidExplorer
 
 instance HasAbilities RoaldEllsworthIntrepidExplorer where
   getAbilities (RoaldEllsworthIntrepidExplorer a) =

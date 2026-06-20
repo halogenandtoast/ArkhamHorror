@@ -14,7 +14,7 @@ newtype ReanimatedDead = ReanimatedDead EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 reanimatedDead :: EnemyCard ReanimatedDead
-reanimatedDead = enemy ReanimatedDead Cards.reanimatedDead (1, Static 1, 1) (1, 0)
+reanimatedDead = enemy ReanimatedDead Cards.reanimatedDead
 
 instance RunMessage ReanimatedDead where
   runMessage msg (ReanimatedDead attrs) = ReanimatedDead <$> runMessage msg attrs

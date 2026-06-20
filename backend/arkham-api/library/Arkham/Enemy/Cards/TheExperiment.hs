@@ -14,7 +14,7 @@ newtype TheExperiment = TheExperiment EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theExperiment :: EnemyCard TheExperiment
-theExperiment = enemy TheExperiment Cards.theExperiment (4, Static 7, 2) (2, 2)
+theExperiment = enemy TheExperiment Cards.theExperiment
 
 instance HasAbilities TheExperiment where
   getAbilities (TheExperiment x) =

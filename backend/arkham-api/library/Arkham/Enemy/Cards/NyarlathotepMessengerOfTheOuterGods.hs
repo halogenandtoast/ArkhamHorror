@@ -19,8 +19,6 @@ nyarlathotepMessengerOfTheOuterGods =
   enemy
     NyarlathotepMessengerOfTheOuterGods
     Cards.nyarlathotepMessengerOfTheOuterGods
-    (3, Static 4, 4)
-    (0, 1)
 
 instance RunMessage NyarlathotepMessengerOfTheOuterGods where
   runMessage msg e@(NyarlathotepMessengerOfTheOuterGods attrs) = case msg of

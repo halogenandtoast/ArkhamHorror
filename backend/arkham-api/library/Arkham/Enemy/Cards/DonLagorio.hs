@@ -13,7 +13,7 @@ newtype DonLagorio = DonLagorio EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 donLagorio :: EnemyCard DonLagorio
-donLagorio = enemy DonLagorio Cards.donLagorio (4, Static 4, 3) (2, 0)
+donLagorio = enemy DonLagorio Cards.donLagorio
 
 instance HasModifiersFor DonLagorio where
   getModifiersFor (DonLagorio attrs) = do

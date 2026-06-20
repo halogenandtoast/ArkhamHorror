@@ -18,7 +18,7 @@ newtype FormlessSpawn = FormlessSpawn EnemyAttrs
 
 formlessSpawn :: EnemyCard FormlessSpawn
 formlessSpawn =
-  enemy FormlessSpawn Cards.formlessSpawn (2, Static 10, 2) (3, 3)
+  enemy FormlessSpawn Cards.formlessSpawn
     & setSpawnAt (locationIs Locations.nexusOfNKai)
 
 instance HasModifiersFor FormlessSpawn where

@@ -12,7 +12,7 @@ newtype MiGoMeddler = MiGoMeddler EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miGoMeddler :: EnemyCard MiGoMeddler
-miGoMeddler = enemy MiGoMeddler Cards.miGoMeddler (3, PerPlayer 2, 4) (1, 0)
+miGoMeddler = enemy MiGoMeddler Cards.miGoMeddler
 
 instance HasAbilities MiGoMeddler where
   getAbilities (MiGoMeddler a) = [restricted a 1 (thisIs a ReadyEnemy) $ forced $ PhaseBegins #when #enemy]

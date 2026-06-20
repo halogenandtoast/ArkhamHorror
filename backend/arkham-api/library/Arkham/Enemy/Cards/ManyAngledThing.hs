@@ -14,7 +14,7 @@ newtype ManyAngledThing = ManyAngledThing EnemyAttrs
 
 manyAngledThing :: EnemyCard ManyAngledThing
 manyAngledThing =
-  enemy ManyAngledThing Cards.manyAngledThing (2, Static 7, 2) (1, 1)
+  enemy ManyAngledThing Cards.manyAngledThing
     & setSpawnAt (locationIs Locations.tindalos)
 
 instance HasModifiersFor ManyAngledThing where

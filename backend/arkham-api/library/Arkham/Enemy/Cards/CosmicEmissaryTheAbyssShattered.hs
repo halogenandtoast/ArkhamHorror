@@ -16,8 +16,6 @@ cosmicEmissaryTheAbyssShattered =
   enemyWith
     CosmicEmissaryTheAbyssShattered
     Cards.cosmicEmissaryTheAbyssShattered
-    (4, Static 10, 4)
-    (1, 1)
     $ asSelfLocationL
     ?~ "cosmicEmissaryAbyss"
 

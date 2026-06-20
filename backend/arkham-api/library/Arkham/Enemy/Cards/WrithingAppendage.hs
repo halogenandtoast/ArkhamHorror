@@ -21,7 +21,7 @@ newtype WrithingAppendage = WrithingAppendage EnemyAttrs
 
 writhingAppendage :: EnemyCard WrithingAppendage
 writhingAppendage =
-  enemy WrithingAppendage Cards.writhingAppendage (2, Static 2, 4) (1, 0)
+  enemy WrithingAppendage Cards.writhingAppendage
 
 instance HasAbilities WrithingAppendage where
   getAbilities (WrithingAppendage attrs) =

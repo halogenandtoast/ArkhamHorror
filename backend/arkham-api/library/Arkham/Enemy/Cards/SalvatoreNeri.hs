@@ -15,7 +15,7 @@ newtype SalvatoreNeri = SalvatoreNeri EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 salvatoreNeri :: EnemyCard SalvatoreNeri
-salvatoreNeri = enemy SalvatoreNeri Cards.salvatoreNeri (0, Static 3, 0) (0, 2)
+salvatoreNeri = enemy SalvatoreNeri Cards.salvatoreNeri
 
 instance HasModifiersFor SalvatoreNeri where
   getModifiersFor (SalvatoreNeri attrs) = maybeModifySelf attrs do

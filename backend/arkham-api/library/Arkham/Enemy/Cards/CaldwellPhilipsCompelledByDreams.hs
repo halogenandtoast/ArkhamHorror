@@ -17,8 +17,6 @@ caldwellPhilipsCompelledByDreams =
   enemy
     CaldwellPhilipsCompelledByDreams
     Cards.caldwellPhilipsCompelledByDreams
-    (2, Static 2, 3)
-    (0, 1)
 
 instance HasModifiersFor CaldwellPhilipsCompelledByDreams where
   getModifiersFor (CaldwellPhilipsCompelledByDreams a) = modifySelf a [CannotBeDamaged]

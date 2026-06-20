@@ -14,7 +14,7 @@ newtype SaturniteMonarchInAnAlienLand = SaturniteMonarchInAnAlienLand EnemyAttrs
 
 saturniteMonarchInAnAlienLand :: EnemyCard SaturniteMonarchInAnAlienLand
 saturniteMonarchInAnAlienLand =
-  enemy SaturniteMonarchInAnAlienLand Cards.saturniteMonarchInAnAlienLand (3, PerPlayer 6, 2) (2, 2)
+  enemy SaturniteMonarchInAnAlienLand Cards.saturniteMonarchInAnAlienLand
 
 instance HasModifiersFor SaturniteMonarchInAnAlienLand where
   getModifiersFor (SaturniteMonarchInAnAlienLand a) = do

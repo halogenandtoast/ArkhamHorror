@@ -10,5 +10,5 @@ newtype ServantOfFlameRagingFury = ServantOfFlameRagingFury EnemyAttrs
 
 servantOfFlameRagingFury :: EnemyCard ServantOfFlameRagingFury
 servantOfFlameRagingFury =
-  enemy ServantOfFlameRagingFury Cards.servantOfFlameRagingFury (4, PerPlayer 5, 4) (2, 2)
+  enemy ServantOfFlameRagingFury Cards.servantOfFlameRagingFury
     & setPrey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)

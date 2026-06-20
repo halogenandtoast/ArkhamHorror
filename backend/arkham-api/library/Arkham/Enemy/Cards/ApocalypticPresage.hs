@@ -16,7 +16,7 @@ newtype ApocalypticPresage = ApocalypticPresage EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 apocalypticPresage :: EnemyCard ApocalypticPresage
-apocalypticPresage = enemy ApocalypticPresage Cards.apocalypticPresage (4, Static 5, 2) (1, 2)
+apocalypticPresage = enemy ApocalypticPresage Cards.apocalypticPresage
 
 instance HasAbilities ApocalypticPresage where
   getAbilities (ApocalypticPresage a) =

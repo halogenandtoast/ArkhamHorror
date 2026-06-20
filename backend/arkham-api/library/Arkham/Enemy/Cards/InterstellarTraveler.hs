@@ -15,7 +15,7 @@ newtype InterstellarTraveler = InterstellarTraveler EnemyAttrs
 
 interstellarTraveler :: EnemyCard InterstellarTraveler
 interstellarTraveler =
-  enemyWith InterstellarTraveler Cards.interstellarTraveler (4, Static 3, 2) (1, 2)
+  enemyWith InterstellarTraveler Cards.interstellarTraveler
     $ spawnAtL
     ?~ SpawnAt (LocationWithTrait Extradimensional)
 

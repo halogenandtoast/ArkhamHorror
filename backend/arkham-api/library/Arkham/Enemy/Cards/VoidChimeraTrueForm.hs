@@ -14,7 +14,7 @@ newtype VoidChimeraTrueForm = VoidChimeraTrueForm EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 voidChimeraTrueForm :: EnemyCard VoidChimeraTrueForm
-voidChimeraTrueForm = enemy VoidChimeraTrueForm Cards.voidChimeraTrueForm (4, PerPlayer 4, 4) (1, 1)
+voidChimeraTrueForm = enemy VoidChimeraTrueForm Cards.voidChimeraTrueForm
 
 instance HasModifiersFor VoidChimeraTrueForm where
   getModifiersFor (VoidChimeraTrueForm a) = do

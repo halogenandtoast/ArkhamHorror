@@ -15,7 +15,7 @@ newtype ValeriyaAntonovaDontMessWithHer = ValeriyaAntonovaDontMessWithHer EnemyA
 
 valeriyaAntonovaDontMessWithHer :: EnemyCard ValeriyaAntonovaDontMessWithHer
 valeriyaAntonovaDontMessWithHer =
-  enemy ValeriyaAntonovaDontMessWithHer Cards.valeriyaAntonovaDontMessWithHer (2, Static 3, 3) (0, 1)
+  enemy ValeriyaAntonovaDontMessWithHer Cards.valeriyaAntonovaDontMessWithHer
 
 instance HasModifiersFor ValeriyaAntonovaDontMessWithHer where
   getModifiersFor (ValeriyaAntonovaDontMessWithHer a) = do

@@ -17,7 +17,7 @@ newtype HydraDeepInSlumber = HydraDeepInSlumber EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hydraDeepInSlumber :: EnemyCard HydraDeepInSlumber
-hydraDeepInSlumber = enemyWith HydraDeepInSlumber Cards.hydraDeepInSlumber (0, Static 1, 0) (0, 0)
+hydraDeepInSlumber = enemyWith HydraDeepInSlumber Cards.hydraDeepInSlumber
   $ \a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing}
 
 instance HasModifiersFor HydraDeepInSlumber where

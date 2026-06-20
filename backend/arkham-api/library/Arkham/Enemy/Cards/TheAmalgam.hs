@@ -19,7 +19,7 @@ newtype TheAmalgam = TheAmalgam EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theAmalgam :: EnemyCard TheAmalgam
-theAmalgam = enemy TheAmalgam Cards.theAmalgam (3, Static 3, 2) (1, 1)
+theAmalgam = enemy TheAmalgam Cards.theAmalgam
 
 instance HasAbilities TheAmalgam where
   getAbilities (TheAmalgam x) =

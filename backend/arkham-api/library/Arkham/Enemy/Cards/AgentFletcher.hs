@@ -18,7 +18,7 @@ instance HasModifiersFor AgentFletcher where
       pure [SetSkillValue #intellect 0]
 
 agentFletcher :: EnemyCard AgentFletcher
-agentFletcher = enemy AgentFletcher Cards.agentFletcher (2, Static 3, 3) (1, 1) & setPreyIsOnlyBearer
+agentFletcher = enemy AgentFletcher Cards.agentFletcher & setPreyIsOnlyBearer
 
 instance RunMessage AgentFletcher where
   runMessage msg (AgentFletcher attrs) = AgentFletcher <$> runMessage msg attrs

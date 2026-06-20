@@ -11,7 +11,7 @@ newtype TheNamelessLurker = TheNamelessLurker EnemyAttrs
 
 theNamelessLurker :: EnemyCard TheNamelessLurker
 theNamelessLurker =
-  enemy TheNamelessLurker Cards.theNamelessLurker (2, Static 1, 2) (0, 2)
+  enemy TheNamelessLurker Cards.theNamelessLurker
     & setSpawnAt (FarthestLocationFromInvestigator You EmptyLocation)
 
 instance HasAbilities TheNamelessLurker where

@@ -12,7 +12,7 @@ newtype SecurityPatrolC = SecurityPatrolC EnemyAttrs
 
 securityPatrolC :: EnemyCard SecurityPatrolC
 securityPatrolC =
-  enemy SecurityPatrolC Cards.securityPatrolC (3, Static 2, 3) (1, 0)
+  enemy SecurityPatrolC Cards.securityPatrolC
     & setSpawnAt (NearestLocationToYou $ oneOf ["Casino Lounge", "Security Office"])
 
 instance HasAbilities SecurityPatrolC where

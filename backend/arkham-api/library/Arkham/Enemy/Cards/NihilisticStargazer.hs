@@ -13,7 +13,7 @@ newtype NihilisticStargazer = NihilisticStargazer EnemyAttrs
 
 nihilisticStargazer :: EnemyCard NihilisticStargazer
 nihilisticStargazer =
-  enemyWith NihilisticStargazer Cards.nihilisticStargazer (3, Static 2, 1) (0, 1)
+  enemyWith NihilisticStargazer Cards.nihilisticStargazer
     $ spawnAtL
     ?~ SpawnAt (locationIs Locations.athenaeumOfTheEmptySky)
 

@@ -8,7 +8,7 @@ newtype MonstrousStarSpawn = MonstrousStarSpawn EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 monstrousStarSpawn :: EnemyCard MonstrousStarSpawn
-monstrousStarSpawn = enemy MonstrousStarSpawn Cards.monstrousStarSpawn (2, Static 6, 2) (1, 1)
+monstrousStarSpawn = enemy MonstrousStarSpawn Cards.monstrousStarSpawn
 
 -- TODO: abilities
 instance RunMessage MonstrousStarSpawn where

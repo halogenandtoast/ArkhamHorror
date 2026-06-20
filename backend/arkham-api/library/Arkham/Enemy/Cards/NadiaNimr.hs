@@ -10,7 +10,7 @@ newtype NadiaNimr = NadiaNimr EnemyAttrs
 
 nadiaNimr :: EnemyCard NadiaNimr
 nadiaNimr =
-  enemyWith NadiaNimr Cards.nadiaNimr (5, Static 3, 3) (2, 0)
+  enemyWith NadiaNimr Cards.nadiaNimr
     $ spawnAtL
     ?~ SpawnAt "Temple Courtyard"
 

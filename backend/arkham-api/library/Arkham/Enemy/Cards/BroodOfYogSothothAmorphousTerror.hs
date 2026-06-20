@@ -18,8 +18,6 @@ broodOfYogSothothAmorphousTerror =
   enemy
     BroodOfYogSothothAmorphousTerror
     Cards.broodOfYogSothothAmorphousTerror
-    (6, Static 1, 3)
-    (1, 2)
 
 instance HasModifiersFor BroodOfYogSothothAmorphousTerror where
   getModifiersFor (BroodOfYogSothothAmorphousTerror a) = do

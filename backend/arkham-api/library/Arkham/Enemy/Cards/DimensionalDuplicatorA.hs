@@ -15,7 +15,7 @@ newtype DimensionalDuplicatorA = DimensionalDuplicatorA EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalDuplicatorA :: EnemyCard DimensionalDuplicatorA
-dimensionalDuplicatorA = enemy DimensionalDuplicatorA Cards.dimensionalDuplicatorA (3, Static 3, 3) (1, 1)
+dimensionalDuplicatorA = enemy DimensionalDuplicatorA Cards.dimensionalDuplicatorA
 
 instance HasAbilities DimensionalDuplicatorA where
   getAbilities (DimensionalDuplicatorA a) =

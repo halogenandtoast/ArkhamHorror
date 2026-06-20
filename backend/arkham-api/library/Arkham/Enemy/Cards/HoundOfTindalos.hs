@@ -17,7 +17,7 @@ newtype HoundOfTindalos = HoundOfTindalos EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 houndOfTindalos :: EnemyCard HoundOfTindalos
-houndOfTindalos = enemy HoundOfTindalos Cards.houndOfTindalos (3, Static 2, 3) (0, 1)
+houndOfTindalos = enemy HoundOfTindalos Cards.houndOfTindalos
 
 instance HasModifiersFor HoundOfTindalos where
   getModifiersFor (HoundOfTindalos a) = do

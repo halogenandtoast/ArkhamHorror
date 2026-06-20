@@ -12,7 +12,7 @@ newtype UnderseaParasite = UnderseaParasite EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 underseaParasite :: EnemyCard UnderseaParasite
-underseaParasite = enemy UnderseaParasite Cards.underseaParasite (5, Static 1, 5) (1, 0)
+underseaParasite = enemy UnderseaParasite Cards.underseaParasite
 
 instance HasAbilities UnderseaParasite where
   getAbilities (UnderseaParasite a) =

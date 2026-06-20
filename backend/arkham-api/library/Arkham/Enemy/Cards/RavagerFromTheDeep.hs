@@ -19,7 +19,7 @@ newtype RavagerFromTheDeep = RavagerFromTheDeep EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ravagerFromTheDeep :: EnemyCard RavagerFromTheDeep
-ravagerFromTheDeep = enemy RavagerFromTheDeep Cards.ravagerFromTheDeep (2, Static 4, 1) (2, 1)
+ravagerFromTheDeep = enemy RavagerFromTheDeep Cards.ravagerFromTheDeep
 
 instance HasModifiersFor RavagerFromTheDeep where
   getModifiersFor (RavagerFromTheDeep a) = modifySelfMaybe a do

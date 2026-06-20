@@ -15,7 +15,7 @@ newtype MemoryOfAnUnrequitedLove = MemoryOfAnUnrequitedLove EnemyAttrs
 
 memoryOfAnUnrequitedLove :: EnemyCard MemoryOfAnUnrequitedLove
 memoryOfAnUnrequitedLove =
-  enemyWith MemoryOfAnUnrequitedLove Cards.memoryOfAnUnrequitedLove (4, PerPlayer 3, 3) (1, 1)
+  enemyWith MemoryOfAnUnrequitedLove Cards.memoryOfAnUnrequitedLove
     $ preyL
     .~ Prey (ControlsAsset $ assetIs Assets.drAmyKenslerProfessorOfBiology)
 

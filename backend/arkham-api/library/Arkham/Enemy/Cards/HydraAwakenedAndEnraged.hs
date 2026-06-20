@@ -20,8 +20,6 @@ hydraAwakenedAndEnraged =
   enemyWith
     HydraAwakenedAndEnraged
     Cards.hydraAwakenedAndEnraged
-    (7, Static 1, 4)
-    (2, 1)
     (healthL .~ Nothing)
 
 instance HasModifiersFor HydraAwakenedAndEnraged where

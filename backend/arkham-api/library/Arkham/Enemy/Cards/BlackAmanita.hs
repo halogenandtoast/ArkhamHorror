@@ -10,7 +10,7 @@ newtype BlackAmanita = BlackAmanita EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blackAmanita :: EnemyCard BlackAmanita
-blackAmanita = enemy BlackAmanita Cards.blackAmanita (2, Static 2, 3) (0, 1)
+blackAmanita = enemy BlackAmanita Cards.blackAmanita
 
 instance HasAbilities BlackAmanita where
   getAbilities (BlackAmanita a) =

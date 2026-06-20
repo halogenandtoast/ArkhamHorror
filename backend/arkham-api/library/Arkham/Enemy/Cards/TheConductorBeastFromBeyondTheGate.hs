@@ -19,8 +19,6 @@ theConductorBeastFromBeyondTheGate =
   enemy
     TheConductorBeastFromBeyondTheGate
     Cards.theConductorBeastFromBeyondTheGate
-    (3, Static 4, 3)
-    (2, 1)
     & setSpawnAt LeftmostLocation
 
 instance HasAbilities TheConductorBeastFromBeyondTheGate where

@@ -12,7 +12,7 @@ newtype FangOfYig = FangOfYig EnemyAttrs
 
 fangOfYig :: EnemyCard FangOfYig
 fangOfYig =
-  enemy FangOfYig Cards.fangOfYig (3, Static 3, 3) (1, 1)
+  enemy FangOfYig Cards.fangOfYig
     & setPrey (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
 
 instance HasModifiersFor FangOfYig where

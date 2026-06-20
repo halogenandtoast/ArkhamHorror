@@ -8,7 +8,7 @@ newtype GangEnforcer = GangEnforcer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gangEnforcer :: EnemyCard GangEnforcer
-gangEnforcer = enemy GangEnforcer Cards.gangEnforcer (3, Static 3, 2) (2, 0)
+gangEnforcer = enemy GangEnforcer Cards.gangEnforcer
 
 -- TODO: Prey - Most clues. Forced - the first time each round an investigator
 -- at this enemy's location attacks another Criminal enemy, Gang Enforcer

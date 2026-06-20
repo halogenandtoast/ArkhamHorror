@@ -14,7 +14,7 @@ instance HasModifiersFor AsylumGorger where
 
 asylumGorger :: EnemyCard AsylumGorger
 asylumGorger =
-  enemy AsylumGorger Cards.asylumGorger (4, Static 5, 4) (3, 3)
+  enemy AsylumGorger Cards.asylumGorger
     & setSpawnAt "Basement Hall"
 
 instance RunMessage AsylumGorger where

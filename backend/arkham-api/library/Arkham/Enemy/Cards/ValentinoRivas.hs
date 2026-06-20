@@ -10,7 +10,7 @@ newtype ValentinoRivas = ValentinoRivas EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 valentinoRivas :: EnemyCard ValentinoRivas
-valentinoRivas = enemy ValentinoRivas Cards.valentinoRivas (3, Static 5, 4) (1, 1)
+valentinoRivas = enemy ValentinoRivas Cards.valentinoRivas
 
 instance HasAbilities ValentinoRivas where
   getAbilities (ValentinoRivas a) =

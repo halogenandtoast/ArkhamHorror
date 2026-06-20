@@ -13,7 +13,7 @@ newtype SerpentGuardian = SerpentGuardian EnemyAttrs
 
 serpentGuardian :: EnemyCard SerpentGuardian
 serpentGuardian =
-  enemy SerpentGuardian Cards.serpentGuardian (4, Static 5, 1) (2, 0)
+  enemy SerpentGuardian Cards.serpentGuardian
     & setSpawnAt (NearestLocationToYou LocationWithAnyClues)
 
 instance HasModifiersFor SerpentGuardian where

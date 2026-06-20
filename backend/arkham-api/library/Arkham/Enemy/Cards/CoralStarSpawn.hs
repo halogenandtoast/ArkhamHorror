@@ -8,7 +8,7 @@ newtype CoralStarSpawn = CoralStarSpawn EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coralStarSpawn :: EnemyCard CoralStarSpawn
-coralStarSpawn = enemy CoralStarSpawn Cards.coralStarSpawn (3, Static 5, 3) (1, 0)
+coralStarSpawn = enemy CoralStarSpawn Cards.coralStarSpawn
 
 -- TODO: abilities
 instance RunMessage CoralStarSpawn where

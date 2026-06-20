@@ -12,7 +12,7 @@ newtype MaghanArkat = MaghanArkat EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 maghanArkat :: EnemyCard MaghanArkat
-maghanArkat = enemy MaghanArkat Cards.maghanArkat (3, PerPlayer 8, 5) (3, 1)
+maghanArkat = enemy MaghanArkat Cards.maghanArkat
 
 instance HasAbilities MaghanArkat where
   getAbilities (MaghanArkat a) =

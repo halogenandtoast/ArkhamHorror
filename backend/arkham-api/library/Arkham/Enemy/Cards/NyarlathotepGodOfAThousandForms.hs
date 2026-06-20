@@ -19,8 +19,6 @@ nyarlathotepGodOfAThousandForms =
   enemy
     NyarlathotepGodOfAThousandForms
     Cards.nyarlathotepGodOfAThousandForms
-    (2, Static 6, 5)
-    (1, 0)
 
 instance RunMessage NyarlathotepGodOfAThousandForms where
   runMessage msg e@(NyarlathotepGodOfAThousandForms attrs) = case msg of

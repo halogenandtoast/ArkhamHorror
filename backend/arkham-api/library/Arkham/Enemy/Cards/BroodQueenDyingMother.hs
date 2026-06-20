@@ -14,7 +14,7 @@ newtype BroodQueenDyingMother = BroodQueenDyingMother EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 broodQueenDyingMother :: EnemyCard BroodQueenDyingMother
-broodQueenDyingMother = enemy BroodQueenDyingMother Cards.broodQueenDyingMother (1, Static 5, 3) (2, 2)
+broodQueenDyingMother = enemy BroodQueenDyingMother Cards.broodQueenDyingMother
 
 instance HasModifiersFor BroodQueenDyingMother where
   getModifiersFor (BroodQueenDyingMother a) = do

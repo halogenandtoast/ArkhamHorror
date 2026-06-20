@@ -14,7 +14,7 @@ newtype AnetteMason = AnetteMason EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 anetteMason :: EnemyCard AnetteMason
-anetteMason = enemy AnetteMason Cards.anetteMason (4, PerPlayer 4, 4) (1, 1)
+anetteMason = enemy AnetteMason Cards.anetteMason
 
 instance HasAbilities AnetteMason where
   getAbilities (AnetteMason a) = extend1 a $ mkAbility a 1 $ forced $ PhaseBegins #after #enemy

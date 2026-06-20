@@ -15,7 +15,7 @@ newtype JohnnyValoneHereToCollect = JohnnyValoneHereToCollect EnemyAttrs
 
 johnnyValoneHereToCollect :: EnemyCard JohnnyValoneHereToCollect
 johnnyValoneHereToCollect =
-  enemy JohnnyValoneHereToCollect Cards.johnnyValoneHereToCollect (3, Static 2, 2) (0, 1)
+  enemy JohnnyValoneHereToCollect Cards.johnnyValoneHereToCollect
 
 instance HasModifiersFor JohnnyValoneHereToCollect where
   getModifiersFor (JohnnyValoneHereToCollect a) = modifySelf a [CannotBeDamaged]

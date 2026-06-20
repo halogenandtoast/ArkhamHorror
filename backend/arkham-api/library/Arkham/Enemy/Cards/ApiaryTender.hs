@@ -13,7 +13,7 @@ newtype ApiaryTender = ApiaryTender EnemyAttrs
 
 apiaryTender :: EnemyCard ApiaryTender
 apiaryTender =
-  enemy ApiaryTender Cards.apiaryTender (3, Static 3, 3) (1, 1)
+  enemy ApiaryTender Cards.apiaryTender
     & setPrey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasAbilities ApiaryTender where

@@ -14,7 +14,7 @@ newtype CthulhuHoaryWings = CthulhuHoaryWings EnemyAttrs
 -- Keyword Alert is on the card def. Prey - Highest [agility].
 cthulhuHoaryWings :: EnemyCard CthulhuHoaryWings
 cthulhuHoaryWings =
-  enemy CthulhuHoaryWings Cards.cthulhuHoaryWings (0, Static 1, 0) (1, 1)
+  enemy CthulhuHoaryWings Cards.cthulhuHoaryWings
     & setPrey (InvestigatorWithHighestSkill #agility UneliminatedInvestigator)
 
 instance HasModifiersFor CthulhuHoaryWings where

@@ -10,7 +10,7 @@ newtype AquaticAbomination = AquaticAbomination EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 aquaticAbomination :: EnemyCard AquaticAbomination
-aquaticAbomination = enemy AquaticAbomination Cards.aquaticAbomination (5, Static 7, 2) (2, 2)
+aquaticAbomination = enemy AquaticAbomination Cards.aquaticAbomination
 
 instance HasModifiersFor AquaticAbomination where
   getModifiersFor (AquaticAbomination a) = do

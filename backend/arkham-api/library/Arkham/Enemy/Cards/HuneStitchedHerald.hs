@@ -12,7 +12,7 @@ newtype HuneStitchedHerald = HuneStitchedHerald EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huneStitchedHerald :: EnemyCard HuneStitchedHerald
-huneStitchedHerald = enemy HuneStitchedHerald Cards.huneStitchedHerald (3, Static 4, 2) (1, 2)
+huneStitchedHerald = enemy HuneStitchedHerald Cards.huneStitchedHerald
 
 instance HasAbilities HuneStitchedHerald where
   getAbilities (HuneStitchedHerald a) =

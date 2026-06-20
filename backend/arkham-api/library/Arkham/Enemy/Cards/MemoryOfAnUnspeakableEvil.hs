@@ -15,7 +15,7 @@ newtype MemoryOfAnUnspeakableEvil = MemoryOfAnUnspeakableEvil EnemyAttrs
 
 memoryOfAnUnspeakableEvil :: EnemyCard MemoryOfAnUnspeakableEvil
 memoryOfAnUnspeakableEvil =
-  enemyWith MemoryOfAnUnspeakableEvil Cards.memoryOfAnUnspeakableEvil (4, PerPlayer 3, 4) (0, 2)
+  enemyWith MemoryOfAnUnspeakableEvil Cards.memoryOfAnUnspeakableEvil
     $ preyL
     .~ Prey (ControlsAsset $ assetIs Assets.danforthBrilliantStudent)
 

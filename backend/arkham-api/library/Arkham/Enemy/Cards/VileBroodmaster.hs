@@ -11,7 +11,7 @@ newtype VileBroodmaster = VileBroodmaster EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vileBroodmaster :: EnemyCard VileBroodmaster
-vileBroodmaster = enemy VileBroodmaster Cards.vileBroodmaster (4, Static 7, 3) (2, 1)
+vileBroodmaster = enemy VileBroodmaster Cards.vileBroodmaster
 
 instance HasModifiersFor VileBroodmaster where
   getModifiersFor (VileBroodmaster a) = do

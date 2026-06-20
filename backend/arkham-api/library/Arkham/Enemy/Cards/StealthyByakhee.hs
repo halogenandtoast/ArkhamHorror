@@ -10,7 +10,7 @@ newtype StealthyByakhee = StealthyByakhee EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 stealthyByakhee :: EnemyCard StealthyByakhee
-stealthyByakhee = enemy StealthyByakhee Cards.stealthyByakhee (5, Static 2, 3) (2, 1)
+stealthyByakhee = enemy StealthyByakhee Cards.stealthyByakhee
 
 instance HasModifiersFor StealthyByakhee where
   getModifiersFor (StealthyByakhee a) = modifySelfWhen a a.exhausted [Modifier.EnemyFight (-3)]

@@ -15,7 +15,7 @@ newtype FrenziedMiner = FrenziedMiner EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frenziedMiner :: EnemyCard FrenziedMiner
-frenziedMiner = enemy FrenziedMiner Cards.frenziedMiner (0, Static 4, 0) (1, 0)
+frenziedMiner = enemy FrenziedMiner Cards.frenziedMiner
 
 instance HasModifiersFor FrenziedMiner where
   getModifiersFor (FrenziedMiner a) = do

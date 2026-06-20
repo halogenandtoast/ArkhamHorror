@@ -14,8 +14,6 @@ nathanWickMasterOfIndoctrination =
   enemy
     NathanWickMasterOfIndoctrination
     Cards.nathanWickMasterOfIndoctrination
-    (4, Static 5, 3)
-    (1, 1)
 
 instance HasAbilities NathanWickMasterOfIndoctrination where
   getAbilities (NathanWickMasterOfIndoctrination a) =

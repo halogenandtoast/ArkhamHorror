@@ -13,7 +13,7 @@ newtype ZealotOfParadise = ZealotOfParadise EnemyAttrs
 
 zealotOfParadise :: EnemyCard ZealotOfParadise
 zealotOfParadise =
-  enemyWith ZealotOfParadise Cards.zealotOfParadise (2, Static 2, 3) (1, 0)
+  enemyWith ZealotOfParadise Cards.zealotOfParadise
     $ spawnAtL
     ?~ SpawnAt (locationIs Locations.shrineOfMaghanArkat)
 

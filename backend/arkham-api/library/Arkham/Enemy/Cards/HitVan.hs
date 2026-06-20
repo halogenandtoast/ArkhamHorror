@@ -10,7 +10,7 @@ newtype HitVan = HitVan EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hitVan :: EnemyCard HitVan
-hitVan = enemyWith HitVan Cards.hitVan (3, Static 5, 3) (1, 1) (spawnAtL ?~ SpawnAt RearmostLocation)
+hitVan = enemyWith HitVan Cards.hitVan (spawnAtL ?~ SpawnAt RearmostLocation)
 
 instance HasModifiersFor HitVan where
   getModifiersFor (HitVan a) =

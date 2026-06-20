@@ -13,7 +13,7 @@ newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
 
 screechingByakhee :: EnemyCard ScreechingByakhee
 screechingByakhee =
-  enemy ScreechingByakhee Cards.screechingByakhee (3, Static 4, 3) (1, 2)
+  enemy ScreechingByakhee Cards.screechingByakhee
     & setPrey LowestRemainingSanity
 
 instance HasModifiersFor ScreechingByakhee where

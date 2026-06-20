@@ -12,7 +12,7 @@ newtype HordeOfNight = HordeOfNight EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hordeOfNight :: EnemyCard HordeOfNight
-hordeOfNight = enemy HordeOfNight Cards.hordeOfNight (1, Static 1, 1) (1, 1)
+hordeOfNight = enemy HordeOfNight Cards.hordeOfNight
 
 instance HasModifiersFor HordeOfNight where
   getModifiersFor (HordeOfNight a) = do

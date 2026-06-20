@@ -16,7 +16,7 @@ newtype KamanThah = KamanThah EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kamanThah :: EnemyCard KamanThah
-kamanThah = enemy KamanThah Cards.kamanThah (2, Static 3, 2) (1, 0)
+kamanThah = enemy KamanThah Cards.kamanThah
 
 instance HasAbilities KamanThah where
   getAbilities (KamanThah x) =

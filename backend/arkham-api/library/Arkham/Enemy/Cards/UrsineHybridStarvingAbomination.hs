@@ -14,7 +14,7 @@ newtype UrsineHybridStarvingAbomination = UrsineHybridStarvingAbomination EnemyA
 
 ursineHybridStarvingAbomination :: EnemyCard UrsineHybridStarvingAbomination
 ursineHybridStarvingAbomination =
-  enemy UrsineHybridStarvingAbomination Cards.ursineHybridStarvingAbomination (5, Static 6, 3) (3, 2)
+  enemy UrsineHybridStarvingAbomination Cards.ursineHybridStarvingAbomination
     & setPrey LeadInvestigator
 
 instance HasModifiersFor UrsineHybridStarvingAbomination where

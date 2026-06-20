@@ -12,7 +12,7 @@ newtype TenebrousNightgaunt = TenebrousNightgaunt EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tenebrousNightgaunt :: EnemyCard TenebrousNightgaunt
-tenebrousNightgaunt = enemy TenebrousNightgaunt Cards.tenebrousNightgaunt (4, Static 4, 1) (1, 1)
+tenebrousNightgaunt = enemy TenebrousNightgaunt Cards.tenebrousNightgaunt
 
 -- We add a no-op ability here as the scenario TheSearchForKadath will be
 -- responsible for triggering the ability, and implementing its effect.

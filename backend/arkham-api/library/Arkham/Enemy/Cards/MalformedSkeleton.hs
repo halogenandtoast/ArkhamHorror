@@ -15,7 +15,7 @@ newtype MalformedSkeleton = MalformedSkeleton EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 malformedSkeleton :: EnemyCard MalformedSkeleton
-malformedSkeleton = enemy MalformedSkeleton Cards.malformedSkeleton (4, Static 4, 1) (3, 3)
+malformedSkeleton = enemy MalformedSkeleton Cards.malformedSkeleton
 
 instance HasModifiersFor MalformedSkeleton where
   getModifiersFor (MalformedSkeleton a) = modifySelf a [AttackDealsEitherDamageOrHorror]

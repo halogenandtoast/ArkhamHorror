@@ -12,7 +12,7 @@ newtype CorpseLichen = CorpseLichen EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseLichen :: EnemyCard CorpseLichen
-corpseLichen = enemy CorpseLichen Cards.corpseLichen (4, Static 4, 3) (1, 1)
+corpseLichen = enemy CorpseLichen Cards.corpseLichen
 
 instance HasModifiersFor CorpseLichen where
   getModifiersFor (CorpseLichen a) = do

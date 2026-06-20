@@ -11,7 +11,7 @@ newtype LurkingDeepOne = LurkingDeepOne EnemyAttrs
 
 lurkingDeepOne :: EnemyCard LurkingDeepOne
 lurkingDeepOne =
-  enemyWith LurkingDeepOne Cards.lurkingDeepOne (2, Static 2, 4) (1, 1)
+  enemyWith LurkingDeepOne Cards.lurkingDeepOne
     $ preyL
     .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 

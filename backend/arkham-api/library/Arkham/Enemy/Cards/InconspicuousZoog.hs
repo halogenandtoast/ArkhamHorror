@@ -15,7 +15,7 @@ newtype InconspicuousZoog = InconspicuousZoog EnemyAttrs
 
 inconspicuousZoog :: EnemyCard InconspicuousZoog
 inconspicuousZoog =
-  enemyWith InconspicuousZoog Cards.inconspicuousZoog (2, Static 1, 2) (1, 1)
+  enemyWith InconspicuousZoog Cards.inconspicuousZoog
     $ spawnAtL
     ?~ SpawnAt (ConnectedLocation NotForMovement)
 

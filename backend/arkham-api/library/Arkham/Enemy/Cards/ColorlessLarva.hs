@@ -10,7 +10,7 @@ newtype ColorlessLarva = ColorlessLarva EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 colorlessLarva :: EnemyCard ColorlessLarva
-colorlessLarva = enemy ColorlessLarva Cards.colorlessLarva (1, Static 1, 1) (0, 1)
+colorlessLarva = enemy ColorlessLarva Cards.colorlessLarva
 
 instance HasAbilities ColorlessLarva where
   getAbilities (ColorlessLarva a) =

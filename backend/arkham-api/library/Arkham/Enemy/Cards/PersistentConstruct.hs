@@ -8,7 +8,7 @@ newtype PersistentConstruct = PersistentConstruct EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 persistentConstruct :: EnemyCard PersistentConstruct
-persistentConstruct = enemy PersistentConstruct Cards.persistentConstruct (2, Static 2, 2) (1, 0)
+persistentConstruct = enemy PersistentConstruct Cards.persistentConstruct
 
 -- TODO: abilities
 instance RunMessage PersistentConstruct where

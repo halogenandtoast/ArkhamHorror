@@ -16,7 +16,7 @@ newtype CrustaceanHybridInTheLight = CrustaceanHybridInTheLight EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crustaceanHybridInTheLight :: EnemyCard CrustaceanHybridInTheLight
-crustaceanHybridInTheLight = enemy CrustaceanHybridInTheLight Cards.crustaceanHybridInTheLight (3, Static 3, 4) (1, 1)
+crustaceanHybridInTheLight = enemy CrustaceanHybridInTheLight Cards.crustaceanHybridInTheLight
 
 instance HasModifiersFor CrustaceanHybridInTheLight where
   getModifiersFor (CrustaceanHybridInTheLight a) = do

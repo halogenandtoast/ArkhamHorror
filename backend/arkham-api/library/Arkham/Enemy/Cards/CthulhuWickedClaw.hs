@@ -14,7 +14,7 @@ newtype CthulhuWickedClaw = CthulhuWickedClaw EnemyAttrs
 -- Keyword Retaliate is on the card def. Prey - Highest [combat].
 cthulhuWickedClaw :: EnemyCard CthulhuWickedClaw
 cthulhuWickedClaw =
-  enemy CthulhuWickedClaw Cards.cthulhuWickedClaw (0, Static 1, 0) (1, 0)
+  enemy CthulhuWickedClaw Cards.cthulhuWickedClaw
     & setPrey (InvestigatorWithHighestSkill #combat UneliminatedInvestigator)
 
 instance HasModifiersFor CthulhuWickedClaw where

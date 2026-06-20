@@ -13,7 +13,7 @@ newtype HumbleSupplicant = HumbleSupplicant EnemyAttrs
 
 humbleSupplicant :: EnemyCard HumbleSupplicant
 humbleSupplicant =
-  enemyWith HumbleSupplicant Cards.humbleSupplicant (2, Static 2, 2) (1, 0)
+  enemyWith HumbleSupplicant Cards.humbleSupplicant
     $ spawnAtL
     ?~ SpawnAtFirst
       [ SpawnAt $ LocationWithTrait Cairo <> LocationWithEnemy (EnemyWithTrait Brotherhood)

@@ -13,7 +13,7 @@ newtype WitnessOfChaos = WitnessOfChaos EnemyAttrs
 
 witnessOfChaos :: EnemyCard WitnessOfChaos
 witnessOfChaos =
-  enemy WitnessOfChaos Cards.witnessOfChaos (4, Static 4, 2) (1, 1)
+  enemy WitnessOfChaos Cards.witnessOfChaos
     & setSpawnAt FewestBreaches
 
 instance HasAbilities WitnessOfChaos where

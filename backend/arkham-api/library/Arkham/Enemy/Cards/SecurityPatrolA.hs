@@ -12,7 +12,7 @@ newtype SecurityPatrolA = SecurityPatrolA EnemyAttrs
 
 securityPatrolA :: EnemyCard SecurityPatrolA
 securityPatrolA =
-  enemy SecurityPatrolA Cards.securityPatrolA (3, Static 2, 3) (1, 0)
+  enemy SecurityPatrolA Cards.securityPatrolA
     & setSpawnAt (NearestLocationToYou $ oneOf ["Casino Lounge", "Security Office"])
 
 instance HasAbilities SecurityPatrolA where

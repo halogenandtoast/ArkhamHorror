@@ -10,7 +10,7 @@ newtype Zealot = Zealot EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 zealot :: EnemyCard Zealot
-zealot = enemy Zealot Cards.zealot (2, Static 1, 2) (1, 0)
+zealot = enemy Zealot Cards.zealot
 
 instance HasAbilities Zealot where
   getAbilities (Zealot a) =

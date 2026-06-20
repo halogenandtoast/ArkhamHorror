@@ -11,7 +11,7 @@ newtype ForgottenShoggoth = ForgottenShoggoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forgottenShoggoth :: EnemyCard ForgottenShoggoth
-forgottenShoggoth = enemy ForgottenShoggoth Cards.forgottenShoggoth (3, Static 6, 2) (1, 2)
+forgottenShoggoth = enemy ForgottenShoggoth Cards.forgottenShoggoth
 
 instance HasAbilities ForgottenShoggoth where
   getAbilities (ForgottenShoggoth a) =

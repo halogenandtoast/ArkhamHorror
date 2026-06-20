@@ -11,7 +11,7 @@ newtype EmissaryFromYuggoth = EmissaryFromYuggoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emissaryFromYuggoth :: EnemyCard EmissaryFromYuggoth
-emissaryFromYuggoth = enemy EmissaryFromYuggoth Cards.emissaryFromYuggoth (3, Static 4, 3) (1, 1)
+emissaryFromYuggoth = enemy EmissaryFromYuggoth Cards.emissaryFromYuggoth
 
 instance HasAbilities EmissaryFromYuggoth where
   getAbilities (EmissaryFromYuggoth a) =

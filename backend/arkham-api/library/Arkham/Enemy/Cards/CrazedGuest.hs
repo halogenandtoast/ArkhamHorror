@@ -9,7 +9,7 @@ newtype CrazedGuest = CrazedGuest EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crazedGuest :: EnemyCard CrazedGuest
-crazedGuest = enemy CrazedGuest Cards.crazedGuest (3, Static 5, 4) (1, 0)
+crazedGuest = enemy CrazedGuest Cards.crazedGuest
 
 instance HasAbilities CrazedGuest where
   getAbilities (CrazedGuest a) = extend1 a $ restricted a 1 OnSameLocation parleyAction_

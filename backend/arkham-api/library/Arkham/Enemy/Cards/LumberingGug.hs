@@ -12,7 +12,7 @@ newtype LumberingGug = LumberingGug EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lumberingGug :: EnemyCard LumberingGug
-lumberingGug = enemy LumberingGug Cards.lumberingGug (4, Static 6, 2) (2, 2)
+lumberingGug = enemy LumberingGug Cards.lumberingGug
 
 instance HasAbilities LumberingGug where
   getAbilities (LumberingGug attrs) =

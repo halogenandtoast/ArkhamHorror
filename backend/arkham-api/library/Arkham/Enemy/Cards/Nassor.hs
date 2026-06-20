@@ -17,7 +17,7 @@ newtype Nassor = Nassor EnemyAttrs
 
 nassor :: EnemyCard Nassor
 nassor =
-  enemyWith Nassor Cards.nassor (4, Static 6, 4) (0, 0)
+  enemyWith Nassor Cards.nassor
     $ spawnAtL
     ?~ SpawnAt "Streets of Cairo"
 

@@ -13,7 +13,7 @@ newtype SwarmOfSpiders = SwarmOfSpiders EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 swarmOfSpiders :: EnemyCard SwarmOfSpiders
-swarmOfSpiders = enemy SwarmOfSpiders Cards.swarmOfSpiders (1, Static 1, 0) (1, 0)
+swarmOfSpiders = enemy SwarmOfSpiders Cards.swarmOfSpiders
 
 instance HasModifiersFor SwarmOfSpiders where
   getModifiersFor (SwarmOfSpiders attrs) = do

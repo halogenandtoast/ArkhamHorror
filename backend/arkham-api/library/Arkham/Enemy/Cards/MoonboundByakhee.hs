@@ -22,7 +22,7 @@ instance HasModifiersFor MoonboundByakhee where
 
 moonboundByakhee :: EnemyCard MoonboundByakhee
 moonboundByakhee =
-  enemyWith MoonboundByakhee Cards.moonboundByakhee (3, Static 3, 3) (3, 1)
+  enemyWith MoonboundByakhee Cards.moonboundByakhee
     $ (spawnAtL ?~ SpawnAt (NearestLocationToYou $ LocationWithTrait Surface))
     . (preyL .~ OnlyPrey (Prey (MostToken AlarmLevel <> HasTokens AlarmLevel (atLeast 3))))
 

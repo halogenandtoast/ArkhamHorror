@@ -12,7 +12,7 @@ newtype CerenerianDeepOne = CerenerianDeepOne EnemyAttrs
 
 cerenerianDeepOne :: EnemyCard CerenerianDeepOne
 cerenerianDeepOne =
-  enemyWith CerenerianDeepOne Cards.cerenerianDeepOne (2, Static 3, 2) (1, 1)
+  enemyWith CerenerianDeepOne Cards.cerenerianDeepOne
     $ (preyL .~ Prey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator))
 
 instance HasAbilities CerenerianDeepOne where

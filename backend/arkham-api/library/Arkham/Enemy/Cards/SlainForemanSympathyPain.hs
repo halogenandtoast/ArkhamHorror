@@ -16,7 +16,7 @@ newtype SlainForemanSympathyPain = SlainForemanSympathyPain EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slainForemanSympathyPain :: EnemyCard SlainForemanSympathyPain
-slainForemanSympathyPain = enemy SlainForemanSympathyPain Cards.slainForemanSympathyPain (4, Static 5, 2) (1, 1)
+slainForemanSympathyPain = enemy SlainForemanSympathyPain Cards.slainForemanSympathyPain
 
 instance HasModifiersFor SlainForemanSympathyPain where
   getModifiersFor (SlainForemanSympathyPain a) = do

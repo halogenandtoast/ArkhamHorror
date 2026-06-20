@@ -19,7 +19,7 @@ newtype TzuSanNiangOutForBlood = TzuSanNiangOutForBlood EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tzuSanNiangOutForBlood :: EnemyCard TzuSanNiangOutForBlood
-tzuSanNiangOutForBlood = enemy TzuSanNiangOutForBlood Cards.tzuSanNiangOutForBlood (2, Static 4, 2) (1, 1)
+tzuSanNiangOutForBlood = enemy TzuSanNiangOutForBlood Cards.tzuSanNiangOutForBlood
 
 instance HasAbilities TzuSanNiangOutForBlood where
   getAbilities (TzuSanNiangOutForBlood a) =

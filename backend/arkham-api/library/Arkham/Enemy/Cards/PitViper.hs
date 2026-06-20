@@ -12,7 +12,7 @@ newtype PitViper = PitViper EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pitViper :: EnemyCard PitViper
-pitViper = enemy PitViper Cards.pitViper (3, Static 1, 3) (1, 0)
+pitViper = enemy PitViper Cards.pitViper
 
 instance HasAbilities PitViper where
   getAbilities (PitViper a) =

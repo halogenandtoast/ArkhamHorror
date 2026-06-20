@@ -11,7 +11,7 @@ newtype TheoPeters = TheoPeters EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theoPeters :: EnemyCard TheoPeters
-theoPeters = enemy TheoPeters Cards.theoPeters (3, Static 3, 3) (1, 0)
+theoPeters = enemy TheoPeters Cards.theoPeters
 
 instance HasAbilities TheoPeters where
   getAbilities (TheoPeters a) =

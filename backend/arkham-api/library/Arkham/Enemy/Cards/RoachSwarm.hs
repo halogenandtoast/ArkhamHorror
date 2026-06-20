@@ -13,7 +13,7 @@ newtype RoachSwarm = RoachSwarm EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 roachSwarm :: EnemyCard RoachSwarm
-roachSwarm = enemy RoachSwarm Cards.roachSwarm (0, Static 2, 3) (1, 0)
+roachSwarm = enemy RoachSwarm Cards.roachSwarm
 
 instance HasModifiersFor RoachSwarm where
   getModifiersFor (RoachSwarm a) = maybeModifySelf a do

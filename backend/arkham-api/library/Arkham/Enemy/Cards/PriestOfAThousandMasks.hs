@@ -14,7 +14,7 @@ newtype PriestOfAThousandMasks = PriestOfAThousandMasks EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 priestOfAThousandMasks :: EnemyCard PriestOfAThousandMasks
-priestOfAThousandMasks = enemy PriestOfAThousandMasks Cards.priestOfAThousandMasks (2, Static 2, 2) (0, 1)
+priestOfAThousandMasks = enemy PriestOfAThousandMasks Cards.priestOfAThousandMasks
 
 instance HasModifiersFor PriestOfAThousandMasks where
   getModifiersFor (PriestOfAThousandMasks a) = do

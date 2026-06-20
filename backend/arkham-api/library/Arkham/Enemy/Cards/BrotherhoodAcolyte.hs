@@ -13,7 +13,7 @@ newtype BrotherhoodAcolyte = BrotherhoodAcolyte EnemyAttrs
 
 brotherhoodAcolyte :: EnemyCard BrotherhoodAcolyte
 brotherhoodAcolyte =
-  enemy BrotherhoodAcolyte Cards.brotherhoodAcolyte (3, Static 1, 1) (0, 1)
+  enemy BrotherhoodAcolyte Cards.brotherhoodAcolyte
     & setSpawnAt (LocationWithMostEnemies Anywhere (EnemyWithTrait Cultist))
 
 instance HasAbilities BrotherhoodAcolyte where

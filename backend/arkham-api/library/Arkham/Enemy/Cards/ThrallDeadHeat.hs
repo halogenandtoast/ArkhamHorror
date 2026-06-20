@@ -15,7 +15,7 @@ newtype ThrallDeadHeat = ThrallDeadHeat EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thrallDeadHeat :: EnemyCard ThrallDeadHeat
-thrallDeadHeat = enemy ThrallDeadHeat Cards.thrallDeadHeat (2, Static 2, 1) (1, 0)
+thrallDeadHeat = enemy ThrallDeadHeat Cards.thrallDeadHeat
 
 instance HasAbilities ThrallDeadHeat where
   getAbilities (ThrallDeadHeat a) =

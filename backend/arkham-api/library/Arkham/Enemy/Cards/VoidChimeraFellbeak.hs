@@ -10,7 +10,7 @@ newtype VoidChimeraFellbeak = VoidChimeraFellbeak EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 voidChimeraFellbeak :: EnemyCard VoidChimeraFellbeak
-voidChimeraFellbeak = enemy VoidChimeraFellbeak Cards.voidChimeraFellbeak (4, Static 2, 2) (3, 0)
+voidChimeraFellbeak = enemy VoidChimeraFellbeak Cards.voidChimeraFellbeak
 
 instance HasModifiersFor VoidChimeraFellbeak where
   getModifiersFor (VoidChimeraFellbeak a) = do

@@ -10,7 +10,7 @@ newtype LupineThrall = LupineThrall EnemyAttrs
 
 lupineThrall :: EnemyCard LupineThrall
 lupineThrall =
-  enemy LupineThrall Cards.lupineThrall (4, Static 3, 4) (1, 1)
+  enemy LupineThrall Cards.lupineThrall
     & setPrey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
     & setSpawnAt (FarthestLocationFromYou Anywhere)
 

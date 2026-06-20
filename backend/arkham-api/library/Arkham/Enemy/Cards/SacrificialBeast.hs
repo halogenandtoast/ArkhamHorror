@@ -12,7 +12,7 @@ newtype SacrificialBeast = SacrificialBeast EnemyAttrs
 
 sacrificialBeast :: EnemyCard SacrificialBeast
 sacrificialBeast =
-  enemyWith SacrificialBeast Cards.sacrificialBeast (4, Static 3, 2) (1, 1)
+  enemyWith SacrificialBeast Cards.sacrificialBeast
     $ spawnAtL
     ?~ SpawnAt (FarthestLocationFromYou Anywhere)
 

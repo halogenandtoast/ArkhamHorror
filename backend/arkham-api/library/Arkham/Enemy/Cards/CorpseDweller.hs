@@ -13,7 +13,7 @@ newtype CorpseDweller = CorpseDweller EnemyAttrs
 
 corpseDweller :: EnemyCard CorpseDweller
 corpseDweller =
-  enemyWith CorpseDweller Cards.corpseDweller (3, Static 5, 4) (2, 1)
+  enemyWith CorpseDweller Cards.corpseDweller
     $ ( spawnAtL
           ?~ SpawnAt
             ( LocationWithEnemy

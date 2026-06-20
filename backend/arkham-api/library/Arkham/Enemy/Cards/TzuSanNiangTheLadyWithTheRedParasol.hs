@@ -20,8 +20,6 @@ tzuSanNiangTheLadyWithTheRedParasol =
   enemy
     TzuSanNiangTheLadyWithTheRedParasol
     Cards.tzuSanNiangTheLadyWithTheRedParasol
-    (2, PerPlayer 2, 2)
-    (1, 1)
 
 instance HasAbilities TzuSanNiangTheLadyWithTheRedParasol where
   getAbilities (TzuSanNiangTheLadyWithTheRedParasol a) =

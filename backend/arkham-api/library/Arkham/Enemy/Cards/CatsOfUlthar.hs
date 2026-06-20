@@ -15,7 +15,7 @@ newtype CatsOfUlthar = CatsOfUlthar EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 catsOfUlthar :: EnemyCard CatsOfUlthar
-catsOfUlthar = enemy CatsOfUlthar Cards.catsOfUlthar (1, Static 1, 1) (1, 0)
+catsOfUlthar = enemy CatsOfUlthar Cards.catsOfUlthar
 
 -- This is a bit weird to handle, but this is the only card that does that so
 -- we affect the first token drawn and treat it like you need to draw an

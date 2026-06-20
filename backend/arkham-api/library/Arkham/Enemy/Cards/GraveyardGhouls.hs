@@ -14,8 +14,6 @@ graveyardGhouls =
   enemyWith
     GraveyardGhouls
     Cards.graveyardGhouls
-    (3, Static 3, 2)
-    (1, 1)
     (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasModifiersFor GraveyardGhouls where

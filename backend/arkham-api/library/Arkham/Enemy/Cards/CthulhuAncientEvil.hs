@@ -12,7 +12,7 @@ newtype CthulhuAncientEvil = CthulhuAncientEvil EnemyAttrs
 
 -- Keyword Massive is on the card def.
 cthulhuAncientEvil :: EnemyCard CthulhuAncientEvil
-cthulhuAncientEvil = enemy CthulhuAncientEvil Cards.cthulhuAncientEvil (0, Static 1, 0) (0, 0)
+cthulhuAncientEvil = enemy CthulhuAncientEvil Cards.cthulhuAncientEvil
 
 instance HasModifiersFor CthulhuAncientEvil where
   getModifiersFor (CthulhuAncientEvil a) =

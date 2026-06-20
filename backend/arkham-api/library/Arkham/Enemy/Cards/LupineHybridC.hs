@@ -15,8 +15,6 @@ lupineHybridC =
   enemyWith
     LupineHybridC
     Cards.lupineHybridC
-    (3, Static 4, 1)
-    (1, 1)
     (spawnAtL ?~ SpawnAt (LocationInPosition $ Pos 0 (-2)))
 
 instance HasAbilities LupineHybridC where

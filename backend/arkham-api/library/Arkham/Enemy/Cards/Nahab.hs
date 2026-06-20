@@ -12,7 +12,7 @@ newtype Nahab = Nahab EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nahab :: EnemyCard Nahab
-nahab = enemy Nahab Cards.nahab (1, PerPlayer 1, 3) (1, 2)
+nahab = enemy Nahab Cards.nahab
 
 -- Do not remove doom from Nahab when the agenda advances.
 instance HasModifiersFor Nahab where

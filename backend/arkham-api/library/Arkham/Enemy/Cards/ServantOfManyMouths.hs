@@ -13,7 +13,7 @@ newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
 
 servantOfManyMouths :: EnemyCard ServantOfManyMouths
 servantOfManyMouths =
-  enemy ServantOfManyMouths Cards.servantOfManyMouths (3, Static 2, 1) (2, 0)
+  enemy ServantOfManyMouths Cards.servantOfManyMouths
     & setSpawnAt EmptyLocation
 
 instance HasAbilities ServantOfManyMouths where

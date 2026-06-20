@@ -14,7 +14,7 @@ newtype MemoryOfAMissingFather = MemoryOfAMissingFather EnemyAttrs
 
 memoryOfAMissingFather :: EnemyCard MemoryOfAMissingFather
 memoryOfAMissingFather =
-  enemyWith MemoryOfAMissingFather Cards.memoryOfAMissingFather (3, PerPlayer 4, 4) (1, 1)
+  enemyWith MemoryOfAMissingFather Cards.memoryOfAMissingFather
     $ preyL
     .~ Prey (ControlsAsset $ assetIs Assets.takadaHirokoAeroplaneMechanic)
 

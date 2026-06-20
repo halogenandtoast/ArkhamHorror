@@ -14,7 +14,7 @@ newtype MemoryOfAnAlienTranslation = MemoryOfAnAlienTranslation EnemyAttrs
 
 memoryOfAnAlienTranslation :: EnemyCard MemoryOfAnAlienTranslation
 memoryOfAnAlienTranslation =
-  enemyWith MemoryOfAnAlienTranslation Cards.memoryOfAnAlienTranslation (3, PerPlayer 4, 5) (1, 1)
+  enemyWith MemoryOfAnAlienTranslation Cards.memoryOfAnAlienTranslation
     $ preyL
     .~ Prey (ControlsAsset $ assetIs Assets.roaldEllsworthIntrepidExplorer)
 

@@ -17,7 +17,7 @@ newtype MalevolentSpirit = MalevolentSpirit EnemyAttrs
 
 malevolentSpirit :: EnemyCard MalevolentSpirit
 malevolentSpirit =
-  enemy MalevolentSpirit Cards.malevolentSpirit (2, Static 2, 4) (0, 1)
+  enemy MalevolentSpirit Cards.malevolentSpirit
     & setSpawnAt (mapOneOf LocationWithTitle ["Chapel Attic", "Chapel Crypt"])
 
 instance HasModifiersFor MalevolentSpirit where

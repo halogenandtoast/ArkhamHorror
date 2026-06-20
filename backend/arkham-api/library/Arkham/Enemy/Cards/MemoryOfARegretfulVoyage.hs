@@ -15,7 +15,7 @@ newtype MemoryOfARegretfulVoyage = MemoryOfARegretfulVoyage EnemyAttrs
 
 memoryOfARegretfulVoyage :: EnemyCard MemoryOfARegretfulVoyage
 memoryOfARegretfulVoyage =
-  enemyWith MemoryOfARegretfulVoyage Cards.memoryOfARegretfulVoyage (2, PerPlayer 5, 5) (0, 1)
+  enemyWith MemoryOfARegretfulVoyage Cards.memoryOfARegretfulVoyage
     $ preyL
     .~ Prey (ControlsAsset $ assetIs Assets.professorWilliamDyerProfessorOfGeology)
 

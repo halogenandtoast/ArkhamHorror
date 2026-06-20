@@ -15,7 +15,7 @@ newtype AlejandroVela = AlejandroVela EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alejandroVela :: EnemyCard AlejandroVela
-alejandroVela = enemy AlejandroVela Cards.alejandroVela (6, PerPlayer 4, 3) (1, 2)
+alejandroVela = enemy AlejandroVela Cards.alejandroVela
 
 instance HasAbilities AlejandroVela where
   getAbilities (AlejandroVela a) =

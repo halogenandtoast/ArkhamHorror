@@ -11,7 +11,7 @@ newtype StubbornDetective = StubbornDetective EnemyAttrs
 
 stubbornDetective :: EnemyCard StubbornDetective
 stubbornDetective =
-  enemy StubbornDetective Cards.stubbornDetective (3, Static 2, 2) (1, 0)
+  enemy StubbornDetective Cards.stubbornDetective
     & setPreyIsOnlyBearer
 
 instance HasModifiersFor StubbornDetective where

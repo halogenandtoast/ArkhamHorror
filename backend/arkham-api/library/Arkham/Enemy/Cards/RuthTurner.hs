@@ -10,7 +10,7 @@ newtype RuthTurner = RuthTurner EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ruthTurner :: EnemyCard RuthTurner
-ruthTurner = enemyWith RuthTurner Cards.ruthTurner (2, Static 4, 5) (1, 0) (spawnAtL ?~ "St. Mary's Hospital")
+ruthTurner = enemyWith RuthTurner Cards.ruthTurner (spawnAtL ?~ "St. Mary's Hospital")
 
 instance HasAbilities RuthTurner where
   getAbilities (RuthTurner a) =

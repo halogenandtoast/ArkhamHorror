@@ -11,7 +11,7 @@ newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
 
 silverTwilightAcolyte :: EnemyCard SilverTwilightAcolyte
 silverTwilightAcolyte =
-  enemy SilverTwilightAcolyte Cards.silverTwilightAcolyte (2, Static 3, 3) (1, 0)
+  enemy SilverTwilightAcolyte Cards.silverTwilightAcolyte
     & setPreyIsOnlyBearer
 
 instance HasAbilities SilverTwilightAcolyte where

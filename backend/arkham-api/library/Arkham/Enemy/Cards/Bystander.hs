@@ -8,4 +8,4 @@ newtype Bystander = Bystander EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 bystander :: EnemyCard Bystander
-bystander = enemy Bystander Cards.bystander (1, Static 1, 1) (1, 0)
+bystander = enemy Bystander Cards.bystander

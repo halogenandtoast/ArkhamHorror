@@ -13,7 +13,7 @@ newtype ApostleOfDagon = ApostleOfDagon EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 apostleOfDagon :: EnemyCard ApostleOfDagon
-apostleOfDagon = enemy ApostleOfDagon Cards.apostleOfDagon (2, Static 3, 2) (1, 1)
+apostleOfDagon = enemy ApostleOfDagon Cards.apostleOfDagon
 
 instance HasModifiersFor ApostleOfDagon where
   getModifiersFor (ApostleOfDagon a) = do

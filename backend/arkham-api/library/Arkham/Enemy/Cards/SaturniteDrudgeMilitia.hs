@@ -9,7 +9,7 @@ newtype SaturniteDrudgeMilitia = SaturniteDrudgeMilitia EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 saturniteDrudgeMilitia :: EnemyCard SaturniteDrudgeMilitia
-saturniteDrudgeMilitia = enemy SaturniteDrudgeMilitia Cards.saturniteDrudgeMilitia (3, Static 5, 3) (1, 1)
+saturniteDrudgeMilitia = enemy SaturniteDrudgeMilitia Cards.saturniteDrudgeMilitia
 
 instance HasAbilities SaturniteDrudgeMilitia where
   getAbilities (SaturniteDrudgeMilitia a) = extend1 a $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_

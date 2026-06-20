@@ -11,7 +11,7 @@ newtype YoungDeepOne = YoungDeepOne EnemyAttrs
 
 youngDeepOne :: EnemyCard YoungDeepOne
 youngDeepOne =
-  enemy YoungDeepOne Cards.youngDeepOne (3, Static 3, 3) (1, 1)
+  enemy YoungDeepOne Cards.youngDeepOne
     & setPrey (InvestigatorWithLowestSkill #combat UneliminatedInvestigator)
 
 instance HasAbilities YoungDeepOne where

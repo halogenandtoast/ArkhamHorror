@@ -13,7 +13,7 @@ newtype ScientistOfYith = ScientistOfYith EnemyAttrs
 
 scientistOfYith :: EnemyCard ScientistOfYith
 scientistOfYith =
-  enemy ScientistOfYith Cards.scientistOfYith (4, Static 3, 1) (2, 0)
+  enemy ScientistOfYith Cards.scientistOfYith
     & setSpawnAt "Laboratory of the Great Race"
 
 instance HasModifiersFor ScientistOfYith where

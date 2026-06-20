@@ -17,7 +17,7 @@ newtype YogSothoth = YogSothoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yogSothoth :: EnemyCard YogSothoth
-yogSothoth = enemyWith YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5) (evadeL .~ Nothing)
+yogSothoth = enemyWith YogSothoth Cards.yogSothoth (evadeL .~ Nothing)
 
 instance HasModifiersFor YogSothoth where
   getModifiersFor (YogSothoth a) = do

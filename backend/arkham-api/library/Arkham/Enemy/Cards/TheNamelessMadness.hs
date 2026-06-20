@@ -14,7 +14,7 @@ newtype TheNamelessMadness = TheNamelessMadness EnemyAttrs
 
 theNamelessMadness :: EnemyCard TheNamelessMadness
 theNamelessMadness =
-  enemyWith TheNamelessMadness Cards.theNamelessMadness (0, Static 1, 0) (1, 1)
+  enemyWith TheNamelessMadness Cards.theNamelessMadness
     $ (fightL ?~ GameValueCalculation (PerPlayer 1))
     . (healthL .~ Nothing)
     . (evadeL ?~ GameValueCalculation (PerPlayer 1))

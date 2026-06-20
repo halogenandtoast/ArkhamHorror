@@ -14,7 +14,7 @@ newtype EzelZenRezl = EzelZenRezl EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ezelZenRezl :: EnemyCard EzelZenRezl
-ezelZenRezl = enemy EzelZenRezl Cards.ezelZenRezl (5, PerPlayer 7, 3) (2, 2)
+ezelZenRezl = enemy EzelZenRezl Cards.ezelZenRezl
 
 instance HasAbilities EzelZenRezl where
   getAbilities (EzelZenRezl a) =

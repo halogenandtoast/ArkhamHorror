@@ -13,7 +13,7 @@ newtype CovenInitiate = CovenInitiate EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 covenInitiate :: EnemyCard CovenInitiate
-covenInitiate = enemy CovenInitiate Cards.covenInitiate (2, Static 2, 2) (0, 1)
+covenInitiate = enemy CovenInitiate Cards.covenInitiate
 
 instance RunMessage CovenInitiate where
   runMessage msg e@(CovenInitiate attrs) = runQueueT $ case msg of

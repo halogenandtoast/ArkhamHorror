@@ -10,7 +10,7 @@ newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
 
 victoriaDevereux :: EnemyCard VictoriaDevereux
 victoriaDevereux =
-  enemyWith VictoriaDevereux Cards.victoriaDevereux (3, Static 3, 2) (1, 0) (spawnAtL ?~ "Northside")
+  enemyWith VictoriaDevereux Cards.victoriaDevereux (spawnAtL ?~ "Northside")
 
 instance HasAbilities VictoriaDevereux where
   getAbilities (VictoriaDevereux a) =

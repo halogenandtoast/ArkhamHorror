@@ -11,7 +11,7 @@ newtype DrLaylaElMasri = DrLaylaElMasri EnemyAttrs
 
 drLaylaElMasri :: EnemyCard DrLaylaElMasri
 drLaylaElMasri =
-  enemyWith DrLaylaElMasri Cards.drLaylaElMasri (4, Static 4, 2) (0, 2)
+  enemyWith DrLaylaElMasri Cards.drLaylaElMasri
     $ spawnAtL
     ?~ SpawnAt "Expedition Camp"
 

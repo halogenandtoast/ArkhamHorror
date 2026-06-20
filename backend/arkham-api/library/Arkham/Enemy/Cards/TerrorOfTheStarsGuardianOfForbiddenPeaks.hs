@@ -21,8 +21,6 @@ terrorOfTheStarsGuardianOfForbiddenPeaks =
   enemy
     TerrorOfTheStarsGuardianOfForbiddenPeaks
     Cards.terrorOfTheStarsGuardianOfForbiddenPeaks
-    (0, Static 3, 0)
-    (2, 2)
 
 instance HasModifiersFor TerrorOfTheStarsGuardianOfForbiddenPeaks where
   getModifiersFor (TerrorOfTheStarsGuardianOfForbiddenPeaks a) = do

@@ -21,7 +21,7 @@ instance HasModifiersFor VulnerableHeart where
     modifySelf a [CannotBeDefeated, CannotBeEvaded, CannotMakeAttacksOfOpportunity, EnemyFight dmg]
 
 vulnerableHeart :: EnemyCard VulnerableHeart
-vulnerableHeart = enemyWith VulnerableHeart Cards.vulnerableHeart (0, Static 15, 0) (2, 2) $ \a ->
+vulnerableHeart = enemyWith VulnerableHeart Cards.vulnerableHeart $ \a ->
   a {enemyEvade = Nothing}
 
 instance RunMessage VulnerableHeart where

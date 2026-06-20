@@ -14,8 +14,6 @@ wizardOfTheOrder =
   enemyWith
     WizardOfTheOrder
     Cards.wizardOfTheOrder
-    (4, Static 2, 2)
-    (1, 0)
     (spawnAtL ?~ SpawnAt EmptyLocation)
 
 instance HasAbilities WizardOfTheOrder where

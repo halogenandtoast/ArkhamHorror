@@ -16,7 +16,7 @@ newtype IchtacaScionOfYig = IchtacaScionOfYig EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ichtacaScionOfYig :: EnemyCard IchtacaScionOfYig
-ichtacaScionOfYig = enemy IchtacaScionOfYig Cards.ichtacaScionOfYig (4, PerPlayer 6, 4) (2, 1)
+ichtacaScionOfYig = enemy IchtacaScionOfYig Cards.ichtacaScionOfYig
 
 instance HasAbilities IchtacaScionOfYig where
   getAbilities (IchtacaScionOfYig a) =

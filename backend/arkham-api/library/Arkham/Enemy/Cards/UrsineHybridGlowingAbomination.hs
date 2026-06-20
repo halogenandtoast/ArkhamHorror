@@ -14,7 +14,7 @@ newtype UrsineHybridGlowingAbomination = UrsineHybridGlowingAbomination EnemyAtt
 
 ursineHybridGlowingAbomination :: EnemyCard UrsineHybridGlowingAbomination
 ursineHybridGlowingAbomination =
-  enemy UrsineHybridGlowingAbomination Cards.ursineHybridGlowingAbomination (5, Static 5, 3) (3, 2)
+  enemy UrsineHybridGlowingAbomination Cards.ursineHybridGlowingAbomination
 
 instance HasModifiersFor UrsineHybridGlowingAbomination where
   getModifiersFor (UrsineHybridGlowingAbomination a) = do

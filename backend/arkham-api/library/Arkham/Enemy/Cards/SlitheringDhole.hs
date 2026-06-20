@@ -17,8 +17,6 @@ slitheringDhole =
   enemyWith
     SlitheringDhole
     Cards.slitheringDhole
-    (3, Static 5, 3)
-    (1, 1)
     $ ( spawnAtL
           ?~ SpawnAt (NearestLocationToYou $ LocationWithTreachery $ treacheryIs Treacheries.dholeTunnel)
       )

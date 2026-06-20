@@ -20,8 +20,6 @@ marshGug =
   enemyWith
     MarshGug
     Cards.marshGug
-    (3, Static 4, 3)
-    (2, 1)
     (spawnAtL ?~ SpawnAt (LocationWithTrait Bayou))
 
 instance RunMessage MarshGug where

@@ -12,7 +12,7 @@ newtype MiasmaticShadow = MiasmaticShadow EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miasmaticShadow :: EnemyCard MiasmaticShadow
-miasmaticShadow = enemy MiasmaticShadow Cards.miasmaticShadow (3, Static 3, 3) (1, 1)
+miasmaticShadow = enemy MiasmaticShadow Cards.miasmaticShadow
 
 instance HasModifiersFor MiasmaticShadow where
   getModifiersFor (MiasmaticShadow a) =

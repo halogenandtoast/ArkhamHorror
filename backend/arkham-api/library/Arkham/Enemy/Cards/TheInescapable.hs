@@ -8,7 +8,7 @@ newtype TheInescapable = TheInescapable EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theInescapable :: EnemyCard TheInescapable
-theInescapable = enemy TheInescapable Cards.theInescapable (4, Static 6, 2) (2, 0)
+theInescapable = enemy TheInescapable Cards.theInescapable
 
 -- TODO: abilities
 instance RunMessage TheInescapable where

@@ -11,7 +11,7 @@ newtype VoidChimeraFellhound = VoidChimeraFellhound EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 voidChimeraFellhound :: EnemyCard VoidChimeraFellhound
-voidChimeraFellhound = enemy VoidChimeraFellhound Cards.voidChimeraFellhound (4, Static 2, 4) (2, 1)
+voidChimeraFellhound = enemy VoidChimeraFellhound Cards.voidChimeraFellhound
 
 instance HasModifiersFor VoidChimeraFellhound where
   getModifiersFor (VoidChimeraFellhound a) = do

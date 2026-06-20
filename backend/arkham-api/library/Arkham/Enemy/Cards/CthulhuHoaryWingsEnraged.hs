@@ -8,7 +8,7 @@ newtype CthulhuHoaryWingsEnraged = CthulhuHoaryWingsEnraged EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cthulhuHoaryWingsEnraged :: EnemyCard CthulhuHoaryWingsEnraged
-cthulhuHoaryWingsEnraged = enemy CthulhuHoaryWingsEnraged Cards.cthulhuHoaryWingsEnraged (0, Static 1, 0) (1, 1)
+cthulhuHoaryWingsEnraged = enemy CthulhuHoaryWingsEnraged Cards.cthulhuHoaryWingsEnraged
 
 -- TODO: abilities
 instance RunMessage CthulhuHoaryWingsEnraged where

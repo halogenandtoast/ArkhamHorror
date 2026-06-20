@@ -11,7 +11,7 @@ newtype TheSpectralWatcher = TheSpectralWatcher EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theSpectralWatcher :: EnemyCard TheSpectralWatcher
-theSpectralWatcher = enemy TheSpectralWatcher Cards.theSpectralWatcher (3, Static 5, 3) (1, 1)
+theSpectralWatcher = enemy TheSpectralWatcher Cards.theSpectralWatcher
 
 instance HasAbilities TheSpectralWatcher where
   getAbilities (TheSpectralWatcher a) =

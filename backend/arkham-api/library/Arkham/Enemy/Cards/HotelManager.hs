@@ -15,7 +15,7 @@ newtype HotelManager = HotelManager EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hotelManager :: EnemyCard HotelManager
-hotelManager = enemy HotelManager Cards.hotelManager (3, PerPlayer 6, 4) (2, 2)
+hotelManager = enemy HotelManager Cards.hotelManager
 
 instance HasModifiersFor HotelManager where
   getModifiersFor (HotelManager attrs) =

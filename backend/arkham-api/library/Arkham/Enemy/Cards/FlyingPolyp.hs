@@ -10,7 +10,7 @@ newtype FlyingPolyp = FlyingPolyp EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 flyingPolyp :: EnemyCard FlyingPolyp
-flyingPolyp = enemy FlyingPolyp Cards.flyingPolyp (2, Static 2, 2) (1, 0)
+flyingPolyp = enemy FlyingPolyp Cards.flyingPolyp
 
 instance RunMessage FlyingPolyp where
   runMessage msg (FlyingPolyp attrs) = FlyingPolyp <$> runMessage msg attrs

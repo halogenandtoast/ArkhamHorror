@@ -10,7 +10,7 @@ newtype JudithPark = JudithPark EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 judithPark :: EnemyCard JudithPark
-judithPark = enemy JudithPark Cards.judithPark (5, Static 3, 2) (1, 0)
+judithPark = enemy JudithPark Cards.judithPark
 
 instance HasAbilities JudithPark where
   getAbilities (JudithPark a) =

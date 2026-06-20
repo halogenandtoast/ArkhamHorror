@@ -12,7 +12,11 @@ theExperiment =
           ExtracurricularActivity
           1
       )
-      { cdHealth = health 7
+      { cdHealthDamage = healthDamage 2
+      , cdSanityDamage = sanityDamage 2
+      , cdFight = fight 4
+      , cdEvade = evade 2
+      , cdHealth = health 7
       , cdCardTraits = setFromList [Monster, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Massive]
       , cdVictoryPoints = Just 2
@@ -21,7 +25,10 @@ theExperiment =
 cloverClubPitBoss :: CardDef
 cloverClubPitBoss =
   (enemy "02078" "Clover Club Pit Boss" TheHouseAlwaysWins 1)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 2
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Humanoid, Criminal, Elite]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
@@ -30,7 +37,11 @@ cloverClubPitBoss =
 thrall :: CardDef
 thrall =
   (enemy "02086" "Thrall" BishopsThralls 3)
-    { cdHealth = health 2
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Retaliate]
     }
@@ -38,7 +49,11 @@ thrall =
 wizardOfYogSothoth :: CardDef
 wizardOfYogSothoth =
   (enemy "02087" "Wizard of Yog-Sothoth" BishopsThralls 1)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 4
+    , cdEvade = evade 3
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Sorcerer]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
@@ -47,7 +62,10 @@ wizardOfYogSothoth =
 whippoorwill :: CardDef
 whippoorwill =
   (enemy "02090" "Whippoorwill" Whippoorwills 3)
-    { cdHealth = health 1
+    { cdSanityDamage = sanityDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 4
+    , cdHealth = health 1
     , cdCardTraits = setFromList [Creature]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
@@ -55,7 +73,11 @@ whippoorwill =
 avianThrall :: CardDef
 avianThrall =
   (enemy "02094" "Avian Thrall" BeastThralls 2)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 5
+    , cdEvade = evade 3
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Creature, Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
@@ -63,7 +85,11 @@ avianThrall =
 lupineThrall :: CardDef
 lupineThrall =
   (enemy "02095" "Lupine Thrall" BeastThralls 2)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 4
+    , cdEvade = evade 4
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
@@ -71,14 +97,20 @@ lupineThrall =
 oBannionsThug :: CardDef
 oBannionsThug =
   (enemy "02097" "O'Bannion's Thug" NaomisCrew 2)
-    { cdHealth = health 2
+    { cdHealthDamage = healthDamage 2
+    , cdFight = fight 4
+    , cdEvade = evade 2
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
     }
 
 mobster :: CardDef
 mobster =
   (enemy "02098" "Mobster" NaomisCrew 2)
-    { cdHealth = health 2
+    { cdHealthDamage = healthDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
     , cdKeywords = setFromList [Keyword.Retaliate]
     }
@@ -86,7 +118,11 @@ mobster =
 conglomerationOfSpheres :: CardDef
 conglomerationOfSpheres =
   (enemy "02103" "Conglomeration of Spheres" HideousAbominations 2)
-    { cdHealth = health 6
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 1
+    , cdEvade = evade 4
+    , cdHealth = health 6
     , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
@@ -94,7 +130,11 @@ conglomerationOfSpheres =
 servantOfTheLurker :: CardDef
 servantOfTheLurker =
   (enemy "02104" "Servant of the Lurker" HideousAbominations 1)
-    { cdHealth = health 5
+    { cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 4
+    , cdEvade = evade 2
+    , cdHealth = health 5
     , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
@@ -108,7 +148,11 @@ huntingHorror =
       TheMiskatonicMuseum
       1
   )
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 2
+    , cdEvade = evade 2
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Monster, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
@@ -116,7 +160,11 @@ huntingHorror =
 grapplingHorror :: CardDef
 grapplingHorror =
   (enemy "02182" "Grappling Horror" TheEssexCountyExpress 2)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 2
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
@@ -124,7 +172,11 @@ grapplingHorror =
 emergentMonstrosity :: CardDef
 emergentMonstrosity =
   (enemy "02183" "Emergent Monstrosity" TheEssexCountyExpress 2)
-    { cdHealth = health 5
+    { cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 4
+    , cdEvade = evade 3
+    , cdHealth = health 5
     , cdCardTraits = setFromList [Monster, Abomination]
     , cdVictoryPoints = Just 1
     }
@@ -133,7 +185,11 @@ silasBishop :: CardDef
 silasBishop =
   unique
     $ (enemy "02216" ("Silas Bishop" <:> "Infused With Evil") BloodOnTheAltar 1)
-      { cdHealth = healthPerInvestigator 6
+      { cdHealthDamage = healthDamage 2
+      , cdSanityDamage = sanityDamage 2
+      , cdFight = fight 3
+      , cdEvade = evade 7
+      , cdHealth = healthPerInvestigator 6
       , cdCardTraits = setFromList [Monster, Abomination, Elite]
       , cdKeywords = singleton Keyword.Massive
       , cdVictoryPoints = Just 2
@@ -142,7 +198,10 @@ silasBishop =
 servantOfManyMouths :: CardDef
 servantOfManyMouths =
   (enemy "02224" "Servant of Many Mouths" BloodOnTheAltar 3)
-    { cdHealth = health 2
+    { cdHealthDamage = healthDamage 2
+    , cdFight = fight 3
+    , cdEvade = evade 1
+    , cdHealth = health 2
     , cdCardTraits = singleton Humanoid
     , cdKeywords = singleton Keyword.Retaliate
     }
@@ -150,7 +209,11 @@ servantOfManyMouths =
 broodOfYogSothoth :: CardDef
 broodOfYogSothoth =
   (enemy "02255" "Brood of Yog-Sothoth" UndimensionedAndUnseen 5)
-    { cdHealth = health 1
+    { cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 6
+    , cdEvade = evade 3
+    , cdHealth = health 1
     , cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = singleton Keyword.Massive
     , cdVictoryPoints = Just 1
@@ -160,7 +223,11 @@ sethBishop :: CardDef
 sethBishop =
   unique
     $ (enemy "02293" ("Seth Bishop" <:> "Sorcerer of Dunwich") WhereDoomAwaits 1)
-      { cdHealth = healthPerInvestigator 3
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 5
+      , cdEvade = evade 5
+      , cdHealth = healthPerInvestigator 3
       , cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
       , cdKeywords = setFromList [Keyword.Retaliate]
       , cdVictoryPoints = Just 1
@@ -169,14 +236,22 @@ sethBishop =
 devoteeOfTheKey :: CardDef
 devoteeOfTheKey =
   (enemy "02294" "Devotee of the Key" WhereDoomAwaits 2)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Sorcerer]
     }
 
 crazedShoggoth :: CardDef
 crazedShoggoth =
   (enemy "02295" "Crazed Shoggoth" WhereDoomAwaits 1)
-    { cdHealth = health 6
+    { cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 3
+    , cdEvade = evade 4
+    , cdHealth = health 6
     , cdCardTraits = setFromList [Monster, Shoggoth]
     , cdVictoryPoints = Just 1
     }
@@ -190,7 +265,10 @@ yogSothoth =
           LostInTimeAndSpace
           1
       )
-      { cdHealth = health 4
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 5
+      , cdFight = fight 4
+      , cdHealth = health 4
       , cdCardTraits = setFromList [AncientOne, Elite]
       , cdKeywords =
           setFromList
@@ -200,7 +278,11 @@ yogSothoth =
 interstellarTraveler :: CardDef
 interstellarTraveler =
   (enemy "02329" "Interstellar Traveler" LostInTimeAndSpace 3)
-    { cdHealth = health 3
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 4
+    , cdEvade = evade 2
+    , cdHealth = health 3
     , cdCardTraits = setFromList [Monster, Yithian]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
@@ -208,7 +290,11 @@ interstellarTraveler =
 yithianStarseeker :: CardDef
 yithianStarseeker =
   (enemy "02330" "Yithian Starseeker" LostInTimeAndSpace 2)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 5
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Monster, Yithian]
     , cdKeywords = setFromList [Keyword.Retaliate]
     }

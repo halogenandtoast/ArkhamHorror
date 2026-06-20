@@ -11,7 +11,7 @@ newtype ReturnToHeretic_38 = ReturnToHeretic_38 EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToHeretic_38 :: EnemyCard ReturnToHeretic_38
-returnToHeretic_38 = enemy ReturnToHeretic_38 Cards.returnToHeretic_38 (4, Static 2, 3) (1, 1)
+returnToHeretic_38 = enemy ReturnToHeretic_38 Cards.returnToHeretic_38
 
 instance HasModifiersFor ReturnToHeretic_38 where
   getModifiersFor = hereticModifiers

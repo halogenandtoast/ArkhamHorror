@@ -15,7 +15,7 @@ newtype SpeakerForTheDarkPharaoh = SpeakerForTheDarkPharaoh EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 speakerForTheDarkPharaoh :: EnemyCard SpeakerForTheDarkPharaoh
-speakerForTheDarkPharaoh = enemy SpeakerForTheDarkPharaoh Cards.speakerForTheDarkPharaoh (2, Static 2, 3) (0, 1)
+speakerForTheDarkPharaoh = enemy SpeakerForTheDarkPharaoh Cards.speakerForTheDarkPharaoh
 
 instance HasModifiersFor SpeakerForTheDarkPharaoh where
   getModifiersFor (SpeakerForTheDarkPharaoh a) = do

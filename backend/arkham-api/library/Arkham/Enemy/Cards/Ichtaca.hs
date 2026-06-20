@@ -10,7 +10,7 @@ newtype Ichtaca = Ichtaca EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ichtaca :: EnemyCard Ichtaca
-ichtaca = enemy Ichtaca Cards.ichtaca (5, Static 4, 4) (2, 0)
+ichtaca = enemy Ichtaca Cards.ichtaca
 
 instance HasAbilities Ichtaca where
   getAbilities (Ichtaca a) =

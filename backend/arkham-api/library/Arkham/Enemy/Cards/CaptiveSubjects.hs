@@ -13,7 +13,7 @@ newtype CaptiveSubjects = CaptiveSubjects EnemyAttrs
 
 captiveSubjects :: EnemyCard CaptiveSubjects
 captiveSubjects =
-  enemy CaptiveSubjects Cards.captiveSubjects (2, Static 5, 4) (0, 2)
+  enemy CaptiveSubjects Cards.captiveSubjects
     & setSpawnAt "Alien Conservatory"
 
 instance HasModifiersFor CaptiveSubjects where

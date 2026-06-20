@@ -12,7 +12,7 @@ newtype LodgeNeophyte = LodgeNeophyte EnemyAttrs
 
 lodgeNeophyte :: EnemyCard LodgeNeophyte
 lodgeNeophyte =
-  enemyWith LodgeNeophyte Cards.lodgeNeophyte (3, Static 1, 2) (0, 1)
+  enemyWith LodgeNeophyte Cards.lodgeNeophyte
     $ spawnAtL
     ?~ SpawnAt EmptyLocation
 

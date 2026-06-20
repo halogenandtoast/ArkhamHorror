@@ -14,7 +14,7 @@ newtype MemoryOfAHuntGoneAwry = MemoryOfAHuntGoneAwry EnemyAttrs
 
 memoryOfAHuntGoneAwry :: EnemyCard MemoryOfAHuntGoneAwry
 memoryOfAHuntGoneAwry =
-  enemyWith MemoryOfAHuntGoneAwry Cards.memoryOfAHuntGoneAwry (5, PerPlayer 3, 2) (1, 1)
+  enemyWith MemoryOfAHuntGoneAwry Cards.memoryOfAHuntGoneAwry
     $ preyL
     .~ Prey (ControlsAsset $ assetIs Assets.roaldEllsworthIntrepidExplorer)
 

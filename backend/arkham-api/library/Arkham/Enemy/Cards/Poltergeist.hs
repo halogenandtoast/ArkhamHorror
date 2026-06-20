@@ -13,7 +13,7 @@ newtype Poltergeist = Poltergeist EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 poltergeist :: EnemyCard Poltergeist
-poltergeist = enemy Poltergeist Cards.poltergeist (3, Static 2, 4) (0, 2)
+poltergeist = enemy Poltergeist Cards.poltergeist
 
 instance HasAbilities Poltergeist where
   getAbilities (Poltergeist a) =

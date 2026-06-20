@@ -12,7 +12,7 @@ newtype ElderThingScavenger = ElderThingScavenger EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elderThingScavenger :: EnemyCard ElderThingScavenger
-elderThingScavenger = enemy ElderThingScavenger Cards.elderThingScavenger (3, Static 3, 3) (1, 1)
+elderThingScavenger = enemy ElderThingScavenger Cards.elderThingScavenger
 
 instance HasAbilities ElderThingScavenger where
   getAbilities (ElderThingScavenger a) =

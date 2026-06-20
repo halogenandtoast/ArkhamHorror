@@ -13,7 +13,7 @@ newtype SquamousParasite = SquamousParasite EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 squamousParasite :: EnemyCard SquamousParasite
-squamousParasite = enemy SquamousParasite Cards.squamousParasite (3, Static 1, 3) (1, 0)
+squamousParasite = enemy SquamousParasite Cards.squamousParasite
 
 instance HasAbilities SquamousParasite where
   getAbilities (SquamousParasite a) =

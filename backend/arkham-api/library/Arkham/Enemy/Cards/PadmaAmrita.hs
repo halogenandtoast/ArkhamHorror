@@ -14,7 +14,7 @@ newtype PadmaAmrita = PadmaAmrita EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 padmaAmrita :: EnemyCard PadmaAmrita
-padmaAmrita = enemy PadmaAmrita Cards.padmaAmrita (5, PerPlayer 3, 3) (0, 0)
+padmaAmrita = enemy PadmaAmrita Cards.padmaAmrita
 
 instance HasModifiersFor PadmaAmrita where
   getModifiersFor (PadmaAmrita a) =

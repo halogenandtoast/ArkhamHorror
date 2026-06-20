@@ -8,7 +8,7 @@ newtype SethBishop = SethBishop EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sethBishop :: EnemyCard SethBishop
-sethBishop = enemy SethBishop Cards.sethBishop (5, PerPlayer 3, 5) (1, 1)
+sethBishop = enemy SethBishop Cards.sethBishop
 
 instance RunMessage SethBishop where
   runMessage msg (SethBishop attrs) = SethBishop <$> runMessage msg attrs

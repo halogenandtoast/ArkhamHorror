@@ -22,8 +22,6 @@ slimeCoveredDhole =
   enemyWith
     SlimeCoveredDhole
     Cards.slimeCoveredDhole
-    (2, Static 3, 3)
-    (1, 1)
     ( (preyL .~ Prey LowestRemainingHealth)
         . (spawnAtL ?~ SpawnAt (LocationWithoutTrait Bayou))
     )

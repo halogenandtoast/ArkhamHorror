@@ -19,8 +19,6 @@ nyarlathotepTheCrawlingChaos =
   enemy
     NyarlathotepTheCrawlingChaos
     Cards.nyarlathotepTheCrawlingChaos
-    (5, Static 5, 2)
-    (0, 1)
 
 instance RunMessage NyarlathotepTheCrawlingChaos where
   runMessage msg e@(NyarlathotepTheCrawlingChaos attrs) = case msg of

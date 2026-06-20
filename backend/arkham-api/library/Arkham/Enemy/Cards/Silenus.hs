@@ -13,7 +13,7 @@ newtype Silenus = Silenus EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 silenus :: EnemyCard Silenus
-silenus = enemy Silenus Cards.silenus (4, PerPlayer 8, 4) (1, 3)
+silenus = enemy Silenus Cards.silenus
 
 instance HasAbilities Silenus where
   getAbilities (Silenus a) =

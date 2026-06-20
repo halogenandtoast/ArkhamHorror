@@ -11,7 +11,7 @@ newtype StalkingManticore = StalkingManticore EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stalkingManticore :: EnemyCard StalkingManticore
-stalkingManticore = enemy StalkingManticore Cards.stalkingManticore (4, PerPlayer 3, 2) (2, 1)
+stalkingManticore = enemy StalkingManticore Cards.stalkingManticore
 
 instance HasAbilities StalkingManticore where
   getAbilities (StalkingManticore a) =

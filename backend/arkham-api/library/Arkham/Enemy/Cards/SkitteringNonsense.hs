@@ -12,7 +12,7 @@ newtype SkitteringNonsense = SkitteringNonsense EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 skitteringNonsense :: EnemyCard SkitteringNonsense
-skitteringNonsense = enemy SkitteringNonsense Cards.skitteringNonsense (2, Static 2, 4) (1, 1)
+skitteringNonsense = enemy SkitteringNonsense Cards.skitteringNonsense
 
 instance HasAbilities SkitteringNonsense where
   getAbilities (SkitteringNonsense a) =

@@ -13,7 +13,7 @@ newtype LanternClubMember = LanternClubMember EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lanternClubMember :: EnemyCard LanternClubMember
-lanternClubMember = enemy LanternClubMember Cards.lanternClubMember (3, Static 2, 2) (0, 1)
+lanternClubMember = enemy LanternClubMember Cards.lanternClubMember
 
 instance HasAbilities LanternClubMember where
   getAbilities (LanternClubMember a) =

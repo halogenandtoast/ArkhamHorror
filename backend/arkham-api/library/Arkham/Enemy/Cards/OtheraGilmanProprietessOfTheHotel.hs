@@ -15,8 +15,6 @@ otheraGilmanProprietessOfTheHotel =
   enemy
     OtheraGilmanProprietessOfTheHotel
     Cards.otheraGilmanProprietessOfTheHotel
-    (3, Static 5, 3)
-    (0, 2)
 
 instance HasAbilities OtheraGilmanProprietessOfTheHotel where
   getAbilities (OtheraGilmanProprietessOfTheHotel a) =

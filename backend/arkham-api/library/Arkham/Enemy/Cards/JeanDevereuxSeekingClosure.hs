@@ -19,7 +19,7 @@ newtype JeanDevereuxSeekingClosure = JeanDevereuxSeekingClosure EnemyAttrs
 
 jeanDevereuxSeekingClosure :: EnemyCard JeanDevereuxSeekingClosure
 jeanDevereuxSeekingClosure =
-  enemy JeanDevereuxSeekingClosure Cards.jeanDevereuxSeekingClosure (3, PerPlayer 3, 3) (1, 0)
+  enemy JeanDevereuxSeekingClosure Cards.jeanDevereuxSeekingClosure
 
 instance HasModifiersFor JeanDevereuxSeekingClosure where
   getModifiersFor (JeanDevereuxSeekingClosure a) = modifySelf a [CannotBeEngaged]

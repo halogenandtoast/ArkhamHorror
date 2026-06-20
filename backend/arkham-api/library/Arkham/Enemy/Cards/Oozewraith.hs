@@ -11,7 +11,7 @@ newtype Oozewraith = Oozewraith EnemyAttrs
 
 oozewraith :: EnemyCard Oozewraith
 oozewraith =
-  enemyWith Oozewraith Cards.oozewraith (4, Static 7, 2) (1, 1)
+  enemyWith Oozewraith Cards.oozewraith
     $ spawnAtL
     ?~ SpawnAt (FarthestLocationFromYou $ LocationWithTrait Oozified)
 

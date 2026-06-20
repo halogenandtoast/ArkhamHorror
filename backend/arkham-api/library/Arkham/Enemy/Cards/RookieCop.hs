@@ -12,7 +12,7 @@ newtype RookieCop = RookieCop EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rookieCop :: EnemyCard RookieCop
-rookieCop = enemy RookieCop Cards.rookieCop (2, Static 2, 2) (1, 1)
+rookieCop = enemy RookieCop Cards.rookieCop
 
 instance HasModifiersFor RookieCop where
   getModifiersFor (RookieCop a) =

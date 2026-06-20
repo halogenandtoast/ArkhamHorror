@@ -12,7 +12,7 @@ newtype CochlealStag = CochlealStag EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 cochlealStag :: EnemyCard CochlealStag
-cochlealStag = enemy CochlealStag Cards.cochlealStag (3, Static 5, 4) (2, 1)
+cochlealStag = enemy CochlealStag Cards.cochlealStag
 
 instance HasModifiersFor CochlealStag where
   getModifiersFor (CochlealStag a) = do

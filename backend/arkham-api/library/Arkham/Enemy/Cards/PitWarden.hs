@@ -13,7 +13,7 @@ newtype PitWarden = PitWarden EnemyAttrs
 
 pitWarden :: EnemyCard PitWarden
 pitWarden =
-  enemyWith PitWarden Cards.pitWarden (4, Static 4, 1) (1, 1)
+  enemyWith PitWarden Cards.pitWarden
     $ spawnAtL
     ?~ SpawnAtFirst
       [ SpawnAt (LocationWithEnemy $ enemyIs Enemies.yig)

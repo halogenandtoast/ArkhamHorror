@@ -16,7 +16,7 @@ newtype ErikaStrandPossessedProducer = ErikaStrandPossessedProducer EnemyAttrs
 
 erikaStrandPossessedProducer :: EnemyCard ErikaStrandPossessedProducer
 erikaStrandPossessedProducer =
-  enemy ErikaStrandPossessedProducer Cards.erikaStrandPossessedProducer (4, Static 5, 2) (1, 2)
+  enemy ErikaStrandPossessedProducer Cards.erikaStrandPossessedProducer
 
 instance HasAbilities ErikaStrandPossessedProducer where
   getAbilities (ErikaStrandPossessedProducer a) =

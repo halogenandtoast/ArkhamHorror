@@ -15,7 +15,7 @@ newtype SummonedBeast = SummonedBeast EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 summonedBeast :: EnemyCard SummonedBeast
-summonedBeast = enemy SummonedBeast Cards.summonedBeast (5, PerPlayer 6, 2) (2, 2)
+summonedBeast = enemy SummonedBeast Cards.summonedBeast
 
 instance HasModifiersFor SummonedBeast where
   getModifiersFor (SummonedBeast attrs) = do

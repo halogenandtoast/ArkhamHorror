@@ -10,7 +10,7 @@ newtype Hellhound = Hellhound EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hellhound :: EnemyCard Hellhound
-hellhound = enemy Hellhound Cards.hellhound (2, Static 3, 4) (1, 1)
+hellhound = enemy Hellhound Cards.hellhound
 
 instance HasAbilities Hellhound where
   getAbilities (Hellhound a) =

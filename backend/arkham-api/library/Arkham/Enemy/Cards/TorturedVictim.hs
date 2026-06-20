@@ -12,7 +12,7 @@ newtype TorturedVictim = TorturedVictim EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 torturedVictim :: EnemyCard TorturedVictim
-torturedVictim = enemy TorturedVictim Cards.torturedVictim (2, Static 2, 2) (1, 1)
+torturedVictim = enemy TorturedVictim Cards.torturedVictim
 
 instance RunMessage TorturedVictim where
   runMessage msg e@(TorturedVictim attrs) = runQueueT $ scenarioI18n $ case msg of

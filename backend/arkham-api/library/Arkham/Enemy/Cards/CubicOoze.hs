@@ -9,7 +9,7 @@ newtype CubicOoze = CubicOoze EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 cubicOoze :: EnemyCard CubicOoze
-cubicOoze = enemyWith CubicOoze Cards.cubicOoze (1, Static 4, 4) (2, 0) (spawnAtL ?~ NoSpawn)
+cubicOoze = enemyWith CubicOoze Cards.cubicOoze (spawnAtL ?~ NoSpawn)
 
 instance RunMessage CubicOoze where
   runMessage msg e@(CubicOoze attrs) = runQueueT $ case msg of

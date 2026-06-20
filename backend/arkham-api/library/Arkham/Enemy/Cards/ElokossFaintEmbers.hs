@@ -13,7 +13,7 @@ newtype ElokossFaintEmbers = ElokossFaintEmbers EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elokossFaintEmbers :: EnemyCard ElokossFaintEmbers
-elokossFaintEmbers = enemy ElokossFaintEmbers Cards.elokossFaintEmbers (5, Static 5, 5) (3, 3)
+elokossFaintEmbers = enemy ElokossFaintEmbers Cards.elokossFaintEmbers
 
 instance HasModifiersFor ElokossFaintEmbers where
   getModifiersFor (ElokossFaintEmbers a) = do

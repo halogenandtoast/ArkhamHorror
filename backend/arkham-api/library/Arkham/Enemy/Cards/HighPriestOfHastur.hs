@@ -13,7 +13,7 @@ newtype HighPriestOfHastur = HighPriestOfHastur EnemyAttrs
 
 highPriestOfHastur :: EnemyCard HighPriestOfHastur
 highPriestOfHastur =
-  enemy HighPriestOfHastur Cards.highPriestOfHastur (6, Static 4, 2) (0, 0)
+  enemy HighPriestOfHastur Cards.highPriestOfHastur
     & setPrey MostCardsInHand
     & setSpawnAt "Palace of the King"
 

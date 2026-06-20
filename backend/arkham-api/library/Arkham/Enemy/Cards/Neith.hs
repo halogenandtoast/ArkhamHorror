@@ -14,7 +14,7 @@ newtype Neith = Neith EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 neith :: EnemyCard Neith
-neith = enemy Neith Cards.neith (4, PerPlayer 5, 4) (0, 2)
+neith = enemy Neith Cards.neith
 
 instance HasAbilities Neith where
   getAbilities (Neith a) =

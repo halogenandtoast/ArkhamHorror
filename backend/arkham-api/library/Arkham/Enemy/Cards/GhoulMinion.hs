@@ -8,7 +8,7 @@ newtype GhoulMinion = GhoulMinion EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ghoulMinion :: EnemyCard GhoulMinion
-ghoulMinion = enemy GhoulMinion Cards.ghoulMinion (2, Static 2, 2) (1, 1)
+ghoulMinion = enemy GhoulMinion Cards.ghoulMinion
 
 instance RunMessage GhoulMinion where
   runMessage msg (GhoulMinion attrs) = GhoulMinion <$> runMessage msg attrs

@@ -12,7 +12,7 @@ newtype SerpentFromYoth = SerpentFromYoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 serpentFromYoth :: EnemyCard SerpentFromYoth
-serpentFromYoth = enemy SerpentFromYoth Cards.serpentFromYoth (3, Static 5, 3) (1, 2)
+serpentFromYoth = enemy SerpentFromYoth Cards.serpentFromYoth
 
 instance HasModifiersFor SerpentFromYoth where
   getModifiersFor (SerpentFromYoth a) = do

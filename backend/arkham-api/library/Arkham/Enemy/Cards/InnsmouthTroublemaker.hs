@@ -12,7 +12,7 @@ newtype InnsmouthTroublemaker = InnsmouthTroublemaker EnemyAttrs
 
 innsmouthTroublemaker :: EnemyCard InnsmouthTroublemaker
 innsmouthTroublemaker =
-  enemyWith InnsmouthTroublemaker Cards.innsmouthTroublemaker (4, Static 3, 2) (2, 0)
+  enemyWith InnsmouthTroublemaker Cards.innsmouthTroublemaker
     $ spawnAtL
     ?~ SpawnAt (LocationWithMostClues Anywhere)
 

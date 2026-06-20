@@ -20,8 +20,6 @@ theClaretKnightHoldsYouInContempt =
   enemy
     TheClaretKnightHoldsYouInContempt
     Cards.theClaretKnightHoldsYouInContempt
-    (4, Static 4, 3)
-    (1, 2)
     & setSpawnAt (FarthestLocationFromYou Anywhere)
 
 instance HasModifiersFor TheClaretKnightHoldsYouInContempt where

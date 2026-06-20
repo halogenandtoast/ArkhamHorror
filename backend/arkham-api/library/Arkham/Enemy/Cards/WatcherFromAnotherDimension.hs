@@ -19,8 +19,6 @@ watcherFromAnotherDimension =
   enemyWith
     WatcherFromAnotherDimension
     Cards.watcherFromAnotherDimension
-    (5, Static 2, 5)
-    (3, 0)
     (spawnAtL ?~ NoSpawn)
 
 instance HasAbilities WatcherFromAnotherDimension where

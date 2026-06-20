@@ -10,7 +10,7 @@ newtype MobGoons = MobGoons EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 mobGoons :: EnemyCard MobGoons
-mobGoons = enemyWith MobGoons Cards.mobGoons (3, Static 3, 3) (1, 1) preyIsOnlyBearer
+mobGoons = enemyWith MobGoons Cards.mobGoons preyIsOnlyBearer
 
 instance HasModifiersFor MobGoons where
   getModifiersFor (MobGoons a) =

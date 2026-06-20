@@ -13,7 +13,7 @@ newtype Eixodolon = Eixodolon EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eixodolon :: EnemyCard Eixodolon
-eixodolon = enemy Eixodolon Cards.eixodolon (2, Static 6, 3) (2, 2)
+eixodolon = enemy Eixodolon Cards.eixodolon
 
 harvestedPainInVictory :: ExtendedCardMatcher
 harvestedPainInVictory = basic $ cardIs Treacheries.harvestedPain

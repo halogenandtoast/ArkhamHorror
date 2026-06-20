@@ -18,7 +18,7 @@ newtype DeepOneHatchling = DeepOneHatchling EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepOneHatchling :: EnemyCard DeepOneHatchling
-deepOneHatchling = enemy DeepOneHatchling Cards.deepOneHatchling (1, Static 1, 1) (0, 1)
+deepOneHatchling = enemy DeepOneHatchling Cards.deepOneHatchling
 
 instance HasAbilities DeepOneHatchling where
   getAbilities (DeepOneHatchling a) =

@@ -14,7 +14,7 @@ newtype KeeperOfTheOath = KeeperOfTheOath EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keeperOfTheOath :: EnemyCard KeeperOfTheOath
-keeperOfTheOath = enemy KeeperOfTheOath Cards.keeperOfTheOath (5, Static 3, 3) (1, 1)
+keeperOfTheOath = enemy KeeperOfTheOath Cards.keeperOfTheOath
 
 instance HasModifiersFor KeeperOfTheOath where
   getModifiersFor (KeeperOfTheOath a) = do

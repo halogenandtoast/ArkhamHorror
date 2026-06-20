@@ -13,7 +13,7 @@ newtype HighPriestNotToBeDescribed = HighPriestNotToBeDescribed EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 highPriestNotToBeDescribed :: EnemyCard HighPriestNotToBeDescribed
-highPriestNotToBeDescribed = enemy HighPriestNotToBeDescribed Cards.highPriestNotToBeDescribed (5, PerPlayer 3, 3) (1, 1)
+highPriestNotToBeDescribed = enemy HighPriestNotToBeDescribed Cards.highPriestNotToBeDescribed
 
 instance HasModifiersFor HighPriestNotToBeDescribed where
   getModifiersFor (HighPriestNotToBeDescribed a) = modifySelf a [CannotMakeAttacksOfOpportunity]

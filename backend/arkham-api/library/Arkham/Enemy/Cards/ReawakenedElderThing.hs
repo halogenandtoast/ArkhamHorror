@@ -16,7 +16,7 @@ newtype ReawakenedElderThing = ReawakenedElderThing EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 reawakenedElderThing :: EnemyCard ReawakenedElderThing
-reawakenedElderThing = enemy ReawakenedElderThing Cards.reawakenedElderThing (2, Static 3, 1) (1, 1)
+reawakenedElderThing = enemy ReawakenedElderThing Cards.reawakenedElderThing
 
 instance HasAbilities ReawakenedElderThing where
   getAbilities (ReawakenedElderThing a) =

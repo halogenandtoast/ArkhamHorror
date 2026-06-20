@@ -10,7 +10,7 @@ newtype OtherworldlyMimic = OtherworldlyMimic EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 otherworldlyMimic :: EnemyCard OtherworldlyMimic
-otherworldlyMimic = enemy OtherworldlyMimic Cards.otherworldlyMimic (3, Static 2, 4) (0, 2)
+otherworldlyMimic = enemy OtherworldlyMimic Cards.otherworldlyMimic
 
 instance HasAbilities OtherworldlyMimic where
   getAbilities (OtherworldlyMimic a) =

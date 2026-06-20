@@ -18,8 +18,6 @@ allosaurusIndomitablePredator =
   enemyWith
     AllosaurusIndomitablePredator
     Cards.allosaurusIndomitablePredator
-    (5, Static 1, 5)
-    (3, 0)
     (healthL .~ Nothing)
 
 instance HasModifiersFor AllosaurusIndomitablePredator where

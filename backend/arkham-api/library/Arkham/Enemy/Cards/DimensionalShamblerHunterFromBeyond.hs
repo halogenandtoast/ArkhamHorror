@@ -18,8 +18,6 @@ dimensionalShamblerHunterFromBeyond =
   enemy
     DimensionalShamblerHunterFromBeyond
     Cards.dimensionalShamblerHunterFromBeyond
-    (6, Static 5, 2)
-    (2, 2)
 
 instance HasAbilities DimensionalShamblerHunterFromBeyond where
   getAbilities (DimensionalShamblerHunterFromBeyond a) =

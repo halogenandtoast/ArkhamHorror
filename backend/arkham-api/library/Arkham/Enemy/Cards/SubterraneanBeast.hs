@@ -13,7 +13,7 @@ newtype SubterraneanBeast = SubterraneanBeast EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 subterraneanBeast :: EnemyCard SubterraneanBeast
-subterraneanBeast = enemy SubterraneanBeast Cards.subterraneanBeast (4, Static 4, 3) (1, 1)
+subterraneanBeast = enemy SubterraneanBeast Cards.subterraneanBeast
 
 instance HasModifiersFor SubterraneanBeast where
   getModifiersFor (SubterraneanBeast a) = do

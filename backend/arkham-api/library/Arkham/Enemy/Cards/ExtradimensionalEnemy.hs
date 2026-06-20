@@ -10,7 +10,7 @@ newtype ExtradimensionalEnemy = ExtradimensionalEnemy EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 extradimensionalEnemy :: EnemyCard ExtradimensionalEnemy
-extradimensionalEnemy = enemy ExtradimensionalEnemy Cards.extradimensionalEnemy (1, Static 1, 1) (1, 1)
+extradimensionalEnemy = enemy ExtradimensionalEnemy Cards.extradimensionalEnemy
 
 instance HasAbilities ExtradimensionalEnemy where
   getAbilities (ExtradimensionalEnemy a) = extend1 a $ mkAbility a 1 $ forced $ EnemyDisengaged #after You (be a)

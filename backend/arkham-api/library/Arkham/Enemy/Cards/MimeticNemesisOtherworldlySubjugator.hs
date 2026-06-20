@@ -19,8 +19,6 @@ mimeticNemesisOtherworldlySubjugator :: EnemyCard MimeticNemesisOtherworldlySubj
 mimeticNemesisOtherworldlySubjugator = enemyWith
   MimeticNemesisOtherworldlySubjugator
   Cards.mimeticNemesisOtherworldlySubjugator
-  (3, Static 1, 4)
-  (1, 1)
   \a -> a {enemyHealth = Nothing}
 
 instance HasAbilities MimeticNemesisOtherworldlySubjugator where

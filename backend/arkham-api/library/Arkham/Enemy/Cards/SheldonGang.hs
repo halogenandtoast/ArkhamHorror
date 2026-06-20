@@ -15,7 +15,7 @@ newtype SheldonGang = SheldonGang EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sheldonGang :: EnemyCard SheldonGang
-sheldonGang = enemy SheldonGang Cards.sheldonGang (3, Static 1, 2) (2, 0)
+sheldonGang = enemy SheldonGang Cards.sheldonGang
 
 instance HasModifiersFor SheldonGang where
   getModifiersFor (SheldonGang a) = do

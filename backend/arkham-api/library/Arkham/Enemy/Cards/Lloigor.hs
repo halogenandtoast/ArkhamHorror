@@ -13,7 +13,7 @@ newtype Lloigor = Lloigor EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lloigor :: EnemyCard Lloigor
-lloigor = enemyWith Lloigor Cards.lloigor (3, Static 5, 4) (1, 1) (preyL .~ Prey FewestCardsInHand)
+lloigor = enemyWith Lloigor Cards.lloigor (preyL .~ Prey FewestCardsInHand)
 
 instance HasModifiersFor Lloigor where
   getModifiersFor (Lloigor a) = do

@@ -16,7 +16,7 @@ newtype AvianThrall = AvianThrall EnemyAttrs
 
 avianThrall :: EnemyCard AvianThrall
 avianThrall =
-  enemy AvianThrall Cards.avianThrall (5, Static 4, 3) (1, 1)
+  enemy AvianThrall Cards.avianThrall
     & setPrey (InvestigatorWithLowestSkill #intellect UneliminatedInvestigator)
 
 instance HasModifiersFor AvianThrall where

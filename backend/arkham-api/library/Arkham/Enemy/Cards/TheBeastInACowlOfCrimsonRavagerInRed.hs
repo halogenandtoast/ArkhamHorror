@@ -16,8 +16,6 @@ theBeastInACowlOfCrimsonRavagerInRed =
   enemy
     TheBeastInACowlOfCrimsonRavagerInRed
     Cards.theBeastInACowlOfCrimsonRavagerInRed
-    (3, PerPlayer 3, 4)
-    (2, 2)
 
 instance HasAbilities TheBeastInACowlOfCrimsonRavagerInRed where
   getAbilities (TheBeastInACowlOfCrimsonRavagerInRed a) =

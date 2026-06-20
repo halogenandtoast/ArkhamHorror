@@ -15,8 +15,6 @@ abhorrentMoonBeast =
   enemyWith
     AbhorrentMoonBeast
     Cards.abhorrentMoonBeast
-    (2, Static 3, 4)
-    (1, 1)
     (damageStrategyL .~ DamageAssetsFirst (AssetWithTrait Guest))
 
 instance RunMessage AbhorrentMoonBeast where

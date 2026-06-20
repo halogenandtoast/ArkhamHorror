@@ -12,7 +12,7 @@ newtype WingedKeeper = WingedKeeper EnemyAttrs
 
 wingedKeeper :: EnemyCard WingedKeeper
 wingedKeeper =
-  enemy WingedKeeper Cards.wingedKeeper (3, Static 3, 4) (1, 1)
+  enemy WingedKeeper Cards.wingedKeeper
     & setSpawnAt (HighestRow LocationWithoutInvestigators)
     & setPrey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 

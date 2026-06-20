@@ -12,7 +12,7 @@ newtype CrazedShoggoth = CrazedShoggoth EnemyAttrs
 
 crazedShoggoth :: EnemyCard CrazedShoggoth
 crazedShoggoth =
-  enemy CrazedShoggoth Cards.crazedShoggoth (3, Static 6, 4) (2, 2)
+  enemy CrazedShoggoth Cards.crazedShoggoth
     & setSpawnAt (NearestLocationToYou $ LocationWithTrait Altered)
 
 instance HasAbilities CrazedShoggoth where

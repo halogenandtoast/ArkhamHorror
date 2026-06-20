@@ -14,7 +14,7 @@ newtype LaComtesseSubverterOfPlans = LaComtesseSubverterOfPlans EnemyAttrs
 
 laComtesseSubverterOfPlans :: EnemyCard LaComtesseSubverterOfPlans
 laComtesseSubverterOfPlans =
-  enemy LaComtesseSubverterOfPlans Cards.laComtesseSubverterOfPlans (1, Static 3, 3) (0, 1)
+  enemy LaComtesseSubverterOfPlans Cards.laComtesseSubverterOfPlans
     & setSpawnAt "Balcony"
 
 instance HasModifiersFor LaComtesseSubverterOfPlans where

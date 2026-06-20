@@ -8,7 +8,7 @@ newtype GangSoldier = GangSoldier EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gangSoldier :: EnemyCard GangSoldier
-gangSoldier = enemy GangSoldier Cards.gangSoldier (2, Static 2, 2) (1, 0)
+gangSoldier = enemy GangSoldier Cards.gangSoldier
 
 instance RunMessage GangSoldier where
   runMessage msg (GangSoldier attrs) = runQueueT $ GangSoldier <$> liftRunMessage msg attrs

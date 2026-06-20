@@ -10,7 +10,7 @@ newtype BroodOfYig = BroodOfYig EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 broodOfYig :: EnemyCard BroodOfYig
-broodOfYig = enemy BroodOfYig Cards.broodOfYig (2, Static 3, 2) (1, 1)
+broodOfYig = enemy BroodOfYig Cards.broodOfYig
 
 instance HasModifiersFor BroodOfYig where
   getModifiersFor (BroodOfYig a) = do

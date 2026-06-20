@@ -11,7 +11,7 @@ newtype ProfessorNathanielTaylor = ProfessorNathanielTaylor EnemyAttrs
 
 professorNathanielTaylor :: EnemyCard ProfessorNathanielTaylor
 professorNathanielTaylor =
-  enemyWith ProfessorNathanielTaylor Cards.professorNathanielTaylor (3, Static 4, 4) (0, 1)
+  enemyWith ProfessorNathanielTaylor Cards.professorNathanielTaylor
     $ spawnAtL
     ?~ SpawnAt "Outskirts of Cairo"
 

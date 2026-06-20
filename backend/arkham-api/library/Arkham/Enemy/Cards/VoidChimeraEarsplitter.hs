@@ -10,7 +10,7 @@ newtype VoidChimeraEarsplitter = VoidChimeraEarsplitter EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 voidChimeraEarsplitter :: EnemyCard VoidChimeraEarsplitter
-voidChimeraEarsplitter = enemy VoidChimeraEarsplitter Cards.voidChimeraEarsplitter (3, Static 3, 4) (0, 3)
+voidChimeraEarsplitter = enemy VoidChimeraEarsplitter Cards.voidChimeraEarsplitter
 
 instance HasModifiersFor VoidChimeraEarsplitter where
   getModifiersFor (VoidChimeraEarsplitter a) = do

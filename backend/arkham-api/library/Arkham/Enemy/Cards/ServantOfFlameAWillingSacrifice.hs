@@ -15,8 +15,6 @@ servantOfFlameAWillingSacrifice =
   enemy
     ServantOfFlameAWillingSacrifice
     Cards.servantOfFlameAWillingSacrifice
-    (4, PerPlayer 5, 4)
-    (2, 2)
 
 instance HasAbilities ServantOfFlameAWillingSacrifice where
   getAbilities (ServantOfFlameAWillingSacrifice a) =

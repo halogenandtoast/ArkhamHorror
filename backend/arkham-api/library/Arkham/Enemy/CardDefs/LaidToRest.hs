@@ -9,7 +9,10 @@ jeanDevereuxSeekingClosure =
   unique
     $ doubleSided "90057b"
     $ (enemy "90057a" ("Jean Devereux" <:> "Seeking Closure") LaidToRest 1)
-      { cdHealth = healthPerInvestigator 3
+      { cdHealthDamage = healthDamage 1
+      , cdFight = fight 3
+      , cdEvade = evade 3
+      , cdHealth = healthPerInvestigator 3
       , cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
       , cdKeywords =
           setFromList
@@ -23,14 +26,23 @@ jeanDevereuxPossessed =
   unique
     $ doubleSided "90057a"
     $ (enemy "90057b" ("Jean Devereux" <:> "Possessed") LaidToRest 1)
-      { cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 4
+      , cdEvade = evade 2
+      , cdHealth = healthPerInvestigator 3
+      , cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
       , cdKeywords = setFromList [Keyword.Hunter]
       }
 
 ravenousSpirit :: CardDef
 ravenousSpirit =
   (enemy "90058" ("Ravenous Spirit" <:> "Possessed") LaidToRest 4)
-    { cdHealth = health 4
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 4
+    , cdEvade = evade 4
+    , cdHealth = health 4
     , cdCardTraits = setFromList [Monster, Geist, Spectral, Elite]
     , cdKeywords =
         setFromList

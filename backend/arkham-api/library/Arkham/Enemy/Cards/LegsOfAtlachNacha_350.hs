@@ -27,8 +27,6 @@ legsOfAtlachNacha_350 =
   enemyWith
     LegsOfAtlachNacha_350
     Cards.legsOfAtlachNacha_350
-    (0, PerPlayer 3, 3)
-    (1, 1)
     (asSelfLocationL ?~ "legs4")
 
 instance HasAbilities LegsOfAtlachNacha_350 where

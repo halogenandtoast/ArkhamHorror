@@ -24,8 +24,6 @@ dagonDeepInSlumberIntoTheMaelstrom :: EnemyCard DagonDeepInSlumberIntoTheMaelstr
 dagonDeepInSlumberIntoTheMaelstrom = enemyWith
   DagonDeepInSlumberIntoTheMaelstrom
   Cards.dagonDeepInSlumberIntoTheMaelstrom
-  (0, Static 1, 0)
-  (0, 0)
   $ \a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing}
 
 instance HasModifiersFor DagonDeepInSlumberIntoTheMaelstrom where

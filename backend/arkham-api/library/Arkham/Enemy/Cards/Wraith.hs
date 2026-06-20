@@ -18,7 +18,7 @@ newtype Wraith = Wraith EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wraith :: EnemyCard Wraith
-wraith = enemy Wraith Cards.wraith (2, Static 2, 2) (0, 2)
+wraith = enemy Wraith Cards.wraith
 
 instance HasAbilities Wraith where
   getAbilities (Wraith a) = case a.placement of

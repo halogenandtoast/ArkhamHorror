@@ -9,7 +9,7 @@ newtype MobEnforcer = MobEnforcer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mobEnforcer :: EnemyCard MobEnforcer
-mobEnforcer = enemy MobEnforcer Cards.mobEnforcer (4, Static 3, 3) (1, 0) & setPreyIsOnlyBearer
+mobEnforcer = enemy MobEnforcer Cards.mobEnforcer & setPreyIsOnlyBearer
 
 instance HasAbilities MobEnforcer where
   getAbilities (MobEnforcer a) = extend1 a $ restricted a 1 OnSameLocation $ parleyAction (ResourceCost 4)

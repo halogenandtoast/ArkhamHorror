@@ -13,7 +13,7 @@ newtype BroodOfYogSothothThrashingSpawn = BroodOfYogSothothThrashingSpawn EnemyA
 
 broodOfYogSothothThrashingSpawn :: EnemyCard BroodOfYogSothothThrashingSpawn
 broodOfYogSothothThrashingSpawn =
-  enemy BroodOfYogSothothThrashingSpawn Cards.broodOfYogSothothThrashingSpawn (7, Static 1, 3) (2, 1)
+  enemy BroodOfYogSothothThrashingSpawn Cards.broodOfYogSothothThrashingSpawn
 
 instance HasModifiersFor BroodOfYogSothothThrashingSpawn where
   getModifiersFor (BroodOfYogSothothThrashingSpawn a) = do

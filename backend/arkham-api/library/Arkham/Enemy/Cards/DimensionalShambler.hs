@@ -20,7 +20,7 @@ newtype DimensionalShambler = DimensionalShambler EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalShambler :: EnemyCard DimensionalShambler
-dimensionalShambler = enemy DimensionalShambler Cards.dimensionalShambler (4, PerPlayer 4, 3) (2, 2)
+dimensionalShambler = enemy DimensionalShambler Cards.dimensionalShambler
 
 instance HasAbilities DimensionalShambler where
   getAbilities (DimensionalShambler attrs) =

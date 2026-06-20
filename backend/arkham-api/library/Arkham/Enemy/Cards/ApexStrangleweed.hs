@@ -12,7 +12,7 @@ newtype ApexStrangleweed = ApexStrangleweed EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 apexStrangleweed :: EnemyCard ApexStrangleweed
-apexStrangleweed = enemy ApexStrangleweed Cards.apexStrangleweed (3, Static 6, 3) (1, 1)
+apexStrangleweed = enemy ApexStrangleweed Cards.apexStrangleweed
 
 instance HasAbilities ApexStrangleweed where
   getAbilities (ApexStrangleweed a) =

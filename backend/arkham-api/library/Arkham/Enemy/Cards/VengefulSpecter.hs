@@ -19,7 +19,7 @@ newtype VengefulSpecter = VengefulSpecter EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vengefulSpecter :: EnemyCard VengefulSpecter
-vengefulSpecter = enemy VengefulSpecter Cards.vengefulSpecter (4, PerPlayer 4, 5) (0, 2)
+vengefulSpecter = enemy VengefulSpecter Cards.vengefulSpecter
 
 instance HasAbilities VengefulSpecter where
   getAbilities (VengefulSpecter attrs) =

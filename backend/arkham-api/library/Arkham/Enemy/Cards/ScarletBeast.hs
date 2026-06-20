@@ -12,7 +12,7 @@ newtype ScarletBeast = ScarletBeast EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 scarletBeast :: EnemyCard ScarletBeast
-scarletBeast = enemy ScarletBeast Cards.scarletBeast (2, Static 4, 4) (1, 1)
+scarletBeast = enemy ScarletBeast Cards.scarletBeast
 
 instance HasModifiersFor ScarletBeast where
   getModifiersFor (ScarletBeast a) = modifySelfMaybe a do

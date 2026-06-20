@@ -11,7 +11,7 @@ newtype PennyWhite = PennyWhite EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pennyWhite :: EnemyCard PennyWhite
-pennyWhite = enemy PennyWhite Cards.pennyWhite (4, Static 5, 3) (0, 2)
+pennyWhite = enemy PennyWhite Cards.pennyWhite
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite a) =

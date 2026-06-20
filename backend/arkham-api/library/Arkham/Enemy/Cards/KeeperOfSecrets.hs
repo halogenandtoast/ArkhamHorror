@@ -12,7 +12,7 @@ newtype KeeperOfSecrets = KeeperOfSecrets EnemyAttrs
 
 keeperOfSecrets :: EnemyCard KeeperOfSecrets
 keeperOfSecrets =
-  enemy KeeperOfSecrets Cards.keeperOfSecrets (4, Static 2, 3) (1, 1)
+  enemy KeeperOfSecrets Cards.keeperOfSecrets
     & setSpawnAt EmptyLocation
 
 instance HasAbilities KeeperOfSecrets where

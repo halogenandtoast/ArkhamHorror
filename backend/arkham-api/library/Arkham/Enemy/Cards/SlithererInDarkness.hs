@@ -17,7 +17,7 @@ newtype SlithererInDarkness = SlithererInDarkness EnemyAttrs
 
 slithererInDarkness :: EnemyCard SlithererInDarkness
 slithererInDarkness =
-  enemy SlithererInDarkness Cards.slithererInDarkness (3, Static 5, 4) (2, 1)
+  enemy SlithererInDarkness Cards.slithererInDarkness
     & setSpawnAt (NearestLocationToYou FloodedLocation)
 
 instance HasModifiersFor SlithererInDarkness where

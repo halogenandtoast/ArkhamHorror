@@ -18,7 +18,7 @@ newtype InnsmouthShoggoth = InnsmouthShoggoth (EnemyAttrs `With` Meta)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 innsmouthShoggoth :: EnemyCard InnsmouthShoggoth
-innsmouthShoggoth = enemy (InnsmouthShoggoth . (`with` Meta Nothing)) Cards.innsmouthShoggoth (3, Static 4, 2) (2, 2)
+innsmouthShoggoth = enemy (InnsmouthShoggoth . (`with` Meta Nothing)) Cards.innsmouthShoggoth
 
 instance HasModifiersFor InnsmouthShoggoth where
   getModifiersFor (InnsmouthShoggoth (With a _)) = do

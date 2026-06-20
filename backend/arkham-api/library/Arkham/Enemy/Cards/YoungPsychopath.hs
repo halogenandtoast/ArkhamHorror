@@ -13,7 +13,7 @@ newtype YoungPsychopath = YoungPsychopath EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 youngPsychopath :: EnemyCard YoungPsychopath
-youngPsychopath = enemy YoungPsychopath Cards.youngPsychopath (2, Static 2, 3) (1, 1)
+youngPsychopath = enemy YoungPsychopath Cards.youngPsychopath
 
 instance HasAbilities YoungPsychopath where
   getAbilities (YoungPsychopath a) = extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)

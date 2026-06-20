@@ -10,7 +10,7 @@ newtype JordanPerry = JordanPerry EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jordanPerry :: EnemyCard JordanPerry
-jordanPerry = enemy JordanPerry Cards.jordanPerry (2, Static 8, 2) (1, 1)
+jordanPerry = enemy JordanPerry Cards.jordanPerry
 
 instance HasAbilities JordanPerry where
   getAbilities (JordanPerry a) =

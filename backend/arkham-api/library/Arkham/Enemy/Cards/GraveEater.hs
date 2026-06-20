@@ -11,7 +11,7 @@ newtype GraveEater = GraveEater EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graveEater :: EnemyCard GraveEater
-graveEater = enemy GraveEater Cards.graveEater (2, Static 2, 2) (1, 1)
+graveEater = enemy GraveEater Cards.graveEater
 
 instance HasAbilities GraveEater where
   getAbilities (GraveEater x) =

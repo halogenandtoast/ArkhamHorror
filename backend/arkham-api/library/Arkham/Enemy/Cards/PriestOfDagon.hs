@@ -10,7 +10,7 @@ newtype PriestOfDagon = PriestOfDagon EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 priestOfDagon :: EnemyCard PriestOfDagon
-priestOfDagon = enemyWith PriestOfDagon Cards.priestOfDagon (3, Static 2, 3) (1, 1) spawnAtEmptyLocation
+priestOfDagon = enemyWith PriestOfDagon Cards.priestOfDagon spawnAtEmptyLocation
 
 instance HasAbilities PriestOfDagon where
   getAbilities (PriestOfDagon a) =

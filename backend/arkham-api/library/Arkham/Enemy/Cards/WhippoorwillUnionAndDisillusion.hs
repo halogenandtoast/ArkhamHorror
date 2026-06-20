@@ -13,5 +13,3 @@ whippoorwillUnionAndDisillusion =
   enemy
     (WhippoorwillUnionAndDisillusion . Whippoorwill)
     Cards.whippoorwillUnionAndDisillusion
-    (2, Static 1, 4)
-    (0, 1)

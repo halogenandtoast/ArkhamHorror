@@ -13,7 +13,7 @@ newtype HostOfInsanity = HostOfInsanity EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hostOfInsanity :: EnemyCard HostOfInsanity
-hostOfInsanity = enemy HostOfInsanity Cards.hostOfInsanity (4, Static 4, 4) (1, 1)
+hostOfInsanity = enemy HostOfInsanity Cards.hostOfInsanity
 
 instance HasModifiersFor HostOfInsanity where
   getModifiersFor (HostOfInsanity a) = do

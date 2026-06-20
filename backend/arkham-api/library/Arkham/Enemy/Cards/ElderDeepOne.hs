@@ -8,7 +8,7 @@ newtype ElderDeepOne = ElderDeepOne EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elderDeepOne :: EnemyCard ElderDeepOne
-elderDeepOne = enemy ElderDeepOne Cards.elderDeepOne (3, Static 4, 4) (2, 0)
+elderDeepOne = enemy ElderDeepOne Cards.elderDeepOne
 
 -- TODO: abilities
 instance RunMessage ElderDeepOne where

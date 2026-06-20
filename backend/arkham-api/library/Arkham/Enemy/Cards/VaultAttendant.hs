@@ -12,7 +12,7 @@ newtype VaultAttendant = VaultAttendant EnemyAttrs
 
 vaultAttendant :: EnemyCard VaultAttendant
 vaultAttendant =
-  enemyWith VaultAttendant Cards.vaultAttendant (2, Static 2, 4) (2, 0)
+  enemyWith VaultAttendant Cards.vaultAttendant
     $ (preyL .~ Prey MostClues)
     . (spawnAtL ?~ SpawnEngagedWith MostClues)
 

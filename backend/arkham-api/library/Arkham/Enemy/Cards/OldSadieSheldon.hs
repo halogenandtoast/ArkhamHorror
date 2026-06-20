@@ -20,7 +20,7 @@ newtype OldSadieSheldon = OldSadieSheldon EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oldSadieSheldon :: EnemyCard OldSadieSheldon
-oldSadieSheldon = enemy OldSadieSheldon Cards.oldSadieSheldon (1, Static 1, 1) (1, 0)
+oldSadieSheldon = enemy OldSadieSheldon Cards.oldSadieSheldon
 
 instance HasModifiersFor OldSadieSheldon where
   getModifiersFor (OldSadieSheldon a) =

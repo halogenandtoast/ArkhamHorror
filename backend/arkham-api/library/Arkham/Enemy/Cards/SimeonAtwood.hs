@@ -11,7 +11,7 @@ newtype SimeonAtwood = SimeonAtwood EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 simeonAtwood :: EnemyCard SimeonAtwood
-simeonAtwood = enemy SimeonAtwood Cards.simeonAtwood (1, Static 2, 4) (1, 0)
+simeonAtwood = enemy SimeonAtwood Cards.simeonAtwood
 
 instance HasAbilities SimeonAtwood where
   getAbilities (SimeonAtwood a) =

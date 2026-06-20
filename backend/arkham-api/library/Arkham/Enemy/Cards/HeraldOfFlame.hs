@@ -10,7 +10,7 @@ newtype HeraldOfFlame = HeraldOfFlame EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 heraldOfFlame :: EnemyCard HeraldOfFlame
-heraldOfFlame = enemy HeraldOfFlame Cards.heraldOfFlame (4, Static 5, 2) (0, 2)
+heraldOfFlame = enemy HeraldOfFlame Cards.heraldOfFlame
 
 instance HasAbilities HeraldOfFlame where
   getAbilities (HeraldOfFlame a) =

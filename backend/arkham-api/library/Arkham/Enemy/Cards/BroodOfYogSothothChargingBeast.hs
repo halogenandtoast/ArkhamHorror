@@ -13,7 +13,7 @@ newtype BroodOfYogSothothChargingBeast = BroodOfYogSothothChargingBeast EnemyAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 broodOfYogSothothChargingBeast :: EnemyCard BroodOfYogSothothChargingBeast
-broodOfYogSothothChargingBeast = enemy BroodOfYogSothothChargingBeast Cards.broodOfYogSothothChargingBeast (5, Static 1, 4) (2, 1)
+broodOfYogSothothChargingBeast = enemy BroodOfYogSothothChargingBeast Cards.broodOfYogSothothChargingBeast
 
 instance HasModifiersFor BroodOfYogSothothChargingBeast where
   getModifiersFor (BroodOfYogSothothChargingBeast a) = do

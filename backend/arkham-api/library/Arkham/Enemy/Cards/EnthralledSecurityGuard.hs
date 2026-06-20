@@ -10,7 +10,7 @@ newtype EnthralledSecurityGuard = EnthralledSecurityGuard EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 enthralledSecurityGuard :: EnemyCard EnthralledSecurityGuard
-enthralledSecurityGuard = enemy EnthralledSecurityGuard Cards.enthralledSecurityGuard (2, Static 3, 4) (1, 0)
+enthralledSecurityGuard = enemy EnthralledSecurityGuard Cards.enthralledSecurityGuard
 
 instance HasAbilities EnthralledSecurityGuard where
   getAbilities (EnthralledSecurityGuard a) =

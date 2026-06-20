@@ -8,7 +8,7 @@ newtype StarSpawnObserver = StarSpawnObserver EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 starSpawnObserver :: EnemyCard StarSpawnObserver
-starSpawnObserver = enemy StarSpawnObserver Cards.starSpawnObserver (4, Static 4, 3) (1, 1)
+starSpawnObserver = enemy StarSpawnObserver Cards.starSpawnObserver
 
 -- TODO: abilities
 instance RunMessage StarSpawnObserver where

@@ -14,7 +14,7 @@ newtype HuntingGhast = HuntingGhast EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingGhast :: EnemyCard HuntingGhast
-huntingGhast = enemyWith HuntingGhast Cards.huntingGhast (2, Static 2, 3) (1, 1) (preyL .~ Prey MostDamage)
+huntingGhast = enemyWith HuntingGhast Cards.huntingGhast (preyL .~ Prey MostDamage)
 
 instance HasAbilities HuntingGhast where
   getAbilities (HuntingGhast attrs) =

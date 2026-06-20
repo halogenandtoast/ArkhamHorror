@@ -15,7 +15,7 @@ newtype HotelSecurity = HotelSecurity EnemyAttrs
 
 hotelSecurity :: EnemyCard HotelSecurity
 hotelSecurity =
-  enemyWith HotelSecurity Cards.hotelSecurity (4, Static 3, 2) (2, 0)
+  enemyWith HotelSecurity Cards.hotelSecurity
     $ spawnAtL
     ?~ SpawnAt (NearestLocationToYou EmptyLocation)
 

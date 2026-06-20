@@ -13,7 +13,7 @@ newtype UnboundBeast = UnboundBeast EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 unboundBeast :: EnemyCard UnboundBeast
-unboundBeast = enemy UnboundBeast Cards.unboundBeast (3, Static 3, 3) (1, 1) & setPreyIsBearer
+unboundBeast = enemy UnboundBeast Cards.unboundBeast & setPreyIsBearer
 
 instance RunMessage UnboundBeast where
   runMessage msg e@(UnboundBeast attrs) = runQueueT $ case msg of

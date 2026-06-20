@@ -12,7 +12,7 @@ newtype PrimevalTerror = PrimevalTerror EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 primevalTerror :: EnemyCard PrimevalTerror
-primevalTerror = enemy PrimevalTerror Cards.primevalTerror (2, Static 2, 2) (2, 0)
+primevalTerror = enemy PrimevalTerror Cards.primevalTerror
 
 instance HasModifiersFor PrimevalTerror where
   getModifiersFor (PrimevalTerror a) =

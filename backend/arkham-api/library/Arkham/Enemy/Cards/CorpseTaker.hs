@@ -15,7 +15,7 @@ newtype CorpseTaker = CorpseTaker EnemyAttrs
 
 corpseTaker :: EnemyCard CorpseTaker
 corpseTaker =
-  enemy CorpseTaker Cards.corpseTaker (4, Static 3, 3) (1, 2)
+  enemy CorpseTaker Cards.corpseTaker
     & setSpawnAt (FarthestLocationFromYou EmptyLocation)
 
 instance HasAbilities CorpseTaker where

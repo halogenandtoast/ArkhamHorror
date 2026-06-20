@@ -13,7 +13,7 @@ newtype DiscipleOfTheSwarm = DiscipleOfTheSwarm EnemyAttrs
 
 discipleOfTheSwarm :: EnemyCard DiscipleOfTheSwarm
 discipleOfTheSwarm =
-  enemyWith DiscipleOfTheSwarm Cards.discipleOfTheSwarm (2, Static 2, 2) (1, 0)
+  enemyWith DiscipleOfTheSwarm Cards.discipleOfTheSwarm
     $ spawnAtL
     ?~ SpawnAt (locationIs Locations.theBurningPit)
 

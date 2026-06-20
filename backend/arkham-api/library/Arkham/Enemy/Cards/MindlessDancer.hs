@@ -17,7 +17,7 @@ newtype MindlessDancer = MindlessDancer EnemyAttrs
 
 mindlessDancer :: EnemyCard MindlessDancer
 mindlessDancer =
-  enemy MindlessDancer Cards.mindlessDancer (6, Static 5, 3) (2, 1)
+  enemy MindlessDancer Cards.mindlessDancer
     & setSpawnAt
       (IncludeEmptySpace $ FarthestLocationFromYou (IncludeEmptySpace $ locationIs Locations.emptySpace))
 

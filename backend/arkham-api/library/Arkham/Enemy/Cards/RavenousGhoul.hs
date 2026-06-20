@@ -13,8 +13,6 @@ ravenousGhoul =
   enemyWith
     RavenousGhoul
     Cards.ravenousGhoul
-    (3, Static 3, 3)
-    (1, 1)
     (preyL .~ Prey LowestRemainingHealth)
 
 instance RunMessage RavenousGhoul where

@@ -27,7 +27,7 @@ newtype AtlachNacha = AtlachNacha EnemyAttrs
 
 atlachNacha :: EnemyCard AtlachNacha
 atlachNacha =
-  enemyWith AtlachNacha Cards.atlachNacha (4, PerPlayer 4, 4) (2, 2)
+  enemyWith AtlachNacha Cards.atlachNacha
     $ (asSelfLocationL ?~ "atlachNacha")
     . setMeta @Meta (Meta 0)
 

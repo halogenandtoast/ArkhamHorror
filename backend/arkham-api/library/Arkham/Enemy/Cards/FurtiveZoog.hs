@@ -17,7 +17,7 @@ newtype FurtiveZoog = FurtiveZoog EnemyAttrs
 
 furtiveZoog :: EnemyCard FurtiveZoog
 furtiveZoog =
-  enemyWith FurtiveZoog Cards.furtiveZoog (3, Static 1, 1) (1, 0)
+  enemyWith FurtiveZoog Cards.furtiveZoog
     $ (spawnAtL ?~ SpawnEngagedWith (InvestigatorWithLowestSkill #combat $ colocatedWithMatch You))
     . (preyL .~ Prey (InvestigatorWithLowestSkill #combat UneliminatedInvestigator))
 

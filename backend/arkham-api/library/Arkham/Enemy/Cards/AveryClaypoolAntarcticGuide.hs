@@ -14,7 +14,7 @@ newtype AveryClaypoolAntarcticGuide = AveryClaypoolAntarcticGuide EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 averyClaypoolAntarcticGuide :: EnemyCard AveryClaypoolAntarcticGuide
-averyClaypoolAntarcticGuide = enemy AveryClaypoolAntarcticGuide Cards.averyClaypoolAntarcticGuide (1, Static 3, 3) (2, 1)
+averyClaypoolAntarcticGuide = enemy AveryClaypoolAntarcticGuide Cards.averyClaypoolAntarcticGuide
 
 instance HasAbilities AveryClaypoolAntarcticGuide where
   getAbilities (AveryClaypoolAntarcticGuide a) =

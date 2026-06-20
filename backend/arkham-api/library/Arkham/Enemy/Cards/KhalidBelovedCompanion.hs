@@ -17,7 +17,7 @@ newtype KhalidBelovedCompanion = KhalidBelovedCompanion EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 khalidBelovedCompanion :: EnemyCard KhalidBelovedCompanion
-khalidBelovedCompanion = enemy KhalidBelovedCompanion Cards.khalidBelovedCompanion (4, Static 5, 3) (2, 1)
+khalidBelovedCompanion = enemy KhalidBelovedCompanion Cards.khalidBelovedCompanion
 
 instance HasAbilities KhalidBelovedCompanion where
   getAbilities (KhalidBelovedCompanion a) =

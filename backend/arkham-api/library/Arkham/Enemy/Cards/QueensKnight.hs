@@ -10,7 +10,7 @@ newtype QueensKnight = QueensKnight EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 queensKnight :: EnemyCard QueensKnight
-queensKnight = enemy QueensKnight Cards.queensKnight (2, Static 5, 2) (2, 0)
+queensKnight = enemy QueensKnight Cards.queensKnight
 
 instance HasAbilities QueensKnight where
   getAbilities (QueensKnight a) =

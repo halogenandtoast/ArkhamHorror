@@ -12,7 +12,7 @@ newtype GrapplingSpawn = GrapplingSpawn EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 grapplingSpawn :: EnemyCard GrapplingSpawn
-grapplingSpawn = enemy GrapplingSpawn Cards.grapplingSpawn (4, Static 2, 2) (1, 1)
+grapplingSpawn = enemy GrapplingSpawn Cards.grapplingSpawn
 
 instance HasModifiersFor GrapplingSpawn where
   getModifiersFor (GrapplingSpawn a) = do

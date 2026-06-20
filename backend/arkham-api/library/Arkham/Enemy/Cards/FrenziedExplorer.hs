@@ -16,8 +16,6 @@ frenziedExplorer =
   enemyWith
     FrenziedExplorer
     Cards.frenziedExplorer
-    (2, Static 2, 2)
-    (1, 1)
     (tokensL %~ setTokens #doom 1)
 
 instance HasAbilities FrenziedExplorer where

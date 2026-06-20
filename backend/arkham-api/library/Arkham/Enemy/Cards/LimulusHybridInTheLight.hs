@@ -15,7 +15,7 @@ newtype LimulusHybridInTheLight = LimulusHybridInTheLight EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 limulusHybridInTheLight :: EnemyCard LimulusHybridInTheLight
-limulusHybridInTheLight = enemy LimulusHybridInTheLight Cards.limulusHybridInTheLight (3, Static 5, 4) (1, 2)
+limulusHybridInTheLight = enemy LimulusHybridInTheLight Cards.limulusHybridInTheLight
 
 instance HasModifiersFor LimulusHybridInTheLight where
   getModifiersFor (LimulusHybridInTheLight a) = do

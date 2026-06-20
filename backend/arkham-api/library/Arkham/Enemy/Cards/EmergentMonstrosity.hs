@@ -11,7 +11,7 @@ newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
 
 emergentMonstrosity :: EnemyCard EmergentMonstrosity
 emergentMonstrosity =
-  enemy EmergentMonstrosity Cards.emergentMonstrosity (4, Static 5, 3) (2, 2)
+  enemy EmergentMonstrosity Cards.emergentMonstrosity
     & setSpawnAt (firstOf [LocationInDirection RightOf YourLocation, YourLocation])
     & setExhausted
 

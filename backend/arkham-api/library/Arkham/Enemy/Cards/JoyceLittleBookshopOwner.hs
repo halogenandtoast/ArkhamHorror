@@ -12,7 +12,7 @@ newtype JoyceLittleBookshopOwner = JoyceLittleBookshopOwner EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 joyceLittleBookshopOwner :: EnemyCard JoyceLittleBookshopOwner
-joyceLittleBookshopOwner = enemy JoyceLittleBookshopOwner Cards.joyceLittleBookshopOwner (5, Static 3, 3) (0, 1)
+joyceLittleBookshopOwner = enemy JoyceLittleBookshopOwner Cards.joyceLittleBookshopOwner
 
 instance HasAbilities JoyceLittleBookshopOwner where
   getAbilities (JoyceLittleBookshopOwner a) =

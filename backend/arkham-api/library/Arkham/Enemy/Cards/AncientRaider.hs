@@ -13,7 +13,7 @@ newtype AncientRaider = AncientRaider EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ancientRaider :: EnemyCard AncientRaider
-ancientRaider = enemy AncientRaider Cards.ancientRaider (3, Static 3, 2) (1, 0)
+ancientRaider = enemy AncientRaider Cards.ancientRaider
 
 instance HasAbilities AncientRaider where
   getAbilities (AncientRaider a) =

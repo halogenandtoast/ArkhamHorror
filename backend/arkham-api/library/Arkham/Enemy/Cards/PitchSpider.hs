@@ -18,8 +18,6 @@ pitchSpider =
   enemyWith
     PitchSpider
     Cards.pitchSpider
-    (2, Static 1, 4)
-    (1, 1)
     $ spawnAtL
     ?~ SpawnAtFirst
       [ SpawnAt $ LocationWithTitle "Sea of Pitch" <> EmptyLocation

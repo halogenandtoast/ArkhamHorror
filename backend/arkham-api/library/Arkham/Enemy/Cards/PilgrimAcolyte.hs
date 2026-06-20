@@ -8,7 +8,7 @@ newtype PilgrimAcolyte = PilgrimAcolyte EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pilgrimAcolyte :: EnemyCard PilgrimAcolyte
-pilgrimAcolyte = enemy PilgrimAcolyte Cards.pilgrimAcolyte (2, Static 2, 2) (1, 0)
+pilgrimAcolyte = enemy PilgrimAcolyte Cards.pilgrimAcolyte
 
 -- TODO: abilities
 instance RunMessage PilgrimAcolyte where

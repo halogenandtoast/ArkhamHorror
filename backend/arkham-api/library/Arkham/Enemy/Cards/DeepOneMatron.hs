@@ -13,7 +13,7 @@ newtype DeepOneMatron = DeepOneMatron EnemyAttrs
 
 deepOneMatron :: EnemyCard DeepOneMatron
 deepOneMatron =
-  enemyWith DeepOneMatron Cards.deepOneMatron (3, Static 6, 3) (0, 1)
+  enemyWith DeepOneMatron Cards.deepOneMatron
     $ spawnAtL
     ?~ SpawnAtFirst
       [ SpawnAt $ RevealedLocation <> "Drowned Shanty"

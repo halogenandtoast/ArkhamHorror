@@ -19,8 +19,6 @@ anetteMasonReincarnatedEvil =
   enemyWith
     AnetteMasonReincarnatedEvil
     Cards.anetteMasonReincarnatedEvil
-    (5, PerPlayer 6, 3)
-    (3, 1)
     (spawnAtL ?~ "Hangman's Hill")
 
 instance HasModifiersFor AnetteMasonReincarnatedEvil where

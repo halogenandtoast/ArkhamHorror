@@ -10,7 +10,7 @@ newtype HybridAssassin = HybridAssassin EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hybridAssassin :: EnemyCard HybridAssassin
-hybridAssassin = enemy HybridAssassin Cards.hybridAssassin (3, Static 3, 1) (0, 1)
+hybridAssassin = enemy HybridAssassin Cards.hybridAssassin
 
 instance HasAbilities HybridAssassin where
   getAbilities (HybridAssassin attrs) =

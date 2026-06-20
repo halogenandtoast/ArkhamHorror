@@ -16,7 +16,7 @@ newtype KnightOfTheOuterVoid = KnightOfTheOuterVoid EnemyAttrs
 
 knightOfTheOuterVoid :: EnemyCard KnightOfTheOuterVoid
 knightOfTheOuterVoid =
-  enemy KnightOfTheOuterVoid Cards.knightOfTheOuterVoid (3, Static 3, 4) (1, 1)
+  enemy KnightOfTheOuterVoid Cards.knightOfTheOuterVoid
     & setSpawnAt (ConnectedLocation NotForMovement)
 
 instance HasAbilities KnightOfTheOuterVoid where

@@ -13,7 +13,7 @@ newtype Nightriders = Nightriders EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nightriders :: EnemyCard Nightriders
-nightriders = enemy Nightriders Cards.nightriders (2, Static 2, 5) (0, 1)
+nightriders = enemy Nightriders Cards.nightriders
 
 instance HasModifiersFor Nightriders where
   getModifiersFor (Nightriders a) = do

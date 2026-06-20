@@ -11,7 +11,7 @@ newtype ForestWatcher = ForestWatcher EnemyAttrs
 
 forestWatcher :: EnemyCard ForestWatcher
 forestWatcher =
-  enemyWith ForestWatcher Cards.forestWatcher (1, Static 2, 3) (1, 0)
+  enemyWith ForestWatcher Cards.forestWatcher
     $ spawnAtL
     ?~ SpawnAtFirst [SpawnAt EmptyLocation, SpawnAt Anywhere]
 

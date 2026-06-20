@@ -16,7 +16,7 @@ newtype EdwinBennetBitterAdversary = EdwinBennetBitterAdversary EnemyAttrs
 
 edwinBennetBitterAdversary :: EnemyCard EdwinBennetBitterAdversary
 edwinBennetBitterAdversary =
-  enemy EdwinBennetBitterAdversary Cards.edwinBennetBitterAdversary (2, Static 1, 2) (1, 1)
+  enemy EdwinBennetBitterAdversary Cards.edwinBennetBitterAdversary
 
 instance HasModifiersFor EdwinBennetBitterAdversary where
   getModifiersFor (EdwinBennetBitterAdversary a) = do

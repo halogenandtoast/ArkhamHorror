@@ -13,7 +13,7 @@ newtype DeepOneBull = DeepOneBull EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepOneBull :: EnemyCard DeepOneBull
-deepOneBull = enemy DeepOneBull Cards.deepOneBull (4, Static 5, 2) (2, 0)
+deepOneBull = enemy DeepOneBull Cards.deepOneBull
 
 instance HasAbilities DeepOneBull where
   getAbilities (DeepOneBull a) =

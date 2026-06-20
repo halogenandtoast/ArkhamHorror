@@ -16,8 +16,6 @@ broodOfYogSothothSwellingDevourer =
   enemy
     BroodOfYogSothothSwellingDevourer
     Cards.broodOfYogSothothSwellingDevourer
-    (6, Static 2, 2)
-    (1, 2)
 
 instance HasModifiersFor BroodOfYogSothothSwellingDevourer where
   getModifiersFor (BroodOfYogSothothSwellingDevourer a) = do

@@ -15,7 +15,7 @@ newtype DagonsBrood = DagonsBrood EnemyAttrs
 
 dagonsBrood :: EnemyCard DagonsBrood
 dagonsBrood =
-  enemyWith DagonsBrood Cards.dagonsBrood (1, Static 4, 3) (1, 0)
+  enemyWith DagonsBrood Cards.dagonsBrood
     $ spawnAtL
     ?~ SpawnAt
       ( FarthestLocationFromYou

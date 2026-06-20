@@ -12,7 +12,7 @@ newtype BillyCooper = BillyCooper EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 billyCooper :: EnemyCard BillyCooper
-billyCooper = enemyWith BillyCooper Cards.billyCooper (5, Static 4, 2) (2, 0) (spawnAtL ?~ SpawnAt "Easttown")
+billyCooper = enemyWith BillyCooper Cards.billyCooper (spawnAtL ?~ SpawnAt "Easttown")
 
 instance HasAbilities BillyCooper where
   getAbilities (BillyCooper a) =

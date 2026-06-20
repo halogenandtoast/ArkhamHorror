@@ -13,7 +13,7 @@ newtype BenignElderThing = BenignElderThing EnemyAttrs
 
 benignElderThing :: EnemyCard BenignElderThing
 benignElderThing =
-  enemyWith BenignElderThing Cards.benignElderThing (1, Static 1, 1) (1, 1)
+  enemyWith BenignElderThing Cards.benignElderThing
     $ (spawnAtL ?~ SpawnAt EmptyLocation)
     . (tokensL %~ setTokens #doom 1)
 

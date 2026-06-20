@@ -11,7 +11,7 @@ newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
 
 relentlessDarkYoung :: EnemyCard RelentlessDarkYoung
 relentlessDarkYoung =
-  enemy RelentlessDarkYoung Cards.relentlessDarkYoung (4, Static 5, 2) (2, 1)
+  enemy RelentlessDarkYoung Cards.relentlessDarkYoung
     & setPrey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasAbilities RelentlessDarkYoung where

@@ -17,8 +17,6 @@ serpentsOfYig =
   enemyWith
     SerpentsOfYig
     Cards.serpentsOfYig
-    (2, Static 3, 2)
-    (1, 1)
     (\a -> a & preyL .~ BearerOf (toId a))
 
 instance RunMessage SerpentsOfYig where

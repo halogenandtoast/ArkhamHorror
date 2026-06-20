@@ -15,7 +15,7 @@ newtype Heretic_K = Heretic_K (EnemyAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 heretic_K :: EnemyCard Heretic_K
-heretic_K = enemy (Heretic_K . (`with` Metadata False)) Cards.heretic_K (4, Static 2, 3) (1, 1)
+heretic_K = enemy (Heretic_K . (`with` Metadata False)) Cards.heretic_K
 
 instance HasModifiersFor Heretic_K where
   getModifiersFor = hereticModifiers

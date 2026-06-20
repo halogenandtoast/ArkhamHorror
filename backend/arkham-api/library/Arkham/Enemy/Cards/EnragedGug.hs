@@ -15,8 +15,6 @@ enragedGug =
   enemyWith
     EnragedGug
     Cards.enragedGug
-    (3, Static 3, 2)
-    (1, 1)
     (damageStrategyL .~ HorrorAssetsFirst (AssetWithTrait Guest))
 
 instance RunMessage EnragedGug where

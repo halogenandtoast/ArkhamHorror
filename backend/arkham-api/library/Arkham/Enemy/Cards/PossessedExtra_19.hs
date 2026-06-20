@@ -8,7 +8,7 @@ newtype PossessedExtra_19 = PossessedExtra_19 EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 possessedExtra_19 :: EnemyCard PossessedExtra_19
-possessedExtra_19 = enemy PossessedExtra_19 Cards.possessedExtra_19 (1, Static 1, 1) (1, 0)
+possessedExtra_19 = enemy PossessedExtra_19 Cards.possessedExtra_19
 
 instance RunMessage PossessedExtra_19 where
   runMessage msg (PossessedExtra_19 attrs) = PossessedExtra_19 <$> runMessage msg attrs

@@ -10,7 +10,7 @@ newtype AngryMob = AngryMob EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 angryMob :: EnemyCard AngryMob
-angryMob = enemy AngryMob Cards.angryMob (3, Static 4, 3) (1, 1)
+angryMob = enemy AngryMob Cards.angryMob
 
 instance HasModifiersFor AngryMob where
   getModifiersFor (AngryMob a) = do

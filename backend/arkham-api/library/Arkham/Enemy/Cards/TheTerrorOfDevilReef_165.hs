@@ -16,7 +16,7 @@ newtype TheTerrorOfDevilReef_165 = TheTerrorOfDevilReef_165 EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theTerrorOfDevilReef_165 :: EnemyCard TheTerrorOfDevilReef_165
-theTerrorOfDevilReef_165 = enemy TheTerrorOfDevilReef_165 Cards.theTerrorOfDevilReef_165 (3, Static 6, 3) (2, 2)
+theTerrorOfDevilReef_165 = enemy TheTerrorOfDevilReef_165 Cards.theTerrorOfDevilReef_165
 
 instance HasAbilities TheTerrorOfDevilReef_165 where
   getAbilities (TheTerrorOfDevilReef_165 a) =

@@ -18,7 +18,7 @@ newtype JeanDevereuxPossessed = JeanDevereuxPossessed EnemyAttrs
 
 jeanDevereuxPossessed :: EnemyCard JeanDevereuxPossessed
 jeanDevereuxPossessed =
-  enemy JeanDevereuxPossessed Cards.jeanDevereuxPossessed (4, PerPlayer 3, 2) (1, 1)
+  enemy JeanDevereuxPossessed Cards.jeanDevereuxPossessed
     & setOnlyPrey
       (oneOf [investigatorIs Investigators.jimCulver, investigatorIs Investigators.jimCulverParallel])
 

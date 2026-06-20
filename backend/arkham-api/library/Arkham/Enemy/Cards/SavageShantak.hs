@@ -11,7 +11,7 @@ newtype SavageShantak = SavageShantak EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 savageShantak :: EnemyCard SavageShantak
-savageShantak = enemy SavageShantak Cards.savageShantak (1, Static 4, 1) (2, 1)
+savageShantak = enemy SavageShantak Cards.savageShantak
 
 instance HasModifiersFor SavageShantak where
   getModifiersFor (SavageShantak a) = do

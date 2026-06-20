@@ -13,7 +13,7 @@ newtype WingedOne = WingedOne EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wingedOne :: EnemyCard WingedOne
-wingedOne = enemyWith WingedOne Cards.wingedOne (3, Static 3, 4) (3, 1) (spawnAtL ?~ "Bleak Plains")
+wingedOne = enemyWith WingedOne Cards.wingedOne (spawnAtL ?~ "Bleak Plains")
 
 instance HasAbilities WingedOne where
   getAbilities (WingedOne a) =

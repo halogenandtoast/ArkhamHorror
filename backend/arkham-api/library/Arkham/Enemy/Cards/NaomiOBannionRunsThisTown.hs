@@ -12,7 +12,7 @@ newtype NaomiOBannionRunsThisTown = NaomiOBannionRunsThisTown EnemyAttrs
 
 naomiOBannionRunsThisTown :: EnemyCard NaomiOBannionRunsThisTown
 naomiOBannionRunsThisTown =
-  enemy NaomiOBannionRunsThisTown Cards.naomiOBannionRunsThisTown (4, Static 5, 2) (1, 1)
+  enemy NaomiOBannionRunsThisTown Cards.naomiOBannionRunsThisTown
 
 instance HasAbilities NaomiOBannionRunsThisTown where
   getAbilities (NaomiOBannionRunsThisTown a) =

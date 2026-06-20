@@ -12,7 +12,7 @@ newtype WizardOfYogSothoth = WizardOfYogSothoth EnemyAttrs
 
 wizardOfYogSothoth :: EnemyCard WizardOfYogSothoth
 wizardOfYogSothoth =
-  enemy WizardOfYogSothoth Cards.wizardOfYogSothoth (4, Static 3, 3) (1, 2)
+  enemy WizardOfYogSothoth Cards.wizardOfYogSothoth
     & setPrey FewestCardsInHand
 
 instance HasAbilities WizardOfYogSothoth where

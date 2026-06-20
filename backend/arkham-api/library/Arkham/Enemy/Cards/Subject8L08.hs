@@ -19,7 +19,7 @@ instance HasAbilities Subject8L08 where
 
 subject8L08 :: EnemyCard Subject8L08
 subject8L08 =
-  enemyWith Subject8L08 Cards.subject8L08 (0, PerPlayer 15, 0) (0, 0)
+  enemyWith Subject8L08 Cards.subject8L08
     $ \a -> a {enemyFight = Nothing, enemyEvade = Nothing}
 
 -- Subject 8L-08 devours the card behind the given reference: the entity (if any)

@@ -8,4 +8,4 @@ newtype CantorOfFlame = CantorOfFlame EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 cantorOfFlame :: EnemyCard CantorOfFlame
-cantorOfFlame = enemy CantorOfFlame Cards.cantorOfFlame (2, Static 2, 2) (1, 0)
+cantorOfFlame = enemy CantorOfFlame Cards.cantorOfFlame

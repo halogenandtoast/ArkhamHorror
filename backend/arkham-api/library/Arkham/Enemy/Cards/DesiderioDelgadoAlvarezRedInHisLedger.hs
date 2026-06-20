@@ -19,8 +19,6 @@ desiderioDelgadoAlvarezRedInHisLedger =
   enemy
     DesiderioDelgadoAlvarezRedInHisLedger
     Cards.desiderioDelgadoAlvarezRedInHisLedger
-    (4, Static 5, 3)
-    (2, 1)
 
 instance HasAbilities DesiderioDelgadoAlvarezRedInHisLedger where
   getAbilities (DesiderioDelgadoAlvarezRedInHisLedger a) =

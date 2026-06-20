@@ -16,7 +16,7 @@ newtype RampagingShoggoth = RampagingShoggoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rampagingShoggoth :: EnemyCard RampagingShoggoth
-rampagingShoggoth = enemy RampagingShoggoth Cards.rampagingShoggoth (3, Static 4, 1) (2, 1)
+rampagingShoggoth = enemy RampagingShoggoth Cards.rampagingShoggoth
 
 instance HasModifiersFor RampagingShoggoth where
   getModifiersFor (RampagingShoggoth a) = do

@@ -17,8 +17,6 @@ tindalosAlphaMachinationsThroughTime =
   enemy
     TindalosAlphaMachinationsThroughTime
     Cards.tindalosAlphaMachinationsThroughTime
-    (4, Static 3, 4)
-    (1, 1)
 
 instance HasAbilities TindalosAlphaMachinationsThroughTime where
   getAbilities (TindalosAlphaMachinationsThroughTime a) =

@@ -9,7 +9,7 @@ newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
 
 corpseHungryGhoul :: EnemyCard CorpseHungryGhoul
 corpseHungryGhoul =
-  enemy CorpseHungryGhoul Cards.corpseHungryGhoul (4, Static 3, 3) (2, 2)
+  enemy CorpseHungryGhoul Cards.corpseHungryGhoul
     & setSpawnAt "Bedroom"
 
 instance RunMessage CorpseHungryGhoul where

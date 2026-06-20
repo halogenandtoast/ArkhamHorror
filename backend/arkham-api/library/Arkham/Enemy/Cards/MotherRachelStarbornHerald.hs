@@ -15,7 +15,7 @@ newtype MotherRachelStarbornHerald = MotherRachelStarbornHerald EnemyAttrs
 
 motherRachelStarbornHerald :: EnemyCard MotherRachelStarbornHerald
 motherRachelStarbornHerald =
-  enemy MotherRachelStarbornHerald Cards.motherRachelStarbornHerald (4, Static 2, 2) (1, 2)
+  enemy MotherRachelStarbornHerald Cards.motherRachelStarbornHerald
 
 instance HasModifiersFor MotherRachelStarbornHerald where
   getModifiersFor (MotherRachelStarbornHerald a) = do

@@ -19,8 +19,6 @@ poleman =
   enemyWith
     Poleman
     Cards.poleman
-    (4, Static 4, 2)
-    (1, 1)
     ( (spawnAtL ?~ "Canal-side")
         . (preyL .~ Prey (HasMostMatchingAsset (AssetWithTitle "Innocent Reveler")))
     )

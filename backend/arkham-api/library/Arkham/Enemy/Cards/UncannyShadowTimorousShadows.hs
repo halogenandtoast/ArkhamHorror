@@ -16,7 +16,7 @@ newtype UncannyShadowTimorousShadows = UncannyShadowTimorousShadows EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 uncannyShadowTimorousShadows :: EnemyCard UncannyShadowTimorousShadows
-uncannyShadowTimorousShadows = enemy UncannyShadowTimorousShadows Cards.uncannyShadowTimorousShadows (3, Static 4, 3) (1, 1)
+uncannyShadowTimorousShadows = enemy UncannyShadowTimorousShadows Cards.uncannyShadowTimorousShadows
 
 instance HasModifiersFor UncannyShadowTimorousShadows where
   getModifiersFor (UncannyShadowTimorousShadows a) = do

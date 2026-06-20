@@ -11,7 +11,7 @@ newtype WebSpinner = WebSpinner EnemyAttrs
 
 webSpinner :: EnemyCard WebSpinner
 webSpinner =
-  enemyWith WebSpinner Cards.webSpinner (2, Static 2, 2) (1, 1)
+  enemyWith WebSpinner Cards.webSpinner
     $ spawnAtL
     ?~ SpawnAt EmptyLocation
 

@@ -14,7 +14,7 @@ newtype PriestessOfTheCoven = PriestessOfTheCoven EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 priestessOfTheCoven :: EnemyCard PriestessOfTheCoven
-priestessOfTheCoven = enemy PriestessOfTheCoven Cards.priestessOfTheCoven (2, Static 3, 2) (2, 0)
+priestessOfTheCoven = enemy PriestessOfTheCoven Cards.priestessOfTheCoven
 
 instance HasModifiersFor PriestessOfTheCoven where
   getModifiersFor (PriestessOfTheCoven a) = do

@@ -19,7 +19,7 @@ newtype EctoplasmicHorror = EctoplasmicHorror (EnemyAttrs `With` Meta)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ectoplasmicHorror :: EnemyCard EctoplasmicHorror
-ectoplasmicHorror = enemy (EctoplasmicHorror . (`with` Meta True)) Cards.ectoplasmicHorror (2, Static 2, 2) (0, 1)
+ectoplasmicHorror = enemy (EctoplasmicHorror . (`with` Meta True)) Cards.ectoplasmicHorror
 
 instance RunMessage EctoplasmicHorror where
   runMessage msg e@(EctoplasmicHorror (With attrs meta)) = case msg of

@@ -10,7 +10,7 @@ newtype DreadedShantak = DreadedShantak EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreadedShantak :: EnemyCard DreadedShantak
-dreadedShantak = enemy DreadedShantak Cards.dreadedShantak (5, Static 5, 3) (2, 1)
+dreadedShantak = enemy DreadedShantak Cards.dreadedShantak
 
 instance HasModifiersFor DreadedShantak where
   getModifiersFor (DreadedShantak a) = do

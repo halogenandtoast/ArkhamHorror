@@ -15,7 +15,7 @@ newtype BogGator = BogGator EnemyAttrs
 
 bogGator :: EnemyCard BogGator
 bogGator =
-  enemyWith BogGator Cards.bogGator (2, Static 2, 2) (1, 1)
+  enemyWith BogGator Cards.bogGator
     $ preyL
     .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 

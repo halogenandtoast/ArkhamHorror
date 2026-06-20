@@ -10,7 +10,7 @@ newtype VengefulSerpent = VengefulSerpent EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vengefulSerpent :: EnemyCard VengefulSerpent
-vengefulSerpent = enemy VengefulSerpent Cards.vengefulSerpent (2, Static 2, 2) (1, 1)
+vengefulSerpent = enemy VengefulSerpent Cards.vengefulSerpent
 
 instance HasAbilities VengefulSerpent where
   getAbilities (VengefulSerpent a) =

@@ -16,8 +16,6 @@ terrorOfTheStarsBaneOfTheElderThings =
   enemy
     TerrorOfTheStarsBaneOfTheElderThings
     Cards.terrorOfTheStarsBaneOfTheElderThings
-    (4, Static 3, 3)
-    (2, 2)
 
 instance HasModifiersFor TerrorOfTheStarsBaneOfTheElderThings where
   getModifiersFor (TerrorOfTheStarsBaneOfTheElderThings a) = do

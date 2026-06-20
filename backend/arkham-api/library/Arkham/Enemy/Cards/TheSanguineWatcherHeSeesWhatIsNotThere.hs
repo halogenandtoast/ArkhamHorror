@@ -20,8 +20,6 @@ theSanguineWatcherHeSeesWhatIsNotThere =
   enemy
     TheSanguineWatcherHeSeesWhatIsNotThere
     Cards.theSanguineWatcherHeSeesWhatIsNotThere
-    (4, Static 4, 4)
-    (2, 2)
 
 instance HasAbilities TheSanguineWatcherHeSeesWhatIsNotThere where
   getAbilities (TheSanguineWatcherHeSeesWhatIsNotThere a) =

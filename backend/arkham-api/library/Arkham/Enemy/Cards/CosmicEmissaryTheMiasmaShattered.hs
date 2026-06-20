@@ -11,7 +11,7 @@ newtype CosmicEmissaryTheMiasmaShattered = CosmicEmissaryTheMiasmaShattered Enem
 
 cosmicEmissaryTheMiasmaShattered :: EnemyCard CosmicEmissaryTheMiasmaShattered
 cosmicEmissaryTheMiasmaShattered =
-  enemyWith CosmicEmissaryTheMiasmaShattered Cards.cosmicEmissaryTheMiasmaShattered (4, Static 10, 2) (3, 0)
+  enemyWith CosmicEmissaryTheMiasmaShattered Cards.cosmicEmissaryTheMiasmaShattered
     $ (asSelfLocationL ?~ "cosmicEmissaryMiasma")
     . (preyL .~ Prey (InvestigatorWithHighestSkill #agility UneliminatedInvestigator))
 

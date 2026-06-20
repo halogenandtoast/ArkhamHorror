@@ -12,7 +12,7 @@ newtype AshleighClarke = AshleighClarke EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ashleighClarke :: EnemyCard AshleighClarke
-ashleighClarke = enemy AshleighClarke Cards.ashleighClarke (2, Static 5, 4) (0, 2)
+ashleighClarke = enemy AshleighClarke Cards.ashleighClarke
 
 instance HasModifiersFor AshleighClarke where
   getModifiersFor (AshleighClarke a) = do

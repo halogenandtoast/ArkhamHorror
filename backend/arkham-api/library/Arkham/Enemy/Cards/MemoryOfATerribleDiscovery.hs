@@ -14,7 +14,7 @@ newtype MemoryOfATerribleDiscovery = MemoryOfATerribleDiscovery EnemyAttrs
 
 memoryOfATerribleDiscovery :: EnemyCard MemoryOfATerribleDiscovery
 memoryOfATerribleDiscovery =
-  enemyWith MemoryOfATerribleDiscovery Cards.memoryOfATerribleDiscovery (3, PerPlayer 4, 3) (1, 1)
+  enemyWith MemoryOfATerribleDiscovery Cards.memoryOfATerribleDiscovery
     $ preyL
     .~ Prey (ControlsAsset $ assetIs Assets.averyClaypoolAntarcticGuide)
 

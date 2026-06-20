@@ -8,7 +8,7 @@ newtype TheRedGlovedManShroudedInMystery = TheRedGlovedManShroudedInMystery Enem
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theRedGlovedManShroudedInMystery :: EnemyCard TheRedGlovedManShroudedInMystery
-theRedGlovedManShroudedInMystery = enemy TheRedGlovedManShroudedInMystery Cards.theRedGlovedManShroudedInMystery (5, PerPlayer 2, 5) (1, 1)
+theRedGlovedManShroudedInMystery = enemy TheRedGlovedManShroudedInMystery Cards.theRedGlovedManShroudedInMystery
 
 instance RunMessage TheRedGlovedManShroudedInMystery where
   runMessage msg (TheRedGlovedManShroudedInMystery attrs) = runQueueT $ case msg of

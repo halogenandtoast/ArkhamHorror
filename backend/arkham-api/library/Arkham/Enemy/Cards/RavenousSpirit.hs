@@ -16,7 +16,7 @@ newtype RavenousSpirit = RavenousSpirit EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ravenousSpirit :: EnemyCard RavenousSpirit
-ravenousSpirit = enemy RavenousSpirit Cards.ravenousSpirit (4, Static 4, 4) (1, 1)
+ravenousSpirit = enemy RavenousSpirit Cards.ravenousSpirit
 
 instance HasModifiersFor RavenousSpirit where
   getModifiersFor (RavenousSpirit a) = do

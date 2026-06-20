@@ -17,7 +17,7 @@ newtype SlitheringHybrid = SlitheringHybrid EnemyAttrs
 
 slitheringHybrid :: EnemyCard SlitheringHybrid
 slitheringHybrid =
-  enemy SlitheringHybrid Cards.slitheringHybrid (3, Static 2, 2) (0, 2)
+  enemy SlitheringHybrid Cards.slitheringHybrid
     & setSpawnAt (LocationWithMostEnemies (LocationWithTitle "Outer Fields") AnyEnemy)
 
 instance HasModifiersFor SlitheringHybrid where

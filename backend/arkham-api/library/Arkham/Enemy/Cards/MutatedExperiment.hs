@@ -10,7 +10,7 @@ newtype MutatedExperiment = MutatedExperiment EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mutatedExperiment :: EnemyCard MutatedExperiment
-mutatedExperiment = enemy MutatedExperiment Cards.mutatedExperiment (3, Static 3, 3) (1, 1)
+mutatedExperiment = enemy MutatedExperiment Cards.mutatedExperiment
 
 instance HasAbilities MutatedExperiment where
   getAbilities (MutatedExperiment a) =

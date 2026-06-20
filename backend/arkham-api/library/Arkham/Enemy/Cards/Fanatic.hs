@@ -12,7 +12,7 @@ newtype Fanatic = Fanatic EnemyAttrs
 
 fanatic :: EnemyCard Fanatic
 fanatic =
-  enemy Fanatic Cards.fanatic (3, Static 2, 3) (1, 0)
+  enemy Fanatic Cards.fanatic
     & setSpawnAt (LocationWithMostClues RevealedLocation)
 
 instance HasAbilities Fanatic where

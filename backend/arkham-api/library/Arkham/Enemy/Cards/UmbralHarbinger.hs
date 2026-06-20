@@ -12,7 +12,7 @@ newtype UmbralHarbinger = UmbralHarbinger EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 umbralHarbinger :: EnemyCard UmbralHarbinger
-umbralHarbinger = enemy UmbralHarbinger Cards.umbralHarbinger (3, Static 5, 1) (1, 1)
+umbralHarbinger = enemy UmbralHarbinger Cards.umbralHarbinger
 
 instance HasAbilities UmbralHarbinger where
   getAbilities (UmbralHarbinger a) =

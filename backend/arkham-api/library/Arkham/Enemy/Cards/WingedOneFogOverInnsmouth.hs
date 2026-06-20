@@ -20,7 +20,7 @@ newtype WingedOneFogOverInnsmouth = WingedOneFogOverInnsmouth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 wingedOneFogOverInnsmouth :: EnemyCard WingedOneFogOverInnsmouth
-wingedOneFogOverInnsmouth = enemy WingedOneFogOverInnsmouth Cards.wingedOneFogOverInnsmouth (3, Static 5, 0) (1, 1)
+wingedOneFogOverInnsmouth = enemy WingedOneFogOverInnsmouth Cards.wingedOneFogOverInnsmouth
 
 instance HasModifiersFor WingedOneFogOverInnsmouth where
   getModifiersFor (WingedOneFogOverInnsmouth a) = modifySelfMaybe a do

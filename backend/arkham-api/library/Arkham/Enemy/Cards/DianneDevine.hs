@@ -14,7 +14,7 @@ newtype DianneDevine = DianneDevine EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dianneDevine :: EnemyCard DianneDevine
-dianneDevine = enemy DianneDevine Cards.dianneDevine (2, Static 3, 2) (0, 0)
+dianneDevine = enemy DianneDevine Cards.dianneDevine
 
 instance HasModifiersFor DianneDevine where
   getModifiersFor (DianneDevine a) = do

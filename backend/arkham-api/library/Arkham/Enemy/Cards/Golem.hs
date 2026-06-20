@@ -10,7 +10,7 @@ newtype Golem = Golem EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 golem :: EnemyCard Golem
-golem = enemy Golem Cards.golem (1, Static 1, 1) (1, 0)
+golem = enemy Golem Cards.golem
 
 instance RunMessage Golem where
   runMessage msg e@(Golem attrs) = runQueueT $ case msg of 

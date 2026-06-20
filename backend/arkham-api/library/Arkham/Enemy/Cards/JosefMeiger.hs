@@ -15,7 +15,7 @@ newtype JosefMeiger = JosefMeiger EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 josefMeiger :: EnemyCard JosefMeiger
-josefMeiger = enemy JosefMeiger Cards.josefMeiger (3, Static 3, 3) (1, 1)
+josefMeiger = enemy JosefMeiger Cards.josefMeiger
 
 instance HasAbilities JosefMeiger where
   getAbilities (JosefMeiger a) =

@@ -14,7 +14,7 @@ newtype SeafloorLeviathan = SeafloorLeviathan EnemyAttrs
 
 seafloorLeviathan :: EnemyCard SeafloorLeviathan
 seafloorLeviathan =
-  enemyWith SeafloorLeviathan Cards.seafloorLeviathan (2, Static 4, 2) (1, 1)
+  enemyWith SeafloorLeviathan Cards.seafloorLeviathan
     $ spawnAtL
     ?~ "Barrier Core"
 

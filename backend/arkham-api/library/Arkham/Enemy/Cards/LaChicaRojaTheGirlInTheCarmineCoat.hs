@@ -14,8 +14,6 @@ laChicaRojaTheGirlInTheCarmineCoat =
   enemy
     LaChicaRojaTheGirlInTheCarmineCoat
     Cards.laChicaRojaTheGirlInTheCarmineCoat
-    (3, Static 2, 5)
-    (1, 1)
 
 instance HasAbilities LaChicaRojaTheGirlInTheCarmineCoat where
   getAbilities (LaChicaRojaTheGirlInTheCarmineCoat a) =

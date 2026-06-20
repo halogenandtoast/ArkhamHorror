@@ -16,13 +16,13 @@ newtype EtherealEntity = EtherealEntity EnemyAttrs
 
 etherealEntity :: EnemyCard EtherealEntity
 etherealEntity =
-  enemyWith EtherealEntity Cards.etherealEntity (2, Static 3, 1) (0, 1)
+  enemyWith EtherealEntity Cards.etherealEntity
     $ spawnAtL
     ?~ SpawnAt (locationIs Locations.athenaeumOfTheEmptySky)
 
 etherealEntityWarOfTheOuterGods :: EnemyCard EtherealEntity
 etherealEntityWarOfTheOuterGods =
-  enemyWith EtherealEntity Cards.etherealEntityWarOfTheOuterGods (2, Static 3, 1) (0, 1)
+  enemyWith EtherealEntity Cards.etherealEntityWarOfTheOuterGods
     $ spawnAtL
     ?~ SpawnAt (locationIs Locations.athenaeumOfTheEmptySky)
 

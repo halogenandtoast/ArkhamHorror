@@ -14,7 +14,7 @@ newtype ThingInTheSarcophagus = ThingInTheSarcophagus EnemyAttrs
 
 thingInTheSarcophagus :: EnemyCard ThingInTheSarcophagus
 thingInTheSarcophagus =
-  enemyWith ThingInTheSarcophagus Cards.thingInTheSarcophagus (3, Static 5, 2) (1, 1)
+  enemyWith ThingInTheSarcophagus Cards.thingInTheSarcophagus
     $ spawnAtL
     ?~ SpawnAt (LocationWithMostClues Anywhere)
 

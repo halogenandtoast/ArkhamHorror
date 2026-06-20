@@ -13,7 +13,7 @@ newtype GreyWeaver = GreyWeaver EnemyAttrs
 
 greyWeaver :: EnemyCard GreyWeaver
 greyWeaver =
-  enemyWith GreyWeaver Cards.greyWeaver (4, Static 5, 3) (1, 2)
+  enemyWith GreyWeaver Cards.greyWeaver
     $ preyL
     .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 

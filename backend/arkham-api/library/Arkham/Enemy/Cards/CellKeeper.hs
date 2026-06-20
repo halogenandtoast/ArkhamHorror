@@ -16,7 +16,7 @@ newtype CellKeeper = CellKeeper EnemyAttrs
 
 cellKeeper :: EnemyCard CellKeeper
 cellKeeper =
-  enemy CellKeeper Cards.cellKeeper (3, Static 3, 2) (0, 2)
+  enemy CellKeeper Cards.cellKeeper
     & setSpawnAt (LocationWithTrait Sanctum)
 
 instance HasAbilities CellKeeper where

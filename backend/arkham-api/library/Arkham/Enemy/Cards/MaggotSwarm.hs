@@ -11,7 +11,7 @@ newtype MaggotSwarm = MaggotSwarm EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 maggotSwarm :: EnemyCard MaggotSwarm
-maggotSwarm = enemy MaggotSwarm Cards.maggotSwarm (3, Static 2, 3) (0, 1)
+maggotSwarm = enemy MaggotSwarm Cards.maggotSwarm
 
 instance HasModifiersFor MaggotSwarm where
   getModifiersFor (MaggotSwarm a) = do

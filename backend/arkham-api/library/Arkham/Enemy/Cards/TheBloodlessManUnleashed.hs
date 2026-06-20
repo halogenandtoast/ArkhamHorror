@@ -15,8 +15,6 @@ theBloodlessManUnleashed =
   enemy
     TheBloodlessManUnleashed
     Cards.theBloodlessManUnleashed
-    (3, PerPlayer 6, 3)
-    (2, 1)
 
 instance HasAbilities TheBloodlessManUnleashed where
   getAbilities (TheBloodlessManUnleashed a) =

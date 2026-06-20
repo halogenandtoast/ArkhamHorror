@@ -11,7 +11,7 @@ newtype EaterOfTheDepths = EaterOfTheDepths EnemyAttrs
 
 eaterOfTheDepths :: EnemyCard EaterOfTheDepths
 eaterOfTheDepths =
-  enemyWith EaterOfTheDepths Cards.eaterOfTheDepths (5, Static 6, 0) (3, 2)
+  enemyWith EaterOfTheDepths Cards.eaterOfTheDepths
     $ spawnAtL
     ?~ SpawnAtRandomSetAsideLocation
 

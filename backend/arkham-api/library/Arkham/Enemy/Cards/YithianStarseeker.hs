@@ -11,7 +11,7 @@ newtype YithianStarseeker = YithianStarseeker EnemyAttrs
 
 yithianStarseeker :: EnemyCard YithianStarseeker
 yithianStarseeker =
-  enemy YithianStarseeker Cards.yithianStarseeker (3, Static 4, 5) (2, 1)
+  enemy YithianStarseeker Cards.yithianStarseeker
     & setSpawnAt "Another Dimension"
 
 instance HasAbilities YithianStarseeker where

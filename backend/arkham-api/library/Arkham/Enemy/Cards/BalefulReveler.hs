@@ -17,7 +17,7 @@ newtype BalefulReveler = BalefulReveler EnemyAttrs
 
 -- TODO: spawn at is complicated here
 balefulReveler :: EnemyCard BalefulReveler
-balefulReveler = enemy BalefulReveler Cards.balefulReveler (4, PerPlayer 5, 3) (2, 2)
+balefulReveler = enemy BalefulReveler Cards.balefulReveler
 
 instance HasAbilities BalefulReveler where
   getAbilities (BalefulReveler a) =

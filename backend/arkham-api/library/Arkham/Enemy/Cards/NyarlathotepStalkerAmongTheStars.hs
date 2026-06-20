@@ -19,8 +19,6 @@ nyarlathotepStalkerAmongTheStars =
   enemy
     NyarlathotepStalkerAmongTheStars
     Cards.nyarlathotepStalkerAmongTheStars
-    (3, Static 7, 3)
-    (1, 1)
 
 instance RunMessage NyarlathotepStalkerAmongTheStars where
   runMessage msg e@(NyarlathotepStalkerAmongTheStars attrs) = case msg of

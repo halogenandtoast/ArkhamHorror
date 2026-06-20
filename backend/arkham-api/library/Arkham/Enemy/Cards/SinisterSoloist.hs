@@ -12,7 +12,7 @@ newtype SinisterSoloist = SinisterSoloist EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sinisterSoloist :: EnemyCard SinisterSoloist
-sinisterSoloist = enemy SinisterSoloist Cards.sinisterSoloist (4, PerPlayer 6, 5) (2, 2)
+sinisterSoloist = enemy SinisterSoloist Cards.sinisterSoloist
 
 instance HasModifiersFor SinisterSoloist where
   getModifiersFor (SinisterSoloist a) = do

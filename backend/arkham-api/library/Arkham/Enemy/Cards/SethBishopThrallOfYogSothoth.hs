@@ -15,7 +15,7 @@ newtype SethBishopThrallOfYogSothoth = SethBishopThrallOfYogSothoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sethBishopThrallOfYogSothoth :: EnemyCard SethBishopThrallOfYogSothoth
-sethBishopThrallOfYogSothoth = enemy SethBishopThrallOfYogSothoth Cards.sethBishopThrallOfYogSothoth (5, PerPlayer 4, 5) (1, 1)
+sethBishopThrallOfYogSothoth = enemy SethBishopThrallOfYogSothoth Cards.sethBishopThrallOfYogSothoth
 
 instance HasAbilities SethBishopThrallOfYogSothoth where
   getAbilities (SethBishopThrallOfYogSothoth a) =

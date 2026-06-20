@@ -16,7 +16,7 @@ newtype AmaranthCorruptionRevealed = AmaranthCorruptionRevealed EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 amaranthCorruptionRevealed :: EnemyCard AmaranthCorruptionRevealed
-amaranthCorruptionRevealed = enemy AmaranthCorruptionRevealed Cards.amaranthCorruptionRevealed (4, PerPlayer 6, 4) (2, 1)
+amaranthCorruptionRevealed = enemy AmaranthCorruptionRevealed Cards.amaranthCorruptionRevealed
 
 instance HasAbilities AmaranthCorruptionRevealed where
   getAbilities (AmaranthCorruptionRevealed a) =

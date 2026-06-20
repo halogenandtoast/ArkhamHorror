@@ -14,7 +14,7 @@ newtype MoonBeast = MoonBeast EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 moonBeast :: EnemyCard MoonBeast
-moonBeast = enemy MoonBeast Cards.moonBeast (5, Static 5, 1) (1, 1)
+moonBeast = enemy MoonBeast Cards.moonBeast
 
 instance HasAbilities MoonBeast where
   getAbilities (MoonBeast a) =

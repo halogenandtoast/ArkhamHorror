@@ -16,7 +16,7 @@ newtype TheManInThePallidMask = TheManInThePallidMask EnemyAttrs
 
 theManInThePallidMask :: EnemyCard TheManInThePallidMask
 theManInThePallidMask =
-  enemy TheManInThePallidMask Cards.theManInThePallidMask (4, Static 3, 4) (0, 1)
+  enemy TheManInThePallidMask Cards.theManInThePallidMask
     & setSpawnAt (FarthestLocationFromAll Anywhere)
 
 instance HasAbilities TheManInThePallidMask where

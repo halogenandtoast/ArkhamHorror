@@ -14,7 +14,7 @@ newtype FacelessAbductor = FacelessAbductor EnemyAttrs
 
 facelessAbductor :: EnemyCard FacelessAbductor
 facelessAbductor =
-  enemyWith FacelessAbductor Cards.facelessAbductor (4, Static 4, 3) (1, 2)
+  enemyWith FacelessAbductor Cards.facelessAbductor
     $ spawnAtL
     ?~ SpawnAt (NearestLocationToYou $ LocationWithTrait Prison)
 

@@ -11,7 +11,7 @@ newtype LodgeEnforcer = LodgeEnforcer EnemyAttrs
 
 lodgeEnforcer :: EnemyCard LodgeEnforcer
 lodgeEnforcer =
-  enemyWith LodgeEnforcer Cards.lodgeEnforcer (3, Static 4, 3) (1, 1)
+  enemyWith LodgeEnforcer Cards.lodgeEnforcer
     $ spawnAtL
     ?~ SpawnAtFirst
       [SpawnAt $ MostBreaches $ LocationWithBreaches (AtLeast $ Static 1), "Silver Twilight Lodge"]

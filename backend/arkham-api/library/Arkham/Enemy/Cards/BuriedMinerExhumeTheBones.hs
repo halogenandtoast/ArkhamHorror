@@ -16,7 +16,7 @@ newtype BuriedMinerExhumeTheBones = BuriedMinerExhumeTheBones EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 buriedMinerExhumeTheBones :: EnemyCard BuriedMinerExhumeTheBones
-buriedMinerExhumeTheBones = enemy BuriedMinerExhumeTheBones Cards.buriedMinerExhumeTheBones (2, Static 4, 4) (1, 1)
+buriedMinerExhumeTheBones = enemy BuriedMinerExhumeTheBones Cards.buriedMinerExhumeTheBones
 
 instance HasModifiersFor BuriedMinerExhumeTheBones where
   getModifiersFor (BuriedMinerExhumeTheBones a) = do

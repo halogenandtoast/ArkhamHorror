@@ -20,8 +20,6 @@ unsealedPhantasm =
   enemyWith
     UnsealedPhantasm
     Cards.unsealedPhantasm
-    (5, Static 5, 4)
-    (2, 2)
     ( spawnAtL
         ?~ SpawnAtFirst
           [ SpawnAt (NearestLocationToYou $ "Mist-Pylon" <> LocationWithoutModifier (ScenarioModifier "collapsed"))

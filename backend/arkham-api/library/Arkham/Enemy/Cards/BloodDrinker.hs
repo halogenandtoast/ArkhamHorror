@@ -10,7 +10,7 @@ newtype BloodDrinker = BloodDrinker EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bloodDrinker :: EnemyCard BloodDrinker
-bloodDrinker = enemy BloodDrinker Cards.bloodDrinker (2, Static 3, 4) (1, 1)
+bloodDrinker = enemy BloodDrinker Cards.bloodDrinker
 
 instance HasAbilities BloodDrinker where
   getAbilities (BloodDrinker a) =

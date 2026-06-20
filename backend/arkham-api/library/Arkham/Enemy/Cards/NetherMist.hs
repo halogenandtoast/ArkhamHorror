@@ -16,7 +16,7 @@ instance HasAbilities NetherMist where
 
 netherMist :: EnemyCard NetherMist
 netherMist =
-  enemy NetherMist Cards.netherMist (3, Static 4, 3) (1, 1)
+  enemy NetherMist Cards.netherMist
     & setPrey (at_ $ LocationWithMostClues $ LocationWithInvestigator Anyone)
 
 instance RunMessage NetherMist where

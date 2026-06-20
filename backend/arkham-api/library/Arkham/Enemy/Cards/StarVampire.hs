@@ -11,7 +11,7 @@ newtype StarVampire = StarVampire EnemyAttrs
 
 starVampire :: EnemyCard StarVampire
 starVampire =
-  enemy StarVampire Cards.starVampire (4, Static 5, 1) (1, 0)
+  enemy StarVampire Cards.starVampire
     & setPrey MostRemainingHealth
 
 instance HasAbilities StarVampire where

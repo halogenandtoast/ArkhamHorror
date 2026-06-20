@@ -148,6 +148,16 @@ const showSkipAll = computed(() => {
 
   return isCurrentPlayersInvestigator.value && skipAllAvailable?.value === true
 })
+const canSkipTriggers = computed(() => skipTriggersAction.value !== -1 || showSkipAll.value)
+
+function skipTriggers() {
+  if (skipTriggersAction.value !== -1) {
+    emit('choose', skipTriggersAction.value)
+    return
+  }
+
+  skipAllTriggers && skipAllTriggers()
+}
 
 const investigatorClass = computed(() => {
   return ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.meta !== 'Neutral' ? (props.investigator.meta ?? props.investigator.class) : props.investigator.class
@@ -497,8 +507,8 @@ const spadeInjury = computed(() => {
 
             <span class="skip-triggers-group" :class="{ 'skip-triggers-group--paired': showSkipAll }">
               <button
-                :disabled="skipTriggersAction == -1 || skipAllInProgress"
-                @click="$emit('choose', skipTriggersAction)"
+                :disabled="!canSkipTriggers || skipAllInProgress"
+                @click="skipTriggers"
                 class="skip-triggers-button"
               >{{ isMobile ? t('skip') : $t('investigator.skipTriggers') }}</button>
               <button

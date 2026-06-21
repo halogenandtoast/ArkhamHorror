@@ -816,10 +816,17 @@ const abilities = computed(() => {
     }, []);
 })
 
-const realityAcidBadges = computed(() => {
+interface ScenarioBadge {
+  key: string
+  icon: string
+  label: string
+  detail?: string
+}
+
+const scenarioBadges = computed<ScenarioBadge[]>(() => {
   if (props.scenario.id !== 'c85001') return []
 
-  const badges: { key: string, icon: string, label: string, detail?: string }[] = []
+  const badges: ScenarioBadge[] = []
   if (props.scenario.meta?.foodAndDrinksActive === true) {
     const damage = typeof props.scenario.meta.foodAndDrinksDamageDealt === 'number' ? props.scenario.meta.foodAndDrinksDamageDealt : 0
     badges.push({
@@ -1814,7 +1821,7 @@ async function addChaosToken(face: any){
         @choose="choose"
         @close="hideCards"
       />
-      <div class="scenario-cards">
+      <div class="scenario-cards" :class="{ 'scenario-cards--has-badges': scenarioBadges.length > 0 }">
         <div v-if="anyInTheShadowLocations || inTheShadows.length > 0 || inTheShadowsInvestigators.length > 0" class="in-the-shadows">
           <template v-if="anyInTheShadowLocations">
             <Location
@@ -2085,15 +2092,6 @@ async function addChaosToken(face: any){
                 <PoolItem v-if="damage && damage > 0" type="damage" :amount="damage" />
               </div>
             </div>
-            <div v-if="realityAcidBadges.length > 0" class="reality-acid-badges" aria-label="Reality Acid reminders">
-              <div v-for="badge in realityAcidBadges" :key="badge.key" class="reality-acid-badge" :title="badge.detail">
-                <span class="reality-acid-badge-icon" aria-hidden="true">{{ badge.icon }}</span>
-                <span class="reality-acid-badge-text">
-                  <strong>{{ badge.label }}</strong>
-                  <small v-if="badge.detail">{{ badge.detail }}</small>
-                </span>
-              </div>
-            </div>
           </div>
           <div class="keys" v-if="keys.length > 0">
             <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
@@ -2150,12 +2148,23 @@ async function addChaosToken(face: any){
         >
         </SkillTest>
 
+        <div v-if="scenarioBadges.length > 0" class="scenario-badges" aria-label="Scenario reminders">
+          <div v-for="badge in scenarioBadges" :key="badge.key" class="scenario-badge" :title="badge.detail">
+            <span class="scenario-badge-icon" aria-hidden="true">{{ badge.icon }}</span>
+            <span class="scenario-badge-text">
+              <strong>{{ badge.label }}</strong>
+              <small v-if="badge.detail">{{ badge.detail }}</small>
+            </span>
+          </div>
+        </div>
+
       </div>
 
 
       <div class="location-cards-container" @dblclick.passive="toggleZoom">
-        <Connections :game="game" :playerId="playerId" :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation" />
         <div class="location-cards-scroller" ref="scrollerRef">
+        <div class="location-cards-stage">
+        <Connections :game="game" :playerId="playerId" :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation" />
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :css="props.scenario.id !== 'c10651'" :style="locationStyles" @before-leave="beforeLeave">
           <div
             v-for="location in locations"
@@ -2240,6 +2249,7 @@ async function addChaosToken(face: any){
             </template>
           </template>
         </transition-group>
+        </div>
         <div v-if="playerLocationZones.length > 0" class="player-location-zones">
           <section
             v-for="zone in playerLocationZones"
@@ -2403,6 +2413,10 @@ async function addChaosToken(face: any){
   width: 100%;
   gap: 10px;
   z-index: var(--z-index-neg-2);
+  background: rgba(0, 0, 0, 0.14);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+
   @media (max-width: 800px) and (orientation: portrait) {
     padding-top: 10px;
     padding-bottom: 0;
@@ -2415,6 +2429,10 @@ async function addChaosToken(face: any){
    the revealed card and its buttons stay clickable. */
 .scenario-cards:has(.treachery-group.is-revealed) {
   z-index: var(--z-index-1);
+}
+
+.scenario-cards--has-badges {
+  padding-bottom: 56px;
 }
 
 .clue {
@@ -2555,9 +2573,20 @@ async function addChaosToken(face: any){
   }
 }
 
-.location-cards {
+.location-cards-stage {
+  position: relative;
   display: grid;
   flex-shrink: 0;
+  width: max-content;
+  height: max-content;
+  overflow: hidden;
+}
+
+.location-cards {
+  display: grid;
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 1;
   transition: transform 0.2s ease;
 }
 
@@ -2565,7 +2594,6 @@ async function addChaosToken(face: any){
   display: flex;
   overflow: hidden;
   flex: 1;
-  padding-top: 32px;
   position: relative;
   @media (max-width: 800px) and (orientation: portrait) {
     padding-top: 5px;
@@ -2764,48 +2792,67 @@ async function addChaosToken(face: any){
   width: fit-content;
 }
 
-.reality-acid-badges {
+.scenario-badges {
   position: absolute;
-  top: 0;
-  left: calc(100% + 8px);
+  right: 0;
+  bottom: 0;
+  left: 0;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   gap: 6px;
-  width: 240px;
+  min-height: 34px;
+  padding: 5px 10px;
+  overflow: hidden;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.reality-acid-badge {
+.scenario-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  border: 1px solid rgb(255 255 255 / 25%);
-  border-radius: 10px;
-  background: rgb(14 17 20 / 90%);
+  gap: 7px;
+  min-width: 0;
+  max-width: 260px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-left: 3px solid rgb(160 185 190 / 55%);
+  border-radius: 6px;
+  background: rgb(18 21 24 / 92%);
   color: white;
-  padding: 7px 9px;
-  box-shadow: 0 4px 14px rgb(0 0 0 / 45%);
+  padding: 4px 8px 4px 6px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 18%);
 }
 
-.reality-acid-badge-icon {
-  min-width: 30px;
-  font-size: 1.25rem;
-  text-align: center;
+.scenario-badge-icon {
+  flex: 0 0 auto;
+  font-size: 0.95rem;
+  line-height: 1;
+  white-space: nowrap;
 }
 
-.reality-acid-badge-text {
+.scenario-badge-text {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  line-height: 1.15;
+  min-width: 0;
+  line-height: 1.05;
 }
 
-.reality-acid-badge-text strong {
-  font-size: 0.78rem;
+.scenario-badge-text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  letter-spacing: 0.01em;
 }
 
-.reality-acid-badge-text small {
-  opacity: 0.75;
-  font-size: 0.66rem;
+.scenario-badge-text small {
+  overflow: hidden;
+  opacity: 0.68;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.58rem;
 }
 
 .scenario-cards-under {

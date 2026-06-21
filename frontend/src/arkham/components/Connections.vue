@@ -628,8 +628,8 @@ onBeforeUnmount(()=> {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index:var(--z-index-neg-1);
-  overflow: visible !important;
+  z-index: 0;
+  overflow: hidden;
 }
 
 .line{

@@ -5,6 +5,7 @@ import Arkham.Id
 import Arkham.Investigator.Cards
 import Arkham.Name
 import Arkham.Prelude
+import Data.Aeson.Types (typeMismatch)
 import GHC.Records
 
 data ArkhamDBDecklist = ArkhamDBDecklist
@@ -15,23 +16,24 @@ data ArkhamDBDecklist = ArkhamDBDecklist
   , meta :: Maybe Text
   , taboo_id :: Maybe Int
   , url :: Maybe Text
-  , decklist_id :: Maybe Int
+  , decklist_id :: Maybe Text
   , decklist_name :: Maybe Text
   }
   deriving stock (Generic, Show, Ord, Eq, Data)
 
 instance ToJSON ArkhamDBDecklist where
-  toJSON ArkhamDBDecklist {..} = object
-    [ "slots" .= slots
-    , "sideSlots" .= sideSlots
-    , "investigator_code" .= investigator_code
-    , "investigator_name" .= investigator_name
-    , "meta" .= meta
-    , "taboo_id" .= taboo_id
-    , "url" .= url
-    , "id" .= decklist_id
-    , "name" .= decklist_name
-    ]
+  toJSON ArkhamDBDecklist {..} =
+    object
+      [ "slots" .= slots
+      , "sideSlots" .= sideSlots
+      , "investigator_code" .= investigator_code
+      , "investigator_name" .= investigator_name
+      , "meta" .= meta
+      , "taboo_id" .= taboo_id
+      , "url" .= url
+      , "id" .= decklist_id
+      , "name" .= decklist_name
+      ]
 
 data ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
   { alternate_front :: Maybe InvestigatorId
@@ -65,6 +67,12 @@ instance FromJSON ArkhamDBDecklist where
     meta <- o .:? "meta"
     taboo_id <- o .:? "taboo_id"
     url <- o .:? "url"
-    decklist_id <- o .:? "id"
+    decklist_id <- o .:? "id" >>= traverse parseDecklistId
     decklist_name <- o .:? "name"
     pure $ ArkhamDBDecklist {..}
+   where
+    parseDecklistId = \case
+      String t -> pure t
+      Number n -> pure $ tshow n
+      Null -> pure ""
+      v -> typeMismatch "Decklist id" v

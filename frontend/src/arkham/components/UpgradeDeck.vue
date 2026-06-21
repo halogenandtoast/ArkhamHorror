@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { displayTabooList } from '@/arkham/taboo';
 import { ref, computed, inject } from 'vue';
-import { fetchDeckList, upgradeDeck } from '@/arkham/api';
+import { upgradeDeck } from '@/arkham/api';
 import { imgsrc, localizeArkhamDBBaseUrl, processArkhamBuildDeck } from '@/arkham/helpers';
 import { ArkhamDbDecklist } from '@/arkham/types/Deck';
 import { Game } from '@/arkham/types/Game';
@@ -214,8 +214,8 @@ function loadDeck() {
   deckList.value = null
 
   const arkhamDbRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
-  const arkhamBuildRegex = /https:\/\/arkham\.build\/(?:deck\/view|share)\/([^/]+)/
-  const arkhamBuildDecklistRegex = /https:\/\/arkham\.build\/decklist(?:\/view)?\/([^/]+)/
+  const arkhamBuildRegex = /https:\/\/arkham\.build\/(?:deck\/view|share)\/([^/?]+)/
+  const arkhamBuildDecklistRegex = /https:\/\/arkham\.build\/decklist(?:\/view)?\/([^/?]+)/
 
   let matches
   let isArkhamBuild = false
@@ -228,17 +228,15 @@ function loadDeck() {
     fetchUrl = deckUrl.value
     isArkhamBuild = true
   } else if ((matches = deck.value.match(arkhamBuildDecklistRegex))) {
-    deckUrl.value = null
-    fetchUrl = deck.value
+    deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}?type=decklist`
+    fetchUrl = deckUrl.value
     isArkhamBuild = true
   } else {
     return
   }
 
   const url = deckUrl.value
-  const request = deck.value.match(arkhamBuildDecklistRegex)
-    ? fetchDeckList(fetchUrl)
-    : fetch(fetchUrl).then((response) => response.json() as Promise<ArkhamDbDecklist>)
+  const request = fetch(fetchUrl).then((response) => response.json() as Promise<ArkhamDbDecklist>)
 
   request
     .then((data) => {

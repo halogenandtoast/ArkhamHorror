@@ -76,6 +76,7 @@ import Arkham.Helpers.Card (
   cardIsFast',
   drawThisCardFrom,
   extendedCardMatch,
+  getCardEntityTarget,
   getModifiedCardCost,
   passesLimits,
  )
@@ -860,16 +861,36 @@ handleDoInvestigatorDrewPlayerCardFrom a@InvestigatorAttrs{..} iid card mdeck = 
   let
     cardFilter :: IsCard c => [c] -> [c]
     cardFilter = filter ((/= card.id) . toCardId)
+  -- Cards drawn simultaneously are placed in hand up front (handleDoDrawCardsV2),
+  -- then this deferred handler finalizes each draw. An effect resolving between
+  -- those two steps can relocate a just-drawn card before we get here -- e.g. a
+  -- sibling weakness's revelation that grants an action to play it (At a
+  -- Crossroads), or a random discard triggered during that action. By then the
+  -- card has settled into a final zone, and finalizing the draw would corrupt
+  -- state: re-adding it to hand leaves a phantom duplicate of the in-play copy,
+  -- and the zone strips below pull it back out of the discard, orphaning it. So
+  -- only finalize while the card is still in flight; if it has settled in play, or
+  -- (having been discarded out from under us) in the discard pile, leave it be.
+  inPlay <- isJust <$> getCardEntityTarget (toCard card)
+  let
+    drawnFromDiscard = case mdeck of
+      Just (Deck.InvestigatorDiscard _) -> True
+      _ -> False
+    settledElsewhere =
+      inPlay || (not drawnFromDiscard && card.id `elem` map toCardId investigatorDiscard)
   doCheck <- hasModifier iid CheckHandSizeAfterDraw
   when doCheck $ push $ CheckHandSize iid
   pure
-    $ a
-    & (handL %~ nub . (toCard card :))
-    & (deckL %~ filter ((/= card.id) . toCardId))
-    & (foundCardsL . each %~ cardFilter)
-    & (cardsUnderneathL %~ cardFilter)
-    & (discardL %~ cardFilter)
-    & (bondedCardsL %~ cardFilter)
+    $ if settledElsewhere
+      then a
+      else
+        a
+          & (handL %~ nub . (toCard card :))
+          & (deckL %~ filter ((/= card.id) . toCardId))
+          & (foundCardsL . each %~ cardFilter)
+          & (cardsUnderneathL %~ cardFilter)
+          & (discardL %~ cardFilter)
+          & (bondedCardsL %~ cardFilter)
 
 handleEmptyDeck a@InvestigatorAttrs{..} iid = do
   modifiers' <- getModifiers (toTarget a)

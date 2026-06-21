@@ -170,7 +170,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           let iid = InvestigatorId (cdCardCode card)
           push
             $ LoadDecklist player
-            $ ArkhamDBDecklist mempty mempty iid (toTitle card) Nothing Nothing Nothing
+            $ ArkhamDBDecklist mempty mempty iid (toTitle card) Nothing Nothing Nothing Nothing Nothing
           push $ DrawAndChooseTarot iid Upright 1
           forInvestigator iid (DoStep 3 (LoadScenario opts))
       pure s
@@ -276,6 +276,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
               Nothing
               Nothing
               Nothing -- TODO: should we figure out the taboo list here??
+              Nothing
+              Nothing
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro"

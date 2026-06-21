@@ -46,6 +46,9 @@ const deckId = ref<string | null>(null)
 const deckName = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const deckList = ref<ArkhamDbDecklist | null>(null)
+const normalizeCode = (code: string) => code.replace(/^c/, '')
+const isInvestigatorImplemented = (code: string) =>
+  investigators.value.includes(code) || investigators.value.includes(normalizeCode(code))
 const maybeSetPortrait = (code: string | null | undefined) => {
   if (!code || !props.setPortrait) return
   props.setPortrait(imgsrc(`portraits/${normalizeCode(code)}.jpg`))
@@ -65,7 +68,7 @@ function loadDeckFromFile(e: Event) {
       deckList.value = data
       investigator.value = null
       investigatorError.value = null
-      if (investigators.value.includes(data.investigator_code)) {
+      if (isInvestigatorImplemented(data.investigator_code)) {
         if(data.meta && data.meta.alternate_front) {
           investigator.value = data.meta.alternate_front
           if (props.setPortrait) {
@@ -102,7 +105,7 @@ async function loadDeck() {
   if (!dl) return
 
   const invCode = resolvedInvestigatorCode(dl)
-  const invImplemented = investigators.value.includes(dl.investigator_code)
+  const invImplemented = isInvestigatorImplemented(dl.investigator_code)
 
   if (invImplemented) {
     investigator.value = invCode
@@ -119,7 +122,6 @@ async function loadDeck() {
   await runValidations()
 }
 
-const normalizeCode = (code: string) => code.replace(/^c/, '')
 const cardByCode = computed(() => {
   const m = new Map<string, ArkhamDBCard>()
   for (const c of cards.value) m.set(normalizeCode(c.cardCode), c)

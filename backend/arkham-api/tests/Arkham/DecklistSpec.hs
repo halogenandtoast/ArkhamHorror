@@ -42,6 +42,8 @@ extraDeckDecklist =
     , meta = Just "{\"extra_deck\":\"05153\"}"
     , taboo_id = Just 8
     , url = Nothing
+    , decklist_id = Nothing
+    , decklist_name = Nothing
     }
 
 sideSlotsDecklist :: ArkhamDBDecklist
@@ -54,4 +56,6 @@ sideSlotsDecklist =
     , meta = Nothing
     , taboo_id = Just 8
     , url = Nothing
+    , decklist_id = Nothing
+    , decklist_name = Nothing
     }

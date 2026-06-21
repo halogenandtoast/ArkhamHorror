@@ -229,6 +229,7 @@
     "deleteDeck": "删除牌组"
   },
   "deckList": {
+    "newDeck": "新牌组",
     "saveToDeckList": "保存到牌组列表",
     "saveToDeckListDescription": "保留此牌组以供未来的战役使用"
   },

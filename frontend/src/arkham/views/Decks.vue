@@ -80,7 +80,7 @@ async function sync(deck: Arkham.Deck) {
     <div id="decks">
       <header class="decks-header">
         <h2>{{ $t('decks') }}</h2>
-        <PrimaryButton :label="showNewDeck ? t('cancel') : t('newDeck')" :danger="showNewDeck" @click="showNewDeck = !showNewDeck" />
+        <PrimaryButton :label="showNewDeck ? t('cancel') : t('deckList.newDeck')" :danger="showNewDeck" @click="showNewDeck = !showNewDeck" />
       </header>
 
       <div v-if="showNewDeck" class="new-deck-panel">

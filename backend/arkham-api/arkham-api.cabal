@@ -6909,6 +6909,7 @@ test-suite spec
       Arkham.Enemy.Cards.TonysQuarrySpec
       Arkham.Enemy.Cards.WatcherFromAnotherDimensionSpec
       Arkham.Event.Events.AstoundingRevelationSpec
+      Arkham.Event.Events.AtACrossroads1Spec
       Arkham.Event.Events.BackstabSpec
       Arkham.Event.Events.BaitAndSwitchSpec
       Arkham.Event.Events.Barricade3Spec

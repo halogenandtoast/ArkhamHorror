@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import {imgsrc, localizeArkhamDBBaseUrl, processArkhamBuildDeck} from '@/arkham/helpers';
-import { fetchDeckList } from '@/arkham/api';
 
 const model = defineModel()
 const deck = ref<string | null>(null)
@@ -9,8 +8,8 @@ const deckUrl = ref<string | null>(null)
 const error = ref<string | null>(null)
 
 const arkhamDbRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
-const arkhamBuildShareRegex = /https:\/\/arkham\.build\/(?:deck\/view|share(?:\/view)?)\/([^/]+)/
-const arkhamBuildDecklistRegex = /https:\/\/arkham\.build\/decklist(?:\/view)?\/([^/]+)/
+const arkhamBuildShareRegex = /https:\/\/arkham\.build\/(?:deck\/view|share(?:\/view)?)\/([^/?]+)/
+const arkhamBuildDecklistRegex = /https:\/\/arkham\.build\/decklist(?:\/view)?\/([^/?]+)/
 const isArkhamBuild = computed(() => deck.value && (deck.value.match(arkhamBuildShareRegex) || deck.value.match(arkhamBuildDecklistRegex)))
 
 async function loadDeck() {
@@ -39,14 +38,19 @@ async function loadDeck() {
       error.value = "Could not find deck, please make sure you have created a public share."
     }
   } else if (matches = deck.value.match(arkhamBuildDecklistRegex)) {
-    deckUrl.value = null
+    deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}?type=decklist`
     try {
-      const data = await fetchDeckList(deck.value)
-      const deckData = processArkhamBuildDeck(data, null)
-      if (Object.keys(deckData.slots).length === 0) {
-        error.value = "Is this deck empty?"
-      } else{
-        model.value = deckData
+      const response = await fetch(deckUrl.value)
+      if (response.ok) {
+        const data = await response.json()
+        const deckData = processArkhamBuildDeck(data, deckUrl.value)
+        if (Object.keys(deckData.slots).length === 0) {
+          error.value = "Is this deck empty?"
+        } else{
+          model.value = deckData
+        }
+      } else {
+        error.value = "Could not find decklist."
       }
     } catch {
       error.value = "Could not find decklist."

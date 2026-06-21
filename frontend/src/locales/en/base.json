@@ -240,6 +240,7 @@
     "deleteDeck": "Delete deck"
   },
   "deckList": {
+    "newDeck": "New Deck",
     "saveToDeckList": "Save to Deck List",
     "saveToDeckListDescription": "Keep this deck available for future campaigns"
   },

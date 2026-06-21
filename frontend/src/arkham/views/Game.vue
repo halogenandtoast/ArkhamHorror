@@ -1316,12 +1316,6 @@ onUnmounted(() => {
       />
     </div>
     <CardOverlay />
-    <div
-      v-if="realityAcidLightActive"
-      class="reality-acid-flashlight"
-      :style="{ '--flashlight-x': `${flashlightX}px`, '--flashlight-y': `${flashlightY}px` }"
-      aria-hidden="true"
-    ></div>
     <button
       v-if="realityAcidLightDevoured"
       type="button"
@@ -1335,6 +1329,12 @@ onUnmounted(() => {
       </span>
       <span class="reality-acid-light-switch-label">{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</span>
     </button>
+    <div
+      v-if="realityAcidLightActive"
+      class="reality-acid-flashlight"
+      :style="{ '--flashlight-x': `${flashlightX}px`, '--flashlight-y': `${flashlightY}px` }"
+      aria-hidden="true"
+    ></div>
     <Draggable v-if="showShortcuts">
       <div class="shortcuts-modal">
         <div class="shortcuts-header">

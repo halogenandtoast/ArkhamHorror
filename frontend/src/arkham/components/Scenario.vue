@@ -869,6 +869,8 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
   return badges
 })
 
+const showScenarioNotifierBar = computed(() => scenarioBadges.value.length > 0)
+
 const rotationSteps = ref(0)
 const transpose = <T>(grid: T[][]): T[][] =>
   (grid[0] ?? []).map((_col, i) => grid.map(row => row[i]))
@@ -1690,7 +1692,7 @@ async function addChaosToken(face: any){
     <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose"/>
   </div>
   <div v-else-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
-    <div class="scenario-body" :class="{'split-view': splitView }">
+    <div class="scenario-body" :class="{'split-view': splitView, 'scenario-body--notifier-overlays': showScenarioNotifierBar }">
       <Draggable v-if="showOutOfPlay || forcedShowOutOfPlay">
         <template #handle><header><h2>{{ $t('gameBar.outOfPlay') }}</h2></header></template>
         <div class="card-row-cards">
@@ -1821,7 +1823,7 @@ async function addChaosToken(face: any){
         @choose="choose"
         @close="hideCards"
       />
-      <div class="scenario-cards" :class="{ 'scenario-cards--has-badges': scenarioBadges.length > 0 }">
+      <div class="scenario-cards" :class="{ 'scenario-cards--has-badges': showScenarioNotifierBar }">
         <div v-if="anyInTheShadowLocations || inTheShadows.length > 0 || inTheShadowsInvestigators.length > 0" class="in-the-shadows">
           <template v-if="anyInTheShadowLocations">
             <Location
@@ -2148,7 +2150,7 @@ async function addChaosToken(face: any){
         >
         </SkillTest>
 
-        <div v-if="scenarioBadges.length > 0" class="scenario-badges" aria-label="Scenario reminders">
+        <div v-if="showScenarioNotifierBar" class="scenario-badges" aria-label="Scenario reminders">
           <div v-for="badge in scenarioBadges" :key="badge.key" class="scenario-badge" :title="badge.detail">
             <span class="scenario-badge-icon" aria-hidden="true">{{ badge.icon }}</span>
             <span class="scenario-badge-text">
@@ -2432,6 +2434,7 @@ async function addChaosToken(face: any){
 }
 
 .scenario-cards--has-badges {
+  z-index: auto;
   padding-bottom: 56px;
 }
 
@@ -2467,6 +2470,10 @@ async function addChaosToken(face: any){
 
   display: grid;
   grid-template-rows: auto 1fr;
+
+  &.scenario-body--notifier-overlays {
+    z-index: auto;
+  }
 
   &.split-view {
     grid-template-columns: 1fr 2fr;

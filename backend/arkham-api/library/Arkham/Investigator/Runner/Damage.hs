@@ -731,7 +731,9 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
                 [iid'] -> [damageInvestigator iid' True]
                 xs -> [damageInvestigator iid' False | iid' <- xs]
             DamageAssetsFirst amatcher -> do
-              healthDamageableAssets' <- select $ mapOneOf AssetWithId healthDamageableAssets <> amatcher
+              matchingAssets <- select $ mapOneOf AssetWithId healthDamageableAssets <> amatcher
+              healthDamageableAssets' <-
+                mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd matchingAssets (field AssetRemainingHealth)
               let
                 targetCount =
                   if null healthDamageableAssets'
@@ -741,7 +743,7 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
               pure
                 $ [damageInvestigator iid applyAll | null healthDamageableAssets']
                 <> map (`damageInvestigator` applyAll) healthDamageableInvestigators
-                <> map (`damageAsset` applyAll) healthDamageableAssets'
+                <> map (\(x, n) -> damageAsset x (n >= health && applyAll)) healthDamageableAssets'
             HorrorAssetsFirst _ -> do
               let
                 targetCount =
@@ -851,15 +853,17 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
                 [iid'] -> [damageInvestigator iid' True]
                 xs -> [damageInvestigator iid' False | iid' <- xs]
             DamageAssetsFirst _ -> do
+              sanityDamageableAssets' <-
+                mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd sanityDamageableAssets (field AssetRemainingSanity)
               let
                 targetCount =
-                  if null sanityDamageableAssets
+                  if null sanityDamageableAssets'
                     then 1 + length sanityDamageableInvestigators
-                    else length sanityDamageableAssets
+                    else length sanityDamageableAssets'
                 applyAll = targetCount == 1
 
               pure $ [damageInvestigator iid applyAll]
-                <> map (`damageAsset` applyAll) sanityDamageableAssets
+                <> map (\(x, n) -> damageAsset x (n >= sanity && applyAll)) sanityDamageableAssets'
                 <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
             HorrorAssetsFirst amatcher -> do
               sanityDamageableAssets' <- select $ mapOneOf AssetWithId sanityDamageableAssets <> amatcher

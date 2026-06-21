@@ -194,6 +194,33 @@ const investigatorPortraitImage = computed(() => {
   return portraitImage(props.investigator.cardCode, suffix)
 })
 
+const miniCardDevoured = computed(() => {
+  const devouredMiniCards = props.game.scenario?.meta?.devouredMiniCards
+  return Array.isArray(devouredMiniCards) && devouredMiniCards.includes(id.value)
+})
+
+const replacementMiniCardInitials = computed(() => {
+  const name = props.investigator.name.title
+    .replace(/["“”']/g, '')
+    .replace(/\([^)]*\)/g, '')
+    .trim()
+  const words = name.split(/\s+/).filter(Boolean)
+  if (words.length === 0) return '?'
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase()
+  return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase()
+})
+
+const replacementMiniCardStyle = computed(() => ({
+  '--replacement-class-color': `var(--${investigatorClass.value.toLowerCase()})`,
+}))
+
+const portraitClasses = computed(() => ({
+  'investigator--can-interact--portrait': investigatorAction.value !== -1,
+  ethereal: ethereal.value,
+  dragging: dragging.value,
+  captured: captured.value,
+}))
+
 const emitter = useEmitter()
 const cardsUnderneath = computed(() => props.investigator.cardsUnderneath)
 const cardsUnderneathLabel = computed(() => t('investigator.underneathCards', {count: cardsUnderneath.value.length}))
@@ -418,10 +445,28 @@ const spadeInjury = computed(() => {
         <line x1="5" y1="5" x2="19" y2="19" />
       </svg>
     </span>
+    <div
+      v-if="miniCardDevoured"
+      class="portrait portrait--replacement-marker portrait--devoured-mini-card"
+      :class="portraitClasses"
+      :style="replacementMiniCardStyle"
+      :draggable="debug.active"
+      v-tooltip="investigator.name.title"
+      @click="$emit('choose', investigatorAction)"
+      @dragstart="startDrag($event)"
+      @dragstop="endDrag"
+      @drop="onDrop($event)"
+      @dragover.prevent="dragover($event)"
+      @dragenter.prevent
+    >
+      {{ replacementMiniCardInitials }}
+      <img class="portrait--blob-overlay" :src="imgsrc('extra/the-blob-that-ate-everything/blob-overlay.png')" alt="" aria-hidden="true" />
+    </div>
     <img
+      v-else
       :src="investigatorPortraitImage"
       class="portrait"
-      :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1, ethereal, dragging, captured }"
+      :class="portraitClasses"
       :draggable="debug.active"
       @click="$emit('choose', investigatorAction)"
       @dragstart="startDrag($event)"
@@ -752,6 +797,38 @@ i.action {
 .portrait {
   border-radius: 3px;
   width: calc(var(--card-width) * 0.6);
+}
+
+.portrait--replacement-marker {
+  aspect-ratio: 2 / 3;
+  border: 2px dashed color-mix(in srgb, var(--replacement-class-color) 70%, white);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--replacement-class-color) 82%, black), var(--replacement-class-color));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--card-width) * 0.24);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 75%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 20%);
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.portrait--devoured-mini-card {
+  position: relative;
+  overflow: visible;
+}
+
+.portrait--blob-overlay {
+  position: absolute;
+  inset: -2px;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 .supplies {

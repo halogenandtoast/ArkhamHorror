@@ -9,19 +9,24 @@ newtype CubicOoze = CubicOoze EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 cubicOoze :: EnemyCard CubicOoze
-cubicOoze = enemyWith CubicOoze Cards.cubicOoze (spawnAtL ?~ NoSpawn)
+cubicOoze = enemyWith CubicOoze Cards.cubicOoze ((spawnAtL ?~ NoSpawn) . (delayEngagementL .~ True))
 
 instance RunMessage CubicOoze where
   runMessage msg e@(CubicOoze attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      -- Spawn engaged with you, then immediately attempt to evade. A successful
-      -- evade exhausts and disengages it (spawned at your location, exhausted
-      -- and unengaged); a failed evade leaves it engaged and it attacks you.
-      push $ EnemySpawnEngagedWith (toId attrs) (InvestigatorWithId iid)
       sid <- getRandom
-      chooseEvadeEnemyMatch sid iid (attrs.ability 1) (EnemyWithId $ toId attrs)
+      push $ TryEvadeEnemy sid iid attrs.id (IndexedSource 0 (toSource attrs)) Nothing #agility
       pure e
-    FailedSkillTest iid (Just action) (isAbilitySource attrs 1 -> True) _ _ _ | action == #evade -> do
+    PassedThisSkillTest iid (IndexedSource 0 (isSource attrs -> True)) -> do
+      push
+        $ EnemySpawn
+        $ (mkSpawnDetails attrs.id $ SpawnAt (locationWithInvestigator iid))
+          { spawnDetailsExhausted = True
+          , spawnDetailsUnengaged = True
+          }
+      pure $ CubicOoze $ attrs & delayEngagementL .~ False & exhaustedL .~ True
+    FailedThisSkillTest iid (IndexedSource 0 (isSource attrs -> True)) -> do
+      push $ EnemySpawnEngagedWith (toId attrs) (InvestigatorWithId iid)
       initiateEnemyAttack attrs (attrs.ability 1) iid
-      pure e
+      pure $ CubicOoze $ attrs & delayEngagementL .~ False
     _ -> CubicOoze <$> liftRunMessage msg attrs

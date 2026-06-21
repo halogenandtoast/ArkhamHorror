@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.TheBlobThatAteEverything (theBlobThatAteEveryth
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card (Card)
 import Arkham.DamageEffect (nonAttack)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -10,7 +11,12 @@ import Arkham.Helpers.Enemy (getModifiedKeywords)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
-import Arkham.Helpers.SkillTest (getCommittedCards, getSkillTestAction, getSkillTestTargetedEnemy, withSkillTest)
+import Arkham.Helpers.SkillTest (
+  getCommittedCards,
+  getSkillTestAction,
+  getSkillTestTargetedEnemy,
+  withSkillTest,
+ )
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
@@ -21,7 +27,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Placement (Placement (Global))
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Card (Card)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (difficultyL)
 import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
@@ -212,6 +217,17 @@ instance RunMessage TheBlobThatAteEverything where
     -- been devoured (per investigator or per group) in the scenario meta.
     ScenarioSpecific "blobSetMeta" (maybeResult -> Just (key, value)) ->
       pure $ TheBlobThatAteEverything $ attrs & setMetaKey (Key.fromText key) (value :: Value)
+    ScenarioSpecific "blobSetDebugRealityAcidTokens" value -> do
+      let tokens = maybeResult value :: Maybe [ChaosTokenFace]
+      case tokens of
+        Just tokens' ->
+          pure $ TheBlobThatAteEverything $ attrs & setMetaKey "debugRealityAcidTokens" tokens'
+        Nothing -> pure s
+    ScenarioSpecific "blobClearDebugRealityAcidTokens" _ ->
+      pure
+        $ TheBlobThatAteEverything
+        $ attrs
+        & setMetaKey "debugRealityAcidTokens" ([] :: [ChaosTokenFace])
     -- Track every card exiled during the scenario so Reality Acid can devour
     -- "all cards that have been exiled".
     Exiled _ card -> do
@@ -238,7 +254,9 @@ instance RunMessage TheBlobThatAteEverything where
       -- Any one investigator may add each in-play reward asset to their deck.
       rewardAssets <-
         select
-          $ mapOneOf assetIs [Assets.universalSolvent, Assets.petOozeling, Assets.miGoWeapon, Assets.ltWilsonStewart]
+          $ mapOneOf
+            assetIs
+            [Assets.universalSolvent, Assets.petOozeling, Assets.miGoWeapon, Assets.ltWilsonStewart]
       for_ rewardAssets addCampaignCardToDeckChoice_
       endOfScenario
       pure s

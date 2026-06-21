@@ -53,6 +53,7 @@ import Data.Typeable
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
+
 isActionTarget :: Targetable a => a -> Target -> Bool
 isActionTarget a = isTarget a . toProxyTarget
 
@@ -432,10 +433,11 @@ insteadOfDamage (asId -> eid) body = do
       Damaged (EnemyTarget eid') dmg | eid == eid' -> evalQueueT (body dmg)
       other -> pure [other]
 
--- | Reduce the amount of the pending 'Damaged' message on this enemy to at most
--- @n@ (leaving it unchanged if it is already lower). Pair with a forced ability
--- on an @EnemyTakeDamage #when@ window to implement "reduce that damage to @n@"
--- effects. See Crustacean Hybrid (In the Light) and Vengeful Specter.
+{- | Reduce the amount of the pending 'Damaged' message on this enemy to at most
+@n@ (leaving it unchanged if it is already lower). Pair with a forced ability
+on an @EnemyTakeDamage #when@ window to implement "reduce that damage to @n@"
+effects. See Crustacean Hybrid (In the Light) and Vengeful Specter.
+-}
 reduceDamageTakenTo
   :: (HasQueue Message m, MonadTrans t, ToId enemy EnemyId)
   => enemy -> Int -> t m ()

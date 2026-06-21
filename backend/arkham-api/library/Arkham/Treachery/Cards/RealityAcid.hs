@@ -83,8 +83,16 @@ instance RunMessage RealityAcid where
   runMessage msg t@(RealityAcid attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       -- Subject 8L-08 devours a random aspect of reality: reveal two chaos
-      -- tokens and consult the Reality Acid chart.
-      push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 2) SetAside
+      -- tokens and consult the Reality Acid chart. A debug option may force the
+      -- next pair of tokens; it is consumed immediately so later Reality Acid
+      -- draws return to normal randomness.
+      debugFaces <- getScenarioMetaKeyDefault "debugRealityAcidTokens" []
+      case debugFaces :: [ChaosTokenFace] of
+        [face1, face2] -> do
+          tokens <- traverse createChaosToken [face1, face2]
+          push $ ScenarioSpecific "blobClearDebugRealityAcidTokens" Null
+          push $ RequestedChaosTokens (attrs.ability 1) (Just iid) tokens
+        _ -> push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 2) SetAside
       pure t
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
       let source = attrs.ability 1
@@ -426,7 +434,10 @@ instance RunMessage RealityAcid where
                     oncePerInvestigator "playerReferenceCard" devourRandomUnownedCard
                 -- (-4 to -8) + {skull}/{cultist}: your investigator mini card (once per investigator).
                 | handleTokenMatch neg4to8 isSkullCultist =
-                    oncePerInvestigator "miniCard" devourRandomUnownedCard
+                    oncePerInvestigator "miniCard" do
+                      devourRandomUnownedCard
+                      devouredMiniCards <- getScenarioMetaKeyDefault "devouredMiniCards" []
+                      recordConsumed "devouredMiniCards" (toJSON (iid : devouredMiniCards :: [InvestigatorId]))
                 -- (-4 to -8) + {tablet}/{elderThing}: your house (Core #124), devoured once for the group.
                 | handleTokenMatch neg4to8 isTabletElder =
                     oncePerGroup "yourHouse" devourYourHouse

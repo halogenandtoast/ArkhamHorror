@@ -27,10 +27,15 @@ instance HasModifiersFor BlackwatersBane where
     modifySelect a (EnemyWithTrait Ooze) [AddKeyword Keyword.Retaliate, ScenarioModifier "noBlob"]
 
 instance HasAbilities BlackwatersBane where
-  getAbilities (BlackwatersBane a) = [mkAbility a 1 $ Objective $ forced $ RoundEnds #when]
+  getAbilities (BlackwatersBane a) =
+    -- "A Moment of Respite": this act does not advance the round it enters play.
+    -- The objective only activates once a round has begun while it has been in
+    -- play, so it advances at the end of the following round.
+    [mkAbility a 1 (Objective $ forced $ RoundEnds #when) | toResultDefault False a.meta]
 
 instance RunMessage BlackwatersBane where
   runMessage msg a@(BlackwatersBane attrs) = runQueueT $ case msg of
+    Do BeginRound -> pure $ BlackwatersBane $ attrs & metaL .~ toJSON True
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       advancedWithOther attrs
       pure a

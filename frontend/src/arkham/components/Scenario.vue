@@ -52,6 +52,7 @@ import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
+import ScenarioDebug from '@/arkham/components/ScenarioDebug.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import Story from '@/arkham/components/Story.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -99,6 +100,7 @@ const forcedShowOutOfPlay = ref(false)
 const forcedShowDiscard = ref(false)
 const forcedShowHollowed = ref(false)
 const encounterDiscardPopoverShown = ref(false)
+const showScenarioDebugOptions = ref(false)
 const locationMap = ref<Element | null>(null)
 const scrollerRef = ref<HTMLElement | null>(null)
 const viewingDiscard = ref(false)
@@ -728,7 +730,6 @@ addEntry({
 // Computed
 const pendingScenarioDifficulty = ref<string | null>(null)
 const displayedScenarioDifficulty = computed(() => pendingScenarioDifficulty.value ?? props.scenario.difficulty)
-
 watch(() => props.scenario.difficulty, (difficulty) => {
   if (pendingScenarioDifficulty.value === difficulty) pendingScenarioDifficulty.value = null
 })
@@ -2049,6 +2050,14 @@ async function addChaosToken(face: any){
               <option value="Expert">Expert</option>
             </select>
           </label>
+          <button
+            v-if="debug.active"
+            type="button"
+            class="scenario-debug-toggle"
+            @click="showScenarioDebugOptions = true"
+          >
+            Debug
+          </button>
           <CardsUnderIndicator
             v-if="cardsUnderScenarioReference.length > 0"
             class="scenario-cards-under"
@@ -2289,6 +2298,15 @@ async function addChaosToken(face: any){
       </div>
     </div>
   </div>
+
+  <Teleport to="body">
+    <ScenarioDebug
+      v-if="debug.active && showScenarioDebugOptions"
+      :game="game"
+      :scenario="scenario"
+      @close="showScenarioDebugOptions = false"
+    />
+  </Teleport>
 </template>
 
 <style scoped>
@@ -2955,6 +2973,21 @@ async function addChaosToken(face: any){
   color: white;
   font-size: 0.75rem;
 }
+
+.scenario-debug-toggle {
+  align-self: center;
+  width: var(--card-width);
+  margin-top: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  background: var(--button);
+  color: white;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 
 .spent-keys {
   pointer-events: none;

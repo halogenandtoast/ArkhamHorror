@@ -26,7 +26,7 @@ instance HasAbilities TheCrater where
           $ withI18nTooltip "theCrater.deal"
           $ restricted a 1 (Here <> exists targetEnemy)
           $ actionAbilityWithCost (SpendTokenCost Token.Resource (TargetIs ScenarioTarget))
-      , mkAbility a 2 $ forced $ RoundEnds #when
+      , restricted a 2 (exists $ InvestigatorAt (be a)) $ forced $ RoundEnds #when
       ]
    where
     targetEnemy = oneOf [enemyIs Enemies.subject8L08, EnemyWithTrait Manifold]
@@ -35,11 +35,9 @@ instance RunMessage TheCrater where
   runMessage msg l@(TheCrater attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ oneOf [enemyIs Enemies.subject8L08, EnemyWithTrait Manifold]
-      chooseTargetM iid enemies \enemy ->
-        nonAttackEnemyDamage (Just iid) (attrs.ability 1) 3 enemy
+      chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 3
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      iids <- select $ investigatorAt attrs
-      for_ iids \iid -> assignDamage iid (attrs.ability 2) 1
+      selectEach (investigatorAt attrs) \iid -> assignDamage iid (attrs.ability 2) 1
       pure l
     _ -> TheCrater <$> liftRunMessage msg attrs

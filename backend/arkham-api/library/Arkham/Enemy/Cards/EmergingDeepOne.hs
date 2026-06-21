@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Enemy.Types (delayEngagementL)
 import Arkham.Helpers.Location (getLocationOf, placementLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), getCombinedModifiers)
 import Arkham.Location.FloodLevel

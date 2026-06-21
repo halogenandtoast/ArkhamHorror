@@ -750,6 +750,18 @@ instance RunMessage EnemyAttrs where
         if willMove
           then do
             batchId <- getRandom
+            -- The `Move` path records `enemyMovement` (with its `moveFromInPlay`
+            -- flag) before pushing EnemyMove, but MoveToward/MoveUntil/hunter
+            -- moves reach EnemyMove directly without it. Record it here when
+            -- absent so that if the enemy leaves play mid-move (e.g. a forced
+            -- ability fires in the enter window and removes it) the `Do EnemyMove`
+            -- / `EnemyEntered` guards abort the placement instead of dragging the
+            -- removed enemy back into play.
+            mMovement <- case enemyMovement of
+              Just _ -> pure enemyMovement
+              Nothing -> do
+                m <- move (toSource eid) (toTarget eid) lid
+                pure $ Just m {moveFromInPlay = isInPlayPlacement enemyPlacement}
             mRunWouldMove <- runMaybeT do
               from <- MaybeT $ getLocationOf eid
               let source = fromMaybe (toSource eid) a.movement.source
@@ -771,7 +783,7 @@ instance RunMessage EnemyAttrs where
             -- causes After (EnemyEntered) to re-emit the after-EnemySpawns
             -- window at the new location, re-firing enters-play abilities
             -- in an infinite loop.
-            pure $ a & spawnDetailsL .~ Nothing
+            pure $ a & spawnDetailsL .~ Nothing & movementL .~ mMovement
           else do
             push (EnemyCheckEngagement eid)
             pure a

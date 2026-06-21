@@ -4,7 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card (Card)
-import Arkham.DamageEffect (nonAttack)
+import Arkham.DamageEffect (damageAssignmentAmount, nonAttack)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Enemy (getModifiedKeywords)
@@ -18,12 +18,14 @@ import Arkham.Helpers.SkillTest (
   withSkillTest,
  )
 import Arkham.Helpers.Xp (toBonus)
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
-import Arkham.Matcher
+import Arkham.Matcher hiding (PhaseStep)
 import Arkham.Message.Lifted.Choose
+import Arkham.Phase
 import Arkham.Placement (Placement (Global))
 import Arkham.Projection
 import Arkham.Resolution
@@ -201,6 +203,19 @@ instance RunMessage TheBlobThatAteEverything where
             devour [card]
             skillTestModifier sid ElderThing iid (AnySkillValue 1)
       pure s
+    Damaged (EnemyTarget eid) assignment -> do
+      foodAndDrinksActive <- getScenarioMetaKeyDefault "foodAndDrinksActive" False
+      isSubject <- eid <=~> enemyIs Enemies.subject8L08
+      if foodAndDrinksActive && isSubject
+        then do
+          damageDealt <- getScenarioMetaKeyDefault "foodAndDrinksDamageDealt" 0
+          let damageDealt' = damageDealt + damageAssignmentAmount assignment
+          pure
+            $ TheBlobThatAteEverything
+            $ attrs
+            & setMetaKey "foodAndDrinksDamageDealt" (damageDealt' :: Int)
+            & setMetaKey "foodAndDrinksActive" (damageDealt' < 3)
+        else pure s
     Defeated (EnemyTarget eid) _ _ _ -> do
       modifiers <- getModifiers eid
       unless (ScenarioModifier "noBlob" `elem` modifiers) do
@@ -211,12 +226,33 @@ instance RunMessage TheBlobThatAteEverything where
           subject <- selectJust $ enemyIs Enemies.subject8L08
           push $ DealDamage (EnemyTarget subject) (nonAttack Nothing attrs (x + extra))
       pure s
+    PhaseStep (InvestigationPhaseStep InvestigationPhaseEndsStep) _ ->
+      pure $ TheBlobThatAteEverything $ attrs & setMetaKey "languageActive" (False :: Bool)
     EndRound ->
-      pure $ TheBlobThatAteEverything $ attrs & setMetaKey "lightActive" (False :: Bool)
+      pure
+        $ TheBlobThatAteEverything
+        $ attrs
+        & setMetaKey "lightActive" (False :: Bool)
+        & setMetaKey "lightDevoured" (False :: Bool)
+        & setMetaKey "voiceActive" ([] :: [InvestigatorId])
+        & setMetaKey "friendshipsActive" (False :: Bool)
     -- Reality Acid records which one-time "aspects of reality" have already
     -- been devoured (per investigator or per group) in the scenario meta.
-    ScenarioSpecific "blobSetMeta" (maybeResult -> Just (key, value)) ->
-      pure $ TheBlobThatAteEverything $ attrs & setMetaKey (Key.fromText key) (value :: Value)
+    ScenarioSpecific "blobSetMeta" (maybeResult -> Just (key, value)) -> do
+      let
+        setLightDevoured = if key == "lightActive" then setMetaKey "lightDevoured" True else id
+        setFoodAndDrinksActive =
+          if key == "foodAndDrinks"
+            then setMetaKey "foodAndDrinksActive" True . setMetaKey "foodAndDrinksDamageDealt" (0 :: Int)
+            else id
+      pure
+        $ TheBlobThatAteEverything
+        $ attrs
+        & setMetaKey (Key.fromText key) (value :: Value)
+        & setLightDevoured
+        & setFoodAndDrinksActive
+    ScenarioSpecific "blobSetLightActive" (maybeResult -> Just active) ->
+      pure $ TheBlobThatAteEverything $ attrs & setMetaKey "lightActive" (active :: Bool)
     ScenarioSpecific "blobSetDebugRealityAcidTokens" value -> do
       let tokens = maybeResult value :: Maybe [ChaosTokenFace]
       case tokens of

@@ -13,6 +13,7 @@ runQueueT body = do
   msgs <- readIORef inbox
   pushAll $ reverse msgs
   pure a
+
 evalQueueT :: MonadIO m => QueueT msg m a -> m [msg]
 evalQueueT body = do
   inbox <- newIORef []
@@ -47,6 +48,7 @@ instance HasQueue msg m => HasQueue msg (ReaderT r m) where
 instance (Monoid w, HasQueue msg m) => HasQueue msg (WriterT w m) where
   messageQueue = lift messageQueue
   pushAll = lift . pushAll
+
 newQueue :: MonadIO m => [msg] -> m (Queue msg)
 newQueue msgs = Queue <$> newIORef msgs
 
@@ -124,11 +126,13 @@ replaceAllMessagesMatching
   :: HasQueue msg m => (msg -> Bool) -> (msg -> [msg]) -> m ()
 replaceAllMessagesMatching matcher replacer = withQueue_ \queue ->
   flip concatMap queue \msg -> if matcher msg then replacer msg else [msg]
+
 overMessagesM :: HasQueue msg m => (msg -> m [msg]) -> m ()
 overMessagesM replacer = peekQueue >>= concatMapM replacer >>= setQueue
 
 pushAfter :: HasQueue msg m => (msg -> Bool) -> msg -> m ()
 pushAfter matcher msg = replaceMessageMatching matcher (\m -> [m, msg])
+
 popMessageMatching
   :: HasQueue msg m => (msg -> Bool) -> m (Maybe msg)
 popMessageMatching matcher = withQueue \queue ->

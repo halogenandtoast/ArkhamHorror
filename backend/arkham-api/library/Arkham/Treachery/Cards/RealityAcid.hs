@@ -5,7 +5,6 @@ import Arkham.CampaignLogKey (CampaignLogKey (YouHaveNoSoul))
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Deck qualified as Deck
 import Arkham.Difficulty (Difficulty (..))
 import Arkham.Effect.Import
 import Arkham.Helpers
@@ -32,6 +31,7 @@ import Arkham.Scenario.Types (Field (ScenarioTokens))
 import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
 import Arkham.SkillType
 import Arkham.SlotType
+import Arkham.Strategy (IsDraw (..), defer, fromDeck)
 import Arkham.Token
 import Arkham.Trait hiding (Trait (Cultist, ElderThing, Evidence, Expert, Supply))
 import Arkham.Treachery.Cards qualified as Cards
@@ -53,19 +53,29 @@ devourTarget :: (ReverseQueue m, Targetable a) => a -> m ()
 devourTarget x = push $ ScenarioSpecific "devour" (toJSON (toTarget x))
 
 -- Choose one member of a non-empty set to devour, then return the consulted
--- tokens. If the set is empty the aspect cannot be devoured, so consult again.
+-- tokens. If the set is empty the aspect cannot be devoured, so show its text
+-- followed by the "consult again" rule and reveal two new tokens.
 chooseToDevour
   :: (ReverseQueue m, Targetable a)
-  => InvestigatorId -> m () -> m () -> m () -> [a] -> (a -> QueueT Message m ()) -> m ()
-chooseToDevour iid again done showModal xs act = case xs of
-  [] -> again
-  _ -> showModal >> chooseOneM iid (targets xs act) >> done
+  => InvestigatorId
+  -> (Text -> m ())
+  -> (Maybe Text -> m ())
+  -> m ()
+  -> Text
+  -> [a]
+  -> (a -> QueueT Message m ())
+  -> m ()
+chooseToDevour iid showOutcome againWith done key xs act = case xs of
+  [] -> againWith (Just key)
+  _ -> showOutcome key >> chooseOneM iid (targets xs act) >> done
 
--- Devour every member of a set, then return the consulted tokens.
-devourEach :: Monad m => m () -> m () -> m () -> [a] -> (a -> m ()) -> m ()
-devourEach again done showModal xs act = case xs of
-  [] -> again
-  _ -> showModal >> traverse_ act xs >> done
+-- Devour every member of a set, then return the consulted tokens. If the set is
+-- empty, show the aspect text followed by the "consult again" rule.
+devourEach
+  :: Monad m => (Text -> m ()) -> (Maybe Text -> m ()) -> m () -> Text -> [a] -> (a -> m ()) -> m ()
+devourEach showOutcome againWith done key xs act = case xs of
+  [] -> againWith (Just key)
+  _ -> showOutcome key >> traverse_ act xs >> done
 
 cardLevel :: Card -> Int
 cardLevel = fromMaybe 0 . cdLevel . toCardDef
@@ -112,35 +122,42 @@ instance RunMessage RealityAcid where
 
       -- Returning to the chart for a fresh result: return the two consulted
       -- tokens, then reveal two new ones from the full bag and consult again.
-      -- Used both for unlisted combinations and for any aspect that cannot be
-      -- devoured.
       let
-        again = do
+        reroll = do
           done
           push $ RequestChaosTokens source (Just iid) (Reveal 2) SetAside
 
+      -- Used for unlisted combinations and for any aspect that cannot be
+      -- devoured: show the revealed pair, the matched aspect's text (when there
+      -- is one), and the rule that sends us back to the chart, then reveal two
+      -- new tokens and consult again. Per the rules: "If the combination of
+      -- chaos tokens revealed is not listed, or if the listed aspect cannot be
+      -- devoured, reveal two new chaos tokens and consult the chart again."
+      let
+        againWith mkey = do
+          scenarioI18n $ flavor $ scope "realityAcid" do
+            setTitle "title"
+            cols $ for_ faces chaosTokenImg
+            for_ mkey \key -> do
+              p "devours"
+              scope "outcomes" $ p key
+            p "consultAgain"
+          reroll
+        again = againWith Nothing
+
       let baseSkill key st = showOutcome key >> nextPhaseModifier MythosPhase source iid (BaseSkillOf st 0) >> done
 
-      -- Your greatest flaw: search your deck for a weakness and devour it.
-      let
-        devourGreatestFlaw = do
-          weaknesses <- select $ inDeckOf iid <> basic WeaknessCard
-          case weaknesses of
-            [] -> again
-            _ -> do
-              showOutcome "greatestFlaw"
-              chooseOneM iid $ targets weaknesses \c -> do
-                devourTarget c
-                push $ ShuffleDeck (Deck.InvestigatorDeck iid)
-              done
       let
         healFromInvestigator = do
-          showOutcome "heal"
           ok <-
             selectAny $ InvestigatorWithId iid <> oneOf [InvestigatorWithAnyHorror, InvestigatorWithAnyDamage]
-          removeTokens source iid #damage 1
-          removeTokens source iid #horror 1
-          if ok then done else again
+          if ok
+            then do
+              showOutcome "heal"
+              removeTokens source iid #damage 1
+              removeTokens source iid #horror 1
+              done
+            else againWith (Just "heal")
 
       -- Several aspects on the chart have no game state to devour ("your voice",
       -- "your house", etc). Rather than rerolling forever, each can be devoured a
@@ -152,13 +169,13 @@ instance RunMessage RealityAcid where
         oncePerGroup keyT effect = do
           consumed <- getScenarioMetaKeyDefault (Key.fromText keyT) False
           if consumed
-            then again
+            then againWith (Just keyT)
             else showOutcome keyT >> effect >> recordConsumed keyT (toJSON True) >> done
       let
         oncePerInvestigator keyT effect = do
           consumed <- getScenarioMetaKeyDefault (Key.fromText keyT) []
           if iid `elem` consumed
-            then again
+            then againWith (Just keyT)
             else showOutcome keyT >> effect >> recordConsumed keyT (toJSON (iid : consumed)) >> done
 
       -- Increase the count of cards beneath Subject 8L-08 with a random, unowned
@@ -207,30 +224,43 @@ instance RunMessage RealityAcid where
                 -- {elderSign} + {skull}/{cultist}: the non-Elite enemy nearest to you.
                 | handleTokenMatch (== ElderSign) isSkullCultist = do
                     enemies <- select $ NearestEnemyTo iid (NonEliteEnemy <> not_ EnemyWithVictory)
-                    chooseToDevour iid again done (showOutcome "nearestEnemy") enemies devourTarget
+                    chooseToDevour iid showOutcome againWith done "nearestEnemy" enemies devourTarget
                 -- {elderSign} + {tablet}/{elderThing}: a treachery at your location.
                 | handleTokenMatch (== ElderSign) isTabletElder = do
                     treacheries <- select $ TreacheryAt (locationWithInvestigator iid) <> not_ TreacheryWithVictory
-                    chooseToDevour iid again done (showOutcome "treachery") treacheries devourTarget
+                    chooseToDevour iid showOutcome againWith done "treachery" treacheries devourTarget
                 -- {elderSign} + (-1 to -8): 1 horror and 1 damage from your investigator card.
                 | handleTokenMatch (== ElderSign) isNeg = healFromInvestigator
                 -- {elderSign} + (+0/+1): your greatest flaw (a weakness in your deck).
-                | handleTokenMatch (== ElderSign) zeroOrPlus = devourGreatestFlaw
+                | handleTokenMatch (== ElderSign) zeroOrPlus = do
+                    -- Your greatest flaw: search your deck for a weakness and
+                    -- devour it. The search always runs (even on an empty deck,
+                    -- so the player sees the "no cards found" result); the
+                    -- choose-and-devour, or "consult again" when nothing is
+                    -- found, is resolved by the deferred SearchFound /
+                    -- SearchNoneFound handlers below.
+                    showOutcome "greatestFlaw"
+                    search iid source iid [fromDeck] (basic WeaknessCard) (defer attrs IsNotDraw)
                 -- {elderSign} + {autoFail}: the {elderSign} token just revealed.
                 | handleTokenMatch (== ElderSign) (== AutoFail) = do
                     showOutcome "elderSignToken"
                     done
                     push $ RemoveChaosToken ElderSign
                 -- +1 + {skull}/{cultist}: your caution. Resolve Reality Acid three more times.
-                | handleTokenMatch (== PlusOne) isSkullCultist = showOutcome "caution" >> replicateM_ 3 again
+                | handleTokenMatch (== PlusOne) isSkullCultist = showOutcome "caution" >> replicateM_ 3 reroll
                 -- +1 + {tablet}/{elderThing}: your ignorance. Discover 1 clue at your location.
                 | handleTokenMatch (== PlusOne) isTabletElder = do
-                    showOutcome "ignorance"
-                    discoverAtYourLocation NotInvestigate iid source 1
-                    done
+                    canDiscover <- selectAny $ locationWithInvestigator iid <> locationWithDiscoverableCluesBy iid
+                    if canDiscover
+                      then do
+                        showOutcome "ignorance"
+                        discoverAtYourLocation NotInvestigate iid source 1
+                        done
+                      else againWith (Just "ignorance")
                 -- +1 + (-1 to -8): friendships. Investigators cannot commit to each others' tests.
                 | handleTokenMatch (== PlusOne) isNeg = do
                     showOutcome "friendships"
+                    recordConsumed "friendshipsActive" (toJSON True)
                     iids <- allInvestigators
                     for_ iids \i -> roundModifier source i CannotCommitToOtherInvestigatorsSkillTests
                     done
@@ -241,7 +271,7 @@ instance RunMessage RealityAcid where
                     cluesThere <- field LocationClues loc
                     let toRemove = min n cluesThere
                     if toRemove <= 0
-                      then again
+                      then againWith (Just "locationClues")
                       else do
                         showOutcome "locationClues"
                         removeTokens source loc #clue toRemove
@@ -249,7 +279,7 @@ instance RunMessage RealityAcid where
                 -- 0 + (-1/-2): itself, and then regurgitates itself. Deal 1 damage to Subject 8L-08.
                 | handleTokenMatch (== Zero) neg1or2 =
                     getSubject8L08 >>= \case
-                      Nothing -> again
+                      Nothing -> againWith (Just "regurgitate")
                       Just s -> do
                         showOutcome "regurgitate"
                         nonAttackEnemyDamage (Just iid) source 1 s
@@ -258,7 +288,7 @@ instance RunMessage RealityAcid where
                 | handleTokenMatch (== Zero) (== MinusThree) = do
                     enemies <- select $ EnemyWithTrait Manifold
                     case enemies of
-                      [] -> again
+                      [] -> againWith (Just "manifold")
                       _ -> do
                         showOutcome "manifold"
                         for_ enemies \e -> push $ HealAllDamage (toTarget e) source
@@ -268,7 +298,7 @@ instance RunMessage RealityAcid where
                     let useTypes = [Supply, Ammo, Charge, Secret]
                     assets <- select $ assetControlledBy iid <> oneOf (map AssetWithUses useTypes)
                     case assets of
-                      [] -> again
+                      [] -> againWith (Just "uses")
                       _ -> do
                         showOutcome "uses"
                         for_ assets \a -> for_ useTypes \u -> do
@@ -293,16 +323,16 @@ instance RunMessage RealityAcid where
                         $ oneOf [inDeckOf iid, inDiscardOf iid, inHandOf NotForPlay iid, inPlayAreaOf iid]
                     let candidates = filter (\c -> let l = cardLevel c in l >= 1 && l <= 5) pool
                     if sum (map cardLevel candidates) < 5
-                      then again
+                      then againWith (Just "levelCards")
                       else showOutcome "levelCards" >> devourLevels iid source 5 candidates
                 -- -2 + {skull}/{cultist}: the top 3 cards of your deck.
                 | handleTokenMatch (== MinusTwo) isSkullCultist = do
                     cs <- fieldMap InvestigatorDeck (take 3 . unDeck) iid
-                    devourEach again done (showOutcome "top3Deck") cs devourTarget
+                    devourEach showOutcome againWith done "top3Deck" cs devourTarget
                 -- -2 + {tablet}/{elderThing}: the top 3 cards of your discard pile.
                 | handleTokenMatch (== MinusTwo) isTabletElder = do
                     cs <- fieldMap InvestigatorDiscard (take 3) iid
-                    devourEach again done (showOutcome "top3Discard") cs devourTarget
+                    devourEach showOutcome againWith done "top3Discard" cs devourTarget
                 -- -2 + (-4 to -8): your party's teamwork. Each investigator loses 1 action.
                 | handleTokenMatch (== MinusTwo) neg4to8 = do
                     showOutcome "teamwork"
@@ -312,7 +342,7 @@ instance RunMessage RealityAcid where
                 -- -3 + {skull}/{cultist}/{tablet}/{elderThing}: a Talent, Connection, or Condition asset.
                 | handleTokenMatch (== MinusThree) isSymbol = do
                     assets <- select $ assetControlledBy iid <> hasAnyTrait [Talent, Connection, Condition]
-                    chooseToDevour iid again done (showOutcome "talentAsset") assets devourTarget
+                    chooseToDevour iid showOutcome againWith done "talentAsset" assets devourTarget
                 -- -3 + (-4 to -8): your sense of time. Block abilities on time/watch/chrono cards.
                 | handleTokenMatch (== MinusThree) neg4to8 = do
                     showOutcome "senseOfTime"
@@ -329,11 +359,11 @@ instance RunMessage RealityAcid where
                 -- {skull} + {skull}: the highest-cost Ally asset you control.
                 | handleTokenMatch (== Skull) (== Skull) = do
                     assets <- select $ AssetWithHighestPrintedCost (assetControlledBy iid <> withTrait Ally)
-                    chooseToDevour iid again done (showOutcome "ally") assets devourTarget
+                    chooseToDevour iid showOutcome againWith done "ally" assets devourTarget
                 -- {skull} + {cultist}: all event cards in your hand.
                 | handleTokenMatch (== Skull) (== Cultist) = do
                     cs <- fieldMap InvestigatorHand (filterCards EventType) iid
-                    devourEach again done (showOutcome "events") cs devourTarget
+                    devourEach showOutcome againWith done "events" cs devourTarget
                 -- {skull} + {tablet}: all of your resources.
                 | handleTokenMatch (== Skull) (== Tablet) = do
                     showOutcome "resources"
@@ -342,7 +372,7 @@ instance RunMessage RealityAcid where
                 -- {skull} + {elderThing}: all skill cards in your hand.
                 | handleTokenMatch (== Skull) (== ElderThing) = do
                     cs <- fieldMap InvestigatorHand (filterCards SkillType) iid
-                    devourEach again done (showOutcome "skills") cs devourTarget
+                    devourEach showOutcome againWith done "skills" cs devourTarget
                 -- {tablet} + {tablet}: your sense of urgency. You cannot move this round.
                 | handleTokenMatch (== Tablet) (== Tablet) = do
                     showOutcome "cannotMove"
@@ -362,7 +392,7 @@ instance RunMessage RealityAcid where
                 | handleTokenMatch (== Cultist) (== Cultist) = do
                     exiled <- getScenarioMetaKeyDefault "exiledCards" []
                     case exiled :: [Card] of
-                      [] -> again
+                      [] -> againWith (Just "exiledCards")
                       _ -> do
                         showOutcome "exiledCards"
                         devour exiled
@@ -383,16 +413,16 @@ instance RunMessage RealityAcid where
                 -- {autoFail} + {skull}/{cultist}: all Spell and Ritual assets you control.
                 | handleTokenMatch (== AutoFail) isSkullCultist = do
                     assets <- select $ assetControlledBy iid <> hasAnyTrait [Spell, Ritual]
-                    devourEach again done (showOutcome "spellRitual") assets devourTarget
+                    devourEach showOutcome againWith done "spellRitual" assets devourTarget
                 -- {autoFail} + {tablet}/{elderThing}: all Item assets you control.
                 | handleTokenMatch (== AutoFail) isTabletElder = do
                     assets <- select $ assetControlledBy iid <> withTrait Item
-                    devourEach again done (showOutcome "item") assets devourTarget
+                    devourEach showOutcome againWith done "item" assets devourTarget
                 -- {autoFail} + (+1): the concept of a "discard pile". Until the end of the next
                 -- mythos phase, cards that would be discarded are devoured instead.
                 | handleTokenMatch (== AutoFail) (== PlusOne) =
                     getSubject8L08 >>= \case
-                      Nothing -> again
+                      Nothing -> againWith (Just "discardPile")
                       Just s -> do
                         showOutcome "discardPile"
                         iids <- allInvestigators
@@ -408,7 +438,7 @@ instance RunMessage RealityAcid where
                 | handleTokenMatch (== AutoFail) neg2or3 = do
                     countermeasures <- scenarioFieldMap ScenarioTokens (countTokens Resource)
                     if countermeasures <= 0
-                      then again
+                      then againWith (Just "countermeasure")
                       else do
                         showOutcome "countermeasure"
                         removeTokens source ScenarioTarget #resource 1
@@ -418,7 +448,7 @@ instance RunMessage RealityAcid where
                 | handleTokenMatch (== AutoFail) neg4to8 = do
                     difficulty <- getDifficulty
                     if difficulty `elem` [Hard, Expert]
-                      then again
+                      then againWith (Just "easiness")
                       else do
                         showOutcome "easiness"
                         push $ ScenarioSpecific "blobFlipToHard" Null
@@ -446,13 +476,15 @@ instance RunMessage RealityAcid where
                     oncePerGroup "noSoul" (record YouHaveNoSoul)
                 -- 0 + {skull}: your voice (once per investigator).
                 | handleTokenMatch (== Zero) (== Skull) =
-                    oncePerInvestigator "voice" (pure ())
+                    oncePerInvestigator "voice" do
+                      voiceActive <- getScenarioMetaKeyDefault "voiceActive" []
+                      recordConsumed "voiceActive" (toJSON (iid : voiceActive :: [InvestigatorId]))
                 -- 0 + {cultist}: your group's food and drinks (once for the whole group).
                 | handleTokenMatch (== Zero) (== Cultist) =
                     oncePerGroup "foodAndDrinks" (pure ())
                 -- 0 + {tablet}: the concept of language (once for the whole group).
                 | handleTokenMatch (== Zero) (== Tablet) =
-                    oncePerGroup "language" (pure ())
+                    oncePerGroup "language" (recordConsumed "languageActive" (toJSON True))
                 -- 0 + {elderThing}: light (once per investigator).
                 | handleTokenMatch (== Zero) (== ElderThing) =
                     oncePerInvestigator "light" (recordConsumed "lightActive" (toJSON True))
@@ -474,6 +506,20 @@ instance RunMessage RealityAcid where
                 | otherwise = again
           go
         _ -> again
+      pure t
+    -- Greatest flaw: the deck search found one or more weaknesses; let the
+    -- investigator pick which one to devour, then return the consulted tokens.
+    -- The search itself shuffles the deck back in.
+    SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
+      chooseOneM iid $ targets cards devourTarget
+      resetChaosTokens (attrs.ability 1)
+      pure t
+    -- Greatest flaw: the search turned up no weaknesses; return the consulted
+    -- tokens and consult Reality Acid again with two fresh tokens.
+    SearchNoneFound iid (isTarget attrs -> True) -> do
+      let source = attrs.ability 1
+      resetChaosTokens source
+      push $ RequestChaosTokens source (Just iid) (Reveal 2) SetAside
       pure t
     _ -> RealityAcid <$> liftRunMessage msg attrs
 

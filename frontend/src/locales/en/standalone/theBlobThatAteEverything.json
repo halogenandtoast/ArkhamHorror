@@ -111,12 +111,13 @@
   "realityAcid": {
     "title": "Reality Acid",
     "devours": "Subject 8L-08 opens its maw, and devours…",
+    "consultAgain": "*If the combination of chaos tokens revealed is not listed, or if the listed aspect cannot be devoured, reveal two new chaos tokens and consult the chart again.*",
     "outcomes": {
       "nearestEnemy": "…The non-_Elite_ enemy nearest to you.",
       "treachery": "…A treachery at your location.",
       "heal": "…1 horror and 1 damage from your investigator card.",
       "greatestFlaw": "…Your greatest flaw. Search your deck for any 1 weakness card. It is devoured.",
-      "elderSignToken": "…The {elderSign} token just revealed.",
+      "elderSignToken": "…The {'{'}elderSign{'}'} token just revealed.",
       "caution": "…Your caution. Resolve Reality Acid three more times, ignoring this result.",
       "ignorance": "…Your ignorance. Discover 1 clue at your location.",
       "friendships": "…Friendships. Until the end of the round, investigators cannot commit cards to each others’ skill tests.",

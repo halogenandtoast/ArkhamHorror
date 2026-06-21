@@ -260,10 +260,34 @@ const isActualScenarioView = computed(() => {
     && activeQuestionTag !== 'ContinueCampaign'
 })
 
-const realityAcidLightActive = computed(() => {
+const realityAcidLightOverride = ref<boolean | null>(null)
+const realityAcidLightMetaActive = computed(() => {
   const scenario = game.value?.scenario
   return scenario?.id === 'c85001' && scenario.meta?.lightActive === true
 })
+
+const realityAcidLightActive = computed(() => realityAcidLightOverride.value ?? realityAcidLightMetaActive.value)
+
+watch(realityAcidLightMetaActive, () => {
+  realityAcidLightOverride.value = null
+})
+
+const realityAcidLightDevoured = computed(() => {
+  const scenario = game.value?.scenario
+  if (scenario?.id !== 'c85001') return false
+  return realityAcidLightMetaActive.value || scenario.meta?.lightDevoured === true || realityAcidLightOverride.value !== null
+})
+
+const toggleRealityAcidLight = () => {
+  const gameId = game.value?.id
+  if (!gameId) return
+  const active = !realityAcidLightActive.value
+  realityAcidLightOverride.value = active
+  debug.send(gameId, {
+    tag: 'ScenarioSpecific',
+    contents: ['blobSetLightActive', active],
+  })
+}
 
 const activePlayerId = computed(() => game.value?.activePlayerId ?? null)
 
@@ -1298,6 +1322,19 @@ onUnmounted(() => {
       :style="{ '--flashlight-x': `${flashlightX}px`, '--flashlight-y': `${flashlightY}px` }"
       aria-hidden="true"
     ></div>
+    <button
+      v-if="realityAcidLightDevoured"
+      type="button"
+      class="reality-acid-light-switch"
+      :class="{ 'reality-acid-light-switch--on': realityAcidLightActive }"
+      :title="realityAcidLightActive ? 'Turn the lights back on' : 'Turn the lights off'"
+      @click="toggleRealityAcidLight"
+    >
+      <span class="reality-acid-light-switch-track">
+        <span class="reality-acid-light-switch-knob"></span>
+      </span>
+      <span class="reality-acid-light-switch-label">{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</span>
+    </button>
     <Draggable v-if="showShortcuts">
       <div class="shortcuts-modal">
         <div class="shortcuts-header">
@@ -1753,6 +1790,58 @@ onUnmounted(() => {
     rgba(0, 0, 0, 0.9) 100%
   );
   mix-blend-mode: multiply;
+}
+
+.reality-acid-light-switch {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: var(--z-index-9999);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 999px;
+  background: rgb(14 17 20 / 88%);
+  color: white;
+  padding: 6px 9px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 45%);
+  cursor: pointer;
+}
+
+.reality-acid-light-switch-track {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  background: #d6c36a;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 35%);
+}
+
+.reality-acid-light-switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 18px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 50%);
+  transition: left 120ms ease;
+}
+
+.reality-acid-light-switch--on .reality-acid-light-switch-track {
+  background: #263241;
+}
+
+.reality-acid-light-switch--on .reality-acid-light-switch-knob {
+  left: 4px;
+}
+
+.reality-acid-light-switch-label {
+  white-space: nowrap;
 }
 
 .action {

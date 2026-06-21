@@ -22,15 +22,23 @@ recoverTheSample = story RecoverTheSample Cards.recoverTheSample & persistStory
 
 instance HasAbilities RecoverTheSample where
   getAbilities (RecoverTheSample a) =
-    [ mkAbility a 1 $ forced $ Moves #after (ControlsAsset $ assetIs Assets.meteoriteSample) AnySource Anywhere (LocationWithTitle "Research Site")
-    , restricted
-        a
-        2
-        ( exists
-            $ assetIs Assets.meteoriteSample
-            <> AssetAttachedTo
-              (EnemyTargetMatches $ enemyIs Enemies.miGoHarvester <> EnemyAt (LocationWithTitle "Fungus Mound"))
-        )
+    [ mkAbility a 1
+        $ forced
+        $ Moves
+          #after
+          (ControlsAsset $ assetIs Assets.meteoriteSample)
+          AnySource
+          Anywhere
+          (LocationWithTitle "Research Site")
+    , onlyOnce
+        $ restricted
+          a
+          2
+          ( exists
+              $ assetIs Assets.meteoriteSample
+              <> AssetAttachedTo
+                (EnemyTargetMatches $ enemyIs Enemies.miGoHarvester <> EnemyAt (LocationWithTitle "Fungus Mound"))
+          )
         $ forced AnyWindow
     ]
 
@@ -61,14 +69,14 @@ instance RunMessage RecoverTheSample where
           nameVar Assets.petOozeling $ questionLabeled' "takeControlOf"
           questionLabeledCard Assets.petOozeling
           portraits investigators (`takeControlOfSetAsideAsset` pet)
-        selectOne (assetIs Assets.meteoriteSample) >>= traverse_ removeFromGame
-        selectOne (enemyIs Enemies.miGoHarvester) >>= traverse_ (addToVictory iid)
+        selectEach (assetIs Assets.meteoriteSample) removeFromGame
+        selectEach (enemyIs Enemies.miGoHarvester) (addToVictory iid)
         addToVictory iid attrs
         placeTokens (attrs.ability 1) ScenarioTarget #resource 2
 
       whenM (remembered TheSampleWasLost) do
-        selectOne (enemyIs Enemies.miGoHarvester) >>= traverse_ removeFromGame
-        selectOne (assetIs Assets.meteoriteSample) >>= traverse_ removeFromGame
+        selectEach (assetIs Assets.meteoriteSample) removeFromGame
+        selectEach (enemyIs Enemies.miGoHarvester) removeFromGame
         removeFromGame attrs
         removeTokens (attrs.ability 2) ScenarioTarget #resource 2
 

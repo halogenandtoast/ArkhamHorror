@@ -816,6 +816,52 @@ const abilities = computed(() => {
     }, []);
 })
 
+const realityAcidBadges = computed(() => {
+  if (props.scenario.id !== 'c85001') return []
+
+  const badges: { key: string, icon: string, label: string, detail?: string }[] = []
+  if (props.scenario.meta?.foodAndDrinksActive === true) {
+    const damage = typeof props.scenario.meta.foodAndDrinksDamageDealt === 'number' ? props.scenario.meta.foodAndDrinksDamageDealt : 0
+    badges.push({
+      key: 'foodAndDrinks',
+      icon: '🚫🍔',
+      label: 'No food or drinks',
+      detail: `${Math.min(damage, 3)}/3 damage dealt to Subject 8L-08`,
+    })
+  }
+
+  if (props.scenario.meta?.languageActive === true) {
+    badges.push({
+      key: 'language',
+      icon: '🗣️?',
+      label: 'Gibberish only',
+      detail: 'The concept of language is devoured until the end of the investigation phase.',
+    })
+  }
+
+  if (props.scenario.meta?.friendshipsActive === true) {
+    badges.push({
+      key: 'friendships',
+      icon: '🤝⃠',
+      label: 'No cross-commits',
+      detail: 'Friendships are devoured until the end of the round.',
+    })
+  }
+
+  const voiceActive = props.scenario.meta?.voiceActive
+  if (Array.isArray(voiceActive) && voiceActive.length > 0) {
+    const names = voiceActive.map((iid) => props.game.investigators[iid]?.name?.title).filter(Boolean)
+    badges.push({
+      key: 'voice',
+      icon: '🤐',
+      label: names.length === 1 ? `${names[0]} cannot speak` : 'No speaking/noise',
+      detail: names.length > 0 ? names.join(', ') : 'One or more investigators cannot speak or make noise until the end of the round.',
+    })
+  }
+
+  return badges
+})
+
 const rotationSteps = ref(0)
 const transpose = <T>(grid: T[][]): T[][] =>
   (grid[0] ?? []).map((_col, i) => grid.map(row => row[i]))
@@ -1988,54 +2034,65 @@ async function addChaosToken(face: any){
         />
 
         <div class="scenario-guide">
-          <div class="scenario-guide-card-wrapper">
-            <div class="scenario-guide-card">
-              <img
-                class="card"
-                :src="scenarioGuide"
-                :data-spent-keys="JSON.stringify(spentKeys)"
-                :data-depth="currentDepth"
+          <div class="scenario-guide-main">
+            <div class="scenario-guide-card-wrapper">
+              <div class="scenario-guide-card">
+                <img
+                  class="card"
+                  :src="scenarioGuide"
+                  :data-spent-keys="JSON.stringify(spentKeys)"
+                  :data-depth="currentDepth"
+                />
+                <img
+                  v-for="reference in additionalReferences"
+                  class="card"
+                  :src="reference"
+                />
+                <AbilityButton
+                  v-for="ability in abilities"
+                  :key="ability.index"
+                  :ability="ability.contents"
+                  :game="game"
+                  @click="choose(ability.index)"
+                />
+              </div>
+              <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
+              <PoolItem class="civilians-slain" v-if="civiliansSlain" type="resource" :amount="civiliansSlain" />
+              <PoolItem class="strength-of-the-abyss" v-if="strengthOfTheAbyss !== undefined" type="resource" :amount="strengthOfTheAbyss" />
+              <PoolItem class="targets" v-if="targets" type="resource" :amount="targets" />
+              <PoolItem class="scraps" v-if="scraps" type="resource" :amount="scraps" />
+              <PoolItem class="switches" v-if="switches" type="resource" :amount="switches" />
+              <PoolItem class="darkness-level" v-if="darknessLevel" type="resource" :amount="darknessLevel" />
+              <div class="spent-keys" v-if="spentKeys.length > 0">
+                <KeyToken v-for="k in spentKeys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
+              </div>
+              <PoolItem
+                v-if="signOfTheGods"
+                class="signOfTheGods"
+                type="resource"
+                tooltip="Sign of the Gods"
+                :amount="signOfTheGods"
               />
-              <img
-                v-for="reference in additionalReferences"
-                class="card"
-                :src="reference"
+              <PoolItem
+                v-if="distortion"
+                class="distortion"
+                type="damage"
+                tooltip="Distortion"
+                :amount="distortion"
               />
-              <AbilityButton
-                v-for="ability in abilities"
-                :key="ability.index"
-                :ability="ability.contents"
-                :game="game"
-                @click="choose(ability.index)"
-              />
+              <div class="pool" v-if="hasPool">
+                <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+                <PoolItem v-if="damage && damage > 0" type="damage" :amount="damage" />
+              </div>
             </div>
-            <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
-            <PoolItem class="civilians-slain" v-if="civiliansSlain" type="resource" :amount="civiliansSlain" />
-            <PoolItem class="strength-of-the-abyss" v-if="strengthOfTheAbyss !== undefined" type="resource" :amount="strengthOfTheAbyss" />
-            <PoolItem class="targets" v-if="targets" type="resource" :amount="targets" />
-            <PoolItem class="scraps" v-if="scraps" type="resource" :amount="scraps" />
-            <PoolItem class="switches" v-if="switches" type="resource" :amount="switches" />
-            <PoolItem class="darkness-level" v-if="darknessLevel" type="resource" :amount="darknessLevel" />
-            <div class="spent-keys" v-if="spentKeys.length > 0">
-              <KeyToken v-for="k in spentKeys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
-            </div>
-            <PoolItem
-              v-if="signOfTheGods"
-              class="signOfTheGods"
-              type="resource"
-              tooltip="Sign of the Gods"
-              :amount="signOfTheGods"
-            />
-            <PoolItem
-              v-if="distortion"
-              class="distortion"
-              type="damage"
-              tooltip="Distortion"
-              :amount="distortion"
-            />
-            <div class="pool" v-if="hasPool">
-              <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-              <PoolItem v-if="damage && damage > 0" type="damage" :amount="damage" />
+            <div v-if="realityAcidBadges.length > 0" class="reality-acid-badges" aria-label="Reality Acid reminders">
+              <div v-for="badge in realityAcidBadges" :key="badge.key" class="reality-acid-badge" :title="badge.detail">
+                <span class="reality-acid-badge-icon" aria-hidden="true">{{ badge.icon }}</span>
+                <span class="reality-acid-badge-text">
+                  <strong>{{ badge.label }}</strong>
+                  <small v-if="badge.detail">{{ badge.detail }}</small>
+                </span>
+              </div>
             </div>
           </div>
           <div class="keys" v-if="keys.length > 0">
@@ -2700,6 +2757,55 @@ async function addChaosToken(face: any){
   flex-direction: column;
   position: relative;
   isolation: isolate;
+}
+
+.scenario-guide-main {
+  position: relative;
+  width: fit-content;
+}
+
+.reality-acid-badges {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 8px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 240px;
+}
+
+.reality-acid-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 10px;
+  background: rgb(14 17 20 / 90%);
+  color: white;
+  padding: 7px 9px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 45%);
+}
+
+.reality-acid-badge-icon {
+  min-width: 30px;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.reality-acid-badge-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.15;
+}
+
+.reality-acid-badge-text strong {
+  font-size: 0.78rem;
+}
+
+.reality-acid-badge-text small {
+  opacity: 0.75;
+  font-size: 0.66rem;
 }
 
 .scenario-cards-under {

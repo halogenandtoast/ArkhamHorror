@@ -18,7 +18,7 @@ luckyCigaretteCase3 = asset LuckyCigaretteCase3 Cards.luckyCigaretteCase3
 
 instance HasAbilities LuckyCigaretteCase3 where
   getAbilities (LuckyCigaretteCase3 a) =
-    [ controlled a 1 (can.search.deck You)
+    [ controlled a 1 (can.search.deck (You <> not_ DeckIsEmpty))
         $ triggered (SkillTestResult #after You #any (SuccessResult $ atLeast 1)) (exhaust a)
     ]
 

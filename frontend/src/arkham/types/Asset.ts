@@ -36,6 +36,7 @@ export type Asset = {
   keys: ArkhamKey[];
   customizations: Customization[];
   marketDeck?: Card[]
+  knownMarketDeck?: Card[]
   spiritDeck?: Card[]
   modifiers?: Modifier[];
   mutated?: string;
@@ -68,6 +69,7 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   customizations: customizationsDecoder,
   marketDeck: v2Optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
+  knownMarketDeck: v2Optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
   spiritDeck: v2Optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
   modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   mutated: v2Optional(JsonDecoder.string()),

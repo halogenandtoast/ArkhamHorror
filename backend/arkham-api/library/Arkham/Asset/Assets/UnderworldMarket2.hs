@@ -16,9 +16,19 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
-newtype Meta = Meta {marketDeck :: [Card]}
+data Meta = Meta
+  { marketDeck :: [Card]
+  , knownMarketDeck :: [Card]
+  }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON Meta
+
+instance FromJSON Meta where
+  parseJSON = withObject "Meta" \o -> do
+    marketDeck <- o .: "marketDeck"
+    knownMarketDeck <- o .:? "knownMarketDeck" .!= []
+    pure Meta {..}
 
 newtype UnderworldMarket2 = UnderworldMarket2 (AssetAttrs `With` Meta)
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -33,7 +43,7 @@ pickCardsByCodes (code : codes) cards = do
     card : after -> (card :) <$> pickCardsByCodes codes (before <> after)
 
 underworldMarket2 :: AssetCard UnderworldMarket2
-underworldMarket2 = asset (UnderworldMarket2 . (`with` Meta [])) Cards.underworldMarket2
+underworldMarket2 = asset (UnderworldMarket2 . (`with` Meta [] [])) Cards.underworldMarket2
 
 instance HasAbilities UnderworldMarket2 where
   getAbilities (UnderworldMarket2 (With attrs meta)) =
@@ -52,7 +62,7 @@ instance RunMessage UnderworldMarket2 where
         Just selected | length selected == 10 -> do
           traverse_ obtainCard selected
           deck' <- shuffle (selected <> marketDeck meta)
-          pure . UnderworldMarket2 . (`with` Meta deck') $ attrs
+          pure . UnderworldMarket2 . (`with` Meta deck' []) $ attrs
         _ -> do
           focusCards xs $ chooseOrRunNM iid 10 $ targets xs $ handleTarget iid (attrs.ability 1)
           pure a
@@ -60,9 +70,11 @@ instance RunMessage UnderworldMarket2 where
       card <- getCard cid
       obtainCard card
       deck' <- shuffle (card : marketDeck meta)
-      pure . UnderworldMarket2 . (`with` Meta deck') $ attrs
+      pure . UnderworldMarket2 . (`with` Meta deck' []) $ attrs
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let (xs, rest) = splitAt 2 $ marketDeck meta
+      let
+        (xs, rest) = splitAt 2 $ marketDeck meta
+        knownRest = filter ((`notElem` map toCardId xs) . toCardId) $ knownMarketDeck meta
       when (notNull xs) do
         focusCards xs do
           spendableResources <- getSpendableResources iid
@@ -82,8 +94,8 @@ instance RunMessage UnderworldMarket2 where
                         chooseOrRunOneAtATimeM iid $ targets cs $ handleTarget iid (attrs.ability 2)
                         unfocusCards
 
-      pure . UnderworldMarket2 . (`with` Meta rest) $ attrs
+      pure . UnderworldMarket2 . (`with` Meta rest knownRest) $ attrs
     HandleTargetChoice _iid (isAbilitySource attrs 2 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
-      pure . UnderworldMarket2 . (`with` Meta (marketDeck meta ++ [card])) $ attrs
+      pure . UnderworldMarket2 . (`with` Meta (marketDeck meta ++ [card]) (knownMarketDeck meta ++ [card])) $ attrs
     _ -> UnderworldMarket2 . (`with` meta) <$> liftRunMessage msg attrs

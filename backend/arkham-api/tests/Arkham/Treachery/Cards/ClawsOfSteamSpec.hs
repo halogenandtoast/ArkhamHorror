@@ -26,7 +26,7 @@ spec = describe "Claws of Steam" do
   -- Guard the common path: an asset that can soak the full amount takes it all and
   -- the investigator is untouched.
   it "keeps all damage on the asset when it can soak the full amount" . gameTest $ \self -> do
-    aleksey <- self `putAssetIntoPlay` Assets.alekseySaburovAlwaysOnTheMend
+    _ <- self `putAssetIntoPlay` Assets.alekseySaburovAlwaysOnTheMend
 
     run $ InvestigatorAssignDamage self.id (TestSource mempty) (DamageAssetsFirst AnyAsset) 2 0
     applyAllDamage

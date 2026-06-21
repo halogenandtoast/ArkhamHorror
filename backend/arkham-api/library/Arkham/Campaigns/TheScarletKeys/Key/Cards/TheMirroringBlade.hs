@@ -15,18 +15,21 @@ theMirroringBlade :: ScarletKeyCard TheMirroringBlade
 theMirroringBlade = key TheMirroringBlade Cards.theMirroringBlade
 
 instance HasAbilities TheMirroringBlade where
-  getAbilities (TheMirroringBlade a) = case a.bearer of
-    InvestigatorTarget iid | not a.shifted ->
-      case a.stability of
-        Stable ->
-          [ restricted
-              a
-              1
-              (exists $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource (a.ability 1))
-              $ FastAbility Free
-          ]
-        Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
-    _ -> []
+  getAbilities (TheMirroringBlade a)
+    | a.shifted = []
+    | Just iid <- keyHolderInvestigator a =
+        case a.stability of
+          Stable ->
+            [ restricted
+                a
+                1
+                (exists $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource (a.ability 1))
+                $ FastAbility Free
+            ]
+          Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
+    | Just aid <- keyHolderAsset a =
+        [restricted a 1 (youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free]
+    | otherwise = []
 
 instance RunMessage TheMirroringBlade where
   runMessage msg k@(TheMirroringBlade attrs) = runQueueT $ case msg of

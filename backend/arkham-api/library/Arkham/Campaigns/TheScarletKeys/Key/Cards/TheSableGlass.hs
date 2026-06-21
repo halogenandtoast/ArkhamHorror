@@ -17,15 +17,18 @@ theSableGlass :: ScarletKeyCard TheSableGlass
 theSableGlass = key TheSableGlass Cards.theSableGlass
 
 instance HasAbilities TheSableGlass where
-  getAbilities (TheSableGlass a) = case a.bearer of
-    InvestigatorTarget iid | not a.shifted ->
-      case a.stability of
-        Stable ->
-          [ restricted a 1 (youExist $ InvestigatorWithId iid <> at_ LocationWithConcealedCard)
-              $ FastAbility Free
-          ]
-        Unstable -> [restricted a 1 (youExist $ InvestigatorWithId iid) $ FastAbility Free]
-    _ -> []
+  getAbilities (TheSableGlass a)
+    | a.shifted = []
+    | Just iid <- keyHolderInvestigator a =
+        case a.stability of
+          Stable ->
+            [ restricted a 1 (youExist $ InvestigatorWithId iid <> at_ LocationWithConcealedCard)
+                $ FastAbility Free
+            ]
+          Unstable -> [restricted a 1 (youExist $ InvestigatorWithId iid) $ FastAbility Free]
+    | Just aid <- keyHolderAsset a =
+        [restricted a 1 (youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free]
+    | otherwise = []
 
 instance RunMessage TheSableGlass where
   runMessage msg k@(TheSableGlass attrs) = runQueueT $ case msg of

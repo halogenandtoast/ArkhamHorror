@@ -22,23 +22,25 @@ theLightOfPharos :: ScarletKeyCard TheLightOfPharos
 theLightOfPharos = key TheLightOfPharos Cards.theLightOfPharos
 
 instance HasAbilities TheLightOfPharos where
-  getAbilities (TheLightOfPharos a) = case a.bearer of
-    InvestigatorTarget iid
-      | not a.shifted ->
-          [ restricted
-              a
-              1
-              ( youExist (InvestigatorWithId iid)
-                  <> PlayableCardExistsWithCostReduction (Reduce 3) (inHandOf ForPlay iid)
-              )
-              $ FastAbility Free
-          ]
-    ScenarioTarget
-      | not a.shifted ->
-          [ restricted a 1 (PlayableCardExistsWithCostReduction (Reduce 3) $ InHandOf ForPlay You)
-              $ FastAbility Free
-          ]
-    _ -> []
+  getAbilities (TheLightOfPharos a)
+    | a.shifted = []
+    | Just iid <- keyHolderInvestigator a =
+        [ restricted
+            a
+            1
+            ( youExist (InvestigatorWithId iid)
+                <> PlayableCardExistsWithCostReduction (Reduce 3) (inHandOf ForPlay iid)
+            )
+            $ FastAbility Free
+        ]
+    | Just aid <- keyHolderAsset a =
+        [ restricted a 1 (youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free
+        ]
+    | ScenarioTarget <- a.bearer =
+        [ restricted a 1 (PlayableCardExistsWithCostReduction (Reduce 3) $ InHandOf ForPlay You)
+            $ FastAbility Free
+        ]
+    | otherwise = []
 
 instance RunMessage TheLightOfPharos where
   runMessage msg k@(TheLightOfPharos attrs) = runQueueT $ case msg of

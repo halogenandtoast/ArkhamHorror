@@ -19,10 +19,13 @@ theWellspringOfFortune :: ScarletKeyCard TheWellspringOfFortune
 theWellspringOfFortune = key TheWellspringOfFortune Cards.theWellspringOfFortune
 
 instance HasAbilities TheWellspringOfFortune where
-  getAbilities (TheWellspringOfFortune a) = case a.bearer of
-    InvestigatorTarget iid | not a.shifted ->
-      [restricted a 1 (NotScenario "88001" <> youExist (InvestigatorWithId iid)) $ FastAbility Free]
-    _ -> []
+  getAbilities (TheWellspringOfFortune a)
+    | a.shifted = []
+    | Just iid <- keyHolderInvestigator a =
+        [restricted a 1 (NotScenario "88001" <> youExist (InvestigatorWithId iid)) $ FastAbility Free]
+    | Just aid <- keyHolderAsset a =
+        [restricted a 1 (NotScenario "88001" <> youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free]
+    | otherwise = []
 
 instance RunMessage TheWellspringOfFortune where
   runMessage msg k@(TheWellspringOfFortune attrs) = runQueueT $ case msg of

@@ -18,14 +18,17 @@ theTwistedAntiprism :: ScarletKeyCard TheTwistedAntiprism
 theTwistedAntiprism = key TheTwistedAntiprism Cards.theTwistedAntiprism
 
 instance HasAbilities TheTwistedAntiprism where
-  getAbilities (TheTwistedAntiprism a) = case a.bearer of
-    InvestigatorTarget iid | not a.shifted ->
-      case a.stability of
-        Stable ->
-          [ restricted a 1 (exists (colocatedWith iid <> can.manipulate.deck)) $ FastAbility Free
-          ]
-        Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
-    _ -> []
+  getAbilities (TheTwistedAntiprism a)
+    | a.shifted = []
+    | Just iid <- keyHolderInvestigator a =
+        case a.stability of
+          Stable ->
+            [ restricted a 1 (exists (colocatedWith iid <> can.manipulate.deck)) $ FastAbility Free
+            ]
+          Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
+    | Just aid <- keyHolderAsset a =
+        [restricted a 1 (youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free]
+    | otherwise = []
 
 instance RunMessage TheTwistedAntiprism where
   runMessage msg k@(TheTwistedAntiprism attrs) = runQueueT $ case msg of

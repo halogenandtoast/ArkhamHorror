@@ -252,16 +252,41 @@ import Arkham.Target as X
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Matcher (pattern AssetWithId, pattern HasMatchingAsset)
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Token
 import Arkham.Window
 
+-- | The investigator who may shift this key via its fast ability when the key
+-- is attached to an investigator. Shifting follows the key's current
+-- attachment (placement), not its original bearer.
+keyHolderInvestigator :: ScarletKeyAttrs -> Maybe InvestigatorId
+keyHolderInvestigator attrs = case attrs.placement of
+  AttachedToInvestigator iid -> Just iid
+  _ -> Nothing
+
+-- | When a key is attached to a story asset, the asset whose controller(s) may
+-- shift it.
+keyHolderAsset :: ScarletKeyAttrs -> Maybe AssetId
+keyHolderAsset attrs = case attrs.placement of
+  AttachedToAsset aid _ -> Just aid
+  _ -> Nothing
+
+-- | Resolve the investigator who is shifting the key. Prefers the current
+-- attachment: an investigator the key is attached to, otherwise the controller
+-- of the story asset it is attached to. Falls back to the original bearer (and
+-- the meta-recorded triggerer for scenario-borne keys) for keys that are not
+-- attached to an investigator or asset.
 withInvestigatorBearer
-  :: Applicative m => ScarletKeyAttrs -> (InvestigatorId -> m ()) -> m ()
-withInvestigatorBearer attrs f = case attrs.bearer of
-  InvestigatorTarget iid -> f iid
-  ScenarioTarget -> traverse_ f (maybeResult @InvestigatorId attrs.meta)
-  _ -> pure ()
+  :: ReverseQueue m => ScarletKeyAttrs -> (InvestigatorId -> m ()) -> m ()
+withInvestigatorBearer attrs f = case attrs.placement of
+  AttachedToInvestigator iid -> f iid
+  AttachedToAsset aid _ -> selectOne (HasMatchingAsset (AssetWithId aid)) >>= traverse_ f
+  _ -> case attrs.bearer of
+    InvestigatorTarget iid -> f iid
+    ScenarioTarget -> traverse_ f (maybeResult @InvestigatorId attrs.meta)
+    _ -> pure ()
 
 shiftKey :: ReverseQueue m => ScarletKeyAttrs -> m () -> m ()
 shiftKey attrs body = do

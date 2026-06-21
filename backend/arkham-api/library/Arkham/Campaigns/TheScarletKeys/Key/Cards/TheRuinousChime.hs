@@ -14,18 +14,21 @@ theRuinousChime :: ScarletKeyCard TheRuinousChime
 theRuinousChime = key TheRuinousChime Cards.theRuinousChime
 
 instance HasAbilities TheRuinousChime where
-  getAbilities (TheRuinousChime a) = case a.bearer of
-    InvestigatorTarget iid | not a.shifted ->
-      case a.stability of
-        Stable ->
-          [ restricted
-              a
-              1
-              (exists $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeEvadedBy (a.ability 1))
-              $ FastAbility Free
-          ]
-        Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
-    _ -> []
+  getAbilities (TheRuinousChime a)
+    | a.shifted = []
+    | Just iid <- keyHolderInvestigator a =
+        case a.stability of
+          Stable ->
+            [ restricted
+                a
+                1
+                (exists $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeEvadedBy (a.ability 1))
+                $ FastAbility Free
+            ]
+          Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
+    | Just aid <- keyHolderAsset a =
+        [restricted a 1 (youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free]
+    | otherwise = []
 
 instance RunMessage TheRuinousChime where
   runMessage msg k@(TheRuinousChime attrs) = runQueueT $ case msg of

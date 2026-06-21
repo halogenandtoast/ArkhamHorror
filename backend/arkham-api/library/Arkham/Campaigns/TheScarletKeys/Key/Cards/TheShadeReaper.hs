@@ -20,22 +20,24 @@ theShadeReaper :: ScarletKeyCard TheShadeReaper
 theShadeReaper = key TheShadeReaper Cards.theShadeReaper
 
 instance HasAbilities TheShadeReaper where
-  getAbilities (TheShadeReaper a) = case a.bearer of
-    InvestigatorTarget iid
-      | not a.shifted ->
-          if a.stable
-            then
-              [ restricted
-                  a
-                  1
-                  ( youExist (InvestigatorWithId iid)
-                      <> exists (NonEliteEnemy <> EnemyAt (locationWithInvestigator iid))
-                  )
-                  $ FastAbility Free
-              ]
-            else
-              [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
-    _ -> []
+  getAbilities (TheShadeReaper a)
+    | a.shifted = []
+    | Just iid <- keyHolderInvestigator a =
+        if a.stable
+          then
+            [ restricted
+                a
+                1
+                ( youExist (InvestigatorWithId iid)
+                    <> exists (NonEliteEnemy <> EnemyAt (locationWithInvestigator iid))
+                )
+                $ FastAbility Free
+            ]
+          else
+            [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
+    | Just aid <- keyHolderAsset a =
+        [restricted a 1 (youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free]
+    | otherwise = []
 
 instance RunMessage TheShadeReaper where
   runMessage msg k@(TheShadeReaper attrs) = runQueueT $ case msg of

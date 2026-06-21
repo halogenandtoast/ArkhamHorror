@@ -16,25 +16,27 @@ theBaleEngine :: ScarletKeyCard TheBaleEngine
 theBaleEngine = key TheBaleEngine Cards.theBaleEngine
 
 instance HasAbilities TheBaleEngine where
-  getAbilities (TheBaleEngine a) = case a.bearer of
-    InvestigatorTarget iid
-      | not a.shifted ->
-          if a.stable
-            then
-              [ restricted
-                  a
-                  1
-                  ( youExist (InvestigatorWithId iid)
-                      <> exists
-                        ( AssetControlledBy (affectsColocated iid)
-                            <> mapOneOf AssetCanHaveUses [Ammo, Charge, Secret, Supply, Evidence]
-                        )
-                  )
-                  $ FastAbility Free
-              ]
-            else
-              [restricted a 1 (youExist (InvestigatorWithId iid) <> exists InvestigatorWithAnyResources) $ FastAbility Free]
-    _ -> []
+  getAbilities (TheBaleEngine a)
+    | a.shifted = []
+    | Just iid <- keyHolderInvestigator a =
+        if a.stable
+          then
+            [ restricted
+                a
+                1
+                ( youExist (InvestigatorWithId iid)
+                    <> exists
+                      ( AssetControlledBy (affectsColocated iid)
+                          <> mapOneOf AssetCanHaveUses [Ammo, Charge, Secret, Supply, Evidence]
+                      )
+                )
+                $ FastAbility Free
+            ]
+          else
+            [restricted a 1 (youExist (InvestigatorWithId iid) <> exists InvestigatorWithAnyResources) $ FastAbility Free]
+    | Just aid <- keyHolderAsset a =
+        [restricted a 1 (youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free]
+    | otherwise = []
 
 instance RunMessage TheBaleEngine where
   runMessage msg k@(TheBaleEngine attrs) = runQueueT $ case msg of

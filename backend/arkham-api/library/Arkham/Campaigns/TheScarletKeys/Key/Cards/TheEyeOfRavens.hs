@@ -15,20 +15,23 @@ theEyeOfRavens :: ScarletKeyCard TheEyeOfRavens
 theEyeOfRavens = key TheEyeOfRavens Cards.theEyeOfRavens
 
 instance HasAbilities TheEyeOfRavens where
-  getAbilities (TheEyeOfRavens a) = case a.bearer of
-    InvestigatorTarget iid | not a.shifted ->
-      case a.stability of
-        Stable ->
-          [ restricted
-              a
-              1
-              ( youExist (InvestigatorWithId iid)
-                  <> DuringSkillTest (SkillTestAtYourLocation <> SkillTestOfInvestigator (affectsOthers Anyone))
-              )
-              $ FastAbility Free
-          ]
-        Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
-    _ -> []
+  getAbilities (TheEyeOfRavens a)
+    | a.shifted = []
+    | Just iid <- keyHolderInvestigator a =
+        case a.stability of
+          Stable ->
+            [ restricted
+                a
+                1
+                ( youExist (InvestigatorWithId iid)
+                    <> DuringSkillTest (SkillTestAtYourLocation <> SkillTestOfInvestigator (affectsOthers Anyone))
+                )
+                $ FastAbility Free
+            ]
+          Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
+    | Just aid <- keyHolderAsset a =
+        [restricted a 1 (youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free]
+    | otherwise = []
 
 instance RunMessage TheEyeOfRavens where
   runMessage msg k@(TheEyeOfRavens attrs) = runQueueT $ case msg of

@@ -37,7 +37,8 @@ instance RunMessage ReclaimedByNature where
           enemies <- select $ EnemyAt $ oneOf [yourLocation, connectedTo yourLocation]
           chooseOneM iid $ campaignI18n do
             unscoped $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
-            labeled' "reclaimedByNature.enemiesHeal" do
-              for_ enemies \enemy -> healDamage enemy attrs 1
+            when (notNull enemies) do
+              labeled' "reclaimedByNature.enemiesHeal" do
+                for_ enemies \enemy -> healDamage enemy attrs 1
       pure t
     _ -> ReclaimedByNature <$> liftRunMessage msg attrs

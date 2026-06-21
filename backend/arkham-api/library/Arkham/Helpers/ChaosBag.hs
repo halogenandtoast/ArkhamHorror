@@ -16,14 +16,18 @@ import Arkham.Matcher
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Tracing
 
+-- These can be queried outside of a scenario (e.g. while gathering actions
+-- during the between-scenarios deck-upgrade step, where the scenario has
+-- already been torn out of the game mode). With no scenario there is no chaos
+-- bag, so degrade to "no tokens" rather than crashing on the missing field.
 getOnlyChaosTokensInBag :: (HasGame m, Tracing m) => m [ChaosToken]
-getOnlyChaosTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+getOnlyChaosTokensInBag = foldMap chaosBagChaosTokens <$> scenarioFieldMaybe ScenarioChaosBag
 
 getBagChaosTokens :: (HasCallStack, HasGame m, Tracing m) => m [ChaosToken]
-getBagChaosTokens = scenarioFieldMap ScenarioChaosBag allChaosBagChaosTokens
+getBagChaosTokens = foldMap allChaosBagChaosTokens <$> scenarioFieldMaybe ScenarioChaosBag
 
 getTokenPool :: (HasGame m, Tracing m) => m [ChaosToken]
-getTokenPool = scenarioFieldMap ScenarioChaosBag chaosBagTokenPool
+getTokenPool = foldMap chaosBagTokenPool <$> scenarioFieldMaybe ScenarioChaosBag
 
 getRemainingFrostTokens :: (HasGame m, Tracing m) => m Int
 getRemainingFrostTokens = selectCount $ InTokenPool #frost

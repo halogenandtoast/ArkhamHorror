@@ -41,6 +41,11 @@ async function deleteGameEvent(game: GameDetails) {
 
 const newGame = ref(route.path === "/new-game" || false)
 const showImportGame = ref(false)
+const importGameRef = ref<any>(null)
+const importGameSelected = computed(() => !!importGameRef.value?.selectedFile)
+const importGameCanSubmit = computed(() => importGameRef.value?.canSubmit ?? false)
+const importGameLoading = computed(() => importGameRef.value?.loading ?? false)
+const submitImportGame = () => importGameRef.value?.submit()
 
 // View Transition helper
 function withViewTransition(fn: () => void) {
@@ -105,9 +110,20 @@ const dismissNotification = (notification: AppNotification) => {
             <div v-if="currentUser && showImportGame" class="load-game-panel">
               <div class="panel-header">
                 <h3>{{ $t('home.loadGame') }}</h3>
-                <button class="panel-close" type="button" @click="toggleImportGame">{{ $t('cancel') }}</button>
+                <div class="panel-actions">
+                  <button class="panel-close" type="button" @click="toggleImportGame">{{ $t('cancel') }}</button>
+                  <button
+                    v-if="importGameSelected"
+                    class="panel-load"
+                    type="button"
+                    :disabled="!importGameCanSubmit"
+                    @click="submitImportGame"
+                  >
+                    {{ importGameLoading ? 'Loading…' : 'Load Game' }}
+                  </button>
+                </div>
               </div>
-              <ImportGame />
+              <ImportGame ref="importGameRef" />
             </div>
           </Transition>
           <div v-if="activeGames.length === 0" class="box">
@@ -322,16 +338,41 @@ header {
   text-transform: uppercase;
 }
 
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-load,
 .panel-close {
-  background: transparent;
   border: 1px solid var(--box-border);
   border-radius: 3px;
-  color: var(--title);
   cursor: pointer;
   font-size: 0.8em;
   font-weight: bolder;
   padding: 7px 10px;
   text-transform: uppercase;
+}
+
+.panel-load {
+  background: var(--spooky-green);
+  border-color: var(--spooky-green);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: hsl(80, 35%, 32%);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+.panel-close {
+  background: transparent;
+  color: var(--title);
 
   &:hover {
     background: rgba(255, 255, 255, 0.06);

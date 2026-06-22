@@ -62,8 +62,15 @@ const deck = computed(() => {
   })
 
   for (const asset of Object.values(props.game.assets)) {
-    if (asset.cardCode !== 'c09077' || asset.owner !== props.investigator.id || !asset.marketDeck?.length) continue
-    attachmentMeta.attachments_09077 = asset.marketDeck.map((card) => asCardCode(card).replace(/^c/, '')).join(',')
+    if (asset.owner !== props.investigator.id) continue
+
+    if (asset.cardCode === 'c09077' && asset.marketDeck?.length) {
+      attachmentMeta.attachments_09077 = asset.marketDeck.map((card) => asCardCode(card).replace(/^c/, '')).join(',')
+    }
+
+    if (asset.cardCode === 'c90052' && asset.spiritDeck?.length) {
+      attachmentMeta.attachments_90052 = asset.spiritDeck.map((card) => asCardCode(card).replace(/^c/, '')).join(',')
+    }
   }
 
   for (const cardCode of Object.keys(attachmentMeta)) {

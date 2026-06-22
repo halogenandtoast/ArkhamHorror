@@ -86,30 +86,50 @@ const groupedCards = computed(() => {
 })
 
 const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
-  if (!props.deck.list.meta) return {}
+  const result: Record<string, Arkham.CardDef[]> = {}
 
   try {
-    const meta = JSON.parse(props.deck.list.meta) as Record<string, unknown>
-    const result = Object.entries(meta).reduce<Record<string, Arkham.CardDef[]>>((acc, [key, value]) => {
+    const meta = props.deck.list.meta ? JSON.parse(props.deck.list.meta) as Record<string, unknown> : {}
+    Object.entries(meta).forEach(([key, value]) => {
       const match = key.match(/^attachments_(\d+)$/)
-      if (!match || typeof value !== 'string') return acc
+      if (!match || typeof value !== 'string') return
 
       const attachedCards = value
         .split(',')
         .map((code) => findCardByDeckCode(code.trim()))
         .filter((card): card is Arkham.CardDef => !!card)
 
-      if (attachedCards.length > 0) acc[match[1]] = attachedCards
-      return acc
-    }, {})
+      if (attachedCards.length > 0) result[match[1]] = attachedCards
+    })
 
     const hiddenSlots = (meta.hidden_slots as { slots?: Record<string, number> } | undefined)?.slots
-    if (!result['09077'] && hiddenSlots) {
-      const marketCards = Object.entries(hiddenSlots).flatMap(([code, quantity]) => {
+    if (hiddenSlots) {
+      const hiddenCards = Object.entries(hiddenSlots).flatMap(([code, quantity]) => {
         const card = findCardByDeckCode(code)
         return card ? Array(quantity).fill(card) : []
       })
-      if (marketCards.length > 0) result['09077'] = marketCards
+      if (hiddenCards.length > 0) {
+        const hasFromTheBeyond = !!props.deck.list.slots['90052'] || !!props.deck.list.slots['c90052']
+        if (hasFromTheBeyond && !result['90052']) result['90052'] = hiddenCards
+        else if (!result['09077']) result['09077'] = hiddenCards
+      }
+    }
+
+    const sideSlots = props.deck.list.sideSlots
+    if (sideSlots && !result['90052']) {
+      const sideCards = Object.entries(sideSlots).flatMap(([code, quantity]) => {
+        const card = findCardByDeckCode(code)
+        return card ? Array(quantity).fill(card) : []
+      })
+      if (sideCards.length > 0) result['90052'] = sideCards
+    }
+
+    if (typeof meta.extra_deck === 'string' && !result['90052']) {
+      const extraCards = meta.extra_deck
+        .split(',')
+        .map((code) => findCardByDeckCode(code.trim()))
+        .filter((card): card is Arkham.CardDef => !!card)
+      if (extraCards.length > 0) result['90052'] = extraCards
     }
 
     return result
@@ -130,10 +150,13 @@ const groupedAttachedCards = (card: Arkham.CardDef) => {
 }
 
 const underworldMarketCards = () => attachments.value['09077'] ?? []
+const spiritDeckCards = () => attachments.value['90052'] ?? []
 
 const marketCardCount = (card: Arkham.CardDef) => underworldMarketCards().filter((c) => c.art === card.art).length
+const spiritCardCount = (card: Arkham.CardDef) => spiritDeckCards().filter((c) => c.art === card.art).length
 
 const marketTooltip = (card: Arkham.CardDef) => `Attached to Market deck (x ${marketCardCount(card)})`
+const spiritTooltip = (card: Arkham.CardDef) => `In Spirit deck (x ${spiritCardCount(card)})`
 
 const isUnderworldMarketCard = (card: Arkham.CardDef, idx?: number) => {
   const marketCount = marketCardCount(card)
@@ -142,6 +165,21 @@ const isUnderworldMarketCard = (card: Arkham.CardDef, idx?: number) => {
 
   const occurrence = allCards.value.slice(0, idx + 1).filter((c) => c.art === card.art).length
   return occurrence <= marketCount
+}
+
+const isSpiritDeckCard = (card: Arkham.CardDef, idx?: number) => {
+  const spiritCount = spiritCardCount(card)
+  if (spiritCount === 0) return false
+  if (idx === undefined) return true
+
+  const occurrence = allCards.value.slice(0, idx + 1).filter((c) => c.art === card.art).length
+  return occurrence <= spiritCount
+}
+
+const attachmentHeading = (card: Arkham.CardDef) => {
+  if (card.art === '90052') return 'Spirit deck'
+  if (card.art === '09077') return 'Underworld Market'
+  return `Attached cards for ${cardName(card)}`
 }
 
 const cardName = (card: Arkham.CardDef) => {
@@ -296,10 +334,16 @@ watch(deckRef, (el) => {
                 <font-awesome-icon icon="store" />
                 <span>x {{ marketCardCount(card) }}</span>
               </span>
+              <span v-if="isSpiritDeckCard(card)" class="spirit-badge market-badge--image" v-tooltip="spiritTooltip(card)" :aria-label="spiritTooltip(card)">
+                <font-awesome-icon :icon="['fas', 'ghost']" />
+                <span>x {{ spiritCardCount(card) }}</span>
+              </span>
             </span>
           </div>
           <div v-if="attachedCards(card).length > 0" class="attachments-panel">
-            <div class="attachments-title"><font-awesome-icon icon="paperclip" /> Attached cards for {{ cardName(card) }}</div>
+            <div class="attachments-title" :class="{ 'attachments-title--spirit': card.art === '90052' }">
+              <font-awesome-icon :icon="card.art === '90052' ? ['fas', 'ghost'] : 'paperclip'" /> {{ attachmentHeading(card) }}
+            </div>
             <div class="attachment-grid">
               <a
                 v-for="entry in groupedAttachedCards(card)"
@@ -334,6 +378,10 @@ watch(deckRef, (el) => {
                     <font-awesome-icon icon="store" />
                     <span>x {{ marketCardCount(card) }}</span>
                   </span>
+                  <span v-if="isSpiritDeckCard(card)" class="spirit-badge" v-tooltip="spiritTooltip(card)" :aria-label="spiritTooltip(card)">
+                    <font-awesome-icon :icon="['fas', 'ghost']" />
+                    <span>x {{ spiritCardCount(card) }}</span>
+                  </span>
                 </div>
               </td>
               <td>{{card.classSymbols.join(', ')}}</td>
@@ -348,8 +396,8 @@ watch(deckRef, (el) => {
             <tr v-if="attachedCards(card).length > 0" class="attachments-row">
               <td colspan="7">
                 <div class="attachments-list">
-                  <div class="attachments-heading">
-                    <font-awesome-icon icon="paperclip" /> Attached cards for {{ cardName(card) }}
+                  <div class="attachments-heading" :class="{ 'attachments-heading--spirit': card.art === '90052' }">
+                    <font-awesome-icon :icon="card.art === '90052' ? ['fas', 'ghost'] : 'paperclip'" /> {{ attachmentHeading(card) }}
                   </div>
                   <div class="attachment-pills">
                     <a
@@ -533,7 +581,8 @@ watch(deckRef, (el) => {
   white-space: nowrap;
 }
 
-.market-badge {
+.market-badge,
+.spirit-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -548,6 +597,12 @@ watch(deckRef, (el) => {
   font-size: 0.68rem;
   font-weight: 800;
   white-space: nowrap;
+}
+
+.spirit-badge {
+  color: #b8d7ff;
+  background: rgba(120, 170, 255, 0.14);
+  border-color: rgba(120, 170, 255, 0.34);
 }
 
 .attachments-row td {
@@ -578,6 +633,10 @@ watch(deckRef, (el) => {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.attachments-heading--spirit {
+  color: #b8d7ff;
 }
 
 .attachment-pills {
@@ -667,6 +726,11 @@ watch(deckRef, (el) => {
   font-size: 0.82rem;
 }
 
+.spirit-badge.market-badge--image {
+  background: rgba(0, 0, 0, 0.72);
+  border-color: rgba(120, 170, 255, 0.5);
+}
+
 .cards {
   overflow-y: auto;
   display: grid;
@@ -714,6 +778,10 @@ watch(deckRef, (el) => {
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.attachments-title--spirit {
+  color: #b8d7ff;
 }
 
 .attachment-grid {

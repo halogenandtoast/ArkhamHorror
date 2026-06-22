@@ -33,18 +33,31 @@ const attachedCards = (card: Arkham.CardDef) => props.attachments[card.art] ?? [
 const groupedAttachedCards = (card: Arkham.CardDef) => groupCards(attachedCards(card))
 
 const underworldMarketCards = () => props.attachments['09077'] ?? []
+const spiritDeckCards = () => props.attachments['90052'] ?? []
 
-const marketCardCounts = computed(() => {
+const countCards = (cards: Arkham.CardDef[]) => {
   const counts = new Map<string, number>()
-  for (const card of underworldMarketCards()) counts.set(card.art, (counts.get(card.art) ?? 0) + 1)
+  for (const card of cards) counts.set(card.art, (counts.get(card.art) ?? 0) + 1)
   return counts
-})
+}
+
+const marketCardCounts = computed(() => countCards(underworldMarketCards()))
+const spiritCardCounts = computed(() => countCards(spiritDeckCards()))
 
 const marketCardCount = (card: Arkham.CardDef) => marketCardCounts.value.get(card.art) ?? 0
+const spiritCardCount = (card: Arkham.CardDef) => spiritCardCounts.value.get(card.art) ?? 0
 
 const marketTooltip = (card: Arkham.CardDef) => `Attached to Market deck (x ${marketCardCount(card)})`
+const spiritTooltip = (card: Arkham.CardDef) => `In Spirit deck (x ${spiritCardCount(card)})`
 
 const isUnderworldMarketCard = (card: Arkham.CardDef) => marketCardCount(card) > 0
+const isSpiritDeckCard = (card: Arkham.CardDef) => spiritCardCount(card) > 0
+
+const attachmentTitle = (card: Arkham.CardDef) => {
+  if (card.art === '90052') return 'Spirit deck'
+  if (card.art === '09077') return 'Underworld Market'
+  return 'Attached cards'
+}
 
 const cardName = (card: Arkham.CardDef) => {
   const subtitle = card.name.subtitle === null ? "" : `: ${card.name.subtitle}`
@@ -68,10 +81,16 @@ const cardName = (card: Arkham.CardDef) => {
             <font-awesome-icon icon="store" />
             <span>x {{ marketCardCount(card) }}</span>
           </span>
+          <span v-if="isSpiritDeckCard(card)" class="spirit-badge" v-tooltip="spiritTooltip(card)" :aria-label="spiritTooltip(card)">
+            <font-awesome-icon :icon="['fas', 'ghost']" />
+            <span>x {{ spiritCardCount(card) }}</span>
+          </span>
         </span>
       </a>
       <div v-if="attachedCards(card).length > 0" class="attachments-panel">
-        <div class="attachments-title"><font-awesome-icon icon="paperclip" /> Attached cards</div>
+        <div class="attachments-title" :class="{ 'attachments-title--spirit': card.art === '90052' }">
+          <font-awesome-icon :icon="card.art === '90052' ? ['fas', 'ghost'] : 'paperclip'" /> {{ attachmentTitle(card) }}
+        </div>
         <div class="attachment-grid">
           <a
             v-for="entry in groupedAttachedCards(card)"
@@ -150,7 +169,8 @@ const cardName = (card: Arkham.CardDef) => {
   white-space: nowrap;
 }
 
-.market-badge {
+.market-badge,
+.spirit-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -165,6 +185,11 @@ const cardName = (card: Arkham.CardDef) => {
   box-shadow: 0 2px 7px rgba(0, 0, 0, 0.45);
   font-size: 0.82rem;
   font-weight: 800;
+}
+
+.spirit-badge {
+  color: #b8d7ff;
+  border-color: rgba(120, 170, 255, 0.5);
 }
 
 .has-attachments {
@@ -200,6 +225,10 @@ const cardName = (card: Arkham.CardDef) => {
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.attachments-title--spirit {
+  color: #b8d7ff;
 }
 
 .attachment-grid {

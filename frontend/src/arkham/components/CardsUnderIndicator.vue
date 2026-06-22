@@ -223,7 +223,7 @@ const isHighlighted = computed(() => props.highlighted || hasCardChoice.value)
 
 .cards-under-popover {
   min-width: 0;
-  max-width: 80vw;
+  max-width: max(50vw, 300px);
   padding: 10px;
 }
 
@@ -239,9 +239,11 @@ const isHighlighted = computed(() => props.highlighted || hasCardChoice.value)
 .cards-under-popover__cards {
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 6px;
-  overflow-x: auto;
+  max-height: 50vh;
+  overflow: auto;
 }
 
 .cards-under-popover__card-wrap {
@@ -266,6 +268,10 @@ const isHighlighted = computed(() => props.highlighted || hasCardChoice.value)
 </style>
 
 <style>
+.v-popper__popper.v-popper--theme-cards-under-popover {
+  z-index: calc(var(--z-card-hover-overlay) - 1);
+}
+
 .v-popper--theme-cards-under-popover .v-popper__inner {
   background: rgba(15, 15, 20, 0.92);
   backdrop-filter: blur(8px);

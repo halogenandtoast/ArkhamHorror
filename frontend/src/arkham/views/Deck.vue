@@ -115,30 +115,50 @@ const cards = computed(() => {
 })
 
 const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
-  if (!deck.value?.list.meta) return {}
+  const result: Record<string, Arkham.CardDef[]> = {}
 
   try {
-    const meta = JSON.parse(deck.value.list.meta) as Record<string, unknown>
-    const result = Object.entries(meta).reduce<Record<string, Arkham.CardDef[]>>((acc, [key, value]) => {
+    const meta = deck.value?.list.meta ? JSON.parse(deck.value.list.meta) as Record<string, unknown> : {}
+    Object.entries(meta).forEach(([key, value]) => {
       const match = key.match(/^attachments_(\d+)$/)
-      if (!match || typeof value !== 'string') return acc
+      if (!match || typeof value !== 'string') return
 
       const attachedCards = value
         .split(',')
         .map((code) => findCardByDeckCode(code.trim()))
         .filter((card): card is Arkham.CardDef => !!card)
 
-      if (attachedCards.length > 0) acc[match[1]] = attachedCards
-      return acc
-    }, {})
+      if (attachedCards.length > 0) result[match[1]] = attachedCards
+    })
 
     const hiddenSlots = (meta.hidden_slots as { slots?: Record<string, number> } | undefined)?.slots
-    if (!result['09077'] && hiddenSlots) {
-      const marketCards = Object.entries(hiddenSlots).flatMap(([code, quantity]) => {
+    if (hiddenSlots) {
+      const hiddenCards = Object.entries(hiddenSlots).flatMap(([code, quantity]) => {
         const card = findCardByDeckCode(code)
         return card ? Array(quantity).fill(card) : []
       })
-      if (marketCards.length > 0) result['09077'] = marketCards
+      if (hiddenCards.length > 0) {
+        const hasFromTheBeyond = !!deck.value?.list.slots['90052'] || !!deck.value?.list.slots['c90052']
+        if (hasFromTheBeyond && !result['90052']) result['90052'] = hiddenCards
+        else if (!result['09077']) result['09077'] = hiddenCards
+      }
+    }
+
+    const sideSlots = deck.value?.list.sideSlots
+    if (sideSlots && !result['90052']) {
+      const sideCards = Object.entries(sideSlots).flatMap(([code, quantity]) => {
+        const card = findCardByDeckCode(code)
+        return card ? Array(quantity).fill(card) : []
+      })
+      if (sideCards.length > 0) result['90052'] = sideCards
+    }
+
+    if (typeof meta.extra_deck === 'string' && !result['90052']) {
+      const extraCards = meta.extra_deck
+        .split(',')
+        .map((code) => findCardByDeckCode(code.trim()))
+        .filter((card): card is Arkham.CardDef => !!card)
+      if (extraCards.length > 0) result['90052'] = extraCards
     }
 
     return result

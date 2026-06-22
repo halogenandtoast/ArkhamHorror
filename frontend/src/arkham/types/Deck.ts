@@ -43,6 +43,7 @@ export function deckClass(deck: Deck) {
 export type DeckList = {
   investigator_code: string;
   slots: Record<string, number>;
+  sideSlots?: Record<string, number>;
   meta?: string
   taboo_id?: number
 }
@@ -58,6 +59,7 @@ export const deckListDecoder = JsonDecoder.object<DeckList>(
   {
     investigator_code: JsonDecoder.string(),
     slots: JsonDecoder.record<number>(JsonDecoder.number(), 'Dict<cardcode, number'),
+    sideSlots: v2Optional(JsonDecoder.record<number>(JsonDecoder.number(), 'Dict<cardcode, number')),
     meta: v2Optional(JsonDecoder.string()),
     taboo_id: v2Optional(JsonDecoder.number()),
   },

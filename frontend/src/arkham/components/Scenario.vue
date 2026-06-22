@@ -2533,6 +2533,8 @@ async function addChaosToken(face: any){
   touch-action: manipulation;
   scrollbar-gutter: stable both-edges;
   scroll-padding: 30%;
+  padding: 24px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 16px;

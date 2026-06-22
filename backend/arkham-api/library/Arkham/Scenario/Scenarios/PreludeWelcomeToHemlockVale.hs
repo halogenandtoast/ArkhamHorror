@@ -254,7 +254,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           when (resources > 0) do
             chooseOneM iid do
               labeled' "tadsGeneralStore.item" do
-                codexFinishedFor 6 iid
+                codexFinishedFor 14 iid
                 spendResources iid 1
                 search iid source iid [fromDeck] (basic #item) (PlayFoundNoCost iid 1)
               unscoped skip_

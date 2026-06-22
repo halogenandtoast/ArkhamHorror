@@ -40,6 +40,7 @@ async function deleteGameEvent(game: GameDetails) {
 }
 
 const newGame = ref(route.path === "/new-game" || false)
+const showImportGame = ref(false)
 
 // View Transition helper
 function withViewTransition(fn: () => void) {
@@ -54,12 +55,17 @@ function withViewTransition(fn: () => void) {
 const toggleNewGame = () => {
   withViewTransition(() => {
     newGame.value = !newGame.value
+    showImportGame.value = false
     if (newGame.value === true) {
       router.push({ path: "/new-game" })
     } else {
       router.push({ path: "/" })
     }
   })
+}
+
+const toggleImportGame = () => {
+  showImportGame.value = !showImportGame.value
 }
 
 const dismissNotification = (notification: AppNotification) => {
@@ -88,8 +94,22 @@ const dismissNotification = (notification: AppNotification) => {
         <section>
           <header class="main-header">
             <h2>{{$t('activeGames')}}</h2>
-            <PrimaryButton :label="$t('newGame')" @click="toggleNewGame" />
+            <div class="header-actions">
+              <button v-if="currentUser" class="secondary-cta" type="button" @click="toggleImportGame">
+                {{ $t('home.loadGame') }}
+              </button>
+              <PrimaryButton :label="$t('newGame')" @click="toggleNewGame" />
+            </div>
           </header>
+          <Transition name="slide">
+            <div v-if="currentUser && showImportGame" class="load-game-panel">
+              <div class="panel-header">
+                <h3>{{ $t('home.loadGame') }}</h3>
+                <button class="panel-close" type="button" @click="toggleImportGame">{{ $t('cancel') }}</button>
+              </div>
+              <ImportGame />
+            </div>
+          </Transition>
           <div v-if="activeGames.length === 0" class="box">
             <p>{{ $t('home.noActiveGames') }}</p>
           </div>
@@ -100,12 +120,6 @@ const dismissNotification = (notification: AppNotification) => {
           <header><h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2></header>
           <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
 
-        </section>
-        <section v-if="currentUser">
-          <header>
-            <h2>{{ $t('home.loadGame') }}</h2>
-          </header>
-          <ImportGame />
         </section>
       </div>
     </div>
@@ -221,6 +235,7 @@ header {
   display: flex;
   margin-bottom: 10px;
   align-items: center;
+  gap: 12px;
   h2 {
     flex: 1;
   }
@@ -247,6 +262,80 @@ header {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.secondary-cta {
+  align-self: center;
+  background: transparent;
+  border: 1px solid var(--box-border);
+  border-radius: 3px;
+  color: var(--title);
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 700;
+  opacity: 0.8;
+  outline: 0;
+  padding: 8px 12px;
+  text-transform: uppercase;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    padding: 6px 9px;
+    font-size: 0.75em;
+  }
+}
+
+.load-game-panel {
+  background: var(--box-background);
+  border: 1px solid var(--box-border);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.panel-header h3 {
+  flex: 1;
+  margin: 0;
+  color: var(--title);
+  font-family: teutonic, sans-serif;
+  font-size: 1.4em;
+  text-transform: uppercase;
+}
+
+.panel-close {
+  background: transparent;
+  border: 1px solid var(--box-border);
+  border-radius: 3px;
+  color: var(--title);
+  cursor: pointer;
+  font-size: 0.8em;
+  font-weight: bolder;
+  padding: 7px 10px;
+  text-transform: uppercase;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
 }
 
 .notification {

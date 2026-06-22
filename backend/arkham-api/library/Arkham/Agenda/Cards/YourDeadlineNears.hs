@@ -1,6 +1,7 @@
 module Arkham.Agenda.Cards.YourDeadlineNears (yourDeadlineNears) where
 
 import Arkham.Ability
+import Arkham.Helpers.Window.Enemy
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
 import Arkham.Card
@@ -28,7 +29,7 @@ instance HasAbilities YourDeadlineNears where
 
 instance RunMessage YourDeadlineNears where
   runMessage msg a@(YourDeadlineNears attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (wouldBeDefeatedEnemy -> eid) _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 (defeatedEnemy -> eid) _ -> do
       healCultistInsteadOfDefeat (attrs.ability 1) eid
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

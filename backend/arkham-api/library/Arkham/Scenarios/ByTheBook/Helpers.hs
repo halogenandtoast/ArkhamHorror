@@ -2,21 +2,18 @@ module Arkham.Scenarios.ByTheBook.Helpers where
 
 import Arkham.Card
 import Arkham.Classes.HasGame
-import Arkham.Classes.HasQueue (push)
-import Arkham.Enemy.Helpers (cancelEnemyDefeat)
+import Arkham.Classes.HasQueue (HasQueue, push)
 import Arkham.Classes.Query
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Card (ConvertToCard (..), getVictoryPoints)
 import Arkham.Helpers.Modifiers (getModifiers)
-import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Message.Lifted hiding (cancelEnemyDefeat)
+import Arkham.Message.Lifted
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Prelude
@@ -25,9 +22,8 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.Source
 import Arkham.Tracing
 import Arkham.Trait (Trait (Cultist))
-import Arkham.Window (Window, windowType)
-import Arkham.Window qualified as Window
 import Arkham.Xp
+import Control.Monad.Trans.Class (MonadTrans)
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = standaloneI18n "byTheBook" a
@@ -38,27 +34,15 @@ rolandBanks = InvestigatorWithTitle "Roland Banks"
 victoryDisplayCultists :: ExtendedCardMatcher
 victoryDisplayCultists = VictoryDisplayCardMatch $ basic $ CardWithTrait Cultist <> #enemy
 
-wouldBeDefeatedEnemy :: [Window] -> EnemyId
-wouldBeDefeatedEnemy = \case
-  ((windowType -> Window.EnemyWouldBeDefeated eid) : _) -> eid
-  (_ : rest) -> wouldBeDefeatedEnemy rest
-  [] -> error "Unexpected window for wouldBeDefeatedEnemy"
-
-healCultistInsteadOfDefeat :: (ReverseQueue m, Sourceable source) => source -> EnemyId -> m ()
+healCultistInsteadOfDefeat
+  :: (ReverseQueue (t m), HasQueue Message m, MonadTrans t, Sourceable source)
+  => source -> EnemyId -> t m ()
 healCultistInsteadOfDefeat source eid = do
   cancelEnemyDefeat eid
   damage <- field EnemyDamage eid
   health <- fieldJust EnemyHealth eid
   let excess = damage - health + 1
   when (excess > 0) $ healDamage eid source excess
-
-spawnMrGrey :: ReverseQueue m => m ()
-spawnMrGrey =
-  selectOne rolandBanks >>= \case
-    Just roland -> createEnemyCard_ Enemies.mrGrey roland
-    Nothing -> do
-      lead <- getLead
-      createEnemyCard_ Enemies.mrGrey (locationWithInvestigator lead)
 
 hasDeckCard :: (HasGame m, Tracing m) => InvestigatorId -> CardDef -> m Bool
 hasDeckCard iid def =

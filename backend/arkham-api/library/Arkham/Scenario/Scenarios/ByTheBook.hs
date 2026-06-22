@@ -120,13 +120,22 @@ instance RunMessage ByTheBook where
 
       cultOfUmordhoth <- gatherEncounterSet Set.CultOfUmordhoth
       darkCult <- gatherEncounterSet Set.DarkCult
-      let darkCultEnemies = filterCards (CardWithType EnemyType) (map toCard darkCult)
-      conspirators <-
-        traverse (setFacedown True) =<< shuffle (map toCard cultOfUmordhoth <> darkCultEnemies)
-      zipWithM_
-        (\lid conspirator -> placeUnderneath lid [conspirator])
-        (downtown : southside : arkhamPoliceStation : others)
-        conspirators
+      let conspiratorLocations = downtown : southside : arkhamPoliceStation : others
+      let cultistEnemies =
+            filterCards
+              (CardWithType EnemyType <> CardWithTrait Trait.Cultist)
+              (map toCard (cultOfUmordhoth <> darkCult))
+      -- One facedown conspirator beneath each location. With the Return set the
+      -- pool is 12 (9 + 3); shuffling and placing only as many as there are
+      -- locations leaves 3 at random out of the game.
+      let placeConspirators pool = do
+            conspirators <- traverse (setFacedown True) =<< shuffle pool
+            zipWithM_ (\lid c -> placeUnderneath lid [c]) conspiratorLocations conspirators
+      scenarioI18n $ leadChooseOneM do
+        labeled' "returnTo.include" do
+          returnEnemies <- map toCard <$> gatherEncounterSet Set.ReturnCultOfUmordhoth
+          placeConspirators (cultistEnemies <> returnEnemies)
+        labeled' "returnTo.exclude" $ placeConspirators cultistEnemies
 
       selectOne rolandBanks >>= traverse_ \roland -> gainClues roland ScenarioSource 1
     ResolveChaosToken _ Cultist iid -> do

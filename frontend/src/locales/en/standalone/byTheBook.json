@@ -38,6 +38,10 @@
     "returnToConspirators": "<section style='display: flex; flex-direction: row; gap: 1em;'>You may optionally decide to gather the cards included in the *Return to the Cult of Umôrdhoth* encounter set, as well, if your collection includes them. This set is indicated by the icon to the right. If you do, shuffle the 3 cards from this encounter set with the 9 _Cultist_ enemies from above, and remove 3 of the 12 cards at random from the game without looking at them. Then place one of the remaining enemies facedown underneath each location in play, as a conspirator.<section class='encounter-sets' style='flex-shrink: 0'><img src='{setImgPath}/return-cult.png' align='right' /></section></section>",
     "rolandClue": "Roland Banks begins the game with 1 clue (from the token pool)."
   },
+  "returnTo": {
+    "include": "Include the _Return to the Cult of Umôrdhoth_ encounter set",
+    "exclude": "Do not include the _Return to the Cult of Umôrdhoth_ encounter set"
+  },
   "timeHasRunOut": {
     "title": "Time Has Run Out",
     "body": "<p>\"It's not enough,\" your superior scolds you. \"I'm sorry, but it's just too contrived for me to believe. And if I don't believe it, the courts won't, either. I mean, honestly. Cults? Human sacrifices?\"</p><p>You grit your teeth and slam your hand down on the myriad documents and evidence you've collected. It's all there, you insist.</p><p>\"It's been weeks and you don't have a real case here. Just a lot of circumstantial mumbo-jumbo,\" he deflects. \"And besides, Mr. Grey is a cornerstone of this community. That you would disparage him with these accusations...\" The hint of derision towards you in his voice gives him away. Is he on Grey's payroll? Or worse? Either way, it's clear arguing won't get you anywhere. You know better than to make a fuss. You'll have to keep your head down and do things your own way if you want to make a difference in Arkham.</p><p>Remove a _Cultist_ enemy in the victory display from the game (Mr. Grey, if able).</p>"

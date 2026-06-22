@@ -18,7 +18,7 @@ newtype YourDeadlineNears = YourDeadlineNears AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yourDeadlineNears :: AgendaCard YourDeadlineNears
-yourDeadlineNears = agenda (2, A) YourDeadlineNears Cards.yourDeadlineNears (Static 8)
+yourDeadlineNears = agenda (2, A) YourDeadlineNears Cards.yourDeadlineNears (Static 6)
 
 instance HasAbilities YourDeadlineNears where
   getAbilities (YourDeadlineNears a) =

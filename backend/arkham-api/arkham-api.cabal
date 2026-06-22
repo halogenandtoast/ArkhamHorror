@@ -6814,6 +6814,7 @@ test-suite spec
       Arkham.Asset.Assets.ArcaneInitiateSpec
       Arkham.Asset.Assets.ArcaneStudies2Spec
       Arkham.Asset.Assets.ArcaneStudiesSpec
+      Arkham.Asset.Assets.BandagesSpec
       Arkham.Asset.Assets.BandolierSpec
       Arkham.Asset.Assets.BaseballBatSpec
       Arkham.Asset.Assets.BeatCop2Spec

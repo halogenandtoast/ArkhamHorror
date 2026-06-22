@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -18,7 +19,7 @@ bandages = assetWith Bandages Cards.bandages discardWhenNoUses
 
 instance HasAbilities Bandages where
   getAbilities (Bandages a) =
-    [ controlled_ a 1
+    [ controlled a 1 (thisExists a $ AssetWithUses Supply)
         $ triggered
           ( oneOf
               [ AssetDealtDamage
@@ -31,7 +32,7 @@ instance HasAbilities Bandages where
                   AnySource
               ]
           )
-          (assetUseCost a Supply 1)
+          Free
     ]
 
 getHealTargets :: [Window] -> [Target]
@@ -43,8 +44,21 @@ getHealTargets = \case
 
 instance RunMessage Bandages where
   runMessage msg a@(Bandages attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getHealTargets -> healTargets) _ -> do
-      chooseOrRunOneM iid do
-        targets healTargets \target -> healDamage target (attrs.ability 1) 1
+    UseCardAbility iid (isSource attrs -> True) 1 (getHealTargets -> rawTargets) _ -> do
+      let source = attrs.ability 1
+      -- Bandages triggers once per damaged investigator/Ally, not per point of
+      -- damage. The window batch reports the investigator under both a
+      -- TakeDamage and a DealtDamage window, so reduce to the distinct,
+      -- currently-healable entities that took damage this window.
+      healableInvestigators <-
+        selectMap InvestigatorTarget $ HealableInvestigator source #damage (colocatedWith iid)
+      healableAllies <-
+        selectMap AssetTarget $ HealableAsset source #damage (at_ (locationWithInvestigator iid) <> #ally)
+      let healTargets = filter (`elem` (healableInvestigators <> healableAllies)) (nub rawTargets)
+      supplies <- findWithDefault 0 Supply <$> field AssetUses attrs.id
+      chooseUpToNM_ iid (min supplies (length healTargets)) do
+        targets healTargets \target -> do
+          push $ SpendUses source (toTarget attrs) Supply 1
+          healDamage target source 1
       pure a
     _ -> Bandages <$> liftRunMessage msg attrs

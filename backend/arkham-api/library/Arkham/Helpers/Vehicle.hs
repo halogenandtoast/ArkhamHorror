@@ -16,6 +16,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Window qualified as Window
+import Data.UUID qualified as UUID
 
 vehicleEnterOrExitAbility :: (Sourceable a, HasCardCode a) => a -> Ability
 vehicleEnterOrExitAbility x =
@@ -38,7 +39,16 @@ enterOrExitVehicle iid a = do
 moveVehicle :: (ToId asset AssetId, ReverseQueue m) => asset -> LocationId -> LocationId -> m ()
 moveVehicle (asId -> asset) fromLid toLid = do
   iids <- select $ InVehicleMatching (AssetWithId asset)
-  checkWindows $ map (\iid' -> Window.mkWhen $ Window.Leaving iid' fromLid) iids
+  -- Carried investigators move along with the vehicle, so fire the "moves"
+  -- window in addition to leaving/entering. Without this, movement reactions
+  -- (e.g. Ursula Downs' "after you move, investigate") never trigger for
+  -- passengers. See #4883. No Movement entity backs a vehicle move, so use a
+  -- nil MovementId (matching the fallback in Arkham.Window).
+  let source = AssetSource asset
+      movementId = MovementId UUID.nil
+  checkWindows
+    $ [Window.mkWhen (Window.Leaving iid' fromLid) | iid' <- iids]
+    <> [Window.mkWhen (Window.Moves iid' source (Just fromLid) toLid movementId) | iid' <- iids]
   place asset toLid
   -- Snapshot enemy presence at entry so "after you enter a location with 1+
   -- enemies" triggers fire for carried investigators too. See #4813.
@@ -46,3 +56,4 @@ moveVehicle (asId -> asset) fromLid toLid = do
   checkWindows
     $ [Window.mkAfter (Window.Entering iid' toLid) | iid' <- iids]
     <> [Window.mkAfter (Window.EnteringLocationWithEnemy iid' toLid) | toLidHasEnemy, iid' <- iids]
+    <> [Window.mkAfter (Window.Moves iid' source (Just fromLid) toLid movementId) | iid' <- iids]

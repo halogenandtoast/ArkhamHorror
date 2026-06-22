@@ -160,6 +160,7 @@ data Cost
   | ScenarioResourceCost Int
   | ResourceCost Int
   | CalculatedResourceCost GameCalculation
+  | CalculatedClueCost GameCalculation
   | CalculatedHandDiscardCost GameCalculation ExtendedCardMatcher
   | FieldResourceCost FieldCost
   | MaybeFieldResourceCost MaybeFieldCost

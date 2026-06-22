@@ -15,7 +15,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log
+import Arkham.Modifier (ModifierType (StartingHand))
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ByTheBook.Helpers
@@ -53,9 +53,10 @@ byTheBook difficulty =
     "90032"
     "By the Book"
     difficulty
-    [ "northside downtown easttown"
-    , "miskatonicUniversity rivertown graveyard"
-    , "stMarysHospital southside arkhamPoliceStation"
+    [ ".                    downtown            ."
+    , "northside            arkhamPoliceStation easttown"
+    , "miskatonicUniversity rivertown           graveyard"
+    , "stMarysHospital      southside           ."
     ]
 
 instance HasChaosTokenValue ByTheBook where
@@ -87,7 +88,8 @@ instance RunMessage ByTheBook where
         li "chooseLocations"
         li.nested "placeLocations" do
           li "startAt"
-        li "conspirators"
+        li.nested "conspirators" do
+          li "returnToConspirators"
         li "rolandClue"
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
@@ -153,7 +155,11 @@ instance RunMessage ByTheBook where
                 | n >= 6 = 2
                 | n >= 4 = 1
                 | otherwise = 0
-          when (bonus > 0) $ recordCount ByTheBookBonusCards bonus
+          -- Roland's bonus opening-hand cards only matter when there is a next
+          -- scenario, so apply them as a next-scenario modifier rather than a
+          -- recorded campaign-log count (which would surface in the log UI).
+          when (bonus > 0) $ unlessStandalone $ for_ mRoland \roland ->
+            nextScenarioModifier attrs roland (StartingHand bonus)
           when (n >= 10) do
             faces <- sort . nub . filter isNumberChaosToken . map (.face) <$> getBagChaosTokens
             for_ mRoland \roland ->

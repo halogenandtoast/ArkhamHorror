@@ -156,6 +156,9 @@ withTooltip t a = a & abilityTooltipL ?~ t
 withI18nTooltip :: HasI18n => Text -> Ability -> Ability
 withI18nTooltip t a = a & abilityTooltipL ?~ scope "tooltips" (toI18n t)
 
+tooltip :: HasI18n => Text -> Ability -> Ability
+tooltip = withI18nTooltip
+
 selfAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 selfAbility a n c = restrictedAbility a n (Self <> c)
 
@@ -266,10 +269,10 @@ restrict :: Criterion -> Ability -> Ability
 restrict = flip withCriteria
 
 haunted :: (HasCardCode a, Sourceable a) => Text -> a -> Int -> Ability
-haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
+haunted t a n = withTooltip t $ mkAbility a n Haunted
 
 hauntedI :: (HasI18n, HasCardCode a, Sourceable a) => Scope -> a -> Int -> Ability
-hauntedI tooltip a n = withI18nTooltip tooltip $ mkAbility a n Haunted
+hauntedI t a n = withI18nTooltip t $ mkAbility a n Haunted
 
 cosmos :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
 cosmos a n = mkAbility a n Cosmos

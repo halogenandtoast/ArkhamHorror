@@ -3,6 +3,7 @@ module Arkham.Agenda.Cards.ACovertConspiracy (aCovertConspiracy) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
+import Arkham.Card (genCard)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Window.Enemy
@@ -36,11 +37,16 @@ instance RunMessage ACovertConspiracy where
       resign iid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
+      -- Mr. Grey is the back of this agenda (a unique, double-sided card). Using
+      -- fetchCard/createEnemyCard_ here resolves the unique card to the in-play
+      -- agenda side (90033a) and fails to flip it, so generate the enemy side
+      -- (90033b) directly instead.
+      card <- genCard Enemies.mrGrey
       selectOne rolandBanks >>= \case
-        Just roland -> createEnemyCard_ Enemies.mrGrey roland
+        Just roland -> createEnemy_ card roland
         Nothing -> do
           lead <- getLead
-          createEnemyCard_ Enemies.mrGrey (locationWithInvestigator lead)
+          createEnemy_ card (locationWithInvestigator lead)
       advanceAgendaDeck attrs
       pure a
     _ -> ACovertConspiracy <$> liftRunMessage msg attrs

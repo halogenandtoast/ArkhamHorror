@@ -452,10 +452,10 @@ handlePlayerWindow a@InvestigatorAttrs{..} iid additionalActions isAdditional im
         usesAction = not isAdditional
         drawCardsF = if usesAction then drawCardsAction else drawCards
         effectActions = flip mapMaybe additionalActions' $ \case
-          AdditionalAction _ _ (EffectAction tooltip effectId) ->
+          AdditionalAction _ _ (EffectAction t effectId) ->
             Just
               $ EffectActionButton
-                (Tooltip tooltip)
+                (Tooltip t)
                 effectId
                 [UseEffectAction iid effectId windows]
           _ -> Nothing

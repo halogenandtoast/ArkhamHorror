@@ -636,6 +636,10 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         n <- calculate (Matcher.replaceYouMatcher iid calc)
         resources <- getSpendableResources iid
         pure $ resources >= n
+      CalculatedClueCost calc -> do
+        n <- calculate (Matcher.replaceYouMatcher iid calc)
+        clues <- getSpendableClueCount [iid]
+        pure $ clues >= n
       CalculatedHandDiscardCost calc matcher -> do
         n <- calculate (Matcher.replaceYouMatcher iid calc)
         getCanAffordCost_ iid source actions windows' canModify (HandDiscardCost n matcher)

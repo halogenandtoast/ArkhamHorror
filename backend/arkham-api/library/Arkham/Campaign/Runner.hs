@@ -23,14 +23,12 @@ import Arkham.GameT
 import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Modifiers (setupModifier)
 import Arkham.Helpers.Query
 import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier (ModifierType (StartingHand))
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
@@ -74,19 +72,6 @@ defaultCampaignRunner msg a = case msg of
       [] -> pure ()
       xs -> push . chooseUpgradeDecks =<< traverse getPlayer xs
     pure a
-  SetupInvestigators -> do
-    -- Challenge scenario rewards that apply to the next scenario only
-    let counts = campaignLogRecordedCounts $ campaignLog $ toAttrs a
-    let bonusCards = fromMaybe 0 $ lookup ByTheBookBonusCards counts
-    when (bonusCards > 0) do
-      select (InvestigatorWithTitle "Roland Banks") >>= traverse_ \iid ->
-        setupModifier CampaignSource iid (StartingHand bonusCards)
-    pure
-      $ updateAttrs a
-      $ ( logL
-            . recordedCountsL
-            %~ deleteMap ByTheBookBonusCards
-        )
   CampaignStep (ScenarioStepWithOptions sid opts) -> do
     pushAll
       $ [ ResetInvestigators

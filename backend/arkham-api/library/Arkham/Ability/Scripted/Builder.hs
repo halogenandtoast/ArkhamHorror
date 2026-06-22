@@ -7,7 +7,7 @@ module Arkham.Ability.Scripted.Builder (
 where
 
 import Arkham.Ability qualified as A
-import Arkham.Ability.Scripted hiding (fight, fightAction, forced, reaction)
+import Arkham.Ability.Scripted hiding (fight, fightAction, forced, reaction, tooltip)
 import Arkham.Ability.Scripted qualified as S
 import Arkham.Ability.Types qualified
 import Arkham.Action

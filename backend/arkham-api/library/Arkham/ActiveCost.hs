@@ -789,6 +789,10 @@ payCost msg c iid skipAdditionalCosts cost = do
       n <- calculate calc
       push $ PayCost acId iid True (ResourceCost n)
       pure c
+    CalculatedClueCost calc -> do
+      n <- calculate calc
+      push $ PayCost acId iid True (ClueCost $ Static n)
+      pure c
     CalculatedHandDiscardCost calc matcher -> do
       n <- calculate calc
       push $ PayCost acId iid True (HandDiscardCost n matcher)

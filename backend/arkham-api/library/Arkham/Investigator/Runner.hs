@@ -76,7 +76,6 @@ import Arkham.Helpers.Location (
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (getPlayableCards)
-import Arkham.Helpers.Ref (sourceToCard)
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Slot (
   canPutIntoSlot,
@@ -96,7 +95,7 @@ import Arkham.Helpers.Window (
  )
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.History
-import Arkham.I18n (countVar, ikey', withI18n)
+import Arkham.I18n (cardNameVar, countVar, ikey', keyVar, withI18n)
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Types qualified as Attrs
@@ -1375,11 +1374,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     choices <- concatForM slots $ \sType -> do
       slots' <- adjustableSlots sType
       for slots' \(sType', slot) -> do
-        card <- sourceToCard (slotSource slot)
-        pure
-          $ Label
-            ("Change slot from " <> toTitle card <> " to " <> tshow sType)
-            [InvestigatorAdjustSlot iid slot sType' sType]
+        -- Name a filled slot by the card occupying it (so two otherwise-identical
+        -- adjustable slots are distinguishable); when empty, name it by its
+        -- current slot type ("empty Hand slot") rather than the card that grants
+        -- it. `sType` (destination) and `sType'` (current) are localized via @:{}.
+        label <- case slotItems slot of
+          (occupantAid : _) -> do
+            occCard <- field AssetCard occupantAid
+            pure
+              $ withI18n
+              $ cardNameVar occCard
+              $ keyVar "slot" (slotKey sType)
+              $ ikey' "label.changeSlot"
+          [] ->
+            pure
+              $ withI18n
+              $ keyVar "fromSlot" (slotKey sType')
+              $ keyVar "slot" (slotKey sType)
+              $ ikey' "label.changeEmptySlot"
+        pure $ Label label [InvestigatorAdjustSlot iid slot sType' sType]
 
     when (notNull choices) do
       player <- getPlayer iid
@@ -1388,9 +1401,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   InvestigatorAdjustSlot iid slot fromSlotType toSlotType | iid == investigatorId -> do
     push $ RefillSlots iid []
+    -- N.B. Only remove the single slot being adjusted. The `Eq Slot` instance
+    -- treats every AdjustableSlot as equal, so `filter (/= slot)` would wipe out
+    -- *all* adjustable slots of this type (e.g. both of two Hidden Pockets),
+    -- silently dropping a slot and forcing an asset to be discarded. We match on
+    -- exact source equality rather than `isSlotSource`, because two Hidden Pockets
+    -- attached to the same asset share an AssetSource (so the fuzzy `isSlotSource`
+    -- match could move the wrong slot); their full BothSource differs by event.
     pure
       $ a
-      & (slotsL %~ ix fromSlotType %~ filter (/= slot))
+      & (slotsL %~ ix fromSlotType %~ deleteFirstMatch ((== slotSource slot) . slotSource))
       & (slotsL %~ at toSlotType . non [] %~ (emptySlot slot :))
   InvestigatorClearUnusedAssetSlots iid xs | iid == investigatorId -> do
     updatedSlots <- for (mapToList investigatorSlots) \(slotType, slots) -> do

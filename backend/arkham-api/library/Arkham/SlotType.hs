@@ -48,6 +48,18 @@ slotName = \case
   TarotSlot -> "Tarot"
   HeadSlot -> "Head"
 
+-- | i18n key for a slot type, used with @keyVar "slot"@ + the @\@:{slot}@ linked
+-- message syntax in the frontend locales (e.g. base.json's @slot.accessory@).
+slotKey :: SlotType -> Text
+slotKey = \case
+  HandSlot -> "slot.hand"
+  BodySlot -> "slot.body"
+  AllySlot -> "slot.ally"
+  AccessorySlot -> "slot.accessory"
+  ArcaneSlot -> "slot.arcane"
+  TarotSlot -> "slot.tarot"
+  HeadSlot -> "slot.head"
+
 allSlotTypes :: [SlotType]
 allSlotTypes = [minBound .. maxBound]
 

@@ -20,6 +20,8 @@
   "cancelHorrorAndDamage": "Cancel Horror and Damage",
   "cancelRevelationEffect": "Cancel Revelation Effect",
   "cancelMove": "Cancel the effects of the move",
+  "changeSlot": "Change {name} slot to @:{slot} slot",
+  "changeEmptySlot": "Change empty @:{fromSlot} slot to @:{slot} slot",
   "chaosTokenRemoveToPool": "Remove to Token Pool",
   "chaosTokenReturnToBag": "Return to Bag",
   "chooseAfterSkillTestEffect": "Choose after skill test effect to resolve",

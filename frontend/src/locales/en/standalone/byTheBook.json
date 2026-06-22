@@ -38,9 +38,11 @@
     "returnToConspirators": "<section style='display: flex; flex-direction: row; gap: 1em;'>You may optionally decide to gather the cards included in the *Return to the Cult of Umôrdhoth* encounter set, as well, if your collection includes them. This set is indicated by the icon to the right. If you do, shuffle the 3 cards from this encounter set with the 9 _Cultist_ enemies from above, and remove 3 of the 12 cards at random from the game without looking at them. Then place one of the remaining enemies facedown underneath each location in play, as a conspirator.<section class='encounter-sets' style='flex-shrink: 0'><img src='{setImgPath}/return-cult.png' align='right' /></section></section>",
     "rolandClue": "Roland Banks begins the game with 1 clue (from the token pool)."
   },
-  "returnTo": {
-    "include": "Include the _Return to the Cult of Umôrdhoth_ encounter set",
-    "exclude": "Do not include the _Return to the Cult of Umôrdhoth_ encounter set"
+  "label": {
+    "returnTo": {
+      "include": "Include the _Return to the Cult of Umôrdhoth_ encounter set",
+      "exclude": "Do not include the _Return to the Cult of Umôrdhoth_ encounter set"
+    }
   },
   "timeHasRunOut": {
     "title": "Time Has Run Out",

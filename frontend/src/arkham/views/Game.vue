@@ -118,6 +118,7 @@ const store = useCardStore()
 const userStore = useUserStore()
 const { addEntry, menuItems } = useMenu()
 const preloaded = new Set<string>()
+const preloading = new Set<string>()
 let mouseX = 0
 let mouseY = 0
 const flashlightX = ref(0)
@@ -385,11 +386,7 @@ watch(
     if (newV === oldV) return
     await fetchGame(props.gameId, props.spectate).then(
       async ({ game: newGame, playerId: newPlayerId, multiplayerMode }) => {
-        try {
-          await loadAllImages(newGame)
-        } catch (e) {
-          console.error(e)
-        }
+        preloadImages(newGame)
         ;(window as Window & { g?: Arkham.Game }).g = newGame
         game.value = newGame
         solo.value = multiplayerMode === 'Solo'
@@ -1098,22 +1095,26 @@ async function loadAllImages(game: Arkham.Game): Promise<void> {
   for (const card of Object.values(game.cards)) {
     const { cardCode, isFlipped } = toCardContents(card)
     const url = imgsrc(`cards/${cardCode.replace(/^c/, '')}${isFlipped ? 'b' : ''}.avif`)
-    if (!preloaded.has(url)) pending.push(url)
+    if (!preloaded.has(url) && !preloading.has(url)) pending.push(url)
   }
   if (pending.length === 0) return
+  pending.forEach((url) => preloading.add(url))
 
   await Promise.all(
     pending.map(
       (url) =>
-        new Promise<void>((resolve, reject) => {
+        new Promise<void>((resolve) => {
           const img = new Image()
           img.onload = () => {
             preloaded.add(url)
+            preloading.delete(url)
             resolve()
           }
           img.onerror = () => {
             preloaded.add(url)
-            reject(`Could not load ${url}`)
+            preloading.delete(url)
+            console.warn(`Could not preload ${url}`)
+            resolve()
           }
           img.src = url
         }),

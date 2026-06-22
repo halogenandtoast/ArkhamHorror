@@ -26,8 +26,11 @@ spec = describe "Words of Power" $ do
       silas `moveTo` location
 
       -- Put Words of Power into Carson's threat area and a doom on the enemy.
-      loadDeck carson [Cards.wordsOfPower]
-      drawCards carson 1
+      -- It is an encounter treachery, so draw it from the encounter deck; its
+      -- Revelation places it in the drawing investigator's threat area.
+      wordsOfPower <- genEncounterCard Cards.wordsOfPower
+      run $ SetEncounterDeck (Deck [wordsOfPower])
+      run $ drawEncounterCard carson.id GameSource
       run $ PlaceDoom GameSource (toTarget enemy) 1
       assert
         $ selectAny

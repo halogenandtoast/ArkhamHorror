@@ -28,7 +28,6 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Action qualified as Action
-import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosToken.Types (ChaosToken (..))
@@ -38,10 +37,10 @@ import Arkham.Direction
 import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
+import Arkham.Helpers.Discover (resolveDiscoverCluesAt, resolveSuccessfulInvestigation)
 import Arkham.Helpers.GameValue (getGameValue)
-import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame, windows, wouldDoEach)
+import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, windows, wouldDoEach)
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.History
 import Arkham.I18n
@@ -64,7 +63,6 @@ import Arkham.Matcher (
  )
 import Arkham.Message (Message (MoveAction, RevealLocation))
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
 import Arkham.Name (display, toName)
 import Arkham.Placement
 import Arkham.Prelude
@@ -170,7 +168,8 @@ instance RunMessage LocationAttrs where
         $ SkillTestResultOption
           ( SkillTestOption
               { option =
-                  Label ("Discover Clue at " <> display (toName a))
+                  Label
+                    ("Discover Clue at " <> display (toName a))
                     [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
                     , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
                     ]
@@ -184,7 +183,8 @@ instance RunMessage LocationAttrs where
         $ SkillTestResultOption
           ( SkillTestOption
               { option =
-                  Label ("Discover Clue at " <> display (toName a))
+                  Label
+                    ("Discover Clue at " <> display (toName a))
                     [Successful (Action.Investigate, toTarget a) iid source actual n]
               , kind = OriginalOptionKind
               , criteria = Nothing
@@ -192,61 +192,10 @@ instance RunMessage LocationAttrs where
           )
       pure a
     Successful (Action.Investigate, _) iid source target n | isTarget a target -> do
-      let lid = toId a
-      modifiers' <- getModifiers lid
-      let (before, _, after) = frame (Window.SuccessfulInvestigation iid lid)
-      let alternateSuccessfullInvestigation = mapMaybe (preview _AlternateSuccessfullInvestigation) modifiers'
-      push before
-
-      when (null alternateSuccessfullInvestigation) do
-        did <- getRandom
-        push $ Msg.DiscoverClues iid $ viaInvestigate $ discoverPure did lid (toSource a) 1
-
-      for_ alternateSuccessfullInvestigation \target' ->
-        push $ Successful (Action.Investigate, toTarget lid) iid source target' n
-
-      push after
+      resolveSuccessfulInvestigation (toId a) (toSource a) iid source n
       pure a
     Msg.DiscoverClues iid d | d.location == DiscoverAtLocation a.id -> do
-      mods <- getModifiers iid
-      let lid = a.id
-
-      let additionalDiscoveredAt =
-            Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods, olid /= lid]
-      let additionalDiscovered = getSum $ fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods]
-
-      let
-        total lid' n = do
-          let
-            getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
-            getMaybeMax (MaxCluesDiscovered x) Nothing = Just x
-            getMaybeMax (MaxCluesDiscovered x) (Just x') = Just $ min x x'
-            getMaybeMax _ x = x
-          mMax :: Maybe Int <- foldr getMaybeMax Nothing <$> getModifiers lid'
-          pure $ maybe n (min n) mMax
-
-      canDiscoverClues <-
-        anyM (getCanDiscoverClues d.isInvestigate iid) (lid : Map.keys additionalDiscoveredAt)
-      if canDiscoverClues
-        then do
-          baseOk <- getCanDiscoverClues d.isInvestigate iid lid
-          base <- total lid (d.count + additionalDiscovered)
-          discoveredClues <- min base <$> field LocationClues lid
-          checkWindowMsg <-
-            checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid d.id d.source discoveredClues)]
-
-          otherWindows <- forMaybeM (mapToList additionalDiscoveredAt) \(lid', n) -> runMaybeT do
-            liftGuardM $ getCanDiscoverClues d.isInvestigate iid lid'
-            discoveredClues' <- lift $ min <$> total lid' (getSum n) <*> field LocationClues lid'
-            guard (discoveredClues' > 0)
-            lift
-              $ checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid' d.id d.source discoveredClues')]
-          pushAll $ [checkWindowMsg | baseOk] <> otherWindows <> [DoStep 1 msg]
-        else do
-          concealed <- getConcealedAt (ForExpose $ toSource iid) lid
-          when (notNull concealed) do
-            chooseExposeConcealedAt iid iid (LocationWithId lid)
-
+      resolveDiscoverCluesAt a.id iid d
       pure a
     FailedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       push $ Failed (Action.Investigate, toTarget a) iid source (toTarget a) n
@@ -289,7 +238,9 @@ instance RunMessage LocationAttrs where
         <> resolve (RemoveLocation $ toId a)
       pure a
     RemovedFromPlay (isSource a -> True) -> do
-      pushAll $ [UnsealChaosToken token | token <- locationSealedChaosTokens] <> [RemovePlacedChaosToken token | token <- locationPlacedChaosTokens]
+      pushAll
+        $ [UnsealChaosToken token | token <- locationSealedChaosTokens]
+        <> [RemovePlacedChaosToken token | token <- locationPlacedChaosTokens]
       pure a
     SetConnections lid connections | lid == locationId -> do
       pure
@@ -457,7 +408,8 @@ instance RunMessage LocationAttrs where
       revealer <- maybe getLead pure miid
       mFromLid <- join <$> fieldMay InvestigatorPreviousLocation revealer
       whenWindowMsg <- checkWindows [mkWindow Timing.When (Window.RevealLocation revealer lid)]
-      revealForcedMsg <- checkWindows [mkWindow Timing.When (Window.RevealLocationForcedAbilities revealer lid mFromLid)]
+      revealForcedMsg <-
+        checkWindows [mkWindow Timing.When (Window.RevealLocationForcedAbilities revealer lid mFromLid)]
       afterWindowMsg <- checkWindows [mkWindow Timing.After (Window.RevealLocation revealer lid)]
       let currentClues = countTokens Clue locationTokens
 

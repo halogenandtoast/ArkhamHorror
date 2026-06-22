@@ -4374,7 +4374,11 @@ maybeAgenda aid = runMaybeT do
 
 instance Projection Location where
   getAttrs lid = toAttrs <$> getLocation lid
-  project lid = preview (entitiesL . locationsL . ix lid) <$> getGame
+  -- Use maybeLocation (not a bare locationsL lookup) so enemy-locations resolve
+  -- as Locations here too. Otherwise project/fieldMay disagree with field/getLocation,
+  -- and matchers that go through fieldMay (e.g. locationMatches for LocationWithClues)
+  -- silently treat enemy-locations as having no clues/doom/shroud/etc.
+  project lid = maybeLocation lid
   field f lid = do
     l <- getLocation lid
     let attrs@LocationAttrs {..} = toAttrs l

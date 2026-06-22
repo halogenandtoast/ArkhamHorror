@@ -323,10 +323,14 @@ sourceCanDamageEnemy eid source = do
         <$> sourceMatches
           source
           (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
+    -- Only block sources matching the modifier's own matcher. We must NOT add
+    -- EncounterCardSource here (unlike the ...Except whitelist above): a basic
+    -- attack's source is UseAbilitySource <fighter> (EnemySource <enemy>) 100,
+    -- whose underlying EnemySource matches EncounterCardSource, so including it
+    -- would block every investigator's fight against the enemy (issue #4887),
+    -- not just the one the matcher targets.
     CannotBeDamagedByPlayerSources matcher ->
-      sourceMatches
-        source
-        (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
+      sourceMatches source matcher
     CannotBeDamaged -> pure True
     _ -> pure False
 

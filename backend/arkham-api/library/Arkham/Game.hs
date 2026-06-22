@@ -1166,8 +1166,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       activeId <- view activeInvestigatorIdL <$> getGame
       pure $ runMatches ((== activeId) . toId) as
     YetToTakeTurn -> do
-      activeId <- view activeInvestigatorIdL <$> getGame
-      pure $ runMatches (\i -> toId i /= activeId && not (investigatorEndedTurn $ toAttrs i)) as
+      getTurnInvestigator <&> \case
+        Nothing -> asMatch as
+        Just (toId -> turnId) -> runMatches (\i -> toId i /= turnId && not (investigatorEndedTurn $ toAttrs i)) as
     LeadInvestigator -> do
       leadId <- gameLeadInvestigatorId <$> getGame
       pure $ runMatches ((== leadId) . toId) as
@@ -3688,8 +3689,12 @@ enemyMatcherFilter es matcher' = do
       adjust modifiers & allM \case
         CannotBeDamagedByPlayerSourcesExcept sourceMatcher ->
           sourceMatches source (oneOf [NotSource SourceIsPlayerCard, sourceMatcher])
+        -- Only the matcher; see Arkham.Helpers.Enemy.sourceCanDamageEnemy and
+        -- issue #4887. A basic attack resolves to an EnemySource, so folding in
+        -- NotSource SourceIsPlayerCard here would exclude every fighter, not the
+        -- matcher's target. (inShadows uses AnySource, which still matches all.)
         CannotBeDamagedByPlayerSources sourceMatcher ->
-          not <$> sourceMatches source (oneOf [NotSource SourceIsPlayerCard, sourceMatcher])
+          not <$> sourceMatches source sourceMatcher
         CannotBeDamaged -> pure False
         _ -> pure True
     EnemyWithAsset assetMatcher -> do
@@ -4374,6 +4379,7 @@ maybeAgenda aid = runMaybeT do
 
 instance Projection Location where
   getAttrs lid = toAttrs <$> getLocation lid
+
   -- Use maybeLocation (not a bare locationsL lookup) so enemy-locations resolve
   -- as Locations here too. Otherwise project/fieldMay disagree with field/getLocation,
   -- and matchers that go through fieldMay (e.g. locationMatches for LocationWithClues)

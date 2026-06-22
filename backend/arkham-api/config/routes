@@ -52,6 +52,7 @@
           /claim-seat ApiV1ArkhamGameClaimSeatR POST
     /admin AdminP:
       / ApiV1AdminR GET
+      /stats ApiV1AdminStatsR GET
       /metrics ApiV1AdminMetricsR GET DELETE
       /rooms ApiV1AdminRoomsP:
         / ApiV1AdminRoomsR GET
@@ -59,6 +60,7 @@
           / ApiV1AdminRoomR DELETE
       /games ApiV1AdminGamesP:
         / ApiV1AdminGamesR GET
+        !/active ApiV1AdminActiveGamesR GET
         !/find/#ArkhamPlayerId ApiV1AdminFindGameR GET
         /#ArkhamGameId ApiV1AdminGameP:
           / ApiV1AdminGameR GET PUT

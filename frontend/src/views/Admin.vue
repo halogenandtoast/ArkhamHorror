@@ -1,60 +1,98 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import api from '@/api'
 import GameRow from '@/arkham/components/GameRow.vue'
 import GameFinder from '@/components/admin/GameFinder.vue'
 import type { GameDetails, GameDetailsEntry } from '@/arkham/types/Game'
 
-interface RoomData {
-  roomClients: number
-  roomLastUpdateAt: string | null
-  roomArkhamGameId: string
-}
-
 type AdminGameDetailsEntry = GameDetails | GameDetailsEntry | { error: string }
 
-interface AdminData {
+interface AdminStats {
   currentUsers: number
   activeUsers: number
-  roomData: RoomData[]
-  recentGames: AdminGameDetailsEntry[]
-  activeGames: AdminGameDetailsEntry[]
 }
 
-const request = await api.get<AdminData>('admin')
-const data = computed(() => request.data)
+const stats = ref<AdminStats | null>(null)
+const activeGameEntries = ref<AdminGameDetailsEntry[]>([])
+const recentGameEntries = ref<AdminGameDetailsEntry[]>([])
+
+const statsLoading = ref(true)
+const activeGamesLoading = ref(true)
+const recentGamesLoading = ref(true)
+
+const statsError = ref(false)
+const activeGamesError = ref(false)
+const recentGamesError = ref(false)
 
 const isGameDetails = (entry: AdminGameDetailsEntry): entry is GameDetails => !('error' in entry)
 
-const activeGameEntries = data.value.activeGames.filter(isGameDetails)
-const recentGameEntries = data.value.recentGames.filter(isGameDetails)
+const activeGameDetails = computed(() => activeGameEntries.value.filter(isGameDetails))
+const recentGameDetails = computed(() => recentGameEntries.value.filter(isGameDetails))
 
-const activeGames = activeGameEntries.filter(g => g.gameState.tag !== 'IsOver')
-const finishedGames = activeGameEntries.filter(g => g.gameState.tag === 'IsOver')
+const activeGames = computed(() => activeGameDetails.value.filter(g => g.gameState.tag !== 'IsOver'))
+const finishedGames = computed(() => activeGameDetails.value.filter(g => g.gameState.tag === 'IsOver'))
 
-const recentActiveGames = recentGameEntries.filter(g => g.gameState.tag !== 'IsOver')
-const recentFinishedGames = recentGameEntries.filter(g => g.gameState.tag === 'IsOver')
+const recentActiveGames = computed(() => recentGameDetails.value.filter(g => g.gameState.tag !== 'IsOver'))
+const recentFinishedGames = computed(() => recentGameDetails.value.filter(g => g.gameState.tag === 'IsOver'))
+
+async function loadStats() {
+  try {
+    stats.value = (await api.get<AdminStats>('admin/stats')).data
+  } catch {
+    statsError.value = true
+  } finally {
+    statsLoading.value = false
+  }
+}
+
+async function loadActiveGames() {
+  try {
+    activeGameEntries.value = (await api.get<AdminGameDetailsEntry[]>('admin/games/active')).data
+  } catch {
+    activeGamesError.value = true
+  } finally {
+    activeGamesLoading.value = false
+  }
+}
+
+async function loadRecentGames() {
+  try {
+    recentGameEntries.value = (await api.get<AdminGameDetailsEntry[]>('admin/games')).data
+  } catch {
+    recentGamesError.value = true
+  } finally {
+    recentGamesLoading.value = false
+  }
+}
+
+onMounted(() => {
+  void loadStats()
+  void loadActiveGames()
+  void loadRecentGames()
+})
 </script>
 
 <template>
   <section class="stats-grid" aria-label="Admin stats">
       <div class="stat-card box">
         <span class="stat-label">Current Users</span>
-        <strong>{{ data.currentUsers }}</strong>
+        <strong>{{ statsLoading ? '…' : stats?.currentUsers ?? '—' }}</strong>
       </div>
       <div class="stat-card box">
         <span class="stat-label">Active Users (14d)</span>
-        <strong>{{ data.activeUsers }}</strong>
+        <strong>{{ statsLoading ? '…' : stats?.activeUsers ?? '—' }}</strong>
       </div>
       <div class="stat-card box">
         <span class="stat-label">Active Games</span>
-        <strong>{{ activeGames.length }}</strong>
+        <strong>{{ activeGamesLoading ? '…' : activeGames.length }}</strong>
       </div>
       <div class="stat-card box">
         <span class="stat-label">Finished Games</span>
-        <strong>{{ finishedGames.length }}</strong>
+        <strong>{{ activeGamesLoading ? '…' : finishedGames.length }}</strong>
       </div>
     </section>
+
+    <p v-if="statsError" class="empty box">Unable to load admin stats.</p>
 
     <section class="admin-block">
       <header class="section-header">
@@ -68,7 +106,9 @@ const recentFinishedGames = recentGameEntries.filter(g => g.gameState.tag === 'I
         <h2>Active Games</h2>
         <span class="count-badge" aria-label="Active games count">{{ activeGames.length }}</span>
       </header>
-      <div v-if="activeGames.length === 0" class="empty box">No active games.</div>
+      <div v-if="activeGamesLoading" class="empty box">Loading active games…</div>
+      <div v-else-if="activeGamesError" class="empty box">Unable to load active games.</div>
+      <div v-else-if="activeGames.length === 0" class="empty box">No active games.</div>
       <div v-else class="game-list">
         <GameRow v-for="g in activeGames" :key="g.id" :game="g" :admin="true" />
       </div>
@@ -90,7 +130,9 @@ const recentFinishedGames = recentGameEntries.filter(g => g.gameState.tag === 'I
         <span class="section-note">from last 20</span>
         <span class="count-badge" aria-label="Recent active games count">{{ recentActiveGames.length }}</span>
       </header>
-      <div v-if="recentActiveGames.length === 0" class="empty box">No recent active games.</div>
+      <div v-if="recentGamesLoading" class="empty box">Loading recent games…</div>
+      <div v-else-if="recentGamesError" class="empty box">Unable to load recent games.</div>
+      <div v-else-if="recentActiveGames.length === 0" class="empty box">No recent active games.</div>
       <div v-else class="game-list">
         <GameRow v-for="g in recentActiveGames" :key="g.id" :game="g" :admin="true" />
       </div>

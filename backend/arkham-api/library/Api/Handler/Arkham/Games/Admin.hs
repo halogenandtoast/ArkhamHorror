@@ -5,11 +5,13 @@
 
 module Api.Handler.Arkham.Games.Admin (
   getApiV1AdminR,
+  getApiV1AdminStatsR,
   getApiV1AdminRoomsR,
   getApiV1AdminGameR,
   getApiV1AdminFindGameR,
   putApiV1AdminGameR,
   getApiV1AdminGamesR,
+  getApiV1AdminActiveGamesR,
   putApiV1AdminGameRawR,
   deleteApiV1AdminRoomR,
 ) where
@@ -39,6 +41,13 @@ data AdminData = AdminData
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
 
+data AdminStats = AdminStats
+  { currentUsers :: Int
+  , activeUsers :: Int
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
 data RoomData = RoomData
   { roomClients :: Int
   , roomLastUpdatedAt :: Maybe UTCTime
@@ -52,8 +61,15 @@ selectCount inner = fmap (sum . map unValue . toList) . selectOne $ inner $> cou
 
 getApiV1AdminR :: Handler AdminData
 getApiV1AdminR = do
-  recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
+  AdminStats {..} <- getApiV1AdminStatsR
   roomData <- getRoomData
+  activeGames <- getActiveGames roomData
+  recentGames <- runDB $ getRecentGames 20
+  pure $ AdminData {..}
+
+getApiV1AdminStatsR :: Handler AdminStats
+getApiV1AdminStatsR = do
+  recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
 
   runDB do
     currentUsers <- selectCount $ from $ table @User
@@ -68,14 +84,14 @@ getApiV1AdminR = do
         where_ (games.updatedAt >=. val recent)
         pure (countDistinct users.id)
 
-    activeGames <-
-      map (`toGameDetailsEntry` 0) <$> select do
-        games <- from $ table @ArkhamGameRaw
-        where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) roomData))
-        pure games
-    recentGames <- getRecentGames 20
+    pure $ AdminStats {..}
 
-    pure $ AdminData {..}
+getActiveGames :: [RoomData] -> Handler [GameDetailsEntry]
+getActiveGames roomData = runDB do
+  map (`toGameDetailsEntry` 0) <$> select do
+    games <- from $ table @ArkhamGameRaw
+    where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) roomData))
+    pure games
 
 getApiV1AdminGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1AdminGameR gameId = do
@@ -104,6 +120,9 @@ getRecentGames n = do
 
 getApiV1AdminGamesR :: Handler [GameDetailsEntry]
 getApiV1AdminGamesR = runDB $ getRecentGames 20
+
+getApiV1AdminActiveGamesR :: Handler [GameDetailsEntry]
+getApiV1AdminActiveGamesR = getRoomData >>= getActiveGames
 
 putApiV1AdminGameR :: ArkhamGameId -> Handler ()
 putApiV1AdminGameR gameId = do

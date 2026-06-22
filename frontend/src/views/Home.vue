@@ -410,7 +410,7 @@ header.main-header {
   h2 {
     view-transition-name: main-header-title;
   }
-  button {
+  .primary-btn {
     view-transition-name: main-header-button;
   }
 }

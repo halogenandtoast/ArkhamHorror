@@ -15,7 +15,7 @@ overconfident = treachery Overconfident Cards.overconfident
 instance HasAbilities Overconfident where
   getAbilities (Overconfident a) =
     [ restricted a 1 (InThreatAreaOf You) $ forced $ SkillTestResult #after You #any #failure
-    , restricted a 2 (InThreatAreaOf You) doubleActionAbility
+    , restricted a 2 OnSameLocation doubleActionAbility
     ]
 
 instance RunMessage Overconfident where

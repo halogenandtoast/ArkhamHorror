@@ -4,6 +4,7 @@ import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { TokenType, Token } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
+import { cardImage as cardToImage, asCardCode, toCardContents, type Card as ArkhamCard } from '@/arkham/types/Card';
 import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
 import KeyToken from '@/arkham/components/Key.vue';
@@ -11,6 +12,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import TokenView from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import {isUse} from '@/arkham/types/Token';
+import { useDbCardStore } from '@/stores/dbCards'
 
 const props = defineProps<{
   game: Game
@@ -21,6 +23,7 @@ const props = defineProps<{
 const emit = defineEmits<{ close: [] }>()
 const placeTokens = ref(false);
 const setModifiers = ref(false);
+const inspectSpiritDeck = ref(false);
 const placeTokenType = ref<Token>(
   (Object.
     entries(props.asset.tokens).
@@ -42,6 +45,7 @@ const image = computed(() => {
 
 const keys = computed(() => props.asset.keys)
 const debug = useDebug()
+const dbCardStore = useDbCardStore()
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
 const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && (v ?? 0) > 0))
@@ -50,6 +54,15 @@ const damage = computed(() => props.asset.tokens[TokenType.Damage])
 const horror = computed(() => props.asset.tokens[TokenType.Horror])
 
 const tokenTypes = Object.values(TokenType);
+const spiritDeck = computed(() => props.asset.spiritDeck ?? [])
+const spiritDeckCardImage = (card: ArkhamCard) => imgsrc(cardToImage(card))
+const spiritDeckCardImageId = (card: ArkhamCard) => toCardContents(card).art ?? asCardCode(card).replace(/^c/, '')
+const spiritDeckCardName = (card: ArkhamCard) => {
+  const contents = toCardContents(card)
+  const dbCard = dbCardStore.getDbCard(contents.art ?? asCardCode(card).replace(/^c/, ''))
+  if (!dbCard) return 'Unknown card'
+  return dbCard.subname ? `${dbCard.name}: ${dbCard.subname}` : dbCard.name
+}
 
 const showSlots = ref(false)
 const slots = computed(() => {
@@ -120,6 +133,22 @@ const hasPool = computed(() => {
         <div class="slots">{{slots}}</div>
         <button @click="showSlots = false">{{ $t('debug.common.back') }}</button>
       </div>
+      <div v-else-if="inspectSpiritDeck" class="spirit-deck-inspector">
+        <div class="spirit-deck-inspector__header">Spirit Deck ({{ spiritDeck.length }})</div>
+        <div v-if="spiritDeck.length > 0" class="spirit-deck-inspector__cards">
+          <div v-for="(card, index) in spiritDeck" :key="`${toCardContents(card).id}-${index}`" class="spirit-deck-inspector__card">
+            <span class="spirit-deck-inspector__position">{{ index + 1 }}</span>
+            <img
+              class="spirit-deck-inspector__image"
+              :src="spiritDeckCardImage(card)"
+              :data-image-id="spiritDeckCardImageId(card)"
+            />
+            <span class="spirit-deck-inspector__name">{{ spiritDeckCardName(card) }}</span>
+          </div>
+        </div>
+        <div v-else class="spirit-deck-inspector__empty">The spirit deck is empty.</div>
+        <button @click="inspectSpiritDeck = false">{{ $t('debug.common.back') }}</button>
+      </div>
       <div v-else-if="setModifiers" class="buttons">
         <button @click="setModifiers = false">{{ $t('debug.common.back') }}</button>
         <Modifier :modifier="modifier" v-for="(modifier, idx) in asset.modifiers" :key="idx" />
@@ -132,6 +161,7 @@ const hasPool = computed(() => {
         <button v-else @click="debug.send(game.id, {tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.asset.exhaust') }}</button>
         <button v-if="asset.health || asset.sanity" @click="debug.send(game.id, {tag: 'AssetDefeated', contents: [{ tag: 'GameSource' }, id]})">{{ $t('debug.asset.defeat') }}</button>
         <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">{{ $t('debug.asset.discard') }}</button>
+        <button v-if="asset.spiritDeck" @click="inspectSpiritDeck = true">Inspect spirit deck</button>
         <button v-if="slots.length > 0" @click="showSlots = true">{{ $t('debug.asset.showSlots') }}</button>
         <button @click="setModifiers = true">{{ $t('debug.common.modifiers') }}</button>
         <button @click="emit('close')">{{ $t('debug.common.close') }}</button>
@@ -252,5 +282,52 @@ const hasPool = computed(() => {
 .slots {
   font-size: 0.8em;
   color: #ccc;
+}
+
+.spirit-deck-inspector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(520px, 60vw);
+  max-height: 70vh;
+  color: #ddd;
+}
+
+.spirit-deck-inspector__header {
+  font-weight: bold;
+  color: white;
+}
+
+.spirit-deck-inspector__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.spirit-deck-inspector__card {
+  display: grid;
+  grid-template-columns: 2ch 48px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.spirit-deck-inspector__position {
+  color: #aaa;
+  text-align: right;
+}
+
+.spirit-deck-inspector__image {
+  width: 48px;
+  border-radius: 3px;
+}
+
+.spirit-deck-inspector__name,
+.spirit-deck-inspector__empty {
+  font-size: 0.9em;
 }
 </style>

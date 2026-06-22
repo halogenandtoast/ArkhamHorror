@@ -1,292 +1,348 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-const props = defineProps<{
-  selected: string
-}>()
-const sidebarOpen = ref(false)
-const toggleSidebar = () => (sidebarOpen.value = !sidebarOpen.value)
+import { computed, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+const selected = computed(() => route.name === 'Rooms' ? 'rooms' : 'dashboard')
+
+async function navigateTo(path: string) {
+  if (router.currentRoute.value.path === path) return
+
+  const documentWithTransition = document as Document & {
+    startViewTransition?: (callback: () => Promise<void>) => void
+  }
+
+  if (documentWithTransition.startViewTransition) {
+    documentWithTransition.startViewTransition(async () => {
+      await router.push(path)
+      await nextTick()
+    })
+  } else {
+    await router.push(path)
+  }
+}
 </script>
 
 <template>
-  <div class="admin-shell" :class="{ 'sidebar-open': sidebarOpen }">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">
-        <span>{{ $t('admin.title') }}</span>
-      </div>
+  <div class="admin-page page-container">
+    <div class="admin-layout page-content">
+      <header class="admin-header">
+        <div class="admin-title-block">
+          <p class="eyebrow">{{ $t('admin.title') }}</p>
+          <Transition name="admin-title-fade" mode="out-in">
+            <h1 :key="selected">{{ selected === 'rooms' ? $t('admin.rooms') : $t('admin.dashboard') }}</h1>
+          </Transition>
+        </div>
 
-      <nav class="nav">
-        <a class="nav-link" :class="{ active: selected == 'dashboard' }" href="#/admin">
-          <!-- dashboard icon -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
-          {{ $t('admin.dashboard') }}
-        </a>
-        <a class="nav-link" :class="{ active: selected == 'rooms' }" href="#/admin/rooms">
-          <!-- users icon -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v3H4V5zm0 6h10v3H4v-3zm0 6h7v3H4v-3z" fill="currentColor"/></svg>
-          {{ $t('admin.rooms') }}
-        </a>
-        <a class="nav-link" href="#">
-          <!-- users icon -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-3.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.98 1.97 3.45V20h6v-3.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>
-          {{ $t('admin.users') }}
-        </a>
-        <a class="nav-link" href="#">
-          <!-- games icon -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 6h-7V3H3v15h3v3h15V6zm-2 13H8v-3H6V5h6v3h7v11z" fill="currentColor"/></svg>
-          {{ $t('admin.games') }}
-        </a>
+        <nav class="admin-nav" :class="selected" :aria-label="$t('admin.title')">
+          <a
+            class="admin-nav-link"
+            :class="{ active: selected === 'dashboard' }"
+            :href="router.resolve('/admin').href"
+            @click.prevent="navigateTo('/admin')"
+          >
+            {{ $t('admin.dashboard') }}
+          </a>
+          <a
+            class="admin-nav-link"
+            :class="{ active: selected === 'rooms' }"
+            :href="router.resolve('/admin/rooms').href"
+            @click.prevent="navigateTo('/admin/rooms')"
+          >
+            {{ $t('admin.rooms') }}
+          </a>
+        </nav>
+      </header>
 
-        <div class="nav-section">{{ $t('admin.insights') }}</div>
-        <a class="nav-link" href="#"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm4 0h14v-2H7v2zM3 17h2v-2H3v2zm4 0h14v-2H7v2zM3 9h2V7H3v2zm4 0h14V7H7v2z" fill="currentColor"/></svg>{{ $t('admin.reports') }}</a>
-        <a class="nav-link" href="#"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm0-8h2V7h-2v2zm1-7C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="currentColor"/></svg>{{ $t('admin.status') }}</a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <button class="collapse" @click="toggleSidebar" :aria-label="$t('admin.toggleSidebar')">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6l6 6-6 6V6z" fill="currentColor"/></svg>
-        </button>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <main class="content">
-      <slot></slot>
-    </main>
+      <RouterView v-slot="{ Component }">
+        <Transition name="admin-route" mode="out-in">
+          <main class="admin-content" :key="route.fullPath">
+            <Suspense>
+              <component :is="Component" />
+              <template #fallback>
+                <div class="admin-loading" role="status" aria-live="polite">
+                  <div class="loading-header">
+                    <span class="loading-title"></span>
+                    <span class="loading-count"></span>
+                  </div>
+                  <div class="loading-line wide"></div>
+                  <div class="loading-line"></div>
+                  <div class="loading-line short"></div>
+                  <span class="sr-only">Loading admin content…</span>
+                </div>
+              </template>
+            </Suspense>
+          </main>
+        </Transition>
+      </RouterView>
+    </div>
   </div>
 </template>
 
 <style scoped>
-/* ---------------- Theme ---------------- */
-:host, .admin-shell {
-  --bg:        #0b0d10;
-  --panel:     #12151a;
-  --panel-2:   #151a21;
-  --text:      #e7eaef;
-  --muted:     #9aa3b2;
-  --line:      #252b34;
-  --brand:     #7dd3fc;
-  --brand-2:   #a78bfa;
-  --shadow:    0 12px 32px rgba(0,0,0,.35);
+.admin-page {
+  margin-block-start: 0;
+  padding-block: 20px 28px;
+  box-sizing: border-box;
+  scrollbar-gutter: stable;
 }
 
-/* ---------------- Layout ---------------- */
-.admin-shell {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  grid-template-rows: 100vh; /* sidebar stretches full height */
-  background: var(--bg);
-  color: var(--text);
-  overflow: hidden;
+.admin-layout {
+  width: min(1180px, calc(100vw - 32px));
 }
 
-/* Mobile/Tablet: sidebar slides over */
-@media (max-width: 960px) {
-  .admin-shell {
-    grid-template-columns: 1fr;
-  }
+.admin-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--box-border);
 }
 
-/* ---------------- Sidebar ---------------- */
-.sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex; flex-direction: column;
-  gap: 12px;
-  padding: 18px 14px;
-  background:
-    radial-gradient(700px 300px at 0% 0%, rgba(125,211,252,.06), transparent 60%),
-    linear-gradient(180deg, var(--panel), var(--panel-2));
-  border-right: 1px solid var(--line);
-  box-shadow: inset -1px 0 0 var(--line);
-  z-index: var(--z-index-20);
-}
-
-.brand {
-  display: flex; align-items: center; gap: 10px;
-  font-weight: 800; letter-spacing: .02em;
-  color: var(--text);
-}
-
-/* nav */
-.nav {
-  display: grid;
-  gap: 4px;
-  margin-top: 8px;
-}
-.nav-section {
-  margin: 14px 10px 6px;
-  font-size: .75rem;
-  color: var(--muted);
-  letter-spacing: .12em;
+.eyebrow {
+  color: var(--spooky-green);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  margin: 0 0 2px;
   text-transform: uppercase;
 }
-.nav-link {
-  display: grid;
-  grid-template-columns: 22px 1fr;
+
+.admin-title-block {
+  min-width: 14rem;
+}
+
+h1 {
+  color: var(--title);
+  font-family: teutonic, sans-serif;
+  font-size: 2.3rem;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.admin-title-fade-enter-active,
+.admin-title-fade-leave-active {
+  transition: opacity 130ms ease-in-out;
+}
+
+.admin-title-fade-enter-from,
+.admin-title-fade-leave-to {
+  opacity: 0;
+}
+
+.admin-nav {
+  --admin-nav-gap: 4px;
+  --admin-nav-padding: 4px;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  color: var(--text);
-  text-decoration: none;
-  border: 1px solid transparent;
-  transition: background .18s ease, border-color .18s ease, transform .18s ease;
-}
-.nav-link svg { width: 18px; height: 18px; opacity: .9 }
-.nav-link:hover {
-  background: color-mix(in oklab, var(--brand) 14%, transparent);
-  border-color: color-mix(in oklab, var(--brand) 26%, transparent);
-  transform: translateX(2px);
-}
-.nav-link.active {
-  background: color-mix(in oklab, var(--brand) 20%, transparent);
-  border-color: color-mix(in oklab, var(--brand) 40%, transparent);
-  box-shadow: 0 8px 20px rgba(125,211,252,.15) inset;
-}
-
-/* sidebar footer */
-.sidebar-footer {
-  margin-top: auto;
-  display: flex; justify-content: flex-end;
-}
-.collapse {
-  display: grid; place-items: center;
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--line);
-  color: var(--text);
-}
-.collapse:hover { background: rgba(255,255,255,.07) }
-
-/* Slide-in behavior on small screens */
-@media (max-width: 960px) {
-  .sidebar {
-    position: fixed; left: 0; top: 0;
-    transform: translateX(-100%);
-    width: 260px;
-    transition: transform .25s ease;
-  }
-  .admin-shell.sidebar-open .sidebar {
-    transform: translateX(0);
-  }
-}
-
-/* ---------------- Main content ---------------- */
-.content {
-  min-width: 0; /* fix overflow with grids */
-  display: flex; flex-direction: column;
-  height: 100vh; overflow: auto;
-  background:
-    radial-gradient(1200px 600px at 100% 0%, rgba(167,139,250,.05), transparent 60%),
-    var(--bg);
-}
-
-/* top bar */
-.topbar {
-  position: sticky; top: 0; z-index: var(--z-index-10);
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in oklab, var(--bg) 85%, transparent);
-  backdrop-filter: blur(6px);
-}
-.topbar h1 { font-size: 1rem; margin: 0; color: var(--text); font-weight: 700; letter-spacing: .02em }
-.hamburger {
-  display: none;
-  width: 36px; height: 36px; border-radius: 10px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--line);
-  color: var(--text);
-}
-.hamburger:hover { background: rgba(255,255,255,.07) }
-
-@media (max-width: 960px) {
-  .hamburger { display: grid; place-items: center }
-}
-
-/* KPI cards row */
-.cards-row {
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 5px;
   display: grid;
-  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: var(--admin-nav-gap);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: var(--admin-nav-padding);
+  position: relative;
+}
+
+.admin-nav::before {
+  content: '';
+  background: var(--spooky-green-dark);
+  border-radius: 3px;
+  bottom: var(--admin-nav-padding);
+  left: var(--admin-nav-padding);
+  position: absolute;
+  top: var(--admin-nav-padding);
+  transform: translateX(0);
+  transition: transform 220ms cubic-bezier(.2, .8, .2, 1);
+  width: calc((100% - (var(--admin-nav-padding) * 2) - var(--admin-nav-gap)) / 2);
+  z-index: 0;
+}
+
+.admin-nav.rooms::before {
+  transform: translateX(calc(100% + var(--admin-nav-gap)));
+}
+
+.admin-nav-link {
+  border-radius: 3px;
+  color: color-mix(in srgb, var(--spooky-green) 50%, #aaa);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.15s ease;
+  z-index: 1;
+}
+
+.admin-nav-link:hover,
+.admin-nav-link.active {
+  color: white;
+}
+
+.admin-content {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  padding: 20px;
-}
-@media (max-width: 1200px) {
-  .cards-row { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
-}
-@media (max-width: 600px) {
-  .cards-row { grid-template-columns: 1fr; }
+  view-transition-name: admin-content;
 }
 
-.card.kpi {
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: var(--shadow);
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+.admin-loading {
+  background: color-mix(in srgb, var(--background-dark) 42%, transparent);
+  border: 1px solid color-mix(in srgb, var(--box-border) 75%, transparent);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 160px;
+  padding: 14px;
+}
 
-  &.accent-blue {
-    background: linear-gradient(180deg, var(--panel), rgba(125,211,252,.15));
+.loading-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.loading-title,
+.loading-count,
+.loading-line {
+  animation: admin-loading-pulse 1.1s ease-in-out infinite alternate;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+
+.loading-title {
+  flex: 1;
+  height: 22px;
+  max-width: 260px;
+}
+
+.loading-count {
+  height: 24px;
+  width: 42px;
+}
+
+.loading-line {
+  height: 48px;
+  width: 100%;
+}
+
+.loading-line.wide {
+  height: 72px;
+}
+
+.loading-line.short {
+  width: 68%;
+}
+
+.sr-only {
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+  clip: rect(0, 0, 0, 0);
+}
+
+.admin-route-enter-active,
+.admin-route-leave-active {
+  transition: opacity 180ms cubic-bezier(.2, .8, .2, 1), transform 180ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.admin-route-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.admin-route-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+:global(::view-transition-old(root)),
+:global(::view-transition-new(root)) {
+  animation: none;
+}
+
+:global(::view-transition-group(admin-content)) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+}
+
+:global(::view-transition-old(admin-content)) {
+  animation: admin-content-out 180ms cubic-bezier(.4, 0, 1, 1) both;
+}
+
+:global(::view-transition-new(admin-content)) {
+  animation: admin-content-in 220ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+:global(::view-transition-old(admin-content)),
+:global(::view-transition-new(admin-content)) {
+  mix-blend-mode: normal;
+}
+
+@keyframes admin-content-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
   }
 
-  &.accent-purple {
-    background: linear-gradient(180deg, var(--panel), rgba(167,139,250,.15));
-  }
-
-  &.accent-green {
-    background: linear-gradient(180deg, var(--panel), rgba(52,211,153,.15));
-  }
-
-  &.accent-orange {
-    background: linear-gradient(180deg, var(--panel), rgba(249,115,22,.15));
+  to {
+    opacity: 0;
+    transform: translateY(6px);
   }
 }
 
-.card.kpi:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--brand) 30%, transparent);
-  box-shadow: 0 14px 36px rgba(0,0,0,.45);
-}
-.kpi-head { color: var(--muted); font-size: .85rem; margin-bottom: 6px; letter-spacing: .02em }
-.kpi-value { font-size: 2rem; font-weight: 800; }
+@keyframes admin-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 
-/* Blocks & lists */
-.block { padding: 8px 20px 24px }
-.block-header {
-  position: sticky; top: 54px; /* below topbar */
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 0 10px;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in oklab, var(--bg) 85%, transparent);
-  backdrop-filter: blur(6px);
-  z-index: var(--z-index-5);
-}
-.block-header h2 {
-  font-size: .95rem; text-transform: uppercase; letter-spacing: .12em;
-  color: var(--muted); margin: 0;
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.game-list { display: grid; gap: 10px; margin-top: 12px }
-.game-list :deep(> *) {
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  box-shadow: var(--shadow);
+@keyframes admin-loading-pulse {
+  from {
+    opacity: 0.45;
+  }
+
+  to {
+    opacity: 0.9;
+  }
 }
 
-/* Empty state */
-.empty {
-  display: grid; place-items: center;
-  padding: 24px; margin-top: 12px;
-  border-radius: 12px;
-  color: var(--muted);
-  border: 1px dashed rgba(168,176,191,.3);
-  background:
-    repeating-linear-gradient(135deg, rgba(125,211,252,.04) 0 10px, transparent 10px 20px),
-    var(--panel);
+@media (max-width: 700px) {
+  .admin-page {
+    padding-block: 12px 20px;
+  }
+
+  .admin-layout {
+    width: calc(100vw - 24px);
+  }
+
+  .admin-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .admin-nav {
+    width: fit-content;
+  }
 }
 </style>

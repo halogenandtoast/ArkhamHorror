@@ -47,10 +47,10 @@ async function processFile(file: File) {
     playerIds.value = Array.from(new Set(ids))
     if (playerIds.value.length === 0) {
       errorMsg.value = 'No playerIds found.'
+      return
     }
 
     gameDetails.value = await findGame(playerIds.value[0])
-
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)
     errorMsg.value = `Failed to parse JSON: ${message}`
@@ -77,7 +77,7 @@ function collectPlayerIds(node: unknown): string[] {
 </script>
 
 <template>
-  <div class="uploader">
+  <div class="uploader box">
     <div
       class="dropzone"
       :class="{ dragging }"
@@ -88,7 +88,8 @@ function collectPlayerIds(node: unknown): string[] {
       role="button"
       tabindex="0"
     >
-      <p><strong>Drop your JSON here</strong> or click to choose a file</p>
+      <strong>Drop JSON here</strong>
+      <span>or click to choose a file</span>
       <input
         ref="file"
         type="file"
@@ -108,24 +109,55 @@ function collectPlayerIds(node: unknown): string[] {
 </template>
 
 <style scoped>
-.uploader { display: grid; gap: 1rem; margin: 10px; }
+.uploader {
+  display: grid;
+  gap: 10px;
+}
+
 .dropzone {
-  border: 2px dashed #888;
-  border-radius: 12px;
-  padding: 2rem;
-  text-align: center;
+  align-items: center;
+  border: 1px dashed color-mix(in srgb, var(--spooky-green) 65%, var(--box-border));
+  border-radius: 5px;
+  color: var(--title);
   cursor: pointer;
-  transition: border-color .2s, background-color .2s;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  padding: 18px;
+  text-align: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
+
+.dropzone strong {
+  color: color-mix(in srgb, var(--spooky-green) 80%, white);
+  text-transform: uppercase;
+}
+
+.dropzone span {
+  opacity: 0.75;
+}
+
+.dropzone:hover,
 .dropzone.dragging {
-  border-color: #4b9cff;
-  background-color: rgba(75,156,255,.08);
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: var(--spooky-green);
 }
-.hidden { display: none; }
-.results ul {
-  margin: 0;
-  padding-left: 1.25rem;
-  line-height: 1.6;
+
+.hidden {
+  display: none;
 }
-.error { color: #c0392b; }
+
+.results {
+  display: grid;
+  gap: 10px;
+}
+
+.error {
+  background: color-mix(in srgb, var(--delete) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--delete) 55%, var(--box-border));
+  border-radius: 5px;
+  color: color-mix(in srgb, var(--delete) 30%, white);
+  padding: 10px;
+}
 </style>

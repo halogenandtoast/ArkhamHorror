@@ -4,8 +4,6 @@ import api from '@/api'
 import GameRow from '@/arkham/components/GameRow.vue'
 import GameFinder from '@/components/admin/GameFinder.vue'
 import type { GameDetails, GameDetailsEntry } from '@/arkham/types/Game'
-import AdminUI from '@/arkham/components/Admin/UI.vue'
-import Room from '@/components/admin/Room.vue'
 
 interface RoomData {
   roomClients: number
@@ -36,326 +34,187 @@ const finishedGames = activeGameEntries.filter(g => g.gameState.tag === 'IsOver'
 
 const recentActiveGames = recentGameEntries.filter(g => g.gameState.tag !== 'IsOver')
 const recentFinishedGames = recentGameEntries.filter(g => g.gameState.tag === 'IsOver')
-
 </script>
 
 <template>
-  <AdminUI :selected="'dashboard'">
-    <header class="topbar">
-      <button class="hamburger" aria-label="Open menu">
-        <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 10h18v2H3v-2zm0-5h18v2H3v-2z" fill="currentColor"/></svg>
-      </button>
-      <h1>Dashboard</h1>
-    </header>
-
-    <!-- Cards row -->
-    <section class="cards-row">
-      <div class="card kpi accent-blue">
-        <div class="kpi-head">Current Users</div>
-        <div class="kpi-value">{{ data.currentUsers }}</div>
+  <section class="stats-grid" aria-label="Admin stats">
+      <div class="stat-card box">
+        <span class="stat-label">Current Users</span>
+        <strong>{{ data.currentUsers }}</strong>
       </div>
-      <div class="card kpi accent-purple">
-        <div class="kpi-head">Active Users (14d)</div>
-        <div class="kpi-value">{{ data.activeUsers }}</div>
+      <div class="stat-card box">
+        <span class="stat-label">Active Users (14d)</span>
+        <strong>{{ data.activeUsers }}</strong>
       </div>
-      <div class="card kpi accent-green">
-        <div class="kpi-head">Active Games</div>
-        <div class="kpi-value">{{ activeGames.length }}</div>
+      <div class="stat-card box">
+        <span class="stat-label">Active Games</span>
+        <strong>{{ activeGames.length }}</strong>
       </div>
-      <div class="card kpi accent-orange">
-        <div class="kpi-head">Finished Games</div>
-        <div class="kpi-value">{{ finishedGames.length }}</div>
+      <div class="stat-card box">
+        <span class="stat-label">Finished Games</span>
+        <strong>{{ finishedGames.length }}</strong>
       </div>
     </section>
 
-    <GameFinder />
+    <section class="admin-block">
+      <header class="section-header">
+        <h2>Find Game</h2>
+      </header>
+      <GameFinder />
+    </section>
 
-    <!-- Active Games -->
-    <section class="block">
-      <div class="block-header">
+    <section class="admin-block">
+      <header class="section-header">
         <h2>Active Games</h2>
-      </div>
-      <div v-if="activeGames.length === 0" class="empty">No active games.</div>
-      <div class="game-list">
+        <span class="count-badge" aria-label="Active games count">{{ activeGames.length }}</span>
+      </header>
+      <div v-if="activeGames.length === 0" class="empty box">No active games.</div>
+      <div v-else class="game-list">
         <GameRow v-for="g in activeGames" :key="g.id" :game="g" :admin="true" />
       </div>
     </section>
 
-    <!-- Finished Games -->
-    <section class="block" v-if="finishedGames.length > 0">
-      <div class="block-header">
+    <section class="admin-block" v-if="finishedGames.length > 0">
+      <header class="section-header">
         <h2>Finished Games</h2>
-      </div>
+        <span class="count-badge" aria-label="Finished games count">{{ finishedGames.length }}</span>
+      </header>
       <div class="game-list">
         <GameRow v-for="g in finishedGames" :key="g.id" :game="g" :admin="true" />
       </div>
     </section>
 
-    <!-- Active Games -->
-    <section class="block">
-      <div class="block-header">
-        <h2>Recent Active Games (from last 20)</h2>
-      </div>
-      <div v-if="recentActiveGames.length === 0" class="empty">No active games.</div>
-      <div class="game-list">
+    <section class="admin-block">
+      <header class="section-header">
+        <h2>Recent Active Games</h2>
+        <span class="section-note">from last 20</span>
+        <span class="count-badge" aria-label="Recent active games count">{{ recentActiveGames.length }}</span>
+      </header>
+      <div v-if="recentActiveGames.length === 0" class="empty box">No recent active games.</div>
+      <div v-else class="game-list">
         <GameRow v-for="g in recentActiveGames" :key="g.id" :game="g" :admin="true" />
       </div>
     </section>
 
-    <!-- Finished Games -->
-    <section class="block" v-if="recentFinishedGames.length > 0">
-      <div class="block-header">
-        <h2>Recent Finished Games (from last 20)</h2>
-      </div>
+    <section class="admin-block" v-if="recentFinishedGames.length > 0">
+      <header class="section-header">
+        <h2>Recent Finished Games</h2>
+        <span class="section-note">from last 20</span>
+        <span class="count-badge" aria-label="Recent finished games count">{{ recentFinishedGames.length }}</span>
+      </header>
       <div class="game-list">
         <GameRow v-for="g in recentFinishedGames" :key="g.id" :game="g" :admin="true" />
       </div>
     </section>
-
-    <!-- Rooms -->
-    <section class="block" v-if="recentFinishedGames.length > 0">
-      <div class="block-header">
-        <h2>Rooms</h2>
-      </div>
-      <div class="game-list">
-        <Room v-for="room in data.roomData" :room="room" :key="room.roomArkhamGameId" />
-      </div>
-    </section>
-  </AdminUI>
 </template>
 
 <style scoped>
-/* ---------------- Theme ---------------- */
-:host, .admin-shell {
-  --bg:        #0b0d10;
-  --panel:     #12151a;
-  --panel-2:   #151a21;
-  --text:      #e7eaef;
-  --muted:     #9aa3b2;
-  --line:      #252b34;
-  --brand:     #7dd3fc;
-  --brand-2:   #a78bfa;
-  --shadow:    0 12px 32px rgba(0,0,0,.35);
-}
-
-/* ---------------- Layout ---------------- */
-.admin-shell {
+.stats-grid {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  grid-template-rows: 100vh; /* sidebar stretches full height */
-  background: var(--bg);
-  color: var(--text);
-  overflow: hidden;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-/* Mobile/Tablet: sidebar slides over */
-@media (max-width: 960px) {
-  .admin-shell {
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 82px;
+  justify-content: center;
+}
+
+.stat-label {
+  color: color-mix(in srgb, var(--title) 70%, transparent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stat-card strong {
+  color: var(--title);
+  font-family: "Noto Sans", Avenir, Helvetica, Arial, sans-serif;
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.admin-block {
+  background: color-mix(in srgb, var(--background-dark) 42%, transparent);
+  border: 1px solid color-mix(in srgb, var(--box-border) 75%, transparent);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.admin-block + .admin-block {
+  margin-top: 4px;
+}
+
+.section-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.section-header h2 {
+  color: var(--title);
+  flex: 1;
+  font-family: teutonic, sans-serif;
+  font-size: 1.6rem;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.section-note {
+  color: color-mix(in srgb, var(--title) 60%, transparent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.count-badge {
+  align-items: center;
+  background: var(--background-dark);
+  border: 1px solid var(--spooky-green);
+  border-left-width: 4px;
+  border-radius: 3px;
+  color: color-mix(in srgb, var(--spooky-green) 78%, white);
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 800;
+  justify-content: center;
+  line-height: 1;
+  min-width: 2.1em;
+  padding: 5px 9px 5px 7px;
+}
+
+.game-list,
+.room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.empty {
+  color: var(--title);
+  opacity: 0.75;
+}
+
+@media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .stats-grid {
     grid-template-columns: 1fr;
   }
 }
-
-/* ---------------- Sidebar ---------------- */
-.sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex; flex-direction: column;
-  gap: 12px;
-  padding: 18px 14px;
-  background:
-    radial-gradient(700px 300px at 0% 0%, rgba(125,211,252,.06), transparent 60%),
-    linear-gradient(180deg, var(--panel), var(--panel-2));
-  border-right: 1px solid var(--line);
-  box-shadow: inset -1px 0 0 var(--line);
-  z-index: var(--z-index-20);
-}
-
-.brand {
-  display: flex; align-items: center; gap: 10px;
-  font-weight: 800; letter-spacing: .02em;
-  color: var(--text);
-}
-
-/* nav */
-.nav {
-  display: grid;
-  gap: 4px;
-  margin-top: 8px;
-}
-.nav-section {
-  margin: 14px 10px 6px;
-  font-size: .75rem;
-  color: var(--muted);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.nav-link {
-  display: grid;
-  grid-template-columns: 22px 1fr;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  color: var(--text);
-  text-decoration: none;
-  border: 1px solid transparent;
-  transition: background .18s ease, border-color .18s ease, transform .18s ease;
-}
-.nav-link svg { width: 18px; height: 18px; opacity: .9 }
-.nav-link:hover {
-  background: color-mix(in oklab, var(--brand) 14%, transparent);
-  border-color: color-mix(in oklab, var(--brand) 26%, transparent);
-  transform: translateX(2px);
-}
-.nav-link.active {
-  background: color-mix(in oklab, var(--brand) 20%, transparent);
-  border-color: color-mix(in oklab, var(--brand) 40%, transparent);
-  box-shadow: 0 8px 20px rgba(125,211,252,.15) inset;
-}
-
-/* sidebar footer */
-.sidebar-footer {
-  margin-top: auto;
-  display: flex; justify-content: flex-end;
-}
-.collapse {
-  display: grid; place-items: center;
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--line);
-  color: var(--text);
-}
-.collapse:hover { background: rgba(255,255,255,.07) }
-
-/* Slide-in behavior on small screens */
-@media (max-width: 960px) {
-  .sidebar {
-    position: fixed; left: 0; top: 0;
-    transform: translateX(-100%);
-    width: 260px;
-    transition: transform .25s ease;
-  }
-  .admin-shell.sidebar-open .sidebar {
-    transform: translateX(0);
-  }
-}
-
-/* ---------------- Main content ---------------- */
-.content {
-  min-width: 0; /* fix overflow with grids */
-  display: flex; flex-direction: column;
-  height: 100vh; overflow: auto;
-  background:
-    radial-gradient(1200px 600px at 100% 0%, rgba(167,139,250,.05), transparent 60%),
-    var(--bg);
-}
-
-/* top bar */
-.topbar {
-  position: sticky; top: 0; z-index: var(--z-index-10);
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in oklab, var(--bg) 85%, transparent);
-  backdrop-filter: blur(6px);
-}
-.topbar h1 { font-size: 1rem; margin: 0; color: var(--text); font-weight: 700; letter-spacing: .02em }
-.hamburger {
-  display: none;
-  width: 36px; height: 36px; border-radius: 10px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--line);
-  color: var(--text);
-}
-.hamburger:hover { background: rgba(255,255,255,.07) }
-
-@media (max-width: 960px) {
-  .hamburger { display: grid; place-items: center }
-}
-
-/* KPI cards row */
-.cards-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(180px, 1fr));
-  gap: 16px;
-  padding: 20px;
-}
-@media (max-width: 1200px) {
-  .cards-row { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
-}
-@media (max-width: 600px) {
-  .cards-row { grid-template-columns: 1fr; }
-}
-
-.card.kpi {
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: var(--shadow);
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-
-  &.accent-blue {
-    background: linear-gradient(180deg, var(--panel), rgba(125,211,252,.15));
-  }
-
-  &.accent-purple {
-    background: linear-gradient(180deg, var(--panel), rgba(167,139,250,.15));
-  }
-
-  &.accent-green {
-    background: linear-gradient(180deg, var(--panel), rgba(52,211,153,.15));
-  }
-
-  &.accent-orange {
-    background: linear-gradient(180deg, var(--panel), rgba(249,115,22,.15));
-  }
-}
-
-.card.kpi:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--brand) 30%, transparent);
-  box-shadow: 0 14px 36px rgba(0,0,0,.45);
-}
-.kpi-head { color: var(--muted); font-size: .85rem; margin-bottom: 6px; letter-spacing: .02em }
-.kpi-value { font-size: 2rem; font-weight: 800; }
-
-/* Blocks & lists */
-.block { padding: 8px 20px 24px }
-.block-header {
-  position: sticky; top: 54px; /* below topbar */
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 0 10px;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in oklab, var(--bg) 85%, transparent);
-  backdrop-filter: blur(6px);
-  z-index: var(--z-index-5);
-}
-.block-header h2 {
-  font-size: .95rem; text-transform: uppercase; letter-spacing: .12em;
-  color: var(--muted); margin: 0;
-}
-
-.game-list { display: grid; gap: 10px; margin-top: 12px }
-.game-list :deep(> *) {
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  box-shadow: var(--shadow);
-}
-
-/* Empty state */
-.empty {
-  display: grid; place-items: center;
-  padding: 24px; margin-top: 12px;
-  border-radius: 12px;
-  color: var(--muted);
-  border: 1px dashed rgba(168,176,191,.3);
-  background:
-    repeating-linear-gradient(135deg, rgba(125,211,252,.04) 0 10px, transparent 10px 20px),
-    var(--panel);
-}
-
 </style>

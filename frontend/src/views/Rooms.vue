@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import api from '@/api'
-import AdminUI from '@/arkham/components/Admin/UI.vue'
 import Room from '@/components/admin/Room.vue'
 
 interface RoomData {
@@ -15,48 +14,69 @@ const data = computed(() => request.data)
 </script>
 
 <template>
-  <AdminUI :selected="'rooms'">
-    <header class="topbar">
-      <button class="hamburger" aria-label="Open menu">
-        <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 10h18v2H3v-2zm0-5h18v2H3v-2z" fill="currentColor"/></svg>
-      </button>
-      <h1>Rooms</h1>
-    </header>
+  <section class="admin-block">
+      <header class="section-header">
+        <h2>Open Rooms</h2>
+        <span class="count-badge" aria-label="Open rooms count">{{ data.length }}</span>
+      </header>
 
-    <Room v-for="room in data" :room="room" :key="room.roomArkhamGameId" />
-  </AdminUI>
+      <div v-if="data.length === 0" class="empty box">No rooms.</div>
+      <div v-else class="room-list">
+        <Room v-for="room in data" :room="room" :key="room.roomArkhamGameId" />
+      </div>
+  </section>
 </template>
 
 <style scoped>
-.room {
-  padding: 20px;
-  border-bottom: 1px solid var(--line);
+.admin-block,
+.room-list {
   display: flex;
-  *  {
-    flex: 1;
-  }
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* top bar */
-.topbar {
-  position: sticky; top: 0; z-index: var(--z-index-10);
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in oklab, var(--bg) 85%, transparent);
-  backdrop-filter: blur(6px);
+.admin-block {
+  background: color-mix(in srgb, var(--background-dark) 42%, transparent);
+  border: 1px solid color-mix(in srgb, var(--box-border) 75%, transparent);
+  border-radius: 6px;
+  padding: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
-.topbar h1 { font-size: 1rem; margin: 0; color: var(--text); font-weight: 700; letter-spacing: .02em }
-.hamburger {
-  display: none;
-  width: 36px; height: 36px; border-radius: 10px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--line);
-  color: var(--text);
-}
-.hamburger:hover { background: rgba(255,255,255,.07) }
 
-@media (max-width: 960px) {
-  .hamburger { display: grid; place-items: center }
+.section-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.section-header h2 {
+  color: var(--title);
+  flex: 1;
+  font-family: teutonic, sans-serif;
+  font-size: 1.6rem;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.count-badge {
+  align-items: center;
+  background: var(--background-dark);
+  border: 1px solid var(--spooky-green);
+  border-left-width: 4px;
+  border-radius: 3px;
+  color: color-mix(in srgb, var(--spooky-green) 78%, white);
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 800;
+  justify-content: center;
+  line-height: 1;
+  min-width: 2.1em;
+  padding: 5px 9px 5px 7px;
+}
+
+.empty {
+  color: var(--title);
+  opacity: 0.75;
 }
 </style>

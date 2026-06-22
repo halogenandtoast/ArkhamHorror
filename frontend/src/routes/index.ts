@@ -25,15 +25,22 @@ export default [
   },
   {
     path: '/admin',
-    name: 'Admin',
-    component: () => import('@/views/Admin.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Admin" },
-  },
-  {
-    path: '/admin/rooms',
-    name: 'Rooms',
-    component: () => import('@/views/Rooms.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Rooms" },
+    component: () => import('@/arkham/components/Admin/UI.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      {
+        path: '',
+        name: 'Admin',
+        component: () => import('@/views/Admin.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Admin" },
+      },
+      {
+        path: 'rooms',
+        name: 'Rooms',
+        component: () => import('@/views/Rooms.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Rooms" },
+      },
+    ],
   },
   {
     path: '/sign-in',

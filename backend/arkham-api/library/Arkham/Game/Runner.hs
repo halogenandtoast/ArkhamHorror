@@ -8,7 +8,7 @@ import Arkham.Act.Types (Field (..))
 import Arkham.Action qualified as Action
 import Arkham.ActiveCost
 import Arkham.Agenda
-import Arkham.Agenda.Types (Field (..))
+import Arkham.Agenda.Types (Field (..), doomL)
 import Arkham.Asset
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
@@ -1226,9 +1226,17 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . actsL . at aid ?~ either throw id (lookupAct aid deckNum $ toCardId card)
   AddAgenda agendaDeckNum card -> do
     let aid = AgendaId $ toCardCode card
+    mods <- getModifiers aid
+    let startingDoom = sum [n | EntersPlayWithDoom n <- mods]
     let (before, _, after) = frame (Window.EnterPlay $ toTarget aid)
     pushAll [before, after]
-    pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum (toCardId card)
+    let theAgenda = lookupAgenda aid agendaDeckNum (toCardId card)
+    pure
+      $ g
+      & entitiesL
+      . agendasL
+      . at aid
+      ?~ (if startingDoom > 0 then overAttrs (doomL .~ startingDoom) theAgenda else theAgenda)
   ReassignHorror source target n -> do
     let
       matchesP = \case

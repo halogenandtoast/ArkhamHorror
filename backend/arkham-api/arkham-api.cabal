@@ -6810,6 +6810,7 @@ test-suite spec
   other-modules:
       Arkham.Agenda.Cards.RestrictedAccessSpec
       Arkham.Agenda.Cards.ShadowsDeepenSpec
+      Arkham.Agenda.Cards.TheTrueCulpritV10Spec
       Arkham.Asset.Assets.Aquinnah1Spec
       Arkham.Asset.Assets.ArcaneInitiateSpec
       Arkham.Asset.Assets.ArcaneStudies2Spec

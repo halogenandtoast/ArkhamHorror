@@ -12,6 +12,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Enemy (createWithDoom)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName)
 import Arkham.I18n
 import Arkham.Matcher
@@ -226,8 +227,9 @@ instance RunMessage FollowingLeads where
               shuffleCardsIntoDeck Deck.EncounterDeck guests
               shuffleEncounterDiscardBackIn
               agenda <- genCard Agendas.theTrueCulpritV10
+              doom <- perPlayer 2
+              phaseModifier attrs (AgendaId $ toCardCode agenda) (EntersPlayWithDoom doom)
               push $ SetCurrentAgendaDeck 1 [agenda]
-              placeDoom attrs (AgendaMatcherTarget AnyAgenda) =<< perPlayer 2
               pure "managersKeyAndTomeOfRituals"
             _ -> error "invalid combination"
 

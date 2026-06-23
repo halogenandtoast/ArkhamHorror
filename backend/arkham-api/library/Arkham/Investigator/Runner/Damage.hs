@@ -726,10 +726,20 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
         let
           go = \case
             AmongInvestigators imatcher -> do
-              select imatcher <&> \case
-                [] -> []
-                [iid'] -> [damageInvestigator iid' True]
-                xs -> [damageInvestigator iid' False | iid' <- xs]
+              iids <- select imatcher
+              -- The damage is dealt to the matched investigators "divided as they
+              -- wish" and is *not* direct, so each point can also be soaked by an
+              -- asset controlled by one of those investigators. Offer one point at a
+              -- time across every matched investigator and their damageable assets.
+              soakAssets <-
+                fmap (toList . mconcat)
+                  $ for iids \i -> getHealthDamageableAssets i matcher source health damageTargets horrorTargets
+              pure $ case (iids, soakAssets) of
+                ([], _) -> []
+                ([iid'], []) -> [damageInvestigator iid' True]
+                _ ->
+                  [damageInvestigator iid' False | iid' <- iids]
+                    <> [damageAsset aid False | aid <- soakAssets]
             DamageAssetsFirst amatcher -> do
               matchingAssets <- select $ mapOneOf AssetWithId healthDamageableAssets <> amatcher
               healthDamageableAssets' <-
@@ -848,10 +858,18 @@ handleInvestigatorDoAssignDamageV6 a@InvestigatorAttrs{..} iid source strategy m
         let
           go = \case
             AmongInvestigators imatcher -> do
-              select imatcher <&> \case
-                [] -> []
-                [iid'] -> [damageInvestigator iid' True]
-                xs -> [damageInvestigator iid' False | iid' <- xs]
+              iids <- select imatcher
+              -- See the health branch: horror dealt "divided as they wish" is not
+              -- direct, so allow soaking onto the matched investigators' assets.
+              soakAssets <-
+                fmap (toList . mconcat)
+                  $ for iids \i -> getSanityDamageableAssets i matcher source sanity damageTargets horrorTargets
+              pure $ case (iids, soakAssets) of
+                ([], _) -> []
+                ([iid'], []) -> [damageInvestigator iid' True]
+                _ ->
+                  [damageInvestigator iid' False | iid' <- iids]
+                    <> [damageAsset aid False | aid <- soakAssets]
             DamageAssetsFirst _ -> do
               sanityDamageableAssets' <-
                 mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd sanityDamageableAssets (field AssetRemainingSanity)

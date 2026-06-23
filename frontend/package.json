@@ -15,6 +15,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,vue}\"",
     "test": "node --test tests/**/*.test.mjs",
     "digest": "node ./scripts/digest.cjs",
+    "fetch-card-data": "node ./scripts/fetch-card-data.cjs --slim",
     "slim-cards": "node ./scripts/slim-cards.cjs"
   },
   "dependencies": {

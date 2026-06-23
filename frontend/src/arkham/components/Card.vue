@@ -45,13 +45,24 @@ const image = computed(() => {
     const back = props.card.tag === 'PlayerCard' ? 'player_back' : 'encounter_back'
     return imgsrc(`${back}.jpg`);
   }
-  // c05178 has 6 pairs of (front,back) variants — when not flipped, render the front.
-  const sleeperPair: Record<string, string> = {
+  // c05178 has 6 pairs of (front,back) variants using extended alphabet
+  // suffixes: 05178a/b, 05178c/d, ... 05178k/l. The card code points at
+  // the back/Unfinished Business side, so when unflipped render the matching
+  // previous-letter front, and when flipped render the card code as-is.
+  // Some saved/flipped cards can arrive with the generic "b" suffix appended
+  // to the extended code (e.g. c05178lb); canonicalize those to c05178l.
+  const unfinishedBusinessBack = cardCode.match(/^(c(?:05178[bcdfhjl]|5403[89]b))b$/)?.[1]
+  if (unfinishedBusinessBack) return cardImage(unfinishedBusinessBack)
+
+  const forcedFlippedSuffix: Record<string, string> = {
     c05178b: 'a', c05178d: 'c', c05178f: 'e',
     c05178h: 'g', c05178j: 'i', c05178l: 'k',
+    c54038b: '', c54039b: '',
   }
-  if (!isFlipped && cardCode in sleeperPair) {
-    return cardImage(cardCode.slice(0, -1), sleeperPair[cardCode])
+  if (cardCode in forcedFlippedSuffix) {
+    return isFlipped
+      ? cardImage(cardCode)
+      : cardImage(cardCode.slice(0, -1), forcedFlippedSuffix[cardCode])
   }
   const revealed = props.revealed && !isEnemyLocationCard.value
   const suffix = !revealed && isFlipped ? 'b' : ''

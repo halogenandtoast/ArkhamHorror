@@ -19,7 +19,7 @@ const emit = defineEmits(['choose'])
 
 const choose = async (idx: number) => emit('choose', idx)
 
-const unfinishedBusinessCodes = new Set(['c05178b', 'c05178d', 'c05178f', 'c05178h', 'c05178j', 'c05178l'])
+const unfinishedBusinessCodes = new Set(['c05178b', 'c05178d', 'c05178f', 'c05178h', 'c05178j', 'c05178l', 'c54038b', 'c54039b'])
 
 function victoryDisplayRegularCard(card: EncounterCard | PlayerCard): EncounterCard | PlayerCard {
   const contents = toCardContents(card)

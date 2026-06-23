@@ -375,9 +375,9 @@ function onLocationPointerDown(event: PointerEvent, location: { id: string }) {
     rotationAtStart: rotationSteps.value,
     moved: false,
   }
-  window.addEventListener('pointermove', onWindowPointerMove)
-  window.addEventListener('pointerup', onWindowPointerUp)
-  window.addEventListener('pointercancel', onWindowPointerUp)
+  window.addEventListener('pointermove', onWindowPointerMove, { passive: true })
+  window.addEventListener('pointerup', onWindowPointerUp, { passive: true })
+  window.addEventListener('pointercancel', onWindowPointerUp, { passive: true })
 }
 
 function onWindowPointerMove(event: PointerEvent) {

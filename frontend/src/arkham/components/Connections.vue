@@ -552,7 +552,7 @@ onMounted(async () => {
   requestId.value = window.requestAnimationFrame(tick)
 
   window.addEventListener('resize', requestConnectionUpdate)
-  window.addEventListener('scroll', requestConnectionUpdate, true)
+  window.addEventListener('scroll', requestConnectionUpdate, { capture: true, passive: true })
   window.addEventListener('arkham-location-layout-change', requestConnectionUpdate)
 
   const locationCards = document.querySelector('.location-cards') as HTMLElement | null
@@ -580,7 +580,7 @@ watch(() => props.enableCosmicEmissaryAnimation, () => { requestConnectionUpdate
 
 onBeforeUnmount(()=> {
   window.removeEventListener('resize', requestConnectionUpdate)
-  window.removeEventListener('scroll', requestConnectionUpdate, true)
+  window.removeEventListener('scroll', requestConnectionUpdate, { capture: true })
   window.removeEventListener('arkham-location-layout-change', requestConnectionUpdate)
   connectionObserver?.disconnect()
   connectionObserver = null

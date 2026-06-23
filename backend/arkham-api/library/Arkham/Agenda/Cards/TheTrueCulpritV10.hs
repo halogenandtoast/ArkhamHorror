@@ -25,7 +25,10 @@ instance HasModifiersFor TheTrueCulpritV10 where
 instance HasAbilities TheTrueCulpritV10 where
   getAbilities (TheTrueCulpritV10 attrs) =
     guard (onSide A attrs)
-      *> [ skillTestAbility $ restricted (proxied (locationIs Cards.basement) attrs) 1 Here actionAbility
+      *> [ scenarioI18n
+             $ withI18nTooltip "theTrueCulprit.basement"
+             $ skillTestAbility
+             $ restricted (proxied (locationIs Cards.basement) attrs) 1 Here actionAbility
          , restricted attrs 2 (exists $ AgendaWithDoom (EqualTo $ Static 0) <> AgendaWithId attrs.id)
              $ Objective
              $ forced AnyWindow
@@ -34,16 +37,17 @@ instance HasAbilities TheTrueCulpritV10 where
 instance RunMessage TheTrueCulpritV10 where
   runMessage msg a@(TheTrueCulpritV10 attrs) = runQueueT $ case msg of
     UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
-      leadAssets <- select $ AssetWithTrait Lead <> assetControlledBy iid
+      leadAssets <- select $ AssetWithTrait Lead <> at_ (LocationWithTitle "Basement")
       sid <- getRandom
-      chooseOneM iid $ scenarioI18n $ scope "theTrueCulprit" do
-        labeled' "removeClueLeadAsset"
-          do
-            chooseOrRunOneM iid do
-              targets leadAssets \asset -> do
-                push $ RemoveClues (AbilitySource p 1) (toTarget asset) 1
-                skillTestModifier sid (AbilitySource p 1) sid (Difficulty (-2))
-        labeledI "skip" nothing
+      unless (null leadAssets) do
+        chooseOneM iid $ scenarioI18n $ scope "theTrueCulprit" do
+          labeled' "removeClueLeadAsset"
+            do
+              chooseOrRunOneM iid do
+                targets leadAssets \asset -> do
+                  push $ RemoveClues (AbilitySource p 1) (toTarget asset) 1
+                  skillTestModifier sid (AbilitySource p 1) sid (Difficulty (-2))
+          labeledI "skip" nothing
       chooseOneM iid do
         for_ [#willpower, #agility] \skill -> do
           skillLabeled skill $ beginSkillTest sid iid (AbilitySource p 1) iid skill (Fixed 4)

@@ -10,6 +10,9 @@
     }
   ],
   "tooltips": {
+    "theTrueCulprit": {
+      "basement": "{'{'}action{'}'}: Test {'{'}willpower{'}'} (4) or {'{'}agility{'}'} (4). You may remove 1 clue from a Lead asset in the Basement to reduce the difficulty of this test by 2. If you succeed, remove 1 doom from the agenda."
+    },
     "bloodstainedDagger": {
       "fight": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}combat{'}'} for this attack.",
       "fightExhaust": "{'{'}action{'}'}: Exhaust Bloodstained Dagger and take 1 horror: _Fight_. You get +2 {'{'}combat{'}'} and deal +1 damage for this attack. If this attack defeats an enemy, draw 1 card."

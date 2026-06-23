@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n'
 import type { User } from '@/types';
 import { useDbCardStore } from '@/stores/dbCards'
 import { checkImageExists } from '@/arkham/helpers'
+import { loadLocaleMessages, normalizeLocale } from '@/locales/messages'
 
 const props = defineProps<{
   user: User
@@ -11,14 +13,26 @@ const props = defineProps<{
 }>()
 
 const store = useDbCardStore()
+const { availableLocales, locale, setLocaleMessage } = useI18n({ useScope: 'global' })
+const language = ref(localStorage.getItem('language') || locale.value)
 const beta = ref(props.user.beta ? "On" : "Off")
 const showDeleteConfirm = ref(false)
 
 const betaUpdate = async () => props.updateBeta(beta.value == "On")
 
 const updateLanguage = async (a: Event) => {
-  const target = a.target as HTMLInputElement;
-  localStorage.setItem('language', target.value)
+  const target = a.target as HTMLSelectElement;
+  const selectedLanguage = target.value
+  const uiLocale = normalizeLocale(selectedLanguage)
+
+  if (!availableLocales.includes(uiLocale)) {
+    const messages = await loadLocaleMessages(uiLocale)
+    setLocaleMessage(messages.locale, messages.messages)
+  }
+
+  language.value = selectedLanguage
+  locale.value = selectedLanguage
+  localStorage.setItem('language', selectedLanguage)
   await store.initDbCards()
   await checkImageExists()
 }
@@ -32,7 +46,7 @@ const updateLanguage = async (a: Event) => {
       <section class="box column">
         <h3>{{$t('language')}}</h3>
         <p>{{ $t('settingsForm.languageHelp') }}</p>
-        <select v-model="$i18n.locale" @change="updateLanguage">
+        <select :value="language" @change="updateLanguage">
           <option value="de">Deutsch/German</option>
           <option value="en">English</option>
           <option value="es">Español/Spanish</option>

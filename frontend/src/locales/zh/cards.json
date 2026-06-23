@@ -1085,9 +1085,23 @@
     },
     "theBeyondBleakNetherworld": {
       "attachTheTop": "将灵魂牌库顶的牌正面朝上附属到彼端上，作为一个灵魂",
+      "attachSpirit": "将灵魂牌库顶的牌正面朝上附属到彼端上，作为一个灵魂",
       "discardThisSpirit": "弃掉此灵魂",
+      "discardSpirit": "弃掉此灵魂",
       "take1DirectDamage": "受到1点直接伤害",
-      "take1DirectHorror": "受到1点直接恐惧"
+      "takeDirectDamage": "受到1点直接伤害",
+      "take1DirectHorror": "受到1点直接恐惧",
+      "takeDirectHorror": "受到1点直接恐惧",
+      "elderSignHealHorror": "古老印记：治愈1点恐惧",
+      "elderSignAttachSpirit": "古老印记：将灵魂牌库顶的牌附属到彼端上，作为一个灵魂",
+      "elderSignDoNothing": "古老印记：不治愈恐惧，也不附属灵魂",
+      "autoFailTakeDirectDamage": "自动失败：弃掉此灵魂并受到1点直接伤害",
+      "autoFailTakeDirectHorror": "自动失败：弃掉此灵魂并受到1点直接恐惧",
+      "skullDiscardSpiritHealHorror": "骷髅：弃掉此灵魂并治愈1点恐惧",
+      "skullDiscardSpirit": "骷髅：弃掉此灵魂",
+      "symbolDiscardSpirit": "符号标记：弃掉此灵魂",
+      "symbolTakeDirectDamage": "符号标记：受到1点直接伤害",
+      "otherDiscardSpirit": "其他标记：弃掉此灵魂"
     },
     "theCouncilsCoffer2": {
       "searchDeck": "查找牌库顶",

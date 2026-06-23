@@ -1100,9 +1100,23 @@
     },
     "theBeyondBleakNetherworld": {
       "attachTheTop": "Attach the top card of the spirit deck to The Beyond, as a spirit",
+      "attachSpirit": "Attach the top card of the spirit deck to The Beyond, as a spirit",
       "discardThisSpirit": "Discard this spirit",
+      "discardSpirit": "Discard this spirit",
       "take1DirectDamage": "Take 1 direct damage",
-      "take1DirectHorror": "Take 1 direct horror"
+      "takeDirectDamage": "Take 1 direct damage",
+      "take1DirectHorror": "Take 1 direct horror",
+      "takeDirectHorror": "Take 1 direct horror",
+      "elderSignHealHorror": "Elder Sign: Heal 1 horror",
+      "elderSignAttachSpirit": "Elder Sign: Attach the top card of the spirit deck to The Beyond, as a spirit",
+      "elderSignDoNothing": "Elder Sign: Do not heal horror or attach a spirit",
+      "autoFailTakeDirectDamage": "Auto-fail: Discard this spirit and take 1 direct damage",
+      "autoFailTakeDirectHorror": "Auto-fail: Discard this spirit and take 1 direct horror",
+      "skullDiscardSpiritHealHorror": "Skull: Discard this spirit and heal 1 horror",
+      "skullDiscardSpirit": "Skull: Discard this spirit",
+      "symbolDiscardSpirit": "Symbol token: Discard this spirit",
+      "symbolTakeDirectDamage": "Symbol token: Take 1 direct damage",
+      "otherDiscardSpirit": "Other token: Discard this spirit"
     },
     "theCouncilsCoffer2": {
       "searchDeck": "Search Deck",

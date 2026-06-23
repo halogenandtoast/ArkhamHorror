@@ -1205,6 +1205,10 @@ const darknessLevel = computed(() => props.scenario.tokens[TokenType.DarknessLev
 const signOfTheGods = computed(() => props.scenario.counts["SignOfTheGods"])
 const strengthOfTheAbyss = computed(() => props.scenario.counts["StrengthOfTheAbyss"])
 const distortion = computed(() => props.scenario.counts["Distortion"])
+// Laid to Rest: horror placed on the scenario reference card represents
+// Spiritual Disturbance (defeats everyone at 4). Render it on the scenario card.
+const spiritualDisturbance = computed(() =>
+  props.scenario.id === 'c90054' ? props.scenario.tokens[TokenType.Horror] : undefined)
 const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 // Reactive
@@ -2110,6 +2114,13 @@ async function addChaosToken(face: any){
                 tooltip="Distortion"
                 :amount="distortion"
               />
+              <PoolItem
+                v-if="spiritualDisturbance"
+                class="spiritualDisturbance"
+                type="horror"
+                tooltip="Spiritual Disturbance"
+                :amount="spiritualDisturbance"
+              />
               <div class="pool" v-if="hasPool">
                 <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
                 <PoolItem v-if="damage && damage > 0" type="damage" :amount="damage" />
@@ -2916,6 +2927,13 @@ async function addChaosToken(face: any){
   }
 
   .distortion {
+    align-self: end;
+    justify-self: end;
+    pointer-events: none;
+    z-index: var(--z-index-10);
+  }
+
+  .spiritualDisturbance {
     align-self: end;
     justify-self: end;
     pointer-events: none;

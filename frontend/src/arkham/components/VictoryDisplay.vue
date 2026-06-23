@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
-import { type Card, toCardContents } from '@/arkham/types/Card';
+import { type Card, type EncounterCard, type PlayerCard, toCardContents } from '@/arkham/types/Card';
 import CardView from '@/arkham/components/Card.vue'
 import Enemy from '@/arkham/components/Enemy.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
@@ -19,12 +19,27 @@ const emit = defineEmits(['choose'])
 
 const choose = async (idx: number) => emit('choose', idx)
 
+const unfinishedBusinessCodes = new Set(['c05178b', 'c05178d', 'c05178f', 'c05178h', 'c05178j', 'c05178l'])
+
+function victoryDisplayRegularCard(card: EncounterCard | PlayerCard): EncounterCard | PlayerCard {
+  const contents = toCardContents(card)
+  if (!unfinishedBusinessCodes.has(contents.cardCode)) return card
+  return { ...card, contents: { ...contents, isFlipped: true } }
+}
+
+function victoryDisplayCard(card: Card): Card {
+  if (card.tag === 'VengeanceCard') return { ...card, contents: victoryDisplayRegularCard(card.contents) }
+  return victoryDisplayRegularCard(card)
+}
+
+const displayVictoryDisplay = computed(() => props.victoryDisplay.map(victoryDisplayCard))
+
 const enemiesInVictoryDisplay = computed(() => {
   return Object.values(props.game.enemies).filter((e) => e.placement.tag === 'OutOfPlay' && (['VictoryDisplayZone'] as string[]).includes(e.placement.contents))
 })
 const topOfVictoryDisplay = computed(() => {
   const enemyCardIds = enemiesInVictoryDisplay.value.map(e => e.cardId)
-  return props.victoryDisplay.filter((c) => !enemyCardIds.includes(toCardContents(c).id))[0]
+  return displayVictoryDisplay.value.filter((c) => !enemyCardIds.includes(toCardContents(c).id))[0]
 })
 
 const viewVictoryDisplayLabel = computed(() => t('scenario.victoryDisplay'))
@@ -47,7 +62,7 @@ const viewVictoryDisplayLabel = computed(() => t('scenario.victoryDisplay'))
 
     <CardsUnderIndicator
       v-if="victoryDisplay.length > 0"
-      :cards="victoryDisplay"
+      :cards="displayVictoryDisplay"
       :label="viewVictoryDisplayLabel"
       :game="game"
       :playerId="playerId"

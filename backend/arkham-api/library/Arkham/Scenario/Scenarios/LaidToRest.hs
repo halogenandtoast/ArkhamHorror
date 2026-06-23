@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Scenario.Scenarios.LaidToRest (laidToRest, LaidToRest (..)) where
 
 import Arkham.Id
@@ -64,7 +65,7 @@ instance HasChaosTokenValue LaidToRest where
   getChaosTokenValue iid chaosTokenFace (LaidToRest attrs) = case chaosTokenFace of
     Skull -> do
       n <- selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTitle "Unfinished Business"
-      pure $ toChaosTokenValue attrs Skull (n + 1) (n + 2)
+      pure $ toChaosTokenValue attrs Skull (traceShowId $ n + 1) (n + 2)
     Cultist -> do
       n <- cardsAttachedToTheBeyond
       pure $ toChaosTokenValue attrs Cultist n (n * 2)

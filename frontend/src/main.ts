@@ -18,16 +18,17 @@ library.add(faBan, faLocationDot, faCircleExclamation, faGhost, faSearch, faList
 
 async function bootstrap() {
   const language = localStorage.getItem('language')
-  const naviLanguage = navigator.language || 'en'
-  const currentLanguage = normalizeLocale(language ?? naviLanguage.split('-')[0])
-  if (language !== currentLanguage) { localStorage.setItem('language', currentLanguage) }
+  const naviLanguage = (navigator.language || 'en').split('-')[0]
+  const currentLanguage = language ?? naviLanguage
+  const currentLocale = normalizeLocale(currentLanguage)
+  if (!language) { localStorage.setItem('language', currentLanguage) }
 
   const loadedMessages: Record<string, any> = {}
   const fallback = await loadLocaleMessages('en')
   loadedMessages[fallback.locale] = fallback.messages
 
-  if (currentLanguage !== fallback.locale) {
-    const current = await loadLocaleMessages(currentLanguage)
+  if (currentLocale !== fallback.locale) {
+    const current = await loadLocaleMessages(currentLocale)
     loadedMessages[current.locale] = current.messages
   }
 

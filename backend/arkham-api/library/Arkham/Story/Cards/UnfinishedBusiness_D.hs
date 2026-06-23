@@ -41,6 +41,7 @@ instance RunMessage UnfinishedBusiness_D where
         . UnfinishedBusiness_D
         $ attrs
         & (placementL .~ InThreatArea iid)
+        & (flippedL .~ True)
         & (removeAfterResolutionL .~ False)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ withI18n do

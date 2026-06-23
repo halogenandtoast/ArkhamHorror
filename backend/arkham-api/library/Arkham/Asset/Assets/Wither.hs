@@ -48,20 +48,22 @@ instance RunMessage WitherEffect where
   runMessage msg e@(WitherEffect attrs) = runQueueT $ case msg of
     RevealChaosToken _ iid token | isTarget iid attrs.target -> do
       withSkillTest \sid -> do
-        enemyId <- fromJustNote "no attacked enemy" <$> getAttackedEnemy
         mtaboo <- field InvestigatorTaboo iid
         let checkToken =
               if maybe False (>= TabooList25) mtaboo
                 then isSymbolChaosToken
                 else (`elem` [Skull, Cultist, Tablet, ElderThing])
-        when (checkToken token.face && maybe False (isTarget sid) attrs.metaTarget) do
-          iid' <- selectJust TurnInvestigator
-          ems <- effectModifiers attrs [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1)]
-          push
-            $ If
-              (Window.RevealChaosTokenEffect iid token attrs.id)
-              [CreateWindowModifierEffect (EffectTurnWindow iid') ems attrs.source (toTarget enemyId)]
-          disable attrs
+        when (checkToken token.face && maybe False (isTarget sid) attrs.metaTarget) $
+          getAttackedEnemy >>= \case
+            Nothing -> disable attrs
+            Just enemyId -> do
+              iid' <- selectJust TurnInvestigator
+              ems <- effectModifiers attrs [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1)]
+              push
+                $ If
+                  (Window.RevealChaosTokenEffect iid token attrs.id)
+                  [CreateWindowModifierEffect (EffectTurnWindow iid') ems attrs.source (toTarget enemyId)]
+              disable attrs
       pure e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
       disableReturn e

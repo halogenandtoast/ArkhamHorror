@@ -49,7 +49,6 @@ instance RunMessage Wither4Effect where
   runMessage msg e@(Wither4Effect attrs) = runQueueT $ case msg of
     RevealChaosToken _ iid token | isTarget iid attrs.target -> do
       withSkillTest \sid -> do
-        enemyId <- fromJustNote "no attacked enemy" <$> getAttackedEnemy
         isTaboo <- maybe False (>= TabooList25) <$> field InvestigatorTaboo iid
         let checkToken =
               if isTaboo
@@ -58,22 +57,24 @@ instance RunMessage Wither4Effect where
         let triggers =
               checkToken token.face
                 && maybe False (isTarget sid) attrs.metaTarget
-        when triggers do
-          iid' <- selectJust TurnInvestigator
-          ems <-
-            effectModifiers
-              attrs
-              [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1), HealthModifierWithMin (-1) (Min 1)]
-          push
-            $ If
-              (Window.RevealChaosTokenEffect iid token attrs.id)
-              [ CreateWindowModifierEffect
-                  (if isTaboo then EffectPhaseWindow else EffectTurnWindow iid')
-                  ems
-                  attrs.source
-                  (toTarget enemyId)
-              ]
-          disable attrs
+        when triggers $ getAttackedEnemy >>= \case
+          Nothing -> disable attrs
+          Just enemyId -> do
+            iid' <- selectJust TurnInvestigator
+            ems <-
+              effectModifiers
+                attrs
+                [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1), HealthModifierWithMin (-1) (Min 1)]
+            push
+              $ If
+                (Window.RevealChaosTokenEffect iid token attrs.id)
+                [ CreateWindowModifierEffect
+                    (if isTaboo then EffectPhaseWindow else EffectTurnWindow iid')
+                    ems
+                    attrs.source
+                    (toTarget enemyId)
+                ]
+            disable attrs
       pure e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
       disableReturn e

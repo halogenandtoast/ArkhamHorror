@@ -285,7 +285,10 @@ watch(abilities, (abilities) => {
 
 const assetStory = computed(() => {
   const { stories } = props.game
-  return Object.values(stories).find((s) => s.otherSide?.contents === props.asset.id)
+  return Object.values(stories).find((s) =>
+    s.otherSide?.contents === props.asset.id ||
+    (s.placement.tag === "AttachedToAsset" && s.placement.contents[0] === props.asset.id)
+  )
 })
 
 function startDrag(event: DragEvent) {

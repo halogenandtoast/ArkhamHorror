@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.ValeLanternAFaintHope (valeLanternAFaintHope) where
+module Arkham.Asset.Assets.ValeLanternAFaintHope (valeLanternAFaintHope, valeLanternAFaintHopeEffect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -63,6 +63,10 @@ instance RunMessage ValeLanternAFaintHope where
 newtype ValeLanternAFaintHopeEffect = ValeLanternAFaintHopeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+valeLanternAFaintHopeEffect :: EffectArgs -> ValeLanternAFaintHopeEffect
+valeLanternAFaintHopeEffect = cardEffect ValeLanternAFaintHopeEffect Cards.valeLanternAFaintHope
+
 instance HasModifiersFor ValeLanternAFaintHopeEffect where
   getModifiersFor (ValeLanternAFaintHopeEffect a) = maybeModified_ a a.target do
     EffectMetaTarget (LocationTarget lid) <- hoistMaybe a.metadata

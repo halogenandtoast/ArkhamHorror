@@ -1,7 +1,5 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-module Arkham.Scenario.Scenarios.LaidToRest (laidToRest, LaidToRest (..)) where
+module Arkham.Scenario.Scenarios.LaidToRest (laidToRest) where
 
-import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -16,6 +14,7 @@ import Arkham.Helpers.Card (ConvertToCard (..), getVictoryPoints)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers hiding (roundModifiers)
+import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorTaboo))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -65,7 +64,7 @@ instance HasChaosTokenValue LaidToRest where
   getChaosTokenValue iid chaosTokenFace (LaidToRest attrs) = case chaosTokenFace of
     Skull -> do
       n <- selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTitle "Unfinished Business"
-      pure $ toChaosTokenValue attrs Skull (traceShowId $ n + 1) (n + 2)
+      pure $ toChaosTokenValue attrs Skull (n + 1) (n + 2)
     Cultist -> do
       n <- cardsAttachedToTheBeyond
       pure $ toChaosTokenValue attrs Cultist n (n * 2)
@@ -142,12 +141,13 @@ gainLaidToRestXp attrs = do
     mvp <- getVictoryPoints c
     pure $ fmap (\n -> (toTitle card, n)) mvp
 
--- | The deck-buildable candidate pool for Jim's spirit deck: every distinct
--- (by name) Ally asset, any class, level 0-2, that a player could legally
--- include in a deck (excludes weaknesses, signatures, and The Beyond itself).
--- Sourced from the full player-card database ('allPlayerCards') rather than the
--- in-game card pool, because with a non-parallel Jim almost no allies are
--- registered in the game yet.
+{- | The deck-buildable candidate pool for Jim's spirit deck: every distinct
+(by name) Ally asset, any class, level 0-2, that a player could legally
+include in a deck (excludes weaknesses, signatures, and The Beyond itself).
+Sourced from the full player-card database ('allPlayerCards') rather than the
+in-game card pool, because with a non-parallel Jim almost no allies are
+registered in the game yet.
+-}
 spiritDeckCandidates :: [CardDef]
 spiritDeckCandidates =
   nubOrdOn cdName
@@ -156,17 +156,21 @@ spiritDeckCandidates =
     $ toList allPlayerCards
  where
   isCandidate def =
-    cdCardType def == AssetType
-      && Ally `member` cdCardTraits def
+    cdCardType def
+      == AssetType
+      && Ally
+      `member` cdCardTraits def
       && maybe True (<= 2) (cdLevel def)
       && isNothing (cdCardSubType def)
       && isNothing (cdEncounterSet def)
       && not (isSignature def)
-      && cdCardCode def /= cdCardCode Assets.theBeyondBleakNetherworld
+      && cdCardCode def
+      /= cdCardCode Assets.theBeyondBleakNetherworld
 
--- | If The Beyond is not already available to Jim (already in play, or in his
--- deck/story cards), prompt the Jim player to build a spirit deck. The answer
--- is handled by the @ScenarioSpecific "laidToRest.buildSpiritDeck"@ case below.
+{- | If The Beyond is not already available to Jim (already in play, or in his
+deck/story cards), prompt the Jim player to build a spirit deck. The answer
+is handled by the @ScenarioSpecific "laidToRest.buildSpiritDeck"@ case below.
+-}
 buildSpiritDeckIfNeeded :: ReverseQueue m => m ()
 buildSpiritDeckIfNeeded = do
   selectOne jimCulver >>= traverse_ \jim -> do
@@ -239,8 +243,17 @@ instance RunMessage LaidToRest where
       abandonedChapel <- place Locations.abandonedChapel
 
       clues <- perPlayer 1
-      for_ [hangmansBrook, theGallows, hereticsGraves, chapelCrypt, chapelAttic, hauntedFields, abandonedChapel] \lid ->
-        placeTokens ScenarioSource lid #clue clues
+      for_
+        [ hangmansBrook
+        , theGallows
+        , hereticsGraves
+        , chapelCrypt
+        , chapelAttic
+        , hauntedFields
+        , abandonedChapel
+        ]
+        \lid ->
+          placeTokens ScenarioSource lid #clue clues
 
       heretics <-
         pickN

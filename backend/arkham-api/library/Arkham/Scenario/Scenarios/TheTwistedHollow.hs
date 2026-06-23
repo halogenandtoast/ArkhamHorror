@@ -14,7 +14,7 @@ import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
 import Arkham.Helpers.Query (
   allInvestigators,
   getInvestigators,
@@ -44,11 +44,26 @@ import Arkham.Trait (Trait (Dark))
 import Arkham.Zone
 
 newtype TheTwistedHollow = TheTwistedHollow ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theTwistedHollow :: Difficulty -> TheTwistedHollow
 theTwistedHollow difficulty = scenario TheTwistedHollow "10605" "The Twisted Hollow" difficulty []
+
+instance HasModifiersFor TheTwistedHollow where
+  getModifiersFor (TheTwistedHollow a) = do
+    modifySelectWith
+      a
+      (assetIs Assets.drRosaMarquezBestInHerField)
+      setActiveDuringSetup
+      [DoNotTakeUpSlot #ally]
+    n <- getPlayerCount
+    when (n == 1) do
+      modifySelectWith
+        a
+        (AssetWithTitle "Vale Lantern")
+        setActiveDuringSetup
+        [DoNotTakeUpSlot #hand]
 
 instance HasChaosTokenValue TheTwistedHollow where
   getChaosTokenValue iid tokenFace (TheTwistedHollow attrs) = case tokenFace of

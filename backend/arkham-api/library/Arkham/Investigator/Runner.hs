@@ -689,8 +689,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   ShuffleDeck (Deck.InvestigatorDeck iid) | iid == investigatorId -> handleShuffleDeck a iid
   ShuffleDiscardBackIn iid | iid == investigatorId -> handleShuffleDiscardBackIn a iid
   Resign iid | iid == investigatorId -> do
-    pushAll $ resolve (Msg.InvestigatorResigned iid)
+    -- "When you resign" abilities must fire before the investigator is marked
+    -- resigned; otherwise the window is skipped for that investigator and
+    -- forced abilities on cards they control (e.g. Relics of the Past artifacts)
+    -- never get a chance to trigger.
     Lifted.checkWhen $ Window.InvestigatorResigned iid
+    pushAll $ resolve (Msg.InvestigatorResigned iid)
     pure $ a & endedTurnL .~ True
   Msg.InvestigatorDefeated source iid | iid == investigatorId -> do
     whenM (withoutModifier a CannotBeDefeated) do

@@ -269,7 +269,11 @@ instance Not EnemyAttackMatcher where
   not_ = NotEnemyAttack
 
 mconcat
-  [ deriveJSON defaultOptions ''PreyMatcher
+  [ deriveToJSON defaultOptions ''PreyMatcher
+  , [d|
+      instance FromJSON PreyMatcher where
+        parseJSON value = $(mkParseJSON defaultOptions ''PreyMatcher) value <|> (Prey <$> parseJSON value)
+    |]
   , deriveToJSON defaultOptions ''EnemyMatcher
   , deriveJSON defaultOptions ''EnemyAttackMatcher
   ]

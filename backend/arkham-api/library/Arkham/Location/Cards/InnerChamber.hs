@@ -10,7 +10,6 @@ import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.RelicsOfThePast.Helpers
@@ -41,7 +40,6 @@ instance RunMessage InnerChamber where
       pure l
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       let cards = drewCards.cards
-      let nonLocations = filter (not . (`cardMatch` CardWithType LocationType)) cards
       let
         drawSelected :: ReverseQueue n => Card -> n ()
         drawSelected card =
@@ -55,23 +53,20 @@ instance RunMessage InnerChamber where
               , cardDrewRules = mempty
               , cardDrewTarget = Nothing
               }
-      if null nonLocations
-        then focusCards cards do
-          shuffleCardsIntoDeck ExplorationDeck cards
-          continue_ iid
+      if null cards
+        then continue_ iid
         else do
           hasChalk <- getHasSupply iid Chalk
           focusCards cards do
-            chooseTargetM iid nonLocations \card -> do
+            chooseTargetM iid cards \card -> do
               let rest = deleteFirst card cards
-              let restNonLocations = deleteFirst card nonLocations
-              if hasChalk && notNull restNonLocations
+              if hasChalk && notNull rest
                 then chooseOneM iid $ scenarioI18n do
                   labeled' "innerChamber.doNotDrawAnother" do
                     unfocusCards
                     shuffleCardsIntoDeck ExplorationDeck rest
                     drawSelected card
-                  targets restNonLocations \extra -> do
+                  targets rest \extra -> do
                     unfocusCards
                     shuffleCardsIntoDeck ExplorationDeck (deleteFirst extra rest)
                     drawSelected card

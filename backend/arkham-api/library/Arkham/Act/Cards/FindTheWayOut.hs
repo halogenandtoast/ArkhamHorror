@@ -18,7 +18,7 @@ instance HasAbilities FindTheWayOut where
     extend
       a
       [ restricted a 1 (OnLocation LocationWithoutClues) exploreAction_
-      , restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+      , onlyOnce $ restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
       ]
 
 instance RunMessage FindTheWayOut where

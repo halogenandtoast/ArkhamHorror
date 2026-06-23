@@ -552,6 +552,18 @@ mconcat
         parseJSON = withObject "ModifierType" \v -> do
           tag :: Text <- v .: "tag"
           case tag of
+            "CanPlayUnderControlOf" -> do
+              let parseRecord o = do
+                    cmatch <- o .: "cardMatcher" <|> o .: "card"
+                    imatch <- o .: "investigatorMatcher" <|> o .: "investigator"
+                    pure $ CanPlayUnderControlOf cmatch imatch
+              mContents <- v .:? "contents"
+              case mContents of
+                Just contents ->
+                  (uncurry CanPlayUnderControlOf <$> parseJSON contents)
+                    <|> withObject "CanPlayUnderControlOf" parseRecord contents
+                    <|> (flip CanPlayUnderControlOf Anyone <$> parseJSON contents)
+                Nothing -> parseRecord v
             "MaxDamageTaken" -> do
               contents <- (Right <$> v .: "contents") <|> (Left <$> v .: "contents")
               case contents of

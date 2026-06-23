@@ -73,4 +73,16 @@ data instance Field ConcealedCard :: Type -> Type where
 instance HasCardCode ConcealedCard where
   toCardCode = const "xconcealed"
 
-$(deriveJSON (aesonOptions $ Just "concealedCard") ''ConcealedCard)
+mconcat
+  [ deriveToJSON (aesonOptions $ Just "concealedCard") ''ConcealedCard
+  , [d|
+      instance FromJSON ConcealedCard where
+        parseJSON = withObject "ConcealedCard" \o -> do
+          concealedCardKind <- o .: "kind"
+          concealedCardId <- o .: "id"
+          concealedCardPlacement <- o .: "placement"
+          concealedCardFlipped <- o .: "flipped"
+          concealedCardKnown <- o .:? "known" .!= concealedCardFlipped
+          pure $ ConcealedCard concealedCardKind concealedCardId concealedCardPlacement concealedCardFlipped concealedCardKnown
+    |]
+  ]

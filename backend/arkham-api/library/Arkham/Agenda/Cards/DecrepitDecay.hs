@@ -23,7 +23,7 @@ decrepitDecay = agenda (1, A) DecrepitDecay Cards.decrepitDecay (Static 6)
 
 instance HasAbilities DecrepitDecay where
   getAbilities (DecrepitDecay a) =
-    [forcedAbility a 1 $ EnemyDefeated #when You (BySource $ SourceOwnedBy You) notKidnapper]
+    [forcedAbility a 1 $ EnemyDefeated #when You (BySource $ SourceUsedBy You) notKidnapper]
 
 instance RunMessage DecrepitDecay where
   runMessage msg a@(DecrepitDecay attrs) = runQueueT $ case msg of

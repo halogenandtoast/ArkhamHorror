@@ -28,7 +28,7 @@ instance HasAbilities AbarranArrigorriagakoaAbarranUnleashed where
     extend1 a
       $ restricted a 1 (thisExists a ReadyEnemy)
       $ forced
-      $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceOwnedBy You)
+      $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceUsedBy You)
 
 instance RunMessage AbarranArrigorriagakoaAbarranUnleashed where
   runMessage msg e@(AbarranArrigorriagakoaAbarranUnleashed attrs) = runQueueT $ case msg of

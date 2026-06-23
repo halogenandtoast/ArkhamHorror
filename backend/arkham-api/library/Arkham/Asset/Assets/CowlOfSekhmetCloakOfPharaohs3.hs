@@ -27,6 +27,6 @@ instance RunMessage CowlOfSekhmetCloakOfPharaohs3 where
       roundModifier (attrs.ability 1) iid (CannotBeEngagedBy $ mapOneOf EnemyWithId enemies)
       for_ enemies \enemy -> do
         roundModifier (attrs.ability 1) enemy
-          $ CannotBeDamagedByPlayerSources (SourceOwnedBy $ InvestigatorWithId iid)
+          $ CannotBeDamagedByPlayerSources (SourceUsedBy $ InvestigatorWithId iid)
       pure a
     _ -> CowlOfSekhmetCloakOfPharaohs3 <$> liftRunMessage msg attrs

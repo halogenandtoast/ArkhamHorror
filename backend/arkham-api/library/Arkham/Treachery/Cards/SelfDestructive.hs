@@ -17,7 +17,7 @@ instance HasAbilities SelfDestructive where
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ forced
         $ EnemyDealtDamage #when AnyDamageEffect AnyEnemy
-        $ SourceOwnedBy You
+        $ SourceUsedBy You
     , restrictedAbility a 2 OnSameLocation $ ActionAbility mempty Nothing $ ActionCost 2
     ]
 

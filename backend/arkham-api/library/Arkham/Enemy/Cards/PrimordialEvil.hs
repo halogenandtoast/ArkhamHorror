@@ -18,7 +18,7 @@ instance HasAbilities PrimordialEvil where
   getAbilities (PrimordialEvil a) =
     extend
       a
-      [mkAbility a 1 $ forced $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceOwnedBy You)]
+      [mkAbility a 1 $ forced $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceUsedBy You)]
 
 instance RunMessage PrimordialEvil where
   runMessage msg e@(PrimordialEvil attrs) = runQueueT $ case msg of

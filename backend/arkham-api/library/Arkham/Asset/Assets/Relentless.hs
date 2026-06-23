@@ -24,7 +24,7 @@ instance HasAbilities Relentless where
   getAbilities (Relentless a) =
     [ restrictedAbility a 1 ControlsThis
         $ triggered
-          ( EnemyDealtExcessDamage Timing.When AnyDamageEffect AnyEnemy (SourceOwnedBy You)
+          ( EnemyDealtExcessDamage Timing.When AnyDamageEffect AnyEnemy (SourceUsedBy You)
           )
         $ ExhaustCost
         $ toTarget a

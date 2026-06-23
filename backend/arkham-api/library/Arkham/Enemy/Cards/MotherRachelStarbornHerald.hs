@@ -27,7 +27,7 @@ instance HasAbilities MotherRachelStarbornHerald where
     extend1 a
       $ restricted a 1 (exists $ EnemyAt (locationWithEnemy a) <> not_ (be a))
       $ forced
-      $ EnemyDealtDamage #after AnyDamageEffect (be a) (SourceOwnedBy You)
+      $ EnemyDealtDamage #after AnyDamageEffect (be a) (SourceUsedBy You)
 
 instance RunMessage MotherRachelStarbornHerald where
   runMessage msg e@(MotherRachelStarbornHerald attrs) = runQueueT $ case msg of

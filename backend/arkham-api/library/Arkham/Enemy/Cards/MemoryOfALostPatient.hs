@@ -26,8 +26,8 @@ instance HasAbilities MemoryOfALostPatient where
       [ restricted a 1 (thisExists a ExhaustedEnemy)
           $ freeReaction
           $ oneOf
-            [ AssetHealed #after #damage AnyAsset (SourceOwnedBy You)
-            , InvestigatorHealed #after #damage Anyone (SourceOwnedBy You)
+            [ AssetHealed #after #damage AnyAsset (SourceUsedBy You)
+            , InvestigatorHealed #after #damage Anyone (SourceUsedBy You)
             ]
       , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny (be a)
       ]

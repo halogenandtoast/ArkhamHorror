@@ -18,7 +18,7 @@ instance HasAbilities InHarmsWay where
       a
       1
       InYourThreatArea
-      (forced $ EnemyDealtDamage #after AnyDamageEffect AnyEnemy (SourceOwnedBy You))
+      (forced $ EnemyDealtDamage #after AnyDamageEffect AnyEnemy (SourceUsedBy You))
       : [mkAbility a 2 $ forcedOnElimination iid | iid <- toList a.inThreatAreaOf]
 
 instance RunMessage InHarmsWay where

@@ -29,7 +29,7 @@ instance HasAbilities ExperimentalPsychology where
         actionAbility
     , controlled_ a 2
         $ triggered
-          (InvestigatorHealed #after #horror (affectsOthers Anyone) (SourceOwnedBy You))
+          (InvestigatorHealed #after #horror (affectsOthers Anyone) (SourceUsedBy You))
           (exhaust a)
     ]
 

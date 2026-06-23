@@ -22,7 +22,7 @@ instance HasAbilities DimensionalDuplicatorA where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ EnemyDealtDamage #after AnyDamageEffect (be a) (SourceOwnedBy You)
+      $ EnemyDealtDamage #after AnyDamageEffect (be a) (SourceUsedBy You)
 
 instance RunMessage DimensionalDuplicatorA where
   runMessage msg e@(DimensionalDuplicatorA attrs) = runQueueT $ case msg of

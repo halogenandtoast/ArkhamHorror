@@ -22,7 +22,7 @@ instance HasAbilities ZoeySamarasParallel where
         $ selfAbility a 1 HasRemainingBlessTokens
         $ freeReaction
         $ EnemyDealtDamage #after AnyDamageEffect AnyEnemy
-        $ SourceOwnedBy You
+        $ SourceUsedBy You
     , playerLimit PerRound
         $ selfAbility a 2 (DuringSkillTest (YourSkillTest #attacking <> SkillTestBeforeRevealingChaosTokens))
         $ FastAbility

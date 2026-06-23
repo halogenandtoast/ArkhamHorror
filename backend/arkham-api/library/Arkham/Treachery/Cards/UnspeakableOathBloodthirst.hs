@@ -25,7 +25,7 @@ instance HasAbilities UnspeakableOathBloodthirst where
           ]
     , restrictedAbility attrs 2 InYourHand
         $ freeReaction
-        $ EnemyDealtExcessDamage #when AnyDamageEffect AnyEnemy (SourceOwnedBy You)
+        $ EnemyDealtExcessDamage #when AnyDamageEffect AnyEnemy (SourceUsedBy You)
     ]
 
 instance RunMessage UnspeakableOathBloodthirst where

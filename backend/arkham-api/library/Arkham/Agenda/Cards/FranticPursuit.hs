@@ -16,7 +16,7 @@ franticPursuit = agenda (3, A) FranticPursuit Cards.franticPursuit (Static 7)
 
 instance HasAbilities FranticPursuit where
   getAbilities (FranticPursuit a) =
-    [forcedAbility a 1 $ EnemyDefeated #when You (BySource $ SourceOwnedBy You) notKidnapper]
+    [forcedAbility a 1 $ EnemyDefeated #when You (BySource $ SourceUsedBy You) notKidnapper]
 
 instance RunMessage FranticPursuit where
   runMessage msg a@(FranticPursuit attrs) = runQueueT $ case msg of

@@ -48,7 +48,7 @@ instance HasAbilities SpecialInvestigation where
                         <> LocationWithInvestigator You
                     )
               )
-              (SourceOwnedBy You)
+              (SourceUsedBy You)
           ]
     ]
 

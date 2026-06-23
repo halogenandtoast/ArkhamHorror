@@ -27,7 +27,7 @@ instance HasAbilities ApostleOfDagon where
       [ mkAbility a 1 $ forced $ EnemySpawns #after Anywhere $ be a
       , restricted a 2 HasRemainingCurseTokens
           $ forced
-          $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceOwnedBy Anyone)
+          $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceUsedBy Anyone)
       ]
 
 instance RunMessage ApostleOfDagon where

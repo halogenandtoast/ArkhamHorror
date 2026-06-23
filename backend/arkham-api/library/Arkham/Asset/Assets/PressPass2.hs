@@ -21,7 +21,7 @@ instance HasAbilities PressPass2 where
         $ triggered
           ( oneOf
               [ SpentClues #after You (atLeast 1)
-              , PlacedToken #after (SourceOwnedBy You) (LocationTargetMatches YourLocation) Clue
+              , PlacedToken #after (SourceUsedBy You) (LocationTargetMatches YourLocation) Clue
               ]
           )
           (exhaust a)

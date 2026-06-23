@@ -468,6 +468,9 @@ targetIs = TargetIs . toTarget
 sourceOwnedBy :: (AsId iid, IdOf iid ~ InvestigatorId) => iid -> SourceMatcher
 sourceOwnedBy = SourceOwnedBy . InvestigatorWithId . asId
 
+sourceUsedBy :: (AsId iid, IdOf iid ~ InvestigatorId) => iid -> SourceMatcher
+sourceUsedBy = SourceUsedBy . InvestigatorWithId . asId
+
 -- ** Ability Helpers **
 
 performableAbilityWithoutActionBy :: InvestigatorId -> AbilityMatcher -> AbilityMatcher

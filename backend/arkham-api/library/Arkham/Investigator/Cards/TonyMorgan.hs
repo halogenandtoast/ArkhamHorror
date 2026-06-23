@@ -49,7 +49,7 @@ instance HasAbilities TonyMorgan where
         $ selfAbility
           a
           NonActivateAbility
-          (exists (EnemyWithBounty <> oneOf [CanFightEnemyWith (SourceOwnedBy $ be a), CanEngageEnemy source]))
+          (exists (EnemyWithBounty <> oneOf [CanFightEnemyWith (SourceUsedBy $ be a), CanEngageEnemy source]))
           (ActionAbility mempty Nothing Free)
     | BountyAction `notElem` map additionalActionType a.usedAdditionalActions
     ]

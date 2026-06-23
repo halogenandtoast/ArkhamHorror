@@ -1629,7 +1629,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                     else matches enemyId enemyMatcher
             , defeatedByMatches
                 defeatedBy
-                (defeatedByMatcher <> Matcher.BySource (Matcher.SourceOwnedBy $ Matcher.InvestigatorWithId iid))
+                (defeatedByMatcher <> Matcher.BySource (Matcher.SourceUsedBy $ Matcher.InvestigatorWithId iid))
             ]
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.Anyone -> do
           andM
@@ -1665,7 +1665,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                     else matches enemyId (InPlayEnemy enemyMatcher)
             , defeatedByMatches
                 defeatedBy
-                (defeatedByMatcher <> Matcher.BySource (Matcher.SourceOwnedBy $ Matcher.InvestigatorWithId iid))
+                (defeatedByMatcher <> Matcher.BySource (Matcher.SourceUsedBy $ Matcher.InvestigatorWithId iid))
             ]
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.Anyone -> do
           andM
@@ -1701,7 +1701,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                     else matches enemyId enemyMatcher
             , defeatedByMatches
                 defeatedBy
-                (defeatedByMatcher <> Matcher.BySource (Matcher.SourceOwnedBy $ Matcher.InvestigatorWithId iid))
+                (defeatedByMatcher <> Matcher.BySource (Matcher.SourceUsedBy $ Matcher.InvestigatorWithId iid))
             ]
         Window.IfEnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.Anyone -> do
           andM

@@ -30,7 +30,7 @@ instance HasAbilities NathanielCho where
     [ playerLimit PerPhase
         $ restricted x 1 Self
         $ freeReaction
-        $ EnemyDealtDamage #when AnyDamageEffect AnyEnemy (SourceOwnedBy You <> SourceIsType EventType)
+        $ EnemyDealtDamage #when AnyDamageEffect AnyEnemy (SourceUsedBy You <> SourceIsType EventType)
     ]
 
 instance HasChaosTokenValue NathanielCho where

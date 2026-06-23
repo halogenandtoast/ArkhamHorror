@@ -20,7 +20,7 @@ instance HasAbilities GuardianElderThing where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceOwnedBy You)
+      $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceUsedBy You)
 
 instance RunMessage GuardianElderThing where
   runMessage msg e@(GuardianElderThing attrs) = runQueueT $ case msg of

@@ -82,6 +82,61 @@ getSourceController = \case
   ElderSignEffectSource iid -> pure $ Just iid
   _ -> pure Nothing
 
+-- | Resolve which investigator(s) a source belongs to.
+--
+-- When @creditUser@ is 'False' (the @SourceOwnedBy@ matcher) this is strict card
+-- ownership: an ability source resolves to the underlying card's controller/owner, so a
+-- location/encounter ability matches nobody.
+--
+-- When @creditUser@ is 'True' (the @SourceUsedBy@ matcher) the investigator who *used* the
+-- ability is additionally credited, so effects performed via a location/encounter ability
+-- count for "you deal/heal/defeat" cards. See issue #4902.
+checkSourceOwner
+  :: (HasCallStack, HasGame m, Tracing m)
+  => Bool -> Matcher.InvestigatorMatcher -> Source -> m Bool
+checkSourceOwner creditUser whoMatcher = go
+ where
+  go = \case
+    AbilitySource source' n
+      | creditUser -> do
+          iid' <- getActiveInvestigatorId
+          go (UseAbilitySource iid' source' n)
+      | otherwise -> go source'
+    UseAbilitySource iid' source' _
+      | creditUser -> orM [elem iid' <$> select whoMatcher, go source']
+      | otherwise -> go source'
+    AssetSource aid ->
+      selectAssetController aid >>= \case
+        Just iid' -> elem iid' <$> select whoMatcher
+        _ -> pure False
+    EventSource eid -> do
+      selectEventController eid >>= \case
+        Just controllerId -> elem controllerId <$> select whoMatcher
+        Nothing -> do
+          -- event may have been discarded already
+          mOwner <- (toCardOwner =<<) <$> fieldMay EventCard eid
+          case mOwner of
+            Just owner -> elem owner <$> select whoMatcher
+            Nothing -> pure False
+    SkillSource sid -> do
+      selectSkillController sid >>= \case
+        Just controllerId -> elem controllerId <$> select whoMatcher
+        Nothing -> pure False
+    InvestigatorSource iid -> elem iid <$> select whoMatcher
+    ElderSignEffectSource iid -> elem iid <$> select whoMatcher
+    CardIdSource cid -> do
+      c <- getCard cid
+      case toCardOwner c of
+        Nothing -> pure False
+        Just iid -> elem iid <$> select whoMatcher
+    CardCostSource cid -> do
+      c <- getCard cid
+      case toCardOwner c of
+        Nothing -> pure False
+        Just iid -> elem iid <$> select whoMatcher
+    PaymentSource s' -> go s'
+    _ -> pure False
+
 sourceMatches :: (HasCallStack, HasGame m, Tracing m) => Source -> Matcher.SourceMatcher -> m Bool
 sourceMatches s = \case
   Matcher.SourceIsCancelable sm -> case s of
@@ -145,46 +200,12 @@ sourceMatches s = \case
       isEventSource s
   Matcher.AnySource -> pure True
   Matcher.SourceMatches ms -> allM (sourceMatches s) ms
-  Matcher.SourceOwnedBy whoMatcher ->
-    let
-      checkSource = \case
-        AbilitySource source' n -> do
-          iid' <- getActiveInvestigatorId
-          checkSource (UseAbilitySource iid' source' n)
-        UseAbilitySource iid' source' _ -> orM [elem iid' <$> select whoMatcher, checkSource source']
-        AssetSource aid ->
-          selectAssetController aid >>= \case
-            Just iid' -> elem iid' <$> select whoMatcher
-            _ -> pure False
-        EventSource eid -> do
-          selectEventController eid >>= \case
-            Just controllerId -> elem controllerId <$> select whoMatcher
-            Nothing -> do
-              -- event may have been discarded already
-              mOwner <- (toCardOwner =<<) <$> fieldMay EventCard eid
-              case mOwner of
-                Just owner -> elem owner <$> select whoMatcher
-                Nothing -> pure False
-        SkillSource sid -> do
-          selectSkillController sid >>= \case
-            Just controllerId -> elem controllerId <$> select whoMatcher
-            Nothing -> pure False
-        InvestigatorSource iid -> elem iid <$> select whoMatcher
-        ElderSignEffectSource iid -> elem iid <$> select whoMatcher
-        CardIdSource cid -> do
-          c <- getCard cid
-          case toCardOwner c of
-            Nothing -> pure False
-            Just iid -> elem iid <$> select whoMatcher
-        CardCostSource cid -> do
-          c <- getCard cid
-          case toCardOwner c of
-            Nothing -> pure False
-            Just iid -> elem iid <$> select whoMatcher
-        PaymentSource s' -> checkSource s'
-        _ -> pure False
-     in
-      checkSource s
+  -- SourceOwnedBy is strict card ownership: an ability source resolves to the underlying
+  -- card's controller/owner. SourceUsedBy additionally credits the investigator who used the
+  -- ability (the performer), so effects dealt/healed via a location/encounter ability count
+  -- for "you deal/heal/defeat" cards. See issue #4902.
+  Matcher.SourceOwnedBy whoMatcher -> checkSourceOwner False whoMatcher s
+  Matcher.SourceUsedBy whoMatcher -> checkSourceOwner True whoMatcher s
   Matcher.SourceIsCardEffect -> do
     let
       go = \case

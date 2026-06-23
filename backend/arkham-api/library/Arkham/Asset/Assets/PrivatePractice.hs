@@ -15,7 +15,7 @@ privatePractice = asset PrivatePractice Cards.privatePractice
 instance HasAbilities PrivatePractice where
   getAbilities (PrivatePractice a) =
     [ controlled_ a 1
-        $ triggered (InvestigatorHealed #after #horror Anyone (SourceOwnedBy You)) (exhaust a)
+        $ triggered (InvestigatorHealed #after #horror Anyone (SourceUsedBy You)) (exhaust a)
     ]
 
 instance RunMessage PrivatePractice where

@@ -21,7 +21,7 @@ instance HasAbilities ScreechingBanshee where
       $ restricted a 1 (thisExists a (EnemyAt HauntedLocation))
       $ forced
       $ EnemyDealtDamage #when AnyDamageEffect (be a)
-      $ SourceOwnedBy You
+      $ SourceUsedBy You
       <> NotSource (mapOneOf SourceWithTrait [Spell, Relic])
 
 instance RunMessage ScreechingBanshee where

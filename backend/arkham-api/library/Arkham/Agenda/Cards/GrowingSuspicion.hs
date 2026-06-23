@@ -16,7 +16,7 @@ growingSuspicion = agenda (2, A) GrowingSuspicion Cards.growingSuspicion (Static
 
 instance HasAbilities GrowingSuspicion where
   getAbilities (GrowingSuspicion a) =
-    [forcedAbility a 1 $ EnemyDefeated #when You (BySource $ SourceOwnedBy You) notKidnapper]
+    [forcedAbility a 1 $ EnemyDefeated #when You (BySource $ SourceUsedBy You) notKidnapper]
 
 instance RunMessage GrowingSuspicion where
   runMessage msg a@(GrowingSuspicion attrs) = runQueueT $ case msg of

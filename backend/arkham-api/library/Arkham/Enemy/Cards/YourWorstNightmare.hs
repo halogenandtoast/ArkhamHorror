@@ -19,8 +19,8 @@ instance HasModifiersFor YourWorstNightmare where
       modified_ a iid [CannotPerformAction $ EnemyAction #fight $ EnemyWithId a.id]
       modifySelf
         a
-        [ CannotBeDamagedByPlayerSources (SourceOwnedBy $ InvestigatorWithId iid)
-        , CanOnlyBeDefeatedBy (NotSource $ SourceOwnedBy $ InvestigatorWithId iid)
+        [ CannotBeDamagedByPlayerSources (SourceUsedBy $ InvestigatorWithId iid)
+        , CanOnlyBeDefeatedBy (NotSource $ SourceUsedBy $ InvestigatorWithId iid)
         ]
 
 instance RunMessage YourWorstNightmare where

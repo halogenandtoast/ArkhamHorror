@@ -18,7 +18,7 @@ instance HasAbilities FortunesShieldA where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ EnemyTakeDamage #when AnyDamageEffect (be a) AnyValue (SourceOwnedBy You)
+      $ EnemyTakeDamage #when AnyDamageEffect (be a) AnyValue (SourceUsedBy You)
 
 instance RunMessage FortunesShieldA where
   runMessage msg e@(FortunesShieldA attrs) = runQueueT $ case msg of

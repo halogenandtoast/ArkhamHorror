@@ -20,7 +20,7 @@ instance HasModifiersFor WordsOfPower where
       modifySelect
         a
         (EnemyAt (locationWithInvestigator iid) <> EnemyWithAnyDoom)
-        [CannotBeDamagedByPlayerSources (SourceOwnedBy $ InvestigatorWithId iid)]
+        [CannotBeDamagedByPlayerSources (SourceUsedBy $ InvestigatorWithId iid)]
       hasEnemiesWithDoom <- selectAny $ enemyAtLocationWith iid <> EnemyWithAnyDoom
       modifiedWhen_ a hasEnemiesWithDoom iid [CannotDiscoverCluesAt (locationWithInvestigator iid)]
     _ -> pure mempty

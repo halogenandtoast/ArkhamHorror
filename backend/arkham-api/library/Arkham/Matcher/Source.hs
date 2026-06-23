@@ -28,6 +28,7 @@ data SourceMatcher
   | EncounterCardSource
   | SourceMatchesAny [SourceMatcher]
   | SourceOwnedBy InvestigatorMatcher
+  | SourceUsedBy InvestigatorMatcher
   | SourceIsType CardType
   | SourceIsAbility AbilityMatcher
   | SourceIsPlayerCard

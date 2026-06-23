@@ -295,6 +295,16 @@ scenarioSpecific key value = push $ ScenarioSpecific key (toJSON value)
 scenarioSpecific_ :: ReverseQueue m => Text -> m ()
 scenarioSpecific_ key = push $ ScenarioSpecific key Null
 
+-- | Ask the given investigator's player a scenario-specific question. The
+-- frontend renders the @key@ and @value@ payload; the client answers with a
+-- @ScenarioSpecificAnswer key value@ which resolves to a @ScenarioSpecific key
+-- value@ message (mirrors how 'PickCampaignSpecific' is asked).
+pickScenarioSpecific
+  :: (ToJSON a, ReverseQueue m) => InvestigatorId -> Text -> a -> m ()
+pickScenarioSpecific iid key value = do
+  pid <- getPlayer iid
+  push $ Ask pid $ PickScenarioSpecific key (toJSON value)
+
 removeCampaignCardFromDeck
   :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator

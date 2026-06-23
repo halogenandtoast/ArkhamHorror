@@ -15,6 +15,7 @@ import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import WorldMap, { type MapData } from '@/arkham/components/TheScarletKeys/WorldMap.vue';
+import BuildSpiritDeck from '@/arkham/components/BuildSpiritDeck.vue';
 
 export interface Props {
   game: Game
@@ -146,6 +147,11 @@ const isEmbarkQuestion = (q: Question): q is Question & { tag: QuestionType.PICK
   q.tag === QuestionType.PICK_CAMPAIGN_SPECIFIC &&
   Array.isArray(q.contents) &&
   q.contents[0] === 'embark'
+
+const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: QuestionType.PICK_SCENARIO_SPECIFIC } =>
+  q.tag === QuestionType.PICK_SCENARIO_SPECIFIC &&
+  Array.isArray(q.contents) &&
+  q.contents[0] === 'laidToRest.buildSpiritDeck'
 </script>
 
 <template>
@@ -225,6 +231,10 @@ const isEmbarkQuestion = (q: Question): q is Question & { tag: QuestionType.PICK
 
     <div class="question-label" v-else-if="question && isEmbarkQuestion(question)">
       <WorldMap :game="game" :playerId="effectivePlayerId" :mapData="question.contents[1]" @choose="choose" :embark="true" />
+    </div>
+
+    <div class="question-label spirit-deck-question" v-else-if="question && isBuildSpiritDeckQuestion(question)">
+      <BuildSpiritDeck :game="game" :playerId="effectivePlayerId" :question="question" />
     </div>
 
     <div class="question-label" v-else-if="question && question.tag === QuestionType.PICK_SUPPLIES">
@@ -337,6 +347,12 @@ const isEmbarkQuestion = (q: Question): q is Question & { tag: QuestionType.PICK
   align-items: center;
   height: 100vh;
   background: #26283B;
+}
+
+.question-label.spirit-deck-question.spirit-deck-question {
+  height: 100vh;
+  justify-content: flex-start;
+  overflow-y: auto;
 }
 
 p {

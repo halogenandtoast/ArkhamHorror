@@ -6,6 +6,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Cost (Payment (NoPayment))
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
@@ -14,19 +15,25 @@ import Arkham.Helpers.Card (ConvertToCard (..), getVictoryPoints)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers hiding (roundModifiers)
+import Arkham.Investigator.Types (Field (InvestigatorTaboo))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Name (toTitle)
+import Arkham.PlayerCard (allPlayerCards)
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.LaidToRest.Helpers
 import Arkham.Tracing
-import Arkham.Trait (Trait (Geist, Spectral))
+import Arkham.Trait (Trait (Ally, Geist, Spectral))
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window (defaultWindows)
 import Arkham.Xp
+import Data.Aeson.Types (parseMaybe)
+import Data.List.Extra (nubOrdOn)
 
 newtype LaidToRest = LaidToRest ScenarioAttrs
   deriving anyclass IsScenario
@@ -134,6 +141,45 @@ gainLaidToRestXp attrs = do
     mvp <- getVictoryPoints c
     pure $ fmap (\n -> (toTitle card, n)) mvp
 
+-- | The deck-buildable candidate pool for Jim's spirit deck: every distinct
+-- (by name) Ally asset, any class, level 0-2, that a player could legally
+-- include in a deck (excludes weaknesses, signatures, and The Beyond itself).
+-- Sourced from the full player-card database ('allPlayerCards') rather than the
+-- in-game card pool, because with a non-parallel Jim almost no allies are
+-- registered in the game yet.
+spiritDeckCandidates :: [CardDef]
+spiritDeckCandidates =
+  nubOrdOn cdName
+    $ sortOn (\def -> (toList (cdClassSymbols def), cdName def))
+    $ filter isCandidate
+    $ toList allPlayerCards
+ where
+  isCandidate def =
+    cdCardType def == AssetType
+      && Ally `member` cdCardTraits def
+      && maybe True (<= 2) (cdLevel def)
+      && isNothing (cdCardSubType def)
+      && isNothing (cdEncounterSet def)
+      && not (isSignature def)
+      && cdCardCode def /= cdCardCode Assets.theBeyondBleakNetherworld
+
+-- | If The Beyond is not already available to Jim (already in play, or in his
+-- deck/story cards), prompt the Jim player to build a spirit deck. The answer
+-- is handled by the @ScenarioSpecific "laidToRest.buildSpiritDeck"@ case below.
+buildSpiritDeckIfNeeded :: ReverseQueue m => m ()
+buildSpiritDeckIfNeeded = do
+  selectOne jimCulver >>= traverse_ \jim -> do
+    inPlay <- selectAny theBeyond
+    inDeck <- matchingCardsAlreadyInDeck (cardIs Assets.theBeyondBleakNetherworld)
+    let hasBeyondInDeck = maybe False notNull (lookup jim inDeck)
+    unless (inPlay || hasBeyondInDeck) do
+      pickScenarioSpecific jim "laidToRest.buildSpiritDeck"
+        $ object
+          [ "cardCodes" .= map cdCardCode spiritDeckCandidates
+          , "count" .= (9 :: Int)
+          , "fixed" .= [cdCardCode (toCardDef Enemies.vengefulShade)]
+          ]
+
 instance RunMessage LaidToRest where
   runMessage msg s@(LaidToRest attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
@@ -215,6 +261,30 @@ instance RunMessage LaidToRest where
 
       setExtraEncounterDeck SpectralEncounterDeck
         =<< amongGathered (SingleSidedCard <> CardWithTrait Spectral <> not_ #location)
+    -- Regardless of which version of Jim Culver is played, a spirit deck and The
+    -- Beyond must be in play. Building it is part of Jim's investigator setup: if
+    -- he brought The Beyond himself (parallel Jim, signature permanent in play,
+    -- or a deck listing it) the normal flow already built the spirit deck;
+    -- otherwise we prompt the player to construct one (9 different Ally assets,
+    -- any class, level 0-2) per the deckbuilding requirements on parallel Jim.
+    SetupInvestigator iid -> do
+      isJim <- selectAny $ InvestigatorWithId iid <> jimCulver
+      when isJim buildSpiritDeckIfNeeded
+      LaidToRest <$> liftRunMessage msg attrs
+    ScenarioSpecific "laidToRest.buildSpiritDeck" v -> do
+      let codes = fromMaybe [] $ parseMaybe (withObject "buildSpiritDeck" (.: "cardCodes")) v :: [CardCode]
+      selectOne jimCulver >>= traverse_ \jim -> do
+        taboo <- field InvestigatorTaboo jim
+        let genFor def = Arkham.Card.setTaboo taboo =<< setOwner jim =<< genCard def
+        -- Vengeful Shade is always part of the spirit deck (per parallel Jim's
+        -- deckbuilding requirements), in addition to the 9 chosen allies.
+        sideDeck <-
+          onlyPlayerCards
+            <$> traverse genFor (mapMaybe lookupCardDef codes <> [toCardDef Enemies.vengefulShade])
+        push $ LoadSideDeck jim sideDeck
+        beyond <- genFor Assets.theBeyondBleakNetherworld
+        push $ PutCardIntoPlay jim beyond Nothing NoPayment (defaultWindows jim)
+      pure s
     ResolveChaosToken _ ElderThing iid -> do
       when (isEasyStandard attrs) do
         geist <- selectAny $ EnemyWithTrait Geist <> enemyAtLocationWith iid

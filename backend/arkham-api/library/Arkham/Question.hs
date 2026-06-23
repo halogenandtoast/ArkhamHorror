@@ -216,6 +216,7 @@ data Question msg
   | PickScenarioSettings
   | PickCampaignSettings
   | PickCampaignSpecific Text Value
+  | PickScenarioSpecific Text Value
   | ChooseExchangeAmounts
       { source :: Source
       , investigator1Id :: InvestigatorId

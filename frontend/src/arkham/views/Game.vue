@@ -1171,6 +1171,15 @@ async function choosePaymentAmounts(amounts: Record<string, number>): Promise<vo
   }
 }
 
+async function scenarioSpecificAnswer(key: string, value: unknown): Promise<void> {
+  if (game.value && !props.spectate) {
+    oldQuestion.value = game.value.question
+    setGameQuestion({})
+    processing.value = true
+    send(JSON.stringify({ tag: 'ScenarioSpecificAnswer', contents: [key, value] }))
+  }
+}
+
 async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
@@ -1235,6 +1244,7 @@ provide('chooseDeckList', chooseDeckList)
 provide('send', send)
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
+provide('scenarioSpecificAnswer', scenarioSpecificAnswer)
 provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
 provide('skipAllTriggers', skipAllTriggers)

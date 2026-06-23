@@ -45,6 +45,7 @@ data Answer
   | DeckListAnswer {deckList :: ArkhamDBDecklist, playerId :: PlayerId}
   | PickDestinyAnswer [DestinyDrawing]
   | CampaignSpecificAnswer Text Value
+  | ScenarioSpecificAnswer Text Value
   | ExchangeAmountsAnswer
       { source :: Source
       , fromInvestigator :: InvestigatorId
@@ -294,6 +295,7 @@ answerPlayer = \case
   StandaloneSettingsAnswer _ -> Nothing
   CampaignSettingsAnswer _ -> Nothing
   CampaignSpecificAnswer {} -> Nothing
+  ScenarioSpecificAnswer {} -> Nothing
   DeckAnswer _ pid -> Just pid
   DeckListAnswer _ pid -> Just pid
   PickDestinyAnswer _ -> Nothing
@@ -355,6 +357,20 @@ handleAnswerPure Game {..} playerId = \case
         let question' = Map.delete playerId gameQuestion
         handled
           $ CampaignSpecific k v
+          : [AskMap question' | not (Map.null question')]
+      _ -> unhandled "Wrong question type"
+  ScenarioSpecificAnswer k v -> do
+    let
+      unwrap = \case
+        QuestionLabel _ _ q' -> unwrap q'
+        PayCostQuestion _ q' -> unwrap q'
+        QuestionWithSource _ _ q' -> unwrap q'
+        q' -> q'
+    case unwrap <$> Map.lookup playerId gameQuestion of
+      Just (PickScenarioSpecific {}) -> do
+        let question' = Map.delete playerId gameQuestion
+        handled
+          $ ScenarioSpecific k v
           : [AskMap question' | not (Map.null question')]
       _ -> unhandled "Wrong question type"
   CampaignStepAnswer k -> do

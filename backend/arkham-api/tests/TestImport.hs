@@ -848,8 +848,13 @@ mkTestTracer = do
   pure $ makeTracer tp instrLib tracerOptions
 
 scenarioTest :: ScenarioId -> (Investigator -> TestAppT ()) -> IO ()
-scenarioTest scenarioId body = do
-  investigator <- testInvestigator Investigators.jennyBarnes
+scenarioTest = scenarioTestWith Investigators.jennyBarnes
+
+-- | Like 'scenarioTest' but lets the caller choose which investigator the game
+-- is seeded with (rather than the default Jenny Barnes).
+scenarioTestWith :: CardDef -> ScenarioId -> (Investigator -> TestAppT ()) -> IO ()
+scenarioTestWith investigatorDef scenarioId body = do
+  investigator <- testInvestigator investigatorDef
   let scenario' = lookupScenario scenarioId Easy
   g <- newGame scenario' investigator
   gameRef <- newIORef g

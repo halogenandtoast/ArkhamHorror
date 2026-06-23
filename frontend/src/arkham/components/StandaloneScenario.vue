@@ -72,6 +72,13 @@ const continueCampaign = computed(() => {
 const inStep = computed(() => {
   return !!props.game.scenario?.campaignStep
 })
+
+// A PickScenarioSpecific question (e.g. Laid to Rest's spirit-deck builder) is a
+// story-style question handled by StoryQuestion. It can be asked mid-Setup while
+// the scenario is otherwise "active", so it must take priority over the board.
+const storyQuestionOverride = computed(() =>
+  Object.values(props.game.question).some((q) => q?.tag === 'PickScenarioSpecific')
+)
 </script>
 
 <template>
@@ -88,6 +95,13 @@ const inStep = computed(() => {
       :step="continueCampaign.nextStep"
       :chooseSideStory="continueCampaign.chooseSideStory"
       :canChooseSideStory="continueCampaign.canChooseSideStory"
+    />
+    <StoryQuestion
+      v-else-if="storyQuestionOverride"
+      :game="game"
+      :key="questionHash ?? 'no-question'"
+      :playerId="playerId"
+      @choose="choose"
     />
     <Scenario
       v-else-if="game.scenario && game.phase !== 'CampaignPhase' && !inStep"

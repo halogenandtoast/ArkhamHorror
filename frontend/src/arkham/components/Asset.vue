@@ -69,6 +69,18 @@ const investigators = computed(() => Object.values(props.game.investigators).fil
 const marketPopoverShown = ref(false)
 const knownMarketDeck = computed(() => props.asset.knownMarketDeck ?? [])
 const marketDeckCardImage = (card: ArkhamCard) => imgsrc(cardToImage(card))
+
+// Heretics are shuffled into the spirit deck enemy-side faceup, so their identity
+// is public. They arrive as EncounterCards (the allies / Vengeful Shade are
+// PlayerCards), so when a Heretic is on top we show it (dimmed, since it hasn't
+// been drawn yet) instead of the facedown player back.
+const spiritDeckTop = computed<ArkhamCard | null>(() => props.asset.spiritDeck?.[0] ?? null)
+const spiritDeckTopRevealed = computed(() => spiritDeckTop.value?.tag === 'EncounterCard')
+const spiritDeckTopImage = computed(() =>
+  spiritDeckTopRevealed.value && spiritDeckTop.value
+    ? imgsrc(cardToImage(spiritDeckTop.value))
+    : imgsrc('player_back.jpg'),
+)
 const marketDeckCardCode = (card: ArkhamCard) => asCardCode(card).replace(/^c/, '')
 const marketDeckCardImageId = (card: ArkhamCard) => toCardContents(card).art ?? marketDeckCardCode(card)
 const marketDeckCardName = (card: ArkhamCard) => {
@@ -339,7 +351,8 @@ function startDrag(event: DragEvent) {
         <div v-if="asset.spiritDeck" class="spirit-deck">
           <img
             class="deck card"
-            :src="imgsrc('player_back.jpg')"
+            :class="{ 'spirit-deck--revealed': spiritDeckTopRevealed }"
+            :src="spiritDeckTopImage"
             width="150px"
           />
           <span class="deck-size">{{asset.spiritDeck.length}}</span>
@@ -677,6 +690,12 @@ img.card.ability-target {
 .spirit-deck {
   position: relative;
   margin-right: 5px;
+}
+
+/* A Heretic faceup on top of the spirit deck: shown, but dimmed since it has
+   not been drawn yet. */
+.spirit-deck--revealed {
+  filter: brightness(0.7);
 }
 
 .spirit-manifest-row {

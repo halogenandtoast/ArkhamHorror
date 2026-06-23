@@ -34,8 +34,9 @@ export type Question = QuestionCommon & (
   | PickScenarioSettings 
   | PickCampaignSettings 
   | ChooseOneFromEach 
-  | PickDestiny 
+  | PickDestiny
   | PickCampaignSpecific
+  | PickScenarioSpecific
   | ChooseExchangeAmounts
   | ContinueCampaign
 )
@@ -64,6 +65,7 @@ export enum QuestionType {
   PICK_SCENARIO_SETTINGS = 'PickScenarioSettings',
   PICK_CAMPAIGN_SETTINGS = 'PickCampaignSettings',
   PICK_CAMPAIGN_SPECIFIC = 'PickCampaignSpecific',
+  PICK_SCENARIO_SPECIFIC = 'PickScenarioSpecific',
   CHOOSE_EXCHANGE_AMOUNTS = 'ChooseExchangeAmounts',
   CONTINUE_CAMPAIGN = 'ContinueCampaign'
 }
@@ -189,6 +191,11 @@ export type PickDestiny = {
 
 export type PickCampaignSpecific = {
   tag: QuestionType.PICK_CAMPAIGN_SPECIFIC
+  contents: unknown
+}
+
+export type PickScenarioSpecific = {
+  tag: QuestionType.PICK_SCENARIO_SPECIFIC
   contents: unknown
 }
 
@@ -467,6 +474,14 @@ export const pickCampaignSpecificDecoder = JsonDecoder.object<PickCampaignSpecif
   'PickCampaignSpecific',
 );
 
+export const pickScenarioSpecificDecoder = JsonDecoder.object<PickScenarioSpecific>(
+  {
+    tag: JsonDecoder.literal(QuestionType.PICK_SCENARIO_SPECIFIC),
+    contents: JsonDecoder.succeed()
+  },
+  'PickScenarioSpecific',
+);
+
 export const dropDownDecoder = JsonDecoder.object<DropDown>(
   {
     tag: JsonDecoder.literal(QuestionType.DROP_DOWN),
@@ -578,6 +593,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     pickSuppliesDecoder,
     pickDestinyDecoder,
     pickCampaignSpecificDecoder,
+    pickScenarioSpecificDecoder,
     dropDownDecoder,
     pickScenarioSettingsDecoder,
     pickCampaignSettingsDecoder,

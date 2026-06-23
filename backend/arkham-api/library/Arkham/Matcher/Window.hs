@@ -237,6 +237,12 @@ data WindowMatcher
   | RoundBegins Timing
   | RoundEnds Timing
   | DuringTurn Who
+  | -- | "You have an action to take." Matches the @NonFast@ action-taking window
+    -- (present on your real turn AND during a granted "as if it were your turn"
+    -- action), unlike @DuringTurn@ which means it is genuinely your turn. Action
+    -- abilities default to this so they remain usable with a granted action,
+    -- while "during your turn" Fast cards stay on @DuringTurn@. See #4894.
+    DuringYourAction Who
   | Enters Timing Who Where
   | -- | Matches the @EnteringLocationWithEnemy@ window: the investigator entered
     -- a location that had 1+ enemies at the moment of entry, evaluated then (not

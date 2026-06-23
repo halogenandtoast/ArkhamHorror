@@ -36,7 +36,7 @@ instance RunMessage OneTwoPunch5 where
       chooseFightEnemy sid iid attrs
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) | isFirst metadata -> do
-      fightable <- hasFightActions iid attrs (Arkham.Matcher.DuringTurn You) (Window.defaultWindows iid)
+      fightable <- hasFightActions iid attrs (Arkham.Matcher.DuringYourAction You) (Window.defaultWindows iid)
       when fightable do
         sid <- getRandom
         chooseOneM iid do

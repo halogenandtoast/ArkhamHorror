@@ -29,7 +29,7 @@ instance RunMessage LeadingLadyHeroine where
         when (Guardian `elem` card.classes) $ do_ msg
       pure e
     Do (PlayThisEvent iid (is attrs -> True)) -> do
-      canFight <- hasFightActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
+      canFight <- hasFightActions iid (attrs.ability 1) (DuringYourAction You) (defaultWindows iid)
       chooseOneM iid do
         withI18n $ countVar 1 $ labeledI "drawCards" $ drawCards iid attrs 1
         when canFight $ labeledI "takeFightAction" $ performActionAction iid attrs #fight

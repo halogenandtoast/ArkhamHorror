@@ -41,7 +41,7 @@ instance RunMessage ButterflySwords5 where
       iid <- fromJustNote "no investigator" <$> getSkillTestInvestigator
       oncePerAbility attrs 1 do
         sid <- getRandom
-        canFight <- hasFightActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
+        canFight <- hasFightActions iid (attrs.ability 1) (DuringYourAction You) (defaultWindows iid)
         fight <- capture do
           skillTestModifier sid attrs iid $ AddSkillValue #agility
           chooseFightEnemy sid iid (attrs.ability 1)

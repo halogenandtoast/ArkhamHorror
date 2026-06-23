@@ -368,7 +368,11 @@ getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availabl
         _ -> False
       noAction = isNothing (cdFastWindow pcDef) && goNoAction costStatus
       duringTurnWindow' = mkWhen (DuringTurn iid)
-      notFastWindow = duringTurnWindow' `elem` windows'
+      -- A non-fast card may be played in an action-taking context: a genuine
+      -- DuringTurn window OR the NonFast window (the latter is present during a
+      -- granted "as if it were your turn" action, which has no DuringTurn window).
+      -- See #4894.
+      notFastWindow = duringTurnWindow' `elem` windows' || mkWhen NonFast `elem` windows'
       canBecomeFast =
         CannotPlay FastCard
           `notElem` modifiers
@@ -469,19 +473,22 @@ getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availabl
     attrs <- getAttrs @Investigator iid
     ac <- getActionCost attrs (pcDef.actions <> [#play | costStatus == UnpaidCost NeedsAction])
     let
-      isDuringTurnWindow = \case
+      -- An action-taking context for iid: a genuine DuringTurn window for iid, or
+      -- the NonFast window (present during a granted action). See #4894.
+      isActionWindow = \case
         (windowType -> DuringTurn iid') -> iid == iid'
+        (windowType -> NonFast) -> True
         _ -> False
-      doAsIfTurn = any isDuringTurnWindow windows'
+      doAsIfTurn = any isActionWindow windows'
     evadeOk <-
       if hasEvade && not cheapFail
         then withGrantedActions iid GameSource ac do
           if inFastWindow || doAsIfTurn
             then
               asIfTurn iid
-                $ hasEvadeActions iid (CardIdSource c.id) (Window.DuringTurn You) (defaultWindows iid <> windows')
+                $ hasEvadeActions iid (CardIdSource c.id) (Window.DuringYourAction You) (defaultWindows iid <> windows')
             else
-              hasEvadeActions iid (CardIdSource c.id) (Window.DuringTurn You) (defaultWindows iid <> windows')
+              hasEvadeActions iid (CardIdSource c.id) (Window.DuringYourAction You) (defaultWindows iid <> windows')
         else pure True
     let evadeDetail = if evadeOk then Nothing else Just "No enemy at your location that can be evaded"
 
@@ -496,9 +503,9 @@ getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availabl
           if inFastWindow || doAsIfTurn
             then
               asIfTurn iid
-                $ hasFightActions iid (CardIdSource c.id) (Window.DuringTurn You) (defaultWindows iid <> windows')
+                $ hasFightActions iid (CardIdSource c.id) (Window.DuringYourAction You) (defaultWindows iid <> windows')
             else
-              hasFightActions iid (CardIdSource c.id) (Window.DuringTurn You) (defaultWindows iid <> windows')
+              hasFightActions iid (CardIdSource c.id) (Window.DuringYourAction You) (defaultWindows iid <> windows')
         else pure True
     let fightDetail = if fightOk then Nothing else Just "No enemy at your location that can be fought"
 

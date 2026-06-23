@@ -29,7 +29,7 @@ instance RunMessage LeadingLadyMentor where
         when (Seeker `elem` card.classes) $ do_ msg
       pure e
     Do (PlayThisEvent iid (is attrs -> True)) -> do
-      canInvestigate <- hasInvestigateActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
+      canInvestigate <- hasInvestigateActions iid (attrs.ability 1) (DuringYourAction You) (defaultWindows iid)
       chooseOneM iid do
         withI18n $ countVar 1 $ labeledI "drawCards" $ drawCards iid attrs 1
         when canInvestigate $ labeledI "takeInvestigateAction" $ performActionAction iid attrs #investigate

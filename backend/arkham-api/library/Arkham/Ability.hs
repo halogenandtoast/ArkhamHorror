@@ -473,7 +473,7 @@ applyCostModifier cost _ = cost
 defaultAbilityWindow :: AbilityType -> WindowMatcher
 defaultAbilityWindow = \case
   FastAbility' {} -> FastPlayerWindow
-  ActionAbility {} -> Matcher.DuringTurn You
+  ActionAbility {} -> Matcher.DuringYourAction You
   ForcedAbility window -> window
   SilentForcedAbility window -> window
   ForcedAbilityWithCost window _ -> window
@@ -482,7 +482,7 @@ defaultAbilityWindow = \case
   ConstantReaction _ window _ -> window
   AbilityEffect {} -> AnyWindow
   Haunted -> AnyWindow
-  ServitorAbility _ -> Matcher.DuringTurn You
+  ServitorAbility _ -> Matcher.DuringYourAction You
   Cosmos -> AnyWindow
   Objective aType -> defaultAbilityWindow aType
   DelayedAbility aType -> defaultAbilityWindow aType

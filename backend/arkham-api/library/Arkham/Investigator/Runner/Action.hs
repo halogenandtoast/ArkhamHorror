@@ -413,17 +413,18 @@ handlePerformedActions a@InvestigatorAttrs{..} iid actions = do
 handlePlayerWindow a@InvestigatorAttrs{..} iid additionalActions isAdditional immediate = do
   modifiers <- lift $ withSpan_ "getModifiers" $ getModifiers iid
   mTurnInvestigator <-
-    if AsIfTurn iid `elem` modifiers
-      then pure [iid]
+    if immediate
+      then pure []
       else maybeToList <$> selectOne TurnInvestigator
   let
     windows =
+      -- An "immediate" window is a granted/extra action (Carson Sinclair, Quick
+      -- Thinking, Swift Reflexes, "as if it were your turn" effects). It is NOT
+      -- actually your turn, so it presents only the NonFast action-taking window
+      -- (no DuringTurn, no FastPlayerWindow): basic actions and non-fast action
+      -- cards remain available, but "during your turn" Fast cards and fast/[free]
+      -- abilities -- including taking control of a key -- are not. See #4894.
       map (mkWhen . Window.DuringTurn) mTurnInvestigator
-        -- An "immediate" window is a granted/extra action (e.g. Quick Thinking,
-        -- Swift Reflexes, "as if it were your turn" effects). These do not open a
-        -- fast player window, so fast/[free] abilities -- including taking
-        -- control of a key -- cannot be used during the granted action itself;
-        -- they remain available in the normal player window.
         <> [mkWhen Window.FastPlayerWindow | not immediate]
         <> [mkWhen Window.NonFast]
 

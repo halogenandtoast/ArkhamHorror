@@ -29,7 +29,7 @@ instance RunMessage LeadingLadyFemmeFatale where
         when (Rogue `elem` card.classes) $ do_ msg
       pure e
     Do (PlayThisEvent iid (is attrs -> True)) -> do
-      canEvade <- hasEvadeActions iid attrs (DuringTurn You) (defaultWindows iid)
+      canEvade <- hasEvadeActions iid attrs (DuringYourAction You) (defaultWindows iid)
       chooseOneM iid do
         withI18n $ countVar 1 $ labeledI "drawCards" $ drawCards iid attrs 1
         when canEvade $ labeledI "takeEvadeAction" $ performActionAction iid attrs #evade

@@ -285,6 +285,11 @@ const onDragEnd = () => {
   clearOverlay()
 }
 
+const onOverlayContextMenu = (e: MouseEvent) => {
+  const t = e.target as HTMLElement
+  if (t?.tagName.toLowerCase() !== 'input') e.preventDefault()
+}
+
 onMounted(() => {
   document.addEventListener('pointerdown', onPointerDown, { passive: true })
   document.addEventListener('pointermove', onPointerMove, { passive: true })
@@ -296,10 +301,7 @@ onMounted(() => {
   document.addEventListener('drop', onDragEnd)
   document.addEventListener('arkham:clear-card-overlay', clearOverlay)
   // only block context menu inside the overlay, not globally
-  cardOverlay.value?.addEventListener('contextmenu', (e) => {
-    const t = e.target as HTMLElement
-    if (t?.tagName.toLowerCase() !== 'input') e.preventDefault()
-  })
+  cardOverlay.value?.addEventListener('contextmenu', onOverlayContextMenu)
 })
 onUnmounted(() => {
   document.removeEventListener('pointerdown', onPointerDown)
@@ -311,6 +313,7 @@ onUnmounted(() => {
   document.removeEventListener('dragend', onDragEnd)
   document.removeEventListener('drop', onDragEnd)
   document.removeEventListener('arkham:clear-card-overlay', clearOverlay)
+  cardOverlay.value?.removeEventListener('contextmenu', onOverlayContextMenu)
   clearOverlay()
 })
 

@@ -21,7 +21,7 @@ instance HasAbilities Akwan where
     extendRevealed
       a
       [ scenarioI18n $ withI18nTooltip "akwan.resign" $ locationResignAction a
-      , restricted a 2 (ScenarioDeckWithCard CavernsDeck <> oneOf [IsDay1, IsDay2]) parleyAction_
+      , restricted a 2 (Here <> ScenarioDeckWithCard CavernsDeck <> oneOf [IsDay1, IsDay2]) parleyAction_
       ]
 
 instance RunMessage Akwan where

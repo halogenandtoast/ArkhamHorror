@@ -19,6 +19,8 @@ const deckKey = computed(() => {
   return "RegularEncounterDeck"
 })
 
+const deckSignifier = computed(() => ({ tag: "EncounterDeckByKey", contents: deckKey.value }))
+
 const props = defineProps<Props>()
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
@@ -88,45 +90,63 @@ function onDrop(event: DragEvent) {
     if (data) {
       const json = JSON.parse(data)
       if (json.tag === "EnemyTarget") {
-        let deck = isSpectral.value ? {tag: "EncounterDeckByKey", contents: "SpectralEncounterDeck"} : { tag: "EncounterDeck" }
-        debug.send(props.game.id, {tag: 'ShuffleIntoDeck', contents: [deck, json]})
+        debug.send(props.game.id, {tag: 'ShuffleIntoDeck', contents: [deckSignifier.value, json]})
       }
     }
   }
 }
 
 const debug = useDebug()
+
+function drawEncounterCard() {
+  debug.send(props.game.id, {tag: 'DrawCards', contents: [investigatorId.value, {cardDrawSource: {tag: 'GameSource'}, cardDrawDeck: deckSignifier.value, cardDrawAmount: 1, cardDrawState: {tag: 'UnresolvedCardDraw'}, cardDrawTarget: null, cardDrawAction: false, cardDrawKind: 'StandardCardDraw', cardDrawRules: [], cardDrawAndThen: null, cardDrawAlreadyDrawn: [], cardDrawDiscard: null}]})
+}
+
+function discardEncounterCards(amount: number) {
+  debug.send(props.game.id, {tag: 'DiscardUntilN', contents: [amount, investigatorId.value, {tag: 'GameSource'}, {tag: 'GameTarget'}, deckSignifier.value, {tag: 'AnyCard', contents: []}]})
+}
+
+function selectAndDrawEncounterCard() {
+  debug.send(props.game.id, {tag: 'FindAndDrawEncounterCardWithDeckKey', contents: [investigatorId.value, {'tag': 'AnyCard', contents: []}, 'ExcludeDiscard', deckKey.value]})
+}
+
+function shuffleEncounterDeck() {
+  debug.send(props.game.id, {tag: 'ShuffleDeck', contents: deckSignifier.value})
+}
+
 </script>
 
 <template>
   <div class="encounter-deck">
-    <div class="top-of-deck">
-      <img
-        class="deck"
-        :src="deckImage"
-        :class="{ 'can-interact': deckAction !== -1, 'revealed': revealTopCard, 'card': revealTopCard }"
-        @click="$emit('choose', deckAction)"
-        @drop="onDrop($event)"
-        @dragover.prevent="dragover($event)"
-        @dragenter.prevent
-      />
-      <span class="deck-size">{{props.spectral === undefined ? game.encounterDeckSize : props.spectral}}</span>
-      <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
-    </div>
-    <img
-      v-if="investigatorPortrait"
-      class="portrait"
-      :src="investigatorPortrait"
-    />
-    <template v-if="debug.active">
-      <button @click="debug.send(game.id, {tag: 'DrawCards', contents: [investigatorId, {cardDrawSource: {tag: 'GameSource'}, cardDrawDeck: {tag: 'EncounterDeck'}, cardDrawAmount: 1, cardDrawState: {tag: 'UnresolvedCardDraw'}, cardDrawTarget: null, cardDrawAction: false, cardDrawKind: 'StandardCardDraw', cardDrawRules: [], cardDrawAndThen: null, cardDrawAlreadyDrawn: [], cardDrawDiscard: null}]})">{{ $t('encounterDeck.draw') }}</button>
+    <div v-if="debug.active" class="debug-buttons">
+      <button @click="drawEncounterCard">{{ $t('encounterDeck.draw') }}</button>
       <button
-        @click.exact="debug.send(game.id, {tag: 'DiscardTopOfEncounterDeck', contents: [investigatorId, 1, {tag: 'GameSource'}, null]})"
-        @click.shift="debug.send(game.id, {tag: 'DiscardTopOfEncounterDeck', contents: [investigatorId, 5, {tag: 'GameSource'}, null]})"
+        @click.exact="discardEncounterCards(1)"
+        @click.shift="discardEncounterCards(5)"
       >{{ $t('treachery.discard') }}</button>
-      <button @click="debug.send(game.id, {tag: 'FindAndDrawEncounterCardWithDeckKey', contents: [investigatorId, {'tag': 'AnyCard', contents: []}, 'ExcludeDiscard', deckKey]})">{{ $t('draw.selectDraw') }}</button>
-      <button @click="debug.send(game.id, {tag: 'ShuffleDeck', contents: {'tag': 'EncounterDeck'}})">{{ $t('draw.shuffle') }}</button>
-    </template>
+      <button @click="selectAndDrawEncounterCard">{{ $t('draw.selectDraw') }}</button>
+      <button @click="shuffleEncounterDeck">{{ $t('draw.shuffle') }}</button>
+    </div>
+    <div class="deck-area">
+      <div class="top-of-deck">
+        <img
+          class="deck"
+          :src="deckImage"
+          :class="{ 'can-interact': deckAction !== -1, 'revealed': revealTopCard, 'card': revealTopCard }"
+          @click="$emit('choose', deckAction)"
+          @drop="onDrop($event)"
+          @dragover.prevent="dragover($event)"
+          @dragenter.prevent
+        />
+        <span class="deck-size">{{props.spectral === undefined ? game.encounterDeckSize : props.spectral}}</span>
+        <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
+      </div>
+      <img
+        v-if="investigatorPortrait"
+        class="portrait"
+        :src="investigatorPortrait"
+      />
+    </div>
   </div>
 </template>
 
@@ -146,7 +166,12 @@ const debug = useDebug()
 
 .encounter-deck {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  position: relative;
+}
+
+.deck-area {
   position: relative;
 }
 
@@ -186,5 +211,19 @@ const debug = useDebug()
   padding: 0 2px;
   transform: translateX(-50%) translateY(50%);
   background: rgba(255,255,255,0.8);
+}
+
+.debug-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
+  width: max-content;
+  max-width: 9rem;
+}
+
+.debug-buttons button {
+  font-size: 0.75rem;
+  white-space: nowrap;
 }
 </style>

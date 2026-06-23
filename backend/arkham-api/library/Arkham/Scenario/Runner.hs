@@ -907,6 +907,38 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           $ "Invalid scenario deck key "
           <> show key
           <> ", could not find deck in scenario"
+  Do (DrawCards iid drawing) | Deck.EncounterDeckByKey key <- drawing.deck -> do
+    let
+      deckL' :: Lens' ScenarioAttrs (Deck EncounterCard)
+      deckL' = encounterDeckLensFromKey key
+      discardL' :: Lens' ScenarioAttrs [EncounterCard]
+      discardL' = case key of
+        RegularEncounterDeck -> discardL
+        other -> encounterDecksL . at other . non (Deck [], []) . _2
+    case unDeck (a ^. deckL') of
+      [] -> do
+        when (notNull (a ^. discardL')) $ do
+          pushAll [ShuffleEncounterDiscardBackInByKey key, Do (DrawCards iid drawing)]
+        pure a
+      xs -> do
+        let (drew, rest) = splitAt drawing.amount xs
+        if length drew == drawing.amount
+          then do
+            when (null rest && not scenarioInShuffle) do
+              checkWhen Window.EncounterDeckRunsOutOfCards
+            push $ DrewCards iid $ finalizeDraw drawing $ drawing.alreadyDrawn <> map toCard drew
+            when (null rest && not scenarioInShuffle) do
+              push $ ShuffleEncounterDiscardBackInByKey key
+          else do
+            when (null rest && not scenarioInShuffle) do
+              checkWhen Window.EncounterDeckRunsOutOfCards
+              push $ ShuffleEncounterDiscardBackInByKey key
+
+            push
+              $ Do
+              $ DrawCards iid
+              $ drawing {cardDrawAlreadyDrawn = map toCard drew, cardDrawAmount = drawing.amount - length drew}
+        pure $ a & (deckL' .~ Deck rest) & (inShuffleL .~ null rest)
   Do (DrawCards iid drawing) | drawing.deck == Deck.EncounterDeck -> do
     handler <- getEncounterDeckHandler iid
     key <- getEncounterDeckKey iid
@@ -1321,6 +1353,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   ShuffleDeck Deck.EncounterDeck -> do
     encounterDeck <- withDeckM shuffleM scenarioEncounterDeck
     pure $ a & encounterDeckL .~ encounterDeck
+  ShuffleDeck (Deck.EncounterDeckByKey key) -> do
+    encounterDeck <- withDeckM shuffleM (view (encounterDeckLensFromKey key) a)
+    pure $ a & (encounterDeckLensFromKey key .~ encounterDeck)
   ShuffleEncounterDiscardBackInByKey key -> do
     case key of
       RegularEncounterDeck -> do
@@ -1413,6 +1448,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       xs -> do
         push (RequestedEncounterCards target matches)
         pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
+  DiscardUntilN n _ _ target (Deck.EncounterDeckByKey k) matcher -> do
+    let
+      otherDiscardL :: Lens' ScenarioAttrs [EncounterCard]
+      otherDiscardL = encounterDecksL . at k . non (Deck [], []) . _2
+    (discards, remainingDeck) <- breakNM n (`extendedCardMatch` matcher) (unDeck $ a ^. encounterDeckLensFromKey k)
+    matches <- filterM (`extendedCardMatch` matcher) discards
+    case remainingDeck of
+      [] -> do
+        push (RequestedEncounterCards target matches)
+        encounterDeck <- shuffleM (discards <> a ^. otherDiscardL)
+        pure $ a & encounterDecksL . at k . non (Deck [], []) .~ (Deck encounterDeck, mempty)
+      xs -> do
+        push (RequestedEncounterCards target matches)
+        pure $ a & (encounterDeckLensFromKey k .~ Deck xs) & otherDiscardL %~ (reverse discards <>)
   FoundAndDrewEncounterCard iid cardSource card -> do
     let
       cardId = toCardId card

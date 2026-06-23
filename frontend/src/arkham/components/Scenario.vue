@@ -100,6 +100,7 @@ const forcedShowOutOfPlay = ref(false)
 const forcedShowDiscard = ref(false)
 const forcedShowHollowed = ref(false)
 const encounterDiscardPopoverShown = ref(false)
+const spectralDiscardPopoverShown = ref(false)
 const showScenarioDebugOptions = ref(false)
 const locationMap = ref<Element | null>(null)
 const scrollerRef = ref<HTMLElement | null>(null)
@@ -1105,6 +1106,7 @@ const topOfEncounterDiscard = computed(() => {
 })
 const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
 const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
+const spectralDiscards = computed<Card[]>(() => (spectralDiscard.value ?? []).map(c => ({ tag: 'EncounterCard', contents: c })))
 const topOfSpectralDiscard = computed(() => {
   if (!spectralDiscard.value || !spectralDiscard.value[0]) return null
   return cardCodeImage(spectralDiscard.value[0].cardCode)
@@ -1941,12 +1943,31 @@ async function addChaosToken(face: any){
             v-if="props.scenario.hasEncounterDeck && !hideEncounterDeck"
           />
 
-          <div v-if="topOfSpectralDiscard" class="discard" style="grid-area: spectralDiscard"
-            >
-            <img
-              :src="topOfSpectralDiscard"
-              class="card"
-            />
+          <div v-if="topOfSpectralDiscard" class="discard" style="grid-area: spectralDiscard">
+            <div class="discard-card">
+              <img
+                :src="topOfSpectralDiscard"
+                class="card"
+              />
+              <span class="deck-size">{{ spectralDiscards.length }}</span>
+            </div>
+
+            <div v-if="spectralDiscards.length > 0" class="buttons">
+              <CardsUnderIndicator
+                v-model:shown="spectralDiscardPopoverShown"
+                class="view-discard-button"
+                :cards="spectralDiscards"
+                :game="game"
+                :playerId="playerId"
+                :label="t('scenario.discards')"
+                :isDiscards="true"
+                :fullWidth="true"
+                @choose="choose"
+              />
+              <template v-if="debug.active">
+                <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackInByKey', contents: 'SpectralEncounterDeck'})">{{ $t('scenarioComponent.shuffleBackIn') }}</button>
+              </template>
+            </div>
           </div>
 
           <EncounterDeck

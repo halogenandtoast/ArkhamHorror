@@ -148,15 +148,14 @@ const showSkipAll = computed(() => {
 
   return isCurrentPlayersInvestigator.value && skipAllAvailable?.value === true
 })
-const canSkipTriggers = computed(() => skipTriggersAction.value !== -1 || showSkipAll.value)
+// "Skip Triggers" skips only the current player's own window; it is greyed out
+// when this investigator has no window of their own. "Skip All" (showSkipAll) is
+// a separate button that handles the other players' windows.
+const canSkipTriggers = computed(() => skipTriggersAction.value !== -1)
 
 function skipTriggers() {
-  if (skipTriggersAction.value !== -1) {
-    emit('choose', skipTriggersAction.value)
-    return
-  }
-
-  skipAllTriggers && skipAllTriggers()
+  if (skipTriggersAction.value === -1) return
+  emit('choose', skipTriggersAction.value)
 }
 
 const investigatorClass = computed(() => {

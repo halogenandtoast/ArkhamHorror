@@ -362,7 +362,12 @@ const skipAllAvailable = computed(() => {
   if (skipAllPending.value.size > 0) return true
 
   const entries = authorizedSkipTriggerEntries(game.value)
-  return new Set(entries.map((entry) => entry.playerId)).size > 1
+  const distinct = new Set(entries.map((entry) => entry.playerId))
+  if (distinct.size > 1) return true
+  // The authorized player (e.g. the skill-test owner) may be waiting on a
+  // single other player's fast trigger with no window of their own to skip;
+  // let them skip that lone window too. Solo keeps the stricter rule.
+  return !solo.value && distinct.size === 1 && !distinct.has(playerId.value ?? '')
 })
 
 const skipAllInProgress = computed(() => skipAllPending.value.size > 0)

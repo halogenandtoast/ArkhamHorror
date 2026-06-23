@@ -100,6 +100,24 @@ hereticRunner storyCard msg heretic = runQueueT $ case msg of
   UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
     push $ Flip iid (toSource attrs) (toTarget attrs)
     pure heretic
+  -- Laid to Rest (parallel Jim Culver): Jean Devereux's parley makes Jim *draw*
+  -- the chosen Heretic. A draw is not a defeat, so unlike the Wages of Sin path
+  -- below we do not capture/replay enemy-defeat windows. The Heretic is silently
+  -- removed from the game (detached from The Beyond) and its Unfinished Business
+  -- back side is resolved into the drawing investigator's threat area (the story's
+  -- own ResolveThisStory forces InThreatArea, but we pass it explicitly so the card
+  -- is never momentarily re-attached to The Beyond, which would corrupt its spirit
+  -- count). The source is Jean (not the Heretic itself), which distinguishes this
+  -- from the defeat-driven flip below.
+  Flip iid source (isTarget attrs -> True) | not (isSource attrs source) -> do
+    let card = lookupCard storyCard (toCardId attrs)
+    pushAll
+      [ PlaceEnemy (toId attrs) (OutOfPlay RemovedZone)
+      , ReplaceCard (toCardId attrs) card
+      , StoryMessage $ ReadStoryWithPlacement iid card ResolveIt Nothing (InThreatArea iid)
+      , RemoveEnemy (toId attrs)
+      ]
+    pure heretic
   Flip iid _ (isTarget attrs -> True) -> do
     let card = lookupCard storyCard (toCardId attrs)
     defeatWindows <- lift $ cancelEnemyDefeatCapture attrs

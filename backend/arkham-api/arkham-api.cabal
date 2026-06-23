@@ -6903,6 +6903,7 @@ test-suite spec
       Arkham.Campaign.UsedAbilitiesSpec
       Arkham.DecklistSpec
       Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec
+      Arkham.Enemy.Cards.JeanDevereuxSeekingClosureSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
       Arkham.Enemy.Cards.SilverTwilightAcolyteSpec
       Arkham.Enemy.Cards.StalkingHybridSpec

@@ -674,7 +674,7 @@ instance RunMessage AssetAttrs where
       pure $ a & placementL .~ OutOfPlay Zone.VictoryDisplayZone & controllerL .~ Nothing
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
-        [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]
+        [RemoveFromGame (toTarget a), AddCardToScenarioDeck key (toCard a)]
       pure $ a & placementL .~ Unplaced
     ShuffleCardsIntoDeck _ cards ->
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)

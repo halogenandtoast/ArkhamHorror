@@ -58,7 +58,9 @@ instance RunMessage TheHauntingOfTheWardTheatre where
       assignHorror iid attrs 1
       assets <- select $ assetControlledBy iid <> not_ PermanentAsset <> NonWeaknessAsset
       when (notNull assets) do
-        chooseTargetM iid assets \asset -> push $ AddToScenarioDeck PropsDeck (toTarget asset)
+        chooseTargetM iid assets \asset -> do
+          push $ AddToScenarioDeck PropsDeck (toTarget asset)
+          shuffleDeck PropsDeck
       let (tested, failed) = getMetaDefault @(Int, Int) (0, 0) attrs
       pure $ TheHauntingOfTheWardTheatre $ setMeta @(Int, Int) (tested, failed + 1) attrs
     DoStep 2 (AdvanceAgenda (isSide B attrs -> True)) -> do

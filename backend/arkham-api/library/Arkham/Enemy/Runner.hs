@@ -1839,6 +1839,13 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
         <> [RemoveEnemy a.id]
       pure a
+    RemovedFromPlay source -> do
+      -- An enemy attached to something (e.g. Cavern Moss on an Item asset) is
+      -- discarded when that thing leaves play, mirroring attached treacheries.
+      case placementToAttached a.placement of
+        Just target | isTarget target (sourceToTarget source) -> push $ toDiscard GameSource a
+        _ -> pure ()
+      pure a
     ShuffleBackIntoEncounterDeck source (isTarget a -> True) -> do
       mods <- getModifiers (toTarget a)
       blocked <-

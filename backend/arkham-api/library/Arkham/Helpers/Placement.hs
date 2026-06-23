@@ -89,13 +89,10 @@ onSameLocation iid = \case
       Just p -> (== p) <$> field InvestigatorLocation iid
   AttachedToTreachery tid ->
     liftA2 (==) (field TreacheryLocation tid) (field InvestigatorLocation iid)
-  AttachedToAsset aid _ -> do
-    placement' <- field AssetPlacement aid
-    onSameLocation iid placement'
-
-  -- fieldMay AssetPlacement aid >>= \case
-  --   Nothing -> pure False
-  --   Just placement' -> onSameLocation iid placement'
+  AttachedToAsset aid _ ->
+    fieldMay AssetPlacement aid >>= \case
+      Nothing -> pure False
+      Just placement' -> onSameLocation iid placement'
   AttachedToAct _ -> pure False
   AttachedToAgenda _ -> pure False
   AttachedToInvestigator iid' ->

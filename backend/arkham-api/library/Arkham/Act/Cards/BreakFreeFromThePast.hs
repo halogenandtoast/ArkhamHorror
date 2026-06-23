@@ -39,22 +39,26 @@ instance RunMessage BreakFreeFromThePast where
         investigators <- select UneliminatedInvestigator
         chooseOrRunOneM iid $ scenarioI18n do
           questionLabeled' "chooseInvestigator"
-          targets investigators \iid' -> handleTarget iid attrs (toTarget iid')
+          targets investigators $ handleTarget iid attrs
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid') -> do
-      props <- take 3 <$> getPropsDeck
-      focusCards props do
+      propsDeck <- getPropsDeck
+      let
+        props = take 3 propsDeck
+        signatureProps = filter (`cardMatch` (SignatureCard <> CardOwnedBy iid')) propsDeck
+        choices = nub $ props <> signatureProps
+      focusCards choices do
         chooseOrRunOneM iid' $ scenarioI18n do
           questionLabeled' "chooseProp"
-          targets props \card -> do
+          targets choices \card -> do
             unfocusCards
             push $ RemoveCardFromScenarioDeck PropsDeck card
             let card' = case card of
                   PlayerCard pc -> PlayerCard $ pc {pcOwner = pcOwner pc <|> Just iid'}
                   other -> other
             addToHand iid' (only card')
-            rest <- shuffle (deleteFirst card props)
-            for_ rest \c -> push $ PutCardOnBottomOfDeck iid' (Deck.ScenarioDeckByKey PropsDeck) c
+            rest <- shuffle $ deleteFirst card props
+            for_ rest $ putCardOnBottomOfDeck iid' (Deck.ScenarioDeckByKey PropsDeck)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

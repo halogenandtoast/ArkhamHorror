@@ -54,6 +54,10 @@ defaultCampaignRunner msg a = case msg of
     pure $ updateAttrs a (storeL . at (Aeson.toText k) ?~ v)
   SetCampaignMeta v -> do
     pure $ updateAttrs a (metaL .~ v)
+  AddCampaignModifiersForAll modTypes -> do
+    pure $ updateAttrs a (modifiersForAllL %~ \xs -> nub (xs <> modTypes))
+  RemoveCampaignModifiersForAll modTypes -> do
+    pure $ updateAttrs a (modifiersForAllL %~ filter (`notElem` modTypes))
   StartCampaign -> do
     -- [ALERT] StartCampaign
     players <- allPlayers

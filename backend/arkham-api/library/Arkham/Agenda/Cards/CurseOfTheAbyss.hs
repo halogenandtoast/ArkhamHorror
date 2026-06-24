@@ -16,13 +16,7 @@ curseOfTheAbyss = agenda (2, A) CurseOfTheAbyss Cards.curseOfTheAbyss (Static 6)
 
 instance HasAbilities CurseOfTheAbyss where
   getAbilities (CurseOfTheAbyss a) =
-    [ restricted a 1 (HasScenarioCount StrengthOfTheAbyss $ EqualTo $ Static 0)
-        $ forced
-        $ oneOf
-          [ ScenarioCountDecremented #after StrengthOfTheAbyss
-          , AgendaEntersPlay #after (AgendaWithId a.id)
-          ]
-    ]
+    [restricted a 1 (HasScenarioCount StrengthOfTheAbyss $ EqualTo $ Static 0) $ forced AnyWindow]
 
 instance RunMessage CurseOfTheAbyss where
   runMessage msg a@(CurseOfTheAbyss attrs) = runQueueT $ case msg of

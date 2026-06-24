@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
-import { useDebug } from '@/arkham/debug'
+import { computed, ref, watch } from 'vue'
+import { useDebug, scenarioDebugCountsFor } from '@/arkham/debug'
 import type { Game } from '@/arkham/types/Game'
 import type { Scenario } from '@/arkham/types/Scenario'
 import { chaosTokenImage, type TokenFace } from '@/arkham/types/ChaosToken'
@@ -153,6 +153,31 @@ const setRealityAcidDebugTokens = () => {
 const clearRealityAcidDebugTokens = () => {
   debug.send(props.game.id, { tag: 'ScenarioSpecific', contents: ['blobClearDebugRealityAcidTokens', null] })
 }
+
+const debugCounts = computed(() => scenarioDebugCountsFor(props.scenario))
+
+const countValue = (key: string) => props.scenario.counts[key] ?? 0
+
+// Local, editable copies of each count. They are re-synced to the live value
+// whenever the scenario's counts change (e.g. after applying a change).
+const editedCounts = ref<Record<string, number>>({})
+watch(
+  () => debugCounts.value.map((c) => [c.key, countValue(c.key)] as const),
+  (pairs) => {
+    editedCounts.value = Object.fromEntries(pairs)
+  },
+  { immediate: true, deep: true }
+)
+
+const normalizedCount = (key: string) => Math.max(0, Math.trunc(editedCounts.value[key] || 0))
+const countChanged = (key: string) => normalizedCount(key) !== countValue(key)
+
+const setCount = (key: string) => {
+  debug.send(props.game.id, {
+    tag: 'ScenarioCountSet',
+    contents: [key, normalizedCount(key)],
+  })
+}
 </script>
 
 <template>
@@ -223,6 +248,19 @@ const clearRealityAcidDebugTokens = () => {
           <button v-if="realityAcidDebugChoice" type="button" @click="clearRealityAcidDebugTokens">
             Clear (currently {{ realityAcidDebugChoiceLabel }})
           </button>
+        </section>
+
+        <section v-if="debugCounts.length > 0" class="scenario-debug-section">
+          <div v-for="count in debugCounts" :key="count.key" class="scenario-debug-count">
+            <span class="scenario-debug-label">
+              {{ count.label }}
+              <span class="scenario-debug-current">{{ countValue(count.key) }}</span>
+            </span>
+            <div class="count-editor">
+              <input v-model.number="editedCounts[count.key]" type="number" min="0" class="count-input" />
+              <button type="button" class="count-set" :disabled="!countChanged(count.key)" @click="setCount(count.key)">Set</button>
+            </div>
+          </div>
         </section>
 
       </div>
@@ -404,5 +442,68 @@ const clearRealityAcidDebugTokens = () => {
 .scenario-debug-label {
   opacity: 0.85;
   text-transform: none;
+}
+
+.scenario-debug-current {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  margin-left: 6px;
+  padding: 0 7px;
+  border-radius: 11px;
+  background: rgba(167, 184, 58, 0.22);
+  border: 1px solid rgba(167, 184, 58, 0.5);
+  color: #d7e58a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.scenario-debug-count {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.count-editor {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.count-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  height: 40px;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0 10px;
+}
+
+.count-input:focus {
+  outline: none;
+  border-color: rgba(167, 184, 58, 0.75);
+}
+
+.scenario-debug-options .count-set {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--button);
+}
+
+.scenario-debug-options button:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 </style>

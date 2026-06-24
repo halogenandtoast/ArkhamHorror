@@ -6589,7 +6589,12 @@ preloadModifiers g = case gameMode g of
           traverse_ getModifiersFor $ gameInHandEntities g
           traverse_ getModifiersFor $ gameInDiscardEntities g
           for_ (modeScenario (gameMode g)) getModifiersFor
-          for_ (modeCampaign (gameMode g)) getModifiersFor
+          for_ (modeCampaign (gameMode g)) \c -> do
+            getModifiersFor c
+            let forAll = campaignModifiersForAll (toAttrs c)
+            unless (null forAll) do
+              iids <- select Anyone
+              Helpers.modifyEach CampaignSource iids forAll
     allModifiers <- traverse (foldMapM expandForEach . foldMap handleMoving) rawModifiers
     let offsetModifiers =
           Map.fromList

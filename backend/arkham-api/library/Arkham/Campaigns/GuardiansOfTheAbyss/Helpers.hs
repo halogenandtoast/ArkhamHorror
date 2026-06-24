@@ -10,21 +10,29 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardCode))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log hiding (crossOutRecordSetEntries, recordSetInsert, recordSetReplace)
-import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.Scenario (scenarioField, standaloneI18n)
 import Arkham.I18n ()
 import Arkham.Id
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Message (pattern InvestigatorKilled, Message (ScenarioCountDecrementBy, ScenarioCountIncrementBy))
+import Arkham.Message (
+  Message (
+    AddCampaignModifiersForAll,
+    RemoveCampaignModifiersForAll,
+    ScenarioCountDecrementBy,
+    ScenarioCountIncrementBy
+  ),
+  pattern InvestigatorKilled,
+ )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier (ModifierType (CannotPlay))
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (ScenarioCardsUnderScenarioReference))
 import Arkham.ScenarioLogKey
 import Arkham.Source
-import Arkham.Trait (Trait (Cultist))
 import Arkham.Tracing
+import Arkham.Trait (Trait (Cultist))
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n = standaloneI18n "guardiansOfTheAbyss"
@@ -38,9 +46,10 @@ addStrengthOfTheAbyss n = push $ ScenarioCountIncrementBy StrengthOfTheAbyss n
 removeStrengthOfTheAbyss :: ReverseQueue m => Int -> m ()
 removeStrengthOfTheAbyss n = push $ ScenarioCountDecrementBy StrengthOfTheAbyss n
 
--- | An investigator or unique Ally asset is /"taken by the abyss."/ First add
--- 1 strength to the abyss, then record the card in the campaign log if it is
--- unique.
+{- | An investigator or unique Ally asset is /"taken by the abyss."/ First add
+1 strength to the abyss, then record the card in the campaign log if it is
+unique.
+-}
 investigatorTakenByTheAbyss :: ReverseQueue m => InvestigatorId -> m ()
 investigatorTakenByTheAbyss iid = do
   addStrengthOfTheAbyss 1
@@ -52,6 +61,10 @@ assetTakenByTheAbyss aid = do
   card <- field AssetCard aid
   when (cdUnique $ toCardDef card) do
     recordSetInsert WasTakenByTheAbyss [toCardCode card]
+    -- For the remainder of the campaign, no one may play copies of a unique
+    -- Ally taken by the abyss. Stored campaign-wide so it persists across
+    -- scenarios regardless of which campaign these are played in.
+    push $ AddCampaignModifiersForAll [CannotPlay (cardIs card)]
 
 brotherhoodEnemies :: [CardDef]
 brotherhoodEnemies =
@@ -63,8 +76,9 @@ brotherhoodEnemies =
   , Enemies.professorNathanielTaylor
   ]
 
--- | The i18n flavor key holding the benefit text on each Evidence story card,
--- keyed by the story-side card code.
+{- | The i18n flavor key holding the benefit text on each Evidence story card,
+keyed by the story-side card code.
+-}
 evidenceBenefitKey :: CardCode -> Maybe Text
 evidenceBenefitKey = \case
   "83031b" -> Just "theTranslatorsEvidence.benefit"
@@ -75,8 +89,9 @@ evidenceBenefitKey = \case
   "83036b" -> Just "theProfessorsEvidence.benefit"
   _ -> Nothing
 
--- | The task an investigator must complete before the indicated Evidence
--- story card's benefit can be read.
+{- | The task an investigator must complete before the indicated Evidence
+story card's benefit can be read.
+-}
 evidenceTask :: CardCode -> Maybe ScenarioLogKey
 evidenceTask = \case
   "83031b" -> Just DiscoveredAnAncientTablet
@@ -87,9 +102,10 @@ evidenceTask = \case
   "83036b" -> Just BoughtAnOddTrinket
   _ -> Nothing
 
--- | Read the indicated Evidence card's benefit: its card image alongside the
--- benefit text (card on the left, text on the right), with the instruction to
--- remove 1 strength from the abyss as a plain text entry, then remove it.
+{- | Read the indicated Evidence card's benefit: its card image alongside the
+benefit text (card on the left, text on the right), with the instruction to
+remove 1 strength from the abyss as a plain text entry, then remove it.
+-}
 readEvidence :: ReverseQueue m => CardCode -> m ()
 readEvidence code = for_ (evidenceBenefitKey code) \key -> do
   campaignI18n $ flavor $ cols do
@@ -99,8 +115,9 @@ readEvidence code = for_ (evidenceBenefitKey code) \key -> do
       p.basic "removeStrengthFromTheAbyss"
   removeStrengthOfTheAbyss 1
 
--- | Each unique [[Cultist]] enemy that was in play or beneath the scenario
--- reference card when the game ended.
+{- | Each unique [[Cultist]] enemy that was in play or beneath the scenario
+reference card when the game ended.
+-}
 recordBrotherhoodAgentsWhoEscaped :: ReverseQueue m => m ()
 recordBrotherhoodAgentsWhoEscaped = do
   inPlay <- selectField EnemyCardCode (InPlayEnemy $ EnemyWithTrait Cultist <> UniqueEnemy)
@@ -112,14 +129,18 @@ recordBrotherhoodAgentsWhoEscaped = do
 crossOutTakenByTheAbyss :: ReverseQueue m => m ()
 crossOutTakenByTheAbyss = do
   taken <- recordedCardCodes <$> getRecordSet WasTakenByTheAbyss
-  unless (null taken) $ crossOutRecordSetEntries WasTakenByTheAbyss taken
+  unless (null taken) do
+    crossOutRecordSetEntries WasTakenByTheAbyss taken
+    -- The allies are no longer "taken by the abyss", so lift the campaign-wide
+    -- restriction on playing copies of them.
+    push $ RemoveCampaignModifiersForAll [CannotPlay (CardWithCardCode code) | code <- taken]
 
--- | An investigator who has been /taken by the abyss/ is treated as if they
--- were killed for the remainder of the campaign.
+{- | An investigator who has been /taken by the abyss/ is treated as if they
+were killed for the remainder of the campaign.
+-}
 killRemainingTakenByTheAbyss :: (ReverseQueue m, Sourceable source) => source -> m ()
 killRemainingTakenByTheAbyss source = do
   taken <- recordedCardCodes <$> getRecordSet WasTakenByTheAbyss
-  investigators <- allInvestigators
-  for_ investigators \iid ->
+  eachInvestigator \iid -> do
     when (unInvestigatorId iid `elem` taken) do
       push $ InvestigatorKilled (toSource source) iid

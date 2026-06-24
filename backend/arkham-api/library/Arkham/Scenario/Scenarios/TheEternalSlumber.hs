@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheEternalSlumber (theEternalSlumber, TheEternalSlumber (..)) where
+module Arkham.Scenario.Scenarios.TheEternalSlumber (theEternalSlumber) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -6,13 +6,13 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
 import Arkham.Campaigns.TheForgottenAge.Helpers (ExploreRule (PlaceExplored), explore)
-import Arkham.Helpers.Location (getLocationOf)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log

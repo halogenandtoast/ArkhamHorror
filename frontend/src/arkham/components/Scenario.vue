@@ -60,7 +60,7 @@ import Location from '@/arkham/components/Location.vue';
 import TreacheryView from '@/arkham/components/Treachery.vue';
 import { useGameChoices } from '@/arkham/composables/useGameChoices';
 import { setLocationOffset, resetLocationOffsets } from '@/arkham/api';
-import { useDebug } from '@/arkham/debug'
+import { useDebug, scenarioHasDebugOptions } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { IsMobile } from '@/arkham/isMobile';
@@ -2185,7 +2185,7 @@ async function addChaosToken(face: any){
             </select>
           </label>
           <button
-            v-if="debug.active"
+            v-if="debug.active && scenarioHasDebugOptions(scenario)"
             type="button"
             class="scenario-debug-toggle"
             @click="showScenarioDebugOptions = true"

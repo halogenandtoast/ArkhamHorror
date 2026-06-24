@@ -88,6 +88,11 @@ data CampaignAttrs = CampaignAttrs
   , campaignResolutions :: Map ScenarioId Resolution
   , campaignXpBreakdown :: [XpBreakdownStep]
   , campaignModifiers :: Map InvestigatorId [Modifier]
+  , -- | Modifiers that apply to /all/ investigators for the remainder of the
+    -- campaign (current and future). Unlike 'campaignModifiers' these are not
+    -- snapshotted per-investigator; they are expanded onto every investigator
+    -- when modifiers are collected.
+    campaignModifiersForAll :: [ModifierType]
   , campaignMeta :: Value
   , campaignStore :: Map Text Value
   , campaignDestiny :: Map Scope TarotCard
@@ -207,6 +212,9 @@ completeStep step' steps = step' : steps
 modifiersL :: Lens' CampaignAttrs (Map InvestigatorId [Modifier])
 modifiersL = lens campaignModifiers $ \m x -> m {campaignModifiers = x}
 
+modifiersForAllL :: Lens' CampaignAttrs [ModifierType]
+modifiersForAllL = lens campaignModifiersForAll $ \m x -> m {campaignModifiersForAll = x}
+
 instance Entity CampaignAttrs where
   type EntityId CampaignAttrs = CampaignId
   type EntityAttrs CampaignAttrs = CampaignAttrs
@@ -270,6 +278,7 @@ campaign f campaignId' name difficulty =
       , campaignCompletedSteps = []
       , campaignResolutions = mempty
       , campaignModifiers = mempty
+      , campaignModifiersForAll = mempty
       , campaignMeta = Null
       , campaignStore = mempty
       , campaignXpBreakdown = mempty
@@ -361,6 +370,7 @@ instance FromJSON CampaignAttrs where
       <|> (map toXpBreakdownStep <$> o .:? "xpBreakdown" .!= mempty)
       <|> (o .:? "xpBreakdown" .!= mempty)
     campaignModifiers <- o .: "modifiers"
+    campaignModifiersForAll <- o .:? "modifiersForAll" .!= mempty
     campaignMeta <- o .: "meta"
     campaignStore <- o .:? "store" .!= mempty
     campaignDestiny <- o .:? "destiny" .!= mempty

@@ -1770,39 +1770,18 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       _ -> noMatch
     Matcher.FastPlayerWindow -> guardTiming #when (pure . (== Window.FastPlayerWindow))
     Matcher.DealtDamageOrHorror timing sourceMatcher whoMatcher -> guardTiming timing $ \case
+      -- NB. an ally (asset) you control taking damage/horror is not "you" being dealt
+      -- damage/horror; use AssetDealtDamageOrHorror for that. See issue #4910.
       Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-      Window.WouldTakeDamageOrHorror source' (AssetTarget aid) _ _ ->
-        andM
-          [ elem aid
-              <$> select
-                ( Matcher.AssetControlledBy
-                    $ Matcher.replaceYouMatcher iid whoMatcher
-                )
-          , sourceMatches source' sourceMatcher
-          ]
       _ -> noMatch
     Matcher.DealtDamage timing sourceMatcher whoMatcher -> guardTiming timing $ \case
       Window.DealtDamage source' _ (InvestigatorTarget iid') _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-      Window.DealtDamage source' _ (AssetTarget aid) _ ->
-        andM
-          [ elem aid
-              <$> select
-                (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
-          , sourceMatches source' sourceMatcher
-          ]
       _ -> noMatch
     Matcher.DealtHorror timing sourceMatcher whoMatcher -> guardTiming timing $ \case
       Window.DealtHorror source' (InvestigatorTarget iid') _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-      Window.DealtHorror source' (AssetTarget aid) _ ->
-        andM
-          [ elem aid
-              <$> select
-                (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
-          , sourceMatches source' sourceMatcher
-          ]
       _ -> noMatch
     Matcher.AssignedHorror timing whoMatcher targetListMatcher ->
       guardTiming timing $ \case

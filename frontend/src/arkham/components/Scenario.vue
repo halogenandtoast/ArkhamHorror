@@ -104,6 +104,8 @@ const forcedShowHollowed = ref(false)
 const encounterDiscardPopoverShown = ref(false)
 const spectralDiscardPopoverShown = ref(false)
 const showScenarioDebugOptions = ref(false)
+const realityAcidLightAnchor = ref<HTMLElement | null>(null)
+const realityAcidLightRect = reactive({ left: 0, top: 0, width: 0, height: 0 })
 const locationMap = ref<Element | null>(null)
 const scrollerRef = ref<HTMLElement | null>(null)
 const viewingDiscard = ref(false)
@@ -118,6 +120,14 @@ let cosmicEmissaryObserver: MutationObserver | null = null
 let cosmicEmissaryResizeObserver: ResizeObserver | null = null
 let cosmicEmissaryCompactRequest: number | null = null
 let cosmicEmissaryCompactForce = false
+
+function updateRealityAcidLightRect() {
+  const rect = (realityAcidLightAnchor.value ?? document.querySelector<HTMLElement>('.reality-acid-light-switch-anchor'))?.getBoundingClientRect()
+  realityAcidLightRect.left = rect?.left ?? 0
+  realityAcidLightRect.top = rect?.top ?? 0
+  realityAcidLightRect.width = rect?.width ?? 0
+  realityAcidLightRect.height = rect?.height ?? 0
+}
 
 function readStyleMapCache(key: string): Record<string, Record<string, string>> {
   try {
@@ -569,7 +579,10 @@ onMounted(() => {
   setGameId(props.game.id)
   window.addEventListener('storage', onCosmicEmissaryStorage)
   window.addEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
+  window.addEventListener('resize', updateRealityAcidLightRect)
+  window.addEventListener('scroll', updateRealityAcidLightRect, true)
   document.addEventListener('click', proxyClippedLocationClick, true)
+  nextTick(updateRealityAcidLightRect)
   updateScrollMargins()
   updateCellDimensions()
   updateLayoutPadding()
@@ -663,6 +676,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('storage', onCosmicEmissaryStorage)
   window.removeEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
+  window.removeEventListener('resize', updateRealityAcidLightRect)
+  window.removeEventListener('scroll', updateRealityAcidLightRect, true)
   document.removeEventListener('click', proxyClippedLocationClick, true)
   legObserver?.disconnect()
   legObserver = null
@@ -676,6 +691,7 @@ onBeforeUnmount(() => {
 })
 
 onUpdated(() => {
+  updateRealityAcidLightRect()
   if(props.scenario.id === "c06333") {
     nextTick(() => rotateImages(needsInit.value))
   }
@@ -891,6 +907,15 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
 })
 
 const showScenarioNotifierBar = computed(() => scenarioBadges.value.length > 0 || props.realityAcidLightDevoured === true)
+
+watch(
+  () => [props.realityAcidLightDevoured, props.realityAcidLightActive, scenarioBadges.value.length],
+  () => {
+    nextTick(updateRealityAcidLightRect)
+    setTimeout(updateRealityAcidLightRect, 50)
+  },
+  { immediate: true, flush: 'post' },
+)
 
 const rotationSteps = ref(0)
 const transpose = <T>(grid: T[][]): T[][] =>
@@ -2216,21 +2241,42 @@ async function addChaosToken(face: any){
               <small v-if="badge.detail">{{ badge.detail }}</small>
             </span>
           </div>
-          <button
+          <span
             v-if="realityAcidLightDevoured"
-            type="button"
-            class="scenario-badge reality-acid-light-switch"
-            :class="{ 'reality-acid-light-switch--on': realityAcidLightActive }"
-            :title="realityAcidLightActive ? 'Turn the lights back on' : 'Turn the lights off'"
-            @click="$emit('toggleRealityAcidLight')"
+            ref="realityAcidLightAnchor"
+            class="scenario-badge reality-acid-light-switch-anchor"
+            aria-hidden="true"
           >
-            <span class="reality-acid-light-switch-track" aria-hidden="true">
+            <span class="reality-acid-light-switch-track">
               <span class="reality-acid-light-switch-knob"></span>
             </span>
             <span class="scenario-badge-text reality-acid-light-switch-label">
               <strong>{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</strong>
             </span>
-          </button>
+          </span>
+          <Teleport to="body">
+            <button
+              v-if="realityAcidLightDevoured"
+              type="button"
+              class="scenario-badge reality-acid-light-switch reality-acid-light-switch--floating"
+              :class="{ 'reality-acid-light-switch--on': realityAcidLightActive }"
+              :style="{
+                left: `${realityAcidLightRect.left}px`,
+                top: `${realityAcidLightRect.top}px`,
+                width: `${realityAcidLightRect.width}px`,
+                height: `${realityAcidLightRect.height}px`,
+              }"
+              :title="realityAcidLightActive ? 'Turn the lights back on' : 'Turn the lights off'"
+              @click="$emit('toggleRealityAcidLight')"
+            >
+              <span class="reality-acid-light-switch-track" aria-hidden="true">
+                <span class="reality-acid-light-switch-knob"></span>
+              </span>
+              <span class="scenario-badge-text reality-acid-light-switch-label">
+                <strong>{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</strong>
+              </span>
+            </button>
+          </Teleport>
         </div>
 
       </div>
@@ -2886,7 +2932,7 @@ async function addChaosToken(face: any){
   gap: 6px;
   min-height: 34px;
   padding: 5px 10px;
-  overflow: hidden;
+  overflow: visible;
   pointer-events: none;
   background: rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -2941,6 +2987,11 @@ async function addChaosToken(face: any){
   font-size: 0.58rem;
 }
 
+.reality-acid-light-switch-anchor {
+  min-width: 136px;
+  visibility: hidden;
+}
+
 .reality-acid-light-switch {
   z-index: calc(var(--z-index-9999) + 3);
   isolation: isolate;
@@ -2955,7 +3006,17 @@ async function addChaosToken(face: any){
 }
 
 .reality-acid-light-switch--on {
-  box-shadow: 0 0 0 1px rgb(255 225 105 / 16%), 0 0 20px rgb(255 225 105 / 42%), 0 2px 8px rgb(0 0 0 / 65%);
+  box-shadow:
+    inset 0 0 12px rgb(255 225 105 / 18%),
+    0 0 0 1px rgb(255 225 105 / 16%),
+    0 0 20px rgb(255 225 105 / 42%),
+    0 2px 8px rgb(0 0 0 / 65%);
+}
+
+.reality-acid-light-switch--floating {
+  position: fixed;
+  z-index: 2147483647;
+  max-width: none;
 }
 
 .reality-acid-light-switch-track {

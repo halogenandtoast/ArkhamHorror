@@ -1519,7 +1519,7 @@ onUnmounted(() => {
     <div class="game-bar">
       <div class="game-bar-item">
         <div>
-          <button @click="router.push({ name: 'CampaignLog', params: { gameId } })">
+          <button @click="showLog = !showLog">
             <DocumentTextIcon aria-hidden="true" />
             {{ showLog ? $t('gameBar.closeLog') : $t('gameBar.viewLog') }}
           </button>
@@ -1680,7 +1680,14 @@ onUnmounted(() => {
         :game="game"
         :cards="cards"
         :playerId="playerId"
-      />
+      >
+        <template #header-leading>
+          <button class="back-button" @click="showLog = false">
+            <font-awesome-icon icon="arrow-left" class="back-icon" />
+            <span>{{ $t('back') }}</span>
+          </button>
+        </template>
+      </CampaignLog>
       <div v-else class="game-main">
         <div v-if="showTheSilenceModal" class="the-silence-modal-backdrop">
           <div class="the-silence-modal" role="dialog" aria-modal="true" aria-labelledby="the-silence-modal-title">
@@ -1837,6 +1844,39 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: teutonic, sans-serif;
+  font-size: 0.95em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  .back-icon {
+    font-size: 0.85em;
+    transition: transform 0.15s;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #f0f0f0;
+
+    .back-icon {
+      transform: translateX(-3px);
+    }
+  }
+}
+
 .reality-acid-flashlight {
   --flashlight-x: 50vw;
   --flashlight-y: 50vh;

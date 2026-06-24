@@ -22,20 +22,22 @@ instance HasModifiersFor SchemesInTheDarkBeyond where
 
 instance HasAbilities SchemesInTheDarkBeyond where
   getAbilities (SchemesInTheDarkBeyond a) =
-    [ mkAbility a 1
+    [ restricted a 1 criteria
         $ forced
         $ PlacedDoomCounter #after AnySource (TargetIs $ toTarget a)
     ]
+   where
+    criteria = if a.doom == 4 || a.doom == 8 then NoRestriction else Never
 
 instance RunMessage SchemesInTheDarkBeyond where
   runMessage msg a@(SchemesInTheDarkBeyond attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      when (attrs.doom == 4 || attrs.doom == 8) $ addStrengthOfTheAbyss 1
+      addStrengthOfTheAbyss 1
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       selectEach UneliminatedInvestigator \iid -> do
-        push $ InvestigatorDefeated (toSource attrs) iid
         investigatorTakenByTheAbyss iid
+        push $ InvestigatorDefeated (toSource attrs) iid
       push R1
       pure a
     _ -> SchemesInTheDarkBeyond <$> liftRunMessage msg attrs

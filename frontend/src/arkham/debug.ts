@@ -12,6 +12,7 @@ export interface ScenarioDebugCount {
 
 const scenarioDebugCounts: Record<string, ScenarioDebugCount[]> = {
   c83001: [{ key: 'StrengthOfTheAbyss', label: 'Strength of the Abyss' }], // The Eternal Slumber
+  c83016: [{ key: 'StrengthOfTheAbyss', label: 'Strength of the Abyss' }], // The Night's Usurper
   c04277: [{ key: 'CurrentDepth', label: 'Depth' }], // The Depths of Yoth
 }
 

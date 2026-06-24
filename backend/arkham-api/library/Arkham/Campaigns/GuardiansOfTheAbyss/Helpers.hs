@@ -134,6 +134,7 @@ crossOutTakenByTheAbyss = do
     -- The allies are no longer "taken by the abyss", so lift the campaign-wide
     -- restriction on playing copies of them.
     push $ RemoveCampaignModifiersForAll [CannotPlay (CardWithCardCode code) | code <- taken]
+    push $ RemoveCampaignModifiersForAll [CannotPutIntoPlay (CardWithCardCode code) | code <- taken]
 
 {- | An investigator who has been /taken by the abyss/ is treated as if they
 were killed for the remainder of the campaign.

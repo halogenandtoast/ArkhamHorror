@@ -20,9 +20,7 @@ instance HasAbilities ADreamBetwixt where
   getAbilities (ADreamBetwixt a) =
     extendRevealed
       a
-      [ restricted a 1 (HasScenarioCount StrengthOfTheAbyss $ EqualTo (Static 0))
-          $ forced
-          $ ScenarioCountDecremented #after StrengthOfTheAbyss
+      [ restricted a 1 (HasScenarioCount StrengthOfTheAbyss $ EqualTo (Static 0)) $ forced AnyWindow
       , restricted a 2 (thisExists a LocationCanBeFlipped)
           $ freeReaction
           $ SkillTestResult #after You (WhileInvestigating $ be a) (SuccessResult AnyValue)

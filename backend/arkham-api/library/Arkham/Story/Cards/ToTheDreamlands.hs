@@ -27,7 +27,9 @@ instance RunMessage ToTheDreamlands where
           lid <- placeLocation card
           reveal lid
       selectEach (enemyEngagedWith iid) (disengageEnemy iid)
-      whenJustM (selectOne $ locationIs Locations.theGreatAbyss) \greatAbyss ->
-        moveTo attrs iid greatAbyss
+      doStep 1 msg
+      pure s
+    DoStep 1 (ResolveThisStory iid (is attrs -> True)) -> do
+      whenJustM (selectOne $ locationIs Locations.theGreatAbyss) $ moveTo attrs iid
       pure s
     _ -> ToTheDreamlands <$> liftRunMessage msg attrs

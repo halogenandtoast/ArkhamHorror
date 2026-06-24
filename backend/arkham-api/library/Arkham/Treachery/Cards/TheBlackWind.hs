@@ -22,7 +22,7 @@ instance RunMessage TheBlackWind where
           addToVictory iid attrs
         labeled' "theBlackWind.discard" do
           toDiscardBy iid attrs attrs
-          drawEncounterCard iid attrs
           roundModifiers attrs iid [SkillModifier sk (-1) | sk <- [minBound..]]
+          drawEncounterCard iid attrs
       pure t
     _ -> TheBlackWind <$> liftRunMessage msg attrs

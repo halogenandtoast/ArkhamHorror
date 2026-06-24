@@ -74,13 +74,6 @@ totalModifiedSkillValue s = do
       0
       (skillTestResultsSkillValue results + chaosTokenValues + skillTestResultsIconValue results)
 
-autoFailSkillTestResultsData :: (HasGame m, Tracing m) => SkillTest -> m SkillTestResultsData
-autoFailSkillTestResultsData s = do
-  modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-  mods <- getModifiers s
-  let x = getSum $ mconcat [Sum n | SkillTestResultValueModifier n <- mods]
-  pure $ SkillTestResultsData 0 0 0 modifiedSkillTestDifficulty (guard (x /= 0) $> x) False
-
 computeCommitCosts :: HasGame m => InvestigatorId -> [Card] -> m [Cost]
 computeCommitCosts iid cards = do
   modifiers' <- getModifiers iid

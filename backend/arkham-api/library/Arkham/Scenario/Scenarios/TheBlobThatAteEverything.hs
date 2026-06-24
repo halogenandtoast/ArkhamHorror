@@ -226,6 +226,8 @@ instance RunMessage TheBlobThatAteEverything where
           subject <- selectJust $ enemyIs Enemies.subject8L08
           push $ DealDamage (EnemyTarget subject) (nonAttack Nothing attrs (x + extra))
       pure s
+    AdvanceAgendaBy _ _ ->
+      pure $ TheBlobThatAteEverything $ attrs & setMetaKey "senseOfTimeActive" (False :: Bool)
     PhaseStep (InvestigationPhaseStep InvestigationPhaseEndsStep) _ ->
       pure $ TheBlobThatAteEverything $ attrs & setMetaKey "languageActive" (False :: Bool)
     EndRound ->

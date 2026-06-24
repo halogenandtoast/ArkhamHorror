@@ -9,11 +9,14 @@ import ContinueCampaign from '@/arkham/components/ContinueCampaign.vue';
 const props = defineProps<{
   game: Game
   playerId: string
+  realityAcidLightDevoured?: boolean
+  realityAcidLightActive?: boolean
 }>()
 
 const emit = defineEmits<{
   update: [game: Game]
   choose: [idx: number]
+  toggleRealityAcidLight: []
 }>()
 
 async function update(game: Game) {
@@ -108,8 +111,11 @@ const storyQuestionOverride = computed(() =>
       :game="game"
       :scenario="game.scenario"
       :playerId="playerId"
+      :realityAcidLightDevoured="realityAcidLightDevoured"
+      :realityAcidLightActive="realityAcidLightActive"
       @choose="$emit('choose', $event)"
       @update="update"
+      @toggleRealityAcidLight="$emit('toggleRealityAcidLight')"
     />
     <template v-else>
       <StoryQuestion :game="game" :key="questionHash ?? 'no-question'" :playerId="playerId" @choose="choose" />

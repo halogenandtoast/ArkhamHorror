@@ -12,11 +12,14 @@ const props = defineProps<{
   game: Game
   campaign: Campaign
   playerId: string
+  realityAcidLightDevoured?: boolean
+  realityAcidLightActive?: boolean
 }>()
 
 const emit = defineEmits<{
   update: [game: Game]
   choose: [idx: number]
+  toggleRealityAcidLight: []
 }>()
 
 async function update(game: Game) {
@@ -163,8 +166,11 @@ const inScenarioStep = computed(() => {
       :game="game"
       :scenario="game.scenario"
       :playerId="playerId"
+      :realityAcidLightDevoured="realityAcidLightDevoured"
+      :realityAcidLightActive="realityAcidLightActive"
       @choose="choose"
       @update="update"
+      @toggleRealityAcidLight="$emit('toggleRealityAcidLight')"
     />
     <template v-else>
       <StoryQuestion :game="game" :key="questionHash" :playerId="playerId" @choose="choose" />

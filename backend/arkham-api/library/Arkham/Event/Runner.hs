@@ -192,7 +192,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
       then push $ RemoveEvent $ toId a
       else case eventPlacement of
         Limbo -> case afterPlay of
-          PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a]]
+          PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a], RemovedFromPlay (toSource a)]
           DiscardThis -> Lifted.batched \_ -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
           DeferDiscard -> pushAll [after, toDiscardBy eventController GameSource a]
@@ -205,7 +205,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
             push $ Devoured iid' c
             push $ RemovedFromPlay (toSource a)
         _ -> case afterPlay of
-          PlaceThisBeneath target -> pushAll [PlaceUnderneath target [toCard a]]
+          PlaceThisBeneath target -> pushAll [PlaceUnderneath target [toCard a], RemovedFromPlay (toSource a)]
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           DevourThis iid' -> do
             c <- field EventCard a.id

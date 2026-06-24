@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {
   computed,
+  nextTick,
   onMounted,
   onUnmounted,
   provide,
@@ -121,8 +122,12 @@ const preloaded = new Set<string>()
 const preloading = new Set<string>()
 let mouseX = 0
 let mouseY = 0
+let focusLightObserver: MutationObserver | null = null
+let focusLightAnimationFrame: number | null = null
 const flashlightX = ref(0)
 const flashlightY = ref(0)
+const focusLightX = ref(-1000)
+const focusLightY = ref(-1000)
 
 store.fetchCards()
 
@@ -271,6 +276,11 @@ const realityAcidLightActive = computed(() => realityAcidLightOverride.value ?? 
 
 watch(realityAcidLightMetaActive, () => {
   realityAcidLightOverride.value = null
+})
+
+watch(question, async () => {
+  await nextTick()
+  updateFocusLight()
 })
 
 const realityAcidLightDevoured = computed(() => {
@@ -1257,11 +1267,41 @@ provide('skipAllAvailable', skipAllAvailable)
 provide('skipAllInProgress', skipAllInProgress)
 provide('showOtherPlayersHands', showOtherPlayersHands)
 
+function updateFocusLight() {
+  const highlighted = [...document.querySelectorAll<HTMLElement>(
+    '.source-highlight, .ability-target, .card-frame-inner.highlighted, .cards-under-indicator--highlighted',
+  )].find((el) => {
+    if (el.closest('.scenario-cards')) return false
+    const rect = el.getBoundingClientRect()
+    return rect.width > 0 && rect.height > 0 && rect.bottom >= 0 && rect.right >= 0
+      && rect.top <= window.innerHeight && rect.left <= window.innerWidth
+  })
+
+  if (!highlighted) {
+    focusLightX.value = -1000
+    focusLightY.value = -1000
+    return
+  }
+
+  const rect = highlighted.getBoundingClientRect()
+  focusLightX.value = rect.left + rect.width / 2
+  focusLightY.value = rect.top + rect.height / 2
+}
+
+function scheduleFocusLightUpdate() {
+  if (focusLightAnimationFrame !== null) return
+  focusLightAnimationFrame = requestAnimationFrame(() => {
+    focusLightAnimationFrame = null
+    updateFocusLight()
+  })
+}
+
 const onMove = (event: MouseEvent) => {
   mouseX = event.clientX
   mouseY = event.clientY
   flashlightX.value = event.clientX
   flashlightY.value = event.clientY
+  scheduleFocusLightUpdate()
 }
 
 // callbacks
@@ -1284,6 +1324,9 @@ onMounted(() => {
   ;(window as any).undo = undo
   ;(window as any).debugChoose = choose
   document.addEventListener('mousemove', onMove, { passive: true })
+  focusLightObserver = new MutationObserver(scheduleFocusLightUpdate)
+  focusLightObserver.observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true })
+  scheduleFocusLightUpdate()
   document.addEventListener('keydown', handleKeyPress)
   window.addEventListener('arkham-setting-change', handleSettingChange)
 })
@@ -1292,6 +1335,9 @@ onBeforeRouteLeave(() => close())
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyPress)
   document.removeEventListener('mousemove', onMove)
+  focusLightObserver?.disconnect()
+  focusLightObserver = null
+  if (focusLightAnimationFrame !== null) cancelAnimationFrame(focusLightAnimationFrame)
   window.removeEventListener('arkham-setting-change', handleSettingChange)
   delete (window as any).sendDebug
   delete (window as any).undo
@@ -1332,23 +1378,16 @@ onUnmounted(() => {
       />
     </div>
     <CardOverlay />
-    <button
-      v-if="realityAcidLightDevoured"
-      type="button"
-      class="reality-acid-light-switch"
-      :class="{ 'reality-acid-light-switch--on': realityAcidLightActive }"
-      :title="realityAcidLightActive ? 'Turn the lights back on' : 'Turn the lights off'"
-      @click="toggleRealityAcidLight"
-    >
-      <span class="reality-acid-light-switch-track">
-        <span class="reality-acid-light-switch-knob"></span>
-      </span>
-      <span class="reality-acid-light-switch-label">{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</span>
-    </button>
     <div
       v-if="realityAcidLightActive"
       class="reality-acid-flashlight"
       :style="{ '--flashlight-x': `${flashlightX}px`, '--flashlight-y': `${flashlightY}px` }"
+      aria-hidden="true"
+    ></div>
+    <div
+      v-if="realityAcidLightActive"
+      class="reality-acid-focus-light"
+      :style="{ '--focus-light-x': `${focusLightX}px`, '--focus-light-y': `${focusLightY}px` }"
       aria-hidden="true"
     ></div>
     <Draggable v-if="showShortcuts">
@@ -1736,8 +1775,11 @@ onUnmounted(() => {
           :gameLog="gameLog"
           :playerId="playerId"
           :campaign="game.campaign"
+          :realityAcidLightDevoured="realityAcidLightDevoured"
+          :realityAcidLightActive="realityAcidLightActive"
           @choose="choose"
           @update="update"
+          @toggleRealityAcidLight="toggleRealityAcidLight"
         />
         <ScenarioSettings
           v-else-if="
@@ -1751,8 +1793,11 @@ onUnmounted(() => {
           v-else-if="game.scenario && !gameOver"
           :game="game"
           :playerId="playerId"
+          :realityAcidLightDevoured="realityAcidLightDevoured"
+          :realityAcidLightActive="realityAcidLightActive"
           @choose="choose"
           @update="update"
+          @toggleRealityAcidLight="toggleRealityAcidLight"
         />
         <div
           class="sidebar"
@@ -1800,64 +1845,28 @@ onUnmounted(() => {
   z-index: var(--z-index-9998);
   pointer-events: none;
   background: radial-gradient(
-    circle 190px at var(--flashlight-x) var(--flashlight-y),
-    rgba(0, 0, 0, 0) 0 42%,
-    rgba(0, 0, 0, 0.45) 58%,
-    rgba(0, 0, 0, 0.9) 100%
+    circle 330px at var(--flashlight-x) var(--flashlight-y),
+    rgba(0, 0, 0, 0) 0 52%,
+    rgba(0, 0, 0, 0.12) 68%,
+    rgba(0, 0, 0, 0.82) 100%
   );
-  mix-blend-mode: multiply;
 }
 
-.reality-acid-light-switch {
+.reality-acid-focus-light {
+  --focus-light-x: -1000px;
+  --focus-light-y: -1000px;
   position: fixed;
-  right: 14px;
-  bottom: 14px;
-  z-index: var(--z-index-9999);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid rgb(255 255 255 / 25%);
-  border-radius: 999px;
-  background: rgb(14 17 20 / 88%);
-  color: white;
-  padding: 6px 9px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgb(0 0 0 / 45%);
-  cursor: pointer;
-}
-
-.reality-acid-light-switch-track {
-  position: relative;
-  width: 34px;
-  height: 18px;
-  border-radius: 999px;
-  background: #d6c36a;
-  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 35%);
-}
-
-.reality-acid-light-switch-knob {
-  position: absolute;
-  top: 3px;
-  left: 18px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 50%);
-  transition: left 120ms ease;
-}
-
-.reality-acid-light-switch--on .reality-acid-light-switch-track {
-  background: #263241;
-}
-
-.reality-acid-light-switch--on .reality-acid-light-switch-knob {
-  left: 4px;
-}
-
-.reality-acid-light-switch-label {
-  white-space: nowrap;
+  inset: 0;
+  z-index: calc(var(--z-index-9998) + 1);
+  pointer-events: none;
+  background: radial-gradient(
+    circle 205px at var(--focus-light-x) var(--focus-light-y),
+    rgba(255, 248, 190, 0.72) 0 18%,
+    rgba(255, 230, 128, 0.42) 46%,
+    rgba(255, 226, 120, 0) 76%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.95;
 }
 
 .action {

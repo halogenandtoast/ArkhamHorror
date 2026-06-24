@@ -1,12 +1,15 @@
 module Arkham.Treachery.Cards.RealityAcid (realityAcid, realityAcidEffect) where
 
-import Arkham.Asset.Types (Field (AssetTokens))
+import Arkham.Asset.Types (Field (AssetCard, AssetTokens))
 import Arkham.CampaignLogKey (CampaignLogKey (YouHaveNoSoul))
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Difficulty (Difficulty (..))
+import Arkham.Effect.Builder
 import Arkham.Effect.Import
+import Arkham.Effect.Window
+import Arkham.Event.Types (Field (EventCardId))
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText (chaosTokenImg, cols, flavor, p, scope, setTitle)
 import Arkham.Helpers.Modifiers (modifyEach)
@@ -31,7 +34,7 @@ import Arkham.Scenario.Types (Field (ScenarioTokens))
 import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
 import Arkham.SkillType
 import Arkham.SlotType
-import Arkham.Strategy (IsDraw (..), defer, fromDeck)
+import Arkham.Strategy (IsDraw (..), defer, fromDeck, AfterPlayStrategy(PlaceThisBeneath))
 import Arkham.Token
 import Arkham.Trait hiding (Trait (Cultist, ElderThing, Evidence, Expert, Supply))
 import Arkham.Treachery.Cards qualified as Cards
@@ -105,35 +108,33 @@ instance RunMessage RealityAcid where
         _ -> push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 2) SetAside
       pure t
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
-      let source = attrs.ability 1
-
-      -- An aspect was resolved: return the two consulted tokens to the bag.
-      let done = resetChaosTokens source
-
-      -- Show a modal with the two revealed tokens (rendered inline) and the
-      -- outcome text for the matched chart row. Shown only on a real resolution.
-      let faces = map (.face) tokens
       let
+        source = attrs.ability 1
+
+        -- An aspect was resolved: return the two consulted tokens to the bag.
+        done = resetChaosTokens source
+
+        -- Show a modal with the two revealed tokens (rendered inline) and the
+        -- outcome text for the matched chart row. Shown only on a real resolution.
+        faces = map (.face) tokens
         showOutcome key = scenarioI18n $ flavor $ scope "realityAcid" do
           setTitle "title"
           cols $ for_ faces chaosTokenImg
           p "devours"
           scope "outcomes" $ p key
 
-      -- Returning to the chart for a fresh result: return the two consulted
-      -- tokens, then reveal two new ones from the full bag and consult again.
-      let
+        -- Returning to the chart for a fresh result: return the two consulted
+        -- tokens, then reveal two new ones from the full bag and consult again.
         reroll = do
           done
           push $ RequestChaosTokens source (Just iid) (Reveal 2) SetAside
 
-      -- Used for unlisted combinations and for any aspect that cannot be
-      -- devoured: show the revealed pair, the matched aspect's text (when there
-      -- is one), and the rule that sends us back to the chart, then reveal two
-      -- new tokens and consult again. Per the rules: "If the combination of
-      -- chaos tokens revealed is not listed, or if the listed aspect cannot be
-      -- devoured, reveal two new chaos tokens and consult the chart again."
-      let
+        -- Used for unlisted combinations and for any aspect that cannot be
+        -- devoured: show the revealed pair, the matched aspect's text (when there
+        -- is one), and the rule that sends us back to the chart, then reveal two
+        -- new tokens and consult again. Per the rules: "If the combination of
+        -- chaos tokens revealed is not listed, or if the listed aspect cannot be
+        -- devoured, reveal two new chaos tokens and consult the chart again."
         againWith mkey = do
           scenarioI18n $ flavor $ scope "realityAcid" do
             setTitle "title"
@@ -144,10 +145,13 @@ instance RunMessage RealityAcid where
             p "consultAgain"
           reroll
         again = againWith Nothing
+        baseSkill key st = do
+          showOutcome key
+          withSource source $ effect iid do
+            removeOn $ EffectUntilEndOfNextPhaseWindowFor #mythos
+            apply $ BaseSkillOf st 0
+          done
 
-      let baseSkill key st = showOutcome key >> nextPhaseModifier MythosPhase source iid (BaseSkillOf st 0) >> done
-
-      let
         healFromInvestigator = do
           ok <-
             selectAny $ InvestigatorWithId iid <> oneOf [InvestigatorWithAnyHorror, InvestigatorWithAnyDamage]
@@ -159,28 +163,24 @@ instance RunMessage RealityAcid where
               done
             else againWith (Just "heal")
 
-      -- Several aspects on the chart have no game state to devour ("your voice",
-      -- "your house", etc). Rather than rerolling forever, each can be devoured a
-      -- single time (per investigator or per group), tracked in the scenario meta
-      -- under `key`; once consumed it cannot be devoured again, so consult again.
-      let
+        -- Several aspects on the chart have no game state to devour ("your voice",
+        -- "your house", etc). Rather than rerolling forever, each can be devoured a
+        -- single time (per investigator or per group), tracked in the scenario meta
+        -- under `key`; once consumed it cannot be devoured again, so consult again.
         recordConsumed keyT value = push $ ScenarioSpecific "blobSetMeta" (toJSON (keyT :: Text, value))
-      let
-        oncePerGroup keyT effect = do
+        oncePerGroup keyT eff = do
           consumed <- getScenarioMetaKeyDefault (Key.fromText keyT) False
           if consumed
             then againWith (Just keyT)
-            else showOutcome keyT >> effect >> recordConsumed keyT (toJSON True) >> done
-      let
-        oncePerInvestigator keyT effect = do
+            else showOutcome keyT >> eff >> recordConsumed keyT (toJSON True) >> done
+        oncePerInvestigator keyT eff = do
           consumed <- getScenarioMetaKeyDefault (Key.fromText keyT) []
           if iid `elem` consumed
             then againWith (Just keyT)
-            else showOutcome keyT >> effect >> recordConsumed keyT (toJSON (iid : consumed)) >> done
+            else showOutcome keyT >> eff >> recordConsumed keyT (toJSON (iid : consumed)) >> done
 
-      -- Increase the count of cards beneath Subject 8L-08 with a random, unowned
-      -- player card (used for aspects like a player reference or mini card).
-      let
+        -- Increase the count of cards beneath Subject 8L-08 with a random, unowned
+        -- player card (used for aspects like a player reference or mini card).
         devourRandomUnownedCard = do
           let pool = filter ((`elem` [AssetType, EventType, SkillType]) . cdCardType) (toList allPlayerCards)
           for_ (nonEmpty pool) \defs -> do
@@ -188,8 +188,7 @@ instance RunMessage RealityAcid where
             card <- genPlayerCard def
             devour [toCard card]
 
-      -- Generate Your House (Core #124) and devour it beneath the blob.
-      let
+        -- Generate Your House (Core #124) and devour it beneath the blob.
         devourYourHouse = do
           card <- genEncounterCard Locations.yourHouse
           devour [toCard card]
@@ -318,10 +317,13 @@ instance RunMessage RealityAcid where
                     done
                 -- -1 + (-4 to -8): devour level 1-5 cards of your choice with >= 5 total levels.
                 | handleTokenMatch (== MinusOne) neg4to8 = do
-                    pool <-
-                      select
-                        $ oneOf [inDeckOf iid, inDiscardOf iid, inHandOf NotForPlay iid, inPlayAreaOf iid]
-                    let candidates = filter (\c -> let l = cardLevel c in l >= 1 && l <= 5) pool
+                    nonPlay <- select $ oneOf [inDeckOf iid, inDiscardOf iid, inHandOf NotForPlay iid]
+                    playAssets <-
+                      map snd
+                        <$> selectWithField
+                          AssetCard
+                          (assetControlledBy iid <> AssetCanLeavePlayByNormalMeans <> AssetWithoutModifier CannotLeavePlay)
+                    let candidates = filter (\c -> let l = cardLevel c in l >= 1 && l <= 5) (nonPlay <> playAssets)
                     if sum (map cardLevel candidates) < 5
                       then againWith (Just "levelCards")
                       else showOutcome "levelCards" >> devourLevels iid source 5 candidates
@@ -341,11 +343,17 @@ instance RunMessage RealityAcid where
                     done
                 -- -3 + {skull}/{cultist}/{tablet}/{elderThing}: a Talent, Connection, or Condition asset.
                 | handleTokenMatch (== MinusThree) isSymbol = do
-                    assets <- select $ assetControlledBy iid <> hasAnyTrait [Talent, Connection, Condition]
+                    assets <-
+                      select
+                        $ assetControlledBy iid
+                        <> AssetCanLeavePlayByNormalMeans
+                        <> AssetWithoutModifier CannotLeavePlay
+                        <> hasAnyTrait [Talent, Connection, Condition]
                     chooseToDevour iid showOutcome againWith done "talentAsset" assets devourTarget
                 -- -3 + (-4 to -8): your sense of time. Block abilities on time/watch/chrono cards.
                 | handleTokenMatch (== MinusThree) neg4to8 = do
                     showOutcome "senseOfTime"
+                    recordConsumed "senseOfTimeActive" (toJSON True)
                     iids <- allInvestigators
                     let
                       timeCards =
@@ -358,7 +366,10 @@ instance RunMessage RealityAcid where
                     done
                 -- {skull} + {skull}: the highest-cost Ally asset you control.
                 | handleTokenMatch (== Skull) (== Skull) = do
-                    assets <- select $ AssetWithHighestPrintedCost (assetControlledBy iid <> withTrait Ally)
+                    assets <-
+                      select
+                        $ AssetWithHighestPrintedCost
+                          (assetControlledBy iid <> AssetCanLeavePlayByNormalMeans <> AssetWithoutModifier CannotLeavePlay <> withTrait Ally)
                     chooseToDevour iid showOutcome againWith done "ally" assets devourTarget
                 -- {skull} + {cultist}: all event cards in your hand.
                 | handleTokenMatch (== Skull) (== Cultist) = do
@@ -412,11 +423,21 @@ instance RunMessage RealityAcid where
                     done
                 -- {autoFail} + {skull}/{cultist}: all Spell and Ritual assets you control.
                 | handleTokenMatch (== AutoFail) isSkullCultist = do
-                    assets <- select $ assetControlledBy iid <> hasAnyTrait [Spell, Ritual]
+                    assets <-
+                      select
+                        $ assetControlledBy iid
+                        <> AssetCanLeavePlayByNormalMeans
+                        <> AssetWithoutModifier CannotLeavePlay
+                        <> hasAnyTrait [Spell, Ritual]
                     devourEach showOutcome againWith done "spellRitual" assets devourTarget
                 -- {autoFail} + {tablet}/{elderThing}: all Item assets you control.
                 | handleTokenMatch (== AutoFail) isTabletElder = do
-                    assets <- select $ assetControlledBy iid <> withTrait Item
+                    assets <-
+                      select
+                        $ assetControlledBy iid
+                        <> AssetCanLeavePlayByNormalMeans
+                        <> AssetWithoutModifier CannotLeavePlay
+                        <> withTrait Item
                     devourEach showOutcome againWith done "item" assets devourTarget
                 -- {autoFail} + (+1): the concept of a "discard pile". Until the end of the next
                 -- mythos phase, cards that would be discarded are devoured instead.
@@ -425,14 +446,17 @@ instance RunMessage RealityAcid where
                       Nothing -> againWith (Just "discardPile")
                       Just s -> do
                         showOutcome "discardPile"
+                        recordConsumed "discardPileActive" (toJSON True)
                         iids <- allInvestigators
                         for_ iids \i ->
                           nextPhaseModifier MythosPhase source i (PlaceUnderneathInsteadOfDiscard (toTarget s))
+                        createCardEffect Cards.realityAcid (effectMetaTarget s) source iid
                         done
                 -- {autoFail} + 0: one of your hands. 1 fewer hand slot for the rest of the game.
                 | handleTokenMatch (== AutoFail) (== Zero) = do
                     showOutcome "handSlot"
                     gameModifier source iid (FewerSlots HandSlot 1)
+                    push $ RefillSlots iid []
                     done
                 -- {autoFail} + (-2/-3): 1 countermeasure.
                 | handleTokenMatch (== AutoFail) neg2or3 = do
@@ -534,11 +558,21 @@ realityAcidEffect = cardEffect RealityAcidEffect Cards.realityAcid
 
 instance HasModifiersFor RealityAcidEffect where
   getModifiersFor (RealityAcidEffect attrs) =
-    getSkillTestId >>= \case
-      Nothing -> pure ()
-      Just sid -> modifyEach attrs [SkillTestTarget sid] [AutomaticallyFailIfSucceedByAtLeast 2]
+    case attrs.metaTarget of
+      Just target -> do
+        events <- selectWithField EventCardId $ EventPlayedBy Anyone
+        modifyEach attrs (map (CardIdTarget . snd) events) [SetAfterPlay $ PlaceThisBeneath target]
+      Nothing ->
+        getSkillTestId >>= \case
+          Nothing -> pure ()
+          Just sid -> modifyEach attrs [SkillTestTarget sid] [AutomaticallyFailIfSucceedByAtLeast 2]
 
 instance RunMessage RealityAcidEffect where
   runMessage msg e@(RealityAcidEffect attrs) = runQueueT $ case msg of
-    SkillTestEnds {} -> disableReturn e
+    SkillTestEnds {} | isNothing attrs.metaTarget -> disableReturn e
+    Begin MythosPhase | isJust attrs.metaTarget -> do
+      pure . RealityAcidEffect $ attrs & setEffectMeta True
+    EndPhase | isJust attrs.metaTarget && getEffectMetaDefault False attrs -> do
+      push $ ScenarioSpecific "blobSetMeta" (toJSON ("discardPileActive" :: Text, toJSON False))
+      disableReturn e
     _ -> RealityAcidEffect <$> liftRunMessage msg attrs

@@ -38,11 +38,16 @@ instance RunMessage Subject8L08 where
   runMessage msg e@(Subject8L08 attrs) = runQueueT $ case msg of
     ScenarioSpecific "devour" (maybeResult -> Just target) -> do
       case target of
-        LocationTarget lid -> devourRef attrs (removeLocation lid) lid
-        AssetTarget aid -> devourRef attrs (removeAsset aid) aid
-        EnemyTarget eid -> devourRef attrs (removeEnemy eid) eid
-        TreacheryTarget tid -> devourRef attrs (removeTreachery tid) tid
-        CardIdTarget cid -> devourRef attrs (pure ()) cid
+        LocationTarget lid -> unlessM (hasModifier lid CannotLeavePlay) $ devourRef attrs (removeLocation lid) lid
+        AssetTarget aid -> whenM (selectAny $ AssetWithId aid <> AssetCanLeavePlayByNormalMeans) do
+          unlessM (hasModifier aid CannotLeavePlay) $ devourRef attrs (removeAsset aid) aid
+        EnemyTarget eid -> unlessM (hasModifier eid CannotLeavePlay) $ devourRef attrs (removeEnemy eid) eid
+        TreacheryTarget tid -> unlessM (hasModifier tid CannotLeavePlay) $ devourRef attrs (removeTreachery tid) tid
+        CardIdTarget cid -> do
+          assetsInPlay <- select $ AssetWithCardId cid
+          devourableAssets <- filterM (fmap not . (`hasModifier` CannotLeavePlay))
+            =<< select (AssetWithCardId cid <> AssetCanLeavePlayByNormalMeans)
+          unless (notNull assetsInPlay && null devourableAssets) $ devourRef attrs (pure ()) cid
         _ -> pure ()
       pure e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

@@ -445,16 +445,25 @@ calculateSkillTestResultsData s = do
     op = if FailTies `elem` modifiers' then (>) else (>=)
     baseSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
     succeedByAmount = modifiedSkillValue' - modifiedSkillTestDifficulty
-    failThresholds = [t | AutomaticallyFailIfSucceedByAtLeast t <- modifiers']
-    isSuccess = baseSuccess && not (any (succeedByAmount >=) failThresholds)
-  pure
-    $ SkillTestResultsData
-      currentSkillValue
-      ((if SkillIconsSubtract `elem` modifiers' then negate . abs else id) iconCount - subtractIconCount)
-      chaosTokenValues
-      modifiedSkillTestDifficulty
-      (resultValueModifiers <$ guard (resultValueModifiers /= 0))
-      isSuccess
+    autoFailThresholds = [t | AutomaticallyFailIfSucceedByAtLeast t <- modifiers']
+  if any (succeedByAmount >=) autoFailThresholds
+    then autoFailSkillTestResultsData s
+    else
+      pure
+        $ SkillTestResultsData
+          currentSkillValue
+          ((if SkillIconsSubtract `elem` modifiers' then negate . abs else id) iconCount - subtractIconCount)
+          chaosTokenValues
+          modifiedSkillTestDifficulty
+          (resultValueModifiers <$ guard (resultValueModifiers /= 0))
+          baseSuccess
+
+autoFailSkillTestResultsData :: (HasGame m, Tracing m) => SkillTest -> m SkillTestResultsData
+autoFailSkillTestResultsData s = do
+  modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
+  mods <- getModifiers s
+  let x = getSum $ mconcat [Sum n | SkillTestResultValueModifier n <- mods]
+  pure $ SkillTestResultsData 0 0 0 modifiedSkillTestDifficulty (guard (x /= 0) $> x) False
 
 getCurrentSkillValue :: (HasGame m, Tracing m) => SkillTest -> m Int
 getCurrentSkillValue st = do

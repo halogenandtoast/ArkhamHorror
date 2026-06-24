@@ -51,6 +51,7 @@ export type ModifierType
   | DamageDealt
   | DiscoveredClues
   | SkillTestResultValueModifier
+  | AutomaticallyFailIfSucceedByAtLeast
   | CancelEffects
   | CannotPerformSkillTest
   | GainVictory
@@ -147,6 +148,11 @@ export type DiscoveredClues = {
 
 export type SkillTestResultValueModifier = {
   tag: "SkillTestResultValueModifier"
+  contents: number
+}
+
+export type AutomaticallyFailIfSucceedByAtLeast = {
+  tag: "AutomaticallyFailIfSucceedByAtLeast"
   contents: number
 }
 
@@ -310,6 +316,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('SkillTestResultValueModifier'),
       contents: JsonDecoder.number()
     }, 'SkillTestResultValueModifier'),
+  JsonDecoder.object<AutomaticallyFailIfSucceedByAtLeast>(
+    {
+      tag: JsonDecoder.literal('AutomaticallyFailIfSucceedByAtLeast'),
+      contents: JsonDecoder.number()
+    }, 'AutomaticallyFailIfSucceedByAtLeast'),
   JsonDecoder.object<CancelEffects>(
     {
       tag: JsonDecoder.literal('CancelEffects')

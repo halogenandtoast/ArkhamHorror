@@ -64,6 +64,7 @@ const shouldRender = (mod: Modifier) => {
   if (type.tag === 'RevealAnotherChaosToken') return true
   if (type.tag === 'DoubleSuccess') return true
   if (type.tag === 'DoubleDifficulty') return true
+  if (type.tag === 'AutomaticallyFailIfSucceedByAtLeast') return true
   if (type.tag === 'CannotCommitCards')
     return props.playerId == props.game.investigators[props.skillTest.investigator].playerId
   if (type.tag === 'OtherModifier' && type.contents === 'MayIgnoreLocationEffectsAndKeywords') return true
@@ -449,6 +450,9 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
           </template>
           <template v-if="modifier.type.tag === 'DoubleDifficulty'">
             <span class="text">{{ $t('modifier.doubleDifficulty') }}</span>
+          </template>
+          <template v-if="modifier.type.tag === 'AutomaticallyFailIfSucceedByAtLeast'">
+            <span class="text">{{ $t('modifier.automaticallyFailIfSucceedByAtLeast', { amount: modifier.type.contents }) }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosToken'">
             <span class="text">{{ $t('modifier.cancelMatchingChaosTokensShort') }}</span>

@@ -78,9 +78,11 @@ export interface Props {
   game: Game
   scenario: Scenario
   playerId: string
+  realityAcidLightDevoured?: boolean
+  realityAcidLightActive?: boolean
 }
 const props = defineProps<Props>()
-const emit = defineEmits(['choose'])
+const emit = defineEmits(['choose', 'toggleRealityAcidLight'])
 const debug = useDebug()
 const { addEntry, removeEntry } = useMenu()
 
@@ -856,6 +858,24 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
     })
   }
 
+  if (props.scenario.meta?.senseOfTimeActive === true) {
+    badges.push({
+      key: 'senseOfTime',
+      icon: '🚫⏱️',
+      label: 'No timekeeping',
+      detail: 'Until the agenda advances, investigators cannot use time-keeping devices, ask about the time, or trigger abilities on cards with “time,” “watch,” or “chrono” in their title.',
+    })
+  }
+
+  if (props.scenario.meta?.discardPileActive === true) {
+    badges.push({
+      key: 'discardPile',
+      icon: '🗑️🫥',
+      label: 'No discard piles',
+      detail: 'Until the end of the next mythos phase, cards that would be placed in an investigator discard pile are devoured instead.',
+    })
+  }
+
   const voiceActive = props.scenario.meta?.voiceActive
   if (Array.isArray(voiceActive) && voiceActive.length > 0) {
     const names = voiceActive.map((iid) => props.game.investigators[iid]?.name?.title).filter(Boolean)
@@ -870,7 +890,7 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
   return badges
 })
 
-const showScenarioNotifierBar = computed(() => scenarioBadges.value.length > 0)
+const showScenarioNotifierBar = computed(() => scenarioBadges.value.length > 0 || props.realityAcidLightDevoured === true)
 
 const rotationSteps = ref(0)
 const transpose = <T>(grid: T[][]): T[][] =>
@@ -2183,13 +2203,34 @@ async function addChaosToken(face: any){
         </SkillTest>
 
         <div v-if="showScenarioNotifierBar" class="scenario-badges" aria-label="Scenario reminders">
-          <div v-for="badge in scenarioBadges" :key="badge.key" class="scenario-badge" :title="badge.detail">
+          <div
+            v-for="badge in scenarioBadges"
+            :key="badge.key"
+            class="scenario-badge"
+            v-tooltip="badge.detail"
+            :aria-label="badge.detail ? `${badge.label}: ${badge.detail}` : badge.label"
+          >
             <span class="scenario-badge-icon" aria-hidden="true">{{ badge.icon }}</span>
             <span class="scenario-badge-text">
               <strong>{{ badge.label }}</strong>
               <small v-if="badge.detail">{{ badge.detail }}</small>
             </span>
           </div>
+          <button
+            v-if="realityAcidLightDevoured"
+            type="button"
+            class="scenario-badge reality-acid-light-switch"
+            :class="{ 'reality-acid-light-switch--on': realityAcidLightActive }"
+            :title="realityAcidLightActive ? 'Turn the lights back on' : 'Turn the lights off'"
+            @click="$emit('toggleRealityAcidLight')"
+          >
+            <span class="reality-acid-light-switch-track" aria-hidden="true">
+              <span class="reality-acid-light-switch-knob"></span>
+            </span>
+            <span class="scenario-badge-text reality-acid-light-switch-label">
+              <strong>{{ realityAcidLightActive ? 'Lights off' : 'Lights on' }}</strong>
+            </span>
+          </button>
         </div>
 
       </div>
@@ -2466,8 +2507,8 @@ async function addChaosToken(face: any){
 }
 
 .scenario-cards--has-badges {
-  z-index: auto;
-  padding-bottom: 56px;
+  z-index: calc(var(--z-index-9999) + 2);
+  padding-top: 56px;
 }
 
 .clue {
@@ -2835,9 +2876,10 @@ async function addChaosToken(face: any){
 
 .scenario-badges {
   position: absolute;
+  top: 0;
   right: 0;
-  bottom: 0;
   left: 0;
+  z-index: calc(var(--z-index-9999) + 2);
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -2847,11 +2889,13 @@ async function addChaosToken(face: any){
   overflow: hidden;
   pointer-events: none;
   background: rgba(0, 0, 0, 0.2);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .scenario-badge {
+  position: relative;
   display: inline-flex;
+  pointer-events: auto;
   align-items: center;
   gap: 7px;
   min-width: 0;
@@ -2864,6 +2908,7 @@ async function addChaosToken(face: any){
   padding: 4px 8px 4px 6px;
   box-shadow: 0 1px 3px rgb(0 0 0 / 18%);
 }
+
 
 .scenario-badge-icon {
   flex: 0 0 auto;
@@ -2894,6 +2939,67 @@ async function addChaosToken(face: any){
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.58rem;
+}
+
+.reality-acid-light-switch {
+  z-index: calc(var(--z-index-9999) + 3);
+  isolation: isolate;
+  pointer-events: auto;
+  cursor: pointer;
+  border-color: rgb(255 255 255 / 36%);
+  border-left-color: rgb(255 225 105 / 95%);
+  background: rgb(32 36 42 / 98%);
+  color: #fff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 90%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 65%);
+}
+
+.reality-acid-light-switch--on {
+  box-shadow: 0 0 0 1px rgb(255 225 105 / 16%), 0 0 20px rgb(255 225 105 / 42%), 0 2px 8px rgb(0 0 0 / 65%);
+}
+
+.reality-acid-light-switch-track {
+  position: relative;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  background: #d6c36a;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 35%);
+}
+
+.reality-acid-light-switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 18px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 50%);
+  transition: left 120ms ease;
+}
+
+.reality-acid-light-switch--on .reality-acid-light-switch-track {
+  background: #263241;
+}
+
+.reality-acid-light-switch--on .reality-acid-light-switch-knob {
+  left: 4px;
+}
+
+.reality-acid-light-switch .scenario-badge-text strong {
+  color: #fff;
+  font-size: 0.74rem;
+}
+
+.reality-acid-light-switch .scenario-badge-text small {
+  color: #ffe078;
+  opacity: 1;
+}
+
+.reality-acid-light-switch-label {
+  text-align: left;
 }
 
 .scenario-cards-under {

@@ -338,6 +338,7 @@
     "skillValue": "技能值",
     "doubleSuccess": "两次成功效果",
     "doubleDifficulty": "难度翻倍",
+    "automaticallyFailIfSucceedByAtLeast": "如果成功超过 {amount} 或更多，则自动失败",
     "mayIgnoreLocationEffects": "可以忽略地点效果",
     "skillIconsSubtract": "减去技能图标",
     "skillTestAutomaticallySucceeds": "技能检定自动成功",

@@ -130,14 +130,21 @@ const activeSettings = computed(() => {
     return true
   })
 })
+
+// When a scenario has no standalone settings to configure, there's nothing for
+// the player to do here, so skip the screen entirely by auto-submitting.
+const submitted = ref(false)
+watch(activeSettings, (settings) => {
+  if (settings.length === 0 && !submitted.value) {
+    submitted.value = true
+    submit()
+  }
+}, { immediate: true })
 </script>
 
 <template>
-  <div class="container scroll-container">
+  <div v-if="activeSettings.length > 0" class="container scroll-container">
     <h2>{{ $t('scenarioSettings.title') }}</h2>
-    <div v-if="activeSettings.length == 0">
-      <p>{{ $t('scenarioSettings.noSettings') }}</p>
-    </div>
     <div v-for="setting in activeSettings" :key="setting.key">
       <ScenarioSetting :setting="setting" :scenario="scenario" :game="game" :playerId="playerId" />
     </div>

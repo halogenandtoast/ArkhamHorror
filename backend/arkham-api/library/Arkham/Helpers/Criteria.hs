@@ -7,6 +7,7 @@ import Arkham.Act.Types (Field (..))
 import Arkham.Action qualified as Action
 import Arkham.Actions (actionsToList)
 import {-# SOURCE #-} Arkham.Asset (createAsset)
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..))
 import Arkham.Attack.Types
 import Arkham.Campaigns.EdgeOfTheEarth.Partner (getPartner)
@@ -83,6 +84,7 @@ import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Tracing
+import Arkham.Trait (Trait (Ritual, Spell))
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkWhen)
 import Arkham.Window qualified as Window
@@ -216,21 +218,13 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCrit
       case source'.asset of
         Just trueMagick -> do
           attrs <- getAttrs @Asset trueMagick
-          hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
-          let replaceAssetId = const attrs.id
-          let replaceAssetIds = over biplate replaceAssetId
-          let handEntities =
-                flip map hand \c ->
-                  overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
-                    $ createAsset c
-                    $ unsafeFromCardId c.id
-          getGame >>= runReaderT do
-            flip anyM handEntities \a -> do
-              local (entitiesL %~ addEntity a) do
-                modifiers <- getMonoidalMap <$> execWriterT (getModifiersFor a)
-                local (modifiersL <>~ modifiers) do
-                  let handAbilities = map (overCost replaceAssetIds) (getAbilities a)
-                  anyM (getCanPerformAbility iid windows') handAbilities
+          -- The tooltip is usable if ANY in-hand [Spell] asset has a performable
+          -- ability (action/fast/reaction) when treated as True Magick. We reuse
+          -- the same hand-entity builder that surfaces the re-sourced abilities to
+          -- Sign Magick (3) so the two stay in lockstep.
+          results <- eachTrueMagickHandAbility attrs iid \_card abilities ->
+            anyM (getCanPerformAbility iid windows') abilities
+          pure $ or results
         _ -> error $ "wrong source: " <> show source'
     Criteria.HasCalculation c valueMatcher -> do
       value <- calculate c
@@ -859,3 +853,100 @@ passesEnemyCriteria iid source windows' criterion = do
         case mapMaybe getAttackingEnemy windows' of
           [] -> error "can not be called without enemy source"
           xs -> pure $ Matcher.NotEnemy (concatMap Matcher.EnemyWithId xs)
+
+-- | True Magick: Reworking Reality (5) lets its controller resolve abilities on
+-- [Spell] assets in their hand by treating True Magick as if it were the
+-- revealed asset. The in-hand spell assets are NOT preloaded into
+-- gameInHandEntities (they carry no InHandEffect), and getAbilities is pure so
+-- it cannot read the hand — therefore the borrowed abilities have to be produced
+-- here, in the HasGame-aware collector.
+--
+-- For each in-hand [Spell] asset we build a throwaway asset entity that wears
+-- True Magick's id and card code (so its costs/charges resolve against True
+-- Magick), load that entity's modifiers, and hand its cost-rewritten abilities
+-- to the callback. This is the single source of truth shared by both:
+--   * the HasTrueMagick criterion (True Magick's own tooltip), and
+--   * getTrueMagickInHandAbilities (the abilities surfaced to the matcher DSL).
+eachTrueMagickHandAbility
+  :: (HasCallStack, Tracing m, HasGame m)
+  => AssetAttrs
+  -> InvestigatorId
+  -> (Card -> [Ability] -> ReaderT Game m a)
+  -> m [a]
+eachTrueMagickHandAbility attrs iid f = do
+  hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
+  -- rewrite every reference to the throwaway asset id back onto True Magick's id
+  let replaceAssetIds = over biplate (const attrs.id)
+  getGame >>= runReaderT do
+    for hand \c -> do
+      let a =
+            overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
+              $ createAsset c
+              $ unsafeFromCardId c.id
+      local (entitiesL %~ addEntity a) do
+        modifiers <- getMonoidalMap <$> execWriterT (getModifiersFor a)
+        local (modifiersL <>~ modifiers) do
+          f c (map (overCost replaceAssetIds) (getAbilities a))
+
+-- | The [action] abilities True Magick currently grants from its controller's
+-- hand, re-sourced onto True Magick via @ProxySource (CardIdSource cid)@ so that
+-- @ability.source.asset == trueMagickId@. This is what makes the matcher DSL
+-- (AssetAbility/AssetWithPerformableAbility) — and therefore Sign Magick (3) —
+-- able to target True Magick. These are spliced into getGameAbilities alongside
+-- the generic in-hand asset path; getAbilities cannot produce them because it is
+-- pure and cannot read the hand.
+--
+-- INVARIANT: like every other path in getGameAbilities, this surfaces CANDIDATE
+-- abilities only — it deliberately does NOT call getCanPerformAbility. Doing so
+-- here would re-enter getGameAbilities (criteria evaluation selects abilities)
+-- on the hot path. Performability is the consumer's job (AssetWithPerformableAbility
+-- and Sign Magick (3) both filter with getCanPerformAbility downstream).
+getTrueMagickInHandAbilities :: (HasCallStack, Tracing m, HasGame m) => m [Ability]
+getTrueMagickInHandAbilities = do
+  trueMagicks <- select $ Matcher.assetIs Assets.trueMagickReworkingReality5
+  fmap concat $ for trueMagicks \trueMagick -> do
+    attrs <- getAttrs @Asset trueMagick
+    case attrs.controller of
+      Just iid | attrs.isInPlay ->
+        fmap concat $ eachTrueMagickHandAbility attrs iid \c abilities ->
+          pure
+            [ ab {abilitySource = proxy (CardIdSource c.id) attrs}
+            | ab <- abilities
+            , isActionAbilityType ab
+            ]
+      _ -> pure []
+
+-- | The Spell/Ritual traits True Magick (5) should currently read as, so that
+-- Sign Magick (3)'s @hasAnyTrait [Spell, Ritual]@ criterion (and its
+-- @AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]@ resolution) match
+-- it — but ONLY when True Magick can actually act as a spell right now (there is
+-- an in-hand [Spell] asset with an [action] ability to borrow). We deliberately
+-- restrict the additions to Spell/Ritual: True Magick must NOT read as a Spell
+-- at rest, or it would wrongly be swept up by "all your Spell assets" effects.
+--
+-- This is intentionally modifier-free (pure getAbilities, no getModifiersFor /
+-- getCanPerformAbility) so it is safe to call from True Magick's HasModifiersFor
+-- without re-entering modifier collection. Full performability is still enforced
+-- when the borrowed ability is offered via getTrueMagickInHandAbilities.
+getTrueMagickGrantedTraits :: (HasGame m, Tracing m) => AssetAttrs -> m [Trait]
+getTrueMagickGrantedTraits attrs = case attrs.controller of
+  Just iid | attrs.isInPlay -> do
+    hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
+    let castable c =
+          let a =
+                overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
+                  $ createAsset c
+                  $ unsafeFromCardId c.id
+           in any isActionAbilityType (getAbilities a)
+    pure
+      $ nub
+      $ filter (`elem` [Spell, Ritual])
+      $ concatMap (toList . cdCardTraits . toCardDef) (filter castable hand)
+  _ -> pure []
+
+-- shared with getTrueMagickInHandAbilities: a borrowed in-hand spell only counts
+-- if it exposes an [action] ability (that is what Sign Magick (3) borrows).
+isActionAbilityType :: Ability -> Bool
+isActionAbilityType ab = case abilityType ab of
+  ActionAbility {} -> True
+  _ -> False

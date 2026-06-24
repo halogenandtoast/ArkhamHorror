@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.Game
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Ability (getCanPerformAbility)
+import Arkham.Helpers.Criteria (getTrueMagickGrantedTraits)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
@@ -36,12 +37,22 @@ trueMagickReworkingReality5 = asset (TrueMagickReworkingReality5 . (`with` Metad
 
 instance HasModifiersFor TrueMagickReworkingReality5 where
   getModifiersFor (TrueMagickReworkingReality5 (a `With` meta)) = do
-    for_ (currentAsset meta) \b -> do
-      let selfTraits = cdCardTraits (toCardDef a)
-      let otherTraits = cdCardTraits (toCardDef b)
-      let removals = toList $ selfTraits `difference` otherTraits
-      let additions = toList $ otherTraits `difference` selfTraits
-      modifySelf a $ map AddTrait additions <> map RemoveTrait removals
+    case currentAsset meta of
+      -- Mid-resolution: True Magick IS the revealed asset, so copy its traits
+      -- exactly (e.g. so Twila / "Spell" triggers see the borrowed asset).
+      Just b -> do
+        let selfTraits = cdCardTraits (toCardDef a)
+        let otherTraits = cdCardTraits (toCardDef b)
+        let removals = toList $ selfTraits `difference` otherTraits
+        let additions = toList $ otherTraits `difference` selfTraits
+        modifySelf a $ map AddTrait additions <> map RemoveTrait removals
+      -- At rest: read as Spell/Ritual ONLY when there is a castable in-hand
+      -- [Spell] asset to borrow, so Sign Magick (3)'s hasAnyTrait [Spell, Ritual]
+      -- criterion can target True Magick. Restricted to Spell/Ritual to avoid
+      -- True Magick being swept up by "all your Spell assets" effects at rest.
+      Nothing -> do
+        traits <- getTrueMagickGrantedTraits a
+        modifySelf a $ map AddTrait traits
 
 -- This tooltip is handled specially
 instance HasAbilities TrueMagickReworkingReality5 where

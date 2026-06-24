@@ -1818,13 +1818,19 @@ abilityMatches a@Ability {..} = \case
   BasicAbility -> pure abilityBasic
   HauntedAbility -> pure $ abilityType == Haunted
   AssetAbility assetMatcher -> do
-    abilities <- concatMap getAbilities <$> (traverse getAsset =<< select assetMatcher)
-    -- TrueMagick wraps borrowed abilities in ProxySource (CardIdSource _) so
-    -- we unwrap the proxy
+    assetIds <- select assetMatcher
+    abilities <- concatMap getAbilities <$> traverse getAsset assetIds
+    -- TrueMagick wraps borrowed abilities in ProxySource (CardIdSource _) so we
+    -- unwrap the proxy. The borrowed ability body is the in-hand spell's, never
+    -- in True Magick's pure getAbilities, so we also accept a proxy whose
+    -- .asset (== trueMagickId) is one of the matched assets.
     let unproxied = case abilitySource of
           ProxySource (CardIdSource _) s -> a {abilitySource = s}
           _ -> a
-    pure $ a `elem` abilities || unproxied `elem` abilities
+    let isProxiedToAsset = case abilitySource of
+          ProxySource (CardIdSource _) _ -> maybe False (`elem` assetIds) abilitySource.asset
+          _ -> False
+    pure $ a `elem` abilities || unproxied `elem` abilities || isProxiedToAsset
   TriggeredAbility -> pure $ isTriggeredAbility a
   ActiveAbility -> do
     active <- view activeAbilitiesL <$> getGame
@@ -1914,8 +1920,16 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     BasicAbility -> pure $ filter abilityBasic as
     HauntedAbility -> pure $ filter ((== Haunted) . abilityType) as
     AssetAbility assetMatcher -> do
-      abilities <- concatMap getAbilities <$> (traverse getAsset =<< select assetMatcher)
-      pure $ filter (`elem` abilities) as
+      assetIds <- select assetMatcher
+      abilities <- concatMap getAbilities <$> traverse getAsset assetIds
+      -- TrueMagick (5) re-sources borrowed in-hand spell abilities via
+      -- ProxySource (CardIdSource _) (AssetSource trueMagickId); those abilities
+      -- are NOT in the asset's pure getAbilities, so match them by their proxied
+      -- .asset instead (mirrors the abilityMatches proxy handling above).
+      let isProxiedToAsset a = case abilitySource a of
+            src@(ProxySource (CardIdSource _) _) -> maybe False (`elem` assetIds) src.asset
+            _ -> False
+      pure $ filter (\a -> a `elem` abilities || isProxiedToAsset a) as
     TriggeredAbility -> pure $ filter isTriggeredAbility as
     ActiveAbility -> do
       active <- view activeAbilitiesL <$> getGame
@@ -2008,6 +2022,18 @@ getGameAbilities = do
   inHandEventAbilities <-
     concatMap (filter inHandAbility . getAbilities)
       <$> filterM unblanked (toList $ g ^. inHandEntitiesL . each . eventsL)
+  -- INVARIANT: in-hand asset abilities surface in getGameAbilities iff their
+  -- criteria carry InYourHand — the same guard as in-hand events. (Assets only
+  -- land in gameInHandEntities when their card def has cdCardInHandEffects.)
+  inHandAssetAbilities <-
+    concatMap (filter inHandAbility . getAbilities)
+      <$> filterM unblanked (toList $ g ^. inHandEntitiesL . each . assetsL)
+  -- True Magick (5) re-sources its controller's in-hand [Spell] asset [action]
+  -- abilities onto itself. These cannot come from the path above (the spells
+  -- carry no InHandEffect, so they are not preloaded, and getAbilities is pure)
+  -- so the HasGame-aware collector produces them here, already proxied so that
+  -- ability.source.asset == trueMagickId for the matcher DSL.
+  trueMagickInHandAbilities <- getTrueMagickInHandAbilities
   inDiscardAssetAbilities <-
     concatMap (filter inDiscardAbility . getAbilities)
       <$> filterM unblanked (toList $ g ^. inDiscardEntitiesL . each . assetsL)
@@ -2021,6 +2047,8 @@ getGameAbilities = do
     <> treacheryAbilities
     <> eventAbilities
     <> inHandEventAbilities
+    <> inHandAssetAbilities
+    <> trueMagickInHandAbilities
     <> inDiscardAssetAbilities
     <> actAbilities
     <> agendaAbilities

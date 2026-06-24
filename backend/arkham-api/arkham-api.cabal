@@ -6886,6 +6886,7 @@ test-suite spec
       Arkham.Asset.Assets.SegmentOfOnyx1Spec
       Arkham.Asset.Assets.Shotgun4Spec
       Arkham.Asset.Assets.ShrivellingSpec
+      Arkham.Asset.Assets.SignMagick3Spec
       Arkham.Asset.Assets.SolemnVowSpec
       Arkham.Asset.Assets.StrayCatSpec
       Arkham.Asset.Assets.SummonedHound1Spec
@@ -6895,6 +6896,7 @@ test-suite spec
       Arkham.Asset.Assets.TheMuscleUnpracticedSpec
       Arkham.Asset.Assets.TheNecronomiconSpec
       Arkham.Asset.Assets.Tonys38LongColtSpec
+      Arkham.Asset.Assets.TrueMagickReworkingReality5Spec
       Arkham.Asset.Assets.WendysAmuletSpec
       Arkham.Asset.Assets.ZoeysCrossSpec
       Arkham.Campaign.NightOfTheZealot.ScenariosSpec

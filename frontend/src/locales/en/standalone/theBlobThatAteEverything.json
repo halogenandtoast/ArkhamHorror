@@ -57,6 +57,9 @@
     },
     "church": {
       "evade": "{'{'}action{'}'} If there are no clues on Church: Choose an Ooze enemy at Church, or a connecting location. Move the chosen enemy one location away from Church and automatically evade it. (Group limit once per game.)"
+    },
+    "theMilitarysPlan": {
+      "action": "{'{'}action{'}'}: Test {'{'}intellect{'}'} or {'{'}agility{'}'} (3). If you succeed, remove the horror token on this location."
     }
   },
   "specialRules": [
@@ -112,10 +115,6 @@
       "healHorror": "Heal 3 horror",
       "gainResources": "Gain 5 resources",
       "drawCards": "Draw 3 cards"
-    },
-    "slimyStreets": {
-      "takeDamage": "Take 1 damage",
-      "takeHorror": "Take 1 horror"
     }
   },
   "realityAcid": {

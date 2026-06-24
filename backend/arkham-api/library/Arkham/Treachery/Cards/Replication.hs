@@ -1,16 +1,15 @@
 module Arkham.Treachery.Cards.Replication (replication) where
 
-import Arkham.Capability
 import Arkham.Card.CardDef (cdHealth, fixedHealth, toCardDef)
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (EnemyCard, EnemyDamage, EnemyHealth, EnemyLocation))
-import Arkham.Helpers.Scenario (getEncounterDeckKey)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.CreateEnemy
 import Arkham.Projection
-import Arkham.Trait (Trait (Manifold))
 import Arkham.Tracing
+import Arkham.Trait (Trait (Manifold))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -21,13 +20,11 @@ newtype Replication = Replication TreacheryAttrs
 replication :: TreacheryCard Replication
 replication = treachery Replication Cards.replication
 
--- | Returns the Manifold enemy in play with the most damage on it (if any).
 getMostDamagedManifold :: (HasGame m, Tracing m) => m (Maybe EnemyId)
 getMostDamagedManifold = do
   manifolds <- selectWithField EnemyDamage $ EnemyWithTrait Manifold
   pure $ fst <$> headMay (sortOn (Down . snd) manifolds)
 
--- | The enemy's printed health (Nothing if it has variable/special/no health).
 getEnemyPrintedHealth :: (HasGame m, Tracing m) => EnemyId -> m (Maybe Int)
 getEnemyPrintedHealth eid = do
   card <- field EnemyCard eid
@@ -39,21 +36,9 @@ instance RunMessage Replication where
       getMostDamagedManifold >>= \case
         Nothing -> gainSurge attrs
         Just mostDamaged -> do
-          hasEncounterDeck <- can.target.encounterDeck iid
-          if hasEncounterDeck
-            then do
-              key <- getEncounterDeckKey iid
-              -- Discard until another Manifold enemy with equal or lower printed
-              -- health than the most-damaged one is discarded.
-              mThreshold <- getEnemyPrintedHealth mostDamaged
-              let withinHealth = maybe AnyCard CardWithMaxPrintedHealth mThreshold
-              push
-                $ DiscardUntilFirst
-                  iid
-                  (toSource attrs)
-                  (Deck.EncounterDeckByKey key)
-                  (BasicCardMatch $ #enemy <> CardWithTrait Manifold <> withinHealth)
-            else gainSurge attrs
+          withinHealth <- maybe AnyCard CardWithMaxPrintedHealth <$> getEnemyPrintedHealth mostDamaged
+          discardUntilFirst iid attrs Deck.EncounterDeck
+            $ basic (#enemy <> CardWithTrait Manifold <> withinHealth)
       pure t
     RequestedEncounterCard (isSource attrs -> True) (Just iid) mcard -> do
       mMostDamaged <- getMostDamagedManifold
@@ -62,35 +47,29 @@ instance RunMessage Replication where
           field EnemyLocation mostDamaged >>= \case
             Nothing -> gainSurge attrs
             Just lid -> do
-              -- Spawn the discarded enemy (already constrained to printed health
-              -- <= the most-damaged enemy by the discard matcher) at the same
-              -- location as the most-damaged Manifold enemy. After it is created,
-              -- redistribute damage between the two (see HandleTargetChoice).
               runCreateEnemyT card lid \enemyId -> do
                 setCreationInvestigator iid
-                afterCreate
-                  $ push
-                  $ HandleTargetChoice iid (toSource attrs) (EnemyTarget enemyId)
+                afterCreate $ handleTarget iid attrs enemyId
         _ -> gainSurge attrs
       pure t
-    HandleTargetChoice _ (isSource attrs -> True) (EnemyTarget spawned) -> do
-      -- Redistribute damage between the most-damaged Manifold enemy and the
-      -- newly spawned one so that remaining health on both is as equal as
-      -- possible. The spawned enemy starts with 0 damage, so total damage is
-      -- conserved on the most-damaged enemy.
+    HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget spawned) -> do
       mMostDamaged <- getMostDamagedManifold
       for_ mMostDamaged \mostDamaged -> when (mostDamaged /= spawned) do
         dmgA <- field EnemyDamage mostDamaged
         hA <- fromMaybe 0 <$> field EnemyHealth mostDamaged
         hB <- fromMaybe 0 <$> field EnemyHealth spawned
-        let total = dmgA -- spawned enemy starts undamaged
-        -- remaining-health sum is fixed = (hA + hB) - total. Split it so the
-        -- two remaining-health values are as equal as possible.
-        let remainingSum = (hA + hB) - total
-        let targetRemainingA = max 0 (min hA ((remainingSum + 1) `div` 2))
-        let dmgA' = max 0 (min hA (hA - targetRemainingA))
-        let toMove = max 0 (dmgA - dmgA')
-        when (toMove > 0)
-          $ moveTokensNoDefeated attrs mostDamaged spawned #damage toMove
+        let remainingA = max 0 (hA - dmgA)
+        let remainingSum = remainingA + hB
+        let moveable = min dmgA hB
+        let toMoveFor desiredRemainingA = max 0 (min moveable (desiredRemainingA - remainingA))
+        let toMoveHigh = toMoveFor ((remainingSum + 1) `div` 2)
+        let toMoveLow = toMoveFor (remainingSum `div` 2)
+        let
+          move :: ReverseQueue m => Int -> m ()
+          move toMove = when (toMove > 0) $ moveTokensNoDefeated attrs mostDamaged spawned #damage toMove
+        if toMoveHigh == toMoveLow
+          then move toMoveHigh
+          else chooseOneM iid $ targets [mostDamaged, spawned] \chosen ->
+            move $ if chosen == mostDamaged then toMoveHigh else toMoveLow
       pure t
     _ -> Replication <$> liftRunMessage msg attrs

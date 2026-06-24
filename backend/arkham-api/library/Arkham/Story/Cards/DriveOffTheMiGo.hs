@@ -24,15 +24,18 @@ driveOffTheMiGo = story DriveOffTheMiGo Cards.driveOffTheMiGo & persistStory
 
 instance HasAbilities DriveOffTheMiGo where
   getAbilities (DriveOffTheMiGo a) =
-    [ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny (enemyIs Enemies.miGoGeneral)
-    , restricted a 2 (exists $ LocationWithTitle "Fungus Mound" <> LocationWithoutClues)
-        $ forced AnyWindow
-    , restricted
-        a
-        3
-        (exists $ LocationWithTitle "Fungus Mound" <> LocationWithClues (GreaterThanOrEqualTo $ PerPlayer 4))
-        $ forced AnyWindow
-    ]
+    guard (toResultDefault False a.meta)
+      *> [ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny (enemyIs Enemies.miGoGeneral)
+         , onlyOnce
+             $ restricted a 2 (exists $ LocationWithTitle "Fungus Mound" <> LocationWithoutClues)
+             $ forced AnyWindow
+         , onlyOnce
+             $ restricted
+               a
+               3
+               (exists $ LocationWithTitle "Fungus Mound" <> LocationWithClues (GreaterThanOrEqualTo $ PerPlayer 4))
+             $ forced AnyWindow
+         ]
 
 instance RunMessage DriveOffTheMiGo where
   runMessage msg s@(DriveOffTheMiGo attrs) = runQueueT $ case msg of
@@ -41,7 +44,10 @@ instance RunMessage DriveOffTheMiGo where
       createEnemyAt_ Enemies.miGoGeneral fungusMound
       n <- getPlayerCount
       placeClues (toSource attrs) fungusMound n
+      afterStoryResolution attrs $ doStep 0 msg
       pure $ DriveOffTheMiGo $ attrs & placementL .~ Global
+    DoStep 0 (ResolveThisStory _ (is attrs -> True)) -> do
+      pure $ DriveOffTheMiGo $ attrs & metaL .~ toJSON True
     UseThisAbility iid (isSource attrs -> True) n | n `elem` [1, 2] -> do
       remember TheMiGoWereDrivenOff
       flipOver iid attrs

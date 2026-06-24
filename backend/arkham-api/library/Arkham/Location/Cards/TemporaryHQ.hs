@@ -1,7 +1,9 @@
 module Arkham.Location.Cards.TemporaryHQ (temporaryHQ) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.GameValue
+import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -20,17 +22,34 @@ instance HasAbilities TemporaryHQ where
   getAbilities (TemporaryHQ a) =
     extendRevealed1 a
       $ scenarioI18n
-      $ withI18nTooltip "temporaryHQ.action"
-      $ restricted a 1 Here
+      $ tooltip "temporaryHQ.action"
+      $ restricted
+        a
+        1
+        ( Here
+            <> youExist
+              ( oneOf
+                  [ can.draw.cards
+                  , can.gain.resources
+                  , can.heal.damage (a.ability 1)
+                  , can.heal.horror (a.ability 1)
+                  ]
+              )
+        )
       $ actionAbilityWithCost (SpendTokenCost Token.Resource (TargetIs ScenarioTarget))
 
 instance RunMessage TemporaryHQ where
   runMessage msg l@(TemporaryHQ attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      damageOk <- canHaveDamageHealed (attrs.ability 1) iid
+      horrorOk <- canHaveHorrorHealed (attrs.ability 1) iid
+      resourcesOk <- can.gain.resources iid
+      drawOk <- can.draw.cards iid
+
       chooseOneM iid $ scenarioI18n do
-        labeled' "temporaryHQ.healDamage" $ healDamage iid (attrs.ability 1) 3
-        labeled' "temporaryHQ.healHorror" $ healHorror iid (attrs.ability 1) 3
-        labeled' "temporaryHQ.gainResources" $ gainResources iid (attrs.ability 1) 5
-        labeled' "temporaryHQ.drawCards" $ drawCards iid (attrs.ability 1) 3
+        labeledValidate' damageOk "temporaryHQ.healDamage" $ healDamage iid (attrs.ability 1) 3
+        labeledValidate' horrorOk "temporaryHQ.healHorror" $ healHorror iid (attrs.ability 1) 3
+        labeledValidate' resourcesOk "temporaryHQ.gainResources" $ gainResources iid (attrs.ability 1) 5
+        labeledValidate' drawOk "temporaryHQ.drawCards" $ drawCards iid (attrs.ability 1) 3
       pure l
     _ -> TemporaryHQ <$> liftRunMessage msg attrs

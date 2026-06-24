@@ -2534,7 +2534,10 @@ runGameMessage msg g = case msg of
         (\t -> checkWindows [mkWindow t Window.AtBeginningOfRound])
         [#when, Timing.AtIf, #after]
     pushAll windows'
-    pure g
+    pure
+      $ g
+      & (phaseL .~ MythosPhase)
+      & (phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep)
   EndRound -> do
     pushAllEnd [BeginRoundWindow, BeginRound, Begin MythosPhase]
     let

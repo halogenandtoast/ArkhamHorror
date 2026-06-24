@@ -1,11 +1,8 @@
 module Arkham.Treachery.Cards.ConsumingMaw (consumingMaw) where
 
 import Arkham.Ability
-import Arkham.Asset.Types (Field (..))
 import Arkham.Helpers.Window (getDefeatedAsset)
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Projection
-import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted hiding (AssetDefeated)
 
@@ -18,7 +15,7 @@ consumingMaw = treachery ConsumingMaw Cards.consumingMaw
 
 instance HasAbilities ConsumingMaw where
   getAbilities (ConsumingMaw a) =
-    [mkAbility a 1 $ forced $ AssetDefeated #after (BySource $ SourceIs $ toSource a) AnyAsset]
+    [mkAbility a 1 $ SilentForcedAbility $ AssetDefeated #when (BySource $ SourceIs $ toSource a) AnyAsset]
 
 instance RunMessage ConsumingMaw where
   runMessage msg t@(ConsumingMaw attrs) = runQueueT $ case msg of
@@ -30,7 +27,6 @@ instance RunMessage ConsumingMaw where
       assignDamage iid attrs n
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 (getDefeatedAsset -> aid) _ -> do
-      card <- field AssetCard aid
-      devour [card]
+      scenarioSpecific "devour" (toTarget aid)
       pure t
     _ -> ConsumingMaw <$> liftRunMessage msg attrs

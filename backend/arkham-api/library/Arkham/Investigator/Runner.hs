@@ -98,6 +98,11 @@ import Arkham.History
 import Arkham.I18n (cardNameVar, countVar, ikey', keyVar, withI18n)
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
+import Arkham.Investigator.Runner.Action
+import Arkham.Investigator.Runner.Card
+import Arkham.Investigator.Runner.Damage
+import Arkham.Investigator.Runner.Movement
+import Arkham.Investigator.Runner.Search
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key
 import Arkham.Keyword (Keyword (Starting))
@@ -106,7 +111,6 @@ import Arkham.Matcher (
   AssetMatcher (..),
   CardMatcher (..),
   EnemyMatcher (..),
-  coveredByAnyInPlayEnemy,
   EventMatcher (..),
   ForPlay (..),
   InvestigatorMatcher (..),
@@ -116,6 +120,7 @@ import Arkham.Matcher (
   assetIs,
   at_,
   cardIs,
+  coveredByAnyInPlayEnemy,
   locationWithInvestigator,
   oneOf,
   orConnected,
@@ -153,11 +158,6 @@ import Data.List qualified as List
 import Data.Map.Strict qualified as Map
 import Data.Monoid
 import Data.Set qualified as Set
-import Arkham.Investigator.Runner.Damage
-import Arkham.Investigator.Runner.Search
-import Arkham.Investigator.Runner.Movement
-import Arkham.Investigator.Runner.Card
-import Arkham.Investigator.Runner.Action
 
 instance RunMessage Investigator where
   runMessage msg i@(Investigator (a :: original)) =
@@ -177,9 +177,6 @@ instance RunMessage InvestigatorAttrs where
 
 -- Longest prefix admitting a system of distinct representatives: multi-type actions
 -- (e.g. Fight+Activate from a bold-Fight play) contribute one chosen type per action.
-
-
-
 
 overMetaKey
   :: forall a
@@ -319,8 +316,6 @@ getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@
     ]
 getWindowSkippable _ _ _ = pure True
 
-
-
 runWindow
   :: (HasGame m, Tracing m, HasQueue Message m)
   => InvestigatorAttrs -> [Window] -> [Ability] -> [Card] -> m ()
@@ -376,7 +371,6 @@ runWindow attrs windows actions playableCards = do
               )
               actionsWithMatchingWindows
             <> [SkipTriggersButton iid | skippable]
-
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
@@ -1112,13 +1106,35 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   CancelHorror iid n | iid == investigatorId -> handleCancelHorror a iid n
   InvestigatorDirectDamage iid source damage horror | iid == toId a -> handleInvestigatorDirectDamage a iid source damage horror
   InvestigatorAssignDamage iid source strategy damage horror | iid == toId a -> handleInvestigatorAssignDamage a iid source strategy damage horror
-  InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets | iid == toId a, isDeferredStrategy damageStrategy -> handleInvestigatorDoAssignDamageDeferred a iid source damageStrategy damageTargets horrorTargets
-  InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets | iid == toId a -> handleInvestigatorDoAssignDamage a iid source damageStrategy damageTargets horrorTargets
-  InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets horrorTargets | iid == toId a -> handleInvestigatorDoAssignDamageV2 a iid source matcher health damageTargets horrorTargets
-  InvestigatorDoAssignDamage iid source DamageEvenly matcher 0 sanity damageTargets horrorTargets | iid == toId a -> handleInvestigatorDoAssignDamageV3 a iid source matcher sanity damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets
+    | iid == toId a
+    , isDeferredStrategy damageStrategy ->
+        handleInvestigatorDoAssignDamageDeferred a iid source damageStrategy damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets
+    | iid == toId a ->
+        handleInvestigatorDoAssignDamage a iid source damageStrategy damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets horrorTargets
+    | iid == toId a ->
+        handleInvestigatorDoAssignDamageV2 a iid source matcher health damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source DamageEvenly matcher 0 sanity damageTargets horrorTargets
+    | iid == toId a ->
+        handleInvestigatorDoAssignDamageV3 a iid source matcher sanity damageTargets horrorTargets
   InvestigatorDoAssignDamage iid _ DamageEvenly _ _ _ _ _ | iid == investigatorId -> handleInvestigatorDoAssignDamageV4 a iid
-  InvestigatorDoAssignDamage iid source SingleTarget matcher health sanity damageTargets horrorTargets | iid == toId a -> handleInvestigatorDoAssignDamageV5 a iid source matcher health sanity damageTargets horrorTargets
-  InvestigatorDoAssignDamage iid source strategy matcher health sanity damageTargets horrorTargets | iid == toId a -> handleInvestigatorDoAssignDamageV6 a iid source strategy matcher health sanity damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source SingleTarget matcher health sanity damageTargets horrorTargets
+    | iid == toId a ->
+        handleInvestigatorDoAssignDamageV5 a iid source matcher health sanity damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source strategy matcher health sanity damageTargets horrorTargets
+    | iid == toId a ->
+        handleInvestigatorDoAssignDamageV6
+          a
+          iid
+          source
+          strategy
+          matcher
+          health
+          sanity
+          damageTargets
+          horrorTargets
   Investigate investigation | investigation.investigator == investigatorId && investigation.isAction -> do
     handleSkillTestNesting_ investigation.skillTest msg do
       let (beforeWindowMsg, _, afterWindowMsg) = frame (Window.PerformAction investigatorId #investigate)
@@ -1407,7 +1423,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push $ RefillSlots iid []
     -- N.B. Only remove the single slot being adjusted. The `Eq Slot` instance
     -- treats every AdjustableSlot as equal, so `filter (/= slot)` would wipe out
-    -- *all* adjustable slots of this type (e.g. both of two Hidden Pockets),
+    -- \*all* adjustable slots of this type (e.g. both of two Hidden Pockets),
     -- silently dropping a slot and forcing an asset to be discarded. We match on
     -- exact source equality rather than `isSlotSource`, because two Hidden Pockets
     -- attached to the same asset share an AssetSource (so the fuzzy `isSlotSource`
@@ -1969,6 +1985,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 $ (slotsL %~ maybe id removeFromSlots mAssetId)
                 . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
                 . (handL %~ filter (/= card))
+                . (discardL %~ filter ((/= card) . PlayerCard))
           )
           cards
     let a' = a & update & foundCardsL %~ Map.map (filter (`notElem` cards))
@@ -2466,7 +2483,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   ResetMetadata (isTarget a -> True) -> pure $ a & metaL .~ object []
   _ -> pure a
 
-
 takeUpkeepResources :: InvestigatorAttrs -> Runnable InvestigatorAttrs
 takeUpkeepResources a = do
   fullModifiers <- getModifiers' a
@@ -2491,9 +2507,10 @@ takeUpkeepResources a = do
             $ chooseOne
               player
               [ Label "$label.doNotTakeResources" []
-              , Label (withI18n $ countVar amount $ ikey' "label.takeResources") [TakeResources (toId a) amount (ResourceSource $ toId a) False]
+              , Label
+                  (withI18n $ countVar amount $ ikey' "label.takeResources")
+                  [TakeResources (toId a) amount (ResourceSource $ toId a) False]
               ]
           pure a
         else
           pure $ a & tokensL %~ addTokens Resource amount
-

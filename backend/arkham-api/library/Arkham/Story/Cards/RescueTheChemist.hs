@@ -48,6 +48,18 @@ instance RunMessage RescueTheChemist where
       locations <- select $ FarthestLocationFromAll LocationCanHaveAttachments
       leadChooseOrRunOneM $ targets locations $ createAssetAt_ chemist . AtLocation
       pure $ RescueTheChemist $ attrs & placementL .~ Global
+    ScenarioSpecific "devour" (maybeResult -> Just (AssetTarget aid)) -> do
+      whenM (not <$> remembered TheChemistWasSaved) do
+        whenM (aid <=~> assetIs Assets.universityChemist) do
+          lead <- getLead
+          push $ UseCardAbility lead (toSource attrs) 2 [] NoPayment
+      pure s
+    ScenarioSpecific "devour" (maybeResult -> Just (CardIdTarget cid)) -> do
+      whenM (not <$> remembered TheChemistWasSaved) do
+        whenM (selectAny $ AssetWithCardId cid <> assetIs Assets.universityChemist) do
+          lead <- getLead
+          push $ UseCardAbility lead (toSource attrs) 2 [] NoPayment
+      pure s
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       remember TheChemistWasSaved
       flipOver iid attrs

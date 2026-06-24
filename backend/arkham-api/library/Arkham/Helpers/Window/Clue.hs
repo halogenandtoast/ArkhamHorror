@@ -1,7 +1,5 @@
 {-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
-{-# OPTIONS_GHC -O0 #-}
 
 module Arkham.Helpers.Window.Clue where
 

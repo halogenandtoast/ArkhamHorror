@@ -15,12 +15,14 @@ desiccatedFarmland :: LocationCard DesiccatedFarmland
 desiccatedFarmland = locationWith DesiccatedFarmland Cards.desiccatedFarmland 3 (PerPlayer 1) connectsToAdjacent
 
 instance HasModifiersFor DesiccatedFarmland where
-  getModifiersFor (DesiccatedFarmland a) =
-    modifySelect a (investigatorAt (toId a)) [CannotGainResources]
+  getModifiersFor (DesiccatedFarmland a) = modifySelect a (investigatorAt (toId a)) [CannotGainResources]
 
 instance HasAbilities DesiccatedFarmland where
   getAbilities (DesiccatedFarmland a) =
-    extendRevealed1 a $ restricted a 1 Here $ forced $ TurnEnds #after You
+    extendRevealed1 a
+      $ restricted a 1 (Here <> youExist InvestigatorWithAnyResources)
+      $ forced
+      $ TurnEnds #after You
 
 instance RunMessage DesiccatedFarmland where
   runMessage msg l@(DesiccatedFarmland attrs) = runQueueT $ case msg of

@@ -2120,6 +2120,9 @@ instance RunMessage EnemyAttrs where
     MoveTokens s source _ tType n | isSource a source -> liftRunMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
     MoveTokens s _ target tType n | isTarget a target -> liftRunMessage (PlaceTokens s (toTarget a) tType n) a
+    MoveTokensNoDefeated s source _ tType n | isSource a source -> liftRunMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokensNoDefeated _s _ target tType n | isTarget a target -> do
+      pure $ a & tokensL %~ addTokens tType n
     PlaceTokens source target token n | isTarget a target -> do
       if token == #doom
         then do

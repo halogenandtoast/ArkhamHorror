@@ -107,8 +107,7 @@ gainXpWithMemories attrs = do
 instance RunMessage BadBlood where
   runMessage msg s@(BadBlood attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      flavor $ h "title" >> p "part1"
-      flavor $ h "title" >> p "part2"
+      flavor $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ case attrs.difficulty of

@@ -762,8 +762,7 @@
       ]
     },
     "xp": 3,
-    "alpha": true,
-    "dev": true
+    "beta": true
   },
   {
     "id": "90011",
@@ -853,8 +852,7 @@
       ]
     },
     "xp": 3,
-    "alpha": true,
-    "dev": true
+    "beta": true
   },
   {
     "id": "90020",
@@ -944,8 +942,7 @@
       ]
     },
     "xp": 3,
-    "alpha": true,
-    "dev": true
+    "beta": true
   },
   {
     "id": "90032",
@@ -1035,8 +1032,7 @@
       ]
     },
     "xp": 3,
-    "alpha": true,
-    "dev": true
+    "beta": true
   },
   {
     "id": "90041",
@@ -1130,8 +1126,7 @@
       ]
     },
     "xp": 3,
-    "alpha": true,
-    "dev": true
+    "beta": true
   },
   {
     "id": "90054",
@@ -1225,8 +1220,7 @@
       ]
     },
     "xp": 3,
-    "alpha": true,
-    "dev": true
+    "beta": true
   },
   {
     "id": "90065",
@@ -1314,8 +1308,7 @@
       ]
     },
     "xp": 3,
-    "alpha": true,
-    "dev": true
+    "beta": true
   },
   {
     "id": "90094",
@@ -1416,8 +1409,7 @@
       ]
     },
     "xp": 2,
-    "alpha": true,
-    "dev": true,
+    "beta": true,
     "deckRequirements": [
       "Requires investigator with parallel content"
     ]

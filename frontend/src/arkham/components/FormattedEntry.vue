@@ -830,6 +830,15 @@ ul, :deep(ul) {
   color: var(--neutral-extra-dark);
 }
 
+:deep(.set-icon-font) {
+  display: inline-block;
+  font-family: "ArkhamEncounters";
+  font-style: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  background-color: transparent;
+}
 
 :deep(.encounter-sets) {
   display: flex;

@@ -188,7 +188,7 @@ buildSpiritDeckIfNeeded = do
 instance RunMessage LaidToRest where
   runMessage msg s@(LaidToRest attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "body"
+      flavor $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ case attrs.difficulty of

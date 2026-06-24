@@ -110,12 +110,7 @@ instance HasChaosTokenValue RedTideRising where
 instance RunMessage RedTideRising where
   runMessage msg s@(RedTideRising attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      flavor do
-        h "title"
-        p "body1"
-        p "body2"
-        p "body3"
-        p "body4"
+      flavor $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ case attrs.difficulty of

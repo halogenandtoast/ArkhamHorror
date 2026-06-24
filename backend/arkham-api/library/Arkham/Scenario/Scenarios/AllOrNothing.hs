@@ -10,14 +10,19 @@ import Arkham.Event.Cards qualified as Events
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Xp
-import Arkham.Investigator.Types (Field (InvestigatorClues, InvestigatorResources))
+import Arkham.Investigator.Types (
+  Field (InvestigatorClues, InvestigatorName, InvestigatorResources),
+ )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Modifier (ModifierType (StartingResources))
+import Arkham.Name qualified as Name
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.AllOrNothing.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -79,6 +84,18 @@ instance RunMessage AllOrNothing where
       flavor $ scope "intro" do
         h "title"
         p "body"
+      storyWithChooseOneM
+        do
+          buildFlavor $ scope "setup" $ ul do
+            li.nested "returnTo" do
+              li "returnToSetupCard"
+              li "returnToVersions"
+              li "cloverClubStage"
+              li "returnToTreacheries"
+              li "cheated"
+        do
+          labeled' "returnTo.include" $ setScenarioMeta $ object ["includeReturnTo" .= True]
+          labeled' "returnTo.exclude" $ setScenarioMeta $ object ["includeReturnTo" .= False]
       pure s
     StandaloneSetup -> do
       setChaosTokens $ case attrs.difficulty of
@@ -88,13 +105,22 @@ instance RunMessage AllOrNothing where
         Expert -> expertTokens
       pure s
     Setup -> runScenarioSetup AllOrNothing attrs do
+      includeReturnTo <- getScenarioMetaKeyDefault "includeReturnTo" False
       setup do
         ul do
           li "gatherSets"
+          li.nested.validate includeReturnTo "returnTo" do
+            li "returnToSetupCard"
+            li "returnToVersions"
+            li "cloverClubStage"
+            li "returnToTreacheries"
+            li "cheated"
+          li "scenarioReference"
           li "newActAgenda"
           li "removeFromGame"
           li "setAside"
-          li "placeLocations"
+          li.nested "placeLocations" do
+            li "startAt"
           li "placePitBoss"
           unscoped $ li "shuffleRemainder"
           unscoped $ li "readyToBegin"
@@ -109,7 +135,18 @@ instance RunMessage AllOrNothing where
       removeEvery [Assets.peterClover, Assets.drFrancisMorgan]
 
       startAt =<< place Locations.laBellaLuna
-      cloverClubLounge <- place Locations.cloverClubLounge
+
+      -- With the Return to the House Always Wins set, swap the Clover Club Lounge
+      -- for its new version (which sets aside the Clover Club Stage) and shuffle
+      -- the new treacheries (Caught Cheating, Raise the Stakes) into the deck.
+      loungeDef <-
+        if includeReturnTo
+          then do
+            gather Set.ReturnToTheHouseAlwaysWins
+            removeEvery [Locations.cloverClubLounge]
+            pure Locations.returnToCloverClubLounge
+          else pure Locations.cloverClubLounge
+      cloverClubLounge <- place loungeDef
       placeAll [Locations.cloverClubBar, Locations.cloverClubCardroom, Locations.darkenedHall]
       enemyAt_ Enemies.cloverClubPitBoss cloverClubLounge
 
@@ -120,6 +157,12 @@ instance RunMessage AllOrNothing where
           , Enemies.siobhanRiley
           ]
         <> replicate 4 Enemies.cloverClubBouncer
+        <> [Locations.cloverClubStage | includeReturnTo]
+
+      when includeReturnTo do
+        selectOne skidsOToole >>= traverse_ \skids -> do
+          name <- field InvestigatorName skids
+          remember $ Cheated $ Name.labeled name skids
 
       setActDeck [Acts.playingCards, Acts.hotOnYourTail]
       setAgendaDeck [Agendas.eyesAllAroundYou]

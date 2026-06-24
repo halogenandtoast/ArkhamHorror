@@ -1,7 +1,10 @@
 module Arkham.Location.Cards.OpenWater10593b (openWater10593b) where
 
 import Arkham.Ability
+import Arkham.Card
+import Arkham.Helpers.Location (swapLocation)
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -20,5 +23,8 @@ instance RunMessage OpenWater10593b where
   runMessage msg l@(OpenWater10593b attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       drawEncounterCard iid (attrs.ability 1)
+      pure l
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.muddyFen
       pure l
     _ -> OpenWater10593b <$> liftRunMessage msg attrs

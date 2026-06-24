@@ -75,7 +75,7 @@ instance RunMessage MineCartReliableButBroken where
           movedOffTheRailLine =
             eachInvestigator \iid -> do
               sufferPhysicalTrauma iid 1
-              kill (attrs.ability 1) iid
+              defeat (attrs.ability 1) iid
         selectOne (LocationInPosition pos) >>= \case
           Nothing -> movedOffTheRailLine
           Just newLoc -> do

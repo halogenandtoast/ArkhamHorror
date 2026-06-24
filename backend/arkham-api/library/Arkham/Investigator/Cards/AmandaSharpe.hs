@@ -51,19 +51,13 @@ instance RunMessage AmandaSharpe where
       doStep 1 msg
       pure $ AmandaSharpe $ attrs & setMeta @(Maybe CardId) Nothing
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      -- InvestigatorHand also surfaces in-hand treacheries (hidden weaknesses)
-      -- and hidden enemies; those are not real player cards and placing one
-      -- beneath Amanda leaves the original entity in hand, duplicating it. Only
-      -- offer committable player cards (non-weaknesses), matching ability 1's
-      -- discard logic which assumes the card underneath is a player card.
-      hand <-
-        fieldMap
-          InvestigatorHand
-          (filter (\c -> isJust (preview _PlayerCard c) && cardMatch c NonWeakness))
-          iid
-      case find (`cardMatch` cardIs Skills.whispersFromTheDeep) hand of
-        Nothing -> when (notNull hand) do
-          chooseOrRunOneM iid $ targets hand $ handleTarget iid (attrs.ability 1)
+      playerCards <-
+        fieldMap InvestigatorHand (filter (isJust . preview _PlayerCard)) iid
+      case find (`cardMatch` cardIs Skills.whispersFromTheDeep) playerCards of
+        Nothing -> do
+          let hand = filter (`cardMatch` NonWeakness) playerCards
+          when (notNull hand) do
+            chooseOrRunOneM iid $ targets hand $ handleTarget iid (attrs.ability 1)
         Just whispersFromTheDeep -> do
           chooseOneM iid do
             abilityLabeled iid (mkAbility (proxied whispersFromTheDeep.id attrs) 1 (forced AnyWindow)) do

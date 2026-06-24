@@ -461,22 +461,28 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
   SetupInvestigator iid | iid == investigatorId -> do
     shuffled <- shuffle (unDeck investigatorDeck)
+    -- A CannotPutIntoPlay modifier (e.g. a campaign-wide restriction) keeps a
+    -- card that would otherwise start in play in the deck instead.
+    setupModifiers <- getModifiers a
+    let cannotPutIntoPlay c = any (\case CannotPutIntoPlay m -> cardMatch c m; _ -> False) setupModifiers
     (startsWithMsgs, deck') <-
       foldM
         ( \(msgs, currentDeck) cardDef -> do
             let (before, after) = break ((== cardDef) . toCardDef) (unDeck currentDeck)
             case after of
-              (card : rest) ->
-                pure
-                  ( PutCardIntoPlay
-                      investigatorId
-                      (toCard card)
-                      Nothing
-                      NoPayment
-                      (Window.defaultWindows investigatorId)
-                      : msgs
-                  , Deck (before <> rest)
-                  )
+              (card : rest)
+                | cannotPutIntoPlay (toCard card) -> pure (msgs, currentDeck)
+                | otherwise ->
+                    pure
+                      ( PutCardIntoPlay
+                          investigatorId
+                          (toCard card)
+                          Nothing
+                          NoPayment
+                          (Window.defaultWindows investigatorId)
+                          : msgs
+                      , Deck (before <> rest)
+                      )
               _ | investigatorId `elem` ["05046", "05047", "05048", "05049"] -> do
                 cardDef' <-
                   if investigatorId == "05046" && cardDef.cardCode == "05108"
@@ -501,7 +507,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         )
         ([], Deck shuffled)
         investigatorStartsWith
-    let (permanentCards, deck'') = partition (cdPermanent . toCardDef) (unDeck deck')
+    let (permanentCards, deck'') =
+          partition (\c -> cdPermanent (toCardDef c) && not (cannotPutIntoPlay (toCard c))) (unDeck deck')
     let deck''' =
           filter
             ( and

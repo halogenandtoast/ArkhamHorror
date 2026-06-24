@@ -25,7 +25,7 @@ import Arkham.Message (
  )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Log
-import Arkham.Modifier (ModifierType (CannotPlay))
+import Arkham.Modifier (ModifierType (CannotPlay, CannotPutIntoPlay))
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (ScenarioCardsUnderScenarioReference))
@@ -64,7 +64,7 @@ assetTakenByTheAbyss aid = do
     -- For the remainder of the campaign, no one may play copies of a unique
     -- Ally taken by the abyss. Stored campaign-wide so it persists across
     -- scenarios regardless of which campaign these are played in.
-    push $ AddCampaignModifiersForAll [CannotPlay (cardIs card)]
+    push $ AddCampaignModifiersForAll [CannotPlay (cardIs card), CannotPutIntoPlay (cardIs card)]
 
 brotherhoodEnemies :: [CardDef]
 brotherhoodEnemies =

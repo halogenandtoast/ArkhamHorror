@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "headroom-ai": "^0.22.4",
+    "pi-headroom": "^0.1.0"
+  }
+}

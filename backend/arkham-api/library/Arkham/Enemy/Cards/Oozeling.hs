@@ -6,14 +6,10 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Oozified))
 
 newtype Oozeling = Oozeling EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass (IsEnemy, HasModifiersFor, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 oozeling :: EnemyCard Oozeling
 oozeling =
-  enemyWith Oozeling Cards.oozeling
-    $ spawnAtL
-    ?~ SpawnAt (EmptyLocation <> LocationWithTrait Oozified)
-
-instance RunMessage Oozeling where
-  runMessage msg (Oozeling attrs) = Oozeling <$> runMessage msg attrs
+  enemy Oozeling Cards.oozeling
+    & setSpawnAt (EmptyLocation <> LocationWithTrait Oozified)

@@ -15,7 +15,7 @@ miGoMeddler :: EnemyCard MiGoMeddler
 miGoMeddler = enemy MiGoMeddler Cards.miGoMeddler
 
 instance HasAbilities MiGoMeddler where
-  getAbilities (MiGoMeddler a) = [restricted a 1 (thisIs a ReadyEnemy) $ forced $ PhaseBegins #when #enemy]
+  getAbilities (MiGoMeddler a) = extend1 a $ restricted a 1 (thisIs a ReadyEnemy) $ forced $ PhaseBegins #when #enemy
 
 instance RunMessage MiGoMeddler where
   runMessage msg e@(MiGoMeddler attrs) = runQueueT $ case msg of

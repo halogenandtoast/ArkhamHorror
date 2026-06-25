@@ -6,14 +6,10 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Oozified))
 
 newtype Oozewraith = Oozewraith EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass (IsEnemy, HasModifiersFor, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 oozewraith :: EnemyCard Oozewraith
 oozewraith =
-  enemyWith Oozewraith Cards.oozewraith
-    $ spawnAtL
-    ?~ SpawnAt (FarthestLocationFromYou $ LocationWithTrait Oozified)
-
-instance RunMessage Oozewraith where
-  runMessage msg (Oozewraith attrs) = Oozewraith <$> runMessage msg attrs
+  enemy Oozewraith Cards.oozewraith
+    & setSpawnAt (FarthestLocationFromYou $ LocationWithTrait Oozified)

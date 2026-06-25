@@ -13,7 +13,7 @@ miGoGeneral :: EnemyCard MiGoGeneral
 miGoGeneral = enemy MiGoGeneral Cards.miGoGeneral
 
 instance HasAbilities MiGoGeneral where
-  getAbilities (MiGoGeneral a) = [mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be a)]
+  getAbilities (MiGoGeneral a) = extend1 a $ mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be a)
 
 instance RunMessage MiGoGeneral where
   runMessage msg e@(MiGoGeneral attrs) = runQueueT $ case msg of

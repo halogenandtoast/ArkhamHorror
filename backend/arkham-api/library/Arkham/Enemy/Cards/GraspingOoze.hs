@@ -15,9 +15,8 @@ newtype GraspingOoze = GraspingOoze EnemyAttrs
 
 graspingOoze :: EnemyCard GraspingOoze
 graspingOoze =
-  enemyWith GraspingOoze Cards.graspingOoze
-    $ spawnAtL
-    ?~ SpawnAt (NearestLocationToYou $ LocationWithTrait Oozified)
+  enemy GraspingOoze Cards.graspingOoze
+    & setSpawnAt (NearestLocationToYou $ LocationWithTrait Oozified)
 
 instance HasAbilities GraspingOoze where
   getAbilities (GraspingOoze a) =

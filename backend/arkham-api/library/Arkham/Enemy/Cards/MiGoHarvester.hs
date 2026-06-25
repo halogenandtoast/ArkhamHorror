@@ -15,7 +15,7 @@ miGoHarvester :: EnemyCard MiGoHarvester
 miGoHarvester = enemy MiGoHarvester Cards.miGoHarvester
 
 instance HasAbilities MiGoHarvester where
-  getAbilities (MiGoHarvester a) = [restricted a 1 (thisIs a ReadyEnemy) $ forced $ PhaseBegins #when #enemy]
+  getAbilities (MiGoHarvester a) = extend1 a $ restricted a 1 (thisIs a ReadyEnemy) $ forced $ PhaseBegins #when #enemy
 
 instance RunMessage MiGoHarvester where
   runMessage msg e@(MiGoHarvester attrs) = runQueueT $ case msg of

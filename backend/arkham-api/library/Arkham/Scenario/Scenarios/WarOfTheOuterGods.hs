@@ -130,6 +130,7 @@ instance RunMessage WarOfTheOuterGods where
       additionalRules "warring"
       additionalRules "wards"
       additionalRules "placeAroundThisLocation"
+      additionalRules "swarmingX"
 
       gather Set.WarOfTheOuterGods
       gatherAndSetAside Set.DeathOfStars

@@ -1,17 +1,42 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { imgsrc } from '@/arkham/helpers'
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue'
 
 defineProps<{ title: string; rules: { title?: string; bodyKey: string }[] }>()
 
 const grunge = `url(${imgsrc('grunge.png')})`
+
+const ruleEls = ref<(HTMLElement | null)[]>([])
+const setRuleEl = (el: unknown, i: number) => {
+  ruleEls.value[i] = el as HTMLElement | null
+}
+const scrollToRule = (i: number) => {
+  ruleEls.value[i]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 </script>
 
 <template>
   <div class="log-section">
     <h3 class="section-title">{{ title }}</h3>
+    <nav v-if="rules.filter((r) => r.title).length > 1" class="rule-jump">
+      <template v-for="(rule, i) in rules" :key="i">
+        <a
+          v-if="rule.title"
+          href="#"
+          class="rule-jump-link"
+          @click.prevent="scrollToRule(i)"
+          v-html="rule.title"
+        />
+      </template>
+    </nav>
     <div class="rules">
-      <div class="rule intro-text" v-for="(rule, i) in rules" :key="i">
+      <div
+        class="rule intro-text"
+        v-for="(rule, i) in rules"
+        :key="i"
+        :ref="(el) => setRuleEl(el, i)"
+      >
         <h4 v-if="rule.title" class="rule-title" v-html="rule.title" />
         <div class="rule-body">
           <FormattedEntry :entry="{ tag: 'I18nEntry', key: rule.bodyKey, variables: {} }" />
@@ -41,10 +66,40 @@ const grunge = `url(${imgsrc('grunge.png')})`
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
+.rule-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.rule-jump-link {
+  font-family: teutonic, sans-serif;
+  font-size: 0.85em;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 3px 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.rule-jump-link:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
 .rules {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.rule {
+  scroll-margin-top: 12px;
 }
 
 .intro-text {

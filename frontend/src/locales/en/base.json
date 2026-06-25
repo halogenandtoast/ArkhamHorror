@@ -330,6 +330,7 @@
     "remembered": "Remembered",
     "specialRules": "Special Rules",
     "campaignRules": "Campaign Rules",
+    "backToTop": "Back to top",
     "noRules": "No special rules for the current scenario or campaign.",
     "tabs": {
       "log": "Campaign Log",

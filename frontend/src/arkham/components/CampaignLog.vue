@@ -3,7 +3,7 @@ import * as Arkham from '@/arkham/types/Game'
 import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log'
 import { toCapitalizedWords, formatContent } from '@/arkham/helpers'
 import { cardArt } from '@/arkham/cardImages'
-import { computed, ref, onMounted, watch, type Component } from 'vue'
+import { computed, ref, onMounted, onUnmounted, watch, type Component } from 'vue'
 import { fetchCard } from '@/arkham/api'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { type Name, simpleName } from '@/arkham/types/Name'
@@ -666,11 +666,31 @@ const mapData = computed(() => {
     locations,
   }
 })
+
+// --- Back-to-top (the .content element is the scroll container) ---------------
+const contentEl = ref<HTMLElement | null>(null)
+const showBackToTop = ref(false)
+
+const onContentScroll = () => {
+  showBackToTop.value = (contentEl.value?.scrollTop ?? 0) > 400
+}
+
+const scrollToTop = () => {
+  contentEl.value?.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+onMounted(() => {
+  contentEl.value?.addEventListener('scroll', onContentScroll, { passive: true })
+})
+
+onUnmounted(() => {
+  contentEl.value?.removeEventListener('scroll', onContentScroll)
+})
 </script>
 
 <template>
   <LogIcons />
-  <div class="content column">
+  <div class="content column" ref="contentEl">
     <div class="log-column">
       <div class="campaign-log column">
         <div class="campaign-log-header">
@@ -885,6 +905,18 @@ const mapData = computed(() => {
         />
       </template>
     </div>
+
+    <button
+      type="button"
+      class="back-to-top"
+      :class="{ visible: showBackToTop }"
+      :aria-hidden="!showBackToTop"
+      :tabindex="showBackToTop ? 0 : -1"
+      :title="t('campaignLog.backToTop')"
+      @click="scrollToTop"
+    >
+      <font-awesome-icon :icon="['fas', 'arrow-up']" />
+    </button>
   </div>
 </template>
 
@@ -898,6 +930,63 @@ const mapData = computed(() => {
   overflow: auto;
   padding-bottom: 60px;
   box-sizing: border-box;
+}
+
+.back-to-top {
+  position: sticky;
+  bottom: 18px;
+  align-self: flex-end;
+  margin-right: 18px;
+  /* last child: overlay the bottom padding instead of adding scroll height */
+  margin-bottom: -48px;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
+  background: #2b3140;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
+  z-index: var(--z-index-100);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.back-to-top :deep(svg) {
+  width: 15px;
+  height: 15px;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background: var(--spooky-green);
+  border-color: var(--spooky-green);
+  color: #1b1f29;
+}
+
+.back-to-top:active {
+  transform: translateY(1px);
+}
+
+.back-to-top:focus-visible {
+  outline: none;
+  border-color: var(--spooky-green);
 }
 
 /* ── Tabs ────────────────────────────────────────────────── */

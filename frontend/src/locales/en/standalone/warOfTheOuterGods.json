@@ -113,6 +113,10 @@
     "placeAroundThisLocation": {
       "title": "\"Place around this location\"",
       "body": "If investigators are instructed to place 1 or more clues \"around\" a location, those clues should be placed such that they are physically bordering the location card, but not placed onto the location card itself. Clues that are \"around\" a location are not considered to be \"on\" the location and cannot be discovered by any means.<div class='place-around'><img src='{setImgPath}/../cards/86024b.avif' /><div class='clues left'><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /></div><div class='clues right'><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /></div><div class='clues top'><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /></div><div class='clues bottom'><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /></div></div>"
+    },
+    "swarmingX": {
+      "title": "Swarming X",
+      "body": "The swarming X keyword represents a pack of enemies operating in unison. After an enemy with the swarming X keyword enters play, place the top X cards of your deck facedown underneath the enemy as swarm cards, without looking at them. The enemy those swarm cards are underneath is called the \"host enemy.\" Some scenario card effects may also instruct a player to add swarm cards to an enemy. This is done using the same process.<ul><li>If it is ever unclear which investigator should add swarm cards, the lead investigator does so.</li><li>Each swarm card underneath the host enemy acts as a separate instance of that enemy. Each swarm card has the same values and text as its host card. *(For example, if an investigator is engaged with a host enemy with 2 swarm cards underneath it, that investigator is engaged with 3 enemies in total.)*</li><li>Each swarm card attacks separately when enemies attack during the enemy phase. Once the host enemy and all of its swarm cards have attacked during this step, exhaust all of them.</li><li>Each swarm card can be attacked or dealt damage separately, but the host enemy cannot be defeated while it still has swarm cards underneath it. When a swarm card is defeated, any excess damage may be dealt to another swarm card underneath the same host enemy, or if all of its swarm cards are gone, to the host enemy itself. *(For example, Roland Banks uses a .45 Automatic to attack a Trylogog with 2 swarm cards. The attack deals 2 damage. The first point of damage defeats 1 of the 2 swarm cards, so the excess point of damage may be dealt to another swarm card, defeating it as well.)*</li><li>Anytime a swarm card leaves play, place it on the bottom of its owner's deck. If you are unsure of the owner of the swarm card, you may look at it to determine its owner.</li><li>The host enemy and all of its swarm cards move, engage, and exhaust as a single entity. *(For example, if a host enemy or any of its swarm cards are evaded, all of them exhaust and become disengaged.)*</li><li>When Victory X appears on an enemy with the Swarming X keyword, this text is only active for the host card. Swarm cards cannot enter the victory display and are never worth victory points.</li></ul>"
     }
   },
   "specialRules": [
@@ -139,6 +143,10 @@
     {
       "title": "@:standalone.warOfTheOuterGods.rules.placeAroundThisLocation.title",
       "body": "@:standalone.warOfTheOuterGods.rules.placeAroundThisLocation.body"
+    },
+    {
+      "title": "@:standalone.warOfTheOuterGods.rules.swarmingX.title",
+      "body": "@:standalone.warOfTheOuterGods.rules.swarmingX.body"
     }
   ]
 }

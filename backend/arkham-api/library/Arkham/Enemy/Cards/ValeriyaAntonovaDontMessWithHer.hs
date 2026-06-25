@@ -32,8 +32,7 @@ instance HasModifiersFor ValeriyaAntonovaDontMessWithHer where
 
 instance HasAbilities ValeriyaAntonovaDontMessWithHer where
   getAbilities (ValeriyaAntonovaDontMessWithHer a) =
-    [ mkAbility a 1 $ forced $ RoundEnds #when
-    ]
+    extend1 a $ mkAbility a 1 $ forced $ RoundEnds #when
 
 instance RunMessage ValeriyaAntonovaDontMessWithHer where
   runMessage msg e@(ValeriyaAntonovaDontMessWithHer attrs) = runQueueT $ case msg of

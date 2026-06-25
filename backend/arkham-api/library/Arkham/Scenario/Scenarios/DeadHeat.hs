@@ -111,6 +111,10 @@ instance RunMessage DeadHeat where
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
 
+      additionalRules "civilians"
+      additionalRules "choosingARandomLocation"
+      additionalRules "replacingLocations"
+
       gather Set.DeadHeat
       gather Set.ScarletSorcery
       gather Set.SpreadingCorruption

@@ -253,3 +253,6 @@ storyOnlyBuild [] _ = pure ()
 storyOnlyBuild iids builder = do
   players <- traverse getPlayer iids
   push $ Msg.story players (buildFlavor builder)
+
+additionalRules :: (HasI18n, ReverseQueue m) => Scope -> m ()
+additionalRules s = scope "rules" $ scope s $ flavor $ setTitle "title" >> compose (h3 "title" >> p "body")

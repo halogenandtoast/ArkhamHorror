@@ -35,6 +35,7 @@ instance RunMessage TheGrifterPracticed where
       alarmLevel <- getAlarmLevel iid
       chooseOrRunOneM iid $ scenarioI18n do
         labeled' "theGrifter.change.practiced" do
+          raiseAlarmLevelOf (attrs.ability 1) iid
           focusCards check.cards $ scenarioI18n do
             chooseUpToNMI' iid 2 "done" do
               for_ check.cards \card -> do

@@ -8,6 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey (ScenarioLogKey (NoticedTheMissingBones))
+import Arkham.Spawn
 import Arkham.Trait (Trait (Ghoul))
 
 newtype BurialGround = BurialGround LocationAttrs
@@ -19,7 +20,7 @@ burialGround = location BurialGround Cards.burialGround 4 (PerPlayer 1)
 
 instance HasModifiersFor BurialGround where
   getModifiersFor (BurialGround a) =
-    whenRevealed a $ modifySelect a (EnemyWithTrait Ghoul) [ForceSpawnLocation (be a)]
+    whenRevealed a $ modifySelect a (EnemyWithTrait Ghoul) [OverwrittenSpawn (SpawnAt (be a))]
 
 instance HasAbilities BurialGround where
   getAbilities (BurialGround a) =

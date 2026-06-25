@@ -389,6 +389,11 @@ data ModifierType
   | Persist
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | OtherDoomSubtracts
+  | -- | Like 'ForceSpawn', but only replaces an enemy's normal spawn location
+    -- (a scenario rule, e.g. Dead Heat forcing Ghoul/Risen enemies to a random
+    -- location). A 'ForceSpawn' from a drawing effect (On the Hunt, Kicking the
+    -- Hornet's Nest) takes precedence over this.
+    OverwrittenSpawn SpawnAt
   | PlaceOnBottomOfDeckInsteadOfDiscard
   | -- | Player cards that would be discarded are placed beneath the target instead
     PlaceUnderneathInsteadOfDiscard Target

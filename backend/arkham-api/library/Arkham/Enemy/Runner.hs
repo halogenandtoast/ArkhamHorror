@@ -1992,7 +1992,14 @@ instance RunMessage EnemyAttrs where
         getForcedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnAt m
         getForcedSpawnAt (ForceSpawn m : _) = Just m
         getForcedSpawnAt (_ : xs) = getForcedSpawnAt xs
-      case getForcedSpawnAt mods of
+        getOverwrittenSpawnAt [] = Nothing
+        getOverwrittenSpawnAt (OverwrittenSpawn m : _) = Just m
+        getOverwrittenSpawnAt (_ : xs) = getOverwrittenSpawnAt xs
+      -- ForceSpawn (On the Hunt, Kicking the Hornet's Nest) always wins; an
+      -- OverwrittenSpawn (a scenario rule replacing an enemy's normal spawn,
+      -- e.g. Dead Heat forcing Ghoul/Risen enemies to a random location) only
+      -- applies when no ForceSpawn is present.
+      case getForcedSpawnAt mods <|> getOverwrittenSpawnAt mods of
         Just matcher -> spawnAt enemyId (Just iid) (replaceYouMatcher iid matcher)
         Nothing -> do
           gatherConcealedCards a.id >>= \case

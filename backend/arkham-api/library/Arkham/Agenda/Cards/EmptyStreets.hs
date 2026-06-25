@@ -16,7 +16,7 @@ emptyStreets = agenda (2, A) EmptyStreets Cards.emptyStreets (Static 7)
 
 instance HasModifiersFor EmptyStreets where
   getModifiersFor (EmptyStreets a) = do
-    modifySelect a AnyEnemy [ForceSpawn SpawnAtRandomLocation]
+    modifySelect a AnyEnemy [OverwrittenSpawn SpawnAtRandomLocation]
 
 instance RunMessage EmptyStreets where
   runMessage msg a@(EmptyStreets attrs) = runQueueT $ case msg of

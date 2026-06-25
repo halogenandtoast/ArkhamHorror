@@ -8,6 +8,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Spawn
 
 newtype YourHouse = YourHouse LocationAttrs
   deriving anyclass IsLocation
@@ -18,7 +19,7 @@ yourHouse = location YourHouse Cards.yourHouse 2 (PerPlayer 1)
 
 instance HasModifiersFor YourHouse where
   getModifiersFor (YourHouse attrs) = do
-    modifySelect attrs (enemyIs Cards.ghoulPriest) [ForceSpawnLocation (be attrs)]
+    modifySelect attrs (enemyIs Cards.ghoulPriest) [OverwrittenSpawn (SpawnAt (be attrs))]
 
 -- Ability 1 is just to trigger in UI, it doesn't change anything since we
 -- handle it with the modifier

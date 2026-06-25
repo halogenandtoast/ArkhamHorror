@@ -617,15 +617,20 @@ handleDrawCards a@InvestigatorAttrs{..} iid cardDraw = do
   drawEncounterCardWindow <- checkWindows [mkWhen $ Window.WouldDrawEncounterCard a.id cid phase]
   if cardDrawAction cardDraw
     then do
+      modifiers' <- getModifiers iid
       beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #draw)]
       afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #draw)]
       pushAll
         $ [BeginAction, beforeWindowMsg]
         <> [drawEncounterCardWindow | cardDraw.isEncounterDraw]
-        <> [ TakeActions iid [#draw] (ActionCost 1)
-           , Will (CheckAttackOfOpportunity iid False Nothing)
-           , CheckAttackOfOpportunity iid False Nothing
-           , wouldDrawCard
+        <> [TakeActions iid [#draw] (ActionCost 1)]
+        <> [ Will (CheckAttackOfOpportunity iid False Nothing)
+           | ActionDoesNotCauseAttacksOfOpportunity #draw `notElem` modifiers'
+           ]
+        <> [ CheckAttackOfOpportunity iid False Nothing
+           | ActionDoesNotCauseAttacksOfOpportunity #draw `notElem` modifiers'
+           ]
+        <> [ wouldDrawCard
            , DoDrawCards iid
            , DrawEnded cid iid
            , afterWindowMsg

@@ -241,21 +241,27 @@ handleTakeResources a@InvestigatorAttrs{..} iid n source = do
   beforeWindowMsg <- checkWhen $ Window.PerformAction iid #resource
   afterWindowMsg <- checkAfter $ Window.PerformAction iid #resource
   canGain <- can.gain.resources (sourceToFromSource source) iid
+  modifiers' <- getModifiers iid
 
   when canGain do
     pushAll
-      [ BeginAction
-      , beforeWindowMsg
-      , whenActivateAbilityWindow
-      , TakeActions iid [#resource] (ActionCost 1)
-      , Will (CheckAttackOfOpportunity iid False Nothing)
-      , CheckAttackOfOpportunity iid False Nothing
-      , TakeResources iid n source False
-      , afterWindowMsg
-      , afterActivateAbilityWindow
-      , FinishAction
-      , TakenActions iid [#resource]
-      ]
+      $ [ BeginAction
+        , beforeWindowMsg
+        , whenActivateAbilityWindow
+        , TakeActions iid [#resource] (ActionCost 1)
+        ]
+      <> [ Will (CheckAttackOfOpportunity iid False Nothing)
+         | ActionDoesNotCauseAttacksOfOpportunity #resource `notElem` modifiers'
+         ]
+      <> [ CheckAttackOfOpportunity iid False Nothing
+         | ActionDoesNotCauseAttacksOfOpportunity #resource `notElem` modifiers'
+         ]
+      <> [ TakeResources iid n source False
+         , afterWindowMsg
+         , afterActivateAbilityWindow
+         , FinishAction
+         , TakenActions iid [#resource]
+         ]
   pure a
 
 handleTakeResourcesV2 a@InvestigatorAttrs{..} iid n source msg = do

@@ -634,6 +634,16 @@ instance Tracing Identity where
   defaultSpanArgs = ()
   doTrace _ _ f = f ()
 
+-- | Targets of any open "enemy attacks" windows, so the client can highlight
+-- who/what is currently being attacked (e.g. during a Dodge window).
+gameEnemyAttackTargets :: Game -> [Target]
+gameEnemyAttackTargets g =
+  [ t
+  | ws <- concat (fromMaybe [] (gameWindowStack g))
+  , Window.EnemyAttacks dets <- [windowType ws]
+  , t <- dets.targets
+  ]
+
 instance ToJSON gid => ToJSON (PublicGame gid) where
   toEncoding (FailedToLoadGame e) = pairs ("tag" .= String "FailedToLoadGame" <> "error" .= toJSON e)
   toEncoding (PublicGame gid name glog g@Game {..}) = flip runReader g do
@@ -715,6 +725,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("roundHistory" .= gameRoundHistory)
       <> ("phaseHistory" .= gamePhaseHistory)
       <> ("turnHistory" .= gameTurnHistory)
+      <> ("enemyAttackTargets" .= gameEnemyAttackTargets g)
    where
     emptyAdditionalData =
       object
@@ -850,6 +861,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "roundHistory" .= toJSON gameRoundHistory
         , "phaseHistory" .= toJSON gamePhaseHistory
         , "turnHistory" .= toJSON gameTurnHistory
+        , "enemyAttackTargets" .= toJSON (gameEnemyAttackTargets g)
         ]
    where
     emptyAdditionalData =

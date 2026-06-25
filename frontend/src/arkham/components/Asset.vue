@@ -49,6 +49,7 @@ const exhausted = computed(() => props.asset.exhausted)
 const jammed = computed(() => props.asset.rifleStatus === 'Jammed')
 const highlighter = useHighlighter()
 const isHighlighted = computed(() => highlighter.highlighted.value === props.asset.id)
+const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((t) => t.contents === props.asset.id))
 
 const uiRotation = computed<number>(() => {
   const mods = props.asset.modifiers ?? []
@@ -371,7 +372,7 @@ function startDrag(event: DragEvent) {
             :data-is-spirit="isSpirit || undefined"
             :src="image"
             class="card"
-            :class="{ exhausted, 'ability-target': isHighlighted }"
+            :class="{ exhausted, 'ability-target': isHighlighted || isAttackTarget }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
             :draggable="debug.active"

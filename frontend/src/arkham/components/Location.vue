@@ -542,7 +542,8 @@ const canShowCardsUnderneath = computed(() => {
   return playerCardsUnderneath.value.length > 0 && !hasFacedownCardsUnderneath.value
 })
 const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, 'Cards Underneath', false, debug.active)
-const highlighted = computed(() => highlighter.highlighted.value === props.location.id)
+const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((t) => t.contents === props.location.id))
+const highlighted = computed(() => highlighter.highlighted.value === props.location.id || isAttackTarget.value)
 
 function isVehicleAsset(assetId: string): boolean {
   const asset = props.game.assets[assetId]

@@ -40,6 +40,7 @@ const emit = defineEmits(['showCards', 'hideCards', 'choose'])
 const id = computed(() => props.investigator.id)
 const highlighter = useHighlighter()
 const isHighlighted = computed(() => highlighter.highlighted.value === props.investigator.id)
+const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((t) => t.contents === props.investigator.id))
 const debug = useDebug()
 const choose = (idx: number) => emit('choose', idx)
 
@@ -486,7 +487,7 @@ const spadeInjury = computed(() => {
         </div>
         <div class="investigator-image">
           <img
-            :class="{ 'investigator--can-interact': investigatorAction !== -1, 'ability-target': isHighlighted }"
+            :class="{ 'investigator--can-interact': investigatorAction !== -1, 'ability-target': isHighlighted || isAttackTarget }"
             class="card card--sideways"
             :src="image"
             @click="$emit('choose', investigatorAction)"

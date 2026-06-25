@@ -179,7 +179,7 @@ akwan = location_ "10575" "Akwan" [Coastal] TheLostSister
 suspendedGraveyard :: CardDef
 suspendedGraveyard =
   quantity 2
-    $ locationWithUnrevealed_ "10576" "Cavern" [Cave] "Suspended Graveyard" [Cave, Coastal] TheLostSister
+    $ locationWithUnrevealed_ "10576" "Cavern" [Cave, Dark] "Suspended Graveyard" [Cave, Coastal] TheLostSister
 
 hiddenCoveTheLostSister :: CardDef
 hiddenCoveTheLostSister =
@@ -195,17 +195,17 @@ rockyShoreline =
 
 undergroundPools :: CardDef
 undergroundPools =
-  locationWithUnrevealed_ "10580" "Cavern" [Cave] "Underground Pools" [Cave, Dark] TheLostSister
+  locationWithUnrevealed_ "10580" "Cavern" [Cave, Dark] "Underground Pools" [Cave, Dark] TheLostSister
 
 openCave :: CardDef
 openCave =
   quantity 2
-    $ locationWithUnrevealed_ "10581" "Cavern" [Cave] "Open Cave" [Cave, Dark] TheLostSister
+    $ locationWithUnrevealed_ "10581" "Cavern" [Cave, Dark] "Open Cave" [Cave, Dark] TheLostSister
 
 fungalCave :: CardDef
 fungalCave =
   victory 1
-    $ locationWithUnrevealed_ "10582" "Cavern" [Cave] "Fungal Cave" [Cave, Lair, Dark] TheLostSister
+    $ locationWithUnrevealed_ "10582" "Cavern" [Cave, Dark] "Fungal Cave" [Cave, Lair, Dark] TheLostSister
 
 glimmeringWoods :: CardDef
 glimmeringWoods =

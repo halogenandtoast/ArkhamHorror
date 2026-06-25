@@ -24,7 +24,12 @@ instance HasModifiersFor StalkingHybrid where
     modifySelfWhen a (x > 1) [HealthModifier (x - 1)]
 
 instance HasAbilities StalkingHybrid where
-  getAbilities (StalkingHybrid a) = extend a [mkAbility a 1 $ forced (EnemyAttacks #after You AnyEnemyAttack $ be a)]
+  getAbilities (StalkingHybrid a) =
+    extend a
+      $ [mkAbility a 1 $ forced (EnemyAttacks #after You AnyEnemyAttack $ be a)]
+      <> [ mkAbility a 2 $ SilentForcedAbility (TookControlOfAsset #after Anyone (AssetWithTitle "Vale Lantern"))
+         | isInPlayPlacement a.placement
+         ]
 
 instance RunMessage StalkingHybrid where
   runMessage msg e@(StalkingHybrid attrs) = runQueueT $ case msg of
@@ -32,5 +37,8 @@ instance RunMessage StalkingHybrid where
       selectEach (assetControlledBy iid <> AssetWithTitle "Vale Lantern") \lantern -> do
         flipOverBy iid (attrs.ability 1) lantern
         withLocationOf iid $ place lantern . AtLocation
+      pure e
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      enemyCheckEngagement attrs.id
       pure e
     _ -> StalkingHybrid <$> liftRunMessage msg attrs

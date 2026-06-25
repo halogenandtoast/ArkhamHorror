@@ -23,7 +23,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (LocationPosition))
-import Arkham.Matcher
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message (pattern PassedThisSkillTest)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record, remember, remembered)
@@ -390,5 +390,19 @@ instance RunMessage TheLostSister where
                 else [Enemies.crustaceanHybridInTheDark, Enemies.limulusHybridInTheDark]
         selectEach (EnemyAt (LocationWithId lid) <> mapOneOf enemyIs wrongSide) \eid ->
           flipOverBy lead attrs eid
+      pure s
+    Do (RevealLocation _ lid) -> do
+      -- Revealing a location can change its Dark status (e.g. the Cavern's revealed
+      -- "Open Cave" side gains Dark) under a hybrid already standing on it. A reveal
+      -- fires no enter/spawn window and no locationDarknessChanged, so the hybrid's
+      -- own flip ability never triggers. Re-sync here. Deferred to a follow-up
+      -- message because the scenario runs before the location entity for a given
+      -- message, so the revealed traits aren't visible yet during this one.
+      push $ ScenarioSpecific "syncHybridDarkness" (toJSON lid)
+      TheLostSister <$> liftRunMessage msg attrs
+    ScenarioSpecific "syncHybridDarkness" v -> do
+      let lid = toResult v :: LocationId
+      isDarkNow <- lid <=~> LocationWithTrait Dark
+      push $ ScenarioSpecific "locationDarknessChanged" (toJSON (lid, not isDarkNow, isDarkNow))
       pure s
     _ -> TheLostSister <$> liftRunMessage msg attrs

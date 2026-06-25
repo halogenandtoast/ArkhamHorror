@@ -334,8 +334,7 @@ const clues = computed(() => props.location.tokens[TokenType.Clue])
 // are not on the location and cannot be discovered by any means.
 const cluesAround = computed(() => {
   if (props.location.cardCode !== 'c86024') return 0
-  return 24
-  // return props.game.scenario?.counts["CluesAroundHubDimension"] ?? 0
+  return props.game.scenario?.counts["CluesAroundHubDimension"] ?? 0
 })
 
 const cluesAroundPositions = computed(() => {

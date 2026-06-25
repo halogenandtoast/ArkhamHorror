@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Matcher
 import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.Trait (Trait (Casino))
@@ -36,6 +37,7 @@ instance RunMessage OpeningHand where
     AdvanceAgenda (isSide B attrs -> True) -> do
       createEnemyAtLocationMatching_ Enemies.dimensionalShamblerHunterFromBeyond "Roulette Wheel"
       shuffleEncounterDiscardBackIn
+      raiseAlarmLevel attrs =<< getInvestigators
       doStep 1 msg
       advanceAgendaDeck attrs
       pure a

@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheTurn (theTurn) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
+import Arkham.Helpers.Query (getInvestigators, getLead, getSetAsideCardsMatching)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Story
 import Arkham.Scenarios.FortuneAndFolly.Helpers
@@ -42,6 +42,7 @@ instance RunMessage TheTurn where
             (mapOneOf cardIs [Stories.fortunesDisfavor25, Stories.fortunesDisfavor26, Stories.fortunesDisfavor27])
       for_ (nonEmpty fortunesDisfavor) \(card :| _) -> do
         resolveStory lead card
+      raiseAlarmLevel attrs =<< getInvestigators
       advanceAgendaDeck attrs
       pure a
     _ -> TheTurn <$> liftRunMessage msg attrs

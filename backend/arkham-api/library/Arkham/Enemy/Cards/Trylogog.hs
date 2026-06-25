@@ -7,20 +7,18 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 
 newtype Trylogog = Trylogog EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 trylogog :: EnemyCard Trylogog
 trylogog =
-  enemyWith Trylogog Cards.trylogog
-    $ spawnAtL
-    ?~ SpawnAt (locationIs Locations.theBurningPit)
+  enemy Trylogog Cards.trylogog
+    & setSpawnAt (locationIs Locations.theBurningPit)
 
 trylogogWarOfTheOuterGods :: EnemyCard Trylogog
 trylogogWarOfTheOuterGods =
-  enemyWith Trylogog Cards.trylogogWarOfTheOuterGods
-    $ spawnAtL
-    ?~ SpawnAt (locationIs Locations.theBurningPit)
+  enemy Trylogog Cards.trylogogWarOfTheOuterGods
+    & setSpawnAt (locationIs Locations.theBurningPit)
 
 instance HasModifiersFor Trylogog where
   getModifiersFor (Trylogog a) = modifySelf a [AttackDealsEitherDamageOrHorror]

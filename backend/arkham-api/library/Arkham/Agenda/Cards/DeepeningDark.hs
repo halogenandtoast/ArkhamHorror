@@ -77,7 +77,7 @@ instance RunMessage DeepeningDark where
         beginSkillTest sid owner attrs owner #willpower (Fixed darknessLevel)
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      enemies <- pursuitEnemiesWithHighestEvade
+      enemies <- select $ OutOfPlayEnemy PursuitZone AnyEnemy
       chooseTargetM iid enemies \enemy -> spawnAt enemy (Just iid) (SpawnEngagedWith $ InvestigatorWithId iid)
       pure a
     ForTarget (LocationTarget loc) (AdvanceAgenda (isSide B attrs -> True)) -> do

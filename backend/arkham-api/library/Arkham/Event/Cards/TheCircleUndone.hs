@@ -32,6 +32,7 @@ darkInsight =
   signature "05004"
     $ (event "05014" "Dark Insight" 2 Neutral)
       { cdCardTraits = singleton Insight
+      , cdCriteria = Just Criteria.NotSetup
       , cdFastWindow =
           Just
             $ oneOf

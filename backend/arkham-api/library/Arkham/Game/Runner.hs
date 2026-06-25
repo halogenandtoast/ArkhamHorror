@@ -106,7 +106,7 @@ import Arkham.Matcher hiding (
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (removeLocation)
 import Arkham.Message.Lifted qualified as Lifted
-import Arkham.Modifier (Modifier (modifierSource, modifierType))
+import Arkham.Modifier (Modifier (Modifier, modifierSource, modifierType), ModifierType (AsIfInHandFor))
 import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
@@ -3563,9 +3563,23 @@ preloadEntities g = do
       | Just Refl <- eqT @a @Treachery = overAttrs (\attrs -> attrs {treacheryPlacement = p}) a
       | otherwise = a
     preloadHandEntities entities investigator' = do
-      asIfInHandCards <- getAsIfInHandCardsFor NotForPlay (toId investigator')
-      committedCards <- field Investigator.InvestigatorCommittedCards (toId investigator')
+      let iid = toId investigator'
+      asIfInHandCards <- getAsIfInHandEffectCards iid
+      committedCards <- field Investigator.InvestigatorCommittedCards iid
+      -- Cards that are only "as if in hand for play" (stashed under Backpack /
+      -- Stick to the Plan, etc.) physically sit under their host asset, not in
+      -- hand. Load their entity at the host's placement rather than StillInHand,
+      -- so "while in your hand" effects (e.g. Pelt Shipment's hand-size penalty)
+      -- don't fire while the card is merely playable from under the asset.
+      forPlayMods <- getModifiers' (InvestigatorTarget iid)
       let
+        forPlayHosts :: Map CardId AssetId
+        forPlayHosts =
+          mapFromList
+            [ (cid, aid)
+            | Modifier {modifierType = AsIfInHandFor ForPlay cid, modifierSource = AssetSource aid} <- forPlayMods
+            ]
+        placementFor c = maybe (StillInHand iid) (`AttachedToAsset` Nothing) (lookup c.id forPlayHosts)
         handEffectCards =
           filter (cdCardInHandEffects . toCardDef)
             $ investigatorHand (toAttrs investigator')
@@ -3579,8 +3593,8 @@ preloadEntities g = do
                 foldl'
                   ( \e c ->
                       addCardEntityWith
-                        (toId investigator')
-                        (setPlacement $ StillInHand investigator'.id)
+                        iid
+                        (setPlacement $ placementFor c)
                         (unsafeCardIdToUUID c.id)
                         e
                         c
@@ -3588,7 +3602,7 @@ preloadEntities g = do
                   defaultEntities
                   handEffectCards
              in
-              insertMap (toId investigator') handEntities entities
+              insertMap iid handEntities entities
     preloadDiscardEntities entities investigator' = do
       -- NOTE: recently added the asset type check here to avoid the "Do
       -- (DiscardCard..." message's action removed entity conflicting with this

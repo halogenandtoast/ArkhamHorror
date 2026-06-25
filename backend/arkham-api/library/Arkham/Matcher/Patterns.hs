@@ -496,6 +496,11 @@ pattern SuccessfulParley timing who <- SkillTestResult timing who WhileParleying
   where
     SuccessfulParley timing who = SkillTestResult timing who WhileParleying (SuccessResult AnyValue)
 
+pattern IfEnemyDefeated_ :: Timing -> EnemyMatcher -> WindowMatcher
+pattern IfEnemyDefeated_ timing ematcher <- IfEnemyDefeated timing Anyone ByAny ematcher
+  where
+    IfEnemyDefeated_ timing ematcher = IfEnemyDefeated timing Anyone ByAny ematcher
+
 -- * Ability Helpers
 
 pattern BasicInvestigate :: LocationId -> AbilityMatcher

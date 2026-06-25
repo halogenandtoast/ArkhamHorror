@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.WarOfTheOuterGods (warOfTheOuterGods, WarOfTheOuterGods (..)) where
+module Arkham.Scenario.Scenarios.WarOfTheOuterGods (warOfTheOuterGods) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -10,6 +10,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (getSkillTest)
@@ -82,14 +83,14 @@ commitSwarmCards :: ReverseQueue m => InvestigatorId -> Bool -> m ()
 commitSwarmCards iid allOfThem = do
   insects <- select $ EnemyWithTrait Insect
   unless (null insects) do
-    getSkillTest >>= traverse_ \st -> do
+    whenJustM getSkillTest \st -> do
       let cards = concat (toList $ skillTestCommittedCards st)
       if allOfThem
         then for_ cards \card ->
-          chooseTargetM iid insects \insect -> placeCardAsSwarm insect card
+          chooseTargetM iid insects (`placeCardAsSwarm` card)
         else when (notNull cards) do
-          chooseOneM iid $ targets cards \card ->
-            chooseTargetM iid insects \insect -> placeCardAsSwarm insect card
+          chooseTargetM iid cards \card ->
+            chooseTargetM iid insects (`placeCardAsSwarm` card)
 
 drawTopHexFromDiscard :: ReverseQueue m => ScenarioAttrs -> InvestigatorId -> m ()
 drawTopHexFromDiscard attrs iid = do
@@ -122,6 +123,13 @@ instance RunMessage WarOfTheOuterGods where
         li "setAsideAssets"
         li "shuffleRemainder"
         li.validate False "epicMultiplayer"
+
+      additionalRules "factions"
+      additionalRules "factionAgendas"
+      additionalRules "inTheLead"
+      additionalRules "warring"
+      additionalRules "wards"
+      additionalRules "placeAroundThisLocation"
 
       gather Set.WarOfTheOuterGods
       gatherAndSetAside Set.DeathOfStars
@@ -190,7 +198,7 @@ instance RunMessage WarOfTheOuterGods where
         then WarOfTheOuterGods <$> liftRunMessage msg attrs
         else do
           for_ factionOrder \f ->
-            selectForMaybeM (factionAgenda f) \agenda -> forTarget agenda msg
+            selectForMaybeM (factionAgenda f) (`forTarget` msg)
           pure s
     HuntersMove -> do
       -- During the "hunter enemies move" step, each ready, unengaged enemy
@@ -199,7 +207,8 @@ instance RunMessage WarOfTheOuterGods where
       -- the players choose the order.
       movers <- getWarringMovers
       for_ movers \enemy ->
-        push $ HandleGroupTarget HunterGroup (toTarget enemy) [ScenarioSpecific "warringMove" (toJSON enemy)]
+        push
+          $ HandleGroupTarget HunterGroup (toTarget enemy) [ScenarioSpecific "warringMove" (toJSON enemy)]
       WarOfTheOuterGods <$> liftRunMessage msg attrs
     EnemiesAttack -> do
       -- During the "resolve enemy attacks" step, each unengaged enemy with
@@ -222,10 +231,9 @@ instance RunMessage WarOfTheOuterGods where
               unless (null nearest) do
                 lead <- getLead
                 chooseOrRunOneM lead $ targets nearest \target ->
-                  field EnemyLocation target >>= traverse_ \targetLoc -> do
+                  withLocationOf target \targetLoc -> do
                     nextSteps <- select $ ClosestPathLocation loc targetLoc
-                    chooseOrRunOneM lead $ targets nextSteps \nextStep ->
-                      push $ EnemyMove enemy nextStep
+                    chooseOrRunOneM lead $ targets nextSteps $ push . EnemyMove enemy
       pure s
     ScenarioSpecific "warringAttack" v -> do
       let enemy = toResult v
@@ -293,7 +301,7 @@ instance RunMessage WarOfTheOuterGods where
         addStoryAssetChoice def = addCampaignCardToDeckChoice investigators DoNotShuffleIn def
         killedAndLost key = do
           resolution key
-          eachInvestigator \iid -> kill attrs iid
+          eachInvestigator (kill attrs)
           gameOver
         factionKey = \case
           GreenFaction -> "greenFactionInTheLead"
@@ -306,28 +314,27 @@ instance RunMessage WarOfTheOuterGods where
           case leads of
             [f] -> push $ ScenarioResolution (resolutionFor f)
             fs -> do
-              lead <- getLead
-              chooseOneM lead $ for_ fs \f ->
+              leadChooseOneM $ for_ fs \f ->
                 labeled' (factionKey f) $ push $ ScenarioResolution (resolutionFor f)
         Resolution 1 -> do
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
           addStoryAssetChoice Assets.cloakOfTheOuterRealm
           addStoryAssetChoice Assets.pocketPortal
-          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
           endOfScenario
         Resolution 2 -> do
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           addStoryAssetChoice Assets.cloakOfTheOuterRealm
           addStoryAssetChoice Assets.enchantedSkull
-          resolutionWithXp "resolution2" $ allGainXp' attrs
           endOfScenario
         Resolution 3 -> do
+          resolutionWithXp "resolution3" $ allGainXp' attrs
           addStoryAssetChoice Assets.cloakOfTheOuterRealm
           addStoryAssetChoice Assets.dreadedEnd
-          resolutionWithXp "resolution3" $ allGainXp' attrs
           endOfScenario
         Resolution 4 -> do
+          resolutionWithXp "resolution4" $ allGainXp' attrs
           addStoryAssetChoice Assets.cloakOfTheOuterRealm
           addStoryAssetChoice Assets.bladeOfArkat
-          resolutionWithXp "resolution4" $ allGainXp' attrs
           endOfScenario
         Resolution 5 -> killedAndLost "resolution5"
         Resolution 6 -> killedAndLost "resolution6"

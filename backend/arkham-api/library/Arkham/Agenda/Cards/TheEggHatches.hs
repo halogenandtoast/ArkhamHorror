@@ -25,7 +25,7 @@ instance HasModifiersFor TheEggHatches where
 
 instance HasAbilities TheEggHatches where
   getAbilities (TheEggHatches a) =
-    [mkAbility a 1 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny (enemyIs Enemies.maghanArkat)]
+    [mkAbility a 1 $ Objective $ forced $ IfEnemyDefeated_ #after (enemyIs Enemies.maghanArkat)]
 
 instance RunMessage TheEggHatches where
   runMessage msg a@(TheEggHatches attrs) = runQueueT $ case msg of

@@ -875,6 +875,66 @@ ul, :deep(ul) {
   }
 }
 
+/* example card images for the additional rules sections, mimicking the
+   rulebook layout: the two portrait cards (enemy/treachery) sit side by side
+   on top, with the landscape agenda centered below and slightly larger.
+   Natural aspect ratios are preserved so the landscape agenda is not cropped.
+   Faction-colored arrows (set via the --faction custom property) point at each
+   card, emulating the call-outs printed in the rulebook. */
+:deep(.card-examples) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .ex {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+  }
+  img {
+    width: 120px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  }
+  img.agenda {
+    width: 170px;
+  }
+  /* arrows overlay the card edge, tip pointing onto the card; --at sets the
+     vertical position to roughly match the rulebook call-out for each card.
+     The SVG (faction-colored, with its own white border + drop shadow) points
+     left; the base .arrow flips it to point right, .arrow.left keeps it left. */
+  .arrow {
+    position: absolute;
+    top: var(--at, 30%);
+    left: var(--left, -25px);
+    transform: translateY(-50%) scaleX(-1);
+    width: 36px;
+    height: auto;
+    border-radius: 0;
+    box-shadow: none;
+    z-index: var(--z-index-5);
+  }
+  .arrow.left {
+    left: auto;
+    right: var(--right, -30px);
+    transform: translateY(-50%);
+  }
+  .arrow.top {
+    left: var(--left, 50%);
+    top: -15px;
+    right: var(--right, -30px);
+    transform: rotate(var(--angle, -90deg));
+  }
+}
+
 :deep(hr) {
   border:0;
   border-bottom: 2px solid var(--border-color, #60759F);

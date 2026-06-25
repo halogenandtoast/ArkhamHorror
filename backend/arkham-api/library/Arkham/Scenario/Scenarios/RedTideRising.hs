@@ -264,7 +264,7 @@ gainCustomXp attrs = do
     sum . catMaybes <$> traverse getVictoryPoints (filter (not . isLead) victoryDisplay)
   investigators <- select InvestigatorCanGainXp
   details <- for investigators \iid -> do
-    isWendy <- iid <=~> wendyAdams
+    isWendy <- iid <=~> IncludeEliminated wendyAdams
     let base = otherVictory + max 0 (total - (if isWendy then 3 else 5))
     mods <- getModifiers iid
     let applyModifier n (XPModifier _ m) = max 0 (n + m)

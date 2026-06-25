@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.SkillTest.Base
 
 newtype RiverHawthorneBigInNewYork = RiverHawthorneBigInNewYork AssetAttrs
   deriving anyclass IsAsset
@@ -31,7 +32,7 @@ instance RunMessage RiverHawthorneBigInNewYork where
   runMessage msg a@(RiverHawthorneBigInNewYork attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      chooseBeginSkillTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 3)
+      chooseBeginSkillTestEdit sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 3) \st -> st {skillTestAction = Just #parley}
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       codex iid (attrs.ability 1) 5

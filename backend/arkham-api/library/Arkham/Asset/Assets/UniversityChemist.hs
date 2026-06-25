@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Message.Lifted.Choose
+import Arkham.SkillTest.Base
 
 newtype UniversityChemist = UniversityChemist AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,7 +22,7 @@ instance RunMessage UniversityChemist where
   runMessage msg a@(UniversityChemist attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      chooseBeginSkillTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 3)
+      chooseBeginSkillTestEdit sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 3) \st -> st {skillTestAction = Just #parley}
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       placeTokens (attrs.ability 1) attrs #resource 1

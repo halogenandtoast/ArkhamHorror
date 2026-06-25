@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 
 newtype LeahAtwoodTheValeCook = LeahAtwoodTheValeCook AssetAttrs
@@ -28,7 +29,7 @@ instance RunMessage LeahAtwoodTheValeCook where
   runMessage msg a@(LeahAtwoodTheValeCook attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 2)
+      parley sid iid (attrs.ability 1) attrs #combat (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       codex iid (attrs.ability 1) 2

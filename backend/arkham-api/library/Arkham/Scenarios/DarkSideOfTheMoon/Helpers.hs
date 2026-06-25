@@ -33,7 +33,10 @@ reduceAlarmLevel source = reduceAlarmLevelBy 1 source
 {-# INLINE reduceAlarmLevel #-}
 
 reduceAlarmLevelBy :: (Sourceable source, ReverseQueue m) => Int -> source -> InvestigatorId -> m ()
-reduceAlarmLevelBy n (toSource -> source) iid = removeTokens source iid AlarmLevel n
+reduceAlarmLevelBy n (toSource -> source) iid = do
+  current <- getAlarmLevel iid
+  let n' = min n (max 0 (current - 1))
+  when (n' > 0) $ removeTokens source iid AlarmLevel n'
 {-# INLINE reduceAlarmLevelBy #-}
 
 getMaxAlarmLevel :: (HasGame m, Tracing m) => m Int

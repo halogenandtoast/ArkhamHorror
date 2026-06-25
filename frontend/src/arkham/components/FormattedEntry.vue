@@ -1002,6 +1002,174 @@ ul, :deep(ul) {
   }
 }
 
+/* "Warring" worked example — three panels mirroring the rulebook diagram:
+   setup, hunter move, and resolve attacks. */
+:deep(.warring-example) {
+  --we-card: 84px;
+  --we-h: calc(var(--we-card) * 1.4);
+  margin: 12px 0 4px;
+}
+:deep(.warring-example) .we-cap {
+  margin: 16px 0 10px;
+}
+:deep(.warring-example) .we-title {
+  margin: 8px 0;
+}
+:deep(.warring-example) img {
+  border-radius: 5px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+:deep(.warring-example) .faded {
+  opacity: 0.4;
+}
+:deep(.warring-example) .we-panel {
+  position: relative;
+}
+:deep(.warring-example) .we-arrow {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Panel 1 — setup: three location + enemy groups, centered with a gap */
+:deep(.warring-example) .we-setup {
+  display: flex;
+  justify-content: center;
+  gap: 72px;
+  padding-bottom: 52px;
+}
+:deep(.warring-example) .we-spot {
+  position: relative;
+  flex: none;
+  width: var(--we-card);
+}
+:deep(.warring-example) .we-spot > .loc {
+  display: block;
+  width: 100%;
+}
+:deep(.warring-example) .we-spot > .enemy {
+  position: absolute;
+  width: 100%;
+  left: -40%;
+  top: 30%;
+  z-index: 2;
+}
+
+/* Panel 2 — hunter move: same centered layout as the setup panel. The side
+   locations keep faded "origin" copies of the enemies that moved; the middle
+   location gathers all three. */
+:deep(.warring-example) .we-move {
+  display: flex;
+  justify-content: center;
+  gap: 72px;
+  padding-bottom: 52px;
+  width: fit-content;
+  margin-inline: auto;
+  margin-bottom: 28px;
+}
+/* the left move arrow: from the bottom of the left enemy to the lower middle
+   of the same (red) enemy gathered on the middle location */
+:deep(.warring-example) .we-mv-left {
+  left: 10px;
+  bottom: -19px;
+  width: 150px;
+  height: 40px;
+  box-shadow: none;
+  border-radius: 0;
+}
+/* mirror of the left move arrow: from the right enemy to the middle (green) */
+:deep(.warring-example) .we-mv-right {
+  right: 10px;
+  bottom: -19px;
+  width: 150px;
+  height: 40px;
+  box-shadow: none;
+  border-radius: 0;
+}
+:deep(.warring-example) .we-move .enemy.red-faction {
+  left: -40%;
+  right: auto;
+  top: 30%;
+}
+:deep(.warring-example) .we-move .enemy.green-faction {
+  left: auto;
+  right: -40%;
+  top: 30%;
+}
+:deep(.warring-example) .we-move .enemy.blue-faction {
+  left: 0;
+  right: auto;
+  top: 25%;
+  z-index: 1;
+}
+/* the three enemies gathered on the middle location sit lower and further out
+   than the side "origin" copies */
+:deep(.warring-example) .we-move .gathered .enemy.red-faction {
+  left: -60%;
+  top: 50%;
+}
+:deep(.warring-example) .we-move .gathered .enemy.green-faction {
+  right: -60%;
+  top: 50%;
+}
+
+/* Panel 3 — resolve attacks: three enemies in a row */
+:deep(.warring-example) .we-attack {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0 12px;
+  width: fit-content;
+  margin-inline: auto;
+}
+/* attack arrows: top = Herald -> Disciple, bottom = Zealot -> Disciple */
+:deep(.warring-example) .we-atk-top {
+  left: 44px;
+  top: -10px;
+  width: 72px;
+  height: auto;
+  box-shadow: none;
+  border-radius: 0;
+}
+:deep(.warring-example) .we-atk-bot {
+  left: 72px;
+  bottom: -24px;
+  width: 150px;
+  height: auto;
+  box-shadow: none;
+  border-radius: 0;
+}
+:deep(.warring-example) .we-attack .enemy {
+  position: relative;
+  flex: none;
+  width: var(--we-card);
+}
+/* the outer two enemies (attackers' target and the green attacker) sit lower
+   than the middle one */
+:deep(.warring-example) .we-attack .enemy:nth-child(1),
+:deep(.warring-example) .we-attack .enemy:nth-child(3) {
+  transform: translateY(25%);
+}
+:deep(.warring-example) .we-attack .enemy > img {
+  display: block;
+  width: 100%;
+}
+:deep(.warring-example) .we-attack .dmg {
+  position: absolute;
+  /* width: 15px !important;*/
+  width: calc(var(--we-card) * 0.2) !important;
+  height: auto;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.85));
+  z-index: 3;
+}
+:deep(.warring-example) .we-attack .dmg.d1 { top: -8%; left: 40%; }
+:deep(.warring-example) .we-attack .dmg.d2 { top: 17%; left: 43%; }
+:deep(.warring-example) .we-attack .dmg.d3 { top: 27%; left: 79%; }
+:deep(.warring-example) .we-attack .dmg.d4 { top: 66%; left: 60%; }
+
 :deep(hr) {
   border:0;
   border-bottom: 2px solid var(--border-color, #60759F);

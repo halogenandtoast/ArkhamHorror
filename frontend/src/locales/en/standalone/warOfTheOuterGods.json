@@ -112,7 +112,7 @@
     },
     "placeAroundThisLocation": {
       "title": "\"Place around this location\"",
-      "body": "If investigators are instructed to place 1 or more clues \"around\" a location, those clues should be placed such that they are physically bordering the location card, but not placed onto the location card itself. Clues that are \"around\" a location are not considered to be \"on\" the location and cannot be discovered by any means."
+      "body": "If investigators are instructed to place 1 or more clues \"around\" a location, those clues should be placed such that they are physically bordering the location card, but not placed onto the location card itself. Clues that are \"around\" a location are not considered to be \"on\" the location and cannot be discovered by any means.<div class='place-around'><img src='{setImgPath}/../cards/86024b.avif' /><div class='clues left'><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /></div><div class='clues right'><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /></div><div class='clues top'><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /></div><div class='clues bottom'><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /><img src='{setImgPath}/../clue.png' /></div></div>"
     }
   },
   "specialRules": [

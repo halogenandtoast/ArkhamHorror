@@ -334,22 +334,48 @@ const clues = computed(() => props.location.tokens[TokenType.Clue])
 // are not on the location and cannot be discovered by any means.
 const cluesAround = computed(() => {
   if (props.location.cardCode !== 'c86024') return 0
-  return props.game.scenario?.counts["CluesAroundHubDimension"] ?? 0
+  return 24
+  // return props.game.scenario?.counts["CluesAroundHubDimension"] ?? 0
 })
 
 const cluesAroundPositions = computed(() => {
   const n = cluesAround.value
-  return Array.from({ length: n }, (_, i) => {
-    // distribute clockwise along the card's perimeter, starting top-left
-    const p = (i / n) * 4
-    let x = 0
-    let y = 0
-    if (p < 1) { x = p; y = 0 }
-    else if (p < 2) { x = 1; y = p - 1 }
-    else if (p < 3) { x = 3 - p; y = 1 }
-    else { x = 0; y = 4 - p }
-    return { left: `${x * 100}%`, top: `${y * 100}%` }
-  })
+  if (n <= 0) return []
+
+  // Clue tokens are 1/6 of the card height (square) and sit just outside the
+  // card edge, bordering it. Positions are fractions of the card (0 = card
+  // edge, 1 = opposite edge); corners and edges extend slightly beyond.
+  const aspect = 0.705 // card width / height
+  const hy = 1 / 12 // half a clue as a fraction of the card height
+  const hx = hy / aspect // half a clue as a fraction of the card width
+  const left = -hx
+  const right = 1 + hx
+  const top = -hy
+  const bottom = 1 + hy
+
+  // 6 slots tiled down each side (excluding corners)
+  const sideYs = Array.from({ length: 6 }, (_, k) => (2 * k + 1) / 12)
+  // 4 slots across the top/bottom (excluding corners), spread to match the
+  // corner spacing
+  const step = (right - left) / 5
+  const edgeXs = Array.from({ length: 4 }, (_, k) => left + (k + 1) * step)
+
+  // walk the perimeter clockwise from the top-left corner
+  const slots: Array<[number, number]> = [
+    [left, top],
+    ...edgeXs.map((x) => [x, top] as [number, number]),
+    [right, top],
+    ...sideYs.map((y) => [right, y] as [number, number]),
+    [right, bottom],
+    ...[...edgeXs].reverse().map((x) => [x, bottom] as [number, number]),
+    [left, bottom],
+    ...[...sideYs].reverse().map((y) => [left, y] as [number, number]),
+  ]
+
+  return slots.slice(0, n).map(([x, y]) => ({
+    left: `${x * 100}%`,
+    top: `${y * 100}%`,
+  }))
 })
 const breaches = computed(() => {
   const { breaches } = props.location
@@ -1097,14 +1123,16 @@ const hasAnyLocationVehicleAssets = computed(() =>
 
   .clues-around {
     position: absolute;
-    inset: -9px;
+    inset: 0;
     pointer-events: none;
     z-index: var(--z-index-4);
 
     .clue-around {
       position: absolute;
-      width: 20px;
-      transform: translate(-50%, -50%);
+      /* 1/6 of the rendered card height (the card img is --card-width + 4px
+         wide); sizing off the token's --card-height leaves a small column gap */
+      width: calc((var(--card-width) + 4px) / var(--card-aspect) / 6);
+      transform: translate(-50%, -50%) rotate(90deg);
       filter: drop-shadow(1px 1px 2px rgb(0, 0, 0));
     }
   }

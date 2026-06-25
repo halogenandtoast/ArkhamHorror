@@ -935,6 +935,73 @@ ul, :deep(ul) {
   }
 }
 
+/* "Place around this location" example: a location card with clue tokens
+   physically bordering it (around the edges, not placed on the card).
+   Clue size = 1/6 of the card height, so exactly 6 clues run along the card's
+   right edge; the two corner clues extend one clue beyond the card, making the
+   right column 8 total. The left/right columns own the corners, so the
+   top/bottom rows sit inset between them to avoid corner overlap. */
+:deep(.place-around) {
+  --card-w: 180px;
+  --clue: calc(var(--card-w) * 1.4 / 6);
+  position: relative;
+  width: var(--card-w);
+  margin: calc(var(--clue) + 8px) auto;
+  > img {
+    width: 100%;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  }
+  .clues {
+    position: absolute;
+    display: flex;
+  }
+  .clues img {
+    width: var(--clue);
+    height: var(--clue);
+    border-radius: 0;
+    box-shadow: none;
+    transform: rotate(90deg);
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.6));
+  }
+  .clues.left,
+  .clues.right {
+    flex-direction: column;
+  }
+  /* right column extends into both corners (level with the top/bottom rows),
+     so its top and bottom clues sit in the corners with 6 along the side */
+  .clues.right {
+    right: calc(-1 * var(--clue));
+    top: calc(-1 * var(--clue));
+    height: calc(100% + 2 * var(--clue));
+    justify-content: space-between;
+  }
+  /* left column: 2 clues at the bottom, the lowest sitting in the corner
+     (level with the bottom row) */
+  .clues.left {
+    left: calc(-1 * var(--clue));
+    top: 0;
+    height: calc(100% + var(--clue));
+    justify-content: flex-end;
+  }
+  /* rows: full width, inset from the corners owned by the columns */
+  .clues.top,
+  .clues.bottom {
+    left: 0;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+  .clues.top {
+    top: calc(-1 * var(--clue));
+    justify-content: flex-end;
+  }
+  .clues.bottom {
+    bottom: calc(-1 * var(--clue));
+  }
+}
+
 :deep(hr) {
   border:0;
   border-bottom: 2px solid var(--border-color, #60759F);

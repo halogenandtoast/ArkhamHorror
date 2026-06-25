@@ -20,6 +20,7 @@ import Arkham.Enemy.Types (Field (EnemyAttacking))
 import Arkham.Event.Types qualified as Field
 import {-# SOURCE #-} Arkham.Game (abilityMatches)
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Game.Settings (settingsStrictAsIfAt)
 import Arkham.Helpers.Act (actMatches)
 import {-# SOURCE #-} Arkham.Helpers.Action (actionMatches)
 import Arkham.Helpers.Card (cardListMatches, extendedCardMatch)
@@ -1475,9 +1476,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           -- An asset attacked "as if it were an engaged investigator" (Dogs of
           -- War's Key Locus). Treat it as an investigator at its location, so
           -- "an investigator at your location" matchers fire for anyone there.
+          -- Under the Chapter 2 "as if" ruling this only applies during action
+          -- resolution, not window triggers, so the window does not match.
           SingleAttackTarget (AssetTarget aid) ->
             andM
-              [ aid <=~> AssetAt (locationWithInvestigator iid)
+              [ not . settingsStrictAsIfAt <$> getSettings
+              , aid <=~> AssetAt (locationWithInvestigator iid)
               , not <$> isAttackCancelled details
               , matchWho iid iid whoMatcher
               , matches (attackEnemy details) enemyMatcher
@@ -1496,7 +1500,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               ]
           SingleAttackTarget (AssetTarget aid) ->
             andM
-              [ aid <=~> AssetAt (locationWithInvestigator iid)
+              [ not . settingsStrictAsIfAt <$> getSettings
+              , aid <=~> AssetAt (locationWithInvestigator iid)
               , matchWho iid iid whoMatcher
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher

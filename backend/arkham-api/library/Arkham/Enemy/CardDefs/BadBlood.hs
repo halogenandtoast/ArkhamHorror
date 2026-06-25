@@ -2,6 +2,7 @@ module Arkham.Enemy.CardDefs.BadBlood where
 
 import Arkham.Enemy.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
+import Arkham.Token (Token (Memory))
 
 elspethBaudin :: CardDef
 elspethBaudin =
@@ -17,7 +18,7 @@ elspethBaudin =
       , cdKeywords =
           setFromList
             [ Keyword.Alert
-            , Keyword.Patrol (LocationWithResources $ atLeast 1)
+            , Keyword.Patrol (LocationWithToken Memory)
             , Keyword.Retaliate
             ]
       }

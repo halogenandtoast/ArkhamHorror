@@ -29,6 +29,9 @@ instance ToJSON Game where
       , "gameSeed" .= gameSeed g
       , "gameWindowDepth" .= gameWindowDepth g
       , "gameWindowStack" .= gameWindowStack g
+      , "gameWindowTick" .= gameWindowTick g
+      , "gameWindowTickStack" .= gameWindowTickStack g
+      , "gameEntryTicks" .= gameEntryTicks g
       , "gameRunWindows" .= gameRunWindows g
       , "gameDepthLock" .= gameDepthLock g
       , "gameIgnoreCanModifiers" .= gameIgnoreCanModifiers g
@@ -92,6 +95,9 @@ instance ToJSON Game where
       <> ("gameSeed" .= gameSeed g)
       <> ("gameWindowDepth" .= gameWindowDepth g)
       <> ("gameWindowStack" .= gameWindowStack g)
+      <> ("gameWindowTick" .= gameWindowTick g)
+      <> ("gameWindowTickStack" .= gameWindowTickStack g)
+      <> ("gameEntryTicks" .= gameEntryTicks g)
       <> ("gameRunWindows" .= gameRunWindows g)
       <> ("gameDepthLock" .= gameDepthLock g)
       <> ("gameIgnoreCanModifiers" .= gameIgnoreCanModifiers g)
@@ -155,6 +161,9 @@ instance FromJSON Game where
     gameSeed <- o .: "gameSeed"
     gameWindowDepth <- o .: "gameWindowDepth"
     gameWindowStack <- o .: "gameWindowStack"
+    gameWindowTick <- o .:? "gameWindowTick" .!= 0
+    gameWindowTickStack <- o .:? "gameWindowTickStack" .!= []
+    gameEntryTicks <- o .:? "gameEntryTicks" .!= mempty
     gameRunWindows <- o .: "gameRunWindows"
     gameDepthLock <- o .: "gameDepthLock"
     gameIgnoreCanModifiers <- o .: "gameIgnoreCanModifiers"

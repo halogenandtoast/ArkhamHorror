@@ -59,6 +59,13 @@ data Game = Game
   , gameSeed :: Int
   , gameWindowDepth :: Int
   , gameWindowStack :: Maybe [[Window]]
+  , -- monotonic clock; ticks once per window-open. Parallel to gameWindowStack:
+    -- gameWindowTickStack's head is the open-tick of the window currently being
+    -- checked. gameEntryTicks records the tick at which each card entered play
+    -- so a card cannot respond to a window that opened before it entered.
+    gameWindowTick :: Int
+  , gameWindowTickStack :: [Int]
+  , gameEntryTicks :: Map CardId Int
   , gameRunWindows :: Bool
   , gameDepthLock :: Int
   , gameIgnoreCanModifiers :: Bool

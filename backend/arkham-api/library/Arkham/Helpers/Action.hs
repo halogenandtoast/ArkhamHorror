@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
-import {-# SOURCE #-} Arkham.GameEnv (getAllAbilities)
+import {-# SOURCE #-} Arkham.GameEnv (getAllAbilities, getCurrentWindowTick, getEntryTicks)
 import Arkham.Helpers.Ability (getCanAffordAbility, getCanPerformAbility, isForcedAbility)
 import Arkham.Helpers.CombatTarget
 import Arkham.Helpers.Modifiers (
@@ -18,7 +18,7 @@ import Arkham.Helpers.Modifiers (
   withModifiersOf,
  )
 import {-# SOURCE #-} Arkham.Helpers.Playable (getPlayableCards)
-import Arkham.Helpers.Ref (sourceToTarget)
+import Arkham.Helpers.Ref (sourceToMaybeCard, sourceToTarget)
 import Arkham.Helpers.Source (sourceTraits)
 import {-# SOURCE #-} Arkham.Helpers.Window (windowMatches)
 import Arkham.Id
@@ -210,6 +210,7 @@ getActionsWith iid ws f = do
           pure $ sources & map \source -> action {abilitySource = ProxySource source base}
         _ -> pure [action]
 
+  entryTicks <- getEntryTicks
   actionsMatchingWindow <-
     if null ws
       then pure actionsWithSources
@@ -217,9 +218,30 @@ getActionsWith iid ws f = do
         let abWindow = case (abilitySource ability).location of
               Nothing -> abilityWindow ability
               Just lid -> replaceThisLocation lid (abilityWindow ability)
-        anyM
-          (\w -> windowMatches iid (abilitySource ability) w abWindow)
-          ws
+        matched <-
+          anyM
+            (\w -> windowMatches iid (abilitySource ability) w abWindow)
+            ws
+        if not matched
+          then pure False
+          else do
+            -- A forced/reaction ability may only respond to a window that
+            -- opened strictly after its source card entered play. A card that
+            -- enters during an open window cannot respond to that window's
+            -- already-occurred triggering condition (#4927).
+            isForced <- isForcedAbility iid ability
+            let isReaction = isReactionAbility ability
+            if not (isForced || isReaction)
+              then pure True
+              else
+                sourceToMaybeCard (abilitySource ability) >>= \case
+                  Nothing -> pure True
+                  Just card -> case lookup card.id entryTicks of
+                    Nothing -> pure True
+                    Just entryTick ->
+                      getCurrentWindowTick <&> \case
+                        Nothing -> True
+                        Just openTick -> openTick > entryTick
 
   let bountiesOnly = BountiesOnly `elem` investigatorModifiers
 

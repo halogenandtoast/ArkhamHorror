@@ -7012,6 +7012,7 @@ test-suite spec
       Arkham.Treachery.Cards.DreamlandsEclipseSpec
       Arkham.Treachery.Cards.FinalRhapsodySpec
       Arkham.Treachery.Cards.HauntedSpec
+      Arkham.Treachery.Cards.HemophobiaSpec
       Arkham.Treachery.Cards.HospitalDebtsSpec
       Arkham.Treachery.Cards.HypochondriaSpec
       Arkham.Treachery.Cards.LegInjurySpec

@@ -510,6 +510,7 @@ runGameMessage msg g = case msg of
       & (cardUsesL .~ mempty)
       & (windowStackL .~ mempty)
       & (windowDepthL .~ 0)
+      & (windowTickStackL .~ [])
       & (phaseHistoryL .~ mempty)
       & (turnHistoryL .~ mempty)
       & (roundHistoryL .~ mempty)
@@ -3734,7 +3735,13 @@ runPreGameMessage msg g = case msg of
     if isJust $ modeScenario $ g ^. modeL
       then do
         pushAll [Do (CheckWindows ws), EndCheckWindow]
-        pure $ g & windowDepthL +~ 1 & (windowStackL %~ Just . maybe [ws] (ws :))
+        let tick' = gameWindowTick g + 1
+        pure
+          $ g
+          & windowDepthL +~ 1
+          & (windowStackL %~ Just . maybe [ws] (ws :))
+          & (windowTickL .~ tick')
+          & (windowTickStackL %~ (tick' :))
       else pure g
   EndCheckWindow -> do
     let
@@ -3746,7 +3753,7 @@ runPreGameMessage msg g = case msg of
             [] -> Nothing
             _ -> Just xs
           Just (x : xs) -> Just (x : xs)
-    pure $ g & windowDepthL -~ 1 & windowStackL .~ windowStack
+    pure $ g & windowDepthL -~ 1 & windowStackL .~ windowStack & (windowTickStackL %~ drop 1)
   ScenarioResolution _ -> do
     pure
       $ g
@@ -3754,6 +3761,7 @@ runPreGameMessage msg g = case msg of
       & (skillTestResultsL .~ Nothing)
       & (windowStackL .~ mempty)
       & (windowDepthL .~ 0)
+      & (windowTickStackL .~ [])
   ResetInvestigators -> do
     -- if we reset and there is no player order, set it to the current investigator keys
     pure
@@ -3773,6 +3781,23 @@ runPreGameMessage msg g = case msg of
       & (undoRoundStepL .~ Nothing)
   EndSetup -> pure $ g & inSetupL .~ False
   BeginRound -> pure $ g & undoRoundStepL ?~ (gameScenarioSteps g + 1)
+  -- Entry-tick capture: record the window-tick at which each card entered play
+  -- so a card that enters during an open window cannot respond to a triggering
+  -- condition that already occurred (see Arkham.Helpers.Action). These run
+  -- before the entity's own handler mutates its placement.
+  CardEnteredPlay _ card ->
+    pure $ g & entryTicksL %~ insertMap card.id (gameWindowTick g)
+  PlaceTreachery tid placement -> do
+    old <- field TreacheryPlacement tid
+    let entersPlay = not (isInPlayPlacement old) && isInPlayPlacement placement
+    if entersPlay
+      then do
+        card <- field TreacheryCard tid
+        pure $ g & entryTicksL %~ insertMap card.id (gameWindowTick g)
+      else pure g
+  EnemySpawn details -> do
+    card <- field EnemyCard details.enemy
+    pure $ g & entryTicksL %~ insertMap card.id (gameWindowTick g)
   _ -> pure g
 
 {- | Maintain the revert information for the in-flight action.

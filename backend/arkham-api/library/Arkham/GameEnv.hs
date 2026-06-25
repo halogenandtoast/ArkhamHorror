@@ -277,6 +277,12 @@ getGameInAction = gameInAction <$> getGame
 getWindowStack :: HasGame m => m [[Window]]
 getWindowStack = fromMaybe [] . gameWindowStack <$> getGame
 
+getCurrentWindowTick :: HasGame m => m (Maybe Int)
+getCurrentWindowTick = listToMaybe . gameWindowTickStack <$> getGame
+
+getEntryTicks :: HasGame m => m (Map CardId Int)
+getEntryTicks = gameEntryTicks <$> getGame
+
 getIgnoreCanModifiers :: HasGame m => m Bool
 getIgnoreCanModifiers = gameIgnoreCanModifiers <$> getGame
 

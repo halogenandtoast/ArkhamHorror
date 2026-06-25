@@ -28,7 +28,7 @@ instance HasAbilities UncannyShadowTimorousShadows where
     extend
       a
       [ skillTestAbility
-          $ restricted a 1 (OnSameLocation <> exists (be a <> EnemyWithoutModifier CannotBeFlipped))
+          $ restricted a 1 OnSameLocation
           $ parleyAction (AtLeastOne (Fixed 3) DiscardRandomCardCost)
       , mkAbility a 2 $ forced $ EnemyWouldBeDefeated #when (be a)
       ]

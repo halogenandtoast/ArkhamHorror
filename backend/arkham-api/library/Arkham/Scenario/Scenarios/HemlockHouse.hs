@@ -274,7 +274,7 @@ instance RunMessage HemlockHouse where
         filterM (\iid -> (== Just lid) <$> field InvestigatorLocation iid)
           =<< select UneliminatedInvestigator
       enemies <- select $ EnemyAt (LocationWithId lid)
-      storyAssets <- select $ AssetAt (LocationWithId lid) <> StoryAsset
+      storyAssets <- select $ AssetAt (LocationWithId lid) <> StoryAsset <> UncontrolledAsset
       push $ AddToVictory Nothing (LocationTarget lid)
       case findInGrid lid grid of
         Nothing -> pure s

@@ -255,16 +255,8 @@ instance RunMessage TheThingInTheDepths where
               codexFinished 5
               scope "riverHawthorne" $ flavor $ setTitle "title" >> p.green "uncontrolled"
               record RiverAskedForHelp
-              investigators <- allInvestigators
               river <- selectJust $ assetIs Assets.riverHawthorneBigInNewYork
-              leadChooseOneM do
-                unscoped
-                  $ nameVar Assets.riverHawthorneBigInNewYork
-                  $ questionLabeled' "chooseInvestigatorToTakeControlOf"
-                questionLabeledCard Assets.riverHawthorneBigInNewYork
-                portraits investigators (`takeControlOfAsset` river)
-
-                selectAny $ locationWithInvestigator iid <> LocationInPosition cranberryBogPos
+              takeControlOfAsset iid river
               createAbilityEffect EffectGameWindow
                 $ skillTestAbility
                 $ onlyOnce
@@ -286,14 +278,8 @@ instance RunMessage TheThingInTheDepths where
                 defeatEnemy eid iid source
             else do
               scope "judithPark" $ flavor $ setTitle "title" >> p.green "noGrudge"
-          investigators <- allInvestigators
           judith <- selectJust $ assetIs Assets.judithParkTheMuscle
-          leadChooseOneM do
-            unscoped
-              $ nameVar Assets.judithParkTheMuscle
-              $ questionLabeled' "chooseInvestigatorToTakeControlOf"
-            questionLabeledCard Assets.judithParkTheMuscle
-            portraits investigators (`takeControlOfAsset` judith)
+          takeControlOfAsset iid judith
         Theta -> do
           codexFinished Theta
           entry "drRosaMarquez"

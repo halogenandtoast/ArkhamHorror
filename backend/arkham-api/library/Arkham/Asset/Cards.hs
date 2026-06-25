@@ -304,6 +304,7 @@ allPlayerAssetCards =
       , drAmyKenslerProfessorOfBiologyResolute
       , drawingThin
       , drCharlesWestIiiKnowsHisPurpose
+      , drRosaMarquezBestInHerField
       , dreamDiary
       , dreamDiaryDreamsOfAChild3
       , dreamDiaryDreamsOfAMadman3
@@ -1151,7 +1152,6 @@ allEncounterAssetCards =
       , judithParkTheMuscle
       , theoPetersJackOfAllTrades
       , bertieMusgraveATrueAesthete
-      , drRosaMarquezBestInHerField
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , nightgauntSteed

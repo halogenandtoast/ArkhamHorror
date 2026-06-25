@@ -3440,6 +3440,14 @@ async function addChaosToken(face: any){
   z-index: var(--z-index-20);
 }
 
+/* While a swarm is fanned open (hovering the swarm, or its abilities menu is open),
+   lift the whole cell above its neighbours so the fanned cards aren't occluded by an
+   adjacent location's wrapper — otherwise sweeping across the fan would lose hover. */
+.location-cell:has(.swarm:hover),
+.location-cell:has(.enemy--swarming.showAbilities) {
+  z-index: var(--z-index-30);
+}
+
 .location-wrapper {
   width: fit-content;
 }

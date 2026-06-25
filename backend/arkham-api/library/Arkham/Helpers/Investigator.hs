@@ -750,6 +750,23 @@ getAsIfInHandCardsFor forPlay iid = do
       NotForPlay -> []
   pure $ playableFromOutOfHand <> cardsAddedViaModifiers
 
+-- | Cards to load as in-hand effect entities (see 'preloadEntities'). Unlike
+-- 'getAsIfInHandCardsFor', this is agnostic to ForPlay/NotForPlay: a card that
+-- is only "as if in hand for play" (e.g. an event stashed under Stick to the
+-- Plan or Backpack) must still have its in-hand effects ('cdCardInHandEffects')
+-- applied -- otherwise e.g. Marksmanship(1)'s targeting modifier never fires
+-- while it sits under Stick to the Plan. Cards merely playable from
+-- discard/deck are deliberately excluded; those load as their own entities.
+getAsIfInHandEffectCards :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m [Card]
+getAsIfInHandEffectCards iid = do
+  isSkillTest <- isJust <$> getSkillTest
+  modifiers <- getModifiers (InvestigatorTarget iid)
+  flip mapMaybeM modifiers $ \case
+    AsIfInHand c -> pure $ Just c
+    AsIfInHandFor _ c -> Just <$> getCard c
+    CanCommitToSkillTestsAsIfInHand c | isSkillTest -> pure $ Just c
+    _ -> pure Nothing
+
 matchWho
   :: (HasGame m, Tracing m)
   => InvestigatorId

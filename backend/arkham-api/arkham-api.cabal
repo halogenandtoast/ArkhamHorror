@@ -6871,6 +6871,7 @@ test-suite spec
       Arkham.Asset.Assets.OldBookOfLoreSpec
       Arkham.Asset.Assets.OnTheirHeels5Spec
       Arkham.Asset.Assets.PatricesViolinSpec
+      Arkham.Asset.Assets.PeltShipmentSpec
       Arkham.Asset.Assets.PendantOfTheQueenSpec
       Arkham.Asset.Assets.PeterSylvestreSpec
       Arkham.Asset.Assets.PhysicalTraining2Spec
@@ -6941,6 +6942,7 @@ test-suite spec
       Arkham.Event.Events.LookWhatIFoundSpec
       Arkham.Event.Events.Lucky2Spec
       Arkham.Event.Events.LuckySpec
+      Arkham.Event.Events.Marksmanship1Spec
       Arkham.Event.Events.MindOverMatterSpec
       Arkham.Event.Events.MindWipe1Spec
       Arkham.Event.Events.OccultEvidenceSpec

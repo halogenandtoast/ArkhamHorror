@@ -1472,6 +1472,17 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
+          -- An asset attacked "as if it were an engaged investigator" (Dogs of
+          -- War's Key Locus). Treat it as an investigator at its location, so
+          -- "an investigator at your location" matchers fire for anyone there.
+          SingleAttackTarget (AssetTarget aid) ->
+            andM
+              [ aid <=~> AssetAt (locationWithInvestigator iid)
+              , not <$> isAttackCancelled details
+              , matchWho iid iid whoMatcher
+              , matches (attackEnemy details) enemyMatcher
+              , enemyAttackMatches iid details enemyAttackMatcher
+              ]
           _ -> noMatch
         _ -> noMatch
     Matcher.EnemyAttacksEvenIfCancelled timing whoMatcher enemyAttackMatcher enemyMatcher ->
@@ -1480,6 +1491,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           SingleAttackTarget (InvestigatorTarget who) ->
             andM
               [ matchWho iid who whoMatcher
+              , matches (attackEnemy details) enemyMatcher
+              , enemyAttackMatches iid details enemyAttackMatcher
+              ]
+          SingleAttackTarget (AssetTarget aid) ->
+            andM
+              [ aid <=~> AssetAt (locationWithInvestigator iid)
+              , matchWho iid iid whoMatcher
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]

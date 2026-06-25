@@ -1511,6 +1511,25 @@ instance RunMessage EnemyAttrs where
                , attackExhaustsEnemy details
                , DoNotExhaust `notElem` mods
                ]
+        -- An enemy attacking an asset "as if it were an engaged investigator"
+        -- (e.g. Dogs of War's Key Locus). Horror is dealt as damage. Must not
+        -- re-emit ScenarioSpecific "enemyAttacked" here or the act handler that
+        -- initiates this attack would loop.
+        SingleAttackTarget (AssetTarget aid) -> do
+          let total = healthDamage + sanityDamage
+          pushAll
+            $ [ DealAssetDamageWithCheck aid (EnemyAttackSource enemyId) total 0 True
+              | allowAttack
+              , not details.cancelled
+              ]
+            <> [ Exhaust (mkExhaustion a a)
+               | allowAttack
+               , swarmExhaust
+               , attackExhaustsEnemy details
+               , DoNotExhaust `notElem` mods
+               ]
+            <> ignoreWindows
+            <> [After (EnemyAttack details)]
         _ -> error $ "Unhandled attack target: " <> show (attackTarget details)
 
       -- Retaliate happens inside an investigator's fight action, so the

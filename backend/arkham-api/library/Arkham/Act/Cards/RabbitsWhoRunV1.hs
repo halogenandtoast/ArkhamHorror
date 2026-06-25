@@ -2,10 +2,9 @@ module Arkham.Act.Cards.RabbitsWhoRunV1 (rabbitsWhoRunV1) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Attack (enemyAttack)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Scenarios.DogsOfWar.Helpers
 
 newtype RabbitsWhoRunV1 = RabbitsWhoRunV1 ActAttrs
@@ -29,11 +28,12 @@ instance RunMessage RabbitsWhoRunV1 where
       pure a
     ScenarioSpecific "enemyAttacked" v -> do
       let enemy :: EnemyId = toResult v
-      selectOne (locationWithEnemy enemy) >>= traverse_ \lid -> do
-        dmg <- field EnemyHealthDamage enemy
-        hrr <- field EnemySanityDamage enemy
-        let total = dmg + hrr
-        selectEach (assetAt lid <> AssetWithModifier IsKeyLocus) \locus -> do
-          dealAssetDamage locus enemy total
+      -- "each ready enemy attacks each Key Locus at its location as if it were
+      -- an engaged investigator." Model this as a real attack so attack-reaction
+      -- cards (Dodge etc.) can interact with it; PerformEnemyAttack folds the
+      -- enemy's horror into the asset damage.
+      selectOne (locationWithEnemy enemy) >>= traverse_ \lid ->
+        selectEach (assetAt lid <> AssetWithModifier IsKeyLocus) \locus ->
+          push $ InitiateEnemyAttack $ enemyAttack enemy enemy locus
       pure a
     _ -> RabbitsWhoRunV1 <$> liftRunMessage msg attrs

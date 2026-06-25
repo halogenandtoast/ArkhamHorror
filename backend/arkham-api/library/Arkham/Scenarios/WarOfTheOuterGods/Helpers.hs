@@ -207,15 +207,13 @@ warIsOver winner = do
     selectOne (locationIs Locations.hubDimension) >>= \case
       Just hub -> pure hub
       Nothing -> placeSetAsideLocation Locations.hubDimension
-  reveal hub
-  whenJustM (getSetAsideCardMaybe (factionAncientOne winner)) \ancientOne ->
-    createEnemyAt_ ancientOne hub
+  unsafeReveal hub
+  whenJustM (getSetAsideCardMaybe (factionAncientOne winner)) (`createEnemyAt_` hub)
   let losers = filter (/= winner) factionOrder
   for_ losers \f -> do
     push $ RemoveAllCopiesOfEncounterCardFromGame (factionEncounterCards f)
-    selectEach (factionEnemy f) \enemy -> push $ RemoveFromGame (toTarget enemy)
-    selectEach (mapOneOf treacheryIs (factionTreacheryDefs f)) \treachery ->
-      push $ RemoveFromGame (toTarget treachery)
+    selectEach (factionEnemy f) removeFromGame
+    selectEach (mapOneOf treacheryIs (factionTreacheryDefs f)) removeFromGame
   push $ SetCurrentActDeck 1 []
   for_ losers \f -> push $ SetCurrentAgendaDeck (agendaDeckN f) []
   finalAgenda <- genCard (factionFinalAgenda winner)

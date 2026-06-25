@@ -3,16 +3,23 @@ module Arkham.Enemy.Cards.MaghanArkat (maghanArkat) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Scenarios.WarOfTheOuterGods.Helpers
 import Arkham.Trait (Trait (Mutated))
 
 newtype MaghanArkat = MaghanArkat EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 maghanArkat :: EnemyCard MaghanArkat
 maghanArkat = enemy MaghanArkat Cards.maghanArkat
+
+instance HasModifiersFor MaghanArkat where
+  getModifiersFor (MaghanArkat a) = do
+    n <- perPlayer 8
+    modifySelf a [HealthModifier n]
 
 instance HasAbilities MaghanArkat where
   getAbilities (MaghanArkat a) =

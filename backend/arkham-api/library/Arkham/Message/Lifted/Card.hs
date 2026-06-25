@@ -188,6 +188,13 @@ obtainCard a =
     filterInbox \case
       Arkham.Message.Discarded _ _ discarded -> discarded.id == toCardId card
       _ -> False
+    -- A committed skill keeps a Skill entity (placement Limbo) that is tracked
+    -- separately from the skill test's committed-cards list. ObtainCard only
+    -- clears the latter, so the entity would still be discarded when the test
+    -- ends (e.g. War of the Outer Gods placing a committed skill as a swarm
+    -- card). Remove that committed entity quietly here.
+    selectOne (SkillWithCardId (toCardId card) <> SkillWithPlacement Limbo)
+      >>= traverse_ (push . RemoveSkill)
     push $ ObtainCard $ toCardId card
 
 removeCardFromGame :: (ReverseQueue m, IsCard card) => card -> m ()

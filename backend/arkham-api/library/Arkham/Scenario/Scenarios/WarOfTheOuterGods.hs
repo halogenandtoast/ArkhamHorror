@@ -81,7 +81,7 @@ enemy, as a swarm card.
 -}
 commitSwarmCards :: ReverseQueue m => InvestigatorId -> Bool -> m ()
 commitSwarmCards iid allOfThem = do
-  insects <- select $ EnemyWithTrait Insect
+  insects <- select $ EnemyWithTrait Insect <> not_ IsSwarm
   unless (null insects) do
     whenJustM getSkillTest \st -> do
       let cards = concat (toList $ skillTestCommittedCards st)

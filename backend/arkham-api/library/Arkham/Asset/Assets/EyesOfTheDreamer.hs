@@ -33,30 +33,21 @@ instance RunMessage EyesOfTheDreamer where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       let source = attrs.ability 1
-      onSucceedByEffect sid (atLeast 0) (attrs.ability 1) sid $ doStep 1 msg
       aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure
         $ EyesOfTheDreamer
+        $ setMetaKey "eyesGranted" False
         $ setMetaKey "eyesIgnored" ([] :: [ChaosTokenFace])
         $ setMetaKey "eyesSelected" ([] :: [ChaosTokenFace]) attrs
-    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      let selected :: [ChaosTokenFace] = getMetaKeyDefault "eyesSelected" [] attrs
-      let ignored :: [ChaosTokenFace] = getMetaKeyDefault "eyesIgnored" [] attrs
-      when (any (`elem` ignored) selected) do
-        withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
-      pure a
     UseCardAbility iid (isSource attrs -> True) 2 (getDrawSource -> drawSource) (totalUsesPayment -> n) -> do
-      -- Compose with any prior reactor on this WouldRevealChaosTokens window
-      -- (e.g. Jacqueline Fine) by preserving the existing draw chain and
-      -- nested choice. Without this, firing Eyes after another reactor would
-      -- replace its structure wholesale and discard its effect.
       mchoice <- getChaosBagChoice
       let steps = maybe [Undecided Draw] getSteps mchoice
-      let nested = mchoice >>= \case
-            Resolved {} -> Nothing
-            Decided s -> guard (s /= Draw) $> s
-            Undecided s -> guard (s /= Draw) $> s
-            Deciding s -> guard (s /= Draw) $> s
+      let nested =
+            mchoice >>= \case
+              Resolved {} -> Nothing
+              Decided s -> guard (s /= Draw) $> s
+              Undecided s -> guard (s /= Draw) $> s
+              Deciding s -> guard (s /= Draw) $> s
       push
         $ ReplaceCurrentDraw drawSource iid
         $ Choose (toSource attrs) 1 ResolveChoice (steps <> replicate n (Undecided Draw)) [] nested
@@ -65,7 +56,16 @@ instance RunMessage EyesOfTheDreamer where
     ChaosTokenSelected _ (isSource attrs -> True) chaosToken -> do
       let otherTokens = getMetaKeyDefault "eyesSelected" [] attrs
       pure $ EyesOfTheDreamer $ setMetaKey "eyesSelected" (chaosToken.face : otherTokens) attrs
-    ChaosTokenIgnored _ (isSource attrs -> True) chaosToken -> do
-      let otherTokens = getMetaKeyDefault "eyesIgnored" [] attrs
-      pure $ EyesOfTheDreamer $ setMetaKey "eyesIgnored" (chaosToken.face : otherTokens) attrs
+    ChaosTokenIgnored iid (isSource attrs -> True) chaosToken -> do
+      let selected :: [ChaosTokenFace] = getMetaKeyDefault "eyesSelected" [] attrs
+      let ignored :: [ChaosTokenFace] = getMetaKeyDefault "eyesIgnored" [] attrs
+      let granted :: Bool = getMetaKeyDefault "eyesGranted" False attrs
+      if not granted && chaosToken.face `elem` selected
+        then do
+          withSkillTest \sid -> priority $ skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+          pure
+            $ EyesOfTheDreamer
+            $ setMetaKey "eyesGranted" True
+            $ setMetaKey "eyesIgnored" (chaosToken.face : ignored) attrs
+        else pure $ EyesOfTheDreamer $ setMetaKey "eyesIgnored" (chaosToken.face : ignored) attrs
     _ -> EyesOfTheDreamer <$> liftRunMessage msg attrs

@@ -100,9 +100,9 @@ const showChaosBag = ref(false)
 const showOutOfPlay = ref(false)
 const forcedShowOutOfPlay = ref(false)
 const forcedShowDiscard = ref(false)
-const forcedShowHollowed = ref(false)
 const encounterDiscardPopoverShown = ref(false)
 const spectralDiscardPopoverShown = ref(false)
+const hollowedPopoverShown = ref(false)
 const showScenarioDebugOptions = ref(false)
 const realityAcidLightAnchor = ref<HTMLElement | null>(null)
 const realityAcidLightRect = reactive({ left: 0, top: 0, width: 0, height: 0 })
@@ -1266,14 +1266,6 @@ const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: bool
 }
 const showRemovedFromPlay = () => doShowCards(removedFromPlay, t('scenario.removedFromPlay'), true)
 const showDiscards = () => doShowCards(discards, t('scenario.discards'), true)
-const showHollowed = () => doShowCards(hollowed, t('scenario.hollowed'), true)
-const handleHollowedChoose = (idx: number) => {
-  if (hollowed.value.length > 1) {
-    showHollowed()
-  } else {
-    choose(idx)
-  }
-}
 const hideCards = () => {
   showCards.ref = noCards
   revealingCards.value = false
@@ -1357,15 +1349,14 @@ watchEffect(() => {
     encounterDiscardPopoverShown.value = true
     hideCards()
     forcedShowDiscard.value = true
-    forcedShowHollowed.value = false
+    hollowedPopoverShown.value = false
   } else if (showHollowedCards) {
-    showHollowed()
-    forcedShowHollowed.value = true
+    hollowedPopoverShown.value = true
     forcedShowDiscard.value = false
   } else {
     hideCards()
     forcedShowDiscard.value = false
-    forcedShowHollowed.value = false
+    hollowedPopoverShown.value = false
   }
 })
 
@@ -2211,10 +2202,19 @@ async function addChaosToken(face: any){
               :card="hollowed[0]"
               :playerId="playerId"
               class="card"
-              @click="showHollowed"
-              @choose="handleHollowedChoose"
             />
-            <span class="deck-size">{{hollowed.length}}</span>
+          </div>
+          <div class="buttons">
+            <CardsUnderIndicator
+              v-model:shown="hollowedPopoverShown"
+              class="view-discard-button"
+              :cards="hollowed"
+              :game="game"
+              :playerId="playerId"
+              :label="t('scenario.hollowed')"
+              :fullWidth="true"
+              @choose="choose"
+            />
           </div>
         </div>
         <SkillTest

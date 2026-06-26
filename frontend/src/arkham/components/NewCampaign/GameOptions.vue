@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { imgsrc } from '@/arkham/helpers'
 import { chaosTokenImage, tokenOrder } from '@/arkham/types/ChaosToken'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
-import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/NewGame'
+import type { GameMode, MultiplayerVariant, CampaignType, AiFocus, AiSlotConfig } from '@/arkham/types/NewGame'
+import { aiFocuses } from '@/arkham/types/NewGame'
 
 type FullCampaignOption = {
   key: string
@@ -34,6 +35,9 @@ const props = defineProps<{
 
   chosenCampaignId: string | null
   chosenSideStoryId: string | null
+
+  // Dev build flag; AI-investigator configuration is dev-only (see isDevBuild).
+  dev: boolean
 }>()
 
 const playerCount = defineModel<number>('playerCount', { required: true })
@@ -46,6 +50,73 @@ const includeTarotReadings = defineModel<boolean>('includeTarotReadings', { requ
 const campaignName = defineModel<string | null>('campaignName', { required: true })
 const fullCampaignOptionKey = defineModel<string | null>('fullCampaignOptionKey', { required: true })
 const sideStoryMode = defineModel<string>('sideStoryMode', { required: true })
+
+// "Epic Multiplayer" side-story flow. Only surfaced for side stories whose data
+// carries `epicMultiplayer: true` (src/arkham/data/side-stories.json).
+type EpicGroup = { name: string; playerCount: number }
+const epicMode = defineModel<boolean>('epicMode', { required: true })
+const epicGroupCount = defineModel<number>('epicGroupCount', { required: true })
+const epicGroups = defineModel<EpicGroup[]>('epicGroups', { required: true })
+
+// --- AI-investigator configuration (dev-only, Solo/multihanded only) ----------
+// Emits an `aiPlayers` array (length playerCount) of `AiSlotConfig | null` up to
+// NewCampaign, which forwards it to newGame() only for Solo games.
+const aiPlayers = defineModel<(AiSlotConfig | null)[]>('aiPlayers', { required: true })
+
+// MVP: only Roland Banks is offered as an AI profile (single-option select).
+const aiInvestigatorOptions = [{ code: '01001', name: 'Roland Banks' }]
+const aiFocusOptions: Array<'auto' | AiFocus> = ['auto', ...aiFocuses]
+
+type AiSeat = { enabled: boolean; investigator: string; focus: 'auto' | AiFocus; responseDelayMs: number }
+
+function defaultAiSeat(): AiSeat {
+  return { enabled: false, investigator: aiInvestigatorOptions[0].code, focus: 'auto', responseDelayMs: 1500 }
+}
+
+const aiSeats = ref<AiSeat[]>([])
+
+const showAiConfig = computed(
+  () => props.dev && multiplayerVariant.value === 'Solo' && playerCount.value > 1,
+)
+
+// Keep one seat row per player, preserving anything already configured.
+watch(playerCount, (count) => {
+  const next = aiSeats.value.slice(0, count)
+  while (next.length < count) next.push(defaultAiSeat())
+  aiSeats.value = next
+}, { immediate: true })
+
+// Project the seat rows into the `aiPlayers` model the backend expects. When AI
+// config isn't applicable (non-Solo, or non-dev) we emit an empty array so a
+// previously-configured Solo selection can't leak into a WithFriends game.
+watch([aiSeats, showAiConfig, playerCount], () => {
+  if (!showAiConfig.value) {
+    aiPlayers.value = []
+    return
+  }
+  aiPlayers.value = aiSeats.value.slice(0, playerCount.value).map((seat): AiSlotConfig | null =>
+    seat.enabled
+      ? {
+          investigator: seat.investigator,
+          focus: seat.focus === 'auto' ? undefined : seat.focus,
+          responseDelayMs: seat.responseDelayMs,
+        }
+      : null,
+  )
+}, { deep: true, immediate: true })
+
+const scenarioSupportsEpic = computed(
+  () => props.gameMode === 'SideStory' && props.scenario?.epicMultiplayer === true,
+)
+const isEpicActive = computed(() => scenarioSupportsEpic.value && epicMode.value)
+
+// Keep the per-group rows in sync with the chosen group count, preserving any
+// names/counts the organizer already edited.
+watch(epicGroupCount, (count) => {
+  const next = epicGroups.value.slice(0, count)
+  while (next.length < count) next.push({ name: `Group ${next.length + 1}`, playerCount: 2 })
+  epicGroups.value = next
+})
 
 const sideStoryScenarios = computed(() =>
   props.gameMode === 'SideStory' ? props.scenario?.scenarios ?? [] : []
@@ -271,7 +342,44 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
         <input class="text" type="text" v-model="campaignName" :placeholder="currentCampaignName" />
       </div>
 
-      <div class="card">
+      <div v-if="scenarioSupportsEpic" class="card">
+        <div class="card-title">{{ $t('create.playMode') }}</div>
+        <div class="segmented segmented-2">
+          <input type="radio" v-model="epicMode" :value="false" id="singleGroupMode" />
+          <label for="singleGroupMode">{{ $t('create.singleGroupMode') }}</label>
+          <input type="radio" v-model="epicMode" :value="true" id="epicMultiplayerMode" />
+          <label for="epicMultiplayerMode">{{ $t('create.epicMultiplayerMode') }}</label>
+        </div>
+
+        <transition name="slide">
+          <div v-if="isEpicActive" class="subcard">
+            <div class="card-title small">{{ $t('create.numberOfGroups') }}</div>
+            <div class="segmented segmented-3">
+              <template v-for="n in [2, 3, 4]" :key="n">
+                <input type="radio" v-model="epicGroupCount" :value="n" :id="`groupCount${n}`" />
+                <label :for="`groupCount${n}`">{{ n }}</label>
+              </template>
+            </div>
+
+            <div class="epic-groups">
+              <div v-for="(group, index) in epicGroups" :key="index" class="epic-group-row">
+                <label class="epic-field">
+                  <span class="card-title small">{{ $t('create.groupName') }}</span>
+                  <input class="text" type="text" v-model="group.name" />
+                </label>
+                <label class="epic-field epic-field-count">
+                  <span class="card-title small">{{ $t('create.groupPlayers') }}</span>
+                  <select class="text" v-model.number="group.playerCount">
+                    <option v-for="p in 4" :key="p" :value="p">{{ p }}</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+
+      <div v-if="!isEpicActive" class="card">
         <div class="card-title">{{ $t('create.numberOfPlayers') }}</div>
         <div class="segmented segmented-4">
           <input type="radio" v-model="playerCount" :value="1" id="player1" />
@@ -303,6 +411,45 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
               {{ $t('create.switchingPerspectives') }}
             </div>
             <div class="callout-body" v-html="$t('create.switchingPerspectivesDescription')"></div>
+          </div>
+        </transition>
+
+        <transition name="slide">
+          <div v-if="showAiConfig" class="subcard ai-config">
+            <div class="card-title small ai-config-title">
+              AI Investigators <span class="ai-dev-pill">dev</span>
+            </div>
+            <div class="ai-seats">
+              <div v-for="(seat, index) in aiSeats.slice(0, playerCount)" :key="index" class="ai-seat">
+                <label class="ai-seat-toggle">
+                  <input type="checkbox" v-model="seat.enabled" />
+                  <span>Seat {{ index + 1 }} — AI controlled</span>
+                </label>
+
+                <transition name="slide">
+                  <div v-if="seat.enabled" class="ai-seat-fields">
+                    <label class="ai-field">
+                      <span class="card-title small">Investigator</span>
+                      <select class="text" v-model="seat.investigator">
+                        <option v-for="inv in aiInvestigatorOptions" :key="inv.code" :value="inv.code">
+                          {{ inv.name }}
+                        </option>
+                      </select>
+                    </label>
+                    <label class="ai-field">
+                      <span class="card-title small">Focus</span>
+                      <select class="text" v-model="seat.focus">
+                        <option v-for="focus in aiFocusOptions" :key="focus" :value="focus">{{ focus }}</option>
+                      </select>
+                    </label>
+                    <label class="ai-field">
+                      <span class="card-title small">Response delay (ms)</span>
+                      <input class="text" type="number" min="0" step="100" v-model.number="seat.responseDelayMs" />
+                    </label>
+                  </div>
+                </transition>
+              </div>
+            </div>
           </div>
         </transition>
       </div>
@@ -871,6 +1018,94 @@ input[type='radio']:checked + label {
     margin-top: 4px;
     color: rgba(255 255 255 / 0.75);
   }
+}
+
+.epic-groups {
+  margin-top: 10px;
+  display: grid;
+  gap: 10px;
+}
+
+.epic-group-row {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 10px;
+}
+
+.epic-field {
+  display: grid;
+  gap: 4px;
+}
+
+.epic-field .text {
+  border-radius: 10px;
+}
+
+.ai-config-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-dev-pill {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(184, 134, 11, 0.55);
+  background: rgba(184, 134, 11, 0.25);
+  color: rgba(255, 226, 154, 0.95);
+}
+
+.ai-seats {
+  display: grid;
+  gap: 10px;
+}
+
+.ai-seat {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.ai-seat-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+
+.ai-seat-toggle input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+  accent-color: rgb(110, 134, 64);
+}
+
+.ai-seat-fields {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 700px) {
+  .ai-seat-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ai-field {
+  display: grid;
+  gap: 4px;
+}
+
+.ai-field select.text,
+.ai-field input.text {
+  text-transform: capitalize;
 }
 
 .recommended-list {

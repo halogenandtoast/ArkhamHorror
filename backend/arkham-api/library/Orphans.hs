@@ -6,6 +6,7 @@
 module Orphans where
 
 import Arkham.Card.CardCode
+import Arkham.Epic.Types
 import Arkham.Game
 import Arkham.Message
 import Control.Error.Util (hush)
@@ -44,6 +45,33 @@ instance PersistField [Message] where
   toPersistValue = toPersistValue . toJSON
   fromPersistValue val =
     fromPersistValue val >>= fmapLeft T.pack . parseEither parseJSON
+
+instance PersistFieldSql SharedEventState where
+  sqlType _ = SqlString
+
+instance PersistField SharedEventState where
+  toPersistValue = toPersistValue . toJSON
+  fromPersistValue val =
+    fromPersistValue val >>= fmapLeft T.pack . parseEither parseJSON
+
+instance PersistFieldSql SharedDelta where
+  sqlType _ = SqlString
+
+instance PersistField SharedDelta where
+  toPersistValue = toPersistValue . toJSON
+  fromPersistValue val =
+    fromPersistValue val >>= fmapLeft T.pack . parseEither parseJSON
+
+instance PersistFieldSql EpicRole where
+  sqlType _ = SqlString
+
+instance PersistField EpicRole where
+  toPersistValue = \case
+    Organizer -> PersistText "organizer"
+    GroupPlayer -> PersistText "player"
+  fromPersistValue (PersistText "organizer") = Right Organizer
+  fromPersistValue (PersistText "player") = Right GroupPlayer
+  fromPersistValue _ = Left "invalid EpicRole"
 
 instance PathPiece UUID where
   toPathPiece = toUrlPiece

@@ -61,6 +61,7 @@ import Arkham.Decklist.Type
 import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.Discard
+import Arkham.Epic.Types (SharedKey)
 import Arkham.Discover
 import Arkham.Draw.Types
 import {-# SOURCE #-} Arkham.Effect.Types
@@ -70,6 +71,9 @@ import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
 import {-# SOURCE #-} Arkham.Enemy.Types
 import Arkham.Evade.Types
+import Arkham.Ai.Focus (Focus)
+import Arkham.Ai.Orphans ()
+import Arkham.Ai.State (AiPlayerState)
 import Arkham.Exception
 import Arkham.Exhaust
 import Arkham.Field
@@ -468,6 +472,13 @@ data Message
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetAsIfRuling AsIfRuling
+  | -- AI seat configuration (mutates Settings.settingsAiPlayers)
+    RegisterAiPlayer PlayerId AiPlayerState
+  | SetAiFocusOverride PlayerId (Maybe Focus)
+  | AddAiPriority PlayerId Target
+  | RemoveAiPriority PlayerId Target
+  | SetAiEnabled PlayerId Bool
+  | SetAiResponseDelay PlayerId Int
   | SetLocationOffset LocationId Double Double
   | ResetLocationOffsets
   | SetAsIfAtIgnored InvestigatorId Bool
@@ -1116,6 +1127,11 @@ data Message
   | SetScenarioDifficulty Difficulty
   | SetCampaignStep CampaignStep
   | CreateCard CardId CardCode
+  | -- Epic Multiplayer: mutate a shared counter on the owning event. These are
+    -- captured (not dispatched to a game entity) by the run loop when the game
+    -- belongs to an event; otherwise they are inert no-ops. See "Arkham.Epic".
+    SpendShared SharedKey Int
+  | RaiseShared SharedKey Int
   deriving stock (Show, Eq, Ord, Data)
 
 {- | The fight cluster routes by 'Target' internally. Two public forms exist
@@ -2734,5 +2750,32 @@ chooseDecks pids =
     , AskMap $ mapFromList $ map (,ChooseDeck) pids
     , DoneChoosingDecks
     ]
+
+{- | Like 'chooseDecks' but for AI-assisted games. Each AI seat in @aiSeats@ is
+loaded from its bundled decklist in-place and is NOT prompted; only the
+remaining (human) seats receive a 'ChooseDeck' question.
+
+The two ordering invariants this preserves:
+
+  * The @LoadDecklist@s run /after/ 'ChoosingDecks' (which wipes investigators)
+    and /before/ 'DoneChoosingDecks' (which flips to 'IsActive'), so the loaded
+    AI investigators survive the wipe and are present the instant the game parks
+    on the human deck prompt.
+  * The 'AskMap' contains only human seats, so the game never parks waiting on an
+    AI seat. When every seat is AI the 'AskMap' is omitted entirely.
+
+With @aiSeats == []@ the emitted message list is identical to @chooseDecks pids@,
+so non-AI games are unaffected.
+-}
+chooseDecksWithAi :: [PlayerId] -> [(PlayerId, ArkhamDBDecklist)] -> Message
+chooseDecksWithAi pids aiSeats =
+  Run
+    $ [SetGameState (IsChooseDecks pids), ChoosingDecks]
+    <> [LoadDecklist pid decklist | (pid, decklist) <- aiSeats]
+    <> [AskMap (mapFromList (map (,ChooseDeck) humanPids)) | notNull humanPids]
+    <> [DoneChoosingDecks]
+ where
+  aiPids = map fst aiSeats
+  humanPids = filter (`notElem` aiPids) pids
 
 --

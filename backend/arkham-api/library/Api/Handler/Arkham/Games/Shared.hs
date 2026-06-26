@@ -4,8 +4,13 @@
 
 module Api.Handler.Arkham.Games.Shared where
 
+import Api.Arkham.Epic (applyEpicDeltasLocked, lookupGameEvent, mkEpicEnv)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Arkham.Ai.Decision (decideAi)
+import Arkham.Ai.Helpers (lookupAiPlayer)
+import Arkham.Ai.State (aiEnabled)
+import Arkham.Epic.Types (epicEnvDeltaRef)
 import Arkham.Campaign.Types (CampaignAttrs)
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
 import Arkham.ClassSymbol
@@ -37,7 +42,7 @@ import Data.These
 import Data.Time.Clock
 import Data.UUID (nil)
 import Database.Esqueleto.Experimental hiding (update, (=.))
-import Database.Redis (msgMessage, pubSub, publish, runRedis, subscribe)
+import Database.Redis (RedisChannel, msgMessage, pubSub, publish, runRedis, subscribe)
 import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Step
@@ -123,6 +128,48 @@ data SlowSubscriber = SlowSubscriber
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
   f `catch` \e -> $(logWarn) $ tshow (e :: ConnectionException)
+
+-- | Generic read-only room subscription loop: bridge the Redis channel into the
+-- room, fan room messages out to this websocket, and run @onLastLeave@ when the
+-- final subscriber disconnects. Inbound client frames are ignored (read-only).
+-- Used by the Epic Multiplayer event stream; 'gameStream' has its own variant
+-- with per-game member counting and a log cache.
+streamRoom
+  :: RedisChannel -> Room -> WebSocketsT Handler () -> WebSocketsT Handler ()
+streamRoom channel room onLastLeave = catchingConnectionException do
+  broker <- lift $ getsYesod appMessageBroker
+  let broadcast = broadcastToRoom room
+  let cleanup subId = do
+        unsubscribeFromRoom room subId
+        isEmpty <- liftIO $ atomically $ IntMap.null <$> readTVar (roomSubscribers room)
+        when isEmpty onLastLeave
+  bracket (subscribeToRoom room) (\(subId, _) -> cleanup subId) \(_subId, sub) -> do
+    let Subscriber {subQueue, subOverflow} = sub
+    mtid <- case broker of
+      RedisBroker redisConn _ -> do
+        tid <-
+          liftIO
+            $ async
+            $ runRedis redisConn
+            $ pubSub (subscribe [channel])
+            $ \msg -> do
+              broadcast (BSL.fromStrict $ msgMessage msg)
+              pure mempty
+        pure $ Just tid
+      WebSocketBroker -> pure Nothing
+    let stopSub = maybe (pure ()) (liftIO . cancel) mtid
+    let sender =
+          forever
+            ( do
+                msg <- atomically do
+                  overflowed <- readTVar subOverflow
+                  if overflowed then throwSTM SlowSubscriber else readTBQueue subQueue
+                sendTextData msg
+            )
+            `catch` (\(_ :: SlowSubscriber) -> pure ())
+    finally
+      (race_ sender (runConduit $ sourceWS .| mapM_C (\(_ :: ByteString) -> pure ())))
+      stopSub
 
 data GetGameJson = GetGameJson
   { playerId :: Maybe PlayerId
@@ -214,7 +261,7 @@ updateGame response gameId mRoom = do
   -- Yesod's HCContent control-flow exceptions (notFound, notAuthenticated,
   -- sendStatusJSON, etc.) and break 404/401 responses (see Undo.hs note).
   -- The runMessages span below is wrapped where it's safe.
-  (ArkhamGame {..}, oldLogEntries, updatedLog) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+  (ArkhamGame {..}, oldLogEntries, updatedLog, mSharedUpdate) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
     -- Read the prior log from the per-room cache when it's in sync with
     -- the just-locked game's step; otherwise fall back to the DB. Avoids
     -- the 217-row-avg getGameLog read on every action in the common case.
@@ -232,10 +279,35 @@ updateGame response gameId mRoom = do
 
     let playerId = fromMaybe activePlayer (answerPlayer response)
 
+    -- AI seats answer their own parked question: resolve an AiAnswer into a
+    -- concrete Answer by running the read-only decision engine over the parked
+    -- game (HasGame (ReaderT Game m), the same pattern as getActivePlayer
+    -- above), then feed it through the normal handleAnswer path so all
+    -- downstream message synthesis is reused. A disabled/unregistered seat or an
+    -- absent question resolves to Nothing and is treated as a no-op. decideAi
+    -- sets qrQuestionVersion from this same parked game, so it matches
+    -- gameScenarioSteps at apply time (no "Stale question").
+    mResolved <- case response of
+      AiAnswer aiPid -> case lookupAiPlayer aiPid gameSettings of
+        Just st | aiEnabled st -> case Map.lookup aiPid gameQuestion of
+          Just question -> Just <$> runReaderT (decideAi st aiPid question) gameJson
+          Nothing -> pure Nothing
+        _ -> pure Nothing
+      _ -> pure (Just response)
+
     logRef <- newIORef []
-    handleAnswer gameJson playerId response >>= \case
-      Unhandled _ -> pure (g, oldLogEntries, [])
+    reply <- case mResolved of
+      Nothing -> pure (Unhandled "AI seat disabled or no parked question")
+      Just resolved -> handleAnswer gameJson playerId resolved
+    case reply of
+      Unhandled _ -> pure (g, oldLogEntries, [], Nothing)
       Handled answerMessages -> do
+        -- Epic Multiplayer: if this game is a group within an event, build an
+        -- EpicEnv so Shared* messages emitted during the action are captured as
+        -- deltas. 'Nothing' (every ordinary game) means zero behavior change.
+        mEpicCtx <- lookupGameEvent gameId
+        mEpicEnv <- traverse (uncurry mkEpicEnv) mEpicCtx
+
         let
           messages =
             [SetActivePlayer playerId | activePlayer /= playerId]
@@ -252,7 +324,7 @@ updateGame response gameId mRoom = do
         -- aborts the surrounding DB transaction (rollback releases the lock)
         -- and lets the worker return to the pool.
         mResult <- liftIO $ timeout runMessagesTimeoutMicros do
-          runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) tracer) do
+          runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) tracer mEpicEnv) do
             runMessages (gameIdToText gameId) Nothing
         case mResult of
           Just () -> pure ()
@@ -288,7 +360,26 @@ updateGame response gameId mRoom = do
             [ ArkhamStepChoice =. Choice diffDown updatedQueue
             , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
             ]
-        pure (g', oldLogEntries, updatedLog)
+
+        -- Epic Multiplayer: drain any shared-counter deltas emitted this action
+        -- and apply them to the authoritative event row under a short FOR UPDATE
+        -- lock (taken late, only when there are deltas), within this same
+        -- transaction so the game step and shared mutation commit atomically.
+        mSharedUpdate <- case mEpicCtx of
+          Just (eventEntity, _) -> do
+            deltas <- maybe (pure []) (liftIO . readIORef . epicEnvDeltaRef) mEpicEnv
+            if null deltas
+              then pure Nothing
+              else
+                Just
+                  <$> applyEpicDeltasLocked
+                    (entityKey eventEntity)
+                    (Just gameId)
+                    (Just (arkhamGameStep + 1))
+                    deltas
+          Nothing -> pure Nothing
+
+        pure (g', oldLogEntries, updatedLog, mSharedUpdate)
 
   -- Update the per-room cache after the DB transaction has committed,
   -- so the cache is never ahead of durably-stored state.
@@ -302,6 +393,11 @@ updateGame response gameId mRoom = do
       arkhamGameName
       publishLog
       arkhamGameCurrentData
+
+  -- Epic Multiplayer: fold the new shared state into this group's own stream so
+  -- the shared panel renders from a single source. The organizer dashboard gets
+  -- the same update via the event websocket (see Events handler).
+  for_ mSharedUpdate \s -> publishToRoom gameId (SharedStateUpdate s)
 
 -- | Read the cached log entries IF the cache is consistent with the locked
 -- game's current step. Returns Nothing on a mismatch (so the caller refetches
@@ -377,6 +473,21 @@ publishToRoom gameId a = do
       -- update on the floor; the next subscriber will read the latest
       -- state from the database when they connect.
       lookupRoom gameId >>= traverse_ (`broadcastToRoom` encode a)
+
+-- | Epic Multiplayer sibling of 'publishToRoom', keyed by event id.
+publishToEventRoom :: (MonadIO m, ToJSON a, HasApp m) => ArkhamEpicEventId -> a -> m ()
+publishToEventRoom eid a = do
+  broker <- getsApp appMessageBroker
+  case broker of
+    RedisBroker redisConn _ ->
+      void
+        $ liftIO
+        $ runRedis redisConn
+        $ publish (eventChannel eid)
+        $ toStrictByteString
+        $ encode a
+    WebSocketBroker ->
+      lookupEventRoom eid >>= traverse_ (`broadcastToRoom` encode a)
 
 toGameDetailsEntry :: Entity ArkhamGameRaw -> Int -> GameDetailsEntry
 toGameDetailsEntry (Entity gameId game) playerCount =

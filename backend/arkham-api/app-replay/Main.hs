@@ -213,7 +213,7 @@ main = do
   gameRef <- newIORef currentData
   queueRef <- newQueue resumeQueue
   genRef <- newIORef (mkStdGen currentData.gameSeed)
-  let app = GameApp gameRef queueRef genRef (const (pure ())) tracer
+  let app = GameApp gameRef queueRef genRef (const (pure ())) tracer Nothing
 
   -- Drain any pending queue first, then process answers one at a time using
   -- the same dance as Api.Handler.Arkham.Games.Shared.updateGame: resolve the

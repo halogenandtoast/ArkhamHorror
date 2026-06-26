@@ -7,6 +7,7 @@ module Api.Handler.Arkham.Undo (
   putApiV1ArkhamGameUndoRoundR,
 ) where
 
+import Api.Arkham.Epic (lookupGameEvent, revertEpicDeltasForGameStep)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Api.Handler.Arkham.Games.Shared (publishToRoom)
@@ -83,6 +84,13 @@ stepBack isDebug userId gameId = do
   runExceptT do
     Entity pid arkhamPlayer <- lift $ getBy404 (UniquePlayer userId gameId)
     let n = arkhamGameRawStep rawGame
+    -- Epic Multiplayer: if this game is a group within an event, revert any
+    -- shared-counter deltas this step recorded (additive deltas commute, so this
+    -- is correct even if other groups moved the counter since).
+    mEvent <- lift $ lookupGameEvent gameId
+    let revertShared =
+          for_ mEvent \(eventEntity, _) ->
+            void $ revertEpicDeltasForGameStep (entityKey eventEntity) gameId n
     Entity stepId step <- maybeToExceptM (jsonError "Missing step") $ getBy (UniqueStep gameId n)
     -- never delete the initial step as it can not be redone
     -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
@@ -106,6 +114,7 @@ stepBack isDebug userId gameId = do
             where_ $ entries.arkhamGameId ==. val gameId
             where_ $ entries.step >=. val (n - 1)
           deleteKey stepId
+          revertShared
         pure
           $ ArkhamGame rawGame.name ge (n - 1) rawGame.multiplayerVariant rawGame.createdAt rawGame.updatedAt
       else do
@@ -151,6 +160,7 @@ stepBack isDebug userId gameId = do
                 where_ $ entries.arkhamGameId ==. val gameId
                 where_ $ entries.step >=. val (n - 1)
               deleteKey stepId
+              revertShared
 
               case rawGame.multiplayerVariant of
                 Solo ->

@@ -1,0 +1,30 @@
+{
+  "event": {
+    "newEvent": "New Event",
+    "createEvent": "Create Event",
+    "organizerDashboard": "Organizer Dashboard",
+    "eventName": "Event Name",
+    "eventNamePlaceholder": "Name your event",
+    "scenario": "Scenario",
+    "difficulty": "Difficulty",
+    "includeTarotReadings": "Include Tarot Readings",
+    "groups": "Groups",
+    "groupName": "Group Name",
+    "playerCount": "Players",
+    "countermeasures": "Countermeasures",
+    "totalInvestigators": "Total Investigators",
+    "investigators": "Investigators",
+    "open": "Open",
+    "notStarted": "Not started",
+    "inProgress": "In progress",
+    "decrement": "Decrease countermeasures",
+    "increment": "Increase countermeasures",
+    "loading": "Loading event…",
+    "connecting": "Connecting…",
+    "disconnected": "Reconnecting…",
+    "group": "Group {ordinal}",
+    "create": {
+      "create": "Create Event"
+    }
+  }
+}

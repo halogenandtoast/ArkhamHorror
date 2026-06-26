@@ -133,7 +133,7 @@ putApiV1ArkhamGameDecksR gameId = do
     gameRef <- liftIO $ newIORef arkhamGameCurrentData
     queueRef <- liftIO $ newQueue currentQueue
     genRef <- liftIO $ newIORef $ mkStdGen gameSeed
-    runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) do
+    runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer Nothing) do
       playerId <- getPlayer investigatorId
       let question' = Map.delete (coerce playerId) gameQuestion
       unless (Map.null question') (push $ AskMap question')

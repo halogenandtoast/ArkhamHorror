@@ -47,7 +47,7 @@ putApiV1ArkhamPendingGameR gameId = do
 
             pid <- insert $ ArkhamPlayer userId gameId "00000"
 
-            runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) $ do
+            runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer Nothing) $ do
               addPlayer (PlayerId $ coerce pid)
               runMessages (gameIdToText gameId) Nothing
 

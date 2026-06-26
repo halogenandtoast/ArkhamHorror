@@ -50,6 +50,11 @@
           /playability ApiV1ArkhamGamePlayabilityR POST
           /open-seats ApiV1ArkhamGameOpenSeatsR GET
           /claim-seat ApiV1ArkhamGameClaimSeatR POST
+      /events ApiV1ArkhamEventsP:
+        / ApiV1ArkhamEventsR GET POST
+        /#ArkhamEpicEventId ApiV1ArkhamEventP:
+          / ApiV1ArkhamEventR GET
+          !/counter ApiV1ArkhamEventCounterR POST
     /admin AdminP:
       / ApiV1AdminR GET
       /stats ApiV1AdminStatsR GET

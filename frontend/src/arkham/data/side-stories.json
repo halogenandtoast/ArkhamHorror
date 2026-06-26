@@ -120,6 +120,7 @@
   {
     "id": "70001",
     "name": "The Labyrinths of Lunacy",
+    "epicMultiplayer": true,
     "standaloneDifficulties": [
       "Standard",
       "Hard"
@@ -289,6 +290,7 @@
   {
     "id": "85001",
     "name": "The Blob That Ate Everything",
+    "epicMultiplayer": true,
     "standaloneDifficulties": [
       "Standard",
       "Hard"
@@ -339,6 +341,7 @@
   {
     "id": "86001",
     "name": "War of the Outer Gods",
+    "epicMultiplayer": true,
     "standaloneDifficulties": [
       "Easy",
       "Standard",
@@ -421,6 +424,7 @@
   {
     "id": "87001",
     "name": "Machinations Through Time",
+    "epicMultiplayer": true,
     "standaloneDifficulties": [
       "Easy",
       "Standard",

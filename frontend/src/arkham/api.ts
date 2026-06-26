@@ -8,6 +8,13 @@ import { Token } from '@/arkham/types/Token';
 import { DestinyDrawing } from '@/arkham/types/Question';
 import { StandaloneSetting } from '@/arkham/types/StandaloneSetting';
 import { CampaignLogSettings, Key, CampaignOption } from '@/arkham/types/CampaignSettings'
+import {
+  CreateEventPost,
+  EventDetails,
+  EventListEntry,
+  eventDetailsDecoder,
+  eventListEntryDecoder,
+} from '@/arkham/types/EpicEvent'
 import * as NewGame from '@/arkham/types/NewGame'
 import * as JsonDecoder from 'ts.data.json';
 
@@ -179,7 +186,11 @@ export const newGame = async (
   multiplayerVariant: string,
   includeTarotReadings: boolean,
   options: NewGame.CampaignOption[],
-  strictAsIfAt?: boolean
+  strictAsIfAt?: boolean,
+  // Per-seat AI configuration, parallel to `deckIds` and indexed by seat. Omitted
+  // (the default) preserves today's all-human behavior; entries may be `null` for
+  // human seats. Only sent for Solo/multihanded games (see NewCampaign.start).
+  aiPlayers?: (NewGame.AiSlotConfig | null)[]
 ): Promise<Game> => {
   const { data } = await api.post('arkham/games', {
     deckIds,
@@ -192,7 +203,8 @@ export const newGame = async (
     includeTarotReadings,
     options,
     strictAsIfAt,
-    asIfRuling: strictAsIfAt == null ? undefined : strictAsIfAt ? 'chapter2' : 'chapter1'
+    asIfRuling: strictAsIfAt == null ? undefined : strictAsIfAt ? 'chapter2' : 'chapter1',
+    aiPlayers
   })
   return gameDecoder.decodePromise(data)
 }
@@ -237,4 +249,34 @@ export const fetchOpenSeats = async (gameId: string): Promise<string[]> => {
 
 export const claimSeat = async (gameId: string, investigatorId: string): Promise<void> => {
   await api.post(`arkham/games/${gameId}/claim-seat`, { investigatorId })
+}
+
+// "Epic Multiplayer" events ---------------------------------------------------
+
+export const fetchEvents = async (): Promise<EventListEntry[]> => {
+  const { data } = await api.get('arkham/events')
+  return JsonDecoder.array(eventListEntryDecoder, 'EventListEntry[]').decodePromise(data)
+}
+
+export const fetchEvent = async (eventId: string): Promise<EventDetails> => {
+  const { data } = await api.get(`arkham/events/${eventId}`)
+  return eventDetailsDecoder.decodePromise(data)
+}
+
+export const createEvent = async (payload: CreateEventPost): Promise<EventDetails> => {
+  const { data } = await api.post('arkham/events', payload)
+  return eventDetailsDecoder.decodePromise(data)
+}
+
+export const adjustEventCounter = (eventId: string, key: string, amount: number): Promise<void> =>
+  api.post(`arkham/events/${eventId}/counter`, { key, amount })
+
+// Mirrors the game websocket URL builder in views/Game.vue: same /api/v1 base,
+// http(s) -> ws(s) rewrite, and `?token=` auth on the same path that serves the
+// REST detail endpoint (the GET upgrades to a websocket).
+export const eventWebsocketUrl = (eventId: string, token: string | null): string => {
+  const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
+  return `${baseURL}/api/v1/arkham/events/${eventId}?token=${token}`
+    .replace(/https/, 'wss')
+    .replace(/http/, 'ws')
 }

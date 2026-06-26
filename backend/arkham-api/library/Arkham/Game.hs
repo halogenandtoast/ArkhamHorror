@@ -176,6 +176,7 @@ import Arkham.Matcher hiding (
   SkillCard,
   StoryCard,
  )
+import Arkham.Epic.Types (HasMaybeEpic (..), SharedDelta (..), SharedKey, epicEnvDeltaRef)
 import Arkham.Matcher qualified as M
 import Arkham.Message qualified as Msg
 import Arkham.Metrics (messageTag)
@@ -242,6 +243,8 @@ import Data.Set qualified as Set
 import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
+import Data.UUID qualified as UUID
+import Data.UUID.V4 (nextRandom)
 import OpenTelemetry.Trace.Monad (MonadTracer)
 import Text.Pretty.Simple
 
@@ -6227,9 +6230,24 @@ popMessageWithPriority = withQueue \case
   isPriority (Priority _) = True
   isPriority _ = False
 
+-- | Capture a shared-counter mutation emitted during an Epic Multiplayer group's
+-- action. Appends an invertible 'SharedDelta' to the event's per-action delta
+-- buffer; the commit path applies the buffer under the locked event row. A no-op
+-- when the game is not part of an event (so ordinary games are unaffected).
+captureSharedDelta
+  :: (MonadIO m, MonadReader env m, HasMaybeEpic env)
+  => SharedKey -> Int -> m ()
+captureSharedDelta key amount = do
+  mEpic <- asks getMaybeEpicEnv
+  for_ mEpic \epic -> do
+    did <- UUID.toText <$> liftIO nextRandom
+    let d = SharedDelta {sharedDeltaId = did, sharedDeltaKey = key, sharedDeltaAmount = amount}
+    liftIO $ atomicModifyIORef' (epicEnvDeltaRef epic) \ds -> (ds <> [d], ())
+
 runMessages
   :: ( HasGameRef env
      , HasStdGen env
+     , HasMaybeEpic env
      , HasQueue Message m
      , MonadReader env m
      , HasGameLogger m
@@ -6346,6 +6364,12 @@ runMessages gameId mLogger = do
             Run msgs -> do
               pushAll msgs
               runMessages gameId mLogger
+            -- Epic Multiplayer: shared-counter mutations never touch this game's
+            -- state. When the game belongs to an event we capture them as
+            -- invertible deltas (drained under the locked event row at commit);
+            -- for ordinary games they are inert no-ops.
+            SpendShared k n -> captureSharedDelta k (negate n) >> runMessages gameId mLogger
+            RaiseShared k n -> captureSharedDelta k n >> runMessages gameId mLogger
             ClearUI -> runWithEnv (overGameM $ runMessage ClearUI) >> runMessages gameId mLogger
             Ask _ (ChooseOneAtATime []) -> runMessages gameId mLogger
             Ask _ (ChooseOneAtATimeWithAuto _ []) -> runMessages gameId mLogger

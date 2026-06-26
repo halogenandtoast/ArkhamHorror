@@ -35,6 +35,13 @@
 
     "includeTarotReadings": "Include Tarot Readings",
 
+    "playMode": "Play Mode",
+    "singleGroupMode": "Single Group Mode",
+    "epicMultiplayerMode": "Epic Multiplayer Mode",
+    "numberOfGroups": "Number of Groups",
+    "groupName": "Group Name",
+    "groupPlayers": "Players",
+
     "gameName": "Game Name",
     "create": "Create",
 

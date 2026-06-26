@@ -30,6 +30,13 @@ export default [
     props: true,
   },
   {
+    path: '/events/:id',
+    name: 'OrganizerDashboard',
+    component: () => import('@/arkham/views/OrganizerDashboard.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: Organizer Dashboard" },
+    props: true,
+  },
+  {
     path: '/games/:gameId',
     name: 'Game',
     component: () => import('@/arkham/views/Game.vue'),

@@ -84,6 +84,7 @@ import Text.Regex.Posix ((=~))
 import Api.Handler.Arkham.Admin.Metrics
 import Api.Handler.Arkham.Cards
 import Api.Handler.Arkham.Decks
+import Api.Handler.Arkham.Events
 import Api.Handler.Arkham.Game.Bug
 import Api.Handler.Arkham.Game.Debug
 import Api.Handler.Arkham.Games
@@ -122,6 +123,7 @@ makeFoundation appSettings = do
   let appBugsnag = Bugsnag.defaultSettings (appBugsnagApiKey appSettings)
 
   appGameRooms <- newMVar mempty
+  appEventRooms <- newMVar mempty
 
   appMessageBroker <- case appRedisConnectionInfo appSettings of
     Nothing -> pure WebSocketBroker

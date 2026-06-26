@@ -178,6 +178,9 @@ data App = App
   , appHttpManager :: Manager
   , appLogger :: Logger
   , appGameRooms :: !(MVar (Map ArkhamGameId Room))
+  , appEventRooms :: !(MVar (Map ArkhamEpicEventId Room))
+  -- ^ Epic Multiplayer: per-event websocket rooms (organizer dashboard feed),
+  -- sibling of 'appGameRooms'.
   , appBugsnag :: Bugsnag.Settings
   , appTracer :: Trace.Tracer
   }

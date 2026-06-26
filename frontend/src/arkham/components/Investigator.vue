@@ -6,6 +6,7 @@ import type { Ref } from 'vue'
 import Draggable from '@/components/Draggable.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Modifiers from '@/arkham/components/Modifiers.vue';
+import PendingDamageTokens from '@/arkham/components/PendingDamageTokens.vue';
 import { useDebug } from '@/arkham/debug'
 import { ForwardIcon, PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Game } from '@/arkham/types/Game'
@@ -496,6 +497,12 @@ const spadeInjury = computed(() => {
             @dragenter.prevent
           />
           <span v-if="isBlanked" class="blanked-badge" :data-image-id="blankedCardCode"><font-awesome-icon icon="ban" /></span>
+          <PendingDamageTokens
+            v-if="!portrait"
+            :game="game"
+            :playerId="investigator.playerId"
+            class="investigator-pending-tokens"
+          />
           <Token v-for="sealedToken in investigator.sealedChaosTokens" :key="sealedToken.id" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" class="sealed" />
         </div>
       </div>
@@ -1070,6 +1077,14 @@ i.action {
   height: 14px;
 }
 
+.investigator-pending-tokens {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  z-index: var(--z-index-10);
+  pointer-events: none;
+}
+
 .investigator-image {
   position: relative;
   align-self: stretch;
@@ -1114,7 +1129,7 @@ img.card {
 }
 
 img.card.ability-target {
-  box-shadow: 0 0 0 2px var(--highlight), 0 0 14px 5px var(--highlight), var(--card-shadow);
+  box-shadow: 0 0 0 2px var(--highlight), 0 0 6px 1px var(--highlight), var(--card-shadow);
 }
 
 .card-row-cards {

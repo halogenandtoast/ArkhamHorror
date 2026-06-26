@@ -8,7 +8,7 @@ import { keyToId } from '@/arkham/types/Key'
 import { TokenType } from '@/arkham/types/Token'
 import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage, sourceCardCode } from '@/arkham/cardImages'
-import { useGameChoices, useGameChoicesSource, useGameChoicesTooltip } from '@/arkham/composables/useGameChoices'
+import { useGameChoices, useStickyChoicesSource, useGameChoicesTooltip } from '@/arkham/composables/useGameChoices'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
@@ -59,7 +59,7 @@ const image = computed(() => cardImage(props.enemy.cardCode, props.enemy.flipped
 
 const id = computed(() => props.enemy.id)
 
-const choicesSource = useGameChoicesSource(() => props.game, () => props.playerId)
+const choicesSource = useStickyChoicesSource(() => props.game, () => props.playerId)
 const isHighlighted = computed(() => {
   const source = choicesSource.value
   return source !== null && 'contents' in source && source.contents === props.enemy.id
@@ -523,12 +523,12 @@ img.card.source-highlight {
   align-items: flex-end;
   z-index: var(--z-index-15);
   :deep(img) {
-    width: 20px;
+    width: var(--card-token-width);
     height: auto;
   }
 
   :deep(.token-container) {
-    width: 20px;
+    width: var(--card-token-width);
   }
 
   &:not(:has(.key--can-interact)) {

@@ -243,6 +243,40 @@ export function choicesTooltip(game: Game, playerId: string): string | null {
   });
 }
 
+// When the player is assigning damage/horror, the engine wraps the assignment
+// `ChooseOne` in a `QuestionLabel` whose label states the totals still to apply
+// (e.g. "Assign 2 damage and 1 horror"). Returns the remaining token counts so
+// the UI can show the tokens that still need placing (and suppress the modal).
+export function damageAssignmentTokens(
+  game: Game,
+  playerId: string,
+): { damage: number; horror: number } | null {
+  // The assignment ChooseOne may be wrapped in a QuestionLabel (totals) and a
+  // QuestionWithSource (damage source highlight). Walk down to the ChooseOne,
+  // remembering the label that carries the remaining counts.
+  let question: Question | undefined = game.question[playerId];
+  let label: string | null = null;
+  while (question) {
+    if (question.tag === 'QuestionLabel') label = question.label;
+    if (question.tag === 'ChooseOne') break;
+    question = 'question' in question ? question.question : undefined;
+  }
+  if (!question || question.tag !== 'ChooseOne' || label === null) return null;
+  const assigningDamage = question.choices.some(
+    (c) =>
+      c.tag === MessageType.COMPONENT_LABEL &&
+      'tokenType' in c.component &&
+      (c.component.tokenType === 'DamageToken' || c.component.tokenType === 'HorrorToken'),
+  );
+  if (!assigningDamage) return null;
+  const damageMatch = label.match(/(\d+)\s+damage/);
+  const horrorMatch = label.match(/(\d+)\s+horror/);
+  return {
+    damage: damageMatch ? parseInt(damageMatch[1], 10) : 0,
+    horror: horrorMatch ? parseInt(horrorMatch[1], 10) : 0,
+  };
+}
+
 type Mode = {
   This?: Campaign;
   That?: Scenario;

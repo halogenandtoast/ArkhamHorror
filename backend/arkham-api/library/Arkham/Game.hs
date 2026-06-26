@@ -634,11 +634,12 @@ instance Tracing Identity where
   defaultSpanArgs = ()
   doTrace _ _ f = f ()
 
--- | Targets of any open "enemy attacks" windows, so the client can highlight
--- who/what is currently being attacked (e.g. during a Dodge window).
-gameEnemyAttackTargets :: Game -> [Target]
+-- | The attacking enemy paired with each target of any open "enemy attacks"
+-- window, so the client can highlight who/what is currently being attacked and
+-- overlay the attacker (e.g. during a Dodge window).
+gameEnemyAttackTargets :: Game -> [Value]
 gameEnemyAttackTargets g =
-  [ t
+  [ object ["enemy" .= dets.enemy, "target" .= t]
   | ws <- concat (fromMaybe [] (gameWindowStack g))
   , Window.EnemyAttacks dets <- [windowType ws]
   , t <- dets.targets

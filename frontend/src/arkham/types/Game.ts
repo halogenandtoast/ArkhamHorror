@@ -134,8 +134,13 @@ export type Game = {
   roundHistory: Record<string, History>;
   phaseHistory: Record<string, History>;
   turnHistory: Record<string, History>;
-  enemyAttackTargets: Target[];
+  enemyAttackTargets: EnemyAttackTarget[];
 }
+
+export type EnemyAttackTarget = {
+  enemy: string;
+  target: Target;
+};
 
 const choicesCache = new WeakMap<Game, Map<string, Message[]>>();
 const choicesSourceCache = new WeakMap<Game, Map<string, Source | null>>();
@@ -329,7 +334,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     roundHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
     phaseHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
     turnHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
-    enemyAttackTargets: JsonDecoder.fallback([], JsonDecoder.array(targetDecoder, 'Target[]')),
+    enemyAttackTargets: JsonDecoder.fallback([], JsonDecoder.array(JsonDecoder.object<EnemyAttackTarget>({ enemy: JsonDecoder.string(), target: targetDecoder }, 'EnemyAttackTarget'), 'EnemyAttackTarget[]')),
   },
   'Game',
 ).map(({mode, killedInvestigators, settings, gameSettings, inAction, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, roundHistory, phaseHistory, turnHistory, ...game}) => ({

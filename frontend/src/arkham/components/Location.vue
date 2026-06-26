@@ -12,6 +12,7 @@ import DebugLocation from '@/arkham/components/debug/Location.vue'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import { actionsToList } from '@/arkham/types/Action'
 import ConcealedCard from '@/arkham/components/ConcealedCard.vue'
+import AttackingEnemyOverlay from '@/arkham/components/AttackingEnemyOverlay.vue'
 import KeyToken from '@/arkham/components/Key.vue'
 import Seal from '@/arkham/components/Seal.vue'
 import Locus from '@/arkham/components/Locus.vue'
@@ -542,7 +543,7 @@ const canShowCardsUnderneath = computed(() => {
   return playerCardsUnderneath.value.length > 0 && !hasFacedownCardsUnderneath.value
 })
 const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, 'Cards Underneath', false, debug.active)
-const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((t) => t.contents === props.location.id))
+const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.location.id))
 const highlighted = computed(() => highlighter.highlighted.value === props.location.id || isAttackTarget.value)
 
 function isVehicleAsset(assetId: string): boolean {
@@ -626,6 +627,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
                 @dragenter.prevent
               />
             </template>
+            <AttackingEnemyOverlay v-if="isAttackTarget" :game="game" :targetId="id" />
           </div>
 
           <div v-if="cluesAroundPositions.length > 0" class="clues-around">

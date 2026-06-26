@@ -22,6 +22,7 @@ import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import TokenPool, { type TokenPoolItem } from '@/arkham/components/TokenPool.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
+import AttackingEnemyOverlay from '@/arkham/components/AttackingEnemyOverlay.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import Story from '@/arkham/components/Story.vue';
 import Token from '@/arkham/components/Token.vue';
@@ -49,7 +50,7 @@ const exhausted = computed(() => props.asset.exhausted)
 const jammed = computed(() => props.asset.rifleStatus === 'Jammed')
 const highlighter = useHighlighter()
 const isHighlighted = computed(() => highlighter.highlighted.value === props.asset.id)
-const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((t) => t.contents === props.asset.id))
+const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.asset.id))
 
 const uiRotation = computed<number>(() => {
   const mods = props.asset.modifiers ?? []
@@ -380,6 +381,7 @@ function startDrag(event: DragEvent) {
             @click="clicked"
             :data-customizations="JSON.stringify(asset.customizations)"
           />
+          <AttackingEnemyOverlay v-if="isAttackTarget" :game="game" :targetId="id" />
           <div v-if="investigators.length > 0" class="in-vehicle">
             <div v-for="investigator in investigators" :key="investigator.id">
               <Investigator

@@ -64,6 +64,7 @@ const isHighlighted = computed(() => {
   const source = choicesSource.value
   return source !== null && 'contents' in source && source.contents === props.enemy.id
 })
+const isAttacking = computed(() => props.game.enemyAttackTargets.some((e) => e.enemy === props.enemy.id))
 const { t } = useI18n()
 const choicesTooltip = useGameChoicesTooltip(() => props.game, () => props.playerId)
 const sourceTooltip = computed<string | false>(() => {
@@ -322,7 +323,7 @@ function onDrop(event: DragEvent) {
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
               v-tooltip="sourceTooltip"
-              :class="{ dragging, 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted }"
+              :class="{ dragging, 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking }"
               :data-id="id"
               :data-card-code="enemy.cardCode"
               :data-game-id="game.id"
@@ -344,7 +345,7 @@ function onDrop(event: DragEvent) {
               :src="isSwarm ? imgsrc('player_back.jpg') : image"
               class="card enemy"
               v-tooltip="sourceTooltip"
-              :class="{ 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted }"
+              :class="{ 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking }"
               :data-id="id"
               :data-card-code="enemy.cardCode"
               :data-game-id="game.id"

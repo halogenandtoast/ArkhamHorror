@@ -6,6 +6,7 @@ import type { Ref } from 'vue'
 import Draggable from '@/components/Draggable.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Modifiers from '@/arkham/components/Modifiers.vue';
+import AttackingEnemyOverlay from '@/arkham/components/AttackingEnemyOverlay.vue';
 import { useDebug } from '@/arkham/debug'
 import { ForwardIcon, PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Game } from '@/arkham/types/Game'
@@ -40,7 +41,7 @@ const emit = defineEmits(['showCards', 'hideCards', 'choose'])
 const id = computed(() => props.investigator.id)
 const highlighter = useHighlighter()
 const isHighlighted = computed(() => highlighter.highlighted.value === props.investigator.id)
-const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((t) => t.contents === props.investigator.id))
+const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.investigator.id))
 const debug = useDebug()
 const choose = (idx: number) => emit('choose', idx)
 
@@ -496,6 +497,7 @@ const spadeInjury = computed(() => {
             @dragenter.prevent
           />
           <span v-if="isBlanked" class="blanked-badge" :data-image-id="blankedCardCode"><font-awesome-icon icon="ban" /></span>
+          <AttackingEnemyOverlay v-if="isAttackTarget" :game="game" :targetId="investigator.id" />
           <Token v-for="sealedToken in investigator.sealedChaosTokens" :key="sealedToken.id" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" class="sealed" />
         </div>
       </div>

@@ -16,7 +16,7 @@ aFamiliarPattern = act (1, A) AFamiliarPattern Cards.aFamiliarPattern Nothing
 
 instance HasAbilities AFamiliarPattern where
   getAbilities = actAbilities1 \a ->
-    mkAbility a 1
+    onlyOnce $ mkAbility a 1
       $ Objective
       $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 2) Anywhere)
 

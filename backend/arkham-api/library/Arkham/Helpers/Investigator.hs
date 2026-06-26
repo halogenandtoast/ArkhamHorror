@@ -757,11 +757,11 @@ getAsIfInHandCardsFor forPlay iid = do
 -- applied -- otherwise e.g. Marksmanship(1)'s targeting modifier never fires
 -- while it sits under Stick to the Plan. Cards merely playable from
 -- discard/deck are deliberately excluded; those load as their own entities.
-getAsIfInHandEffectCards :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m [Card]
+getAsIfInHandEffectCards :: (HasCallStack, HasGame m) => InvestigatorId -> m [Card]
 getAsIfInHandEffectCards iid = do
   isSkillTest <- isJust <$> getSkillTest
   modifiers <- getModifiers (InvestigatorTarget iid)
-  flip mapMaybeM modifiers $ \case
+  modifiers & mapMaybeM \case
     AsIfInHand c -> pure $ Just c
     AsIfInHandFor _ c -> Just <$> getCard c
     CanCommitToSkillTestsAsIfInHand c | isSkillTest -> pure $ Just c

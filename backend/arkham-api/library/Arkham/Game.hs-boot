@@ -25,6 +25,7 @@ import Arkham.Classes.Query
 import Arkham.Debug
 import {-# SOURCE #-} Arkham.Effect.Types
 import Arkham.Enemy.Types
+import Arkham.Epic.Types
 import Arkham.Event.Types
 import Arkham.Game.Base as X
 import Arkham.Id
@@ -110,6 +111,7 @@ instance HasAbilities Game
 runMessages
   :: ( HasGameRef env
      , HasStdGen env
+     , HasMaybeEpic env
      , HasQueue Message m
      , MonadReader env m
      , HasGameLogger m

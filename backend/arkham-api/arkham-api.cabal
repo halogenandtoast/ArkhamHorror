@@ -22,12 +22,14 @@ flag library-only
 
 library
   exposed-modules:
+      Api.Arkham.Epic
       Api.Arkham.Export
       Api.Arkham.Helpers
       Api.Arkham.Types.MultiplayerVariant
       Api.Handler.Arkham.Admin.Metrics
       Api.Handler.Arkham.Cards
       Api.Handler.Arkham.Decks
+      Api.Handler.Arkham.Events
       Api.Handler.Arkham.Game.Bug
       Api.Handler.Arkham.Game.Debug
       Api.Handler.Arkham.Games
@@ -2957,6 +2959,7 @@ library
       Arkham.EnemyLocation.Runner
       Arkham.EnemyLocation.Types
       Arkham.Entities
+      Arkham.Epic.Types
       Arkham.Evade
       Arkham.Evade.Types
       Arkham.Event
@@ -6576,6 +6579,7 @@ library
       Entity.Answer
       Entity.Arkham.ArkhamDBDecklist
       Entity.Arkham.Deck
+      Entity.Arkham.Epic
       Entity.Arkham.Game
       Entity.Arkham.GameRaw
       Entity.Arkham.LogEntry
@@ -6815,6 +6819,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Arkham.Act.Cards.AFamiliarPatternSpec
       Arkham.Act.Cards.FalseStepV2Spec
       Arkham.Agenda.Cards.RestrictedAccessSpec
       Arkham.Agenda.Cards.ShadowsDeepenSpec
@@ -6923,6 +6928,7 @@ test-suite spec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Enemy.Cards.TonysQuarrySpec
       Arkham.Enemy.Cards.WatcherFromAnotherDimensionSpec
+      Arkham.Epic.EpicMultiplayerSpec
       Arkham.Event.Events.AstoundingRevelationSpec
       Arkham.Event.Events.AtACrossroads1Spec
       Arkham.Event.Events.BackstabSpec

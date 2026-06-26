@@ -298,7 +298,6 @@ onUnmounted(() => {
       <svg
         class="token-pool-bg"
         :viewBox="`0 0 ${clumpLayout.width} ${clumpLayout.height}`"
-        :style="{ viewTransitionName: vtName('bg') }"
         aria-hidden="true"
       >
         <path class="token-pool-bg-border" :d="clumpLayout.shapePath" />

@@ -1116,23 +1116,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets
     | iid == toId a
     , isDeferredStrategy damageStrategy ->
-        handleInvestigatorDoAssignDamageDeferred a iid source damageStrategy damageTargets horrorTargets
+        finalizeDeferredDamageAssignment a iid source damageStrategy damageTargets horrorTargets
   InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets
     | iid == toId a ->
-        handleInvestigatorDoAssignDamage a iid source damageStrategy damageTargets horrorTargets
+        finalizeDamageAssignment a iid source damageStrategy damageTargets horrorTargets
   InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets horrorTargets
     | iid == toId a ->
-        handleInvestigatorDoAssignDamageV2 a iid source matcher health damageTargets horrorTargets
+        assignHealthDamageEvenly a iid source matcher health damageTargets horrorTargets
   InvestigatorDoAssignDamage iid source DamageEvenly matcher 0 sanity damageTargets horrorTargets
     | iid == toId a ->
-        handleInvestigatorDoAssignDamageV3 a iid source matcher sanity damageTargets horrorTargets
-  InvestigatorDoAssignDamage iid _ DamageEvenly _ _ _ _ _ | iid == investigatorId -> handleInvestigatorDoAssignDamageV4 a iid
+        assignHorrorEvenly a iid source matcher sanity damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid _ DamageEvenly _ _ _ _ _ | iid == investigatorId -> assignDamageEvenlyUnsupported a iid
   InvestigatorDoAssignDamage iid source SingleTarget matcher health sanity damageTargets horrorTargets
     | iid == toId a ->
-        handleInvestigatorDoAssignDamageV5 a iid source matcher health sanity damageTargets horrorTargets
+        assignDamageToSingleTarget a iid source matcher health sanity damageTargets horrorTargets
   InvestigatorDoAssignDamage iid source strategy matcher health sanity damageTargets horrorTargets
     | iid == toId a ->
-        handleInvestigatorDoAssignDamageV6
+        assignDamageDivided
           a
           iid
           source
@@ -1844,10 +1844,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     includeStory <- not <$> hasCampaignOption PlayersDoNotControlStoryAssetClues
     let storyWrapper = if includeStory then id else (<> AssetNonStory)
     assetsWithClues <- select $ storyWrapper $ assetControlledBy iid <> AssetWithAnyClues
-    if null assetsWithClues
-      then push $ Do msg
-      else push $ DoStep n msg
-    pushM $ checkAfter $ Window.SpentClues iid n
+    afterWindow <- checkAfter $ Window.SpentClues iid n
+    pushAll [if null assetsWithClues then Do msg else DoStep n msg, afterWindow]
     pure a
   DoStep n msg'@(InvestigatorSpendClues iid _) | n > 0 && iid == investigatorId -> do
     assets <- select $ assetControlledBy iid <> AssetWithAnyClues

@@ -127,3 +127,20 @@ h2.title {
   position: relative;
   animation: glow 3s linear infinite;
 }
+
+/* On-card token pools (damage/horror/clue/doom shown on assets, enemies,
+   locations, ...). Centralizes size + count font on a single knob so they
+   scale together; overrides the scattered per-component token sizes. */
+.pool .poolItem {
+  --width: var(--card-token-width);
+  font-size: var(--card-token-width);
+}
+
+.pool .poolItem img {
+  width: var(--card-token-width) !important;
+  height: auto !important;
+}
+
+.pool .poolItem span {
+  font-size: calc(var(--card-token-width) * 0.62) !important;
+}

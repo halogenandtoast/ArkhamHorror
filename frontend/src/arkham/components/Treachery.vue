@@ -148,7 +148,7 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
     width: unset;
   }
   :deep(img) {
-    width: 20px;
+    width: var(--card-token-width);
     height: auto;
   }
 

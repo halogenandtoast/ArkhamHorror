@@ -165,7 +165,7 @@ const choose = (index: number) => emits('choose', index)
     width: unset;
   }
   :deep(img) {
-    width: 20px;
+    width: var(--card-token-width);
     height: auto;
   }
   z-index: var(--z-index-1);

@@ -530,7 +530,7 @@ function startDrag(event: DragEvent) {
     width: unset;
   }
   :deep(img) {
-    width: 20px;
+    width: var(--card-token-width);
     height: auto;
   }
 
@@ -573,7 +573,7 @@ img.card {
 }
 
 img.card.ability-target {
-  box-shadow: 0 0 0 2px var(--highlight), 0 0 14px 5px var(--highlight), var(--card-shadow);
+  box-shadow: 0 0 0 2px var(--highlight), 0 0 6px 1px var(--highlight), var(--card-shadow);
 }
 
 .deck-size {

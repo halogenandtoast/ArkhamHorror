@@ -99,6 +99,10 @@
     --pool-token-width: 24px;
   }
 
+  /* Size of damage/horror/clue/etc. tokens shown ON cards (assets, enemies,
+     locations, ...). Kept as one knob so it's easy to tune. */
+  --card-token-width: 25px;
+
   --teal: #66C8D6;
 }
 

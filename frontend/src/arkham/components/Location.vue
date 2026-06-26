@@ -891,7 +891,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
   }
 
   :deep(.token-container) {
-    width: 20px;
+    width: var(--card-token-width);
   }
 }
 

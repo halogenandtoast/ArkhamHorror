@@ -171,12 +171,12 @@ const abilities = computed(() => {
   align-items: flex-end;
   z-index: var(--z-index-15);
   :deep(img) {
-    width: 20px;
+    width: var(--card-token-width);
     height: auto;
   }
 
   :deep(.token-container) {
-    width: 20px;
+    width: var(--card-token-width);
   }
 
   &:not(:has(.key--can-interact)) {

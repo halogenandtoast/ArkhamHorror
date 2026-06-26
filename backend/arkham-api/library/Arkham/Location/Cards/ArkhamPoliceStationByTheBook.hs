@@ -18,7 +18,7 @@ newtype ArkhamPoliceStationByTheBook = ArkhamPoliceStationByTheBook LocationAttr
 
 arkhamPoliceStationByTheBook :: LocationCard ArkhamPoliceStationByTheBook
 arkhamPoliceStationByTheBook =
-  location ArkhamPoliceStationByTheBook Cards.arkhamPoliceStationByTheBook 4 (Static 2)
+  location ArkhamPoliceStationByTheBook Cards.arkhamPoliceStationByTheBook 2 (Static 4)
 
 connectedTitles :: LocationMatcher
 connectedTitles = mapOneOf LocationWithTitle ["Rivertown", "Downtown", "Easttown"]

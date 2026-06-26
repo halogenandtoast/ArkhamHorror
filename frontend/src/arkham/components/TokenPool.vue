@@ -397,10 +397,10 @@ onUnmounted(() => {
    outline so it stays visible. */
 .token-pool-overlay .poolItem-doom img {
   filter:
-    drop-shadow(1px 0 0 rgba(255, 255, 255, 0.5))
-    drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.5))
-    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5))
-    drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.5));
+    drop-shadow(1px 0 0 rgba(255, 255, 255, 0.25))
+    drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.25))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.25))
+    drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.25));
 }
 
 .token-pool-overlay .poolItem img {

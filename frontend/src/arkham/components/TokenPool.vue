@@ -393,6 +393,16 @@ onUnmounted(() => {
   left: -3px;
 }
 
+/* The doom token is dark and blends into the blob; trace it with a faint white
+   outline so it stays visible. */
+.token-pool-overlay .poolItem-doom img {
+  filter:
+    drop-shadow(1px 0 0 rgba(255, 255, 255, 0.5))
+    drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.5))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5))
+    drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.5));
+}
+
 .token-pool-overlay .poolItem img {
   width: var(--card-token-width, 25px) !important;
   height: auto !important;

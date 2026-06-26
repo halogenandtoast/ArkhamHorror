@@ -1,7 +1,14 @@
 <script lang="ts" setup>
-import { computed, ref, onUnmounted } from 'vue'
+import { computed, ref, nextTick, onUnmounted } from 'vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { type Token, type Tokens } from '@/arkham/types/Token'
+
+// Unique per TokenPool instance, so view-transition-names never collide between
+// different cards' pools.
+let tokenPoolUidCounter = 0
+const uid = tokenPoolUidCounter++
+const vtName = (key: string | number) =>
+  `tp-${uid}-${String(key).replace(/[^a-zA-Z0-9_-]/g, '-')}`
 
 export type TokenPoolItem = {
   key: string
@@ -173,42 +180,87 @@ const clumpLayout = computed<ClumpLayout>(() => {
 // The expanded fan is teleported to <body> and positioned centered over the
 // collapsed stack, so it is never clipped by the scrollable player area.
 const anchorEl = ref<HTMLElement | null>(null)
+const overlayEl = ref<HTMLElement | null>(null)
 const overlayStyle = ref<Record<string, string>>({})
-const fanned = ref(false) // drives the open/close animation once mounted
 let collapseTimer: ReturnType<typeof setTimeout> | null = null
+let pointerMoveHandler: ((e: PointerEvent) => void) | null = null
+
+// Toggle `expanded` inside a view transition so each token (which shares a
+// view-transition-name between its collapsed in-flow copy and its fanned overlay
+// copy) appears to glide into position. The in-flow tokens are hidden while
+// expanded so the names aren't duplicated.
+function setExpanded(open: boolean) {
+  const startViewTransition = (document as Document & {
+    startViewTransition?: (cb: () => Promise<void> | void) => void
+  }).startViewTransition
+  if (typeof startViewTransition === 'function') {
+    startViewTransition.call(document, async () => { expanded.value = open; await nextTick() })
+  } else {
+    expanded.value = open
+  }
+}
+
+function rectContains(r: DOMRect | undefined, x: number, y: number, pad = 6) {
+  return !!r && x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad
+}
+
+// Collapse is driven by the actual pointer position against the anchor/overlay
+// rects rather than mouseenter/leave. Those events are unreliable here: the
+// teleported overlay pops up under a stationary cursor and the view transition
+// briefly muddles hit-testing, which caused expand/collapse to flicker.
+function pointerWithin(x: number, y: number) {
+  return (
+    rectContains(anchorEl.value?.getBoundingClientRect(), x, y) ||
+    rectContains(overlayEl.value?.getBoundingClientRect(), x, y)
+  )
+}
+
+function attachPointerTracking() {
+  if (pointerMoveHandler) return
+  pointerMoveHandler = (e: PointerEvent) => {
+    if (pointerWithin(e.clientX, e.clientY)) {
+      if (collapseTimer) { clearTimeout(collapseTimer); collapseTimer = null }
+    } else if (!collapseTimer) {
+      collapseTimer = setTimeout(() => {
+        collapseTimer = null
+        setExpanded(false)
+        detachPointerTracking()
+      }, 120)
+    }
+  }
+  window.addEventListener('pointermove', pointerMoveHandler, { passive: true })
+}
+
+function detachPointerTracking() {
+  if (pointerMoveHandler) {
+    window.removeEventListener('pointermove', pointerMoveHandler)
+    pointerMoveHandler = null
+  }
+}
 
 function onEnter() {
-  if (collapseTimer) { clearTimeout(collapseTimer); collapseTimer = null }
-  if (!clumped.value) return
+  if (!clumped.value || expanded.value) return
   const el = anchorEl.value
   if (el) {
     const r = el.getBoundingClientRect()
     const cx = r.left + r.width / 2
     const cy = r.top + r.height / 2
     const { width, height } = clumpLayout.value
-    const tokenSize = 24
     overlayStyle.value = {
       left: `${cx - width / 2}px`,
       top: `${cy - height / 2}px`,
       width: `${width}px`,
       height: `${height}px`,
-      // Collapsed-state position: every token stacked at the centre.
-      '--fan-cx': `${(width - tokenSize) / 2}px`,
-      '--fan-cy': `${(height - tokenSize) / 2}px`,
     }
   }
-  expanded.value = true
-  // Let the collapsed state paint, then flip to open so the move/scale animates.
-  requestAnimationFrame(() => requestAnimationFrame(() => { if (expanded.value) fanned.value = true }))
+  setExpanded(true)
+  attachPointerTracking()
 }
 
-function onLeave() {
+onUnmounted(() => {
   if (collapseTimer) clearTimeout(collapseTimer)
-  fanned.value = false
-  collapseTimer = setTimeout(() => { expanded.value = false; collapseTimer = null }, 200)
-}
-
-onUnmounted(() => { if (collapseTimer) clearTimeout(collapseTimer) })
+  detachPointerTracking()
+})
 </script>
 
 <template>
@@ -217,9 +269,9 @@ onUnmounted(() => { if (collapseTimer) clearTimeout(collapseTimer) })
   <div
     class="token-pool"
     :class="{ 'token-pool--clumped': clumped }"
+    :style="clumped ? { '--token-count': items.length } : undefined"
     ref="anchorEl"
     @mouseenter="onEnter"
-    @mouseleave="onLeave"
   >
     <PoolItem
       v-for="(item, i) in items"
@@ -228,25 +280,25 @@ onUnmounted(() => { if (collapseTimer) clearTimeout(collapseTimer) })
       :amount="item.amount"
       :tooltip="item.tooltip"
       :class="item.class"
-      :style="clumped ? { '--token-index': i } : undefined"
+      :style="clumped ? { '--token-index': i, viewTransitionName: expanded ? undefined : vtName(item.key), display: expanded ? 'none' : undefined } : undefined"
       @choose="emit('choose', item.key)"
     />
   </div>
 
   <!-- Expanded fan, teleported to the top level so the scrollable player area
-       cannot clip it. -->
+       cannot clip it. Each token shares its in-flow copy's view-transition-name
+       so it appears to glide from the stack into the fan. -->
   <Teleport to="body">
     <div
       v-if="clumped && expanded"
+      ref="overlayEl"
       class="token-pool-overlay"
-      :class="{ 'token-pool-overlay--open': fanned }"
       :style="overlayStyle"
-      @mouseenter="onEnter"
-      @mouseleave="onLeave"
     >
       <svg
         class="token-pool-bg"
         :viewBox="`0 0 ${clumpLayout.width} ${clumpLayout.height}`"
+        :style="{ viewTransitionName: vtName('bg') }"
         aria-hidden="true"
       >
         <path class="token-pool-bg-border" :d="clumpLayout.shapePath" />
@@ -259,7 +311,7 @@ onUnmounted(() => { if (collapseTimer) clearTimeout(collapseTimer) })
         :amount="item.amount"
         :tooltip="item.tooltip"
         :class="item.class"
-        :style="clumpLayout.positions[i]"
+        :style="{ ...clumpLayout.positions[i], viewTransitionName: vtName(item.key) }"
         @choose="emit('choose', item.key)"
       />
     </div>
@@ -272,11 +324,13 @@ onUnmounted(() => { if (collapseTimer) clearTimeout(collapseTimer) })
   display: contents;
 }
 
-/* Clumped (collapsed): a compact peeking stack that acts as the hover anchor. */
+/* Clumped (collapsed): a compact peeking stack that acts as the hover anchor.
+   The box spans the whole stack (incl. the peek) and keeps its size even when
+   the tokens are hidden on expand, so the cursor never falls off the anchor. */
 .token-pool--clumped {
   display: block;
   position: relative;
-  width: var(--card-token-width);
+  width: calc(var(--card-token-width) + (var(--token-count, 1) - 1) * 5px);
   height: var(--card-token-width);
   pointer-events: auto;
   overflow: visible;
@@ -309,15 +363,6 @@ onUnmounted(() => { if (collapseTimer) clearTimeout(collapseTimer) })
   pointer-events: none;
   overflow: visible;
   z-index: 0;
-  opacity: 0;
-  transform: scale(0.45);
-  transform-origin: center;
-  transition: opacity 0.12s ease, transform 0.18s ease;
-}
-
-.token-pool-overlay--open .token-pool-bg {
-  opacity: 1;
-  transform: scale(1);
 }
 
 .token-pool-overlay .token-pool-bg path {
@@ -341,12 +386,6 @@ onUnmounted(() => { if (collapseTimer) clearTimeout(collapseTimer) })
   position: absolute;
   top: 0;
   left: 0;
-  /* Collapsed: all stacked at the centre. Animates out to the fan positions. */
-  transform: translate(var(--fan-cx), var(--fan-cy));
-  transition: transform 0.18s ease;
-}
-
-.token-pool-overlay--open .poolItem {
   transform: translate(var(--token-x), var(--token-y));
 }
 

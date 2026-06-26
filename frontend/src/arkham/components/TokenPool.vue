@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { type Token, type Tokens } from '@/arkham/types/Token'
 
@@ -98,16 +98,70 @@ const items = computed(() => [
   ...props.extraItems.filter((item) => item.force || (item.amount ?? 0) > 0),
   ...tokenItems.value,
 ])
+
+// When there are more tokens than fit comfortably, clump them into an
+// overlapping stack and spread them out (scaled up) on hover — mirroring the
+// sealed-chaos-token popover.
+const CLUMP_THRESHOLD = 3
+const clumped = computed(() => items.value.length > CLUMP_THRESHOLD)
+const expanded = ref(false)
 </script>
 
 <template>
-  <template v-for="item in items" :key="item.key">
+  <div
+    class="token-pool"
+    :class="{ 'token-pool--clumped': clumped, 'token-pool--expanded': expanded }"
+    @mouseenter="expanded = true"
+    @mouseleave="expanded = false"
+  >
     <PoolItem
+      v-for="item in items"
+      :key="item.key"
       :type="item.type"
       :amount="item.amount"
       :tooltip="item.tooltip"
       :class="item.class"
       @choose="emit('choose', item.key)"
     />
-  </template>
+  </div>
 </template>
+
+<style scoped>
+/* Not clumped: behave as before — pass tokens straight into the parent .pool
+   flex layout. */
+.token-pool {
+  display: contents;
+}
+
+.token-pool--clumped {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  border-radius: 999px;
+  transition: padding 0.16s ease, background 0.16s ease;
+}
+
+.token-pool--clumped :deep(.poolItem) {
+  transition: margin 0.16s ease, transform 0.16s ease;
+}
+
+/* Collapsed: overlap into a compact stack. */
+.token-pool--clumped :deep(.poolItem + .poolItem) {
+  margin-left: calc(var(--card-token-width) * -0.5);
+}
+
+/* Expanded: float above the card, spread out and scale up slightly. */
+.token-pool--clumped.token-pool--expanded {
+  z-index: var(--z-index-30000, 30000);
+  background: rgba(0, 0, 0, 0.72);
+  padding: 3px 7px;
+}
+
+.token-pool--clumped.token-pool--expanded :deep(.poolItem + .poolItem) {
+  margin-left: 3px;
+}
+
+.token-pool--clumped.token-pool--expanded :deep(.poolItem) {
+  transform: scale(1.3);
+}
+</style>

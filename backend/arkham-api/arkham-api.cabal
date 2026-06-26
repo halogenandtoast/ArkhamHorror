@@ -811,6 +811,13 @@ library
       Arkham.Agenda.Runner
       Arkham.Agenda.Sequence
       Arkham.Agenda.Types
+      Arkham.Ai.Decision
+      Arkham.Ai.Decks
+      Arkham.Ai.Focus
+      Arkham.Ai.Helpers
+      Arkham.Ai.Orphans
+      Arkham.Ai.State
+      Arkham.Ai.Tags
       Arkham.Aspect
       Arkham.Aspect.Types
       Arkham.Asset

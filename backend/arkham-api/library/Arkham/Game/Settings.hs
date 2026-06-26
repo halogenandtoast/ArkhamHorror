@@ -1,5 +1,8 @@
 module Arkham.Game.Settings where
 
+import Arkham.Ai.Orphans ()
+import Arkham.Ai.State (AiPlayerState)
+import Arkham.Id (PlayerId)
 import Arkham.Prelude
 import Control.Monad.Fail
 
@@ -24,6 +27,9 @@ instance FromJSON AsIfRuling where
 data Settings = Settings
   { settingsAbilitiesCannotReactToThemselves :: Bool -- Grotesque Statue FAQ (September 2023)
   , settingsAsIfRuling :: AsIfRuling
+  , settingsAiPlayers :: Map PlayerId AiPlayerState
+  -- ^ Per-seat AI configuration. Empty for ordinary human-only games; absent
+  -- from older saves (defaults to 'mempty' on load).
   }
   deriving stock (Eq, Show, Generic, Data)
 
@@ -45,6 +51,7 @@ defaultSettings =
   Settings
     { settingsAbilitiesCannotReactToThemselves = True
     , settingsAsIfRuling = Chapter1AsIfRuling
+    , settingsAiPlayers = mempty
     }
 
 instance ToJSON Settings where
@@ -52,6 +59,7 @@ instance ToJSON Settings where
     [ "settingsAbilitiesCannotReactToThemselves" .= settingsAbilitiesCannotReactToThemselves settings
     , "settingsAsIfRuling" .= settingsAsIfRuling settings
     , "settingsStrictAsIfAt" .= settingsStrictAsIfAt settings -- legacy/client compatibility
+    , "aiPlayers" .= settingsAiPlayers settings
     ]
 
 instance FromJSON Settings where
@@ -61,8 +69,10 @@ instance FromJSON Settings where
     legacyStrictAsIfAt <- o .:? "settingsStrictAsIfAt"
     asIfRuling <-
       o .:? "settingsAsIfRuling" .!= maybe defaultSettings.settingsAsIfRuling asIfRulingFromStrictAsIfAt legacyStrictAsIfAt
+    aiPlayers <- o .:? "aiPlayers" .!= mempty
     pure
       Settings
         { settingsAbilitiesCannotReactToThemselves = abilitiesCannotReactToThemselves
         , settingsAsIfRuling = asIfRuling
+        , settingsAiPlayers = aiPlayers
         }

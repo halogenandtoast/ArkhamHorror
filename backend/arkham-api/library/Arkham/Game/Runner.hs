@@ -3,6 +3,8 @@
 module Arkham.Game.Runner where
 
 import Arkham.Ability
+import Arkham.Ai.Helpers (overAiPlayers, overAiSeat)
+import Arkham.Ai.State (AiPlayerState (..))
 import Arkham.Act
 import Arkham.Act.Types (Field (..))
 import Arkham.Action qualified as Action
@@ -106,7 +108,7 @@ import Arkham.Matcher hiding (
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (removeLocation)
 import Arkham.Message.Lifted qualified as Lifted
-import Arkham.Modifier (Modifier (Modifier, modifierSource, modifierType), ModifierType (AsIfInHandFor))
+import Arkham.Modifier (Modifier (Modifier, modifierSource, modifierType))
 import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
@@ -175,6 +177,12 @@ runGameMessage msg g = case msg of
     when (any (\w -> Window.windowType w == Window.FastPlayerWindow) currentWindows) do
       push $ Do (CheckWindows currentWindows)
     pure $ g {gameSettings = g.gameSettings {settingsAsIfRuling = ruling}}
+  RegisterAiPlayer pid st -> pure $ overAiPlayers (Map.insert pid st) g
+  SetAiFocusOverride pid mFocus -> pure $ overAiSeat pid (\s -> s {aiFocusOverride = mFocus}) g
+  AddAiPriority pid target -> pure $ overAiSeat pid (\s -> s {aiPriorities = s.aiPriorities <> [target]}) g
+  RemoveAiPriority pid target -> pure $ overAiSeat pid (\s -> s {aiPriorities = filter (/= target) s.aiPriorities}) g
+  SetAiEnabled pid b -> pure $ overAiSeat pid (\s -> s {aiEnabled = b}) g
+  SetAiResponseDelay pid n -> pure $ overAiSeat pid (\s -> s {aiResponseDelayMs = n}) g
   ResetLocationOffsets -> pure $ g & locationOffsetsL .~ mempty
   SetGameRunWindows b -> pure $ g & runWindowsL .~ b
   SetGameState s -> pure $ g & gameStateL .~ s
@@ -885,21 +893,22 @@ runGameMessage msg g = case msg of
         Nothing -> id
         Just location ->
           let la = toAttrs location
-          in overAttrs \a ->
+           in overAttrs \a ->
                 a
-                  { enemyLocationBase = (enemyLocationBase a)
-                      { locationId = locationId la
-                      , locationCardId = locationCardId la
-                      , locationTokens = locationTokens la
-                      , locationWithoutClues = Token.countTokens Token.Clue (locationTokens la) == 0
-                      , locationLabel = locationLabel la
-                      , locationPosition = locationPosition la
-                      , locationPlacement = locationPlacement la
-                      , locationConnectedMatchers = locationConnectedMatchers la
-                      , locationConnectsTo = locationConnectsTo la
-                      , locationDirections = locationDirections la
-                      , locationRevealedConnectedMatchers = locationRevealedConnectedMatchers la
-                      }
+                  { enemyLocationBase =
+                      (enemyLocationBase a)
+                        { locationId = locationId la
+                        , locationCardId = locationCardId la
+                        , locationTokens = locationTokens la
+                        , locationWithoutClues = Token.countTokens Token.Clue (locationTokens la) == 0
+                        , locationLabel = locationLabel la
+                        , locationPosition = locationPosition la
+                        , locationPlacement = locationPlacement la
+                        , locationConnectedMatchers = locationConnectedMatchers la
+                        , locationConnectsTo = locationConnectsTo la
+                        , locationDirections = locationDirections la
+                        , locationRevealedConnectedMatchers = locationRevealedConnectedMatchers la
+                        }
                   }
       el = inheritLocationData $ lookupEnemyLocation (flippedCardCode $ toCardCode card) lid (toCardId card)
 
@@ -929,7 +938,7 @@ runGameMessage msg g = case msg of
         Nothing -> id
         Just el ->
           let la = enemyLocationBase (toAttrs el)
-          in overAttrs \a ->
+           in overAttrs \a ->
                 a
                   { locationId = locationId la
                   , locationCardId = locationCardId la
@@ -3701,20 +3710,20 @@ preloadEntities g = do
 -- too late.
 instance RunMessage Game where
   runMessage msg g =
-      ( (modeL . here) (runMessage msg) g
-          >>= (modeL . there) (runMessage msg)
-          >>= entitiesL (runMessage msg)
-          >>= actionRemovedEntitiesL (runMessage msg)
-          >>= itraverseOf (inHandEntitiesL . itraversed) (\i -> runMessage (InHand i msg))
-          >>= itraverseOf (inDiscardEntitiesL . itraversed) (\i -> runMessage (InDiscard i msg))
-          >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
-          >>= encounterDiscardEntitiesL (runMessage msg)
-          >>= inSearchEntitiesL (runMessage (InSearch msg))
-          >>= (skillTestL . traverse) (runMessage msg)
-          >>= (activeCostL . traverse) (runMessage msg)
-          >>= runGameMessage msg
-        )
-        <&> handleActionDiff g
+    ( (modeL . here) (runMessage msg) g
+        >>= (modeL . there) (runMessage msg)
+        >>= entitiesL (runMessage msg)
+        >>= actionRemovedEntitiesL (runMessage msg)
+        >>= itraverseOf (inHandEntitiesL . itraversed) (\i -> runMessage (InHand i msg))
+        >>= itraverseOf (inDiscardEntitiesL . itraversed) (\i -> runMessage (InDiscard i msg))
+        >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
+        >>= encounterDiscardEntitiesL (runMessage msg)
+        >>= inSearchEntitiesL (runMessage (InSearch msg))
+        >>= (skillTestL . traverse) (runMessage msg)
+        >>= (activeCostL . traverse) (runMessage msg)
+        >>= runGameMessage msg
+    )
+      <&> handleActionDiff g
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
@@ -3738,7 +3747,8 @@ runPreGameMessage msg g = case msg of
         let tick' = gameWindowTick g + 1
         pure
           $ g
-          & windowDepthL +~ 1
+          & windowDepthL
+          +~ 1
           & (windowStackL %~ Just . maybe [ws] (ws :))
           & (windowTickL .~ tick')
           & (windowTickStackL %~ (tick' :))

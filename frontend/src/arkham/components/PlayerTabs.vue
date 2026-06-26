@@ -16,6 +16,7 @@ import type { Source } from '@/arkham/types/Source';
 import { imgsrc } from '@/arkham/helpers';
 import { gameLocalStorageKey } from '@/arkham/localStorage';
 import { IsMobile } from '@/arkham/isMobile';
+import { isDevBuild } from '@/arkham/displayRules';
 import { useDbCardStore } from '@/stores/dbCards'
 
 export interface Props {
@@ -44,6 +45,12 @@ const inactiveInvestigators = computed(() => props.playerOrder.filter(iid => pro
 const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)
 const { isMobile } = IsMobile();
 const store = useDbCardStore()
+
+// AI-investigator seats carry an entry in settings.aiPlayers (dev-only feature).
+const aiDev = isDevBuild()
+function isAiSeat(investigator: Investigator): boolean {
+  return aiDev && !!props.game.settings.aiPlayers[investigator.playerId]
+}
 
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId
@@ -227,6 +234,7 @@ watchEffect(() => {
       >
         <span v-if="isMobile">{{ getInvestigatorName(investigator.name.title).split(' ')[0] }}</span>
         <span v-else>{{ getInvestigatorName(investigator.name.title) }}</span>
+        <span v-if="isAiSeat(investigator)" class="ai-badge" v-tooltip="'AI controlled'">AI</span>
         <button
           v-if="solo"
           v-tooltip="instructions(investigator)"
@@ -246,6 +254,7 @@ watchEffect(() => {
         :class='tabClass(investigator)'
       >
         <span>{{ investigator.name.title }}</span>
+        <span v-if="isAiSeat(investigator)" class="ai-badge" v-tooltip="'AI controlled'">AI</span>
         <button
           v-if="solo"
           v-tooltip="instructions(investigator)"
@@ -415,6 +424,21 @@ ul.tabs__header > li.tab--selected {
     filter: contrast(200%);
     color: black;
   }
+}
+
+.ai-badge {
+  align-self: center;
+  margin-right: 5px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.65em;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  color: #d7e8b0;
+  background: rgba(110, 134, 64, 0.45);
+  border: 1px solid rgba(110, 134, 64, 0.7);
+  text-transform: uppercase;
 }
 
 .fa-icon {

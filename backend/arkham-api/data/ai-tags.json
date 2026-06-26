@@ -1,0 +1,256 @@
+{
+  "investigators": {
+    "01001": {
+      "name": "Roland Banks",
+      "deckFocus": "combat",
+      "weights": {
+        "combat": 4,
+        "investigate": 3,
+        "survival": 2,
+        "support": 2,
+        "evade": 1,
+        "mobility": 1
+      },
+      "abilities": {
+        "1": {
+          "focuses": ["combat", "investigate"],
+          "action": null,
+          "notes": "After defeating an enemy, discover a clue at your location (combat->clue payoff)."
+        }
+      },
+      "notes": "The Fed. Guardian/Seeker hybrid; 4 combat / 3 intellect mirror his deck focus."
+    }
+  },
+  "cards": {
+    "01006": {
+      "focuses": ["combat"],
+      "role": "weapon",
+      "weight": 4,
+      "abilities": {
+        "1": {
+          "focuses": ["combat"],
+          "action": "Fight",
+          "notes": "Fight for +1 damage; +3 combat (instead of +1) while you are at a location with clues. Spends 1 ammo."
+        }
+      },
+      "notes": "Roland's signature firearm; scales with clues at your location, rewarding the combat->clue loop."
+    },
+    "01020": {
+      "focuses": ["combat"],
+      "role": "weapon",
+      "weight": 3,
+      "abilities": {
+        "1": {
+          "focuses": ["combat"],
+          "action": "Fight",
+          "notes": "Fight with +1 combat; deals +1 damage when the targeted enemy is the only one engaged with you."
+        }
+      }
+    },
+    "01016": {
+      "focuses": ["combat"],
+      "role": "weapon",
+      "weight": 3,
+      "abilities": {
+        "1": {
+          "focuses": ["combat"],
+          "action": "Fight",
+          "notes": "Fight with +1 combat and +1 damage. Spends 1 ammo."
+        }
+      }
+    },
+    "01086": {
+      "focuses": ["combat"],
+      "role": "weapon",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": ["combat"],
+          "action": "Fight",
+          "notes": "Fight with +1 combat for this attack."
+        },
+        "2": {
+          "focuses": ["combat"],
+          "action": "Fight",
+          "notes": "Discard Knife: Fight with +2 combat and +1 damage for this attack."
+        }
+      }
+    },
+    "01025": {
+      "focuses": ["combat"],
+      "role": "skill",
+      "weight": 2,
+      "notes": "Commit to a Fight test; deals +1 damage on success."
+    },
+    "01091": {
+      "focuses": ["combat"],
+      "role": "skill",
+      "weight": 1,
+      "notes": "Two combat icons; draw a card when the test succeeds."
+    },
+    "01024": {
+      "focuses": ["combat"],
+      "role": "event",
+      "weight": 3,
+      "abilities": {
+        "1000": {
+          "focuses": ["combat"],
+          "action": "Play",
+          "notes": "Played as an action: deal 3 damage to every enemy at a location you are at or are connected to (AoE)."
+        }
+      }
+    },
+    "01021": {
+      "focuses": ["combat", "survival"],
+      "role": "ally",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": ["combat", "survival"],
+          "action": null,
+          "notes": "Free reaction: after an enemy attacks you, deal 1 damage to it. Also provides 3 health of soak."
+        }
+      }
+    },
+    "01017": {
+      "focuses": ["combat", "survival"],
+      "role": "asset",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": ["survival"],
+          "action": null,
+          "notes": "Fast: spend 1 resource for +1 willpower during a willpower test."
+        },
+        "2": {
+          "focuses": ["combat"],
+          "action": null,
+          "notes": "Fast: spend 1 resource for +1 combat during a combat test."
+        }
+      }
+    },
+    "01087": {
+      "focuses": ["investigate"],
+      "role": "tool",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": ["investigate"],
+          "action": "Investigate",
+          "notes": "Investigate your location with its shroud reduced by 2. Spends 1 supply."
+        }
+      }
+    },
+    "01037": {
+      "focuses": ["investigate"],
+      "role": "event",
+      "weight": 2,
+      "abilities": {
+        "1000": {
+          "focuses": ["investigate"],
+          "action": "Play",
+          "notes": "Played as an action: discover 1 clue at your location without testing."
+        }
+      }
+    },
+    "01039": {
+      "focuses": ["investigate"],
+      "role": "skill",
+      "weight": 2,
+      "notes": "Commit to an Investigate test; discover 1 additional clue on success."
+    },
+    "01022": {
+      "focuses": ["investigate"],
+      "role": "event",
+      "weight": 2,
+      "abilities": {
+        "1000": {
+          "focuses": ["investigate"],
+          "action": "Play",
+          "notes": "Played after you defeat an enemy at your location: discover 1 clue there (combat->clue synergy)."
+        }
+      },
+      "notes": "Investigate payoff gated on defeating an enemy; pairs with Roland's combat focus."
+    },
+    "01088": {
+      "focuses": ["support"],
+      "role": "economy",
+      "weight": 1,
+      "notes": "Gain 3 resources."
+    },
+    "01023": {
+      "focuses": ["evade", "survival"],
+      "role": "event",
+      "weight": 2,
+      "notes": "Cancel an enemy attack (and its triggered effects)."
+    },
+    "01089": {
+      "focuses": ["survival", "support"],
+      "role": "skill",
+      "weight": 1,
+      "notes": "Flex commit: two willpower icons; draw a card when the test succeeds."
+    },
+    "01093": {
+      "focuses": ["combat", "investigate", "evade", "survival"],
+      "role": "skill",
+      "weight": 1,
+      "notes": "Flex commit: two wild icons, usable on any skill test."
+    },
+    "01007": {
+      "focuses": [],
+      "role": "weakness",
+      "weight": 0,
+      "notes": "Clue-spend obligation: while in play, clues discovered at its location are placed on Cover Up instead of being collected; suffer mental trauma if it is still in play when eliminated."
+    },
+    "01000": {
+      "focuses": [],
+      "role": "weakness",
+      "weight": 0,
+      "notes": "Placeholder for a randomly assigned basic weakness."
+    }
+  },
+  "scenarios": {
+    "01104": {
+      "name": "The Gathering",
+      "acts": {
+        "01108": {
+          "focus": "investigate",
+          "objective": {
+            "kind": "spendClues",
+            "amount": { "perPlayer": 2 },
+            "scope": "anywhere"
+          }
+        },
+        "01109": {
+          "focus": "investigate",
+          "objective": {
+            "kind": "spendClues",
+            "amount": { "perPlayer": 3 },
+            "scope": "Hallway"
+          }
+        },
+        "01110": {
+          "focus": "combat",
+          "objective": {
+            "kind": "defeatEnemy",
+            "target": "01116"
+          }
+        }
+      },
+      "agendas": {
+        "01105": {
+          "threshold": { "static": 3 },
+          "note": "What's Going On?! - lead takes 2 horror or all discard a card."
+        },
+        "01106": {
+          "threshold": { "static": 7 },
+          "note": "Rise of the Ghouls - draws a Ghoul enemy from the encounter deck."
+        },
+        "01107": {
+          "threshold": { "static": 10 },
+          "note": "They're Getting Out! - doom accelerates with ghouls in Parlor/Hallway; advancing ends the scenario."
+        }
+      }
+    }
+  }
+}

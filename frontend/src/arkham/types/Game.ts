@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
-import { v2Optional } from '@/arkham/parser';
+import { v2Optional, withDefault } from '@/arkham/parser';
+import { AiFocus } from '@/arkham/types/NewGame';
 import { Investigator, InvestigatorDetails, investigatorDecoder, investigatorDetailsDecoder } from '@/arkham/types/Investigator';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ConcealedCard, concealedCardDecoder } from '@/arkham/types/ConcealedCard';
@@ -31,11 +32,40 @@ type GameState = { tag: 'IsPending', contents: string[] } | { tag: 'IsActive' } 
 
 type AsIfRuling = 'chapter1' | 'chapter2'
 
+// Per-seat AI state serialized into the game blob (Arkham.Ai.State.AiPlayerState),
+// surfaced under `settings.aiPlayers` keyed by playerId so the UI can read which
+// seats are AI, their enable flag, focus override, response delay, and priorities.
+export type AiPlayerState = {
+  aiEnabled: boolean
+  aiInvestigatorCode: string
+  aiFocusOverride: AiFocus | null
+  aiPriorities: Target[]
+  aiResponseDelayMs: number
+}
+
 type GameSettings = {
   settingsAbilitiesCannotReactToThemselves: boolean
   settingsAsIfRuling: AsIfRuling
   settingsStrictAsIfAt: boolean
+  aiPlayers: Record<string, AiPlayerState>
 }
+
+const aiFocusDecoder = JsonDecoder.oneOf<AiFocus>([
+  JsonDecoder.literal('combat'),
+  JsonDecoder.literal('investigate'),
+  JsonDecoder.literal('evade'),
+  JsonDecoder.literal('support'),
+  JsonDecoder.literal('survival'),
+  JsonDecoder.literal('mobility'),
+], 'AiFocus')
+
+const aiPlayerStateDecoder = JsonDecoder.object<AiPlayerState>({
+  aiEnabled: withDefault(true, JsonDecoder.boolean()),
+  aiInvestigatorCode: JsonDecoder.string(),
+  aiFocusOverride: withDefault<AiFocus | null>(null, aiFocusDecoder),
+  aiPriorities: withDefault<Target[]>([], JsonDecoder.array(targetDecoder, 'Target[]')),
+  aiResponseDelayMs: withDefault(1500, JsonDecoder.number()),
+}, 'AiPlayerState')
 
 const gameSettingsDecoder = JsonDecoder.object<GameSettings>({
   settingsAbilitiesCannotReactToThemselves: JsonDecoder.boolean(),
@@ -44,6 +74,7 @@ const gameSettingsDecoder = JsonDecoder.object<GameSettings>({
     JsonDecoder.literal('chapter2'),
   ], 'AsIfRuling'),
   settingsStrictAsIfAt: JsonDecoder.boolean(),
+  aiPlayers: withDefault<Record<string, AiPlayerState>>({}, JsonDecoder.record<AiPlayerState>(aiPlayerStateDecoder, 'Dict<PlayerId, AiPlayerState>')),
 }, 'GameSettings')
 
 export const gameStateDecoder = JsonDecoder.oneOf<GameState>(
@@ -380,6 +411,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     settingsAbilitiesCannotReactToThemselves: true,
     settingsAsIfRuling: 'chapter1',
     settingsStrictAsIfAt: false,
+    aiPlayers: {},
   },
   undoActionStep: undoActionStep ?? null,
   undoTurnStep: undoTurnStep ?? null,

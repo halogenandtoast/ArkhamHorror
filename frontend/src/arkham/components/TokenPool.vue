@@ -109,8 +109,11 @@ const items = computed(() => [
 // When there are more tokens than fit comfortably, clump them into an
 // overlapping stack and fan them out into an auto-orienting shape on hover —
 // mirroring the sealed-chaos-token popover.
-const CLUMP_THRESHOLD = 3
+const CLUMP_THRESHOLD = 2
 const clumped = computed(() => items.value.length > CLUMP_THRESHOLD)
+// Keep exactly-two-token pools side by side (the parent .pool wraps, which can
+// stack them vertically on narrow asset cards).
+const pairRow = computed(() => !clumped.value && items.value.length === 2)
 const expanded = ref(false)
 
 type ClumpLayout = {
@@ -268,7 +271,7 @@ onUnmounted(() => {
        clumped. This is the hover anchor. -->
   <div
     class="token-pool"
-    :class="{ 'token-pool--clumped': clumped }"
+    :class="{ 'token-pool--clumped': clumped, 'token-pool--row': pairRow }"
     :style="clumped ? { '--token-count': items.length } : undefined"
     ref="anchorEl"
     @mouseenter="onEnter"
@@ -321,6 +324,13 @@ onUnmounted(() => {
 /* Not clumped: pass tokens straight into the parent .pool flex layout. */
 .token-pool {
   display: contents;
+}
+
+/* Exactly two tokens: keep them on one horizontal line. */
+.token-pool--row {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 /* Clumped (collapsed): a compact peeking stack that acts as the hover anchor.

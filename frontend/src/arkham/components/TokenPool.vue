@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onUnmounted } from 'vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { type Token, type Tokens } from '@/arkham/types/Token'
 
@@ -170,30 +170,57 @@ const clumpLayout = computed<ClumpLayout>(() => {
   return { positions, width, height, shapePath: tokenShapePath(shapePoints, closed) }
 })
 
-const clumpSpreadStyle = computed(() => ({
-  '--pool-bg-width': `${clumpLayout.value.width}px`,
-  '--pool-bg-height': `${clumpLayout.value.height}px`,
-  '--pool-bg-collapsed-scale': `${Math.min(1, 24 / Math.max(clumpLayout.value.width, clumpLayout.value.height))}`,
-}))
+// The expanded fan is teleported to <body> and positioned centered over the
+// collapsed stack, so it is never clipped by the scrollable player area.
+const anchorEl = ref<HTMLElement | null>(null)
+const overlayStyle = ref<Record<string, string>>({})
+const fanned = ref(false) // drives the open/close animation once mounted
+let collapseTimer: ReturnType<typeof setTimeout> | null = null
+
+function onEnter() {
+  if (collapseTimer) { clearTimeout(collapseTimer); collapseTimer = null }
+  if (!clumped.value) return
+  const el = anchorEl.value
+  if (el) {
+    const r = el.getBoundingClientRect()
+    const cx = r.left + r.width / 2
+    const cy = r.top + r.height / 2
+    const { width, height } = clumpLayout.value
+    const tokenSize = 24
+    overlayStyle.value = {
+      left: `${cx - width / 2}px`,
+      top: `${cy - height / 2}px`,
+      width: `${width}px`,
+      height: `${height}px`,
+      // Collapsed-state position: every token stacked at the centre.
+      '--fan-cx': `${(width - tokenSize) / 2}px`,
+      '--fan-cy': `${(height - tokenSize) / 2}px`,
+    }
+  }
+  expanded.value = true
+  // Let the collapsed state paint, then flip to open so the move/scale animates.
+  requestAnimationFrame(() => requestAnimationFrame(() => { if (expanded.value) fanned.value = true }))
+}
+
+function onLeave() {
+  if (collapseTimer) clearTimeout(collapseTimer)
+  fanned.value = false
+  collapseTimer = setTimeout(() => { expanded.value = false; collapseTimer = null }, 200)
+}
+
+onUnmounted(() => { if (collapseTimer) clearTimeout(collapseTimer) })
 </script>
 
 <template>
+  <!-- In-flow: normal layout when few tokens, or a compact peeking stack when
+       clumped. This is the hover anchor. -->
   <div
     class="token-pool"
-    :class="{ 'token-pool--clumped': clumped, 'token-pool--expanded': expanded }"
-    :style="clumped ? clumpSpreadStyle : undefined"
-    @mouseenter="expanded = true"
-    @mouseleave="expanded = false"
+    :class="{ 'token-pool--clumped': clumped }"
+    ref="anchorEl"
+    @mouseenter="onEnter"
+    @mouseleave="onLeave"
   >
-    <svg
-      v-if="clumped"
-      class="token-pool-bg"
-      :viewBox="`0 0 ${clumpLayout.width} ${clumpLayout.height}`"
-      aria-hidden="true"
-    >
-      <path class="token-pool-bg-border" :d="clumpLayout.shapePath" />
-      <path class="token-pool-bg-fill" :d="clumpLayout.shapePath" />
-    </svg>
     <PoolItem
       v-for="(item, i) in items"
       :key="item.key"
@@ -201,19 +228,51 @@ const clumpSpreadStyle = computed(() => ({
       :amount="item.amount"
       :tooltip="item.tooltip"
       :class="item.class"
-      :style="clumped ? { '--token-index': i, ...clumpLayout.positions[i] } : undefined"
+      :style="clumped ? { '--token-index': i } : undefined"
       @choose="emit('choose', item.key)"
     />
   </div>
+
+  <!-- Expanded fan, teleported to the top level so the scrollable player area
+       cannot clip it. -->
+  <Teleport to="body">
+    <div
+      v-if="clumped && expanded"
+      class="token-pool-overlay"
+      :class="{ 'token-pool-overlay--open': fanned }"
+      :style="overlayStyle"
+      @mouseenter="onEnter"
+      @mouseleave="onLeave"
+    >
+      <svg
+        class="token-pool-bg"
+        :viewBox="`0 0 ${clumpLayout.width} ${clumpLayout.height}`"
+        aria-hidden="true"
+      >
+        <path class="token-pool-bg-border" :d="clumpLayout.shapePath" />
+        <path class="token-pool-bg-fill" :d="clumpLayout.shapePath" />
+      </svg>
+      <PoolItem
+        v-for="(item, i) in items"
+        :key="item.key"
+        :type="item.type"
+        :amount="item.amount"
+        :tooltip="item.tooltip"
+        :class="item.class"
+        :style="clumpLayout.positions[i]"
+        @choose="emit('choose', item.key)"
+      />
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
-/* Not clumped: behave as before — pass tokens straight into the parent .pool
-   flex layout. */
+/* Not clumped: pass tokens straight into the parent .pool flex layout. */
 .token-pool {
   display: contents;
 }
 
+/* Clumped (collapsed): a compact peeking stack that acts as the hover anchor. */
 .token-pool--clumped {
   display: block;
   position: relative;
@@ -221,63 +280,87 @@ const clumpSpreadStyle = computed(() => ({
   height: var(--card-token-width);
   pointer-events: auto;
   overflow: visible;
-  isolation: isolate;
 }
 
-.token-pool--clumped.token-pool--expanded {
-  z-index: var(--z-index-30000, 30000);
-}
-
-/* The auto-orienting "blob" behind the fanned-out tokens. */
-.token-pool-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--pool-bg-width);
-  height: var(--pool-bg-height);
-  max-width: none;
-  opacity: 0;
-  transform: scale(var(--pool-bg-collapsed-scale));
-  transform-origin: top left;
-  transition: opacity 0.08s ease, transform 0.16s ease;
-  pointer-events: none;
-  z-index: 0;
-  overflow: visible;
-}
-
-.token-pool-bg path {
-  fill: rgba(0, 0, 0, 0.7);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-}
-
-.token-pool-bg-border {
-  stroke: rgba(255, 255, 255, 0.32);
-  stroke-width: 46;
-}
-
-.token-pool-bg-fill {
-  stroke: rgba(0, 0, 0, 0.7);
-  stroke-width: 42;
-}
-
-.token-pool--expanded .token-pool-bg {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Collapsed: stack tokens with a small peek. Expanded: move to fan positions. */
 .token-pool--clumped :deep(.poolItem) {
   position: absolute;
   top: 0;
   left: 0;
   z-index: calc(1 + var(--token-index));
   transform: translateX(calc(var(--token-index) * 5px));
-  transition: transform 0.16s ease;
+}
+</style>
+
+<style>
+/* Teleported to <body>, so these are intentionally global (not scoped). */
+.token-pool-overlay {
+  position: fixed;
+  z-index: var(--z-index-30000, 30000);
+  pointer-events: auto;
+  isolation: isolate;
 }
 
-.token-pool--clumped.token-pool--expanded :deep(.poolItem) {
+.token-pool-overlay .token-pool-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 0;
+  opacity: 0;
+  transform: scale(0.45);
+  transform-origin: center;
+  transition: opacity 0.12s ease, transform 0.18s ease;
+}
+
+.token-pool-overlay--open .token-pool-bg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.token-pool-overlay .token-pool-bg path {
+  fill: rgba(0, 0, 0, 0.72);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+.token-pool-overlay .token-pool-bg-border {
+  stroke: rgba(255, 255, 255, 0.34);
+  stroke-width: 46;
+}
+
+.token-pool-overlay .token-pool-bg-fill {
+  stroke: rgba(0, 0, 0, 0.72);
+  stroke-width: 42;
+}
+
+.token-pool-overlay .poolItem {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Collapsed: all stacked at the centre. Animates out to the fan positions. */
+  transform: translate(var(--fan-cx), var(--fan-cy));
+  transition: transform 0.18s ease;
+}
+
+.token-pool-overlay--open .poolItem {
   transform: translate(var(--token-x), var(--token-y));
+}
+
+/* The health (damage) token art sits a touch right; nudge it left to balance. */
+.token-pool-overlay .poolItem-health {
+  left: -3px;
+}
+
+.token-pool-overlay .poolItem img {
+  width: var(--card-token-width, 25px) !important;
+  height: auto !important;
+}
+
+.token-pool-overlay .poolItem span {
+  font-size: calc(var(--card-token-width, 25px) * 0.62) !important;
 }
 </style>

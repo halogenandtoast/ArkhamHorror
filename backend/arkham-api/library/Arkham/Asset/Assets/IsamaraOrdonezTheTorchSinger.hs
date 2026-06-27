@@ -31,7 +31,7 @@ instance HasAbilities IsamaraOrdonezTheTorchSinger where
 
 instance RunMessage IsamaraOrdonezTheTorchSinger where
   runMessage msg a@(IsamaraOrdonezTheTorchSinger attrs) = runQueueT $ case msg of
-    ReadyExhausted -> do
+    ReadyExhausted | attrs.exhausted -> do
       mods <- getModifiers attrs
       unless (CannotReady `elem` mods) do
         case attrs.controller of

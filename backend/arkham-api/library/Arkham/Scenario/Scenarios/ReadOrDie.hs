@@ -14,6 +14,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTargetedEnemy)
+import Arkham.Helpers.Xp (getInitialVictory)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -26,6 +27,7 @@ import Arkham.Scenario.Import.Lifted hiding ((.=))
 import Arkham.Scenario.Types (setAsideCardsL)
 import Arkham.Scenarios.ReadOrDie.Helpers
 import Arkham.Trait (Trait (Tome))
+import Arkham.Xp (XpBreakdown (..), XpEntry (..))
 import Control.Lens (use, (.=))
 
 {- FOURMOLU_DISABLE -}
@@ -91,12 +93,25 @@ instance HasChaosTokenValue ReadOrDie where
 gainXpWithTomeBonus :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> m Int
 gainXpWithTomeBonus attrs = do
   tomes <- selectCount $ AssetWithTrait Tome <> AssetControlledBy daisyWalker
-  initial <- allGainXp' attrs
-  let bonus = max 0 (tomes - initial)
-  when (bonus > 0) do
-    selectEach (IncludeEliminated daisyWalker) \daisy ->
-      gainXp daisy (toSource attrs) (ikey "xp.tomes") bonus
-  pure initial
+  victory <- getInitialVictory
+  mDaisy <- selectOne (IncludeEliminated daisyWalker)
+  case mDaisy of
+    Just daisy | tomes > victory -> do
+      -- Daisy earns experience equal to her Tome assets in play, *or* the
+      -- victory display, whichever is higher. When the Tomes win she takes that
+      -- value instead of the victory points, so exclude her from the shared
+      -- victory-display experience and attribute her full total to the Tomes.
+      others <- filter (/= daisy) <$> select InvestigatorCanGainXp
+      let
+        excludeDaisyFromVictory (XpBreakdown entries) =
+          XpBreakdown $ flip concatMap entries \case
+            AllGainXp detail -> [InvestigatorGainXp iid detail | iid <- others]
+            InvestigatorGainXp iid _ | iid == daisy -> []
+            entry -> [entry]
+      void $ allGainXpEdit' attrs excludeDaisyFromVictory (second $ filter ((/= daisy) . fst))
+      gainXp daisy (toSource attrs) (ikey "xp.tomes") tomes
+    _ -> void $ allGainXp' attrs
+  pure victory
 
 namerOfTheDeadAttacks :: ReverseQueue m => InvestigatorId -> m ()
 namerOfTheDeadAttacks iid = void $ runMaybeT do

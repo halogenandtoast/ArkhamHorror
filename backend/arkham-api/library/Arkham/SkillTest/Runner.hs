@@ -17,12 +17,14 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Game.Utils (maybeLocation)
 import Arkham.Helpers.Cost (getCanAffordCost)
+import Arkham.Helpers.Enemy (ignoredKeywordWindowsForEnemy)
 import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, skillTestModifier)
 import Arkham.Helpers.Query (getActiveInvestigatorId, getLeadPlayer)
 import Arkham.Helpers.Ref (sourceToMaybeCard, targetToMaybeCard)
 import Arkham.Helpers.Window (checkAfter, checkCancel, checkWhen, checkWindows, windows)
 import Arkham.Id
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
@@ -129,8 +131,19 @@ instance RunMessage SkillTest where
     BeginSkillTestAfterFast -> do
       let windows' = windows [Window.InitiatedSkillTest s]
       windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
+      -- When the attempt's own source ignores a chosen enemy's keyword (e.g. .45
+      -- Automatic (2) ignoring Retaliate), the keyword's effect is ignored for the
+      -- whole attempt. Fire it here, at declaration, while this test is current so
+      -- the test-scoped ignore modifier is visible.
+      ignoreWindows <- case (skillTestAction, skillTestTarget.enemy) of
+        (Just Action.Fight, Just eid) ->
+          ignoredKeywordWindowsForEnemy skillTestSource skillTestInvestigator eid Keyword.Retaliate IgnoreRetaliate
+        (Just Action.Evade, Just eid) ->
+          ignoredKeywordWindowsForEnemy skillTestSource skillTestInvestigator eid Keyword.Alert IgnoreAlert
+        _ -> pure []
       pushAll
         $ windows'
+        <> ignoreWindows
         <> [Do BeginSkillTestAfterFast, windowMsg, BeforeSkillTest s.id, EndSkillTestWindow]
       mAbilityCardId <- case skillTestSource of
         AbilitySource src _ -> fmap toCardId <$> skillTestSourceToMaybeCard src

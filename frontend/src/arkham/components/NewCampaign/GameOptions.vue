@@ -7,6 +7,7 @@ import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
 import type { GameMode, MultiplayerVariant, CampaignType, AiFocus, AiSlotConfig } from '@/arkham/types/NewGame'
 import { aiFocuses } from '@/arkham/types/NewGame'
+import { useSettings } from '@/stores/settings'
 
 type FullCampaignOption = {
   key: string
@@ -105,8 +106,16 @@ watch([aiSeats, showAiConfig, playerCount], () => {
   )
 }, { deep: true, immediate: true })
 
+const settings = useSettings()
+
+// The epic play-mode option only appears for an epic-capable side story AND when
+// the dev-only Epic Multiplayer flag is enabled (store value is dev-gated). When
+// off, the side-story flow shows only the normal single-group flow.
 const scenarioSupportsEpic = computed(
-  () => props.gameMode === 'SideStory' && props.scenario?.epicMultiplayer === true,
+  () =>
+    props.gameMode === 'SideStory' &&
+    props.scenario?.epicMultiplayer === true &&
+    settings.epicMultiplayerEnabled,
 )
 const isEpicActive = computed(() => scenarioSupportsEpic.value && epicMode.value)
 

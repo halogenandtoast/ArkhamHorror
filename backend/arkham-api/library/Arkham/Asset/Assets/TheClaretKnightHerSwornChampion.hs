@@ -26,8 +26,9 @@ theClaretKnightHerSwornChampion = allyWith TheClaretKnightHerSwornChampion Cards
 
 instance HasModifiersFor TheClaretKnightHerSwornChampion where
   getModifiersFor (TheClaretKnightHerSwornChampion a) = do
-    modifySelf a . map AsIfUnderControlOf =<< getInvestigators
-    modifySelect a (scarletKeyIs Keys.theLightOfPharos) . map AsIfUnderControlOf =<< getInvestigators
+    whenM (selectAny $ ScenarioWithId "09635") do
+      modifySelf a . map AsIfUnderControlOf =<< getInvestigators
+      modifySelect a (scarletKeyIs Keys.theLightOfPharos) . map AsIfUnderControlOf =<< getInvestigators
 
 instance HasAbilities TheClaretKnightHerSwornChampion where
   getAbilities (TheClaretKnightHerSwornChampion a) =

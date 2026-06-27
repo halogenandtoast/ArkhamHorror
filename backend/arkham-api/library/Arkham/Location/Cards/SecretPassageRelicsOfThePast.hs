@@ -22,7 +22,9 @@ instance HasAbilities SecretPassageRelicsOfThePast where
   getAbilities (SecretPassageRelicsOfThePast a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ PutLocationIntoPlay #after Anyone (be a)
+      [ restricted a 1 (exists $ SetAsideCardMatch $ cardIs Cards.innerChamber)
+          $ forced
+          $ PutLocationIntoPlay #after Anyone (be a)
       , restricted a 2 (HasSupply Compass) $ forced $ Enters #after You (be a)
       ]
 

@@ -323,6 +323,10 @@ const blocked = computed(() => {
 
 const modifiers = computed(() => props.location.modifiers)
 
+const darkTraitRemoved = computed(() =>
+  modifiers.value?.some((m) => m.type.tag === 'RemoveTrait' && m.type.contents === 'Dark') ?? false
+)
+
 const explosion = computed(() => {
   return (
     modifiers.value?.some((m) => m.type.tag === 'UIModifier' && m.type.contents === 'Explosion') ??
@@ -600,6 +604,18 @@ const hasAnyLocationVehicleAssets = computed(() =>
           <Locus v-if="locus" class="locus" />
           <span v-if="blocked" class="status-icon" v-tooltip="'Blocked'">
             <font-awesome-icon :icon="['fab', 'expeditedssl']" />
+          </span>
+          <span
+            v-if="darkTraitRemoved"
+            class="lantern-badge"
+            v-tooltip="'The Dark trait is removed'"
+          >
+            <img
+              class="lantern-icon"
+              :src="imgsrc('extra/the-feast-of-hemlock-vale/lantern.svg')"
+              alt=""
+              aria-hidden="true"
+            />
           </span>
           <span
             v-for="ui in important"
@@ -1018,6 +1034,32 @@ const hasAnyLocationVehicleAssets = computed(() =>
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Lantern indicator: the location has had its Dark trait removed (Vale Lantern,
+   Open Cave, Luminous Growth, etc.). Positioned top-right so it doesn't collide
+   with the top-left Blocked status icon. No background plate — just the lantern
+   with a warm glow. */
+.lantern-badge {
+  position: absolute;
+  top: 0.25em;
+  right: 0.45em;
+  transform: translate(50%, -50%);
+  width: 1.3em;
+  height: 1.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  z-index: var(--z-index-2);
+}
+
+.lantern-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 2px rgba(255, 224, 150, 0.95))
+    drop-shadow(0 0 5px rgba(255, 198, 105, 0.85));
 }
 
 .important {

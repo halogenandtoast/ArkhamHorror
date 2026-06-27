@@ -57,6 +57,7 @@ export type ModifierType
   | GainVictory
   | ActionCostSetToModifier
   | OtherModifier
+  | RemoveTrait
   | UIModifier
   | SkillModifier
   | SetSkillValue
@@ -239,6 +240,11 @@ export type OtherModifier = {
   contents: string
 }
 
+export type RemoveTrait = {
+  tag: "RemoveTrait"
+  contents: string
+}
+
 type UIModifierType =
   | 'Locus'
   | 'Ethereal'
@@ -361,6 +367,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('CannotEnter'),
       contents: JsonDecoder.string()
     }, 'CannotEnter'),
+  JsonDecoder.object<RemoveTrait>(
+    {
+      tag: JsonDecoder.literal('RemoveTrait'),
+      contents: JsonDecoder.string()
+    }, 'RemoveTrait'),
   JsonDecoder.object<Hollow>(
     {
       tag: JsonDecoder.literal('Hollow'),

@@ -231,10 +231,14 @@ instance RunMessage WarOfTheOuterGods where
               nearest <- select $ NearestEnemyToLocation loc (warringEnemy <> not_ (factionEnemy f))
               unless (null nearest) do
                 lead <- getLead
-                chooseOrRunOneM lead $ targets nearest \target ->
-                  withLocationOf target \targetLoc -> do
-                    nextSteps <- select $ ClosestPathLocation loc targetLoc
-                    chooseOrRunOneM lead $ targets nextSteps $ push . EnemyMove enemy
+                chooseOrRunOneM lead do
+                  questionSourced enemy
+                  targets nearest \target ->
+                    withLocationOf target \targetLoc -> do
+                      nextSteps <- select $ ClosestPathLocation loc targetLoc
+                      chooseOrRunOneM lead do
+                        questionSourced enemy
+                        targets nextSteps $ push . EnemyMove enemy
       pure s
     ScenarioSpecific "warringAttack" v -> do
       let enemy = toResult v

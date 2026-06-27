@@ -1,3 +1,5 @@
+{-# LANGUAGE NoFieldSelectors #-}
+
 module Arkham.Message.Lifted.Choose where
 
 import Arkham.Ability.Types
@@ -19,7 +21,7 @@ import Arkham.Location.Grid
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
-import Arkham.Message (Message (Would), uiToRun)
+import Arkham.Message (Message (Would), questionWithSource, uiToRun)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
 import Arkham.Prelude
@@ -43,6 +45,7 @@ data ChooseState = ChooseState
   { terminated :: Bool
   , label :: Maybe Text
   , labelCardCode :: Maybe CardCode
+  , source :: Maybe Source
   }
 
 newtype ChooseT m a = ChooseT {unChooseT :: StateT ChooseState (WriterT [UI Message] m) a}
@@ -72,7 +75,7 @@ instance MonadTrans ChooseT where
   lift = ChooseT . lift . lift
 
 runChooseT :: ChooseT m a -> m ((a, ChooseState), [UI Message])
-runChooseT = runWriterT . (`runStateT` ChooseState False Nothing Nothing) . unChooseT
+runChooseT (ChooseT m) = runWriterT (runStateT m (ChooseState False Nothing Nothing Nothing))
 
 leadChooseOneM :: ReverseQueue m => ChooseT m a -> m ()
 leadChooseOneM choices = do
@@ -99,15 +102,19 @@ shouldSkipQuestion choices = all isInvalidChoice choices
 
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do
-  ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices
+  ((_, ChooseState {label, labelCardCode, source}), choices') <- runChooseT choices
   unless (shouldSkipQuestion choices') do
-    case label of
-      Nothing -> case labelCardCode of
-        Nothing -> chooseOne iid choices'
-        Just cCode -> questionLabelWithCard "@none" cCode iid $ ChooseOne choices'
-      Just l -> case labelCardCode of
-        Nothing -> questionLabel l iid $ ChooseOne choices'
-        Just cCode -> questionLabelWithCard l cCode iid $ ChooseOne choices'
+    case source of
+      Just s -> do
+        pid <- getPlayer iid
+        push $ questionWithSource s pid $ labelWrap label labelCardCode $ ChooseOne choices'
+      Nothing -> case label of
+        Nothing -> case labelCardCode of
+          Nothing -> chooseOne iid choices'
+          Just cCode -> questionLabelWithCard "@none" cCode iid $ ChooseOne choices'
+        Just l -> case labelCardCode of
+          Nothing -> questionLabel l iid $ ChooseOne choices'
+          Just cCode -> questionLabelWithCard l cCode iid $ ChooseOne choices'
 
 chooseSomeM :: ReverseQueue m => InvestigatorId -> Text -> ChooseT m a -> m ()
 chooseSomeM iid txt choices = do
@@ -150,13 +157,19 @@ chooseOneFromEachM iid choices = do
 
 chooseOrRunOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOrRunOneM iid choices = do
-  ((_, ChooseState {label}), choices') <- runChooseT choices
+  ((_, ChooseState {label, labelCardCode, source}), choices') <- runChooseT choices
   unless (shouldSkipQuestion choices') do
-    case label of
-      Nothing -> chooseOrRunOne iid choices'
-      Just l -> case choices' of
+    case source of
+      Just s -> case choices' of
         [x] -> push $ uiToRun x
-        _ -> questionLabel l iid $ ChooseOne choices'
+        _ -> do
+          pid <- getPlayer iid
+          push $ questionWithSource s pid $ labelWrap label labelCardCode $ ChooseOne choices'
+      Nothing -> case label of
+        Nothing -> chooseOrRunOne iid choices'
+        Just l -> case choices' of
+          [x] -> push $ uiToRun x
+          _ -> questionLabel l iid $ ChooseOne choices'
 
 chooseOrRunNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseOrRunNM iid n choices = do
@@ -503,6 +516,16 @@ questionLabeledI label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = 
 
 questionLabeledCard :: (ReverseQueue m, HasCardCode a) => a -> ChooseT m ()
 questionLabeledCard a = modify $ \s -> s {Arkham.Message.Lifted.Choose.labelCardCode = Just (toCardCode a)}
+
+-- | Attach a source to the question so the client highlights that entity (e.g.
+-- the acting enemy during Hunter/Patrol/Warring movement). Honored by
+-- 'chooseOneM' and 'chooseOrRunOneM'.
+questionSourced :: (ReverseQueue m, Sourceable a) => a -> ChooseT m ()
+questionSourced a = modify $ \s -> s {Arkham.Message.Lifted.Choose.source = Just (toSource a)}
+
+labelWrap :: Maybe Text -> Maybe CardCode -> Question Message -> Question Message
+labelWrap Nothing Nothing q = q
+labelWrap mlabel mcard q = QuestionLabel (fromMaybe "@none" mlabel) mcard q
 
 storyWithContinue :: ReverseQueue m => FlavorText -> Text -> m ()
 storyWithContinue txt button = storyWithChooseOneM txt $ labeled button nothing

@@ -17,6 +17,12 @@
   "elusive": {
     "flee": "Elusive: choose a connecting location for this enemy to flee to."
   },
+  "hunter": {
+    "move": "Hunter: choose a location for this enemy to move toward."
+  },
+  "patrol": {
+    "move": "Patrol: choose a location for this enemy to move toward."
+  },
   "doDeleteGame": "Are you sure you want to delete this game?",
   "email": "Email",
   "finishedGames": "Finished Games",

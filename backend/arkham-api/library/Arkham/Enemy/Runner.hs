@@ -1014,8 +1014,8 @@ instance RunMessage EnemyAttrs where
               pure $ a & movedFromHunterKeywordL .~ True
             ls -> do
               push
-                $ chooseOrRunOne
-                  lead
+                $ questionWithSourceWithTooltip (EnemySource enemyId) (Tooltip "$hunter.move") lead
+                $ ChooseOne
                   [ targetLabel
                       l
                       [ CheckWindows [Window.mkWhen $ Window.MovedFromHunter enemyId]
@@ -1048,8 +1048,8 @@ instance RunMessage EnemyAttrs where
                 ]
             ls -> do
               push
-                $ chooseOrRunOne
-                  lead
+                $ questionWithSourceWithTooltip (EnemySource enemyId) (Tooltip "$patrol.move") lead
+                $ ChooseOne
                   [ targetLabel
                       l
                       [ EnemyMove enemyId l

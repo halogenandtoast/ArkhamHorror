@@ -2451,26 +2451,36 @@ getLocationsMatching lmatcher = do
       case mstart of
         Just start -> do
           let
-            go1 :: Int -> LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
-            go1 0 _ _ = pure ()
-            go1 n loc path = do
-              doesMatch <- lift $ loc <=~> destinationMatcher
-              ps@PathState {..} <- get
-              put
-                $ ps
-                  { _psVisitedLocations = insertSet loc _psVisitedLocations
-                  , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
-                  }
-              connections <-
-                lift
-                  $ select
-                  $ AccessibleFrom ForMovement (LocationWithId loc)
-                  <> CanEnterLocation investigatorMatcher
-              for_ connections \conn -> do
-                unless (conn `elem` _psVisitedLocations) do
-                  go1 (n - 1) conn (path |> loc)
+            -- Breadth-first by distance layer: reach every location via a
+            -- shortest path so the depth budget is never starved by a longer
+            -- route to a hub location. A global-visited DFS could reach the hub
+            -- via a 2-step path first and then drop genuinely 3-away locations
+            -- (issue #4939).
+            go1 :: Int -> [(LocationId, Seq LocationId)] -> StateT PathState (ReaderT Game m) ()
+            go1 0 _ = pure ()
+            go1 _ [] = pure ()
+            go1 n frontier = do
+              for_ frontier \(loc, path) -> do
+                doesMatch <- lift $ loc <=~> destinationMatcher
+                when doesMatch
+                  $ modify \ps -> ps {_psPaths = Map.insertWith (<>) loc [path] (_psPaths ps)}
+              nextFrontier <- fmap concat $ for frontier \(loc, path) -> do
+                connections <-
+                  lift
+                    $ select
+                    $ AccessibleFrom ForMovement (LocationWithId loc)
+                    <> CanEnterLocation investigatorMatcher
+                let path' = path |> loc
+                fmap catMaybes $ for connections \conn -> do
+                  visited <- gets _psVisitedLocations
+                  if conn `member` visited
+                    then pure Nothing
+                    else do
+                      modify \ps -> ps {_psVisitedLocations = insertSet conn (_psVisitedLocations ps)}
+                      pure $ Just (conn, path')
+              go1 (n - 1) nextFrontier
           PathState {_psPaths} <-
-            execStateT (go1 (distance + 1) start mempty) (PathState (singleton start) mempty)
+            execStateT (go1 (distance + 1) [(start, mempty)]) (PathState (singleton start) mempty)
 
           imods <- getModifiers investigator
           let

@@ -22,5 +22,6 @@ spec = describe "Dr. Henry Armitage (Spreading Flames)" $ do
 
     -- A subsequent action that turn does provoke (the modifier only covers the first action)
     run $ drawCardsAction (toId self) self 1
+    chooseOnlyOption "resolve the attack of opportunity"
     applyAllDamage
     self.damage `shouldReturn` 2

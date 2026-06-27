@@ -437,7 +437,7 @@ assertHasNoReaction = do
       AbilityLabel {} -> True
       _ -> False
   case mapToList questionMap of
-    [(_, question)] -> case question of
+    [(_, question)] -> case stripQuestionWrappers question of
       ChooseOne msgs -> case find isReaction msgs of
         Just msg -> expectationFailure $ "expected no reaction, but found " <> show msg
         Nothing -> pure ()
@@ -473,6 +473,7 @@ chooseOptionAcrossQuestions reason f = do
   let
     findIn = \case
       QuestionLabel _ _ q -> findIn q
+      QuestionWithSource _ _ q -> findIn q
       ChooseOne msgs -> find f msgs
       PlayerWindowChooseOne msgs -> find f msgs
       ChooseOneAtATime msgs -> find f msgs
@@ -639,7 +640,7 @@ applyAllDamage = do
   questionMap <- gameQuestion <$> getGame
   let
     choices = case mapToList questionMap of
-      [(_, question)] -> case question of
+      [(_, question)] -> case stripQuestionWrappers question of
         ChooseOne msgs -> msgs
         PlayerWindowChooseOne msgs -> msgs
         _ -> []
@@ -659,7 +660,7 @@ applyAllHorror = do
   questionMap <- gameQuestion <$> getGame
   let
     choices = case mapToList questionMap of
-      [(_, question)] -> case question of
+      [(_, question)] -> case stripQuestionWrappers question of
         ChooseOne msgs -> msgs
         PlayerWindowChooseOne msgs -> msgs
         _ -> []
@@ -706,7 +707,7 @@ assertNoReaction = do
   questionMap <- gameQuestion <$> getGame
   let
     choices = case mapToList questionMap of
-      [(_, question)] -> case question of
+      [(_, question)] -> case stripQuestionWrappers question of
         ChooseOne msgs -> msgs
         PlayerWindowChooseOne msgs -> msgs
         _ -> []
@@ -729,7 +730,7 @@ assertTarget (toTarget -> target) = do
   let
     choices =
       case mapToList questionMap of
-        [(_, question)] -> case question of
+        [(_, question)] -> case stripQuestionWrappers question of
           ChooseOne msgs -> msgs
           PlayerWindowChooseOne msgs -> msgs
           ChooseN _ msgs -> msgs
@@ -755,7 +756,7 @@ assertNotTarget (toTarget -> target) = do
   let
     choices =
       case mapToList questionMap of
-        [(_, question)] -> case question of
+        [(_, question)] -> case stripQuestionWrappers question of
           ChooseOne msgs -> msgs
           PlayerWindowChooseOne msgs -> msgs
           ChooseN _ msgs -> msgs
@@ -799,7 +800,7 @@ assertDamageIsDirect = do
   questionMap <- gameQuestion <$> getGame
   let
     choices = case mapToList questionMap of
-      [(_, question)] -> case question of
+      [(_, question)] -> case stripQuestionWrappers question of
         ChooseOne msgs -> msgs
         PlayerWindowChooseOne msgs -> msgs
         _ -> []
@@ -818,7 +819,7 @@ assertHorrorIsDirect = do
   questionMap <- gameQuestion <$> getGame
   let
     choices = case mapToList questionMap of
-      [(_, question)] -> case question of
+      [(_, question)] -> case stripQuestionWrappers question of
         ChooseOne msgs -> msgs
         PlayerWindowChooseOne msgs -> msgs
         _ -> []

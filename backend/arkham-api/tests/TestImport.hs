@@ -700,11 +700,20 @@ skip = chooseOptionMatching "skip" \case
   SkipTriggersButton {} -> True
   _ -> False
 
+-- | Peel off display-only question wrappers (source highlight, header label)
+-- that the frontend renders but that tests should see through.
+stripQuestionWrappers :: Question msg -> Question msg
+stripQuestionWrappers = \case
+  QuestionLabel _ _ q -> stripQuestionWrappers q
+  QuestionWithSource _ _ q -> stripQuestionWrappers q
+  PayCostQuestion _ q -> stripQuestionWrappers q
+  q -> q
+
 chooseOnlyOption :: HasCallStack => String -> TestAppT ()
 chooseOnlyOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
-    [(_, question)] -> case question of
+    [(_, question)] -> case stripQuestionWrappers question of
       ChooseOne [msg] -> push (uiToRun msg) <* runMessages
       PlayerWindowChooseOne [msg] -> push (uiToRun msg) <* runMessages
       ChooseOneAtATime [msg] -> push (uiToRun msg) <* runMessages
@@ -717,7 +726,7 @@ chooseFirstOption :: HasCallStack => String -> TestAppT ()
 chooseFirstOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
-    [(_, question)] -> case question of
+    [(_, question)] -> case stripQuestionWrappers question of
       ChooseOne (msg : _) -> push (uiToRun msg) >> runMessages
       PlayerWindowChooseOne (msg : _) -> push (uiToRun msg) >> runMessages
       ChooseOneAtATime (msg : _) -> push (uiToRun msg) >> runMessages
@@ -741,6 +750,8 @@ chooseOptionMatching _reason f = do
     liftIO $ expectationFailure $ "could not find a matching message in: " <> show msgs
   go iid question = case question of
     QuestionLabel _ _ q -> go iid q
+    QuestionWithSource _ _ q -> go iid q
+    PayCostQuestion _ q -> go iid q
     ChooseOne msgs -> case find f msgs of
       Just msg -> push (uiToRun msg) <* runMessages
       Nothing -> notFound msgs

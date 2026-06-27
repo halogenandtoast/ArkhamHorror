@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useToast } from 'vue-toastification'
 import type { Game } from '@/arkham/types/Game'
 import type { Target } from '@/arkham/types/Target'
@@ -30,6 +30,29 @@ const focusOptions: Array<'auto' | string> = ['auto', ...aiFocuses]
 const seats = computed(() =>
   Object.entries(props.game.settings.aiPlayers).map(([pid, state]) => ({ pid, state })),
 )
+
+// --- Targeting mode (dev-only) ----------------------------------------------
+// Toggles useAi().targeting; while on, board entities highlight green on hover
+// and clicking opens AiTargetMenu, which applies a directive to `targetSeat`.
+const targetSeat = computed<string | null>({
+  get: () => ai.selectedSeat ?? seats.value[0]?.pid ?? null,
+  set: (pid) => { ai.selectedSeat = pid },
+})
+
+function toggleTargeting() {
+  if (ai.targeting) {
+    ai.stopTargeting()
+  } else {
+    ai.setTargeting(true, targetSeat.value)
+  }
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && ai.targeting) ai.stopTargeting()
+}
+
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 function investigatorNameFor(pid: string): string {
   const investigator = Object.values(props.game.investigators).find((i) => i.playerId === pid)
@@ -168,6 +191,24 @@ watch(
           {{ collapsed ? '▸' : '▾' }}
         </button>
       </div>
+    </div>
+
+    <div class="ai-targeting" :class="{ active: ai.targeting }">
+      <button
+        type="button"
+        class="ai-targeting-toggle"
+        :class="{ active: ai.targeting }"
+        @click="toggleTargeting"
+      >
+        {{ ai.targeting ? 'Targeting — Done (Esc)' : 'Targeting mode' }}
+      </button>
+      <label v-if="seats.length > 1" class="ai-targeting-seat">
+        <span class="ai-control-label">Seat</span>
+        <select v-model="targetSeat">
+          <option v-for="{ pid } in seats" :key="pid" :value="pid">{{ investigatorNameFor(pid) }}</option>
+        </select>
+      </label>
+      <span v-if="ai.targeting" class="ai-targeting-hint">Click a board entity to set its priority.</span>
     </div>
 
     <div v-if="game.skillTest && assistSeats.length > 0" class="ai-assist">
@@ -326,6 +367,55 @@ watch(
   border-radius: 6px;
   padding: 2px 7px;
   cursor: pointer;
+}
+
+.ai-targeting {
+  padding: 8px 10px;
+  display: grid;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ai-targeting.active {
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.ai-targeting-toggle {
+  border: 1px solid rgba(74, 222, 128, 0.5);
+  background: rgba(74, 222, 128, 0.18);
+  color: #d7f5dd;
+  border-radius: 6px;
+  padding: 5px 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+}
+
+.ai-targeting-toggle.active {
+  background: rgba(74, 222, 128, 0.4);
+  border-color: var(--ai-target);
+}
+
+.ai-targeting-seat {
+  display: grid;
+  gap: 3px;
+}
+
+.ai-targeting-seat select {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  padding: 4px 6px;
+  text-transform: capitalize;
+}
+
+.ai-targeting-hint {
+  font-size: 10px;
+  color: rgba(74, 222, 128, 0.85);
+  font-style: italic;
 }
 
 .ai-assist {

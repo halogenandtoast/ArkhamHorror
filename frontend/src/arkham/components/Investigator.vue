@@ -7,7 +7,9 @@ import Draggable from '@/components/Draggable.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Modifiers from '@/arkham/components/Modifiers.vue';
 import PendingDamageTokens from '@/arkham/components/PendingDamageTokens.vue';
+import AiTargetMenu from '@/arkham/components/AiTargetMenu.vue';
 import { useDebug } from '@/arkham/debug'
+import { useAi } from '@/arkham/ai'
 import { ForwardIcon, PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
@@ -44,6 +46,21 @@ const isHighlighted = computed(() => highlighter.highlighted.value === props.inv
 const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.investigator.id))
 const debug = useDebug()
 const choose = (idx: number) => emit('choose', idx)
+
+const ai = useAi()
+const aiMenuOpen = ref(false)
+const frame = ref<HTMLElement | null>(null)
+const aiTarget = computed(() => ({ tag: 'InvestigatorTarget', contents: id.value }))
+
+// In "AI targeting mode" a click opens the directive menu instead of selecting
+// the investigator; normal play is untouched when targeting is off.
+function clicked() {
+  if (ai.targeting) {
+    aiMenuOpen.value = true
+    return
+  }
+  emit('choose', investigatorAction.value)
+}
 
 const { addEntry, removeEntry } = useMenu()
 const settingsStore = useSettings()
@@ -220,6 +237,7 @@ const portraitClasses = computed(() => ({
   ethereal: ethereal.value,
   dragging: dragging.value,
   captured: captured.value,
+  'ai-target-hover': ai.targeting,
 }))
 
 const emitter = useEmitter()
@@ -425,7 +443,7 @@ const spadeInjury = computed(() => {
 </script>
 
 <template>
-  <div v-if="portrait" class="portrait-container">
+  <div v-if="portrait" class="portrait-container" ref="frame">
     <span v-if="isMobile">
       <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
       <template v-for="action in investigator.additionalActions" :key="action">
@@ -453,7 +471,7 @@ const spadeInjury = computed(() => {
       :style="replacementMiniCardStyle"
       :draggable="debug.active"
       v-tooltip="investigator.name.title"
-      @click="$emit('choose', investigatorAction)"
+      @click="clicked"
       @dragstart="startDrag($event)"
       @dragstop="endDrag"
       @drop="onDrop($event)"
@@ -469,7 +487,7 @@ const spadeInjury = computed(() => {
       class="portrait"
       :class="portraitClasses"
       :draggable="debug.active"
-      @click="$emit('choose', investigatorAction)"
+      @click="clicked"
       @dragstart="startDrag($event)"
       @dragstop="endDrag"
       @drop="onDrop($event)"
@@ -486,12 +504,12 @@ const spadeInjury = computed(() => {
           <div class="combat combat-icon">{{combat}}</div>
           <div class="agility agility-icon">{{agility}}</div>
         </div>
-        <div class="investigator-image">
+        <div class="investigator-image" ref="frame">
           <img
-            :class="{ 'investigator--can-interact': investigatorAction !== -1, 'ability-target': isHighlighted || isAttackTarget }"
+            :class="{ 'investigator--can-interact': investigatorAction !== -1, 'ability-target': isHighlighted || isAttackTarget, 'ai-target-hover': ai.targeting }"
             class="card card--sideways"
             :src="image"
-            @click="$emit('choose', investigatorAction)"
+            @click="clicked"
             @drop="onDrop($event)"
             @dragover.prevent="dragover($event)"
             @dragenter.prevent
@@ -618,6 +636,14 @@ const spadeInjury = computed(() => {
       <button class="close button" @click="toggleShowBonded">{{$t('close')}}</button>
     </Draggable>
   </div>
+  <AiTargetMenu
+    v-model="aiMenuOpen"
+    :frame="frame"
+    kind="investigator"
+    :target="aiTarget"
+    :seat="ai.selectedSeat"
+    :game-id="game.id"
+  />
 </template>
 
 <style scoped>
@@ -1130,6 +1156,21 @@ img.card {
 
 img.card.ability-target {
   box-shadow: 0 0 0 2px var(--highlight), 0 0 6px 1px var(--highlight), var(--card-shadow);
+}
+
+/* Dev-only "AI targeting mode": class is only bound while targeting is on, so
+   normal play is untouched. Green border + pale green wash on hover. Applies to
+   both the full investigator card and the small portrait. */
+.ai-target-hover {
+  cursor: pointer;
+  transition: box-shadow 120ms ease, filter 120ms ease;
+}
+
+.ai-target-hover:hover {
+  border: 2px solid var(--ai-target);
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px var(--ai-target), 0 0 12px 3px rgba(74, 222, 128, 0.55);
+  filter: brightness(1.05) sepia(0.35) hue-rotate(55deg) saturate(1.3);
 }
 
 .card-row-cards {

@@ -92,6 +92,9 @@
 
   --highlight: #2dd4bf;
 
+  /* Dev-only "AI targeting mode" hover highlight (see AiTargetMenu / useAi). */
+  --ai-target: #4ade80;
+
   --bullet-red: #391714;
 
   --pool-token-width: min(30px, 4vw);

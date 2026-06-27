@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 import { useDebug } from '@/arkham/debug'
+import { useAi } from '@/arkham/ai'
 import { Game } from '@/arkham/types/Game'
 import { keyToId } from '@/arkham/types/Key'
 import { TokenType } from '@/arkham/types/Token'
@@ -11,6 +12,7 @@ import { cardArt, cardImage, sourceCardCode } from '@/arkham/cardImages'
 import { useGameChoices, useStickyChoicesSource, useGameChoicesTooltip } from '@/arkham/composables/useGameChoices'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
+import AiTargetMenu from '@/arkham/components/AiTargetMenu.vue'
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import TokenPool from '@/arkham/components/TokenPool.vue'
@@ -253,9 +255,17 @@ const addedKeywords = computed(() => {
 
 const choose = (index: number) => emits('choose', index)
 
+const ai = useAi()
+const aiMenuOpen = ref(false)
+const aiTarget = computed(() => ({ tag: 'EnemyTarget', contents: id.value }))
+
 const showAbilities = ref<boolean>(false)
 
 async function clicked() {
+  if (ai.targeting) {
+    aiMenuOpen.value = true
+    return
+  }
   if(cardAction.value !== -1) {
     emits('choose', cardAction.value)
     showAbilities.value = false
@@ -323,7 +333,7 @@ function onDrop(event: DragEvent) {
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
               v-tooltip="sourceTooltip"
-              :class="{ dragging, 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking }"
+              :class="{ dragging, 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking, 'ai-target-hover': ai.targeting }"
               :data-id="id"
               :data-card-code="enemy.cardCode"
               :data-game-id="game.id"
@@ -345,7 +355,7 @@ function onDrop(event: DragEvent) {
               :src="isSwarm ? imgsrc('player_back.jpg') : image"
               class="card enemy"
               v-tooltip="sourceTooltip"
-              :class="{ 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking }"
+              :class="{ 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking, 'ai-target-hover': ai.targeting }"
               :data-id="id"
               :data-card-code="enemy.cardCode"
               :data-game-id="game.id"
@@ -385,6 +395,16 @@ function onDrop(event: DragEvent) {
             :position="atLocation ? 'right' : (inVoid || global) ? 'left' : 'top'"
             :game="game"
             @choose="chooseAbility"
+            />
+
+          <AiTargetMenu
+            v-model="aiMenuOpen"
+            :frame="frame"
+            kind="enemy"
+            :target="aiTarget"
+            :seat="ai.selectedSeat"
+            :game-id="game.id"
+            :position="atLocation ? 'right' : (inVoid || global) ? 'left' : 'top'"
             />
         </div>
 
@@ -489,6 +509,20 @@ function onDrop(event: DragEvent) {
   border: 2px solid var(--select);
   border-radius: 5px;
   cursor: pointer;
+}
+
+/* Dev-only "AI targeting mode": class is only bound while targeting is on, so
+   normal play is untouched. Green border + pale green wash on hover. */
+.ai-target-hover {
+  cursor: pointer;
+  transition: box-shadow 120ms ease, filter 120ms ease;
+}
+
+.ai-target-hover:hover {
+  border: 2px solid var(--ai-target);
+  border-radius: 5px;
+  box-shadow: 0 0 0 2px var(--ai-target), 0 0 12px 3px rgba(74, 222, 128, 0.55);
+  filter: brightness(1.05) sepia(0.35) hue-rotate(55deg) saturate(1.3);
 }
 
 .enemy--can-interact-cursor {

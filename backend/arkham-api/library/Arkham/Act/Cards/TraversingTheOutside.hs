@@ -35,7 +35,7 @@ instance RunMessage TraversingTheOutside where
       outsidersLair <- selectJust $ locationIs Locations.outsidersLairWithoutATrace
       createSetAsideEnemyWith_ Enemies.mimeticNemesisOtherworldlySubjugator outsidersLair createExhausted
       eachInvestigator \iid -> do
-        discards <- select $ inDiscardOf iid
+        discards <- select $ inDiscardOf iid <> basic NonWeakness
         focusCards discards do
           chooseNM iid 2 $ targets discards $ hollow iid
       theRedGlovedMan <- fetchCard Assets.theRedGlovedManHeWasAlwaysThere

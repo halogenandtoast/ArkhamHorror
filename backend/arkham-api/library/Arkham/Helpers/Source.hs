@@ -1,5 +1,6 @@
 module Arkham.Helpers.Source where
 
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Constants (notPlayerAbilityIndex)
@@ -124,6 +125,12 @@ checkSourceOwner creditUser whoMatcher = go
         Nothing -> pure False
     InvestigatorSource iid -> elem iid <$> select whoMatcher
     ElderSignEffectSource iid -> elem iid <$> select whoMatcher
+    -- A Scarlet Key's effects belong to the investigator who bears/controls it,
+    -- so "card effect you control" (Carolyn Fern + The Last Blossom) resolves to
+    -- that investigator. See issue #4948.
+    ScarletKeySource sid -> do
+      owned <- select $ ScarletKeyOneOf [ScarletKeyWithInvestigator whoMatcher, ScarletKeyWithBearer whoMatcher]
+      pure $ sid `elem` owned
     CardIdSource cid -> do
       c <- getCard cid
       case toCardOwner c of

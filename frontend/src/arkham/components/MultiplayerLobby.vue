@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { fetchOpenSeats, claimSeat, joinGame } from '@/arkham/api'
 import { useClipboard } from '@vueuse/core'
-import { imgsrc } from '@/arkham/helpers'
+import { imgsrc, buildShareableUrl } from '@/arkham/helpers'
 import { getGameLocalStorageItem } from '@/arkham/localStorage'
 import type { Game } from '@/arkham/types/Game'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
@@ -37,11 +37,11 @@ const investigators = computed(() => Object.values(props.game.investigators))
 
 const claimSeatUrl = computed(() => {
   const resolved = router.resolve({ name: 'ClaimSeat', params: { gameId: props.gameId } })
-  return window.location.origin + window.location.pathname + resolved.href
+  return buildShareableUrl(resolved.href)
 })
 const joinUrl = computed(() => {
   const resolved = router.resolve({ name: 'JoinGame', params: { gameId: props.gameId } })
-  return window.location.origin + window.location.pathname + resolved.href
+  return buildShareableUrl(resolved.href)
 })
 // A "join-style" lobby is a fresh pending game with no pre-chosen investigators
 // (e.g. epic group lobbies). These have nothing to claim, so the shareable

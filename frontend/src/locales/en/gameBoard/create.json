@@ -41,6 +41,8 @@
     "numberOfGroups": "Number of Groups",
     "groupName": "Group Name",
     "groupPlayers": "Players",
+    "imposeTimeLimit": "Impose time limit",
+    "timeLimitMinutes": "Time limit (minutes)",
 
     "gameName": "Game Name",
     "create": "Create",

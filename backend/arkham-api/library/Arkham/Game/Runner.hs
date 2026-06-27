@@ -536,12 +536,33 @@ runGameMessage msg g = case msg of
       keepCardCache =
         Persist `elem` map modifierType (Map.findWithDefault [] GameTarget (gameModifiers g))
       difficulty = these difficultyOf difficultyOfScenario (const . difficultyOf) (g ^. modeL)
-      mCampaignLog =
-        these (const Nothing) (Just . attr scenarioStandaloneCampaignLog) (\_ _ -> Nothing) (g ^. modeL)
-      playerDecks = these (const mempty) (attr scenarioPlayerDecks) (\_ _ -> mempty) (g ^. modeL)
+      -- Read a value from the current mode that only exists for a STANDALONE
+      -- scenario (the @That@ arm); campaigns (the @This@/@These@ arms) get the
+      -- fallback. A standalone scenario restarts itself here (That -> That), so
+      -- these reads carry the prior scenario's state across the rebuild.
+      extractStandaloneOnly :: a -> (Scenario -> a) -> a
+      extractStandaloneOnly fallback extractor = these (const fallback) extractor (\_ _ -> fallback) (g ^. modeL)
+      mCampaignLog = extractStandaloneOnly Nothing (Just . attr scenarioStandaloneCampaignLog)
+      playerDecks = extractStandaloneOnly mempty (attr scenarioPlayerDecks)
       setCampaignLog = case mCampaignLog of
         Nothing -> id
         Just cl -> overAttrs (standaloneCampaignLogL .~ cl)
+
+      -- Carry the scenario meta across the rebuild (e.g. Epic Multiplayer's
+      -- "epicMultiplayer" flag from setInitialScenarioMeta). Without this, the
+      -- fresh lookupScenario resets meta to Null and the scenario's Setup picks
+      -- its non-epic branch. Standalone only — a campaign moving to a NEW scenario
+      -- must not inherit the prior scenario's meta.
+      scenarioMetaValue = extractStandaloneOnly Null (attr scenarioMeta)
+      setScenarioMeta' = overAttrs (\s -> s {scenarioMeta = scenarioMetaValue})
+
+      -- Likewise carry the standalone scenario's counts across the rebuild. At
+      -- game start the only counts present are external mirrors (e.g. Epic
+      -- Multiplayer's EpicShared pool values injected just before StartScenario) —
+      -- there is no scenario-local progress yet — so a group's shared enemy/pool
+      -- is correctly populated at Setup instead of reading 0.
+      scenarioCountsValue = extractStandaloneOnly mempty (attr scenarioCounts)
+      setScenarioCounts' = overAttrs (\s -> s {scenarioCounts = scenarioCounts s <> scenarioCountsValue})
 
       standalone = isNothing $ modeCampaign $ g ^. modeL
       setPlayerDecks = overAttrs (playerDecksL .~ playerDecks)
@@ -555,7 +576,7 @@ runGameMessage msg g = case msg of
       <> [LoadScenario opts]
     pure
       $ g
-      & (modeL %~ setScenario (setPlayerDecks $ setCampaignLog $ lookupScenario sid difficulty))
+      & (modeL %~ setScenario (setPlayerDecks $ setCampaignLog $ setScenarioMeta' $ setScenarioCounts' $ lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
       & (cardsL %~ if keepCardCache then id else filterMap (not . isEncounterCard))
   PerformTarotReading -> do

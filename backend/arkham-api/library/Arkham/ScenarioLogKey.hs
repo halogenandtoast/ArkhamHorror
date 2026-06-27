@@ -196,6 +196,14 @@ data ScenarioCountKey
     -- event row at the start of each action so the scenario/enemy can read the
     -- current shared value purely. See "Arkham.Epic".
     EpicShared Text
+  | -- Epic Multiplayer: a LOCAL (per-group, never-synced) count of how many times
+    -- the act at this stage has advanced. Unlike 'EpicShared', this is never
+    -- mirrored from the event row, so it is safe to increment per group. It lets a
+    -- cumulative shared clue pool drive a looping act ('ResetActDeckToStage'):
+    -- the Nth advance fires at shared progress >= 2 * total * N, so no shared
+    -- counter ever has to be reset. Lives on the scenario, so it survives the act
+    -- being replaced when the deck loops.
+    EpicActAdvances Int
   deriving stock (Eq, Show, Ord, Data)
 
 instance ToGameLoggerFormat ScenarioLogKey where
@@ -266,6 +274,7 @@ instance FromJSON ScenarioCountKey where
           (x, y) <- o .: "contents"
           pure $ Barriers x y
         "EpicShared" -> EpicShared <$> o .: "contents"
+        "EpicActAdvances" -> EpicActAdvances <$> o .: "contents"
         "CurrentDepth" -> pure CurrentDepth
         "SignOfTheGods" -> pure SignOfTheGods
         "Distortion" -> pure Distortion

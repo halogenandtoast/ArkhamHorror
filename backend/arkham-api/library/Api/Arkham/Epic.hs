@@ -85,6 +85,35 @@ applyEpicDeltasLocked eid mGameId mGameStep deltas = do
         insert_ $ ArkhamEpicStep eid (baseStep + i) mGameId mGameStep d now
       pure s1
 
+-- | Apply a pure update to the event's shared state under a @FOR UPDATE@ lock and
+-- persist it, returning the new state. For barrier/timer BOOKKEEPING
+-- (groups-ready bitmask, timer-start) that is set directly rather than as an
+-- undoable additive delta — so it records no 'ArkhamEpicStep'. The update runs
+-- inside the lock, so concurrent callers see each other's writes (e.g. two groups
+-- marking ready at once can't lose a bit).
+modifySharedStateLocked
+  :: MonadIO m
+  => ArkhamEpicEventId
+  -> (SharedEventState -> SharedEventState)
+  -> ReaderT SqlBackend m SharedEventState
+modifySharedStateLocked eid f = do
+  locked <- select do
+    e <- from $ table @ArkhamEpicEvent
+    where_ $ e.id ==. val eid
+    locking forUpdate
+    pure e
+  case locked of
+    [] -> error "modifySharedStateLocked: epic event row vanished mid-transaction"
+    (Entity _ e : _) -> do
+      now <- liftIO getCurrentTime
+      let s1 = f (arkhamEpicEventSharedState e)
+      P.update
+        eid
+        [ ArkhamEpicEventSharedState P.=. s1
+        , ArkhamEpicEventUpdatedAt P.=. now
+        ]
+      pure s1
+
 -- | Revert deltas that were recorded for a particular game step (used by undo).
 -- Subtracts each delta's amount from the *current* value under lock; additive
 -- deltas commute, so this is correct even if other groups moved the counter in

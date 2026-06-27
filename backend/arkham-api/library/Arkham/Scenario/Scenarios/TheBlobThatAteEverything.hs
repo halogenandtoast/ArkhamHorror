@@ -104,7 +104,13 @@ instance RunMessage TheBlobThatAteEverything where
           ]
 
         setAgendaDeck [Agendas.theAnomalySpreads, Agendas.theAnomalySwells, Agendas.theAnomalyConsumes]
-        setActDeck [Acts.exposeTheAnomaly, Acts.extraterrestrialPhysiology, Acts.blackwatersBane]
+        -- Epic Multiplayer uses Act 1 and Act 3 variants whose clue thresholds are
+        -- a single GLOBAL pool (2 per investigator across all groups); Act 2 is
+        -- shared with the single-group deck.
+        setActDeck
+          $ if isEpic
+            then [Acts.exposeTheAnomalyEpicMultiplayer, Acts.extraterrestrialPhysiology, Acts.blackwatersBaneEpicMultiplayer]
+            else [Acts.exposeTheAnomaly, Acts.extraterrestrialPhysiology, Acts.blackwatersBane]
 
         quarantine <-
           shuffle

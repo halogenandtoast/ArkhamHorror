@@ -37,17 +37,21 @@ import processingJSON from '@/assets/processing.json'
 import api from '@/api'
 import {
   fetchGame,
+  buildWebsocketUrl,
   undoChoice,
   undoScenarioChoice,
   undoAction,
   undoTurn,
   undoPhase,
   undoRound,
+  markEventReady,
+  eventTimeUp,
 } from '@/arkham/api'
 import * as Api from '@/arkham/api'
 import { useCardStore } from '@/stores/cards'
 import { useUserStore } from '@/stores/user'
 import { useEventStore } from '@/arkham/stores/event'
+import { useEventTimer } from '@/arkham/composables/useEventTimer'
 import type { SharedEventState } from '@/arkham/types/EpicEvent'
 import { useMenu } from '@/composable/menu'
 import useEmitter from '@/composable/useEmitter'
@@ -82,6 +86,7 @@ import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Settings from '@/arkham/components/Settings.vue'
 import OrganizerBar from '@/arkham/components/OrganizerBar.vue'
 import PlayerEventBar from '@/arkham/components/PlayerEventBar.vue'
+import EventStartBarrier from '@/arkham/components/EventStartBarrier.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import AiControlPanel from '@/arkham/components/AiControlPanel.vue'
 import AiQuestionsPanel from '@/arkham/components/AiQuestionsPanel.vue'
@@ -152,6 +157,20 @@ const organizerEventId = computed(() => {
   return ev && ev.id === eid && ev.role === 'organizer' ? eid : null
 })
 
+// Player-facing counterpart: any seated MEMBER (not the organizer) of an Epic
+// event may switch to / spectate the sibling groups. Gated on the dev flag (like
+// the rest of the epic UI) and only when the loaded event actually contains this
+// game as one of its group games, so ordinary non-event games never get a
+// switcher. The organizer keeps OrganizerBar above (unchanged).
+const playerEventId = computed(() => {
+  if (!settings.epicMultiplayerEnabled) return null
+  const eid = eventQueryId.value
+  if (!eid) return null
+  const ev = eventStore.event
+  if (!ev || ev.id !== eid || ev.role === 'organizer') return null
+  return ev.groups.some((g) => g.gameId === props.gameId) ? eid : null
+})
+
 watch(
   eventQueryId,
   (eid) => {
@@ -161,6 +180,23 @@ watch(
   },
   { immediate: true },
 )
+
+// "Epic Multiplayer" time limit. The event id this game view actively
+// PARTICIPATES in for the timer: a seated player (or an organizer playing a
+// seat), never the organizer's spectate/non-playing view. Only set when the
+// loaded event contains this game as a group, so ordinary games never engage.
+const timerEventId = computed(() => {
+  if (!settings.epicMultiplayerEnabled) return null
+  if (props.spectate) return null
+  const eid = eventQueryId.value
+  if (!eid) return null
+  const ev = eventStore.event
+  if (!ev || ev.id !== eid) return null
+  return ev.groups.some((g) => g.gameId === props.gameId) ? eid : null
+})
+
+const { hasTimeLimit, barrierPending, timerStartedAt, timeUp } = useEventTimer()
+
 const preloaded = new Set<string>()
 const preloading = new Set<string>()
 let mouseX = 0
@@ -181,6 +217,62 @@ interface PlayabilityInfo {
 }
 
 const game = shallowRef<Arkham.Game | null>(null)
+
+// "Ready to play": the group has reached the first investigation phase of an
+// active, started scenario. Cleanest signal we have off the existing game state.
+const reachedInvestigation = computed(() => {
+  const g = game.value
+  return (
+    !!g &&
+    g.gameState.tag === 'IsActive' &&
+    !!g.scenario?.started &&
+    g.phase === 'InvestigationPhase'
+  )
+})
+
+// Show the blocking start-barrier overlay only once this group has finished its own
+// setup (reached investigation) and is waiting on the other groups. Gating on
+// reachedInvestigation is essential: blocking the board during deck selection /
+// mulligan would stop the player from ever reaching investigation -> deadlock.
+const showStartBarrier = computed(
+  () => !!timerEventId.value && barrierPending.value && reachedInvestigation.value,
+)
+
+// Mark this group ready at the start barrier exactly once per load. Guarded with a
+// local flag (the endpoint is idempotent server-side regardless). Immediate so a
+// reconnect mid-investigation still signals readiness.
+let markedReady = false
+watch(
+  [timerEventId, reachedInvestigation, barrierPending],
+  () => {
+    if (markedReady) return
+    const eid = timerEventId.value
+    if (!eid) return
+    if (!hasTimeLimit.value) return
+    if (timerStartedAt.value !== 0) return
+    if (!reachedInvestigation.value) return
+    markedReady = true
+    markEventReady(eid).catch((e) => console.error(e))
+  },
+  { immediate: true },
+)
+
+// When the countdown hits 0, force the time-up resolution once. Fires from any
+// loaded event game (player or spectating organizer); the endpoint is idempotent
+// across clients.
+let timeUpFired = false
+watch(
+  timeUp,
+  (up) => {
+    if (!up || timeUpFired) return
+    const eid = eventQueryId.value
+    if (!eid || !hasTimeLimit.value) return
+    timeUpFired = true
+    eventTimeUp(eid).catch((e) => console.error(e))
+  },
+  { immediate: true },
+)
+
 const gameCard = ref<GameCard | null>(null)
 const showTheSilenceModal = ref(false)
 const playabilityInfo = ref<PlayabilityInfo | null>(null)
@@ -487,9 +579,7 @@ function setGameQuestion(question: Record<string, Question>) {
 
 const websocketUrl = computed(() => {
   const spectatePrefix = props.spectate ? '/spectate' : ''
-  return `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}?token=${userStore.token}`
-    .replace(/https/, 'wss')
-    .replace(/http/, 'ws')
+  return buildWebsocketUrl(`/api/v1/arkham/games/${props.gameId}${spectatePrefix}`, userStore.token)
 })
 
 watch(
@@ -534,8 +624,6 @@ const gameCardOnlyDecoder = JsonDecoder.object<GameCardOnly>(
   },
   'GameCard',
 )
-
-const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
 
 // Socket Handling
 const onError = () => {
@@ -1983,6 +2071,13 @@ onUnmounted(() => {
       :current-game-id="gameId"
       :spectate="spectate"
     />
+    <PlayerEventBar
+      v-else-if="playerEventId"
+      :event-id="playerEventId"
+      :current-game-id="gameId"
+      :spectate="spectate"
+    />
+    <EventStartBarrier v-if="showStartBarrier" />
     <MultiplayerLobby
       v-if="game.gameState.tag === 'IsPending'"
       :game-id="gameId"

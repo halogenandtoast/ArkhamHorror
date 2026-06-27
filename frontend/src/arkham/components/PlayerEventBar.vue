@@ -7,13 +7,15 @@ import { useEpicHelpers } from '@/arkham/composables/useEpicHelpers'
 import { COUNTERMEASURES, counterValue, type GroupDigest } from '@/arkham/types/EpicEvent'
 import EventCountdown from '@/arkham/components/EventCountdown.vue'
 
-// Organizer-only chrome shown at the top of a group's game view (below the app
-// nav, above the board). Reads everything from the event store, which Game.vue
-// loads from the ?event=<id> query param. Players never see this — Game.vue only
-// mounts it when the loaded event marks the user as organizer.
-// `spectate` is the CURRENT mode for this game view (true = organizer/spectate
-// route, false = playing a seat). The bar is always present for the organizer; it
-// uses the mode to decide what a tab/button does.
+// Player-facing group switcher shown at the top of a group's game view when that
+// game belongs to an Epic Multiplayer event. It mirrors the organizer's switcher
+// (OrganizerBar) but with player semantics: the player's OWN seated group opens
+// in normal PLAY mode, every other group opens read-only in SPECTATE mode
+// ("investigators may freely communicate between groups"). The organizer keeps
+// OrganizerBar untouched; Game.vue only mounts this for non-organizer members and
+// gates it behind the dev flag. Reads the sibling groups + shared counters from
+// the event store, which Game.vue loads from the ?event=<id> query param and keeps
+// live via the SharedStateUpdate feed riding on this group's game websocket.
 const props = defineProps<{ eventId: string; currentGameId: string; spectate: boolean }>()
 
 const router = useRouter()
@@ -24,67 +26,60 @@ const { groupLabel } = useEpicHelpers()
 const countermeasures = computed(() => counterValue(sharedState.value, COUNTERMEASURES))
 const totalInvestigators = computed(() => sharedState.value.sharedTotalInvestigators)
 
-// Only groups whose game exists can be opened.
+// Only groups whose game has been created can be opened.
 const switchableGroups = computed(() => groupDigests.value.filter((g) => g.gameId))
 
-// Groups where this organizer also holds a seat — they can drop into play mode.
-// Hide the button for the group they're already actively playing.
-const seatedGroups = computed(() =>
-  groupDigests.value.filter(
-    (g) => g.gameId && g.youAreSeated && !(g.gameId === props.currentGameId && !props.spectate),
-  ),
-)
-
-// Switch to the organizer (spectate) view of a group. No-op if we're already
-// spectating that exact group; while PLAYING the current group, this pops back
-// to organizer view of it.
-function viewGroup(group: GroupDigest) {
-  if (!group.gameId) return
-  if (group.gameId === props.currentGameId && props.spectate) return
-  router.push({ name: 'Spectate', params: { gameId: group.gameId }, query: { event: props.eventId } })
+// We're viewing this group as a seated player (normal play, not spectating).
+function isPlayingHere(group: GroupDigest): boolean {
+  return group.gameId === props.currentGameId && !props.spectate
 }
 
-// Drop into PLAYER MODE for a seated group: the normal play route, event kept.
-function playSeat(group: GroupDigest) {
+// We're spectating this group right now (read-only).
+function isSpectatingHere(group: GroupDigest): boolean {
+  return group.gameId === props.currentGameId && props.spectate
+}
+
+// Open a group. The player's own seated group opens in normal play mode; any
+// other group opens read-only in spectate mode. No-op when the click would land
+// us exactly where we already are.
+function openGroup(group: GroupDigest) {
   if (!group.gameId) return
-  router.push({ name: 'Game', params: { gameId: group.gameId }, query: { event: props.eventId } })
+  if (group.youAreSeated) {
+    if (isPlayingHere(group)) return
+    router.push({ name: 'Game', params: { gameId: group.gameId }, query: { event: props.eventId } })
+    return
+  }
+  if (isSpectatingHere(group)) return
+  router.push({ name: 'Spectate', params: { gameId: group.gameId }, query: { event: props.eventId } })
 }
 </script>
 
 <template>
-  <div class="organizer-bar">
+  <div class="player-event-bar">
     <RouterLink class="dashboard-link" :to="`/events/${eventId}`">
       <span class="back-arrow" aria-hidden="true">‹</span>
-      <span class="dashboard-name">{{ event?.name ?? $t('event.organizerDashboard') }}</span>
+      <span class="dashboard-name">{{ event?.name ?? $t('event.epicMultiplayer') }}</span>
     </RouterLink>
 
-    <nav class="group-switcher">
+    <nav class="group-switcher" :title="$t('event.communicateHint')">
       <button
         v-for="group in switchableGroups"
         :key="group.ordinal"
         type="button"
         class="group-tab"
-        :class="{ active: group.gameId === currentGameId, playing: group.gameId === currentGameId && !spectate }"
-        @click="viewGroup(group)"
+        :class="{
+          active: group.gameId === currentGameId,
+          playing: isPlayingHere(group),
+          spectating: isSpectatingHere(group),
+        }"
+        @click="openGroup(group)"
       >
         <span class="tab-name">{{ groupLabel(group) }}</span>
-        <span v-if="group.gameId === currentGameId && !spectate" class="tab-mode">{{ $t('event.playing') }}</span>
+        <span v-if="isPlayingHere(group)" class="tab-mode playing-mode">{{ $t('event.playing') }}</span>
+        <span v-else-if="isSpectatingHere(group)" class="tab-mode">{{ $t('event.spectating') }}</span>
+        <span v-else-if="!group.youAreSeated" class="tab-mode">{{ $t('event.spectate') }}</span>
       </button>
     </nav>
-
-    <div v-if="seatedGroups.length" class="bar-actions">
-      <button
-        v-for="group in seatedGroups"
-        :key="group.ordinal"
-        type="button"
-        class="play-seat-btn"
-        @click="playSeat(group)"
-      >
-        {{ seatedGroups.length > 1
-          ? `${$t('event.playMySeat')} · ${groupLabel(group)}`
-          : $t('event.playMySeat') }}
-      </button>
-    </div>
 
     <div class="bar-metrics">
       <EventCountdown />
@@ -101,10 +96,10 @@ function playSeat(group: GroupDigest) {
 </template>
 
 <style scoped>
-.organizer-bar {
+.player-event-bar {
   position: relative;
-  /* Sit above the start-barrier overlay (z-index 900) so the organizer can still
-     navigate between groups while a group waits at the barrier. */
+  /* Sit above the start-barrier overlay (z-index 900) so a waiting player can
+     still switch groups / return to the dashboard. */
   z-index: 1000;
   flex: 0 0 auto;
   display: flex;
@@ -177,7 +172,7 @@ function playSeat(group: GroupDigest) {
 
 .group-tab.active {
   color: #fff;
-  border-bottom-color: var(--spooky-green, #6e8644);
+  border-bottom-color: var(--highlight, #4aa3c7);
   background: rgba(255, 255, 255, 0.04);
 }
 
@@ -188,32 +183,13 @@ function playSeat(group: GroupDigest) {
 .tab-mode {
   font-size: 0.62em;
   letter-spacing: 0.08em;
+  color: var(--highlight, #4aa3c7);
+  opacity: 0.85;
+}
+
+.tab-mode.playing-mode {
   color: var(--important, #d8a657);
   opacity: 0.9;
-}
-
-.bar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.play-seat-btn {
-  background: var(--spooky-green, #6e8644);
-  border: 0;
-  border-radius: 4px;
-  color: #fff;
-  cursor: pointer;
-  padding: 7px 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.82em;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.play-seat-btn:hover {
-  background: hsl(80, 35%, 32%);
 }
 
 .bar-metrics {

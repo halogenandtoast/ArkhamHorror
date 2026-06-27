@@ -56,6 +56,8 @@
         /#ArkhamEpicEventId ApiV1ArkhamEventP:
           / ApiV1ArkhamEventR GET DELETE
           !/counter ApiV1ArkhamEventCounterR POST
+          !/time-up ApiV1ArkhamEventTimeUpR POST
+          !/ready ApiV1ArkhamEventReadyR POST
     /admin AdminP:
       / ApiV1AdminR GET
       /stats ApiV1AdminStatsR GET

@@ -1,14 +1,17 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { useClipboard } from '@vueuse/core'
-import { deleteEvent } from '@/arkham/api'
+import { deleteEvent, eventTimeUp } from '@/arkham/api'
 import { useEventStore } from '@/arkham/stores/event'
 import { useDbCardStore } from '@/stores/dbCards'
-import { imgsrc } from '@/arkham/helpers'
+import { imgsrc, buildShareableUrl } from '@/arkham/helpers'
+import { useEpicHelpers } from '@/arkham/composables/useEpicHelpers'
+import { useEventTimer } from '@/arkham/composables/useEventTimer'
 import { type GroupDigest } from '@/arkham/types/EpicEvent'
+import EventCountdown from '@/arkham/components/EventCountdown.vue'
 
 // Organizer dashboard. Loads the event over REST, then subscribes to the event
 // websocket (via the store) so group state stays live as players act. Shared
@@ -20,20 +23,30 @@ const { t } = useI18n()
 const store = useEventStore()
 const dbStore = useDbCardStore()
 const { event, groupDigests, socketError } = storeToRefs(store)
+const { groupLabel } = useEpicHelpers()
 
 const ready = ref(false)
 const deleting = ref(false)
+
+// Shared countdown: when it hits 0, force the time-up resolution. Guarded so this
+// view fires at most once; the endpoint is idempotent across clients.
+const { timeUp } = useEventTimer()
+let timeUpFired = false
+watch(
+  timeUp,
+  (up) => {
+    if (!up || timeUpFired) return
+    timeUpFired = true
+    eventTimeUp(props.id).catch((e) => console.error(e))
+  },
+  { immediate: true },
+)
 
 // role is 'organizer' whenever the user holds an organizer row, even if they play.
 const isOrganizer = computed(() => event.value?.role === 'organizer')
 
 // A user belongs to one group: once seated anywhere, they can't join elsewhere.
 const committed = computed(() => groupDigests.value.some((g) => g.youAreSeated))
-
-function groupLabel(group: GroupDigest): string {
-  const name = group.name?.trim()
-  return name ? name : t('event.group', { ordinal: group.ordinal + 1 })
-}
 
 // Investigator card code may arrive with or without the engine 'c' prefix; the
 // ArkhamDB lookup and portrait assets both use the bare code.
@@ -59,7 +72,7 @@ function isJoinable(group: GroupDigest): boolean {
 function inviteUrl(group: GroupDigest): string {
   if (!group.gameId) return ''
   const resolved = router.resolve({ name: 'JoinGame', params: { gameId: group.gameId } })
-  return window.location.origin + window.location.pathname + resolved.href
+  return buildShareableUrl(resolved.href)
 }
 
 const { copy } = useClipboard()
@@ -123,6 +136,9 @@ onUnmounted(() => {
       <div class="dash-heading">
         <span class="dash-chip">{{ $t('event.epicMultiplayer') }}</span>
         <h2>{{ event ? event.name : $t('event.organizerDashboard') }}</h2>
+      </div>
+      <div class="dash-countdown">
+        <EventCountdown />
       </div>
       <button
         v-if="isOrganizer && ready"
@@ -240,6 +256,14 @@ onUnmounted(() => {
 .dash-heading {
   flex: 1;
   min-width: 0;
+}
+
+.dash-countdown {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  align-self: center;
+  font-size: 1.2em;
 }
 
 .dash-chip {

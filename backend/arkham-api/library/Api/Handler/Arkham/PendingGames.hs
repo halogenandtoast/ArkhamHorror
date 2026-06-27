@@ -7,18 +7,15 @@ import Import hiding (on, (==.))
 
 import Api.Arkham.Epic (applyEpicDeltasLocked, lookupGameEvent, mkEpicEnv)
 import Api.Arkham.Helpers
-import Api.Handler.Arkham.Games.Shared (broadcastSharedToEvent, publishToRoom)
-import Arkham.Epic.Types (EpicRole (GroupPlayer), GroupOrdinal (..), epicEnvDeltaRef, epicEnvSharedRef, sharedCounters, sharedTotalInvestigators)
+import Api.Handler.Arkham.Games.Shared (epicSyncMessages, propagateShared, publishToRoom)
+import Arkham.Epic.Types (EpicRole (GroupPlayer), GroupOrdinal (..), epicEnvDeltaRef, epicEnvSharedRef)
 import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Game.State
 import Arkham.Id
-import Arkham.Message (Message (ScenarioCountSet))
 import Arkham.Queue
-import Arkham.ScenarioLogKey (ScenarioCountKey (EpicShared))
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
-import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Persist ((==.))
 import Entity.Arkham.Step
@@ -68,14 +65,20 @@ putApiV1ArkhamPendingGameR gameId = do
 
             runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer mEpicEnv) $ do
               addPlayer (PlayerId $ coerce pid)
-              -- Inject the current shared counters BEFORE setup (StartCampaign),
-              -- so the scenario/enemy reconcile to the live pool during setup.
-              for_ mEpicEnv \epic -> do
-                shared <- liftIO $ readIORef (epicEnvSharedRef epic)
-                pushAll
-                  $ [ScenarioCountSet (EpicShared k) v | (k, v) <- Map.toList (sharedCounters shared)]
-                  <> [ScenarioCountSet (EpicShared "total-investigators") (sharedTotalInvestigators shared)]
+              -- Run setup. For a multiplayer lobby this PAUSES at ChooseDeck
+              -- (IsChooseDecks) until players pick decks, so we must NOT run any
+              -- further messages here or we'd blast past deck selection and start
+              -- the scenario with zero investigators ("No lead found").
               runMessages (gameIdToText gameId) Nothing
+              -- Only when setup actually completed in this request (e.g. a fully
+              -- pre-decked/AI group) do we reconcile the board to the shared pool.
+              -- Otherwise the reconcile happens after deck selection via the
+              -- action pull (StartScenario preserves EpicShared counts) + push.
+              setupState <- gameGameState <$> liftIO (readIORef gameRef)
+              when (setupState == IsActive) $ for_ mEpicEnv \epic -> do
+                shared <- liftIO $ readIORef (epicEnvSharedRef epic)
+                pushAll (epicSyncMessages shared)
+                runMessages (gameIdToText gameId) Nothing
 
             updatedGame <- liftIO $ readIORef gameRef
             updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
@@ -112,7 +115,7 @@ putApiV1ArkhamPendingGameR gameId = do
             pure (game', mShared)
       _ -> pure (original, Nothing)
 
-  for_ mShared \(eid, s) -> broadcastSharedToEvent eid s
+  for_ mShared \(eid, s) -> propagateShared eid (Just gameId) s
   publishToRoom gameId
     $ GameUpdate
     $ PublicGame gameId arkhamGameName [] arkhamGameCurrentData

@@ -68,6 +68,9 @@ const epicGroups = ref<EpicGroup[]>([
   { name: 'Group 1', playerCount: 2 },
   { name: 'Group 2', playerCount: 2 },
 ])
+// Shared time limit (epic only). On by default; sends 0 minutes when off.
+const imposeTimeLimit = ref(true)
+const timeLimitMinutes = ref(180)
 
 const scenarios = computed<Scenario[]>(() => gate(scenarioJSON))
 const sideStories = computed<Scenario[]>(() => gate(sideStoriesJSON))
@@ -291,11 +294,19 @@ async function start() {
   // Epic Multiplayer side story: spin up an event aggregate (N group games +
   // shared state) instead of a single game, and land on the organizer dashboard.
   if (isEpicMode.value && scenario.value && currentCampaignName.value) {
+    // Off -> 0 (no limit). On with a bad/empty value -> fall back to the 180 default
+    // so an "imposed" limit can never silently become "no limit".
+    const minutes = imposeTimeLimit.value
+      ? (Number.isFinite(timeLimitMinutes.value) && timeLimitMinutes.value > 0
+          ? Math.floor(timeLimitMinutes.value)
+          : 180)
+      : 0
     const details = await createEvent({
       name: currentCampaignName.value,
       scenarioId: scenario.value.id,
       difficulty: selectedDifficulty.value,
       includeTarotReadings: includeTarotReadings.value,
+      timeLimitMinutes: minutes,
       groups: epicGroups.value.map((g, i) => ({
         name: g.name.trim() === '' ? `Group ${i + 1}` : g.name.trim(),
         playerCount: g.playerCount,
@@ -395,6 +406,8 @@ async function start() {
           v-model:epicMode="epicMode"
           v-model:epicGroupCount="epicGroupCount"
           v-model:epicGroups="epicGroups"
+          v-model:imposeTimeLimit="imposeTimeLimit"
+          v-model:timeLimitMinutes="timeLimitMinutes"
           v-model:aiPlayers="aiPlayers"
           :gameMode="gameMode"
           :campaign="campaign"

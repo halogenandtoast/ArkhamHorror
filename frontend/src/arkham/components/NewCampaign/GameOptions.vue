@@ -56,6 +56,11 @@ const epicMode = defineModel<boolean>('epicMode', { required: true })
 const epicGroupCount = defineModel<number>('epicGroupCount', { required: true })
 const epicGroups = defineModel<EpicGroup[]>('epicGroups', { required: true })
 
+// Shared time limit for the event. When the checkbox is off, NewCampaign sends 0
+// minutes (= no limit / no barrier / no countdown); on, it sends `timeLimitMinutes`.
+const imposeTimeLimit = defineModel<boolean>('imposeTimeLimit', { required: true })
+const timeLimitMinutes = defineModel<number>('timeLimitMinutes', { required: true })
+
 // --- AI-investigator configuration (dev-only, Solo/multihanded only) ----------
 // Emits an `aiPlayers` array (length playerCount) of `AiSlotConfig | null` up to
 // NewCampaign, which forwards it to newGame() only for Solo games.
@@ -382,6 +387,17 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
                   </select>
                 </label>
               </div>
+            </div>
+
+            <div class="epic-time-limit">
+              <label class="epic-toggle">
+                <input type="checkbox" v-model="imposeTimeLimit" />
+                <span class="card-title small">{{ $t('create.imposeTimeLimit') }}</span>
+              </label>
+              <label v-if="imposeTimeLimit" class="epic-field epic-field-count">
+                <span class="card-title small">{{ $t('create.timeLimitMinutes') }}</span>
+                <input class="text" type="number" min="1" step="1" v-model.number="timeLimitMinutes" />
+              </label>
             </div>
           </div>
         </transition>
@@ -1047,6 +1063,31 @@ input[type='radio']:checked + label {
 
 .epic-field .text {
   border-radius: 10px;
+}
+
+.epic-time-limit {
+  margin-top: 14px;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.epic-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.epic-toggle input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.epic-time-limit .epic-field-count {
+  width: 120px;
 }
 
 .ai-config-title {

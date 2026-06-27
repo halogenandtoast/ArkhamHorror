@@ -69,6 +69,13 @@ export function lowercase(word: string) {
   return word.charAt(0).toLowerCase() + word.substring(1);
 }
 
+// Absolute, shareable URL for a router-resolved href. Combines the current origin
+// + pathname with the resolved href so invite/seat links work under hash-history
+// routing. Pass `router.resolve({...}).href`.
+export function buildShareableUrl(resolvedHref: string): string {
+  return window.location.origin + window.location.pathname + resolvedHref
+}
+
 export const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" : ''
 
 export function isLocalized(src: string) {

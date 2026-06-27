@@ -37,6 +37,7 @@ export interface EventDetails {
   name: string
   organizerUserId: number
   role: EventRole | null
+  createdAt: string
   sharedState: SharedEventState
   totalInvestigators: number
   groups: GroupDigest[]
@@ -59,6 +60,8 @@ export interface CreateEventPost {
   scenarioId: string
   difficulty: string
   includeTarotReadings: boolean
+  // Minutes for the shared countdown; 0 means "no time limit".
+  timeLimitMinutes: number
   groups: CreateEventGroup[]
 }
 
@@ -69,6 +72,12 @@ export interface SharedStateUpdate {
 }
 
 export const COUNTERMEASURES = 'countermeasures'
+
+// Time-limit shared-counter keys (see backend contract). `time-limit-minutes` is
+// the configured limit (0 = no limit); `timer-started-at` is the epoch SECONDS the
+// start barrier released and the countdown began (0 until every group is ready).
+export const TIME_LIMIT_MINUTES = 'time-limit-minutes'
+export const TIMER_STARTED_AT = 'timer-started-at'
 
 export function emptySharedState(): SharedEventState {
   return {
@@ -126,6 +135,7 @@ export const eventDetailsDecoder = JsonDecoder.object<EventDetails>(
     name: JsonDecoder.string(),
     organizerUserId: JsonDecoder.number(),
     role: JsonDecoder.nullable(eventRoleDecoder),
+    createdAt: JsonDecoder.string(),
     sharedState: sharedEventStateDecoder,
     totalInvestigators: JsonDecoder.number(),
     groups: JsonDecoder.array(groupDigestDecoder, 'GroupDigest[]'),

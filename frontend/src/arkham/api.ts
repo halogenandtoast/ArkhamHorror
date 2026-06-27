@@ -67,8 +67,6 @@ export const findGame = async (playerId: string): Promise<GameDetailsEntry> => {
 
 export const fetchGames = async (): Promise<GameDetailsEntry[]> => {
   const { data } = await api.get('arkham/games')
-  const failed = data.filter((g: { error?: string }) => g.error !== undefined)
-  if (failed.length > 0) console.log(failed)
   const passed = data.filter((g: { error?: string }) => g.error === undefined)
   return JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodePromise(passed)
 }
@@ -280,16 +278,31 @@ export const createEvent = async (payload: CreateEventPost): Promise<EventDetail
 export const adjustEventCounter = (eventId: string, key: string, amount: number): Promise<void> =>
   api.post(`arkham/events/${eventId}/counter`, { key, amount })
 
+// Mark the caller's group ready at the start barrier. Idempotent server-side; the
+// countdown begins once every group has been marked ready.
+export const markEventReady = async (eventId: string): Promise<void> => {
+  await api.post(`arkham/events/${eventId}/ready`)
+}
+
+// Force all still-playing groups to agenda 3b when the clock runs out. Idempotent
+// server-side, so it's safe for more than one client to fire it.
+export const eventTimeUp = async (eventId: string): Promise<void> => {
+  await api.post(`arkham/events/${eventId}/time-up`)
+}
+
 export const deleteEvent = async (eventId: string): Promise<void> => {
   await api.delete(`arkham/events/${eventId}`)
 }
 
-// Mirrors the game websocket URL builder in views/Game.vue: same /api/v1 base,
-// http(s) -> ws(s) rewrite, and `?token=` auth on the same path that serves the
-// REST detail endpoint (the GET upgrades to a websocket).
-export const eventWebsocketUrl = (eventId: string, token: string | null): string => {
+// Builds a websocket URL for an /api/v1 path: same origin as the page, http(s) ->
+// ws(s) rewrite, and `?token=` auth appended (the GET upgrades to a websocket).
+// Shared by the event socket here and the game socket in views/Game.vue.
+export const buildWebsocketUrl = (path: string, token?: string | null): string => {
   const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
-  return `${baseURL}/api/v1/arkham/events/${eventId}?token=${token}`
+  return `${baseURL}${path}?token=${token}`
     .replace(/https/, 'wss')
     .replace(/http/, 'ws')
 }
+
+export const eventWebsocketUrl = (eventId: string, token: string | null): string =>
+  buildWebsocketUrl(`/api/v1/arkham/events/${eventId}`, token)

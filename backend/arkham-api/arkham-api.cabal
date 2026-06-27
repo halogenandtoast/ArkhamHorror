@@ -6821,6 +6821,8 @@ test-suite spec
   main-is: Spec.hs
   other-modules:
       Arkham.Act.Cards.AFamiliarPatternSpec
+      Arkham.Act.Cards.BlackwatersBaneEpicMultiplayerSpec
+      Arkham.Act.Cards.ExposeTheAnomalyEpicMultiplayerSpec
       Arkham.Act.Cards.FalseStepV2Spec
       Arkham.Agenda.Cards.RestrictedAccessSpec
       Arkham.Agenda.Cards.ShadowsDeepenSpec

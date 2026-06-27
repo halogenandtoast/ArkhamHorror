@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.Subject8L08EpicMultiplayerSpec (spec) where
 
 import Arkham.DamageEffect (nonAttack)
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (EnemyHealth))
+import Arkham.Enemy.Types (Field (EnemyDamage, EnemyHealth))
 import Arkham.Epic.Types (SharedKey (..))
 import Arkham.Helpers.Scenario (scenarioFieldMap)
 import Arkham.Projection (field)
@@ -24,17 +24,22 @@ via a message checker).
 -}
 spec :: Spec
 spec = describe "Subject 8L-08 (Epic Multiplayer)" do
-  it "surfaces the shared remaining health pool as its health"
+  it "shows the fixed max health and surfaces the shared pool as damage tokens"
     . scenarioTest "85001"
     $ \_ -> do
       subject <- testEnemyWithDef Enemies.subject8L08EpicMultiplayer id
-      run $ ScenarioCountSet (EpicShared "enemy-health:85037") 30
+      -- The frozen total is mirrored first; health is the fixed max = 15 * total.
+      run $ ScenarioCountSet (EpicShared "total-investigators") 2
       field EnemyHealth (toId subject) `shouldReturn` Just 30
+      -- Remaining is mirrored next; damage tokens = accumulated = max - remaining.
+      run $ ScenarioCountSet (EpicShared "enemy-health:85037") 25
+      field EnemyDamage (toId subject) `shouldReturn` 5
 
   it "drains the global health pool by the damage dealt rather than dying locally"
     . scenarioTest "85001"
     $ \_ -> do
       subject <- testEnemyWithDef Enemies.subject8L08EpicMultiplayer id
+      run $ ScenarioCountSet (EpicShared "total-investigators") 2
       run $ ScenarioCountSet (EpicShared "enemy-health:85037") 30
       drained <- createMessageChecker \case
         SpendShared (SharedEnemyHealth cc) 5 -> cc == "85037"
@@ -42,7 +47,7 @@ spec = describe "Subject 8L-08 (Epic Multiplayer)" do
       run $ DealDamage (toTarget subject) (nonAttack Nothing (TestSource mempty) 5)
       drained `refShouldBe` True
       -- 5 < 30 remaining: this group's copy is NOT defeated by its own local
-      -- damage; the global pool decides defeat.
+      -- damage (accumulated 0 + 5 < max 30); the global pool decides defeat.
       field EnemyHealth (toId subject) `shouldReturn` Just 30
 
   it "reconciles shared countermeasures and emits deltas on gain and spend"

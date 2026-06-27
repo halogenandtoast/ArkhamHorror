@@ -47,6 +47,7 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Search (searchSource)
 import Arkham.Skill.Types qualified as Field
 import Arkham.SkillTest.Base (SkillTest (..))
 import Arkham.SkillTest.Type
@@ -847,9 +848,16 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.AmongSearchedCards _ who -> do
         field InvestigatorSearch who >>= \case
           Nothing -> pure False
-          Just search' ->
+          Just search' -> do
+            -- During setup we suppress scenario/encounter-initiated searches (e.g. searching
+            -- the collection for a random weakness) but still allow player-card-initiated
+            -- searches (e.g. Whitton Greene's reveal-location search) to trigger reactions.
+            allowedInSetup <-
+              getInSetup >>= \case
+                False -> pure True
+                True -> sourceMatches (searchSource search') Matcher.SourceIsPlayerCard
             andM
-              [ not <$> getInSetup
+              [ pure allowedInSetup
               , maybe False (`elem` search'.allFoundCards) <$> sourceToMaybeCard source
               , matchWho iid who whoMatcher
               ]

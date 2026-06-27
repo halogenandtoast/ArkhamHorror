@@ -39,3 +39,21 @@ spec = describe "Astounding Revelation" do
         self.resources `shouldReturn` 2
         self.discard `shouldReturn` [astoundingRevelation1]
         self.hand `shouldReturn` [toCard astoundingRevelation2]
+
+  context "during setup" do
+    it "still triggers for a player-card-initiated search" . gameTest $ \self -> do
+      astoundingRevelation <- genPlayerCard Events.astoundingRevelation
+      withProp @"deck" (Deck [astoundingRevelation]) self
+      overTest (inSetupL .~ True)
+      run $ search self (InvestigatorSource self.id) self [fromDeck] #any (DrawFound self.id 1)
+      useReaction
+      chooseOnlyOption "Take resources"
+      self.resources `shouldReturn` 2
+      self.discard `shouldReturn` [astoundingRevelation]
+
+    it "does not trigger for a scenario/encounter-initiated search" . gameTest $ \self -> do
+      astoundingRevelation <- genPlayerCard Events.astoundingRevelation
+      withProp @"deck" (Deck [astoundingRevelation]) self
+      overTest (inSetupL .~ True)
+      run $ search self (TestSource mempty) self [fromDeck] #any (DrawFound self.id 1)
+      assertNoReaction

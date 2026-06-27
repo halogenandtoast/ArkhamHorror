@@ -36,9 +36,6 @@ const props = defineProps<{
 
   chosenCampaignId: string | null
   chosenSideStoryId: string | null
-
-  // Dev build flag; AI-investigator configuration is dev-only (see isDevBuild).
-  dev: boolean
 }>()
 
 const playerCount = defineModel<number>('playerCount', { required: true })
@@ -76,8 +73,12 @@ function defaultAiSeat(): AiSeat {
 
 const aiSeats = ref<AiSeat[]>([])
 
+const settings = useSettings()
+
+// AI-investigator configuration is gated on the dev-only "AI Investigators"
+// settings flag (Settings → danger zone); defaults OFF, never on in production.
 const showAiConfig = computed(
-  () => props.dev && multiplayerVariant.value === 'Solo' && playerCount.value > 1,
+  () => settings.aiInvestigatorsEnabled && multiplayerVariant.value === 'Solo' && playerCount.value > 1,
 )
 
 // Keep one seat row per player, preserving anything already configured.
@@ -105,8 +106,6 @@ watch([aiSeats, showAiConfig, playerCount], () => {
       : null,
   )
 }, { deep: true, immediate: true })
-
-const settings = useSettings()
 
 // The epic play-mode option only appears for an epic-capable side story AND when
 // the dev-only Epic Multiplayer flag is enabled (store value is dev-gated). When

@@ -396,7 +396,6 @@ async function start() {
           v-model:epicGroupCount="epicGroupCount"
           v-model:epicGroups="epicGroups"
           v-model:aiPlayers="aiPlayers"
-          :dev="dev"
           :gameMode="gameMode"
           :campaign="campaign"
           :scenario="scenario"

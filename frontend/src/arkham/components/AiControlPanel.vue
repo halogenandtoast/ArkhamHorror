@@ -9,8 +9,9 @@ import { useAi } from '@/arkham/ai'
 import { useDebug } from '@/arkham/debug'
 import { useCardStore } from '@/stores/cards'
 
-// Dev-only live AI controls. Mounted by Game.vue behind isDevBuild() + the presence
-// of AI seats. Config edits go over the existing RAW message channel (debug.send ->
+// Dev-only live AI controls. Mounted by Game.vue behind the "AI Investigators"
+// settings flag (itself isDevBuild() && stored) + the presence of AI seats.
+// Config edits go over the existing RAW message channel (debug.send ->
 // updateGameRaw), the same path debug controls already use. The master on/off lives
 // in the client-side useAi() store (drives Game.vue's auto-answer watcher).
 const props = defineProps<{ game: Game; stuckSeats: Set<string> }>()

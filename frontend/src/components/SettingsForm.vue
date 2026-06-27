@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const store = useDbCardStore()
 const settings = useSettings()
-const { epicMultiplayerStored } = storeToRefs(settings)
+const { epicMultiplayerStored, aiInvestigatorsStored } = storeToRefs(settings)
 const dev = isDevBuild()
 const { availableLocales, locale, setLocaleMessage } = useI18n({ useScope: 'global' })
 const language = ref(localStorage.getItem('language') || locale.value)
@@ -30,6 +30,12 @@ const betaUpdate = async () => props.updateBeta(beta.value == "On")
 const epicMultiplayer = computed({
   get: () => (epicMultiplayerStored.value ? 'On' : 'Off'),
   set: (value: string) => settings.setEpicMultiplayerEnabled(value === 'On'),
+})
+
+// Dev-only AI Investigators flag (WIP), bound to the persisted store value.
+const aiInvestigators = computed({
+  get: () => (aiInvestigatorsStored.value ? 'On' : 'Off'),
+  set: (value: string) => settings.setAiInvestigatorsEnabled(value === 'On'),
 })
 
 const updateLanguage = async (a: Event) => {
@@ -102,6 +108,21 @@ const updateLanguage = async (a: Event) => {
             </label>
             <label class="radio-label">
               <input type="radio" name="epicMultiplayer" value="Off" v-model="epicMultiplayer" />
+              {{ $t('Off') }}
+            </label>
+          </div>
+        </div>
+
+        <div v-if="dev" class="dev-flag">
+          <h4>{{ $t('settingsForm.aiInvestigators') }}</h4>
+          <p class="warning">{{ $t('settingsForm.aiInvestigatorsWarning') }}</p>
+          <div class="row">
+            <label class="radio-label">
+              <input type="radio" name="aiInvestigators" value="On" v-model="aiInvestigators" />
+              {{ $t('On') }}
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="aiInvestigators" value="Off" v-model="aiInvestigators" />
               {{ $t('Off') }}
             </label>
           </div>

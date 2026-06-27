@@ -16,7 +16,7 @@ import type { Source } from '@/arkham/types/Source';
 import { imgsrc } from '@/arkham/helpers';
 import { gameLocalStorageKey } from '@/arkham/localStorage';
 import { IsMobile } from '@/arkham/isMobile';
-import { isDevBuild } from '@/arkham/displayRules';
+import { useSettings } from '@/stores/settings'
 import { useDbCardStore } from '@/stores/dbCards'
 
 export interface Props {
@@ -46,10 +46,11 @@ const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)
 const { isMobile } = IsMobile();
 const store = useDbCardStore()
 
-// AI-investigator seats carry an entry in settings.aiPlayers (dev-only feature).
-const aiDev = isDevBuild()
+// AI-investigator seats carry an entry in settings.aiPlayers. The seat badge is
+// only shown when the dev-only "AI Investigators" flag is enabled.
+const settings = useSettings()
 function isAiSeat(investigator: Investigator): boolean {
-  return aiDev && !!props.game.settings.aiPlayers[investigator.playerId]
+  return settings.aiInvestigatorsEnabled && !!props.game.settings.aiPlayers[investigator.playerId]
 }
 
 function tabClass(investigator: Investigator) {

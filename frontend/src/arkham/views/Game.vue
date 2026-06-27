@@ -53,7 +53,7 @@ import { useMenu } from '@/composable/menu'
 import useEmitter from '@/composable/useEmitter'
 import { useDebug } from '@/arkham/debug'
 import { useAi } from '@/arkham/ai'
-import { isDevBuild } from '@/arkham/displayRules'
+import { useSettings } from '@/stores/settings'
 import { imgsrc } from '@/arkham/helpers'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
@@ -121,8 +121,11 @@ const props = withDefaults(defineProps<Props>(), { spectate: false })
 
 const debug = useDebug()
 const ai = useAi()
-// AI-investigator UI/driver is dev-only (see displayRules.isDevBuild).
-const aiDevEnabled = isDevBuild()
+const settings = useSettings()
+// AI-investigator UI/driver is gated on the dev-only "AI Investigators" settings
+// flag (Settings → danger zone). The flag is itself `isDevBuild() && stored`, so
+// it is never enabled in production and defaults OFF in dev until toggled on.
+const aiDevEnabled = computed(() => settings.aiInvestigatorsEnabled)
 const emitter = useEmitter()
 const router = useRouter()
 const route = useRoute()
@@ -704,7 +707,11 @@ function setAiStuck(pid: string, stuck: boolean) {
 }
 
 function driveAi() {
-  if (!aiDevEnabled || props.spectate) return
+  // Flag off (or spectating): stand down and clear any armed sends.
+  if (!aiDevEnabled.value || props.spectate) {
+    cancelAllAiTimers()
+    return
+  }
   const g = game.value
   if (!g) {
     cancelAllAiTimers()
@@ -792,6 +799,9 @@ function driveAi() {
 // and whenever the client master switch flips.
 watch(game, () => driveAi())
 watch(() => ai.enabled, () => driveAi())
+// Toggling the dev "AI Investigators" flag mid-session stands the driver down /
+// brings it back up immediately (the AiControlPanel mount is reactive on its own).
+watch(aiDevEnabled, () => driveAi())
 const handleResult = (result: ServerResult) => {
   processing.value = false
   switch (result.tag) {

@@ -282,7 +282,14 @@ withInvestigatorBearer
   :: ReverseQueue m => ScarletKeyAttrs -> (InvestigatorId -> m ()) -> m ()
 withInvestigatorBearer attrs f = case attrs.placement of
   AttachedToInvestigator iid -> f iid
-  AttachedToAsset aid _ -> selectOne (HasMatchingAsset (AssetWithId aid)) >>= traverse_ f
+  AttachedToAsset aid _ -> do
+    -- A story asset can be "as if under the control of" multiple investigators
+    -- (e.g. The Claret Knight). Prefer the investigator who actually triggered
+    -- the shift (recorded in meta) so the key resolves for the right player.
+    controllers <- select (HasMatchingAsset (AssetWithId aid))
+    case maybeResult @InvestigatorId attrs.meta of
+      Just iid | iid `elem` controllers -> f iid
+      _ -> traverse_ f (listToMaybe controllers)
   _ -> case attrs.bearer of
     InvestigatorTarget iid -> f iid
     ScenarioTarget -> traverse_ f (maybeResult @InvestigatorId attrs.meta)

@@ -230,15 +230,27 @@ instance RunMessage WarOfTheOuterGods where
             field EnemyLocation enemy >>= traverse_ \loc -> do
               nearest <- select $ NearestEnemyToLocation loc (warringEnemy <> not_ (factionEnemy f))
               unless (null nearest) do
-                lead <- getLead
-                chooseOrRunOneM lead do
-                  questionSourced enemy
-                  targets nearest \target ->
-                    withLocationOf target \targetLoc -> do
-                      nextSteps <- select $ ClosestPathLocation loc targetLoc
-                      chooseOrRunOneM lead do
-                        questionSourced enemy
-                        targets nextSteps $ push . EnemyMove enemy
+                -- Every choice (which nearest enemy to move toward, then which
+                -- first step along the shortest path) ultimately just moves the
+                -- enemy to a connecting location. If they all collapse to a
+                -- single destination, the choice is meaningless, so move there
+                -- automatically rather than prompting.
+                destinations <- nub . concat <$> for nearest \target ->
+                  field EnemyLocation target >>= \case
+                    Nothing -> pure []
+                    Just targetLoc -> select $ ClosestPathLocation loc targetLoc
+                case destinations of
+                  [dest] -> push $ EnemyMove enemy dest
+                  _ -> do
+                    lead <- getLead
+                    chooseOrRunOneM lead do
+                      questionSourced enemy
+                      targets nearest \target ->
+                        withLocationOf target \targetLoc -> do
+                          nextSteps <- select $ ClosestPathLocation loc targetLoc
+                          chooseOrRunOneM lead do
+                            questionSourced enemy
+                            targets nextSteps $ push . EnemyMove enemy
       pure s
     ScenarioSpecific "warringAttack" v -> do
       let enemy = toResult v

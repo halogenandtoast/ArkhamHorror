@@ -83,10 +83,17 @@ const error = computed(() => {
   }
 
   if (deckList.value) {
-    const restrictionError = deckRestrictionError(props.game.scenario?.id, deckList.value, [], {
+    // The required investigator was already validated when the scenario
+    // started, so upgrading another player's deck must not be blocked for not
+    // being the challenge investigator. Pass the rest of the group and treat
+    // this as a non-final choice so only this deck's own restrictions apply.
+    const otherInvestigatorCodes = Object.values(props.game.investigators)
+      .filter((i) => i.playerId !== props.playerId)
+      .map((i) => i.cardCode)
+    const restrictionError = deckRestrictionError(props.game.scenario?.id, deckList.value, otherInvestigatorCodes, {
       campaignId: props.game.campaign?.id,
       campaignLog: props.game.campaign?.log,
-    }, t)
+    }, t, { isLastPlayer: false })
     if (restrictionError) return restrictionError
   }
 

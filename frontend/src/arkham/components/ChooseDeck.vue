@@ -108,7 +108,7 @@ function deckError(deckList: SelectableDeckList): string | null {
   const restrictionError = deckRestrictionError(props.game.scenario?.id, deckList, chosenInvestigatorCodes, {
     campaignId: props.game.campaign?.id,
     campaignLog: props.game.campaign?.log,
-  }, t)
+  }, t, { isLastPlayer: isLastPlayerChoosing.value })
   if (restrictionError) return restrictionError
 
   const investigator = deckInvestigatorCode(deckList)
@@ -190,6 +190,13 @@ const players = computed<Player[]>(() => {
 
   return []
 })
+
+// A challenge scenario only needs one player to use the required deck. The
+// required investigator is therefore only enforced on the final player still
+// choosing, and only if nobody else has already provided it.
+const isLastPlayerChoosing = computed(() =>
+  players.value.filter((p) => p.tag === 'EmptyPlayer').length <= 1
+)
 
 function portraitImage(investigator: Investigator) {
   return portraitImageHelper(investigator.cardCode)

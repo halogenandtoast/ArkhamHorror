@@ -198,23 +198,65 @@ export function hasParallelContent(investigatorCode: string): boolean {
   return PARALLEL_CONTENT_INVESTIGATOR_CODES.has(normalizeCardCode(investigatorCode))
 }
 
+export type DeckRestrictionOptions = {
+  // Whether this is the last player still choosing a deck. Challenge scenarios
+  // only need a single player to use the required deck, so the required
+  // investigator is only enforced as a last resort when nobody else can
+  // provide it. Defaults to true to preserve single-player behaviour.
+  isLastPlayer?: boolean
+}
+
 export function deckRestrictionError(
   scenarioId: string | null | undefined,
   deckList: SelectableDeckList,
   chosenInvestigatorCodes: string[] = [],
   campaign?: CampaignDeckRestrictionContext,
   t?: Translate,
+  options: DeckRestrictionOptions = {},
 ): string | null {
+  const isLastPlayer = options.isLastPlayer ?? true
   const normalizedScenarioId = scenarioId ? normalizeCardCode(scenarioId) : null
   const normalizedCampaignId = campaign?.campaignId ? normalizeCardCode(campaign.campaignId) : null
-  const restrictions = [
-    ...(normalizedScenarioId ? [challengeScenarioInvestigators[normalizedScenarioId]] : []),
-    ...(normalizedScenarioId ? (scenarioDeckRestrictions[normalizedScenarioId] ?? []) : []),
-    ...(normalizedCampaignId ? (campaignDeckRestrictions[normalizedCampaignId] ?? []) : []),
-  ].filter((r): r is DeckRestriction => r !== undefined)
+  const context = { scenarioId, deckList, chosenInvestigatorCodes, ...campaign, t }
 
-  for (const restriction of restrictions) {
-    const error = restriction.validate({ scenarioId, deckList, chosenInvestigatorCodes, ...campaign, t })
+  const requiredInvestigatorRestriction = normalizedScenarioId
+    ? challengeScenarioInvestigators[normalizedScenarioId]
+    : undefined
+  const scenarioRestrictions = normalizedScenarioId ? (scenarioDeckRestrictions[normalizedScenarioId] ?? []) : []
+  const campaignRestrictions = normalizedCampaignId ? (campaignDeckRestrictions[normalizedCampaignId] ?? []) : []
+
+  if (requiredInvestigatorRestriction) {
+    const { investigatorCodes } = requiredInvestigatorRestriction
+    const deckIsRequired = investigatorCodes.has(deckInvestigatorCode(deckList))
+    const someoneElseIsRequired = chosenInvestigatorCodes.some((code) =>
+      investigatorCodes.has(normalizeCardCode(code)),
+    )
+
+    if (deckIsRequired) {
+      // This deck provides the required investigator, so enforce its deck
+      // building restrictions (e.g. Daisy must run 4+ non-weakness Tomes).
+      for (const restriction of scenarioRestrictions) {
+        const error = restriction.validate(context)
+        if (error) return error
+      }
+    } else if (!someoneElseIsRequired && isLastPlayer) {
+      // Only one player needs the required deck. Block a non-required deck
+      // solely when this is the last player choosing and nobody else has
+      // already provided it.
+      const error = requiredInvestigatorRestriction.validate(context)
+      if (error) return error
+    }
+  } else {
+    // Non-challenge scenario restrictions (e.g. parallel-content requirement)
+    // are group aware and apply to every deck.
+    for (const restriction of scenarioRestrictions) {
+      const error = restriction.validate(context)
+      if (error) return error
+    }
+  }
+
+  for (const restriction of campaignRestrictions) {
+    const error = restriction.validate(context)
     if (error) return error
   }
 

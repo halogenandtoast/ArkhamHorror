@@ -30,6 +30,7 @@
         "1": {
           "focuses": ["combat"],
           "action": "Fight",
+          "damage": 1,
           "notes": "Fight for +1 damage; +3 combat (instead of +1) while you are at a location with clues. Spends 1 ammo."
         }
       },
@@ -43,6 +44,7 @@
         "1": {
           "focuses": ["combat"],
           "action": "Fight",
+          "damage": 2,
           "notes": "Fight with +1 combat; deals +1 damage when the targeted enemy is the only one engaged with you."
         }
       }
@@ -55,6 +57,7 @@
         "1": {
           "focuses": ["combat"],
           "action": "Fight",
+          "damage": 2,
           "notes": "Fight with +1 combat and +1 damage. Spends 1 ammo."
         }
       }
@@ -67,11 +70,13 @@
         "1": {
           "focuses": ["combat"],
           "action": "Fight",
+          "damage": 1,
           "notes": "Fight with +1 combat for this attack."
         },
         "2": {
           "focuses": ["combat"],
           "action": "Fight",
+          "damage": 2,
           "notes": "Discard Knife: Fight with +2 combat and +1 damage for this attack."
         }
       }
@@ -110,7 +115,8 @@
           "action": null,
           "notes": "Free reaction: after an enemy attacks you, deal 1 damage to it. Also provides 3 health of soak."
         }
-      }
+      },
+      "soakTrigger": { "damageToEnemy": 1, "target": "attacker" }
     },
     "01017": {
       "focuses": ["combat", "survival"],

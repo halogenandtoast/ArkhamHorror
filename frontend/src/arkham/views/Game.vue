@@ -81,8 +81,10 @@ import HistoryPanel from '@/arkham/components/HistoryPanel.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Settings from '@/arkham/components/Settings.vue'
 import OrganizerBar from '@/arkham/components/OrganizerBar.vue'
+import PlayerEventBar from '@/arkham/components/PlayerEventBar.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import AiControlPanel from '@/arkham/components/AiControlPanel.vue'
+import AiQuestionsPanel from '@/arkham/components/AiQuestionsPanel.vue'
 import Draggable from '@/components/Draggable.vue'
 import Menu from '@/components/Menu.vue'
 import Prompt from '@/components/Prompt.vue'
@@ -358,6 +360,61 @@ watch(activePlayerId, (newActivePlayerId, oldActivePlayerId) => {
 
   playAudioFile('turnIndicator.ogg')
 })
+
+// --- "AI asks questions" fetch trigger (dev-only) ----------------------------
+// On a genuine old->new turn-start edge where the new active seat is an AI seat,
+// pull the AI's pending questions and merge them into the store. Gated on the
+// dev flag; guarded to the turn-start edge so it never refetch-spams. AI-target
+// questions are auto-resolved here; human-target ones render in AiQuestionsPanel.
+watch(activePlayerId, (newActivePlayerId, oldActivePlayerId) => {
+  if (!aiDevEnabled.value || props.spectate) return
+  if (!newActivePlayerId || !oldActivePlayerId || newActivePlayerId === oldActivePlayerId) return
+  const g = game.value
+  if (!g) return
+  if (!isInvestigatorTurn(g)) return
+  if (!(newActivePlayerId in g.settings.aiPlayers)) return
+
+  Api.fetchAiQuestions(g.id)
+    .then((qs) => {
+      ai.mergeQuestions(qs, g.scenarioSteps)
+      resolveAiTargetQuestions()
+    })
+    .catch((e) => console.error(e))
+})
+
+// A skill test opening is another moment an AI can offer help: committing a card
+// to the performer's test (offerCommit). Fetch when a test opens, regardless of
+// whose turn it is, so an AI can offer to boost a (human or AI) performer.
+watch(() => (game.value?.skillTest ?? null) !== null, (hasTest, hadTest) => {
+  if (!hasTest || hadTest) return
+  if (!aiDevEnabled.value || props.spectate) return
+  const g = game.value
+  if (!g) return
+  if (Object.keys(g.settings.aiPlayers).length === 0) return
+
+  Api.fetchAiQuestions(g.id)
+    .then((qs) => {
+      ai.mergeQuestions(qs, g.scenarioSteps)
+      resolveAiTargetQuestions()
+    })
+    .catch((e) => console.error(e))
+})
+
+// Auto-resolve any AI-target question that carries a precomputed answer: replay
+// its chosen option's RAW config Messages over the debug channel and drop it from
+// the store so it never renders. Human-target questions are left for the panel.
+function resolveAiTargetQuestions() {
+  const g = game.value
+  if (!g) return
+  for (const q of [...ai.questions]) {
+    if (!q.toIsAi || q.aiAnswer === null) continue
+    const option = q.options[q.aiAnswer]
+    if (option) {
+      for (const message of option.messages) debug.send(g.id, message)
+    }
+    ai.dismissQuestion(q.id)
+  }
+}
 
 type SkipTriggerEntry = { playerId: string; choiceIdx: number; investigatorId: string }
 
@@ -797,11 +854,19 @@ function driveAi() {
 
 // Re-evaluate whenever the game updates (every server push reassigns game.value)
 // and whenever the client master switch flips.
-watch(game, () => driveAi())
+watch(game, () => {
+  // Drop "AI asks questions" entries that predate the current game state (undo,
+  // or advancing past the window they belonged to).
+  if (game.value) ai.clearStale(game.value.scenarioSteps)
+  driveAi()
+})
 watch(() => ai.enabled, () => driveAi())
 // Toggling the dev "AI Investigators" flag mid-session stands the driver down /
 // brings it back up immediately (the AiControlPanel mount is reactive on its own).
-watch(aiDevEnabled, () => driveAi())
+watch(aiDevEnabled, (enabled) => {
+  if (!enabled) ai.clearQuestions()
+  driveAi()
+})
 const handleResult = (result: ServerResult) => {
   processing.value = false
   switch (result.tag) {
@@ -1605,6 +1670,10 @@ onUnmounted(() => {
       v-if="aiDevEnabled && game && aiSeatIds.length > 0"
       :game="game"
       :stuck-seats="aiStuckSeats"
+    />
+    <AiQuestionsPanel
+      v-if="aiDevEnabled && game && aiSeatIds.length > 0"
+      :game="game"
     />
     <dialog v-if="error" class="error-dialog">
       <h2>{{ $t('error') }}</h2>

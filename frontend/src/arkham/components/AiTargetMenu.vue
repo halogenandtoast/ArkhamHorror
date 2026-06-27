@@ -109,6 +109,9 @@ function choose(directive: Directive) {
     if (directive.focus) {
       debug.send(props.gameId, { tag: 'SetAiFocusOverride', contents: [seat, directive.focus] })
     }
+    // Pause the auto-driver after a manual directive so the AI doesn't immediately
+    // act on it; resume from the panel's Running/Paused button when ready.
+    ai.enabled = false
   }
   open.value = false
   ai.stopTargeting()

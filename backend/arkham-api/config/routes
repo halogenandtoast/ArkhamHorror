@@ -49,6 +49,7 @@
           /reload ApiV1ArkhamGameReloadR GET
           /playability ApiV1ArkhamGamePlayabilityR POST
           /open-seats ApiV1ArkhamGameOpenSeatsR GET
+          /ai-questions ApiV1ArkhamGameAiQuestionsR GET
           /claim-seat ApiV1ArkhamGameClaimSeatR POST
       /events ApiV1ArkhamEventsP:
         / ApiV1ArkhamEventsR GET POST

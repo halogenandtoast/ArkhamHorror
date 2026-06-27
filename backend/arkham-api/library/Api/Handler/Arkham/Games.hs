@@ -12,12 +12,14 @@ module Api.Handler.Arkham.Games (
   deleteApiV1ArkhamGameR,
   putApiV1ArkhamGameRawR,
   postApiV1ArkhamGamePlayabilityR,
+  getApiV1ArkhamGameAiQuestionsR,
 ) where
 
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Api.Handler.Arkham.Games.Shared
 import Arkham.Ai.Focus (Focus)
+import Arkham.Ai.Questions (AiQuestion, assessAiQuestions)
 import Arkham.Ai.State (AiPlayerState (..), defaultAiPlayerState)
 import Arkham.Campaign.Option
 import Arkham.Card
@@ -282,7 +284,7 @@ postApiV1ArkhamGamePlayabilityR gameId = do
   queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen gameJson.gameSeed
   tracer <- getTracer
-  runGameApp (GameApp gameRef queueRef genRef (const $ pure ()) tracer Nothing) do
+  runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer Nothing) do
     card <- getCard cid
     let duringTurnWindows = [mkWhen (Window.DuringTurn iid)]
     checks <- getPlayabilityChecks iid (toSource iid) (UnpaidCost NeedsAction) duringTurnWindows card
@@ -291,3 +293,16 @@ postApiV1ArkhamGamePlayabilityR gameId = do
       , cardCode = unCardCode (toCardCode card)
       , checks
       }
+
+-- | Read-only, NON-BLOCKING advisory questions raised by enabled AI seats (e.g.
+-- an AI investigator offering to move in and fight a teammate's tough engaged
+-- enemy). Evaluated against a pure @ReaderT Game Identity@ snapshot — which is
+-- both 'HasGame' and 'Tracing' — exactly like 'Arkham.Ai.Decision.decideAi'.
+-- Never mutates game state; the frontend polls it and forwards a chosen
+-- option's messages to the raw channel itself.
+getApiV1ArkhamGameAiQuestionsR :: ArkhamGameId -> Handler [AiQuestion]
+getApiV1ArkhamGameAiQuestionsR gameId = do
+  _ <- getRequestUserId
+  g <- runDB $ get404 gameId
+  let gameJson = g.currentData
+  pure $ runIdentity (runReaderT assessAiQuestions gameJson)

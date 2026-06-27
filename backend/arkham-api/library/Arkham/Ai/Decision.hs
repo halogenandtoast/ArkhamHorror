@@ -99,6 +99,8 @@ module Arkham.Ai.Decision (
   decideAiAssist,
   chooseIndexFor,
   scoreChoice,
+  damageAssignmentShape,
+  damageAssignmentDecision,
   AiSituation (..),
   EnemyInfo (..),
   SkillTestInfo (..),
@@ -116,10 +118,15 @@ import Arkham.Ai.Tags (
   ActObjective,
   InvestigatorTag,
   Objective (..),
+  SoakTarget (..),
+  SoakTrigger (..),
+  abDamage,
   abFocuses,
   aoFocus,
   aoObjective,
+  ctAbilities,
   ctFocuses,
+  ctSoakTrigger,
   ctWeight,
   itDeckFocus,
   itWeights,
@@ -128,9 +135,9 @@ import Arkham.Ai.Tags (
   lookupCardTag,
   lookupInvestigatorTag,
  )
-import Arkham.Asset.Types (Field (AssetCard))
+import Arkham.Asset.Types (Field (AssetCard, AssetRemainingHealth))
 import Arkham.Card (Card, printedCardCost)
-import Arkham.Card.CardCode (toCardCode)
+import Arkham.Card.CardCode (CardCode, toCardCode)
 import Arkham.Card.CardDef (cdCardSubType, cdCardType, cdSkills, toCardDef)
 import Arkham.Card.CardType (CardType (AssetType, EventType))
 import Arkham.Classes.HasGame (HasGame, getGame)
@@ -158,7 +165,7 @@ import Arkham.Helpers.SkillTest (
   getSkillTestMatchingSkillIcons,
   getSkillTestModifiedSkillValue,
  )
-import Arkham.Id (EnemyId, InvestigatorId, LocationId, PlayerId, ScenarioId (..))
+import Arkham.Id (AssetId, EnemyId, InvestigatorId, LocationId, PlayerId, ScenarioId (..))
 import Arkham.Investigator.Types (
   Field (InvestigatorHand, InvestigatorRemainingActions, InvestigatorResources),
  )
@@ -375,6 +382,16 @@ data AiSituation = AiSituation
   {- ^ hand is below the max-hand-size limit; gates drawing so we never draw into
   a discard.
   -}
+  , aiSoakAssets :: Map AssetId (CardCode, Int)
+  {- ^ each controlled asset's card code and current remaining health (soak room;
+  'AssetRemainingHealth', @Nothing@ → 0). Drives the soak-trigger damage-routing
+  in 'damageAssignmentDecision'.
+  -}
+  , aiBestWeaponDamage :: Int
+  {- ^ the most damage a single controlled weapon's tagged Fight ability can deal
+  per attack ('abDamage'), floored at 1 (the unarmed base attack). The kill-range
+  yardstick for "would chipping this enemy bring it into one-attack reach?".
+  -}
   }
   deriving stock Show
 
@@ -402,6 +419,8 @@ emptySituation state =
     , aiResourceShortfall = 0
     , aiShouldDig = False
     , aiHandNotFull = True
+    , aiSoakAssets = mempty
+    , aiBestWeaponDamage = 1
     }
 
 gatherSituation :: (HasGame n, Tracing n) => AiPlayerState -> PlayerId -> n AiSituation
@@ -433,12 +452,29 @@ gatherSituation state pid = do
       handCards <- field InvestigatorHand iid
       assetIds <- select (assetControlledBy iid)
       assetCards <- traverse (field AssetCard) assetIds
+      -- Pair each controlled asset with its card code and current soak room; the
+      -- damage-assignment special case routes attack damage onto soak-trigger
+      -- assets (Guard Dog) using this.
+      soakAssets <- for (zip assetIds assetCards) $ \(aid, card) -> do
+        remaining <- field AssetRemainingHealth aid
+        pure (aid, (toCardCode card, fromMaybe 0 remaining))
       mActObjective <- currentActObjective
       let
         mTag = lookupInvestigatorTag (aiInvestigatorCode state)
         focusWeights =
           focusWeightsFor (aiFocusOverride state) mTag (Just stats) handCards assetCards mActObjective
         focus = computeActiveFocus state focusWeights
+        -- The best single-attack damage from any controlled weapon's tagged Fight
+        -- ability, floored at the unarmed base attack (1). Used as the kill-range
+        -- yardstick when deciding whether a soak chip sets up a finisher.
+        bestWeaponDamage =
+          foldl' max 1
+            [ dmg
+            | card <- assetCards
+            , Just tag <- [lookupCardTag (toCardCode card)]
+            , abTag <- Map.elems (ctAbilities tag)
+            , Just dmg <- [abDamage abTag]
+            ]
       skillTestInfo <- gatherSkillTest
       (moveTarget, distances) <-
         gatherMovement
@@ -472,6 +508,8 @@ gatherSituation state pid = do
           , aiResourceShortfall = ecResourceShortfall econ
           , aiShouldDig = ecShouldDig econ
           , aiHandNotFull = ecHandNotFull econ
+          , aiSoakAssets = Map.fromList soakAssets
+          , aiBestWeaponDamage = bestWeaponDamage
           }
 
 -- * Active focus
@@ -769,29 +807,123 @@ statFocus stats = case maxesBy snd skillPairs of
 -- * Answer construction
 
 buildAnswer :: AiSituation -> PlayerId -> Int -> Question Message -> Answer
-buildAnswer sit pid steps q0 = case unwrapQuestion q0 of
-  ChooseAmounts _ tgt choices _ ->
-    AmountsAnswer
-      AmountsResponse
-        { arAmounts = distributeAmounts tgt (amountBounds choices)
-        , arQuestionVersion = Just steps
-        , arPlayerId = Just pid
-        }
-  ChoosePaymentAmounts _ mtgt choices ->
-    PaymentAmountsAnswer
-      PaymentAmountsResponse
-        { parAmounts = distributeAmounts (fromMaybe (MaxAmountTarget 0) mtgt) (paymentBounds choices)
-        , parQuestionVersion = Just steps
-        , parPlayerId = Just pid
-        }
-  Read _ rc _ -> idx (readChoiceIndex rc)
-  -- Everything else is an index question (or an out-of-scope shape, for which
-  -- 'chooseIndexFor' returns Nothing and we answer index 0 defensively).
-  q -> idx (fromMaybe 0 (chooseIndexFor sit q))
+buildAnswer sit pid steps q0
+  -- Enemy-attack damage/horror assignment (one point at a time): route the point
+  -- onto a soak-trigger ally (Guard Dog) when that chips a killable enemy, else
+  -- fall through to the generic pick. Detected on the raw question so we can read
+  -- the attacker off the 'QuestionWithSource' wrapper before it is stripped.
+  | Just (attacker, cs) <- damageAssignmentShape q0 =
+      idx (damageAssignmentDecision sit attacker cs)
+  | otherwise = case unwrapQuestion q0 of
+      ChooseAmounts _ tgt choices _ ->
+        AmountsAnswer
+          AmountsResponse
+            { arAmounts = distributeAmounts tgt (amountBounds choices)
+            , arQuestionVersion = Just steps
+            , arPlayerId = Just pid
+            }
+      ChoosePaymentAmounts _ mtgt choices ->
+        PaymentAmountsAnswer
+          PaymentAmountsResponse
+            { parAmounts = distributeAmounts (fromMaybe (MaxAmountTarget 0) mtgt) (paymentBounds choices)
+            , parQuestionVersion = Just steps
+            , parPlayerId = Just pid
+            }
+      Read _ rc _ -> idx (readChoiceIndex rc)
+      -- Everything else is an index question (or an out-of-scope shape, for which
+      -- 'chooseIndexFor' returns Nothing and we answer index 0 defensively).
+      q -> idx (fromMaybe 0 (chooseIndexFor sit q))
  where
   idx i = Answer QuestionResponse {qrChoice = i, qrPlayerId = Just pid, qrQuestionVersion = Just steps}
   amountBounds cs = [(c.choiceId, c.minBound, c.maxBound) | c <- cs]
   paymentBounds cs = [(c.choiceId, c.minBound, c.maxBound) | c <- cs]
+
+-- * Enemy-attack damage assignment (soak-trigger routing)
+
+{- | Detect an enemy-attack damage\/horror assignment question (the engine parks
+one point at a time): an optional 'QuestionWithSource' \/ 'QuestionLabel'
+wrapper around a bare 'ChooseOne' whose every selectable choice assigns a
+damage or horror token to an investigator or asset. Returns the attacking enemy
+(read from the 'QuestionWithSource' source, when present) and the flattened
+choice list (offset 0, so its indices are the engine's). 'Nothing' for any
+other shape, so non-assignment questions route through the generic path
+unchanged.
+-}
+damageAssignmentShape :: Question Message -> Maybe (Maybe EnemyId, [UI Message])
+damageAssignmentShape = \case
+  QuestionWithSource src _ inner -> (\cs -> (src.enemy, cs)) <$> damageChoices inner
+  q -> (\cs -> (Nothing, cs)) <$> damageChoices q
+ where
+  damageChoices = \case
+    QuestionLabel _ _ q -> damageChoices q
+    ChooseOne cs ->
+      let selectable = filter isSelectable cs
+       in if not (null selectable) && all isDamageOrHorrorComponent selectable
+            then Just cs
+            else Nothing
+    _ -> Nothing
+
+-- | Whether a choice assigns a damage or horror token to an investigator or asset.
+isDamageOrHorrorComponent :: UI Message -> Bool
+isDamageOrHorrorComponent = \case
+  ComponentLabel (InvestigatorComponent _ DamageToken) _ -> True
+  ComponentLabel (InvestigatorComponent _ HorrorToken) _ -> True
+  ComponentLabel (AssetComponent _ DamageToken) _ -> True
+  ComponentLabel (AssetComponent _ HorrorToken) _ -> True
+  _ -> False
+
+{- | Scores for routing a point of attack damage onto a soak-trigger asset. A
+/kill setup/ (the chip drops the enemy into one-attack kill range) beats a mere
+/chip/ (free damage that also spares the controller), and both beat the generic
+pick (which scores soak choices at 0).
+-}
+killSetupScore, chipScore :: Int
+killSetupScore = 2
+chipScore = 1
+
+{- | Pick the choice index for an enemy-attack damage assignment. Prefer a soak
+asset whose ai-tags carry a 'ctSoakTrigger' (e.g. Guard Dog, which damages the
+attacker when it soaks) while it still has soak room and there is an enemy worth
+chipping — strongly when the chip drops that enemy into one-attack kill range
+('aiBestWeaponDamage'), moderately for a free chip that also spares the
+controller (taken only while a point still leaves the ally alive, to avoid
+spending its last soak on a mere chip). Falls back to the generic 'bestByScore'
+pick (index 0 / current behavior) when no soak trigger helps, so non-trigger
+assignments are unchanged. The returned index is into @cs@, the wrapper-stripped
+'ChooseOne' list (offset 0).
+-}
+damageAssignmentDecision :: AiSituation -> Maybe EnemyId -> [UI Message] -> Int
+damageAssignmentDecision sit attacker cs = case maxesBy snd beneficial of
+  ((i, _) : _) -> i
+  [] -> bestByScore sit cs
+ where
+  beneficial =
+    [ (i, sc)
+    | (i, AssetDamageLabel aid _) <- withIndex cs
+    , Just (cc, remaining) <- [Map.lookup aid (aiSoakAssets sit)]
+    , remaining > 0
+    , Just tag <- [lookupCardTag cc]
+    , Just trig <- [ctSoakTrigger tag]
+    , let sc = soakValue remaining trig
+    , sc > 0
+    ]
+  -- Best chip score this trigger can produce against any enemy it can hit.
+  soakValue remaining trig = foldl' max 0 (map (chipValue remaining trig) (chipTargets trig))
+  -- The enemies a trigger can damage: the attacker for Guard Dog; any enemy
+  -- engaged with (hence colocated with) the seat for a colocated trigger.
+  chipTargets trig = case stTarget trig of
+    SoakAttacker -> [info | Just eid <- [attacker], Just info <- [Map.lookup eid (aiEnemies sit)]]
+    SoakColocated -> mapMaybe (`Map.lookup` aiEnemies sit) (aiEngaged sit)
+  -- Value of chipping one enemy: a kill setup when the chip brings it into
+  -- one-attack reach (and it is not already dead); a plain chip otherwise, but
+  -- only while the point would not spend the ally's last soak (remaining > 1).
+  chipValue remaining trig info = case eiRemainingHealth info of
+    Just rh
+      | rh <= 0 -> 0
+      | rh - stDamageToEnemy trig <= aiBestWeaponDamage sit -> killSetupScore
+      | remaining > 1 -> chipScore
+      | otherwise -> 0
+    Nothing -> 0
 
 {- | The engine index to answer for an index-style question, or 'Nothing' for a
 shape that needs a non-index 'Answer' (or that we do not model). Exposed for

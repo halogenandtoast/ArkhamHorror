@@ -5,6 +5,8 @@ module Arkham.Ai.Tags (
   InvestigatorTag (..),
   CardTag (..),
   AbilityTag (..),
+  SoakTrigger (..),
+  SoakTarget (..),
   ScenarioTag (..),
   ActObjective (..),
   Objective (..),
@@ -56,6 +58,10 @@ data CardTag = CardTag
   , ctWeight :: Int
   , ctAbilities :: Map Int AbilityTag
   , ctNotes :: Maybe Text
+  , ctSoakTrigger :: Maybe SoakTrigger
+  -- ^ when this asset soaks damage, an offensive reaction it fires (e.g. Guard
+  -- Dog dealing 1 damage to the attacker). Not statically inspectable from the
+  -- card, so hand-authored. Absent for plain soak (e.g. Beat Cop).
   }
   deriving stock (Show, Eq, Generic)
 
@@ -63,7 +69,28 @@ data AbilityTag = AbilityTag
   { abFocuses :: [Focus]
   , abAction :: Maybe Action
   , abNotes :: Maybe Text
+  , abDamage :: Maybe Int
+  -- ^ for a weapon Fight ability, its per-attack damage INCLUDING the base 1.
   }
+  deriving stock (Show, Eq, Generic)
+
+{- | The offensive payoff an asset's soak ability produces when it is dealt
+damage (currently only by an enemy attack). Guard Dog @01021@ is the
+archetype: it deals 1 damage to the attacker.
+-}
+data SoakTrigger = SoakTrigger
+  { stDamageToEnemy :: Int
+  -- ^ damage the trigger deals to its target enemy.
+  , stTarget :: SoakTarget
+  }
+  deriving stock (Show, Eq, Generic)
+
+-- | Who a 'SoakTrigger' hits.
+data SoakTarget
+  = -- | the enemy that attacked (Guard Dog).
+    SoakAttacker
+  | -- | any enemy at the soaking asset's location.
+    SoakColocated
   deriving stock (Show, Eq, Generic)
 
 data ScenarioTag = ScenarioTag
@@ -149,6 +176,7 @@ instance FromJSON CardTag where
     ctWeight <- o .:? "weight" .!= 1
     ctAbilities <- o .:? "abilities" .!= mempty
     ctNotes <- o .:? "notes"
+    ctSoakTrigger <- o .:? "soakTrigger"
     pure CardTag {..}
 
 instance ToJSON CardTag where
@@ -159,6 +187,7 @@ instance ToJSON CardTag where
       , "weight" .= ctWeight t
       , "abilities" .= ctAbilities t
       , "notes" .= ctNotes t
+      , "soakTrigger" .= ctSoakTrigger t
       ]
 
 instance FromJSON AbilityTag where
@@ -166,6 +195,7 @@ instance FromJSON AbilityTag where
     abFocuses <- o .:? "focuses" .!= []
     abAction <- o .:? "action"
     abNotes <- o .:? "notes"
+    abDamage <- o .:? "damage"
     pure AbilityTag {..}
 
 instance ToJSON AbilityTag where
@@ -174,7 +204,32 @@ instance ToJSON AbilityTag where
       [ "focuses" .= abFocuses t
       , "action" .= abAction t
       , "notes" .= abNotes t
+      , "damage" .= abDamage t
       ]
+
+instance FromJSON SoakTrigger where
+  parseJSON = withObject "SoakTrigger" \o -> do
+    stDamageToEnemy <- o .:? "damageToEnemy" .!= 1
+    stTarget <- o .:? "target" .!= SoakAttacker
+    pure SoakTrigger {..}
+
+instance ToJSON SoakTrigger where
+  toJSON t =
+    object
+      [ "damageToEnemy" .= stDamageToEnemy t
+      , "target" .= stTarget t
+      ]
+
+instance FromJSON SoakTarget where
+  parseJSON = withText "SoakTarget" \case
+    "attacker" -> pure SoakAttacker
+    "colocated" -> pure SoakColocated
+    other -> fail $ "unknown soak target: " <> unpack other
+
+instance ToJSON SoakTarget where
+  toJSON = \case
+    SoakAttacker -> toJSON ("attacker" :: Text)
+    SoakColocated -> toJSON ("colocated" :: Text)
 
 instance FromJSON ScenarioTag where
   parseJSON = withObject "ScenarioTag" \o -> do

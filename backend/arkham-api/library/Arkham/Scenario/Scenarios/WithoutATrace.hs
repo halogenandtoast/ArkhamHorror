@@ -54,7 +54,7 @@ withoutATrace difficulty =
 instance HasChaosTokenValue WithoutATrace where
   getChaosTokenValue iid tokenFace (WithoutATrace attrs) = case tokenFace of
     Skull -> do
-      x <- selectCount Anywhere
+      x <- selectCount $ not_ (LocationWithPlacement InTheShadows)
       pure $ toChaosTokenValue attrs Skull (x `div` 2) x
     Cultist -> pure $ toChaosTokenValue attrs Cultist 4 6
     Tablet -> do

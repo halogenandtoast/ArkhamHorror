@@ -40,9 +40,19 @@ instance RunMessage SpiritualEcho2 where
       withLocationOf iid $ place attrs . AttachedToLocation
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 ws@(toOriginalAbility -> ability) _ -> do
+      -- Perform the echoed ability, then return Spiritual Echo to hand (printed order).
+      -- While the copy resolves the event is still in play and the copied ability opens
+      -- its own "after you activate" window; without a guard Spiritual Echo's reaction
+      -- would be offered again on its own echo and queue a second ReturnToHand for an
+      -- event that's already gone (crash, issue #4941). Suppressing this event's own
+      -- ability for the duration keeps it single-use while preserving the order.
       case attrs.attachedTo.location of
-        Just lid -> temporaryModifier iid (attrs.ability 1) (AsIfAt lid) do
-          push $ UseAbility iid (ignoreActionCost ability) ws
+        Just lid ->
+          temporaryModifiers
+            iid
+            (attrs.ability 1)
+            [AsIfAt lid, CannotTriggerAbilityMatching (AbilityIs (toSource attrs) 1)]
+            do push $ UseAbility iid (ignoreActionCost ability) ws
         _ -> pure ()
       returnToHand iid attrs
       pure e

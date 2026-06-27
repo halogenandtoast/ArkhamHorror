@@ -629,6 +629,27 @@ function enabledAiSeats(g: Arkham.Game): string[] {
   return Object.keys(seats).filter((pid) => seats[pid]?.aiEnabled)
 }
 
+// The investigator id seated at an AI playerId (AI seats map to an investigator
+// via investigator.playerId), or null if that seat isn't seated yet.
+function aiSeatInvestigatorId(g: Arkham.Game, pid: string): string | null {
+  for (const investigator of Object.values(g.investigators)) {
+    if (investigator.playerId === pid) return investigator.id
+  }
+  return null
+}
+
+// A skill-test ASSIST commit window for an AI seat: there is an active skill
+// test, the seat has a parked question, and the seat is NOT the performer (the
+// performer's own AI commit window is driven normally by the backend). The
+// backend's AiAnswer driver loops on these assist windows, so we leave them
+// parked and surface the dev "Request assist" button instead (AiControlPanel).
+function isAiAssistWindow(g: Arkham.Game, pid: string): boolean {
+  if (!g.skillTest) return false
+  if (!(pid in g.question)) return false
+  const invId = aiSeatInvestigatorId(g, pid)
+  return invId !== null && invId !== g.skillTest.investigator
+}
+
 function cancelAiTimer(pid: string) {
   const sched = aiScheduled.get(pid)
   if (sched) {
@@ -688,6 +709,15 @@ function driveAi() {
     const tag = innerQuestionTag(q)
     if (tag && AI_SETUP_DENYLIST.has(tag)) continue
 
+    // Skill-test ASSIST window: the backend AiAnswer driver loops on a teammate
+    // AI's commit window during another investigator's test. Never auto-answer
+    // it and never mark it "stuck" — leave it parked for the human / the dev
+    // "Request assist" button. Cancel any send already armed before the test.
+    if (isAiAssistWindow(g, pid)) {
+      cancelAiTimer(pid)
+      continue
+    }
+
     // Loop-guard: we already auto-answered this exact (seat, version) and it is
     // STILL pending -> the AI couldn't resolve this question shape. Mark the seat
     // stuck and stop auto-answering it; the human creator answers it manually.
@@ -716,6 +746,9 @@ function driveAi() {
       if (cur.scenarioSteps !== version) return
       if (!(pid in cur.question)) return
       if (!enabledAiSeats(cur).includes(pid)) return
+      // A skill test that opened after this send was armed turns the seat's
+      // question into an assist window; don't fire AiAnswer into it (it loops).
+      if (isAiAssistWindow(cur, pid)) return
       aiSentVersion.set(pid, version)
       send(JSON.stringify({ tag: 'AiAnswer', playerId: pid }))
     }, Math.max(0, delay))

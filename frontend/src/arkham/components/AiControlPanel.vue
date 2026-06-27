@@ -1,10 +1,13 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
+import { useToast } from 'vue-toastification'
 import type { Game } from '@/arkham/types/Game'
 import type { Target } from '@/arkham/types/Target'
+import { toCardContents } from '@/arkham/types/Card'
 import { aiFocuses } from '@/arkham/types/NewGame'
 import { useAi } from '@/arkham/ai'
 import { useDebug } from '@/arkham/debug'
+import { useCardStore } from '@/stores/cards'
 
 // Dev-only live AI controls. Mounted by Game.vue behind isDevBuild() + the presence
 // of AI seats. Config edits go over the existing RAW message channel (debug.send ->
@@ -14,7 +17,13 @@ const props = defineProps<{ game: Game; stuckSeats: Set<string> }>()
 
 const ai = useAi()
 const debug = useDebug()
+const cardStore = useCardStore()
+const toast = useToast()
 const collapsed = ref(false)
+
+// The real-time websocket sender Game.vue provides (the same one `choose` uses).
+// AiAssist must ride this channel like AiAnswer, not the RAW/debug HTTP path.
+const wsSend = inject<(msg: string) => void>('send', () => {})
 
 const focusOptions: Array<'auto' | string> = ['auto', ...aiFocuses]
 
@@ -69,6 +78,76 @@ function priorityLabel(target: Target): string {
   }
   return target.tag
 }
+
+// --- Skill-test "Request assist" (dev-only) ----------------------------------
+// While a skill test is active, each AI teammate seat (an AI seat whose
+// investigator is NOT the performer) gets a control. If that seat has a parked
+// question it can commit a card -> enabled "Request assist" button that sends
+// AiAssist over the websocket; otherwise it shows a disabled "can't assist".
+type AssistSeat = { pid: string; name: string; canAssist: boolean }
+
+function investigatorIdForSeat(pid: string): string | null {
+  const investigator = Object.values(props.game.investigators).find((i) => i.playerId === pid)
+  return investigator?.id ?? null
+}
+
+const assistSeats = computed<AssistSeat[]>(() => {
+  const skillTest = props.game.skillTest
+  if (!skillTest) return []
+  const performerId = skillTest.investigator
+  const result: AssistSeat[] = []
+  for (const pid of Object.keys(props.game.settings.aiPlayers)) {
+    const invId = investigatorIdForSeat(pid)
+    if (invId === null || invId === performerId) continue // only AI teammates
+    result.push({ pid, name: investigatorNameFor(pid), canAssist: pid in props.game.question })
+  }
+  return result
+})
+
+function committedCardIds(): Set<string> {
+  const cards = props.game.skillTest?.committedCards ?? []
+  return new Set(cards.map((card) => toCardContents(card).id))
+}
+
+function cardName(cardCode: string): string {
+  return cardStore.cards.find((def) => def.cardCode === cardCode)?.name.title ?? cardCode
+}
+
+// Best-effort attribution for the post-assist toast: who we asked, and which
+// cards were already committed so the freshly committed one can be named.
+const pendingAssist = ref<{ name: string; knownCardIds: Set<string> } | null>(null)
+
+function requestAssist(pid: string) {
+  const seat = assistSeats.value.find((s) => s.pid === pid)
+  if (!seat || !seat.canAssist) return
+  const pending = { name: seat.name, knownCardIds: committedCardIds() }
+  pendingAssist.value = pending
+  wsSend(JSON.stringify({ tag: 'AiAssist', playerId: pid }))
+  // Drop the attribution if nothing comes back in time, so a later unrelated
+  // commit can't be mis-toasted against this request.
+  setTimeout(() => {
+    if (pendingAssist.value === pending) pendingAssist.value = null
+  }, 4000)
+}
+
+// When the test's committed cards grow after a request, toast the new card.
+watch(
+  () => props.game.skillTest?.committedCards,
+  (cards) => {
+    const pending = pendingAssist.value
+    if (!pending) return
+    if (!cards) {
+      pendingAssist.value = null
+      return
+    }
+    const fresh = cards.find((card) => !pending.knownCardIds.has(toCardContents(card).id))
+    if (!fresh) return
+    toast.success(`${pending.name} committed ${cardName(toCardContents(fresh).cardCode)}`, {
+      timeout: 2500,
+    })
+    pendingAssist.value = null
+  },
+)
 </script>
 
 <template>
@@ -88,6 +167,27 @@ function priorityLabel(target: Target): string {
         <button type="button" class="ai-collapse" @click="collapsed = !collapsed">
           {{ collapsed ? '▸' : '▾' }}
         </button>
+      </div>
+    </div>
+
+    <div v-if="game.skillTest && assistSeats.length > 0" class="ai-assist">
+      <div class="ai-assist-title">Skill test assist</div>
+      <div v-for="seat in assistSeats" :key="seat.pid" class="ai-assist-row">
+        <button
+          v-if="seat.canAssist"
+          type="button"
+          class="ai-assist-button"
+          @click="requestAssist(seat.pid)"
+        >
+          Request assist from {{ seat.name }}
+        </button>
+        <span
+          v-else
+          class="ai-assist-cant"
+          :title="`${seat.name} has no committable card for this test`"
+        >
+          {{ seat.name }} can't assist
+        </span>
       </div>
     </div>
 
@@ -226,6 +326,51 @@ function priorityLabel(target: Target): string {
   border-radius: 6px;
   padding: 2px 7px;
   cursor: pointer;
+}
+
+.ai-assist {
+  padding: 8px 10px;
+  display: grid;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(127, 184, 212, 0.08);
+}
+
+.ai-assist-title {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.ai-assist-row {
+  display: flex;
+}
+
+.ai-assist-button {
+  flex: 1;
+  border: 1px solid rgba(127, 184, 212, 0.6);
+  background: rgba(127, 184, 212, 0.25);
+  color: #cfe7f4;
+  border-radius: 6px;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-size: 11px;
+  text-align: left;
+}
+
+.ai-assist-button:hover {
+  background: rgba(127, 184, 212, 0.4);
+}
+
+.ai-assist-cant {
+  flex: 1;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+  padding: 5px 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
 }
 
 .ai-panel-body {

@@ -7,7 +7,7 @@ module Api.Handler.Arkham.Games.Shared where
 import Api.Arkham.Epic (applyEpicDeltasLocked, lookupGameEvent, mkEpicEnv)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
-import Arkham.Ai.Decision (decideAi)
+import Arkham.Ai.Decision (decideAi, decideAiAssist, isAssistCommitWindow)
 import Arkham.Ai.Helpers (lookupAiPlayer)
 import Arkham.Ai.State (aiEnabled)
 import Arkham.Epic.Types (epicEnvDeltaRef)
@@ -290,7 +290,25 @@ updateGame response gameId mRoom = do
     mResolved <- case response of
       AiAnswer aiPid -> case lookupAiPlayer aiPid gameSettings of
         Just st | aiEnabled st -> case Map.lookup aiPid gameQuestion of
-          Just question -> Just <$> runReaderT (decideAi st aiPid question) gameJson
+          Just question -> do
+            -- The non-performer skill-test commit window re-asks itself after
+            -- every commit/uncommit and offers no Start/Done, so the auto-drive
+            -- decideAi would loop forever. Decline it (leave the seat parked,
+            -- exactly like a disabled seat / absent question); the performer
+            -- starting the test silently drops the parked window. On-demand
+            -- single commits arrive separately as AiAssist below.
+            isAssist <- runReaderT (isAssistCommitWindow aiPid question) gameJson
+            if isAssist
+              then pure Nothing
+              else Just <$> runReaderT (decideAi st aiPid question) gameJson
+          Nothing -> pure Nothing
+        _ -> pure Nothing
+      -- AiAssist: commit one card from this seat's parked assist window via the
+      -- assist decision engine. Just ans -> apply through the normal answer path
+      -- (commits exactly one card); Nothing -> no-op (nothing worth adding).
+      AiAssist aiPid -> case lookupAiPlayer aiPid gameSettings of
+        Just st | aiEnabled st -> case Map.lookup aiPid gameQuestion of
+          Just question -> runReaderT (decideAiAssist aiPid question) gameJson
           Nothing -> pure Nothing
         _ -> pure Nothing
       _ -> pure (Just response)

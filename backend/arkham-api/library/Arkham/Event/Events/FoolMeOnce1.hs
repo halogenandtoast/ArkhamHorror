@@ -1,6 +1,7 @@
 module Arkham.Event.Events.FoolMeOnce1 (foolMeOnce1, FoolMeOnce1 (..)) where
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window (cardDrawn)
@@ -34,12 +35,17 @@ instance RunMessage FoolMeOnce1 where
     PlayThisEvent iid eid | eid == attrs.id -> do
       let (batchId, treachery) = getTreachery attrs.windows
       card <- field TreacheryCard treachery
-      pushAll
-        [ RemoveTreachery treachery
-        , IgnoreBatch batchId
-        , PlaceEvent eid (InPlayArea iid)
-        , PlaceUnderneath (toTarget attrs) [card]
-        ]
+      pushAll [RemoveTreachery treachery, IgnoreBatch batchId, PlaceEvent eid (InPlayArea iid)]
+      -- A controller cannot have another investigator's signature card attached:
+      -- it attaches, then immediately discards (see local-faq). Signature
+      -- weaknesses (The Harbinger, Prophecy of the End) carry the Weakness
+      -- subtype rather than a Signature deck restriction.
+      let isForeignSignature =
+            toCardOwner card /= Just iid
+              && (isSignature card || cdCardSubType (toCardDef card) == Just Weakness)
+      if isForeignSignature
+        then addToDiscard iid [card]
+        else push $ PlaceUnderneath (toTarget attrs) [card]
       pure e
     UseCardAbility _ (isSource attrs -> True) 1 (cardDrawn -> treachery) _ -> do
       cancelRevelation (attrs.ability 1) treachery

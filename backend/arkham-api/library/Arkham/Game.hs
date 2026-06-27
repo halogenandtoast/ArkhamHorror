@@ -257,6 +257,18 @@ newCampaign cid msid = newGame (maybe (This cid) (These cid) msid)
 newScenario :: ScenarioId -> Int -> Int -> Difficulty -> Bool -> Game
 newScenario = newGame . That
 
+{- | Bake a scenario-meta flag into a freshly-created scenario 'Game'. Epic
+Multiplayer group games use this at creation time so the scenario can pick its
+epic setup branch at @Setup@, where there is no event context to consult (the
+group activates via the ordinary @PUT /games/:id/join@ path). A no-op for the
+campaign-only mode.
+-}
+setInitialScenarioMeta :: ToJSON a => Key.Key -> a -> Game -> Game
+setInitialScenarioMeta k v = modeL %~ \case
+  This c -> This c
+  That s -> That (overAttrs (Arkham.Scenario.Types.setMetaKey k v) s)
+  These c s -> These c (overAttrs (Arkham.Scenario.Types.setMetaKey k v) s)
+
 newGame :: These CampaignId ScenarioId -> Int -> Int -> Difficulty -> Bool -> Game
 newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
   let state = IsPending []

@@ -18,9 +18,16 @@ import Arkham.Tracing
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "theBlobThatAteEverything" a
 
--- | Subject 8L-08 (Single Group variant). The anomaly itself.
+-- | Subject 8L-08, the anomaly itself. Matches both the Single Group
+-- (@subject8L08@) and Epic Multiplayer (@subject8L08EpicMultiplayer@) variants;
+-- only one of them is ever in play in a given game, so every existing
+-- subject-targeting query keeps working in epic mode unchanged.
+subject8L08Matcher :: EnemyMatcher
+subject8L08Matcher = mapOneOf enemyIs [Cards.subject8L08, Cards.subject8L08EpicMultiplayer]
+
+-- | Subject 8L-08 (either variant). The anomaly itself.
 getSubject8L08 :: (HasGame m, Tracing m) => m (Maybe EnemyId)
-getSubject8L08 = selectOne $ enemyIs Cards.subject8L08
+getSubject8L08 = selectOne subject8L08Matcher
 
 -- | The number of cards Subject 8L-08 has devoured (placed beneath it).
 getDevouredCount :: (HasGame m, Tracing m) => m Int

@@ -13,22 +13,24 @@ module Api.Handler.Arkham.Events (
   getApiV1ArkhamEventsR,
   postApiV1ArkhamEventsR,
   getApiV1ArkhamEventR,
+  deleteApiV1ArkhamEventR,
   postApiV1ArkhamEventCounterR,
 ) where
 
 import Api.Arkham.Epic (applyEpicDeltasLocked)
 import Api.Arkham.Helpers
-import Api.Arkham.Types.MultiplayerVariant (MultiplayerVariant (Solo))
-import Api.Handler.Arkham.Games.Shared (publishToEventRoom, publishToRoom, streamRoom)
-import Arkham.Classes.HasQueue (newQueue)
+import Api.Arkham.Types.MultiplayerVariant (MultiplayerVariant (WithFriends))
+import Api.Handler.Arkham.Games.Shared (deleteEventRoom, deleteRoom, publishToEventRoom, publishToRoom, streamRoom)
+import Arkham.Card.CardCode (CardCode (..))
 import Arkham.Difficulty (Difficulty)
 import Arkham.Epic.Types
-import Arkham.Game (addPlayer, gameGameState, newScenario, runMessages)
+import Arkham.Classes.Entity (attr)
+import Arkham.Game (gameGameState, newScenario, setInitialScenarioMeta)
 import Arkham.Game.State (GameState)
-import Arkham.Id (PlayerId (..), ScenarioId)
-import Arkham.Queue (queueToRef)
+import Arkham.Game.Utils (gameInvestigators)
+import Arkham.Id (InvestigatorId, PlayerId (..), ScenarioId)
+import Arkham.Investigator.Types (Investigator, investigatorPlayerId)
 import Control.Concurrent.MVar (modifyMVar_)
-import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock (getCurrentTime)
@@ -39,7 +41,6 @@ import Database.Esqueleto.Experimental hiding (update, (=.))
 import Database.Persist qualified as P
 import Entity.Arkham.Step (ActionDiff (..), ArkhamStep (..), Choice (..))
 import Import hiding (on, (==.))
-import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import Yesod.WebSockets (WebSocketsT, webSockets)
 
 -- Request bodies --------------------------------------------------------------
@@ -70,12 +71,28 @@ data CounterPost = CounterPost
 
 -- Response payloads -----------------------------------------------------------
 
+data GroupPlayerInfo = GroupPlayerInfo
+  { username :: Text
+  , investigatorId :: Maybe InvestigatorId
+  -- ^ Nothing until the player has chosen an investigator.
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
 data GroupDigest = GroupDigest
   { ordinal :: Int
   , name :: Text
   , gameId :: Maybe ArkhamGameId
   , gameState :: Maybe GameState
   , investigatorCount :: Int
+  -- ^ players currently seated in this group
+  , seatCount :: Int
+  -- ^ total seats; investigatorCount < seatCount means the lobby has open seats
+  , youAreSeated :: Bool
+  -- ^ whether the requesting user holds a seat in this group (so an organizer who
+  -- also plays can drop into it).
+  , players :: [GroupPlayerInfo]
+  -- ^ seated players (username + chosen investigator) for the dashboard.
   }
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
@@ -113,6 +130,19 @@ requireEventMember userId eid = do
     Just (Entity _ m) -> pure (arkhamEpicMemberRole m)
     Nothing -> permissionDenied "You are not a member of this event"
 
+-- | A user may hold both Organizer and GroupPlayer rows, so check for an
+-- Organizer row directly rather than trusting the first membership found.
+requireOrganizer :: UserId -> ArkhamEpicEventId -> Handler ()
+requireOrganizer userId eid = do
+  isOrganizer <-
+    runDB
+      $ P.exists
+        [ ArkhamEpicMemberArkhamEpicEventId P.==. eid
+        , ArkhamEpicMemberUserId P.==. userId
+        , ArkhamEpicMemberRole P.==. Organizer
+        ]
+  unless isOrganizer $ permissionDenied "Only the organizer can delete this event"
+
 -- Handlers --------------------------------------------------------------------
 
 -- | List the events the current user is a member of.
@@ -145,13 +175,16 @@ postApiV1ArkhamEventsR = do
 
   let
     totalInvestigators = sum (map (.playerCount) groups)
-    countermeasures = (totalInvestigators + 1) `div` 2
-    seeded = setSharedCounter Countermeasures countermeasures (emptySharedEventState totalInvestigators)
+    seeded =
+      foldr
+        (\(k, v) -> setSharedCounter k v)
+        (emptySharedEventState totalInvestigators)
+        (epicScenarioSeeds scenarioId totalInvestigators)
 
   -- Create each group's game up front (own transaction per game, mirroring the
   -- normal game-creation path).
   groupGames <- for (zip [0 :: Int ..] groups) \(ordx, grp) -> do
-    gid <- createGroupGame userId grp.name scenarioId difficulty includeTarotReadings grp.playerCount
+    gid <- createGroupGame grp.name scenarioId difficulty includeTarotReadings grp.playerCount
     pure (ordx, grp, gid)
 
   eid <- runDB do
@@ -182,6 +215,24 @@ getApiV1ArkhamEventR eid = do
   webSockets $ eventStream eid
   void $ requireEventMember userId eid
   buildEventDetails userId eid
+
+-- | Delete an event and all of its group games (organizer only). Deleting each
+-- group's 'ArkhamGame' cascades its players/steps/logs and the epic-group row;
+-- deleting the event cascades members and shared-state steps.
+deleteApiV1ArkhamEventR :: ArkhamEpicEventId -> Handler ()
+deleteApiV1ArkhamEventR eid = do
+  userId <- getRequestUserId
+  requireOrganizer userId eid
+  gameValues <- runDB $ select do
+    grp <- from $ table @ArkhamEpicGroup
+    where_ $ grp.arkhamEpicEventId ==. val eid
+    pure grp.arkhamGameId
+  let gameIds = [gid | Value (Just gid) <- gameValues]
+  runDB do
+    for_ gameIds P.delete
+    P.delete eid
+  for_ gameIds deleteRoom
+  deleteEventRoom eid
 
 {- | Adjust a shared counter. Any member may do so; the mutation is recorded as a
 delta on the locked event row and broadcast to the event feed and every
@@ -219,25 +270,39 @@ buildEventDetails userId eid = do
         where_ $ grp.arkhamEpicEventId ==. val eid
         orderBy [asc grp.ordinal]
         pure grp
+      -- A user may hold both Organizer and GroupPlayer rows (an organizer who
+      -- also took a seat). Report Organizer in that case so organizer-only UI
+      -- (e.g. the delete control) stays available.
+      isOrganizer <-
+        runDB
+          $ P.exists
+            [ ArkhamEpicMemberArkhamEpicEventId P.==. eid
+            , ArkhamEpicMemberUserId P.==. userId
+            , ArkhamEpicMemberRole P.==. Organizer
+            ]
       mRole <-
         runDB
           $ P.selectFirst
             [ArkhamEpicMemberArkhamEpicEventId P.==. eid, ArkhamEpicMemberUserId P.==. userId]
             []
-      digests <- traverse mkGroupDigest groupRows
+      let resolvedRole =
+            if isOrganizer
+              then Just Organizer
+              else arkhamEpicMemberRole . entityVal <$> mRole
+      digests <- traverse (mkGroupDigest userId) groupRows
       pure
         EventDetails
           { id = eid
           , name = arkhamEpicEventName event
           , organizerUserId = arkhamEpicEventOrganizerUserId event
-          , role = arkhamEpicMemberRole . entityVal <$> mRole
+          , role = resolvedRole
           , sharedState = arkhamEpicEventSharedState event
           , totalInvestigators = arkhamEpicEventTotalInvestigators event
           , groups = digests
           }
 
-mkGroupDigest :: Entity ArkhamEpicGroup -> Handler GroupDigest
-mkGroupDigest (Entity _ grp) = case arkhamEpicGroupArkhamGameId grp of
+mkGroupDigest :: UserId -> Entity ArkhamEpicGroup -> Handler GroupDigest
+mkGroupDigest userId (Entity _ grp) = case arkhamEpicGroupArkhamGameId grp of
   Nothing ->
     pure
       GroupDigest
@@ -246,50 +311,81 @@ mkGroupDigest (Entity _ grp) = case arkhamEpicGroupArkhamGameId grp of
         , gameId = Nothing
         , gameState = Nothing
         , investigatorCount = 0
+        , seatCount = seats
+        , youAreSeated = False
+        , players = []
         }
   Just gid -> do
     mGame <- runDB $ P.get gid
-    playerCount <- runDB $ P.count [ArkhamPlayerArkhamGameId P.==. gid]
+    seated <- runDB $ P.exists [ArkhamPlayerArkhamGameId P.==. gid, ArkhamPlayerUserId P.==. userId]
+    playerRows <- runDB $ select do
+      (p :& u) <-
+        from
+          $ table @ArkhamPlayer
+            `innerJoin` table @User
+          `on` (\(p :& u) -> p.userId ==. u.id)
+      where_ $ p.arkhamGameId ==. val gid
+      pure (p.id, u.username)
+    let
+      investigators :: [Investigator]
+      investigators = maybe [] (toList . gameInvestigators . arkhamGameCurrentData) mGame
+      invByPlayer :: Map PlayerId InvestigatorId
+      invByPlayer = Map.fromList [(attr investigatorPlayerId i, i.id) | i <- investigators]
+      players =
+        [ GroupPlayerInfo {username = un, investigatorId = Map.lookup (PlayerId (coerce pid)) invByPlayer}
+        | (Value pid, Value un) <- playerRows
+        ]
     pure
       GroupDigest
         { ordinal = ordx
         , name = nm
         , gameId = Just gid
         , gameState = gameGameState . arkhamGameCurrentData <$> mGame
-        , investigatorCount = playerCount
+        , investigatorCount = length players
+        , seatCount = seats
+        , youAreSeated = seated
+        , players = players
         }
  where
   ordx = arkhamEpicGroupOrdinal grp
   nm = arkhamEpicGroupName grp
+  seats = arkhamEpicGroupSeatCount grp
 
-{- | Create one group's game using the normal scenario-creation path. The creator
-holds every seat (Solo) so a single user can drive the group in Milestone 1.
+{- | Create one group's game as an OPEN multiplayer lobby: a WithFriends game with
+@playerCount@ seats and no players yet. It stays in 'IsPending' until players
+join asynchronously via @PUT /games/:id/join@, then activates and runs setup
+once its seats fill — exactly the normal multiplayer flow, one lobby per group.
+The organizer is NOT auto-seated (they may join a group like anyone else).
 -}
 createGroupGame
-  :: UserId -> Text -> ScenarioId -> Difficulty -> Bool -> Int -> Handler ArkhamGameId
-createGroupGame userId gameName scenarioId difficulty includeTarotReadings playerCount = do
+  :: Text -> ScenarioId -> Difficulty -> Bool -> Int -> Handler ArkhamGameId
+createGroupGame gameName scenarioId difficulty includeTarotReadings playerCount = do
   newGameSeed <- liftIO getRandom
-  genRef <- newIORef (mkStdGen newGameSeed)
-  queueRef <- newQueue []
   now <- liftIO getCurrentTime
-  tracer <- getTracer
   let
     seats = max 1 playerCount
-    game = newScenario scenarioId newGameSeed seats difficulty includeTarotReadings
-    ag = ArkhamGame gameName game 0 Solo now now
+    -- Flag the group's scenario as Epic Multiplayer so it picks its epic setup
+    -- branch at Setup time (the join path runs setup with no event context).
+    game =
+      setInitialScenarioMeta "epicMultiplayer" True
+        $ newScenario scenarioId newGameSeed seats difficulty includeTarotReadings
+    ag = ArkhamGame gameName game 0 WithFriends now now
   runDB do
     gameId <- P.insert ag
-    pids <- replicateM seats $ P.insert $ ArkhamPlayer userId gameId "00000"
-    gameRef <- liftIO $ newIORef game
-    runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer Nothing) do
-      for_ pids \pid -> addPlayer (PlayerId $ coerce pid)
-      runMessages (gameIdToText gameId) Nothing
-    updatedGame <- liftIO $ readIORef gameRef
-    updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
-    let ag' = ag {arkhamGameCurrentData = updatedGame}
-    P.replace gameId ag'
-    P.insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0 (ActionDiff [])
+    P.insert_ $ ArkhamStep gameId (Choice mempty []) 0 (ActionDiff [])
     pure gameId
+
+-- | Initial shared counters for an event, by scenario. Frozen at event start
+-- (scales by the total investigator count across all groups).
+epicScenarioSeeds :: ScenarioId -> Int -> [(SharedKey, Int)]
+epicScenarioSeeds scenarioId total
+  | scenarioId == "85001" =
+      -- The Blob That Ate Everything: countermeasures = ceil(total/2); Subject
+      -- 8L-08 (epic, card 85037) global health = 15 x total.
+      [ (Countermeasures, (total + 1) `div` 2)
+      , (SharedEnemyHealth (CardCode "85037"), 15 * total)
+      ]
+  | otherwise = []
 
 -- | The per-event websocket: a read-only feed of shared-state updates.
 eventStream :: ArkhamEpicEventId -> WebSocketsT Handler ()

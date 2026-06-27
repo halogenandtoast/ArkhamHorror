@@ -271,6 +271,10 @@ export const createEvent = async (payload: CreateEventPost): Promise<EventDetail
 export const adjustEventCounter = (eventId: string, key: string, amount: number): Promise<void> =>
   api.post(`arkham/events/${eventId}/counter`, { key, amount })
 
+export const deleteEvent = async (eventId: string): Promise<void> => {
+  await api.delete(`arkham/events/${eventId}`)
+}
+
 // Mirrors the game websocket URL builder in views/Game.vue: same /api/v1 base,
 // http(s) -> ws(s) rewrite, and `?token=` auth on the same path that serves the
 // REST detail endpoint (the GET upgrades to a websocket).

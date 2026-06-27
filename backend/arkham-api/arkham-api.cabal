@@ -6925,6 +6925,7 @@ test-suite spec
       Arkham.Enemy.Cards.SilverTwilightAcolyteSpec
       Arkham.Enemy.Cards.StalkingHybridSpec
       Arkham.Enemy.Cards.StubbornDetectiveSpec
+      Arkham.Enemy.Cards.Subject8L08EpicMultiplayerSpec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Enemy.Cards.TonysQuarrySpec
       Arkham.Enemy.Cards.WatcherFromAnotherDimensionSpec

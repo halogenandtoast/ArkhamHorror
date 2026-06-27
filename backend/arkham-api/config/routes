@@ -53,7 +53,7 @@
       /events ApiV1ArkhamEventsP:
         / ApiV1ArkhamEventsR GET POST
         /#ArkhamEpicEventId ApiV1ArkhamEventP:
-          / ApiV1ArkhamEventR GET
+          / ApiV1ArkhamEventR GET DELETE
           !/counter ApiV1ArkhamEventCounterR POST
     /admin AdminP:
       / ApiV1AdminR GET

@@ -1,30 +1,38 @@
 {
   "event": {
-    "newEvent": "New Event",
-    "createEvent": "Create Event",
+    "events": "Epic Multiplayer Events",
+    "epicMultiplayer": "Epic Multiplayer",
     "organizerDashboard": "Organizer Dashboard",
-    "eventName": "Event Name",
-    "eventNamePlaceholder": "Name your event",
     "scenario": "Scenario",
-    "difficulty": "Difficulty",
-    "includeTarotReadings": "Include Tarot Readings",
-    "groups": "Groups",
-    "groupName": "Group Name",
-    "playerCount": "Players",
     "countermeasures": "Countermeasures",
     "totalInvestigators": "Total Investigators",
     "investigators": "Investigators",
+    "seats": "{count} / {total} seats",
+    "openSeats": "Open seats",
+    "joinable": "Joinable",
+    "full": "Full",
     "open": "Open",
+    "copyInviteLink": "Copy invite link",
+    "inviteLinkCopied": "Link copied!",
+    "joinThisGroup": "Join this group",
     "notStarted": "Not started",
     "inProgress": "In progress",
     "decrement": "Decrease countermeasures",
     "increment": "Increase countermeasures",
     "loading": "Loading event…",
-    "connecting": "Connecting…",
     "disconnected": "Reconnecting…",
+    "deleteEvent": "Delete event",
+    "confirmDelete": "Delete this event and all of its group games? This cannot be undone.",
+    "playMySeat": "Play my seat",
+    "returnToOrganizerView": "Return to organizer view",
+    "playing": "Playing",
+    "players": "Players",
+    "choosing": "Choosing…",
+    "noPlayersYet": "No players yet",
     "group": "Group {ordinal}",
-    "create": {
-      "create": "Create Event"
+    "role": {
+      "organizer": "Organizer",
+      "player": "Player"
     }
   }
 }

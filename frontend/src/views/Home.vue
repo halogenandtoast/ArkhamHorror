@@ -2,11 +2,13 @@
 import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
-import { deleteGame, fetchGames, fetchNotifications } from '@/arkham/api';
+import { deleteGame, fetchGames, fetchEvents, fetchNotifications } from '@/arkham/api';
 import { cullGameLocalStorage, removeGameLocalStorage } from '@/arkham/localStorage';
 import type { GameDetails } from '@/arkham/types/Game';
+import type { EventListEntry } from '@/arkham/types/EpicEvent';
 import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
+import EventRow from '@/arkham/components/EventRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
 import ImportGame from '@/arkham/components/ImportGame.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
@@ -17,6 +19,7 @@ const router = useRouter()
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
 const games: Ref<GameDetails[]> = ref([])
+const events: Ref<EventListEntry[]> = ref([])
 const notifications: Ref<AppNotification[]> = ref([])
 
 const dismissedNotifications = JSON.parse(localStorage.getItem('dismissedNotifications') ?? "[]")
@@ -28,6 +31,19 @@ fetchGames().then((result) => {
   const availableGames = result.filter((g) => g.tag === 'game') as GameDetails[]
   cullGameLocalStorage(availableGames)
   games.value = availableGames
+})
+
+// Epic Multiplayer events surface as a single entry each, inline with regular
+// games (group games are hidden from fetchGames by the backend). A user who is
+// both organizer and player of an event gets duplicate membership rows; collapse
+// to one entry, preferring the organizer role.
+fetchEvents().then((result) => {
+  const byId = new Map<string, EventListEntry>()
+  for (const entry of result) {
+    const existing = byId.get(entry.id)
+    if (!existing || entry.role === 'organizer') byId.set(entry.id, entry)
+  }
+  events.value = [...byId.values()]
 })
 
 fetchNotifications().then((result) => notifications.value = result.filter((n: AppNotification) => !dismissedNotifications.includes(n.id)))
@@ -126,9 +142,10 @@ const dismissNotification = (notification: AppNotification) => {
               <ImportGame ref="importGameRef" />
             </div>
           </Transition>
-          <div v-if="activeGames.length === 0" class="box">
+          <div v-if="activeGames.length === 0 && events.length === 0" class="box">
             <p>{{ $t('home.noActiveGames') }}</p>
           </div>
+          <EventRow v-for="event in events" :key="event.id" :event="event" />
           <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
         </section>
 

@@ -28,10 +28,13 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Phase
 import Arkham.Placement (Placement (Global))
 import Arkham.Projection
+import Arkham.Epic.Types (SharedKey (Countermeasures), sharedKeyText)
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (difficultyL)
+import Arkham.ScenarioLogKey (ScenarioCountKey (EpicShared))
 import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
+import Arkham.Token qualified as Token
 import Data.Aeson.Key qualified as Key
 
 newtype TheBlobThatAteEverything = TheBlobThatAteEverything ScenarioAttrs
@@ -59,83 +62,96 @@ instance RunMessage TheBlobThatAteEverything where
     PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "body"
       pure s
-    Setup -> runScenarioSetup TheBlobThatAteEverything attrs do
-      setup $ ul do
-        li "gatherSets"
-        li.validate False "epicMultiplayer"
-        li.validate True "singleGroup"
-        li "setAsideMiGo"
-        li "setAside"
-        li "subject"
-        li.nested "placeLocations" do
-          li "shuffleQuarantine"
-          li "placeCrater"
-          li "innerRing"
-          li "outerRing"
-          li "remaining"
-          li "startAt"
-        li.validate True "countermeasures"
-        unscoped $ li "shuffleRemainder"
+    Setup -> do
+      -- Epic Multiplayer group games are flagged in scenario meta at creation
+      -- (see Api.Handler.Arkham.Events.createGroupGame): the join/setup path has
+      -- no event context, so we cannot consult the event row here. In epic mode
+      -- the global health pool (Subject 8L-08) and the countermeasures pool are
+      -- event-wide shared state, so we place the epic subject and let the shared
+      -- pool seed/reconcile the countermeasures rather than placing local tokens.
+      isEpic <- getScenarioMetaKeyDefault "epicMultiplayer" False
+      runScenarioSetup TheBlobThatAteEverything attrs do
+        setup $ ul do
+          li "gatherSets"
+          li.validate isEpic "epicMultiplayer"
+          li.validate (not isEpic) "singleGroup"
+          li "setAsideMiGo"
+          li "setAside"
+          li "subject"
+          li.nested "placeLocations" do
+            li "shuffleQuarantine"
+            li "placeCrater"
+            li "innerRing"
+            li "outerRing"
+            li "remaining"
+            li "startAt"
+          li.validate (not isEpic) "countermeasures"
+          unscoped $ li "shuffleRemainder"
 
-      setUsesGrid
+        setUsesGrid
 
-      gather Set.TheBlobThatAteEverything
-      gatherAndSetAside Set.MiGoIncursion
+        gather Set.TheBlobThatAteEverything
+        gatherAndSetAside Set.MiGoIncursion
 
-      placeEnemy Enemies.subject8L08 Global
+        placeEnemy (if isEpic then Enemies.subject8L08EpicMultiplayer else Enemies.subject8L08) Global
 
-      setAside
-        [ Enemies.vulnerableHeart
-        , Enemies.graspingOoze
-        , Enemies.cubicOoze
-        , Enemies.oozewraith
-        , Enemies.oozewraith
-        ]
-
-      setAgendaDeck [Agendas.theAnomalySpreads, Agendas.theAnomalySwells, Agendas.theAnomalyConsumes]
-      setActDeck [Acts.exposeTheAnomaly, Acts.extraterrestrialPhysiology, Acts.blackwatersBane]
-
-      quarantine <-
-        shuffle
-          [ Locations.sewer
-          , Locations.bridge
-          , Locations.waterTower
-          , Locations.church
-          , Locations.oozyLakebed
-          , Locations.oozyLakebed
-          , Locations.slimyStreets
-          , Locations.slimyStreets
-          , Locations.desiccatedFarmland
-          , Locations.desiccatedFarmland
+        setAside
+          [ Enemies.vulnerableHeart
+          , Enemies.graspingOoze
+          , Enemies.cubicOoze
+          , Enemies.oozewraith
+          , Enemies.oozewraith
           ]
 
-      let
-        quarantine' = drop 1 quarantine -- remove 1 at random
-        (innerQuarantine, rest1) = splitAt 2 quarantine'
-        (outerQuarantine, remainingQuarantine) = splitAt 3 rest1
+        setAgendaDeck [Agendas.theAnomalySpreads, Agendas.theAnomalySwells, Agendas.theAnomalyConsumes]
+        setActDeck [Acts.exposeTheAnomaly, Acts.extraterrestrialPhysiology, Acts.blackwatersBane]
 
-      placeInGrid_ (Pos 0 0) Locations.theCrater
+        quarantine <-
+          shuffle
+            [ Locations.sewer
+            , Locations.bridge
+            , Locations.waterTower
+            , Locations.church
+            , Locations.oozyLakebed
+            , Locations.oozyLakebed
+            , Locations.slimyStreets
+            , Locations.slimyStreets
+            , Locations.desiccatedFarmland
+            , Locations.desiccatedFarmland
+            ]
 
-      innerDefs <-
-        shuffle
-          $ Locations.researchSiteTheBlobThatAteEverything
-          : Locations.temporaryHQ
-          : innerQuarantine
-      innerIds <- for (zip [Pos 0 1, Pos 0 (-1), Pos 1 0, Pos (-1) 0] innerDefs) \(pos, def) -> do
-        lid <- placeInGrid pos def
-        pure (def, lid)
+        let
+          quarantine' = drop 1 quarantine -- remove 1 at random
+          (innerQuarantine, rest1) = splitAt 2 quarantine'
+          (outerQuarantine, remainingQuarantine) = splitAt 3 rest1
 
-      outerDefs <- shuffle $ Locations.fungusMound : outerQuarantine
-      for_ (zip [Pos 0 2, Pos 0 (-2), Pos 2 0, Pos (-2) 0] outerDefs) (uncurry placeInGrid_)
+        placeInGrid_ (Pos 0 0) Locations.theCrater
 
-      for_
-        (zip [Pos 1 1, Pos 1 (-1), Pos (-1) 1, Pos (-1) (-1)] remainingQuarantine)
-        (uncurry placeInGrid_)
+        innerDefs <-
+          shuffle
+            $ Locations.researchSiteTheBlobThatAteEverything
+            : Locations.temporaryHQ
+            : innerQuarantine
+        innerIds <- for (zip [Pos 0 1, Pos 0 (-1), Pos 1 0, Pos (-1) 0] innerDefs) \(pos, def) -> do
+          lid <- placeInGrid pos def
+          pure (def, lid)
 
-      for_ (lookup Locations.temporaryHQ innerIds) startAt
+        outerDefs <- shuffle $ Locations.fungusMound : outerQuarantine
+        for_ (zip [Pos 0 2, Pos 0 (-2), Pos 2 0, Pos (-2) 0] outerDefs) (uncurry placeInGrid_)
 
-      playerCount <- getPlayerCount
-      placeTokens ScenarioSource ScenarioTarget #resource (if playerCount >= 3 then 2 else 1)
+        for_
+          (zip [Pos 1 1, Pos 1 (-1), Pos (-1) 1, Pos (-1) (-1)] remainingQuarantine)
+          (uncurry placeInGrid_)
+
+        for_ (lookup Locations.temporaryHQ innerIds) startAt
+
+        -- Single Group seeds local countermeasures here; in Epic Multiplayer the
+        -- countermeasures pool is event-wide shared state (seeded at event
+        -- creation = ceil(total/2)) and is reconciled into this group's scenario
+        -- Resource tokens at the start of each action, so skip the local seed.
+        unless isEpic do
+          playerCount <- getPlayerCount
+          placeTokens ScenarioSource ScenarioTarget #resource (if playerCount >= 3 then 2 else 1)
     SetChaosTokensForScenario -> do
       setChaosTokens
         $ if isEasyStandard attrs
@@ -205,7 +221,7 @@ instance RunMessage TheBlobThatAteEverything where
       pure s
     Damaged (EnemyTarget eid) assignment -> do
       foodAndDrinksActive <- getScenarioMetaKeyDefault "foodAndDrinksActive" False
-      isSubject <- eid <=~> enemyIs Enemies.subject8L08
+      isSubject <- eid <=~> subject8L08Matcher
       if foodAndDrinksActive && isSubject
         then do
           damageDealt <- getScenarioMetaKeyDefault "foodAndDrinksDamageDealt" 0
@@ -223,7 +239,7 @@ instance RunMessage TheBlobThatAteEverything where
         let blobX = [x | Keyword.ScenarioKeywordX "Blob" x <- toList keywords]
         for_ (listToMaybe blobX) \x -> do
           let extra = sum [n | ScenarioModifierValue "Blob" (maybeResult -> Just n) <- modifiers]
-          subject <- selectJust $ enemyIs Enemies.subject8L08
+          subject <- selectJust subject8L08Matcher
           push $ DealDamage (EnemyTarget subject) (nonAttack Nothing attrs (x + extra))
       pure s
     AdvanceAgendaBy _ _ ->
@@ -298,4 +314,23 @@ instance RunMessage TheBlobThatAteEverything where
       for_ rewardAssets addCampaignCardToDeckChoice_
       endOfScenario
       pure s
+    -- Epic Multiplayer: countermeasures are an event-wide shared pool. At the
+    -- start of each action the authoritative value is mirrored in as the
+    -- EpicShared "countermeasures" count; reconcile this group's local Resource
+    -- tokens to it so the existing token-cost gain/spend UI and cost checks see
+    -- the global count. (The EpicShared count is also stored generically below.)
+    ScenarioCountSet (EpicShared key) v | key == sharedKeyText Countermeasures -> do
+      let attrs' = attrs & tokensL %~ Token.setTokens Token.Resource (max 0 v)
+      TheBlobThatAteEverything <$> liftRunMessage msg attrs'
+    -- Countermeasures are scenario Resource tokens on ScenarioTarget. Every gain
+    -- (Research Site) and every spend (Research Site / The Crater / Fungus Mound /
+    -- Temporary HQ / Reality Acid) flows through these two messages, so hooking
+    -- here propagates the change to the shared pool from a single place. Single
+    -- Group games (no epic flag) are unaffected.
+    PlaceTokens _ ScenarioTarget Token.Resource n -> do
+      whenM (getScenarioMetaKeyDefault "epicMultiplayer" False) $ push $ RaiseShared Countermeasures n
+      TheBlobThatAteEverything <$> liftRunMessage msg attrs
+    RemoveTokens _ ScenarioTarget Token.Resource n -> do
+      whenM (getScenarioMetaKeyDefault "epicMultiplayer" False) $ push $ SpendShared Countermeasures n
+      TheBlobThatAteEverything <$> liftRunMessage msg attrs
     _ -> TheBlobThatAteEverything <$> liftRunMessage msg attrs

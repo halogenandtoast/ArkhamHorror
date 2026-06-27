@@ -16,12 +16,20 @@ export interface SharedEventState {
   sharedAppliedDeltas: string[]
 }
 
+export interface GroupPlayerInfo {
+  username: string
+  investigatorId: string | null
+}
+
 export interface GroupDigest {
   ordinal: number
   name: string
   gameId: string | null
   gameState: unknown | null
   investigatorCount: number
+  seatCount: number
+  youAreSeated: boolean
+  players: GroupPlayerInfo[]
 }
 
 export interface EventDetails {
@@ -90,6 +98,14 @@ export const sharedEventStateDecoder = JsonDecoder.object<SharedEventState>(
   'SharedEventState',
 )
 
+export const groupPlayerInfoDecoder = JsonDecoder.object<GroupPlayerInfo>(
+  {
+    username: JsonDecoder.string(),
+    investigatorId: JsonDecoder.nullable(JsonDecoder.string()),
+  },
+  'GroupPlayerInfo',
+)
+
 export const groupDigestDecoder = JsonDecoder.object<GroupDigest>(
   {
     ordinal: JsonDecoder.number(),
@@ -97,6 +113,9 @@ export const groupDigestDecoder = JsonDecoder.object<GroupDigest>(
     gameId: JsonDecoder.nullable(JsonDecoder.string()),
     gameState: JsonDecoder.nullable(JsonDecoder.succeed()),
     investigatorCount: JsonDecoder.number(),
+    seatCount: JsonDecoder.number(),
+    youAreSeated: JsonDecoder.boolean(),
+    players: JsonDecoder.array(groupPlayerInfoDecoder, 'GroupPlayerInfo[]'),
   },
   'GroupDigest',
 )

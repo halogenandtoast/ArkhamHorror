@@ -92,6 +92,11 @@ getApiV1ArkhamGamesR = do
           `innerJoin` table @ArkhamGameRaw
             `on` (\(players :& games) -> players.arkhamGameId ==. toBaseId games.id)
       where_ $ players.userId ==. val userId
+      -- Epic Multiplayer group games are surfaced through their event (one
+      -- entry), not as standalone games in this list.
+      where_ $ notExists $ do
+        grp <- from $ table @ArkhamEpicGroup
+        where_ $ grp.arkhamGameId ==. just (toBaseId games.id)
       orderBy [desc games.updatedAt]
       pure games
     let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]

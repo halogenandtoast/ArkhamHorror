@@ -10,7 +10,8 @@ import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Ai.Decision (decideAi, decideAiAssist, isAssistCommitWindow)
 import Arkham.Ai.Helpers (lookupAiPlayer)
 import Arkham.Ai.State (aiEnabled)
-import Arkham.Epic.Types (epicEnvDeltaRef)
+import Arkham.Epic.Types (SharedEventState, epicEnvDeltaRef, epicEnvSharedRef, sharedCounters, sharedTotalInvestigators)
+import Arkham.ScenarioLogKey (ScenarioCountKey (EpicShared))
 import Arkham.Campaign.Types (CampaignAttrs)
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
 import Arkham.ClassSymbol
@@ -326,13 +327,27 @@ updateGame response gameId mRoom = do
         mEpicCtx <- lookupGameEvent gameId
         mEpicEnv <- traverse (uncurry mkEpicEnv) mEpicCtx
 
+        -- Epic Multiplayer: mirror the current shared counters into this group's
+        -- scenario state (as EpicShared counts) before the action runs, so the
+        -- scenario/enemy read up-to-date shared values purely. Refreshed every
+        -- action (pull), keyed by sharedKeyText, plus the frozen total.
+        epicSyncMessages <- case mEpicEnv of
+          Nothing -> pure []
+          Just epic -> do
+            shared <- liftIO $ readIORef (epicEnvSharedRef epic)
+            pure
+              $ [ ScenarioCountSet (EpicShared k) v
+                | (k, v) <- Map.toList (sharedCounters shared)
+                ]
+              <> [ScenarioCountSet (EpicShared "total-investigators") (sharedTotalInvestigators shared)]
+
         let
           messages =
             [SetActivePlayer playerId | activePlayer /= playerId]
               <> answerMessages
               <> [SetActivePlayer activePlayer | activePlayer /= playerId]
         gameRef <- newIORef gameJson
-        queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
+        queueRef <- newQueue ((ClearUI : epicSyncMessages <> messages) <> currentQueue)
         genRef <- newIORef $ mkStdGen gameSeed
 
         -- Circuit breaker: cap runMessages at runMessagesTimeoutMicros so a
@@ -388,13 +403,14 @@ updateGame response gameId mRoom = do
             deltas <- maybe (pure []) (liftIO . readIORef . epicEnvDeltaRef) mEpicEnv
             if null deltas
               then pure Nothing
-              else
-                Just
-                  <$> applyEpicDeltasLocked
+              else do
+                s <-
+                  applyEpicDeltasLocked
                     (entityKey eventEntity)
                     (Just gameId)
                     (Just (arkhamGameStep + 1))
                     deltas
+                pure $ Just (entityKey eventEntity, s)
           Nothing -> pure Nothing
 
         pure (g', oldLogEntries, updatedLog, mSharedUpdate)
@@ -412,10 +428,11 @@ updateGame response gameId mRoom = do
       publishLog
       arkhamGameCurrentData
 
-  -- Epic Multiplayer: fold the new shared state into this group's own stream so
-  -- the shared panel renders from a single source. The organizer dashboard gets
-  -- the same update via the event websocket (see Events handler).
-  for_ mSharedUpdate \s -> publishToRoom gameId (SharedStateUpdate s)
+  -- Epic Multiplayer: a shared-counter change in one group is broadcast to the
+  -- whole event (dashboard feed + every group's stream) so all connected clients
+  -- reflect the new shared counters live. (Each group's board entities still
+  -- re-sync from the counters on that group's next action.)
+  for_ mSharedUpdate \(eid, s) -> broadcastSharedToEvent eid s
 
 -- | Read the cached log entries IF the cache is consistent with the locked
 -- game's current step. Returns Nothing on a mismatch (so the caller refetches
@@ -507,6 +524,18 @@ publishToEventRoom eid a = do
     WebSocketBroker ->
       lookupEventRoom eid >>= traverse_ (`broadcastToRoom` encode a)
 
+-- | Broadcast a shared-state update to the event's dashboard feed AND to every
+-- group's own game stream, so all connected clients (organizer dashboard,
+-- organizer bars, shared displays) reflect the new shared counters live.
+broadcastSharedToEvent :: ArkhamEpicEventId -> SharedEventState -> Handler ()
+broadcastSharedToEvent eid s = do
+  publishToEventRoom eid (SharedStateUpdate s)
+  gameIds <- runDB $ select do
+    grp <- from $ table @ArkhamEpicGroup
+    where_ $ grp.arkhamEpicEventId ==. val eid
+    pure grp.arkhamGameId
+  for_ gameIds \(Value mGid) -> for_ mGid \gid -> publishToRoom gid (SharedStateUpdate s)
+
 toGameDetailsEntry :: Entity ArkhamGameRaw -> Int -> GameDetailsEntry
 toGameDetailsEntry (Entity gameId game) playerCount =
   case fromJSON @Game (arkhamGameRawCurrentData game) of
@@ -552,3 +581,8 @@ deleteRoom :: ArkhamGameId -> Handler ()
 deleteRoom gameId = do
   roomsVar <- getsYesod appGameRooms
   liftIO $ modifyMVar_ roomsVar $ pure . Map.delete gameId
+
+deleteEventRoom :: ArkhamEpicEventId -> Handler ()
+deleteEventRoom eid = do
+  roomsVar <- getsYesod appEventRooms
+  liftIO $ modifyMVar_ roomsVar $ pure . Map.delete eid

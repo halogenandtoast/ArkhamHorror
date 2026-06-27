@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref, computed, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { fetchOpenSeats, claimSeat } from '@/arkham/api'
+import { fetchOpenSeats, claimSeat, joinGame } from '@/arkham/api'
 import { useClipboard } from '@vueuse/core'
 import { imgsrc } from '@/arkham/helpers'
 import { getGameLocalStorageItem } from '@/arkham/localStorage'
@@ -18,6 +18,7 @@ const props = defineProps<{
   playerId: string | null
 }>()
 
+const route = useRoute()
 const router = useRouter()
 const openSeats = ref<string[]>([])
 const myClaimed = ref<string | null>(null)
@@ -42,12 +43,22 @@ const joinUrl = computed(() => {
   const resolved = router.resolve({ name: 'JoinGame', params: { gameId: props.gameId } })
   return window.location.origin + window.location.pathname + resolved.href
 })
-const effectiveInviteUrl = computed(() => {
-  const state = props.game.gameState
-  const useJoin = state.tag === 'IsPending' && state.contents.length > 0 && investigators.value.length === 0
-  return useJoin ? joinUrl.value : claimSeatUrl.value
-})
+// A "join-style" lobby is a fresh pending game with no pre-chosen investigators
+// (e.g. epic group lobbies). These have nothing to claim, so the shareable
+// invite must point at the JoinGame route, which actually adds the player.
+const isJoinStyleLobby = computed(() =>
+  props.game.gameState.tag === 'IsPending' && investigators.value.length === 0
+)
+const effectiveInviteUrl = computed(() =>
+  isJoinStyleLobby.value ? joinUrl.value : claimSeatUrl.value
+)
 const { copy, copied } = useClipboard({ source: effectiveInviteUrl })
+
+// The viewer can take a seat when it's a join-style lobby and they aren't in the
+// game yet. (Claim-style games keep their per-investigator claim buttons.)
+const canTakeSeat = computed(() =>
+  isJoinStyleLobby.value && !hasPlayerClaimed.value
+)
 
 function isOpen(investigatorId: string) {
   return openSeats.value.includes(investigatorId)
@@ -77,6 +88,25 @@ async function claim(investigatorId: string) {
 
 function onContinue() {
   router.push(`/games/${props.gameId}`)
+}
+
+// Join-style lobby: actually add the viewer to the pending game, then drop them
+// into it. Preserve an ?event context (epic lobbies) like JoinGame.vue does.
+async function takeSeat() {
+  loading.value = true
+  error.value = null
+  const eventId = typeof route.query.event === 'string' ? route.query.event : null
+  try {
+    const game = await joinGame(props.gameId)
+    router.push(
+      eventId
+        ? { name: 'Game', params: { gameId: game.id }, query: { event: eventId } }
+        : `/games/${game.id}`
+    )
+  } catch {
+    error.value = t('lobby.couldNotClaimSeat')
+    loading.value = false
+  }
 }
 </script>
 
@@ -130,7 +160,13 @@ function onContinue() {
 
     <p v-if="error" class="error-msg">{{ error }}</p>
 
-    <div v-if="investigators.length === 0 && game.gameState.tag === 'IsPending'" class="player-count">
+    <div v-if="canTakeSeat" class="actions">
+      <button class="continue-btn take-seat-btn" :disabled="loading" @click="takeSeat" type="button">
+        {{ $t('lobby.takeASeat') }}
+      </button>
+    </div>
+
+    <div v-else-if="investigators.length === 0 && game.gameState.tag === 'IsPending'" class="player-count">
       {{ $t('lobby.waitingForMorePlayers', { remaining: game.playerCount - game.gameState.contents.length }, game.playerCount - game.gameState.contents.length) }}
     </div>
 
@@ -312,6 +348,14 @@ function onContinue() {
   cursor: pointer;
 
   &:hover { background: rgba(0, 0, 0, 0.5); }
+}
+
+.take-seat-btn {
+  background: rgba(110, 134, 64, 0.9);
+  font-weight: 600;
+
+  &:hover:not(:disabled) { background: rgba(110, 134, 64, 1); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 .player-count {

@@ -9,7 +9,7 @@ import {
   shallowRef,
   watch,
 } from 'vue'
-import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import confetti from '@/effects/confetti'
 import { useWebSocket } from '@vueuse/core'
@@ -80,7 +80,7 @@ import GameLog from '@/arkham/components/GameLog.vue'
 import HistoryPanel from '@/arkham/components/HistoryPanel.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Settings from '@/arkham/components/Settings.vue'
-import SharedStatePanel from '@/arkham/components/SharedStatePanel.vue'
+import OrganizerBar from '@/arkham/components/OrganizerBar.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import AiControlPanel from '@/arkham/components/AiControlPanel.vue'
 import Draggable from '@/components/Draggable.vue'
@@ -125,10 +125,37 @@ const ai = useAi()
 const aiDevEnabled = isDevBuild()
 const emitter = useEmitter()
 const router = useRouter()
+const route = useRoute()
 const store = useCardStore()
 const userStore = useUserStore()
 const eventStore = useEventStore()
 const { addEntry, menuItems } = useMenu()
+
+// "Epic Multiplayer": the organizer dashboard's per-group links carry an
+// ?event=<id> query param. When present (and the loaded event marks this user as
+// the organizer), Game.vue renders the organizer bar above the board. The event
+// store is the source of truth for the sibling groups, role, and shared state.
+const eventQueryId = computed(() => {
+  const q = route.query.event
+  return typeof q === 'string' && q !== '' ? q : null
+})
+
+const organizerEventId = computed(() => {
+  const eid = eventQueryId.value
+  if (!eid) return null
+  const ev = eventStore.event
+  return ev && ev.id === eid && ev.role === 'organizer' ? eid : null
+})
+
+watch(
+  eventQueryId,
+  (eid) => {
+    if (!eid) return
+    if (eventStore.event?.id === eid) return
+    eventStore.load(eid).catch((e) => console.error(e))
+  },
+  { immediate: true },
+)
 const preloaded = new Set<string>()
 const preloading = new Set<string>()
 let mouseX = 0
@@ -406,10 +433,15 @@ const websocketUrl = computed(() => {
 })
 
 watch(
-  () => props.gameId,
-  async (newV, oldV) => {
-    if (!newV) return
-    if (newV === oldV) return
+  // Also react to `spectate`: the same Game.vue instance is reused when an
+  // organizer toggles between the Spectate (organizer) and Game (play-my-seat)
+  // routes for one gameId, so we must re-fetch in the new mode to pick up the
+  // player's seat/question (or drop them when spectating again).
+  () => [props.gameId, props.spectate] as const,
+  async (newVals, oldVals) => {
+    const [newId] = newVals
+    if (!newId) return
+    if (oldVals && newId === oldVals[0] && newVals[1] === oldVals[1]) return
     await fetchGame(props.gameId, props.spectate).then(
       async ({ game: newGame, playerId: newPlayerId, multiplayerMode }) => {
         preloadImages(newGame)
@@ -884,8 +916,8 @@ const handleResult = (result: ServerResult) => {
       return
     case 'SharedStateUpdate':
       // "Epic Multiplayer" shared-state feed riding on this group's game ws.
-      // Forward it to the event store so SharedStatePanel stays live; harmless
-      // no-op for ordinary games that never receive this tag.
+      // Forward it to the event store so the organizer bar's shared counters stay
+      // live; harmless no-op for ordinary games that never receive this tag.
       eventStore.applySharedState(result.contents)
       return
     case 'GameUpdate':
@@ -1559,7 +1591,6 @@ onUnmounted(() => {
     </div>
   </div>
   <div id="game" v-else-if="ready && game && playerId">
-    <SharedStatePanel />
     <AiControlPanel
       v-if="aiDevEnabled && game && aiSeatIds.length > 0"
       :game="game"
@@ -1867,6 +1898,12 @@ onUnmounted(() => {
         </button>
       </div>
     </div>
+    <OrganizerBar
+      v-if="organizerEventId"
+      :event-id="organizerEventId"
+      :current-game-id="gameId"
+      :spectate="spectate"
+    />
     <MultiplayerLobby
       v-if="game.gameState.tag === 'IsPending'"
       :game-id="gameId"

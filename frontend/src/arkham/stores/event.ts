@@ -12,10 +12,10 @@ import {
 
 // Store for the "Epic Multiplayer" event aggregate.
 //
-// Holds the live shared state + group digests for the organizer dashboard, and
-// doubles as the sink the in-game SharedStatePanel reads from: Game.vue forwards
-// `SharedStateUpdate` messages off a group's own game websocket into
-// `applySharedState`, so the panel stays live without knowing the event id.
+// Holds the live shared state + group digests for the organizer dashboard and
+// the in-game organizer bar. Game.vue forwards `SharedStateUpdate` messages off a
+// group's own game websocket into `applySharedState`, so the shared counters stay
+// live while viewing/playing a group.
 export const useEventStore = defineStore('event', () => {
   const eventId = ref<string | null>(null)
   const event = ref<EventDetails | null>(null)

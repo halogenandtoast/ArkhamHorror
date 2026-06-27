@@ -191,6 +191,11 @@ data ScenarioCountKey
   | CiviliansSlain
   | StrengthOfTheAbyss
   | CluesAroundHubDimension
+  | -- Epic Multiplayer: a per-group mirror of an event-wide shared counter,
+    -- keyed by 'Arkham.Epic.Types.sharedKeyText'. Refreshed from the locked
+    -- event row at the start of each action so the scenario/enemy can read the
+    -- current shared value purely. See "Arkham.Epic".
+    EpicShared Text
   deriving stock (Eq, Show, Ord, Data)
 
 instance ToGameLoggerFormat ScenarioLogKey where
@@ -260,6 +265,7 @@ instance FromJSON ScenarioCountKey where
         "Barriers" -> do
           (x, y) <- o .: "contents"
           pure $ Barriers x y
+        "EpicShared" -> EpicShared <$> o .: "contents"
         "CurrentDepth" -> pure CurrentDepth
         "SignOfTheGods" -> pure SignOfTheGods
         "Distortion" -> pure Distortion

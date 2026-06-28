@@ -89,3 +89,6 @@ CLAUDE.md
 .mcp.json
 AGENTS.md
 tmp/
+.agents/
+.windsurf/
+skills-lock.json

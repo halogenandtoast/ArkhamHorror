@@ -126,12 +126,9 @@ export const otherSourceDecoder: JsonDecoder.Decoder<OtherSource> = JsonDecoder.
   {
     sourceTag: JsonDecoder.constant("OtherSource"),
     tag: JsonDecoder.string(),
-    contents: JsonDecoder.lazy<string>(() => JsonDecoder.oneOf(
-      [ JsonDecoder.
-          tuple([sourceDecoder, JsonDecoder.number()], 'proxySource').
-          flatMap(([source,]) => "contents" in source ? JsonDecoder.succeed() : JsonDecoder.fail("missing contents"))
-      , v2Optional(JsonDecoder.string())
-      ], 'OtherSource.contents'))
+    contents: JsonDecoder.succeed().map((contents: unknown) =>
+      typeof contents === 'string' ? contents : undefined
+    )
   },
   'OtherSource'
 )

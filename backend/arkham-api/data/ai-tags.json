@@ -13,22 +13,117 @@
       },
       "abilities": {
         "1": {
-          "focuses": ["combat", "investigate"],
+          "focuses": [
+            "combat",
+            "investigate"
+          ],
           "action": null,
           "notes": "After defeating an enemy, discover a clue at your location (combat->clue payoff)."
         }
       },
       "notes": "The Fed. Guardian/Seeker hybrid; 4 combat / 3 intellect mirror his deck focus."
+    },
+    "01002": {
+      "name": "Daisy Walker",
+      "deckFocus": "investigate",
+      "weights": {
+        "investigate": 5,
+        "support": 3,
+        "survival": 2,
+        "combat": 1,
+        "evade": 1,
+        "mobility": 1
+      },
+      "abilities": {
+        "1": {
+          "focuses": [
+            "investigate",
+            "support"
+          ],
+          "notes": "Bonus action usable only for Tome abilities; elder sign draws 1 card per Tome asset you control (clue + card-draw engine)."
+        }
+      },
+      "notes": "The clue queen; intellect 5 plus a bonus Tome action and a card-draw elder sign make her the core investigate/support seeker."
+    },
+    "01003": {
+      "name": "\"Skids\" O'Toole",
+      "deckFocus": "evade",
+      "weights": {
+        "evade": 4,
+        "combat": 3,
+        "investigate": 3,
+        "support": 3,
+        "survival": 2,
+        "mobility": 1
+      },
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "notes": "Fast: spend 2 resources to gain 1 additional action this turn (action economy / flexible tempo)."
+        }
+      },
+      "notes": "Flexible rogue; agility 4 evader who buys extra actions out of his deep resource pool."
+    },
+    "01004": {
+      "name": "Agnes Baker",
+      "deckFocus": "combat",
+      "weights": {
+        "combat": 5,
+        "survival": 4,
+        "evade": 3,
+        "investigate": 2,
+        "support": 2,
+        "mobility": 1
+      },
+      "abilities": {
+        "1": {
+          "focuses": [
+            "combat",
+            "survival"
+          ],
+          "damage": 1,
+          "notes": "Free reaction after horror is placed on you: deal 1 damage to an enemy at your location (horror-fueled damage)."
+        }
+      },
+      "notes": "Core damage mystic; willpower 5 fuels Shrivelling and her horror-for-damage reaction makes her primary focus combat."
+    },
+    "01005": {
+      "name": "Wendy Adams",
+      "deckFocus": "survival",
+      "weights": {
+        "survival": 5,
+        "evade": 4,
+        "investigate": 3,
+        "support": 2,
+        "combat": 1,
+        "mobility": 1
+      },
+      "abilities": {
+        "1": {
+          "focuses": [
+            "survival",
+            "support"
+          ],
+          "notes": "Triggered after revealing a chaos token: discard 1 card to cancel it and reveal another (chaos-bag control)."
+        }
+      },
+      "notes": "Survivor chaos-bag controller; discards cards to re-roll bad tokens, leaning on willpower/agility to survive and evade."
     }
   },
   "cards": {
     "01006": {
-      "focuses": ["combat"],
+      "focuses": [
+        "combat"
+      ],
       "role": "weapon",
       "weight": 4,
       "abilities": {
         "1": {
-          "focuses": ["combat"],
+          "focuses": [
+            "combat"
+          ],
           "action": "Fight",
           "damage": 1,
           "notes": "Fight for +1 damage; +3 combat (instead of +1) while you are at a location with clues. Spends 1 ammo."
@@ -37,12 +132,16 @@
       "notes": "Roland's signature firearm; scales with clues at your location, rewarding the combat->clue loop."
     },
     "01020": {
-      "focuses": ["combat"],
+      "focuses": [
+        "combat"
+      ],
       "role": "weapon",
       "weight": 3,
       "abilities": {
         "1": {
-          "focuses": ["combat"],
+          "focuses": [
+            "combat"
+          ],
           "action": "Fight",
           "damage": 2,
           "notes": "Fight with +1 combat; deals +1 damage when the targeted enemy is the only one engaged with you."
@@ -50,12 +149,16 @@
       }
     },
     "01016": {
-      "focuses": ["combat"],
+      "focuses": [
+        "combat"
+      ],
       "role": "weapon",
       "weight": 3,
       "abilities": {
         "1": {
-          "focuses": ["combat"],
+          "focuses": [
+            "combat"
+          ],
           "action": "Fight",
           "damage": 2,
           "notes": "Fight with +1 combat and +1 damage. Spends 1 ammo."
@@ -63,18 +166,24 @@
       }
     },
     "01086": {
-      "focuses": ["combat"],
+      "focuses": [
+        "combat"
+      ],
       "role": "weapon",
       "weight": 2,
       "abilities": {
         "1": {
-          "focuses": ["combat"],
+          "focuses": [
+            "combat"
+          ],
           "action": "Fight",
           "damage": 1,
           "notes": "Fight with +1 combat for this attack."
         },
         "2": {
-          "focuses": ["combat"],
+          "focuses": [
+            "combat"
+          ],
           "action": "Fight",
           "damage": 2,
           "notes": "Discard Knife: Fight with +2 combat and +1 damage for this attack."
@@ -82,96 +191,131 @@
       }
     },
     "01025": {
-      "focuses": ["combat"],
+      "focuses": [
+        "combat"
+      ],
       "role": "skill",
       "weight": 2,
       "notes": "Commit to a Fight test; deals +1 damage on success."
     },
     "01091": {
-      "focuses": ["combat"],
+      "focuses": [
+        "combat"
+      ],
       "role": "skill",
       "weight": 1,
       "notes": "Two combat icons; draw a card when the test succeeds."
     },
     "01024": {
-      "focuses": ["combat"],
+      "focuses": [
+        "combat"
+      ],
       "role": "event",
       "weight": 3,
       "abilities": {
         "1000": {
-          "focuses": ["combat"],
+          "focuses": [
+            "combat"
+          ],
           "action": "Play",
-          "notes": "Played as an action: deal 3 damage to every enemy at a location you are at or are connected to (AoE)."
+          "notes": "Played as an action: deal 3 damage to each enemy and investigator at a location you are at or connected to (AoE)."
         }
       }
     },
     "01021": {
-      "focuses": ["combat", "survival"],
+      "focuses": [
+        "combat",
+        "survival"
+      ],
       "role": "ally",
       "weight": 2,
       "abilities": {
         "1": {
-          "focuses": ["combat", "survival"],
-          "action": null,
+          "focuses": [
+            "combat",
+            "survival"
+          ],
           "notes": "Free reaction: after an enemy attacks you, deal 1 damage to it. Also provides 3 health of soak."
         }
       },
-      "soakTrigger": { "damageToEnemy": 1, "target": "attacker" }
+      "soakTrigger": {
+        "damageToEnemy": 1,
+        "target": "attacker"
+      }
     },
     "01017": {
-      "focuses": ["combat", "survival"],
+      "focuses": [
+        "combat",
+        "survival"
+      ],
       "role": "asset",
       "weight": 2,
       "abilities": {
         "1": {
-          "focuses": ["survival"],
-          "action": null,
+          "focuses": [
+            "survival"
+          ],
           "notes": "Fast: spend 1 resource for +1 willpower during a willpower test."
         },
         "2": {
-          "focuses": ["combat"],
-          "action": null,
+          "focuses": [
+            "combat"
+          ],
           "notes": "Fast: spend 1 resource for +1 combat during a combat test."
         }
       }
     },
     "01087": {
-      "focuses": ["investigate"],
+      "focuses": [
+        "investigate"
+      ],
       "role": "tool",
       "weight": 2,
       "abilities": {
         "1": {
-          "focuses": ["investigate"],
+          "focuses": [
+            "investigate"
+          ],
           "action": "Investigate",
           "notes": "Investigate your location with its shroud reduced by 2. Spends 1 supply."
         }
       }
     },
     "01037": {
-      "focuses": ["investigate"],
+      "focuses": [
+        "investigate"
+      ],
       "role": "event",
       "weight": 2,
       "abilities": {
         "1000": {
-          "focuses": ["investigate"],
+          "focuses": [
+            "investigate"
+          ],
           "action": "Play",
           "notes": "Played as an action: discover 1 clue at your location without testing."
         }
       }
     },
     "01039": {
-      "focuses": ["investigate"],
+      "focuses": [
+        "investigate"
+      ],
       "role": "skill",
       "weight": 2,
       "notes": "Commit to an Investigate test; discover 1 additional clue on success."
     },
     "01022": {
-      "focuses": ["investigate"],
+      "focuses": [
+        "investigate"
+      ],
       "role": "event",
       "weight": 2,
       "abilities": {
         "1000": {
-          "focuses": ["investigate"],
+          "focuses": [
+            "investigate"
+          ],
           "action": "Play",
           "notes": "Played after you defeat an enemy at your location: discover 1 clue there (combat->clue synergy)."
         }
@@ -179,25 +323,38 @@
       "notes": "Investigate payoff gated on defeating an enemy; pairs with Roland's combat focus."
     },
     "01088": {
-      "focuses": ["support"],
+      "focuses": [
+        "support"
+      ],
       "role": "economy",
       "weight": 1,
       "notes": "Gain 3 resources."
     },
     "01023": {
-      "focuses": ["evade", "survival"],
+      "focuses": [
+        "evade",
+        "survival"
+      ],
       "role": "event",
       "weight": 2,
       "notes": "Cancel an enemy attack (and its triggered effects)."
     },
     "01089": {
-      "focuses": ["survival", "support"],
+      "focuses": [
+        "survival",
+        "support"
+      ],
       "role": "skill",
       "weight": 1,
       "notes": "Flex commit: two willpower icons; draw a card when the test succeeds."
     },
     "01093": {
-      "focuses": ["combat", "investigate", "evade", "survival"],
+      "focuses": [
+        "combat",
+        "investigate",
+        "evade",
+        "survival"
+      ],
       "role": "skill",
       "weight": 1,
       "notes": "Flex commit: two wild icons, usable on any skill test."
@@ -213,6 +370,932 @@
       "role": "weakness",
       "weight": 0,
       "notes": "Placeholder for a randomly assigned basic weakness."
+    },
+    "01018": {
+      "focuses": [
+        "combat",
+        "survival"
+      ],
+      "role": "ally",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "combat"
+          ],
+          "notes": "Free: discard Beat Cop to deal 1 damage to an enemy at your location."
+        }
+      },
+      "notes": "+1 combat to controller; 2 health / 2 sanity soak; discard to deal 1 damage."
+    },
+    "01019": {
+      "focuses": [
+        "support",
+        "survival"
+      ],
+      "role": "heal",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support",
+            "survival"
+          ],
+          "action": "Activate",
+          "notes": "Action: spend 1 supply to heal 1 damage or horror from an investigator at your location."
+        }
+      },
+      "notes": "Healer; 3 supplies, heals damage or horror from a colocated investigator (including self)."
+    },
+    "01026": {
+      "focuses": [
+        "combat",
+        "support"
+      ],
+      "role": "economy",
+      "weight": 1,
+      "abilities": {
+        "1000": {
+          "focuses": [
+            "combat",
+            "support"
+          ],
+          "action": "Play",
+          "notes": "Played as an action: place 3 ammo on a Firearm asset controlled by an investigator at your location."
+        }
+      },
+      "notes": "Refills a Firearm's ammo (combat enabler)."
+    },
+    "01027": {
+      "focuses": [
+        "support",
+        "survival"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "notes": "Free: discard during an investigator's turn at your location to give that investigator 2 additional actions."
+        }
+      },
+      "notes": "+1 willpower; discard for 2 extra actions (action economy)."
+    },
+    "01028": {
+      "focuses": [
+        "combat",
+        "survival"
+      ],
+      "role": "ally",
+      "weight": 3,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "combat"
+          ],
+          "notes": "Free: exhaust and deal 1 damage to Beat Cop to deal 1 damage to an enemy at your location (repeatable)."
+        }
+      },
+      "notes": "+1 combat; 3 health / 2 sanity soak; repeatable 1 damage by self-damaging."
+    },
+    "01029": {
+      "focuses": [
+        "combat"
+      ],
+      "role": "weapon",
+      "weight": 4,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "combat"
+          ],
+          "action": "Fight",
+          "damage": 5,
+          "notes": "Fight with +3 combat; deals 1 damage per point you succeed by (min 1, max 5). Spends 1 ammo."
+        }
+      }
+    },
+    "01058": {
+      "focuses": [
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "notes": "Fast: exhaust and take 1 horror to convert 1 of its 4 secrets into a resource."
+        }
+      },
+      "notes": "Resource engine; trades stored secrets (and horror) for resources."
+    },
+    "01059": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "boost",
+      "weight": 2,
+      "notes": "Accessory: +1 willpower passive plus 2 sanity of horror soak."
+    },
+    "01060": {
+      "focuses": [
+        "combat"
+      ],
+      "role": "spell",
+      "weight": 3,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "combat"
+          ],
+          "action": "Fight",
+          "damage": 1,
+          "notes": "Spend 1 charge: Fight using willpower instead of combat; risks 1 horror on skull/cultist/tablet/elder_thing/auto_fail."
+        }
+      },
+      "notes": "Core mystic attack spell; willpower-based fighting with 4 charges."
+    },
+    "01061": {
+      "focuses": [
+        "support"
+      ],
+      "role": "spell",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "action": "Activate",
+          "notes": "Exhaust + 1 charge: look at top 3 of any deck (including the encounter deck) and reorder them."
+        }
+      },
+      "notes": "Deck-manipulation utility; sets up draws and dodges incoming encounter cards."
+    },
+    "01062": {
+      "focuses": [
+        "investigate",
+        "survival"
+      ],
+      "role": "boost",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "survival"
+          ],
+          "notes": "Fast: spend 1 resource for +1 willpower this skill test."
+        },
+        "2": {
+          "focuses": [
+            "investigate"
+          ],
+          "notes": "Fast: spend 1 resource for +1 intellect this skill test."
+        }
+      },
+      "notes": "Pay-to-boost willpower or intellect on demand."
+    },
+    "01063": {
+      "focuses": [
+        "support"
+      ],
+      "role": "ally",
+      "weight": 2,
+      "abilities": {
+        "2": {
+          "focuses": [
+            "support"
+          ],
+          "notes": "Fast, exhaust: search top 3 of your deck for a Spell and draw it (tutor)."
+        }
+      },
+      "notes": "Spell tutor ally; enters with 1 doom (drawback). 1 health / 2 sanity soak."
+    },
+    "01064": {
+      "focuses": [
+        "investigate"
+      ],
+      "role": "event",
+      "weight": 3,
+      "abilities": {
+        "1000": {
+          "focuses": [
+            "investigate"
+          ],
+          "action": "Play",
+          "notes": "Played as an action: draw the top encounter card, then discover 2 clues at your location."
+        }
+      },
+      "notes": "High clue burst with an encounter-draw drawback."
+    },
+    "01065": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "cancel",
+      "weight": 3,
+      "notes": "Fast: cancel a non-weakness treachery's revelation effect; take 1 horror."
+    },
+    "01066": {
+      "focuses": [
+        "evade",
+        "combat"
+      ],
+      "role": "spell",
+      "weight": 2,
+      "abilities": {
+        "1000": {
+          "focuses": [
+            "evade",
+            "combat"
+          ],
+          "action": "Evade",
+          "damage": 1,
+          "notes": "Evade using willpower instead of agility; deal 1 damage on success; lose an action on bad tokens."
+        }
+      },
+      "notes": "Willpower-based evade spell that also deals 1 damage."
+    },
+    "01067": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "skill",
+      "weight": 1,
+      "notes": "Commit (willpower icon); heal 1 horror if the test succeeds."
+    },
+    "01068": {
+      "focuses": [
+        "survival",
+        "combat"
+      ],
+      "role": "event",
+      "weight": 2,
+      "notes": "Fast, after a phase begins: blank a non-Elite enemy's text box until end of phase (disables Retaliate/forced effects)."
+    },
+    "01070": {
+      "focuses": [
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "action": "Activate",
+          "notes": "Exhaust + 1 resource: add 1 charge to a Spell asset you control (refuel)."
+        }
+      },
+      "notes": "Grants +1 arcane slot and refuels spell charges (spell economy)."
+    },
+    "01071": {
+      "focuses": [
+        "survival"
+      ],
+      "weight": 3,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "survival"
+          ],
+          "notes": "Reaction, spend 1 charge: reveal 2 chaos tokens and resolve only the better one."
+        }
+      },
+      "notes": "Chaos-bag control; mitigates bad tokens on any of your tests. 4 charges."
+    },
+    "01008": {
+      "focuses": [
+        "support"
+      ],
+      "weight": 2,
+      "notes": "Daisy's signature: grants 2 extra hand slots usable only for Tome assets; deckbuilding enabler."
+    },
+    "01009": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "weakness",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "survival"
+          ],
+          "action": "Activate",
+          "notes": "Move 1 horror from The Necronomicon to Daisy; discard it once it has no horror left."
+        }
+      },
+      "notes": "Daisy's signature weakness Tome: enters with 3 horror, can't leave while it has horror, treats elder signs as auto-fails until removed."
+    },
+    "01010": {
+      "focuses": [
+        "evade",
+        "survival"
+      ],
+      "role": "event",
+      "weight": 2,
+      "notes": "Skids' signature; Fast after your turn begins: non-Elite enemies cannot attack you until end of round."
+    },
+    "01012": {
+      "focuses": [
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "notes": "Agnes' signature; reaction draws 1 card each time you play a Spell card (card-draw engine)."
+    },
+    "01013": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "weakness",
+      "weight": 2,
+      "notes": "Agnes' signature weakness Spell: placing doom can advance the agenda; Forced 2 horror if still in hand at end of your turn."
+    },
+    "01014": {
+      "focuses": [
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "notes": "Wendy's signature; play the topmost event from your discard as if in hand and recycle played/discarded events to the bottom of your deck."
+    },
+    "01090": {
+      "focuses": [
+        "investigate"
+      ],
+      "role": "skill",
+      "weight": 1,
+      "notes": "Two intellect icons; draw a card when the test succeeds."
+    },
+    "01092": {
+      "focuses": [
+        "evade"
+      ],
+      "role": "skill",
+      "weight": 1,
+      "notes": "Two agility icons; draw a card when the test succeeds."
+    },
+    "01094": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "soak",
+      "weight": 2,
+      "notes": "Body armor; soaks 4 health of damage."
+    },
+    "01095": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "soak",
+      "weight": 2,
+      "notes": "Accessory relic; soaks 4 horror."
+    },
+    "01044": {
+      "focuses": [
+        "combat"
+      ],
+      "role": "weapon",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "combat"
+          ],
+          "action": "Fight",
+          "damage": 1,
+          "notes": "Fight; deals +1 damage (2 total) if you succeed by 2 or more."
+        }
+      },
+      "notes": "Cheap fast Melee weapon that rewards a high agility roll with extra damage."
+    },
+    "01045": {
+      "focuses": [
+        "investigate",
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "investigate",
+            "support"
+          ],
+          "action": "Investigate",
+          "notes": "Exhaust: Investigate; on success gain 3 resources instead of discovering clues (resource engine)."
+        }
+      },
+      "notes": "Talent that converts a successful investigation into 3 resources."
+    },
+    "01046": {
+      "focuses": [
+        "evade",
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "evade",
+            "support"
+          ],
+          "notes": "Reaction: after you evade an enemy, exhaust to draw 1 card."
+        }
+      },
+      "notes": "Card-draw engine that rewards evading enemies."
+    },
+    "01047": {
+      "focuses": [
+        "combat"
+      ],
+      "role": "weapon",
+      "weight": 3,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "combat"
+          ],
+          "action": "Fight",
+          "damage": 2,
+          "notes": "Spend 1 ammo: Fight with +2 combat; deals +1 damage (2 total) if you succeed by 2 or more."
+        }
+      },
+      "notes": "Illicit firearm with 3 ammo; the primary rogue gun."
+    },
+    "01048": {
+      "focuses": [
+        "support"
+      ],
+      "role": "ally",
+      "weight": 3,
+      "notes": "Grants an additional action each turn (action economy/tempo); also 2 health / 2 sanity soak."
+    },
+    "01049": {
+      "focuses": [
+        "combat",
+        "evade"
+      ],
+      "role": "boost",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "combat"
+          ],
+          "notes": "Fast: spend 1 resource for +1 combat during this skill test."
+        },
+        "2": {
+          "focuses": [
+            "evade"
+          ],
+          "notes": "Fast: spend 1 resource for +1 agility during this skill test."
+        }
+      },
+      "notes": "Pay-to-boost combat or agility tests."
+    },
+    "01050": {
+      "focuses": [
+        "evade",
+        "mobility"
+      ],
+      "role": "movement",
+      "weight": 2,
+      "notes": "Fast: disengage from all enemies and move to a connecting location with no enemies (escape)."
+    },
+    "01051": {
+      "focuses": [
+        "combat"
+      ],
+      "role": "event",
+      "weight": 3,
+      "abilities": {
+        "1000": {
+          "focuses": [
+            "combat"
+          ],
+          "action": "Fight",
+          "notes": "Played as an action: Fight using agility instead of combat; this attack deals +2 damage (3 total)."
+        }
+      },
+      "notes": "Agility-based high-damage attack event."
+    },
+    "01052": {
+      "focuses": [
+        "combat"
+      ],
+      "role": "event",
+      "weight": 2,
+      "abilities": {
+        "1000": {
+          "focuses": [
+            "combat"
+          ],
+          "action": "Play",
+          "notes": "Played as an action: deal 2 damage to an exhausted enemy at your location (no test)."
+        }
+      },
+      "notes": "Untested 2 damage against an exhausted enemy; pairs with evade."
+    },
+    "01053": {
+      "focuses": [
+        "combat",
+        "investigate",
+        "evade",
+        "survival"
+      ],
+      "role": "skill",
+      "weight": 1,
+      "notes": "Flex commit: one wild icon; returns to hand instead of discarding if you succeed by 3 or more (recurring)."
+    },
+    "01055": {
+      "focuses": [
+        "evade",
+        "mobility"
+      ],
+      "role": "ally",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "evade",
+            "mobility"
+          ],
+          "action": "Move",
+          "notes": "Action: disengage from all enemies and move to a connecting location without provoking attacks of opportunity."
+        }
+      },
+      "notes": "+1 agility; escape/reposition ally with 2 health / 2 sanity soak."
+    },
+    "01056": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "cancel",
+      "weight": 2,
+      "notes": "Fast: after revealing a chaos token with a negative modifier, switch its '-' to '+' (negates a bad token)."
+    },
+    "01057": {
+      "focuses": [
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "notes": "Gain 10 resources (large resource burst)."
+    },
+    "01030": {
+      "focuses": [
+        "investigate"
+      ],
+      "role": "tool",
+      "weight": 2,
+      "notes": "Fast Item.Tool: passive +1 intellect while investigating. Cheap reliable seeker clue tool."
+    },
+    "01031": {
+      "focuses": [
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "action": "Draw",
+          "notes": "Action, exhaust: an investigator at your location searches top 3 of deck for a card and draws it (card selection/tutor)."
+        }
+      },
+      "notes": "Tome card-advantage engine; can fuel another player's draw at your location."
+    },
+    "01032": {
+      "focuses": [
+        "support"
+      ],
+      "role": "ally",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "notes": "Reaction when it enters play: search your deck for a Tome asset and add it to hand (tutor)."
+        }
+      },
+      "notes": "Miskatonic ally that tutors a Tome (e.g. Old Book of Lore); 1/1 of soak as a body."
+    },
+    "01033": {
+      "focuses": [
+        "investigate",
+        "support"
+      ],
+      "role": "ally",
+      "weight": 3,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "notes": "Reaction after you successfully investigate, exhaust: gain 1 resource (economy engine)."
+        }
+      },
+      "notes": "Premium seeker ally: passive +1 intellect plus a resource on every successful investigate."
+    },
+    "01034": {
+      "focuses": [
+        "investigate",
+        "evade"
+      ],
+      "role": "boost",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "investigate"
+          ],
+          "notes": "Fast, spend 1 resource: +1 intellect for this skill test."
+        },
+        "2": {
+          "focuses": [
+            "evade"
+          ],
+          "notes": "Fast, spend 1 resource: +1 agility for this skill test."
+        }
+      },
+      "notes": "Talent that converts resources into intellect or agility on demand."
+    },
+    "01035": {
+      "focuses": [
+        "support"
+      ],
+      "role": "heal",
+      "weight": 1,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "action": "Activate",
+          "notes": "Action: test intellect (2) on an investigator at your location; success heals 1 damage, failure deals 1 damage."
+        }
+      },
+      "notes": "Risky Tome heal that can backfire on a failed intellect test."
+    },
+    "01036": {
+      "focuses": [
+        "combat",
+        "evade"
+      ],
+      "role": "event",
+      "weight": 2,
+      "notes": "Fast Insight: until end of round use intellect in place of combat and agility (lets a seeker fight/evade off intellect)."
+    },
+    "01038": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "event",
+      "weight": 1,
+      "abilities": {
+        "1000": {
+          "focuses": [
+            "survival"
+          ],
+          "action": "Play",
+          "notes": "Played as an action: attach to your location; non-Elite enemies cannot move into it until an investigator leaves."
+        }
+      },
+      "notes": "Defensive attachment that walls off your location from non-Elite enemy movement."
+    },
+    "01041": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "cancel",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "survival"
+          ],
+          "notes": "Reaction when a non-Elite enemy spawns at your location, discard: discard/evade or deal 2 damage to that enemy (panic-button removal)."
+        }
+      },
+      "notes": "One-shot Relic that neutralizes a freshly spawned non-Elite threat."
+    },
+    "01042": {
+      "focuses": [
+        "support"
+      ],
+      "role": "boost",
+      "weight": 1,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "action": "Activate",
+          "notes": "Action, exhaust + 1 secret: give an investigator at your location +2 to a chosen skill until end of phase."
+        }
+      },
+      "notes": "Tome that buffs any investigator's chosen skill for a phase (limited secrets)."
+    },
+    "01043": {
+      "focuses": [
+        "support"
+      ],
+      "role": "economy",
+      "weight": 3,
+      "abilities": {
+        "1000": {
+          "focuses": [
+            "support"
+          ],
+          "action": "Draw",
+          "notes": "Fast Insight played for effect: an investigator at your location draws 3 cards (strong card advantage)."
+        }
+      },
+      "notes": "Big card-draw burst for yourself or a colocated ally."
+    },
+    "01072": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "soak",
+      "weight": 1,
+      "notes": "Body armor; soaks 2 damage. Also gives a combat icon when committed."
+    },
+    "01073": {
+      "focuses": [
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "support"
+          ],
+          "notes": "Reaction after you investigate successfully by 2+: return an Item card from your discard to your hand."
+        }
+      },
+      "notes": "Recurs Item cards (weapons/tools) from the discard pile."
+    },
+    "01074": {
+      "focuses": [
+        "combat"
+      ],
+      "role": "weapon",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "combat"
+          ],
+          "action": "Fight",
+          "damage": 2,
+          "notes": "Fight with +2 combat and +1 damage; discard if a skull or auto-fail is revealed during the attack."
+        }
+      }
+    },
+    "01075": {
+      "focuses": [
+        "survival",
+        "support"
+      ],
+      "role": "economy",
+      "weight": 2,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "survival",
+            "support"
+          ],
+          "notes": "Reaction after you fail a skill test: draw 1 card."
+        }
+      },
+      "notes": "Card-draw engine that turns failed tests into draws."
+    },
+    "01076": {
+      "focuses": [
+        "evade"
+      ],
+      "role": "ally",
+      "weight": 1,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "evade"
+          ],
+          "notes": "Free: discard Stray Cat to automatically evade a non-Elite enemy at your location."
+        }
+      },
+      "notes": "One-shot auto-evade ally."
+    },
+    "01077": {
+      "focuses": [
+        "survival",
+        "evade"
+      ],
+      "role": "boost",
+      "weight": 1,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "survival"
+          ],
+          "notes": "Fast: spend 1 resource for +1 willpower this test."
+        },
+        "2": {
+          "focuses": [
+            "evade"
+          ],
+          "notes": "Fast: spend 1 resource for +1 agility this test."
+        }
+      }
+    },
+    "01078": {
+      "focuses": [
+        "evade"
+      ],
+      "role": "event",
+      "weight": 2,
+      "abilities": {
+        "1000": {
+          "focuses": [
+            "evade"
+          ],
+          "action": "Play",
+          "notes": "Played as an Evade action: automatically evade all enemies at your location."
+        }
+      },
+      "notes": "Mass auto-evade to disengage from a swarm."
+    },
+    "01079": {
+      "focuses": [
+        "investigate"
+      ],
+      "role": "event",
+      "weight": 2,
+      "notes": "Fast after failing an investigate by 2 or less: discover 2 clues at your location (turns a miss into clues)."
+    },
+    "01080": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "boost",
+      "weight": 2,
+      "notes": "Fast when you would fail a skill test: +2 to your skill value for that test."
+    },
+    "01081": {
+      "focuses": [
+        "evade",
+        "mobility"
+      ],
+      "role": "skill",
+      "weight": 1,
+      "notes": "Agility skill icon; on a successful evade, disengage from all other enemies and move to a connecting location."
+    },
+    "01082": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "ally",
+      "weight": 3,
+      "abilities": {
+        "1": {
+          "focuses": [
+            "survival",
+            "combat"
+          ],
+          "notes": "Reaction when an enemy attacks you: exhaust and take 1 horror to redirect that enemy's damage to another enemy at your location (you still take horror)."
+        }
+      },
+      "notes": "Key survivor ally; redirects attack damage onto another enemy."
+    },
+    "01083": {
+      "focuses": [
+        "evade"
+      ],
+      "role": "event",
+      "weight": 2,
+      "notes": "Fast after a non-weakness, non-Elite enemy at your location is evaded: shuffle it into the encounter deck (removes it)."
+    },
+    "01085": {
+      "focuses": [
+        "survival"
+      ],
+      "role": "event",
+      "weight": 3,
+      "notes": "Fast during your turn: until end of turn do not reveal chaos tokens for any tests you perform (wards all tokens)."
     }
   },
   "scenarios": {
@@ -223,7 +1306,9 @@
           "focus": "investigate",
           "objective": {
             "kind": "spendClues",
-            "amount": { "perPlayer": 2 },
+            "amount": {
+              "perPlayer": 2
+            },
             "scope": "anywhere"
           }
         },
@@ -231,7 +1316,9 @@
           "focus": "investigate",
           "objective": {
             "kind": "spendClues",
-            "amount": { "perPlayer": 3 },
+            "amount": {
+              "perPlayer": 3
+            },
             "scope": "Hallway"
           }
         },
@@ -245,16 +1332,97 @@
       },
       "agendas": {
         "01105": {
-          "threshold": { "static": 3 },
+          "threshold": {
+            "static": 3
+          },
           "note": "What's Going On?! - lead takes 2 horror or all discard a card."
         },
         "01106": {
-          "threshold": { "static": 7 },
+          "threshold": {
+            "static": 7
+          },
           "note": "Rise of the Ghouls - draws a Ghoul enemy from the encounter deck."
         },
         "01107": {
-          "threshold": { "static": 10 },
+          "threshold": {
+            "static": 10
+          },
           "note": "They're Getting Out! - doom accelerates with ghouls in Parlor/Hallway; advancing ends the scenario."
+        }
+      }
+    },
+    "01120": {
+      "name": "The Midnight Masks",
+      "acts": {
+        "01123": {
+          "focus": "investigate",
+          "objective": {
+            "kind": "other",
+            "note": "Uncovering the Conspiracy - no clue advance cost. As an action, spend 2 clues per player (from anywhere) to draw and resolve a card from the Cultist deck (find/fight a Cultist). Advances when there are 6 unique Cultist cards in the victory display, so investigate to fund the hunt and combat to bank the cultists."
+          }
+        }
+      },
+      "agendas": {
+        "01121a": {
+          "threshold": {
+            "static": 6
+          },
+          "note": "Predator or Prey? - on advance, spawn The Masked Hunter engaged with the prey investigator, then advance to agenda 2."
+        },
+        "01122": {
+          "threshold": {
+            "static": 8
+          },
+          "note": "Time Is Running Short - on advance, the scenario ends at Resolution 2 (It Is Past Midnight); the cult has had too much time."
+        }
+      }
+    },
+    "01142": {
+      "name": "The Devourer Below",
+      "acts": {
+        "01146": {
+          "focus": "investigate",
+          "objective": {
+            "kind": "spendClues",
+            "amount": {
+              "perPlayer": 3
+            },
+            "scope": "anywhere"
+          }
+        },
+        "01147": {
+          "focus": "mobility",
+          "objective": {
+            "kind": "other",
+            "note": "Into the Darkness - advances when any investigator enters the Ritual Site (placed when act 1 advances). The objective is to reach/descend into the Ritual Site; on advance an enemy is dug out of the encounter deck and spawned there."
+          }
+        },
+        "01148": {
+          "focus": "investigate",
+          "objective": {
+            "kind": "other",
+            "note": "Disrupting the Ritual - as an action, pay 1 clue and pass a willpower or agility (3) test to place 1 clue on the act. Advances when there are at least 2 clues per player on the act. Defeating Umordhoth instead wins via Vengeance Awaits (Resolution 2)."
+          }
+        }
+      },
+      "agendas": {
+        "01143": {
+          "threshold": {
+            "static": 4
+          },
+          "note": "The Arkham Woods - on advance, dig a Monster enemy out of the encounter deck and spawn it at Main Path with 1 doom, then advance to agenda 2."
+        },
+        "01144": {
+          "threshold": {
+            "static": 5
+          },
+          "note": "The Ritual Begins - while in play all enemies get +1 fight and +1 evade. On advance, each investigator tests willpower (6) or gains a random Madness basic weakness, then advance to agenda 3."
+        },
+        "01145": {
+          "threshold": {
+            "static": 5
+          },
+          "note": "Vengeance Awaits - forced ability brings Umordhoth into play at the Ritual Site; defeating Umordhoth wins (Resolution 2). If this agenda reaches its doom threshold (side B), the acts are discarded and the investigators lose (No Resolution)."
         }
       }
     }

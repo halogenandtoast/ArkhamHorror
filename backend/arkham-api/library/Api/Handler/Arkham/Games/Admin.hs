@@ -16,6 +16,7 @@ module Api.Handler.Arkham.Games.Admin (
   deleteApiV1AdminRoomR,
 ) where
 
+import Api.Arkham.Epic (lookupGameEvent)
 import Api.Arkham.Helpers
 import Api.Handler.Arkham.Games.Shared
 import Arkham.Game
@@ -100,7 +101,13 @@ getApiV1AdminGameR gameId = do
   let Game {..} = g.currentData
   gameLog <- runDB $ getGameLog gameId Nothing
   let player = gameActivePlayerId
-  pure $ GetGameJson (Just player) g.variant (PublicGame gameId g.name gameLog.entries g.currentData)
+  mEvt <- runDB $ lookupGameEvent gameId
+  pure
+    $ GetGameJson
+      (Just player)
+      g.variant
+      (PublicGame gameId g.name gameLog.entries g.currentData)
+      (entityKey . fst <$> mEvt)
 
 getApiV1AdminFindGameR :: ArkhamPlayerId -> Handler GameDetailsEntry
 getApiV1AdminFindGameR playerId = do

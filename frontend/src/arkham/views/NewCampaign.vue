@@ -65,8 +65,8 @@ type EpicGroup = { name: string; playerCount: number }
 const epicMode = ref(false)
 const epicGroupCount = ref(2)
 const epicGroups = ref<EpicGroup[]>([
-  { name: 'Group 1', playerCount: 2 },
-  { name: 'Group 2', playerCount: 2 },
+  { name: 'Group A', playerCount: 2 },
+  { name: 'Group B', playerCount: 2 },
 ])
 // Shared time limit (epic only). On by default; sends 0 minutes when off.
 const imposeTimeLimit = ref(true)
@@ -308,7 +308,7 @@ async function start() {
       includeTarotReadings: includeTarotReadings.value,
       timeLimitMinutes: minutes,
       groups: epicGroups.value.map((g, i) => ({
-        name: g.name.trim() === '' ? `Group ${i + 1}` : g.name.trim(),
+        name: g.name.trim() === '' ? `Group ${String.fromCharCode(65 + i)}` : g.name.trim(),
         playerCount: g.playerCount,
       })),
     })

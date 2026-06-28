@@ -27,6 +27,20 @@ export const useEventStore = defineStore('event', () => {
   const connected = ref(false)
   const socketError = ref(false)
 
+  // One-shot intent flag: a seated organizer landing on the dashboard is dropped
+  // straight into their group's game. The in-game OrganizerBar's dashboard link
+  // sets this so that ONE explicit navigation shows the dashboard hub instead of
+  // bouncing back. The dashboard reads-and-clears it on mount.
+  const dashboardHubRequested = ref(false)
+  function requestDashboardHub() {
+    dashboardHubRequested.value = true
+  }
+  function consumeDashboardHubRequest(): boolean {
+    const requested = dashboardHubRequested.value
+    dashboardHubRequested.value = false
+    return requested
+  }
+
   let closeFn: (() => void) | null = null
 
   // Apply a shared-state blob, guarding against out-of-order websocket delivery
@@ -100,6 +114,9 @@ export const useEventStore = defineStore('event', () => {
     received,
     connected,
     socketError,
+    dashboardHubRequested,
+    requestDashboardHub,
+    consumeDashboardHubRequest,
     applySharedState,
     setEvent,
     load,

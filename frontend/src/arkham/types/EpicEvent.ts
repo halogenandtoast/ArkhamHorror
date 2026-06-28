@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { withDefault } from '@/arkham/parser';
 
 // "Epic Multiplayer" event aggregate types.
 //
@@ -29,6 +30,10 @@ export interface GroupDigest {
   investigatorCount: number
   seatCount: number
   youAreSeated: boolean
+  // Stage (1/2/3) of this group's current act, and the clues currently on it.
+  // Null when the group has no active act (not started / between acts).
+  actStage: number | null
+  actClues: number | null
   players: GroupPlayerInfo[]
 }
 
@@ -79,6 +84,52 @@ export const COUNTERMEASURES = 'countermeasures'
 export const TIME_LIMIT_MINUTES = 'time-limit-minutes'
 export const TIMER_STARTED_AT = 'timer-started-at'
 
+// Total investigators across all groups; the shared-clue requirement scales off it.
+export const TOTAL_INVESTIGATORS = 'total-investigators'
+
+// Shared CUMULATIVE clue progress per act stage. The counter `act-progress:<stage>`
+// exists (seeded to 0) only for acts that advance on a GLOBAL clue threshold
+// (The Blob's acts 1 & 3, not act 2). Within-cycle progress is `value mod threshold`
+// where `threshold = 2 * total-investigators`.
+export function actProgressKey(stage: number): string {
+  return `act-progress:${stage}`
+}
+
+export function hasActProgress(state: SharedEventState, stage: number): boolean {
+  return actProgressKey(stage) in state.sharedCounters
+}
+
+export function actProgressValue(state: SharedEventState, stage: number): number {
+  return counterValue(state, actProgressKey(stage))
+}
+
+// `pending-act-advance:<stage>` is set to 1 when the shared clue pool EXCEEDS the
+// threshold and the organizer must choose which groups spend (an exact-match pool
+// auto-resolves with no flag).
+export const PENDING_ACT_ADVANCE = 'pending-act-advance'
+
+export function pendingActAdvanceKey(stage: number): string {
+  return `${PENDING_ACT_ADVANCE}:${stage}`
+}
+
+export function pendingActAdvance(state: SharedEventState, stage: number): number {
+  return counterValue(state, pendingActAdvanceKey(stage))
+}
+
+// The act stage currently awaiting organizer allocation, if any: the first
+// `pending-act-advance:<stage>` counter that is set. Lets surfaces detect a pending
+// advance without already knowing the stage.
+export function activePendingAdvanceStage(state: SharedEventState): number | null {
+  const prefix = `${PENDING_ACT_ADVANCE}:`
+  for (const [key, value] of Object.entries(state.sharedCounters)) {
+    if (value > 0 && key.startsWith(prefix)) {
+      const stage = Number(key.slice(prefix.length))
+      if (Number.isFinite(stage)) return stage
+    }
+  }
+  return null
+}
+
 export function emptySharedState(): SharedEventState {
   return {
     sharedVersion: 0,
@@ -124,6 +175,9 @@ export const groupDigestDecoder = JsonDecoder.object<GroupDigest>(
     investigatorCount: JsonDecoder.number(),
     seatCount: JsonDecoder.number(),
     youAreSeated: JsonDecoder.boolean(),
+    // Tolerant while the backend rolls these out: absent/null -> null.
+    actStage: withDefault<number | null, null>(null, JsonDecoder.number()),
+    actClues: withDefault<number | null, null>(null, JsonDecoder.number()),
     players: JsonDecoder.array(groupPlayerInfoDecoder, 'GroupPlayerInfo[]'),
   },
   'GroupDigest',

@@ -22,6 +22,9 @@ import * as JsonDecoder from 'ts.data.json';
 interface FetchData {
   playerId: string
   multiplayerMode: string
+  // The Epic Multiplayer event this game is a group of, resolved server-side
+  // regardless of how the player arrived (null for ordinary, non-event games).
+  eventId: string | null
   game: Game
 }
 
@@ -37,9 +40,9 @@ export const fetchJoinGame = async (gameId: string): Promise<Game> => {
 
 export const fetchGame = async (gameId: string, spectate = false): Promise<FetchData> => {
   const { data } = await api.get(`arkham/games/${gameId}${spectate ? '/spectate' : ''}`)
-  const { playerId, game, multiplayerMode } = data
+  const { playerId, game, multiplayerMode, eventId } = data
   const gameData = await gameDecoder.decodePromise(game)
-  return { playerId, game: gameData, multiplayerMode }
+  return { playerId, game: gameData, multiplayerMode, eventId: eventId ?? null }
 }
 
 export const fetchGameReplay = async (gameId: string, step: number): Promise<FetchReplay> => {
@@ -288,6 +291,18 @@ export const markEventReady = async (eventId: string): Promise<void> => {
 // server-side, so it's safe for more than one client to fire it.
 export const eventTimeUp = async (eventId: string): Promise<void> => {
   await api.post(`arkham/events/${eventId}/time-up`)
+}
+
+// Organizer resolves an over-threshold shared act advance for `stage`, choosing how
+// many clues each group spends. `allocation` entries are { ordinal, spend }. The
+// backend resets the shared pool + clears the pending flag, then broadcasts the
+// updated shared state over the event ws.
+export const resolveEventAdvance = async (
+  eventId: string,
+  stage: number,
+  allocation: { ordinal: number; spend: number }[],
+): Promise<void> => {
+  await api.post(`arkham/events/${eventId}/resolve-advance`, { stage, allocation })
 }
 
 export const deleteEvent = async (eventId: string): Promise<void> => {

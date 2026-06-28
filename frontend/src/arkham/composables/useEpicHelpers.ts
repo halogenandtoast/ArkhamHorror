@@ -3,14 +3,30 @@ import type { GroupDigest } from '@/arkham/types/EpicEvent'
 
 // Shared helpers for the Epic Multiplayer organizer surfaces (dashboard + in-game
 // bar). `groupLabel` formats a group's display name, falling back to an i18n
-// ordinal label ("Group N") when the group has no custom name.
+// letter label ("Group A"). Older events may have persisted default names like
+// "Group 1"; normalize those for display without changing backend data.
 export function useEpicHelpers() {
   const { t } = useI18n()
 
-  function groupLabel(group: GroupDigest): string {
-    const name = group.name?.trim()
-    return name ? name : t('event.group', { ordinal: group.ordinal + 1 })
+  function groupLetter(ordinal: number): string {
+    let index = ordinal
+    let label = ''
+    do {
+      label = String.fromCharCode(65 + (index % 26)) + label
+      index = Math.floor(index / 26) - 1
+    } while (index >= 0)
+    return label
   }
 
-  return { groupLabel }
+  function defaultGroupLabel(ordinal: number): string {
+    return t('event.group', { ordinal: groupLetter(ordinal) })
+  }
+
+  function groupLabel(group: GroupDigest): string {
+    const name = group.name?.trim()
+    if (!name || /^Group \d+$/i.test(name)) return defaultGroupLabel(group.ordinal)
+    return name
+  }
+
+  return { groupLabel, groupLetter, defaultGroupLabel }
 }

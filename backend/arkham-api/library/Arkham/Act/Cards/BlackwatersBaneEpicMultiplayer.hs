@@ -4,33 +4,38 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Epic.Types (SharedKey (BlobStorySeed, SharedActProgress), sharedKeyText, totalInvestigatorsKey)
+import Arkham.Epic.Types (SharedKey (BlobStorySeed, SharedActProgress), sharedKeyText)
 import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Investigator (getSpendableClueCount)
 import Arkham.Helpers.Log (scenarioCount, scenarioCountIncrement)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Story
 import Arkham.Keyword qualified as Keyword
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Placement
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicActAdvances, EpicShared))
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Token (Token (Clue))
 import Arkham.Trait (Trait (Ooze, Oozified))
 
 -- Epic Multiplayer variant of Blackwater's Bane (card 85008). Like the Epic
 -- variant of Act 1, the clue requirement is a single GLOBAL pool shared across
 -- every group: 2 clues per investigator across ALL groups (the event's frozen
 -- total). Unlike the single-group act (which advances at the end of a round via
--- "A Moment of Respite"), the Epic variant advances by pooled clues: each group
--- contributes its local share into the shared @act-progress:3@ counter at the
--- start of each round.
+-- "A Moment of Respite"), the Epic variant advances by pooled clues: each
+-- investigator has a fast ability to place up to 3 of their own clues onto this
+-- act, and only clues placed on a group's act feed the shared @act-progress:3@
+-- counter.
 --
--- The shared pool is CUMULATIVE and never reset; each group tracks how many times
--- this act has advanced in a LOCAL @EpicActAdvances 3@ scenario count, and the Nth
--- advance fires once the cumulative pool reaches @2 * total * N@. Because this act
--- loops ('ResetActDeckToStage 1' brings the deck back round to it), the cumulative
--- threshold makes every pass require another 2*total fresh clues, in lockstep
--- across all groups (see the Act 1 variant for the full rationale).
+-- ADVANCE is SEAM-COORDINATED. The cross-group seam detects @pool >= 2 * total@,
+-- resets the pool, and delivers @ResolveEpicActAdvance 3 spendAmount@ to this act
+-- in every group. We consume @spendAmount@ from the act, hand the leftover clues
+-- to this group's investigators, loop the deck back to act 1 directly (no
+-- AdvanceAct confirmation, which would park in non-interactively synced groups),
+-- and read the seeded Part-1 story. We never touch a Shared* counter here -- the
+-- seam owns the pool reset. @EpicActAdvances 3@ is still bumped on advance so the
+-- story pick's @wave@ keeps re-rolling.
 newtype BlackwatersBaneEpicMultiplayer = BlackwatersBaneEpicMultiplayer ActAttrs
   deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -44,7 +49,7 @@ actStage :: Int
 actStage = 3
 
 -- The shared act-progress 'SharedKey', mirrored into scenario state as
--- @EpicShared "act-progress:3"@.
+-- @EpicShared "act-progress:3"@ and raised on each clue placement.
 actProgressKey :: SharedKey
 actProgressKey = SharedActProgress actStage
 
@@ -58,38 +63,39 @@ instance HasModifiersFor BlackwatersBaneEpicMultiplayer where
 
 instance HasAbilities BlackwatersBaneEpicMultiplayer where
   getAbilities (BlackwatersBaneEpicMultiplayer a) =
-    [ -- CONTRIBUTION: round-start group-clue payment (mirrored from Act 1), feeding
-      -- the shared pool instead of advancing this group's act directly.
-      mkAbility a 1 $ Objective $ triggered (RoundBegins #when) $ GroupClueCost (PerPlayer 2) Anywhere
-    , -- AUTO-ADVANCE: an engine hook on the shared-counter mirror. The act advances
-      -- here once the pooled total reaches the global threshold.
-      mkAbility a 2
-        $ SilentForcedAbility
-        $ ScenarioCountIncremented #after (EpicShared (sharedKeyText actProgressKey))
-    ]
+    -- CONTRIBUTION: fast, per investigator. Place up to 3 of your clues on the act.
+    [restricted a 1 (DuringTurn You <> youExist InvestigatorWithAnyClues) $ FastAbility Free]
 
 instance RunMessage BlackwatersBaneEpicMultiplayer where
   runMessage msg a@(BlackwatersBaneEpicMultiplayer attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      -- Contribute this group's clues (2 per local player) to the shared pool.
-      n <- perPlayer 2
-      push $ RaiseShared actProgressKey n
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      n <- min 3 <$> getSpendableClueCount iid
+      when (n > 0) $ chooseAmount iid "Clues" "Clues" 1 n attrs
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      progress <- scenarioCount (EpicShared (sharedKeyText actProgressKey))
-      total <- scenarioCount (EpicShared totalInvestigatorsKey)
-      advances <- scenarioCount actAdvancesKey
-      -- Cumulative threshold: the (advances + 1)th advance needs 2 * total clues
-      -- beyond all prior advances.
-      when (progress >= 2 * total * (advances + 1)) $ advancedWithOther attrs
+    ResolveAmounts iid (getChoiceAmount "Clues" -> amount) (isTarget attrs -> True) | amount > 0 -> do
+      -- Place this investigator's chosen clues onto the act, then add them to the
+      -- shared pool. Only clues placed on the act count.
+      moveTokens (attrs.ability 1) iid attrs Clue amount
+      push $ RaiseShared actProgressKey amount
       pure a
-    AdvanceAct (isSide B attrs -> True) _ _ -> do
-      -- This advance is the (advances + 1)th time THIS group has reached 3b; read
-      -- the count BEFORE the increment below so `wave` is unambiguously the Kth
-      -- regardless of when the queued increment applies.
+    ResolveEpicActAdvance stage spendAmount | stage == actStage -> do
+      -- The seam has consumed `spendAmount` from the global pool; the leftover clues
+      -- sitting on THIS group's act go to this group's investigators (they take
+      -- control). The act's own clue tokens are discarded by the deck reset below;
+      -- we re-grant only the leftover, so `spendAmount` is effectively spent.
+      let leftover = max 0 (attrs.clues - spendAmount)
+      when (leftover > 0) do
+        iids <- select UneliminatedInvestigator
+        unless (null iids) do
+          let numInvestigators = length iids
+              base = leftover `div` numInvestigators
+              extra = leftover `mod` numInvestigators
+          for_ (zip [0 ..] iids) \(i, iid) -> do
+            let amt = base + if i < extra then 1 else 0
+            when (amt > 0) $ gainClues iid (toSource attrs) amt
+      -- This advance is the (advances + 1)th time this group has reached 3b; read
+      -- the count BEFORE the increment so `wave` is unambiguously the Kth.
       wave <- (+ 1) <$> scenarioCount actAdvancesKey
-      -- Record this advance locally so the next pass needs another 2 * total clues
-      -- (and the shared story re-rolls).
       scenarioCountIncrement actAdvancesKey
       -- Only on the first advance: shuffle the set-aside Mi-Go Drones into the
       -- encounter deck along with the encounter discard pile.
@@ -98,9 +104,12 @@ instance RunMessage BlackwatersBaneEpicMultiplayer where
         shuffleSetAsideIntoEncounterDeck $ cardIs Enemies.miGoDrone
         shuffleEncounterDiscardBackIn
       n <- perPlayer 1
-      selectEach (RevealedLocation <> LocationWithTrait Oozified <> LocationNotAtClueLimit) \loc -> do
+      selectEach (RevealedLocation <> LocationWithTrait Oozified <> LocationNotAtClueLimit) \loc ->
         push $ PlaceCluesUpToClueValue loc (toSource attrs) n
-
+      -- Loop the deck back to act 1 directly (no AdvanceAct confirmation) BEFORE the
+      -- story read, so the deck fully resets even when an idle group is synced
+      -- non-interactively (the story resolution below parks).
+      push $ ResetActDeckToStage 1
       -- Shared Part-1 story: every group derives the SAME pick from a single
       -- per-event seed (EpicShared "blob-story-seed", synced to all groups) plus
       -- this group's wave. All groups start at wave 1 and the seed is identical,
@@ -114,6 +123,5 @@ instance RunMessage BlackwatersBaneEpicMultiplayer where
             2 -> Stories.driveOffTheMiGo
             _ -> Stories.defuseTheExplosives
       readStoryWithPlacement_ lead chosen Global
-      push $ ResetActDeckToStage 1
       pure a
     _ -> BlackwatersBaneEpicMultiplayer <$> liftRunMessage msg attrs

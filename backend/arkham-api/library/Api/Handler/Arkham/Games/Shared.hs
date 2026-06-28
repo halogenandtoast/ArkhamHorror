@@ -4,13 +4,17 @@
 
 module Api.Handler.Arkham.Games.Shared where
 
-import Api.Arkham.Epic (applyEpicDeltasLocked, lookupGameEvent, mkEpicEnv)
+import Api.Arkham.Epic (applyEpicDeltasLocked, lookupGameEvent, mkEpicEnv, modifySharedStateLocked)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Arkham.Act.Sequence qualified as AS
+import Arkham.Act.Types (actSequence)
 import Arkham.Ai.Decision (decideAi, decideAiAssist, isAssistCommitWindow)
 import Arkham.Ai.Helpers (lookupAiPlayer)
 import Arkham.Ai.State (aiEnabled)
-import Arkham.Epic.Types (SharedEventState, epicEnvDeltaRef, epicEnvSharedRef, sharedCounters, sharedTotalInvestigators, totalInvestigatorsKey)
+import Arkham.Classes.Entity (attr)
+import Arkham.Entities (entitiesActs)
+import Arkham.Epic.Types (SharedEventState, SharedKey (PendingActAdvance, SharedActProgress), actProgressStages, epicEnvDeltaRef, epicEnvSharedRef, setSharedCounter, sharedCounter, sharedCounters, sharedTotalInvestigators, totalInvestigatorsKey)
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicShared))
 import Arkham.Campaign.Types (CampaignAttrs)
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
@@ -176,6 +180,10 @@ data GetGameJson = GetGameJson
   { playerId :: Maybe PlayerId
   , multiplayerMode :: MultiplayerVariant
   , game :: PublicGame ArkhamGameId
+  , eventId :: Maybe ArkhamEpicEventId
+  -- ^ the Epic Multiplayer event this game is a group of, if any. Lets the client
+  -- engage the event (shared state, start barrier, time limit) regardless of how
+  -- the player reached the game (so it doesn't depend on a @?event@ URL query).
   }
   deriving stock (Show, Generic)
 
@@ -428,6 +436,11 @@ updateGame response gameId mRoom = do
   -- that group's next action). The acting group is skipped (already reflected).
   for_ mSharedUpdate \(eid, s) -> propagateShared eid (Just gameId) s
 
+  -- Epic Multiplayer: cross-group act-clue advance. Evaluated POST-COMMIT, after
+  -- the placing group's game lock has been released (so the coordinator can take
+  -- the OTHER groups' game locks + the event lock without a game->game deadlock).
+  for_ mSharedUpdate \(eid, s) -> coordinateEpicActAdvance eid s
+
 -- | Read the cached log entries IF the cache is consistent with the locked
 -- game's current step. Returns Nothing on a mismatch (so the caller refetches
 -- from the DB and refreshes the cache).
@@ -629,6 +642,74 @@ propagateShared eid mOrigin shared = do
       $ syncOneGroup shared gid
         `catch` \(e :: SomeException) ->
           $(logWarn) $ "Epic syncOneGroup failed for " <> tshow gid <> ": " <> tshow e
+
+-- | The total clues on the act(s) at @stage@ in a group's game (0 if none). Acts
+-- in play is normally a singleton; this sums defensively.
+stageActClues :: Int -> Game -> Int
+stageActClues stage game =
+  sum
+    [ attr (.clues) act
+    | act <- toList (entitiesActs (gameEntities game))
+    , AS.unActStep (AS.actStep (attr actSequence act)) == stage
+    ]
+
+-- | For each group in an event (in ordinal order) that has a game, the clues
+-- currently on its stage-@stage@ act, paired with its game id and ordinal. Shared
+-- by 'coordinateEpicActAdvance' and the organizer's allocation endpoint so they
+-- size the per-group spend the same way.
+getEventGroupActClues :: ArkhamEpicEventId -> Int -> Handler [(Int, ArkhamGameId, Int)]
+getEventGroupActClues eid stage = do
+  rows <- runDB $ select do
+    grp <- from $ table @ArkhamEpicGroup
+    where_ $ grp.arkhamEpicEventId ==. val eid
+    orderBy [asc grp.ordinal]
+    pure (grp.ordinal, grp.arkhamGameId)
+  fmap catMaybes $ traverse resolveRow rows
+ where
+  resolveRow (Value ordinal, Value mGid) = case mGid of
+    Nothing -> pure Nothing
+    Just gid -> do
+      mGame <- runDB $ selectOne do
+        g <- from $ table @ArkhamGame
+        where_ $ g.id ==. val gid
+        pure g
+      pure $ (\ent -> (ordinal, gid, stageActClues stage (arkhamGameCurrentData (entityVal ent)))) <$> mGame
+
+{- | Epic Multiplayer cross-group coordinator for the shared act-clue advance
+(The Blob). Runs POST-COMMIT, after the placing group's game lock has been
+released (co-located with 'propagateShared' in 'updateGame'), NOT inside the
+group's runMessages — so it can take the OTHER groups' game locks and the event
+lock without a game->game lock-order deadlock.
+
+Given the just-committed shared state @s@, it evaluates each @act-progress:N@
+pool against THRESHOLD = 2 * sharedTotalInvestigators. For a stage that has
+reached threshold and is not already awaiting organizer allocation
+('PendingActAdvance' unset):
+
+  * EXACT (pool == threshold): each group spends exactly its own stage-N act's
+    clues. Push 'ResolveEpicActAdvance' to every group, then reset the pool to 0
+    (a single direct-set; the server owns the pool, the per-group handler must
+    not touch it). The reset means the next check won't re-fire.
+  * EXCESS (pool > threshold): flag 'PendingActAdvance' and wait for the
+    organizer's allocation (@postApiV1ArkhamEventResolveAdvanceR@). Do NOT
+    resolve. The flag guards against re-firing on subsequent placements.
+-}
+coordinateEpicActAdvance :: ArkhamEpicEventId -> SharedEventState -> Handler ()
+coordinateEpicActAdvance eid s = do
+  let threshold = 2 * sharedTotalInvestigators s
+  when (threshold > 0) $ for_ (actProgressStages s) \stage -> do
+    let pool = sharedCounter (SharedActProgress stage) s
+    when (pool >= threshold && sharedCounter (PendingActAdvance stage) s == 0) do
+      if pool == threshold
+        then do
+          groupClues <- getEventGroupActClues eid stage
+          for_ groupClues \(_ord, gid, clues) ->
+            runMessagesInGroup [ResolveEpicActAdvance stage clues] gid
+          newState <- runDB $ modifySharedStateLocked eid (setSharedCounter (SharedActProgress stage) 0)
+          broadcastSharedToEvent eid newState
+        else do
+          newState <- runDB $ modifySharedStateLocked eid (setSharedCounter (PendingActAdvance stage) 1)
+          broadcastSharedToEvent eid newState
 
 toGameDetailsEntry :: Entity ArkhamGameRaw -> Int -> GameDetailsEntry
 toGameDetailsEntry (Entity gameId game) playerCount =

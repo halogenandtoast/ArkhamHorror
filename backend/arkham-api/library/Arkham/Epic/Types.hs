@@ -52,6 +52,11 @@ data SharedKey
   = Countermeasures
   | SharedEnemyHealth CardCode
   | SharedActProgress Int
+  | -- | Set to 1 when a stage-@N@ shared act-clue pool has reached its advance
+    -- threshold WITH EXCESS and awaits the organizer's per-group spend
+    -- allocation; 0/absent otherwise. An exact-threshold crossing resolves
+    -- immediately and never sets this.
+    PendingActAdvance Int
   | GroupDoom GroupOrdinal
   | LeadFaction
   | -- | A random per-event seed (set once at event start) from which each group
@@ -86,6 +91,7 @@ sharedKeyText = \case
   Countermeasures -> "countermeasures"
   SharedEnemyHealth cc -> "enemy-health:" <> unCardCode cc
   SharedActProgress n -> "act-progress:" <> tshow n
+  PendingActAdvance n -> "pending-act-advance:" <> tshow n
   GroupDoom (GroupOrdinal o) -> "group-doom:" <> tshow o
   LeadFaction -> "lead-faction"
   BlobStorySeed -> "blob-story-seed"
@@ -111,6 +117,7 @@ sharedKeyFromText t = case t of
   _ ->
     (SharedEnemyHealth . CardCode <$> stripPrefix "enemy-health:" t)
       <|> (SharedActProgress <$> (stripPrefix "act-progress:" t >>= readMaybe . unpack))
+      <|> (PendingActAdvance <$> (stripPrefix "pending-act-advance:" t >>= readMaybe . unpack))
       <|> (GroupDoom . GroupOrdinal <$> (stripPrefix "group-doom:" t >>= readMaybe . unpack))
 
 {- | An invertible mutation of one shared counter. @sharedDeltaAmount@ is signed:
@@ -164,6 +171,14 @@ setSharedCounter k v s = s {sharedCounters = insertMap (sharedKeyText k) v (shar
 -- | Apply a function to a shared counter's current value (defaulting to 0).
 updateSharedCounter :: (Int -> Int) -> SharedKey -> SharedEventState -> SharedEventState
 updateSharedCounter f k s = setSharedCounter k (f (sharedCounter k s)) s
+
+{- | The stages @N@ for which an @act-progress:N@ counter currently exists in the
+shared state. Lets the cross-group act-advance coordinator find which shared
+act-clue pools to evaluate without re-implementing the key encoding elsewhere.
+-}
+actProgressStages :: SharedEventState -> [Int]
+actProgressStages s =
+  [n | k <- keys (sharedCounters s), Just (SharedActProgress n) <- [sharedKeyFromText k]]
 
 {- | Fold a delta into the state. Idempotent: re-applying a delta whose id was
 already seen is a no-op.

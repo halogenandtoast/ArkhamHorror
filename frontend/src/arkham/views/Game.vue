@@ -12,7 +12,7 @@ import {
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import confetti from '@/effects/confetti'
-import { useWebSocket } from '@vueuse/core'
+import { useWebSocket, useResizeObserver } from '@vueuse/core'
 import { MenuItem } from '@headlessui/vue'
 import {
   AdjustmentsHorizontalIcon,
@@ -141,30 +141,39 @@ const userStore = useUserStore()
 const eventStore = useEventStore()
 const { addEntry, menuItems } = useMenu()
 
-// "Epic Multiplayer": the organizer dashboard's per-group links carry an
-// ?event=<id> query param. When present (and the loaded event marks this user as
-// the organizer), Game.vue renders the organizer bar above the board. The event
-// store is the source of truth for the sibling groups, role, and shared state.
+// "Epic Multiplayer": a group's game can be entered two ways — via the dashboard's
+// per-group links (which carry an ?event=<id> query param) OR via the plain
+// join / "take a seat" path (which does NOT). To engage the event on EITHER path
+// we resolve the event id from the URL first, then fall back to the `eventId` the
+// game-fetch response now carries (resolved server-side). Everything that needs to
+// know "which event is this game a group of" keys off `resolvedEventId`; only true
+// navigation/links keep using the raw `eventQueryId`.
 const eventQueryId = computed(() => {
   const q = route.query.event
   return typeof q === 'string' && q !== '' ? q : null
 })
 
+// Set from the fetchGame payload's `eventId` (null for ordinary games). Lets a
+// group game engage its event even when the URL is missing ?event.
+const gamePayloadEventId = ref<string | null>(null)
+
+const resolvedEventId = computed(() => eventQueryId.value ?? gamePayloadEventId.value)
+
 const organizerEventId = computed(() => {
-  const eid = eventQueryId.value
+  const eid = resolvedEventId.value
   if (!eid) return null
   const ev = eventStore.event
   return ev && ev.id === eid && ev.role === 'organizer' ? eid : null
 })
 
 // Player-facing counterpart: any seated MEMBER (not the organizer) of an Epic
-// event may switch to / spectate the sibling groups. Gated on the dev flag (like
-// the rest of the epic UI) and only when the loaded event actually contains this
-// game as one of its group games, so ordinary non-event games never get a
-// switcher. The organizer keeps OrganizerBar above (unchanged).
+// event may switch to / spectate the sibling groups. NOT gated on the local dev
+// flag — invited players don't have it set, but their game is still part of the
+// event server-side. Engages purely on the loaded event containing this gameId
+// (mirrors organizerEventId). Events can only be CREATED with the dev flag, so
+// there are no event games in production regardless. Organizer keeps OrganizerBar.
 const playerEventId = computed(() => {
-  if (!settings.epicMultiplayerEnabled) return null
-  const eid = eventQueryId.value
+  const eid = resolvedEventId.value
   if (!eid) return null
   const ev = eventStore.event
   if (!ev || ev.id !== eid || ev.role === 'organizer') return null
@@ -172,7 +181,7 @@ const playerEventId = computed(() => {
 })
 
 watch(
-  eventQueryId,
+  resolvedEventId,
   (eid) => {
     if (!eid) return
     if (eventStore.event?.id === eid) return
@@ -183,12 +192,12 @@ watch(
 
 // "Epic Multiplayer" time limit. The event id this game view actively
 // PARTICIPATES in for the timer: a seated player (or an organizer playing a
-// seat), never the organizer's spectate/non-playing view. Only set when the
-// loaded event contains this game as a group, so ordinary games never engage.
+// seat), never the organizer's spectate/non-playing view. NOT gated on the local
+// dev flag (invited players don't have it) — engages purely on the loaded event
+// containing this game as a group, so ordinary games never engage.
 const timerEventId = computed(() => {
-  if (!settings.epicMultiplayerEnabled) return null
   if (props.spectate) return null
-  const eid = eventQueryId.value
+  const eid = resolvedEventId.value
   if (!eid) return null
   const ev = eventStore.event
   if (!ev || ev.id !== eid) return null
@@ -196,6 +205,23 @@ const timerEventId = computed(() => {
 })
 
 const { hasTimeLimit, barrierPending, timerStartedAt, timeUp } = useEventTimer()
+
+// Whether an epic bar (organizer or player) is mounted above the board.
+const hasEventBar = computed(() => !!organizerEventId.value || !!playerEventId.value)
+
+// Reserve the epic bar's height in the board layout. `.game-main` is sized off a
+// hardcoded `calc(100vh - 80px)`; the bar adds height ABOVE it, so without this
+// the board's bottom (player area) is pushed past the viewport and clipped.
+// Measured (not a fixed constant) so it stays correct if the bar wraps/changes,
+// and it defaults to 0 for ordinary, non-event games — no layout shift for them.
+const epicBarRef = ref<HTMLElement | null>(null)
+const epicBarHeight = ref(0)
+useResizeObserver(epicBarRef, () => {
+  epicBarHeight.value = epicBarRef.value?.offsetHeight ?? 0
+})
+watch(hasEventBar, (present) => {
+  if (!present) epicBarHeight.value = 0
+})
 
 const preloaded = new Set<string>()
 const preloading = new Set<string>()
@@ -238,6 +264,14 @@ const showStartBarrier = computed(
   () => !!timerEventId.value && barrierPending.value && reachedInvestigation.value,
 )
 
+// Stage (1/2/3) of the act currently in play for this group, fed to the epic bars'
+// shared-pool readout. The Blob has a single act deck, so the lone act in
+// `game.acts` is the current one; its sequence number is the stage.
+const currentActStage = computed<number | null>(() => {
+  const acts = game.value ? Object.values(game.value.acts) : []
+  return acts.length > 0 ? acts[0].sequence.number : null
+})
+
 // Mark this group ready at the start barrier exactly once per load. Guarded with a
 // local flag (the endpoint is idempotent server-side regardless). Immediate so a
 // reconnect mid-investigation still signals readiness.
@@ -265,7 +299,7 @@ watch(
   timeUp,
   (up) => {
     if (!up || timeUpFired) return
-    const eid = eventQueryId.value
+    const eid = resolvedEventId.value
     if (!eid || !hasTimeLimit.value) return
     timeUpFired = true
     eventTimeUp(eid).catch((e) => console.error(e))
@@ -593,11 +627,14 @@ watch(
     if (!newId) return
     if (oldVals && newId === oldVals[0] && newVals[1] === oldVals[1]) return
     await fetchGame(props.gameId, props.spectate).then(
-      async ({ game: newGame, playerId: newPlayerId, multiplayerMode }) => {
+      async ({ game: newGame, playerId: newPlayerId, multiplayerMode, eventId }) => {
         preloadImages(newGame)
         ;(window as Window & { g?: Arkham.Game }).g = newGame
         game.value = newGame
         solo.value = multiplayerMode === 'Solo'
+        // Engage the Epic event this game belongs to even when the URL lacks
+        // ?event (e.g. entered via the join / take-a-seat path).
+        gamePayloadEventId.value = eventId
         updateGameLog(newGame.log)
         playerId.value = newPlayerId
         ready.value = true
@@ -1753,7 +1790,7 @@ onUnmounted(() => {
       </section>
     </div>
   </div>
-  <div id="game" v-else-if="ready && game && playerId">
+  <div id="game" v-else-if="ready && game && playerId" :style="{ '--epic-bar-height': epicBarHeight + 'px' }">
     <AiControlPanel
       v-if="aiDevEnabled && game && aiSeatIds.length > 0"
       :game="game"
@@ -2065,18 +2102,22 @@ onUnmounted(() => {
         </button>
       </div>
     </div>
-    <OrganizerBar
-      v-if="organizerEventId"
-      :event-id="organizerEventId"
-      :current-game-id="gameId"
-      :spectate="spectate"
-    />
-    <PlayerEventBar
-      v-else-if="playerEventId"
-      :event-id="playerEventId"
-      :current-game-id="gameId"
-      :spectate="spectate"
-    />
+    <div v-if="hasEventBar" ref="epicBarRef" class="epic-bar-slot">
+      <OrganizerBar
+        v-if="organizerEventId"
+        :event-id="organizerEventId"
+        :current-game-id="gameId"
+        :spectate="spectate"
+        :current-act-stage="currentActStage"
+      />
+      <PlayerEventBar
+        v-else-if="playerEventId"
+        :event-id="playerEventId"
+        :current-game-id="gameId"
+        :spectate="spectate"
+        :current-act-stage="currentActStage"
+      />
+    </div>
     <EventStartBarrier v-if="showStartBarrier" />
     <MultiplayerLobby
       v-if="game.gameState.tag === 'IsPending'"
@@ -2480,9 +2521,16 @@ onUnmounted(() => {
   }
 }
 
+/* Epic Multiplayer bar lives in normal flow above the board; reserve its measured
+   height so the board's player area stays within the viewport. Defaults to 0 for
+   ordinary games. */
+.epic-bar-slot {
+  flex: 0 0 auto;
+}
+
 .game-main {
   width: 100vw;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 80px - var(--epic-bar-height, 0px));
   display: flex;
   flex: 1;
 }

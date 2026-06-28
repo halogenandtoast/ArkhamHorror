@@ -127,7 +127,7 @@ const isEpicActive = computed(() => scenarioSupportsEpic.value && epicMode.value
 // names/counts the organizer already edited.
 watch(epicGroupCount, (count) => {
   const next = epicGroups.value.slice(0, count)
-  while (next.length < count) next.push({ name: `Group ${next.length + 1}`, playerCount: 2 })
+  while (next.length < count) next.push({ name: `Group ${String.fromCharCode(65 + next.length)}`, playerCount: 2 })
   epicGroups.value = next
 })
 

@@ -6,6 +6,7 @@ import { useEventStore } from '@/arkham/stores/event'
 import { useEpicHelpers } from '@/arkham/composables/useEpicHelpers'
 import { COUNTERMEASURES, counterValue, type GroupDigest } from '@/arkham/types/EpicEvent'
 import EventCountdown from '@/arkham/components/EventCountdown.vue'
+import SharedPools from '@/arkham/components/SharedPools.vue'
 
 // Player-facing group switcher shown at the top of a group's game view when that
 // game belongs to an Epic Multiplayer event. It mirrors the organizer's switcher
@@ -16,7 +17,13 @@ import EventCountdown from '@/arkham/components/EventCountdown.vue'
 // gates it behind the dev flag. Reads the sibling groups + shared counters from
 // the event store, which Game.vue loads from the ?event=<id> query param and keeps
 // live via the SharedStateUpdate feed riding on this group's game websocket.
-const props = defineProps<{ eventId: string; currentGameId: string; spectate: boolean }>()
+const props = defineProps<{
+  eventId: string
+  currentGameId: string
+  spectate: boolean
+  // Stage (1/2/3) of the act in play for the VIEWED group, from Game.vue.
+  currentActStage: number | null
+}>()
 
 const router = useRouter()
 const store = useEventStore()
@@ -82,6 +89,7 @@ function openGroup(group: GroupDigest) {
     </nav>
 
     <div class="bar-metrics">
+      <SharedPools :current-act-stage="currentActStage" />
       <EventCountdown />
       <div class="bar-metric">
         <span class="bar-label">{{ $t('event.countermeasures') }}</span>

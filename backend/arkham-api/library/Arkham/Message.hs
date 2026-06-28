@@ -1132,6 +1132,17 @@ data Message
     -- belongs to an event; otherwise they are inert no-ops. See "Arkham.Epic".
     SpendShared SharedKey Int
   | RaiseShared SharedKey Int
+  | -- Epic Multiplayer: resolve a shared act-clue advance for ONE group's
+    -- stage-@stage@ act. @ResolveEpicActAdvance stage spendAmount@: remove
+    -- @spendAmount@ clues from that act (consumed toward the shared threshold),
+    -- distribute the act's remaining clues to that group's investigators, and
+    -- advance the act deck. Pushed by the server (the cross-group coordinator in
+    -- 'Api.Handler.Arkham.Games.Shared.coordinateEpicActAdvance' for the exact
+    -- crossing, and the organizer endpoint for an excess allocation), once per
+    -- group. Dispatched to the act entities like any ordinary message; the
+    -- per-group handler must NOT touch the shared counter -- the server owns the
+    -- pool reset (a single direct-set), so there is no exactly-once problem here.
+    ResolveEpicActAdvance Int Int
   deriving stock (Show, Eq, Ord, Data)
 
 {- | The fight cluster routes by 'Target' internally. Two public forms exist

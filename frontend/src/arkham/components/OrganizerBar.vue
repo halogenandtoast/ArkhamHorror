@@ -6,6 +6,7 @@ import { useEventStore } from '@/arkham/stores/event'
 import { useEpicHelpers } from '@/arkham/composables/useEpicHelpers'
 import { COUNTERMEASURES, counterValue, type GroupDigest } from '@/arkham/types/EpicEvent'
 import EventCountdown from '@/arkham/components/EventCountdown.vue'
+import SharedPools from '@/arkham/components/SharedPools.vue'
 
 // Organizer-only chrome shown at the top of a group's game view (below the app
 // nav, above the board). Reads everything from the event store, which Game.vue
@@ -14,7 +15,13 @@ import EventCountdown from '@/arkham/components/EventCountdown.vue'
 // `spectate` is the CURRENT mode for this game view (true = organizer/spectate
 // route, false = playing a seat). The bar is always present for the organizer; it
 // uses the mode to decide what a tab/button does.
-const props = defineProps<{ eventId: string; currentGameId: string; spectate: boolean }>()
+const props = defineProps<{
+  eventId: string
+  currentGameId: string
+  spectate: boolean
+  // Stage (1/2/3) of the act in play for the VIEWED group, from Game.vue.
+  currentActStage: number | null
+}>()
 
 const router = useRouter()
 const store = useEventStore()
@@ -53,7 +60,7 @@ function playSeat(group: GroupDigest) {
 
 <template>
   <div class="organizer-bar">
-    <RouterLink class="dashboard-link" :to="`/events/${eventId}`">
+    <RouterLink class="dashboard-link" :to="`/events/${eventId}`" @click="store.requestDashboardHub()">
       <span class="back-arrow" aria-hidden="true">‹</span>
       <span class="dashboard-name">{{ event?.name ?? $t('event.organizerDashboard') }}</span>
     </RouterLink>
@@ -87,6 +94,7 @@ function playSeat(group: GroupDigest) {
     </div>
 
     <div class="bar-metrics">
+      <SharedPools :current-act-stage="currentActStage" />
       <EventCountdown />
       <div class="bar-metric">
         <span class="bar-label">{{ $t('event.countermeasures') }}</span>

@@ -15,6 +15,7 @@ module Api.Handler.Arkham.Games (
   getApiV1ArkhamGameAiQuestionsR,
 ) where
 
+import Api.Arkham.Epic (lookupGameEvent)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Api.Handler.Arkham.Games.Shared
@@ -66,7 +67,13 @@ getApiV1ArkhamGameR gameId = do
         case g.variant of
           WithFriends -> coerce playerId
           Solo -> gameActivePlayerId
-    pure $ GetGameJson (Just player) g.variant (PublicGame gameId g.name gameLog.entries g.currentData)
+    mEvt <- lookupGameEvent gameId
+    pure
+      $ GetGameJson
+        (Just player)
+        g.variant
+        (PublicGame gameId g.name gameLog.entries g.currentData)
+        (entityKey . fst <$> mEvt)
 
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
@@ -76,7 +83,13 @@ getApiV1ArkhamGameSpectateR gameId = do
     let Game {..} = g.currentData
     gameLog <- getGameLog gameId Nothing
     let player = gameActivePlayerId
-    pure $ GetGameJson (Just player) g.variant (PublicGame gameId g.name gameLog.entries g.currentData)
+    mEvt <- lookupGameEvent gameId
+    pure
+      $ GetGameJson
+        (Just player)
+        g.variant
+        (PublicGame gameId g.name gameLog.entries g.currentData)
+        (entityKey . fst <$> mEvt)
 
 getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamGamesR = do

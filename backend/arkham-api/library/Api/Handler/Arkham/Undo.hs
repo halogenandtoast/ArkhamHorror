@@ -316,6 +316,12 @@ stepBackToScenarioStep userId gameId rawGame targetStep = runExceptT do
     pure steps
 
   lift do
+    -- The step-deletion trigger only permits deleting steps greater than the
+    -- game's current step. Move the game cursor first, then trim future steps.
+    update \g -> do
+      set g [ArkhamGameStep =. val toStep]
+      where_ $ g.id ==. val gameId
+
     -- Range delete by (game_id, step) instead of materializing every step's
     -- UUID into an IN(...) list. Same row set, but the planner uses a single
     -- index scan on steps_game_step_idx and there's no client->server

@@ -143,9 +143,9 @@ directive ('aiPrioritySet').
 
   * /Role-aware investigate deferral/. An Investigate where a co-located,
     clearly-better investigator stands (higher intellect, or an investigate deck
-    focus the seat lacks) and the location holds at most one clue is nudged down
-    by 'investigateDeferralPenalty', letting the better investigator take the
-    clue while the seat fights\/supports. The strongest investigator present is
+    focus the seat lacks) can clear the location's clues themselves
+    ('deferClueCoverage') is nudged down by 'investigateDeferralPenalty', letting
+    the better investigator take them while the seat fights\/supports. The strongest investigator present is
     unaffected.
 
   * /Specialty division of labor/. Derived from the seat's own specialty
@@ -1574,7 +1574,13 @@ investigator should take the (one-or-fewer) clue here instead. Subtracted in
 'scoreChoice'.
 -}
 investigateDeferralPenalty :: Int
-investigateDeferralPenalty = 4
+investigateDeferralPenalty = 10
+
+{- | Up to how many clues a stronger co-located investigator is assumed able to
+clear on their own this turn — at or below this the weaker seat defers the
+location to them (a fuller location needs everyone digging). -}
+deferClueCoverage :: Int
+deferClueCoverage = 3
 
 {- | The small (≤4) specialty bump/malus that divides labor in a mixed party: a
 combat-specialty seat leans into fighting (and off investigating) when the party
@@ -1755,11 +1761,14 @@ scoreChoice sit ui =
     _ -> 0
 
   -- (2) Role-aware investigate deferral: when a co-located, clearly-better
-  -- investigator is here and the location holds at most one clue, let them take
-  -- it and do something else. The strongest investigator present is unaffected.
+  -- investigator is here and they can plausibly clear the clues themselves
+  -- ('deferClueCoverage'), let them take the location and do something else —
+  -- a weak-intellect combat seat shouldn't grind marginal-odds investigates next
+  -- to a seeker. The strongest investigator present is unaffected, and a clue-rich
+  -- location (above the coverage cap) still wants everyone digging.
   investigateDefer = case kind of
     InvestigateChoice
-      | aiLocationClues sit <= 1
+      | aiLocationClues sit <= deferClueCoverage
       , betterInvestigatorColocated sit ->
           negate investigateDeferralPenalty
     _ -> 0

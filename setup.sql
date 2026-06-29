@@ -227,6 +227,21 @@ CREATE TABLE public.arkham_steps (
 
 
 --
+-- Name: arkham_ml_decisions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arkham_ml_decisions (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    arkham_game_id uuid NOT NULL,
+    step integer NOT NULL,
+    player_id text NOT NULL,
+    chosen_index integer NOT NULL,
+    rows jsonb NOT NULL,
+    created_at timestamp with time zone NOT NULL
+);
+
+
+--
 -- Name: notifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -364,6 +379,9 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 ALTER TABLE ONLY public.arkham_steps
     ADD CONSTRAINT arkham_steps_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY public.arkham_ml_decisions
+    ADD CONSTRAINT arkham_ml_decisions_pkey PRIMARY KEY (id);
+
 --
 -- Name: arkham_decks arkham_decks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
@@ -450,6 +468,20 @@ CREATE UNIQUE INDEX steps_game_step_idx ON public.arkham_steps USING btree (arkh
 
 
 --
+-- Name: arkham_ml_decisions_game_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arkham_ml_decisions_game_idx ON public.arkham_ml_decisions USING btree (arkham_game_id);
+
+
+--
+-- Name: arkham_ml_decisions_created_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arkham_ml_decisions_created_idx ON public.arkham_ml_decisions USING btree (created_at);
+
+
+--
 -- Name: arkham_steps enforce_step_order_per_game; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -494,6 +526,14 @@ ALTER TABLE ONLY public.arkham_players
 
 ALTER TABLE ONLY public.arkham_steps
     ADD CONSTRAINT arkham_steps_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id) ON DELETE CASCADE;
+
+
+--
+-- Name: arkham_ml_decisions arkham_ml_decisions_arkham_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arkham_ml_decisions
+    ADD CONSTRAINT arkham_ml_decisions_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id) ON DELETE CASCADE;
 
 
 --

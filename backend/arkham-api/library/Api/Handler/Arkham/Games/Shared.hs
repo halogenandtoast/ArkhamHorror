@@ -12,13 +12,22 @@ import Api.Arkham.Epic (
  )
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
-import Arkham.Ai.Decision (decideAi, decideAiAssist, isAssistCommitWindow)
+import Arkham.Ai.Decision (
+  choiceFeatures,
+  decideAi,
+  decideAiAssist,
+  flattenChoices,
+  gatherSituation,
+  isAssistCommitWindow,
+  scoreBreakdown,
+  unwrapQuestion,
+ )
 import Arkham.Ai.Helpers (lookupAiPlayer)
-import Arkham.Ai.State (aiEnabled)
+import Arkham.Ai.State (aiEnabled, defaultAiPlayerState)
 import Arkham.Campaign.Types (CampaignAttrs)
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
 import Arkham.ClassSymbol
-import Arkham.Classes.Entity (attr)
+import Arkham.Classes.Entity (attr, toId)
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Difficulty
@@ -45,7 +54,7 @@ import Arkham.Game.State
 import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
-import Arkham.Investigator.Types (Investigator)
+import Arkham.Investigator.Types (Investigator, investigatorPlayerId)
 import Arkham.Message
 import Arkham.Name
 import Arkham.Queue
@@ -55,6 +64,7 @@ import Control.Concurrent.MVar
 import Control.Concurrent.STM.TBQueue (readTBQueue)
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
+import Data.Aeson.Key qualified as K
 import Data.Aeson.Types (parse)
 import Data.ByteString.Lazy qualified as BSL
 import Data.IntMap.Strict qualified as IntMap
@@ -64,6 +74,7 @@ import Data.Text qualified as T
 import Data.These
 import Data.Time.Clock
 import Data.UUID (nil)
+import Data.Vector qualified as V
 import Database.Esqueleto.Experimental hiding (update, (=.))
 import Database.Redis (RedisChannel, msgMessage, pubSub, publish, runRedis, subscribe)
 import Entity.Answer
@@ -74,6 +85,7 @@ import Import qualified as P
 import Json
 import Network.WebSockets (ConnectionException)
 import OpenTelemetry.Trace.Monad (MonadTracer (..))
+import System.IO qualified as SIO
 import UnliftIO.Async (async, cancel)
 import UnliftIO.Exception hiding (Handler)
 import UnliftIO.Timeout (timeout)
@@ -289,6 +301,9 @@ updateGame response gameId mRoom = do
         Nothing -> \_ -> pure ()
         Just room -> broadcastToRoom room
   tracer <- getTracer
+  -- Imitation-learning capture flag, read once from app settings (a pure record
+  -- read, no DB). When False the capture below is byte-for-byte inert.
+  collectMl <- getsYesod (appCollectMlData . appSettings)
   -- NOTE: not wrapping the whole handler in withSpan_ -- it would rewrap
   -- Yesod's HCContent control-flow exceptions (notFound, notAuthenticated,
   -- sendStatusJSON, etc.) and break 404/401 responses (see Undo.hs note).
@@ -427,6 +442,14 @@ updateGame response gameId mRoom = do
             [ ArkhamStepChoice =. Choice diffDown updatedQueue
             , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
             ]
+
+        -- Imitation-learning capture (gated off by default; human-only;
+        -- multi-choice only). Runs against gameJson = the PARKED state S_{k-1}
+        -- (its gameQuestion is the question the human just answered), keyed by
+        -- the produced step (arkhamGameStep + 1) so group_ids match the
+        -- historical arkham-extract dataset. Internally try/savepoint-guarded:
+        -- a capture failure can never abort or alter this action.
+        captureMlDecision collectMl gameId (arkhamGameStep + 1) gameJson playerId response now
 
         -- Epic Multiplayer: drain any shared-counter deltas emitted this action
         -- and apply them to the authoritative event row under a short FOR UPDATE
@@ -857,3 +880,125 @@ deleteEventRoom :: ArkhamEpicEventId -> Handler ()
 deleteEventRoom eid = do
   roomsVar <- getsYesod appEventRooms
   liftIO $ modifyMVar_ roomsVar $ pure . Map.delete eid
+
+-- ---------------------------------------------------------------------------
+-- Imitation-learning capture
+--
+-- Logs one 'ArkhamMlDecision' row per HUMAN, multi-choice decision, against the
+-- CURRENT engine (no replay -> drift-free), with the chosen index as a direct
+-- label. Reuses the exported AI feature functions ('gatherSituation',
+-- 'choiceFeatures', 'scoreBreakdown') so the live dataset distils against the
+-- same scorer 'decideAi' uses; it is NOT a second feature implementation.
+--
+-- Safety contract (this is on the hot path, inside the FOR UPDATE-locked
+-- transaction): when @collectMl@ is False it is a no-op (no query, no insert);
+-- otherwise it adds at most ONE insert per human decision, and every failure
+-- mode is swallowed -- see 'runMlCapture' for why even a SQL-level failure
+-- (e.g. the table was never created) cannot abort or alter the game action.
+
+{- | Capture one decision when @collectMl@ is on AND the decision qualifies (see
+'mlDecisionRows'). The PARKED game @game@ is S_{k-1}: its 'gameQuestion' is the
+question the human just answered, and @response@ is that human's original answer
+(an 'AiAnswer'/'AiAssist' seat is rejected by 'mlDecisionRows', so only human
+labels are recorded). @step@ is the PRODUCED step (so the @group_id@ matches the
+historical extractor). Runs in the same 'DB' transaction the action commits in.
+-}
+captureMlDecision
+  :: MonadIO m
+  => Bool
+  -> ArkhamGameId
+  -> Int
+  -> Game
+  -> PlayerId
+  -> Answer
+  -> UTCTime
+  -> ReaderT SqlBackend m ()
+captureMlDecision collectMl gameId step game pid response now =
+  when collectMl $ do
+    conn <- ask
+    -- Hand the RAW inputs to the IO guard: the qualifying check + feature build
+    -- (mlDecisionRows) AND the insert all run inside 'handleAny', so NOTHING --
+    -- not even a blowup while deciding to skip -- can escape into this action's
+    -- transaction.
+    liftIO $ runMlCapture conn gameId step game pid response now
+
+{- | Decide-and-insert the capture row so it can NEVER break the surrounding
+action. Everything risky runs inside 'handleAny':
+
+  1. 'mlDecisionRows' (the skip/keep decision + lazy feature build) is evaluated
+     here, so a partial-function blowup deep in the AI feature code is caught and
+     the transaction is never touched.
+  2. The feature/breakdown JSON is forced before any SQL is issued.
+  3. The insert is wrapped in a SQL @SAVEPOINT@: a SQL-level failure (most
+     plausibly: @collect-ml@ was enabled before the @arkham_ml_decisions@ table
+     was created) is rolled back to the savepoint, which un-poisons the
+     surrounding transaction so the game step still commits. Without the
+     savepoint a failed statement would abort the whole transaction.
+
+In every case it logs and continues.
+-}
+runMlCapture
+  :: SqlBackend -> ArkhamGameId -> Int -> Game -> PlayerId -> Answer -> UTCTime -> IO ()
+runMlCapture conn gameId step game pid response now = handleAny logMlError
+  $ case mlDecisionRows game pid response of
+    Nothing -> pure ()
+    Just (chosenIndex, rowsValue) -> do
+      -- (2) force the lazy feature JSON before any SQL touches the connection.
+      _ <- evaluate (BSL.length (encode rowsValue))
+      let decision = ArkhamMlDecision gameId step (tshow pid) chosenIndex rowsValue now
+      -- (3) savepoint-guarded insert on the action's own connection/transaction.
+      flip runReaderT conn $ do
+        rawExecute "SAVEPOINT arkham_ml_capture" []
+        res <- try (insert_ decision)
+        case res :: Either SomeException () of
+          Right () -> rawExecute "RELEASE SAVEPOINT arkham_ml_capture" []
+          Left e -> do
+            rawExecute "ROLLBACK TO SAVEPOINT arkham_ml_capture" []
+            rawExecute "RELEASE SAVEPOINT arkham_ml_capture" []
+            liftIO $ logMlError e
+
+logMlError :: SomeException -> IO ()
+logMlError e =
+  SIO.hPutStrLn SIO.stderr $ "[arkham-ml] capture skipped (continuing): " <> show e
+
+{- | The qualifying gate + the per-choice feature rows, or 'Nothing' to skip.
+Skips unless ALL hold (mirrors the arkham-extract filters):
+
+  * the original answer is a plain human @Answer (QuestionResponse ..)@ -- this
+    alone rejects AI seats ('AiAnswer'/'AiAssist') and the non-index answer
+    shapes (amounts/payment/raw/deck);
+  * the seat has a parked question whose flattened choices number > 1.
+
+When it qualifies it returns @(chosenIndex, rows)@ where @rows@ is the lazy
+jsonb array -- one element per flattened choice -- to be forced inside the guard.
+The situation snapshot is read in @ReaderT Game Identity@, exactly how 'decideAi'
+invokes 'gatherSituation'.
+-}
+mlDecisionRows :: Game -> PlayerId -> Answer -> Maybe (Int, Json.Value)
+mlDecisionRows game pid = \case
+  Answer (QuestionResponse {qrChoice}) -> do
+    q <- Map.lookup pid (gameQuestion game)
+    (cs, _off) <- flattenChoices (unwrapQuestion q)
+    guard (length cs > 1)
+    let
+      code = maybe "00000" unInvestigatorId (resolveMlInvestigator pid game)
+      sit = runIdentity (runReaderT (gatherSituation (defaultAiPlayerState code) pid) game)
+      rowsValue =
+        Array
+          $ V.fromList
+            [ object
+                [ "chosen" .= (i == qrChoice)
+                , "features" .= object [K.fromText name .= v | (name, v) <- choiceFeatures sit ui]
+                , "breakdown" .= object [K.fromText name .= v | (name, v) <- scoreBreakdown sit ui]
+                ]
+            | (i, ui) <- zip [0 :: Int ..] cs
+            ]
+    pure (qrChoice, rowsValue)
+  _ -> Nothing
+
+{- | The seat's controlled investigator id in the decision snapshot (only its
+card code is needed, to pick the AI focus profile). Mirrors arkham-extract.
+-}
+resolveMlInvestigator :: PlayerId -> Game -> Maybe InvestigatorId
+resolveMlInvestigator pid game =
+  toId <$> find ((== pid) . attr investigatorPlayerId) (Map.elems (gameEntities game).investigators)

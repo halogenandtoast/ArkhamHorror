@@ -176,6 +176,54 @@ executables:
       - condition: flag(library-only)
         buildable: false
 
+  arkham-extract:
+    main: Main.hs
+    source-dirs: app-extract
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+      - aeson
+      - aeson-diff
+      - arkham-api
+      - bytestring
+      - containers
+      - deepseq
+      - hs-opentelemetry-sdk
+      - monad-logger
+      - MonadRandom
+      - persistent
+      - persistent-postgresql
+      - text
+      - transformers
+      - unliftio
+      - vector
+    when:
+      - condition: flag(library-only)
+        buildable: false
+
+  arkham-ml-export:
+    main: Main.hs
+    source-dirs: app-ml-export
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+      - aeson
+      - arkham-api
+      - bytestring
+      - containers
+      - monad-logger
+      - persistent
+      - persistent-postgresql
+      - text
+      - vector
+    when:
+      - condition: flag(library-only)
+        buildable: false
+
 flags:
   library-only:
     description: Build for use with "yesod devel"

@@ -293,18 +293,6 @@ export const eventTimeUp = async (eventId: string): Promise<void> => {
   await api.post(`arkham/events/${eventId}/time-up`)
 }
 
-// Organizer resolves an over-threshold shared act advance for `stage`, choosing how
-// many clues each group spends. `allocation` entries are { ordinal, spend }. The
-// backend resets the shared pool + clears the pending flag, then broadcasts the
-// updated shared state over the event ws.
-export const resolveEventAdvance = async (
-  eventId: string,
-  stage: number,
-  allocation: { ordinal: number; spend: number }[],
-): Promise<void> => {
-  await api.post(`arkham/events/${eventId}/resolve-advance`, { stage, allocation })
-}
-
 export const deleteEvent = async (eventId: string): Promise<void> => {
   await api.delete(`arkham/events/${eventId}`)
 }

@@ -71,6 +71,13 @@ ArkhamEpicStep sql=arkham_epic_steps
   delta SharedDelta
   createdAt UTCTime
   deriving Generic Show
+
+ArkhamGameUndoFloor sql=arkham_game_undo_floors
+  Id UUID default=uuid_generate_v4()
+  arkhamGameId ArkhamGameId OnDeleteCascade
+  floorStep Int
+  UniqueGameUndoFloor arkhamGameId
+  deriving Generic Show
 |]
 
 instance ToJSON ArkhamEpicEvent where

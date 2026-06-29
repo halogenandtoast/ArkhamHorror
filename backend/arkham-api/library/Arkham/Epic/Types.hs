@@ -52,11 +52,19 @@ data SharedKey
   = Countermeasures
   | SharedEnemyHealth CardCode
   | SharedActProgress Int
-  | -- | Set to 1 when a stage-@N@ shared act-clue pool has reached its advance
-    -- threshold WITH EXCESS and awaits the organizer's per-group spend
-    -- allocation; 0/absent otherwise. An exact-threshold crossing resolves
-    -- immediately and never sets this.
-    PendingActAdvance Int
+  | -- | Edge-trigger the resolving act raises (@RaiseShared (AdvanceRequested N) 1@)
+    -- when it advances its stage-@N@ act in-group, signalling the POST-COMMIT
+    -- coordinator. The coordinator's atomic claim consumes it (clears to 0) and, if
+    -- this was the crossing that met the threshold, bumps 'ActAdvanceGen'.
+    AdvanceRequested Int
+  | -- | Monotonic per-stage global act-advance generation. Bumped exactly once per
+    -- advance cycle by the coordinator's atomic claim (under the event lock, using
+    -- the pool reset as the once-only token). Each group advances IN-GROUP via the
+    -- normal AdvanceAct flow when its local 'Arkham.ScenarioLogKey.EpicActAdvances'
+    -- for the stage is behind this. This is the ONLY cross-group act-advance signal
+    -- — no cross-group message injection. Mirrored into scenario state like the
+    -- other counters.
+    ActAdvanceGen Int
   | GroupDoom GroupOrdinal
   | LeadFaction
   | -- | A random per-event seed (set once at event start) from which each group
@@ -91,7 +99,8 @@ sharedKeyText = \case
   Countermeasures -> "countermeasures"
   SharedEnemyHealth cc -> "enemy-health:" <> unCardCode cc
   SharedActProgress n -> "act-progress:" <> tshow n
-  PendingActAdvance n -> "pending-act-advance:" <> tshow n
+  AdvanceRequested n -> "advance-requested:" <> tshow n
+  ActAdvanceGen n -> "act-advance-gen:" <> tshow n
   GroupDoom (GroupOrdinal o) -> "group-doom:" <> tshow o
   LeadFaction -> "lead-faction"
   BlobStorySeed -> "blob-story-seed"
@@ -106,6 +115,13 @@ sharedKeyText = \case
 totalInvestigatorsKey :: Text
 totalInvestigatorsKey = "total-investigators"
 
+-- | The scenario-count key (under 'EpicShared') that mirrors a group's own
+-- ordinal into its scenario state, so a card can learn which group it is. Written
+-- by the per-action sync ('epicSyncMessages'); read by cards as
+-- @scenarioCount (EpicShared groupOrdinalKey)@.
+groupOrdinalKey :: Text
+groupOrdinalKey = "group-ordinal"
+
 sharedKeyFromText :: Text -> Maybe SharedKey
 sharedKeyFromText t = case t of
   "countermeasures" -> Just Countermeasures
@@ -117,7 +133,8 @@ sharedKeyFromText t = case t of
   _ ->
     (SharedEnemyHealth . CardCode <$> stripPrefix "enemy-health:" t)
       <|> (SharedActProgress <$> (stripPrefix "act-progress:" t >>= readMaybe . unpack))
-      <|> (PendingActAdvance <$> (stripPrefix "pending-act-advance:" t >>= readMaybe . unpack))
+      <|> (AdvanceRequested <$> (stripPrefix "advance-requested:" t >>= readMaybe . unpack))
+      <|> (ActAdvanceGen <$> (stripPrefix "act-advance-gen:" t >>= readMaybe . unpack))
       <|> (GroupDoom . GroupOrdinal <$> (stripPrefix "group-doom:" t >>= readMaybe . unpack))
 
 {- | An invertible mutation of one shared counter. @sharedDeltaAmount@ is signed:

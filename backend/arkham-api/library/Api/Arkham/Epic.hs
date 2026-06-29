@@ -152,3 +152,16 @@ revertEpicDeltasForGameStep eid gameId gameStep = do
             ]
           for_ stepRows \(Entity sid _) -> P.delete sid
           pure (Just s1)
+
+{- | The per-game undo FLOOR: the persistence step at/below which undo is walled
+off, because crossing it would rewind an epic act-clue advance whose shared
+effect (pool reset + generation bump that the OTHER groups then follow) cannot be
+locally undone. Set in 'Api.Handler.Arkham.Games.Shared.updateGame' when a group
+advances its act IN-GROUP; enforced by 'Api.Handler.Arkham.Undo.stepBack' /
+'stepBackToScenarioStep'. 0 (no row) means no floor — ordinary undo.
+-}
+getGameUndoFloor :: MonadIO m => ArkhamGameId -> ReaderT SqlBackend m Int
+getGameUndoFloor gameId = do
+  mRow <- P.getBy (UniqueGameUndoFloor gameId)
+  pure $ maybe 0 (arkhamGameUndoFloorFloorStep . entityVal) mRow
+

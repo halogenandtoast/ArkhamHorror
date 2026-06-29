@@ -14,17 +14,18 @@ import Arkham.Helpers.Log (scenarioCountIncrement)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicActAdvances, EpicShared))
-import Arkham.Token (Token (Clue))
 import Arkham.Trait (Trait (Oozified))
 
 -- Epic Multiplayer variant of Expose the Anomaly (card 85005). The act's clue
 -- requirement is a single GLOBAL pool shared across every group in the event:
 -- 2 clues per investigator across ALL groups (the event's frozen total).
 --
--- CONTRIBUTION: each investigator has a fast ability to place up to 3 of their
--- own clues onto this act. Only clues placed on a group's act feed the pool: each
--- placement raises @act-progress:1@ by the amount placed, so the pool is the live
--- sum of clues on every group's act.
+-- CONTRIBUTION: each investigator has a fast ability to spend up to 3 of their
+-- own clues into the shared pool. The clues are spent FROM THE INVESTIGATOR and are
+-- NOT stored as local act tokens (the act holds zero clue tokens); each spend only
+-- raises @act-progress:1@. So the pool lives entirely in shared state: a server
+-- reset zeroes it for every group with no per-group game edit, and a group undoing
+-- its own game can't restore a clue the shared pool already consumed.
 --
 -- ADVANCE is FULLY IN-GROUP -- there is NO cross-group message injection. Each
 -- group flips its own act in its own normal AdvanceAct flow at its own round begin:
@@ -101,25 +102,26 @@ instance RunMessage ExposeTheAnomalyEpicMultiplayer where
       when (n > 0) $ chooseAmount iid "Clues" "Clues" 1 n attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Clues" -> amount) (isTarget attrs -> True) | amount > 0 -> do
-      -- Place this investigator's chosen clues onto the act, then add them to the
-      -- shared pool. Only clues placed on the act count.
-      moveTokens (attrs.ability 1) iid attrs Clue amount
+      -- Spend this investigator's chosen clues straight into the SHARED pool: remove
+      -- them from the investigator and record them only in @act-progress:1@. Nothing
+      -- is placed as a local act token, so the act holds zero clue tokens.
+      spendClues iid amount
       push $ RaiseShared actProgressKey amount
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      -- FIRST-RESOLVER: the pool reached the global threshold. Consume this group's
-      -- act clues, advance in-group via the normal flow, and signal the server. The
-      -- server consumes AdvanceRequested under the lock, resets the pool to 0, and
-      -- bumps the generation once -- we do NOT reset the pool or bump the generation.
-      removeTokens (toSource attrs) attrs Clue attrs.clues
+      -- FIRST-RESOLVER: the pool reached the global threshold. Advance in-group via the
+      -- normal flow and signal the server. The server consumes AdvanceRequested under
+      -- the lock, resets the shared pool to 0, and bumps the generation once -- we do
+      -- NOT reset the pool or bump the generation. There are no local act clue tokens
+      -- to remove (clues live in the shared pool).
       scenarioCountIncrement actAdvancesKey
       push $ RaiseShared (AdvanceRequested actStage) 1
       advancedWithOther attrs
       pure $ ExposeTheAnomalyEpicMultiplayer $ attrs & metaL .~ toJSON True
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       -- FOLLOWER: the global generation is ahead of this group's local count, so a
-      -- resolver already crossed. Catch up by advancing in-group. No shared writes.
-      removeTokens (toSource attrs) attrs Clue attrs.clues
+      -- resolver already crossed. Catch up by advancing in-group. No shared writes,
+      -- and no local act clue tokens to remove.
       scenarioCountIncrement actAdvancesKey
       advancedWithOther attrs
       pure a

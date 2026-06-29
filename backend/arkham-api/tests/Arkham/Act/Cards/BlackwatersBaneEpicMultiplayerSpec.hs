@@ -27,18 +27,23 @@ normal AdvanceAct flow. Unlike Act 1, the side-B flip loops the deck back to act
 stage 1 and reads a seed-derived Part-1 story.
 
   * CONTRIBUTION (ability 1, fast, @DuringTurn You@, only while you have clues):
-    @chooseAmount@ 1..min(3, spendable clues), then moves those clues physically
-    onto the act and raises the shared @act-progress:3@ counter by the amount
-    placed. (In a non-event game the @RaiseShared@ delta is not mirrored back into
-    scenario state, so we assert the emitted message rather than a count change.)
+    @chooseAmount@ 1..min(3, spendable clues), then SPENDS those clues from the
+    investigator (@spendClues@) straight into the shared pool and raises the shared
+    @act-progress:3@ counter by the amount spent. Nothing is placed on the act -- it
+    holds ZERO clue tokens. (In a non-event game the @RaiseShared@ delta is not
+    mirrored back into scenario state, so we assert the emitted message rather than a
+    count change.)
   * FIRST-RESOLVER (ability 2, @Objective $ forced $ RoundBegins #when@): once the
-    mirrored pool reaches @2 * total@, this group advances in-group, clears its own
-    act clues, bumps the LOCAL @EpicActAdvances 3@, and raises @AdvanceRequested 3@.
-    The pool reset / generation bump are server-owned and NOT asserted here.
+    mirrored pool reaches @2 * total@, this group advances in-group, bumps the LOCAL
+    @EpicActAdvances 3@, and raises @AdvanceRequested 3@. The pool reset / generation
+    bump are server-owned and NOT asserted here.
   * FOLLOWER (ability 3, @Objective $ forced $ RoundBegins #when@): when the
     mirrored @act-advance-gen:3@ is ahead of this group's local @EpicActAdvances 3@,
-    this group catches up by advancing in-group, clearing its clues and bumping the
-    local count, raising NO @AdvanceRequested@.
+    this group catches up by advancing in-group, bumping the local count and raising
+    NO @AdvanceRequested@.
+
+There are no local act clue tokens at any point (clues live in the shared pool),
+so advancing does not clear any act clues.
 
 The seeded Part-1 story pick is deterministic: the side-B handler reads
 @wave = EpicActAdvances 3@ (already bumped to its post-increment value by ability
@@ -49,8 +54,8 @@ The seeded Part-1 story pick is deterministic: the side-B handler reads
 Harness notes: the heavier side effects are inert here -- no set-aside Mi-Go
 Drones to reshuffle, no revealed Oozified locations to seed, and
 @ResetActDeckToStage 1@ is a no-op with no configured act stack -- so we assert
-the in-group flip, the local advance count, the cleared act clues, the
-presence/absence of the server signal, and the deterministic story read.
+the in-group flip, the local advance count, the presence/absence of the server
+signal, and the deterministic story read.
 -}
 realAct :: CardDef -> TestAppT Act
 realAct def = do
@@ -61,7 +66,7 @@ realAct def = do
   pure act'
 
 -- | Surface the contribution fast ability (index 1) under a during-turn window
--- and place @amount@ of the investigator's clues onto the act.
+-- and spend @amount@ of the investigator's clues into the shared pool.
 contribute :: Investigator -> Act -> Int -> TestAppT ()
 contribute self act amount = do
   let ws = defaultWindows (toId self)
@@ -96,7 +101,7 @@ useObjective self act idx = do
 
 spec :: Spec
 spec = describe "Blackwater's Bane (Epic Multiplayer)" do
-  it "places contributed clues onto the act, drops them from the investigator, and raises the pool"
+  it "spends contributed clues from the investigator into the pool, leaving no clues on the act"
     . scenarioTest "85001"
     $ \self -> do
       act <- realAct Acts.blackwatersBaneEpicMultiplayer
@@ -108,16 +113,19 @@ spec = describe "Blackwater's Bane (Epic Multiplayer)" do
 
       contribute self act 2
 
+      -- the contribution SPENDS the investigator's clues straight into the shared
+      -- pool: the investigator empties and @act-progress:3@ is raised by the amount.
+      -- Nothing is placed on the act (it holds zero clue tokens) and it does NOT
+      -- advance.
       raised `refShouldBe` True
-      field ActClues act.id `shouldReturn` 2
       self.clues `shouldReturn` 0
+      field ActClues act.id `shouldReturn` 0
       assertAny $ ActWithSide A
 
   it "advances in-group and signals the server once the shared pool meets the global threshold (ability 2, first-resolver)"
     . scenarioTest "85001"
     $ \self -> do
       act <- realAct Acts.blackwatersBaneEpicMultiplayer
-      run $ PlaceTokens (TestSource mempty) (toTarget act) Clue 5
       scenarioCount (EpicActAdvances 3) `shouldReturn` 0
 
       -- mirror the shared pool at the global threshold (pool 2 >= 2 * 1).
@@ -132,7 +140,6 @@ spec = describe "Blackwater's Bane (Epic Multiplayer)" do
 
       assertAny $ ActWithSide B
       assertNone $ ActWithSide A
-      field ActClues act.id `shouldReturn` 0
       scenarioCount (EpicActAdvances 3) `shouldReturn` 1
       requested `refShouldBe` True
 
@@ -140,7 +147,6 @@ spec = describe "Blackwater's Bane (Epic Multiplayer)" do
     . scenarioTest "85001"
     $ \self -> do
       act <- realAct Acts.blackwatersBaneEpicMultiplayer
-      run $ PlaceTokens (TestSource mempty) (toTarget act) Clue 5
       scenarioCount (EpicActAdvances 3) `shouldReturn` 0
 
       -- keep the first-resolver criterion FALSE (pool 0 < 2 * 2) and put the global
@@ -158,7 +164,6 @@ spec = describe "Blackwater's Bane (Epic Multiplayer)" do
 
       assertAny $ ActWithSide B
       assertNone $ ActWithSide A
-      field ActClues act.id `shouldReturn` 0
       scenarioCount (EpicActAdvances 3) `shouldReturn` 1
       noSignal `refShouldBe` False
 
@@ -169,7 +174,6 @@ spec = describe "Blackwater's Bane (Epic Multiplayer)" do
       run $ ScenarioCountSet (EpicShared "blob-story-seed") 0
       run $ ScenarioCountSet (EpicShared "total-investigators") 1
       run $ ScenarioCountSet (EpicShared "act-progress:3") 2
-      run $ PlaceTokens (TestSource mempty) (toTarget act) Clue 4
 
       -- ability 2 bumps EpicActAdvances 3 (0 -> 1) BEFORE the flip, so the side-B
       -- handler reads wave = 1; (seed 0 + wave 1) `mod` 4 = 1 -> 85022. The story

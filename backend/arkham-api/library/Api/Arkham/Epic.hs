@@ -96,23 +96,35 @@ modifySharedStateLocked
   => ArkhamEpicEventId
   -> (SharedEventState -> SharedEventState)
   -> ReaderT SqlBackend m SharedEventState
-modifySharedStateLocked eid f = do
+modifySharedStateLocked eid f = fst <$> modifySharedStateLockedWith eid (\s -> (f s, ()))
+
+-- | 'modifySharedStateLocked' that also returns an extra value computed from the
+-- locked pre-update state — e.g. the act-advance coordinator decides INSIDE the
+-- lock whether this call actually consumed the pool (crossed the threshold) and
+-- returns that flag, so a concurrent second resolver (which sees the pool already
+-- reset) can be told it did NOT consume.
+modifySharedStateLockedWith
+  :: MonadIO m
+  => ArkhamEpicEventId
+  -> (SharedEventState -> (SharedEventState, a))
+  -> ReaderT SqlBackend m (SharedEventState, a)
+modifySharedStateLockedWith eid f = do
   locked <- select do
     e <- from $ table @ArkhamEpicEvent
     where_ $ e.id ==. val eid
     locking forUpdate
     pure e
   case locked of
-    [] -> error "modifySharedStateLocked: epic event row vanished mid-transaction"
+    [] -> error "modifySharedStateLockedWith: epic event row vanished mid-transaction"
     (Entity _ e : _) -> do
       now <- liftIO getCurrentTime
-      let s1 = f (arkhamEpicEventSharedState e)
+      let (s1, a) = f (arkhamEpicEventSharedState e)
       P.update
         eid
         [ ArkhamEpicEventSharedState P.=. s1
         , ArkhamEpicEventUpdatedAt P.=. now
         ]
-      pure s1
+      pure (s1, a)
 
 -- | Revert deltas that were recorded for a particular game step (used by undo).
 -- Subtracts each delta's amount from the *current* value under lock; additive

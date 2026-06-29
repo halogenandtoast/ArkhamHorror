@@ -4,7 +4,12 @@
 
 module Api.Handler.Arkham.Games.Shared where
 
-import Api.Arkham.Epic (applyEpicDeltasLocked, lookupGameEvent, mkEpicEnv, modifySharedStateLocked)
+import Api.Arkham.Epic (
+  applyEpicDeltasLocked,
+  lookupGameEvent,
+  mkEpicEnv,
+  modifySharedStateLockedWith,
+ )
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Ai.Decision (decideAi, decideAiAssist, isAssistCommitWindow)
@@ -750,26 +755,57 @@ It touches ONLY shared counters — it NEVER runs messages in or otherwise mutat
 another group's game (each group advances IN-GROUP via the normal AdvanceAct flow;
 a follower advances when its local 'Arkham.ScenarioLogKey.EpicActAdvances' is
 behind the generation). The pool reset / generation bump are absolute sets, not
-undoable deltas; undo across the advance is blocked by the per-game undo floor set
-on the advancing action (see 'updateGame'), so they never need reverting.
+undoable deltas.
+
+When a stage's claim actually CONSUMES the pool (zeroes it + bumps the generation),
+the advance becomes a GLOBAL CHECKPOINT: 'floorAllGroupsAtCurrentStep' floors undo
+for EVERY group at its current step. This is required for correctness — clues are
+spent straight into the shared pool as undoable @RaiseShared (SharedActProgress)@
+deltas, so without it a CONTRIBUTOR group (not just the advancer) could, after the
+reset, undo a placement and drive the now-zero pool negative while refunding clues
+the advance already consumed. Only the consuming path floors; a non-consuming
+'AdvanceRequested' (already resolved by a concurrent resolver) floors nothing.
 -}
 coordinateEpicActAdvance :: ArkhamEpicEventId -> SharedEventState -> Handler ()
-coordinateEpicActAdvance eid s =
-  for_ (actProgressStages s) \stage ->
-    when (sharedCounter (AdvanceRequested stage) s > 0) do
-      newState <- runDB $ modifySharedStateLocked eid \st ->
-        let
-          pool = sharedCounter (SharedActProgress stage) st
-          threshold = 2 * sharedTotalInvestigators st
-          doResolve =
-            if threshold > 0 && pool >= threshold
-              then
-                setSharedCounter (SharedActProgress stage) 0
-                  . updateSharedCounter (+ 1) (ActAdvanceGen stage)
-              else Import.id
-         in
-          doResolve (setSharedCounter (AdvanceRequested stage) 0 st)
-      broadcastSharedToEvent eid newState
+coordinateEpicActAdvance eid s = do
+  consumed <- or <$> traverse claimStage (actProgressStages s)
+  when consumed $ floorAllGroupsAtCurrentStep eid
+ where
+  claimStage stage
+    | sharedCounter (AdvanceRequested stage) s <= 0 = pure False
+    | otherwise = do
+        (newState, didConsume) <- runDB $ modifySharedStateLockedWith eid \st ->
+          let
+            pool = sharedCounter (SharedActProgress stage) st
+            threshold = 2 * sharedTotalInvestigators st
+            didConsume = threshold > 0 && pool >= threshold
+            doResolve =
+              if didConsume
+                then
+                  setSharedCounter (SharedActProgress stage) 0
+                    . updateSharedCounter (+ 1) (ActAdvanceGen stage)
+                else Import.id
+           in
+            (doResolve (setSharedCounter (AdvanceRequested stage) 0 st), didConsume)
+        broadcastSharedToEvent eid newState
+        pure didConsume
+
+{- | Floor undo for EVERY group in the event at its CURRENT persistence step,
+making a consuming act advance a global checkpoint: no group can undo across it (so
+no contributor can rewind a now-consumed pool placement), while every group's
+actions AFTER it stay undoable. Floors are monotonic (always set at a later step
+than any prior floor). Called ONLY from the consuming claim in
+'coordinateEpicActAdvance'.
+-}
+floorAllGroupsAtCurrentStep :: ArkhamEpicEventId -> Handler ()
+floorAllGroupsAtCurrentStep eid = do
+  gameIds <- getEventGroupGameIds eid
+  for_ gameIds \gid -> do
+    mStep <- runDB $ selectOne do
+      g <- from $ table @ArkhamGame
+      where_ $ g.id ==. val gid
+      pure g.step
+    for_ mStep \(Value step) -> setGameUndoFloor gid step
 
 toGameDetailsEntry :: Entity ArkhamGameRaw -> Int -> GameDetailsEntry
 toGameDetailsEntry (Entity gameId game) playerCount =

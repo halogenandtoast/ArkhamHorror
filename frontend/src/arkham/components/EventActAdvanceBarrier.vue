@@ -5,6 +5,16 @@
 // overlay simply lifts (like EventStartBarrier), surfacing the group's parked
 // "Continue" question for the player to click. Sits above the board but below the
 // event bars, so a waiting player (or the organizer) can still navigate.
+//
+// For the ORGANIZER (organizerEventId set) we surface a direct call-to-action to the
+// dashboard, where the allocation happens — otherwise the organizer has no prompt
+// telling them where to go. requestDashboardHub() suppresses the dashboard's
+// frictionless redirect-back-to-seat for that one explicit navigation.
+import { useEventStore } from '@/arkham/stores/event'
+
+defineProps<{ organizerEventId?: string | null }>()
+
+const store = useEventStore()
 </script>
 
 <template>
@@ -12,6 +22,14 @@
     <div class="barrier-panel">
       <div class="barrier-spinner" aria-hidden="true"></div>
       <p class="barrier-message">{{ $t('event.awaitingOrganizer') }}</p>
+      <RouterLink
+        v-if="organizerEventId"
+        class="barrier-dashboard-link"
+        :to="`/events/${organizerEventId}`"
+        @click="store.requestDashboardHub()"
+      >
+        {{ $t('event.openDashboardToAllocate') }}
+      </RouterLink>
     </div>
   </div>
 </template>
@@ -52,6 +70,24 @@
   font-family: teutonic, sans-serif;
   font-size: 1.5em;
   letter-spacing: 0.02em;
+}
+
+.barrier-dashboard-link {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 6px;
+  background: var(--select, #6a3d9a);
+  color: #fff;
+  font-family: teutonic, sans-serif;
+  font-size: 1.05em;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.barrier-dashboard-link:hover {
+  background: var(--select-hover, #7d4cb5);
 }
 
 @keyframes barrier-spin {

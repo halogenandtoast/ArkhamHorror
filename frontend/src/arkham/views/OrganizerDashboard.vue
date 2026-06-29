@@ -81,31 +81,46 @@ function spendFor(group: GroupDigest): number {
   return spendByOrdinal.value[group.ordinal] ?? 0
 }
 
-// When a pending advance appears, greedily pre-fill a valid starting allocation
-// (fill each group up to its contribution until the threshold is met) the organizer
-// can then tweak. Keyed ONLY on the stage transition so live shared-state updates
-// don't clobber the organizer's in-progress edits. Cleared when nothing is pending.
+const totalSpend = computed(() =>
+  groupDigests.value.reduce((sum, g) => sum + (Number(spendByOrdinal.value[g.ordinal]) || 0), 0),
+)
+
+// Sum of every group's contribution cap for the pending stage. Drives both the
+// initial seed and a re-seed if contributions land in a later shared-state tick.
+const capsTotal = computed(() =>
+  awaitingStage.value === null ? 0 : groupDigests.value.reduce((sum, g) => sum + groupCap(g), 0),
+)
+
+// Greedily fill each group up to its contribution until the threshold is met.
+function prefillAllocation() {
+  let remaining = advanceThreshold.value
+  const next: Record<number, number> = {}
+  for (const g of groupDigests.value) {
+    const take = Math.min(groupCap(g), Math.max(0, remaining))
+    next[g.ordinal] = take
+    remaining -= take
+  }
+  spendByOrdinal.value = next
+}
+
+// Seed a valid starting allocation the organizer can tweak. Keyed on the stage AND
+// the caps total, with `immediate`, so it fills:
+//   * on mount even when the dashboard is opened AFTER the gate was already set
+//     (no stage transition fires otherwise), and
+//   * again if a group's contribution arrives in a later shared-state tick.
+// It only (re)seeds while nothing has been entered yet (totalSpend === 0), so live
+// updates can never clobber the organizer's in-progress edits. Cleared when nothing
+// is pending.
 watch(
-  awaitingStage,
-  (stage) => {
-    if (stage === null) {
+  [awaitingStage, capsTotal],
+  () => {
+    if (awaitingStage.value === null) {
       spendByOrdinal.value = {}
       return
     }
-    let remaining = advanceThreshold.value
-    const next: Record<number, number> = {}
-    for (const g of groupDigests.value) {
-      const take = Math.min(groupCap(g), Math.max(0, remaining))
-      next[g.ordinal] = take
-      remaining -= take
-    }
-    spendByOrdinal.value = next
+    if (totalSpend.value === 0 && capsTotal.value > 0) prefillAllocation()
   },
   { immediate: true },
-)
-
-const totalSpend = computed(() =>
-  groupDigests.value.reduce((sum, g) => sum + (Number(spendByOrdinal.value[g.ordinal]) || 0), 0),
 )
 
 // Valid when every group's spend is a whole number within [0, its contribution] and
@@ -282,7 +297,7 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <footer class="advance-footer">
+        <div class="advance-footer">
           <span class="advance-total" :class="{ invalid: totalSpend !== advanceThreshold }">
             {{ $t('event.allocateTotal', { total: totalSpend, threshold: advanceThreshold }) }}
           </span>
@@ -294,7 +309,7 @@ onUnmounted(() => {
           >
             {{ $t('event.confirmAdvance') }}
           </button>
-        </footer>
+        </div>
       </section>
 
       <section class="groups">

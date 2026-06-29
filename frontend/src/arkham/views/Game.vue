@@ -2132,7 +2132,7 @@ onUnmounted(() => {
       />
     </div>
     <EventStartBarrier v-if="showStartBarrier" />
-    <EventActAdvanceBarrier v-if="showActAdvanceWait" />
+    <EventActAdvanceBarrier v-if="showActAdvanceWait" :organizer-event-id="organizerEventId" />
     <MultiplayerLobby
       v-if="game.gameState.tag === 'IsPending'"
       :game-id="gameId"

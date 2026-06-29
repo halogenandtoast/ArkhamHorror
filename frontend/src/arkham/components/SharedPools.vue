@@ -37,11 +37,11 @@ const sharedClueActive = computed(
 )
 
 // The shared pool is per-cycle (the backend zeroes act-progress:N on advance), so
-// its raw value IS the current progress toward the threshold. Cap the readout at
-// the threshold so it reads cleanly (e.g. 0/Y right after an advance).
+// its raw value IS the current progress. Show the ACTUAL count even when it exceeds
+// the threshold (e.g. "5 / 4") so an over-contributed pool stays visible.
 const sharedClues = computed(() => {
   if (!sharedClueActive.value || props.currentActStage === null) return 0
-  return Math.min(actProgressValue(sharedState.value, props.currentActStage), threshold.value)
+  return actProgressValue(sharedState.value, props.currentActStage)
 })
 </script>
 

@@ -32,6 +32,7 @@
     "timeRemaining": "Time Remaining",
     "sharedClues": "Shared Clues",
     "awaitingOrganizer": "Act ready to advance — awaiting organizer",
+    "openDashboardToAllocate": "Open the organizer dashboard to allocate clues",
     "allocateAdvance": "Advance Act {stage}",
     "allocateAdvanceHint": "Choose how many clues each group spends to advance the act. The total must equal {threshold}.",
     "allocateAvailable": "{count} available",

@@ -63,7 +63,7 @@ function tabClass(investigator: Investigator) {
       'tab--selected': pid === selectedTab.value,
       'tab--active-player': investigator.id === props.activePlayerId,
       'tab--lead-player': investigator.id === props.game.leadInvestigatorId,
-      'tab--has-actions': pid !== props.playerId && hasChoices(investigator.playerId),
+      'tab--has-actions': pid !== selectedTab.value && hasChoices(pid),
       'glow-effect': investigator.id === 'c89001',
     },
     `tab--${investigatorClass}`,
@@ -355,6 +355,14 @@ ul.tabs__header > li.tab--selected {
   opacity: 1;
 }
 
+ul.tabs__header > li.tab--has-actions {
+  opacity: 0.85;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--select) 70%, transparent),
+    0 0 7px color-mix(in srgb, var(--select) 28%, transparent);
+  animation: tab-action-pulse 1.8s ease-in-out infinite alternate;
+}
+
 .tab--Guardian {
   background-color: var(--guardian-extra-dark);
 }
@@ -468,6 +476,19 @@ ul.tabs__header > li.tab--selected {
 
 @keyframes waiting-on-spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes tab-action-pulse {
+  from {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--select) 58%, transparent),
+      0 0 4px color-mix(in srgb, var(--select) 18%, transparent);
+  }
+  to {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--select) 88%, transparent),
+      0 0 9px color-mix(in srgb, var(--select) 36%, transparent);
+  }
 }
 
 @keyframes glow {

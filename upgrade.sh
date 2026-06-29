@@ -15,11 +15,11 @@
 #
 # Migrations: there is no engine-level applied-set (runtime automigration is
 # off and the sqitch registry has diverged), so this script keeps its own
-# `arkham_schema_migrations` table. On the FIRST run against an existing DB it
-# seeds that table with the current plan as "already applied" — a Docker DB is
-# initialised from setup.sql, which is current as of its install, so replaying
-# the (non-idempotent) history would only error. Set ARKHAM_FORCE_MIGRATIONS=1
-# to apply every plan entry regardless (use only on a known-empty/old DB).
+# `arkham_schema_migrations` table. Fresh DBs get it pre-populated by setup.sql.
+# A DB with no such table is a legacy install from an older setup.sql, which
+# held the schema through $BASELINE_THROUGH; we seed that as already-applied and
+# apply everything newer. Set ARKHAM_FORCE_MIGRATIONS=1 to apply the whole plan
+# instead (only safe on a known-empty DB — historical migrations aren't idempotent).
 #
 set -euo pipefail
 
@@ -125,12 +125,13 @@ run_migrations() {
     # ponytail: override with ARKHAM_FORCE_MIGRATIONS=1 to apply the whole plan
     # (only safe on a genuinely empty DB — historical migrations aren't idempotent).
     info "No migration table — seeding baseline through '$BASELINE_THROUGH', will apply newer migrations."
-    local n
+    local n vals=""
     while IFS= read -r n; do
       [ -n "$n" ] || continue
-      db_psql -q -c "INSERT INTO arkham_schema_migrations(name) VALUES ('$n') ON CONFLICT DO NOTHING;" >/dev/null
+      vals="${vals:+$vals,}('$n')"
       [ "$n" = "$BASELINE_THROUGH" ] && break
     done <<< "$plan_names"
+    db_psql -q -c "INSERT INTO arkham_schema_migrations(name) VALUES $vals ON CONFLICT DO NOTHING;" >/dev/null
   fi
 
   local applied count=0 name file
@@ -213,8 +214,8 @@ else
   info "Recreating containers..."
   docker compose up -d
 
+  # img is a live volume mount, so re-synced files are served without a restart.
   resync_images
-  [ -n "$(ls -A frontend/public/img 2>/dev/null)" ] && docker compose restart web
 
   echo ""
   info "Upgrade complete — http://localhost:3000"

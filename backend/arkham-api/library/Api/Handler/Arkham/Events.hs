@@ -18,12 +18,13 @@ module Api.Handler.Arkham.Events (
   postApiV1ArkhamEventCounterR,
   postApiV1ArkhamEventTimeUpR,
   postApiV1ArkhamEventReadyR,
+  postApiV1ArkhamEventResolveAdvanceR,
 ) where
 
 import Api.Arkham.Epic (applyEpicDeltasLocked, modifySharedStateLocked)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant (MultiplayerVariant (WithFriends))
-import Api.Handler.Arkham.Games.Shared (broadcastSharedToEvent, deleteEventRoom, deleteRoom, getEventGroupGameIds, propagateShared, runMessagesInGroupWhen, streamRoom)
+import Api.Handler.Arkham.Games.Shared (broadcastSharedToEvent, deleteEventRoom, deleteRoom, getEventGroupContributions, getEventGroupGameIds, propagateShared, runMessagesInGroupWhen, settleOrganizerAdvance, streamRoom)
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (agendaSequence)
@@ -80,6 +81,23 @@ data CreateEventPost = CreateEventPost
 data CounterPost = CounterPost
   { key :: Text
   , amount :: Int
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass FromJSON
+
+-- | One group's organizer-allocated spend toward a stage advance.
+data AllocationEntry = AllocationEntry
+  { ordinal :: Int
+  , spend :: Int
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass FromJSON
+
+-- | Body of @POST events/{id}/resolve-advance@: the organizer's per-group spend
+-- allocation for a stage awaiting resolution.
+data ResolveAdvancePost = ResolveAdvancePost
+  { stage :: Int
+  , allocation :: [AllocationEntry]
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -342,6 +360,45 @@ postApiV1ArkhamEventReadyR eid = do
           else s'
     broadcastSharedToEvent eid newState
 
+{- | Organizer-mediated excess-clue distribution on a shared act advance. The
+coordinator has gated the stage with @AwaitingOrganizer stage == 1@; the organizer
+allocates how many of each group's contributed clues are spent toward the
+threshold. 200 with empty body — the result is pushed over the websocket.
+
+Validation is server-side from the current shared state: every @spend@ in
+@[0, that group's contribution]@ and @sum spend == 2 * sharedTotalInvestigators@.
+The authoritative consume (write per-group 'ActSpend', reset the pool, bump the
+generation, clear the gate) + the replica mirror + the global undo floor + the
+overlay-lifting broadcast all happen in 'settleOrganizerAdvance', which is atomic
+and idempotent against a double-submit. NO gameplay message is injected into any
+group; the parked act reads its own 'ActSpend' from its mirrored replica.
+-}
+postApiV1ArkhamEventResolveAdvanceR :: ArkhamEpicEventId -> Handler ()
+postApiV1ArkhamEventResolveAdvanceR eid = do
+  userId <- getRequestUserId
+  requireOrganizer userId eid
+  ResolveAdvancePost {..} <- requireCheckJsonBody
+  mEvent <- runDB $ P.get eid
+  case mEvent of
+    Nothing -> notFound
+    Just event -> do
+      let
+        shared0 = arkhamEpicEventSharedState event
+        threshold = 2 * sharedTotalInvestigators shared0
+      when (sharedCounter (AwaitingOrganizer stage) shared0 /= 1)
+        $ invalidArgs ["No advance awaiting organizer for this stage"]
+      contributions <- getEventGroupContributions eid stage
+      let
+        contribMap = Map.fromList contributions
+        -- Aggregate by ordinal so duplicate entries can't defeat a per-group cap.
+        spendByOrdinal = Map.fromListWith (+) [(entry.ordinal, entry.spend) | entry <- allocation]
+        totalSpend = sum (Map.elems spendByOrdinal)
+        invalidGroup (ordinal, spend) = spend < 0 || spend > Map.findWithDefault 0 ordinal contribMap
+      when (totalSpend /= threshold)
+        $ invalidArgs ["Allocation must spend exactly " <> tshow threshold <> " clues"]
+      when (any invalidGroup (Map.toList spendByOrdinal))
+        $ invalidArgs ["A group's spend is negative or exceeds its contribution"]
+      settleOrganizerAdvance eid stage spendByOrdinal
 
 -- | Whether any agenda currently in play in the group's game is at or past
 -- @stage@. Used as the in-lock idempotency guard for the time-up forcing: a group

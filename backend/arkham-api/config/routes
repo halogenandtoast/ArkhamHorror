@@ -58,6 +58,7 @@
           !/counter ApiV1ArkhamEventCounterR POST
           !/time-up ApiV1ArkhamEventTimeUpR POST
           !/ready ApiV1ArkhamEventReadyR POST
+          !/resolve-advance ApiV1ArkhamEventResolveAdvanceR POST
     /admin AdminP:
       / ApiV1AdminR GET
       /stats ApiV1AdminStatsR GET

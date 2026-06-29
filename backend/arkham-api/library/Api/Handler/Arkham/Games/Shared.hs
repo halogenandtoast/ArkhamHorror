@@ -8,6 +8,7 @@ import Api.Arkham.Epic (
   applyEpicDeltasLocked,
   lookupGameEvent,
   mkEpicEnv,
+  modifySharedStateLocked,
   modifySharedStateLockedWith,
  )
 import Api.Arkham.Helpers
@@ -35,7 +36,7 @@ import Arkham.Entities (entitiesActs)
 import Arkham.Epic.Types (
   GroupOrdinal (..),
   SharedEventState,
-  SharedKey (ActAdvanceGen, AdvanceRequested, SharedActProgress),
+  SharedKey (ActAdvanceGen, ActContribution, ActSpend, AdvanceRequested, AwaitingOrganizer, SharedActProgress),
   actProgressStages,
   epicEnvDeltaRef,
   epicEnvGroup,
@@ -765,53 +766,34 @@ per-game undo floor. Acts in play is normally a singleton.
 epicActFingerprint :: Game -> [ActId]
 epicActFingerprint game = sort [attr (.id) act | act <- toList (entitiesActs (gameEntities game))]
 
-{- | Epic Multiplayer PURE-COUNTER cross-group coordinator. Runs POST-COMMIT (in
-'updateGame') whenever a group's just-committed action raised 'AdvanceRequested'.
-For each such stage it makes the once-per-advance decision ATOMICALLY under the
-event @FOR UPDATE@ lock, idempotent against concurrent resolvers: read
-pool = 'SharedActProgress' and threshold = @2 * total@; if pool >= threshold it
-resets the pool to 0 and bumps 'ActAdvanceGen' — using the pool reset as the
-once-only token, so a concurrent second resolver sees pool already 0 and the
-generation bumps exactly once. It ALWAYS clears 'AdvanceRequested'.
+{- | Epic Multiplayer PURE-COUNTER cross-group coordinator, narrowed to a GATE
+SETTER. Runs POST-COMMIT (in 'updateGame') whenever a group's just-committed action
+raised 'AdvanceRequested'. For each such stage, under the event @FOR UPDATE@ lock:
+if the pool ('SharedActProgress') has reached threshold (@2 * total@) it sets
+@AwaitingOrganizer N = 1@ (idempotent — arming an already-armed gate is a no-op);
+it ALWAYS clears 'AdvanceRequested'. Then broadcasts.
 
-It touches ONLY shared counters — it NEVER runs messages in or otherwise mutates
-another group's game (each group advances IN-GROUP via the normal AdvanceAct flow;
-a follower advances when its local 'Arkham.ScenarioLogKey.EpicActAdvances' is
-behind the generation). The pool reset / generation bump are absolute sets, not
-undoable deltas.
-
-When a stage's claim actually CONSUMES the pool (zeroes it + bumps the generation),
-the advance becomes a GLOBAL CHECKPOINT: 'floorAllGroupsAtCurrentStep' floors undo
-for EVERY group at its current step. This is required for correctness — clues are
-spent straight into the shared pool as undoable @RaiseShared (SharedActProgress)@
-deltas, so without it a CONTRIBUTOR group (not just the advancer) could, after the
-reset, undo a placement and drive the now-zero pool negative while refunding clues
-the advance already consumed. Only the consuming path floors; a non-consuming
-'AdvanceRequested' (already resolved by a concurrent resolver) floors nothing.
+It does NOT reset the pool, bump 'ActAdvanceGen', or floor anything — CONSUMPTION
+now happens at allocation time in the organizer endpoint
+('Api.Handler.Arkham.Events.postApiV1ArkhamEventResolveAdvanceR' →
+'settleOrganizerAdvance'). The gate just raises the organizer overlay. Touches ONLY
+shared counters; never injects a gameplay message into any group.
 -}
 coordinateEpicActAdvance :: ArkhamEpicEventId -> SharedEventState -> Handler ()
-coordinateEpicActAdvance eid s = do
-  consumed <- or <$> traverse claimStage (actProgressStages s)
-  when consumed $ floorAllGroupsAtCurrentStep eid
- where
-  claimStage stage
-    | sharedCounter (AdvanceRequested stage) s <= 0 = pure False
-    | otherwise = do
-        (newState, didConsume) <- runDB $ modifySharedStateLockedWith eid \st ->
-          let
-            pool = sharedCounter (SharedActProgress stage) st
-            threshold = 2 * sharedTotalInvestigators st
-            didConsume = threshold > 0 && pool >= threshold
-            doResolve =
-              if didConsume
-                then
-                  setSharedCounter (SharedActProgress stage) 0
-                    . updateSharedCounter (+ 1) (ActAdvanceGen stage)
-                else Import.id
-           in
-            (doResolve (setSharedCounter (AdvanceRequested stage) 0 st), didConsume)
-        broadcastSharedToEvent eid newState
-        pure didConsume
+coordinateEpicActAdvance eid s =
+  for_ (actProgressStages s) \stage ->
+    when (sharedCounter (AdvanceRequested stage) s > 0) do
+      newState <- runDB $ modifySharedStateLocked eid \st ->
+        let
+          pool = sharedCounter (SharedActProgress stage) st
+          threshold = 2 * sharedTotalInvestigators st
+          gate =
+            if threshold > 0 && pool >= threshold
+              then setSharedCounter (AwaitingOrganizer stage) 1
+              else Import.id
+         in
+          gate (setSharedCounter (AdvanceRequested stage) 0 st)
+      broadcastSharedToEvent eid newState
 
 {- | Floor undo for EVERY group in the event at its CURRENT persistence step,
 making a consuming act advance a global checkpoint: no group can undo across it (so
@@ -829,6 +811,65 @@ floorAllGroupsAtCurrentStep eid = do
       where_ $ g.id ==. val gid
       pure g.step
     for_ mStep \(Value step) -> setGameUndoFloor gid step
+
+-- | Each group's @(ordinal, contribution)@ toward a stage-@stage@ advance, read
+-- from the authoritative shared 'ActContribution' counters (mirrored from the
+-- contributing acts). Shaped for the organizer endpoint to cap each group's spend.
+getEventGroupContributions :: ArkhamEpicEventId -> Int -> Handler [(Int, Int)]
+getEventGroupContributions eid stage = do
+  mEvent <- runDB $ selectOne do
+    e <- from $ table @ArkhamEpicEvent
+    where_ $ e.id ==. val eid
+    pure e
+  case mEvent of
+    Nothing -> pure []
+    Just (Entity _ event) -> do
+      let shared = arkhamEpicEventSharedState event
+      groups <- getEventGroupGroups eid
+      pure [(ordinal, sharedCounter (ActContribution stage (GroupOrdinal ordinal)) shared) | (ordinal, _gid) <- groups]
+
+{- | Apply an organizer's act-advance allocation for a stage. Atomic + idempotent:
+under the event @FOR UPDATE@ lock, ONLY if @AwaitingOrganizer stage == 1@ (so a
+double-submit no-ops), it writes each group's 'ActSpend', resets the pool, bumps
+'ActAdvanceGen', and clears 'AwaitingOrganizer'.
+
+CRITICAL ORDERING when it applied: mirror the new shared state into EVERY group's
+replica FIRST (so the parked group's advance handler can read its 'ActSpend' from
+its replica), THEN floor every group at the consumption checkpoint, and only THEN
+broadcast — the broadcast clears 'AwaitingOrganizer' on the event store, which lifts
+the organizer overlay and lets the parked group proceed. No gameplay message is ever
+injected into any group; the seam moves shared counters only.
+-}
+settleOrganizerAdvance :: ArkhamEpicEventId -> Int -> Map Int Int -> Handler ()
+settleOrganizerAdvance eid stage spendByOrdinal = do
+  (newState, applied) <- runDB $ modifySharedStateLockedWith eid \st ->
+    if sharedCounter (AwaitingOrganizer stage) st /= 1
+      then (st, False)
+      else
+        let
+          withSpends =
+            foldl'
+              (\acc (ordinal, spend) -> setSharedCounter (ActSpend stage (GroupOrdinal ordinal)) spend acc)
+              st
+              (Map.toList spendByOrdinal)
+          st' =
+            setSharedCounter (AwaitingOrganizer stage) 0
+              . updateSharedCounter (+ 1) (ActAdvanceGen stage)
+              . setSharedCounter (SharedActProgress stage) 0
+              $ withSpends
+         in
+          (st', True)
+  when applied do
+    -- (1) mirror into every group's replica BEFORE lifting the overlay
+    groups <- getEventGroupGroups eid
+    for_ groups \(ordinal, gid) ->
+      syncOneGroup (GroupOrdinal ordinal) newState gid
+        `catch` \(e :: SomeException) ->
+          $(logWarn) $ "Epic settle mirror failed for " <> tshow gid <> ": " <> tshow e
+    -- (2) global undo checkpoint: no group can rewind across the consumption
+    floorAllGroupsAtCurrentStep eid
+    -- (3) broadcast LAST: clears AwaitingOrganizer -> lifts the overlay
+    broadcastSharedToEvent eid newState
 
 toGameDetailsEntry :: Entity ArkhamGameRaw -> Int -> GameDetailsEntry
 toGameDetailsEntry (Entity gameId game) playerCount =

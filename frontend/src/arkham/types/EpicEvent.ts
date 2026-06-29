@@ -98,6 +98,45 @@ export function actProgressValue(state: SharedEventState, stage: number): number
   return counterValue(state, actProgressKey(stage))
 }
 
+// `awaiting-organizer:<stage>` gates a shared act advance: when the pooled clues
+// exceed the threshold the backend sets it to 1 and waits for the organizer to
+// choose which groups spend (an exact-match pool auto-resolves without it).
+export const AWAITING_ORGANIZER = 'awaiting-organizer'
+
+export function awaitingOrganizerKey(stage: number): string {
+  return `${AWAITING_ORGANIZER}:${stage}`
+}
+
+export function awaitingOrganizer(state: SharedEventState, stage: number): number {
+  return counterValue(state, awaitingOrganizerKey(stage))
+}
+
+// The act stage currently awaiting organizer allocation, if any: the first
+// `awaiting-organizer:<stage>` counter that is set. Lets the dashboard detect it
+// without already knowing the stage.
+export function activeAwaitingStage(state: SharedEventState): number | null {
+  const prefix = `${AWAITING_ORGANIZER}:`
+  for (const [key, value] of Object.entries(state.sharedCounters)) {
+    if (value > 0 && key.startsWith(prefix)) {
+      const stage = Number(key.slice(prefix.length))
+      if (Number.isFinite(stage)) return stage
+    }
+  }
+  return null
+}
+
+// `act-contribution:<stage>:<ordinal>` is how many clues each group contributed to
+// the shared pool for that act stage — the per-group cap the organizer allocates from.
+export const ACT_CONTRIBUTION = 'act-contribution'
+
+export function actContributionKey(stage: number, ordinal: number): string {
+  return `${ACT_CONTRIBUTION}:${stage}:${ordinal}`
+}
+
+export function actContribution(state: SharedEventState, stage: number, ordinal: number): number {
+  return counterValue(state, actContributionKey(stage, ordinal))
+}
+
 export function emptySharedState(): SharedEventState {
   return {
     sharedVersion: 0,

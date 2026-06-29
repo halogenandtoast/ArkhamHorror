@@ -4,13 +4,19 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { useClipboard } from '@vueuse/core'
-import { deleteEvent, eventTimeUp } from '@/arkham/api'
+import { deleteEvent, eventTimeUp, resolveEventAdvance } from '@/arkham/api'
 import { useEventStore } from '@/arkham/stores/event'
 import { useDbCardStore } from '@/stores/dbCards'
 import { imgsrc, buildShareableUrl } from '@/arkham/helpers'
 import { useEpicHelpers } from '@/arkham/composables/useEpicHelpers'
 import { useEventTimer } from '@/arkham/composables/useEventTimer'
-import { type GroupDigest } from '@/arkham/types/EpicEvent'
+import {
+  actContribution,
+  activeAwaitingStage,
+  counterValue,
+  TOTAL_INVESTIGATORS,
+  type GroupDigest,
+} from '@/arkham/types/EpicEvent'
 import EventCountdown from '@/arkham/components/EventCountdown.vue'
 
 // Organizer dashboard. Loads the event over REST, then subscribes to the event
@@ -22,7 +28,7 @@ const router = useRouter()
 const { t } = useI18n()
 const store = useEventStore()
 const dbStore = useDbCardStore()
-const { event, groupDigests, socketError } = storeToRefs(store)
+const { event, groupDigests, socketError, sharedState } = storeToRefs(store)
 const { groupLabel } = useEpicHelpers()
 
 const ready = ref(false)
@@ -47,6 +53,88 @@ const isOrganizer = computed(() => event.value?.role === 'organizer')
 
 // A user belongs to one group: once seated anywhere, they can't join elsewhere.
 const committed = computed(() => groupDigests.value.some((g) => g.youAreSeated))
+
+// --- Shared act-advance allocation ------------------------------------------
+// When the pooled clues EXCEED the threshold the backend sets
+// `awaiting-organizer:<stage>` and waits for the organizer to choose which groups
+// spend. We detect the stage by scanning the shared counters, and require the
+// chosen spends to total exactly `2 * total-investigators`, each within that
+// group's contribution (`act-contribution:<stage>:<ordinal>`).
+const awaitingStage = computed(() => activeAwaitingStage(sharedState.value))
+
+const totalInvestigators = computed(
+  () => counterValue(sharedState.value, TOTAL_INVESTIGATORS) || sharedState.value.sharedTotalInvestigators,
+)
+const advanceThreshold = computed(() => 2 * totalInvestigators.value)
+
+// Each group's cap = its contribution to the pending stage's pool. Read straight
+// from the shared counters (no GroupDigest field needed).
+function groupCap(group: GroupDigest): number {
+  const stage = awaitingStage.value
+  if (stage === null) return 0
+  return Math.max(0, actContribution(sharedState.value, stage, group.ordinal))
+}
+
+// Per-group spend, keyed by ordinal.
+const spendByOrdinal = ref<Record<number, number>>({})
+function spendFor(group: GroupDigest): number {
+  return spendByOrdinal.value[group.ordinal] ?? 0
+}
+
+// When a pending advance appears, greedily pre-fill a valid starting allocation
+// (fill each group up to its contribution until the threshold is met) the organizer
+// can then tweak. Keyed ONLY on the stage transition so live shared-state updates
+// don't clobber the organizer's in-progress edits. Cleared when nothing is pending.
+watch(
+  awaitingStage,
+  (stage) => {
+    if (stage === null) {
+      spendByOrdinal.value = {}
+      return
+    }
+    let remaining = advanceThreshold.value
+    const next: Record<number, number> = {}
+    for (const g of groupDigests.value) {
+      const take = Math.min(groupCap(g), Math.max(0, remaining))
+      next[g.ordinal] = take
+      remaining -= take
+    }
+    spendByOrdinal.value = next
+  },
+  { immediate: true },
+)
+
+const totalSpend = computed(() =>
+  groupDigests.value.reduce((sum, g) => sum + (Number(spendByOrdinal.value[g.ordinal]) || 0), 0),
+)
+
+// Valid when every group's spend is a whole number within [0, its contribution] and
+// the total equals the threshold exactly.
+const allocationValid = computed(() => {
+  if (awaitingStage.value === null || advanceThreshold.value <= 0) return false
+  if (totalSpend.value !== advanceThreshold.value) return false
+  return groupDigests.value.every((g) => {
+    const v = Number(spendByOrdinal.value[g.ordinal] ?? 0)
+    return Number.isInteger(v) && v >= 0 && v <= groupCap(g)
+  })
+})
+
+const submittingAllocation = ref(false)
+async function submitAllocation() {
+  const stage = awaitingStage.value
+  if (stage === null || !allocationValid.value || submittingAllocation.value) return
+  submittingAllocation.value = true
+  const allocation = groupDigests.value.map((g) => ({ ordinal: g.ordinal, spend: spendFor(g) }))
+  try {
+    await resolveEventAdvance(props.id, stage, allocation)
+    // Backend clears the gate + resets the pool; the event ws pushes the update,
+    // which flips awaitingStage to null and tears down the panel.
+  } catch (e) {
+    console.error(e)
+  } finally {
+    submittingAllocation.value = false
+  }
+}
 
 // Investigator card code may arrive with or without the engine 'c' prefix; the
 // ArkhamDB lookup and portrait assets both use the bare code.
@@ -169,6 +257,45 @@ onUnmounted(() => {
 
     <template v-else>
       <p v-if="socketError" class="socket-error">{{ $t('event.disconnected') }}</p>
+
+      <section v-if="isOrganizer && awaitingStage !== null" class="advance-panel">
+        <header class="advance-header">
+          <h3>{{ $t('event.allocateAdvance', { stage: awaitingStage }) }}</h3>
+          <p class="advance-hint">{{ $t('event.allocateAdvanceHint', { threshold: advanceThreshold }) }}</p>
+        </header>
+
+        <div class="advance-groups">
+          <div v-for="group in groupDigests" :key="group.ordinal" class="advance-group">
+            <label class="advance-group-label" :for="`spend-${group.ordinal}`">
+              <span class="advance-group-name">{{ groupLabel(group) }}</span>
+              <span class="advance-group-clues">{{ $t('event.allocateAvailable', { count: groupCap(group) }) }}</span>
+            </label>
+            <input
+              :id="`spend-${group.ordinal}`"
+              v-model.number="spendByOrdinal[group.ordinal]"
+              class="advance-input"
+              type="number"
+              min="0"
+              :max="groupCap(group)"
+              step="1"
+            />
+          </div>
+        </div>
+
+        <footer class="advance-footer">
+          <span class="advance-total" :class="{ invalid: totalSpend !== advanceThreshold }">
+            {{ $t('event.allocateTotal', { total: totalSpend, threshold: advanceThreshold }) }}
+          </span>
+          <button
+            type="button"
+            class="advance-submit"
+            :disabled="!allocationValid || submittingAllocation"
+            @click="submitAllocation"
+          >
+            {{ $t('event.confirmAdvance') }}
+          </button>
+        </footer>
+      </section>
 
       <section class="groups">
         <div v-for="group in groupDigests" :key="group.ordinal" class="group-row">
@@ -307,6 +434,111 @@ h2 {
 .socket-error {
   color: var(--important, #d8a657);
   margin: 0 0 12px;
+}
+
+/* Shared act-advance allocation panel */
+.advance-panel {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--important, #d8a657);
+  border-radius: 6px;
+  background: rgba(216, 166, 87, 0.08);
+}
+
+.advance-header h3 {
+  margin: 0;
+  color: var(--important, #d8a657);
+  text-transform: uppercase;
+  font-family: Teutonic;
+  font-size: 1.3em;
+}
+
+.advance-hint {
+  margin: 4px 0 12px;
+  font-size: 0.9em;
+  opacity: 0.85;
+}
+
+.advance-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.advance-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.advance-group-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.advance-group-name {
+  font-weight: 600;
+}
+
+.advance-group-clues {
+  font-size: 0.78em;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.advance-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--box-border, rgba(255, 255, 255, 0.18));
+  background: var(--background-dark, #12151f);
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.advance-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.advance-total {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.advance-total.invalid {
+  color: var(--delete, #d88);
+}
+
+.advance-submit {
+  padding: 9px 18px;
+  border-radius: 5px;
+  border: 0;
+  background: rgba(110, 134, 64, 0.95);
+  color: #fff;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 0.82em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.advance-submit:hover:not(:disabled) {
+  background: rgba(110, 134, 64, 1);
+}
+
+.advance-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Groups — same two-band shape as GameRow.vue, with a subtle event/group rail. */

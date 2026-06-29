@@ -52,7 +52,7 @@ import { useCardStore } from '@/stores/cards'
 import { useUserStore } from '@/stores/user'
 import { useEventStore } from '@/arkham/stores/event'
 import { useEventTimer } from '@/arkham/composables/useEventTimer'
-import type { SharedEventState } from '@/arkham/types/EpicEvent'
+import { awaitingOrganizer, type SharedEventState } from '@/arkham/types/EpicEvent'
 import { useMenu } from '@/composable/menu'
 import useEmitter from '@/composable/useEmitter'
 import { useDebug } from '@/arkham/debug'
@@ -87,6 +87,7 @@ import Settings from '@/arkham/components/Settings.vue'
 import OrganizerBar from '@/arkham/components/OrganizerBar.vue'
 import PlayerEventBar from '@/arkham/components/PlayerEventBar.vue'
 import EventStartBarrier from '@/arkham/components/EventStartBarrier.vue'
+import EventActAdvanceBarrier from '@/arkham/components/EventActAdvanceBarrier.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import AiControlPanel from '@/arkham/components/AiControlPanel.vue'
 import AiQuestionsPanel from '@/arkham/components/AiQuestionsPanel.vue'
@@ -271,6 +272,18 @@ const currentActStage = computed<number | null>(() => {
   const acts = game.value ? Object.values(game.value.acts) : []
   return acts.length > 0 ? acts[0].sequence.number : null
 })
+
+// Park an actively-playing member of this event's group behind a wait overlay while
+// the shared act advance for their current stage awaits the organizer's allocation.
+// Lifts as soon as the `awaiting-organizer:<stage>` gate clears (the backend pushes
+// the cleared shared state over the ws), surfacing the group's parked "Continue"
+// question for the player to click — mirrors EventStartBarrier's release.
+const showActAdvanceWait = computed(
+  () =>
+    !!timerEventId.value &&
+    currentActStage.value !== null &&
+    awaitingOrganizer(eventStore.sharedState, currentActStage.value) > 0,
+)
 
 // Mark this group ready at the start barrier exactly once per load. Guarded with a
 // local flag (the endpoint is idempotent server-side regardless). Immediate so a
@@ -2119,6 +2132,7 @@ onUnmounted(() => {
       />
     </div>
     <EventStartBarrier v-if="showStartBarrier" />
+    <EventActAdvanceBarrier v-if="showActAdvanceWait" />
     <MultiplayerLobby
       v-if="game.gameState.tag === 'IsPending'"
       :game-id="gameId"

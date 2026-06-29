@@ -65,6 +65,20 @@ data SharedKey
     -- — no cross-group message injection. Mirrored into scenario state like the
     -- other counters.
     ActAdvanceGen Int
+  | -- | Per-group running contribution toward a stage-@N@ advance: how many clues
+    -- group @ordinal@ has fed into the shared pool. Written by the contributing act
+    -- (alongside the @SharedActProgress@ pool raise); read by the organizer endpoint
+    -- to cap that group's spend. Text @act-contribution:N:ordinal@.
+    ActContribution Int GroupOrdinal
+  | -- | Per-group spend toward a stage-@N@ advance, written by the organizer
+    -- endpoint at allocation time. The parked act reads its OWN @ActSpend N ordinal@
+    -- from its mirrored replica to know how many of its clues were consumed; the
+    -- seam never injects a gameplay message. Text @act-spend:N:ordinal@.
+    ActSpend Int GroupOrdinal
+  | -- | Set to 1 when a stage-@N@ advance has reached threshold and is awaiting the
+    -- organizer's per-group allocation (gates the overlay/panel); cleared to 0 when
+    -- the organizer resolves. Text @awaiting-organizer:N@.
+    AwaitingOrganizer Int
   | GroupDoom GroupOrdinal
   | LeadFaction
   | -- | A random per-event seed (set once at event start) from which each group
@@ -101,6 +115,9 @@ sharedKeyText = \case
   SharedActProgress n -> "act-progress:" <> tshow n
   AdvanceRequested n -> "advance-requested:" <> tshow n
   ActAdvanceGen n -> "act-advance-gen:" <> tshow n
+  ActContribution n (GroupOrdinal o) -> "act-contribution:" <> tshow n <> ":" <> tshow o
+  ActSpend n (GroupOrdinal o) -> "act-spend:" <> tshow n <> ":" <> tshow o
+  AwaitingOrganizer n -> "awaiting-organizer:" <> tshow n
   GroupDoom (GroupOrdinal o) -> "group-doom:" <> tshow o
   LeadFaction -> "lead-faction"
   BlobStorySeed -> "blob-story-seed"
@@ -135,7 +152,19 @@ sharedKeyFromText t = case t of
       <|> (SharedActProgress <$> (stripPrefix "act-progress:" t >>= readMaybe . unpack))
       <|> (AdvanceRequested <$> (stripPrefix "advance-requested:" t >>= readMaybe . unpack))
       <|> (ActAdvanceGen <$> (stripPrefix "act-advance-gen:" t >>= readMaybe . unpack))
+      <|> (AwaitingOrganizer <$> (stripPrefix "awaiting-organizer:" t >>= readMaybe . unpack))
+      <|> ((\(n, o) -> ActContribution n (GroupOrdinal o)) <$> stripStageOrdinal "act-contribution:" t)
+      <|> ((\(n, o) -> ActSpend n (GroupOrdinal o)) <$> stripStageOrdinal "act-spend:" t)
       <|> (GroupDoom . GroupOrdinal <$> (stripPrefix "group-doom:" t >>= readMaybe . unpack))
+
+-- | Parse a @"\<prefix>\<stage>:\<ordinal>"@ key body into @(stage, ordinal)@ for the
+-- two-component shared keys ('ActContribution', 'ActSpend').
+stripStageOrdinal :: Text -> Text -> Maybe (Int, Int)
+stripStageOrdinal prefix t = do
+  rest <- stripPrefix prefix t
+  let (a, rest2) = break (== ':') rest
+  b <- stripPrefix ":" rest2
+  (,) <$> readMaybe (unpack a) <*> readMaybe (unpack b)
 
 {- | An invertible mutation of one shared counter. @sharedDeltaAmount@ is signed:
 a raise is positive, a spend negative. Additive deltas commute, which is what

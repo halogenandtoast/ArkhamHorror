@@ -216,6 +216,11 @@
       "draw": "draw 1 card",
       "play": "play 1 revealed card"
     },
+    "cosmicRevelation1": {
+      "even": "Even",
+      "odd": "Odd",
+      "playRevealed": "play 1 revealed card"
+    },
     "crisisOfFaith": {
       "replaceBlessWithCurse": "Replace bless token with curse",
       "swap": "Replace bless token with curse"

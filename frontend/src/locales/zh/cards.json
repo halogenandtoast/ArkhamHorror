@@ -208,6 +208,11 @@
       "draw": "抽取1张卡牌",
       "play": "打出1张自己揭示的卡牌"
     },
+    "cosmicRevelation1": {
+      "even": "偶数",
+      "odd": "奇数",
+      "playRevealed": "打出1张自己揭示的手牌"
+    },
     "crisisOfFaith": {
       "replaceBlessWithCurse": "将{'{'}bless{'}'}标记替换为{'{'}curse{'}'}标记",
       "swap": "将{'{'}bless{'}'}标记替换为{'{'}curse{'}'}标记"

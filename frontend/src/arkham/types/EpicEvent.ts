@@ -137,6 +137,20 @@ export function actContribution(state: SharedEventState, stage: number, ordinal:
   return counterValue(state, actContributionKey(stage, ordinal))
 }
 
+// `act-spend:<stage>:<ordinal>` is how many of a group's contributed clues the
+// organizer allocated to spend toward the threshold (written at resolve time). The
+// remaining-on-act pool is contribution − spend, so spent clues drop off the act
+// once the organizer allocates.
+export const ACT_SPEND = 'act-spend'
+
+export function actSpendKey(stage: number, ordinal: number): string {
+  return `${ACT_SPEND}:${stage}:${ordinal}`
+}
+
+export function actSpend(state: SharedEventState, stage: number, ordinal: number): number {
+  return counterValue(state, actSpendKey(stage, ordinal))
+}
+
 export function emptySharedState(): SharedEventState {
   return {
     sharedVersion: 0,

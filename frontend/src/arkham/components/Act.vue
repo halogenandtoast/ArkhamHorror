@@ -17,7 +17,7 @@ import { keyToId } from '@/arkham/types/Key'
 import { imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Act'
 import { useEventStore } from '@/arkham/stores/event'
-import { actContribution } from '@/arkham/types/EpicEvent'
+import { actContribution, actSpend } from '@/arkham/types/EpicEvent'
 
 const props = defineProps<{
   act: Arkham.Act
@@ -262,12 +262,15 @@ const resources = computed(() => props.act.tokens.Resource ?? 0)
 
 // Epic Multiplayer: shared-clue acts (The Blob's acts 1 & 3) hold ZERO real clue
 // tokens — clues are spent into the global pool — so the act looks empty. Render a
-// PSEUDO clue-token pool equal to THIS group's contribution to the current act stage
-// (`act-contribution:<stage>:<ordinal>`). The viewing group's ordinal comes from the
-// event store's membership (matched by this game's id); null for ordinary games.
-// On advance the act stage changes and the new stage reads 0, so the pseudo tokens
-// reset naturally. NOTE: this shows the VIEWING group's pool only; an organizer/
-// shared view could instead show every group's contribution side by side (follow-up).
+// PSEUDO clue-token pool equal to THIS group's clues still on the act for the current
+// stage = its contribution minus what the organizer allocated it to spend
+// (`act-contribution:<stage>:<ordinal>` − `act-spend:<stage>:<ordinal>`). So the spent
+// clues drop off this group's act the moment the organizer allocates (act-spend is
+// mirrored before the gate lifts), and the leftover stays until this group advances.
+// The viewing group's ordinal comes from the event store's membership (matched by this
+// game's id); null for ordinary games. On advance the act stage changes and the new
+// stage reads 0, so the pseudo tokens reset naturally. NOTE: shows the VIEWING group's
+// pool only; an organizer/shared view could show every group's pool (follow-up).
 const eventStore = useEventStore()
 const thisGroupOrdinal = computed<number | null>(() => {
   const ev = eventStore.event
@@ -278,7 +281,10 @@ const thisGroupOrdinal = computed<number | null>(() => {
 const sharedContribution = computed(() => {
   const ordinal = thisGroupOrdinal.value
   if (ordinal === null) return 0
-  return actContribution(eventStore.sharedState, props.act.sequence.number, ordinal)
+  const stage = props.act.sequence.number
+  const contributed = actContribution(eventStore.sharedState, stage, ordinal)
+  const spent = actSpend(eventStore.sharedState, stage, ordinal)
+  return Math.max(0, contributed - spent)
 })
 
 const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).

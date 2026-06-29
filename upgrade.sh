@@ -51,13 +51,41 @@ else
 fi
 info "Detected install type: $MODE  (in $(pwd))"
 
-# ── Migration runner (mode-specific psql plumbing) ──────────────────────────
-
+# ── Migration runner ────────────────────────────────────────────────────────
+#
+# Two independent choices, decoupled so a git checkout running on Docker
+# doesn't need DATABASE_URL:
+#   1. Where the plan/deploy SQL comes from  — disk (git) or curl (docker).
+#   2. How we reach the database             — DATABASE_URL psql, else the
+#                                               compose `db` service via exec.
+#
 # db_psql <args...>    : run psql, args passed through
 # db_query <sql>       : run sql, return single trimmed value
 # db_apply_file <path> : run a .sql file with ON_ERROR_STOP
+
+# (1) Migration file source.
 if [ "$MODE" = "docker" ]; then
-  info "Ensuring database container is up..."
+  PLAN_FILE="$(mktemp)"
+  curl -fsSL "$REPO_RAW/migrations/sqitch.plan" -o "$PLAN_FILE"
+  # In docker mode the deploy scripts aren't on disk; fetch each on demand.
+  get_deploy() { local name="$1" out; out="$(mktemp)"; curl -fsSL "$REPO_RAW/migrations/deploy/$name.sql" -o "$out" && echo "$out"; }
+else
+  PLAN_FILE="migrations/sqitch.plan"
+  get_deploy() { echo "migrations/deploy/$1.sql"; }
+fi
+
+# (2) DB transport. Prefer an explicit DATABASE_URL; otherwise, if a compose
+# `db` service is defined, run psql inside it — no DATABASE_URL finagling.
+compose_has_db() {
+  command -v docker >/dev/null 2>&1 \
+    && docker compose config --services 2>/dev/null | grep -qx db
+}
+if [ -n "${DATABASE_URL:-}" ] && command -v psql >/dev/null 2>&1; then
+  info "Migrations via DATABASE_URL."
+  db_psql()       { psql "$DATABASE_URL" "$@"; }
+  db_apply_file() { psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$1"; }
+elif compose_has_db; then
+  info "Migrations via docker compose 'db' service."
   docker compose up -d db >/dev/null
   for _ in $(seq 1 30); do
     docker compose exec -T db pg_isready -U "$PG_USER" -d "$PG_DB" >/dev/null 2>&1 && break
@@ -65,30 +93,15 @@ if [ "$MODE" = "docker" ]; then
   done
   docker compose exec -T db pg_isready -U "$PG_USER" -d "$PG_DB" >/dev/null 2>&1 \
     || die "Database did not become ready."
-
   db_psql()       { docker compose exec -T db psql -U "$PG_USER" -d "$PG_DB" "$@"; }
-  db_query()      { db_psql -tA -c "$1" | tr -d '[:space:]'; }
   db_apply_file() { docker compose exec -T db psql -U "$PG_USER" -d "$PG_DB" -v ON_ERROR_STOP=1 < "$1"; }
-
-  PLAN_FILE="$(mktemp)"
-  curl -fsSL "$REPO_RAW/migrations/sqitch.plan" -o "$PLAN_FILE"
-  # In docker mode the deploy scripts aren't on disk; fetch each on demand.
-  get_deploy() { local name="$1" out; out="$(mktemp)"; curl -fsSL "$REPO_RAW/migrations/deploy/$name.sql" -o "$out" && echo "$out"; }
 else
-  : "${DATABASE_URL:=}"
-  if [ -z "$DATABASE_URL" ]; then
-    warn "DATABASE_URL not set — skipping migrations (set it to your dev DB to run them)."
-    SKIP_MIGRATIONS=1
-  fi
-  command -v psql >/dev/null 2>&1 || { warn "psql not found — skipping migrations."; SKIP_MIGRATIONS=1; }
-
-  db_psql()       { psql "$DATABASE_URL" "$@"; }
-  db_query()      { db_psql -tA -c "$1" | tr -d '[:space:]'; }
-  db_apply_file() { psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$1"; }
-
-  PLAN_FILE="migrations/sqitch.plan"
-  get_deploy() { echo "migrations/deploy/$1.sql"; }
+  warn "No DATABASE_URL and no docker compose 'db' service — skipping migrations."
+  SKIP_MIGRATIONS=1
+  db_psql()       { return 0; }
+  db_apply_file() { return 0; }
 fi
+db_query() { db_psql -tA -c "$1" | tr -d '[:space:]'; }
 
 run_migrations() {
   [ "${SKIP_MIGRATIONS:-0}" = "1" ] && return 0

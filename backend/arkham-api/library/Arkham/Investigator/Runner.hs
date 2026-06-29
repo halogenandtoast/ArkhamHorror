@@ -232,11 +232,11 @@ getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows)
 
 getWindowSkippable :: (Tracing m, HasGame m) => InvestigatorAttrs -> [Window] -> Window -> m Bool
 getWindowSkippable
-  attrs
+  _attrs
   ws
   ( windowTiming &&& windowType ->
       (Timing.When, Window.PlayCard iid (Window.CardPlay card@(PlayerCard pc) asAction))
-    ) | iid == toId attrs = do
+    ) = do
     allModifiers <- getModifiers card
     mCost <- getModifiedCardCost iid card
     isFast <- cardIsFast' (\_ -> pure allModifiers) card
@@ -275,9 +275,9 @@ getWindowSkippable
 
       liftGuardM
         $ withAlteredGame withoutCanModifiers
-        $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost $ max 0 $ cost - additionalResources)
+        $ getCanAffordCost iid pc [#play] ws (ResourceCost $ max 0 $ cost - additionalResources)
       when (not isFast && asAction) do
-        liftGuardM $ getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
+        liftGuardM $ getCanAffordCost iid pc [#play] ws (ActionCost 1)
       liftGuardM $ withAlteredGame withoutCanModifiers $ passesLimits iid card
 getWindowSkippable
   attrs

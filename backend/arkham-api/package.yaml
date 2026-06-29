@@ -203,6 +203,23 @@ executables:
       - condition: flag(library-only)
         buildable: false
 
+  arkham-self-play:
+    main: Main.hs
+    source-dirs: app-self-play
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+      - arkham-api
+      - containers
+      - hs-opentelemetry-sdk
+      - MonadRandom
+      - uuid
+    when:
+      - condition: flag(library-only)
+        buildable: false
+
   arkham-ml-export:
     main: Main.hs
     source-dirs: app-ml-export

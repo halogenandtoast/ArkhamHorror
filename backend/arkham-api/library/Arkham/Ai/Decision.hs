@@ -163,6 +163,7 @@ module Arkham.Ai.Decision (
   scoreChoice,
   scoreBreakdown,
   choiceFeatures,
+  learnedScore,
   -- Exposed for the offline ML extraction tool (app-extract): the read-once
   -- situation snapshot, the engine-indexed choice flattener, and the wrapper
   -- stripper. These are the exact entry points the live decision path uses, so
@@ -190,6 +191,7 @@ import Arkham.Ability.Types (Ability, abilityCardCode, abilityIndex, abilityTarg
 import Arkham.Act.Types (Field (ActCard))
 import Arkham.Agenda.Types (Field (AgendaCard))
 import Arkham.Ai.Focus (Focus (..), allFoci, focusForAction, focusForSkill)
+import Arkham.Ai.Model (LinearModel (..), activeLinearModel)
 import Arkham.Ai.State (AiPlayerState (..))
 import Arkham.Ai.Tags (
   ActObjective,
@@ -1620,12 +1622,26 @@ firstSelectable cs = maybe 0 fst (listToMaybe [(i, ui) | (i, ui) <- withIndex cs
 firstStop :: [UI Message] -> Maybe Int
 firstStop cs = listToMaybe [i | (i, ui) <- withIndex cs, uiIsStop ui]
 
+{- | The generic argmax ranking over the selectable choices, returning an index
+into @cs@. This is the ONLY ranking the learned model replaces: when
+'activeLinearModel' is a 'Just' (the @ARKHAM_AI_USE_MODEL@ flag is on AND a
+non-empty model is embedded) the seat ranks by 'learnedScore' instead of the
+hand-tuned 'scoreChoice'; otherwise (the default) it runs the heuristic path
+below unchanged, byte-for-byte. Either way it ranks over the SAME
+@isSelectable@ choices and falls back to index @0@ when none is selectable, so
+the engine index invariant and always-legal fallback hold identically. The
+special-case handlers (commit window, damage\/slot-discard, amounts) live in
+'buildAnswer' \/ 'chooseIndexFor' and are untouched by the model.
+-}
 bestByScore :: AiSituation -> [UI Message] -> Int
-bestByScore sit cs = case maxesBy snd scored of
-  ((i, _) : _) -> i
-  [] -> 0
+bestByScore sit cs = case activeLinearModel of
+  Just m -> argmaxFirst [(i, learnedScore m sit ui) | (i, ui) <- selectable]
+  Nothing -> case maxesBy snd scored of
+    ((i, _) : _) -> i
+    [] -> 0
  where
-  raw = [(i, ui, scoreChoice sit ui) | (i, ui) <- withIndex cs, isSelectable ui]
+  selectable = [(i, ui) | (i, ui) <- withIndex cs, isSelectable ui]
+  raw = [(i, ui, scoreChoice sit ui) | (i, ui) <- selectable]
   -- Last-action economy gate: on our final action, don't spend it taking
   -- resources or drawing when a genuinely productive action is available
   -- (scores > the end-turn baseline). Off the last action, or when nothing
@@ -1637,6 +1653,23 @@ bestByScore sit cs = case maxesBy snd scored of
     [ (i, if lastActionProductive && isEconomyChoice ui then min s 0 else s)
     | (i, ui, s) <- raw
     ]
+
+{- | Argmax over @(index, score)@ pairs returning the index of the highest score,
+ties broken to the lowest index (first in list order) — matching the heuristic
+path's @'maxesBy' snd@-then-@head@, whose stable sort keeps the earliest-listed
+choice among equal maxima. Returns @0@ for an empty list. A strict left fold (not
+the partial ClassyPrelude 'maximum', which is 'Int'-typed via 'maxesBy' anyway
+and cannot rank these 'Double' scores).
+-}
+argmaxFirst :: [(Int, Double)] -> Int
+argmaxFirst = \case
+  [] -> 0
+  (p : ps) -> fst (foldl' keepBetter p ps)
+ where
+  -- Strict @>@: a later choice must STRICTLY beat the incumbent to win, so the
+  -- earliest-listed choice survives a tie (lowest index), as above.
+  keepBetter best@(_, bestScore) cur@(_, curScore) =
+    if curScore > bestScore then cur else best
 
 -- * Choice scoring
 
@@ -2274,6 +2307,31 @@ Ordering is stable. Two greppable blocks:
     the six 'aiFocusWeights', the scalar situation reads, the four 'aiStats'
     skills, the chaos-bag summary, and enemy\/teammate aggregates.
   * @ch.*@ — the 'ChoiceKind' one-hot plus per-choice flags and odds.
+-}
+{- | Score a choice with the distilled standardized linear model (see
+'Arkham.Ai.Model'). For each feature 'choiceFeatures' emits, standardize its
+value @(v - mu) \/ sd@ and weight it by the model coefficient, summing only the
+features the model actually weights (@coef \/= 0@). Missing @mu@\/@sd@ default to
+@0@\/@1@ and @sd@ is floored at @1e-9@ to avoid a divide-by-zero on a degenerate
+(constant) feature. Reuses 'choiceFeatures' verbatim so training and inference
+see identical features; 'scoreChoice' \/ 'scoreBreakdown' are untouched.
+-}
+learnedScore :: LinearModel -> AiSituation -> UI Message -> Double
+learnedScore m sit ui =
+  sum
+    [ ((v - mu) / sd) * coef
+    | (k, v) <- choiceFeatures sit ui
+    , let coef = Map.findWithDefault 0 k (lmCoef m)
+    , coef /= 0
+    , let mu = Map.findWithDefault 0 k (lmMu m)
+    , let sd = max 1e-9 (Map.findWithDefault 1 k (lmSd m))
+    ]
+
+{- | The interpretable per-(situation, choice) feature vector (67 stable keys):
+the situation block ('situationFeatures') concatenated with the per-choice block
+('choiceFeaturesBlock'). The single source of truth for BOTH the offline trainer
+(@ml/train.py@) and the inference-time 'learnedScore', so the distilled model
+sees exactly the features it was trained on.
 -}
 choiceFeatures :: AiSituation -> UI Message -> [(Text, Double)]
 choiceFeatures sit ui = situationFeatures <> choiceFeaturesBlock

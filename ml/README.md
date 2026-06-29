@@ -31,9 +31,21 @@ damage/slot-discard, amounts) are kept; the model only re-ranks the *generic*
    Read `ml/model/report.json`: `lgbm.top1` vs `baseline.top1` (does the learned
    scorer beat the heuristic at predicting real human moves?) and `linear.top1`
    (is linear competitive → simplest distillation?).
-4. **Distill** — bake `ml/model/` into Haskell: learned coefficients into
-   `scoreChoice` (if linear is competitive) or an embedded tree file (FileEmbed,
-   like `ai-tags.json`) + a small pure-Haskell evaluator wired into `bestByScore`.
+4. **Distill** — bake the LINEAR ranker into Haskell (implemented):
+   ```
+   python ml/export_model.py        # report.json linear_* -> backend/arkham-api/data/ai-model.json
+   ```
+   `export_model.py` copies `report.json`'s `linear_coef`/`linear_mu`/`linear_sd`
+   into `data/ai-model.json` (`{coef,mu,sd}`). That file is embedded at compile
+   time by `Arkham.Ai.Model.learnedModel` (FileEmbed, like `ai-tags.json`) and
+   scored per choice by `Arkham.Ai.Decision.learnedScore` — the standardized
+   linear evaluator wired into `bestByScore` as the generic argmax. Activate by
+   **rebuilding** and running with `ARKHAM_AI_USE_MODEL=1`; the placeholder empty
+   model (or the flag off) keeps the hand-tuned heuristic byte-for-byte. Only the
+   generic `bestByScore` ranking is replaced — the commit-window, damage,
+   slot-discard, and amounts special cases are untouched. (A GBDT distillation
+   would instead embed `lgbm.txt` + a tree evaluator; the linear path ships first
+   if `linear.top1` is competitive in `report.json`.)
 5. **Self-play gate** — headless two-AI auto-play; ship only if win-rate ≥ heuristic.
 
 ## Restoring the dump (one-time)

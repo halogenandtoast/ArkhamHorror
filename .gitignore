@@ -92,3 +92,10 @@ tmp/
 .agents/
 .windsurf/
 skills-lock.json
+
+# ML pipeline artifacts (training data, trained-model output, venv)
+/data/
+ml/.venv/
+ml/__pycache__/
+ml/model/
+*.pyc

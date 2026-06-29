@@ -29,6 +29,7 @@ instance HasAbilities DagonsBrood where
         a
         1
         ( exists
+            $ IncludeOmnipotent
             $ mapOneOf
               enemyIs
               [Cards.dagonDeepInSlumberIntoTheMaelstrom, Cards.dagonAwakenedAndEnragedIntoTheMaelstrom]
@@ -39,11 +40,11 @@ instance HasAbilities DagonsBrood where
 instance RunMessage DagonsBrood where
   runMessage msg e@(DagonsBrood attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mDagonSlumbering <- selectOne $ enemyIs Cards.dagonDeepInSlumberIntoTheMaelstrom
+      mDagonSlumbering <- selectOne $ IncludeOmnipotent $ enemyIs Cards.dagonDeepInSlumberIntoTheMaelstrom
       case mDagonSlumbering of
         Just dagon -> placeDoom (attrs.ability 1) dagon 1
         Nothing -> do
-          dagon <- selectJust $ enemyIs Cards.dagonAwakenedAndEnragedIntoTheMaelstrom
+          dagon <- selectJust $ IncludeOmnipotent $ enemyIs Cards.dagonAwakenedAndEnragedIntoTheMaelstrom
           chooseOneM iid $ scenarioI18n $ scope "dagonsBrood" do
             labeled' "placeDoomOnDagon" $ placeDoom (attrs.ability 1) dagon 1
             labeled' "dagonAttacksYou" $ initiateEnemyAttack dagon (attrs.ability 1) iid

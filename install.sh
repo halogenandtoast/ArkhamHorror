@@ -54,6 +54,14 @@ info "Downloading upgrade.sh"
 curl -fsSL "$REPO_RAW/upgrade.sh" -o upgrade.sh
 chmod +x upgrade.sh
 
+info "Downloading migrations (for the migrate service)"
+mkdir -p migrations/deploy
+curl -fsSL "$REPO_RAW/migrate.sh" -o migrate.sh
+curl -fsSL "$REPO_RAW/migrations/sqitch.plan" -o migrations/sqitch.plan
+grep -vE '^[[:space:]]*(%|#|$)' migrations/sqitch.plan | awk '{print $1}' | while read -r m; do
+  curl -fsSL "$REPO_RAW/migrations/deploy/$m.sql" -o "migrations/deploy/$m.sql"
+done
+
 # ── Generate Postgres password ────────────────────────────────────────────────
 
 if [ ! -f config/postgres_password.txt ]; then

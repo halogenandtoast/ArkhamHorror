@@ -9,27 +9,18 @@
 #   ./upgrade.sh
 #
 # What this does (auto-detected per install type):
-#   * git checkout   — git pull --ff-only, then migrate + (optional) image sync
+#   * git checkout   — git pull --ff-only, migrate, (optional) image sync
 #   * docker install — refresh control files, docker compose pull, migrate,
 #                      recreate web, re-sync local images if present
 #
-# Migrations: there is no engine-level applied-set (runtime automigration is
-# off and the sqitch registry has diverged), so this script keeps its own
-# `arkham_schema_migrations` table. Fresh DBs get it pre-populated by setup.sql.
-# A DB with no such table is a legacy install from an older setup.sql, which
-# held the schema through $BASELINE_THROUGH; we seed that as already-applied and
-# apply everything newer. Set ARKHAM_FORCE_MIGRATIONS=1 to apply the whole plan
-# instead (only safe on a known-empty DB — historical migrations aren't idempotent).
+# Migrations are applied by the compose `migrate` one-shot service (see
+# migrate.sh / docker-compose.yml), so `docker compose up` self-migrates too;
+# this script just invokes it so the upgrade is deterministic.
 #
 set -euo pipefail
 
 REPO_RAW="https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main"
 INSTALL_DIR="${ARKHAM_INSTALL_DIR:-arkham-horror}"
-PG_USER="arkham_pg_user"
-PG_DB="arkham-horror-backend"
-# Last migration the shipped setup.sql contains. A DB with no tracking table is
-# assumed initialised from setup.sql, so migrations after this are applied.
-BASELINE_THROUGH="add_step_constraint"
 
 info() { printf '\033[0;32m==> %s\033[0m\n' "$*"; }
 warn() { printf '\033[0;33mWARN: %s\033[0m\n' "$*" >&2; }
@@ -51,103 +42,15 @@ else
 fi
 info "Detected install type: $MODE  (in $(pwd))"
 
-# ── Migration runner ────────────────────────────────────────────────────────
-#
-# Two independent choices, decoupled so a git checkout running on Docker
-# doesn't need DATABASE_URL:
-#   1. Where the plan/deploy SQL comes from  — disk (git) or curl (docker).
-#   2. How we reach the database             — DATABASE_URL psql, else the
-#                                               compose `db` service via exec.
-#
-# db_psql <args...>    : run psql, args passed through
-# db_query <sql>       : run sql, return single trimmed value
-# db_apply_file <path> : run a .sql file with ON_ERROR_STOP
+# ── Migrations: delegate to the compose one-shot `migrate` service ──────────
 
-# (1) Migration file source.
-if [ "$MODE" = "docker" ]; then
-  PLAN_FILE="$(mktemp)"
-  curl -fsSL "$REPO_RAW/migrations/sqitch.plan" -o "$PLAN_FILE"
-  # In docker mode the deploy scripts aren't on disk; fetch each on demand.
-  get_deploy() { local name="$1" out; out="$(mktemp)"; curl -fsSL "$REPO_RAW/migrations/deploy/$name.sql" -o "$out" && echo "$out"; }
-else
-  PLAN_FILE="migrations/sqitch.plan"
-  get_deploy() { echo "migrations/deploy/$1.sql"; }
-fi
-
-# (2) DB transport. Prefer an explicit DATABASE_URL; otherwise, if a compose
-# `db` service is defined, run psql inside it — no DATABASE_URL finagling.
-compose_has_db() {
-  command -v docker >/dev/null 2>&1 \
-    && docker compose config --services 2>/dev/null | grep -qx db
-}
-if [ -n "${DATABASE_URL:-}" ] && command -v psql >/dev/null 2>&1; then
-  info "Migrations via DATABASE_URL."
-  db_psql()       { psql "$DATABASE_URL" "$@"; }
-  db_apply_file() { psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$1"; }
-elif compose_has_db; then
-  info "Migrations via docker compose 'db' service."
-  docker compose up -d db >/dev/null
-  for _ in $(seq 1 30); do
-    docker compose exec -T db pg_isready -U "$PG_USER" -d "$PG_DB" >/dev/null 2>&1 && break
-    sleep 1
-  done
-  docker compose exec -T db pg_isready -U "$PG_USER" -d "$PG_DB" >/dev/null 2>&1 \
-    || die "Database did not become ready."
-  db_psql()       { docker compose exec -T db psql -U "$PG_USER" -d "$PG_DB" "$@"; }
-  db_apply_file() { docker compose exec -T db psql -U "$PG_USER" -d "$PG_DB" -v ON_ERROR_STOP=1 < "$1"; }
-else
-  warn "No DATABASE_URL and no docker compose 'db' service — skipping migrations."
-  SKIP_MIGRATIONS=1
-  db_psql()       { return 0; }
-  db_apply_file() { return 0; }
-fi
-db_query() { db_psql -tA -c "$1" | tr -d '[:space:]'; }
-
-run_migrations() {
-  [ "${SKIP_MIGRATIONS:-0}" = "1" ] && return 0
-
-  # Plan order, ignoring pragmas/blank lines; change name is the first token.
-  local plan_names
-  plan_names="$(grep -vE '^\s*(%|#|$)' "$PLAN_FILE" | awk '{print $1}')"
-  [ -n "$plan_names" ] || { warn "Empty migration plan; nothing to do."; return 0; }
-
-  local existed
-  existed="$(db_query "SELECT to_regclass('public.arkham_schema_migrations') IS NOT NULL")"
-  db_psql -q -c "CREATE TABLE IF NOT EXISTS arkham_schema_migrations (
-    name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now());" >/dev/null
-
-  if [ "$existed" != "t" ] && [ "${ARKHAM_FORCE_MIGRATIONS:-0}" != "1" ]; then
-    # No tracking table → a legacy DB initialised from setup.sql, which contains
-    # the schema through $BASELINE_THROUGH but not arkham_epic. Seed everything
-    # up to and including that as already-applied; the apply loop below then runs
-    # arkham_epic and anything newer. Keep $BASELINE_THROUGH in step with the
-    # last migration setup.sql actually contains.
-    # ponytail: override with ARKHAM_FORCE_MIGRATIONS=1 to apply the whole plan
-    # (only safe on a genuinely empty DB — historical migrations aren't idempotent).
-    info "No migration table — seeding baseline through '$BASELINE_THROUGH', will apply newer migrations."
-    local n vals=""
-    while IFS= read -r n; do
-      [ -n "$n" ] || continue
-      vals="${vals:+$vals,}('$n')"
-      [ "$n" = "$BASELINE_THROUGH" ] && break
-    done <<< "$plan_names"
-    db_psql -q -c "INSERT INTO arkham_schema_migrations(name) VALUES $vals ON CONFLICT DO NOTHING;" >/dev/null
+apply_migrations() {
+  if command -v docker >/dev/null 2>&1 && docker compose config --services 2>/dev/null | grep -qx migrate; then
+    info "Applying migrations (compose migrate service)..."
+    docker compose run --rm migrate
+  else
+    warn "No docker compose 'migrate' service here — apply migrations manually (sqitch/psql)."
   fi
-
-  local applied count=0 name file
-  applied="$(db_query "SELECT string_agg(name, ' ') FROM arkham_schema_migrations" || true)"
-  while IFS= read -r name; do
-    [ -n "$name" ] || continue
-    case " $applied " in *" $name "*) continue ;; esac
-    info "Applying migration: $name"
-    file="$(get_deploy "$name")" || die "Could not fetch migration $name."
-    db_apply_file "$file" || die "Migration $name failed — aborting (no record written)."
-    db_psql -q -c "INSERT INTO arkham_schema_migrations(name) VALUES ('$name') ON CONFLICT DO NOTHING;" >/dev/null
-    count=$((count + 1))
-  done <<< "$plan_names"
-
-  if [ "$count" -eq 0 ]; then info "Database schema already up to date."
-  else info "Applied $count migration(s)."; fi
 }
 
 # ── Image re-sync (only if local images are already present) ────────────────
@@ -175,7 +78,6 @@ resync_images() {
     ./scripts/fetch-assets.sh "$target"
   else
     warn "Local images present but no aws CLI — run: make fetch-images-docker (or scripts/fetch-assets.sh $target)"
-    return 0
   fi
 }
 
@@ -184,7 +86,7 @@ resync_images() {
 if [ "$MODE" = "git" ]; then
   info "Pulling latest source (git pull --ff-only)..."
   git pull --ff-only || die "git pull failed (uncommitted changes or diverged branch). Resolve, then re-run."
-  run_migrations
+  apply_migrations
   resync_images
   echo ""
   info "Source updated. Rebuild to pick up changes:"
@@ -199,9 +101,17 @@ else
   [ -f docker-compose.yml ] && cp docker-compose.yml docker-compose.yml.bak
   curl -fsSL "$REPO_RAW/docker-compose.yml" -o docker-compose.yml
   curl -fsSL "$REPO_RAW/setup.sql"          -o setup.sql
-  mkdir -p scripts
+  curl -fsSL "$REPO_RAW/migrate.sh"         -o migrate.sh
+  mkdir -p scripts migrations/deploy
   curl -fsSL "$REPO_RAW/scripts/fetch-assets.sh" -o scripts/fetch-assets.sh
   chmod +x scripts/fetch-assets.sh
+
+  info "Refreshing migrations..."
+  curl -fsSL "$REPO_RAW/migrations/sqitch.plan" -o migrations/sqitch.plan
+  grep -vE '^[[:space:]]*(%|#|$)' migrations/sqitch.plan | awk '{print $1}' | while read -r m; do
+    curl -fsSL "$REPO_RAW/migrations/deploy/$m.sql" -o "migrations/deploy/$m.sql"
+  done
+
   if [ -f docker-compose.yml.bak ] && ! diff -q docker-compose.yml docker-compose.yml.bak >/dev/null 2>&1; then
     warn "docker-compose.yml changed — your previous version is saved as docker-compose.yml.bak (re-apply any local env edits)."
   fi
@@ -209,7 +119,7 @@ else
   info "Pulling latest images..."
   docker compose pull
 
-  run_migrations
+  apply_migrations
 
   info "Recreating containers..."
   docker compose up -d

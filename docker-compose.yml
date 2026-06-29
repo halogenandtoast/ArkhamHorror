@@ -26,6 +26,18 @@ services:
       - ./setup.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
     secrets:
       - postgres_password
+  # One-shot: applies pending SQL migrations, then exits. `web` waits for it.
+  migrate:
+    image: postgres:14.6-alpine
+    restart: "no"
+    depends_on:
+      - db
+    entrypoint: ["sh", "/migrate.sh"]
+    volumes:
+      - ./migrations:/migrations:ro
+      - ./migrate.sh:/migrate.sh:ro
+    secrets:
+      - postgres_password
   web:
     image: "halogenandtoast/arkham-horror:latest"
     build:
@@ -44,7 +56,10 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
     volumes:
       - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
   fetch-images:

@@ -1,13 +1,18 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { fetchEvent } from '@/arkham/api'
+import Prompt from '@/components/Prompt.vue'
 import { imgsrc } from '@/arkham/helpers'
 import { useEpicHelpers } from '@/arkham/composables/useEpicHelpers'
 import { useDbCardStore } from '@/stores/dbCards'
 import type { EventListEntry, GroupDigest } from '@/arkham/types/EpicEvent'
 
-const props = defineProps<{ event: EventListEntry }>()
+const props = defineProps<{
+  event: EventListEntry
+  deleteEvent?: () => void
+}>()
 const groups = ref<GroupDigest[]>([])
+const deleting = ref(false)
 const { groupLabel } = useEpicHelpers()
 const dbStore = useDbCardStore()
 
@@ -23,6 +28,17 @@ function investigatorClass(investigatorId: string): string {
   return dbStore.getDbCard(bareCode(investigatorId))?.faction_code ?? 'neutral'
 }
 
+function openSeatCount(group: GroupDigest): number {
+  const openPlayers = group.players.filter((player) => !player.investigatorId).length
+  return Math.max(openPlayers, group.seatCount - group.players.filter((player) => player.investigatorId).length)
+}
+
+function confirmDelete(event: MouseEvent) {
+  event.preventDefault()
+  event.stopPropagation()
+  deleting.value = true
+}
+
 onMounted(async () => {
   void dbStore.initDbCards()
   try {
@@ -35,9 +51,17 @@ onMounted(async () => {
 </script>
 
 <template>
-  <RouterLink class="event-row" :to="`/events/${event.id}`">
-    <span class="event-accent" aria-hidden="true" />
-    <div class="event-details">
+  <RouterLink custom :to="`/events/${event.id}`" v-slot="{ navigate }">
+    <div
+      class="event-row"
+      role="link"
+      tabindex="0"
+      @click="navigate"
+      @keydown.enter="() => navigate()"
+      @keydown.space.prevent="() => navigate()"
+    >
+      <span class="event-accent" aria-hidden="true" />
+      <div class="event-details">
       <div class="event-title">
         <div class="main-details">
           <span class="event-chip">{{ $t('event.epicMultiplayer') }}</span>
@@ -45,31 +69,47 @@ onMounted(async () => {
         </div>
         <div class="extra-details">
           <span class="event-role">{{ $t(`event.role.${event.role}`) }}</span>
-          <span class="event-cta" aria-hidden="true">›</span>
+          <div v-if="deleteEvent && event.role === 'organizer'" class="event-delete">
+            <a href="#delete" :aria-label="$t('event.deleteEvent')" @click="confirmDelete">
+              <font-awesome-icon icon="trash" />
+            </a>
+          </div>
         </div>
       </div>
-      <div v-if="groups.length" class="event-groups" aria-label="Epic multiplayer groups">
-        <section v-for="group in groups" :key="group.ordinal" class="event-group-card">
-          <h2>{{ groupLabel(group) }}</h2>
-          <div class="investigators">
-            <div
-              v-for="(player, i) in group.players.filter((p) => p.investigatorId)"
-              :key="`${player.username}-${i}`"
-              class="investigator"
-              :title="player.username"
-            >
-              <div :class="`investigator-portrait-container ${investigatorClass(player.investigatorId!)}`">
-                <img :src="portraitSrc(player.investigatorId!)" class="investigator-portrait" />
+        <div v-if="groups.length" class="event-groups" aria-label="Epic multiplayer groups">
+          <section v-for="group in groups" :key="group.ordinal" class="event-group-card">
+            <h2>{{ groupLabel(group) }}</h2>
+            <div class="investigators">
+              <div
+                v-for="(player, i) in group.players.filter((p) => p.investigatorId)"
+                :key="`${player.username}-${i}`"
+                class="investigator"
+                :title="player.username"
+              >
+                <div :class="`investigator-portrait-container ${investigatorClass(player.investigatorId!)}`">
+                  <img :src="portraitSrc(player.investigatorId!)" class="investigator-portrait" />
+                </div>
+              </div>
+              <div
+                v-for="seat in openSeatCount(group)"
+                :key="`open-seat-${seat}`"
+                class="investigator"
+                :title="$t('event.openSeats')"
+              >
+                <div class="investigator-portrait-container neutral empty-seat">?</div>
               </div>
             </div>
-            <span v-if="group.players.every((p) => !p.investigatorId)" class="empty-group">
-              {{ $t('event.openSeats') }}
-            </span>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </div>
   </RouterLink>
+  <Prompt
+    v-if="deleting && deleteEvent"
+    :prompt="$t('event.confirmDelete')"
+    :yes="deleteEvent"
+    :no="() => deleting = false"
+  />
 </template>
 
 <style scoped>
@@ -86,6 +126,7 @@ onMounted(async () => {
   margin-bottom: 10px;
   overflow: hidden;
   text-decoration: none;
+  cursor: pointer;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
   transition: border-color 0.2s linear, transform 0.12s ease, box-shadow 0.2s linear;
 }
@@ -94,6 +135,11 @@ onMounted(async () => {
   border-color: var(--spooky-green);
   transform: translateY(-1px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.event-row:focus-visible {
+  outline: 2px solid var(--spooky-green);
+  outline-offset: 2px;
 }
 
 .event-accent {
@@ -163,15 +209,20 @@ onMounted(async () => {
   white-space: nowrap;
 }
 
-.event-cta {
-  flex-shrink: 0;
-  font-size: 1.6em;
-  line-height: 1;
-  opacity: 0.5;
-}
+.event-delete {
+  transition: all 0.5s;
+  position: relative;
+  align-self: center;
+  display: flex;
 
-.event-row:hover .event-cta {
-  opacity: 0.9;
+  a {
+    font-size: 1.2em;
+    color: var(--delete);
+
+    &:hover {
+      color: #990000;
+    }
+  }
 }
 
 .event-groups {
@@ -251,10 +302,15 @@ onMounted(async () => {
   width: 126px;
 }
 
-.empty-group {
+.investigator-portrait-container.empty-seat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px dashed var(--neutral);
+  background: rgba(255, 255, 255, 0.04);
   color: color-mix(in srgb, var(--title) 58%, transparent);
-  font-size: 0.8em;
-  font-style: italic;
+  font-size: 1.4em;
+  font-weight: 700;
 }
 
 @media (max-width: 600px) {

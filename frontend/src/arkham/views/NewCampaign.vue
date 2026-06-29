@@ -441,6 +441,10 @@ async function start() {
 </template>
 
 <style scoped>
+:global(html) {
+  scrollbar-gutter: stable;
+}
+
 .new-campaign-content {
   width: 70vw;
   max-width: 98vw;

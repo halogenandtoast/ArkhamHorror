@@ -117,8 +117,10 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toTabooList _ = Nothing
   toMutated :: a -> Maybe Text
   toMutated _ = Nothing
+
 sameCard :: (IsCard a, IsCard b) => a -> b -> Bool
 sameCard a b = toCardId a == toCardId b
+
 class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
@@ -192,6 +194,7 @@ genFlippedCard a = flipCard <$> genCard a
 
 genCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t Card)
 genCards = traverse genCard
+
 genPlayerCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t PlayerCard)
 genPlayerCards = traverse genPlayerCard
 
@@ -257,7 +260,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithClass role -> role `member` cdClassSymbols (toCardDef a)
   CardWithLevel n -> Just n == (toCard a).level
   CardWithMaxLevel n -> maybe False (<= n) $ (toCard a).level
-  CardWithMaxPrintedHealth n -> maybe False (<= n) (cdHealth (toCardDef a) >>= fixedHealth)
+  CardWithMaxPrintedHealth pc n -> maybe False (<= n) (cdHealth (toCardDef a) >>= fixedHealth pc)
   FastCard -> isJust $ cdFastWindow (toCardDef a)
   CardMatches ms -> all (cardMatch a) ms
   CardWithVengeance -> isJust . cdVengeancePoints $ toCardDef a
@@ -440,6 +443,12 @@ instance HasField "icons" Card [SkillIcon] where
 
 instance HasField "cost" Card (Maybe CardCost) where
   getField = cdCost . toCardDef
+
+instance HasField "health" Card (Maybe Health) where
+  getField = cdHealth . toCardDef
+
+instance HasField "fixedHealth" Card (Int -> Maybe Int) where
+  getField c pc = fixedHealth pc =<< c.health
 
 instance HasField "printedCost" Card Int where
   getField = (.printedCost) . toCardDef

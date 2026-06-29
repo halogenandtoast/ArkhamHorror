@@ -1,9 +1,9 @@
 module Arkham.Treachery.Cards.Replication (replication) where
 
-import Arkham.Card.CardDef (cdHealth, fixedHealth, toCardDef)
+import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Types (Field (EnemyCard, EnemyDamage, EnemyHealth, EnemyLocation))
+import Arkham.Enemy.Types (Field (EnemyDamage, EnemyHealth, EnemyLocation))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.CreateEnemy
@@ -25,10 +25,11 @@ getMostDamagedManifold = do
   manifolds <- selectWithField EnemyDamage $ EnemyWithTrait Manifold
   pure $ fst <$> headMay (sortOn (Down . snd) manifolds)
 
-getEnemyPrintedHealth :: (HasGame m, Tracing m) => EnemyId -> m (Maybe Int)
-getEnemyPrintedHealth eid = do
-  card <- field EnemyCard eid
-  pure $ cdHealth (toCardDef card) >>= fixedHealth
+getEnemyPrintedHealth :: (HasGame m, Tracing m, CardGen m) => EnemyId -> m (Maybe Int)
+getEnemyPrintedHealth eid = runMaybeT do
+  card <- MaybeT $ fetchCardMaybe eid
+  pc <- lift getPlayerCount
+  hoistMaybe $ card.fixedHealth pc
 
 instance RunMessage Replication where
   runMessage msg t@(Replication attrs) = runQueueT $ case msg of
@@ -36,7 +37,8 @@ instance RunMessage Replication where
       getMostDamagedManifold >>= \case
         Nothing -> gainSurge attrs
         Just mostDamaged -> do
-          withinHealth <- maybe AnyCard CardWithMaxPrintedHealth <$> getEnemyPrintedHealth mostDamaged
+          pc <- getPlayerCount
+          withinHealth <- maybe AnyCard (CardWithMaxPrintedHealth pc) <$> getEnemyPrintedHealth mostDamaged
           discardUntilFirst iid attrs Deck.EncounterDeck
             $ basic (#enemy <> CardWithTrait Manifold <> withinHealth)
       pure t

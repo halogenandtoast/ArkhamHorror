@@ -1,13 +1,12 @@
 module Arkham.Event.Events.KickingTheHornetsNest (kickingTheHornetsNest) where
 
 import Arkham.Card
-import Arkham.Enemy.Types (Field (EnemyHealth))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), getTotalSearchTargets)
+import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Spawn
 import Arkham.Strategy
 
@@ -36,7 +35,8 @@ instance RunMessage KickingTheHornetsNest where
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       discoverAtYourLocation NotInvestigate iid attrs 1
-      selectOne (EnemyWithCardId cid)
-        >>= traverse_ (field EnemyHealth >=> traverse_ (gainResourcesIfCan iid attrs))
+      card <- fetchCard cid
+      pc <- getPlayerCount
+      for_ (card.fixedHealth pc) (gainResourcesIfCan iid attrs)
       pure e
     _ -> KickingTheHornetsNest <$> liftRunMessage msg attrs

@@ -5,8 +5,9 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence (ActSide (..))
 import Arkham.Act.Types (Act, Field (ActClues))
 import Arkham.Ability.Types (abilityIndex, abilitySource)
+import Arkham.Classes.HasGame (getGame)
 import Arkham.Entities qualified as Entities
-import Arkham.Epic.Types (SharedKey (..))
+import Arkham.Epic.Types (GroupOrdinal (..), SharedKey (..))
 import Arkham.Helpers.Action (getActions)
 import Arkham.Helpers.Log (scenarioCount)
 import Arkham.Matcher
@@ -21,38 +22,43 @@ import TestImport.New
 Act 1) in The Blob That Ate Everything.
 
 The clue requirement is a single GLOBAL pool shared across every group in the
-event: 2 clues per investigator across ALL groups (the event's frozen total).
-The advance is FULLY IN-GROUP -- there is no cross-group message injection; the
-only cross-group communication is the mirrored shared counters. A single game
-can therefore exercise the whole act-side contract:
+event (2 clues per investigator across ALL groups). Advancing is FULLY IN-GROUP
+but gated on an ORGANIZER excess-allocation step, so the resolver PARKS until the
+organizer allocates each group's spend. The act-side contract a single game can
+exercise:
 
   * CONTRIBUTION (ability 1, fast, @DuringTurn You@, only while you have clues):
-    @chooseAmount@ 1..min(3, spendable clues), then on resolution it SPENDS those
-    clues from the investigator (@spendClues@) straight into the shared pool and
-    raises the shared @act-progress:1@ counter by the amount spent. Nothing is
-    placed on the act -- it holds ZERO clue tokens. (In a non-event game the
-    @RaiseShared@ delta is not mirrored back into scenario state, so we assert
-    the emitted message rather than a count change.)
+    @chooseAmount@ 1..min(3, spendable clues), then on resolution @spendClues@ the
+    chosen clues from the investigator (no local act tokens) and raises BOTH the
+    global pool @act-progress:1@ AND this group's own @act-contribution:1:<ordinal>@
+    (ordinal read from @EpicShared "group-ordinal"@) so the organizer can cap each
+    group's spend. (In a non-event game @RaiseShared@ is inert, so we assert the
+    emitted messages rather than mirrored counts.)
   * FIRST-RESOLVER (ability 2, @Objective $ forced $ RoundBegins #when@): once the
-    mirrored pool reaches @2 * total@, this group advances its act in-group via
-    the normal AdvanceAct side-A -> side-B flow, bumps the LOCAL @EpicActAdvances 1@,
-    and raises @AdvanceRequested 1@ to signal the server. The POST-COMMIT server
-    coordinator (not exercised here) consumes that signal, resets the pool, and
-    bumps the generation -- so we deliberately do NOT assert any pool reset or
-    generation bump.
+    pool reaches @2 * total@, it raises @AdvanceRequested 1@, latches a meta flag,
+    and PARKS on a single-option @$continue@ choice (@leadChooseOneM $ labeled
+    "$continue"@). It does NOT advance and does NOT increment here -- a single-option
+    chooseOne genuinely parks until answered.
+  * SETTLE (the parked Continue pushes @NextAdvanceActStep act 1@; also ability 3's
+    body): returns this group's leftover @contributed - spent@ clues to its OWN
+    investigators (auto for a solo group, lead picks otherwise), increments the LOCAL
+    @EpicActAdvances 1@, then advances via the normal AdvanceAct side-A -> side-B flow.
   * FOLLOWER (ability 3, @Objective $ forced $ RoundBegins #when@): when the
-    mirrored @act-advance-gen:1@ is ahead of this group's local @EpicActAdvances 1@,
-    this group catches up by advancing in-group, bumping the local count but
-    raising NO @AdvanceRequested@.
+    server-bumped @act-advance-gen:1@ is ahead of the local @EpicActAdvances 1@, it
+    runs the SAME settle helper, raising NO @AdvanceRequested@.
 
-There are no local act clue tokens at any point (clues live in the shared pool),
-so advancing does not clear any act clues.
+Seam-level (server) and NOT reachable from a single-game spec: the organizer
+allocation endpoint, the @awaiting-organizer:1@ gate / release, the pool reset and
+@act-advance-gen:1@ bump, and cross-group mirror ordering / concurrency. We
+simulate the organizer's allocation by @ScenarioCountSet@ on the mirrored keys
+(@act-contribution:1:o@, @act-spend:1:o@, @act-advance-gen:1@) and drive the parked
+step directly with @NextAdvanceActStep@.
 
 Harness notes: with no configured act stack the side-B @advanceActDeck@ is a
 no-op, and the Vulnerable Heart @leadChooseOneM@ has no Oozified locations to
 target so it is skipped. We assert the in-group flip (side A -> B), the local
-advance count, and the presence/absence of the server signal rather than the
-act-deck position.
+advance count, the returned leftover clues, and the presence/absence of the
+server signal rather than the act-deck position.
 -}
 realAct :: CardDef -> TestAppT Act
 realAct def = do
@@ -96,6 +102,21 @@ useObjective self act idx = do
         <> show idx
         <> ") to be available"
 
+-- | The option labels of every currently-pending question (display wrappers
+-- stripped). Used to prove the first-resolver genuinely PARKS on its @$continue@.
+pendingLabels :: TestAppT [Text]
+pendingLabels = do
+  questions <- toList . gameQuestion <$> getGame
+  pure $ concatMap (labelsOf . stripQuestionWrappers) questions
+ where
+  labelsOf = \case
+    ChooseOne uis -> mapMaybe uiLabel uis
+    PlayerWindowChooseOne uis -> mapMaybe uiLabel uis
+    _ -> []
+  uiLabel = \case
+    Label l _ -> Just l
+    _ -> Nothing
+
 spec :: Spec
 spec = describe "Expose the Anomaly (Epic Multiplayer)" do
   it "spends contributed clues from the investigator into the pool, leaving no clues on the act"
@@ -110,23 +131,38 @@ spec = describe "Expose the Anomaly (Epic Multiplayer)" do
 
       contribute self act 2
 
-      -- the contribution SPENDS the investigator's clues straight into the shared
-      -- pool: the investigator empties and @act-progress:1@ is raised by the amount.
-      -- Nothing is placed on the act (it holds zero clue tokens) and it does NOT
-      -- advance.
+      -- the contribution SPENDS the investigator's clues into the shared pool: the
+      -- investigator empties and the global @act-progress:1@ pool is raised. Nothing
+      -- is placed on the act (zero clue tokens) and it does NOT advance.
       raised `refShouldBe` True
       self.clues `shouldReturn` 0
       field ActClues act.id `shouldReturn` 0
       assertAny $ ActWithSide A
 
-  it "advances in-group and signals the server once the shared pool meets the global threshold (ability 2, first-resolver)"
+  it "records the group's own contribution under its ordinal so the organizer can cap the spend"
+    . scenarioTest "85001"
+    $ \self -> do
+      act <- realAct Acts.exposeTheAnomalyEpicMultiplayer
+      run $ PlaceTokens (TestSource mempty) (toTarget self) Clue 2
+      -- this group's mirrored ordinal; the contribution key is suffixed with it.
+      run $ ScenarioCountSet (EpicShared "group-ordinal") 2
+
+      recorded <- createMessageChecker \case
+        RaiseShared (ActContribution 1 (GroupOrdinal 2)) n -> n == 2
+        _ -> False
+
+      contribute self act 2
+
+      recorded `refShouldBe` True
+      self.clues `shouldReturn` 0
+
+  it "PARKS the first resolver on a Continue choice without advancing (ability 2)"
     . scenarioTest "85001"
     $ \self -> do
       act <- realAct Acts.exposeTheAnomalyEpicMultiplayer
       scenarioCount (EpicActAdvances 1) `shouldReturn` 0
 
-      -- mirror the shared pool at the global threshold: 2 per investigator with a
-      -- frozen event total of 1 (pool 2 >= 2 * 1).
+      -- pool at the global threshold (pool 2 >= 2 * 1).
       run $ ScenarioCountSet (EpicShared "total-investigators") 1
       run $ ScenarioCountSet (EpicShared "act-progress:1") 2
 
@@ -136,15 +172,53 @@ spec = describe "Expose the Anomaly (Epic Multiplayer)" do
 
       useObjective self act 2
 
-      -- the act flips in-group (side A -> B) ...
+      -- it requests the organizer allocation and PARKS: the single-option Continue
+      -- choice is genuinely pending, the act stays on side A, and the local advance
+      -- count is NOT incremented (the server settles it later via the parked step).
+      requested `refShouldBe` True
+      pendingLabels `shouldReturn` ["$continue"]
+      assertAny $ ActWithSide A
+      assertNone $ ActWithSide B
+      scenarioCount (EpicActAdvances 1) `shouldReturn` 0
+
+  it "settles the parked step: returns leftover clues, increments, and advances (contributed 3, spent 2 -> 1 back)"
+    . scenarioTest "85001"
+    $ \self -> do
+      act <- realAct Acts.exposeTheAnomalyEpicMultiplayer
+      self.clues `shouldReturn` 0
+      scenarioCount (EpicActAdvances 1) `shouldReturn` 0
+
+      -- simulate the organizer's allocation for this group (ordinal 0 by default):
+      -- contributed 3, allocated spend 2.
+      run $ ScenarioCountSet (EpicShared "act-contribution:1:0") 3
+      run $ ScenarioCountSet (EpicShared "act-spend:1:0") 2
+
+      -- the parked Continue defers to this step, read after the allocation mirrors.
+      run $ NextAdvanceActStep act.id 1
+
+      -- the leftover (3 - 2 = 1) returns to the solo group's investigator, the local
+      -- count increments, and the act advances in-group (side A -> B).
+      self.clues `shouldReturn` 1
+      scenarioCount (EpicActAdvances 1) `shouldReturn` 1
       assertAny $ ActWithSide B
       assertNone $ ActWithSide A
-      -- ... bumps the LOCAL advance count and raises the server signal. The pool
-      -- reset / generation bump are server-owned and intentionally NOT asserted here.
-      scenarioCount (EpicActAdvances 1) `shouldReturn` 1
-      requested `refShouldBe` True
 
-  it "advances in-group with no server signal when the generation is ahead (ability 3, follower)"
+  it "settles with no leftover when the whole contribution is allocated (contributed 2, spent 2 -> 0 back)"
+    . scenarioTest "85001"
+    $ \self -> do
+      act <- realAct Acts.exposeTheAnomalyEpicMultiplayer
+      run $ ScenarioCountSet (EpicShared "act-contribution:1:0") 2
+      run $ ScenarioCountSet (EpicShared "act-spend:1:0") 2
+
+      run $ NextAdvanceActStep act.id 1
+
+      -- no clues are returned (leftover 0) but the act still increments and advances.
+      self.clues `shouldReturn` 0
+      scenarioCount (EpicActAdvances 1) `shouldReturn` 1
+      assertAny $ ActWithSide B
+      assertNone $ ActWithSide A
+
+  it "advances a follower in-group with no server signal when the generation is ahead (ability 3)"
     . scenarioTest "85001"
     $ \self -> do
       act <- realAct Acts.exposeTheAnomalyEpicMultiplayer
@@ -163,10 +237,9 @@ spec = describe "Expose the Anomaly (Epic Multiplayer)" do
 
       useObjective self act 3
 
-      -- the act flips in-group ...
+      -- the follower runs the same settle helper: it advances in-group and catches
+      -- its local count up to the generation, but raises NO server signal.
       assertAny $ ActWithSide B
       assertNone $ ActWithSide A
-      -- ... the local count catches up to the generation ...
       scenarioCount (EpicActAdvances 1) `shouldReturn` 1
-      -- ... and the follower raises NO server signal.
       noSignal `refShouldBe` False

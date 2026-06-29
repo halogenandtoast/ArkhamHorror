@@ -2,7 +2,7 @@
 import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
-import { deleteGame, fetchGames, fetchEvents, fetchNotifications } from '@/arkham/api';
+import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications } from '@/arkham/api';
 import { cullGameLocalStorage, removeGameLocalStorage } from '@/arkham/localStorage';
 import type { GameDetails } from '@/arkham/types/Game';
 import type { EventListEntry } from '@/arkham/types/EpicEvent';
@@ -53,6 +53,12 @@ async function deleteGameEvent(game: GameDetails) {
     removeGameLocalStorage(game.id)
     games.value = games.value.filter((g) => g.id !== game.id);
   });
+}
+
+async function deleteEpicEvent(event: EventListEntry) {
+  deleteEvent(event.id).then(() => {
+    events.value = events.value.filter((e) => e.id !== event.id)
+  })
 }
 
 const newGame = ref(route.path === "/new-game" || false)
@@ -145,7 +151,12 @@ const dismissNotification = (notification: AppNotification) => {
           <div v-if="activeGames.length === 0 && events.length === 0" class="box">
             <p>{{ $t('home.noActiveGames') }}</p>
           </div>
-          <EventRow v-for="event in events" :key="event.id" :event="event" />
+          <EventRow
+            v-for="event in events"
+            :key="event.id"
+            :event="event"
+            :deleteEvent="() => deleteEpicEvent(event)"
+          />
           <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
         </section>
 

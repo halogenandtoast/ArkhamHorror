@@ -35,14 +35,30 @@ const sideStoryScenarios = computed(() =>
 const challengeScenarios = computed(() =>
   props.sideStories.filter(isChallengeScenario)
 )
+
+function withViewTransition(fn: () => void) {
+  const d = document as Document & { startViewTransition?: (callback: () => void) => void }
+  if (typeof d.startViewTransition === 'function') {
+    d.startViewTransition(fn)
+  } else {
+    fn()
+  }
+}
+
+function selectGameMode(mode: 'Campaign' | 'SideStory') {
+  if (gameMode.value === mode) return
+  withViewTransition(() => {
+    gameMode.value = mode
+  })
+}
 </script>
 
 <template>
   <div class="mode-toggle segmented segmented-2">
-    <input type="radio" v-model="gameMode" :value="'Campaign'" id="campaign" />
+    <input type="radio" :checked="gameMode === 'Campaign'" id="campaign" @change="selectGameMode('Campaign')" />
     <label for="campaign">{{ $t('create.campaign') }}</label>
 
-    <input type="radio" v-model="gameMode" :value="'SideStory'" id="sideStory" />
+    <input type="radio" :checked="gameMode === 'SideStory'" id="sideStory" @change="selectGameMode('SideStory')" />
     <label for="sideStory">{{ $t('create.sideStory') }}</label>
   </div>
 
@@ -173,12 +189,60 @@ input[type='radio'] {
 }
 
 .segmented {
+  --segmented-gap: 2px;
+  --segmented-padding: 2px;
   display: grid;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.18);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+  border-radius: 5px;
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  padding: var(--segmented-padding);
+  gap: var(--segmented-gap);
+  position: relative;
+}
+
+.segmented::before {
+  content: '';
+  background: var(--button-1);
+  border-radius: 3px;
+  bottom: var(--segmented-padding);
+  left: var(--segmented-padding);
+  position: absolute;
+  top: var(--segmented-padding);
+  transform: translateX(0);
+  transition: transform 220ms cubic-bezier(.2, .8, .2, 1), background 150ms ease;
+  width: calc((100% - (var(--segmented-padding) * 2) - var(--segmented-gap)) / 2);
+  z-index: 0;
+}
+
+.segmented:has(#sideStory:checked)::before {
+  transform: translateX(calc(100% + var(--segmented-gap)));
+}
+
+@supports (left: anchor(left)) {
+  #campaign:checked + label,
+  #sideStory:checked + label {
+    anchor-name: --active-game-mode;
+  }
+
+  .segmented::before {
+    bottom: auto;
+    height: anchor-size(height);
+    left: anchor(left);
+    position-anchor: --active-game-mode;
+    top: anchor(top);
+    transform: none;
+    transition:
+      left 220ms cubic-bezier(.2, .8, .2, 1),
+      top 220ms cubic-bezier(.2, .8, .2, 1),
+      width 220ms cubic-bezier(.2, .8, .2, 1),
+      height 220ms cubic-bezier(.2, .8, .2, 1),
+      background 150ms ease;
+    width: anchor-size(width);
+  }
+
+  .segmented:has(#sideStory:checked)::before {
+    transform: none;
+  }
 }
 
 .segmented-2 { grid-template-columns: repeat(2, 1fr); }
@@ -187,28 +251,31 @@ input[type='radio'] {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-block: 10px;
+  padding: 6px 8px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 13px;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 600;
   user-select: none;
   cursor: pointer;
-  background: rgba(255,255,255,0.06);
-  border-right: 1px solid rgba(255,255,255,0.08);
-  transition: background 160ms ease, transform 120ms ease;
-}
-
-.segmented label:last-of-type {
-  border-right: none;
+  border-radius: 3px;
+  color: var(--background-light);
+  margin: 0;
+  position: relative;
+  transition: color 0.15s ease;
+  z-index: 1;
 }
 
 .segmented label:hover {
-  background: rgba(255,255,255,0.10);
+  color: var(--text);
 }
 
 input[type='radio']:checked + label {
-  background: rgba(110, 134, 64, 0.95);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+  color: var(--text);
+}
+
+.segmented:hover::before {
+  background: var(--button-1-highlight);
 }
 
 .campaigns,

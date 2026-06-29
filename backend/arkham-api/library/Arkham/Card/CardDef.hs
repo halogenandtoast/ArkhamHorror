@@ -81,10 +81,10 @@ newtype Health = Health GameValue
 
 -- | The numeric printed health for fixed/per-investigator health; 'Nothing' for
 -- variable (X), special (*), or unknown health.
-fixedHealth :: Health -> Maybe Int
-fixedHealth (Health gv) = case gv of
+fixedHealth :: Int -> Health -> Maybe Int
+fixedHealth pc (Health gv) = case gv of
   Static n -> Just n
-  PerPlayer n -> Just n
+  PerPlayer n -> Just (n * pc)
   _ -> Nothing
 
 -- | An enemy's printed fight value, as a newtype over 'GameValue' (so it can be

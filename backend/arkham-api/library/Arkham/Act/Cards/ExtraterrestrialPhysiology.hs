@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDamage))
 import Arkham.Helpers (unDeck)
+import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario (getEncounterDeck)
 import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestInvestigator)
 import Arkham.Helpers.Window (getTotalDamage)
@@ -36,17 +37,17 @@ instance HasAbilities ExtraterrestrialPhysiology where
     , mkAbility a 3 $ Objective $ freeReaction $ RoundEnds #when
     ]
 
-manifoldHealth :: Card -> Int
-manifoldHealth card = fromMaybe 0 (cdHealth (toCardDef card) >>= fixedHealth)
+manifoldHealth :: Int -> Card -> Int
+manifoldHealth pc card = fromMaybe 0 (card.health >>= fixedHealth pc)
 
-discardUntilManifoldsHaveTotalHealthAtLeast :: Int -> [EncounterCard] -> [EncounterCard]
-discardUntilManifoldsHaveTotalHealthAtLeast x = go 0 []
+discardUntilManifoldsHaveTotalHealthAtLeast :: Int -> Int -> [EncounterCard] -> [EncounterCard]
+discardUntilManifoldsHaveTotalHealthAtLeast pc x = go 0 []
  where
   go _ discarded [] = discarded
   go n discarded _ | n >= x = discarded
   go n discarded (card : cards)
     | toCard card `cardMatch` CardWithTrait Manifold =
-        go (n + manifoldHealth (toCard card)) (card : discarded) cards
+        go (n + manifoldHealth pc (toCard card)) (card : discarded) cards
     | otherwise = go n (card : discarded) cards
 
 instance RunMessage ExtraterrestrialPhysiology where
@@ -74,7 +75,8 @@ instance RunMessage ExtraterrestrialPhysiology where
       pure a
     DoStep x (AdvanceAct (isSide B attrs -> True) _ _) -> do
       lead <- getLead
-      discarded <- discardUntilManifoldsHaveTotalHealthAtLeast x . unDeck <$> getEncounterDeck
+      pc <- getPlayerCount
+      discarded <- discardUntilManifoldsHaveTotalHealthAtLeast pc x . unDeck <$> getEncounterDeck
       push $ DiscardTopOfEncounterDeck lead (length discarded) (attrs.ability 3) (Just $ toTarget attrs)
       pure a
     DiscardedTopOfEncounterDeck _ cards _ (isTarget attrs -> True) -> do

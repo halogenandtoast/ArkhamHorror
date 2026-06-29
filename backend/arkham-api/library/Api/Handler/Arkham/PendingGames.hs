@@ -8,7 +8,7 @@ import Import hiding (on, (==.))
 import Api.Arkham.Epic (applyEpicDeltasLocked, lookupGameEvent, mkEpicEnv)
 import Api.Arkham.Helpers
 import Api.Handler.Arkham.Games.Shared (epicSyncMessages, propagateShared, publishToRoom)
-import Arkham.Epic.Types (EpicRole (GroupPlayer), GroupOrdinal (..), epicEnvDeltaRef, epicEnvSharedRef)
+import Arkham.Epic.Types (EpicRole (GroupPlayer), GroupOrdinal (..), epicEnvDeltaRef, epicEnvGroup, epicEnvSharedRef)
 import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Game.State
@@ -77,7 +77,7 @@ putApiV1ArkhamPendingGameR gameId = do
               setupState <- gameGameState <$> liftIO (readIORef gameRef)
               when (setupState == IsActive) $ for_ mEpicEnv \epic -> do
                 shared <- liftIO $ readIORef (epicEnvSharedRef epic)
-                pushAll (epicSyncMessages shared)
+                pushAll (epicSyncMessages (epicEnvGroup epic) shared)
                 runMessages (gameIdToText gameId) Nothing
 
             updatedGame <- liftIO $ readIORef gameRef

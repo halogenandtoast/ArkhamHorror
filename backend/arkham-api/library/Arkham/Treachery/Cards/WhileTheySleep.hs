@@ -14,7 +14,7 @@ whileTheySleep = treachery WhileTheySleep Cards.whileTheySleep
 instance RunMessage WhileTheySleep where
   runMessage msg t@(WhileTheySleep attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      counts <- for factionOrder \f -> (f,) <$> selectCount (factionEnemy f)
+      counts <- for factionOrder \f -> (f,) <$> selectCount (InPlayEnemy $ factionEnemy f)
       let highest = maximumEx $ map snd counts
       if highest == 0
         then gainSurge attrs

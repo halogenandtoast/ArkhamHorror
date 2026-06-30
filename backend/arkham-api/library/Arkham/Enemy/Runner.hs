@@ -1319,7 +1319,10 @@ instance RunMessage EnemyAttrs where
       let alternateSuccess = [t | AlternateSuccess t <- mods]
       for_ alternateSuccess $ \target' ->
         push $ Successful (Action.Evade, toTarget a) iid source target' n
-      pushWhen (null alternateSuccess) $ EnemyEvaded iid enemyId
+      -- Fire the SuccessfulEvadeEnemy windows around EnemyEvaded (When -> exhaust
+      -- -> After) so "after you evade" reactions see the enemy already exhausted
+      -- and disengaged (e.g. Right Under Their Noses vs Terror of the Stars).
+      when (null alternateSuccess) $ Evade.pushSuccessfulEvade iid source enemyId n
       pure a
     When (FailedSkillTest iid (Just Action.Evade) _source (Initiator target) _ n) | isActionTarget a target -> do
       pushM $ checkWindows [mkWhen $ Window.FailEvadeEnemy iid enemyId n]

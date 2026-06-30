@@ -2370,7 +2370,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     windows <- case mAction of
       Just Action.Investigate -> concat <$> traverse goLocation (maybeToList mTarget)
       Just Action.Fight -> pure $ goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
-      Just Action.Evade -> pure $ goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
+      -- SuccessfulEvadeEnemy fires from the enemy's evade resolution (around
+      -- EnemyEvaded) so reactions see the enemy exhausted; see Enemy.Runner.
       _ -> pure []
     pushM $ checkWindows $ mkWhen (Window.PassSkillTest mAction source iid n) : windows
     pure a
@@ -2394,7 +2395,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     windows <- case mAction of
       Just Action.Investigate -> concat <$> traverse goLocation (maybeToList mTarget)
       Just Action.Fight -> pure $ goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
-      Just Action.Evade -> pure $ goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
+      -- SuccessfulEvadeEnemy fires from the enemy's evade resolution (around
+      -- EnemyEvaded) so reactions see the enemy exhausted; see Enemy.Runner.
       _ -> pure []
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a

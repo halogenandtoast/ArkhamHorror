@@ -5,6 +5,8 @@ import StoryQuestion from '@/arkham/components/StoryQuestion.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
 import ChooseDeck from '@/arkham/components/ChooseDeck.vue';
 import ContinueCampaign from '@/arkham/components/ContinueCampaign.vue';
+import { handleEmbeddedI18n } from '@/arkham/i18n';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   game: Game
@@ -18,6 +20,8 @@ const emit = defineEmits<{
   choose: [idx: number]
   toggleRealityAcidLight: []
 }>()
+
+const { t } = useI18n()
 
 async function update(game: Game) {
   emit('update', game);
@@ -55,7 +59,7 @@ const questionLabel = computed(() => {
     question = Object.values(props.game.question)[0]
   }
 
-  return question?.tag === 'QuestionLabel' ? question.label : null
+  return question?.tag === 'QuestionLabel' ? handleEmbeddedI18n(question.label, t) : null
 })
 
 const questionHash = computed(() => {

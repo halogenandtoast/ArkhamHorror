@@ -14,6 +14,7 @@ import Question from '@/arkham/components/Question.vue';
 import NewDeck from '@/arkham/components/NewDeck.vue'
 import DeckToolbar from '@/arkham/components/DeckToolbar.vue'
 import { useI18n } from 'vue-i18n'
+import { handleEmbeddedI18n } from '@/arkham/i18n'
 
 const { t } = useI18n()
 
@@ -83,7 +84,7 @@ const deckRequirements = computed(() => deckRequirementDescriptions(props.game.s
 
 const questionLabel = computed(() => {
   if (question.value)
-    return question.value.tag === 'QuestionLabel' ? question.value.label : null
+    return question.value.tag === 'QuestionLabel' ? handleEmbeddedI18n(question.value.label, t) : null
 })
 
 async function setPortrait(src: string) {

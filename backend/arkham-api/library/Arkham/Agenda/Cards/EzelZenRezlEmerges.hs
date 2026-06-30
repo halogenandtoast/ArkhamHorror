@@ -25,7 +25,7 @@ instance HasModifiersFor EzelZenRezlEmerges where
 
 instance HasAbilities EzelZenRezlEmerges where
   getAbilities (EzelZenRezlEmerges a) =
-    [mkAbility a 1 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny (enemyIs Enemies.ezelZenRezl)]
+    [mkAbility a 1 $ Objective $ forced $ IfEnemyDefeated_ #after (enemyIs Enemies.ezelZenRezl)]
 
 instance RunMessage EzelZenRezlEmerges where
   runMessage msg a@(EzelZenRezlEmerges attrs) = runQueueT $ case msg of

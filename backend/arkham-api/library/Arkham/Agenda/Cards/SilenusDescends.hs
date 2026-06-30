@@ -25,7 +25,7 @@ instance HasModifiersFor SilenusDescends where
 
 instance HasAbilities SilenusDescends where
   getAbilities (SilenusDescends a) =
-    [mkAbility a 1 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny (enemyIs Enemies.silenus)]
+    [mkAbility a 1 $ Objective $ forced $ IfEnemyDefeated_ #after (enemyIs Enemies.silenus)]
 
 instance RunMessage SilenusDescends where
   runMessage msg a@(SilenusDescends attrs) = runQueueT $ case msg of

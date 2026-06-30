@@ -71,7 +71,12 @@ const uiRotation = computed<number>(() => {
 
 const cardCode = computed(() => props.asset.cardCode)
 const isTheBeyond = computed(() => cardCode.value === 'c90052')
-const investigators = computed(() => Object.values(props.game.investigators).filter((i) => i.placement.tag === 'InVehicle' && i.placement.contents === id.value))
+const investigators = computed(() => Object.values(props.game.investigators).filter((i) => {
+  if (i.placement.tag === 'InVehicle') return i.placement.contents === id.value
+  if (i.placement.tag === 'AttachedToAsset') return i.placement.contents[0] === id.value
+
+  return false
+}))
 const marketPopoverShown = ref(false)
 const knownMarketDeck = computed(() => props.asset.knownMarketDeck ?? [])
 const marketDeckCardImage = (card: ArkhamCard) => imgsrc(cardToImage(card))

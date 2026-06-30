@@ -11,13 +11,14 @@ newtype AthenaeumOfTheEmptySky = AthenaeumOfTheEmptySky LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 athenaeumOfTheEmptySky :: LocationCard AthenaeumOfTheEmptySky
-athenaeumOfTheEmptySky = symbolLabel $ location AthenaeumOfTheEmptySky Cards.athenaeumOfTheEmptySky 3 (PerPlayer 1)
+athenaeumOfTheEmptySky =
+  symbolLabel $ location AthenaeumOfTheEmptySky Cards.athenaeumOfTheEmptySky 3 (PerPlayer 1)
 
 instance HasAbilities AthenaeumOfTheEmptySky where
   getAbilities (AthenaeumOfTheEmptySky a) =
     extendRevealed1 a
       $ groupLimit PerRound
-      $ restricted a 1 (exists $ factionAgenda BlueFaction)
+      $ restricted a 1 (Here <> exists (factionAgenda BlueFaction))
       $ FastAbility
       $ DrawEncounterCardsCost 1
 

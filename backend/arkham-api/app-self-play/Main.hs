@@ -49,7 +49,7 @@
 module Main where
 
 import Api.Arkham.Helpers (GameApp (..), runGameApp)
-import Arkham.Ai.Decision (decideAi, unwrapQuestion)
+import Arkham.Ai.Decision (decideAi, flattenChoices, unwrapQuestion)
 import Arkham.Ai.State (AiPlayerState, defaultAiPlayerState)
 import Arkham.Classes.Entity (attr)
 import Arkham.Classes.HasQueue (newQueue, push, pushAll)
@@ -68,19 +68,20 @@ import Arkham.Investigator.Types
 import Arkham.Message (Message (ClearUI, RegisterAiPlayer, SetActivePlayer))
 import Arkham.Question (Question (PickCampaignSettings, PickScenarioSettings))
 import Control.Exception (SomeException, evaluate, try)
-import Control.Monad (forM)
+import Control.Monad (forM, when)
 import Control.Monad.Random (StdGen, mkStdGen)
-import Data.IORef (IORef, newIORef, readIORef, writeIORef)
+import Data.IORef (IORef, modifyIORef', newIORef, readIORef, writeIORef)
 import Data.List (find)
 import Data.Map.Strict qualified as Map
-import Data.Maybe (listToMaybe)
+import Data.Maybe (isJust, listToMaybe)
 import Data.String (fromString)
 import Data.UUID qualified as UUID
 import Entity.Answer
-  ( Answer (CampaignSettingsAnswer, StandaloneSettingsAnswer)
+  ( Answer (Answer, CampaignSettingsAnswer, StandaloneSettingsAnswer)
   , CampaignSettings (CampaignSettings)
   , Reply (Handled, Unhandled)
   , handleAnswerPure
+  , qrChoice
   )
 import OpenTelemetry.Trace
   ( Tracer
@@ -89,9 +90,10 @@ import OpenTelemetry.Trace
   , makeTracer
   , tracerOptions
   )
-import System.Environment (getArgs)
+import System.Environment (getArgs, lookupEnv)
 import System.Exit (die)
 import System.IO (BufferMode (LineBuffering), hPutStrLn, hSetBuffering, stderr, stdout)
+import System.IO.Unsafe (unsafePerformIO)
 import Prelude
 
 -- ---------------------------------------------------------------------------
@@ -242,7 +244,8 @@ runOneGame tracer scenario difficulty maxSteps seed = do
       push (RegisterAiPlayer harnessPlayerId rolandAiState)
       runMessages "self-play-setup" Nothing
 
-    outcome <- driveLoop app gameRef genRef maxSteps 0
+    traceRef <- newIORef []
+    outcome <- driveLoop app gameRef genRef maxSteps traceRef 0
     evaluate outcome
   pure (either (const Aborted) id result)
 
@@ -250,27 +253,49 @@ runOneGame tracer scenario difficulty maxSteps seed = do
 'updateGame'. Stops at 'IsOver' (real outcome) or when the safety cap \/ a stuck
 state \/ an unhandled answer forces 'Aborted'.
 -}
-driveLoop :: GameApp -> IORef Game -> IORef StdGen -> Int -> Int -> IO Outcome
-driveLoop app gameRef genRef maxSteps = loop
+-- | Set @ARKHAM_SP_TRACE=1@ to dump the last ~80 decisions when a game aborts,
+-- so the looping pattern (the same question/answer repeating) is visible.
+{-# NOINLINE traceEnabled #-}
+traceEnabled :: Bool
+traceEnabled = unsafePerformIO (isJust <$> lookupEnv "ARKHAM_SP_TRACE")
+
+-- | One-line summary of a decision: step, seat, choice count, chosen index, and
+-- a truncated render of the chosen UI choice.
+decisionSummary :: Int -> PlayerId -> Question Message -> Answer -> String
+decisionSummary step qpid q answer =
+  let cs = maybe [] fst (flattenChoices (unwrapQuestion q))
+      idx = case answer of Answer qr -> qrChoice qr; _ -> -1
+      chosen = case if idx >= 0 then listToMaybe (drop idx cs) else Nothing of
+        Just ui -> take 140 (show ui)
+        Nothing -> "<non-index answer>"
+   in "  step " <> show step <> " seat " <> take 8 (show qpid) <> " [" <> show (length cs) <> "ch] #" <> show idx <> " " <> chosen
+
+driveLoop :: GameApp -> IORef Game -> IORef StdGen -> Int -> IORef [String] -> Int -> IO Outcome
+driveLoop app gameRef genRef maxSteps traceRef = loop
  where
+  dumpTrace reason = when traceEnabled $ do
+    hPutStrLn stderr ("[trace] ABORT (" <> reason <> ") -- last decisions (oldest first):")
+    buf <- readIORef traceRef
+    mapM_ (hPutStrLn stderr) (reverse buf)
   loop steps = do
     game <- readIORef gameRef
     if gameGameState game == IsOver
       then pure (deriveOutcome game)
       else
         if steps >= maxSteps
-          then pure Aborted
+          then dumpTrace "max-steps" >> pure Aborted
           else case parkedQuestion game of
-            Nothing -> pure Aborted -- not over, but nothing to answer: stuck
+            Nothing -> dumpTrace "no parked question" >> pure Aborted -- not over, nothing to answer
             Just (qpid, q) -> do
               -- Mirror updateGame: each action re-seeds the gen from the parked
               -- game's evolving gameSeed (toExternalGame draws a fresh seed at every
               -- park), so a given starting seed replays deterministically.
               writeIORef genRef (mkStdGen (gameSeed game))
               answer <- decideAnswer app qpid q
+              when traceEnabled $ modifyIORef' traceRef (take 80 . (decisionSummary steps qpid q answer :))
               reply <- handleAnswerPure game qpid answer
               case reply of
-                Unhandled _ -> pure Aborted
+                Unhandled _ -> dumpTrace "unhandled answer" >> pure Aborted
                 Handled answerMessages -> do
                   let activePid = gameActivePlayerId game
                       bracketed =

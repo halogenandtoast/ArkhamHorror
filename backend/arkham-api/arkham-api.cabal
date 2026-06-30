@@ -7073,9 +7073,11 @@ test-suite spec
       Arkham.Campaign.ThePathToCarcosa.ScenariosSpec
       Arkham.Campaign.UsedAbilitiesSpec
       Arkham.DecklistSpec
+      Arkham.Enemy.Cards.DagonsBroodSpec
       Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec
       Arkham.Enemy.Cards.JeanDevereuxSeekingClosureSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
+      Arkham.Enemy.Cards.MoonBeastSpec
       Arkham.Enemy.Cards.SilverTwilightAcolyteSpec
       Arkham.Enemy.Cards.StalkingHybridSpec
       Arkham.Enemy.Cards.StubbornDetectiveSpec
@@ -7120,6 +7122,7 @@ test-suite spec
       Arkham.Event.Events.OopsSpec
       Arkham.Event.Events.PredatorOrPreySpec
       Arkham.Event.Events.RefineSpec
+      Arkham.Event.Events.RightUnderTheirNosesSpec
       Arkham.Event.Events.SearchForTheTruthSpec
       Arkham.Event.Events.SeekingAnswersSpec
       Arkham.Event.Events.SneakAttackSpec

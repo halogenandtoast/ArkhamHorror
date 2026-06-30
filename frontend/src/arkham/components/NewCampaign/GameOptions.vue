@@ -82,8 +82,12 @@ const settings = useSettings()
 
 // AI-investigator configuration is gated on the dev-only "AI Investigators"
 // settings flag (Settings → danger zone); defaults OFF, never on in production.
+// Available for a true single-player game (the one seat is AI-controlled) and for
+// multihanded solo (an AI takes one of the >1 seats). Never for WithFriends.
 const showAiConfig = computed(
-  () => settings.aiInvestigatorsEnabled && multiplayerVariant.value === 'Solo' && playerCount.value > 1,
+  () =>
+    settings.aiInvestigatorsEnabled &&
+    (playerCount.value === 1 || (multiplayerVariant.value === 'Solo' && playerCount.value > 1)),
 )
 
 // Keep one seat row per player, preserving anything already configured.
@@ -100,6 +104,14 @@ watch([aiSeats, showAiConfig, playerCount], () => {
   if (!showAiConfig.value) {
     aiPlayers.value = []
     return
+  }
+  // A 1-player game hides the Solo/WithFriends selector, but driving its single
+  // seat with the AI needs the Solo (one-client-drives-all) variant so the
+  // creator's client runs the AI and `aiPlayers` is actually sent (NewCampaign
+  // only forwards it for Solo). Enabling the AI flips the solo game to Solo;
+  // disabling restores the default WithFriends.
+  if (playerCount.value === 1) {
+    multiplayerVariant.value = aiSeats.value[0]?.enabled ? 'Solo' : 'WithFriends'
   }
   aiPlayers.value = aiSeats.value.slice(0, playerCount.value).map((seat): AiSlotConfig | null =>
     seat.enabled

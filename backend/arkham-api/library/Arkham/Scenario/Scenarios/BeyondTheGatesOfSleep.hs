@@ -48,7 +48,6 @@ import Arkham.Trait (
     Woods
   ),
  )
-import Data.Aeson (Result (..))
 
 newtype BeyondTheGatesOfSleep = BeyondTheGatesOfSleep ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -199,9 +198,7 @@ instance RunMessage BeyondTheGatesOfSleep where
       pure s
     ForInvestigator i Setup -> do
       let
-        usedDreams = case fromJSON attrs.meta of
-          Error e -> error $ "failed to parse dreams: " <> e
-          Success result -> result
+        usedDreams = toResultDefault @[Dream] [] attrs.meta
       investigatorClass <- field InvestigatorClass i
       traits <- field InvestigatorTraits i
 

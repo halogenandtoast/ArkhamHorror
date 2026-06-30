@@ -2171,7 +2171,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   PutCardOnBottomOfDeck _ (Deck.InvestigatorDeck iid) card | iid == toId a -> handlePutCardOnBottomOfDeck a iid card
   PutCardOnBottomOfDeck _ _ card -> handlePutCardOnBottomOfDeckV2 a card
   DebugAddToHand iid cardId | iid == investigatorId -> do
-    card <- getCard cardId
+    card <- setOwner iid =<< getCard cardId
+    bondedCards <- concatForM (cdBondedWith $ toCardDef card) \(n, cCode) -> do
+      case lookupCardDef cCode of
+        Nothing -> error "missing bonded card"
+        Just def -> do
+          cs <- replicateM n (genCard def)
+          traverse (Arkham.Card.setTaboo a.taboo <=< setOwner iid) cs
+    pushAll $ map (PlaceInBonded iid) bondedCards
     liftRunMessage (AddToHand iid [card]) a
   DrawToHandFrom iid deck cards | iid == investigatorId -> handleDrawToHandFrom a iid deck cards
   DrawToHand iid cards | iid == investigatorId -> handleDrawToHand a iid cards

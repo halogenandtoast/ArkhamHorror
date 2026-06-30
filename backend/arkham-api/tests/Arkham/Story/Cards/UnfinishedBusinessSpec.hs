@@ -1,9 +1,12 @@
 module Arkham.Story.Cards.UnfinishedBusinessSpec (spec) where
 
+import Arkham.DefeatedBy
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Window qualified as Window
 import TestImport.New
 
 spec :: Spec
@@ -20,3 +23,35 @@ spec = describe "Unfinished Business" $ do
     run $ Resign (toId investigator)
     chooseOnlyOption "flip Unfinished Business back over"
     assert $ selectAny (enemyIs Enemies.heretic_A)
+
+  it "resolves into the defeating investigator's threat area when another investigator clicks the forced ability"
+    $ gameTest
+    $ \defeatingInvestigator -> do
+      clickingInvestigator <- addInvestigator Investigators.rolandBanks
+      location <- testLocationWith id
+      run $ placedLocation location
+      moveTo defeatingInvestigator location
+      moveTo clickingInvestigator location
+
+      heretic <- testEnemyWithDef Enemies.heretic_A id
+      run $ PlaceEnemy (toId heretic) (AtLocation (toId location))
+
+      let
+        windows =
+          [ Window.mkAfter
+              $ Window.EnemyDefeated
+                (Just $ toId defeatingInvestigator)
+                (DefeatedByDamage $ InvestigatorSource $ toId defeatingInvestigator)
+                (toId heretic)
+          ]
+
+      run $ UseCardAbility (toId clickingInvestigator) (toSource heretic) 2 windows NoPayment
+      chooseOnlyOption "resolve Unfinished Business"
+
+      assert
+        $ selectAny
+        $ StoryWithTitle "Unfinished Business"
+        <> StoryWithPlacement (InThreatArea $ toId defeatingInvestigator)
+      assertNone
+        $ StoryWithTitle "Unfinished Business"
+        <> StoryWithPlacement (InThreatArea $ toId clickingInvestigator)

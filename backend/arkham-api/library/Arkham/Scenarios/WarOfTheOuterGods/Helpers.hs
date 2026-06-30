@@ -100,8 +100,12 @@ factionEncounterCards f = mapOneOf cardIs (factionEnemyDefs f <> factionTreacher
 factionEnemy :: Faction -> EnemyMatcher
 factionEnemy = mapOneOf enemyIs . factionEnemyDefs
 
+-- Defeated faction enemies linger in the entity map placed in 'OutOfPlay
+-- RemovedZone', and the default enemy matcher base set only drops 'OutOfGame'
+-- (not 'OutOfPlay'). Wrap in 'InPlayEnemy' so a defeated warring enemy is never
+-- offered to move/attack during the enemy phase.
 warringEnemy :: EnemyMatcher
-warringEnemy = EnemyWithKeyword #warring
+warringEnemy = InPlayEnemy (EnemyWithKeyword #warring)
 
 getEnemyFaction :: (HasGame m, Tracing m) => EnemyId -> m (Maybe Faction)
 getEnemyFaction eid = do

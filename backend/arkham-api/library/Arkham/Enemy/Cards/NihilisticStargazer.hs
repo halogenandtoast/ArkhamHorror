@@ -13,14 +13,13 @@ newtype NihilisticStargazer = NihilisticStargazer EnemyAttrs
 
 nihilisticStargazer :: EnemyCard NihilisticStargazer
 nihilisticStargazer =
-  enemyWith NihilisticStargazer Cards.nihilisticStargazer
-    $ spawnAtL
-    ?~ SpawnAt (locationIs Locations.athenaeumOfTheEmptySky)
+  enemy NihilisticStargazer Cards.nihilisticStargazer
+    & setSpawnAt (locationIs Locations.athenaeumOfTheEmptySky)
 
 instance HasAbilities NihilisticStargazer where
   getAbilities (NihilisticStargazer a) =
     extend1 a
-      $ restricted a 1 (notExists $ mapOneOf factionEnemy [GreenFaction, RedFaction])
+      $ restricted a 1 (notExists $ InPlayEnemy $ mapOneOf factionEnemy [GreenFaction, RedFaction])
       $ forced
       $ RoundEnds #when
 

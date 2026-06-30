@@ -2034,7 +2034,7 @@ runGameMessage msg g = case msg of
                     _ -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
                 -- War of the Outer Gods: warring enemies move during this
                 -- step and are batched with hunters
-                Keyword.ScenarioKeyword "Warring" -> matches eid (ReadyEnemy <> UnengagedEnemy)
+                Keyword.ScenarioKeyword "Warring" -> matches eid (InPlayEnemy AnyEnemy <> ReadyEnemy <> UnengagedEnemy)
                 _ -> pure False
               pure (target, msgs)
           FailSkillTestGroup -> pure targetMap

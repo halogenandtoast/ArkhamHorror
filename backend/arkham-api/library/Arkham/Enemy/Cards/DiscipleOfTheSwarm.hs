@@ -13,14 +13,13 @@ newtype DiscipleOfTheSwarm = DiscipleOfTheSwarm EnemyAttrs
 
 discipleOfTheSwarm :: EnemyCard DiscipleOfTheSwarm
 discipleOfTheSwarm =
-  enemyWith DiscipleOfTheSwarm Cards.discipleOfTheSwarm
-    $ spawnAtL
-    ?~ SpawnAt (locationIs Locations.theBurningPit)
+  enemy DiscipleOfTheSwarm Cards.discipleOfTheSwarm
+    & setSpawnAt (locationIs Locations.theBurningPit)
 
 instance HasAbilities DiscipleOfTheSwarm where
   getAbilities (DiscipleOfTheSwarm a) =
     extend1 a
-      $ restricted a 1 (notExists $ mapOneOf factionEnemy [BlueFaction, GreenFaction])
+      $ restricted a 1 (notExists $ InPlayEnemy $ mapOneOf factionEnemy [BlueFaction, GreenFaction])
       $ forced
       $ RoundEnds #when
 

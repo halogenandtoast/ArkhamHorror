@@ -13,14 +13,13 @@ newtype ZealotOfParadise = ZealotOfParadise EnemyAttrs
 
 zealotOfParadise :: EnemyCard ZealotOfParadise
 zealotOfParadise =
-  enemyWith ZealotOfParadise Cards.zealotOfParadise
-    $ spawnAtL
-    ?~ SpawnAt (locationIs Locations.shrineOfMaghanArkat)
+  enemy ZealotOfParadise Cards.zealotOfParadise
+    & setSpawnAt (locationIs Locations.shrineOfMaghanArkat)
 
 instance HasAbilities ZealotOfParadise where
   getAbilities (ZealotOfParadise a) =
     extend1 a
-      $ restricted a 1 (notExists $ mapOneOf factionEnemy [BlueFaction, RedFaction])
+      $ restricted a 1 (notExists $ InPlayEnemy $ mapOneOf factionEnemy [BlueFaction, RedFaction])
       $ forced
       $ RoundEnds #when
 

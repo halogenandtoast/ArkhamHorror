@@ -3,7 +3,6 @@ module Arkham.Act.Cards.CloseThePortal (closeThePortal) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -27,6 +26,10 @@ instance HasAbilities CloseThePortal where
         (youExist $ InvestigatorAt (LocationWithTrait RitualSite) <> InvestigatorWithAnyClues)
         actionAbility
     , mkAbility a 2 $ forced $ PlacedDoomCounter #after AnySource (TargetControlledBy Anyone)
+    , onlyOnce
+        $ restricted a 3 (HasScenarioCount CluesAroundHubDimension $ GreaterThanOrEqualTo $ PerPlayer 6)
+        $ Objective
+        $ forced AnyWindow
     ]
 
 instance RunMessage CloseThePortal where
@@ -49,13 +52,8 @@ instance RunMessage CloseThePortal where
       lead <- getLead
       chooseSelectM lead AnyAgenda \agenda -> placeDoom (attrs.ability 2) agenda n
       pure a
-    ScenarioCountIncrementBy CluesAroundHubDimension _ | onSide A attrs -> do
-      doStep 1 msg
-      pure a
-    DoStep 1 (ScenarioCountIncrementBy CluesAroundHubDimension _) | onSide A attrs -> do
-      required <- perPlayer 6
-      around <- getCluesAroundHubDimension
-      when (around >= required) $ advancedWithOther attrs
+    UseThisAbility _iid (isSource attrs -> True) 3 -> do
+      advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R1

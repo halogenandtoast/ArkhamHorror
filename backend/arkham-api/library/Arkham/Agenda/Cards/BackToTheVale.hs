@@ -24,11 +24,12 @@ backToTheVale = agenda (3, A) BackToTheVale Cards.backToTheVale (Static 3)
 
 instance HasAbilities BackToTheVale where
   getAbilities (BackToTheVale a) =
-    [ mkAbility a 1
-        $ FastAbility
-          (OrCost [ExhaustAssetCost (AssetWithTitle "Vale Lantern"), GroupClueCost (PerPlayer 1) Anywhere])
-    , onlyOnce $ restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
-    ]
+    guard (onSide A a)
+      *> [ mkAbility a 1
+             $ FastAbility
+               (OrCost [ExhaustAssetCost (AssetWithTitle "Vale Lantern"), GroupClueCost (PerPlayer 1) Anywhere])
+         , onlyOnce $ restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+         ]
 
 instance RunMessage BackToTheVale where
   runMessage msg a@(BackToTheVale attrs) = runQueueT $ case msg of

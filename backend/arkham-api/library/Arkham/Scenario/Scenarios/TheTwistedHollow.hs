@@ -2,6 +2,7 @@ module Arkham.Scenario.Scenarios.TheTwistedHollow (theTwistedHollow) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
@@ -361,4 +362,9 @@ instance RunMessage TheTwistedHollow where
           endOfScenario
         _ -> error "invalid resolution"
       pure s
+    CheckForRemainingInvestigators -> do
+      is2B <- selectAny $ AgendaWithSequence $ AS.Sequence 3 AS.B
+      if is2B
+        then pure s
+        else TheTwistedHollow <$> liftRunMessage msg attrs
     _ -> TheTwistedHollow <$> liftRunMessage msg attrs

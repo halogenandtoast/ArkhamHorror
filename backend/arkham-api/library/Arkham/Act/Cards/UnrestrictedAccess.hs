@@ -17,21 +17,22 @@ unrestrictedAccess = act (2, A) UnrestrictedAccess Cards.unrestrictedAccess Noth
 
 instance HasAbilities UnrestrictedAccess where
   getAbilities = actAbilities1 \a ->
-    restricted
-      a
-      1
-      ( AtLeastNCriteriaMet
-          3
-          [ AssetExists (assetIs Assets.theCustodian <> ControlledAsset)
-          , Remembered FoundTheProcess
-          , Remembered DissectedAnOrgan
-          , Remembered InterviewedASubject
-          , Remembered RealizedWhatYearItIs
-          , Remembered ActivatedTheDevice
-          , Remembered ReadAboutEarth
-          , Remembered SawAFamiliarSpecimen
-          ]
-      )
+    onlyOnce
+      $ restricted
+        a
+        1
+        ( AtLeastNCriteriaMet
+            3
+            [ AssetExists (assetIs Assets.theCustodian <> ControlledAsset)
+            , Remembered FoundTheProcess
+            , Remembered DissectedAnOrgan
+            , Remembered InterviewedASubject
+            , Remembered RealizedWhatYearItIs
+            , Remembered ActivatedTheDevice
+            , Remembered ReadAboutEarth
+            , Remembered SawAFamiliarSpecimen
+            ]
+        )
       $ Objective
       $ forced AnyWindow
 

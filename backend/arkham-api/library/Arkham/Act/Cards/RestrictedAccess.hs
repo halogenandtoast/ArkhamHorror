@@ -16,19 +16,20 @@ restrictedAccess = act (2, A) RestrictedAccess Cards.restrictedAccess Nothing
 
 instance HasAbilities RestrictedAccess where
   getAbilities = actAbilities1 \a ->
-    restricted
-      a
-      1
-      ( AtLeastNCriteriaMet
-          3
-          [ AssetExists (assetIs Assets.theCustodian <> ControlledAsset)
-          , Remembered FoundTheProcess
-          , Remembered DissectedAnOrgan
-          , Remembered InterviewedASubject
-          , Remembered RealizedWhatYearItIs
-          , Remembered ActivatedTheDevice
-          ]
-      )
+    onlyOnce
+      $ restricted
+        a
+        1
+        ( AtLeastNCriteriaMet
+            3
+            [ AssetExists (assetIs Assets.theCustodian <> ControlledAsset)
+            , Remembered FoundTheProcess
+            , Remembered DissectedAnOrgan
+            , Remembered InterviewedASubject
+            , Remembered RealizedWhatYearItIs
+            , Remembered ActivatedTheDevice
+            ]
+        )
       $ Objective
       $ forced AnyWindow
 

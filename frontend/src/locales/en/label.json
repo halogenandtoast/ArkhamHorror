@@ -1,4 +1,6 @@
 {
+  "addCardToDeck": "Add {name} to a deck",
+  "doNotAddCardToDeck": "Do not add {name} to a deck",
   "addCurseTokens": "Add 1 {'{'}curse{'}'} token to the chaos bag | Add {count} {'{'}curse{'}'} tokens to the chaos bag",
   "addSupply": "Add Supply",
   "addToHand": "Add {name} to hand",

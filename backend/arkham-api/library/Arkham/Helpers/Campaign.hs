@@ -8,6 +8,7 @@ import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -114,14 +115,14 @@ addCampaignCardToDeckChoice leadPlayer investigators shouldShuffleIn card =
 
 addCampaignCardToDeckChoiceWith
   :: PlayerId -> [InvestigatorId] -> ShuffleIn -> Card -> (InvestigatorId -> [Message]) -> Message
-addCampaignCardToDeckChoiceWith leadPlayer investigators shouldShuffleIn card f =
-  questionLabelWithCard ("Add " <> display card.name <> " to a deck") card.cardCode leadPlayer
+addCampaignCardToDeckChoiceWith leadPlayer investigators shouldShuffleIn card f = withI18n do
+  questionLabelWithCard (cardNameVar card $ ikey' "label.addCardToDeck") card.cardCode leadPlayer
     $ ChooseOne
     $ [ PortraitLabel investigator $ AddCampaignCardToDeck investigator shouldShuffleIn card
           : f investigator
       | investigator <- investigators
       ]
-    <> [Label ("Do not add " <> display card.name <> " to any deck") []]
+    <> [Label (cardNameVar card $ ikey' "label.doNotAddCardToDeck") []]
 
 forceAddCampaignCardToDeckChoice
   :: PlayerId -> [InvestigatorId] -> ShuffleIn -> Card -> Message

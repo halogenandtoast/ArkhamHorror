@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
 import { cardImage } from '@/arkham/cardImages';
 import type { Modifier } from '@/arkham/types/Modifier';
@@ -12,6 +12,7 @@ import { MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { useDebug } from '@/arkham/debug'
+import { useCardStore } from '@/stores/cards'
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -24,6 +25,11 @@ const emit = defineEmits<{
   choose: [value: number]
 }>()
 const debug = useDebug()
+const cardStore = useCardStore()
+
+onMounted(() => {
+  if (!cardStore.loaded) cardStore.fetchCards()
+})
 
 const cardContents = computed<CardContents>(() => {
   return props.card.tag === "CardContents" ? props.card : ( props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents)
@@ -169,6 +175,16 @@ const modifiers = computed(() => {
   }, [])
 })
 
+const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
+
+const cardDef = computed(() => cardStore.cards.find((c) => c.cardCode === cardContents.value.cardCode))
+const canDebugCustomize = computed(() => debug.active && !!investigatorId.value && (cardDef.value?.customizations?.length ?? 0) > 0)
+
+function debugCustomize() {
+  if (!investigatorId.value) return
+  debug.send(props.game.id, { tag: 'DebugCustomize', contents: [investigatorId.value, id.value] })
+}
+
 const modifiedPlayingCard = computed(() => {
   const playingCardModifier = modifiers.value.find(m => m.type.tag === 'ScenarioModifierValue' && m.type.contents[0] === 'setPlayingCard')
   if (playingCardModifier && playingCardModifier.type.tag === 'ScenarioModifierValue') {
@@ -221,6 +237,13 @@ function startDrag(event: DragEvent) {
       <PoolItem v-if="lostSouls" type="resource" :amount="lostSouls" />
       <PoolItem v-if="leylines" type="resource" :amount="leylines" />
     </div>
+    <button
+      v-if="canDebugCustomize"
+      class="debug-customize"
+      type="button"
+      title="Debug customize"
+      @click.stop="debugCustomize"
+    ><font-awesome-icon icon="wrench" /></button>
     <AbilityButton
       v-for="ability in abilities"
       :key="ability.index"
@@ -275,5 +298,28 @@ function startDrag(event: DragEvent) {
   display: flex;
   flex-direction: column;
   position: relative;
+}
+
+.debug-customize {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: var(--z-index-20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid #111;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.debug-customize:hover {
+  background: #fff;
 }
 </style>

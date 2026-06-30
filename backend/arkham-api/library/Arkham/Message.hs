@@ -1124,6 +1124,8 @@ data Message
   | -- Debug
     ClearQueue
   | DebugAddToHand InvestigatorId CardId
+  | DebugCustomize InvestigatorId CardId
+  | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | SetScenarioDifficulty Difficulty
   | SetCampaignStep CampaignStep
   | CreateCard CardId CardCode

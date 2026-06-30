@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject, Ref } from 'vue'
+import { computed, inject, onMounted, Ref } from 'vue'
 import { CardContents, type Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
@@ -9,6 +9,8 @@ import { cardImage } from '@/arkham/cardImages'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { IsMobile } from '@/arkham/isMobile'
+import { useDebug } from '@/arkham/debug'
+import { useCardStore } from '@/stores/cards'
 
 export interface Props {
   game: Game
@@ -18,6 +20,12 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const debug = useDebug()
+const cardStore = useCardStore()
+
+onMounted(() => {
+  if (!cardStore.loaded) cardStore.fetchCards()
+})
 
 const { isMobile } = IsMobile();
 const investigator = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId))
@@ -106,6 +114,13 @@ const image = computed(() => {
   const { cardCode, mutated } = cardContents.value;
   return cardImage(cardCode, mutated ? `_${mutated}` : '')
 })
+
+const cardDef = computed(() => cardStore.cards.find((c) => c.cardCode === cardContents.value.cardCode))
+const canDebugCustomize = computed(() => debug.active && (cardDef.value?.customizations?.length ?? 0) > 0)
+
+function debugCustomize() {
+  debug.send(props.game.id, { tag: 'DebugCustomize', contents: [props.ownerId, id.value] })
+}
 
 
 /*
@@ -252,6 +267,14 @@ function oilPaintEffect(canvas, radius, intensity) {
       @click="$emit('choose', cardAction)"
     />
 
+    <button
+      v-if="canDebugCustomize"
+      class="debug-customize"
+      type="button"
+      title="Debug customize"
+      @click.stop="debugCustomize"
+    ><font-awesome-icon icon="wrench" /></button>
+
     <AbilityButton
       v-if="!isMobile"
       v-for="ability in abilities"
@@ -284,5 +307,29 @@ function oilPaintEffect(canvas, radius, intensity) {
 .card-container {
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.debug-customize {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: var(--z-index-20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid #111;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.debug-customize:hover {
+  background: #fff;
 }
 </style>

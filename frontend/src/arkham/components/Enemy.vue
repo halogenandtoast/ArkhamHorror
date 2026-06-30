@@ -708,6 +708,18 @@ img.card.source-highlight {
   justify-content: space-evenly;
 }
 
+/* Keep the host enemy above its tucked swarm stack. The swarm cards are rendered
+   after the host in DOM order and overlap it via transforms, so give the host a
+   stronger stacking layer than the swarm container. */
+.enemy--outer > .enemy {
+  position: relative;
+  z-index: var(--z-index-20);
+}
+
+.enemy--outer > .swarm {
+  z-index: var(--z-index-10);
+}
+
 .attached.card {
   object-fit: cover;
   object-position: left bottom;

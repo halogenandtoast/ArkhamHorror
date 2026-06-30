@@ -46,6 +46,16 @@ instance RunMessage CosmicRevelation1 where
           withI18n $ countVar 1 $ labeledI "drawCards" $ drawCards iid attrs 1
         unless (null cards) do
           labeled' "playRevealed" do
-            focusCards cards $ chooseTargetM iid cards (playCardPayingCost iid)
+            focusCards cards $ chooseTargetM iid cards \c -> do
+              -- The revealing investigator plays the card as if it were their
+              -- turn. The card was selected under `asActive iid`, but the play
+              -- itself re-checks playability at PlayCard time against the real
+              -- active investigator. Without setting the active investigator a
+              -- fight/evade event played by a non-active investigator silently
+              -- fizzles (cost paid, no skill test). See #4965.
+              mactive <- selectOne ActiveInvestigator
+              push $ SetActiveInvestigator iid
+              playCardPayingCost iid c
+              for_ mactive $ push . SetActiveInvestigator
       pure e
     _ -> CosmicRevelation1 <$> liftRunMessage msg attrs

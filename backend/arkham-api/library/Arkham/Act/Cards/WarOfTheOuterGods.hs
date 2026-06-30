@@ -7,7 +7,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.WarOfTheOuterGods.Helpers
-import Arkham.Trait (Trait (Cultist))
 
 newtype WarOfTheOuterGods = WarOfTheOuterGods ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -19,7 +18,7 @@ warOfTheOuterGods = act (1, A) WarOfTheOuterGods Cards.warOfTheOuterGods Nothing
 instance HasAbilities WarOfTheOuterGods where
   getAbilities (WarOfTheOuterGods a) =
     [ mkAbility a 1 $ forced $ PlacedDoomCounter #after AnySource (TargetControlledBy Anyone)
-    , restricted a 2 (notExists $ EnemyWithTrait Cultist)
+    , restricted a 2 (notExists $ InPlayEnemy #cultist)
         $ Objective
         $ actionAbilityWithCost (GroupClueCost (PerPlayer 3) Anywhere)
     ]

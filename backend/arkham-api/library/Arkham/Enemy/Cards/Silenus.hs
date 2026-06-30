@@ -3,17 +3,24 @@ module Arkham.Enemy.Cards.Silenus (silenus) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.WarOfTheOuterGods.Helpers
 
 newtype Silenus = Silenus EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 silenus :: EnemyCard Silenus
 silenus = enemy Silenus Cards.silenus
+
+instance HasModifiersFor Silenus where
+  getModifiersFor (Silenus a) = do
+    n <- perPlayer 8
+    modifySelf a [HealthModifier n]
 
 instance HasAbilities Silenus where
   getAbilities (Silenus a) =

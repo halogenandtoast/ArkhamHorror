@@ -28,6 +28,10 @@ instance RunMessage HallowedMirror where
         shuffleCardsIntoDeck iid deckSoothingMelodies
       pure a
     RemovedFromPlay (isSource attrs -> True) -> do
-      for_ attrs.owner \iid -> push (RemoveAllCopiesOfCardFromGame iid "05314")
+      -- v2.0 errata (faq/card_errata.md): "set them aside, out of play" instead
+      -- of "remove them from the game" — matches Occult Lexicon / Miss Doyle.
+      for_ attrs.owner \iid -> do
+        soothingMelodies <- select $ basic $ CardOwnedBy iid <> cardIs Events.soothingMelody
+        for_ soothingMelodies $ placeInBonded iid
       HallowedMirror <$> liftRunMessage msg attrs
     _ -> HallowedMirror <$> liftRunMessage msg attrs

@@ -341,7 +341,7 @@ runGameMessage msg g = case msg of
     investigator <- getInvestigator investigatorId
     let playerId = attr investigatorPlayerId investigator
     let iid' = dl.investigator
-    -- let sideDeck = decklistExtraDeck dl
+    let sideDeck = dl.extra
     let
       setCardAttachments (cCode, attachments) =
         flip Map.alter cCode \case
@@ -362,6 +362,7 @@ runGameMessage msg g = case msg of
                   }
             )
             investigator
+    when (notNull sideDeck) $ push $ LoadSideDeck investigatorId sideDeck
     push $ UpgradeDeck investigatorId decklist.url (Deck cards)
 
     pure

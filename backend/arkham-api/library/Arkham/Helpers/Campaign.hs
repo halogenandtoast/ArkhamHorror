@@ -13,7 +13,6 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
@@ -127,8 +126,8 @@ addCampaignCardToDeckChoiceWith leadPlayer investigators shouldShuffleIn card f 
 forceAddCampaignCardToDeckChoice
   :: PlayerId -> [InvestigatorId] -> ShuffleIn -> Card -> Message
 forceAddCampaignCardToDeckChoice _ [onlyId] shouldShuffleIn card = AddCampaignCardToDeck onlyId shouldShuffleIn card
-forceAddCampaignCardToDeckChoice leadPlayer investigators shouldShuffleIn card =
-  questionLabelWithCard ("Add " <> display card.name <> " to a deck") card.cardCode leadPlayer
+forceAddCampaignCardToDeckChoice leadPlayer investigators shouldShuffleIn card = withI18n do
+  questionLabelWithCard (cardNameVar card $ ikey' "label.addCardToDeck") card.cardCode leadPlayer
     $ ChooseOne
       [ PortraitLabel investigator [AddCampaignCardToDeck investigator shouldShuffleIn card]
       | investigator <- investigators

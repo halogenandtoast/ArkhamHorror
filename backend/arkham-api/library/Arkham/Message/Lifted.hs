@@ -2826,6 +2826,9 @@ takeControlOfSetAsideAsset iid card = push $ Msg.TakeControlOfSetAsideAsset iid 
 enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
 enemyCheckEngagement = push . EnemyCheckEngagement
 
+checkEngagement :: ReverseQueue m => InvestigatorId -> m ()
+checkEngagement = push . CheckEnemyEngagement
+
 attackIfEngaged
   :: ( ReverseQueue m
      , AsId enemy

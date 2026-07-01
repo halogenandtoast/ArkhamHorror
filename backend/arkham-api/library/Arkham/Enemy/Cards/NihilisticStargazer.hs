@@ -19,7 +19,7 @@ nihilisticStargazer =
 instance HasAbilities NihilisticStargazer where
   getAbilities (NihilisticStargazer a) =
     extend1 a
-      $ restricted a 1 (notExists $ InPlayEnemy $ mapOneOf factionEnemy [GreenFaction, RedFaction])
+      $ restricted a 1 (noneInPlay $ mapOneOf factionEnemy [GreenFaction, RedFaction])
       $ forced
       $ RoundEnds #when
 

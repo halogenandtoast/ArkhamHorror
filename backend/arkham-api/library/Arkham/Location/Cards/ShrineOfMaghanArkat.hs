@@ -17,7 +17,7 @@ instance HasAbilities ShrineOfMaghanArkat where
   getAbilities (ShrineOfMaghanArkat a) =
     extendRevealed1 a
       $ groupLimit PerRound
-      $ restricted a 1 (exists $ factionAgenda GreenFaction)
+      $ restricted a 1 (Here <> exists (factionAgenda GreenFaction))
       $ FastAbility
       $ DrawEncounterCardsCost 1
 

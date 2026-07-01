@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.WhileTheySleep (whileTheySleep) where
 
+import Arkham.Matcher
 import Arkham.Scenarios.WarOfTheOuterGods.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

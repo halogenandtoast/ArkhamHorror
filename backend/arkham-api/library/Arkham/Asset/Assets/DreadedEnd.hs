@@ -30,7 +30,7 @@ instance RunMessage DreadedEnd where
         labeledValidate' (notNull enemies) "placeEnemyOnTopOfEncounterDeck" do
           chooseTargetM iid enemies $ putOnTopOfDeck iid Deck.EncounterDeck
         labeled' "lookAtTopOfEncounterDeck" do
-          lookAt iid (attrs.ability 1) EncounterDeckTarget [(FromTopOfDeck 5, PutBack)] #any
+          lookAt iid (attrs.ability 1) EncounterDeckTarget [(FromTopOfDeck 5, PutBackInAnyOrder)] #any
             $ defer attrs IsNotDraw
       pure a
     SearchFound iid (isTarget attrs -> True) _ (onlyEncounterCards -> cards) | notNull cards -> do

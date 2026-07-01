@@ -107,7 +107,10 @@ const showScenarioDebugOptions = ref(false)
 const realityAcidLightAnchor = ref<HTMLElement | null>(null)
 const realityAcidLightRect = reactive({ left: 0, top: 0, width: 0, height: 0 })
 const locationMap = ref<Element | null>(null)
+const locationCardsContainer = ref<HTMLElement | null>(null)
 const scrollerRef = ref<HTMLElement | null>(null)
+const hiddenLocationActionEdges = ref({ top: false, right: false, bottom: false, left: false })
+const hasHiddenLocationActionEdge = computed(() => Object.values(hiddenLocationActionEdges.value).some(Boolean))
 const viewingDiscard = ref(false)
 const revealingCards = ref(false)
 const cardRowTitle = ref("")
@@ -118,6 +121,11 @@ const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 let legObserver: MutationObserver | null = null
 let cosmicEmissaryObserver: MutationObserver | null = null
 let cosmicEmissaryResizeObserver: ResizeObserver | null = null
+let hiddenLocationActionObserver: MutationObserver | null = null
+let hiddenLocationActionResizeObserver: ResizeObserver | null = null
+let hiddenLocationActionRaf: number | null = null
+let stagePan: { pointerId: number, startX: number, startY: number, scrollLeft: number, scrollTop: number, moved: boolean } | null = null
+let suppressNextStageClick = false
 let cosmicEmissaryCompactRequest: number | null = null
 let cosmicEmissaryCompactForce = false
 
@@ -574,6 +582,102 @@ function proxyClippedLocationClick(event: MouseEvent) {
   }))
 }
 
+function onStagePointerDown(event: PointerEvent) {
+  if (event.button !== 0) return
+  const scroller = scrollerRef.value
+  if (!scroller) return
+  const target = event.target as HTMLElement | null
+  if (target?.closest('button, a, input, select, textarea')) return
+  if (scroller.scrollWidth <= scroller.clientWidth && scroller.scrollHeight <= scroller.clientHeight) return
+
+  stagePan = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    scrollLeft: scroller.scrollLeft,
+    scrollTop: scroller.scrollTop,
+    moved: false,
+  }
+  scroller.setPointerCapture(event.pointerId)
+}
+
+function onStagePointerMove(event: PointerEvent) {
+  if (!stagePan || stagePan.pointerId !== event.pointerId) return
+  const scroller = scrollerRef.value
+  if (!scroller) return
+  const dx = event.clientX - stagePan.startX
+  const dy = event.clientY - stagePan.startY
+  if (!stagePan.moved && Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) stagePan.moved = true
+  if (!stagePan.moved) return
+  event.preventDefault()
+  scroller.scrollLeft = stagePan.scrollLeft - dx
+  scroller.scrollTop = stagePan.scrollTop - dy
+}
+
+function onStagePointerUp(event: PointerEvent) {
+  if (!stagePan || stagePan.pointerId !== event.pointerId) return
+  const scroller = scrollerRef.value
+  if (scroller?.hasPointerCapture(event.pointerId)) scroller.releasePointerCapture(event.pointerId)
+  suppressNextStageClick = stagePan.moved
+  stagePan = null
+}
+
+function onStageClick(event: MouseEvent) {
+  if (!suppressNextStageClick) return
+  suppressNextStageClick = false
+  event.preventDefault()
+  event.stopPropagation()
+}
+
+function updateHiddenLocationActionEdges() {
+  const container = locationCardsContainer.value
+  if (!container) return
+
+  const bounds = container.getBoundingClientRect()
+  const next = { top: false, right: false, bottom: false, left: false }
+  const actionEls = Array.from(
+    container.querySelectorAll<HTMLElement>('.location-cell--can-interact, .can-interact, [class*="--can-interact"]')
+  )
+
+  for (const el of actionEls) {
+    const rect = el.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) continue
+
+    const style = getComputedStyle(el)
+    if (style.visibility === 'hidden' || style.display === 'none') continue
+
+    const isPartiallyVisible =
+      rect.right > bounds.left &&
+      rect.left < bounds.right &&
+      rect.bottom > bounds.top &&
+      rect.top < bounds.bottom
+    if (isPartiallyVisible) continue
+
+    if (rect.right <= bounds.left) next.left = true
+    if (rect.left >= bounds.right) next.right = true
+    if (rect.bottom <= bounds.top) next.top = true
+    if (rect.top >= bounds.bottom) next.bottom = true
+  }
+
+  const current = hiddenLocationActionEdges.value
+  if (
+    current.top !== next.top ||
+    current.right !== next.right ||
+    current.bottom !== next.bottom ||
+    current.left !== next.left
+  ) {
+    hiddenLocationActionEdges.value = next
+  }
+}
+
+function scheduleHiddenLocationActionEdgesUpdate() {
+  if (hiddenLocationActionRaf !== null) cancelAnimationFrame(hiddenLocationActionRaf)
+  hiddenLocationActionRaf = requestAnimationFrame(() => {
+    hiddenLocationActionRaf = null
+    updateHiddenLocationActionEdges()
+  })
+}
+
 // callbacks
 onMounted(() => {
   setGameId(props.game.id)
@@ -581,11 +685,26 @@ onMounted(() => {
   window.addEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
   window.addEventListener('resize', updateRealityAcidLightRect)
   window.addEventListener('scroll', updateRealityAcidLightRect, true)
+  window.addEventListener('resize', scheduleHiddenLocationActionEdgesUpdate)
+  window.addEventListener('scroll', scheduleHiddenLocationActionEdgesUpdate, true)
   document.addEventListener('click', proxyClippedLocationClick, true)
   nextTick(updateRealityAcidLightRect)
   updateScrollMargins()
   updateCellDimensions()
   updateLayoutPadding()
+  nextTick(scheduleHiddenLocationActionEdgesUpdate)
+  if (locationCardsContainer.value) {
+    hiddenLocationActionObserver = new MutationObserver(scheduleHiddenLocationActionEdgesUpdate)
+    hiddenLocationActionObserver.observe(locationCardsContainer.value, {
+      attributes: true,
+      attributeFilter: ['class', 'style'],
+      childList: true,
+      subtree: true,
+    })
+
+    hiddenLocationActionResizeObserver = new ResizeObserver(scheduleHiddenLocationActionEdgesUpdate)
+    hiddenLocationActionResizeObserver.observe(locationCardsContainer.value)
+  }
   if(props.scenario.id === "c10651") {
     nextTick(requestCosmicEmissaryCompact)
     setTimeout(requestCosmicEmissaryCompact, 100)
@@ -678,6 +797,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
   window.removeEventListener('resize', updateRealityAcidLightRect)
   window.removeEventListener('scroll', updateRealityAcidLightRect, true)
+  window.removeEventListener('resize', scheduleHiddenLocationActionEdgesUpdate)
+  window.removeEventListener('scroll', scheduleHiddenLocationActionEdgesUpdate, true)
   document.removeEventListener('click', proxyClippedLocationClick, true)
   legObserver?.disconnect()
   legObserver = null
@@ -685,6 +806,14 @@ onBeforeUnmount(() => {
   cosmicEmissaryObserver = null
   cosmicEmissaryResizeObserver?.disconnect()
   cosmicEmissaryResizeObserver = null
+  hiddenLocationActionObserver?.disconnect()
+  hiddenLocationActionObserver = null
+  hiddenLocationActionResizeObserver?.disconnect()
+  hiddenLocationActionResizeObserver = null
+  if (hiddenLocationActionRaf !== null) cancelAnimationFrame(hiddenLocationActionRaf)
+  hiddenLocationActionRaf = null
+  stagePan = null
+  suppressNextStageClick = false
   if (cosmicEmissaryCompactRequest !== null) cancelAnimationFrame(cosmicEmissaryCompactRequest)
   cosmicEmissaryCompactRequest = null
   cancelActiveDrag()
@@ -1201,6 +1330,7 @@ const unusedLabels = computed(() => {
   return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
 })
 const choices = useGameChoices(() => props.game, () => props.playerId)
+watch([choices, locations, locationsZoom], () => nextTick(scheduleHiddenLocationActionEdgesUpdate), { flush: 'post' })
 
 type LocationLike = { id: string, label: string }
 
@@ -2282,8 +2412,28 @@ async function addChaosToken(face: any){
       </div>
 
 
-      <div class="location-cards-container" @dblclick.passive="toggleZoom">
-        <div class="location-cards-scroller" ref="scrollerRef">
+      <div
+        ref="locationCardsContainer"
+        class="location-cards-container"
+        :class="{
+          'location-cards-container--hidden-action': hasHiddenLocationActionEdge,
+          'location-cards-container--hidden-action-top': hiddenLocationActionEdges.top,
+          'location-cards-container--hidden-action-right': hiddenLocationActionEdges.right,
+          'location-cards-container--hidden-action-bottom': hiddenLocationActionEdges.bottom,
+          'location-cards-container--hidden-action-left': hiddenLocationActionEdges.left,
+          'location-cards-container--unlocked': locationsUnlocked,
+        }"
+        @dblclick.passive="toggleZoom"
+      >
+        <div
+          class="location-cards-scroller"
+          ref="scrollerRef"
+          @pointerdown="onStagePointerDown"
+          @pointermove="onStagePointerMove"
+          @pointerup="onStagePointerUp"
+          @pointercancel="onStagePointerUp"
+          @click.capture="onStageClick"
+        >
         <div class="location-cards-stage">
         <Connections :game="game" :playerId="playerId" :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation" />
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :css="props.scenario.id !== 'c10651'" :style="locationStyles" @before-leave="beforeLeave">
@@ -2719,6 +2869,12 @@ async function addChaosToken(face: any){
 }
 
 .location-cards-container {
+  --hidden-location-action-glow: rgba(255, 0, 255, 0.32);
+  --hidden-location-action-soft: rgba(255, 0, 255, 0.12);
+  --hidden-location-action-top: transparent;
+  --hidden-location-action-right: transparent;
+  --hidden-location-action-bottom: transparent;
+  --hidden-location-action-left: transparent;
   display: flex;
   overflow: hidden;
   flex: 1;
@@ -2728,6 +2884,47 @@ async function addChaosToken(face: any){
     padding-bottom: 5px;
   }
 }
+
+.location-cards-container--hidden-action::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-index-30);
+  background:
+    linear-gradient(to bottom, var(--hidden-location-action-top), transparent 14px) top / 100% 14px no-repeat,
+    linear-gradient(to left, var(--hidden-location-action-right), transparent 14px) right / 14px 100% no-repeat,
+    linear-gradient(to top, var(--hidden-location-action-bottom), transparent 14px) bottom / 100% 14px no-repeat,
+    linear-gradient(to right, var(--hidden-location-action-left), transparent 14px) left / 14px 100% no-repeat;
+  box-shadow: inset 0 0 6px var(--hidden-location-action-soft);
+}
+
+.location-cards-scroller {
+  cursor: grab;
+  user-select: none;
+}
+
+.location-cards-scroller:active {
+  cursor: grabbing;
+}
+
+
+.location-cards-container--hidden-action-top {
+  --hidden-location-action-top: var(--hidden-location-action-glow);
+}
+
+.location-cards-container--hidden-action-right {
+  --hidden-location-action-right: var(--hidden-location-action-glow);
+}
+
+.location-cards-container--hidden-action-bottom {
+  --hidden-location-action-bottom: var(--hidden-location-action-glow);
+}
+
+.location-cards-container--hidden-action-left {
+  --hidden-location-action-left: var(--hidden-location-action-glow);
+}
+
 
 .portrait {
   border-radius: 3px;

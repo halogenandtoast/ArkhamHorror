@@ -247,15 +247,14 @@ placeAssetAsSwarm insect aid = do
   push $ RemoveAsset aid
   push $ PlacedSwarmCard insect card
 
--- | Resources on enemies are mutations.
 placeMutations :: (ReverseQueue m, Sourceable source) => source -> EnemyId -> Int -> m ()
-placeMutations source eid n = placeTokens source (EnemyTarget eid) Resource n
+placeMutations source eid n = placeTokens source (EnemyTarget eid) Mutation n
 
 removeMutations :: (ReverseQueue m, Sourceable source) => source -> EnemyId -> Int -> m ()
-removeMutations source eid n = removeTokens (toSource source) (EnemyTarget eid) Resource n
+removeMutations source eid n = removeTokens (toSource source) (EnemyTarget eid) Mutation n
 
 getMutations :: (HasGame m, Tracing m) => EnemyId -> m Int
-getMutations = fieldMap EnemyTokens (countTokens Resource)
+getMutations = fieldMap EnemyTokens (countTokens Mutation)
 
 -- | Order enemies green, then blue, then red. Enemies without a faction are
 -- dropped.

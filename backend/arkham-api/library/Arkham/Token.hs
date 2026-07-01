@@ -36,6 +36,7 @@ data Token
   | Lock
   | LostSoul
   | Memory
+  | Mutation
   | Newspaper
   | Offering
   | Overgrowth

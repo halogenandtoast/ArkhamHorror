@@ -113,7 +113,7 @@ watch(showAbilities, (newValue) => {
 <template>
   <Teleport to="body">
     <OnClickOutside @trigger="showAbilities = false" v-if="showAbilities" :options="{ ignore: [frame] }">
-      <div class="abilities" :class="position" :style="abilitiesPosition" ref="abilitiesRef" >
+      <div class="abilities" :class="positionClass" :style="abilitiesPosition" ref="abilitiesRef" >
         <AbilityButton
           v-for="{index, contents} in abilities"
           :key="index"

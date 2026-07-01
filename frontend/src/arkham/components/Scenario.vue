@@ -2598,7 +2598,7 @@ async function addChaosToken(face: any){
         </div>
       </div>
 
-      <div id="player-zone">
+      <div id="player-zone" :class="{ 'player-zone--fullscreen': locationsFullscreen }">
         <PlayerTabs
           :game="game"
           :playerId="playerId"
@@ -2963,6 +2963,18 @@ async function addChaosToken(face: any){
   padding: 4px 6px;
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.55);
+}
+
+/* Keep the player zone (hand + in-play assets) usable while the board is a
+   fixed fullscreen overlay: pin it to the viewport bottom above the overlay. */
+.player-zone--fullscreen {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: calc(var(--z-index-50) + 1);
+  background: var(--background);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .location-cards-container--hidden-action::after {

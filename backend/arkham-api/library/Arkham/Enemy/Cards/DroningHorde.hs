@@ -22,7 +22,7 @@ instance HasModifiersFor DroningHorde where
 
 instance HasAbilities DroningHorde where
   getAbilities (DroningHorde a) =
-    extend1 a $ forcedAbility a 1 $ EnemyEnters #after Anywhere (be a)
+    extend1 a $ forcedAbility a 1 $ EnemyEntersPlay #after (be a <> not_ IsSwarm)
 
 instance RunMessage DroningHorde where
   runMessage msg e@(DroningHorde attrs) = runQueueT $ case msg of

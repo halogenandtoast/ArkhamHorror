@@ -2977,18 +2977,28 @@ async function addChaosToken(face: any){
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
 }
 
-.location-cards-container--hidden-action::after {
+.location-cards-container::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: var(--z-index-30);
+  opacity: 0;
+  transition: opacity 0.3s ease;
   background:
     linear-gradient(to bottom, var(--hidden-location-action-top), transparent 14px) top / 100% 14px no-repeat,
     linear-gradient(to left, var(--hidden-location-action-right), transparent 14px) right / 14px 100% no-repeat,
     linear-gradient(to top, var(--hidden-location-action-bottom), transparent 14px) bottom / 100% 14px no-repeat,
     linear-gradient(to right, var(--hidden-location-action-left), transparent 14px) left / 14px 100% no-repeat;
   box-shadow: inset 0 0 6px var(--hidden-location-action-soft);
+}
+
+.location-cards-container--hidden-action::after {
+  opacity: 1;
+
+  @starting-style {
+    opacity: 0;
+  }
 }
 
 .location-cards-scroller {

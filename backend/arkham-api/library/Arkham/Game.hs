@@ -222,6 +222,7 @@ import Arkham.Treachery.Types (
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each, over, set)
+import Control.Lens.Plated (universe)
 import Control.Monad.Catch (MonadMask)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
@@ -3559,6 +3560,34 @@ getMaybeOutOfPlayEnemy outOfPlayZone eid = do
   isCorrectOutOfPlay e = case e.placement of
     OutOfPlay zone -> zone == outOfPlayZone
     _ -> False
+-- | Enemy queries default to enemies that are NOT sitting in an out-of-play
+-- zone (@OutOfPlay VoidZone/PursuitZone/TheDepths/SetAsideZone/...@). To reach
+-- those, a matcher must decorate itself (@OutOfPlayEnemy zone@,
+-- @IncludeOutOfPlayEnemy@, @EnemyWithPlacement (OutOfPlay ...)@, or
+-- @DefeatedEnemy@); when it does, we leave the full candidate set intact so the
+-- decorator can find them. This makes @InPlayEnemy@ redundant (a no-op) for its
+-- one real job of excluding zone-resident enemies. Non-zone placements that are
+-- also \"not in play\" (hidden-in-hand, limbo, on-top-of-deck, unplaced) are
+-- left matchable exactly as before -- this only scopes the OutOfPlay zones.
+restrictToInPlayZones :: EnemyMatcher -> [Enemy] -> [Enemy]
+restrictToInPlayZones matcher es
+  | referencesOutOfPlay matcher = es
+  | otherwise = filter (not . isOutOfPlayZone . attr enemyPlacement) es
+ where
+  isOutOfPlayZone = \case
+    OutOfPlay {} -> True
+    _ -> False
+
+referencesOutOfPlay :: EnemyMatcher -> Bool
+referencesOutOfPlay = any isOutOfPlayReference . universe
+ where
+  isOutOfPlayReference = \case
+    OutOfPlayEnemy {} -> True
+    IncludeOutOfPlayEnemy {} -> True
+    DefeatedEnemy {} -> True
+    EnemyWithPlacement p -> isOutOfPlayPlacement p
+    _ -> False
+
 getEnemiesMatching :: (HasCallStack, HasGame m, Tracing m) => EnemyMatcher -> m [Enemy]
 getEnemiesMatching matcher' = do
   case matcher' of
@@ -3592,7 +3621,9 @@ getEnemiesMatching matcher' = do
               . view (entitiesL . enemyLocationsL)
               $ g
       let allGameEnemies = regularEnemies <> enemyLocationProxies
-      enemyMatcherFilter allGameEnemies (matcher <> EnemyWithoutModifier Omnipotent)
+      enemyMatcherFilter
+        (restrictToInPlayZones matcher allGameEnemies)
+        (matcher <> EnemyWithoutModifier Omnipotent)
 
 enemyMatcherFilter :: (HasCallStack, HasGame m, Tracing m) => [Enemy] -> EnemyMatcher -> m [Enemy]
 enemyMatcherFilter [] _ = pure []

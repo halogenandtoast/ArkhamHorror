@@ -7,7 +7,6 @@ import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act
-import Arkham.Helpers.Enemy
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Matcher
@@ -36,7 +35,9 @@ instance RunMessage TheWitchLight where
   runMessage msg a@(TheWitchLight attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       step <- getCurrentActStep
-      mnahab <- getUniqueEnemyMaybe Enemies.nahab
+      -- Nahab cycles in and out of the set-aside zone here, so we must find her
+      -- while she is out of play to re-set-her-aside instead of duplicating her.
+      mnahab <- selectOne (IncludeOutOfPlayEnemy $ enemyIs Enemies.nahab)
       case step of
         3 -> do
           for_ mnahab \nahab -> placeDoom attrs nahab 1

@@ -198,7 +198,7 @@ instance RunMessage DevilReef where
           story $ scope "resolutions" $ i18nWithTitle "resolution1"
 
           n <- getCurrentAgendaStep
-          terrorOfTheDevilReef <- selectOne $ EnemyWithTitle "The Terror of Devil Reef"
+          terrorOfTheDevilReef <- selectOne $ InPlayEnemy $ EnemyWithTitle "The Terror of Devil Reef"
 
           when (n == 1 || isJust terrorOfTheDevilReef) do
             record TheTerrorOfDevilReefIsStillAlive

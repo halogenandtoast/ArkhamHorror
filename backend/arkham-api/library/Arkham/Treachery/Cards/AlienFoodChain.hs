@@ -25,7 +25,7 @@ instance HasModifiersFor AlienFoodChain where
 instance RunMessage AlienFoodChain where
   runMessage msg t@(AlienFoodChain attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      manifolds <- selectWithField EnemyRemainingHealth $ EnemyWithTrait Manifold
+      manifolds <- selectWithField EnemyRemainingHealth $ InPlayEnemy $ EnemyWithTrait Manifold
       let withHealth = sortOn snd [(eid, h) | (eid, Just h) <- manifolds]
       case withHealth of
         [] -> gainSurge attrs

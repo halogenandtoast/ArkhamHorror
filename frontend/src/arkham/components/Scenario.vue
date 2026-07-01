@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
-import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon, ArrowPathIcon, LockClosedIcon, LockOpenIcon, ArrowUturnLeftIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon, ArrowPathIcon, LockClosedIcon, LockOpenIcon, ArrowUturnLeftIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
   watch,
@@ -201,6 +201,12 @@ function decreaseZoom() {
 }
 
 const locationsUnlocked = ref(false)
+const locationsFullscreen = ref(false)
+function onFullscreenKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape' && locationsFullscreen.value) {
+    locationsFullscreen.value = false
+  }
+}
 const draggingLocationId = ref<string | null>(null)
 // Optimistic offsets after a drop, kept until the server echoes them back.
 // Stored in canonical (rotationSteps=0) coordinates, same as the backend.
@@ -701,6 +707,7 @@ onMounted(() => {
   window.addEventListener('resize', scheduleHiddenLocationActionEdgesUpdate)
   window.addEventListener('scroll', scheduleHiddenLocationActionEdgesUpdate, true)
   document.addEventListener('click', proxyClippedLocationClick, true)
+  window.addEventListener('keydown', onFullscreenKeydown)
   nextTick(updateRealityAcidLightRect)
   updateScrollMargins()
   updateCellDimensions()
@@ -813,6 +820,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', scheduleHiddenLocationActionEdgesUpdate)
   window.removeEventListener('scroll', scheduleHiddenLocationActionEdgesUpdate, true)
   document.removeEventListener('click', proxyClippedLocationClick, true)
+  window.removeEventListener('keydown', onFullscreenKeydown)
   legObserver?.disconnect()
   legObserver = null
   cosmicEmissaryObserver?.disconnect()
@@ -2435,9 +2443,41 @@ async function addChaosToken(face: any){
           'location-cards-container--hidden-action-bottom': hiddenLocationActionEdges.bottom,
           'location-cards-container--hidden-action-left': hiddenLocationActionEdges.left,
           'location-cards-container--unlocked': locationsUnlocked,
+          'location-cards-container--fullscreen': locationsFullscreen,
         }"
         @dblclick.passive="toggleZoom"
       >
+        <!-- ponytail: fullscreen mirror of the player-zone zoom-control; duplicated markup
+             beats prop-drilling ~10 handlers into a shared child. Keep the two in sync. -->
+        <div v-if="locationsFullscreen" class="zoom-control zoom-control--fullscreen">
+          <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
+          <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
+          <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>
+          <button
+            class="zoom-btn"
+            :class="{ 'zoom-btn--active': locationsUnlocked }"
+            @click.stop="toggleLocationsUnlocked"
+            v-tooltip="locationsUnlocked ? 'Lock locations' : 'Unlock locations to drag'"
+          >
+            <LockOpenIcon v-if="locationsUnlocked" class="zoom-btn__icon" />
+            <LockClosedIcon v-else class="zoom-btn__icon" />
+          </button>
+          <button
+            v-if="hasAnyOffset"
+            class="zoom-btn"
+            @click.stop="resetLocationsLayout"
+            v-tooltip="'Reset location positions'"
+          >
+            <ArrowUturnLeftIcon class="zoom-btn__icon" />
+          </button>
+          <button
+            class="zoom-btn zoom-btn--active"
+            @click.stop="locationsFullscreen = false"
+            v-tooltip="'Exit fullscreen locations (Esc)'"
+          >
+            <ArrowsPointingInIcon class="zoom-btn__icon" />
+          </button>
+        </div>
         <div
           class="location-cards-scroller"
           ref="scrollerRef"
@@ -2588,6 +2628,15 @@ async function addChaosToken(face: any){
               v-tooltip="'Reset location positions'"
             >
               <ArrowUturnLeftIcon class="zoom-btn__icon" />
+            </button>
+            <button
+              class="zoom-btn"
+              :class="{ 'zoom-btn--active': locationsFullscreen }"
+              @click.stop="locationsFullscreen = !locationsFullscreen"
+              v-tooltip="locationsFullscreen ? 'Exit fullscreen locations (Esc)' : 'Expand locations to full screen'"
+            >
+              <ArrowsPointingInIcon v-if="locationsFullscreen" class="zoom-btn__icon" />
+              <ArrowsPointingOutIcon v-else class="zoom-btn__icon" />
             </button>
           </div>
         </PlayerTabs>
@@ -2896,6 +2945,24 @@ async function addChaosToken(face: any){
     padding-top: 5px;
     padding-bottom: 5px;
   }
+}
+
+.location-cards-container--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-50);
+  background: var(--background);
+}
+
+.zoom-control--fullscreen {
+  position: absolute;
+  top: 45px;
+  right: 10px;
+  z-index: var(--z-index-10, 10);
+  display: flex !important;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .location-cards-container--hidden-action::after {

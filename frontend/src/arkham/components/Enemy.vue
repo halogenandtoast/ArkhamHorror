@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { Dropdown } from 'floating-vue'
+import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useI18n } from 'vue-i18n'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 import { useDebug } from '@/arkham/debug'
@@ -27,7 +29,7 @@ import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 import { Source } from '@/arkham/types/Source'
 import { isManifestedSpiritEnemy } from '@/arkham/spiritVisuals';
-import { toCardContents } from '@/arkham/types/Card';
+import { type Card as ArkhamCard, toCardContents } from '@/arkham/types/Card';
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -76,11 +78,12 @@ const sourceTooltip = computed<string | false>(() => {
 
 const choices = useGameChoices(() => props.game, () => props.playerId)
 
+function isCardActionForId(c: Message, enemyId: string): boolean {
+  return c.tag === MessageType.TARGET_LABEL && c.target.contents === enemyId
+}
+
 function isCardAction(c: Message): boolean {
-  if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
-    return true
-  }
-  return false
+  return isCardActionForId(c, id.value)
 }
 
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
@@ -93,29 +96,38 @@ const swarmEnemies = computed(() =>
   Object.values(props.game.enemies).filter((e) => e.placement.tag === 'AsSwarm' && e.placement.swarmHost === props.enemy.id)
 )
 
+const swarmCards = computed<ArkhamCard[]>(() =>
+  swarmEnemies.value.flatMap((e) => e.placement.tag === 'AsSwarm' ? [e.placement.swarmCard] : [])
+)
+
+const swarmCardsShown = ref(false)
+const swarmTooltip = computed(() => `Swarm cards (${swarmCards.value.length}) — click to view`)
+const swarmBackImage = imgsrc('player_back.jpg')
+const swarmEnemyDamage = (enemy: typeof props.enemy) => (enemy.tokens[TokenType.Damage] || 0) + enemy.assignedDamage
+
 const isSwarm = computed(() => props.enemy.placement.tag === 'AsSwarm')
 
 const referenceCards = computed(() => props.enemy.referenceCards)
 const hasSpiritAura = computed(() => isManifestedSpiritEnemy(props.enemy, props.game))
 
-function isAbility(v: Message): v is AbilityLabel {
-  if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
+function isAbilityForId(v: Message, enemyId: string): v is AbilityLabel {
+  if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === enemyId) {
     return true
   }
 
-  if (v.tag === MessageType.FIGHT_LABEL_WITH_SKILL && v.enemyId === id.value) {
+  if (v.tag === MessageType.FIGHT_LABEL_WITH_SKILL && v.enemyId === enemyId) {
     return true
   }
 
-  if (v.tag === MessageType.EVADE_LABEL && v.enemyId === id.value) {
+  if (v.tag === MessageType.EVADE_LABEL && v.enemyId === enemyId) {
     return true
   }
 
-  if (v.tag === MessageType.EVADE_LABEL_WITH_SKILL && v.enemyId === id.value) {
+  if (v.tag === MessageType.EVADE_LABEL_WITH_SKILL && v.enemyId === enemyId) {
     return true
   }
 
-  if (v.tag === MessageType.ENGAGE_LABEL && v.enemyId === id.value) {
+  if (v.tag === MessageType.ENGAGE_LABEL && v.enemyId === enemyId) {
     return true
   }
 
@@ -127,14 +139,36 @@ function isAbility(v: Message): v is AbilityLabel {
 
   if (source.sourceTag === 'ProxySource') {
     if ("contents" in source.source) {
-      return source.source.contents === id.value
+      return source.source.contents === enemyId
     }
   } else if (source.tag === 'EnemySource') {
-    return source.contents === id.value
+    return source.contents === enemyId
   }
 
   return false
 }
+
+function isAbility(v: Message): v is AbilityLabel {
+  return isAbilityForId(v, id.value)
+}
+
+function isChoiceForEnemyId(v: Message, enemyId: string): boolean {
+  return isAbilityForId(v, enemyId) || isCardActionForId(v, enemyId)
+}
+
+const swarmHasAvailableActions = computed(() =>
+  swarmEnemies.value.some((enemy) => choices.value.some((choice) => isChoiceForEnemyId(choice, enemy.id)))
+)
+
+const swarmIsOnlyChoiceSource = computed(() =>
+  swarmHasAvailableActions.value
+    && choices.value.length > 0
+    && choices.value.every((choice) => swarmEnemies.value.some((enemy) => isChoiceForEnemyId(choice, enemy.id)))
+)
+
+watch(swarmIsOnlyChoiceSource, (isOnlySource) => {
+  if (isOnlySource) swarmCardsShown.value = true
+}, { immediate: true })
 
 const abilities = computed<AbilityMessage[]>(() => {
   return choices.value
@@ -394,6 +428,7 @@ function onDrop(event: DragEvent) {
             :abilities="abilities"
             :position="atLocation ? 'right' : (inVoid || global) ? 'left' : 'top'"
             :game="game"
+            :host-has-swarm="swarmEnemies.length > 0"
             @choose="chooseAbility"
             />
 
@@ -472,18 +507,62 @@ function onDrop(event: DragEvent) {
       </template>
     </div>
 
-    <div class="swarm" v-if="swarmEnemies.length > 0" :style="{ '--swarm-count': swarmEnemies.length }">
-      <Enemy
+    <div
+      v-if="swarmEnemies.length > 0"
+      class="swarm-card-stack"
+      :style="{ '--swarm-count-for-width': swarmEnemies.length }"
+      aria-hidden="true"
+    >
+      <span
         v-for="(swarmEnemy, index) in swarmEnemies"
         :key="swarmEnemy.id"
-        :enemy="swarmEnemy"
-        :game="game"
-        :playerId="playerId"
-        :atLocation="atLocation"
-        @choose="$emit('choose', $event)"
-        class="enemy--swarming"
+        class="swarm-card-stack__card"
         :style="{ '--swarm-index': index }"
-      />
+      >
+        <img class="swarm-card-stack__back" :src="swarmBackImage" />
+        <BugAntIcon class="swarm-card-stack__icon" aria-hidden="true" />
+        <span v-if="swarmEnemyDamage(swarmEnemy) > 0" class="swarm-card-stack__damage">{{ swarmEnemyDamage(swarmEnemy) }}</span>
+      </span>
+    </div>
+
+    <div v-if="swarmCards.length > 0" class="swarm-button-wrap">
+      <Dropdown
+        v-model:shown="swarmCardsShown"
+        :triggers="['click']"
+        :auto-hide="true"
+        :distance="8"
+        placement="bottom"
+        theme="cards-under-popover"
+      >
+        <button
+          type="button"
+          class="swarm-indicator"
+          :class="{ 'swarm-indicator--highlighted': swarmHasAvailableActions }"
+          :aria-label="swarmTooltip"
+          v-tooltip="swarmTooltip"
+        >
+          <BugAntIcon class="swarm-indicator__icon" aria-hidden="true" />
+          <span class="swarm-indicator__count">{{ swarmCards.length }}</span>
+        </button>
+
+        <template #popper>
+        <div class="swarm-popover">
+          <div class="swarm-popover__header">Swarm Cards ({{ swarmCards.length }})</div>
+          <div class="swarm-popover__cards">
+            <Enemy
+              v-for="swarmEnemy in swarmEnemies"
+              :key="swarmEnemy.id"
+              :enemy="swarmEnemy"
+              :game="game"
+              :playerId="playerId"
+              :atLocation="false"
+              class="swarm-popover__enemy"
+              @choose="$emit('choose', $event)"
+            />
+          </div>
+        </div>
+        </template>
+      </Dropdown>
     </div>
     <DebugEnemy v-if="debugging" :game="game" :enemy="enemy" :playerId="playerId" @close="debugging = false" />
   </div>
@@ -641,93 +720,183 @@ img.card.source-highlight {
   }
 }
 
-/*
- * Swarm fan.
- *
- * Collapsed, the swarm cards hide behind the host card (below its z-index), tucked
- * left so only their right edges fan out — the host clearly owns the swarm and the
- * count stays readable. Hovering the host enemy (or the swarm) slides them out from
- * behind it and fans them to the right.
- *
- * Every offset is a `transform`, which never affects layout, so the host and
- * everything around it stay put whether collapsed or fanned (requirement a). The
- * fan stays overlapping (no holes), so the whole group is one contiguous hover
- * surface and sweeping between cards can't drop into a gap and collapse it
- * (requirement b).
- */
-.swarm {
-  /* how far (in card widths) the stack hides behind the host while collapsed */
-  --swarm-tuck: 0.78;
-  /* fraction of a card poking out from behind the host per stacked card */
-  --swarm-peek: 0.22;
-  /* fraction of a card revealed per card once fanned out */
-  --swarm-reveal: 0.62;
-  --swarm-count: 1;
-  position: relative;
-  /*
-   * A single-cell grid: every swarm card lives in the same cell (grid-area 1/1)
-   * and is offset purely with `transform`, immune to flex-shrink quirks. The box
-   * only reserves the collapsed fan/peek width; the opened fan may overflow it.
-   */
-  display: grid;
-  grid-template-columns: var(--card-width);
-  justify-content: start;
-  width: calc(var(--card-width) * ((1 - var(--swarm-tuck)) + (var(--swarm-count) - 1) * var(--swarm-peek)));
-  flex: 0 0 auto;
-  align-self: center;
-}
-
-.swarm .enemy--swarming {
-  --swarm-index: 0;
-  grid-area: 1 / 1;
-  /* Behind the host (host card is var(--z-index-5)); lead card on top of the rest. */
-  z-index: calc(var(--swarm-count) - var(--swarm-index));
-  transform: translateX(calc(var(--card-width) * (var(--swarm-peek) * var(--swarm-index) - var(--swarm-tuck))));
-  transition: transform 0.18s ease;
-}
-
-/* Hovering anywhere in the host + swarm group fans the cards out from behind
-   the host to the right; likewise while a swarm card's abilities menu is open. */
-.enemy--outer:hover > .swarm .enemy--swarming,
-.swarm:hover .enemy--swarming,
-.swarm:has(> .enemy--swarming:hover) .enemy--swarming,
-.swarm:has(.enemy--swarming.showAbilities) .enemy--swarming {
-  transform: translateX(calc(var(--card-width) * var(--swarm-reveal) * var(--swarm-index)));
-}
-
-/* Lift the whole group above sibling enemies while revealed. */
-.enemy--outer:hover,
-.enemy--outer:has(.swarm:hover),
-.enemy--outer:has(.enemy--swarming.showAbilities) {
-  position: relative;
-  z-index: var(--z-index-30);
-}
-
-
 .enemy--outer {
   isolation: isolate;
   display: flex;
-  justify-content: space-evenly;
-}
-
-/* Collapsed swarm peeks can extend into the stacked location enemy column. Keep
-   swarm hosts above ordinary sibling enemies even before hover so those peeks are
-   not covered and remain hoverable. */
-.enemy--outer:has(> .swarm) {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3px;
   position: relative;
-  z-index: var(--z-index-20);
 }
 
-/* Keep the host enemy above its tucked swarm stack. The swarm cards are rendered
-   after the host in DOM order and overlap it via transforms, so give the host a
-   stronger stacking layer than the swarm container. */
 .enemy--outer > .enemy {
   position: relative;
   z-index: var(--z-index-20);
 }
 
-.enemy--outer > .swarm {
+.swarm-card-stack {
+  --swarm-card-width: calc(var(--card-width) * 0.8);
+  --swarm-tuck: 0.78;
+  --swarm-peek: 0.025;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: var(--z-index-10);
+  width: var(--swarm-card-width);
+  height: calc(var(--swarm-card-width) / var(--card-aspect));
+  pointer-events: none;
+}
+
+.swarm-card-stack__card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--swarm-card-width);
+  height: calc(var(--swarm-card-width) / var(--card-aspect));
+  border-radius: 6px;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.22), 2px 1px 4px rgba(0, 0, 0, 0.45);
+  transform: translateX(calc(var(--swarm-card-width) * var(--swarm-peek) * var(--swarm-index)));
+  z-index: calc(var(--swarm-count-for-width, 1) - var(--swarm-index));
+}
+
+.swarm-card-stack__back {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill;
+  border-radius: 6px;
+}
+
+.swarm-card-stack__icon {
+  position: absolute;
+  inset: 0;
+  width: 58%;
+  height: 58%;
+  margin: auto;
+  color: rgba(255, 255, 255, 0.88);
+  filter: drop-shadow(0 1px 1px #000) drop-shadow(0 0 3px #000);
+  pointer-events: none;
+}
+
+.swarm-card-stack__damage,
+.swarm-popover__damage {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  min-width: 1.35em;
+  height: 1.35em;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  background: var(--health);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 1px #000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+}
+
+.swarm-button-wrap {
+  margin-top: 3px;
+  position: relative;
+  z-index: var(--z-index-20);
+}
+
+.swarm-indicator {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: var(--card-width);
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.46);
+  color: #fff;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.swarm-indicator:hover {
+  background: rgba(0, 0, 0, 0.68);
+  border-color: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
+}
+
+.swarm-indicator--highlighted {
+  border-color: color-mix(in srgb, var(--select) 65%, black);
+  background: color-mix(in srgb, var(--select) 55%, black);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--select) 45%, transparent), 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.swarm-indicator--highlighted:hover {
+  border-color: color-mix(in srgb, var(--select) 75%, black);
+  background: color-mix(in srgb, var(--select) 65%, black);
+}
+
+.swarm-indicator__icon {
+  width: 15px;
+  height: 15px;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.65));
+}
+
+.swarm-indicator__count {
+  min-width: 1.35em;
+  height: 1.35em;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-variant-numeric: tabular-nums;
+}
+
+.swarm-popover {
+  min-width: 0;
+  max-width: max(50vw, 300px);
+  padding: 10px;
+}
+
+.swarm-popover__header {
+  margin: 0 0 8px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.swarm-popover__cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  max-height: 50vh;
+  overflow: auto;
+}
+
+.swarm-popover__card-wrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.swarm-popover__card {
+  width: calc(var(--card-width, 100px) * 1.1);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 .attached.card {
@@ -786,5 +955,28 @@ img.card.source-highlight {
   transition: width 0.8s ease;
   width: calc(var(--card-width) * 3);
   max-width: calc(var(--card-width) * 3);
+}
+</style>
+
+<style>
+.v-popper__popper.v-popper--theme-cards-under-popover {
+  z-index: calc(var(--z-card-hover-overlay) - 1);
+}
+
+.v-popper--theme-cards-under-popover .v-popper__inner {
+  background: rgba(15, 15, 20, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #fff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.v-popper--theme-cards-under-popover .v-popper__arrow-outer {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.v-popper--theme-cards-under-popover .v-popper__arrow-inner {
+  border-color: rgba(15, 15, 20, 0.92);
 }
 </style>

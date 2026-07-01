@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Game } from '@/arkham/types/Game';
 import { OnClickOutside } from '@vueuse/components'
-import { ref, watch, computed, nextTick } from 'vue';
+import { ref, watch, computed, nextTick, getCurrentInstance } from 'vue';
 import type { AbilityMessage } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
@@ -11,7 +11,8 @@ const props = withDefaults(defineProps<{
   frame: HTMLElement | null;
   position?: 'top' | 'bottom' | 'left' | 'right';
   showMove?: boolean
-}>(), {showMove: true});
+  hostHasSwarm?: boolean
+}>(), {showMove: true, hostHasSwarm: false});
 
 const emits = defineEmits<{
   (e: 'choose', index: number): void;
@@ -22,7 +23,12 @@ interface Position {
   top?: string;
   left?: string;
   right?: string;
+  positionAnchor?: string;
 }
+
+// Native CSS anchor positioning when available; JS math is the fallback below.
+const supportsAnchor = typeof CSS !== 'undefined' && CSS.supports('anchor-name: --a');
+const anchorName = `--abilities-anchor-${getCurrentInstance()?.uid ?? 0}`;
 
 const abilitiesRef = ref<HTMLElement | null>(null);
 const showAbilities = defineModel()
@@ -30,6 +36,13 @@ const abilitiesPosition = ref<Position>({ bottom: '0px', top: '0px', left: '0px'
 const positionClass = computed(() => props.position || 'top');
 
 function calculatePosition() {
+  if (props.frame && supportsAnchor) {
+    // Name the frame and point the menu at it; scoped @supports CSS does the placement.
+    props.frame.style.setProperty('anchor-name', anchorName);
+    abilitiesPosition.value = { positionAnchor: anchorName };
+    return;
+  }
+
   if (props.frame) {
     const rect = props.frame.getBoundingClientRect();
     const menuRect = abilitiesRef.value?.getBoundingClientRect();
@@ -91,6 +104,8 @@ watch(
 watch(showAbilities, (newValue) => {
   if (newValue) {
     nextTick(() => calculatePosition());
+  } else if (supportsAnchor) {
+    props.frame?.style.removeProperty('anchor-name');
   }
 });
 </script>
@@ -104,6 +119,7 @@ watch(showAbilities, (newValue) => {
           :key="index"
           :ability="contents"
           :show-move="showMove"
+          :host-has-swarm="hostHasSwarm"
           :game="game"
           @click="chooseAbility(index)"
         />
@@ -122,10 +138,9 @@ watch(showAbilities, (newValue) => {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  z-index: var(--z-index-1000);
+  z-index: var(--z-modal-overlay);
   button {
-    padding-block: min(3px, 1vw);
-    padding-inline: min(6px, 2vw);
+    padding: 0;
     margin-top: 0;
     display: flex;
     align-items: center;
@@ -141,12 +156,46 @@ watch(showAbilities, (newValue) => {
     }
   }
 
+  :deep(.button-label) {
+    padding-block: min(3px, 1vw);
+    padding-inline: min(6px, 2vw);
+  }
+
   :deep(span) {
     @media (max-width: 800px) and (orientation: portrait) {
       &:before {
         font-size: 2.0em !important;
       }
     }
+  }
+}
+
+/* Progressive enhancement: pin to the frame via CSS anchor positioning.
+   position-anchor is set inline (per-instance name); these replicate the JS
+   placement for each variant. position-try flips off-screen menus back on. */
+@supports (anchor-name: --a) {
+  .abilities {
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+  .abilities.top {
+    inset: auto;
+    bottom: anchor(top);
+    left: anchor(left);
+  }
+  .abilities.bottom {
+    inset: auto;
+    top: anchor(bottom);
+    left: anchor(left);
+  }
+  .abilities.left {
+    inset: auto;
+    top: anchor(top);
+    right: anchor(left);
+  }
+  .abilities.right {
+    inset: auto;
+    top: anchor(top);
+    left: anchor(right);
   }
 }
 </style>

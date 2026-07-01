@@ -587,7 +587,20 @@ function onStagePointerDown(event: PointerEvent) {
   const scroller = scrollerRef.value
   if (!scroller) return
   const target = event.target as HTMLElement | null
-  if (target?.closest('button, a, input, select, textarea')) return
+  if (target?.closest([
+    'button',
+    'a',
+    'input',
+    'select',
+    'textarea',
+    '[role="button"]',
+    '.card',
+    '.card-frame',
+    '.enemy',
+    '.enemy--outer',
+    '.swarm-button-wrap',
+    '.v-popper__popper',
+  ].join(', '))) return
   if (scroller.scrollWidth <= scroller.clientWidth && scroller.scrollHeight <= scroller.clientHeight) return
 
   stagePan = {

@@ -666,9 +666,8 @@ img.card.source-highlight {
   position: relative;
   /*
    * A single-cell grid: every swarm card lives in the same cell (grid-area 1/1)
-   * and is offset purely with `transform`, immune to flex-shrink quirks. The width
-   * reserves only the sliver that pokes out from behind the host; the fan overflows
-   * this box on hover (transform only), so neighbours never shift either way.
+   * and is offset purely with `transform`, immune to flex-shrink quirks. The box
+   * only reserves the collapsed fan/peek width; the opened fan may overflow it.
    */
   display: grid;
   grid-template-columns: var(--card-width);
@@ -687,16 +686,17 @@ img.card.source-highlight {
   transition: transform 0.18s ease;
 }
 
-/* Hovering the host or the swarm (its peeking edges) fans the cards out from
-   behind the host to the right; likewise while a swarm card's abilities menu is open. */
-.enemy--outer > .enemy:hover + .swarm .enemy--swarming,
+/* Hovering anywhere in the host + swarm group fans the cards out from behind
+   the host to the right; likewise while a swarm card's abilities menu is open. */
+.enemy--outer:hover > .swarm .enemy--swarming,
 .swarm:hover .enemy--swarming,
+.swarm:has(> .enemy--swarming:hover) .enemy--swarming,
 .swarm:has(.enemy--swarming.showAbilities) .enemy--swarming {
   transform: translateX(calc(var(--card-width) * var(--swarm-reveal) * var(--swarm-index)));
 }
 
 /* Lift the whole group above sibling enemies while revealed. */
-.enemy--outer:has(> .enemy:hover),
+.enemy--outer:hover,
 .enemy--outer:has(.swarm:hover),
 .enemy--outer:has(.enemy--swarming.showAbilities) {
   position: relative;
@@ -708,6 +708,14 @@ img.card.source-highlight {
   isolation: isolate;
   display: flex;
   justify-content: space-evenly;
+}
+
+/* Collapsed swarm peeks can extend into the stacked location enemy column. Keep
+   swarm hosts above ordinary sibling enemies even before hover so those peeks are
+   not covered and remain hoverable. */
+.enemy--outer:has(> .swarm) {
+  position: relative;
+  z-index: var(--z-index-20);
 }
 
 /* Keep the host enemy above its tucked swarm stack. The swarm cards are rendered

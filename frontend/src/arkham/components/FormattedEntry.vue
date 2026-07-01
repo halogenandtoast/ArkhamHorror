@@ -370,6 +370,7 @@ p.billenia, :deep(p.billenia) {
   font-family: "Billenia";
   font-weight: 500;
   font-size: 1.4em;
+  font-style: normal;
   margin: 10px;
 }
 

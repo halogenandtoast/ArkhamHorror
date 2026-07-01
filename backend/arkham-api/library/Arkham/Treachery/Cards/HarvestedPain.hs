@@ -21,8 +21,6 @@ instance RunMessage HarvestedPain where
       sanity <- field InvestigatorRemainingSanity iid
       if health <= 3 || sanity <= 3
         then addToVictory iid attrs
-        else do
-          assignDamage iid attrs 1
-          assignHorror iid attrs 1
+        else assignDamageAndHorror iid attrs 1 1
       pure t
     _ -> HarvestedPain <$> liftRunMessage msg attrs

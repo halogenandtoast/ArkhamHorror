@@ -5,7 +5,7 @@
     "groupA": "<p>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight.</p><p>For the first time since awakening, you study your surroundings. You have been sealed in a windowless chamber, which is filled with copper pipes. The faint whistling of escaping air surrounds you on all sides. You are a prisoner here, with no means of escape. There is a note lying on the ground nearby.</p>",
     "groupB": "<p>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight.</p><p>For the first time since awakening, you study your surroundings. You have been sealed in a tall glass tank, and water fills the chamber to your ankles. Outside the dull glass, you can see many more tanks like yours, wreathed in mist. You are a prisoner here, with no means of escape. There is a note lying on the ground just outside the tank.</p>",
     "groupC": "<p>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight.</p><p>For the first time since awakening, you study your surroundings. You are in a dark chamber, lit only by a few candles. Old barrels, crates and rotten storage shelves fill the cramped chamber. You cannot see any windows or doors leading out. You are a prisoner here, with no means of escape. There is a note lying on the ground nearby.</p>",
-    "note": "<p><i>It reads:</i></p><blockquote><i>Greetings.</i><br/><i>I have gathered you here as an experiment. Think of this as a test of human will. You will survive. Or you will die.</i><br/><i>You are not alone. Two other groups share in your fate. Will you risk your lives to aid them? Or will you find freedom upon the backs of their corpses?</i><br/><i>I will allow you to escape, should you prove strong of will and quick of wit. If not, your pain and anguish shall serve as a reminder that humans are not the inheritors of Earth.</i></blockquote>"
+    "note": "<p><i>It reads:</i></p><p><span class='wolgast' style='font-weight:600;'>Greetings.<br/>I have gathered you here as an experiment. Think of this as a test of human will. You will survive. Or you will die.<br/>You are not alone. Two other groups share in your fate. Will you risk your lives to aid them? Or will you find freedom upon the backs of their corpses?<br/>I will allow you to escape, should you prove strong of will and quick of wit. If not, your pain and anguish shall serve as a reminder that humans are not the inheritors of Earth.</span></p>"
   },
   "group": {
     "groupA": "Group A",
@@ -52,8 +52,10 @@
     "chooseAdditionalActions": "You peer through an overgrown mirror and see an unfamiliar reflection. Choose an investigator to take 2 additional actions during their next turn."
   },
   "torturedVictim": {
-    "discardRandomCard": "Discard a random card from your hand",
-    "takeAttack": "Tortured Victim makes an immediate attack against you"
+    "label": {
+      "discardRandomCard": "Discard a random card from your hand",
+      "takeAttack": "Tortured Victim makes an immediate attack against you"
+    }
   },
   "unnaturalWeariness": {
     "loseResources": "Lose 3 resources",

@@ -1196,8 +1196,12 @@ chamberOfRegret =
 
 labyrinthineHallsFoulSmellingPath :: CardDef
 labyrinthineHallsFoulSmellingPath =
-  location
+  locationWithUnrevealed
     "70025"
+    "Labyrinthine Halls"
+    []
+    Equals
+    [Circle, Square, Heart, Equals]
     ("Labyrinthine Halls" <:> "Foul-smelling Path")
     []
     Equals
@@ -1206,8 +1210,12 @@ labyrinthineHallsFoulSmellingPath =
 
 labyrinthineHallsCorpseFilledPath :: CardDef
 labyrinthineHallsCorpseFilledPath =
-  location
+  locationWithUnrevealed
     "70026"
+    "Labyrinthine Halls"
+    []
+    Equals
+    [Circle, Square, Heart, Equals]
     ("Labyrinthine Halls" <:> "Corpse-filled Path")
     []
     Equals
@@ -1216,8 +1224,12 @@ labyrinthineHallsCorpseFilledPath =
 
 labyrinthineHallsOvergrownPath :: CardDef
 labyrinthineHallsOvergrownPath =
-  location
+  locationWithUnrevealed
     "70027"
+    "Labyrinthine Halls"
+    []
+    Equals
+    [Circle, Square, Heart, Equals]
     ("Labyrinthine Halls" <:> "Overgrown Path")
     []
     Equals

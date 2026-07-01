@@ -35,13 +35,14 @@ theLabyrinthsOfLunacy difficulty =
     "70001"
     "The Labyrinths of Lunacy"
     difficulty
-    [ ".                  chamberOfRain      chamberOfSecrets   chamberOfNight"
-    , ".                  chamberOfSorrows   .                  chamberOfRegret"
-    , "labyrinthineHalls1 labyrinthineHalls2 labyrinthineHalls3 ."
-    , "chamberOfDecay     chamberOfRot       chamberOfHunger    ."
-    , ".                  chamberOfPoison    .                  ."
-    , ".                  abandonedWarehouse .                  ."
-    ]
+    []
+    -- [ ".                  chamberOfRain      chamberOfSecrets   chamberOfNight"
+    -- , ".                  chamberOfSorrows   .                  chamberOfRegret"
+    -- , "labyrinthineHalls1 labyrinthineHalls2 labyrinthineHalls3 ."
+    -- , "chamberOfDecay     chamberOfRot       chamberOfHunger    ."
+    -- , ".                  chamberOfPoison    .                  ."
+    -- , ".                  abandonedWarehouse .                  ."
+    -- ]
 
 standardTokens, hardTokens :: [ChaosTokenFace]
 standardTokens =
@@ -147,6 +148,12 @@ instance RunMessage TheLabyrinthsOfLunacy where
 
       case grp of
         GroupA -> do
+          push $ SetLayout
+            [ ".                  chamberOfDecay     ."
+            , ".                  labyrinthineHalls1 ."
+            , ".                  chamberOfSecrets   ."
+            , "labyrinthineHalls2 .                  labyrinthineHalls3"
+            ]
           setActDeck
             [Acts.sealedInGroupA, Acts.distortionsInTimeGroupA, Acts.theEscapeTheLabyrinthsOfLunacy]
           setAside [Locations.chamberOfDecay]

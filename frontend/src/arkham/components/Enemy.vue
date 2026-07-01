@@ -687,14 +687,16 @@ img.card.source-highlight {
   transition: transform 0.18s ease;
 }
 
-/* Hovering the swarm (its peeking edges) fans the cards out from behind the host to
-   the right; likewise while a swarm card's abilities menu is open. */
+/* Hovering the host or the swarm (its peeking edges) fans the cards out from
+   behind the host to the right; likewise while a swarm card's abilities menu is open. */
+.enemy--outer > .enemy:hover + .swarm .enemy--swarming,
 .swarm:hover .enemy--swarming,
 .swarm:has(.enemy--swarming.showAbilities) .enemy--swarming {
   transform: translateX(calc(var(--card-width) * var(--swarm-reveal) * var(--swarm-index)));
 }
 
 /* Lift the whole group above sibling enemies while revealed. */
+.enemy--outer:has(> .enemy:hover),
 .enemy--outer:has(.swarm:hover),
 .enemy--outer:has(.enemy--swarming.showAbilities) {
   position: relative;

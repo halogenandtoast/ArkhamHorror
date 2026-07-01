@@ -28,7 +28,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
-  EnemyMatcher (InPlayEnemy),
   cardIs,
   enemyIs,
   investigatorAt,
@@ -308,7 +307,7 @@ instance RunMessage SmokeAndMirrors where
       case r of
         NoResolution -> do
           recordSetInsert ServantOfElokoss [servantDef.cardCode]
-          eliteInPlay <- selectField EnemyCard $ InPlayEnemy $ EliteEnemy <> EnemyAt Anywhere
+          eliteInPlay <- selectField EnemyCard $ EliteEnemy <> EnemyAt Anywhere
 
           cardsUnderLocations <-
             concatMapM (field LocationCardsUnderneath) =<< select (LocationWithCardsUnderneath AnyCards)

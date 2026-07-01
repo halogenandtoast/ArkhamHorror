@@ -20,10 +20,10 @@ broodTitle :: Text
 broodTitle = nameTitle . toName $ Cards.broodOfYogSothoth
 
 getMatchingBroodOfYogSothoth :: (HasGame m, Tracing m) => EnemyMatcher -> m [EnemyId]
-getMatchingBroodOfYogSothoth matcher = select $ InPlayEnemy $ EnemyWithTitle broodTitle <> matcher
+getMatchingBroodOfYogSothoth matcher = select $ EnemyWithTitle broodTitle <> matcher
 
 getBroodOfYogSothoth :: (HasGame m, Tracing m) => m [EnemyId]
-getBroodOfYogSothoth = select $ InPlayEnemy $ EnemyWithTitle broodTitle
+getBroodOfYogSothoth = select $ EnemyWithTitle broodTitle
 
 getSetAsideBroodOfYogSothoth :: (HasGame m, Tracing m) => m [Card]
 getSetAsideBroodOfYogSothoth = getSetAsideCardsMatching $ CardWithTitle broodTitle

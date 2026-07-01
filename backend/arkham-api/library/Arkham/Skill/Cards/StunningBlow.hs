@@ -20,7 +20,7 @@ instance RunMessage StunningBlow where
       withSkillTestEnemyTarget \eid ->
         skillTestCardOptionEdit
           attrs
-          (optionWhenExists $ InPlayEnemy $ EnemyWithId eid <> enemyCanBeEvadedBy attrs)
+          (optionWhenExists $ EnemyWithId eid <> enemyCanBeEvadedBy attrs)
           (automaticallyEvadeEnemy iid eid)
       pure s
     _ -> StunningBlow <$> liftRunMessage msg attrs

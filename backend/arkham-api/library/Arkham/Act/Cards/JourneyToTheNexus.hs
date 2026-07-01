@@ -60,7 +60,7 @@ instance RunMessage JourneyToTheNexus where
             discardAllClues attrs iid
             place iid Unplaced
 
-          selectEach AnyInPlayEnemy \e -> place e (OutOfPlay PursuitZone)
+          selectEach AnyEnemy \e -> place e (OutOfPlay PursuitZone)
 
           inPlayLocations <- select Anywhere
           locationCards <- for inPlayLocations \lid -> do

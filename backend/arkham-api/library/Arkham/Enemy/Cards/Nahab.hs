@@ -23,7 +23,7 @@ instance HasModifiersFor Nahab where
 instance HasAbilities Nahab where
   getAbilities (Nahab a) =
     extend1 a
-      $ restricted a 1 (thisExists a $ InPlayEnemy ReadyEnemy)
+      $ restricted a 1 (thisExists a $ ReadyEnemy)
       $ forced
       $ PhaseBegins #after #enemy
 

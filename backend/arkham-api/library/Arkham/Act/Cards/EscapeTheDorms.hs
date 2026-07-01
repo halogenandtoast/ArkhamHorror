@@ -52,6 +52,6 @@ instance RunMessage EscapeTheDorms where
       advanceActDeck attrs
       pure a
     DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
-      discardEach attrs (InPlayEnemy AnyEnemy)
+      discardEach attrs (AnyEnemy)
       pure a
     _ -> EscapeTheDorms <$> liftRunMessage msg attrs

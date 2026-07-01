@@ -26,8 +26,8 @@ instance HasAbilities TemplesOfTenochtitlan_177 where
           $ forced
           $ PutLocationIntoPlay #after Anyone (be a)
       , groupLimit PerRound
-          $ restricted a 2 (Here <> cluesOnThis 1 <> CanDiscoverCluesAt (be a) <> exists AnyInPlayEnemy)
-          $ actionAbilityWithCost (EnemyDoomCost 1 AnyInPlayEnemy)
+          $ restricted a 2 (Here <> cluesOnThis 1 <> CanDiscoverCluesAt (be a) <> exists AnyEnemy)
+          $ actionAbilityWithCost (EnemyDoomCost 1 AnyEnemy)
       ]
 
 instance RunMessage TemplesOfTenochtitlan_177 where

@@ -436,7 +436,7 @@ applyAbilityCriteriaModifiers c modifiers = foldr applyCriterionModifier c modif
     OnLocation _ -> True
     _ -> False
   replaceEngagementCheck = \case
-    EnemyIsEngagedWith _ -> AnyInPlayEnemy
+    EnemyIsEngagedWith _ -> AnyEnemy
     other -> other
   handleEnemyCriterion = \case
     EnemyExists em -> EnemyExists $ over biplate (transform replaceEngagementCheck) em

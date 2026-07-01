@@ -512,7 +512,7 @@ defaultRemoveDoomMatchers =
   RemoveDoomMatchers
     { removeDoomLocations = Anywhere
     , removeDoomInvestigators = Anyone
-    , removeDoomEnemies = InPlayEnemy AnyEnemy
+    , removeDoomEnemies = AnyEnemy
     , removeDoomAssets = AnyAsset
     , removeDoomActs = AnyAct
     , removeDoomAgendas = AnyAgenda

@@ -43,7 +43,7 @@ instance RunMessage AbandonedToMadness where
       doStep 1 msg
       pure t
     DoStep 1 (FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card)) -> do
-      menemy <- select $ InPlayEnemy $ EnemyWithCardId card.id
+      menemy <- select $ EnemyWithCardId card.id
       for_ menemy (attachTreachery attrs)
       pure t
     _ -> AbandonedToMadness <$> liftRunMessage msg attrs

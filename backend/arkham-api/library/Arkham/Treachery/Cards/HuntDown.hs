@@ -19,7 +19,7 @@ huntDown = treachery HuntDown Cards.huntDown
 instance RunMessage HuntDown where
   runMessage msg t@(HuntDown attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- selectMaybeMax EnemyFight $ InPlayEnemy $ EnemyWithTrait Mutated
+      enemies <- selectMaybeMax EnemyFight $ EnemyWithTrait Mutated
       if null enemies
         then gainSurge attrs
         else chooseOrRunOneM iid $ targets enemies $ handleTarget iid attrs

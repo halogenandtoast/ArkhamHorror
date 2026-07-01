@@ -37,7 +37,7 @@ theSilentHeath difficulty = scenario TheSilentHeath "10549" "The Silent Heath" d
 instance HasChaosTokenValue TheSilentHeath where
   getChaosTokenValue iid tokenFace (TheSilentHeath attrs) = case tokenFace of
     Skull -> do
-      inPlay <- selectCount $ InPlayEnemy $ EnemyWithTrait Insect
+      inPlay <- selectCount $ EnemyWithTrait Insect
       inVictory <- selectCount $ VictoryDisplayCardMatch $ basic $ #enemy <> CardWithTrait Insect
       let n = inPlay + inVictory
       pure $ toChaosTokenValue attrs Skull ((n + 1) `div` 2) n

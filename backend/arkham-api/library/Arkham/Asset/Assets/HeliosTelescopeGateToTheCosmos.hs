@@ -37,7 +37,7 @@ instance RunMessage HeliosTelescopeGateToTheCosmos where
       doStep (attrs.use Shard) msg
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
-      enemies <- select $ InPlayEnemy EliteEnemy
+      enemies <- select $ EliteEnemy
       chooseOrRunOneM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
       doStep (n - 1) msg'
       pure a

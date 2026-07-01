@@ -218,7 +218,7 @@ getFightableEnemyIds
   :: (HasGame m, Tracing m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
 getFightableEnemyIds iid (toSource -> source) = do
   fightAnywhereEnemyIds <-
-    select AnyInPlayEnemy >>= filterM \eid -> do
+    select AnyEnemy >>= filterM \eid -> do
       modifiers' <- getModifiers (EnemyTarget eid)
       pure $ Modifier.CanBeFoughtAsIfAtYourLocation `elem` modifiers'
   locationId <- getJustLocation iid

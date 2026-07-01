@@ -205,7 +205,7 @@ instance RunMessage TheSecretName where
               (toSource attrs)
               Nothing
         Tablet -> do
-          selectForMaybeM (InPlayEnemy $ enemyIs Enemies.nahab) \nahab -> do
+          selectForMaybeM (enemyIs Enemies.nahab) \nahab -> do
             if isEasyStandard attrs
               then do
                 atYourLocation <- nahab <=~> EnemyAt (locationWithInvestigator iid)

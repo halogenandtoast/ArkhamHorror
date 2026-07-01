@@ -26,7 +26,7 @@ instance HasModifiersFor IchtacaTheForgottenGuardian where
     (combat, agility) <-
       fromMaybe (1, 1) <$> runMaybeT do
         enemy <- MaybeT getSkillTestTargetedEnemy
-        liftGuardM $ enemy <=~> InPlayEnemy (EnemyWithId enemy)
+        liftGuardM $ enemy <=~> (EnemyWithId enemy)
         MaybeT getSkillTestAction >>= \case
           Action.Fight -> do
             combat <- lift $ maybe 1 (const 2) <$> getVictoryPoints enemy

@@ -61,7 +61,7 @@ enemyMoveToIfInPlay
   -> m ()
 enemyMoveToIfInPlay source enemy location =
   push
-    . IfEnemyExists (InPlayEnemy $ EnemyWithId $ asId enemy)
+    . IfEnemyExists (EnemyWithId $ asId enemy)
     . (: [])
     . Move
     =<< asMoveTo source enemy (asId location)

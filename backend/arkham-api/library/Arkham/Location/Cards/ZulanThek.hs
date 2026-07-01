@@ -20,14 +20,14 @@ zulanThek = location ZulanThek Cards.zulanThek 4 (PerPlayer 1)
 instance HasAbilities ZulanThek where
   getAbilities (ZulanThek a) =
     veiled1 a
-      $ restricted a 1 (exists (InPlayEnemy $ enemyIs Enemies.hordeOfNight) <> exists (investigatorAt a.id))
+      $ restricted a 1 (exists (enemyIs Enemies.hordeOfNight) <> exists (investigatorAt a.id))
       $ forced
       $ RoundEnds #when
 
 instance RunMessage ZulanThek where
   runMessage msg l@(ZulanThek attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      selectOne (InPlayEnemy $ enemyIs Enemies.hordeOfNight) >>= traverse_ \hordeOfNight -> do
+      selectOne (enemyIs Enemies.hordeOfNight) >>= traverse_ \hordeOfNight -> do
         n <- selectCount $ investigatorAt attrs.id
         lead <- getLead
         push $ PlaceSwarmCards lead hordeOfNight n

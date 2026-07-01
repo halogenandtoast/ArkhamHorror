@@ -17,7 +17,7 @@ instance HasAbilities TheyMustBeDestroyed where
     mkAbility a 1 (Objective $ forced AnyWindow)
       `withCriteria` not_
         ( oneOf
-            [ exists $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
+            [ exists $ EnemyWithTitle "Brood of Yog-Sothoth"
             , SetAsideCardExists $ CardWithTitle "Brood of Yog-Sothoth"
             ]
         )

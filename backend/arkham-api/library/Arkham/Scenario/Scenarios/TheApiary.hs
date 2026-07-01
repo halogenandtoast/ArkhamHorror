@@ -31,7 +31,7 @@ theApiary difficulty = scenario TheApiary "11553" "The Apiary" difficulty []
 instance HasChaosTokenValue TheApiary where
   getChaosTokenValue iid chaosTokenFace (TheApiary attrs) = case chaosTokenFace of
     Skull -> do
-      enemyDoom <- selectSum EnemyDoom AnyInPlayEnemy
+      enemyDoom <- selectSum EnemyDoom AnyEnemy
       assetDoom <- selectSum AssetDoom AnyAsset
       let total = enemyDoom + assetDoom
       pure $ ChaosTokenValue Skull (NegativeModifier $ byDifficulty attrs (min 4 (total `div` 2)) (min 8 total))

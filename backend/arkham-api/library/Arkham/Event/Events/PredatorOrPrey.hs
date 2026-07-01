@@ -40,7 +40,7 @@ fleeOptions attrs iid loc = do
 instance RunMessage PredatorOrPrey where
   runMessage msg e@(PredatorOrPrey attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- select $ InPlayEnemy AnyEnemy
+      enemies <- select $ AnyEnemy
       if null enemies
         then drawCardsIfCan iid attrs 1
         else do

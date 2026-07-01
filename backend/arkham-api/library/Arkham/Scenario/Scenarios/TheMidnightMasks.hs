@@ -56,7 +56,7 @@ instance HasChaosTokenValue TheMidnightMasks where
   getChaosTokenValue iid chaosTokenFace (TheMidnightMasks attrs) = case chaosTokenFace of
     Skull -> do
       value <-
-        byDifficulty attrs (fieldMax EnemyDoom (InPlayEnemy $ EnemyWithTrait Trait.Cultist)) getDoomCount
+        byDifficulty attrs (fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)) getDoomCount
       pure $ ChaosTokenValue Skull (NegativeModifier value)
     Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 2)
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
@@ -190,7 +190,7 @@ instance RunMessage TheMidnightMasks where
     ScenarioResolution (Resolution n) -> scope "resolutions" do
       agenda <- getCurrentAgendaStep
       inPlayCultistsWhoGotAway <-
-        selectField EnemyCardCode (InPlayEnemy $ withTrait Trait.Cultist <> UniqueEnemy)
+        selectField EnemyCardCode (withTrait Trait.Cultist <> UniqueEnemy)
       ghoulPriestDefeated <- selectAny (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ghoulPriest)
       resolutionWithXp
         (if n == 1 then "resolution1" else "resolution2")

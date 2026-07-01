@@ -19,7 +19,7 @@ bidingItsTime = agenda (2, A) BidingItsTime Cards.bidingItsTime (Static 6)
 
 instance HasAbilities BidingItsTime where
   getAbilities (BidingItsTime x) =
-    [ restricted x 1 (exists $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth")
+    [ restricted x 1 (exists $ EnemyWithTitle "Brood of Yog-Sothoth")
         $ forced
         $ PhaseEnds #when #enemy
     ]
@@ -27,7 +27,7 @@ instance HasAbilities BidingItsTime where
 instance RunMessage BidingItsTime where
   runMessage msg a@(BidingItsTime attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      broodOfYogSothoth <- selectTargets $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
+      broodOfYogSothoth <- selectTargets $ EnemyWithTitle "Brood of Yog-Sothoth"
       leadChooseOneAtATimeM $ targets broodOfYogSothoth \x -> push $ ChooseRandomLocation x mempty
       pure a
     ChosenRandomLocation target@(EnemyTarget _) lid -> do

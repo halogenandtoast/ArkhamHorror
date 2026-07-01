@@ -37,7 +37,7 @@ oneLastJob difficulty =
 instance HasChaosTokenValue OneLastJob where
   getChaosTokenValue iid chaosTokenFace (OneLastJob attrs) = case chaosTokenFace of
     Skull -> do
-      criminals <- selectCount $ InPlayEnemy $ EnemyWithTrait Criminal
+      criminals <- selectCount $ EnemyWithTrait Criminal
       let value = byDifficulty attrs (min 4 criminals) (1 + criminals)
       pure $ ChaosTokenValue Skull (NegativeModifier value)
     Tablet -> do

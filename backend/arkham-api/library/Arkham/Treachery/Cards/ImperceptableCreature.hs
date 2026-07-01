@@ -26,7 +26,6 @@ instance RunMessage ImperceptableCreature where
     Revelation iid (isSource attrs -> True) -> do
       brood <-
         select
-          $ InPlayEnemy
           $ EnemyWithTitle broodTitle
           <> not_ (EnemyWithAttachedTreachery $ treacheryIs Cards.imperceptableCreature)
       chooseTargetM iid brood \selected -> do

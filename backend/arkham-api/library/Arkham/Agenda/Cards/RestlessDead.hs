@@ -78,7 +78,7 @@ instance RunMessage RestlessDead where
       revertAgenda attrs
       pure a
     DoStep 1 msg'@(AdvanceAgenda (isSide B attrs -> True)) -> do
-      noGeists <- selectNone $ InPlayEnemy $ NonWeaknessEnemy <> EnemyWithTrait Geist
+      noGeists <- selectNone $ NonWeaknessEnemy <> EnemyWithTrait Geist
       if noGeists
         then advanceCurrentAct attrs
         else selectForMaybeM (enemyIs Enemies.tzuSanNiangTheLadyWithTheRedParasol) (`forTarget` msg')

@@ -19,7 +19,7 @@ cafeLunaBastionOfRemembrance =
 
 instance HasModifiersFor CafeLunaBastionOfRemembrance where
   getModifiersFor (CafeLunaBastionOfRemembrance a) = do
-    n <- selectCount $ InPlayEnemy $ EnemyWithTrait Outsider
+    n <- selectCount $ EnemyWithTrait Outsider
     when (n > 0) $ modifySelf a [ShroudModifier (-n)]
 
 instance HasAbilities CafeLunaBastionOfRemembrance where

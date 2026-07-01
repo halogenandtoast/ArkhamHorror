@@ -34,7 +34,7 @@ instance HasModifiersFor GhostLight where
 
 instance HasAbilities GhostLight where
   getAbilities = actAbilities1 \a ->
-    restricted a 1 (not_ $ exists $ InPlayEnemy $ EnemyWithTrait Geist <> NonWeaknessEnemy)
+    restricted a 1 (not_ $ exists $ EnemyWithTrait Geist <> NonWeaknessEnemy)
       $ Objective
       $ forced
       $ RoundEnds #when

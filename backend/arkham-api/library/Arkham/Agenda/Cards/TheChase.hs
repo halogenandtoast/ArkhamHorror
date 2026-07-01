@@ -46,7 +46,7 @@ instance HasAbilities TheChase where
 instance RunMessage TheChase where
   runMessage msg a@(TheChase attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      enemies <- select $ InPlayEnemy AnyEnemy
+      enemies <- select $ AnyEnemy
       leadChooseOneAtATimeM do
         targets enemies \x -> do
           push $ HunterMove x

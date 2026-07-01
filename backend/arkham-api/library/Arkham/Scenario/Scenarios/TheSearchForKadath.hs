@@ -279,7 +279,7 @@ instance RunMessage TheSearchForKadath where
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
-          selectEach (InPlayEnemy $ not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           placeAllAt baharna
           for_ locations removeLocation
           search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.nightriders)
@@ -293,7 +293,7 @@ instance RunMessage TheSearchForKadath where
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
-          selectEach (InPlayEnemy $ not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           beingsOfIb <- getSetAsideCard Enemies.beingsOfIb
           createEnemyAt_ beingsOfIb ruinsOfIb
           placeAllAt kadatheron
@@ -306,7 +306,7 @@ instance RunMessage TheSearchForKadath where
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
-          selectEach (InPlayEnemy $ not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           stalkingManticore <- getSetAsideCard Enemies.stalkingManticore
           hordeOfNight <- getSetAsideCard Enemies.hordeOfNight
           createEnemyAt_ stalkingManticore forbiddenLands
@@ -320,7 +320,7 @@ instance RunMessage TheSearchForKadath where
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
-          selectEach (InPlayEnemy $ not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
           placeAllAt celephais
           for_ locations removeLocation

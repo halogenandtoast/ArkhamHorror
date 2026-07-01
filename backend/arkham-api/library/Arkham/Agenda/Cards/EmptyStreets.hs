@@ -22,7 +22,7 @@ instance RunMessage EmptyStreets where
   runMessage msg a@(EmptyStreets attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator (`sufferPhysicalTrauma` 1)
-      razin <- selectAny $ InPlayEnemy $ enemyIs Enemies.razinFarhiReanimatedArtificer
+      razin <- selectAny $ enemyIs Enemies.razinFarhiReanimatedArtificer
       push $ if razin then R1 else R2
       pure a
     _ -> EmptyStreets <$> liftRunMessage msg attrs

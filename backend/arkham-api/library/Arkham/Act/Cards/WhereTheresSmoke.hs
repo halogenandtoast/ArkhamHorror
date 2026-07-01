@@ -31,7 +31,7 @@ instance RunMessage WhereTheresSmoke where
       advanceVia #clues attrs (attrs.ability 1)
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      selectEach (InPlayEnemy AnyEnemy) $ toDiscard attrs
+      selectEach (AnyEnemy) $ toDiscard attrs
 
       placeSetAsideLocation_ Locations.dormitories_MiskatonicUniversity
       placeSetAsideLocation_ Locations.miskatonicQuad_MiskatonicUniversity

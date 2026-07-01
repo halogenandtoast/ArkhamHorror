@@ -1,6 +1,5 @@
 module Arkham.Treachery.Cards.WhileTheySleep (whileTheySleep) where
 
-import Arkham.Matcher
 import Arkham.Scenarios.WarOfTheOuterGods.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -15,7 +14,7 @@ whileTheySleep = treachery WhileTheySleep Cards.whileTheySleep
 instance RunMessage WhileTheySleep where
   runMessage msg t@(WhileTheySleep attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      counts <- for factionOrder \f -> (f,) <$> selectCount (InPlayEnemy $ factionEnemy f)
+      counts <- for factionOrder \f -> (f,) <$> selectCount (factionEnemy f)
       let highest = maximumEx $ map snd counts
       if highest == 0
         then gainSurge attrs

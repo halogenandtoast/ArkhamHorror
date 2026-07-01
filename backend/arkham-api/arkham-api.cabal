@@ -7161,6 +7161,7 @@ test-suite spec
       Arkham.Location.Cards.EnchantedWoodsVillageOfZoogsSpec
       Arkham.Matcher.CoveredByAnyInPlayEnemySpec
       Arkham.Matcher.NearestLocationToMostSpec
+      Arkham.Matcher.OutOfPlayEnemySpec
       Arkham.Scenario.SpecHelpers
       Arkham.Scenario.TheMidwinterGalaSpec
       Arkham.Skill.Cards.DeductionSpec

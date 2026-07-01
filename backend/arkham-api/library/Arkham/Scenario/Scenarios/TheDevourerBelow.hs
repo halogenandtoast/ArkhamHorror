@@ -132,7 +132,7 @@ instance RunMessage TheDevourerBelow where
       pure s
     Setup -> runScenarioSetup TheDevourerBelow attrs $ setupTheDevourerBelow attrs
     ResolveChaosToken _ Cultist iid -> do
-      enemies <- select $ NearestEnemyToFallback iid (InPlayEnemy AnyEnemy)
+      enemies <- select $ NearestEnemyToFallback iid (AnyEnemy)
       chooseTargetM iid enemies $ placeDoomOn Cultist (byDifficulty attrs 1 2)
       pure s
     ResolveChaosToken _ Tablet iid -> do
@@ -140,7 +140,7 @@ instance RunMessage TheDevourerBelow where
         assignDamageAndHorror iid Tablet 1 $ byDifficulty attrs 0 1
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      whenAny (InPlayEnemy $ EnemyWithTrait AncientOne) $ drawAnotherChaosToken iid
+      whenAny (EnemyWithTrait AncientOne) $ drawAnotherChaosToken iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _ | isHardExpert attrs -> do
       findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Monster

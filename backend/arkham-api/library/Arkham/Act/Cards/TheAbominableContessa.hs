@@ -45,7 +45,7 @@ instance RunMessage TheAbominableContessa where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      mcontessa <- selectOne $ InPlayEnemy $ enemyIs Enemies.theContessaNeedlesslySmug
+      mcontessa <- selectOne $ enemyIs Enemies.theContessaNeedlesslySmug
       for_ mcontessa \contessa -> do
         healAllDamage attrs contessa
         place contessa $ OutOfPlay SetAsideZone

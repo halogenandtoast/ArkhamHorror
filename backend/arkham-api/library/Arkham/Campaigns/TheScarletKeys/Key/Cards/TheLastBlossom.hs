@@ -40,7 +40,7 @@ instance RunMessage TheLastBlossom where
     CampaignSpecific "shift[09544]" _ -> do
       shiftKey attrs do
         when attrs.unstable do
-          enemies <- select $ InPlayEnemy EnemyWithAnyDamage
+          enemies <- select $ EnemyWithAnyDamage
           for_ enemies $ healDamageOn attrs 1
           unless (null enemies) $ withInvestigatorBearer attrs (`flipOver` attrs)
         when attrs.stable do

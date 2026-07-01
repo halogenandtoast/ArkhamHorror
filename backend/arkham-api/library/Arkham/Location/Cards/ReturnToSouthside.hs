@@ -31,7 +31,6 @@ instance HasModifiersFor ReturnToSouthside where
             $ CriteriaOverride
             $ EnemyCriteria
             $ ThisEnemy
-            $ InPlayEnemy
             $ EnemyWithoutModifier CannotBeEvaded
         , CanEvadeOverride $ CriteriaOverride $ exists $ InEncounterDiscard <> #enemy
         ]
@@ -57,7 +56,7 @@ instance RunMessage ReturnToSouthside where
       wrapper do
         chooseEvadeEnemyEdit sid iid (attrs.ability 1) \c ->
           c
-            { chooseEvadeEnemyMatcher = evadeOverride $ InPlayEnemy $ EnemyWithoutModifier CannotBeEvaded
+            { chooseEvadeEnemyMatcher = evadeOverride $ EnemyWithoutModifier CannotBeEvaded
             , chooseEvadeOverride = True
             , chooseEvadeTarget = Just $ toTarget attrs
             , chooseEvadeAdditionalOptions = map toEvadeLabel enemyCards

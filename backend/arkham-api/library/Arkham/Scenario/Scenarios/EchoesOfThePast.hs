@@ -47,8 +47,8 @@ echoesOfThePast difficulty =
 instance HasChaosTokenValue EchoesOfThePast where
   getChaosTokenValue iid chaosTokenFace (EchoesOfThePast attrs) = case chaosTokenFace of
     Skull -> do
-      highestDoom <- fieldMax EnemyDoom AnyInPlayEnemy
-      totalDoom <- selectSum EnemyDoom AnyInPlayEnemy
+      highestDoom <- fieldMax EnemyDoom AnyEnemy
+      totalDoom <- selectSum EnemyDoom AnyEnemy
       pure $ toChaosTokenValue attrs Skull highestDoom totalDoom
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 4
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4

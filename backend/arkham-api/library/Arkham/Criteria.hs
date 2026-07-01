@@ -425,7 +425,8 @@ instance Exists EnemyMatcher where
   exists = enemyExists
 
 instance InPlay EnemyMatcher where
-  asInPlay = InPlayEnemy
+  -- Enemy queries are in-play by default now, so this is the identity.
+  asInPlay = id
 
 instance Exists ExtendedCardMatcher where
   exists = ExtendedCardExists

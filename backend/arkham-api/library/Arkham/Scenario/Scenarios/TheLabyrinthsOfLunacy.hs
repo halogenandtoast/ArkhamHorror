@@ -209,7 +209,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
     ScenarioSpecific "act3Setup" _ -> do
       warehouse <- placeSetAsideLocation Locations.abandonedWarehouse
       reveal warehouse
-      selectEach (InPlayEnemy AnyEnemy) \eid -> push $ DisengageEnemyFromAll eid
+      selectEach (AnyEnemy) \eid -> push $ DisengageEnemyFromAll eid
       selectEach UneliminatedInvestigator \iid ->
         push $ PlaceInvestigator iid (AtLocation warehouse)
       createSetAsideEnemy_ Enemies.eixodolon warehouse

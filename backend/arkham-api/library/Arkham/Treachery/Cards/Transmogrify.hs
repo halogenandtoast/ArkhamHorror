@@ -20,7 +20,7 @@ transmogrify = treachery Transmogrify Cards.transmogrify
 instance RunMessage Transmogrify where
   runMessage msg t@(Transmogrify attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      insects <- select $ InPlayEnemy $ EnemyWithTrait Insect <> not_ IsSwarm
+      insects <- select $ EnemyWithTrait Insect <> not_ IsSwarm
       if null insects
         then
           findEncounterCard iid attrs $ cardsAre [Enemies.trylogog, Enemies.trylogogWarOfTheOuterGods]

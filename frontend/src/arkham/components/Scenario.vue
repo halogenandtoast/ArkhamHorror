@@ -2765,7 +2765,7 @@ async function addChaosToken(face: any){
 
     &:deep(.player-info) {
       grid-column: 1;
-      grid-row: 2 / 5;
+      grid-row: 2 / 3;
       display: flex;
       flex-direction: column;
 
@@ -2802,7 +2802,7 @@ async function addChaosToken(face: any){
 
     .location-cards-container {
       grid-column: 2;
-      grid-row: 1 / 5;
+      grid-row: 1 / 3;
     }
   }
 }

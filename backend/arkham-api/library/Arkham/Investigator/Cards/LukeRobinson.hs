@@ -112,8 +112,22 @@ instance RunMessage LukeRobinson where
     InitiatePlayCard iid card mtarget payment windows' asAction | iid == toId attrs && active meta -> do
       let a = attrs
       mods <- getModifiers (toTarget a)
-      playable <- withModifiers iid (toModifiers attrs [IgnorePlayableModifierContexts]) $ do
-        getIsPlayable (toId a) (toSource a) (UnpaidCost NeedsAction) windows' card
+      -- N.B. a post-payment InitiatePlayCard (reaction/ability plays via
+      -- playCardPayingCost -> ActiveCost) arrives after resources were spent;
+      -- re-checking the full unpaid cost spuriously fails and force-routes the
+      -- play to a connecting location (#5009). Credit the resources already
+      -- paid back as an inline cost reduction, and drop the #play action
+      -- requirement for plays that never used an action.
+      let paidResources = totalResourcePayment payment
+      let costStatus = UnpaidCost $ if payment == NoPayment then NeedsAction else NoAction
+      playable <-
+        withModifiers
+          iid
+          ( toModifiers attrs
+              $ IgnorePlayableModifierContexts
+              : [ReduceCostOf (CardWithId card.id) paidResources | paidResources > 0]
+          )
+          $ getIsPlayable (toId a) (toSource a) costStatus windows' card
       let
         shouldSkip = flip any mods $ \case
           AsIfInHand card' -> card == card'
@@ -149,7 +163,10 @@ instance RunMessage LukeRobinson where
           chooseOrRunOneM iid do
             when playable do
               labeledI "playAtCurrentLocation" do
-                doStep 1 msg
+                -- the tracked card id only exists to skip re-asking on the
+                -- post-payment InitiatePlayCard; a play that arrives already
+                -- paid has no second pass, so tracking would leave a stale id
+                when (payment == NoPayment) $ doStep 1 msg
                 playCard
             when (notNull lids) do
               labeledI "playAtConnectingLocation" $ do

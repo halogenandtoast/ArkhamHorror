@@ -32,6 +32,15 @@ spec = describe "loadDecklist" $ do
     liftIO $ rook.pcTabooList `shouldBe` Just TabooList23
     liftIO $ rook.pcMutated `shouldBe` Just "Mutated20"
 
+  it "preserves arkham.build hunch deck attachments from meta" $ gameTest $ \_ -> do
+    let attachments = decklistAttachments arkhamBuildHunchDecklist
+
+    liftIO
+      $ attachments
+      `shouldBe` Map.singleton
+        "05002"
+        ["05010", "03026", "03026", "04103", "04103", "02186", "02186", "01022", "01022", "01037", "01037"]
+
 extraDeckDecklist :: ArkhamDBDecklist
 extraDeckDecklist =
   ArkhamDBDecklist
@@ -55,6 +64,20 @@ sideSlotsDecklist =
     , investigator_name = "Jim Culver"
     , meta = Nothing
     , taboo_id = Just 8
+    , url = Nothing
+    , decklist_id = Nothing
+    , decklist_name = Nothing
+    }
+
+arkhamBuildHunchDecklist :: ArkhamDBDecklist
+arkhamBuildHunchDecklist =
+  ArkhamDBDecklist
+    { slots = mempty
+    , sideSlots = mempty
+    , investigator_code = "05002"
+    , investigator_name = "Joe Diamond"
+    , meta = Just "{\"attachments_05002\":\"05010,03026,03026,04103,04103,02186,02186,01022,01022,01037,01037\"}"
+    , taboo_id = Nothing
     , url = Nothing
     , decklist_id = Nothing
     , decklist_name = Nothing

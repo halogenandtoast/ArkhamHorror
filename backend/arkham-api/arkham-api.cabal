@@ -7145,6 +7145,7 @@ test-suite spec
       Arkham.Investigator.Cards.FatherMateoParallelSpec
       Arkham.Investigator.Cards.JennyBarnesSpec
       Arkham.Investigator.Cards.JimCulverSpec
+      Arkham.Investigator.Cards.JoeDiamondSpec
       Arkham.Investigator.Cards.KymaniJonesSpec
       Arkham.Investigator.Cards.LukeRobinsonSpec
       Arkham.Investigator.Cards.MandyThompsonSpec

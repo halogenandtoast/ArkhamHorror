@@ -6,6 +6,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers
 import Arkham.Helpers.Deck
+import Arkham.Helpers.Investigator (getCardAttachments)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Deck
@@ -39,6 +40,55 @@ joeDiamond =
 
 hunchDeck :: InvestigatorAttrs -> [Card]
 hunchDeck = Map.findWithDefault [] HunchDeck . investigatorDecks
+
+hunchDeckCandidates :: InvestigatorAttrs -> [PlayerCard]
+hunchDeckCandidates attrs = filter (`cardMatch` (CardWithTrait Insight <> #event)) (unDeck attrs.deck)
+
+pickHunchDeck :: [CardCode] -> [PlayerCard] -> Maybe [PlayerCard]
+pickHunchDeck cardCodes cards = do
+  guard $ length cardCodes == 11
+  pickCardsByCodes cardCodes cards
+
+pickCardsByCodes :: [CardCode] -> [PlayerCard] -> Maybe [PlayerCard]
+pickCardsByCodes [] _ = Just []
+pickCardsByCodes (cardCode : rest) cards = do
+  (card, remaining) <- pickCardByCode cardCode cards
+  (card :) <$> pickCardsByCodes rest remaining
+
+pickCardByCode :: CardCode -> [PlayerCard] -> Maybe (PlayerCard, [PlayerCard])
+pickCardByCode cardCode cards = case break ((== cardCode) . toCardCode) cards of
+  (_, []) -> Nothing
+  (before, card : after) -> Just (card, before <> after)
+
+setupHunchDeck :: ReverseQueue m => InvestigatorId -> InvestigatorAttrs -> Metadata -> m JoeDiamond
+setupHunchDeck iid attrs meta = do
+  let insights = hunchDeckCandidates attrs
+  if length insights == 11
+    then useHunchDeck attrs meta insights
+    else do
+      let
+        unsolvedCase =
+          fromJustNote "Deck missing unsolved case"
+            $ find (`cardMatch` cardIs Events.unsolvedCase) insights
+        remainingInsights = filter (/= unsolvedCase) insights
+      focusCards (map toCard remainingInsights) do
+        push $ ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard unsolvedCase]
+        questionLabel "$cards.label.joeDiamond.chooseHunchCards" iid
+          $ ChooseN 10
+          $ [ targetLabel insight.id [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
+            | insight <- remainingInsights
+            ]
+      pure $ JoeDiamond (attrs `with` meta)
+
+useHunchDeck :: MonadRandom m => InvestigatorAttrs -> Metadata -> [PlayerCard] -> m JoeDiamond
+useHunchDeck attrs meta insights = do
+  hunchDeck' <- shuffleM $ map toCard insights
+  pure
+    $ JoeDiamond
+    . (`with` Metadata (revealedHunchCard meta))
+    $ attrs
+    & (deckL %~ withDeck (filter (`notElem` insights)))
+    & (decksL . at HunchDeck ?~ hunchDeck')
 
 instance HasModifiersFor JoeDiamond where
   getModifiersFor (JoeDiamond (a `With` Metadata mcid)) =
@@ -74,30 +124,24 @@ instance RunMessage JoeDiamond where
         _ -> pure i
     SetupInvestigator iid | attrs `is` iid -> do
       attrs' <- liftRunMessage msg attrs
-      let insights = filter (`cardMatch` (CardWithTrait Insight <> #event)) (unDeck attrs.deck)
-      if length insights == 11
-        then do
-          hunchDeck' <- shuffleM $ map toCard insights
-          pure
-            $ JoeDiamond
-            . (`with` Metadata (revealedHunchCard meta))
-            $ attrs'
-            & (deckL %~ withDeck (filter (`notElem` insights)))
-            & (decksL . at HunchDeck ?~ hunchDeck')
-        else do
-          let
-            unsolvedCase =
-              fromJustNote "Deck missing unsolved case"
-                $ find (`cardMatch` cardIs Events.unsolvedCase) insights
-            remainingInsights = filter (/= unsolvedCase) insights
-          focusCards (map toCard remainingInsights) do
-            push $ ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard unsolvedCase]
+      importedCodes <- getCardAttachments iid Cards.joeDiamond
+      case pickHunchDeck importedCodes (hunchDeckCandidates attrs') of
+        Just importedHunchDeck -> do
+          focusCards (map toCard importedHunchDeck) do
             questionLabel "$cards.label.joeDiamond.chooseHunchCards" iid
-              $ ChooseN 10
-              $ [ targetLabel insight.id [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
-                | insight <- remainingInsights
+              $ ChooseOne
+                [ Label
+                    "$cards.label.joeDiamond.useImportedHunchDeck"
+                    [UseImportedHunchDeck iid (map toCardCode importedHunchDeck)]
+                , Label "$cards.label.joeDiamond.manuallyBuildHunchDeck" [ManuallyBuildHunchDeck iid]
                 ]
           pure $ JoeDiamond (attrs' `with` meta)
+        Nothing -> setupHunchDeck iid attrs' meta
+    UseImportedHunchDeck iid cardCodes | attrs `is` iid ->
+      case pickHunchDeck cardCodes (hunchDeckCandidates attrs) of
+        Just importedHunchDeck -> useHunchDeck attrs meta importedHunchDeck
+        Nothing -> setupHunchDeck iid attrs meta
+    ManuallyBuildHunchDeck iid | attrs `is` iid -> setupHunchDeck iid attrs meta
     ShuffleCardsIntoDeck (Deck.HunchDeck iid) [insight] | attrs `is` iid -> do
       hunchDeck' <- shuffleM $ insight : filter (/= insight) (hunchDeck attrs)
       pure

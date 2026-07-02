@@ -596,7 +596,9 @@
     "joeDiamond": {
       "chooseHunchCards": "选择11张_洞察_事件，组成“直觉牌库”",
       "chooseHunch": "选择11张_洞察_事件，组成“直觉牌库”",
-      "doNotMove": "不移动_洞察_"
+      "doNotMove": "不移动_洞察_",
+      "useImportedHunchDeck": "使用导入的直觉牌库",
+      "manuallyBuildHunchDeck": "手动构建直觉牌库"
     },
     "katana": {
       "exhaustKatanaToDeal2DamageForThisAttack": "横置武士刀以使本次攻击造成+2伤害"

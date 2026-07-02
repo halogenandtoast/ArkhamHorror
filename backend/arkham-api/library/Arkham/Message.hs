@@ -961,6 +961,8 @@ data Message
   | EndSetup
   | SetupInvestigators
   | SetupInvestigator InvestigatorId
+  | UseImportedHunchDeck InvestigatorId [CardCode]
+  | ManuallyBuildHunchDeck InvestigatorId
   | SetupStep Target Int
   | ShuffleAllFocusedIntoDeck InvestigatorId Target
   | PutAllFocusedIntoDiscard InvestigatorId Target

@@ -11,7 +11,7 @@ import Arkham.PlayerCard
 import Arkham.Prelude hiding (optional, try, (<|>))
 import Arkham.Taboo.Types
 import Data.Aeson
-import Data.Aeson.Key (fromText)
+import Data.Aeson.Key (fromText, toText)
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.IntMap qualified as IntMap
 import Data.Map.Strict qualified as Map
@@ -153,6 +153,12 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
 decklistAttachments :: ArkhamDBDecklist -> Map CardCode [CardCode]
 decklistAttachments decklist = fromMaybe mempty do
   meta' <- meta decklist
-  ArkhamDBDecklistMeta {attachments_09077, attachments_11080} <- decode (encodeUtf8 $ fromStrict meta')
-  let parseAttachments cardCode = maybe [] (\codes -> [(CardCode cardCode, map CardCode $ filter (/= "") $ T.splitOn "," codes)])
-  pure $ Map.fromList $ parseAttachments "09077" attachments_09077 <> parseAttachments "11080" attachments_11080
+  Object o <- decode (encodeUtf8 $ fromStrict meta')
+  pure $ Map.fromList $ mapMaybe parseAttachments $ KeyMap.toList o
+ where
+  parseAttachments (key, String codes) = do
+    cardCode <- T.stripPrefix "attachments_" $ toText key
+    let attachments = map CardCode $ filter (/= "") $ T.splitOn "," codes
+    guard $ notNull attachments
+    pure (CardCode cardCode, attachments)
+  parseAttachments _ = Nothing

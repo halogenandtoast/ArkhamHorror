@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { Dropdown } from 'floating-vue'
 import { type Card as ArkhamCard, type CardContents, cardImage, toCardContents } from '@/arkham/types/Card'
 import { imgsrc } from '@/arkham/helpers'
 import type { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import CardView from '@/arkham/components/Card.vue'
+import { useDebug } from '@/arkham/debug'
 
 const props = withDefaults(defineProps<{
   cards: (ArkhamCard | CardContents)[]
@@ -28,7 +29,9 @@ const emit = defineEmits<{
   'update:shown': [value: boolean]
 }>()
 
+const debug = useDebug()
 const internalShown = ref(false)
+const restoreAfterDrag = ref(false)
 const shown = computed({
   get: () => props.shown ?? internalShown.value,
   set: (value: boolean) => {
@@ -49,6 +52,25 @@ function isCardInChoices(card: ArkhamCard | CardContents): boolean {
 
 const hasCardChoice = computed(() => props.cards.some(isCardInChoices))
 const isHighlighted = computed(() => props.highlighted || hasCardChoice.value)
+
+function finishDrag() {
+  window.removeEventListener('dragend', finishDrag)
+  window.removeEventListener('drop', finishDrag)
+  if (restoreAfterDrag.value) {
+    restoreAfterDrag.value = false
+    shown.value = true
+  }
+}
+
+function hideDiscardPopoverWhileDragging() {
+  if (!debug.active || !props.isDiscards || !shown.value) return
+  restoreAfterDrag.value = true
+  shown.value = false
+  window.addEventListener('dragend', finishDrag, { once: true })
+  window.addEventListener('drop', finishDrag, { once: true })
+}
+
+onBeforeUnmount(() => finishDrag())
 </script>
 
 <template>
@@ -79,7 +101,7 @@ const isHighlighted = computed(() => props.highlighted || hasCardChoice.value)
     <template #popper>
       <div class="cards-under-popover">
         <div class="cards-under-popover__header">{{ label }} ({{ count }})</div>
-        <div class="cards-under-popover__cards">
+        <div class="cards-under-popover__cards" @dragstart="hideDiscardPopoverWhileDragging">
           <div
             v-for="(card, i) in cards"
             :key="i"

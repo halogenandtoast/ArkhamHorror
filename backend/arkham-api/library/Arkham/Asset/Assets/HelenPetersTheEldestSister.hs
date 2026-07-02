@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.HelenPetersTheEldestSister (helenPetersTheEldestSiste
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyEvaded)
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (Time (..), getCampaignTime)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (Time (..), getTimeFor)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
@@ -16,9 +16,9 @@ helenPetersTheEldestSister :: AssetCard HelenPetersTheEldestSister
 helenPetersTheEldestSister = ally HelenPetersTheEldestSister Cards.helenPetersTheEldestSister (3, 2)
 
 instance HasModifiersFor HelenPetersTheEldestSister where
-  getModifiersFor (HelenPetersTheEldestSister a) = do
-    time <- getCampaignTime
-    controllerGets a $ case time of
+  getModifiersFor (HelenPetersTheEldestSister a) = for_ a.controller \iid -> do
+    time <- getTimeFor iid
+    modified_ a iid $ case time of
       Day -> [SkillModifier #combat 1]
       Night -> [SkillModifier #agility 1]
 

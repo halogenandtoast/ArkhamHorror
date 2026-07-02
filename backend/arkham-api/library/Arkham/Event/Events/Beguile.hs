@@ -29,12 +29,12 @@ instance HasAbilities Beguile where
               <> oneOf
                 [ exists (RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid))
                 , exists
-                    ( PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation]
-                        <> BasicAbility
+                    ( BasicAbility
                         <> oneOf
                           [ #investigate <> AbilityOnLocation (locationWithEnemy eid)
                           , #evade <> AbilityOnEnemy (at_ (locationWithEnemy eid))
                           ]
+                        <> PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation]
                     )
                 ]
           )
@@ -56,21 +56,22 @@ instance RunMessage Beguile where
           canMove <- selectAny $ be eid <> EnemyCanBeMovedBy (toSource $ attrs.ability 1)
           locations <-
             if canMove
-              then selectAny $ RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid)
+              then
+                selectAny $ RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid)
               else pure False
           investigate' <-
             selectAny
-              $ PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation]
-              <> BasicAbility
+              $ BasicAbility
               <> #investigate
               <> AbilityOnLocation (locationWithEnemy eid)
+              <> PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation]
 
           evade <-
             selectAny
-              $ PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation, IgnoreEngagementRequirement]
-              <> BasicAbility
+              $ BasicAbility
               <> #evade
               <> AbilityOnEnemy (at_ (locationWithEnemy eid))
+              <> PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation, IgnoreEngagementRequirement]
 
           chooseOrRunOne iid
             $ [Label "$cards.label.beguile.moveAttachedEnemy" [DoStep 1 msg] | locations]

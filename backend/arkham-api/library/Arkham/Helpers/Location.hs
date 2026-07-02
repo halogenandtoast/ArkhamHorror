@@ -41,7 +41,7 @@ toConnections lid =
   fieldMap LocationCard (cdLocationRevealedConnections . toCardDef) lid
 
 getConnectedMatcher :: (HasGame m, Tracing m) => ForMovement -> LocationId -> m LocationMatcher
-getConnectedMatcher forMovement l = do
+getConnectedMatcher forMovement l = cached (ConnectedMatcherKey l forMovement) $ do
   isRevealed <- field LocationRevealed l
   directionalMatchers <- fieldMap LocationConnectsTo (map (`LocationInDirection` self) . setToList) l
   base <-

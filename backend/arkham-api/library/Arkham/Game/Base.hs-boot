@@ -24,5 +24,6 @@ gamePhaseHistory :: Game -> Map InvestigatorId History
 gameTurnHistory :: Game -> Map InvestigatorId History
 gameRoundHistory :: Game -> Map InvestigatorId History
 gameIgnoreCanModifiers :: Game -> Bool
+gameAllowEmptySpaces :: Game -> Bool
 -- Time Warp
 gameActionCanBeUndone :: Game -> Bool

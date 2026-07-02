@@ -1,4 +1,5 @@
 {-# LANGUAGE TypeAbstractions #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator.Runner (module Arkham.Investigator.Runner, module X) where
@@ -37,7 +38,6 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Card.Settings
-import Arkham.PlayerCard qualified as PlayerCard
 import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
 import Arkham.Deck qualified as Deck
@@ -64,9 +64,9 @@ import Arkham.Helpers.Card (
   getModifiedCardCost,
   passesLimits,
  )
-import Arkham.Helpers.Customization
 import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.Criteria (passesCriteria)
+import Arkham.Helpers.Customization
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Location (
@@ -111,9 +111,9 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
   AssetMatcher (..),
   CardMatcher (..),
-  ExtendedCardMatcher (..),
   EnemyMatcher (..),
   EventMatcher (..),
+  ExtendedCardMatcher (..),
   ForPlay (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
@@ -139,6 +139,7 @@ import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
+import Arkham.PlayerCard qualified as PlayerCard
 import Arkham.Plural
 import Arkham.Prelude
 import Arkham.Projection
@@ -515,7 +516,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           filter
             ( and
                 . sequence
-                  [ (`notElem` investigatorStartsWithInHand) . toCardDef
+                  [ (`notElem` map toCardCode investigatorStartsWithInHand) . toCardCode
                   , not
                       . ( `cardMatch`
                             oneOf [cardIs Treacheries.falseAwakening, cardIs Treacheries.falseAwakeningPointOfNoReturn]
@@ -2180,10 +2181,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         let availableCustomizations = filter (not . hasCustomization_ customizations (pcCustomizations pc)) (keys customizations)
         player <- getPlayer iid
         unless (null availableCustomizations) do
-          push $ Msg.chooseOne player
-            [ Label ("$customizations." <> tshow customization) [DebugIncreaseCustomization iid card.cardCode customization []]
-            | customization <- availableCustomizations
-            ]
+          push
+            $ Msg.chooseOne
+              player
+              [ Label
+                  ("$customizations." <> tshow customization)
+                  [DebugIncreaseCustomization iid card.cardCode customization []]
+              | customization <- availableCustomizations
+              ]
       _ -> pure ()
     pure a
   DebugIncreaseCustomization iid cardCode customization choices | iid == investigatorId -> do
@@ -2191,41 +2196,57 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     for_ mcard \card -> do
       let requiredChoices = choicesRequired customization
       -- Debug: enable the customization entirely by filling every remaining check mark
-      let fillAll = pushAll $ replicate (fromMaybe 0 $ cardRemainingCheckMarks card customization) (IncreaseCustomization iid cardCode customization choices)
+      let fillAll =
+            pushAll
+              $ replicate
+                (fromMaybe 0 $ cardRemainingCheckMarks card customization)
+                (IncreaseCustomization iid cardCode customization choices)
       if length choices < length requiredChoices
         then case drop (length choices) requiredChoices of
           (CustomizationTraitChoice : _) -> do
             player <- getPlayer iid
-            push $ Msg.chooseOneDropDown player
-              [ ( tshow trait
-                , DebugIncreaseCustomization iid cardCode customization (ChosenTrait trait : choices)
-                )
-              | trait <- [minBound ..]
-              ]
+            push
+              $ Msg.chooseOneDropDown
+                player
+                [ ( tshow trait
+                  , DebugIncreaseCustomization iid cardCode customization (ChosenTrait trait : choices)
+                  )
+                | trait <- [minBound ..]
+                ]
           (CustomizationCardChoice matcher : _) -> do
             player <- getPlayer iid
-            push $ Msg.chooseOneDropDown player
-              [ ( c
-                , DebugIncreaseCustomization iid cardCode customization (ChosenCard c : choices)
-                )
-              | c <- sort $ nub $ map toTitle $ filter ((`cardMatch` matcher) . (`lookupPlayerCard` nullCardId)) (toList PlayerCard.allPlayerCards)
-              ]
+            push
+              $ Msg.chooseOneDropDown
+                player
+                [ ( c
+                  , DebugIncreaseCustomization iid cardCode customization (ChosenCard c : choices)
+                  )
+                | c <-
+                    sort
+                      $ nub
+                      $ map toTitle
+                      $ filter ((`cardMatch` matcher) . (`lookupPlayerCard` nullCardId)) (toList PlayerCard.allPlayerCards)
+                ]
           (CustomizationSkillChoice : _) -> do
             player <- getPlayer iid
-            push $ Msg.chooseOneDropDown player
-              [ ( tshow skill
-                , DebugIncreaseCustomization iid cardCode customization (ChosenSkill skill : choices)
-                )
-              | skill <- [minBound ..]
-              ]
+            push
+              $ Msg.chooseOneDropDown
+                player
+                [ ( tshow skill
+                  , DebugIncreaseCustomization iid cardCode customization (ChosenSkill skill : choices)
+                  )
+                | skill <- [minBound ..]
+                ]
           (CustomizationIndexChoice zs : _) -> do
             player <- getPlayer iid
-            push $ Msg.chooseOneDropDown player
-              [ ( tshow z
-                , DebugIncreaseCustomization iid cardCode customization (ChosenIndex n : choices)
-                )
-              | (n, z) <- withIndex zs
-              ]
+            push
+              $ Msg.chooseOneDropDown
+                player
+                [ ( tshow z
+                  , DebugIncreaseCustomization iid cardCode customization (ChosenIndex n : choices)
+                  )
+                | (n, z) <- withIndex zs
+                ]
           _ -> fillAll
         else fillAll
     pure a

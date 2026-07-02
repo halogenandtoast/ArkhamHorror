@@ -34,9 +34,9 @@ instance HasAbilities TriggerMan3 where
         x
         2
         ( exists
-            $ PerformableAbility [IgnoreActionCost]
-            <> AbilityOnAsset (AssetAttachedToAsset $ be x)
+            $ AbilityOnAsset (AssetAttachedToAsset $ be x)
             <> AbilityIsActionAbility
+            <> PerformableAbility [IgnoreActionCost]
         )
         $ FastAbility (exhaust x <> ResourceCost 1)
     ]
@@ -58,9 +58,9 @@ instance RunMessage TriggerMan3 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       abilities <-
         selectMap ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
-          $ PerformableAbility [IgnoreActionCost]
-          <> AbilityOnAsset (AssetAttachedToAsset $ be attrs)
+          $ AbilityOnAsset (AssetAttachedToAsset $ be attrs)
           <> #action
+          <> PerformableAbility [IgnoreActionCost]
       chooseOrRunOneM iid do
         for_ abilities \ab -> abilityLabeled iid ab do
           abilityModifier ab.ref (attrs.ability 2) iid (BaseSkill 4)

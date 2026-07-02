@@ -44,9 +44,9 @@ instance RunMessage DirtyDeeds3 where
       abilities <-
         map ((`applyAbilityModifiers` [IgnoreAllCosts]) . doesNotProvokeAttacksOfOpportunity)
           <$> select
-            ( PerformableAbility [IgnoreAllCosts]
-                <> oneOf [AbilityIsActionAbility, AbilityIsFastAbility]
+            ( oneOf [AbilityIsActionAbility, AbilityIsFastAbility]
                 <> AbilityOnAsset (AssetWithCardId cid)
+                <> PerformableAbility [IgnoreAllCosts]
             )
       when (notNull abilities) do
         chooseOrRunOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities]

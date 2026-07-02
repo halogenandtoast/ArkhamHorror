@@ -58,9 +58,9 @@ instance RunMessage TaskForce where
         abilities <-
           map ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
             <$> select
-              ( PerformableAbilityBy (InvestigatorWithId iid') [IgnoreActionCost]
-                  <> #action
+              ( #action
                   <> AbilityOnAsset (assetControlledBy iid')
+                  <> PerformableAbilityBy (InvestigatorWithId iid') [IgnoreActionCost]
               )
         pure $ if null abilities then Nothing else Just (iid', abilities)
       chooseOrRunOneM iid do

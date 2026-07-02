@@ -37,9 +37,9 @@ instance RunMessage GrapplingHook where
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       abilities' <-
         select
-          $ PerformableAbility [ActionCostModifier (-1)]
-          <> BasicAbility
+          $ BasicAbility
           <> mapOneOf AbilityIsAction [#engage, #evade, #investigate, #move]
+          <> PerformableAbility [ActionCostModifier (-1)]
       effectId <- getRandom
       builder <- makeEffectBuilder (toCardCode attrs) Nothing (attrs.ability 1) iid
       chooseOrRunOneM iid do

@@ -181,7 +181,7 @@ import Arkham.Matcher qualified as M
 import Arkham.Message qualified as Msg
 import Arkham.Metrics (messageTag)
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
-import Arkham.Modifier.Builder (buildModifiers)
+import Arkham.Modifier.Builder (buildModifiers, runCacheReaderT)
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
@@ -2135,8 +2135,24 @@ getLocationsMatching lmatcher = do
           . view (entitiesL . enemyLocationsL)
           $ g
   let ls = regularLs <> enemyProxies
-  flip runReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) $ go ls lmatcher'
+  -- Common case (matcher does not toggle empty spaces, or gameAllowEmptySpaces
+  -- already equals doAllowEmpty): run 'go' directly in @m@ so its nested
+  -- select/getConnectedMatcher/getModifiers calls hit the live scoped query
+  -- cache (see 'runCachedQuery'/'ModifierBuilder').
+  --
+  -- The IncludeEmptySpace toggle (grid movement: ALL accessibility runs under
+  -- it) needs gameAllowEmptySpaces = True to propagate to nested selects, which
+  -- only happens through the game env. Rather than a plain 'runReaderT' — whose
+  -- HasGame instance has a no-op cache, so every AccessibleTo/ConnectedFrom BFS
+  -- was recomputed uncached (issue #4985 timeout) — 'runCacheReaderT' overrides
+  -- the game env yet delegates the cache to @m@, so the flag=True accessibility
+  -- work shares the surrounding pass cache. 'cached' namespaces those entries
+  -- (NamespaceEmptyKey) so they never collide with flag=False results.
+  if doAllowEmpty == allowEmpty
+    then go ls lmatcher'
+    else runCacheReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) (go ls lmatcher')
  where
+  go :: forall n. (HasGame n, Tracing n) => [Location] -> LocationMatcher -> n [Location]
   go [] = const (pure [])
   go ls = \case
     OutOfGameLocation -> pure [] -- Handled above
@@ -2459,7 +2475,7 @@ getLocationsMatching lmatcher = do
             -- route to a hub location. A global-visited DFS could reach the hub
             -- via a 2-step path first and then drop genuinely 3-away locations
             -- (issue #4939).
-            go1 :: Int -> [(LocationId, Seq LocationId)] -> StateT PathState (ReaderT Game m) ()
+            go1 :: Int -> [(LocationId, Seq LocationId)] -> StateT PathState n ()
             go1 0 _ = pure ()
             go1 _ [] = pure ()
             go1 n frontier = do
@@ -2539,7 +2555,7 @@ getLocationsMatching lmatcher = do
           field InvestigatorLocation investigator >>= \case
             Just start -> do
               let
-                go1 :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
+                go1 :: LocationId -> Seq LocationId -> StateT PathState n ()
                 go1 loc path = do
                   doesMatch <- lift $ loc <=~> destinationMatcher
                   ps@PathState {..} <- get
@@ -2595,7 +2611,7 @@ getLocationsMatching lmatcher = do
       destinations <- select destinationMatcher
       valids <- concatForM starts \start -> do
         let
-          go1 :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
+          go1 :: LocationId -> Seq LocationId -> StateT PathState n ()
           go1 loc path = do
             doesMatch <- lift $ loc <=~> endMatcher
             ps@PathState {..} <- get

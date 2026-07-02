@@ -17,7 +17,7 @@ import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
 import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (getModifiers, withoutModifier)
-import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.Query (allInvestigators, getActiveInvestigatorId)
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.Helpers.Window (getThatEnemy, windowMatches)
 import Arkham.Id
@@ -69,8 +69,15 @@ getCanPerformAbility !iid !ws !ability = do
     liftGuardM $ not <$> preventedByInvestigatorModifiers iid ability
     liftGuardM $ getCanAffordAbility iid ability ws
     liftGuardM $ meetsActionRestrictions iid ws ability
-    liftGuardM $ withActiveInvestigator iid do
-      passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
+    liftGuardM do
+      -- When the active investigator is already iid (e.g. inside a cached
+      -- getActions pass), skip re-entering withActiveInvestigator: that wrapper
+      -- adds a ReaderT layer whose HasGame cache is a no-op, defeating the scoped
+      -- query cache exactly where the expensive criteria/accessibility run.
+      active <- getActiveInvestigatorId
+      if active == iid
+        then passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
+        else withActiveInvestigator iid $ passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
 
 preventedByInvestigatorModifiers
   :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool

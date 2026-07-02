@@ -23,9 +23,9 @@ instance HasAbilities SpiritualEcho2 where
       [ restricted a 1 OwnsThis
           $ freeReaction
           $ ActivateAbility #after You
-          $ PerformableAbility [AsIfAt lid]
-          <> AssetAbility (hasAnyTrait [Spell, Ritual])
+          $ AssetAbility (hasAnyTrait [Spell, Ritual])
           <> oneOf [#action, #fast]
+          <> PerformableAbility [AsIfAt lid]
       ]
     Nothing -> []
 

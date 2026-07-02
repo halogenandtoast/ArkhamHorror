@@ -14,8 +14,10 @@ services:
       - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
       - POSTGRES_DB=arkham-horror-backend
     ports:
-      # Bind to localhost only to prevent external access
-      - "127.0.0.1:5433:5432"
+      # Bind to localhost only to prevent external access.
+      # Host port is configurable (DB_PORT in .env) to avoid collisions; the
+      # app never uses it — it reaches db over the compose network at db:5432.
+      - "127.0.0.1:${DB_PORT:-5433}:5432"
     user: postgres
     cap_drop:
       - ALL
@@ -26,12 +28,22 @@ services:
       - ./setup.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
     secrets:
       - postgres_password
+    # Ready only once Postgres actually accepts connections. initdb (which
+    # imports setup.sql) runs a temp local-only server first, so the port isn't
+    # reachable until real startup — start_period covers a slow first import.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 120s
   # One-shot: applies pending SQL migrations, then exits. `web` waits for it.
   migrate:
     image: postgres:14.6-alpine
     restart: "no"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     entrypoint: ["sh", "/migrate.sh"]
     volumes:
       - ./migrations:/migrations:ro

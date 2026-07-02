@@ -609,6 +609,11 @@ function onStagePointerDown(event: PointerEvent) {
   ].join(', '))) return
   if (scroller.scrollWidth <= scroller.clientWidth && scroller.scrollHeight <= scroller.clientHeight) return
 
+  // Do NOT capture the pointer here. Capturing on pointerdown retargets the
+  // browser-synthesized click to the scroller, swallowing clicks on any board
+  // element that hasn't handled the pointerdown itself. We only capture once a
+  // real drag begins (see onStagePointerMove), so a stationary click always
+  // reaches whatever it lands on.
   stagePan = {
     pointerId: event.pointerId,
     startX: event.clientX,
@@ -617,7 +622,6 @@ function onStagePointerDown(event: PointerEvent) {
     scrollTop: scroller.scrollTop,
     moved: false,
   }
-  scroller.setPointerCapture(event.pointerId)
 }
 
 function onStagePointerMove(event: PointerEvent) {
@@ -626,7 +630,13 @@ function onStagePointerMove(event: PointerEvent) {
   if (!scroller) return
   const dx = event.clientX - stagePan.startX
   const dy = event.clientY - stagePan.startY
-  if (!stagePan.moved && Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) stagePan.moved = true
+  if (!stagePan.moved && Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
+    stagePan.moved = true
+    // Capture now that this is a real drag, so we keep receiving move/up events
+    // even if the pointer leaves the scroller. A click that never dragged is
+    // never captured, so it isn't swallowed.
+    scroller.setPointerCapture(event.pointerId)
+  }
   if (!stagePan.moved) return
   event.preventDefault()
   scroller.scrollLeft = stagePan.scrollLeft - dx

@@ -3,6 +3,8 @@ module Arkham.Story.Cards.UnfinishedBusinessSpec (spec) where
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Projection (field)
+import Arkham.Story.Types (Field (StoryFlipped))
 import Arkham.Story.Cards qualified as Stories
 import TestImport qualified as TI
 import TestImport.New
@@ -40,3 +42,20 @@ spec = describe "Unfinished Business" $ do
     run $ Resign (toId investigator)
     chooseOnlyOption "flip Unfinished Business back over"
     assert $ selectAny (enemyIs Enemies.heretic_A)
+
+  it "keeps its story side faceup after resolving into an investigator's threat area" $ gameTest $ \investigator -> do
+    for_
+      [ (Stories.unfinishedBusiness_B, "05178b")
+      , (Stories.unfinishedBusiness_D, "05178d")
+      , (Stories.unfinishedBusiness_F, "05178f")
+      , (Stories.unfinishedBusiness_H, "05178h")
+      , (Stories.returnToUnfinishedBusiness_38, "54038b")
+      , (Stories.returnToUnfinishedBusiness_39, "54039b")
+      ]
+      \(storyCard, storyId) -> do
+        card <- genCard storyCard
+        run $ StoryMessage $ ReadStoryWithPlacement (toId investigator) card ResolveIt Nothing (InThreatArea $ toId investigator)
+
+        field StoryFlipped storyId `shouldReturn` False
+        chooseOnlyOption "resolve Unfinished Business"
+        field StoryFlipped storyId `shouldReturn` False

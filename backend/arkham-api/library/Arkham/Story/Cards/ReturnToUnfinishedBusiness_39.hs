@@ -41,7 +41,6 @@ instance RunMessage ReturnToUnfinishedBusiness_39 where
         . ReturnToUnfinishedBusiness_39
         $ attrs
         & (placementL .~ InThreatArea iid)
-        & (flippedL .~ True)
         & (removeAfterResolutionL .~ False)
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       selectOne (enemyIs Enemies.theSpectralWatcher) >>= traverse_ readyThis

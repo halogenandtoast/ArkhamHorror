@@ -5657,8 +5657,8 @@ instance Query ExtendedCardMatcher where
           if cdUnique def && cdCardType def == AssetType
             then
               not <$> case nameSubtitle (cdName def) of
-                Nothing -> selectAny (AssetWithTitle $ nameTitle $ cdName def)
-                Just subtitle -> selectAny (AssetWithFullTitle (nameTitle $ cdName def) subtitle)
+                Nothing -> selectAny (InPlayAsset $ AssetWithTitle $ nameTitle $ cdName def)
+                Just subtitle -> selectAny (InPlayAsset $ AssetWithFullTitle (nameTitle $ cdName def) subtitle)
             else pure True
       WillGoIntoSlot s -> do
         flip filterM cs \c -> do

@@ -251,8 +251,8 @@ getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availabl
     uniquenessOk <- case (cdUnique pcDef, cdCardType pcDef) of
       (True, AssetType) ->
         not <$> case nameSubtitle (cdName pcDef) of
-          Nothing -> selectAny (AssetWithTitle title)
-          Just subtitle -> selectAny (AssetWithFullTitle title subtitle)
+          Nothing -> selectAny (InPlayAsset $ AssetWithTitle title)
+          Just subtitle -> selectAny (InPlayAsset $ AssetWithFullTitle title subtitle)
       _ -> pure True
     let uniquenessDetail = if uniquenessOk then Nothing else Just $ "A copy of \"" <> title <> "\" is already in play"
 

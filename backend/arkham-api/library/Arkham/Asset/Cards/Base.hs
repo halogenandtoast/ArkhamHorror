@@ -22,7 +22,10 @@ storyAsset cardCode name cost encounterSet =
 
 storyAsset_ :: CardCode -> Name -> EncounterSet -> CardDef
 storyAsset_ cardCode name encounterSet =
-  (baseAsset (Just (encounterSet, 1)) cardCode name 0 (singleton Neutral)) {cdLevel = Nothing, cdCost = Nothing}
+  (baseAsset (Just (encounterSet, 1)) cardCode name 0 (singleton Neutral))
+    { cdLevel = Nothing
+    , cdCost = Nothing
+    }
 
 storyAssetWithMany :: CardCode -> Name -> Int -> EncounterSet -> Int -> CardDef
 storyAssetWithMany cardCode name cost encounterSet encounterSetCount =
@@ -44,7 +47,7 @@ fast cd = cd {cdFastWindow = Just (DuringTurn You)}
 
 weakness :: CardCode -> Name -> CardDef
 weakness cardCode name =
-  (baseAsset Nothing cardCode name 0 (singleton Neutral))
+  (baseAsset Nothing cardCode name 0 mempty)
     { cdCardSubType = Just Weakness
     , cdRevelation = IsRevelation
     , cdCost = Nothing

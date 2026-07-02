@@ -3750,6 +3750,7 @@ async function addChaosToken(face: any){
 
 .location-wrapper {
   width: fit-content;
+  padding-top: 5px;
 }
 
 .abyss-location-count {

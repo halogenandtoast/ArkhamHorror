@@ -12,9 +12,12 @@ data Meta = Meta
   -- ^ groups whose games have already been completed (mini-campaign)
   , survivedGroups :: [Group]
   -- ^ groups that escaped the labyrinth
+  , miniCampaign :: Bool
+  -- ^ whether this is a mini-campaign (all three groups) or a single standalone game
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 initialMeta :: Group -> Meta
-initialMeta g = Meta {currentGroup = g, playedGroups = [], survivedGroups = []}
+initialMeta g =
+  Meta {currentGroup = g, playedGroups = [], survivedGroups = [], miniCampaign = False}

@@ -59,6 +59,7 @@ import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
 import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
 import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..), enemyLocationAsEnemyId)
 import Arkham.Entities
+import Arkham.Epic.Types (HasMaybeEpic (..), SharedDelta (..), SharedKey, epicEnvDeltaRef)
 import Arkham.Event.Types
 import Arkham.ForMovement
 import Arkham.Game.Base as X
@@ -176,7 +177,6 @@ import Arkham.Matcher hiding (
   SkillCard,
   StoryCard,
  )
-import Arkham.Epic.Types (HasMaybeEpic (..), SharedDelta (..), SharedKey, epicEnvDeltaRef)
 import Arkham.Matcher qualified as M
 import Arkham.Message qualified as Msg
 import Arkham.Metrics (messageTag)
@@ -265,10 +265,11 @@ group activates via the ordinary @PUT /games/:id/join@ path). A no-op for the
 campaign-only mode.
 -}
 setInitialScenarioMeta :: ToJSON a => Key.Key -> a -> Game -> Game
-setInitialScenarioMeta k v = modeL %~ \case
-  This c -> This c
-  That s -> That (overAttrs (Arkham.Scenario.Types.setMetaKey k v) s)
-  These c s -> These c (overAttrs (Arkham.Scenario.Types.setMetaKey k v) s)
+setInitialScenarioMeta k v =
+  modeL %~ \case
+    This c -> This c
+    That s -> That (overAttrs (Arkham.Scenario.Types.setMetaKey k v) s)
+    These c s -> These c (overAttrs (Arkham.Scenario.Types.setMetaKey k v) s)
 
 newGame :: These CampaignId ScenarioId -> Int -> Int -> Difficulty -> Bool -> Game
 newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
@@ -650,9 +651,10 @@ instance Tracing Identity where
   defaultSpanArgs = ()
   doTrace _ _ f = f ()
 
--- | The attacking enemy paired with each target of any open "enemy attacks"
--- window, so the client can highlight who/what is currently being attacked and
--- overlay the attacker (e.g. during a Dodge window).
+{- | The attacking enemy paired with each target of any open "enemy attacks"
+window, so the client can highlight who/what is currently being attacked and
+overlay the attacker (e.g. during a Dodge window).
+-}
 gameEnemyAttackTargets :: Game -> [Value]
 gameEnemyAttackTargets g =
   [ object ["enemy" .= dets.enemy, "target" .= t]
@@ -3560,15 +3562,17 @@ getMaybeOutOfPlayEnemy outOfPlayZone eid = do
   isCorrectOutOfPlay e = case e.placement of
     OutOfPlay zone -> zone == outOfPlayZone
     _ -> False
--- | Enemy queries default to enemies that are NOT sitting in an out-of-play
--- zone (@OutOfPlay VoidZone/PursuitZone/TheDepths/SetAsideZone/...@). To reach
--- those, a matcher must decorate itself (@OutOfPlayEnemy zone@,
--- @IncludeOutOfPlayEnemy@, @EnemyWithPlacement (OutOfPlay ...)@, or
--- @DefeatedEnemy@); when it does, we leave the full candidate set intact so the
--- decorator can find them. This makes @InPlayEnemy@ redundant (a no-op) for its
--- one real job of excluding zone-resident enemies. Non-zone placements that are
--- also \"not in play\" (hidden-in-hand, limbo, on-top-of-deck, unplaced) are
--- left matchable exactly as before -- this only scopes the OutOfPlay zones.
+
+{- | Enemy queries default to enemies that are NOT sitting in an out-of-play
+zone (@OutOfPlay VoidZone/PursuitZone/TheDepths/SetAsideZone/...@). To reach
+those, a matcher must decorate itself (@OutOfPlayEnemy zone@,
+@IncludeOutOfPlayEnemy@, @EnemyWithPlacement (OutOfPlay ...)@, or
+@DefeatedEnemy@); when it does, we leave the full candidate set intact so the
+decorator can find them. This makes @InPlayEnemy@ redundant (a no-op) for its
+one real job of excluding zone-resident enemies. Non-zone placements that are
+also \"not in play\" (hidden-in-hand, limbo, on-top-of-deck, unplaced) are
+left matchable exactly as before -- this only scopes the OutOfPlay zones.
+-}
 restrictToInPlayZones :: EnemyMatcher -> [Enemy] -> [Enemy]
 restrictToInPlayZones matcher es
   | referencesOutOfPlay matcher = es
@@ -4834,7 +4838,7 @@ getEnemyField f e = do
       case mTotalHealth of
         Nothing -> pure Nothing
         Just totalHealth -> do
-          pure $ Just (totalHealth - enemyDamage attrs)
+          pure $ Just (max 0 $ totalHealth - enemyDamage attrs)
     EnemyForcedRemainingHealth -> do
       totalHealth <- fieldJust EnemyHealth (toId e)
       pure (totalHealth - enemyDamage attrs)
@@ -6283,10 +6287,11 @@ popMessageWithPriority = withQueue \case
   isPriority (Priority _) = True
   isPriority _ = False
 
--- | Capture a shared-counter mutation emitted during an Epic Multiplayer group's
--- action. Appends an invertible 'SharedDelta' to the event's per-action delta
--- buffer; the commit path applies the buffer under the locked event row. A no-op
--- when the game is not part of an event (so ordinary games are unaffected).
+{- | Capture a shared-counter mutation emitted during an Epic Multiplayer group's
+action. Appends an invertible 'SharedDelta' to the event's per-action delta
+buffer; the commit path applies the buffer under the locked event row. A no-op
+when the game is not part of an event (so ordinary games are unaffected).
+-}
 captureSharedDelta
   :: (MonadIO m, MonadReader env m, HasMaybeEpic env)
   => SharedKey -> Int -> m ()

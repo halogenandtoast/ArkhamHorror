@@ -374,6 +374,7 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "54046": return "theCircleUndone.unionAndDisillusion"
     case "54049": return "theCircleUndone.inTheClutchesOfChaos"
     case "54056": return "theCircleUndone.beforeTheBlackThrone"
+    case "70001": return "standalone.theLabyrinthsOfLunacy"
     case "71001": return "standalone.theMidwinterGala"
     case "72001": return "standalone.filmFatale"
     case "81001": return "standalone.curseOfTheRougarou"

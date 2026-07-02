@@ -72,6 +72,10 @@ const epicGroups = ref<EpicGroup[]>([
 const imposeTimeLimit = ref(true)
 const timeLimitMinutes = ref(180)
 
+// "Mini-campaign" side-story mode (only meaningful for side stories flagged
+// `miniCampaign` in side-stories.json, e.g. The Labyrinths of Lunacy).
+const miniCampaign = ref(false)
+
 const scenarios = computed<Scenario[]>(() => gate(scenarioJSON))
 const sideStories = computed<Scenario[]>(() => gate(sideStoriesJSON))
 const campaigns = computed<Campaign[]>(() => gate(campaignJSON))
@@ -234,10 +238,12 @@ watch(selectedScenario, () => {
   if (gameMode.value === 'SideStory') sideStoryMode.value = 'campaign'
   // Re-arm to the default single-group mode whenever the chosen side story changes.
   epicMode.value = false
+  miniCampaign.value = false
 })
 
 watch(gameMode, () => {
   epicMode.value = false
+  miniCampaign.value = false
 })
 
 watch(selectedCampaign, (id) => {
@@ -285,7 +291,8 @@ async function start() {
 
   const options = [
     ...enabledRecommendedOptions,
-    ...variant
+    ...variant,
+    ...(miniCampaign.value ? [{ tag: 'PlayAsMiniCampaign' }] : [])
   ]
 
   // AI seats are only meaningful (and only sent) for Solo/multihanded games.
@@ -408,6 +415,7 @@ async function start() {
           v-model:epicGroups="epicGroups"
           v-model:imposeTimeLimit="imposeTimeLimit"
           v-model:timeLimitMinutes="timeLimitMinutes"
+          v-model:miniCampaign="miniCampaign"
           v-model:aiPlayers="aiPlayers"
           :gameMode="gameMode"
           :campaign="campaign"

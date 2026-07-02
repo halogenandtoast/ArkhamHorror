@@ -61,6 +61,11 @@ const epicGroups = defineModel<EpicGroup[]>('epicGroups', { required: true })
 const imposeTimeLimit = defineModel<boolean>('imposeTimeLimit', { required: true })
 const timeLimitMinutes = defineModel<number>('timeLimitMinutes', { required: true })
 
+// "Mini-campaign" side-story flow. Surfaced for side stories whose data carries
+// `miniCampaign: true` (src/arkham/data/side-stories.json). Unlike Epic Multiplayer
+// this is not behind a dev flag.
+const miniCampaign = defineModel<boolean>('miniCampaign', { required: true })
+
 // --- AI-investigator configuration (dev-only, Solo/multihanded only) ----------
 // Emits an `aiPlayers` array (length playerCount) of `AiSlotConfig | null` up to
 // NewCampaign, which forwards it to newGame() only for Solo games.
@@ -134,6 +139,12 @@ const scenarioSupportsEpic = computed(
     settings.epicMultiplayerEnabled,
 )
 const isEpicActive = computed(() => scenarioSupportsEpic.value && epicMode.value)
+
+// Mini-campaign choice appears for any side story flagged `miniCampaign`, with no
+// dev gating. Hidden while an Epic Multiplayer event is being configured.
+const scenarioSupportsMiniCampaign = computed(
+  () => props.gameMode === 'SideStory' && props.scenario?.miniCampaign === true,
+)
 
 // Keep the per-group rows in sync with the chosen group count, preserving any
 // names/counts the organizer already edited.
@@ -412,6 +423,20 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
               </label>
             </div>
           </div>
+        </transition>
+      </div>
+
+      <div v-if="scenarioSupportsMiniCampaign && !isEpicActive" class="card">
+        <div class="card-title">{{ $t('create.playMode') }}</div>
+        <div class="segmented segmented-2">
+          <input type="radio" v-model="miniCampaign" :value="false" id="singleScenarioMode" />
+          <label for="singleScenarioMode">{{ $t('create.singleScenarioMode') }}</label>
+          <input type="radio" v-model="miniCampaign" :value="true" id="miniCampaignMode" />
+          <label for="miniCampaignMode">{{ $t('create.miniCampaignMode') }}</label>
+        </div>
+
+        <transition name="slide">
+          <div v-if="miniCampaign" class="subcard mini-campaign-desc" v-html="$t('create.miniCampaignDescription')"></div>
         </transition>
       </div>
 
@@ -792,6 +817,41 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.78);
   margin-bottom: 8px;
+}
+
+.mini-campaign-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.mini-campaign-desc :deep(p) {
+  margin: 0 0 10px;
+}
+
+.mini-campaign-desc :deep(ul) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mini-campaign-desc :deep(li) {
+  position: relative;
+  padding-left: 18px;
+}
+
+.mini-campaign-desc :deep(li)::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
 }
 
 .card-title.small {

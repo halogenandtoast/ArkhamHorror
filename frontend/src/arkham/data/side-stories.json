@@ -115,6 +115,7 @@
     "id": "70001",
     "name": "The Labyrinths of Lunacy",
     "epicMultiplayer": true,
+    "miniCampaign": true,
     "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [

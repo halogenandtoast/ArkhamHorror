@@ -75,6 +75,7 @@ allowOptions cs = cs {canUpgradeDecks = True, canChooseSideStory = True}
 
 continueNoUpgrade :: CampaignStep -> Maybe CampaignStep
 continueNoUpgrade ns = continueEdit ns noUpgrade
+
 instance HasField "normalize" CampaignStep CampaignStep where
   getField = normalizedCampaignStep
 

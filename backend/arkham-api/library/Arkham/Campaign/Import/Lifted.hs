@@ -261,6 +261,7 @@ setNextCampaignStepEdit cs = push . NextCampaignStep . continueEdit cs
 
 interludeStepPart :: ReverseQueue m => Int -> Maybe InterludeKey -> Int -> m ()
 interludeStepPart n mKey part = push $ NextCampaignStep $ Just $ InterludeStepPart n mKey part
+
 campaignStep_ :: ReverseQueue m => CampaignStep -> m ()
 campaignStep_ s = setNextCampaignStep s
 

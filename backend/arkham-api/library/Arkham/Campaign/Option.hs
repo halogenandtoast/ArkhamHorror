@@ -41,6 +41,8 @@ data CampaignOption
   | FatalMiragePart1
   | FatalMiragePart2
   | FatalMiragePart3
+  | -- | The Labyrinths of Lunacy
+    PlayAsMiniCampaign
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''CampaignOption)

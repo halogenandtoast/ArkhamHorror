@@ -5357,6 +5357,7 @@ library
       Arkham.Scenarios.TheHeartOfMadness.Pylon
       Arkham.Scenarios.TheHouseAlwaysWins.Helpers
       Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers
+      Arkham.Scenarios.TheLabyrinthsOfLunacy.Key
       Arkham.Scenarios.TheLabyrinthsOfLunacy.Meta
       Arkham.Scenarios.TheLairOfDagon.Helpers
       Arkham.Scenarios.TheLastKing.Helpers

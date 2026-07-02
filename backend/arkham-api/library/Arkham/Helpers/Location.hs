@@ -72,9 +72,12 @@ placementLocation :: (HasCallStack, HasGame m, Tracing m) => Placement -> m (May
 placementLocation = \case
   AtLocation lid -> pure $ Just lid
   AttachedToLocation lid -> pure $ Just lid
-  InPlayArea iid -> field InvestigatorLocation iid
-  InThreatArea iid -> field InvestigatorLocation iid
-  AttachedToInvestigator iid -> field InvestigatorLocation iid
+  -- Use the safe (join) read: an entity may briefly reference an investigator who
+  -- has been removed from the game (e.g. while a group swap parks on deck choice),
+  -- and a location lookup during a matcher scan must not crash on the missing id.
+  InPlayArea iid -> fieldMayJoin InvestigatorLocation iid
+  InThreatArea iid -> fieldMayJoin InvestigatorLocation iid
+  AttachedToInvestigator iid -> fieldMayJoin InvestigatorLocation iid
   AttachedToEnemy eid -> fieldMayJoin EnemyLocation eid
   AttachedToTreachery tid -> fieldMayJoin TreacheryLocation tid
   AttachedToAsset aid' _ -> fieldMayJoin AssetLocation aid'

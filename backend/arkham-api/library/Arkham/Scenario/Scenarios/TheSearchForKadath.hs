@@ -255,7 +255,7 @@ instance RunMessage TheSearchForKadath where
       pure s
     SetScenarioMeta value -> do
       let region = toResult value
-      let meta = toResult attrs.meta
+      let meta = toResultDefault (Meta []) attrs.meta
       let meta' = meta {regions = regions meta <> [region]}
 
       leadId <- getLead

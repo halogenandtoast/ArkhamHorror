@@ -43,6 +43,11 @@ instance RunMessage LilyChen where
     BeginGame -> do
       createCardEffect Cards.lilyChen Nothing attrs attrs
       pure i
+    Blanked BeginGame -> do
+      -- Yithian form blanks BeginGame, but the Disciplines still function and
+      -- rely on this effect to track their flip conditions (issue #4998).
+      createCardEffect Cards.lilyChen Nothing attrs attrs
+      pure i
     ElderSignEffect iid | iid == toId attrs -> do
       pure $ LilyChen $ attrs `with` Metadata True
     SkillTestEnds _ iid _ | attrs.id == iid && flipDiscipline meta -> do

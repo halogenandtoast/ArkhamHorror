@@ -272,6 +272,9 @@ getActionsWith iid ws f = do
       isForced <- isForcedAbility iid ability
       let
         -- Lola Hayes: Forced abilities will always trigger
+        -- weaknesses ignore the class system (FAQ 1.35) but weakness
+        -- assets with Lola-usable activated abilities don't exist; add a
+        -- cdCardSubType exemption here (needs a source->def lookup) if one ever does
         prevents (CanOnlyUseCardsInRole role) =
           null (setFromList [role, Neutral, Mythos] `intersect` cardClasses)
             && not isForced

@@ -259,8 +259,10 @@ getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availabl
     -- Play restrictions check
     modifiers <- getModifiers iid
     let
+      -- Weaknesses do not interact with the class system (FAQ 1.35)
       prevents (CanOnlyUseCardsInRole role) =
-        null $ intersect (cdClassSymbols pcDef) (setFromList [Mythos, Neutral, role])
+        isNothing (cdCardSubType pcDef)
+          && null (intersect (cdClassSymbols pcDef) (setFromList [Mythos, Neutral, role]))
       prevents (CannotPlay matcher) = cardMatch c matcher
       prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
       prevents _ = False

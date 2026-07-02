@@ -41,7 +41,6 @@ instance RunMessage UnfinishedBusiness_B where
         . UnfinishedBusiness_B
         $ attrs
         & (placementL .~ InThreatArea iid)
-        & (flippedL .~ True)
         & (removeAfterResolutionL .~ False)
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       chooseOneM iid $ withI18n do

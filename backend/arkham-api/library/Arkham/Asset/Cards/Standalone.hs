@@ -829,7 +829,7 @@ edwinBennetAstuteAssociate =
     , cdCost = Nothing
     , cdUnique = True
     , cdDoubleSided = True
-    , cdOtherSide = Just "87036a"
+    , cdOtherSide = Just "87036"
     }
 
 edwinBennetEsteemedColleague :: CardDef
@@ -839,7 +839,7 @@ edwinBennetEsteemedColleague =
     , cdCost = Nothing
     , cdUnique = True
     , cdDoubleSided = True
-    , cdOtherSide = Just "87037a"
+    , cdOtherSide = Just "87037"
     }
 
 eixodolonsNote :: CardDef

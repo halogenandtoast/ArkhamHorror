@@ -1,15 +1,15 @@
 module Arkham.Location.Cards.Tindalos (tindalos) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
-import Arkham.I18n
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Scenarios.MachinationsThroughTime.Helpers
+import Arkham.SortedPair
 import Arkham.Trait (Trait (Portal, Scientist))
 
 newtype Tindalos = Tindalos LocationAttrs
@@ -21,10 +21,11 @@ tindalos = location Tindalos Cards.tindalos 5 (Static 0)
 
 instance HasModifiersFor Tindalos where
   getModifiersFor (Tindalos a) = do
-    self <- modifySelf a [ConnectedToWhen (be a) (LocationWithTrait Portal)]
-    others <-
-      modifySelect a (not_ $ LocationWithId a.id) [ConnectedToWhen (LocationWithTrait Portal) (be a)]
-    pure $ self <> others
+    modifySelf a [ConnectedToWhen (be a) (LocationWithTrait Portal)]
+    modifySelect a (not_ $ LocationWithId a.id) [ConnectedToWhen (LocationWithTrait Portal) (be a)]
+    selectEach (LocationWithTrait Portal) \lid -> do
+      modifiedWith_ a a.id setActiveDuringSetup [DoNotDrawConnection $ sortedPair lid a.id]
+      modifiedWith_ a lid setActiveDuringSetup [DoNotDrawConnection $ sortedPair lid a.id]
 
 instance HasAbilities Tindalos where
   getAbilities (Tindalos a) =
@@ -42,9 +43,7 @@ instance RunMessage Tindalos where
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      chooseOneM iid $ withI18n do
-        chooseTest #combat 2 $ beginSkillTest sid iid (attrs.ability 2) iid #combat (Fixed 2)
-        chooseTest #agility 2 $ beginSkillTest sid iid (attrs.ability 2) iid #agility (Fixed 2)
+      chooseBeginSkillTest sid iid (attrs.ability 2) iid [#combat, #agility] (Fixed 2)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       scientists <- getAbductedScientists

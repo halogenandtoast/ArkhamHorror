@@ -670,7 +670,7 @@ input[type='image'] {
 }
 
 .wizard-actions .action:active:not(:disabled) {
-  transform: translateY(0px);
+  transform: translateY(0px) scale(0.97);
 }
 
 .wizard-actions .action.primary {

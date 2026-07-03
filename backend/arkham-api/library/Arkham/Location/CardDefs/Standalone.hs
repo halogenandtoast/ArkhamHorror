@@ -1001,7 +1001,7 @@ hubDimension =
 tindalos :: CardDef
 tindalos =
   (location
-     "87005a"
+     "87005"
      ("Tindalos" <:> "Realm of Angular Time")
      [Past, Present, Future]
      NoSymbol

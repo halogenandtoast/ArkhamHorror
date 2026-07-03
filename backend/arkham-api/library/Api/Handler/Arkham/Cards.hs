@@ -9,9 +9,7 @@ import Arkham.Asset.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.EncounterCard
-import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.PlayerCard
 import Arkham.Scenario
 import Data.Map.Strict qualified as Map
@@ -19,21 +17,22 @@ import Data.Text qualified as T
 
 getApiV1ArkhamCardsR :: Handler [CardDef]
 getApiV1ArkhamCardsR = do
+  cardPool <- fromMaybe "player" <$> lookupGetParam "cardPool"
   showEncounter <- isJust <$> lookupGetParam "includeEncounter"
   let
-    cards =
-      if showEncounter
-        then
-          allInvestigatorCards
-            <> allPlayerCards
-            <> allEncounterCards
-            <> allScenarioCards
-            <> allEncounterInvestigatorCards
-        else
-          allInvestigatorCards
-            <> Map.filter (isNothing . cdEncounterSet) allPlayerCards
-            <> Map.fromList
-              (map (toCardCode &&& id) [Locations.dreamGateWondrousJourney, Events.theStarsAreRight]) -- is encounter back so won't show correctly
+    allCards =
+      allInvestigatorCards
+        <> allPlayerCards
+        <> allEncounterCards
+        <> allScenarioCards
+        <> allEncounterInvestigatorCards
+    playerCards = Map.filter (isNothing . cdEncounterSet) allCards
+    campaignCards = Map.filter (isJust . cdEncounterSet) allCards
+    cards = case cardPool of
+      "campaign" -> campaignCards
+      "both" -> allCards
+      _ | showEncounter -> allCards
+      _ -> playerCards
     safeBCodes =
       [ "03047b"
       , "03084b"

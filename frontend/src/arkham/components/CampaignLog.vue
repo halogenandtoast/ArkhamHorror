@@ -981,7 +981,7 @@ onUnmounted(() => {
 }
 
 .back-to-top:active {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(0.97);
 }
 
 .back-to-top:focus-visible {

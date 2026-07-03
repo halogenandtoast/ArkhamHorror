@@ -7,6 +7,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
+import Arkham.EncounterSet
 import Arkham.Name
 import Arkham.Trait hiding (Supply)
 
@@ -261,6 +262,8 @@ bodyOfAYithian =
       [Monster, Yithian]
   )
     { cdUnique = False
+    , cdEncounterSet = Just TheCityOfArchives
+    , cdEncounterSetQuantity = Just 4
     }
 
 shatteredSelf :: CardDef
@@ -273,6 +276,8 @@ shatteredSelf =
   )
     { cdUnique = False
     , cdOtherSide = Just "10661b"
+    , cdEncounterSet = Just FateOfTheVale
+    , cdEncounterSetQuantity = Just 4
     }
 
 carolynFern :: CardDef
@@ -327,35 +332,51 @@ marieLambeau =
 
 gavriellaMizrah :: CardDef
 gavriellaMizrah =
-  investigator
-    "05046"
-    ("Gavriella Mizrah" <:> "Private Security")
-    Neutral
-    [Veteran]
+  ( investigator
+      "05046"
+      ("Gavriella Mizrah" <:> "Private Security")
+      Neutral
+      [Veteran]
+  )
+    { cdEncounterSet = Just DisappearanceAtTheTwilightEstate
+    , cdEncounterSetQuantity = Just 1
+    }
 
 jeromeDavids :: CardDef
 jeromeDavids =
-  investigator
-    "05047"
-    ("Jerome Davids" <:> "Josef's Secretary")
-    Neutral
-    [Assistant, SilverTwilight]
+  ( investigator
+      "05047"
+      ("Jerome Davids" <:> "Josef's Secretary")
+      Neutral
+      [Assistant, SilverTwilight]
+  )
+    { cdEncounterSet = Just DisappearanceAtTheTwilightEstate
+    , cdEncounterSetQuantity = Just 1
+    }
 
 valentinoRivas :: CardDef
 valentinoRivas =
-  investigator
-    "05048"
-    ("Valentino Rivas" <:> "Wealthy Philanthropist")
-    Neutral
-    [SilverTwilight, Socialite]
+  ( investigator
+      "05048"
+      ("Valentino Rivas" <:> "Wealthy Philanthropist")
+      Neutral
+      [SilverTwilight, Socialite]
+  )
+    { cdEncounterSet = Just DisappearanceAtTheTwilightEstate
+    , cdEncounterSetQuantity = Just 1
+    }
 
 pennyWhite :: CardDef
 pennyWhite =
-  investigator
-    "05049"
-    ("Penny White" <:> "Josef's Housekeeper")
-    Neutral
-    [Assistant]
+  ( investigator
+      "05049"
+      ("Penny White" <:> "Josef's Housekeeper")
+      Neutral
+      [Assistant]
+  )
+    { cdEncounterSet = Just DisappearanceAtTheTwilightEstate
+    , cdEncounterSetQuantity = Just 1
+    }
 
 tommyMuldoon :: CardDef
 tommyMuldoon =

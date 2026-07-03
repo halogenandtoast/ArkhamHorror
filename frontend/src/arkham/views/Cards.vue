@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { watch, ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { fetchCards } from '@/arkham/api';
+import { fetchCards, type CardPoolMode } from '@/arkham/api';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
 import CardListView from '@/arkham/components/CardListView.vue';
@@ -97,45 +97,66 @@ const query = ref<string>(queryText)
 const view = ref(route.query.view? toView(route.query.view) : View.List)
 const activeChapter = ref<number>(route.query.chapter ? parseInt(route.query.chapter.toString()) : 1)
 
-const includeEncounter = computed(() => route.query.includeEncounter === "true")
+const cardPoolMode = computed<CardPoolMode>(() => {
+  const cardPool = route.query.cardPool?.toString()
+  if (cardPool === 'campaign' || cardPool === 'both') return cardPool
+  return route.query.includeEncounter === 'true' ? 'both' : 'player'
+})
 const store = useDbCardStore()
 
 const CACHE_KEY_PREFIX = 'arkham_cards_cache_'
 const CACHE_VERSION = 'v2'
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
-const getCachedCards = (withEncounter: boolean): Arkham.CardDef[] | null => {
-  const key = `${CACHE_KEY_PREFIX}${CACHE_VERSION}_${withEncounter}`
+let cachedAllCards: Arkham.CardDef[] | null = null
+
+const sortCards = (cards: Arkham.CardDef[]) => [...cards].sort((a, b) => {
+  if (a.art < b.art) return -1
+  if (a.art > b.art) return 1
+  return 0
+})
+
+const isCampaignCard = (card: Arkham.CardDef) => card.encounterSet != null
+
+const cardInPool = (card: Arkham.CardDef, cardPool: CardPoolMode) => {
+  if (cardPool === 'both') return true
+  return cardPool === 'campaign' ? isCampaignCard(card) : !isCampaignCard(card)
+}
+
+const getCachedCards = (): Arkham.CardDef[] | null => {
+  if (cachedAllCards) return cachedAllCards
+
+  const key = `${CACHE_KEY_PREFIX}${CACHE_VERSION}_all`
   try {
     const cached = sessionStorage.getItem(key)
     if (cached) {
       const { cards, timestamp } = JSON.parse(cached)
-      if (Date.now() - timestamp < CACHE_TTL_MS) return cards
+      if (Date.now() - timestamp < CACHE_TTL_MS) {
+        cachedAllCards = cards
+        return cards
+      }
     }
   } catch { /* ignore */ }
   return null
 }
 
-const setCachedCards = (cards: Arkham.CardDef[], withEncounter: boolean) => {
-  const key = `${CACHE_KEY_PREFIX}${CACHE_VERSION}_${withEncounter}`
+const setCachedCards = (cards: Arkham.CardDef[]) => {
+  cachedAllCards = cards
+  const key = `${CACHE_KEY_PREFIX}${CACHE_VERSION}_all`
   try {
     sessionStorage.setItem(key, JSON.stringify({ cards, timestamp: Date.now() }))
   } catch { /* ignore quota errors */ }
 }
 
 const fetchData = async () => {
-  const cached = getCachedCards(includeEncounter.value)
+  const cached = getCachedCards()
   if (cached) {
     allCards.value = cached
     return
   }
-  fetchCards(includeEncounter.value).then(async (response) => {
-    const sorted = response.sort((a, b) => {
-      if (a.art < b.art) return -1
-      if (a.art > b.art) return 1
-      return 0
-    })
-    setCachedCards(sorted, includeEncounter.value)
+  fetchCards('both').then(async (response) => {
+    const sorted = sortCards(response)
+    setCachedCards(sorted)
     allCards.value = sorted
   })
 }
@@ -210,11 +231,6 @@ const filter = ref<Filter>({ cardTypes: [], text: [], level: null, cycle: null, 
 
 await fetchData()
 
-watch(() => includeEncounter.value, (newIncludeEncounter) => {
-  router.push({ name: 'Cards', query: { ...route.query, includeEncounter: newIncludeEncounter ? 'true' : undefined}})
-  fetchData()
-})
-
 watch(() => view.value, (newView) => {
   router.push({ name: 'Cards', query: { ...route.query, view: fromView(newView) }})
 })
@@ -284,6 +300,7 @@ const cardCounts = computed(() => {
   const index = cardSearchIndex.value
 
   for (const card of allCards.value ?? []) {
+    if (!cardInPool(card, cardPoolMode.value)) continue
     const meta = index.get(card.cardCode)
     if (meta?.setCode) bySet.set(meta.setCode, (bySet.get(meta.setCode) ?? 0) + 1)
     if (meta?.cycle) byCycle.set(meta.cycle, (byCycle.get(meta.cycle) ?? 0) + 1)
@@ -294,11 +311,19 @@ const cardCounts = computed(() => {
 
 const cycleCount = (cycle: CardCycle) => cardCounts.value.byCycle.get(cycle.cycle) ?? 0
 
+const expectedCardCount = (set: CardSet) => {
+  const playerCards = set.playerCards
+  const encounterCards = Math.max(encounterSetTotal(set) - playerCards, 0)
+  if (cardPoolMode.value === 'player') return playerCards
+  if (cardPoolMode.value === 'campaign') return encounterCards
+  return playerCards + encounterCards
+}
+
 const cycleCountText = (cycle: CardCycle) => {
   if (!allCards.value) return 0
   const implementedCount = cycleCount(cycle)
   const cycleSets = setsByCycle.get(cycle.cycle) ?? []
-  const total = cycleSets.reduce((acc, set) => acc + (includeEncounter.value ? encounterSetTotal(set) : set.playerCards), 0)
+  const total = cycleSets.reduce((acc, set) => acc + expectedCardCount(set), 0)
 
   if (implementedCount == total) {
     return ""
@@ -311,7 +336,7 @@ const setCount = (set: CardSet) => cardCounts.value.bySet.get(set.code) ?? 0
 
 const setCountText = (set: CardSet) => {
   const implementedCount = setCount(set)
-  const total = includeEncounter.value ? encounterSetTotal(set) : set.playerCards
+  const total = expectedCardCount(set)
 
   if (implementedCount == total) {
     return ""
@@ -334,6 +359,7 @@ const cards = computed(() => {
 
   return allCards.value.filter((c) => {
     if (c.cardCode === "cx05184") return false
+    if (!cardInPool(c, cardPoolMode.value)) return false
 
     const meta = index.get(c.cardCode)
     if (!meta) return false
@@ -505,9 +531,15 @@ const setSet = (set: CardSet) => {
   setFilter()
 }
 
-const toggleIncludeEncounter = () => {
-  const includeEncounter = route.query.includeEncounter === 'true'
-  router.push({ name: 'Cards', query: { ...route.query, includeEncounter: !includeEncounter ? 'true' : undefined }})
+const setCardPoolMode = (mode: CardPoolMode) => {
+  router.push({
+    name: 'Cards',
+    query: {
+      ...route.query,
+      includeEncounter: undefined,
+      cardPool: mode === 'player' ? undefined : mode,
+    },
+  })
 }
 
 const showSidebar = ref(false)
@@ -565,10 +597,16 @@ const showSidebar = ref(false)
           <button @click.prevent="view = View.List" :class="{ active: view == View.List }" :title="$t('cardsView.listView')"><font-awesome-icon icon="list" /></button>
           <button @click.prevent="view = View.Image" :class="{ active: view == View.Image }" :title="$t('cardsView.imageView')"><font-awesome-icon icon="image" /></button>
         </div>
-        <label class="encounter-toggle">
-          <input type="checkbox" @click="toggleIncludeEncounter" :checked="includeEncounter" id="include-encounter" />
-          <span>{{ $t('cardsView.includeEncounter') }}</span>
-        </label>
+        <div class="card-pool-toggle segmented segmented-3" role="radiogroup" :aria-label="$t('cardsView.cardPool')">
+          <input type="radio" :checked="cardPoolMode === 'player'" id="card-pool-player" @change="setCardPoolMode('player')" />
+          <label for="card-pool-player">{{ $t('cardsView.playerCards') }}</label>
+
+          <input type="radio" :checked="cardPoolMode === 'campaign'" id="card-pool-campaign" @change="setCardPoolMode('campaign')" />
+          <label for="card-pool-campaign">{{ $t('cardsView.campaignCards') }}</label>
+
+          <input type="radio" :checked="cardPoolMode === 'both'" id="card-pool-both" @change="setCardPoolMode('both')" />
+          <label for="card-pool-both">{{ $t('cardsView.bothCards') }}</label>
+        </div>
       </header>
       <CardImageView v-if="view == View.Image" :cards="cards" :show-counts="false" />
       <CardListView v-if="view == View.List" :cards="cards" :show-counts="false" />
@@ -863,20 +901,77 @@ header {
   }
 }
 
-.encounter-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #999;
-  font-size: 0.82rem;
-  cursor: pointer;
-  white-space: nowrap;
-  user-select: none;
+.segmented {
+  --segmented-gap: 2px;
+  --segmented-padding: 2px;
+  display: grid;
+  border-radius: 5px;
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  padding: var(--segmented-padding);
+  gap: var(--segmented-gap);
+  position: relative;
+}
 
-  input[type=checkbox] {
-    accent-color: var(--spooky-green);
-    cursor: pointer;
-  }
+.segmented::before {
+  content: '';
+  background: var(--button-1);
+  border-radius: 3px;
+  bottom: var(--segmented-padding);
+  left: var(--segmented-padding);
+  position: absolute;
+  top: var(--segmented-padding);
+  transform: translateX(0);
+  transition: transform 220ms cubic-bezier(.2, .8, .2, 1), background 150ms ease;
+  width: calc((100% - (var(--segmented-padding) * 2) - (var(--segmented-gap) * 2)) / 3);
+  z-index: 0;
+}
+
+.segmented:has(#card-pool-campaign:checked)::before {
+  transform: translateX(calc(100% + var(--segmented-gap)));
+}
+
+.segmented:has(#card-pool-both:checked)::before {
+  transform: translateX(calc((100% + var(--segmented-gap)) * 2));
+}
+
+.segmented-3 { grid-template-columns: repeat(3, 1fr); }
+
+.segmented input[type='radio'] {
+  display: none;
+}
+
+.segmented label {
+  align-items: center;
+  border-radius: 3px;
+  color: var(--background-light);
+  cursor: pointer;
+  display: flex;
+  font-size: 11px;
+  font-weight: 600;
+  justify-content: center;
+  letter-spacing: 0.06em;
+  margin: 0;
+  padding: 6px 8px;
+  position: relative;
+  text-transform: uppercase;
+  transition: color 0.15s ease;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.segmented label:hover,
+.segmented input[type='radio']:checked + label {
+  color: var(--text);
+}
+
+.segmented:hover::before {
+  background: var(--button-1-highlight);
+}
+
+.card-pool-toggle {
+  min-width: 255px;
 }
 
 </style>

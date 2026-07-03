@@ -84,8 +84,11 @@ export const fetchDeck = async (deckId: string): Promise<Deck> => {
  return deckDecoder.decodePromise(data)
 }
 
-export const fetchCards = async (includeEncounter = false): Promise<CardDef[]> => {
-  const query = includeEncounter ? "?includeEncounter" : ""
+export type CardPoolMode = 'player' | 'campaign' | 'both'
+
+export const fetchCards = async (cardPool: CardPoolMode | boolean = 'player'): Promise<CardDef[]> => {
+  const mode: CardPoolMode = cardPool === true ? 'both' : cardPool === false ? 'player' : cardPool
+  const query = mode === 'player' ? "" : `?includeEncounter&cardPool=${mode}`
   const { data } = await api.get(`arkham/cards${query}`)
   return JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodePromise(data)
 }

@@ -30,7 +30,12 @@ button {
   padding: 0px 5px;
   font-family: Arial;
   font-size: min(12px, 2vw);
+  transition: transform 80ms ease;
   i { display: contents; font-style: italic; }
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 footer {

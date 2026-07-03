@@ -869,6 +869,7 @@ section {
   color: white;
   border: 1px solid #666;
   cursor: pointer;
+  transition: transform 80ms ease;
 }
 
 .button:hover {
@@ -878,6 +879,7 @@ section {
 .button:active {
   background-color: #666;
   border-color: #111;
+  transform: scale(0.97);
 }
 
 .intro-text {

@@ -1528,7 +1528,7 @@ trylogog =
 edwinBennetBitterAdversary :: CardDef
 edwinBennetBitterAdversary =
   unique
-    $ (enemy "87036a" ("Edwin Bennet" <:> "Bitter Adversary") MachinationsThroughTimeSingleGroup 1)
+    $ (enemy "87036" ("Edwin Bennet" <:> "Bitter Adversary") MachinationsThroughTimeSingleGroup 1)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 2
@@ -1544,7 +1544,7 @@ edwinBennetBitterAdversary =
 edwinBennetEnviousRival :: CardDef
 edwinBennetEnviousRival =
   unique
-    $ (enemy "87037a" ("Edwin Bennet" <:> "Envious Rival") MachinationsThroughTimeEpicMultiplayer 1)
+    $ (enemy "87037" ("Edwin Bennet" <:> "Envious Rival") MachinationsThroughTimeEpicMultiplayer 1)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 3

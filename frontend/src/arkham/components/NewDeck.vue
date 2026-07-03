@@ -388,7 +388,7 @@ async function createDeck() {
     }
 
     &:active:not(:disabled) {
-      transform: translateY(0);
+      transform: translateY(0) scale(0.97);
     }
 
     &:disabled {

@@ -242,7 +242,7 @@ runGameMessage msg g = case msg of
       setCardAttachments (cCode, attachments) =
         flip Map.alter cCode \case
           Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
-          Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
+          Just current -> Just $ current {cardAttachments = attachments}
     let investigator =
           updateAttrs (lookupInvestigator iid' playerId) \ia ->
             ia
@@ -304,7 +304,7 @@ runGameMessage msg g = case msg of
       setCardAttachments (cCode, attachments) =
         flip Map.alter cCode \case
           Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
-          Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
+          Just current -> Just $ current {cardAttachments = attachments}
     let investigator =
           updateAttrs (lookupInvestigator iid' playerId) \ia ->
             ia
@@ -346,7 +346,7 @@ runGameMessage msg g = case msg of
       setCardAttachments (cCode, attachments) =
         flip Map.alter cCode \case
           Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
-          Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
+          Just current -> Just $ current {cardAttachments = attachments}
     let investigator' =
           overAttrs
             ( \ia ->

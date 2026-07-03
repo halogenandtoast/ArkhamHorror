@@ -157,9 +157,9 @@ attachmentLimit "10079" = 3 -- Bewitching
 attachmentLimit _ = maxBound
 
 sideSlotsWithoutAttachments :: ArkhamDBDecklist -> Map CardCode Int
-sideSlotsWithoutAttachments decklist = foldr removeCard (sideSlots decklist) (concat $ Map.elems $ decklistAttachments decklist)
+sideSlotsWithoutAttachments decklist = foldr doRemoveCard (sideSlots decklist) (concat $ Map.elems $ decklistAttachments decklist)
  where
-  removeCard cardCode = Map.update (\n -> guard (n > 1) $> n - 1) cardCode
+  doRemoveCard cardCode = Map.update (\n -> guard (n > 1) $> n - 1) cardCode
 
 metaDecklistAttachments :: ArkhamDBDecklist -> Map CardCode [CardCode]
 metaDecklistAttachments decklist = fromMaybe mempty do

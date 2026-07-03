@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Card.CardCode
 import Arkham.Helpers.Investigator (getCardAttachments)
 import Arkham.Helpers.Modifiers hiding (cardResolutionModifier, costModifier)
 import Arkham.I18n

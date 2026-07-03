@@ -47,7 +47,6 @@ instance RunMessage UnfinishedBusiness_H where
         . UnfinishedBusiness_H
         $ attrs
         & (placementL .~ InThreatArea iid)
-        & (flippedL .~ True)
         & (removeAfterResolutionL .~ False)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasCards <-

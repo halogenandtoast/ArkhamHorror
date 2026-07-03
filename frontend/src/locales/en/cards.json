@@ -611,9 +611,7 @@
     "joeDiamond": {
       "chooseHunchCards": "Choose 10 more cards for hunch deck",
       "chooseHunch": "Choose 10 more cards for hunch deck",
-      "doNotMove": "Do not move an insight",
-      "useImportedHunchDeck": "Use imported hunch deck",
-      "manuallyBuildHunchDeck": "Build hunch deck manually"
+      "doNotMove": "Do not move an insight"
     },
     "katana": {
       "exhaustKatanaToDeal2DamageForThisAttack": "Exhaust Katana to deal +2 damage for this attack"

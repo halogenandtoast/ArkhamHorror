@@ -13,27 +13,23 @@ import TestImport
 
 spec :: Spec
 spec = describe "Joe Diamond" do
-  it "can use an imported arkham.build hunch deck during setup" $ gameTestWith Investigators.joeDiamond $ \self -> do
+  it "uses an imported arkham.build hunch deck during setup without asking" $ gameTestWith Investigators.joeDiamond $ \self -> do
     withDeck self (importedHunchCards <> extraInsightCards)
     withImportedHunchDeck self importedHunchCodes
 
     run $ SetupInvestigator self.id
-    chooseOptionMatching "use imported hunch deck" \case
-      Label "$cards.label.joeDiamond.useImportedHunchDeck" _ -> True
-      _ -> False
 
     decks <- fieldMap InvestigatorDecks id self.id
     let hunchDeckCodes = maybe [] (map toCardCode) $ Map.lookup InvestigatorDeck.HunchDeck decks
     liftIO $ hunchDeckCodes `shouldMatchList` importedHunchCodes
 
-  it "can still manually build a hunch deck when an imported deck is configured" $ gameTestWith Investigators.joeDiamond $ \self -> do
+    questionMap <- gameQuestion <$> getGame
+    liftIO $ questionMap `shouldBe` mempty
+
+  it "still manually builds a hunch deck when no imported deck is configured" $ gameTestWith Investigators.joeDiamond $ \self -> do
     withDeck self (importedHunchCards <> extraInsightCards)
-    withImportedHunchDeck self importedHunchCodes
 
     run $ SetupInvestigator self.id
-    chooseOptionMatching "manually build hunch deck" \case
-      Label "$cards.label.joeDiamond.manuallyBuildHunchDeck" _ -> True
-      _ -> False
 
     questionMap <- gameQuestion <$> getGame
     case mapToList questionMap of

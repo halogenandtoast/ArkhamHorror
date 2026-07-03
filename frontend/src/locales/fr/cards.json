@@ -3,9 +3,7 @@
     "joeDiamond": {
       "chooseHunchCards": "Choisissez 10 cartes supplémentaires pour le paquet Intuition",
       "chooseHunch": "Choisissez 10 cartes supplémentaires pour le paquet Intuition",
-      "doNotMove": "Ne pas déplacer une Perspicacité",
-      "useImportedHunchDeck": "Utiliser le paquet Intuition importé",
-      "manuallyBuildHunchDeck": "Construire le paquet Intuition manuellement"
+      "doNotMove": "Ne pas déplacer une Perspicacité"
     },
     "occultReliquary": {
       "choose": "Choisir le type d'emplacement pour le Reliquaire Occulte"

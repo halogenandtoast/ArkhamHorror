@@ -126,22 +126,8 @@ instance RunMessage JoeDiamond where
       attrs' <- liftRunMessage msg attrs
       importedCodes <- getCardAttachments iid Cards.joeDiamond
       case pickHunchDeck importedCodes (hunchDeckCandidates attrs') of
-        Just importedHunchDeck -> do
-          focusCards (map toCard importedHunchDeck) do
-            questionLabel "$cards.label.joeDiamond.chooseHunchCards" iid
-              $ ChooseOne
-                [ Label
-                    "$cards.label.joeDiamond.useImportedHunchDeck"
-                    [UseImportedHunchDeck iid (map toCardCode importedHunchDeck)]
-                , Label "$cards.label.joeDiamond.manuallyBuildHunchDeck" [ManuallyBuildHunchDeck iid]
-                ]
-          pure $ JoeDiamond (attrs' `with` meta)
+        Just importedHunchDeck -> useHunchDeck attrs' meta importedHunchDeck
         Nothing -> setupHunchDeck iid attrs' meta
-    UseImportedHunchDeck iid cardCodes | attrs `is` iid ->
-      case pickHunchDeck cardCodes (hunchDeckCandidates attrs) of
-        Just importedHunchDeck -> useHunchDeck attrs meta importedHunchDeck
-        Nothing -> setupHunchDeck iid attrs meta
-    ManuallyBuildHunchDeck iid | attrs `is` iid -> setupHunchDeck iid attrs meta
     ShuffleCardsIntoDeck (Deck.HunchDeck iid) [insight] | attrs `is` iid -> do
       hunchDeck' <- shuffleM $ insight : filter (/= insight) (hunchDeck attrs)
       pure

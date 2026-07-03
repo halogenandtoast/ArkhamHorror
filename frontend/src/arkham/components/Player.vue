@@ -18,6 +18,7 @@ import EventView from '@/arkham/components/Event.vue';
 import Skill from '@/arkham/components/Skill.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
+import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
@@ -27,6 +28,7 @@ import Draw from '@/arkham/components/Draw.vue'
 import { IsMobile } from '@/arkham/isMobile';
 import { Modifier } from '@/arkham/types/Modifier';
 import { Enemy } from '@/arkham/types/Enemy';
+import type { Source } from '@/arkham/types/Source';
 import { XMarkIcon } from '@heroicons/vue/20/solid';
 import * as Api from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef';
@@ -218,6 +220,108 @@ const committedIdSet = computed(() => new Set((props.game.skillTest?.committedCa
 const playerHand = computed(() =>
   props.investigator.hand.filter(card => !committedIdSet.value.has(toCardContents(card).id))
 )
+const handCardIdSet = computed(() => new Set(playerHand.value.map(card => toCardContents(card).id)))
+
+function asIfInHandCardId(contents: unknown): string | null {
+  if (typeof contents === 'string') return contents
+  if (Array.isArray(contents)) {
+    const cardId = [...contents].reverse().find((value): value is string => typeof value === 'string')
+    return cardId ?? null
+  }
+  return null
+}
+
+function sourceCard(source: Source): CardT.Card | null {
+  switch (source.sourceTag) {
+    case 'ProxySource':
+      return sourceCard(source.source)
+    case 'IndexedSource':
+      return source.contents ? sourceCard(source.contents[1]) : null
+    case 'AbilitySource':
+      return sourceCard(source.contents[0])
+    case 'UseAbilitySource':
+      return sourceCard(source.contents[1])
+    case 'PaymentSource':
+      return sourceCard(source.contents)
+    case 'BothSource':
+      return sourceCard(source.contents[0]) ?? sourceCard(source.contents[1])
+    case 'TarotSource':
+      return null
+    case 'OtherSource': {
+      const id = source.contents
+      if (!id) return null
+      switch (source.tag) {
+        case 'AssetSource':
+          return props.game.cards[props.game.assets[id]?.cardId]
+        case 'EventSource':
+          return props.game.cards[props.game.events[id]?.cardId]
+        case 'SkillSource':
+          return props.game.cards[props.game.skills[id]?.cardId]
+        case 'TreacherySource':
+          return props.game.cards[props.game.treacheries[id]?.cardId]
+        case 'CardIdSource':
+          return props.game.cards[id]
+        default:
+          return null
+      }
+    }
+  }
+}
+
+const asIfInHandCards = computed<CardT.Card[]>(() => {
+  const cards: CardT.Card[] = []
+  const seen = new Set<string>()
+
+  for (const [target, modifiers] of props.game.modifiers) {
+    if (target.tag !== 'InvestigatorTarget' || target.contents !== props.investigator.id) continue
+
+    for (const modifier of modifiers) {
+      const modifierType = modifier.type
+      if (modifierType.tag === 'AsIfInHand') {
+        const card = modifierType.contents
+        const cardId = toCardContents(card).id
+        if (!handCardIdSet.value.has(cardId) && !seen.has(cardId)) {
+          cards.push(card)
+          seen.add(cardId)
+        }
+      } else if (modifierType.tag === 'AsIfInHandFor' || modifierType.tag === 'AsIfInHandForPlay') {
+        const cardId = asIfInHandCardId(modifierType.contents)
+        if (!cardId || handCardIdSet.value.has(cardId) || seen.has(cardId)) continue
+        const card = props.game.cards[cardId] ?? modifier.card
+        if (card) {
+          cards.push(card)
+          seen.add(cardId)
+        }
+      }
+    }
+  }
+
+  return cards
+})
+
+const asIfInHandPhantomCards = computed<CardT.Card[]>(() => {
+  const cards: CardT.Card[] = []
+  const seen = new Set<string>()
+  const playableIds = new Set(asIfInHandCards.value.map(card => toCardContents(card).id))
+
+  for (const [target, modifiers] of props.game.modifiers) {
+    if (target.tag !== 'InvestigatorTarget' || target.contents !== props.investigator.id) continue
+
+    for (const modifier of modifiers) {
+      const modifierType = modifier.type
+      if (modifierType.tag !== 'AsIfInHand' && modifierType.tag !== 'AsIfInHandFor' && modifierType.tag !== 'AsIfInHandForPlay') continue
+
+      const card = sourceCard(modifier.source) ?? modifier.card
+      if (!card) continue
+      const cardId = toCardContents(card).id
+      if (playableIds.has(cardId) || seen.has(cardId)) continue
+      cards.push(card)
+      seen.add(cardId)
+    }
+  }
+
+  return cards
+})
 
 const showDebugAddCard = ref(false)
 const debugPlayerCards = ref<CardDef[]>([])
@@ -763,6 +867,29 @@ function closeHand() {
           @dragover.prevent="dragover($event)"
           @dragenter.prevent
           >
+          <div v-if="asIfInHandCards.length > 0" class="special-hand-card-stack">
+            <span
+              v-for="card in asIfInHandPhantomCards"
+              :key="toCardContents(card).id"
+              class="phantom-hand-card-frame"
+            >
+              <img
+                class="card phantom-hand-card"
+                :src="imgsrc(CardT.cardImage(card))"
+                :data-image="imgsrc(CardT.cardImage(card))"
+              />
+            </span>
+            <CardsUnderIndicator
+              key="as-if-in-hand-cards"
+              class="special-hand-cards"
+              :cards="asIfInHandCards"
+              label="Out of play cards playable as if in hand"
+              placement="top"
+              :game="game"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
+          </div>
           <HandCard
             v-for="card in playerHand"
             :card="card"
@@ -835,6 +962,29 @@ function closeHand() {
         @dragenter.prevent
         :style="{ pointerEvents: `${handAreaPointerEvents}`, flex: 1 }"
         >
+        <div v-if="asIfInHandCards.length > 0" class="special-hand-card-stack">
+          <span
+            v-for="card in asIfInHandPhantomCards"
+            :key="toCardContents(card).id"
+            class="phantom-hand-card-frame"
+          >
+            <img
+              class="card phantom-hand-card"
+              :src="imgsrc(CardT.cardImage(card))"
+              :data-image="imgsrc(CardT.cardImage(card))"
+            />
+          </span>
+          <CardsUnderIndicator
+            key="as-if-in-hand-cards"
+            class="special-hand-cards"
+            :cards="asIfInHandCards"
+            label="Out of play cards playable as if in hand"
+            placement="top"
+            :game="game"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+        </div>
         <HandCard
           v-for="card in playerHand"
           :card="card"
@@ -991,6 +1141,76 @@ function closeHand() {
   display: flex;
   gap: 5px;
   overflow-x: auto;
+}
+
+.special-hand-card-stack {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+  min-width: var(--card-width);
+}
+
+.phantom-hand-card-frame {
+  position: relative;
+  display: block;
+  width: var(--card-width);
+  min-width: var(--card-width);
+  line-height: 0;
+}
+
+.phantom-hand-card-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px dashed rgba(160, 185, 210, 0.38);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.phantom-hand-card {
+  width: var(--card-width);
+  min-width: var(--card-width);
+  border-radius: 6px;
+  opacity: 0.45;
+  filter: saturate(0.45) contrast(0.9) drop-shadow(0 0 7px rgba(120, 170, 220, 0.28));
+  mask-image: linear-gradient(to bottom, black 68%, rgba(0, 0, 0, 0.22));
+}
+
+.phantom-hand-card:hover {
+  opacity: 0.72;
+  filter: saturate(0.65) contrast(0.98) drop-shadow(0 0 9px rgba(120, 170, 220, 0.42));
+}
+
+.special-hand-cards {
+  align-self: center;
+}
+
+.special-hand-cards:deep(.cards-under-indicator) {
+  height: 18px;
+  min-width: 30px;
+  padding: 0 5px;
+  gap: 3px;
+  border-style: dashed;
+  border-color: rgba(160, 185, 210, 0.38);
+  background: rgba(10, 18, 28, 0.58);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 7px rgba(110, 160, 210, 0.18);
+}
+
+.special-hand-cards:deep(.cards-under-indicator--highlighted) {
+  border-color: color-mix(in srgb, var(--select) 78%, white 8%);
+  background: color-mix(in srgb, var(--select) 26%, rgba(10, 18, 28, 0.72));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--select) 42%, transparent);
+}
+
+.special-hand-cards:deep(.cards-under-indicator__icon) {
+  transform: scale(0.78);
+}
+
+.special-hand-cards:deep(.cards-under-indicator__count) {
+  font-size: 0.62rem;
 }
 
 .hand-move,

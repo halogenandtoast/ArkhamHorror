@@ -11,7 +11,7 @@ newtype ReturnToHeartOfTheEldersPart1 = ReturnToHeartOfTheEldersPart1 HeartOfThe
 returnToHeartOfTheEldersPart1 :: Difficulty -> ReturnToHeartOfTheEldersPart1
 returnToHeartOfTheEldersPart1 difficulty =
   scenarioWith
-    (ReturnToHeartOfTheEldersPart1 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False))
+    (ReturnToHeartOfTheEldersPart1 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False Nothing))
     "53045"
     "Return to Heart of the Elders"
     difficulty

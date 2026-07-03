@@ -56,9 +56,24 @@ data HeartOfTheEldersScenarioStep = One | Two
 data HeartOfTheEldersMetadata = HeartOfTheEldersMetadata
   { scenarioStep :: HeartOfTheEldersScenarioStep
   , reachedAct2 :: Bool
+  , part1StartingCard :: Maybe CardCode
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON HeartOfTheEldersMetadata where
+  toJSON metadata =
+    object
+      [ "scenarioStep" .= scenarioStep metadata
+      , "reachedAct2" .= reachedAct2 metadata
+      , "part1StartingCard" .= part1StartingCard metadata
+      ]
+
+instance FromJSON HeartOfTheEldersMetadata where
+  parseJSON = withObject "HeartOfTheEldersMetadata" \o -> do
+    scenarioStep' <- o .: "scenarioStep"
+    reachedAct2' <- o .: "reachedAct2"
+    part1StartingCard' <- o .:? "part1StartingCard"
+    pure $ HeartOfTheEldersMetadata scenarioStep' reachedAct2' part1StartingCard'
 
 newtype HeartOfTheElders = HeartOfTheElders (ScenarioAttrs `With` HeartOfTheEldersMetadata)
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -89,7 +104,7 @@ heartOfTheEldersLayout =
 heartOfTheEldersPart1 :: Difficulty -> HeartOfTheEldersPart1
 heartOfTheEldersPart1 difficulty =
   scenarioWith
-    (HeartOfTheEldersPart1 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False))
+    (HeartOfTheEldersPart1 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False Nothing))
     "04205a"
     "Heart of the Elders, Part 1"
     difficulty
@@ -99,7 +114,7 @@ heartOfTheEldersPart1 difficulty =
 heartOfTheEldersPart2 :: Difficulty -> HeartOfTheEldersPart2
 heartOfTheEldersPart2 difficulty =
   scenarioWith
-    (HeartOfTheEldersPart2 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata Two False))
+    (HeartOfTheEldersPart2 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata Two False Nothing))
     "04205a"
     "Heart of the Elders, Part 2"
     difficulty
@@ -109,7 +124,7 @@ heartOfTheEldersPart2 difficulty =
 heartOfTheElders :: Difficulty -> HeartOfTheElders
 heartOfTheElders difficulty =
   scenario
-    (HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False))
+    (HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False Nothing))
     "04205"
     "Heart of the Elders"
     difficulty
@@ -162,12 +177,14 @@ setupHeartOfTheElders
 setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata of
   One -> scope "part1" do
     pathsKnown <- getRecordCount PathsAreKnownToYou
-
     if pathsKnown == 6
       then do
         setup $ ul $ li.valid "pathsKnownToYou"
         push R1
       else do
+        for_ (part1StartingCard metadata >>= lookupCardDef) \cardDef ->
+          withOwner cardDef (`putCampaignCardIntoPlay` cardDef)
+
         mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
         setup do
           ul do
@@ -342,26 +359,29 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
     storyWithChooseOneM' (h "title" >> p "intro1") do
       getOwner Assets.ichtacaTheForgottenGuardian >>= \case
         Nothing -> invalidLabeled' "ichtaca"
-        Just iid ->
+        Just _ ->
           labeled' "ichtaca" do
             flavor $ h "title" >> p "intro2"
-            putCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
+            push $ ScenarioSpecific "part1StartingCard" (toJSON $ toCardCode Assets.ichtacaTheForgottenGuardian)
 
       getOwner Assets.alejandroVela >>= \case
         Nothing -> invalidLabeled' "alejandro"
-        Just iid ->
+        Just _ ->
           labeled' "alejandro" do
             flavor $ h "title" >> p "intro3"
-            putCampaignCardIntoPlay iid Assets.alejandroVela
+            push $ ScenarioSpecific "part1StartingCard" (toJSON $ toCardCode Assets.alejandroVela)
 
       getOwner Assets.expeditionJournal >>= \case
         Nothing -> invalidLabeled' "expeditionJournal"
-        Just iid ->
+        Just _ ->
           labeled' "expeditionJournal" do
             flavor $ h "title" >> p "intro4"
-            putCampaignCardIntoPlay iid Assets.expeditionJournal
+            push $ ScenarioSpecific "part1StartingCard" (toJSON $ toCardCode Assets.expeditionJournal)
       labeled' "else" nothing
     pure s
+  ScenarioSpecific "part1StartingCard" v -> do
+    let cardCode = toResult @CardCode v
+    pure $ HeartOfTheElders (attrs `With` metadata {part1StartingCard = Just cardCode})
   ScenarioResolution r -> scope "resolutions" do
     case r of
       NoResolution -> do

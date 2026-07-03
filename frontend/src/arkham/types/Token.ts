@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { withDefault } from '@/arkham/parser';
 
 export const TOKENS = [
   "Aether",
@@ -84,8 +85,10 @@ export type Tokens = Partial<Record<Token, number>>;
 export function isUse(t: Token): boolean {
   return t !== 'Damage' && t !== 'Horror' && t !== 'Clue' && t !== 'Doom';
 }
-export const tokensDecoder =
+const tokenPairsDecoder =
   JsonDecoder.array<[Token, number]>(
     JsonDecoder.tuple([tokenDecoder, JsonDecoder.number()], 'Token[]'),
     'Token[]'
   ).map<{ [key in Token]?: number}>(pairs => pairs.reduce((acc, v) => ({ ...acc, [v[0]]: v[1] }), {}))
+
+export const tokensDecoder = withDefault({}, tokenPairsDecoder)

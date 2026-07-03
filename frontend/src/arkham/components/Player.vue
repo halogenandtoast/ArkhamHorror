@@ -840,7 +840,7 @@ function closeHand() {
           />
           <span class="deck-size">{{hunchDeck.length}}</span>
         </div>
-        <button v-if="debug" @click="showHunchDeck">{{ $t('player.viewDeck') }}</button>
+        <button v-if="debug.active" @click="showHunchDeck">{{ $t('player.viewDeck') }}</button>
       </div>
 
       <div class="investigator-and-deck">

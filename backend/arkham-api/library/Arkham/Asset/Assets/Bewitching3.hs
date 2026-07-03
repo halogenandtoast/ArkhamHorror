@@ -5,10 +5,14 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
+import Arkham.Card.CardCode
+import Arkham.Helpers.Investigator (getCardAttachments)
 import Arkham.Helpers.Modifiers (getAdditionalSearchTargets)
 import Arkham.I18n
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 import Arkham.Name (toTitle)
 import Arkham.Strategy
 import Arkham.Trait qualified as Trait
@@ -28,10 +32,28 @@ instance HasAbilities Bewitching3 where
    where
     criteria = if null a.cardsUnderneath then Never else NoRestriction
 
+pickCardsByCodes :: [CardCode] -> [Card] -> Maybe [Card]
+pickCardsByCodes [] _ = Just []
+pickCardsByCodes (code : codes) cards = do
+  let (before, rest) = break ((== code) . (.cardCode)) cards
+  case rest of
+    [] -> Nothing
+    card : after -> (card :) <$> pickCardsByCodes codes (before <> after)
+
 instance RunMessage Bewitching3 where
   runMessage msg a@(Bewitching3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid attrs iid [fromDeck] #any (defer attrs IsNotDraw)
+      attachments <- getCardAttachments iid attrs
+      if null attachments
+        then search iid attrs iid [fromDeck] #any (defer attrs IsNotDraw)
+        else do
+          deck <- fieldMap InvestigatorDeck (map toCard . (.cards)) iid
+          let tricks = filterCards (CardWithTrait Trait.Trick) deck
+          case pickCardsByCodes attachments tricks of
+            Just selected | length selected <= 3 -> do
+              traverse_ obtainCard selected
+              placeUnderneath attrs selected
+            _ -> search iid attrs iid [fromDeck] #any (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       let tricks = filterCards (CardWithTrait Trait.Trick) cards

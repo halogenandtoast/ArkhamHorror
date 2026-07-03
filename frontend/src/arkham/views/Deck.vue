@@ -161,13 +161,32 @@ const isSpiritDeckCard = (card: Arkham.CardDef) => {
   return hasTrait(card, 'Ally') || hasTrait(card, 'Geist') || hasTrait(card, 'Spirit')
 }
 
+const attachmentLimits: Record<string, number> = {
+  '03264': 3, // Stick to the Plan
+  '07303': 5, // Ancestral Knowledge
+  '10079': 3, // Bewitching
+}
+
+const hasCardInDeck = (code: string) => {
+  const slots = deck.value?.list.slots ?? {}
+  return !!slots[code] || !!slots[`c${code}`]
+}
+
 const sideSlotCards = computed(() => cardsFromSlots(deck.value?.list.sideSlots))
+const explicitAttachmentCards = computed(() => {
+  return Object.entries(attachmentLimits).flatMap(([code, limit]) => {
+    if (!hasCardInDeck(code)) return []
+    const value = deckMeta.value[`attachments_${code}`]
+    return typeof value === 'string' ? cardsFromList(value).slice(0, limit) : []
+  })
+})
+const sideSlotCardsWithoutAttachments = computed(() => withoutCards(sideSlotCards.value, explicitAttachmentCards.value))
 
 const sideSlotCardsAreSpiritDeck = computed(() => {
-  return hasFromTheBeyond.value && sideSlotCards.value.length > 0 && sideSlotCards.value.every(isSpiritDeckCard)
+  return hasFromTheBeyond.value && sideSlotCardsWithoutAttachments.value.length > 0 && sideSlotCardsWithoutAttachments.value.every(isSpiritDeckCard)
 })
 
-const sideDeckCards = computed(() => sideSlotCardsAreSpiritDeck.value ? [] : sideSlotCards.value)
+const sideDeckCards = computed(() => sideSlotCardsAreSpiritDeck.value ? [] : sideSlotCardsWithoutAttachments.value)
 
 const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
   const result: Record<string, Arkham.CardDef[]> = {}
@@ -176,8 +195,9 @@ const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
     const match = key.match(/^attachments_(\d+)$/)
     if (!match || typeof value !== 'string') return
 
-    const attachedCards = cardsFromList(value)
-    if (attachedCards.length > 0) result[match[1]] = attachedCards
+    const code = match[1]
+    const attachedCards = cardsFromList(value).slice(0, attachmentLimits[code] ?? undefined)
+    if (attachedCards.length > 0) result[code] = attachedCards
   })
 
   const hiddenSlots = (deckMeta.value.hidden_slots as { slots?: Record<string, number> } | undefined)?.slots
@@ -190,7 +210,7 @@ const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
   }
 
   if (sideSlotCardsAreSpiritDeck.value) {
-    result['90052'] = [...(result['90052'] ?? []), ...sideSlotCards.value]
+    result['90052'] = [...(result['90052'] ?? []), ...sideSlotCardsWithoutAttachments.value]
   }
 
   if (typeof deckMeta.value.extra_deck === 'string' && hasFromTheBeyond.value) {

@@ -35,10 +35,11 @@ instance RunMessage SparrowMaskTheWanderersCompanion where
   runMessage msg a@(SparrowMaskTheWanderersCompanion attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
-        chooseOneM iid do
-          (withI18n $ countVar 2 $ skillVar #willpower $ labeled' "getPlus")
-            $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 2)
-          (withI18n $ countVar 2 $ skillVar #agility $ labeled' "getPlus") $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 2)
+        chooseOneM iid $ withI18n do
+          countVar 2 $ skillVar #willpower $ labeled' "getPlus" do
+            skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 2)
+          countVar 2 $ skillVar #agility $ labeled' "getPlus" do
+            skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 2)
       pure a
     Do (CheckWindows ws) -> do
       if attrs.use Offering < 2
@@ -46,16 +47,15 @@ instance RunMessage SparrowMaskTheWanderersCompanion where
           Nothing -> pure a
           Just iid -> do
             shouldReplenish <-
-              anyM
-                ( \w ->
-                    windowMatches iid (toSource attrs) w
-                      $ oneOf
-                        [ DealtDamageOrHorror #after AnySource You
-                        , DealtDamage #after AnySource You
-                        , DealtHorror #after AnySource You
-                        ]
-                )
-                ws
+              ws & anyM \w ->
+                windowMatches iid (toSource attrs) w
+                  $ oneOf
+                    [ DealtDamageOrHorror #after AnySource (InvestigatorWithId iid)
+                    , DealtDamage #after AnySource (InvestigatorWithId iid)
+                    , DealtHorror #after AnySource (InvestigatorWithId iid)
+                    , AssetDealtDamageOrHorror #after AnySource (AssetControlledBy $ InvestigatorWithId iid)
+                    , AssetDealtDamage #after AnySource (AssetControlledBy $ InvestigatorWithId iid)
+                    ]
             depth <- getWindowDepth
             let alreadyReplenished = isJust $ getAssetMetaDefault @(Maybe Int) Nothing attrs
             if shouldReplenish && not alreadyReplenished

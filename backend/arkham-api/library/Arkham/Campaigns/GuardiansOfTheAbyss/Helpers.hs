@@ -120,7 +120,7 @@ reference card when the game ended.
 -}
 recordBrotherhoodAgentsWhoEscaped :: ReverseQueue m => m ()
 recordBrotherhoodAgentsWhoEscaped = do
-  inPlay <- selectField EnemyCardCode (InPlayEnemy $ EnemyWithTrait Cultist <> UniqueEnemy)
+  inPlay <- selectField EnemyCardCode (EnemyWithTrait Cultist <> UniqueEnemy)
   underneath <- scenarioField ScenarioCardsUnderScenarioReference
   let escaped = inPlay <> [toCardCode c | c <- underneath, cdUnique (toCardDef c)]
   unless (null escaped) $ recordSetInsert BrotherhoodAgentsWhoEscaped escaped

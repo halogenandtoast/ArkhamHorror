@@ -32,7 +32,7 @@ instance HasAbilities FateOfTheValeV2 where
           $ restricted
             a
             2
-            ( notExists (InPlayEnemy $ EnemyWithTrait Trait.Resident)
+            ( notExists (EnemyWithTrait Trait.Resident)
                 <> notExists (LocationWithCardsUnderneath $ HasCard $ CardWithTrait Trait.Resident)
             )
           $ Objective

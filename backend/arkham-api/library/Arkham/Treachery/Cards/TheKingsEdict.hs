@@ -31,7 +31,7 @@ instance RunMessage TheKingsEdict where
             then for_ enemies \cultist -> moveTokens attrs lid cultist #clue 1
             else chooseNM iid clueCount do
               targets enemies \cultist -> moveTokens attrs lid cultist #clue 1
-      selectEach (InPlayEnemy $ withTrait Cultist)
+      selectEach (EnemyWithTrait Cultist)
         $ createCardEffect Cards.theKingsEdict Nothing attrs
       pure t
     _ -> TheKingsEdict <$> liftRunMessage msg attrs

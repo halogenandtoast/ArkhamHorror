@@ -21,7 +21,7 @@ inconvenientQuesitoningC = treachery InconvenientQuesitoningC Cards.inconvenient
 instance RunMessage InconvenientQuesitoningC where
   runMessage msg t@(InconvenientQuesitoningC attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- select $ NearestEnemyTo iid $ InPlayEnemy $ EnemyWithTrait Casino <> not_ UniqueEnemy
+      enemies <- select $ NearestEnemyTo iid $ EnemyWithTrait Casino <> not_ UniqueEnemy
       if null enemies
         then gainSurge attrs
         else do

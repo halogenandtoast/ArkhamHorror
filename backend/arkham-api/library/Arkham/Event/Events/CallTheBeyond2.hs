@@ -44,9 +44,9 @@ instance RunMessage CallTheBeyond2 where
       abilities <-
         map ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
           <$> select
-            ( PerformableAbility [IgnoreActionCost]
-                <> AbilityIsActionAbility
+            ( AbilityIsActionAbility
                 <> AbilityOnAsset (AssetWithId aid)
+                <> PerformableAbility [IgnoreActionCost]
             )
       when (notNull abilities) do
         chooseOne iid $ Label "$label.doNotResolveAbility" []

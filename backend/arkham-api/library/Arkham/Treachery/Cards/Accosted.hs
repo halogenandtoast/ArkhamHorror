@@ -16,7 +16,7 @@ accosted = treachery Accosted Cards.accosted
 instance RunMessage Accosted where
   runMessage msg t@(Accosted attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      cultists <- select $ NearestEnemyToFallback iid (InPlayEnemy #cultist)
+      cultists <- select $ NearestEnemyToFallback iid (#cultist)
       if null cultists
         then do
           assignDamage iid attrs 1

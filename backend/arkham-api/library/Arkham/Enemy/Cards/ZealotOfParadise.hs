@@ -19,7 +19,7 @@ zealotOfParadise =
 instance HasAbilities ZealotOfParadise where
   getAbilities (ZealotOfParadise a) =
     extend1 a
-      $ restricted a 1 (notExists $ InPlayEnemy $ mapOneOf factionEnemy [BlueFaction, RedFaction])
+      $ restricted a 1 (noneInPlay $ mapOneOf factionEnemy [BlueFaction, RedFaction])
       $ forced
       $ RoundEnds #when
 

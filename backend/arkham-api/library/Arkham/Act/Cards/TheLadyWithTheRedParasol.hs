@@ -120,6 +120,6 @@ instance RunMessage TheLadyWithTheRedParasol where
         _ -> error "failed to gather tzu san niang's concealed cards"
       push
         $ RemoveAllDoomFromPlay
-          defaultRemoveDoomMatchers {removeDoomEnemies = InPlayEnemy (not_ $ EnemyWithId tzuSanNiang)}
+          defaultRemoveDoomMatchers {removeDoomEnemies = (not_ $ EnemyWithId tzuSanNiang)}
       pure a
     _ -> TheLadyWithTheRedParasol <$> liftRunMessage msg attrs

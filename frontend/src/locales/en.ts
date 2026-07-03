@@ -18,6 +18,7 @@ import theFeastOfHemlockVale from '@/locales/en/theFeastOfHemlockVale'
 import brethrenOfAsh from '@/locales/en/brethrenOfAsh'
 import theDrownedCity from '@/locales/en/theDrownedCity'
 import standalone from '@/locales/en/standalone'
+import theLabyrinthsOfLunacyLog from '@/locales/en/theLabyrinthsOfLunacy.json'
 import gameBoard from '@/locales/en/gameBoard/gameBoard'
 import xp from '@/locales/en/xp.json'
 
@@ -45,4 +46,5 @@ export default
   , brethrenOfAsh
   , theDrownedCity
   , standalone
+  , theLabyrinthsOfLunacy: theLabyrinthsOfLunacyLog
   }

@@ -31,7 +31,7 @@ instance RunMessage BumsRush where
     DoStep 2 (PlayThisEvent iid (is attrs -> True)) -> do
       for_ attrs.target.enemy \enemyId -> do
         -- because this is delayed, the enemy might have been defeated and we should not move it
-        whenM (matches enemyId (InPlayEnemy NonEliteEnemy)) do
+        whenM (matches enemyId (NonEliteEnemy)) do
           choices <- select $ connectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
           chooseOrRunOneM iid do
             labeledI "doNotMoveEnemy" nothing

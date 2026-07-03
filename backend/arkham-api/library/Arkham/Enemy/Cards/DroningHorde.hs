@@ -22,10 +22,7 @@ instance HasModifiersFor DroningHorde where
 
 instance HasAbilities DroningHorde where
   getAbilities (DroningHorde a) =
-    extend1 a
-      $ mkAbility a 1
-      $ forced
-      $ EnemyEnters #after Anywhere (be a <> not_ IsSwarm)
+    extend1 a $ forcedAbility a 1 $ EnemyEntersPlay #after (be a <> not_ IsSwarm)
 
 instance RunMessage DroningHorde where
   runMessage msg e@(DroningHorde attrs) = runQueueT $ case msg of
@@ -34,10 +31,9 @@ instance RunMessage DroningHorde where
       pure e
     ForTarget (InvestigatorTarget iid) (UseThisAbility _ (isSource attrs -> True) 1) -> do
       hand <- iid.hand
-      whenM (selectAny $ EnemyWithTrait Insect) do
-        when (notNull hand) do
-          chooseOneM iid $ targets hand \card -> do
-            insects <- select $ EnemyWithTrait Insect
-            chooseOrRunOneM iid $ targets insects (`placeCardAsSwarm` card)
+      insects <- select $ EnemyWithTrait Insect <> not_ IsSwarm
+      when (notNull insects && notNull hand) do
+        chooseOneM iid $ targets hand \card -> do
+          chooseOrRunOneM iid $ targets insects (`placeCardAsSwarm` card)
       pure e
     _ -> DroningHorde <$> liftRunMessage msg attrs

@@ -37,7 +37,7 @@ instance HasAbilities StatuesInTheDeep where
 instance RunMessage StatuesInTheDeep where
   runMessage msg l@(StatuesInTheDeep attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      selectEach (EnemyWithTrait AncientOne) $ automaticallyEvadeEnemy iid
+      selectEach (IncludeOmnipotent $ EnemyWithTrait AncientOne) $ automaticallyEvadeEnemy iid
       setThisFloodLevel attrs Unflooded
       gameModifier (attrs.ability 1) attrs CannotBeFlooded
       pure l

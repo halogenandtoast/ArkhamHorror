@@ -41,8 +41,8 @@ instance RunMessage DisciplineBalanceOfBody where
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       abilities' <-
         select
-          $ PerformableAbility [ActionCostModifier (-1)]
-          <> oneOf [AbilityIsAction #fight, AbilityIsAction #evade]
+          $ oneOf [AbilityIsAction #fight, AbilityIsAction #evade]
+          <> PerformableAbility [ActionCostModifier (-1)]
 
       playableCards <- withGrantedAction iid attrs do
         filterCards (mapOneOf CardWithAction [#fight, #evade])

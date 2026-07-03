@@ -18,7 +18,7 @@ hideousLullaby = treachery HideousLullaby Cards.hideousLullaby
 instance RunMessage HideousLullaby where
   runMessage msg t@(HideousLullaby attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      deepOnes <- selectMaybeMax EnemyFight $ InPlayEnemy $ EnemyWithTrait DeepOne
+      deepOnes <- selectMaybeMax EnemyFight $ EnemyWithTrait DeepOne
       if null deepOnes
         then gainSurge attrs
         else do

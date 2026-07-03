@@ -17,7 +17,7 @@ instance HasAbilities TheBurningPit where
   getAbilities (TheBurningPit a) =
     extendRevealed1 a
       $ groupLimit PerRound
-      $ restricted a 1 (exists $ factionAgenda RedFaction)
+      $ restricted a 1 (Here <> exists (factionAgenda RedFaction))
       $ FastAbility
       $ DrawEncounterCardsCost 1
 

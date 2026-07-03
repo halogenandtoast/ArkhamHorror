@@ -57,6 +57,7 @@ const TOKEN_CONFIG: Partial<Record<Token, { type: string; tooltip?: string }>> =
   Evidence: { type: 'resource', tooltip: 'Evidence' },
   Warning: { type: 'resource', tooltip: 'Warning' },
   Memory: { type: 'resource', tooltip: 'Memory' },
+  Mutation: { type: 'resource', tooltip: 'Mutation' },
   Brilliance: { type: 'resource', tooltip: 'Brilliance' },
   Charge: { type: 'resource' },
 }

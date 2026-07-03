@@ -43,7 +43,6 @@ instance RunMessage UnfinishedBusiness_F where
         . UnfinishedBusiness_F
         $ attrs
         & (placementL .~ InThreatArea iid)
-        & (flippedL .~ True)
         & (removeAfterResolutionL .~ False)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasEnoughResources <- fieldMap InvestigatorResources (>= 2) iid

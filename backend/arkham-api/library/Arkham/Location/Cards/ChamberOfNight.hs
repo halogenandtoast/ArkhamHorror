@@ -1,9 +1,11 @@
 module Arkham.Location.Cards.ChamberOfNight (chamberOfNight) where
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Types (Field (..))
 
 newtype ChamberOfNight = ChamberOfNight LocationAttrs
@@ -25,6 +27,10 @@ instance RunMessage ChamberOfNight where
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       cards <- scenarioField ScenarioCardsUnderScenarioReference
-      focusCards cards (continue_ iid)
+      focusCards cards do
+        chooseOrRunOneM iid $ targets cards $ handleTarget iid (attrs.ability 1)
+      pure l
+    HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
+      revealCard . forceFlipCard =<< fetchCard cid
       pure l
     _ -> ChamberOfNight <$> liftRunMessage msg attrs

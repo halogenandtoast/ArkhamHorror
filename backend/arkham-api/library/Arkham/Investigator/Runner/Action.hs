@@ -158,6 +158,7 @@ import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Message.Lifted.Move (moveTo, moveToEdit)
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
+import Arkham.Modifier.Builder (runCachedQueryT)
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
@@ -434,7 +435,11 @@ handlePlayerWindow a@InvestigatorAttrs{..} iid additionalActions isAdditional im
         <> [mkWhen Window.FastPlayerWindow | not immediate]
         <> [mkWhen Window.NonFast]
 
-  actions <- asIfTurn iid (getActions iid windows)
+  -- Run the whole action-enumeration pass under a single scoped query cache
+  -- (see 'runCachedQuery'): a PerformableAbility criterion (e.g. Eon Chart) would
+  -- otherwise re-enumerate every ability and re-run grid reachability uncached,
+  -- turning a large fast player window into a timeout on grid scenarios.
+  actions <- asIfTurn iid $ runCachedQueryT (getActions iid windows)
   anyForced <- anyM (isForcedAbility iid) actions
   if anyForced
     then do

@@ -20,17 +20,17 @@ transmogrify = treachery Transmogrify Cards.transmogrify
 instance RunMessage Transmogrify where
   runMessage msg t@(Transmogrify attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      insects <- select $ EnemyWithTrait Insect
+      insects <- select $ EnemyWithTrait Insect <> not_ IsSwarm
       if null insects
-        then findEncounterCard iid attrs $ mapOneOf cardIs [Enemies.trylogog, Enemies.trylogogWarOfTheOuterGods]
+        then
+          findEncounterCard iid attrs $ cardsAre [Enemies.trylogog, Enemies.trylogogWarOfTheOuterGods]
         else do
           assets <- select $ assetControlledBy iid
-          when (notNull assets) do
-            chooseOneM iid $ targets assets \asset ->
-              chooseTargetM iid insects \insect -> placeAssetAsSwarm insect asset
+          chooseOneM iid $ targets assets \asset ->
+            chooseTargetM iid insects (`placeAssetAsSwarm` asset)
       pure t
     FoundEncounterCard _ (isTarget attrs -> True) (toCard -> card) -> do
       burningPit <- selectOne $ locationIs Locations.theBurningPit
-      for_ burningPit \lid -> push $ SpawnEnemyAt card lid
+      for_ burningPit $ spawnEnemyAt_ card
       pure t
     _ -> Transmogrify <$> liftRunMessage msg attrs

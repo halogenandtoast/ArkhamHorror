@@ -1669,6 +1669,10 @@ putOnBottomOfDeck
   :: (ReverseQueue m, IsDeck deck, Targetable target) => InvestigatorId -> deck -> target -> m ()
 putOnBottomOfDeck iid deck target = push $ PutOnBottomOfDeck iid (toDeck deck) (toTarget target)
 
+putOnTopOfDeck
+  :: (ReverseQueue m, IsDeck deck, Targetable target) => InvestigatorId -> deck -> target -> m ()
+putOnTopOfDeck iid deck target = push $ PutOnTopOfDeck iid (toDeck deck) (toTarget target)
+
 putCardOnBottomOfDeck
   :: (ReverseQueue m, IsDeck deck, IsCard card) => InvestigatorId -> deck -> card -> m ()
 putCardOnBottomOfDeck iid deck card = push $ PutCardOnBottomOfDeck iid (toDeck deck) (toCard card)
@@ -2825,6 +2829,9 @@ takeControlOfSetAsideAsset iid card = push $ Msg.TakeControlOfSetAsideAsset iid 
 
 enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
 enemyCheckEngagement = push . EnemyCheckEngagement
+
+checkEngagement :: ReverseQueue m => InvestigatorId -> m ()
+checkEngagement = push . CheckEnemyEngagement
 
 attackIfEngaged
   :: ( ReverseQueue m

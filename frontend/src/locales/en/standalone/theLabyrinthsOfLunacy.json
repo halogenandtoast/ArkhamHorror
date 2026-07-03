@@ -1,11 +1,20 @@
 {
   "intro": {
     "title": "The Labyrinths of Lunacy",
-    "chooseGroup": "<p>When played in <i>Single Group Mode</i>, <i>The Labyrinths of Lunacy</i> can be played in one of two ways—as a single standalone scenario, or over a series of three games, like a mini-campaign.</p><p>When played as a single standalone scenario, you may play as either Group A, B, or C. When played as a mini-campaign, play three consecutive games—one for each group—in an order of your choosing. Which group is trapped in this part of the labyrinth?</p>",
+    "chooseMode": "<p>When played in <i>Single Group Mode</i>, <i>The Labyrinths of Lunacy</i> can be played in one of two ways—as a single standalone scenario, or over a series of three games, like a mini-campaign.</p><p>When played as a single standalone scenario, you may play as either Group A, B, or C. When played as a mini-campaign, play three consecutive games—one for each group—in an order of your choosing. How would you like to play?</p>",
+    "label": {
+      "standaloneMode": "Play a single standalone scenario",
+      "miniCampaignMode": "Play the three-game mini-campaign"
+    },
+    "chooseGroup": "<p>Which group is trapped in this part of the labyrinth?</p>",
     "groupA": "<p>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight.</p><p>For the first time since awakening, you study your surroundings. You have been sealed in a windowless chamber, which is filled with copper pipes. The faint whistling of escaping air surrounds you on all sides. You are a prisoner here, with no means of escape. There is a note lying on the ground nearby.</p>",
     "groupB": "<p>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight.</p><p>For the first time since awakening, you study your surroundings. You have been sealed in a tall glass tank, and water fills the chamber to your ankles. Outside the dull glass, you can see many more tanks like yours, wreathed in mist. You are a prisoner here, with no means of escape. There is a note lying on the ground just outside the tank.</p>",
     "groupC": "<p>You wake up and realize you are in a strange place, with no memory of how you arrived. Your muscles are weak and uncooperative. Your vision is blurred. Simply rising to your feet takes a tremendous effort. Your legs are wobbly and can barely support your weight.</p><p>For the first time since awakening, you study your surroundings. You are in a dark chamber, lit only by a few candles. Old barrels, crates and rotten storage shelves fill the cramped chamber. You cannot see any windows or doors leading out. You are a prisoner here, with no means of escape. There is a note lying on the ground nearby.</p>",
-    "note": "<p><i>It reads:</i></p><blockquote><i>Greetings.</i><br/><i>I have gathered you here as an experiment. Think of this as a test of human will. You will survive. Or you will die.</i><br/><i>You are not alone. Two other groups share in your fate. Will you risk your lives to aid them? Or will you find freedom upon the backs of their corpses?</i><br/><i>I will allow you to escape, should you prove strong of will and quick of wit. If not, your pain and anguish shall serve as a reminder that humans are not the inheritors of Earth.</i></blockquote>"
+    "note": "<p><i>It reads:</i></p><p><span class='wolgast' style='font-weight:600;'>Greetings.<br/>I have gathered you here as an experiment. Think of this as a test of human will. You will survive. Or you will die.<br/>You are not alone. Two other groups share in your fate. Will you risk your lives to aid them? Or will you find freedom upon the backs of their corpses?<br/>I will allow you to escape, should you prove strong of will and quick of wit. If not, your pain and anguish shall serve as a reminder that humans are not the inheritors of Earth.</span></p>",
+    "miniCampaign": {
+      "title": "The Mini-Campaign",
+      "instructions": "<p>When played as a mini-campaign, play three consecutive games—one for each group—in an order of your choosing. Unlike a normal campaign, the following rules apply:</p><ul><li>When constructing decks for <i>The Labyrinths of Lunacy</i>, use the rules for standalone mode. You do not need to start with 0 experience.</li><li>Players may swap investigators and/or decks in between each scenario, in order to represent the different groups of investigators who have been trapped inside the Labyrinths.</li><li>Experience is not earned or spent in between scenarios during this campaign.</li><li>There is no Campaign Log for this campaign. During this campaign, investigators do not earn trauma, and investigators who are killed or driven insane may still be used in other scenarios.</li></ul>"
+    }
   },
   "group": {
     "groupA": "Group A",
@@ -16,6 +25,11 @@
     "groupA": "Group A",
     "groupB": "Group B",
     "groupC": "Group C"
+  },
+  "remembered": {
+    "pulledTheLeftLever": "{name} pulled the left lever",
+    "pulledTheMiddleLever": "{name} pulled the middle lever",
+    "pulledTheRightLever": "{name} pulled the right lever"
   },
   "setup": {
     "gatherSets": "Gather all cards from <i>The Labyrinths of Lunacy</i> encounter set. This set is indicated by this icon:<section class='encounter-sets'><img src='{setImgPath}/in-the-labyrinths-of-lunacy.png'></section>",
@@ -41,10 +55,12 @@
     "takeClue": "Take control of 1 clue on an investigator in either Chamber of Sorrows or Chamber of Rain (or from that location if you are the only investigator in the game)."
   },
   "chamberOfRegret": {
-    "whichLever": "You pull one of the 3 levers (choose one): left, middle, or right. As soon as you do, the gate slams shut behind you. You cannot leave the Chamber of Regret for the remainder of the current act.",
-    "left": "Pull the left lever",
-    "middle": "Pull the middle lever",
-    "right": "Pull the right lever"
+    "label": {
+      "whichLever": "You pull one of the 3 levers (choose one): left, middle, or right. As soon as you do, the gate slams shut behind you. You cannot leave the Chamber of Regret for the remainder of the current act.",
+      "left": "Pull the left lever",
+      "middle": "Pull the middle lever",
+      "right": "Pull the right lever"
+    }
   },
   "labyrinthineHalls": {
     "chooseDrawCards": "You find an old lockbox in a pile of refuse, and decide to leave something behind. Choose an investigator to draw 2 cards.",
@@ -52,8 +68,10 @@
     "chooseAdditionalActions": "You peer through an overgrown mirror and see an unfamiliar reflection. Choose an investigator to take 2 additional actions during their next turn."
   },
   "torturedVictim": {
-    "discardRandomCard": "Discard a random card from your hand",
-    "takeAttack": "Tortured Victim makes an immediate attack against you"
+    "label": {
+      "discardRandomCard": "Discard a random card from your hand",
+      "takeAttack": "Tortured Victim makes an immediate attack against you"
+    }
   },
   "unnaturalWeariness": {
     "loseResources": "Lose 3 resources",
@@ -93,8 +111,10 @@
     "breaksFree": "<p><i>The creature smashes through the glass of its terrarium and lashes out hungrily at anyone nearby.</i></p><p>Move Eixodolon's Pet to Chamber of Hunger. It attacks each investigator in the Chamber of Hunger, in player order. Resolve <b>Act 3 Setup</b>.</p>"
   },
   "resolutions": {
-    "endScenario": "End the scenario here",
-    "playAnotherGroup": "Continue the mini-campaign as another group",
+    "label": {
+      "endScenario": "End the scenario here",
+      "playAnotherGroup": "Continue the mini-campaign as another group"
+    },
     "resolution1": {
       "title": "Resolution 1",
       "body": "<p><b>Resolution 1</b>: <i>In the wrong hands, your anguish is a powerful weapon. Your blood fuels the arcane glyph carved into the cement floor at the labyrinth's core. For the cruel mastermind who trapped you here, it is a moment of triumph and vindication. The entire world will feel this pain. This fear. This despair.</i></p><p>The investigators lose.</p>"

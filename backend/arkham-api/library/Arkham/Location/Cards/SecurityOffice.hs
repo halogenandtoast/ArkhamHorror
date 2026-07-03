@@ -30,7 +30,7 @@ instance RunMessage SecurityOffice where
       pure l
     DiscardedCards iid _ (isTarget attrs -> True) cards -> do
       enemyCards <-
-        fmap (map (.suit)) . mapMaybeM toPlayingCard =<< selectField EnemyCard (InPlayEnemy AnyEnemy)
+        fmap (map (.suit)) . mapMaybeM toPlayingCard =<< selectField EnemyCard (AnyEnemy)
       cards' <- cards & mapMaybeM toPlayingCard
       when (any ((`elem` enemyCards) . (.suit)) cards') do
         remember ObservedTheStaff

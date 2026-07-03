@@ -28,7 +28,7 @@ instance RunMessage SerpentsIre where
     Revelation iid (isSource attrs -> True) -> do
       serpents <- select $ OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent
       fightValue <-
-        maybeFieldMax @(OutOfPlayEntity 'PursuitZone Enemy)
+        maybeFieldMax0 @(OutOfPlayEntity 'PursuitZone Enemy)
           (OutOfPlayEnemyField PursuitZone EnemyFight)
           (OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent)
       choices <-

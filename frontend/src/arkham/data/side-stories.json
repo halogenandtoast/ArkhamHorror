@@ -2,10 +2,7 @@
   {
     "id": "81001",
     "name": "Curse of the Rougarou",
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard"
-    ],
+    "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [
         "PlusOne",
@@ -67,10 +64,7 @@
   {
     "id": "82001",
     "name": "Carnevale of Horrors",
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard"
-    ],
+    "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [
         "PlusOne",
@@ -121,10 +115,8 @@
     "id": "70001",
     "name": "The Labyrinths of Lunacy",
     "epicMultiplayer": true,
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard"
-    ],
+    "miniCampaign": true,
+    "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [
         "PlusOne",
@@ -175,9 +167,7 @@
         "id": "83001",
         "name": "The Eternal Slumber",
         "box": "83001b",
-        "notAfter": [
-          "83016"
-        ]
+        "notAfter": ["83016"]
       },
       {
         "id": "83016",
@@ -185,10 +175,7 @@
         "box": "83001a"
       }
     ],
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard"
-    ],
+    "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [
         "PlusOne",
@@ -245,10 +232,7 @@
   {
     "id": "84001",
     "name": "Murder at the Excelsior Hotel",
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard"
-    ],
+    "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [
         "PlusOne",
@@ -291,10 +275,7 @@
     "id": "85001",
     "name": "The Blob That Ate Everything",
     "epicMultiplayer": true,
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard"
-    ],
+    "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [
         "PlusOne",
@@ -342,12 +323,7 @@
     "id": "86001",
     "name": "War of the Outer Gods",
     "epicMultiplayer": true,
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -418,19 +394,13 @@
       ]
     },
     "xp": 3,
-    "alpha": true,
-    "dev": true
+    "alpha": true
   },
   {
     "id": "87001",
     "name": "Machinations Through Time",
     "epicMultiplayer": true,
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -517,10 +487,7 @@
   {
     "id": "88001",
     "name": "Fortune and Folly",
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard"
-    ],
+    "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [
         "PlusOne",
@@ -566,11 +533,7 @@
   {
     "id": "71001",
     "name": "The Midwinter Gala",
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Standard": [
         "PlusOne",
@@ -635,10 +598,7 @@
   {
     "id": "72001",
     "name": "Film Fatale",
-    "standaloneDifficulties": [
-      "Standard",
-      "Hard"
-    ],
+    "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [
         "PlusOne",
@@ -678,15 +638,8 @@
     "id": "90004",
     "name": "Read or Die",
     "requiredInvestigator": "Daisy Walker",
-    "deckRequirements": [
-      "Daisy Walker's deck must include at least 4 non-weakness Tome assets."
-    ],
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "deckRequirements": ["Daisy Walker's deck must include at least 4 non-weakness Tome assets."],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -771,12 +724,7 @@
     "id": "90011",
     "name": "All or Nothing",
     "requiredInvestigator": "\"Skids\" O'Toole",
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -861,12 +809,7 @@
     "id": "90020",
     "name": "Bad Blood",
     "requiredInvestigator": "Agnes Baker",
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -951,12 +894,7 @@
     "id": "90032",
     "name": "By the Book",
     "requiredInvestigator": "Roland Banks",
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -1041,12 +979,7 @@
     "id": "90041",
     "name": "Red Tide Rising",
     "requiredInvestigator": "Wendy Adams",
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -1135,12 +1068,7 @@
     "id": "90054",
     "name": "Laid to Rest",
     "requiredInvestigator": "Jim Culver",
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -1229,12 +1157,7 @@
     "id": "90065",
     "name": "Relics of the Past",
     "requiredInvestigator": "Monterey Jack",
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -1316,12 +1239,7 @@
   {
     "id": "90094",
     "name": "Enthralling Encore",
-    "standaloneDifficulties": [
-      "Easy",
-      "Standard",
-      "Hard",
-      "Expert"
-    ],
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -1413,8 +1331,6 @@
     },
     "xp": 2,
     "beta": true,
-    "deckRequirements": [
-      "Requires investigator with parallel content"
-    ]
+    "deckRequirements": ["Requires investigator with parallel content"]
   }
 ]

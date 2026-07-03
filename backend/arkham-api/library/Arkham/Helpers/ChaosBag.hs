@@ -46,7 +46,7 @@ getSealedChaosTokens =
   concat
     <$> sequence
       [ selectAgg id AssetSealedChaosTokens AnyAsset
-      , selectAgg id EnemySealedChaosTokens AnyInPlayEnemy
+      , selectAgg id EnemySealedChaosTokens AnyEnemy
       , selectAgg id EventSealedChaosTokens AnyEvent
       , selectAgg id InvestigatorSealedChaosTokens Anyone
       ]

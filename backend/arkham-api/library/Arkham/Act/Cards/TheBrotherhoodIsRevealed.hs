@@ -39,7 +39,7 @@ instance HasModifiersFor TheBrotherhoodIsRevealed where
 
 instance HasAbilities TheBrotherhoodIsRevealed where
   getAbilities (TheBrotherhoodIsRevealed (a `With` _)) =
-    [ restricted a 1 (not_ $ exists $ InPlayEnemy IsIchtacasPrey)
+    [ restricted a 1 (not_ $ exists $ IsIchtacasPrey)
         $ Objective
         $ forced
         $ oneOf

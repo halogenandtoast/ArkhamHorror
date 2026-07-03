@@ -283,6 +283,22 @@ fieldMaxByM fld f matcher = selectAggM' (fmap Max0 . f) fld matcher
 maybeFieldMax
   :: forall attrs a matcher m
    . ( QueryElement matcher ~ EntityId attrs
+     , Ord a
+     , Query matcher
+     , Projection attrs
+     , Tracing m
+     , HasGame m
+     )
+  => Field attrs (Maybe a)
+  -> matcher
+  -> m (Maybe a)
+maybeFieldMax fld matcher = do
+  results <- catMaybes <$> selectField fld matcher
+  pure $ maximumMay results
+
+maybeFieldMax0
+  :: forall attrs a matcher m
+   . ( QueryElement matcher ~ EntityId attrs
      , Num a
      , Ord a
      , Query matcher
@@ -293,7 +309,7 @@ maybeFieldMax
   => Field attrs (Maybe a)
   -> matcher
   -> m a
-maybeFieldMax fld matcher = do
+maybeFieldMax0 fld matcher = do
   results <- catMaybes <$> selectField fld matcher
   pure $ getMax0 $ foldMap Max0 results
 
@@ -361,7 +377,6 @@ selectMaxByM fld f matcher = do
 
 selectMaybeMax
   :: ( QueryElement matcher ~ EntityId attrs
-     , Num a
      , Query matcher
      , Projection attrs
      , Tracing m
@@ -372,12 +387,11 @@ selectMaybeMax
   -> matcher
   -> m [QueryElement matcher]
 selectMaybeMax fld matcher = do
-  maxValue <- maybeFieldMax fld matcher
-  if maxValue > 0
-    then do
+  maybeFieldMax fld matcher >>= \case
+    Nothing -> pure []
+    Just maxValue -> do
       results <- select matcher
       filterM (fmap (== Just maxValue) . field fld) results
-    else pure []
 
 selectOne
   :: (HasCallStack, Query a, Tracing m, HasGame m)

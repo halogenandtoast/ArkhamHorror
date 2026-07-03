@@ -103,15 +103,15 @@ instance RunMessage TheFeastOfHemlockVale where
             leadChooseOneM do
               questionLabeled' "survey"
               survey NorthPointMine do
-                scenarioLabeled' "writtenInRock" "10501-night1" $ afterPrelude WrittenInRock
+                scenarioLabeled' "writtenInRock" "10501-night1" $ campaignStepEdit_ WrittenInRock noUpgrade
               survey HemlockHarbor do
-                scenarioLabeled' "hemlockHouse" "10523-night1" $ afterPrelude HemlockHouse
+                scenarioLabeled' "hemlockHouse" "10523-night1" $ campaignStepEdit_ HemlockHouse noUpgrade
               survey PearlRidge do
-                scenarioLabeled' "theSilentHeath" "10549-night1" $ afterPrelude TheSilentHeath
+                scenarioLabeled' "theSilentHeath" "10549-night1" $ campaignStepEdit_ TheSilentHeath noUpgrade
               survey AkwanShoreline do
-                scenarioLabeled' "theLostSister" "10569-night1" $ afterPrelude TheLostSister
+                scenarioLabeled' "theLostSister" "10569-night1" $ campaignStepEdit_ TheLostSister noUpgrade
               survey EastwickBog do
-                scenarioLabeled' "theThingInTheDepths" "10588-night1" $ afterPrelude TheThingInTheDepths
+                scenarioLabeled' "theThingInTheDepths" "10588-night1" $ campaignStepEdit_ TheThingInTheDepths noUpgrade
       pure c
     ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing)) -> do
       scope "prelude.theFirstEvening" do
@@ -260,15 +260,15 @@ instance RunMessage TheFeastOfHemlockVale where
             leadChooseOneM do
               questionLabeled' "survey"
               survey NorthPointMine do
-                scenarioLabeled' "writtenInRock" "10501-night2" $ afterPrelude WrittenInRock
+                scenarioLabeled' "writtenInRock" "10501-night2" $ campaignStepEdit_ WrittenInRock noUpgrade
               survey HemlockHarbor do
-                scenarioLabeled' "hemlockHouse" "10523-night2" $ afterPrelude HemlockHouse
+                scenarioLabeled' "hemlockHouse" "10523-night2" $ campaignStepEdit_ HemlockHouse noUpgrade
               survey PearlRidge do
-                scenarioLabeled' "theSilentHeath" "10549-night2" $ afterPrelude TheSilentHeath
+                scenarioLabeled' "theSilentHeath" "10549-night2" $ campaignStepEdit_ TheSilentHeath noUpgrade
               survey AkwanShoreline do
-                scenarioLabeled' "theLostSister" "10569-night2" $ afterPrelude TheLostSister
+                scenarioLabeled' "theLostSister" "10569-night2" $ campaignStepEdit_ TheLostSister noUpgrade
               survey EastwickBog do
-                scenarioLabeled' "theThingInTheDepths" "10588-night2" $ afterPrelude TheThingInTheDepths
+                scenarioLabeled' "theThingInTheDepths" "10588-night2" $ campaignStepEdit_ TheThingInTheDepths noUpgrade
       pure c
     ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" Nothing)) -> do
       scope "prelude.theSecondEvening" do

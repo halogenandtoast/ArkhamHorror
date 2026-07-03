@@ -17,7 +17,7 @@ umbralHarbinger = enemy UmbralHarbinger Cards.umbralHarbinger
 instance HasAbilities UmbralHarbinger where
   getAbilities (UmbralHarbinger a) =
     extend1 a
-      $ restricted a 1 (exists $ InPlayEnemy #cultist)
+      $ restricted a 1 (exists $ enemy_ #cultist)
       $ forced
       $ EnemyDealtDamage #when AnyDamageEffect (be a) AnySource
 

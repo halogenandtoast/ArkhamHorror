@@ -280,7 +280,6 @@ import Arkham.Matcher (
   pattern AnyAct,
   pattern AnyAgenda,
   pattern AnyEnemy,
-  pattern AnyInPlayEnemy,
   pattern InvestigatorIsPlayer,
   pattern LocationWithAnyClues,
   pattern TheScenario,
@@ -693,7 +692,7 @@ gatherSituation state pid = do
           c <- field LocationClues lid
           s <- field LocationShroud lid
           pure (c, s)
-      enemyIds <- select AnyInPlayEnemy
+      enemyIds <- select AnyEnemy
       enemyInfos <- for enemyIds $ \eid -> do
         -- Remaining health is total health minus damage tokens on the enemy
         -- ('EnemyRemainingHealth'); 'EnemyHealthDamage' is instead the enemy's

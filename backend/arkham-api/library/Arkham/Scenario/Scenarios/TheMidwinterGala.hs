@@ -147,7 +147,7 @@ calculateScore attrs = do
         else 0
   alliedScore <- case ally of
     TheFoundation -> do
-      n <- selectCount $ InPlayEnemy NonWeaknessEnemy
+      n <- selectCount $ NonWeaknessEnemy
       pure $ case n of
         0 -> 4
         1 -> 2

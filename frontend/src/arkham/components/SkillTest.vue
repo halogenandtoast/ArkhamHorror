@@ -286,7 +286,9 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
 </script>
 
 <template>
-  <Draggable>
+  <Draggable
+    avoid-selector=".concealed-card--can-interact, .location-cell--can-interact, .location-cell--can-interact .location-wrapper, .location-cell--can-interact .card-frame"
+  >
     <template #handle>
       <h2>{{ $t('skillTestTitle') }}</h2>
     </template>

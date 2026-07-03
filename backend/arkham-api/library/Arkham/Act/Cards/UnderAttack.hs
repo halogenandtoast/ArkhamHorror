@@ -22,7 +22,7 @@ instance HasAbilities UnderAttack where
       a
       [ restricted (proxied (LocationWithModifier $ ScenarioModifier "camp") a) 1 Here
           $ ActionAbility #resign Nothing (ActionCost 1 <> GroupClueCost (Static 4) YourLocation)
-      , restricted a 1 (not_ $ exists $ InPlayEnemy $ EnemyWithTrait Eidolon)
+      , restricted a 1 (not_ $ exists $ EnemyWithTrait Eidolon)
           $ Objective
           $ forced AnyWindow
       , restricted a 2 AllUndefeatedInvestigatorsResigned
@@ -38,7 +38,7 @@ instance HasModifiersFor UnderAttack where
 instance RunMessage UnderAttack where
   runMessage msg a@(UnderAttack attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      noEidolons <- selectNone $ InPlayEnemy $ EnemyWithTrait Eidolon
+      noEidolons <- selectNone $ EnemyWithTrait Eidolon
       push $ if noEidolons then R1 else R2
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do

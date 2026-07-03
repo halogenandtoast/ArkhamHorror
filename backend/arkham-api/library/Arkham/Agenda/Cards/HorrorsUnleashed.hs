@@ -19,7 +19,7 @@ horrorsUnleashed = agenda (3, A) HorrorsUnleashed Cards.horrorsUnleashed (Static
 
 instance HasAbilities HorrorsUnleashed where
   getAbilities (HorrorsUnleashed x) =
-    [ restricted x 1 (exists $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth")
+    [ restricted x 1 (exists $ EnemyWithTitle "Brood of Yog-Sothoth")
         $ forced
         $ PhaseEnds #when #enemy
     ]
@@ -31,7 +31,7 @@ instance HasModifiersFor HorrorsUnleashed where
 instance RunMessage HorrorsUnleashed where
   runMessage msg a@(HorrorsUnleashed attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      broodOfYogSothoth <- select $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
+      broodOfYogSothoth <- select $ EnemyWithTitle "Brood of Yog-Sothoth"
       leadChooseOneAtATimeM $ targets broodOfYogSothoth \x -> push $ ChooseRandomLocation (toTarget x) mempty
       pure a
     ChosenRandomLocation target@(EnemyTarget _) lid -> do

@@ -26,9 +26,9 @@ instance HasAbilities AbigailForeman4 where
     , controlled_ a 2
         $ triggered
           ( ActivateAbility #after You
-              $ PerformableAbility [IgnoreAllCosts]
+              $ AssetAbility (AssetAttachedToAsset (be a))
               <> #action
-              <> AssetAbility (AssetAttachedToAsset (be a))
+              <> PerformableAbility [IgnoreAllCosts]
           )
           (exhaust a)
     ]

@@ -641,8 +641,10 @@ getIsCommittable a c = runValidT do
             pure $ x >= n
           CanCommitAfterRevealingTokens -> pure True
         prevented = flip any modifiers' $ \case
+          -- Weaknesses do not interact with the class system (FAQ 1.35)
           CanOnlyUseCardsInRole role ->
-            null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Mythos, Neutral, role])
+            isNothing (cdCardSubType $ toCardDef card)
+              && null (intersect (cdClassSymbols $ toCardDef card) (setFromList [Mythos, Neutral, role]))
           CannotCommitCards matcher -> cardMatch card matcher
           _ -> False
 

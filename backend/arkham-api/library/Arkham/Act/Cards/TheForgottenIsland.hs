@@ -59,7 +59,7 @@ instance RunMessage TheForgottenIsland where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      mallosaurus <- selectOne $ InPlayEnemy $ enemyIs Enemies.allosaurusRampagingPredator
+      mallosaurus <- selectOne $ enemyIs Enemies.allosaurusRampagingPredator
       for_ mallosaurus (`place` OutOfPlay SetAsideZone)
       discardEach attrs (not_ $ enemyIs Enemies.allosaurusRampagingPredator)
       jungleSet <- selectJust $ locationIs Locations.jungleSet

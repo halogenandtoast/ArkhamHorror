@@ -54,7 +54,7 @@ instance HasAbilities FalseColorsV2 where
     , restricted
         a
         3
-        (HasCalculation (SumEnemyFieldCalculation (InPlayEnemy AnyEnemy) EnemyClues) (AtLeast $ PerPlayer 4))
+        (HasCalculation (SumEnemyFieldCalculation (AnyEnemy) EnemyClues) (AtLeast $ PerPlayer 4))
         $ Objective
         $ forced AnyWindow
     ]

@@ -262,6 +262,8 @@ const campaignCardPrefixes: Record<string, string[]> = {
 
 const playerCardTypes = new Set(['AssetType', 'EventType', 'SkillType', 'PlayerTreacheryType', 'PlayerEnemyType'])
 const debugCardTypes = new Set([...playerCardTypes, 'InvestigatorType'])
+const standaloneSideStoryPlayerCardPrefixes = ['70', '71', '72', '81', '82', '83', '84', '85', '86', '87', '88', '89']
+const standaloneSideStoryPlayerCardCodes = new Set(['90045a', '90045b', '90073', '90074', '90075', '90076'])
 
 const currentCampaignPlayerCardCodes = computed(() => new Set([
   ...Object.values(props.game.campaign?.storyCards ?? {}).flat().map(CardT.asCardCode),
@@ -323,8 +325,18 @@ function isCurrentCampaignPlayerCard(card: CardDef) {
   return currentCampaignPrefixes().some((prefix) => cardCode.startsWith(prefix))
 }
 
+function isStandaloneSideStoryPlayerCard(card: CardDef) {
+  if (card.encounterSet == null || !playerCardTypes.has(card.cardType)) return false
+
+  const cardCode = card.cardCode.replace(/^c/, '')
+  return standaloneSideStoryPlayerCardCodes.has(cardCode)
+    || standaloneSideStoryPlayerCardPrefixes.some((prefix) => cardCode.startsWith(prefix))
+}
+
 function isDebugPlayerCard(card: CardDef) {
-  return (card.encounterSet == null && debugCardTypes.has(card.cardType)) || isCurrentCampaignPlayerCard(card)
+  return (card.encounterSet == null && debugCardTypes.has(card.cardType))
+    || isCurrentCampaignPlayerCard(card)
+    || isStandaloneSideStoryPlayerCard(card)
 }
 
 async function openDebugAddCard() {

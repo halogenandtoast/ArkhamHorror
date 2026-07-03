@@ -17,6 +17,6 @@ scenarioI18n a = campaignI18n $ scope "dealingsInTheDark" a
 
 getCluesPossesedByTheCult :: (Tracing m, HasGame m) => m Int
 getCluesPossesedByTheCult = do
-  cultistClues <- selectSum EnemyClues (InPlayEnemy #cultist)
+  cultistClues <- selectSum EnemyClues (enemy_ #cultist)
   cluesUnveiled <- maybe (pure 0) (field StoryClues) =<< selectOne (storyIs Stories.theUnveiling)
   pure $ cultistClues + cluesUnveiled

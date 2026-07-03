@@ -36,7 +36,7 @@ instance HasAbilities UrsulaDowns where
     criteria =
       Self
         <> oneOf
-          [ exists $ PerformableAbilityBy (be a) [ActionCostModifier (-1)] <> #investigate
+          [ exists $ #investigate <> PerformableAbilityBy (be a) [ActionCostModifier (-1)]
           , exists $ PlayableCard (UnpaidCost NoAction) #investigate <> InHandOf ForPlay (be a)
           ]
 

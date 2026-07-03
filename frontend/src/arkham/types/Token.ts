@@ -30,6 +30,7 @@ export const TOKENS = [
   "Lock",
   "LostSoul",
   "Memory",
+  "Mutation",
   "Newspaper",
   "Offering",
   "Overgrowth",

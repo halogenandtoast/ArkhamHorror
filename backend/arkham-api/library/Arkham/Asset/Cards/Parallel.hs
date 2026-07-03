@@ -179,5 +179,6 @@ samuelBlakeObsessiveProducer =
     , cdUnique = True
     , cdSlots = [#ally]
     , cdCost = Just (StaticCost 3)
-    , cdKeywords = setFromList [Keyword.Replacement, Keyword.Peril, Keyword.Hidden]
+    , cdKeywords = setFromList [Keyword.Replacement, Keyword.Peril]
+    , cdRevelation = NoRevelation
     }

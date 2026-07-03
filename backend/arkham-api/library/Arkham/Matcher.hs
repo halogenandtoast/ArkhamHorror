@@ -475,7 +475,7 @@ sourceUsedBy = SourceUsedBy . InvestigatorWithId . asId
 
 performableAbilityWithoutActionBy :: InvestigatorId -> AbilityMatcher -> AbilityMatcher
 performableAbilityWithoutActionBy iid a =
-  PerformableAbilityBy (InvestigatorWithId iid) [ActionCostModifier (-1)] <> a
+  a <> PerformableAbilityBy (InvestigatorWithId iid) [ActionCostModifier (-1)]
 
 -- ** Replacements
 
@@ -512,7 +512,7 @@ defaultRemoveDoomMatchers =
   RemoveDoomMatchers
     { removeDoomLocations = Anywhere
     , removeDoomInvestigators = Anyone
-    , removeDoomEnemies = InPlayEnemy AnyEnemy
+    , removeDoomEnemies = AnyEnemy
     , removeDoomAssets = AnyAsset
     , removeDoomActs = AnyAct
     , removeDoomAgendas = AnyAgenda

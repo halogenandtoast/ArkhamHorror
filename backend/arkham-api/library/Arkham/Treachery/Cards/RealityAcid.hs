@@ -83,14 +83,36 @@ devourEach showOutcome againWith done key xs act = case xs of
 cardLevel :: Card -> Int
 cardLevel = fromMaybe 0 . cdLevel . toCardDef
 
+-- Level 1-5 cards the investigator may devour: from deck, discard, hand (not for
+-- play), and leaveable controlled assets. Recomputed each step so already-devoured
+-- cards (now gone from every zone) drop out naturally.
+devourLevelCandidates :: ReverseQueue m => InvestigatorId -> m [Card]
+devourLevelCandidates iid = do
+  nonPlay <- select $ oneOf [inDeckOf iid, inDiscardOf iid, inHandOf NotForPlay iid]
+  playAssets <-
+    map snd
+      <$> selectWithField
+        AssetCard
+        (assetControlledBy iid <> AssetCanLeavePlayByNormalMeans <> AssetWithoutModifier CannotLeavePlay)
+  pure $ filter (\c -> let l = cardLevel c in l >= 1 && l <= 5) (nonPlay <> playAssets)
+
 -- Devour level 1-5 cards of the investigator's choice with at least `remaining`
--- total levels, one at a time (running total), then finish the consult.
-devourLevels :: ReverseQueue m => InvestigatorId -> Source -> Int -> [Card] -> m ()
-devourLevels iid source remaining candidates
-  | remaining <= 0 || null candidates = resetChaosTokens source
-  | otherwise = chooseOneM iid $ targets candidates \c -> do
-      devourTarget c
-      devourLevels iid source (remaining - cardLevel c) (filter (/= c) candidates)
+-- total levels, one at a time (running total), then finish the consult. Each pick
+-- pushes a fresh step (via DoStep, carrying the running remaining total) rather than
+-- inlining the recursive choice, so the choice tree is only ever built one level deep
+-- at a time. Inlining recursively materializes the entire (exponential) decision tree
+-- into a single message, which for a real game reached ~46MB and made every request
+-- on the game time out (issue #4995).
+devourLevels :: ReverseQueue m => InvestigatorId -> TreacheryAttrs -> Int -> m ()
+devourLevels iid attrs remaining
+  | remaining <= 0 = resetChaosTokens (attrs.ability 1)
+  | otherwise = do
+      candidates <- devourLevelCandidates iid
+      if null candidates
+        then resetChaosTokens (attrs.ability 1)
+        else chooseOneM iid $ targets candidates \c -> do
+          devourTarget c
+          doStep (remaining - cardLevel c) (Revelation iid (toSource attrs))
 
 instance RunMessage RealityAcid where
   runMessage msg t@(RealityAcid attrs) = runQueueT $ case msg of
@@ -326,7 +348,7 @@ instance RunMessage RealityAcid where
                     let candidates = filter (\c -> let l = cardLevel c in l >= 1 && l <= 5) (nonPlay <> playAssets)
                     if sum (map cardLevel candidates) < 5
                       then againWith (Just "levelCards")
-                      else showOutcome "levelCards" >> devourLevels iid source 5 candidates
+                      else showOutcome "levelCards" >> devourLevels iid attrs 5
                 -- -2 + {skull}/{cultist}: the top 3 cards of your deck.
                 | handleTokenMatch (== MinusTwo) isSkullCultist = do
                     cs <- fieldMap InvestigatorDeck (take 3 . unDeck) iid
@@ -544,6 +566,12 @@ instance RunMessage RealityAcid where
       let source = attrs.ability 1
       resetChaosTokens source
       push $ RequestChaosTokens source (Just iid) (Reveal 2) SetAside
+      pure t
+    -- Continue devouring level 1-5 cards (the "-1 + (-4 to -8)" aspect). The step
+    -- number carries the remaining total; this re-entry keeps the choice tree one
+    -- level deep instead of materializing the whole thing at once (issue #4995).
+    DoStep n (Revelation iid (isSource attrs -> True)) -> do
+      devourLevels iid attrs n
       pure t
     _ -> RealityAcid <$> liftRunMessage msg attrs
 

@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.TheLabyrinthsOfLunacy (theLabyrinthsOfLunacy) w
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Option (CampaignOption (PlayAsMiniCampaign))
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -14,13 +15,16 @@ import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message (chooseDecks)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (record)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (ScenarioAttrs (..))
 import Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers
+import Arkham.Scenarios.TheLabyrinthsOfLunacy.Key qualified as Log
 import Arkham.Scenarios.TheLabyrinthsOfLunacy.Meta
 
 newtype TheLabyrinthsOfLunacy = TheLabyrinthsOfLunacy ScenarioAttrs
@@ -35,13 +39,7 @@ theLabyrinthsOfLunacy difficulty =
     "70001"
     "The Labyrinths of Lunacy"
     difficulty
-    [ ".                  chamberOfRain      chamberOfSecrets   chamberOfNight"
-    , ".                  chamberOfSorrows   .                  chamberOfRegret"
-    , "labyrinthineHalls1 labyrinthineHalls2 labyrinthineHalls3 ."
-    , "chamberOfDecay     chamberOfRot       chamberOfHunger    ."
-    , ".                  chamberOfPoison    .                  ."
-    , ".                  abandonedWarehouse .                  ."
-    ]
+    []
 
 standardTokens, hardTokens :: [ChaosTokenFace]
 standardTokens =
@@ -71,23 +69,18 @@ instance HasChaosTokenValue TheLabyrinthsOfLunacy where
 
 instance RunMessage TheLabyrinthsOfLunacy where
   runMessage msg s@(TheLabyrinthsOfLunacy attrs) = runQueueT $ scenarioI18n $ case msg of
+    -- Standalone vs. mini-campaign is chosen on the new-game screen and arrives as
+    -- a campaign option; record it in the meta before the scenario is set up.
+    HandleOption PlayAsMiniCampaign -> do
+      whenM getIsStandalone
+        $ push
+        $ SetScenarioMeta
+        $ toJSON (toResultDefault (initialMeta GroupA) attrs.meta) {miniCampaign = True}
+      pure s
     PreScenarioSetup -> scope "intro" do
-      let meta =
-            if scenarioTimesPlayed attrs > 0
-              then toResult attrs.meta
-              else initialMeta GroupA
-      let remaining = filter (`notElem` playedGroups meta) [minBound ..]
-      storyWithChooseOneM' (h "title" >> p "chooseGroup") do
-        for_ remaining \g -> do
-          popScope $ labeled' (groupLabel g) do
-            push $ SetScenarioMeta $ toJSON $ meta {currentGroup = g}
-            scope "intro" $ flavor do
-              h "title"
-              p $ case g of
-                GroupA -> "groupA"
-                GroupB -> "groupB"
-                GroupC -> "groupC"
-              p "note"
+      -- The mode is already set (from the new-game option, or defaults to a single
+      -- standalone game); just pick which as-yet-unplayed group is trapped here.
+      chooseGroup (toResultDefault (initialMeta GroupA) attrs.meta)
       pure s
     StandaloneSetup -> do
       setChaosTokens $ if isEasyStandard attrs then standardTokens else hardTokens
@@ -147,6 +140,13 @@ instance RunMessage TheLabyrinthsOfLunacy where
 
       case grp of
         GroupA -> do
+          push
+            $ SetLayout
+              [ ".                  chamberOfDecay     abandonedWarehouse"
+              , ".                  labyrinthineHalls1 ."
+              , ".                  chamberOfSecrets   ."
+              , "labyrinthineHalls2 .                  labyrinthineHalls3"
+              ]
           setActDeck
             [Acts.sealedInGroupA, Acts.distortionsInTimeGroupA, Acts.theEscapeTheLabyrinthsOfLunacy]
           setAside [Locations.chamberOfDecay]
@@ -158,6 +158,15 @@ instance RunMessage TheLabyrinthsOfLunacy where
           startAt lid
           assetAt_ Assets.keyOfMysteries lid
         GroupB -> do
+          push
+            $ SetLayout
+              [ ".                  chamberOfRain      chamberOfSecrets   chamberOfNight"
+              , ".                  chamberOfSorrows   .                  chamberOfRegret"
+              , "labyrinthineHalls1 labyrinthineHalls2 labyrinthineHalls3 ."
+              , "chamberOfDecay     chamberOfRot       chamberOfHunger    ."
+              , ".                  chamberOfPoison    .                  ."
+              , ".                  abandonedWarehouse .                  ."
+              ]
           setActDeck
             [Acts.wateryGraveGroupB, Acts.seepingDeathGroupB, Acts.theEscapeTheLabyrinthsOfLunacy]
           setAside [Assets.keyOfMysteries, Locations.chamberOfRot, Locations.chamberOfPoison]
@@ -172,6 +181,15 @@ instance RunMessage TheLabyrinthsOfLunacy where
             for_ (filter (/= drowning) investigators) \iid ->
               push $ PlaceInvestigator iid (AtLocation sorrows)
         GroupC -> do
+          push
+            $ SetLayout
+              [ ".                  chamberOfRegret    ."
+              , ".                  chamberOfNight     ."
+              , ".                  labyrinthineHalls1 ."
+              , ".                  chamberOfHunger    ."
+              , ".                  abandonedWarehouse ."
+              , "labyrinthineHalls2 .                  labyrinthineHalls3"
+              ]
           setActDeck
             [Acts.theLeversGroupC, Acts.thePetGroupC, Acts.theEscapeTheLabyrinthsOfLunacy]
           setAside [Assets.keyOfMysteries, Locations.chamberOfHunger]
@@ -209,7 +227,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
     ScenarioSpecific "act3Setup" _ -> do
       warehouse <- placeSetAsideLocation Locations.abandonedWarehouse
       reveal warehouse
-      selectEach (InPlayEnemy AnyEnemy) \eid -> push $ DisengageEnemyFromAll eid
+      selectEach (AnyEnemy) \eid -> push $ DisengageEnemyFromAll eid
       selectEach UneliminatedInvestigator \iid ->
         push $ PlaceInvestigator iid (AtLocation warehouse)
       createSetAsideEnemy_ Enemies.eixodolon warehouse
@@ -247,17 +265,14 @@ instance RunMessage TheLabyrinthsOfLunacy where
         Resolution 1 -> do
           let meta' = meta {playedGroups = grp : playedGroups meta}
           push $ SetScenarioMeta $ toJSON meta'
-          if length (playedGroups meta') >= 3
-            then do_ (ScenarioResolutionStep 1 (Resolution 1))
-            else do
-              resolutionWithChooseOne "resolution1" do
-                labeled' "endScenario" do
-                  killRemainingInvestigators attrs
-                  push GameOver
-                  endOfScenario
-                labeled' "playAnotherGroup" do
-                  killRemainingInvestigators attrs
-                  push $ ScenarioResolutionStep 10 (Resolution 1)
+          recordGroupOutcome grp Log.TheGroupPerished
+          -- Mini-campaign: automatically continue with the next group until all
+          -- three have played, without asking. Otherwise resolve the game.
+          if miniCampaign meta && length (playedGroups meta') < 3
+            then do
+              killRemainingInvestigators attrs
+              push $ ScenarioResolutionStep 10 (Resolution 1)
+            else do_ (ScenarioResolutionStep 1 (Resolution 1))
         Resolution 2 -> do
           let meta' =
                 meta
@@ -265,12 +280,10 @@ instance RunMessage TheLabyrinthsOfLunacy where
                   , survivedGroups = grp : survivedGroups meta
                   }
           push $ SetScenarioMeta $ toJSON meta'
-          if length (playedGroups meta') >= 3
-            then do_ (ScenarioResolutionStep 1 (Resolution 2))
-            else do
-              resolutionWithChooseOne "resolution2" do
-                labeled' "endScenario" endOfScenario
-                labeled' "playAnotherGroup" $ push $ ScenarioResolutionStep 10 (Resolution 2)
+          recordGroupOutcome grp Log.TheGroupEscapedTheLabyrinth
+          if miniCampaign meta && length (playedGroups meta') < 3
+            then push $ ScenarioResolutionStep 10 (Resolution 2)
+            else do_ (ScenarioResolutionStep 1 (Resolution 2))
         _ -> error "Invalid resolution"
       pure s
     Do (ScenarioResolutionStep 1 (Resolution n)) -> scope "resolutions" do
@@ -288,30 +301,56 @@ instance RunMessage TheLabyrinthsOfLunacy where
       endOfScenario
       pure s
     ScenarioResolutionStep 10 _ -> do
-      standalone <- getIsStandalone
+      -- Between mini-campaign games, players may swap investigators and/or decks
+      -- (standalone deck construction; no experience or trauma carries over).
+      -- chooseDecks re-prompts each player, then we restart the scenario through
+      -- the normal standalone path (StartScenario carries the meta across the
+      -- rebuild, so PreScenarioSetup skips the mode prompt and just picks the
+      -- next group).
+      players <- allPlayers
       pushAll
-        $ [ResetGame]
-        <> [StandaloneSetup | standalone]
-        <> [ PreScenarioSetup
-           , ChooseLeadInvestigator
-           , SetPlayerOrder
-           , SetupInvestigators
-           , InvestigatorsMulligan
-           , Setup
-           , EndSetup
-           ]
-      let resetAttrs = toAttrs $ theLabyrinthsOfLunacy attrs.difficulty
-      pure
-        . TheLabyrinthsOfLunacy
-        $ resetAttrs
-          { scenarioTimesPlayed = scenarioTimesPlayed attrs + 1
-          , scenarioPlayerDecks = scenarioPlayerDecks attrs
-          , scenarioStoryCards = scenarioStoryCards attrs
-          , scenarioMeta = attrs.meta
-          }
+        -- Tear down the previous group's board FIRST. chooseDecks wipes the
+        -- investigators and then parks on the deck prompt; if the group's enemies
+        -- (etc.) were still in play they'd reference now-missing investigators and
+        -- any enemy-matcher scan (or a plain game load) would crash.
+        [ ResetGame
+        , chooseDecks players
+        , ResetInvestigators
+        , ResetGame
+        , StartScenario attrs.id Nothing
+        ]
+      -- Clear the previous group's decks so only the freshly chosen ones populate.
+      pure $ TheLabyrinthsOfLunacy attrs {scenarioPlayerDecks = mempty, scenarioStoryCards = mempty}
     _ -> TheLabyrinthsOfLunacy <$> liftRunMessage msg attrs
 
 killRemainingInvestigators :: ReverseQueue m => ScenarioAttrs -> m ()
 killRemainingInvestigators attrs =
   selectEach UneliminatedInvestigator \iid ->
     push $ InvestigatorKilled (toSource attrs) iid
+
+{- | Record a group's fate into the (standalone) campaign log. Each group is its
+own log section, so the log reflects every group played in the mini-campaign.
+-}
+recordGroupOutcome :: ReverseQueue m => Group -> Log.GroupOutcome -> m ()
+recordGroupOutcome grp outcome = record $ case grp of
+  GroupA -> Log.GroupA outcome
+  GroupB -> Log.GroupB outcome
+  GroupC -> Log.GroupC outcome
+
+{- | Present the choice of which (as-yet-unplayed) group is trapped in the
+labyrinth, resolving the chosen group's intro flavor text.
+-}
+chooseGroup :: (HasI18n, ReverseQueue m) => Meta -> m ()
+chooseGroup meta = do
+  let remaining = filter (`notElem` playedGroups meta) [minBound ..]
+  storyWithChooseOneM' (h "title" >> p "chooseGroup") do
+    for_ remaining \g -> do
+      popScope $ labeled' (groupLabel g) do
+        push $ SetScenarioMeta $ toJSON meta {currentGroup = g}
+        scope "intro" $ flavor do
+          h "title"
+          p $ case g of
+            GroupA -> "groupA"
+            GroupB -> "groupB"
+            GroupC -> "groupC"
+          p "note"

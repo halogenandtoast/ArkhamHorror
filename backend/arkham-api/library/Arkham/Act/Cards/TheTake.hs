@@ -42,7 +42,7 @@ instance RunMessage TheTake where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      mabbaran <- selectOne $ InPlayEnemy $ enemyIs Enemies.abarranArrigorriagakoaAbarranUnleashed
+      mabbaran <- selectOne $ enemyIs Enemies.abarranArrigorriagakoaAbarranUnleashed
       case mabbaran of
         Just abbaran -> enemyMoveTo attrs abbaran =<< getJustLocationByName "Relic Room"
         Nothing -> eachInvestigator \iid -> do

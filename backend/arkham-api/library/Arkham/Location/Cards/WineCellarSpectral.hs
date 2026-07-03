@@ -36,7 +36,7 @@ instance HasAbilities WineCellarSpectral where
 instance RunMessage WineCellarSpectral where
   runMessage msg l@(WineCellarSpectral attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      silverTwilight <- select (InPlayEnemy $ EnemyWithTrait SilverTwilight <> EnemyWithAnyDoom)
+      silverTwilight <- select (EnemyWithTrait SilverTwilight <> EnemyWithAnyDoom)
       chooseOneM iid $ scenarioI18n do
         withSkillTest \sid ->
           unscoped
@@ -47,7 +47,7 @@ instance RunMessage WineCellarSpectral where
           chooseTargetM iid silverTwilight $ removeDoomFrom (attrs.ability 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      silverTwilight <- select (InPlayEnemy $ EnemyWithTrait SilverTwilight)
+      silverTwilight <- select (EnemyWithTrait SilverTwilight)
       chooseOneM iid do
         scenarioI18n $ labeledValidate' (notNull silverTwilight) "wineCellarSpectral.placeDoom" do
           chooseTargetM iid silverTwilight $ placeDoomOn (attrs.ability 2) 1

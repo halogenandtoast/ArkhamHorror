@@ -51,7 +51,7 @@ instance RunMessage CaughtRedHanded where
         selectAny
           $ enemyIs Enemies.theRedGlovedManShroudedInMystery
           <> EnemyWithTokens (PerPlayer 1) #resource
-      selectOne (InPlayEnemy $ enemyIs Enemies.theRedGlovedManShroudedInMystery)
+      selectOne (enemyIs Enemies.theRedGlovedManShroudedInMystery)
         >>= traverse_ addToVictory_
       push $ if parleyed then R2 else R1
       pure a

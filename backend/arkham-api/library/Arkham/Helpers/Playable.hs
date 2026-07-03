@@ -251,16 +251,18 @@ getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availabl
     uniquenessOk <- case (cdUnique pcDef, cdCardType pcDef) of
       (True, AssetType) ->
         not <$> case nameSubtitle (cdName pcDef) of
-          Nothing -> selectAny (AssetWithTitle title)
-          Just subtitle -> selectAny (AssetWithFullTitle title subtitle)
+          Nothing -> selectAny (InPlayAsset $ AssetWithTitle title)
+          Just subtitle -> selectAny (InPlayAsset $ AssetWithFullTitle title subtitle)
       _ -> pure True
     let uniquenessDetail = if uniquenessOk then Nothing else Just $ "A copy of \"" <> title <> "\" is already in play"
 
     -- Play restrictions check
     modifiers <- getModifiers iid
     let
+      -- Weaknesses do not interact with the class system (FAQ 1.35)
       prevents (CanOnlyUseCardsInRole role) =
-        null $ intersect (cdClassSymbols pcDef) (setFromList [Mythos, Neutral, role])
+        isNothing (cdCardSubType pcDef)
+          && null (intersect (cdClassSymbols pcDef) (setFromList [Mythos, Neutral, role]))
       prevents (CannotPlay matcher) = cardMatch c matcher
       prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
       prevents _ = False

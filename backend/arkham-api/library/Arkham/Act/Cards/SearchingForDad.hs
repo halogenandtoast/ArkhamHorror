@@ -27,7 +27,7 @@ instance HasAbilities SearchingForDad where
         a
         1
         ( wrapCriteria a
-            $ Negate (oneOf [exists (InPlayEnemy $ EnemyWithTrait Suspect), exists (LocationWithTrait Hideout)])
+            $ Negate (oneOf [exists (EnemyWithTrait Suspect), exists (LocationWithTrait Hideout)])
             <> ScenarioDeckWithCard LeadsDeck
             <> exists wendyAdams
         )

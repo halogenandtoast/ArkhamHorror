@@ -27,9 +27,9 @@ instance RunMessage HandEyeCoordination1 where
         adjust ab = doesNotProvokeAttacksOfOpportunity $ applyAbilityModifiers ab [ignoredCost]
       abilities <-
         selectMap adjust
-          $ PerformableAbility [ignoredCost]
-          <> #action
+          $ #action
           <> AbilityOnAsset (tabooModify $ assetControlledBy iid <> oneOf [#tool, #weapon])
+          <> PerformableAbility [ignoredCost]
       chooseOrRunOneM iid $ for_ abilities \ab -> abilityLabeled iid ab nothing
       pure e
     _ -> HandEyeCoordination1 <$> liftRunMessage msg attrs

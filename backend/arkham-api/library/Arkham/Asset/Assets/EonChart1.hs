@@ -1,7 +1,7 @@
 module Arkham.Asset.Assets.EonChart1 (eonChart1) where
 
-import Arkham.Actions
 import Arkham.Ability
+import Arkham.Actions
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
@@ -30,7 +30,10 @@ instance HasAbilities EonChart1 where
         1
         ( DuringTurn You
             <> oneOf
-              [ exists $ oneOf [#move, #investigate, #evade] <> PerformableAbility [ActionCostModifier (-1)]
+              [ exists
+                  $ NotAbility (AbilityOnCard $ cardsAre [Cards.eonChart1, Cards.eonChart4])
+                  <> oneOf [#move, #investigate, #evade]
+                  <> PerformableAbility [ActionCostModifier (-1)]
               , PlayableCardExists
                   (UnpaidCost NoAction)
                   (basic $ mapOneOf CardWithAction [#move, #investigate, #evade])

@@ -273,7 +273,7 @@ instance RunMessage TheThingInTheDepths where
           if judithShared
             then do
               scope "judithPark" $ flavor $ setTitle "title" >> p.green "grudge"
-              enemies <- select $ NonEliteEnemy <> AnyInPlayEnemy
+              enemies <- select $ NonEliteEnemy <> AnyEnemy
               chooseTargetM iid enemies \eid ->
                 defeatEnemy eid iid source
             else do

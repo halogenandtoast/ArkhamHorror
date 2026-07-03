@@ -33,7 +33,7 @@ instance RunMessage FlurryOfBlows5 where
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       abilities <-
         map ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
-          <$> select (PerformableAbility [IgnoreActionCost] <> #fight <> AbilityOnAsset (AssetWithId aid))
+          <$> select (#fight <> AbilityOnAsset (AssetWithId aid) <> PerformableAbility [IgnoreActionCost])
       chooseOrRunOneM iid $ for_ abilities \ab -> abilityLabeled iid ab nothing
       pure e
     _ -> FlurryOfBlows5 <$> liftRunMessage msg attrs

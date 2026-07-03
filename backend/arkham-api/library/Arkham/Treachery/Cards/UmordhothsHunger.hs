@@ -19,7 +19,7 @@ instance RunMessage UmordhothsHunger where
     Revelation _ (isSource attrs -> True) -> do
       eachInvestigator (`randomDiscard` attrs)
       doStep 1 msg
-      selectEach AnyInPlayEnemy \enemy -> healDamage enemy attrs 1
+      selectEach AnyEnemy \enemy -> healDamage enemy attrs 1
       pure t
     DoStep 1 (Revelation _ (isSource attrs -> True)) -> do
       eachInvestigator \iid -> do

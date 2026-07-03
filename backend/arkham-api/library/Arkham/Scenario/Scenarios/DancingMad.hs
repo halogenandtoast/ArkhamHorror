@@ -176,7 +176,7 @@ instance RunMessage DancingMad where
           drawCard lead desi
           eachInvestigator \iid -> unless (iid == lead) $ forInvestigator iid Setup
     ForInvestigator iid Setup -> do
-      enemies <- selectField EnemyName (InPlayEnemy $ EnemyWithTrait Coterie)
+      enemies <- selectField EnemyName (EnemyWithTrait Coterie)
       discardUntilFirst
         iid
         ScenarioSource

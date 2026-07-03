@@ -21,7 +21,7 @@ instance HasAbilities CurtainCall where
     [ restricted
         (proxied (LocationMatcherSource $ locationIs Cards.lobby) attrs)
         1
-        (Here <> not_ (exists $ InPlayEnemy $ enemyIs Enemies.theManInThePallidMask))
+        (Here <> not_ (exists $ enemyIs Enemies.theManInThePallidMask))
         $ ActionAbility #resign Nothing (ActionCost 1)
     , restricted attrs 2 (exists $ LocationWithoutHorror <> connectedTo LocationWithAnyHorror)
         $ forced

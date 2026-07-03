@@ -20,7 +20,6 @@ instance HasModifiersFor VoidChimeraTrueForm where
   getModifiersFor (VoidChimeraTrueForm a) = do
     anyOtherForm <-
       selectAny
-        $ InPlayEnemy
         $ mapOneOf
           enemyIs
           [ Cards.voidChimeraFellbeak

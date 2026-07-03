@@ -65,7 +65,7 @@ instance RunMessage DeckOfPossibilitiesTychokineticImplement where
                   cardLabeled def $ handleTarget iid (attrs.ability 1) (CardCodeTarget def.cardCode)
             (King, Hearts) -> healAllDamageAndHorror (attrs.ability 1) iid
             (King, Clubs) -> do
-              enemies <- select $ InPlayEnemy NonEliteEnemy
+              enemies <- select $ NonEliteEnemy
               treacheries <- select InPlayTreachery
               chooseOneM iid do
                 targets enemies removeFromGame

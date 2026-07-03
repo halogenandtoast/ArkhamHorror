@@ -618,7 +618,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
           <=~> Matcher.IncludeSealed
             ( Matcher.oneOf
                 [ Matcher.SealedOnAsset Matcher.AnyAsset Matcher.AnyChaosToken
-                , Matcher.SealedOnEnemy Matcher.AnyInPlayEnemy Matcher.AnyChaosToken
+                , Matcher.SealedOnEnemy Matcher.AnyEnemy Matcher.AnyChaosToken
                 ]
             )
       ReturnChaosTokensToPoolCost n matcher -> do

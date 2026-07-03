@@ -28,7 +28,7 @@ instance HasAbilities LambsToTheSlaughter where
              $ restricted a 1 (InVictoryDisplay (CardWithTrait Resident) (AtLeast $ StaticWithPerPlayer 1 1))
              $ Objective
              $ forced AnyWindow
-         , restricted a 2 (exists $ InPlayEnemy $ EnemyWithTrait Resident)
+         , restricted a 2 (exists $ EnemyWithTrait Resident)
              $ freeReaction
              $ SkillTestResult
                #after

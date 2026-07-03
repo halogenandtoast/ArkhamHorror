@@ -5357,6 +5357,7 @@ library
       Arkham.Scenarios.TheHeartOfMadness.Pylon
       Arkham.Scenarios.TheHouseAlwaysWins.Helpers
       Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers
+      Arkham.Scenarios.TheLabyrinthsOfLunacy.Key
       Arkham.Scenarios.TheLabyrinthsOfLunacy.Meta
       Arkham.Scenarios.TheLairOfDagon.Helpers
       Arkham.Scenarios.TheLastKing.Helpers
@@ -7161,6 +7162,7 @@ test-suite spec
       Arkham.Location.Cards.EnchantedWoodsVillageOfZoogsSpec
       Arkham.Matcher.CoveredByAnyInPlayEnemySpec
       Arkham.Matcher.NearestLocationToMostSpec
+      Arkham.Matcher.OutOfPlayEnemySpec
       Arkham.Scenario.SpecHelpers
       Arkham.Scenario.TheMidwinterGalaSpec
       Arkham.Skill.Cards.DeductionSpec
@@ -7176,6 +7178,7 @@ test-suite spec
       Arkham.Skill.Cards.ViciousBlowSpec
       Arkham.Skill.Cards.WatchThisSpec
       Arkham.Story.Cards.UnfinishedBusinessSpec
+      Arkham.Story.CardsSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.AmnesiaSpec
       Arkham.Treachery.Cards.BloodlustSpec

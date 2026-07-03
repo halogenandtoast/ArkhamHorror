@@ -101,11 +101,11 @@ factionEnemy :: Faction -> EnemyMatcher
 factionEnemy = mapOneOf enemyIs . factionEnemyDefs
 
 -- Defeated faction enemies linger in the entity map placed in 'OutOfPlay
--- RemovedZone', and the default enemy matcher base set only drops 'OutOfGame'
--- (not 'OutOfPlay'). Wrap in 'InPlayEnemy' so a defeated warring enemy is never
--- offered to move/attack during the enemy phase.
+-- RemovedZone'. Enemy queries now default to in-play (non-'OutOfPlay') enemies,
+-- so a defeated warring enemy is never offered to move/attack during the enemy
+-- phase without any decoration here.
 warringEnemy :: EnemyMatcher
-warringEnemy = InPlayEnemy (EnemyWithKeyword #warring)
+warringEnemy = EnemyWithKeyword #warring
 
 getEnemyFaction :: (HasGame m, Tracing m) => EnemyId -> m (Maybe Faction)
 getEnemyFaction eid = do
@@ -247,15 +247,14 @@ placeAssetAsSwarm insect aid = do
   push $ RemoveAsset aid
   push $ PlacedSwarmCard insect card
 
--- | Resources on enemies are mutations.
 placeMutations :: (ReverseQueue m, Sourceable source) => source -> EnemyId -> Int -> m ()
-placeMutations source eid n = placeTokens source (EnemyTarget eid) Resource n
+placeMutations source eid n = placeTokens source (EnemyTarget eid) Mutation n
 
 removeMutations :: (ReverseQueue m, Sourceable source) => source -> EnemyId -> Int -> m ()
-removeMutations source eid n = removeTokens (toSource source) (EnemyTarget eid) Resource n
+removeMutations source eid n = removeTokens (toSource source) (EnemyTarget eid) Mutation n
 
 getMutations :: (HasGame m, Tracing m) => EnemyId -> m Int
-getMutations = fieldMap EnemyTokens (countTokens Resource)
+getMutations = fieldMap EnemyTokens (countTokens Mutation)
 
 -- | Order enemies green, then blue, then red. Enemies without a faction are
 -- dropped.

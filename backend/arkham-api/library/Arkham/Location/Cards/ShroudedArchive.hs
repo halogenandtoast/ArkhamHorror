@@ -26,7 +26,7 @@ instance RunMessage ShroudedArchive where
     ForTarget (KeyTarget k) (UseThisAbility iid (isSource attrs -> True) 1) -> do
       sid <- getRandom
       chooseBeginSkillTest sid iid (attrs.ability 1) (KeyTarget k) [#willpower, #intellect]
-        $ MinCalculation (Fixed 0) (SubtractCalculation (Fixed 8) (CountEnemies $ InPlayEnemy #cultist))
+        $ MinCalculation (Fixed 0) (SubtractCalculation (Fixed 8) (CountEnemies $ #cultist))
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       getSkillTestTarget >>= \case

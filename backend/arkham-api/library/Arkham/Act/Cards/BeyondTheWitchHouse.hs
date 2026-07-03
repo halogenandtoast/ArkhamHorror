@@ -29,7 +29,7 @@ instance RunMessage BeyondTheWitchHouse where
       site <- placeSetAsideLocation Locations.siteOfTheSacrifice
 
       nahab <-
-        selectOne (enemyIs Enemies.nahab) >>= \case
+        selectOne (IncludeOutOfPlayEnemy $ enemyIs Enemies.nahab) >>= \case
           Nothing -> findUniqueCard Enemies.nahab >>= (`createEnemyAt` site)
           Just x -> x <$ enemyMoveTo attrs x site
 

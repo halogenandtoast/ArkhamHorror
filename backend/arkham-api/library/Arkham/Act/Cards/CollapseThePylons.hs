@@ -67,7 +67,7 @@ instance RunMessage CollapseThePylons where
       toDiscard GameSource attrs
       pure a
     DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
-      selectEach (InPlayEnemy $ enemyIs Enemies.theNamelessMadness) (`place` Unplaced)
+      selectEach (enemyIs Enemies.theNamelessMadness) (`place` Unplaced)
       pure a
     DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       connectLocations "theGateOfYquaa" "titanicRamp1"

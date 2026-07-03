@@ -341,7 +341,7 @@ runGameMessage msg g = case msg of
     investigator <- getInvestigator investigatorId
     let playerId = attr investigatorPlayerId investigator
     let iid' = dl.investigator
-    -- let sideDeck = decklistExtraDeck dl
+    let sideDeck = dl.extra
     let
       setCardAttachments (cCode, attachments) =
         flip Map.alter cCode \case
@@ -362,6 +362,7 @@ runGameMessage msg g = case msg of
                   }
             )
             investigator
+    when (notNull sideDeck) $ push $ LoadSideDeck investigatorId sideDeck
     push $ UpgradeDeck investigatorId decklist.url (Deck cards)
 
     pure
@@ -2034,7 +2035,7 @@ runGameMessage msg g = case msg of
                     _ -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
                 -- War of the Outer Gods: warring enemies move during this
                 -- step and are batched with hunters
-                Keyword.ScenarioKeyword "Warring" -> matches eid (InPlayEnemy AnyEnemy <> ReadyEnemy <> UnengagedEnemy)
+                Keyword.ScenarioKeyword "Warring" -> matches eid (AnyEnemy <> ReadyEnemy <> UnengagedEnemy)
                 _ -> pure False
               pure (target, msgs)
           FailSkillTestGroup -> pure targetMap

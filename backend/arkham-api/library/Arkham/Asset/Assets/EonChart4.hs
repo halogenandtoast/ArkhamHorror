@@ -34,7 +34,10 @@ instance HasAbilities EonChart4 where
     actions = [#move, #investigate, #evade]
     matcher =
       oneOf
-        [ exists $ PerformableAbility [ActionCostModifier (-1)] <> mapOneOf AbilityIsAction actions
+        [ exists
+            $ NotAbility (AbilityOnCard $ cardsAre [Cards.eonChart1, Cards.eonChart4])
+            <> mapOneOf AbilityIsAction actions
+            <> PerformableAbility [ActionCostModifier (-1)]
         , PlayableCardExists (UnpaidCost NoAction) $ basic (mapOneOf CardWithAction actions)
         ]
 
@@ -51,7 +54,9 @@ getAvailable iid attrs canDoActions = do
   let abilityF = if tabooed TabooList20 attrs then (<> BasicAbility) else id
   abilities <-
     select
-      (abilityF $ PerformableAbility [ActionCostModifier (-1)] <> oneOf (map AbilityIsAction canDoActions))
+      $ abilityF
+      $ oneOf (map AbilityIsAction canDoActions)
+      <> PerformableAbility [ActionCostModifier (-1)]
   pure (playableCards, abilities)
 
 getAvailableActionTypes

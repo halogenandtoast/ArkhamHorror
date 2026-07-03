@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -27,6 +28,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WarOfTheOuterGods.Helpers
 import Arkham.SkillTest.Base (skillTestCommittedCards)
+import Arkham.Tracing
 import Arkham.Trait (Trait (Hex, Insect, Mutated))
 
 newtype WarOfTheOuterGods = WarOfTheOuterGods ScenarioAttrs
@@ -235,10 +237,11 @@ instance RunMessage WarOfTheOuterGods where
                 -- enemy to a connecting location. If they all collapse to a
                 -- single destination, the choice is meaningless, so move there
                 -- automatically rather than prompting.
-                destinations <- nub . concat <$> for nearest \target ->
-                  field EnemyLocation target >>= \case
-                    Nothing -> pure []
-                    Just targetLoc -> select $ ClosestPathLocation loc targetLoc
+                destinations <-
+                  nub . concat <$> for nearest \target ->
+                    field EnemyLocation target >>= \case
+                      Nothing -> pure []
+                      Just targetLoc -> select $ ClosestPathLocation loc targetLoc
                 case destinations of
                   [dest] -> push $ EnemyMove enemy dest
                   _ -> do
@@ -293,6 +296,18 @@ instance RunMessage WarOfTheOuterGods where
       magenda' <- maybe (selectOne AnyAgenda) (pure . Just) magenda
       for_ magenda' \agenda -> placeDoom attrs agenda excess
       pure s
+    Defeated (EnemyTarget eid) _ _ _ -> do
+      -- When a warring enemy defeats the last opposing-faction enemy at its
+      -- location, any warring attacks still queued behind it in the same
+      -- enemy-attack choice now have nothing to fight. Their resolution is
+      -- already a no-op, so drop them from the pending choice rather than
+      -- forcing the player to click through an attack that does nothing.
+      insteadOfMatchingWith isPendingWarringAttackChoice \case
+        Ask pid (ChooseOneAtATime xs) -> do
+          xs' <- filterM (warringAttackStillValid eid) xs
+          pure [Ask pid (ChooseOneAtATime xs') | notNull xs']
+        other -> pure [other]
+      WarOfTheOuterGods <$> liftRunMessage msg attrs
     ResolveChaosToken _ Cultist _ | isHardExpert attrs -> do
       selectEach (EnemyWithTrait Mutated) \enemy -> placeMutations attrs enemy 1
       pure s
@@ -359,3 +374,28 @@ instance RunMessage WarOfTheOuterGods where
         _ -> error "Unknown resolution"
       pure s
     _ -> WarOfTheOuterGods <$> liftRunMessage msg attrs
+
+{- | A pending enemy-attack choice that still contains at least one warring
+attack, so it may need pruning after a warring enemy is defeated.
+-}
+isPendingWarringAttackChoice :: Message -> Bool
+isPendingWarringAttackChoice = \case
+  Ask _ (ChooseOneAtATime xs) -> any isWarringAttackEntry xs
+  _ -> False
+ where
+  isWarringAttackEntry = \case
+    TargetLabel _ msgs -> any isWarringAttack msgs
+    _ -> False
+  isWarringAttack = \case
+    ScenarioSpecific "warringAttack" _ -> True
+    _ -> False
+
+{- | Keep every non-warring choice, and keep a warring attack only if its
+attacker still has a warring target other than the just-defeated enemy.
+-}
+warringAttackStillValid :: (HasGame m, Tracing m) => EnemyId -> UI Message -> m Bool
+warringAttackStillValid defeatedEid = \case
+  TargetLabel _ [ScenarioSpecific "warringAttack" v] -> do
+    ts <- getWarringTargets (toResult v)
+    pure $ any (/= defeatedEid) ts
+  _ -> pure True

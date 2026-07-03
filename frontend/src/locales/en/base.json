@@ -547,6 +547,7 @@
       "exhaust": "Exhaust",
       "defeat": "Defeat",
       "discard": "Discard",
+      "flip": "Flip",
       "showSlots": "Show Slots"
     },
     "concealedCard": {

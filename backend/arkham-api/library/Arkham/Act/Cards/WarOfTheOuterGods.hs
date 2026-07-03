@@ -18,7 +18,7 @@ warOfTheOuterGods = act (1, A) WarOfTheOuterGods Cards.warOfTheOuterGods Nothing
 instance HasAbilities WarOfTheOuterGods where
   getAbilities (WarOfTheOuterGods a) =
     [ mkAbility a 1 $ forced $ PlacedDoomCounter #after AnySource (TargetControlledBy Anyone)
-    , restricted a 2 (notExists $ InPlayEnemy #cultist)
+    , restricted a 2 (notExists $ enemy_ #cultist)
         $ Objective
         $ actionAbilityWithCost (GroupClueCost (PerPlayer 3) Anywhere)
     ]

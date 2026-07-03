@@ -806,6 +806,7 @@ detect_resolvers() {
             | awk '{print $2}' \
             | grep -vE '^(127\.|::1$)' \
             | head -3 \
+            | sed -E '/:/ s/.*/[&]/' \
             | tr '\n' ' ')
     fi
     if [ -z "$resolvers" ] && [ "$(uname -s)" = "Darwin" ]; then
@@ -815,6 +816,7 @@ detect_resolvers() {
             | grep -vE '^(127\.|::1$)' \
             | sort -u \
             | head -3 \
+            | sed -E '/:/ s/.*/[&]/' \
             | tr '\n' ' ')
     fi
     if [ -z "$resolvers" ]; then

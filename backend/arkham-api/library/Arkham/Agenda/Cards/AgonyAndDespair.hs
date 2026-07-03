@@ -24,6 +24,10 @@ instance HasAbilities AgonyAndDespair where
 
 instance RunMessage AgonyAndDespair where
   runMessage msg a@(AgonyAndDespair attrs) = runQueueT $ case msg of
+    ForTarget (isTarget attrs -> True) AdvanceAgendaIfThresholdSatisfied -> do
+      n <- getDoomCount
+      when (n >= 11) $ scenarioSpecific_ "doomThresholdMet"
+      AgonyAndDespair <$> liftRunMessage msg attrs
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       let mThreshold = agendaDoomThreshold attrs
       for_ mThreshold \gv -> do

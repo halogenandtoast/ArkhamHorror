@@ -7,8 +7,10 @@ import Arkham.Ability.Types (Ability)
 import Arkham.Action
 import Arkham.Card (Card)
 import Arkham.Cost
+import Arkham.ForMovement (ForMovement)
 import {-# SOURCE #-} Arkham.Game.Base
 import Arkham.Id
+import Arkham.Matcher.Location (LocationMatcher)
 import Arkham.Prelude
 import Arkham.Query
 import Arkham.Queue
@@ -21,9 +23,23 @@ import Data.GADT.Compare.TH (deriveGCompare, deriveGEq)
 import Data.GADT.Show.TH (deriveGShow)
 import Data.Typeable
 
+-- | Memoize @build@ under @k@ against the game's query cache.
+--
+-- The key is namespaced by 'gameAllowEmptySpaces': a location query resolved
+-- with empty-space ("xempty") locations included returns a different set than
+-- the same query resolved without them, so the two must never share a cache
+-- slot. Accessibility under @IncludeEmptySpace@ (grid movement) runs with the
+-- flag on; everything else runs with it off. Wrapping the key here — rather
+-- than threading a Bool through every 'CacheKey' constructor — keeps the
+-- flag=False path (the overwhelming common case) byte-identical while letting
+-- the flag=True accessibility pass share one cache soundly. See
+-- 'getLocationsMatching' and 'runCacheReaderT'.
 cached :: forall m v. HasGame m => CacheKey v -> m v -> m v
-cached k build = case getCache @m of
-  GameCache wc -> wc k build
+cached k build = do
+  allowEmpty <- gameAllowEmptySpaces <$> getGame
+  let k' = if allowEmpty then NamespaceEmptyKey k else k
+  case getCache @m of
+    GameCache wc -> wc k' build
 
 class Monad m => HasGame m where
   getGame :: m Game
@@ -57,11 +73,15 @@ data CacheKey v where
   CanMoveToLocationKey :: InvestigatorId -> Source -> LocationId -> CacheKey Bool
   CanMoveToLocationsKey_ :: InvestigatorId -> Source -> [LocationId] -> CacheKey [LocationId]
   CanMoveToLocationsKey :: InvestigatorId -> Source -> CacheKey [LocationId]
+  ConnectedMatcherKey :: LocationId -> ForMovement -> CacheKey LocationMatcher
   PlayableCardsKey
     :: InvestigatorId -> Source -> CostStatus -> [Window] -> CacheKey [Card]
   GetAllAbilitiesKey :: CacheKey [Ability]
   SelectKey :: Typeable a => SomeQuery a -> CacheKey [a]
   ExistKey :: Typeable a => SomeQuery a -> CacheKey Bool
+  -- | Namespaces any key to the "empty spaces included" (grid movement) world;
+  -- applied automatically by 'cached' when 'gameAllowEmptySpaces' is set.
+  NamespaceEmptyKey :: CacheKey v -> CacheKey v
 
 deriving stock instance Show (CacheKey v)
 
@@ -94,6 +114,11 @@ instance GEq CacheKey where
       | (a1, b1) == (a2, b2) = Just Refl
       | otherwise = Nothing
   geq
+    (ConnectedMatcherKey a1 b1)
+    (ConnectedMatcherKey a2 b2)
+      | (a1, b1) == (a2, b2) = Just Refl
+      | otherwise = Nothing
+  geq
     (PlayableCardsKey a1 b1 c1 d1)
     (PlayableCardsKey a2 b2 c2 d2)
       | (a1, b1, c1, d1) == (a2, b2, c2, d2) = Just Refl
@@ -105,11 +130,17 @@ instance GEq CacheKey where
   geq (ExistKey (q1 :: SomeQuery a)) (ExistKey (q2 :: SomeQuery b))
     | Just Refl <- eqT @a @b, q1 == q2 = Just Refl -- requires Eq (SomeQuery a)
     | otherwise = Nothing
+  geq (NamespaceEmptyKey a) (NamespaceEmptyKey b) = geq a b
   geq _ _ = Nothing
 
 -- Total ordering on keys (used by DMap’s balanced tree)
 instance GCompare CacheKey where
   gcompare k1 k2 = case (k1, k2) of
+    -- NamespaceEmptyKey sorts as a distinct outermost namespace; keep these
+    -- cases first so they win over the per-constructor catch-alls below.
+    (NamespaceEmptyKey a, NamespaceEmptyKey b) -> gcompare a b
+    (NamespaceEmptyKey _, _) -> GLT
+    (_, NamespaceEmptyKey _) -> GGT
     (CanAffordCostKey a1 b1 c1 d1 e1 f1, CanAffordCostKey a2 b2 c2 d2 e2 f2) ->
       compareTuple (a1, b1, c1, d1, e1, f1) (a2, b2, c2, d2, e2, f2)
     (CanAffordCostKey {}, _) -> GLT
@@ -145,6 +176,7 @@ instance GCompare CacheKey where
         GT -> GGT
     (SelectKey {}, GetAllAbilitiesKey {}) -> GGT
     (SelectKey {}, PlayableCardsKey {}) -> GGT
+    (SelectKey {}, ConnectedMatcherKey {}) -> GLT
     (SelectKey {}, _) -> GGT
     (ExistKey (q1 :: SomeQuery a), ExistKey (q2 :: SomeQuery b)) | Just Refl <- eqT @a @b ->
       case compare q1 q2 of -- requires Ord (SomeQuery a)
@@ -152,7 +184,11 @@ instance GCompare CacheKey where
         EQ -> GEQ
         GT -> GGT
     (ExistKey {}, SelectKey {}) -> GLT
+    (ExistKey {}, ConnectedMatcherKey {}) -> GLT
     (ExistKey {}, _) -> GGT
+    (ConnectedMatcherKey a1 b1, ConnectedMatcherKey a2 b2) ->
+      compareTuple (a1, b1) (a2, b2)
+    (ConnectedMatcherKey {}, _) -> GGT
    where
     -- Helper: lift ordinary Ord tuple comparison to GCompare’s 3-way
     compareTuple :: Ord t => t -> t -> GOrdering a a

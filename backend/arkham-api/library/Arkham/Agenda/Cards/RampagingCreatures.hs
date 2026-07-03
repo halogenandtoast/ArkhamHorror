@@ -17,7 +17,7 @@ rampagingCreatures = agenda (1, A) RampagingCreatures Cards.rampagingCreatures (
 
 instance HasAbilities RampagingCreatures where
   getAbilities (RampagingCreatures x) =
-    [ restricted x 1 (exists $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth")
+    [ restricted x 1 (exists $ EnemyWithTitle "Brood of Yog-Sothoth")
         $ forced
         $ PhaseEnds #when #enemy
     ]
@@ -25,7 +25,7 @@ instance HasAbilities RampagingCreatures where
 instance RunMessage RampagingCreatures where
   runMessage msg a@(RampagingCreatures attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      broodOfYogSothoth <- select $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
+      broodOfYogSothoth <- select $ EnemyWithTitle "Brood of Yog-Sothoth"
       leadChooseOneAtATimeM $ targets broodOfYogSothoth \x -> push $ ChooseRandomLocation (toTarget x) mempty
       pure a
     ChosenRandomLocation target@(EnemyTarget _) lid | onSide A attrs -> do

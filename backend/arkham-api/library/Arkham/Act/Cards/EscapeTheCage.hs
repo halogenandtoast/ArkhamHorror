@@ -17,7 +17,7 @@ escapeTheCage :: ActCard EscapeTheCage
 escapeTheCage = act (3, A) EscapeTheCage Cards.escapeTheCage Nothing
 
 enemyMatcher :: EnemyMatcher
-enemyMatcher = InPlayEnemy $ #ready <> withTrait SilverTwilight <> not_ (EnemyAt "Entry Hall") <> AloofEnemy
+enemyMatcher = #ready <> withTrait SilverTwilight <> not_ (EnemyAt "Entry Hall") <> AloofEnemy
 
 instance HasAbilities EscapeTheCage where
   getAbilities = actAbilities \x ->

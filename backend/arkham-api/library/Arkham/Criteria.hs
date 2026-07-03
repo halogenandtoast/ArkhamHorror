@@ -355,11 +355,21 @@ thisEnemy = EnemyCriteria . ThisEnemy
 atYourLocation :: InvestigatorMatcher -> Criterion
 atYourLocation matcher = exists (AtYourLocation <> matcher)
 
+class InPlay a where
+  asInPlay :: a -> a
+
+anyInPlay :: (Exists a, InPlay a) => a -> Criterion
+anyInPlay = exists . asInPlay
+
+noneInPlay :: (Exists a, InPlay a) => a -> Criterion
+noneInPlay = notExists . asInPlay
+
 class Exists a where
   exists :: a -> Criterion
 
 thisIs :: (Exists matcher, Be a matcher, Semigroup matcher) => a -> matcher -> Criterion
 thisIs a matcher = exists (be a <> matcher)
+
 any_ :: (Exists a, OneOf a) => [a] -> Criterion
 any_ = exists . oneOf
 
@@ -413,6 +423,10 @@ instance Exists TreacheryMatcher where
 
 instance Exists EnemyMatcher where
   exists = enemyExists
+
+instance InPlay EnemyMatcher where
+  -- Enemy queries are in-play by default now, so this is the identity.
+  asInPlay = id
 
 instance Exists ExtendedCardMatcher where
   exists = ExtendedCardExists

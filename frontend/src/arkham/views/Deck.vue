@@ -102,69 +102,103 @@ function findCardByDeckCode(code: string): Arkham.CardDef | undefined {
   return localizeCard(allCards.value.find((c) => c.art === normalized))
 }
 
-const cards = computed(() => {
-  if (deck.value === undefined || deck.value === null) {
-    return []
-  }
+const cardsFromSlots = (slots: Record<string, number> | undefined): Arkham.CardDef[] => {
+  if (!slots) return []
 
-  return Object.entries(deck.value.list.slots).flatMap(([key, value]) => {
+  return Object.entries(slots).flatMap(([key, value]) => {
     const result = findCardByDeckCode(key)
     if (!result) return []
     return Array(value).fill(result)
   })
+}
+
+const cardsFromList = (codes: string): Arkham.CardDef[] => {
+  return codes
+    .split(',')
+    .map((code) => findCardByDeckCode(code.trim()))
+    .filter((card): card is Arkham.CardDef => !!card)
+}
+
+const deckMeta = computed<Record<string, unknown>>(() => {
+  try {
+    return deck.value?.list.meta ? JSON.parse(deck.value.list.meta) as Record<string, unknown> : {}
+  } catch (_e) {
+    return {}
+  }
 })
+
+const hasFromTheBeyond = computed(() => {
+  return !!deck.value?.list.slots['90052'] || !!deck.value?.list.slots['c90052']
+})
+
+const withoutCards = (source: Arkham.CardDef[], cardsToRemove: Arkham.CardDef[]) => {
+  const remaining = new Map<string, number>()
+  cardsToRemove.forEach((card) => remaining.set(card.cardCode, (remaining.get(card.cardCode) ?? 0) + 1))
+
+  return source.filter((card) => {
+    const count = remaining.get(card.cardCode) ?? 0
+    if (count <= 0) return true
+    remaining.set(card.cardCode, count - 1)
+    return false
+  })
+}
+
+const cards = computed(() => withoutCards(cardsFromSlots(deck.value?.list.slots), hunchDeckCards.value))
+
+const hunchDeckCards = computed(() => {
+  if (!deck.value) return []
+  const investigatorCode = deck.value.list.investigator_code.replace(/^c/, '')
+  if (investigatorCode !== '05002') return []
+  const hunchCards = deckMeta.value[`attachments_${investigatorCode}`]
+  return typeof hunchCards === 'string' ? cardsFromList(hunchCards) : []
+})
+
+const hasTrait = (card: Arkham.CardDef, traitName: string) => {
+  return card.cardTraits.some((trait) => trait.toLowerCase() === traitName.toLowerCase())
+}
+
+const isSpiritDeckCard = (card: Arkham.CardDef) => {
+  return hasTrait(card, 'Ally') || hasTrait(card, 'Geist') || hasTrait(card, 'Spirit')
+}
+
+const sideSlotCards = computed(() => cardsFromSlots(deck.value?.list.sideSlots))
+
+const sideSlotCardsAreSpiritDeck = computed(() => {
+  return hasFromTheBeyond.value && sideSlotCards.value.length > 0 && sideSlotCards.value.every(isSpiritDeckCard)
+})
+
+const sideDeckCards = computed(() => sideSlotCardsAreSpiritDeck.value ? [] : sideSlotCards.value)
 
 const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
   const result: Record<string, Arkham.CardDef[]> = {}
 
-  try {
-    const meta = deck.value?.list.meta ? JSON.parse(deck.value.list.meta) as Record<string, unknown> : {}
-    Object.entries(meta).forEach(([key, value]) => {
-      const match = key.match(/^attachments_(\d+)$/)
-      if (!match || typeof value !== 'string') return
+  Object.entries(deckMeta.value).forEach(([key, value]) => {
+    const match = key.match(/^attachments_(\d+)$/)
+    if (!match || typeof value !== 'string') return
 
-      const attachedCards = value
-        .split(',')
-        .map((code) => findCardByDeckCode(code.trim()))
-        .filter((card): card is Arkham.CardDef => !!card)
+    const attachedCards = cardsFromList(value)
+    if (attachedCards.length > 0) result[match[1]] = attachedCards
+  })
 
-      if (attachedCards.length > 0) result[match[1]] = attachedCards
-    })
-
-    const hiddenSlots = (meta.hidden_slots as { slots?: Record<string, number> } | undefined)?.slots
-    if (hiddenSlots) {
-      const hiddenCards = Object.entries(hiddenSlots).flatMap(([code, quantity]) => {
-        const card = findCardByDeckCode(code)
-        return card ? Array(quantity).fill(card) : []
-      })
-      if (hiddenCards.length > 0) {
-        const hasFromTheBeyond = !!deck.value?.list.slots['90052'] || !!deck.value?.list.slots['c90052']
-        if (hasFromTheBeyond && !result['90052']) result['90052'] = hiddenCards
-        else if (!result['09077']) result['09077'] = hiddenCards
-      }
+  const hiddenSlots = (deckMeta.value.hidden_slots as { slots?: Record<string, number> } | undefined)?.slots
+  if (hiddenSlots) {
+    const hiddenCards = cardsFromSlots(hiddenSlots)
+    if (hiddenCards.length > 0) {
+      if (hasFromTheBeyond.value && !result['90052']) result['90052'] = hiddenCards
+      else if (!result['09077']) result['09077'] = hiddenCards
     }
-
-    const sideSlots = deck.value?.list.sideSlots
-    if (sideSlots && !result['90052']) {
-      const sideCards = Object.entries(sideSlots).flatMap(([code, quantity]) => {
-        const card = findCardByDeckCode(code)
-        return card ? Array(quantity).fill(card) : []
-      })
-      if (sideCards.length > 0) result['90052'] = sideCards
-    }
-
-    if (typeof meta.extra_deck === 'string' && !result['90052']) {
-      const extraCards = meta.extra_deck
-        .split(',')
-        .map((code) => findCardByDeckCode(code.trim()))
-        .filter((card): card is Arkham.CardDef => !!card)
-      if (extraCards.length > 0) result['90052'] = extraCards
-    }
-
-    return result
-  } catch (_e) {
-    return {}
   }
+
+  if (sideSlotCardsAreSpiritDeck.value) {
+    result['90052'] = [...(result['90052'] ?? []), ...sideSlotCards.value]
+  }
+
+  if (typeof deckMeta.value.extra_deck === 'string' && hasFromTheBeyond.value) {
+    const extraCards = cardsFromList(deckMeta.value.extra_deck)
+    if (extraCards.length > 0) result['90052'] = [...(result['90052'] ?? []), ...extraCards]
+  }
+
+  return result
 })
 
 async function deleteDeckEvent() {
@@ -255,8 +289,25 @@ watch(deckRef, (el) => {
           </div>
         </template>
       </header>
-      <CardImageView v-if="view == View.Image" :cards="cards" :attachments="attachments" />
-      <CardListView v-if="view == View.List" :cards="cards" :attachments="attachments" />
+      <div class="deck-sections">
+        <section v-if="hunchDeckCards.length > 0" class="deck-section deck-section--hunch">
+          <h2 class="deck-section-title">Hunch Deck <span>{{ hunchDeckCards.length }}</span></h2>
+          <CardImageView v-if="view == View.Image" :cards="hunchDeckCards" />
+          <CardListView v-if="view == View.List" :cards="hunchDeckCards" />
+        </section>
+
+        <section class="deck-section deck-section--main">
+          <h2 class="deck-section-title">Main Deck <span>{{ cards.length }}</span></h2>
+          <CardImageView v-if="view == View.Image" :cards="cards" :attachments="attachments" />
+          <CardListView v-if="view == View.List" :cards="cards" :attachments="attachments" />
+        </section>
+
+        <section v-if="sideDeckCards.length > 0" class="deck-section deck-section--side">
+          <h2 class="deck-section-title">Side Deck <span>{{ sideDeckCards.length }}</span></h2>
+          <CardImageView v-if="view == View.Image" :cards="sideDeckCards" />
+          <CardListView v-if="view == View.List" :cards="sideDeckCards" />
+        </section>
+      </div>
     </div>
     <Prompt
       v-if="deleting"
@@ -293,6 +344,59 @@ watch(deckRef, (el) => {
     overflow: visible;
   }
 }
+
+.deck-sections {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 16px 24px;
+}
+
+.deck-section {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-bottom: 18px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+
+  &:last-child { margin-bottom: 0; }
+
+  &:deep(.cards),
+  &:deep(.card-table-wrapper) {
+    flex: unset;
+    overflow: visible;
+  }
+}
+
+.deck-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 14px;
+  color: #e8dfc9;
+  background: rgba(0, 0, 0, 0.28);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  span {
+    padding: 1px 7px;
+    color: #1d170f;
+    background: #c8a96e;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    letter-spacing: 0;
+  }
+}
+
+.deck-section--hunch .deck-section-title { color: #b8d7ff; }
+.deck-section--side .deck-section-title { color: #d2c6ff; }
 
 /* ── Deck header ─────────────────────────────────────────── */
 

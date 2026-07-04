@@ -7,6 +7,9 @@ import TestImport
 import Arkham.ClassSymbol
 import Arkham.Decklist
 import Arkham.Decklist.RandomBasicWeakness
+import Arkham.Helpers.Scenario qualified as Scenario
+import Arkham.PlayerCard (randomWeakness)
+import Arkham.Projection (fieldMap)
 import Arkham.Taboo.Types
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -62,6 +65,39 @@ spec = describe "loadDecklist" $ do
     candidates `shouldSatisfy` notNull
     candidateCodes `shouldSatisfy` all (.isChapterTwo)
     candidateCodes `shouldNotContain` ["02037", "04040", "07038"]
+
+  it "uses arkham.build card_pool when LoadDecklist replaces 01000 through InitDeck" $ gameTest $ \self -> do
+    placeholder <- genPlayerCard randomWeakness
+    liftIO
+      $ map toCardCode
+        ( randomBasicWeaknessCandidates
+            RandomBasicWeaknessContext
+              { rbwInvestigatorClass = Guardian
+              , rbwPlayerCount = 1
+              , rbwDecklist = Just singletonRandomWeaknessDecklist
+              , rbwStandalone = True
+              }
+        )
+      `shouldBe` ["12102"]
+    (deckWithoutPlaceholder, replacementDefs) <-
+      Scenario.addRandomBasicWeaknessIfNeeded Guardian 1 (Just singletonRandomWeaknessDecklist) (Deck [placeholder])
+    liftIO do
+      map toCardCode (unDeck deckWithoutPlaceholder) `shouldBe` []
+      map toCardCode replacementDefs `shouldBe` ["12102"]
+
+    initDeckCarriedDecklist <-
+      createMessageChecker \case
+        InitDeck iid _ (Just decklist) deck ->
+          iid == "12013"
+            && decklist == singletonRandomWeaknessDecklist
+            && map toCardCode (unDeck deck) == ["01000"]
+        _ -> False
+
+    run $ LoadDecklist (attr investigatorPlayerId self) singletonRandomWeaknessDecklist
+    initDeckCarriedDecklist `refShouldBe` True
+
+    deckCodes <- fieldMap InvestigatorDeck (map toCardCode . unDeck) (InvestigatorId "12013")
+    liftIO $ deckCodes `shouldBe` ["12102"]
 
   it "falls back to the broad random basic weakness pool when card_pool is absent" do
     let candidateCodes =
@@ -227,6 +263,13 @@ arkhamBuildChapterTwoDecklist =
     , url = Just "https://api.arkham.build/v1/public/share/5917699"
     , decklist_id = Just "5917699"
     , decklist_name = Just "Isabelle Barnes Chapter Two"
+    }
+
+singletonRandomWeaknessDecklist :: ArkhamDBDecklist
+singletonRandomWeaknessDecklist =
+  arkhamBuildChapterTwoDecklist
+    { meta = Just "{\"card_pool\":\"pack:12102\"}"
+    , decklist_name = Just "Isabelle Barnes Singleton Random Weakness"
     }
 
 noCardPoolDecklist :: ArkhamDBDecklist

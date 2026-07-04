@@ -1,0 +1,307 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Arkham Card Code Space</title>
+<style>
+  :root{ --bg:#0d1017; --panel:#161b26; --line:#232a38; --txt:#c9d3e0; --dim:#7c8698; --accent:#e0a94a; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; background:var(--bg); color:var(--txt);
+    font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; overflow:hidden; }
+  #app{ display:flex; height:100%; }
+  #side{ width:290px; flex:0 0 290px; background:var(--panel); border-right:1px solid var(--line);
+    display:flex; flex-direction:column; }
+  #side h1{ font-size:14px; margin:0; padding:12px 14px; border-bottom:1px solid var(--line); color:var(--accent); }
+  .box{ padding:10px 14px; border-bottom:1px solid var(--line); }
+  .box h2{ font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); margin:0 0 8px; }
+  #legend{ flex:1; overflow-y:auto; }
+  .row{ display:flex; align-items:center; gap:8px; padding:2px 0; cursor:pointer; border-radius:3px; }
+  .row:hover{ background:#1f2636; }
+  .row.off{ opacity:.35; }
+  .sw{ width:12px; height:12px; border-radius:2px; flex:0 0 12px; }
+  .row .nm{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .row .ct{ color:var(--dim); font-size:11px; }
+  input,button,select{ background:#0d1017; color:var(--txt); border:1px solid var(--line);
+    border-radius:4px; padding:5px 7px; font:inherit; width:100%; }
+  button{ cursor:pointer; width:auto; }
+  .btns{ display:flex; gap:6px; flex-wrap:wrap; }
+  label.chk{ display:flex; align-items:center; gap:6px; cursor:pointer; width:auto; }
+  label.chk input{ width:auto; }
+  #stats div{ display:flex; justify-content:space-between; padding:1px 0; }
+  #stats span{ color:var(--dim); }
+  #free .fr{ display:flex; justify-content:space-between; cursor:pointer; padding:2px 4px; border-radius:3px; }
+  #free .fr:hover{ background:#1f2636; }
+  #main{ flex:1; position:relative; }
+  canvas{ display:block; width:100%; height:100%; cursor:crosshair; }
+  #tip{ position:absolute; pointer-events:none; background:#0a0d13ee; border:1px solid var(--line);
+    border-radius:5px; padding:6px 9px; max-width:280px; font-size:12px; display:none; z-index:5; }
+  #tip b{ color:var(--accent); }
+  #tip .t{ color:var(--dim); }
+  #hint{ position:absolute; bottom:8px; left:10px; color:var(--dim); font-size:11px; }
+  #drop{ position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+    background:#0d1017; text-align:center; z-index:10; padding:40px; }
+  #drop input{ width:auto; margin-top:12px; }
+</style>
+
+<div id="app">
+  <div id="side">
+    <h1>ARKHAM · CODE SPACE</h1>
+    <div class="box">
+      <h2>Search</h2>
+      <input id="search" placeholder="card name / code…">
+    </div>
+    <div class="box">
+      <h2>View</h2>
+      <div class="btns" style="margin-bottom:8px">
+        <button id="fit">Reset</button>
+        <select id="grp"><option value="pack">Color by pack</option><option value="cycle">Color by cycle</option></select>
+      </div>
+      <label class="chk"><input type="checkbox" id="showfree" checked> highlight free blocks</label>
+    </div>
+    <div class="box" id="stats"><h2>Stats</h2></div>
+    <div class="box" id="freebox"><h2>Largest free blocks</h2><div id="free"></div></div>
+    <div id="legend" class="box"><h2>Groups</h2><div id="legrows"></div></div>
+  </div>
+  <div id="main">
+    <canvas id="cv"></canvas>
+    <div id="tip"></div>
+    <div id="hint">scroll = zoom · drag = pan · hover = inspect · click legend/free = jump</div>
+    <div id="drop">
+      <div>Could not auto-load <b>cards.json</b>.<br>Serve this folder over http, or pick the file:
+        <br><input type="file" id="file" accept=".json"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLS=1000, ROWS=100;               // 5-digit space = 100 rows × 1000 cols
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const tip=document.getElementById('tip');
+let DPR=Math.min(devicePixelRatio||1,2);
+
+let cards=[], byCode=new Map();           // int code -> card
+let packs=new Map();                      // pack_code -> {color,count,row,min,max,name,on}
+let cycleColor=new Map();
+let freeRanges=[];                        // {a,b,len}
+let grpMode='pack', showFree=true, hlSet=null;
+
+// view transform: screen = (world - origin)*scale
+let scale=1, ox=0, oy=0;
+
+// ---- color helpers ----
+function hsl(i,n){ return `hsl(${(i*137.508)%360} 62% 58%)`; }
+
+function prep(raw){
+  cards=[]; byCode.clear(); packs.clear();
+  const seen=new Set();
+  for(const c of raw){
+    const base=c.code.slice(0,5);
+    const n=parseInt(base,10);
+    if(isNaN(n)) continue;
+    if(seen.has(n)) continue;             // fold 6-digit variants onto base slot
+    seen.add(n);
+    const rec={n, row:Math.floor(n/1000), code:base, name:c.real_name||c.code, type:c.type_code,
+      faction:c.faction_code, pack:c.pack_code||'?', xp:c.xp};
+    cards.push(rec); byCode.set(n,rec);
+  }
+  // packs in first-appearance order
+  let pi=0;
+  for(const r of cards){
+    let p=packs.get(r.pack);
+    if(!p){ p={color:hsl(pi++,0), count:0, row:Math.floor(r.n/1000),
+      min:r.n%1000, max:r.n%1000, name:r.pack, on:true}; packs.set(r.pack,p); }
+    p.count++; const col=r.n%1000;
+    if(col<p.min)p.min=col; if(col>p.max)p.max=col;
+  }
+  // cycle colors (prefix)
+  cycleColor.clear();
+  [...new Set(cards.map(r=>r.row))].sort((a,b)=>a-b).forEach((rw,i)=>cycleColor.set(rw,hsl(i,0)));
+  computeFree();
+  buildLegend(); buildStats(); buildFree();
+}
+
+function color(r){
+  if(hlSet) return hlSet.has(r.n)?'#fff':'#2a3140';
+  return grpMode==='pack' ? packs.get(r.pack).color : cycleColor.get(r.row);
+}
+
+function computeFree(){
+  const used=new Uint8Array(COLS*ROWS);
+  for(const r of cards) used[r.n]=1;
+  freeRanges=[]; let a=-1;
+  for(let i=0;i<used.length;i++){
+    if(!used[i]){ if(a<0)a=i; }
+    else if(a>=0){ freeRanges.push({a,b:i-1,len:i-a}); a=-1; }
+  }
+  if(a>=0) freeRanges.push({a,b:used.length-1,len:used.length-a});
+  freeRanges.sort((x,y)=>y.len-x.len);
+}
+
+// ---- drawing ----
+function resize(){ const r=cv.getBoundingClientRect();
+  cv.width=r.width*DPR; cv.height=r.height*DPR; if(!scale) fit(); draw(); }
+function fit(){ const w=cv.width,h=cv.height;
+  scale=Math.min(w/COLS,h/ROWS)*0.96;
+  ox=(COLS/2)-(w/2)/scale; oy=(ROWS/2)-(h/2)/scale; }
+function s2w(x,y){ return [x*DPR/scale+ox, y*DPR/scale+oy]; }
+
+function draw(){
+  const w=cv.width,h=cv.height;
+  ctx.fillStyle='#0d1017'; ctx.fillRect(0,0,w,h);
+  const cell=scale;                        // px per world unit
+  // visible world bounds
+  const [wx0,wy0]=s2w(0,0), [wx1,wy1]=s2w(w/DPR,h/DPR);
+
+  // free-block highlight (rects, few of them)
+  if(showFree && !hlSet){
+    ctx.fillStyle='#151b28';
+    for(const f of freeRanges){
+      if(f.len<8) break;                   // sorted desc; stop at small
+      // free range may span rows; draw per-row segments
+      let s=f.a;
+      while(s<=f.b){
+        const row=Math.floor(s/1000), rowEnd=row*1000+999;
+        const e=Math.min(f.b,rowEnd), c0=s%1000;
+        const sx=(c0-ox)*cell, sy=(row-oy)*cell;
+        ctx.fillRect(sx,sy,(e-s+1)*cell,cell);
+        s=e+1;
+      }
+    }
+  }
+
+  // pack group boxes (only when meaningful)
+  if(grpMode==='pack' && !hlSet){
+    ctx.lineWidth=1;
+    for(const [k,p] of packs){
+      if(!p.on) continue;
+      const sx=(p.min-ox)*cell, sy=(p.row-oy)*cell, ww=(p.max-p.min+1)*cell;
+      if(sx>w||sx+ww<0||sy>h||sy+cell<0) continue;
+      ctx.strokeStyle=p.color+''; ctx.globalAlpha=.5;
+      ctx.strokeRect(sx+.5,sy+.5,ww-1,cell-1); ctx.globalAlpha=1;
+      if(ww>44){ ctx.fillStyle='#0d1017cc'; ctx.font='10px monospace';
+        const tw=ctx.measureText(k).width+6;
+        ctx.fillRect(sx+1,sy+1,Math.min(tw,ww-2),12);
+        ctx.fillStyle='#cfd8e6'; ctx.fillText(k,sx+4,sy+10); }
+    }
+  }
+
+  // cells
+  const drawText=cell>=16;
+  ctx.textBaseline='middle';
+  for(const r of cards){
+    const p=packs.get(r.pack); if(grpMode==='pack'&&!p.on&&!hlSet) continue;
+    const cx=r.n%1000, cy=r.row;
+    if(cx<wx0-1||cx>wx1||cy<wy0-1||cy>wy1) continue;   // cull
+    const sx=(cx-ox)*cell, sy=(cy-oy)*cell;
+    ctx.fillStyle=color(r);
+    ctx.fillRect(sx,sy,cell-(cell>3?1:0),cell-(cell>3?1:0));
+    if(drawText){
+      ctx.fillStyle='#0b0e14'; ctx.font=`${Math.min(cell*.28,11)}px monospace`;
+      ctx.fillText(r.code, sx+3, sy+cell*0.32);
+      if(cell>=34){ ctx.fillStyle='#0b0e14dd';
+        ctx.fillText(r.name.slice(0,Math.floor(cell/6)), sx+3, sy+cell*0.7); }
+    }
+  }
+
+  // cycle row guides when zoomed
+  if(cell>=6){
+    ctx.strokeStyle='#ffffff10'; ctx.lineWidth=1;
+    const r0=Math.max(0,Math.floor(wy0)), r1=Math.min(ROWS,Math.ceil(wy1));
+    for(let rr=r0;rr<=r1;rr++){ const y=(rr-oy)*cell; ctx.beginPath();
+      ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  }
+}
+
+// ---- interaction ----
+let drag=null;
+cv.addEventListener('mousedown',e=>{ drag=[e.clientX,e.clientY,ox,oy]; });
+addEventListener('mouseup',()=>drag=null);
+addEventListener('mousemove',e=>{
+  if(drag){ ox=drag[2]-(e.clientX-drag[0])*DPR/scale; oy=drag[3]-(e.clientY-drag[1])*DPR/scale; draw(); return; }
+  hover(e);
+});
+cv.addEventListener('mouseleave',()=>tip.style.display='none');
+cv.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const r=cv.getBoundingClientRect();
+  const [wx,wy]=s2w(e.clientX-r.left,e.clientY-r.top);
+  const f=Math.exp(-e.deltaY*0.0015);
+  scale=Math.max(0.05,Math.min(scale*f,80));
+  // keep cursor world point fixed
+  ox=wx-(e.clientX-r.left)*DPR/scale; oy=wy-(e.clientY-r.top)*DPR/scale;
+  draw();
+},{passive:false});
+
+function hover(e){
+  const r=cv.getBoundingClientRect();
+  const [wx,wy]=s2w(e.clientX-r.left,e.clientY-r.top);
+  const cx=Math.floor(wx), cy=Math.floor(wy);
+  if(cx<0||cx>=COLS||cy<0||cy>=ROWS){ tip.style.display='none'; return; }
+  const n=cy*1000+cx, card=byCode.get(n);
+  const codeStr=String(n).padStart(5,'0');
+  let html;
+  if(card){ const p=packs.get(card.pack);
+    html=`<b>${card.name}</b><div class="t">${card.code} · ${card.type||''} ${card.faction||''}${card.xp?(' · '+card.xp+'xp'):''}</div><div class="t">pack ${p.name}</div>`;
+  } else {
+    html=`<b>${codeStr}</b><div class="t">— free slot —</div>`;
+  }
+  tip.innerHTML=html; tip.style.display='block';
+  tip.style.left=Math.min(e.clientX-r.left+14, r.width-290)+'px';
+  tip.style.top=(e.clientY-r.top+14)+'px';
+}
+
+function jumpTo(row,c0,c1){
+  const w=cv.width,h=cv.height, span=Math.max(c1-c0+1,3);
+  scale=Math.min(w/(span*1.3), h/6);
+  ox=(c0+c1)/2 - (w/2)/scale; oy=row+0.5 - (h/2)/scale; draw();
+}
+
+// ---- panels ----
+function buildLegend(){
+  const el=document.getElementById('legrows'); el.innerHTML='';
+  for(const [k,p] of packs){
+    const d=document.createElement('div'); d.className='row';
+    d.innerHTML=`<span class="sw" style="background:${p.color}"></span>
+      <span class="nm">${k}</span><span class="ct">${p.count}</span>`;
+    d.onclick=e=>{ if(e.shiftKey){ p.on=!p.on; d.classList.toggle('off',!p.on); draw(); }
+      else jumpTo(p.row,p.min,p.max); };
+    el.appendChild(d);
+  }
+}
+function buildStats(){
+  const used=cards.length, free=COLS*ROWS-used;
+  const rowsUsed=new Set(cards.map(r=>Math.floor(r.n/1000))).size;
+  document.getElementById('stats').innerHTML=`<h2>Stats</h2>
+    <div>codes used <span>${used.toLocaleString()}</span></div>
+    <div>free slots <span>${free.toLocaleString()}</span></div>
+    <div>packs <span>${packs.size}</span></div>
+    <div>cycles used <span>${rowsUsed}/100</span></div>
+    <div>fill <span>${(used/(COLS*ROWS)*100).toFixed(2)}%</span></div>`;
+}
+function buildFree(){
+  const el=document.getElementById('free'); el.innerHTML='';
+  for(const f of freeRanges.slice(0,14)){
+    const d=document.createElement('div'); d.className='fr';
+    d.innerHTML=`<span>${String(f.a).padStart(5,'0')}–${String(f.b).padStart(5,'0')}</span><span style="color:var(--dim)">${f.len}</span>`;
+    d.onclick=()=>jumpTo(Math.floor(f.a/1000),f.a%1000,Math.min(f.b%1000||999,999));
+    el.appendChild(d);
+  }
+}
+
+document.getElementById('search').oninput=e=>{
+  const q=e.target.value.trim().toLowerCase();
+  hlSet = q ? new Set(cards.filter(r=>r.name.toLowerCase().includes(q)||r.code.includes(q)).map(r=>r.n)) : null;
+  draw();
+};
+document.getElementById('fit').onclick=()=>{ fit(); draw(); };
+document.getElementById('grp').onchange=e=>{ grpMode=e.target.value; draw(); };
+document.getElementById('showfree').onchange=e=>{ showFree=e.target.checked; draw(); };
+
+// ---- load ----
+function boot(raw){ prep(raw); scale=0; resize(); }
+addEventListener('resize',()=>{ DPR=Math.min(devicePixelRatio||1,2); resize(); });
+fetch('/cards.json').then(r=>{ if(!r.ok)throw 0; return r.json(); }).then(boot)
+  .catch(()=>{ document.getElementById('drop').style.display='flex'; });
+document.getElementById('file').onchange=e=>{
+  const f=e.target.files[0]; if(!f)return;
+  f.text().then(t=>{ document.getElementById('drop').style.display='none'; boot(JSON.parse(t)); });
+};
+</script>

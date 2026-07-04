@@ -88,20 +88,39 @@ let scale=1, ox=0, oy=0;
 
 // ---- color helpers ----
 function hsl(i,n){ return `hsl(${(i*137.508)%360} 62% 58%)`; }
+function normalizeCode(code){ return String(code||'').slice(0,5); }
 
 function prep(raw){
   cards=[]; byCode.clear(); packs.clear();
   const seen=new Set();
-  for(const c of raw){
-    const base=c.code.slice(0,5);
-    const n=parseInt(base,10);
-    if(isNaN(n)) continue;
-    if(seen.has(n)) continue;             // fold 6-digit variants onto base slot
+  const directCodes=new Set();
+  const addCard=(c, slotCode, aliasKind=null)=>{
+    const n=parseInt(slotCode,10);
+    if(isNaN(n) || n<0 || n>=COLS*ROWS || seen.has(n)) return;
     seen.add(n);
-    const rec={n, row:Math.floor(n/1000), code:base, name:c.real_name||c.code, type:c.type_code,
-      faction:c.faction_code, pack:c.pack_code||'?', xp:c.xp};
+    const sourceCode=normalizeCode(c.code);
+    const rec={n, row:Math.floor(n/1000), code:slotCode, sourceCode, aliasKind,
+      name:c.real_name||c.name||c.code, type:c.type_code, faction:c.faction_code,
+      pack:c.pack_code||'?', xp:c.xp};
     cards.push(rec); byCode.set(n,rec);
+  };
+
+  // Pass 1: real card codes win their own slots.
+  for(const c of raw){
+    const base=normalizeCode(c.code);
+    if(!base) continue;
+    directCodes.add(base);
+    addCard(c, base);
   }
+
+  // Pass 2: fill missing original/reprint slots such as duplicate_of_code/reprint_of.
+  for(const c of raw){
+    for(const field of ['duplicate_of_code','reprint_of']){
+      const alias=normalizeCode(c[field]);
+      if(alias && !directCodes.has(alias)) addCard(c, alias, field);
+    }
+  }
+
   // packs in first-appearance order
   let pi=0;
   for(const r of cards){
@@ -239,7 +258,8 @@ function hover(e){
   const codeStr=String(n).padStart(5,'0');
   let html;
   if(card){ const p=packs.get(card.pack);
-    html=`<b>${card.name}</b><div class="t">${card.code} · ${card.type||''} ${card.faction||''}${card.xp?(' · '+card.xp+'xp'):''}</div><div class="t">pack ${p.name}</div>`;
+    const alias=card.aliasKind ? `<div class="t">filled from ${card.sourceCode} via ${card.aliasKind}</div>` : '';
+    html=`<b>${card.name}</b><div class="t">${card.code} · ${card.type||''} ${card.faction||''}${card.xp?(' · '+card.xp+'xp'):''}</div><div class="t">pack ${p.name}</div>${alias}`;
   } else {
     html=`<b>${codeStr}</b><div class="t">— free slot —</div>`;
   }
@@ -288,7 +308,7 @@ function buildFree(){
 
 document.getElementById('search').oninput=e=>{
   const q=e.target.value.trim().toLowerCase();
-  hlSet = q ? new Set(cards.filter(r=>r.name.toLowerCase().includes(q)||r.code.includes(q)).map(r=>r.n)) : null;
+  hlSet = q ? new Set(cards.filter(r=>r.name.toLowerCase().includes(q)||r.code.includes(q)||r.sourceCode.includes(q)).map(r=>r.n)) : null;
   draw();
 };
 document.getElementById('fit').onclick=()=>{ fit(); draw(); };

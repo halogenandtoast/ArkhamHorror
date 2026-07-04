@@ -38,7 +38,11 @@ V2_DEPLOYMENT  ?= arkham-web
 V2_PLATFORM    ?= linux/amd64
 V2_BUILDER     ?= arkham-multiarch
 V2_DO_CLUSTER  ?= arkham-horror-doks
-V2_CACHE_IMAGE ?= $(V2_IMAGE):buildcache
+V2_CACHE_DIR   ?= $(CURDIR)/.buildx-cache/v2
+V2_CACHE_NEXT  ?= $(V2_CACHE_DIR).new
+V2_CACHE_PREV  ?= $(V2_CACHE_DIR).prev
+V2_CACHE_SETUP = CACHE_ARGS="--cache-to type=local,dest=$(V2_CACHE_NEXT),mode=max"; rm -rf "$(V2_CACHE_NEXT)"; if [ -d "$(V2_CACHE_DIR)" ]; then CACHE_ARGS="--cache-from type=local,src=$(V2_CACHE_DIR) $$CACHE_ARGS"; fi
+V2_CACHE_PROMOTE = if [ -d "$(V2_CACHE_NEXT)" ]; then rm -rf "$(V2_CACHE_PREV)"; if [ -d "$(V2_CACHE_DIR)" ]; then mv "$(V2_CACHE_DIR)" "$(V2_CACHE_PREV)"; fi; if mv "$(V2_CACHE_NEXT)" "$(V2_CACHE_DIR)"; then rm -rf "$(V2_CACHE_PREV)"; else if [ -d "$(V2_CACHE_PREV)" ]; then mv "$(V2_CACHE_PREV)" "$(V2_CACHE_DIR)"; fi; exit 1; fi; fi
 
 ## Ensure a docker-container buildx builder exists (required for multi-platform builds)
 v2-buildx-setup:
@@ -63,13 +67,13 @@ v2-deploy: v2-buildx-setup v2-kubeconfig-ensure
 	  TAG=$$(git rev-parse --short HEAD); \
 	  DIRTY=$$(git status --porcelain | head -1); \
 	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
+	  $(V2_CACHE_SETUP); \
 	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM))"; \
-	  docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) \
-	    --cache-from type=registry,ref=$(V2_CACHE_IMAGE) \
-	    --cache-to type=registry,ref=$(V2_CACHE_IMAGE),mode=max \
+	  docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) $$CACHE_ARGS \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
 	    --push . ; \
+	  $(V2_CACHE_PROMOTE); \
 	  echo ">> rolling $(V2_DEPLOYMENT) (image stays :latest, restart forces pull)"; \
 	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
 	    rollout restart deployment/$(V2_DEPLOYMENT); \
@@ -89,14 +93,14 @@ v2-deploy-committed: v2-buildx-setup v2-kubeconfig-ensure
 	@set -e; \
 	  REF="$(V2_GIT_REF)"; \
 	  TAG=$$(git rev-parse --short "$$REF"); \
+	  $(V2_CACHE_SETUP); \
 	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM)) from committed ref $$REF"; \
-	  git archive --format=tar "$$REF" | docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) \
-	    --cache-from type=registry,ref=$(V2_CACHE_IMAGE) \
-	    --cache-to type=registry,ref=$(V2_CACHE_IMAGE),mode=max \
+	  git archive --format=tar "$$REF" | docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) $$CACHE_ARGS \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
 	    --file Dockerfile \
 	    --push - ; \
+	  $(V2_CACHE_PROMOTE); \
 	  echo ">> rolling $(V2_DEPLOYMENT) (image stays :latest, restart forces pull)"; \
 	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
 	    rollout restart deployment/$(V2_DEPLOYMENT); \
@@ -115,13 +119,13 @@ v2-push-multiarch: v2-buildx-setup
 	  TAG=$$(git rev-parse --short HEAD); \
 	  DIRTY=$$(git status --porcelain | head -1); \
 	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
+	  $(V2_CACHE_SETUP); \
 	  echo ">> building $(V2_IMAGE):$$TAG (linux/amd64,linux/arm64)"; \
-	  docker buildx build --builder $(V2_BUILDER) --platform linux/amd64,linux/arm64 \
-	    --cache-from type=registry,ref=$(V2_CACHE_IMAGE) \
-	    --cache-to type=registry,ref=$(V2_CACHE_IMAGE),mode=max \
+	  docker buildx build --builder $(V2_BUILDER) --platform linux/amd64,linux/arm64 $$CACHE_ARGS \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
-	    --push .
+	    --push . ; \
+	  $(V2_CACHE_PROMOTE)
 .PHONY: v2-push-multiarch
 
 ## Tail logs from the DigitalOcean k8s deployment

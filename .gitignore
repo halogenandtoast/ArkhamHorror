@@ -89,6 +89,7 @@ CLAUDE.md
 .mcp.json
 AGENTS.md
 tmp/
+.buildx-cache/
 .agents/
 .windsurf/
 skills-lock.json

@@ -38,6 +38,7 @@ V2_DEPLOYMENT  ?= arkham-web
 V2_PLATFORM    ?= linux/amd64
 V2_BUILDER     ?= arkham-multiarch
 V2_DO_CLUSTER  ?= arkham-horror-doks
+V2_CACHE_IMAGE ?= $(V2_IMAGE):buildcache
 
 ## Ensure a docker-container buildx builder exists (required for multi-platform builds)
 v2-buildx-setup:
@@ -64,6 +65,8 @@ v2-deploy: v2-buildx-setup v2-kubeconfig-ensure
 	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
 	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM))"; \
 	  docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) \
+	    --cache-from type=registry,ref=$(V2_CACHE_IMAGE) \
+	    --cache-to type=registry,ref=$(V2_CACHE_IMAGE),mode=max \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
 	    --push . ; \
@@ -88,6 +91,8 @@ v2-deploy-committed: v2-buildx-setup v2-kubeconfig-ensure
 	  TAG=$$(git rev-parse --short "$$REF"); \
 	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM)) from committed ref $$REF"; \
 	  git archive --format=tar "$$REF" | docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) \
+	    --cache-from type=registry,ref=$(V2_CACHE_IMAGE) \
+	    --cache-to type=registry,ref=$(V2_CACHE_IMAGE),mode=max \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
 	    --file Dockerfile \
@@ -112,6 +117,8 @@ v2-push-multiarch: v2-buildx-setup
 	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
 	  echo ">> building $(V2_IMAGE):$$TAG (linux/amd64,linux/arm64)"; \
 	  docker buildx build --builder $(V2_BUILDER) --platform linux/amd64,linux/arm64 \
+	    --cache-from type=registry,ref=$(V2_CACHE_IMAGE) \
+	    --cache-to type=registry,ref=$(V2_CACHE_IMAGE),mode=max \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
 	    --push .

@@ -87,7 +87,7 @@ spec = describe "loadDecklist" $ do
 
     initDeckCarriedDecklist <-
       createMessageChecker \case
-        InitDeck iid _ (Just decklist) deck ->
+        InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDecklist = Just decklist, initDeckDeck = deck} ->
           iid == "12013"
             && decklist == singletonRandomWeaknessDecklist
             && map toCardCode (unDeck deck) == ["01000"]
@@ -124,8 +124,82 @@ spec = describe "loadDecklist" $ do
                 }
 
     candidateCodes `shouldSatisfy` notNull
-    candidateCodes `shouldSatisfy` all (T.isPrefixOf "01" . unCardCode)
+    candidateCodes `shouldSatisfy` all (\code -> any (`T.isPrefixOf` unCardCode code) ["010", "011"])
     candidateCodes `shouldNotContain` ["02037"]
+    candidateCodes `shouldNotContain` ["01596"]
+
+  it "restricts arkham.build short card_pool tokens by cycle" do
+    let candidateCodes =
+          map toCardCode
+            $ randomBasicWeaknessCandidates
+              RandomBasicWeaknessContext
+                { rbwInvestigatorClass = Seeker
+                , rbwPlayerCount = 1
+                , rbwDecklist = Just arkhamBuildShortCardPoolDecklist
+                , rbwStandalone = False
+                }
+        allowedPrefixes = ["01", "02", "03", "04", "05"]
+
+    candidateCodes `shouldSatisfy` notNull
+    candidateCodes `shouldSatisfy` all (\code -> any (`T.isPrefixOf` unCardCode code) allowedPrefixes)
+    candidateCodes `shouldNotContain` ["60554"]
+
+  it "restricts arkham.build short pack card_pool tokens by pack" do
+    let candidateCodes =
+          map toCardCode
+            $ randomBasicWeaknessCandidates
+              RandomBasicWeaknessContext
+                { rbwInvestigatorClass = Mystic
+                , rbwPlayerCount = 1
+                , rbwDecklist = Just arkhamBuildShortPackCardPoolDecklist
+                , rbwStandalone = False
+                }
+
+    candidateCodes `shouldSatisfy` notNull
+    candidateCodes `shouldSatisfy` all (`elem` ["60356", "60454", "60554"])
+    candidateCodes `shouldNotContain` ["60204"]
+
+  it "recognizes prefixed arkham.build pack card_pool tokens" do
+    let candidateCodes =
+          map toCardCode
+            $ randomBasicWeaknessCandidates
+              RandomBasicWeaknessContext
+                { rbwInvestigatorClass = Mystic
+                , rbwPlayerCount = 1
+                , rbwDecklist = Just prefixedArkhamBuildShortPackCardPoolDecklist
+                , rbwStandalone = False
+                }
+
+    candidateCodes `shouldBe` ["60454"]
+
+  it "recognizes arkham.build all-pool token names" do
+    let candidateCodes =
+          map toCardCode
+            $ randomBasicWeaknessCandidates
+              RandomBasicWeaknessContext
+                { rbwInvestigatorClass = Mystic
+                , rbwPlayerCount = 1
+                , rbwDecklist = Just arkhamBuildAllPoolDecklist
+                , rbwStandalone = False
+                }
+
+    candidateCodes `shouldSatisfy` notNull
+    ["01596", "08130", "12102", "51011", "52011", "53012", "54014"] `shouldSatisfy` all (`elem` candidateCodes)
+
+  it "does not treat Echoes of the Past as Edge of the Earth" do
+    let candidateCodes =
+          map toCardCode
+            $ randomBasicWeaknessCandidates
+              RandomBasicWeaknessContext
+                { rbwInvestigatorClass = Guardian
+                , rbwPlayerCount = 1
+                , rbwDecklist = Just echoesOfThePastCardPoolDecklist
+                , rbwStandalone = False
+                }
+
+    candidateCodes `shouldSatisfy` notNull
+    candidateCodes `shouldSatisfy` all (\code -> any (`T.isPrefixOf` unCardCode code) ["010", "011"])
+    candidateCodes `shouldNotContain` ["08130"]
 
   it "ignores unknown arkham.build pool tokens when recognized tokens are present" do
     let candidateCodes =
@@ -283,6 +357,26 @@ noCardPoolDecklist =
 
 coreCardPoolDecklist :: ArkhamDBDecklist
 coreCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"cycle:core\"}"}
+
+arkhamBuildShortCardPoolDecklist :: ArkhamDBDecklist
+arkhamBuildShortCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"core,dwlp,ptcp,tfap,tcup\"}"}
+
+arkhamBuildShortPackCardPoolDecklist :: ArkhamDBDecklist
+arkhamBuildShortPackCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"mar,mig,and\"}"}
+
+prefixedArkhamBuildShortPackCardPoolDecklist :: ArkhamDBDecklist
+prefixedArkhamBuildShortPackCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"pack:mar\"}"}
+
+arkhamBuildAllPoolDecklist :: ArkhamDBDecklist
+arkhamBuildAllPoolDecklist =
+  noCardPoolDecklist
+    { meta =
+        Just
+          "{\"card_pool\":\"mar,mig,and,rcore,core,dwlp,ptcp,tfap,tcup,tdep,ticp,eoep,tskp,fhvp,tdcp,core_2026,rtnotz,rtdwl,rtptc,rttfa,rttcu,nat,har,win,jac,ste,tom,car\"}"
+    }
+
+echoesOfThePastCardPoolDecklist :: ArkhamDBDecklist
+echoesOfThePastCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"core,eotp\"}"}
 
 mixedKnownUnknownCardPoolDecklist :: ArkhamDBDecklist
 mixedKnownUnknownCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"cycle:core,cycle:new\"}"}

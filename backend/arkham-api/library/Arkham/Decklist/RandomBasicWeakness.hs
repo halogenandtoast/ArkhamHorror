@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Arkham.Decklist.RandomBasicWeakness where
 
 import Arkham.Card.CardCode
@@ -112,27 +110,61 @@ tokenPredicate token
   | token == "cycle:investigator_decks_ch2" =
       Just \cardCode -> cardCode.isChapterTwo && cardCodeStartsWith "60" cardCode
   | "pack:" `T.isPrefixOf` token =
-      let prefix = T.drop 5 token
-       in Just $ if T.null prefix then const False else cardCodeStartsWith prefix
-  | otherwise = cardCodeStartsWith <$> cycleTokenPrefix token
+      let packToken = T.drop 5 token
+       in Just
+            if T.null packToken
+              then const False
+              else cardCodeStartsWithAny $ fromMaybe [packToken] $ tokenPrefixes packToken
+  | otherwise = cardCodeStartsWithAny <$> tokenPrefixes token
 
 cardCodeStartsWith :: Text -> CardCode -> Bool
 cardCodeStartsWith prefix = T.isPrefixOf prefix . unCardCode
 
-cycleTokenPrefix :: Text -> Maybe Text
-cycleTokenPrefix = \case
-  "cycle:core" -> Just "01"
-  "cycle:dwl" -> Just "02"
-  "cycle:ptc" -> Just "03"
-  "cycle:tfa" -> Just "04"
-  "cycle:tcu" -> Just "05"
-  "cycle:tde" -> Just "06"
-  "cycle:tic" -> Just "07"
-  "cycle:eote" -> Just "08"
-  "cycle:tsk" -> Just "09"
-  "cycle:fhv" -> Just "10"
-  "cycle:tdc" -> Just "11"
-  "cycle:core_ch2" -> Just "12"
-  "cycle:return" -> Just "5"
-  "cycle:investigator_decks" -> Just "60"
+cardCodeStartsWithAny :: [Text] -> CardCode -> Bool
+cardCodeStartsWithAny prefixes cardCode = any (`cardCodeStartsWith` cardCode) prefixes
+
+tokenPrefixes :: Text -> Maybe [Text]
+tokenPrefixes token = case fromMaybe token $ T.stripPrefix "cycle:" token of
+  "core" -> Just ["010", "011"]
+  "rcore" -> Just ["015", "016"]
+  "dwl" -> Just ["02"]
+  "dwlp" -> Just ["02"]
+  "ptc" -> Just ["03"]
+  "ptcp" -> Just ["03"]
+  "tfa" -> Just ["04"]
+  "tfap" -> Just ["04"]
+  "tcu" -> Just ["05"]
+  "tcup" -> Just ["05"]
+  "tde" -> Just ["06"]
+  "tdep" -> Just ["06"]
+  "tic" -> Just ["07"]
+  "ticp" -> Just ["07"]
+  "eote" -> Just ["08"]
+  "eoep" -> Just ["08"]
+  "tsk" -> Just ["09"]
+  "tskp" -> Just ["09"]
+  "fhv" -> Just ["10"]
+  "fhvp" -> Just ["10"]
+  "tdc" -> Just ["11"]
+  "tdcp" -> Just ["11"]
+  "core_ch2" -> Just ["12"]
+  "core2026" -> Just ["12"]
+  "core_2026" -> Just ["12"]
+  "return" -> Just ["5"]
+  "rtnotz" -> Just ["50"]
+  "rtdwl" -> Just ["51"]
+  "rtptc" -> Just ["52"]
+  "rttfa" -> Just ["53"]
+  "rttcu" -> Just ["54"]
+  "investigator_decks" -> Just ["60"]
+  "nat" -> Just ["6010"]
+  "tom" -> Just ["6015"]
+  "har" -> Just ["6020"]
+  "car" -> Just ["6025"]
+  "win" -> Just ["6030"]
+  "and" -> Just ["6035"]
+  "jac" -> Just ["6040"]
+  "mar" -> Just ["6045"]
+  "ste" -> Just ["6050"]
+  "mig" -> Just ["6055"]
   _ -> Nothing

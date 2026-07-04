@@ -7165,7 +7165,6 @@ test-suite spec
       Arkham.Matcher.CoveredByAnyInPlayEnemySpec
       Arkham.Matcher.NearestLocationToMostSpec
       Arkham.Matcher.OutOfPlayEnemySpec
-      Arkham.MessageSpec
       Arkham.Scenario.SpecHelpers
       Arkham.Scenario.TheMidwinterGalaSpec
       Arkham.Skill.Cards.DeductionSpec

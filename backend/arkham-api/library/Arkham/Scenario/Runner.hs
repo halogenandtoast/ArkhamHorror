@@ -212,7 +212,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
            , StartScenario scenarioId Nothing
            ]
     pure a
-  InitDeck iid _ _mDecklist deck -> do
+  InitDeck iid _ mDecklist deck -> do
     standalone <- getIsStandalone
     if standalone
       then do
@@ -231,7 +231,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                     CardLabel c False [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
                 Just _ -> pure Nothing
             else pure Nothing
-        (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
+        (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck
         weaknesses <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
         purchaseTrauma <- initDeckTrauma deck' iid (toTarget a)
         initXp <- initDeckXp deck' iid (toTarget a)

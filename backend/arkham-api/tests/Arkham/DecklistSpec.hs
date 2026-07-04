@@ -133,6 +133,33 @@ spec = describe "loadDecklist" $ do
     candidateCodes `shouldBe` []
     candidateCodes `shouldNotContain` ["02037"]
 
+  it "falls back at sampling time when arkham.build pool filters leave no candidates" do
+    let candidateCodes =
+          map toCardCode
+            $ randomBasicWeaknessSamplingCandidates
+              RandomBasicWeaknessContext
+                { rbwInvestigatorClass = Guardian
+                , rbwPlayerCount = 1
+                , rbwDecklist = Just emptyPackCardPoolDecklist
+                , rbwStandalone = False
+                }
+
+    candidateCodes `shouldContain` ["02037"]
+
+  it "keeps taboo and standalone restrictions when sampling falls back from an empty arkham.build pool" do
+    let candidateCodes =
+          map toCardCode
+            $ randomBasicWeaknessSamplingCandidates
+              RandomBasicWeaknessContext
+                { rbwInvestigatorClass = Guardian
+                , rbwPlayerCount = 1
+                , rbwDecklist = Just emptyPackTaboo23CardPoolDecklist
+                , rbwStandalone = True
+                }
+
+    candidateCodes `shouldSatisfy` notNull
+    candidateCodes `shouldNotContain` ["08113"]
+
   it "applies taboo-mutated restrictions before filtering standalone candidates" do
     let candidateCodes =
           map toCardCode
@@ -222,6 +249,9 @@ unknownOnlyCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"
 
 emptyPackCardPoolDecklist :: ArkhamDBDecklist
 emptyPackCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"pack:\"}"}
+
+emptyPackTaboo23CardPoolDecklist :: ArkhamDBDecklist
+emptyPackTaboo23CardPoolDecklist = emptyPackCardPoolDecklist {taboo_id = Just 8}
 
 noCardPoolTaboo23Decklist :: ArkhamDBDecklist
 noCardPoolTaboo23Decklist = noCardPoolDecklist {taboo_id = Just 8}

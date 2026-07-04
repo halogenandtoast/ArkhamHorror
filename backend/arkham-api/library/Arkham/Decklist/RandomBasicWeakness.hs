@@ -45,16 +45,25 @@ randomBasicWeaknessCandidates :: RandomBasicWeaknessContext -> [CardDef]
 randomBasicWeaknessCandidates ctx =
   filter (weaknessFilter ctx) $ tabooMutate ctx <$> allBasicWeaknesses
 
+randomBasicWeaknessSamplingCandidates :: RandomBasicWeaknessContext -> [CardDef]
+randomBasicWeaknessSamplingCandidates ctx =
+  let candidates = randomBasicWeaknessCandidates ctx
+   in if null candidates then randomBasicWeaknessCandidatesIgnoringCardPool ctx else candidates
+
 sampleRandomBasicWeakness :: MonadRandom m => RandomBasicWeaknessContext -> m CardDef
 sampleRandomBasicWeakness ctx =
   sample
     $ fromJustNote "No random basic weakness candidates"
     $ nonEmpty
-    $ randomBasicWeaknessCandidates ctx
+    $ randomBasicWeaknessSamplingCandidates ctx
 
 tabooMutate :: RandomBasicWeaknessContext -> CardDef -> CardDef
 tabooMutate RandomBasicWeaknessContext {rbwDecklist} cardDef =
   maybe id tabooListModify (rbwDecklist >>= fromTabooId . taboo_id) cardDef
+
+randomBasicWeaknessCandidatesIgnoringCardPool :: RandomBasicWeaknessContext -> [CardDef]
+randomBasicWeaknessCandidatesIgnoringCardPool ctx =
+  filter (weaknessFilterIgnoringCardPool ctx) $ tabooMutate ctx <$> allBasicWeaknesses
 
 weaknessFilter :: RandomBasicWeaknessContext -> CardDef -> Bool
 weaknessFilter ctx cardDef =
@@ -63,6 +72,14 @@ weaknessFilter ctx cardDef =
     , classAllowed ctx cardDef
     , standaloneAllowed ctx cardDef
     , cardPoolAllowed ctx cardDef
+    ]
+
+weaknessFilterIgnoringCardPool :: RandomBasicWeaknessContext -> CardDef -> Bool
+weaknessFilterIgnoringCardPool ctx cardDef =
+  and
+    [ multiplayerAllowed ctx cardDef
+    , classAllowed ctx cardDef
+    , standaloneAllowed ctx cardDef
     ]
 
 multiplayerAllowed :: RandomBasicWeaknessContext -> CardDef -> Bool

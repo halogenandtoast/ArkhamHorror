@@ -242,7 +242,7 @@ instance RunMessage BeyondTheGatesOfSleep where
     SearchFound iid (LabeledTarget "Drifter" ScenarioTarget) _ cards | notNull cards -> do
       playerCount <- getPlayerCount
       classSymbol <- field InvestigatorClass iid
-      newWeakness <- genCard =<< getRandomBasicWeakness classSymbol playerCount
+      newWeakness <- genCard =<< getRandomBasicWeakness classSymbol playerCount Nothing
       focusCards cards do
         chooseOneM iid do
           questionLabeled "$theDreamEaters.beyondTheGatesOfSleep.label.replaceWeaknessQuestion"

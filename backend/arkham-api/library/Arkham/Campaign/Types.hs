@@ -13,6 +13,8 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import Arkham.Decklist.RandomBasicWeakness
+import Arkham.Decklist.Type
 import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.I18n
@@ -31,7 +33,6 @@ import Control.Monad.Writer hiding (filterM)
 import Data.Aeson.TH
 import Data.Aeson.Types (Parser)
 import Data.Data
-import Data.List.NonEmpty qualified as NE
 import Data.Map.Monoidal.Strict (MonoidalMap (..))
 import Data.Map.Strict qualified as Map
 import GHC.Records
@@ -222,27 +223,23 @@ instance Entity CampaignAttrs where
   toAttrs = id
   overAttrs f = f
 
-getRandomBasicWeakness :: MonadRandom m => ClassSymbol -> Int -> m CardDef
-getRandomBasicWeakness investigatorClass playerCount = do
-  let
-    multiplayerFilter =
-      if playerCount < 2
-        then notElem MultiplayerOnly . cdDeckRestrictions
-        else const True
-    notForClass = \case
-      OnlyClass c -> c /= investigatorClass
-      _ -> True
-    classOnlyFilter = not . any notForClass . cdDeckRestrictions
-    weaknessFilter = and . sequence [multiplayerFilter, classOnlyFilter]
-  sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses)
+getRandomBasicWeakness :: MonadRandom m => ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> m CardDef
+getRandomBasicWeakness investigatorClass playerCount mDecklist =
+  sampleRandomBasicWeakness
+    RandomBasicWeaknessContext
+      { rbwInvestigatorClass = investigatorClass
+      , rbwPlayerCount = playerCount
+      , rbwDecklist = mDecklist
+      , rbwStandalone = False
+      }
 
 addRandomBasicWeaknessIfNeeded
-  :: CardGen m => ClassSymbol -> Int -> Deck PlayerCard -> m (Deck PlayerCard, [Card])
-addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do
+  :: CardGen m => ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> Deck PlayerCard -> m (Deck PlayerCard, [Card])
+addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck = do
   runWriterT do
     Deck <$> flip filterM (unDeck deck) \card -> do
       when (toCardDef card == randomWeakness) do
-        getRandomBasicWeakness investigatorClass playerCount >>= lift . genCard >>= tell . pure
+        getRandomBasicWeakness investigatorClass playerCount mDecklist >>= lift . genCard >>= tell . pure
       pure $ toCardDef card /= randomWeakness
 
 campaignWith

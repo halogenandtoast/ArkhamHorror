@@ -138,18 +138,6 @@ setActDeckN n = genCards >=> push . SetActDeckCards n
 setDecksLayout :: ReverseQueue m => [GridTemplateRow] -> m ()
 setDecksLayout = push . SetDecksLayout
 
-revealBy
-  :: ( AsId investigator
-     , IdOf investigator ~ InvestigatorId
-     , AsId location
-     , IdOf location ~ LocationId
-     , ReverseQueue m
-     )
-  => investigator
-  -> location
-  -> m ()
-revealBy investigator = push . Msg.RevealLocation (Just $ asId investigator) . asId
-
 gainXp
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Text -> Int -> m ()
 gainXp iid (toSource -> source) from xp = do
@@ -205,20 +193,20 @@ assignDamage iid (toSource -> source) damage =
 
 assignDamageTo
   :: (ReverseQueue m, Sourceable source) => source -> Int -> InvestigatorId -> m ()
-assignDamageTo source damage iid = 
+assignDamageTo source damage iid =
   whenM (matches iid InvestigatorCanBeDamaged) do
     assignDamage iid source damage
 
 assignDamageWithStrategy
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> DamageStrategy -> Int -> m ()
 assignDamageWithStrategy _ _ _ 0 = pure ()
-assignDamageWithStrategy iid (toSource -> source) strat damage = 
+assignDamageWithStrategy iid (toSource -> source) strat damage =
   whenM (matches iid InvestigatorCanBeDamaged) do
     push $ Msg.assignDamageWithStrategy iid source strat damage
 
 assignHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-assignHorror iid (toSource -> source) horror = 
+assignHorror iid (toSource -> source) horror =
   whenM (matches iid InvestigatorCanBeDamaged) do
     push $ Msg.assignHorror iid source horror
 
@@ -231,13 +219,13 @@ assignDamageAndHorror
 assignDamageAndHorror _ _ 0 0 = pure ()
 assignDamageAndHorror iid (toSource -> source) 0 horror = assignHorror iid source horror
 assignDamageAndHorror iid (toSource -> source) damage 0 = assignDamage iid source damage
-assignDamageAndHorror iid (toSource -> source) damage horror = 
+assignDamageAndHorror iid (toSource -> source) damage horror =
   whenM (matches iid InvestigatorCanBeDamaged) do
     push $ Msg.assignDamageAndHorror iid source damage horror
 
 directDamageAndHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
-directDamageAndHorror iid source d h = 
+directDamageAndHorror iid source d h =
   whenM (matches iid InvestigatorCanBeDamaged) do
     push $ Msg.directDamageAndHorror iid source d h
 
@@ -850,11 +838,12 @@ placeDoomOnAgenda n = push $ PlaceDoomOnAgenda n CanNotAdvance
 placeDoomOnAgendaAndCheckAdvance :: ReverseQueue m => Int -> m ()
 placeDoomOnAgendaAndCheckAdvance n = push $ PlaceDoomOnAgenda n CanAdvance
 
--- | Place doom on the current agenda as a /card effect/, attributing it to
--- @source@. Unlike 'placeDoomOnAgenda' (which routes through the scenario and so
--- is sourced from the scenario itself), this preserves the placing card's source
--- so @SourceIsCardEffect@ \"would place doom\" windows fire (e.g. The Onslaught
--- redirecting doom onto The Captives).
+{- | Place doom on the current agenda as a /card effect/, attributing it to
+@source@. Unlike 'placeDoomOnAgenda' (which routes through the scenario and so
+is sourced from the scenario itself), this preserves the placing card's source
+so @SourceIsCardEffect@ \"would place doom\" windows fire (e.g. The Onslaught
+redirecting doom onto The Captives).
+-}
 placeDoomOnAgendaBy :: (ReverseQueue m, Sourceable source) => source -> Int -> m ()
 placeDoomOnAgendaBy _ 0 = pure ()
 placeDoomOnAgendaBy source n = do
@@ -1845,9 +1834,10 @@ skillTestCardOption
   :: (ReverseQueue m, HasCardCode card, Named card) => card -> QueueT Message m () -> m ()
 skillTestCardOption = skillTestCardOptionVariant "name"
 
--- | Like 'skillTestCardOption' but lets the caller pick the i18n key used to
--- render the option label (the card name is still passed as the @name@ var).
--- e.g. @skillTestCardOptionVariant "discard"@ renders "Discard {cardName}".
+{- | Like 'skillTestCardOption' but lets the caller pick the i18n key used to
+render the option label (the card name is still passed as the @name@ var).
+e.g. @skillTestCardOptionVariant "discard"@ renders "Discard {cardName}".
+-}
 skillTestCardOptionVariant
   :: (ReverseQueue m, HasCardCode card, Named card) => Scope -> card -> QueueT Message m () -> m ()
 skillTestCardOptionVariant variant card =
@@ -2874,7 +2864,7 @@ initiateEnemyAttack enemy source target = do
   when canAttack $ push $ InitiateEnemyAttack $ enemyAttack enemy source target
 
 despiteExhausted :: EnemyAttackDetails -> EnemyAttackDetails
-despiteExhausted x = x { attackDespiteExhausted = True }
+despiteExhausted x = x {attackDespiteExhausted = True}
 
 initiateEnemyAttackEdit
   :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy, ReverseQueue m)

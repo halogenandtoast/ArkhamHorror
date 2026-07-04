@@ -241,6 +241,26 @@ reveal (asId -> lid) = do
 unsafeReveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
 unsafeReveal (asId -> lid) = push $ Msg.RevealLocation Nothing lid
 
+revealBy
+  :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => InvestigatorId -> location -> m ()
+revealBy iid (asId -> lid) = do
+  inSetup <- getInSetup
+  if inSetup
+    then unsafeRevealBy iid lid
+    else whenMatch lid UnrevealedLocation $ unsafeRevealBy iid lid
+
+unsafeRevealBy
+  :: ( AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , AsId location
+     , IdOf location ~ LocationId
+     , ReverseQueue m
+     )
+  => investigator
+  -> location
+  -> m ()
+unsafeRevealBy investigator = push . Msg.RevealLocation (Just $ asId investigator) . asId
+
 revealMatching :: ReverseQueue m => LocationMatcher -> m ()
 revealMatching matcher = selectEach matcher (push . Msg.RevealLocation Nothing)
 

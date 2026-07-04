@@ -242,12 +242,7 @@ instance RunMessage TheTwistedHollow where
           locations <- select UnrevealedLocation
           chooseOneM iid do
             labeled' "doNotRevealLocation" nothing
-            targets locations \loc ->
-              temporaryModifier
-                iid
-                source
-                (CannotTriggerAbilityMatching $ AbilityIsForcedAbility <> AbilityOnLocation (LocationWithId loc))
-                (reveal loc)
+            targets locations $ handleTarget iid ScenarioSource
         Omega -> scope "bertieMusgrave" do
           codexFinished Omega
           flavor $ setTitle "title" >> p.green "body"
@@ -333,6 +328,13 @@ instance RunMessage TheTwistedHollow where
                 Just pos -> emptyPositionsInDirections grid pos [GridUp ..]
             for_ (zip locationPositions woodsDeck) (uncurry placeLocationInGrid)
         _ -> pure ()
+      pure s
+    HandleTargetChoice iid ScenarioSource (LocationTarget lid) -> do
+      temporaryModifier
+        iid
+        ScenarioSource
+        (CannotTriggerAbilityMatching $ AbilityIsForcedAbility <> AbilityOnLocation (LocationWithId lid))
+        (revealBy iid lid)
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

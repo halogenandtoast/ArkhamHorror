@@ -298,7 +298,7 @@ document.getElementById('showfree').onchange=e=>{ showFree=e.target.checked; dra
 // ---- load ----
 function boot(raw){ prep(raw); scale=0; resize(); }
 addEventListener('resize',()=>{ DPR=Math.min(devicePixelRatio||1,2); resize(); });
-fetch('/cards.json').then(r=>{ if(!r.ok)throw 0; return r.json(); }).then(boot)
+fetch('/card-space.json').then(r=>{ if(!r.ok)throw 0; return r.json(); }).then(boot)
   .catch(()=>{ document.getElementById('drop').style.display='flex'; });
 document.getElementById('file').onchange=e=>{
   const f=e.target.files[0]; if(!f)return;

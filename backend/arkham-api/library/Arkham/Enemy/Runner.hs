@@ -309,22 +309,11 @@ instance RunMessage EnemyAttrs where
       preyIds <- select =<< getPreyMatcher a
       liftRunMessage (EnemySpawnEngagedWith eid $ oneOf $ map InvestigatorWithId preyIds) a
     EnemySpawnEngagedWith eid investigatorMatcher | eid == enemyId -> do
-      preyIds <- select investigatorMatcher
-      iidsWithLocations <- forToSnd preyIds (selectJust . locationWithInvestigator)
-      lead <- getLeadPlayer
       push
-        $ chooseOrRunOne
-          lead
-          [ targetLabel iid
-              $ resolve
-                ( EnemySpawn
-                    $ (mkSpawnDetails eid $ SpawnAtLocation lid)
-                      { spawnDetailsInvestigator = Just iid
-                      , spawnDetailsOverridden = True
-                      }
-                )
-          | (iid, lid) <- toList iidsWithLocations
-          ]
+        $ EnemySpawn
+        $ (mkSpawnDetails eid $ SpawnEngagedWith investigatorMatcher)
+          { spawnDetailsOverridden = True
+          }
       pure a
     SetBearer (EnemyTarget eid) iid | eid == enemyId -> do
       pure $ a & bearerL ?~ iid
@@ -432,7 +421,7 @@ instance RunMessage EnemyAttrs where
                       pushAll
                         $ [ Will (EnemyEngageInvestigator enemyId iid) | not (spawnDetailsUnengaged details) || forcedEngagement
                           ]
-                          <> [EnemyEntered enemyId lid, EnemySpawned details]
+                        <> [EnemyEntered enemyId lid, EnemySpawned details]
                       case swarms of
                         [] -> pure ()
                         [x] -> do
@@ -481,7 +470,7 @@ instance RunMessage EnemyAttrs where
                 investigatorIds <- select $ investigatorAt lid
                 pushAll
                   $ [Will (EnemyEngageInvestigator eid iid) | iid <- investigatorIds]
-                    <> [EnemyEntered eid lid, EnemySpawned details]
+                  <> [EnemyEntered eid lid, EnemySpawned details]
 
               if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted) || forcedEngagement
                 then do
@@ -496,8 +485,8 @@ instance RunMessage EnemyAttrs where
                       atSameLocation <- iid <=~> investigatorAt lid
                       pushAll
                         $ [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not (spawnDetailsUnengaged details)]
-                          <> [EnemyCheckEngagement eid | not atSameLocation && not (spawnDetailsUnengaged details)]
-                          <> [EnemyEntered eid lid, EnemySpawned details]
+                        <> [EnemyCheckEngagement eid | not atSameLocation && not (spawnDetailsUnengaged details)]
+                        <> [EnemyEntered eid lid, EnemySpawned details]
                     _ -> do
                       investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
                       lead <- getLeadPlayer
@@ -512,7 +501,7 @@ instance RunMessage EnemyAttrs where
                         [iid] -> do
                           pushAll
                             $ [Will (EnemyEngageInvestigator eid iid) | not onlyPrey || iid `elem` preyIds]
-                              <> [EnemyEntered eid lid, EnemySpawned details]
+                            <> [EnemyEntered eid lid, EnemySpawned details]
                         iids -> do
                           let scoped = if not onlyPrey then iids else filter (`elem` preyIds) iids
                           case scoped of
@@ -601,8 +590,9 @@ instance RunMessage EnemyAttrs where
           let entries = eid : swarm
           iidsHere <- select $ investigatorAt lid
           let spawnWindows = [mkAfter (Window.EnemySpawns eid lid) | isJust enemySpawnDetails]
-          afterWindows <- checkWindows $
-            spawnWindows
+          afterWindows <-
+            checkWindows
+              $ spawnWindows
               <> [mkAfter (Window.EnemyEnters eid' lid) | eid' <- entries]
               <> [mkAfter (Window.EnemyEntersYourLocation iid' eid' lid) | iid' <- iidsHere, eid' <- entries]
           -- A moving enemy engages investigators at its destination immediately

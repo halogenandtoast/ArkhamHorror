@@ -76,7 +76,12 @@ spawnAt eid miid (SpawnAt locationMatcher) = do
     <> resolve
       (EnemySpawnAtLocationMatching miid locationMatcher eid)
 spawnAt eid _ (SpawnEngagedWith investigatorMatcher) = do
-  pushAll $ resolve (EnemySpawnEngagedWith eid investigatorMatcher)
+  pushAll
+    $ resolve
+    $ EnemySpawn
+    $ (mkSpawnDetails eid $ SpawnEngagedWith investigatorMatcher)
+      { spawnDetailsOverridden = True
+      }
 spawnAt eid _ (SpawnPlaced placement) = do
   push $ PlaceEnemy eid placement
 spawnAt eid miid (SpawnAtFirst []) = do

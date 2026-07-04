@@ -259,7 +259,7 @@ runGameMessage msg g = case msg of
     when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
     push
       $ if iid /= oldIid
-        then InitDeck iid dl.url (Deck deck)
+        then InitDeck iid dl.url (Just decklist) (Deck deck)
         else UpgradeDeck iid dl.url (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g == oldIid then set activeInvestigatorIdL iid else id
@@ -319,7 +319,7 @@ runGameMessage msg g = case msg of
               }
     let iid = toId investigator
     when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
-    push $ InitDeck iid dl.url (Deck deck)
+    push $ InitDeck iid dl.url (Just decklist) (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =

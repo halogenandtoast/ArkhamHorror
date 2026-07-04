@@ -212,7 +212,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
            , StartScenario scenarioId Nothing
            ]
     pure a
-  InitDeck iid _ deck -> do
+  InitDeck iid _ _mDecklist deck -> do
     standalone <- getIsStandalone
     if standalone
       then do
@@ -240,7 +240,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         pushAll $ LoadDeck iid deck'' : purchaseTrauma <> toList mEldritchBrand <> [DoStep 1 msg] <> initXp
         pure $ a & playerDecksL %~ insertMap iid deck''
       else pure a
-  DoStep 1 (InitDeck iid _ deck) -> do
+  DoStep 1 (InitDeck iid _ _mDecklist deck) -> do
     standalone <- getIsStandalone
     when standalone do
       let cardCodes = map toCardCode $ unDeck deck

@@ -789,7 +789,7 @@ data Message
   | InDiscard InvestigatorId Message -- Nothing uses this yet
   | InSearch Message
   | InHand InvestigatorId Message
-  | InitDeck InvestigatorId (Maybe Text) (Deck PlayerCard) -- used to initialize the deck for the campaign
+  | InitDeck InvestigatorId (Maybe Text) (Maybe ArkhamDBDecklist) (Deck PlayerCard) -- used to initialize the deck for the campaign
   | LoadSideDeck InvestigatorId [PlayerCard] -- used to initialize the side deck for the campaign
   | LoadDecklist PlayerId ArkhamDBDecklist
   | ReplaceInvestigator InvestigatorId ArkhamDBDecklist
@@ -1943,6 +1943,11 @@ mconcat
               case contents of
                 Right (a, b, c, d) -> pure $ PlayerWindow a b c d
                 Left (a, b, c) -> pure $ PlayerWindow a b c True
+            "InitDeck" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Right (iid, murl, mdecklist, deck) -> pure $ InitDeck iid murl mdecklist deck
+                Left (iid, murl, deck) -> pure $ InitDeck iid murl Nothing deck
             "AddToVictory" -> do
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
               case contents of

@@ -8,19 +8,21 @@ import Arkham.EncounterSet
 
 gatherEncounterSet :: CardGen m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet encounterSet =
-  concat <$> for
-    defs
-    \def ->
-      traverse genEncounterCard
-        $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
+  concat <$> for defs \def ->
+    traverse genEncounterCard
+      $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
  where
   defs =
-    filter (and . sequence [not . hasBSide, (== Just encounterSet) . cdEncounterSet])
+    filter
+      ( and
+          . sequence
+            [(/= InvestigatorType) . cdCardType, not . hasBSide, (== Just encounterSet) . cdEncounterSet]
+      )
       $ toList allEncounterCards
   hasBSide =
     and
       . sequence
-        [(/= InvestigatorType) . cdCardType, isDoubleSided, isSuffixOf "b" . unCardCode . toCardCode]
+        [isDoubleSided, isSuffixOf "b" . unCardCode . toCardCode]
 
   -- Location cards are weird because they are always double sided, but when we
   -- gather cards we want to include them even when the suffix is a "b", in these

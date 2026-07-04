@@ -212,7 +212,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
            , StartScenario scenarioId Nothing
            ]
     pure a
-  InitDeck iid _ deck -> do
+  InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDecklist = mDecklist, initDeckDeck = deck} -> do
     standalone <- getIsStandalone
     if standalone
       then do
@@ -231,7 +231,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                     CardLabel c False [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
                 Just _ -> pure Nothing
             else pure Nothing
-        (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
+        (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck
         weaknesses <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
         purchaseTrauma <- initDeckTrauma deck' iid (toTarget a)
         initXp <- initDeckXp deck' iid (toTarget a)
@@ -240,7 +240,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         pushAll $ LoadDeck iid deck'' : purchaseTrauma <> toList mEldritchBrand <> [DoStep 1 msg] <> initXp
         pure $ a & playerDecksL %~ insertMap iid deck''
       else pure a
-  DoStep 1 (InitDeck iid _ deck) -> do
+  DoStep 1 (InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDeck = deck}) -> do
     standalone <- getIsStandalone
     when standalone do
       let cardCodes = map toCardCode $ unDeck deck

@@ -2204,6 +2204,7 @@ library
       Arkham.Deck
       Arkham.DeckBuilding.Adjustment
       Arkham.Decklist
+      Arkham.Decklist.RandomBasicWeakness
       Arkham.Decklist.Type
       Arkham.Decks
       Arkham.DefeatedBy

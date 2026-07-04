@@ -163,7 +163,7 @@ defaultCampaignRunner msg a = case msg of
   RemoveChaosToken token -> pure $ updateAttrs a (chaosBagL %~ deleteFirstMatch (== token))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   RemoveOption option -> pure $ updateAttrs a (logL . optionsL %~ deleteSet option)
-  InitDeck iid _ deck -> do
+  InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDecklist = mDecklist, initDeckDeck = deck} -> do
     playerCount <- getPlayerCount
     investigatorClass <- field InvestigatorClass iid
     let cardCodes = map toCardCode $ unDeck deck
@@ -180,7 +180,7 @@ defaultCampaignRunner msg a = case msg of
             Just _ -> pure Nothing
         else pure Nothing
 
-    (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
+    (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck
     purchaseTrauma <- initDeckTrauma deck' iid CampaignTarget
     initXp <- initDeckXp deck' iid CampaignTarget
     pushAll
@@ -191,7 +191,7 @@ defaultCampaignRunner msg a = case msg of
       <> initXp
 
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
-  DoStep 1 (InitDeck iid _ deck) -> do
+  DoStep 1 (InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDeck = deck}) -> do
     let cardCodes = map toCardCode $ unDeck deck
     mSpiritualHealing <-
       if "11098" `elem` cardCodes

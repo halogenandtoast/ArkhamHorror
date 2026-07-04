@@ -1366,7 +1366,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
       & (cardsUnderneathL %~ filter ((/= card) . toCard))
       & (foundCardsL . each %~ filter (/= card))
-  InitDeck iid murl _ | iid == investigatorId -> handleInitDeck a iid murl
+  InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckUrl = murl} | iid == investigatorId -> handleInitDeck a iid murl
   UpgradeDeck iid murl _ | iid == investigatorId -> handleUpgradeDeck a iid murl
   ObtainCard cardId -> handleObtainCard a cardId
   ReplaceCard cardId card -> handleReplaceCard a cardId card

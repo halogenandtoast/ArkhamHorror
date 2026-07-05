@@ -1,4 +1,10 @@
 {
+  "specialRules": [
+    { "title": "Flood Tokens", "body": "@:theDrownedCity.additionalRulesAndClarifications.floodTokens" },
+    { "title": "Artifacts", "body": "@:theDrownedCity.additionalRulesAndClarifications.artifacts" },
+    { "title": "Alien Glyphs", "body": "@:theDrownedCity.additionalRulesAndClarifications.alienGlyphs" },
+    { "title": "New Keywords", "body": "@:theDrownedCity.newKeywords.body" }
+  ],
   "noAir": "You did not find air. Take 5 direct damage.",
   "intro": {
     "title": "The Risen Deep",

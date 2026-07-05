@@ -18,9 +18,6 @@
       "elderThing": "-3. Shuffle the topmost _Hex_ treachery in the encounter discard pile into the exploration deck."
     }
   },
-  "xp": {
-    "resolution1": "Mended the shattered timeline and saved the Earth from catastrophe."
-  },
   "label": {
     "standaloneIchtacaSetAgainst": "Ichtaca is set against you. Add 3 {'{'}tablet{'}'} tokens to the chaos bag.",
     "standaloneAlejandroSetAgainst": "Alejandro is set against you. Add 3 {'{'}cultist{'}'} tokens to the chaos bag.",
@@ -78,6 +75,9 @@
     "body": "Story cards are a new cardtype that appears in this Mythos Pack. These cards serve as an avenue for additional narrative and typically appear as the reverse side of another scenario card. When you are instructed to resolve a story card, simply read its story text and resolve its game text, if any."
   },
   "resolutions": {
+    "xp": {
+      "resolution1": "Mended the shattered timeline and saved the Earth from catastrophe."
+    },
     "noResolution": {
       "title": "No Resolution",
       "body": "_If no resolution was reached (each investigator resigned or was defeated)_: Read _Resolution 4_."

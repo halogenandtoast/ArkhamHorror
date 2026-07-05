@@ -14,9 +14,6 @@
       "elderThing": "-3。将遭遇弃牌堆顶的第一张_巫术_诡计卡牌洗入探索牌库。"
     }
   },
-  "xp": {
-    "resolution1": "修补了破碎的时间线，拯救地球免受灾难。"
-  },
   "label": {
     "ichtacaSetAgainst": "Ichtaca is set against you. Add 3 {'{'}tablet{'}'} tokens to the chaos bag.",
     "alejandroSetAgainst": "Alejandro is set against you. Add 3 {'{'}cultist{'}'} tokens to the chaos bag.",
@@ -70,6 +67,9 @@
     "body": "剧情卡牌是在本冒险里出现的一种新的卡牌类型。此类卡牌只出现在另一冒险卡牌的背面，作为另一种叙述的形式出现。在你收到指示要结算一张剧情卡牌时，阅读该卡牌上的故事文本并结算其游戏文本(如有)。"
   },
   "resolutions": {
+    "xp": {
+      "resolution1": "修补了破碎的时间线，拯救地球免受灾难。"
+    },
     "noResolution": {
       "title": "未达成任何结局",
       "body": "_如果未达成任何结局(每位调查员撤退或者被击败)_：阅读_结局4_."

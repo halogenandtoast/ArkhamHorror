@@ -143,7 +143,7 @@ handEyeCoordination1 =
                   $ AssetControlledBy You
                   <> oneOf [#tool, #weapon]
                   <> AssetCardMatch (mapOneOf CardWithLevel [0 .. 3])
-                  <> AssetWithPerformableAbility AbilityIsActionAbility [IgnoreActionCost]
+                  <> AssetWithPerformableAbility AbilityIsActionAbility [IgnoreAllCosts]
               )
               ( exists
                   $ AssetControlledBy You

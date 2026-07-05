@@ -6447,6 +6447,7 @@ runMessages gameId mLogger = do
             ClearUI -> runWithEnv (overGameM $ runMessage ClearUI) >> runMessages gameId mLogger
             Ask _ (ChooseOneAtATime []) -> runMessages gameId mLogger
             Ask _ (ChooseOneAtATimeWithAuto _ []) -> runMessages gameId mLogger
+            Ask _ (ChooseN _ []) -> runMessages gameId mLogger
             Ask pid q -> do
               -- if we are choosing decks, we do not want to clobber other ChooseDeck
               moreChooseDecks <-

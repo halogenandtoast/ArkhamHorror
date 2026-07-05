@@ -270,13 +270,21 @@ handleInvestigatorEliminated a@InvestigatorAttrs{..} iid = do
     isAttackingThisInvestigator = \case
       EnemyAttack details -> any (isTarget iid) details.targets
       _ -> False
+    -- A multi-card discard (e.g. Empyrean Brilliance) re-asks the remaining
+    -- ChooseN after each pick. If discarding a card defeats this investigator
+    -- mid-selection, the leftover choices point at cards swept out of the
+    -- now-empty hand, leaving an unanswerable prompt.
+    isSelfDiscard = \case
+      DiscardCard iid' _ _ -> iid' == iid
+      _ -> False
   let
     isNotEliminatedChoice = \case
-      TargetLabel _ msgs -> none isAttackingThisInvestigator msgs
+      TargetLabel _ msgs -> none isAttackingThisInvestigator msgs && none isSelfDiscard msgs
       _ -> True
   let removeEliminatedChoices = filter isNotEliminatedChoice
   lift $ mapQueue \case
     Ask who (ChooseOneAtATime choices) -> Ask who (ChooseOneAtATime $ removeEliminatedChoices choices)
+    Ask who (ChooseN n choices) -> Ask who (ChooseN n $ removeEliminatedChoices choices)
     other -> other
   pure
     $ a

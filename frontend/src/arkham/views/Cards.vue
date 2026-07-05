@@ -524,11 +524,13 @@ const cycleIconCode = (cycle: CardCycle): string => {
 const setCycle = (cycle: CardCycle) => {
   query.value = filterString({...filter.value, set: null, cycle: cycle.cycle})
   setFilter()
+  showSidebar.value = false
 }
 
 const setSet = (set: CardSet) => {
   query.value = filterString({...filter.value, cycle: null, set: set.code})
   setFilter()
+  showSidebar.value = false
 }
 
 const setCardPoolMode = (mode: CardPoolMode) => {
@@ -550,6 +552,16 @@ const showSidebar = ref(false)
     <div class="sidebar-overlay" :class="{ visible: showSidebar }" @click="showSidebar = false"></div>
     <div class="sidebar" :class="{ open: showSidebar }">
       <button class="sidebar-close" @click="showSidebar = false"><font-awesome-icon icon="times" /></button>
+      <div class="sidebar-card-pool card-pool-toggle segmented segmented-3" role="radiogroup" :aria-label="$t('cardsView.cardPool')">
+        <input type="radio" :checked="cardPoolMode === 'player'" id="card-pool-player-mobile" @change="setCardPoolMode('player')" />
+        <label for="card-pool-player-mobile">{{ $t('cardsView.playerCards') }}</label>
+
+        <input type="radio" :checked="cardPoolMode === 'campaign'" id="card-pool-campaign-mobile" @change="setCardPoolMode('campaign')" />
+        <label for="card-pool-campaign-mobile">{{ $t('cardsView.campaignCards') }}</label>
+
+        <input type="radio" :checked="cardPoolMode === 'both'" id="card-pool-both-mobile" @change="setCardPoolMode('both')" />
+        <label for="card-pool-both-mobile">{{ $t('cardsView.bothCards') }}</label>
+      </div>
       <div class="chapter-tabs">
         <button
           :class="['chapter-tab', { active: activeChapter === 1 }]"
@@ -597,7 +609,7 @@ const showSidebar = ref(false)
           <button @click.prevent="view = View.List" :class="{ active: view == View.List }" :title="$t('cardsView.listView')"><font-awesome-icon icon="list" /></button>
           <button @click.prevent="view = View.Image" :class="{ active: view == View.Image }" :title="$t('cardsView.imageView')"><font-awesome-icon icon="image" /></button>
         </div>
-        <div class="card-pool-toggle segmented segmented-3" role="radiogroup" :aria-label="$t('cardsView.cardPool')">
+        <div class="desktop-card-pool card-pool-toggle segmented segmented-3" role="radiogroup" :aria-label="$t('cardsView.cardPool')">
           <input type="radio" :checked="cardPoolMode === 'player'" id="card-pool-player" @change="setCardPoolMode('player')" />
           <label for="card-pool-player">{{ $t('cardsView.playerCards') }}</label>
 
@@ -636,15 +648,16 @@ const showSidebar = ref(false)
   overflow: hidden;
   @media (max-width: 768px) {
     position: fixed;
-    left: 0;
+    right: 0;
     top: 0;
     bottom: 0;
-    width: 280px;
+    width: min(340px, 88vw);
     max-height: unset;
-    border-right: 1px solid rgba(255,255,255,0.12);
+    border-right: none;
+    border-left: 1px solid rgba(255,255,255,0.12);
     background: var(--background);
     z-index: var(--z-index-50);
-    transform: translateX(-100%);
+    transform: translateX(100%);
     transition: transform 0.25s ease;
     overflow-y: auto;
     &.open { transform: translateX(0); }
@@ -668,8 +681,8 @@ const showSidebar = ref(false)
   display: none;
   @media (max-width: 768px) {
     display: flex;
-    align-self: flex-end;
-    margin: 8px 8px 0 auto;
+    align-self: flex-start;
+    margin: 8px auto 0 8px;
     background: transparent;
     border: none;
     color: #777;
@@ -688,6 +701,8 @@ const showSidebar = ref(false)
     align-items: center;
     justify-content: center;
     gap: 3px;
+    order: 3;
+    flex-shrink: 0;
     height: 32px;
     padding: 0 8px;
     background: rgba(255,255,255,0.08);
@@ -704,7 +719,6 @@ const showSidebar = ref(false)
   display: none;
   @media (max-width: 768px) {
     display: inline-block;
-    transform: rotate(180deg);
     font-size: 0.65em;
     opacity: 0.7;
   }
@@ -841,6 +855,11 @@ header {
   backdrop-filter: blur(6px);
   z-index: var(--z-index-1);
 
+  @media (max-width: 768px) {
+    gap: 6px;
+    padding: 8px max(8px, env(safe-area-inset-right)) 8px max(8px, env(safe-area-inset-left));
+  }
+
   form {
     display: flex;
     align-items: center;
@@ -850,6 +869,11 @@ header {
     overflow: hidden;
     flex: 1;
     max-width: 360px;
+    min-width: 0;
+
+    @media (max-width: 768px) {
+      max-width: none;
+    }
 
     input {
       flex: 1;
@@ -894,6 +918,16 @@ header {
     transition: background 0.12s, color 0.12s;
 
     &:hover { color: #ccc; }
+
+    :deep(svg) {
+      display: block;
+      width: 14px;
+      height: 14px;
+      font-size: 14px;
+      max-width: 14px;
+      max-height: 14px;
+    }
+
     &.active {
       background: rgba(255,255,255,0.12);
       color: #eee;
@@ -927,11 +961,13 @@ header {
   z-index: 0;
 }
 
-.segmented:has(#card-pool-campaign:checked)::before {
+.segmented:has(#card-pool-campaign:checked)::before,
+.segmented:has(#card-pool-campaign-mobile:checked)::before {
   transform: translateX(calc(100% + var(--segmented-gap)));
 }
 
-.segmented:has(#card-pool-both:checked)::before {
+.segmented:has(#card-pool-both:checked)::before,
+.segmented:has(#card-pool-both-mobile:checked)::before {
   transform: translateX(calc((100% + var(--segmented-gap)) * 2));
 }
 
@@ -972,6 +1008,53 @@ header {
 
 .card-pool-toggle {
   min-width: 255px;
+}
+
+.sidebar-card-pool {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-card-pool {
+    display: none;
+  }
+
+  .sidebar-card-pool {
+    display: grid;
+    margin: 10px 12px 12px;
+    min-width: 0;
+  }
+
+  header form {
+    order: 1;
+  }
+
+  .view-controls {
+    order: 2;
+  }
+
+  .sidebar-toggle :deep(svg),
+  header form button :deep(svg) {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    max-width: 14px;
+    max-height: 14px;
+  }
+
+  .view-controls {
+    flex-shrink: 0;
+  }
+
+  .view-controls button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 32px;
+    padding: 0;
+    line-height: 1;
+  }
 }
 
 </style>

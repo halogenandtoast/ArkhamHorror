@@ -652,7 +652,9 @@ function toggleHandAreaMarginBottom(event: Event) {
     handAreaMarginBottom.value = handCardExposedHeight_MAX;
     handAreaPointerEvents.value = 'auto'
   }
-  else if(!target.closest('.in-hand')){
+  else if (target.closest('.in-hand, .abilities')) {
+    return
+  } else {
     handAreaMarginBottom.value = handCardExposedHeight_MIN;
     handAreaPointerEvents.value = 'none'
   }
@@ -896,6 +898,7 @@ function closeHand() {
             :game="game"
             :playerId="playerId"
             :ownerId="investigator.id"
+            :mobileHandOpen="handAreaPointerEvents === 'auto'"
             :key="toCardContents(card).id"
             @choose="$emit('choose', $event)"
             :draggable="debug.active"
@@ -991,6 +994,7 @@ function closeHand() {
           :game="game"
           :playerId="playerId"
           :ownerId="investigator.id"
+          :mobileHandOpen="handAreaPointerEvents === 'auto'"
           :key="toCardContents(card).id"
           @choose="$emit('choose', $event)"
           :draggable="debug.active"
@@ -1017,6 +1021,7 @@ function closeHand() {
             :data-index="treachery.cardId"
             :playerId="playerId"
             :isInHand="true"
+            :mobileHandOpen="handAreaPointerEvents === 'auto'"
             @choose="$emit('choose', $event)"
           />
           <div class="card-container" v-else>

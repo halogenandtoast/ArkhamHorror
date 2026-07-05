@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject, onMounted, Ref } from 'vue'
+import { computed, inject, onMounted, Ref, ref, watch } from 'vue'
 import { CardContents, type Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
@@ -7,6 +7,7 @@ import { MessageType} from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
 import { cardImage } from '@/arkham/cardImages'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { IsMobile } from '@/arkham/isMobile'
 import { useDebug } from '@/arkham/debug'
@@ -17,6 +18,7 @@ export interface Props {
   card: Card
   playerId: string
   ownerId: string
+  mobileHandOpen?: boolean
 }
 
 const props = defineProps<Props>()
@@ -28,6 +30,12 @@ onMounted(() => {
 })
 
 const { isMobile } = IsMobile();
+const cardFrame = ref<HTMLElement | null>(null)
+const showAbilities = ref(false)
+
+watch(() => props.mobileHandOpen, (open) => {
+  if (open === false) showAbilities.value = false
+})
 const investigator = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId))
 const investigatorId = computed(() => investigator.value?.id)
 
@@ -103,8 +111,19 @@ const abilities = computed(() => {
 })
 
 const classObject = computed(() => {
-  return { 'card--can-interact': cardAction.value !== -1 }
+  return { 'card--can-interact': cardAction.value !== -1 || (isMobile && abilities.value.length > 0) }
 })
+
+function handleCardClick() {
+  if (isMobile && abilities.value.length > 0) {
+    showAbilities.value = true
+    return
+  }
+
+  emit('choose', cardAction.value)
+}
+
+const emit = defineEmits<{ choose: [value: number] }>()
 
 const cardBack = computed(() => {
   return imgsrc("player_back.jpg")
@@ -246,17 +265,8 @@ function oilPaintEffect(canvas, radius, intensity) {
 
 <template>
   <div class="card-container" :data-index="id" v-if="solo || showOtherPlayersHands || (investigatorId == ownerId) || revealed">
-    <AbilityButton
-      v-if="isMobile"
-      v-for="ability in abilities"
-      :key="ability.index"
-      :ability="ability.contents"
-      :data-image="image"
-      :game="game"
-      @click="$emit('choose', ability.index)"
-    />
-
     <img
+      ref="cardFrame"
       :class="classObject"
       class="card in-hand"
       :src="image"
@@ -264,7 +274,7 @@ function oilPaintEffect(canvas, radius, intensity) {
       :data-playability-game-id="cardAction === -1 ? game.id : undefined"
       :data-playability-investigator-id="cardAction === -1 ? investigatorId : undefined"
       :data-playability-card-id="cardAction === -1 ? id : undefined"
-      @click="$emit('choose', cardAction)"
+      @click="handleCardClick"
     />
 
     <button
@@ -285,6 +295,15 @@ function oilPaintEffect(canvas, radius, intensity) {
       @click="$emit('choose', ability.index)"
       />
 
+    <AbilitiesMenu
+      v-if="isMobile && abilities.length > 0"
+      v-model="showAbilities"
+      :game="game"
+      :abilities="abilities"
+      :frame="cardFrame"
+      position="top"
+      @choose="$emit('choose', $event)"
+    />
   </div>
   <div class="card-container" v-else>
     <img class="card in-hand" :src="cardBack" />

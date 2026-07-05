@@ -397,7 +397,8 @@
   },
   "chooseDeck": {
     "search": "搜索…",
-    "useThisDeck": "使用此牌组"
+    "useThisDeck": "使用此牌组",
+    "randomBasicWeaknessPoolTooltip": "调整随机分配此牌组基础弱点时使用的产品范围。"
   },
   "deckToolbar": {
     "searchDecks": "搜索牌组…",

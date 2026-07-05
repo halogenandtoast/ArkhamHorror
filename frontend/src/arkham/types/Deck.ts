@@ -2,20 +2,28 @@ import * as JsonDecoder from 'ts.data.json';
 import { investigatorClass } from '@/arkham/helpers';
 import { v2Optional } from '@/arkham/parser';
 
+export type DeckMeta = string | Record<string, unknown>
+
 interface Meta {
-  alternate_front: string
+  alternate_front?: string
+  card_pool?: string
+  [key: string]: unknown
 }
 
 export interface ArkhamDbDecklist {
   id: string
   url: string | null
-  meta?: Meta
+  meta?: DeckMeta
   name: string
   investigator_code: string
   investigator_name: string
   slots: {
     [key: string]: number
   }
+  sideSlots?: {
+    [key: string]: number
+  }
+  taboo_id?: number | null
 }
 
 

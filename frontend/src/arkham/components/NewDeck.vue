@@ -74,8 +74,17 @@ const maybeSetPortrait = (code: string | null | undefined) => {
   if (!code || !props.setPortrait) return
   props.setPortrait(imgsrc(`portraits/${normalizeCode(code)}.jpg`))
 }
-const resolvedInvestigatorCode = (d: ArkhamDbDecklist) =>
-  d.meta?.alternate_front ?? d.investigator_code
+const resolvedInvestigatorCode = (d: ArkhamDbDecklist) => {
+  const meta = (() => {
+    if (typeof d.meta !== 'string') return d.meta
+    try {
+      return JSON.parse(d.meta || '{}')
+    } catch (_e) {
+      return {}
+    }
+  })()
+  return meta?.alternate_front ?? d.investigator_code
+}
 
 function loadDeckFromFile(e: Event) {
   valid.value = false

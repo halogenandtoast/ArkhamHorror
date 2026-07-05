@@ -439,7 +439,8 @@
   },
   "chooseDeck": {
     "search": "Search…",
-    "useThisDeck": "Use this deck"
+    "useThisDeck": "Use this deck",
+    "randomBasicWeaknessPoolTooltip": "Adjust which products are used when randomly assigning this deck's basic weakness."
   },
   "deckRestrictions": {
     "scarletKeys": {

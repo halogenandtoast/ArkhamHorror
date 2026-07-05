@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { displayTabooId, displayTabooList } from '@/arkham/taboo';
-import { computed, ref, inject } from 'vue'
+import { computed, ref, inject, watch, nextTick } from 'vue'
 import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
 import { imgsrc, type InvestigatorClass } from '@/arkham/helpers'
@@ -8,7 +8,7 @@ import { portraitImage as portraitImageHelper } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Deck'
 import {deckClass} from '@/arkham/types/Deck'
 import { deckInvestigatorCode, deckRequirementDescriptions, deckRestrictionError, type SelectableDeckList } from '@/arkham/deckRestrictions'
-import type { ArkhamDbDecklist } from '@/arkham/types/Deck'
+import type { ArkhamDbDecklist, DeckMeta } from '@/arkham/types/Deck'
 import type { Investigator } from '@/arkham/types/Investigator'
 import Question from '@/arkham/components/Question.vue';
 import NewDeck from '@/arkham/components/NewDeck.vue'
@@ -82,6 +82,115 @@ const deckRequirements = computed(() => deckRequirementDescriptions(props.game.s
   campaignLog: props.game.campaign?.log,
 }, t))
 
+const weaknessPoolOptions = [
+  { token: 'cycle:core', label: 'Core Set', aliases: ['core'] },
+  { token: 'cycle:rcore', label: 'Revised Core Set', aliases: ['rcore'] },
+  { token: 'cycle:dwl', label: 'The Dunwich Legacy', aliases: ['dwl', 'dwlp'] },
+  { token: 'cycle:ptc', label: 'The Path to Carcosa', aliases: ['ptc', 'ptcp'] },
+  { token: 'cycle:tfa', label: 'The Forgotten Age', aliases: ['tfa', 'tfap'] },
+  { token: 'cycle:tcu', label: 'The Circle Undone', aliases: ['tcu', 'tcup'] },
+  { token: 'cycle:tde', label: 'The Dream-Eaters', aliases: ['tde', 'tdep'] },
+  { token: 'cycle:tic', label: 'The Innsmouth Conspiracy', aliases: ['tic', 'ticp'] },
+  { token: 'cycle:eote', label: 'Edge of the Earth', aliases: ['eote', 'eoep'] },
+  { token: 'cycle:tsk', label: 'The Scarlet Keys', aliases: ['tsk', 'tskp'] },
+  { token: 'cycle:fhv', label: 'The Feast of Hemlock Vale', aliases: ['fhv', 'fhvp'] },
+  { token: 'cycle:tdc', label: 'The Drowned City', aliases: ['tdc', 'tdcp'] },
+  { token: 'cycle:core_ch2', label: 'Chapter 2 Core Set', aliases: ['core_ch2', 'core2026', 'core_2026'] },
+  { token: 'cycle:return', label: 'Return To boxes', aliases: ['return'] },
+  { token: 'cycle:investigator_decks', label: 'Investigator Starter Decks', aliases: ['investigator_decks'] },
+  { token: 'cycle:investigator_decks_ch2', label: 'Chapter 2 Investigator Decks', aliases: ['investigator_decks_ch2'] },
+]
+
+function normalizeWeaknessPoolToken(token: string): string {
+  const trimmed = token.trim()
+  const bare = trimmed.startsWith('cycle:') ? trimmed.slice(6) : trimmed
+  return weaknessPoolOptions.find((o) => o.token === trimmed || o.aliases.includes(bare))?.token ?? trimmed
+}
+
+const selectedWeaknessPool = ref<string[]>([])
+const weaknessPoolTouched = ref(false)
+const weaknessPoolOpen = ref(false)
+
+const selectedDeck = computed(() => decks.value.find((d) => d.id === deckId.value) ?? null)
+const currentDeckList = computed(() => {
+  if (unsavedDeckList.value) return unsavedDeckList.value
+  if (!selectedDeck.value) return null
+  return deckToArkhamDbDecklist(selectedDeck.value)
+})
+const weaknessPoolSummary = computed(() => {
+  if (selectedWeaknessPool.value.length === 0) return 'All basic weaknesses'
+  const names = selectedWeaknessPool.value.map((token) => weaknessPoolOptions.find((o) => o.token === token)?.label ?? token)
+  return names.length <= 2 ? names.join(', ') : `${names.length} products selected`
+})
+
+function deckToArkhamDbDecklist(deck: Arkham.Deck): ArkhamDbDecklist {
+  return {
+    id: deck.id,
+    name: deck.name,
+    url: deck.url,
+    investigator_code: deck.list.investigator_code,
+    investigator_name: deck.name,
+    slots: { ...deck.list.slots },
+    sideSlots: { ...(deck.list.sideSlots ?? {}) },
+    meta: deck.list.meta,
+    taboo_id: deck.list.taboo_id ?? null,
+  }
+}
+
+function decodeMeta(meta: DeckMeta | undefined): Record<string, unknown> {
+  if (!meta) return {}
+  if (typeof meta === 'string') {
+    try {
+      const parsed = JSON.parse(meta)
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
+    } catch (_e) {
+      return {}
+    }
+  }
+  return { ...meta }
+}
+
+function weaknessPoolFromMeta(meta: DeckMeta | undefined): string[] {
+  const cardPool = decodeMeta(meta).card_pool
+  if (typeof cardPool !== 'string') return []
+  return [...new Set(cardPool.split(',').map(normalizeWeaknessPoolToken).filter(Boolean))]
+}
+
+function deckListWithWeaknessPool(deckList: ArkhamDbDecklist): ArkhamDbDecklist {
+  const meta = decodeMeta(deckList.meta)
+  if (selectedWeaknessPool.value.length === 0) {
+    delete meta.card_pool
+  } else {
+    meta.card_pool = selectedWeaknessPool.value.join(',')
+  }
+
+  return { ...deckList, meta: JSON.stringify(meta) }
+}
+
+function resetWeaknessPoolFromDeck() {
+  selectedWeaknessPool.value = weaknessPoolFromMeta(currentDeckList.value?.meta)
+  weaknessPoolTouched.value = false
+  weaknessPoolOpen.value = false
+}
+
+function setWeaknessPool(tokens: string[]) {
+  selectedWeaknessPool.value = tokens
+  weaknessPoolTouched.value = true
+}
+
+async function toggleWeaknessPoolForDeck(deck: Arkham.Deck) {
+  if (deckId.value === deck.id) {
+    weaknessPoolOpen.value = !weaknessPoolOpen.value
+    return
+  }
+
+  deckId.value = deck.id
+  await nextTick()
+  weaknessPoolOpen.value = true
+}
+
+watch(currentDeckList, resetWeaknessPoolFromDeck)
+
 const questionLabel = computed(() => {
   if (question.value)
     return question.value.tag === 'QuestionLabel' ? handleEmbeddedI18n(question.value.label, t) : null
@@ -95,7 +204,7 @@ async function addDeck(d: Arkham.Deck) {
   decks.value = [...decks.value, d]
   deckId.value = d.id
   unsavedDeckList.value = null
-  await choose()
+  deckType.value = "UseExistingDeck"
 }
 
 async function addUnsavedDeck(dl: ArkhamDbDecklist) {
@@ -161,9 +270,11 @@ const chooseChoice = (idx: number) => emit('choose', idx)
 
 async function choose() {
   if (unsavedDeckList.value && chooseDeckList && unsavedDeckError.value === null) {
-    await chooseDeckList(unsavedDeckList.value)
+    await chooseDeckList(deckListWithWeaknessPool(unsavedDeckList.value))
   } else if (deckId.value && error.value === null) {
-    if (chooseDeck) {
+    if (weaknessPoolTouched.value && chooseDeckList && selectedDeck.value) {
+      await chooseDeckList(deckListWithWeaknessPool(deckToArkhamDbDecklist(selectedDeck.value)))
+    } else if (chooseDeck) {
       await chooseDeck(deckId.value)
     }
   }
@@ -272,25 +383,54 @@ const needsReply = computed(() => {
                 />
                 <div class="deck-list">
                   <div v-if="filteredDecks.length === 0" class="deck-list-empty">{{ $t('noDecksMatchFilters') }}</div>
-                  <div
-                    v-for="deck in filteredDecks"
-                    :key="deck.id"
-                    class="deck-item"
-                    :class="[deckClass(deck), { selected: deckId === deck.id, 'has-error': deckId === deck.id && error }]"
-                    @click.prevent="deckId = deck.id"
-                  >
-                    <img class="deck-item-portrait" :src="imgsrc(`cards/${deckPortraitCode(deck)}.avif`)" />
-                    <div class="deck-item-info">
-                      <span class="deck-item-name">{{ deck.name }}</span>
-                      <span v-if="deckTaboo(deck)" class="deck-item-taboo">
-                        <font-awesome-icon icon="book" /> {{ deckTaboo(deck) }}
-                      </span>
-                      <span v-if="deckId === deck.id && error" class="deck-item-error">{{ error }}</span>
+                  <template v-for="deck in filteredDecks" :key="deck.id">
+                    <div
+                      class="deck-item"
+                      :class="[deckClass(deck), { selected: deckId === deck.id, 'has-error': deckId === deck.id && error }]"
+                      @click.prevent="deckId = deck.id"
+                    >
+                      <img class="deck-item-portrait" :src="imgsrc(`cards/${deckPortraitCode(deck)}.avif`)" />
+                      <div class="deck-item-info">
+                        <span class="deck-item-name">{{ deck.name }}</span>
+                        <span v-if="deckTaboo(deck)" class="deck-item-taboo">
+                          <font-awesome-icon icon="book" /> {{ deckTaboo(deck) }}
+                        </span>
+                        <span v-if="deckId === deck.id && error" class="deck-item-error">{{ error }}</span>
+                      </div>
+                      <button
+                        type="button"
+                        class="deck-item-weakness-button"
+                        :class="{ active: deckId === deck.id && (weaknessPoolOpen || selectedWeaknessPool.length > 0) }"
+                        v-tooltip="$t('chooseDeck.randomBasicWeaknessPoolTooltip')"
+                        :aria-label="$t('chooseDeck.randomBasicWeaknessPoolTooltip')"
+                        @click.stop.prevent="toggleWeaknessPoolForDeck(deck)"
+                      >
+                        <font-awesome-icon icon="shuffle" />
+                      </button>
+                      <button class="deck-item-use" @click.stop.prevent="selectAndChoose(deck)" :title="$t('chooseDeck.useThisDeck')">
+                        <font-awesome-icon icon="chevron-right" />
+                      </button>
+                      <div v-if="deckId === deck.id && weaknessPoolOpen" class="weakness-pool-panel deck-item-weakness-pool" @click.stop>
+                        <div class="weakness-pool-heading">
+                          <span>Random basic weakness pool</span>
+                          <span class="weakness-pool-summary">{{ weaknessPoolSummary }}</span>
+                        </div>
+                        <p class="weakness-pool-help">
+                          Limit random basic weaknesses to selected products. Leave empty to use the full pool.
+                        </p>
+                        <div class="weakness-pool-actions">
+                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">Select all</button>
+                          <button type="button" @click.prevent="setWeaknessPool([])">Clear</button>
+                        </div>
+                        <div class="weakness-pool-grid">
+                          <label v-for="option in weaknessPoolOptions" :key="option.token" class="weakness-pool-option">
+                            <input type="checkbox" :value="option.token" v-model="selectedWeaknessPool" @change="weaknessPoolTouched = true" />
+                            <span>{{ option.label }}</span>
+                          </label>
+                        </div>
+                      </div>
                     </div>
-                    <button class="deck-item-use" @click.stop.prevent="selectAndChoose(deck)" :title="$t('chooseDeck.useThisDeck')">
-                      <font-awesome-icon icon="chevron-right" />
-                    </button>
-                  </div>
+                  </template>
                 </div>
               </div>
               <div v-else class="load-deck-layout">
@@ -306,6 +446,27 @@ const needsReply = computed(() => {
                   <form v-if="deckType == 'UnsavedDeck'" class="deck-form" @submit.prevent="choose">
                     <p class="unsaved-deck-name">{{ unsavedDeckList?.name }}</p>
                     <p v-if="unsavedDeckError" class="deck-form-error">{{ unsavedDeckError }}</p>
+                    <div class="weakness-pool-panel">
+                      <button type="button" class="weakness-pool-toggle" @click.prevent="weaknessPoolOpen = !weaknessPoolOpen">
+                        <span>Random basic weakness pool</span>
+                        <span class="weakness-pool-summary">{{ weaknessPoolSummary }}</span>
+                      </button>
+                      <div v-if="weaknessPoolOpen" class="weakness-pool-body">
+                        <p class="weakness-pool-help">
+                          Limit random basic weaknesses to selected products. Leave empty to use the full pool.
+                        </p>
+                        <div class="weakness-pool-actions">
+                          <button type="button" @click.prevent="setWeaknessPool(weaknessPoolOptions.map((o) => o.token))">Select all</button>
+                          <button type="button" @click.prevent="setWeaknessPool([])">Clear</button>
+                        </div>
+                        <div class="weakness-pool-grid">
+                          <label v-for="option in weaknessPoolOptions" :key="option.token" class="weakness-pool-option">
+                            <input type="checkbox" :value="option.token" v-model="selectedWeaknessPool" @change="weaknessPoolTouched = true" />
+                            <span>{{ option.label }}</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                     <button type="submit" class="primary-action" :disabled="!!unsavedDeckError">{{$t('create.choose')}}</button>
                   </form>
                   <NewDeck v-else @new-deck="addDeck" @new-deck-list="addUnsavedDeck" :no-portrait="true" :set-portrait="setPortrait" />
@@ -561,6 +722,7 @@ const needsReply = computed(() => {
 .deck-item {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   padding: 10px 12px;
   background: rgba(255,255,255,0.04);
@@ -631,13 +793,13 @@ const needsReply = computed(() => {
   letter-spacing: 0.04em;
 }
 
-.deck-item-use {
+.deck-item-use,
+.deck-item-weakness-button {
   flex-shrink: 0;
   width: 34px;
   height: 34px;
   border-radius: 5px;
   border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(110, 134, 64, 0.85);
   color: white;
   cursor: pointer;
   display: flex;
@@ -648,12 +810,34 @@ const needsReply = computed(() => {
   outline: none;
 
   &:hover {
-    background: rgba(110, 134, 64, 1);
     transform: scale(1.08);
     box-shadow: 0 4px 12px rgba(0,0,0,0.35);
   }
 
   &:active { transform: scale(1.0); }
+}
+
+.deck-item-use {
+  background: rgba(110, 134, 64, 0.85);
+
+  &:hover {
+    background: rgba(110, 134, 64, 1);
+  }
+}
+
+.deck-item-weakness-button {
+  width: 24px;
+  height: 24px;
+  font-size: 0.68em;
+  background: rgba(235, 235, 235, 0.18);
+  color: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(4px);
+
+  &:hover,
+  &.active {
+    background: rgba(235, 235, 235, 0.30);
+    color: white;
+  }
 }
 
 /* Load New Deck layout: portrait left, form right */
@@ -706,6 +890,109 @@ const needsReply = computed(() => {
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
+}
+
+.weakness-pool-panel {
+  margin-top: 10px;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 8px;
+  background: rgba(0,0,0,0.16);
+  overflow: hidden;
+}
+
+.deck-item-weakness-pool {
+  flex: 0 0 100%;
+  margin-top: 0;
+  cursor: default;
+}
+
+.weakness-pool-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(255,255,255,0.86);
+  font-size: 0.78em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.weakness-pool-toggle:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.weakness-pool-heading {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(255,255,255,0.86);
+  font-size: 0.78em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.weakness-pool-summary {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.9em;
+  font-weight: 600;
+  text-align: right;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.weakness-pool-help,
+.deck-form p.weakness-pool-help {
+  margin: 0;
+  padding: 0 12px 10px;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.82em;
+}
+
+.weakness-pool-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px 10px;
+}
+
+.weakness-pool-actions button {
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.78);
+  padding: 5px 10px;
+  font-size: 0.76em;
+  cursor: pointer;
+}
+
+.weakness-pool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 6px;
+  padding: 0 12px 12px;
+}
+
+.weakness-pool-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.82);
+  font-size: 0.84em;
+  padding: 5px 6px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.04);
+}
+
+.weakness-pool-option input {
+  accent-color: rgb(110, 134, 64);
 }
 
 /* Primary action button */

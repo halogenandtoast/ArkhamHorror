@@ -1246,7 +1246,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
           pure $ maybe False (`elem` locations) mlid
     InvestigatorWithId iid -> pure $ flip runMatches as $ (== iid) . toId
     InvestigatorIs cardCode -> pure $ flip runMatches as \a ->
-      toCardCode a == cardCode || case a.form of
+      cardCode `elem` (toCardDef (toAttrs a)).cardCodes || case a.form of
         TransfiguredForm c -> c == cardCode
         YithianForm -> coerce (toId a) == cardCode
         HomunculusForm -> coerce (toId a) == cardCode

@@ -184,6 +184,30 @@ runGameMessage msg g = case msg of
   SetAiEnabled pid b -> pure $ overAiSeat pid (\s -> s {aiEnabled = b}) g
   SetAiResponseDelay pid n -> pure $ overAiSeat pid (\s -> s {aiResponseDelayMs = n}) g
   ResetLocationOffsets -> pure $ g & locationOffsetsL .~ mempty
+  SetCardOwner cardId iid -> do
+    -- Debug: force one card's owner to iid across every representation it lives in
+    -- (store, hand/deck/discard/underneath/bonded, and any in-play skill/asset entity).
+    -- Used to repair promo/alt-art games where deck-load stamped a normalized-away owner.
+    let reown pc = pc {pcOwner = Just iid}
+        fixPc pc = if toCardId pc == cardId then reown pc else pc
+        fixCard c = if toCardId c == cardId then overPlayerCard reown c else c
+        fixInv a =
+          a
+            { investigatorDeck = fmap fixPc (investigatorDeck a)
+            , investigatorDiscard = map fixPc (investigatorDiscard a)
+            , investigatorHand = map fixCard (investigatorHand a)
+            , investigatorCardsUnderneath = map fixCard (investigatorCardsUnderneath a)
+            , investigatorBondedCards = map fixCard (investigatorBondedCards a)
+            }
+        fixSkill a = if toCardId a == cardId then a {skillOwner = iid} else a
+        fixAsset a = if toCardId a == cardId then a {assetOwner = Just iid} else a
+    for_ (lookup cardId (g ^. cardsL)) \c -> replaceCard cardId (fixCard c)
+    pure
+      $ g
+      & cardsL %~ Map.adjust fixCard cardId
+      & entitiesL . investigatorsL %~ Map.map (overAttrs fixInv)
+      & entitiesL . skillsL %~ Map.map (overAttrs fixSkill)
+      & entitiesL . assetsL %~ Map.map (overAttrs fixAsset)
   SetGameRunWindows b -> pure $ g & runWindowsL .~ b
   SetGameState s -> pure $ g & gameStateL .~ s
   ChoosingDecks -> pure $ g & entitiesL . investigatorsL .~ mempty & gameStateL .~ IsChooseDecks (g ^. playersL)

@@ -1131,6 +1131,7 @@ data Message
   | Simultaneously [Message]
   | -- Debug
     ClearQueue
+  | SetCardOwner CardId InvestigatorId
   | DebugAddToHand InvestigatorId CardId
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]

@@ -5,7 +5,6 @@ import Arkham.Card.PlayerCard
 import Arkham.Customization
 import Arkham.Decklist.Type
 import Arkham.Id
-import Arkham.Investigator
 import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.Prelude hiding (optional, try, (<|>))
@@ -67,7 +66,7 @@ loadDecklistCards f decklist =
       genPlayerCardWith (lookupPlayerCardDef cardCode)
         $ applyDecklistCardMeta decklist
         . applyCustomizations decklist
-        . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
+        . setPlayerCardOwner (decklistInvestigatorId decklist)
         . setTaboo (fromTabooId $ taboo_id decklist)
 
 loadExtraDeck :: CardGen m => ArkhamDBDecklist -> m [PlayerCard]
@@ -85,7 +84,7 @@ loadExtraDeck decklist = do
       let convert =
             applyDecklistCardMeta decklist
               . applyCustomizations decklist
-              . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
+              . setPlayerCardOwner (decklistInvestigatorId decklist)
               . setTaboo (fromTabooId $ taboo_id decklist)
       traverse ((`genPlayerCardWith` convert) . lookupPlayerCardDef . CardCode) codes
 

@@ -50,6 +50,7 @@ instance RunMessage TheDrownedCity where
         flavor $ setTitle "title" >> p "artifacts"
         flavor $ setTitle "title" >> p "alienGlyphs"
       scope "newKeywords" $ flavor $ setTitle "title" >> p "body"
+      scope "prologue" $ flavor $ setTitle "title" >> p "body"
       nextCampaignStep
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "anOfferYouCantRefuse" do

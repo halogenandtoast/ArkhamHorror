@@ -22,7 +22,7 @@ instance HasAbilities FamilyInheritance where
   getAbilities (FamilyInheritance a) =
     [ controlled a 1 (ResourcesOnThis (atLeast 1)) actionAbility
     , controlled_ a 2 $ forced $ TurnBegins #when You
-    , controlled_ a 3 $ delayed $ forced $ TurnEnds #when You
+    , controlled a 3 (ResourcesOnThis (atLeast 1)) $ delayed $ forced $ TurnEnds #when You
     ]
 
 instance RunMessage FamilyInheritance where

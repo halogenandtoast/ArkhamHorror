@@ -58,12 +58,12 @@ instance RunMessage FriendsInLowPlaces where
         then do
           chooseOneM iid do
             cardI18n $ scope "friendsInLowPlaces" $ labeled' "versatileSkip" $ doStep 0 msg
-            for_ (eachWithRest hasBothTraits) \(card, cards') -> do
+            for_ hasBothTraits \card -> do
               targeting card do
                 when (attrs `hasCustomization` Bolstering) $ phaseModifier attrs card (AddSkillIcons [#wild])
                 addToHand iid (only card)
                 handleTarget iid attrs card
-                doStep 0 $ SearchFound iid (toTarget attrs) x cards'
+                doStep 0 $ SearchFound iid (toTarget attrs) x (deleteFirst card cards)
         else doStep 0 msg
       if attrs `hasCustomization` Clever
         then chooseOneM iid do

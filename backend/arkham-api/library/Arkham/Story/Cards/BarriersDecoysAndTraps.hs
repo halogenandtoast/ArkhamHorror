@@ -34,13 +34,13 @@ instance HasModifiersFor BarriersDecoysAndTraps where
           (l1, l2) | l1 == lid && n > 0 -> do
             pos2 <- lift $ field LocationPosition l2
             pure $ case pos2 >>= directionBetween pos of
-              Just dir -> [Barricades [l2], ScenarioModifier (barrierModifier dir)]
-              Nothing -> [Barricades [l2]]
+              Just dir -> [ScenarioModifier (barrierModifier dir)]
+              Nothing -> []
           (l1, l2) | l2 == lid && n > 0 -> do
             pos1 <- lift $ field LocationPosition l1
             pure $ case pos1 >>= directionBetween pos of
-              Just dir -> [Barricades [l1], ScenarioModifier (barrierModifier dir)]
-              Nothing -> [Barricades [l1]]
+              Just dir -> [ScenarioModifier (barrierModifier dir)]
+              Nothing -> []
           _ -> pure []
       mods <- concat <$> traverse barrierMods (mapToList meta)
       guard $ notNull mods

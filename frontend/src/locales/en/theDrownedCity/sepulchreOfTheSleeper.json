@@ -1,6 +1,6 @@
 {
   "tooltips": {
-    "weakenCthulhu": "During your turn, remove 1 doom from an Artifact asset you control: Cthulhu loses [[Relentless]] and gets -1 fight and -1 evade until the end of the round. Limit once per asset per round."
+    "weakenCthulhu": "During your turn, remove 1 doom from an Artifact asset you control: Cthulhu loses _Relentless_ and gets -1 fight and -1 evade until the end of the round. Limit once per asset per round."
   },
   "placeAdditionalDoom": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Tidal Tablet",
   "placeAdditionalDoomOnObsidianClaw": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Obsidian Claw",

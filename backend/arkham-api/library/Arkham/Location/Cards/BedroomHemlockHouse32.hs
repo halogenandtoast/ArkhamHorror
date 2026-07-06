@@ -35,7 +35,7 @@ instance HasAbilities BedroomHemlockHouse32 where
         -- act ability "Place 1 resource on it, as a seal".
         restricted a 1 Here
           $ freeReaction
-              (PlacedToken #after AnySource (TargetIs $ toTarget a.id) Resource)
+              (PlacedToken #after (SourceUsedBy You) (TargetIs $ toTarget a.id) Resource)
       ]
 
 instance RunMessage BedroomHemlockHouse32 where

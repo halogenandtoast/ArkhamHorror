@@ -30,7 +30,7 @@ instance HasAbilities BedroomHemlockHouse33 where
     extendRevealed a
       [ restricted a 1 Here
           $ freeReaction
-              (PlacedToken #after AnySource (TargetIs $ toTarget a.id) Resource)
+              (PlacedToken #after (SourceUsedBy You) (TargetIs $ toTarget a.id) Resource)
       ]
 
 instance RunMessage BedroomHemlockHouse33 where

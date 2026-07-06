@@ -12,6 +12,7 @@ const props = withDefaults(defineProps<{
   position?: 'top' | 'bottom' | 'left' | 'right';
   showMove?: boolean
   hostHasSwarm?: boolean
+  playAction?: number
 }>(), {showMove: true, hostHasSwarm: false});
 
 const emits = defineEmits<{
@@ -114,6 +115,13 @@ onUnmounted(() => {
   <Teleport to="body">
     <OnClickOutside @trigger="showAbilities = false" v-if="showAbilities" :options="{ ignore: [frame] }">
       <div class="abilities" :class="positionClass" :style="abilitiesPosition" ref="abilitiesRef" >
+        <button
+          v-if="playAction !== undefined"
+          class="play-card-button"
+          @click="chooseAbility(playAction)"
+        >
+          <span class="button-label">{{ $t('label.play') }}</span>
+        </button>
         <AbilityButton
           v-for="{index, contents} in abilities"
           :key="index"
@@ -156,7 +164,8 @@ onUnmounted(() => {
     }
   }
 
-  :deep(.button-label) {
+  :deep(.button-label),
+  .button-label {
     padding-block: min(3px, 1vw);
     padding-inline: min(6px, 2vw);
   }
@@ -168,5 +177,31 @@ onUnmounted(() => {
       }
     }
   }
+}
+
+.play-card-button {
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: var(--button);
+  z-index: var(--z-index-1000);
+  width: 100%;
+  min-width: max-content;
+  display: inline-flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.play-card-button::before {
+  content: "\1F0CF";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  padding: 3px 6px;
+  background: rgba(255, 255, 255, 0.12);
 }
 </style>

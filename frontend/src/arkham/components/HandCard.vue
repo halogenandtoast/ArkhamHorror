@@ -111,11 +111,11 @@ const abilities = computed(() => {
 })
 
 const classObject = computed(() => {
-  return { 'card--can-interact': cardAction.value !== -1 || (isMobile && abilities.value.length > 0) }
+  return { 'card--can-interact': cardAction.value !== -1 || (isMobile.value && abilities.value.length > 0) }
 })
 
 function handleCardClick() {
-  if (isMobile && abilities.value.length > 0) {
+  if (isMobile.value && abilities.value.length > 0) {
     showAbilities.value = true
     return
   }
@@ -301,6 +301,7 @@ function oilPaintEffect(canvas, radius, intensity) {
       :game="game"
       :abilities="abilities"
       :frame="cardFrame"
+      :play-action="cardAction !== -1 ? cardAction : undefined"
       position="top"
       @choose="$emit('choose', $event)"
     />

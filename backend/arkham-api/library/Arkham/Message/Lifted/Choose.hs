@@ -460,6 +460,14 @@ chooseTargetM
   -> m ()
 chooseTargetM iid ts action = chooseOneM iid $ unterminated $ for_ ts \t -> targeting t (action t)
 
+chooseHandleTargetM
+  :: (ReverseQueue m, Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> [target]
+  -> m ()
+chooseHandleTargetM iid source ts = chooseTargetM iid ts $ handleTarget iid source
+
 chooseThisM
   :: (ReverseQueue m, Targetable target)
   => InvestigatorId

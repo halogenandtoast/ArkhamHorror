@@ -176,6 +176,7 @@ let pressTimer: number | null = null
 let canDisablePress = false
 let currentPointerType = 'mouse'
 let dragActive = false
+const lastPointer = ref<{ clientX: number; clientY: number } | null>(null)
 
 const clearTimer = (t: number | null) => (t !== null ? (clearTimeout(t), null) : null)
 
@@ -221,6 +222,7 @@ const queueHover = (el: HTMLElement) => {
 
 const onMouseOver = (e: MouseEvent) => {
   if (currentPointerType === 'touch' || dragActive) return
+  lastPointer.value = { clientX: e.clientX, clientY: e.clientY }
   const el = targetFromEvent(e)
   hoverTimer = clearTimer(hoverTimer)
   if (!el || el.classList.contains('dragging') || el.classList.contains('no-overlay')) {
@@ -248,6 +250,7 @@ const onPointerDown = (e: PointerEvent) => {
 
 const onPointerMove = (e: PointerEvent) => {
   currentPointerType = e.pointerType
+  lastPointer.value = { clientX: e.clientX, clientY: e.clientY }
   if (e.pointerType === 'touch') {
     if (hoveredElement.value?.classList.contains('card--locations')) {
       hoveredElement.value = null
@@ -389,13 +392,25 @@ const getPosition = (el: HTMLElement): { top: number; left: number } => {
   const width = sideways.value ? OVERLAY_W / CARD_RATIO : OVERLAY_W
   const height = sideways.value ? OVERLAY_W : Math.round(OVERLAY_W / CARD_RATIO)
 
-  const top = rect.top + window.scrollY - 40
-  const bottom = top + height
-  const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top)
-
   const gap = 2
   const hasCust = !!customizationsCard.value
   const totalWidth = hasCust ? (width * 2 + gap) : width
+
+  if (el.dataset.overlayPosition === 'cursor-right' && lastPointer.value) {
+    const cursorGap = 18
+    const viewportPad = 10
+    const desiredTop = lastPointer.value.clientY + window.scrollY - 40
+    const maxTop = window.scrollY + window.innerHeight - height - viewportPad
+    const top = Math.max(window.scrollY + viewportPad, Math.min(desiredTop, maxTop))
+    const desiredLeft = lastPointer.value.clientX + window.scrollX + cursorGap
+    const maxLeft = window.scrollX + window.innerWidth - totalWidth - viewportPad
+    const left = Math.max(window.scrollX + viewportPad, Math.min(desiredLeft, maxLeft))
+    return { top, left }
+  }
+
+  const top = rect.top + window.scrollY - 40
+  const bottom = top + height
+  const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top)
 
   const rightSide = rect.left + window.scrollX + rect.width + 10
   return (rightSide + totalWidth >= window.innerWidth)

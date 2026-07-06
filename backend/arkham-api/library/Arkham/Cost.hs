@@ -70,6 +70,7 @@ data Payment
   | RemovePayment [Target]
   | ExilePayment [Target]
   | UsesPayment Int
+  | SpendTokenPayment Token Target
   | HorrorPayment Int
   | DamagePayment Int
   | DirectDamagePayment Int
@@ -329,6 +330,9 @@ totalActionCost = sumOf (cosmos . _ActionCost)
 
 totalResourcePayment :: Payment -> Int
 totalResourcePayment = sumOf (cosmos . _ResourcePayment)
+
+paymentTargets :: Payment -> [Target]
+paymentTargets = toListOf (cosmos . _SpendTokenPayment . _2)
 
 totalCluePayment :: Payment -> Int
 totalCluePayment = sumOf (cosmos . _CluePayment . _2)

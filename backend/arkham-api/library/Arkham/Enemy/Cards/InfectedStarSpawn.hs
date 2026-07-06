@@ -4,8 +4,8 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 
 newtype InfectedStarSpawn = InfectedStarSpawn EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 infectedStarSpawn :: EnemyCard InfectedStarSpawn
 infectedStarSpawn = enemy InfectedStarSpawn Cards.infectedStarSpawn

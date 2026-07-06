@@ -4085,6 +4085,12 @@ enemyMatcherFilter es matcher' = do
             Nothing -> pure False
             Just v -> gameValueMatches v valueMatcher
       filterM (fieldMapM EnemyRemainingHealth hasRemainingHealth . toId) es
+    EnemyWithRemainingHealthLessThan calc -> do
+      n <- calculate calc
+      let hasRemainingHealth = \case
+            Nothing -> pure False
+            Just v -> gameValueMatches v (LessThan $ Static n)
+      filterM (fieldMapM EnemyRemainingHealth hasRemainingHealth . toId) es
     EnemyWithoutModifier modifier -> filterM (`withoutModifier` modifier) es
     EnemyWithModifier modifier -> do
       flip filterM es \enemy -> elem modifier <$> getModifiers (toTarget enemy)

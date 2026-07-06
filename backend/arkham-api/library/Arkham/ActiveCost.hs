@@ -33,7 +33,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Distance
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
+import Arkham.Enemy.Types (Field (EnemySealedChaosTokens, EnemyTokens))
 import Arkham.Event.Types (Field (EventCard, EventController))
 import Arkham.Exception
 import Arkham.Exhaust (mkExhaustion)
@@ -72,7 +72,6 @@ import Arkham.Matcher hiding (
   SkillCard,
  )
 import Arkham.Message.Lifted qualified as Lifted
-import Arkham.Message.Lifted.Choose
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
@@ -284,12 +283,16 @@ payCost msg c iid skipAdditionalCosts cost = do
         select tm >>= filterM \case
           ScenarioTarget -> scenarioFieldMap ScenarioTokens ((> 0) . Token.countTokens tkn)
           LocationTarget lid -> fieldMap LocationTokens ((> 0) . Token.countTokens tkn) lid
+          EnemyTarget lid -> fieldMap EnemyTokens ((> 0) . Token.countTokens tkn) lid
           _ -> pure False
       case ts of
         [] -> error "Empty list for SpendTokenCost"
-        [x] -> runQueueT $ Lifted.removeTokens source x tkn 1
-        xs -> runQueueT $ chooseTargetM iid xs \x -> Lifted.removeTokens source x tkn 1
-      pure c
+        [x] -> do
+          runQueueT $ Lifted.removeTokens source x tkn 1
+          withPayment $ SpendTokenPayment tkn x
+        xs -> do
+          push $ chooseOne player $ targetLabels xs $ only . pay . SpendTokenCost tkn . TargetIs
+          pure c
     PlaceKeyCost target key -> do
       push $ PlaceKey target key
       pure c
@@ -399,7 +402,9 @@ payCost msg c iid skipAdditionalCosts cost = do
             ]
       pure c
     EnemyAttackCost eid -> do
-      push $ toMessage $ (enemyAttack eid source iid) {attackCanBeCanceled = False, attackDespiteExhausted = True}
+      push
+        $ toMessage
+        $ (enemyAttack eid source iid) {attackCanBeCanceled = False, attackDespiteExhausted = True}
       pure c
     DrawEncounterCardsCost n -> do
       push $ drawEncounterCards iid source n
@@ -1215,7 +1220,10 @@ payCost msg c iid skipAdditionalCosts cost = do
               lead <- getLeadPlayer
               push
                 $ Ask lead
-                $ ChoosePaymentAmounts ("$cluesPerPlayerAsGroup total=i:" <> tshow totalClues) (Just $ TotalAmountTarget totalClues) paymentOptions
+                $ ChoosePaymentAmounts
+                  ("$cluesPerPlayerAsGroup total=i:" <> tshow totalClues)
+                  (Just $ TotalAmountTarget totalClues)
+                  paymentOptions
       pure c
     -- push (SpendClues totalClues iids)
     -- withPayment $ CluePayment totalClues

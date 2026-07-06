@@ -1959,8 +1959,18 @@ instance RunMessage EnemyAttrs where
       pure
         $ a
         & (attackingL . _Just . damagedL . at (toTarget aid) . non (0, 0) %~ first (max 0 . subtract x))
+    Will (CheckAttackOfOpportunity iid isFast mtchr) | not isFast && not enemyExhausted -> do
+      let isNotIgnored = case mtchr of
+            Nothing -> pure True
+            Just AnyEnemy -> pure False
+            Just m -> enemyId <!=~> m
+      notIgnored <- isNotIgnored
+      modifiers' <- getModifiers enemyId
+      engaged <- matches iid (investigatorEngagedWith enemyId)
+      let canAttack = not $ any (`elem` modifiers') [CannotMakeAttacksOfOpportunity, CannotAttack]
+      pure $ a & attackOfOpportunityFlaggedL .~ (notIgnored && engaged && canAttack)
     Will (CheckAttackOfOpportunity {}) -> do
-      pure $ a & attackOfOpportunityFlaggedL .~ True
+      pure $ a & attackOfOpportunityFlaggedL .~ False
     CheckAttackOfOpportunity iid isFast mtchr | not isFast && not enemyExhausted && enemyAttackOfOpportunityFlagged -> do
       let
         handleAttack = whenM (matches iid $ investigatorEngagedWith enemyId) do

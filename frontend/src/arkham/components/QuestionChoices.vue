@@ -23,6 +23,52 @@ const { t } = useI18n()
 const label = function(body: string) {
   return formatContent(handleEmbeddedI18n(body, t))
 }
+
+const drownedCityTaskCards: Record<string, string> = {
+  noPlaceLikeHome: '11753a',
+  walkInFaith: '11754a',
+  toeTheLine: '11755a',
+  goodMoney: '11756a',
+  proveYourWorth: '11757a',
+  doNoHarm: '11758a',
+  dreamsOfDestruction: '11759a',
+  plumbTheDepths: '11760a',
+}
+
+const drownedCityTaskNames: Record<string, string> = {
+  'No Place Like Home': 'noPlaceLikeHome',
+  'Walk in Faith': 'walkInFaith',
+  'Toe the Line': 'toeTheLine',
+  'Good Money': 'goodMoney',
+  'Prove Your Worth': 'proveYourWorth',
+  'Do No Harm': 'doNoHarm',
+  'Dreams of Destruction': 'dreamsOfDestruction',
+  'Plumb the Depths': 'plumbTheDepths',
+}
+
+const drownedCityTaskKey = (body: string) => {
+  const raw = body.trim()
+  const i18nKey = raw.replace(/^\$/, '')
+  const prefix = 'theDrownedCity.anOfferYouCantRefuse.label.'
+  if (i18nKey.startsWith(prefix)) {
+    const key = i18nKey.slice(prefix.length)
+    return key in drownedCityTaskCards ? key : null
+  }
+  if (raw in drownedCityTaskCards) return raw
+
+  const localized = handleEmbeddedI18n(body, t)
+  return drownedCityTaskNames[localized] ?? null
+}
+
+const drownedCityTaskCardCode = (body: string) => {
+  const key = drownedCityTaskKey(body)
+  return key ? drownedCityTaskCards[key] : undefined
+}
+
+const drownedCityTaskRecommendation = (body: string) => {
+  const key = drownedCityTaskKey(body)
+  return key ? label(`$theDrownedCity.anOfferYouCantRefuse.recommended.${key}`) : null
+}
 </script>
 <template>
   <div class='question-choices'>
@@ -53,13 +99,41 @@ const label = function(body: string) {
         <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
           Choose <i class="iconElderThing"></i>
         </button>
-        <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
+        <button
+          v-else
+          @click="choose(index)"
+          :class="{ 'task-choice': drownedCityTaskCardCode(choice.label) }"
+        >
+          <span class="choice-content">
+            <span class="choice-label" v-html="label(choice.label)"></span>
+            <span
+              v-if="drownedCityTaskRecommendation(choice.label)"
+              class="choice-subtext"
+              v-html="drownedCityTaskRecommendation(choice.label)"
+            ></span>
+          </span>
+        </button>
       </div>
       <div v-else-if="choice.tag === MessageType.COST_LABEL" class="message-label">
         <button @click="choose(index)" v-html="label(formatCost(choice.cost, t))"></button>
       </div>
-      <div v-else-if="choice.tag === MessageType.INVALID_LABEL" class="message-label">
-        <button v-html="label(choice.label)" disabled></button>
+      <div
+        v-else-if="choice.tag === MessageType.INVALID_LABEL"
+        class="message-label"
+      >
+        <button
+          :class="{ 'task-choice': drownedCityTaskCardCode(choice.label) }"
+          disabled
+        >
+          <span class="choice-content">
+            <span class="choice-label" v-html="label(choice.label)"></span>
+            <span
+              v-if="drownedCityTaskRecommendation(choice.label)"
+              class="choice-subtext"
+              v-html="drownedCityTaskRecommendation(choice.label)"
+            ></span>
+          </span>
+        </button>
       </div>
       <div v-else-if="choice.tag === MessageType.INFO" class="message-label">
         <FormattedEntry v-for="(entry, entryIndex) in choice.flavor.body" :key="entryIndex" :entry="entry" />
@@ -158,8 +232,51 @@ button, a.button {
     font-family: "ArkhamIcons";
     content: "\E91A";
     margin-right: 10px;
+    flex: 0 0 auto;
+  }
+
+  &.task-choice {
+    align-items: flex-start;
+    text-align: left;
   }
 }
+
+.choice-content,
+.choice-label {
+  display: block;
+}
+
+.choice-content {
+  flex: 1 1 auto;
+}
+
+.choice-subtext {
+  color: #cfc6d8;
+  display: block;
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-top: 4px;
+  text-transform: none;
+}
+
+.choice-subtext :deep(.guardian-icon)::before,
+.choice-subtext :deep(.seeker-icon)::before,
+.choice-subtext :deep(.rogue-icon)::before,
+.choice-subtext :deep(.mystic-icon)::before,
+.choice-subtext :deep(.survivor-icon)::before {
+  display: inline-block;
+  font-family: "Arkham";
+  font-size: 1.1em;
+  font-weight: normal;
+  text-transform: none;
+}
+
+.choice-subtext :deep(.guardian-icon)::before { content: "\0051"; }
+.choice-subtext :deep(.seeker-icon)::before { content: "\0045"; }
+.choice-subtext :deep(.rogue-icon)::before { content: "\0054"; }
+.choice-subtext :deep(.mystic-icon)::before { content: "\0057"; }
+.choice-subtext :deep(.survivor-icon)::before { content: "\0052"; }
 
   button:hover, a.button:hover {
   background-color: #311b3e;

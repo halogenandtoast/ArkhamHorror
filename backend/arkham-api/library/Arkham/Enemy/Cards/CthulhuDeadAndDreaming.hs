@@ -4,8 +4,8 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 
 newtype CthulhuDeadAndDreaming = CthulhuDeadAndDreaming EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 cthulhuDeadAndDreaming :: EnemyCard CthulhuDeadAndDreaming
 cthulhuDeadAndDreaming = enemy CthulhuDeadAndDreaming Cards.cthulhuDeadAndDreaming

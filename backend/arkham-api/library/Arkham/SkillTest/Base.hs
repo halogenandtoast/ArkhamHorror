@@ -100,6 +100,10 @@ instance HasField "step" SkillTest SkillTestStep where
 
 setIsRevelation :: SkillTest -> SkillTest
 setIsRevelation st = st {skillTestIsRevelation = True}
+
+setIsParley :: SkillTest -> SkillTest
+setIsParley st = st {skillTestAction = Just #parley}
+
 instance Targetable SkillTest where
   toTarget s = SkillTestTarget s.id
   isTarget s (SkillTestTarget sid) = s.id == sid

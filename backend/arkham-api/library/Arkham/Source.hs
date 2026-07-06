@@ -164,6 +164,7 @@ isProxySource _ _ = False
 isIndexedSource :: Sourceable a => a -> Source -> Bool
 isIndexedSource a (IndexedSource _ source) = isSource a source
 isIndexedSource _ _ = False
+
 proxy :: (Sourceable a, Sourceable b) => a -> b -> Source
 proxy a b = ProxySource (toSource a) (toSource b)
 
@@ -196,9 +197,10 @@ isEncounterCardSource = \case
   ActSource _ -> True
   _ -> False
 
--- | Static check: would this SourceMatcher potentially match a player card source?
--- Used for playability checks where we don't have a specific source but need to know
--- if player card sources are allowed through.
+{- | Static check: would this SourceMatcher potentially match a player card source?
+Used for playability checks where we don't have a specific source but need to know
+if player card sources are allowed through.
+-}
 allowsPlayerCardSource :: SourceMatcher -> Bool
 allowsPlayerCardSource = \case
   SourceIsPlayerCard -> True
@@ -279,6 +281,9 @@ instance Sourceable ActMatcher where
 
 instance Sourceable LocationMatcher where
   toSource = LocationMatcherSource
+
+instance Sourceable EnemyMatcher where
+  toSource = EnemyMatcherSource
 
 toAbilitySource :: Sourceable a => a -> Int -> Source
 toAbilitySource a n = case toSource a of

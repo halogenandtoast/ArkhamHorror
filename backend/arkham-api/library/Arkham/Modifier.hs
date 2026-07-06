@@ -524,6 +524,9 @@ instance IsLabel "retaliate" ModifierType where
 instance IsLabel "alert" ModifierType where
   fromLabel = AddKeyword Alert
 
+instance IsLabel "aloof" ModifierType where
+  fromLabel = AddKeyword Aloof
+
 data Modifier = Modifier
   { modifierSource :: Source
   , modifierType :: ModifierType

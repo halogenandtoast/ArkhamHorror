@@ -7,8 +7,8 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype CthulhuAncientEvil = CthulhuAncientEvil EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- Keyword Massive is on the card def.
 cthulhuAncientEvil :: EnemyCard CthulhuAncientEvil

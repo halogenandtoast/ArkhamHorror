@@ -8,8 +8,8 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Summit))
 
 newtype PrimevalTerror = PrimevalTerror EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 primevalTerror :: EnemyCard PrimevalTerror
 primevalTerror = enemy PrimevalTerror Cards.primevalTerror

@@ -25,6 +25,7 @@ import Arkham.Act.Runner as X (
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,
+  pattern PassedThisSkillTestBy,
   pattern R1,
   pattern R2,
   pattern R3,

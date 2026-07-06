@@ -10,11 +10,11 @@ tillinghastEsoterica =
 -- Gang hideouts: the reverse sides of the two "Questioning the Gangs" act copies.
 hibbsRoadhouse :: CardDef
 hibbsRoadhouse =
-  victory 1 $ location_ "11504b" "Hibb's Roadhouse" [Arkham, Front] OneLastJob
+  victory 1 $ otherSideIs "11504" $ location_ "11504b" "Hibb's Roadhouse" [Arkham, Front] OneLastJob
 
 laBellaLunaTheDrownedCity :: CardDef
 laBellaLunaTheDrownedCity =
-  victory 1 $ location_ "11505b" "La Bella Luna" [Arkham, Front] OneLastJob
+  victory 1 $ otherSideIs "11505" $ location_ "11505b" "La Bella Luna" [Arkham, Front] OneLastJob
 
 -- The Western Wall
 treacherousPathSlickSteps :: CardDef

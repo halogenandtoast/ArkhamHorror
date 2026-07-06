@@ -6,8 +6,8 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers
 
 newtype SadieSheldon = SadieSheldon EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sadieSheldon :: EnemyCard SadieSheldon
 sadieSheldon = enemy SadieSheldon Cards.sadieSheldon

@@ -7,8 +7,8 @@ import Arkham.Matcher
 import Arkham.Scenarios.TheGrandVault.Helpers
 
 newtype VaultAttendant = VaultAttendant EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 vaultAttendant :: EnemyCard VaultAttendant
 vaultAttendant =

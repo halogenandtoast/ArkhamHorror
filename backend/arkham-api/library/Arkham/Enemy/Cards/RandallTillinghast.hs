@@ -10,8 +10,8 @@ import Arkham.Matcher
 import Arkham.Projection
 
 newtype RandallTillinghast = RandallTillinghast EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 randallTillinghast :: EnemyCard RandallTillinghast
 randallTillinghast = enemy RandallTillinghast Cards.randallTillinghast

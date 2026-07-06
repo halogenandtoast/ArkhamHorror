@@ -68,8 +68,7 @@ instance RunMessage TheDrownedCity where
             scope "task" $ scope lbl $ flavor $ setTitle "title" >> p "body"
       pure c
     DoStep 2 (CampaignStep (InterludeStep 1 _)) -> scope "anOfferYouCantRefuse" do
-      flavor $ setTitle "title" >> p "interlude2"
-      leadChooseOneM do
+      storyWithChooseOneM' (setTitle "title" >> p "interlude2") do
         labeled' "refuse" do
           flavor $ setTitle "title" >> p "interlude3"
           gameOver
@@ -78,16 +77,28 @@ instance RunMessage TheDrownedCity where
           nextCampaignStep
       pure c
     CampaignStep (InterludeStep 2 _) -> scope "expeditionToRlyeh" do
-      flavor $ setTitle "title" >> p "body"
-      leadChooseOneM do
+      storyWithChooseOneM' (setTitle "title" >> p "body") do
         labeled' "west" do
-          flavor $ setTitle "title" >> p "westernExpedition"
           record TheExpeditionHeadedWest
+          flavor do
+            setTitle "title"
+            p "westernExpedition"
+            ul do
+              li "theExpeditionHeadedWest"
+              li "andyVanNortwick"
+              li "westernChaosTokens"
+              li "proceedToTheWesternWall"
           addCampaignCardToDeckChoice_ Assets.andyVanNortwick
           setNextCampaignStep TheWesternWall
         labeled' "east" do
-          flavor $ setTitle "title" >> p "easternExpedition"
           record TheExpeditionHeadedEast
+          flavor do
+            setTitle "title"
+            p "easternExpedition"
+            ul do
+              li "theExpeditionHeadedEast"
+              li "rubyStandish"
+              li "proceedToObsidianCanyons"
           addCampaignCardToDeckChoice_ Assets.rubyStandish
           -- TODO: swap a chaos token (remove 1 / add 1) for the remainder of the
           -- campaign, per the Eastern Expedition setup.

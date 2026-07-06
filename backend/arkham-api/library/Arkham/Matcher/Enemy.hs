@@ -3,6 +3,7 @@
 
 module Arkham.Matcher.Enemy where
 
+import {-# SOURCE #-} Arkham.Calculation
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card.CardCode
 import Arkham.Card.Id
@@ -75,6 +76,7 @@ data EnemyMatcher
   | EnemyWithMaybeFieldLessThanOrEqualToThis EnemyId (Field Enemy (Maybe Int))
   | EnemyWithMaybeFieldLessThanOrEqualTo Int (Field Enemy (Maybe Int))
   | EnemyWithRemainingHealth ValueMatcher
+  | EnemyWithRemainingHealthLessThan GameCalculation
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher
   | EnemyWithMostDoom EnemyMatcher
@@ -228,11 +230,12 @@ instance IsEnemyMatcher EnemyMatcher where
 instance IsEnemyMatcher EnemyId where
   toEnemyMatcher = EnemyWithId
 
--- | True when knowing an enemy is merely "any in-play enemy" already guarantees it
--- matches the matcher (the matcher adds no further restriction). Used to decide whether
--- non-enemy fight targets that are attackable "as if an enemy" (Mist-Pylons, Key Loci)
--- should be offered -- they only make sense for an unrestricted fight, not one narrowed
--- by e.g. @EnemyCanAttack You@.
+{- | True when knowing an enemy is merely "any in-play enemy" already guarantees it
+matches the matcher (the matcher adds no further restriction). Used to decide whether
+non-enemy fight targets that are attackable "as if an enemy" (Mist-Pylons, Key Loci)
+should be offered -- they only make sense for an unrestricted fight, not one narrowed
+by e.g. @EnemyCanAttack You@.
+-}
 coveredByAnyInPlayEnemy :: EnemyMatcher -> Bool
 coveredByAnyInPlayEnemy = \case
   AnyEnemy -> True
@@ -273,7 +276,7 @@ mconcat
   , [d|
       instance FromJSON PreyMatcher where
         parseJSON value = $(mkParseJSON defaultOptions ''PreyMatcher) value <|> (Prey <$> parseJSON value)
-    |]
+      |]
   , deriveToJSON defaultOptions ''EnemyMatcher
   , deriveJSON defaultOptions ''EnemyAttackMatcher
   ]

@@ -30,7 +30,8 @@ oneLastJob difficulty =
     "11501"
     "One Last Job"
     difficulty
-    [ "northside            downtown             easttown"
+    [ ".                    laBellaLuna          hibbsRoadhouse"
+    , "northside            downtown             easttown"
     , "tillinghastEsoterica miskatonicUniversity rivertown"
     ]
 
@@ -38,8 +39,10 @@ instance HasChaosTokenValue OneLastJob where
   getChaosTokenValue iid chaosTokenFace (OneLastJob attrs) = case chaosTokenFace of
     Skull -> do
       criminals <- selectCount $ EnemyWithTrait Criminal
-      let value = byDifficulty attrs (min 4 criminals) (1 + criminals)
-      pure $ ChaosTokenValue Skull (NegativeModifier value)
+      pure
+        $ ChaosTokenValue Skull
+        $ NegativeModifier
+        $ byDifficulty attrs (min 4 criminals) (1 + criminals)
     Tablet -> do
       criminalHere <- selectAny $ EnemyWithTrait Criminal <> enemyAtLocationWith iid
       pure
@@ -52,7 +55,7 @@ instance HasChaosTokenValue OneLastJob where
 instance RunMessage OneLastJob where
   runMessage msg s@(OneLastJob attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
-      setChaosTokens (chaosBagContents attrs.difficulty)
+      setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> do
       flavor $ scope "intro" do

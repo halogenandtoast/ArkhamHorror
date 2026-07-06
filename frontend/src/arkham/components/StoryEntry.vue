@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { cardArt, cardImage } from '@/arkham/cardImages';
 import { Game } from '@/arkham/types/Game';
@@ -31,6 +31,79 @@ const maybeFormat = function(body: string) {
 }
 
 const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
+
+const drownedCityTaskCards: Record<string, string> = {
+  noPlaceLikeHome: '11753a',
+  walkInFaith: '11754a',
+  toeTheLine: '11755a',
+  goodMoney: '11756a',
+  proveYourWorth: '11757a',
+  doNoHarm: '11758a',
+  dreamsOfDestruction: '11759a',
+  plumbTheDepths: '11760a',
+}
+
+const drownedCityTaskNames: Record<string, string> = {
+  'No Place Like Home': 'noPlaceLikeHome',
+  'Walk in Faith': 'walkInFaith',
+  'Toe the Line': 'toeTheLine',
+  'Good Money': 'goodMoney',
+  'Prove Your Worth': 'proveYourWorth',
+  'Do No Harm': 'doNoHarm',
+  'Dreams of Destruction': 'dreamsOfDestruction',
+  'Plumb the Depths': 'plumbTheDepths',
+}
+
+const drownedCityTaskKey = (body: string) => {
+  const raw = body.trim()
+  const i18nKey = raw.replace(/^\$/, '')
+  const prefix = 'theDrownedCity.anOfferYouCantRefuse.label.'
+  if (i18nKey.startsWith(prefix)) {
+    const key = i18nKey.slice(prefix.length)
+    return key in drownedCityTaskCards ? key : null
+  }
+  if (raw in drownedCityTaskCards) return raw
+  const localized = maybeFormat(body)
+  return drownedCityTaskNames[localized] ?? null
+}
+
+const drownedCityTaskCardCode = (body: string) => {
+  const key = drownedCityTaskKey(body)
+  return key ? drownedCityTaskCards[key] : undefined
+}
+
+const drownedCityTaskRecommendation = (body: string) => {
+  const key = drownedCityTaskKey(body)
+  return key ? t(`theDrownedCity.anOfferYouCantRefuse.recommended.${key}`) : null
+}
+
+const selectedTaskChoice = ref<{ index: number; label: string; cardCode: string; canConfirm: boolean } | null>(null)
+
+const selectDrownedCityTask = (choice: ReadChoice) => {
+  if (!('label' in choice)) return false
+  const cardCode = drownedCityTaskCardCode(choice.label)
+  if (!cardCode) return false
+  selectedTaskChoice.value = {
+    index: choice.index,
+    label: choice.label,
+    cardCode,
+    canConfirm: choice.tag === 'Label',
+  }
+  return true
+}
+
+const handleChoice = (choice: ReadChoice) => {
+  if (selectDrownedCityTask(choice)) return
+  if (choice.tag === 'Label') choose(choice.index)
+}
+
+const confirmDrownedCityTask = () => {
+  if (selectedTaskChoice.value?.canConfirm) choose(selectedTaskChoice.value.index)
+}
+
+watch(() => props.question, () => {
+  selectedTaskChoice.value = null
+})
 
 const readCards = computed(() => props.question.readCards ?? [])
 
@@ -104,33 +177,81 @@ const flippableCard = (cardCode: string) => {
 </script>
 <template>
   <div class="intro-text">
-    <div class="entry">
-      <h1 v-if="question.flavorText.title">{{maybeFormat(question.flavorText.title)}}</h1>
-      <section v-if="focusedChaosTokens.length > 0" class="focused-tokens">
-        <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
-      </section>
-      <div class="entry-body">
-        <img :src="cardImage(cardCode)" v-for="cardCode in readCards" class="card no-overlay" />
-        <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+    <div class="entry-row" :class="{ 'task-layout': readChoices.some((choice) => 'label' in choice && !!drownedCityTaskCardCode(choice.label)) }">
+      <div class="entry">
+        <h1 v-if="question.flavorText.title">{{maybeFormat(question.flavorText.title)}}</h1>
+        <section v-if="focusedChaosTokens.length > 0" class="focused-tokens">
+          <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
+        </section>
+        <div class="entry-body">
+          <img :src="cardImage(cardCode)" v-for="cardCode in readCards" class="card no-overlay" />
+          <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+        </div>
+        <div class="pick-cards" v-if="pickCards.length > 0">
+          <template v-for="card in pickCards" :key="card.index">
+            <CardImage v-if="card.flippable" :card="flippableCard(card.cardCode)" class="no-overlay pick" @click="choose(card.index)" />
+            <img v-else :src="cardImage(card.cardCode)" class="card no-overlay pick" @click="choose(card.index)" />
+          </template>
+        </div>
       </div>
-      <div class="pick-cards" v-if="pickCards.length > 0">
-        <template v-for="card in pickCards" :key="card.index">
-          <CardImage v-if="card.flippable" :card="flippableCard(card.cardCode)" class="no-overlay pick" @click="choose(card.index)" />
-          <img v-else :src="cardImage(card.cardCode)" class="card no-overlay pick" @click="choose(card.index)" />
-        </template>
+      <div class="task-selection">
+        <div class="task-row">
+        <aside v-if="readChoices.some((choice) => 'label' in choice && !!drownedCityTaskCardCode(choice.label))" class="task-card-panel">
+          <div class="task-card-frame" :class="{ empty: !selectedTaskChoice }">
+            <img
+              v-if="selectedTaskChoice"
+              :src="cardImage(selectedTaskChoice.cardCode)"
+              class="no-overlay task-card-image"
+              :alt="maybeFormat(selectedTaskChoice.label)"
+            />
+            <span v-else>Select a task to preview its card.</span>
+          </div>
+        </aside>
+        <div class="options">
+          <template v-for="(readChoice, choiceIndex) in readChoices" :key="readChoice.tag === 'Info' ? `info-${choiceIndex}` : readChoice.index">
+            <div class="choice-wrapper">
+              <button
+                v-if="readChoice.tag === 'InvalidLabel'"
+                :class="{ 'task-choice': drownedCityTaskCardCode(readChoice.label), selected: selectedTaskChoice?.index === readChoice.index }"
+                :disabled="!drownedCityTaskCardCode(readChoice.label)"
+                @click="selectDrownedCityTask(readChoice)"
+                >
+                <i class="option"></i>
+                <span class="choice-content">
+                  <span class="choice-label" v-html="formatContent(maybeFormat(readChoice.label))"></span>
+                  <span
+                    v-if="drownedCityTaskRecommendation(readChoice.label)"
+                    class="choice-subtext"
+                    v-html="formatContent(drownedCityTaskRecommendation(readChoice.label) ?? '')"
+                  ></span>
+                </span>
+              </button>
+              <button
+                v-else-if="readChoice.tag === 'Label'"
+                :class="{ 'task-choice': drownedCityTaskCardCode(readChoice.label), selected: selectedTaskChoice?.index === readChoice.index }"
+                @click="handleChoice(readChoice)"
+                >
+                <i class="option"></i>
+                <span class="choice-content">
+                  <span class="choice-label" v-html="formatContent(maybeFormat(readChoice.label))"></span>
+                  <span
+                    v-if="drownedCityTaskRecommendation(readChoice.label)"
+                    class="choice-subtext"
+                    v-html="formatContent(drownedCityTaskRecommendation(readChoice.label) ?? '')"
+                  ></span>
+                </span>
+              </button>
+            </div>
+          </template>
+        </div>
+        </div>
+        <button
+          v-if="selectedTaskChoice"
+          class="confirm-task-button"
+          :disabled="!selectedTaskChoice.canConfirm"
+          @click="confirmDrownedCityTask"
+        >Confirm</button>
       </div>
-    </div>
-    <div class="options">
-      <template v-for="(readChoice, choiceIndex) in readChoices" :key="readChoice.tag === 'Info' ? `info-${choiceIndex}` : readChoice.index">
-        <button
-          v-if="readChoice.tag === 'InvalidLabel'"
-          disabled
-          ><i class="option"></i><span v-html="formatContent(maybeFormat(readChoice.label))"></span></button>
-        <button
-          v-else-if="readChoice.tag === 'Label'"
-          @click="choose(readChoice.index)"
-          ><i class="option"></i><span v-html="formatContent(maybeFormat(readChoice.label))"></span></button>
-      </template>
     </div>
   </div>
 </template>
@@ -417,6 +538,92 @@ const flippableCard = (cardCode: string) => {
 
 }
 
+.entry-row {
+  display: block;
+}
+
+.entry-row.task-layout {
+  display: block;
+}
+
+.entry-row .entry {
+  min-width: 0;
+}
+
+.task-selection {
+  margin-top: 20px;
+}
+
+.entry-row.task-layout .task-row {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.entry-row.task-layout .options {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.task-card-panel {
+  flex: 0 0 260px;
+  position: sticky;
+  top: 0;
+}
+
+.task-card-frame {
+  align-items: center;
+  aspect-ratio: 0.714;
+  background: rgba(17, 13, 20, 0.72);
+  border: 2px solid rgba(220, 214, 208, 0.45);
+  border-radius: 13px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  color: #d8d0df;
+  display: flex;
+  font-family: Arial, sans-serif;
+  font-size: 0.72em;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1.2;
+  padding: 10px;
+  text-align: center;
+}
+
+.task-card-frame.empty {
+  border-style: dashed;
+}
+
+.task-card-frame:not(.empty) {
+  overflow: hidden;
+  padding: 0;
+}
+
+.task-card-image {
+  border-radius: 10px;
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.confirm-task-button {
+  margin-top: 10px;
+  background-color: #2f6141;
+  &:hover { background-color: #3c7d54; }
+}
+
+@media (max-width: 780px) {
+  .entry-row.task-layout .task-row {
+    flex-direction: column;
+  }
+
+  .task-card-panel {
+    position: static;
+    width: min(260px, 100%);
+  }
+}
+
 p {
   font-family: "ArkhamFlavor";
   :deep(i) {
@@ -459,7 +666,61 @@ button, a.button {
     cursor: not-allowed;
     background-color: #999 !important;
   }
+
+  &.task-choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: none;
+    &:hover { transform: none; }
+  }
+
+  &.selected {
+    background-color: #241430;
+    box-shadow: inset 0 0 0 2px #d8d0df;
+    &:hover { background-color: #241430; }
+  }
 }
+
+.task-choice .choice-content,
+.task-choice .choice-label {
+  display: block;
+}
+
+.task-choice .choice-content {
+  flex: 1 1 auto;
+}
+
+.task-choice .choice-label {
+  font-size: 1.15em;
+}
+
+.choice-subtext {
+  color: #d8d0df;
+  display: block;
+  font-size: 0.95em;
+  line-height: 1.3;
+  margin-top: 6px;
+  text-transform: none;
+}
+
+.choice-subtext :deep(.guardian-icon)::before,
+.choice-subtext :deep(.seeker-icon)::before,
+.choice-subtext :deep(.rogue-icon)::before,
+.choice-subtext :deep(.mystic-icon)::before,
+.choice-subtext :deep(.survivor-icon)::before {
+  display: inline-block;
+  font-family: "Arkham";
+  font-size: 1.1em;
+  font-weight: normal;
+  text-transform: none;
+}
+
+.choice-subtext :deep(.guardian-icon)::before { content: "\0051"; }
+.choice-subtext :deep(.seeker-icon)::before { content: "\0045"; }
+.choice-subtext :deep(.rogue-icon)::before { content: "\0054"; }
+.choice-subtext :deep(.mystic-icon)::before { content: "\0057"; }
+.choice-subtext :deep(.survivor-icon)::before { content: "\0052"; }
 
 a.button {
   display: block;
@@ -473,6 +734,10 @@ a.button {
     content: "\E91A";
     margin-right: 10px;
   }
+}
+
+.task-choice .option:before {
+  margin-right: 0;
 }
 
 .card {

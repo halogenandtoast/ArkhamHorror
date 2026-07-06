@@ -13,15 +13,15 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Cost.FieldCost
 import Arkham.Distance
-import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
+import Arkham.Enemy.Types (Field (EnemySealedChaosTokens, EnemyTokens))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Action (additionalActionCovers)
 import {-# SOURCE #-} Arkham.Helpers.Calculation
 import Arkham.Helpers.Card (extendedCardMatch, getModifiedCardCost)
 import Arkham.Helpers.ChaosBag
-import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.ChaosToken (matchChaosToken)
+import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
 import {-# SOURCE #-} Arkham.Helpers.Investigator ()
@@ -156,6 +156,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         targets & anyM \case
           ScenarioTarget -> scenarioFieldMap ScenarioTokens ((> 0) . countTokens tkn)
           LocationTarget lid -> fieldMap LocationTokens ((> 0) . countTokens tkn) lid
+          EnemyTarget lid -> fieldMap EnemyTokens ((> 0) . countTokens tkn) lid
           _ -> pure False
       PlaceKeyCost _ k -> fieldMap InvestigatorKeys (elem k) iid
       GroupSpendKeyCost k lm -> selectAny (Matcher.InvestigatorAt lm <> Matcher.InvestigatorWithKey k)
@@ -536,9 +537,10 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         let lm = Matcher.replaceYouMatcher iid locationMatcher
         iids <- select $ Matcher.InvestigatorAt lm
         let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
-        total <- sum <$> for iids \iid' -> do
-          handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid'
-          pure $ sum $ map (count countF . cdSkills . toCardDef) handCards
+        total <-
+          sum <$> for iids \iid' -> do
+            handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid'
+            pure $ sum $ map (count countF . cdSkills . toCardDef) handCards
         pure $ total >= n
       SameSkillIconCost n -> do
         handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid

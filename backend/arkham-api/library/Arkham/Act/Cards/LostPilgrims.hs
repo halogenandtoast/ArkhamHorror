@@ -12,7 +12,6 @@ import Arkham.Helpers.Scenario (getVictoryDisplay)
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Message (pattern PassedThisSkillTestBy)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Trait (Trait (Cultist, Stowaway))

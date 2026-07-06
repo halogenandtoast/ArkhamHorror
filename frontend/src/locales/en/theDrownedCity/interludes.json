@@ -11,14 +11,18 @@
     "title": "Interlude I: An Offer You Can’t Refuse",
     "interlude1": "<p>“What you have recovered is no mere curio,” Randall smirks as you admire the ancient artifact—a vaguely humanoid figure with a heavy, octopoid head and squid-like features. “Through much painstaking research, I have pinpointed the relative coordinates of an ancient city: a stretch of ocean in the South Pacific where many sailing vessels have disappeared with no explanation. I need someone bold and resourceful to lead an expedition to the ancient city. I need that person to be you. Should you accept, I shall absolve you of any remaining debt and provide you enough money to retire comfortably. Very comfortably.”</p><p>Your mind wanders back to those other “concerns.”</p>",
     "chooseTask": "In player order, each investigator must choose a different Task and read its text.",
-    "walkInFaith": "Walk in Faith",
-    "toeTheLine": "Toe the Line",
-    "noPlaceLikeHome": "No Place Like Home",
-    "goodMoney": "Good Money",
-    "doNoHarm": "Do No Harm",
-    "proveYourWorth": "Prove Your Worth",
-    "dreamsOfDestruction": "Dreams of Destruction",
-    "plumbTheDepths": "Plumb the Depths",
+    "label": {
+      "walkInFaith": "Walk in Faith",
+      "toeTheLine": "Toe the Line",
+      "noPlaceLikeHome": "No Place Like Home",
+      "goodMoney": "Good Money",
+      "doNoHarm": "Do No Harm",
+      "proveYourWorth": "Prove Your Worth",
+      "dreamsOfDestruction": "Dreams of Destruction",
+      "plumbTheDepths": "Plumb the Depths",
+      "refuse": "Refuse.",
+      "accept": "Take his offer."
+    },
     "task": {
       "walkInFaith": {
         "title": "Task: Walk in Faith",
@@ -57,14 +61,33 @@
     "refuse": "Refuse.",
     "accept": "Take his offer.",
     "interlude3": "<p>There has to be a catch. Tillinghast wouldn’t offer such tempting bait otherwise. You’re through with him. You shake your head no. “Then get out,” Tillinghast says icily. “I have no further use for you. Rest assured, however, that if you speak a word of this to anyone, you will regret it.” Without a word, you walk out of the shop, leaving behind whatever wonders—and dangers—Tillinghast had in store for you. <b>The investigators lose the campaign.</b></p>",
-    "interlude4": "<p>Whatever his reasons for burying the lede, the offer is too tempting to refuse. Ruby and Andy nod along with you in agreement. Tillinghast’s face breaks into a familiar smirk. “How lovely. I’d hoped you would say yes. Truly, this is the opportunity of a lifetime. I assure you this will change everything.”</p>"
+    "interlude4": "<p>Whatever his reasons for burying the lede, the offer is too tempting to refuse. Ruby and Andy nod along with you in agreement. Tillinghast’s face breaks into a familiar smirk. “How lovely. I’d hoped you would say yes. Truly, this is the opportunity of a lifetime. I assure you this will change everything.”</p>",
+    "recommended": {
+      "noPlaceLikeHome": "Recommended for Survivor ({'{'}survivor{'}'}), Drifter, Hunter, or Wayfarer investigators.",
+      "walkInFaith": "Recommended for Guardian ({'{'}guardian{'}'}), Mystic ({'{'}mystic{'}'}), Believer, Blessed, Chosen, Hunter, or Sorcerer investigators.",
+      "toeTheLine": "Recommended for Guardian ({'{'}guardian{'}'}), Agency, Detective, Hunter, Police, or Veteran investigators.",
+      "goodMoney": "Recommended for Rogue ({'{'}rogue{'}'}), Civic, Criminal, Entrepreneur, or Socialite investigators.",
+      "proveYourWorth": "Recommended for Agency, Performer, Silver Twilight, or Socialite investigators.",
+      "doNoHarm": "Recommended for Assistant, Civic, Medic, Veteran, or Warden investigators.",
+      "dreamsOfDestruction": "Recommended for Mystic ({'{'}mystic{'}'}), Artist, Clairvoyant, Cultist, Cursed, Dreamer, Performer, or Sorcerer investigators.",
+      "plumbTheDepths": "Recommended for Seeker ({'{'}seeker{'}'}), Agency, Clairvoyant, Detective, Miskatonic, Scholar, or Reporter investigators."
+    }
   },
   "expeditionToRlyeh": {
     "title": "Interlude II: Expedition to R’lyeh",
-    "body": "<p>It is early evening when you first see the ancient city—a tangle of collapsed towers, labyrinthine boroughs, and jagged paths that loop in on themselves like a rat’s nest. In the morning, you discuss which route to take. Andy wants to follow the coastline to the ruined western wall near the mouth of the cove. Ruby, perennially comfortable with heights, wants to take to the skyline to map the city, pointing at a distant, cathedral-like structure further inland. Depending on which character you want to follow, you will either explore the ancient city from west to east, or east to west. You must decide, as a group.</p>",
-    "west": "Follow Andy along the shoreline to the Western Wall.",
-    "east": "Accompany Ruby through the Obsidian Canyons toward a massive inland structure.",
-    "westernExpedition": "<p>Something about the distant, ruined wall and submerged spires calls to you. After agreeing to accompany Andy westward, he sighs with relief. “I don’t want to worry you, but I could swear I saw something human-shaped swimming below. I’ll be glad for the company.” Before parting ways, he passes you the obsidian tablet he found, stammering that he isn’t much of a linguist.</p>",
-    "easternExpedition": "<p>Since you landed, you haven’t been able to take your eyes off the phantasmagoric skyline. After agreeing to accompany her eastward, you catch the faintest hint of a smile from Ruby. “Fine, you can come along. As long as you don’t hold me back,” she smirks. A fell wind whistles through the perilous canyons, smelling of ancient decay and another, sweeter smell. Storm clouds churn in the distance threateningly.</p>"
+    "body": "<p>It is early evening when you first see the ancient city. You emerge from your cabin to see Andy and Ruby staring out at a jagged, bleak skyline off the starboard bow. The ancient city is a tangle of collapsed towers, labyrinthine boroughs, and jagged paths that loop in on themselves like a rat’s nest. Andy nearly drops his camera as a choppy wave lifts and then drops the nose of the ship with a sharp crash.</p><p>“You’re seeing this. It’s real. Tell me it’s real,” Andy says, furiously loading more film into his scuffed camera. You and the rest of the crew marvel at the mind-bending skyline with a mixture of awe and dread. Seawater pours from the mouths of alien effigies and ancient sepulchres. Strange ephemeral shapes flit in and out of the obsidian canyons of R’lyeh. It is unlike anything built by human hands.</p><p>You catch yourself saying the city’s name under your breath. Even the unflappable Ruby seems dumbstruck as the ship sails past a ring of rocky shoals into a broad cove. After making landfall, the expedition camps on the black-sanded beach, at the foot of a towering obsidian spire. Menacing, gargantuan doors set in the tower’s base loom like silent sentinels. There is hardly a word between the expedition members on the first night; Andy spends the evening poring over an obsidian stone set with glowing glyphs, while Ruby lovingly reorganizes her tool bag.</p><p>In the morning, you discuss which route to take. Tillinghast has provided enough diving equipment, climbing gear, and rations to explore inland for at least two weeks before you would need to return to the beach. Andy and Ruby are at odds, however. Andy wants to follow the coastline to the ruined western wall near the mouth of the cove. Ruby, perennially comfortable with heights, wants to take to the skyline to map the city. She points excitedly at a distant, cathedral-like structure further inland.</p><p>Depending on which character you want to follow, you will either explore the ancient city from west to east, or east to west. You must decide, as a group:</p>",
+    "label": {
+      "west": "Follow Andy along the shoreline to the Western Wall. Proceed to _Western Expedition._",
+      "east": "Accompany Ruby through the Obsidian Canyons toward a massive inland structure. Skip to _Eastern Expedition._"
+    },
+    "westernExpedition": "<p>_Western Expedition:_ Something about the distant, ruined wall and submerged spires calls to you. After agreeing to accompany Andy westward, he sighs with relief. “I can handle myself, of course, but if we have to go diving, I’d…” he looks blankly into the distance for a moment. “I don’t want to worry you, but I could swear I saw something human-shaped swimming below. I’ll be glad for the company.” You look past the black water to the edge of the cove, suddenly apprehensive. Something crests the waves for a moment, then disappears. You have the feeling of being watched.</p><p>“Two weeks, then,” says Ruby, hefting a coil of rope over one shoulder. “We’ll meet back here in two weeks. Don’t forget the diving suits. And don’t get yourself killed. I would hate to lose my favorite rival.”</p>",
+    "easternExpedition": "<p>_Eastern Expedition:_ Since you landed, you haven’t been able to take your eyes off the phantasmagoric skyline. After agreeing to accompany her eastward, you catch the faintest hint of a smile from Ruby. “Fine, you can come along. As long as you don’t hold me back,” she smirks. A fell wind whistles through the perilous canyons, smelling of ancient decay and another, sweeter smell. Storm clouds churn in the distance threateningly.</p>",
+    "theExpeditionHeadedWest": "In your Campaign Log, record *the expedition headed west*.",
+    "andyVanNortwick": "Choose an investigator to add the Andy Van Nortwick story asset to their deck. It does not count toward their deck size. This card can be found in the Expedition encounter set, indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+    "westernChaosTokens": "Remove 1 {'{'}tablet{'}'} token from the chaos bag. Add 1 {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.",
+    "proceedToTheWesternWall": "Proceed to _The Western Wall._",
+    "theExpeditionHeadedEast": "In your Campaign Log, record *the expedition headed east*.",
+    "rubyStandish": "Choose an investigator to add the Ruby Standish story asset to their deck. It does not count toward their deck size. This card can be found in the Expedition encounter set, indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+    "proceedToObsidianCanyons": "Proceed to _Obsidian Canyons._"
   }
 }

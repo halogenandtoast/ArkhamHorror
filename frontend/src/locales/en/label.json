@@ -413,7 +413,7 @@
     "spendTokenKey": "Spend {count} token(s) (as key)",
     "supply": "Spend a supply",
     "unpayable": "Unpayable",
-    "upTo": "Up to: {inner}",
+    "upTo": "Up to {inner}",
     "use": "Spend {count} {useType}",
     "useAll": "Spend all {useType}",
     "useUpTo": "Spend {min}-{max} {useType}",

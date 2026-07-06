@@ -25,7 +25,10 @@ instance HasAbilities QuestioningTheGangsV2 where
   getAbilities (QuestioningTheGangsV2 a) | onSide A a =
     [ restricted a 1 (youExist $ InvestigatorEngagedWith (EnemyWithTrait Criminal))
         $ FastAbility Free
-    , mkAbility a 2 $ Objective $ forced $ RoundEnds #when
+    , restricted a 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 2 1)
+        $ Objective
+        $ forced
+        $ RoundEnds #when
     ]
   getAbilities _ = []
 

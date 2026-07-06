@@ -54,6 +54,7 @@ instance ToJSON Game where
       , "gamePhaseStep" .= gamePhaseStep g
       , "gameSkillTest" .= gameSkillTest g
       , "gameFocusedCards" .= gameFocusedCards g
+      , "gameHighlightedCards" .= gameHighlightedCards g
       , "gameFocusedTarotCards" .= gameFocusedTarotCards g
       , "gameFoundCards" .= gameFoundCards g
       , "gameFocusedChaosTokens" .= gameFocusedChaosTokens g
@@ -120,6 +121,7 @@ instance ToJSON Game where
       <> ("gamePhaseStep" .= gamePhaseStep g)
       <> ("gameSkillTest" .= gameSkillTest g)
       <> ("gameFocusedCards" .= gameFocusedCards g)
+      <> ("gameHighlightedCards" .= gameHighlightedCards g)
       <> ("gameFocusedTarotCards" .= gameFocusedTarotCards g)
       <> ("gameFoundCards" .= gameFoundCards g)
       <> ("gameFocusedChaosTokens" .= gameFocusedChaosTokens g)
@@ -186,6 +188,7 @@ instance FromJSON Game where
     gamePhaseStep <- o .: "gamePhaseStep"
     gameSkillTest <- o .: "gameSkillTest"
     gameFocusedCards <- o .: "gameFocusedCards" <|> (pure <$> o .: "gameFocusedCards")
+    gameHighlightedCards <- o .:? "gameHighlightedCards" .!= mempty
     gameFocusedTarotCards <- o .: "gameFocusedTarotCards"
     gameFoundCards <- o .: "gameFoundCards"
     gameFocusedChaosTokens <- o .: "gameFocusedChaosTokens"

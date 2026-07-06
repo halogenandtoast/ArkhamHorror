@@ -77,6 +77,7 @@ const image = computed(() => {
 })
 
 const id = computed(() => props.card.tag === 'VengeanceCard' ? props.card.contents.contents.id : cardContents.value.id)
+const isHighlighted = computed(() => props.game.highlightedCards.includes(id.value))
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function canInteract(c: Message): boolean {
@@ -222,7 +223,7 @@ function startDrag(event: DragEvent) {
       class="playing-card-overlay"
     />
     <img
-      :class="{'card--can-interact': cardAction !== -1, 'sideways': forceSideways}"
+      :class="{'card--can-interact': cardAction !== -1, 'card--highlighted': isHighlighted && cardAction === -1, 'sideways': forceSideways}"
       class="card"
       :src="image"
       :data-customizations="JSON.stringify(cardContents.customizations)"
@@ -284,6 +285,10 @@ function startDrag(event: DragEvent) {
 .card--can-interact {
   border: 2px solid var(--select);
   cursor: pointer;
+}
+
+.card--highlighted {
+  border: 2px solid var(--highlight);
 }
 
 .vengeance {

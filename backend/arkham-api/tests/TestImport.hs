@@ -924,6 +924,7 @@ newGame scenario' investigator = do
         , gameGameState = IsActive
         , gameFoundCards = mempty
         , gameFocusedCards = mempty
+        , gameHighlightedCards = mempty
         , gameFocusedTarotCards = mempty
         , gameFocusedChaosTokens = mempty
         , gameActiveCard = Nothing

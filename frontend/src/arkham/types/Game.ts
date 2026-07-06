@@ -146,6 +146,7 @@ export type Game = {
   skillTestResults: SkillTestResults | null;
   treacheries: Record<string, Treachery>;
   focusedCards: Card[];
+  highlightedCards: string[];
   focusedTarotCards: TarotCard[];
   foundCards: Record<string, Card[]>;
   focusedChaosTokens: ChaosToken[];
@@ -380,6 +381,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     skillTestResults: JsonDecoder.nullable(skillTestResultsDecoder),
     treacheries: JsonDecoder.record<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
     focusedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+    highlightedCards: JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'),
     focusedTarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
     foundCards: JsonDecoder.record<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
     focusedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),

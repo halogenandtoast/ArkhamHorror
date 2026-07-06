@@ -211,6 +211,7 @@ shuffleCardsIntoDeck
   -> cards
   -> m ()
 shuffleCardsIntoDeck deck cards = whenCanShuffleIn deck cards do
+  for_ cards $ push . ObtainCard . toCardId
   push $ Msg.shuffleCardsIntoDeck deck cards
 
 chooseAndDiscardAssetMatching

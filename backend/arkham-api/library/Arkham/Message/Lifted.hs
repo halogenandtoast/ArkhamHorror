@@ -1806,6 +1806,11 @@ focusCards cards body = do
 focusCard :: (ReverseQueue m, IsCard a) => a -> StateT Unfocus m () -> m ()
 focusCard card = focusCards [card]
 
+-- | Visually highlight the given cards (target color) in the current modal.
+-- Cleared automatically when the search/focus ends.
+highlightCards :: (ReverseQueue m, IsCard a) => [a] -> m ()
+highlightCards cards = push $ HighlightCards $ map toCard cards
+
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
 

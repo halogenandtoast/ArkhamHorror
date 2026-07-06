@@ -542,6 +542,7 @@ runGameMessage msg g = case msg of
       & (actionRemovedEntitiesL .~ mempty)
       & (activeAbilitiesL .~ mempty)
       & (foundCardsL .~ mempty)
+      & (highlightedCardsL .~ mempty)
       & (cardUsesL .~ mempty)
       & (windowStackL .~ mempty)
       & (windowDepthL .~ 0)
@@ -822,7 +823,8 @@ runGameMessage msg g = case msg of
         )
         mEffect
   FocusCards cards -> pure $ g & focusedCardsL %~ (cards :)
-  UnfocusCards -> pure $ g & focusedCardsL %~ drop 1
+  HighlightCards cards -> pure $ g & highlightedCardsL .~ map toCardId cards
+  UnfocusCards -> pure $ g & focusedCardsL %~ drop 1 & highlightedCardsL .~ mempty
   FoundCards cards -> pure $ g & foundCardsL .~ cards
   ClearFound FromDeck -> do
     pure $ g & foundCardsL %~ Map.filterWithKey (\k _ -> not (zoneIsFromDeck k))
@@ -1488,7 +1490,7 @@ runGameMessage msg g = case msg of
       else pushAll [msg', FinishedSearch]
     pure g
   FinishedSearch -> do
-    pure $ g & foundCardsL .~ mempty
+    pure $ g & foundCardsL .~ mempty & highlightedCardsL .~ mempty
   DiscardedCard cardId -> do
     let
       handleCard card = case card of

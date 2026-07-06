@@ -766,6 +766,7 @@ data Message
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher FindEncounterCardStrategy
   | FinishedWithMulligan InvestigatorId
   | FocusCards [Card]
+  | HighlightCards [Card]
   | FocusChaosTokens [ChaosToken]
   | Force Message
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard

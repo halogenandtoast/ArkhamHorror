@@ -94,6 +94,7 @@ data Game = Game
   , gamePhaseStep :: Maybe PhaseStep
   , gameSkillTest :: Maybe SkillTest
   , gameFocusedCards :: [[Card]]
+  , gameHighlightedCards :: [CardId] -- cards visually highlighted (target color) in the current modal
   , gameFocusedTarotCards :: [TarotCard]
   , gameFoundCards :: Map Zone [Card]
   , gameFocusedChaosTokens :: [ChaosToken]

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 import Arkham.Scenarios.TheTwistedHollow.Helpers
@@ -21,13 +21,14 @@ stalkingHybrid =
 instance HasModifiersFor StalkingHybrid where
   getModifiersFor (StalkingHybrid a) = do
     x <- getDarknessLevel
-    modifySelfWhen a (x > 1) [HealthModifier (x - 1)]
+    modifySelf a [HealthModifier x]
 
 instance HasAbilities StalkingHybrid where
   getAbilities (StalkingHybrid a) =
     extend a
       $ [mkAbility a 1 $ forced (EnemyAttacks #after You AnyEnemyAttack $ be a)]
-      <> [ mkAbility a 2 $ SilentForcedAbility (TookControlOfAsset #after Anyone (AssetWithTitle "Vale Lantern"))
+      <> [ mkAbility a 2
+             $ SilentForcedAbility (TookControlOfAsset #after Anyone (AssetWithTitle "Vale Lantern"))
          | isInPlayPlacement a.placement
          ]
 

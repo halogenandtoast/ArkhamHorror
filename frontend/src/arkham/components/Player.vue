@@ -77,6 +77,16 @@ const currentTreacheries = computed(() => {
     filter((t) => t.placement.tag === 'Limbo' && t.drawnBy === investigatorId.value && (props.playerId === props.investigator.playerId || !t.peril))
 })
 
+// Enemies mid-spawn are Unplaced (no location yet). Show them like a resolving treachery,
+// next to the threat area of the investigator whose question is currently active, so the
+// player can see the card they're choosing a spawn location for.
+const spawningEnemies = computed(() => {
+  if (!props.game.question[props.investigator.playerId]) return []
+  return Object.values(props.game.enemies).filter(
+    (e) => e.placement.tag === 'OtherPlacement' && e.placement.contents === 'Unplaced'
+  )
+})
+
 const stories = computed(() =>
   Object.
     values(props.game.stories).
@@ -679,6 +689,17 @@ function closeHand() {
         @dragenter.prevent
       >
         <transition-group @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+          <EnemyView
+            v-for="enemy in spawningEnemies"
+            :key="enemy.id"
+            :enemy="enemy"
+            :game="game"
+            :data-index="enemy.cardId"
+            :playerId="playerId"
+            class="spawning-enemy"
+            @choose="$emit('choose', $event)"
+          />
+
           <Story
             v-for="story in stories"
             :key="story.id"
@@ -1130,6 +1151,12 @@ function closeHand() {
     margin: 0 8px;
     background: rgba(255, 255, 255, 0.15);
     border-radius: 1px;
+  }
+
+  .spawning-enemy {
+    border-radius: 8px;
+    box-shadow: 0 0 12px 3px var(--important);
+    margin-right: 8px;
   }
 
   &.in-play--collapsed {

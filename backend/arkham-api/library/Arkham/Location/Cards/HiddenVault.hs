@@ -40,9 +40,7 @@ instance RunMessage HiddenVault where
     Flip _iid _ (isTarget attrs -> True) -> do
       -- "Flip this card and resolve its text." The resolvable effect for a Glyph
       -- location in The Drowned City is translating its alien glyph.
-      -- TODO: the recorded word for rune_u is unverified in our data; "Eye" is a
-      -- placeholder. Verify the actual translated word on the back side.
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("Hidden Vault" :: Text, "Eye" :: Text)
+      campaignSpecific "translateGlyph" ("rune_u" :: Text, "Daughters" :: Text)
       pure . HiddenVault $ attrs & canBeFlippedL .~ False
     _ -> HiddenVault <$> liftRunMessage msg attrs

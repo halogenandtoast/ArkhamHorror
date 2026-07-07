@@ -43,6 +43,6 @@ instance RunMessage ObsidianRelicPuzzlingEffigy where
       -- text here (likely via readStory) instead of (or in addition to) the glyph
       -- translation below, and verify the actual translated word for glyph "y".
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("y" :: Text, "Effigy" :: Text)
+      campaignSpecific "translateGlyph" ("rune_y" :: Text, "Knowledge" :: Text)
       pure a
     _ -> ObsidianRelicPuzzlingEffigy <$> liftRunMessage msg attrs

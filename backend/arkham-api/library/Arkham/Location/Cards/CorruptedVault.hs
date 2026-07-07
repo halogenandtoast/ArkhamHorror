@@ -22,6 +22,6 @@ instance RunMessage CorruptedVault where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       -- You discover this glyph (rune_q). Record "Hand" under rune_q; translated.
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("Corrupted Vault" :: Text, "Hand" :: Text)
+      campaignSpecific "translateGlyph" ("rune_q" :: Text, "Hand" :: Text)
       pure l
     _ -> CorruptedVault <$> liftRunMessage msg attrs

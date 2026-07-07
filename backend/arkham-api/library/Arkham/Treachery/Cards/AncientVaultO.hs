@@ -74,6 +74,6 @@ instance RunMessage AncientVaultO where
       -- TODO: confirm the exact glyph letter/translated word printed on 11608b
       -- (rune_o). Placeholder "Door" used until verified.
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("Ancient Vault" :: Text, "Door" :: Text)
+      campaignSpecific "translateGlyph" ("rune_o" :: Text, "Power" :: Text)
       pure $ AncientVaultO $ attrs & setMeta True
     _ -> AncientVaultO <$> liftRunMessage msg attrs

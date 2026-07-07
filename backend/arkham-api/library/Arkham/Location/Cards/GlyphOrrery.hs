@@ -45,6 +45,6 @@ instance RunMessage GlyphOrrery where
       -- text here (likely via readStory) in addition to the glyph translation, and
       -- verify the actual translated word (placeholder "Star" used below).
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_d" :: Text, "Star" :: Text)
+      campaignSpecific "translateGlyph" ("rune_d" :: Text, "Wave" :: Text)
       pure . GlyphOrrery $ attrs & canBeFlippedL .~ False
     _ -> GlyphOrrery <$> liftRunMessage msg attrs

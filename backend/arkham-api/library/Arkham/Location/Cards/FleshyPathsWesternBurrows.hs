@@ -21,6 +21,6 @@ instance RunMessage FleshyPathsWesternBurrows where
   runMessage msg l@(FleshyPathsWesternBurrows attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("Fleshy Paths" :: Text, "Time" :: Text)
+      campaignSpecific "translateGlyph" ("rune_r" :: Text, "Time" :: Text)
       pure l
     _ -> FleshyPathsWesternBurrows <$> liftRunMessage msg attrs

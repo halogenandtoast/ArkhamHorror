@@ -48,6 +48,6 @@ instance RunMessage SkyRelicErodedByWinds where
       -- text here (likely via readStory) instead of (or in addition to) the glyph
       -- translation below, and verify the actual translated word for glyph "rune_f".
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_f" :: Text, "Wind" :: Text)
+      campaignSpecific "translateGlyph" ("rune_f" :: Text, "Stars" :: Text)
       pure . SkyRelicErodedByWinds $ attrs & flippedL .~ True
     _ -> SkyRelicErodedByWinds <$> liftRunMessage msg attrs

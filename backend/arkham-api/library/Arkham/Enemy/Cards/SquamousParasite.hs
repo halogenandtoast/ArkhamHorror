@@ -34,8 +34,7 @@ instance RunMessage SquamousParasite where
       -- TODO: once 11580b is implemented as the proper story/back side, resolve its
       -- text here (likely via readStory) instead of the inlined glyph translation.
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      -- TODO: the rune_t translated word is unverified; "Death" is a placeholder.
-      campaignSpecific "translateGlyph" ("Squamous Parasite" :: Text, "Death" :: Text)
+      campaignSpecific "translateGlyph" ("rune_t" :: Text, "Air" :: Text)
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       -- "If Squamous Parasite would leave play, set it aside, out of play."

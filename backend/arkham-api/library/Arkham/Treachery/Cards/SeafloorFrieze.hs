@@ -42,9 +42,7 @@ instance RunMessage SeafloorFrieze where
       pure t
     PassedSkillTest _iid _ (isAbilitySource attrs 1 -> True) Initiator {} (SkillSkillTest SkillWillpower) _ -> do
       -- Succeeded at both tests: flip this card and resolve its glyph translation.
-      -- TODO: confirm the exact glyph letter / translated word printed on the 11531b
-      -- side and any additional flipped-side story text. Placeholder values used.
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("W" :: Text, "Wall" :: Text)
+      campaignSpecific "translateGlyph" ("rune_w" :: Text, "Parasite" :: Text)
       pure t
     _ -> SeafloorFrieze <$> liftRunMessage msg attrs

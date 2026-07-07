@@ -270,3 +270,11 @@
     content: "\E915";
   }
 }
+
+.rune-A {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\e900";
+  }
+}

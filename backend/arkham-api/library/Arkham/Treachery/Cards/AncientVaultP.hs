@@ -40,7 +40,7 @@ instance RunMessage AncientVaultP where
       -- this glyph, record its translation, and add this card to the victory display.
       -- TODO: verify the exact glyph word printed on 11610b (placeholder "Weather").
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("Ancient Vault" :: Text, "Weather" :: Text)
+      campaignSpecific "translateGlyph" ("rune_p" :: Text, "Weather" :: Text)
       addToVictory iid attrs
       pure t
     _ -> AncientVaultP <$> liftRunMessage msg attrs

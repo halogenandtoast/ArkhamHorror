@@ -30,6 +30,6 @@ instance RunMessage ChamberOfRecordsArm where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       -- You discover this glyph (rune_l). Record "Arm" under rune_l; translated.
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("Chamber of Records" :: Text, "Arm" :: Text)
+      campaignSpecific "translateGlyph" ("rune_l" :: Text, "Arm" :: Text)
       pure l
     _ -> ChamberOfRecordsArm <$> liftRunMessage msg attrs

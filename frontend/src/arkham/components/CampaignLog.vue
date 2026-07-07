@@ -27,6 +27,7 @@ import campaignJSON from '@/arkham/data/campaigns.json'
 import { useI18n } from 'vue-i18n'
 import { useDbCardStore } from '@/stores/dbCards'
 
+import DiscoveredRunes from '@/arkham/components/TheDrownedCity/DiscoveredRunes.vue'
 import ResidentNotes from '@/arkham/components/TheFeastOfHemlockVale/ResidentNotes.vue'
 import AreasSurveyed from '@/arkham/components/TheFeastOfHemlockVale/AreasSurveyed.vue'
 import DayTimeTracker from '@/arkham/components/TheFeastOfHemlockVale/DayTimeTracker.vue'
@@ -508,6 +509,7 @@ const NON_CARD_KEYS = new Set([
   'edgeOfTheEarth.key.suppliesRecovered',
   'edgeOfTheEarth.key.sealsPlaced',
   'edgeOfTheEarth.key.sealsRecovered',
+  'theDrownedCity.key.discoveredGlyphs',
 ])
 
 const findCard = (cardCode: string): CardDef | undefined =>
@@ -875,9 +877,11 @@ onUnmounted(() => {
             :displayRecordValue="displayRecordValue"
           />
 
+          <DiscoveredRunes v-if="game.campaign?.id === '11'" :log="selectedLog" :game-id="game.id" @refresh="emit('refresh')" />
+
           <!-- Campaign recorded sets + counts -->
           <CampaignLogRecordedSets
-            :entries="Object.entries(recordedSets)"
+            :entries="(Object.entries(recordedSets) as [string, any[]][]).filter(([k]) => !k.toLowerCase().includes('discoveredglyph'))"
             :counts="recordedCounts"
             :displayRecordValue="displayRecordValue"
           />

@@ -45,6 +45,6 @@ instance RunMessage AncientRelicLeeringVisage where
       -- translation below, and verify the actual translated word for the rune_s glyph
       -- (placeholder "Spirit" below).
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("Ancient Relic" :: Text, "Spirit" :: Text)
+      campaignSpecific "translateGlyph" ("rune_s" :: Text, "Machine" :: Text)
       pure a
     _ -> AncientRelicLeeringVisage <$> liftRunMessage msg attrs

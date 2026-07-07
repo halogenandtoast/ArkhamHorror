@@ -30,6 +30,37 @@
     "title": "New Keywords",
     "body": "<h3>Alert</h3><p class='basic'>Some enemies in this campaign have the alert keyword. Each time an investigator fails a skill test while attempting to evade an enemy with the alert keyword, after applying all results for that skill test, that enemy performs an attack against the evading investigator. An enemy does not exhaust after performing an alert attack. This attack occurs whether the enemy is engaged with the evading investigator or not.</p><h3>Patrol</h3><p class='basic'>Some enemies in this campaign have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated target (as described in parentheses next to the word “patrol”).</p><h3>Relentless</h3><p class='basic'>Some enemies in this campaign have the relentless keyword. During the enemy phase (after framework step 3.3), each enemy with the relentless keyword that has attacked this phase (even if that attack was canceled) readies and attacks the investigator(s) it is engaged with a second time.</p><h3>Seal</h3><p class='basic'>As an additional cost for a card with the seal keyword to enter play, its controller must search the chaos bag for the specified chaos token and place it on top of the card, thereby sealing the token. A sealed chaos token is not considered to be in the chaos bag, and therefore cannot be revealed from the chaos bag as part of a skill test or ability.</p>"
   },
+  "glyphs": {
+    "title": "Alien Glyphs",
+    "runes": {
+      "a": "Depths",
+      "b": "Plant",
+      "c": "Elder Thing",
+      "d": "Wave",
+      "e": "Darkness",
+      "f": "Stars",
+      "g": "Life",
+      "h": "Y’ch’lecht",
+      "i": "Cthulhu",
+      "j": "Sleep",
+      "k": "Dreams",
+      "l": "Arm",
+      "m": "Earth",
+      "n": "Doom",
+      "o": "Power",
+      "p": "Weather",
+      "q": "Hand",
+      "r": "Time",
+      "s": "Machine",
+      "t": "Air",
+      "u": "Daughters",
+      "v": "Stranger",
+      "w": "Parasite",
+      "x": "Sum",
+      "y": "Knowledge",
+      "z": "City"
+    }
+  },
   "key": {
     "rubyWonTheBet": "Ruby won the bet.",
     "rubyLostTheBet": "Ruby lost the bet.",

@@ -22,7 +22,7 @@ instance HasAbilities ShatteredRuins where
 instance RunMessage ShatteredRuins where
   runMessage msg l@(ShatteredRuins attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      campaignSpecific "translateGlyph" ("v" :: Text, "Stranger" :: Text)
+      campaignSpecific "translateGlyph" ("rune_v" :: Text, "Stranger" :: Text)
       record TheInvestigatorsDiscoveredAnAlienLanguage
       pure l
     _ -> ShatteredRuins <$> liftRunMessage msg attrs

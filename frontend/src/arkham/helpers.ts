@@ -167,7 +167,8 @@ export function replaceIcons(body: string) {
     replace(/{codex}/g, '<span class="codex-icon"></span>').
     replace(/{day}/g, '<span class="day-icon"></span>').
     replace(/{night}/g, '<span class="night-icon"></span>').
-    replace(/{perPlayer}/g, '<span class="per-player"></span>')
+    replace(/{perPlayer}/g, '<span class="per-player"></span>').
+    replace(/{rune([A-Z])}/g, `<span class="rune-$1"></span>`)
 }
 
 export type InvestigatorClass =

@@ -36,6 +36,8 @@ data TheDrownedCityKey
     ThePowerWasDiverted
   | -- | The Grand Vault
     TheInnerSanctumWasUnsealed
+  | -- | Alien Glyphs (translated glyph record; recorded-set of rune letters "A".."Z")
+    DiscoveredGlyphs
   | -- | Interlude III: The Awakening / Return to Arkham
     YourAlliesHaveAPlan
   | TheInvestigatorsStoodTogether

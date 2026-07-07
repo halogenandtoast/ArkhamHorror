@@ -26,7 +26,7 @@ instance RunMessage UnderseaParasite where
   runMessage msg e@(UnderseaParasite attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) n | n `elem` [1, 2] -> do
       -- TODO: resolve flipped story side "11549b" (translated word unknown)
-      campaignSpecific "translateGlyph" ("x" :: Text, "Parasite" :: Text)
+      campaignSpecific "translateGlyph" ("rune_x" :: Text, "Sum" :: Text)
       record TheInvestigatorsDiscoveredAnAlienLanguage
       pure e
     _ -> UnderseaParasite <$> liftRunMessage msg attrs

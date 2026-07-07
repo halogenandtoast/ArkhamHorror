@@ -38,6 +38,6 @@ instance RunMessage UnderseaVault where
       -- text here (likely via readStory) instead of (or in addition to) the glyph
       -- translation below, and verify the actual glyph name/translated word.
       record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("Undersea Vault" :: Text, "Vault" :: Text)
+      campaignSpecific "translateGlyph" ("rune_z" :: Text, "City" :: Text)
       pure . UnderseaVault $ attrs & canBeFlippedL .~ False
     _ -> UnderseaVault <$> liftRunMessage msg attrs

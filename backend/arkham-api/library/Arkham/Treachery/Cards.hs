@@ -102,6 +102,7 @@ allPlayerTreacheryCards =
       , paradimensionalUnderstanding
       , paranoia
       , poisoned
+      , frostbitten
       , possessed
       , prophecyOfTheEnd
       , psychosis
@@ -353,7 +354,6 @@ allEncounterTreacheryCards =
       , fromAnotherTime
       , fromTheDepths
       , fromTheOtherSide
-      , frostbitten
       , frozenInFear
       , frozenInFearAPhantomOfTruth
       , fulfillTheOaths

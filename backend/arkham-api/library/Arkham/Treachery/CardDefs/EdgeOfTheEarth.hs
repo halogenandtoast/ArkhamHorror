@@ -1,8 +1,8 @@
 {- HLINT ignore "Use camelCase" -}
 module Arkham.Treachery.CardDefs.EdgeOfTheEarth where
 
-import Arkham.Treachery.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
+import Arkham.Treachery.CardDefs.Import
 
 theHarbinger :: CardDef
 theHarbinger =
@@ -122,8 +122,10 @@ crumblingRuins =
 
 frostbitten :: CardDef
 frostbitten =
-  (treachery "08646" "Frostbitten" CityOfTheElderThings 4)
+  (weakness "08646" "Frostbitten")
     { cdCardTraits = setFromList [Injury]
+    , cdEncounterSet = Just CityOfTheElderThings
+    , cdEncounterSetQuantity = Just 4
     }
 
 possessed :: CardDef

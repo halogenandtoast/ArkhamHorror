@@ -412,7 +412,7 @@ instance RunMessage TheFeastOfHemlockVale where
       let meta = toResultDefault initMeta attrs.meta
       let
         meta' =
-          case mstep of
+          case fmap (.unwrap.normalize) mstep of
             Just PreludeDawnOfTheSecondDay -> meta {day = Day2, time = Day}
             Just PreludeDawnOfTheFinalDay -> meta {day = Day3, time = Day}
             Just PreludeTheFinalEvening -> meta {day = Day3, time = Night}

@@ -13,7 +13,8 @@ import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith)
+import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
@@ -41,7 +42,7 @@ newtype TheLostSister = TheLostSister ScenarioAttrs
 
 instance HasModifiersFor TheLostSister where
   getModifiersFor (TheLostSister a) = do
-    modifySelect a (assetIs Assets.helenPetersTheEldestSister) [DoNotTakeUpSlot #ally]
+    modifySelectWith a (assetIs Assets.helenPetersTheEldestSister) setActiveDuringSetup [DoNotTakeUpSlot #ally]
     modifySelect
       a
       (InvestigatorAt $ LocationWithTrait Dark)

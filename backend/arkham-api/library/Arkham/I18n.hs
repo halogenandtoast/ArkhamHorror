@@ -108,6 +108,9 @@ withVar k v a = let ?scopeVars = ?scopeVars <> singletonMap k v in a
 withVars :: HasI18n => [Pair] -> (HasI18n => a) -> a
 withVars kv a = let ?scopeVars = ?scopeVars <> Map.fromList (map (first K.toText) kv) in a
 
+withXp :: HasI18n => Int -> (HasI18n => a) -> a
+withXp xp = withVars ["xp" .= xp]
+
 toScope :: Text -> Scope
 toScope t = case T.words t of
   [] -> ""

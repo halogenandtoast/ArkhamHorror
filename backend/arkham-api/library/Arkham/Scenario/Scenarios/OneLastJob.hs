@@ -8,7 +8,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (connectBothWays)
-import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Investigator.Cards (wendyAdams, wendyAdamsParallel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -112,16 +112,31 @@ instance RunMessage OneLastJob where
         , Enemies.gangEnforcer
         ]
     ScenarioResolution res -> scope "resolutions" do
-      discoveredAlienLanguage <- getHasRecord TheInvestigatorsDiscoveredAnAlienLanguage
-      when discoveredAlienLanguage do
+      discoveredAnAlienLanguage <- getHasRecord TheInvestigatorsDiscoveredAnAlienLanguage
+      when discoveredAnAlienLanguage do
         campaignSpecific "translateGlyph" ("rune_a" :: Text, "Depths" :: Text)
+      xp <- allGainXp' attrs
       case res of
-        NoResolution -> do
+        NoResolution -> scope "noResolution" do
           record RubyWonTheBet
-          resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
-        Resolution 1 -> do
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            popScope $ ul do
+              li "rubyLostTheBet"
+              withXp xp $ li "victory"
+              li.validate discoveredAnAlienLanguage "discoveredAnAlienLanguage"
+              li "proceed"
+        Resolution 1 -> scope "resolution1" do
           record RubyLostTheBet
-          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            popScope $ ul do
+              li "rubyWonTheBet"
+              withXp xp $ li "victory"
+              li.validate discoveredAnAlienLanguage "discoveredAnAlienLanguage"
+              li "proceed"
         _ -> error $ "Unknown resolution: " <> show res
       endOfScenario
       pure s

@@ -23,7 +23,7 @@ instance HasModifiersFor FaceTheMusic where
 instance HasAbilities FaceTheMusic where
   getAbilities = actAbilities \a ->
     [ mkAbility a 1
-        $ actionAbilityWithCost
+        $ parleyAction
           (SpendTokenCost #clue $ EnemyTargetMatches $ EnemyWithTrait Criminal <> at_ YourLocation)
     , restricted a 2 (InVictoryDisplay (CardWithTrait Elite) (atLeast 1))
         $ Objective

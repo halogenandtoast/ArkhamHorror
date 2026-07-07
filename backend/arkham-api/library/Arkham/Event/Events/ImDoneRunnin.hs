@@ -1,14 +1,12 @@
-module Arkham.Event.Events.ImDoneRunnin (imDoneRunnin, imDoneRunninEffect, ImDoneRunnin (..)) where
+module Arkham.Event.Events.ImDoneRunnin (imDoneRunnin, imDoneRunninEffect) where
 
-import Arkham.Classes
-import Arkham.DamageEffect
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Capability
+import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier, modified_)
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Prelude
 
 newtype ImDoneRunnin = ImDoneRunnin EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -18,16 +16,14 @@ imDoneRunnin :: EventCard ImDoneRunnin
 imDoneRunnin = event ImDoneRunnin Cards.imDoneRunnin
 
 instance RunMessage ImDoneRunnin where
-  runMessage msg e@(ImDoneRunnin attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+  runMessage msg e@(ImDoneRunnin attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       enemies <- select $ EnemyAt (locationWithInvestigator iid)
-      enabled <- createCardEffect Cards.imDoneRunnin Nothing (toSource attrs) (InvestigatorTarget iid)
-      pushAll
-        $ map (Ready . EnemyTarget) enemies
-        <> [EngageEnemy iid enemy Nothing False | enemy <- enemies]
-        <> [enabled]
+      for_ enemies readyThis
+      for_ enemies (engageEnemy iid)
+      createCardEffect Cards.imDoneRunnin Nothing (toSource attrs) (InvestigatorTarget iid)
       pure e
-    _ -> ImDoneRunnin <$> runMessage msg attrs
+    _ -> ImDoneRunnin <$> liftRunMessage msg attrs
 
 newtype ImDoneRunninEffect = ImDoneRunninEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -40,23 +36,22 @@ instance HasModifiersFor ImDoneRunninEffect where
   getModifiersFor (ImDoneRunninEffect a) = modified_ a a.target [DoNotExhaustEvaded, DoNotDisengageEvaded]
 
 instance RunMessage ImDoneRunninEffect where
-  runMessage msg e@(ImDoneRunninEffect attrs@EffectAttrs {..}) = case msg of
-    EnemyEvaded iid eid | InvestigatorTarget iid == effectTarget -> do
+  runMessage msg e@(ImDoneRunninEffect attrs) = runQueueT $ case msg of
+    EnemyEvaded iid enemy | InvestigatorTarget iid == attrs.target -> do
       canDamage <-
         andM
-          [ eid <=~> EnemyCanBeDamagedBySource effectSource
-          , withoutModifier iid CannotDealDamage
+          [ enemy <=~> EnemyCanBeDamagedBySource attrs.source
+          , can.deal.damage iid
           ]
-      player <- getPlayer iid
-      when canDamage
-        $ push
-        $ chooseOne
-          player
-          [ Label "$label.doNotDamageEnemy" []
-          , Label "$label.damageEnemy" [DealDamage (EnemyTarget eid) $ nonAttack (Just iid) effectSource 1]
-          ]
+      let
+        normalEvade :: ReverseQueue m => m ()
+        normalEvade = successfulEvasion DisengageAndExhaust enemy
+      if canDamage
+        then do
+          chooseOneM iid $ withI18n do
+            labeled' "doNotDamageEnemy" normalEvade
+            labeled' "damageEnemy" $ nonAttackEnemyDamage (Just iid) attrs.source 1 enemy
+        else normalEvade
       pure e
-    EndTurn _ -> do
-      push (DisableEffect effectId)
-      pure e
-    _ -> ImDoneRunninEffect <$> runMessage msg attrs
+    EndTurn _ -> disableReturn e
+    _ -> ImDoneRunninEffect <$> liftRunMessage msg attrs

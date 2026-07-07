@@ -2778,6 +2778,28 @@ automaticallyEvadeEnemy investigator enemy = push $ Msg.EnemyEvaded (asId invest
 exhaustEnemy :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 exhaustEnemy s t = push . Exhaust $ Exhaust.mkExhaustion s t
 
+-- | What a successful evasion resolves to. The DoNot{Disengage,Exhaust}Evaded
+-- modifiers can drop either half; if both are dropped there is no result (see
+-- 'evasionResult').
+data EvasionResult = DisengageOnly | ExhaustOnly | DisengageAndExhaust
+  deriving stock (Eq, Show)
+
+-- | Fold the DoNot{Disengage,Exhaust}Evaded gates into an 'EvasionResult';
+-- 'Nothing' when both halves are suppressed.
+evasionResult :: Bool -> Bool -> Maybe EvasionResult
+evasionResult True True = Just DisengageAndExhaust
+evasionResult True False = Just DisengageOnly
+evasionResult False True = Just ExhaustOnly
+evasionResult False False = Nothing
+
+-- | The mechanical result of a successful evasion: the enemy disengages from
+-- everyone and/or exhausts. Single source of truth shared by the enemy runner
+-- and cards that re-resolve an evasion (e.g. "I'm done runnin'!").
+successfulEvasion :: (ReverseQueue m, ToId enemy EnemyId) => EvasionResult -> enemy -> m ()
+successfulEvasion result (asId -> eid) = do
+  when (result /= ExhaustOnly) $ disengageFromAll eid
+  when (result /= DisengageOnly) $ exhaustEnemy (EnemySource eid) eid
+
 placeInBonded :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 placeInBonded iid = push . PlaceInBonded iid . toCard
 

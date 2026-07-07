@@ -98,8 +98,10 @@ import Arkham.Message.Lifted (
   obtainCard,
   placeKey,
   removeEnemy,
+  evasionResult,
   scenarioSpecific,
   selectEach,
+  successfulEvasion,
  )
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
@@ -1230,8 +1232,12 @@ instance RunMessage EnemyAttrs where
     Do (EnemyEvaded iid eid) | eid == enemyId -> do
       mods <- getModifiers iid
       emods <- getModifiers eid
-      pushWhen (DoNotDisengageEvaded `notElem` mods) $ DisengageEnemyFromAll eid
-      pushWhen (DoNotExhaustEvaded `notElem` (mods <> emods)) $ Exhaust (mkExhaustion a a)
+      for_
+        ( evasionResult
+            (DoNotDisengageEvaded `notElem` mods)
+            (DoNotExhaustEvaded `notElem` (mods <> emods))
+        )
+        (`successfulEvasion` eid)
       runDefaultMaybeT a do
         pendingSpawnAt <- hoistMaybe $ (.spawnAt) <$> enemySpawnDetails
         lid <- MaybeT $ case pendingSpawnAt of

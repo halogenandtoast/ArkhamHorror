@@ -100,9 +100,9 @@ const drownedCityTaskRecommendation = (body: string) => {
           Choose <i class="iconElderThing"></i>
         </button>
         <button
-          v-else
+          v-else-if="drownedCityTaskCardCode(choice.label)"
           @click="choose(index)"
-          :class="{ 'task-choice': drownedCityTaskCardCode(choice.label) }"
+          class="task-choice"
         >
           <span class="choice-content">
             <span class="choice-label" v-html="label(choice.label)"></span>
@@ -113,6 +113,7 @@ const drownedCityTaskRecommendation = (body: string) => {
             ></span>
           </span>
         </button>
+        <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
       </div>
       <div v-else-if="choice.tag === MessageType.COST_LABEL" class="message-label">
         <button @click="choose(index)" v-html="label(formatCost(choice.cost, t))"></button>
@@ -122,7 +123,8 @@ const drownedCityTaskRecommendation = (body: string) => {
         class="message-label"
       >
         <button
-          :class="{ 'task-choice': drownedCityTaskCardCode(choice.label) }"
+          v-if="drownedCityTaskCardCode(choice.label)"
+          class="task-choice"
           disabled
         >
           <span class="choice-content">
@@ -134,6 +136,7 @@ const drownedCityTaskRecommendation = (body: string) => {
             ></span>
           </span>
         </button>
+        <button v-else v-html="label(choice.label)" disabled></button>
       </div>
       <div v-else-if="choice.tag === MessageType.INFO" class="message-label">
         <FormattedEntry v-for="(entry, entryIndex) in choice.flavor.body" :key="entryIndex" :entry="entry" />

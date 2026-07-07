@@ -648,7 +648,7 @@ valeLanternBeaconOfHope =
 valeLanternExtinguishedLightBoon :: CardDef
 valeLanternExtinguishedLightBoon =
   (storyAsset "10610b" ("Vale Lantern" <:> "Extinguished Light") 2 TheTwistedHollow)
-    { cdCardTraits = setFromList [Item, Tool, Lit, Boon]
+    { cdCardTraits = setFromList [Item, Tool, Boon]
     , cdSlots = [#hand]
     , cdOtherSide = Just "10610a"
     , cdDoubleSided = True
@@ -666,7 +666,7 @@ valeLanternAFaintHope =
 valeLanternExtinguishedLight :: CardDef
 valeLanternExtinguishedLight =
   (storyAsset "10611b" ("Vale Lantern" <:> "Extinguished Light") 2 TheTwistedHollow)
-    { cdCardTraits = setFromList [Item, Tool, Lit]
+    { cdCardTraits = setFromList [Item, Tool]
     , cdSlots = [#hand]
     , cdOtherSide = Just "10611a"
     , cdDoubleSided = True

@@ -16,7 +16,11 @@ gatherEncounterSet encounterSet =
     filter
       ( and
           . sequence
-            [(/= InvestigatorType) . cdCardType, not . hasBSide, (== Just encounterSet) . cdEncounterSet]
+            [ (/= InvestigatorType) . cdCardType
+            , isNothing . cdCardSubType -- weaknesses are never shuffled into the encounter deck
+            , not . hasBSide
+            , (== Just encounterSet) . cdEncounterSet
+            ]
       )
       $ toList allEncounterCards
   hasBSide =

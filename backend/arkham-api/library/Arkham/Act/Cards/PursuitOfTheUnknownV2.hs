@@ -22,10 +22,8 @@ instance HasAbilities PursuitOfTheUnknownV2 where
         1
         (exists (DeckWith $ HasCard $ CardWithTitle "Tekeli-li") <> ScenarioDeckWithCard TekeliliDeck)
         $ actionAbilityWithCost (SpendTokenKeyCost 2 #tablet)
-    , restricted
-        x
-        2
-        (EachUndefeatedInvestigator $ at_ $ "Hidden Tunnel" <> LocationWithoutClues)
+    , onlyOnce
+        $ restricted x 2 (EachUndefeatedInvestigator $ at_ $ "Hidden Tunnel" <> LocationWithoutClues)
         $ Objective
         $ forced AnyWindow
     ]

@@ -1231,7 +1231,7 @@ instance RunMessage EnemyAttrs where
       mods <- getModifiers iid
       emods <- getModifiers eid
       pushWhen (DoNotDisengageEvaded `notElem` mods) $ DisengageEnemyFromAll eid
-      pushWhen (DoNotExhaustEvaded `notElem` emods) $ Exhaust (mkExhaustion a a)
+      pushWhen (DoNotExhaustEvaded `notElem` (mods <> emods)) $ Exhaust (mkExhaustion a a)
       runDefaultMaybeT a do
         pendingSpawnAt <- hoistMaybe $ (.spawnAt) <$> enemySpawnDetails
         lid <- MaybeT $ case pendingSpawnAt of

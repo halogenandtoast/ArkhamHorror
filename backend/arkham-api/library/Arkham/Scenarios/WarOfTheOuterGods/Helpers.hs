@@ -269,7 +269,10 @@ sortEnemiesByFaction eids = do
 -- move toward.
 getWarringMovers :: (HasGame m, Tracing m) => m [EnemyId]
 getWarringMovers = do
-  warring <- select $ warringEnemy <> ReadyEnemy <> UnengagedEnemy
+  -- Swarm cards move with their host (like normal hunter movement, which guards
+  -- `not (isSwarm a)`), so exclude them — otherwise a host with N swarm cards
+  -- would move N+1 times.
+  warring <- select $ warringEnemy <> ReadyEnemy <> UnengagedEnemy <> not_ IsSwarm
   flip filterM warring \enemy ->
     getEnemyFaction enemy >>= \case
       Nothing -> pure False

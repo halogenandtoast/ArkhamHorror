@@ -25,9 +25,8 @@ instance RunMessage Pickpocketing2 where
   runMessage msg a@(Pickpocketing2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       doBoth <- runMaybeT do
-        st <- MaybeT getSkillTest
         guardM inEvasionSkillTest
-        SucceededBy _ n <- pure (skillTestResult st)
+        SucceededBy _ n <- MaybeT getSkillTestResultWithResultModifiers
         pure $ n >= 2
       if fromMaybe False doBoth
         then do

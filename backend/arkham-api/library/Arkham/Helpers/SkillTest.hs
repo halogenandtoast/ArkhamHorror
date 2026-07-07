@@ -371,6 +371,23 @@ inAttackSkillTest = (== Just #fight) <$> getSkillTestAction
 inEvasionSkillTest :: HasGame m => m Bool
 inEvasionSkillTest = (== Just #evade) <$> getSkillTestAction
 
+-- | The 'skillTestResult' stored on the skill test does not include
+-- 'SkillTestResultValueModifier' effects; those are only folded in when the
+-- Pass/Fail messages are emitted (see 'Arkham.SkillTest.Runner'). Cards that
+-- inspect the succeeded/failed-by margin during the resolution window need this
+-- modifier-adjusted value instead of the raw field.
+getSkillTestResultWithResultModifiers :: HasGame m => m (Maybe SkillTestResult)
+getSkillTestResultWithResultModifiers = runMaybeT do
+  st <- MaybeT getSkillTest
+  modifiers' <- lift $ getModifiers (SkillTestTarget st.id)
+  let
+    apply r (SkillTestResultValueModifier n) = case r of
+      SucceededBy b m -> SucceededBy b (max 0 (m + n))
+      FailedBy b m -> FailedBy b (max 0 (m + n))
+      Unrun -> Unrun
+    apply r _ = r
+  pure $ foldl' apply (skillTestResult st) modifiers'
+
 getIsPerilous :: (HasGame m, Tracing m) => SkillTest -> m Bool
 getIsPerilous skillTest = case skillTestSource skillTest of
   TreacherySource tid -> do

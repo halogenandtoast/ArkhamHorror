@@ -41,7 +41,12 @@ instance HasAbilities QuestioningTheGangsV1 where
 instance RunMessage QuestioningTheGangsV1 where
   runMessage msg a@(QuestioningTheGangsV1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      criminals <- select $ enemyEngagedWith iid <> EnemyWithTrait Criminal
+      clues <- field InvestigatorClues iid
+      criminals <-
+        select
+          $ enemyEngagedWith iid
+          <> EnemyWithTrait Criminal
+          <> EnemyWithRemainingHealthLessThan (Fixed $ 1 + clues)
       chooseHandleTargetM iid (attrs.ability 1) criminals
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget enemy) -> do

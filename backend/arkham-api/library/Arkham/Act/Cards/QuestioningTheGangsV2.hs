@@ -3,14 +3,13 @@ module Arkham.Act.Cards.QuestioningTheGangsV2 (questioningTheGangsV2) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Card (genCard)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyForcedRemainingHealth))
 import Arkham.Helpers.Location (connectBothWays)
-import Arkham.Helpers.Query (getPlayerCount)
+import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose (chooseTargetM)
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection (field)
 import Arkham.Trait (Trait (Criminal))
 
@@ -22,36 +21,47 @@ questioningTheGangsV2 :: ActCard QuestioningTheGangsV2
 questioningTheGangsV2 = act (1, A) QuestioningTheGangsV2 Cards.questioningTheGangsV2 Nothing
 
 instance HasAbilities QuestioningTheGangsV2 where
-  getAbilities (QuestioningTheGangsV2 a) | onSide A a =
-    [ restricted a 1 (youExist $ InvestigatorEngagedWith (EnemyWithTrait Criminal))
-        $ FastAbility Free
+  getAbilities = actAbilities \a ->
+    [ restricted
+        a
+        1
+        ( youExist
+            $ InvestigatorEngagedWith
+            $ EnemyWithTrait Criminal
+            <> EnemyWithRemainingHealthLessThan
+              (SumCalculation [Fixed 1, InvestigatorsFieldCalculation You InvestigatorClues])
+        )
+        freeTrigger_
     , restricted a 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 2 1)
         $ Objective
         $ forced
         $ RoundEnds #when
     ]
-  getAbilities _ = []
 
 instance RunMessage QuestioningTheGangsV2 where
   runMessage msg a@(QuestioningTheGangsV2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      criminals <- select $ enemyEngagedWith iid <> EnemyWithTrait Criminal
-      chooseTargetM iid criminals \enemy -> do
-        h <- field EnemyForcedRemainingHealth enemy
-        spendClues iid h
-        toDiscardBy iid (attrs.ability 1) enemy
-        placeClues (attrs.ability 1) attrs.id 1
+      clues <- field InvestigatorClues iid
+      criminals <-
+        select
+          $ enemyEngagedWith iid
+          <> EnemyWithTrait Criminal
+          <> EnemyWithRemainingHealthLessThan (Fixed $ 1 + clues)
+      chooseHandleTargetM iid (attrs.ability 1) criminals
+      pure a
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget enemy) -> do
+      spendClues iid =<< field EnemyForcedRemainingHealth enemy
+      toDiscardBy iid (attrs.ability 1) enemy
+      placeClues (attrs.ability 1) attrs.id 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      threshold <- (2 +) <$> getPlayerCount
-      when (attrs.clues >= threshold) $ advancedWithOther attrs
+      advancedWithOther attrs
       pure a
-    AdvanceAct (isSide A attrs -> True) _ _ -> do
-      laBellaLunaId <- placeLocation =<< genCard Locations.laBellaLunaTheDrownedCity
-      downtown <- selectJust (LocationWithTitle "Downtown")
-      connectBothWays laBellaLunaId downtown
-      naomi <- getSetAsideCard Enemies.naomiOBannion
-      createEnemyAt_ naomi laBellaLunaId
-      advanceToAct attrs Cards.theOBannionGang A
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      laBellaLuna <- placeLocation Locations.laBellaLunaTheDrownedCity
+      withMatch (LocationWithTitle "Downtown") (connectBothWays laBellaLuna)
+      createEnemyAt_ Enemies.naomiOBannion laBellaLuna
+      setActDeck [Cards.questioningTheGangsV2, Cards.theOBannionGang, Cards.faceTheMusic]
+      advanceActDeck attrs
       pure a
     _ -> QuestioningTheGangsV2 <$> liftRunMessage msg attrs

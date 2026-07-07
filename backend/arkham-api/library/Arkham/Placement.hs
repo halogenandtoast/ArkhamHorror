@@ -187,6 +187,7 @@ mconcat
   [ deriveToJSON defaultOptions ''Placement
   , makePrisms ''Placement
   ]
+
 class IsPlacement a where
   toPlacement :: a -> Placement
 

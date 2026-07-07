@@ -16,7 +16,7 @@ newtype StalkingHybrid = StalkingHybrid EnemyAttrs
 stalkingHybrid :: EnemyCard StalkingHybrid
 stalkingHybrid =
   enemy StalkingHybrid Cards.stalkingHybrid
-    & setOnlyPrey (ControlsAsset $ AssetWithTitle "Vale Lantern")
+    & setOnlyPrey (ControlsAsset "Vale Lantern")
 
 instance HasModifiersFor StalkingHybrid where
   getModifiersFor (StalkingHybrid a) = do
@@ -26,18 +26,17 @@ instance HasModifiersFor StalkingHybrid where
 instance HasAbilities StalkingHybrid where
   getAbilities (StalkingHybrid a) =
     extend a
-      $ [mkAbility a 1 $ forced (EnemyAttacks #after You AnyEnemyAttack $ be a)]
-      <> [ mkAbility a 2
-             $ SilentForcedAbility (TookControlOfAsset #after Anyone (AssetWithTitle "Vale Lantern"))
+      $ [mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack $ be a]
+      <> [ mkAbility a 2 $ silent $ TookControlOfAsset #after Anyone "Vale Lantern"
          | isInPlayPlacement a.placement
          ]
 
 instance RunMessage StalkingHybrid where
   runMessage msg e@(StalkingHybrid attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      selectEach (assetControlledBy iid <> AssetWithTitle "Vale Lantern") \lantern -> do
+      withMatch (assetControlledBy iid <> "Vale Lantern") \lantern -> do
         flipOverBy iid (attrs.ability 1) lantern
-        withLocationOf iid $ place lantern . AtLocation
+        withLocationOf iid $ place lantern
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       enemyCheckEngagement attrs.id

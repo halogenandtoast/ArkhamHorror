@@ -2,10 +2,9 @@ module Arkham.Event.Events.RightUnderTheirNoses (rightUnderTheirNoses) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.SkillTest (getsSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestResultWithResultModifiers)
 import Arkham.I18n
 import Arkham.Matcher
-import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 
 newtype RightUnderTheirNoses = RightUnderTheirNoses EventAttrs
@@ -18,7 +17,7 @@ rightUnderTheirNoses = event RightUnderTheirNoses Cards.rightUnderTheirNoses
 instance RunMessage RightUnderTheirNoses where
   runMessage msg e@(RightUnderTheirNoses attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      getsSkillTest skillTestResult >>= \case
+      getSkillTestResultWithResultModifiers >>= \case
         Just (SucceededBy _ n) | n >= 2 -> do
           hasConnected <-
             select

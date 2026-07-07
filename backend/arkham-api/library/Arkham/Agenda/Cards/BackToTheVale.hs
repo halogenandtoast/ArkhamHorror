@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.ForMovement
+import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
 import Arkham.I18n
 import Arkham.Matcher
@@ -12,6 +13,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Spawn
 import Arkham.Token
 import Arkham.Trait (Trait (Dark))
 
@@ -59,9 +61,9 @@ instance RunMessage BackToTheVale where
             chooseTargetM iid enemies \enemy -> do
               isDark <- matches loc (LocationWithTrait Dark)
               if isDark
-                then spawnEnemyAt_ enemy loc
+                then spawnAt enemy (Just iid) (SpawnAtLocation loc)
                 else chooseOrRunOneM iid do
-                  targets locations $ spawnEnemyAt_ enemy
+                  targets locations \targetLoc -> spawnAt enemy (Just iid) (SpawnAtLocation targetLoc)
       pure a
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do
       withLocationOf iid \loc -> do

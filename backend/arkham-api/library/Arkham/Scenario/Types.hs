@@ -78,6 +78,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioResolvedStories :: Field Scenario [StoryId]
   ScenarioChaosBag :: Field Scenario ChaosBag
   ScenarioInResolution :: Field Scenario Bool
+  ScenarioIsPrelude :: Field Scenario Bool
   ScenarioSetAsideCards :: Field Scenario [Card]
   ScenarioSetAsideKeys :: Field Scenario (Set ArkhamKey)
   ScenarioKeys :: Field Scenario (Set ArkhamKey)
@@ -140,6 +141,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioTimesPlayed :: Int
   , scenarioDefeatedEnemies :: Map EnemyId DefeatedEnemyAttrs
   , scenarioIsSideStory :: Bool
+  , scenarioIsPrelude :: Bool
   , scenarioInShuffle :: Bool
   , scenarioSearch :: Maybe Search
   , scenarioStarted :: Bool
@@ -339,6 +341,7 @@ scenario f cardCode name difficulty layout =
       , scenarioTimesPlayed = 0
       , scenarioDefeatedEnemies = mempty
       , scenarioIsSideStory = False
+      , scenarioIsPrelude = False
       , scenarioInShuffle = False
       , scenarioXpBreakdown = Nothing
       , scenarioCampaignStep = Nothing
@@ -461,6 +464,7 @@ instance FromJSON ScenarioAttrs where
     scenarioTimesPlayed <- o .: "timesPlayed"
     scenarioDefeatedEnemies <- o .: "defeatedEnemies"
     scenarioIsSideStory <- o .:? "isSideStory" .!= False
+    scenarioIsPrelude <- o .:? "isPrelude" .!= False
     scenarioInShuffle <- o .:? "inShuffle" .!= False
     scenarioStoryCards :: Map InvestigatorId [Card] <-
       (o .: "storyCards") <|> (map (toCard @PlayerCard) <$$> (o .: "storyCards"))

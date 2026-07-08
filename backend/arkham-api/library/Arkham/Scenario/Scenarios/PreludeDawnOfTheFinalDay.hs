@@ -53,6 +53,7 @@ preludeDawnOfTheFinalDay difficulty =
     ]
     $ (hasEncounterDeckL .~ False)
     . (referenceL .~ "10704")
+    . (isPreludeL .~ True)
 
 instance HasChaosTokenValue PreludeDawnOfTheFinalDay where
   getChaosTokenValue iid tokenFace (PreludeDawnOfTheFinalDay attrs) =

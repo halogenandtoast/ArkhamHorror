@@ -194,6 +194,7 @@ import Arkham.Queue
 import Arkham.Random
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding (scenario)
+import Arkham.UltimatumsAndBoons (ultimatumOrBoonAbilities)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.HorrorInHighGear.Helpers (getRear)
 import Arkham.Scenarios.WakingNightmare.InfestationBag
@@ -6097,6 +6098,7 @@ instance Projection Scenario where
       ScenarioResolvedStories -> pure scenarioResolvedStories
       ScenarioChaosBag -> pure scenarioChaosBag
       ScenarioInResolution -> pure scenarioInResolution
+      ScenarioIsPrelude -> pure scenarioIsPrelude
       ScenarioSetAsideCards -> do
         enemyCards <- selectField EnemyCard $ EnemyWithPlacement (OutOfPlay SetAsideZone)
         pure $ nubOrdOn (.id) (scenarioSetAsideCards <> enemyCards)
@@ -6712,6 +6714,7 @@ preloadModifiers g = case gameMode g of
           getModifiersFor $ gameEntities g
           traverse_ getModifiersFor $ gameInHandEntities g
           traverse_ getModifiersFor $ gameInDiscardEntities g
+          for_ (activeUltimatumsAndBoons (gameSettings g)) getModifiersFor
           for_ (modeScenario (gameMode g)) getModifiersFor
           for_ (modeCampaign (gameMode g)) \c -> do
             getModifiersFor c
@@ -6811,6 +6814,7 @@ instance HasAbilities Game where
       <> concatMap getAbilities (gameInHandEntities g)
       <> concatMap getAbilities (gameInDiscardEntities g)
       <> getAbilities (gameMode g)
+      <> concatMap ultimatumOrBoonAbilities (toList $ activeUltimatumsAndBoons $ gameSettings g)
 
 instance HasAbilities GameMode where
   getAbilities (This c) = getAbilities c

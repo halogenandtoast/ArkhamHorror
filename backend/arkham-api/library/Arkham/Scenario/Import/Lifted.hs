@@ -258,6 +258,7 @@ import Arkham.Scenario.Runner as X (
   getMetaKeyDefault,
   gridL,
   hasEncounterDeckL,
+  isPreludeL,
   locationLayoutL,
   metaL,
   optionsL,

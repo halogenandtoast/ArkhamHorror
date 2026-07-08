@@ -46,7 +46,7 @@ preludeWelcomeToHemlockVale difficulty =
     , "heart circle   spade"
     , ".     circle   spade"
     ]
-    (hasEncounterDeckL .~ False)
+    ((hasEncounterDeckL .~ False) . (isPreludeL .~ True))
 
 instance HasChaosTokenValue PreludeWelcomeToHemlockVale where
   getChaosTokenValue iid tokenFace (PreludeWelcomeToHemlockVale attrs) =

@@ -42,6 +42,12 @@ standaloneI18n s a = withI18n $ scope "standalone" $ scope s a
 getIsReturnTo :: (HasGame m, Tracing m) => m Bool
 getIsReturnTo = selectJust TheScenario <&> \(ScenarioId c) -> T.take 1 (unCardCode c) == "5"
 
+-- | True when the active scenario is a prelude (e.g. Feast of Hemlock Vale's
+-- day preludes). Used to skip per-scenario effects that would otherwise
+-- double-count across a prelude and the scenario it leads into.
+getIsPrelude :: (HasGame m, Tracing m) => m Bool
+getIsPrelude = fromMaybe False <$> scenarioFieldMaybe ScenarioIsPrelude
+
 scenarioField :: (HasCallStack, HasGame m, Tracing m) => Field Scenario a -> m a
 scenarioField fld = scenarioFieldMap fld id
 

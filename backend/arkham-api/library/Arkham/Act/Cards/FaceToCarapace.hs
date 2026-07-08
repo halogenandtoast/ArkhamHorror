@@ -23,7 +23,7 @@ limulusHybrid = oneOf [enemyIs Enemies.limulusHybridInTheLight, enemyIs Enemies.
 instance HasAbilities FaceToCarapace where
   getAbilities = actAbilities \a ->
     [ mkAbility a 1
-        $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
+        $ actionAbilityWithCost (ClueCost (PerPlayer 1))
     , mkAbility a 2
         $ Objective
         $ forced

@@ -26,7 +26,7 @@ data Ultimatum
   | UltimatumOfChaos
   | UltimatumOfDisaster
   | UltimatumOfDread
-  | UltimatumOfFailrue
+  | UltimatumOfFailure
   | UltimatumOfFinality
   | UltimatumOfForbiddenKnowledge
   | UltimatumOfHardship
@@ -56,5 +56,19 @@ variantName = \case
 mconcat
   [ deriveJSON defaultOptions ''Boon
   , deriveJSON defaultOptions ''Ultimatum
-  , deriveJSON defaultOptions ''UltimatumOrBoon
   ]
+
+{- | The union's JSON is deliberately FLAT — @Boon BoonOfHades@ ⇄
+@"BoonOfHades"@ — because the wire format predates the union type: the client
+sends/reads plain tag strings (create-game POST, settings, Source contents)
+and existing saved games store them. A derived tagged encoding would break
+all of those. Constructor names are disjoint (BoonOf*/UltimatumOf*), so the
+flat form is unambiguous.
+-}
+instance ToJSON UltimatumOrBoon where
+  toJSON = \case
+    Ultimatum u -> toJSON u
+    Boon b -> toJSON b
+
+instance FromJSON UltimatumOrBoon where
+  parseJSON v = (Boon <$> parseJSON v) <|> (Ultimatum <$> parseJSON v)

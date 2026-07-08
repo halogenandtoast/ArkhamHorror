@@ -66,7 +66,9 @@ getPlayableCards source investigator costStatus windows' = do
     hand <- field InvestigatorHand iid
     playableHandCards <-
       filterPlayable investigator source costStatus windows' (hand <> asIfInHandCards)
-    pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
+    -- A discard card permitted by CanPlayTopmostOfDiscard/CanPlayFromDiscard is
+    -- collected by both getAsIfInHandCards and getPlayableDiscards; dedupe.
+    pure $ nub $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
 
 getPlayableCardsMatch
   :: ( HasCallStack

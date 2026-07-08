@@ -18,7 +18,7 @@ instance HasAbilities WeedChokedBeach where
   getAbilities (WeedChokedBeach attrs) =
     extendRevealed
       attrs
-      [ mkAbility attrs 1 $ forced $ SkillTestResult #after You WhileEvading #failure
+      [ restricted attrs 1 Here $ forced $ SkillTestResult #after You WhileEvading #failure
       , mkAbility attrs 2 $ forced $ Leaves #when You (be attrs)
       ]
 

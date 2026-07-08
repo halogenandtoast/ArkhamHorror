@@ -27,7 +27,7 @@ instance HasModifiersFor LimulusHybridInTheDark where
 instance HasAbilities LimulusHybridInTheDark where
   getAbilities (LimulusHybridInTheDark a) =
     extend a
-      [ restricted a 1 (isLight a)
+      [ restricted a 1 (isLight a <> youExist LeadInvestigator)
           $ SilentForcedAbility
           $ oneOf [EnemyEnters #after Anywhere (be a), EnemySpawns #after Anywhere (be a)]
       , mkAbility a 2 $ forced $ EnemyAttackedSuccessfully #after You (SourceWithTrait Melee) (be a)

@@ -29,7 +29,7 @@ instance HasAbilities CrustaceanHybridInTheDark where
   getAbilities (CrustaceanHybridInTheDark a) =
     extend
       a
-      [ restricted a 1 (isLight a)
+      [ restricted a 1 (isLight a <> youExist LeadInvestigator)
           $ SilentForcedAbility
           $ oneOf [EnemyEnters #after Anywhere (be a), EnemySpawns #after Anywhere (be a)]
       , restricted a 2 (exists $ investigator_ $ at_ $ locationWithEnemy a)

@@ -65,6 +65,9 @@ const questionLabel = computed(() => {
 
   if (!question) return null
 
+  // Ultimatums/Boons questions render their own titled panel inside ChooseDeck
+  if (question.tag === 'QuestionLabel' && question.label?.startsWith('$label.ultimatumsAndBoons')) return null
+
   return question.tag === 'QuestionLabel' ? handleEmbeddedI18n(question.label, t) : null
 })
 

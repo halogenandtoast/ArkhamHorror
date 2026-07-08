@@ -59,6 +59,9 @@ const aiPlayers = ref<(AiSlotConfig | null)[]>([])
 const fullCampaignOptionKey = ref<string | null>(null)
 const recommendedOptionState = ref<Record<string, boolean>>({})
 
+// Ultimatums and Boons variant tags selected in GameOptions (e.g. "BoonOfHades").
+const ultimatumsAndBoons = ref<string[]>([])
+
 // "Epic Multiplayer" side-story mode state (only meaningful for epic-capable
 // side stories; see GameOptions.vue / side-stories.json).
 type EpicGroup = { name: string; playerCount: number }
@@ -250,6 +253,7 @@ watch(selectedCampaign, (id) => {
   selectedScenario.value = null
   returnTo.value = false
   recommendedOptionState.value = {}
+  ultimatumsAndBoons.value = []
   strictAsIfAt.value = id != null && id >= '11'
 
   if (id === '09') fullCampaign.value = 'FullCampaign'
@@ -350,7 +354,8 @@ async function start() {
         includeTarotReadings.value,
         options,
         strictAsIfAt.value,
-        aiPlayersForCreate
+        aiPlayersForCreate,
+        ultimatumsAndBoons.value
       ).then((game) => router.push(`/games/${game.id}`))
     }
   } else {
@@ -369,7 +374,8 @@ async function start() {
         includeTarotReadings.value,
         options,
         strictAsIfAt.value,
-        aiPlayersForCreate
+        aiPlayersForCreate,
+        ultimatumsAndBoons.value
       ).then((game) => router.push(`/games/${game.id}`))
     }
   }
@@ -410,6 +416,7 @@ async function start() {
           v-model:campaignName="campaignName"
           v-model:fullCampaignOptionKey="fullCampaignOptionKey"
           v-model:recommendedOptionState="recommendedOptionState"
+          v-model:ultimatumsAndBoons="ultimatumsAndBoons"
           v-model:epicMode="epicMode"
           v-model:epicGroupCount="epicGroupCount"
           v-model:epicGroups="epicGroups"

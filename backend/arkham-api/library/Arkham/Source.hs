@@ -22,6 +22,7 @@ import Arkham.Matcher.Types (
 import Arkham.Prelude
 import Arkham.Tarot
 import Arkham.Trait hiding (ElderThing)
+import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.TH
 import Data.UUID (nil)
 import GHC.OverloadedLabels
@@ -74,6 +75,7 @@ data Source
   | CardCostSource CardId
   | BothSource Source Source
   | TarotSource TarotCard
+  | UltimatumOrBoonSource UltimatumOrBoon
   | BatchSource BatchId
   | ScarletKeySource ScarletKeyId
   | ConcealedCardSource ConcealedCardId

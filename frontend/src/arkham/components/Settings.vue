@@ -51,6 +51,8 @@ const investigator = computed(() => {
 
 const skipTriggers = ref(investigator.value?.settings.globalSettings.ignoreUnrelatedSkillTestTriggers ?? false)
 const asIfRuling = ref(props.game.settings.settingsAsIfRuling)
+const ultimatumsAndBoonsEnabled = ref(props.game.settings.settingsUltimatumsAndBoonsEnabled)
+const hasUltimatumsAndBoons = computed(() => props.game.settings.settingsUltimatumsAndBoons.length > 0)
 const cosmicEmissaryAnimationKey = computed(() => gameLocalStorageKey(props.game.id, 'enableCosmicEmissaryAnimation'))
 const showCosmicEmissaryAnimationSetting = computed(() => props.game.scenario?.id === 'c10651')
 const enableCosmicEmissaryAnimation = ref(
@@ -77,6 +79,15 @@ watch(() => props.game.settings.settingsAsIfRuling, (value) => {
 watch(asIfRuling, async (value) => {
   if (value === props.game.settings.settingsAsIfRuling) return
   await updateGameRaw(props.game.id, { tag: 'SetAsIfRuling', contents: value })
+})
+
+watch(() => props.game.settings.settingsUltimatumsAndBoonsEnabled, (value) => {
+  ultimatumsAndBoonsEnabled.value = value
+})
+
+watch(ultimatumsAndBoonsEnabled, async (value) => {
+  if (value === props.game.settings.settingsUltimatumsAndBoonsEnabled) return
+  await updateGameRaw(props.game.id, { tag: 'SetUltimatumsAndBoonsEnabled', contents: value })
 })
 
 watch(enableCosmicEmissaryAnimation, (value) => {
@@ -259,6 +270,19 @@ onBeforeUnmount(() => {
               <label for="opt-asIfRuling-chapter1">Chapter 1</label>
               <input type="radio" id="opt-asIfRuling-chapter2" name="opt-asIfRuling" :checked="asIfRuling === 'chapter2'" @change="asIfRuling = 'chapter2'" />
               <label for="opt-asIfRuling-chapter2">Chapter 2</label>
+            </div>
+          </div>
+
+          <div class="toggle-row" v-if="hasUltimatumsAndBoons">
+            <div class="toggle-text">
+              <div class="toggle-name">{{ $t('ultimatumsAndBoons.settingsToggleTitle') }}</div>
+              <div class="toggle-desc">{{ $t('ultimatumsAndBoons.settingsToggleDescription') }}</div>
+            </div>
+            <div class="segmented segmented-2 toggle-control">
+              <input type="radio" id="opt-ultimatumsAndBoons-on" name="opt-ultimatumsAndBoons" :checked="ultimatumsAndBoonsEnabled" @change="ultimatumsAndBoonsEnabled = true" />
+              <label for="opt-ultimatumsAndBoons-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-ultimatumsAndBoons-off" name="opt-ultimatumsAndBoons" :checked="!ultimatumsAndBoonsEnabled" @change="ultimatumsAndBoonsEnabled = false" />
+              <label for="opt-ultimatumsAndBoons-off">{{ $t('Off') }}</label>
             </div>
           </div>
 

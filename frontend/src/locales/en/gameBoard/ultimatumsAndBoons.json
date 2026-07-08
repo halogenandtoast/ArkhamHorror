@@ -1,0 +1,60 @@
+{
+  "title": "Boons & Ultimatums",
+  "boons": "Boons",
+  "ultimatums": "Ultimatums",
+  "selectedCount": "{count} selected",
+  "noneSelected": "None selected",
+  "settingsToggleTitle": "Ultimatums & Boons enabled",
+  "settingsToggleDescription": "Turn the selected Ultimatums and Boons on or off for this game. This affects everyone in the game.",
+  "currentlyDisabled": "(currently disabled)",
+  "entries": {
+    "BoonOfTheAncients": {
+      "name": "Boon of the Ancients",
+      "text": "Campaign Mode only. Each investigator begins the campaign with 5 additional experience."
+    },
+    "BoonOfAthena": {
+      "name": "Boon of Athena",
+      "text": "The first time each game you draw the autofail token, you may cancel that token, return it to the chaos bag, and draw another in its place."
+    },
+    "BoonOfDestiny": {
+      "name": "Boon of Destiny",
+      "text": "Before drawing your opening hand, you may search your deck for 1 copy of a card and add it to your hand (this does not change the number of cards in your opening hand)."
+    },
+    "BoonOfHades": {
+      "name": "Boon of Hades",
+      "text": "Each investigator begins the game with 2 additional resources in their resource pool."
+    },
+    "BoonOfHermes": {
+      "name": "Boon of Hermes",
+      "text": "Each investigator may take an additional action during their turn, which may only be used to move."
+    },
+    "BoonOfThoth": {
+      "name": "Boon of Thoth",
+      "text": "Each investigator begins the game with 1 additional card in their opening hand."
+    },
+    "BoonOfOsiris": {
+      "name": "Boon of Osiris",
+      "text": "The first time each investigator would be defeated in a scenario, after suffering trauma, heal all damage and horror from that investigator. That investigator cannot be damaged until the beginning of their next turn."
+    },
+    "BoonOfTheMorrigan": {
+      "name": "Boon of the Morrígan",
+      "text": "When a player would add a random basic weakness to their deck during deckbuilding, they instead draw three random basic weaknesses, return one of their choice to the collection, and select one at random from the remaining two. The selected weakness is added to their deck."
+    },
+    "BoonOfPersephone": {
+      "name": "Boon of Persephone",
+      "text": "Campaign Mode only. If an investigator is defeated, they gain 3 additional experience."
+    },
+    "BoonOfTheExplorer": {
+      "name": "Boon of the Explorer",
+      "text": "Each investigator may take an additional action during their turn, which may only be used to Explore."
+    },
+    "BoonOfTheChild": {
+      "name": "Boon of the Child",
+      "text": "Once per round, an investigator may play the topmost event in their discard pile as if it were in their hand. If they do, after that event resolves, they must place it on the bottom of their deck."
+    }
+  },
+  "morrigan": {
+    "instructions": "Choose 1 of these 3 random basic weaknesses to return to the collection. One of the remaining 2 will be chosen at random and added to your deck.",
+    "returnAction": "Return to the collection"
+  }
+}

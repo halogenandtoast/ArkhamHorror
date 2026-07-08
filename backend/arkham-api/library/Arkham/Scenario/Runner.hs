@@ -24,7 +24,7 @@ import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
-import Arkham.Campaign.Types (Field (..))
+import Arkham.Campaign.Types (Field (..), getRandomBasicWeakness)
 import Arkham.CampaignLog hiding (optionsL)
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -92,6 +92,7 @@ import Arkham.Story.Types (Field (..))
 import Arkham.SideStory (challengeScenarioInvestigator)
 import Arkham.Tarot
 import Arkham.Token
+import Arkham.UltimatumsAndBoons (Boon (..), hasBoon, morriganWeaknessMessages)
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (mkWhen)
@@ -232,12 +233,30 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                 Just _ -> pure Nothing
             else pure Nothing
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck
-        weaknesses <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
+        morrigan <- hasBoon BoonOfTheMorrigan
+        (weaknesses, morriganMessages) <-
+          if morrigan
+            then do
+              msgs <-
+                concat <$> for randomWeaknesses \_ ->
+                  morriganWeaknessMessages
+                    iid
+                    (genCard =<< getRandomBasicWeakness investigatorClass playerCount mDecklist)
+              pure ([], msgs)
+            else do
+              ws <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
+              pure (ws, [])
         purchaseTrauma <- initDeckTrauma deck' iid (toTarget a)
         initXp <- initDeckXp deck' iid (toTarget a)
         let deck'' = withDeck (<> weaknesses) deck'
 
-        pushAll $ LoadDeck iid deck'' : purchaseTrauma <> toList mEldritchBrand <> [DoStep 1 msg] <> initXp
+        pushAll
+          $ LoadDeck iid deck''
+          : morriganMessages
+          <> purchaseTrauma
+          <> toList mEldritchBrand
+          <> [DoStep 1 msg]
+          <> initXp
         pure $ a & playerDecksL %~ insertMap iid deck''
       else pure a
   DoStep 1 (InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDeck = deck}) -> do

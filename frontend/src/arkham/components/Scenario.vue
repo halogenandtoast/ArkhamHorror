@@ -980,7 +980,9 @@ function isAbility(v: Message): v is AbilityLabel {
   }
 
   const { source } = v.ability;
-  return source.sourceTag === 'OtherSource' && source.tag === 'ScenarioSource' 
+  // Ultimatums/Boons are global pseudo-entities with no board presence; their
+  // ability buttons render on the scenario card like scenario abilities do.
+  return source.sourceTag === 'OtherSource' && (source.tag === 'ScenarioSource' || source.tag === 'UltimatumOrBoonSource')
 }
 
 const abilities = computed(() => {

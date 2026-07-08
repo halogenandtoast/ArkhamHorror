@@ -3,14 +3,14 @@
 module Arkham.Game.Runner where
 
 import Arkham.Ability
-import Arkham.Ai.Helpers (overAiPlayers, overAiSeat)
-import Arkham.Ai.State (AiPlayerState (..))
 import Arkham.Act
 import Arkham.Act.Types (Field (..))
 import Arkham.Action qualified as Action
 import Arkham.ActiveCost
 import Arkham.Agenda
 import Arkham.Agenda.Types (Field (..), doomL)
+import Arkham.Ai.Helpers (overAiPlayers, overAiSeat)
+import Arkham.Ai.State (AiPlayerState (..))
 import Arkham.Asset
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
@@ -45,7 +45,7 @@ import Arkham.Event.Types
 import Arkham.Game.Base
 import Arkham.Game.Diff
 import Arkham.Game.Json ()
-import Arkham.Game.Settings (settingsAsIfRuling)
+import Arkham.Game.Settings (settingsAsIfRuling, settingsUltimatumsAndBoonsEnabled)
 import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
@@ -177,6 +177,8 @@ runGameMessage msg g = case msg of
     when (any (\w -> Window.windowType w == Window.FastPlayerWindow) currentWindows) do
       push $ Do (CheckWindows currentWindows)
     pure $ g {gameSettings = g.gameSettings {settingsAsIfRuling = ruling}}
+  SetUltimatumsAndBoonsEnabled enabled ->
+    pure $ g {gameSettings = g.gameSettings {settingsUltimatumsAndBoonsEnabled = enabled}}
   RegisterAiPlayer pid st -> pure $ overAiPlayers (Map.insert pid st) g
   SetAiFocusOverride pid mFocus -> pure $ overAiSeat pid (\s -> s {aiFocusOverride = mFocus}) g
   AddAiPriority pid target -> pure $ overAiSeat pid (\s -> s {aiPriorities = s.aiPriorities <> [target]}) g
@@ -204,10 +206,17 @@ runGameMessage msg g = case msg of
     for_ (lookup cardId (g ^. cardsL)) \c -> replaceCard cardId (fixCard c)
     pure
       $ g
-      & cardsL %~ Map.adjust fixCard cardId
-      & entitiesL . investigatorsL %~ Map.map (overAttrs fixInv)
-      & entitiesL . skillsL %~ Map.map (overAttrs fixSkill)
-      & entitiesL . assetsL %~ Map.map (overAttrs fixAsset)
+      & cardsL
+      %~ Map.adjust fixCard cardId
+      & entitiesL
+      . investigatorsL
+      %~ Map.map (overAttrs fixInv)
+      & entitiesL
+      . skillsL
+      %~ Map.map (overAttrs fixSkill)
+      & entitiesL
+      . assetsL
+      %~ Map.map (overAttrs fixAsset)
   SetGameRunWindows b -> pure $ g & runWindowsL .~ b
   SetGameState s -> pure $ g & gameStateL .~ s
   ChoosingDecks -> pure $ g & entitiesL . investigatorsL .~ mempty & gameStateL .~ IsChooseDecks (g ^. playersL)
@@ -604,7 +613,15 @@ runGameMessage msg g = case msg of
       <> [LoadScenario opts]
     pure
       $ g
-      & (modeL %~ setScenario (setPlayerDecks $ setCampaignLog $ setScenarioMeta' $ setScenarioCounts' $ lookupScenario sid difficulty))
+      & ( modeL
+            %~ setScenario
+              ( setPlayerDecks
+                  $ setCampaignLog
+                  $ setScenarioMeta'
+                  $ setScenarioCounts'
+                  $ lookupScenario sid difficulty
+              )
+        )
       & (phaseL .~ InvestigationPhase)
       & (cardsL %~ if keepCardCache then id else filterMap (not . isEncounterCard))
   PerformTarotReading -> do

@@ -4,6 +4,7 @@ import Arkham.Ai.Orphans ()
 import Arkham.Ai.State (AiPlayerState)
 import Arkham.Id (PlayerId)
 import Arkham.Prelude
+import Arkham.UltimatumsAndBoons.Types
 import Control.Monad.Fail
 
 data AsIfRuling
@@ -30,8 +31,20 @@ data Settings = Settings
   , settingsAiPlayers :: Map PlayerId AiPlayerState
   -- ^ Per-seat AI configuration. Empty for ordinary human-only games; absent
   -- from older saves (defaults to 'mempty' on load).
+  , settingsUltimatumsAndBoons :: Set UltimatumOrBoon
+  -- ^ Variant rules selected at game creation; permanent for the campaign or
+  -- standalone scenario per the FAQ, so nothing mutates this after creation.
+  , settingsUltimatumsAndBoonsEnabled :: Bool
+  -- ^ Runtime kill switch: when False, selected entries behave as if nothing
+  -- were selected. Every effect hook reads through 'activeUltimatumsAndBoons'.
   }
   deriving stock (Eq, Show, Generic, Data)
+
+-- | The single gate every Ultimatum/Boon hook must go through.
+activeUltimatumsAndBoons :: Settings -> Set UltimatumOrBoon
+activeUltimatumsAndBoons settings
+  | settingsUltimatumsAndBoonsEnabled settings = settingsUltimatumsAndBoons settings
+  | otherwise = mempty
 
 settingsStrictAsIfAt :: Settings -> Bool
 settingsStrictAsIfAt = (== Chapter2AsIfRuling) . settingsAsIfRuling
@@ -52,6 +65,8 @@ defaultSettings =
     { settingsAbilitiesCannotReactToThemselves = True
     , settingsAsIfRuling = Chapter1AsIfRuling
     , settingsAiPlayers = mempty
+    , settingsUltimatumsAndBoons = mempty
+    , settingsUltimatumsAndBoonsEnabled = True
     }
 
 instance ToJSON Settings where
@@ -60,6 +75,8 @@ instance ToJSON Settings where
     , "settingsAsIfRuling" .= settingsAsIfRuling settings
     , "settingsStrictAsIfAt" .= settingsStrictAsIfAt settings -- legacy/client compatibility
     , "aiPlayers" .= settingsAiPlayers settings
+    , "settingsUltimatumsAndBoons" .= settingsUltimatumsAndBoons settings
+    , "settingsUltimatumsAndBoonsEnabled" .= settingsUltimatumsAndBoonsEnabled settings
     ]
 
 instance FromJSON Settings where
@@ -70,9 +87,13 @@ instance FromJSON Settings where
     asIfRuling <-
       o .:? "settingsAsIfRuling" .!= maybe defaultSettings.settingsAsIfRuling asIfRulingFromStrictAsIfAt legacyStrictAsIfAt
     aiPlayers <- o .:? "aiPlayers" .!= mempty
+    ultimatumsAndBoons <- o .:? "settingsUltimatumsAndBoons" .!= mempty
+    ultimatumsAndBoonsEnabled <- o .:? "settingsUltimatumsAndBoonsEnabled" .!= True
     pure
       Settings
         { settingsAbilitiesCannotReactToThemselves = abilitiesCannotReactToThemselves
         , settingsAsIfRuling = asIfRuling
         , settingsAiPlayers = aiPlayers
+        , settingsUltimatumsAndBoons = ultimatumsAndBoons
+        , settingsUltimatumsAndBoonsEnabled = ultimatumsAndBoonsEnabled
         }

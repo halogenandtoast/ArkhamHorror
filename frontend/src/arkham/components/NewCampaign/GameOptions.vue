@@ -290,6 +290,38 @@ const strictAsIfAt = defineModel<boolean>('strictAsIfAt', { required: true })
 
 const rulesExpanded = ref(false)
 
+// --- Ultimatums and Boons variant selection ------------------------------------
+// Selected enum tags flow up to NewCampaign and into the create-game POST body.
+const ultimatumsAndBoons = defineModel<string[]>('ultimatumsAndBoons', { required: true })
+
+// Each group renders as its own collapsed card; per-group expansion state.
+const uabExpanded = ref<Record<string, boolean>>({ boons: false, ultimatums: false })
+
+const uabSelectedCount = (group: { tags: string[] }) =>
+  group.tags.filter((tag) => ultimatumsAndBoons.value.includes(tag)).length
+
+// ponytail: hardcoded catalog; Ultimatums arrive in a later drop — add their tags
+// to the ultimatums group (and locale entries) when they land.
+const uabGroups: { key: 'boons' | 'ultimatums'; tags: string[] }[] = [
+  {
+    key: 'boons',
+    tags: [
+      'BoonOfTheAncients',
+      'BoonOfAthena',
+      'BoonOfDestiny',
+      'BoonOfHades',
+      'BoonOfHermes',
+      'BoonOfThoth',
+      'BoonOfOsiris',
+      'BoonOfTheMorrigan',
+      'BoonOfPersephone',
+      'BoonOfTheExplorer',
+      'BoonOfTheChild',
+    ],
+  },
+  { key: 'ultimatums', tags: [] },
+]
+
 type RulesPreset = 'chapter1' | 'chapter2'
 
 type RulesSettings = {
@@ -708,6 +740,35 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
           </div>
         </div>
       </div>
+
+      <template v-for="group in uabGroups" :key="group.key">
+        <div v-if="group.tags.length > 0" class="card rules-card">
+          <button type="button" class="rules-toggle" @click="uabExpanded[group.key] = !uabExpanded[group.key]">
+            <span class="card-title" style="margin-bottom: 0">{{ $t(`ultimatumsAndBoons.${group.key}`) }}</span>
+            <span class="rules-header-right">
+              <span class="preset-pill" :class="{ 'uab-active': uabSelectedCount(group) > 0 }">
+                {{ uabSelectedCount(group) > 0
+                  ? $t('ultimatumsAndBoons.selectedCount', { count: uabSelectedCount(group) })
+                  : $t('ultimatumsAndBoons.noneSelected') }}
+              </span>
+              <span class="rules-chevron" :class="{ expanded: uabExpanded[group.key] }">▸</span>
+            </span>
+          </button>
+          <transition name="slide">
+            <div v-if="uabExpanded[group.key]" class="rules-body subcard">
+              <div class="uab-group">
+                <label v-for="tag in group.tags" :key="tag" class="uab-row">
+                  <input type="checkbox" :value="tag" v-model="ultimatumsAndBoons" />
+                  <span class="uab-text">
+                    <span class="uab-name">{{ $t(`ultimatumsAndBoons.entries.${tag}.name`) }}</span>
+                    <span class="uab-desc">{{ $t(`ultimatumsAndBoons.entries.${tag}.text`) }}</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </transition>
+        </div>
+      </template>
     </section>
   </div>
 </template>
@@ -1405,6 +1466,59 @@ input[type='radio']:checked + label {
 
 .rules-chevron.expanded {
   transform: rotate(90deg);
+}
+
+.preset-pill.uab-active {
+  background: rgba(110, 134, 64, 0.25);
+  border-color: rgba(110, 134, 64, 0.55);
+  color: rgba(180, 210, 120, 0.9);
+}
+
+.uab-group {
+  display: grid;
+  gap: 8px;
+}
+
+.uab-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.uab-row:has(input:checked) {
+  background: rgba(110, 134, 64, 0.2);
+  border-color: rgba(110, 134, 64, 0.6);
+}
+
+.uab-row input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: rgb(110, 134, 64);
+}
+
+.uab-text {
+  display: grid;
+  gap: 4px;
+}
+
+.uab-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.uab-desc {
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .recommended-icon {

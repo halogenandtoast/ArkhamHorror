@@ -28,7 +28,14 @@ import Arkham.Classes.HasQueue
 import Arkham.Cost.Status
 import Arkham.Difficulty
 import Arkham.Game
-import Arkham.Game.Settings (AsIfRuling, asIfRulingFromStrictAsIfAt, defaultAsIfRulingForCampaign, settingsAsIfRuling)
+import Arkham.Game.Settings (
+  AsIfRuling,
+  asIfRulingFromStrictAsIfAt,
+  defaultAsIfRulingForCampaign,
+  settingsAsIfRuling,
+  settingsUltimatumsAndBoons,
+ )
+import Arkham.UltimatumsAndBoons.Types (UltimatumOrBoon)
 import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Playable (getPlayabilityChecks)
 import Arkham.Id
@@ -153,6 +160,7 @@ data CreateGamePost = CreateGamePost
   , strictAsIfAt :: Maybe Bool
   , asIfRuling :: Maybe AsIfRuling
   , aiPlayers :: [Maybe AiSlotConfig]
+  , ultimatumsAndBoons :: Set UltimatumOrBoon
   }
   deriving stock (Show, Generic)
 
@@ -173,6 +181,7 @@ instance FromJSON CreateGamePost where
     strictAsIfAt <- o .:? "strictAsIfAt"
     asIfRuling <- o .:? "asIfRuling"
     aiPlayers <- o .:? "aiPlayers" .!= []
+    ultimatumsAndBoons <- o .:? "ultimatumsAndBoons" .!= mempty
     pure CreateGamePost {..}
 
 -- | New Game
@@ -195,7 +204,14 @@ postApiV1ArkhamGamesR = do
       Nothing -> case scenarioId of
         Just sid -> newScenario sid newGameSeed playerCount difficulty includeTarotReadings
         Nothing -> error "missing either a campign id or a scenario id"
-    game = baseGame {gameSettings = baseGame.gameSettings {settingsAsIfRuling = asIfRulingValue}}
+    game =
+      baseGame
+        { gameSettings =
+            baseGame.gameSettings
+              { settingsAsIfRuling = asIfRulingValue
+              , settingsUltimatumsAndBoons = ultimatumsAndBoons
+              }
+        }
     ag = ArkhamGame campaignName game 0 multiplayerVariant now now
     repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
 

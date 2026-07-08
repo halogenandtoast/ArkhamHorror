@@ -37,6 +37,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SideStory
 import Arkham.Tarot
+import Arkham.UltimatumsAndBoons
 import Arkham.Xp
 import Data.Aeson.Key qualified as Aeson
 import Data.Map.Strict qualified as Map
@@ -181,14 +182,25 @@ defaultCampaignRunner msg a = case msg of
         else pure Nothing
 
     (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck
+    morrigan <- hasBoon BoonOfTheMorrigan
+    weaknessMessages <-
+      if morrigan
+        then
+          concat <$> for randomWeaknesses \_ ->
+            morriganWeaknessMessages
+              iid
+              (genCard =<< getRandomBasicWeakness investigatorClass playerCount mDecklist)
+        else pure $ map (AddCampaignCardToDeck iid ShuffleIn) randomWeaknesses
+    ancients <- hasBoon BoonOfTheAncients
     purchaseTrauma <- initDeckTrauma deck' iid CampaignTarget
     initXp <- initDeckXp deck' iid CampaignTarget
     pushAll
-      $ map (AddCampaignCardToDeck iid ShuffleIn) randomWeaknesses
+      $ weaknessMessages
       <> purchaseTrauma
       <> toList mEldritchBrand
       <> [DoStep 1 msg]
       <> initXp
+      <> (if ancients then ancientsStartingXpMessages iid else [])
 
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   DoStep 1 (InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDeck = deck}) -> do

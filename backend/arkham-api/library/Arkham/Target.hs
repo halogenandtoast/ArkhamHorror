@@ -19,6 +19,7 @@ import Arkham.Phase
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Tarot
+import Arkham.UltimatumsAndBoons.Types
 import Arkham.Trait
 import Control.Lens (Getting)
 import Control.Lens.Plated (Plated)
@@ -71,6 +72,7 @@ data Target
   | AbilityTarget InvestigatorId AbilityRef
   | BothTarget Target Target
   | TarotTarget TarotCard
+  | UltimatumOrBoonTarget UltimatumOrBoon
   | BatchTarget BatchId
   | ActiveCostTarget ActiveCostId
   | LabeledTarget Text Target -- Use with caution, this is not a real target

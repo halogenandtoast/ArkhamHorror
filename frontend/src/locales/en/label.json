@@ -293,6 +293,9 @@
   "takeAdditionalAction": "Take additional action",
   "takeAdditionalActionThisTurn": "Take an additional action this turn",
   "takeResources": "Take resource | Take {count} resources",
+  "ultimatumsAndBoons": {
+    "returnWeakness": "Choose a weakness to return to the collection"
+  },
   "useCharge": "Charge",
   "useNewLocationShroud": "Use new location's shroud",
   "useOriginalLocationsShroud": "Use original locations shroud",

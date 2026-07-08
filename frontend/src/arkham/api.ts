@@ -195,7 +195,9 @@ export const newGame = async (
   // Per-seat AI configuration, parallel to `deckIds` and indexed by seat. Omitted
   // (the default) preserves today's all-human behavior; entries may be `null` for
   // human seats. Only sent for Solo/multihanded games (see NewCampaign.start).
-  aiPlayers?: (NewGame.AiSlotConfig | null)[]
+  aiPlayers?: (NewGame.AiSlotConfig | null)[],
+  // Ultimatums and Boons variant tags (e.g. "BoonOfHades"). Omitted = none.
+  ultimatumsAndBoons?: string[]
 ): Promise<Game> => {
   const { data } = await api.post('arkham/games', {
     deckIds,
@@ -209,7 +211,8 @@ export const newGame = async (
     options,
     strictAsIfAt,
     asIfRuling: strictAsIfAt == null ? undefined : strictAsIfAt ? 'chapter2' : 'chapter1',
-    aiPlayers
+    aiPlayers,
+    ultimatumsAndBoons
   })
   return gameDecoder.decodePromise(data)
 }

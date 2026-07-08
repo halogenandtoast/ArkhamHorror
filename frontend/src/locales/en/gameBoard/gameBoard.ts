@@ -8,5 +8,6 @@ import scenario from '@/locales/en/gameBoard/scenario.json'
 import card from '@/locales/en/gameBoard/card.json'
 import upgrade from '@/locales/en/gameBoard/upgrade.json'
 import create from '@/locales/en/gameBoard/create.json'
+import ultimatumsAndBoons from '@/locales/en/gameBoard/ultimatumsAndBoons.json'
 
-export default {...base, phase, skillTest, gameBar, historyPanel, investigator, scenario, card, upgrade, create}
+export default {...base, phase, skillTest, gameBar, historyPanel, investigator, scenario, card, upgrade, create, ultimatumsAndBoons}

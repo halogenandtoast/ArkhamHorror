@@ -480,6 +480,7 @@ data Message
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetAsIfRuling AsIfRuling
+  | SetUltimatumsAndBoonsEnabled Bool
   | -- AI seat configuration (mutates Settings.settingsAiPlayers)
     RegisterAiPlayer PlayerId AiPlayerState
   | SetAiFocusOverride PlayerId (Maybe Focus)

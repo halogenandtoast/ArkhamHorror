@@ -3,8 +3,8 @@ module Arkham.Helpers.Source where
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card
 import Arkham.Classes.HasGame
-import Arkham.Constants (notPlayerAbilityIndex)
 import Arkham.Classes.Query
+import Arkham.Constants (notPlayerAbilityIndex)
 import Arkham.Field.Import
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.FetchCard
@@ -71,6 +71,7 @@ sourceTraits = \case
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
   ScarletKeySource _ -> pure mempty
   ConcealedCardSource _ -> pure mempty
+  UltimatumOrBoonSource _ -> pure mempty
 
 getSourceController :: (HasGame m, Tracing m) => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
@@ -83,15 +84,16 @@ getSourceController = \case
   ElderSignEffectSource iid -> pure $ Just iid
   _ -> pure Nothing
 
--- | Resolve which investigator(s) a source belongs to.
---
--- When @creditUser@ is 'False' (the @SourceOwnedBy@ matcher) this is strict card
--- ownership: an ability source resolves to the underlying card's controller/owner, so a
--- location/encounter ability matches nobody.
---
--- When @creditUser@ is 'True' (the @SourceUsedBy@ matcher) the investigator who *used* the
--- ability is additionally credited, so effects performed via a location/encounter ability
--- count for "you deal/heal/defeat" cards. See issue #4902.
+{- | Resolve which investigator(s) a source belongs to.
+
+When @creditUser@ is 'False' (the @SourceOwnedBy@ matcher) this is strict card
+ownership: an ability source resolves to the underlying card's controller/owner, so a
+location/encounter ability matches nobody.
+
+When @creditUser@ is 'True' (the @SourceUsedBy@ matcher) the investigator who *used* the
+ability is additionally credited, so effects performed via a location/encounter ability
+count for "you deal/heal/defeat" cards. See issue #4902.
+-}
 checkSourceOwner
   :: (HasCallStack, HasGame m, Tracing m)
   => Bool -> Matcher.InvestigatorMatcher -> Source -> m Bool
@@ -129,7 +131,8 @@ checkSourceOwner creditUser whoMatcher = go
     -- so "card effect you control" (Carolyn Fern + The Last Blossom) resolves to
     -- that investigator. See issue #4948.
     ScarletKeySource sid -> do
-      owned <- select $ ScarletKeyOneOf [ScarletKeyWithInvestigator whoMatcher, ScarletKeyWithBearer whoMatcher]
+      owned <-
+        select $ ScarletKeyOneOf [ScarletKeyWithInvestigator whoMatcher, ScarletKeyWithBearer whoMatcher]
       pure $ sid `elem` owned
     CardIdSource cid -> do
       c <- getCard cid
@@ -164,7 +167,8 @@ sourceMatches s = \case
         ProxySource _ s' -> go s'
         BothSource lSource rSource -> orM [go lSource, go rSource]
         _ -> pure False
-    in go s
+     in
+      go s
   Matcher.SourceIsEnemyAttack em -> case s of
     EnemyAttackSource eid -> elem eid <$> select em
     _ -> pure False
@@ -266,6 +270,7 @@ sourceMatches s = \case
         ScarletKeySource {} -> True
         ConcealedCardSource {} -> True
         PaymentSource {} -> False
+        UltimatumOrBoonSource _ -> False
     pure $ go s
   Matcher.SourceIsType t -> member t <$> sourceTypes s
   Matcher.EncounterCardSource ->

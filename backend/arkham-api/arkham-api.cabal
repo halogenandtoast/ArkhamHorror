@@ -6566,6 +6566,8 @@ library
       Arkham.Treachery.Treacheries
       Arkham.Treachery.Types
       Arkham.UI
+      Arkham.UltimatumsAndBoons
+      Arkham.UltimatumsAndBoons.Types
       Arkham.Window
       Arkham.Xp
       Arkham.Zone
@@ -7205,7 +7207,19 @@ test-suite spec
       Arkham.Treachery.Cards.SmiteTheWickedSpec
       Arkham.Treachery.Cards.WordsOfPowerSpec
       Arkham.Treachery.Cards.WrackedByNightmaresSpec
+      Arkham.UltimatumsAndBoons.BoonOfAthenaSpec
+      Arkham.UltimatumsAndBoons.BoonOfDestinySpec
+      Arkham.UltimatumsAndBoons.BoonOfHadesSpec
+      Arkham.UltimatumsAndBoons.BoonOfHermesSpec
+      Arkham.UltimatumsAndBoons.BoonOfOsirisSpec
+      Arkham.UltimatumsAndBoons.BoonOfPersephoneSpec
+      Arkham.UltimatumsAndBoons.BoonOfTheAncientsSpec
+      Arkham.UltimatumsAndBoons.BoonOfTheChildSpec
+      Arkham.UltimatumsAndBoons.BoonOfTheExplorerSpec
+      Arkham.UltimatumsAndBoons.BoonOfTheMorriganSpec
+      Arkham.UltimatumsAndBoons.BoonOfThothSpec
       Helpers.Message
+      Helpers.UltimatumsAndBoons
       SpecHook
       TestImport
       TestImport.Lifted

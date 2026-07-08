@@ -1548,7 +1548,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   PutCardIntoPlay _ card _ _ _ -> handlePutCardIntoPlay a card
   Msg.InvestigatorDamage iid source damage horror | iid == investigatorId -> do
     mods <- getModifiers a
-    let damage' = damage + sum [x | DamageTaken x <- mods]
+    -- CannotBeDamaged blocks damage only; horror still applies.
+    let damage' = if CannotBeDamaged `elem` mods then 0 else damage + sum [x | DamageTaken x <- mods]
     let horror' = horror + sum [x | HorrorTaken x <- mods]
     if CancelOneDamageOrHorror `elem` mods
       then
@@ -1576,6 +1577,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   CancelAssignedDamage target damageReduction horrorReduction | isTarget a target -> handleCancelAssignedDamage a target damageReduction horrorReduction
   ApplyHealing source -> handleApplyHealing a source msg
   Do (ApplyHealing source) -> handleDoApplyHealing a source
+  -- Heal-all messages route through the normal HealDamage/HealHorror pipeline
+  -- so heal windows and cannot-heal modifiers apply. Previously only assets
+  -- handled these; on investigators they silently no-oped.
+  HealAllDamageAndHorror (InvestigatorTarget iid) source | iid == investigatorId -> do
+    pushAll
+      $ [HealDamage (toTarget a) source (investigatorHealthDamage a) | investigatorHealthDamage a > 0]
+      <> [HealHorror (toTarget a) source (investigatorSanityDamage a) | investigatorSanityDamage a > 0]
+    pure a
+  HealAllDamage (InvestigatorTarget iid) source | iid == investigatorId -> do
+    pushWhen (investigatorHealthDamage a > 0)
+      $ HealDamage (toTarget a) source (investigatorHealthDamage a)
+    pure a
+  HealAllHorror (InvestigatorTarget iid) source | iid == investigatorId -> do
+    pushWhen (investigatorSanityDamage a > 0)
+      $ HealHorror (toTarget a) source (investigatorSanityDamage a)
+    pure a
   HealDamage (InvestigatorTarget iid) source amount' | iid == investigatorId -> handleHealDamage a iid source amount' msg
   Do (HealDamage (InvestigatorTarget iid) source amount) | iid == investigatorId -> handleDoHealDamage a iid source amount
   HealDamageDelayed (isTarget a -> True) source n -> handleHealDamageDelayed a source n

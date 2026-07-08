@@ -5,7 +5,7 @@ import type { Cost } from '@/arkham/types/Cost';
 import type { AbilityLabel, FightLabel, FightLabelWithSkill, EvadeLabel, EvadeLabelWithSkill, EngageLabel } from '@/arkham/types/Message';
 import { SkillType } from '@/arkham/types/SkillType';
 import type { Ability, AbilitySkills, AbilityType } from '@/arkham/types/Ability';
-import { sourceKey } from '@/arkham/types/Source';
+import { sourceKey, type Source } from '@/arkham/types/Source';
 import type { Action } from '@/arkham/types/Action';
 import { actionsToList } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
@@ -60,6 +60,35 @@ const labelType = computed(() => {
   const ty = ability.value?.type ?? null
   if (ty && ty.tag === "DelayedAbility") return ty.abilityType
   return ty
+})
+
+// An Ultimatum/Boon pseudo-entity ability: returns the catalog tag (e.g.
+// "BoonOfDestiny") so the button can announce which boon is offering itself.
+function ultimatumOrBoonTag(source: Source): string | null {
+  switch (source.sourceTag) {
+    case 'ProxySource':
+      return ultimatumOrBoonTag(source.source)
+    case 'IndexedSource':
+      return source.contents ? ultimatumOrBoonTag(source.contents[1]) : null
+    case 'AbilitySource':
+      return ultimatumOrBoonTag(source.contents[0])
+    case 'UseAbilitySource':
+      return ultimatumOrBoonTag(source.contents[1])
+    case 'PaymentSource':
+      return ultimatumOrBoonTag(source.contents)
+    case 'BothSource':
+      return ultimatumOrBoonTag(source.contents[0]) ?? ultimatumOrBoonTag(source.contents[1])
+    case 'OtherSource':
+      return source.tag === 'UltimatumOrBoonSource' && source.contents ? source.contents : null
+    default:
+      return null
+  }
+}
+
+const boonTag = computed(() => ability.value ? ultimatumOrBoonTag(ability.value.source) : null)
+const boonName = computed(() => {
+  if (!boonTag.value) return null
+  return t(`ultimatumsAndBoons.entries.${boonTag.value}.name`)
 })
 
 const isObjective = computed(() => ability.value && ability.value.type.tag === "Objective")
@@ -192,6 +221,10 @@ const abilityLabel = computed(() => {
 
   if (isDelayedAbility.value === true) {
     return t('Delayed')
+  }
+
+  if (boonName.value) {
+    return boonName.value
   }
 
   if (labelType.value?.tag === "ForcedAbility") {
@@ -379,6 +412,7 @@ const classObject = computed(() => {
   const abilitySkillClass = abilitySkills.value ? `skill-${toClass(abilitySkills.value)}` : null
 
   return {
+    'boon-button': boonTag.value !== null,
     'zeroed-ability-button': isZeroedActionAbility.value && isNeutralAbility.value,
     'fast-ability-button': isFastActionAbility.value,
     'reaction-ability-button': isReactionAbility.value,
@@ -646,6 +680,18 @@ const classObject = computed(() => {
     font-family: "arkham";
     content: "\0059";
     margin-right: 5px;
+  }
+}
+
+/* Ultimatum/Boon pseudo-entity abilities: recolor and drop the reaction/forced
+   glyph so the button reads purely as a variant-rule boon. Declared last so it
+   wins over the reaction/forced styling above. */
+.boon-button, button.boon-button {
+  background: linear-gradient(90deg, #8a6d1d 0%, #b3922f 100%);
+  border: none;
+  color: #fff;
+  &:before {
+    content: none;
   }
 }
 

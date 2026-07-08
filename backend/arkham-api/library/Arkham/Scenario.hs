@@ -41,6 +41,7 @@ import Arkham.Slot
 import Arkham.Tarot
 import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.UltimatumsAndBoons (runUltimatumsAndBoonsMessage)
 import Arkham.Window (duringTurnWindow, mkWhen)
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
@@ -526,7 +527,12 @@ instance RunMessage Scenario where
               pushAll $ addToVictoryMsgs <> [whenEnd, msg]
               pure $ overAttrs (\a -> a & inResolutionL .~ True) x
             else clearQueue >> go
-        _ -> go
+        _ -> do
+          -- Ultimatums/Boons dispatch piggybacks on the scenario the same way
+          -- tarot cards do: they are not entities, so nothing else claims
+          -- their ability uses.
+          runUltimatumsAndBoonsMessage msg
+          go
    where
     go = Scenario <$> runMessage msg s
 

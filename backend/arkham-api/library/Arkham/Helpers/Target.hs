@@ -30,6 +30,7 @@ import Data.Proxy
 
 targetTraits :: (HasCallStack, HasGame m, Tracing m) => Target -> m (Set Trait)
 targetTraits = \case
+  UltimatumOrBoonTarget _ -> pure mempty
   DiscoverTarget _ -> pure mempty
   GameTarget -> pure mempty
   ActDeckTarget -> pure mempty

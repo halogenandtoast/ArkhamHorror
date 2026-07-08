@@ -47,6 +47,8 @@ type GameSettings = {
   settingsAbilitiesCannotReactToThemselves: boolean
   settingsAsIfRuling: AsIfRuling
   settingsStrictAsIfAt: boolean
+  settingsUltimatumsAndBoons: string[]
+  settingsUltimatumsAndBoonsEnabled: boolean
   aiPlayers: Record<string, AiPlayerState>
 }
 
@@ -74,6 +76,8 @@ const gameSettingsDecoder = JsonDecoder.object<GameSettings>({
     JsonDecoder.literal('chapter2'),
   ], 'AsIfRuling'),
   settingsStrictAsIfAt: JsonDecoder.boolean(),
+  settingsUltimatumsAndBoons: withDefault<string[]>([], JsonDecoder.array(JsonDecoder.string(), 'string[]')),
+  settingsUltimatumsAndBoonsEnabled: withDefault(true, JsonDecoder.boolean()),
   aiPlayers: withDefault<Record<string, AiPlayerState>>({}, JsonDecoder.record<AiPlayerState>(aiPlayerStateDecoder, 'Dict<PlayerId, AiPlayerState>')),
 }, 'GameSettings')
 
@@ -413,6 +417,8 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     settingsAbilitiesCannotReactToThemselves: true,
     settingsAsIfRuling: 'chapter1',
     settingsStrictAsIfAt: false,
+    settingsUltimatumsAndBoons: [],
+    settingsUltimatumsAndBoonsEnabled: true,
     aiPlayers: {},
   },
   undoActionStep: undoActionStep ?? null,

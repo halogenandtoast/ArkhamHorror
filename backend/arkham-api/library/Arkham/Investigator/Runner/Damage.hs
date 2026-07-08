@@ -343,6 +343,8 @@ handleCancelHorror a@InvestigatorAttrs{..} iid n = lift do
 handleInvestigatorDirectDamage a@InvestigatorAttrs{..} iid source damage horror = do
   unless (investigatorDefeated || investigatorResigned) do
     mods <- getModifiers a
+    -- CannotBeDamaged blocks damage only; horror still applies.
+    let damage' = if CannotBeDamaged `elem` mods then 0 else damage
     let horrorToCancel =
           if any (`elem` mods) [CannotCancelHorror, CannotCancelHorrorFrom source]
             then 0
@@ -350,17 +352,17 @@ handleInvestigatorDirectDamage a@InvestigatorAttrs{..} iid source damage horror 
     let horror' = max 0 (horror - horrorToCancel)
     pushAll
       $ [ CheckWindows
-            $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
-            : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage DamageDirect) | damage > 0]
+            $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage' horror')
+            : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage' DamageDirect) | damage' > 0]
               <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
-        | damage > 0 || horror' > 0
+        | damage' > 0 || horror' > 0
         ]
       <> [ InvestigatorDoAssignDamage
              iid
              source
              DamageAny
              (AssetWithModifier CanBeAssignedDirectDamage)
-             damage
+             damage'
              horror'
              []
              []
@@ -370,8 +372,10 @@ handleInvestigatorDirectDamage a@InvestigatorAttrs{..} iid source damage horror 
 handleInvestigatorAssignDamage a@InvestigatorAttrs{..} iid source strategy damage horror = do
   unless (investigatorDefeated || investigatorResigned) do
     mods <- getModifiers a
+    -- CannotBeDamaged blocks damage only; horror still applies.
+    let damage' = if CannotBeDamaged `elem` mods then 0 else damage
     if TreatAllDamageAsDirect `elem` mods
-      then push $ InvestigatorDirectDamage iid source damage horror
+      then push $ InvestigatorDirectDamage iid source damage' horror
       else do
         let horrorToCancel =
               if any (`elem` mods) [CannotCancelHorror, CannotCancelHorrorFrom source]
@@ -380,12 +384,12 @@ handleInvestigatorAssignDamage a@InvestigatorAttrs{..} iid source strategy damag
         let horror' = max 0 (horror - horrorToCancel)
         pushAll
           $ [ CheckWindows
-                $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
-                : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage strategy) | damage > 0]
+                $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage' horror')
+                : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage' strategy) | damage' > 0]
                   <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
-            | damage > 0 || horror' > 0
+            | damage' > 0 || horror' > 0
             ]
-          <> [InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror' [] []]
+          <> [InvestigatorDoAssignDamage iid source strategy AnyAsset damage' horror' [] []]
   pure a
 
 finalizeDeferredDamageAssignment a@InvestigatorAttrs{..} iid source damageStrategy damageTargets horrorTargets = do

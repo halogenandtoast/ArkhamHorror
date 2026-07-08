@@ -11,6 +11,7 @@ import { deckInvestigatorCode, deckRequirementDescriptions, deckRestrictionError
 import type { ArkhamDbDecklist, DeckMeta } from '@/arkham/types/Deck'
 import type { Investigator } from '@/arkham/types/Investigator'
 import Question from '@/arkham/components/Question.vue';
+import UltimatumsAndBoonsQuestion from '@/arkham/components/UltimatumsAndBoonsQuestion.vue';
 import NewDeck from '@/arkham/components/NewDeck.vue'
 import DeckToolbar from '@/arkham/components/DeckToolbar.vue'
 import { useI18n } from 'vue-i18n'
@@ -196,6 +197,13 @@ const questionLabel = computed(() => {
     return question.value.tag === 'QuestionLabel' ? handleEmbeddedI18n(question.value.label, t) : null
 })
 
+// Ultimatums/Boons deckbuilding interruptions (e.g. Boon of the Morrígan's
+// weakness choice) get a dedicated, boon-styled question UI.
+const isUltimatumsAndBoonsQuestion = computed(() =>
+  question.value?.tag === 'QuestionLabel'
+    && question.value.label?.startsWith('$label.ultimatumsAndBoons')
+)
+
 async function setPortrait(src: string) {
   createdPortrait.value = src
 }
@@ -338,8 +346,16 @@ const needsReply = computed(() => {
               <img :src="portraitImage(player.contents)" />
             </div>
             <div v-if="question && playerId == player.contents.playerId" class="question">
-              <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
-              <Question :game="game" :playerId="playerId" @choose="chooseChoice" />
+              <UltimatumsAndBoonsQuestion
+                v-if="isUltimatumsAndBoonsQuestion"
+                :game="game"
+                :playerId="playerId"
+                @choose="chooseChoice"
+              />
+              <template v-else>
+                <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
+                <Question :game="game" :playerId="playerId" @choose="chooseChoice" />
+              </template>
             </div>
             <div v-else>
               <div v-if="tabooList(player.contents)" class="taboo-list">

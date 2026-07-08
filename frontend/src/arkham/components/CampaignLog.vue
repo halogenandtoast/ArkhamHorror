@@ -22,6 +22,7 @@ import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
 import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
 import CampaignLogChaosBag from '@/arkham/components/CampaignLogChaosBag.vue'
+import CampaignLogUltimatumsAndBoons from '@/arkham/components/CampaignLogUltimatumsAndBoons.vue'
 import CampaignLogAdditionalSection from '@/arkham/components/CampaignLogAdditionalSection.vue'
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { useI18n } from 'vue-i18n'
@@ -103,6 +104,10 @@ const visibleSections = computed(() => {
   if (props.game.campaign?.id !== '10') return sections.value
   return sections.value.filter((s) => s.id !== 'areasSurveyed')
 })
+
+// --- Ultimatums and Boons variants -----------------------------------------------
+const ultimatumsAndBoonsEnabled = computed(() => props.game.settings.settingsUltimatumsAndBoonsEnabled)
+const ultimatumsAndBoons = computed(() => props.game.settings.settingsUltimatumsAndBoons)
 
 // --- Determine available logs & titles -----------------------------------------
 const mainLog = computed<LogContents>(() => props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || EMPTY_LOG)
@@ -839,6 +844,12 @@ onUnmounted(() => {
           <CampaignLogChaosBag
             v-if="chaosBag.length > 0"
             :chaosBag="chaosBag"
+          />
+
+          <CampaignLogUltimatumsAndBoons
+            v-if="ultimatumsAndBoons.length > 0"
+            :entries="ultimatumsAndBoons"
+            :enabled="ultimatumsAndBoonsEnabled"
           />
 
           <CampaignLogSection

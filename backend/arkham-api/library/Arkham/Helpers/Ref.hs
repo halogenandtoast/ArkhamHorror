@@ -69,7 +69,7 @@ sourceToMaybeTarget = \case
   AssetSource aid -> Just $ AssetTarget aid
   EnemySource eid -> Just $ EnemyTarget eid
   CardIdSource c -> Just $ CardIdTarget c
-  ScenarioSource -> Just $ ScenarioTarget
+  ScenarioSource -> Just ScenarioTarget
   InvestigatorSource iid -> Just $ InvestigatorTarget iid
   CardCodeSource cid -> Just $ CardCodeTarget cid
   ChaosTokenSource t -> Just $ ChaosTokenTarget t
@@ -83,7 +83,7 @@ sourceToMaybeTarget = \case
   SkillSource sid -> Just $ SkillTarget sid
   EmptyDeckSource -> Nothing
   DeckSource -> Nothing
-  GameSource -> Just $ GameTarget
+  GameSource -> Just GameTarget
   ActSource aid -> Just $ ActTarget aid
   EncounterCardSource _ -> Nothing
   TestSource {} -> Just TestTarget
@@ -94,8 +94,8 @@ sourceToMaybeTarget = \case
   ResourceSource iid -> Just $ ResourceTarget iid
   AbilitySource s _ -> sourceToMaybeTarget s
   UseAbilitySource _ s _ -> sourceToMaybeTarget s
-  ActDeckSource -> Just $ ActDeckTarget
-  AgendaDeckSource -> Just $ AgendaDeckTarget
+  ActDeckSource -> Just ActDeckTarget
+  AgendaDeckSource -> Just AgendaDeckTarget
   ActMatcherSource {} -> Nothing
   AgendaMatcherSource {} -> Nothing
   AssetMatcherSource {} -> Nothing
@@ -104,7 +104,7 @@ sourceToMaybeTarget = \case
   EnemyAttackSource a -> Just $ EnemyTarget a
   EnemyDefeatSource a -> Just $ EnemyTarget a
   StorySource code -> Just $ StoryTarget code
-  CampaignSource -> Just $ CampaignTarget
+  CampaignSource -> Just CampaignTarget
   TarotSource arcana -> Just $ TarotTarget arcana
   ThisCard -> Nothing
   CardCostSource a -> Just $ CardCostTarget a
@@ -113,6 +113,7 @@ sourceToMaybeTarget = \case
   ActiveCostSource acId -> Just $ ActiveCostTarget acId
   ScarletKeySource kId -> Just $ ScarletKeyTarget kId
   ConcealedCardSource kId -> Just $ ConcealedCardTarget kId
+  UltimatumOrBoonSource b -> Just $ UltimatumOrBoonTarget b
 
 targetToSource :: Target -> Source
 targetToSource = \case
@@ -157,6 +158,7 @@ targetToSource = \case
   CardMatcherTarget _ -> error "can not convert"
   CampaignTarget -> CampaignSource
   TarotTarget arcana -> TarotSource arcana
+  UltimatumOrBoonTarget b -> UltimatumOrBoonSource b
   AbilityTarget _ _ -> error "can not convert"
   BothTarget t1 t2 -> BothSource (targetToSource t1) (targetToSource t2)
   BatchTarget bId -> BatchSource bId

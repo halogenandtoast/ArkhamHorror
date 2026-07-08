@@ -31,7 +31,7 @@ instance HasAbilities CrustaceanHybridInTheDark where
       a
       [ restricted a 1 (isLight a <> youExist LeadInvestigator)
           $ SilentForcedAbility
-          $ oneOf [EnemyEnters #after Anywhere (be a), EnemySpawns #after Anywhere (be a)]
+          $ oneOf [EnemyEnters #when Anywhere (be a), EnemySpawns #when Anywhere (be a)]
       , restricted a 2 (exists $ investigator_ $ at_ $ locationWithEnemy a)
           $ forced
           $ EnemyFlipped #after (be a)

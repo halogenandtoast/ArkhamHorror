@@ -2670,24 +2670,31 @@ getLocationsMatching lmatcher = do
             getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
       pure $ filter ((`elem` matches') . toId) ls
     NearestLocationToMost matcher -> do
-      -- Mirror of FarthestLocationFromAll: among candidates, return the
-      -- location(s) whose maximum distance to any reachable investigator is the
-      -- smallest. Unreachable investigators contribute no distance for that
-      -- candidate, which lets locations in disconnected components still
-      -- qualify (and tie across components).
+      -- "Nearest to the most investigators" is a vote count, not a single
+      -- distance metric: each investigator votes for the candidate location(s)
+      -- at the shortest movement distance from them (on a tie for nearest, an
+      -- investigator votes for each tied location). The result is the
+      -- candidate(s) with the most votes; a remaining tie is broken by the lead
+      -- investigator at the call site. Investigators who cannot reach any
+      -- candidate cast no vote.
       iids <- getInvestigators
       candidates <- map toId <$> getLocationsMatching matcher
-      distances <- for iids \iid -> do
-        distanceSingletons . getMonoidalMap <$> execWriterT do
-          mloc <- getMaybeLocation iid
-          for_ mloc \start -> do
-            for_ candidates \candidate -> do
+      votes <- fmap concat $ for iids \iid -> do
+        getMaybeLocation iid >>= \case
+          Nothing -> pure []
+          Just start -> do
+            present <- fmap catMaybes $ for candidates \candidate -> do
               mDistance <- getDistance start candidate
-              for_ mDistance \(Distance distance) -> do
-                tell $ MonoidalMap.singleton distance [candidate]
+              pure $ fmap (\(Distance d) -> (candidate, d)) mDistance
+            pure $ case minimumMay (map snd present) of
+              Nothing -> []
+              Just nearest -> [candidate | (candidate, d) <- present, d == nearest]
       let
-        overallDistances = distanceAggregates $ foldr (unionWith max) mempty distances
-        resultIds = maybe [] coerce . headMay . map snd . sortOn fst . mapToList $ overallDistances
+        tally = unionsWith (+) (map (`singletonMap` (1 :: Int)) votes) :: Map LocationId Int
+        counts = mapToList tally
+        resultIds = case maximumMay (map snd counts) of
+          Nothing -> []
+          Just best -> [c | (c, n) <- counts, n == best]
       pure $ filter ((`elem` resultIds) . toId) ls
     NearestLocationToAny matcher -> do
       iids <- getInvestigators

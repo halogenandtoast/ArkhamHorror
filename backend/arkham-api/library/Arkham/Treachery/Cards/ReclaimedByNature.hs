@@ -34,7 +34,7 @@ instance RunMessage ReclaimedByNature where
                   initiateEnemyAttackEdit enemy attrs iid despiteExhausted
         Night -> do
           let yourLocation = locationWithInvestigator iid
-          enemies <- select $ EnemyAt $ oneOf [yourLocation, connectedTo yourLocation]
+          enemies <- select $ EnemyWithAnyDamage <> EnemyAt (oneOf [yourLocation, connectedTo yourLocation])
           chooseOneM iid $ campaignI18n do
             unscoped $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
             when (notNull enemies) do

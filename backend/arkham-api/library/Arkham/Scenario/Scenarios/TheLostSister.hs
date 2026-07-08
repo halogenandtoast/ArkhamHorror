@@ -384,12 +384,14 @@ instance RunMessage TheLostSister where
       when (before /= after) do
         lead <- getLead
         -- "after" is the new darkness of the location; flip the hybrids that are on
-        -- the wrong side onto the side that matches it.
+        -- the wrong side onto the side that matches it. Must use enemyIsExact: plain
+        -- enemyIs matches by base card code (10584a == 10584b), so it matches a hybrid
+        -- on either side and would flip a correctly-sided one to the wrong side.
         let wrongSide =
               if after
                 then [Enemies.crustaceanHybridInTheLight, Enemies.limulusHybridInTheLight]
                 else [Enemies.crustaceanHybridInTheDark, Enemies.limulusHybridInTheDark]
-        selectEach (EnemyAt (LocationWithId lid) <> mapOneOf enemyIs wrongSide) \eid ->
+        selectEach (EnemyAt (LocationWithId lid) <> mapOneOf enemyIsExact wrongSide) \eid ->
           flipOverBy lead attrs eid
       pure s
     Do (RevealLocation _ lid) -> do

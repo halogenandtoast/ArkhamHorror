@@ -71,6 +71,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       storyOnly finishedTheirMeal $ buildFlavor $ h "title" >> p "theHemlockCurse"
       for_ finishedTheirMeal \iid -> addCampaignCardToDeck iid ShuffleIn Skills.theHemlockCurse
       storyOnly others $ buildFlavor $ h "title" >> p "gnawingHunger"
+      for_ others (`sufferPhysicalTrauma` 1)
       pure s
     ResolveChaosToken token face iid | face `elem` [Cultist, ElderThing] -> do
       hemlockPreludeResolveChaosToken attrs token face iid

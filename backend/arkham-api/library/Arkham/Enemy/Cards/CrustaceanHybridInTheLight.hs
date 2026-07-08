@@ -50,6 +50,6 @@ instance RunMessage CrustaceanHybridInTheLight where
     Flip _ _ (isTarget attrs -> True) -> do
       let darkCard = lookupCard Cards.crustaceanHybridInTheDark attrs.cardId
       push $ ReplaceEnemy attrs.id darkCard Swap
-      checkAfter $ Window.EnemyFlipped attrs.id
+      when (isNothing (enemySpawnDetails attrs)) $ checkAfter $ Window.EnemyFlipped attrs.id
       pure e
     _ -> CrustaceanHybridInTheLight <$> liftRunMessage msg attrs

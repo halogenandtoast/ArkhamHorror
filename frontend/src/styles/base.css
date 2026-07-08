@@ -34,7 +34,7 @@ button {
   i { display: contents; font-style: italic; }
 }
 
-button:active:not(:disabled) {
+button:active:not(:disabled):not(.new-campaign-content button) {
   transform: scale(0.97);
 }
 

@@ -27,6 +27,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
 import Arkham.DefeatedBy
+import Arkham.Event.Types (Event)
 import Arkham.Game.Base
 import Arkham.Game.Settings
 import Arkham.Helpers.ChaosToken (cancelChaosToken)
@@ -114,10 +115,19 @@ instance HasModifiersFor Boon where
       BoonOfPersephone -> modifySelectMaybe source Matcher.DefeatedInvestigator \_ -> do
         liftGuardM $ not <$> getIsStandalone
         pure [XPModifier "Boon of Persephone" 3]
-      BoonOfTheChild -> modifySelectMaybe source Matcher.Anyone \iid -> do
-        mods <- lift $ getModifiers iid
-        guard $ boonOfTheChildUsedMarker `notElem` mods
-        pure [CanPlayTopmostOfDiscard (Just EventType, [])]
+      BoonOfTheChild -> do
+        modifySelectMaybe source Matcher.Anyone \iid -> do
+          mods <- lift $ getModifiers iid
+          guard $ boonOfTheChildUsedMarker `notElem` mods
+          pure [CanPlayTopmostOfDiscard (Just EventType, [])]
+        -- Bottom-deck instead of discard, computed from the event's own
+        -- played-from zone: message-based effect creation would race the play
+        -- chain (the scenario dispatches before entities, so pushed effects
+        -- resolve only after the event has already discarded).
+        modifySelectMaybe source Matcher.AnyEvent \eid -> do
+          attrs <- lift $ getAttrs @Event eid
+          guard attrs.playedFromDiscard
+          pure [PlaceOnBottomOfDeckInsteadOfDiscard]
       _ -> pure ()
 
 ultimatumOrBoonAbilities :: UltimatumOrBoon -> [Ability]
@@ -232,20 +242,16 @@ runUltimatumsAndBoonsMessage msg = case msg of
         case find (`cardMatch` Matcher.CardWithType EventType) discard' of
           Just topmostEvent | toCardId topmostEvent == toCardId card -> do
             -- Attributed to this boon even if another effect also allows
-            -- discard plays; over-attribution only bottom-decks a card such
-            -- effects (e.g. Wendy's Amulet) would bottom-deck anyway.
+            -- discard plays. Only the once-per-round marker is pushed here;
+            -- the bottom-decking is a computed modifier (HasModifiersFor) on
+            -- events played from the discard, since a pushed effect would
+            -- resolve after the event has already discarded.
             marker <-
               roundModifier
                 (UltimatumOrBoonSource (Boon BoonOfTheChild))
                 (InvestigatorTarget iid)
                 boonOfTheChildUsedMarker
-            bottomOfDeck <-
-              cardResolutionModifier
-                card
-                (UltimatumOrBoonSource (Boon BoonOfTheChild))
-                card
-                PlaceOnBottomOfDeckInsteadOfDiscard
-            pushAll [marker, bottomOfDeck]
+            push marker
           _ -> pure ()
   _ -> pure ()
 

@@ -70,6 +70,8 @@ instance RunMessage InTheSearchlight where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       laChicaRoja <- selectJust $ enemyIs Enemies.laChicaRojaTheGirlInTheCarmineCoat
+      cancelEnemyDefeatWithWindows laChicaRoja
+      healAllDamage attrs laChicaRoja
       withLocationOf laChicaRoja \loc -> do
         targetCount <- countScenarioTokens Token.Target
         hasTarget <- matches loc (LocationWithToken Token.Target)
@@ -96,8 +98,6 @@ instance RunMessage InTheSearchlight where
               then doStep 2 msg
               else push R1
           else do
-            cancelEnemyDefeatWithWindows laChicaRoja
-            healAllDamage attrs laChicaRoja
             place laChicaRoja InTheShadows
             doStep 0 msg -- resolveConcealed lead laChicaRoja needs the target to be removed first
             push $ ResetActDeckToStage 1

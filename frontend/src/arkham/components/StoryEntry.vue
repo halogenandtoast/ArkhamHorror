@@ -682,6 +682,19 @@ button, a.button {
   }
 }
 
+/* Buttons here are width:100%, so the global scale(0.97) press bounce grows
+   with viewport width. Ramp the scale toward 1 on wider screens to keep the
+   pixel bounce roughly constant. */
+button:active:not(:disabled) {
+  transform: scale(0.985);
+}
+@media (min-width: 900px) {
+  button:active:not(:disabled) { transform: scale(0.99); }
+}
+@media (min-width: 1400px) {
+  button:active:not(:disabled) { transform: scale(0.994); }
+}
+
 .task-choice .choice-content,
 .task-choice .choice-label {
   display: block;

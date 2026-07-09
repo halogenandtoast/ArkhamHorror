@@ -5,8 +5,16 @@
   "selectedCount": "{count} selected",
   "noneSelected": "None selected",
   "settingsToggleTitle": "Ultimatums & Boons enabled",
-  "settingsToggleDescription": "Turn the selected Ultimatums and Boons on or off for this game. This affects everyone in the game.",
+  "settingsToggleDescription": "Turn the selected Ultimatums and Boons on or off for this game. This affects everyone in the game. Deckbuilding entries (such as Ultimatum of the Highlander or Induction) are enforced when decks are chosen and are not affected by this toggle.",
   "currentlyDisabled": "(currently disabled)",
+  "deckbuildingBadge": "Deckbuilding — not affected by the in-game On/Off toggle",
+  "rolledThisGame": "Rolled this game",
+  "deckErrors": {
+    "highlander": "Ultimatum of the Highlander: only 1 copy of {name} is allowed",
+    "induction": "Ultimatum of Induction: decks can only include level 0 cards ({name})",
+    "exile": "Ultimatum of Exile: cards with exile are Campaign Mode only ({name})",
+    "orthodoxy": "Ultimatum of Orthodoxy: this deck must use a taboo list"
+  },
   "entries": {
     "BoonOfTheAncients": {
       "name": "Boon of the Ancients",
@@ -51,10 +59,95 @@
     "BoonOfTheChild": {
       "name": "Boon of the Child",
       "text": "Once per round, an investigator may play the topmost event in their discard pile as if it were in their hand. If they do, after that event resolves, they must place it on the bottom of their deck."
+    },
+    "UltimatumOfAgony": {
+      "name": "Ultimatum of Agony",
+      "text": "When assigning damage or horror, investigators must assign as much damage or horror as possible to a single card before any excess may be assigned to a different card."
+    },
+    "UltimatumOfBrokenPromises": {
+      "name": "Ultimatum of Broken Promises",
+      "text": "Remove the Elder Sign token from the chaos bag during setup of a campaign or standalone scenario."
+    },
+    "UltimatumOfTheBrokenVeil": {
+      "name": "Ultimatum of the Broken Veil",
+      "text": "Anytime 1 or more weakness cards are discarded from the top of an investigator's deck, shuffle those cards back into that investigator's deck."
+    },
+    "UltimatumOfChaos": {
+      "name": "Ultimatum of Chaos",
+      "text": "Each investigator's starting deck of non-signature, non-weakness cards must be selected at random from among all eligible options in that player's collection. (Honor rule — not enforced by the app.)"
+    },
+    "UltimatumOfDisaster": {
+      "name": "Ultimatum of Disaster",
+      "text": "Each investigator's deckbuilding requirements gain \"1 additional random basic weakness.\""
+    },
+    "UltimatumOfDread": {
+      "name": "Ultimatum of Dread",
+      "text": "Do not skip the mythos phase during the first round of each game."
+    },
+    "UltimatumOfFailure": {
+      "name": "Ultimatum of Failure",
+      "text": "Add an additional autofail token to the chaos bag during setup of a campaign (or standalone scenario)."
+    },
+    "UltimatumOfFinality": {
+      "name": "Ultimatum of Finality",
+      "text": "Campaign Mode only. If an investigator is defeated by damage, they are killed. If an investigator is defeated by horror, they are driven insane."
+    },
+    "UltimatumOfForbiddenKnowledge": {
+      "name": "Ultimatum of Forbidden Knowledge",
+      "text": "Each investigator begins the game with 1 fewer card in their opening hand."
+    },
+    "UltimatumOfHardship": {
+      "name": "Ultimatum of Hardship",
+      "text": "Each investigator begins the game with 2 fewer resources in their resource pool."
+    },
+    "UltimatumOfTheHighlander": {
+      "name": "Ultimatum of the Highlander",
+      "text": "Each investigator's deck can only include 1 copy of each non-weakness card, by title (unless multiple copies of that card are required by that investigator's deckbuilding requirements)."
+    },
+    "UltimatumOfInduction": {
+      "name": "Ultimatum of Induction",
+      "text": "Campaign Mode only. Investigator decks can only contain level 0 cards. Investigators cannot earn or spend experience."
+    },
+    "UltimatumOfOrthodoxy": {
+      "name": "Ultimatum of Orthodoxy",
+      "text": "Play the game using the Taboo List."
+    },
+    "UltimatumOfTheScream": {
+      "name": "Ultimatum of The Scream",
+      "text": "Campaign Mode only. When a unique non-story and non-weakness ally asset you control is defeated, remove it from the game. You cannot play that card for the rest of the campaign. After the scenario ends, remove that ally and all copies of it from each player's deck."
+    },
+    "UltimatumOfSurvival": {
+      "name": "Ultimatum of Survival",
+      "text": "Campaign Mode only. If an investigator is killed or driven insane, their player is eliminated from the campaign and cannot continue playing as a new investigator."
+    },
+    "UltimatumOfUltimatums": {
+      "name": "Ultimatum of Ultimatums",
+      "text": "Campaign Mode only. Before each game in the campaign, choose 1 ultimatum/boon at random and begin the game with that boon or ultimatum active. (This does not apply to ultimatums or boons that affect deckbuilding or chaos bag construction.)"
+    },
+    "UltimatumOfExile": {
+      "name": "Ultimatum of Exile",
+      "text": "Treat each card with \"exile\" in its text box as if it also had \"Campaign Mode only.\""
+    },
+    "UltimatumOfTheSpiral": {
+      "name": "Ultimatum of the Spiral",
+      "text": "Campaign Mode only. After an investigator is defeated, add 1 random basic weakness to their deck."
+    },
+    "UltimatumOfMalevolence": {
+      "name": "Ultimatum of Malevolence",
+      "text": "Easy or Standard difficulty only. While playing, use the \"Hard/Expert\" side of the scenario's reference card."
     }
   },
   "morrigan": {
     "instructions": "Choose 1 of these 3 random basic weaknesses to return to the collection. One of the remaining 2 will be chosen at random and added to your deck.",
     "returnAction": "Return to the collection"
-  }
+  },
+  "deckRequirements": {
+    "chaos": "Ultimatum of Chaos: your deck's non-signature, non-weakness cards must be chosen at random from your collection (honor rule — not enforced by the app)",
+    "disaster": "Ultimatum of Disaster: your deck gains 1 additional random basic weakness (added automatically)",
+    "highlander": "Ultimatum of the Highlander: only 1 copy of each non-weakness card by title (unless your investigator requires more)",
+    "induction": "Ultimatum of Induction: only level 0 cards; no experience can be earned or spent",
+    "orthodoxy": "Ultimatum of Orthodoxy: your deck must use a taboo list",
+    "exile": "Ultimatum of Exile: cards with exile cannot be used in standalone play"
+  },
+  "betaBadge": "Beta"
 }

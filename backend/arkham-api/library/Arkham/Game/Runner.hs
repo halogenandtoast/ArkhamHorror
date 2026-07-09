@@ -30,6 +30,7 @@ import Arkham.DamageEffect
 import Arkham.Debug
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist
+import Arkham.Difficulty
 import Arkham.Effect
 import Arkham.Effect.Types (EffectAttrs (effectFinished, effectOnDisable))
 import Arkham.Effect.Window (EffectWindow (EffectCardResolutionWindow))
@@ -45,7 +46,14 @@ import Arkham.Event.Types
 import Arkham.Game.Base
 import Arkham.Game.Diff
 import Arkham.Game.Json ()
-import Arkham.Game.Settings (settingsAsIfRuling, settingsUltimatumsAndBoonsEnabled)
+import Arkham.Game.Settings (
+  activeUltimatumsAndBoons,
+  settingsAsIfRuling,
+  settingsRolledUltimatumOrBoon,
+  settingsScreamedAllies,
+  settingsUltimatumsAndBoons,
+  settingsUltimatumsAndBoonsEnabled,
+ )
 import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
@@ -143,6 +151,7 @@ import Arkham.Treachery.Types (
   treacheryPlacement,
   treacheryWaiting,
  )
+import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -179,6 +188,12 @@ runGameMessage msg g = case msg of
     pure $ g {gameSettings = g.gameSettings {settingsAsIfRuling = ruling}}
   SetUltimatumsAndBoonsEnabled enabled ->
     pure $ g {gameSettings = g.gameSettings {settingsUltimatumsAndBoonsEnabled = enabled}}
+  RecordScreamedAlly code ->
+    pure
+      $ g
+        { gameSettings =
+            g.gameSettings {settingsScreamedAllies = insertSet code (settingsScreamedAllies g.gameSettings)}
+        }
   RegisterAiPlayer pid st -> pure $ overAiPlayers (Map.insert pid st) g
   SetAiFocusOverride pid mFocus -> pure $ overAiSeat pid (\s -> s {aiFocusOverride = mFocus}) g
   AddAiPriority pid target -> pure $ overAiSeat pid (\s -> s {aiPriorities = s.aiPriorities <> [target]}) g
@@ -203,7 +218,7 @@ runGameMessage msg g = case msg of
             }
         fixSkill a = if toCardId a == cardId then a {skillOwner = iid} else a
         fixAsset a = if toCardId a == cardId then a {assetOwner = Just iid} else a
-    for_ (lookup cardId (g ^. cardsL)) \c -> replaceCard cardId (fixCard c)
+    for_ (lookup cardId (g ^. cardsL)) $ replaceCard cardId . fixCard
     pure
       $ g
       & cardsL
@@ -602,12 +617,33 @@ runGameMessage msg g = case msg of
       setScenarioCounts' = overAttrs (\s -> s {scenarioCounts = scenarioCounts s <> scenarioCountsValue})
 
       standalone = isNothing $ modeCampaign $ g ^. modeL
+      activeVariants = activeUltimatumsAndBoons (gameSettings g)
+      -- Ultimatum of Malevolence: use the Hard/Expert reference side while
+      -- nominally playing Easy/Standard. Only the reference side flips; the
+      -- chaos bag still builds from the real difficulty.
+      useHardExpertReference =
+        Ultimatum UltimatumOfMalevolence `member` activeVariants && difficulty `elem` [Easy, Standard]
+      setUseHardExpertReference = overAttrs (\s -> s {scenarioUseHardExpertReference = useHardExpertReference})
       setPlayerDecks = overAttrs (playerDecksL .~ playerDecks)
       opts =
         (fromMaybe defaultScenarioOptions mopts)
           { scenarioOptionsStandalone = standalone
           , scenarioOptionsPerformTarotReading = gamePerformTarotReadings g
           }
+    -- Ultimatum of Ultimatums (campaign only): roll one non-deckbuilding,
+    -- non-chaos-bag entry for this game only. Re-rolled every StartScenario;
+    -- cleared when the ultimatum isn't active.
+    let
+      eligibleForRoll entry =
+        not (affectsDeckbuildingOrChaosBag entry)
+          && entry
+          `notElem` settingsUltimatumsAndBoons (gameSettings g)
+    rolled <-
+      if not standalone && Ultimatum UltimatumOfUltimatums `member` activeVariants
+        then case nonEmpty (filter eligibleForRoll allUltimatumsAndBoons) of
+          Nothing -> pure Nothing
+          Just pool -> Just <$> sample pool
+        else pure Nothing
     pushAll
       $ [HandleOption option | standalone, option <- maybe [] (toList . campaignLogOptions) mCampaignLog]
       <> [LoadScenario opts]
@@ -619,11 +655,13 @@ runGameMessage msg g = case msg of
                   $ setCampaignLog
                   $ setScenarioMeta'
                   $ setScenarioCounts'
+                  $ setUseHardExpertReference
                   $ lookupScenario sid difficulty
               )
         )
       & (phaseL .~ InvestigationPhase)
       & (cardsL %~ if keepCardCache then id else filterMap (not . isEncounterCard))
+      & \g' -> g' {gameSettings = (gameSettings g') {settingsRolledUltimatumOrBoon = rolled}}
   PerformTarotReading -> do
     when (gamePerformTarotReadings g) do
       lead <- getLeadPlayer

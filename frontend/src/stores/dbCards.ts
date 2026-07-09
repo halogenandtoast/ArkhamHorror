@@ -23,9 +23,18 @@ export interface ArkhamDBCard {
   real_traits: string
   real_text: string
   type_code: string
+  // "weakness" | "basicweakness"; absent on non-weakness cards
+  subtype_code?: string
   is_unique: boolean
   double_sided: boolean
   encounter_code?: string
+  // Investigator cards only: required signature cards keyed by code, each
+  // mapping to its alternate versions (also keyed by code).
+  deck_requirements?: {
+    size?: number
+    card?: Record<string, Record<string, string> | null>
+    random?: unknown[]
+  }
 }
 
 export interface DbCardsState {

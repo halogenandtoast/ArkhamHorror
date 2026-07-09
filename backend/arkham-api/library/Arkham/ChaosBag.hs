@@ -7,6 +7,8 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
 import Arkham.ChaosToken.Types
+import Arkham.Game.Settings (activeUltimatumsAndBoons)
+import Arkham.UltimatumsAndBoons.Types
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.GameEnv
@@ -622,7 +624,17 @@ instance RunMessage ChaosBag where
       pure $ c & forceDrawL ?~ face
     ForceChaosTokenDrawToken token -> do
       pure $ c & forceDrawL ?~ token.face
-    SetChaosTokens tokens' -> do
+    SetChaosTokens rawTokens -> do
+      -- Ultimatums that alter chaos bag construction. Applied whenever the bag
+      -- is (re)built from a face list, which in practice is setup.
+      variants <- activeUltimatumsAndBoons <$> getSettings
+      let
+        brokenPromises = Ultimatum UltimatumOfBrokenPromises `member` variants
+        failure = Ultimatum UltimatumOfFailure `member` variants
+        tokens' =
+          (if brokenPromises then filter (/= ElderSign) else id)
+            $ rawTokens
+            <> [AutoFail | failure]
       tokens'' <- traverse createChaosToken tokens'
       blessTokens <- replicateM 10 $ createChaosToken #bless
       curseTokens <- replicateM 10 $ createChaosToken #curse

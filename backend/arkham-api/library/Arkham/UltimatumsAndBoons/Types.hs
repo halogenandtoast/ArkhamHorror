@@ -39,7 +39,7 @@ data Ultimatum
   | UltimatumOfExile
   | UltimatumOfTheSpiral
   | UltimatumOfMalevolence
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
 
 data UltimatumOrBoon
   = Ultimatum Ultimatum
@@ -52,6 +52,30 @@ variantName :: UltimatumOrBoon -> Text
 variantName = \case
   Ultimatum u -> tshow u
   Boon b -> tshow b
+
+allUltimatumsAndBoons :: [UltimatumOrBoon]
+allUltimatumsAndBoons = map Boon [minBound ..] <> map Ultimatum [minBound ..]
+
+{- | Entries excluded from Ultimatum of Ultimatums' per-game roll — its own
+text exempts "ultimatums or boons that affect deckbuilding or chaos bag
+construction". Boon of the Ancients is included here since campaign-start
+experience is meaningless as a single-game roll.
+-}
+affectsDeckbuildingOrChaosBag :: UltimatumOrBoon -> Bool
+affectsDeckbuildingOrChaosBag = \case
+  Boon b -> b `elem` [BoonOfTheMorrigan, BoonOfTheAncients]
+  Ultimatum u ->
+    u
+      `elem` [ UltimatumOfBrokenPromises
+             , UltimatumOfChaos
+             , UltimatumOfDisaster
+             , UltimatumOfFailure
+             , UltimatumOfTheHighlander
+             , UltimatumOfInduction
+             , UltimatumOfOrthodoxy
+             , UltimatumOfExile
+             , UltimatumOfUltimatums -- never rolls itself
+             ]
 
 mconcat
   [ deriveJSON defaultOptions ''Boon

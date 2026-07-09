@@ -1,7 +1,10 @@
+import { useDbCardStore, type ArkhamDBCard } from '@/stores/dbCards'
+
 export type SelectableDeckList = {
   investigator_code: string
   slots: Record<string, number>
   meta?: string | { alternate_front?: string }
+  taboo_id?: number | null
 }
 
 type Translate = (key: string, named?: Record<string, unknown>) => string
@@ -9,6 +12,9 @@ type Translate = (key: string, named?: Record<string, unknown>) => string
 type CampaignDeckRestrictionContext = {
   campaignId?: string | null
   campaignLog?: { recordedSets?: Record<string, unknown[]> } | null
+  // The game's SELECTED Ultimatums/Boons tags. Deck legality applies from
+  // selection alone, regardless of the runtime enabled toggle.
+  ultimatumsAndBoons?: string[]
 }
 
 type DeckRestrictionContext = CampaignDeckRestrictionContext & {
@@ -183,7 +189,7 @@ export function deckRequirementDescriptions(
   const normalizedScenarioId = scenarioId ? normalizeCardCode(scenarioId) : null
   const normalizedCampaignId = campaign?.campaignId ? normalizeCardCode(campaign.campaignId) : null
 
-  return [
+  const restrictionDescriptions = [
     ...(normalizedScenarioId ? [challengeScenarioInvestigators[normalizedScenarioId]] : []),
     ...(normalizedScenarioId ? (scenarioDeckRestrictions[normalizedScenarioId] ?? []) : []),
     ...(normalizedCampaignId ? (campaignDeckRestrictions[normalizedCampaignId] ?? []) : []),
@@ -192,6 +198,50 @@ export function deckRequirementDescriptions(
     if (typeof r.description === 'function') return t ? [r.description(t)] : []
     return [r.description]
   })
+
+  return [...restrictionDescriptions, ...ultimatumDeckRequirementDescriptions(campaign, t)]
+}
+
+// Deckbuilding Ultimatums shown in the requirements panel (challenge-scenario
+// style). Only the applicable ones for the game mode are listed.
+const ULTIMATUM_DECK_REQUIREMENT_KEYS: Record<string, 'always' | 'campaign' | 'standalone'> = {
+  UltimatumOfChaos: 'always',
+  UltimatumOfDisaster: 'always',
+  UltimatumOfTheHighlander: 'always',
+  UltimatumOfInduction: 'campaign',
+  UltimatumOfOrthodoxy: 'always',
+  UltimatumOfExile: 'standalone',
+}
+
+function ultimatumDeckRequirementDescriptions(
+  campaign?: CampaignDeckRestrictionContext,
+  t?: Translate,
+): string[] {
+  if (!t) return []
+  const isCampaign = !!campaign?.campaignId
+  return (campaign?.ultimatumsAndBoons ?? []).flatMap((tag) => {
+    const applies = ULTIMATUM_DECK_REQUIREMENT_KEYS[tag]
+    if (!applies) return []
+    if (applies === 'campaign' && !isCampaign) return []
+    if (applies === 'standalone' && isCampaign) return []
+    const key = tag.replace(/^UltimatumOf(The)?/, '')
+    return [t(`ultimatumsAndBoons.deckRequirements.${key.charAt(0).toLowerCase()}${key.slice(1)}`)]
+  })
+}
+
+// Ultimatums whose deck constraint is actually validated by deckRestrictionError
+// (Chaos is an honor rule and Disaster is automatic — informational only).
+export function hasValidatedUltimatumDeckConstraints(
+  ultimatumsAndBoons: string[],
+  isCampaign: boolean,
+): boolean {
+  return ultimatumsAndBoons.some(
+    (tag) =>
+      tag === 'UltimatumOfOrthodoxy'
+      || tag === 'UltimatumOfTheHighlander'
+      || (tag === 'UltimatumOfInduction' && isCampaign)
+      || (tag === 'UltimatumOfExile' && !isCampaign),
+  )
 }
 
 export function hasParallelContent(investigatorCode: string): boolean {
@@ -258,6 +308,80 @@ export function deckRestrictionError(
   for (const restriction of campaignRestrictions) {
     const error = restriction.validate(context)
     if (error) return error
+  }
+
+  return ultimatumDeckError(context)
+}
+
+// --- Ultimatums (variant rules) that constrain deckbuilding -----------------
+// Enforced at deck construction; the in-game Ultimatums & Boons on/off toggle
+// does not lift them.
+function ultimatumDeckError(context: DeckRestrictionContext): string | null {
+  const ultimatums = context.ultimatumsAndBoons ?? []
+  if (ultimatums.length === 0) return null
+
+  const { deckList, t } = context
+  const isCampaign = !!context.campaignId
+
+  if (ultimatums.includes('UltimatumOfOrthodoxy') && !deckList.taboo_id) {
+    return t?.('ultimatumsAndBoons.deckErrors.orthodoxy')
+      ?? 'Ultimatum of Orthodoxy: this deck must use a taboo list'
+  }
+
+  const store = useDbCardStore()
+  void store.initDbCards()
+  // Card-data checks pass silently until dbCards loads; callers evaluate this
+  // inside computeds that track the store and re-run once it does.
+  if (store.dbCards.length === 0) return null
+
+  const dbCard = (code: string): ArkhamDBCard | null => store.getDbCard(normalizeCardCode(code))
+
+  const checkInduction = isCampaign && ultimatums.includes('UltimatumOfInduction')
+  const checkExile = !isCampaign && ultimatums.includes('UltimatumOfExile')
+
+  for (const [code, count] of Object.entries(deckList.slots)) {
+    if (count <= 0) continue
+    const card = dbCard(code)
+    // Weaknesses are exempt: signatures/basic weaknesses are required content.
+    if (!card || card.subtype_code) continue
+
+    if (checkInduction && (card.xp ?? 0) > 0) {
+      return t?.('ultimatumsAndBoons.deckErrors.induction', { name: card.real_name })
+        ?? `Ultimatum of Induction: decks can only include level 0 cards (${card.real_name})`
+    }
+
+    if (checkExile && /exile/i.test(card.real_text ?? '')) {
+      return t?.('ultimatumsAndBoons.deckErrors.exile', { name: card.real_name })
+        ?? `Ultimatum of Exile: cards with exile are Campaign Mode only (${card.real_name})`
+    }
+  }
+
+  if (ultimatums.includes('UltimatumOfTheHighlander')) {
+    // Titles required by the investigator's deckbuilding requirements (and
+    // their alternate versions) are exempt from the 1-copy limit.
+    const requiredTitles = new Set<string>()
+    for (const invCode of new Set([deckInvestigatorCode(deckList), normalizeCardCode(deckList.investigator_code)])) {
+      const requirements = dbCard(invCode)?.deck_requirements?.card ?? {}
+      for (const [reqCode, alternates] of Object.entries(requirements)) {
+        for (const code of [reqCode, ...Object.keys(alternates ?? {})]) {
+          const name = dbCard(code)?.real_name
+          if (name) requiredTitles.add(name)
+        }
+      }
+    }
+
+    const countsByTitle: Record<string, number> = {}
+    for (const [code, count] of Object.entries(deckList.slots)) {
+      if (count <= 0) continue
+      const card = dbCard(code)
+      if (!card || card.subtype_code) continue
+      if (requiredTitles.has(card.real_name)) continue
+      countsByTitle[card.real_name] = (countsByTitle[card.real_name] ?? 0) + count
+      if (countsByTitle[card.real_name] > 1) {
+        return t?.('ultimatumsAndBoons.deckErrors.highlander', { name: card.real_name })
+          ?? `Ultimatum of the Highlander: only 1 copy of ${card.real_name} is allowed`
+      }
+    }
   }
 
   return null

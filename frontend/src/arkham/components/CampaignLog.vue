@@ -850,6 +850,7 @@ onUnmounted(() => {
             v-if="ultimatumsAndBoons.length > 0"
             :entries="ultimatumsAndBoons"
             :enabled="ultimatumsAndBoonsEnabled"
+            :rolled="game.settings.settingsRolledUltimatumOrBoon"
           />
 
           <CampaignLogSection

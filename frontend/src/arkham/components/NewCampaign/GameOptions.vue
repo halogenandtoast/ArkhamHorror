@@ -300,9 +300,8 @@ const uabExpanded = ref<Record<string, boolean>>({ boons: false, ultimatums: fal
 const uabSelectedCount = (group: { tags: string[] }) =>
   group.tags.filter((tag) => ultimatumsAndBoons.value.includes(tag)).length
 
-// ponytail: hardcoded catalog; Ultimatums arrive in a later drop — add their tags
-// to the ultimatums group (and locale entries) when they land.
-const uabGroups: { key: 'boons' | 'ultimatums'; tags: string[] }[] = [
+// ponytail: hardcoded catalog; add new tags here + locale entries when they land.
+const uabGroups: { key: 'boons' | 'ultimatums'; beta?: boolean; tags: string[] }[] = [
   {
     key: 'boons',
     tags: [
@@ -319,8 +318,43 @@ const uabGroups: { key: 'boons' | 'ultimatums'; tags: string[] }[] = [
       'BoonOfTheChild',
     ],
   },
-  { key: 'ultimatums', tags: [] },
+  {
+    key: 'ultimatums',
+    beta: true,
+    tags: [
+      'UltimatumOfAgony',
+      'UltimatumOfBrokenPromises',
+      'UltimatumOfTheBrokenVeil',
+      'UltimatumOfChaos',
+      'UltimatumOfDisaster',
+      'UltimatumOfDread',
+      'UltimatumOfExile',
+      'UltimatumOfFailure',
+      'UltimatumOfFinality',
+      'UltimatumOfForbiddenKnowledge',
+      'UltimatumOfHardship',
+      'UltimatumOfTheHighlander',
+      'UltimatumOfInduction',
+      'UltimatumOfMalevolence',
+      'UltimatumOfOrthodoxy',
+      'UltimatumOfTheScream',
+      'UltimatumOfTheSpiral',
+      'UltimatumOfSurvival',
+      'UltimatumOfUltimatums',
+    ],
+  },
 ]
+
+// Entries enforced at deck construction (deckRestrictions.ts) rather than at
+// runtime — the in-game Ultimatums & Boons on/off toggle does not affect them.
+const UAB_DECKBUILDING_TAGS = new Set([
+  'UltimatumOfChaos',
+  'UltimatumOfDisaster',
+  'UltimatumOfTheHighlander',
+  'UltimatumOfInduction',
+  'UltimatumOfOrthodoxy',
+  'UltimatumOfExile',
+])
 
 type RulesPreset = 'chapter1' | 'chapter2'
 
@@ -744,7 +778,10 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
       <template v-for="group in uabGroups" :key="group.key">
         <div v-if="group.tags.length > 0" class="card rules-card">
           <button type="button" class="rules-toggle" @click="uabExpanded[group.key] = !uabExpanded[group.key]">
-            <span class="card-title" style="margin-bottom: 0">{{ $t(`ultimatumsAndBoons.${group.key}`) }}</span>
+            <span class="card-title" style="margin-bottom: 0">
+              {{ $t(`ultimatumsAndBoons.${group.key}`) }}
+              <span v-if="group.beta" class="uab-beta-pill">{{ $t('ultimatumsAndBoons.betaBadge') }}</span>
+            </span>
             <span class="rules-header-right">
               <span class="preset-pill" :class="{ 'uab-active': uabSelectedCount(group) > 0 }">
                 {{ uabSelectedCount(group) > 0
@@ -760,7 +797,12 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
                 <label v-for="tag in group.tags" :key="tag" class="uab-row">
                   <input type="checkbox" :value="tag" v-model="ultimatumsAndBoons" />
                   <span class="uab-text">
-                    <span class="uab-name">{{ $t(`ultimatumsAndBoons.entries.${tag}.name`) }}</span>
+                    <span class="uab-name">
+                      {{ $t(`ultimatumsAndBoons.entries.${tag}.name`) }}
+                      <span v-if="UAB_DECKBUILDING_TAGS.has(tag)" class="uab-deckbuilding-badge">
+                        {{ $t('ultimatumsAndBoons.deckbuildingBadge') }}
+                      </span>
+                    </span>
                     <span class="uab-desc">{{ $t(`ultimatumsAndBoons.entries.${tag}.text`) }}</span>
                   </span>
                 </label>
@@ -1519,6 +1561,35 @@ input[type='radio']:checked + label {
   font-size: 12px;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.6);
+}
+
+.uab-deckbuilding-badge {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  margin-left: 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 211, 112, 0.35);
+  background: rgba(95, 65, 10, 0.35);
+  color: rgba(255, 226, 154, 0.95);
+  white-space: nowrap;
+}
+
+/* matches the campaign-box beta ribbon color (darkgoldenrod), pill-shaped */
+.uab-beta-pill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 1px 8px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: darkgoldenrod;
+  color: white;
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
 .recommended-icon {

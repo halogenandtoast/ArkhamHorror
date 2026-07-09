@@ -7218,6 +7218,21 @@ test-suite spec
       Arkham.UltimatumsAndBoons.BoonOfTheExplorerSpec
       Arkham.UltimatumsAndBoons.BoonOfTheMorriganSpec
       Arkham.UltimatumsAndBoons.BoonOfThothSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfAgonySpec
+      Arkham.UltimatumsAndBoons.UltimatumOfBrokenPromisesSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfDisasterSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfDreadSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfFailureSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfFinalitySpec
+      Arkham.UltimatumsAndBoons.UltimatumOfForbiddenKnowledgeSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfHardshipSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfInductionSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfMalevolenceSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfSurvivalSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfTheBrokenVeilSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfTheScreamSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfTheSpiralSpec
+      Arkham.UltimatumsAndBoons.UltimatumOfUltimatumsSpec
       Helpers.Message
       Helpers.UltimatumsAndBoons
       SpecHook

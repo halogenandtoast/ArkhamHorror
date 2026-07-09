@@ -49,6 +49,11 @@ type GameSettings = {
   settingsStrictAsIfAt: boolean
   settingsUltimatumsAndBoons: string[]
   settingsUltimatumsAndBoonsEnabled: boolean
+  // Ultimatum of Ultimatums' per-game random roll (a tag like "BoonOfHermes");
+  // re-rolled each scenario.
+  settingsRolledUltimatumOrBoon: string | null
+  // Card codes banned by Ultimatum of The Scream.
+  settingsScreamedAllies: string[]
   aiPlayers: Record<string, AiPlayerState>
 }
 
@@ -78,6 +83,8 @@ const gameSettingsDecoder = JsonDecoder.object<GameSettings>({
   settingsStrictAsIfAt: JsonDecoder.boolean(),
   settingsUltimatumsAndBoons: withDefault<string[]>([], JsonDecoder.array(JsonDecoder.string(), 'string[]')),
   settingsUltimatumsAndBoonsEnabled: withDefault(true, JsonDecoder.boolean()),
+  settingsRolledUltimatumOrBoon: withDefault<string | null>(null, JsonDecoder.string()),
+  settingsScreamedAllies: withDefault<string[]>([], JsonDecoder.array(JsonDecoder.string(), 'string[]')),
   aiPlayers: withDefault<Record<string, AiPlayerState>>({}, JsonDecoder.record<AiPlayerState>(aiPlayerStateDecoder, 'Dict<PlayerId, AiPlayerState>')),
 }, 'GameSettings')
 
@@ -419,6 +426,8 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     settingsStrictAsIfAt: false,
     settingsUltimatumsAndBoons: [],
     settingsUltimatumsAndBoonsEnabled: true,
+    settingsRolledUltimatumOrBoon: null,
+    settingsScreamedAllies: [],
     aiPlayers: {},
   },
   undoActionStep: undoActionStep ?? null,

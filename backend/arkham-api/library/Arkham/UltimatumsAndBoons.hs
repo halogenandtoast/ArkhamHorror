@@ -21,23 +21,36 @@ module Arkham.UltimatumsAndBoons (
 
 import Arkham.Ability
 import Arkham.Action.Additional
+import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
+import Arkham.Classes.Query (select, (<=~>))
+import Arkham.Deck qualified as Deck
+import Arkham.Decklist.RandomBasicWeakness (
+  RandomBasicWeaknessContext (..),
+  sampleRandomBasicWeakness,
+ )
 import Arkham.DefeatedBy
 import Arkham.Event.Types (Event)
 import Arkham.Game.Base
 import Arkham.Game.Settings
 import Arkham.Helpers.ChaosToken (cancelChaosToken)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Window (checkWindows)
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario (getIsStandalone)
+import Arkham.Helpers.Window (checkWindows)
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Investigator.Types (
+  Field (..),
+  Investigator,
+  investigatorHealthDamage,
+  investigatorSanityDamage,
+ )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Prelude
@@ -45,6 +58,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tracing
+import Arkham.Trait (Trait (Ally))
 import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (mkAfter, revealedChaosTokens)
 import Arkham.Window qualified as Window
@@ -61,6 +75,9 @@ hasUltimatumOrBoon b = member b <$> getActiveUltimatumsAndBoons
 
 hasBoon :: HasGame m => Boon -> m Bool
 hasBoon = hasUltimatumOrBoon . Boon
+
+hasUltimatum :: HasGame m => Ultimatum -> m Bool
+hasUltimatum = hasUltimatumOrBoon . Ultimatum
 
 fromUltimatumOrBoon :: UltimatumOrBoon -> SourceableWithCardCode
 fromUltimatumOrBoon b = SourceableWithCardCode (CardCode $ variantName b) (UltimatumOrBoonSource b)
@@ -92,7 +109,24 @@ instance HasModifiersFor UltimatumOrBoon where
     Boon b -> getModifiersFor b
 
 instance HasModifiersFor Ultimatum where
-  getModifiersFor _ = pure ()
+  getModifiersFor u = do
+    let source = UltimatumOrBoonSource (Ultimatum u)
+    case u of
+      UltimatumOfHardship ->
+        modifySelectWith source Matcher.Anyone setActiveDuringSetup [StartingResources (-2)]
+      UltimatumOfForbiddenKnowledge ->
+        modifySelectWith source Matcher.Anyone setActiveDuringSetup [StartingHand (-1)]
+      UltimatumOfInduction -> modifySelectMaybe source Matcher.Anyone \_ -> do
+        liftGuardM $ not <$> getIsStandalone
+        pure [CannotGainXP]
+      UltimatumOfTheScream -> do
+        screamed <- settingsScreamedAllies . gameSettings <$> getGame
+        unless (null screamed) do
+          modifySelect
+            source
+            Matcher.Anyone
+            [CannotPlay $ Matcher.mapOneOf Matcher.CardWithCardCode (toList screamed)]
+      _ -> pure ()
 
 instance HasModifiersFor Boon where
   getModifiersFor b = do
@@ -103,15 +137,19 @@ instance HasModifiersFor Boon where
       BoonOfThoth ->
         modifySelectWith source Matcher.Anyone setActiveDuringSetup [StartingHand 1]
       BoonOfHermes ->
-        modifySelect source Matcher.Anyone
-          $ [ GiveAdditionalAction
-                $ AdditionalAction "Boon of Hermes" source (ActionRestrictedAdditionalAction #move)
-            ]
+        modifySelect
+          source
+          Matcher.Anyone
+          [ GiveAdditionalAction
+              $ AdditionalAction "Boon of Hermes" source (ActionRestrictedAdditionalAction #move)
+          ]
       BoonOfTheExplorer ->
-        modifySelect source Matcher.Anyone
-          $ [ GiveAdditionalAction
-                $ AdditionalAction "Boon of the Explorer" source (ActionRestrictedAdditionalAction #explore)
-            ]
+        modifySelect
+          source
+          Matcher.Anyone
+          [ GiveAdditionalAction
+              $ AdditionalAction "Boon of the Explorer" source (ActionRestrictedAdditionalAction #explore)
+          ]
       BoonOfPersephone -> modifySelectMaybe source Matcher.DefeatedInvestigator \_ -> do
         liftGuardM $ not <$> getIsStandalone
         pure [XPModifier "Boon of Persephone" 3]
@@ -138,7 +176,8 @@ ultimatumOrBoonAbilities = \case
 boonAbilities :: Boon -> [Ability]
 boonAbilities b = case b of
   BoonOfAthena ->
-    [ withTooltip "Boon of Athena: cancel the autofail token, return it to the chaos bag, and draw another in its place"
+    [ withTooltip
+        "Boon of Athena: cancel the autofail token, return it to the chaos bag, and draw another in its place"
         $ playerLimit PerGame
         $ restricted
           (fromUltimatumOrBoon (Boon b))
@@ -164,11 +203,78 @@ boonAbilities b = case b of
 @RunMessage@ catch-all (mirroring how tarot ability uses are dispatched).
 -}
 runUltimatumsAndBoonsMessage
-  :: (HasGame m, HasQueue Message m, Tracing m)
+  :: (HasGame m, HasQueue Message m, Tracing m, CardGen m)
   => Message
   -> m ()
 runUltimatumsAndBoonsMessage msg = case msg of
   UseAbility _ ab _ | isUltimatumOrBoonSource ab.source -> push $ Do msg
+  -- Ultimatum of the Broken Veil: weaknesses milled off the top of a deck
+  -- shuffle back in.
+  DiscardedTopOfDeck iid cards _ _ -> do
+    whenM (hasUltimatum UltimatumOfTheBrokenVeil) do
+      let weaknesses = filter (`cardMatch` Matcher.WeaknessCard) cards
+      unless (null weaknesses) do
+        push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) (map PlayerCard weaknesses)
+  InvestigatorIsDefeated source iid -> do
+    standalone <- getIsStandalone
+    unless standalone do
+      -- Ultimatum of Finality: defeat by damage kills, defeat by horror
+      -- drives insane.
+      whenM (hasUltimatum UltimatumOfFinality) do
+        attrs <- getAttrs @Investigator iid
+        modifiedHealth <- field InvestigatorHealth iid
+        modifiedSanity <- field InvestigatorSanity iid
+        when (investigatorHealthDamage attrs >= modifiedHealth) $ push $ InvestigatorKilled source iid
+        when (investigatorSanityDamage attrs >= modifiedSanity) $ push $ DrivenInsane iid
+      -- Ultimatum of the Spiral: a defeated investigator's deck gains a
+      -- random basic weakness.
+      whenM (hasUltimatum UltimatumOfTheSpiral) do
+        investigatorClass <- field InvestigatorClass iid
+        playerCount <- getPlayerCount
+        weakness <-
+          genCard
+            =<< sampleRandomBasicWeakness
+              RandomBasicWeaknessContext
+                { rbwInvestigatorClass = investigatorClass
+                , rbwPlayerCount = playerCount
+                , rbwDecklist = Nothing
+                , rbwStandalone = False
+                }
+        push $ AddCampaignCardToDeck iid DoNotShuffleIn weakness
+  -- Ultimatum of The Scream: a defeated unique non-story, non-weakness ally
+  -- is removed from the game and banned for the rest of the campaign.
+  When (AssetDefeated _ aid) -> do
+    standalone <- getIsStandalone
+    unless standalone do
+      whenM (hasUltimatum UltimatumOfTheScream) do
+        screams <-
+          aid
+            <=~> ( Matcher.UniqueAsset
+                     <> Matcher.AssetWithTrait Ally
+                     <> Matcher.AssetNonStory
+                     <> Matcher.NonWeaknessAsset
+                     <> Matcher.AssetControlledBy Matcher.Anyone
+                 )
+        when screams do
+          code <- fieldMap AssetCard toCardCode aid
+          replaceMessageMatching
+            (\case Do (AssetDefeated _ aid') -> aid == aid'; _ -> False)
+            \case
+              Do (AssetDefeated _ aid') ->
+                [RecordScreamedAlly code, RemoveFromGame (AssetTarget aid')]
+              _ -> error "invalid match"
+  -- After the scenario ends, remove screamed allies (and all copies) from
+  -- every player's deck. Hooked on NextCampaignStep rather than EndOfScenario:
+  -- the scenario's EndOfScenario handler clears the queue, which would wipe
+  -- messages pushed at that point. Idempotent, so re-firing is harmless.
+  NextCampaignStep _ -> do
+    whenM (hasUltimatum UltimatumOfTheScream) do
+      screamed <- settingsScreamedAllies . gameSettings <$> getGame
+      unless (null screamed) do
+        iids <- select Matcher.Anyone
+        for_ (toList screamed) \code ->
+          for_ (lookupCardDef code) \def ->
+            for_ iids \iid -> push $ RemoveCampaignCardFromDeck iid def
   UseCardAbility iid (UltimatumOrBoonSource (Boon BoonOfAthena)) 1 (revealedChaosTokens -> [token]) _ -> do
     -- SacrificialDoll recipe: ChaosTokenCanceled is what marks the token
     -- cancelled in the bag and strips it from pendingRequests, so the skill

@@ -34,9 +34,11 @@ const KEEP_FIELDS = [
   'real_traits',
   'real_text',
   'type_code',
+  'subtype_code',
   'is_unique',
   'double_sided',
   'encounter_code',
+  'deck_requirements',
 ]
 
 const publicDir = path.join(__dirname, '..', 'public')

@@ -119,6 +119,9 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioStandaloneCampaignLog :: CampaignLog
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
+  , scenarioUseHardExpertReference :: Bool
+  -- ^ Ultimatum of Malevolence: use the Hard/Expert reference side while
+  -- nominally playing Easy/Standard (isEasyStandard/isHardExpert honor this)
   , scenarioNoRemainingInvestigatorsHandler :: Target
   , scenarioVictoryDisplay :: [Card]
   , scenarioChaosBag :: ChaosBag
@@ -317,6 +320,7 @@ scenario f cardCode name difficulty layout =
       , scenarioStandaloneCampaignLog = mkCampaignLog
       , scenarioCardsUnderScenarioReference = mempty
       , scenarioInResolution = False
+      , scenarioUseHardExpertReference = False
       , scenarioNoRemainingInvestigatorsHandler = ScenarioTarget
       , scenarioVictoryDisplay = mempty
       , scenarioChaosBag = emptyChaosBag
@@ -442,6 +446,7 @@ instance FromJSON ScenarioAttrs where
     scenarioStandaloneCampaignLog <- o .: "standaloneCampaignLog"
     scenarioSetAsideCards <- o .: "setAsideCards"
     scenarioInResolution <- o .: "inResolution"
+    scenarioUseHardExpertReference <- o .:? "useHardExpertReference" .!= False
     scenarioNoRemainingInvestigatorsHandler <- o .: "noRemainingInvestigatorsHandler"
     scenarioVictoryDisplay <- o .: "victoryDisplay"
     scenarioChaosBag <- o .: "chaosBag"

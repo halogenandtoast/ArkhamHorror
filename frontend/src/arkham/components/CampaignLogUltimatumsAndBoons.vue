@@ -2,8 +2,12 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const props = defineProps<{ entries: string[]; enabled: boolean }>()
+const props = defineProps<{ entries: string[]; enabled: boolean; rolled?: string | null }>()
 const { t } = useI18n()
+
+// Ultimatum of Ultimatums' per-game random roll: shown apart from the
+// permanent lists, gold for a boon, crimson for an ultimatum.
+const rolledKind = computed(() => (props.rolled?.startsWith('BoonOf') ? 'boons' : 'ultimatums'))
 
 const boons = computed(() => props.entries.filter((tag) => tag.startsWith('BoonOf')))
 const ultimatums = computed(() => props.entries.filter((tag) => tag.startsWith('UltimatumOf')))
@@ -17,6 +21,21 @@ const groups = computed(() =>
 </script>
 
 <template>
+  <div v-if="rolled" class="log-section rolled-section" :class="[rolledKind, { disabled: !enabled }]">
+    <h3 class="section-title">
+      {{ t('ultimatumsAndBoons.rolledThisGame') }}
+      <span v-if="!enabled" class="disabled-badge">{{ t('ultimatumsAndBoons.currentlyDisabled') }}</span>
+    </h3>
+    <ul class="entry-list">
+      <li class="entry rolled-entry">
+        <span class="entry-icon" aria-hidden="true">{{ rolledKind === 'boons' ? '✦' : '✖' }}</span>
+        <div class="entry-body">
+          <span class="entry-name">{{ t(`ultimatumsAndBoons.entries.${rolled}.name`) }}</span>
+          <span class="entry-text">{{ t(`ultimatumsAndBoons.entries.${rolled}.text`) }}</span>
+        </div>
+      </li>
+    </ul>
+  </div>
   <div
     v-for="group in groups"
     :key="group.key"
@@ -53,6 +72,16 @@ const groups = computed(() =>
     opacity: 0.55;
     filter: grayscale(60%);
   }
+
+  &.rolled-section {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, var(--box-background));
+  }
+}
+
+.rolled-entry {
+  border: 1px dashed var(--accent);
+  border-left: 3px solid var(--accent);
 }
 
 .section-title {

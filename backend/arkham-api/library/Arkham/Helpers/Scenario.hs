@@ -106,13 +106,15 @@ toChaosTokenValue attrs t esVal heVal =
 byDifficulty :: ScenarioAttrs -> a -> a -> a
 byDifficulty attrs a b = if isEasyStandard attrs then a else b
 
+-- Ultimatum of Malevolence flips the reference side without changing the
+-- actual difficulty (chaos bag construction etc. still use the real value).
 isEasyStandard :: ScenarioAttrs -> Bool
-isEasyStandard ScenarioAttrs {scenarioDifficulty} =
-  scenarioDifficulty `elem` [Easy, Standard]
+isEasyStandard ScenarioAttrs {scenarioDifficulty, scenarioUseHardExpertReference} =
+  not scenarioUseHardExpertReference && scenarioDifficulty `elem` [Easy, Standard]
 
 isHardExpert :: ScenarioAttrs -> Bool
-isHardExpert ScenarioAttrs {scenarioDifficulty} =
-  scenarioDifficulty `elem` [Hard, Expert]
+isHardExpert ScenarioAttrs {scenarioDifficulty, scenarioUseHardExpertReference} =
+  scenarioUseHardExpertReference || scenarioDifficulty `elem` [Hard, Expert]
 
 getScenarioDeck :: (HasGame m, Tracing m) => ScenarioDeckKey -> m [Card]
 getScenarioDeck k = scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)

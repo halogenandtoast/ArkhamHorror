@@ -481,6 +481,8 @@ data Message
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetAsIfRuling AsIfRuling
   | SetUltimatumsAndBoonsEnabled Bool
+  | -- | Ultimatum of The Scream: ban this ally for the rest of the campaign
+    RecordScreamedAlly CardCode
   | -- AI seat configuration (mutates Settings.settingsAiPlayers)
     RegisterAiPlayer PlayerId AiPlayerState
   | SetAiFocusOverride PlayerId (Maybe Focus)

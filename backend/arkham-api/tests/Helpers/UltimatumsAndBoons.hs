@@ -5,6 +5,11 @@ module Helpers.UltimatumsAndBoons (
   module Arkham.UltimatumsAndBoons.Types,
   withUltimatumsAndBoons,
   withUltimatumsAndBoonsDisabled,
+  withUltimatums,
+  withUltimatumsDisabled,
+  withSelections,
+  withSelectionsDisabled,
+  setUltimatumsAndBoons,
   asCampaign,
 ) where
 
@@ -20,19 +25,33 @@ setUltimatumsAndBoons f = do
   -- run a no-op message so preloaded modifiers pick up the new settings
   tick
 
--- Specs deal in Boons directly; wrap into the union at the storage boundary.
-withUltimatumsAndBoons :: [Boon] -> TestAppT ()
-withUltimatumsAndBoons bs =
-  setUltimatumsAndBoons \s -> s {settingsUltimatumsAndBoons = setFromList (map Boon bs)}
+-- | Select any mix of ultimatums and boons.
+withSelections :: [UltimatumOrBoon] -> TestAppT ()
+withSelections xs =
+  setUltimatumsAndBoons \s -> s {settingsUltimatumsAndBoons = setFromList xs}
 
 -- | Same selection, but with the runtime kill switch flipped off.
-withUltimatumsAndBoonsDisabled :: [Boon] -> TestAppT ()
-withUltimatumsAndBoonsDisabled bs =
+withSelectionsDisabled :: [UltimatumOrBoon] -> TestAppT ()
+withSelectionsDisabled xs =
   setUltimatumsAndBoons \s ->
     s
-      { settingsUltimatumsAndBoons = setFromList (map Boon bs)
+      { settingsUltimatumsAndBoons = setFromList xs
       , settingsUltimatumsAndBoonsEnabled = False
       }
+
+-- Specs deal in Boons/Ultimatums directly; wrap into the union at the storage
+-- boundary.
+withUltimatumsAndBoons :: [Boon] -> TestAppT ()
+withUltimatumsAndBoons = withSelections . map Boon
+
+withUltimatumsAndBoonsDisabled :: [Boon] -> TestAppT ()
+withUltimatumsAndBoonsDisabled = withSelectionsDisabled . map Boon
+
+withUltimatums :: [Ultimatum] -> TestAppT ()
+withUltimatums = withSelections . map Ultimatum
+
+withUltimatumsDisabled :: [Ultimatum] -> TestAppT ()
+withUltimatumsDisabled = withSelectionsDisabled . map Ultimatum
 
 -- | The test harness runs standalone (@That scenario@); campaign-gated
 -- entries (Boon of Persephone, Boon of the Ancients) need a campaign present.

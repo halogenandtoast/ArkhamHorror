@@ -57,7 +57,8 @@ import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types (Field (..))
 import Arkham.Fight.Types
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
-import Arkham.Game.Settings (settingsStrictAsIfAt)
+import Arkham.Game.Settings (activeUltimatumsAndBoons, settingsStrictAsIfAt)
+import Arkham.UltimatumsAndBoons.Types (Ultimatum (..), UltimatumOrBoon (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Ability (
@@ -952,13 +953,42 @@ assignDamageDivided a@InvestigatorAttrs{..} iid source strategy matcher health s
         go strategy
       else pure []
   player <- getPlayer iid
+  -- Ultimatum of Agony: as much damage/horror as possible must be assigned to
+  -- a single card before any excess may go to a different card — while the
+  -- most recently assigned target can still absorb the type, it is the only
+  -- offered choice for that type.
+  agony <-
+    elem (Ultimatum UltimatumOfAgony) . activeUltimatumsAndBoons <$> getSettings
+  let
+    componentMatchesTarget tokenType target = \case
+      ComponentLabel (InvestigatorComponent iid' tt) _ -> tt == tokenType && target == toTarget iid'
+      ComponentLabel (AssetComponent aid tt) _ -> tt == tokenType && target == toTarget aid
+      AuxiliaryComponentLabel (InvestigatorComponent iid' tt) _ -> tt == tokenType && target == toTarget iid'
+      AuxiliaryComponentLabel (AssetComponent aid tt) _ -> tt == tokenType && target == toTarget aid
+      _ -> False
+    targetCanAbsorb capacityField = \case
+      InvestigatorTarget _ -> pure True
+      AssetTarget aid -> fieldMap capacityField (maybe False (> 0)) aid
+      _ -> pure False
+    restrictToCurrent tokenType capacityField targets choices
+      | not agony = pure choices
+      | otherwise = case targets of
+          target : _ -> do
+            canAbsorb <- targetCanAbsorb capacityField target
+            let restrictedChoices = filter (componentMatchesTarget tokenType target) choices
+            pure $ if canAbsorb && notNull restrictedChoices then restrictedChoices else choices
+          [] -> pure choices
+  healthDamageMessages' <-
+    restrictToCurrent DamageToken AssetRemainingHealth damageTargets healthDamageMessages
+  sanityDamageMessages' <-
+    restrictToCurrent HorrorToken AssetRemainingSanity horrorTargets sanityDamageMessages
   -- Wrap with the damage source so the client highlights it as the actor
   -- (yellow source-highlight), and with the totals label for the token counts.
   push
     $ questionWithSource source player
     $ QuestionLabel (assignDamageTotalsLabel health sanity) Nothing
     $ ChooseOne
-    $ healthDamageMessages <> sanityDamageMessages
+    $ healthDamageMessages' <> sanityDamageMessages'
   pure a
 
 handleDrivenInsane a@InvestigatorAttrs{..} iid = do

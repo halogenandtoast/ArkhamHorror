@@ -2,6 +2,7 @@ module Arkham.Game.Settings where
 
 import Arkham.Ai.Orphans ()
 import Arkham.Ai.State (AiPlayerState)
+import Arkham.Card.CardCode (CardCode)
 import Arkham.Id (PlayerId)
 import Arkham.Prelude
 import Arkham.UltimatumsAndBoons.Types
@@ -37,13 +38,23 @@ data Settings = Settings
   , settingsUltimatumsAndBoonsEnabled :: Bool
   -- ^ Runtime kill switch: when False, selected entries behave as if nothing
   -- were selected. Every effect hook reads through 'activeUltimatumsAndBoons'.
+  -- Deckbuilding-time entries are validated at deck construction and are NOT
+  -- re-validated when this flips.
+  , settingsRolledUltimatumOrBoon :: Maybe UltimatumOrBoon
+  -- ^ Ultimatum of Ultimatums: the entry rolled for the CURRENT game only.
+  -- Re-rolled (or cleared) at each StartScenario.
+  , settingsScreamedAllies :: Set CardCode
+  -- ^ Ultimatum of The Scream: allies removed from the game for the rest of
+  -- the campaign.
   }
   deriving stock (Eq, Show, Generic, Data)
 
 -- | The single gate every Ultimatum/Boon hook must go through.
 activeUltimatumsAndBoons :: Settings -> Set UltimatumOrBoon
 activeUltimatumsAndBoons settings
-  | settingsUltimatumsAndBoonsEnabled settings = settingsUltimatumsAndBoons settings
+  | settingsUltimatumsAndBoonsEnabled settings =
+      settingsUltimatumsAndBoons settings
+        <> maybe mempty singletonSet (settingsRolledUltimatumOrBoon settings)
   | otherwise = mempty
 
 settingsStrictAsIfAt :: Settings -> Bool
@@ -67,6 +78,8 @@ defaultSettings =
     , settingsAiPlayers = mempty
     , settingsUltimatumsAndBoons = mempty
     , settingsUltimatumsAndBoonsEnabled = True
+    , settingsRolledUltimatumOrBoon = Nothing
+    , settingsScreamedAllies = mempty
     }
 
 instance ToJSON Settings where
@@ -77,6 +90,8 @@ instance ToJSON Settings where
     , "aiPlayers" .= settingsAiPlayers settings
     , "settingsUltimatumsAndBoons" .= settingsUltimatumsAndBoons settings
     , "settingsUltimatumsAndBoonsEnabled" .= settingsUltimatumsAndBoonsEnabled settings
+    , "settingsRolledUltimatumOrBoon" .= settingsRolledUltimatumOrBoon settings
+    , "settingsScreamedAllies" .= settingsScreamedAllies settings
     ]
 
 instance FromJSON Settings where
@@ -89,6 +104,8 @@ instance FromJSON Settings where
     aiPlayers <- o .:? "aiPlayers" .!= mempty
     ultimatumsAndBoons <- o .:? "settingsUltimatumsAndBoons" .!= mempty
     ultimatumsAndBoonsEnabled <- o .:? "settingsUltimatumsAndBoonsEnabled" .!= True
+    rolledUltimatumOrBoon <- o .:? "settingsRolledUltimatumOrBoon" .!= Nothing
+    screamedAllies <- o .:? "settingsScreamedAllies" .!= mempty
     pure
       Settings
         { settingsAbilitiesCannotReactToThemselves = abilitiesCannotReactToThemselves
@@ -96,4 +113,6 @@ instance FromJSON Settings where
         , settingsAiPlayers = aiPlayers
         , settingsUltimatumsAndBoons = ultimatumsAndBoons
         , settingsUltimatumsAndBoonsEnabled = ultimatumsAndBoonsEnabled
+        , settingsRolledUltimatumOrBoon = rolledUltimatumOrBoon
+        , settingsScreamedAllies = screamedAllies
         }

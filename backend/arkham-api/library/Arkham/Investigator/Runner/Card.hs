@@ -578,9 +578,10 @@ handleDoDiscardTopOfDeck a@InvestigatorAttrs{..} iid n source mTarget = do
       pushAll
         $ windowMsgs
         <> [DeckHasNoCards investigatorId mTarget | null deck']
-        <> [ DiscardedTopOfDeck iid cs source target
-           | target <- maybeToList mTarget
-           ]
+        -- Always emit DiscardedTopOfDeck so global observers (e.g. Ultimatum of
+        -- the Broken Veil) see target-less mills too; card handlers match their
+        -- own target, so GameTarget doesn't reach them.
+        <> [DiscardedTopOfDeck iid cs source (fromMaybe GameTarget mTarget)]
         <> [discardedFromDeckWindow | notNull cs']
       pure
         $ a

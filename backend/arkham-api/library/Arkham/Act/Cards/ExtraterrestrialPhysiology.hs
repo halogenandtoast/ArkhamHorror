@@ -34,7 +34,7 @@ instance HasAbilities ExtraterrestrialPhysiology where
         $ FastAbility
         $ ClueCost
         $ Static 1
-    , mkAbility a 3 $ Objective $ freeReaction $ RoundEnds #when
+    , mkAbility a 3 $ Objective $ forced $ RoundEnds #when
     ]
 
 manifoldHealth :: Int -> Card -> Int

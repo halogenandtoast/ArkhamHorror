@@ -50,8 +50,14 @@ function confirmClear() {
 
 const anyEarned = computed(() => rows.value.some((r) => r.earnedAt !== null))
 
+const campaignEarnedCount = (campaign: { entries: AchievementEntry[] }) =>
+  campaign.entries.filter((entry) => !!earnedRow(entry)).length
+
+const campaignProgressPercent = (campaign: { entries: AchievementEntry[] }) =>
+  campaign.entries.length === 0 ? 0 : Math.round((campaignEarnedCount(campaign) / campaign.entries.length) * 100)
+
 const campaignHasEarned = (campaign: { entries: AchievementEntry[] }) =>
-  campaign.entries.some((entry) => !!earnedRow(entry))
+  campaignEarnedCount(campaign) > 0
 
 const byTag = computed(() => new Map(rows.value.map((r) => [r.achievement, r])))
 
@@ -87,18 +93,26 @@ const earnedDate = (row: Achievement): string | null => {
         </button>
       </div>
 
-      <section v-for="campaign in campaigns" :key="campaign.campaignId" class="campaign-section">
-        <div class="campaign-header">
-          <h2>{{ t(`achievements.campaigns.${campaign.campaignId}`) }}</h2>
+      <details v-for="campaign in campaigns" :key="campaign.campaignId" class="campaign-section">
+        <summary class="campaign-header">
+          <div class="campaign-title">
+            <h2>{{ t(`achievements.campaigns.${campaign.campaignId}`) }}</h2>
+            <div class="campaign-progress" :aria-label="`${campaignEarnedCount(campaign)} of ${campaign.entries.length} achievements earned`">
+              <span class="progress-count">{{ campaignEarnedCount(campaign) }}/{{ campaign.entries.length }}</span>
+              <span class="progress-track" aria-hidden="true">
+                <span class="progress-fill" :style="{ width: `${campaignProgressPercent(campaign)}%` }" />
+              </span>
+            </div>
+          </div>
           <button
             v-if="campaignHasEarned(campaign)"
             type="button"
             class="clear-btn"
-            @click="requestClearCampaign(campaign.campaignId)"
+            @click.stop.prevent="requestClearCampaign(campaign.campaignId)"
           >
             {{ t('achievements.clearCampaign') }}
           </button>
-        </div>
+        </summary>
         <ul class="entry-list">
           <li
             v-for="entry in campaign.entries"
@@ -130,7 +144,7 @@ const earnedDate = (row: Achievement): string | null => {
             </button>
           </li>
         </ul>
-      </section>
+      </details>
 
       <Prompt
         v-if="pendingClear"
@@ -159,16 +173,20 @@ const earnedDate = (row: Achievement): string | null => {
 }
 
 .clear-btn {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  background: rgba(160, 60, 60, 0.25);
-  color: rgba(255, 255, 255, 0.85);
-  padding: 4px 10px;
-  font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.55);
+  padding: 2px 7px;
+  font-size: 0.72rem;
+  line-height: 1.3;
   cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 
   &:hover {
-    background: rgba(160, 60, 60, 0.5);
+    border-color: rgba(200, 70, 70, 0.45);
+    background: rgba(160, 60, 60, 0.24);
+    color: rgba(255, 210, 210, 0.95);
   }
 }
 
@@ -206,6 +224,65 @@ h1 {
   padding: 14px 16px;
 }
 
+.campaign-header {
+  cursor: pointer;
+  list-style: none;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.campaign-header::-webkit-details-marker {
+  display: none;
+}
+
+.campaign-header::before {
+  content: '▸';
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.85rem;
+  transition: transform 0.15s ease;
+}
+
+.campaign-title {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-width: 0;
+}
+
+.campaign-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.progress-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-track {
+  width: 96px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(179, 146, 47, 0.35);
+}
+
+.campaign-section[open] .campaign-header::before {
+  transform: rotate(90deg);
+}
+
 h2 {
   font-family: teutonic, sans-serif;
   font-size: 1.2em;
@@ -213,16 +290,14 @@ h2 {
   color: rgba(255, 255, 255, 0.75);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin: 0 0 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin: 0;
 }
 
 .entry-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin: 0;
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }

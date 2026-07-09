@@ -33,11 +33,13 @@ instance HasChaosTokenValue DanielaReyes2 where
 instance RunMessage DanielaReyes2 where
   runMessage msg i@(DanielaReyes2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
-      -- MustFight must be active during target selection (ChooseFightEnemy), not
-      -- just the skill test, so an elusive enemy that fled after attacking is
-      -- still a valid target for this fight (CanFightEnemy honors MustFight
-      -- regardless of location).
-      temporaryModifier iid (attrs.ability 1) (MustFight enemy) do
+      -- She fights the enemy that attacked her even if it has since moved away
+      -- (e.g. an elusive enemy that fled). These modifiers must be active for the
+      -- whole fight action, not just the skill test: MustFight (so target
+      -- selection picks that enemy) and IgnoreOnSameLocation (so the fight
+      -- abilities are offered at all — the enemy's OnSameLocation criterion would
+      -- otherwise hide her basic fight now that it is not at her location).
+      temporaryModifiers iid (attrs.ability 1) [MustFight enemy, IgnoreOnSameLocation] do
         performActionAction iid (attrs.ability 1) #fight
       pure i
     ElderSignEffect iid | attrs `is` iid -> do

@@ -1,12 +1,26 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { achievementCatalog, type AchievementEntry } from '@/arkham/achievements'
 import type { Achievement } from '@/arkham/types/Achievement'
 
-defineProps<{ achievements: Achievement[] }>()
+const props = defineProps<{ achievements: Achievement[]; campaignId?: string }>()
+
 const { t } = useI18n()
 
-const earnedDate = (row: Achievement): string | null => {
-  if (!row.earnedAt) return null
+const entries = computed<AchievementEntry[]>(() =>
+  achievementCatalog.filter((entry) => entry.campaignId === props.campaignId)
+)
+
+const byTag = computed(() => new Map(props.achievements.map((row) => [row.achievement, row])))
+
+const earnedRow = (entry: AchievementEntry): Achievement | null => {
+  const row = byTag.value.get(entry.tag)
+  return row?.earnedAt ? row : null
+}
+
+const earnedDate = (row: Achievement | null): string | null => {
+  if (!row?.earnedAt) return null
   const d = new Date(row.earnedAt)
   return isNaN(d.getTime()) ? null : d.toLocaleDateString()
 }
@@ -16,14 +30,19 @@ const earnedDate = (row: Achievement): string | null => {
   <div class="log-section">
     <h3 class="section-title">{{ t('achievements.tabTitle') }}</h3>
     <ul class="entry-list">
-      <li v-for="row in achievements" :key="row.id" class="entry">
+      <li
+        v-for="entry in entries"
+        :key="entry.tag"
+        class="entry"
+        :class="{ earned: !!earnedRow(entry) }"
+      >
         <font-awesome-icon :icon="['fas', 'trophy']" class="entry-icon" aria-hidden="true" />
         <div class="entry-body">
           <span class="entry-name">
-            {{ t(`achievements.entries.${row.achievement}.name`) }}
-            <span v-if="earnedDate(row)" class="entry-date">{{ earnedDate(row) }}</span>
+            {{ t(`achievements.entries.${entry.tag}.name`) }}
+            <span v-if="earnedDate(earnedRow(entry))" class="entry-date">{{ earnedDate(earnedRow(entry)) }}</span>
           </span>
-          <span class="entry-text">{{ t(`achievements.entries.${row.achievement}.text`) }}</span>
+          <span class="entry-text">{{ t(`achievements.entries.${entry.tag}.text`) }}</span>
         </div>
       </li>
     </ul>
@@ -63,42 +82,60 @@ const earnedDate = (row: Achievement): string | null => {
 
 .entry {
   display: flex;
+  align-items: flex-start;
   gap: 10px;
-  padding: 8px 12px;
-  border-radius: 5px;
-  background: rgba(179, 146, 47, 0.08);
-  border-left: 3px solid var(--accent);
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.18);
+  color: rgba(255, 255, 255, 0.5);
+  opacity: 0.72;
+}
+
+.entry.earned {
+  color: var(--text);
+  opacity: 1;
 }
 
 .entry-icon {
-  color: var(--accent);
+  color: rgba(255, 255, 255, 0.22);
+  margin-top: 2px;
   flex-shrink: 0;
-  margin-top: 3px;
+}
+
+.entry.earned .entry-icon {
+  color: var(--accent);
+  filter: drop-shadow(0 0 4px rgba(179, 146, 47, 0.35));
 }
 
 .entry-body {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .entry-name {
-  color: var(--title);
   font-weight: 600;
-  font-size: 0.95rem;
-  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.entry.earned .entry-name {
+  color: #f1e6bf;
 }
 
 .entry-date {
-  margin-left: 8px;
-  font-weight: 400;
-  font-size: 0.8em;
   color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85em;
+  font-weight: normal;
+  margin-left: 8px;
 }
 
 .entry-text {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.85rem;
-  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.52);
+  line-height: 1.35;
+}
+
+.entry.earned .entry-text {
+  color: rgba(255, 255, 255, 0.78);
 }
 </style>

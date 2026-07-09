@@ -22,6 +22,7 @@ import CampaignLogSpecialRules from '@/arkham/components/CampaignLogSpecialRules
 import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
 import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
+import { achievementCatalog } from '@/arkham/achievements'
 import CampaignLogChaosBag from '@/arkham/components/CampaignLogChaosBag.vue'
 import CampaignLogUltimatumsAndBoons from '@/arkham/components/CampaignLogUltimatumsAndBoons.vue'
 import CampaignLogAchievements from '@/arkham/components/CampaignLogAchievements.vue'
@@ -49,11 +50,17 @@ const { t, tm } = useI18n()
 type LogTab = 'log' | 'investigators' | 'rules' | 'achievements' | `additional:${number}`
 const activeTab = ref<LogTab>('log')
 
-// Achievements earned in this game; the tab only appears when there are any.
 const achievements = ref<Achievement[]>([])
+const campaignAchievementEntries = computed(() =>
+  achievementCatalog.filter((entry) => entry.campaignId === props.game.campaign?.id)
+)
+const achievementsEnabled = computed(() =>
+  !!props.game.settings.settingsAchievementsEnabled && campaignAchievementEntries.value.length > 0
+)
+
 onMounted(() => {
   fetchGameAchievements(props.game.id)
-    .then((rows) => { achievements.value = rows.filter((r) => r.earnedAt !== null) })
+    .then((rows) => { achievements.value = rows })
     .catch(() => { achievements.value = [] })
 })
 
@@ -733,7 +740,7 @@ onUnmounted(() => {
             @click="activeTab = 'rules'"
           >{{ t('campaignLog.tabs.rules') }}</button>
           <button
-            v-if="achievements.length > 0"
+            v-if="achievementsEnabled"
             type="button"
             :class="{ active: activeTab === 'achievements' }"
             @click="activeTab = 'achievements'"
@@ -780,6 +787,7 @@ onUnmounted(() => {
         <CampaignLogAchievements
           v-if="activeTab === 'achievements'"
           :achievements="achievements"
+          :campaign-id="game.campaign?.id"
         />
 
         <template v-for="(section, index) in additionalLogSections" :key="section.title">

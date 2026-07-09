@@ -3,16 +3,12 @@ module Arkham.Agenda.Cards.VengeanceAwaits (vengeanceAwaits) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Creation
 import Arkham.Helpers.Enemy (getUniqueEnemyMaybe)
 import Arkham.Helpers.Query
-import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -25,7 +21,7 @@ instance HasAbilities VengeanceAwaits where
   getAbilities (VengeanceAwaits a) | onSide A a = do
     [forcedAbility a 1 $ AgendaAdvances #when $ AgendaWithId (toId a)]
   getAbilities (VengeanceAwaits a) =
-    [ mkAbility a 2 $ Objective $ forced $ IfEnemyDefeated #after Anyone ByAny $ enemyIs Enemies.umordhoth
+    [ mkAbility a 2 $ Objective $ forced $ EnemyDefeated #when Anyone ByAny $ enemyIs Enemies.umordhoth
     ]
 
 instance RunMessage VengeanceAwaits where
@@ -40,22 +36,17 @@ instance RunMessage VengeanceAwaits where
             selectEach (enemyAt ritualSite) (toDiscard attrs)
             pure ritualSite
 
+      -- Umordhoth (and, in Return To, its attached Vault of Earthly Demise) is
+      -- placed out of play during setup. Move that existing entity into play so
+      -- the attached vault comes with it, rather than spawning a fresh copy.
       getUniqueEnemyMaybe Enemies.umordhoth >>= \case
         Just umordhoth -> place umordhoth ritualSite
-        Nothing -> do
-          umordhoth <- getSetAsideCard Enemies.umordhoth
-
-          isReturnTo <- getIsReturnTo
-          if isReturnTo && "01146" `notElem` actIds
-            then do
-              vaultOfEarthlyDemise <- genCard Treacheries.vaultOfEarthlyDemise
-              tid <- getRandom
-
-              createEnemyWith_ umordhoth ritualSite \c ->
-                c
-                  { enemyCreationBefore = [AttachStoryTreacheryTo tid vaultOfEarthlyDemise (toTarget c.enemy)]
-                  }
-            else createEnemyAt_ umordhoth ritualSite
+        Nothing ->
+          selectOne (OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.umordhoth) >>= \case
+            Just umordhoth -> place umordhoth ritualSite
+            Nothing -> do
+              umordhoth <- getSetAsideCard Enemies.umordhoth
+              createEnemyAt_ umordhoth ritualSite
 
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

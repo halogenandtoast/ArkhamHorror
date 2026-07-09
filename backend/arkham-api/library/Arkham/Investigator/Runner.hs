@@ -875,7 +875,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     -- Targets that are merely attackable "as if an enemy" (Mist-Pylons, Key Loci) are not
     -- real enemies. Only offer them when the fight is unrestricted; a fight narrowed by
     -- the card's matcher (e.g. Toe to Toe's @EnemyCanAttack You@) must not include them.
-    let includeAsIfEnemy = coveredByAnyInPlayEnemy enemyMatcher
+    -- The Runic Axe (Inscription of the Hunt) fight uses a CanFightEnemyWithOverride
+    -- matcher, which coveredByAnyInPlayEnemy treats as "restricted". That override widens
+    -- the fight rather than narrowing it, so it must still offer as-if-enemy targets
+    -- (Mist-Pylons, Key Loci). canMoveToConnected is exactly this Hunt-source case.
+    let includeAsIfEnemy = coveredByAnyInPlayEnemy enemyMatcher || canMoveToConnected
     locationIds <-
       if includeAsIfEnemy
         then

@@ -5,7 +5,7 @@ module Arkham.Asset where
 import Arkham.Asset.Assets
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Card.PlayerCard (tabooMutated)
+import Arkham.Card.PlayerCard (tabooChained, tabooMutated)
 import Arkham.Prelude
 
 createAsset :: (HasCallStack, IsCard a) => a -> AssetId -> Asset
@@ -16,6 +16,7 @@ createAsset a aId =
           { assetCustomizations = customizations
           , assetTaboo = tabooList
           , assetMutated = mutated
+          , assetChained = chained
           }
  where
   customizations = case toCard a of
@@ -26,6 +27,9 @@ createAsset a aId =
     _ -> Nothing
   mutated = case toCard a of
     PlayerCard pc -> tabooMutated tabooList pc
+    _ -> Nothing
+  chained = case toCard a of
+    PlayerCard pc -> tabooChained tabooList pc
     _ -> Nothing
 
 lookupAsset :: HasCallStack => CardCode -> AssetId -> Maybe InvestigatorId -> CardId -> Asset

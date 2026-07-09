@@ -227,6 +227,7 @@ function startDrag(event: DragEvent) {
       class="card"
       :src="image"
       :data-customizations="JSON.stringify(cardContents.customizations)"
+      :data-chained="cardContents.chained || undefined"
       :data-pc="modifiedPlayingCard ? modifiedPlayingCard : null"
       :draggable="debug.active"
       @dragstart="startDrag"

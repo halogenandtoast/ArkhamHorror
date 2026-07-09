@@ -31,6 +31,7 @@ data PlayerCard = MkPlayerCard
   , pcCustomizations :: Customizations
   , pcTabooList :: Maybe TabooList
   , pcMutated :: Maybe Text
+  , pcChained :: Maybe Text
   , pcMeta :: Maybe (Map Text [CardCode])
   , pcFacedown :: Maybe Bool
   }
@@ -111,6 +112,7 @@ lookupPlayerCard cardDef cardId =
     , pcCustomizations = mempty
     , pcTabooList = Nothing
     , pcMutated = Nothing
+    , pcChained = Nothing
     , pcMeta = Nothing
     , pcFacedown = Nothing
     }
@@ -119,11 +121,16 @@ setPlayerCardOwner :: InvestigatorId -> PlayerCard -> PlayerCard
 setPlayerCardOwner iid pc = pc {pcOwner = Just iid}
 
 setTaboo :: Maybe TabooList -> PlayerCard -> PlayerCard
-setTaboo mtaboo pc = pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo pc}
+setTaboo mtaboo pc = pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo pc, pcChained = tabooChained mtaboo pc}
 
 tabooMutated :: Maybe TabooList -> PlayerCard -> Maybe Text
 tabooMutated Nothing _ = Nothing
 tabooMutated jtbl pc = asum $ map (tabooMutated' jtbl) (toCardDef pc).cardCodes
+
+tabooChained :: Maybe TabooList -> PlayerCard -> Maybe Text
+tabooChained (Just tbl) pc
+  | tbl >= TabooList21 && "09022" `elem` (toCardDef pc).cardCodes = Just "Chained21"
+tabooChained _ _ = Nothing
 
 tabooMutated' :: Maybe TabooList -> CardCode -> Maybe Text
 tabooMutated' = \case

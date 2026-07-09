@@ -341,7 +341,7 @@ setTaboo mtaboo card = do
   pure result
  where
   go = \case
-    PlayerCard pc -> PlayerCard (pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo pc})
+    PlayerCard pc -> PlayerCard (pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo pc, pcChained = tabooChained mtaboo pc})
     other -> other
 
 setFacedown :: CardGen m => Bool -> Card -> m Card

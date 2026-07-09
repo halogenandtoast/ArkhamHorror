@@ -393,6 +393,7 @@ function startDrag(event: DragEvent) {
             @dragstart="startDrag"
             @click="clicked"
             :data-customizations="JSON.stringify(asset.customizations)"
+            :data-chained="asset.chained || undefined"
           />
           <div v-if="investigators.length > 0" class="in-vehicle">
             <div v-for="investigator in investigators" :key="investigator.id">

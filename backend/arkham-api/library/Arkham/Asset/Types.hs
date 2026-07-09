@@ -297,6 +297,7 @@ data AssetAttrs = AssetAttrs
   , assetFlipped :: Bool
   , assetTaboo :: Maybe TabooList
   , assetMutated :: Maybe Text -- for art display
+  , assetChained :: Maybe Text -- for art display (customization sheet only currently)
   , assetDriver :: Maybe InvestigatorId
   , assetVisible :: Bool
   , assetResolved :: Bool
@@ -506,6 +507,7 @@ assetWith f cardDef g =
             , assetFlipped = False
             , assetTaboo = Nothing
             , assetMutated = Nothing
+            , assetChained = Nothing
             , assetDriver = Nothing
             , assetVisible = True
             , assetResolved = False
@@ -665,6 +667,7 @@ instance FromJSON AssetAttrs where
     assetFlipped <- o .: "flipped"
     assetTaboo <- o .: "taboo"
     assetMutated <- o .: "mutated"
+    assetChained <- o .:? "chained" .!= Nothing
     assetDriver <- o .: "driver"
     assetVisible <- o .:? "visible" .!= True
     assetResolved <- o .:? "visible" .!= True

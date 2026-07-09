@@ -378,7 +378,6 @@ instance RunMessage SkillTest where
         checkAfter $ Window.RevealChaosTokensDuringSkillTest iid s skillTestToResolveChaosTokens
       pushAll $ UnfocusChaosTokens
         : cancelRevealWindow
-        : afterRevealMsg
         : afterRevealWindow
         : afterRevealMsg
         : [ Will (ResolveChaosToken drawnChaosToken chaosTokenFace iid)

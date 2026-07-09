@@ -26,10 +26,9 @@ spec = describe "Ultimatum of the Scream" $ do
       getModifiers self
         `shouldContainM` [CannotPlay (Matcher.CardWithCardCode "01048")]
 
-    -- SUSPECTED BUG: the dispatcher pushes RemoveCampaignCardFromDeck when it
-    -- sees EndOfScenario, but the scenario's own EndOfScenario handler
-    -- (Scenario/Runner) then calls clearQueue, wiping those pushes before they
-    -- run. Expected red until fixed.
+    -- Cleanup lives on the campaign's NextCampaignStep handler: EndOfScenario
+    -- clears the queue, and campaign transitions can run without a scenario
+    -- to dispatch through.
     it "removes screamed allies from every deck at the end of the scenario" . gameTest $ \self -> do
       withUltimatums [UltimatumOfTheScream]
       asCampaign

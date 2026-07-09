@@ -27,7 +27,7 @@ import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
-import Arkham.Classes.Query (select, (<=~>))
+import Arkham.Classes.Query ((<=~>))
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist.RandomBasicWeakness (
   RandomBasicWeaknessContext (..),
@@ -199,6 +199,25 @@ boonAbilities b = case b of
     ]
   _ -> []
 
+{- | Ultimatum of The Scream: remove screamed allies (and all copies) from
+every stored campaign deck. Called from the campaign's NextCampaignStep
+handler — the scenario-side dispatcher can't host this because campaign
+transitions may run in campaign-only mode (no scenario to dispatch), and
+EndOfScenario's own handler clears the queue. Idempotent, so re-firing on
+every step transition is harmless.
+-}
+screamedAllyCleanupMessages :: HasGame m => [InvestigatorId] -> m [Message]
+screamedAllyCleanupMessages iids = do
+  active <- hasUltimatum UltimatumOfTheScream
+  screamed <- settingsScreamedAllies . gameSettings <$> getGame
+  pure
+    [ RemoveCampaignCardFromDeck iid def
+    | active
+    , code <- toList screamed
+    , def <- maybeToList (lookupCardDef code)
+    , iid <- iids
+    ]
+
 {- | Message dispatch for the interactive entries; called from the scenario's
 @RunMessage@ catch-all (mirroring how tarot ability uses are dispatched).
 -}
@@ -263,18 +282,6 @@ runUltimatumsAndBoonsMessage msg = case msg of
               Do (AssetDefeated _ aid') ->
                 [RecordScreamedAlly code, RemoveFromGame (AssetTarget aid')]
               _ -> error "invalid match"
-  -- After the scenario ends, remove screamed allies (and all copies) from
-  -- every player's deck. Hooked on NextCampaignStep rather than EndOfScenario:
-  -- the scenario's EndOfScenario handler clears the queue, which would wipe
-  -- messages pushed at that point. Idempotent, so re-firing is harmless.
-  NextCampaignStep _ -> do
-    whenM (hasUltimatum UltimatumOfTheScream) do
-      screamed <- settingsScreamedAllies . gameSettings <$> getGame
-      unless (null screamed) do
-        iids <- select Matcher.Anyone
-        for_ (toList screamed) \code ->
-          for_ (lookupCardDef code) \def ->
-            for_ iids \iid -> push $ RemoveCampaignCardFromDeck iid def
   UseCardAbility iid (UltimatumOrBoonSource (Boon BoonOfAthena)) 1 (revealedChaosTokens -> [token]) _ -> do
     -- SacrificialDoll recipe: ChaosTokenCanceled is what marks the token
     -- cancelled in the bag and strips it from pendingRequests, so the skill

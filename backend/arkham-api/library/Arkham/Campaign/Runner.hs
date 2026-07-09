@@ -456,6 +456,14 @@ defaultCampaignRunner msg a = case msg of
         case step.unwrap.normalize of
           EpilogueStep -> push $ CampaignStep step
           _ -> pushAll [HandleKilledOrInsaneInvestigators, CampaignStep step]
+    -- Ultimatum of The Scream: strip banned allies from every player's deck.
+    -- Stored campaign decks plus seated investigators (a deck may not be
+    -- stored yet mid-transition). Pushed after the step messages so the
+    -- removals process before them.
+    investigators <- getInvestigators
+    pushAll
+      =<< screamedAllyCleanupMessages
+        (nub $ Map.keys (campaignDecks $ toAttrs a) <> investigators)
     pure
       $ updateAttrs a
       $ \attrs ->

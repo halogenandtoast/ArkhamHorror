@@ -105,15 +105,22 @@ const drawCardsAction = computed(() => {
     });
 })
 
-const discardCardsAction = computed(() => {
-  return choices
-    .value
-    .some(choice => 
-      discards
-        .value
-        .some(discardItem => choice.tag === 'TargetLabel' && ArkhamCard.toCardContents(discardItem).id === choice.target.contents)
-    )
-})
+function isDiscardChoice(c: Message) {
+  if (c.tag === "TargetLabel") {
+    if (c.target.tag !== "CardIdTarget") return false
+    return props.investigator.discard.some(card => card.id === c.target.contents)
+  }
+  if (c.tag === "AbilityLabel") {
+    const sourceId = c.ability.source.sourceTag === 'OtherSource' ? c.ability.source.contents : undefined
+    if (!sourceId) return false
+    if (props.investigator.discard.some(card => card.id === sourceId)) return true
+    const asset = props.game.assets[sourceId]
+    return !!asset && props.investigator.discard.some(card => asset.cardId == card.id)
+  }
+  return false
+}
+
+const discardCardsAction = computed(() => choices.value.some(isDiscardChoice))
 
 
 const topOfDeckTreachery = computed(() => {
@@ -209,22 +216,9 @@ const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.ma
 const discardPopoverShown = ref(false)
 
 watch(choices, async (newChoices) => {
-  const isDiscardChoice = (c: Message) => {
-    if (c.tag === "TargetLabel") {
-      if (c.target.tag !== "CardIdTarget") return false
-      return props.investigator.discard.some(card => card.id === c.target.contents)
-    }
-    if (c.tag === "AbilityLabel") {
-      const sourceId = c.ability.source.sourceTag === 'OtherSource' ? c.ability.source.contents : undefined
-      if (!sourceId) return false
-      if (props.investigator.discard.some(card => card.id === sourceId)) return true
-      const asset = props.game.assets[sourceId]
-      return asset && props.investigator.discard.some(card => asset.cardId == card.id)
-    }
-    return false
-  }
+  const actionableChoices = newChoices.filter(choice => choice.tag !== 'SkipTriggersButton')
 
-  if (newChoices.length > 0 && newChoices.every(isDiscardChoice)) {
+  if (actionableChoices.length > 0 && actionableChoices.every(isDiscardChoice)) {
     discardPopoverShown.value = true
   }
 }, { immediate: true })
@@ -237,7 +231,7 @@ watch(choices, async (newChoices) => {
     @dragover.prevent="dragover($event)"
     @dragenter.prevent
   >
-    <Card v-if="topOfDiscard" :class="{'discard--can-use': discardCardsAction === true}" :game="game" :card="topOfDiscard" :playerId="playerId" />
+    <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :playerId="playerId" :allowAbilityButtons="false" :allowInteractions="false" />
     <CardsUnderIndicator
       v-if="discards.length > 0"
       class="view-discard-button"

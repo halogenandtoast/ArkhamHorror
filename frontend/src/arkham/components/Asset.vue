@@ -194,7 +194,7 @@ function isAbility(v: Message): v is AbilityLabel {
       return source.source.contents === id.value
     }
   } else if (source.tag === 'AssetSource') {
-    return source.contents === id.value
+    return source.contents === id.value && props.asset.placement.tag !== 'StillInDiscard'
   }
 
   return false

@@ -47,7 +47,17 @@ const interactive = computed(() => props.game !== undefined && props.playerId !=
 
 function isCardInChoices(card: ArkhamCard | CardContents): boolean {
   const cardId = toCardContents(card).id
-  return choices.value.some(choice => choice.tag === 'TargetLabel' && cardId === choice.target.contents)
+  return choices.value.some(choice => {
+    if (choice.tag === 'TargetLabel') return choice.target.tag === 'CardIdTarget' && cardId === choice.target.contents
+    if (choice.tag === 'AbilityLabel') {
+      const sourceId = choice.ability.source.sourceTag === 'OtherSource' ? choice.ability.source.contents : undefined
+      if (!sourceId) return false
+      if (cardId === sourceId) return true
+      const asset = props.game?.assets[sourceId]
+      return asset?.cardId === cardId
+    }
+    return false
+  })
 }
 
 const hasCardChoice = computed(() => props.cards.some(isCardInChoices))

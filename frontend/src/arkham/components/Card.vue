@@ -19,7 +19,9 @@ const props = withDefaults(defineProps<{
   card: Card | CardContents
   revealed?: boolean
   playerId: string
-}>(), { revealed: false })
+  allowAbilityButtons?: boolean
+  allowInteractions?: boolean
+}>(), { revealed: false, allowAbilityButtons: true, allowInteractions: true })
 
 const emit = defineEmits<{
   choose: [value: number]
@@ -106,6 +108,7 @@ function canInteract(c: Message): boolean {
 }
 
 const cardAction = computed(() => {
+  if (!props.allowInteractions) return -1
   return choices.value.findIndex(canInteract)
 })
 
@@ -129,7 +132,7 @@ function isAbility(v: Message): v is AbilityLabel {
   if (source.tag === 'AssetSource' && source.contents) {
     const asset = props.game.assets[source.contents]
     if (asset) {
-      return asset.cardId === id.value && asset.placement.tag === 'StillInHand'
+      return asset.cardId === id.value && (asset.placement.tag === 'StillInHand' || asset.placement.tag === 'StillInDiscard')
     }
   }
 
@@ -137,6 +140,8 @@ function isAbility(v: Message): v is AbilityLabel {
 }
 
 const abilities = computed<AbilityMessage[]>(() => {
+  if (!props.allowAbilityButtons) return []
+
   return choices.value
     .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {

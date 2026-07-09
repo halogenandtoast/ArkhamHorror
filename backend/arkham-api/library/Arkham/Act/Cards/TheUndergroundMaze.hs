@@ -30,7 +30,7 @@ instance HasAbilities TheUndergroundMaze where
         , groupLimit PerRound
             $ withI18nTooltip "theUndergroundMaze.slide"
             $ restricted a 2 (exists LocationCanBeSlid)
-            $ actionAbilityWithCost (GroupResourceCost (PerPlayer 1) Anywhere)
+            $ actionAbilityWithCost (CalculatedResourceCost $ GameValueCalculation $ PerPlayer 1)
         , withI18nTooltip "theUndergroundMaze.prismaticShard"
             $ mkAbility a 3 actionAbility
             & restrict

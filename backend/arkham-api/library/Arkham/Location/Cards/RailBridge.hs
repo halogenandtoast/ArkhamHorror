@@ -1,11 +1,11 @@
 module Arkham.Location.Cards.RailBridge (railBridge) where
 
 import Arkham.Ability
+import Arkham.Calculation
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher
 import Arkham.Token
 
 newtype RailBridge = RailBridge LocationAttrs
@@ -23,7 +23,7 @@ instance HasAbilities RailBridge where
     extendRevealed1 a
       $ groupLimit PerRound
       $ restricted a 1 Here
-      $ actionAbilityWithCost (GroupResourceCost (PerPlayer 1) Anywhere)
+      $ actionAbilityWithCost (CalculatedResourceCost $ GameValueCalculation $ PerPlayer 1)
 
 instance RunMessage RailBridge where
   runMessage msg l@(RailBridge attrs) = runQueueT $ case msg of

@@ -35,7 +35,10 @@ instance RunMessage OpenCave where
       beginSkillTest sid iid (attrs.ability 1) attrs #agility difficulty
       pure l
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
+      push $ ScenarioSpecific "syncHybridDarkness" (toJSON attrs.id)
       pure $ OpenCave $ attrs & setMeta True
     Begin InvestigationPhase -> do
+      when (getLocationMetaDefault False attrs) do
+        push $ ScenarioSpecific "syncHybridDarkness" (toJSON attrs.id)
       OpenCave . setMeta @Bool False <$> liftRunMessage msg attrs
     _ -> OpenCave <$> liftRunMessage msg attrs

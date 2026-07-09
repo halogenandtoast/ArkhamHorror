@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.TheGathering (setupTheGathering, theGathering, TheGathering (..)) where
 
+import Arkham.Achievement (Achievement (..), NightOfTheZealotAchievement (..), earnAchievement)
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -117,7 +118,10 @@ instance RunMessage TheGathering where
           let valids = if leadId `elem` killed then resigned else [leadId]
           valids' <- select $ InvestigatorCanAddCardsToDeck <> mapOneOf InvestigatorWithId valids
           unless (null valids') do
-            addCampaignCardToDeckChoice valids' DoNotShuffleIn Assets.litaChantler
+            -- Declining Lita earns "I Don't Trust Her" (Return to NOTZ only;
+            -- earnAchievement self-gates on the campaign).
+            addCampaignCardToDeckChoiceWhenDeclined valids' DoNotShuffleIn Assets.litaChantler do
+              earnAchievement $ NightOfTheZealotAchievement IDontTrustHer
       case r of
         NoResolution -> do
           resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2

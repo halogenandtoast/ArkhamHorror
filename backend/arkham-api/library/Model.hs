@@ -9,6 +9,7 @@ module Model (
 ) where
 
 import Database.Persist.Postgresql.JSON ()
+import Entity.Arkham.Achievement as X
 import Entity.Arkham.ArkhamDBDecklist as X
 import Entity.Arkham.Deck as X
 import Entity.Arkham.Epic as X

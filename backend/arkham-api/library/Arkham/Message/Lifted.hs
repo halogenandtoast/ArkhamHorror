@@ -347,6 +347,22 @@ addCampaignCardToDeckChoiceWith choices shouldShuffleIn card f = do
   card' <- fetchCard card
   push $ Msg.addCampaignCardToDeckChoiceWith lead choices shouldShuffleIn card' f
 
+-- | Like 'addCampaignCardToDeckChoice', with a continuation for the players
+-- DECLINING the card (e.g. the "I Don't Trust Her" achievement).
+addCampaignCardToDeckChoiceWhenDeclined
+  :: (FetchCard card, ReverseQueue m)
+  => [InvestigatorId]
+  -> ShuffleIn
+  -> card
+  -> QueueT Message m ()
+  -> m ()
+addCampaignCardToDeckChoiceWhenDeclined choices shouldShuffleIn card whenDeclined = do
+  lead <- getLeadPlayer
+  card' <- fetchCard card
+  declined <- capture whenDeclined
+  push
+    $ Msg.addCampaignCardToDeckChoiceWhenDeclined lead choices shouldShuffleIn card' (const []) declined
+
 forceAddCampaignCardToDeckChoice
   :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> ShuffleIn -> card -> m ()
 forceAddCampaignCardToDeckChoice choices shouldShuffleIn card = do

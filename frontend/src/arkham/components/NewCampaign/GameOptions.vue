@@ -7,6 +7,7 @@ import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
 import type { GameMode, MultiplayerVariant, CampaignType, AiFocus, AiSlotConfig } from '@/arkham/types/NewGame'
 import { aiFocuses } from '@/arkham/types/NewGame'
+import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
 import { useSettings } from '@/stores/settings'
 
 type FullCampaignOption = {
@@ -289,6 +290,21 @@ const recommendedOptionState =
 const strictAsIfAt = defineModel<boolean>('strictAsIfAt', { required: true })
 
 const rulesExpanded = ref(false)
+
+// --- Achievement tracking --------------------------------------------------------
+// Only rendered when the effective campaign (Return To swaps the id) has an
+// achievement catalog; unsupported campaigns always create with tracking on.
+const achievementsEnabled = defineModel<boolean>('achievementsEnabled', { required: true })
+
+const effectiveCampaignId = computed<string | null>(() => {
+  if (props.gameMode !== 'Campaign') return null
+  if (returnTo.value && props.selectedCampaignReturnTo?.id) return props.selectedCampaignReturnTo.id
+  return props.chosenCampaignId
+})
+
+const supportsAchievements = computed(
+  () => !!effectiveCampaignId.value && ACHIEVEMENT_CAMPAIGN_IDS.includes(effectiveCampaignId.value)
+)
 
 // --- Ultimatums and Boons variant selection ------------------------------------
 // Selected enum tags flow up to NewCampaign and into the create-game POST body.
@@ -687,6 +703,18 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
           <input type="radio" v-model="includeTarotReadings" :value="true" id="tarotYes" />
           <label for="tarotYes">{{ $t('Yes') }}</label>
         </div>
+      </div>
+
+      <div v-if="supportsAchievements" class="card">
+        <div class="card-title">{{ $t('achievements.settingsToggleTitle') }}</div>
+        <div class="segmented segmented-2">
+          <input type="radio" v-model="achievementsEnabled" :value="true" id="achievementsOn" />
+          <label for="achievementsOn">{{ $t('On') }}</label>
+
+          <input type="radio" v-model="achievementsEnabled" :value="false" id="achievementsOff" />
+          <label for="achievementsOff">{{ $t('Off') }}</label>
+        </div>
+        <div class="achievements-desc">{{ $t('achievements.settingsToggleDescription') }}</div>
       </div>
 
       <div class="card rules-card">
@@ -1330,6 +1358,13 @@ input[type='radio']:checked + label {
 .ai-field select.text,
 .ai-field input.text {
   text-transform: capitalize;
+}
+
+.achievements-desc {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .recommended-list {

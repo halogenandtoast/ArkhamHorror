@@ -33,6 +33,7 @@ import Arkham.Game.Settings (
   asIfRulingFromStrictAsIfAt,
   defaultAsIfRulingForCampaign,
   settingsAsIfRuling,
+  settingsAchievementsEnabled,
   settingsUltimatumsAndBoons,
  )
 import Arkham.UltimatumsAndBoons.Types (UltimatumOrBoon)
@@ -161,6 +162,7 @@ data CreateGamePost = CreateGamePost
   , asIfRuling :: Maybe AsIfRuling
   , aiPlayers :: [Maybe AiSlotConfig]
   , ultimatumsAndBoons :: Set UltimatumOrBoon
+  , achievementsEnabled :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -182,6 +184,7 @@ instance FromJSON CreateGamePost where
     asIfRuling <- o .:? "asIfRuling"
     aiPlayers <- o .:? "aiPlayers" .!= []
     ultimatumsAndBoons <- o .:? "ultimatumsAndBoons" .!= mempty
+    achievementsEnabled <- o .:? "achievementsEnabled" .!= True
     pure CreateGamePost {..}
 
 -- | New Game
@@ -210,6 +213,7 @@ postApiV1ArkhamGamesR = do
             baseGame.gameSettings
               { settingsAsIfRuling = asIfRulingValue
               , settingsUltimatumsAndBoons = ultimatumsAndBoons
+              , settingsAchievementsEnabled = achievementsEnabled
               }
         }
     ag = ArkhamGame campaignName game 0 multiplayerVariant now now

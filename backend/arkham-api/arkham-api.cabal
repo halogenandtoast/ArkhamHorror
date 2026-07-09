@@ -26,6 +26,7 @@ library
       Api.Arkham.Export
       Api.Arkham.Helpers
       Api.Arkham.Types.MultiplayerVariant
+      Api.Handler.Arkham.Achievements
       Api.Handler.Arkham.Admin.Metrics
       Api.Handler.Arkham.Cards
       Api.Handler.Arkham.Decks
@@ -49,6 +50,8 @@ library
       Arkham.Ability.Type
       Arkham.Ability.Types
       Arkham.Ability.Used
+      Arkham.Achievement
+      Arkham.Achievement.Types
       Arkham.Act
       Arkham.Act.Acts
       Arkham.Act.CardDefs.AllOrNothing
@@ -2035,6 +2038,7 @@ library
       Arkham.Campaign.Campaigns.EdgeOfTheEarth
       Arkham.Campaign.Campaigns.GuardiansOfTheAbyss
       Arkham.Campaign.Campaigns.NightOfTheZealot
+      Arkham.Campaign.Campaigns.NightOfTheZealot.Achievements
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToTheCircleUndone
       Arkham.Campaign.Campaigns.ReturnToTheDunwichLegacy
@@ -6583,6 +6587,7 @@ library
       Config
       Entity
       Entity.Answer
+      Entity.Arkham.Achievement
       Entity.Arkham.ArkhamDBDecklist
       Entity.Arkham.Deck
       Entity.Arkham.Epic
@@ -6975,6 +6980,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Arkham.Achievements.ReturnToNightOfTheZealotSpec
       Arkham.Act.Cards.AFamiliarPatternSpec
       Arkham.Act.Cards.BlackwatersBaneEpicMultiplayerSpec
       Arkham.Act.Cards.ExposeTheAnomalyEpicMultiplayerSpec
@@ -7233,6 +7239,7 @@ test-suite spec
       Arkham.UltimatumsAndBoons.UltimatumOfTheScreamSpec
       Arkham.UltimatumsAndBoons.UltimatumOfTheSpiralSpec
       Arkham.UltimatumsAndBoons.UltimatumOfUltimatumsSpec
+      Helpers.Achievements
       Helpers.Message
       Helpers.UltimatumsAndBoons
       SpecHook

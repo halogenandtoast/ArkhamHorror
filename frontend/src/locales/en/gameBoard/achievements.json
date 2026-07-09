@@ -1,0 +1,77 @@
+{
+  "toastTitle": "Achievement unlocked!",
+  "tabTitle": "Achievements",
+  "pageTitle": "Achievements",
+  "gameDeleted": "(game deleted)",
+  "viewGame": "View game",
+  "settingsToggleTitle": "Achievement tracking",
+  "settingsToggleDescription": "Track this campaign's official achievements as you play. Unlocks are recorded to your account and shown in the campaign log.",
+  "noneEarnedYet": "No achievements earned yet.",
+  "campaigns": {
+    "50": "Return to the Night of the Zealot"
+  },
+  "entries": {
+    "TheZealotsRevenge": {
+      "name": "The Zealot's Revenge",
+      "text": "Have Lita Chantler's reaction ability deal the killing blow to the Ghoul Priest."
+    },
+    "IDontTrustHer": {
+      "name": "I Don't Trust Her",
+      "text": "When given the option to add Lita Chantler to your deck, refuse to do so."
+    },
+    "InsuranceDoesntCoverGhouls": {
+      "name": "Insurance Doesn't Cover Ghouls",
+      "text": "Burn your house to the ground in The Gathering."
+    },
+    "ButDoIHaveTo": {
+      "name": "…But Do I Have To?",
+      "text": "In The Midnight Masks, have each investigator remain in Your House for the first three rounds."
+    },
+    "ConspiracyOfSilence": {
+      "name": "Conspiracy of Silence",
+      "text": "Find and interrogate all six unique cultists in The Midnight Masks."
+    },
+    "TourOfArkham": {
+      "name": "Tour of Arkham",
+      "text": "Trigger each of the \"once per game\" abilities on all of the locations in play in The Midnight Masks."
+    },
+    "DoYouGetItNow": {
+      "name": "Do You Get It Now?",
+      "text": "Trigger the Forced ability on Billy Cooper by defeating the Ghoul Priest at his location."
+    },
+    "PinchHitter": {
+      "name": "Pinch Hitter",
+      "text": "Defeat three Ghoul enemies with a Baseball Bat without it breaking."
+    },
+    "EvenDeathMayDie": {
+      "name": "Even Death May Die",
+      "text": "Defeat Umôrdhoth while the Vault of Earthly Demise is attached to it."
+    },
+    "BreakTheCircle": {
+      "name": "Break the Circle",
+      "text": "Complete The Devourer Below without Umôrdhoth spawning."
+    },
+    "TheyreJustMisunderstood": {
+      "name": "They're Just Misunderstood",
+      "text": "Win the Night of the Zealot campaign without defeating a single unique Cultist enemy."
+    },
+    "UmordhothsFavor": {
+      "name": "Umôrdhoth's Favor",
+      "text": "Win the Night of the Zealot campaign without defeating a single Ghoul enemy."
+    },
+    "ZealotLineInTheSand": {
+      "name": "Line in the Sand",
+      "text": "Win the Night of the Zealot campaign with at least three Ultimatums active."
+    },
+    "ArkhamExpertise": {
+      "name": "Arkham Expertise",
+      "text": "Win the Night of the Zealot campaign on Expert difficulty."
+    }
+  },
+  "clearAll": "Clear all",
+  "clearCampaign": "Clear campaign",
+  "clearOne": "Clear this achievement",
+  "clearAllConfirm": "Clear ALL earned achievements? This cannot be undone.",
+  "clearCampaignConfirm": "Clear all earned achievements for {campaign}? This cannot be undone.",
+  "clearOneConfirm": "Clear the achievement \"{name}\"? This cannot be undone."
+}

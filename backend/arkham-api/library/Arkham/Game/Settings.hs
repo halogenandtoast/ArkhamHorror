@@ -46,6 +46,9 @@ data Settings = Settings
   , settingsScreamedAllies :: Set CardCode
   -- ^ Ultimatum of The Scream: allies removed from the game for the rest of
   -- the campaign.
+  , settingsAchievementsEnabled :: Bool
+  -- ^ Above-the-table achievement tracking for this game. Defaults on;
+  -- only shown at creation for campaigns with an achievement list.
   }
   deriving stock (Eq, Show, Generic, Data)
 
@@ -80,6 +83,7 @@ defaultSettings =
     , settingsUltimatumsAndBoonsEnabled = True
     , settingsRolledUltimatumOrBoon = Nothing
     , settingsScreamedAllies = mempty
+    , settingsAchievementsEnabled = True
     }
 
 instance ToJSON Settings where
@@ -92,6 +96,7 @@ instance ToJSON Settings where
     , "settingsUltimatumsAndBoonsEnabled" .= settingsUltimatumsAndBoonsEnabled settings
     , "settingsRolledUltimatumOrBoon" .= settingsRolledUltimatumOrBoon settings
     , "settingsScreamedAllies" .= settingsScreamedAllies settings
+    , "settingsAchievementsEnabled" .= settingsAchievementsEnabled settings
     ]
 
 instance FromJSON Settings where
@@ -106,6 +111,7 @@ instance FromJSON Settings where
     ultimatumsAndBoonsEnabled <- o .:? "settingsUltimatumsAndBoonsEnabled" .!= True
     rolledUltimatumOrBoon <- o .:? "settingsRolledUltimatumOrBoon" .!= Nothing
     screamedAllies <- o .:? "settingsScreamedAllies" .!= mempty
+    achievementsEnabled <- o .:? "settingsAchievementsEnabled" .!= True
     pure
       Settings
         { settingsAbilitiesCannotReactToThemselves = abilitiesCannotReactToThemselves
@@ -115,4 +121,5 @@ instance FromJSON Settings where
         , settingsUltimatumsAndBoonsEnabled = ultimatumsAndBoonsEnabled
         , settingsRolledUltimatumOrBoon = rolledUltimatumOrBoon
         , settingsScreamedAllies = screamedAllies
+        , settingsAchievementsEnabled = achievementsEnabled
         }

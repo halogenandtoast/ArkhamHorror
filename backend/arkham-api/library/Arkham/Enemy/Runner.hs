@@ -1413,6 +1413,20 @@ instance RunMessage EnemyAttrs where
       sourceModifiers <- maybe (pure []) getModifiers (sourceToMaybeTarget details.source)
       keywords <- getModifiedKeywords a
 
+      -- Elusive fires "after that attack resolves" — before the after-attack
+      -- reaction windows — so the enemy disengages/moves/flips first and
+      -- reactions (e.g. Daniela Reyes) resolve against the fled enemy.
+      -- Readiness is captured here so a #when reaction that exhausts the enemy
+      -- before it attacks still suppresses elusive. Retaliate handles its own
+      -- elusive in the AttackEnemy handler.
+      readyForElusive <- eid <=~> ReadyEnemy
+      let elusiveMsgs =
+            [ HandleElusive enemyId
+            | attackType details /= RetaliateAttack
+            , readyForElusive
+            , Keyword.Elusive `elem` keywords
+            ]
+
       let
         applyModifiers cards (CancelAttacksByEnemies c n) = do
           canceled <- elem enemyId <$> select n
@@ -1490,6 +1504,7 @@ instance RunMessage EnemyAttrs where
                , DoNotExhaust `notElem` mods
                ]
             <> ignoreWindows
+            <> elusiveMsgs
             <> [After (EnemyAttack details)]
         MassiveAttackTargets ts -> do
           lead <- getLeadPlayer
@@ -1528,15 +1543,9 @@ instance RunMessage EnemyAttrs where
                , DoNotExhaust `notElem` mods
                ]
             <> ignoreWindows
+            <> elusiveMsgs
             <> [After (EnemyAttack details)]
         _ -> error $ "Unhandled attack target: " <> show (attackTarget details)
-
-      -- Retaliate happens inside an investigator's fight action, so the
-      -- AttackEnemy handler already pushes HandleElusive — skip here to
-      -- avoid moving the enemy twice.
-      when (attackType details /= RetaliateAttack) do
-        whenM (eid <=~> ReadyEnemy) do
-          pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
 
       pure a
     After (EnemyAttack details) | details.enemy == a.id -> do

@@ -33,8 +33,12 @@ instance HasChaosTokenValue DanielaReyes2 where
 instance RunMessage DanielaReyes2 where
   runMessage msg i@(DanielaReyes2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
-      nextSkillTestModifier iid (attrs.ability 1) iid (MustFight enemy)
-      performActionAction iid (attrs.ability 1) #fight
+      -- MustFight must be active during target selection (ChooseFightEnemy), not
+      -- just the skill test, so an elusive enemy that fled after attacking is
+      -- still a valid target for this fight (CanFightEnemy honors MustFight
+      -- regardless of location).
+      temporaryModifier iid (attrs.ability 1) (MustFight enemy) do
+        performActionAction iid (attrs.ability 1) #fight
       pure i
     ElderSignEffect iid | attrs `is` iid -> do
       enemies <-

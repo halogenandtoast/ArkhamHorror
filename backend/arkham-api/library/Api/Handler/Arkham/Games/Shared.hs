@@ -13,6 +13,7 @@ import Api.Arkham.Epic (
  )
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Arkham.Achievement.Types (achievementName)
 import Arkham.Ai.Decision (
   choiceFeatures,
   decideAi,
@@ -36,7 +37,14 @@ import Arkham.Entities (entitiesActs)
 import Arkham.Epic.Types (
   GroupOrdinal (..),
   SharedEventState,
-  SharedKey (ActAdvanceGen, ActContribution, ActSpend, AdvanceRequested, AwaitingOrganizer, SharedActProgress),
+  SharedKey (
+    ActAdvanceGen,
+    ActContribution,
+    ActSpend,
+    AdvanceRequested,
+    AwaitingOrganizer,
+    SharedActProgress
+  ),
   actProgressStages,
   epicEnvDeltaRef,
   epicEnvGroup,
@@ -74,6 +82,7 @@ import Data.String.Conversions.Monomorphic (toStrictByteString)
 import Data.Text qualified as T
 import Data.These
 import Data.Time.Clock
+import Data.Traversable (for)
 import Data.UUID (nil)
 import Data.Vector qualified as V
 import Database.Esqueleto.Experimental hiding (update, (=.))
@@ -309,7 +318,7 @@ updateGame response gameId mRoom = do
   -- Yesod's HCContent control-flow exceptions (notFound, notAuthenticated,
   -- sendStatusJSON, etc.) and break 404/401 responses (see Undo.hs note).
   -- The runMessages span below is wrapped where it's safe.
-  (ArkhamGame {..}, oldLogEntries, updatedLog, mSharedUpdate, actAdvanced) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+  (ArkhamGame {..}, oldLogEntries, updatedLog, mSharedUpdate, actAdvanced, newAchievements) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
     -- Read the prior log from the per-room cache when it's in sync with
     -- the just-locked game's step; otherwise fall back to the DB. Avoids
     -- the 217-row-avg getGameLog read on every action in the common case.
@@ -367,7 +376,7 @@ updateGame response gameId mRoom = do
       Nothing -> pure (Unhandled "AI seat disabled or no parked question")
       Just resolved -> handleAnswer gameJson playerId resolved
     case reply of
-      Unhandled _ -> pure (g, oldLogEntries, [], Nothing, False)
+      Unhandled _ -> pure (g, oldLogEntries, [], Nothing, False, [])
       Handled answerMessages -> do
         -- Epic Multiplayer: if this game is a group within an event, build an
         -- EpicEnv so Shared* messages emitted during the action are captured as
@@ -398,9 +407,16 @@ updateGame response gameId mRoom = do
         -- row indefinitely. On timeout, throw RunMessagesTimeout -- this
         -- aborts the surrounding DB transaction (rollback releases the lock)
         -- and lets the worker return to the pool.
+        -- Above-the-table achievements: collect EarnAchievement messages via
+        -- the (otherwise unused) runMessages message logger; persisted below.
+        achievementsRef <- newIORef []
+        let
+          collectAchievements = \case
+            EarnAchievement a -> modifyIORef' achievementsRef (a :)
+            _ -> pure ()
         mResult <- liftIO $ timeout runMessagesTimeoutMicros do
           runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) tracer mEpicEnv) do
-            runMessages (gameIdToText gameId) Nothing
+            runMessages (gameIdToText gameId) (Just collectAchievements)
         case mResult of
           Just () -> pure ()
           Nothing -> liftIO $ throwIO $ RunMessagesTimeout gameId runMessagesTimeoutMicros
@@ -471,7 +487,23 @@ updateGame response gameId mRoom = do
                 pure $ Just (entityKey eventEntity, s)
           Nothing -> pure Nothing
 
-        pure (g', oldLogEntries, updatedLog, mSharedUpdate, actAdvanced)
+        -- Persist newly earned achievements: one row per human player per
+        -- achievement, ever. insertUnique against UniqueUserAchievement makes
+        -- re-earns no-ops; only genuinely new rows produce a toast.
+        earned <- liftIO $ ordNub . reverse <$> readIORef achievementsRef
+        newAchievements <-
+          if null earned
+            then pure []
+            else do
+              players <- P.selectList [ArkhamPlayerArkhamGameId P.==. gameId] []
+              let userIds = ordNub $ map (arkhamPlayerUserId . entityVal) players
+              fmap concat $ for earned \achievement -> do
+                inserted <- for userIds \uid ->
+                  P.insertUnique
+                    $ ArkhamAchievement uid achievement (Just now) (Just gameId) Null
+                pure [achievement | any isJust inserted]
+
+        pure (g', oldLogEntries, updatedLog, mSharedUpdate, actAdvanced, newAchievements)
 
   -- Update the per-room cache after the DB transaction has committed,
   -- so the cache is never ahead of durably-stored state.
@@ -485,6 +517,10 @@ updateGame response gameId mRoom = do
       arkhamGameName
       publishLog
       arkhamGameCurrentData
+
+  -- Achievement unlock toasts, after the rows are durably committed.
+  for_ newAchievements \achievement ->
+    publishToRoom gameId $ GameAchievement (achievementName achievement)
 
   -- Epic Multiplayer: propagate a shared-counter change across the event — update
   -- every client's shared store AND sync the other groups' game-state boards to
@@ -812,9 +848,10 @@ floorAllGroupsAtCurrentStep eid = do
       pure g.step
     for_ mStep \(Value step) -> setGameUndoFloor gid step
 
--- | Each group's @(ordinal, contribution)@ toward a stage-@stage@ advance, read
--- from the authoritative shared 'ActContribution' counters (mirrored from the
--- contributing acts). Shaped for the organizer endpoint to cap each group's spend.
+{- | Each group's @(ordinal, contribution)@ toward a stage-@stage@ advance, read
+from the authoritative shared 'ActContribution' counters (mirrored from the
+contributing acts). Shaped for the organizer endpoint to cap each group's spend.
+-}
 getEventGroupContributions :: ArkhamEpicEventId -> Int -> Handler [(Int, Int)]
 getEventGroupContributions eid stage = do
   mEvent <- runDB $ selectOne do
@@ -826,7 +863,10 @@ getEventGroupContributions eid stage = do
     Just (Entity _ event) -> do
       let shared = arkhamEpicEventSharedState event
       groups <- getEventGroupGroups eid
-      pure [(ordinal, sharedCounter (ActContribution stage (GroupOrdinal ordinal)) shared) | (ordinal, _gid) <- groups]
+      pure
+        [ (ordinal, sharedCounter (ActContribution stage (GroupOrdinal ordinal)) shared)
+        | (ordinal, _gid) <- groups
+        ]
 
 {- | Apply an organizer's act-advance allocation for a stage. Atomic + idempotent:
 under the event @FOR UPDATE@ lock, ONLY if @AwaitingOrganizer stage == 1@ (so a

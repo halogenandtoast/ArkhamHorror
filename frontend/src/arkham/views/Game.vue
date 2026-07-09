@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {
   computed,
+  markRaw,
   nextTick,
   onMounted,
   onUnmounted,
@@ -9,6 +10,7 @@ import {
   shallowRef,
   watch,
 } from 'vue'
+import { useToast } from 'vue-toastification'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import confetti from '@/effects/confetti'
@@ -89,6 +91,7 @@ import PlayerEventBar from '@/arkham/components/PlayerEventBar.vue'
 import EventStartBarrier from '@/arkham/components/EventStartBarrier.vue'
 import EventActAdvanceBarrier from '@/arkham/components/EventActAdvanceBarrier.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
+import AchievementToast from '@/arkham/components/AchievementToast.vue'
 import AiControlPanel from '@/arkham/components/AiControlPanel.vue'
 import AiQuestionsPanel from '@/arkham/components/AiQuestionsPanel.vue'
 import Draggable from '@/components/Draggable.vue'
@@ -111,6 +114,7 @@ type ServerResult =
   | { tag: 'GameError'; contents: string }
   | { tag: 'GameMessage'; contents: string }
   | { tag: 'GameTarot'; contents: string }
+  | { tag: 'GameAchievement'; contents: string }
   | { tag: 'GameCard'; contents: string }
   | { tag: 'GameCardOnly'; contents: string }
   | { tag: 'GameUpdate'; contents: string }
@@ -141,6 +145,7 @@ const store = useCardStore()
 const userStore = useUserStore()
 const eventStore = useEventStore()
 const { addEntry, menuItems } = useMenu()
+const toast = useToast()
 
 // "Epic Multiplayer": a group's game can be entered two ways — via the dashboard's
 // per-group links (which carry an ?event=<id> query param) OR via the plain
@@ -1084,6 +1089,24 @@ const handleResult = (result: ServerResult) => {
           uiLock.value = false
         })
       return
+
+    case 'GameAchievement': {
+      // Non-blocking gold toast; vue-toastification stacks multiple unlocks.
+      // Strings are translated here because the toast container has no i18n.
+      const tag = result.contents
+      toast(
+        {
+          component: markRaw(AchievementToast),
+          props: {
+            title: t('achievements.toastTitle'),
+            name: t(`achievements.entries.${tag}.name`),
+            text: t(`achievements.entries.${tag}.text`),
+          },
+        },
+        { timeout: 8000, icon: false, closeButton: false, toastClassName: 'achievement-toast' },
+      )
+      return
+    }
 
     case 'GameCard':
       if (props.spectate) return

@@ -114,14 +114,27 @@ addCampaignCardToDeckChoice leadPlayer investigators shouldShuffleIn card =
 
 addCampaignCardToDeckChoiceWith
   :: PlayerId -> [InvestigatorId] -> ShuffleIn -> Card -> (InvestigatorId -> [Message]) -> Message
-addCampaignCardToDeckChoiceWith leadPlayer investigators shouldShuffleIn card f = withI18n do
+addCampaignCardToDeckChoiceWith leadPlayer investigators shouldShuffleIn card f =
+  addCampaignCardToDeckChoiceWhenDeclined leadPlayer investigators shouldShuffleIn card f []
+
+-- | Like 'addCampaignCardToDeckChoiceWith', but with messages to run when the
+-- players decline the card (e.g. the "I Don't Trust Her" achievement).
+addCampaignCardToDeckChoiceWhenDeclined
+  :: PlayerId
+  -> [InvestigatorId]
+  -> ShuffleIn
+  -> Card
+  -> (InvestigatorId -> [Message])
+  -> [Message]
+  -> Message
+addCampaignCardToDeckChoiceWhenDeclined leadPlayer investigators shouldShuffleIn card f declined = withI18n do
   questionLabelWithCard (cardNameVar card $ ikey' "label.addCardToDeck") card.cardCode leadPlayer
     $ ChooseOne
     $ [ PortraitLabel investigator $ AddCampaignCardToDeck investigator shouldShuffleIn card
           : f investigator
       | investigator <- investigators
       ]
-    <> [Label (cardNameVar card $ ikey' "label.doNotAddCardToDeck") []]
+    <> [Label (cardNameVar card $ ikey' "label.doNotAddCardToDeck") declined]
 
 forceAddCampaignCardToDeckChoice
   :: PlayerId -> [InvestigatorId] -> ShuffleIn -> Card -> Message

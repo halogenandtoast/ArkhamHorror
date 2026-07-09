@@ -30,6 +30,7 @@ import Arkham.Strategy as X
 import Arkham.Text as X
 
 import Arkham.Ability.Types
+import Arkham.Achievement.Types (Achievement)
 import Arkham.Act.Sequence
 import Arkham.Action hiding (Explore)
 import Arkham.Action qualified as Action
@@ -483,6 +484,9 @@ data Message
   | SetUltimatumsAndBoonsEnabled Bool
   | -- | Ultimatum of The Scream: ban this ally for the rest of the campaign
     RecordScreamedAlly CardCode
+  | -- | Above-the-table achievement earned; persisted per human player and
+    -- toasted by the API layer (the engine only announces it).
+    EarnAchievement Achievement
   | -- AI seat configuration (mutates Settings.settingsAiPlayers)
     RegisterAiPlayer PlayerId AiPlayerState
   | SetAiFocusOverride PlayerId (Maybe Focus)

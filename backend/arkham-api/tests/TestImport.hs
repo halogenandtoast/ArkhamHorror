@@ -640,10 +640,13 @@ createMessageChecker :: (Message -> Bool) -> TestAppT (IORef Bool)
 createMessageChecker f = do
   ref <- liftIO $ newIORef False
   testApp <- get
+  -- Chain rather than replace, so several checkers can watch the same game.
+  let prev = testLogger testApp
   put
     $ testApp
-      { testLogger =
-          Just (\msg -> when (f msg) (liftIO $ atomicWriteIORef ref True))
+      { testLogger = Just \msg -> do
+          for_ prev ($ msg)
+          when (f msg) (liftIO $ atomicWriteIORef ref True)
       }
   pure ref
 

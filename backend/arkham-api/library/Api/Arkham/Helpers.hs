@@ -78,6 +78,9 @@ data ApiResponse
   | GameTarot Aeson.Value
   | GameShowDiscard InvestigatorId
   | GameShowUnder InvestigatorId
+  | -- | Above-the-table achievement unlocked (flat achievement tag); the
+    -- client renders the toast from its i18n catalog.
+    GameAchievement Text
   | GamePlayabilityInfo {cardId :: CardId, cardCode :: Text, checks :: [(Text, Maybe Text)]}
   | -- Epic Multiplayer: the event's shared state, pushed to a group's own stream
     -- so the shared panel renders from a single source (the group websocket).

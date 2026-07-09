@@ -23,6 +23,13 @@ export default [
     props: true,
   },
   {
+    path: '/achievements',
+    name: 'Achievements',
+    component: () => import('@/arkham/views/Achievements.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: Achievements" },
+    props: true,
+  },
+  {
     path: '/campaigns/new',
     name: 'NewCampaign',
     component: () => import('@/arkham/views/NewCampaign.vue'),

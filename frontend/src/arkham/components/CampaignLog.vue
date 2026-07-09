@@ -4,7 +4,8 @@ import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/typ
 import { toCapitalizedWords, formatContent } from '@/arkham/helpers'
 import { cardArt } from '@/arkham/cardImages'
 import { computed, ref, onMounted, onUnmounted, watch, type Component } from 'vue'
-import { fetchCard } from '@/arkham/api'
+import { fetchCard, fetchGameAchievements } from '@/arkham/api'
+import type { Achievement } from '@/arkham/types/Achievement'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { type Name, simpleName } from '@/arkham/types/Name'
 import { scenarioToI18n, scenarioToKeyI18n, campaignIdToI18n, type Remembered } from '@/arkham/types/Scenario'
@@ -23,6 +24,7 @@ import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInves
 import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
 import CampaignLogChaosBag from '@/arkham/components/CampaignLogChaosBag.vue'
 import CampaignLogUltimatumsAndBoons from '@/arkham/components/CampaignLogUltimatumsAndBoons.vue'
+import CampaignLogAchievements from '@/arkham/components/CampaignLogAchievements.vue'
 import CampaignLogAdditionalSection from '@/arkham/components/CampaignLogAdditionalSection.vue'
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { useI18n } from 'vue-i18n'
@@ -44,8 +46,16 @@ const emit = defineEmits<{ refresh: [] }>()
 const store = useDbCardStore()
 const { t, tm } = useI18n()
 
-type LogTab = 'log' | 'investigators' | 'rules' | `additional:${number}`
+type LogTab = 'log' | 'investigators' | 'rules' | 'achievements' | `additional:${number}`
 const activeTab = ref<LogTab>('log')
+
+// Achievements earned in this game; the tab only appears when there are any.
+const achievements = ref<Achievement[]>([])
+onMounted(() => {
+  fetchGameAchievements(props.game.id)
+    .then((rows) => { achievements.value = rows.filter((r) => r.earnedAt !== null) })
+    .catch(() => { achievements.value = [] })
+})
 
 const sectionComponentById: Record<string, Component> = {
   motherRachelNotes: ResidentNotes,
@@ -723,6 +733,12 @@ onUnmounted(() => {
             @click="activeTab = 'rules'"
           >{{ t('campaignLog.tabs.rules') }}</button>
           <button
+            v-if="achievements.length > 0"
+            type="button"
+            :class="{ active: activeTab === 'achievements' }"
+            @click="activeTab = 'achievements'"
+          >{{ t('achievements.tabTitle') }}</button>
+          <button
             v-for="(section, index) in additionalLogSections"
             :key="section.title"
             type="button"
@@ -760,6 +776,11 @@ onUnmounted(() => {
             :rules="keywordsAndConcepts.rules"
           />
         </template>
+
+        <CampaignLogAchievements
+          v-if="activeTab === 'achievements'"
+          :achievements="achievements"
+        />
 
         <template v-for="(section, index) in additionalLogSections" :key="section.title">
           <CampaignLogAdditionalSection

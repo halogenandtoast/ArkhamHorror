@@ -23,6 +23,7 @@
         /#ArkhamDeckId ApiV1ArkhamDeckP:
           / ApiV1ArkhamDeckR GET DELETE
           /sync ApiV1ArkhamSyncDeckR POST
+      /achievements ApiV1ArkhamAchievementsR GET DELETE
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST
         !/import ApiV1ArkhamGamesImportR POST
@@ -51,6 +52,7 @@
           /open-seats ApiV1ArkhamGameOpenSeatsR GET
           /ai-questions ApiV1ArkhamGameAiQuestionsR GET
           /claim-seat ApiV1ArkhamGameClaimSeatR POST
+          /achievements ApiV1ArkhamGameAchievementsR GET
       /events ApiV1ArkhamEventsP:
         / ApiV1ArkhamEventsR GET POST
         /#ArkhamEpicEventId ApiV1ArkhamEventP:

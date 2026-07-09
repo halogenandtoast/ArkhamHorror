@@ -24,6 +24,7 @@ import Arkham.Criteria (Criterion)
 import Arkham.Criteria qualified as Criteria
 import Arkham.Customization
 import Arkham.Enemy.Types (Field (..))
+import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
 import {-# SOURCE #-} Arkham.Entities
 import Arkham.Event.Types (Event, Field (..))
 import Arkham.Event.Types qualified
@@ -842,6 +843,11 @@ passesEnemyCriteria iid source windows' criterion = do
       _ -> error $ "Does not handle source: " <> show source
     Criteria.ThisEnemy enemyMatcher -> case source of
       EnemySource eid -> pure $ Matcher.EnemyWithId eid <> enemyMatcher
+      -- An enemy-location proxy (e.g. Hemlock House rooms) exposes fight/evade
+      -- abilities sourced from its LocationSource. Fight/evade criteria overrides
+      -- that use ThisEnemy (Becky (2), Longbow (3), etc.) resolve here against the
+      -- proxy's coerced enemy id rather than crashing.
+      LocationSource lid -> pure $ Matcher.EnemyWithId (enemyLocationAsEnemyId (EnemyLocationId lid)) <> enemyMatcher
       _ -> error "Invalid source for ThisEnemy"
     Criteria.NotAttackingEnemy ->
       -- TODO: should not be multiple enemies, but if so need to OR not AND matcher

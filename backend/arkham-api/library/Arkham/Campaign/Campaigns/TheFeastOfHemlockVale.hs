@@ -61,6 +61,7 @@ instance IsCampaign TheFeastOfHemlockVale where
           TheThingInTheDepths -> handleTime
           TheTwistedHollow -> continue PreludeDawnOfTheSecondDay
           TheLongestNight -> continue PreludeDawnOfTheFinalDay
+          StandaloneScenarioStep _ nextStep' -> Just nextStep'
           EpilogueStep -> Nothing
           UpgradeDeckStep nextStep' -> Just nextStep'
           _ -> Nothing

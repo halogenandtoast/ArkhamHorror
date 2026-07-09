@@ -2765,7 +2765,9 @@ getLocationsMatching lmatcher = do
       flip filterM ls $ \l -> do
         matchAny <- getConnectedMatcher forMovement l
         mods <- getModifiers l.id
-        let barricaded = concat [xs | Barricades xs <- mods]
+        investigatorsHere <- select $ investigatorAt l.id
+        canIgnore <- anyM (fmap (CanIgnoreBarriers `elem`) . getModifiers) investigatorsHere
+        let barricaded = if canIgnore then [] else concat [xs | Barricades xs <- mods]
         selectAny $ not_ (beOneOf $ toId l : barricaded) <> Unblocked <> matcher <> matchAny
     UnbarricadedConnectedFrom forMovement matcher -> do
       starts <- select matcher

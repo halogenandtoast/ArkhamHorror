@@ -261,7 +261,7 @@ getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSou
           imods <- getModifiers iid
           mods <- getModifiers lid
           let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
-          let barricaded = concat [xs | Barricades xs <- mods]
+          let barricaded = if CanIgnoreBarriers `elem` imods then [] else concat [xs | Barricades xs <- mods]
           ls & filter (and . sequence [(/= lid), (`notElem` barricaded)]) & filterM \l -> do
             mods' <- getModifiers l
             pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]

@@ -13,7 +13,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Window (wouldDo)
 import Arkham.Helpers.Xp
@@ -58,6 +58,7 @@ instance HasModifiersFor TheLongestNight where
       setActiveDuringSetup
       [DoNotTakeUpSlot #ally]
     modifySelectWith a (assetIs Assets.ajax) setActiveDuringSetup [DoNotTakeUpSlot #ally]
+    modifySelect a Anyone [CanIgnoreBarriers]
 
 theLongestNight :: Difficulty -> TheLongestNight
 theLongestNight difficulty = scenario TheLongestNight "10626" "The Longest Night" difficulty []

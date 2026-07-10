@@ -83,6 +83,9 @@ getCard cardId = do
     Nothing -> error $ "Unregistered card id: " <> show cardId <> "\n" <> prettyCallStack callStack
     Just card -> pure card
 
+getCardMaybe :: HasGame m => CardId -> m (Maybe Card)
+getCardMaybe cardId = lookup cardId . gameCards <$> getGame
+
 findAllCards :: HasGame m => (Card -> Bool) -> m [Card]
 findAllCards cardPred = filter cardPred . toList . gameCards <$> getGame
 

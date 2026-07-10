@@ -61,6 +61,7 @@ getHistory :: HasGame m => HistoryType -> InvestigatorId -> m History
 getHistoryField :: HasGame m => HistoryType -> InvestigatorId -> HistoryField k -> m k
 getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest
 getCard :: (HasCallStack, HasGame m) => CardId -> m Card
+getCardMaybe :: HasGame m => CardId -> m (Maybe Card)
 findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
 findAllCards :: HasGame m => (Card -> Bool) -> m [Card]
 getSettings :: HasGame m => m Settings

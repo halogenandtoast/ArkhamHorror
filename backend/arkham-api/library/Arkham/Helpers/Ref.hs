@@ -37,7 +37,7 @@ targetToMaybeCard = \case
   TreacheryTarget aid -> fieldMay TreacheryCard aid
   LocationTarget aid -> fieldMay LocationCard aid
   SearchedCardTarget cId -> Just <$> getCard cId
-  CardIdTarget cId -> Just <$> getCard cId
+  CardIdTarget cId -> getCardMaybe cId
   BothTarget a b -> do
     aCard <- targetToMaybeCard a
     bCard <- targetToMaybeCard b

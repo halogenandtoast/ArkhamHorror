@@ -251,6 +251,14 @@ returnFromShatteredSelf = flip handleInvestigator \(ShatteredSelf (attrs `With` 
         , investigatorLog = investigatorLog a
         , investigatorKilled = investigatorKilled a
         , investigatorDrivenInsane = investigatorDrivenInsane a
+        , investigatorDeck = investigatorDeck attrs
+        , investigatorHand = investigatorHand attrs
+        , investigatorDiscard = investigatorDiscard attrs
+        , investigatorSlots = investigatorSlots attrs
+        , investigatorRemainingActions = investigatorRemainingActions attrs
+        , investigatorActionsTaken = investigatorActionsTaken attrs
+        , investigatorActionsPerformed = investigatorActionsPerformed attrs
+        , investigatorEndedTurn = investigatorEndedTurn attrs
         }
     _ -> error "The shattered self cannot be made whole again"
 

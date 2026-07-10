@@ -27,7 +27,7 @@ instance RunMessage AlienWhispers where
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       hasCards <- notNull <$> field InvestigatorHand iid
-      damageAssets <- select $ assetControlledBy iid <> AssetCanBeDamagedBySource (toSource attrs)
+      damageAssets <- select $ assetControlledBy iid <> AssetCanBeDamagedBySource (toSource attrs) <> AssetCanBeAssignedDamageBy iid
       horrorAssets <- select $ assetControlledBy iid <> AssetCanBeAssignedHorrorBy iid
 
       chooseOrRunOneM iid $ withI18n do

@@ -14,10 +14,14 @@
     }
   },
   "label": {
+    "chooseWhoReadsActII": "Choisissez qui lira l’Acte II du Roi en Jaune",
     "above": "Placez au-dessus",
     "below": "Placez au-dessous",
     "right": "Placez à droite",
     "left": "Placez à gauche"
+  },
+  "remembered": {
+    "youOpenedASecretPassageway": "Vous avez ouvert un passage secret."
   },
   "intro": {
     "title": "Scénario VI : Le Masque Blême",

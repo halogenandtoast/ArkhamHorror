@@ -6,9 +6,6 @@
       "body": "<p class='basic'>During this scenario, locations will be arranged in a set pattern, with new locations from the Catacombs Deck emerging to the left, right, above, or below existing locations, as they are revealed. A location that is put into play to the left, right, above, or below another location should be set next to that location in the manner described, with no other locations in between them.</p><p class='basic'>A location that is next to another location in this manner is considered _adjacent_. Locations are only adjacent orthogonally (left, right, above, and below), and are not adjacent diagonally. During this scenario, adjacent locations are considered to be connected to one another.</p><p class='basic'>You cannot put a location into play where an existing location already is. If you are given the choice to place a location from the Catacombs Deck in one of multiple spots, and one of those spots is occupied by an existing location, you cannot choose that spot. You must choose a spot unoccupied by a location, if able. If all of the specified spots are occupied by existing locations, the _Forced_ effect fails and no new Catacombs locations are put into play.</p>"
     }
   ],
-  "label": {
-    "chooseWhoReadsActII": "Choose who will read Act II of The King in Yellow"
-  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the number of locations away from the starting location you are (max 5).",
@@ -24,10 +21,14 @@
     }
   },
   "label": {
+    "chooseWhoReadsActII": "Choose who will read Act II of The King in Yellow",
     "above": "Place Above",
     "below": "Place Below",
     "right": "Place to the Right",
     "left": "Place to the Left"
+  },
+  "remembered": {
+    "youOpenedASecretPassageway": "You opened a secret passageway."
   },
   "intro": {
     "title": "Scenario VI: The Pallid Mask",

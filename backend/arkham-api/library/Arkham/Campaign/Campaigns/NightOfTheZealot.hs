@@ -22,9 +22,10 @@ nightOfTheZealot = campaign NightOfTheZealot "01" "Night of the Zealot"
 instance RunMessage NightOfTheZealot where
   -- Achievement detection first (Return to NOTZ; self-gating, see the
   -- module). Lives on the shared runner so the Return-to campaign inherits it.
-  runMessage msg c = runQueueT $ campaignI18n $ lift (runNotzAchievements msg) *> case msg of
-    CampaignStep PrologueStep -> do
-      storyI "prologue"
-      nextCampaignStep
-      pure c
-    _ -> lift $ defaultCampaignRunner msg c
+  runMessage msg c =
+    runQueueT $ campaignI18n $ lift (runNotzAchievements msg) *> case msg of
+      CampaignStep PrologueStep -> do
+        storyI "prologue"
+        nextCampaignStep
+        pure c
+      _ -> lift $ defaultCampaignRunner msg c

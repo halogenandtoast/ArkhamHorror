@@ -1,11 +1,11 @@
 module Arkham.Enemy.Cards.HostOfInsanity (hostOfInsanity) where
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
-import Arkham.Ability
 import Arkham.Matcher
 
 newtype HostOfInsanity = HostOfInsanity EnemyAttrs
@@ -23,7 +23,11 @@ instance HasModifiersFor HostOfInsanity where
 instance HasAbilities HostOfInsanity where
   getAbilities (HostOfInsanity a) =
     extend1 a
-      $ restricted a 1 (youExist $ ControlsAsset $ assetIs Assets.claspOfBlackOnyx) parleyAction_
+      $ restricted
+        a
+        1
+        (OnSameLocation <> youExist (ControlsAsset $ assetIs Assets.claspOfBlackOnyx))
+        parleyAction_
 
 instance RunMessage HostOfInsanity where
   runMessage msg e@(HostOfInsanity attrs) = runQueueT $ case msg of

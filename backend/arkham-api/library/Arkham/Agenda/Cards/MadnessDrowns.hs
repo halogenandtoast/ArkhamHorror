@@ -22,7 +22,6 @@ instance HasAbilities MadnessDrowns where
   getAbilities (MadnessDrowns a)
     | onSide A a =
         [ restricted a 1 (exists $ EnemyWithTitle "Hastur" <> EnemyWithDamage (AtLeast $ PerPlayer 5))
-            $ Objective
             $ forced AnyWindow
         ]
   getAbilities _ = []

@@ -4,7 +4,7 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['50', '51']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['50', '51', '52']
 
 export type AchievementTag =
   | 'TheZealotsRevenge'
@@ -36,6 +36,22 @@ export type AchievementTag =
   | 'TabulaRasa'
   | 'DunwichLineInTheSand'
   | 'DunwichExpertise'
+  | 'FairWarning'
+  | 'FirstSteps'
+  | 'CrashingTheParty'
+  | 'ForPryingEyes'
+  | 'TheCuckoosNest'
+  | 'TakeALookAtThis'
+  | 'ThePathOfDeath'
+  | 'GuessingGame'
+  | 'HasturMadeMeDoIt'
+  | 'SayMyName'
+  | 'GetBackHere'
+  | 'ThePathIsFalse'
+  | 'ThePathIsReal'
+  | 'ThePathIsMine'
+  | 'CarcosaLineInTheSand'
+  | 'CarcosaExpertise'
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string }
 
@@ -69,4 +85,20 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'TabulaRasa', campaignId: '51' },
   { tag: 'DunwichLineInTheSand', campaignId: '51' },
   { tag: 'DunwichExpertise', campaignId: '51' },
+  { tag: 'FairWarning', campaignId: '52' },
+  { tag: 'FirstSteps', campaignId: '52' },
+  { tag: 'CrashingTheParty', campaignId: '52' },
+  { tag: 'ForPryingEyes', campaignId: '52' },
+  { tag: 'TheCuckoosNest', campaignId: '52' },
+  { tag: 'TakeALookAtThis', campaignId: '52' },
+  { tag: 'ThePathOfDeath', campaignId: '52' },
+  { tag: 'GuessingGame', campaignId: '52' },
+  { tag: 'HasturMadeMeDoIt', campaignId: '52' },
+  { tag: 'SayMyName', campaignId: '52' },
+  { tag: 'GetBackHere', campaignId: '52' },
+  { tag: 'ThePathIsFalse', campaignId: '52' },
+  { tag: 'ThePathIsReal', campaignId: '52' },
+  { tag: 'ThePathIsMine', campaignId: '52' },
+  { tag: 'CarcosaLineInTheSand', campaignId: '52' },
+  { tag: 'CarcosaExpertise', campaignId: '52' },
 ]

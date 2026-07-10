@@ -15,10 +15,14 @@
     }
   },
   "label": {
+    "chooseWhoReadsActII": "누가 『황색의 왕』 제2막을 읽을지 선택",
     "above": "위쪽에 배치",
     "below": "아래쪽에 배치",
     "right": "오른쪽에 배치",
     "left": "왼쪽에 배치"
+  },
+  "remembered": {
+    "youOpenedASecretPassageway": "당신은 비밀 통로를 열었습니다."
   },
   "intro": {
     "title": "시나리오 VI: 창백한 가면",

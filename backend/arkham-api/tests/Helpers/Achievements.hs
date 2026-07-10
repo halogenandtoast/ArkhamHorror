@@ -12,8 +12,12 @@ module Helpers.Achievements (
   asReturnToTheDunwichLegacy,
   asReturnToTheDunwichLegacyWith,
   asReturnToTheDunwichLegacyScenario,
+  asReturnToThePathToCarcosa,
+  asReturnToThePathToCarcosaWith,
+  asReturnToThePathToCarcosaScenario,
   didEarn,
   didEarnDunwich,
+  didEarnCarcosa,
 ) where
 
 import Arkham.Achievement.Types
@@ -72,6 +76,15 @@ asReturnToTheDunwichLegacy = asReturnToTheDunwichLegacyWith Easy
 asReturnToTheDunwichLegacyScenario :: CardCode -> TestAppT ()
 asReturnToTheDunwichLegacyScenario = asAchievementCampaignScenario "51"
 
+asReturnToThePathToCarcosaWith :: Difficulty -> TestAppT ()
+asReturnToThePathToCarcosaWith = asAchievementCampaign "52"
+
+asReturnToThePathToCarcosa :: TestAppT ()
+asReturnToThePathToCarcosa = asReturnToThePathToCarcosaWith Easy
+
+asReturnToThePathToCarcosaScenario :: CardCode -> TestAppT ()
+asReturnToThePathToCarcosaScenario = asAchievementCampaignScenario "52"
+
 didEarn :: NightOfTheZealotAchievement -> TestAppT (IORef Bool)
 didEarn achievement =
   createMessageMatcher $ EarnAchievement $ NightOfTheZealotAchievement achievement
@@ -79,3 +92,7 @@ didEarn achievement =
 didEarnDunwich :: TheDunwichLegacyAchievement -> TestAppT (IORef Bool)
 didEarnDunwich achievement =
   createMessageMatcher $ EarnAchievement $ TheDunwichLegacyAchievement achievement
+
+didEarnCarcosa :: ThePathToCarcosaAchievement -> TestAppT (IORef Bool)
+didEarnCarcosa achievement =
+  createMessageMatcher $ EarnAchievement $ ThePathToCarcosaAchievement achievement

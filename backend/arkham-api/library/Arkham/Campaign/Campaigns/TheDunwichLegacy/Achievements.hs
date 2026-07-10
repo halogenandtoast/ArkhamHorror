@@ -40,7 +40,6 @@ import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Resolution
 import Arkham.Target
 import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -150,7 +149,6 @@ runDunwichAchievements msg = whenEligibleCampaign $ case msg of
         earnAchievement $ TheDunwichLegacyAchievement BirdHunting
   BeginTurn _ -> setStore whippoorwillKillsKey (0 :: Int)
   EndTurn _ -> setStore whippoorwillKillsKey (0 :: Int)
-
   -- "All Aboard": no Helpless Passenger may leave play in The Essex County
   -- Express. Every leave-play path (defeat, or its train car being removed)
   -- routes through a Discard of the asset; rescuing (taking control) does

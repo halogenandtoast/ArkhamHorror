@@ -9,7 +9,8 @@
   "noneEarnedYet": "No achievements earned yet.",
   "campaigns": {
     "50": "Return to the Night of the Zealot",
-    "51": "Return to the Dunwich Legacy"
+    "51": "Return to the Dunwich Legacy",
+    "52": "Return to The Path to Carcosa"
   },
   "entries": {
     "TheZealotsRevenge": {
@@ -127,6 +128,70 @@
     "DunwichExpertise": {
       "name": "Dunwich Expertise",
       "text": "Win The Dunwich Legacy campaign on Expert difficulty."
+    },
+    "FairWarning": {
+      "name": "Fair Warning",
+      "text": "Defeat the Royal Emissary three times during a single playthrough of Curtain Call."
+    },
+    "FirstSteps": {
+      "name": "First Steps",
+      "text": "Interview Constance Dumaine, Jordan Perry, Ishimaru Haruko, Sebastien Moreau, and Ashleigh Clarke in The Last King."
+    },
+    "CrashingTheParty": {
+      "name": "Crashing the Party",
+      "text": "Defeat the Lunatic version of Dianne Devine in The Last King."
+    },
+    "ForPryingEyes": {
+      "name": "For Prying Eyes",
+      "text": "Add the Hidden Library to the victory display in Echoes of the Past."
+    },
+    "TheCuckoosNest": {
+      "name": "The Cuckoo's Nest",
+      "text": "Resign with Daniel Chesterfield under an investigator's control in The Unspeakable Oath."
+    },
+    "TakeALookAtThis": {
+      "name": "Take a Look at This!",
+      "text": "Parley with the Host of Insanity in The Unspeakable Oath."
+    },
+    "ThePathOfDeath": {
+      "name": "The Path of Death",
+      "text": "Use your Clasp of Black Onyx to find a shortcut in The Pallid Mask."
+    },
+    "GuessingGame": {
+      "name": "Guessing Game",
+      "text": "Advance to the final agenda of one agenda deck before advancing the first agenda of the other agenda deck in Black Stars Rise."
+    },
+    "HasturMadeMeDoIt": {
+      "name": "Hastur Made Me Do It",
+      "text": "Defeat Hastur in Dim Carcosa while a Possession treachery is in your hand."
+    },
+    "SayMyName": {
+      "name": "Say My Name",
+      "text": "After you have heeded Daniel's warning, speak the name of HASTUR aloud seven or more times during a single scenario (or its setup)."
+    },
+    "GetBackHere": {
+      "name": "Get Back Here",
+      "text": "Win The Path to Carcosa campaign having never ended a scenario with The Man in the Pallid Mask in play."
+    },
+    "ThePathIsFalse": {
+      "name": "The Path is False",
+      "text": "Win The Path to Carcosa campaign with 8 Doubt."
+    },
+    "ThePathIsReal": {
+      "name": "The Path is Real",
+      "text": "Win The Path to Carcosa campaign with 8 Conviction."
+    },
+    "ThePathIsMine": {
+      "name": "The Path is Mine",
+      "text": "Win The Path to Carcosa campaign with less than 2 Doubt and Conviction in total."
+    },
+    "CarcosaLineInTheSand": {
+      "name": "Line in the Sand",
+      "text": "Win The Path to Carcosa campaign with at least three Ultimatums active."
+    },
+    "CarcosaExpertise": {
+      "name": "Carcosa Expertise",
+      "text": "Win The Path to Carcosa campaign on Expert difficulty."
     }
   },
   "clearAll": "Clear all",

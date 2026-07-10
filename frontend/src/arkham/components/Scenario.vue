@@ -59,7 +59,7 @@ import Asset from '@/arkham/components/Asset.vue';
 import Location from '@/arkham/components/Location.vue';
 import TreacheryView from '@/arkham/components/Treachery.vue';
 import { useGameChoices } from '@/arkham/composables/useGameChoices';
-import { setLocationOffset, resetLocationOffsets } from '@/arkham/api';
+import { setLocationOffset, resetLocationOffsets, updateGameRaw } from '@/arkham/api';
 import { useDebug, scenarioHasDebugOptions } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
@@ -1067,6 +1067,30 @@ const scenarioBadges = computed<ScenarioBadge[]>(() => {
 
   return badges
 })
+
+const heededDanielsWarning = computed(() =>
+  props.game.campaign?.id === '03' || props.game.campaign?.id === '52'
+    ? props.game.campaign.log.recorded.some((r) => r.tag === 'ThePathToCarcosaKey' && r.contents === 'YouHeadedDanielsWarning')
+    : false
+)
+const hasturSpeaker = computed(() => {
+  const investigators = Object.values(props.game.investigators).filter((i) => !i.eliminated && !i.defeated)
+  return investigators.find((i) => i.playerId === props.playerId) ?? investigators[0] ?? null
+})
+const spokenHasturTooltip = computed(() => {
+  const name = hasturSpeaker.value?.name.title ?? 'an investigator'
+  return `Record that ${name} spoke HASTUR aloud and take 1 horror.`
+})
+
+async function recordSpokenHastur() {
+  const investigatorId = hasturSpeaker.value?.id
+  if (!investigatorId) return
+
+  await updateGameRaw(props.game.id, {
+    tag: 'PlaceTokens',
+    contents: [{ tag: 'CampaignSource' }, { tag: 'InvestigatorTarget', contents: investigatorId }, 'Horror', 1],
+  })
+}
 
 const showScenarioNotifierBar = computed(() => scenarioBadges.value.length > 0 || props.realityAcidLightDevoured === true)
 
@@ -2324,6 +2348,18 @@ async function addChaosToken(face: any){
                 <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
                 <PoolItem v-if="damage && damage > 0" type="damage" :amount="damage" />
               </div>
+            </div>
+            <div v-if="heededDanielsWarning" class="spoken-hastur-recorder">
+              <button
+                type="button"
+                class="spoken-hastur-button"
+                :disabled="!hasturSpeaker"
+                v-tooltip="spokenHasturTooltip"
+                :aria-label="spokenHasturTooltip"
+                @click.stop.prevent="recordSpokenHastur"
+              >
+                <img :src="imgsrc('ct_cultist.png')" alt="" />
+              </button>
             </div>
           </div>
           <div class="keys" v-if="keys.length > 0">
@@ -4023,6 +4059,42 @@ async function addChaosToken(face: any){
     grid-column-gap: 0;
   }
 }
+
+.spoken-hastur-recorder {
+  position: absolute;
+  top: 4px;
+  right: -42px;
+  z-index: calc(var(--z-index-9999) + 1);
+}
+
+.spoken-hastur-button {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(241, 196, 15, 0.45);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+
+  img {
+    width: 22px;
+    height: 22px;
+    filter: sepia(1) saturate(5) hue-rotate(350deg) brightness(1.15);
+  }
+
+  &:hover {
+    background: rgba(241, 196, 15, 0.16);
+    border-color: rgba(241, 196, 15, 0.75);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
 
 .concealed-card {
   width: calc(var(--card-width) * 0.55);

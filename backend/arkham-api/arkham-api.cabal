@@ -2054,6 +2054,7 @@ library
       Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.TheInnsmouthConspiracy
       Arkham.Campaign.Campaigns.ThePathToCarcosa
+      Arkham.Campaign.Campaigns.ThePathToCarcosa.Achievements
       Arkham.Campaign.Campaigns.TheScarletKeys
       Arkham.Campaign.Import.Lifted
       Arkham.Campaign.Option
@@ -6983,6 +6984,7 @@ test-suite spec
   other-modules:
       Arkham.Achievements.ReturnToNightOfTheZealotSpec
       Arkham.Achievements.ReturnToTheDunwichLegacySpec
+      Arkham.Achievements.ReturnToThePathToCarcosaSpec
       Arkham.Act.Cards.AFamiliarPatternSpec
       Arkham.Act.Cards.BlackwatersBaneEpicMultiplayerSpec
       Arkham.Act.Cards.ExposeTheAnomalyEpicMultiplayerSpec

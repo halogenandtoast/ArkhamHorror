@@ -28,7 +28,7 @@ instance HasAbilities MadnessCoils where
         a
         1
         (exists $ EnemyWithTitle "Hastur" <> EnemyWithDamage (AtLeast $ PerPlayer 3))
-        (Objective $ forced AnyWindow)
+        (forced AnyWindow)
 
 instance RunMessage MadnessCoils where
   runMessage msg a@(MadnessCoils (attrs `With` metadata)) = runQueueT $ case msg of

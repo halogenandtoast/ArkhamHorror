@@ -15,10 +15,14 @@
     }
   },
   "label": {
+    "chooseWhoReadsActII": "选择谁将阅读《黄衣之王》第二幕",
     "above": "置于上方",
     "below": "置于下方",
     "right": "置于右方",
     "left": "置于左方"
+  },
+  "remembered": {
+    "youOpenedASecretPassageway": "你打开了一条秘密通道。"
   },
   "intro": {
     "title": "冒险 VI: 苍白面具",

@@ -494,6 +494,17 @@ const debug = useDebug()
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
 const skills = computed(() => props.investigator.skills.map((e) => props.game.skills[e]).filter(e => e))
 const emptySlots = computed(() => props.investigator.slots.filter((s) => s.empty))
+type DebugSlotType = 'HeadSlot' | 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
+const debugSlotTypes: { type: DebugSlotType; label: string; icon: string }[] = [
+  { type: 'HandSlot', label: 'Hand', icon: 'slots/hand.png' },
+  { type: 'ArcaneSlot', label: 'Arcane', icon: 'slots/arcane.png' },
+  { type: 'AllySlot', label: 'Ally', icon: 'slots/ally.png' },
+  { type: 'AccessorySlot', label: 'Accessory', icon: 'slots/accessory.png' },
+  { type: 'BodySlot', label: 'Body', icon: 'slots/body.png' },
+  { type: 'HeadSlot', label: 'Head', icon: 'slots/head.png' },
+  { type: 'TarotSlot', label: 'Tarot', icon: 'slots/tarot.png' },
+]
+const showDebugSlotMenu = ref(false)
 const { isMobile } = IsMobile();
 
 const slotImg = (slot: Arkham.Slot) => {
@@ -621,6 +632,17 @@ function onDrop(event: DragEvent) {
       }
     }
   }
+}
+
+function debugAddSlot(slotType: DebugSlotType) {
+  debug.send(props.game.id, {
+    tag: 'AddSlot',
+    contents: [
+      props.investigator.id,
+      slotType,
+      { tag: 'Slot', source: { tag: 'GameSource' }, assets: [] },
+    ],
+  })
 }
 
 const playAreaCollapsed = ref(false)
@@ -797,6 +819,30 @@ function closeHand() {
 
           <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot.tag}${idx}`">
             <img :src="slotImg(slot)" />
+          </div>
+
+          <div v-if="debug.active" key="debug-add-slots" class="debug-add-slots" :class="{ expanded: showDebugSlotMenu }">
+            <button
+              type="button"
+              class="debug-add-slots-toggle"
+              :aria-expanded="showDebugSlotMenu"
+              @click="showDebugSlotMenu = !showDebugSlotMenu"
+            >
+              <span>Add Slot</span>
+              <span>{{ showDebugSlotMenu ? '−' : '+' }}</span>
+            </button>
+            <div v-if="showDebugSlotMenu" class="debug-add-slots-menu">
+              <button
+                v-for="slot in debugSlotTypes"
+                :key="slot.type"
+                type="button"
+                :title="`Add ${slot.label} Slot`"
+                @click="debugAddSlot(slot.type)"
+              >
+                <img :src="imgsrc(slot.icon)" />
+                <span>{{ slot.label }}</span>
+              </button>
+            </div>
           </div>
 
         </transition-group>
@@ -1346,6 +1392,64 @@ function closeHand() {
   img {
     width: calc(var(--card-width) / 2);
     filter: invert(75%);
+  }
+}
+
+.debug-add-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: var(--card-width);
+
+  &.expanded {
+    width: min(calc(var(--card-width) * 2.4), 320px);
+  }
+
+  button {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.42);
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--select);
+    }
+  }
+}
+
+.debug-add-slots-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  padding: 0 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.debug-add-slots-menu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+
+  button {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 6px 8px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    img {
+      width: 22px;
+      filter: invert(75%);
+    }
   }
 }
 

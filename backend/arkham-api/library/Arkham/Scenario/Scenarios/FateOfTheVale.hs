@@ -171,7 +171,7 @@ resolveAbyssDraw iid source card = do
                 initiateEnemyAttack eid source iid
                 toDiscard source eid
       Nothing -> case card of
-        PlayerCard _ -> addToHand iid [card]
+        PlayerCard pc -> addToHand (fromMaybe iid pc.owner) [card]
         _ -> drawCard iid card
 
 instance HasModifiersFor FateOfTheVale where

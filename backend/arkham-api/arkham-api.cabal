@@ -2049,6 +2049,7 @@ library
       Arkham.Campaign.Campaigns.TheDreamEaters
       Arkham.Campaign.Campaigns.TheDrownedCity
       Arkham.Campaign.Campaigns.TheDunwichLegacy
+      Arkham.Campaign.Campaigns.TheDunwichLegacy.Achievements
       Arkham.Campaign.Campaigns.TheFeastOfHemlockVale
       Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.TheInnsmouthConspiracy
@@ -6981,6 +6982,7 @@ test-suite spec
   main-is: Spec.hs
   other-modules:
       Arkham.Achievements.ReturnToNightOfTheZealotSpec
+      Arkham.Achievements.ReturnToTheDunwichLegacySpec
       Arkham.Act.Cards.AFamiliarPatternSpec
       Arkham.Act.Cards.BlackwatersBaneEpicMultiplayerSpec
       Arkham.Act.Cards.ExposeTheAnomalyEpicMultiplayerSpec

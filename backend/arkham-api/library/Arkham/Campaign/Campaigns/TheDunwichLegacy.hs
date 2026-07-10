@@ -1,6 +1,7 @@
 module Arkham.Campaign.Campaigns.TheDunwichLegacy (theDunwichLegacy, TheDunwichLegacy (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Campaigns.TheDunwichLegacy.Achievements (runDunwichAchievements)
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Option
 import Arkham.Campaign.Types
@@ -60,7 +61,7 @@ theDunwichLegacy :: Difficulty -> TheDunwichLegacy
 theDunwichLegacy = campaign TheDunwichLegacy (CampaignId "02") "The Dunwich Legacy"
 
 instance RunMessage TheDunwichLegacy where
-  runMessage msg c = runQueueT $ campaignI18n $ case msg of
+  runMessage msg c = runQueueT $ campaignI18n $ lift (runDunwichAchievements msg) *> case msg of
     CampaignStep PrologueStep -> scope "prologue" do
       storyWithChooseOneM' (setTitle "title" >> p "body") do
         labeled' "extracurricularActivity" $ setNextCampaignStep ExtracurricularActivity

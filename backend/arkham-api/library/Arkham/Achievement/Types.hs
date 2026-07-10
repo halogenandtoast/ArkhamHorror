@@ -42,17 +42,42 @@ data NightOfTheZealotAchievement
 
 $(deriveJSON defaultOptions ''NightOfTheZealotAchievement)
 
+-- | Return to the Dunwich Legacy (campaign "51").
+data TheDunwichLegacyAchievement
+  = WhatIsThisStuffAnyway
+  | NoVoidForYou
+  | FirstRuleOfArkham
+  | AllAboard
+  | TheGangsAllHere
+  | NoBroodLeftBehind
+  | RemindMeNotToPissHerOff
+  | Eureka
+  | BeyondWhatVeil
+  | HereWeGoAgain
+  | BirdHunting
+  | TheyArentGettingAwayWithThis
+  | TabulaRasa
+  | DunwichLineInTheSand
+  | DunwichExpertise
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
+
+$(deriveJSON defaultOptions ''TheDunwichLegacyAchievement)
+
 data Achievement
   = NightOfTheZealotAchievement NightOfTheZealotAchievement
+  | TheDunwichLegacyAchievement TheDunwichLegacyAchievement
   deriving stock (Eq, Show, Ord, Data)
 
 allAchievements :: [Achievement]
-allAchievements = map NightOfTheZealotAchievement [minBound ..]
+allAchievements =
+  map NightOfTheZealotAchievement [minBound ..]
+    <> map TheDunwichLegacyAchievement [minBound ..]
 
 -- | Flat constructor name; the wire and database representation.
 achievementName :: Achievement -> Text
 achievementName = \case
   NightOfTheZealotAchievement a -> tshow a
+  TheDunwichLegacyAchievement a -> tshow a
 
 parseAchievement :: Text -> Maybe Achievement
 parseAchievement t = lookup t achievementsByName
@@ -63,6 +88,7 @@ parseAchievement t = lookup t achievementsByName
 achievementCampaigns :: Achievement -> [Text]
 achievementCampaigns = \case
   NightOfTheZealotAchievement _ -> ["50"]
+  TheDunwichLegacyAchievement _ -> ["51"]
 
 -- Flat JSON, mirroring UltimatumOrBoon: the union never leaks its shape.
 instance ToJSON Achievement where

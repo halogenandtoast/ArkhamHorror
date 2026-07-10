@@ -15,7 +15,7 @@ searchingForAnswers = act (1, A) SearchingForAnswers Cards.searchingForAnswers N
 
 instance HasAbilities SearchingForAnswers where
   getAbilities (SearchingForAnswers x) =
-    [mkAbility x 1 $ forced $ Enters #when You "The Hidden Chamber"]
+    [mkAbility x 1 $ Objective $ forced $ Enters #when You "The Hidden Chamber"]
 
 instance RunMessage SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs) = runQueueT $ case msg of

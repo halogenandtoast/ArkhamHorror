@@ -4,7 +4,7 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['50']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['50', '51']
 
 export type AchievementTag =
   | 'TheZealotsRevenge'
@@ -21,6 +21,21 @@ export type AchievementTag =
   | 'UmordhothsFavor'
   | 'ZealotLineInTheSand'
   | 'ArkhamExpertise'
+  | 'WhatIsThisStuffAnyway'
+  | 'NoVoidForYou'
+  | 'FirstRuleOfArkham'
+  | 'AllAboard'
+  | 'TheGangsAllHere'
+  | 'NoBroodLeftBehind'
+  | 'RemindMeNotToPissHerOff'
+  | 'Eureka'
+  | 'BeyondWhatVeil'
+  | 'HereWeGoAgain'
+  | 'BirdHunting'
+  | 'TheyArentGettingAwayWithThis'
+  | 'TabulaRasa'
+  | 'DunwichLineInTheSand'
+  | 'DunwichExpertise'
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string }
 
@@ -39,4 +54,19 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'UmordhothsFavor', campaignId: '50' },
   { tag: 'ZealotLineInTheSand', campaignId: '50' },
   { tag: 'ArkhamExpertise', campaignId: '50' },
+  { tag: 'WhatIsThisStuffAnyway', campaignId: '51' },
+  { tag: 'NoVoidForYou', campaignId: '51' },
+  { tag: 'FirstRuleOfArkham', campaignId: '51' },
+  { tag: 'AllAboard', campaignId: '51' },
+  { tag: 'TheGangsAllHere', campaignId: '51' },
+  { tag: 'NoBroodLeftBehind', campaignId: '51' },
+  { tag: 'RemindMeNotToPissHerOff', campaignId: '51' },
+  { tag: 'Eureka', campaignId: '51' },
+  { tag: 'BeyondWhatVeil', campaignId: '51' },
+  { tag: 'HereWeGoAgain', campaignId: '51' },
+  { tag: 'BirdHunting', campaignId: '51' },
+  { tag: 'TheyArentGettingAwayWithThis', campaignId: '51' },
+  { tag: 'TabulaRasa', campaignId: '51' },
+  { tag: 'DunwichLineInTheSand', campaignId: '51' },
+  { tag: 'DunwichExpertise', campaignId: '51' },
 ]

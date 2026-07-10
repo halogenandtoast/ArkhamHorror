@@ -8,7 +8,8 @@
   "settingsToggleDescription": "Track this campaign's official achievements as you play. Unlocks are recorded to your account and shown in the campaign log.",
   "noneEarnedYet": "No achievements earned yet.",
   "campaigns": {
-    "50": "Return to the Night of the Zealot"
+    "50": "Return to the Night of the Zealot",
+    "51": "Return to the Dunwich Legacy"
   },
   "entries": {
     "TheZealotsRevenge": {
@@ -66,6 +67,66 @@
     "ArkhamExpertise": {
       "name": "Arkham Expertise",
       "text": "Win the Night of the Zealot campaign on Expert difficulty."
+    },
+    "WhatIsThisStuffAnyway": {
+      "name": "What Is This Stuff, Anyway?",
+      "text": "Defeat The Experiment using the Alchemical Concoction in Extracurricular Activities."
+    },
+    "NoVoidForYou": {
+      "name": "No Void For You",
+      "text": "Complete The Miskatonic Museum without ever defeating the Hunting Horror."
+    },
+    "FirstRuleOfArkham": {
+      "name": "First Rule of Arkham",
+      "text": "Burn the Necronomicon in The Miskatonic Museum."
+    },
+    "AllAboard": {
+      "name": "All Aboard",
+      "text": "Complete The Essex County Express without letting any Helpless Passengers leave play."
+    },
+    "TheGangsAllHere": {
+      "name": "The Gang's All Here",
+      "text": "In The Survivors, have Dr. Henry Armitage, Dr. Francis Morgan, Professor Warren Rice, Zebulon Whateley, and Earl Sawyer all survive The Dunwich Legacy."
+    },
+    "NoBroodLeftBehind": {
+      "name": "No Brood Left Behind",
+      "text": "Have no Broods of Yog-Sothoth escape into the wild in Undimensioned and Unseen."
+    },
+    "RemindMeNotToPissHerOff": {
+      "name": "Remind Me Not To Piss Her Off",
+      "text": "Defeat either version of Seth Bishop while Naomi O'Bannion is under your control."
+    },
+    "Eureka": {
+      "name": "Eureka!",
+      "text": "Identify the Strange Solution."
+    },
+    "BeyondWhatVeil": {
+      "name": "Beyond What Veil?",
+      "text": "Take 10 damage from Beyond the Veil without being defeated."
+    },
+    "HereWeGoAgain": {
+      "name": "Here We Go Again",
+      "text": "Have Dr. Henry Armitage, Dr. Francis Morgan, and Professor Warren Rice in play at the same time."
+    },
+    "BirdHunting": {
+      "name": "Bird Hunting",
+      "text": "Defeat 3 Whippoorwills in a single turn."
+    },
+    "TheyArentGettingAwayWithThis": {
+      "name": "They Aren't Getting Away With This",
+      "text": "Win The Dunwich Legacy campaign as \"Ashcan\" Pete with Duke listed under \"Sacrificed to Yog-Sothoth.\""
+    },
+    "TabulaRasa": {
+      "name": "Tabula Rasa",
+      "text": "Win The Dunwich Legacy campaign with no Tablet or Elder Thing tokens in the chaos bag."
+    },
+    "DunwichLineInTheSand": {
+      "name": "Line in the Sand",
+      "text": "Win The Dunwich Legacy campaign with at least three Ultimatums active."
+    },
+    "DunwichExpertise": {
+      "name": "Dunwich Expertise",
+      "text": "Win The Dunwich Legacy campaign on Expert difficulty."
     }
   },
   "clearAll": "Clear all",

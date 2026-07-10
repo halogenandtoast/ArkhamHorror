@@ -331,7 +331,7 @@ instance RunMessage LocationAttrs where
     RemoveAllClues _ target | isTarget a target -> do
       pure $ a & tokensL %~ removeAllTokens Clue & withoutCluesL .~ True
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
-    RemoveAllTokens _ target | isTarget a target -> pure $ a & tokensL %~ mempty
+    RemoveAllTokens _ target | isTarget a target -> pure $ a & tokensL %~ mempty & withoutCluesL .~ locationRevealed
     PlaceTokens source target tType n | isTarget a target -> do
       if tType == Clue
         then do

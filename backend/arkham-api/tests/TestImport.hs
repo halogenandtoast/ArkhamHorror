@@ -871,9 +871,16 @@ scenarioTest = scenarioTestWith Investigators.jennyBarnes
 -- | Like 'scenarioTest' but lets the caller choose which investigator the game
 -- is seeded with (rather than the default Jenny Barnes).
 scenarioTestWith :: CardDef -> ScenarioId -> (Investigator -> TestAppT ()) -> IO ()
-scenarioTestWith investigatorDef scenarioId body = do
+scenarioTestWith investigatorDef = scenarioTestWithDifficulty investigatorDef Easy
+
+-- | Like 'scenarioTestWith' but also lets the caller choose the difficulty
+-- (needed for effects that differ between the Easy/Standard and Hard/Expert
+-- sides of a scenario reference card).
+scenarioTestWithDifficulty
+  :: CardDef -> Difficulty -> ScenarioId -> (Investigator -> TestAppT ()) -> IO ()
+scenarioTestWithDifficulty investigatorDef difficulty scenarioId body = do
   investigator <- testInvestigator investigatorDef
-  let scenario' = lookupScenario scenarioId Easy
+  let scenario' = lookupScenario scenarioId difficulty
   g <- newGame scenario' investigator
   gameRef <- newIORef g
   queueRef <- newQueue []

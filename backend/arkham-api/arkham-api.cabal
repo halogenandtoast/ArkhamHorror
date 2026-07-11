@@ -7178,6 +7178,7 @@ test-suite spec
       Arkham.Matcher.NearestLocationToMostSpec
       Arkham.Matcher.OutOfPlayEnemySpec
       Arkham.Modifier.SearchAllInvestigatorsSpec
+      Arkham.Scenario.DancingMadSpec
       Arkham.Scenario.SpecHelpers
       Arkham.Scenario.TheMidwinterGalaSpec
       Arkham.Skill.Cards.DeductionSpec

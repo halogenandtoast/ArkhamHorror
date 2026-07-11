@@ -190,10 +190,18 @@ instance RunMessage DancingMad where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         Cultist -> withLocationOf iid $ makeDecoyAt iid
-        Tablet -> whenJustM getSkillTest \st -> do
-          for_ (Map.assocs st.committedCards) \(iid', cards) -> do
-            for_ cards \c -> when (cardMatch c NonWeakness) $ hollow iid' c
+        -- Easy/Standard: "If you fail, set each non-weakness card committed to
+        -- this test aside as a hollow." Hard/Expert removes them immediately on
+        -- reveal instead (see ResolveChaosToken Tablet below).
+        Tablet | isEasyStandard attrs -> hollowCommittedCards
         _ -> pure ()
+      pure s
+    ResolveChaosToken _ Tablet _ | not (isEasyStandard attrs) -> do
+      -- Hard/Expert Tablet has no "if you fail" clause: set the committed
+      -- non-weakness cards aside immediately when the token is revealed. hollow
+      -- obtains each card, which drops it from the skill test's committed cards,
+      -- so their icons no longer count toward this test.
+      hollowCommittedCards
       pure s
     ResolveChaosToken token ElderThing iid -> do
       withLocationOf iid \loc -> do
@@ -240,3 +248,7 @@ instance RunMessage DancingMad where
       endOfScenario
       pure s
     _ -> DancingMad <$> liftRunMessage msg attrs
+   where
+    hollowCommittedCards = whenJustM getSkillTest \st ->
+      for_ (Map.assocs st.committedCards) \(iid', cards) ->
+        for_ cards \c -> when (cardMatch c NonWeakness) $ hollow iid' c

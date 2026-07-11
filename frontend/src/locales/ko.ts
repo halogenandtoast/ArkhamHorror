@@ -1,5 +1,8 @@
 import base from '@/locales/ko/base.json'
+import event from '@/locales/ko/event.json'
+import log from '@/locales/ko/log.json'
 import label from '@/locales/ko/label.json'
+import investigators from '@/locales/ko/investigators.json'
 import campaignLog from '@/locales/ko/campaignLog.json'
 import nightOfTheZealot from '@/locales/ko/nightOfTheZealot'
 import theDunwichLegacy from '@/locales/ko/theDunwichLegacy'
@@ -14,4 +17,4 @@ import standalone from '@/locales/ko/standalone'
 import gameBoard from '@/locales/ko/gameBoard/gameBoard'
 import xp from '@/locales/ko/xp.json'
 
-export default {...base, ...campaignLog, ...gameBoard, label, xp, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, theFeastOfHemlockVale, standalone}
+export default {...base, ...event, ...campaignLog, ...gameBoard, label, xp, investigators, log, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, theFeastOfHemlockVale, standalone}

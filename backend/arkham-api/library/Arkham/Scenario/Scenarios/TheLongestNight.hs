@@ -531,6 +531,9 @@ instance RunMessage TheLongestNight where
     ScenarioCountDecrementBy (Barriers l1 l2) n -> do
       let meta' = decrementBarriers n l1 l2 $ toResultDefault defaultMeta attrs.meta
       pure $ TheLongestNight $ attrs & metaL .~ toJSON meta'
+    RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do
+      addCampaignCardToDeck iid ShuffleIn card
+      pure s
     ScenarioResolution r -> scope "resolutions" do
       defeated <- select DefeatedInvestigator
       unless (null defeated) do

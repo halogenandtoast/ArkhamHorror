@@ -25,12 +25,12 @@ import Arkham.Campaign (lookupCampaign)
 import Arkham.Campaign.Types (campaignStep)
 import Arkham.CampaignStep (CampaignStep (ScenarioStep))
 import Arkham.Difficulty
-import Arkham.Id (CampaignId)
 import Arkham.Message
 import TestImport
 
--- | Attach the given campaign at the given difficulty, keeping the harness
--- scenario.
+{- | Attach the given campaign at the given difficulty, keeping the harness
+scenario.
+-}
 asAchievementCampaign :: CampaignId -> Difficulty -> TestAppT ()
 asAchievementCampaign campaignId difficulty = do
   overTest \g ->

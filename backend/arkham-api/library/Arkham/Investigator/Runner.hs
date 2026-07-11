@@ -2328,34 +2328,83 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           )
       ) | iid' == toId a -> do
       mods <- getModifiers iid
+      let searchAll = SearchAllInvestigators `elem` mods
+      -- SearchAllInvestigators (Leah Atwood Codex 2): fold every OTHER
+      -- investigator's deck/hand/discard into the same plain Zone;
+      -- SearchIncludesDeckOf folds in just that investigator's deck. Merged cards
+      -- keep pcOwner so the frontend can group by owner. Scenario out-of-play
+      -- decks (e.g. The Abyss) are NOT included: this is a player-card effect and
+      -- player-card effects cannot interact with The Abyss.
+      -- You can draw your OWN signature but not another investigator's: drop any
+      -- signature card whose owner isn't the searcher from every merged source.
+      -- (The searcher's own zones are folded in unfiltered below.)
+      -- A deck is only merged if its owner's deck can be searched (The
+      -- Harbinger), and a discard only if its owner's cards can leave it
+      -- (Graveyard Ghouls).
+      let dropOthersSignatures = filter \c -> not (isSignature c) || toCardOwner c == Just iid'
+      -- SearchIncludesDeckOf takes precedence over SearchAllInvestigators for
+      -- deck merging: an extension search may start while the original search's
+      -- SearchAllInvestigators window effect is still live, and must only merge
+      -- the single chosen deck (the searcher's own deck needs no merge -- it is
+      -- folded in natively below, so a self-target only suppresses searchAll).
+      let extendedDeckMods = [i | SearchIncludesDeckOf i <- mods]
+      deckOwners <-
+        if
+          | notNull extendedDeckMods -> pure $ nub $ filter (/= iid') extendedDeckMods
+          | searchAll -> filter (/= iid') <$> getInvestigators
+          | otherwise -> pure []
+      otherDeck <-
+        fmap dropOthersSignatures $ concatForM deckOwners \o -> do
+          omods <- getModifiers o
+          if CannotManipulateDeck `elem` omods
+            then pure []
+            else fieldMap InvestigatorDeck (map toCard . unDeck) o
+      (otherHand, otherDiscard) <-
+        if searchAll
+          then do
+            others <- filter (/= iid') <$> getInvestigators
+            hand <- dropOthersSignatures <$> concatForM others (field InvestigatorHand)
+            discard <- fmap dropOthersSignatures $ concatForM others \o -> do
+              omods <- getModifiers o
+              if CardsCannotLeaveYourDiscardPile `elem` omods
+                then pure []
+                else fieldMap InvestigatorDiscard (map toCard) o
+            pure (hand, discard)
+          else pure ([], [])
+      ownDiscard <-
+        if searchAll
+          then do
+            tmods <- getModifiers iid'
+            pure $ if CardsCannotLeaveYourDiscardPile `elem` tmods then [] else investigatorDiscard
+          else pure investigatorDiscard
       let
         additionalDepth =
           sum [x | searchType == Searching, SearchDepth x <- mods]
             + sum [x | searchType == Looking, LookAtDepth x <- mods]
         foundCards :: Map Zone [Card] =
           foldl'
-            ( \hmap (cardSource, _) -> case cardSource of
-                Zone.FromDeck ->
-                  insertWith (<>) Zone.FromDeck (map PlayerCard $ unDeck investigatorDeck) hmap
-                Zone.FromHand -> insertWith (<>) Zone.FromHand investigatorHand hmap
-                Zone.FromTopOfDeck n ->
-                  insertWith
-                    (<>)
-                    Zone.FromDeck
-                    (map PlayerCard . take (n + additionalDepth) $ unDeck investigatorDeck)
-                    hmap
-                Zone.FromBottomOfDeck n ->
-                  insertWith
-                    (<>)
-                    Zone.FromDeck
-                    (map PlayerCard . take (n + additionalDepth) . reverse $ unDeck investigatorDeck)
-                    hmap
-                Zone.FromDiscard ->
-                  insertWith (<>) Zone.FromDiscard (map PlayerCard investigatorDiscard) hmap
-                other -> error $ mconcat ["Zone ", show other, " not yet handled"]
-            )
-            mempty
-            cardSources
+              ( \hmap (cardSource, _) -> case cardSource of
+                  Zone.FromDeck ->
+                    insertWith (<>) Zone.FromDeck (map PlayerCard (unDeck investigatorDeck) <> otherDeck) hmap
+                  Zone.FromHand -> insertWith (<>) Zone.FromHand (investigatorHand <> otherHand) hmap
+                  Zone.FromTopOfDeck n ->
+                    insertWith
+                      (<>)
+                      Zone.FromDeck
+                      (map PlayerCard (take (n + additionalDepth) $ unDeck investigatorDeck) <> otherDeck)
+                      hmap
+                  Zone.FromBottomOfDeck n ->
+                    insertWith
+                      (<>)
+                      Zone.FromDeck
+                      (map PlayerCard (take (n + additionalDepth) . reverse $ unDeck investigatorDeck) <> otherDeck)
+                      hmap
+                  Zone.FromDiscard ->
+                    insertWith (<>) Zone.FromDiscard (map PlayerCard ownDiscard <> otherDiscard) hmap
+                  other -> error $ mconcat ["Zone ", show other, " not yet handled"]
+              )
+              mempty
+              cardSources
 
       when (searchType == Searching) $ do
         pushBatch batchId

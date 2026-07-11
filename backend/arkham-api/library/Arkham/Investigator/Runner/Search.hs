@@ -461,7 +461,15 @@ handleResolveSearch a@InvestigatorAttrs{..} = do
                 Looking -> False
                 Revealing -> any (\(z, zrs) -> foundKey z == FromDeck && zrs == ShuffleBackIn) searchZones
                 Searching -> any (\(z, zrs) -> foundKey z == FromDeck && zrs == ShuffleBackIn) searchZones
-            pushWhen shouldShuffle $ ShuffleDeck (Deck.InvestigatorDeck a.id)
+            -- SearchAllInvestigators searched every investigator's deck, so shuffle
+            -- them all; otherwise just the searcher's deck. A deck merged in via
+            -- SearchIncludesDeckOf was searched, so it always shuffles.
+            if SearchAllInvestigators `elem` mods
+              then when shouldShuffle do
+                iids <- getInvestigators
+                pushAll [ShuffleDeck (Deck.InvestigatorDeck i) | i <- iids]
+              else pushWhen shouldShuffle $ ShuffleDeck (Deck.InvestigatorDeck a.id)
+            pushAll [ShuffleDeck (Deck.InvestigatorDeck i) | SearchIncludesDeckOf i <- mods]
           DrawFoundUpTo who n -> do
             let
               choices =
@@ -507,6 +515,9 @@ handleResolveSearch a@InvestigatorAttrs{..} = do
                   , After (PreSearchFound iid Nothing (Deck.InvestigatorDeck a.id) (concat $ toList targetCards))
                   , SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
                   ]
+            -- A deck merged in via SearchIncludesDeckOf was searched, so it
+            -- shuffles once the deferred resolution (queued ahead) completes.
+            pushAll [ShuffleDeck (Deck.InvestigatorDeck i) | SearchIncludesDeckOf i <- mods]
           DrawAllFound who -> do
             let
               choices =

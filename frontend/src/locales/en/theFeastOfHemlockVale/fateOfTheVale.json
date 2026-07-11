@@ -165,7 +165,9 @@
       "act3": "<p>_Otherwise:_</p><p>\"This was our home,\" Leah weeps. \"Rachel, what were you thinking? This is all my fault. I stood by and let this happen.\"</p><p class='basic right'>Each investigator may either draw 2 cards or heal 1 horror.</p>",
       "label": {
         "drawTwo": "Draw 2 cards",
-        "healHorror": "Heal 1 horror"
+        "healHorror": "Heal 1 horror",
+        "doNotExtend": "Do not extend the search",
+        "drawItem": "Draw an Item asset, or extend the search into a deck"
       }
     },
     "simeonAtwood": {

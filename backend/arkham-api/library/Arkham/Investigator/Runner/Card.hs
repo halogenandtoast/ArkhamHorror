@@ -1068,9 +1068,25 @@ handleDrawFocusedToHand a@InvestigatorAttrs{..} iid' cardSource cardId = do
       fromJustNote "missing card"
         $ find ((== cardId) . toCardId) (findWithDefault [] cardSource $ a ^. foundCardsL)
     foundCards' = Map.map (filter ((/= cardId) . toCardId)) (a ^. foundCardsL)
-  push $ case zoneToDeck a.id cardSource of
-    Nothing -> drawToHand iid' card
-    Just deck -> drawToHandFrom iid' deck card
+    -- SearchAllInvestigators can surface cards from another investigator's zone or
+    -- a scenario deck (FromCollection). Those aren't in the drawer's own deck, so
+    -- the normal draw-from-deck removal would leave a duplicate. Route them through
+    -- the global obtain path (addToHand -> obtainCard), which clears the card from
+    -- any owner's hand/deck/discard and scenario decks while preserving pcOwner.
+    -- The own-zone case is left byte-for-byte identical (same draw-trigger windows).
+    inOwnZone = case cardSource of
+      Zone.FromDeck -> card `elem` map toCard (unDeck investigatorDeck)
+      Zone.FromTopOfDeck _ -> card `elem` map toCard (unDeck investigatorDeck)
+      Zone.FromBottomOfDeck _ -> card `elem` map toCard (unDeck investigatorDeck)
+      Zone.FromHand -> card `elem` investigatorHand
+      Zone.FromDiscard -> card `elem` map toCard investigatorDiscard
+      _ -> False
+  push
+    $ if inOwnZone
+      then case zoneToDeck a.id cardSource of
+        Nothing -> drawToHand iid' card
+        Just deck -> drawToHandFrom iid' deck card
+      else addToHand iid' card
   pure $ a & foundCardsL .~ foundCards' & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
 
 handleAddFocusedToTopOfDeck a@InvestigatorAttrs{..} iid' cardId = do

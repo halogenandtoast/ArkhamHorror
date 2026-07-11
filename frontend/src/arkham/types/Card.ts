@@ -97,6 +97,9 @@ export type CardContents = {
   mutated?: string
   chained?: string
   meta?: Record<string, any>
+  // owner === searching investigator => their own zone; another id => that
+  // investigator's zone; null/absent => the scenario "Abyss" deck (owner-less).
+  owner?: string
 }
 
 export type VengeanceCard = {
@@ -127,6 +130,7 @@ export const cardContentsDecoder = JsonDecoder.object<CardContents>(
     mutated: v2Optional(JsonDecoder.string()),
     chained: v2Optional(JsonDecoder.string()),
     meta: v2Optional(JsonDecoder.succeed()),
+    owner: v2Optional(JsonDecoder.string()),
   },
   'CardContents',
 );

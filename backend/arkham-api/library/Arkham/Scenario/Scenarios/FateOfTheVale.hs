@@ -17,7 +17,7 @@ import Arkham.Helpers.Act (getCurrentAct, getCurrentActStep)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (connectBothWays, withLocationOf)
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect, modifySelectWith)
 import Arkham.Helpers.Query (allInvestigators, getSetAsideCardMaybe)
 import Arkham.Helpers.SkillTest (isEvadeWith, isFightWith)
 import Arkham.Helpers.Xp (toBonus)
@@ -40,10 +40,17 @@ import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.ScenarioLogKey (ScenarioLogKey (BertieIsFleeing))
 import Arkham.Scenarios.FateOfTheVale.Helpers
 import Arkham.Story.Cards qualified as Stories
-import Arkham.Strategy (FoundCardsStrategy (..), ZoneReturnStrategy (..), fromDeck, fromDiscard)
+import Arkham.Strategy (
+  FoundCardsStrategy (..),
+  IsDraw (..),
+  ZoneReturnStrategy (..),
+  defer,
+  fromDeck,
+  fromDiscard,
+ )
 import Arkham.Token (Token (Resource))
 import Arkham.Trait (Trait (Cave, Colour, Emissary))
-import Arkham.Zone (OutOfPlayZone (..), Zone (..))
+import Arkham.Zone (Zone (..))
 import Control.Lens (use, (%=), (.=))
 
 newtype FateOfTheVale = FateOfTheVale ScenarioAttrs
@@ -113,6 +120,63 @@ drawResidentUnderneath iid source = do
       eid <- createEnemyAt (residentEnemyDef r) lid
       exhaustEnemy source eid
 
+leahCodex2Matcher :: ExtendedCardMatcher
+leahCodex2Matcher = basic (#item <> #asset)
+
+{- | Codex 2 (Leah Atwood, Act 2): search every investigator's hand and discard
+pile, plus each deck the search has been extended into so far (tracked in
+scenario meta). Each extension re-runs the whole search so the prompt always
+shows every available option, fully grouped by source in the UI. Decks the
+search extends into are searched and therefore shuffled; keeping that opt-in
+per deck is the point of the phased flow.
+-}
+leahCodex2Search :: ReverseQueue m => ScenarioAttrs -> InvestigatorId -> [InvestigatorId] -> m ()
+leahCodex2Search attrs iid searched = do
+  -- The SearchAllInvestigators/SearchIncludesDeckOf modifiers come from the
+  -- scenario's HasModifiersFor (driven by the leahCodex2Searcher/-Searched meta
+  -- keys), not searchModifier: window effects die on the previous phase's
+  -- EndSearch before the re-search folds its foundCards.
+  let deckZones
+        | iid `elem` searched = [fromDeck]
+        -- FromTopOfDeck 0 contributes none of the searcher's own cards; the
+        -- SearchIncludesDeckOf merges supply the chosen decks instead.
+        | notNull searched = [(FromTopOfDeck 0, PutBack)]
+        | otherwise = []
+  search
+    iid
+    (toSource attrs)
+    iid
+    ([(FromHand, PutBack), fromDiscard] <> deckZones)
+    leahCodex2Matcher
+    (defer (LabeledTarget "leahCodex2" ScenarioTarget) IsNotDraw)
+
+{- | The deferred resolution: draw one of the found Item assets, or extend the
+search into one more not-yet-searched deck (only searchable decks are offered;
+The Harbinger locks a deck out).
+-}
+leahCodex2Found
+  :: (ReverseQueue m, HasI18n) => ScenarioAttrs -> InvestigatorId -> [Card] -> m ()
+leahCodex2Found attrs iid cards = do
+  let searched = getMetaKeyDefault "leahCodex2Searched" [] attrs :: [InvestigatorId]
+  eligibleDecks <- filter (`notElem` searched) <$> select InvestigatorCanSearchDeck
+  if null cards && null eligibleDecks
+    then scenarioSpecific "leahCodex2Done" ()
+    else chooseOrRunOneM iid do
+      questionLabeled' "drawItem"
+      -- targeting (CardIdTarget), not cardLabeled: card-id targets render inside
+      -- the searched-cards modal groups; a CardLabel would float separately.
+      for_ cards \card -> targeting card do
+        addToHand iid [card]
+        scenarioSpecific "leahCodex2Done" ()
+      -- One option per extendable deck; the frontend renders each as a
+      -- placeholder "From X's Deck" section in the searched-cards modal with a
+      -- button that extends the search into that deck (see "extendSearchDeck"
+      -- in Question.vue).
+      for_ eligibleDecks \deckOwner ->
+        targeting (LabeledTarget "extendSearchDeck" (toTarget deckOwner))
+          $ scenarioSpecific "leahCodex2Extend" (iid, deckOwner)
+      when (null cards) $ labeled' "doNotExtend" $ scenarioSpecific "leahCodex2Done" ()
+
 openCaveLabelFor :: ReverseQueue m => LocationId -> m (Maybe Text)
 openCaveLabelFor nest = do
   nestLabel <- field LocationLabel nest
@@ -176,6 +240,15 @@ resolveAbyssDraw iid source card = do
 
 instance HasModifiersFor FateOfTheVale where
   getModifiersFor (FateOfTheVale attrs) = do
+    -- Leah Atwood Codex 2: while the codex search is resolving, the searcher
+    -- searches every investigator's hand/discard plus each deck the search was
+    -- extended into. Driven by scenario meta rather than searchModifier window
+    -- effects: those disable on ANY EndSearch/SearchEnded, so the previous
+    -- phase's teardown would strip them before the re-search builds its
+    -- foundCards (losing the merged hands/discards).
+    for_ (getMetaKeyDefault "leahCodex2Searcher" Nothing attrs :: Maybe InvestigatorId) \iid -> do
+      let searched = getMetaKeyDefault "leahCodex2Searched" [] attrs
+      modified_ attrs iid $ SearchAllInvestigators : map SearchIncludesDeckOf searched
     modifySelectWith
       attrs
       (enemyIsExact Enemies.cosmicEmissaryThePhantasm)
@@ -448,18 +521,18 @@ instance RunMessage FateOfTheVale where
               hr
               p.validate (not isAct2) "act3"
           when isAct2 do
-            -- Search all out-of-play areas for an Item asset and draw it.
             codexFinishedUntilNewAct 2
-            search
-              iid
-              source
-              iid
-              [ (FromOutOfPlay SetAsideZone, PutBack)
-              , (FromOutOfPlay VictoryDisplayZone, PutBack)
-              , (FromOutOfPlay VoidZone, PutBack)
-              ]
-              (basic (#item <> #asset))
-              (DrawFound iid 1)
+            -- "Search all out-of-play areas for an Item asset and draw it."
+            -- Phased so deck searches (which force a shuffle) stay opt-in: search
+            -- every investigator's hand and discard first (nothing shuffles),
+            -- then the deferred handler (SearchFound "leahCodex2" below) offers
+            -- the found Items and may repeatedly extend the search into further
+            -- decks. The Abyss is NOT searched -- this is a player-card effect
+            -- and player-card effects cannot interact with The Abyss. The drawn
+            -- card keeps its owner (obtainCard preserves pcOwner), so it returns
+            -- to its true owner's discard if it later leaves play, even when
+            -- drawn by another investigator.
+            scenarioSpecific "leahCodex2Start" iid
           when isAct3 do
             codexFinished 2
             eachInvestigator \iid' -> chooseOneM iid' do
@@ -663,4 +736,25 @@ instance RunMessage FateOfTheVale where
     ScenarioSpecific "removeFromAbyss" v -> do
       let cid = toResult v :: CardId
       pure $ FateOfTheVale $ attrs & decksL . at AbyssDeck %~ fmap (filter ((/= cid) . toCardId))
+    ScenarioSpecific "leahCodex2Start" v -> do
+      let iid = toResult v :: InvestigatorId
+      leahCodex2Search attrs iid []
+      pure
+        $ FateOfTheVale
+        $ attrs
+        & setMetaKey "leahCodex2Searcher" (Just iid)
+        & setMetaKey "leahCodex2Searched" ([] :: [InvestigatorId])
+    ScenarioSpecific "leahCodex2Extend" v -> do
+      let (iid, deckOwner) = toResult v :: (InvestigatorId, InvestigatorId)
+      let searched = nub $ deckOwner : getMetaKeyDefault "leahCodex2Searched" [] attrs
+      leahCodex2Search attrs iid searched
+      pure $ FateOfTheVale $ attrs & setMetaKey "leahCodex2Searched" searched
+    ScenarioSpecific "leahCodex2Done" _ -> do
+      pure $ FateOfTheVale $ attrs & setMetaKey "leahCodex2Searcher" (Nothing :: Maybe InvestigatorId)
+    SearchFound iid (LabeledTarget "leahCodex2" _) _ cards -> scope "codex" $ scope "leahAtwood" do
+      leahCodex2Found attrs iid cards
+      pure s
+    SearchNoneFound iid (LabeledTarget "leahCodex2" _) -> scope "codex" $ scope "leahAtwood" do
+      leahCodex2Found attrs iid []
+      pure s
     _ -> FateOfTheVale <$> liftRunMessage msg attrs

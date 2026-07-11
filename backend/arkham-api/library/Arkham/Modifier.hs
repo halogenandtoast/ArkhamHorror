@@ -426,6 +426,14 @@ data ModifierType
   | ScenarioModifier Text
   | ScenarioModifierValue Text Value
   | SearchDepth Int
+  | -- | When searching, also fold in every other investigator's matching
+    -- deck/hand/discard cards, keyed under the same plain Zone. See Leah Atwood
+    -- Codex 2 (Fate of the Vale).
+    SearchAllInvestigators
+  | -- | When searching, also fold this investigator's deck into the FromDeck
+    -- zone (their cards keep pcOwner). Used to extend a search into a single
+    -- chosen deck. See Leah Atwood Codex 2 (Fate of the Vale).
+    SearchIncludesDeckOf InvestigatorId
   | Semaphore
   | SetAbilityCost Cost
   | SetAbilityCriteria CriteriaOverride

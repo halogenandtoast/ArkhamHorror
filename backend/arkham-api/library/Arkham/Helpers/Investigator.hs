@@ -62,14 +62,9 @@ getStartingResources a = do
 getSkillValue :: (HasGame m, Tracing m) => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = do
   mods <- getModifiers iid
-  let
-    fld =
-      case st of
-        SkillWillpower -> InvestigatorBaseWillpower
-        SkillIntellect -> InvestigatorBaseIntellect
-        SkillCombat -> InvestigatorBaseCombat
-        SkillAgility -> InvestigatorBaseAgility
-  base <- field fld iid
+  -- honor BaseSkillOf/BaseSkill overrides (e.g. Shattered Self, Monstrous Transformation)
+  -- rather than reading the raw base field, so skill-combine effects (Lockpicks, Enchant Weapon) see them
+  base <- baseSkillValueFor st Nothing iid
   let canBeIncreased = SkillCannotBeIncreased st `notElem` mods
   x <-
     if canBeIncreased

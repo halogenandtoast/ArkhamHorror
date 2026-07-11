@@ -28,15 +28,6 @@ connect a b = do
 anyOf :: [Location] -> LocationMatcher
 anyOf = LocationMatchAny . map (LocationWithId . toId)
 
--- `addInvestigator` only inserts into entities; `getInvestigators` filters by
--- `gamePlayerOrder` via `inTurnOrder`, so additions must be appended to the
--- player order for them to show up in queries.
-addInvestigatorInTurnOrder :: CardDef -> TestAppT Investigator
-addInvestigatorInTurnOrder def = do
-  i <- addInvestigator def
-  overTest $ \g -> g {gamePlayerOrder = gamePlayerOrder g <> [toId i]}
-  pure i
-
 spec :: Spec
 spec = describe "NearestLocationToMost" do
   it "counts each investigator's nearest candidate and picks the most-voted" . gameTest $ \self -> do
@@ -44,8 +35,8 @@ spec = describe "NearestLocationToMost" do
     -- self + i2 at l1; i3 at l5. Candidates: l1, l3, l5.
     --   self -> nearest candidate l1 (0)   | i2 -> l1 (0)  | i3 -> l5 (0)
     -- Votes: l1 = 2, l5 = 1, l3 = 0 -> l1 wins.
-    i2 <- addInvestigatorInTurnOrder Investigators.rolandBanks
-    i3 <- addInvestigatorInTurnOrder Investigators.daisyWalker
+    i2 <- addInvestigator Investigators.rolandBanks
+    i3 <- addInvestigator Investigators.daisyWalker
     l1 <- testLocation
     l2 <- testLocation
     l3 <- testLocation
@@ -64,7 +55,7 @@ spec = describe "NearestLocationToMost" do
     -- Component A: l1 - l2 (self at l1, votes l2)
     -- Component B: l3 - l4 (i2  at l3, votes l4)
     -- Each candidate collects one vote -> both tie.
-    i2 <- addInvestigatorInTurnOrder Investigators.rolandBanks
+    i2 <- addInvestigator Investigators.rolandBanks
     l1 <- testLocation
     l2 <- testLocation
     l3 <- testLocation
@@ -79,7 +70,7 @@ spec = describe "NearestLocationToMost" do
     -- Component A: l1 - l2          (self at l1, votes l2 at distance 1)
     -- Component B: l3 - l4 - l5     (i2   at l3, votes l5 at distance 2)
     -- Distance is irrelevant across investigators: each candidate has one vote.
-    i2 <- addInvestigatorInTurnOrder Investigators.rolandBanks
+    i2 <- addInvestigator Investigators.rolandBanks
     l1 <- testLocation
     l2 <- testLocation
     l3 <- testLocation
@@ -99,7 +90,7 @@ spec = describe "NearestLocationToMost" do
     -- Votes: a = 1, b = 1, c = 1 -> all three tie (lead investigator decides).
     -- Mirrors the reported game: an investigator standing on a Coastal location
     -- plus another equidistant from two others must offer all three as choices.
-    i2 <- addInvestigatorInTurnOrder Investigators.rolandBanks
+    i2 <- addInvestigator Investigators.rolandBanks
     a <- testLocation
     d <- testLocation
     x <- testLocation

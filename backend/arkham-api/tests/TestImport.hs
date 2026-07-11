@@ -586,7 +586,13 @@ addInvestigator
 addInvestigator defF = do
   investigator' <- testInvestigator defF
   env <- get
-  runReaderT (overGame (entitiesL . Entities.investigatorsL %~ insertEntity investigator')) env
+  runReaderT
+    ( overGame
+        ( (entitiesL . Entities.investigatorsL %~ insertEntity investigator')
+            . (playerOrderL %~ (<> [toId investigator']))
+        )
+    )
+    env
   pure investigator'
 
 testConnectedLocations

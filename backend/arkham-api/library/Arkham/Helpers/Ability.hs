@@ -239,10 +239,12 @@ canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \ca
           $ Matcher.locationWithInvestigator iid
           <> Matcher.LocationWithExposableConcealedCard ab.source
       if base
-        then pure $ base || concealed
-        else flip anyM modifiers \case
-          CanEvadeOverride (CriteriaOverride c) -> (|| concealed) <$> passesCriteria iid Nothing abilitySource abilitySource [] c
-          _ -> pure concealed
+        then pure True
+        else do
+          overrideValid <- flip anyM modifiers \case
+            CanEvadeOverride (CriteriaOverride c) -> passesCriteria iid Nothing abilitySource abilitySource [] c
+            _ -> pure False
+          pure $ overrideValid || concealed
   Action.Engage -> case abilitySource of
     EnemySource _ -> pure True
     _ -> do

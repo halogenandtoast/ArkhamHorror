@@ -35,20 +35,22 @@ instance RunMessage IcePick3 where
       let usedHere = maybe False ((toTarget attrs `elem`) . skillTestSubscribers) mTest
       when usedHere $ withSkillTest \sid -> do
         when (action == #fight) do
-          chooseOneM iid do
-            (cardI18n $ labeled' "icePick3.discardIcePick3ToDo1Damage") do
-              toDiscardBy iid (attrs.ability 1) attrs
-              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-            labeledI "doNotDiscardCard" nothing
+          skillTestCardOptionEdit attrs (preOriginalOption . optionWhenExists (AssetWithId attrs.id)) do
+            chooseOneM iid do
+              (cardI18n $ labeled' "icePick3.discardIcePick3ToDo1Damage") do
+                toDiscardBy iid (attrs.ability 1) attrs
+                skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+              labeledI "doNotDiscardCard" nothing
         when (action == #investigate) do
           withLocationOf iid \loc -> do
             mTargetLoc <- getSkillTestTargetedLocation
-            chooseOneM iid do
-              (cardI18n $ labeled' "icePick3.discardIcePick3") do
-                toDiscardBy iid (attrs.ability 1) attrs
-                if mTargetLoc == Just loc
-                  then skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
-                  else skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt loc 1)
-              labeledI "doNotDiscardCard" nothing
+            skillTestCardOptionEdit attrs (preOriginalOption . optionWhenExists (AssetWithId attrs.id)) do
+              chooseOneM iid do
+                (cardI18n $ labeled' "icePick3.discardIcePick3") do
+                  toDiscardBy iid (attrs.ability 1) attrs
+                  if mTargetLoc == Just loc
+                    then skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+                    else skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt loc 1)
+                labeledI "doNotDiscardCard" nothing
       pure a
     _ -> IcePick3 <$> liftRunMessage msg attrs

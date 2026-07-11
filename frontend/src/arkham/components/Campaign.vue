@@ -72,7 +72,12 @@ const questionLabel = computed(() => {
 })
 
 const continueCampaign = computed(() => {
-  if (props.game.campaign && props.game.campaign.step?.tag === 'ContinueCampaignStep') return props.game.campaign.step.contents
+  if (!props.game.campaign) return null
+  const step = props.game.campaign.step
+  if (step?.tag === 'ContinueCampaignStep') return step.contents
+  if (step?.tag === 'StandaloneScenarioStep' && step.contents[1]?.tag === 'ContinueCampaignStep') {
+    return step.contents[1].contents
+  }
   return null
 })
 
@@ -132,6 +137,13 @@ const continueScenario = computed(() => {
   return null
 })
 
+const scenarioContinuationStep = computed(() => {
+  const step = props.game.scenario?.campaignStep
+  if (!step) return null
+  if (['ScenarioStep', 'ScenarioStepWithOptions'].includes(step.tag)) return step
+  return null
+})
+
 const inScenarioStep = computed(() => {
   return !!props.game.scenario?.campaignStep
 })
@@ -149,8 +161,10 @@ const inScenarioStep = computed(() => {
     <ContinueCampaign
       :game="game"
       :campaign="campaign"
+      :scenario="game.scenario ?? undefined"
+      :playerId="playerId"
       :canUpgradeDecks="continueCampaign.canUpgradeDecks"
-      :step="continueCampaign.nextStep"
+      :step="scenarioContinuationStep || continueCampaign.nextStep"
       :chooseSideStory="continueCampaign.chooseSideStory"
       :canChooseSideStory="continueCampaign.canChooseSideStory"
     />

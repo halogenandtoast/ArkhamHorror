@@ -399,12 +399,14 @@ handleAnswerPure Game {..} playerId = \case
     case gameMode of
       This c -> case c.step of
         CS.ContinueCampaignStep {} -> handled [NextCampaignStep (Just k)]
+        CS.StandaloneScenarioStep _ (CS.ContinueCampaignStep {}) -> handled [NextCampaignStep (Just k)]
         _ -> handled []
       These c s -> case s.step of
         Just (CS.ContinueCampaignStep {}) -> handled [NextScenarioCampaignStep (Just k)]
         Just (CS.ScenarioStepWithOptions {}) -> handled [ScenarioCampaignStep k.normalize]
         _ -> case c.step of
           CS.ContinueCampaignStep {} -> handled [NextCampaignStep (Just k)]
+          CS.StandaloneScenarioStep _ (CS.ContinueCampaignStep {}) -> handled [NextCampaignStep (Just k)]
           _ -> handled []
       That s -> case s.step of
         Just (CS.ContinueCampaignStep {}) -> handled [NextScenarioCampaignStep (Just k)]

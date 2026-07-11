@@ -34,11 +34,10 @@ instance HasAbilities JudithParkTheMuscle where
 instance RunMessage JudithParkTheMuscle where
   runMessage msg a@(JudithParkTheMuscle attrs) = runQueueT $ case msg of
     PlaceAsset aid _ | aid == toId attrs -> do
-      n :: Int <-
-        getCampaignDay <&> \case
-          Day1 -> 1
-          Day2 -> 2
-          Day3 -> 3
+      n <- dayNumber <$> getCampaignDay
+      JudithParkTheMuscle <$> liftRunMessage msg (attrs & setMeta n)
+    TakeControlOfAsset _ aid | aid == toId attrs -> do
+      n <- dayNumber <$> getCampaignDay
       JudithParkTheMuscle <$> liftRunMessage msg (attrs & setMeta n)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       codex iid (attrs.ability 1) 7

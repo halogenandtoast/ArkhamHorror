@@ -37,11 +37,10 @@ instance HasAbilities TheoPetersJackOfAllTrades where
 instance RunMessage TheoPetersJackOfAllTrades where
   runMessage msg a@(TheoPetersJackOfAllTrades attrs) = runQueueT $ case msg of
     PlaceAsset aid _ | aid == toId attrs -> do
-      n :: Int <-
-        getCampaignDay <&> \case
-          Day1 -> 1
-          Day2 -> 2
-          Day3 -> 3
+      n <- dayNumber <$> getCampaignDay
+      TheoPetersJackOfAllTrades <$> liftRunMessage msg (attrs & setMeta n)
+    TakeControlOfAsset _ aid | aid == toId attrs -> do
+      n <- dayNumber <$> getCampaignDay
       TheoPetersJackOfAllTrades <$> liftRunMessage msg (attrs & setMeta n)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       codex iid (attrs.ability 1) 8

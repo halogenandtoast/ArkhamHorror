@@ -811,9 +811,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideCardsL %~ filter (`notElem` cards)
   CardEnteredPlay _ card -> liftRunMessage (ObtainCard card.id) a
   ReplaceCard cardId card -> do
-    -- Keep any reference to this card in the victory display in sync (e.g. when a
-    -- card is flipped to its other side while sitting in the victory display).
-    pure $ a & victoryDisplayL %~ map (\c -> if toCardId c == cardId then card else c)
+    -- Keep any reference to this card in sync (e.g. when a card is flipped to its
+    -- other side, or a story asset's back changes, while sitting in a scenario zone).
+    let sync = map (\c -> if toCardId c == cardId then card else c)
+    pure $ a & victoryDisplayL %~ sync & setAsideCardsL %~ sync
   ObtainCard cardId -> do
     let
       deleteCard :: IsCard c => [c] -> [c]

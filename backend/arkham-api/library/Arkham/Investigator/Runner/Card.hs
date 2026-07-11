@@ -511,15 +511,20 @@ handleReplaceCard a@InvestigatorAttrs{..} cardId card = do
     & (decksL . each %~ map doReplace)
 
 handlePutCampaignCardIntoPlay a@InvestigatorAttrs{..} iid cardDef = do
-  let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
-  case mcard of
+  -- The card may have been drawn into hand (e.g. an opening-hand draw) or
+  -- discarded before setup puts it into play, so search all three zones.
+  let candidates =
+        map PlayerCard (unDeck investigatorDeck)
+          <> investigatorHand
+          <> map PlayerCard investigatorDiscard
+  case find ((== cardDef) . toCardDef) candidates of
     Nothing ->
       sendError $ "The game expected to find "
         <> toTitle cardDef
         <> " in the deck of "
         <> toTitle a
         <> ", but was unable to find it."
-    Just card -> push $ PutCardIntoPlay iid (PlayerCard card) Nothing NoPayment []
+    Just card -> push $ PutCardIntoPlay iid card Nothing NoPayment []
   pure a
 
 handleRemoveAllCopiesOfCardFromGame a@InvestigatorAttrs{..} iid cardCode = do

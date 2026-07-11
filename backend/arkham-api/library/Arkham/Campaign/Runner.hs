@@ -171,6 +171,10 @@ defaultCampaignRunner msg a = case msg of
       $ updateAttrs a
       $ (storyCardsL %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid)
       . (decksL %~ adjustMap (withDeck $ filter ((/= cardDef) . toCardDef)) iid)
+  ReplaceCard cardId card ->
+    -- Keep campaign story cards in sync when a card's identity changes (e.g. a
+    -- story asset moved from the encounter pool to the player pool).
+    pure $ updateAttrs a (storyCardsL %~ Map.map (map (\c -> if toCardId c == cardId then card else c)))
   AddChaosToken token -> do
     if token `notElem` [CurseToken, BlessToken]
       then pure $ updateAttrs a (chaosBagL %~ (token :))

@@ -1075,6 +1075,11 @@ allPlayerAssetCards =
       , zoeysCrossAdvanced
       , drHenryArmitage_SpreadingFlames
       , collector
+      , --- Mi-Go Incursion
+        universalSolvent
+      , petOozeling
+      , miGoWeapon
+      , ltWilsonStewart
       ]
 
 -- with encounter backs
@@ -1166,10 +1171,6 @@ allEncounterAssetCards =
         universityChemist
       , meteoriteSample
       , theMilitarysPlan
-      , universalSolvent
-      , petOozeling
-      , miGoWeapon
-      , ltWilsonStewart
       , mysteriousPhoto
       , mysteriousPhotoBack
       , --- Relics of the Past

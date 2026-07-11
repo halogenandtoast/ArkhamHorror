@@ -92,6 +92,16 @@ instance RunMessage TheBlobThatAteEverything where
 
         gather Set.TheBlobThatAteEverything
         gatherAndSetAside Set.MiGoIncursion
+        -- Reward assets are single-sided player cards (no encounter back), so
+        -- they live in the player pool and are no longer pulled in by the
+        -- encounter-set gather above; set them aside explicitly for the stories
+        -- that grant them (Recover the Sample, Rescue the Chemist, etc.).
+        setAside
+          [ Assets.universalSolvent
+          , Assets.petOozeling
+          , Assets.miGoWeapon
+          , Assets.ltWilsonStewart
+          ]
 
         placeEnemy (if isEpic then Enemies.subject8L08EpicMultiplayer else Enemies.subject8L08) Global
 

@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isEvadeWith, isFightWith)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isEvading, isFighting)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -19,13 +19,14 @@ crystalMimic = enemy CrystalMimic Cards.crystalMimic
 
 instance HasModifiersFor CrystalMimic where
   getModifiersFor (CrystalMimic attrs) = do
-    fighting <- isFightWith (be attrs)
-    evading <- isEvadeWith (be attrs)
-    when (fighting || evading) do
-      miid <- getSkillTestInvestigator
-      for_ miid \iid -> do
+    fighting <- isFighting attrs
+    evading <- isEvading attrs
+    miid <- getSkillTestInvestigator
+    case (fighting || evading, miid) of
+      (True, Just iid) -> do
         handCount <- fieldMap InvestigatorHand length iid
-        modified_ attrs attrs [EnemyFight (handCount - 6), EnemyEvade (handCount - 6)]
+        modifySelf attrs [EnemyFight handCount, EnemyEvade handCount]
+      _ -> modifySelf attrs [EnemyFight 6, EnemyEvade 6]
 
 instance HasAbilities CrystalMimic where
   getAbilities (CrystalMimic a) = extend1 a $ forcedAbility a 1 $ EnemyAttacks #after You AnyEnemyAttack (be a)

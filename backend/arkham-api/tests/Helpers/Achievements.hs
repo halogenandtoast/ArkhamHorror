@@ -15,9 +15,13 @@ module Helpers.Achievements (
   asReturnToThePathToCarcosa,
   asReturnToThePathToCarcosaWith,
   asReturnToThePathToCarcosaScenario,
+  asReturnToTheForgottenAge,
+  asReturnToTheForgottenAgeWith,
+  asReturnToTheForgottenAgeScenario,
   didEarn,
   didEarnDunwich,
   didEarnCarcosa,
+  didEarnForgottenAge,
 ) where
 
 import Arkham.Achievement.Types
@@ -85,6 +89,15 @@ asReturnToThePathToCarcosa = asReturnToThePathToCarcosaWith Easy
 asReturnToThePathToCarcosaScenario :: CardCode -> TestAppT ()
 asReturnToThePathToCarcosaScenario = asAchievementCampaignScenario "52"
 
+asReturnToTheForgottenAgeWith :: Difficulty -> TestAppT ()
+asReturnToTheForgottenAgeWith = asAchievementCampaign "53"
+
+asReturnToTheForgottenAge :: TestAppT ()
+asReturnToTheForgottenAge = asReturnToTheForgottenAgeWith Easy
+
+asReturnToTheForgottenAgeScenario :: CardCode -> TestAppT ()
+asReturnToTheForgottenAgeScenario = asAchievementCampaignScenario "53"
+
 didEarn :: NightOfTheZealotAchievement -> TestAppT (IORef Bool)
 didEarn achievement =
   createMessageMatcher $ EarnAchievement $ NightOfTheZealotAchievement achievement
@@ -96,3 +109,7 @@ didEarnDunwich achievement =
 didEarnCarcosa :: ThePathToCarcosaAchievement -> TestAppT (IORef Bool)
 didEarnCarcosa achievement =
   createMessageMatcher $ EarnAchievement $ ThePathToCarcosaAchievement achievement
+
+didEarnForgottenAge :: TheForgottenAgeAchievement -> TestAppT (IORef Bool)
+didEarnForgottenAge achievement =
+  createMessageMatcher $ EarnAchievement $ TheForgottenAgeAchievement achievement

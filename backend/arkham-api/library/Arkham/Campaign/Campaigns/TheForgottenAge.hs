@@ -1,6 +1,7 @@
 module Arkham.Campaign.Campaigns.TheForgottenAge (theForgottenAge, TheForgottenAge (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Campaigns.TheForgottenAge.Achievements (runForgottenAgeAchievements)
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -96,6 +97,7 @@ getPoisonedInvestigators attrs = do
 
 instance RunMessage TheForgottenAge where
   runMessage msg c@(TheForgottenAge attrs) = runQueueT $ campaignI18n do
+    lift $ runForgottenAgeAchievements msg
     let metadata = toResultDefault mempty (campaignMeta attrs)
     case msg of
       CampaignStep PrologueStep -> scope "prologue" do

@@ -10,7 +10,8 @@
   "campaigns": {
     "50": "Return to the Night of the Zealot",
     "51": "Return to the Dunwich Legacy",
-    "52": "Return to The Path to Carcosa"
+    "52": "Return to The Path to Carcosa",
+    "53": "Return to The Forgotten Age"
   },
   "entries": {
     "TheZealotsRevenge": {
@@ -192,6 +193,70 @@
     "CarcosaExpertise": {
       "name": "Carcosa Expertise",
       "text": "Win The Path to Carcosa campaign on Expert difficulty."
+    },
+    "WhyDidItHaveToBeSnakes": {
+      "name": "Why Did It Have to Be Snakes?",
+      "text": "Defeat twenty Serpent enemies across The Forgotten Age campaign."
+    },
+    "WatchThemUnravel": {
+      "name": "Watch Them Unravel",
+      "text": "Complete all four act decks during a single playthrough of Threads of Fate."
+    },
+    "HopeForHumanity": {
+      "name": "Hope for Humanity",
+      "text": "Restore Ichtaca's faith in humanity in The Boundary Beyond."
+    },
+    "Scenario5What": {
+      "name": "Scenario 5-What?",
+      "text": "Skip Heart of the Elders, Part 1."
+    },
+    "BeyondPerfection": {
+      "name": "Beyond Perfection",
+      "text": "Complete all eight tasks on act 2 of The City of Archives during a single playthrough."
+    },
+    "IRememberEverything": {
+      "name": "I Remember Everything!",
+      "text": "Restore Alejandro's memories in The City of Archives."
+    },
+    "Patricide": {
+      "name": "Patricide",
+      "text": "Defeat Yig in The Depths of Yoth."
+    },
+    "HesGotAPoint": {
+      "name": "He's Got a Point",
+      "text": "Side with Alejandro in Shattered Aeons."
+    },
+    "ValusiaSoundsGreat": {
+      "name": "Valusia Sounds Great",
+      "text": "Side with Ichtaca in Shattered Aeons."
+    },
+    "IveBuiltUpAnImmunity": {
+      "name": "I've Built Up An Immunity",
+      "text": "Win The Forgotten Age campaign without ever becoming poisoned."
+    },
+    "WeHaveAnUnderstanding": {
+      "name": "We Have an Understanding",
+      "text": "Win The Forgotten Age campaign without ever dealing any damage to the Harbinger of Valusia."
+    },
+    "WhoNeedsAnyOfThisJunk": {
+      "name": "Who Needs Any of This Junk?",
+      "text": "Win The Forgotten Age campaign without purchasing any supplies."
+    },
+    "DontTreadOnMe": {
+      "name": "Don't Tread on Me",
+      "text": "Win The Forgotten Age campaign with no tally marks recorded under Yig's Fury in your Campaign Log."
+    },
+    "BaneOfYig": {
+      "name": "Bane of Yig",
+      "text": "Win The Forgotten Age campaign with 25 or more tally marks recorded under Yig's Fury in your Campaign Log."
+    },
+    "IfICouldTurnBackTime": {
+      "name": "If I Could Turn Back Time",
+      "text": "Forge your own path, unlock Scenario IX, and win The Forgotten Age campaign."
+    },
+    "YothExpertise": {
+      "name": "Yoth Expertise",
+      "text": "Win The Forgotten Age campaign on Expert difficulty."
     }
   },
   "clearAll": "Clear all",

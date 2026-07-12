@@ -87,10 +87,34 @@ data ThePathToCarcosaAchievement
 
 $(deriveJSON defaultOptions ''ThePathToCarcosaAchievement)
 
+-- | Return to The Forgotten Age (campaign "53"). The official list gates
+-- these to the Return-to encounter sets only.
+data TheForgottenAgeAchievement
+  = WhyDidItHaveToBeSnakes
+  | WatchThemUnravel
+  | HopeForHumanity
+  | Scenario5What
+  | BeyondPerfection
+  | IRememberEverything
+  | Patricide
+  | HesGotAPoint
+  | ValusiaSoundsGreat
+  | IveBuiltUpAnImmunity
+  | WeHaveAnUnderstanding
+  | WhoNeedsAnyOfThisJunk
+  | DontTreadOnMe
+  | BaneOfYig
+  | IfICouldTurnBackTime
+  | YothExpertise
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
+
+$(deriveJSON defaultOptions ''TheForgottenAgeAchievement)
+
 data Achievement
   = NightOfTheZealotAchievement NightOfTheZealotAchievement
   | TheDunwichLegacyAchievement TheDunwichLegacyAchievement
   | ThePathToCarcosaAchievement ThePathToCarcosaAchievement
+  | TheForgottenAgeAchievement TheForgottenAgeAchievement
   deriving stock (Eq, Show, Ord, Data)
 
 allAchievements :: [Achievement]
@@ -98,6 +122,7 @@ allAchievements =
   map NightOfTheZealotAchievement [minBound ..]
     <> map TheDunwichLegacyAchievement [minBound ..]
     <> map ThePathToCarcosaAchievement [minBound ..]
+    <> map TheForgottenAgeAchievement [minBound ..]
 
 -- | Flat constructor name; the wire and database representation.
 achievementName :: Achievement -> Text
@@ -105,6 +130,7 @@ achievementName = \case
   NightOfTheZealotAchievement a -> tshow a
   TheDunwichLegacyAchievement a -> tshow a
   ThePathToCarcosaAchievement a -> tshow a
+  TheForgottenAgeAchievement a -> tshow a
 
 parseAchievement :: Text -> Maybe Achievement
 parseAchievement t = lookup t achievementsByName
@@ -117,6 +143,7 @@ achievementCampaigns = \case
   NightOfTheZealotAchievement _ -> ["50"]
   TheDunwichLegacyAchievement _ -> ["51"]
   ThePathToCarcosaAchievement _ -> ["52"]
+  TheForgottenAgeAchievement _ -> ["53"]
 
 -- Flat JSON, mirroring UltimatumOrBoon: the union never leaks its shape.
 instance ToJSON Achievement where

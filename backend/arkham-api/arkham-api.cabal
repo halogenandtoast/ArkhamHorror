@@ -2052,6 +2052,7 @@ library
       Arkham.Campaign.Campaigns.TheDunwichLegacy.Achievements
       Arkham.Campaign.Campaigns.TheFeastOfHemlockVale
       Arkham.Campaign.Campaigns.TheForgottenAge
+      Arkham.Campaign.Campaigns.TheForgottenAge.Achievements
       Arkham.Campaign.Campaigns.TheInnsmouthConspiracy
       Arkham.Campaign.Campaigns.ThePathToCarcosa
       Arkham.Campaign.Campaigns.ThePathToCarcosa.Achievements
@@ -6984,6 +6985,7 @@ test-suite spec
   other-modules:
       Arkham.Achievements.ReturnToNightOfTheZealotSpec
       Arkham.Achievements.ReturnToTheDunwichLegacySpec
+      Arkham.Achievements.ReturnToTheForgottenAgeSpec
       Arkham.Achievements.ReturnToThePathToCarcosaSpec
       Arkham.Act.Cards.AFamiliarPatternSpec
       Arkham.Act.Cards.BlackwatersBaneEpicMultiplayerSpec

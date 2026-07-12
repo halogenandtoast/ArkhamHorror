@@ -4,7 +4,7 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['50', '51', '52']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['50', '51', '52', '53']
 
 export type AchievementTag =
   | 'TheZealotsRevenge'
@@ -52,6 +52,22 @@ export type AchievementTag =
   | 'ThePathIsMine'
   | 'CarcosaLineInTheSand'
   | 'CarcosaExpertise'
+  | 'WhyDidItHaveToBeSnakes'
+  | 'WatchThemUnravel'
+  | 'HopeForHumanity'
+  | 'Scenario5What'
+  | 'BeyondPerfection'
+  | 'IRememberEverything'
+  | 'Patricide'
+  | 'HesGotAPoint'
+  | 'ValusiaSoundsGreat'
+  | 'IveBuiltUpAnImmunity'
+  | 'WeHaveAnUnderstanding'
+  | 'WhoNeedsAnyOfThisJunk'
+  | 'DontTreadOnMe'
+  | 'BaneOfYig'
+  | 'IfICouldTurnBackTime'
+  | 'YothExpertise'
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string }
 
@@ -101,4 +117,20 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'ThePathIsMine', campaignId: '52' },
   { tag: 'CarcosaLineInTheSand', campaignId: '52' },
   { tag: 'CarcosaExpertise', campaignId: '52' },
+  { tag: 'WhyDidItHaveToBeSnakes', campaignId: '53' },
+  { tag: 'WatchThemUnravel', campaignId: '53' },
+  { tag: 'HopeForHumanity', campaignId: '53' },
+  { tag: 'Scenario5What', campaignId: '53' },
+  { tag: 'BeyondPerfection', campaignId: '53' },
+  { tag: 'IRememberEverything', campaignId: '53' },
+  { tag: 'Patricide', campaignId: '53' },
+  { tag: 'HesGotAPoint', campaignId: '53' },
+  { tag: 'ValusiaSoundsGreat', campaignId: '53' },
+  { tag: 'IveBuiltUpAnImmunity', campaignId: '53' },
+  { tag: 'WeHaveAnUnderstanding', campaignId: '53' },
+  { tag: 'WhoNeedsAnyOfThisJunk', campaignId: '53' },
+  { tag: 'DontTreadOnMe', campaignId: '53' },
+  { tag: 'BaneOfYig', campaignId: '53' },
+  { tag: 'IfICouldTurnBackTime', campaignId: '53' },
+  { tag: 'YothExpertise', campaignId: '53' },
 ]

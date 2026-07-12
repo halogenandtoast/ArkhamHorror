@@ -22,6 +22,7 @@ instance HasAbilities ImpossiblePursuit where
       $ Objective
       $ forced
       $ EnemyLeavesPlay #when
+      $ IncludeOutOfPlayEnemy
       $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
 
 instance RunMessage ImpossiblePursuit where

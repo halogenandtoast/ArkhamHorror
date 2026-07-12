@@ -98,11 +98,11 @@ instance RunMessage TheThingInTheDepths where
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro5"
-      eachInvestigator \iid -> setupModifier attrs iid (StartingResources (-2))
+      eachInvestigator \iid -> nextSetupModifier attrs.id attrs iid (StartingResources (-2))
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro6"
-      eachInvestigator \iid -> setupModifier attrs iid (FewerActions 1)
+      eachInvestigator \iid -> nextSetupModifier attrs.id attrs iid (FewerActions 1)
       pure s
     Setup -> runScenarioSetup TheThingInTheDepths attrs do
       day <- getCampaignDay

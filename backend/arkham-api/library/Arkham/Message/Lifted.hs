@@ -1341,6 +1341,15 @@ scenarioSetupModifier
   -> m ()
 scenarioSetupModifier scenarioId source target modifier = Msg.pushM $ Msg.scenarioSetupModifier scenarioId source target modifier
 
+nextSetupModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => ScenarioId
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+nextSetupModifier scenarioId source target modifier = Msg.pushM $ Msg.nextSetupModifier scenarioId source target modifier
+
 revelationModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => source

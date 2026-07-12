@@ -32,6 +32,11 @@ instance HasModifiersFor GenericEffect where
           when (scenarioId == currentScenarioId) do
             modifiers' <- resolveModifiers modifiers
             tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers'
+      Just (EffectNextSetupWindow createdInScenarioId) -> do
+        selectOne TheScenario >>= traverse_ \currentScenarioId ->
+          when (createdInScenarioId /= currentScenarioId) do
+            modifiers' <- resolveModifiers modifiers
+            tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers'
       Just (EffectSkillTestWindow sid) -> do
         msid <- getSkillTestId
         modifiers' <- resolveModifiers modifiers

@@ -68,6 +68,17 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     EndRound | isEndOfWindow a EffectRoundWindow -> do
       a <$ push (DisableEffect effectId)
+    EndRound -> do
+      -- A next-scenario setup modifier stays active through the target scenario's
+      -- first round (so first-turn action penalties apply), then is dismissed. We
+      -- key on "not the scenario it was created in" so it survives the creating
+      -- scenario untouched and only expires once carried forward.
+      case effectWindow of
+        Just (EffectNextSetupWindow createdInScenarioId) ->
+          selectOne TheScenario >>= traverse_ \currentScenarioId ->
+            pushWhen (createdInScenarioId /= currentScenarioId) (DisableEffect effectId)
+        _ -> pure ()
+      pure a
     FinishedEvent _ | isEndOfWindow a EffectEventWindow -> do
       a <$ push (DisableEffect effectId)
     BeginAction | isEndOfWindow a EffectNextActionWindow -> do

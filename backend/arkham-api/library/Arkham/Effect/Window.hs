@@ -27,6 +27,11 @@ data EffectWindow
   | EffectActWindow
   | EffectSetupWindow
   | EffectScenarioSetupWindow ScenarioId
+  | -- | Carries a setup modifier to the *next* scenario. Tagged with the scenario
+    -- it was created in; inert while that scenario is current, active (as a setup
+    -- modifier) once a different scenario is current, and dismissed at the end of
+    -- that scenario's first round (so first-turn action penalties still apply).
+    EffectNextSetupWindow ScenarioId
   | EffectTurnWindow InvestigatorId
   | EffectEndOfNextTurnWindow InvestigatorId
   | EffectNextTurnWindow InvestigatorId

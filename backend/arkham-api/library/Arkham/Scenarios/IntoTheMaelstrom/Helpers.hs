@@ -1,12 +1,15 @@
 module Arkham.Scenarios.IntoTheMaelstrom.Helpers where
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Classes.HasQueue (push)
+import Arkham.Classes.Query (select, selectEach)
 import Arkham.Helpers.Query (getLead, getSetAsideCard)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message (Message (AddAct, SetActDeckCards))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
@@ -35,5 +38,11 @@ flashback _iid f = case f of
       labeled
         "Defy Agent Harper. Search each player’s hand, deck, discard pile, and all play areas for Elina Harper and remove her from the game. Put the set-aside City of the Deep (v. III) into play next to the current act. It provides a new alternate objective."
         do
+          selectEach (assetIs Assets.elinaHarperKnowsTooMuch) removeFromGame
+          harperCards <-
+            select
+              $ basic (cardIs Assets.elinaHarperKnowsTooMuch)
+              <> oneOf [InHandOf NotForPlay Anyone, InDeckOf Anyone, InDiscardOf Anyone]
+          for_ harperCards removeCardFromGame
           push $ SetActDeckCards 2 [actV3]
           push $ AddAct 2 actV3

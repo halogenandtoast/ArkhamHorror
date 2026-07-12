@@ -373,6 +373,14 @@ three, return one of the player's choice to the collection, and add one at
 random from the remaining two. The random pick is pre-sampled per branch so
 the choice resolves deterministically (undo/replay safe).
 
+Each drawn weakness is presented as a self-describing 'CardLabel' rather than a
+'FocusCards'-backed target. 'FocusCards' writes a single global focus list, so
+in multiplayer two investigators resolving this choice inside the same
+ChooseDecks window (every InitDeck runs there) would clobber each other's focus
+and one player could never resolve theirs — ending up with no weakness.
+'CardLabel' carries the card in the choice itself (the client renders it from
+the card database), so the choices are independent per player.
+
 'AddCampaignCardToDeck' is handled in both campaign and standalone modes, so
 one message shape covers both @InitDeck@ call sites.
 -}
@@ -388,12 +396,9 @@ morriganWeaknessMessages iid drawWeakness = do
     kept <- case nonEmpty (filter ((/= toCardId returned) . toCardId) cards) of
       Nothing -> error "morrigan: fewer than two remaining weaknesses"
       Just remaining -> sample remaining
-    pure $ targetLabel (toCardId returned) [AddCampaignCardToDeck iid ShuffleIn kept]
+    pure $ CardLabel (toCardCode returned) False [AddCampaignCardToDeck iid ShuffleIn kept]
   pure
-    [ FocusCards cards
-    , Ask player $ QuestionLabel "$label.ultimatumsAndBoons.returnWeakness" Nothing $ ChooseOne choices
-    , UnfocusCards
-    ]
+    [Ask player $ QuestionLabel "$label.ultimatumsAndBoons.returnWeakness" Nothing $ ChooseOne choices]
  where
   -- The basic weakness pool is far larger than 3; the fuel only guards
   -- against a pathological sampler.

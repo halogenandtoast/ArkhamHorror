@@ -4,9 +4,16 @@ import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game'
 import { cardImage as cardCodeImage } from '@/arkham/cardImages'
 
-const props = defineProps<{ game: Game; playerId: string }>()
+// playerId is the seat whose question this is (the one choosing). viewOnly is
+// set when the current viewer isn't that seat, so other players see the same
+// panel but can't answer.
+const props = defineProps<{ game: Game; playerId: string; viewOnly?: boolean }>()
 const emit = defineEmits<{ choose: [value: number] }>()
 const { t } = useI18n()
+
+const choosingInvestigator = computed(() =>
+  Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
+)
 
 // The Morrígan question is a QuestionLabel-wrapped ChooseOne of CardLabel
 // choices, one per drawn weakness; choice index i returns weakness i. The cards
@@ -21,25 +28,34 @@ const choices = computed(() => {
     return [{ index, cardCode: choice.cardCode as string }]
   })
 })
+
+function pick(index: number) {
+  if (props.viewOnly) return
+  emit('choose', index)
+}
 </script>
 
 <template>
-  <div class="morrigan-panel">
+  <div class="morrigan-panel" :class="{ 'view-only': viewOnly }">
     <h2 class="morrigan-title">
       <span class="morrigan-icon" aria-hidden="true">✦</span>
       {{ t('ultimatumsAndBoons.entries.BoonOfTheMorrigan.name') }}
     </h2>
-    <p class="morrigan-instructions">{{ t('ultimatumsAndBoons.morrigan.instructions') }}</p>
+    <p v-if="viewOnly" class="morrigan-instructions">
+      {{ t('ultimatumsAndBoons.morrigan.waiting', { investigator: choosingInvestigator?.name?.title ?? '' }) }}
+    </p>
+    <p v-else class="morrigan-instructions">{{ t('ultimatumsAndBoons.morrigan.instructions') }}</p>
     <div class="weakness-cards">
       <button
         v-for="{ index, cardCode } in choices"
         :key="cardCode"
         type="button"
         class="weakness-card"
-        @click="emit('choose', index)"
+        :disabled="viewOnly"
+        @click="pick(index)"
       >
         <img :src="cardCodeImage(cardCode)" :alt="cardCode" />
-        <span class="return-label">{{ t('ultimatumsAndBoons.morrigan.returnAction') }}</span>
+        <span v-if="!viewOnly" class="return-label">{{ t('ultimatumsAndBoons.morrigan.returnAction') }}</span>
       </button>
     </div>
   </div>
@@ -123,5 +139,18 @@ const choices = computed(() => {
 
     .return-label { opacity: 1; }
   }
+}
+
+.view-only .weakness-card {
+  cursor: default;
+
+  &:hover, &:focus-visible {
+    transform: none;
+    outline: none;
+  }
+}
+
+.view-only .weakness-cards {
+  opacity: 0.7;
 }
 </style>

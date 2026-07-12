@@ -139,7 +139,8 @@
   },
   "morrigan": {
     "instructions": "Choose 1 of these 3 random basic weaknesses to return to the collection. One of the remaining 2 will be chosen at random and added to your deck.",
-    "returnAction": "Return to the collection"
+    "returnAction": "Return to the collection",
+    "waiting": "Waiting for {investigator} to choose a weakness to return…"
   },
   "deckRequirements": {
     "chaos": "Ultimatum of Chaos: your deck's non-signature, non-weakness cards must be chosen at random from your collection (honor rule — not enforced by the app)",

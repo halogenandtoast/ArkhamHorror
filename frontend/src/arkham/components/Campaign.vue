@@ -7,6 +7,7 @@ import Scenario from '@/arkham/components/Scenario.vue';
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 import ChooseDeck from '@/arkham/components/ChooseDeck.vue';
 import ContinueCampaign from '@/arkham/components/ContinueCampaign.vue';
+import UltimatumsAndBoonsQuestion from '@/arkham/components/UltimatumsAndBoonsQuestion.vue';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { useI18n } from 'vue-i18n';
 
@@ -76,11 +77,14 @@ const questionLabel = computed(() => {
 // prologue) while the choice is still pending. Suppress the campaign "Continue"
 // screen while any player has a pending Ultimatums & Boons question so the
 // asking player's question surfaces (via StoryQuestion) instead of being masked.
-const pendingUltimatumsAndBoonsQuestion = computed(() =>
-  Object.values(props.game.question).some(
-    (q) => q?.tag === 'QuestionLabel' && q.label?.startsWith('$label.ultimatumsAndBoons')
+const ultimatumsAndBoonsQuestion = computed(() => {
+  const entry = Object.entries(props.game.question).find(
+    ([, q]) => q?.tag === 'QuestionLabel' && q.label?.startsWith('$label.ultimatumsAndBoons')
   )
-)
+  return entry ? { playerId: entry[0] } : null
+})
+
+const pendingUltimatumsAndBoonsQuestion = computed(() => ultimatumsAndBoonsQuestion.value !== null)
 
 const continueCampaign = computed(() => {
   if (!props.game.campaign) return null
@@ -182,11 +186,18 @@ const inScenarioStep = computed(() => {
     />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
-    <template v-if="pickDestiny">
+    <UltimatumsAndBoonsQuestion
+      v-if="ultimatumsAndBoonsQuestion"
+      :game="game"
+      :playerId="ultimatumsAndBoonsQuestion.playerId"
+      :viewOnly="ultimatumsAndBoonsQuestion.playerId !== playerId"
+      @choose="choose"
+    />
+    <template v-else-if="pickDestiny">
       <StoryQuestion :game="game" :key="questionHash" :playerId="playerId" @choose="choose" />
     </template>
     <ContinueCampaign
-      v-if="continueScenario"
+      v-else-if="continueScenario"
       :game="game"
       :scenario="game.scenario ?? undefined"
       :canUpgradeDecks="continueScenario.canUpgradeDecks"

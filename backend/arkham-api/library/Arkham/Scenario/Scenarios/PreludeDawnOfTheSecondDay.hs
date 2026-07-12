@@ -185,15 +185,17 @@ instance RunMessage PreludeDawnOfTheSecondDay where
               hr
               p.validate (not hatchedAPlan) "otherwise"
 
-          unless hatchedAPlan do
-            drawCards iid source 1
-            search
-              iid
-              source
-              iid
-              [fromTopOfDeck 9]
-              (basic $ oneOf [#tactic, #trick])
-              (AddFoundToHand iid 1)
+          if hatchedAPlan
+            then record ThePlanIsUnderway
+            else do
+              drawCards iid source 1
+              search
+                iid
+                source
+                iid
+                [fromTopOfDeck 9]
+                (basic $ oneOf [#tactic, #trick])
+                (AddFoundToHand iid 1)
         4 -> do
           codexFinished 4
           record WilliamTookHeart

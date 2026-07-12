@@ -71,8 +71,20 @@ const questionLabel = computed(() => {
   return question.tag === 'QuestionLabel' ? handleEmbeddedI18n(question.label, t) : null
 })
 
+// Boon of the Morrígan's weakness choice is deferred to just after decks are
+// chosen, so the campaign step is already a ContinueCampaignStep (e.g. the
+// prologue) while the choice is still pending. Suppress the campaign "Continue"
+// screen while any player has a pending Ultimatums & Boons question so the
+// asking player's question surfaces (via StoryQuestion) instead of being masked.
+const pendingUltimatumsAndBoonsQuestion = computed(() =>
+  Object.values(props.game.question).some(
+    (q) => q?.tag === 'QuestionLabel' && q.label?.startsWith('$label.ultimatumsAndBoons')
+  )
+)
+
 const continueCampaign = computed(() => {
   if (!props.game.campaign) return null
+  if (pendingUltimatumsAndBoonsQuestion.value) return null
   const step = props.game.campaign.step
   if (step?.tag === 'ContinueCampaignStep') return step.contents
   if (step?.tag === 'StandaloneScenarioStep' && step.contents[1]?.tag === 'ContinueCampaignStep') {

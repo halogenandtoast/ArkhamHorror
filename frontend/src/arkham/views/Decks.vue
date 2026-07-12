@@ -123,11 +123,12 @@ async function sync(deck: Arkham.Deck) {
   max-width: 98vw;
   min-width: 60vw;
   margin: 0 auto;
-  padding: 0 20px;
+  box-sizing: border-box;
+  padding: 20px 20px 10px;
   @media (max-width: 768px) {
     width: 100%;
     min-width: unset;
-    padding: 0 12px;
+    padding: 20px 12px 10px;
     box-sizing: border-box;
   }
 }

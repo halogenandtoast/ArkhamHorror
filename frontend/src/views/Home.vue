@@ -206,7 +206,7 @@ h2 {
   @media (max-width: 768px) {
     min-width: unset;
     width: 100%;
-    padding: 0 12px;
+    padding: 20px 12px 10px;
     box-sizing: border-box;
   }
 }

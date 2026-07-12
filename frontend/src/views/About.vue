@@ -51,7 +51,7 @@ const isSupportPage = computed(() => route.query.support !== undefined);
 @media (max-width: 768px) {
   .page-content {
     width: 100%;
-    padding: 0 12px;
+    padding: 20px 12px 10px;
     box-sizing: border-box;
   }
 }

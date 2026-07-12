@@ -227,7 +227,9 @@ const earnedDate = (row: Achievement): string | null => {
 .achievements-column {
   width: min(900px, 90%);
   margin-inline: auto;
-  margin-block: 28px;
+  box-sizing: border-box;
+  padding-top: 20px;
+  padding-bottom: 10px;
   display: flex;
   flex-direction: column;
   gap: 20px;

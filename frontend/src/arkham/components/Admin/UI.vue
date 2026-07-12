@@ -91,6 +91,8 @@ async function navigateTo(path: string) {
 
 .admin-layout {
   width: min(1180px, calc(100vw - 32px));
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .admin-header {

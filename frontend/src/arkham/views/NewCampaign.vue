@@ -464,27 +464,29 @@ async function start() {
             {{ $t('create.create') }}
           </button>
         </div>
-      </form>
+    </form>
   </div>
 </template>
 
 <style scoped>
-:global(html) {
-  scrollbar-gutter: stable;
-}
-
 .new-campaign-content {
-  width: 70vw;
-  max-width: 98vw;
-  min-width: 60vw;
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  min-height: 0;
+  box-sizing: border-box;
+  padding-top: 20px;
+  padding-bottom: 10px;
 }
 
 #new-campaign {
-  width: 100%;
+  width: 70vw;
+  max-width: 98vw;
+  min-width: 60vw;
   color: #fff;
   border-radius: 3px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
   display: grid;
   gap: 10px;
 }
@@ -540,10 +542,14 @@ h2 {
 }
 
 header {
+  width: 70vw;
+  max-width: 98vw;
+  min-width: 60vw;
+  margin: 0 auto 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
+  gap: 12px;
 }
 
 header h2 {

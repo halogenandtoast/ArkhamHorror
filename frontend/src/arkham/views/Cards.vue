@@ -545,12 +545,24 @@ const setCardPoolMode = (mode: CardPoolMode) => {
 }
 
 const showSidebar = ref(false)
+const sidebarCollapsed = ref(false)
 </script>
 
 <template>
   <div class="container">
     <div class="sidebar-overlay" :class="{ visible: showSidebar }" @click="showSidebar = false"></div>
-    <div class="sidebar" :class="{ open: showSidebar }">
+    <div class="sidebar" :class="{ open: showSidebar, collapsed: sidebarCollapsed }">
+      <button
+        v-if="!sidebarCollapsed"
+        class="sidebar-collapse"
+        type="button"
+        aria-label="Hide card sets"
+        title="Hide card sets"
+        @click="sidebarCollapsed = true"
+      >
+        <span class="collapse-glyph" aria-hidden="true" data-tooltip="Hide card sets">«</span>
+      </button>
+      <div class="sidebar-content">
       <button class="sidebar-close" @click="showSidebar = false"><font-awesome-icon icon="times" /></button>
       <div class="sidebar-card-pool card-pool-toggle segmented segmented-3" role="radiogroup" :aria-label="$t('cardsView.cardPool')">
         <input type="radio" :checked="cardPoolMode === 'player'" id="card-pool-player-mobile" @change="setCardPoolMode('player')" />
@@ -562,28 +574,24 @@ const showSidebar = ref(false)
         <input type="radio" :checked="cardPoolMode === 'both'" id="card-pool-both-mobile" @change="setCardPoolMode('both')" />
         <label for="card-pool-both-mobile">{{ $t('cardsView.bothCards') }}</label>
       </div>
-      <div class="chapter-tabs">
-        <button
-          :class="['chapter-tab', { active: activeChapter === 1 }]"
-          @click="activeChapter = 1"
-        >{{ t('cardsView.chapter1') }}</button>
-        <button
-          :class="['chapter-tab', { active: activeChapter === 2 }]"
-          @click="activeChapter = 2"
-        >{{ t('cardsView.chapter2') }}</button>
+      <div class="chapter-tabs segmented segmented-2" role="radiogroup" aria-label="Card chapter">
+        <input type="radio" :checked="activeChapter === 1" id="chapter-1" @change="activeChapter = 1" />
+        <label for="chapter-1">{{ t('cardsView.chapter1') }}</label>
+        <input type="radio" :checked="activeChapter === 2" id="chapter-2" @change="activeChapter = 2" />
+        <label for="chapter-2">{{ t('cardsView.chapter2') }}</label>
       </div>
       <nav class="cycles">
         <ol>
           <li v-for="cycle in displayedCycles" :key="cycle.code">
-            <div class="nav-row">
+            <div :class="['nav-row', 'nav-row--cycle', { active: filter.cycle === cycle.cycle }]">
               <i v-if="SET_FONT_CHARS[cycleIconCode(cycle)]" class="set-icon-font">{{ SET_FONT_CHARS[cycleIconCode(cycle)] }}</i>
               <img v-else-if="cycleIconCode(cycle)" class="set-icon" :src="`/img/arkham/encounter-sets/${cycleIconCode(cycle)}.png`" :alt="cycle.name" />
               <a href="#" @click.prevent="setCycle(cycle)">{{cycle.name}}</a>
               <span class="count">{{cycleCountText(cycle)}}</span>
             </div>
-            <ol>
+            <ol class="set-list">
               <li v-for="set in cycleSets(cycle)" :key="set.code">
-                <div class="nav-row nav-row--sub">
+                <div :class="['nav-row', 'nav-row--sub', { active: filter.set === set.code }]">
                   <i v-if="SET_FONT_CHARS[set.code]" class="set-icon-font">{{ SET_FONT_CHARS[set.code] }}</i>
                   <img v-else class="set-icon" :src="`/img/arkham/encounter-sets/${set.code}.png`" :alt="set.name" />
                   <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>
@@ -594,9 +602,19 @@ const showSidebar = ref(false)
           </li>
         </ol>
       </nav>
+      </div>
     </div>
     <div class="results">
       <header>
+        <button
+          v-if="sidebarCollapsed"
+          class="desktop-sidebar-toggle"
+          @click="sidebarCollapsed = false"
+          title="Show card sets"
+        >
+          <font-awesome-icon class="toggle-arrow" icon="chevron-right" />
+          <font-awesome-icon icon="book" />
+        </button>
         <button class="sidebar-toggle" @click="showSidebar = !showSidebar" :title="$t('cardsView.browseSets')">
           <font-awesome-icon class="toggle-arrow" icon="chevron-right" />
           <font-awesome-icon icon="book" />
@@ -641,11 +659,25 @@ const showSidebar = ref(false)
 /* ── Sidebar ────────────────────────────────────────────── */
 
 .sidebar {
+  position: relative;
   display: flex;
   flex-direction: column;
-  width: clamp(200px, 18vw, 320px);
+  width: clamp(260px, 21vw, 340px);
   border-right: 1px solid rgba(255,255,255,0.08);
-  overflow: hidden;
+  background: color-mix(in srgb, var(--background) 96%, black 4%);
+  overflow: visible;
+  z-index: 3;
+  transition: width 0.18s ease, border-color 0.18s ease;
+
+  &.collapsed {
+    width: 0;
+    border-right-color: transparent;
+
+    .sidebar-content {
+      display: none;
+    }
+  }
+
   @media (max-width: 768px) {
     position: fixed;
     right: 0;
@@ -661,7 +693,114 @@ const showSidebar = ref(false)
     transition: transform 0.25s ease;
     overflow-y: auto;
     &.open { transform: translateX(0); }
+
+    &.collapsed {
+      width: min(340px, 88vw);
+
+      .sidebar-content { display: flex; }
+    }
   }
+}
+
+.sidebar-content {
+  display: flex;
+  flex: 1;
+  min-width: 260px;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-collapse {
+  position: absolute;
+  top: 0;
+  right: -9px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 100%;
+  padding: 0;
+  color: #aaa;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    color: #fff;
+  }
+
+  .collapse-glyph {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1;
+    background: color-mix(in srgb, var(--background) 74%, white 26%);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    transform: translate(-50%, -54%);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.55);
+  }
+
+  .collapse-glyph:hover,
+  &:focus-visible .collapse-glyph {
+    background: color-mix(in srgb, var(--background) 72%, white 28%);
+  }
+
+  .collapse-glyph::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 50%;
+    left: 28px;
+    z-index: 2;
+    padding: 5px 8px;
+    color: #eee;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0;
+    text-shadow: none;
+    white-space: nowrap;
+    pointer-events: none;
+    background: rgba(12, 16, 18, 0.96);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 6px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    opacity: 0;
+    transform: translateY(-50%) translateX(-4px);
+    transition: opacity 0.12s, transform 0.12s;
+  }
+
+  .collapse-glyph:hover::after,
+  &:focus-visible .collapse-glyph::after {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.sidebar:has(.sidebar-collapse:hover),
+.sidebar:has(.sidebar-collapse:focus-visible) {
+  border-right-color: rgba(255,255,255,0.35);
 }
 
 .sidebar-overlay {
@@ -694,24 +833,40 @@ const showSidebar = ref(false)
   }
 }
 
+.desktop-sidebar-toggle,
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: #aaa;
+  cursor: pointer;
+  &:hover { background: rgba(255,255,255,0.14); color: #eee; }
+}
+
 .sidebar-toggle {
   display: none;
   @media (max-width: 768px) {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
     order: 3;
-    flex-shrink: 0;
-    height: 32px;
-    padding: 0 8px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 6px;
-    color: #aaa;
-    cursor: pointer;
-    flex-shrink: 0;
-    &:hover { background: rgba(255,255,255,0.14); color: #eee; }
+  }
+}
+
+.desktop-sidebar-toggle {
+  .toggle-arrow {
+    display: inline-block;
+    font-size: 0.65em;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 }
 
@@ -725,39 +880,16 @@ const showSidebar = ref(false)
 }
 
 .chapter-tabs {
-  display: flex;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  --segmented-items: 2;
+  margin: 12px 12px 8px;
   flex-shrink: 0;
-}
-
-.chapter-tab {
-  flex: 1;
-  padding: 10px 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #888;
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-
-  &:hover {
-    color: #ccc;
-  }
-
-  &.active {
-    color: var(--spooky-green);
-    border-bottom-color: var(--spooky-green);
-  }
 }
 
 .cycles {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 0 16px;
+  padding: 6px 10px 18px;
+  scrollbar-color: rgba(255,255,255,0.22) transparent;
 
   ol {
     list-style: none;
@@ -766,8 +898,12 @@ const showSidebar = ref(false)
   }
 
   > ol > li + li {
-    margin-top: 5px;
-    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 4px;
+  }
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 
@@ -775,13 +911,16 @@ const showSidebar = ref(false)
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding: 0 10px 0 14px;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 8px;
+  transition: background 0.12s, color 0.12s;
 
   a {
     flex: 1;
     min-width: 0;
-    padding: 5px 4px 5px 0;
-    font-size: 0.82rem;
+    padding: 7px 6px 7px 0;
+    font-size: 0.84rem;
     font-weight: 600;
     color: #ccc;
     text-decoration: none;
@@ -793,12 +932,44 @@ const showSidebar = ref(false)
     &:hover { color: var(--spooky-green); }
   }
 
+  &.active {
+    background: rgba(255,255,255,0.075);
+
+    a,
+    .set-icon-font,
+    .count {
+      color: var(--spooky-green);
+    }
+
+    .set-icon {
+      filter: brightness(0) saturate(100%) invert(68%) sepia(55%) saturate(391%) hue-rotate(112deg) brightness(89%) contrast(88%);
+    }
+  }
+
   .count {
     flex-shrink: 0;
     font-size: 0.72rem;
     color: var(--button);
     white-space: nowrap;
   }
+}
+
+.nav-row--cycle {
+  min-height: 30px;
+  margin: 0 4px 5px 0;
+
+  a {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  &:hover {
+    background: rgba(255,255,255,0.045);
+  }
+}
+
+.set-list {
+  margin: 0 0 9px;
 }
 
 .set-icon-font {
@@ -824,12 +995,14 @@ const showSidebar = ref(false)
 }
 
 .nav-row--sub {
-  padding-left: 26px;
+  min-height: 28px;
+  margin-left: 30px;
+  padding-left: 8px;
 
   a {
-    padding-top: 3px;
-    padding-bottom: 3px;
-    font-size: 0.78rem;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 0.79rem;
     font-weight: 400;
     color: #999;
   }
@@ -847,9 +1020,9 @@ const showSidebar = ref(false)
 header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
-  padding: 10px 16px;
+  padding: 14px 20px;
   background: color-mix(in srgb, var(--background) 92%, transparent);
   border-bottom: 1px solid rgba(255,255,255,0.07);
   backdrop-filter: blur(6px);
@@ -902,11 +1075,11 @@ header {
 
 .view-controls {
   display: flex;
-  gap: 2px;
+  gap: 3px;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 6px;
-  padding: 2px;
+  border-radius: 8px;
+  padding: 3px;
 
   button {
     background: transparent;
@@ -938,6 +1111,8 @@ header {
 .segmented {
   --segmented-gap: 2px;
   --segmented-padding: 2px;
+  --segmented-items: 3;
+  --segmented-gap-total: 4px;
   display: grid;
   border-radius: 5px;
   background: var(--background-dark);
@@ -957,18 +1132,25 @@ header {
   top: var(--segmented-padding);
   transform: translateX(0);
   transition: transform 220ms cubic-bezier(.2, .8, .2, 1), background 150ms ease;
-  width: calc((100% - (var(--segmented-padding) * 2) - (var(--segmented-gap) * 2)) / 3);
+  width: calc((100% - (var(--segmented-padding) * 2) - var(--segmented-gap-total)) / var(--segmented-items));
   z-index: 0;
 }
 
 .segmented:has(#card-pool-campaign:checked)::before,
-.segmented:has(#card-pool-campaign-mobile:checked)::before {
+.segmented:has(#card-pool-campaign-mobile:checked)::before,
+.segmented:has(#chapter-2:checked)::before {
   transform: translateX(calc(100% + var(--segmented-gap)));
 }
 
 .segmented:has(#card-pool-both:checked)::before,
 .segmented:has(#card-pool-both-mobile:checked)::before {
   transform: translateX(calc((100% + var(--segmented-gap)) * 2));
+}
+
+.segmented-2 {
+  --segmented-items: 2;
+  --segmented-gap-total: 2px;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .segmented-3 { grid-template-columns: repeat(3, 1fr); }

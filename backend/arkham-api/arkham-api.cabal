@@ -7233,6 +7233,7 @@ test-suite spec
       Arkham.UltimatumsAndBoons.BoonOfTheChildSpec
       Arkham.UltimatumsAndBoons.BoonOfTheExplorerSpec
       Arkham.UltimatumsAndBoons.BoonOfTheMorriganSpec
+      Arkham.UltimatumsAndBoons.BoonOfTheMorriganTwoPlayerSpec
       Arkham.UltimatumsAndBoons.BoonOfThothSpec
       Arkham.UltimatumsAndBoons.UltimatumOfAgonySpec
       Arkham.UltimatumsAndBoons.UltimatumOfBrokenPromisesSpec

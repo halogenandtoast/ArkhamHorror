@@ -270,11 +270,21 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
 
           pushAll
             $ LoadDeck iid deck''
-            : morriganMessages
-              <> purchaseTrauma
+            : purchaseTrauma
               <> toList mEldritchBrand
               <> [DoStep 1 msg]
               <> initXp
+
+          -- Defer the Morrígan choice out of the ChooseDecks window. Every
+          -- InitDeck runs while decks are still being chosen; presenting an
+          -- interactive choice there folds it into the shared ChooseDeck
+          -- question and races the per-player investigator setup (a player could
+          -- be dropped from the game). Running it after DoneChoosingDecks lets
+          -- each choice resolve in the active game, one at a time. Queued after
+          -- the LoadDeck above so the added weakness isn't overwritten; falls
+          -- back to now when no ChooseDecks is pending (single-player / tests).
+          unless (null morriganMessages)
+            $ insertAfterMatchingOrNow morriganMessages (== DoneChoosingDecks)
           pure $ a & playerDecksL %~ insertMap iid deck''
         else pure a
   DoStep 1 (InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDeck = deck}) -> do

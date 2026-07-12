@@ -4,7 +4,7 @@ import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/typ
 import { toCapitalizedWords, formatContent } from '@/arkham/helpers'
 import { cardArt } from '@/arkham/cardImages'
 import { computed, ref, onMounted, onUnmounted, watch, type Component } from 'vue'
-import { fetchCard, fetchGameAchievements } from '@/arkham/api'
+import { fetchAchievements, fetchCard, fetchGameAchievements } from '@/arkham/api'
 import type { Achievement } from '@/arkham/types/Achievement'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { type Name, simpleName } from '@/arkham/types/Name'
@@ -51,6 +51,8 @@ type LogTab = 'log' | 'investigators' | 'rules' | 'achievements' | `additional:$
 const activeTab = ref<LogTab>('log')
 
 const achievements = ref<Achievement[]>([])
+// User-wide rows (any game) for checklist progress checkmarks.
+const userAchievements = ref<Achievement[]>([])
 const campaignAchievementEntries = computed(() =>
   achievementCatalog.filter((entry) => entry.campaignId === props.game.campaign?.id)
 )
@@ -62,6 +64,9 @@ onMounted(() => {
   fetchGameAchievements(props.game.id)
     .then((rows) => { achievements.value = rows })
     .catch(() => { achievements.value = [] })
+  fetchAchievements()
+    .then((rows) => { userAchievements.value = rows })
+    .catch(() => { userAchievements.value = [] })
 })
 
 const sectionComponentById: Record<string, Component> = {
@@ -787,6 +792,7 @@ onUnmounted(() => {
         <CampaignLogAchievements
           v-if="activeTab === 'achievements'"
           :achievements="achievements"
+          :user-achievements="userAchievements"
           :campaign-id="game.campaign?.id"
         />
 

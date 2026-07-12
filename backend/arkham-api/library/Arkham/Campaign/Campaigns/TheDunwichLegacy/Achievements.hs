@@ -70,14 +70,19 @@ runDunwichAchievements msg = whenEligibleCampaign $ case msg of
   RecordCount key 0 | key == toCampaignLogKey BroodEscapedIntoTheWild -> do
     earnAchievement $ TheDunwichLegacyAchievement NoBroodLeftBehind
 
-  -- "The Gang's All Here": all five allies survive (recorded one by one in
-  -- interlude 2, The Survivors). Earlier keys in the batch are already
-  -- applied to the log when a later Record dispatches, so check the others.
-  Record key | key `elem` map toCampaignLogKey survivedKeys -> do
-    let others = filter ((/= key) . toCampaignLogKey) survivedKeys
-    allSurvived <- and <$> traverse getHasRecord others
-    when allSurvived do
-      earnAchievement $ TheDunwichLegacyAchievement TheGangsAllHere
+  -- "The Gang's All Here": each survivor recorded in interlude 2 (The
+  -- Survivors) checks off their box; the API layer accumulates the checklist
+  -- per user ACROSS playthroughs and awards the earn when all five are in.
+  Record key | key `elem` map (toCampaignLogKey . fst) survivedItems -> do
+    for_ [item | (k, item) <- survivedItems, toCampaignLogKey k == key] \item ->
+      achievementProgress (TheDunwichLegacyAchievement TheGangsAllHere) [item]
+  -- Idempotent sweep at every campaign step transition: derive the survivor
+  -- checklist from the campaign log, so campaigns whose interlude ran before
+  -- this detection existed still report their progress (the API layer merge
+  -- makes re-reports no-ops).
+  CampaignStep _ -> do
+    survived <- filterM (getHasRecord . toCampaignLogKey . fst) survivedItems
+    achievementProgress (TheDunwichLegacyAchievement TheGangsAllHere) (map snd survived)
 
   -- Campaign win: Lost in Time and Space's Resolution 1 is the only
   -- resolution the investigators survive with a record.
@@ -223,13 +228,14 @@ whenEssexCountyExpress body = do
 theEssexCountyExpressIds :: [ScenarioId]
 theEssexCountyExpressIds = ["02159", "51025"]
 
-survivedKeys :: [TheDunwichLegacyKey]
-survivedKeys =
-  [ DrHenryArmitageSurvivedTheDunwichLegacy
-  , ProfessorWarrenRiceSurvivedTheDunwichLegacy
-  , DrFrancisMorganSurvivedTheDunwichLegacy
-  , ZebulonWhateleySurvivedTheDunwichLegacy
-  , EarlSawyerSurvivedTheDunwichLegacy
+-- Campaign log key -> checklist item key from 'achievementChecklist'.
+survivedItems :: [(TheDunwichLegacyKey, Text)]
+survivedItems =
+  [ (DrHenryArmitageSurvivedTheDunwichLegacy, "DrHenryArmitage")
+  , (ProfessorWarrenRiceSurvivedTheDunwichLegacy, "ProfessorWarrenRice")
+  , (DrFrancisMorganSurvivedTheDunwichLegacy, "DrFrancisMorgan")
+  , (ZebulonWhateleySurvivedTheDunwichLegacy, "ZebulonWhateley")
+  , (EarlSawyerSurvivedTheDunwichLegacy, "EarlSawyer")
   ]
 
 professors :: [CardDef]

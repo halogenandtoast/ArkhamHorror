@@ -8,6 +8,7 @@ module Arkham.Achievements.ReturnToTheDunwichLegacySpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey (CampaignLogKey (YouHaveIdentifiedTheSolution), recorded, toCampaignLogKey)
+import Arkham.CampaignStep (CampaignStep (InterludeStep))
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Enemies
@@ -90,26 +91,35 @@ spec = describe "Return to the Dunwich Legacy achievements" $ do
       run $ RecordCount (toCampaignLogKey BroodEscapedIntoTheWild) 2
       earned `refShouldBe` False
 
+  -- The earn itself happens at the API layer once every survivor has been
+  -- checked off across playthroughs; the engine only reports the checklist
+  -- items (see applyAchievementProgress).
   context "The Gang's All Here" $ do
-    it "is earned when all five allies survive" . gameTest $ \_ -> do
+    it "reports each recorded survivor as checklist progress" . gameTest $ \_ -> do
       asReturnToTheDunwichLegacy
-      earned <- didEarnDunwich TheGangsAllHere
+      armitage <- didProgressDunwich TheGangsAllHere ["DrHenryArmitage"]
+      earl <- didProgressDunwich TheGangsAllHere ["EarlSawyer"]
       run $ Record (toCampaignLogKey DrHenryArmitageSurvivedTheDunwichLegacy)
       run $ Record (toCampaignLogKey ProfessorWarrenRiceSurvivedTheDunwichLegacy)
-      run $ Record (toCampaignLogKey DrFrancisMorganSurvivedTheDunwichLegacy)
-      run $ Record (toCampaignLogKey ZebulonWhateleySurvivedTheDunwichLegacy)
-      earned `refShouldBe` False
+      armitage `refShouldBe` True
+      earl `refShouldBe` False
       run $ Record (toCampaignLogKey EarlSawyerSurvivedTheDunwichLegacy)
-      earned `refShouldBe` True
+      earl `refShouldBe` True
 
-    it "is not earned with only four survivors" . gameTest $ \_ -> do
+    it "does not report progress for unrelated records" . gameTest $ \_ -> do
       asReturnToTheDunwichLegacy
-      earned <- didEarnDunwich TheGangsAllHere
+      armitage <- didProgressDunwich TheGangsAllHere ["DrHenryArmitage"]
+      run $ Record (toCampaignLogKey TheInvestigatorsDestroyedTheNecronomicon)
+      armitage `refShouldBe` False
+
+    -- Backfill for campaigns whose interlude predates the checklist feature.
+    it "re-reports recorded survivors at campaign step transitions" . gameTest $ \_ -> do
+      asReturnToTheDunwichLegacy
       run $ Record (toCampaignLogKey DrHenryArmitageSurvivedTheDunwichLegacy)
-      run $ Record (toCampaignLogKey ProfessorWarrenRiceSurvivedTheDunwichLegacy)
-      run $ Record (toCampaignLogKey DrFrancisMorganSurvivedTheDunwichLegacy)
-      run $ Record (toCampaignLogKey ZebulonWhateleySurvivedTheDunwichLegacy)
-      earned `refShouldBe` False
+      run $ Record (toCampaignLogKey EarlSawyerSurvivedTheDunwichLegacy)
+      swept <- didProgressDunwich TheGangsAllHere ["DrHenryArmitage", "EarlSawyer"]
+      run $ CampaignStep (InterludeStep 99 Nothing)
+      swept `refShouldBe` True
 
   context "winning the campaign" $ do
     it "earns Dunwich Expertise on Expert" . gameTest $ \_ -> do

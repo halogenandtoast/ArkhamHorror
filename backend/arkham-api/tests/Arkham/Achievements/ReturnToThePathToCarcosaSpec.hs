@@ -14,6 +14,7 @@ import Arkham.Agenda.Sequence (AgendaSequence (..), AgendaSide (..))
 import Arkham.Agenda.Types (AgendaAttrs (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey (recorded, toCampaignLogKey)
+import Arkham.CampaignStep (CampaignStep (InterludeStep))
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Enemies
@@ -61,10 +62,16 @@ spec = describe "Return to The Path to Carcosa achievements" $ do
       killEmissary
       earned `refShouldBe` False
 
+  -- The earn itself happens at the API layer once every VIP has been checked
+  -- off across playthroughs; the engine only reports the checklist items
+  -- (see applyAchievementProgress).
   context "First Steps" $ do
-    it "is earned when all five VIPs are interviewed" . gameTest $ \_ -> do
+    it "reports every interviewed VIP as checklist progress" . gameTest $ \_ -> do
       asReturnToThePathToCarcosa
-      earned <- didEarnCarcosa FirstSteps
+      progressed <-
+        didProgressCarcosa
+          FirstSteps
+          ["ConstanceDumaine", "SebastienMoreau", "JordanPerry", "AshleighClarke", "IshimaruHaruko"]
       run
         $ RecordSetInsert
           (toCampaignLogKey VIPsInterviewed)
@@ -74,11 +81,14 @@ spec = describe "Return to The Path to Carcosa achievements" $ do
           , recorded (toCardCode Assets.sebastienMoreau)
           , recorded (toCardCode Assets.ashleighClarke)
           ]
-      earned `refShouldBe` True
+      progressed `refShouldBe` True
 
-    it "is not earned with only four VIPs interviewed" . gameTest $ \_ -> do
+    it "reports only the VIPs actually interviewed" . gameTest $ \_ -> do
       asReturnToThePathToCarcosa
-      earned <- didEarnCarcosa FirstSteps
+      progressed <-
+        didProgressCarcosa
+          FirstSteps
+          ["ConstanceDumaine", "SebastienMoreau", "JordanPerry", "IshimaruHaruko"]
       run
         $ RecordSetInsert
           (toCampaignLogKey VIPsInterviewed)
@@ -87,7 +97,19 @@ spec = describe "Return to The Path to Carcosa achievements" $ do
           , recorded (toCardCode Assets.ishimaruHaruko)
           , recorded (toCardCode Assets.sebastienMoreau)
           ]
-      earned `refShouldBe` False
+      progressed `refShouldBe` True
+
+    -- Backfill for campaigns whose The Last King predates the checklist
+    -- feature.
+    it "re-reports interviewed VIPs at campaign step transitions" . gameTest $ \_ -> do
+      asReturnToThePathToCarcosa
+      run
+        $ RecordSetInsert
+          (toCampaignLogKey VIPsInterviewed)
+          [recorded (toCardCode Assets.constanceDumaine)]
+      swept <- didProgressCarcosa FirstSteps ["ConstanceDumaine"]
+      run $ CampaignStep (InterludeStep 99 Nothing)
+      swept `refShouldBe` True
 
   context "Crashing the Party" $ do
     it "is earned defeating the Lunatic Dianne Devine" . gameTest $ \_ -> do

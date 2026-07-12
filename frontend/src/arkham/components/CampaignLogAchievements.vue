@@ -1,10 +1,14 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { achievementCatalog, type AchievementEntry } from '@/arkham/achievements'
+import { achievementCatalog, achievementChecklists, type AchievementEntry } from '@/arkham/achievements'
 import type { Achievement } from '@/arkham/types/Achievement'
 
-const props = defineProps<{ achievements: Achievement[]; campaignId?: string }>()
+const props = defineProps<{
+  achievements: Achievement[]
+  userAchievements?: Achievement[]
+  campaignId?: string
+}>()
 
 const { t } = useI18n()
 
@@ -18,6 +22,27 @@ const earnedRow = (entry: AchievementEntry): Achievement | null => {
   const row = byTag.value.get(entry.tag)
   return row?.earnedAt ? row : null
 }
+
+// Checklist achievements accumulate across playthroughs, so checkmarks come
+// from the user-wide rows (not just this game's earns).
+const userByTag = computed(
+  () => new Map((props.userAchievements ?? []).map((row) => [row.achievement, row]))
+)
+
+const checklist = (entry: AchievementEntry): string[] | undefined =>
+  achievementChecklists[entry.tag]
+
+const checkedItems = (entry: AchievementEntry): string[] => {
+  const row = userByTag.value.get(entry.tag)
+  if (!row) return []
+  if (row.earnedAt !== null) return checklist(entry) ?? []
+  return Array.isArray(row.progress)
+    ? row.progress.filter((x): x is string => typeof x === 'string')
+    : []
+}
+
+const isChecked = (entry: AchievementEntry, item: string): boolean =>
+  checkedItems(entry).includes(item)
 
 const earnedDate = (row: Achievement | null): string | null => {
   if (!row?.earnedAt) return null
@@ -43,6 +68,17 @@ const earnedDate = (row: Achievement | null): string | null => {
             <span v-if="earnedDate(earnedRow(entry))" class="entry-date">{{ earnedDate(earnedRow(entry)) }}</span>
           </span>
           <span class="entry-text">{{ t(`achievements.entries.${entry.tag}.text`) }}</span>
+          <ul v-if="checklist(entry)" class="checklist">
+            <li
+              v-for="item in checklist(entry)"
+              :key="item"
+              class="checklist-item"
+              :class="{ checked: isChecked(entry, item) }"
+            >
+              <span class="checkbox" aria-hidden="true">{{ isChecked(entry, item) ? '☑' : '☐' }}</span>
+              {{ t(`achievements.entries.${entry.tag}.items.${item}`) }}
+            </li>
+          </ul>
         </div>
       </li>
     </ul>
@@ -133,6 +169,31 @@ const earnedDate = (row: Achievement | null): string | null => {
 .entry-text {
   color: rgba(255, 255, 255, 0.52);
   line-height: 1.35;
+}
+
+.checklist {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.checklist-item {
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.45;
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.checklist-item.checked {
+  color: rgba(217, 184, 69, 0.85);
+}
+
+.checkbox {
+  font-size: 1rem;
 }
 
 .entry.earned .entry-text {

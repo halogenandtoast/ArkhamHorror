@@ -47,3 +47,17 @@ earnAchievement achievement = do
     $ push
     $ Priority
     $ EarnAchievement achievement
+
+{- | Report completed checklist items (see 'achievementChecklist') for a
+cross-playthrough achievement. Same gating and Priority rationale as
+'earnAchievement'; the API layer merges the items into the per-user
+progress row and awards the earn once the checklist is complete.
+-}
+achievementProgress :: (HasGame m, HasQueue Message m) => Achievement -> [Text] -> m ()
+achievementProgress achievement items = do
+  enabled <- settingsAchievementsEnabled . gameSettings <$> getGame
+  mCampaignId <- currentCampaignId
+  when (enabled && notNull items && maybe False (`elem` achievementCampaigns achievement) mCampaignId)
+    $ push
+    $ Priority
+    $ AchievementProgress achievement items

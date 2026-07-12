@@ -67,14 +67,24 @@ runCarcosaAchievements msg = whenEligibleCampaign $ case msg of
       when (c + n >= 7) do
         earn SayMyName
 
-  -- "First Steps": interview all five VIPs in The Last King. The Last King's
-  -- resolution inserts every interviewed VIP's asset card code into the
-  -- VIPsInterviewed record set in a single write.
+  -- "First Steps": each VIP interviewed in The Last King checks off their
+  -- box (the resolution inserts every interviewed VIP's asset card code into
+  -- VIPsInterviewed in a single write); the API layer accumulates the
+  -- checklist per user ACROSS playthroughs and awards the earn at five.
   RecordSetInsert key entries | key == toCampaignLogKey VIPsInterviewed -> do
-    existing <- recordedCardCodes <$> getRecordSet VIPsInterviewed
-    let interviewed = nub (existing <> recordedCardCodes entries)
-    when (all (`elem` interviewed) vipAssetCodes) do
-      earn FirstSteps
+    let interviewed = recordedCardCodes entries
+    achievementProgress
+      (ThePathToCarcosaAchievement FirstSteps)
+      [item | (code, item) <- vipItems, code `elem` interviewed]
+  -- Idempotent sweep at every campaign step transition: derive the VIP
+  -- checklist from the campaign log, so campaigns whose The Last King ran
+  -- before this detection existed still report their progress (the API layer
+  -- merge makes re-reports no-ops).
+  CampaignStep _ -> do
+    interviewed <- recordedCardCodes <$> getRecordSet VIPsInterviewed
+    achievementProgress
+      (ThePathToCarcosaAchievement FirstSteps)
+      [item | (code, item) <- vipItems, code `elem` interviewed]
 
   -- "The Cuckoo's Nest": resign with Daniel Chesterfield under an
   -- investigator's control. A controlled asset that resigns with its owner
@@ -212,17 +222,16 @@ whenEchoesOfThePast = whenScenarioIn ["03120", "52028"]
 whenBlackStarsRise :: (HasGame m, Tracing m) => m () -> m ()
 whenBlackStarsRise = whenScenarioIn ["03274", "52054"]
 
--- The five VIP bystander asset card codes recorded in VIPsInterviewed.
-vipAssetCodes :: [CardCode]
-vipAssetCodes =
-  map
-    toCardCode
-    [ Assets.constanceDumaine
-    , Assets.jordanPerry
-    , Assets.ishimaruHaruko
-    , Assets.sebastienMoreau
-    , Assets.ashleighClarke
-    ]
+-- VIP bystander asset card code (as recorded in VIPsInterviewed) ->
+-- checklist item key from 'achievementChecklist'.
+vipItems :: [(CardCode, Text)]
+vipItems =
+  [ (toCardCode Assets.constanceDumaine, "ConstanceDumaine")
+  , (toCardCode Assets.sebastienMoreau, "SebastienMoreau")
+  , (toCardCode Assets.jordanPerry, "JordanPerry")
+  , (toCardCode Assets.ashleighClarke, "AshleighClarke")
+  , (toCardCode Assets.ishimaruHaruko, "IshimaruHaruko")
+  ]
 
 hasturForms :: [CardDef]
 hasturForms =

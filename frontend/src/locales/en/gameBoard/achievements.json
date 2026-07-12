@@ -11,7 +11,8 @@
     "50": "Return to the Night of the Zealot",
     "51": "Return to the Dunwich Legacy",
     "52": "Return to The Path to Carcosa",
-    "53": "Return to The Forgotten Age"
+    "53": "Return to The Forgotten Age",
+    "54": "Return to The Circle Undone"
   },
   "entries": {
     "TheZealotsRevenge": {
@@ -88,7 +89,14 @@
     },
     "TheGangsAllHere": {
       "name": "The Gang's All Here",
-      "text": "In The Survivors, have Dr. Henry Armitage, Dr. Francis Morgan, Professor Warren Rice, Zebulon Whateley, and Earl Sawyer all survive The Dunwich Legacy."
+      "text": "In The Survivors, have the following characters survive The Dunwich Legacy:",
+      "items": {
+        "DrHenryArmitage": "Dr. Henry Armitage",
+        "ZebulonWhateley": "Zebulon Whateley",
+        "DrFrancisMorgan": "Dr. Francis Morgan",
+        "EarlSawyer": "Earl Sawyer",
+        "ProfessorWarrenRice": "Professor Warren Rice"
+      }
     },
     "NoBroodLeftBehind": {
       "name": "No Brood Left Behind",
@@ -136,7 +144,14 @@
     },
     "FirstSteps": {
       "name": "First Steps",
-      "text": "Interview Constance Dumaine, Jordan Perry, Ishimaru Haruko, Sebastien Moreau, and Ashleigh Clarke in The Last King."
+      "text": "Interview the following VIPs in The Last King:",
+      "items": {
+        "ConstanceDumaine": "Constance Dumaine",
+        "SebastienMoreau": "Sebastien Moreau",
+        "JordanPerry": "Jordan Perry",
+        "AshleighClarke": "Ashleigh Clarke",
+        "IshimaruHaruko": "Ishimaru Haruko"
+      }
     },
     "CrashingTheParty": {
       "name": "Crashing the Party",
@@ -257,6 +272,66 @@
     "YothExpertise": {
       "name": "Yoth Expertise",
       "text": "Win The Forgotten Age campaign on Expert difficulty."
+    },
+    "WhoYouGonnaCall": {
+      "name": "Who You Gonna Call?",
+      "text": "Defeat 13 Geist or Spectral enemies across the campaign. Enemies who are not discarded or added to the victory display do not count."
+    },
+    "SaviorOfHumanity": {
+      "name": "Savior of Humanity",
+      "text": "Rescue every Silver Twilight enemy who appears in At Death's Doorstep."
+    },
+    "TenOutOfTenWouldReadAgain": {
+      "name": "10/10 Would Read Again",
+      "text": "Using The Black Book, take a total of 10 horror with its ability throughout the campaign."
+    },
+    "CarlShmarl": {
+      "name": "Carl Shmarl",
+      "text": "Become part of the Silver Twilight Lodge's Inner Circle, then betray them in Union and Disillusion."
+    },
+    "TheThreefoldRule": {
+      "name": "The Threefold Rule",
+      "text": "Join forces with Erynn and turn on her coven in Union and Disillusion."
+    },
+    "NewWorldOrder": {
+      "name": "New World Order",
+      "text": "Help the Silver Twilight Lodge win The Circle Undone campaign."
+    },
+    "ImmortalitySoundsNice": {
+      "name": "Immortality Sounds Nice",
+      "text": "Help Anette's Coven win The Circle Undone campaign."
+    },
+    "MoreLikeExcursion": {
+      "name": "More Like Excursion",
+      "text": "Complete In the Clutches of Chaos without a single incursion occurring."
+    },
+    "MemberThese": {
+      "name": "'Member These?",
+      "text": "Discover all ten Mementos: the Mesmerizing Flute, Ritual Components, Scrap of Torn Shadow, Strange Incantation, Gilman's Journal, Keziah's Formulae, Worn Crucifix, Wisp of Spectral Mist, Corn Husk Doll, and Bloody Tree Carvings."
+    },
+    "CaseClosed": {
+      "name": "Case Closed",
+      "text": "Save each of Valentino Rivas, Gavriella Mizrah, Penny White, and Jerome Davids from a terrible fate."
+    },
+    "MusicOfTheOuterGods": {
+      "name": "Music of the Outer Gods",
+      "text": "Accept your fate and win The Circle Undone campaign by joining the Pipers of Azathoth."
+    },
+    "WeaverOfShadowAndMist": {
+      "name": "Weaver of Shadow and Mist",
+      "text": "Reject your fate and win The Circle Undone campaign by crafting a spell to contain Azathoth."
+    },
+    "FinePrint": {
+      "name": "Fine Print",
+      "text": "Win The Circle Undone campaign by signing your name in The Black Book of Azathoth."
+    },
+    "SpeakTheWordsAloud": {
+      "name": "duolA sdroW eht kaepS",
+      "text": "Win The Circle Undone campaign by discovering and reversing an ancient incantation."
+    },
+    "CircleExpertise": {
+      "name": "Circle Expertise",
+      "text": "Win The Circle Undone campaign on Expert difficulty."
     }
   },
   "clearAll": "Clear all",

@@ -487,6 +487,10 @@ data Message
   | -- | Above-the-table achievement earned; persisted per human player and
     -- toasted by the API layer (the engine only announces it).
     EarnAchievement Achievement
+  | -- | Checklist items completed toward a cross-playthrough achievement
+    -- (see 'achievementChecklist'); the API layer merges them into the
+    -- per-user progress row and awards the earn when the list is complete.
+    AchievementProgress Achievement [Text]
   | -- AI seat configuration (mutates Settings.settingsAiPlayers)
     RegisterAiPlayer PlayerId AiPlayerState
   | SetAiFocusOverride PlayerId (Maybe Focus)

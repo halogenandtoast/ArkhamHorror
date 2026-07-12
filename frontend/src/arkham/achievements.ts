@@ -4,7 +4,7 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['50', '51', '52', '53']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['50', '51', '52', '53', '54']
 
 export type AchievementTag =
   | 'TheZealotsRevenge'
@@ -68,8 +68,44 @@ export type AchievementTag =
   | 'BaneOfYig'
   | 'IfICouldTurnBackTime'
   | 'YothExpertise'
+  | 'WhoYouGonnaCall'
+  | 'SaviorOfHumanity'
+  | 'TenOutOfTenWouldReadAgain'
+  | 'CarlShmarl'
+  | 'TheThreefoldRule'
+  | 'NewWorldOrder'
+  | 'ImmortalitySoundsNice'
+  | 'MoreLikeExcursion'
+  | 'MemberThese'
+  | 'CaseClosed'
+  | 'MusicOfTheOuterGods'
+  | 'WeaverOfShadowAndMist'
+  | 'FinePrint'
+  | 'SpeakTheWordsAloud'
+  | 'CircleExpertise'
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string }
+
+// Cross-playthrough checklist achievements: item keys mirror the backend
+// achievementChecklist (Arkham.Achievement.Types); the earned row's progress
+// column holds the checked keys. Names live at
+// achievements.entries.<tag>.items.<key>.
+export const achievementChecklists: Partial<Record<AchievementTag, string[]>> = {
+  TheGangsAllHere: [
+    'DrHenryArmitage',
+    'ZebulonWhateley',
+    'DrFrancisMorgan',
+    'EarlSawyer',
+    'ProfessorWarrenRice',
+  ],
+  FirstSteps: [
+    'ConstanceDumaine',
+    'SebastienMoreau',
+    'JordanPerry',
+    'AshleighClarke',
+    'IshimaruHaruko',
+  ],
+}
 
 export const achievementCatalog: AchievementEntry[] = [
   { tag: 'TheZealotsRevenge', campaignId: '50' },
@@ -133,4 +169,19 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'BaneOfYig', campaignId: '53' },
   { tag: 'IfICouldTurnBackTime', campaignId: '53' },
   { tag: 'YothExpertise', campaignId: '53' },
+  { tag: 'WhoYouGonnaCall', campaignId: '54' },
+  { tag: 'SaviorOfHumanity', campaignId: '54' },
+  { tag: 'TenOutOfTenWouldReadAgain', campaignId: '54' },
+  { tag: 'CarlShmarl', campaignId: '54' },
+  { tag: 'TheThreefoldRule', campaignId: '54' },
+  { tag: 'NewWorldOrder', campaignId: '54' },
+  { tag: 'ImmortalitySoundsNice', campaignId: '54' },
+  { tag: 'MoreLikeExcursion', campaignId: '54' },
+  { tag: 'MemberThese', campaignId: '54' },
+  { tag: 'CaseClosed', campaignId: '54' },
+  { tag: 'MusicOfTheOuterGods', campaignId: '54' },
+  { tag: 'WeaverOfShadowAndMist', campaignId: '54' },
+  { tag: 'FinePrint', campaignId: '54' },
+  { tag: 'SpeakTheWordsAloud', campaignId: '54' },
+  { tag: 'CircleExpertise', campaignId: '54' },
 ]

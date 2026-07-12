@@ -64,6 +64,7 @@ data TheCircleUndoneKey
   | TheLeadInvestigatorHasJoinedThePipersOfAzathoth
   | AzathothSlumbersForNow
   | TheInvestigatorsSignedTheBlackBookOfAzathoth
+  | TheInvestigatorsReversedTheIncantation
   | ErynnJoinedTheInvestigators
   | TheCovenOfKeziahHoldsTheWorldInItsGrasp
   deriving stock (Show, Eq, Ord, Generic, Data)

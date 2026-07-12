@@ -2046,6 +2046,7 @@ library
       Arkham.Campaign.Campaigns.ReturnToThePathToCarcosa
       Arkham.Campaign.Campaigns.StandaloneCampaign
       Arkham.Campaign.Campaigns.TheCircleUndone
+      Arkham.Campaign.Campaigns.TheCircleUndone.Achievements
       Arkham.Campaign.Campaigns.TheDreamEaters
       Arkham.Campaign.Campaigns.TheDrownedCity
       Arkham.Campaign.Campaigns.TheDunwichLegacy
@@ -6984,6 +6985,7 @@ test-suite spec
   main-is: Spec.hs
   other-modules:
       Arkham.Achievements.ReturnToNightOfTheZealotSpec
+      Arkham.Achievements.ReturnToTheCircleUndoneSpec
       Arkham.Achievements.ReturnToTheDunwichLegacySpec
       Arkham.Achievements.ReturnToTheForgottenAgeSpec
       Arkham.Achievements.ReturnToThePathToCarcosaSpec

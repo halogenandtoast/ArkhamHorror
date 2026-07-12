@@ -250,15 +250,15 @@ instance RunMessage BeforeTheBlackThrone where
         Resolution 5 -> do
           readInvestigatorDefeat
           resolutionWithXp "resolution5" $ allGainXpWithBonus' attrs $ toBonus "resolution5" 10
-          record AzathothSlumbersForNow
           record TheInvestigatorsSignedTheBlackBookOfAzathoth
+          record AzathothSlumbersForNow
           eachInvestigator \iid -> sufferTrauma iid 2 2
           endOfScenario
         Resolution 6 -> do
           readInvestigatorDefeat
           resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "resolution6" 5
+          record TheInvestigatorsReversedTheIncantation
           record AzathothSlumbersForNow
-          record TheInvestigatorsSignedTheBlackBookOfAzathoth
           eachInvestigator \iid -> sufferTrauma iid 1 1
           endOfScenario
         _ -> error "unknown resolution"

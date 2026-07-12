@@ -1,6 +1,7 @@
 module Arkham.Campaign.Campaigns.TheCircleUndone (theCircleUndone, TheCircleUndone (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Campaigns.TheCircleUndone.Achievements (runCircleAchievements)
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -67,7 +68,7 @@ disappearanceAtTheTwilightEstateSteps =
   ]
 
 instance RunMessage TheCircleUndone where
-  runMessage msg c@(TheCircleUndone attrs) = runQueueT $ campaignI18n $ case msg of
+  runMessage msg c@(TheCircleUndone attrs) = runQueueT $ campaignI18n $ lift (runCircleAchievements msg) *> case msg of
     StartCampaign | attrs.step.unwrap `elem` (PrologueStep : disappearanceAtTheTwilightEstateSteps) -> do
       campaignStep_
         $ if attrs.step.unwrap `elem` disappearanceAtTheTwilightEstateSteps

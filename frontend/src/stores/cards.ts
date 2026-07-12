@@ -7,6 +7,8 @@ export interface CardsState {
   loaded: boolean
 }
 
+let fetchCardsPromise: Promise<CardDef[]> | null = null
+
 export const useCardStore = defineStore("cards", {
   state: () => ({
     cards: [],
@@ -19,14 +21,18 @@ export const useCardStore = defineStore("cards", {
   },
   actions: {
     async fetchCards() {
-      if (!this.loaded) {
-        try {
-          const data = await Api.fetchCards(true)
-          this.cards = data
-          this.loaded = true
-        } catch (error) {
-          console.log(error)
-        }
+      if (this.loaded) return this.cards
+
+      fetchCardsPromise ??= Api.fetchCards(true)
+
+      try {
+        const data = await fetchCardsPromise
+        this.cards = data
+        this.loaded = true
+        return data
+      } catch (error) {
+        fetchCardsPromise = null
+        console.log(error)
       }
     }
   }

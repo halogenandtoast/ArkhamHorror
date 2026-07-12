@@ -179,6 +179,7 @@ instance RunMessage TheFeastOfHemlockVale where
                   flavor $ setTitle "title" >> p "oldBlood4"
           "omega" -> do
             incrementRecordCount TheoPetersRelationshipLevel 1
+            interludeXpAll (toBonus "bonus" 1)
             reunited <- getHasRecord ThePetersFamilyWereReunited
             flavor do
               setTitle "title"

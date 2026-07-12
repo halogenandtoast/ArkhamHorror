@@ -2621,7 +2621,6 @@ async function addChaosToken(face: any){
             </template>
           </template>
         </transition-group>
-        </div>
         <div v-if="playerLocationZones.length > 0" class="player-location-zones">
           <section
             v-for="zone in playerLocationZones"
@@ -2642,6 +2641,7 @@ async function addChaosToken(face: any){
               />
             </div>
           </section>
+        </div>
         </div>
         </div>
       </div>
@@ -2922,6 +2922,10 @@ async function addChaosToken(face: any){
 }
 
 .player-location-zones {
+  grid-area: 2 / 1;
+  justify-self: center;
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -2964,6 +2968,7 @@ async function addChaosToken(face: any){
 .location-cards-stage {
   position: relative;
   display: grid;
+  row-gap: 16px;
   flex-shrink: 0;
   width: max-content;
   height: max-content;
@@ -2973,6 +2978,7 @@ async function addChaosToken(face: any){
 .location-cards {
   display: grid;
   grid-area: 1 / 1;
+  justify-self: center;
   position: relative;
   z-index: 1;
   transition: transform 0.2s ease;

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { fetchJoinGame } from '@/arkham/api'
+import { fetchGame, fetchJoinGame } from '@/arkham/api'
 import type { Game } from '@/arkham/types/Game'
 import MultiplayerLobby from '@/arkham/components/MultiplayerLobby.vue'
 
@@ -13,11 +13,19 @@ const props = defineProps<Props>()
 const { t } = useI18n()
 
 const game = ref<Game | null>(null)
+const playerId = ref<string | null>(null)
 const loadError = ref(false)
 
-fetchJoinGame(props.gameId)
-  .then(g => { game.value = g })
-  .catch(() => { loadError.value = true })
+fetchGame(props.gameId)
+  .then(({ game: g, playerId: pid }) => {
+    game.value = g
+    playerId.value = pid
+  })
+  .catch(() => {
+    fetchJoinGame(props.gameId)
+      .then(g => { game.value = g })
+      .catch(() => { loadError.value = true })
+  })
 </script>
 
 <template>
@@ -29,7 +37,7 @@ fetchJoinGame(props.gameId)
     v-else-if="game"
     :game-id="gameId"
     :game="game"
-    :player-id="null"
+    :player-id="playerId"
   />
   <div v-else class="loading">{{ t('claimSeat.loading') }}</div>
 </template>

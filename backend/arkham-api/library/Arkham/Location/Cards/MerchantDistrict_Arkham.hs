@@ -20,7 +20,7 @@ merchantDistrict_Arkham = location MerchantDistrict_Arkham Cards.merchantDistric
 
 instance HasAbilities MerchantDistrict_Arkham where
   getAbilities (MerchantDistrict_Arkham a) =
-    extendRevealed1 a $ groupLimit PerRound $ restricted a 1 restriction $ FastAbility' Free #move
+    extendRevealed1 a $ playerLimit PerRound $ restricted a 1 restriction $ FastAbility' Free #move
    where
     restriction =
       Here

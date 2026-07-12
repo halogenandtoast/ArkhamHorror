@@ -171,7 +171,7 @@ instance RunMessage TheFeastOfHemlockVale where
                 interludeXpAll (toBonus "bonus" 1)
                 flavor $ setTitle "title" >> p "oldBlood2"
               labeled' "leah" do
-                incrementRecordCount JudithParkRelationshipLevel 1
+                incrementRecordCount LeahAtwoodRelationshipLevel 1
                 interludeXpAll (toBonus "bonus" 1)
                 flavor $ setTitle "title" >> p "oldBlood3"
                 when searched do

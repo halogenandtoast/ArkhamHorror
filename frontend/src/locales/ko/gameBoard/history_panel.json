@@ -1,0 +1,43 @@
+{
+    "title": "기록",
+    "round": "라운드",
+    "phase": "단계",
+    "turn": "차례",
+    "empty": "이 범위에는 아직 기록된 내용이 없습니다.",
+    "section": {
+        "counts": "횟수",
+        "playedCards": "플레이한 카드",
+        "treacheriesDrawn": "뽑은 시련",
+        "enemiesDrawn": "뽑은 적",
+        "enemiesDefeated": "격퇴한 적",
+        "enemiesAttackedBy": "공격받은 적",
+        "dealtDamageTo": "피해를 준 대상",
+        "locationsInvestigated": "조사한 장소",
+        "cluesDiscovered": "발견한 단서",
+        "skillTests": "능력 테스트"
+    },
+    "field": {
+        "actionsCompleted": "수행한 행동",
+        "actionsSpent": "소모한 행동",
+        "moved": "이동",
+        "cardsDrawn": "뽑은 카드",
+        "resourcesGained": "획득한 자원",
+        "attacksOfOpportunity": "기회 공격",
+        "successfulAttacks": "성공한 공격",
+        "successfulEvasions": "성공한 회피",
+        "successfulInvestigations": "성공한 조사",
+        "successfulExplore": "성공한 탐사"
+    },
+    "skillResult": {
+        "unrun": "미실행",
+        "succeededBy": "{n}만큼 성공",
+        "failedBy": "{n}만큼 실패"
+    },
+    "enemy": {
+        "health": "체력: {n}",
+        "defeated": "격퇴됨"
+    },
+    "clues": {
+        "count": "단서: {n}"
+    }
+}

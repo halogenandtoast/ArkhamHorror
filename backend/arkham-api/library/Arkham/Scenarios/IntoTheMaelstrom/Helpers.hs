@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Classes.HasQueue (push)
-import Arkham.Classes.Query (select, selectEach)
+import Arkham.Classes.Query (select)
 import Arkham.Helpers.Query (getLead, getSetAsideCard)
 import Arkham.I18n
 import Arkham.Id

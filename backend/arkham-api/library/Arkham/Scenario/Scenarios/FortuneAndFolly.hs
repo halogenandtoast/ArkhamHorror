@@ -159,8 +159,8 @@ instance HasModifiersFor FortuneAndFolly where
       , (Enemies.fortunesDaggerB, "fortunesDaggerBNext", Clockwise)
       ]
       \(enemyCode, patrolDestination, patrolDirection) ->
-        selectEach (LocationWithEnemy $ enemyIs enemyCode) \loc -> do
-          reversed <- selectAny $ enemyIs enemyCode <> EnemyWithModifier (ScenarioModifier "reverseDirection")
+        selectEach (LocationWithEnemy $ enemyIsExact enemyCode) \loc -> do
+          reversed <- selectAny $ enemyIsExact enemyCode <> EnemyWithModifier (ScenarioModifier "reverseDirection")
           sym <- field LocationPrintedSymbol loc
           let newSym = Map.findWithDefault sym sym $ case patrolDirection of
                 Clockwise -> if reversed then counterClockwiseMap else clockwiseMap

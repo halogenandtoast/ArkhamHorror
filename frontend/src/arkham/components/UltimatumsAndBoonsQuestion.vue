@@ -2,24 +2,23 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Game } from '@/arkham/types/Game'
-import { cardImage, toCardContents } from '@/arkham/types/Card'
-import { imgsrc } from '@/arkham/helpers'
+import { cardImage as cardCodeImage } from '@/arkham/cardImages'
 
 const props = defineProps<{ game: Game; playerId: string }>()
 const emit = defineEmits<{ choose: [value: number] }>()
 const { t } = useI18n()
 
-// The Morrígan question is a QuestionLabel-wrapped ChooseOne of CardIdTarget
-// labels, one per focused weakness; choice index i returns focused card i.
+// The Morrígan question is a QuestionLabel-wrapped ChooseOne of CardLabel
+// choices, one per drawn weakness; choice index i returns weakness i. The cards
+// are carried on the choices themselves (not the single global focusedCards
+// list), so each player's question renders independently in multiplayer.
 const choices = computed(() => {
   const q = props.game.question[props.playerId]
   const inner = q?.tag === 'QuestionLabel' ? q.question : q
   if (inner?.tag !== 'ChooseOne') return []
   return inner.choices.flatMap((choice: any, index: number) => {
-    if (choice.tag !== 'TargetLabel' || choice.target?.tag !== 'CardIdTarget') return []
-    const cardId = choice.target.contents
-    const card = props.game.focusedCards.flat().find((c) => toCardContents(c).id === cardId)
-    return card ? [{ index, card }] : []
+    if (choice.tag !== 'CardLabel') return []
+    return [{ index, cardCode: choice.cardCode as string }]
   })
 })
 </script>
@@ -33,13 +32,13 @@ const choices = computed(() => {
     <p class="morrigan-instructions">{{ t('ultimatumsAndBoons.morrigan.instructions') }}</p>
     <div class="weakness-cards">
       <button
-        v-for="{ index, card } in choices"
-        :key="toCardContents(card).id"
+        v-for="{ index, cardCode } in choices"
+        :key="cardCode"
         type="button"
         class="weakness-card"
         @click="emit('choose', index)"
       >
-        <img :src="imgsrc(cardImage(card))" :alt="toCardContents(card).cardCode" />
+        <img :src="cardCodeImage(cardCode)" :alt="cardCode" />
         <span class="return-label">{{ t('ultimatumsAndBoons.morrigan.returnAction') }}</span>
       </button>
     </div>

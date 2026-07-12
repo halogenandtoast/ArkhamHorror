@@ -309,6 +309,12 @@ h2 {
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.04);
   border-left: 3px solid rgba(255, 255, 255, 0.15);
+}
+
+.entry:not(.earned) > .entry-icon,
+.entry:not(.earned) .entry-name,
+.entry:not(.earned) .entry-text,
+.entry:not(.earned) .checklist-item:not(.checked) {
   opacity: 0.55;
   filter: grayscale(60%);
 }
@@ -316,8 +322,6 @@ h2 {
 .entry.earned {
   background: rgba(179, 146, 47, 0.08);
   border-left-color: var(--accent);
-  opacity: 1;
-  filter: none;
 }
 
 .entry-icon {

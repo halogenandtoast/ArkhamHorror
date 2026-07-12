@@ -191,7 +191,6 @@ instance RunMessage TheFeastOfHemlockVale where
               record HelenPetersJoinedTheSurvey
               addCampaignCardToDeckChoice_ Assets.helenPetersTheEldestSister
           "gamma" -> do
-            incrementRecordCount TheoPetersRelationshipLevel 1
             simeonCrossedOut <- getHasRecord SimeonCrossedOut
             unless simeonCrossedOut do
               incrementRecordCount SimeonAtwoodRelationshipLevel 1

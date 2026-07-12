@@ -327,18 +327,19 @@ instance RunMessage WrittenInRock where
     ScenarioResolution r -> scope "resolutions" do
       let
         resolution6 = do
+          clues <- getSum <$> selectAgg Sum InvestigatorClues Anyone
+          helpedRiver <- (clues >=) <$> perPlayer 2
+          let riverBonus = if helpedRiver then toBonus "bonus.river" 1 else NoBonus
           case r of
             Resolution 1 -> do
-              resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "bonus.simeon" 2
+              resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "bonus.simeon" 2 <> riverBonus
             Resolution 2 -> do
-              resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "bonus.leah" 2
-            _ -> resolutionWithXp "resolution6" $ allGainXp' attrs
+              resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "bonus.leah" 2 <> riverBonus
+            _ -> resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs riverBonus
           hasShard <- selectAny $ AssetControlledBy Anyone <> assetIs Assets.prismaticShardAlienMeteorite
           when hasShard do
             investigators <- allInvestigators
             forceAddCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.prismaticShardAlienMeteorite
-          clues <- getSum <$> selectAgg Sum InvestigatorClues Anyone
-          helpedRiver <- (clues >=) <$> perPlayer 2
           if helpedRiver
             then incrementRecordCount RiverHawthorneRelationshipLevel 1
             else do

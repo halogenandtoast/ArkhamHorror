@@ -16,7 +16,7 @@ sluiceControl :: LocationCard SluiceControl
 sluiceControl =
   locationWith SluiceControl Cards.sluiceControl 4 (PerPlayer 2)
     $ costToEnterUnrevealedL
-    .~ GroupClueCost (PerPlayer 1) YourLocation
+    .~ GroupClueCost (PerPlayer 1) Anywhere
 
 instance HasAbilities SluiceControl where
   getAbilities (SluiceControl a) =

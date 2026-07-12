@@ -109,7 +109,8 @@
     "xp": {
       "bonus": {
         "simeon": "Bonus Experience",
-        "leah": "Bonus Experience"
+        "leah": "Bonus Experience",
+        "river": "Bonus Experience"
       }
     },
     "noResolution": {

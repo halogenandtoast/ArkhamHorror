@@ -199,10 +199,17 @@ ignoredKeywordWindowsForEnemy
   :: (HasCallStack, HasGame m, Tracing m)
   => Source -> InvestigatorId -> EnemyId -> Keyword -> ModifierType -> m [Message]
 ignoredKeywordWindowsForEnemy source iid eid keyword ignoreModifier = do
-  keywords <- getModifiedKeywords eid
-  if keyword `elem` keywords
-    then ignoredKeywordWindows source [toTarget iid, toTarget eid] ignoreModifier
-    else pure []
+  -- The target may be a concealed mini-card rather than a real Enemy entity
+  -- (asset/event evades can target these). Those have no keywords to ignore, and
+  -- looking them up via getEnemy would crash, so bail out when no enemy exists.
+  exists <- selectAny (EnemyWithId eid)
+  if not exists
+    then pure []
+    else do
+      keywords <- getModifiedKeywords eid
+      if keyword `elem` keywords
+        then ignoredKeywordWindows source [toTarget iid, toTarget eid] ignoreModifier
+        else pure []
 
 canEnterLocation :: (HasGame m, Tracing m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do

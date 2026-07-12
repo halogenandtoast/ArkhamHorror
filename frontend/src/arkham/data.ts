@@ -25,6 +25,8 @@ export interface Campaign {
   beta?: boolean
   alpha?: boolean
   dev?: boolean
+  homebrew?: boolean
+  designer?: string
   settings?: string[]
   returnTo?: {
     id: string

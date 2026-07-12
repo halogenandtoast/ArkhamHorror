@@ -241,6 +241,52 @@ allStoryCards =
       , deckOfPossibilities
       , realityAcid
       , triumphAndSubjugation
+      -- Dark Matter (homebrew)
+      , finalDestinationDarkMatter
+      , intoTheArchivesDarkMatter
+      , k2PS187CyberneticBrainsDarkMatter
+      , strangeIsTheNightDarkMatter
+      , whatTypeOfShipIsThisDarkMatter
+      , whoAmIDarkMatter
+      , reintegratedDarkMatter_062
+      , reintegratedDarkMatter_063
+      , reintegratedDarkMatter_064
+      , reintegratedDarkMatter_065
+      , evidenceAdamTannerDarkMatter
+      , evidenceCaptainBurrDarkMatter
+      , evidenceDoctorFengDarkMatter
+      , evidenceLtArcherMichaelsDarkMatter
+      , evidenceMUD12MudbugDarkMatter
+      , evidenceSophieDarkMatter
+      , theCultistDarkMatter
+      , theMinerDarkMatter
+      , theTeacherDarkMatter
+      , arrivalOfTheKingDarkMatter
+      , delightsDarkMatter
+      , forYouAloneDarkMatter
+      , lostExpeditionDarkMatter
+      , ritualOfTheSunDarkMatter
+      , withoutATraceDarkMatter
+      -- Circus Ex Mortis (homebrew)
+      , theDarkYoungStirCircusExMortis
+      , hiddenInPlainSightCircusExMortis
+      , underLockAndKeyCircusExMortis
+      , cautiousJailersCircusExMortis
+      , deepInTheDarkCircusExMortis
+      , clappedInIronsCircusExMortis
+      , hypnoticStateCircusExMortis
+      , pathForwardCircusExMortis_180
+      , pathForwardCircusExMortis_181
+      , pathForwardCircusExMortis_182
+      , pathForwardCircusExMortis_183
+      , strikeTheHeartCircusExMortis
+      , silenceThePipesCircusExMortis
+      , raiseTheTorchCircusExMortis
+      , splitTheRockCircusExMortis
+      , scribeTheSigilCircusExMortis
+      , cleanseTheStainCircusExMortis
+      , reciteThePrayerCircusExMortis
+      , bearTheBurdenCircusExMortis
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -882,3 +928,182 @@ realityAcid =
 
 triumphAndSubjugation :: CardDef
 triumphAndSubjugation = story "90023b" "Triumph and Subjugation" BadBlood & otherSideIs "90023"
+
+
+--- Dark Matter (homebrew)
+-- Dark Matter (fan campaign by Axolotl): the_tatterdemalion
+finalDestinationDarkMatter :: CardDef
+finalDestinationDarkMatter =
+  story "z-dark-matter-030" "Final Destination" DarkMatterTheTatterdemalion
+
+intoTheArchivesDarkMatter :: CardDef
+intoTheArchivesDarkMatter =
+  story "z-dark-matter-032" "Into the Archives" DarkMatterTheTatterdemalion
+
+k2PS187CyberneticBrainsDarkMatter :: CardDef
+k2PS187CyberneticBrainsDarkMatter =
+  story "z-dark-matter-034" "K2-PS187 Cybernetic Brains" DarkMatterTheTatterdemalion
+
+strangeIsTheNightDarkMatter :: CardDef
+strangeIsTheNightDarkMatter =
+  story "z-dark-matter-039" "Strange is the Night" DarkMatterTheTatterdemalion
+
+whatTypeOfShipIsThisDarkMatter :: CardDef
+whatTypeOfShipIsThisDarkMatter =
+  story "z-dark-matter-041" "What Type of Ship is This?" DarkMatterTheTatterdemalion
+
+whoAmIDarkMatter :: CardDef
+whoAmIDarkMatter = story "z-dark-matter-042" "Who am I?" DarkMatterTheTatterdemalion
+
+-- Dark Matter (fan campaign by Axolotl): electric_nightmare
+reintegratedDarkMatter_062 :: CardDef
+reintegratedDarkMatter_062 =
+  doubleSided $ story "z-dark-matter-062" "Reintegrated" DarkMatterElectricNightmare
+
+reintegratedDarkMatter_063 :: CardDef
+reintegratedDarkMatter_063 =
+  doubleSided $ story "z-dark-matter-063" "Reintegrated" DarkMatterElectricNightmare
+
+reintegratedDarkMatter_064 :: CardDef
+reintegratedDarkMatter_064 =
+  doubleSided $ story "z-dark-matter-064" "Reintegrated" DarkMatterElectricNightmare
+
+reintegratedDarkMatter_065 :: CardDef
+reintegratedDarkMatter_065 =
+  doubleSided $ story "z-dark-matter-065" "Reintegrated" DarkMatterElectricNightmare
+
+-- Dark Matter (fan campaign by Axolotl): in_the_shadow_of_earth
+evidenceAdamTannerDarkMatter :: CardDef
+evidenceAdamTannerDarkMatter =
+  story "z-dark-matter-139" "Evidence (Adam Tanner)" DarkMatterInTheShadowOfEarth
+
+evidenceCaptainBurrDarkMatter :: CardDef
+evidenceCaptainBurrDarkMatter =
+  story "z-dark-matter-140" "Evidence (Captain Burr)" DarkMatterInTheShadowOfEarth
+
+evidenceDoctorFengDarkMatter :: CardDef
+evidenceDoctorFengDarkMatter =
+  story "z-dark-matter-141" "Evidence (Doctor Feng)" DarkMatterInTheShadowOfEarth
+
+evidenceLtArcherMichaelsDarkMatter :: CardDef
+evidenceLtArcherMichaelsDarkMatter =
+  story "z-dark-matter-142" "Evidence (Lt. \"Archer\" Michaels)" DarkMatterInTheShadowOfEarth
+
+evidenceMUD12MudbugDarkMatter :: CardDef
+evidenceMUD12MudbugDarkMatter =
+  story "z-dark-matter-143" "Evidence (MU-D12 \"Mudbug\")" DarkMatterInTheShadowOfEarth
+
+evidenceSophieDarkMatter :: CardDef
+evidenceSophieDarkMatter =
+  story "z-dark-matter-144" "Evidence (Sophie)" DarkMatterInTheShadowOfEarth
+
+-- Dark Matter (fan campaign by Axolotl): strange_moons
+theCultistDarkMatter :: CardDef
+theCultistDarkMatter = story "z-dark-matter-179" "The Cultist" DarkMatterStrangeMoons
+
+theMinerDarkMatter :: CardDef
+theMinerDarkMatter = story "z-dark-matter-180" "The Miner" DarkMatterStrangeMoons
+
+theTeacherDarkMatter :: CardDef
+theTeacherDarkMatter = story "z-dark-matter-181" "The Teacher" DarkMatterStrangeMoons
+
+-- Dark Matter (fan campaign by Axolotl): fragment_of_carcosa
+arrivalOfTheKingDarkMatter :: CardDef
+arrivalOfTheKingDarkMatter =
+  story "z-dark-matter-227" "Arrival of the King" DarkMatterFragmentOfCarcosa
+
+delightsDarkMatter :: CardDef
+delightsDarkMatter = story "z-dark-matter-228" "Delights" DarkMatterFragmentOfCarcosa
+
+forYouAloneDarkMatter :: CardDef
+forYouAloneDarkMatter = story "z-dark-matter-229" "For You Alone" DarkMatterFragmentOfCarcosa
+
+lostExpeditionDarkMatter :: CardDef
+lostExpeditionDarkMatter = story "z-dark-matter-230" "Lost Expedition" DarkMatterFragmentOfCarcosa
+
+-- Dark Matter (fan campaign by Axolotl): starfall
+ritualOfTheSunDarkMatter :: CardDef
+ritualOfTheSunDarkMatter = story "z-dark-matter-269" "Ritual of the Sun" DarkMatterStarfall
+
+withoutATraceDarkMatter :: CardDef
+withoutATraceDarkMatter = story "z-dark-matter-278" "Without a Trace" DarkMatterStarfall
+
+--- Circus Ex Mortis (homebrew)
+-- Circus Ex Mortis (fan campaign by Tyler Gotch): harm_s_way
+theDarkYoungStirCircusExMortis :: CardDef
+theDarkYoungStirCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-060" "The Dark Young Stir..." CircusExMortisHarmsWay
+
+hiddenInPlainSightCircusExMortis :: CardDef
+hiddenInPlainSightCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-061" "Hidden in Plain Sight" CircusExMortisHarmsWay
+
+underLockAndKeyCircusExMortis :: CardDef
+underLockAndKeyCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-062" "Under Lock and Key" CircusExMortisHarmsWay
+
+cautiousJailersCircusExMortis :: CardDef
+cautiousJailersCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-063" "Cautious Jailers" CircusExMortisHarmsWay
+
+deepInTheDarkCircusExMortis :: CardDef
+deepInTheDarkCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-064" "Deep in the Dark" CircusExMortisHarmsWay
+
+clappedInIronsCircusExMortis :: CardDef
+clappedInIronsCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-065" "Clapped in Irons" CircusExMortisHarmsWay
+
+hypnoticStateCircusExMortis :: CardDef
+hypnoticStateCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-066" "Hypnotic State" CircusExMortisHarmsWay
+
+-- Circus Ex Mortis (fan campaign by Tyler Gotch): red_sunrise
+pathForwardCircusExMortis_180 :: CardDef
+pathForwardCircusExMortis_180 =
+  doubleSided $ (story "z-circus-ex-mortis-180" "Path Forward" CircusExMortisRedSunrise) {cdEncounterSetQuantity = Just 2}
+
+pathForwardCircusExMortis_181 :: CardDef
+pathForwardCircusExMortis_181 =
+  doubleSided $ (story "z-circus-ex-mortis-181" "Path Forward" CircusExMortisRedSunrise) {cdEncounterSetQuantity = Just 2}
+
+pathForwardCircusExMortis_182 :: CardDef
+pathForwardCircusExMortis_182 =
+  doubleSided $ (story "z-circus-ex-mortis-182" "Path Forward" CircusExMortisRedSunrise) {cdEncounterSetQuantity = Just 2}
+
+pathForwardCircusExMortis_183 :: CardDef
+pathForwardCircusExMortis_183 =
+  doubleSided $ (story "z-circus-ex-mortis-183" "Path Forward" CircusExMortisRedSunrise) {cdEncounterSetQuantity = Just 2}
+
+-- Circus Ex Mortis (fan campaign by Tyler Gotch): thousand_to_one
+strikeTheHeartCircusExMortis :: CardDef
+strikeTheHeartCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-201" "Strike the Heart" CircusExMortisThousandToOne
+
+silenceThePipesCircusExMortis :: CardDef
+silenceThePipesCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-202" "Silence the Pipes" CircusExMortisThousandToOne
+
+raiseTheTorchCircusExMortis :: CardDef
+raiseTheTorchCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-203" "Raise the Torch" CircusExMortisThousandToOne
+
+splitTheRockCircusExMortis :: CardDef
+splitTheRockCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-204" "Split the Rock" CircusExMortisThousandToOne
+
+scribeTheSigilCircusExMortis :: CardDef
+scribeTheSigilCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-205" "Scribe the Sigil" CircusExMortisThousandToOne
+
+cleanseTheStainCircusExMortis :: CardDef
+cleanseTheStainCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-206" "Cleanse the Stain" CircusExMortisThousandToOne
+
+reciteThePrayerCircusExMortis :: CardDef
+reciteThePrayerCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-207" "Recite the Prayer" CircusExMortisThousandToOne
+
+bearTheBurdenCircusExMortis :: CardDef
+bearTheBurdenCircusExMortis =
+  doubleSided $ story "z-circus-ex-mortis-208" "Bear the Burden" CircusExMortisThousandToOne

@@ -3,7 +3,7 @@ import Draggable from '@/components/Draggable.vue';
 import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { TokenType, Token } from '@/arkham/types/Token';
-import { imgsrc } from '@/arkham/helpers';
+import { cardImg } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import Modifier from '@/arkham/components/Modifier.vue';
@@ -61,7 +61,7 @@ const id = computed(() => props.enemy.id)
 
 const cardCode = computed(() => props.enemy.cardCode)
 const image = computed(() => {
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}.avif`)
+  return cardImg(cardCode.value.replace('c', ''))
 })
 
 const debug = useDebug()

@@ -10,6 +10,8 @@ import theScarletKeys from '@/arkham/data/theScarletKeys.json'
 import theFeastOfHemlockVale from '@/arkham/data/theFeastOfHemlockVale.json'
 import brethrenOfAsh from '@/arkham/data/brethrenOfAsh.json'
 import theDrownedCity from '@/arkham/data/theDrownedCity.json'
+import darkMatter from '@/arkham/data/darkMatter.json'
+import circusExMortis from '@/arkham/data/circusExMortis.json'
 import sideStories from '@/arkham/data/side-stories.json'
 
 export default
@@ -25,5 +27,7 @@ export default
   , ...theFeastOfHemlockVale
   , ...brethrenOfAsh
   , ...theDrownedCity
+  , ...darkMatter
+  , ...circusExMortis
   , ...sideStories
   ]

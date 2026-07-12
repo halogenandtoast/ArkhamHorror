@@ -550,6 +550,9 @@ instance HasChaosTokenValue Scenario where
             pure
               $ ChaosTokenValue chaosTokenFace
               $ if count (== #frost) revealed == 2 then AutoFailModifier else NegativeModifier 1
+          -- Circus Ex Mortis guide p1: the moon token's printed value is 0; its
+          -- seal-and-reveal-another effect is handled at ResolveChaosToken.
+          MoonToken -> pure $ ChaosTokenValue chaosTokenFace NoModifier
           _ -> getChaosTokenValue iid chaosTokenFace s
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
@@ -744,6 +747,23 @@ allScenarios =
     , ("90004", SomeScenario readOrDie)
     , ("90041", SomeScenario redTideRising)
     , ("90065", SomeScenario relicsOfThePast)
+    -- Homebrew
+    , ("z-dark-matter-013", SomeScenario theTatterdemalionDarkMatter)
+    , ("z-dark-matter-053", SomeScenario electricNightmareDarkMatter)
+    , ("z-dark-matter-090", SomeScenario lostQuantumDarkMatter)
+    , ("z-dark-matter-115", SomeScenario inTheShadowOfEarthDarkMatter)
+    , ("z-dark-matter-156", SomeScenario strangeMoonsDarkMatter)
+    , ("z-dark-matter-193", SomeScenario theMachineInYellowDarkMatter)
+    , ("z-dark-matter-212", SomeScenario fragmentOfCarcosaDarkMatter)
+    , ("z-dark-matter-246", SomeScenario starfallDarkMatter)
+    , ("z-circus-ex-mortis-001", SomeScenario oneNightOnlyCircusExMortis)
+    , ("z-circus-ex-mortis-017", SomeScenario thePrimrosePathCircusExMortis)
+    , ("z-circus-ex-mortis-042", SomeScenario harmsWayCircusExMortis)
+    , ("z-circus-ex-mortis-076", SomeScenario allPointsWestCircusExMortis)
+    , ("z-circus-ex-mortis-110", SomeScenario piperAtTheGatesOfDawnCircusExMortis)
+    , ("z-circus-ex-mortis-124", SomeScenario bacchanaliaCircusExMortis)
+    , ("z-circus-ex-mortis-155", SomeScenario redSunriseCircusExMortis)
+    , ("z-circus-ex-mortis-192", SomeScenario thousandToOneCircusExMortis)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -908,4 +928,21 @@ scenarioEncounterSets =
     , ("90004", EncounterSet.ReadOrDie)
     , ("90041", EncounterSet.RedTideRising)
     , ("90065", EncounterSet.RelicsOfThePast)
+    -- Homebrew
+    , ("z-dark-matter-013", EncounterSet.DarkMatterTheTatterdemalion)
+    , ("z-dark-matter-053", EncounterSet.DarkMatterElectricNightmare)
+    , ("z-dark-matter-090", EncounterSet.DarkMatterLostQuantum)
+    , ("z-dark-matter-115", EncounterSet.DarkMatterInTheShadowOfEarth)
+    , ("z-dark-matter-156", EncounterSet.DarkMatterStrangeMoons)
+    , ("z-dark-matter-193", EncounterSet.DarkMatterTheMachineInYellow)
+    , ("z-dark-matter-212", EncounterSet.DarkMatterFragmentOfCarcosa)
+    , ("z-dark-matter-246", EncounterSet.DarkMatterStarfall)
+    , ("z-circus-ex-mortis-001", EncounterSet.CircusExMortisOneNightOnly)
+    , ("z-circus-ex-mortis-017", EncounterSet.CircusExMortisThePrimrosePath)
+    , ("z-circus-ex-mortis-042", EncounterSet.CircusExMortisHarmsWay)
+    , ("z-circus-ex-mortis-076", EncounterSet.CircusExMortisAllPointsWest)
+    , ("z-circus-ex-mortis-110", EncounterSet.CircusExMortisPiperAtTheGatesOfDawn)
+    , ("z-circus-ex-mortis-124", EncounterSet.CircusExMortisBacchanalia)
+    , ("z-circus-ex-mortis-155", EncounterSet.CircusExMortisRedSunrise)
+    , ("z-circus-ex-mortis-192", EncounterSet.CircusExMortisThousandToOne)
     ]

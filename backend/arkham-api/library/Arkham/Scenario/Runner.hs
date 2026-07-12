@@ -555,6 +555,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           when (token `elem` [#curse, #bless, #frost]) do
             let shouldRevealAnother = DoNotRevealAnotherChaosToken `notElem` mods
             pushWhen shouldRevealAnother (DrawAnotherChaosToken iid)
+          -- Moon token (Circus Ex Mortis, guide p1): "0. Seal this token on
+          -- your investigator card and reveal another token." ResolveChaosToken
+          -- only fires for tokens revealed during a skill test, matching the
+          -- rule that a moon token revealed outside a skill test has no effect.
+          when (token == #moon) do
+            let shouldRevealAnother = DoNotRevealAnotherChaosToken `notElem` mods
+            pushAll
+              $ [SealChaosToken drawnToken, SealedChaosToken drawnToken (Just iid) (InvestigatorTarget iid)]
+              <> [DrawAnotherChaosToken iid | shouldRevealAnother]
     pure a
   EndOfScenario mNextCampaignStep -> do
     -- Do not update without updating Hemlock Preludes

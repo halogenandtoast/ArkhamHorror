@@ -23,6 +23,8 @@ import Arkham.Act.CardDefs.EnthrallingEncore as X
 import Arkham.Act.CardDefs.ReadOrDie as X
 import Arkham.Act.CardDefs.RedTideRising as X
 import Arkham.Act.CardDefs.RelicsOfThePast as X
+import Arkham.Act.CardDefs.DarkMatter as X
+import Arkham.Act.CardDefs.CircusExMortis as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -420,4 +422,58 @@ allActCards =
       , thePhantomShop
       , fightBack
       , banishHim
+      -- Dark Matter (homebrew)
+      , eventHorizonDarkMatter
+      , artificalInsanityDarkMatter
+      , reconnectedDarkMatter
+      , publicSchool187V10DarkMatter
+      , publicSchool187V20DarkMatter
+      , publicSchool187V30DarkMatter
+      , psychoanalysisDarkMatter
+      , facingYourFearsDarkMatter
+      , elbrusStationDarkMatter
+      , quantumZenoDarkMatter
+      , destabilizationDarkMatter
+      , isAnyoneHomeDarkMatter
+      , saveOurSoulsDarkMatter
+      , theShadowOfEarthDarkMatter
+      , firstEncounterDarkMatter
+      , secretsOfTheMindDarkMatter
+      , awakeningDarkMatter
+      , theManInThePallidMaskDarkMatter
+      , unmaskedDarkMatter
+      , inLostCarcosaDarkMatter
+      , theHeirToCarcosaDarkMatter
+      , theUnspeakableTruthDarkMatter
+      , endTimesDarkMatter
+      , tassildasAwakeningDarkMatter
+      -- Circus Ex Mortis (homebrew)
+      , ratsInACageCircusExMortis_005
+      , ratsInACageCircusExMortis_006
+      , ratsInACageCircusExMortis_007
+      , ratsInACageCircusExMortis_008
+      , smokeAndMirrorsCircusExMortis
+      , outAndAwayCircusExMortis
+      , forestOfIllusionCircusExMortis
+      , escapeActVICircusExMortis
+      , escapeActVIICircusExMortis
+      , overdueDepartureCircusExMortis
+      , throughTheForestsVICircusExMortis
+      , throughTheForestsVIICircusExMortis
+      , noFreeRidesCircusExMortis
+      , engineTroubleCircusExMortis
+      , theGreatTrainHorrorCircusExMortis
+      , allsFairCircusExMortis
+      , audienceParticipationVICircusExMortis
+      , audienceParticipationVIICircusExMortis
+      , audienceParticipationVIIICircusExMortis
+      , theTrueMonsterCircusExMortis
+      , behindClosedDoorsCircusExMortis
+      , deeperProfanitiesCircusExMortis
+      , fashionablyEarlyCircusExMortis
+      , forestOfGiantsVICircusExMortis
+      , forestOfGiantsVIICircusExMortis
+      , forestOfGiantsVIIICircusExMortis
+      , impendingZenithCircusExMortis
+      , ageOldVisionsCircusExMortis
       ]

@@ -6,7 +6,7 @@ import type { Game } from '@/arkham/types/Game';
 import type { History, SkillTestResult, DefeatedEnemy } from '@/arkham/types/History';
 import Card from '@/arkham/components/Card.vue';
 import { useDbCardStore } from '@/stores/dbCards';
-import { imgsrc } from '@/arkham/helpers';
+import { cardImg, imgsrc } from '@/arkham/helpers';
 
 const props = defineProps<{
   game: Game
@@ -241,7 +241,7 @@ function strippedCode(code: string): string {
 }
 
 function cardImageFor(code: string): string {
-  return imgsrc(`cards/${strippedCode(code)}.avif`)
+  return cardImg(strippedCode(code))
 }
 
 const clueIcon = imgsrc('clue-icon.png')

@@ -116,6 +116,16 @@ export function imgsrc(src: string) {
   return fullPath
 }
 
+// Homebrew card art (z- prefixed codes) lives in homebrew/ instead of cards/.
+// `art` is a c-stripped card code, optionally with a suffix (e.g. "z-dark-matter-013b").
+export function cardImgPath(art: string): string {
+  return `${art.startsWith('z-') ? 'homebrew' : 'cards'}/${art}.avif`
+}
+
+export function cardImg(art: string): string {
+  return imgsrc(cardImgPath(art))
+}
+
 export function pluralize(w: string, n: number) {
   const language = localStorage.getItem('language') || 'en'
   switch (language) {
@@ -159,6 +169,7 @@ export function replaceIcons(body: string) {
     replace(/{bless}/g, '<span class="bless-icon"></span>').
     replace(/{curse}/g, '<span class="curse-icon"></span>').
     replace(/{frost}/g, '<span class="frost-icon"></span>').
+    replace(/{moon}/g, '<span class="moon-icon"></span>').
     replace(/{sealA}/g, '<span class="seal-a-icon"></span>').
     replace(/{sealB}/g, '<span class="seal-b-icon"></span>').
     replace(/{sealC}/g, '<span class="seal-c-icon"></span>').

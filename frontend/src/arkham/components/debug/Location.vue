@@ -7,7 +7,7 @@ import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import type { Game } from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Location';
-import { imgsrc } from '@/arkham/helpers';
+import { cardImg } from '@/arkham/helpers';
 import { TokenType, type Token } from '@/arkham/types/Token';
 
 type Props = {
@@ -38,7 +38,7 @@ const debug = useDebug()
 const id = computed(() => props.location.id)
 const cardCode = computed(() => props.location.cardCode)
 const image = computed(() => {
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}.avif`)
+  return cardImg(cardCode.value.replace('c', ''))
 })
 
 const clues = computed(() => props.location.tokens[TokenType.Clue])

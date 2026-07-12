@@ -16,6 +16,7 @@ import Arkham.Skill.CardDefs.Core2026 as X
 import Arkham.Skill.CardDefs.ReturnTo as X
 import Arkham.Skill.CardDefs.Standalone as X
 import Arkham.Skill.CardDefs.Promo as X
+import Arkham.Skill.CardDefs.CircusExMortis as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -183,4 +184,6 @@ allPlayerSkillCards =
       , outTheDoor
       , outTheDoor1
       , contingency3
+      -- Circus Ex Mortis (homebrew)
+      , invocationOfDianaCircusExMortis
       ]

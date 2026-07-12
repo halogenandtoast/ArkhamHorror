@@ -3,6 +3,8 @@
 module Arkham.CampaignLogKey where
 
 import Arkham.Campaigns.BrethrenOfAsh.Key
+import Arkham.Campaigns.CircusExMortis.Key
+import Arkham.Campaigns.DarkMatter.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Campaigns.TheCircleUndone.Key
@@ -43,6 +45,8 @@ data CampaignLogKey
   | TheFeastOfHemlockValeKey TheFeastOfHemlockValeKey
   | BrethrenOfAshKey BrethrenOfAshKey
   | TheDrownedCityKey TheDrownedCityKey
+  | DarkMatterKey DarkMatterKey
+  | CircusExMortisKey CircusExMortisKey
   | TheLabyrinthsOfLunacyKey TheLabyrinthsOfLunacyKey
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
@@ -110,6 +114,8 @@ instance FromJSON CampaignLogKey where
       <|> (TheFeastOfHemlockValeKey <$> parseJSON o)
       <|> (BrethrenOfAshKey <$> parseJSON o)
       <|> (TheDrownedCityKey <$> parseJSON o)
+      <|> (DarkMatterKey <$> parseJSON o)
+      <|> (CircusExMortisKey <$> parseJSON o)
       <|> (TheLabyrinthsOfLunacyKey <$> parseJSON o)
       <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
       <|> parseStringKey o
@@ -284,10 +290,22 @@ instance IsCampaignLogKey TheDrownedCityKey where
     TheDrownedCityKey k -> Just k
     _ -> Nothing
 
+instance IsCampaignLogKey DarkMatterKey where
+  toCampaignLogKey = DarkMatterKey
+  fromCampaignLogKey = \case
+    DarkMatterKey k -> Just k
+    _ -> Nothing
+
 instance IsCampaignLogKey TheLabyrinthsOfLunacyKey where
   toCampaignLogKey = TheLabyrinthsOfLunacyKey
   fromCampaignLogKey = \case
     TheLabyrinthsOfLunacyKey k -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey CircusExMortisKey where
+  toCampaignLogKey = CircusExMortisKey
+  fromCampaignLogKey = \case
+    CircusExMortisKey k -> Just k
     _ -> Nothing
 
 instance ToJSONKey CampaignLogKey
@@ -353,6 +371,8 @@ instance ToGameLoggerFormat CampaignLogKey where
     TheFeastOfHemlockValeKey k -> pack . go $ show k
     BrethrenOfAshKey k -> pack . go $ show k
     TheDrownedCityKey k -> pack . go $ show k
+    DarkMatterKey k -> pack . go $ show k
+    CircusExMortisKey k -> pack . go $ show k
     s -> pack . go $ show s
    where
     go :: String -> String

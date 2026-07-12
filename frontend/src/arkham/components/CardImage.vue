@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useAttrs, ref, computed } from 'vue'
-import { imgsrc } from '@/arkham/helpers'
+import { cardImg, imgsrc } from '@/arkham/helpers'
 import { CardDef } from '@/arkham/types/CardDef'
 import { ArrowPathIcon } from '@heroicons/vue/20/solid'
 
@@ -58,29 +58,29 @@ const vertical = computed(() => {
 const image = computed(() => {
   const {cardType} = props.card 
   if (cardType == 'LocationType' && props.card.doubleSided)
-    return imgsrc(`cards/${props.card.art}b.avif`)
+    return cardImg(`${props.card.art}b`)
 
-  return imgsrc(`cards/${props.card.art}.avif`)
+  return cardImg(props.card.art)
 })
 const backImage = computed(() => {
   const {cardType, otherSide, doubleSided} = props.card 
   if (otherSide)
-    return imgsrc(`cards/${otherSide.replace(/^c/, '')}.avif`)
+    return cardImg(otherSide.replace(/^c/, ''))
 
   if (['ActType', 'AgendaType', 'ScenarioType', 'InvestigatorType'].includes(cardType))
-    return imgsrc(`cards/${props.card.art.replace(/a$/, '')}b.avif`)
+    return cardImg(`${props.card.art.replace(/a$/, '')}b`)
 
   if ('LocationType' == cardType) {
     if (props.card.doubleSided)
-      return imgsrc(`cards/${props.card.art}.avif`)
+      return cardImg(props.card.art)
     return imgsrc('encounter_back.jpg')
   }
 
   if (['EnemyType', 'StoryType'].includes(cardType) && props.card.doubleSided)
-    return imgsrc(`cards/${props.card.art}b.avif`)
+    return cardImg(`${props.card.art}b`)
 
   if (doubleSided)
-    return imgsrc(`cards/${props.card.art.replace(/a$/, '')}b.avif`)
+    return cardImg(`${props.card.art.replace(/a$/, '')}b`)
 
   if (['EnemyType', 'StoryType', 'TreacheryType', 'EncounterAssetType', 'EncounterEventType'].includes(cardType)) {
     if (props.card.meta?.customBack)

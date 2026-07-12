@@ -1,0 +1,10 @@
+[
+  { "id": "z-circus-ex-mortis-001", "name": "One Night Only", "campaign": "z-circus-ex-mortis", "standalone": false },
+  { "id": "z-circus-ex-mortis-017", "name": "The Primrose Path", "campaign": "z-circus-ex-mortis", "standalone": false },
+  { "id": "z-circus-ex-mortis-042", "name": "Harm's Way", "campaign": "z-circus-ex-mortis", "standalone": false },
+  { "id": "z-circus-ex-mortis-076", "name": "All Points West", "campaign": "z-circus-ex-mortis", "standalone": false },
+  { "id": "z-circus-ex-mortis-110", "name": "Piper at the Gates of Dawn", "campaign": "z-circus-ex-mortis", "standalone": false },
+  { "id": "z-circus-ex-mortis-124", "name": "Bacchanalia", "campaign": "z-circus-ex-mortis", "standalone": false },
+  { "id": "z-circus-ex-mortis-155", "name": "Red Sunrise", "campaign": "z-circus-ex-mortis", "standalone": false },
+  { "id": "z-circus-ex-mortis-192", "name": "Thousand to One", "campaign": "z-circus-ex-mortis", "standalone": false }
+]

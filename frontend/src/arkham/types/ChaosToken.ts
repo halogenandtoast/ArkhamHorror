@@ -14,7 +14,7 @@ export const tokenOrder = [
   'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight',
   'Skull', 'Cultist', 'Tablet', 'ElderThing',
   'AutoFail', 'ElderSign',
-  'CurseToken', 'BlessToken', 'FrostToken',
+  'CurseToken', 'BlessToken', 'FrostToken', 'MoonToken',
 ] as const
 
 export type TokenFace = typeof tokenOrder[number]
@@ -39,6 +39,7 @@ export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
   JsonDecoder.literal('CurseToken'),
   JsonDecoder.literal('BlessToken'),
   JsonDecoder.literal('FrostToken'),
+  JsonDecoder.literal('MoonToken'),
 ], 'TokenFace');
 
 export const chaosTokenDecoder = JsonDecoder.object({
@@ -87,6 +88,8 @@ export function chaosTokenImage(face: TokenFace): string {
       return imgsrc("ct_bless.png");
     case 'FrostToken':
       return imgsrc("ct_frost.png");
+    case 'MoonToken':
+      return imgsrc("ct_moon.png");
     default:
       return imgsrc("ct_blank.png");
   }

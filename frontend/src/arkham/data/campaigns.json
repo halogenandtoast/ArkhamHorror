@@ -1264,5 +1264,53 @@
         , "Skull", "Skull", "ElderThing", "Tablet", "AutoFail", "ElderSign"
         ]
     }
+  },
+  {
+    "id": "z-dark-matter",
+    "name": "Dark Matter",
+    "homebrew": true,
+    "designer": "Axolotl",
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo"
+        , "Skull", "Skull", "Cultist", "Cultist", "Tablet", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour"
+        , "Skull", "Skull", "Cultist", "Cultist", "Tablet", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFive"
+        , "Skull", "Skull", "Cultist", "Cultist", "Tablet", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusEight"
+        , "Skull", "Skull", "Cultist", "Cultist", "Tablet", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ]
+    }
+  },
+  {
+    "id": "z-circus-ex-mortis",
+    "name": "Circus Ex Mortis",
+    "homebrew": true,
+    "designer": "The Beard",
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo"
+        , "Skull", "Skull", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour"
+        , "Skull", "Skull", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour", "MinusFive"
+        , "Skull", "Skull", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour", "MinusFive", "MinusSeven"
+        , "Skull", "Skull", "ElderThing", "AutoFail", "ElderSign"
+        ]
+    }
   }
 ]

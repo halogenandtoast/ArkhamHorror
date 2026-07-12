@@ -3,7 +3,7 @@ import { displayTabooId, displayTabooList } from '@/arkham/taboo';
 import { computed, ref, inject, watch, nextTick } from 'vue'
 import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
-import { imgsrc, type InvestigatorClass } from '@/arkham/helpers'
+import { cardImg, imgsrc, type InvestigatorClass } from '@/arkham/helpers'
 import { portraitImage as portraitImageHelper } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Deck'
 import {deckClass} from '@/arkham/types/Deck'
@@ -423,7 +423,7 @@ const needsReply = computed(() => {
                       :class="[deckClass(deck), { selected: deckId === deck.id, 'has-error': deckId === deck.id && error }]"
                       @click.prevent="deckId = deck.id"
                     >
-                      <img class="deck-item-portrait" :src="imgsrc(`cards/${deckPortraitCode(deck)}.avif`)" />
+                      <img class="deck-item-portrait" :src="cardImg(deckPortraitCode(deck))" />
                       <div class="deck-item-info">
                         <span class="deck-item-name">{{ deck.name }}</span>
                         <span v-if="deckTaboo(deck)" class="deck-item-taboo">

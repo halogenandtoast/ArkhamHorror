@@ -23,6 +23,8 @@ import Arkham.Agenda.CardDefs.EnthrallingEncore as X
 import Arkham.Agenda.CardDefs.ReadOrDie as X
 import Arkham.Agenda.CardDefs.RedTideRising as X
 import Arkham.Agenda.CardDefs.RelicsOfThePast as X
+import Arkham.Agenda.CardDefs.DarkMatter as X
+import Arkham.Agenda.CardDefs.CircusExMortis as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -371,4 +373,49 @@ allAgendaCards =
       , theComingStorm
       , theDoomOfArkham
       , theFinalSeal
+      -- Dark Matter (homebrew)
+      , emergencyProcedureDarkMatter
+      , theGhostShipDarkMatter
+      , riseOfTheMachinesDarkMatter
+      , figmentOfYourImaginationDarkMatter
+      , itDarkMatter
+      , theQuantumMaelstromDarkMatter_091
+      , theQuantumMaelstromDarkMatter_092
+      , theQuantumMaelstromDarkMatter_093
+      , theNostalgiaIIDarkMatter
+      , theThingFromEarthDarkMatter
+      , screamOfTheDeadDarkMatter
+      , itsWeirdAndPissedOffDarkMatter
+      , moonsOfSaturnDarkMatter
+      , signsFromAldebaranDarkMatter
+      , flightOfTheByakheesDarkMatter
+      , againstTheSunDarkMatter
+      , theThirdActDarkMatter
+      , aNightmareDarkMatter
+      , outOfMindDarkMatter
+      , theShadowsLengthenDarkMatter
+      , shallDryAndDieDarkMatter
+      , journeyAcrossSpaceDarkMatter
+      , redSunDarkMatter
+      , supernovaDarkMatter
+      , darkMatterDarkMatter
+      -- Circus Ex Mortis (homebrew)
+      , theTrueFaceCircusExMortis
+      , houseOfHorrorsCircusExMortis
+      , mesmericMagicCircusExMortis
+      , savageNatureCircusExMortis
+      , bloodMoonCircusExMortis
+      , theCircusSleepsCircusExMortis
+      , treadingOnEggshellsCircusExMortis
+      , sleepWhenYoureDeadCircusExMortis
+      , scheduleToKeepCircusExMortis
+      , repeatShowingCircusExMortis
+      , doomAndGloomCircusExMortis
+      , whirlingSpectacleCircusExMortis
+      , intoTheLionsDenCircusExMortis
+      , lackOfRestraintCircusExMortis
+      , feverPitchCircusExMortis
+      , fadingSunlightVICircusExMortis
+      , fadingSunlightVIICircusExMortis
+      , underMoonlessSkiesCircusExMortis
       ]

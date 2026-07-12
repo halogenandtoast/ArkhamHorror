@@ -14,7 +14,7 @@ import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
 import { keyToId } from '@/arkham/types/Key'
-import { imgsrc } from '@/arkham/helpers'
+import { cardImg, imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Act'
 import { useEventStore } from '@/arkham/stores/event'
 import { actContribution, actSpend } from '@/arkham/types/EpicEvent'
@@ -76,7 +76,7 @@ const cardCode = computed(() => {
 })
 
 const image = computed(() => {
-  return imgsrc(`cards/${cardCode.value}.avif`)
+  return cardImg(cardCode.value)
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))

@@ -366,6 +366,44 @@ data Trait
   | Yoth
   | Yuggoth
   | Zoog
+  | -- Homebrew traits (Dark Matter, Circus Ex Mortis)
+    AI
+  | Access
+  | Alien
+  | AsteroidBelt
+  | Brain
+  | Camp
+  | Carcosa
+  | CircusTrain
+  | Clearing
+  | Colony
+  | Data
+  | Destiny
+  | Device
+  | Earth
+  | Elbrus
+  | FreightCar
+  | Interface
+  | LiberPater
+  | Liminal
+  | Machine
+  | Mars
+  | Medical
+  | Memory
+  | Moon
+  | NewMoonCircus
+  | Nightmare
+  | NostalgiaII
+  | Path
+  | Pluto
+  | Quantum
+  | School
+  | Simulation
+  | SpecialCar
+  | Starship
+  | Tainted
+  | Tatterdemalion
+  | Virtual
   deriving stock (Show, Eq, Generic, Ord, Enum, Bounded, Read, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

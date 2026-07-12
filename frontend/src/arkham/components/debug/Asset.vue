@@ -3,7 +3,7 @@ import Draggable from '@/components/Draggable.vue';
 import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { TokenType, Token } from '@/arkham/types/Token';
-import { imgsrc } from '@/arkham/helpers';
+import { cardImg, imgsrc } from '@/arkham/helpers';
 import { cardImage as cardToImage, asCardCode, toCardContents, type Card as ArkhamCard } from '@/arkham/types/Card';
 import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
@@ -51,7 +51,7 @@ const canFlip = computed(() => {
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
 const image = computed(() => {
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}.avif`)
+  return cardImg(cardCode.value.replace('c', ''))
 })
 
 const keys = computed(() => props.asset.keys)

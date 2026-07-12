@@ -75,6 +75,7 @@ instance ToDisplay ChaosTokenFace where
     CurseToken -> "{curse}"
     BlessToken -> "{bless}"
     FrostToken -> "{frost}"
+    MoonToken -> "{moon}"
 
 instance HasField "id" ChaosToken ChaosTokenId where
   getField = chaosTokenId
@@ -111,6 +112,10 @@ data ChaosTokenFace
   | CurseToken
   | BlessToken
   | FrostToken
+  | -- | Homebrew (Circus Ex Mortis): "0. Seal this token on your investigator
+    -- card and reveal another token." No effect when revealed outside a skill
+    -- test.
+    MoonToken
   deriving stock (Bounded, Enum, Show, Eq, Ord, Data)
 
 instance IsLabel "+1" ChaosTokenFace where
@@ -169,6 +174,9 @@ instance IsLabel "curse" ChaosTokenFace where
 
 instance IsLabel "frost" ChaosTokenFace where
   fromLabel = FrostToken
+
+instance IsLabel "moon" ChaosTokenFace where
+  fromLabel = MoonToken
 
 allChaosTokenFaces :: [ChaosTokenFace]
 allChaosTokenFaces = [minBound ..]
@@ -251,6 +259,7 @@ isSymbolChaosToken = \case
   CurseToken -> True
   BlessToken -> True
   FrostToken -> True
+  MoonToken -> True
   _ -> False
 
 isNonNegativeChaosToken :: ChaosTokenFace -> Bool
@@ -299,6 +308,7 @@ chaosTokenLabel = \case
   CurseToken -> "Curse"
   BlessToken -> "Bless"
   FrostToken -> "Frost"
+  MoonToken -> "Moon"
 
 mconcat
   [ deriveJSON defaultOptions ''ChaosTokenModifier

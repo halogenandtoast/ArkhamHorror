@@ -47,10 +47,14 @@ const challengeScenarios = computed(() =>
   props.sideStories.filter(isChallengeScenario)
 )
 
+const homebrew = computed(() => {
+  return import.meta.env.PROD ? [] : [{ id: 'homebrew' as const, label: 'create.homebrewHeading', items: homebrewCampaigns.value }]
+})
+
 const campaignGroups = computed(() => [
   { id: 'chapter1' as const, label: 'create.chapter1Heading', items: chapter1Campaigns.value },
   { id: 'chapter2' as const, label: 'create.chapter2Heading', items: chapter2Campaigns.value },
-  { id: 'homebrew' as const, label: 'create.homebrewHeading', items: homebrewCampaigns.value },
+  ...homebrew.value
 ].filter((group) => group.items.length))
 
 const scenarioGroups = computed(() => [
@@ -133,8 +137,11 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
       </div>
     </div>
   </template>
-
   <template v-else>
+    <div v-if="campaignGroup == 'homebrew'" style="color:red;font-size:3em;">
+      If you are seeing this, do not start one of these campaigns, they will break.
+    </div>
+
     <div class="campaigns">
       <template v-for="c in activeCampaigns" :key="c.id">
         <div class="campaign">

@@ -908,6 +908,10 @@ data Message
   | PutOnBottomOfDeck InvestigatorId DeckSignifier Target
   | Record CampaignLogKey
   | RecordForInvestigator InvestigatorId CampaignLogKey
+  | -- | Adjust a per-investigator tally in that investigator's own campaign log
+    -- (e.g. Dark Matter "Memories"). Negative values cross off tallies; the
+    -- count never drops below zero.
+    IncrementRecordCountForInvestigator InvestigatorId CampaignLogKey Int
   | RecordCount CampaignLogKey Int
   | IncrementRecordCount CampaignLogKey Int
   | DecrementRecordCount CampaignLogKey Int

@@ -17,6 +17,8 @@ import Arkham.Location.CardDefs.ThePathToCarcosa as X
 import Arkham.Location.CardDefs.TheScarletKeys as X
 import Arkham.Location.CardDefs.ByTheBook as X
 import Arkham.Location.CardDefs.RelicsOfThePast as X
+import Arkham.Location.CardDefs.DarkMatter as X
+import Arkham.Location.CardDefs.CircusExMortis as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -1295,6 +1297,153 @@ allLocationCards =
       , southside
       , westernRooftops
       , easternRooftops
+      -- Dark Matter (homebrew)
+      , cargoHoldDarkMatter
+      , cryosleepQuartersDarkMatter
+      , engineRoomDarkMatter_023
+      , escapePodBayDarkMatter
+      , infirmaryDarkMatter_025
+      , messHallDarkMatter
+      , shipsBridgeDarkMatter
+      , ventilationShaftDarkMatter
+      , cafeteriaDarkMatter
+      , classroomK2DarkMatter
+      , entranceHallDarkMatter
+      , gymnasiumDarkMatter
+      , biologyLabDarkMatter
+      , libraryDarkMatter
+      , schoolGroundsDarkMatter
+      , coldWastesDarkMatter
+      , crystalPeakDarkMatter
+      , iceSpiresDarkMatter
+      , landingCraftDarkMatter
+      , mainFacilityDarkMatter
+      , omniTransmittersDarkMatter
+      , qCrystalMinesDarkMatter
+      , schrodGeneratorsDarkMatter
+      , airlocksDarkMatter
+      , crewQuartersDarkMatter
+      , engineRoomDarkMatter_127
+      , flightDeckDarkMatter
+      , hydroponicsDarkMatter
+      , infirmaryDarkMatter_130
+      , shipMainframeDarkMatter
+      , telecomsDarkMatter
+      , brainStorageDarkMatter
+      , communicatorDarkMatter
+      , dreamDiagnosticsDarkMatter
+      , entranceTunnelDarkMatter
+      , memoryScannerDarkMatter
+      , realitySimulatorDarkMatter
+      , aHidingPlaceDarkMatter
+      , aMutinyDarkMatter
+      , adriftInSpaceDarkMatter
+      , anAccidentDarkMatter
+      , cityOfCatsDarkMatter
+      , feverDreamDarkMatter
+      , abandonedLanderDarkMatter
+      , surfaceOfFragmentDarkMatter
+      , bottomlessPitDarkMatter
+      , cyclopeanCavernsDarkMatter
+      , hiddenPassageDarkMatter
+      , iceCavityDarkMatter
+      , impassableRavineDarkMatter
+      , stalagmiteForestDarkMatter
+      , theTatterdemalionDarkMatter
+      , newBrooklynDarkMatter
+      , hopeDarkMatter
+      , yuggothDarkMatter
+      , theCassildaDarkMatter
+      , earthDarkMatter
+      , mountSinaiDarkMatter
+      , derelictShipDarkMatter
+      , martianRuinsDarkMatter
+      , olympusTelescopeDarkMatter
+      , moonbaseLaboratoryDarkMatter
+      , thresholdOfYuggothDarkMatter
+      -- Circus Ex Mortis (homebrew)
+      , circusGatesPathToFreedomCircusExMortis
+      , forestPassageCircusExMortis
+      , remoteCabinCircusExMortis
+      , woodlandOverlookCircusExMortis
+      , circusEncampmentCircusExMortis
+      , moonlitForestSmolderingCampfireCircusExMortis
+      , moonlitForestQuietValleyCircusExMortis
+      , moonlitForestShallowRiverCircusExMortis
+      , moonlitForestGlassyLakeCircusExMortis
+      , moonlitForestCircularGroveCircusExMortis
+      , moonlitForestMistyMarshCircusExMortis
+      , moonlitForestShadowedPathCircusExMortis
+      , moonlitForestFogBankCircusExMortis
+      , moonlitForestLabyrinthOfTreesCircusExMortis
+      , moonlitForestDeadGroveCircusExMortis
+      , ringmastersTrailerCircusExMortis
+      , crowdedRowCircusExMortis_050
+      , crowdedRowCircusExMortis_051
+      , crowdedRowCircusExMortis_052
+      , crowdedRowCircusExMortis_053
+      , secludedTentCircusExMortis_054
+      , secludedTentCircusExMortis_055
+      , secludedTentCircusExMortis_056
+      , secludedTentCircusExMortis_057
+      , campOutskirtsGuardedCloselyCircusExMortis
+      , campOutskirtsQuietForNowCircusExMortis
+      , cabooseCircusExMortis
+      , locomotiveEngineCircusExMortis
+      , boxcarCircusExMortis
+      , flatcarCircusExMortis
+      , gondolaCarCircusExMortis
+      , stockCarCircusExMortis
+      , tankCarCircusExMortis
+      , coalHopperCarCircusExMortis
+      , craneCarCircusExMortis
+      , mailCarCircusExMortis
+      , refrigeratorCarCircusExMortis
+      , reinforcedCarCircusExMortis
+      , circusEngineCircusExMortis
+      , exoticAnimalCarCircusExMortis
+      , performersCarCircusExMortis
+      , circusGatesDoorwayToDoomCircusExMortis
+      , vestibuleCircusExMortis
+      , banquetHallCircusExMortis
+      , statuaryGardensCircusExMortis
+      , privateParlorCircusExMortis
+      , collectionHallCircusExMortis
+      , upperBalconyCircusExMortis
+      , hiddenDungeonCircusExMortis
+      , manorCellarsCircusExMortis
+      , savageAltarCircusExMortis
+      , forgottenTrailCircusExMortis
+      , ritualClearingCircusExMortis
+      , foothillSlopeCircusExMortis_164
+      , foothillSlopeCircusExMortis_165
+      , foothillSlopeCircusExMortis_166
+      , foothillSlopeCircusExMortis_167
+      , mountainStreamCircusExMortis_168
+      , mountainStreamCircusExMortis_169
+      , mountainStreamCircusExMortis_170
+      , mountainStreamCircusExMortis_171
+      , openForestCircusExMortis_172
+      , openForestCircusExMortis_173
+      , openForestCircusExMortis_174
+      , shadowedWildernessCircusExMortis_175
+      , shadowedWildernessCircusExMortis_176
+      , shadowedWildernessCircusExMortis_177
+      , shadowedWildernessCircusExMortis_178
+      , shadowedWildernessCircusExMortis_179
+      , silentClearingCircusExMortis
+      , primalForestCircusExMortis
+      , highThicketCircusExMortis
+      , sparseWoodlandCircusExMortis
+      , mossyGlenCircusExMortis
+      , fallenCopseCircusExMortis
+      , animalCagesCircusExMortis
+      , carouselCircusExMortis
+      , gamesGalleryCircusExMortis
+      , performerTrailersCircusExMortis
+      , theBigTopFirstRingCircusExMortis
+      , theBigTopSecondRingCircusExMortis
+      , theBigTopThirdRingCircusExMortis
       ]
 
 allSpecialLocationCards :: Map CardCode CardDef

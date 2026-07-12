@@ -31,6 +31,7 @@ data Action
   | Resource
   | Explore
   | Circle
+  | Scan
   deriving stock (Show, Eq, Ord, Bounded, Enum, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -72,3 +73,6 @@ instance IsLabel "explore" Action where
 
 instance IsLabel "circle" Action where
   fromLabel = Circle
+
+instance IsLabel "scan" Action where
+  fromLabel = Scan

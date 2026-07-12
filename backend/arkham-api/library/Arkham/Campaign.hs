@@ -63,4 +63,7 @@ allCampaigns =
     , ("12", SomeCampaign brethrenOfAsh)
     , ("11", SomeCampaign theDrownedCity)
     , ("83", SomeCampaign guardiansOfTheAbyss)
+    , -- Homebrew
+      ("z-dark-matter", SomeCampaign darkMatter)
+    , ("z-circus-ex-mortis", SomeCampaign circusExMortis)
     ]

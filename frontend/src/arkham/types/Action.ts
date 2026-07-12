@@ -1,6 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 
-export type Action = 'Ability' | 'Draw' | 'Engage' | 'Evade' | 'Fight' | 'Investigate' | 'Move' | 'Parley' | 'Play' | 'Resign' | 'Resource' | 'Explore' | 'Circle'
+export type Action = 'Ability' | 'Draw' | 'Engage' | 'Evade' | 'Fight' | 'Investigate' | 'Move' | 'Parley' | 'Play' | 'Resign' | 'Resource' | 'Explore' | 'Circle' | 'Scan'
 
 export const actionDecoder = JsonDecoder.oneOf<Action>([
   JsonDecoder.literal('Ability'),
@@ -15,7 +15,8 @@ export const actionDecoder = JsonDecoder.oneOf<Action>([
   JsonDecoder.literal('Resign'),
   JsonDecoder.literal('Resource'),
   JsonDecoder.literal('Explore'),
-  JsonDecoder.literal('Circle')
+  JsonDecoder.literal('Circle'),
+  JsonDecoder.literal('Scan')
 ], 'Action')
 
 export type Actions

@@ -1,4 +1,4 @@
-import { imgsrc } from '@/arkham/helpers'
+import { cardImg, imgsrc } from '@/arkham/helpers'
 import type { Game } from '@/arkham/types/Game'
 import type { Source } from '@/arkham/types/Source'
 
@@ -7,7 +7,7 @@ export function cardArt(cardCode: string, suffix: string = ''): string {
 }
 
 export function cardImage(cardCode: string, suffix: string = ''): string {
-  return imgsrc(`cards/${cardArt(cardCode, suffix)}.avif`)
+  return cardImg(cardArt(cardCode, suffix))
 }
 
 export function portraitImage(cardCode: string, suffix: string = ''): string {

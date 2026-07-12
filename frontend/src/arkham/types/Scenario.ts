@@ -240,6 +240,7 @@ export function campaignIdToI18n(campaignId: string): string | null {
     case "10": return "theFeastOfHemlockVale"
     case "11": return "theDrownedCity"
     case "12": return "brethrenOfAsh"
+    case "z-dark-matter": return "darkMatter"
     case "83": return "standalone.guardiansOfTheAbyss"
     default: return null
   }

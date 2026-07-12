@@ -375,6 +375,43 @@ data EncounterSet
   | TheInescapable
   | Dreams
   | AlienMachinery
+  | -- Dark Matter (homebrew)
+    DarkMatterAnachronism
+  | DarkMatterArtificialIntelligence
+  | DarkMatterDarkPast
+  | DarkMatterDeepSpace
+  | DarkMatterElectricNightmare
+  | DarkMatterEndtimes
+  | DarkMatterFragmentOfCarcosa
+  | DarkMatterHastursGaze
+  | DarkMatterInTheShadowOfEarth
+  | DarkMatterInterstellarPredators
+  | DarkMatterLostQuantum
+  | DarkMatterStarfall
+  | DarkMatterStrangeMoons
+  | DarkMatterTheBoogeyman
+  | DarkMatterTheMachineInYellow
+  | DarkMatterTheTatterdemalion
+  | -- Circus Ex Mortis (homebrew)
+    CircusExMortisAllPointsWest
+  | CircusExMortisBacchanalia
+  | CircusExMortisChildrenOfTheGoat
+  | CircusExMortisCircusGrounds
+  | CircusExMortisCultOfShubNiggurath
+  | CircusExMortisDestinyAndProphecy
+  | CircusExMortisHarmsWay
+  | CircusExMortisIllusoryTricks
+  | CircusExMortisLunaticNight
+  | CircusExMortisNewMoonDaredevils
+  | CircusExMortisNewMoonEntertainers
+  | CircusExMortisOneNightOnly
+  | CircusExMortisPanickedMasses
+  | CircusExMortisPiperAtTheGatesOfDawn
+  | CircusExMortisPrimordialEvils
+  | CircusExMortisRedSunrise
+  | CircusExMortisSavageWoods
+  | CircusExMortisThePrimrosePath
+  | CircusExMortisThousandToOne
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 

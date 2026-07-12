@@ -4,7 +4,7 @@ import { Game } from '@/arkham/types/Game';
 import Token from '@/arkham/components/Token.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
-import { imgsrc } from '@/arkham/helpers';
+import { cardImg } from '@/arkham/helpers';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as Arkham from '@/arkham/types/Skill';
 
@@ -26,7 +26,7 @@ const id = computed(() => props.skill.id)
 const cardCode = computed(() => props.skill.cardCode)
 const image = computed(() => {
   const mutated = props.skill.mutated ? `_${props.skill.mutated}` : ''
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.avif`)
+  return cardImg(`${cardCode.value.replace('c', '')}${mutated}`)
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 

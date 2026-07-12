@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { watch, ref, computed, onMounted } from 'vue';
-import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
+import { cardImg, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 import type { Deck} from '@/arkham/types/Deck';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
@@ -32,7 +32,7 @@ const enum View {
   List = "LIST",
 }
 
-const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
+const image = (card: Arkham.CardDef) => cardImg(card.art)
 const view = ref(View.List)
 
 function localizeCard(result: Arkham.CardDef | undefined): Arkham.CardDef | undefined {

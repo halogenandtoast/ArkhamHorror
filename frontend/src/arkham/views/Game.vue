@@ -60,7 +60,7 @@ import useEmitter from '@/composable/useEmitter'
 import { useDebug } from '@/arkham/debug'
 import { useAi } from '@/arkham/ai'
 import { useSettings } from '@/stores/settings'
-import { imgsrc } from '@/arkham/helpers'
+import { cardImg, imgsrc } from '@/arkham/helpers'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
 import * as Arkham from '@/arkham/types/Game'
@@ -1578,7 +1578,7 @@ async function loadAllImages(game: Arkham.Game): Promise<void> {
   const pending: string[] = []
   for (const card of Object.values(game.cards)) {
     const { cardCode, isFlipped } = toCardContents(card)
-    const url = imgsrc(`cards/${cardCode.replace(/^c/, '')}${isFlipped ? 'b' : ''}.avif`)
+    const url = cardImg(`${cardCode.replace(/^c/, '')}${isFlipped ? 'b' : ''}`)
     if (!preloaded.has(url) && !preloading.has(url)) pending.push(url)
   }
   if (pending.length === 0) return
@@ -2231,7 +2231,7 @@ onUnmounted(() => {
             <div class="debug-playability-content">
               <img
                 class="debug-card-image"
-                :src="imgsrc(`cards/${playabilityInfo.cardCode.replace('c', '')}.avif`)"
+                :src="cardImg(playabilityInfo.cardCode.replace('c', ''))"
               />
               <ul class="playability-checks">
                 <li

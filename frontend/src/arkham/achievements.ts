@@ -105,6 +105,25 @@ export const achievementChecklists: Partial<Record<AchievementTag, string[]>> = 
     'AshleighClarke',
     'IshimaruHaruko',
   ],
+  // Printed checklist order (two-column card layout).
+  MemberThese: [
+    'MesmerizingFlute',
+    'KeziahsFormulae',
+    'RitualComponents',
+    'WornCrucifix',
+    'ScrapOfTornShadow',
+    'WispOfSpectralMist',
+    'StrangeIncantation',
+    'CornHuskDoll',
+    'GilmansJournal',
+    'BloodyTreeCarvings',
+  ],
+  CaseClosed: [
+    'ValentinoRivas',
+    'GavriellaMizrah',
+    'PennyWhite',
+    'JeromeDavids',
+  ],
 }
 
 export const achievementCatalog: AchievementEntry[] = [

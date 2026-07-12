@@ -307,11 +307,29 @@
     },
     "MemberThese": {
       "name": "'Member These?",
-      "text": "Discover all ten Mementos: the Mesmerizing Flute, Ritual Components, Scrap of Torn Shadow, Strange Incantation, Gilman's Journal, Keziah's Formulae, Worn Crucifix, Wisp of Spectral Mist, Corn Husk Doll, and Bloody Tree Carvings."
+      "text": "Discover the following Mementos:",
+      "items": {
+        "MesmerizingFlute": "Mesmerizing Flute",
+        "KeziahsFormulae": "Keziah's Formulae",
+        "RitualComponents": "Ritual Components",
+        "WornCrucifix": "Worn Crucifix",
+        "ScrapOfTornShadow": "Scrap of Torn Shadow",
+        "WispOfSpectralMist": "Wisp of Spectral Mist",
+        "StrangeIncantation": "Strange Incantation",
+        "CornHuskDoll": "Corn Husk Doll",
+        "GilmansJournal": "Gilman's Journal",
+        "BloodyTreeCarvings": "Bloody Tree Carvings"
+      }
     },
     "CaseClosed": {
       "name": "Case Closed",
-      "text": "Save each of Valentino Rivas, Gavriella Mizrah, Penny White, and Jerome Davids from a terrible fate."
+      "text": "Save each of the following characters from a terrible fate:",
+      "items": {
+        "ValentinoRivas": "Valentino Rivas",
+        "GavriellaMizrah": "Gavriella Mizrah",
+        "PennyWhite": "Penny White",
+        "JeromeDavids": "Jerome Davids"
+      }
     },
     "MusicOfTheOuterGods": {
       "name": "Music of the Outer Gods",

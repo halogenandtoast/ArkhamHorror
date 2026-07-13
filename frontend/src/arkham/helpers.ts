@@ -116,10 +116,17 @@ export function imgsrc(src: string) {
   return fullPath
 }
 
-// Homebrew card art (z- prefixed codes) lives in homebrew/ instead of cards/.
-// `art` is a c-stripped card code, optionally with a suffix (e.g. "z-dark-matter-013b").
+// Homebrew card art (z- prefixed codes) lives under its campaign folder.
+// `art` is a c-stripped card code, optionally with a suffix (e.g. "z-circus-ex-mortis-001b").
 export function cardImgPath(art: string): string {
-  return `${art.startsWith('z-') ? 'homebrew' : 'cards'}/${art}.avif`
+  const homebrewMatch = art.match(/^z-(.+)-(\d+[a-z]?)$/)
+
+  if (homebrewMatch) {
+    const [, campaign, cardCode] = homebrewMatch
+    return `homebrew/${campaign}/cards/${cardCode}.avif`
+  }
+
+  return `cards/${art}.avif`
 }
 
 export function cardImg(art: string): string {

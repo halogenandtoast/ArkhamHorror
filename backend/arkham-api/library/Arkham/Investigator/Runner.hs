@@ -8,6 +8,7 @@ import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
 import Arkham.ClassSymbol as X
 import Arkham.Classes as X
+import Arkham.Cost.Status qualified as Cost
 import Arkham.ForMovement
 import Arkham.Helpers.Investigator as X
 import Arkham.Helpers.Message as X hiding (
@@ -62,7 +63,6 @@ import Arkham.Helpers.Action (
 import Arkham.Helpers.Card (
   cardIsFast',
   getModifiedCardCost,
-  passesLimits,
  )
 import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.Criteria (passesCriteria)
@@ -76,7 +76,7 @@ import Arkham.Helpers.Location (
  )
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Playable (getPlayableCards)
+import Arkham.Helpers.Playable (getIsPlayable, getPlayableCards)
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Slot (
   canPutIntoSlot,
@@ -281,15 +281,20 @@ getWindowSkippable
         $ getCanAffordCost iid pc [#play] ws (ResourceCost $ max 0 $ cost - additionalResources)
       when (not isFast && asAction) do
         liftGuardM $ getCanAffordCost iid pc [#play] ws (ActionCost 1)
-      liftGuardM $ withAlteredGame withoutCanModifiers $ passesLimits iid card
+      liftGuardM $ withAlteredGame withoutCanModifiers $ getIsPlayable iid iid Cost.PaidCost ws card
 getWindowSkippable
   attrs
-  _ws
+  ws
   ( windowTiming &&& windowType ->
       (Timing.When, Window.PlayEvent iid eid)
     ) | iid == toId attrs = do
     card <- field EventCard eid
-    withAlteredGame withoutCanModifiers $ passesLimits iid card
+    -- A PlayEvent "when" trigger is only skippable if the event would still be
+    -- legal without any CanModify helpers from those triggers. This catches
+    -- fight/evade events that are only playable because a reaction such as
+    -- Miguel's Knapsack will make the investigator AsIfAt another location; in
+    -- that case skipping the trigger would leave the event with no legal target.
+    withAlteredGame withoutCanModifiers $ getIsPlayable iid iid Cost.PaidCost ws card
 getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
   let
     excludeOne [] = []

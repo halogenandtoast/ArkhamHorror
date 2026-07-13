@@ -26,7 +26,6 @@ import Arkham.Helpers.Modifiers (
   getModifiers,
   hasModifier,
   toModifiers,
-  withGrantedActions,
   withModifiers,
   withModifiersOf,
  )
@@ -225,9 +224,10 @@ getPlayabilityChecksWithResources
      , Sourceable source
      )
   => Bool
-  -- ^ Short-circuit: stop at the first failed (cheap) check instead of
-  -- computing every check. Used by the boolean playability path; the
-  -- diagnostic path passes False to gather all failure reasons.
+  {- ^ Short-circuit: stop at the first failed (cheap) check instead of
+  computing every check. Used by the boolean playability path; the
+  diagnostic path passes False to gather all failure reasons.
+  -}
   -> InvestigatorId
   -> source
   -> Int
@@ -484,15 +484,42 @@ getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availabl
         (windowType -> NonFast) -> True
         _ -> False
       doAsIfTurn = any isActionWindow windows'
+      actionWindows = defaultWindows iid <> windows'
+      -- Only widen the playability probe for this exact card when a modifier says
+      -- the card may be played at another location (Miguel's Knapsack, etc.).
+      -- This does not alter generic fight/evade actions: it is scoped to this
+      -- card's playability check and uses AsIfAt only for candidate locations
+      -- granted by a matching CanPlayAtLocation modifier.
+      canPlayAtLocationMatchers =
+        [ lmatch
+        | CanModify (CanPlayAtLocation cmatch lmatch) <- modifiers
+        , cardMatch c cmatch
+        ]
+      actionCostModifiers = toModifiers GameSource [ActionCostModifier (-ac)]
+      grantedLocationModifiers lid = do
+        acMods <- actionCostModifiers
+        asIfAtModifiers <- toModifiers (CardIdSource c.id) [AsIfAt lid]
+        pure $ acMods <> asIfAtModifiers
+      checkEvadeAtCurrentLocation = withModifiers iid actionCostModifiers do
+        if inFastWindow || doAsIfTurn
+          then
+            asIfTurn iid $ hasEvadeActions iid (CardIdSource c.id) (Window.DuringYourAction You) actionWindows
+          else hasEvadeActions iid (CardIdSource c.id) (Window.DuringYourAction You) actionWindows
+      checkEvadeAtGrantedLocation lid = withModifiers iid (grantedLocationModifiers lid) do
+        if inFastWindow || doAsIfTurn
+          then
+            asIfTurn iid $ hasEvadeActions iid (CardIdSource c.id) (Window.DuringYourAction You) actionWindows
+          else hasEvadeActions iid (CardIdSource c.id) (Window.DuringYourAction You) actionWindows
+      checkEvadeLocalOrGranted = do
+        localOk <- checkEvadeAtCurrentLocation
+        if localOk || null canPlayAtLocationMatchers
+          then pure localOk
+          else do
+            lids <- nub . concat <$> traverse select canPlayAtLocationMatchers
+            anyM checkEvadeAtGrantedLocation lids
     evadeOk <-
       if hasEvade && not cheapFail
-        then withGrantedActions iid GameSource ac do
-          if inFastWindow || doAsIfTurn
-            then
-              asIfTurn iid
-                $ hasEvadeActions iid (CardIdSource c.id) (Window.DuringYourAction You) (defaultWindows iid <> windows')
-            else
-              hasEvadeActions iid (CardIdSource c.id) (Window.DuringYourAction You) (defaultWindows iid <> windows')
+        then checkEvadeLocalOrGranted
         else pure True
     let evadeDetail = if evadeOk then Nothing else Just "No enemy at your location that can be evaded"
 
@@ -503,13 +530,24 @@ getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availabl
             && not (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` pcDef.actions)
     fightOk <-
       if hasFight && not cheapFail
-        then withGrantedActions iid GameSource ac do
-          if inFastWindow || doAsIfTurn
-            then
-              asIfTurn iid
-                $ hasFightActions iid (CardIdSource c.id) (Window.DuringYourAction You) (defaultWindows iid <> windows')
-            else
-              hasFightActions iid (CardIdSource c.id) (Window.DuringYourAction You) (defaultWindows iid <> windows')
+        then do
+          let
+            checkFightAtCurrentLocation = withModifiers iid actionCostModifiers do
+              if inFastWindow || doAsIfTurn
+                then
+                  asIfTurn iid $ hasFightActions iid (CardIdSource c.id) (Window.DuringYourAction You) actionWindows
+                else hasFightActions iid (CardIdSource c.id) (Window.DuringYourAction You) actionWindows
+            checkFightAtGrantedLocation lid = withModifiers iid (grantedLocationModifiers lid) do
+              if inFastWindow || doAsIfTurn
+                then
+                  asIfTurn iid $ hasFightActions iid (CardIdSource c.id) (Window.DuringYourAction You) actionWindows
+                else hasFightActions iid (CardIdSource c.id) (Window.DuringYourAction You) actionWindows
+          localOk <- checkFightAtCurrentLocation
+          if localOk || null canPlayAtLocationMatchers
+            then pure localOk
+            else do
+              lids <- nub . concat <$> traverse select canPlayAtLocationMatchers
+              anyM checkFightAtGrantedLocation lids
         else pure True
     let fightDetail = if fightOk then Nothing else Just "No enemy at your location that can be fought"
 

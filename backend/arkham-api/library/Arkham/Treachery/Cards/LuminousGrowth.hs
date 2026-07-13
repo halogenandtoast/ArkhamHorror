@@ -36,7 +36,12 @@ instance RunMessage LuminousGrowth where
           $ RevealedLocation
           <> LocationWithTrait Dark
           <> LocationWithoutTreachery (treacheryIs Cards.luminousGrowth)
-      chooseTargetM iid ls $ attachTreachery attrs
+      chooseTargetM iid ls \lid -> do
+        attachTreachery attrs lid
+        -- Attaching light-ifies the location (removes Dark) but fires no
+        -- enter/spawn window, so hybrids already standing here never flip. Mirror
+        -- the RemoveTreachery push (dark -> light) so the scenario re-sides them.
+        push $ ScenarioSpecific "locationDarknessChanged" (toJSON (lid, True, False))
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom

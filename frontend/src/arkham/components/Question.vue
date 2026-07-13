@@ -353,13 +353,18 @@ const label = function(body: string) {
   return formatContent(handleEmbeddedI18n(body, t))
 }
 
+const payCostLabel = function(costValue: Parameters<typeof formatCost>[0]) {
+  const cost = formatCost(costValue, t)
+  return cost.startsWith('Spend ') ? cost : t('label.cost.pay', { cost })
+}
+
 const paymentAmountsLabel = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
     return label(question.value.label)
   }
 
   if (question.value?.tag === QuestionType.PAY_COST_QUESTION && question.value.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    return label(t('label.cost.pay', { cost: formatCost(question.value.cost, t) }))
+    return label(payCostLabel(question.value.cost))
   }
 
   return null
@@ -711,7 +716,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
         <img :src="questionImage" class="card" />
       </div>
 
-      <legend>{{ t('label.cost.pay', { cost: formatCost(question.cost, t) }) }}</legend>
+      <legend>{{ payCostLabel(question.cost) }}</legend>
       <DropDown @choose="choose" :options="question.question.options" />
     </div>
 

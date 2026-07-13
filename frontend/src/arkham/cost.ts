@@ -276,7 +276,8 @@ export function formatCost(cost: Cost, t: Translate): string {
     }
     case 'ClueCost': {
       const gv = get(cost, 'contents')
-      return t('label.cost.clue', { count: gameValueCount(gv) })
+      const key = gameValueTag(gv) === 'PerPlayer' ? 'label.cost.cluePerPlayer' : 'label.cost.clue'
+      return t(key, { count: gameValueCount(gv) })
     }
     case 'AssetClueCost': {
       const contents = get<unknown[]>(cost, 'contents') ?? []
@@ -287,9 +288,17 @@ export function formatCost(cost: Cost, t: Translate): string {
     case 'GroupClueCost':
     case 'SameLocationGroupClueCost': {
       const contents = get<unknown[]>(cost, 'contents') ?? []
-      const count = gameValueCount(contents[0])
+      const gameValue = contents[0]
+      const perPlayer = gameValueTag(gameValue) === 'PerPlayer'
+      const count = gameValueCount(gameValue)
       return t(
-        tag === 'SameLocationGroupClueCost' ? 'label.cost.sameLocationGroupClue' : 'label.cost.groupClue',
+        tag === 'SameLocationGroupClueCost'
+          ? perPlayer
+            ? 'label.cost.sameLocationGroupCluePerPlayer'
+            : 'label.cost.sameLocationGroupClue'
+          : perPlayer
+            ? 'label.cost.groupCluePerPlayer'
+            : 'label.cost.groupClue',
         { count }
       )
     }
@@ -300,7 +309,9 @@ export function formatCost(cost: Cost, t: Translate): string {
     }
     case 'GroupResourceCost': {
       const contents = get<unknown[]>(cost, 'contents') ?? []
-      return t('label.cost.groupResource', { count: gameValueCount(contents[0]) })
+      const gameValue = contents[0]
+      const key = gameValueTag(gameValue) === 'PerPlayer' ? 'label.cost.groupResourcePerPlayer' : 'label.cost.groupResource'
+      return t(key, { count: gameValueCount(gameValue) })
     }
     case 'GroupDiscardCost': {
       const contents = get<unknown[]>(cost, 'contents') ?? []

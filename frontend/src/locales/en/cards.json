@@ -104,9 +104,9 @@
       "extraDamage": "This attack deals an additional +1 damage. Discard Baseball Bat after this attack"
     },
     "beguile": {
-      "move": "Move attached enemy to a revealed connecting location",
-      "investigate": "Perform a basic investigate action at it's location",
-      "evade": "Perform a basic evade action at it's location"
+      "moveAttachedEnemy": "Move attached enemy to a revealed connecting location",
+      "basicInvestigate": "Perform a basic investigate action at its location",
+      "basicEvade": "Perform a basic evade action at its location"
     },
     "beloved": {
       "removeForAutoSuccess": "Remove Beloved from the game to replace that token's effects with the following: \"You automatically succeed. (Do not reveal another token. Return this token to the chaos bag after this test ends).\"",

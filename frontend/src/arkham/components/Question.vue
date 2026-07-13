@@ -1353,8 +1353,8 @@ h2 {
   overflow: hidden;
   align-items: stretch;
   background: #735e7b;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 18px;
+  border: 0;
+  border-radius: 0;
 }
 
 .amount-form {

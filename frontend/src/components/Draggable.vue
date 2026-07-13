@@ -498,6 +498,19 @@ function moveUp() {
     }
   }
 
+  &:has(.amount-modal) {
+    background: #735e7b;
+    border-color: rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+
+    > header {
+      background: rgba(20, 14, 24, 0.72);
+      border-radius: 16px 16px 0 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+  }
+
   header {
     display: flex;
     align-items: center;
@@ -562,7 +575,9 @@ function moveUp() {
       margin: 0px;
     }
     &:has(.amount-modal) {
-      margin: 0px;
+      margin: 0;
+      border-radius: 0 0 16px 16px;
+      background: #735e7b;
     }
     &:has(.chaos-bag) {
       margin: 0px;

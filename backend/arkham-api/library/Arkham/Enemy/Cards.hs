@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards (module Arkham.Enemy.Cards, module X) where
 
 import Arkham.Enemy.CardDefs.Base as X
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Enemy.CardDefs.Core2026 as X
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth as X
 import Arkham.Enemy.CardDefs.NightOfTheZealot as X
@@ -23,8 +24,6 @@ import Arkham.Enemy.CardDefs.LaidToRest as X
 import Arkham.Enemy.CardDefs.EnthrallingEncore as X
 import Arkham.Enemy.CardDefs.ReadOrDie as X
 import Arkham.Enemy.CardDefs.RelicsOfThePast as X
-import Arkham.Enemy.CardDefs.DarkMatter as X
-import Arkham.Enemy.CardDefs.CircusExMortis as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -75,7 +74,7 @@ allPlayerEnemyCards =
       ]
 
 allEncounterEnemyCards :: Map CardCode CardDef
-allEncounterEnemyCards =
+allEncounterEnemyCards = (Homebrew.enemiesMap <>) $
   mapFromList
     $ concatMap
       toCardCodePairs
@@ -730,89 +729,7 @@ allEncounterEnemyCards =
       , elderDeepOne
       , persistentConstruct
       -- Dark Matter (homebrew)
-      , theFeasterFromAfarDarkMatter
-      , cybervirusDarkMatter
-      , uplA21DemheDarkMatter
-      , jv7HyadesDarkMatter
-      , lr02HaliDarkMatter
-      , systemBugDarkMatter
-      , shadowOfThoughtsDarkMatter
-      , glitchInTheSystemDarkMatter
-      , manifestedWhispersDarkMatter
-      , virtualByakheeDarkMatter
-      , theBOOGEYMANDarkMatter
-      , houndOfTindalosDarkMatter
-      , miGoStabilizerDarkMatter
-      , quantumPhantomDarkMatter
-      , theEntityDarkMatter
-      , corruptedMachineDarkMatter
-      , mimicDarkMatter
-      , ratsDarkMatter
-      , theGreysDarkMatter
-      , parasiteDarkMatter
-      , stalkingByakheeDarkMatter
-      , viciousByakheeDarkMatter
-      , yourOtherSelfDarkMatter
-      , daemonOfNisDarkMatter
-      , spiritOfThanDarkMatter
-      , caveDwellerDarkMatter
-      , sophisticSpiresDarkMatter
-      , tatteredCurtainsDarkMatter
-      , yellowMistsDarkMatter
-      , tassildaDarkMatter
-      , yithianGuardDarkMatter
-      , miGoSentinelDarkMatter
-      , domaagTeelDarkMatter
-      , shamblerFromTheStarsDarkMatter
-      , exoroidDarkMatter
-      , martianCrabDarkMatter
-      , cyberCultistDarkMatter
-      , spacePiratesDarkMatter
-      , voidByakheeDarkMatter
       -- Circus Ex Mortis (homebrew)
-      , disguisedMonstrosityCircusExMortis
-      , grotesqueLionCircusExMortis
-      , newMoonDrudgeCircusExMortis
-      , newMoonIllusionistCircusExMortis
-      , circusPredatorCircusExMortis
-      , ursineBruteCircusExMortis
-      , toweringDarkYoungCircusExMortis_067
-      , toweringDarkYoungCircusExMortis_068
-      , toweringDarkYoungCircusExMortis_069
-      , toweringDarkYoungCircusExMortis_070
-      , toweringDarkYoungCircusExMortis_071
-      , sacrificialShepherdCircusExMortis
-      , loomingGoatspawnCircusExMortis
-      , rampagingGoatspawnCircusExMortis
-      , ravenousGoatspawnCircusExMortis
-      , writhingGoatspawnCircusExMortis
-      , newMoonStiltwalkerCircusExMortis
-      , newMoonTumblerCircusExMortis
-      , sylvesterBlakeCircusExMortis
-      , goatspawnCorruptorCircusExMortis
-      , brashLotharioCircusExMortis
-      , partyAnimalCircusExMortis
-      , sadisticSocialiteCircusExMortis
-      , struttingPeacockCircusExMortis
-      , theCultEnMasseLeaderlessFanaticismCircusExMortis
-      , theCultEnMasseBlackGoatsRaptureCircusExMortis
-      , theCultEnMasseRingmastersFervorCircusExMortis
-      , devoteeOfTheThousandCircusExMortis
-      , maliciousGoatspawnCircusExMortis
-      , roamingDarkYoungCircusExMortis
-      , ravenousBroodCircusExMortis
-      , darkYoungJuggernautCircusExMortis
-      , shubNiggurathCircusExMortis
-      , nascentDarkYoungCircusExMortis
-      , twistedSatyrCircusExMortis
-      , supplicantOfTheGoatCircusExMortis
-      , mooncalfCircusExMortis
-      , newMoonAcrobatCircusExMortis
-      , newMoonBeastTamerCircusExMortis
-      , newMoonStrongmanCircusExMortis
-      , newMoonCarnyCircusExMortis
-      , newMoonClownCircusExMortis
-      , newMoonMagicianCircusExMortis
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

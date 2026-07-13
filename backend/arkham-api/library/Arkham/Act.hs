@@ -3,6 +3,7 @@
 module Arkham.Act (Act (..), lookupAct) where
 
 import Arkham.Act.Acts
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Act.Types
 import Arkham.Card
 import Arkham.Id
@@ -32,7 +33,7 @@ withActCardCode cCode f = case lookup cCode allActs of
   Just (SomeActCard a) -> Right (f a)
 
 allActs :: Map CardCode SomeActCard
-allActs =
+allActs = (mapFrom someActCardCode Registry.acts <>) $
   mapFrom
     someActCardCode
     [ -- Night of the Zealot
@@ -546,11 +547,4 @@ allActs =
     , SomeActCard thePhantomShop
     , SomeActCard fightBack
     , SomeActCard banishHim
-    , SomeActCard forestOfIllusionCircusExMortis
-    , SomeActCard ratsInACageCircusExMortis_005
-    , SomeActCard ratsInACageCircusExMortis_006
-    , SomeActCard ratsInACageCircusExMortis_007
-    , SomeActCard ratsInACageCircusExMortis_008
-    , SomeActCard smokeAndMirrorsCircusExMortis
-    , SomeActCard outAndAwayCircusExMortis
     ]

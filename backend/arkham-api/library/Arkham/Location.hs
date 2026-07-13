@@ -6,6 +6,7 @@ module Arkham.Location (
 ) where
 
 import Arkham.Card
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Id
@@ -47,7 +48,7 @@ withLocationCardCode cCode f = case lookup cCode allLocations of
   Just (SomeLocationCard a) -> f a
 
 allLocations :: Map CardCode SomeLocationCard
-allLocations =
+allLocations = (mapFrom someLocationCardCode Registry.locations <>) $
   mapFrom
     someLocationCardCode
     [ -- Night of the Zealot
@@ -1461,26 +1462,4 @@ allLocations =
     , SomeLocationCard southside
     , SomeLocationCard westernRooftops
     , SomeLocationCard easternRooftops
-    , SomeLocationCard animalCagesCircusExMortis
-    , SomeLocationCard carouselCircusExMortis
-    , SomeLocationCard circusEncampmentCircusExMortis
-    , SomeLocationCard forestPassageCircusExMortis
-    , SomeLocationCard gamesGalleryCircusExMortis
-    , SomeLocationCard moonlitForestCircularGroveCircusExMortis
-    , SomeLocationCard moonlitForestDeadGroveCircusExMortis
-    , SomeLocationCard moonlitForestFogBankCircusExMortis
-    , SomeLocationCard moonlitForestGlassyLakeCircusExMortis
-    , SomeLocationCard moonlitForestLabyrinthOfTreesCircusExMortis
-    , SomeLocationCard moonlitForestMistyMarshCircusExMortis
-    , SomeLocationCard moonlitForestQuietValleyCircusExMortis
-    , SomeLocationCard moonlitForestShadowedPathCircusExMortis
-    , SomeLocationCard moonlitForestShallowRiverCircusExMortis
-    , SomeLocationCard moonlitForestSmolderingCampfireCircusExMortis
-    , SomeLocationCard performerTrailersCircusExMortis
-    , SomeLocationCard remoteCabinCircusExMortis
-    , SomeLocationCard theBigTopFirstRingCircusExMortis
-    , SomeLocationCard theBigTopSecondRingCircusExMortis
-    , SomeLocationCard theBigTopThirdRingCircusExMortis
-    , SomeLocationCard woodlandOverlookCircusExMortis
-    , SomeLocationCard circusGatesPathToFreedomCircusExMortis
     ]

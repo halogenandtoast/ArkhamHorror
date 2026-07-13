@@ -3,8 +3,8 @@
 module Arkham.CampaignLogKey where
 
 import Arkham.Campaigns.BrethrenOfAsh.Key
-import Arkham.Campaigns.CircusExMortis.Key
-import Arkham.Campaigns.DarkMatter.Key
+import Arkham.Homebrew.CircusExMortis.Key
+import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Campaigns.TheCircleUndone.Key

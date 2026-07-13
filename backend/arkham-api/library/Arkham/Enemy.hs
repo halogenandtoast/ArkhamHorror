@@ -3,6 +3,7 @@
 module Arkham.Enemy where
 
 import Arkham.Card
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Classes
 import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
@@ -52,7 +53,7 @@ withEnemyCardCode cCode f = case lookup cCode allEnemies of
   Just (SomeEnemyCard a) -> f a
 
 allEnemies :: Map CardCode SomeEnemyCard
-allEnemies =
+allEnemies = (mapFromList (concatMap someEnemyCardCodes Registry.enemies) <>) $
   mapFromList
     $ concatMap
       someEnemyCardCodes
@@ -988,25 +989,4 @@ allEnemies =
       , SomeEnemyCard deepOneThrall
       , SomeEnemyCard elderDeepOne
       , SomeEnemyCard persistentConstruct
-      , SomeEnemyCard circusPredatorCircusExMortis
-      , SomeEnemyCard disguisedMonstrosityCircusExMortis
-      , SomeEnemyCard grotesqueLionCircusExMortis
-      , SomeEnemyCard mooncalfCircusExMortis
-      , SomeEnemyCard nascentDarkYoungCircusExMortis
-      , SomeEnemyCard newMoonAcrobatCircusExMortis
-      , SomeEnemyCard newMoonBeastTamerCircusExMortis
-      , SomeEnemyCard newMoonCarnyCircusExMortis
-      , SomeEnemyCard newMoonClownCircusExMortis
-      , SomeEnemyCard newMoonDrudgeCircusExMortis
-      , SomeEnemyCard newMoonIllusionistCircusExMortis
-      , SomeEnemyCard newMoonMagicianCircusExMortis
-      , SomeEnemyCard newMoonStrongmanCircusExMortis
-      , SomeEnemyCard supplicantOfTheGoatCircusExMortis
-      , SomeEnemyCard twistedSatyrCircusExMortis
-      , SomeEnemyCard ursineBruteCircusExMortis
-      , SomeEnemyCard stalkingByakheeDarkMatter
-      , SomeEnemyCard systemBugDarkMatter
-      , SomeEnemyCard theBOOGEYMANDarkMatter
-      , SomeEnemyCard theFeasterFromAfarDarkMatter
-      , SomeEnemyCard viciousByakheeDarkMatter
       ]

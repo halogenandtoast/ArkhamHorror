@@ -3,6 +3,7 @@
 module Arkham.Asset where
 
 import Arkham.Asset.Assets
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard (tabooChained, tabooMutated)
@@ -50,7 +51,7 @@ withAssetCardCode cCode f = case lookup cCode allAssets of
   Just (SomeAssetCard a) -> f a
 
 allAssets :: Map CardCode SomeAssetCard
-allAssets =
+allAssets = (mapFromList (concatMap someAssetCardCodes Registry.assets) <>) $
   mapFromList
     $ concatMap
       someAssetCardCodes
@@ -1672,10 +1673,4 @@ allAssets =
       , SomeAssetCard obsidianClawPower
       , SomeAssetCard johnRaymondLegrasse
       , SomeAssetCard horrorInClay
-      , SomeAssetCard k2PS187100FunctionalityDarkMatter
-      , SomeAssetCard k2PS18725FunctionalityDarkMatter
-      , SomeAssetCard k2PS18750FunctionalityDarkMatter
-      , SomeAssetCard k2PS18775FunctionalityDarkMatter
-      , SomeAssetCard majaDarkMatter
-      , SomeAssetCard illusoryLocusCircusExMortis
       ]

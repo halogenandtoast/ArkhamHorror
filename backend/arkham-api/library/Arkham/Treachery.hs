@@ -3,6 +3,7 @@
 module Arkham.Treachery where
 
 import Arkham.Card
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Id
@@ -50,7 +51,7 @@ withTreacheryCardCode cCode f = case lookup cCode allTreacheries of
   Just (SomeTreacheryCard a) -> f a
 
 allTreacheries :: Map CardCode SomeTreacheryCard
-allTreacheries =
+allTreacheries = (mapFromList (concatMap someTreacheryCardCodes Registry.treacheries) <>) $
   mapFromList
     $ concatMap
       someTreacheryCardCodes
@@ -1106,21 +1107,4 @@ allTreacheries =
       , SomeTreacheryCard stillBehindYou
       , SomeTreacheryCard deepOneAmbush
       , SomeTreacheryCard infernalMachinery
-      , SomeTreacheryCard anachronismDarkMatter
-      , SomeTreacheryCard coldVacuumDarkMatter
-      , SomeTreacheryCard futureEvilsDarkMatter
-      , SomeTreacheryCard grimFutureDarkMatter
-      , SomeTreacheryCard hauntingPastDarkMatter
-      , SomeTreacheryCard micrometeoroidDarkMatter
-      , SomeTreacheryCard radiantCrownDarkMatter
-      , SomeTreacheryCard solarFlareDarkMatter
-      , SomeTreacheryCard endlessSpawnCircusExMortis
-      , SomeTreacheryCard feralImpulsesCircusExMortis
-      , SomeTreacheryCard lunarInfluenceCircusExMortis
-      , SomeTreacheryCard milkOfShubNiggurathCircusExMortis
-      , SomeTreacheryCard moonlightIllusionCircusExMortis
-      , SomeTreacheryCard ominousMoonlightCircusExMortis
-      , SomeTreacheryCard quickerThanTheEyeCircusExMortis
-      , SomeTreacheryCard recklessStuntCircusExMortis
-      , SomeTreacheryCard maddeningSpectacleCircusExMortis
       ]

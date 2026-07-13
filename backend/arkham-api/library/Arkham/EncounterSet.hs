@@ -1,10 +1,11 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.EncounterSet where
 
 import Arkham.Prelude
 
-import Data.Aeson.TH
+import Data.Char (isUpper)
+import Data.Char qualified as Char
+import Data.Data (dataTypeConstrs, dataTypeOf, fromConstr, showConstr)
+import Data.Text qualified as T
 
 data EncounterSet
   = TheGathering
@@ -375,44 +376,39 @@ data EncounterSet
   | TheInescapable
   | Dreams
   | AlienMachinery
-  | -- Dark Matter (homebrew)
-    DarkMatterAnachronism
-  | DarkMatterArtificialIntelligence
-  | DarkMatterDarkPast
-  | DarkMatterDeepSpace
-  | DarkMatterElectricNightmare
-  | DarkMatterEndtimes
-  | DarkMatterFragmentOfCarcosa
-  | DarkMatterHastursGaze
-  | DarkMatterInTheShadowOfEarth
-  | DarkMatterInterstellarPredators
-  | DarkMatterLostQuantum
-  | DarkMatterStarfall
-  | DarkMatterStrangeMoons
-  | DarkMatterTheBoogeyman
-  | DarkMatterTheMachineInYellow
-  | DarkMatterTheTatterdemalion
-  | -- Circus Ex Mortis (homebrew)
-    CircusExMortisAllPointsWest
-  | CircusExMortisBacchanalia
-  | CircusExMortisChildrenOfTheGoat
-  | CircusExMortisCircusGrounds
-  | CircusExMortisCultOfShubNiggurath
-  | CircusExMortisDestinyAndProphecy
-  | CircusExMortisHarmsWay
-  | CircusExMortisIllusoryTricks
-  | CircusExMortisLunaticNight
-  | CircusExMortisNewMoonDaredevils
-  | CircusExMortisNewMoonEntertainers
-  | CircusExMortisOneNightOnly
-  | CircusExMortisPanickedMasses
-  | CircusExMortisPiperAtTheGatesOfDawn
-  | CircusExMortisPrimordialEvils
-  | CircusExMortisRedSunrise
-  | CircusExMortisSavageWoods
-  | CircusExMortisThePrimrosePath
-  | CircusExMortisThousandToOne
+  | Homebrew Text
   | Test
-  deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
+  deriving stock (Show, Eq, Ord, Data)
 
-$(deriveJSON defaultOptions ''EncounterSet)
+-- | JSON encoding is kept compatible with the original all-nullary string form:
+-- official sets encode as their constructor name, homebrew sets as their slug
+-- (e.g. @"z-dark-matter:anachronism"@). Parsing falls back to 'Homebrew' for any
+-- unrecognized string, and remaps legacy campaign-prefixed constructor names
+-- (from when homebrew sets were real constructors) onto their slugs.
+instance ToJSON EncounterSet where
+  toJSON (Homebrew t) = String t
+  toJSON s = String (tshow s)
+
+officialEncounterSets :: Map Text EncounterSet
+officialEncounterSets =
+  mapFromList
+    [ (pack name, fromConstr c)
+    | c <- dataTypeConstrs (dataTypeOf (Test :: EncounterSet))
+    , let name = showConstr c
+    , name /= "Homebrew"
+    ]
+
+instance FromJSON EncounterSet where
+  parseJSON = withText "EncounterSet" \t ->
+    pure $ fromMaybe (Homebrew (legacySlug t)) (lookup t officialEncounterSets)
+
+-- | Remap legacy homebrew constructor names ("DarkMatterAnachronism") to slugs
+-- ("z-dark-matter:anachronism"); anything else is assumed to already be a slug.
+legacySlug :: Text -> Text
+legacySlug t
+  | Just rest <- T.stripPrefix "DarkMatter" t, not (T.null rest) = "z-dark-matter:" <> toSnake rest
+  | Just rest <- T.stripPrefix "CircusExMortis" t, not (T.null rest) = "z-circus-ex-mortis:" <> toSnake rest
+  | otherwise = t
+ where
+  toSnake = T.dropWhile (== '_') . T.concatMap \c -> if isUpper c then T.pack ['_', Char.toLower c] else T.singleton c
+

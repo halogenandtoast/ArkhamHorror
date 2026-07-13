@@ -3,6 +3,8 @@
 module Arkham.Scenario (module Arkham.Scenario) where
 
 import Arkham.Ability
+import Arkham.Homebrew.Registry qualified as Registry
+import Arkham.Homebrew.Types (HomebrewScenario (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.ChaosToken
@@ -585,8 +587,11 @@ allScenarioCards =
 duplicatedScenarios :: [CardCode]
 duplicatedScenarios = ["04205a", "04205b", "08501c", "10677a", "10679a", "10679b"]
 
+homebrewScenarios :: Map CardCode SomeScenario
+homebrewScenarios = mapFromList [(c, SomeScenario f) | (c, HomebrewScenario f) <- Registry.scenarios]
+
 allScenarios :: Map CardCode SomeScenario
-allScenarios =
+allScenarios = (homebrewScenarios <>) $
   mapFromList
     [ ("01104", SomeScenario theGathering)
     , ("01120", SomeScenario theMidnightMasks)
@@ -748,26 +753,10 @@ allScenarios =
     , ("90041", SomeScenario redTideRising)
     , ("90065", SomeScenario relicsOfThePast)
     -- Homebrew
-    , ("z-dark-matter-013", SomeScenario theTatterdemalionDarkMatter)
-    , ("z-dark-matter-053", SomeScenario electricNightmareDarkMatter)
-    , ("z-dark-matter-090", SomeScenario lostQuantumDarkMatter)
-    , ("z-dark-matter-115", SomeScenario inTheShadowOfEarthDarkMatter)
-    , ("z-dark-matter-156", SomeScenario strangeMoonsDarkMatter)
-    , ("z-dark-matter-193", SomeScenario theMachineInYellowDarkMatter)
-    , ("z-dark-matter-212", SomeScenario fragmentOfCarcosaDarkMatter)
-    , ("z-dark-matter-246", SomeScenario starfallDarkMatter)
-    , ("z-circus-ex-mortis-001", SomeScenario oneNightOnlyCircusExMortis)
-    , ("z-circus-ex-mortis-017", SomeScenario thePrimrosePathCircusExMortis)
-    , ("z-circus-ex-mortis-042", SomeScenario harmsWayCircusExMortis)
-    , ("z-circus-ex-mortis-076", SomeScenario allPointsWestCircusExMortis)
-    , ("z-circus-ex-mortis-110", SomeScenario piperAtTheGatesOfDawnCircusExMortis)
-    , ("z-circus-ex-mortis-124", SomeScenario bacchanaliaCircusExMortis)
-    , ("z-circus-ex-mortis-155", SomeScenario redSunriseCircusExMortis)
-    , ("z-circus-ex-mortis-192", SomeScenario thousandToOneCircusExMortis)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
-scenarioEncounterSets =
+scenarioEncounterSets = (mapFromList Registry.scenarioSets <>) $
   mapFromList
     [ ("01104", EncounterSet.TheGathering)
     , ("01120", EncounterSet.TheMidnightMasks)
@@ -929,20 +918,4 @@ scenarioEncounterSets =
     , ("90041", EncounterSet.RedTideRising)
     , ("90065", EncounterSet.RelicsOfThePast)
     -- Homebrew
-    , ("z-dark-matter-013", EncounterSet.DarkMatterTheTatterdemalion)
-    , ("z-dark-matter-053", EncounterSet.DarkMatterElectricNightmare)
-    , ("z-dark-matter-090", EncounterSet.DarkMatterLostQuantum)
-    , ("z-dark-matter-115", EncounterSet.DarkMatterInTheShadowOfEarth)
-    , ("z-dark-matter-156", EncounterSet.DarkMatterStrangeMoons)
-    , ("z-dark-matter-193", EncounterSet.DarkMatterTheMachineInYellow)
-    , ("z-dark-matter-212", EncounterSet.DarkMatterFragmentOfCarcosa)
-    , ("z-dark-matter-246", EncounterSet.DarkMatterStarfall)
-    , ("z-circus-ex-mortis-001", EncounterSet.CircusExMortisOneNightOnly)
-    , ("z-circus-ex-mortis-017", EncounterSet.CircusExMortisThePrimrosePath)
-    , ("z-circus-ex-mortis-042", EncounterSet.CircusExMortisHarmsWay)
-    , ("z-circus-ex-mortis-076", EncounterSet.CircusExMortisAllPointsWest)
-    , ("z-circus-ex-mortis-110", EncounterSet.CircusExMortisPiperAtTheGatesOfDawn)
-    , ("z-circus-ex-mortis-124", EncounterSet.CircusExMortisBacchanalia)
-    , ("z-circus-ex-mortis-155", EncounterSet.CircusExMortisRedSunrise)
-    , ("z-circus-ex-mortis-192", EncounterSet.CircusExMortisThousandToOne)
     ]

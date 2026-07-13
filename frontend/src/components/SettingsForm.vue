@@ -75,6 +75,7 @@ const updateLanguage = async (a: Event) => {
           <option value="po">Português/Portuguese</option>
           <option value="ru">Русский/Russian</option>
           <option value="uk">українська/Ukrainian</option>
+          <option value="zh-cn">简体中文/Simplified Chinese</option>
           <option value="zh">中文/Chinese</option>
         </select>
       </section>

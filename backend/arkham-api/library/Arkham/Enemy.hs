@@ -988,4 +988,25 @@ allEnemies =
       , SomeEnemyCard deepOneThrall
       , SomeEnemyCard elderDeepOne
       , SomeEnemyCard persistentConstruct
+      , SomeEnemyCard circusPredatorCircusExMortis
+      , SomeEnemyCard disguisedMonstrosityCircusExMortis
+      , SomeEnemyCard grotesqueLionCircusExMortis
+      , SomeEnemyCard mooncalfCircusExMortis
+      , SomeEnemyCard nascentDarkYoungCircusExMortis
+      , SomeEnemyCard newMoonAcrobatCircusExMortis
+      , SomeEnemyCard newMoonBeastTamerCircusExMortis
+      , SomeEnemyCard newMoonCarnyCircusExMortis
+      , SomeEnemyCard newMoonClownCircusExMortis
+      , SomeEnemyCard newMoonDrudgeCircusExMortis
+      , SomeEnemyCard newMoonIllusionistCircusExMortis
+      , SomeEnemyCard newMoonMagicianCircusExMortis
+      , SomeEnemyCard newMoonStrongmanCircusExMortis
+      , SomeEnemyCard supplicantOfTheGoatCircusExMortis
+      , SomeEnemyCard twistedSatyrCircusExMortis
+      , SomeEnemyCard ursineBruteCircusExMortis
+      , SomeEnemyCard stalkingByakheeDarkMatter
+      , SomeEnemyCard systemBugDarkMatter
+      , SomeEnemyCard theBOOGEYMANDarkMatter
+      , SomeEnemyCard theFeasterFromAfarDarkMatter
+      , SomeEnemyCard viciousByakheeDarkMatter
       ]

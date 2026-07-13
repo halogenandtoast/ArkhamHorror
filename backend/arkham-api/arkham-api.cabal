@@ -258,6 +258,7 @@ library
       Arkham.Act.Cards.OpeningTheMaw
       Arkham.Act.Cards.OpenThePathAbove
       Arkham.Act.Cards.OpenThePathBelow
+      Arkham.Act.Cards.OutAndAwayCircusExMortis
       Arkham.Act.Cards.OutOfThisWorld
       Arkham.Act.Cards.ParadiseLost
       Arkham.Act.Cards.PastAndPresent
@@ -278,6 +279,7 @@ library
       Arkham.Act.Cards.RabbitsWhoRunV2
       Arkham.Act.Cards.RabbitsWhoRunV3
       Arkham.Act.Cards.RaceForAnswers
+      Arkham.Act.Cards.RatsInACageCircusExMortis
       Arkham.Act.Cards.ReactivateTheCore
       Arkham.Act.Cards.RecoverTheRelic
       Arkham.Act.Cards.RedRuin
@@ -328,6 +330,7 @@ library
       Arkham.Act.Cards.ShadowOfThePastV3
       Arkham.Act.Cards.ShatteredMemories
       Arkham.Act.Cards.SkinGame
+      Arkham.Act.Cards.SmokeAndMirrorsCircusExMortis
       Arkham.Act.Cards.SpeedReading
       Arkham.Act.Cards.SprawlingCityV1
       Arkham.Act.Cards.SprawlingCityV2
@@ -602,6 +605,7 @@ library
       Arkham.Agenda.Cards.HorrorsUnleashed
       Arkham.Agenda.Cards.HospitalOfHorrors
       Arkham.Agenda.Cards.HotPursuit
+      Arkham.Agenda.Cards.HouseOfHorrorsCircusExMortis
       Arkham.Agenda.Cards.HumanityFading
       Arkham.Agenda.Cards.HyperboreanBlood
       Arkham.Agenda.Cards.IcyDepths
@@ -634,6 +638,7 @@ library
       Arkham.Agenda.Cards.ManifestationsOfEvil
       Arkham.Agenda.Cards.MarkedForSacrifice
       Arkham.Agenda.Cards.MaskedRevelers
+      Arkham.Agenda.Cards.MesmericMagicCircusExMortis
       Arkham.Agenda.Cards.MortalInquiry
       Arkham.Agenda.Cards.OpeningHand
       Arkham.Agenda.Cards.OtherworldlyHorror
@@ -786,6 +791,7 @@ library
       Arkham.Agenda.Cards.TheTrueCulpritV7
       Arkham.Agenda.Cards.TheTrueCulpritV8
       Arkham.Agenda.Cards.TheTrueCulpritV9
+      Arkham.Agenda.Cards.TheTrueFaceCircusExMortis
       Arkham.Agenda.Cards.TheTruthIsHidden
       Arkham.Agenda.Cards.TheTurn
       Arkham.Agenda.Cards.TheWaterRises
@@ -1356,6 +1362,7 @@ library
       Arkham.Asset.Assets.IchtacaTheForgottenGuardian
       Arkham.Asset.Assets.IdolOfXanatosWatcherBeyondTime
       Arkham.Asset.Assets.IkiaqTheCouncilsChosen3
+      Arkham.Asset.Assets.IllusoryLocusCircusExMortis
       Arkham.Asset.Assets.ImprovisedShield
       Arkham.Asset.Assets.IneffableTruth
       Arkham.Asset.Assets.IneffableTruth3
@@ -4028,6 +4035,7 @@ library
       Arkham.Location.Cards.ChurningWaters
       Arkham.Location.Cards.CircuitousTrail
       Arkham.Location.Cards.CircusEncampmentCircusExMortis
+      Arkham.Location.Cards.CircusGatesPathToFreedomCircusExMortis
       Arkham.Location.Cards.CityOfElderThings
       Arkham.Location.Cards.CityOfGugs
       Arkham.Location.Cards.CityOfTheMoonBeasts
@@ -6313,6 +6321,7 @@ library
       Arkham.Treachery.Cards.LurkingFear
       Arkham.Treachery.Cards.MacabreMemento
       Arkham.Treachery.Cards.MaddeningDelusions
+      Arkham.Treachery.Cards.MaddeningSpectacleCircusExMortis
       Arkham.Treachery.Cards.Malfunction
       Arkham.Treachery.Cards.Maligned
       Arkham.Treachery.Cards.MarkedByTheSign

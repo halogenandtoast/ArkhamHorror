@@ -1672,4 +1672,10 @@ allAssets =
       , SomeAssetCard obsidianClawPower
       , SomeAssetCard johnRaymondLegrasse
       , SomeAssetCard horrorInClay
+      , SomeAssetCard k2PS187100FunctionalityDarkMatter
+      , SomeAssetCard k2PS18725FunctionalityDarkMatter
+      , SomeAssetCard k2PS18750FunctionalityDarkMatter
+      , SomeAssetCard k2PS18775FunctionalityDarkMatter
+      , SomeAssetCard majaDarkMatter
+      , SomeAssetCard illusoryLocusCircusExMortis
       ]

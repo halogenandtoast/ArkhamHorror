@@ -546,4 +546,11 @@ allActs =
     , SomeActCard thePhantomShop
     , SomeActCard fightBack
     , SomeActCard banishHim
+    , SomeActCard forestOfIllusionCircusExMortis
+    , SomeActCard ratsInACageCircusExMortis_005
+    , SomeActCard ratsInACageCircusExMortis_006
+    , SomeActCard ratsInACageCircusExMortis_007
+    , SomeActCard ratsInACageCircusExMortis_008
+    , SomeActCard smokeAndMirrorsCircusExMortis
+    , SomeActCard outAndAwayCircusExMortis
     ]

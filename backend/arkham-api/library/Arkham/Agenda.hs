@@ -484,4 +484,9 @@ allAgendas =
     , SomeAgendaCard theComingStorm
     , SomeAgendaCard theDoomOfArkham
     , SomeAgendaCard theFinalSeal
+    , SomeAgendaCard bloodMoonCircusExMortis
+    , SomeAgendaCard savageNatureCircusExMortis
+    , SomeAgendaCard theTrueFaceCircusExMortis
+    , SomeAgendaCard houseOfHorrorsCircusExMortis
+    , SomeAgendaCard mesmericMagicCircusExMortis
     ]

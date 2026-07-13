@@ -1106,4 +1106,21 @@ allTreacheries =
       , SomeTreacheryCard stillBehindYou
       , SomeTreacheryCard deepOneAmbush
       , SomeTreacheryCard infernalMachinery
+      , SomeTreacheryCard anachronismDarkMatter
+      , SomeTreacheryCard coldVacuumDarkMatter
+      , SomeTreacheryCard futureEvilsDarkMatter
+      , SomeTreacheryCard grimFutureDarkMatter
+      , SomeTreacheryCard hauntingPastDarkMatter
+      , SomeTreacheryCard micrometeoroidDarkMatter
+      , SomeTreacheryCard radiantCrownDarkMatter
+      , SomeTreacheryCard solarFlareDarkMatter
+      , SomeTreacheryCard endlessSpawnCircusExMortis
+      , SomeTreacheryCard feralImpulsesCircusExMortis
+      , SomeTreacheryCard lunarInfluenceCircusExMortis
+      , SomeTreacheryCard milkOfShubNiggurathCircusExMortis
+      , SomeTreacheryCard moonlightIllusionCircusExMortis
+      , SomeTreacheryCard ominousMoonlightCircusExMortis
+      , SomeTreacheryCard quickerThanTheEyeCircusExMortis
+      , SomeTreacheryCard recklessStuntCircusExMortis
+      , SomeTreacheryCard maddeningSpectacleCircusExMortis
       ]

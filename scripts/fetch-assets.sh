@@ -12,7 +12,7 @@
 # Usage:
 #   ./scripts/fetch-assets.sh en        # All English/static images (~1.3 GB)
 #   ./scripts/fetch-assets.sh en+fr     # English/static + French translations
-#   ./scripts/fetch-assets.sh cards     # English card images only (~755 MB)
+#   ./scripts/fetch-assets.sh cards     # English card images + homebrew card images only (~755 MB)
 #   ./scripts/fetch-assets.sh all       # Everything (~2.9 GB)
 #
 # Environment variables:
@@ -76,7 +76,7 @@ usage() {
 Usage: $(basename "$0") <target>
 
 Targets:
-  cards       English card images only (~755 MB)
+  cards       English card images + homebrew card images only (~755 MB)
   en          All English/static images (~1.3 GB)
   en+fr       English/static + French translations
   en+es       English/static + Spanish translations
@@ -318,6 +318,7 @@ printf '\n%s=== %s ===%s\n\n' "$_BOLD" \
 case "$1" in
   cards)
     _sync_prefix "img/arkham/cards/"
+    _sync_prefix "img/arkham/homebrew/" -E 'img/arkham/homebrew/[^/]+/cards/'
     ;;
   en)
     _sync_prefix "img/" -vE "$ALL_LANG_PATTERN"

@@ -1,6 +1,10 @@
 module Arkham.Asset.Cards.DarkMatter where
 
 import Arkham.Asset.Cards.Import
+import Arkham.LocationSymbol qualified as LS
+
+withScanIcons :: [LS.LocationSymbol] -> CardDef -> CardDef
+withScanIcons icons def = def {cdMeta = insertMap "scanIcons" (toJSON icons) def.meta}
 
 -- the_tatterdemalion
 virtualAccessKeyDarkMatter :: CardDef
@@ -14,14 +18,16 @@ virtualAccessKeyDarkMatter =
 
 evaSuitDarkMatter :: CardDef
 evaSuitDarkMatter =
-  (storyAsset_ "z-dark-matter-029" "EVA Suit" DarkMatterTheTatterdemalion)
-      { cdCardTraits = setFromList [Armor, Item]
-      , cdSlots = [#body]
-      }
+  withScanIcons [LS.Square, LS.Moon]
+    $ (storyAsset_ "z-dark-matter-029" "EVA Suit" DarkMatterTheTatterdemalion)
+        { cdCardTraits = setFromList [Armor, Item]
+        , cdSlots = [#body]
+        }
 
 heirToCarcosaDarkMatter :: CardDef
 heirToCarcosaDarkMatter =
-  permanent
+  withScanIcons [LS.Equals]
+    $ permanent
       $ (storyAsset_ "z-dark-matter-031" ("Heir to Carcosa" <:> "Untranslated Runes") DarkMatterTheTatterdemalion)
         { cdCardTraits = setFromList [Tome]
         , cdUnique = True
@@ -29,18 +35,21 @@ heirToCarcosaDarkMatter =
 
 medicalFoamDarkMatter :: CardDef
 medicalFoamDarkMatter =
-  (storyAsset_ "z-dark-matter-036" "Medical Foam" DarkMatterTheTatterdemalion)
-      { cdCardTraits = setFromList [Medical, Science, Item]
-      , cdSlots = [#hand]
-      }
+  withScanIcons [LS.Heart]
+    $ (storyAsset_ "z-dark-matter-036" "Medical Foam" DarkMatterTheTatterdemalion)
+        { cdCardTraits = setFromList [Medical, Science, Item]
+        , cdSlots = [#hand]
+        }
 
 mindMachineInterfaceDarkMatter :: CardDef
 mindMachineInterfaceDarkMatter =
-  (storyAsset_ "z-dark-matter-037" "Mind-Machine Interface" DarkMatterTheTatterdemalion) {cdCardTraits = setFromList [Device]}
+  withScanIcons [LS.Triangle, LS.Plus, LS.Hourglass, LS.T]
+    $ (storyAsset_ "z-dark-matter-037" "Mind-Machine Interface" DarkMatterTheTatterdemalion) {cdCardTraits = setFromList [Device]}
 
 radiationTabletsDarkMatter :: CardDef
 radiationTabletsDarkMatter =
-  (storyAsset_ "z-dark-matter-038" "Radiation Tablets" DarkMatterTheTatterdemalion) {cdCardTraits = setFromList [Medical, Science, Item]}
+  withScanIcons [LS.Heart]
+    $ (storyAsset_ "z-dark-matter-038" "Radiation Tablets" DarkMatterTheTatterdemalion) {cdCardTraits = setFromList [Medical, Science, Item]}
 
 -- electric_nightmare
 majaDarkMatter :: CardDef

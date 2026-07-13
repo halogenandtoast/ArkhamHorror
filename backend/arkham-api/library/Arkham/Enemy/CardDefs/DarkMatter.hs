@@ -1,6 +1,11 @@
 module Arkham.Enemy.CardDefs.DarkMatter where
 
 import Arkham.Enemy.CardDefs.Import
+import Arkham.Keyword qualified as Keyword
+import Arkham.LocationSymbol qualified as LS
+
+withScanIcons :: [LS.LocationSymbol] -> CardDef -> CardDef
+withScanIcons icons def = def {cdMeta = insertMap "scanIcons" (toJSON icons) def.meta}
 
 -- deep_space
 theFeasterFromAfarDarkMatter :: CardDef
@@ -18,35 +23,55 @@ theFeasterFromAfarDarkMatter =
 -- the_tatterdemalion
 cybervirusDarkMatter :: CardDef
 cybervirusDarkMatter =
-  (enemy "z-dark-matter-028" "Cybervirus" DarkMatterTheTatterdemalion 1)
-      { cdSanityDamage = sanityDamage 2
-      , cdFight = fight 2
-      , cdEvade = evade 4
-      , cdHealth = healthPerInvestigator 2
-      , cdCardTraits = setFromList [Virtual]
-      , cdVictoryPoints = Just 1
-      }
+  withScanIcons [LS.Trefoil]
+    $ (enemy "z-dark-matter-028" "Cybervirus" DarkMatterTheTatterdemalion 1)
+        { cdSanityDamage = sanityDamage 2
+        , cdFight = fight 2
+        , cdEvade = evade 4
+        , cdHealth = healthPerInvestigator 2
+        , cdCardTraits = setFromList [Virtual]
+        , cdVictoryPoints = Just 1
+        , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+        }
 
 jv7HyadesDarkMatter :: CardDef
 jv7HyadesDarkMatter =
-  (enemy "z-dark-matter-033" ("JV-7 'Hyades'" <:> "Artificial Co-Pilot") DarkMatterTheTatterdemalion 1)
-      { cdHealthDamage = healthDamage 1
-      , cdSanityDamage = sanityDamage 1
-      , cdFight = fight 2
-      , cdEvade = evade 2
-      , cdHealth = health 3
-      , cdCardTraits = setFromList [AI, Machine]
-      }
+  withScanIcons [LS.T]
+    $ (enemy "z-dark-matter-033" ("JV-7 'Hyades'" <:> "Artificial Co-Pilot") DarkMatterTheTatterdemalion 1)
+        { cdHealthDamage = healthDamage 1
+        , cdSanityDamage = sanityDamage 1
+        , cdFight = fight 2
+        , cdEvade = evade 2
+        , cdHealth = health 3
+        , cdCardTraits = setFromList [AI, Machine]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Alert]
+        }
 
 lr02HaliDarkMatter :: CardDef
 lr02HaliDarkMatter =
-  (enemy "z-dark-matter-035" "LR-02 'Hali'" DarkMatterTheTatterdemalion 1)
-      { cdHealthDamage = healthDamage 1
-      , cdSanityDamage = sanityDamage 1
-      , cdFight = fight 3
-      , cdEvade = evade 4
-      , cdHealth = healthPerInvestigator 2
-      , cdCardTraits = setFromList [Humanoid, AI, Machine]
+  withScanIcons [LS.Triangle, LS.Circle, LS.Plus]
+    $ (enemy "z-dark-matter-035" "LR-02 'Hali'" DarkMatterTheTatterdemalion 1)
+        { cdHealthDamage = healthDamage 1
+        , cdSanityDamage = sanityDamage 1
+        , cdFight = fight 3
+        , cdEvade = evade 4
+        , cdHealth = healthPerInvestigator 2
+        , cdCardTraits = setFromList [Humanoid, AI, Machine]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
+        , cdVictoryPoints = Just 1
+        }
+
+-- Back of agenda z-dark-matter-015 ("The Ghost Ship"); spawned when that agenda
+-- advances (see the scenario/agenda modules).
+uplA21DemheDarkMatter :: CardDef
+uplA21DemheDarkMatter =
+  (enemy "z-dark-matter-015b" ("UPL-A21 'Demhe'" <:> "Unmanned Power Loader") DarkMatterTheTatterdemalion 1)
+      { cdHealthDamage = healthDamage 3
+      , cdFight = fight 5
+      , cdEvade = evade 2
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [AI, Machine, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter]
       , cdVictoryPoints = Just 1
       }
 

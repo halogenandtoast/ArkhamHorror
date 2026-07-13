@@ -732,6 +732,7 @@ allEncounterEnemyCards =
       -- Dark Matter (homebrew)
       , theFeasterFromAfarDarkMatter
       , cybervirusDarkMatter
+      , uplA21DemheDarkMatter
       , jv7HyadesDarkMatter
       , lr02HaliDarkMatter
       , systemBugDarkMatter

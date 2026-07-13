@@ -4,9 +4,13 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.EncounterSet
+import Arkham.LocationSymbol qualified as LS
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Trait
+
+withScanIcons :: [LS.LocationSymbol] -> CardDef -> CardDef
+withScanIcons icons def = def {cdMeta = insertMap "scanIcons" (toJSON icons) def.meta}
 
 addTrait :: Trait -> CardDef -> CardDef
 addTrait trait def =
@@ -934,26 +938,33 @@ triumphAndSubjugation = story "90023b" "Triumph and Subjugation" BadBlood & othe
 -- Dark Matter (fan campaign by Axolotl): the_tatterdemalion
 finalDestinationDarkMatter :: CardDef
 finalDestinationDarkMatter =
-  story "z-dark-matter-030" "Final Destination" DarkMatterTheTatterdemalion
+  withScanIcons [LS.T, LS.Trefoil]
+    $ (story "z-dark-matter-030" "Final Destination" DarkMatterTheTatterdemalion) {cdVictoryPoints = Just 1}
 
 intoTheArchivesDarkMatter :: CardDef
 intoTheArchivesDarkMatter =
-  story "z-dark-matter-032" "Into the Archives" DarkMatterTheTatterdemalion
+  withScanIcons [LS.Trefoil]
+    $ (story "z-dark-matter-032" "Into the Archives" DarkMatterTheTatterdemalion) {cdVictoryPoints = Just 1}
 
 k2PS187CyberneticBrainsDarkMatter :: CardDef
 k2PS187CyberneticBrainsDarkMatter =
-  story "z-dark-matter-034" "K2-PS187 Cybernetic Brains" DarkMatterTheTatterdemalion
+  withScanIcons [LS.T, LS.Trefoil]
+    $ (story "z-dark-matter-034" "K2-PS187 Cybernetic Brains" DarkMatterTheTatterdemalion) {cdVictoryPoints = Just 1}
 
 strangeIsTheNightDarkMatter :: CardDef
 strangeIsTheNightDarkMatter =
-  story "z-dark-matter-039" "Strange is the Night" DarkMatterTheTatterdemalion
+  withScanIcons [LS.Star]
+    $ (story "z-dark-matter-039" "Strange is the Night" DarkMatterTheTatterdemalion) {cdVictoryPoints = Just 1}
 
 whatTypeOfShipIsThisDarkMatter :: CardDef
 whatTypeOfShipIsThisDarkMatter =
-  story "z-dark-matter-041" "What Type of Ship is This?" DarkMatterTheTatterdemalion
+  withScanIcons [LS.Moon, LS.Hourglass]
+    $ (story "z-dark-matter-041" "What Type of Ship is This?" DarkMatterTheTatterdemalion) {cdVictoryPoints = Just 2}
 
 whoAmIDarkMatter :: CardDef
-whoAmIDarkMatter = story "z-dark-matter-042" "Who am I?" DarkMatterTheTatterdemalion
+whoAmIDarkMatter =
+  withScanIcons [LS.Triangle]
+    $ (story "z-dark-matter-042" "Who am I?" DarkMatterTheTatterdemalion) {cdVictoryPoints = Just 1}
 
 -- Dark Matter (fan campaign by Axolotl): electric_nightmare
 reintegratedDarkMatter_062 :: CardDef

@@ -6,35 +6,84 @@ import Arkham.Trait qualified as Trait
 -- the_tatterdemalion
 cargoHoldDarkMatter :: CardDef
 cargoHoldDarkMatter =
-  location_ "z-dark-matter-021" "Cargo Hold" [Tatterdemalion, Access] DarkMatterTheTatterdemalion
+  location
+    "z-dark-matter-021"
+    "Cargo Hold"
+    [Tatterdemalion, Access]
+    Square
+    [Circle, Hourglass, Moon]
+    DarkMatterTheTatterdemalion
 
 cryosleepQuartersDarkMatter :: CardDef
 cryosleepQuartersDarkMatter =
-  location_ "z-dark-matter-022" "Cryosleep Quarters" [Tatterdemalion] DarkMatterTheTatterdemalion
+  location
+    "z-dark-matter-022"
+    "Cryosleep Quarters"
+    [Tatterdemalion]
+    Triangle
+    [Circle]
+    DarkMatterTheTatterdemalion
 
 engineRoomDarkMatter_023 :: CardDef
 engineRoomDarkMatter_023 =
-  location_ "z-dark-matter-023" "Engine Room" [Tatterdemalion] DarkMatterTheTatterdemalion
+  location
+    "z-dark-matter-023"
+    "Engine Room"
+    [Tatterdemalion]
+    Hourglass
+    [Square]
+    DarkMatterTheTatterdemalion
 
 escapePodBayDarkMatter :: CardDef
 escapePodBayDarkMatter =
-  location_ "z-dark-matter-024" "Escape Pod Bay" [Tatterdemalion, Access] DarkMatterTheTatterdemalion
+  location
+    "z-dark-matter-024"
+    "Escape Pod Bay"
+    [Tatterdemalion, Access]
+    Moon
+    [Square]
+    DarkMatterTheTatterdemalion
 
 infirmaryDarkMatter_025 :: CardDef
 infirmaryDarkMatter_025 =
-  location_ "z-dark-matter-025" "Infirmary" [Tatterdemalion] DarkMatterTheTatterdemalion
+  location
+    "z-dark-matter-025"
+    "Infirmary"
+    [Tatterdemalion]
+    Plus
+    [Circle, Equals]
+    DarkMatterTheTatterdemalion
 
 messHallDarkMatter :: CardDef
 messHallDarkMatter =
-  location_ "z-dark-matter-026" "Mess Hall" [Tatterdemalion] DarkMatterTheTatterdemalion
+  location
+    "z-dark-matter-026"
+    "Mess Hall"
+    [Tatterdemalion]
+    Circle
+    [Square, T, Triangle, Plus, Equals]
+    DarkMatterTheTatterdemalion
 
 shipsBridgeDarkMatter :: CardDef
 shipsBridgeDarkMatter =
-  location_ "z-dark-matter-027" "Ship's Bridge" [Tatterdemalion, Access] DarkMatterTheTatterdemalion
+  location
+    "z-dark-matter-027"
+    "Ship's Bridge"
+    [Tatterdemalion, Access]
+    T
+    [Circle, Equals]
+    DarkMatterTheTatterdemalion
 
 ventilationShaftDarkMatter :: CardDef
 ventilationShaftDarkMatter =
-  location_ "z-dark-matter-040" "Ventilation Shaft" [Tatterdemalion] DarkMatterTheTatterdemalion
+  withMeta ("scanIcons", [Circle, Plus])
+    $ location
+      "z-dark-matter-040"
+      "Ventilation Shaft"
+      [Tatterdemalion]
+      Equals
+      [Circle, Plus, T]
+      DarkMatterTheTatterdemalion
 
 -- electric_nightmare
 cafeteriaDarkMatter :: CardDef
@@ -69,7 +118,8 @@ coldWastesDarkMatter = location_ "z-dark-matter-099" "Cold Wastes" [Elbrus] Dark
 
 crystalPeakDarkMatter :: CardDef
 crystalPeakDarkMatter =
-  victory 2 $ location_ "z-dark-matter-100" "Crystal Peak" [Elbrus, Extradimensional] DarkMatterLostQuantum
+  victory 2
+    $ location_ "z-dark-matter-100" "Crystal Peak" [Elbrus, Extradimensional] DarkMatterLostQuantum
 
 iceSpiresDarkMatter :: CardDef
 iceSpiresDarkMatter =
@@ -170,11 +220,13 @@ anAccidentDarkMatter =
 
 cityOfCatsDarkMatter :: CardDef
 cityOfCatsDarkMatter =
-  victory 1 $ location_ "z-dark-matter-177" "City of Cats" [Simulation, Dreamlands] DarkMatterStrangeMoons
+  victory 1
+    $ location_ "z-dark-matter-177" "City of Cats" [Simulation, Dreamlands] DarkMatterStrangeMoons
 
 feverDreamDarkMatter :: CardDef
 feverDreamDarkMatter =
-  victory 1 $ location_ "z-dark-matter-178" "Fever Dream" [Simulation, Nightmare] DarkMatterStrangeMoons
+  victory 1
+    $ location_ "z-dark-matter-178" "Fever Dream" [Simulation, Nightmare] DarkMatterStrangeMoons
 
 -- fragment_of_carcosa
 abandonedLanderDarkMatter :: CardDef
@@ -202,7 +254,12 @@ iceCavityDarkMatter = location_ "z-dark-matter-224" "Ice Cavity" [Cave] DarkMatt
 
 impassableRavineDarkMatter :: CardDef
 impassableRavineDarkMatter =
-  victory 1 $ location_ "z-dark-matter-225" ("Impassable Ravine" <:> "Where the Cultists Disappeared") [Cave] DarkMatterFragmentOfCarcosa
+  victory 1
+    $ location_
+      "z-dark-matter-225"
+      ("Impassable Ravine" <:> "Where the Cultists Disappeared")
+      [Cave]
+      DarkMatterFragmentOfCarcosa
 
 stalagmiteForestDarkMatter :: CardDef
 stalagmiteForestDarkMatter =
@@ -215,22 +272,36 @@ theTatterdemalionDarkMatter =
 
 newBrooklynDarkMatter :: CardDef
 newBrooklynDarkMatter =
-  location_ "z-dark-matter-254" ("New Brooklyn" <:> "Population: 4034 Humans") [Colony, AsteroidBelt] DarkMatterStarfall
+  location_
+    "z-dark-matter-254"
+    ("New Brooklyn" <:> "Population: 4034 Humans")
+    [Colony, AsteroidBelt]
+    DarkMatterStarfall
 
 hopeDarkMatter :: CardDef
 hopeDarkMatter =
-  location_ "z-dark-matter-255" ("Hope" <:> "Population: 138021 Humans") [Colony, Mars] DarkMatterStarfall
+  location_
+    "z-dark-matter-255"
+    ("Hope" <:> "Population: 138021 Humans")
+    [Colony, Mars]
+    DarkMatterStarfall
 
 yuggothDarkMatter :: CardDef
 yuggothDarkMatter =
-  victory 1 $ location_ "z-dark-matter-256" ("Yuggoth" <:> "Population: 23615 Mi-Go") [Colony, Pluto] DarkMatterStarfall
+  victory 1
+    $ location_
+      "z-dark-matter-256"
+      ("Yuggoth" <:> "Population: 23615 Mi-Go")
+      [Colony, Pluto]
+      DarkMatterStarfall
 
 theCassildaDarkMatter :: CardDef
 theCassildaDarkMatter = location_ "z-dark-matter-258" "The Cassilda" [Starship] DarkMatterStarfall
 
 earthDarkMatter :: CardDef
 earthDarkMatter =
-  victory 2 $ location_ "z-dark-matter-262" ("Earth" <:> "The Stars Were Right") [Earth] DarkMatterStarfall
+  victory 2
+    $ location_ "z-dark-matter-262" ("Earth" <:> "The Stars Were Right") [Earth] DarkMatterStarfall
 
 mountSinaiDarkMatter :: CardDef
 mountSinaiDarkMatter =
@@ -249,7 +320,8 @@ olympusTelescopeDarkMatter =
 
 moonbaseLaboratoryDarkMatter :: CardDef
 moonbaseLaboratoryDarkMatter =
-  victory 1 $ location_ "z-dark-matter-267" "Moonbase Laboratory" [Colony, Trait.Moon] DarkMatterStarfall
+  victory 1
+    $ location_ "z-dark-matter-267" "Moonbase Laboratory" [Colony, Trait.Moon] DarkMatterStarfall
 
 thresholdOfYuggothDarkMatter :: CardDef
 thresholdOfYuggothDarkMatter =

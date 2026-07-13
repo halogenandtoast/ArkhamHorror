@@ -1,6 +1,7 @@
 module Arkham.Event.Events.StalkPrey (stalkPrey) where
 
 import Arkham.Card
+import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.I18n
@@ -21,7 +22,7 @@ instance RunMessage StalkPrey where
       findEncounterCardIn iid attrs (cardMatcher_ #enemy) [FromEncounterDeck]
       pure e
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) -> do
-      drawCard iid card
+      drawCardFrom iid Deck.EncounterDeck card
       drawCards iid attrs 1
       discoverAtYourLocation NotInvestigate iid attrs 1
       doStep 1 msg

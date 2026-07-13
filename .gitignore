@@ -100,3 +100,6 @@ ml/.venv/
 ml/__pycache__/
 ml/model/
 *.pyc
+
+docs/homebrew
+docs/homebrew.md

@@ -54,13 +54,47 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Tracing
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non)
 import Control.Monad.State.Strict (evalStateT, get, put)
 import Data.List qualified as List
 import Data.List.Extra (nubOrd)
 import Data.Set qualified as Set
+
+getAdditionalActionCosts :: HasGame m => InvestigatorId -> Target -> Action -> m [Cost]
+getAdditionalActionCosts iid target action = do
+  investigatorModifiers <- getModifiers iid
+  targetModifiers <- getModifiers target
+  pure
+    $ mapMaybe
+      ( \case
+          AdditionalActionCostOf (IsAction action') n | action == action' -> Just (ActionCost n)
+          _ -> Nothing
+      )
+      investigatorModifiers
+    <> mapMaybe
+      ( \case
+          AdditionalCostToInvestigate c | action == #investigate -> Just c
+          AdditionalCostToExplore c | action == #explore -> Just c
+          AdditionalCostToResign c | action == #resign -> Just c
+          _ -> Nothing
+      )
+      targetModifiers
+
+getAdditionalActionCost :: HasGame m => InvestigatorId -> Target -> Action -> m Cost
+getAdditionalActionCost iid target action = mconcat <$> getAdditionalActionCosts iid target action
+
+getCanAffordAdditionalActionCost
+  :: (HasCallStack, HasGame m, Tracing m, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> Target
+  -> Action
+  -> m Bool
+getCanAffordAdditionalActionCost iid source target action = do
+  cost <- getAdditionalActionCost iid target action
+  getCanAffordCost iid source [] [mkWhen Window.NonFast] cost
 
 hasSkillTestCost :: Cost -> Bool
 hasSkillTestCost = \case

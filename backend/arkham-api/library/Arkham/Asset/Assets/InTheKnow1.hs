@@ -4,9 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
+import Arkham.Helpers.Cost
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype InTheKnow1 = InTheKnow1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -17,9 +18,8 @@ inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 
 instance HasAbilities InTheKnow1 where
   getAbilities (InTheKnow1 attrs) =
-    [ delayAdditionalCostsWhen (exists $ RevealedLocation <> InvestigatableLocation)
+    [ withInvestigationTargets RevealedLocation
         $ restricted attrs 1 ControlsThis (investigateAction $ assetUseCost attrs Secret 1)
-        & (abilityMetadataL ?~ InvestigateTargets RevealedLocation)
     ]
 
 instance RunMessage InTheKnow1 where
@@ -28,9 +28,9 @@ instance RunMessage InTheKnow1 where
       locations <- select $ RevealedLocation <> InvestigatableLocation
       locationsWithInvestigate <- concatForM locations \lid -> do
         investigateActions <- select $ AbilityOnLocation (be lid) <> #investigate
-        mods <- getModifiers lid
-        let costs = fold [m | AdditionalCostToInvestigate m <- mods]
-        pure $ map (lid,costs,) investigateActions
+        costs <- getAdditionalActionCost iid (toTarget lid) #investigate
+        canAfford <- getCanAffordAdditionalActionCost iid attrs (toTarget lid) #investigate
+        pure $ if canAfford then map (lid,costs,) investigateActions else []
       batchId <- getRandom
       chooseOneM iid do
         for_ locationsWithInvestigate \(location, costs, ability) -> do

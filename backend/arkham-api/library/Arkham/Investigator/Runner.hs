@@ -64,7 +64,7 @@ import Arkham.Helpers.Card (
   cardIsFast',
   getModifiedCardCost,
  )
-import Arkham.Helpers.Cost (getCanAffordCost)
+import Arkham.Helpers.Cost (getAdditionalActionCosts, getCanAffordCost)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Discover
@@ -562,20 +562,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   ReturnToHand iid (CardIdTarget cardId) | iid == investigatorId -> handleReturnToHandV3 a iid cardId
   ReturnToHand iid (CardMatcherTarget matcher) | iid == investigatorId -> handleReturnToHandV4 a iid matcher
   CheckAdditionalActionCosts iid target action msgs | iid == investigatorId -> do
-    mods <- getModifiers a
-    targetMods <- getModifiers target
-    let
-      additionalCosts =
-        mapMaybe
-          \case
-            AdditionalActionCostOf (IsAction action') n | action == action' -> Just (ActionCost n)
-            _ -> Nothing
-          mods
-          <> mapMaybe
-            \case
-              AdditionalCostToInvestigate c | action == #investigate -> Just c
-              _ -> Nothing
-            targetMods
+    additionalCosts <- getAdditionalActionCosts iid target action
     if null additionalCosts
       then pushAll msgs
       else do

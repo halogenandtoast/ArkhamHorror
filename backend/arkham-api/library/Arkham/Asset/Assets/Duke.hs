@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Ability
+import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Investigate
@@ -23,14 +24,10 @@ duke = allyWith Duke Cards.duke (2, 3) noSlots
 instance HasAbilities Duke where
   getAbilities (Duke a) =
     [ fightAbility a 1 (exhaust a) ControlsThis
-    , delayAdditionalCostsWhen (youExist $ InvestigatorCanMoveTo (a.ability 2) Anywhere)
+    , withInvestigationTargets
+        (oneOf [YourLocation, CanMoveToLocation You (a.ability 2) Anywhere])
         $ (mkAbility a 2 (investigateAction $ exhaust a))
-          { abilityCriteria =
-              ControlsThis
-                <> oneOf
-                  [ exists (YourLocation <> InvestigatableLocation)
-                  , youExist $ InvestigatorCanMoveTo (a.ability 2) Anywhere
-                  ]
+          { abilityCriteria = ControlsThis
           }
     ]
 
@@ -45,9 +42,13 @@ instance RunMessage Duke where
       let source = attrs.ability 2
       as <- select $ performableAbilityWithoutActionBy iid $ at_ (be iid) <> #basic <> #investigate
       let convert ab = noAOO $ decrease_ (ab {abilitySource = ProxySource ab.source source}) 1
+      accessibleLocations <-
+        filterM
+          (\lid -> getCanAffordAdditionalActionCost iid attrs (toTarget lid) #investigate)
+          =<< getAccessibleLocations iid source
       chooseOneM iid do
         for_ as \ab -> abilityLabeled iid (convert ab) nothing
-        targetsM (getAccessibleLocations iid source) \lid' -> do
+        targets accessibleLocations \lid' -> do
           moveTo attrs iid lid'
           doStep 1 msg
       pure a
@@ -65,6 +66,7 @@ instance RunMessage Duke where
         whenM (getCanPerformAbility iid (defaultWindows iid) $ decrease_ ab 1) do
           sid <- getRandom
           skillTestModifiers sid (attrs.ability 2) iid [BaseSkillOf #intellect 4]
-          pushM $ mkInvestigateLocation sid iid (attrs.ability 2) lid
+          investigate' <- mkInvestigateLocation sid iid (attrs.ability 2) lid
+          push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
       pure a
     _ -> Duke <$> liftRunMessage msg attrs

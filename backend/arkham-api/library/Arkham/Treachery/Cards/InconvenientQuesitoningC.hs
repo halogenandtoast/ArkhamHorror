@@ -25,7 +25,9 @@ instance RunMessage InconvenientQuesitoningC where
       if null enemies
         then gainSurge attrs
         else do
-          withLocationOf iid \loc -> chooseTargetM iid enemies \x -> moveTowards attrs x loc
+          withLocationOf iid \loc -> chooseTargetM iid enemies \x -> do
+            moveTowards attrs x loc
+            enemyCheckEngagement x
           sid <- getRandom
           revelationSkillTest sid iid attrs #intellect (Fixed 3)
       pure t

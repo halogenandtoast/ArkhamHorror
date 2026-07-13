@@ -235,6 +235,14 @@ investigateAbility entity idx cost criteria =
     { abilityCriteria = criteria <> exists (YourLocation <> InvestigatableLocation)
     }
 
+withInvestigationTargets :: LocationMatcher -> Ability -> Ability
+withInvestigationTargets matcher =
+  delayAdditionalCostsWhen criterion
+    . restrict criterion
+    . (abilityMetadataL ?~ InvestigateTargets matcher)
+ where
+  criterion = exists $ matcher <> InvestigatableLocation
+
 investigateAbilityWith
   :: (Sourceable a, HasCardCode a) => a -> Int -> SkillType -> Cost -> Criterion -> Ability
 investigateAbilityWith entity idx stype cost criteria =

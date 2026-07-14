@@ -245,61 +245,68 @@ caboose =
 
 locomotiveEngine :: CardDef
 locomotiveEngine =
-  location ":circus-ex-mortis:082" "Locomotive Engine" [Train] Equals [Square, Moon] Set.AllPointsWest
+  singleSided
+    $ location ":circus-ex-mortis:082" "Locomotive Engine" [Train] Equals [Square, Moon] Set.AllPointsWest
 
 boxcar :: CardDef
 boxcar =
-  location
-    ":circus-ex-mortis:083"
-    "Boxcar"
-    [Train, FreightCar]
-    Square
-    [Equals, Star, Hourglass]
-    Set.AllPointsWest
+  singleSided
+    $ location
+      ":circus-ex-mortis:083"
+      "Boxcar"
+      [Train, FreightCar]
+      Square
+      [Equals, Star, Hourglass]
+      Set.AllPointsWest
 
 flatcar :: CardDef
 flatcar =
-  location
-    ":circus-ex-mortis:084"
-    "Flatcar"
-    [Train, FreightCar]
-    Square
-    [Equals, Star, Hourglass]
-    Set.AllPointsWest
+  singleSided
+    $ location
+      ":circus-ex-mortis:084"
+      "Flatcar"
+      [Train, FreightCar]
+      Square
+      [Equals, Star, Hourglass]
+      Set.AllPointsWest
 
 gondolaCar :: CardDef
 gondolaCar =
-  location
-    ":circus-ex-mortis:085"
-    "Gondola Car"
-    [Train, FreightCar]
-    Square
-    [Equals, Star, Hourglass]
-    Set.AllPointsWest
+  singleSided
+    $ location
+      ":circus-ex-mortis:085"
+      "Gondola Car"
+      [Train, FreightCar]
+      Square
+      [Equals, Star, Hourglass]
+      Set.AllPointsWest
 
 stockCar :: CardDef
 stockCar =
-  location
-    ":circus-ex-mortis:086"
-    "Stock Car"
-    [Train, FreightCar]
-    Square
-    [Equals, Star, Hourglass]
-    Set.AllPointsWest
+  singleSided
+    $ location
+      ":circus-ex-mortis:086"
+      "Stock Car"
+      [Train, FreightCar]
+      Square
+      [Equals, Star, Hourglass]
+      Set.AllPointsWest
 
 tankCar :: CardDef
 tankCar =
-  location
-    ":circus-ex-mortis:087"
-    "Tank Car"
-    [Train, FreightCar]
-    Square
-    [Equals, Star, Hourglass]
-    Set.AllPointsWest
+  singleSided
+    $ location
+      ":circus-ex-mortis:087"
+      "Tank Car"
+      [Train, FreightCar]
+      Square
+      [Equals, Star, Hourglass]
+      Set.AllPointsWest
 
 coalHopperCar :: CardDef
 coalHopperCar =
-  victory 1
+  singleSided
+    $ victory 1
     $ location
       ":circus-ex-mortis:088"
       "Coal Hopper Car"
@@ -310,7 +317,8 @@ coalHopperCar =
 
 craneCar :: CardDef
 craneCar =
-  victory 1
+  singleSided
+    $ victory 1
     $ location
       ":circus-ex-mortis:089"
       "Crane Car"
@@ -321,7 +329,8 @@ craneCar =
 
 mailCar :: CardDef
 mailCar =
-  victory 1
+  singleSided
+    $ victory 1
     $ location
       ":circus-ex-mortis:090"
       "Mail Car"
@@ -332,7 +341,8 @@ mailCar =
 
 refrigeratorCar :: CardDef
 refrigeratorCar =
-  victory 1
+  singleSided
+    $ victory 1
     $ location
       ":circus-ex-mortis:091"
       "Refrigerator Car"
@@ -343,7 +353,8 @@ refrigeratorCar =
 
 reinforcedCar :: CardDef
 reinforcedCar =
-  victory 1
+  singleSided
+    $ victory 1
     $ location
       ":circus-ex-mortis:092"
       "Reinforced Car"

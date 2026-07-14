@@ -13,6 +13,6 @@ CREATE TABLE IF NOT EXISTS arkham_steps (
   step INTEGER NOT NULL
 );
 
-CREATE UNIQUE INDEX steps_game_step_idx ON arkham_steps(arkham_game_id, step);
+CREATE UNIQUE INDEX IF NOT EXISTS steps_game_step_idx ON arkham_steps(arkham_game_id, step);
 
 COMMIT;

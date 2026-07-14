@@ -258,6 +258,7 @@ data CardDef = CardDef
   , cdEvade :: Maybe Evade
   , cdHealthDamage :: Maybe HealthDamage
   , cdSanityDamage :: Maybe SanityDamage
+  , cdErrata :: Maybe Text
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -401,6 +402,7 @@ emptyCardDef cCode name cType =
     , cdEvade = Nothing
     , cdHealthDamage = Nothing
     , cdSanityDamage = Nothing
+    , cdErrata = Nothing
     }
 
 instance IsCardMatcher CardDef where
@@ -528,6 +530,7 @@ cardDefKeyValues CardDef {..} =
         , pairJust "evade" cdEvade
         , pairJust "healthDamage" cdHealthDamage
         , pairJust "sanityDamage" cdSanityDamage
+        , pairJust "errata" cdErrata
         ]
   where
     pairWhen :: (KeyValue e kv, ToJSON v) => Bool -> Key -> v -> [kv]
@@ -610,5 +613,6 @@ instance FromJSON CardDef where
     cdEvade <- o .:? "evade"
     cdHealthDamage <- o .:? "healthDamage"
     cdSanityDamage <- o .:? "sanityDamage"
+    cdErrata <- o .:? "errata"
 
     pure CardDef {..}

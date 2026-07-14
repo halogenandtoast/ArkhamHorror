@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Card.PlayerCard where
 
 import Arkham.Asset.Cards
@@ -20,7 +18,6 @@ import Arkham.Prelude
 import Arkham.SkillType
 import {-# SOURCE #-} Arkham.Taboo
 import Arkham.Taboo.Types
-import Data.Aeson.TH
 import GHC.Records
 
 data PlayerCard = MkPlayerCard
@@ -258,4 +255,32 @@ tabooMutated25 = \case
   "11120" -> Just "Mutated25"
   pc -> tabooMutated24 pc
 
-$(deriveJSON (aesonOptions $ Just "pc") ''PlayerCard)
+instance ToJSON PlayerCard where
+  toJSON pc =
+    object
+      [ "id" .= pcId pc
+      , "owner" .= pcOwner pc
+      , "cardCode" .= pcCardCode pc
+      , "originalCardCode" .= pcOriginalCardCode pc
+      , "customizations" .= pcCustomizations pc
+      , "tabooList" .= pcTabooList pc
+      , "mutated" .= pcMutated pc
+      , "chained" .= pcChained pc
+      , "meta" .= pcMeta pc
+      , "facedown" .= pcFacedown pc
+      , "errata" .= cdErrata (toCardDef pc)
+      ]
+
+instance FromJSON PlayerCard where
+  parseJSON = withObject "PlayerCard" \o -> do
+    pcId <- o .: "id"
+    pcOwner <- o .:? "owner"
+    pcCardCode <- o .: "cardCode"
+    pcOriginalCardCode <- o .: "originalCardCode"
+    pcCustomizations <- o .: "customizations"
+    pcTabooList <- o .:? "tabooList"
+    pcMutated <- o .:? "mutated"
+    pcChained <- o .:? "chained"
+    pcMeta <- o .:? "meta"
+    pcFacedown <- o .:? "facedown"
+    pure MkPlayerCard {..}

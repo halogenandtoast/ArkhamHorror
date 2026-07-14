@@ -52,6 +52,7 @@ endurance =
   (asset "12017" "Endurance" 2 Guardian)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Talent]
+    , cdErrata = Just "This card should have a wild skill icon."
     }
 
 loganHastingsBountyHunter :: CardDef

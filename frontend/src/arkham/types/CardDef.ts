@@ -31,6 +31,7 @@ export type CardDef = {
   cost: CardCost | null;
   otherSide: string | null;
   meta: Record<string, any>;
+  errata: string | null;
   encounterSet?: any;
   customizations?: CustomizationDef[];
 }
@@ -70,6 +71,7 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     name: nameDecoder,
     cost: withDefault(null, cardCostDecoder),
     meta: JsonDecoder.succeed().map((v: any) => v ?? {}),
+    errata: withDefault(null, JsonDecoder.string()),
     encounterSet: v2Optional(JsonDecoder.succeed()),
     customizations: withDefault<CustomizationDef[]>([], JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.number()], 'CustomizationDef'), 'CustomizationDef[]')),
   },

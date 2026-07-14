@@ -609,7 +609,8 @@ const flippableCard = (cardCode: string) => {
     skills: [],
     cost: null,
     otherSide: `${cardCode}b`,
-    meta: {}
+    meta: {},
+    errata: null
   }
 }
 

@@ -242,6 +242,13 @@ table statements and run them manually, you will want to specifically run the
 * start the backend with `cd backend && make api.watch`
 * start the frontend with `cd frontend && npm run serve`
 
+## Homebrew content
+
+Want to build your own campaign, scenario, or custom content? See
+[Writing homebrew content](./docs/homebrew.md) — a hands-on guide to adding
+cards, campaigns, traits, actions, tokens, and more without touching the base
+game.
+
 ## Copyright Disclaimer
 
 The information presented in this app about [Arkham Horror: The Card Game™][arkham], both textual and graphical, is © Fantasy Flight Games 2024. This app is a fan project and is not produced, endorsed, or supported by, or affiliated with Fantasy Flight Games.

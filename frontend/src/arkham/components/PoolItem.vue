@@ -6,6 +6,7 @@ export interface Props {
   type: string
   amount?: number
   tooltip?: string
+  image?: string
 }
 const props = defineProps<Props>()
 
@@ -19,7 +20,7 @@ const tokenImages: Record<string, string> = {
 }
 
 const image = computed(() => {
-  return imgsrc(tokenImages[props.type] ?? `${props.type}.png`)
+  return props.image ?? imgsrc(tokenImages[props.type] ?? `${props.type}.png`)
 })
 </script>
 

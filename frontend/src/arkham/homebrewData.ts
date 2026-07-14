@@ -17,6 +17,23 @@ const scenarioModules = import.meta.glob('@homebrew/*/scenarios.json', { eager: 
   { default: (Scenario & { i18n: string })[] }
 >
 
+// `tokens.json` — custom chaos tokens a campaign wants surfaced in the
+// scenario totals bar (counted across the chaos bag and sealed tokens). Each
+// entry names the token `face` (its slug) and an optional `tooltip`.
+export interface HomebrewTotalsToken {
+  face: string
+  tooltip?: string
+}
+
+const tokenModules = import.meta.glob('@homebrew/*/tokens.json', { eager: true }) as Record<
+  string,
+  { default: HomebrewTotalsToken[] }
+>
+
+export const homebrewTotalsTokens: HomebrewTotalsToken[] = Object.values(tokenModules).flatMap(
+  (m) => m.default,
+)
+
 export const homebrewCampaigns: Campaign[] = Object.values(campaignModules).map((m) => m.default)
 
 export const homebrewScenarios: (Scenario & { i18n: string })[] = Object.values(

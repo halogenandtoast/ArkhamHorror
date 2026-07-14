@@ -7,15 +7,34 @@ instances enumerated by TH) — no edits here when adding a campaign.
 -}
 module Arkham.Homebrew.Defs where
 
+import Arkham.Action (Action, coreActions)
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Criteria (Criterion)
 import Arkham.Homebrew.DefsBase
 import Arkham.Homebrew.DefsEntries ()
 import Arkham.Homebrew.TH
 import Arkham.Prelude
+import Arkham.Trait (Trait, coreTraits)
 
 allHomebrewDefs :: HomebrewDefs
 allHomebrewDefs = $(discoverInstances ''IsHomebrewDefs 'homebrewDefs)
+
+-- | The full trait universe: core traits plus every trait every discovered
+-- homebrew campaign owns. Use in place of the old @[minBound .. maxBound]@.
+allTraits :: [Trait]
+allTraits = coreTraits <> ordNub (hdTraits allHomebrewDefs)
+
+-- | The full action universe: core actions plus every action every discovered
+-- homebrew campaign owns. Use in place of the old @[minBound .. maxBound]@.
+allActions :: [Action]
+allActions = coreActions <> ordNub (hdActions allHomebrewDefs)
+
+-- | Per-action affordability criteria contributed by homebrew campaigns. Core
+-- 'Arkham.Helpers.Ability.canDoAction'' evaluates the entry for a homebrew
+-- action (defaulting to always-affordable when absent).
+homebrewActionAffordability :: Map Action Criterion
+homebrewActionAffordability = mapFromList (hdActionAffordability allHomebrewDefs)
 
 defMap :: (HomebrewDefs -> [CardDef]) -> Map CardCode CardDef
 defMap slot = mapFromList $ map (toCardCode &&& id) (slot allHomebrewDefs)

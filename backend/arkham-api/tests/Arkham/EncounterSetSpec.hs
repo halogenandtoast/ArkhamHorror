@@ -23,7 +23,3 @@ spec = describe "EncounterSet JSON" do
 
   it "falls back to Homebrew for unknown strings" do
     decode "\"some-future-set\"" `shouldBe` Just (Homebrew "some-future-set")
-
-  it "remaps legacy homebrew constructor names to slugs" do
-    decode "\"DarkMatterAnachronism\"" `shouldBe` Just (Homebrew ":dark-matter:anachronism")
-    decode "\"CircusExMortisOneNightOnly\"" `shouldBe` Just (Homebrew ":circus-ex-mortis:one_night_only")

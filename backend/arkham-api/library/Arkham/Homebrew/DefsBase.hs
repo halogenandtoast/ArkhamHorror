@@ -2,11 +2,14 @@
 
 module Arkham.Homebrew.DefsBase where
 
+import Arkham.Action (Action)
 import Arkham.Card.CardDef
+import Arkham.Criteria (Criterion)
 import Arkham.Prelude
+import Arkham.Trait (Trait)
 
--- | Everything a homebrew campaign (or standalone) contributes to the card
--- definition tables, one slot per @all*Cards@ aggregate.
+-- | Everything a homebrew campaign (or standalone) contributes: its card
+-- definition tables (one slot per @all*Cards@ aggregate) and its trait values.
 data HomebrewDefs = HomebrewDefs
   { hdLocations :: [CardDef]
   , hdEnemies :: [CardDef]
@@ -17,6 +20,18 @@ data HomebrewDefs = HomebrewDefs
   , hdEncounterAssets :: [CardDef]
   , hdPlayerSkills :: [CardDef]
   , hdStories :: [CardDef]
+  , -- | The campaign's own trait values (see its @Traits.hs@). Folded into
+    -- @Arkham.Homebrew.Defs.allTraits@ so they appear wherever the full trait
+    -- universe is enumerated.
+    hdTraits :: [Trait]
+  , -- | The campaign's own action values (see its @Actions.hs@). Folded into
+    -- @Arkham.Homebrew.Defs.allActions@.
+    hdActions :: [Action]
+  , -- | Per-action affordability rules for this campaign's actions, evaluated
+    -- generically by core (see @Arkham.Homebrew.Defs.homebrewActionAffordability@
+    -- and its use in @Arkham.Helpers.Ability.canDoAction'@). An action with no
+    -- entry is always affordable.
+    hdActionAffordability :: [(Action, Criterion)]
   }
 
 instance Semigroup HomebrewDefs where
@@ -31,10 +46,13 @@ instance Semigroup HomebrewDefs where
       , hdEncounterAssets = hdEncounterAssets a <> hdEncounterAssets b
       , hdPlayerSkills = hdPlayerSkills a <> hdPlayerSkills b
       , hdStories = hdStories a <> hdStories b
+      , hdTraits = hdTraits a <> hdTraits b
+      , hdActions = hdActions a <> hdActions b
+      , hdActionAffordability = hdActionAffordability a <> hdActionAffordability b
       }
 
 instance Monoid HomebrewDefs where
-  mempty = HomebrewDefs [] [] [] [] [] [] [] [] []
+  mempty = HomebrewDefs [] [] [] [] [] [] [] [] [] [] [] []
 
 -- | Implement in your campaign's @Defs.hs@ on a campaign-local tag type; the
 -- instance is discovered automatically (see 'Arkham.Homebrew.Defs').

@@ -26,9 +26,6 @@ instance IsLabel "explore" Actions where
 instance IsLabel "circle" Actions where
   fromLabel = singleAction #circle
 
-instance IsLabel "scan" Actions where
-  fromLabel = singleAction #scan
-
 instance IsLabel "resign" Actions where
   fromLabel = singleAction #resign
 

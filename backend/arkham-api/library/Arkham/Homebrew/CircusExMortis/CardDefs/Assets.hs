@@ -2,7 +2,7 @@ module Arkham.Homebrew.CircusExMortis.CardDefs.Assets where
 
 import Arkham.Asset.Cards.Import
 import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
-import Arkham.Homebrew.Traits
+import Arkham.Homebrew.CircusExMortis.Traits
 
 -- one_night_only
 illusoryLocus :: CardDef

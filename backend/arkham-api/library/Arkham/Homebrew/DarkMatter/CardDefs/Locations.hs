@@ -2,8 +2,8 @@ module Arkham.Homebrew.DarkMatter.CardDefs.Locations where
 
 import Arkham.Location.CardDefs.Import
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
-import Arkham.Homebrew.Traits hiding (pattern Moon)
-import Arkham.Homebrew.Traits qualified as Trait
+import Arkham.Homebrew.DarkMatter.Traits hiding (pattern Moon)
+import Arkham.Homebrew.DarkMatter.Traits qualified as Trait
 
 -- the_tatterdemalion
 cargoHold :: CardDef

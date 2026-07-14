@@ -2,6 +2,7 @@ module Arkham.Homebrew.DarkMatter.Assets.K2PS18750Functionality (k2PS18750Functi
 
 import Arkham.Ability
 import Arkham.Action.Additional
+import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..))
@@ -29,6 +30,6 @@ instance RunMessage K2PS18750Functionality where
         turnModifier iid' (attrs.ability 1) iid'
           $ GiveAdditionalAction
           $ AdditionalAction "K2-PS187" (toSource attrs)
-          $ ActionRestrictedAdditionalAction #scan
+          $ ActionRestrictedAdditionalAction Scan
       pure a
     _ -> K2PS18750Functionality <$> liftRunMessage msg attrs

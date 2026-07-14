@@ -10,6 +10,7 @@ import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.CircusExMortis.CardDefs.Skills qualified as Skills
 import Arkham.Homebrew.CircusExMortis.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Treacheries
+import Arkham.Homebrew.CircusExMortis.Traits qualified as Traits
 
 locations :: [CardDef]
 locations =
@@ -315,4 +316,7 @@ instance IsHomebrewDefs CircusExMortisDefs where
       , hdEncounterAssets = encounterAssets
       , hdPlayerSkills = playerSkills
       , hdStories = stories
+      , hdTraits = Traits.traits
+      , hdActions = []
+      , hdActionAffordability = []
       }

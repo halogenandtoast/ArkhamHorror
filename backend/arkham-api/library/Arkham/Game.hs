@@ -117,6 +117,7 @@ import Arkham.Helpers.Playable
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
+import Arkham.Homebrew.Defs (allActions)
 import Arkham.Helpers.Slot
 import Arkham.Helpers.Source
 import Arkham.Helpers.Target
@@ -1363,7 +1364,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       flip runMatchesM as \a -> do
         let iid = toId a
         taken <- nub . concat <$> field InvestigatorActionsTaken iid
-        let allowed = filter (`notElem` taken) [minBound ..]
+        let allowed = filter (`notElem` taken) allActions
         actions <- Helpers.withGrantedAction iid (toAttrs a) do
           filter (\x -> any (abilityIs x) allowed) <$> getActions iid (Window.defaultWindows iid)
         (resourceOk, drawOk) <- Helpers.withModifiersOf iid (toAttrs a) [ActionCostOf IsAnyAction (-1)] do

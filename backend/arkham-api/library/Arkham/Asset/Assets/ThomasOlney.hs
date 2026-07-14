@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
-import Arkham.Homebrew.Traits (allTraits)
+import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Trait
 import Arkham.Scenarios.TheMidwinterGala.Helpers
 

@@ -1,7 +1,7 @@
 module Arkham.Homebrew.DarkMatter.Helpers where
 
 import Arkham.Ability
-import Arkham.Homebrew.DarkMatter.Key
+import Arkham.Actions (Actions (..))
 import Arkham.CampaignLog (campaignLogRecordedCounts)
 import Arkham.CampaignLogKey (toCampaignLogKey)
 import Arkham.Card
@@ -13,6 +13,10 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Scenario (getScenarioDeck)
+import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
+import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
+import Arkham.Homebrew.DarkMatter.Key
+import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern ScanningDeck)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorLog))
@@ -27,11 +31,9 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Scenario.Deck
 import Arkham.Scenario.Setup
 import Arkham.Source
 import Arkham.Tracing
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Window qualified as Window
 
 campaignI18n :: (HasI18n => a) -> a
@@ -63,9 +65,10 @@ addImpendingDoom = incrementRecordCount ImpendingDoom
 
 -- ** Desynchronization (guide p6) ** --
 
--- | Scenario II intro: each investigator with 3 or fewer Memories must read
--- Desynchronization and add the Desync weakness to their deck (it does not
--- count towards the deck limit).
+{- | Scenario II intro: each investigator with 3 or fewer Memories must read
+Desynchronization and add the Desync weakness to their deck (it does not
+count towards the deck limit).
+-}
 checkDesynchronization :: ReverseQueue m => m ()
 checkDesynchronization = do
   iids <- filterM (fmap (<= 3) . getMemories) =<< getInvestigators
@@ -87,10 +90,11 @@ scanIcons a = fromMaybe [] $ lookup "scanIcons" (cdMeta $ toCardDef a) >>= maybe
 hasScanningBack :: HasCardDef a => a -> Bool
 hasScanningBack = notNull . scanIcons
 
--- | Setup: "Create the scanning deck. This is done by taking all the (other)
--- encounter cards with icons at the bottom of their back side and shuffling
--- them together." Call after setting aside any scanning-back cards that the
--- setup excludes (they are gone from the gathered pool by then).
+{- | Setup: "Create the scanning deck. This is done by taking all the (other)
+encounter cards with icons at the bottom of their back side and shuffling
+them together." Call after setting aside any scanning-back cards that the
+setup excludes (they are gone from the gathered pool by then).
+-}
 addScanningDeck :: ReverseQueue m => ScenarioBuilderT m ()
 addScanningDeck = do
   cards <- filter hasScanningBack <$> amongGathered AnyCard
@@ -100,16 +104,18 @@ addScanningDeck = do
 getScanningDeck :: (HasGame m, Tracing m) => m [Card]
 getScanningDeck = getScenarioDeck ScanningDeck
 
--- | The Scan action designator; usually, but not always, initiated using the
--- "activate" action.
+{- | The Scan action designator; usually, but not always, initiated using the
+"activate" action.
+-}
 scanAction :: Cost -> AbilityType
-scanAction cost = ActionAbility #scan Nothing (ActionCost 1 <> cost)
+scanAction cost = ActionAbility (SingleAction Scan) Nothing (ActionCost 1 <> cost)
 
 scanAction_ :: AbilityType
 scanAction_ = scanAction mempty
 
--- | Payload of the @"scan"@ 'Window.ScenarioEvent' fired after every scan,
--- successful or not.
+{- | Payload of the @"scan"@ 'Window.ScenarioEvent' fired after every scan,
+successful or not.
+-}
 data ScanResult = ScanResult
   { scannedBy :: InvestigatorId
   , scannedFor :: [LocationSymbol]
@@ -122,11 +128,12 @@ data ScanResult = ScanResult
 scanEvent :: Text
 scanEvent = "scan"
 
--- | Perform a scan for the given icon(s). A card matches only if it shows
--- every requested icon (Strange Moons' "Brain Scanning" scans for two icons;
--- a normal scan passes one). Non-matching cards are set aside face down and
--- shuffled back in afterwards; the first matching card is drawn. If no card
--- matches, the scan is unsuccessful.
+{- | Perform a scan for the given icon(s). A card matches only if it shows
+every requested icon (Strange Moons' "Brain Scanning" scans for two icons;
+a normal scan passes one). Non-matching cards are set aside face down and
+shuffled back in afterwards; the first matching card is drawn. If no card
+matches, the scan is unsuccessful.
+-}
 scan
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> [LocationSymbol] -> m ()
 scan iid (toSource -> source) icons = do
@@ -142,9 +149,10 @@ scan iid (toSource -> source) icons = do
       drawScannedCard iid source x
       checkAfter $ Window.ScenarioEvent scanEvent (Just iid) (toJSON $ ScanResult iid icons (Just x) True)
 
--- | Motion scanning (In the Shadow of Earth): simply draw the top card of the
--- scanning deck. The caller is responsible for the "only while at a location
--- with a matching icon" restriction.
+{- | Motion scanning (In the Shadow of Earth): simply draw the top card of the
+scanning deck. The caller is responsible for the "only while at a location
+with a matching icon" restriction.
+-}
 scanTopOfScanningDeck
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 scanTopOfScanningDeck iid (toSource -> source) = do
@@ -172,9 +180,10 @@ drawScannedCard iid source card = do
       , cardDrewTarget = Nothing
       }
 
--- | "If such a situation arises that you would need to discard a card with
--- the scanning back or shuffle it into any other deck, shuffle it back into
--- the scanning deck instead."
+{- | "If such a situation arises that you would need to discard a card with
+the scanning back or shuffle it into any other deck, shuffle it back into
+the scanning deck instead."
+-}
 shuffleIntoScanningDeck :: (ReverseQueue m, IsCard card) => [card] -> m ()
 shuffleIntoScanningDeck cards =
   push $ ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey ScanningDeck) (map toCard cards)

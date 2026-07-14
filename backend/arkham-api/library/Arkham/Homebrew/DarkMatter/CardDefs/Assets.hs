@@ -2,7 +2,7 @@ module Arkham.Homebrew.DarkMatter.CardDefs.Assets where
 
 import Arkham.Asset.Cards.Import
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
-import Arkham.Homebrew.Traits
+import Arkham.Homebrew.DarkMatter.Traits
 import Arkham.LocationSymbol qualified as LS
 
 withScanIcons :: [LS.LocationSymbol] -> CardDef -> CardDef

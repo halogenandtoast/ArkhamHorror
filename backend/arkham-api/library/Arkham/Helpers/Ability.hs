@@ -19,6 +19,7 @@ import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (getModifiers, withoutModifier)
 import Arkham.Helpers.Query (allInvestigators, getActiveInvestigatorId)
 import Arkham.Helpers.Scenario (getScenarioDeck)
+import Arkham.Homebrew.Defs (homebrewActionAffordability)
 import Arkham.Helpers.Window (getThatEnemy, windowMatches)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
@@ -291,7 +292,9 @@ canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \ca
       , notNull <$> getScenarioDeck ExplorationDeck
       ]
   Action.Circle -> pure True
-  Action.Scan -> notNull <$> getScenarioDeck ScanningDeck
+  Action.HomebrewAction t ->
+    maybe (pure True) (passesCriteria iid Nothing abilitySource abilitySource [])
+      $ lookup (Action.HomebrewAction t) homebrewActionAffordability
 
 getCanAffordAbility
   :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool

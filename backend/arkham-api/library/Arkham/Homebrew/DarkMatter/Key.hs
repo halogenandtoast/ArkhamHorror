@@ -1,5 +1,13 @@
-module Arkham.Homebrew.DarkMatter.Key where
+{- | Campaign-log keys owned by the Dark Matter campaign.
 
+Like an official campaign (e.g. @TheDunwichLegacyKey@), the campaign owns its own
+key enum. It plugs into the core log via the single shared
+'Arkham.CampaignLogKey.HomebrewCampaignLogKey' wrapper — no per-campaign wiring
+in core. Keys serialize by name through that wrapper.
+-}
+module Arkham.Homebrew.DarkMatter.Key (module Arkham.Homebrew.DarkMatter.Key) where
+
+import Arkham.CampaignLogKey (CampaignLogKey (HomebrewCampaignLogKey), IsCampaignLogKey (..))
 import Arkham.Prelude
 
 data DarkMatterKey
@@ -50,5 +58,11 @@ data DarkMatterKey
     ImpendingDoom
   | -- | Tallies: per-investigator count (see 'Arkham.Homebrew.DarkMatter.Helpers')
     Memories
-  deriving stock (Show, Eq, Ord, Generic, Data)
+  deriving stock (Show, Read, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+instance IsCampaignLogKey DarkMatterKey where
+  toCampaignLogKey = HomebrewCampaignLogKey . tshow
+  fromCampaignLogKey = \case
+    HomebrewCampaignLogKey t -> readMay (unpack t)
+    _ -> Nothing

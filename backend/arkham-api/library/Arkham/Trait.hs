@@ -369,10 +369,10 @@ data Trait
   | Yuggoth
   | Zoog
   | -- | Open extension point for homebrew content. Do not use directly; each
-    -- homebrew campaign exposes named, bidirectional pattern synonyms over this
-    -- (see @Arkham.Homebrew.Traits@) so card code stays typo-checked. The 'Text'
-    -- tag equals the trait's name, so serialization matches a plain enum
-    -- constructor and needs no migration.
+    -- homebrew campaign owns and exposes named, bidirectional pattern synonyms
+    -- over this (see its @Traits.hs@, e.g. @Arkham.Homebrew.DarkMatter.Traits@)
+    -- so card code stays typo-checked. The 'Text' tag equals the trait's name,
+    -- so serialization matches a plain enum constructor and needs no migration.
     HomebrewTrait Text
   deriving stock (Show, Eq, Generic, Ord, Read, Data)
   deriving anyclass (Hashable)
@@ -391,7 +391,7 @@ instance FromJSON Trait where
 
 -- | Every non-homebrew trait. Replaces @[minBound .. maxBound]@ now that 'Trait'
 -- carries the open 'HomebrewTrait' constructor and can no longer derive 'Enum'.
--- For the full set including homebrew, use @Arkham.Homebrew.Traits.allTraits@.
+-- For the full set including homebrew, use @Arkham.Homebrew.Defs.allTraits@.
 coreTraits :: [Trait]
 coreTraits =
   [ fromConstr con

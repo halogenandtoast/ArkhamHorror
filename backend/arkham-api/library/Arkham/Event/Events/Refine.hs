@@ -7,7 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Customization
-import Arkham.Homebrew.Traits (allTraits)
+import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Matcher
 import Arkham.Trait (displayTrait)
 import Arkham.Name hiding (labeled)

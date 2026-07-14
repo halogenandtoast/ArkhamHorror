@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.Ajax (ajax) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Homebrew.Defs (allActions)
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.I18n
@@ -24,7 +25,7 @@ instance HasModifiersFor Ajax where
   getModifiersFor (Ajax a) = for_ a.controller \iid -> do
     actions <- fieldMap InvestigatorActionsPerformed concat iid
     when (null actions) do
-      modified_ a iid $ ActionDoesNotCauseAttacksOfOpportunity <$> [minBound ..]
+      modified_ a iid $ ActionDoesNotCauseAttacksOfOpportunity <$> allActions
 
 instance HasAbilities Ajax where
   getAbilities (Ajax a) =

@@ -2,12 +2,12 @@ module Arkham.Homebrew.DarkMatter.Enemies.TheFeasterFromAfar (theFeasterFromAfar
 
 import Arkham.Ability
 import Arkham.Deck qualified as Deck
-import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
+import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern ScanningDeck)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Scenario.Deck
 
 newtype TheFeasterFromAfar = TheFeasterFromAfar EnemyAttrs
   deriving anyclass IsEnemy

@@ -2,6 +2,7 @@ module Arkham.Asset.Assets.ElinaHarperKnowsTooMuch (elinaHarperKnowsTooMuch) whe
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Homebrew.Defs (allActions)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
@@ -20,7 +21,7 @@ instance HasModifiersFor ElinaHarperKnowsTooMuch where
       actions <- fieldMap InvestigatorActionsPerformed concat iid
       modified_ a iid
         $ [SkillModifier #intellect 1, SkillModifier #agility 1]
-        <> (if null actions then ActionDoesNotCauseAttacksOfOpportunity <$> [minBound ..] else [])
+        <> (if null actions then ActionDoesNotCauseAttacksOfOpportunity <$> allActions else [])
 
 instance RunMessage ElinaHarperKnowsTooMuch where
   runMessage msg (ElinaHarperKnowsTooMuch attrs) = runQueueT $ case msg of

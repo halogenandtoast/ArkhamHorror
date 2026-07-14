@@ -3,8 +3,6 @@
 module Arkham.CampaignLogKey where
 
 import Arkham.Campaigns.BrethrenOfAsh.Key
-import Arkham.Homebrew.CircusExMortis.Key
-import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Campaigns.TheCircleUndone.Key
@@ -45,8 +43,13 @@ data CampaignLogKey
   | TheFeastOfHemlockValeKey TheFeastOfHemlockValeKey
   | BrethrenOfAshKey BrethrenOfAshKey
   | TheDrownedCityKey TheDrownedCityKey
-  | DarkMatterKey DarkMatterKey
-  | CircusExMortisKey CircusExMortisKey
+  | -- | The single shared wrapper through which any homebrew campaign plugs its
+    -- own key enum into the log — the homebrew analogue of the per-campaign
+    -- @…Key …Key@ constructors above, but injected rather than hardcoded. Each
+    -- campaign owns @data …Key@ plus an 'IsCampaignLogKey' instance that maps to
+    -- and from this wrapper (see e.g. @Arkham.Homebrew.DarkMatter.Key@), so
+    -- adding a campaign needs no change here.
+    HomebrewCampaignLogKey Text
   | TheLabyrinthsOfLunacyKey TheLabyrinthsOfLunacyKey
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
@@ -114,8 +117,6 @@ instance FromJSON CampaignLogKey where
       <|> (TheFeastOfHemlockValeKey <$> parseJSON o)
       <|> (BrethrenOfAshKey <$> parseJSON o)
       <|> (TheDrownedCityKey <$> parseJSON o)
-      <|> (DarkMatterKey <$> parseJSON o)
-      <|> (CircusExMortisKey <$> parseJSON o)
       <|> (TheLabyrinthsOfLunacyKey <$> parseJSON o)
       <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
       <|> parseStringKey o
@@ -290,22 +291,10 @@ instance IsCampaignLogKey TheDrownedCityKey where
     TheDrownedCityKey k -> Just k
     _ -> Nothing
 
-instance IsCampaignLogKey DarkMatterKey where
-  toCampaignLogKey = DarkMatterKey
-  fromCampaignLogKey = \case
-    DarkMatterKey k -> Just k
-    _ -> Nothing
-
 instance IsCampaignLogKey TheLabyrinthsOfLunacyKey where
   toCampaignLogKey = TheLabyrinthsOfLunacyKey
   fromCampaignLogKey = \case
     TheLabyrinthsOfLunacyKey k -> Just k
-    _ -> Nothing
-
-instance IsCampaignLogKey CircusExMortisKey where
-  toCampaignLogKey = CircusExMortisKey
-  fromCampaignLogKey = \case
-    CircusExMortisKey k -> Just k
     _ -> Nothing
 
 instance ToJSONKey CampaignLogKey
@@ -371,8 +360,7 @@ instance ToGameLoggerFormat CampaignLogKey where
     TheFeastOfHemlockValeKey k -> pack . go $ show k
     BrethrenOfAshKey k -> pack . go $ show k
     TheDrownedCityKey k -> pack . go $ show k
-    DarkMatterKey k -> pack . go $ show k
-    CircusExMortisKey k -> pack . go $ show k
+    HomebrewCampaignLogKey t -> pack . go $ unpack t
     s -> pack . go $ show s
    where
     go :: String -> String

@@ -3692,6 +3692,7 @@ library
       Arkham.Homebrew.CircusExMortis.Scenarios.ThousandToOne
       Arkham.Homebrew.CircusExMortis.Sets
       Arkham.Homebrew.CircusExMortis.Tokens
+      Arkham.Homebrew.CircusExMortis.Traits
       Arkham.Homebrew.CircusExMortis.Treacheries.EndlessSpawn
       Arkham.Homebrew.CircusExMortis.Treacheries.FeralImpulses
       Arkham.Homebrew.CircusExMortis.Treacheries.LunarInfluence
@@ -3702,6 +3703,7 @@ library
       Arkham.Homebrew.CircusExMortis.Treacheries.QuickerThanTheEye
       Arkham.Homebrew.CircusExMortis.Treacheries.RecklessStunt
       Arkham.Homebrew.ContentEntries
+      Arkham.Homebrew.DarkMatter.Actions
       Arkham.Homebrew.DarkMatter.Assets.K2PS187100Functionality
       Arkham.Homebrew.DarkMatter.Assets.K2PS18725Functionality
       Arkham.Homebrew.DarkMatter.Assets.K2PS18750Functionality
@@ -3727,6 +3729,7 @@ library
       Arkham.Homebrew.DarkMatter.Helpers
       Arkham.Homebrew.DarkMatter.Import
       Arkham.Homebrew.DarkMatter.Key
+      Arkham.Homebrew.DarkMatter.ScenarioDeckKeys
       Arkham.Homebrew.DarkMatter.Scenarios.ElectricNightmare
       Arkham.Homebrew.DarkMatter.Scenarios.FragmentOfCarcosa
       Arkham.Homebrew.DarkMatter.Scenarios.InTheShadowOfEarth
@@ -3736,6 +3739,7 @@ library
       Arkham.Homebrew.DarkMatter.Scenarios.TheMachineInYellow
       Arkham.Homebrew.DarkMatter.Scenarios.TheTatterdemalion
       Arkham.Homebrew.DarkMatter.Sets
+      Arkham.Homebrew.DarkMatter.Traits
       Arkham.Homebrew.DarkMatter.Treacheries.Anachronism
       Arkham.Homebrew.DarkMatter.Treacheries.ColdVacuum
       Arkham.Homebrew.DarkMatter.Treacheries.FutureEvils
@@ -3752,7 +3756,6 @@ library
       Arkham.Homebrew.TokenDefs
       Arkham.Homebrew.TokenEntries
       Arkham.Homebrew.Tokens
-      Arkham.Homebrew.Traits
       Arkham.Homebrew.Types
       Arkham.I18n
       Arkham.Id
@@ -7129,6 +7132,7 @@ test-suite spec
       Arkham.Act.Cards.BlackwatersBaneEpicMultiplayerSpec
       Arkham.Act.Cards.ExposeTheAnomalyEpicMultiplayerSpec
       Arkham.Act.Cards.FalseStepV2Spec
+      Arkham.ActionSpec
       Arkham.Agenda.Cards.RestrictedAccessSpec
       Arkham.Agenda.Cards.ShadowsDeepenSpec
       Arkham.Agenda.Cards.TheTrueCulpritV10Spec
@@ -7226,6 +7230,7 @@ test-suite spec
       Arkham.Campaign.TheDunwichLegacy.ScenariosSpec
       Arkham.Campaign.ThePathToCarcosa.ScenariosSpec
       Arkham.Campaign.UsedAbilitiesSpec
+      Arkham.CampaignLogKeySpec
       Arkham.ChaosTokenFaceSpec
       Arkham.DecklistSpec
       Arkham.EncounterSetSpec
@@ -7325,6 +7330,7 @@ test-suite spec
       Arkham.Scenario.Scenarios.TheThingInTheDepthsSpec
       Arkham.Scenario.SpecHelpers
       Arkham.Scenario.TheMidwinterGalaSpec
+      Arkham.ScenarioDeckKeySpec
       Arkham.Skill.Cards.DeductionSpec
       Arkham.Skill.Cards.FearlessSpec
       Arkham.Skill.Cards.GutsSpec
@@ -7339,6 +7345,7 @@ test-suite spec
       Arkham.Skill.Cards.WatchThisSpec
       Arkham.Story.Cards.UnfinishedBusinessSpec
       Arkham.Story.CardsSpec
+      Arkham.TraitSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.AmnesiaSpec
       Arkham.Treachery.Cards.BloodlustSpec

@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.DrHenryArmitage_SpreadingFlames (drHenryArmitage_Spre
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Homebrew.Defs (allActions)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
@@ -19,4 +20,4 @@ instance HasModifiersFor DrHenryArmitage_SpreadingFlames where
     modified_ a iid [SkillModifier #willpower 1, SkillModifier #intellect 1]
     actions <- fieldMap InvestigatorActionsPerformed concat iid
     when (null actions) do
-      modified_ a iid $ ActionDoesNotCauseAttacksOfOpportunity <$> [minBound ..]
+      modified_ a iid $ ActionDoesNotCauseAttacksOfOpportunity <$> allActions

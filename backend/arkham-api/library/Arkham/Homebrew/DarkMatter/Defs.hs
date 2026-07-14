@@ -9,6 +9,8 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
+import Arkham.Homebrew.DarkMatter.Actions qualified as Actions
+import Arkham.Homebrew.DarkMatter.Traits qualified as Traits
 
 locations :: [CardDef]
 locations =
@@ -345,4 +347,7 @@ instance IsHomebrewDefs DarkMatterDefs where
       , hdEncounterAssets = encounterAssets
       , hdPlayerSkills = playerSkills
       , hdStories = stories
+      , hdTraits = Traits.traits
+      , hdActions = Actions.actions
+      , hdActionAffordability = Actions.actionAffordability
       }

@@ -103,7 +103,7 @@ export default defineComponent({
     return formatEntry(t, entry)
   },
   data() {
-    return { green_fleur: `url(${imgsrc('green_fleur.png')})` }
+    return { green_fleur: `url(${imgsrc('fleurs/green_fleur.png')})` }
   }
 })
 </script>

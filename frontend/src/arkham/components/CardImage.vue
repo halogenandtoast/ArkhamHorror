@@ -73,7 +73,7 @@ const backImage = computed(() => {
   if ('LocationType' == cardType) {
     if (props.card.doubleSided)
       return cardImg(props.card.art)
-    return imgsrc('encounter_back.jpg')
+    return imgsrc('backs/back_encounter.jpg')
   }
 
   if (['EnemyType', 'StoryType'].includes(cardType) && props.card.doubleSided)
@@ -85,14 +85,14 @@ const backImage = computed(() => {
   if (['EnemyType', 'StoryType', 'TreacheryType', 'EncounterAssetType', 'EncounterEventType'].includes(cardType)) {
     if (props.card.meta?.customBack)
       return imgsrc(`backs/${props.card.meta.customBack}`)
-    return imgsrc('encounter_back.jpg')
+    return imgsrc('backs/back_encounter.jpg')
   }
 
   // Player-type cards (e.g. earned Artifact assets) may also define a custom back.
   if (props.card.meta?.customBack)
     return imgsrc(`backs/${props.card.meta.customBack}`)
 
-  return imgsrc('player_back.jpg')
+  return imgsrc('backs/back_player.jpg')
   
 })
 

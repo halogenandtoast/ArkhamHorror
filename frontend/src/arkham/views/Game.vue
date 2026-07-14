@@ -2206,10 +2206,10 @@ onUnmounted(() => {
                 <CardView :game="game" :card="gameCard.card" :playerId="playerId" />
                 <img
                   v-if="gameCard.card.tag === 'PlayerCard'"
-                  :src="imgsrc('player_back.jpg')"
+                  :src="imgsrc('backs/back_player.jpg')"
                   class="card back"
                 />
-                <img v-else :src="imgsrc('back.png')" class="card back" />
+                <img v-else :src="imgsrc('backs/back_encounter.jpg')" class="card back" />
               </div>
               <button @click="continueUI">{{ $t('ok') }}</button>
             </div>

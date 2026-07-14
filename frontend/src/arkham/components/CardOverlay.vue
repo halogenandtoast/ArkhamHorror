@@ -11,6 +11,7 @@ import {
   type VNodeRef,
 } from 'vue'
 import { cardImg, imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
+import { homebrewTokenMap } from '@/arkham/homebrewAssets'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useDebug } from '@/arkham/debug'
 import { fetchPlayability, type PlayabilityResponse } from '@/arkham/api'
@@ -906,7 +907,6 @@ const TOKEN_MAP: Record<string, string> = {
   '[bless]': '<span class="bless-icon"></span>',
   '[curse]': '<span class="curse-icon"></span>',
   '[frost]': '<span class="frost-icon"></span>',
-  '[moon]': '<span class="moon-icon"></span>',
   '[per_investigator]': '<span class="per-player"></span>',
   '[seal_a]': '<span class="seal-a-icon"></span>',
   '[seal_b]': '<span class="seal-b-icon"></span>',
@@ -916,6 +916,7 @@ const TOKEN_MAP: Record<string, string> = {
   '[day]': '<span class="day-icon"></span>',
   '[night]': '<span class="night-icon"></span>',
   '[codex]': '<span class="codex-icon"></span>',
+  ...homebrewTokenMap,
 }
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

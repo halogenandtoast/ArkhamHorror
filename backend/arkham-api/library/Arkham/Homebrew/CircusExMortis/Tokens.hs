@@ -15,3 +15,8 @@ customTokens =
       , tokenRevealEffect = SealOnRevealerAndRevealAnother
       }
   ]
+
+data CircusExMortisTokens
+
+instance IsHomebrewTokens CircusExMortisTokens where
+  homebrewTokens = customTokens

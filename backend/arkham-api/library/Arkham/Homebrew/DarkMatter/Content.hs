@@ -104,3 +104,19 @@ scenarioSets =
 
 campaigns :: [(CampaignId, HomebrewCampaign)]
 campaigns = [(":dark-matter", HomebrewCampaign darkMatter)]
+
+data DarkMatterContent
+
+instance IsHomebrewContent DarkMatterContent where
+  homebrewContent =
+    HomebrewContent
+      { hcActs = acts
+      , hcAgendas = agendas
+      , hcAssets = assets
+      , hcEnemies = enemies
+      , hcLocations = locations
+      , hcTreacheries = treacheries
+      , hcScenarios = scenarios
+      , hcScenarioSets = scenarioSets
+      , hcCampaigns = campaigns
+      }

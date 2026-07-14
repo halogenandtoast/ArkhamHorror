@@ -1,0 +1,60 @@
+{
+  "name": "Dark Matter",
+  "intro": {
+    "title": "In Space, No One Can Hear You Scream",
+    "body": "<p class='basic'>“He mentioned the establishment of the Dynasty in Carcosa, the lakes which connected Hastur, Aldebaran, and the mystery of the Hyades. He spoke of Cassilda and Camilla, and sounded the cloudy depths of Demhe and the Lake of Hali.”</p><p class='basic right'>– Robert W. Chambers, “The Repairer of Reputations”</p><p>It is 2147, and you have just woken up from cryo-sleep in a seemingly abandoned space ship – and from there on you are thrown into a deep space adventure across the solar system to prevent the extinction of the human race. Based on Call of Cthulhu supplements Ripples from Carcosa by Oscar Rios and the End Time by Dr. Michael C. LaBossiere, <i>Dark Matter</i> is an 8 scenario fan-made campaign for <i>Arkham Horror: The Card Game</i> for 1–4 players, designed by Axolotl. It requires <i>The Path to Carcosa</i> deluxe expansion; for the best experience, it is highly recommended that you have completed <i>The Path to Carcosa</i> before playing.</p>"
+  },
+  "specialRules": [
+    { "title": "Scan", "body": "@:darkMatter.additionalRulesAndClarifications.scan" },
+    { "title": "Memories", "body": "@:darkMatter.additionalRulesAndClarifications.memories" },
+    { "title": "Alert", "body": "@:darkMatter.additionalRulesAndClarifications.alert" }
+  ],
+  "additionalRulesAndClarifications": {
+    "title": "Additional Rules & Clarifications",
+    "scan": "<h3>Scan</h3><p class='basic'>Some encounter cards in this campaign will have icons indicated on the bottom of the card when they are face down. These encounter cards will be used to form the “scanning deck”, an out of play deck of cards that will be constructed during the setup of some scenarios.</p><p class='basic'>In this campaign, abilities identified by the <b>Scan</b> action designator allow investigators to explore your environment. Such abilities are generally used to find story assets, story cards or locations in the scanning deck to help progress within each scenario, and are usually, but not always, initiated using the “activate” action.</p><p class='basic'><b>Scan</b> abilities instruct you to search for the top card of the scanning deck matching a certain icon. In such cases, look at the icons on the bottom of the top card in the scanning deck. <b>If the top card of the scanning deck has an icon matching the icon you are scanning for, draw that card.</b> This is considered a “successful” scan. If no cards were drawn, the scan is considered to be “unsuccessful”.</p><p class='basic'>If the topmost card does not have a matching icon, place it face down next to the scanning deck, and look for a matching icon on the next card of the scanning deck. Repeat this process until a card of the indicated type is drawn. After this action has ended, shuffle each card next to the scanning deck back into the scanning deck.</p><p class='basic'><b>Scan</b> abilities will usually, but not always, refer to the icon of a location. The icon of a location is the connection symbol that is located in the top left corner of the card.</p><p class='basic'>If such a situation arises that you would need to discard a card with the scanning back or shuffle it into any other deck, shuffle it back into the scanning deck instead.</p>",
+    "memories": "<h3>Memories</h3><p class='basic'>Some scenario cards, story resolutions and interludes may refer to your “Memories”. Each investigator has a section in the Campaign Log to mark their individual “Memories”. <b>These “Memories” are tied to specific investigators, and are not shared among all of the investigators.</b></p><p class='basic'>You may be instructed to add tally marks or cross out tally marks to specific investigator’s “Memories”. This is done by marking a line in that investigator’s “Memories” section in the Campaign Log, or crossing out one of the above lines, respectively. The number of “Memories” each investigator has is equal to the number of tally marks in their respective sections that have not been crossed out.</p>",
+    "alert": "<h3>Alert</h3><p class='basic'>Each time an investigator fails a skill test while attempting to evade an enemy with the alert keyword, after applying all results for that skill test, that enemy performs an attack against the evading investigator. An enemy does not exhaust after performing an alert attack. This attack occurs whether the enemy is engaged with the evading investigator or not.</p>"
+  },
+  "prologue": {
+    "title": "Prologue",
+    "body": "<p>You turn over the folded program in your hand, reading it for what seems like the hundredth time. “Miskatonic Playhouse presents: The King in Yellow,” it reads. “A special one-night engagement at Arkham’s very own Ward Theatre. An irresistible drama in two acts. Production staged and directed by Nigel Engram.” The cast is a small ensemble, with one unattributed credit at the end: “The Stranger.”</p><p>To have such a highly anticipated play come to Arkham all the way from Paris is a noteworthy event, even if it is just for one night. For weeks leading up to the show, it was the talk of the town. It seemed so unassuming… and yet, you have evidence something sinister is at work. It started with the disappearance of one of the stagehands at the theatre—a boy of only seventeen who missed rehearsal one night and was never seen again. Then, less than two weeks before the performance, there was the musician whose corpse was found with a gun in its mouth. Perhaps most chilling was the crazed man the coppers had picked up in Independence Square who had been ranting and raving about the “King’s return.” He was brought to Arkham Asylum, and you were surprised to discover that he was not alone in his delusions.</p><p>Finding these events suspicious, you and your companions have delved deeper into the matter. Although no connection can be proven, these weren’t the only strange events surrounding the up-and-coming play. Instances of suicide and madness have followed in its wake, and you are determined to discover why.</p><p>The lights in the auditorium dim, and a spotlight shines on the stage. What unfolds is not quite what you expected. Slow-paced and monotonous, the first act of <i>The King in Yellow</i> is a tedious bore. The setting and characters are compelling, but the meandering and nonsensical story does little to entertain or inform. You begin to wonder whether the dreadful events surrounding <i>The King in Yellow</i> aren’t connected, after all. Perhaps it was just your overactive imagination; how could such a trivial and unassuming show cause such pandemonium? You are surprised when the first act closes without any rising action or revelation. The lights rise for the intermission, and you consider leaving early, stifling a yawn. Before you are able to decide, however, you find yourself drifting… drifting… to sleep.</p><p class='basic right'>Proceed to <b>Scenario I: The Tatterdemalion</b>.</p>"
+  },
+  "desynchronization": {
+    "title": "Desynchronization",
+    "body": "<p>An overturned schoolbus gathers dust on the school grounds. As you examine the vandalized windows, you notice a glimpse of your own reflection. However, you no longer recognize the person looking back at you. The frame, the distinct facial features, they all seem so familiar to you, yet you know this is not your body. You stare into the glass in disbelief. The face of your reflection morphs into a blank, pale mask with no mouth, nose or eyes. The virtual reality no longer recognizes your residual self image anymore – the mental projection of your digital self has decayed into nothingness.</p><p class='basic'>You must add the Desync weakness to your deck. This card does not count towards your deck limit.</p>"
+  },
+  "key": {
+    "youWereTransportedToTheVirtualDreamlandsByMaja": "You were transported to the Virtual Dreamlands by Maja.",
+    "youEnteredTheVirtualDreamlandsByYourOwnMeans": "You entered the Virtual Dreamlands by your own means.",
+    "hasBeenInfectedByTheCybervirus": "Has been infected by the cybervirus.",
+    "youAreTrappedInAVirtualNightmare": "You are trapped in a virtual nightmare.",
+    "youPartiallyRestoredTheSanityOfK2PS187": "You partially restored the sanity of K2-PS187.",
+    "youFullyRestoredTheSanityOfK2PS187": "You fully restored the sanity of K2-PS187.",
+    "youHaveWatchedThePerformanceOfHeirToCarcosa": "You have watched the performance of Heir to Carcosa.",
+    "theElbrusStationHasBeenLostInTheQuantumRealm": "The Elbrus Station has been lost in the quantum realm.",
+    "theElbrusStationHasBeenFullyStabilized": "The Elbrus Station has been fully stabilized.",
+    "youHaveWitnessedThePrimordialChaos": "You have witnessed the primordial chaos.",
+    "youHaveRescuedTheRemainingCrewOfTheNostalgiaII": "You have rescued the remaining crew of the Nostalgia II.",
+    "theNostalgiaIIHasBeenSaved": "The Nostalgia II has been saved.",
+    "youCouldntSaveTheCrewOfTheNostalgiaII": "You couldn’t save the crew of the Nostalgia II.",
+    "allInvestigatorsHaveBeenCorruptedByTheEarth": "All investigators have been corrupted by the Earth.",
+    "youAreNotInGoodStandingWithTheMiGo": "You are not in good standing with the Mi-Go.",
+    "youAreAlliedWithTheMiGo": "You are allied with the Mi-Go.",
+    "youHaveUncoveredTheCultistsInhumanMethods": "You have uncovered the cultist’s inhuman methods.",
+    "theInvestigatorsAreTrappedWithinCarcosa": "The investigators are trapped within Carcosa.",
+    "theInvestigatorsKnowOfTheAbjurationOfTheThrone": "The investigators know of the Abjuration of the Throne.",
+    "theSunWentSupernovaAndWipedOutMostOfTheSolarSystem": "The sun went supernova and wiped out most of the solar system.",
+    "miGoSafelyReturnedToTheirHomeWorld": "Mi-Go safely returned to their home world.",
+    "hopeWasShieldedFromTheBlast": "Hope was shielded from the blast.",
+    "theUCCEscapedToAnotherGalaxy": "The UCC escaped to another galaxy.",
+    "livedTheRemainderOfTheirDaysWithHope": "Lived the remainder of their days, with Hope.",
+    "livedTheRemainderOfTheirDaysOnParadise": "Lived the remainder of their days, on Paradise.",
+    "youHaveReturnedToThePalacesOfDimCarcosa": "You have returned to the palaces of Dim Carcosa.",
+    "wasCaughtInTheSupernovasBlast": "Was caught in the supernova’s blast.",
+    "theInvestigatorsEscapedHastursGrasp": "The investigators have finally escaped Hastur’s grasp and prevented him from escaping his prison.",
+    "theRealmOfCarcosaOvertookOurUniverse": "The realm of Carcosa overtook our universe, and Tassilda rules over the black stars.",
+    "hasturAndTassildaAreImprisonedInCarcosaOnceMore": "Hastur and Tassilda are imprisoned in Carcosa once more, and the universe vanquished the inevitable… For now.",
+    "impendingDoom": "Impending Doom",
+    "memories": "Memories"
+  }
+}

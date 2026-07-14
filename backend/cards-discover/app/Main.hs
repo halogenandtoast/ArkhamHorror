@@ -6,6 +6,8 @@ import Prelude
 
 data Opts = Opts
   { dir :: FilePath
+  , only :: Maybe FilePath
+  , instancesOnly :: Bool
   , sourceName :: FilePath
   , sourceLocation :: FilePath
   , targetFile :: FilePath
@@ -14,7 +16,8 @@ data Opts = Opts
 main :: IO ()
 main = do
   Opts {..} <- execParser infoParser
-  discoverCards (Source sourceName) (Destination targetFile) dir
+  let mode = if instancesOnly then InstancesOnly else ReExport
+  discoverCardsWith (Source sourceName) (Destination targetFile) dir only mode
  where
   infoParser = info
     (helper <*> optsParser)
@@ -22,6 +25,8 @@ main = do
   optsParser =
     Opts
       <$> strOption (long "dir" <> short 'd' <> value "Cards")
+      <*> optional (strOption (long "only" <> help "Only files with this exact basename"))
+      <*> switch (long "instances" <> help "Emit instance-only imports (import M ())")
       <*> argument str (metavar "NAME" <> help "Name of the source file")
       <*> argument str (metavar "PATH" <> help "Path to the input file")
       <*> argument str (metavar "PATH" <> help "Path to the output file")

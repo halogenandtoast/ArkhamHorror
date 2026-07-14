@@ -90,7 +90,7 @@ const spiritDeckTopRevealed = computed(() => spiritDeckTop.value?.tag === 'Encou
 const spiritDeckTopImage = computed(() =>
   spiritDeckTopRevealed.value && spiritDeckTop.value
     ? imgsrc(cardToImage(spiritDeckTop.value))
-    : imgsrc('player_back.jpg'),
+    : imgsrc('backs/back_player.jpg'),
 )
 const marketDeckCardCode = (card: ArkhamCard) => asCardCode(card).replace(/^c/, '')
 const marketDeckCardImageId = (card: ArkhamCard) => toCardContents(card).art ?? marketDeckCardCode(card)
@@ -119,7 +119,7 @@ const image = computed(() => {
   if (props.asset.flipped) {
     if (cardCode.value === "c90052") return cardImage(cardCode.value, 'b')
     if (cardCode.value === "c88043") return cardImage(cardCode.value, 'b')
-    return imgsrc(`player_back.jpg`)
+    return imgsrc(`backs/back_player.jpg`)
   }
   const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
   return cardImage(cardCode.value, mutated)
@@ -323,7 +323,7 @@ function startDrag(event: DragEvent) {
         <div v-if="asset.marketDeck" class="market-deck">
           <img
             class="deck card no-overlay"
-            :src="imgsrc('player_back.jpg')"
+            :src="imgsrc('backs/back_player.jpg')"
             width="150px"
           />
           <span class="deck-size">{{asset.marketDeck.length}}</span>

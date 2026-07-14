@@ -18,9 +18,9 @@ export interface Props {
 }
 
 const grunge = `url(${imgsrc('grunge.png')})`
-const checkpoint_fleur = `url(${imgsrc('checkpoint_fleur.png')})`
-const resolution_fleur = `url(${imgsrc('resolution_fleur.png')})`
-const black_fleur = `url(${imgsrc('black_fleur.png')})`
+const checkpoint_fleur = `url(${imgsrc('fleurs/checkpoint_fleur.png')})`
+const resolution_fleur = `url(${imgsrc('fleurs/resolution_fleur.png')})`
+const black_fleur = `url(${imgsrc('fleurs/black_fleur.png')})`
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)

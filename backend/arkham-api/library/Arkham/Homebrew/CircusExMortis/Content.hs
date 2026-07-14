@@ -186,3 +186,19 @@ scenarioSets =
 
 campaigns :: [(CampaignId, HomebrewCampaign)]
 campaigns = [(":circus-ex-mortis", HomebrewCampaign circusExMortis)]
+
+data CircusExMortisContent
+
+instance IsHomebrewContent CircusExMortisContent where
+  homebrewContent =
+    HomebrewContent
+      { hcActs = acts
+      , hcAgendas = agendas
+      , hcAssets = assets
+      , hcEnemies = enemies
+      , hcLocations = locations
+      , hcTreacheries = treacheries
+      , hcScenarios = scenarios
+      , hcScenarioSets = scenarioSets
+      , hcCampaigns = campaigns
+      }

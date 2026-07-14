@@ -1,0 +1,32 @@
+{
+  "thePrimrosePath": {
+    "intro": {
+      "title": "Scenario II: The Primrose Path",
+      "body": "<p>Stories have long been told and retold in Arkham about the strange and mystical things lurking in it. Witches, demons, humanoid beasts, the list goes on. Any one of those would be reason to not venture into the woods at night, but since you're already chancing things with the circus and its monsters, there's not much left to hold you back.</p><p>The full moon lends an eerie brightness to the woods. The same atmosphere of illusory magic that you saw on the circus grounds lingers between the trees. No doubt the circus has taken precautions to veil themselves from prying outsiders, and you wonder how they and the moon align. Until then, you must decide how you will proceed into this mystical forest.</p>",
+      "label": {
+        "useMoonlight": "\"We'll use the moonlight to our advantage.\" If there is a {'{'}moon{'}'} token in the chaos bag, remove it and add a {'{'}tablet{'}'} token for the remainder of the campaign.",
+        "shadows": "\"We'll stick to the shadows as much as possible.\" If there is a {'{'}tablet{'}'} token in the chaos bag, remove it and add a {'{'}moon{'}'} token for the remainder of the campaign."
+      }
+    },
+    "bloodMoon": {
+      "label": {
+        "physicalTrauma": "Suffer 1 physical trauma",
+        "mentalTrauma": "Suffer 1 mental trauma"
+      }
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>Battered and dazed, you stumble through the ensorcelled woods, instinctive motivation for survival alone pushing you forward. Minutes pass &ndash; or are they hours? &ndash; until a much softer crunch rouses your senses. One of the circus carnies wanders by you, seemingly on patrol. The carnie must be on his way back to the camp, and if he can bypass the illusory defenses, then perhaps you can as well. You follow the man at a distance, and gradually, you tail him to the outskirts of the circus encampment.</p><p>In your Campaign Log, record that <b>the investigators were lost in the Arkham woods</b>.</p>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>Despite the fearsome challenges in the forest, you find the camp to be surprisingly placid. The performers sleep in tents or in hammocks out in the open, with only a small night guard on duty patrolling. For all the magic and monstrosity at their command, the circus is still crewed by mortal humans with common needs.</p><p>Some creatures that you faced in the woods did not even look as disguised as circus animals. They were almost formless amalgamations of mouths, tentacles, hooves and horns, scattered over a fleshy trunk like the patches on an old coat. You shudder to imagine what worse things could be at the circus' beck and call.</p><p>In your Campaign Log, record that <b>the investigators bypassed the illusions</b>.</p>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p>With cautious steps, you traverse the outskirts of the circus encampment, looking for any sign of the kidnapped citizens. You reach a towering oak at the far side, ancient, twisted, and all but barren. An ornate painted trailer stands against it, larger than any of the other nearby carts by far.</p><p>The towering figure of the ringmaster emerges and descends the short steps. \"Get your sleep,\" he utters, \"the perimeter guard will let us know when they arrive.\" With the ringmaster out in the woods, you have a rare chance to delve into the heart of the matter. Steeling your nerve, you creep up the steps to his trailer.</p><p>Each investigator earns experience equal to the Victory X value of each card in the victory display ({'{'}xp{'}'} total).</p>"
+      }
+    }
+  }
+}

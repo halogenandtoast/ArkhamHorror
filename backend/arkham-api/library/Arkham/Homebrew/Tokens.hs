@@ -1,3 +1,9 @@
+{-# LANGUAGE TemplateHaskell #-}
+
+{- | Custom chaos tokens contributed by homebrew campaigns. Campaigns are
+discovered: any @Arkham/Homebrew/<Name>/Tokens.hs@ with an 'IsHomebrewTokens'
+instance is folded in automatically — no edits here when adding a campaign.
+-}
 module Arkham.Homebrew.Tokens (
   module Arkham.Homebrew.TokenDefs,
   customTokenDefs,
@@ -5,15 +11,16 @@ module Arkham.Homebrew.Tokens (
 ) where
 
 import Arkham.ChaosToken.Types
-import Arkham.Homebrew.CircusExMortis.Tokens qualified as CircusExMortis
+import Arkham.Homebrew.TH
 import Arkham.Homebrew.TokenDefs
+import Arkham.Homebrew.TokenEntries ()
 import Arkham.Prelude
 
 customTokenDefs :: Map Text CustomTokenDef
 customTokenDefs =
   mapFromList
     [ (tokenSlug def, def)
-    | def <- CircusExMortis.customTokens
+    | def <- $(discoverInstances ''IsHomebrewTokens 'homebrewTokens)
     ]
 
 -- | Engine-level reveal behavior for a token face; 'RevealNoEffect' for

@@ -63,7 +63,7 @@ export function cardId(card: Card | CardContents): string {
 
 export function cardImage(card: Card | CardContents) {
   if (cardFacedown(card)) {
-    return card.tag === 'PlayerCard' || card.tag === 'CardContents' ? 'player_back.jpg' : 'encounter_back.jpg'
+    return card.tag === 'PlayerCard' || card.tag === 'CardContents' ? 'backs/back_player.jpg' : 'backs/back_encounter.jpg'
   }
   const side = cardIsFlipped(card) ? 'b' : ''
   // TODO, send art with cards next to

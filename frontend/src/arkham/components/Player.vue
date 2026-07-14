@@ -51,8 +51,8 @@ const solo = inject<Ref<boolean>>('solo')
 const showOtherPlayersHands = inject<Ref<boolean>>('showOtherPlayersHands')
 
 const investigatorId = computed(() => props.investigator.id)
-const ENCOUNTER_BACK = imgsrc("encounter_back.jpg")
-const PLAYER_BACK = imgsrc("player_back.jpg")
+const ENCOUNTER_BACK = imgsrc("backs/back_encounter.jpg")
+const PLAYER_BACK = imgsrc("backs/back_player.jpg")
 
 function backForEnemy(enemy: Enemy) {
   const card = props.game.cards[enemy.cardId]
@@ -904,7 +904,7 @@ function closeHand() {
           <img
             v-else
             class="deck card"
-            :src="imgsrc('player_back.jpg')"
+            :src="imgsrc('backs/back_player.jpg')"
             width="150px"
           />
           <span class="deck-size">{{hunchDeck.length}}</span>

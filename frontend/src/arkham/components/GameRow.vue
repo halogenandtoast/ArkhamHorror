@@ -1,19 +1,22 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import type { GameDetails } from '@/arkham/types/Game';
-import type { Difficulty } from '@/arkham/types/Difficulty';
-import type { CampaignDetails } from '@/arkham/types/Campaign';
-import type { ScenarioDetails } from '@/arkham/types/Scenario';
-import { imgsrc } from '@/arkham/helpers';
+import { computed, ref } from 'vue'
+import type { GameDetails } from '@/arkham/types/Game'
+import type { Difficulty } from '@/arkham/types/Difficulty'
+import type { CampaignDetails } from '@/arkham/types/Campaign'
+import type { ScenarioDetails } from '@/arkham/types/Scenario'
+import { imgsrc } from '@/arkham/helpers'
 import Prompt from '@/components/Prompt.vue'
 
-const props = withDefaults(defineProps<{
-  game: GameDetails
-  deleteGame?: () => void
-  admin?: boolean
-}>(), {
-  admin: false
-})
+const props = withDefaults(
+  defineProps<{
+    game: GameDetails
+    deleteGame?: () => void
+    admin?: boolean
+  }>(),
+  {
+    admin: false,
+  },
+)
 const campaign = computed<CampaignDetails | null>(() => props.game.campaign)
 const scenario = computed<ScenarioDetails | null>(() => props.game.scenario)
 const deleting = ref(false)
@@ -32,7 +35,9 @@ const difficulty = computed<Difficulty>(() => {
 
 const currentHeading = computed(() => {
   if (campaign.value?.currentCampaignMode) {
-    return campaign.value?.currentCampaignMode === "TheWebOfDreams" ? "The Web of Dreams" : "The Dream-Quest"
+    return campaign.value?.currentCampaignMode === 'TheWebOfDreams'
+      ? 'The Web of Dreams'
+      : 'The Dream-Quest'
   }
 
   return null
@@ -40,13 +45,35 @@ const currentHeading = computed(() => {
 
 const otherHeading = computed(() => {
   if (currentHeading.value) {
-    return currentHeading.value === "The Web of Dreams" ? "The Dream-Quest" : "The Web of Dreams" 
+    return currentHeading.value === 'The Web of Dreams' ? 'The Dream-Quest' : 'The Web of Dreams'
   }
 
   return null
 })
 
 const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
+
+const campaignIcon = computed(() => {
+  if (!campaign.value) return null
+  const { id: campaignId } = campaign.value
+  if (!campaignId) return null
+  if (campaignId.startsWith(':')) {
+    const homebrewId = campaignId.slice(1)
+    return imgsrc(`homebrew/${homebrewId}/sets/${homebrewId}.png`)
+  }
+  return imgsrc(`sets/${campaignId}.png`)
+})
+
+const scenarioIcon = computed(() => {
+  if (!scenario.value) return null
+  const { id: scenarioId } = scenario.value
+  if (!scenarioId) return null
+  if (scenarioId.startsWith('c:')) {
+    const [, homebrewId, homebrewScenarioId] = scenarioId.match(/^c:([^:]+):([^:]+)$/)
+    return imgsrc(`homebrew/${homebrewId}/sets/${homebrewScenarioId}.png`)
+  }
+  return imgsrc(`sets/${scenarioId.replace('c', '')}.png`)
+})
 </script>
 
 <template>
@@ -55,59 +82,78 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
       <div class="game-title">
         <div class="main-details">
           <div class="campaign-icon-container" v-if="campaign">
-            <img class="campaign-icon" :src="imgsrc(`sets/${campaign.id}.png`)" />
+            <img class="campaign-icon" :src="campaignIcon" />
           </div>
           <div class="campaign-icon-container" v-else-if="scenario">
             <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
           </div>
-          <router-link v-if="admin" class="title" :to="`/admin/games/${game.id}`">{{game.name}}</router-link>
-          <router-link v-else-if="game.hasOpenSeats" class="title" :to="`/games/${game.id}/claim-seat`">{{game.name}}</router-link>
-          <router-link v-else class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
+          <router-link v-if="admin" class="title" :to="`/admin/games/${game.id}`">{{
+            game.name
+          }}</router-link>
+          <router-link
+            v-else-if="game.hasOpenSeats"
+            class="title"
+            :to="`/games/${game.id}/claim-seat`"
+            >{{ game.name }}</router-link
+          >
+          <router-link v-else class="title" :to="`/games/${game.id}`">{{ game.name }}</router-link>
           <div v-if="game.multiplayerVariant === 'Solo'" class="solo">{{ $t('gameRow.solo') }}</div>
         </div>
         <div v-if="campaign && scenario" class="scenario-details">
-          <img class="scenario-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
-          <span>{{scenario.name.title}}</span>
+          <img class="scenario-icon" :src="scenarioIcon" />
+          <span>{{ scenario.name.title }}</span>
         </div>
         <div class="extra-details">
-          <div class="game-difficulty">{{difficulty}}</div>
+          <div class="game-difficulty">{{ difficulty }}</div>
 
           <div v-if="deleteGame" class="game-delete">
-            <a href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+            <a href="#delete" @click.prevent="deleting = true"
+              ><font-awesome-icon icon="trash"
+            /></a>
           </div>
           <Prompt
             v-if="deleting && deleteGame"
             prompt="Are you sure you want to delete this game?"
             :yes="deleteGame"
-            :no="() => deleting = false"
+            :no="() => (deleting = false)"
           />
         </div>
       </div>
       <div class="game-subdetails">
         <div class="current-subdetails">
-          <h2 v-if="currentHeading">{{currentHeading}}</h2>
+          <h2 v-if="currentHeading">{{ currentHeading }}</h2>
           <div class="investigators">
             <div
               v-for="investigator in game.investigators"
               :key="investigator.id"
               class="investigator"
             >
-              <div :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`">
-                <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+              <div
+                :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`"
+              >
+                <img
+                  :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)"
+                  class="investigator-portrait"
+                />
               </div>
             </div>
           </div>
         </div>
         <div v-if="Object.keys(game.otherInvestigators).length > 0" class="other-subdetails">
-          <h2 v-if="otherHeading">{{otherHeading}}</h2>
+          <h2 v-if="otherHeading">{{ otherHeading }}</h2>
           <div class="other-investigators">
             <div
               v-for="investigator in game.otherInvestigators"
               :key="investigator.id"
               class="investigator"
             >
-              <div :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`">
-                <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+              <div
+                :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`"
+              >
+                <img
+                  :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)"
+                  class="investigator-portrait"
+                />
               </div>
             </div>
           </div>
@@ -119,7 +165,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
 
 <style scoped>
 h2 {
-  color: #6E8644;
+  color: #6e8644;
   font-size: 2em;
   text-transform: uppercase;
 }
@@ -225,7 +271,7 @@ h2 {
 
 .investigator-portrait-container {
   width: 50px;
-  height:50px;
+  height: 50px;
   overflow: hidden;
   border-radius: 5px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
@@ -268,7 +314,7 @@ h2 {
 
 .game-subdetails {
   display: flex;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   flex-grow: 1;
   position: relative;
 
@@ -281,7 +327,7 @@ h2 {
 .current-subdetails {
   display: flex;
   flex-direction: column;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   flex: 1;
   position: relative;
   gap: 10px;
@@ -309,9 +355,8 @@ h2 {
   }
 }
 
-
-
-.main-details, .extra-details {
+.main-details,
+.extra-details {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -335,7 +380,10 @@ h2 {
     flex-direction: column;
     font-size: 0.8em;
     align-items: flex-start;
-    img { width: 20px; height: auto; }
+    img {
+      width: 20px;
+      height: auto;
+    }
     gap: 5px;
     padding: 6px 10px;
   }
@@ -376,7 +424,7 @@ h2 {
   background: var(--box-background);
 
   h2 {
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.02);
     color: var(--title);
     font-size: 1em;
     margin: 0;
@@ -398,7 +446,6 @@ h2 {
   border-radius: 10px;
   text-transform: uppercase;
 }
-
 
 .solo {
   color: rgba(255, 255, 255, 0.5);

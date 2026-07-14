@@ -1,6 +1,7 @@
-module Arkham.Homebrew.CircusExMortis.Defs where
+module Arkham.Homebrew.CircusExMortis.Defs (module Arkham.Homebrew.CircusExMortis.Defs) where
 
 import Arkham.Card.CardDef
+import Arkham.Homebrew.DefsBase
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
@@ -299,3 +300,19 @@ stories =
   , Stories.theDarkYoungStir
   , Stories.underLockAndKey
   ]
+
+data CircusExMortisDefs
+
+instance IsHomebrewDefs CircusExMortisDefs where
+  homebrewDefs =
+    HomebrewDefs
+      { hdLocations = locations
+      , hdEnemies = enemies
+      , hdTreacheries = treacheries
+      , hdPlayerTreacheries = playerTreacheries
+      , hdActs = acts
+      , hdAgendas = agendas
+      , hdEncounterAssets = encounterAssets
+      , hdPlayerSkills = playerSkills
+      , hdStories = stories
+      }

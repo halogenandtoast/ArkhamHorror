@@ -1,6 +1,7 @@
-module Arkham.Homebrew.DarkMatter.Defs where
+module Arkham.Homebrew.DarkMatter.Defs (module Arkham.Homebrew.DarkMatter.Defs) where
 
 import Arkham.Card.CardDef
+import Arkham.Homebrew.DefsBase
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
@@ -329,3 +330,19 @@ stories =
   , Stories.whoAmI
   , Stories.withoutATrace
   ]
+
+data DarkMatterDefs
+
+instance IsHomebrewDefs DarkMatterDefs where
+  homebrewDefs =
+    HomebrewDefs
+      { hdLocations = locations
+      , hdEnemies = enemies
+      , hdTreacheries = treacheries
+      , hdPlayerTreacheries = playerTreacheries
+      , hdActs = acts
+      , hdAgendas = agendas
+      , hdEncounterAssets = encounterAssets
+      , hdPlayerSkills = playerSkills
+      , hdStories = stories
+      }

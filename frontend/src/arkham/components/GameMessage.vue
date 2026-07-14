@@ -8,49 +8,49 @@ import { handleEmbeddedI18n } from '@/arkham/i18n';
 function imageFor(tokenFace: string) {
   switch (tokenFace) {
     case 'PlusOne':
-      return imgsrc("ct_plus1.png");
+      return imgsrc("chaos-tokens/ct_plus1.png");
     case 'Zero':
-      return imgsrc("ct_0.png");
+      return imgsrc("chaos-tokens/ct_0.png");
     case 'MinusOne':
-      return imgsrc("ct_minus1.png");
+      return imgsrc("chaos-tokens/ct_minus1.png");
     case 'MinusTwo':
-      return imgsrc("ct_minus2.png");
+      return imgsrc("chaos-tokens/ct_minus2.png");
     case 'MinusThree':
-      return imgsrc("ct_minus3.png");
+      return imgsrc("chaos-tokens/ct_minus3.png");
     case 'MinusFour':
-      return imgsrc("ct_minus4.png");
+      return imgsrc("chaos-tokens/ct_minus4.png");
     case 'MinusFive':
-      return imgsrc("ct_minus5.png");
+      return imgsrc("chaos-tokens/ct_minus5.png");
     case 'MinusSix':
-      return imgsrc("ct_minus6.png");
+      return imgsrc("chaos-tokens/ct_minus6.png");
     case 'MinusSeven':
-      return imgsrc("ct_minus7.png");
+      return imgsrc("chaos-tokens/ct_minus7.png");
     case 'MinusEight':
-      return imgsrc("ct_minus8.png");
+      return imgsrc("chaos-tokens/ct_minus8.png");
     case 'AutoFail':
-      return imgsrc("ct_autofail.png");
+      return imgsrc("chaos-tokens/ct_autofail.png");
     case 'ElderSign':
-      return imgsrc("ct_eldersign.png");
+      return imgsrc("chaos-tokens/ct_eldersign.png");
     case 'Skull':
-      return imgsrc("ct_skull.png");
+      return imgsrc("chaos-tokens/ct_skull.png");
     case 'Cultist':
-      return imgsrc("ct_cultist.png");
+      return imgsrc("chaos-tokens/ct_cultist.png");
     case 'Tablet':
-      return imgsrc("ct_tablet.png");
+      return imgsrc("chaos-tokens/ct_tablet.png");
     case 'ElderThing':
-      return imgsrc("ct_elderthing.png");
+      return imgsrc("chaos-tokens/ct_elderthing.png");
     case 'BlessToken':
-      return imgsrc("ct_bless.png");
+      return imgsrc("chaos-tokens/ct_bless.png");
     case 'CurseToken':
-      return imgsrc("ct_curse.png");
+      return imgsrc("chaos-tokens/ct_curse.png");
     case 'FrostToken':
-      return imgsrc("ct_frost.png");
+      return imgsrc("chaos-tokens/ct_frost.png");
     default: {
       if (tokenFace.includes(':')) {
-        const parts = tokenFace.split(':')
-        return imgsrc(`ct_${parts[parts.length - 1]}.png`)
+        const [, campaign, key] = tokenFace.split(':')
+        if (campaign && key) return imgsrc(`homebrew/${campaign}/chaos-tokens/${key}.png`)
       }
-      return imgsrc("ct_blank.png");
+      return imgsrc("chaos-tokens/ct_blank.png");
     }
   }
 }

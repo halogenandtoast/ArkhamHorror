@@ -3701,6 +3701,7 @@ library
       Arkham.Homebrew.CircusExMortis.Treacheries.OminousMoonlight
       Arkham.Homebrew.CircusExMortis.Treacheries.QuickerThanTheEye
       Arkham.Homebrew.CircusExMortis.Treacheries.RecklessStunt
+      Arkham.Homebrew.ContentEntries
       Arkham.Homebrew.DarkMatter.Assets.K2PS187100Functionality
       Arkham.Homebrew.DarkMatter.Assets.K2PS18725Functionality
       Arkham.Homebrew.DarkMatter.Assets.K2PS18750Functionality
@@ -3744,8 +3745,12 @@ library
       Arkham.Homebrew.DarkMatter.Treacheries.RadiantCrown
       Arkham.Homebrew.DarkMatter.Treacheries.SolarFlare
       Arkham.Homebrew.Defs
+      Arkham.Homebrew.DefsBase
+      Arkham.Homebrew.DefsEntries
       Arkham.Homebrew.Registry
+      Arkham.Homebrew.TH
       Arkham.Homebrew.TokenDefs
+      Arkham.Homebrew.TokenEntries
       Arkham.Homebrew.Tokens
       Arkham.Homebrew.Types
       Arkham.I18n
@@ -7286,6 +7291,7 @@ test-suite spec
       Arkham.Game.DiffSpec
       Arkham.GameSpec
       Arkham.Helpers.InvestigatorSpec
+      Arkham.HomebrewRegistrySpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec
       Arkham.Investigator.Cards.CarsonSinclairSpec

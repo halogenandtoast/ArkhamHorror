@@ -1,3 +1,5 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+
 module Arkham.Homebrew.TokenDefs where
 
 import Arkham.Prelude
@@ -22,3 +24,8 @@ data CustomTokenDef = CustomTokenDef
   -- the display key (format tag, label, frontend @ct_<key>.png@ icon).
   , tokenRevealEffect :: CustomTokenReveal
   }
+
+-- | Implement in your campaign's @Tokens.hs@ on a campaign-local tag type;
+-- the instance is discovered automatically (see 'Arkham.Homebrew.Tokens').
+class IsHomebrewTokens a where
+  homebrewTokens :: [CustomTokenDef]

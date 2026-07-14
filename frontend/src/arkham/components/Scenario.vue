@@ -2358,7 +2358,7 @@ async function addChaosToken(face: any){
                 :aria-label="spokenHasturTooltip"
                 @click.stop.prevent="recordSpokenHastur"
               >
-                <img :src="imgsrc('ct_cultist.png')" alt="" />
+                <img :src="imgsrc('chaos-tokens/ct_cultist.png')" alt="" />
               </button>
             </div>
           </div>
@@ -2603,7 +2603,7 @@ async function addChaosToken(face: any){
 
           <template v-if="barriers">
             <div v-for="[area, amount] in Object.entries(barriers)" :key="area" class="barrier" :class="{ vertical: isVertical(area) }" :style="{ 'grid-area': `barrier-${area}` }">
-              <img v-for="n in amount" :key="n" :src="imgsrc('resource.png')" />
+              <img v-for="n in amount" :key="n" :src="imgsrc('tokens/resource.png')" />
               <button v-if="debug.active && (amount as number > 0)" @click="debug.send(game.id, {tag: 'ScenarioCountDecrementBy', contents: [{ 'tag': 'Barriers', 'contents': area.split('--') }, 1]})">x</button>
             </div>
           </template>
@@ -2691,9 +2691,9 @@ async function addChaosToken(face: any){
         <div id="totals">
           <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
           <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
-          <PoolItem v-if="blessTokens > 0" type="ct_bless" :amount="blessTokens" />
-          <PoolItem v-if="curseTokens > 0" type="ct_curse" :amount="curseTokens" />
-          <PoolItem v-if="frostTokens > 0" type="ct_frost" :amount="frostTokens" />
+          <PoolItem v-if="blessTokens > 0" type="chaos-tokens/ct_bless" :amount="blessTokens" />
+          <PoolItem v-if="curseTokens > 0" type="chaos-tokens/ct_curse" :amount="curseTokens" />
+          <PoolItem v-if="frostTokens > 0" type="chaos-tokens/ct_frost" :amount="frostTokens" />
         </div>
       </div>
     </div>

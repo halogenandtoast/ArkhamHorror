@@ -1,3 +1,10 @@
+{-# LANGUAGE TemplateHaskell #-}
+
+{- | Runtime content contributed by homebrew campaigns. Campaigns are
+discovered: any @Arkham/Homebrew/<Name>/Content.hs@ with an
+'IsHomebrewContent' instance is folded in automatically — no edits here when
+adding a campaign.
+-}
 module Arkham.Homebrew.Registry where
 
 import Arkham.Act.Types (SomeActCard)
@@ -6,37 +13,40 @@ import Arkham.Asset.Types (SomeAssetCard)
 import Arkham.Card.CardCode
 import Arkham.EncounterSet (EncounterSet)
 import Arkham.Enemy.Types (SomeEnemyCard)
+import Arkham.Homebrew.ContentEntries ()
+import Arkham.Homebrew.TH
 import Arkham.Homebrew.Types as X
 import Arkham.Id (CampaignId)
 import Arkham.Location.Types (SomeLocationCard)
-import Arkham.Prelude
+import Arkham.Prelude ()
 import Arkham.Treachery.Types (SomeTreacheryCard)
-import Arkham.Homebrew.DarkMatter.Content qualified as DarkMatter
-import Arkham.Homebrew.CircusExMortis.Content qualified as CircusExMortis
+
+allHomebrewContent :: HomebrewContent
+allHomebrewContent = $(discoverInstances ''IsHomebrewContent 'homebrewContent)
 
 acts :: [SomeActCard]
-acts = DarkMatter.acts <> CircusExMortis.acts
+acts = hcActs allHomebrewContent
 
 agendas :: [SomeAgendaCard]
-agendas = DarkMatter.agendas <> CircusExMortis.agendas
+agendas = hcAgendas allHomebrewContent
 
 assets :: [SomeAssetCard]
-assets = DarkMatter.assets <> CircusExMortis.assets
+assets = hcAssets allHomebrewContent
 
 enemies :: [SomeEnemyCard]
-enemies = DarkMatter.enemies <> CircusExMortis.enemies
+enemies = hcEnemies allHomebrewContent
 
 locations :: [SomeLocationCard]
-locations = DarkMatter.locations <> CircusExMortis.locations
+locations = hcLocations allHomebrewContent
 
 treacheries :: [SomeTreacheryCard]
-treacheries = DarkMatter.treacheries <> CircusExMortis.treacheries
+treacheries = hcTreacheries allHomebrewContent
 
 scenarios :: [(CardCode, HomebrewScenario)]
-scenarios = DarkMatter.scenarios <> CircusExMortis.scenarios
+scenarios = hcScenarios allHomebrewContent
 
 scenarioSets :: [(CardCode, EncounterSet)]
-scenarioSets = DarkMatter.scenarioSets <> CircusExMortis.scenarioSets
+scenarioSets = hcScenarioSets allHomebrewContent
 
 campaigns :: [(CampaignId, HomebrewCampaign)]
-campaigns = DarkMatter.campaigns <> CircusExMortis.campaigns
+campaigns = hcCampaigns allHomebrewContent

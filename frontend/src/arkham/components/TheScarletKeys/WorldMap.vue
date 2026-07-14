@@ -236,7 +236,7 @@ const viewBox = computed(() => {
   return `${x0} ${y0} ${w} ${h}`
 })
 
-const worldMap = imgsrc('world-map.jpg')
+const worldMap = imgsrc('extra/the-scarlet-keys/world-map.jpg')
 
 const toggleFullScreen = async () => {
   const el = wrapperEl.value

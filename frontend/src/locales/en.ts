@@ -1,4 +1,5 @@
 import base from '@/locales/en/base.json'
+import { homebrewMessages } from '@/locales/homebrew'
 import event from '@/locales/en/event.json'
 import log from '@/locales/en/log.json'
 import cards from '@/locales/en/cards.json'
@@ -17,8 +18,6 @@ import theScarletKeys from '@/locales/en/theScarletKeys'
 import theFeastOfHemlockVale from '@/locales/en/theFeastOfHemlockVale'
 import brethrenOfAsh from '@/locales/en/brethrenOfAsh'
 import theDrownedCity from '@/locales/en/theDrownedCity'
-import darkMatter from '@/locales/en/darkMatter'
-import circusExMortis from '@/locales/en/circusExMortis'
 import standalone from '@/locales/en/standalone'
 import theLabyrinthsOfLunacyLog from '@/locales/en/theLabyrinthsOfLunacy.json'
 import gameBoard from '@/locales/en/gameBoard/gameBoard'
@@ -47,8 +46,7 @@ export default
   , theFeastOfHemlockVale
   , brethrenOfAsh
   , theDrownedCity
-  , darkMatter
-  , circusExMortis
+  , ...homebrewMessages()
   , standalone
   , theLabyrinthsOfLunacy: theLabyrinthsOfLunacyLog
   }

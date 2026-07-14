@@ -200,7 +200,7 @@ const modifiedPlayingCard = computed(() => {
   if (playingCardModifier && playingCardModifier.type.tag === 'ScenarioModifierValue') {
     const playingCard = playingCardModifier.type.contents[1]
     if (!playingCard) return
-    return imgsrc(`playing-cards/${playingCard.rank}-${playingCard.suit}.png`)
+    return imgsrc(`extra/fortune-and-folly/playing-cards/${playingCard.rank}-${playingCard.suit}.png`)
   }
   return null
 

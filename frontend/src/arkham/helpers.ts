@@ -1,4 +1,5 @@
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
 import { ref, type Ref } from 'vue';
 
 interface ImageHelper {
@@ -153,7 +154,7 @@ export function formatContent(body: string) {
 }
 
 export function replaceIcons(body: string) {
-  return body.
+  return replaceHomebrewIcons(body).
     replace(/{action}/g, '<span class="action-icon"></span>').
     replace(/{fast}/g, '<span class="fast-icon"></span>').
     replace(/{reaction}/g, '<span class="reaction-icon"></span>').
@@ -176,7 +177,6 @@ export function replaceIcons(body: string) {
     replace(/{bless}/g, '<span class="bless-icon"></span>').
     replace(/{curse}/g, '<span class="curse-icon"></span>').
     replace(/{frost}/g, '<span class="frost-icon"></span>').
-    replace(/{moon}/g, '<span class="moon-icon"></span>').
     replace(/{sealA}/g, '<span class="seal-a-icon"></span>').
     replace(/{sealB}/g, '<span class="seal-b-icon"></span>').
     replace(/{sealC}/g, '<span class="seal-c-icon"></span>').

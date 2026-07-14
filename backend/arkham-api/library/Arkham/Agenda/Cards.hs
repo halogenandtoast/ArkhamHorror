@@ -372,6 +372,4 @@ allAgendaCards = (Homebrew.agendasMap <>) $
       , theComingStorm
       , theDoomOfArkham
       , theFinalSeal
-      -- Dark Matter (homebrew)
-      -- Circus Ex Mortis (homebrew)
       ]

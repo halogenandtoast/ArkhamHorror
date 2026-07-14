@@ -421,6 +421,4 @@ allActCards = (Homebrew.actsMap <>) $
       , thePhantomShop
       , fightBack
       , banishHim
-      -- Dark Matter (homebrew)
-      -- Circus Ex Mortis (homebrew)
       ]

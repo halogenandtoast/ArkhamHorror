@@ -184,5 +184,4 @@ allPlayerSkillCards = (Homebrew.playerSkillsMap <>) $
       , outTheDoor
       , outTheDoor1
       , contingency3
-      -- Circus Ex Mortis (homebrew)
       ]

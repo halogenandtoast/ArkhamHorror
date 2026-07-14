@@ -161,7 +161,6 @@ allPlayerTreacheryCards = (Homebrew.playerTreacheriesMap <>) $
       , calledToGuinee
       , hemophobia
       , markOfElokoss
-      -- Dark Matter (homebrew)
       ]
 
 allEncounterTreacheryCards :: Map CardCode CardDef
@@ -787,6 +786,4 @@ allEncounterTreacheryCards = (Homebrew.treacheriesMap <>) $
       , stillBehindYou
       , deepOneAmbush
       , infernalMachinery
-      -- Dark Matter (homebrew)
-      -- Circus Ex Mortis (homebrew)
       ]

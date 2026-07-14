@@ -728,8 +728,6 @@ allEncounterEnemyCards = (Homebrew.enemiesMap <>) $
       , deepOneThrall
       , elderDeepOne
       , persistentConstruct
-      -- Dark Matter (homebrew)
-      -- Circus Ex Mortis (homebrew)
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef

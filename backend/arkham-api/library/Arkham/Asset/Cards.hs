@@ -1214,8 +1214,6 @@ allEncounterAssetCards = (Homebrew.encounterAssetsMap <>) $
       , obsidianClawPower
       , johnRaymondLegrasse
       , horrorInClay
-      -- Dark Matter (homebrew)
-      -- Circus Ex Mortis (homebrew)
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

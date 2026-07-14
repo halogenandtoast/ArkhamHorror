@@ -1296,8 +1296,6 @@ allLocationCards = (Homebrew.locationsMap <>) $
       , southside
       , westernRooftops
       , easternRooftops
-      -- Dark Matter (homebrew)
-      -- Circus Ex Mortis (homebrew)
       ]
 
 allSpecialLocationCards :: Map CardCode CardDef

@@ -213,8 +213,6 @@ allStoryCards = (Homebrew.storiesMap <>) $
       , deckOfPossibilities
       , realityAcid
       , triumphAndSubjugation
-      -- Dark Matter (homebrew)
-      -- Circus Ex Mortis (homebrew)
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -856,6 +854,3 @@ realityAcid =
 
 triumphAndSubjugation :: CardDef
 triumphAndSubjugation = story "90023b" "Triumph and Subjugation" BadBlood & otherSideIs "90023"
-
-
---- Dark Matter (homebrew)

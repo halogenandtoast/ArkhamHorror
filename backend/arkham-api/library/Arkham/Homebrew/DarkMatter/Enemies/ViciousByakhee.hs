@@ -3,11 +3,12 @@ module Arkham.Homebrew.DarkMatter.Enemies.ViciousByakhee (viciousByakhee) where
 import Arkham.Ability
 import Arkham.DamageEffect
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
+import Arkham.Homebrew.Traits (pattern Brain)
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Trait (Trait (Brain, MiGo))
+import Arkham.Trait (Trait (MiGo))
 
 newtype ViciousByakhee = ViciousByakhee EnemyAttrs
   deriving anyclass IsEnemy

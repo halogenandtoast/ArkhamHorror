@@ -11,4 +11,4 @@ import Arkham.Location.CardDefs.Base as X
 import Arkham.LocationSymbol as X
 import Arkham.Name as X
 import Arkham.Prelude as X
-import Arkham.Trait as X hiding (Circle, Moon)
+import Arkham.Trait as X hiding (Circle)

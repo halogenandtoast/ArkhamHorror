@@ -2,6 +2,7 @@ module Arkham.Homebrew.DarkMatter.CardDefs.Enemies where
 
 import Arkham.Enemy.CardDefs.Import
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
+import Arkham.Homebrew.Traits
 import Arkham.Keyword qualified as Keyword
 import Arkham.LocationSymbol qualified as LS
 

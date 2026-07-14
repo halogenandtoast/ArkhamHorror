@@ -23,6 +23,7 @@ import Arkham.Name as X
 import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
+import Arkham.Homebrew.Traits (allTraits)
 import Arkham.Trait as X hiding (Cosmos, Cultist, ElderThing, Haunted)
 import Data.Aeson (Result (..))
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -2227,10 +2228,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             push
               $ Msg.chooseOneDropDown
                 player
-                [ ( tshow trait
+                [ ( displayTrait trait
                   , DebugIncreaseCustomization iid cardCode customization (ChosenTrait trait : choices)
                   )
-                | trait <- [minBound ..]
+                | trait <- allTraits
                 ]
           (CustomizationCardChoice matcher : _) -> do
             player <- getPlayer iid

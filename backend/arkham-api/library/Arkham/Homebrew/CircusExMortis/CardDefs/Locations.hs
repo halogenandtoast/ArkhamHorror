@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.CardDefs.Locations where
 
 import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
+import Arkham.Homebrew.Traits hiding (pattern Moon)
 import Arkham.Location.CardDefs.Import
 
 -- one_night_only

@@ -11,8 +11,14 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{ choose: [] }>()
 
+const tokenImages: Record<string, string> = {
+  clue: 'tokens/clue.png',
+  doom: 'tokens/doom.png',
+  resource: 'tokens/resource.png',
+}
+
 const image = computed(() => {
-  return imgsrc(`${props.type}.png`)
+  return imgsrc(tokenImages[props.type] ?? `${props.type}.png`)
 })
 </script>
 

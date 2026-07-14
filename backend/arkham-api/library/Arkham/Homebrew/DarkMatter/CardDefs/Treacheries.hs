@@ -2,6 +2,7 @@ module Arkham.Homebrew.DarkMatter.CardDefs.Treacheries where
 
 import Arkham.Treachery.CardDefs.Import
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
+import Arkham.Homebrew.Traits
 
 -- anachronism
 anachronism :: CardDef

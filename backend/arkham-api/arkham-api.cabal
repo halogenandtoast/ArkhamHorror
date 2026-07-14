@@ -3752,6 +3752,7 @@ library
       Arkham.Homebrew.TokenDefs
       Arkham.Homebrew.TokenEntries
       Arkham.Homebrew.Tokens
+      Arkham.Homebrew.Traits
       Arkham.Homebrew.Types
       Arkham.I18n
       Arkham.Id

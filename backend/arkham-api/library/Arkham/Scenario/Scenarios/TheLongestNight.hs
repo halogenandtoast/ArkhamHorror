@@ -11,10 +11,11 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Doom (getDoomCount)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith)
-import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
 import Arkham.Helpers.Window (wouldDo)
 import Arkham.Helpers.Xp
 import Arkham.I18n
@@ -232,7 +233,8 @@ instance RunMessage TheLongestNight where
       addExtraDeck EnemyDeck =<< shuffle enemyCards
 
       when bearWounded do
-        nonAttackEnemyDamage Nothing ScenarioSource 2 ursine
+        damage <- perPlayer 2
+        nonAttackEnemyDamage_ Nothing ScenarioSource damage ursine
         exhaustEnemy ScenarioSource ursine
 
       doStep 1 msg
@@ -295,9 +297,11 @@ instance RunMessage TheLongestNight where
       chooseOneM lead do
         questionLabeled' "placeTrap"
         unterminated $ for_ trapLocations \lid -> targeting lid $ placeTrap ScenarioSource lid
-      chooseOneM lead do
-        questionLabeled' "placeBarrier"
-        unterminated $ for_ allLocations \lid -> targeting lid $ forTarget lid Setup
+      playerCount <- getPlayerCount
+      for_ [1 .. playerCount] \_ ->
+        chooseOneM lead do
+          questionLabeled' "placeBarrier"
+          unterminated $ for_ allLocations \lid -> targeting lid $ forTarget lid Setup
       pure s
     ForTarget (LocationTarget lid) Setup -> do
       lead <- getLead

@@ -5105,6 +5105,7 @@ instance Projection Investigator where
           Just skillTest -> findWithDefault [] (toId i) (skillTestCommittedCards skillTest)
       InvestigatorDefeated -> pure investigatorDefeated
       InvestigatorResigned -> pure investigatorResigned
+      InvestigatorIsEliminated -> pure investigatorEliminated
       InvestigatorXp -> pure investigatorXp
       InvestigatorSupplies -> pure investigatorSupplies
 

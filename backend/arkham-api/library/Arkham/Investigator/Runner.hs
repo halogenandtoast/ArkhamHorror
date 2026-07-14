@@ -447,7 +447,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         <$> filterM filterAbility investigatorUsedAbilities
     pure $ a & usedAbilitiesL .~ usedAbilities
   ForTarget (isTarget a -> True) (EndOfScenario {}) -> do
-    pure $ a & handL .~ mempty & defeatedL .~ False & resignedL .~ False
+    -- eliminated must clear with defeated/resigned, or interludes (and scenarios
+    -- with skipInvestigatorSetup, which never run ForInvestigators ResetGame)
+    -- would treat everyone eliminated last scenario as still eliminated.
+    pure $ a & handL .~ mempty & defeatedL .~ False & resignedL .~ False & eliminatedL .~ False
   ForInvestigators _ ResetGame ->
     pure
       $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId investigatorPlayerId)

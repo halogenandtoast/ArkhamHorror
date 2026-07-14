@@ -149,6 +149,10 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorCommittedCards :: Field Investigator [Card]
   InvestigatorDefeated :: Field Investigator Bool
   InvestigatorResigned :: Field Investigator Bool
+  -- named ...IsEliminated to avoid clashing with the InvestigatorEliminated
+  -- Message pattern and Matcher constructor, which this module's wide re-export
+  -- would otherwise make ambiguous
+  InvestigatorIsEliminated :: Field Investigator Bool
   InvestigatorPhysicalTrauma :: Field Investigator Int
   InvestigatorMentalTrauma :: Field Investigator Int
   InvestigatorXp :: Field Investigator Int
@@ -248,6 +252,7 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorCommittedCards" -> pure $ SomeField InvestigatorCommittedCards
     "InvestigatorDefeated" -> pure $ SomeField Arkham.Investigator.Types.InvestigatorDefeated
     "InvestigatorResigned" -> pure $ SomeField Arkham.Investigator.Types.InvestigatorResigned
+    "InvestigatorIsEliminated" -> pure $ SomeField Arkham.Investigator.Types.InvestigatorIsEliminated
     "InvestigatorPhysicalTrauma" -> pure $ SomeField InvestigatorPhysicalTrauma
     "InvestigatorMentalTrauma" -> pure $ SomeField InvestigatorMentalTrauma
     "InvestigatorXp" -> pure $ SomeField InvestigatorXp

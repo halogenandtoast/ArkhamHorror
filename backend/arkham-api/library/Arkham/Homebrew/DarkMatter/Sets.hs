@@ -1,4 +1,22 @@
-module Arkham.Homebrew.DarkMatter.Sets (module Arkham.EncounterSet, pattern Anachronism, pattern ArtificialIntelligence, pattern DarkPast, pattern DeepSpace, pattern ElectricNightmare, pattern Endtimes, pattern FragmentOfCarcosa, pattern HastursGaze, pattern InTheShadowOfEarth, pattern InterstellarPredators, pattern LostQuantum, pattern Starfall, pattern StrangeMoons, pattern TheBoogeyman, pattern TheMachineInYellow, pattern TheTatterdemalion) where
+module Arkham.Homebrew.DarkMatter.Sets (
+  module Arkham.EncounterSet,
+  pattern Anachronism,
+  pattern ArtificialIntelligence,
+  pattern DarkPast,
+  pattern DeepSpace,
+  pattern ElectricNightmare,
+  pattern Endtimes,
+  pattern FragmentOfCarcosa,
+  pattern HastursGaze,
+  pattern InTheShadowOfEarth,
+  pattern InterstellarPredators,
+  pattern LostQuantum,
+  pattern Starfall,
+  pattern StrangeMoons,
+  pattern TheBoogeyman,
+  pattern TheMachineInYellow,
+  pattern TheTatterdemalion,
+) where
 
 import Arkham.EncounterSet
 

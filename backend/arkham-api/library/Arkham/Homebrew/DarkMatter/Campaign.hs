@@ -1,13 +1,13 @@
 module Arkham.Homebrew.DarkMatter.Campaign (darkMatter) where
 
-import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Campaign.Import.Lifted
-import Arkham.Homebrew.DarkMatter.CampaignSteps
-import Arkham.Homebrew.DarkMatter.Import
 import Arkham.Card (toCardDef)
 import Arkham.ChaosToken
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.FlavorText
+import Arkham.Homebrew.DarkMatter.CampaignSteps
+import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
+import Arkham.Homebrew.DarkMatter.Import
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier (ModifierType (..))
@@ -128,8 +128,9 @@ instance RunMessage DarkMatter where
       pure c
     _ -> lift $ defaultCampaignRunner msg c
 
--- | The Search for Fragment (guide p10): choose a trace that has not already
--- been chosen; when every Scenario III is done, skip to Introspection.
+{- | The Search for Fragment (guide p10): choose a trace that has not already
+been chosen; when every Scenario III is done, skip to Introspection.
+-}
 theSearchForFragment :: (HasI18n, ReverseQueue m) => DarkMatter -> m DarkMatter
 theSearchForFragment c = scope "theSearchForFragment" do
   let completed = (toAttrs c).completedSteps

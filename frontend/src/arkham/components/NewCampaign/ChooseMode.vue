@@ -47,9 +47,15 @@ const challengeScenarios = computed(() =>
   props.sideStories.filter(isChallengeScenario)
 )
 
-const homebrew = computed(() => {
-  return import.meta.env.PROD ? [] : [{ id: 'homebrew' as const, label: 'create.homebrewHeading', items: homebrewCampaigns.value }]
-})
+const homebrew = computed(() => [
+  { id: 'homebrew' as const, label: 'create.homebrewHeading', items: homebrewCampaigns.value },
+])
+
+function campaignBoxSrc(campaign: Campaign) {
+  if (!campaign.homebrew) return imgsrc(`boxes/${campaign.id}.jpg`)
+  const homebrewId = campaign.id.replace(/^:/, '')
+  return imgsrc(`homebrew/${homebrewId}/boxes/${homebrewId}.jpg`)
+}
 
 const campaignGroups = computed(() => [
   { id: 'chapter1' as const, label: 'create.chapter1Heading', items: chapter1Campaigns.value },
@@ -138,10 +144,6 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
     </div>
   </template>
   <template v-else>
-    <div v-if="campaignGroup == 'homebrew'" style="color:red;font-size:3em;">
-      If you are seeing this, do not start one of these campaigns, they will break.
-    </div>
-
     <div class="campaigns">
       <template v-for="c in activeCampaigns" :key="c.id">
         <div class="campaign">
@@ -155,7 +157,7 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
               type="image"
               class="campaign-box"
               :class="{ 'selected-campaign': selectedCampaign == c.id }"
-              :src="imgsrc(c.homebrew ? `homebrew/boxes/${c.id}.jpg` : `boxes/${c.id}.jpg`)"
+              :src="campaignBoxSrc(c)"
               @error="missingBoxArt[c.id] = true"
               @click.prevent="selectedCampaign = c.id; emits('go')"
             />
@@ -370,7 +372,7 @@ input[type='radio']:checked + label {
 
 .vt-box:hover .campaign-box:not(.selected-campaign),
 .vt-box:hover .scenario-box:not(.selected-scenario) {
-  filter: grayscale(70%) contrast(1.08) brightness(0.98);
+  filter: none;
 }
 
 .selected-campaign,

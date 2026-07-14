@@ -1098,7 +1098,7 @@ input[type='radio']:checked + label {
 }
 
 .scenario-tile:hover img {
-  filter: grayscale(100%) sepia(1);
+  filter: none;
   transform: scale(1.02);
 }
 

@@ -94,6 +94,11 @@ export const fetchCards = async (cardPool: CardPoolMode | boolean = 'player'): P
   return JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodePromise(data)
 }
 
+export const fetchHomebrewCards = async (): Promise<CardDef[]> => {
+  const { data } = await api.get('arkham/homebrew/cards')
+  return JsonDecoder.array(cardDefDecoder, 'ArkhamHomebrewCardDef[]').decodePromise(data)
+}
+
 export const fetchCard = async (cardCode: string): Promise<CardDef> => {
   const { data } = await api.get(`arkham/card/${cardCode}`)
   return cardDefDecoder.decodePromise(data)

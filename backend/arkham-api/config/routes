@@ -14,6 +14,7 @@
     /notifications ApiV1NotificationsR GET
     /arkham ApiV1ArkhamP:
       /cards ApiV1ArkhamCardsR GET
+      /homebrew/cards ApiV1ArkhamHomebrewCardsR GET
       /card/#CardCode ApiV1ArkhamCardR GET
       /investigators ApiV1ArkhamInvestigatorsR GET
       /decks ApiV1ArkhamDecksP:

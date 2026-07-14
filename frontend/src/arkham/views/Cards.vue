@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { watch, ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { fetchCards, type CardPoolMode } from '@/arkham/api';
+import { fetchCards, fetchHomebrewCards, type CardPoolMode } from '@/arkham/api';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
 import CardListView from '@/arkham/components/CardListView.vue';
@@ -10,6 +10,9 @@ import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
+import { isDevBuild } from '@/arkham/displayRules'
+import { homebrewCampaigns } from '@/arkham/homebrewData'
+import { imgsrc } from '@/arkham/helpers'
 
 const { t } = useI18n()
 
@@ -19,6 +22,8 @@ enum View {
 }
 
 const CHAPTER_2_CYCLES = new Set([12, 61])
+const HOMEBREW_CYCLE = -1
+const dev = isDevBuild()
 
 const SET_FONT_CHARS: Record<string, string> = {
   // CHAPTER 1
@@ -105,7 +110,7 @@ const cardPoolMode = computed<CardPoolMode>(() => {
 const store = useDbCardStore()
 
 const CACHE_KEY_PREFIX = 'arkham_cards_cache_'
-const CACHE_VERSION = 'v2'
+const CACHE_VERSION = 'v3'
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
 let cachedAllCards: Arkham.CardDef[] | null = null
@@ -154,11 +159,12 @@ const fetchData = async () => {
     allCards.value = cached
     return
   }
-  fetchCards('both').then(async (response) => {
-    const sorted = sortCards(response)
-    setCachedCards(sorted)
-    allCards.value = sorted
-  })
+
+  const officialCards = await fetchCards('both')
+  const homebrewCards = dev ? await fetchHomebrewCards() : []
+  const sorted = sortCards([...officialCards, ...homebrewCards])
+  setCachedCards(sorted)
+  allCards.value = sorted
 }
 
 interface Filter {
@@ -180,6 +186,7 @@ interface CardSet {
   code: string
   cycle: number
   encounterDuplicates?: number
+  homebrew?: boolean
   // Unused code numbers within [min, max] that don't correspond to a real card,
   // so they aren't counted toward the set total.
   missing?: string[]
@@ -208,7 +215,25 @@ interface CardSearchIndex {
   encounterCode?: string
 }
 
-const setsByCycle = (sets as CardSet[]).reduce<Map<number, CardSet[]>>((acc, set) => {
+const homebrewCycle: CardCycle = { name: 'Homebrew', cycle: HOMEBREW_CYCLE, code: 'homebrew' }
+const homebrewSets: CardSet[] = dev
+  ? homebrewCampaigns.map((campaign) => {
+      const id = campaign.id.replace(/^:/, '')
+      return {
+        name: campaign.name,
+        min: 0,
+        max: 0,
+        playerCards: 0,
+        code: `homebrew-${id}`,
+        cycle: HOMEBREW_CYCLE,
+        homebrew: true,
+      }
+    })
+  : []
+const allCycles: CardCycle[] = dev ? [...cycles, homebrewCycle] : cycles
+const allSets: CardSet[] = dev ? [...(sets as CardSet[]), ...homebrewSets] : (sets as CardSet[])
+
+const setsByCycle = allSets.reduce<Map<number, CardSet[]>>((acc, set) => {
   const cycleSets = acc.get(set.cycle)
   if (cycleSets) cycleSets.push(set)
   else acc.set(set.cycle, [set])
@@ -221,8 +246,15 @@ const findCardSetByArt = (art: string) => {
   const cached = cardSetCache.get(art)
   if (cached !== undefined || cardSetCache.has(art)) return cached
 
+  const homebrewMatch = art.match(/^:([^:]+):/)
+  if (homebrewMatch) {
+    const set = homebrewSets.find((s) => s.code === `homebrew-${homebrewMatch[1]}`)
+    cardSetCache.set(art, set)
+    return set
+  }
+
   const cardCode = parseInt(art)
-  const set = (sets as CardSet[]).find((s) => cardCode >= s.min && cardCode <= s.max)
+  const set = allSets.find((s) => !s.homebrew && cardCode >= s.min && cardCode <= s.max)
   cardSetCache.set(art, set)
   return set
 }
@@ -237,6 +269,10 @@ watch(() => view.value, (newView) => {
 
 watch(() => activeChapter.value, (newChapter) => {
   router.push({ name: 'Cards', query: { ...route.query, chapter: newChapter === 1 ? undefined : String(newChapter) }})
+  if (newChapter === HOMEBREW_CYCLE) {
+    query.value = filterString({ ...filter.value, cycle: null, set: 'homebrew' })
+    setFilter()
+  }
 })
 
 watch(() => allCards.value, () => {
@@ -267,9 +303,13 @@ watch(() => allCards.value, () => {
   }
 })
 
-const chapter1Cycles = computed(() => cycles.filter((c) => !CHAPTER_2_CYCLES.has(c.cycle)))
-const chapter2Cycles = computed(() => cycles.filter((c) => CHAPTER_2_CYCLES.has(c.cycle)))
-const displayedCycles = computed(() => activeChapter.value === 2 ? chapter2Cycles.value : chapter1Cycles.value)
+const chapter1Cycles = computed(() => allCycles.filter((c) => !CHAPTER_2_CYCLES.has(c.cycle) && c.cycle !== HOMEBREW_CYCLE))
+const chapter2Cycles = computed(() => allCycles.filter((c) => CHAPTER_2_CYCLES.has(c.cycle)))
+const homebrewCycles = computed(() => allCycles.filter((c) => c.cycle === HOMEBREW_CYCLE))
+const displayedCycles = computed(() => {
+  if (activeChapter.value === HOMEBREW_CYCLE) return homebrewCycles.value
+  return activeChapter.value === 2 ? chapter2Cycles.value : chapter1Cycles.value
+})
 
 const cardSearchIndex = computed(() => {
   const index = new Map<string, CardSearchIndex>()
@@ -312,6 +352,8 @@ const cardCounts = computed(() => {
 const cycleCount = (cycle: CardCycle) => cardCounts.value.byCycle.get(cycle.cycle) ?? 0
 
 const expectedCardCount = (set: CardSet) => {
+  if (set.homebrew) return setCount(set)
+
   const playerCards = set.playerCards
   const encounterCards = Math.max(encounterSetTotal(set) - playerCards, 0)
   if (cardPoolMode.value === 'player') return playerCards
@@ -345,7 +387,7 @@ const setCountText = (set: CardSet) => {
   return ` (${implementedCount}/${total})`
 }
 
-const cards = computed(() => {
+const filteredCardsIgnoringPool = computed(() => {
   if (!allCards.value) return []
 
   const { classes, encounterSets, traits, cycle, set, text, level, cardTypes } = filter.value
@@ -359,13 +401,14 @@ const cards = computed(() => {
 
   return allCards.value.filter((c) => {
     if (c.cardCode === "cx05184") return false
-    if (!cardInPool(c, cardPoolMode.value)) return false
 
     const meta = index.get(c.cardCode)
     if (!meta) return false
 
     if (cycle && meta.cycle !== cycle) return false
-    if (set && meta.setCode !== set) return false
+    if (set === 'homebrew') {
+      if (meta.cycle !== HOMEBREW_CYCLE) return false
+    } else if (set && meta.setCode !== set) return false
 
     if (classSet && !meta.classSymbolsLower.some((cs) => classSet.has(cs))) return false
     if (traitSet && !meta.traitsLower.some((trait) => traitSet.has(trait))) return false
@@ -386,6 +429,17 @@ const cards = computed(() => {
     return true
   })
 })
+
+const hasPlayerCards = computed(() => filteredCardsIgnoringPool.value.some((card) => !isCampaignCard(card)))
+const hasCampaignCards = computed(() => filteredCardsIgnoringPool.value.some(isCampaignCard))
+const canShowBothCards = computed(() => hasPlayerCards.value && hasCampaignCards.value)
+const cardPoolAvailable = (mode: CardPoolMode) => {
+  if (mode === 'player') return hasPlayerCards.value
+  if (mode === 'campaign') return hasCampaignCards.value
+  return canShowBothCards.value
+}
+
+const cards = computed(() => filteredCardsIgnoringPool.value.filter((c) => cardInPool(c, cardPoolMode.value)))
 
 const setFilter = () => {
   router.push({ name: 'Cards', query: { ...route.query, q: query.value }})
@@ -419,11 +473,12 @@ const setFilter = () => {
     classes = matchClasses[1].split('|').map((s) => s.toLowerCase().trim())
   }
 
-  const matchCycle = queryString.match(/y:([1-9][0-9]*)/)
+  const matchCycle = queryString.match(/y:(-?\d+)/)
 
   if (matchCycle) {
-    queryString = queryString.replace(/y:([1-9][0-9]*)/, '')
-    cycle = parseInt(matchCycle[1])
+    queryString = queryString.replace(/y:-?\d+/, '')
+    const parsedCycle = parseInt(matchCycle[1])
+    if (parsedCycle > 0) cycle = parsedCycle
   }
 
   const matchSet = queryString.match(/e:([^ ]*)/)
@@ -462,8 +517,12 @@ const filterString = (f: Filter): string => {
     result += ` p:${f.level}`
   }
 
-  if (f.cycle) {
+  if (f.cycle && f.cycle !== HOMEBREW_CYCLE) {
     result += ` y:${f.cycle}`
+  }
+
+  if (f.cycle === HOMEBREW_CYCLE) {
+    result += ' e:homebrew'
   }
 
   if (f.set) {
@@ -521,6 +580,24 @@ const cycleIconCode = (cycle: CardCycle): string => {
   return cycleSets(cycle)[0]?.code ?? ''
 }
 
+function homebrewSetImagePath(code: string) {
+  const homebrewId = code.replace(/^homebrew-/, '')
+  return imgsrc(`homebrew/${homebrewId}/sets/${homebrewId}.png`)
+}
+
+function setIconSrc(set: CardSet) {
+  return set.homebrew ? homebrewSetImagePath(set.code) : `/img/arkham/encounter-sets/${set.code}.png`
+}
+
+function cycleIconSrc(cycle: CardCycle) {
+  if (cycle.cycle === HOMEBREW_CYCLE) {
+    const set = cycleSets(cycle)[0]
+    return set ? homebrewSetImagePath(set.code) : ''
+  }
+  const code = cycleIconCode(cycle)
+  return code ? `/img/arkham/encounter-sets/${code}.png` : ''
+}
+
 const setCycle = (cycle: CardCycle) => {
   query.value = filterString({...filter.value, set: null, cycle: cycle.cycle})
   setFilter()
@@ -534,6 +611,8 @@ const setSet = (set: CardSet) => {
 }
 
 const setCardPoolMode = (mode: CardPoolMode) => {
+  if (!cardPoolAvailable(mode)) return
+
   router.push({
     name: 'Cards',
     query: {
@@ -543,6 +622,12 @@ const setCardPoolMode = (mode: CardPoolMode) => {
     },
   })
 }
+
+watch([hasPlayerCards, hasCampaignCards, cardPoolMode], ([hasPlayer, hasCampaign, mode]) => {
+  if (cardPoolAvailable(mode)) return
+  if (hasCampaign) setCardPoolMode('campaign')
+  else if (hasPlayer) setCardPoolMode('player')
+}, { immediate: true })
 
 const showSidebar = ref(false)
 const sidebarCollapsed = ref(false)
@@ -565,27 +650,45 @@ const sidebarCollapsed = ref(false)
       <div class="sidebar-content">
       <button class="sidebar-close" @click="showSidebar = false"><font-awesome-icon icon="times" /></button>
       <div class="sidebar-card-pool card-pool-toggle segmented segmented-3" role="radiogroup" :aria-label="$t('cardsView.cardPool')">
-        <input type="radio" :checked="cardPoolMode === 'player'" id="card-pool-player-mobile" @change="setCardPoolMode('player')" />
+        <input type="radio" :checked="cardPoolMode === 'player'" :disabled="!cardPoolAvailable('player')" id="card-pool-player-mobile" @change="setCardPoolMode('player')" />
         <label for="card-pool-player-mobile">{{ $t('cardsView.playerCards') }}</label>
 
-        <input type="radio" :checked="cardPoolMode === 'campaign'" id="card-pool-campaign-mobile" @change="setCardPoolMode('campaign')" />
+        <input type="radio" :checked="cardPoolMode === 'campaign'" :disabled="!cardPoolAvailable('campaign')" id="card-pool-campaign-mobile" @change="setCardPoolMode('campaign')" />
         <label for="card-pool-campaign-mobile">{{ $t('cardsView.campaignCards') }}</label>
 
-        <input type="radio" :checked="cardPoolMode === 'both'" id="card-pool-both-mobile" @change="setCardPoolMode('both')" />
+        <input type="radio" :checked="cardPoolMode === 'both'" :disabled="!cardPoolAvailable('both')" id="card-pool-both-mobile" @change="setCardPoolMode('both')" />
         <label for="card-pool-both-mobile">{{ $t('cardsView.bothCards') }}</label>
       </div>
-      <div class="chapter-tabs segmented segmented-2" role="radiogroup" aria-label="Card chapter">
+      <div :class="['chapter-tabs segmented', dev ? 'segmented-3' : 'segmented-2']" role="radiogroup" aria-label="Card chapter">
         <input type="radio" :checked="activeChapter === 1" id="chapter-1" @change="activeChapter = 1" />
         <label for="chapter-1">{{ t('cardsView.chapter1') }}</label>
         <input type="radio" :checked="activeChapter === 2" id="chapter-2" @change="activeChapter = 2" />
         <label for="chapter-2">{{ t('cardsView.chapter2') }}</label>
+        <template v-if="dev">
+          <input type="radio" :checked="activeChapter === HOMEBREW_CYCLE" id="chapter-homebrew" @change="activeChapter = HOMEBREW_CYCLE" />
+          <label for="chapter-homebrew">Homebrew</label>
+        </template>
       </div>
       <nav class="cycles">
-        <ol>
+        <ol v-if="activeChapter === HOMEBREW_CYCLE">
+          <li v-for="set in homebrewSets" :key="set.code">
+            <div :class="['nav-row', 'nav-row--cycle', { active: filter.set === set.code }]">
+              <span
+                class="set-icon set-icon--homebrew"
+                :style="{ '--set-icon-url': `url(${setIconSrc(set)})` }"
+                role="img"
+                :aria-label="set.name"
+              ></span>
+              <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>
+              <span class="count">{{setCountText(set)}}</span>
+            </div>
+          </li>
+        </ol>
+        <ol v-else>
           <li v-for="cycle in displayedCycles" :key="cycle.code">
             <div :class="['nav-row', 'nav-row--cycle', { active: filter.cycle === cycle.cycle }]">
               <i v-if="SET_FONT_CHARS[cycleIconCode(cycle)]" class="set-icon-font">{{ SET_FONT_CHARS[cycleIconCode(cycle)] }}</i>
-              <img v-else-if="cycleIconCode(cycle)" class="set-icon" :src="`/img/arkham/encounter-sets/${cycleIconCode(cycle)}.png`" :alt="cycle.name" />
+              <img v-else-if="cycleIconSrc(cycle)" class="set-icon" :src="cycleIconSrc(cycle)" :alt="cycle.name" />
               <a href="#" @click.prevent="setCycle(cycle)">{{cycle.name}}</a>
               <span class="count">{{cycleCountText(cycle)}}</span>
             </div>
@@ -593,7 +696,7 @@ const sidebarCollapsed = ref(false)
               <li v-for="set in cycleSets(cycle)" :key="set.code">
                 <div :class="['nav-row', 'nav-row--sub', { active: filter.set === set.code }]">
                   <i v-if="SET_FONT_CHARS[set.code]" class="set-icon-font">{{ SET_FONT_CHARS[set.code] }}</i>
-                  <img v-else class="set-icon" :src="`/img/arkham/encounter-sets/${set.code}.png`" :alt="set.name" />
+                  <img v-else class="set-icon" :src="setIconSrc(set)" :alt="set.name" />
                   <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>
                   <span class="count">{{setCountText(set)}}</span>
                 </div>
@@ -628,13 +731,13 @@ const sidebarCollapsed = ref(false)
           <button @click.prevent="view = View.Image" :class="{ active: view == View.Image }" :title="$t('cardsView.imageView')"><font-awesome-icon icon="image" /></button>
         </div>
         <div class="desktop-card-pool card-pool-toggle segmented segmented-3" role="radiogroup" :aria-label="$t('cardsView.cardPool')">
-          <input type="radio" :checked="cardPoolMode === 'player'" id="card-pool-player" @change="setCardPoolMode('player')" />
+          <input type="radio" :checked="cardPoolMode === 'player'" :disabled="!cardPoolAvailable('player')" id="card-pool-player" @change="setCardPoolMode('player')" />
           <label for="card-pool-player">{{ $t('cardsView.playerCards') }}</label>
 
-          <input type="radio" :checked="cardPoolMode === 'campaign'" id="card-pool-campaign" @change="setCardPoolMode('campaign')" />
+          <input type="radio" :checked="cardPoolMode === 'campaign'" :disabled="!cardPoolAvailable('campaign')" id="card-pool-campaign" @change="setCardPoolMode('campaign')" />
           <label for="card-pool-campaign">{{ $t('cardsView.campaignCards') }}</label>
 
-          <input type="radio" :checked="cardPoolMode === 'both'" id="card-pool-both" @change="setCardPoolMode('both')" />
+          <input type="radio" :checked="cardPoolMode === 'both'" :disabled="!cardPoolAvailable('both')" id="card-pool-both" @change="setCardPoolMode('both')" />
           <label for="card-pool-both">{{ $t('cardsView.bothCards') }}</label>
         </div>
       </header>
@@ -941,8 +1044,12 @@ const sidebarCollapsed = ref(false)
       color: var(--spooky-green);
     }
 
-    .set-icon {
+    .set-icon:not(.set-icon--homebrew) {
       filter: brightness(0) saturate(100%) invert(68%) sepia(55%) saturate(391%) hue-rotate(112deg) brightness(89%) contrast(88%);
+    }
+
+    .set-icon--homebrew {
+      color: var(--spooky-green);
     }
   }
 
@@ -992,6 +1099,17 @@ const sidebarCollapsed = ref(false)
   object-fit: contain;
   margin-right: 4px;
   filter: brightness(0) invert(0.8);
+}
+
+.set-icon--homebrew {
+  width: 18px;
+  height: 18px;
+  margin-left: -1px;
+  color: #fff;
+  background: currentColor;
+  filter: none;
+  mask: var(--set-icon-url) center / contain no-repeat;
+  -webkit-mask: var(--set-icon-url) center / contain no-repeat;
 }
 
 .nav-row--sub {
@@ -1143,7 +1261,8 @@ header {
 }
 
 .segmented:has(#card-pool-both:checked)::before,
-.segmented:has(#card-pool-both-mobile:checked)::before {
+.segmented:has(#card-pool-both-mobile:checked)::before,
+.segmented:has(#chapter-homebrew:checked)::before {
   transform: translateX(calc((100% + var(--segmented-gap)) * 2));
 }
 
@@ -1182,6 +1301,15 @@ header {
 .segmented label:hover,
 .segmented input[type='radio']:checked + label {
   color: var(--text);
+}
+
+.segmented input[type='radio']:disabled + label {
+  color: color-mix(in srgb, var(--background-light) 45%, transparent);
+  cursor: not-allowed;
+}
+
+.segmented input[type='radio']:disabled + label:hover {
+  color: color-mix(in srgb, var(--background-light) 45%, transparent);
 }
 
 .segmented:hover::before {

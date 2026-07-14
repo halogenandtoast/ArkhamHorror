@@ -49,7 +49,7 @@ const updateLanguage = async (a: Event) => {
   }
 
   language.value = selectedLanguage
-  locale.value = selectedLanguage
+  locale.value = uiLocale
   localStorage.setItem('language', selectedLanguage)
   await store.initDbCards()
   await checkImageExists()

@@ -139,11 +139,17 @@ function loadMetadata(localeRoot) {
 
 function parseArgs(args) {
   const options = { sourceLocale: 'zh-cn', outputLang: 'zh-cn', slim: false }
+  const readValue = (option, index) => {
+    const value = args[index]
+    if (!value || value.startsWith('-')) throw new Error(`${option} requires a value`)
+    return value
+  }
+
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i]
-    if (arg === '--source') options.source = args[++i]
-    else if (arg === '--source-locale') options.sourceLocale = args[++i]
-    else if (arg === '--output-lang') options.outputLang = args[++i]
+    if (arg === '--source') options.source = readValue(arg, ++i)
+    else if (arg === '--source-locale') options.sourceLocale = readValue(arg, ++i)
+    else if (arg === '--output-lang') options.outputLang = readValue(arg, ++i)
     else if (arg === '--slim') options.slim = true
     else if (arg === '--help' || arg === '-h') options.help = true
     else throw new Error(`Unknown argument: ${arg}`)

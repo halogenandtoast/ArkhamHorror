@@ -34,7 +34,7 @@ async function bootstrap() {
   }
 
   const i18n = VueI18n.createI18n({
-    locale: currentLanguage, // set locale
+    locale: currentLocale, // set locale
     fallbackLocale: 'en', // set fallback locale
     legacy: false,
     warnHtmlMessage: false,

@@ -9,6 +9,13 @@ test('the Simplified Chinese importer writes a separate zh-cn locale by default'
   assert.deepEqual(parseArgs([]), { sourceLocale: 'zh-cn', outputLang: 'zh-cn', slim: false })
 })
 
+test('translation importer options require a value', () => {
+  for (const option of ['--source', '--source-locale', '--output-lang']) {
+    assert.throws(() => parseArgs([option]), new RegExp(`${option} requires a value`))
+    assert.throws(() => parseArgs([option, '--slim']), new RegExp(`${option} requires a value`))
+  }
+})
+
 test('translated text is merged without replacing gameplay metadata', () => {
   const cards = [
     {

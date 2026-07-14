@@ -50,3 +50,15 @@ test('Simplified Chinese reuses the existing Chinese UI messages', async () => {
   assert.equal(uiLocaleFor('zh'), 'zh')
   assert.equal(uiLocaleFor('de'), 'en')
 })
+
+test('bootstrap initializes Vue I18n with the normalized UI locale', async () => {
+  const source = await readFile(resolve('src/main.ts'), 'utf8')
+
+  assert.match(source, /locale:\s*currentLocale/)
+})
+
+test('language settings switch Vue I18n to the normalized UI locale', async () => {
+  const source = await readFile(resolve('src/components/SettingsForm.vue'), 'utf8')
+
+  assert.match(source, /locale\.value\s*=\s*uiLocale/)
+})

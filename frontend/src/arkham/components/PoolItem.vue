@@ -15,6 +15,7 @@ const tokenImages: Record<string, string> = {
   clue: 'tokens/clue.png',
   doom: 'tokens/doom.png',
   resource: 'tokens/resource.png',
+  sanity: 'horror.png',
 }
 
 const image = computed(() => {

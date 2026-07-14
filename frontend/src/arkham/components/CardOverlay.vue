@@ -54,6 +54,7 @@ const { t } = useI18n()
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
 const isMobile = ref(false)
+const overPopover = computed(() => !!hoveredElement.value?.closest('.v-popper__popper'))
 
 const playabilityData = ref<PlayabilityResponse | null>(null)
 let playabilityTimer: number | null = null
@@ -1012,12 +1013,13 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div
-    class="card-overlay"
-    ref="cardOverlay"
-    :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px'}"
-    :class="{ sideways, tarot, isMobile }"
-  >
+  <Teleport to="body">
+    <div
+      class="card-overlay"
+      ref="cardOverlay"
+      :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px'}"
+      :class="{ sideways, tarot, isMobile, overPopover }"
+    >
     <div class="card-image">
       <svg
         v-if="card"
@@ -1241,7 +1243,8 @@ watchEffect(() => {
         </li>
       </ul>
     </div>
-  </div>
+    </div>
+  </Teleport>
   <Teleport to="body">
     <div v-if="cosmicEmissaryPrompt" class="cosmic-emissary-prompt-backdrop">
       <div class="cosmic-emissary-prompt" role="dialog" aria-modal="true" aria-labelledby="cosmic-emissary-prompt-title">
@@ -1426,6 +1429,10 @@ watchEffect(() => {
   pointer-events: none;
   animation: fadeIn 0.5s;
 }
+.card-overlay.overPopover {
+  z-index: var(--z-card-hover-overlay-over-popover);
+}
+
 .card-overlay.sideways {
   /* on narrow portrait screens, allow horizontal scroll if both SVGs visible */
   @media (max-width: 800px) and (orientation: portrait){

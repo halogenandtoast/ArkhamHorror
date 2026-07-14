@@ -52,6 +52,7 @@
   /* Semantic aliases */
   --z-card-hover-overlay: var(--z-index-20000);
   --z-tooltip: var(--z-index-25000);
+  --z-card-hover-overlay-over-popover: var(--z-index-30000);
   --z-modal-overlay: var(--z-index-30000);
 }
 

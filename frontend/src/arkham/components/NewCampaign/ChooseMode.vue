@@ -46,9 +46,9 @@ const challengeScenarios = computed(() =>
   props.sideStories.filter(isChallengeScenario)
 )
 
-const homebrew = computed(() => [
-  { id: 'homebrew' as const, label: 'create.homebrewHeading', items: homebrewCampaigns.value },
-])
+const homebrew = computed(() =>
+  import.meta.env.PROD ? [] : [{ id: 'homebrew' as const, label: 'create.homebrewHeading', items: homebrewCampaigns.value }]
+)
 
 function campaignBoxSrc(campaign: Campaign) {
   if (!campaign.homebrew) return imgsrc(`boxes/${campaign.id}.jpg`)

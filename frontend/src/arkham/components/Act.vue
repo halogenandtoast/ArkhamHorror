@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ComputedRef, computed, ref } from 'vue'
+import { ComputedRef, computed, ref, watch } from 'vue'
 import { useCardStore } from '@/stores/cards'
 import { type Game } from '@/arkham/types/Game'
 import { type Card, cardImage, asCardCode, cardFacedown } from '@/arkham/types/Card'
@@ -268,37 +268,16 @@ async function chooseAbility(index: number) {
   emits('choose', index)
 }
 
-const isVertical = computed(() => {
-  return [
-    '03321b',
-    '04117b',
-    '04118b',
-    '04122b',
-    '04125b',
-    '04126b',
-    '04128b',
-    '04130b',
-    '04133b',
-    '04134b',
-    '04137b',
-    '04209b',
-    '05055b',
-    '05288ab',
-    '05286ab',
-    '05286b',
-    '05288b',
-    '09615b',
-    '10607b',
-    '11504b',
-    '11505b',
-    '53029b',
-    '53030b',
-    '53032b',
-    '53034b',
-    '53046b',
-    '82006b',
-  ].includes(cardCode.value)
-})
+// Full-height backs (an act/agenda that flips to an enemy or location) are stored
+// portrait; normal act/agenda faces are landscape. Detect from the loaded image
+// instead of maintaining a card-code whitelist. Reset on src change so a flip
+// re-detects; @load then corrects it.
+const isVertical = ref(false)
+function updateOrientation(e: Event) {
+  const img = e.target as HTMLImageElement
+  isVertical.value = img.naturalHeight > img.naturalWidth
+}
+watch(image, () => { isVertical.value = false })
 
 const breaches = computed(() => {
   const { breaches } = props.act
@@ -357,6 +336,7 @@ const nextToScarletKeys = computed(() =>
           }"
           class="card"
           @click="clicked"
+          @load="updateOrientation"
           :src="image"
           ref="frame"
         />

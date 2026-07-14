@@ -1,7 +1,7 @@
 module Arkham.Homebrew.DarkMatter.Defs (module Arkham.Homebrew.DarkMatter.Defs) where
 
 import Arkham.Card.CardDef
-import Arkham.Homebrew.DefsBase
+import Arkham.Homebrew.DarkMatter.Actions qualified as Actions
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
@@ -9,8 +9,8 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
-import Arkham.Homebrew.DarkMatter.Actions qualified as Actions
 import Arkham.Homebrew.DarkMatter.Traits qualified as Traits
+import Arkham.Homebrew.DefsBase
 
 locations :: [CardDef]
 locations =
@@ -36,8 +36,8 @@ locations =
   , Locations.derelictShip
   , Locations.dreamDiagnostics
   , Locations.earth
-  , Locations.engineRoom_023
-  , Locations.engineRoom_127
+  , Locations.engineRoomTatterdemalion
+  , Locations.engineRoomInTheShadowOfEarth
   , Locations.entranceHall
   , Locations.entranceTunnel
   , Locations.escapePodBay
@@ -50,8 +50,8 @@ locations =
   , Locations.iceCavity
   , Locations.iceSpires
   , Locations.impassableRavine
-  , Locations.infirmary_025
-  , Locations.infirmary_130
+  , Locations.infirmaryTatterdemalion
+  , Locations.infirmaryInTheShadowOfEarth
   , Locations.landingCraft
   , Locations.library
   , Locations.mainFacility

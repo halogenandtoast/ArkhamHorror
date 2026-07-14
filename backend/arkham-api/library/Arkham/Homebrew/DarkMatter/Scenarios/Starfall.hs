@@ -13,7 +13,7 @@ newtype Starfall = Starfall ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 starfall :: Difficulty -> Starfall
-starfall difficulty = scenario Starfall ":dark-matter:246" "Starfall" difficulty []
+starfall difficulty = scenario Starfall ":dark-matter:243" "Starfall" difficulty []
 
 instance HasChaosTokenValue Starfall where
   getChaosTokenValue iid tokenFace (Starfall attrs) = case tokenFace of

@@ -19,11 +19,10 @@ const props = defineProps<{
 const gameMode = defineModel<GameMode>('gameMode', { required: true })
 const selectedCampaign = defineModel<string | null>('selectedCampaign', { required: true })
 const selectedScenario = defineModel<string | null>('selectedScenario', { required: true })
+const campaignGroup = defineModel<CampaignGroup>('campaignGroup', { required: true })
+const scenarioGroup = defineModel<ScenarioGroup>('scenarioGroup', { required: true })
 
 const emits = defineEmits(['go'])
-
-const campaignGroup = ref<CampaignGroup>('chapter1')
-const scenarioGroup = ref<ScenarioGroup>('sideStories')
 
 const chapter1Campaigns = computed(() =>
   props.campaigns.filter((c) => !CHAPTER_2_CAMPAIGN_IDS.has(c.id) && !c.homebrew)
@@ -144,6 +143,10 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
     </div>
   </template>
   <template v-else>
+    <div v-if="campaignGroup === 'homebrew'" class="homebrew-warning">
+      If you are seeing this, do not start one of these campaigns, they will break.
+    </div>
+
     <div class="campaigns">
       <template v-for="c in activeCampaigns" :key="c.id">
         <div class="campaign">
@@ -419,7 +422,8 @@ input[type='radio']:checked + label {
 }
 
 .beta-warning,
-.alpha-warning {
+.alpha-warning,
+.homebrew-warning {
   margin-top: 12px;
   padding: 12px;
   border-radius: 12px;
@@ -434,7 +438,8 @@ input[type='radio']:checked + label {
   background: rgba(184, 134, 11, 0.25);
 }
 
-.alpha-warning {
+.alpha-warning,
+.homebrew-warning {
   background: rgba(139, 0, 0, 0.25);
 }
 

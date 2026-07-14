@@ -82,24 +82,24 @@ scenarios :: [(CardCode, HomebrewScenario)]
 scenarios =
   [ (":dark-matter:013", HomebrewScenario theTatterdemalion)
   , (":dark-matter:053", HomebrewScenario electricNightmare)
-  , (":dark-matter:090", HomebrewScenario lostQuantum)
-  , (":dark-matter:115", HomebrewScenario inTheShadowOfEarth)
-  , (":dark-matter:156", HomebrewScenario strangeMoons)
-  , (":dark-matter:193", HomebrewScenario theMachineInYellow)
-  , (":dark-matter:212", HomebrewScenario fragmentOfCarcosa)
-  , (":dark-matter:246", HomebrewScenario starfall)
+  , (":dark-matter:087", HomebrewScenario lostQuantum)
+  , (":dark-matter:112", HomebrewScenario inTheShadowOfEarth)
+  , (":dark-matter:153", HomebrewScenario strangeMoons)
+  , (":dark-matter:190", HomebrewScenario theMachineInYellow)
+  , (":dark-matter:209", HomebrewScenario fragmentOfCarcosa)
+  , (":dark-matter:243", HomebrewScenario starfall)
   ]
 
 scenarioSets :: [(CardCode, EncounterSet)]
 scenarioSets =
   [ (":dark-matter:013", Sets.TheTatterdemalion)
   , (":dark-matter:053", Sets.ElectricNightmare)
-  , (":dark-matter:090", Sets.LostQuantum)
-  , (":dark-matter:115", Sets.InTheShadowOfEarth)
-  , (":dark-matter:156", Sets.StrangeMoons)
-  , (":dark-matter:193", Sets.TheMachineInYellow)
-  , (":dark-matter:212", Sets.FragmentOfCarcosa)
-  , (":dark-matter:246", Sets.Starfall)
+  , (":dark-matter:087", Sets.LostQuantum)
+  , (":dark-matter:112", Sets.InTheShadowOfEarth)
+  , (":dark-matter:153", Sets.StrangeMoons)
+  , (":dark-matter:190", Sets.TheMachineInYellow)
+  , (":dark-matter:209", Sets.FragmentOfCarcosa)
+  , (":dark-matter:243", Sets.Starfall)
   ]
 
 campaigns :: [(CampaignId, HomebrewCampaign)]

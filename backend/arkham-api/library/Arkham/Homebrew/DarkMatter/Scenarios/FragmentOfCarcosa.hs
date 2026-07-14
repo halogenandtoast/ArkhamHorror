@@ -13,7 +13,7 @@ newtype FragmentOfCarcosa = FragmentOfCarcosa ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fragmentOfCarcosa :: Difficulty -> FragmentOfCarcosa
-fragmentOfCarcosa difficulty = scenario FragmentOfCarcosa ":dark-matter:212" "Fragment of Carcosa" difficulty []
+fragmentOfCarcosa difficulty = scenario FragmentOfCarcosa ":dark-matter:209" "Fragment of Carcosa" difficulty []
 
 instance HasChaosTokenValue FragmentOfCarcosa where
   getChaosTokenValue iid tokenFace (FragmentOfCarcosa attrs) = case tokenFace of

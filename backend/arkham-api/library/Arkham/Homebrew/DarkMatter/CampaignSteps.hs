@@ -14,34 +14,34 @@ pattern ElectricNightmare <- ScenarioStep ":dark-matter:053"
     ElectricNightmare = ScenarioStep ":dark-matter:053"
 
 pattern LostQuantum :: CampaignStep
-pattern LostQuantum <- ScenarioStep ":dark-matter:090"
+pattern LostQuantum <- ScenarioStep ":dark-matter:087"
   where
-    LostQuantum = ScenarioStep ":dark-matter:090"
+    LostQuantum = ScenarioStep ":dark-matter:087"
 
 pattern InTheShadowOfEarth :: CampaignStep
-pattern InTheShadowOfEarth <- ScenarioStep ":dark-matter:115"
+pattern InTheShadowOfEarth <- ScenarioStep ":dark-matter:112"
   where
-    InTheShadowOfEarth = ScenarioStep ":dark-matter:115"
+    InTheShadowOfEarth = ScenarioStep ":dark-matter:112"
 
 pattern StrangeMoons :: CampaignStep
-pattern StrangeMoons <- ScenarioStep ":dark-matter:156"
+pattern StrangeMoons <- ScenarioStep ":dark-matter:153"
   where
-    StrangeMoons = ScenarioStep ":dark-matter:156"
+    StrangeMoons = ScenarioStep ":dark-matter:153"
 
 pattern TheMachineInYellow :: CampaignStep
-pattern TheMachineInYellow <- ScenarioStep ":dark-matter:193"
+pattern TheMachineInYellow <- ScenarioStep ":dark-matter:190"
   where
-    TheMachineInYellow = ScenarioStep ":dark-matter:193"
+    TheMachineInYellow = ScenarioStep ":dark-matter:190"
 
 pattern FragmentOfCarcosa :: CampaignStep
-pattern FragmentOfCarcosa <- ScenarioStep ":dark-matter:212"
+pattern FragmentOfCarcosa <- ScenarioStep ":dark-matter:209"
   where
-    FragmentOfCarcosa = ScenarioStep ":dark-matter:212"
+    FragmentOfCarcosa = ScenarioStep ":dark-matter:209"
 
 pattern Starfall :: CampaignStep
-pattern Starfall <- ScenarioStep ":dark-matter:246"
+pattern Starfall <- ScenarioStep ":dark-matter:243"
   where
-    Starfall = ScenarioStep ":dark-matter:246"
+    Starfall = ScenarioStep ":dark-matter:243"
 
 -- Interludes
 pattern MissionBriefing :: CampaignStep

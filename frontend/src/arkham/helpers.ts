@@ -118,9 +118,9 @@ export function imgsrc(src: string) {
 }
 
 // Homebrew card art (prefixed codes) lives under its campaign folder.
-// `art` is a c-stripped card code, optionally with a suffix (e.g. "circus-ex-mortis:001b").
+// `art` is a c-stripped card code, optionally with suffixes (e.g. "circus-ex-mortis:001b", "dark-matter:063aa").
 export function cardImgPath(art: string): string {
-  const homebrewMatch = art.match(/^:(.+):(\d+[a-z]?)$/)
+  const homebrewMatch = art.match(/^:(.+):(\d+[a-z]*)$/)
 
   if (homebrewMatch) {
     const [, campaign, cardCode] = homebrewMatch

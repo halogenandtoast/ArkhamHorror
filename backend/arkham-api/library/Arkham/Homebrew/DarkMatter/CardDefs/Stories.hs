@@ -40,74 +40,74 @@ whoAmI =
 -- Dark Matter (fan campaign by Axolotl): electric_nightmare
 reintegrated_062 :: CardDef
 reintegrated_062 =
-  doubleSided $ story ":dark-matter:062" "Reintegrated" Set.ElectricNightmare
+  otherSideIs ":dark-matter:063ab" $ story ":dark-matter:063aa" "Reintegrated" Set.ElectricNightmare
 
 reintegrated_063 :: CardDef
 reintegrated_063 =
-  doubleSided $ story ":dark-matter:063" "Reintegrated" Set.ElectricNightmare
+  otherSideIs ":dark-matter:063bb" $ story ":dark-matter:063ba" "Reintegrated" Set.ElectricNightmare
 
 reintegrated_064 :: CardDef
 reintegrated_064 =
-  doubleSided $ story ":dark-matter:064" "Reintegrated" Set.ElectricNightmare
+  otherSideIs ":dark-matter:063cb" $ story ":dark-matter:063ca" "Reintegrated" Set.ElectricNightmare
 
 reintegrated_065 :: CardDef
 reintegrated_065 =
-  doubleSided $ story ":dark-matter:065" "Reintegrated" Set.ElectricNightmare
+  otherSideIs ":dark-matter:063db" $ story ":dark-matter:063da" "Reintegrated" Set.ElectricNightmare
 
 -- Dark Matter (fan campaign by Axolotl): in_the_shadow_of_earth
 evidenceAdamTanner :: CardDef
 evidenceAdamTanner =
-  story ":dark-matter:139" "Evidence (Adam Tanner)" Set.InTheShadowOfEarth
+  story ":dark-matter:136" "Evidence (Adam Tanner)" Set.InTheShadowOfEarth
 
 evidenceCaptainBurr :: CardDef
 evidenceCaptainBurr =
-  story ":dark-matter:140" "Evidence (Captain Burr)" Set.InTheShadowOfEarth
+  story ":dark-matter:137" "Evidence (Captain Burr)" Set.InTheShadowOfEarth
 
 evidenceDoctorFeng :: CardDef
 evidenceDoctorFeng =
-  story ":dark-matter:141" "Evidence (Doctor Feng)" Set.InTheShadowOfEarth
+  story ":dark-matter:138" "Evidence (Doctor Feng)" Set.InTheShadowOfEarth
 
 evidenceLtArcherMichaels :: CardDef
 evidenceLtArcherMichaels =
-  story ":dark-matter:142" "Evidence (Lt. \"Archer\" Michaels)" Set.InTheShadowOfEarth
+  story ":dark-matter:139" "Evidence (Lt. \"Archer\" Michaels)" Set.InTheShadowOfEarth
 
 evidenceMUD12Mudbug :: CardDef
 evidenceMUD12Mudbug =
-  story ":dark-matter:143" "Evidence (MU-D12 \"Mudbug\")" Set.InTheShadowOfEarth
+  story ":dark-matter:140" "Evidence (MU-D12 \"Mudbug\")" Set.InTheShadowOfEarth
 
 evidenceSophie :: CardDef
 evidenceSophie =
-  story ":dark-matter:144" "Evidence (Sophie)" Set.InTheShadowOfEarth
+  story ":dark-matter:141" "Evidence (Sophie)" Set.InTheShadowOfEarth
 
 -- Dark Matter (fan campaign by Axolotl): strange_moons
 theCultist :: CardDef
-theCultist = story ":dark-matter:179" "The Cultist" Set.StrangeMoons
+theCultist = story ":dark-matter:176" "The Cultist" Set.StrangeMoons
 
 theMiner :: CardDef
-theMiner = story ":dark-matter:180" "The Miner" Set.StrangeMoons
+theMiner = story ":dark-matter:177" "The Miner" Set.StrangeMoons
 
 theTeacher :: CardDef
-theTeacher = story ":dark-matter:181" "The Teacher" Set.StrangeMoons
+theTeacher = story ":dark-matter:178" "The Teacher" Set.StrangeMoons
 
 -- Dark Matter (fan campaign by Axolotl): fragment_of_carcosa
 arrivalOfTheKing :: CardDef
 arrivalOfTheKing =
-  story ":dark-matter:227" "Arrival of the King" Set.FragmentOfCarcosa
+  story ":dark-matter:224" "Arrival of the King" Set.FragmentOfCarcosa
 
 delights :: CardDef
-delights = story ":dark-matter:228" "Delights" Set.FragmentOfCarcosa
+delights = story ":dark-matter:225" "Delights" Set.FragmentOfCarcosa
 
 forYouAlone :: CardDef
-forYouAlone = story ":dark-matter:229" "For You Alone" Set.FragmentOfCarcosa
+forYouAlone = story ":dark-matter:226" "For You Alone" Set.FragmentOfCarcosa
 
 lostExpedition :: CardDef
-lostExpedition = story ":dark-matter:230" "Lost Expedition" Set.FragmentOfCarcosa
+lostExpedition = story ":dark-matter:227" "Lost Expedition" Set.FragmentOfCarcosa
 
 -- Dark Matter (fan campaign by Axolotl): starfall
 ritualOfTheSun :: CardDef
-ritualOfTheSun = story ":dark-matter:269" "Ritual of the Sun" Set.Starfall
+ritualOfTheSun = story ":dark-matter:266" "Ritual of the Sun" Set.Starfall
 
 withoutATrace :: CardDef
-withoutATrace = story ":dark-matter:278" "Without a Trace" Set.Starfall
+withoutATrace = story ":dark-matter:275" "Without a Trace" Set.Starfall
 
 --- Circus Ex Mortis (homebrew)

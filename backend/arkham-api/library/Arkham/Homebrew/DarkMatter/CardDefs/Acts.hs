@@ -36,58 +36,58 @@ facingYourFears =
 
 -- lost_quantum
 elbrusStation :: CardDef
-elbrusStation = act ":dark-matter:094" "Elbrus Station" 1 Set.LostQuantum
+elbrusStation = act ":dark-matter:091" "Elbrus Station" 1 Set.LostQuantum
 
 quantumZeno :: CardDef
-quantumZeno = act ":dark-matter:095" "Quantum Zeno" 2 Set.LostQuantum
+quantumZeno = act ":dark-matter:092" "Quantum Zeno" 2 Set.LostQuantum
 
 destabilization :: CardDef
-destabilization = act ":dark-matter:096" "Destabilization" 2 Set.LostQuantum
+destabilization = act ":dark-matter:093" "Destabilization" 2 Set.LostQuantum
 
 -- in_the_shadow_of_earth
 isAnyoneHome :: CardDef
-isAnyoneHome = act ":dark-matter:119" "Is Anyone Home?" 1 Set.InTheShadowOfEarth
+isAnyoneHome = act ":dark-matter:116" "Is Anyone Home?" 1 Set.InTheShadowOfEarth
 
 saveOurSouls :: CardDef
-saveOurSouls = act ":dark-matter:120" "Save Our Souls" 2 Set.InTheShadowOfEarth
+saveOurSouls = act ":dark-matter:117" "Save Our Souls" 2 Set.InTheShadowOfEarth
 
 theShadowOfEarth :: CardDef
 theShadowOfEarth =
-  act ":dark-matter:121" "The Shadow of Earth" 3 Set.InTheShadowOfEarth
+  act ":dark-matter:118" "The Shadow of Earth" 3 Set.InTheShadowOfEarth
 
 -- strange_moons
 firstEncounter :: CardDef
-firstEncounter = act ":dark-matter:161" "First Encounter" 1 Set.StrangeMoons
+firstEncounter = act ":dark-matter:158" "First Encounter" 1 Set.StrangeMoons
 
 secretsOfTheMind :: CardDef
-secretsOfTheMind = act ":dark-matter:162" "Secrets of the Mind" 2 Set.StrangeMoons
+secretsOfTheMind = act ":dark-matter:159" "Secrets of the Mind" 2 Set.StrangeMoons
 
 -- the_machine_in_yellow
 awakening :: CardDef
-awakening = act ":dark-matter:197" "Awakening?" 1 Set.TheMachineInYellow
+awakening = act ":dark-matter:194" "Awakening?" 1 Set.TheMachineInYellow
 
 theManInThePallidMask :: CardDef
 theManInThePallidMask =
-  act ":dark-matter:198" "The Man in the Pallid Mask" 2 Set.TheMachineInYellow
+  act ":dark-matter:195" "The Man in the Pallid Mask" 2 Set.TheMachineInYellow
 
 unmasked :: CardDef
-unmasked = act ":dark-matter:199" "Unmasked" 3 Set.TheMachineInYellow
+unmasked = act ":dark-matter:196" "Unmasked" 3 Set.TheMachineInYellow
 
 -- fragment_of_carcosa
 inLostCarcosa :: CardDef
-inLostCarcosa = act ":dark-matter:215" "In Lost Carcosa" 1 Set.FragmentOfCarcosa
+inLostCarcosa = act ":dark-matter:212" "In Lost Carcosa" 1 Set.FragmentOfCarcosa
 
 theHeirToCarcosa :: CardDef
 theHeirToCarcosa =
-  act ":dark-matter:216" "The Heir to Carcosa" 2 Set.FragmentOfCarcosa
+  act ":dark-matter:213" "The Heir to Carcosa" 2 Set.FragmentOfCarcosa
 
 theUnspeakableTruth :: CardDef
 theUnspeakableTruth =
-  act ":dark-matter:217" "The Unspeakable Truth" 3 Set.FragmentOfCarcosa
+  act ":dark-matter:214" "The Unspeakable Truth" 3 Set.FragmentOfCarcosa
 
 -- starfall
 endTimes :: CardDef
-endTimes = act ":dark-matter:251" "End Times" 1 Set.Starfall
+endTimes = act ":dark-matter:248" "End Times" 1 Set.Starfall
 
 tassildasAwakening :: CardDef
-tassildasAwakening = act ":dark-matter:252" "Tassilda's Awakening" 1 Set.Starfall
+tassildasAwakening = act ":dark-matter:249" "Tassilda's Awakening" 1 Set.Starfall

@@ -331,7 +331,7 @@ instance HasField "unique" CardDef Bool where
   getField = cdUnique
 
 instance HasField "doubleSided" CardDef Bool where
-  getField = isJust . cdOtherSide
+  getField = cdDoubleSided
 
 instance HasField "otherSide" CardDef (Maybe CardCode) where
   getField = cdOtherSide

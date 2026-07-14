@@ -139,6 +139,12 @@ otherSideIs ccode def =
     , cdOtherSide = Just ccode
     }
 
+singleSidedWithBack :: CardCode -> CardDef -> CardDef
+singleSidedWithBack = otherSideIs
+
+singleSidedWithFlippedBack :: CardDef -> CardDef
+singleSidedWithFlippedBack def = singleSidedWithBack (flippedCardCode def.cardCode) def
+
 veiled :: CardDef -> CardDef
 veiled def =
   def

@@ -103,8 +103,8 @@ instance RunMessage DarkMatter where
     DoStep 1 (CampaignStep (InterludeStep 3 _)) -> scope "introspection" do
       flavor $ setTitle "title" >> p "introspection1"
       eachInvestigator \iid -> do
-        scenarioSetupModifier ":dark-matter:193" CampaignSource iid (StartingResources 1)
-        scenarioSetupModifier ":dark-matter:193" CampaignSource iid (StartingHand 1)
+        scenarioSetupModifier ":dark-matter:190" CampaignSource iid (StartingResources 1)
+        scenarioSetupModifier ":dark-matter:190" CampaignSource iid (StartingHand 1)
       pure c
     CampaignStep EpilogueStep -> scope "epilogue" do
       hopeShielded <- getHasRecord HopeWasShieldedFromTheBlast

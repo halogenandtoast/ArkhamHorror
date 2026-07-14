@@ -26,7 +26,7 @@ instance RunMessage AlkalineForest where
       chooseOrRunOneM iid $ withI18n do
         countVar 1 $ labeled' "takeDirectHorror" $ directHorror iid (attrs.ability 1) 1
         countVar 2
-          $ labeledValidate' discardOk "discardCardsFromHand"
+          $ labeledValidate' discardOk "discardRandomCardsFromHand"
           $ randomDiscardN iid (attrs.ability 1) 2
       pure l
     _ -> AlkalineForest <$> liftRunMessage msg attrs

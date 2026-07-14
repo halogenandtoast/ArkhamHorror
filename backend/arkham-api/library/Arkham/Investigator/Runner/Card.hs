@@ -981,10 +981,18 @@ handleDrawToHandFrom a@InvestigatorAttrs{..} iid deck cards = do
   when (isNothing $ a ^. searchL) do
     push after
   assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
+  -- Commit every card out of the deck now, before the per-card draw messages above
+  -- resolve. Each card's draw windows fire before the next card is drawn, so a reaction
+  -- to card 1 (Dream-Enhancing Serum) could otherwise draw card 2 out from under us
+  -- while it still sat in the deck, and the pending InvestigatorDrewPlayerCardFrom would
+  -- then draw it a second time, duplicating the card. handleDoDrawCardsV2 keeps the same
+  -- invariant for the standard draw path.
+  let drawnCardIds = map toCardId cards
   pure
     $ a
     & (cardsUnderneathL %~ filter (`notElem` cards))
     & (slotsL %~ flip (foldr removeFromSlots) assetIds)
+    & (deckL %~ filter ((`notElem` drawnCardIds) . toCardId))
     & (discardL %~ filter ((`notElem` cards) . PlayerCard))
     & (foundCardsL . each %~ filter (`notElem` cards))
     & (bondedCardsL %~ filter (`notElem` cards))

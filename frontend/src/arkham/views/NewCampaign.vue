@@ -11,7 +11,8 @@ import { storeToRefs } from 'pinia'
 import type { GameMode, MultiplayerVariant, CampaignType, AiSlotConfig } from '@/arkham/types/NewGame'
 
 import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
-import campaignJSON from '@/arkham/data/campaigns'
+import officialCampaignJSON from '@/arkham/data/campaigns'
+import { homebrewCampaigns } from '@/arkham/homebrewData'
 import scenarioJSON from '@/arkham/data/scenarios'
 import sideStoriesJSON from '@/arkham/data/side-stories'
 import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
@@ -86,6 +87,7 @@ const miniCampaign = ref(false)
 
 const scenarios = computed<Scenario[]>(() => gate(scenarioJSON))
 const sideStories = computed<Scenario[]>(() => gate(sideStoriesJSON))
+const campaignJSON = [...officialCampaignJSON, ...homebrewCampaigns]
 const campaigns = computed<Campaign[]>(() => gate(campaignJSON))
 
 const scenario = computed(() =>

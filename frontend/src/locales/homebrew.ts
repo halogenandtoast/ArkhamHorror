@@ -1,8 +1,8 @@
-// Homebrew campaign locales are discovered from the campaign directories
-// themselves (backend/arkham-api/library/Arkham/Homebrew/<Name>/locales/en/),
+// Homebrew campaign locales are discovered from frontend/homebrew/<campaign>/locales/en/,
 // mirroring the backend's instance discovery: dropping a campaign directory in
-// requires no i18n registration here. The directory name (PascalCase) becomes
-// the message scope (camelCase), e.g. CircusExMortis -> circusExMortis, and
+// requires no i18n registration here. The kebab-case directory name (matching
+// the campaign id, e.g. circus-ex-mortis for :circus-ex-mortis) camelCases to
+// the message scope (circusExMortis, matching the backend campaignI18n scope);
 // every JSON file in its locales/en/ folder is shallow-merged into that scope.
 const modules = import.meta.glob('@homebrew/*/locales/en/*.json', { eager: true }) as Record<
   string,
@@ -14,7 +14,8 @@ export function homebrewMessages(): Record<string, Record<string, unknown>> {
   for (const [path, mod] of Object.entries(modules)) {
     const match = path.match(/\/([^/]+)\/locales\/en\/[^/]+\.json$/)
     if (!match || !match[1]) continue
-    const scope = match[1].charAt(0).toLowerCase() + match[1].slice(1)
+    const parts = match[1].split('-')
+    const scope = (parts[0] ?? '') + parts.slice(1).map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join('')
     out[scope] = { ...(out[scope] ?? {}), ...mod.default }
   }
   return out

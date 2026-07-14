@@ -1,0 +1,58 @@
+[
+  {
+    "id": ":circus-ex-mortis:001",
+    "name": "One Night Only",
+    "campaign": ":circus-ex-mortis",
+    "standalone": false,
+    "i18n": "oneNightOnly"
+  },
+  {
+    "id": ":circus-ex-mortis:017",
+    "name": "The Primrose Path",
+    "campaign": ":circus-ex-mortis",
+    "standalone": false,
+    "i18n": "thePrimrosePath"
+  },
+  {
+    "id": ":circus-ex-mortis:042",
+    "name": "Harm's Way",
+    "campaign": ":circus-ex-mortis",
+    "standalone": false,
+    "i18n": "harmsWay"
+  },
+  {
+    "id": ":circus-ex-mortis:076",
+    "name": "All Points West",
+    "campaign": ":circus-ex-mortis",
+    "standalone": false,
+    "i18n": "allPointsWest"
+  },
+  {
+    "id": ":circus-ex-mortis:110",
+    "name": "Piper at the Gates of Dawn",
+    "campaign": ":circus-ex-mortis",
+    "standalone": false,
+    "i18n": "piperAtTheGatesOfDawn"
+  },
+  {
+    "id": ":circus-ex-mortis:124",
+    "name": "Bacchanalia",
+    "campaign": ":circus-ex-mortis",
+    "standalone": false,
+    "i18n": "bacchanalia"
+  },
+  {
+    "id": ":circus-ex-mortis:155",
+    "name": "Red Sunrise",
+    "campaign": ":circus-ex-mortis",
+    "standalone": false,
+    "i18n": "redSunrise"
+  },
+  {
+    "id": ":circus-ex-mortis:192",
+    "name": "Thousand to One",
+    "campaign": ":circus-ex-mortis",
+    "standalone": false,
+    "i18n": "thousandToOne"
+  }
+]

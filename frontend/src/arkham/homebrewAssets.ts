@@ -1,5 +1,5 @@
 // Frontend assets contributed by homebrew campaigns, discovered from the
-// campaign directories (backend/arkham-api/library/Arkham/Homebrew/<Name>/frontend/):
+// frontend/homebrew/<campaign>/ directories:
 //
 // - `*.css` is injected into the bundle as-is (asset URLs inside should be
 //   absolute, e.g. /img/arkham/homebrew/<campaign>/...).
@@ -9,9 +9,9 @@
 //
 // Like the locale and instance discovery, dropping a campaign directory in
 // requires no registration here.
-import.meta.glob('@homebrew/*/frontend/*.css', { eager: true })
+import.meta.glob('@homebrew/*/*.css', { eager: true })
 
-const iconModules = import.meta.glob('@homebrew/*/frontend/icons.json', { eager: true }) as Record<
+const iconModules = import.meta.glob('@homebrew/*/icons.json', { eager: true }) as Record<
   string,
   { default: Record<string, string> }
 >

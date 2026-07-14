@@ -13,7 +13,7 @@ newtype TheMachineInYellow = TheMachineInYellow ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theMachineInYellow :: Difficulty -> TheMachineInYellow
-theMachineInYellow difficulty = scenario TheMachineInYellow "z-dark-matter-193" "The Machine in Yellow" difficulty []
+theMachineInYellow difficulty = scenario TheMachineInYellow ":dark-matter:193" "The Machine in Yellow" difficulty []
 
 instance HasChaosTokenValue TheMachineInYellow where
   getChaosTokenValue iid tokenFace (TheMachineInYellow attrs) = case tokenFace of

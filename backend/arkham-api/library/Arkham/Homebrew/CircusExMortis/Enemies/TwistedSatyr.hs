@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.TwistedSatyr (twistedSatyr) where
 
 import Arkham.Ability
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
@@ -25,7 +26,7 @@ instance HasAbilities TwistedSatyr where
 instance RunMessage TwistedSatyr where
   runMessage msg e@(TwistedSatyr attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      selectOne (chaosToken_ #moon) >>= \case
+      selectOne (chaosToken_ (ChaosTokenFaceIs MoonToken)) >>= \case
         Just token -> sealChaosToken iid iid token
         Nothing -> assignHorror iid (attrs.ability 1) 1
       pure e

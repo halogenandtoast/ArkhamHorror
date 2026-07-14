@@ -17,6 +17,7 @@ newtype TheBigTopSecondRing = TheBigTopSecondRing LocationAttrs
 theBigTopSecondRing :: LocationCard TheBigTopSecondRing
 theBigTopSecondRing =
   location TheBigTopSecondRing Cards.theBigTopSecondRing 2 (PerPlayer 1)
+    & setLabel "theBigTopSecondRing"
 
 instance HasAbilities TheBigTopSecondRing where
   getAbilities (TheBigTopSecondRing a) =

@@ -18,6 +18,7 @@ locations =
   , Locations.caboose
   , Locations.campOutskirtsGuardedClosely
   , Locations.campOutskirtsQuietForNow
+  , Locations.canyonEntrance
   , Locations.carousel
   , Locations.circusEncampment
   , Locations.circusEngine
@@ -26,17 +27,19 @@ locations =
   , Locations.coalHopperCar
   , Locations.collectionHall
   , Locations.craneCar
+  , Locations.crowdedRow_048
+  , Locations.crowdedRow_049
   , Locations.crowdedRow_050
   , Locations.crowdedRow_051
-  , Locations.crowdedRow_052
-  , Locations.crowdedRow_053
+  , Locations.defiledWoods
   , Locations.exoticAnimalCar
   , Locations.fallenCopse
   , Locations.flatcar
+  , Locations.foothillSlope_162
+  , Locations.foothillSlope_163
   , Locations.foothillSlope_164
   , Locations.foothillSlope_165
-  , Locations.foothillSlope_166
-  , Locations.foothillSlope_167
+  , Locations.forestChasm
   , Locations.forestPassage
   , Locations.forgottenTrail
   , Locations.gamesGallery
@@ -46,6 +49,7 @@ locations =
   , Locations.locomotiveEngine
   , Locations.mailCar
   , Locations.manorCellars
+  , Locations.markedGrove
   , Locations.moonlitForestCircularGrove
   , Locations.moonlitForestDeadGrove
   , Locations.moonlitForestFogBank
@@ -57,13 +61,13 @@ locations =
   , Locations.moonlitForestShallowRiver
   , Locations.moonlitForestSmolderingCampfire
   , Locations.mossyGlen
+  , Locations.mountainStream_166
+  , Locations.mountainStream_167
   , Locations.mountainStream_168
   , Locations.mountainStream_169
-  , Locations.mountainStream_170
-  , Locations.mountainStream_171
+  , Locations.openForest_170
+  , Locations.openForest_171
   , Locations.openForest_172
-  , Locations.openForest_173
-  , Locations.openForest_174
   , Locations.performerTrailers
   , Locations.performersCar
   , Locations.primalForest
@@ -74,15 +78,15 @@ locations =
   , Locations.ringmastersTrailer
   , Locations.ritualClearing
   , Locations.savageAltar
+  , Locations.secludedTent_052
+  , Locations.secludedTent_053
   , Locations.secludedTent_054
   , Locations.secludedTent_055
-  , Locations.secludedTent_056
-  , Locations.secludedTent_057
+  , Locations.shadowedWilderness_173
+  , Locations.shadowedWilderness_174
   , Locations.shadowedWilderness_175
   , Locations.shadowedWilderness_176
   , Locations.shadowedWilderness_177
-  , Locations.shadowedWilderness_178
-  , Locations.shadowedWilderness_179
   , Locations.silentClearing
   , Locations.sparseWoodland
   , Locations.statuaryGardens

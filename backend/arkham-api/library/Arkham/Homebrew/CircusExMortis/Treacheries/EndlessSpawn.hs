@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.EndlessSpawn (endlessSpawn) where
 
 import Arkham.Ability
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Card
 import Arkham.Helpers.Location (withLocationOf)
@@ -38,14 +39,14 @@ instance RunMessage EndlessSpawn where
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      hasMoon <- selectAny $ chaosToken_ #moon
+      hasMoon <- selectAny $ chaosToken_ (ChaosTokenFaceIs MoonToken)
       chooseOneM iid do
         skillLabeled #agility $ beginSkillTest sid iid (attrs.ability 2) attrs #agility (Fixed 3)
         -- ponytail: "automatically succeed" modeled as a direct discard on the
         -- seal branch; outcome is identical to passing the test (discard Endless
         -- Spawn), and there is no clean primitive to force a specific test to pass.
         when hasMoon $ campaignI18n $ labeled' "endlessSpawn.autoSucceed" do
-          selectOne (chaosToken_ #moon) >>= traverse_ (sealChaosToken iid iid)
+          selectOne (chaosToken_ (ChaosTokenFaceIs MoonToken)) >>= traverse_ (sealChaosToken iid iid)
           toDiscardBy iid (attrs.ability 2) attrs
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do

@@ -1266,7 +1266,7 @@
     }
   },
   {
-    "id": "z-dark-matter",
+    "id": "dark-matter",
     "name": "Dark Matter",
     "homebrew": true,
     "designer": "Axolotl",
@@ -1290,7 +1290,7 @@
     }
   },
   {
-    "id": "z-circus-ex-mortis",
+    "id": ":circus-ex-mortis",
     "name": "Circus Ex Mortis",
     "homebrew": true,
     "designer": "The Beard",

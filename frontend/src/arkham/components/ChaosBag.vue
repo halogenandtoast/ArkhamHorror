@@ -61,10 +61,13 @@ function imageFor(tokenFace: string) {
       return imgsrc("ct_curse.png");
     case 'FrostToken':
       return imgsrc("ct_frost.png");
-    case 'MoonToken':
-      return imgsrc("ct_moon.png");
-    default:
+    default: {
+      if (tokenFace.includes(':')) {
+        const parts = tokenFace.split(':')
+        return imgsrc(`ct_${parts[parts.length - 1]}.png`)
+      }
       return imgsrc("ct_blank.png");
+    }
   }
 }
 
@@ -84,7 +87,7 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON))
 const debug = useDebug()
 const allTokenFaces = computed(() => props.chaosBag.chaosTokens.map(t => t.face).sort(sortTokenFaces))
-const tokenOrder = ['PlusOne', 'Zero', 'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight', 'Skull', 'Cultist', 'Tablet', 'ElderThing', 'AutoFail', 'ElderSign', 'CurseToken', 'BlessToken', 'FrostToken', 'MoonToken']
+const tokenOrder = ['PlusOne', 'Zero', 'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight', 'Skull', 'Cultist', 'Tablet', 'ElderThing', 'AutoFail', 'ElderSign', 'CurseToken', 'BlessToken', 'FrostToken']
 
 function sortTokenFaces(a: string, b: string) {
   return tokenOrder.indexOf(a) - tokenOrder.indexOf(b)

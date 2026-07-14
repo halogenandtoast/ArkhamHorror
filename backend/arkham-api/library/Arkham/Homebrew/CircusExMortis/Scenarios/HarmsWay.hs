@@ -13,7 +13,7 @@ newtype HarmsWay = HarmsWay ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 harmsWay :: Difficulty -> HarmsWay
-harmsWay difficulty = scenario HarmsWay "z-circus-ex-mortis-042" "Harm's Way" difficulty []
+harmsWay difficulty = scenario HarmsWay ":circus-ex-mortis:042" "Harm's Way" difficulty []
 
 instance HasChaosTokenValue HarmsWay where
   getChaosTokenValue iid tokenFace (HarmsWay attrs) = case tokenFace of

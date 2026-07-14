@@ -13,7 +13,7 @@ newtype PiperAtTheGatesOfDawn = PiperAtTheGatesOfDawn ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 piperAtTheGatesOfDawn :: Difficulty -> PiperAtTheGatesOfDawn
-piperAtTheGatesOfDawn difficulty = scenario PiperAtTheGatesOfDawn "z-circus-ex-mortis-110" "Piper at the Gates of Dawn" difficulty []
+piperAtTheGatesOfDawn difficulty = scenario PiperAtTheGatesOfDawn ":circus-ex-mortis:110" "Piper at the Gates of Dawn" difficulty []
 
 instance HasChaosTokenValue PiperAtTheGatesOfDawn where
   getChaosTokenValue iid tokenFace (PiperAtTheGatesOfDawn attrs) = case tokenFace of

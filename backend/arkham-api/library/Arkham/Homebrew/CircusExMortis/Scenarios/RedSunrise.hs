@@ -13,7 +13,7 @@ newtype RedSunrise = RedSunrise ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 redSunrise :: Difficulty -> RedSunrise
-redSunrise difficulty = scenario RedSunrise "z-circus-ex-mortis-155" "Red Sunrise" difficulty []
+redSunrise difficulty = scenario RedSunrise ":circus-ex-mortis:155" "Red Sunrise" difficulty []
 
 instance HasChaosTokenValue RedSunrise where
   getChaosTokenValue iid tokenFace (RedSunrise attrs) = case tokenFace of

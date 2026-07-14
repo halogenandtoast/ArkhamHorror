@@ -13,7 +13,7 @@ newtype LostQuantum = LostQuantum ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostQuantum :: Difficulty -> LostQuantum
-lostQuantum difficulty = scenario LostQuantum "z-dark-matter-090" "Lost Quantum" difficulty []
+lostQuantum difficulty = scenario LostQuantum ":dark-matter:090" "Lost Quantum" difficulty []
 
 instance HasChaosTokenValue LostQuantum where
   getChaosTokenValue iid tokenFace (LostQuantum attrs) = case tokenFace of

@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Campaign (circusExMortis) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as HBAssets
 import Arkham.Campaign.Import.Lifted
 import Arkham.Homebrew.CircusExMortis.CampaignSteps
@@ -25,7 +26,7 @@ newtype CircusExMortis = CircusExMortis CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 circusExMortis :: Difficulty -> CircusExMortis
-circusExMortis = campaign CircusExMortis (CampaignId "z-circus-ex-mortis") "Circus Ex Mortis"
+circusExMortis = campaign CircusExMortis (CampaignId ":circus-ex-mortis") "Circus Ex Mortis"
 
 instance IsCampaign CircusExMortis where
   campaignTokens = chaosBagContents
@@ -67,7 +68,7 @@ instance RunMessage CircusExMortis where
           setTitle "title"
           p "minnie"
           ul $ li "addMoonTokens"
-      replicateM_ 3 $ addChaosToken #moon
+      replicateM_ 3 $ addChaosToken MoonToken
       nextCampaignStep
       pure c
     -- Interlude: The Future and the Past (guide pp9-10)
@@ -106,7 +107,7 @@ instance RunMessage CircusExMortis where
         setTitle "title"
         p "escape"
         ul $ li "addMoonToken"
-      addChaosToken #moon
+      addChaosToken MoonToken
       nextCampaignStep
       pure c
     -- Interlude: Written in Stone (guide pp19-20)

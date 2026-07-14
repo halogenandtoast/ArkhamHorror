@@ -39,6 +39,31 @@ locationWithUnrevealed cardCode unrevealedName unrevealedTraits unrevealedLocati
     , cdLevel = Nothing
     }
 
+locationWithUnrevealedName
+  :: CardCode
+  -> Name
+  -> Name
+  -> [Trait]
+  -> LocationSymbol
+  -> [LocationSymbol]
+  -> EncounterSet
+  -> CardDef
+locationWithUnrevealedName cardCode unrevealedName name traits locationSymbol connectedLocationSymbols encounterSet =
+  ( location
+      cardCode
+      unrevealedName
+      traits
+      locationSymbol
+      connectedLocationSymbols
+      encounterSet
+  )
+    { cdRevealedName = Just name
+    , cdRevealedCardTraits = setFromList traits
+    , cdLocationRevealedSymbol = Just locationSymbol
+    , cdLocationRevealedConnections = connectedLocationSymbols
+    , cdLevel = Nothing
+    }
+
 locationWithUnrevealed_
   :: CardCode
   -> Name

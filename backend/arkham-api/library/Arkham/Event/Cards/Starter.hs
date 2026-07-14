@@ -1,6 +1,7 @@
 module Arkham.Event.Cards.Starter where
 
 import Arkham.Actions
+import Arkham.ChaosToken.Types (allChaosTokenFaces)
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
 import Arkham.ForMovement
@@ -343,7 +344,7 @@ eldritchInspiration1 =
   (event "60420" "Eldritch Inspiration" 0 Mystic)
     { cdSkills = [#willpower, #intellect, #intellect]
     , cdCardTraits = setFromList [Spell, Spirit]
-    , cdFastWindow = Just $ WouldTriggerChaosTokenRevealEffectOnCard You MysticCard [minBound ..]
+    , cdFastWindow = Just $ WouldTriggerChaosTokenRevealEffectOnCard You MysticCard allChaosTokenFaces
     , cdLevel = Just 1
     }
 

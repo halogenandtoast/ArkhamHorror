@@ -3,7 +3,7 @@ module Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestGlassyLake (
 ) where
 
 import Arkham.Ability
-import Arkham.ChaosToken.Types (ChaosTokenFace (MoonToken))
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted

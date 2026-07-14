@@ -554,7 +554,7 @@ instance HasChaosTokenValue Scenario where
               $ if count (== #frost) revealed == 2 then AutoFailModifier else NegativeModifier 1
           -- Circus Ex Mortis guide p1: the moon token's printed value is 0; its
           -- seal-and-reveal-another effect is handled at ResolveChaosToken.
-          MoonToken -> pure $ ChaosTokenValue chaosTokenFace NoModifier
+          CustomToken _ -> pure $ ChaosTokenValue chaosTokenFace NoModifier
           _ -> getChaosTokenValue iid chaosTokenFace s
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario

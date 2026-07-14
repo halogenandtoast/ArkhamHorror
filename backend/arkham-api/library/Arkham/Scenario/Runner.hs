@@ -82,6 +82,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Name hiding (labeled)
 import Arkham.Phase
 import Arkham.Placement
+import Arkham.Homebrew.Tokens
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
@@ -552,18 +553,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       if tokenModifier == AutoFailModifier
         then push FailSkillTest
         else do
+          let shouldRevealAnother = DoNotRevealAnotherChaosToken `notElem` mods
           when (token `elem` [#curse, #bless, #frost]) do
-            let shouldRevealAnother = DoNotRevealAnotherChaosToken `notElem` mods
             pushWhen shouldRevealAnother (DrawAnotherChaosToken iid)
-          -- Moon token (Circus Ex Mortis, guide p1): "0. Seal this token on
-          -- your investigator card and reveal another token." ResolveChaosToken
-          -- only fires for tokens revealed during a skill test, matching the
-          -- rule that a moon token revealed outside a skill test has no effect.
-          when (token == #moon) do
-            let shouldRevealAnother = DoNotRevealAnotherChaosToken `notElem` mods
-            pushAll
-              $ [SealChaosToken drawnToken, SealedChaosToken drawnToken (Just iid) (InvestigatorTarget iid)]
-              <> [DrawAnotherChaosToken iid | shouldRevealAnother]
+          -- Homebrew custom tokens: engine-level reveal behavior comes from the
+          -- token's registered 'CustomTokenReveal'. ResolveChaosToken only
+          -- fires for tokens revealed during a skill test, so custom tokens
+          -- revealed outside one never have an engine effect.
+          case customTokenRevealEffect token of
+            RevealNoEffect -> pure ()
+            RevealAnother -> pushWhen shouldRevealAnother (DrawAnotherChaosToken iid)
+            SealOnRevealerAndRevealAnother ->
+              pushAll
+                $ [SealChaosToken drawnToken, SealedChaosToken drawnToken (Just iid) (InvestigatorTarget iid)]
+                <> [DrawAnotherChaosToken iid | shouldRevealAnother]
     pure a
   EndOfScenario mNextCampaignStep -> do
     -- Do not update without updating Hemlock Preludes

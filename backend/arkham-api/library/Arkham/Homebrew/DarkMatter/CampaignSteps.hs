@@ -4,44 +4,44 @@ import Arkham.CampaignStep
 import Arkham.Prelude
 
 pattern TheTatterdemalion :: CampaignStep
-pattern TheTatterdemalion <- ScenarioStep "z-dark-matter-013"
+pattern TheTatterdemalion <- ScenarioStep ":dark-matter:013"
   where
-    TheTatterdemalion = ScenarioStep "z-dark-matter-013"
+    TheTatterdemalion = ScenarioStep ":dark-matter:013"
 
 pattern ElectricNightmare :: CampaignStep
-pattern ElectricNightmare <- ScenarioStep "z-dark-matter-053"
+pattern ElectricNightmare <- ScenarioStep ":dark-matter:053"
   where
-    ElectricNightmare = ScenarioStep "z-dark-matter-053"
+    ElectricNightmare = ScenarioStep ":dark-matter:053"
 
 pattern LostQuantum :: CampaignStep
-pattern LostQuantum <- ScenarioStep "z-dark-matter-090"
+pattern LostQuantum <- ScenarioStep ":dark-matter:090"
   where
-    LostQuantum = ScenarioStep "z-dark-matter-090"
+    LostQuantum = ScenarioStep ":dark-matter:090"
 
 pattern InTheShadowOfEarth :: CampaignStep
-pattern InTheShadowOfEarth <- ScenarioStep "z-dark-matter-115"
+pattern InTheShadowOfEarth <- ScenarioStep ":dark-matter:115"
   where
-    InTheShadowOfEarth = ScenarioStep "z-dark-matter-115"
+    InTheShadowOfEarth = ScenarioStep ":dark-matter:115"
 
 pattern StrangeMoons :: CampaignStep
-pattern StrangeMoons <- ScenarioStep "z-dark-matter-156"
+pattern StrangeMoons <- ScenarioStep ":dark-matter:156"
   where
-    StrangeMoons = ScenarioStep "z-dark-matter-156"
+    StrangeMoons = ScenarioStep ":dark-matter:156"
 
 pattern TheMachineInYellow :: CampaignStep
-pattern TheMachineInYellow <- ScenarioStep "z-dark-matter-193"
+pattern TheMachineInYellow <- ScenarioStep ":dark-matter:193"
   where
-    TheMachineInYellow = ScenarioStep "z-dark-matter-193"
+    TheMachineInYellow = ScenarioStep ":dark-matter:193"
 
 pattern FragmentOfCarcosa :: CampaignStep
-pattern FragmentOfCarcosa <- ScenarioStep "z-dark-matter-212"
+pattern FragmentOfCarcosa <- ScenarioStep ":dark-matter:212"
   where
-    FragmentOfCarcosa = ScenarioStep "z-dark-matter-212"
+    FragmentOfCarcosa = ScenarioStep ":dark-matter:212"
 
 pattern Starfall :: CampaignStep
-pattern Starfall <- ScenarioStep "z-dark-matter-246"
+pattern Starfall <- ScenarioStep ":dark-matter:246"
   where
-    Starfall = ScenarioStep "z-dark-matter-246"
+    Starfall = ScenarioStep ":dark-matter:246"
 
 -- Interludes
 pattern MissionBriefing :: CampaignStep

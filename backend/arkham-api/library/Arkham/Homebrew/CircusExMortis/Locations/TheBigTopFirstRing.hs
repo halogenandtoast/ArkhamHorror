@@ -17,6 +17,7 @@ newtype TheBigTopFirstRing = TheBigTopFirstRing LocationAttrs
 theBigTopFirstRing :: LocationCard TheBigTopFirstRing
 theBigTopFirstRing =
   location TheBigTopFirstRing Cards.theBigTopFirstRing 1 (PerPlayer 1)
+    & setLabel "theBigTopFirstRing"
 
 instance HasAbilities TheBigTopFirstRing where
   getAbilities (TheBigTopFirstRing a) =

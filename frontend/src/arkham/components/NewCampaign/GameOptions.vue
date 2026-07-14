@@ -232,6 +232,11 @@ const selectionBoxSrc = computed(() => {
   if (!selectionSummary.value) return null
   const part = selectedSideStoryPart.value
   const id = part ? part.box ?? part.id : selectionSummary.value.id
+
+  if (id.startsWith(":")) {
+    const homebrew = id.slice(1,)
+    return imgsrc(`homebrew/${homebrew}/boxes/${homebrew}.jpg`)
+  }
   return imgsrc(`boxes/${id}.jpg`)
 })
 

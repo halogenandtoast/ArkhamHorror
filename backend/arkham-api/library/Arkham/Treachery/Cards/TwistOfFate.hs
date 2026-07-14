@@ -40,7 +40,7 @@ instance RunMessage TwistOfFate where
           CurseToken -> (Sum 0, Sum 0)
           BlessToken -> (Sum 0, Sum 0)
           FrostToken -> (Sum 0, Sum 0)
-          MoonToken -> (Sum 0, Sum 0)
+          CustomToken _ -> (Sum 0, Sum 0)
 
       continue iid $ assignDamageAndHorror iid attrs damage horror
       pure t

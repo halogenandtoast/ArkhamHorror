@@ -13,7 +13,7 @@ newtype Bacchanalia = Bacchanalia ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bacchanalia :: Difficulty -> Bacchanalia
-bacchanalia difficulty = scenario Bacchanalia "z-circus-ex-mortis-124" "Bacchanalia" difficulty []
+bacchanalia difficulty = scenario Bacchanalia ":circus-ex-mortis:124" "Bacchanalia" difficulty []
 
 instance HasChaosTokenValue Bacchanalia where
   getChaosTokenValue iid tokenFace (Bacchanalia attrs) = case tokenFace of

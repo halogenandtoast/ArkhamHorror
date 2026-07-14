@@ -15,15 +15,15 @@ spec = describe "EncounterSet JSON" do
     decode (encode TheGathering) `shouldBe` Just TheGathering
 
   it "encodes homebrew sets as their slug" do
-    toJSON (Homebrew "z-dark-matter:anachronism") `shouldBe` String "z-dark-matter:anachronism"
+    toJSON (Homebrew ":dark-matter:anachronism") `shouldBe` String ":dark-matter:anachronism"
 
   it "round-trips homebrew sets" do
-    decode (encode (Homebrew "z-dark-matter:anachronism"))
-      `shouldBe` Just (Homebrew "z-dark-matter:anachronism")
+    decode (encode (Homebrew ":dark-matter:anachronism"))
+      `shouldBe` Just (Homebrew ":dark-matter:anachronism")
 
   it "falls back to Homebrew for unknown strings" do
     decode "\"some-future-set\"" `shouldBe` Just (Homebrew "some-future-set")
 
   it "remaps legacy homebrew constructor names to slugs" do
-    decode "\"DarkMatterAnachronism\"" `shouldBe` Just (Homebrew "z-dark-matter:anachronism")
-    decode "\"CircusExMortisOneNightOnly\"" `shouldBe` Just (Homebrew "z-circus-ex-mortis:one_night_only")
+    decode "\"DarkMatterAnachronism\"" `shouldBe` Just (Homebrew ":dark-matter:anachronism")
+    decode "\"CircusExMortisOneNightOnly\"" `shouldBe` Just (Homebrew ":circus-ex-mortis:one_night_only")

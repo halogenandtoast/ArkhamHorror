@@ -1,9 +1,9 @@
 module Arkham.Homebrew.CircusExMortis.Agendas.HouseOfHorrors (houseOfHorrors) where
 
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Agenda.Import.Lifted
 import Arkham.Homebrew.CircusExMortis.Helpers (campaignI18n)
-import Arkham.ChaosToken
 import Arkham.Helpers.ChaosBag (getOnlyChaosTokensInBag)
 import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCard)
 import Arkham.I18n

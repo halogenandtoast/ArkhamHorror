@@ -13,7 +13,7 @@ newtype AllPointsWest = AllPointsWest ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 allPointsWest :: Difficulty -> AllPointsWest
-allPointsWest difficulty = scenario AllPointsWest "z-circus-ex-mortis-076" "All Points West" difficulty []
+allPointsWest difficulty = scenario AllPointsWest ":circus-ex-mortis:076" "All Points West" difficulty []
 
 instance HasChaosTokenValue AllPointsWest where
   getChaosTokenValue iid tokenFace (AllPointsWest attrs) = case tokenFace of

@@ -29,7 +29,7 @@ newtype ElectricNightmare = ElectricNightmare ScenarioAttrs
 
 electricNightmare :: Difficulty -> ElectricNightmare
 electricNightmare difficulty =
-  scenario ElectricNightmare "z-dark-matter-053" "Electric Nightmare" difficulty []
+  scenario ElectricNightmare ":dark-matter:053" "Electric Nightmare" difficulty []
 
 -- | Local scenario i18n scope: darkMatter.electricNightmare.*
 scenarioI18n :: (HasI18n => a) -> a

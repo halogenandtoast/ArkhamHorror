@@ -7,9 +7,25 @@ import Arkham.Classes.GameLogger
 import Arkham.Id
 import Arkham.Prelude
 import Data.Aeson.TH
+import Data.Char qualified as Char
 import Data.Function (on)
+import Data.Text qualified as T
 import GHC.OverloadedLabels
 import GHC.Records
+
+
+-- | The display key of a custom token: the part after the final colon
+-- (":circus-ex-mortis:moon" -> "moon"). Drives the format tag ("{moon}"),
+-- the label ("Moon"), and the frontend icon key (ct_moon.png).
+customTokenKey :: Text -> Text
+customTokenKey slug = case T.splitOn ":" slug of
+  [] -> slug
+  parts -> last (impureNonNull parts)
+
+capitalizeFirst :: Text -> Text
+capitalizeFirst t = case T.uncons t of
+  Nothing -> t
+  Just (c, rest) -> T.cons (Char.toUpper c) rest
 
 newtype ChaosTokenId = ChaosTokenId UUID
   deriving stock Data
@@ -75,7 +91,7 @@ instance ToDisplay ChaosTokenFace where
     CurseToken -> "{curse}"
     BlessToken -> "{bless}"
     FrostToken -> "{frost}"
-    MoonToken -> "{moon}"
+    CustomToken slug -> "{" <> customTokenKey slug <> "}"
 
 instance HasField "id" ChaosToken ChaosTokenId where
   getField = chaosTokenId
@@ -112,11 +128,12 @@ data ChaosTokenFace
   | CurseToken
   | BlessToken
   | FrostToken
-  | -- | Homebrew (Circus Ex Mortis): "0. Seal this token on your investigator
-    -- card and reveal another token." No effect when revealed outside a skill
-    -- test.
-    MoonToken
-  deriving stock (Bounded, Enum, Show, Eq, Ord, Data)
+  | -- | Open constructor for campaign/scenario-specific homebrew tokens,
+    -- identified by slug (e.g. @":circus-ex-mortis:moon"@). Display name,
+    -- icon key, and JSON form derive from the slug's last segment; reveal
+    -- behavior comes from 'Arkham.Homebrew.Tokens.customTokenDefs'.
+    CustomToken Text
+  deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "+1" ChaosTokenFace where
   fromLabel = PlusOne
@@ -175,11 +192,14 @@ instance IsLabel "curse" ChaosTokenFace where
 instance IsLabel "frost" ChaosTokenFace where
   fromLabel = FrostToken
 
-instance IsLabel "moon" ChaosTokenFace where
-  fromLabel = MoonToken
-
+-- | All official token faces (custom homebrew faces are open-ended and
+-- deliberately excluded).
 allChaosTokenFaces :: [ChaosTokenFace]
-allChaosTokenFaces = [minBound ..]
+allChaosTokenFaces =
+  [ PlusOne, Zero, MinusOne, MinusTwo, MinusThree, MinusFour, MinusFive
+  , MinusSix, MinusSeven, MinusEight, Skull, Cultist, Tablet, ElderThing
+  , AutoFail, ElderSign, CurseToken, BlessToken, FrostToken
+  ]
 
 instance HasField "isNumber" ChaosTokenFace Bool where
   getField = isNumberChaosToken
@@ -259,7 +279,7 @@ isSymbolChaosToken = \case
   CurseToken -> True
   BlessToken -> True
   FrostToken -> True
-  MoonToken -> True
+  CustomToken _ -> True
   _ -> False
 
 isNonNegativeChaosToken :: ChaosTokenFace -> Bool
@@ -308,11 +328,10 @@ chaosTokenLabel = \case
   CurseToken -> "Curse"
   BlessToken -> "Bless"
   FrostToken -> "Frost"
-  MoonToken -> "Moon"
+  CustomToken slug -> capitalizeFirst (customTokenKey slug)
 
 mconcat
   [ deriveJSON defaultOptions ''ChaosTokenModifier
-  , deriveJSON defaultOptions ''ChaosTokenFace
   , deriveToJSON defaultOptions ''ChaosToken
   , [d|
       instance FromJSON ChaosToken where
@@ -329,3 +348,22 @@ mconcat
 
 instance ToJSONKey ChaosTokenFace
 instance FromJSONKey ChaosTokenFace
+
+-- | Kept compatible with the original all-nullary string encoding: official
+-- faces encode as their constructor name, custom faces as their slug. Unknown
+-- strings parse as 'CustomToken' (with the legacy "MoonToken" name remapped),
+-- so saves survive both directions.
+instance ToJSON ChaosTokenFace where
+  toJSON (CustomToken slug) = String slug
+  toJSON face = String (tshow face)
+
+officialChaosTokenFaces :: Map Text ChaosTokenFace
+officialChaosTokenFaces = mapFromList [(tshow face, face) | face <- allChaosTokenFaces]
+
+instance FromJSON ChaosTokenFace where
+  parseJSON = withText "ChaosTokenFace" \t ->
+    pure $ fromMaybe (CustomToken (legacyTokenSlug t)) (lookup t officialChaosTokenFaces)
+
+legacyTokenSlug :: Text -> Text
+legacyTokenSlug "MoonToken" = ":circus-ex-mortis:moon"
+legacyTokenSlug t = t

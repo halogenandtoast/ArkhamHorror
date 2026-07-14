@@ -6,12 +6,6 @@ import Arkham.Asset.Types (SomeAssetCard (..))
 import Arkham.Card.CardCode
 import Arkham.EncounterSet (EncounterSet)
 import Arkham.Enemy.Types (SomeEnemyCard (..))
-import Arkham.Homebrew.CircusExMortis.Campaign (circusExMortis)
-import Arkham.Homebrew.CircusExMortis.Sets qualified as Sets
-import Arkham.Homebrew.Types
-import Arkham.Id (CampaignId)
-import Arkham.Location.Types (SomeLocationCard (..))
-import Arkham.Treachery.Types (SomeTreacheryCard (..))
 import Arkham.Homebrew.CircusExMortis.Acts.ForestOfIllusion
 import Arkham.Homebrew.CircusExMortis.Acts.OutAndAway
 import Arkham.Homebrew.CircusExMortis.Acts.RatsInACage
@@ -22,6 +16,7 @@ import Arkham.Homebrew.CircusExMortis.Agendas.MesmericMagic
 import Arkham.Homebrew.CircusExMortis.Agendas.SavageNature
 import Arkham.Homebrew.CircusExMortis.Agendas.TheTrueFace
 import Arkham.Homebrew.CircusExMortis.Assets.IllusoryLocus
+import Arkham.Homebrew.CircusExMortis.Campaign (circusExMortis)
 import Arkham.Homebrew.CircusExMortis.Enemies.CircusPredator
 import Arkham.Homebrew.CircusExMortis.Enemies.DisguisedMonstrosity
 import Arkham.Homebrew.CircusExMortis.Enemies.GrotesqueLion
@@ -59,6 +54,15 @@ import Arkham.Homebrew.CircusExMortis.Locations.TheBigTopFirstRing
 import Arkham.Homebrew.CircusExMortis.Locations.TheBigTopSecondRing
 import Arkham.Homebrew.CircusExMortis.Locations.TheBigTopThirdRing
 import Arkham.Homebrew.CircusExMortis.Locations.WoodlandOverlook
+import Arkham.Homebrew.CircusExMortis.Scenarios.AllPointsWest
+import Arkham.Homebrew.CircusExMortis.Scenarios.Bacchanalia
+import Arkham.Homebrew.CircusExMortis.Scenarios.HarmsWay
+import Arkham.Homebrew.CircusExMortis.Scenarios.OneNightOnly
+import Arkham.Homebrew.CircusExMortis.Scenarios.PiperAtTheGatesOfDawn
+import Arkham.Homebrew.CircusExMortis.Scenarios.RedSunrise
+import Arkham.Homebrew.CircusExMortis.Scenarios.ThePrimrosePath
+import Arkham.Homebrew.CircusExMortis.Scenarios.ThousandToOne
+import Arkham.Homebrew.CircusExMortis.Sets qualified as Sets
 import Arkham.Homebrew.CircusExMortis.Treacheries.EndlessSpawn
 import Arkham.Homebrew.CircusExMortis.Treacheries.FeralImpulses
 import Arkham.Homebrew.CircusExMortis.Treacheries.LunarInfluence
@@ -68,14 +72,10 @@ import Arkham.Homebrew.CircusExMortis.Treacheries.MoonlightIllusion
 import Arkham.Homebrew.CircusExMortis.Treacheries.OminousMoonlight
 import Arkham.Homebrew.CircusExMortis.Treacheries.QuickerThanTheEye
 import Arkham.Homebrew.CircusExMortis.Treacheries.RecklessStunt
-import Arkham.Homebrew.CircusExMortis.Scenarios.AllPointsWest
-import Arkham.Homebrew.CircusExMortis.Scenarios.Bacchanalia
-import Arkham.Homebrew.CircusExMortis.Scenarios.HarmsWay
-import Arkham.Homebrew.CircusExMortis.Scenarios.OneNightOnly
-import Arkham.Homebrew.CircusExMortis.Scenarios.PiperAtTheGatesOfDawn
-import Arkham.Homebrew.CircusExMortis.Scenarios.RedSunrise
-import Arkham.Homebrew.CircusExMortis.Scenarios.ThePrimrosePath
-import Arkham.Homebrew.CircusExMortis.Scenarios.ThousandToOne
+import Arkham.Homebrew.Types
+import Arkham.Id (CampaignId)
+import Arkham.Location.Types (SomeLocationCard (..))
+import Arkham.Treachery.Types (SomeTreacheryCard (..))
 
 acts :: [SomeActCard]
 acts =
@@ -162,27 +162,27 @@ treacheries =
 
 scenarios :: [(CardCode, HomebrewScenario)]
 scenarios =
-  [ ("z-circus-ex-mortis-001", HomebrewScenario oneNightOnly)
-  , ("z-circus-ex-mortis-017", HomebrewScenario thePrimrosePath)
-  , ("z-circus-ex-mortis-042", HomebrewScenario harmsWay)
-  , ("z-circus-ex-mortis-076", HomebrewScenario allPointsWest)
-  , ("z-circus-ex-mortis-110", HomebrewScenario piperAtTheGatesOfDawn)
-  , ("z-circus-ex-mortis-124", HomebrewScenario bacchanalia)
-  , ("z-circus-ex-mortis-155", HomebrewScenario redSunrise)
-  , ("z-circus-ex-mortis-192", HomebrewScenario thousandToOne)
+  [ (":circus-ex-mortis:001", HomebrewScenario oneNightOnly)
+  , (":circus-ex-mortis:017", HomebrewScenario thePrimrosePath)
+  , (":circus-ex-mortis:042", HomebrewScenario harmsWay)
+  , (":circus-ex-mortis:076", HomebrewScenario allPointsWest)
+  , (":circus-ex-mortis:110", HomebrewScenario piperAtTheGatesOfDawn)
+  , (":circus-ex-mortis:124", HomebrewScenario bacchanalia)
+  , (":circus-ex-mortis:155", HomebrewScenario redSunrise)
+  , (":circus-ex-mortis:192", HomebrewScenario thousandToOne)
   ]
 
 scenarioSets :: [(CardCode, EncounterSet)]
 scenarioSets =
-  [ ("z-circus-ex-mortis-001", Sets.OneNightOnly)
-  , ("z-circus-ex-mortis-017", Sets.ThePrimrosePath)
-  , ("z-circus-ex-mortis-042", Sets.HarmsWay)
-  , ("z-circus-ex-mortis-076", Sets.AllPointsWest)
-  , ("z-circus-ex-mortis-110", Sets.PiperAtTheGatesOfDawn)
-  , ("z-circus-ex-mortis-124", Sets.Bacchanalia)
-  , ("z-circus-ex-mortis-155", Sets.RedSunrise)
-  , ("z-circus-ex-mortis-192", Sets.ThousandToOne)
+  [ (":circus-ex-mortis:001", Sets.OneNightOnly)
+  , (":circus-ex-mortis:017", Sets.ThePrimrosePath)
+  , (":circus-ex-mortis:042", Sets.HarmsWay)
+  , (":circus-ex-mortis:076", Sets.AllPointsWest)
+  , (":circus-ex-mortis:110", Sets.PiperAtTheGatesOfDawn)
+  , (":circus-ex-mortis:124", Sets.Bacchanalia)
+  , (":circus-ex-mortis:155", Sets.RedSunrise)
+  , (":circus-ex-mortis:192", Sets.ThousandToOne)
   ]
 
 campaigns :: [(CampaignId, HomebrewCampaign)]
-campaigns = [("z-circus-ex-mortis", HomebrewCampaign circusExMortis)]
+campaigns = [(":circus-ex-mortis", HomebrewCampaign circusExMortis)]

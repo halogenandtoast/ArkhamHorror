@@ -1,10 +1,10 @@
 module Arkham.Homebrew.CircusExMortis.Locations.TheBigTopThirdRing (theBigTopThirdRing) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.Helpers (campaignI18n)
 import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Helpers (campaignI18n)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -21,6 +21,7 @@ newtype TheBigTopThirdRing = TheBigTopThirdRing LocationAttrs
 theBigTopThirdRing :: LocationCard TheBigTopThirdRing
 theBigTopThirdRing =
   location TheBigTopThirdRing Cards.theBigTopThirdRing 3 (PerPlayer 1)
+    & setLabel "theBigTopThirdRing"
 
 instance HasAbilities TheBigTopThirdRing where
   getAbilities (TheBigTopThirdRing a) =

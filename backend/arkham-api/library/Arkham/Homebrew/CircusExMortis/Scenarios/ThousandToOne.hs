@@ -13,7 +13,7 @@ newtype ThousandToOne = ThousandToOne ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thousandToOne :: Difficulty -> ThousandToOne
-thousandToOne difficulty = scenario ThousandToOne "z-circus-ex-mortis-192" "Thousand to One" difficulty []
+thousandToOne difficulty = scenario ThousandToOne ":circus-ex-mortis:192" "Thousand to One" difficulty []
 
 instance HasChaosTokenValue ThousandToOne where
   getChaosTokenValue iid tokenFace (ThousandToOne attrs) = case tokenFace of

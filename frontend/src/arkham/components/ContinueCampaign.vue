@@ -295,6 +295,15 @@ const expeditionLeader = computed(() => {
   return props.campaign.meta?.expeditionLeader
 })
 
+const setIcon = computed(() => {
+  if (!scenario.value) return null
+  if (scenario.value.startsWith(":")) {
+    const [, homebrew, scenarioId] = scenario.value.match(/^:(.+):(.+)$/)
+    return imgsrc(`homebrew/${homebrew}/sets/${scenarioId}.png`)
+  }
+  return imgsrc(`sets/${scenario.value}.png`)
+})
+
 </script>
 
 <template>
@@ -331,7 +340,7 @@ const expeditionLeader = computed(() => {
           <button v-if="canChooseSideStory && standalones.length > 0" @click="addSideStory = true" :disable="hasSent">+ {{t('addSideScenario')}}</button>
         </div>
       </div>
-      <div v-if="scenario" class="next-step-icon"><img :src="imgsrc(`sets/${scenario}.png`)" /></div>
+      <div v-if="scenario" class="next-step-icon"><img :src="setIcon" /></div>
     </div>
 
     <template v-if="!addSideStory && !chooseSideStory">

@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.Mooncalf (mooncalf) where
 
 import Arkham.Homebrew.CircusExMortis.Helpers
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
@@ -15,7 +16,7 @@ mooncalf :: EnemyCard Mooncalf
 mooncalf =
   enemyWith Mooncalf Cards.mooncalf
     $ preyL
-    .~ Prey (InvestigatorWithSealedChaosToken #moon)
+    .~ Prey (InvestigatorWithSealedChaosToken (ChaosTokenFaceIs MoonToken))
 
 instance HasModifiersFor Mooncalf where
   getModifiersFor (Mooncalf a) = do

@@ -3691,6 +3691,7 @@ library
       Arkham.Homebrew.CircusExMortis.Scenarios.ThePrimrosePath
       Arkham.Homebrew.CircusExMortis.Scenarios.ThousandToOne
       Arkham.Homebrew.CircusExMortis.Sets
+      Arkham.Homebrew.CircusExMortis.Tokens
       Arkham.Homebrew.CircusExMortis.Treacheries.EndlessSpawn
       Arkham.Homebrew.CircusExMortis.Treacheries.FeralImpulses
       Arkham.Homebrew.CircusExMortis.Treacheries.LunarInfluence
@@ -3744,6 +3745,8 @@ library
       Arkham.Homebrew.DarkMatter.Treacheries.SolarFlare
       Arkham.Homebrew.Defs
       Arkham.Homebrew.Registry
+      Arkham.Homebrew.TokenDefs
+      Arkham.Homebrew.Tokens
       Arkham.Homebrew.Types
       Arkham.I18n
       Arkham.Id
@@ -7217,6 +7220,7 @@ test-suite spec
       Arkham.Campaign.TheDunwichLegacy.ScenariosSpec
       Arkham.Campaign.ThePathToCarcosa.ScenariosSpec
       Arkham.Campaign.UsedAbilitiesSpec
+      Arkham.ChaosTokenFaceSpec
       Arkham.DecklistSpec
       Arkham.EncounterSetSpec
       Arkham.Enemy.Cards.DagonsBroodSpec

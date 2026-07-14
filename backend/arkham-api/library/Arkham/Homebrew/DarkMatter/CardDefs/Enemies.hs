@@ -11,7 +11,7 @@ withScanIcons icons def = def {cdMeta = insertMap "scanIcons" (toJSON icons) def
 -- deep_space
 theFeasterFromAfar :: CardDef
 theFeasterFromAfar =
-  (enemy "z-dark-matter-006" "The Feaster from Afar" Set.DeepSpace 1)
+  (enemy ":dark-matter:006" "The Feaster from Afar" Set.DeepSpace 1)
       { cdHealthDamage = healthDamage 2
       , cdSanityDamage = sanityDamage 2
       , cdFight = fight 3
@@ -25,7 +25,7 @@ theFeasterFromAfar =
 cybervirus :: CardDef
 cybervirus =
   withScanIcons [LS.Trefoil]
-    $ (enemy "z-dark-matter-028" "Cybervirus" Set.TheTatterdemalion 1)
+    $ (enemy ":dark-matter:028" "Cybervirus" Set.TheTatterdemalion 1)
         { cdSanityDamage = sanityDamage 2
         , cdFight = fight 2
         , cdEvade = evade 4
@@ -38,7 +38,7 @@ cybervirus =
 jv7Hyades :: CardDef
 jv7Hyades =
   withScanIcons [LS.T]
-    $ (enemy "z-dark-matter-033" ("JV-7 'Hyades'" <:> "Artificial Co-Pilot") Set.TheTatterdemalion 1)
+    $ (enemy ":dark-matter:033" ("JV-7 'Hyades'" <:> "Artificial Co-Pilot") Set.TheTatterdemalion 1)
         { cdHealthDamage = healthDamage 1
         , cdSanityDamage = sanityDamage 1
         , cdFight = fight 2
@@ -51,7 +51,7 @@ jv7Hyades =
 lr02Hali :: CardDef
 lr02Hali =
   withScanIcons [LS.Triangle, LS.Circle, LS.Plus]
-    $ (enemy "z-dark-matter-035" "LR-02 'Hali'" Set.TheTatterdemalion 1)
+    $ (enemy ":dark-matter:035" "LR-02 'Hali'" Set.TheTatterdemalion 1)
         { cdHealthDamage = healthDamage 1
         , cdSanityDamage = sanityDamage 1
         , cdFight = fight 3
@@ -62,11 +62,11 @@ lr02Hali =
         , cdVictoryPoints = Just 1
         }
 
--- Back of agenda z-dark-matter-015 ("The Ghost Ship"); spawned when that agenda
+-- Back of agenda :dark-matter:015 ("The Ghost Ship"); spawned when that agenda
 -- advances (see the scenario/agenda modules).
 uplA21Demhe :: CardDef
 uplA21Demhe =
-  (enemy "z-dark-matter-015b" ("UPL-A21 'Demhe'" <:> "Unmanned Power Loader") Set.TheTatterdemalion 1)
+  (enemy ":dark-matter:015b" ("UPL-A21 'Demhe'" <:> "Unmanned Power Loader") Set.TheTatterdemalion 1)
       { cdHealthDamage = healthDamage 3
       , cdFight = fight 5
       , cdEvade = evade 2
@@ -79,7 +79,7 @@ uplA21Demhe =
 -- artificial_intelligence
 systemBug :: CardDef
 systemBug =
-  (enemy "z-dark-matter-052" "System Bug" Set.ArtificialIntelligence 3)
+  (enemy ":dark-matter:052" "System Bug" Set.ArtificialIntelligence 3)
       { cdHealthDamage = healthDamage 1
       , cdFight = fight 3
       , cdEvade = evade 2
@@ -90,7 +90,7 @@ systemBug =
 -- electric_nightmare
 shadowOfThoughts :: CardDef
 shadowOfThoughts =
-  (enemy "z-dark-matter-079" "Shadow of Thoughts" Set.ElectricNightmare 1)
+  (enemy ":dark-matter:079" "Shadow of Thoughts" Set.ElectricNightmare 1)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 2
       , cdEvade = evade 2
@@ -101,7 +101,7 @@ shadowOfThoughts =
 
 glitchInTheSystem :: CardDef
 glitchInTheSystem =
-  (enemy "z-dark-matter-082" "Glitch in the System" Set.ElectricNightmare 3)
+  (enemy ":dark-matter:082" "Glitch in the System" Set.ElectricNightmare 3)
       { cdHealthDamage = healthDamage 1
       , cdFight = fight 2
       , cdEvade = evade 0
@@ -111,7 +111,7 @@ glitchInTheSystem =
 
 manifestedWhispers :: CardDef
 manifestedWhispers =
-  (enemy "z-dark-matter-083" "Manifested Whispers" Set.ElectricNightmare 2)
+  (enemy ":dark-matter:083" "Manifested Whispers" Set.ElectricNightmare 2)
       { cdHealthDamage = healthDamage 1
       , cdFight = fight 3
       , cdEvade = evade 3
@@ -121,7 +121,7 @@ manifestedWhispers =
 
 virtualByakhee :: CardDef
 virtualByakhee =
-  (enemy "z-dark-matter-085" "Virtual Byakhee" Set.ElectricNightmare 2)
+  (enemy ":dark-matter:085" "Virtual Byakhee" Set.ElectricNightmare 2)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 3
@@ -133,7 +133,7 @@ virtualByakhee =
 -- the_boogeyman
 theBOOGEYMAN :: CardDef
 theBOOGEYMAN =
-  (enemy "z-dark-matter-086" ("THE BOOGEYMAN" <:> "Virtual Nightmare") Set.TheBoogeyman 1)
+  (enemy ":dark-matter:086" ("THE BOOGEYMAN" <:> "Virtual Nightmare") Set.TheBoogeyman 1)
       { cdSanityDamage = sanityDamage 2
       , cdCardTraits = setFromList [Virtual, Monster, Elite]
       }
@@ -141,7 +141,7 @@ theBOOGEYMAN =
 -- lost_quantum
 houndOfTindalos :: CardDef
 houndOfTindalos =
-  (enemy "z-dark-matter-108" "Hound of Tindalos" Set.LostQuantum 3)
+  (enemy ":dark-matter:108" "Hound of Tindalos" Set.LostQuantum 3)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 4
@@ -153,7 +153,7 @@ houndOfTindalos =
 
 miGoStabilizer :: CardDef
 miGoStabilizer =
-  (enemy "z-dark-matter-110" "Mi-Go Stabilizer" Set.LostQuantum 2)
+  (enemy ":dark-matter:110" "Mi-Go Stabilizer" Set.LostQuantum 2)
       { cdHealthDamage = healthDamage 1
       , cdFight = fight 3
       , cdEvade = evade 1
@@ -163,7 +163,7 @@ miGoStabilizer =
 
 quantumPhantom :: CardDef
 quantumPhantom =
-  (enemy "z-dark-matter-113" "Quantum Phantom" Set.LostQuantum 2)
+  (enemy ":dark-matter:113" "Quantum Phantom" Set.LostQuantum 2)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 2
@@ -175,7 +175,7 @@ quantumPhantom =
 -- in_the_shadow_of_earth
 theEntity :: CardDef
 theEntity =
-  (enemy "z-dark-matter-124" "The Entity" Set.InTheShadowOfEarth 1)
+  (enemy ":dark-matter:124" "The Entity" Set.InTheShadowOfEarth 1)
       { cdHealthDamage = healthDamage 3
       , cdSanityDamage = sanityDamage 2
       , cdFight = fight 4
@@ -187,7 +187,7 @@ theEntity =
 
 corruptedMachine :: CardDef
 corruptedMachine =
-  (enemy "z-dark-matter-147" "Corrupted Machine" Set.InTheShadowOfEarth 2)
+  (enemy ":dark-matter:147" "Corrupted Machine" Set.InTheShadowOfEarth 2)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 4
@@ -198,7 +198,7 @@ corruptedMachine =
 
 mimic :: CardDef
 mimic =
-  (enemy "z-dark-matter-151" "Mimic" Set.InTheShadowOfEarth 3)
+  (enemy ":dark-matter:151" "Mimic" Set.InTheShadowOfEarth 3)
       { cdHealthDamage = healthDamage 2
       , cdFight = fight 3
       , cdEvade = evade 3
@@ -208,7 +208,7 @@ mimic =
 
 rats :: CardDef
 rats =
-  (enemy "z-dark-matter-154" "Rats?" Set.InTheShadowOfEarth 3)
+  (enemy ":dark-matter:154" "Rats?" Set.InTheShadowOfEarth 3)
       { cdHealthDamage = healthDamage 1
       , cdFight = fight 1
       , cdEvade = evade 3
@@ -219,8 +219,8 @@ rats =
 -- strange_moons
 theGreys :: CardDef
 theGreys =
-  doubleSided "z-dark-matter-166b"
-      $ (enemy "z-dark-matter-166" "The Greys" Set.StrangeMoons 1)
+  doubleSided ":dark-matter:166b"
+      $ (enemy ":dark-matter:166" "The Greys" Set.StrangeMoons 1)
         { cdSanityDamage = sanityDamage 1
         , cdFight = fight 4
         , cdEvade = evade 4
@@ -230,7 +230,7 @@ theGreys =
 
 parasite :: CardDef
 parasite =
-  (enemy "z-dark-matter-187" "Parasite" Set.StrangeMoons 3)
+  (enemy ":dark-matter:187" "Parasite" Set.StrangeMoons 3)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 2
@@ -242,7 +242,7 @@ parasite =
 -- interstellar_predators
 stalkingByakhee :: CardDef
 stalkingByakhee =
-  (enemy "z-dark-matter-191" "Stalking Byakhee" Set.InterstellarPredators 3)
+  (enemy ":dark-matter:191" "Stalking Byakhee" Set.InterstellarPredators 3)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 2
@@ -253,7 +253,7 @@ stalkingByakhee =
 
 viciousByakhee :: CardDef
 viciousByakhee =
-  (enemy "z-dark-matter-192" "Vicious Byakhee" Set.InterstellarPredators 3)
+  (enemy ":dark-matter:192" "Vicious Byakhee" Set.InterstellarPredators 3)
       { cdHealthDamage = healthDamage 2
       , cdFight = fight 4
       , cdEvade = evade 2
@@ -264,14 +264,14 @@ viciousByakhee =
 -- the_machine_in_yellow
 yourOtherSelf :: CardDef
 yourOtherSelf =
-  (enemy "z-dark-matter-200" "Your Other Self" Set.TheMachineInYellow 4)
+  (enemy ":dark-matter:200" "Your Other Self" Set.TheMachineInYellow 4)
       { cdSanityDamage = sanityDamage 1
       , cdCardTraits = setFromList [Virtual, Humanoid, Elite]
       }
 
 daemonOfNis :: CardDef
 daemonOfNis =
-  (enemy "z-dark-matter-201" ("Daemon of Nis" <:> "Devourer of Memories") Set.TheMachineInYellow 1)
+  (enemy ":dark-matter:201" ("Daemon of Nis" <:> "Devourer of Memories") Set.TheMachineInYellow 1)
       { cdHealthDamage = healthDamage 1
       , cdFight = fight 3
       , cdEvade = evade 2
@@ -282,7 +282,7 @@ daemonOfNis =
 
 spiritOfThan :: CardDef
 spiritOfThan =
-  (enemy "z-dark-matter-211" ("Spirit of Than" <:> "The One that Got Away") Set.TheMachineInYellow 1)
+  (enemy ":dark-matter:211" ("Spirit of Than" <:> "The One that Got Away") Set.TheMachineInYellow 1)
       { cdHealthDamage = healthDamage 1
       , cdFight = fight 2
       , cdEvade = evade 3
@@ -294,7 +294,7 @@ spiritOfThan =
 -- fragment_of_carcosa
 caveDweller :: CardDef
 caveDweller =
-  (enemy "z-dark-matter-233" ("Cave Dweller" <:> "Suspiciously Familiar") Set.FragmentOfCarcosa 1)
+  (enemy ":dark-matter:233" ("Cave Dweller" <:> "Suspiciously Familiar") Set.FragmentOfCarcosa 1)
       { cdHealthDamage = healthDamage 3
       , cdFight = fight 4
       , cdEvade = evade 6
@@ -305,7 +305,7 @@ caveDweller =
 
 sophisticSpires :: CardDef
 sophisticSpires =
-  (enemy "z-dark-matter-242" "Sophistic Spires" Set.FragmentOfCarcosa 2)
+  (enemy ":dark-matter:242" "Sophistic Spires" Set.FragmentOfCarcosa 2)
       { cdSanityDamage = sanityDamage 2
       , cdFight = fight 2
       , cdEvade = evade 5
@@ -315,7 +315,7 @@ sophisticSpires =
 
 tatteredCurtains :: CardDef
 tatteredCurtains =
-  (enemy "z-dark-matter-243" "Tattered Curtains" Set.FragmentOfCarcosa 2)
+  (enemy ":dark-matter:243" "Tattered Curtains" Set.FragmentOfCarcosa 2)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 4
@@ -326,7 +326,7 @@ tatteredCurtains =
 
 yellowMists :: CardDef
 yellowMists =
-  (enemy "z-dark-matter-245" "Yellow Mists" Set.FragmentOfCarcosa 1)
+  (enemy ":dark-matter:245" "Yellow Mists" Set.FragmentOfCarcosa 1)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 4
@@ -339,7 +339,7 @@ yellowMists =
 -- starfall
 tassilda :: CardDef
 tassilda =
-  (enemy "z-dark-matter-257" ("Tassilda" <:> "Royal Princess of Carcosa") Set.Starfall 1)
+  (enemy ":dark-matter:257" ("Tassilda" <:> "Royal Princess of Carcosa") Set.Starfall 1)
       { cdHealthDamage = healthDamage 3
       , cdSanityDamage = sanityDamage 3
       , cdFight = fight 6
@@ -350,7 +350,7 @@ tassilda =
 
 yithianGuard :: CardDef
 yithianGuard =
-  (enemy "z-dark-matter-259" "Yithian Guard" Set.Starfall 1)
+  (enemy ":dark-matter:259" "Yithian Guard" Set.Starfall 1)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 2
       , cdFight = fight 3
@@ -362,7 +362,7 @@ yithianGuard =
 
 miGoSentinel :: CardDef
 miGoSentinel =
-  (enemy "z-dark-matter-260" "Mi-Go Sentinel" Set.Starfall 1)
+  (enemy ":dark-matter:260" "Mi-Go Sentinel" Set.Starfall 1)
       { cdHealthDamage = healthDamage 2
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 4
@@ -374,7 +374,7 @@ miGoSentinel =
 
 domaagTeel :: CardDef
 domaagTeel =
-  (enemy "z-dark-matter-261" ("Domaag T’eel" <:> "The Mistake that Ended the World") Set.Starfall 1)
+  (enemy ":dark-matter:261" ("Domaag T’eel" <:> "The Mistake that Ended the World") Set.Starfall 1)
       { cdHealthDamage = healthDamage 2
       , cdSanityDamage = sanityDamage 2
       , cdFight = fight 5
@@ -386,7 +386,7 @@ domaagTeel =
 
 shamblerFromTheStars :: CardDef
 shamblerFromTheStars =
-  (enemy "z-dark-matter-276" "Shambler from the Stars" Set.Starfall 1)
+  (enemy ":dark-matter:276" "Shambler from the Stars" Set.Starfall 1)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 3
@@ -398,7 +398,7 @@ shamblerFromTheStars =
 
 exoroid :: CardDef
 exoroid =
-  (enemy "z-dark-matter-277" "Exoroid" Set.Starfall 1)
+  (enemy ":dark-matter:277" "Exoroid" Set.Starfall 1)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 2
@@ -409,7 +409,7 @@ exoroid =
 
 martianCrab :: CardDef
 martianCrab =
-  (enemy "z-dark-matter-280" "Martian Crab" Set.Starfall 1)
+  (enemy ":dark-matter:280" "Martian Crab" Set.Starfall 1)
       { cdHealthDamage = healthDamage 2
       , cdFight = fight 5
       , cdEvade = evade 2
@@ -420,7 +420,7 @@ martianCrab =
 
 cyberCultist :: CardDef
 cyberCultist =
-  (enemy "z-dark-matter-286" "Cyber-Cultist" Set.Starfall 2)
+  (enemy ":dark-matter:286" "Cyber-Cultist" Set.Starfall 2)
       { cdSanityDamage = sanityDamage 1
       , cdFight = fight 3
       , cdEvade = evade 1
@@ -430,7 +430,7 @@ cyberCultist =
 
 spacePirates :: CardDef
 spacePirates =
-  (enemy "z-dark-matter-289" "Space Pirates" Set.Starfall 2)
+  (enemy ":dark-matter:289" "Space Pirates" Set.Starfall 2)
       { cdHealthDamage = healthDamage 1
       , cdFight = fight 3
       , cdEvade = evade 3
@@ -440,7 +440,7 @@ spacePirates =
 
 voidByakhee :: CardDef
 voidByakhee =
-  (enemy "z-dark-matter-291" "Void Byakhee" Set.Starfall 2)
+  (enemy ":dark-matter:291" "Void Byakhee" Set.Starfall 2)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 3

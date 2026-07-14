@@ -10,7 +10,7 @@ withScanIcons icons def = def {cdMeta = insertMap "scanIcons" (toJSON icons) def
 -- the_tatterdemalion
 virtualAccessKey :: CardDef
 virtualAccessKey =
-  (storyAsset "z-dark-matter-020" ("Virtual Access Key" <:> "Key to the Gate of Dreams") 2 Set.TheTatterdemalion)
+  (storyAsset ":dark-matter:020" ("Virtual Access Key" <:> "Key to the Gate of Dreams") 2 Set.TheTatterdemalion)
       { cdCardTraits = setFromList [Item, Charm, Relic]
       , cdSkills = [#willpower, #wild, #wild]
       , cdSlots = [#accessory]
@@ -20,7 +20,7 @@ virtualAccessKey =
 evaSuit :: CardDef
 evaSuit =
   withScanIcons [LS.Square, LS.Moon]
-    $ (storyAsset_ "z-dark-matter-029" "EVA Suit" Set.TheTatterdemalion)
+    $ (storyAsset_ ":dark-matter:029" "EVA Suit" Set.TheTatterdemalion)
         { cdCardTraits = setFromList [Armor, Item]
         , cdSlots = [#body]
         }
@@ -29,7 +29,7 @@ heirToCarcosa :: CardDef
 heirToCarcosa =
   withScanIcons [LS.Equals]
     $ permanent
-      $ (storyAsset_ "z-dark-matter-031" ("Heir to Carcosa" <:> "Untranslated Runes") Set.TheTatterdemalion)
+      $ (storyAsset_ ":dark-matter:031" ("Heir to Carcosa" <:> "Untranslated Runes") Set.TheTatterdemalion)
         { cdCardTraits = setFromList [Tome]
         , cdUnique = True
         }
@@ -37,7 +37,7 @@ heirToCarcosa =
 medicalFoam :: CardDef
 medicalFoam =
   withScanIcons [LS.Heart]
-    $ (storyAsset_ "z-dark-matter-036" "Medical Foam" Set.TheTatterdemalion)
+    $ (storyAsset_ ":dark-matter:036" "Medical Foam" Set.TheTatterdemalion)
         { cdCardTraits = setFromList [Medical, Science, Item]
         , cdSlots = [#hand]
         }
@@ -45,17 +45,17 @@ medicalFoam =
 mindMachineInterface :: CardDef
 mindMachineInterface =
   withScanIcons [LS.Triangle, LS.Plus, LS.Hourglass, LS.T]
-    $ (storyAsset_ "z-dark-matter-037" "Mind-Machine Interface" Set.TheTatterdemalion) {cdCardTraits = setFromList [Device]}
+    $ (storyAsset_ ":dark-matter:037" "Mind-Machine Interface" Set.TheTatterdemalion) {cdCardTraits = setFromList [Device]}
 
 radiationTablets :: CardDef
 radiationTablets =
   withScanIcons [LS.Heart]
-    $ (storyAsset_ "z-dark-matter-038" "Radiation Tablets" Set.TheTatterdemalion) {cdCardTraits = setFromList [Medical, Science, Item]}
+    $ (storyAsset_ ":dark-matter:038" "Radiation Tablets" Set.TheTatterdemalion) {cdCardTraits = setFromList [Medical, Science, Item]}
 
 -- electric_nightmare
 maja :: CardDef
 maja =
-  (storyAsset_ "z-dark-matter-061" ("Maja" <:> "Information Archives") Set.ElectricNightmare)
+  (storyAsset_ ":dark-matter:061" ("Maja" <:> "Information Archives") Set.ElectricNightmare)
       { cdCardTraits = setFromList [Avatar]
       , cdUnique = True
       }
@@ -63,7 +63,7 @@ maja =
 k2PS18725Functionality :: CardDef
 k2PS18725Functionality =
   permanent
-      $ (storyAsset_ "z-dark-matter-067" ("K2-PS187" <:> "25% Functionality") Set.ElectricNightmare)
+      $ (storyAsset_ ":dark-matter:067" ("K2-PS187" <:> "25% Functionality") Set.ElectricNightmare)
         { cdCardTraits = setFromList [AI]
         , cdUnique = True
         }
@@ -71,7 +71,7 @@ k2PS18725Functionality =
 k2PS18750Functionality :: CardDef
 k2PS18750Functionality =
   permanent
-      $ (storyAsset_ "z-dark-matter-068" ("K2-PS187" <:> "50% Functionality") Set.ElectricNightmare)
+      $ (storyAsset_ ":dark-matter:068" ("K2-PS187" <:> "50% Functionality") Set.ElectricNightmare)
         { cdCardTraits = setFromList [AI]
         , cdUnique = True
         }
@@ -79,7 +79,7 @@ k2PS18750Functionality =
 k2PS18775Functionality :: CardDef
 k2PS18775Functionality =
   permanent
-      $ (storyAsset_ "z-dark-matter-069" ("K2-PS187" <:> "75% Functionality") Set.ElectricNightmare)
+      $ (storyAsset_ ":dark-matter:069" ("K2-PS187" <:> "75% Functionality") Set.ElectricNightmare)
         { cdCardTraits = setFromList [AI]
         , cdUnique = True
         }
@@ -87,7 +87,7 @@ k2PS18775Functionality =
 k2PS187100Functionality :: CardDef
 k2PS187100Functionality =
   permanent
-      $ (storyAsset_ "z-dark-matter-070" ("K2-PS187" <:> "100% Functionality") Set.ElectricNightmare)
+      $ (storyAsset_ ":dark-matter:070" ("K2-PS187" <:> "100% Functionality") Set.ElectricNightmare)
         { cdCardTraits = setFromList [AI]
         , cdUnique = True
         }
@@ -95,14 +95,14 @@ k2PS187100Functionality =
 -- lost_quantum
 erwinSimmonsFading :: CardDef
 erwinSimmonsFading =
-  (storyAsset_ "z-dark-matter-097" ("Erwin Simmons" <:> "Fading") Set.LostQuantum)
+  (storyAsset_ ":dark-matter:097" ("Erwin Simmons" <:> "Fading") Set.LostQuantum)
       { cdCardTraits = setFromList [Scientist, Human, Ally]
       , cdUnique = True
       }
 
 erwinSimmonsQuantumPhysicist :: CardDef
 erwinSimmonsQuantumPhysicist =
-  (storyAsset "z-dark-matter-098" ("Erwin Simmons" <:> "Quantum Physicist") 3 Set.LostQuantum)
+  (storyAsset ":dark-matter:098" ("Erwin Simmons" <:> "Quantum Physicist") 3 Set.LostQuantum)
       { cdCardTraits = setFromList [Scientist, Human, Ally]
       , cdSkills = [#wild, #wild]
       , cdSlots = [#ally]
@@ -112,7 +112,7 @@ erwinSimmonsQuantumPhysicist =
 -- in_the_shadow_of_earth
 spaceArtillery :: CardDef
 spaceArtillery =
-  (storyAsset "z-dark-matter-123" "Space Artillery" 4 Set.InTheShadowOfEarth)
+  (storyAsset ":dark-matter:123" "Space Artillery" 4 Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [NostalgiaII, Weapon, Ranged]
       , cdSkills = [#combat, #combat, #combat]
       , cdUnique = True
@@ -120,42 +120,42 @@ spaceArtillery =
 
 adamTanner :: CardDef
 adamTanner =
-  (storyAsset_ "z-dark-matter-133" "Adam Tanner" Set.InTheShadowOfEarth)
+  (storyAsset_ ":dark-matter:133" "Adam Tanner" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
 
 captainBurr :: CardDef
 captainBurr =
-  (storyAsset_ "z-dark-matter-134" "Captain Burr" Set.InTheShadowOfEarth)
+  (storyAsset_ ":dark-matter:134" "Captain Burr" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
 
 doctorFeng :: CardDef
 doctorFeng =
-  (storyAsset_ "z-dark-matter-135" "Doctor Feng" Set.InTheShadowOfEarth)
+  (storyAsset_ ":dark-matter:135" "Doctor Feng" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
 
 ltArcherMichaels :: CardDef
 ltArcherMichaels =
-  (storyAsset_ "z-dark-matter-136" "Lt. \"Archer\" Michaels" Set.InTheShadowOfEarth)
+  (storyAsset_ ":dark-matter:136" "Lt. \"Archer\" Michaels" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
 
 muD12Mudbug :: CardDef
 muD12Mudbug =
-  (storyAsset_ "z-dark-matter-137" "MU-D12 \"Mudbug\"" Set.InTheShadowOfEarth)
+  (storyAsset_ ":dark-matter:137" "MU-D12 \"Mudbug\"" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
 
 sophie :: CardDef
 sophie =
-  (storyAsset_ "z-dark-matter-138" "Sophie" Set.InTheShadowOfEarth)
+  (storyAsset_ ":dark-matter:138" "Sophie" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
@@ -163,75 +163,75 @@ sophie =
 -- strange_moons
 brainCylinder089 :: CardDef
 brainCylinder089 =
-  (storyAsset_ "z-dark-matter-163" "Brain Cylinder 089" Set.StrangeMoons) {cdCardTraits = setFromList [Brain]}
+  (storyAsset_ ":dark-matter:163" "Brain Cylinder 089" Set.StrangeMoons) {cdCardTraits = setFromList [Brain]}
 
 brainCylinder114 :: CardDef
 brainCylinder114 =
-  (storyAsset_ "z-dark-matter-164" "Brain Cylinder 114" Set.StrangeMoons) {cdCardTraits = setFromList [Brain]}
+  (storyAsset_ ":dark-matter:164" "Brain Cylinder 114" Set.StrangeMoons) {cdCardTraits = setFromList [Brain]}
 
 brainCylinder367 :: CardDef
 brainCylinder367 =
-  (storyAsset_ "z-dark-matter-165" "Brain Cylinder 367" Set.StrangeMoons) {cdCardTraits = setFromList [Brain]}
+  (storyAsset_ ":dark-matter:165" "Brain Cylinder 367" Set.StrangeMoons) {cdCardTraits = setFromList [Brain]}
 
 -- fragment_of_carcosa
 bottleOfWhispers :: CardDef
 bottleOfWhispers =
-  (storyAsset "z-dark-matter-218" ("Bottle of Whispers" <:> "It Was Meant for You") 1 Set.FragmentOfCarcosa) {cdCardTraits = setFromList [Item]}
+  (storyAsset ":dark-matter:218" ("Bottle of Whispers" <:> "It Was Meant for You") 1 Set.FragmentOfCarcosa) {cdCardTraits = setFromList [Item]}
 
 -- starfall
 projectOrigami :: CardDef
-projectOrigami = (storyAsset_ "z-dark-matter-270" "Project Origami" Set.Starfall)
+projectOrigami = (storyAsset_ ":dark-matter:270" "Project Origami" Set.Starfall)
 
 lastHope :: CardDef
-lastHope = (storyAsset_ "z-dark-matter-271" "Last Hope" Set.Starfall)
+lastHope = (storyAsset_ ":dark-matter:271" "Last Hope" Set.Starfall)
 
 repairingTheThreshold :: CardDef
 repairingTheThreshold =
-  (storyAsset_ "z-dark-matter-272" "Repairing the Threshold" Set.Starfall)
+  (storyAsset_ ":dark-matter:272" "Repairing the Threshold" Set.Starfall)
 
 arNO :: CardDef
 arNO =
-  (storyAsset_ "z-dark-matter-273" ("Ar-NO" <:> "Insufficient Data") Set.Starfall) {cdCardTraits = setFromList [AI]}
+  (storyAsset_ ":dark-matter:273" ("Ar-NO" <:> "Insufficient Data") Set.Starfall) {cdCardTraits = setFromList [AI]}
 
 directorCixin :: CardDef
 directorCixin =
-  (storyAsset_ "z-dark-matter-274" ("Director Cixin" <:> "Hope is in Danger") Set.Starfall)
+  (storyAsset_ ":dark-matter:274" ("Director Cixin" <:> "Hope is in Danger") Set.Starfall)
       { cdCardTraits = setFromList [Human]
       , cdUnique = True
       }
 
 miGoCollector :: CardDef
 miGoCollector =
-  (storyAsset_ "z-dark-matter-275" ("Mi-Go Collector" <:> "Distrustful") Set.Starfall) {cdCardTraits = setFromList [MiGo]}
+  (storyAsset_ ":dark-matter:275" ("Mi-Go Collector" <:> "Distrustful") Set.Starfall) {cdCardTraits = setFromList [MiGo]}
 
 thePallidMask :: CardDef
 thePallidMask =
-  (storyAsset_ "z-dark-matter-279" "The Pallid Mask" Set.Starfall)
+  (storyAsset_ ":dark-matter:279" "The Pallid Mask" Set.Starfall)
       { cdCardTraits = setFromList [Item, Relic]
       , cdUnique = True
       }
 
 k11SurveyUnit :: CardDef
 k11SurveyUnit =
-  (storyAsset_ "z-dark-matter-281" "K-11 Survey Unit" Set.Starfall) {cdCardTraits = setFromList [Ally, AI]}
+  (storyAsset_ ":dark-matter:281" "K-11 Survey Unit" Set.Starfall) {cdCardTraits = setFromList [Ally, AI]}
 
 shieldingDevice :: CardDef
 shieldingDevice =
-  (storyAsset_ "z-dark-matter-282" ("Shielding Device" <:> "Electromagnetic Barrier") Set.Starfall)
+  (storyAsset_ ":dark-matter:282" ("Shielding Device" <:> "Electromagnetic Barrier") Set.Starfall)
       { cdCardTraits = setFromList [Item]
       , cdUnique = True
       }
 
 stasisCube :: CardDef
 stasisCube =
-  (storyAsset_ "z-dark-matter-283" ("Stasis Cube" <:> "Timeless Artifact") Set.Starfall)
+  (storyAsset_ ":dark-matter:283" ("Stasis Cube" <:> "Timeless Artifact") Set.Starfall)
       { cdCardTraits = setFromList [Item, Relic]
       , cdUnique = True
       }
 
 universalArchives :: CardDef
 universalArchives =
-  (storyAsset_ "z-dark-matter-284" ("Universal Archives" <:> "Theory of Everything") Set.Starfall)
+  (storyAsset_ ":dark-matter:284" ("Universal Archives" <:> "Theory of Everything") Set.Starfall)
       { cdCardTraits = setFromList [Data]
       , cdUnique = True
       }

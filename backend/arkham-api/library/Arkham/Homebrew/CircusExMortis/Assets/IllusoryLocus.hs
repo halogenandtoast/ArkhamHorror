@@ -1,10 +1,10 @@
 module Arkham.Homebrew.CircusExMortis.Assets.IllusoryLocus (illusoryLocus) where
 
 import Arkham.Ability
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosBag.RevealStrategy
-import Arkham.ChaosToken
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection

@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Helpers where
 
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame

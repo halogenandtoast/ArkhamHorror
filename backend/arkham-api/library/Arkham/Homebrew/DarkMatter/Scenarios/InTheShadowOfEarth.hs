@@ -13,7 +13,7 @@ newtype InTheShadowOfEarth = InTheShadowOfEarth ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inTheShadowOfEarth :: Difficulty -> InTheShadowOfEarth
-inTheShadowOfEarth difficulty = scenario InTheShadowOfEarth "z-dark-matter-115" "In the Shadow of Earth" difficulty []
+inTheShadowOfEarth difficulty = scenario InTheShadowOfEarth ":dark-matter:115" "In the Shadow of Earth" difficulty []
 
 instance HasChaosTokenValue InTheShadowOfEarth where
   getChaosTokenValue iid tokenFace (InTheShadowOfEarth attrs) = case tokenFace of

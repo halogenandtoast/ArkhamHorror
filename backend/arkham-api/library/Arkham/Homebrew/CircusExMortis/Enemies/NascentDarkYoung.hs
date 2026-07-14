@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.NascentDarkYoung (nascentDarkYoung) where
 
 import Arkham.Ability
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
@@ -24,7 +25,7 @@ instance HasAbilities NascentDarkYoung where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceUsedBy $ InvestigatorWithSealedChaosToken #moon)
+      $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceUsedBy $ InvestigatorWithSealedChaosToken (ChaosTokenFaceIs MoonToken))
 
 instance RunMessage NascentDarkYoung where
   runMessage msg e@(NascentDarkYoung attrs) = runQueueT $ case msg of

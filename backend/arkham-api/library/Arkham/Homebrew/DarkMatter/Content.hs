@@ -80,27 +80,27 @@ treacheries =
 
 scenarios :: [(CardCode, HomebrewScenario)]
 scenarios =
-  [ ("z-dark-matter-013", HomebrewScenario theTatterdemalion)
-  , ("z-dark-matter-053", HomebrewScenario electricNightmare)
-  , ("z-dark-matter-090", HomebrewScenario lostQuantum)
-  , ("z-dark-matter-115", HomebrewScenario inTheShadowOfEarth)
-  , ("z-dark-matter-156", HomebrewScenario strangeMoons)
-  , ("z-dark-matter-193", HomebrewScenario theMachineInYellow)
-  , ("z-dark-matter-212", HomebrewScenario fragmentOfCarcosa)
-  , ("z-dark-matter-246", HomebrewScenario starfall)
+  [ (":dark-matter:013", HomebrewScenario theTatterdemalion)
+  , (":dark-matter:053", HomebrewScenario electricNightmare)
+  , (":dark-matter:090", HomebrewScenario lostQuantum)
+  , (":dark-matter:115", HomebrewScenario inTheShadowOfEarth)
+  , (":dark-matter:156", HomebrewScenario strangeMoons)
+  , (":dark-matter:193", HomebrewScenario theMachineInYellow)
+  , (":dark-matter:212", HomebrewScenario fragmentOfCarcosa)
+  , (":dark-matter:246", HomebrewScenario starfall)
   ]
 
 scenarioSets :: [(CardCode, EncounterSet)]
 scenarioSets =
-  [ ("z-dark-matter-013", Sets.TheTatterdemalion)
-  , ("z-dark-matter-053", Sets.ElectricNightmare)
-  , ("z-dark-matter-090", Sets.LostQuantum)
-  , ("z-dark-matter-115", Sets.InTheShadowOfEarth)
-  , ("z-dark-matter-156", Sets.StrangeMoons)
-  , ("z-dark-matter-193", Sets.TheMachineInYellow)
-  , ("z-dark-matter-212", Sets.FragmentOfCarcosa)
-  , ("z-dark-matter-246", Sets.Starfall)
+  [ (":dark-matter:013", Sets.TheTatterdemalion)
+  , (":dark-matter:053", Sets.ElectricNightmare)
+  , (":dark-matter:090", Sets.LostQuantum)
+  , (":dark-matter:115", Sets.InTheShadowOfEarth)
+  , (":dark-matter:156", Sets.StrangeMoons)
+  , (":dark-matter:193", Sets.TheMachineInYellow)
+  , (":dark-matter:212", Sets.FragmentOfCarcosa)
+  , (":dark-matter:246", Sets.Starfall)
   ]
 
 campaigns :: [(CampaignId, HomebrewCampaign)]
-campaigns = [("z-dark-matter", HomebrewCampaign darkMatter)]
+campaigns = [(":dark-matter", HomebrewCampaign darkMatter)]

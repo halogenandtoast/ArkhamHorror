@@ -14,10 +14,18 @@ export const tokenOrder = [
   'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight',
   'Skull', 'Cultist', 'Tablet', 'ElderThing',
   'AutoFail', 'ElderSign',
-  'CurseToken', 'BlessToken', 'FrostToken', 'MoonToken',
+  'CurseToken', 'BlessToken', 'FrostToken',
 ] as const
 
-export type TokenFace = typeof tokenOrder[number]
+// Custom homebrew tokens arrive as slugs like ":circus-ex-mortis:moon"; the
+// segment after the last colon is the icon key (ct_<key>.png).
+export type TokenFace = typeof tokenOrder[number] | string
+
+export function customTokenKey(face: string): string | null {
+  if (!face.includes(':')) return null
+  const parts = face.split(':')
+  return parts[parts.length - 1] ?? null
+}
 
 export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
   JsonDecoder.literal('PlusOne'),
@@ -39,7 +47,7 @@ export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
   JsonDecoder.literal('CurseToken'),
   JsonDecoder.literal('BlessToken'),
   JsonDecoder.literal('FrostToken'),
-  JsonDecoder.literal('MoonToken'),
+  JsonDecoder.string(), // custom homebrew token slug
 ], 'TokenFace');
 
 export const chaosTokenDecoder = JsonDecoder.object({
@@ -88,10 +96,11 @@ export function chaosTokenImage(face: TokenFace): string {
       return imgsrc("ct_bless.png");
     case 'FrostToken':
       return imgsrc("ct_frost.png");
-    case 'MoonToken':
-      return imgsrc("ct_moon.png");
-    default:
+    default: {
+      const key = customTokenKey(face)
+      if (key) return imgsrc(`ct_${key}.png`)
       return imgsrc("ct_blank.png");
+    }
   }
 }
 

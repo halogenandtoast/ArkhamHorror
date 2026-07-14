@@ -1,20 +1,20 @@
 module Arkham.Homebrew.CircusExMortis.Scenarios.OneNightOnly (oneNightOnly) where
 
-import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Act.Types (Field (..))
-import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
-import Arkham.Homebrew.CircusExMortis.Helpers
-import Arkham.Homebrew.CircusExMortis.Key
 import Arkham.Card (toCardDef)
 import Arkham.Card.CardDef (CardDef, cdCardCode)
-import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Enemies
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
-import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
+import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
+import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.Helpers
+import Arkham.Homebrew.CircusExMortis.Key
+import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -30,7 +30,15 @@ newtype OneNightOnly = OneNightOnly ScenarioAttrs
 
 oneNightOnly :: Difficulty -> OneNightOnly
 oneNightOnly difficulty =
-  scenario OneNightOnly "z-circus-ex-mortis-001" "One Night Only" difficulty []
+  scenario
+    OneNightOnly
+    ":circus-ex-mortis:001"
+    "One Night Only"
+    difficulty
+    [ ". carousel carousel . . gamesGallery gamesGallery ."
+    , ". . . theBigTopFirstRing theBigTopFirstRing . . ."
+    , "animalCages animalCages theBigTopSecondRing theBigTopSecondRing theBigTopThirdRing theBigTopThirdRing performerTrailers performerTrailers"
+    ]
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "oneNightOnly" a
@@ -132,7 +140,7 @@ instance RunMessage OneNightOnly where
             for_ mAct \aid -> do
               cardCode <- fieldMap ActCard (cdCardCode . toCardDef) aid
               let token
-                    | cardCode `elem` ["z-circus-ex-mortis-005", "z-circus-ex-mortis-006"] = Tablet
+                    | cardCode `elem` [":circus-ex-mortis:005", ":circus-ex-mortis:006"] = Tablet
                     | otherwise = Cultist
               addChaosToken token
           push $ ScenarioResolution $ Resolution 3

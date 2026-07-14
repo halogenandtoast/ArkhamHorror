@@ -13,7 +13,7 @@ newtype TheTatterdemalion = TheTatterdemalion ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theTatterdemalion :: Difficulty -> TheTatterdemalion
-theTatterdemalion difficulty = scenario TheTatterdemalion "z-dark-matter-013" "The Tatterdemalion" difficulty []
+theTatterdemalion difficulty = scenario TheTatterdemalion ":dark-matter:013" "The Tatterdemalion" difficulty []
 
 instance HasChaosTokenValue TheTatterdemalion where
   getChaosTokenValue iid tokenFace (TheTatterdemalion attrs) = case tokenFace of

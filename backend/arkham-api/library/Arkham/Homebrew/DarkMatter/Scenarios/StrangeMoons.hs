@@ -13,7 +13,7 @@ newtype StrangeMoons = StrangeMoons ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeMoons :: Difficulty -> StrangeMoons
-strangeMoons difficulty = scenario StrangeMoons "z-dark-matter-156" "Strange Moons" difficulty []
+strangeMoons difficulty = scenario StrangeMoons ":dark-matter:156" "Strange Moons" difficulty []
 
 instance HasChaosTokenValue StrangeMoons where
   getChaosTokenValue iid tokenFace (StrangeMoons attrs) = case tokenFace of

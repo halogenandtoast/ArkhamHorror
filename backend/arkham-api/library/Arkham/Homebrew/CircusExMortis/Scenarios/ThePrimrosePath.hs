@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Scenarios.ThePrimrosePath (thePrimrosePath) where
 
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Homebrew.CircusExMortis.Key
@@ -28,7 +29,7 @@ newtype ThePrimrosePath = ThePrimrosePath ScenarioAttrs
 
 thePrimrosePath :: Difficulty -> ThePrimrosePath
 thePrimrosePath difficulty =
-  scenario ThePrimrosePath "z-circus-ex-mortis-017" "The Primrose Path" difficulty []
+  scenario ThePrimrosePath ":circus-ex-mortis:017" "The Primrose Path" difficulty []
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "thePrimrosePath" a

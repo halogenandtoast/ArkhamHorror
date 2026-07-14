@@ -3,49 +3,49 @@ module Arkham.Homebrew.DarkMatter.Sets (module Arkham.EncounterSet, pattern Anac
 import Arkham.EncounterSet
 
 pattern ArtificialIntelligence :: EncounterSet
-pattern ArtificialIntelligence = Homebrew "z-dark-matter:artificial_intelligence"
+pattern ArtificialIntelligence = Homebrew ":dark-matter:artificial_intelligence"
 
 pattern DarkPast :: EncounterSet
-pattern DarkPast = Homebrew "z-dark-matter:dark_past"
+pattern DarkPast = Homebrew ":dark-matter:dark_past"
 
 pattern DeepSpace :: EncounterSet
-pattern DeepSpace = Homebrew "z-dark-matter:deep_space"
+pattern DeepSpace = Homebrew ":dark-matter:deep_space"
 
 pattern ElectricNightmare :: EncounterSet
-pattern ElectricNightmare = Homebrew "z-dark-matter:electric_nightmare"
+pattern ElectricNightmare = Homebrew ":dark-matter:electric_nightmare"
 
 pattern Endtimes :: EncounterSet
-pattern Endtimes = Homebrew "z-dark-matter:endtimes"
+pattern Endtimes = Homebrew ":dark-matter:endtimes"
 
 pattern FragmentOfCarcosa :: EncounterSet
-pattern FragmentOfCarcosa = Homebrew "z-dark-matter:fragment_of_carcosa"
+pattern FragmentOfCarcosa = Homebrew ":dark-matter:fragment_of_carcosa"
 
 pattern HastursGaze :: EncounterSet
-pattern HastursGaze = Homebrew "z-dark-matter:hasturs_gaze"
+pattern HastursGaze = Homebrew ":dark-matter:hasturs_gaze"
 
 pattern InTheShadowOfEarth :: EncounterSet
-pattern InTheShadowOfEarth = Homebrew "z-dark-matter:in_the_shadow_of_earth"
+pattern InTheShadowOfEarth = Homebrew ":dark-matter:in_the_shadow_of_earth"
 
 pattern InterstellarPredators :: EncounterSet
-pattern InterstellarPredators = Homebrew "z-dark-matter:interstellar_predators"
+pattern InterstellarPredators = Homebrew ":dark-matter:interstellar_predators"
 
 pattern LostQuantum :: EncounterSet
-pattern LostQuantum = Homebrew "z-dark-matter:lost_quantum"
+pattern LostQuantum = Homebrew ":dark-matter:lost_quantum"
 
 pattern Starfall :: EncounterSet
-pattern Starfall = Homebrew "z-dark-matter:starfall"
+pattern Starfall = Homebrew ":dark-matter:starfall"
 
 pattern StrangeMoons :: EncounterSet
-pattern StrangeMoons = Homebrew "z-dark-matter:strange_moons"
+pattern StrangeMoons = Homebrew ":dark-matter:strange_moons"
 
 pattern TheBoogeyman :: EncounterSet
-pattern TheBoogeyman = Homebrew "z-dark-matter:the_boogeyman"
+pattern TheBoogeyman = Homebrew ":dark-matter:the_boogeyman"
 
 pattern TheMachineInYellow :: EncounterSet
-pattern TheMachineInYellow = Homebrew "z-dark-matter:the_machine_in_yellow"
+pattern TheMachineInYellow = Homebrew ":dark-matter:the_machine_in_yellow"
 
 pattern TheTatterdemalion :: EncounterSet
-pattern TheTatterdemalion = Homebrew "z-dark-matter:the_tatterdemalion"
+pattern TheTatterdemalion = Homebrew ":dark-matter:the_tatterdemalion"
 
 pattern Anachronism :: EncounterSet
-pattern Anachronism = Homebrew "z-dark-matter:anachronism"
+pattern Anachronism = Homebrew ":dark-matter:anachronism"

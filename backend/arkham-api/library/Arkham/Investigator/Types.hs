@@ -328,6 +328,10 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorMulligansTaken :: Int
   , investigatorBondedCards :: [Card]
   , investigatorMeta :: Value
+  , -- meta belonging to the form we are transfigured into, kept apart from
+    -- investigatorMeta because the investigator we transfigured from still reads
+    -- theirs (their signature cards are in our deck) and the two shapes differ
+    investigatorFormMeta :: Value
   , investigatorUnhealedHorrorThisRound :: Int
   , investigatorSealedChaosTokens :: [ChaosToken]
   , -- handling liquid courage
@@ -568,18 +572,24 @@ instance Show Investigator where
 instance ToJSON Investigator where
   toJSON (Investigator a) = toJSON a
 
+-- | Attrs as the form we are transfigured into sees them. A transfigured form never
+-- gets SetupInvestigator, so its meta is uninitialized rather than inherited from the
+-- investigator we transfigured from, whose meta is a different shape and still theirs.
+asFormAttrs :: InvestigatorAttrs -> InvestigatorAttrs
+asFormAttrs a = a {investigatorMeta = investigatorFormMeta a}
+
 instance HasModifiersFor Investigator where
   getModifiersFor (Investigator a) = do
     case investigatorForm (toAttrs a) of
       TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
-        getModifiersFor (investigatorFromAttrs @a (toAttrs a))
+        getModifiersFor (investigatorFromAttrs @a (asFormAttrs $ toAttrs a))
       _ -> getModifiersFor a
 
 instance HasChaosTokenValue Investigator where
   getChaosTokenValue iid chaosTokenFace (Investigator a) =
     case investigatorForm (toAttrs a) of
       TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
-        getChaosTokenValue iid chaosTokenFace (investigatorFromAttrs @a (toAttrs a))
+        getChaosTokenValue iid chaosTokenFace (investigatorFromAttrs @a (asFormAttrs $ toAttrs a))
       _ -> getChaosTokenValue iid chaosTokenFace a
 
 data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator
@@ -587,7 +597,7 @@ data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator
 instance HasAbilities Investigator where
   getAbilities i@(Investigator a) = case investigatorForm (toAttrs a) of
     TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
-      getAbilities @a (investigatorFromAttrs @a (toAttrs a)) <> inateAbilities
+      getAbilities @a (investigatorFromAttrs @a (asFormAttrs $ toAttrs a)) <> inateAbilities
     _ -> baseAbilities <> inateAbilities
    where
     baseAbilities = getAbilities a
@@ -725,6 +735,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorMulligansTaken <- o .: "mulligansTaken"
     investigatorBondedCards <- o .: "bondedCards"
     investigatorMeta <- o .: "meta"
+    investigatorFormMeta <- o .:? "formMeta" .!= Null
     investigatorUnhealedHorrorThisRound <- o .: "unhealedHorrorThisRound"
     investigatorSealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
     investigatorHorrorHealed <- o .: "horrorHealed"

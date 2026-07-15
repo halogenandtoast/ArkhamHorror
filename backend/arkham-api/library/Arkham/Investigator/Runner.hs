@@ -169,11 +169,20 @@ instance RunMessage Investigator where
       modifiers' <- getModifiers (toTarget i)
       let msg' = if Blank `elem` modifiers' then Blanked msg else msg
       case investigatorForm (toAttrs a) of
-        TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
-          Investigator
-            . investigatorFromAttrs @original
-            . toAttrs
-            <$> runMessage @a msg' (investigatorFromAttrs @a (toAttrs a))
+        TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) -> do
+          let a0 = toAttrs a
+          a' <- toAttrs <$> runMessage @a msg' (investigatorFromAttrs @a (asFormAttrs a0))
+          -- the form reads and writes its own meta, ours is left alone for our
+          -- signature cards. Changing form means a different form, which starts
+          -- uninitialized.
+          pure
+            . Investigator
+            $ investigatorFromAttrs @original
+              a'
+                { investigatorMeta = investigatorMeta a0
+                , investigatorFormMeta =
+                    if investigatorForm a' == investigatorForm a0 then investigatorMeta a' else Null
+                }
         _ -> Investigator <$> runMessage msg' a
 
 instance RunMessage InvestigatorAttrs where

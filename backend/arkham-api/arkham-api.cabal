@@ -7255,6 +7255,7 @@ test-suite spec
       Arkham.Event.Events.BarricadeSpec
       Arkham.Event.Events.BlindingLight2Spec
       Arkham.Event.Events.BlindingLightSpec
+      Arkham.Event.Events.BountySpec
       Arkham.Event.Events.BuryThemDeepSpec
       Arkham.Event.Events.CloseCall2Spec
       Arkham.Event.Events.CrypticResearch4Spec
@@ -7296,6 +7297,7 @@ test-suite spec
       Arkham.Event.Events.WorkingAHunchSpec
       Arkham.Game.DiffSpec
       Arkham.GameSpec
+      Arkham.Helpers.EnemySpec
       Arkham.Helpers.InvestigatorSpec
       Arkham.HomebrewRegistrySpec
       Arkham.Investigator.Cards.AgnesBakerSpec

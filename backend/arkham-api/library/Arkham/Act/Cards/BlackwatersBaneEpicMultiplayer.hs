@@ -22,6 +22,7 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicActAdvances, EpicShared))
+import Arkham.Scenarios.TheBlobThatAteEverything.Helpers (scenarioI18n)
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Ooze, Oozified))
 
@@ -124,9 +125,9 @@ instance RunMessage BlackwatersBaneEpicMultiplayer where
   runMessage msg a@(BlackwatersBaneEpicMultiplayer attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- min 3 <$> getSpendableClueCount iid
-      when (n > 0) $ chooseAmount iid "Clues" "Clues" 1 n attrs
+      when (n > 0) $ scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 1 n attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "Clues" -> amount) (isTarget attrs -> True) | amount > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> amount) (isTarget attrs -> True) | amount > 0 -> do
       -- Spend the chosen clues into the shared pool AND record this group's own
       -- contribution (so the organizer can cap each group's spend). No local tokens.
       ordinal <- scenarioCount (EpicShared groupOrdinalKey)

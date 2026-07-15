@@ -2,6 +2,12 @@
   "label": {
     "lookAtExplorationDeck": "Look at the top cards of the exploration deck",
     "lookAtEncounterDeck": "Look at the top cards of the encounter deck",
+    "farid": {
+      "resourcesToSpend": "Amount of resources to spend"
+    },
+    "nadiaNimr": {
+      "horrorToTake": "Amount of horror to take"
+    },
     "nassor": {
       "addStrength": "Add 1 strength to the abyss",
       "extraDamage": "Nassor deals +{count} damage and +{count} horror for this attack"

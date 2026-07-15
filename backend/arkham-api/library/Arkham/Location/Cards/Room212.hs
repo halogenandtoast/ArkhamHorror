@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -12,6 +13,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Move
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 
 newtype Room212 = Room212 LocationAttrs
   deriving anyclass IsLocation
@@ -25,26 +27,25 @@ instance HasModifiersFor Room212 where
 
 instance HasAbilities Room212 where
   getAbilities (Room212 attrs) =
-    if attrs.unrevealed
-      then
-        extend1 attrs
-          $ skillTestAbility
-          $ withTooltip
-            "{action}: Test {agility} (4) to attempt to pick the lock. If you succeed, reveal Room 212 and immediately move to it."
-          $ restricted
-            (proxied (LocationMatcherSource "Second Floor Hall") attrs)
-            1
-            (OnLocation "Second Floor Hall")
-            #action
-      else
-        extend1 attrs
-          $ skillTestAbility
-          $ withTooltip
-            "{action}: Test {intellect} (3). If you succeed, move any number of clues controlled by investigators at this location to Sinister Solution (if it is in play)."
-          $ restricted attrs 1 Here actionAbility
+    scenarioI18n
+      $ if attrs.unrevealed
+        then
+          extend1 attrs
+            $ skillTestAbility
+            $ withI18nTooltip "room212.pickLock"
+            $ restricted
+              (proxied (LocationMatcherSource "Second Floor Hall") attrs)
+              1
+              (OnLocation "Second Floor Hall")
+              #action
+        else
+          extend1 attrs
+            $ skillTestAbility
+            $ withI18nTooltip "room212.moveClues"
+            $ restricted attrs 1 Here actionAbility
 
 instance RunMessage Room212 where
-  runMessage msg l@(Room212 attrs) = runQueueT $ case msg of
+  runMessage msg l@(Room212 attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
@@ -57,7 +58,7 @@ instance RunMessage Room212 where
         named <- traverse (\(iid', n) -> (,n) <$> field InvestigatorName iid') iids
         chooseAmounts
           iid
-          "number of clues to move to Sinister Solution"
+          (ikey' "label.room212.moveClues")
           (MinAmountTarget 0)
           (map (\(name, n) -> (toTitle name, (0, n))) named)
           attrs

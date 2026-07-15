@@ -22,6 +22,7 @@ import Arkham.Helpers.Query (allInvestigators, getSetAsideCardMaybe)
 import Arkham.Helpers.SkillTest (isEvadeWith, isFightWith)
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.Id
+import Arkham.I18n (ikey')
 import Arkham.Investigator.Cards qualified as InvestigatorCards
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Layout
@@ -623,7 +624,7 @@ instance RunMessage FateOfTheVale where
             then do
               codexFinishedUntilNewAct 6
               eachInvestigator \iid' ->
-                nextTurnModifier iid' source iid' (AdditionalActions "Gideon Mizrah" source 1)
+                nextTurnModifier iid' source iid' (AdditionalActions (ikey' "additionalActions") source 1)
             else do
               codexFinished 6
               if isFateOfTheValeV1

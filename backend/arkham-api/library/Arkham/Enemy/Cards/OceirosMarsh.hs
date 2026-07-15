@@ -7,6 +7,7 @@ import Arkham.Enemy.Types (Field (EnemyKeys))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Projection ()
+import Arkham.I18n
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -43,9 +44,9 @@ instance RunMessage OceirosMarsh where
       case skillTestResult <$> mskillTest of
         Just (SucceededBy _ n) -> do
           ks <- field EnemyKeys attrs.id
-          chooseNM iid (min n (length ks)) do
+          chooseNM iid (min n (length ks)) $ withI18n do
             for_ ks \k ->
-              labeled ("Take " <> keyName k) $ placeKey iid k
+              keyVar "key" (keyName k) $ labeled' "takeKey" $ placeKey iid k
         _ -> pure ()
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do

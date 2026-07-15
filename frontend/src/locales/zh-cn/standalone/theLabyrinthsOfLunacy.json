@@ -22,6 +22,9 @@
     "groupC": "团队C"
   },
   "label": {
+    "decayDiagram": {
+      "cluesToFlip": "要翻面的线索数量"
+    },
     "groupA": "团队A",
     "groupB": "团队B",
     "groupC": "团队C"
@@ -65,7 +68,8 @@
   "labyrinthineHalls": {
     "chooseDrawCards": "你在一堆垃圾中发现一只旧锁箱，决定留下点什么。选择一位调查员抽取2张牌。",
     "chooseGainResources": "你发现了一具自己似乎曾经认识之人的尸体，希望当初能救下他。选择一位调查员获得4个资源。",
-    "chooseAdditionalActions": "你透过一面长满藤蔓的镜子，看见一个陌生的倒影。选择一位调查员；在其下一个回合中，该调查员可以执行2次额外行动。"
+    "chooseAdditionalActions": "你透过一面长满藤蔓的镜子，看见一个陌生的倒影。选择一位调查员；在其下一个回合中，该调查员可以执行2次额外行动。",
+    "additionalActions": "迷宫走廊"
   },
   "torturedVictim": {
     "label": {

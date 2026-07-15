@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.CircusEncampmentCircusExMortis (circusEncampmentCircusExMortis) where
 
 import Arkham.Ability
-import Arkham.Campaigns.CircusExMortis.Helpers (getSealedMoonTokens, releaseMoonToken)
+import Arkham.Campaigns.CircusExMortis.Helpers (campaignI18n, getSealedMoonTokens, releaseMoonToken)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -35,7 +35,7 @@ instance RunMessage CircusEncampmentCircusExMortis where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- "Release any amount of moon tokens sealed on your investigator card."
       moons <- getSealedMoonTokens iid
-      chooseSomeM iid "Done releasing moon tokens" do
+      campaignI18n $ chooseSomeM' iid "doneReleasingMoonTokens" do
         for_ moons \token ->
           targeting (ChaosTokenTarget token) $ releaseMoonToken token
       pure l

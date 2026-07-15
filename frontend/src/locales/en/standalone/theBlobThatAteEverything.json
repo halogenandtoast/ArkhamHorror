@@ -1,4 +1,5 @@
 {
+  "cluesToSpend": "Clues to spend",
   "xp": {
     "bonus": "Saved the fabric of existence."
   },
@@ -110,6 +111,13 @@
   },
   "label": {
     "doneDevouring": "Done devouring cards",
+    "ltWilsonStewart": {
+      "healDamage": "Heal 1 damage from Lt. Wilson Stewart",
+      "healHorror": "Heal 1 horror from Lt. Wilson Stewart",
+      "gainSkillValue": "You get +1 skill value for your next skill test",
+      "drawCard": "Draw 1 card",
+      "gainResource": "Gain 1 resource"
+    },
     "temporaryHQ": {
       "healDamage": "Heal 3 damage",
       "healHorror": "Heal 3 horror",

@@ -185,6 +185,8 @@
   "chooseInvestigatorForKey": "选择一名调查员获得{color}钥匙的控制权",
   "whoWillDrive": "谁来驾驶{name}？",
   "chooseNewDriverFor": "为{name}选择新驾驶员",
+  "takeKey": "拿取{key}钥匙",
+  "placeKey": "放置{key}钥匙",
   "chooseX": "选择X",
   "leaveCardOnTop": "将卡牌留在顶部",
   "leaveVehicleNoReentry": "离开载具。在本轮剩余时间内你无法进入该载具",

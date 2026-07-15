@@ -19,6 +19,9 @@
       "takeHorrorAndRelease": "Take 1 horror. Then, release that token"
     }
   },
+  "label": {
+    "doneReleasingMoonTokens": "Done releasing moon tokens"
+  },
   "key": {
     "theRingmasterDoesNotSuspectYou": "The ringmaster does not suspect you.",
     "theRingmasterHasHisEyeOnYou": "The ringmaster has his eye on you.",

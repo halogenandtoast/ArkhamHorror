@@ -70,9 +70,17 @@
     }
   ],
   "label": {
+    "placeKey": "放置{key}钥匙",
+    "moveKey": "移动{key}钥匙",
     "v1": "进入_设置（v. I）_",
     "v2": "进入_设置（v. II）_",
     "v3": "进入_设置（v. III）_"
+  },
+  "tooltips": {
+    "cityLandscape": {
+      "look": "在你回合期间，花费1个线索：查看你所在行或列的一个城市景观的已揭示面。(每轮仅限一次。)",
+      "move": "在你回合期间，花费3个线索：移动到你所在行或列的任意地点。(每轮仅限一次。)"
+    }
   },
   "remembered": {
     "theTeamStudiedTheHistoryOfTheElderThings": "队伍研究了古老者的历史。",

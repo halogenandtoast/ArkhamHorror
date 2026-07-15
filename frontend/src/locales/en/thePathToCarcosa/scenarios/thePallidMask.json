@@ -1,5 +1,8 @@
 {
   "heading": "Scenario VI",
+  "xp": {
+    "readActII": "Read Act II"
+  },
   "specialRules": [
     {
       "title": "Location Adjacency in the Catacombs",
@@ -22,6 +25,7 @@
   },
   "label": {
     "chooseWhoReadsActII": "Choose who will read Act II of The King in Yellow",
+    "doneChoosingWhoReadsActII": "Done choosing who will read Act II",
     "above": "Place Above",
     "below": "Place Below",
     "right": "Place to the Right",

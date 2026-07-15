@@ -1,8 +1,18 @@
 {
   "heading": "第一部分",
+  "label": {
+    "bringDoctorMaheswaran": "说服马斯沃伦医生与你一同调查，保障她和你们的安全。",
+    "leaveDoctorMaheswaranWithPatients": "说服马斯沃伦医生留下照顾病人，在你们调查期间保护他们。"
+  },
+  "message": {
+    "infestationTokenDrawn": "{token}在蛛群滋生检定中被抽出"
+  },
   "tooltips": {
     "waitingRoom": {
       "resign": "你逃离医院，将同伴留在身后。"
+    },
+    "containingTheOutbreak": {
+      "sealRift": "{'{'}action{'}'}：检定{'{'}willpower{'}'}(X)以尝试弥合裂痕。X为本地点的隐藏值。位于本地点的调查员可以共同花费1{'{'}perPlayer{'}'}个线索，以自动成功。如果你检定成功，将本地点上的伤害标记替换为恐惧标记。直到本场游戏结束，本地点不能变成蛛巢。"
     }
   },
   "privateRoom": {

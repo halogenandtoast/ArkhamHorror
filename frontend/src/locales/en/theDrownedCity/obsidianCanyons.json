@@ -1,5 +1,11 @@
 {
   "cluesToSpend": "Clues to spend",
+  "resourcesToSpend": "Resources to spend",
+  "label": {
+    "returnToTheShoreline": {
+      "spendClues": "Choose how many clues to spend"
+    }
+  },
   "wingsOfTerror": {
     "drawEnemy": "Draw that enemy",
     "attack": "That enemy attacks you"

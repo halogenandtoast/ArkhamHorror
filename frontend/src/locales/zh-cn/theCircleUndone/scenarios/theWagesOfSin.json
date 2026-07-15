@@ -15,7 +15,8 @@
     }
   },
   "messages": {
-    "understandTheTragicLyrics": "\"你理解了女巫之歌背后的悲惨歌词\""
+    "understandTheTragicLyrics": "\"你理解了女巫之歌背后的悲惨歌词\"",
+    "banished": "{card}已被放逐"
   },
   "tooltips": {
     "hangmansBrook": {

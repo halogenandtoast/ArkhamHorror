@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.CyclopeanSpires (cyclopeanSpires) where
 
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -8,6 +9,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.CityOfTheElderThings.Helpers
 
 newtype CyclopeanSpires = CyclopeanSpires LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -35,6 +37,7 @@ instance RunMessage CyclopeanSpires where
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
       ks <- field LocationKeys lid
       chooseOneM iid do
-        for_ ks \k -> labeled ("Move " <> keyName k) $ push $ PlaceKey (toTarget attrs) k
+        for_ ks \k -> scenarioI18n $ keyVar "key" (keyName k) $ labeled' "moveKey" do
+          push $ PlaceKey (toTarget attrs) k
       pure l
     _ -> CyclopeanSpires <$> liftRunMessage msg attrs

@@ -204,7 +204,7 @@ instance RunMessage TheHeartOfMadnessPart2 where
 
       for_ seals \seal -> do
         chooseOrRunOneM lead do
-          questionLabeled $ "Choose Investigator to take the " <> format seal <> " seal"
+          keyVar "seal" (format seal) $ questionLabeled' "chooseInvestigatorForSeal"
           targets investigators (`placeSeal` seal)
 
       addTekeliliDeck

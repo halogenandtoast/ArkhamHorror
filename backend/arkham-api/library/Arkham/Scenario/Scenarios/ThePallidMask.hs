@@ -44,7 +44,7 @@ instance HasModifiersFor ThePallidMask where
   getModifiersFor (ThePallidMask a) = do
     modifySelectMaybe a Anyone \iid -> do
       liftGuardM $ elem (recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
-      pure [XPModifier "Read Act II" 2]
+      pure [XPModifier (scenarioI18n $ scope "xp" $ ikey' "readActII") 2]
 
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
@@ -257,7 +257,7 @@ instance RunMessage ThePallidMask where
               searchCollectionForRandom lead attrs
                 $ BasicWeaknessCard
                 <> mapOneOf CardWithTrait [Madness, Pact]
-            else chooseSome1M lead "Done having investigators read Act II" do
+            else popScope $ chooseSome1M' lead "doneChoosingWhoReadsActII" do
               questionLabeled' "chooseWhoReadsActII"
               targets investigators \iid -> do
                 gainXp lead attrs "resolutions.xp.bonus" 2

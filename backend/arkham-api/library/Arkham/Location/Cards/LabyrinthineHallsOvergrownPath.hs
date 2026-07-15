@@ -33,6 +33,7 @@ instance RunMessage LabyrinthineHallsOvergrownPath where
         chooseOrRunOneM iid $ scope "labyrinthineHalls" do
           questionLabeled' "chooseAdditionalActions"
           targets leaveBehind \iid' ->
-            nextTurnModifier iid' (attrs.ability 1) iid' (AdditionalActions "Labyrinthine Halls" (toSource attrs) 2)
+            nextTurnModifier iid' (attrs.ability 1) iid'
+              $ AdditionalActions (ikey' "additionalActions") (toSource attrs) 2
       pure l
     _ -> LabyrinthineHallsOvergrownPath <$> liftRunMessage msg attrs

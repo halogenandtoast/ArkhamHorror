@@ -14,6 +14,9 @@
     }
   },
   "label": {
+    "bladeOfArkat": {
+      "resourcesToRemove": "Resources to remove"
+    },
     "placeDoomOnTheBlueAgenda": "Place 1 doom on the blue agenda",
     "placeClueOnYourLocation": "Place 1 of your clues on your location",
     "take2Horror": "Take 2 horror",

@@ -25,14 +25,9 @@ instance HasAbilities DanforthBrilliantStudent where
 instance RunMessage DanforthBrilliantStudent where
   runMessage msg e@(DanforthBrilliantStudent attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseAmounts
-        iid
-        "Number of cards to draw from the top of the Tekeli-li deck"
-        (MaxAmountTarget 2)
-        [("Cards", (0, 2))]
-        attrs
+      campaignI18n $ chooseAmount' iid "danforthBrilliantStudent.drawTekelili" "$cards" 0 2 attrs
       pure e
-    ResolveAmounts iid (getChoiceAmount "Cards" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$cards" -> n) (isTarget attrs -> True) -> do
       drawTekelili iid (attrs.ability 1) n
       placeTokens (attrs.ability 1) attrs #resource n
       doStep 2 msg

@@ -5,6 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Investigator (getSpendableClueCount)
 import Arkham.Matcher
+import Arkham.Scenarios.ObsidianCanyons.Helpers
 
 newtype ReturnToTheShoreline = ReturnToTheShoreline ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -22,14 +23,14 @@ instance HasAbilities ReturnToTheShoreline where
     ]
 
 instance RunMessage ReturnToTheShoreline where
-  runMessage msg a@(ReturnToTheShoreline attrs) = runQueueT $ case msg of
+  runMessage msg a@(ReturnToTheShoreline attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- "Spend X clues": let the investigator choose how many clues to commit to
       -- the reveal. X is bounded by the clues they can spend.
       spendable <- getSpendableClueCount iid
-      chooseAmount iid "Spend Clues" "Clues" 0 spendable attrs
+      chooseAmount' iid "returnToTheShoreline.spendClues" "$clues" 0 spendable attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "Clues" -> x) (isTarget attrs -> True) | x > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> x) (isTarget attrs -> True) | x > 0 -> do
       spendClues iid x
       -- TODO: The "Summit deck" (the deck of open-sky / location cards drawn for the
       -- floating sky-city) has no engine support yet. Once it exists, the rest of the

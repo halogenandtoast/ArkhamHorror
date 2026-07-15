@@ -14,6 +14,9 @@
     }
   },
   "label": {
+    "bladeOfArkat": {
+      "resourcesToRemove": "要移除的资源数量"
+    },
     "placeDoomOnTheBlueAgenda": "在蓝色密谋上放置1个毁灭标记",
     "placeClueOnYourLocation": "将1个你的线索放在你所在地",
     "take2Horror": "承受2点恐惧",

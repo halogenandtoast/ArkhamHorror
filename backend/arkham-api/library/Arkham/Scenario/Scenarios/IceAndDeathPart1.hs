@@ -58,7 +58,7 @@ instance HasChaosTokenValue IceAndDeathPart1 where
 instance RunMessage IceAndDeathPart1 where
   runMessage msg s@(IceAndDeathPart1 attrs) = runQueueT $ scenarioI18n 1 $ case msg of
     PreScenarioSetup -> do
-      storyWithContinue (i18nWithTitle "intro") "Proceed to _Ice and Death, Part 1._"
+      storyWithContinue (i18nWithTitle "intro") (ikey' "label.proceedToIceAndDeathPart1")
       doStep 1 PreScenarioSetup
       story $ i18nWithTitle "investigatorSetup"
       eachInvestigator (`forInvestigator` PreScenarioSetup)
@@ -78,16 +78,16 @@ instance RunMessage IceAndDeathPart1 where
 
       storyWithContinue
         (i18nWithTitle "intro1" <> rest)
-        (if winifredPresent then "Proceed to _Intro 2_" else "Skip to _Intro 3_")
+        (ikey' $ if winifredPresent then "label.proceedToIntro2" else "label.skipToIntro3")
 
       doStep (if winifredPresent then 2 else 3) PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> do
-      storyWithContinue (i18nWithTitle "intro2") "Skip to _Intro 4_"
+      storyWithContinue (i18nWithTitle "intro2") (ikey' "label.skipToIntro4")
       doStep 4 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do
-      storyWithContinue (i18nWithTitle "intro3") "Proceed to _Intro 4_"
+      storyWithContinue (i18nWithTitle "intro3") (ikey' "label.proceedToIntro4")
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> do

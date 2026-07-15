@@ -14,6 +14,10 @@
       "body": "<p class='basic'>When Victory X appears on a _swarming_ enemy, this text is only active for the host card. Swarm cards cannot enter the victory display and are never worth victory points.</p>"
     }
   ],
+  "kingdomOfTheSkai": "You find a captain willing to grant you passage to the remote regions of the Dreamlands, wherein you may find signs from the gods to point you in the direction of Kadath.",
+  "tooltips": {
+    "portResign": "_Resign_. Venturing into the unknown has become too dangerous, so you return to safety with the information you've gathered."
+  },
   "waresOfBaharna": {
     "label": {
       "chooseInvestigator": "Choose investigator to decide on returning discard"
@@ -37,6 +41,10 @@
     "leaveEmptyHanded": "Leave empty-handed",
     "forceIntoTemple": "Force your way into the temple.",
     "placeNightgaunt": "Place Tenebrous Nightgaunt in city location",
+    "visitOriab": "Visit the isle of Oriab to the south. Resolve _Oriab Setup_ in the Campaign Guide.",
+    "visitMnar": "Visit the ancient land of Mnar to the west. Resolve _Mnar Setup_ in the Campaign Guide.",
+    "visitForbiddenLands": "Visit the Forbidden Lands to the north. Resolve _Forbidden Lands Setup_ in the Campaign Guide.",
+    "visitTimelessRealm": "Visit the kingdom of the Timeless Realm to the east. Resolve _Timeless Realm Setup_ in the Campaign Guide.",
     "virgilGray": {
       "heal1HorrorFromVirgilGray": "Heal 1 horror from Virgil Gray"
     }

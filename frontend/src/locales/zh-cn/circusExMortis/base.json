@@ -19,6 +19,9 @@
       "takeHorrorAndRelease": "承受1点恐惧，然后释放该标记"
     }
   },
+  "label": {
+    "doneReleasingMoonTokens": "月亮标记释放完毕"
+  },
   "key": {
     "theRingmasterDoesNotSuspectYou": "团长没有怀疑你。",
     "theRingmasterHasHisEyeOnYou": "团长盯上你了。",

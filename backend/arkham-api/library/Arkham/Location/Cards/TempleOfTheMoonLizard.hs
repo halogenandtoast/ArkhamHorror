@@ -10,6 +10,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner hiding (beginSkillTest, chooseOrRunOne)
 import Arkham.Matcher
@@ -65,9 +66,11 @@ instance RunMessage TempleOfTheMoonLizard where
     UseCardAbility iid (isSource attrs -> True) 2 (getClues -> n) _ -> do
       discardableCards <- fieldMap InvestigatorHand (count (`cardMatch` DiscardableCard)) iid
       chooseOrRunOne iid
-        $ [Label ("Take " <> tshow n <> " horror") [Msg.assignHorror iid (attrs.ability 2) n]]
+        $ withI18n
+        $ countVar n
+        $ [Label (ikey' "label.takeHorror") [Msg.assignHorror iid (attrs.ability 2) n]]
         <> [ Label
-            ("Discard " <> tshow n <> " cards")
+            (ikey' "label.discardCards")
             [toMessage $ discardFromHand iid (attrs.ability 2) DiscardChoose n]
            | discardableCards > 0
            ]

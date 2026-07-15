@@ -14,6 +14,10 @@
       "body": "<p class='basic'>当具有_蜂拥_的敌人带有胜利X时，该文本只对主卡生效。蜂拥卡不能进入胜利区，且永远不提供胜利点。</p>"
     }
   ],
+  "kingdomOfTheSkai": "你找到一位船长愿意带你前往幻梦境的偏远地带，你或许能因此找到一些神迹，来指引你卡达斯所在的方位。",
+  "tooltips": {
+    "portResign": "_撤退_。进入未知领域冒险一事变得过于危险，所以你带着目前搜集到的一切返回安全的地方。"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. 其中X等于调查员发现的神迹数量。",
@@ -37,6 +41,10 @@
     "leaveEmptyHanded": "空手离开",
     "forceIntoTemple": "强行进入神庙。",
     "placeNightgaunt": "将幽暗夜魇放置在城市地点",
+    "visitOriab": "前往南边的奥瑞巴岛。结算剧本手册的_奥瑞巴岛冒险设置_。",
+    "visitMnar": "前往西边古老的米纳尔。结算剧本手册的_米纳尔冒险设置_。",
+    "visitForbiddenLands": "前往北边的禁闭之地。结算剧本手册的_禁闭之地冒险设置_。",
+    "visitTimelessRealm": "前往东边的永恒王国。结算剧本手册的_永恒王国冒险设置_。",
     "virgilGray": {
       "heal1HorrorFromVirgilGray": "治疗维吉尔·格雷的1点恐惧"
     }
@@ -48,9 +56,9 @@
   },
   "theDoomThatCameBefore": {
     "label": {
-      "visitOriab": "造访南方的奥里亚布岛。在剧本手册中结算“奥里亚布设置”。",
-      "visitForbiddenLands": "造访北方的禁忌之地。在剧本手册中结算“禁忌之地设置”。",
-      "visitTimelessRealm": "造访东面的永恒国度。在剧本手册中结算“永恒国度设置”。"
+      "visitOriab": "前往南边的奥瑞巴岛。结算剧本手册的_奥瑞巴岛冒险设置_。",
+      "visitForbiddenLands": "前往北边的禁闭之地。结算剧本手册的_禁闭之地冒险设置_。",
+      "visitTimelessRealm": "前往东边的永恒王国。结算剧本手册的_永恒王国冒险设置_。"
     }
   }
 }

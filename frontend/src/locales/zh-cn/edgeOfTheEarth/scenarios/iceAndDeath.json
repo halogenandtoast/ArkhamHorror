@@ -1,6 +1,13 @@
 {
   "heading": "冒险I",
   "part1": {
+    "label": {
+      "proceedToIceAndDeathPart1": "进入_冒险I：亡命冰原，第I部分_",
+      "proceedToIntro2": "进入_引言2_",
+      "skipToIntro3": "跳至_引言3_",
+      "skipToIntro4": "跳至_引言4_",
+      "proceedToIntro4": "进入_引言4_"
+    },
     "investigatorSetup": {
       "title": "调查员设置",
       "body": "<div class='iceAndDeath'><ul><li>每位调查员可以选择一名探险队的可用成员(即未被划掉的成员)加入他们。将所选角色的剧情支援放置入场，位于该调查员的游戏区域(这些剧情支援可以在<i>探险队</i>遭遇组中找到)。</li></ul></div>"

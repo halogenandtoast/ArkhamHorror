@@ -1,4 +1,7 @@
 {
+  "xp": {
+    "rescuedCivilians": "Rescued Civilians"
+  },
   "heading": "File #11-B",
   "rules": {
     "civilians": {

@@ -10,6 +10,7 @@
     "mirage": "Mirage"
   },
   "label": {
+    "chooseAgenda": "The investigators may choose which agenda to use (the higher the agenda number, the less time the investigators will have).",
     "keepPlaying": "Keep playing",
     "moveToPrisonOfMemories": "Move to the Prison of Memories",
     "shuffleTekeliliIntoYourDeck": "Shuffle the top card of the Tekeli-li deck into your deck without looking at it.",
@@ -41,6 +42,7 @@
     "proceedToTheForbiddenPeaks": "If the last scenario you played before this one was Ice and Death, proceed to _Scenario II: To the Forbidden Peaks_.",
     "proceedToCityOfTheElderThings": "If the last scenario you played before this one was To the Forbidden Peaks, proceed to _Scenario III: City of the Elder Things_.",
     "proceedToTheHeartOfMadness": "If the last scenario you played before this one was City of the Elder Things, proceed to _Scenario IV: The Heart of Madness_.",
+    "noResolutionTitle": "No Resolution",
     "title": "Resolution 1",
     "noResolution": "<p>_If no resolution was reached (each investigator was defeated)_: You stumble wearily to your feet. A dream? Your grip your temples, your mind aching. It feels as though a pneumatic drill has been taken to the inside of your skull. If this is what sleep is to be in this hellish place, you want no part of it.</p>",
     "resolution1": "<p>_Resolution 1_: You tumble through the doorway and onto your sleeping mat, flailing within your tangle of warm blankets. No door shuts behind you. Did you only imagine all of that? Or was it all real?</p>"

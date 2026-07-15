@@ -6,6 +6,7 @@ import Arkham.Asset.Types (Field (AssetDriver))
 import Arkham.Direction
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -44,7 +45,7 @@ instance RunMessage CliffsideRoad_b where
         sid <- getRandom
         chooseOneM driver do
           for_ [#willpower, #agility] \sType -> do
-            labeled ("Test " <> format sType <> "(" <> tshow n <> ")")
+            withI18n $ chooseTest sType n
               $ beginSkillTest sid driver (attrs.ability 2) vehicle sType (Fixed n)
       pure . CliffsideRoad_b $ attrs & globalMetaL %~ sawVehicle vehicle
     FailedThisSkillTest _iid (isAbilitySource attrs 2 -> True) -> do

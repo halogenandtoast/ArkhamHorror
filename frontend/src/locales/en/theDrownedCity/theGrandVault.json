@@ -1,4 +1,9 @@
 {
+  "label": {
+    "ancientVault": {
+      "takeDamageAndHorror": "Take a combined total of damage and/or horror"
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half the number of activated locations (rounded down).",

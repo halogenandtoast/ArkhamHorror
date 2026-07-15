@@ -6,6 +6,9 @@
     }
   ],
   "heading": "冒险 VI",
+  "xp": {
+    "readActII": "阅读了场景II"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X。X为你所在地点到起始地点的地点数量(最多5)。",
@@ -22,6 +25,7 @@
   },
   "label": {
     "chooseWhoReadsActII": "选择谁将阅读《黄衣之王》第二幕",
+    "doneChoosingWhoReadsActII": "阅读第二幕的调查员选择完毕",
     "above": "置于上方",
     "below": "置于下方",
     "right": "置于右方",

@@ -7,6 +7,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.HemlockHouse.Helpers
 
 newtype ParlorHemlockHouse = ParlorHemlockHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -28,16 +29,16 @@ instance HasAbilities ParlorHemlockHouse where
     targetEnemy = EnemyAt (ConnectedFrom NotForMovement (be a))
 
 instance RunMessage ParlorHemlockHouse where
-  runMessage msg l@(ParlorHemlockHouse attrs) = runQueueT $ case msg of
+  runMessage msg l@(ParlorHemlockHouse attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ EnemyAt $ ConnectedFrom NotForMovement (be attrs)
       chooseTargetM iid enemies \enemy -> do
         nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2 enemy
         chooseOneM iid do
-          labeled "Test {intellect} (4) for 1 additional damage" do
+          labeled' "parlor.testForAdditionalDamage" do
             sid <- getRandom
             beginSkillTest sid iid (attrs.ability 1) enemy #intellect (Fixed 4)
-          labeled "Skip" nothing
+          labeledI "skip" nothing
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       whenJustM getSkillTestTargetedEnemy $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1

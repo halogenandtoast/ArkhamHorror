@@ -135,11 +135,18 @@
   },
   "part2": {
     "label": {
+      "chooseInvestigatorForSeal": "选择一位调查员拿取{seal}封印",
+      "setNamelessMadnessAside": "将{count}张无名疯狂放在一边",
       "chooseSealCount": "调查员可选择自己拥有多少封印：",
       "easierExperienceSeals": "较易：随机3个封印“已放置”，其余2个“已发现”。",
       "averageExperienceSeals": "普通：随机2个封印“已放置”，1个“已发现”，其余2个不使用。",
       "harderExperienceSeals": "较难：随机1个封印“已放置”，其余4个不使用。",
       "nightmarishExperienceSeals": "噩梦：不使用封印。"
+    },
+    "tooltips": {
+      "theGateOfYquaa": {
+        "resign": "你撤退了，希望你已经做了足够的工作，能够把大门彼端的东西封印起来(如果你控制着1个或更多封印，你保留它们的控制权)。"
+      }
     },
     "intro1": {
       "check": "检查冒险日志：",

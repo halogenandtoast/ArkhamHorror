@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isSkillTestSource)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -13,6 +14,7 @@ import Arkham.Matcher
 import Arkham.Message (pattern MovedClues)
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 
 newtype Room245 = Room245 LocationAttrs
   deriving anyclass IsLocation
@@ -41,7 +43,7 @@ instance HasModifiersFor Room245 where
     for_ mtop \topOfDiscard -> modified_ attrs topOfDiscard [PlaceOnBottomOfDeckInsteadOfDiscard]
 
 instance RunMessage Room245 where
-  runMessage msg l@(Room245 attrs) = runQueueT $ case msg of
+  runMessage msg l@(Room245 attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
@@ -54,7 +56,7 @@ instance RunMessage Room245 where
         named <- traverse (\(iid', n) -> (,n) <$> field InvestigatorName iid') iids
         chooseAmounts
           iid
-          "number of clues to move to Time-worn Locket"
+          (ikey' "label.room245.moveClues")
           (MinAmountTarget 0)
           (map (\(name, n) -> (toTitle name, (0, n))) named)
           (toTarget attrs)

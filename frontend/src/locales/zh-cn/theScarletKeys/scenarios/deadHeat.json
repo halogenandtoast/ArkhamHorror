@@ -1,4 +1,7 @@
 {
+  "xp": {
+    "rescuedCivilians": "解救平民"
+  },
   "rules": {
     "civilians": {
       "title": "平民",

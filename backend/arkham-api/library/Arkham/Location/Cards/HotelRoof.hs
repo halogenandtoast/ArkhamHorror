@@ -3,6 +3,7 @@ module Arkham.Location.Cards.HotelRoof (hotelRoof) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
@@ -12,6 +13,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 
 newtype HotelRoof = HotelRoof LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,20 +24,19 @@ hotelRoof = location HotelRoof Cards.hotelRoof 3 (PerPlayer 1)
 
 instance HasAbilities HotelRoof where
   getAbilities (HotelRoof a) =
-    extendRevealed
-      a
-      [ skillTestAbility
-          $ withTooltip
-            "{action}: Test {agility} (4) or {combat} (4). If you succeed, move to either Room 212, Room 225, or Room 245."
+    scenarioI18n
+      $ extendRevealed
+        a
+      $ [ skillTestAbility
+          $ withI18nTooltip "hotelRoof.moveToRoom"
           $ restricted a 1 Here actionAbility
       , skillTestAbility
-          $ withTooltip
-            "{action}: Test {willpower} (3). If you succeed, move any number of clues controlled by investigators at this location to Alien Device (if it is in play)."
+          $ withI18nTooltip "hotelRoof.moveClues"
           $ restricted a 2 Here actionAbility
       ]
 
 instance RunMessage HotelRoof where
-  runMessage msg l@(HotelRoof attrs) = runQueueT $ case msg of
+  runMessage msg l@(HotelRoof attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseBeginSkillTest sid iid (attrs.ability 1) iid [#agility, #combat] (Fixed 4)
@@ -56,7 +57,7 @@ instance RunMessage HotelRoof where
         named <- traverse (\(iid', n) -> (,n) <$> field InvestigatorName iid') iids
         chooseAmounts
           iid
-          "number of clues to move to Alien Device"
+          (ikey' "label.hotelRoof.moveClues")
           (MinAmountTarget 0)
           (map (\(name, n) -> (toTitle name, (0, n))) named)
           attrs

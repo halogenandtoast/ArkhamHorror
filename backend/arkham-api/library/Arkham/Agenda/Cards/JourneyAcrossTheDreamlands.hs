@@ -10,6 +10,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Scenarios.TheSearchForKadath.Helpers
 import Arkham.Trait (Trait (Port))
 
 newtype JourneyAcrossTheDreamlands = JourneyAcrossTheDreamlands AgendaAttrs
@@ -21,12 +22,12 @@ journeyAcrossTheDreamlands = agenda (1, A) JourneyAcrossTheDreamlands Cards.jour
 
 instance HasAbilities JourneyAcrossTheDreamlands where
   getAbilities (JourneyAcrossTheDreamlands x) =
-    [ withTooltip
-        "_Resign_. Venturing into the unknown has become too dangerous, so you return to safety with the information you've gathered."
+    scenarioI18n
+      [ withI18nTooltip "portResign"
         $ restrictedAbility x 1 (exists $ You <> at_ (withTrait Port))
         $ ActionAbility #resign Nothing
         $ ActionCost 1
-    ]
+      ]
 
 instance RunMessage JourneyAcrossTheDreamlands where
   runMessage msg a@(JourneyAcrossTheDreamlands attrs) = case msg of

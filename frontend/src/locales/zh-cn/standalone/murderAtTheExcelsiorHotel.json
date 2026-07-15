@@ -11,7 +11,8 @@
   ],
   "tooltips": {
     "theTrueCulprit": {
-      "basement": "{'{'}action{'}'}：检定{'{'}willpower{'}'}（4）或{'{'}agility{'}'}（4）。你可以从地下室的一张线索支援上移除1个线索，使本次检定难度降低2。若你成功，从密谋上移除1个毁灭标记。"
+      "basement": "{'{'}action{'}'}：检定{'{'}willpower{'}'}（4）或{'{'}agility{'}'}（4）。你可以从地下室的一张线索支援上移除1个线索，使本次检定难度降低2。若你成功，从密谋上移除1个毁灭标记。",
+      "room212": "{'{'}action{'}'}如果仪式古书位于本地点：进行一次{'{'}willpower{'}'}(5)或{'{'}intellect{'}'}(5)检定。如果你成功，将仪式古书上的至多1{'{'}perPlayer{'}'}个线索移到采集的大脑上。"
     },
     "bloodstainedDagger": {
       "fight": "{'{'}action{'}'}：_攻击。_本次攻击中你获得+2{'{'}combat{'}'}。",
@@ -19,6 +20,23 @@
     },
     "foyer": {
       "resign": "你逃离犯罪现场。"
+    },
+    "hotelRoof": {
+      "moveToRoom": "{'{'}action{'}'}：进行一次{'{'}agility{'}'}(4)或{'{'}combat{'}'}(4)检定。如果你成功，移动到212房间、225房间或245房间。",
+      "moveClues": "{'{'}action{'}'}：进行一次{'{'}willpower{'}'}(3)检定。如果你成功，将本地点调查员控制的任意数量线索移动到异星装置上(如果其位于场上)。"
+    },
+    "room212": {
+      "pickLock": "{'{'}action{'}'}：进行一次{'{'}agility{'}'}(4)检定，尝试撬锁。如果你成功，揭示212房间并立即移动至此。",
+      "moveClues": "{'{'}action{'}'}：进行一次{'{'}intellect{'}'}(3)检定。如果你成功，将本地点调查员控制的任意数量线索移动到不祥溶液上(如果其位于场上)。"
+    },
+    "room225": {
+      "cleanBlood": "{'{'}action{'}'}：进行一次{'{'}willpower{'}'}(3)检定。如果你成功，请记住调查员“清理血迹”。",
+      "hideBody": "{'{'}action{'}'}：进行一次{'{'}combat{'}'}(3)检定。如果你成功，请记住调查员“藏起尸体”。",
+      "tidyRoom": "{'{'}action{'}'}：进行一次{'{'}intellect{'}'}(3)检定。如果你成功，请记住调查员“收拾房间”。"
+    },
+    "office": {
+      "pickLock": "{'{'}action{'}'}：进行一次{'{'}agility{'}'}(3)检定，尝试撬锁。如果你成功，揭示办公室并立即移动至此。",
+      "moveClues": "{'{'}action{'}'}：进行一次{'{'}intellect{'}'}(0)检定。你每成功超过难度1点，可以将办公室一位调查员控制的1个线索移动到经理的钥匙上(如果其位于场上)。"
     }
   },
   "tokens": {
@@ -124,7 +142,25 @@
     }
   },
   "label": {
-    "placeClueToTreatAsNegative": "将1个你的线索放在你所在地点，将此标记视为-{count}"
+    "placeClueToTreatAsNegative": "将1个你的线索放在你所在地点，将此标记视为-{count}",
+    "basement": {
+      "moveClues": "选择要移动到仪式古书上的线索数量"
+    },
+    "hotelRoof": {
+      "moveClues": "选择要移动到异星装置上的线索数量"
+    },
+    "office": {
+      "moveClues": "选择要移动到经理的钥匙上的线索数量"
+    },
+    "room212": {
+      "moveClues": "选择要移动到不祥溶液上的线索数量"
+    },
+    "room245": {
+      "moveClues": "选择要移动到陈旧的挂坠盒上的线索数量"
+    },
+    "theTrueCulpritV9": {
+      "moveClues": "选择要移动到采集的大脑上的线索数量"
+    }
   },
   "arkhamOfficer": {
     "label": {

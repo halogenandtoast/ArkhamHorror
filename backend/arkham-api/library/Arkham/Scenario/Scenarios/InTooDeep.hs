@@ -260,7 +260,7 @@ instance RunMessage InTooDeep where
           story $ i18nWithTitle "resolution1"
           madeItSafely <- getHasRecord TheInvestigatorsMadeItSafelyToTheirVehicles
           allGainXpWithBonus attrs
-            $ if madeItSafely then WithBonus "Made it safely to their vehicles" 2 else NoBonus
+            $ if madeItSafely then toBonus "vehicles" 2 else NoBonus
           endOfScenario
         _ -> throw $ UnknownResolution r
       pure s

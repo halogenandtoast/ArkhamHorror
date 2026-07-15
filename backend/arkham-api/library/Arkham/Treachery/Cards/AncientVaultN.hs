@@ -3,10 +3,12 @@ module Arkham.Treachery.Cards.AncientVaultN (ancientVaultN) where
 import Arkham.Ability
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.I18n
 import Arkham.Location.Types (Field (..))
 import Arkham.Message.Lifted.Log (record)
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Scenarios.TheGrandVault.Helpers (scenarioI18n)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -33,16 +35,17 @@ instance RunMessage AncientVaultN where
       x <- case attrs.placement of
         AttachedToLocation lid -> fieldWithDefault 0 LocationShroud lid
         _ -> pure 0
-      chooseAmounts
-        iid
-        "Take a combined total of damage and/or horror"
-        (TotalAmountTarget x)
-        [("Damage", (0, x)), ("Horror", (0, x))]
-        (toTarget attrs)
+      scenarioI18n
+        $ chooseAmounts
+          iid
+          (ikey' "label.ancientVault.takeDamageAndHorror")
+          (TotalAmountTarget x)
+          [("$damage", (0, x)), ("$horror", (0, x))]
+          (toTarget attrs)
       pure t
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
-      let damage = getChoiceAmount "Damage" choices
-      let horror = getChoiceAmount "Horror" choices
+      let damage = getChoiceAmount "$damage" choices
+      let horror = getChoiceAmount "$horror" choices
       assignDamageAndHorror iid (attrs.ability 1) damage horror
       -- Flip this card over and resolve its text (the glyph translation).
       -- TODO: verify the exact glyph identifier string; the recorded word is "Doom".

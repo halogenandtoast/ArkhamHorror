@@ -1,4 +1,9 @@
 {
+  "label": {
+    "ancientVault": {
+      "takeDamageAndHorror": "选择合计要受到的伤害和/或恐惧"
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X。X为已启动地点数量的一半，向下取整。",

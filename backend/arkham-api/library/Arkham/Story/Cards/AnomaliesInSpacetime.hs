@@ -13,8 +13,8 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Name (toTitle)
 import Arkham.Projection
-import Arkham.Question (AmountTarget (..))
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.MachinationsThroughTime.Helpers (scenarioI18n)
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 
@@ -44,12 +44,12 @@ instance RunMessage AnomaliesInSpacetime where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       clues <- iid.clues
       sid <- getRandom
-      chooseAmounts iid "Clues to spend" (MaxAmountTarget clues) [("Clues", (0, clues))] attrs
+      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 0 clues attrs
       chooseOneM iid $ withI18n do
         chooseTest #willpower 3 $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
         chooseTest #agility 3 $ beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
       pure s
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) -> do
       when (n > 0) do
         spendClues iid n
         nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue (3 * n))

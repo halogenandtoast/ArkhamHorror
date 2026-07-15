@@ -1,5 +1,11 @@
 {
   "cluesToSpend": "要花费的线索",
+  "resourcesToSpend": "要花费的资源",
+  "label": {
+    "returnToTheShoreline": {
+      "spendClues": "选择要花费的线索数量"
+    }
+  },
   "wingsOfTerror": {
     "drawEnemy": "抽取该敌人",
     "attack": "该敌人攻击你"

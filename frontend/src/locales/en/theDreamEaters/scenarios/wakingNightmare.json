@@ -1,5 +1,12 @@
 {
   "heading": "Scenario I-B",
+  "label": {
+    "bringDoctorMaheswaran": "Convince Doctor Maheswaran to come with you while you investigate, for her safety and yours.",
+    "leaveDoctorMaheswaranWithPatients": "Convince Doctor Maheswaran to stay with the patients and keep them safe while you investigate."
+  },
+  "message": {
+    "infestationTokenDrawn": "{token} drawn during the Infestation Test"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-1 (-3 instead if you are engaged with a _Staff_ enemy).",
@@ -15,6 +22,9 @@
   "tooltips": {
     "waitingRoom": {
       "resign": "You flee the hospital, leaving your companions behind."
+    },
+    "containingTheOutbreak": {
+      "sealRift": "{'{'}action{'}'}: Test {'{'}willpower{'}'} (X) to attempt to seal the rift. X is this location's shroud. Investigators at this location may spend 1 {'{'}perPlayer{'}'} clues, as a group, to automatically succeed. If you succeed, replace the damage token on this location with a horror token. For the remainder of the game, this location cannot become infested."
     }
   },
   "privateRoom": {

@@ -26,6 +26,7 @@
     "proceedToTheForbiddenPeaks": "若此冒险前游玩的是《亡命冰原》，进入_冒险II：失落之峰_。",
     "proceedToCityOfTheElderThings": "若此冒险前游玩的是《失落之峰》，进入_冒险III：古老者之城_。",
     "proceedToTheHeartOfMadness": "若此冒险前游玩的是《古老者之城》，进入_冒险IV：疯狂之心_。",
+    "noResolutionTitle": "未达成结局",
     "title": "结局1",
     "noResolution": "<p>_如果未达成结局（所有调查员被击败）：_你疲惫地站起身，按住阵阵作痛的太阳穴。梦？这里若连睡眠都是这般地狱，你宁可不要。</p>",
     "xp": {
@@ -57,7 +58,7 @@
     }
   },
   "tooltips": { "mirage": "幻景" },
-  "label": { "keepPlaying": "继续游戏", "moveToPrisonOfMemories": "移动至记忆囚笼", "shuffleTekeliliIntoYourDeck": "不查看地将忒咳哩-哩牌堆顶的1张卡牌混洗入你的牌堆。", "averyClaypoolAntarcticGuideResolute": { "revealANewChaosToken": "抽出一个新的混乱标记", "spend1Supply": "花费1个补给" } },
+  "label": { "chooseAgenda": "调查员可以选择使用哪张密谋（密谋编号越大，调查员拥有的时间越少）。", "keepPlaying": "继续游戏", "moveToPrisonOfMemories": "移动至记忆囚笼", "shuffleTekeliliIntoYourDeck": "不查看地将忒咳哩-哩牌堆顶的1张卡牌混洗入你的牌堆。", "averyClaypoolAntarcticGuideResolute": { "revealANewChaosToken": "抽出一个新的混乱标记", "spend1Supply": "花费1个补给" } },
   "deckOfTheTheodosia": { "label": { "addShroud": "本次调查中，使其隐匿值+2", "spendAdditionalAction": "额外花费1个行动" } },
   "drKenslersOffice": { "label": { "removeSecret": "从你控制的一张支援上移除1个秘密" } }
 }

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetClues, AssetController))
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -13,6 +14,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Move
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 
 newtype OfficeMurderAtTheExcelsiorHotel = OfficeMurderAtTheExcelsiorHotel LocationAttrs
   deriving anyclass IsLocation
@@ -27,27 +29,26 @@ instance HasModifiersFor OfficeMurderAtTheExcelsiorHotel where
 
 instance HasAbilities OfficeMurderAtTheExcelsiorHotel where
   getAbilities (OfficeMurderAtTheExcelsiorHotel attrs) =
-    if attrs.unrevealed
-      then
-        extend1 attrs
-          $ skillTestAbility
-          $ withTooltip
-            "{action}: Test {agility} (3) to attempt to pick the lock. If you succeed, reveal Office and immediately move to it."
-          $ restricted
-            (proxied (LocationMatcherSource "Basement") attrs)
-            1
-            (OnLocation "Basement")
-            #action
-      else
-        extend1
-          attrs
-          $ skillTestAbility
-          $ withTooltip
-            "{action}: Test {intellect} (0). For each point you succeed by, you may move 1 clue controlled by an investigator in the Office to Manager's key (if it is in play)."
-          $ restricted attrs 1 Here actionAbility
+    scenarioI18n
+      $ if attrs.unrevealed
+        then
+          extend1 attrs
+            $ skillTestAbility
+            $ withI18nTooltip "office.pickLock"
+            $ restricted
+              (proxied (LocationMatcherSource "Basement") attrs)
+              1
+              (OnLocation "Basement")
+              #action
+        else
+          extend1
+            attrs
+            $ skillTestAbility
+            $ withI18nTooltip "office.moveClues"
+            $ restricted attrs 1 Here actionAbility
 
 instance RunMessage OfficeMurderAtTheExcelsiorHotel where
-  runMessage msg l@(OfficeMurderAtTheExcelsiorHotel attrs) = runQueueT $ case msg of
+  runMessage msg l@(OfficeMurderAtTheExcelsiorHotel attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 0)
@@ -66,7 +67,7 @@ instance RunMessage OfficeMurderAtTheExcelsiorHotel where
         named <- traverse (\(iid', x) -> (,x) <$> field InvestigatorName iid') iids
         chooseAmounts
           iid
-          "number of clues to move to Manager's Key"
+          (ikey' "label.office.moveClues")
           (MaxAmountTarget n)
           (map (\(name, x) -> (toTitle name, (0, x))) named)
           (toTarget attrs)

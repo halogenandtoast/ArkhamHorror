@@ -6,6 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Scenarios.CityOfTheElderThings.Helpers
 
 newtype DoomFromBelow = DoomFromBelow AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -16,17 +17,16 @@ doomFromBelow = agenda (1, A) DoomFromBelow Cards.doomFromBelow (Static 10)
 
 instance HasAbilities DoomFromBelow where
   getAbilities (DoomFromBelow a) =
-    [ withTooltip
-        "During your turn, spend 1 clue: Look at the revealed side of a City Landscape in your column or row. (Limit once per round.)"
+    scenarioI18n
+      [ withI18nTooltip "cityLandscape.look"
         $ playerLimit PerRound
         $ restricted a 1 (DuringTurn You <> exists (UnrevealedLocation <> inYourColumnOrRow))
         $ FastAbility (ClueCost $ Static 1)
-    , withTooltip
-        "During your turn, spend 3 clues: Move to any location in your column or row. (Limit once per round.)"
+      , withI18nTooltip "cityLandscape.move"
         $ playerLimit PerRound
         $ restricted a 2 (DuringTurn You <> exists (CanMoveToLocation You (toSource a) inYourColumnOrRow))
         $ FastAbility (ClueCost $ Static 3)
-    ]
+      ]
    where
     inYourColumnOrRow = columnOrRowOf (LocationWithInvestigator You)
 

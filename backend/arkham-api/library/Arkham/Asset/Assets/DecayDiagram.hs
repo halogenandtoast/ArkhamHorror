@@ -9,6 +9,7 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers (scenarioI18n)
 
 newtype DecayDiagram = DecayDiagram AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -43,9 +44,9 @@ instance RunMessage DecayDiagram where
       placeTokens (attrs.ability 2) attrs #doom 1
       clues <- field InvestigatorClues iid
       when (clues > 0) do
-        chooseAmount iid "Clues" "Clues" 0 clues attrs
+        scenarioI18n $ chooseAmount' iid "decayDiagram.cluesToFlip" "$clues" 0 clues attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       removeTokens (attrs.ability 2) iid #clue n
       placeTokens (attrs.ability 2) attrs #doom n
       pure a

@@ -2,6 +2,12 @@
   "label": {
     "lookAtExplorationDeck": "查看探索牌堆顶的卡牌",
     "lookAtEncounterDeck": "查看遭遇牌堆顶的卡牌",
+    "farid": {
+      "resourcesToSpend": "要花费的资源数量"
+    },
+    "nadiaNimr": {
+      "horrorToTake": "要受到的恐惧数量"
+    },
     "nassor": {
       "addStrength": "使深渊之力增加1点",
       "extraDamage": "纳索尔本次攻击造成+{count}点伤害和+{count}点恐惧"

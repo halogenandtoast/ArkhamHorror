@@ -230,7 +230,7 @@ instance RunMessage TheBlobThatAteEverything where
       withSkillTest \sid -> do
         let n = if isEasyStandard attrs then 5 else 7
         hand <- field InvestigatorHand iid
-        chooseUpToNM iid n "doneDevouring" do
+        chooseUpToNM' iid n "doneDevouring" do
           for_ hand \card -> cardLabeled card do
             devour [card]
             skillTestModifier sid ElderThing iid (AnySkillValue 1)

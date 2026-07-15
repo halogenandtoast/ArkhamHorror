@@ -51,7 +51,7 @@ instance RunMessage WalkingThroughTime where
       scientists <- select $ AssetWithTrait Scientist <> AssetAt (LocationWithId from)
       movable <- filterM (`assetCanEnter` destination) scientists
       when (notNull movable) do
-        chooseSomeM iid "Done moving scientists" do
+        scenarioI18n $ chooseSomeM' iid "doneMovingScientists" do
           targets movable \scientist -> place scientist (AtLocation destination)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

@@ -2,6 +2,7 @@ module Arkham.Location.Cards.CorriganIndustries (corriganIndustries) where
 
 import Arkham.Ability
 import Arkham.Card (toCard)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -34,7 +35,7 @@ instance RunMessage CorriganIndustries where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       discards <- fieldMap InvestigatorDiscard (map toCard) iid
       focusCards discards do
-        chooseUpToNM iid 4 "Done choosing cards" do
+        withI18n $ chooseUpToNM' iid 4 "doneChoosingCards" do
           for_ discards \card -> cardLabeled card $ addToHand iid (only card)
         unfocusCards
       pure l

@@ -1,4 +1,5 @@
 {
+  "cluesToSpend": "要花费的线索",
   "xp": {
     "bonus": "拯救了存在本身。"
   },
@@ -110,6 +111,13 @@
   },
   "label": {
     "doneDevouring": "完成吞噬卡牌",
+    "ltWilsonStewart": {
+      "healDamage": "从威尔逊·斯图尔特中尉上治疗1点伤害",
+      "healHorror": "从威尔逊·斯图尔特中尉上治疗1点恐惧",
+      "gainSkillValue": "你的下一次技能检定获得+1技能值",
+      "drawCard": "抽1张卡牌",
+      "gainResource": "获得1个资源"
+    },
     "temporaryHQ": {
       "healDamage": "治疗3点伤害",
       "healHorror": "治疗3点恐惧",

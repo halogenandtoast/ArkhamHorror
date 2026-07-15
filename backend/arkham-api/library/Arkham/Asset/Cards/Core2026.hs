@@ -275,6 +275,8 @@ huntersInstinct =
     , cdCardTraits = setFromList [Talent]
     , cdLimits = [LimitPerInvestigator 1]
     , cdUses = uses Supply 3
+    , cdErrata =
+        Just "This card’s keyword line should read “If there are no supplies on Hunter’s Instinct, discard it.”"
     }
 
 jumpsuit :: CardDef

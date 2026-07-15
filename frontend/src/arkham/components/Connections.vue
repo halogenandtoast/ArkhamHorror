@@ -50,6 +50,7 @@ let chevronProto: SVGPathElement | null = null
 const EPS = 0.5
 const close = (a: number, b: number) => Math.abs(a - b) < EPS
 const linesByConn = new Map<string, SVGLineElement>()
+const fateGlowLinesByConn = new Map<string, SVGLineElement>()
 const chevronsByConn = new Map<string, SVGPathElement>()
 
 type GridDirection = 'North' | 'East' | 'South' | 'West'
@@ -193,6 +194,8 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: stri
   else line.classList.remove('mine-cart-next-line')
 
   if (className === 'fate-of-the-vale-enemy-line') {
+    updateFateGlowLine(connection, line, x1, y1, x2, y2)
+    line.style.filter = ''
     if (props.enableCosmicEmissaryAnimation === false) {
       line.removeAttribute('style')
     } else {
@@ -268,6 +271,59 @@ function makeOrUpdateMineCartInvalidLine(locationDiv: HTMLElement, direction: Gr
   return [lineConnection, xConnection]
 }
 
+function setSvgAttr(el: SVGElement, name: string, value: string) {
+  if (el.getAttribute(name) !== value) el.setAttribute(name, value)
+}
+
+function updateFateSmokeFilter(connection: string, x1: number, y1: number, x2: number, y2: number): string | null {
+  if (!defsEl) return null
+  const filterId = `fate-of-the-vale-smoke-filter-${connection.replace(/[^a-zA-Z0-9_-]/g, '-')}`
+  let filter = defsEl.querySelector<SVGFilterElement>(`#${filterId}`)
+  if (!filter) {
+    filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter')
+    filter.id = filterId
+    filter.setAttribute('filterUnits', 'userSpaceOnUse')
+    filter.setAttribute('color-interpolation-filters', 'sRGB')
+    filter.innerHTML = `
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="17" result="smokeNoise" />
+      <feDisplacementMap in="SourceGraphic" in2="smokeNoise" scale="5" xChannelSelector="R" yChannelSelector="G" result="distorted" />
+      <feGaussianBlur in="distorted" stdDeviation="1.9" />
+    `
+    defsEl.appendChild(filter)
+  }
+
+  const pad = 96
+  setSvgAttr(filter, 'x', String(Math.min(x1, x2) - pad))
+  setSvgAttr(filter, 'y', String(Math.min(y1, y2) - pad))
+  setSvgAttr(filter, 'width', String(Math.abs(x2 - x1) + pad * 2))
+  setSvgAttr(filter, 'height', String(Math.abs(y2 - y1) + pad * 2))
+  return filterId
+}
+
+function updateFateGlowLine(connection: string, line: SVGLineElement, x1: number, y1: number, x2: number, y2: number) {
+  if (!svgEl || !lineProto) return
+  let glowLine = fateGlowLinesByConn.get(connection)
+  if (!glowLine) {
+    glowLine = lineProto.cloneNode(true) as SVGLineElement
+    glowLine.classList.remove('original')
+    glowLine.classList.add('connection', 'fate-of-the-vale-enemy-line-glow')
+    glowLine.removeAttribute('id')
+    glowLine.dataset.connection = `${connection}:glow`
+    svgEl.insertBefore(glowLine, line)
+    fateGlowLinesByConn.set(connection, glowLine)
+  }
+  setSvgAttr(glowLine, 'x1', String(x1))
+  setSvgAttr(glowLine, 'y1', String(y1))
+  setSvgAttr(glowLine, 'x2', String(x2))
+  setSvgAttr(glowLine, 'y2', String(y2))
+  if (props.enableCosmicEmissaryAnimation === false) {
+    glowLine.removeAttribute('filter')
+  } else {
+    const filterId = updateFateSmokeFilter(connection, x1, y1, x2, y2)
+    if (filterId) setSvgAttr(glowLine, 'filter', `url(#${filterId})`)
+  }
+}
+
 function updateFateOfTheValeEnemyLineGradient(line: SVGLineElement, connection: string, x1: number, y1: number, x2: number, y2: number) {
   if (!defsEl) return
 
@@ -297,13 +353,14 @@ function updateFateOfTheValeEnemyLineGradient(line: SVGLineElement, connection: 
   const uy = dy / dist
   const patternLength = 96
 
-  gradient.setAttribute('x1', String(x1))
-  gradient.setAttribute('y1', String(y1))
-  gradient.setAttribute('x2', String(x1 + ux * patternLength))
-  gradient.setAttribute('y2', String(y1 + uy * patternLength))
+  setSvgAttr(gradient, 'x1', String(x1))
+  setSvgAttr(gradient, 'y1', String(y1))
+  setSvgAttr(gradient, 'x2', String(x1 + ux * patternLength))
+  setSvgAttr(gradient, 'y2', String(y1 + uy * patternLength))
   gradient.querySelector('animateTransform')?.setAttribute('from', '0 0')
   gradient.querySelector('animateTransform')?.setAttribute('to', `${ux * patternLength} ${uy * patternLength}`)
-  line.setAttribute('stroke', `url(#${gradientId})`)
+  setSvgAttr(line, 'stroke', `url(#${gradientId})`)
+
 }
 
 // Renders a one-way connection as a stream of filled chevron polygons
@@ -499,6 +556,9 @@ function handleConnections(includeFateOfTheVale = true) {
   for (const [conn, el] of linesByConn) {
     if (!live.has(conn)) {
       if (!includeFateOfTheVale && el.classList.contains('fate-of-the-vale-enemy-line')) continue
+      fateGlowLinesByConn.get(conn)?.remove()
+      fateGlowLinesByConn.delete(conn)
+      defsEl?.querySelector(`#fate-of-the-vale-smoke-filter-${conn.replace(/[^a-zA-Z0-9_-]/g, '-')}`)?.remove()
       el.remove()
       linesByConn.delete(conn)
     }
@@ -516,24 +576,33 @@ const connectionUpdateRequestId = ref<number | null>(null)
 let connectionObserver: MutationObserver | null = null
 let resizeObserver: ResizeObserver | null = null
 let connectionUpdateTimeouts: number[] = []
-let lastTime = 0
-const FRAME_MS = 1000 / 30 // 30fps for normal/enemy connection following only
+let transientTrackingUntil = 0
+
+function stopTransientTracking() {
+  transientTrackingUntil = 0
+  if (requestId.value !== null) cancelAnimationFrame(requestId.value)
+  requestId.value = null
+}
+
+function requestTransientConnectionTracking(durationMs = 260) {
+  transientTrackingUntil = Math.max(transientTrackingUntil, performance.now() + durationMs)
+  if (requestId.value !== null) return
+  const tick = (ts: number) => {
+    requestId.value = null
+    if (ts >= transientTrackingUntil) return
+    handleConnections(false)
+    requestId.value = window.requestAnimationFrame(tick)
+  }
+  requestId.value = window.requestAnimationFrame(tick)
+}
 
 function requestConnectionUpdate() {
   if (connectionUpdateRequestId.value !== null) return
   connectionUpdateRequestId.value = window.requestAnimationFrame(() => {
     connectionUpdateRequestId.value = null
     handleConnections(true)
+    requestTransientConnectionTracking()
   })
-}
-
-function tick(ts: number) {
-  requestId.value = null
-  if (ts - lastTime >= FRAME_MS) {
-    lastTime = ts
-    handleConnections(false)
-  }
-  requestId.value = window.requestAnimationFrame(tick)
 }
 
 onMounted(async () => {
@@ -548,8 +617,8 @@ onMounted(async () => {
   // these delayed full updates they can remain at the initial pre-layout
   // positions after leaving and re-entering a game.
   handleConnections(true)
+  requestTransientConnectionTracking()
   connectionUpdateTimeouts = [50, 150, 500, 1500].map((delay) => window.setTimeout(requestConnectionUpdate, delay))
-  requestId.value = window.requestAnimationFrame(tick)
 
   window.addEventListener('resize', requestConnectionUpdate)
   window.addEventListener('scroll', requestConnectionUpdate, { capture: true, passive: true })
@@ -588,12 +657,16 @@ onBeforeUnmount(()=> {
   resizeObserver = null
   connectionUpdateTimeouts.forEach((timeoutId) => clearTimeout(timeoutId))
   connectionUpdateTimeouts = []
-  if(requestId.value !== null) cancelAnimationFrame(requestId.value)
-  requestId.value = null
+  stopTransientTracking()
   if(connectionUpdateRequestId.value !== null) cancelAnimationFrame(connectionUpdateRequestId.value)
   connectionUpdateRequestId.value = null
-  for (const [,el] of linesByConn) el.remove()
+  for (const [conn, el] of linesByConn) {
+    defsEl?.querySelector(`#fate-of-the-vale-smoke-filter-${conn.replace(/[^a-zA-Z0-9_-]/g, '-')}`)?.remove()
+    el.remove()
+  }
+  for (const [,el] of fateGlowLinesByConn) el.remove()
   linesByConn.clear()
+  fateGlowLinesByConn.clear()
   for (const [,el] of chevronsByConn) el.remove()
   chevronsByConn.clear()
   svgEl = null
@@ -606,13 +679,6 @@ onBeforeUnmount(()=> {
 <template>
   <svg ref="svgRef" class="connections-svg" :class="{ 'cosmic-emissary-animation-disabled': props.enableCosmicEmissaryAnimation === false }">
     <defs>
-      <filter id="fate-of-the-vale-smoke-filter" x="-1000" y="-1000" width="4000" height="4000" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="17" result="smokeNoise">
-          <animate v-if="props.enableCosmicEmissaryAnimation !== false" attributeName="baseFrequency" values="0.024;0.036;0.024" dur="9s" repeatCount="indefinite" />
-        </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="smokeNoise" scale="5" xChannelSelector="R" yChannelSelector="G" result="distorted" />
-        <feGaussianBlur in="distorted" stdDeviation="1.9" />
-      </filter>
     </defs>
     <line ref="protoRef" class="line original" stroke-dasharray="5, 5"/>
     <path ref="chevronProtoRef" class="chevrons original"/>
@@ -669,6 +735,14 @@ onBeforeUnmount(()=> {
   filter: drop-shadow(0 0 2px rgba(220 48 48 / 0.45));
 }
 
+.fate-of-the-vale-enemy-line-glow {
+  stroke: rgba(132 202 199 / 0.52);
+  stroke-width: 22px;
+  stroke-linecap: round;
+  stroke-opacity: 0.9;
+  vector-effect: non-scaling-stroke;
+}
+
 .fate-of-the-vale-enemy-line{
   stroke-width: 10px;
   stroke-dasharray: 86 10;
@@ -676,18 +750,24 @@ onBeforeUnmount(()=> {
   stroke-opacity: 1;
   vector-effect: non-scaling-stroke;
   animation: fate-of-the-vale-smoke-flow 7.5s linear infinite;
-  filter:
-    url(#fate-of-the-vale-smoke-filter)
-    drop-shadow(0 0 4px rgba(221 242 235 / 0.9))
-    drop-shadow(0 0 10px rgba(132 202 199 / 0.95))
-    drop-shadow(0 0 18px rgba(54 102 114 / 0.85));
 }
 
-.cosmic-emissary-animation-disabled .fate-of-the-vale-enemy-line {
+.cosmic-emissary-animation-disabled .fate-of-the-vale-enemy-line,
+.cosmic-emissary-animation-disabled .fate-of-the-vale-enemy-line-glow {
   animation: none;
   filter: none;
   stroke: rgba(132 202 199 / 0.7);
   stroke-dasharray: unset;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fate-of-the-vale-enemy-line {
+    animation: none;
+  }
+
+  .fate-of-the-vale-enemy-line-glow {
+    filter: drop-shadow(0 0 8px rgba(132 202 199 / 0.55));
+  }
 }
 
 @keyframes fate-of-the-vale-smoke-flow {

@@ -2476,6 +2476,11 @@ failSkillTest = push Msg.FailSkillTest
 passSkillTest :: ReverseQueue m => m ()
 passSkillTest = push Msg.PassSkillTest
 
+-- | "You succeed by n, instead" — unlike 'passSkillTest' this is not an
+-- automatic success, so the skill value does not carry into the result.
+passSkillTestBy :: ReverseQueue m => Int -> m ()
+passSkillTestBy = push . Msg.PassSkillTestBy
+
 ready :: (ReverseQueue m, Targetable target) => target -> m ()
 ready = push . Msg.ready
 

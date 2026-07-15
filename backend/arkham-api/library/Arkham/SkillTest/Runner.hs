@@ -430,10 +430,15 @@ instance RunMessage SkillTest where
         Ask _ (ChooseOne [SkillTestApplyResultsButton]) -> True
         _ -> False
       push $ chooseOne player [SkillTestApplyResultsButton]
-      let s' = s & resultL .~ SucceededBy NonAutomatic n
-      results <- calculateSkillTestResultsData s'
-      push $ SkillTestResults results
-      pure $ s' & resultL .~ SucceededBy NonAutomatic n
+      -- "You succeed by n, instead" overrides the tested values entirely, so the
+      -- result can't be recalculated from them (FailTies etc. must not apply)
+      mods <- getModifiers (toTarget s)
+      let x = getSum $ mconcat [Sum m | SkillTestResultValueModifier m <- mods]
+      push $ SkillTestResults $ SkillTestResultsData n 0 0 0 (guard (x /= 0) $> x) True
+      pure
+        $ s
+        & (resultL .~ SucceededBy NonAutomatic n)
+        & (difficultyL .~ SkillTestDifficulty (Fixed 0))
     FailSkillTest -> do
       push $ Do FailSkillTest
       when (skillTestStep < SkillTestFastWindow2) $ push CheckAllAdditionalCommitCosts

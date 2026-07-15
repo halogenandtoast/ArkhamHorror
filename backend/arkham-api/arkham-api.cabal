@@ -7327,6 +7327,7 @@ test-suite spec
       Arkham.Matcher.CoveredByAnyInPlayEnemySpec
       Arkham.Matcher.NearestLocationToMostSpec
       Arkham.Matcher.OutOfPlayEnemySpec
+      Arkham.Modifier.CannotAttackDuringEnemyPhaseSpec
       Arkham.Modifier.SearchAllInvestigatorsSpec
       Arkham.Scenario.DancingMadSpec
       Arkham.Scenario.Scenarios.TheThingInTheDepthsSpec

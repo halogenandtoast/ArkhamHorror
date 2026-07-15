@@ -27,7 +27,7 @@ handleCosmicEmissaryColour attrs windows = do
   -- The attack path resolves inside a batch we cancel to ward off the hit; the
   -- evade path carries no batch, so only ignore one when present.
   for_ (getMaybeBatchId windows) (push . IgnoreBatch)
-  roundModifier (attrs.ability 1) attrs CannotAttack
+  roundModifier (attrs.ability 1) attrs CannotAttackDuringEnemyPhase
 
 cosmicEmissaryShatteredAbility :: EnemyAttrs -> ChaosTokenMatcher -> [Ability]
 cosmicEmissaryShatteredAbility attrs token =

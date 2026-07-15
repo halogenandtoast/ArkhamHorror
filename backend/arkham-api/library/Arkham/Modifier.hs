@@ -153,6 +153,7 @@ data ModifierType
   | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
   | CannotAssignDamage InvestigatorId
   | CannotAttack
+  | CannotAttackDuringEnemyPhase
   | CannotAttackEnemy EnemyId
   | CannotBeAdvancedByDoomThreshold
   | CannotBeAttacked

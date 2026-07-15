@@ -494,7 +494,15 @@ handleAnswerPure Game {..} playerId = \case
               result <- try @SomeException $ evaluate $ go id q response
               case result of
                 Left _ -> unhandled "Wrong question type"
-                Right msgs -> handled msgs
+                Right msgs -> do
+                  -- Re-ask everyone else still parked on this AskMap, as every other
+                  -- answer branch does. Without this, answering one seat of a
+                  -- multi-player AskMap silently drops the other seats' questions --
+                  -- during deck selection that loses a player's ChooseDeck and the
+                  -- campaign starts a man down. No-op when this seat is the only one
+                  -- being asked, which is the overwhelmingly common case.
+                  let question' = Map.delete playerId gameQuestion
+                  handled $ msgs <> [AskMap question' | not (Map.null question')]
           )
           $ Map.lookup playerId gameQuestion
  where

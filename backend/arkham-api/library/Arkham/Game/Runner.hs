@@ -172,6 +172,14 @@ getInvestigatorsInOrder = do
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
+  -- ClearUI is pushed exactly once per accepted answer (Api Games.Shared), so
+  -- it marks the parked question as consumed. Without this, a queue that
+  -- drains without reaching a new Ask leaves the answered question on the
+  -- game; the client re-poses it and the questionVersion staleness guard in
+  -- Entity.Answer accepts the resubmit, re-running its effects (#5151). Any
+  -- seats still owed a question are re-asked by the AskMap the answer
+  -- branches append after this message.
+  ClearUI -> pure $ g & questionL .~ mempty
   AfterThisTestResolves _sid msgs -> do
     insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
     pure g

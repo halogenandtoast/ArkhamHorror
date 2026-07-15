@@ -37,23 +37,15 @@ async function choose(idx: number) {
 
 const chooseDeck = computed(() => {
   if (props.game.campaign && props.game.campaign.step?.tag === 'ChooseDecksStep') return true
-  const question = Object.values(props.game.question)[0]
-
-  if (question === null || question == undefined) {
-    return false
-  }
-
-  const { tag } = question
-
-  if (tag === 'ChooseDeck' || props.game.gameState.tag === 'IsChooseDecks') {
-    return true
-  }
-
-  if (tag === 'QuestionLabel') {
-    return question.question.tag === 'ChooseDeck'
-  }
-
-  return false
+  // Deck screen only while someone actually has a ChooseDeck question parked.
+  // gameState alone is not enough: it can be stuck at IsChooseDecks with a
+  // different question pending (e.g. after a lost DoneChoosingDecks), and
+  // rendering by state would mask that question behind an inert deck screen.
+  return Object.values(props.game.question).some((q) => {
+    if (!q) return false
+    if (q.tag === 'ChooseDeck') return true
+    return q.tag === 'QuestionLabel' && q.question.tag === 'ChooseDeck'
+  })
 })
 
 
@@ -163,6 +155,11 @@ const scenarioContinuationStep = computed(() => {
 const inScenarioStep = computed(() => {
   return !!props.game.scenario?.campaignStep
 })
+
+// A question can be parked while gameState is still IsChooseDecks (e.g. Boon
+// of the Morrígan's weakness swap asked between deck loads). It must render
+// through the same question branches as an active game, or the screen is blank.
+const hasQuestion = computed(() => Object.keys(props.game.question).length > 0)
 </script>
 
 <template>
@@ -185,7 +182,7 @@ const inScenarioStep = computed(() => {
       :canChooseSideStory="continueCampaign.canChooseSideStory"
     />
   </div>
-  <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
+  <div v-else-if="game.gameState.tag === 'IsActive' || hasQuestion" id="game" class="game">
     <UltimatumsAndBoonsQuestion
       v-if="ultimatumsAndBoonsQuestion"
       :game="game"

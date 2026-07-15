@@ -6313,6 +6313,15 @@ interleaveSimultaneously seqs
               preMsgs ++ [windowMsg] ++ afterMsg
 
 -- finds the first message in the form `Priority msg` and returns that, otherwise returns the first message
+-- | Is this parked question part of deck selection (possibly wrapped)?
+isDeckQuestion :: Question Message -> Bool
+isDeckQuestion = \case
+  ChooseDeck -> True
+  ChooseUpgradeDeck -> True
+  QuestionLabel _ _ q -> isDeckQuestion q
+  QuestionWithSource _ _ q -> isDeckQuestion q
+  _ -> False
+
 popMessageWithPriority :: HasQueue Message m => m (Maybe Message)
 popMessageWithPriority = withQueue \case
   [] -> ([], Nothing)
@@ -6369,6 +6378,19 @@ runMessages gameId mLogger = do
   when valid do
     mmsg <- popMessageWithPriority
     case mmsg of
+      Nothing
+        | isChooseDecks (gameGameState g)
+        , not (any isDeckQuestion (gameQuestion g)) ->
+            -- Self-heal a bricked deck-selection: DoneChoosingDecks (which flips
+            -- IsChooseDecks -> IsActive) lives ONLY in the persisted step queue,
+            -- parked behind the ChooseDeck ask. If that queue is ever lost, every
+            -- deck and deferred InitDeck question still resolves, but the queue
+            -- then drains with the game stuck in IsChooseDecks forever (the
+            -- frontend shows the deck screen with nothing to do). Draining while
+            -- choosing decks with no deck question left parked can only mean the
+            -- continuation is gone, so re-push it. A healthy flow never gets
+            -- here: its drain happens after DoneChoosingDecks has already run.
+            push DoneChoosingDecks >> runMessages gameId mLogger
       Nothing -> case gamePhase g of
         CampaignPhase {} -> pure ()
         ResolutionPhase {} -> pure ()

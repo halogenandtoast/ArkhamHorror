@@ -101,8 +101,8 @@
       "basicEvade": "在其地点执行一次基础躲避行动"
     },
     "beloved": {
-      "removeForAutoSuccess": "将挚爱从游戏中移除，以此将该标记的效果换为如下：\"你自动成功。(不要再揭示另一个标记。本次检定结束后，将该标记返回混乱袋。\"",
-      "remove": "将挚爱从游戏中移除，以此将该标记的效果换为如下：\"你自动成功。(不要再揭示另一个标记。本次检定结束后，将该标记返回混乱袋。\"",
+      "removeForAutoSuccess": "将挚爱从游戏中移除，以如下效果取代该标记的效果：“你自动成功。（不要再揭示另一个标记。本次检定结束后，将该标记放回混乱袋。）”",
+      "remove": "将挚爱从游戏中移除，以如下效果取代该标记的效果：“你自动成功。（不要再揭示另一个标记。本次检定结束后，将该标记放回混乱袋。）”",
       "skip": "不移除挚爱"
     },
     "berettaM19184": {
@@ -115,7 +115,7 @@
       "chooseNoMoreTrickCards": "不选择更多_技巧_卡牌"
     },
     "blackMarket": {
-      "missingOwner": "一张留置的卡牌缺少其所有者。请选择正确的所有者"
+      "missingOwner": "一张放在一边的卡牌缺少其所有者。请选择正确的所有者"
     },
     "blessedBlade": {
       "exhaustToAddBless": "横置蒙福之刃以在混乱袋中加入1个{'{'}bless{'}'}标记",
@@ -299,7 +299,7 @@
     },
     "dowsingRod4": {
       "exhaustForBoost": "横置寻龙尺并在上面放置1个毁灭标记，以移动到一个连接地点且本次调查得到+2技能值",
-      "onLastClue": "如果本次调查发现了一个地点的最后一个线索，移除寻龙尺的1个毁灭标记"
+      "onLastClue": "如果本次调查发现了一个地点的最后一个线索，重整寻龙尺并移除其上所有毁灭标记"
     },
     "drWilliamTMaleson2": {
       "chooseCardToResolve": "选择结算的遭遇卡"
@@ -464,7 +464,7 @@
       "discard": "弃掉它",
       "putOnTop": "放在遭遇牌库顶",
       "placeBeneath": "正面朝下放在歌莉娅·戈德堡底下(她底下最多3张卡牌)",
-      "chooseDrawer": "选择抽取遭遇牌堆的调查员顺序"
+      "chooseDrawer": "选择抽取遭遇牌库的调查员顺序"
     },
     "grannyOrne": {
       "failBy1Less": "检定失败，且检定结果低1点",
@@ -540,8 +540,8 @@
       "releaseABlessToken": "释放一个{'{'}bless{'}'}标记"
     },
     "honedInstinct": {
-      "another": "(习惯成自然)进行2个行动。将敏锐直觉从游戏中移除",
-      "skip": "只进行1个行动"
+      "another": "再进行一个行动，然后将敏锐直觉从游戏中移除（习惯成自然）",
+      "skip": "不再进行额外行动"
     },
     "hope": {
       "putIntoPlayFromDiscard": "从你的弃牌堆放置入场"
@@ -594,8 +594,8 @@
       "take2Resources": "获得2资源"
     },
     "joeDiamond": {
-      "chooseHunchCards": "选择11张_洞察_事件，组成“直觉牌库”",
-      "chooseHunch": "选择11张_洞察_事件，组成“直觉牌库”",
+      "chooseHunchCards": "为直觉牌库再选择10张卡牌",
+      "chooseHunch": "为直觉牌库再选择10张卡牌",
       "doNotMove": "不移动_洞察_"
     },
     "katana": {
@@ -1089,8 +1089,8 @@
       "searchDiscard": "查找弃牌堆"
     },
     "theBeyondBleakNetherworld": {
-      "attachTheTop": "将灵魂牌库顶的牌正面朝上附属到彼端上，作为一个灵魂",
-      "attachSpirit": "将灵魂牌库顶的牌正面朝上附属到彼端上，作为一个灵魂",
+      "attachTheTop": "将灵魂牌库顶的牌正面朝上附属到异世界上，作为一个灵魂",
+      "attachSpirit": "将灵魂牌库顶的牌正面朝上附属到异世界上，作为一个灵魂",
       "discardThisSpirit": "弃掉此灵魂",
       "discardSpirit": "弃掉此灵魂",
       "take1DirectDamage": "受到1点直接伤害",
@@ -1098,7 +1098,7 @@
       "take1DirectHorror": "受到1点直接恐惧",
       "takeDirectHorror": "受到1点直接恐惧",
       "elderSignHealHorror": "古老印记：治愈1点恐惧",
-      "elderSignAttachSpirit": "古老印记：将灵魂牌库顶的牌附属到彼端上，作为一个灵魂",
+      "elderSignAttachSpirit": "古老印记：将灵魂牌库顶的牌附属到异世界上，作为一个灵魂",
       "elderSignDoNothing": "古老印记：不治愈恐惧，也不附属灵魂",
       "autoFailTakeDirectDamage": "自动失败：弃掉此灵魂并受到1点直接伤害",
       "autoFailTakeDirectHorror": "自动失败：弃掉此灵魂并受到1点直接恐惧",
@@ -1208,7 +1208,7 @@
     },
     "wendyAdamsParallel": {
       "sealOne": "封印混乱袋中的1个{'{'}bless{'}'}或{'{'}curse{'}'}标记",
-      "sealAny": "封印本次检定期间揭示的1个{'{'}bless{'}'} 或 {'{'}curse{'}'}标记",
+      "sealAny": "封印本次检定期间从混乱袋揭示的任意{'{'}bless{'}'}或{'{'}curse{'}'}标记",
       "doneSealingTokens": "结束封印标记",
       "doNotChooseAnyMoreTokens": "不选择更多的标记"
     },
@@ -1294,8 +1294,8 @@
       "exhaust2": "横置加密编码盘并花费1秘密：_调查_。本次调查你所在地点的隐藏值-2"
     },
     "decoy": {
-      "twoEnemies": "{'{'}reaction{'}'}在你打出诱敌时，提升其费用2点：“\"一个非精英敌人\"”变为“\"最多2个非精英敌人\"”",
-      "twoConnections": "{'{'}reaction{'}'}在你打出诱敌时，提升其费用2点：“\"你所在地点\"”变为“\"与你所在地点之间连接次数不超过2的地点\"”"
+      "twoEnemies": "{'{'}reaction{'}'}在你打出诱敌时，提升其费用2点：“一个非精英敌人”变为“最多2个非精英敌人”",
+      "twoConnections": "{'{'}reaction{'}'}在你打出诱敌时，提升其费用2点：“你所在地点”变为“与你所在地点之间连接次数不超过2的地点”"
     },
     "devilFriendOrFoe2": {
       "damageConcealed": "对隐藏卡牌造成伤害",
@@ -1325,12 +1325,12 @@
       "alternativeHypothesis": "你可以结算其强制效果，选择一个你本轮未选择的标准。然后，将其重整"
     },
     "endurance": {
-      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
-      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}（若这是攻击或躲避，改为得到+2{'{'}agility{'}'}）",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}（若这是攻击或躲避，改为得到+2{'{'}combat{'}'}）"
     },
     "endurance3": {
-      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
-      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}（若这是攻击或躲避，改为得到+2{'{'}agility{'}'}）",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}（若这是攻击或躲避，改为得到+2{'{'}combat{'}'}）"
     },
     "handCrankFlashlight": {
       "discardForShroud": "弃掉手摇式手电筒，以使你的地点得到隐藏值-1，直到本轮结束"
@@ -1355,10 +1355,10 @@
       "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+2{'{'}willpower{'}'}"
     },
     "holySpear5": {
-      "fightWithReleaseBless": "{'{'}action{'}'}: _攻击_。你本次攻击得到+2{'{'}combat{'}'}并造成+1伤害。在你发动本能力时，你可以释放一个封印在圣矛上的{'{'}bless{'}'}标记",
+      "fightWithReleaseBless": "{'{'}action{'}'}: _攻击_。你本次攻击得到+2{'{'}willpower{'}'}并造成+1伤害。在你发动本能力时，你可以释放一个封印在圣矛上的{'{'}bless{'}'}标记",
       "fightWithSealBless": "{'{'}action{'}'}查找混乱袋，找出2个{'{'}bless{'}'}标记并将其封印在圣矛上：_攻击_。你本次攻击得到+4{'{'}combat{'}'}并造成+2伤害",
       "actionSearchThe": "{'{'}action{'}'}查找混乱袋，找出2个{'{'}bless{'}'}标记并将其封印在圣矛上：_攻击_。你本次攻击得到+4{'{'}combat{'}'}并造成+2伤害",
-      "actionYouGet2": "{'{'}action{'}'}: _攻击_. You get +2 {'{'}combat{'}'}并造成+1伤害。在你发动本能力时，你可以释放一个封印在圣矛上的{'{'}bless{'}'}标记"
+      "actionYouGet2": "{'{'}action{'}'}：_攻击_。你本次攻击得到+2{'{'}willpower{'}'}并造成+1伤害。在你发动本能力时，你可以释放一个封印在圣矛上的{'{'}bless{'}'}标记。"
     },
     "hyperawareness": {
       "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
@@ -1383,12 +1383,12 @@
       "fastSpend2Resources2": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+1{'{'}intellect{'}'}，直到本阶段结束"
     },
     "levelheaded": {
-      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
-      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}（若这是冒险卡牌上的检定，改为得到+2{'{'}agility{'}'}）",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}（若这是冒险卡牌上的检定，改为得到+2{'{'}willpower{'}'}）"
     },
     "levelheaded3": {
-      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
-      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}（若这是冒险卡牌上的检定，改为得到+2{'{'}agility{'}'}）",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}（若这是冒险卡牌上的检定，改为得到+2{'{'}willpower{'}'}）"
     },
     "livreDeibon": {
       "fastExhaustLivre": "{'{'}fast{'}'}横置伊波恩之书：将你牌库顶的卡牌投入到你所在地点一位调查员执行的符合条件的技能检定中",
@@ -1458,8 +1458,8 @@
     },
     "ravenousMyconidUnidentified": {
       "searchForUncannyGrowth": "查找你的绑定卡牌，找出诡异疯长，并将其加入你的手牌",
-      "classifyNewSpecies": "将每个生长移动到你的资源池，作为资源。在冒险日志中，记录下“\"你识别了新的物种\"”",
-      "moveEachGrowth": "将每个生长移动到你的资源池，作为资源。在冒险日志中，记录下“\"你识别了新的物种\"”",
+      "classifyNewSpecies": "将每个生长移动到你的资源池，作为资源。在剧本日志中，记录下“你识别了新的物种”",
+      "moveEachGrowth": "将每个生长移动到你的资源池，作为资源。在剧本日志中，记录下“你识别了新的物种”",
       "search": "查找你的绑定卡牌，找出诡异疯长，并将其加入你的手牌"
     },
     "scientificTheory1": {

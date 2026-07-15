@@ -38,7 +38,7 @@
     "giveSeal": "给予封印",
     "takeSeal": "承受封印",
     "takeHorror": "受到{count}点恐惧",
-    "discardTopOfEncounterDeck": "弃掉遭遇牌堆顶的牌 | 弃掉遭遇牌堆顶的{count}张牌",
+    "discardTopOfEncounterDeck": "弃掉遭遇牌库顶的牌 | 弃掉遭遇牌库顶的{count}张牌",
     "takeDamageAndHorror": "受到{damage}点伤害和{horror}点恐惧",
     "loseActions": "失去1个行动 | 失去{count}个行动",
     "loseResources": "失去1资源 | 失去{count}资源"
@@ -59,7 +59,7 @@
   "Explore": "探索",
   "Fight": "攻击",
   "Engage": "交战",
-  "Forced": "強制",
+  "Forced": "强制",
   "Delayed": "延时效果",
   "Objective": "目标",
   "Haunted": "闹鬼",
@@ -68,10 +68,10 @@
   "ChooseOne": "选择一项",
   "Choose": "选择",
   "setup": "设置",
-  "addToken": "向混乱袋中加入一个 {'{'}{token}{'}'} 混乱标记，并持续直到剧本结束",
+  "addToken": "向混乱袋中加入一个 {'{'}{token}{'}'} 混乱标记，直到剧本结束",
   "token": {
     "Aether": "以太",
-    "AlarmLevel": "警觉等级",
+    "AlarmLevel": "警报等级",
     "Ammo": "弹药",
     "Antiquity": "古物",
     "Bounty": "赏金",
@@ -193,7 +193,7 @@
     "deckCreation": "牌组创建"
   },
   "upgradeDecks": "升级牌组",
-  "addSideScenario": "添加支线剧本",
+  "addSideScenario": "添加支线冒险",
   "lead": "调查员队长",
   "or2": "{0} 或 {1}",
   "or3": "{0}、{1} 或 {2}",
@@ -219,7 +219,12 @@
   "join": "加入",
   "joinGame": "加入游戏",
   "decks": "牌组",
-  "newDeck": "新牌组",
+  "newDeck": {
+    "save": "保存",
+    "saveAndUse": "保存并使用",
+    "useWithoutSaving": "不保存，直接使用",
+    "unimplementedError": "无法创建牌组，以下卡牌尚未实装："
+  },
   "deckSyncedSuccessfully": "牌组同步成功",
   "areYouSureDeleteDeck": "你确定要删除这个牌组吗？",
   "noDecksMatchFilters": "没有符合过滤条件的牌组。",
@@ -235,7 +240,7 @@
   },
   "lobby": {
     "scenario": "冒险",
-    "campaign": "战役",
+    "campaign": "剧本",
     "multiplayer": "多人游戏",
     "waitingForPlayers": "等待玩家加入",
     "inviteOthers": "邀请其他玩家加入：",
@@ -288,14 +293,14 @@
   },
   "scenarioSettings": {
     "title": "单场冒险模式设置",
-    "noSettings": "此剧本目前没有可用的单场冒险模式设置。",
+    "noSettings": "此冒险目前没有可用的单场冒险模式设置。",
     "begin": "开始"
   },
   "campaignSettings": {
     "title": "剧本设置"
   },
   "sideStory": {
-    "selectSideScenario": "选择要添加的支线剧情 "
+    "selectSideScenario": "选择要添加的支线冒险"
   },
   "partners": {
     "expeditionTeam": "探险队",
@@ -405,12 +410,6 @@
     "sortName": "排序: 名称",
     "sortClass": "排序: 职阶"
   },
-  "newDeck": {
-    "save": "保存",
-    "saveAndUse": "保存并使用",
-    "useWithoutSaving": "不保存，直接使用",
-    "unimplementedError": "无法创建牌组，以下卡牌尚未实装："
-  },
   "claimSeat": {
     "unableToLoad": "无法加载游戏详细信息。",
     "goToGame": "前往游戏 →",
@@ -474,7 +473,7 @@
     "travelHere": "旅行至此",
     "travelTime": "旅行时间",
     "sideStoryLocation": "这是一个支线剧情地点。",
-    "sideStoryDescription": "如果你想在这个战役中添加一个支线剧情，你可以旅行到这个地点，并花费等同于游玩该支线剧情通常所需经验的额外时间。",
+    "sideStoryDescription": "如果你想在这个剧本中添加一个支线剧情，你可以旅行到这个地点，并花费等同于游玩该支线剧情通常所需经验的额外时间。",
     "travelWithExpeditedTicket": "使用特快车票旅行（1 次）",
     "travelWithoutStopping": "旅行至此但不停留",
     "locationLocked": "该地点当前已锁定。"

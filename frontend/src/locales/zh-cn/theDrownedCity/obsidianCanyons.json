@@ -17,10 +17,10 @@
     "resign": "你从古老穹顶攀下，离开受风暴蹂躏的天际线。"
   },
   "hangingShip": {
-    "slide": "将悬船滑入相邻的开放天空"
+    "slide": "将悬挂船只滑入相邻的开放天空"
   },
   "magneticSpires": {
-    "swap": "选择至多2格外的一处开放天空，与磁力尖塔交换位置"
+    "swap": "选择至多2格外的一处开放天空，与磁性尖塔交换位置"
   },
   "lostInTheClouds": {
     "eachInvestigatorTakesHorror": "每位调查员承受2点直接恐惧"

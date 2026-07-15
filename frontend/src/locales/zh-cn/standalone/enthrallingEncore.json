@@ -1,29 +1,29 @@
 {
   "intro": {
-    "title": "摄魂返场",
+    "title": "惑人返场",
     "body": "<p>人生如戏，每个人都有自己的角色。自从《黄衣之王》在阿卡姆的沃德剧院上演以来，已经过去多久了？你说不清。你一直把那件事抛在脑后，将它视为无法解释却异常鲜明的幻觉。可随后，你听见了那旋律。起初它出现在梦中，那部剧的管弦乐配乐如今只剩一把小提琴在演奏。它将你引向一直避开的阿卡姆角落：沃德剧院。剧院阴暗而安静，唯有那支只有你能听见的旋律仍在回荡……</p>"
   },
   "setup": {
-    "gatherSets": "找出下列遭遇组中的所有卡牌：*摄魂返场*、*拉开帷幕*、*腐朽与污秽*、*幻觉*、*萦绕不散*、*食尸鬼*、*恐惧来袭*与*老鼠*。除*摄魂返场*外，所有遭遇组均可在内核系列与《卡尔克萨之路》剧本扩展中找到。将*拉开帷幕*遭遇组原有的冒险辅助卡、场景和密谋移出游戏。<section class='encounter-sets'><img src='{setImgPath}/curtain-call.png' /><img src='{setImgPath}/decay-and-filth.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/hauntings.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/rats.png' /></section>",
-    "propsDeck": "构建道具牌堆：从你的收藏中，每个阵营（{'{'}guardian{'}'}、{'{'}seeker{'}'}、{'{'}rogue{'}'}、{'{'}mystic{'}'}与{'{'}survivor{'}'}）各找出3张0级、非[[盟友]]支援，共15张卡牌（若可能，不要重复）。将这些卡牌混洗组成道具牌堆，放在冒险辅助卡牌旁。（使用规则说明书建议的清单：体能训练、急救、砍刀、旧日传说书、超凡感知、医学教本、窃盗、妙手空空、强力一击、神圣玫瑰念珠、占卜、奥术研究、棒球棒、兔子脚和深度挖掘。）",
-    "removeCards": "将苍白面具之人和皇室特使移出游戏。",
-    "setAside": "将每张大厅门道和每张后台门道放在一边，位于场外。",
+    "gatherSets": "找出下列遭遇组中的所有卡牌：*惑人返场*、*拉开帷幕*、*腐朽与污秽*、*幻觉*、*萦绕不散*、*食尸鬼*、*恐惧打击*与*老鼠*。除*惑人返场*外，所有遭遇组均可在内核系列与《卡尔克萨之路》剧本扩展中找到。将*拉开帷幕*遭遇组原有的冒险参考卡牌、场景和密谋移出游戏。<section class='encounter-sets'><img src='{setImgPath}/curtain-call.png' /><img src='{setImgPath}/decay-and-filth.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/hauntings.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "propsDeck": "构建道具牌堆：从你的收藏中，每个阵营（{'{'}guardian{'}'}、{'{'}seeker{'}'}、{'{'}rogue{'}'}、{'{'}mystic{'}'}与{'{'}survivor{'}'}）各找出3张0级、非[[盟友]]支援，共15张卡牌（若可能，不要重复）。将这些卡牌混洗组成道具牌堆，放在冒险参考卡牌旁。（使用规则说明书建议的清单：体能训练、急救、砍刀、智慧古书、超凡感知、医学教科书、窃盗、妙手空空、沉重打击、神圣玫瑰珠、占卜、神秘研究、棒球棒、幸运兔脚和深度挖掘。）",
+    "removeCards": "将苍白面具下的男子和皇家密使移出游戏。",
+    "setAside": "将每张前厅走廊门口和每张后台走廊门口放在一边，位于场外。",
     "placeLocations": "将剧院、大厅、阳台和后台地点放置入场。",
     "startAt": "每位调查员从剧院开始游戏。",
-    "sinisterSoloist": "将阴险独奏者敌人放置入场，位于后台。"
+    "sinisterSoloist": "将邪恶独奏者敌人放置入场，位于后台。"
   },
   "tokens": {
     "easyStandard": {
       "skull": "-X。X为小节数。",
       "cultist": "-2。如果你失败，你必须花费1个线索或承受1点伤害。",
       "tablet": "-3（若你控制的卡牌中有3个或更多阵营，则改为-5）。",
-      "elderThing": "-2。若阴险独奏者在你所在地，抽取另一枚标记。"
+      "elderThing": "-2。若邪恶独奏者在你所在地，抽取另一枚标记。"
     },
     "hardExpert": {
       "skull": "-X。X比小节数多1。",
       "cultist": "-3。如果你失败，你必须花费1个线索并承受1点伤害。",
       "tablet": "-4（若你控制的卡牌中有3个或更多阵营，则改为-6）。",
-      "elderThing": "-3。若阴险独奏者在你所在地，改为自动失败。"
+      "elderThing": "-3。若邪恶独奏者在你所在地，改为自动失败。"
     }
   },
   "label": {

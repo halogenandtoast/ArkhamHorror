@@ -16,7 +16,7 @@
   "cluesToSpend": "要花费的线索",
   "centralChamber": {
     "moveToConnecting": "移动至一个连接地点",
-    "motherAttacks": "母体攻击你"
+    "motherAttacks": "主母攻击你"
   },
   "apiaryEntranceBeckoningLight": {
     "resign": "撤退。"
@@ -39,7 +39,7 @@
     },
     "noResolution": {
       "title": "未达成结局",
-      "body": "你逃出腐烂的隧道，从脖子上抠出一只扭动的虫子。但愿你没被感染……"
+      "body": "<p>_若未达成结局：_</p>你逃出腐烂的隧道，从脖子上抠出一只扭动的虫子。但愿你没被感染……"
     }
   }
 }

@@ -5,6 +5,7 @@ module Arkham.Enemy where
 import Arkham.Card
 import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Classes
+import Arkham.Enemy.DefeatedProxy (toDefeatedEnemyProxy)
 import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Modifiers
@@ -38,6 +39,17 @@ lookupEnemy :: HasCallStack => CardCode -> EnemyId -> CardId -> Enemy
 lookupEnemy cardCode = case lookup cardCode allEnemies of
   Nothing -> error $ "Unknown enemy (lookupEnemy): " <> show cardCode <> "\n\n" <> prettyCallStack callStack
   Just (SomeEnemyCard a) -> \e c -> Enemy $ cbCardBuilder a c e
+
+-- | Rebuild an 'Enemy' from the attrs recorded when it was defeated.
+--
+-- Unlike 'lookupEnemy' this tolerates a card code with no enemy builder, because
+-- enemy-locations defeat as enemies and land in @ScenarioDefeatedEnemies@ too.
+-- 'lookupEnemy' keeps its error: it builds enemies at spawn, where an inert
+-- fallback would mask a real bug.
+lookupDefeatedEnemy :: EnemyAttrs -> Enemy
+lookupDefeatedEnemy a = case lookup (toCardCode a) allEnemies of
+  Just (SomeEnemyCard b) -> overAttrs (const a) $ Enemy $ cbCardBuilder b (toCardId a) (toId a)
+  Nothing -> toDefeatedEnemyProxy a
 
 instance FromJSON Enemy where
   parseJSON = withObject "Enemy" $ \o -> do

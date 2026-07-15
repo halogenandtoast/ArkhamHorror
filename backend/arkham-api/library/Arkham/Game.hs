@@ -53,7 +53,7 @@ import Arkham.Debug
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect.Types
-import Arkham.Enemy (lookupEnemy)
+import Arkham.Enemy (lookupDefeatedEnemy)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), enemyClues, enemyDamage, enemyDoom)
 import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
 import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
@@ -3626,9 +3626,7 @@ getEnemiesMatching :: (HasCallStack, HasGame m, Tracing m) => EnemyMatcher -> m 
 getEnemiesMatching matcher' = do
   case matcher' of
     DefeatedEnemy matcher -> do
-      let
-        wrapEnemy (defeatedEnemyAttrs -> a) =
-          overAttrs (const a) $ lookupEnemy (toCardCode a) (toId a) (toCardId a)
+      let wrapEnemy = lookupDefeatedEnemy . defeatedEnemyAttrs
       allDefeatedEnemies <- map wrapEnemy . toList <$> scenarioField ScenarioDefeatedEnemies
       -- Defeated enemies may be fully removed from play by the time this query
       -- runs (e.g. the IfEnemyDefeated window resolves post-discard), so field

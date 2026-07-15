@@ -4,6 +4,7 @@
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
 import Arkham.Ability as X
+import Arkham.Behavior.Defeat qualified as Defeat
 import Arkham.Behavior.Evade qualified as Evade
 import Arkham.Behavior.Fight qualified as Fight
 import Arkham.Behavior.Heal qualified as Heal
@@ -43,7 +44,6 @@ import Arkham.Classes.HasGame
 import Arkham.Constants
 import Arkham.Damage
 import Arkham.DamageEffect
-import Arkham.DefeatedBy
 import Arkham.Exhaust (Exhaustion (..), mkExhaustion)
 import Arkham.Fight
 import Arkham.ForMovement
@@ -1757,40 +1757,29 @@ instance RunMessage EnemyAttrs where
         push $ Arkham.Message.Defeated (EnemyTarget eid) (toCardId a) source (setToList $ toTraits a)
       pure a
     Arkham.Message.Defeated (EnemyTarget eid) _ source _ | eid == toId a -> do
-      mModifiedHealth <- fieldMayJoin EnemyHealth (toId a)
-      let
-        defeatedByDamage = maybe False (enemyDamage a >=) mModifiedHealth
-        defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
+      defeatedBy <- Defeat.classifyDefeat source (enemyDamage a) <$> fieldMayJoin EnemyHealth (toId a)
       miid <- getSourceController source
-      whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy eid]
       mloc <- field EnemyLocation a.id
 
       lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
-      pushAll
-        $ [whenMsg, When msg]
-        <> ( case miid of
-               Just iid -> [PlaceKey (toTarget iid) ekey | ekey <- toList enemyKeys]
-               Nothing -> case mloc of
-                 Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
-                 _ -> []
-           )
-        <> [Do msg, After msg]
+      let
+        keyMsgs = case miid of
+          Just iid -> [PlaceKey (toTarget iid) ekey | ekey <- toList enemyKeys]
+          Nothing -> case mloc of
+            Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
+            _ -> []
+      pushAll =<< Defeat.openDefeat eid defeatedBy miid msg keyMsgs
       pure
         $ a
         & (keysL .~ mempty)
         & (lastKnownLocationL %~ (mloc <|>))
     Do (Arkham.Message.Defeated (EnemyTarget eid) _ source _) | eid == toId a -> do
-      mModifiedHealth <- fieldMayJoin EnemyHealth (toId a)
-      let
-        defeatedByDamage = maybe False (enemyDamage a >=) mModifiedHealth
-        defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
+      defeatedBy <- Defeat.classifyDefeat source (enemyDamage a) <$> fieldMayJoin EnemyHealth (toId a)
       miid <- getSourceController source
       victory <- getVictoryPoints eid
       mods <- getModifiers a
       vengeance <- getVengeancePoints eid
-      afterMsg <- checkWindows [mkAfter $ Window.IfEnemyDefeated miid defeatedBy eid]
-      afterDefeatMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
       let
         placeInVictory = isJust (victory <|> vengeance) && not a.placement.isSwarm && LoseVictory `notElem` mods
         victoryMsgs =
@@ -1800,14 +1789,13 @@ instance RunMessage EnemyAttrs where
         -- Doomed keyword: when defeated, place 1 doom on the agenda (can advance)
         doomedMsgs =
           guard (Set.member Keyword.Doomed (cdKeywords (toCardDef a))) *> [PlaceDoomOnAgenda 1 CanAdvance]
+        disposal =
+          victoryMsgs
+            <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
+            <> defeatMsgs
+            <> doomedMsgs
 
-      pushAll
-        $ afterDefeatMsg
-        : victoryMsgs
-          <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
-          <> defeatMsgs
-          <> doomedMsgs
-          <> [afterMsg]
+      pushAll =<< Defeat.closeDefeat eid defeatedBy miid disposal
 
       case a.placement of
         AsSwarm eid' _ -> do

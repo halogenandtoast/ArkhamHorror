@@ -2942,6 +2942,7 @@ library
       Arkham.Enemy.Cards.Zealot
       Arkham.Enemy.Cards.ZealotOfParadise
       Arkham.Enemy.Creation
+      Arkham.Enemy.DefeatedProxy
       Arkham.Enemy.Enemies
       Arkham.Enemy.Helpers
       Arkham.Enemy.Import.Lifted

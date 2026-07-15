@@ -190,13 +190,14 @@ watchEffect(() => {
 
   const playerIds = [...new Set(allTargets ? playersWithTargets : playersWithForced)]
 
+  if (userPicked.value) return
+
   if (playerIds.length == 0) {
     const investigator = Object.values(props.players).find(i => i.playerId === props.playerId)
     if (investigator && investigator.id == props.activePlayerId) {
       selectedTab.value = props.playerId
       return
     }
-    if (userPicked.value) return
   }
 
   // In true multiplayer each player controls their own view and shouldn't be
@@ -213,7 +214,6 @@ watchEffect(() => {
       selectedTab.value = playerIds[0]
       return
     }
-    if (userPicked.value) return
     selectedTab.value = props.playerId
     return
   }

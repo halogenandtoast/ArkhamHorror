@@ -1,0 +1,44 @@
+{
+  "heading": "第一部分",
+  "specialRules": [
+    {
+      "title": "入梦之阶",
+      "body": "<p class='basic'>本冒险开始时，没有遭遇牌堆。因此，调查员不能使用任何会以任何方式与遭遇牌堆互动的能力。（例如，检索遭遇牌堆、从遭遇牌堆抽取卡牌，或查看遭遇牌堆中卡牌的效果都会失败。）</p><p class='basic'>此外，场景1a具有文本：“在神话阶段，不要从遭遇牌堆抽取卡牌。”</p><p class='basic'>在冒险的某一时刻，调查员会被指示组建遭遇牌堆；此后上述文本不再生效，调查员可如常与遭遇牌堆互动。</p>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. 其中X等于你手牌张数的一半(向上取整)。",
+      "cultist": "-X. 其中X为已揭示的魔幻森林地点数量。",
+      "tablet": "-2. 如果你失败且本次检定为对蜂拥敌人的攻击或躲避尝试，其增加1张蜂拥卡牌。"
+    },
+    "hardExpert": {
+      "skull": "-X. 其中X等于你手牌张数。",
+      "cultist": "-X. 其中X为已揭示的 _树林_ 地点数量。",
+      "tablet": "-2. 如果本次检定为对蜂拥敌人的攻击或躲避尝试，其增加1张蜂拥卡牌。"
+    }
+  },
+  "thePath": {
+    "label": {
+      "stepBack": "退后一步，旁观这超现实的一幕。",
+      "interrupt": "打断那只伤痕累累的猫，亲自处理此事。"
+    }
+  },
+  "label": {
+    "doNotReplace": "不替换",
+    "doNotTakeAny": "不选取任何卡牌",
+    "replaceWeaknessQuestion": "将基础弱点替换为随机弱点，并承受1点你选择的创伤？",
+    "chooseUpToTacticSupply": "选择至多{count}张战术和/或补给卡牌；你在本冒险开始时将其作为额外的起始手牌。"
+  },
+  "enchantedWoodsTheMoonTree": {
+    "label": {
+      "loseAllActions": "失去所有剩余行动"
+    }
+  },
+  "journeyThroughTheGates": {
+    "label": {
+      "testWillpower": "检定{'{'}willpower{'}'}（3），以记起这一切只是梦境",
+      "doNotTest": "不进行检定"
+    }
+  }
+}

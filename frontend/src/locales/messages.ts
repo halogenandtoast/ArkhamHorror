@@ -7,6 +7,7 @@ const localeLoaders = {
   ko: () => import('@/locales/ko'),
   es: () => import('@/locales/es'),
   zh: () => import('@/locales/zh'),
+  'zh-cn': () => import('@/locales/zh-cn'),
 } satisfies Record<UiLocale, () => Promise<unknown>>
 
 export type SupportedLocale = keyof typeof localeLoaders

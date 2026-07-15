@@ -1,0 +1,101 @@
+{
+  "specialRules": [
+    {
+      "title": "淹没标记",
+      "body": "@:theDrownedCity.additionalRulesAndClarifications.floodTokens"
+    },
+    {
+      "title": "神器",
+      "body": "@:theDrownedCity.additionalRulesAndClarifications.artifacts"
+    },
+    {
+      "title": "异星字符",
+      "body": "@:theDrownedCity.additionalRulesAndClarifications.alienGlyphs"
+    },
+    {
+      "title": "新关键词",
+      "body": "@:theDrownedCity.newKeywords.body"
+    }
+  ],
+  "noAir": "你没有找到空气。承受5点直接伤害。",
+  "intro": {
+    "title": "苏醒的深渊",
+    "body": "“……梦魇死城拉莱耶，是由黑暗群星上渗透下来的可憎巨怪在史前难以衡量的亘古筑成。伟大的克苏鲁与其部属长眠于此，隐匿在绿色粘液的墓穴中。在无数个轮回之后，它们最终将心思远播，给敏感之人的梦境带来了恐惧，不可违逆地呼唤忠实的信徒踏上解放与归位的朝圣之旅。”\n<right>——H.P.洛夫克拉夫特，《克苏鲁的呼唤》</right>"
+  },
+  "prologue": {
+    "title": "序幕",
+    "body": "<fancy>4月15日</fancy>\n有一阵子不对头了。天气冷得不正常，大雪、大雨和大雾让新英格兰的阴郁挥之不去。日常生活的方方面面都变得焦躁不安。街头巷尾的口角变成大打出手。关闭的大门后面传来压抑的叫嚷。米大翘课的学生为数不少。阿卡姆人都切身体会到：事情不一样了，事情不对劲了。"
+  },
+  "additionalRulesAndClarifications": {
+    "title": "附加规则与说明",
+    "floodTokens": "<h3>淹没标记</h3><p class='basic'>本战役中，卡牌效果可以淹没地点。地点有未淹没、部分淹没和完全淹没三种等级；使用本扩展的双面淹没标记记录。淹没等级本身没有固有效果，但部分效果会在淹没地点、尤其完全淹没地点改变或增强。</p><ul><li>没有淹没标记的地点为未淹没。</li><li>地点部分淹没时，将淹没标记的部分淹没面朝上置于其上。</li><li>地点完全淹没时，将完全淹没面朝上的标记置于其上；若已部分淹没，则翻转其标记。</li><li>淹没等级“提高”时，未淹没变为部分淹没，或部分淹没变为完全淹没；完全淹没不能再提高。</li><li>淹没等级“降低”时，完全淹没变为部分淹没，或部分淹没变为未淹没；变为未淹没时移除标记。</li><li>就卡牌效果而言，部分与完全淹没地点都视为“已淹没”。</li></ul>",
+    "artifacts": "<h3>神器</h3><p class='basic'>调查员可在《淹灭之城》战役中获得带有_神器_特征的剧情支援。神器与普通支援相似，但遵循下列例外：</p><ul><li>神器绝不加入调查员牌组；冒险结算后，将场上所有神器放回游戏盒。</li><li>设置时若指示调查员以一张已获得的神器开始游戏，只能选择冒险日志“已获得的神器”栏中勾选的神器。</li><li>神器有独特牌背、没有费用、不能离场，也不能被冒险效果选择弃掉。</li><li>部分神器带有异星字符；除非调查员已翻译该神器上全部字符，其下文本均视为空白。</li><li>控制神器的调查员被击败时，不将神器移出游戏，而是交给最近的幸存调查员控制。</li></ul>",
+    "alienGlyphs": "<h3>异星字符</h3><p class='basic'>战役中可能要求调查员翻译冒险日志第二页的一个字符。按游戏指示，将译文写在该字符正下方的空白处。</p><ul><li>字符含义本身没有固有游戏效果。</li><li>部分神器带有异星字符；除非调查员已翻译该神器上全部字符，其下文本均视为空白。</li><li>《淹灭之城》多数冒险会要求将字符卡放在一旁，位于场外。</li></ul>",
+    "newKeywords": "<h3>警戒</h3><p class='basic'>带有警戒关键词的敌人被调查员尝试闪避时，若该检定失败，在结算全部结果后，该敌人攻击该调查员。警戒攻击后敌人不会耗竭；无论是否与该调查员交战都会触发。</p><h3>巡逻</h3><p class='basic'>敌军阶段流程步骤3.2中，每名就绪且未交战的巡逻敌人沿最短路径向其指定目标地点移动一格；目标说明位于“巡逻”后的括号中。</p><h3>不屈</h3><p class='basic'>敌军阶段流程步骤3.3后，每名本阶段已攻击过的“不屈”敌人（即使攻击被取消）重整，并再次攻击与其交战的调查员。</p><h3>封印</h3><p class='basic'>带有封印关键词的卡牌入场时，作为额外费用，其控制者必须从混乱袋找出指定混乱标记并放在该卡上。被封印标记不视为在混乱袋中，不能作为技能检定或能力的一部分被揭示。</p>"
+  },
+  "newKeywords": {
+    "title": "新关键词",
+    "body": "<h3>警戒</h3><p class='basic'>带有警戒关键词的敌人被调查员尝试闪避时，若该检定失败，在结算全部结果后，该敌人攻击该调查员。警戒攻击后敌人不会耗竭；无论是否与该调查员交战都会触发。</p><h3>巡逻</h3><p class='basic'>敌军阶段流程步骤3.2中，每名就绪且未交战的巡逻敌人沿最短路径向其指定目标地点移动一格；目标说明位于“巡逻”后的括号中。</p><h3>不屈</h3><p class='basic'>敌军阶段流程步骤3.3后，每名本阶段已攻击过的“不屈”敌人（即使攻击被取消）重整，并再次攻击与其交战的调查员。</p><h3>封印</h3><p class='basic'>带有封印关键词的卡牌入场时，作为额外费用，其控制者必须从混乱袋找出指定混乱标记并放在该卡上。被封印标记不视为在混乱袋中，不能作为技能检定或能力的一部分被揭示。</p>"
+  },
+  "glyphs": {
+    "title": "异星字符",
+    "runes": {
+      "a": "深渊",
+      "b": "植物",
+      "c": "古老者",
+      "d": "海浪",
+      "e": "黑暗",
+      "f": "群星",
+      "g": "生命",
+      "h": "伊库勒刻特",
+      "i": "克苏鲁",
+      "j": "睡眠",
+      "k": "梦境",
+      "l": "手臂",
+      "m": "大地",
+      "n": "毁灭",
+      "o": "力量",
+      "p": "天气",
+      "q": "手",
+      "r": "时间",
+      "s": "装置",
+      "t": "空气",
+      "u": "女儿们",
+      "v": "陌生人",
+      "w": "寄生物",
+      "x": "总和",
+      "y": "知识",
+      "z": "城市"
+    }
+  },
+  "key": {
+    "rubyWonTheBet": "露比赢得赌局。",
+    "rubyLostTheBet": "露比输掉赌局。",
+    "theInvestigatorsDiscoveredAnAlienLanguage": "调查员们发现了一种异星语言。",
+    "walkInFaith": "追随信仰",
+    "toeTheLine": "安分守己",
+    "noPlaceLikeHome": "吾家可归",
+    "goodMoney": "价值千金",
+    "doNoHarm": "医者仁心",
+    "proveYourWorth": "证明价值",
+    "dreamsOfDestruction": "毁灭之梦",
+    "plumbTheDepths": "追本溯源",
+    "theExpeditionHeadedWest": "探险队向西进发。",
+    "theExpeditionHeadedEast": "探险队向东进发。",
+    "theExpeditionHelpedThePilgrim": "探险队帮助了朝圣者。",
+    "theExpeditionLeftThePilgrim": "探险队离开了朝圣者。",
+    "barrierNode": "屏障节点",
+    "obsidianClaw": "黑曜石之爪",
+    "shardOfYchlecht": "伊库勒刻特碎片",
+    "tidalTablet": "潮汐碑匾",
+    "grislyMask": "骇人“面具”",
+    "horrorInClay": "陶中恐怖",
+    "thePowerWasDiverted": "力量被转移了。",
+    "theInnerSanctumWasUnsealed": "内殿的封印被解除。",
+    "yourAlliesHaveAPlan": "你的盟友已有计划。",
+    "theInvestigatorsStoodTogether": "调查员同心协力。",
+    "cthulhuWasDrivenAway": "克苏鲁被赶跑了。",
+    "cthulhuAnnihilatedTheExpedition": "克苏鲁毁灭了探险队。",
+    "cthulhuWasBanished": "克苏鲁被驱除."
+  }
+}

@@ -1,11 +1,10 @@
-export const uiLocales = ['en', 'fr', 'it', 'ko', 'es', 'zh'] as const
+export const uiLocales = ['en', 'fr', 'it', 'ko', 'es', 'zh', 'zh-cn'] as const
 
 export type UiLocale = (typeof uiLocales)[number]
 
 export function uiLocaleFor(language: string): UiLocale {
   const normalized = language.toLowerCase()
-  const candidate = normalized === 'zh-cn' ? 'zh' : normalized
-  return uiLocales.includes(candidate as UiLocale) ? (candidate as UiLocale) : 'en'
+  return uiLocales.includes(normalized as UiLocale) ? (normalized as UiLocale) : 'en'
 }
 
 export function preferredLanguage(browserLocale: string): string {

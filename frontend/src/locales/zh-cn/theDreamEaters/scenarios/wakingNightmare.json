@@ -1,0 +1,26 @@
+{
+  "heading": "第一部分",
+  "tooltips": {
+    "waitingRoom": {
+      "resign": "你逃离医院，将同伴留在身后。"
+    }
+  },
+  "privateRoom": {
+    "label": {
+      "payClues": "支付1{'{'}perPlayer{'}'}个线索",
+      "doNotPay": "不支付"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 -1(如果你与 _职工_ 敌人交战，改为-3)。",
+      "cultist": "再抽一个混乱标记。如果你检定失败且当前密谋为密谋2或密谋3，进行一次蛛群滋生检定。",
+      "elderThing": "-X. 其中X为蛛巢地点数量。"
+    },
+    "hardExpert": {
+      "skull": "-2 -1(如果你与 _职工_ 敌人交战，改为-4)。",
+      "cultist": "再抽一个混乱标记。如果当前密谋为密谋2或密谋3，进行一次蛛群滋生检定。",
+      "elderThing": "-X. 其中X为蛛巢地点数量+1"
+    }
+  }
+}

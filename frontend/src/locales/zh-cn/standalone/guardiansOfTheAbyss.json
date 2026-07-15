@@ -1,0 +1,94 @@
+{
+  "label": {
+    "lookAtExplorationDeck": "查看探索牌堆顶的卡牌",
+    "lookAtEncounterDeck": "查看遭遇牌堆顶的卡牌",
+    "nassor": {
+      "addStrength": "使深渊之力增加1点",
+      "extraDamage": "纳索尔本次攻击造成+{count}点伤害和+{count}点恐惧"
+    },
+    "theBlackWind": {
+      "addStrength": "使深渊之力增加1点，并将黑风加入胜利区。",
+      "discard": "弃掉黑风并抽取遭遇牌堆顶的一张卡牌替代它。本回合余下时间内，你所有技能-1。"
+    },
+    "fateOfTheDreamers": {
+      "removeStrength": "使深渊之力减少2点。",
+      "addStrength": "使深渊之力增加2点。"
+    },
+    "prisonersOfConquest": {
+      "freeTheCreatures": "检定{agility}（4）以解救生物。",
+      "slayTheCreatures": "检定{combat}（4）以杀死生物。"
+    },
+    "ruinsOfSarkomand": {
+      "speakToTheDenizens": "检定{intellect}（3）以与栖居在这些废墟中的类人生物交谈。",
+      "blockTheTrapdoor": "检定{combat}（3）以封住活板门。"
+    },
+    "effigyOfNodens": {
+      "entreatForAid": "检定{willpower}（2）以恳求这座雕像所刻画的存在协助你。",
+      "overthrowTheStatue": "检定{combat}（2）以推倒雕像。"
+    },
+    "usurpTheNight": {
+      "proceed": "阅读结局3",
+      "flipBack": "将此卡翻回敌人面",
+      "acceptMercy": "接受夏拉的怜悯并立即撤退",
+      "refuse": "拒绝"
+    },
+    "theHourOfJudgment": {
+      "destroyNeith": "彻底毁灭奈丝。选择此项代表你相信仍受永恒沉睡诅咒的人将被解放。",
+      "spareNeith": "饶过奈丝并听她说话。选择此项代表你相信能进一步了解奈丝称为夏拉的那个人。"
+    },
+    "defeatingXzharah": {
+      "proceed": "阅读结局2",
+      "flipBack": "将此场景翻回“a”面"
+    }
+  },
+  "intoTheGate": {
+    "ankh": "<p>*你的安卡护符绽放出刺目的光芒，令夏拉退缩。“所以，奈丝抛弃了我们！”夏拉嘶声说道。*</p>"
+  },
+  "removeStrengthFromTheAbyss": "使深渊之力减少1点。",
+  "theTranslatorsEvidence": {
+    "benefit": "<p>*你将石板带给艾尔·马斯里博士，她尽力将其译出：“当抉择作出，祂将从圣地的一千场献祭中获得力量。”她眨了几下眼，努力理解其中的含义。“现在有多少昏迷病人？”她睁大眼睛问道。*</p>"
+  },
+  "theSupplicantsEvidence": {
+    "benefit": "<p>*摩尔博士试图徒步逃出城市时，你终于将他逼入绝境。“很聪明，”他承认，“但已经太迟了。把我关起来也无所谓。梦者将被献祭，我们的天选者会带领我们进入新时代。”然而数小时后，他却哀求你放他出城：“求你，收割者来了！奈丝要来找我们所有人。我们都会被献祭，你不明白吗？你和我，所有人！趁还来得及，我们都得逃离这座城！”*</p>"
+  },
+  "thePriestesssEvidence": {
+    "benefit": "<p>*你用娜迪娅给你的钥匙进入那处标记过的住所。出乎意料的是，里面空无一人，只有腐烂与陈旧皮革的淡淡臭味。地下室散落着旧书，以及兄弟会和其众多代理人留下的记录。查阅它们需要时间，但线索终归是线索。*</p>"
+  },
+  "theSalesmansEvidence": {
+    "benefit": "<p>*法里德把金制神像塞进背包，笑得合不拢嘴。趁他还没兴奋过头，你追问情报。“听着，他们许诺给我超乎想象的财富。连我也有个价码，明白吗？”他无奈地摊开双手。“我给你看看账目。过去几个月我做了不少‘生意’，它们会把你指向正确方向。”*</p>"
+  },
+  "theAssassinsEvidence": {
+    "benefit": "<p>*刺客身负致命伤，脸上却仍挂着邪恶的笑容。“那一天就要来了，”他在咳嗽间隙说道，“以为杀了我就能阻止它？蠢货！野兽会吞噬你们所有人！”他用最后一口气发出狂笑，随后寂静无声。*</p><p>*趁旁人还没发现尸体，你迅速搜查他的随身物品。在一堆怪异对象中，你找到一本小小的皮面日记，上面写着晦涩的铭文：*</p><p class='center'><span class='wolgast' style='line-height:1em;'>*我们的贡礼浸透深渊之刃<br>千枚灵魂永不苏醒<br>以此，天选者终将崛起<br>那一天已迫在眉睫！*</span></p>"
+  },
+  "theProfessorsEvidence": {
+    "benefit": "<p>*你将饰物放在教授桌上。他戴上单片眼镜，仔细端详。“有意思！”他惊叹道，“这只能来自皇家墓穴中的一座特定陵墓，大多数学者都不相信它存在。”他站起身同你握手。“给我些时间继续研究。若我们都能活着离开，或许我还能重新提交论文。”他阴郁地笑道。*</p>"
+  },
+  "rules": {
+    "storyCards": {
+      "title": "剧情卡",
+      "body": "剧情卡是在本冒险出现的一种新的卡牌类型。此类卡牌只出现在另一冒险卡的背面，作为另一种叙述的形式出现。在你收到指示要结算一张剧情卡时，阅读该卡上的剧情文本然后结算其游戏文本(如果有的话)。\n<i>(注意：当一个在场的地点或敌人翻至剧情卡一面时，该地点或敌人在剧情卡结算时依然视为在场。)</i>"
+    },
+    "strengthOfTheAbyss": {
+      "title": "深渊之力",
+      "body": "在本场冒险中，冒险辅助卡上的资源数量表示当前深渊之力的强度。当你受到指示，要增强或减弱深渊之力时，相应地调整冒险辅助卡上的资源标记数目。深渊之力本身没有效果；但是，某些遭遇卡的效果根据当前的深渊之力，可能会改变或变得更强。要当心——深渊之力越是强大，你要面临的阻力也会越大。要是它变得过于强大，你就会败在深渊守卫的手上。"
+    },
+    "takenByTheAbyss": {
+      "title": "“坠入深渊”",
+      "body": "如果一个效果声明一位被击败的调查员或一个被击败的[[盟友]]支援<i>“坠入深渊”</i>，该角色惨遭诅咒，陷入长久的沉睡。每有一位调查员或一个[[盟友]]支援<i>“坠入深渊”</i> ，深渊之力增强1点。然后，如果这是一张独特卡牌，在冒险日志上记录下<i>“(卡牌名)坠入深渊。”</i>坠入深渊的调查员视为阵亡或发疯。此外，玩家不能再打出<i>坠入深渊</i>的任何独特[[盟友]]支援，直到该剧本结束。"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.storyCards.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.storyCards.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.body"
+    }
+  ]
+}

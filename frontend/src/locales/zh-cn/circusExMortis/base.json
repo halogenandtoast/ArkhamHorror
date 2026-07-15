@@ -1,0 +1,47 @@
+{
+  "name": "亡者马戏团",
+  "intro": "<h1>新月阴影下</h1><p>新月马戏团仅在阿卡姆演出一夜，而失踪案与离奇死亡一路随团沿海蔓延。《亡者马戏团》是 Tyler Gotch 为《诡镇奇谈：卡牌版》设计的八场爱好者战役。</p>",
+  "additionalRules": {
+    "title": "附加规则：月亮标记",
+    "moonTokens": "<p class='basic'>本战役引入新的混乱标记：月亮 ({'{'}moon{'}'}) 标记。在《亡者马戏团》中，月亮影响重大；月亮标记代表其诡异影响的强度与严重程度。</p><ul><li>技能检定中揭示月亮标记时：“0。将此标记封印在你的调查员卡上，再揭示一个标记。”</li><li>封印在调查员卡上的月亮标记本身没有效果，但部分卡牌会参照是否有月亮标记被封印，或封印的数量。</li><li>每轮结束时，你调查员卡上每有一个月亮标记，必须选择：<ul><li>该标记继续封印于调查员卡上。</li><li>承受1点伤害或1点恐惧，然后释放该标记。</li></ul></li><li>技能检定外揭示的月亮标记本身没有效果，除非卡牌另有说明。</li></ul>"
+  },
+  "prologue": {
+    "title": "序幕",
+    "body": "<p class='center'><b>****** 即将登场：新月马戏团！ ******</b></p><p class='center'><b>快来欣赏世界上最精彩的演出！</b></p><p class='center'><b>惊险杂技、无上力量与技艺、活着的不可思议生物！</b></p><p class='center'><b>本周日来到你的城镇，仅演一夜！</b></p><p class='center'><b>** 切勿错过此生仅有的机会！ **</b></p><p><i>1923年8月26日，星期日，马萨诸塞州阿卡姆。</i></p><p>新月马戏团近一周来一直是全城话题。巡回马戏团通常只为利润拜访大城市，阿卡姆人也很少有余裕随兴去波士顿、纽约或费城。就连法兰西山的上流人士都开玩笑说想去看一眼。你也对马戏团感兴趣，却不是出于那些寻常理由。</p>",
+    "minnie": "<p>《阿卡姆广告报》的明妮·克莱因最先让你注意到这些巧合。你在维尔玛餐厅找到她，她拿着记事本，饥饿的眼神显然不是冲着午餐特餐。“看看这个，”她用铅笔指着记录说，“新月马戏团原本在南方大城市巡演，从没越过孟菲斯；一个月前却突然沿海北上，专挑小地方，阿卡姆是他们自萨凡纳以来最大的站。”</p><p>她接着指出：马戏团停留的每个城镇都发生失踪与离奇死亡，而看过演出的人没有人记得任何具体内容；相隔三州的两人甚至向当地报纸说了完全一样的话。这足以让你调查。你拿着票，做好各种准备，前往马戏团；夏夜仍亮，满月却已升起。</p>",
+    "addMoonTokens": "将3个 {'{'}moon{'}'} 标记加入混乱袋，直至战役结束。"
+  },
+  "moonToken": {
+    "label": {
+      "endOfRoundQuestion": "你的调查员卡上封印了一个 {'{'}moon{'}'} 标记。你必须选择一项：",
+      "keepSealed": "该标记继续封印在你的调查员卡上",
+      "takeDamageAndRelease": "承受1点伤害，然后释放该标记",
+      "takeHorrorAndRelease": "承受1点恐惧，然后释放该标记"
+    }
+  },
+  "key": {
+    "theRingmasterDoesNotSuspectYou": "团长没有怀疑你。",
+    "theRingmasterHasHisEyeOnYou": "团长盯上你了。",
+    "theInvestigatorsWereLostInTheArkhamWoods": "调查员迷失在阿卡姆树林中。",
+    "theInvestigatorsBypassedTheIllusions": "调查员绕过了幻象。",
+    "groupsOfCitizensWereSavedFromTheCircus": "从马戏团救出的市民群体",
+    "theRingmasterHadDaysToPrepare": "团长获得的准备天数",
+    "theInvestigatorsCouldNotEscapeTheCircus": "调查员未能逃离马戏团。",
+    "theInvestigatorsClashedWithBlake": "调查员与布莱克交锋。",
+    "theInvestigatorsUnmaskedBlake": "调查员揭露了布莱克。",
+    "theInvestigatorsStruckDownBlake": "调查员击倒了布莱克。",
+    "theInvestigatorsMustFollowTheCult": "调查员必须追随邪教。",
+    "theInvestigatorsDiscoveredTheRitualsLocation": "调查员发现了仪式地点。",
+    "theInvestigatorsDidNotArriveInTime": "调查员未能及时抵达。",
+    "theCultRallies": "邪教集结。",
+    "theInvestigatorsWereDevouredByTheThousandYoung": "调查员被千仔吞噬。",
+    "theInvestigatorsEndedTheRitual": "调查员终止了仪式。",
+    "shubNiggurathReignsOverAnEclipsedWorld": "莎布·尼古拉丝统治着日蚀世界。",
+    "shubNiggurathVanishedWithTheEclipse": "莎布·尼古拉丝随日蚀消失。",
+    "theProphecyWasFulfilled": "预言实现了。",
+    "theProphecyWasUnfulfilled": "预言未能实现。",
+    "destinies": "命运",
+    "theNewMoonCircusWasNeverSeenAgain": "新月马戏团从此销声匿迹。",
+    "theNewMoonCircusMaySomedayReturn": "新月马戏团也许终会归来。"
+  }
+}

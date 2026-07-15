@@ -1,0 +1,179 @@
+{
+  "xp": {
+    "bonus": "拯救了存在本身。"
+  },
+  "remembered": {
+    "theChemistWasSaved": "化学家获救了",
+    "theFormulaWasNotCompleted": "配方未完成",
+    "theSampleWasRecovered": "样本被找回了",
+    "theSampleWasLost": "样本遗失了",
+    "theMiGoWereDrivenOff": "米·戈被击退了",
+    "theSecretOfTheOozeWasStolen": "软泥的秘密被偷走了",
+    "theExplosivesWereDefused": "炸药已被拆除",
+    "theExplosivesWereDetonated": "炸药被引爆了"
+  },
+  "intro": {
+    "title": "吞噬万物",
+    "body": "局势并没有得到控制。\n这份报告是最先到达此地的联邦调查员写下的。在接下来的几天里，黑水镇处于封锁状态。众多报纸都登载了陨石撞击一事，但除了巨大的陨石坑和它对村庄造成的影响之外，人们对这件事知道的并不多。任何人都不允许离开这座小镇，进镇也必须得到政府秘密机构的批准。有少数人不幸地得到了这一批准，其中包含高级政府特工，为了调查陨石，还找来了附近的米斯卡塔尼克大学的一队研究员。对这座小镇其余的住民来说，这不过是件怪事，别无其他……直到那块陨石“孵化”。\n我亲眼目睹了那一幕。怪物现身时，它先是吞噬了派去收集和研究陨石様本的整队研究员，紧接着是他们的实验仪器。再是朗·格雷厄姆的拖拉机，然后将他的房子整个吞入。它继续生长、扩大，将沿路遇到的一切都吃干抹净。我差点没能活着逃出来。\n军队赶到时，他们还以为能用枪子儿和炮弹把这玩意给干掉。他们一波又一波地发起攻势，但不论他们用了什么武器，都会成为那头怪物的食粮。然后它自己分裂成数百个碎片，转瞬间湮没了整支军队。战争打得激烈，此时我和返回小镇的其他人一同望向上空，看见无数光芒与形状在变换。天上有什么东西等待着，等待着时机到来。\n小镇仍被隔离，我们被困在镇上了。那头怪物越长越大，要不了多久，整座黑水镇都会被它吞噬。到那个时候，谁还能阻止它肆虐呢？"
+  },
+  "setup": {
+    "gatherSets": "找出*吞噬万物*遭遇组中的所有卡牌。该遭遇组以此图标表示：<section class='encounter-sets'><img src='{setImgPath}/the-blob-that-ate-everything.png' /></section>",
+    "epicMultiplayer": "若你进行的是*史诗多人模式*，找出以此图标表示的史诗多人遭遇组中的所有卡牌。（将单组遭遇组的所有卡牌移出游戏。）<section class='encounter-sets'><img src='{setImgPath}/epic-multiplayer.png' /></section>",
+    "singleGroup": "若你进行的是*单组模式*，找出以此图标表示的单组遭遇组中的所有卡牌。（将史诗多人遭遇组的所有卡牌移出游戏。）<section class='encounter-sets'><img src='{setImgPath}/single-group.png' /></section>",
+    "setAsideMiGo": "将米·戈入侵遭遇组中的所有卡牌放在一边，位于场外。该遭遇组以此图标表示：<section class='encounter-sets'><img src='{setImgPath}/migo.png' /></section>",
+    "setAside": "从<i>吞噬万物</i>遭遇组查找以下遭遇卡牌，并将其放在一边，位于场外：脆弱心脏、1张紧噬软泥、1张方体软泥、2张软泥幽灵。",
+    "subject": "将“个体代号8L-08”敌人放置入场，放在密谋牌堆旁边。该卡牌不在任何地点上。",
+    "placeLocations": "根据后文的指导来设置地点。",
+    "shuffleQuarantine": "混洗所有“隔离区”地点，将其中1张地点卡牌移出游戏。",
+    "placeCrater": "将“陨石坑”放置入场。",
+    "innerRing": "拿取“研究营地”、“临时指挥部”，以及2张随机的“隔离区”地点。将这些地点卡牌混洗，并逐张放置，使每张卡牌与“陨石坑”连接。",
+    "outerRing": "拿取“真菌坟林”和3张随机的“隔离区”地点。将这些地点卡牌混洗，并逐张放置，使每张卡牌分别与“陨石坑”外圈4个地点之中的1个地点连接，并距离“陨石坑”最远。",
+    "remaining": "将剩余“隔离区”放置入场。",
+    "startAt": "每位调查员从“临时指挥部”开始游戏。",
+    "countermeasures": "若你进行的是*单组模式*，在冒险辅助卡上放置1个资源，作为对策（若游戏中有3或4位调查员，改为放置2个资源）。"
+  },
+  "tooltips": {
+    "theCrater": {
+      "deal": "{'{'}action{'}'} 花费1个对策：对任意地点的个体代号8L-08或一名复体敌人造成3点伤害。"
+    },
+    "researchSite": {
+      "gainCountermeasure": "{'{'}action{'}'} 花费2个线索：获得1个对策。",
+      "placeClues": "{'{'}action{'}'} 花费1个对策：在研究营地放置2个线索_（从标记库中）_。"
+    },
+    "temporaryHQ": {
+      "action": "{'{'}action{'}'} 花费1个对策：选择一项 - 治疗3点伤害、治疗3点恐惧、获得5个资源或抽3张卡牌。"
+    },
+    "fungusMound": {
+      "test": "{'{'}action{'}'} 花费1个对策：选择任意地点的一名米·戈敌人并检定{'{'}intellect{'}'}（0）。你每超过难度1点，对所选敌人造成1点伤害（至多5点）。"
+    },
+    "sewer": {
+      "move": "{'{'}action{'}'} 检定{'{'}intellect{'}'}（1）。若你成功，移动至距离下水道至多X个连接的地点，X为你的成功度。"
+    },
+    "bridge": {
+      "defeat": "{'{'}fast{'}'} 选择桥上的一名已耗竭复体敌人并检定{'{'}intellect{'}'}（X），X为该敌人的躲避值。若你成功，击败所选敌人。（每局游戏至多成功一次。）"
+    },
+    "waterTower": {
+      "damage": "{'{'}action{'}'} 若水塔上没有线索：检定{'{'}intellect{'}'}（3）。若你成功，对水塔及每个连接地点的每名软泥敌人各造成3点伤害。（每局游戏至多成功一次。）"
+    },
+    "church": {
+      "evade": "{'{'}action{'}'} 若教堂上没有线索：选择教堂或连接地点的一名软泥敌人。将所选敌人向远离教堂的方向移动一个地点并自动躲避它。（团队每局游戏限一次。）"
+    },
+    "theMilitarysPlan": {
+      "action": "{'{'}action{'}'}：检定{'{'}intellect{'}'}或{'{'}agility{'}'}（3）。若你成功，移除该地点上的恐惧标记。"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "团块X",
+      "body": "本场冒险的许多敌人均为这头怪物的碎块，它们被分散到各处，有着自己的意识。击败此类敌人，就能对怪物本体造成伤害。当一个带有<b>团块X</b>的敌人被击败时，对“个体代号8L-08”造成X点伤害。"
+    },
+    {
+      "title": "吞噬",
+      "body": "<p class='basic'>本冒险中，个体代号8L-08能够“吞噬”多种事物。</p><ul><li>卡牌被吞噬时，将其放在个体代号8L-08下方。其下方的卡牌视为离场。游戏结束时，将每张被吞噬的卡牌放回其拥有者牌组。调查员被吞噬时，该调查员死亡。</li><li>标记被吞噬时，将其放入标记库。</li><li>选择要吞噬的地点时，不能选择会使其他地点没有有效连接的地点。</li><li>个体代号8L-08也能吞噬现实的某些面向或形而上的物体；如此做时，会指示你后果。</li></ul>"
+    },
+    {
+      "title": "对策",
+      "body": "“对策”表示补给、研究，或军用装备，能够提高调查员的生存能力。可以通过特定卡牌的能力来花费“对策”从而触发强力效果。然而，获得新“对策”的机会十分罕见，要谨慎决定使用的方式！"
+    },
+    {
+      "title": "剧情卡",
+      "body": "剧情卡是在本冒险出现的一种新的卡牌类型。此类卡牌只出现在另一冒险卡的背面，作为另一种叙述的形式出现。在你收到指示要结算一张剧情卡时，阅读该卡上的剧情文本然后结算其游戏文本(如果有的话)。\n<i>(注意：当一个在场的地点或敌人翻至剧情卡一面时，该地点或敌人在剧情卡结算时依然视为在场。)</i>"
+    },
+    {
+      "title": "现实溶蚀",
+      "body": "<style>.reality-acid-table{width:100%;border-collapse:collapse;font-size:.82em;line-height:1.25;background:#BEC5B1;color:#1f1a12}.reality-acid-table th{background:#A2B695;color:#1f1a12;text-transform:uppercase;letter-spacing:.04em;border:1px solid #7f9273;padding:4px 6px;font-weight:bold}.reality-acid-table td{border:1px solid #8f9b86;padding:4px 6px;vertical-align:top;font-weight:normal}.reality-acid-table tbody tr:nth-child(odd){background:#BEC5B1}.reality-acid-table tbody tr:nth-child(even){background:#CDD0C3}.reality-acid-table .token{width:13%;text-align:center;color:#1f1a12;white-space:nowrap}.reality-acid-table .aspect{width:74%}</style><p class='basic'>个体代号8L-08张开巨口，开始吞噬……若翻开的混乱标记组合未列于表中，或列出的现实具象无法吞噬，抽取两个新的混乱标记并再次查表。混乱标记的顺序不限。</p><table class='reality-acid-table'><thead><tr><th colspan='2'>混乱标记</th><th><center><b>被吞噬的现实具象</b></center></th></tr></thead><tbody><tr><td class='token'>{autoFail}</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>……离你最近的非_精英_敌人。</td></tr><tr><td class='token'>{autoFail}</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>……你所在地点的一张诡计卡。</td></tr><tr><td class='token'>{autoFail}</td><td class='token'>–1 to –8</td><td class='aspect'>……你调查员卡牌上的1点恐惧和1点伤害。</td></tr><tr><td class='token'>{autoFail}</td><td class='token'>+0/+1</td><td class='aspect'>……你最大的缺点。查找你牌堆的任意1张弱点卡，其被吞噬。</td></tr><tr><td class='token'>{autoFail}</td><td class='token'>{elderSign}</td><td class='aspect'>……刚翻开的{autoFail}标记。</td></tr><tr><td class='token'>+1</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>……你的谨慎。再结算3次“现实溶蚀”，无视本次结果。</td></tr><tr><td class='token'>+1</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>……你的无知。发现你所在地点的1个线索。</td></tr><tr><td class='token'>+1</td><td class='token'>–1 to –8</td><td class='aspect'>……友谊。调查员们不能对他人的技能检定投入卡牌，直到本轮结束。</td></tr><tr><td class='token'>+1</td><td class='token'>0</td><td class='aspect'>……你的玩家参考卡。</td></tr><tr><td class='token'>0</td><td class='token'>0</td><td class='aspect'>……你所在地点每位调查员1个线索。</td></tr><tr><td class='token'>0</td><td class='token'>{skull}</td><td class='aspect'>……你的声音。你不能说话也不能制造噪音，直到本轮结束。</td></tr><tr><td class='token'>0</td><td class='token'>{cultist}</td><td class='aspect'>……你所在团队的食物和饮用水，你所在团队不能消耗食物和饮用水，直到你所在团队对“个体代号8L-08”造成了至少3点伤害。</td></tr><tr><td class='token'>0</td><td class='token'>{tablet}</td><td class='aspect'>……语言的概念。在调查员阶段结束之前，你只能胡言乱语。</td></tr><tr><td class='token'>0</td><td class='token'>{elderThing}</td><td class='aspect'>……光。每位调查员在关闭或遮盖所有附近光源的情况下进行游戏(手电筒除外)，直到本轮结束。</td></tr><tr><td class='token'>0</td><td class='token'>–1/–2</td><td class='aspect'>……它自身，然后它反刍自身。对“个体代号8L-08”造成1点伤害。</td></tr><tr><td class='token'>0</td><td class='token'>–3</td><td class='aspect'>……所有_复体_敌人的伤害。</td></tr><tr><td class='token'>0</td><td class='token'>–4 to –8</td><td class='aspect'>……你控制的支援卡上的所有补给、子弹、充能和秘密。</td></tr><tr><td class='token'>–1</td><td class='token'>{skull}</td><td class='aspect'>……你的希望。直到下个神话阶段结束，将你的基础意志设为0。</td></tr><tr><td class='token'>–1</td><td class='token'>{cultist}</td><td class='aspect'>……你的好奇心。直到下个神话阶段结束，将你的基础智力设为0。</td></tr><tr><td class='token'>–1</td><td class='token'>{tablet}</td><td class='aspect'>……你的精准。直到下个神话阶段结束，将你的基础力量设为0。</td></tr><tr><td class='token'>–1</td><td class='token'>{elderThing}</td><td class='aspect'>……你的专注。直到下个神话阶段结束，将你的基础敏捷设为0。</td></tr><tr><td class='token'>–1</td><td class='token'>–1</td><td class='aspect'>……你的多种才艺。你不能打出或使用不符合你调查员职阶的卡牌，直到本轮结束。</td></tr><tr><td class='token'>–1</td><td class='token'>–2</td><td class='aspect'>……你的手机。</td></tr><tr><td class='token'>–1</td><td class='token'>–3</td><td class='aspect'>……混乱袋。从混乱袋中移除所有标记，将其放到另一个容器。</td></tr><tr><td class='token'>–1</td><td class='token'>–4 to –8</td><td class='aspect'>……从你的牌库、弃牌堆、手牌和游戏区域中选择若干张等级1至5的卡牌，等级总和至少为5。</td></tr><tr><td class='token'>–2</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>……你牌库顶3张牌。</td></tr><tr><td class='token'>–2</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>……你弃牌堆顶的3张卡牌。</td></tr><tr><td class='token'>–2</td><td class='token'>–2</td><td class='aspect'>……你存放牌库用的牌盒。</td></tr><tr><td class='token'>–2</td><td class='token'>–3</td><td class='aspect'>……你调查员的牌套。</td></tr><tr><td class='token'>–2</td><td class='token'>–4 to –8</td><td class='aspect'>……你所在团队的协作能力。每位调查员失去1个行动。</td></tr><tr><td class='token'>–3</td><td class='token'>{skull}/{cultist}/{tablet}/{elderThing}</td><td class='aspect'>……你控制的一张_才能_、_人脉_或_状态_支援卡。</td></tr><tr><td class='token'>–3</td><td class='token'>–4 to –8</td><td class='aspect'>……你的时间感。在你推进密谋前，调查员不能使用计时装置、询问时间，或触发名称中含有“时间”“手表”或“时计”的任何卡牌能力。</td></tr><tr><td class='token'>–4 to –8</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>……你的迷你卡(用其他东西标记所在地点)。</td></tr><tr><td class='token'>–4 to –8</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>……你的房子。搜索收藏，找出“你的房子”(基础＃124)；其被吞噬。</td></tr><tr><td class='token'>–4 to –8</td><td class='token'>–4 to –8</td><td class='aspect'>……你的灵魂。在冒险日志中，记录<i>你失去了灵魂</i>。</td></tr><tr><td class='token'>{skull}</td><td class='token'>{skull}</td><td class='aspect'>……你控制的费用最高的_盟友_支援卡。</td></tr><tr><td class='token'>{skull}</td><td class='token'>{cultist}</td><td class='aspect'>……你手牌中的所有事件卡牌。</td></tr><tr><td class='token'>{skull}</td><td class='token'>{tablet}</td><td class='aspect'>……你所有的资源。</td></tr><tr><td class='token'>{skull}</td><td class='token'>{elderThing}</td><td class='aspect'>……你手牌中的所有技能卡牌。</td></tr><tr><td class='token'>{cultist}</td><td class='token'>{cultist}</td><td class='aspect'>……被放逐的所有卡牌。</td></tr><tr><td class='token'>{cultist}</td><td class='token'>{tablet}</td><td class='aspect'>……你的身份。将你调查员文本框视作空白(包括_属性_)，直到本轮结束。</td></tr><tr><td class='token'>{cultist}</td><td class='token'>{elderThing}</td><td class='aspect'>……速度概念。调查员不能获得或执行额外的行动，直到本轮结束。</td></tr><tr><td class='token'>{tablet}</td><td class='token'>{tablet}</td><td class='aspect'>……你的紧迫感。你不能移动，直到本轮结束。</td></tr><tr><td class='token'>{tablet}</td><td class='token'>{elderThing}</td><td class='aspect'>……你的潜能。你不能提高技能值直到本轮结束。</td></tr><tr><td class='token'>{elderThing}</td><td class='token'>{elderThing}</td><td class='aspect'>……你的耐心。在当前的密谋上放置1个毁灭标记。</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>{skull}/{cultist}</td><td class='aspect'>……你控制的所有_法术_和_仪式_支援卡。</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>{tablet}/{elderThing}</td><td class='aspect'>……你控制的所有_道具_支援卡。</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>+1</td><td class='aspect'>……“弃牌堆”的概念。任何卡牌将要被放到任意调查员的弃牌堆时，改为该卡牌被吞噬，直到下一个神话阶段结束。</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>0</td><td class='aspect'>……你的一只手。你的手部槽位-1，直到本局游戏结束。</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>–1</td><td class='aspect'>……胜利的概念。下一次调查员将要检定成功并超过难度至少2点，该调查员改为自动失败。</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>–2/–3</td><td class='aspect'>……1对策。</td></tr><tr><td class='token'>{elderSign}</td><td class='token'>–4 to –8</td><td class='aspect'>……简单的概念。在游戏结束前，将冒险参考卡翻至困难／专家面。</td></tr></tbody></table>"
+    }
+  ],
+  "resolutions": {
+    "resolution1": {
+      "title": "结局1",
+      "body": "黑水镇已被吞噬一空。封锁线也已破坏。无法控制那头怪物，它先是延伸到了村庄，吞噬沿路的一切事物。旋即整个马萨诸塞州都被它吞入腹中。然后是整个新英格兰。它从地下挖开通路，连海洋都无法阻止它前进。无一大陆幸免。地球上的每个生物都会被吞噬，然后，地球也将迎来同样的命运。\n……但这还没有结束。\n即使这个星球完全化为虚无，也无法阻止那头怪物的生长。它会不断扩张和吞噬，直到一切的一切只剩下冰冷的虚空和吞噬万物的团块。"
+    },
+    "resolution2": {
+      "title": "结局2",
+      "body": "<i>事件报告：8L-08(接上页)</i>\n<i>1928年7月11日，星期三</i>\n<i>马萨诸塞州黑水镇</i>\n<i>上午7时42分——接触████████████生物。该生物通过陨石███████████；研究员暂时无法确定，陨石究竟是作为██████████载体，还是某种被用作██████████████卵体。当局立即启动了紧急响应进程。大约上午5时，该生物被第三方消灭。根据行动协议，现场采集的样本被送往██████作进一步研究。目前，特工们忙于清理该生物残留在隔离区的物质，并且极力建议立即销毁之前的冲突事件报告。</i>\n<i>黑水镇的居民被告知，隔离██████████受到通过空气传播的病毒████████传染。███████发生多例感染；医疗团队将对此进行确认。</i>\n<i>这起事件中有非官方人员参与，特工尝试与他们会面以写入汇报。由于这起事件的敏感性性质，建议在封锁解除后保持密切观察。知情人士必须████████████. ████████████████████████████████████████████.</i>\n<i>立即销毁本事件报告。服从附加指示。</i>"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "个体代号8L-08每吞噬5张卡牌，-1。",
+      "cultist": "-2。若此标记在攻击敌人期间被抽出，该敌人本次攻击获得反击。",
+      "tablet": "-3。本次技能检定结束后，个体代号8L-08吞噬每张投入本次检定的卡牌。",
+      "elderThing": "-5。从你手中选择至多5张卡牌。个体代号8L-08吞噬每张所选卡牌；以此方式每吞噬1张卡牌，本次检定中你的技能值+1。"
+    },
+    "hardExpert": {
+      "skull": "个体代号8L-08每吞噬3张卡牌，-1。",
+      "cultist": "-3。若此标记在攻击敌人期间被抽出，该敌人本次检定获得反击。",
+      "tablet": "-4。本次技能检定结束后，个体代号8L-08吞噬每张投入本次检定的卡牌。",
+      "elderThing": "-7。从你手中选择至多7张卡牌。个体代号8L-08吞噬每张所选卡牌；以此方式每吞噬1张卡牌，本次检定中你的技能值+1。"
+    }
+  },
+  "label": {
+    "doneDevouring": "完成吞噬卡牌",
+    "temporaryHQ": {
+      "healDamage": "治疗3点伤害",
+      "healHorror": "治疗3点恐惧",
+      "gainResources": "获得5个资源",
+      "drawCards": "抽3张卡牌"
+    }
+  },
+  "realityAcid": {
+    "title": "现实溶蚀",
+    "devours": "个体代号8L-08张开巨口，吞噬了……",
+    "consultAgain": "<smallcaps>“个体代号8L-08”张开了它的巨口，开始吞噬……</smallcaps>\n<i>(如果翻开的混乱标记与以下列举的任何组合都不同，或者如果列出的具象无法被吞噬，抽出两个新的混乱标记并再次查看下表。)</i>",
+    "outcomes": {
+      "nearestEnemy": "……离你最近的非[[精英]]敌人。",
+      "treachery": "……你所在地的一张诡计。",
+      "heal": "……你调查员卡牌上的1点恐惧和1点伤害。",
+      "greatestFlaw": "……你最大的缺点。查找你牌堆的任意1张弱点卡，其被吞噬。",
+      "elderSignToken": "……刚刚抽出的{'{'}elderSign{'}'}标记。",
+      "caution": "……你的谨慎。再结算3次“现实溶蚀”，无视本次结果。",
+      "ignorance": "……你的无知。在你所在地发现1个线索。",
+      "friendships": "……友谊。调查员们不能对他人的技能检定投入卡牌，直到本轮结束。",
+      "playerReferenceCard": "……你的玩家辅助卡。",
+      "locationClues": "……你所在地点的1[per_investigator]个线索。",
+      "voice": "……你的声音。你不能说话也不能制造噪音，直到本轮结束。",
+      "foodAndDrinks": "……你所在团队的食物和饮用水，你所在团队不能消耗食物和饮用水，直到你所在团队对“个体代号8L-08”造成了至少3点伤害。",
+      "language": "……语言的概念。在调查员阶段结束之前，你只能胡言乱语。",
+      "light": "……光。每位调查员在关闭或遮盖所有附近光源的情况下进行游戏(手电筒除外)，直到本轮结束。",
+      "regurgitate": "……它自身，然后它反刍自身。对“个体代号8L-08”造成1点伤害。",
+      "manifold": "……所有[[复体]]敌人的伤害。",
+      "uses": "……你控制的支援卡上的所有补给、子弹、充能和秘密。",
+      "willpower": "……你的希望。将你的基础[willpower]变为0，直至下一个神话阶段结束。",
+      "intellect": "……你的好奇心。将你的基础[intellect]变为0，直至下一个神话阶段结束。",
+      "combat": "……你的准确度。将你的基础[combat]变为0，直至下一个神话阶段结束。",
+      "agility": "……你的专注力。将你的基础[agility]变为0，直至下一个神话阶段结束。",
+      "versatility": "……你的多种才艺。你不能打出或使用不符合你调查员职阶的卡牌，直到本轮结束。",
+      "cellPhone": "……你的手机。",
+      "chaosBag": "……混乱袋。从混乱袋中移除所有标记，将其放到另一个容器。",
+      "levelCards": "……你牌堆，弃牌堆，手牌和游戏区域等级为1-5的卡牌，由你选择总等级至少为5的若干张卡牌。",
+      "top3Deck": "……你牌组顶的3张卡牌。",
+      "top3Discard": "……你弃牌堆顶的3张卡牌。",
+      "deckbox": "……你存放牌库用的牌盒。",
+      "cardSleeve": "……你的调查员卡牌牌套。",
+      "teamwork": "……你所在团队的协作能力。每位调查员失去1个行动。",
+      "talentAsset": "……你控制的一张[[才能]]、[[人脉]]或[[状态]]支援卡。",
+      "senseOfTime": "……你的时间观念。调查员不能使用计时设备，不能询问时间，也不能触发标题带有“时间”、“表”或“时”字样的任何卡牌的能力，直到推进密谋。",
+      "miniCard": "……你的迷你卡(用其他东西标记所在地点)。",
+      "yourHouse": "……你的房子。搜索收藏，找出“你的房子”(基础＃124)；其被吞噬。",
+      "noSoul": "……你的灵魂。在冒险日志中，记录<i>你失去了灵魂</i>。",
+      "ally": "……你控制的费用最高的[[盟友]]支援卡。",
+      "events": "……你手中的所有事件卡。",
+      "resources": "……你的所有资源。",
+      "skills": "……你手中的所有技能卡。",
+      "exiledCards": "……被放逐的所有卡牌。",
+      "identity": "……你的身份。将你调查员文本框视作空白(包括[[属性]])，直到本轮结束。",
+      "speed": "……速度概念。调查员不能获得或执行额外的行动，直到本轮结束。",
+      "cannotMove": "……你的紧迫感。你不能移动，直到本轮结束。",
+      "potential": "……你的潜能。你不能提高技能值直到本轮结束。",
+      "doom": "……你的耐心。在当前的密谋上放置1个毁灭标记。",
+      "spellRitual": "……你控制的所有[[法术]]和[[仪式]]支援卡。",
+      "item": "……你控制的所有_物品_支援。",
+      "discardPile": "……“弃牌堆”的概念。任何卡牌将要被放到任意调查员的弃牌堆时，改为该卡牌被吞噬，直到下一个神话阶段结束。",
+      "handSlot": "……你的一只手。你的手部槽位-1，直到本局游戏结束。",
+      "success": "……胜利的概念。下一次调查员将要检定成功并超过难度至少2点，该调查员改为自动失败。",
+      "countermeasure": "……1对策。",
+      "easiness": "……舒适感。将冒险辅助卡翻到“困难/专家”面，直到本局游戏结束。"
+    }
+  }
+}

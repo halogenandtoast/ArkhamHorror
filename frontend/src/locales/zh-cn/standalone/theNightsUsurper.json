@@ -1,0 +1,76 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X。X为深渊之力。",
+      "cultist": "再揭示一个标记。若你失败且深渊之力不超过3，深渊之力+1。",
+      "tablet": "-1。本次技能检定中，忽略你技能值的所有加成。",
+      "elderThing": "-4。若你成功且深渊之力至少为4，深渊之力-1。"
+    },
+    "hardExpert": {
+      "skull": "-X。X比深渊之力多1。",
+      "cultist": "再揭示一个标记。若你失败且深渊之力不超过5，深渊之力+1。",
+      "tablet": "-3。本次技能检定中，忽略你技能值的所有加成。",
+      "elderThing": "-5。若你成功且深渊之力至少为4，深渊之力-1。"
+    }
+  },
+  "remembered": {
+    "freedTheNightgaunts": "释放了夜魇",
+    "executedTheNightgaunts": "处决了夜魇",
+    "warnedTheDenizensOfSarkomand": "警告了萨科曼德的住民",
+    "cutOffAllEscape": "切断了所有逃路",
+    "pledForHelp": "恳求协助",
+    "affrontedTheRulerOfThisRealm": "冒犯了此界统治者"
+  },
+  "intro": {
+    "title": "夜之乱臣",
+    "body": "温洛克摩挲着自己的胡子，思索着你的话。身为本次勘察代赫舒尔的领队，你能不能加入探险队完全取决于他。“瞧，你这些证据我都看了。我知道开罗发生了什么。我也相信你说的。可是……”他恼火地叹了一声，“我只是不知道要怎么说服探险队的其它人。古代神庙是一回事，但要说通往另一个维度的入口？这个称为伊扎法拉的家伙？这些都不可能是真的，对吧？”\n但你的研究和经验得出的答案并不是这样。威胁是确实存在的。这个神秘组织——恶兽兄弟会——在全埃及活动，要是不阻止他们，他们新发现的“天选”就会带来毁灭，危害整个地球。\n你又坚持了一次，一定要探险队对你打开大门。“好吧，好吧。”温洛克最终还是服软了。“我不知道你到底要在沙漠里找什么，但我希望你能找到它。”你摇摇头作为回应。那你情愿空手而归。"
+  },
+  "setup": {
+    "gatherSets": "收集下列遭遇组：*夜之乱臣*、*埃及沙漠*、*野兽兄弟会*和*深渊馈赠*。它们分别以如下图示表示：<section class='encounter-sets'><img src='{setImgPath}/nights-usurper.png' /><img src='{setImgPath}/sands-of-egypt.png' /><img src='{setImgPath}/brotherhood-of-the-beast.png' /><img src='{setImgPath}/abyssal-gifts.png' /></section>",
+    "placeLocations": "将探险营地放置入场。每位调查员从探险营地开始游戏。",
+    "setAside": "将下列卡牌放在一边，位于场外：深渊镰形剑、召来的夜魇、单面惊悚入口地点、双面伊扎法拉敌人、5张双面[[异界]]地点、2张骇人的夏塔克鸟。伊扎法拉和[[异界]]地点卡的背面为剧情卡。为了获得最佳的游戏体验，请勿查看背面的剧情卡<i>(详见“剧情卡”)</i>。",
+    "explorationDeck": "创建探索牌堆。拿取7张剩余的单面地点，将这些地点与遭遇卡一同混洗形成探索牌堆，所混洗的遭遇卡为以下每种1张：深渊领域、黑风、金字塔下的恐怖、蝗虫成群。",
+    "brotherhood": "找出6张双面[[兄弟会]]敌人卡。这些敌人卡的另一面均为剧情卡<i>(详见“剧情卡”)</i>。其中一些敌人会放在冒险辅助卡底下，具体见下。将其余敌人移出游戏。",
+    "brotherhoodCampaign": "将冒险日志上 <i>“逃走的兄弟会成员”</i>下列出的敌人放在冒险辅助卡底下。",
+    "brotherhoodStandalone": "因为你没有完成<b>永恒沉睡</b>，混洗这6个敌人，将其中3个放在冒险辅助卡底下，不要查看。",
+    "strengthOfTheAbyss": "将一定数量的资源标记放在冒险辅助卡上(放在“深渊之力”下方)，具体见下<i>(参见的“深渊之力”)</i>。",
+    "strengthCampaign": "放置的资源标记数量等于冒险日志上所记的<i>“深渊中的沉梦者”</i>旁括号内所列的数字。",
+    "strengthStandalone": "若以独立模式游玩，游戏中每位调查员放置1资源。"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "未达成结局",
+      "body": "<p>_若未达成任何结局（每位调查员撤退或被击败）：_进入_结局1_。</p>"
+    },
+    "resolution1": {
+      "title": "结局1",
+      "body": "“这就是个拱门。你干嘛这么激动，老大？”温洛克叉着手。这东西浑身上下都透着一股不对劲。他确信这地方就是那群阿卡姆来的人要找的地方——绘有精妙图文的拱门——很明显不通往任何地方——但是，温洛克确定在另一端一定有着什么。“这不是埃及的东西。”他眯起眼凝视着拱门，“这看起来甚至都不是……不是人类的东西。”\n“你相信那些傻瓜？看啊老大，<b>这什么都不是！</b>”其中一个队员笑道。\n“嗯？”温洛克瞪大了眼睛厉声说道，“是吗？”"
+    },
+    "resolution2": {
+      "title": "结局2",
+      "body": "伊扎法拉的实体开始消散。团团云雾环绕着他，迫使他跪下。深渊的生物无声无息地出现在你周围，带着寂静而面无表情的恨意包围住了伊扎法拉。就连伊扎法拉的剑都不听他的使唤，掉在了地上，剑刀碎裂开来。“预言必须被实现……”这是伊扎法拉邪恶声音留下的最后一句。他的实体消散在这片领域的薄雾中。大深渊里只留一片寂静。"
+    },
+    "resolution3": {
+      "title": "结局3",
+      "body": "你跪在伊扎法拉面前，他将冰冷的手放在你肩上。“你已经证明了自己的忠诚。”他宣布道。深渊中的生物环绕着你，低头向新主人致意。再也没有谁敢反抗他了。“你的族裔中很少有人能具备足够的智能或意志能看到未来。看到我们的预言实现。但你很有价值，打开了自己的眼界。比我过去信任的蠢货都更有价值。”他让你站起身，将自己那把染血弯剑的剑柄交到了你的手里，“现在起身吧，恶兽之仆。你在我们之中赢得了一席之地。”"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.storyCards.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.storyCards.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.strengthOfTheAbyss.body"
+    },
+    {
+      "title": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.title",
+      "body": "@:standalone.guardiansOfTheAbyss.rules.takenByTheAbyss.body"
+    },
+    {
+      "title": "探索",
+      "body": "<i>深渊守卫</i>中的某些能力带有<b>探索</b>行动标识。此类能力通常会通过“启动”行动发动，用于找出新的地点并将这一地点放置入场。\n<b>探索</b>能力会指示你抽取“探索牌堆”顶上的1张卡牌。探索牌堆是一个独立的牌堆，在某些冒险的设置阶段构成该牌堆，包含多张单面地点卡和诡计卡。"
+    }
+  ]
+}

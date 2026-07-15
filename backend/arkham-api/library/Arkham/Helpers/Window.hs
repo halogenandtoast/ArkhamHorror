@@ -1806,12 +1806,22 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
       _ -> noMatch
+    -- FAQ (2.12): "you" being dealt damage/horror also covers assets you control, so
+    -- an attack soaked entirely by an ally still counts. TakeDamage/TakeHorror carry
+    -- the total dealt to the investigator however it was assigned, and are raised
+    -- alongside the per-target DealtDamage/DealtHorror windows. Damage dealt straight
+    -- to an asset (Guard Dog) raises no investigator TakeDamage, so it stays unmatched
+    -- and self-damaging assets (Ancient Relic) cannot retrigger themselves.
     Matcher.DealtDamage timing sourceMatcher whoMatcher -> guardTiming timing $ \case
       Window.DealtDamage source' _ (InvestigatorTarget iid') _ ->
+        andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      Window.TakeDamage source' _ (InvestigatorTarget iid') _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
       _ -> noMatch
     Matcher.DealtHorror timing sourceMatcher whoMatcher -> guardTiming timing $ \case
       Window.DealtHorror source' (InvestigatorTarget iid') _ ->
+        andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      Window.TakeHorror source' (InvestigatorTarget iid') _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
       _ -> noMatch
     Matcher.AssignedHorror timing whoMatcher targetListMatcher ->

@@ -15,6 +15,7 @@ offeredMorriganWeaknesses = do
   choicesOf = \case
     QuestionLabel _ _ inner -> choicesOf inner
     ChooseOne cs -> cs
+    WindowChooseOne cs -> cs
     _ -> []
 
 spec :: Spec

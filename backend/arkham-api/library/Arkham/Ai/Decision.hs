@@ -1591,6 +1591,7 @@ flattenChoices :: Question msg -> Maybe ([UI msg], Int)
 flattenChoices = \case
   ChooseOne cs -> Just (cs, 0)
   PlayerWindowChooseOne cs -> Just (cs, 0)
+  WindowChooseOne cs -> Just (cs, 0)
   ChooseN _ cs -> Just (cs, 0)
   ChooseSome cs -> Just (cs, 0)
   ChooseSome1 _ cs -> Just (cs, 0)

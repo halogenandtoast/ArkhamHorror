@@ -710,12 +710,16 @@ skip = chooseOptionMatching "skip" \case
   _ -> False
 
 -- | Peel off display-only question wrappers (source highlight, header label)
--- that the frontend renders but that tests should see through.
+-- that the frontend renders but that tests should see through. Also normalizes
+-- the window-ask flavors of ChooseOne, which differ from a plain ChooseOne only
+-- in whether the queue regenerates the seat (see Entity.Answer), not in how a
+-- spec answers them.
 stripQuestionWrappers :: Question msg -> Question msg
 stripQuestionWrappers = \case
   QuestionLabel _ _ q -> stripQuestionWrappers q
   QuestionWithSource _ _ q -> stripQuestionWrappers q
   PayCostQuestion _ q -> stripQuestionWrappers q
+  WindowChooseOne cs -> ChooseOne cs
   q -> q
 
 chooseOnlyOption :: HasCallStack => String -> TestAppT ()
@@ -757,10 +761,7 @@ chooseOptionMatching _reason f = do
  where
   notFound msgs =
     liftIO $ expectationFailure $ "could not find a matching message in: " <> show msgs
-  go iid question = case question of
-    QuestionLabel _ _ q -> go iid q
-    QuestionWithSource _ _ q -> go iid q
-    PayCostQuestion _ q -> go iid q
+  go iid question = case stripQuestionWrappers question of
     ChooseOne msgs -> case find f msgs of
       Just msg -> push (uiToRun msg) <* runMessages
       Nothing -> notFound msgs

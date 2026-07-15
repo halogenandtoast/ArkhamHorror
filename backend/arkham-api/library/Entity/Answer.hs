@@ -463,15 +463,12 @@ handleAnswerPure Game {..} playerId = \case
           handled $ concatMap handleCost $ Map.toList (parAmounts response)
         _ -> unhandled "Wrong question type"
   Raw message -> do
-    let isPlayerWindowChoose = \case
-          PlayerWindowChooseOne _ -> True
-          _ -> False
     let inFastWindow =
           maybe
             False
             (any (any (\w -> Window.windowType w == Window.FastPlayerWindow)))
             gameWindowStack
-    if not (Map.null gameQuestion) && not (any isPlayerWindowChoose $ toList gameQuestion)
+    if not (Map.null gameQuestion) && not (any isRegeneratedWindowChoose $ toList gameQuestion)
       then case message of
         PassSkillTest -> handled [message]
         FailSkillTest -> handled [message]
@@ -501,11 +498,25 @@ handleAnswerPure Game {..} playerId = \case
                   -- during deck selection that loses a player's ChooseDeck and the
                   -- campaign starts a man down. No-op when this seat is the only one
                   -- being asked, which is the overwhelmingly common case.
-                  let question' = Map.delete playerId gameQuestion
+                  --
+                  -- Window seats are excluded: both PlayerWindow and runWindow
+                  -- regenerate every seat from scratch once the queue drains, so a
+                  -- re-asked one is stale (it enumerated its choices before this
+                  -- answer resolved), it forces the other player to use an ability
+                  -- they wanted to decline or that is already spent, and it keeps the
+                  -- queue from draining, which is what regenerates them.
+                  let question' = Map.filter (not . isRegeneratedWindowChoose) $ Map.delete playerId gameQuestion
                   handled $ msgs <> [AskMap question' | not (Map.null question')]
           )
           $ Map.lookup playerId gameQuestion
  where
+  -- Seats the queue rebuilds on its own: PlayerWindow re-pushes itself, and a
+  -- WindowChooseOne is followed by the Do (CheckWindows ws) that WindowAsk
+  -- queues behind it. Re-parking either hands back a stale question (#5160).
+  isRegeneratedWindowChoose = \case
+    PlayerWindowChooseOne _ -> True
+    WindowChooseOne _ -> True
+    _ -> False
   go
     :: (Question Message -> Question Message)
     -> Question Message
@@ -546,6 +557,9 @@ handleAnswerPure Game {..} playerId = \case
       Just msg -> [uiToRun msg]
     PlayerWindowChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ PlayerWindowChooseOne qs]
+      Just msg -> [uiToRun msg]
+    WindowChooseOne qs -> case qs !!? qrChoice response of
+      Nothing -> [Ask playerId $ f $ WindowChooseOne qs]
       Just msg -> [uiToRun msg]
     ChooseOneFromEach qs -> case concat qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ ChooseOneFromEach qs]

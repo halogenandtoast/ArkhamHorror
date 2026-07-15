@@ -2686,6 +2686,7 @@ questionWithSourceWithTooltip :: Source -> Tooltip -> PlayerId -> Question Messa
 questionWithSourceWithTooltip s tt pid q = Ask pid (QuestionWithSource s (Just tt) q)
 
 asWindowChoose :: HasCallStack => [Window] -> Message -> Message
+asWindowChoose ws (Ask pid (ChooseOne cs)) = WindowAsk ws pid (WindowChooseOne cs)
 asWindowChoose ws (Ask pid q) = WindowAsk ws pid q
 asWindowChoose _ _ = error "asWindowChoose: expected Ask"
 

@@ -58,6 +58,7 @@ useDreamlandsEclipseForcedAbility dreamlandsEclipse = do
  where
   go = \case
     ChooseOne msgs -> chooseFrom msgs
+    WindowChooseOne msgs -> chooseFrom msgs
     PlayerWindowChooseOne msgs -> chooseFrom msgs
     ChooseOneAtATime msgs -> chooseFrom msgs
     ChooseN _ msgs -> chooseFrom msgs
@@ -96,6 +97,7 @@ chooseLabel expected = do
  where
   go = \case
     ChooseOne msgs -> chooseFrom msgs
+    WindowChooseOne msgs -> chooseFrom msgs
     PlayerWindowChooseOne msgs -> chooseFrom msgs
     ChooseOneAtATime msgs -> chooseFrom msgs
     ChooseN _ msgs -> chooseFrom msgs

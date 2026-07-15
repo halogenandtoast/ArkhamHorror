@@ -12,6 +12,6 @@ import Arkham.Matcher as X hiding (IgnoreChaosToken)
 import Arkham.Modifier as X
 import Arkham.Name as X
 import Arkham.Prelude as X
-import Arkham.Trait as X hiding (Memory)
+import Arkham.Trait as X
 
 {- HLint ignore "Use camelCase" -}

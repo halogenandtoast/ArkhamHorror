@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { homebrewCampaignScope, homebrewScenarioI18n } from '@/arkham/homebrewData'
 import { type Search, searchDecoder } from '@/arkham/types/Search';
 import { type Name, nameDecoder } from '@/arkham/types/Name';
 import { CampaignStep, campaignStepDecoder} from '@/arkham/types/CampaignStep';
@@ -240,9 +241,10 @@ export function campaignIdToI18n(campaignId: string): string | null {
     case "10": return "theFeastOfHemlockVale"
     case "11": return "theDrownedCity"
     case "12": return "brethrenOfAsh"
-    case "z-dark-matter": return "darkMatter"
     case "83": return "standalone.guardiansOfTheAbyss"
-    default: return null
+    default:
+      if (campaignId.startsWith(":")) return homebrewCampaignScope(campaignId)
+      return null
   }
 }
 
@@ -251,6 +253,11 @@ export function scenarioToI18n(scenario: Scenario): string {
 }
 
 export function scenarioIdToI18n(scenarioId: string): string {
+  if (scenarioId.startsWith("c:")) {
+    const i18n = homebrewScenarioI18n(scenarioId)
+    if (i18n) return i18n
+    throw new Error(`Unknown scenario id: ${scenarioId}`)
+  }
   switch (scenarioId.replace(/^c/, '')) {
     case "01104": return "nightOfTheZealot.theGathering"
     case "01120": return "nightOfTheZealot.theMidnightMasks"

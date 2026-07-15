@@ -48,6 +48,8 @@ import KeyToken from '@/arkham/components/Key.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import Connections from '@/arkham/components/Connections.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import { chaosTokenImage } from '@/arkham/types/ChaosToken';
+import { homebrewTotalsTokens } from '@/arkham/homebrewData';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import SkillTest from '@/arkham/components/SkillTest.vue';
@@ -1907,6 +1909,22 @@ const blessTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
 const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'CurseToken').length)
 const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'FrostToken').length)
 
+// Custom campaign tokens (e.g. the Circus Ex Mortis moon) that opt into the
+// totals bar via their campaign's homebrew tokens.json. Counted across the
+// chaos bag and every investigator's sealed tokens (where moon tokens live).
+const homebrewTotals = computed(() => {
+  const sealed = Object.values(props.game.investigators).flatMap((i) => i.sealedChaosTokens ?? [])
+  const all = [...props.scenario.chaosBag.chaosTokens, ...sealed]
+  return homebrewTotalsTokens
+    .map((cfg) => ({
+      face: cfg.face,
+      tooltip: cfg.tooltip,
+      image: chaosTokenImage(cfg.face),
+      count: all.filter((t) => t.face === cfg.face).length,
+    }))
+    .filter((t) => t.count > 0)
+})
+
 async function removeChaosToken(face: any){
   debug.send(props.game.id, {tag: 'ChaosBagMessage', contents: {tag: 'RemoveChaosToken_', contents: face}})
 }
@@ -2358,7 +2376,7 @@ async function addChaosToken(face: any){
                 :aria-label="spokenHasturTooltip"
                 @click.stop.prevent="recordSpokenHastur"
               >
-                <img :src="imgsrc('ct_cultist.png')" alt="" />
+                <img :src="imgsrc('chaos-tokens/ct_cultist.png')" alt="" />
               </button>
             </div>
           </div>
@@ -2603,7 +2621,7 @@ async function addChaosToken(face: any){
 
           <template v-if="barriers">
             <div v-for="[area, amount] in Object.entries(barriers)" :key="area" class="barrier" :class="{ vertical: isVertical(area) }" :style="{ 'grid-area': `barrier-${area}` }">
-              <img v-for="n in amount" :key="n" :src="imgsrc('resource.png')" />
+              <img v-for="n in amount" :key="n" :src="imgsrc('tokens/resource.png')" />
               <button v-if="debug.active && (amount as number > 0)" @click="debug.send(game.id, {tag: 'ScenarioCountDecrementBy', contents: [{ 'tag': 'Barriers', 'contents': area.split('--') }, 1]})">x</button>
             </div>
           </template>
@@ -2691,9 +2709,10 @@ async function addChaosToken(face: any){
         <div id="totals">
           <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
           <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
-          <PoolItem v-if="blessTokens > 0" type="ct_bless" :amount="blessTokens" />
-          <PoolItem v-if="curseTokens > 0" type="ct_curse" :amount="curseTokens" />
-          <PoolItem v-if="frostTokens > 0" type="ct_frost" :amount="frostTokens" />
+          <PoolItem v-if="blessTokens > 0" type="chaos-tokens/ct_bless" :amount="blessTokens" />
+          <PoolItem v-if="curseTokens > 0" type="chaos-tokens/ct_curse" :amount="curseTokens" />
+          <PoolItem v-if="frostTokens > 0" type="chaos-tokens/ct_frost" :amount="frostTokens" />
+          <PoolItem v-for="t in homebrewTotals" :key="t.face" type="custom-token" :image="t.image" :amount="t.count" :tooltip="t.tooltip" />
         </div>
       </div>
     </div>

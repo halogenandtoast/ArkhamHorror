@@ -731,7 +731,11 @@ function scheduleApplyUpdate(payload: string) {
       updateGameLog(updatedGame.log)
       preloadImages(updatedGame)
       if (!locked) {
-        if (solo.value === true) {
+        // Only re-seat while there is a question to seat against. With an empty
+        // question map every branch below falls back to Object.keys(...)[0] ===
+        // undefined, which blanks the whole view (it renders on `playerId`) until
+        // a reload re-derives it from the API.
+        if (solo.value === true && Object.keys(game.value.question).length > 0) {
           if (Object.keys(game.value.question).length == 1) {
             playerId.value = Object.keys(game.value.question)[0]
           } else if (game.value.activePlayerId !== playerId.value) {
@@ -2206,10 +2210,10 @@ onUnmounted(() => {
                 <CardView :game="game" :card="gameCard.card" :playerId="playerId" />
                 <img
                   v-if="gameCard.card.tag === 'PlayerCard'"
-                  :src="imgsrc('player_back.jpg')"
+                  :src="imgsrc('backs/back_player.jpg')"
                   class="card back"
                 />
-                <img v-else :src="imgsrc('back.png')" class="card back" />
+                <img v-else :src="imgsrc('backs/back_encounter.jpg')" class="card back" />
               </div>
               <button @click="continueUI">{{ $t('ok') }}</button>
             </div>

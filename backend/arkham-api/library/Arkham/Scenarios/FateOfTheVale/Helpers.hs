@@ -4,15 +4,21 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (ActCard))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card
+import Arkham.Deck qualified as Deck
+import Arkham.Draw.Types
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Act (getCurrentAct)
+import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.Helpers.Window (wouldDo)
 import Arkham.I18n
 import Arkham.Id (InvestigatorId)
-import Arkham.Message (Message)
-import Arkham.Message.Lifted.Queue
+import Arkham.Message (Message (DrewCards, Run))
+import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Scenario.Deck
+import Arkham.Source
 import Arkham.Window qualified as Window
 
 scenarioI18n :: (HasI18n => a) -> a
@@ -52,3 +58,38 @@ abyssDrawWindow tag iid card resolveMsg = do
     resolveMsg
     (Window.ScenarioEvent (key "wouldDrawFromAbyss") (Just iid) (toJSON card))
     (Window.ScenarioEvent (key "drewFromAbyss") (Just iid) (toJSON card))
+
+{- | Reveal cards from the top of The Abyss until an encounter-backed card is
+found and draw it, replacing the mythos encounter draw. Shared by every Fate of
+the Vale agenda (The Silence, The Miasma, The Spiral), each of which carries the
+same forced ability.
+-}
+revealEncounterCardFromAbyss :: ReverseQueue m => Source -> InvestigatorId -> m ()
+revealEncounterCardFromAbyss source iid = do
+  abyss <- getScenarioDeck AbyssDeck
+  let
+    hasEncounterBack = \case
+      EncounterCard c -> not (cdDoubleSided $ toCardDef c)
+      _ -> False
+    (nonEncounter, rest) = break hasEncounterBack (reverse abyss)
+  case rest of
+    EncounterCard ec : _ -> do
+      let revealed = nonEncounter <> [EncounterCard ec]
+      focusCards revealed do
+        chooseOneM iid do
+          withI18n $ labeled' "continue" do
+            unfocusCards
+            for_ revealed $ scenarioSpecific "removeFromAbyss" . toCardId
+            for_ (reverse nonEncounter) $ putCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck)
+            -- Old Memory (and any future cards) may react to a card being drawn
+            -- from The Abyss, so route the draw through a cancellable window.
+            let drawMsg = DrewCards iid $ finalizeDraw (newCardDraw source Deck.EncounterDeck 1) [EncounterCard ec]
+            abyssDrawWindow "mythos" iid (EncounterCard ec) (Run [drawMsg])
+    _ -> pure ()
+  when (null rest && notNull nonEncounter) do
+    focusCards nonEncounter do
+      chooseOneM iid do
+        withI18n $ labeled' "continue" do
+          unfocusCards
+          for_ nonEncounter $ scenarioSpecific "removeFromAbyss" . toCardId
+          for_ (reverse nonEncounter) $ putCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck)

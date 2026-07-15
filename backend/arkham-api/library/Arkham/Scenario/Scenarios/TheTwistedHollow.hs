@@ -15,7 +15,7 @@ import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith, setActiveDuringSetup)
 import Arkham.Helpers.Query (
   allInvestigators,
   getInvestigators,
@@ -65,6 +65,12 @@ instance HasModifiersFor TheTwistedHollow where
         (AssetWithTitle "Vale Lantern")
         setActiveDuringSetup
         [DoNotTakeUpSlot #hand]
+    modifySelect
+      a
+      Anyone
+      [ CannotTriggerAbilityMatching
+          $ AbilityIsForcedAbility <> AbilityOnEnemy (OutOfPlayEnemy PursuitZone AnyEnemy)
+      ]
 
 instance HasChaosTokenValue TheTwistedHollow where
   getChaosTokenValue iid tokenFace (TheTwistedHollow attrs) = case tokenFace of

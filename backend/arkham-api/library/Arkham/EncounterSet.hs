@@ -1,10 +1,8 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.EncounterSet where
 
 import Arkham.Prelude
 
-import Data.Aeson.TH
+import Data.Data (dataTypeConstrs, dataTypeOf, fromConstr, showConstr)
 
 data EncounterSet
   = TheGathering
@@ -375,44 +373,27 @@ data EncounterSet
   | TheInescapable
   | Dreams
   | AlienMachinery
-  | -- Dark Matter (homebrew)
-    DarkMatterAnachronism
-  | DarkMatterArtificialIntelligence
-  | DarkMatterDarkPast
-  | DarkMatterDeepSpace
-  | DarkMatterElectricNightmare
-  | DarkMatterEndtimes
-  | DarkMatterFragmentOfCarcosa
-  | DarkMatterHastursGaze
-  | DarkMatterInTheShadowOfEarth
-  | DarkMatterInterstellarPredators
-  | DarkMatterLostQuantum
-  | DarkMatterStarfall
-  | DarkMatterStrangeMoons
-  | DarkMatterTheBoogeyman
-  | DarkMatterTheMachineInYellow
-  | DarkMatterTheTatterdemalion
-  | -- Circus Ex Mortis (homebrew)
-    CircusExMortisAllPointsWest
-  | CircusExMortisBacchanalia
-  | CircusExMortisChildrenOfTheGoat
-  | CircusExMortisCircusGrounds
-  | CircusExMortisCultOfShubNiggurath
-  | CircusExMortisDestinyAndProphecy
-  | CircusExMortisHarmsWay
-  | CircusExMortisIllusoryTricks
-  | CircusExMortisLunaticNight
-  | CircusExMortisNewMoonDaredevils
-  | CircusExMortisNewMoonEntertainers
-  | CircusExMortisOneNightOnly
-  | CircusExMortisPanickedMasses
-  | CircusExMortisPiperAtTheGatesOfDawn
-  | CircusExMortisPrimordialEvils
-  | CircusExMortisRedSunrise
-  | CircusExMortisSavageWoods
-  | CircusExMortisThePrimrosePath
-  | CircusExMortisThousandToOne
+  | Homebrew Text
   | Test
-  deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
+  deriving stock (Show, Eq, Ord, Data)
 
-$(deriveJSON defaultOptions ''EncounterSet)
+-- | Official sets encode as their constructor name, homebrew sets as their slug
+-- (e.g. @":dark-matter:anachronism"@). Parsing falls back to 'Homebrew' for any
+-- unrecognized string.
+instance ToJSON EncounterSet where
+  toJSON (Homebrew t) = String t
+  toJSON s = String (tshow s)
+
+officialEncounterSets :: Map Text EncounterSet
+officialEncounterSets =
+  mapFromList
+    [ (pack name, fromConstr c)
+    | c <- dataTypeConstrs (dataTypeOf (Test :: EncounterSet))
+    , let name = showConstr c
+    , name /= "Homebrew"
+    ]
+
+instance FromJSON EncounterSet where
+  parseJSON = withText "EncounterSet" \t ->
+    pure $ fromMaybe (Homebrew t) (lookup t officialEncounterSets)
+

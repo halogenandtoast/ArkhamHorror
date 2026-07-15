@@ -451,6 +451,10 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       ClueCostX -> do
         spendableClues <- getSpendableClueCount [iid]
         pure $ spendableClues >= 1
+      PerPlayerClueCostX -> do
+        spendableClues <- getSpendableClueCount [iid]
+        n <- perPlayer 1
+        pure $ spendableClues >= n
       GroupClueCostX lm -> do
         let wrapper = if lm == Matcher.Anywhere then id else (Matcher.InvestigatorAt lm <>)
         spendableClues <- getSpendableClueCount =<< select (wrapper Matcher.UneliminatedInvestigator)

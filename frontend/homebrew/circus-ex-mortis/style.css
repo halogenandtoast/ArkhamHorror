@@ -1,0 +1,11 @@
+/* Moon token (Circus Ex Mortis): no font glyph, use the token art. */
+.moon-icon {
+  &:before {
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background: url("/img/arkham/homebrew/circus-ex-mortis/icons/moon.png") center/contain no-repeat;
+    vertical-align: -0.15em;
+  }
+}

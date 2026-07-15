@@ -46,20 +46,34 @@ indent i doc = Render do
   let new = (replicate i ' ' <>) <$> execState (unRender doc) mempty
   modify (<> new)
 
+data DiscoverMode = ReExport | InstancesOnly
+
 discoverCards :: Source -> Destination -> FilePath -> IO ()
-discoverCards (Source src) (Destination dest) cardsDir = do
+discoverCards src dest cardsDir = discoverCardsWith src dest cardsDir Nothing ReExport
+
+-- | 'InstancesOnly' emits @import M ()@ lines (typeclass instances in scope,
+-- no names re-exported); an @only@ basename restricts discovery to files with
+-- that exact name, skipping files at the scan root (so a same-named central
+-- module never imports itself).
+discoverCardsWith :: Source -> Destination -> FilePath -> Maybe FilePath -> DiscoverMode -> IO ()
+discoverCardsWith (Source src) (Destination dest) cardsDir only mode = do
   let (dir, _) = splitFileName src
   files <- getFilesRecursive $ dir </> cardsDir
   let
+    wanted f = case only of
+      Nothing -> True
+      Just name -> takeFileName f == name && length (splitDirectories f) > 1
     input =
       AllModelsFile
         { amfModuleBase = fromJust $ pathToModule src
         , amfModuleImports =
             mapMaybe
               (pathToModule . ((dir </> cardsDir) </>))
-              files
+              (filter wanted files)
         }
-    output = renderFile input
+    output = case mode of
+      ReExport -> renderFile input
+      InstancesOnly -> renderInstancesFile input
 
   writeFile dest output
 
@@ -92,6 +106,26 @@ renderFile amf = render do
       "import "
       fromString $ moduleName mod'
       " as X"
+
+renderInstancesFile :: AllModelsFile -> String
+renderInstancesFile amf = render do
+  let modName = moduleName $ amfModuleBase amf
+  renderLine do
+    "{-# LINE 1 "
+    fromString $ show modName
+    " #-}"
+  ""
+  renderLine do
+    "module "
+    fromString modName
+    " () where"
+  ""
+  for_
+    (amfModuleImports amf)
+    \mod' -> renderLine do
+      "import "
+      fromString $ moduleName mod'
+      " ()"
 
 data Module = Module
   { moduleName :: String

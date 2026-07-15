@@ -63,7 +63,7 @@
     "gatherEnemies": "Gather the 15 red-backed enemy cards in *The Longest Night* encounter set.",
     "ursineHybrid": "Put the Ursine Hybrid enemy into play at the west Outer Fields location.",
     "shuffleEnemyDeck": "Shuffle the remaining enemy cards to build the Enemy deck. Place it next to the agenda deck.",
-    "bearWounded": "Check the Campaign Log. If <i>the bear was wounded</i> is recorded, deal 2 damage to the Ursine Hybrid enemy and exhaust it.",
+    "bearWounded": "Check the Campaign Log. If <i>the bear was wounded</i> is recorded, deal 2 {'{'}perPlayer{'}'} damage to the Ursine Hybrid enemy and exhaust it.",
     "defenses": "Prepare your defenses! Regardless of their starting position, investigators choose, as a group, to place a total of 1 decoy, 1 trap, and 1 barrier, divided as they want among any number of locations. (See Barriers, Decoys, and Traps to the right.)",
     "placeDefenses": "Place a total of 1 decoy, 1 trap, and 1 barrier, divided as they want among any number of locations.",
     "tokenReferenceCard": "Put the \"Barriers, Decoys, and Traps\" Token Reference Card next to the scenario reference card.",

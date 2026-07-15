@@ -46,7 +46,7 @@ const normalizeSkill = (skill: string) => {
     </template>
     <template v-else-if="modifier.type.tag === 'DiscoveredClues'">
       <span>+{{modifier.type.contents}}</span>
-      <img :src="imgsrc(`clue.png`)" />
+      <img :src="imgsrc(`tokens/clue.png`)" />
     </template>
     <template v-else-if="modifier.type.tag === 'SkillTestResultValueModifier'">
       <span class="text">{{ $t('modifier.result') }}</span> <span>{{modifier.type.contents > 0 ? '+' : ''}}{{modifier.type.contents}}</span>

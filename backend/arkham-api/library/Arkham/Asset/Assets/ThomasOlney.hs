@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
+import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Trait
 import Arkham.Scenarios.TheMidwinterGala.Helpers
 
@@ -28,7 +29,7 @@ instance HasAbilities ThomasOlney where
 instance RunMessage ThomasOlney where
   runMessage msg a@(ThomasOlney attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneDropDown iid [(displayTrait trait, ForTrait trait msg) | trait <- [minBound ..]]
+      chooseOneDropDown iid [(displayTrait trait, ForTrait trait msg) | trait <- allTraits]
       pure a
     ForTrait trait (UseThisAbility iid (isSource attrs -> True) 1) -> do
       discardTopOfEncounterDeckAndHandle iid (attrs.ability 1) 1 attrs

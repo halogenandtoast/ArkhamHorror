@@ -144,9 +144,10 @@ db-unstick-kill:
 	@./scripts/db-unstick.sh --kill
 .PHONY: db-unstick-kill
 
-## Sync local images to s3 bucket
+## Sync local images to s3 bucket (public/ plus homebrew campaign images)
 sync-images:
 	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store"
+	./scripts/sync-homebrew-images.sh
 .PHONY: sync-images
 
 ## Fetch all images via CloudFront (requires aws + curl)

@@ -30,9 +30,9 @@ export interface Props {
 }
 
 const grunge = `url(${imgsrc('grunge.png')})`
-const black_fleur = `url(${imgsrc('fleur.png')})`
-const checkpoint_fleur = `url(${imgsrc('checkpoint_fleur.png')})`
-const resolution_fleur = `url(${imgsrc('resolution_fleur.png')})`
+const black_fleur = `url(${imgsrc('fleurs/fleur.png')})`
+const checkpoint_fleur = `url(${imgsrc('fleurs/checkpoint_fleur.png')})`
+const resolution_fleur = `url(${imgsrc('fleurs/resolution_fleur.png')})`
 const props = withDefaults(defineProps<Props>(), { isSkillTest: false })
 const emit = defineEmits(['choose'])
 const { t } = useI18n()
@@ -450,8 +450,8 @@ const traumaKind = (text: string) => {
 
 const traumaIcon = (text: string) => {
   switch (traumaKind(text)) {
-    case 'health': return imgsrc('health-icon.png')
-    case 'horror': return imgsrc('horror-icon.png')
+    case 'health': return imgsrc('icons/health-icon.png')
+    case 'horror': return imgsrc('icons/horror-icon.png')
     default: return null
   }
 }
@@ -609,7 +609,8 @@ const flippableCard = (cardCode: string) => {
     skills: [],
     cost: null,
     otherSide: `${cardCode}b`,
-    meta: {}
+    meta: {},
+    errata: null
   }
 }
 

@@ -51,7 +51,7 @@ instance RunMessage CloverClubCardroom where
         CurseToken -> pure ()
         BlessToken -> pure ()
         FrostToken -> pure ()
-        MoonToken -> pure ()
+        CustomToken _ -> pure ()
       resetChaosTokens (attrs.ability 1)
       pure l
     _ -> CloverClubCardroom <$> liftRunMessage msg attrs

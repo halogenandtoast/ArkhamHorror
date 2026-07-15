@@ -1155,6 +1155,20 @@ payCost msg c iid skipAdditionalCosts cost = do
               | n <- [1 .. mVal]
               ]
       pure c
+    PerPlayerClueCostX -> do
+      mVal <- getSpendableClueCount [iid]
+      x <- perPlayer 1
+      let maxX = mVal `div` x
+      if maxX <= 1
+        then push $ pay (ClueCost (PerPlayer 1))
+        else
+          push
+            $ questionLabel ("Spend 1-" <> tshow maxX <> " {perPlayer} clues") player
+            $ DropDown
+              [ (tshow n, pay (ClueCost (PerPlayer n)))
+              | n <- [1 .. maxX]
+              ]
+      pure c
     DiscoveredCluesCost -> do
       let n = discoveredClues c.windows
       push $ pay (ClueCost $ Static n)

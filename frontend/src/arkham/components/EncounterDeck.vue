@@ -52,7 +52,7 @@ const deckImage = computed(() => {
     }
   }
 
-  return imgsrc('back.png')
+  return imgsrc('backs/back_encounter.jpg')
 })
 
 const deckAction = computed(() => {

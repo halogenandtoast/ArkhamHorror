@@ -42,7 +42,7 @@ const topOfDeck = computed(() => {
   if  (topOfDeckRevealed.value && topCard) {
     return cardImage(topCard.cardCode)
   }
-  return imgsrc("player_back.jpg")
+  return imgsrc("backs/back_player.jpg")
 })
 
 const playTopOfDeckAction = computed(() => {

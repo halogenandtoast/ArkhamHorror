@@ -13,6 +13,6 @@ CREATE TABLE IF NOT EXISTS arkham_log_entries (
   created_at TIMESTAMP DEFAULT now()
 );
 
-CREATE INDEX log_entries_game_id ON arkham_log_entries(arkham_game_id);
+CREATE INDEX IF NOT EXISTS log_entries_game_id ON arkham_log_entries(arkham_game_id);
 
 COMMIT;

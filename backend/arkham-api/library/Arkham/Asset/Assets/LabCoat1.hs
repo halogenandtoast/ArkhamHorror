@@ -23,6 +23,6 @@ instance HasAbilities LabCoat1 where
 instance RunMessage LabCoat1 where
   runMessage msg a@(LabCoat1 attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ PassSkillTestBy 0
+      passSkillTestBy 0
       pure a
     _ -> LabCoat1 <$> liftRunMessage msg attrs

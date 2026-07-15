@@ -22,14 +22,14 @@ const emit = defineEmits<{
 const keyToImage = (k: ArkhamKey): string => {
   switch (k.tag) {
     case "TokenKey": return chaosTokenImage(k.contents.face)
-    case "BlueKey": return imgsrc("keys/blue-key.jpg")
-    case "GreenKey": return imgsrc("keys/green-key.jpg")
-    case "RedKey": return imgsrc("keys/red-key.jpg")
-    case "YellowKey": return imgsrc("keys/yellow-key.jpg")
-    case "PurpleKey": return imgsrc("keys/purple-key.jpg")
-    case "BlackKey": return imgsrc("keys/black-key.jpg")
-    case "WhiteKey": return imgsrc("keys/white-key.jpg")
-    case "UnrevealedKey": return imgsrc("keys/key-back.jpg")
+    case "BlueKey": return imgsrc("extra/the-innsmouth-conspiracy/keys/blue-key.jpg")
+    case "GreenKey": return imgsrc("extra/the-innsmouth-conspiracy/keys/green-key.jpg")
+    case "RedKey": return imgsrc("extra/the-innsmouth-conspiracy/keys/red-key.jpg")
+    case "YellowKey": return imgsrc("extra/the-innsmouth-conspiracy/keys/yellow-key.jpg")
+    case "PurpleKey": return imgsrc("extra/the-innsmouth-conspiracy/keys/purple-key.jpg")
+    case "BlackKey": return imgsrc("extra/the-innsmouth-conspiracy/keys/black-key.jpg")
+    case "WhiteKey": return imgsrc("extra/the-innsmouth-conspiracy/keys/white-key.jpg")
+    case "UnrevealedKey": return imgsrc("extra/the-innsmouth-conspiracy/keys/key-back.jpg")
   }
 }
 

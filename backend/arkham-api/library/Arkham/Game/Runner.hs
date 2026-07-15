@@ -172,6 +172,14 @@ getInvestigatorsInOrder = do
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
+  -- ClearUI is pushed exactly once per accepted answer (Api Games.Shared), so
+  -- it marks the parked question as consumed. Without this, a queue that
+  -- drains without reaching a new Ask leaves the answered question on the
+  -- game; the client re-poses it and the questionVersion staleness guard in
+  -- Entity.Answer accepts the resubmit, re-running its effects (#5151). Any
+  -- seats still owed a question are re-asked by the AskMap the answer
+  -- branches append after this message.
+  ClearUI -> pure $ g & questionL .~ mempty
   AfterThisTestResolves _sid msgs -> do
     insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
     pure g
@@ -1078,12 +1086,22 @@ runGameMessage msg g = case msg of
   -- Investigators, story assets, and enemies that were here are relocated by
   -- the scenario per the enemy-location defeat rules; everything else at the
   -- location leaves play as it would when a location is removed.
+  --
+  -- Match on placement, not on `AtLocation`/`assetAt`/`TreacheryAt`: those resolve a card's
+  -- location through its controller, so a card in the play/threat area of an investigator
+  -- standing here would match and be discarded instead of moving with them.
   RemoveEnemyLocation lid -> do
-    treacheries <- select $ TreacheryAt $ LocationWithId lid
+    treacheries <-
+      select
+        $ oneOf [TreacheryWithPlacement (AtLocation lid), TreacheryWithPlacement (AttachedToLocation lid)]
     pushAll $ concatMap (resolve . toDiscard GameSource) treacheries
-    events <- select $ eventAt lid
+    events <-
+      select $ oneOf [EventWithPlacement (AtLocation lid), EventWithPlacement (AttachedToLocation lid)]
     pushAll $ concatMap (resolve . toDiscard GameSource) events
-    assets <- select $ assetAt lid <> NotAsset StoryAsset
+    assets <-
+      select
+        $ oneOf [AssetWithPlacement (AtLocation lid), AssetWithPlacement (AttachedToLocation lid)]
+        <> NotAsset StoryAsset
     pushAll $ concatMap (resolve . toDiscard GameSource) assets
     pure $ g & entitiesL . enemyLocationsL %~ deleteMap lid
   ReplaceLocation lid card replaceStrategy -> do

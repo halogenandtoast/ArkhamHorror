@@ -18,6 +18,6 @@ instance RunMessage ScrapeBy1 where
       tokens <- getSkillTestRevealedChaosTokens
       when (any (isSymbolChaosToken . (.face)) tokens) do
         assignHorror iid attrs 1
-      passSkillTest
+      passSkillTestBy 0
       pure e
     _ -> ScrapeBy1 <$> liftRunMessage msg attrs

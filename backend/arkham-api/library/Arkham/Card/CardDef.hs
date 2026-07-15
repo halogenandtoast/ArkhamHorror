@@ -148,6 +148,8 @@ toCardCodePairs c =
               , cdArt = unCardCode cardCode
               , cdAlternateCardCodes =
                   map (\c' -> if c' == cardCode then c.cardCode else c') (cdAlternateCardCodes c)
+              , cdSkills = fromMaybe (cdSkills c) $ lookup cardCode (cdAlternateSkills c)
+              , cdErrata = lookup cardCode (cdAlternateErrata c) <|> cdErrata c
               }
           )
       )
@@ -258,6 +260,9 @@ data CardDef = CardDef
   , cdEvade :: Maybe Evade
   , cdHealthDamage :: Maybe HealthDamage
   , cdSanityDamage :: Maybe SanityDamage
+  , cdAlternateSkills :: Map CardCode [SkillIcon]
+  , cdAlternateErrata :: Map CardCode Text
+  , cdErrata :: Maybe Text
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -331,7 +336,7 @@ instance HasField "unique" CardDef Bool where
   getField = cdUnique
 
 instance HasField "doubleSided" CardDef Bool where
-  getField = isJust . cdOtherSide
+  getField = cdDoubleSided
 
 instance HasField "otherSide" CardDef (Maybe CardCode) where
   getField = cdOtherSide
@@ -401,6 +406,9 @@ emptyCardDef cCode name cType =
     , cdEvade = Nothing
     , cdHealthDamage = Nothing
     , cdSanityDamage = Nothing
+    , cdAlternateSkills = mempty
+    , cdAlternateErrata = mempty
+    , cdErrata = Nothing
     }
 
 instance IsCardMatcher CardDef where
@@ -528,6 +536,9 @@ cardDefKeyValues CardDef {..} =
         , pairJust "evade" cdEvade
         , pairJust "healthDamage" cdHealthDamage
         , pairJust "sanityDamage" cdSanityDamage
+        , pairWhen (not $ null cdAlternateSkills) "alternateSkills" cdAlternateSkills
+        , pairWhen (not $ null cdAlternateErrata) "alternateErrata" cdAlternateErrata
+        , pairJust "errata" cdErrata
         ]
   where
     pairWhen :: (KeyValue e kv, ToJSON v) => Bool -> Key -> v -> [kv]
@@ -610,5 +621,8 @@ instance FromJSON CardDef where
     cdEvade <- o .:? "evade"
     cdHealthDamage <- o .:? "healthDamage"
     cdSanityDamage <- o .:? "sanityDamage"
+    cdAlternateSkills <- o .:? "alternateSkills" .!= mempty
+    cdAlternateErrata <- o .:? "alternateErrata" .!= mempty
+    cdErrata <- o .:? "errata"
 
     pure CardDef {..}

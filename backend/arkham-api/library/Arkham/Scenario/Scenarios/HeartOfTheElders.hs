@@ -18,7 +18,7 @@ import Arkham.Card
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.GameT (GameT)
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
@@ -462,7 +462,19 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
                   (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns])
                   >>= \case
                     Just eid -> field EnemyDamage eid
-                    Nothing -> getRecordCount TheHarbingerIsStillAlive
+                    -- the Harbinger may have fled mid-scenario (set aside, out of play);
+                    -- read its damage from the set-aside zone so it isn't lost (#5133)
+                    Nothing ->
+                      selectOne
+                        ( OutOfPlayEnemy SetAsideZone
+                            $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+                        )
+                        >>= \case
+                          Just eid ->
+                            field @(OutOfPlayEntity 'SetAsideZone Enemy)
+                              (OutOfPlayEnemyField SetAsideZone EnemyDamage)
+                              eid
+                          Nothing -> getRecordCount TheHarbingerIsStillAlive
               recordCount TheHarbingerIsStillAlive damage
         endOfScenario
     pure s

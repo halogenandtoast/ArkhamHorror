@@ -23,8 +23,10 @@ import Arkham.Helpers.Message (placeLocation, pushM, toDiscard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
+import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Helpers.Window hiding (attackSource)
+import Arkham.History (defeatedEnemyHealth)
 import Arkham.Id
 import Arkham.Keyword hiding (Surge)
 import Arkham.Matcher hiding (DealtDamage, canEnterLocation)
@@ -36,6 +38,7 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
+import Arkham.Scenario.Types (Field (ScenarioDefeatedEnemies))
 import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
@@ -437,8 +440,15 @@ createEngagedWith investigator ec =
 
 getDefeatedEnemyHealth :: (HasGame m, Tracing m) => EnemyId -> m (Maybe Int)
 getDefeatedEnemyHealth eid = do
-  healthValue <- getEnemyField EnemyHealthActual eid
-  for healthValue calculate
+  getEnemyField EnemyHealthActual eid >>= \case
+    Just healthValue -> Just <$> calculate healthValue
+    -- A removed enemy keeps its entity (placed OutOfPlay RemovedZone) so that
+    -- effects resolving alongside the defeat can still read it, but
+    -- clearRemovedEntities drops it from the entity map once the ability that
+    -- defeated it resolves, and again at BeginTurn. An IfEnemyDefeated window
+    -- answered after that finds no enemy at all, so fall back to the health
+    -- recorded at the moment it was defeated.
+    Nothing -> fmap defeatedEnemyHealth . lookup eid <$> scenarioField ScenarioDefeatedEnemies
 
 type family FlatField k where
   FlatField (Maybe a) = a

@@ -11,11 +11,11 @@ const props = defineProps<{
 const sealToImage = (k: Seal): string => {
   const revealed = k.sealActive ? "active" : "dormant"
   switch (k.sealKind) {
-    case "SealA": return imgsrc(`seals/seal-a-${revealed}.png`)
-    case "SealB": return imgsrc(`seals/seal-b-${revealed}.png`)
-    case "SealC": return imgsrc(`seals/seal-c-${revealed}.png`)
-    case "SealD": return imgsrc(`seals/seal-d-${revealed}.png`)
-    case "SealE": return imgsrc(`seals/seal-e-${revealed}.png`)
+    case "SealA": return imgsrc(`extra/edge-of-the-earth/seals/seal-a-${revealed}.png`)
+    case "SealB": return imgsrc(`extra/edge-of-the-earth/seals/seal-b-${revealed}.png`)
+    case "SealC": return imgsrc(`extra/edge-of-the-earth/seals/seal-c-${revealed}.png`)
+    case "SealD": return imgsrc(`extra/edge-of-the-earth/seals/seal-d-${revealed}.png`)
+    case "SealE": return imgsrc(`extra/edge-of-the-earth/seals/seal-e-${revealed}.png`)
   }
 }
 

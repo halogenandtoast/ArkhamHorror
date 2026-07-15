@@ -95,7 +95,7 @@ function localizeCard(result: Arkham.CardDef | undefined): Arkham.CardDef | unde
 
 function findCardByDeckCode(code: string): Arkham.CardDef | undefined {
   if (code === "c01000") {
-    return { cardCode: code, doubleSided: false, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null, otherSide: null, meta: {} }
+    return { cardCode: code, doubleSided: false, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null, otherSide: null, meta: {}, errata: null }
   }
 
   const normalized = code.replace(/^c/, '')

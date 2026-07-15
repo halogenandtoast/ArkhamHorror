@@ -3,6 +3,7 @@
 module Arkham.Agenda (module Arkham.Agenda) where
 
 import Arkham.Agenda.Agendas
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
@@ -29,7 +30,7 @@ withAgendaCardCode cCode f = case lookup cCode allAgendas of
   Just (SomeAgendaCard a) -> f a
 
 allAgendas :: Map CardCode SomeAgendaCard
-allAgendas =
+allAgendas = (mapFrom someAgendaCardCode Registry.agendas <>) $
   mapFrom
     someAgendaCardCode
     [ -- Night of the Zealot

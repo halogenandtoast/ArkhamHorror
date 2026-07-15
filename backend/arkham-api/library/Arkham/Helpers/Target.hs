@@ -174,6 +174,7 @@ targetMatches s = \case
           Limbo -> field TreacheryDrawnBy tid >>= isLocation InvestigatorLocation
           _ -> isLocation TreacheryLocation tid
       EventTarget eid -> fieldMapM EventPlacement placementLocation eid <&> maybe False (`elem` locations)
+      ProxyTarget proxyTarget _ -> targetMatches proxyTarget (TargetAtLocation ls)
       _ -> pure False
   TargetWithDoom -> case s of
     AssetTarget aid -> fieldSome AssetDoom aid

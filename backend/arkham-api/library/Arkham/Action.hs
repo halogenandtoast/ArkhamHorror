@@ -1,6 +1,7 @@
 module Arkham.Action where
 
 import Arkham.Prelude
+import Data.Data (dataTypeConstrs, dataTypeOf, fromConstr, showConstr)
 import GHC.OverloadedLabels
 
 data ActionType
@@ -31,9 +32,40 @@ data Action
   | Resource
   | Explore
   | Circle
-  | Scan
-  deriving stock (Show, Eq, Ord, Bounded, Enum, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  | -- | Open extension point for homebrew actions. Do not use directly; each
+    -- homebrew campaign owns pattern synonyms over this (see its @Actions.hs@,
+    -- e.g. @Arkham.Homebrew.DarkMatter.Actions@). The 'Text' tag is the action
+    -- name, so serialization matches a plain enum constructor and needs no
+    -- migration.
+    HomebrewAction Text
+  deriving stock (Show, Eq, Ord, Generic, Data)
+  deriving anyclass (Hashable)
+
+-- | Core actions serialize as their bare constructor name (as the derived
+-- all-nullary encoding did); a 'HomebrewAction' serializes as its tag, which by
+-- construction equals the old constructor name, so saves round-trip. FromJSON
+-- resolves core names first, so a promoted homebrew action decodes to it.
+instance ToJSON Action where
+  toJSON = \case
+    HomebrewAction t -> toJSON t
+    a -> toJSON (tshow a)
+
+instance FromJSON Action where
+  parseJSON = withText "Action" $ \t ->
+    pure $ findWithDefault (HomebrewAction t) t coreActionByName
+
+-- | Every non-homebrew action. Replaces @[minBound .. maxBound]@ now that
+-- 'Action' carries the open 'HomebrewAction' constructor. For the full set
+-- including homebrew, use @Arkham.Homebrew.Defs.allActions@.
+coreActions :: [Action]
+coreActions =
+  [ fromConstr con
+  | con <- dataTypeConstrs (dataTypeOf (HomebrewAction ""))
+  , showConstr con /= "HomebrewAction"
+  ]
+
+coreActionByName :: Map Text Action
+coreActionByName = mapFromList [(tshow a, a) | a <- coreActions]
 
 instance IsLabel "activate" Action where
   fromLabel = Activate
@@ -73,6 +105,3 @@ instance IsLabel "explore" Action where
 
 instance IsLabel "circle" Action where
   fromLabel = Circle
-
-instance IsLabel "scan" Action where
-  fromLabel = Scan

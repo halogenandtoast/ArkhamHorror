@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { TokenType } from '@/arkham/types/Token';
-import { ComputedRef, computed, ref } from 'vue';
+import { ComputedRef, computed, ref, watch } from 'vue';
 import { useCardStore } from '@/stores/cards';
 import { useDebug } from '@/arkham/debug';
 import { useI18n } from 'vue-i18n';
@@ -218,10 +218,16 @@ function hideTreacheryGroup(cCode: string) {
   if (revealedTreacheryGroup.value === cCode) revealedTreacheryGroup.value = null
 }
 
-const isVertical = computed(() => {
-  const cardCode = props.agenda.flipped ? id.value.replace(/a?$/, 'b') : id.value
-  return ["c01121b", "c03241b", "c06169b", "c50026b", "c07164b", "c07165b", "c07199b", "c82002b", "c90033b", "c90066b"].includes(cardCode) 
-})
+// Full-height backs (an act/agenda that flips to an enemy or location) are stored
+// portrait; normal act/agenda faces are landscape. Detect from the loaded image
+// instead of maintaining a card-code whitelist. Reset on src change so a flip
+// re-detects; @load then corrects it.
+const isVertical = ref(false)
+function updateOrientation(e: Event) {
+  const img = e.target as HTMLImageElement
+  isVertical.value = img.naturalHeight > img.naturalWidth
+}
+watch(image, () => { isVertical.value = false })
 
 const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 const wards = computed(() => props.agenda.tokens[TokenType.Ward])
@@ -244,6 +250,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
         :class="{ 'agenda--can-progress': interactAction !== -1, 'card--sideways': !isVertical }"
           class="card card--agenda"
           @click="$emit('choose', interactAction)"
+          @load="updateOrientation"
           :src="image"
         />
         <div class="pool" v-if="!agenda.flipped">

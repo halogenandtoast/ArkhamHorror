@@ -2,6 +2,7 @@
 module Arkham.Treachery.Cards (module Arkham.Treachery.Cards, module X) where
 
 import Arkham.Treachery.CardDefs.Base as X
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Treachery.CardDefs.Core2026 as X
 import Arkham.Treachery.CardDefs.EdgeOfTheEarth as X
 import Arkham.Treachery.CardDefs.NightOfTheZealot as X
@@ -18,8 +19,6 @@ import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Treachery.CardDefs.ThePathToCarcosa as X
 import Arkham.Treachery.CardDefs.TheScarletKeys as X
 import Arkham.Treachery.CardDefs.RelicsOfThePast as X
-import Arkham.Treachery.CardDefs.DarkMatter as X
-import Arkham.Treachery.CardDefs.CircusExMortis as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -29,7 +28,7 @@ allTreacheryCards :: Map CardCode CardDef
 allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
 
 allPlayerTreacheryCards :: Map CardCode CardDef
-allPlayerTreacheryCards =
+allPlayerTreacheryCards = (Homebrew.playerTreacheriesMap <>) $
   mapFromList
     $ concatMap
       toCardCodePairs
@@ -162,12 +161,10 @@ allPlayerTreacheryCards =
       , calledToGuinee
       , hemophobia
       , markOfElokoss
-      -- Dark Matter (homebrew)
-      , desyncDarkMatter
       ]
 
 allEncounterTreacheryCards :: Map CardCode CardDef
-allEncounterTreacheryCards =
+allEncounterTreacheryCards = (Homebrew.treacheriesMap <>) $
   mapFromList
     $ concatMap
       toCardCodePairs
@@ -789,117 +786,4 @@ allEncounterTreacheryCards =
       , stillBehindYou
       , deepOneAmbush
       , infernalMachinery
-      -- Dark Matter (homebrew)
-      , anachronismDarkMatter
-      , hauntingPastDarkMatter
-      , reminiscencePledgeDarkMatter
-      , reminiscenceSecretsDarkMatter
-      , reminiscenceCovenantDarkMatter
-      , callOfTheVoidDarkMatter
-      , coldVacuumDarkMatter
-      , micrometeoroidDarkMatter
-      , theColorsOfSpaceDarkMatter
-      , grimFutureDarkMatter
-      , futureEvilsDarkMatter
-      , artificialGravityMalfunctionDarkMatter
-      , cabinPressureDarkMatter
-      , coolantLeakDarkMatter
-      , decompressionDarkMatter
-      , highRadiationLevelsDarkMatter
-      , allSeeingEyeDarkMatter
-      , electricSurgeDarkMatter
-      , hallucinatoryHologramsDarkMatter
-      , predictiveAlgorithmDarkMatter
-      , digitalCorrosionDarkMatter
-      , decoherenceDarkMatter
-      , duplicationDarkMatter
-      , nonEuclideanGeometryDarkMatter
-      , comeCLOSERDarkMatter
-      , rememberMEDarkMatter
-      , surpriseDarkMatter
-      , entangledDarkMatter
-      , incomprehensibleDarkMatter
-      , paradoxicalThreatDarkMatter
-      , quantumCollapseDarkMatter
-      , radioactiveDecayDarkMatter
-      , anothersWoeDarkMatter
-      , contaminationDarkMatter
-      , fromTheDarkDarkMatter
-      , hopelessDarkMatter
-      , infectionDarkMatter
-      , paleBlueDotDarkMatter
-      , perfectImitationDarkMatter
-      , scrambledDarkMatter
-      , alienAidDarkMatter
-      , closeEncountersDarkMatter
-      , innocentMishapDarkMatter
-      , lostInTranslationDarkMatter
-      , miGoExperimentsDarkMatter
-      , simulationDiscrepancyDarkMatter
-      , toxicPitsDarkMatter
-      , extraterrestrialAssaultDarkMatter
-      , darkReflectionsMalingererDarkMatter
-      , darkReflectionsMurdererDarkMatter
-      , darkReflectionsSycophantDarkMatter
-      , darkReflectionsZealotDarkMatter
-      , delusionalMadnessDarkMatter
-      , fathomlessRegretsDarkMatter
-      , forbiddingPromisesDarkMatter
-      , persistenceOfMemoryDarkMatter
-      , perspectiveSwitchDarkMatter
-      , brokenRealityDarkMatter
-      , caveCollapseDarkMatter
-      , chosenByHimDarkMatter
-      , echoesOfTassildaMatterDarkMatter
-      , echoesOfTassildaMindDarkMatter
-      , hastursDomainDarkMatter
-      , irresistibleTruthsDarkMatter
-      , madnessOfCarcosaDarkMatter
-      , sceneShiftingDarkMatter
-      , songOfYourSoulDarkMatter
-      , unstableDimensionDarkMatter
-      , alienationDarkMatter
-      , solarEclipseDarkMatter
-      , theDarkForestDarkMatter
-      , theStarsWereRightDarkMatter
-      , solarFlareDarkMatter
-      , radiantCrownDarkMatter
-      -- Circus Ex Mortis (homebrew)
-      , maddeningSpectacleCircusExMortis
-      , feralImpulsesCircusExMortis
-      , moonlightIllusionCircusExMortis
-      , closeWatchCircusExMortis
-      , keepQuietCircusExMortis
-      , violentThrashingCircusExMortis
-      , brokenCouplingsCircusExMortis
-      , focusedSabotageCircusExMortis
-      , overloadedEngineCircusExMortis
-      , ricketyRideCircusExMortis
-      , duplicitousIllusionCircusExMortis
-      , phantomBeastsCircusExMortis
-      , shadowyPerformanceCircusExMortis
-      , allThatGlittersCircusExMortis
-      , bestLeftUnsaidCircusExMortis
-      , destructiveImpulsesCircusExMortis
-      , drinkAndBeMerryCircusExMortis
-      , perfumeAndPassionCircusExMortis
-      , crashingTreesCircusExMortis
-      , silentForestCircusExMortis
-      , balefulEclipseCircusExMortis
-      , dreadOfTheNewMoonCircusExMortis
-      , hungerOfThousandsCircusExMortis
-      , ireOfShubNiggurathCircusExMortis
-      , endlessSpawnCircusExMortis
-      , milkOfShubNiggurathCircusExMortis
-      , hypnoticGlamourCircusExMortis
-      , phantasmalDeceptionCircusExMortis
-      , lunarInfluenceCircusExMortis
-      , ominousMoonlightCircusExMortis
-      , recklessStuntCircusExMortis
-      , quickerThanTheEyeCircusExMortis
-      , lostAllControlCircusExMortis
-      , wildHysteriaCircusExMortis
-      , primordialEvilsCircusExMortis
-      , denseTangleCircusExMortis
-      , lostTheTrailCircusExMortis
       ]

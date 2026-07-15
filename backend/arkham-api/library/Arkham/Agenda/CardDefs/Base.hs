@@ -16,3 +16,10 @@ agenda cardCode name stage encounterSet =
     , cdStage = Just stage
     , cdLevel = Nothing
     }
+
+otherSideIs :: CardCode -> CardDef -> CardDef
+otherSideIs ccode def =
+  def
+    { cdDoubleSided = False
+    , cdOtherSide = Just ccode
+    }

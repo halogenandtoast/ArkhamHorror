@@ -312,7 +312,7 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
       <div class="skill-test-contents">
         <div v-if="swarmEnemy" class="target-card swarming">
           <div class="swarm">
-            <img :src="imgsrc('player_back.jpg')" class="card" />
+            <img :src="imgsrc('backs/back_player.jpg')" class="card" />
           </div>
           <div v-if="swarmHost" class="host">
             <Card :game="game" :card="swarmHost" :revealed="true" playerId="" />
@@ -344,7 +344,7 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
               </div>
             </div>
             <div v-else-if="skillTest.baseValue.tag === 'HalfResourcesOf'" class="half-resources">
-              <img :src="imgsrc(`resource.png`)" /> / 2
+              <img :src="imgsrc(`tokens/resource.png`)" /> / 2
             </div>
             <span>VS</span>
           </div>
@@ -420,7 +420,7 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
           </template>
           <template v-if="modifier.type.tag === 'DiscoveredClues'">
             <span>+{{modifier.type.contents}}</span>
-            <img :src="imgsrc(`clue.png`)" />
+            <img :src="imgsrc(`tokens/clue.png`)" />
           </template>
           <template v-if="modifier.type.tag === 'SkillTestResultValueModifier'">
             <span class="text">{{ $t('modifier.result') }}</span> <span>{{modifier.type.contents > 0 ? '+' : ''}}{{modifier.type.contents}}</span>

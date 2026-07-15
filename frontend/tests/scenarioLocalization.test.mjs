@@ -5,6 +5,7 @@ import test from 'node:test'
 
 const library = path.resolve(import.meta.dirname, '../../backend/arkham-api/library/Arkham')
 const scenarioSourceDirectories = [
+  'Homebrew',
   'Act/Cards',
   'Agenda/Cards',
   'Campaign/Campaigns',

@@ -102,7 +102,7 @@ const swarmCards = computed<ArkhamCard[]>(() =>
 
 const swarmCardsShown = ref(false)
 const swarmTooltip = computed(() => `Swarm cards (${swarmCards.value.length}) — click to view`)
-const swarmBackImage = imgsrc('player_back.jpg')
+const swarmBackImage = imgsrc('backs/back_player.jpg')
 const swarmEnemyDamage = (enemy: typeof props.enemy) => (enemy.tokens[TokenType.Damage] || 0) + enemy.assignedDamage
 
 const isSwarm = computed(() => props.enemy.placement.tag === 'AsSwarm')
@@ -386,7 +386,7 @@ function onDrop(event: DragEvent) {
             <img v-else
               :draggable="debug.active"
               @dragstart="startDrag($event, enemy)"
-              :src="isSwarm ? imgsrc('player_back.jpg') : image"
+              :src="isSwarm ? imgsrc('backs/back_player.jpg') : image"
               class="card enemy"
               v-tooltip="sourceTooltip"
               :class="{ 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking, 'ai-target-hover': ai.targeting }"

@@ -28,8 +28,8 @@ watch(pending, (next) => {
 
 onUnmounted(() => { if (hideTimer) clearTimeout(hideTimer) })
 
-const damageToken = imgsrc('damage-token.png')
-const horrorToken = imgsrc('horror-token.png')
+const damageToken = imgsrc('tokens/damage-token.png')
+const horrorToken = imgsrc('tokens/horror-token.png')
 </script>
 
 <template>

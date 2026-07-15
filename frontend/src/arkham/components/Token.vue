@@ -65,7 +65,7 @@ const classObject = computed(() => ({
     />
     <img
       class="token back"
-      :src="imgsrc('ct_blank.png')"
+      :src="imgsrc('chaos-tokens/ct_blank.png')"
     />
   </div>
 </template>

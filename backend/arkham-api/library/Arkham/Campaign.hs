@@ -3,6 +3,8 @@
 module Arkham.Campaign where
 
 import Arkham.Campaign.Campaigns
+import Arkham.Homebrew.Registry qualified as Registry
+import Arkham.Homebrew.Types (HomebrewCampaign (..))
 import Arkham.Campaign.Runner
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
 import Arkham.Classes
@@ -41,8 +43,11 @@ instance FromJSON Campaign where
 
 data SomeCampaign = forall a. IsCampaign a => SomeCampaign (Difficulty -> a)
 
+homebrewCampaigns :: Map CampaignId SomeCampaign
+homebrewCampaigns = mapFromList [(c, SomeCampaign f) | (c, HomebrewCampaign f) <- Registry.campaigns]
+
 allCampaigns :: Map CampaignId SomeCampaign
-allCampaigns =
+allCampaigns = (homebrewCampaigns <>) $
   mapFromList
     [ ("01", SomeCampaign nightOfTheZealot)
     , ("02", SomeCampaign theDunwichLegacy)
@@ -63,7 +68,4 @@ allCampaigns =
     , ("12", SomeCampaign brethrenOfAsh)
     , ("11", SomeCampaign theDrownedCity)
     , ("83", SomeCampaign guardiansOfTheAbyss)
-    , -- Homebrew
-      ("z-dark-matter", SomeCampaign darkMatter)
-    , ("z-circus-ex-mortis", SomeCampaign circusExMortis)
     ]

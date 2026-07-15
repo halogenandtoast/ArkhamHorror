@@ -57,6 +57,7 @@ laboratoryAssistant =
     , cdCardTraits = setFromList [Ally, Miskatonic, Science]
     , cdSlots = [#ally]
     , cdAlternateCardCodes = ["60212", "12032"]
+    , cdAlternateSkills = singletonMap "12032" [#willpower]
     }
 
 strangeSolution :: CardDef

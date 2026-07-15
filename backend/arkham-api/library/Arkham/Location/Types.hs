@@ -351,8 +351,8 @@ locationResignAction attrs =
   toLocationAbility attrs (mkAbility attrs 99 $ ActionAbility #resign Nothing (ActionCost 1))
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
-toLocationAbility attrs =
-  abilityCriteriaL <>~ OnLocation (LocationWithId $ toId attrs)
+toLocationAbility attrs = abilityCriteriaL <>~ OnLocation (LocationWithId $ toId attrs)
+
 data Location = forall a. IsLocation a => Location a
 
 instance HasField "id" Location LocationId where

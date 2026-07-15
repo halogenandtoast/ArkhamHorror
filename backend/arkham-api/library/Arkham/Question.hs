@@ -173,6 +173,11 @@ data AmountTarget = MinAmountTarget Int | MaxAmountTarget Int | TotalAmountTarge
 data Question msg
   = ChooseOne {choices :: [UI msg]}
   | PlayerWindowChooseOne {choices :: [UI msg]}
+  | -- | A seat's choices for an open window, built by @runWindow@. The
+    -- @WindowAsk@ handler queues a @Do (CheckWindows ws)@ behind the ask, which
+    -- rebuilds every seat from scratch, so a seat left over after another seat
+    -- answers is stale and must be dropped rather than re-asked (#5160).
+    WindowChooseOne {choices :: [UI msg]}
   | ChooseOneFromEach {groups :: [[UI msg]]}
   | ChooseN {amount :: Int, choices :: [UI msg]}
   | ChooseSome {choices :: [UI msg]}

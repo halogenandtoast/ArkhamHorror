@@ -52,6 +52,7 @@ endurance =
   (asset "12017" "Endurance" 2 Guardian)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Talent]
+    , cdErrata = Just "This card should have a wild skill icon."
     }
 
 loganHastingsBountyHunter :: CardDef
@@ -274,6 +275,8 @@ huntersInstinct =
     , cdCardTraits = setFromList [Talent]
     , cdLimits = [LimitPerInvestigator 1]
     , cdUses = uses Supply 3
+    , cdErrata =
+        Just "This card’s keyword line should read “If there are no supplies on Hunter’s Instinct, discard it.”"
     }
 
 jumpsuit :: CardDef

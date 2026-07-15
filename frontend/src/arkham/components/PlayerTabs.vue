@@ -42,7 +42,7 @@ const investigators = computed(() =>
   props.playerOrder.filter(iid => !props.game.investigators[iid]?.eliminated).map(iid => props.players[iid])
 )
 const inactiveInvestigators = computed(() => props.playerOrder.filter(iid => props.game.investigators[iid]?.eliminated ?? false).map(iid => props.players[iid]))
-const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)
+const lead = computed(() => `url('${imgsrc(`tokens/lead-investigator.png`)}')`)
 const { isMobile } = IsMobile();
 const store = useDbCardStore()
 
@@ -118,12 +118,20 @@ const sourceToPlacement = (source: Source): Placement | null => {
     case "EnemySource":
       {
         const { contents } = source
-        if (contents) return props.game.enemies[contents].placement
+        if (typeof contents === 'string') {
+          const enemy = props.game.enemies[contents]
+          if (enemy) return enemy.placement
+        }
+        break
       }
     case "TreacherySource":
       {
         const { contents } = source
-        if (contents) return props.game.treacheries[contents].placement
+        if (typeof contents === 'string') {
+          const treachery = props.game.treacheries[contents]
+          if (treachery) return treachery.placement
+        }
+        break
       }
     default:
   }
@@ -190,13 +198,14 @@ watchEffect(() => {
 
   const playerIds = [...new Set(allTargets ? playersWithTargets : playersWithForced)]
 
+  if (userPicked.value) return
+
   if (playerIds.length == 0) {
     const investigator = Object.values(props.players).find(i => i.playerId === props.playerId)
     if (investigator && investigator.id == props.activePlayerId) {
       selectedTab.value = props.playerId
       return
     }
-    if (userPicked.value) return
   }
 
   // In true multiplayer each player controls their own view and shouldn't be
@@ -213,7 +222,6 @@ watchEffect(() => {
       selectedTab.value = playerIds[0]
       return
     }
-    if (userPicked.value) return
     selectedTab.value = props.playerId
     return
   }

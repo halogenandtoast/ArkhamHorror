@@ -32,24 +32,21 @@ async function choose(idx: number) {
 }
 
 //const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep')
+// A question can be parked while gameState is still IsChooseDecks (e.g. an
+// Ultimatums & Boons question asked between deck loads). It must render
+// through the same question branches as an active game, or the screen is blank.
+const hasQuestion = computed(() => Object.keys(props.game.question).length > 0)
+
 const chooseDeck = computed(() => {
-  const question = Object.values(props.game.question)[0]
-
-  if (question === null || question == undefined) {
-    return false
-  }
-
-  const { tag } = question
-
-  if (tag === 'ChooseDeck' || props.game.gameState.tag === 'IsChooseDecks') {
-    return true
-  }
-
-  if (tag === 'QuestionLabel') {
-    return question.question.tag === 'ChooseDeck'
-  }
-
-  return false
+  // Deck screen only while someone actually has a ChooseDeck question parked.
+  // gameState alone is not enough: it can be stuck at IsChooseDecks with a
+  // different question pending (e.g. after a lost DoneChoosingDecks), and
+  // rendering by state would mask that question behind an inert deck screen.
+  return Object.values(props.game.question).some((q) => {
+    if (!q) return false
+    if (q.tag === 'ChooseDeck') return true
+    return q.tag === 'QuestionLabel' && q.question.tag === 'ChooseDeck'
+  })
 })
 
 const questionLabel = computed(() => {
@@ -96,7 +93,7 @@ const storyQuestionOverride = computed(() =>
     <h2 v-if="questionLabel" class="question-label">{{ questionLabel }}</h2>
     <ChooseDeck :game="game" :playerId="playerId" @choose="choose" />
   </div>
-  <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
+  <div v-else-if="game.gameState.tag === 'IsActive' || hasQuestion" id="game" class="game">
     <ContinueCampaign
       v-if="continueCampaign"
       :game="game"

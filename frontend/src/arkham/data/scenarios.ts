@@ -1,4 +1,5 @@
 import nightOfTheZealot from '@/arkham/data/nightOfTheZealot.json'
+import { homebrewScenarios } from '@/arkham/homebrewData'
 import theDunwichLegacy from '@/arkham/data/theDunwichLegacy.json'
 import thePathToCarcosa from '@/arkham/data/thePathToCarcosa.json'
 import theForgottenAge from '@/arkham/data/theForgottenAge.json'
@@ -10,8 +11,6 @@ import theScarletKeys from '@/arkham/data/theScarletKeys.json'
 import theFeastOfHemlockVale from '@/arkham/data/theFeastOfHemlockVale.json'
 import brethrenOfAsh from '@/arkham/data/brethrenOfAsh.json'
 import theDrownedCity from '@/arkham/data/theDrownedCity.json'
-import darkMatter from '@/arkham/data/darkMatter.json'
-import circusExMortis from '@/arkham/data/circusExMortis.json'
 import sideStories from '@/arkham/data/side-stories.json'
 
 export default
@@ -27,7 +26,6 @@ export default
   , ...theFeastOfHemlockVale
   , ...brethrenOfAsh
   , ...theDrownedCity
-  , ...darkMatter
-  , ...circusExMortis
   , ...sideStories
-  ]
+    , ...homebrewScenarios
+]

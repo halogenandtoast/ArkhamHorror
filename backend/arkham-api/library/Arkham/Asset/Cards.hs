@@ -1,6 +1,7 @@
 module Arkham.Asset.Cards (module Arkham.Asset.Cards, module X) where
 
 import Arkham.Asset.Cards.AndrePatel as X
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Asset.Cards.CarolynFern2 as X
 import Arkham.Asset.Cards.Core2026 as X
 import Arkham.Asset.Cards.EdgeOfTheEarth as X
@@ -24,8 +25,6 @@ import Arkham.Asset.Cards.TheScarletKeys as X
 import Arkham.Asset.Cards.TommyMuldoon2 as X
 import Arkham.Asset.Cards.RedTideRising as X
 import Arkham.Asset.Cards.RelicsOfThePast as X
-import Arkham.Asset.Cards.DarkMatter as X
-import Arkham.Asset.Cards.CircusExMortis as X
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
@@ -1086,7 +1085,7 @@ allPlayerAssetCards =
 
 -- with encounter backs
 allEncounterAssetCards :: Map CardCode CardDef
-allEncounterAssetCards =
+allEncounterAssetCards = (Homebrew.encounterAssetsMap <>) $
   mapFromList
     $ map
       (toCardCode &&& id)
@@ -1215,66 +1214,6 @@ allEncounterAssetCards =
       , obsidianClawPower
       , johnRaymondLegrasse
       , horrorInClay
-      -- Dark Matter (homebrew)
-      , virtualAccessKeyDarkMatter
-      , evaSuitDarkMatter
-      , heirToCarcosaDarkMatter
-      , medicalFoamDarkMatter
-      , mindMachineInterfaceDarkMatter
-      , radiationTabletsDarkMatter
-      , majaDarkMatter
-      , k2PS18725FunctionalityDarkMatter
-      , k2PS18750FunctionalityDarkMatter
-      , k2PS18775FunctionalityDarkMatter
-      , k2PS187100FunctionalityDarkMatter
-      , erwinSimmonsFadingDarkMatter
-      , erwinSimmonsQuantumPhysicistDarkMatter
-      , spaceArtilleryDarkMatter
-      , adamTannerDarkMatter
-      , captainBurrDarkMatter
-      , doctorFengDarkMatter
-      , ltArcherMichaelsDarkMatter
-      , muD12MudbugDarkMatter
-      , sophieDarkMatter
-      , brainCylinder089DarkMatter
-      , brainCylinder114DarkMatter
-      , brainCylinder367DarkMatter
-      , bottleOfWhispersDarkMatter
-      , projectOrigamiDarkMatter
-      , lastHopeDarkMatter
-      , repairingTheThresholdDarkMatter
-      , arNODarkMatter
-      , directorCixinDarkMatter
-      , miGoCollectorDarkMatter
-      , thePallidMaskDarkMatter
-      , k11SurveyUnitDarkMatter
-      , shieldingDeviceDarkMatter
-      , stasisCubeDarkMatter
-      , universalArchivesDarkMatter
-      -- Circus Ex Mortis (homebrew)
-      , illusoryLocusCircusExMortis
-      , carrieDykstraCircusExMortis
-      , ralphDykstraCircusExMortis
-      , cecilSharpeCircusExMortis
-      , estherMeredithCircusExMortis
-      , phillipHutchinsCircusExMortis
-      , richardStrattonCircusExMortis
-      , veraAshcroftCircusExMortis
-      , amaltheaWeaverCircusFortuneTellerCircusExMortis
-      , amaltheaWeaverAspirantOfCourageCircusExMortis
-      , amaltheaWeaverAspirantOfWisdomCircusExMortis
-      , amaltheaWeaverOracleOfPurityCircusExMortis
-      , amaltheaWeaverOracleOfResolveCircusExMortis
-      , amaltheaWeaverOracleOfEnlightenmentCircusExMortis
-      , amaltheaWeaverOracleOfMysteryCircusExMortis
-      , deCultusBestiaeForgottenWorkOfApuleiusCircusExMortis
-      , deCultusBestiaeInterpretationOfConvictionCircusExMortis
-      , deCultusBestiaeInterpretationOfObsessionCircusExMortis
-      , deCultusBestiaeProphecyOfTheBeyondCircusExMortis
-      , deCultusBestiaeProphecyOfTheEternalCircusExMortis
-      , deCultusBestiaeProphecyOfTheHordeCircusExMortis
-      , deCultusBestiaeProphecyOfTheBehemothCircusExMortis
-      , terrifiedCaptivesCircusExMortis
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

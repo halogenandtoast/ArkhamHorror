@@ -90,6 +90,8 @@ huntersInstinct2 =
     , cdUses = uses Supply 3
     , cdLimits = [LimitPerInvestigator 1]
     , cdLevel = Just 2
+    , cdErrata =
+        Just "This card’s keyword line should read “If there are no supplies on Hunter’s Instinct, discard it.”"
     }
 
 winchesterModel522 :: CardDef

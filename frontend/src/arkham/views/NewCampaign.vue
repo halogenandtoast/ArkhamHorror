@@ -11,7 +11,8 @@ import { storeToRefs } from 'pinia'
 import type { GameMode, MultiplayerVariant, CampaignType, AiSlotConfig } from '@/arkham/types/NewGame'
 
 import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
-import campaignJSON from '@/arkham/data/campaigns'
+import officialCampaignJSON from '@/arkham/data/campaigns'
+import { homebrewCampaigns } from '@/arkham/homebrewData'
 import scenarioJSON from '@/arkham/data/scenarios'
 import sideStoriesJSON from '@/arkham/data/side-stories'
 import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
@@ -20,6 +21,8 @@ import ChooseMode from '@/arkham/components/NewCampaign/ChooseMode.vue'
 import GameOptions from '@/arkham/components/NewCampaign/GameOptions.vue'
 
 type Step = 'ChooseMode' | 'GameOptions'
+type CampaignGroup = 'chapter1' | 'chapter2' | 'homebrew'
+type ScenarioGroup = 'sideStories' | 'challengeScenarios'
 
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
@@ -36,6 +39,8 @@ const gate = <T extends { alpha?: boolean; beta?: boolean; dev?: boolean }>(item
   filterDisplayable(items, displayRuleOptions.value)
 
 const step = ref<Step>('ChooseMode')
+const campaignGroup = ref<CampaignGroup>('chapter1')
+const scenarioGroup = ref<ScenarioGroup>('sideStories')
 const gameMode = ref<GameMode>('Campaign')
 const includeTarotReadings = ref(false)
 const strictAsIfAt = ref(false)
@@ -86,6 +91,7 @@ const miniCampaign = ref(false)
 
 const scenarios = computed<Scenario[]>(() => gate(scenarioJSON))
 const sideStories = computed<Scenario[]>(() => gate(sideStoriesJSON))
+const campaignJSON = dev ? [...officialCampaignJSON, ...homebrewCampaigns] : officialCampaignJSON
 const campaigns = computed<Campaign[]>(() => gate(campaignJSON))
 
 const scenario = computed(() =>
@@ -407,6 +413,8 @@ async function start() {
           v-model:gameMode="gameMode"
           v-model:selectedCampaign="selectedCampaign"
           v-model:selectedScenario="selectedScenario"
+          v-model:campaignGroup="campaignGroup"
+          v-model:scenarioGroup="scenarioGroup"
           :campaigns="campaigns"
           :sideStories="sideStories"
           :campaign="campaign"

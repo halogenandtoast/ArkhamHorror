@@ -132,7 +132,7 @@ function handleCardClick() {
 const emit = defineEmits<{ choose: [value: number] }>()
 
 const cardBack = computed(() => {
-  return imgsrc('player_back.jpg')
+  return imgsrc('backs/back_player.jpg')
 })
 
 const image = computed(() => {

@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.UrsineHybridStarvingAbomination (ursineHybridStarvingA
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelfWith, setActiveDuringSetup)
 import Arkham.Matcher
 import Arkham.Scenarios.TheLongestNight.Helpers (pattern IgnoreBarriers, pattern IgnoreDecoys)
 import Arkham.Trait (Trait (Field))
@@ -20,7 +20,7 @@ ursineHybridStarvingAbomination =
 instance HasModifiersFor UrsineHybridStarvingAbomination where
   getModifiersFor (UrsineHybridStarvingAbomination a) = do
     n <- perPlayer 3
-    modifySelf a [HealthModifier n, IgnoreBarriers, IgnoreDecoys]
+    modifySelfWith a setActiveDuringSetup [HealthModifier n, IgnoreBarriers, IgnoreDecoys]
     isMoving <- a.id <=~> MovingEnemy
     modifySelectWhen
       a

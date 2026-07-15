@@ -9,7 +9,8 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (EnemyDamage))
+import Arkham.Enemy.Types (Enemy, Field (EnemyDamage, OutOfPlayEnemyField))
+import Arkham.Zone
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosBag
@@ -320,7 +321,19 @@ instance RunMessage TheBoundaryBeyond where
                 $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
             damage <- case inPlayHarbinger of
               Just eid -> field EnemyDamage eid
-              Nothing -> getRecordCount TheHarbingerIsStillAlive
+              -- the Harbinger may have fled mid-scenario (set aside, out of play);
+              -- read its damage from the set-aside zone so it isn't lost (#5133)
+              Nothing -> do
+                setAsideHarbinger <-
+                  selectOne
+                    $ OutOfPlayEnemy SetAsideZone
+                    $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+                case setAsideHarbinger of
+                  Just eid ->
+                    field @(OutOfPlayEntity 'SetAsideZone Enemy)
+                      (OutOfPlayEnemyField SetAsideZone EnemyDamage)
+                      eid
+                  Nothing -> getRecordCount TheHarbingerIsStillAlive
             recordCount TheHarbingerIsStillAlive damage
       endOfScenario
       pure s

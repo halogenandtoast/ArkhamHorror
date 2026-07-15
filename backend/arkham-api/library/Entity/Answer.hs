@@ -463,15 +463,12 @@ handleAnswerPure Game {..} playerId = \case
           handled $ concatMap handleCost $ Map.toList (parAmounts response)
         _ -> unhandled "Wrong question type"
   Raw message -> do
-    let isPlayerWindowChoose = \case
-          PlayerWindowChooseOne _ -> True
-          _ -> False
     let inFastWindow =
           maybe
             False
             (any (any (\w -> Window.windowType w == Window.FastPlayerWindow)))
             gameWindowStack
-    if not (Map.null gameQuestion) && not (any isPlayerWindowChoose $ toList gameQuestion)
+    if not (Map.null gameQuestion) && not (any isRegeneratedWindowChoose $ toList gameQuestion)
       then case message of
         PassSkillTest -> handled [message]
         FailSkillTest -> handled [message]
@@ -494,10 +491,30 @@ handleAnswerPure Game {..} playerId = \case
               result <- try @SomeException $ evaluate $ go id q response
               case result of
                 Left _ -> unhandled "Wrong question type"
-                Right msgs -> handled msgs
+                Right msgs -> do
+                  -- Re-ask ONLY leftover deck-selection seats. ChooseDeck has no
+                  -- regeneration path: if it is dropped when another seat answers,
+                  -- the campaign starts a man down. Every other multi-seat ask is
+                  -- either rebuilt by the queue (PlayerWindow re-pushes itself,
+                  -- WindowAsk queues a trailing Do (CheckWindows), the skill-test
+                  -- loop re-asks the commit window) or was satisfied by this answer
+                  -- (story Read continues for the table). Re-parking those hands a
+                  -- stale, decline-less question to the other player -- forcing a
+                  -- Joey ability (#5159), a commit to a finished test (#5164), or a
+                  -- second copy of every rules-book entry -- so they are dropped,
+                  -- which was the pre-#5151 behavior for all seats.
+                  let question' = Map.filter isDeckQuestion $ Map.delete playerId gameQuestion
+                  handled $ msgs <> [AskMap question' | not (Map.null question')]
           )
           $ Map.lookup playerId gameQuestion
  where
+  -- Seats the queue rebuilds on its own: PlayerWindow re-pushes itself, and a
+  -- WindowChooseOne is followed by the Do (CheckWindows ws) that WindowAsk
+  -- queues behind it. Re-parking either hands back a stale question (#5160).
+  isRegeneratedWindowChoose = \case
+    PlayerWindowChooseOne _ -> True
+    WindowChooseOne _ -> True
+    _ -> False
   go
     :: (Question Message -> Question Message)
     -> Question Message
@@ -538,6 +555,9 @@ handleAnswerPure Game {..} playerId = \case
       Just msg -> [uiToRun msg]
     PlayerWindowChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ PlayerWindowChooseOne qs]
+      Just msg -> [uiToRun msg]
+    WindowChooseOne qs -> case qs !!? qrChoice response of
+      Nothing -> [Ask playerId $ f $ WindowChooseOne qs]
       Just msg -> [uiToRun msg]
     ChooseOneFromEach qs -> case concat qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ ChooseOneFromEach qs]

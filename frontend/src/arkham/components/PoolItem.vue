@@ -6,13 +6,23 @@ export interface Props {
   type: string
   amount?: number
   tooltip?: string
+  image?: string
 }
 const props = defineProps<Props>()
 
 const emit = defineEmits<{ choose: [] }>()
 
+const tokenImages: Record<string, string> = {
+  clue: 'tokens/clue.png',
+  doom: 'tokens/doom.png',
+  resource: 'tokens/resource.png',
+  sanity: 'horror.png',
+  card: 'backs/back_encounter.jpg',
+  player_card: 'backs/back_player.jpg',
+}
+
 const image = computed(() => {
-  return imgsrc(`${props.type}.png`)
+  return props.image ?? imgsrc(tokenImages[props.type] ?? `${props.type}.png`)
 })
 </script>
 

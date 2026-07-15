@@ -164,18 +164,6 @@
   }
 }
 
-/* Moon token (Circus Ex Mortis homebrew): no font glyph, use the token art. */
-.moon-icon {
-  &:before {
-    content: "";
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    background: url("/img/arkham/moon.png") center/contain no-repeat;
-    vertical-align: -0.15em;
-  }
-}
-
 .seal-a-icon {
   &:before {
     text-transform: none;

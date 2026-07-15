@@ -1,4 +1,5 @@
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
 import { ref, type Ref } from 'vue';
 
 interface ImageHelper {
@@ -116,10 +117,17 @@ export function imgsrc(src: string) {
   return fullPath
 }
 
-// Homebrew card art (z- prefixed codes) lives in homebrew/ instead of cards/.
-// `art` is a c-stripped card code, optionally with a suffix (e.g. "z-dark-matter-013b").
+// Homebrew card art (prefixed codes) lives under its campaign folder.
+// `art` is a c-stripped card code, optionally with suffixes (e.g. "circus-ex-mortis:001b", "dark-matter:063aa").
 export function cardImgPath(art: string): string {
-  return `${art.startsWith('z-') ? 'homebrew' : 'cards'}/${art}.avif`
+  const homebrewMatch = art.match(/^:(.+):(\d+[a-z]*)$/)
+
+  if (homebrewMatch) {
+    const [, campaign, cardCode] = homebrewMatch
+    return `homebrew/${campaign}/cards/${cardCode}.avif`
+  }
+
+  return `cards/${art}.avif`
 }
 
 export function cardImg(art: string): string {
@@ -147,7 +155,7 @@ export function formatContent(body: string) {
 }
 
 export function replaceIcons(body: string) {
-  return body.
+  return replaceHomebrewIcons(body).
     replace(/{action}/g, '<span class="action-icon"></span>').
     replace(/{fast}/g, '<span class="fast-icon"></span>').
     replace(/{reaction}/g, '<span class="reaction-icon"></span>').
@@ -170,7 +178,6 @@ export function replaceIcons(body: string) {
     replace(/{bless}/g, '<span class="bless-icon"></span>').
     replace(/{curse}/g, '<span class="curse-icon"></span>').
     replace(/{frost}/g, '<span class="frost-icon"></span>').
-    replace(/{moon}/g, '<span class="moon-icon"></span>').
     replace(/{sealA}/g, '<span class="seal-a-icon"></span>').
     replace(/{sealB}/g, '<span class="seal-b-icon"></span>').
     replace(/{sealC}/g, '<span class="seal-c-icon"></span>').

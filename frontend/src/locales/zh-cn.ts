@@ -1,4 +1,5 @@
 import base from '@/locales/zh-cn/base.json'
+import { homebrewMessages } from '@/locales/homebrew'
 import log from '@/locales/zh-cn/log.json'
 import cards from '@/locales/zh-cn/cards.json'
 import label from '@/locales/zh-cn/label.json'
@@ -15,8 +16,6 @@ import edgeOfTheEarth from '@/locales/zh-cn/edgeOfTheEarth'
 import theScarletKeys from '@/locales/zh-cn/theScarletKeys'
 import theFeastOfHemlockVale from '@/locales/zh-cn/theFeastOfHemlockVale'
 import brethrenOfAsh from '@/locales/zh-cn/brethrenOfAsh'
-import darkMatter from '@/locales/zh-cn/darkMatter'
-import circusExMortis from '@/locales/zh-cn/circusExMortis'
 import theDrownedCity from '@/locales/zh-cn/theDrownedCity'
 import standalone from '@/locales/zh-cn/standalone'
 import gameBoard from '@/locales/zh-cn/gameBoard/gameBoard'
@@ -43,8 +42,7 @@ export default
   theScarletKeys, 
   theFeastOfHemlockVale,
   brethrenOfAsh, 
-  darkMatter,
-  circusExMortis,
+  ...homebrewMessages('zh-cn'),
   theDrownedCity,
   standalone
 }

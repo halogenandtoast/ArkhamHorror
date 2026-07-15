@@ -159,6 +159,9 @@ filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
   PlayerWindowChooseOne msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask pid $ PlayerWindowChooseOne x)
+  WindowChooseOne msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask pid $ WindowChooseOne x)
   ChooseOneFromEach groups -> case filter notNull $ map (mapMaybe (filterOutEnemyUiMessages eid)) groups of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseOneFromEach x)
@@ -234,6 +237,15 @@ getCanReady a = do
   mods <- getModifiers a
   phase <- getPhase
   pure $ CannotReady `notElem` mods && (DoesNotReadyDuringUpkeep `notElem` mods || phase /= #upkeep)
+
+-- | Whether an enemy is currently barred from attacking. 'CannotAttack' is
+-- unconditional; 'CannotAttackDuringEnemyPhase' only bites in the enemy phase,
+-- since @Do EnemiesAttack@ is also pushed by card effects outside of it.
+getCannotAttackNow :: HasGame m => [ModifierType] -> m Bool
+getCannotAttackNow mods
+  | CannotAttack `elem` mods = pure True
+  | CannotAttackDuringEnemyPhase `elem` mods = (== #enemy) <$> getPhase
+  | otherwise = pure False
 
 getCanEngage :: (HasGame m, Tracing m) => EnemyAttrs -> m Bool
 getCanEngage a = do
@@ -1052,7 +1064,8 @@ instance RunMessage EnemyAttrs where
       pure a
     ForInvestigator iid EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
       mods <- getModifiers enemyId
-      unless (CannotAttack `elem` mods) do
+      cannotAttack <- getCannotAttackNow mods
+      unless cannotAttack do
         let mOverride = getFirst $ mconcat [First (Just override) | EnemyAttacksOverride override <- mods]
         iids <-
           select (fromMaybe enemyAttacks mOverride) >>= filterM \iid' -> do
@@ -1087,7 +1100,8 @@ instance RunMessage EnemyAttrs where
       pure a
     Do EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
       mods <- getModifiers (EnemyTarget enemyId)
-      unless (CannotAttack `elem` mods) do
+      cannotAttack <- getCannotAttackNow mods
+      unless cannotAttack do
         let mOverride = getFirst $ mconcat [First (Just override) | EnemyAttacksOverride override <- mods]
         iids <-
           select (fromMaybe enemyAttacks mOverride) >>= filterM \iid' -> do

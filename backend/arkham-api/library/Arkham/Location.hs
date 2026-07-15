@@ -6,6 +6,7 @@ module Arkham.Location (
 ) where
 
 import Arkham.Card
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Id
@@ -47,7 +48,7 @@ withLocationCardCode cCode f = case lookup cCode allLocations of
   Just (SomeLocationCard a) -> f a
 
 allLocations :: Map CardCode SomeLocationCard
-allLocations =
+allLocations = (mapFrom someLocationCardCode Registry.locations <>) $
   mapFrom
     someLocationCardCode
     [ -- Night of the Zealot

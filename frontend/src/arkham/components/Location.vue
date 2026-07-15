@@ -497,9 +497,9 @@ const floodLevel = computed(() => {
     case 'Unflooded':
       return null
     case 'PartiallyFlooded':
-      return imgsrc('partially-flooded.png')
+      return imgsrc('tokens/partially-flooded.png')
     case 'FullyFlooded':
-      return imgsrc('fully-flooded.png')
+      return imgsrc('tokens/fully-flooded.png')
     default:
       return null
   }
@@ -657,7 +657,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
             <img
               v-for="(pos, idx) in cluesAroundPositions"
               :key="idx"
-              :src="imgsrc('clue.png')"
+              :src="imgsrc('tokens/clue.png')"
               class="clue-around"
               :style="pos"
             />

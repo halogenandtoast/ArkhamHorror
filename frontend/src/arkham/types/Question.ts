@@ -44,6 +44,9 @@ export type Question = QuestionCommon & (
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
   PLAYER_WINDOW_CHOOSE_ONE = 'PlayerWindowChooseOne',
+  // A reaction/forced window ask. Renders as a plain ChooseOne; the distinct tag
+  // exists so the backend can drop stale seats of a multi-player window AskMap.
+  WINDOW_CHOOSE_ONE = 'WindowChooseOne',
   CHOOSE_ONE_FROM_EACH = 'ChooseOneFromEach',
   CHOOSE_UP_TO_N = 'ChooseUpToN',
   CHOOSE_SOME = 'ChooseSome',
@@ -495,6 +498,7 @@ export const chooseOneDecoder = JsonDecoder.object<{ tag: QuestionType, choices:
     tag: JsonDecoder.oneOf(
         [JsonDecoder.literal(QuestionType.CHOOSE_ONE)
         , JsonDecoder.literal(QuestionType.PLAYER_WINDOW_CHOOSE_ONE)
+        , JsonDecoder.literal(QuestionType.WINDOW_CHOOSE_ONE)
         ], "ChooseOne.tag"),
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },

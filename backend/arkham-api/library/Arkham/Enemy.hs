@@ -3,6 +3,7 @@
 module Arkham.Enemy where
 
 import Arkham.Card
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Classes
 import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
@@ -52,7 +53,7 @@ withEnemyCardCode cCode f = case lookup cCode allEnemies of
   Just (SomeEnemyCard a) -> f a
 
 allEnemies :: Map CardCode SomeEnemyCard
-allEnemies =
+allEnemies = (mapFromList (concatMap someEnemyCardCodes Registry.enemies) <>) $
   mapFromList
     $ concatMap
       someEnemyCardCodes

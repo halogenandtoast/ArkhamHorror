@@ -409,6 +409,7 @@ investigator f cardDef Stats {..} =
                 , investigatorMovement = Nothing
                 , investigatorBondedCards = mempty
                 , investigatorMeta = Null
+                , investigatorFormMeta = Null
                 , investigatorUnhealedHorrorThisRound = 0
                 , investigatorSealedChaosTokens = []
                 , investigatorUsedAbilities = mempty
@@ -553,7 +554,13 @@ getAvailableSkillsFor skillType iid = do
 
 isEliminated :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m Bool
 isEliminated iid =
-  orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid
+  -- The eliminated flag must be checked alongside the other two: elimination
+  -- empties the hand/deck/discard and sets it, but the resign path only marks
+  -- resigned afterwards (see Investigator.Runner Do (InvestigatorResigned)). In
+  -- that gap the investigator would otherwise still match You/Uneliminated with
+  -- an empty hand, firing threat-area forced abilities (e.g. Captivating Gleam).
+  orM
+    $ sequence [field InvestigatorResigned, field InvestigatorDefeated, field InvestigatorIsEliminated] iid
 
 getHandCount :: (HasGame m, Tracing m) => InvestigatorId -> m Int
 getHandCount = fieldMap InvestigatorHand length

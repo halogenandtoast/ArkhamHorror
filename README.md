@@ -38,12 +38,18 @@ please file a bug.
 * The Dream-Eaters
 * The Innsmouth Conspiracy
 * Edge of the Earth
+* The Scarlet Keys
+* The Feast of Hemlock Vale (Beta)
 
 ### Side Stories
 
 * The Curse of the Rougarou
 * Carnevale of Horrors
 * Murder at the Excelsior Hotel
+* Guardians of the Abyss (Beta)
+* The Blob That Ate Everything
+* War of the Outer Gods (Beta)
+* Fortune and Folly
 * The Midwinter Gala
 * Film Fatale
 
@@ -240,7 +246,14 @@ table statements and run them manually, you will want to specifically run the
 ### Running the server
 
 * start the backend with `cd backend && make api.watch`
-* start the frontend with `cd frontend && npm run serve`
+* start the frontend with `cd frontend && npm run dev`
+
+## Homebrew content
+
+Want to build your own campaign, scenario, or custom content? See
+[Writing homebrew content](./docs/homebrew.md) — a hands-on guide to adding
+cards, campaigns, traits, actions, tokens, and more without touching the base
+game.
 
 ## Copyright Disclaimer
 

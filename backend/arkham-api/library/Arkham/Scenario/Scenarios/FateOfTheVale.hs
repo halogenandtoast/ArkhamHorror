@@ -699,9 +699,9 @@ instance RunMessage FateOfTheVale where
               let abyss = findWithDefault [] AbyssDeck attrs.decks
               let bottom6 = drop (max 0 (length abyss - 6)) abyss
               unless (null bottom6) $ focusCards bottom6 do
-                chooseOneAtATimeM iid do
-                  labeled' "doneDrawing" unfocusCards
-                  targets bottom6 $ drawCardFromAbyss iid source
+                chooseSomeM' iid "doneDrawing"
+                  $ targets bottom6
+                  $ drawCardFromAbyss iid source
             else do
               if isOtherwise
                 then codexFinishedUntilNewAct Theta

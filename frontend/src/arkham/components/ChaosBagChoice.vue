@@ -109,18 +109,18 @@ const allResolved = computed(() => {
           <Token v-for="(token, idx) in tokenChoice.tokens" :key="idx" :token="token" :game="game" :playerId="playerId" @choose="choose" />
         </template>
         <template v-else-if="'step' in tokenChoice && tokenChoice.step.tag === 'Draw'">
-          <img :src="imgsrc('ct_blank.png')" class="token" v-if="tokenChoice.tag === 'Decided'" />
-          <img :src="imgsrc('ct_blank.png')" class="token deciding" v-if="tokenChoice.tag === 'Deciding'" />
-          <img :src="imgsrc('ct_choose.png')" class="token" v-if="tokenChoice.tag === 'Undecided'" />
+          <img :src="imgsrc('chaos-tokens/ct_blank.png')" class="token" v-if="tokenChoice.tag === 'Decided'" />
+          <img :src="imgsrc('chaos-tokens/ct_blank.png')" class="token deciding" v-if="tokenChoice.tag === 'Deciding'" />
+          <img :src="imgsrc('chaos-tokens/ct_choose.png')" class="token" v-if="tokenChoice.tag === 'Undecided'" />
         </template>
         <template v-else-if="'step' in tokenChoice">
           <ChaosBagChoice :choice="tokenChoice.step" :game="game" :playerId="playerId" @choose="choose" />
         </template>
         <template v-else-if="tokenChoice.tag === 'Draw'">
-          <img :src="imgsrc('ct_blank.png')" class="token" />
+          <img :src="imgsrc('chaos-tokens/ct_blank.png')" class="token" />
         </template>
         <template v-else-if="tokenChoice.tag === 'DrawUntil'">
-          <img :src="imgsrc('ct_blank.png')" class="token" />
+          <img :src="imgsrc('chaos-tokens/ct_blank.png')" class="token" />
         </template>
         <template v-else>
           <div class="error"> Token choice was unhandled, please report with: {{tokenChoice}}</div>

@@ -1,6 +1,7 @@
 module Api.Handler.Arkham.Cards (
   getApiV1ArkhamCardR,
   getApiV1ArkhamCardsR,
+  getApiV1ArkhamHomebrewCardsR,
 ) where
 
 import Import
@@ -9,6 +10,7 @@ import Arkham.Asset.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.EncounterCard
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Investigator.Cards
 import Arkham.PlayerCard
 import Arkham.Scenario
@@ -100,6 +102,21 @@ getApiV1ArkhamCardsR = do
     $ toList
     $ cards
     `Map.difference` allSpecialPlayerAssetCards
+
+getApiV1ArkhamHomebrewCardsR :: Handler [CardDef]
+getApiV1ArkhamHomebrewCardsR = do
+  let allHomebrewCards =
+        Homebrew.locationsMap
+          <> Homebrew.enemiesMap
+          <> Homebrew.treacheriesMap
+          <> Homebrew.playerTreacheriesMap
+          <> Homebrew.actsMap
+          <> Homebrew.agendasMap
+          <> Homebrew.encounterAssetsMap
+          <> Homebrew.playerSkillsMap
+          <> Homebrew.storiesMap
+
+  pure $ Map.elems allHomebrewCards
 
 getApiV1ArkhamCardR :: CardCode -> Handler CardDef
 getApiV1ArkhamCardR cCode = do

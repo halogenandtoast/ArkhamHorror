@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards (module Arkham.Skill.Cards, module X) where
 
 import Arkham.Skill.CardDefs.Base as X
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Skill.CardDefs.NightOfTheZealot as X
 import Arkham.Skill.CardDefs.TheDunwichLegacy as X
 import Arkham.Skill.CardDefs.ThePathToCarcosa as X
@@ -16,14 +17,13 @@ import Arkham.Skill.CardDefs.Core2026 as X
 import Arkham.Skill.CardDefs.ReturnTo as X
 import Arkham.Skill.CardDefs.Standalone as X
 import Arkham.Skill.CardDefs.Promo as X
-import Arkham.Skill.CardDefs.CircusExMortis as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
 
 allPlayerSkillCards :: Map CardCode CardDef
-allPlayerSkillCards =
+allPlayerSkillCards = (Homebrew.playerSkillsMap <>) $
   mapFromList
     $ concatMap
       toCardCodePairs
@@ -184,6 +184,4 @@ allPlayerSkillCards =
       , outTheDoor
       , outTheDoor1
       , contingency3
-      -- Circus Ex Mortis (homebrew)
-      , invocationOfDianaCircusExMortis
       ]

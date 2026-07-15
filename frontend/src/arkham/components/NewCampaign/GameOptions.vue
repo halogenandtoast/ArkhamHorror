@@ -232,6 +232,11 @@ const selectionBoxSrc = computed(() => {
   if (!selectionSummary.value) return null
   const part = selectedSideStoryPart.value
   const id = part ? part.box ?? part.id : selectionSummary.value.id
+
+  if (id.startsWith(":")) {
+    const homebrew = id.slice(1,)
+    return imgsrc(`homebrew/${homebrew}/boxes/${homebrew}.jpg`)
+  }
   return imgsrc(`boxes/${id}.jpg`)
 })
 
@@ -437,13 +442,6 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
         style="view-transition-name: selected-game-box;"
       >
         <img class="selection-img" :src="selectionBoxSrc" :alt="selectionSummary.title" />
-
-        <div class="selection-overlay">
-          <div class="chip">
-            {{ selectionKind === 'Campaign' ? $t('create.campaign') : $t('create.sideStory') }}
-          </div>
-          <div class="selection-title">{{ selectionSummary.title }}</div>
-        </div>
       </div>
     </aside>
 
@@ -887,46 +885,6 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
   pointer-events: none;
 }
 
-.selection-overlay {
-  border-radius: 14px;
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 10px;
-  background: linear-gradient(
-    to top,
-    rgba(0 0 0 / 0.85),
-    rgba(0 0 0 / 0.05) 60%,
-    rgba(0 0 0 / 0)
-  );
-  pointer-events: none;
-}
-
-.chip {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  height: 22px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(6px);
-  margin-bottom: 6px;
-}
-
-.selection-title {
-  font-family: Teutonic;
-  font-size: 18px;
-  letter-spacing: 0.02em;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
-}
-
 /* Cards */
 .card {
   border-radius: 12px;
@@ -1093,7 +1051,7 @@ input[type='radio']:checked + label {
 }
 
 .scenario-tile:hover img {
-  filter: grayscale(100%) sepia(1);
+  filter: none;
   transform: scale(1.02);
 }
 

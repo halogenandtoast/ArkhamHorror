@@ -68,9 +68,9 @@ const deckImage = computed(() => {
     case 'TidalTunnelDeck':
       return imgsrc("cards/07048b.avif");
     case 'TekeliliDeck':
-      return imgsrc("player_back.jpg");
+      return imgsrc("backs/back_player.jpg");
     case 'GuestDeck':
-      return imgsrc("player_back.jpg");
+      return imgsrc("backs/back_player.jpg");
     case 'OtherworldDeck':
       let topCard = props.deck[1][0];
       if (topCard) {
@@ -85,7 +85,7 @@ const deckImage = computed(() => {
     case 'AbyssDeck':
       return imgsrc("cards/10670b.avif");
     default:
-      return imgsrc("back.png");
+      return imgsrc("backs/back_encounter.jpg");
   }
 })
 

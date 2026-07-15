@@ -102,6 +102,7 @@ data Cost
   | AssetClueCost Text AssetMatcher GameValue
   | ClueCost GameValue
   | ClueCostX
+  | PerPlayerClueCostX
   | GroupClueCostX LocationMatcher
   | DiscoveredCluesCost
   | GroupResourceCost GameValue LocationMatcher

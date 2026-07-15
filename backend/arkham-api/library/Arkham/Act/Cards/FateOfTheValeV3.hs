@@ -39,7 +39,7 @@ instance HasAbilities FateOfTheValeV3 where
       [ scenarioI18n
           $ withI18nTooltip "fateOfTheValeV3.placeKindling"
           $ restricted a 1 (DuringTurn You)
-          $ actionAbilityWithCost (GroupClueCostX YourLocation)
+          $ actionAbilityWithCost PerPlayerClueCostX
       , scenarioI18n
           $ withI18nTooltip "fateOfTheValeV3.drawFire"
           $ restricted

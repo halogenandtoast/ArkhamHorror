@@ -118,12 +118,20 @@ const sourceToPlacement = (source: Source): Placement | null => {
     case "EnemySource":
       {
         const { contents } = source
-        if (contents) return props.game.enemies[contents].placement
+        if (typeof contents === 'string') {
+          const enemy = props.game.enemies[contents]
+          if (enemy) return enemy.placement
+        }
+        break
       }
     case "TreacherySource":
       {
         const { contents } = source
-        if (contents) return props.game.treacheries[contents].placement
+        if (typeof contents === 'string') {
+          const treachery = props.game.treacheries[contents]
+          if (treachery) return treachery.placement
+        }
+        break
       }
     default:
   }

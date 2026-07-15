@@ -492,20 +492,18 @@ handleAnswerPure Game {..} playerId = \case
               case result of
                 Left _ -> unhandled "Wrong question type"
                 Right msgs -> do
-                  -- Re-ask everyone else still parked on this AskMap, as every other
-                  -- answer branch does. Without this, answering one seat of a
-                  -- multi-player AskMap silently drops the other seats' questions --
-                  -- during deck selection that loses a player's ChooseDeck and the
-                  -- campaign starts a man down. No-op when this seat is the only one
-                  -- being asked, which is the overwhelmingly common case.
-                  --
-                  -- Window seats are excluded: both PlayerWindow and runWindow
-                  -- regenerate every seat from scratch once the queue drains, so a
-                  -- re-asked one is stale (it enumerated its choices before this
-                  -- answer resolved), it forces the other player to use an ability
-                  -- they wanted to decline or that is already spent, and it keeps the
-                  -- queue from draining, which is what regenerates them.
-                  let question' = Map.filter (not . isRegeneratedWindowChoose) $ Map.delete playerId gameQuestion
+                  -- Re-ask ONLY leftover deck-selection seats. ChooseDeck has no
+                  -- regeneration path: if it is dropped when another seat answers,
+                  -- the campaign starts a man down. Every other multi-seat ask is
+                  -- either rebuilt by the queue (PlayerWindow re-pushes itself,
+                  -- WindowAsk queues a trailing Do (CheckWindows), the skill-test
+                  -- loop re-asks the commit window) or was satisfied by this answer
+                  -- (story Read continues for the table). Re-parking those hands a
+                  -- stale, decline-less question to the other player -- forcing a
+                  -- Joey ability (#5159), a commit to a finished test (#5164), or a
+                  -- second copy of every rules-book entry -- so they are dropped,
+                  -- which was the pre-#5151 behavior for all seats.
+                  let question' = Map.filter isDeckQuestion $ Map.delete playerId gameQuestion
                   handled $ msgs <> [AskMap question' | not (Map.null question')]
           )
           $ Map.lookup playerId gameQuestion

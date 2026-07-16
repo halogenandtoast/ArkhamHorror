@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.38.1.
+-- This file has been generated from package.yaml by hpack version 0.39.6.
 --
 -- see: https://github.com/sol/hpack
 
@@ -7359,6 +7359,7 @@ test-suite spec
       Arkham.Treachery.Cards.ClawsOfSteamSpec
       Arkham.Treachery.Cards.CoverUpSpec
       Arkham.Treachery.Cards.DetachedFromRealitySpec
+      Arkham.Treachery.Cards.DreadfulMechanismSpec
       Arkham.Treachery.Cards.DreamlandsEclipseSpec
       Arkham.Treachery.Cards.EndOfNegotiationsSpec
       Arkham.Treachery.Cards.FinalRhapsodySpec

@@ -1703,14 +1703,23 @@ instance RunMessage ActiveCost where
               let
                 isAction = isActionAbility ability && ability.index > 0 && not (isFastAbility ability)
                 actions = nub $ [Action.Activate | abilityIsActivate ability] <> ability.actions
-                -- A *fast* ability with a bold action designator still performs
-                -- that action: "Activating such an ability allows an investigator
-                -- to perform the effects of the designated action(s)" (Grimoire,
-                -- "Action Designators"). It takes no action (no FinishAction /
-                -- TakenActions), but its after-window must still open so
-                -- "after an investigator parleys/fights/..." cards can respond
-                -- (End of Negotiations vs Questioning the Gangs' fast Parley).
-                fastDesignatedActions = if isFastAbility ability then ability.actions else []
+                -- A *fast* ability with a bold Parley designator still performs a
+                -- parley: "Parley abilities are exclusively resolved by ...
+                -- activating abilities" (Grimoire, "Parley"), and there is no
+                -- basic parley action, so nothing else opens its after-window.
+                -- Its reactors are worded as the verb ("after an investigator
+                -- parleys" -- End of Negotiations vs Questioning the Gangs' fast
+                -- Parley), so open PerformAction #parley here (no FinishAction /
+                -- TakenActions; a fast ability takes no action).
+                --
+                -- Restricted to Parley on purpose: the other designators
+                -- (fight/evade/investigate/move) DO have basic actions, and an
+                -- ability-initiated one passes isAction=False so it opens no
+                -- window -- a fast one must stay window-less too, or forced
+                -- "after you perform an action" cards (Arm Injury, Dreadful
+                -- Mechanism, Serpent's Haven, Time Warp) mis-fire on it.
+                fastDesignatedActions =
+                  if isFastAbility ability then filter (== Action.Parley) ability.actions else []
                 iid = c.investigator
               whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
               afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]

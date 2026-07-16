@@ -5548,6 +5548,7 @@ library
       Arkham.Script
       Arkham.Search
       Arkham.SideStory
+      Arkham.SimultaneousAsk
       Arkham.Skill
       Arkham.Skill.CardDefs.Base
       Arkham.Skill.CardDefs.Core2026

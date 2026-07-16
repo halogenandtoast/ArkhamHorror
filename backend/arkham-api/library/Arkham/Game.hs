@@ -320,6 +320,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gamePlayerOrder = []
         , gameRemovedFromPlay = mempty
         , gameQuestion = mempty
+        , gameSimultaneousAsks = mempty
         , gameSkillTestResults = Nothing
         , gameEnemyMoving = Nothing
         , gameEnemyEvading = Nothing
@@ -6378,6 +6379,11 @@ runMessages gameId mLogger = do
     case mmsg of
       Nothing
         | isChooseDecks (gameGameState g)
+        , -- An open barrier holds its own continuation in state, so it cannot have
+          -- been lost and must not be pre-empted: it releases from SeatResolved.
+          -- Only the pre-barrier paths (ChooseUpgradeDeck, The Dream Eaters'
+          -- sequential prompts) can strand a queued DoneChoosingDecks.
+          null (gameSimultaneousAsks g)
         , not (any isDeckQuestion (gameQuestion g)) ->
             -- Self-heal a bricked deck-selection: DoneChoosingDecks (which flips
             -- IsChooseDecks -> IsActive) lives ONLY in the persisted step queue,

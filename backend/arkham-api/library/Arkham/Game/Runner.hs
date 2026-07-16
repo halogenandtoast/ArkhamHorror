@@ -178,8 +178,56 @@ runGameMessage msg g = case msg of
   -- game; the client re-poses it and the questionVersion staleness guard in
   -- Entity.Answer accepts the resubmit, re-running its effects (#5151). Any
   -- seats still owed a question are re-asked by the AskMap the answer
-  -- branches append after this message.
+  -- branches append after this message -- or, for a seat inside a multi-seat
+  -- barrier, restored from its durable slot by the barrier itself (the
+  -- published map is only ever a projection of those slots).
   ClearUI -> pure $ g & questionL .~ mempty
+  BeginSimultaneousAsk bid policy slots continuation -> do
+    let
+      barrier =
+        SimultaneousAsk
+          { saPolicy = policy
+          , saSlots = slots
+          , saDeferred = mempty
+          , saContinuation = continuation
+          }
+    -- A barrier with no seats (e.g. an all-AI table) is joined on creation, so it
+    -- never lands in state at all.
+    if isJoined barrier
+      then pushAll continuation >> pure g
+      else do
+        push $ AskMap slots
+        pure $ g & simultaneousAsksL . at bid ?~ barrier
+  SeatResolved bid pid -> case lookup bid (gameSimultaneousAsks g) of
+    -- Already released (or never opened): a seat resolving twice is a no-op.
+    Nothing -> pure g
+    Just barrier -> do
+      let barrier' = barrier {saSlots = Map.delete pid (saSlots barrier)}
+      if isJoined barrier'
+        then do
+          -- The join is decided purely by the pending set, so whichever seat happens
+          -- to resolve last releases the barrier. No queue position, no "is another
+          -- seat still parked" check, no last-seat race.
+          --
+          -- Every seat's deferred setup runs before the continuation, one seat at a
+          -- time, so the campaign cannot move on with a seat's setup outstanding.
+          pushAll (saDeferred barrier' <> saContinuation barrier')
+          pure $ g & simultaneousAsksL %~ Map.delete bid
+        else do
+          -- Re-park the seats still waiting, restoring each from its durable slot
+          -- (the ClearUI for this seat's answer wiped the published map).
+          push $ AskMap (saSlots barrier')
+          pure $ g & simultaneousAsksL . at bid ?~ barrier'
+  DeferPastSimultaneousAsk pid msgs -> case barrierSeat pid g of
+    Just (bid, barrier) ->
+      pure $ g & simultaneousAsksL . at bid ?~ barrier {saDeferred = saDeferred barrier <> msgs}
+    Nothing -> do
+      -- No barrier for this seat. Preserve the pre-barrier behaviour exactly: defer
+      -- past a queued DoneChoosingDecks if one is pending (The Dream Eaters' own
+      -- sequential deck prompts), otherwise run now (single player / standalone /
+      -- tests). This subsumes the per-call-site Morrígan insertAfterMatchingOrNow.
+      insertAfterMatchingOrNow msgs (== DoneChoosingDecks)
+      pure g
   AfterThisTestResolves _sid msgs -> do
     insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
     pure g

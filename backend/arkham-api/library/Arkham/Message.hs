@@ -25,6 +25,7 @@ import Arkham.Message.Story as X
 import Arkham.Message.Token as X
 import Arkham.Message.Type as X
 import Arkham.Question as X
+import Arkham.SimultaneousAsk as X
 import Arkham.SkillTest.Option as X
 import Arkham.Strategy as X
 import Arkham.Text as X
@@ -599,6 +600,22 @@ data Message
   | Ask PlayerId (Question Message)
   | WindowAsk [Window] PlayerId (Question Message)
   | AskMap (Map PlayerId (Question Message))
+  | -- | Open a multi-seat barrier: park every seat in the map on its own question
+    -- and hold the @[Message]@ continuation in game state (never in the queue) until
+    -- the join policy is satisfied. Each seat then runs a self-contained sub-flow
+    -- that ends in 'SeatResolved'. With no seats the continuation runs immediately.
+    -- See "Arkham.SimultaneousAsk" and @docs/multi-seat-barrier.md@.
+    BeginSimultaneousAsk BatchId JoinPolicy (Map PlayerId (Question Message)) [Message]
+  | -- | One seat's sub-flow has finished. Drops that seat's slot, re-parks the seats
+    -- still waiting, and runs the deferred work + continuation once the join
+    -- condition holds.
+    SeatResolved BatchId PlayerId
+  | -- | Run @msgs@ once this seat's barrier releases, rather than inside its sub-flow.
+    -- For the interactive parts of deck setup, which cannot park inside a sub-flow
+    -- without letting another seat's answer drain this seat's tail (see
+    -- "Arkham.SimultaneousAsk"). With no barrier open for the seat this falls back to
+    -- the pre-barrier behaviour: after a queued 'DoneChoosingDecks', else right now.
+    DeferPastSimultaneousAsk PlayerId [Message]
   | After Message
   | EvadeMessage EvadeMessage
   | AfterRevelation InvestigatorId TreacheryId
@@ -2778,38 +2795,47 @@ chooseUpgradeDecks pids =
     , DoneUpgradingDecks
     ]
 
-chooseDecks :: [PlayerId] -> Message
-chooseDecks pids =
-  Run
-    [ SetGameState (IsChooseDecks pids)
-    , ChoosingDecks
-    , AskMap $ mapFromList $ map (,ChooseDeck) pids
-    , DoneChoosingDecks
-    ]
+{- | Open the deck-selection barrier for @pids@.
+
+@continuation@ is everything that must happen once /every/ seat has finished its
+deck setup -- the tail that used to sit in the queue behind the ask, after
+'DoneChoosingDecks'. It is now held in game state by the barrier
+('Arkham.SimultaneousAsk'), so it cannot be reached until every seat has emitted
+'SeatResolved', and a seat's deck-setup tail can no longer leak past it (#5173).
+
+'DoneChoosingDecks' (which flips 'IsChooseDecks' -> 'IsActive') is the head of the
+continuation, so the state flip is likewise driven by the barrier releasing rather
+than by the queue draining to the right position.
+-}
+chooseDecks :: BatchId -> [PlayerId] -> [Message] -> Message
+chooseDecks batchId pids = chooseDecksWithAi batchId pids []
 
 {- | Like 'chooseDecks' but for AI-assisted games. Each AI seat in @aiSeats@ is
 loaded from its bundled decklist in-place and is NOT prompted; only the
 remaining (human) seats receive a 'ChooseDeck' question.
 
-The two ordering invariants this preserves:
+The ordering invariants this preserves:
 
   * The @LoadDecklist@s run /after/ 'ChoosingDecks' (which wipes investigators)
-    and /before/ 'DoneChoosingDecks' (which flips to 'IsActive'), so the loaded
-    AI investigators survive the wipe and are present the instant the game parks
-    on the human deck prompt.
-  * The 'AskMap' contains only human seats, so the game never parks waiting on an
-    AI seat. When every seat is AI the 'AskMap' is omitted entirely.
+    and /before/ the barrier opens, so the loaded AI investigators survive the
+    wipe and are present the instant the game parks on the human deck prompt.
+  * Only human seats enter the barrier, so it never waits on an AI seat. When
+    every seat is AI the barrier has no seats, its join condition holds on
+    creation, and @continuation@ runs immediately.
 
-With @aiSeats == []@ the emitted message list is identical to @chooseDecks pids@,
-so non-AI games are unaffected.
+With @aiSeats == []@ this is exactly @chooseDecks@, so non-AI games are unaffected.
 -}
-chooseDecksWithAi :: [PlayerId] -> [(PlayerId, ArkhamDBDecklist)] -> Message
-chooseDecksWithAi pids aiSeats =
+chooseDecksWithAi :: BatchId -> [PlayerId] -> [(PlayerId, ArkhamDBDecklist)] -> [Message] -> Message
+chooseDecksWithAi batchId pids aiSeats continuation =
   Run
     $ [SetGameState (IsChooseDecks pids), ChoosingDecks]
     <> [LoadDecklist pid decklist | (pid, decklist) <- aiSeats]
-    <> [AskMap (mapFromList (map (,ChooseDeck) humanPids)) | notNull humanPids]
-    <> [DoneChoosingDecks]
+    <> [ BeginSimultaneousAsk
+           batchId
+           JoinAll
+           (mapFromList (map (,ChooseDeck) humanPids))
+           (DoneChoosingDecks : continuation)
+       ]
  where
   aiPids = map fst aiSeats
   humanPids = filter (`notElem` aiPids) pids

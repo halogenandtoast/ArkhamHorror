@@ -12,6 +12,7 @@ import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.I18n
+import Arkham.Id (getId)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -308,16 +309,14 @@ instance RunMessage TheLabyrinthsOfLunacy where
       -- rebuild, so PreScenarioSetup skips the mode prompt and just picks the
       -- next group).
       players <- allPlayers
+      batchId <- getId
       pushAll
         -- Tear down the previous group's board FIRST. chooseDecks wipes the
         -- investigators and then parks on the deck prompt; if the group's enemies
         -- (etc.) were still in play they'd reference now-missing investigators and
         -- any enemy-matcher scan (or a plain game load) would crash.
         [ ResetGame
-        , chooseDecks players
-        , ResetInvestigators
-        , ResetGame
-        , StartScenario attrs.id Nothing
+        , chooseDecks batchId players [ResetInvestigators, ResetGame, StartScenario attrs.id Nothing]
         ]
       -- Clear the previous group's decks so only the freshly chosen ones populate.
       pure $ TheLabyrinthsOfLunacy attrs {scenarioPlayerDecks = mempty, scenarioStoryCards = mempty}

@@ -245,10 +245,8 @@ instance RunMessage TheDreamEaters where
         pure c
       CampaignStep (PrologueStepPart 2) -> do
         players <- allPlayers
-        pushAll
-          [ chooseDecks players
-          , NextCampaignStep (continue BeyondTheGatesOfSleep)
-          ]
+        batchId <- getId
+        push $ chooseDecks batchId players [NextCampaignStep (continue BeyondTheGatesOfSleep)]
         pure
           $ TheDreamEaters
           $ attrs
@@ -257,10 +255,8 @@ instance RunMessage TheDreamEaters where
             }
       CampaignStep (PrologueStepPart 3) -> do
         players <- allPlayers
-        pushAll
-          [ chooseDecks players
-          , NextCampaignStep (continue WakingNightmare)
-          ]
+        batchId <- getId
+        push $ chooseDecks batchId players [NextCampaignStep (continue WakingNightmare)]
         pure
           $ TheDreamEaters
           $ attrs

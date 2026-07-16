@@ -245,3 +245,21 @@ spec = describe "Return to The Circle Undone achievements" $ do
       earned <- didEarnCircle CircleExpertise
       run $ Record (toCampaignLogKey AzathothSlumbersForNow)
       earned `refShouldBe` False
+
+    it "is earned when the Lodge wins on Expert" . gameTest $ \_ -> do
+      asReturnToTheCircleUndoneWith Expert
+      earned <- didEarnCircle CircleExpertise
+      run $ Record (toCampaignLogKey TheTrueWorkOfTheSilverTwilightLodgeHasBegun)
+      earned `refShouldBe` True
+
+    it "is earned when the Coven wins on Expert" . gameTest $ \_ -> do
+      asReturnToTheCircleUndoneWith Expert
+      earned <- didEarnCircle CircleExpertise
+      run $ Record (toCampaignLogKey TheCovenOfKeziahHoldsTheWorldInItsGrasp)
+      earned `refShouldBe` True
+
+    it "is not earned when a faction wins on a lower difficulty" . gameTest $ \_ -> do
+      asReturnToTheCircleUndoneWith Easy
+      earned <- didEarnCircle CircleExpertise
+      run $ Record (toCampaignLogKey TheTrueWorkOfTheSilverTwilightLodgeHasBegun)
+      earned `refShouldBe` False

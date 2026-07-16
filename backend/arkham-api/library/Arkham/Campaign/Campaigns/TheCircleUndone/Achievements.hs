@@ -72,13 +72,17 @@ runCircleAchievements msg = whenEligibleCampaign $ case msg of
 
   -- "New World Order" / "Immortality Sounds Nice": the campaign ends in the
   -- Lodge's / Coven's favour (Union and Disillusion Resolutions 2 / 9, each a
-  -- distinct gameOver record).
+  -- distinct gameOver record). Investigators truly loyal to that faction win
+  -- the campaign there — and those records are written ONLY at those loyal-win
+  -- resolutions — so they also count toward Circle Expertise.
   Record key
-    | key == toCampaignLogKey TheTrueWorkOfTheSilverTwilightLodgeHasBegun ->
+    | key == toCampaignLogKey TheTrueWorkOfTheSilverTwilightLodgeHasBegun -> do
         earn NewWorldOrder
+        checkCircleExpertise
   Record key
-    | key == toCampaignLogKey TheCovenOfKeziahHoldsTheWorldInItsGrasp ->
+    | key == toCampaignLogKey TheCovenOfKeziahHoldsTheWorldInItsGrasp -> do
         earn ImmortalitySoundsNice
+        checkCircleExpertise
   -- The four surviving endings of Before the Black Throne.
   Record key
     | key == toCampaignLogKey TheLeadInvestigatorHasJoinedThePipersOfAzathoth ->
@@ -103,9 +107,7 @@ runCircleAchievements msg = whenEligibleCampaign $ case msg of
           ]
     unless otherEnding $ earn WeaverOfShadowAndMist
     -- "Circle Expertise": win the campaign (any surviving ending) on Expert.
-    g <- getGame
-    when (fmap (campaignDifficulty . toAttrs) (currentCampaign (gameMode g)) == Just Expert) do
-      earn CircleExpertise
+    checkCircleExpertise
 
   -- "Case Closed": save each of the four missing people. Their *Fate stories
   -- record <name>IsAlive; the API accumulates the checklist across playthroughs
@@ -160,6 +162,15 @@ runCircleAchievements msg = whenEligibleCampaign $ case msg of
 
 earn :: (HasGame m, HasQueue Message m) => TheCircleUndoneAchievement -> m ()
 earn = earnAchievement . TheCircleUndoneAchievement
+
+-- | "Circle Expertise": earn when the current campaign win happens on Expert.
+-- Called from every winning-campaign record (the Black Throne survivals and the
+-- two loyal-faction gameOver endings in Union and Disillusion).
+checkCircleExpertise :: (HasGame m, HasQueue Message m) => m ()
+checkCircleExpertise = do
+  g <- getGame
+  when (fmap (campaignDifficulty . toAttrs) (currentCampaign (gameMode g)) == Just Expert) do
+    earn CircleExpertise
 
 progressCase :: (HasGame m, HasQueue Message m) => Text -> m ()
 progressCase item = achievementProgress (TheCircleUndoneAchievement CaseClosed) [item]

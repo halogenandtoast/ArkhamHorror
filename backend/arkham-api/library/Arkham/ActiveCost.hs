@@ -1703,6 +1703,14 @@ instance RunMessage ActiveCost where
               let
                 isAction = isActionAbility ability && ability.index > 0 && not (isFastAbility ability)
                 actions = nub $ [Action.Activate | abilityIsActivate ability] <> ability.actions
+                -- A *fast* ability with a bold action designator still performs
+                -- that action: "Activating such an ability allows an investigator
+                -- to perform the effects of the designated action(s)" (Grimoire,
+                -- "Action Designators"). It takes no action (no FinishAction /
+                -- TakenActions), but its after-window must still open so
+                -- "after an investigator parleys/fights/..." cards can respond
+                -- (End of Negotiations vs Questioning the Gangs' fast Parley).
+                fastDesignatedActions = if isFastAbility ability then ability.actions else []
                 iid = c.investigator
               whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
               afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
@@ -1711,7 +1719,13 @@ instance RunMessage ActiveCost where
                   then do
                     afterWindowMsgs <- checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]
                     pure [afterWindowMsgs, FinishAction, TakenActions iid actions]
-                  else pure []
+                  else
+                    if notNull fastDesignatedActions
+                      then do
+                        afterWindowMsgs <-
+                          checkWindows [mkAfter (Window.PerformAction iid action) | action <- fastDesignatedActions]
+                        pure [afterWindowMsgs]
+                      else pure []
               -- TODO: this will not work for ForcedWhen, but this currently only applies to IntelReport
               isForced <- isForcedAbility iid ability
               card <- sourceToCard ability.source

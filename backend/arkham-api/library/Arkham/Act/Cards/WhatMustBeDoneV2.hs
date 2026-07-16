@@ -27,10 +27,11 @@ instance HasAbilities WhatMustBeDoneV2 where
     extend
       attrs
       [ mkAbility attrs 1 $ actionAbilityWithCost ClueCostX
-      , restricted
-          attrs
-          2
-          (exists $ LeadInvestigator <> at_ ("The Black Throne" <> LocationWithoutClues))
+      , onlyOnce
+          $ restricted
+            attrs
+            2
+            (exists $ LeadInvestigator <> at_ ("The Black Throne" <> LocationWithoutClues))
           $ Objective
           $ forced AnyWindow
       ]

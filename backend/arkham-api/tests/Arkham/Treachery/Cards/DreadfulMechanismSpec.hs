@@ -3,9 +3,9 @@ module Arkham.Treachery.Cards.DreadfulMechanismSpec (spec) where
 import Arkham.Ability.Types (abilityIndex)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
+import Arkham.Fight
 import Arkham.Matcher (treacheryIs)
 import Arkham.Projection
-import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (defaultWindows)
 import TestImport.New
@@ -38,12 +38,16 @@ spec = describe "Dreadful Mechanism" do
     _ <- self `putTreacheryIntoPlay` Treacheries.dreadfulMechanism
     setChaosTokens [Zero]
 
-    void $ self `fightEnemy` enemy
+    sid <- getRandom
+    run
+      $ FightEnemy (toId enemy)
+      $ (mkChooseFightPure sid (toId self) self) {chooseFightIsAction = True}
     startSkillTest
-    click "Apply results"
+    applyResults
 
     -- basic fight IS an action -> Dreadful Mechanism's Forced ability is offered
     useForcedAbility
+    applyAllDamage
     self.damage `shouldReturn` 1
 
   it "does NOT fire after a fast [fight] ability" . gameTest $ \self -> do
@@ -61,7 +65,7 @@ spec = describe "Dreadful Mechanism" do
     run $ UseAbility (toId self) fastFight (defaultWindows $ toId self)
     chooseTarget enemy
     startSkillTest
-    click "Apply results"
+    applyResults
 
     -- a fast ability is not an action: Dreadful Mechanism must not fire, it
     -- stays in play, and no damage is dealt.

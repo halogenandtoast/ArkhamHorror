@@ -415,21 +415,29 @@ handleAnswerPure game@Game {..} playerId = \case
       Just (PickScenarioSpecific {}) -> handled $ ScenarioSpecific k v : reAskOthers game playerId
       _ -> unhandled "Wrong question type"
   CampaignStepAnswer k -> do
-    case gameMode of
-      This c -> case c.step of
-        CS.ContinueCampaignStep {} -> handled [NextCampaignStep (Just k)]
-        CS.StandaloneScenarioStep _ (CS.ContinueCampaignStep {}) -> handled [NextCampaignStep (Just k)]
-        _ -> handled []
-      These c s -> case s.step of
-        Just (CS.ContinueCampaignStep {}) -> handled [NextScenarioCampaignStep (Just k)]
-        Just (CS.ScenarioStepWithOptions {}) -> handled [ScenarioCampaignStep k.normalize]
-        _ -> case c.step of
+    let
+      unwrap = \case
+        QuestionLabel _ _ q' -> unwrap q'
+        PayCostQuestion _ q' -> unwrap q'
+        QuestionWithSource _ _ q' -> unwrap q'
+        q' -> q'
+    case unwrap <$> Map.lookup playerId gameQuestion of
+      Just ContinueCampaign -> case gameMode of
+        This c -> case c.step of
           CS.ContinueCampaignStep {} -> handled [NextCampaignStep (Just k)]
           CS.StandaloneScenarioStep _ (CS.ContinueCampaignStep {}) -> handled [NextCampaignStep (Just k)]
           _ -> handled []
-      That s -> case s.step of
-        Just (CS.ContinueCampaignStep {}) -> handled [NextScenarioCampaignStep (Just k)]
-        _ -> handled []
+        These c s -> case s.step of
+          Just (CS.ContinueCampaignStep {}) -> handled [NextScenarioCampaignStep (Just k)]
+          Just (CS.ScenarioStepWithOptions {}) -> handled [ScenarioCampaignStep k.normalize]
+          _ -> case c.step of
+            CS.ContinueCampaignStep {} -> handled [NextCampaignStep (Just k)]
+            CS.StandaloneScenarioStep _ (CS.ContinueCampaignStep {}) -> handled [NextCampaignStep (Just k)]
+            _ -> handled []
+        That s -> case s.step of
+          Just (CS.ContinueCampaignStep {}) -> handled [NextScenarioCampaignStep (Just k)]
+          _ -> handled []
+      _ -> unhandled "Wrong question type"
   PickDestinyAnswer choices -> do
     handled [SetDestiny $ Map.fromList $ map (\(DestinyDrawing scope card) -> (scope, card)) choices]
   ExchangeAmountsAnswer source fromInvestigator toInvestigator token n -> do

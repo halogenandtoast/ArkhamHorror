@@ -84,7 +84,11 @@ const continueCampaign = computed(() => {
   const step = props.game.campaign.step
   if (step?.tag === 'ContinueCampaignStep') return step.contents
   if (step?.tag === 'StandaloneScenarioStep' && step.contents[1]?.tag === 'ContinueCampaignStep') {
-    return step.contents[1].contents
+    // The standalone step stores where the campaign should continue after the
+    // side scenario. It is only actionable when ContinueCampaign is actually pending.
+    const hasContinueQuestion = Object.values(props.game.question)
+      .some((question) => question?.tag === 'ContinueCampaign')
+    return hasContinueQuestion ? step.contents[1].contents : null
   }
   return null
 })

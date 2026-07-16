@@ -7406,6 +7406,7 @@ test-suite spec
       Arkham.UltimatumsAndBoons.UltimatumOfTheScreamSpec
       Arkham.UltimatumsAndBoons.UltimatumOfTheSpiralSpec
       Arkham.UltimatumsAndBoons.UltimatumOfUltimatumsSpec
+      Entity.AnswerSpec
       Helpers.Achievements
       Helpers.Message
       Helpers.UltimatumsAndBoons

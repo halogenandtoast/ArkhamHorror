@@ -3,6 +3,7 @@ module Entity.AnswerSpec (spec) where
 import Arkham.Campaign (lookupCampaign)
 import Arkham.Campaign.Types (campaignStep)
 import Arkham.CampaignStep qualified as CS
+import Arkham.Classes.HasGame (getGame)
 import Arkham.Difficulty
 import Entity.Answer
 import TestImport.New

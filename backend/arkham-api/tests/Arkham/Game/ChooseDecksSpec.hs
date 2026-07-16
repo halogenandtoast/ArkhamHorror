@@ -201,6 +201,53 @@ spec = describe "deck selection" do
       (gameGameState <$> getGame) `shouldReturn` IsActive
       self.resources `shouldReturn` 1
 
+    it "asks for purchased trauma through the real deck-load flow" . gameTest $ \self -> do
+      pid <- getPlayer (toId self)
+      bid <- getRandom
+      openBarrier bid [pid] []
+
+      run $ Run [LoadDecklist pid inTheThickOfItDecklist, SeatResolved bid pid]
+
+      game <- getGame
+      let investigator = fromJustNote "deck load creates the investigator" $ find ((== pid) . attr investigatorPlayerId) (toList $ gameInvestigators game)
+      (stripQuestionWrappers <$> lookup pid (gameQuestion game)) `shouldSatisfy` \case
+        Just ChooseAmounts {} -> True
+        _ -> False
+      traumaOf investigator `shouldReturn` (0, 0)
+
+      answerTrauma investigator 1 1
+      traumaOf investigator `shouldReturn` (1, 1)
+      (gameGameState <$> getGame) `shouldReturn` IsActive
+
+    it "resolves purchased trauma for every loaded deck" . gameTest $ \self -> do
+      other <- addInvestigator Investigators.rolandBanks
+      selfPid <- getPlayer (toId self)
+      otherPid <- getPlayer (toId other)
+      bid <- getRandom
+      openBarrier bid [selfPid, otherPid] []
+
+      run $ Run [LoadDecklist selfPid inTheThickOfItDecklist, SeatResolved bid selfPid]
+      run $ Run [LoadDecklist otherPid daisyInTheThickOfItDecklist, SeatResolved bid otherPid]
+
+      game <- getGame
+      let investigatorFor pid = fromJustNote "deck load creates the investigator" $ find ((== pid) . attr investigatorPlayerId) (toList $ gameInvestigators game)
+          self' = investigatorFor selfPid
+          other' = investigatorFor otherPid
+      (stripQuestionWrappers <$> lookup selfPid (gameQuestion game)) `shouldSatisfy` \case
+        Just ChooseAmounts {} -> True
+        _ -> False
+
+      answerTrauma self' 1 1
+      gameAfterFirst <- getGame
+      (stripQuestionWrappers <$> lookup otherPid (gameQuestion gameAfterFirst)) `shouldSatisfy` \case
+        Just ChooseAmounts {} -> True
+        _ -> False
+
+      answerTrauma other' 2 0
+      traumaOf self' `shouldReturn` (1, 1)
+      traumaOf other' `shouldReturn` (2, 0)
+      (gameGameState <$> getGame) `shouldReturn` IsActive
+
     -- chooseDecksWithAi is the real entry point. An AI seat is loaded in place and
     -- never prompted, so it must never become a slot -- a barrier waiting on a seat
     -- that is never asked would hang the table forever.
@@ -279,7 +326,19 @@ spec = describe "deck selection" do
     Run msgs -> listToMaybe [slots | BeginSimultaneousAsk _ _ slots _ <- msgs]
     _ -> Nothing
 
-  -- Only the seat id is under test; the decklist is never loaded by these specs.
+  inTheThickOfItDecklist :: Decklist.ArkhamDBDecklist
+  inTheThickOfItDecklist =
+    aiDecklist
+      { Decklist.slots = singletonMap "08125" 1
+      }
+
+  daisyInTheThickOfItDecklist :: Decklist.ArkhamDBDecklist
+  daisyInTheThickOfItDecklist =
+    inTheThickOfItDecklist
+      { Decklist.investigator_code = "01002"
+      , Decklist.investigator_name = "Daisy Walker"
+      }
+
   aiDecklist :: Decklist.ArkhamDBDecklist
   aiDecklist =
     Decklist.ArkhamDBDecklist

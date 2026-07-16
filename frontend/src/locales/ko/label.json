@@ -8,6 +8,7 @@
   "cancelMove": "이동 효과를 취소합니다.",
   "chooseTrauma": "트라우마 선택",
   "cluesToPlace": "장소에 놓을 단서",
+  "cluesToMove": "이동할 단서",
   "continue": "계속",
   "dealDamage": "피해를 {count}만큼 줍니다.",
   "dealAdditionalDamage": "피해를 +{count}만큼 추가로 줍니다.",

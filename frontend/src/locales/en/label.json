@@ -43,6 +43,7 @@
   "chooseInvestigatorToTakeControlOf": "Choose investigator to take control of {name}",
   "chooseTwoCardsToRotate": "Choose two cards to rotate",
   "cluesToPlace": "Clues to place",
+  "cluesToMove": "Clues to move",
   "commitToSkillTest": "Commit to skill test",
   "continue": "Continue",
   "continueHavingDiscarded": "Continue having discarded 1 card | Continue having discarded {count} cards",

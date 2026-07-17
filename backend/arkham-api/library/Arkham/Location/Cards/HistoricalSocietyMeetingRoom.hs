@@ -20,10 +20,9 @@ instance HasAbilities HistoricalSocietyMeetingRoom where
   getAbilities (HistoricalSocietyMeetingRoom a)
     | a.revealed =
         extend1 a
-          [ playerLimit PerRound
-            $ restricted a 1 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
-            $ actionAbilityWithCost (ExhaustAssetCost $ AssetWithTrait Ally)
-          ]
+          $ playerLimit PerRound
+          $ restricted a 1 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
+          $ actionAbilityWithCost (ExhaustAssetCost $ AssetWithTrait Ally)
   getAbilities (HistoricalSocietyMeetingRoom a) =
     extend1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
 

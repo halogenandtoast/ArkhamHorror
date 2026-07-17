@@ -6,7 +6,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DiscoverClues, RevealLocation)
-import Arkham.Trait
 
 newtype HistoricalSocietyMeetingRoom = HistoricalSocietyMeetingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,14 +16,14 @@ historicalSocietyMeetingRoom =
   location HistoricalSocietyMeetingRoom Cards.historicalSocietyMeetingRoom 4 (PerPlayer 1)
 
 instance HasAbilities HistoricalSocietyMeetingRoom where
-  getAbilities (HistoricalSocietyMeetingRoom a)
-    | a.revealed =
-        extend1 a
-          $ playerLimit PerRound
-          $ restricted a 1 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
-          $ actionAbilityWithCost (ExhaustAssetCost $ AssetWithTrait Ally)
   getAbilities (HistoricalSocietyMeetingRoom a) =
-    extend1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+    extend1 a
+      $ if a.revealed
+        then
+          playerLimit PerRound
+            $ restricted a 1 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
+            $ actionAbilityWithCost (ExhaustAssetCost #ally)
+        else mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
 
 instance RunMessage HistoricalSocietyMeetingRoom where
   runMessage msg l@(HistoricalSocietyMeetingRoom attrs) = runQueueT $ case msg of

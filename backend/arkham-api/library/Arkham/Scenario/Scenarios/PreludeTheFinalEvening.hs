@@ -213,8 +213,6 @@ instance RunMessage PreludeTheFinalEvening where
       placeResident GideonMizrah theCommons 3 Enemies.gideonMizrah Assets.gideonMizrahSeasonedSailor
       placeResident JudithPark theOldMill 2 Enemies.judithPark Assets.judithParkTheMuscle
       placeResident TheoPeters tadsStore 2 Enemies.theoPeters Assets.theoPetersJackOfAllTrades
-
-      placeDoomOnAgenda n
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do

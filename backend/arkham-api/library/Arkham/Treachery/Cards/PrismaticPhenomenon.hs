@@ -31,9 +31,19 @@ instance RunMessage PrismaticPhenomenon where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       whenJustM getSkillTestTarget \target ->
         withSkillTest \sid ->
-          skillTestModifier sid (attrs.ability 1) target (AlternateSuccessfullInvestigation $ toTarget attrs)
+          for_ (individualInvestigationTargets target) \target' ->
+            skillTestModifier
+              sid
+              (attrs.ability 1)
+              target'
+              (AlternateSuccessfullInvestigation $ toTarget attrs)
       pure t
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     _ -> PrismaticPhenomenon <$> liftRunMessage msg attrs
+
+individualInvestigationTargets :: Target -> [Target]
+individualInvestigationTargets = \case
+  BothTarget left right -> individualInvestigationTargets left <> individualInvestigationTargets right
+  target -> [target]

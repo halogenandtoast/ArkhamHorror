@@ -215,12 +215,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     when standalone $ do
       players <- allPlayers
       lead <- getActivePlayer
+      batchId <- getId
       pushAll
         $ [Ask lead PickScenarioSettings | not scenarioIsSideStory]
-        <> [ chooseDecks players
-           , ResetInvestigators
-           , ResetGame
-           , StartScenario scenarioId Nothing
+        <> [ chooseDecks batchId players [ResetInvestigators, ResetGame, StartScenario scenarioId Nothing]
            ]
     pure a
   InitDeck
@@ -268,24 +266,23 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           purchaseTrauma <- initDeckTrauma deck' iid (toTarget a)
           initXp <- initDeckXp deck' iid (toTarget a)
           let deck'' = withDeck (<> weaknesses) deck'
+          pid <- getPlayer iid
 
+          -- Interactive setup is deferred past the deck barrier: a question parked
+          -- inside this seat's sub-flow would leave the rest of its setup in the
+          -- global queue for the next seat's answer to drain (#5173). Deferred work
+          -- resolves one seat at a time once every seat has chosen. LoadDeck stays
+          -- here (non-interactive) and still runs first, so the Morrígan swaps below
+          -- cannot be overwritten by it.
           pushAll
-            $ LoadDeck iid deck''
-            : purchaseTrauma
-              <> toList mEldritchBrand
-              <> [DoStep 1 msg]
-              <> initXp
-
-          -- Defer the Morrígan choice out of the ChooseDecks window. Every
-          -- InitDeck runs while decks are still being chosen; presenting an
-          -- interactive choice there folds it into the shared ChooseDeck
-          -- question and races the per-player investigator setup (a player could
-          -- be dropped from the game). Running it after DoneChoosingDecks lets
-          -- each choice resolve in the active game, one at a time. Queued after
-          -- the LoadDeck above so the added weakness isn't overwritten; falls
-          -- back to now when no ChooseDecks is pending (single-player / tests).
-          unless (null morriganMessages)
-            $ insertAfterMatchingOrNow morriganMessages (== DoneChoosingDecks)
+            [ LoadDeck iid deck''
+            , DeferPastSimultaneousAsk pid
+                $ morriganMessages
+                <> purchaseTrauma
+                <> toList mEldritchBrand
+                <> [DoStep 1 msg]
+                <> initXp
+            ]
           pure $ a & playerDecksL %~ insertMap iid deck''
         else pure a
   DoStep 1 (InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDeck = deck}) -> do

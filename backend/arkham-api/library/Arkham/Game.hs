@@ -53,7 +53,7 @@ import Arkham.Debug
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect.Types
-import Arkham.Enemy (lookupEnemy)
+import Arkham.Enemy (lookupDefeatedEnemy)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), enemyClues, enemyDamage, enemyDoom)
 import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
 import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
@@ -320,6 +320,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gamePlayerOrder = []
         , gameRemovedFromPlay = mempty
         , gameQuestion = mempty
+        , gameSimultaneousAsks = mempty
         , gameSkillTestResults = Nothing
         , gameEnemyMoving = Nothing
         , gameEnemyEvading = Nothing
@@ -3626,9 +3627,7 @@ getEnemiesMatching :: (HasCallStack, HasGame m, Tracing m) => EnemyMatcher -> m 
 getEnemiesMatching matcher' = do
   case matcher' of
     DefeatedEnemy matcher -> do
-      let
-        wrapEnemy (defeatedEnemyAttrs -> a) =
-          overAttrs (const a) $ lookupEnemy (toCardCode a) (toId a) (toCardId a)
+      let wrapEnemy = lookupDefeatedEnemy . defeatedEnemyAttrs
       allDefeatedEnemies <- map wrapEnemy . toList <$> scenarioField ScenarioDefeatedEnemies
       -- Defeated enemies may be fully removed from play by the time this query
       -- runs (e.g. the IfEnemyDefeated window resolves post-discard), so field
@@ -6380,6 +6379,11 @@ runMessages gameId mLogger = do
     case mmsg of
       Nothing
         | isChooseDecks (gameGameState g)
+        , -- An open barrier holds its own continuation in state, so it cannot have
+          -- been lost and must not be pre-empted: it releases from SeatResolved.
+          -- Only the pre-barrier paths (ChooseUpgradeDeck, The Dream Eaters'
+          -- sequential prompts) can strand a queued DoneChoosingDecks.
+          null (gameSimultaneousAsks g)
         , not (any isDeckQuestion (gameQuestion g)) ->
             -- Self-heal a bricked deck-selection: DoneChoosingDecks (which flips
             -- IsChooseDecks -> IsActive) lives ONLY in the persisted step queue,

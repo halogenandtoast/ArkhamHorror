@@ -82,7 +82,8 @@
     "azathothSlumbersForNow": "阿撒托斯睡着……暂时是的",
     "theInvestigatorsSignedTheBlackBookOfAzathoth": "调查员在阿撒托斯的黑书上签名",
     "theInvestigatorsReversedTheIncantation": "调查员逆转了咒文",
-    "erynnJoinedTheInvestigators": "伊琳加入了调查员"
+    "erynnJoinedTheInvestigators": "伊琳加入了调查员",
+    "theCovenOfKeziahHoldsTheWorldInItsGrasp": "凯夏女巫团将世界握于掌中"
   },
   "tooltips": {
     "wraith": {
@@ -154,6 +155,7 @@
     "whatDoYouWantWithTheCreature": "<p>_“你打算对那头怪物做什么？”_</p><p>“首先，我们得对其施术绑缚，阻止它继续作恶。这是至关重要的。封印完成后，我们就能够在保全自身和他人的前提下学习它所拥有的知识。”</p>",
     "whatDoTheWitchesWantWithTheCreature": "<p>_“女巫们要对那头怪物做什么？”_</p><p>“我很肯定，她们想要知道它的秘密，抽取它的力量。”他捋着胡须，推断道，“可能会让那鬼魂附在其中一个女巫的身上，从而获得超越生死的力量。”</p>",
     "didYouKnowAboutTheCreature": "<p>_“你在慈善晚宴之前就知道那头怪物的存在吗？”_</p><p>“老实说，是的。”桑福德承认，“但我们没想到它是冲着我们来的。插手女巫的召唤仪式后，便有幽灵迷雾数日不散，我们遂展开调查。我们可能太过张扬，被它盯上了。但说到底，这不一定就是件坏事。”</p>",
+    "didYouKnowAboutTheCreatureBeforeTheCharityGala": "<p>_“你在慈善晚宴之前就知道那头怪物的存在吗？”_</p><p>“老实说，是的。”桑福德承认，“但我们没想到它是冲着我们来的。插手女巫的召唤仪式后，便有幽灵迷雾数日不散，我们遂展开调查。我们可能太过张扬，被它盯上了。但说到底，这不一定就是件坏事。”</p>",
     "whereAreTheFourMissingPeopleFromTheCharityGala": "<p>_“慈善晚宴上失踪的四个人现在身在何处？”_</p><p>“这事只有上帝知道答案了。”桑福德叹了口气答道，“或许，他们被归来的亡灵带走了。或者是被迷雾吞噬了。”他想了一会，补充道，“我猜，要是他们还活着，那他们也快变成亡灵了。异象似乎只发生在它周围，说不清是好事还是坏事。”</p>",
     "whyAreYouLookingAtMeLikeThat": "<p class='basic'>检查剧本日志。仅当*调查员从看守人之拥下存活*，你才能提问以下问题。</p><p>_“……你为什么这样看着我？”_</p><p>桑福德清了清嗓子。“我……没什么。”他在撒谎。</p>",
     "done": "结束提问"

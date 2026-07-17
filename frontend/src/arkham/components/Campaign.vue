@@ -81,6 +81,13 @@ const pendingUltimatumsAndBoonsQuestion = computed(() => ultimatumsAndBoonsQuest
 const continueCampaign = computed(() => {
   if (!props.game.campaign) return null
   if (pendingUltimatumsAndBoonsQuestion.value) return null
+  // The campaign step records where play will continue, but deferred deck setup
+  // (such as In the Thick of It trauma) can still have its own question pending.
+  // Only render the continuation when the server is actually asking for it.
+  const hasContinueQuestion = Object.values(props.game.question)
+    .some((question) => question?.tag === 'ContinueCampaign')
+  if (!hasContinueQuestion) return null
+
   const step = props.game.campaign.step
   if (step?.tag === 'ContinueCampaignStep') return step.contents
   if (step?.tag === 'StandaloneScenarioStep' && step.contents[1]?.tag === 'ContinueCampaignStep') {

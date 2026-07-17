@@ -907,6 +907,7 @@ newGame scenario' investigator = do
         { gameWindowDepth = 0
         , gameWindowStack = Nothing
         , gameWindowTick = 0
+        , gameSimultaneousAsks = mempty
         , gameWindowTickStack = []
         , gameEntryTicks = mempty
         , gameRunWindows = True

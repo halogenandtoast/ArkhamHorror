@@ -31,7 +31,7 @@ instance HasAbilities QuestioningTheGangsV2 where
             <> EnemyWithRemainingHealthLessThan
               (SumCalculation [Fixed 1, InvestigatorsFieldCalculation You InvestigatorClues])
         )
-        freeTrigger_
+        (FastAbility' Free #parley)
     , restricted a 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 2 1)
         $ Objective
         $ forced

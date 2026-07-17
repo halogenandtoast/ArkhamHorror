@@ -73,10 +73,15 @@ defaultCampaignRunner msg a = case msg of
     aiSeats <- forMaybeM players \pid -> do
       mState <- getAiPlayerState pid
       pure $ (pid,) <$> (bundledDeckFor . aiInvestigatorCode =<< mState)
-    pushAll
-      $ chooseDecksWithAi players aiSeats
-      : [Ask lead PickCampaignSettings | (campaignStep (toAttrs a)).unwrap /= PrologueStep]
-        <> [CampaignStep $ campaignStep $ toAttrs a]
+    batchId <- getId
+    -- The settings prompt and the first campaign step are the barrier's
+    -- continuation: they are held in game state until every seat has finished its
+    -- deck setup, rather than queued behind the deck ask where a seat's InitDeck
+    -- tail could run past them (#5173).
+    push
+      $ chooseDecksWithAi batchId players aiSeats
+      $ [Ask lead PickCampaignSettings | (campaignStep (toAttrs a)).unwrap /= PrologueStep]
+      <> [CampaignStep $ campaignStep $ toAttrs a]
     pure a
   HandleKilledOrInsaneInvestigators -> do
     -- This case is mainly to handle when there is not an upgrade window
@@ -135,7 +140,8 @@ defaultCampaignRunner msg a = case msg of
     pure a
   CampaignStep (ChooseDecksStep _) -> do
     players <- allPlayers
-    pushAll $ chooseDecks players : [FinishedUpgradingDecks]
+    batchId <- getId
+    push $ chooseDecks batchId players [FinishedUpgradingDecks]
     pure a
   CampaignStep (ContinueCampaignStep _step') -> do
     lead <- getLeadPlayer
@@ -209,12 +215,6 @@ defaultCampaignRunner msg a = case msg of
         else pure []
     let randomWeaknesses = baseRandomWeaknesses <> extraWeakness
     morrigan <- hasBoon BoonOfTheMorrigan
-    -- Boon of the Morrígan opens an interactive choice. Defer it out of the
-    -- ChooseDecks window: every InitDeck runs while decks are still being
-    -- chosen, so presenting the choice there folds it into the shared
-    -- ChooseDeck question and races the per-player investigator setup (a player
-    -- could be dropped from the game). It is queued after this InitDeck's own
-    -- messages (below) and resolves in the active game, one player at a time.
     morriganSwaps <-
       if morrigan
         then
@@ -228,18 +228,28 @@ defaultCampaignRunner msg a = case msg of
     ancients <- hasBoon BoonOfTheAncients
     purchaseTrauma <- initDeckTrauma deck' iid CampaignTarget
     initXp <- initDeckXp deck' iid CampaignTarget
+    pid <- getPlayer iid
+
+    -- Every InitDeck runs while decks are still being chosen. Its interactive parts
+    -- (Boon of the Morrígan, trauma, Eldritch Brand, XP) must not park inside that
+    -- window: the message queue is global, so a question parked here leaves the rest
+    -- of this seat's setup sitting in it, and the next seat to answer anything drains
+    -- that tail -- running this seat's setup, and then the campaign, out from under
+    -- its own unanswered question (#5173). Deferred past the barrier instead, they
+    -- resolve one seat at a time once the table is done choosing.
+    --
+    -- DoStep 1 (Spiritual Healing) reads the trauma purchased above, and the XP
+    -- messages follow it, so the whole tail defers together and keeps its order.
     pushAll
       $ weaknessMessages
-      <> purchaseTrauma
-      <> toList mEldritchBrand
-      <> [DoStep 1 msg]
-      <> initXp
-      <> (if ancients then ancientsStartingXpMessages iid else [])
-
-    -- Deferred after the pushAll above so it runs once decks are done; falls
-    -- back to now when no ChooseDecks is pending (single-player / tests).
-    unless (null morriganSwaps)
-      $ insertAfterMatchingOrNow morriganSwaps (== DoneChoosingDecks)
+      <> [ DeferPastSimultaneousAsk pid
+             $ morriganSwaps
+             <> purchaseTrauma
+             <> toList mEldritchBrand
+             <> [DoStep 1 msg]
+             <> initXp
+             <> (if ancients then ancientsStartingXpMessages iid else [])
+         ]
 
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   DoStep 1 (InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDeck = deck}) -> do

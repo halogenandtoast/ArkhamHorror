@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.38.1.
+-- This file has been generated from package.yaml by hpack version 0.39.6.
 --
 -- see: https://github.com/sol/hpack
 
@@ -2942,6 +2942,7 @@ library
       Arkham.Enemy.Cards.Zealot
       Arkham.Enemy.Cards.ZealotOfParadise
       Arkham.Enemy.Creation
+      Arkham.Enemy.DefeatedProxy
       Arkham.Enemy.Enemies
       Arkham.Enemy.Helpers
       Arkham.Enemy.Import.Lifted
@@ -5547,6 +5548,7 @@ library
       Arkham.Script
       Arkham.Search
       Arkham.SideStory
+      Arkham.SimultaneousAsk
       Arkham.Skill
       Arkham.Skill.CardDefs.Base
       Arkham.Skill.CardDefs.Core2026
@@ -7358,7 +7360,9 @@ test-suite spec
       Arkham.Treachery.Cards.ClawsOfSteamSpec
       Arkham.Treachery.Cards.CoverUpSpec
       Arkham.Treachery.Cards.DetachedFromRealitySpec
+      Arkham.Treachery.Cards.DreadfulMechanismSpec
       Arkham.Treachery.Cards.DreamlandsEclipseSpec
+      Arkham.Treachery.Cards.EndOfNegotiationsSpec
       Arkham.Treachery.Cards.FinalRhapsodySpec
       Arkham.Treachery.Cards.HauntedSpec
       Arkham.Treachery.Cards.HemophobiaSpec
@@ -7367,6 +7371,7 @@ test-suite spec
       Arkham.Treachery.Cards.LegInjurySpec
       Arkham.Treachery.Cards.MysteriousChantingSpec
       Arkham.Treachery.Cards.ParanoiaSpec
+      Arkham.Treachery.Cards.PrismaticPhenomenonSpec
       Arkham.Treachery.Cards.PsychosisSpec
       Arkham.Treachery.Cards.PsychotropicSporesSpec
       Arkham.Treachery.Cards.RexsCurseSpec
@@ -7403,6 +7408,7 @@ test-suite spec
       Arkham.UltimatumsAndBoons.UltimatumOfTheScreamSpec
       Arkham.UltimatumsAndBoons.UltimatumOfTheSpiralSpec
       Arkham.UltimatumsAndBoons.UltimatumOfUltimatumsSpec
+      Entity.AnswerSpec
       Helpers.Achievements
       Helpers.Message
       Helpers.UltimatumsAndBoons

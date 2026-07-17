@@ -107,8 +107,15 @@ data Game = Game
   , gameSkillTestResults :: Maybe SkillTestResultsData
   , gameEnemyMoving :: Maybe EnemyId
   , gameEnemyEvading :: Maybe EnemyId
-  , -- Active questions
+  , -- Active questions. The published surface the frontend reads
+    -- (@gameQuestion[myPid]@). While a barrier is open this is the projection of
+    -- the owning 'SimultaneousAsk''s slots; see 'gameSimultaneousAsks'.
     gameQuestion :: Map PlayerId (Question Message)
+  , -- | Open multi-seat barriers, keyed by the batch that owns each one. Holds the
+    -- pending seats and the continuation, so "everyone is ready" is a pure
+    -- function of state rather than of where the queue happens to have drained to.
+    -- See "Arkham.SimultaneousAsk" and @docs/multi-seat-barrier.md@.
+    gameSimultaneousAsks :: Map BatchId (SimultaneousAsk Message)
   , -- handling time warp
     gameActionCanBeUndone :: Bool
   , gameActionDiff :: [Diff.Patch]
@@ -142,6 +149,15 @@ data Game = Game
   deriving stock (Eq, Show)
 
 makeLensesWith suffixedFields ''Game
+
+{- | The open barrier (if any) this seat is still pending in.
+
+A seat belongs to at most one barrier; @Nothing@ means the seat is asked normally
+(the pre-barrier path: 'ChooseUpgradeDeck', The Dream Eaters' sequential deck
+prompts, and every ordinary question). See "Arkham.SimultaneousAsk".
+-}
+barrierSeat :: PlayerId -> Game -> Maybe (BatchId, SimultaneousAsk Message)
+barrierSeat pid = find (member pid . saPending . snd) . mapToList . gameSimultaneousAsks
 
 instance HasField "state" Game GameState where
   getField = gameGameState

@@ -41,7 +41,7 @@ lessonLearned =
   (event "12022" "Lesson Learned" 1 Guardian)
     { cdCardTraits = setFromList [Insight, Spirit]
     , cdSkills = [#intellect, #combat]
-    , cdFastWindow = Just $ DealtDamage #after (SourceIsEnemyAttack AnyEnemy) You
+    , cdFastWindow = Just $ EnemyAttacks #after You AnyEnemyAttack AnyEnemy
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     }
 

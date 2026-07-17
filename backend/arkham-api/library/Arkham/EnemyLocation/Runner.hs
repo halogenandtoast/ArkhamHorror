@@ -30,12 +30,11 @@ import Arkham.Classes.HasGame
 import Arkham.Constants
 import Arkham.Damage (DamageType (..))
 import Arkham.DamageEffect (DamageAssignment (..))
-import Arkham.DefeatedBy
 import Arkham.Direction
 import Arkham.Discover (DiscoverLocation (DiscoverAtLocation))
-import Arkham.Helpers.Discover (resolveDiscoverCluesAt, resolveSuccessfulInvestigation)
 import Arkham.ForMovement (ForMovement (..))
 import Arkham.Helpers.Calculation (calculate)
+import Arkham.Helpers.Discover (resolveDiscoverCluesAt, resolveSuccessfulInvestigation)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Source (getSourceController)
 import Arkham.Helpers.Window (checkAfter, checkWindows, frame)
@@ -57,6 +56,7 @@ import Arkham.Name (display, toName)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Token
+import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
@@ -166,8 +166,10 @@ instance RunMessage EnemyLocationAttrs where
       mods <- getCombinedModifiers [toTarget iid, toTarget a]
       let keywords = cdKeywords (toCardDef a)
       when
-        ( Keyword.Retaliate `member` keywords
-            && IgnoreRetaliate `notElem` mods
+        ( Keyword.Retaliate
+            `member` keywords
+            && IgnoreRetaliate
+            `notElem` mods
             && (not a.exhausted || CanRetaliateWhileExhausted `elem` mods)
         )
         $ push
@@ -246,31 +248,42 @@ instance RunMessage EnemyLocationAttrs where
         Heal.pushHealedAfter DamageType (toTarget a) source healAmount
       pure $ a & baseL . tokensL %~ subtractTokens Damage healAmount
     CheckDefeated source (isTarget a -> True) | not a.defeated -> do
-      mHealth <- traverse calculate a.health
-      modifiers' <- getModifiers (toTarget a)
-      let applyHealthMod (HealthModifier m) n = max 0 (n + m)
-          applyHealthMod _ n = n
-      let mModifiedHealth = fmap (\h -> foldr applyHealthMod h modifiers') mHealth
+      mModifiedHealth <- getModifiedHealth a
       for_ mModifiedHealth \health -> do
         when (enemyLocationDamage a >= health) do
           (whenMsg, afterMsg) <- Defeat.wouldBeDefeatedWindows (asEnemyId a)
           pushAll
             [ whenMsg
             , afterMsg
-            , Msg.EnemyLocationDefeated a.id (toCardId a) source (setToList $ toTraits (toCardDef a))
+            , Msg.Defeated (EnemyTarget (asEnemyId a)) (toCardId a) source (setToList $ toTraits (toCardDef a))
             ]
       pure a
-    Msg.EnemyLocationDefeated lid _ source _ | lid == a.id -> do
+    -- Enemy-locations are enemies, so they defeat through the same generic `Defeated`
+    -- message and the same Defeat behavior as Arkham.Enemy.Runner: that is what lets
+    -- "if this attack defeats an enemy" effects (Meat Cleaver, Hatchet, Runic Axe, ...),
+    -- the Game runner's defeat history, and cancelEnemyDefeat see them. The enemy
+    -- subsystem has no entity for the coerced EnemyId, so resolve the trio here.
+    Msg.Defeated (EnemyTarget eid) _ source _ | eid == asEnemyId a -> do
+      defeatedBy <- Defeat.classifyDefeat source (enemyLocationDamage a) <$> getModifiedHealth a
       miid <- getSourceController source
-      let defeatedBy = DefeatedByOther source
-      (whenMsg, afterMsg) <- Defeat.defeatedWindows miid defeatedBy (asEnemyId a)
-      pushAll
-        [ whenMsg
-        , Do (Msg.EnemyLocationDefeated lid (toCardId a) source (setToList $ toTraits (toCardDef a)))
-        , afterMsg
-        ]
+      pushAll =<< Defeat.openDefeat (asEnemyId a) defeatedBy miid msg []
+      pure a
+    Do (Msg.Defeated (EnemyTarget eid) _ source _) | eid == asEnemyId a -> do
+      defeatedBy <- Defeat.classifyDefeat source (enemyLocationDamage a) <$> getModifiedHealth a
+      miid <- getSourceController source
+      -- No disposal: an enemy-location doesn't discard itself. Removing it also removes
+      -- the location and relocates everyone standing on it, which is a consequence of
+      -- the defeat rather than part of it, so that waits for `After` below — otherwise
+      -- IfEnemyDefeated would resolve against a location that no longer exists and
+      -- matchers like Bounty's `EnemyWasAt YourLocation` could never match.
+      pushAll =<< Defeat.closeDefeat (asEnemyId a) defeatedBy miid []
+      pure a
+    After (Msg.Defeated (EnemyTarget eid) _ source _) | eid == asEnemyId a -> do
+      push $ Msg.EnemyLocationDefeated a.id (toCardId a) source (setToList $ toTraits (toCardDef a))
       pure $ a & defeatedL .~ True
-    Do (Msg.EnemyLocationDefeated lid _ _ _) | lid == a.id -> do
+    -- Hand off to the scenario, which relocates what was here and removes the location
+    -- per the enemy-location defeat rules.
+    Msg.EnemyLocationDefeated lid _ _ _ | lid == a.id -> do
       push $ ScenarioSpecific "enemyLocationDefeated" (toJSON lid)
       pure a
     PlaceTokens _ (isTarget a -> True) token n -> pure $ a & baseL . tokensL %~ addTokens token n
@@ -310,6 +323,20 @@ instance RunMessage EnemyLocationAttrs where
     applyDamageMod (DamageTaken n) acc = acc + n
     applyDamageMod NoDamageDealt _ = 0
     applyDamageMod _ acc = acc
+
+{- | This enemy-location's health with 'HealthModifier's applied.
+
+Not @field EnemyHealth@: an enemy-location registers its modifiers against its
+'LocationTarget' (see 'modifySelf' in e.g. Living Parlor), so the enemy field
+projection over the coerced EnemyId would miss them entirely.
+-}
+getModifiedHealth :: (Tracing m, HasGame m) => EnemyLocationAttrs -> m (Maybe Int)
+getModifiedHealth a = do
+  mHealth <- traverse calculate a.health
+  modifiers' <- getModifiers (toTarget a)
+  let applyHealthMod (HealthModifier m) n = max 0 (n + m)
+      applyHealthMod _ n = n
+  pure $ fmap (\h -> foldr applyHealthMod h modifiers') mHealth
 
 -- | Determine if an investigator is allowed to investigate this enemy-location.
 getInvestigateAllowed :: HasGame m => InvestigatorId -> EnemyLocationAttrs -> m Bool

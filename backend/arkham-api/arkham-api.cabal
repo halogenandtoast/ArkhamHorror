@@ -7370,6 +7370,7 @@ test-suite spec
       Arkham.Treachery.Cards.LegInjurySpec
       Arkham.Treachery.Cards.MysteriousChantingSpec
       Arkham.Treachery.Cards.ParanoiaSpec
+      Arkham.Treachery.Cards.PrismaticPhenomenonSpec
       Arkham.Treachery.Cards.PsychosisSpec
       Arkham.Treachery.Cards.PsychotropicSporesSpec
       Arkham.Treachery.Cards.RexsCurseSpec

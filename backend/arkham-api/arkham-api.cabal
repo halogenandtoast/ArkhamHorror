@@ -7209,6 +7209,7 @@ test-suite spec
       Arkham.Asset.Assets.RabbitsFootSpec
       Arkham.Asset.Assets.ResearchLibrarianSpec
       Arkham.Asset.Assets.Rolands38SpecialSpec
+      Arkham.Asset.Assets.RunicAxeSpec
       Arkham.Asset.Assets.ScavengingSpec
       Arkham.Asset.Assets.ScryingSpec
       Arkham.Asset.Assets.SegmentOfOnyx1Spec

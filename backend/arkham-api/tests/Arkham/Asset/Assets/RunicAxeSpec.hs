@@ -24,13 +24,14 @@ spec = describe "Runic Axe" $ do
             attrs
               { assetPlacement = InPlayArea (toId self)
               , assetCustomizations = IntMap.singleton 3 (1, [])
+              , assetTokens = singletonMap Charge 4
               }
         )
         self
     rougarou <- testEnemyWithDef Enemies.theRougarou id
     rougarou `spawnAt` location
 
-    [fight] <- getActionsFrom self axe
+    let fight = fromJustNote "Runic Axe fight ability" $ listToMaybe $ getAbilities axe
     self `useAbility` fight
     chooseOptionMatching "choose The Rougarou" $ \case
       FightLabel {enemyId} -> enemyId == toId rougarou

@@ -631,7 +631,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 </script>
 
 <template>
-  <div class='question-wrapper'>
+  <div class='question-wrapper' data-game-actionable="true">
     <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
     <div v-if="cardPiles.length > 0" class="cardPiles">
       <div v-for="{pile, index} in cardPiles" :key="index" class="card-pile" @click="choose(index)">

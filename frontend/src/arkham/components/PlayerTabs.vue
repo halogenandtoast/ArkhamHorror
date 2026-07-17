@@ -1,18 +1,14 @@
 <script lang="ts" setup>
 import { useStorage } from '@vueuse/core'
-import { computed, ref, watchEffect, inject } from 'vue';
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
 import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { Message, AbilityLabel, type TargetLabel } from '@/arkham/types/Message';
-import type { Target } from '@/arkham/types/Target';
 import type { Investigator } from '@/arkham/types/Investigator';
 import type { TarotCard } from '@/arkham/types/TarotCard';
-import type { Placement } from '@/arkham/types/Placement';
-import type { Source } from '@/arkham/types/Source';
 import { imgsrc } from '@/arkham/helpers';
 import { gameLocalStorageKey } from '@/arkham/localStorage';
 import { IsMobile } from '@/arkham/isMobile';
@@ -32,9 +28,12 @@ const props = defineProps<Props>()
 
 const storageKey = computed(() => gameLocalStorageKey(props.game.id, 'selected-tab'))
 const selectedTab = useStorage<string>(storageKey, props.playerId)
-const userPicked = ref(false)
+const playerInfo = ref<HTMLElement | null>(null)
 
 const solo = inject<Ref<boolean>>('solo')
+const spectate = inject<Ref<boolean>>('spectate', ref(false))
+const processing = inject<Ref<boolean>>('processing', ref(false))
+const uiLock = inject<Ref<boolean>>('uiLock', ref(false))
 const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
 const isWaiting = (investigator: Investigator) => props.playerOrder.length > 1 && investigator.playerId in props.game.question
@@ -83,15 +82,32 @@ function instructions(investigator: Investigator) {
   return null
 }
 
+type SwitchReason = 'baseline' | 'tab-action' | 'sole-question'
+interface SwitchFrame {
+  tab: string
+  perspective: string
+  reason: SwitchReason
+}
+
+const switchStack = ref<SwitchFrame[]>([
+  { tab: selectedTab.value, perspective: props.playerId, reason: 'baseline' },
+])
+const pendingPerspective = ref<string | null>(null)
+
+function resetSwitchStack(tab: string, perspective: string) {
+  switchStack.value = [{ tab, perspective, reason: 'baseline' }]
+}
+
 function selectTab(i: string) {
   selectedTab.value = i
-  userPicked.value = true
+  resetSwitchStack(i, props.playerId)
 }
 
 function selectTabExtended(i: string) {
   selectedTab.value = i
-  userPicked.value = true
+  resetSwitchStack(i, i)
   if (solo?.value && props.playerId !== i && switchInvestigator) {
+    pendingPerspective.value = i
     switchInvestigator(i)
   }
 }
@@ -105,135 +121,173 @@ function getInvestigatorName(cardTitle: string): string {
   return language === 'en'? cardTitle : store.getCardName(cardTitle, "investigator")
 }
 
-const isForcedAbility = (ability: Message): ability is AbilityLabel => {
-  return ability.tag === "AbilityLabel" && ability.ability.type.tag === "ForcedAbility"
+// New actionable controls should use data-game-actionable. The class selectors
+// keep existing card/target controls participating while they migrate to the
+// shared marker.
+const ACTIONABLE_SELECTOR = [
+  '[data-game-actionable="true"]',
+  '[class*="--can-interact"]',
+  '[class*="--can-progress"]',
+  '.can-interact',
+  '.deck--can-draw',
+  '.clue--can-spend',
+  '.resource--can-take',
+].join(',')
+
+function isAiPlayer(playerId: string) {
+  return playerId in props.game.settings.aiPlayers
 }
 
-const isTargetLabel = (ability: Message): ability is TargetLabel => {
-  return ability.tag === "TargetLabel"
+function isEnabledAction(element: Element): element is HTMLElement {
+  if (!(element instanceof HTMLElement)) return false
+  if (element.matches(':disabled,[aria-disabled="true"]')) return false
+  return !element.closest('[inert]')
 }
 
-const sourceToPlacement = (source: Source): Placement | null => {
-  switch (source.tag) {
-    case "EnemySource":
-      {
-        const { contents } = source
-        if (typeof contents === 'string') {
-          const enemy = props.game.enemies[contents]
-          if (enemy) return enemy.placement
-        }
-        break
-      }
-    case "TreacherySource":
-      {
-        const { contents } = source
-        if (typeof contents === 'string') {
-          const treachery = props.game.treacheries[contents]
-          if (treachery) return treachery.placement
-        }
-        break
-      }
-    default:
-  }
+function actionLocations() {
+  const scope = playerInfo.value?.closest<HTMLElement>('#scenario') ?? playerInfo.value
+  const tabs = new Set<string>()
+  let outsideTab = false
 
-  return null
-}
-
-const targetToPlacement = (target: Target): Placement | null => {
-  switch (target.tag) {
-    case "EnemyTarget":
-      {
-        const { contents } = target
-        if (typeof contents === 'string') {
-          const enemy = props.game.enemies[contents]
-          if (enemy) return enemy.placement
-        }
-      }
-    case "TreacheryTarget":
-      {
-        const { contents } = target
-        if (typeof contents === 'string') {
-          const treachery = props.game.treacheries[contents]
-          if (treachery) return treachery.placement
-        }
-      }
-    default:
-  }
-
-  return null
-}
-
-watchEffect(() => {
-  // determines which tab will be active, it should be the player who is
-  // playing the game, but on occasion there will be a forced effect in another
-  // players tab and we'd like to direct the player there
-  const allChoices = ArkhamGame.choices(props.game, props.playerId)
-
-  const playersWithForced = allChoices
-    .reduce((acc, c) => {
-      if (isForcedAbility(c)) {
-        const { source } = c.ability
-        const placement = sourceToPlacement(source)
-        if (placement?.tag == 'InThreatArea') {
-          const investigator = props.game.investigators[placement.contents]
-          if (investigator) acc.push(investigator.playerId)
-        }
-      } else if (allChoices.length == 1) {
-      }
-      return acc
-    }, [] as string[])
-
-  const allTargets = allChoices.every(isTargetLabel)
-  const playersWithTargets = !allTargets ? [] : allChoices
-    .reduce((acc, c) => {
-      if (isTargetLabel(c)) {
-        const placement = targetToPlacement(c.target)
-        if (placement?.tag == 'InThreatArea') {
-          const investigator = props.game.investigators[placement.contents]
-          if (investigator) acc.push(investigator.playerId)
-        }
-      }
-      return acc
-    }, [] as string[])
-
-  const playerIds = [...new Set(allTargets ? playersWithTargets : playersWithForced)]
-
-  if (userPicked.value) return
-
-  if (playerIds.length == 0) {
-    const investigator = Object.values(props.players).find(i => i.playerId === props.playerId)
-    if (investigator && investigator.id == props.activePlayerId) {
-      selectedTab.value = props.playerId
-      return
+  for (const element of scope?.querySelectorAll(ACTIONABLE_SELECTOR) ?? []) {
+    if (!isEnabledAction(element)) continue
+    const tab = element.closest<HTMLElement>('.tab[data-player-tab]')
+    if (!tab) {
+      outsideTab = true
+      continue
     }
+    const playerId = tab.dataset.playerTab
+    if (playerId && !isAiPlayer(playerId)) tabs.add(playerId)
   }
 
-  // In true multiplayer each player controls their own view and shouldn't be
-  // yanked to another investigator's tab during e.g. a help/commit window where
-  // multiple players have choices. We still follow a forced/target effect into
-  // another tab when this browser's player is the only player with a choice.
-  if (solo?.value !== true) {
-    const playersWithChoices = Object.keys(props.game.question).filter(pid => hasChoices(pid))
-    const onlyThisPlayerHasChoice =
-      playersWithChoices.length === 1 &&
-      playersWithChoices[0] === props.playerId
+  return { tabs, outsideTab }
+}
 
-    if (playerIds.length > 0 && !playerIds.includes(props.playerId) && onlyThisPlayerHasChoice) {
-      selectedTab.value = playerIds[0]
-      return
-    }
-    selectedTab.value = props.playerId
+function frameIsStillNeeded(frame: SwitchFrame, tabs: Set<string>) {
+  if (frame.reason === 'tab-action') return tabs.has(frame.tab)
+  if (frame.reason === 'sole-question') {
+    return frame.perspective in props.game.question && !isAiPlayer(frame.perspective)
+  }
+  return true
+}
+
+function applyFrame(frame: SwitchFrame) {
+  selectedTab.value = frame.tab
+  if (solo?.value === true && props.playerId !== frame.perspective && switchInvestigator) {
+    pendingPerspective.value = frame.perspective
+    switchInvestigator(frame.perspective)
+  }
+}
+
+function pushAutomaticFrame(tab: string, perspective: string, reason: Exclude<SwitchReason, 'baseline'>) {
+  const current = switchStack.value.at(-1)
+  if (current?.tab === tab && current.perspective === perspective) return
+  switchStack.value.push({ tab, perspective, reason })
+  applyFrame(switchStack.value.at(-1)!)
+}
+
+function unwindSwitchStack(tabs: Set<string>) {
+  while (switchStack.value.length > 1) {
+    const current = switchStack.value.at(-1)!
+    if (frameIsStillNeeded(current, tabs)) break
+    switchStack.value.pop()
+  }
+  applyFrame(switchStack.value.at(-1)!)
+}
+
+let actionObserver: MutationObserver | null = null
+let inspectionFrame: number | null = null
+let automaticSwitchCandidate: string | null = null
+
+function scheduleActionInspection() {
+  if (inspectionFrame !== null) cancelAnimationFrame(inspectionFrame)
+  inspectionFrame = requestAnimationFrame(async () => {
+    inspectionFrame = null
+    await nextTick()
+    inspectActions()
+  })
+}
+
+function automaticSwitchIsStable(candidate: string) {
+  if (automaticSwitchCandidate === candidate) {
+    automaticSwitchCandidate = null
+    return true
+  }
+
+  automaticSwitchCandidate = candidate
+  // Vue can briefly remove one tab's controls while replacing a question. Do
+  // not route on that intermediate DOM (for example, while Old Book of Lore
+  // replaces its investigator target prompt with focused cards).
+  scheduleActionInspection()
+  return false
+}
+
+function inspectActions() {
+  if (pendingPerspective.value === props.playerId) pendingPerspective.value = null
+  if (spectate.value || processing.value || uiLock.value || pendingPerspective.value !== null) {
+    automaticSwitchCandidate = null
     return
   }
 
-  selectedTab.value = playerIds.length > 0 && !playerIds.includes(props.playerId)
-    ? playerIds[0]
-    : props.playerId
+  const { tabs, outsideTab } = actionLocations()
+
+  // A unique tab is the only place where the current perspective can act.
+  // Controls elsewhere in the scenario deliberately suppress the switch.
+  if (!outsideTab && tabs.size === 1) {
+    const [onlyTab] = tabs
+    if (onlyTab !== selectedTab.value) {
+      if (!automaticSwitchIsStable(`tab-action:${onlyTab}:${props.playerId}`)) return
+      pushAutomaticFrame(onlyTab, props.playerId, 'tab-action')
+      return
+    }
+  }
+
+  // In multihanded solo, a question belonging solely to another human
+  // investigator is enough to change perspective. Its specialized UI may not
+  // exist until that perspective is active, so this fallback does not rely on
+  // DOM markers.
+  if (solo?.value === true && tabs.size === 0 && !outsideTab) {
+    const questionPlayers = Object.keys(props.game.question).filter(pid => !isAiPlayer(pid))
+    if (questionPlayers.length === 1 && questionPlayers[0] !== props.playerId) {
+      const questionPlayer = questionPlayers[0]
+      if (!automaticSwitchIsStable(`sole-question:${questionPlayer}`)) return
+      pushAutomaticFrame(questionPlayer, questionPlayer, 'sole-question')
+      return
+    }
+  }
+
+  automaticSwitchCandidate = null
+  unwindSwitchStack(tabs)
+}
+
+onMounted(() => {
+  const scope = playerInfo.value?.closest<HTMLElement>('#scenario') ?? playerInfo.value
+  if (scope) {
+    actionObserver = new MutationObserver(scheduleActionInspection)
+    actionObserver.observe(scope, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['class', 'disabled', 'aria-disabled', 'data-game-actionable'],
+    })
+  }
+  scheduleActionInspection()
 })
+
+onBeforeUnmount(() => {
+  actionObserver?.disconnect()
+  if (inspectionFrame !== null) cancelAnimationFrame(inspectionFrame)
+})
+
+watch(
+  () => [props.playerId, props.game.scenarioSteps, props.game.question, processing.value, uiLock.value] as const,
+  scheduleActionInspection,
+  { deep: true },
+)
 </script>
 
 <template>
-  <div class="player-info">
+  <div ref="playerInfo" class="player-info">
     <div class="tabs-row">
     <ul class='tabs__header'>
       <li v-for='investigator in investigators'
@@ -249,7 +303,7 @@ watchEffect(() => {
           v-tooltip="instructions(investigator)"
           :disabled="investigator.playerId === props.playerId"
           class="switch-investigators"
-          @click="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
+          @click.stop="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
         <span
           v-else-if="isWaiting(investigator)"
           class="waiting-indicator"
@@ -269,7 +323,7 @@ watchEffect(() => {
           v-tooltip="instructions(investigator)"
           :disabled="investigator.playerId === props.playerId"
           class="switch-investigators"
-          @click="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
+          @click.stop="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
         <span
           v-else-if="isWaiting(investigator)"
           class="waiting-indicator"

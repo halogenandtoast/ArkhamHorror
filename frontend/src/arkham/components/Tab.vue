@@ -15,7 +15,7 @@ const isActive = computed(() => props.selectedTab == props.index)
 </script>
 
 <template>
-  <div class='tab' v-show='isActive'>
+  <div class='tab' :data-player-tab="index" v-show='isActive'>
     <slot></slot>
   </div>
 </template>

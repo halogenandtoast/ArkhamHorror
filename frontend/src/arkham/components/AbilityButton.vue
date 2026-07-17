@@ -441,6 +441,7 @@ const classObject = computed(() => {
   <button
     v-if="display"
     class="button"
+    data-game-actionable="true"
     :class="classObject"
     @click="$emit('choose', ability)"
     v-bind="attributes"

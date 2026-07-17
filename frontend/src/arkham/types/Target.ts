@@ -3,7 +3,7 @@ import { AbilityRef } from '@/arkham/types/Ability';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 import { v2Optional } from '@/arkham/parser'
 
-type TargetContents = string | { face: string, id: string } | { ability: AbilityRef }
+type TargetContents = string | { face: string, id: string } | { ability: AbilityRef } | [Target, Target]
 
 export type Target = {
   tag: string
@@ -26,6 +26,15 @@ const  targetContentsDecoder: JsonDecoder.Decoder<TargetContents> = JsonDecoder.
 
 export const targetDecoder: JsonDecoder.Decoder<Target> = JsonDecoder.lazy(() =>
   JsonDecoder.oneOf<Target>([
+    JsonDecoder.object<Target>(
+      {
+        tag: JsonDecoder.literal('BothTarget'),
+        contents: JsonDecoder.tuple([targetDecoder, targetDecoder], 'BothTargetContents'),
+        label: v2Optional(JsonDecoder.string()),
+        innerTag: v2Optional(JsonDecoder.string()),
+      },
+      'BothTarget'
+    ),
     JsonDecoder.object<Target>(
       {
         tag: JsonDecoder.literal('ProxyTarget'),

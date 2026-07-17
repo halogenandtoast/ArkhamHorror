@@ -93,12 +93,14 @@ const switchStack = ref<SwitchFrame[]>([
   { tab: selectedTab.value, perspective: props.playerId, reason: 'baseline' },
 ])
 const pendingPerspective = ref<string | null>(null)
+let manualSelectionAtStep: number | null = null
 
 function resetSwitchStack(tab: string, perspective: string) {
   switchStack.value = [{ tab, perspective, reason: 'baseline' }]
 }
 
 function selectTab(i: string) {
+  manualSelectionAtStep = props.game.scenarioSteps
   selectedTab.value = i
   resetSwitchStack(i, props.playerId)
 }
@@ -198,6 +200,7 @@ function unwindSwitchStack(tabs: Set<string>) {
 let actionObserver: MutationObserver | null = null
 let inspectionFrame: number | null = null
 let automaticSwitchCandidate: string | null = null
+let automaticSwitchCandidateSince = 0
 
 function scheduleActionInspection() {
   if (inspectionFrame !== null) cancelAnimationFrame(inspectionFrame)
@@ -209,12 +212,20 @@ function scheduleActionInspection() {
 }
 
 function automaticSwitchIsStable(candidate: string) {
+  const now = performance.now()
   if (automaticSwitchCandidate === candidate) {
-    automaticSwitchCandidate = null
-    return true
+    // Two adjacent animation frames were still short enough to catch the
+    // intermediate DOM produced while playing assets such as Flashlight. Wait
+    // for the destination to remain unchanged before routing.
+    if (now - automaticSwitchCandidateSince >= 120) {
+      automaticSwitchCandidate = null
+      return true
+    }
+  } else {
+    automaticSwitchCandidate = candidate
+    automaticSwitchCandidateSince = now
   }
 
-  automaticSwitchCandidate = candidate
   // Vue can briefly remove one tab's controls while replacing a question. Do
   // not route on that intermediate DOM (for example, while Old Book of Lore
   // replaces its investigator target prompt with focused cards).
@@ -228,6 +239,14 @@ function inspectActions() {
     automaticSwitchCandidate = null
     return
   }
+
+  // Clicking a tab mutates the observed DOM. Keep the user's selection stable
+  // for the current game state rather than immediately routing away and back.
+  if (manualSelectionAtStep === props.game.scenarioSteps) {
+    automaticSwitchCandidate = null
+    return
+  }
+  manualSelectionAtStep = null
 
   const { tabs, outsideTab } = actionLocations()
 

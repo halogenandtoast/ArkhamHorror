@@ -18,7 +18,8 @@ oldCompass2 :: AssetCard OldCompass2
 oldCompass2 = asset OldCompass2 Cards.oldCompass2
 
 instance HasAbilities OldCompass2 where
-  getAbilities (OldCompass2 a) = [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) investigateAction_]
+  getAbilities (OldCompass2 a) =
+    [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) investigateAction_]
 
 instance RunMessage OldCompass2 where
   runMessage msg a@(OldCompass2 attrs) = runQueueT $ case msg of

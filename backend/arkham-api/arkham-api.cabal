@@ -7196,6 +7196,7 @@ test-suite spec
       Arkham.Asset.Assets.MedicalTextsSpec
       Arkham.Asset.Assets.MitchBrownSpec
       Arkham.Asset.Assets.OldBookOfLoreSpec
+      Arkham.Asset.Assets.OldCompass2Spec
       Arkham.Asset.Assets.OnTheirHeels5Spec
       Arkham.Asset.Assets.PatricesViolinSpec
       Arkham.Asset.Assets.PeltShipmentSpec

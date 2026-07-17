@@ -27,15 +27,13 @@ instance HasModifiersFor BedroomHemlockHouse34 where
 
 instance HasAbilities BedroomHemlockHouse34 where
   getAbilities (BedroomHemlockHouse34 a) =
-    extendRevealed a
-      [ restricted a 1 Here
-          $ freeReaction
-              (PlacedToken #after (SourceUsedBy You) (TargetIs $ toTarget a.id) Resource)
-      ]
+    extend1 a
+      $ restricted a 1 Here
+      $ freeReaction (PlacedToken #after (SourceUsedBy You) (TargetIs $ toTarget a.id) Resource)
 
 instance RunMessage BedroomHemlockHouse34 where
   runMessage msg l@(BedroomHemlockHouse34 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ withI18n do
         countVar 1 $ labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
         countVar 2 $ labeled' "gainResources" $ gainResources iid (attrs.ability 1) 2

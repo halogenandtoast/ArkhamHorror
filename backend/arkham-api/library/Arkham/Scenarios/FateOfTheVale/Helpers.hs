@@ -4,17 +4,15 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (ActCard))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card
-import Arkham.Deck qualified as Deck
-import Arkham.Draw.Types
+import Arkham.Classes.HasQueue (push)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Act (getCurrentAct)
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.Helpers.Window (wouldDo)
 import Arkham.I18n
 import Arkham.Id (InvestigatorId)
-import Arkham.Message (Message (DrewCards, Run))
+import Arkham.Message (Message (Run, ScenarioSpecific))
 import Arkham.Message.Lifted
-import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
@@ -54,10 +52,28 @@ abyssDrawWindow tag iid card resolveMsg = do
   -- Reactors such as Old Memory must not trigger on signature cards drawn from
   -- The Abyss, so flag those windows with a ":signature" suffix they ignore.
   let key prefix = prefix <> ":" <> tag <> (if isSignature card then ":signature" else "")
+  highlightCards [card]
   wouldDo
     resolveMsg
     (Window.ScenarioEvent (key "wouldDrawFromAbyss") (Just iid) (toJSON card))
     (Window.ScenarioEvent (key "drewFromAbyss") (Just iid) (toJSON card))
+  highlightCards ([] :: [Card])
+
+{- | Reveal cards from The Abyss one at a time, giving reactions such as Old
+Memory a window for every card before continuing. The cards stay focused until
+@resolveMsg@ has finished asking any follow-up question.
+-}
+revealCardsFromAbyss :: ReverseQueue m => InvestigatorId -> [Card] -> Message -> m ()
+revealCardsFromAbyss iid cards resolveMsg = focusCards cards do
+  for_ cards \card -> do
+    let suffix = if isSignature card then ":signature" else ""
+    highlightCards [card]
+    wouldDo
+      (Run [])
+      (Window.ScenarioEvent ("wouldRevealFromAbyss" <> suffix) (Just iid) (toJSON card))
+      (Window.ScenarioEvent ("revealedFromAbyss" <> suffix) (Just iid) (toJSON card))
+    highlightCards ([] :: [Card])
+  push resolveMsg
 
 {- | Reveal cards from the top of The Abyss until an encounter-backed card is
 found and draw it, replacing the mythos encounter draw. Shared by every Fate of
@@ -72,24 +88,11 @@ revealEncounterCardFromAbyss source iid = do
       EncounterCard c -> not (cdDoubleSided $ toCardDef c)
       _ -> False
     (nonEncounter, rest) = break hasEncounterBack (reverse abyss)
-  case rest of
-    EncounterCard ec : _ -> do
-      let revealed = nonEncounter <> [EncounterCard ec]
-      focusCards revealed do
-        chooseOneM iid do
-          withI18n $ labeled' "continue" do
-            unfocusCards
-            for_ revealed $ scenarioSpecific "removeFromAbyss" . toCardId
-            for_ (reverse nonEncounter) $ putCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck)
-            -- Old Memory (and any future cards) may react to a card being drawn
-            -- from The Abyss, so route the draw through a cancellable window.
-            let drawMsg = DrewCards iid $ finalizeDraw (newCardDraw source Deck.EncounterDeck 1) [EncounterCard ec]
-            abyssDrawWindow "mythos" iid (EncounterCard ec) (Run [drawMsg])
-    _ -> pure ()
-  when (null rest && notNull nonEncounter) do
-    focusCards nonEncounter do
-      chooseOneM iid do
-        withI18n $ labeled' "continue" do
-          unfocusCards
-          for_ nonEncounter $ scenarioSpecific "removeFromAbyss" . toCardId
-          for_ (reverse nonEncounter) $ putCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck)
+  let encounter = case rest of
+        EncounterCard ec : _ -> Just (EncounterCard ec)
+        _ -> Nothing
+      revealed = nonEncounter <> maybeToList encounter
+  unless (null revealed)
+    $ revealCardsFromAbyss iid revealed
+    $ ScenarioSpecific "resolveEncounterCardsRevealedFromAbyss"
+    $ toJSON (source, iid, nonEncounter, encounter)

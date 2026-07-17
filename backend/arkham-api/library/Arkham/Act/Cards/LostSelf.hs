@@ -249,14 +249,9 @@ revealFromBottomOfAbyss :: ReverseQueue m => InvestigatorId -> Int -> m ()
 revealFromBottomOfAbyss iid n = do
   abyss <- getScenarioDeck AbyssDeck
   let revealed = drop (max 0 (length abyss - n)) abyss
-  unless (null revealed) $ focusCards revealed do
-    chooseOneM iid do
-      targets revealed \card -> do
-        unfocusCards
-        let rest = filter (/= card) revealed
-        for_ revealed $ scenarioSpecific "removeFromAbyss" . toCardId
-        shuffleCardsIntoTopOfDeck (Deck.ScenarioDeckByKey AbyssDeck) 0 rest
-        scenarioSpecific "drawFromAbyss" (iid, card)
+  unless (null revealed)
+    $ revealCardsFromAbyss iid revealed
+    $ ScenarioSpecific "lostSelfChooseFromRevealedAbyss" (toJSON (iid, revealed))
 
 instance RunMessage LostSelf where
   runMessage msg a@(LostSelf attrs) = runQueueT $ case msg of
@@ -265,6 +260,17 @@ instance RunMessage LostSelf where
       getSkillTest >>= traverse_ \st -> case skillTestResult st of
         SucceededBy _ n | n > 0 -> revealFromBottomOfAbyss iid n
         _ -> pure ()
+      pure a
+    ScenarioSpecific "lostSelfChooseFromRevealedAbyss" v -> do
+      let (iid, originallyRevealed) = toResult v :: (InvestigatorId, [Card])
+      abyss <- getScenarioDeck AbyssDeck
+      let revealed = filter ((`elem` map toCardId abyss) . toCardId) originallyRevealed
+      unless (null revealed) $ chooseOneM iid do
+        targets revealed \card -> do
+          let rest = filter (/= card) revealed
+          for_ revealed $ scenarioSpecific "removeFromAbyss" . toCardId
+          shuffleCardsIntoTopOfDeck (Deck.ScenarioDeckByKey AbyssDeck) 0 rest
+          scenarioSpecific "drawFromAbyss" (iid, card)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 2) iid (AnySkillValue 2)

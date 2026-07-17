@@ -9,6 +9,7 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
+import Arkham.Draw.Types
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.ForMovement
@@ -21,6 +22,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect, mod
 import Arkham.Helpers.Query (allInvestigators, getSetAsideCardMaybe)
 import Arkham.Helpers.SkillTest (isEvadeWith, isFightWith)
 import Arkham.Helpers.Xp (toBonus)
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as InvestigatorCards
 import Arkham.Investigator.Types (Field (..))
@@ -726,6 +728,23 @@ instance RunMessage FateOfTheVale where
     ScenarioSpecific "drawFromAbyss" v -> do
       let (iid, card) = toResult v :: (InvestigatorId, Card)
       drawCardFromAbyss iid ScenarioSource card
+      pure s
+    ScenarioSpecific "resolveEncounterCardsRevealedFromAbyss" v -> do
+      let (source, iid, nonEncounter, encounter) =
+            toResult v :: (Source, InvestigatorId, [Card], Maybe Card)
+          abyssIds = map toCardId $ findWithDefault [] AbyssDeck attrs.decks
+          stillInAbyss card = toCardId card `elem` abyssIds
+          remainingNonEncounter = filter stillInAbyss nonEncounter
+          remainingEncounter = encounter >>= \card -> card <$ guard (stillInAbyss card)
+          remaining = remainingNonEncounter <> maybeToList remainingEncounter
+      chooseOneM iid do
+        withI18n $ labeled' "continue" do
+          for_ remaining $ scenarioSpecific "removeFromAbyss" . toCardId
+          for_ (reverse remainingNonEncounter)
+            $ putCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck)
+          for_ remainingEncounter \card -> do
+            let drawMsg = DrewCards iid $ finalizeDraw (newCardDraw source Deck.EncounterDeck 1) [card]
+            abyssDrawWindow "mythos" iid card (Run [drawMsg])
       pure s
     DoBatch _ (ScenarioSpecific "resolveAbyssDraw" v) -> do
       let (iid, source, card) = toResult v :: (InvestigatorId, Source, Card)

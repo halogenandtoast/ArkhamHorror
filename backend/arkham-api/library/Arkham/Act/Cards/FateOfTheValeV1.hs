@@ -14,7 +14,7 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.FateOfTheVale.Helpers (scenarioI18n)
+import Arkham.Scenarios.FateOfTheVale.Helpers (revealCardsFromAbyss, scenarioI18n)
 import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.Trait (Trait (Lair))
@@ -41,19 +41,12 @@ instance HasAbilities FateOfTheValeV1 where
       ]
 
 revealFromBottomOfAbyss :: ReverseQueue m => Source -> InvestigatorId -> Int -> m ()
-revealFromBottomOfAbyss source iid n = do
+revealFromBottomOfAbyss _source iid n = do
   abyss <- getScenarioDeck AbyssDeck
   let revealed = drop (max 0 (length abyss - n)) abyss
-  unless (null revealed) $ focusCards revealed do
-    chooseOneM iid $ withI18n do
-      labeled' "continue" do
-        unfocusCards
-        for_ revealed $ scenarioSpecific "removeFromAbyss" . toCardId
-        let enemies = filter (\c -> toCardType c == EnemyType && not (cdDoubleSided $ toCardDef c)) revealed
-        when (notNull enemies) do
-          push
-            $ DrewCards iid
-            $ finalizeDraw (newCardDraw source Deck.EncounterDeck (length enemies)) enemies
+  unless (null revealed)
+    $ revealCardsFromAbyss iid revealed
+    $ ScenarioSpecific "fateOfTheValeV1ResolveRevealedAbyss" (toJSON (iid, revealed))
 
 instance RunMessage FateOfTheValeV1 where
   runMessage msg a@(FateOfTheValeV1 attrs) = runQueueT $ case msg of
@@ -61,6 +54,19 @@ instance RunMessage FateOfTheValeV1 where
       getSkillTest >>= traverse_ \st -> case skillTestResult st of
         SucceededBy _ n | n > 0 -> revealFromBottomOfAbyss (attrs.ability 1) iid n
         _ -> pure ()
+      pure a
+    ScenarioSpecific "fateOfTheValeV1ResolveRevealedAbyss" v -> do
+      let (iid, originallyRevealed) = toResult v :: (InvestigatorId, [Card])
+      abyss <- getScenarioDeck AbyssDeck
+      let revealed = filter ((`elem` map toCardId abyss) . toCardId) originallyRevealed
+      chooseOneM iid $ withI18n do
+        labeled' "continue" do
+          for_ revealed $ scenarioSpecific "removeFromAbyss" . toCardId
+          let enemies = filter (\c -> toCardType c == EnemyType && not (cdDoubleSided $ toCardDef c)) revealed
+          when (notNull enemies) do
+            push
+              $ DrewCards iid
+              $ finalizeDraw (newCardDraw (attrs.ability 1) Deck.EncounterDeck (length enemies)) enemies
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 2) iid (AnySkillValue 2)

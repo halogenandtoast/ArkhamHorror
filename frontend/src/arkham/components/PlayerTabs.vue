@@ -8,6 +8,7 @@ import Player from '@/arkham/components/Player.vue';
 import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Investigator } from '@/arkham/types/Investigator';
+import type { Question } from '@/arkham/types/Question';
 import type { TarotCard } from '@/arkham/types/TarotCard';
 import { imgsrc } from '@/arkham/helpers';
 import { gameLocalStorageKey } from '@/arkham/localStorage';
@@ -82,7 +83,7 @@ function instructions(investigator: Investigator) {
   return null
 }
 
-type SwitchReason = 'baseline' | 'tab-action' | 'sole-question'
+type SwitchReason = 'baseline' | 'tab-action' | 'sole-question' | 'covered-question'
 interface SwitchFrame {
   tab: string
   perspective: string
@@ -165,11 +166,50 @@ function actionLocations() {
   return { tabs, outsideTab }
 }
 
+function humanQuestionPlayers() {
+  return Object.keys(props.game.question).filter(pid => !isAiPlayer(pid))
+}
+
+function skillTestPlayerId() {
+  if (solo?.value !== true) return undefined
+  const investigatorId = props.game.skillTest?.investigator
+  return investigatorId ? props.game.investigators[investigatorId]?.playerId : undefined
+}
+
+function activeInvestigatorPlayerId() {
+  return props.game.investigators[props.game.activeInvestigatorId]?.playerId
+}
+
+function questionKind(playerId: string) {
+  let question: Question | undefined = props.game.question[playerId]
+  const tags: string[] = []
+  while (question) {
+    tags.push(question.tag)
+    question = 'question' in question ? question.question : undefined
+  }
+  return tags.join('/')
+}
+
+function playerCanAnswerAllQuestionsFrom(playerId: string, otherPlayerId: string) {
+  if (questionKind(playerId) !== questionKind(otherPlayerId)) return false
+  const available = new Set(ArkhamGame.choices(props.game, playerId).map(choice => JSON.stringify(choice)))
+  return ArkhamGame.choices(props.game, otherPlayerId).every(choice => available.has(JSON.stringify(choice)))
+}
+
 function frameIsStillNeeded(frame: SwitchFrame, tabs: Set<string>) {
+  const skillTestPlayer = skillTestPlayerId()
+  // Once an automatic switch has brought us to the investigator taking the
+  // test, transient fast-window questions must not unwind us to an older tab.
+  // A sole actionable tab can still add a temporary frame above this one.
+  if (frame.reason !== 'baseline' && skillTestPlayer && frame.tab === skillTestPlayer) {
+    return true
+  }
   if (frame.reason === 'tab-action') return tabs.has(frame.tab)
   if (frame.reason === 'sole-question') {
-    return frame.perspective in props.game.question && !isAiPlayer(frame.perspective)
+    const questionPlayers = humanQuestionPlayers()
+    return questionPlayers.length === 1 && questionPlayers[0] === frame.perspective
   }
+  if (frame.reason === 'covered-question') return false
   return true
 }
 
@@ -181,7 +221,18 @@ function applyFrame(frame: SwitchFrame) {
   }
 }
 
+const automaticSwitchStackEnabled = false
+
 function pushAutomaticFrame(tab: string, perspective: string, reason: Exclude<SwitchReason, 'baseline'>) {
+  if (!automaticSwitchStackEnabled) {
+    // One-way routing: meeting another criterion may switch again, but ending a
+    // criterion never restores an earlier tab. The user can always choose one.
+    applyFrame({ tab, perspective, reason })
+    return
+  }
+
+  // Retained stack implementation. This is deliberately unreachable while
+  // automaticSwitchStackEnabled is false.
   const current = switchStack.value.at(-1)
   if (current?.tab === tab && current.perspective === perspective) return
   switchStack.value.push({ tab, perspective, reason })
@@ -249,6 +300,42 @@ function inspectActions() {
   manualSelectionAtStep = null
 
   const { tabs, outsideTab } = actionLocations()
+  const questionPlayers = humanQuestionPlayers()
+  const soleQuestionPlayer = questionPlayers.length === 1 ? questionPlayers[0] : null
+  const skillTestPlayer = skillTestPlayerId()
+  const activeQuestionPlayer = activeInvestigatorPlayerId()
+  const activePlayerCoversOtherQuestions = solo?.value === true
+    && questionPlayers.length > 1
+    && activeQuestionPlayer !== undefined
+    && questionPlayers.includes(activeQuestionPlayer)
+    && questionPlayers.every(pid => pid === activeQuestionPlayer || playerCanAnswerAllQuestionsFrom(activeQuestionPlayer, pid))
+
+  // Keep the active investigator in view when they can answer every question
+  // offered to the other investigators. Switching tabs adds no capability and
+  // needlessly interrupts their turn.
+  if (activePlayerCoversOtherQuestions && activeQuestionPlayer) {
+    if (selectedTab.value !== activeQuestionPlayer || props.playerId !== activeQuestionPlayer) {
+      if (!automaticSwitchIsStable(`covered-question:${activeQuestionPlayer}`)) return
+      pushAutomaticFrame(activeQuestionPlayer, activeQuestionPlayer, 'covered-question')
+    } else {
+      automaticSwitchCandidate = null
+    }
+    return
+  }
+
+  // A sole question owns the tab even if Vue has left stale actionable controls
+  // on another tab. During a skill test, however, another investigator's fast
+  // window does not pull focus away from the test taker unless that
+  // investigator's tab is the sole place with an actionable control.
+  if (solo?.value === true && soleQuestionPlayer && (!skillTestPlayer || soleQuestionPlayer === skillTestPlayer)) {
+    if (selectedTab.value !== soleQuestionPlayer || props.playerId !== soleQuestionPlayer) {
+      if (!automaticSwitchIsStable(`sole-question:${soleQuestionPlayer}`)) return
+      pushAutomaticFrame(soleQuestionPlayer, soleQuestionPlayer, 'sole-question')
+    } else {
+      automaticSwitchCandidate = null
+    }
+    return
+  }
 
   // A unique tab is the only place where the current perspective can act.
   // Controls elsewhere in the scenario deliberately suppress the switch.
@@ -261,22 +348,8 @@ function inspectActions() {
     }
   }
 
-  // In multihanded solo, a question belonging solely to another human
-  // investigator is enough to change perspective. Its specialized UI may not
-  // exist until that perspective is active, so this fallback does not rely on
-  // DOM markers.
-  if (solo?.value === true && tabs.size === 0 && !outsideTab) {
-    const questionPlayers = Object.keys(props.game.question).filter(pid => !isAiPlayer(pid))
-    if (questionPlayers.length === 1 && questionPlayers[0] !== props.playerId) {
-      const questionPlayer = questionPlayers[0]
-      if (!automaticSwitchIsStable(`sole-question:${questionPlayer}`)) return
-      pushAutomaticFrame(questionPlayer, questionPlayer, 'sole-question')
-      return
-    }
-  }
-
   automaticSwitchCandidate = null
-  unwindSwitchStack(tabs)
+  if (automaticSwitchStackEnabled) unwindSwitchStack(tabs)
 }
 
 onMounted(() => {

@@ -20,7 +20,7 @@ mysteriousGrimoire2 = asset MysteriousGrimoire2 Cards.mysteriousGrimoire2
 
 instance HasAbilities MysteriousGrimoire2 where
   getAbilities (MysteriousGrimoire2 a) =
-    [controlled a 1 (youExist can.search.deck) $ freeTrigger $ UseCostUpTo (be a) Secret 1 2]
+    [controlled a 1 (youExist can.search.deck) $ freeTrigger $ exhaust a <> UseCostUpTo (be a) Secret 1 2]
 
 instance RunMessage MysteriousGrimoire2 where
   runMessage msg a@(MysteriousGrimoire2 attrs) = runQueueT $ case msg of

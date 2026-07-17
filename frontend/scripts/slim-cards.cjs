@@ -10,6 +10,7 @@
 const fs = require('fs')
 const path = require('path')
 const zlib = require('zlib')
+const { isCardDataFilename } = require('./card-data-files.cjs')
 
 const KEEP_FIELDS = [
   'code',
@@ -48,7 +49,7 @@ if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true })
 
 const sources = fs
   .readdirSync(publicDir)
-  .filter((f) => /^cards_[a-z]+\.json$/.test(f))
+  .filter(isCardDataFilename)
 
 if (sources.length === 0) {
   console.error('No cards_*.json source files found in', publicDir)

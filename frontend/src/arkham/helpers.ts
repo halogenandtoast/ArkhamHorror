@@ -140,7 +140,8 @@ export function pluralize(w: string, n: number) {
     case 'ko': {
       return `${w} ${n}`
     }
-    case 'zh': {
+    case 'zh':
+    case 'zh-cn': {
       return `${n}${w}${n == 1 ? '' : ''}`
     }
     default: return `${n} ${w}${n == 1 ? '' : 's'}`

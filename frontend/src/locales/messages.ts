@@ -1,3 +1,5 @@
+import { uiLocaleFor, type UiLocale } from '@/locales/language'
+
 const localeLoaders = {
   en: () => import('@/locales/en'),
   fr: () => import('@/locales/fr'),
@@ -5,14 +7,14 @@ const localeLoaders = {
   ko: () => import('@/locales/ko'),
   es: () => import('@/locales/es'),
   zh: () => import('@/locales/zh'),
-}
+} satisfies Record<UiLocale, () => Promise<unknown>>
 
 export type SupportedLocale = keyof typeof localeLoaders
 
 export const supportedLocales = Object.keys(localeLoaders) as SupportedLocale[]
 
 export function normalizeLocale(locale: string): SupportedLocale {
-  return supportedLocales.includes(locale as SupportedLocale) ? locale as SupportedLocale : 'en'
+  return uiLocaleFor(locale)
 }
 
 export async function loadLocaleMessages(locale: string) {

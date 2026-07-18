@@ -323,6 +323,7 @@ function targetLabelHandledElsewhere(choice: TargetLabel) {
       case 'SkillTarget': return contents in props.game.skills
       case 'InvestigatorTarget': return contents in props.game.investigators || contents in props.game.otherInvestigators
       case 'ScarletKeyTarget': return contents in props.game.scarletKeys
+      case 'ConcealedCardTarget':
       case 'ConcealedTarget': return contents in props.game.concealed
       case 'CardIdTarget': return visibleCardIds.value.has(contents)
       case 'ChaosTokenFaceTarget': return props.game.focusedChaosTokens.some((token) => token.face === contents)

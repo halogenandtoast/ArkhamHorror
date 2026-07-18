@@ -1,6 +1,8 @@
 module Arkham.Event.Events.DodgeSpec (spec) where
 
 import Arkham.Attack qualified as Attack
+import Arkham.EnemyLocation.Cards qualified as EnemyLocations
+import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Placement (Placement (AtLocation))
 import TestImport.New
@@ -20,6 +22,23 @@ spec = do
       enemy `attacks` self
 
       let attackMessage = InvestigatorAssignDamage self.id (EnemyAttackSource $ toId enemy) DamageAny 1 0
+
+      withRewind $ assertRunsMessage attackMessage skip
+      assertDoesNotRunMessage attackMessage $ chooseTarget dodge
+
+    it "cancels an enemy-location attack" . gameTest $ \self -> do
+      withProp @"resources" 1 self
+      location <- testLocation
+      enemyLocation <- genCard EnemyLocations.livingBedroomHemlockHouse34
+      dodge <- genCard Cards.dodge
+      let enemyId = enemyLocationAsEnemyId $ EnemyLocationId location.id
+
+      self `addToHand` dodge
+      self `moveTo` location
+      run $ PlaceEnemyLocation location.id enemyLocation
+      run $ InitiateEnemyAttack $ Attack.enemyAttack enemyId enemyId self.id
+
+      let attackMessage = InvestigatorAssignDamage self.id (EnemyAttackSource enemyId) DamageAny 1 1
 
       withRewind $ assertRunsMessage attackMessage skip
       assertDoesNotRunMessage attackMessage $ chooseTarget dodge

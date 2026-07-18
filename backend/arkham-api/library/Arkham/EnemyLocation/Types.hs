@@ -2,6 +2,7 @@
 
 module Arkham.EnemyLocation.Types where
 
+import Arkham.Attack.Types (EnemyAttackDetails)
 import Arkham.Calculation
 import Arkham.Card
 import Arkham.Classes.Entity
@@ -61,6 +62,7 @@ data EnemyLocationAttrs = EnemyLocationAttrs
   , enemyLocationHealthDamage :: Int
   , enemyLocationSanityDamage :: Int
   , enemyLocationAssignedDamage :: Map Source DamageAssignment
+  , enemyLocationAttacking :: Maybe EnemyAttackDetails
   , enemyLocationDefeated :: Bool
   , enemyLocationExhausted :: Bool
   , enemyLocationOriginalCardCode :: CardCode
@@ -258,6 +260,7 @@ instance ToJSON EnemyLocationAttrs where
           , "healthDamage" .= enemyLocationHealthDamage a
           , "sanityDamage" .= enemyLocationSanityDamage a
           , "assignedDamage" .= enemyLocationAssignedDamage a
+          , "attacking" .= enemyLocationAttacking a
           , "defeated" .= enemyLocationDefeated a
           , "exhausted" .= enemyLocationExhausted a
           ]
@@ -284,6 +287,7 @@ instance FromJSON EnemyLocationAttrs where
     healthDamage <- o .: "healthDamage"
     sanityDamage <- o .: "sanityDamage"
     assignedDamage <- o .:? "assignedDamage" .!= mempty
+    attacking <- o .:? "attacking"
     defeated <- o .:? "defeated" .!= False
     exhausted <- o .:? "exhausted" .!= False
     pure
@@ -306,6 +310,7 @@ instance FromJSON EnemyLocationAttrs where
         , enemyLocationHealthDamage = healthDamage
         , enemyLocationSanityDamage = sanityDamage
         , enemyLocationAssignedDamage = assignedDamage
+        , enemyLocationAttacking = attacking
         , enemyLocationDefeated = defeated
         , enemyLocationExhausted = exhausted
         , enemyLocationOriginalCardCode = originalCardCode
@@ -424,6 +429,7 @@ enemyLocationWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) 
             , enemyLocationHealthDamage = healthDamage
             , enemyLocationSanityDamage = sanityDamage
             , enemyLocationAssignedDamage = mempty
+            , enemyLocationAttacking = Nothing
             , enemyLocationDefeated = False
             , enemyLocationExhausted = False
             , enemyLocationOriginalCardCode = toCardCode cardDef

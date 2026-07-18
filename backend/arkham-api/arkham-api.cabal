@@ -7367,6 +7367,7 @@ test-suite spec
       Arkham.Treachery.Cards.DreadfulMechanismSpec
       Arkham.Treachery.Cards.DreamlandsEclipseSpec
       Arkham.Treachery.Cards.EndOfNegotiationsSpec
+      Arkham.Treachery.Cards.EuphoriaSpec
       Arkham.Treachery.Cards.FinalRhapsodySpec
       Arkham.Treachery.Cards.HauntedSpec
       Arkham.Treachery.Cards.HemophobiaSpec

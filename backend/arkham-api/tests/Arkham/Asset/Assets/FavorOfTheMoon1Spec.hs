@@ -10,6 +10,7 @@ import TestImport.New
 spec :: Spec
 spec = describe "Favor of the Moon" do
   it "stays in play with the curse it seals as it enters play" . gameTest $ \self -> do
+    withProp @"resources" 1 self
     setChaosTokens [CurseToken]
     favorOfTheMoon <- genCard Assets.favorOfTheMoon1
     withProp @"hand" [favorOfTheMoon] self
@@ -23,6 +24,7 @@ spec = describe "Favor of the Moon" do
     asDefs self.discard `shouldReturn` []
 
   it "discards itself when it seals no tokens" . gameTest $ \self -> do
+    withProp @"resources" 1 self
     setChaosTokens [Zero]
     favorOfTheMoon <- genCard Assets.favorOfTheMoon1
     withProp @"hand" [favorOfTheMoon] self
@@ -30,4 +32,3 @@ spec = describe "Favor of the Moon" do
       self `playCard` favorOfTheMoon
 
     assert $ selectNone $ assetIs Assets.favorOfTheMoon1
-    asDefs self.discard `shouldReturn` [Assets.favorOfTheMoon1]

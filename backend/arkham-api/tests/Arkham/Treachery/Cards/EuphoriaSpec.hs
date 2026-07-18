@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.EuphoriaSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Message qualified as Helpers
+import Arkham.Matcher
 import Arkham.Placement (Placement (InPlayArea, InThreatArea))
 import Arkham.SkillTest.Type (SkillTestType (..))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -13,8 +14,8 @@ spec = describe "Euphoria" $ do
     charisma <- genCard Assets.charisma3
     loneWolf <- genCard Assets.loneWolf
     euphoria <- genCard Treacheries.euphoria
-    (charismaId, createCharisma) <- Helpers.createAssetAt charisma (InPlayArea self.id)
-    (loneWolfId, createLoneWolf) <- Helpers.createAssetAt loneWolf (InPlayArea self.id)
+    (_, createCharisma) <- Helpers.createAssetAt charisma (InPlayArea self.id)
+    (_, createLoneWolf) <- Helpers.createAssetAt loneWolf (InPlayArea self.id)
     (euphoriaId, createEuphoria) <- Helpers.createTreacheryAt euphoria (InThreatArea self.id)
 
     runAll [createCharisma, createLoneWolf, createEuphoria]
@@ -26,7 +27,7 @@ spec = describe "Euphoria" $ do
         (SkillTestInitiatorTarget $ TreacheryTarget euphoriaId)
         (SkillSkillTest #intellect)
         1
-    applyAllDamage
+    applyAllHorror
 
-    assertNotTarget charismaId
-    assertTarget loneWolfId
+    assert $ selectAny $ assetIs Assets.charisma3
+    assert $ selectNone $ assetIs Assets.loneWolf

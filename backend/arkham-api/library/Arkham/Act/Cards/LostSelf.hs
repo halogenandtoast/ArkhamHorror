@@ -15,7 +15,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (connectBothWays)
 import Arkham.Helpers.Query (getInvestigators, getSetAsideCardMaybe, getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario
-import Arkham.Investigator.Types (Field (InvestigatorDeck))
+import Arkham.Investigator.Types (Field (InvestigatorDeck, InvestigatorDiscard, InvestigatorHand))
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
@@ -30,6 +30,7 @@ import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Cave, Emissary, Lair))
+import Control.Monad.Extra (findM)
 import Data.List (cycle)
 
 newtype LostSelf = LostSelf ActAttrs
@@ -302,20 +303,21 @@ instance RunMessage LostSelf where
       -- and all out-of-play areas for her and put her into play.
       marquezInPlay <- selectAny (assetIs Assets.drRosaMarquezBestInHerField)
       unless marquezInPlay do
-        investigators <- getInvestigators
-        owners <-
-          filterM
-            ( fieldMap
-                InvestigatorDeck
-                (any ((== Assets.drRosaMarquezBestInHerField) . toCardDef) . unDeck)
-            )
-            investigators
-        case owners of
-          (iid : _) -> putCampaignCardIntoPlay iid Assets.drRosaMarquezBestInHerField
-          [] -> do
+        getSetAsideCardMaybe Assets.drRosaMarquezBestInHerField >>= \case
+          Just card -> do
             lead <- getLead
-            getSetAsideCardMaybe Assets.drRosaMarquezBestInHerField
-              >>= traverse_ (takeControlOfSetAsideAsset lead)
+            takeControlOfSetAsideAsset lead card
+          Nothing -> do
+            let hasMarquez :: HasCardDef a => [a] -> Bool
+                hasMarquez = any ((== Assets.drRosaMarquezBestInHerField) . toCardDef)
+            mOwner <-
+              getInvestigators >>= findM \i -> do
+                orM
+                  [ fieldMap InvestigatorHand hasMarquez i
+                  , fieldMap InvestigatorDiscard hasMarquez i
+                  , fieldMap InvestigatorDeck (hasMarquez . unDeck) i
+                  ]
+            for_ mOwner (`putCampaignCardIntoPlay` Assets.drRosaMarquezBestInHerField)
 
       abyss <- flipTheAbyssStoryToLocation
 

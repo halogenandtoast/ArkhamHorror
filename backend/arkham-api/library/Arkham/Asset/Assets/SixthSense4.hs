@@ -5,6 +5,7 @@ import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFace)
 import Arkham.Effect.Import
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Location
@@ -54,7 +55,8 @@ instance RunMessage SixthSense4Effect where
     DoStep 1 (RevealChaosToken (SkillTestSource sid) iid token) | maybe False (isTarget sid) attrs.metaTarget -> do
       case attrs.target of
         InvestigationTarget iid' lid | iid == iid' -> do
-          when (token.face `elem` [Skull, Cultist, Tablet, ElderThing]) do
+          faces <- getModifiedChaosTokenFace token
+          when (any (`elem` [Skull, Cultist, Tablet, ElderThing]) faces) do
             currentShroud <- fieldJust LocationShroud lid
             locations <-
               selectWithField

@@ -30,7 +30,6 @@ instance RunMessage BetweenWorlds where
       moveTo attrs iid locationId
       pure t
     After (Revelation _ (isSource attrs -> True)) -> do
-      -- Using discarded to remove existence)
-      push $ Discarded (toTarget attrs) (toSource attrs) (toCard attrs)
+      push $ RemoveTreachery attrs.id
       pure t
     _ -> BetweenWorlds <$> liftRunMessage msg attrs

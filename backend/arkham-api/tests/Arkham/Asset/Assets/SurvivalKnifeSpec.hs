@@ -1,6 +1,7 @@
 module Arkham.Asset.Assets.SurvivalKnifeSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Phase
 import TestImport.New
 
 spec :: Spec
@@ -19,7 +20,7 @@ spec = describe "Survival Knife" do
     run $ SetPhase EnemyPhase
     run $ InvestigatorAssignDamage self.id (EnemyAttackSource $ toId enemy) DamageAny 1 0
     chooseOptionMatching "assign damage to asset" \case
-      AssetDamageLabel aid _ -> aid == toId beatCop
+      AssetDamageLabel aid _ -> aid == beatCop
       _ -> False
     applyAllDamage
 

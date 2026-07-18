@@ -44,14 +44,14 @@ const isEnemyLocationCard = computed(() => {
 
 const image = computed(() => {
   if (props.card.tag === 'VengeanceCard') {
-    const back = props.card.contents.tag === 'PlayerCard' ? 'player_back' : 'encounter_back'
-    return imgsrc(`${back}.jpg`);
+    const back = props.card.contents.tag === 'PlayerCard' ? 'back_player' : 'back_encounter'
+    return imgsrc(`backs/${back}.jpg`);
   }
 
   const { cardCode, isFlipped, mutated } = cardContents.value
   if (cardFacedown(props.card) && !props.revealed) {
-    const back = props.card.tag === 'PlayerCard' ? 'player_back' : 'encounter_back'
-    return imgsrc(`${back}.jpg`);
+    const back = props.card.tag === 'PlayerCard' ? 'back_player' : 'back_encounter'
+    return imgsrc(`backs/${back}.jpg`);
   }
   // c05178 has 6 pairs of (front,back) variants using extended alphabet
   // suffixes: 05178a/b, 05178c/d, ... 05178k/l. The card code points at

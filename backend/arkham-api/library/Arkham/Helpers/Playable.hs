@@ -142,6 +142,27 @@ getIsPlayable (asId -> iid) source costStatus windows' c = do
   availableResources <- getSpendableResources iid
   getIsPlayableWithResources iid source availableResources costStatus windows' c
 
+-- | Check whether an already-initiated card play remains legal. The original
+-- play window has already been validated and is no longer available while
+-- resolving reactions to playing the card, so only that check is omitted.
+getIsPlayableAfterInitiation
+  :: ( HasCallStack
+     , Tracing m
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => investigator
+  -> source
+  -> CostStatus
+  -> [Window]
+  -> Card
+  -> m Bool
+getIsPlayableAfterInitiation (asId -> iid) source costStatus windows' c = do
+  availableResources <- getSpendableResources iid
+  getIsPlayableWithResources' True iid source availableResources costStatus windows' c
+
 withReducedCost
   :: ( Tracing m
      , HasGame m
@@ -167,30 +188,64 @@ getIsPlayableWithResources
   -> [Window]
   -> Card
   -> m Bool
-getIsPlayableWithResources _ _ _ _ _ (VengeanceCard _) = pure False
-getIsPlayableWithResources _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) = do
-  if c.kind `elem` [PlayerTreacheryType, PlayerEnemyType]
-    then pure False
-    else do
-      ignoreContexts <- hasModifier iid IgnorePlayableModifierContexts
-      contexts :: [(CardMatcher, [ModifierType])] <-
-        concat . mapMaybe (preview _PlayableModifierContexts) <$> getModifiers iid
-      base <- go
-      others <-
-        traverse
-          (\(matcher, ctx) -> (cardMatch c matcher &&) <$> withModifiers iid (toModifiers iid ctx) go)
-          (if ignoreContexts then [] else contexts)
-      pure $ or (base : others)
- where
-  go :: forall n. (Tracing n, HasGame n) => n Bool
-  go =
-    all (isNothing . snd)
-      -- Boolean path: short-circuit. A card rejected by a cheap check (type,
-      -- cost, play window, ...) must not pay for the expensive criteria /
-      -- fight-evade checks. The diagnostic path (getPlayabilityChecks) passes
-      -- False to compute every reason.
-      <$> getPlayabilityChecksWithResources True iid source availableResources costStatus windows' c
+getIsPlayableWithResources = getIsPlayableWithResources' False
+
+getIsPlayableWithResources'
+  :: forall m source investigator
+   . ( HasCallStack
+     , Tracing m
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => Bool
+  -> investigator
+  -> source
+  -> Int
+  -> CostStatus
+  -> [Window]
+  -> Card
+  -> m Bool
+getIsPlayableWithResources' _ _ _ _ _ _ (VengeanceCard _) = pure False
+getIsPlayableWithResources' _ _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
+getIsPlayableWithResources'
+  playAlreadyInitiated
+  (asId -> iid)
+  (toSource -> source)
+  availableResources
+  costStatus
+  windows'
+  c@(PlayerCard _) = do
+    if c.kind `elem` [PlayerTreacheryType, PlayerEnemyType]
+      then pure False
+      else do
+        ignoreContexts <- hasModifier iid IgnorePlayableModifierContexts
+        contexts :: [(CardMatcher, [ModifierType])] <-
+          concat . mapMaybe (preview _PlayableModifierContexts) <$> getModifiers iid
+        base <- go
+        others <-
+          traverse
+            (\(matcher, ctx) -> (cardMatch c matcher &&) <$> withModifiers iid (toModifiers iid ctx) go)
+            (if ignoreContexts then [] else contexts)
+        pure $ or (base : others)
+   where
+    go :: forall n. (Tracing n, HasGame n) => n Bool
+    go =
+      all (isNothing . snd)
+        -- Boolean path: short-circuit. A card rejected by a cheap check (type,
+        -- cost, play window, ...) must not pay for the expensive criteria /
+        -- fight-evade checks. The diagnostic path (getPlayabilityChecks) passes
+        -- False to compute every reason.
+        <$> getPlayabilityChecksWithResources
+          True
+          playAlreadyInitiated
+          iid
+          source
+          availableResources
+          costStatus
+          windows'
+          c
 
 getOtherPlayersPlayableCards
   :: (Tracing m, HasGame m) => InvestigatorId -> CostStatus -> [Window] -> m [Card]
@@ -214,7 +269,7 @@ getPlayabilityChecks
 getPlayabilityChecks (asId -> iid) source costStatus windows' c = do
   availableResources <- getSpendableResources iid
   -- Diagnostic path: compute every check so the UI can report all reasons.
-  getPlayabilityChecksWithResources False iid source availableResources costStatus windows' c
+  getPlayabilityChecksWithResources False False iid source availableResources costStatus windows' c
 
 getPlayabilityChecksWithResources
   :: forall m source
@@ -228,6 +283,8 @@ getPlayabilityChecksWithResources
   computing every check. Used by the boolean playability path; the
   diagnostic path passes False to gather all failure reasons.
   -}
+  -> Bool
+  {- ^ The card play was already initiated, so its original play window was validated. -}
   -> InvestigatorId
   -> source
   -> Int
@@ -235,11 +292,19 @@ getPlayabilityChecksWithResources
   -> [Window]
   -> Card
   -> m [(Text, Maybe Text)]
-getPlayabilityChecksWithResources _ _ _ _ _ _ (VengeanceCard _) =
+getPlayabilityChecksWithResources _ _ _ _ _ _ _ (VengeanceCard _) =
   pure [("Card type", Just "Vengeance cards are not playable")]
-getPlayabilityChecksWithResources _ _ _ _ _ _ (EncounterCard _) =
+getPlayabilityChecksWithResources _ _ _ _ _ _ _ (EncounterCard _) =
   pure [("Card type", Just "Encounter cards are not playable")]
-getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) =
+getPlayabilityChecksWithResources
+  shortCircuit
+  playAlreadyInitiated
+  iid
+  (toSource -> source)
+  availableResources
+  costStatus
+  windows'
+  c@(PlayerCard _) =
   withDepthGuard 3 [] $ do
     let pcDef = toCardDef c
 
@@ -393,13 +458,23 @@ getPlayabilityChecksWithResources shortCircuit iid (toSource -> source) availabl
           && cardMatch c cardMatcher
           && (maybe True (< TabooList24) mTaboo || notFastWindow)
       applyModifier _ val = val
-    inFastWindow <-
+    matchesFastWindow <-
       maybe
         (pure False)
         (cardInFastWindows iid source c windows')
         (cdFastWindow pcDef <|> canBecomeFastWindow)
     let
-      playWindowOk = (isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins || noAction
+      -- Reaction windows only retain the PlayCard/PlayEvent window, not the
+      -- original window in which the player initiated the card. Treat that
+      -- timing as already satisfied while still validating criteria, targets,
+      -- limits, slots, and restrictions without reaction-provided modifiers.
+      inFastWindow = matchesFastWindow
+      playWindowOk =
+        playAlreadyInitiated
+          || (isNothing (cdFastWindow pcDef) && notFastWindow)
+          || inFastWindow
+          || isBobJenkins
+          || noAction
       playWindowDetail =
         if playWindowOk
           then Nothing

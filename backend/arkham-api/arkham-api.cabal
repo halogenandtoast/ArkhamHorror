@@ -7194,6 +7194,7 @@ test-suite spec
       Arkham.Asset.Assets.MagnifyingGlass1Spec
       Arkham.Asset.Assets.MagnifyingGlassSpec
       Arkham.Asset.Assets.MedicalTextsSpec
+      Arkham.Asset.Assets.MiguelsKnapsackSpec
       Arkham.Asset.Assets.MitchBrownSpec
       Arkham.Asset.Assets.OldBookOfLoreSpec
       Arkham.Asset.Assets.OldCompass2Spec
@@ -7274,6 +7275,7 @@ test-suite spec
       Arkham.Event.Events.EvidenceSpec
       Arkham.Event.Events.ExtraAmmunition1Spec
       Arkham.Event.Events.FickleFortune3Spec
+      Arkham.Event.Events.HiddenPocketSpec
       Arkham.Event.Events.HotStreak4Spec
       Arkham.Event.Events.LieInWaitSpec
       Arkham.Event.Events.LookWhatIFoundSpec

@@ -1109,7 +1109,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       withPayment $ UsesPayment n
     UseCostUpTo assetMatcher uType n m -> do
       assets <- select assetMatcher
-      uses <- sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
+      uses <- getSpendableUseCount assets uType
       let maxUses = min uses m
 
       name <- fieldMap InvestigatorName toTitle iid

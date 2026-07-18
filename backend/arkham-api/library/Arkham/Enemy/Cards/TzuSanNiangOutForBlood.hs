@@ -6,6 +6,8 @@ import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Window (getPassedBy)
 import Arkham.I18n
 import Arkham.Matcher
@@ -15,7 +17,7 @@ import Arkham.Scenarios.ShadesOfSuffering.Helpers
 import Arkham.Token
 
 newtype TzuSanNiangOutForBlood = TzuSanNiangOutForBlood EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tzuSanNiangOutForBlood :: EnemyCard TzuSanNiangOutForBlood
@@ -34,6 +36,11 @@ instance HasAbilities TzuSanNiangOutForBlood where
         You
         (oneOf [WhileEvadingAnEnemy (be a), WhileAttackingAnEnemy (be a)])
         (SuccessResult $ atLeast 1)
+
+instance HasModifiersFor TzuSanNiangOutForBlood where
+  getModifiersFor (TzuSanNiangOutForBlood a) = do
+    n <- perPlayer 2
+    modifySelf a [HealthModifier n]
 
 instance RunMessage TzuSanNiangOutForBlood where
   runMessage msg e@(TzuSanNiangOutForBlood attrs) = runQueueT $ case msg of

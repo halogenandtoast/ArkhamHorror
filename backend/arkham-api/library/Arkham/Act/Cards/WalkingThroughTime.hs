@@ -11,7 +11,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement (place)
 import Arkham.Placement
 import Arkham.Scenarios.MachinationsThroughTime.Helpers
-import Arkham.Trait (Trait (Scientist))
+import Arkham.Trait (Trait (Future, Past, Present, Scientist))
 import Arkham.Window qualified as Window
 
 newtype WalkingThroughTime = WalkingThroughTime ActAttrs
@@ -25,8 +25,16 @@ instance HasAbilities WalkingThroughTime where
   getAbilities (WalkingThroughTime a) =
     [ mkAbility a 1
         $ freeReaction
-        $ Moves #after You AnySource (LocationWithAsset $ AssetWithTrait Scientist) Anywhere
-    , restricted a 2 objectiveMet $ Objective $ forced AnyWindow
+        $ oneOf
+          [ Moves
+              #after
+              You
+              AnySource
+              (LocationWithAsset $ AssetWithTrait Scientist <> AssetWithTrait time)
+              (LocationWithTrait time)
+          | time <- [Past, Present, Future]
+          ]
+    , onlyOnce $ restricted a 2 objectiveMet $ Objective $ forced AnyWindow
     ]
    where
     nonTindalos = not_ (locationIs Locations.tindalos)

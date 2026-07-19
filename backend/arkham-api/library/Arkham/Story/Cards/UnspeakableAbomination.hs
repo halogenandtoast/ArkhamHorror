@@ -3,7 +3,7 @@ module Arkham.Story.Cards.UnspeakableAbomination (unspeakableAbomination) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Helpers.Query (getSetAsideCardsMatching)
+import Arkham.Helpers.Query (getSetAsideCardMaybe)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Story.Cards qualified as Cards
@@ -16,19 +16,17 @@ newtype UnspeakableAbomination = UnspeakableAbomination StoryAttrs
 unspeakableAbomination :: StoryCard UnspeakableAbomination
 unspeakableAbomination = story UnspeakableAbomination Cards.unspeakableAbomination & persistStory
 
+tyrthrha :: EnemyMatcher
+tyrthrha = enemyIs Enemies.tyrthrha
+
 instance HasAbilities UnspeakableAbomination where
   getAbilities (UnspeakableAbomination a) =
-    if a ^. flippedL
-      then
-        [ doesNotProvokeAttacksOfOpportunity
-            $ restricted
-              a
-              1
-              (youExist $ InvestigatorAt (LocationWithEnemy $ enemyIs Enemies.tyrthrha))
-            $ actionAbilityWithCost (ClueCost (Static 1))
-        , mkAbility a 2 $ forced $ EnemyDefeated #when Anyone ByAny (enemyIs Enemies.tyrthrha)
-        ]
-      else []
+    guard a.flipped
+      *> [ noAOO
+             $ restricted a 1 (youExist $ at_ (LocationWithEnemy tyrthrha))
+             $ actionAbilityWithCost (ClueCost (Static 1))
+         , mkAbility a 2 $ forced $ EnemyDefeated #when Anyone ByAny tyrthrha
+         ]
 
 instance RunMessage UnspeakableAbomination where
   runMessage msg s@(UnspeakableAbomination attrs) = runQueueT $ case msg of
@@ -37,17 +35,16 @@ instance RunMessage UnspeakableAbomination where
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
       pure s
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      selectForMaybeM (enemyIs Enemies.tyrthrha) \tyrthrha -> do
-        let damage = if n >= 3 then 3 else 2
-        nonAttackEnemyDamage (Just iid) (attrs.ability 1) damage tyrthrha
+      let damage = if n >= 3 then 3 else 2
+      selectForMaybeM (enemyIs Enemies.tyrthrha)
+        $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) damage
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       addToVictory iid attrs
       pure s
     Flip _ _ (isTarget attrs -> True) -> do
-      tindalos <- selectOne $ locationIs Locations.tindalos
-      for_ tindalos \tindalos' -> do
-        tyrthrha <- getSetAsideCardsMatching (cardIs Enemies.tyrthrha)
-        for_ tyrthrha \card -> createEnemyAt_ card tindalos'
+      withMatch (locationIs Locations.tindalos) \tindalos -> do
+        whenJustM (getSetAsideCardMaybe Enemies.tyrthrha) (`createEnemyAt_` tindalos)
+      flippedOver attrs
       pure $ UnspeakableAbomination $ attrs & flippedL .~ True
     _ -> UnspeakableAbomination <$> liftRunMessage msg attrs

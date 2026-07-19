@@ -95,9 +95,11 @@ getSetAsideCardMaybe :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m (Ma
 getSetAsideCardMaybe def = do
   (\card -> if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id)
     <$$> selectOne (SetAsideCardMatch $ cardIs def)
+
 getSetAsideEncounterSet :: (HasGame m, Tracing m) => EncounterSet -> m [Card]
 getSetAsideEncounterSet encounterSet =
   scenarioFieldMap ScenarioSetAsideCards (filter ((== Just encounterSet) . getEncounterSet))
+
 maybeGetSetAsideCard :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m (Maybe Card)
 maybeGetSetAsideCard def = runMaybeT do
   guardInScenario

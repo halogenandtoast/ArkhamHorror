@@ -24,7 +24,10 @@ instance HasModifiersFor Tyrthrha where
 
 instance HasAbilities Tyrthrha where
   getAbilities (Tyrthrha a) =
-    extend1 a $ mkAbility a 1 $ forced $ EnemyEnters #when Anywhere (be a)
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyEnters #when (LocationWithAsset $ AssetWithTrait Scientist) (be a)
 
 instance RunMessage Tyrthrha where
   runMessage msg e@(Tyrthrha attrs) = runQueueT $ case msg of

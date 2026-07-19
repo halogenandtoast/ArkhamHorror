@@ -17,22 +17,32 @@ newtype ANobleLegacyPast = ANobleLegacyPast StoryAttrs
 aNobleLegacyPast :: StoryCard ANobleLegacyPast
 aNobleLegacyPast = storyWith ANobleLegacyPast Cards.aNobleLegacyPast (flippedL .~ True) & persistStory
 
-usedAbilities :: StoryAttrs -> [Int]
-usedAbilities attrs = toResultDefault [] attrs.meta
-
 instance HasAbilities ANobleLegacyPast where
   getAbilities (ANobleLegacyPast a) =
-    [ restricted a 1 (youAtPastUniversity <> thomasAtPastUniversity <> maryAtPastUniversity) actionAbility
-    | 1 `notElem` usedAbilities a
+    [ restricted
+        a
+        1
+        ( not_ (Remembered ThomasAndMaryHaveMet)
+            <> youAtPastUniversity
+            <> thomasAtPastUniversity
+            <> maryAtPastUniversity
+        )
+        actionAbility
+    , restricted a 2 (not_ (Remembered ThomasAndMaryAreInspiredByNikolaTesla) <> scientistsTogether)
+        $ actionAbilityWithCost (GroupClueCost (PerPlayer 2) Anywhere)
+    , restricted a 3 (youAtPastUniversity <> not_ (Remembered FundingForAnObservatoryHasBegun))
+        $ FastAbility (GroupResourceCost (PerPlayer 2) Anywhere)
+    , onlyOnce
+        $ restricted
+          a
+          4
+          ( Remembered ThomasAndMaryHaveMet
+              <> Remembered ThomasAndMaryAreInspiredByNikolaTesla
+              <> Remembered FundingForAnObservatoryHasBegun
+          )
+        $ Objective
+        $ forced AnyWindow
     ]
-      <> [ restricted a 2 scientistsTogether
-             $ actionAbilityWithCost (GroupClueCost (PerPlayer 2) Anywhere)
-         | 2 `notElem` usedAbilities a
-         ]
-      <> [ restricted a 3 youAtPastUniversity
-             $ FastAbility (GroupResourceCost (PerPlayer 2) Anywhere)
-         | 3 `notElem` usedAbilities a
-         ]
    where
     youAtPastUniversity = youExist $ InvestigatorAt (locationIs Locations.miskatonicUniversityPast)
     thomasAtPastUniversity =
@@ -48,16 +58,18 @@ instance HasAbilities ANobleLegacyPast where
           )
 
 instance RunMessage ANobleLegacyPast where
-  runMessage msg (ANobleLegacyPast attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) n | n `elem` [1, 2, 3] -> do
-      case n of
-        1 -> remember ThomasAndMaryHaveMet
-        2 -> remember ThomasAndMaryAreInspiredByNikolaTesla
-        3 -> remember FundingForAnObservatoryHasBegun
-        _ -> pure ()
-      let used = nub (n : usedAbilities attrs)
-      when (length used == 3) do
-        lead <- getLead
-        addToVictory lead attrs
-      pure $ ANobleLegacyPast $ attrs & metaL .~ toJSON used
+  runMessage msg s@(ANobleLegacyPast attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      remember ThomasAndMaryHaveMet
+      pure s
+    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+      remember ThomasAndMaryAreInspiredByNikolaTesla
+      pure s
+    UseThisAbility _iid (isSource attrs -> True) 3 -> do
+      remember FundingForAnObservatoryHasBegun
+      pure s
+    UseThisAbility _iid (isSource attrs -> True) 4 -> do
+      lead <- getLead
+      addToVictory lead attrs
+      pure s
     _ -> ANobleLegacyPast <$> liftRunMessage msg attrs

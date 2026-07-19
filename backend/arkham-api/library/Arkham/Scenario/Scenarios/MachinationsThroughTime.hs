@@ -198,10 +198,8 @@ instance RunMessage MachinationsThroughTime where
 
       if
         | plot == Stories.anomaliesInSpacetime -> do
-            removeEvery [Enemies.tyrthrha, Enemies.oldSadieSheldon, Enemies.sheldonGang]
-            anomalies <- perPlayer 1
-            universities <- select $ LocationWithTitle "Miskatonic University"
-            for_ universities \lid -> placeTokens ScenarioSource lid #horror anomalies
+          removeEvery [Enemies.tyrthrha, Enemies.oldSadieSheldon, Enemies.sheldonGang]
+          doStep 1 Setup
         | plot == Stories.mobTroubles -> do
             setAside
               [ Enemies.oldSadieSheldon
@@ -225,6 +223,12 @@ instance RunMessage MachinationsThroughTime where
           Hard -> 1
           Expert -> 2
       placeDoomOnAgenda (max 0 (doomCount + difficultyDoom))
+    DoStep 1 Setup -> do
+      selectForMaybeM (storyIs Stories.anomaliesInSpacetime) flippedOver
+      anomalies <- perPlayer 1
+      universities <- select $ LocationWithTitle "Miskatonic University"
+      for_ universities \lid -> placeTokens ScenarioSource lid #horror anomalies
+      pure s
     ResolveChaosToken _ Cultist iid -> do
       atTindalos <- iid <=~> InvestigatorAt (locationIs Locations.tindalos)
       when atTindalos failSkillTest

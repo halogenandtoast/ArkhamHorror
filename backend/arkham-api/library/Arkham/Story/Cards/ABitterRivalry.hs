@@ -45,12 +45,12 @@ instance HasAbilities ABitterRivalry where
 instance RunMessage ABitterRivalry where
   runMessage msg s@(ABitterRivalry attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      selectForMaybeM edwin \edwin' -> do
+      withMatch edwin \edwin' -> do
         readyThis edwin'
         withLocationOf iid $ enemyMoveTo (attrs.ability 1) edwin'
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      selectForMaybeM (edwin <> enemyAtLocationWith iid) \edwin' -> do
+      withMatch edwin \edwin' -> do
         sid <- getRandom
         chooseOneM iid $ withI18n do
           labeled' "fight" do

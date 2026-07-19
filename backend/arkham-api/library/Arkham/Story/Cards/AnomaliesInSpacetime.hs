@@ -44,7 +44,8 @@ instance RunMessage AnomaliesInSpacetime where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       clues <- iid.clues
       sid <- getRandom
-      chooseAmounts iid "Clues to spend" (MaxAmountTarget clues) [("Clues", (0, clues))] attrs
+      when (clues > 0) do
+        chooseAmounts iid "Clues to spend" (MaxAmountTarget clues) [("Clues", (0, clues))] attrs
       chooseOneM iid $ withI18n do
         chooseTest #willpower 3 $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
         chooseTest #agility 3 $ beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)

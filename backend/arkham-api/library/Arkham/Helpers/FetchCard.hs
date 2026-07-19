@@ -82,6 +82,9 @@ instance FetchCard EnemyId where
 instance FetchCard LocationId where
   fetchCardMaybe_ = fieldMap Field.LocationCard Just
 
+instance FetchCard StoryId where
+  fetchCardMaybe_ = fieldMap Field.StoryCard Just
+
 instance FetchCard CardId where
   fetchCardMaybe_ = fmap Just . getCard
 

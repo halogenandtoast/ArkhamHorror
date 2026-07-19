@@ -1,3 +1,29 @@
+.card--flipping {
+  animation: card-flip 450ms ease-in-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+@keyframes card-flip {
+  0% {
+    transform: perspective(900px) rotateY(0deg);
+  }
+
+  50% {
+    transform: perspective(900px) rotateY(90deg);
+  }
+
+  100% {
+    transform: perspective(900px) rotateY(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card--flipping {
+    animation: none;
+  }
+}
+
 h2.title {
   color: var(--title);
   font-size: 2em;

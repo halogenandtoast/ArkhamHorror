@@ -9,6 +9,7 @@ import { cardArt, cardImage } from '@/arkham/cardImages'
 import { keyToId } from '@/arkham/types/Key'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { useGameIndexes } from '@/arkham/composables/useGameIndexes'
+import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import DebugLocation from '@/arkham/components/debug/Location.vue'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import { actionsToList } from '@/arkham/types/Action'
@@ -73,6 +74,7 @@ const image = computed(() => {
   if (enemyLocation) return cardImage(cardCode)
   return cardImage(cardCode, revealed ? '' : 'b')
 })
+const { displayedImage, flipping } = useCardFlip(image)
 
 const id = computed(() => props.location.id)
 const aiTarget = computed(() => ({ tag: 'LocationTarget', contents: id.value }))
@@ -626,7 +628,10 @@ const hasAnyLocationVehicleAssets = computed(() =>
             <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
           </span>
 
-          <div class="card-frame-inner" :class="{ highlighted, blocked, exhausted: isExhausted }">
+          <div
+            class="card-frame-inner"
+            :class="{ highlighted, blocked, exhausted: isExhausted, 'card--flipping': flipping && !locationStory }"
+          >
             <Story
               v-if="locationStory"
               :story="locationStory"
@@ -643,7 +648,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
               <img
                 :data-id="id"
                 class="card card--locations"
-                :src="image"
+                :src="displayedImage"
                 :class="{ 'location--can-interact': canInteract && !hasObjective, 'location--can-interact-cursor': canInteract, 'ai-target-hover': ai.targeting }"
                 draggable="false"
                 @drop="onDrop"
@@ -653,7 +658,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
             </template>
           </div>
 
-          <div v-if="cluesAroundPositions.length > 0" class="clues-around">
+          <div v-if="!flipping && cluesAroundPositions.length > 0" class="clues-around">
             <img
               v-for="(pos, idx) in cluesAroundPositions"
               :key="idx"
@@ -663,12 +668,12 @@ const hasAnyLocationVehicleAssets = computed(() =>
             />
           </div>
 
-          <div class="clues pool location-pool" v-if="(clues ?? 0) > 0 || floodLevel">
+          <div class="clues pool location-pool" v-if="!flipping && ((clues ?? 0) > 0 || floodLevel)">
             <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
             <img v-if="floodLevel" :src="floodLevel" class="flood-level" />
           </div>
 
-          <div class="pool location-pool" v-if="hasPool">
+          <div class="pool location-pool" v-if="!flipping && hasPool">
             <KeyToken
               v-for="k in keys"
               :key="keyToId(k)"

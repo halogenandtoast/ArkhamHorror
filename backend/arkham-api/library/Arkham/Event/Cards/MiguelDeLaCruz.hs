@@ -4,6 +4,7 @@ import Arkham.Actions
 import Arkham.Criteria (evadeOverride, fightOverride)
 import Arkham.Event.Cards.Import
 import Arkham.ForMovement
+import Arkham.Modifier (ModifierType (CannotReceiveModifiersFromPlayerSources))
 
 decoyTrap :: CardDef
 decoyTrap =
@@ -37,8 +38,12 @@ guerrillaTactics =
         Just
           $ exists
           $ oneOf
-            [ fightOverride $ EnemyAt (orConnected NotForMovement YourLocation)
-            , evadeOverride $ EnemyAt (orConnected NotForMovement YourLocation)
+            [ fightOverride
+                $ EnemyAt (orConnected NotForMovement YourLocation)
+                <> EnemyWithoutModifier CannotReceiveModifiersFromPlayerSources
+            , evadeOverride
+                $ EnemyAt (orConnected NotForMovement YourLocation)
+                <> EnemyWithoutModifier CannotReceiveModifiersFromPlayerSources
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
     }
@@ -88,8 +93,12 @@ guerrillaTactics2 =
         Just
           $ exists
           $ oneOf
-            [ fightOverride $ EnemyAt (orConnected NotForMovement YourLocation)
-            , evadeOverride $ EnemyAt (orConnected NotForMovement YourLocation)
+            [ fightOverride
+                $ EnemyAt (orConnected NotForMovement YourLocation)
+                <> EnemyWithoutModifier CannotReceiveModifiersFromPlayerSources
+            , evadeOverride
+                $ EnemyAt (orConnected NotForMovement YourLocation)
+                <> EnemyWithoutModifier CannotReceiveModifiersFromPlayerSources
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
     , cdLevel = Just 2

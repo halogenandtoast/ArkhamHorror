@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.MiguelsKnapsack (miguelsKnapsack) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Card.CardDef (cdOverrideActionPlayableIfCriteriaMet, toCardDef)
 import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
 import Arkham.Helpers.Card (cardPassesLimitsAtLocation)
 import Arkham.Helpers.Game (withAlteredGame)
@@ -37,37 +38,31 @@ instance RunMessage MiguelsKnapsack where
   runMessage msg a@(MiguelsKnapsack attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getPlayedEvent -> eid) _ -> do
       withLocationOf iid \lid -> do
-        connectingLids <- getConnectedLocations lid
         card <- fetchCard eid
         let
-          hasFight = #fight `elem` card.actions
-          hasEvade = #evade `elem` card.actions
           source = CardIdSource card.id
-          hasLocalTarget =
-            orM
-              $ [selectAny $ CanFightEnemy source <> at_ (locationWithInvestigator iid) | hasFight]
-              <> [selectAny $ CanEvadeEnemy source <> at_ (locationWithInvestigator iid) | hasEvade]
-          hasTargetAt lid' = withModifiersOf iid (CardIdSource card.id) [AsIfAt lid'] do
-            orM
-              $ [selectAny $ CanFightEnemy source <> at_ (LocationWithId lid') | hasFight]
-              <> [selectAny $ CanEvadeEnemy source <> at_ (LocationWithId lid') | hasEvade]
-          hasRelevantTargetHere =
-            if hasFight || hasEvade then hasLocalTarget else pure True
-          hasRelevantTargetAt lid' =
-            if hasFight || hasEvade then hasTargetAt lid' else pure True
-        playableAtCurrentLocation <- withAlteredGame withoutCanModifiers hasRelevantTargetHere
+          enemyMatchers =
+            [CanFightEnemy source | #fight `elem` card.actions]
+              <> [CanEvadeEnemy source | #evade `elem` card.actions]
+          playableAt lid'
+            | null enemyMatchers = pure True
+            | otherwise =
+                withAlteredGame withoutCanModifiers
+                  $ withModifiersOf iid source [AsIfAt lid']
+                  $ orM [selectAny $ matcher <> at_ (LocationWithId lid') | matcher <- enemyMatchers]
+        playableHere <-
+          if cdOverrideActionPlayableIfCriteriaMet (toCardDef card)
+            then pure True
+            else playableAt lid
         validConnectingLids <-
-          connectingLids & filterM \lid' ->
-            andM
-              [ cardPassesLimitsAtLocation card lid'
-              , withAlteredGame withoutCanModifiers $ hasRelevantTargetAt lid'
-              ]
+          getConnectedLocations lid >>= filterM \lid' ->
+            andM [cardPassesLimitsAtLocation card lid', playableAt lid']
         let
           playAtConnectingLocation :: ReverseQueue m => m ()
           playAtConnectingLocation = chooseOrRunOneM iid do
             targets validConnectingLids \lid' ->
               cardResolutionModifiers card (attrs.ability 1) iid [AsIfAt lid']
-        if not playableAtCurrentLocation && notNull validConnectingLids
+        if not playableHere && notNull validConnectingLids
           then playAtConnectingLocation
           else chooseOneM iid do
             (withI18n $ countVar 1 $ labeled' "drawCards") do

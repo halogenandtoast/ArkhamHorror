@@ -4317,6 +4317,19 @@ enemyMatcherFilter es matcher' = do
           CannotBeDefeatedBy sm -> sourceMatches source sm
           _ -> pure False
       noneM prevents modifiers
+    EnemyCanBeAttackedBy source -> flip filterM es \enemy -> do
+      enemyMods <- getModifiers (toTarget enemy)
+      not
+        <$> anyM
+          ( \case
+              CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of
+                Just aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
+                _ -> pure True
+              CannotBeAttackedByPlayerSourcesExcept sm ->
+                not <$> sourceMatches source sm
+              _ -> pure False
+          )
+          enemyMods
     EnemyCanBeEvadedBy source -> do
       iid <- view activeInvestigatorIdL <$> getGame
       modifiers' <- getModifiers iid

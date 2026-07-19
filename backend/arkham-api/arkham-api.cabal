@@ -7277,6 +7277,7 @@ test-suite spec
       Arkham.Event.Events.EvidenceSpec
       Arkham.Event.Events.ExtraAmmunition1Spec
       Arkham.Event.Events.FickleFortune3Spec
+      Arkham.Event.Events.GuerrillaTacticsSpec
       Arkham.Event.Events.HiddenPocketSpec
       Arkham.Event.Events.HotStreak4Spec
       Arkham.Event.Events.LieInWaitSpec

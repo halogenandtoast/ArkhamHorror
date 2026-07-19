@@ -856,8 +856,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         _ -> original
       applyMatcherModifiers _ n = n
       canFightMatcher = case overrides of
-        [] -> if choose.overriden then AnyEnemy else CanFightEnemy source
-        [o] -> CanFightEnemyWithOverride o
+        [] -> if choose.overriden then AnyEnemy <> EnemyCanBeAttackedBy source else CanFightEnemy source
+        [o] -> CanFightEnemyWithOverride o <> EnemyCanBeAttackedBy source
         _ -> error "multiple overrides found"
     smods <- filter (== IgnoreAloof) <$> getModifiers choose.skillTest
     enemyIds <-
@@ -1005,8 +1005,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         _ -> original
       applyMatcherModifiers _ n = n
       canEvadeMatcher = case overrides of
-        [] -> if choose.overriden then AnyEnemy else CanEvadeEnemy source
-        [o] -> CanEvadeEnemyWithOverride o
+        [] -> if choose.overriden then AnyEnemy <> EnemyCanBeEvadedBy source else CanEvadeEnemy source
+        [o] -> CanEvadeEnemyWithOverride o <> EnemyCanBeEvadedBy source
         _ -> error "multiple overrides found"
     enemyIds <-
       select

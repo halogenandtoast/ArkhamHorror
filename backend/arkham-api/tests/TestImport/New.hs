@@ -744,6 +744,9 @@ assertTarget (toTarget -> target) = do
       FightLabelWithSkill eid _ _ -> case target of
         EnemyTarget eid' -> eid == eid'
         _ -> False
+      EvadeLabel eid _ -> case target of
+        EnemyTarget eid' -> eid == eid'
+        _ -> False
       _ -> False
 
   case find isMessageTarget choices of
@@ -768,6 +771,9 @@ assertNotTarget (toTarget -> target) = do
         EnemyTarget eid' -> eid == eid'
         _ -> False
       FightLabel eid _ -> case target of
+        EnemyTarget eid' -> eid == eid'
+        _ -> False
+      EvadeLabel eid _ -> case target of
         EnemyTarget eid' -> eid == eid'
         _ -> False
       _ -> False

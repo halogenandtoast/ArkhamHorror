@@ -22,6 +22,28 @@ spec = describe "Miguel's Knapsack" do
       chooseOnlyOption "Miguel's Knapsack is required to supply a legal target"
       knapsack.exhausted `shouldReturn` True
 
+  it "offers to draw when the event already reaches a connecting location" . gameTest $ \self -> do
+    knapsack <- self `putAssetIntoPlay` Assets.miguelsKnapsack
+    (here, connecting) <- testConnectedLocations id id
+    self `moveTo` here
+    enemy <- testEnemy
+    enemy `spawnAt` connecting
+    guerrillaTactics <- genCard Events.guerrillaTactics2
+    drawnCard <- testPlayerCard id
+    withProp @"resources" 1 self
+    withProp @"deck" (Deck [drawnCard]) self
+    self `addToHand` guerrillaTactics
+
+    duringTurn self do
+      self `playCard` guerrillaTactics
+      clickLabel "$cards.label.guerrillaTactics.evade"
+      useReactionOf knapsack
+      chooseOptionMatching "draw a card" \case
+        Label "$label.drawCards count=i:1.0" _ -> True
+        _ -> False
+      self.hand `shouldReturn` [toCard drawnCard]
+      knapsack.exhausted `shouldReturn` True
+
   it "allows its reaction to be skipped when the event has a local target" . gameTest $ \self -> do
     knapsack <- self `putAssetIntoPlay` Assets.miguelsKnapsack
     (here, _connecting) <- testConnectedLocations id id

@@ -26,7 +26,7 @@ innerChamber =
 
 instance HasAbilities InnerChamber where
   getAbilities (InnerChamber a) =
-    extendRevealed1 a $ restricted a 1 Here $ actionAbilityWithCost ClueCostX
+    extendRevealed1 a $ restricted a 1 Here $ actionAbilityWithCost $ OptionalCost ClueCostX
 
 getClueCount :: Payment -> Int
 getClueCount (CluePayment _ n) = n

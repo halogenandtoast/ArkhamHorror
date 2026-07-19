@@ -61,6 +61,7 @@ import { useDebug } from '@/arkham/debug'
 import { useAi } from '@/arkham/ai'
 import { useSettings } from '@/stores/settings'
 import { cardImg, imgsrc } from '@/arkham/helpers'
+import { cardImage as cardCodeImage } from '@/arkham/cardImages'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
 import * as Arkham from '@/arkham/types/Game'
@@ -713,6 +714,132 @@ const qPop = () => {
 }
 let decoding = false
 let pendingUpdate: string | null = null
+let locationFlipPreviewTimer: number | null = null
+let locationFlipPreviewSequence = 0
+
+const locationFlipPreview = ref<{ id: number; src: string; halo: string } | null>(null)
+
+function flippedLocation(previous: Arkham.Game, current: Arkham.Game): string | null {
+  for (const [id, location] of Object.entries(current.locations)) {
+    const previousLocation = previous.locations[id]
+    if (!previousLocation) continue
+    if (previousLocation.revealed !== location.revealed || previousLocation.cardCode !== location.cardCode) {
+      return id
+    }
+  }
+
+  return null
+}
+
+function locationImageUrl(gameState: Arkham.Game, locationId: string): string | null {
+  const location = gameState.locations[locationId]
+  if (!location) return null
+  if (location.enemyLocation) return cardCodeImage(location.cardCode)
+  return cardCodeImage(location.cardCode, location.revealed ? '' : 'b')
+}
+
+function sharpenCanvas(context: CanvasRenderingContext2D, width: number, height: number) {
+  const imageData = context.getImageData(0, 0, width, height)
+  const input = imageData.data
+  const output = new Uint8ClampedArray(input)
+  const amount = 0.18
+
+  for (let y = 1; y < height - 1; y += 1) {
+    for (let x = 1; x < width - 1; x += 1) {
+      const idx = (y * width + x) * 4
+      const top = idx - width * 4
+      const bottom = idx + width * 4
+      const left = idx - 4
+      const right = idx + 4
+
+      for (let channel = 0; channel < 3; channel += 1) {
+        output[idx + channel] = input[idx + channel] * (1 + amount * 4)
+          - input[top + channel] * amount
+          - input[bottom + channel] * amount
+          - input[left + channel] * amount
+          - input[right + channel] * amount
+      }
+    }
+  }
+
+  imageData.data.set(output)
+  context.putImageData(imageData, 0, 0)
+}
+
+function cropLocationFlipImage(src: string): Promise<{ src: string; halo: string } | null> {
+  return new Promise((resolve) => {
+    const image = new Image()
+    image.crossOrigin = 'anonymous'
+    image.onload = () => {
+      const referenceWidth = 423
+      const referenceHeight = 600
+      const cropX = 8
+      const cropY = 74
+      const cropWidth = 407
+      const cropHeight = 196
+      const sourceScaleX = image.naturalWidth / referenceWidth
+      const sourceScaleY = image.naturalHeight / referenceHeight
+      const sourceX = cropX * sourceScaleX
+      const sourceY = cropY * sourceScaleY
+      const sourceWidth = Math.min(cropWidth * sourceScaleX, image.naturalWidth - sourceX)
+      const sourceHeight = Math.min(cropHeight * sourceScaleY, image.naturalHeight - sourceY)
+      if (sourceWidth <= 0 || sourceHeight <= 0) {
+        resolve(null)
+        return
+      }
+
+      const canvas = document.createElement('canvas')
+      const scale = 3
+      canvas.width = cropWidth * scale
+      canvas.height = cropHeight * scale
+      const context = canvas.getContext('2d')
+      if (!context) {
+        resolve(null)
+        return
+      }
+
+      context.imageSmoothingEnabled = true
+      context.imageSmoothingQuality = 'high'
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, canvas.width, canvas.height)
+
+      try {
+        const sample = context.getImageData(45 * scale, 30 * scale, 1, 1).data
+        const halo = `rgba(${sample[0]}, ${sample[1]}, ${sample[2]}, 0.62)`
+        sharpenCanvas(context, canvas.width, canvas.height)
+        resolve({ src: canvas.toDataURL('image/png'), halo })
+      } catch (error) {
+        console.warn('Unable to create location flip preview', error)
+        resolve(null)
+      }
+    }
+    image.onerror = () => resolve(null)
+    image.src = src
+  })
+}
+
+function clearLocationFlipPreview() {
+  if (locationFlipPreviewTimer !== null) window.clearTimeout(locationFlipPreviewTimer)
+  locationFlipPreviewTimer = null
+  locationFlipPreview.value = null
+}
+
+function showLocationFlipPreview(previous: Arkham.Game, current: Arkham.Game) {
+  const locationId = flippedLocation(previous, current)
+  if (!locationId) return
+  const url = locationImageUrl(current, locationId)
+  if (!url) return
+
+  const sequence = ++locationFlipPreviewSequence
+  void cropLocationFlipImage(url).then((preview) => {
+    if (!preview || sequence !== locationFlipPreviewSequence) return
+    if (locationFlipPreviewTimer !== null) window.clearTimeout(locationFlipPreviewTimer)
+    locationFlipPreview.value = { id: sequence, ...preview }
+    locationFlipPreviewTimer = window.setTimeout(() => {
+      if (locationFlipPreview.value?.id === sequence) locationFlipPreview.value = null
+      locationFlipPreviewTimer = null
+    }, 1300)
+  })
+}
 
 function entitiesMoved(previous: Arkham.Game, current: Arkham.Game) {
   const placementChanged = (
@@ -730,6 +857,7 @@ function entitiesMoved(previous: Arkham.Game, current: Arkham.Game) {
 function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
   const nextGame = locked ? { ...updatedGame, question: {} } : updatedGame
   const previousGame = game.value
+  if (previousGame) showLocationFlipPreview(previousGame, nextGame)
   const apply = async () => {
     game.value = nextGame
     await nextTick()
@@ -1835,6 +1963,7 @@ onMounted(() => {
 
 onBeforeRouteLeave(() => close())
 onUnmounted(() => {
+  clearLocationFlipPreview()
   document.removeEventListener('keydown', handleKeyPress)
   document.removeEventListener('mousemove', onMove)
   focusLightObserver?.disconnect()
@@ -1890,6 +2019,19 @@ onUnmounted(() => {
       />
     </div>
     <CardOverlay />
+    <Transition name="location-flip-preview">
+      <div
+        v-if="locationFlipPreview"
+        :key="locationFlipPreview.id"
+        class="location-flip-preview"
+        :style="{ '--location-flip-halo': locationFlipPreview.halo }"
+        aria-hidden="true"
+      >
+        <div class="location-flip-preview-frame">
+          <img :src="locationFlipPreview.src" alt="" />
+        </div>
+      </div>
+    </Transition>
     <div
       v-if="realityAcidLightActive"
       class="reality-acid-flashlight"
@@ -3541,6 +3683,111 @@ button:hover .shortcut {
   width: 80px;
   filter: invert(48%) sepia(32%) saturate(393%) hue-rotate(37deg) brightness(92%) contrast(89%);
   aspect-ratio: 1;
+}
+
+.location-flip-preview {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-1000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, var(--location-flip-halo, rgba(255, 255, 255, 0.35)), rgba(8, 9, 10, 0) 42%),
+    radial-gradient(ellipse at center, rgba(8, 9, 10, 0.28), rgba(8, 9, 10, 0) 70%);
+
+  .location-flip-preview-frame {
+    position: relative;
+    width: min(96vw, 1221px);
+    height: min(46.2vw, 588px);
+    max-height: 86vh;
+    border-radius: 8px;
+    filter:
+      drop-shadow(0 0 3vmin var(--location-flip-halo, rgba(255, 255, 255, 0.45)))
+      drop-shadow(0 5vmin 4vmin var(--location-flip-halo, rgba(255, 255, 255, 0.34)))
+      drop-shadow(2vmin -2vmin 15vmin var(--location-flip-halo, rgba(255, 255, 255, 0.26)))
+      drop-shadow(0 0 7vmin var(--location-flip-halo, rgba(255, 255, 255, 0.42)));
+    box-shadow:
+      0 0 54px var(--location-flip-halo, rgba(255, 255, 255, 0.32)),
+      0 34px 110px rgba(0, 0, 0, 0.62);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -18px;
+      border-radius: 18px;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0) 48%, var(--location-flip-halo, rgba(255, 255, 255, 0.34)) 74%, rgba(0, 0, 0, 0) 100%);
+      filter: blur(14px);
+    }
+  }
+
+  img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    filter: saturate(1.14) contrast(1.12) brightness(1.02);
+  }
+}
+
+.location-flip-preview-enter-active,
+.location-flip-preview-leave-active {
+  transition: opacity 420ms ease;
+}
+
+.location-flip-preview-enter-active .location-flip-preview-frame {
+  animation:
+    location-flip-reveal 1300ms cubic-bezier(0.16, 1, 0.3, 1) both,
+    location-flip-glow 4s cubic-bezier(0.55, 0.085, 0.68, 0.53) infinite;
+}
+
+.location-flip-preview-enter-from,
+.location-flip-preview-leave-to {
+  opacity: 0;
+}
+
+@keyframes location-flip-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  24% {
+    opacity: 0.94;
+  }
+  72% {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes location-flip-glow {
+  0% {
+    filter:
+      drop-shadow(0 0 3vmin var(--location-flip-halo, rgba(255, 255, 255, 0.45)))
+      drop-shadow(0 5vmin 4vmin var(--location-flip-halo, rgba(255, 255, 255, 0.34)))
+      drop-shadow(2vmin -2vmin 15vmin var(--location-flip-halo, rgba(255, 255, 255, 0.26)))
+      drop-shadow(0 0 7vmin var(--location-flip-halo, rgba(255, 255, 255, 0.42)));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 3vmin var(--location-flip-halo, rgba(255, 255, 255, 0.32)))
+      drop-shadow(0 5vmin 4vmin var(--location-flip-halo, rgba(255, 255, 255, 0.26)))
+      drop-shadow(2vmin -2vmin 15vmin rgba(0, 0, 0, 0.62))
+      drop-shadow(0 0 7vmin var(--location-flip-halo, rgba(255, 255, 255, 0.3)));
+  }
+  100% {
+    filter:
+      drop-shadow(0 0 3vmin var(--location-flip-halo, rgba(255, 255, 255, 0.45)))
+      drop-shadow(0 5vmin 4vmin var(--location-flip-halo, rgba(255, 255, 255, 0.34)))
+      drop-shadow(2vmin -2vmin 15vmin var(--location-flip-halo, rgba(255, 255, 255, 0.26)))
+      drop-shadow(0 0 7vmin var(--location-flip-halo, rgba(255, 255, 255, 0.42)));
+  }
 }
 
 .replay-button {

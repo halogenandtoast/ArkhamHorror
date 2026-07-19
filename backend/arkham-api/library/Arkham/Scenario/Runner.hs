@@ -1015,12 +1015,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         let (drew, rest) = splitAt drawing.amount xs
         if length drew == drawing.amount
           then do
+            for_ drew \card -> sendCardAudio "revealEncounterCard" card
             when (null rest && not scenarioInShuffle) do
               checkWhen Window.EncounterDeckRunsOutOfCards
             push $ DrewCards iid $ finalizeDraw drawing $ drawing.alreadyDrawn <> map toCard drew
             when (null rest && not scenarioInShuffle) do
               push $ ShuffleEncounterDiscardBackInByKey key
           else do
+            for_ drew \card -> sendCardAudio "revealEncounterCard" card
             when (null rest && not scenarioInShuffle) do
               checkWhen Window.EncounterDeckRunsOutOfCards
               push $ ShuffleEncounterDiscardBackInByKey key

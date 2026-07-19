@@ -1048,6 +1048,7 @@ runGameMessage msg g = case msg of
   -- Removes the location entity and adds an enemy-location entity with the same ID.
   -- All investigators, enemies, attachments, and tokens are kept per the rules.
   FlipToEnemyLocation lid card -> do
+    sendCardAudio "flipCard" card
     mLocation <- maybeLocation lid
     let
       inheritLocationData = case mLocation of
@@ -1093,6 +1094,7 @@ runGameMessage msg g = case msg of
   -- Removes the enemy-location entity and adds a location entity with the same ID.
   -- All investigators, enemies, attachments, and tokens are kept per the rules.
   FlipToLocation lid card -> do
+    sendCardAudio "flipCard" card
     let
       mEnemyLocation = preview (entitiesL . enemyLocationsL . ix lid) g
       inheritEnemyLocationData = case mEnemyLocation of
@@ -1651,6 +1653,7 @@ runGameMessage msg g = case msg of
     -- If we try to return to hand but the asset is gone, then do nothing
     mAsset <- maybeAsset assetId
     for_ mAsset $ \asset -> do
+      sendCardAudio "moveCard" asset
       removeAllMessagesMatching $ \case
         Discarded (AssetTarget assetId') _ _ -> assetId == assetId'
         _ -> False
@@ -1685,6 +1688,7 @@ runGameMessage msg g = case msg of
   ReturnToHand iid (EventTarget eventId) -> do
     event' <- getEvent eventId
     card <- field EventCard eventId
+    sendCardAudio "moveCard" card
     push $ addToHand iid card
     removedEntitiesF <-
       if gameInAction g || attr eventWaiting event'
@@ -1778,6 +1782,7 @@ runGameMessage msg g = case msg of
         let controller = fromMaybe owner $ listToMaybe [c | PlayUnderControlOf c <- cardMods]
 
         send $ format investigator' <> " played " <> format card
+        sendCardAudio "playCard" card
         g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
         let
           recordLimit g'' = \case
@@ -3632,9 +3637,11 @@ runGameMessage msg g = case msg of
       & (activeAbilitiesL .~ remainingAbilities)
       & removedEntitiesF
       & (entitiesL %~ (if null remainingAbilities then clearRemovedEntities else id))
-  Discarded (AssetTarget aid) _ (EncounterCard _) -> do
+  Discarded (AssetTarget aid) _ (EncounterCard ec) -> do
+    sendCardAudio "discardCard" ec
     runMessage (RemoveAsset aid) g
-  Discarded (AssetTarget aid) _source _card -> do
+  Discarded (AssetTarget aid) _source card -> do
+    sendCardAudio "discardCard" card
     maybeAsset aid >>= \case
       Nothing -> pure g
       Just _ -> runMessage (RemoveAsset aid) g

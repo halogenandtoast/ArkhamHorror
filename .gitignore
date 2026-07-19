@@ -105,3 +105,6 @@ ml/model/
 # Local homebrew working data (guide transcriptions, codegen maps); the
 # checked-in guide is docs/homebrew.md
 docs/homebrew/
+frontend/public/img/*
+frontend/public/audio/*
+!frontend/public/audio/manifest.json

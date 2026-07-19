@@ -13,6 +13,7 @@
 **/*.hie
 **/dist-newstyle
 **/public/img
+**/public/audio/cards
 backend/foo
 backend/tags
 backend/hls.log

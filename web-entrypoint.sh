@@ -16,6 +16,19 @@ if [ -z "${ASSET_HOST+x}" ]; then
   fi
 fi
 
+# Auto-detect AUDIO_HOST if not explicitly set.
+# If mounted card audio files are present, serve audio locally. Otherwise fall
+# back to CloudFront; the small manifest remains bundled in the image so the
+# backend can resolve cue names without shipping large audio files.
+if [ -z "${AUDIO_HOST+x}" ]; then
+  audio_dir="/opt/arkham/src/frontend/dist/audio/cards"
+  if [ -n "$(ls -A "$audio_dir" 2>/dev/null)" ]; then
+    export AUDIO_HOST=""
+  else
+    export AUDIO_HOST="https://assets.arkhamhorror.app"
+  fi
+fi
+
 # If the app already got a full DATABASE_URL, leave it alone.
 if [ -z "${DATABASE_URL}" ]; then
   # Prefer env-injected password first (good for Kamal), then Docker secret file.

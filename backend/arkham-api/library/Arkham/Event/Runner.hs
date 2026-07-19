@@ -124,6 +124,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
   ReadyExhausted -> pure $ a & exhaustedL .~ False
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
   Exhaust ea | a `isTarget` ea.target -> do
+    sendCardAudio "exhaustCard" a
     unless eventExhausted $ pushAll ea.thenMsgs
     pure $ a & exhaustedL .~ True
   PayCardCost _ card _ | toCardId a == toCardId card -> do

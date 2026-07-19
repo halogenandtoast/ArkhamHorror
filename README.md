@@ -257,6 +257,51 @@ To install a git hook that warns if you forget to update the manifest:
 make install-hooks
 ```
 
+#### Audio
+
+Large audio assets are handled like images: they are **not stored in the git
+repository**. They are hosted on CloudFront and the app loads them from the CDN
+by default. The small `audio/manifest.json` file is kept in the repository so
+the backend can resolve which sound cue to play without shipping all audio files
+inside the Docker image.
+
+If you need local copies (e.g. for offline development), use the fetch script
+(requires `aws` CLI and `curl`):
+
+```
+make fetch-audio
+
+# Or use the script directly:
+./scripts/fetch-assets.sh audio
+```
+
+If you only have Docker (no local AWS CLI), use the Docker-based target instead:
+
+```
+make fetch-audio-docker
+
+# Or run directly:
+docker compose --profile fetch-audio run --rm fetch-audio
+```
+
+Audio files are stored in `frontend/public/audio/` and mounted into the
+container. After fetching, run `docker compose restart web` to use local audio.
+
+To force local audio or CDN audio, set `AUDIO_HOST` in `docker-compose.yml`:
+
+```yaml
+    environment:
+      - AUDIO_HOST=                                # force local audio
+      - AUDIO_HOST=https://assets.arkhamhorror.app # force CDN audio
+```
+
+For local frontend development, use `VITE_AUDIO_HOST` in
+`frontend/.env.development.local`:
+
+```
+VITE_AUDIO_HOST=
+```
+
 #### Database
 Create the local database:
 

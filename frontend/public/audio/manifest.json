@@ -1,0 +1,676 @@
+{
+  "cards/Generic/Cultist/Cultist": [
+    "cards/Generic/Cultist/Cultist (1).ogg",
+    "cards/Generic/Cultist/Cultist (10).ogg",
+    "cards/Generic/Cultist/Cultist (11).ogg",
+    "cards/Generic/Cultist/Cultist (12).ogg",
+    "cards/Generic/Cultist/Cultist (13).ogg",
+    "cards/Generic/Cultist/Cultist (2).ogg",
+    "cards/Generic/Cultist/Cultist (3).ogg",
+    "cards/Generic/Cultist/Cultist (4).ogg",
+    "cards/Generic/Cultist/Cultist (5).ogg",
+    "cards/Generic/Cultist/Cultist (6).ogg",
+    "cards/Generic/Cultist/Cultist (7).ogg",
+    "cards/Generic/Cultist/Cultist (8).ogg",
+    "cards/Generic/Cultist/Cultist (9).ogg"
+  ],
+  "cards/Generic/Mini/Mini": [
+    "cards/Generic/Mini/Mini (1).ogg",
+    "cards/Generic/Mini/Mini (2).ogg",
+    "cards/Generic/Mini/Mini (3).ogg",
+    "cards/Generic/Mini/Mini (4).ogg",
+    "cards/Generic/Mini/Mini (5).ogg"
+  ],
+  "cards/Generic/Monster/Monster": [
+    "cards/Generic/Monster/Monster (1).ogg",
+    "cards/Generic/Monster/Monster (10).ogg",
+    "cards/Generic/Monster/Monster (11).ogg",
+    "cards/Generic/Monster/Monster (12).ogg",
+    "cards/Generic/Monster/Monster (13).ogg",
+    "cards/Generic/Monster/Monster (14).ogg",
+    "cards/Generic/Monster/Monster (2).ogg",
+    "cards/Generic/Monster/Monster (3).ogg",
+    "cards/Generic/Monster/Monster (4).ogg",
+    "cards/Generic/Monster/Monster (5).ogg",
+    "cards/Generic/Monster/Monster (6).ogg",
+    "cards/Generic/Monster/Monster (7).ogg",
+    "cards/Generic/Monster/Monster (8).ogg",
+    "cards/Generic/Monster/Monster (9).ogg"
+  ],
+  "cards/Generic/moveCard/Humanoid": [
+    "cards/Generic/moveCard/Humanoid.ogg"
+  ],
+  "cards/Generic/playCard/Blessed": [
+    "cards/Generic/playCard/Blessed.ogg"
+  ],
+  "cards/Generic/playCard/Cursed": [
+    "cards/Generic/playCard/Cursed.ogg"
+  ],
+  "cards/Generic/playCard/Firearm": [
+    "cards/Generic/playCard/Firearm.ogg"
+  ],
+  "cards/Generic/playCard/Melee": [
+    "cards/Generic/playCard/Melee.ogg"
+  ],
+  "cards/Generic/playCard/Relic": [
+    "cards/Generic/playCard/Relic.ogg"
+  ],
+  "cards/Generic/playCard/Spell": [
+    "cards/Generic/playCard/Spell.ogg"
+  ],
+  "cards/Generic/playCard/Tarot": [
+    "cards/Generic/playCard/Tarot.ogg"
+  ],
+  "cards/Generic/playCard/Tome": [
+    "cards/Generic/playCard/Tome.ogg"
+  ],
+  "cards/Generic/playCard/Tool": [
+    "cards/Generic/playCard/Tool.ogg"
+  ],
+  "cards/Generic/removeResourceCard/Blessed": [
+    "cards/Generic/removeResourceCard/Blessed.ogg"
+  ],
+  "cards/Generic/removeResourceCard/Cursed": [
+    "cards/Generic/removeResourceCard/Cursed.ogg"
+  ],
+  "cards/Generic/removeResourceCard/Firearm": [
+    "cards/Generic/removeResourceCard/Firearm.ogg"
+  ],
+  "cards/Generic/removeResourceCard/Spell": [
+    "cards/Generic/removeResourceCard/Spell.ogg"
+  ],
+  "cards/Generic/removeResourceCard/Tome": [
+    "cards/Generic/removeResourceCard/Tome.ogg"
+  ],
+  "cards/Generic/revealEncounterCard/Ghoul": [
+    "cards/Generic/revealEncounterCard/Ghoul.ogg"
+  ],
+  "cards/Specific/discardCard/Augur": [
+    "cards/Specific/discardCard/Augur.ogg"
+  ],
+  "cards/Specific/discardCard/Flare": [
+    "cards/Specific/discardCard/Flare.ogg"
+  ],
+  "cards/Specific/discardCard/Gravedigger_s Shovel": [
+    "cards/Specific/discardCard/Gravedigger_s Shovel.ogg"
+  ],
+  "cards/Specific/discardCard/Hope": [
+    "cards/Specific/discardCard/Hope.ogg"
+  ],
+  "cards/Specific/discardCard/Knife": [
+    "cards/Specific/discardCard/Knife.ogg"
+  ],
+  "cards/Specific/discardCard/Lucky Dice": [
+    "cards/Specific/discardCard/Lucky Dice.ogg"
+  ],
+  "cards/Specific/discardCard/Stray Cat": [
+    "cards/Specific/discardCard/Stray Cat.ogg"
+  ],
+  "cards/Specific/discardCard/Zeal": [
+    "cards/Specific/discardCard/Zeal.ogg"
+  ],
+  "cards/Specific/exhaustCard/Augur": [
+    "cards/Specific/exhaustCard/Augur.ogg"
+  ],
+  "cards/Specific/exhaustCard/Baron Samedi": [
+    "cards/Specific/exhaustCard/Baron Samedi.ogg"
+  ],
+  "cards/Specific/exhaustCard/Beat Cop": [
+    "cards/Specific/exhaustCard/Beat Cop.ogg"
+  ],
+  "cards/Specific/exhaustCard/Dario El-Amin": [
+    "cards/Specific/exhaustCard/Dario El-Amin.ogg"
+  ],
+  "cards/Specific/exhaustCard/David Renfield": [
+    "cards/Specific/exhaustCard/David Renfield.ogg"
+  ],
+  "cards/Specific/exhaustCard/De Vermis Mysteriis": [
+    "cards/Specific/exhaustCard/De Vermis Mysteriis.ogg"
+  ],
+  "cards/Specific/exhaustCard/Double, Double": [
+    "cards/Specific/exhaustCard/Double, Double.ogg"
+  ],
+  "cards/Specific/exhaustCard/Duke": [
+    "cards/Specific/exhaustCard/Duke.ogg"
+  ],
+  "cards/Specific/exhaustCard/High Roller": [
+    "cards/Specific/exhaustCard/High Roller.ogg"
+  ],
+  "cards/Specific/exhaustCard/Hope": [
+    "cards/Specific/exhaustCard/Hope.ogg"
+  ],
+  "cards/Specific/exhaustCard/Jim_s Trumpet": [
+    "cards/Specific/exhaustCard/Jim_s Trumpet.ogg"
+  ],
+  "cards/Specific/exhaustCard/Lockpicks": [
+    "cards/Specific/exhaustCard/Lockpicks.ogg"
+  ],
+  "cards/Specific/exhaustCard/Lucky Cigarette Case": [
+    "cards/Specific/exhaustCard/Lucky Cigarette Case.ogg"
+  ],
+  "cards/Specific/exhaustCard/Madame Labranche": [
+    "cards/Specific/exhaustCard/Madame Labranche.ogg"
+  ],
+  "cards/Specific/exhaustCard/Patrice’s Violin": [
+    "cards/Specific/exhaustCard/Patrice’s Violin.ogg"
+  ],
+  "cards/Specific/exhaustCard/Shield of Faith": [
+    "cards/Specific/exhaustCard/Shield of Faith.ogg"
+  ],
+  "cards/Specific/exhaustCard/Survival Knife": [
+    "cards/Specific/exhaustCard/Survival Knife.ogg"
+  ],
+  "cards/Specific/exhaustCard/Try and Try Again": [
+    "cards/Specific/exhaustCard/Try and Try Again.ogg"
+  ],
+  "cards/Specific/exhaustCard/Well Prepared": [
+    "cards/Specific/exhaustCard/Well Prepared.ogg"
+  ],
+  "cards/Specific/exhaustCard/Zeal": [
+    "cards/Specific/exhaustCard/Zeal.ogg"
+  ],
+  "cards/Specific/flipCard/Attic": [
+    "cards/Specific/flipCard/Attic.ogg"
+  ],
+  "cards/Specific/flipCard/Cellar": [
+    "cards/Specific/flipCard/Cellar.ogg"
+  ],
+  "cards/Specific/flipCard/Downtown": [
+    "cards/Specific/flipCard/Downtown.ogg"
+  ],
+  "cards/Specific/flipCard/East Town": [
+    "cards/Specific/flipCard/East Town.ogg"
+  ],
+  "cards/Specific/flipCard/Graveyard": [
+    "cards/Specific/flipCard/Graveyard.ogg"
+  ],
+  "cards/Specific/flipCard/Hallway": [
+    "cards/Specific/flipCard/Hallway.ogg"
+  ],
+  "cards/Specific/flipCard/Miskatonic University": [
+    "cards/Specific/flipCard/Miskatonic University.ogg"
+  ],
+  "cards/Specific/flipCard/Northside": [
+    "cards/Specific/flipCard/Northside.ogg"
+  ],
+  "cards/Specific/flipCard/Parlor": [
+    "cards/Specific/flipCard/Parlor.ogg"
+  ],
+  "cards/Specific/flipCard/Rivertown": [
+    "cards/Specific/flipCard/Rivertown.ogg"
+  ],
+  "cards/Specific/flipCard/Southside": [
+    "cards/Specific/flipCard/Southside.ogg"
+  ],
+  "cards/Specific/flipCard/St. Mary_s Hospital": [
+    "cards/Specific/flipCard/St. Mary_s Hospital.ogg"
+  ],
+  "cards/Specific/flipCard/The Clock Strikes Midnight": [
+    "cards/Specific/flipCard/The Clock Strikes Midnight.ogg"
+  ],
+  "cards/Specific/moveCard/Cats from Saturn": [
+    "cards/Specific/moveCard/Cats from Saturn.ogg"
+  ],
+  "cards/Specific/moveCard/Ghoul Priest": [
+    "cards/Specific/moveCard/Ghoul Priest.ogg"
+  ],
+  "cards/Specific/playCard/A Chance Encounter": [
+    "cards/Specific/playCard/A Chance Encounter.ogg"
+  ],
+  "cards/Specific/playCard/A Test of Will": [
+    "cards/Specific/playCard/A Test of Will.ogg"
+  ],
+  "cards/Specific/playCard/Abandoned and Alone": [
+    "cards/Specific/playCard/Abandoned and Alone.ogg"
+  ],
+  "cards/Specific/playCard/Ace In The Hole": [
+    "cards/Specific/playCard/Ace In The Hole.ogg"
+  ],
+  "cards/Specific/playCard/Amnesia": [
+    "cards/Specific/playCard/Amnesia.ogg"
+  ],
+  "cards/Specific/playCard/Aquinnah": [
+    "cards/Specific/playCard/Aquinnah.ogg"
+  ],
+  "cards/Specific/playCard/Arcane Initiate": [
+    "cards/Specific/playCard/Arcane Initiate.ogg"
+  ],
+  "cards/Specific/playCard/Astral Travel": [
+    "cards/Specific/playCard/Astral Travel.ogg"
+  ],
+  "cards/Specific/playCard/Atychiphobia": [
+    "cards/Specific/playCard/Atychiphobia.ogg"
+  ],
+  "cards/Specific/playCard/Augur": [
+    "cards/Specific/playCard/Augur.ogg"
+  ],
+  "cards/Specific/playCard/Backstab": [
+    "cards/Specific/playCard/Backstab.ogg"
+  ],
+  "cards/Specific/playCard/Baron Samedi": [
+    "cards/Specific/playCard/Baron Samedi.ogg"
+  ],
+  "cards/Specific/playCard/Barricade": [
+    "cards/Specific/playCard/Barricade.ogg"
+  ],
+  "cards/Specific/playCard/Baseball Bat": [
+    "cards/Specific/playCard/Baseball Bat.ogg"
+  ],
+  "cards/Specific/playCard/Beat Cop": [
+    "cards/Specific/playCard/Beat Cop.ogg"
+  ],
+  "cards/Specific/playCard/Bind Monster": [
+    "cards/Specific/playCard/Bind Monster.ogg"
+  ],
+  "cards/Specific/playCard/Blinding Light": [
+    "cards/Specific/playCard/Blinding Light.ogg"
+  ],
+  "cards/Specific/playCard/Boxing Gloves": [
+    "cards/Specific/playCard/Boxing Gloves.ogg"
+  ],
+  "cards/Specific/playCard/Brute Force": [
+    "cards/Specific/playCard/Brute Force.ogg"
+  ],
+  "cards/Specific/playCard/Burning the Midnight Oil": [
+    "cards/Specific/playCard/Burning the Midnight Oil.ogg"
+  ],
+  "cards/Specific/playCard/Calling in Favors": [
+    "cards/Specific/playCard/Calling in Favors.ogg"
+  ],
+  "cards/Specific/playCard/Cat Burglar": [
+    "cards/Specific/playCard/Cat Burglar.ogg"
+  ],
+  "cards/Specific/playCard/Chainsaw": [
+    "cards/Specific/playCard/Chainsaw.ogg"
+  ],
+  "cards/Specific/playCard/Chronophobia": [
+    "cards/Specific/playCard/Chronophobia.ogg"
+  ],
+  "cards/Specific/playCard/Counterpunch": [
+    "cards/Specific/playCard/Counterpunch.ogg"
+  ],
+  "cards/Specific/playCard/Coup de Grâce": [
+    "cards/Specific/playCard/Coup de Grâce.ogg"
+  ],
+  "cards/Specific/playCard/Cover Up": [
+    "cards/Specific/playCard/Cover Up.ogg"
+  ],
+  "cards/Specific/playCard/Delve Too Deep": [
+    "cards/Specific/playCard/Delve Too Deep.ogg"
+  ],
+  "cards/Specific/playCard/Deny Existence": [
+    "cards/Specific/playCard/Deny Existence.ogg"
+  ],
+  "cards/Specific/playCard/Detached from Reality": [
+    "cards/Specific/playCard/Detached from Reality.ogg"
+  ],
+  "cards/Specific/playCard/Dodge": [
+    "cards/Specific/playCard/Dodge.ogg"
+  ],
+  "cards/Specific/playCard/Double Or Nothing": [
+    "cards/Specific/playCard/Double Or Nothing.ogg"
+  ],
+  "cards/Specific/playCard/Drawing the Sign": [
+    "cards/Specific/playCard/Drawing the Sign.ogg"
+  ],
+  "cards/Specific/playCard/Dynamite Blast": [
+    "cards/Specific/playCard/Dynamite Blast.ogg"
+  ],
+  "cards/Specific/playCard/Eat lead!": [
+    "cards/Specific/playCard/Eat lead!.ogg"
+  ],
+  "cards/Specific/playCard/Eldritch Inspiration": [
+    "cards/Specific/playCard/Eldritch Inspiration.ogg"
+  ],
+  "cards/Specific/playCard/Emergency Cache": [
+    "cards/Specific/playCard/Emergency Cache.ogg"
+  ],
+  "cards/Specific/playCard/Enchanted Blade": [
+    "cards/Specific/playCard/Enchanted Blade.ogg"
+  ],
+  "cards/Specific/playCard/Ethereal Form": [
+    "cards/Specific/playCard/Ethereal Form.ogg"
+  ],
+  "cards/Specific/playCard/Evidence!": [
+    "cards/Specific/playCard/Evidence!.ogg"
+  ],
+  "cards/Specific/playCard/Expeditious Retreat": [
+    "cards/Specific/playCard/Expeditious Retreat.ogg"
+  ],
+  "cards/Specific/playCard/Extra Ammunition": [
+    "cards/Specific/playCard/Extra Ammunition.ogg"
+  ],
+  "cards/Specific/playCard/Familiar Spirit": [
+    "cards/Specific/playCard/Familiar Spirit.ogg"
+  ],
+  "cards/Specific/playCard/Final Rhapsody": [
+    "cards/Specific/playCard/Final Rhapsody.ogg"
+  ],
+  "cards/Specific/playCard/Fine Print": [
+    "cards/Specific/playCard/Fine Print.ogg"
+  ],
+  "cards/Specific/playCard/Fire Axe": [
+    "cards/Specific/playCard/Fire Axe.ogg"
+  ],
+  "cards/Specific/playCard/Flamethrower": [
+    "cards/Specific/playCard/Flamethrower.ogg"
+  ],
+  "cards/Specific/playCard/Glory": [
+    "cards/Specific/playCard/Glory.ogg"
+  ],
+  "cards/Specific/playCard/Guard Dog": [
+    "cards/Specific/playCard/Guard Dog.ogg"
+  ],
+  "cards/Specific/playCard/Haunted": [
+    "cards/Specific/playCard/Haunted.ogg"
+  ],
+  "cards/Specific/playCard/Hired Muscle": [
+    "cards/Specific/playCard/Hired Muscle.ogg"
+  ],
+  "cards/Specific/playCard/Holy Rosary": [
+    "cards/Specific/playCard/Holy Rosary.ogg"
+  ],
+  "cards/Specific/playCard/Hope": [
+    "cards/Specific/playCard/Hope.ogg"
+  ],
+  "cards/Specific/playCard/Hospital Debts": [
+    "cards/Specific/playCard/Hospital Debts.ogg"
+  ],
+  "cards/Specific/playCard/Hot Streak": [
+    "cards/Specific/playCard/Hot Streak.ogg"
+  ],
+  "cards/Specific/playCard/Hypnotic Gaze": [
+    "cards/Specific/playCard/Hypnotic Gaze.ogg"
+  ],
+  "cards/Specific/playCard/Hypochondria": [
+    "cards/Specific/playCard/Hypochondria.ogg"
+  ],
+  "cards/Specific/playCard/I_m outta here!": [
+    "cards/Specific/playCard/I_m outta here!.ogg"
+  ],
+  "cards/Specific/playCard/Internal Injury": [
+    "cards/Specific/playCard/Internal Injury.ogg"
+  ],
+  "cards/Specific/playCard/Leather Coat": [
+    "cards/Specific/playCard/Leather Coat.ogg"
+  ],
+  "cards/Specific/playCard/Leather Jacket": [
+    "cards/Specific/playCard/Leather Jacket.ogg"
+  ],
+  "cards/Specific/playCard/Leo De Luca": [
+    "cards/Specific/playCard/Leo De Luca.ogg"
+  ],
+  "cards/Specific/playCard/Lightning Gun": [
+    "cards/Specific/playCard/Lightning Gun.ogg"
+  ],
+  "cards/Specific/playCard/Look what I found!": [
+    "cards/Specific/playCard/Look what I found!.ogg"
+  ],
+  "cards/Specific/playCard/Lucky Dice": [
+    "cards/Specific/playCard/Lucky Dice.ogg"
+  ],
+  "cards/Specific/playCard/Lucky!": [
+    "cards/Specific/playCard/Lucky!.ogg"
+  ],
+  "cards/Specific/playCard/Machete": [
+    "cards/Specific/playCard/Machete.ogg"
+  ],
+  "cards/Specific/playCard/Meat Cleaver": [
+    "cards/Specific/playCard/Meat Cleaver.ogg"
+  ],
+  "cards/Specific/playCard/Miss Doyle": [
+    "cards/Specific/playCard/Miss Doyle.ogg"
+  ],
+  "cards/Specific/playCard/Monster Slayer": [
+    "cards/Specific/playCard/Monster Slayer.ogg"
+  ],
+  "cards/Specific/playCard/Narcolepsy": [
+    "cards/Specific/playCard/Narcolepsy.ogg"
+  ],
+  "cards/Specific/playCard/Newspaper": [
+    "cards/Specific/playCard/Newspaper.ogg"
+  ],
+  "cards/Specific/playCard/Offer You Cannot Refuse - Copie": [
+    "cards/Specific/playCard/Offer You Cannot Refuse - Copie.ogg"
+  ],
+  "cards/Specific/playCard/Old Keyring": [
+    "cards/Specific/playCard/Old Keyring.ogg"
+  ],
+  "cards/Specific/playCard/Overzealous": [
+    "cards/Specific/playCard/Overzealous.ogg"
+  ],
+  "cards/Specific/playCard/Paranoia": [
+    "cards/Specific/playCard/Paranoia.ogg"
+  ],
+  "cards/Specific/playCard/Patrice’s Violin": [
+    "cards/Specific/playCard/Patrice’s Violin.ogg"
+  ],
+  "cards/Specific/playCard/Physical Training": [
+    "cards/Specific/playCard/Physical Training.ogg"
+  ],
+  "cards/Specific/playCard/Police Badge": [
+    "cards/Specific/playCard/Police Badge.ogg"
+  ],
+  "cards/Specific/playCard/Research Librarian": [
+    "cards/Specific/playCard/Research Librarian.ogg"
+  ],
+  "cards/Specific/playCard/Ritual Candles": [
+    "cards/Specific/playCard/Ritual Candles.ogg"
+  ],
+  "cards/Specific/playCard/Rookie Mistake": [
+    "cards/Specific/playCard/Rookie Mistake.ogg"
+  ],
+  "cards/Specific/playCard/Self-Centered": [
+    "cards/Specific/playCard/Self-Centered.ogg"
+  ],
+  "cards/Specific/playCard/Self-Destructive": [
+    "cards/Specific/playCard/Self-Destructive.ogg"
+  ],
+  "cards/Specific/playCard/Sell Your Soul": [
+    "cards/Specific/playCard/Sell Your Soul.ogg"
+  ],
+  "cards/Specific/playCard/Siren Call": [
+    "cards/Specific/playCard/Siren Call.ogg"
+  ],
+  "cards/Specific/playCard/Sneak Attack": [
+    "cards/Specific/playCard/Sneak Attack.ogg"
+  ],
+  "cards/Specific/playCard/Spectral Razor": [
+    "cards/Specific/playCard/Spectral Razor.ogg"
+  ],
+  "cards/Specific/playCard/Storm of Spirits": [
+    "cards/Specific/playCard/Storm of Spirits.ogg"
+  ],
+  "cards/Specific/playCard/Strange Solution": [
+    "cards/Specific/playCard/Strange Solution.ogg"
+  ],
+  "cards/Specific/playCard/Stunning Blow": [
+    "cards/Specific/playCard/Stunning Blow.ogg"
+  ],
+  "cards/Specific/playCard/Tetsuo Mori": [
+    "cards/Specific/playCard/Tetsuo Mori.ogg"
+  ],
+  "cards/Specific/playCard/The Bell Tolls": [
+    "cards/Specific/playCard/The Bell Tolls.ogg"
+  ],
+  "cards/Specific/playCard/The Home Front": [
+    "cards/Specific/playCard/The Home Front.ogg"
+  ],
+  "cards/Specific/playCard/Three Aces": [
+    "cards/Specific/playCard/Three Aces.ogg"
+  ],
+  "cards/Specific/playCard/Time Warp": [
+    "cards/Specific/playCard/Time Warp.ogg"
+  ],
+  "cards/Specific/playCard/Treasure Hunter": [
+    "cards/Specific/playCard/Treasure Hunter.ogg"
+  ],
+  "cards/Specific/playCard/Trial by Fire": [
+    "cards/Specific/playCard/Trial by Fire.ogg"
+  ],
+  "cards/Specific/playCard/Voice of the Messenger": [
+    "cards/Specific/playCard/Voice of the Messenger.ogg"
+  ],
+  "cards/Specific/playCard/Ward of Protection": [
+    "cards/Specific/playCard/Ward of Protection.ogg"
+  ],
+  "cards/Specific/playCard/Warning Shot": [
+    "cards/Specific/playCard/Warning Shot.ogg"
+  ],
+  "cards/Specific/playCard/Word of Command": [
+    "cards/Specific/playCard/Word of Command.ogg"
+  ],
+  "cards/Specific/playCard/Zeal": [
+    "cards/Specific/playCard/Zeal.ogg"
+  ],
+  "cards/Specific/removeResourceCard/.18 Derringer": [
+    "cards/Specific/removeResourceCard/.18 Derringer.ogg"
+  ],
+  "cards/Specific/removeResourceCard/.32 Colt": [
+    "cards/Specific/removeResourceCard/.32 Colt.ogg"
+  ],
+  "cards/Specific/removeResourceCard/.41 Derringer": [
+    "cards/Specific/removeResourceCard/.41 Derringer.ogg"
+  ],
+  "cards/Specific/removeResourceCard/.45 Automatic": [
+    "cards/Specific/removeResourceCard/.45 Automatic.ogg"
+  ],
+  "cards/Specific/removeResourceCard/.45 Thompson": [
+    "cards/Specific/removeResourceCard/.45 Thompson.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Alchemical Transmutation": [
+    "cards/Specific/removeResourceCard/Alchemical Transmutation.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Ancient Stone": [
+    "cards/Specific/removeResourceCard/Ancient Stone.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Armageddon": [
+    "cards/Specific/removeResourceCard/Armageddon.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Azure Flame": [
+    "cards/Specific/removeResourceCard/Azure Flame.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Becky": [
+    "cards/Specific/removeResourceCard/Becky.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Clairvoyance": [
+    "cards/Specific/removeResourceCard/Clairvoyance.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Clarity of Mind": [
+    "cards/Specific/removeResourceCard/Clarity of Mind.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Colt Vest Pocket": [
+    "cards/Specific/removeResourceCard/Colt Vest Pocket.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Enchanted Blade": [
+    "cards/Specific/removeResourceCard/Enchanted Blade.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Eye of Chaos": [
+    "cards/Specific/removeResourceCard/Eye of Chaos.ogg"
+  ],
+  "cards/Specific/removeResourceCard/First Aid": [
+    "cards/Specific/removeResourceCard/First Aid.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Flamethrower": [
+    "cards/Specific/removeResourceCard/Flamethrower.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Flashlight": [
+    "cards/Specific/removeResourceCard/Flashlight.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Healing Words": [
+    "cards/Specific/removeResourceCard/Healing Words.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Ineffable Truth": [
+    "cards/Specific/removeResourceCard/Ineffable Truth.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Kerosene": [
+    "cards/Specific/removeResourceCard/Kerosene.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Lightning Gun": [
+    "cards/Specific/removeResourceCard/Lightning Gun.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Liquid Courage": [
+    "cards/Specific/removeResourceCard/Liquid Courage.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Lockpicks": [
+    "cards/Specific/removeResourceCard/Lockpicks.ogg"
+  ],
+  "cards/Specific/removeResourceCard/M1918 BAR": [
+    "cards/Specific/removeResourceCard/M1918 BAR.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Mauser C96": [
+    "cards/Specific/removeResourceCard/Mauser C96.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Mists of R_lyeh": [
+    "cards/Specific/removeResourceCard/Mists of R_lyeh.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Mk 1 Grenades": [
+    "cards/Specific/removeResourceCard/Mk 1 Grenades.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Obfuscation": [
+    "cards/Specific/removeResourceCard/Obfuscation.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Old Hunting Rifle": [
+    "cards/Specific/removeResourceCard/Old Hunting Rifle.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Old Keyring": [
+    "cards/Specific/removeResourceCard/Old Keyring.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Painkillers": [
+    "cards/Specific/removeResourceCard/Painkillers.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Rite of Seeking": [
+    "cards/Specific/removeResourceCard/Rite of Seeking.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Roland_s .38 Special": [
+    "cards/Specific/removeResourceCard/Roland_s .38 Special.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Sawed-Off Shotgun": [
+    "cards/Specific/removeResourceCard/Sawed-Off Shotgun.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Scrying": [
+    "cards/Specific/removeResourceCard/Scrying.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Shards of the Void": [
+    "cards/Specific/removeResourceCard/Shards of the Void.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Shotgun": [
+    "cards/Specific/removeResourceCard/Shotgun.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Shrivelling": [
+    "cards/Specific/removeResourceCard/Shrivelling.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Smoking Pipe": [
+    "cards/Specific/removeResourceCard/Smoking Pipe.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Springfield M1903": [
+    "cards/Specific/removeResourceCard/Springfield M1903.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Strange Solution": [
+    "cards/Specific/removeResourceCard/Strange Solution.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Tennessee Sour Mash": [
+    "cards/Specific/removeResourceCard/Tennessee Sour Mash.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Tony’s .38 Long Colt": [
+    "cards/Specific/removeResourceCard/Tony’s .38 Long Colt.ogg"
+  ],
+  "cards/Specific/removeResourceCard/Venturer": [
+    "cards/Specific/removeResourceCard/Venturer.ogg"
+  ],
+  "cards/Specific/revealEncounterCard/Crypt Chill": [
+    "cards/Specific/revealEncounterCard/Crypt Chill.ogg"
+  ],
+  "cards/Specific/revealEncounterCard/Locked Door": [
+    "cards/Specific/revealEncounterCard/Locked Door.ogg"
+  ],
+  "cards/Specific/revealEncounterCard/Mysterious Chanting": [
+    "cards/Specific/revealEncounterCard/Mysterious Chanting.ogg"
+  ],
+  "cards/Specific/revealEncounterCard/Obscuring Fog": [
+    "cards/Specific/revealEncounterCard/Obscuring Fog.ogg"
+  ],
+  "cards/Specific/revealEncounterCard/On Wings of Darkness": [
+    "cards/Specific/revealEncounterCard/On Wings of Darkness.ogg"
+  ]
+}

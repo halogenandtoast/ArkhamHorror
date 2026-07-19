@@ -17,7 +17,8 @@
     "digest": "node ./scripts/digest.cjs",
     "fetch-card-data": "node ./scripts/fetch-card-data.cjs --slim",
     "import-zh-cn-cards": "node ./scripts/import-card-translations.cjs --source-locale zh-cn --output-lang zh-cn --slim",
-    "slim-cards": "node ./scripts/slim-cards.cjs"
+    "slim-cards": "node ./scripts/slim-cards.cjs",
+    "generate-audio-manifest": "node ./scripts/generate-audio-manifest.cjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",

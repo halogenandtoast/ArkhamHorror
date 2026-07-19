@@ -90,6 +90,7 @@ data AppSettings = AppSettings
     , appMailtrapApiToken :: Token
     , appBugsnagApiKey :: Text
     , appAssetHost :: Maybe Text
+    , appAudioHost :: Maybe Text
     , appCollectMlData :: Bool
     -- ^ Collect imitation-learning data: when True, 'updateGame' logs one
     -- @ArkhamMlDecision@ row per human, multi-choice decision. Default False;
@@ -123,6 +124,7 @@ instance FromJSON AppSettings where
         appMailtrapApiToken <- o .: "mailtrap-api-token"
         appBugsnagApiKey <- o .: "bugsnag-api-token"
         appAssetHost <- o .:? "asset-host"
+        appAudioHost <- o .:? "audio-host"
         appCollectMlData <- o .:? "collect-ml" .!= False
 
         pure AppSettings {..}

@@ -754,6 +754,7 @@ instance RunMessage EnemyAttrs where
         willMove <- canEnterLocation eid lid
         if willMove
           then do
+            sendCardAudio "moveCard" a
             batchId <- getRandom
             -- The `Move` path records `enemyMovement` (with its `moveFromInPlay`
             -- flag) before pushing EnemyMove, but MoveToward/MoveUntil/hunter

@@ -20,15 +20,18 @@ data CurrentUser = CurrentUser
   deriving stock Generic
   deriving anyclass ToJSON
 
-newtype SiteSettings = SiteSettings
+data SiteSettings = SiteSettings
   { assetHost :: Maybe Text
+  , audioHost :: Maybe Text
   }
 
 instance ToJSON SiteSettings where
-  toJSON SiteSettings {assetHost} = object ["assetHost" .= assetHost]
+  toJSON SiteSettings {assetHost, audioHost} = object ["assetHost" .= assetHost, "audioHost" .= audioHost]
 
 getApiV1SiteSettingsR :: Handler SiteSettings
-getApiV1SiteSettingsR = SiteSettings <$> getsApp (appAssetHost . appSettings)
+getApiV1SiteSettingsR = do
+  settings <- getsApp appSettings
+  pure $ SiteSettings settings.appAssetHost settings.appAudioHost
 
 putApiV1SettingsR :: Handler CurrentUser
 putApiV1SettingsR = do

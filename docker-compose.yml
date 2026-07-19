@@ -58,11 +58,16 @@ services:
         - GHC_VERSION=9.12.2
     # ASSET_HOST is auto-detected by web-entrypoint.sh:
     #   unset (default): uses local images if present, CDN otherwise
+    # AUDIO_HOST is auto-detected the same way for optional local audio files.
     # To override, uncomment one of the lines below:
     # environment:
     #   - ASSET_HOST=                                 # force local images
     #   - ASSET_HOST=https://assets.arkhamhorror.app # force CDN
+    #   - AUDIO_HOST=                                 # force local audio
+    #   - AUDIO_HOST=https://assets.arkhamhorror.app # force CDN audio
     #   - REDIS_CONN=redis://redis:6379
+    environment:
+      - AUDIO_HOST=/
     secrets:
       - postgres_password
     ports:
@@ -74,6 +79,8 @@ services:
         condition: service_completed_successfully
     volumes:
       - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
+      - ./frontend/public/audio/manifest.json:/opt/arkham/src/frontend/dist/audio/manifest.json
+      - ./frontend/public/audio/cards:/opt/arkham/src/frontend/dist/audio/cards
   fetch-images:
     profiles: ["fetch-images"]
     image: amazon/aws-cli
@@ -82,6 +89,14 @@ services:
       - ./scripts/fetch-assets.sh:/workspace/scripts/fetch-assets.sh:ro
     entrypoint: ["/bin/bash", "/workspace/scripts/fetch-assets.sh"]
     command: en
+  fetch-audio:
+    profiles: ["fetch-audio"]
+    image: amazon/aws-cli
+    volumes:
+      - ./frontend/public/audio:/workspace/frontend/public/audio
+      - ./scripts/fetch-assets.sh:/workspace/scripts/fetch-assets.sh:ro
+    entrypoint: ["/bin/bash", "/workspace/scripts/fetch-assets.sh"]
+    command: audio
 volumes:
  pgdata:
 # Docker secret for Postgres password

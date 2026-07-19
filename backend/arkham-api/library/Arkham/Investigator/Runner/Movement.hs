@@ -482,6 +482,7 @@ handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
               [targetLabel lid [MoveTo $ movement {moveDestination = ToLocation lid}] | lid <- lids]
         pure a
       ToLocation lid -> do
+        when (movement.means /= Place) $ sendAudioCue "cards/Generic/Mini/Mini"
         -- Engaged, non-massive enemies that can enter follow the investigator
         -- into lid; others disengage. We push EnemyEnteredFollowing for each
         -- follower inside a Simultaneously block alongside the investigator's

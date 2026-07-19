@@ -13,6 +13,7 @@
 #   ./scripts/fetch-assets.sh en        # All English/static images (~1.3 GB)
 #   ./scripts/fetch-assets.sh en+fr     # English/static + French translations
 #   ./scripts/fetch-assets.sh cards     # English card images + homebrew card images only (~755 MB)
+#   ./scripts/fetch-assets.sh audio     # Audio files only
 #   ./scripts/fetch-assets.sh all       # Everything (~2.9 GB)
 #
 # Environment variables:
@@ -77,6 +78,7 @@ Usage: $(basename "$0") <target>
 
 Targets:
   cards       English card images + homebrew card images only (~755 MB)
+  audio       Audio files only
   en          All English/static images (~1.3 GB)
   en+fr       English/static + French translations
   en+es       English/static + Spanish translations
@@ -309,6 +311,7 @@ ALL_LANG_PATTERN="img/arkham/($(IFS='|'; printf '%s' "${ALL_LANGS[*]}")/)"
 printf '\n%s=== %s ===%s\n\n' "$_BOLD" \
   "$(case "$1" in
     cards)             echo 'Fetching English card images' ;;
+    audio)             echo 'Fetching audio files' ;;
     en)                echo 'Fetching all English/static images' ;;
     en+*)              echo "Fetching English/static + ${1#en+} translations" ;;
     fr|es|ita|ko|zh)   echo "Fetching $1 translated images only" ;;
@@ -319,6 +322,9 @@ case "$1" in
   cards)
     _sync_prefix "img/arkham/cards/"
     _sync_prefix "img/arkham/homebrew/" -E 'img/arkham/homebrew/[^/]+/cards/'
+    ;;
+  audio)
+    _sync_prefix "audio/"
     ;;
   en)
     _sync_prefix "img/" -vE "$ALL_LANG_PATTERN"

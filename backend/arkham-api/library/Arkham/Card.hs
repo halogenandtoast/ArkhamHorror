@@ -38,6 +38,13 @@ import Arkham.Taboo.Types
 import Arkham.Trait
 import Control.Monad.State.Strict (StateT)
 import Control.Monad.Writer.Strict (WriterT)
+import Data.Aeson qualified as Aeson
+import Data.Char (isDigit)
+import Data.Char qualified as Char
+import Data.List (isSuffixOf)
+import Data.List qualified as List
+import Data.Map.Strict qualified as Map
+import System.Directory (doesDirectoryExist, listDirectory)
 import Data.Aeson.TH
 import Data.IntMap.Strict qualified as IntMap
 import Data.Text qualified as T
@@ -641,3 +648,132 @@ instance IsThisCard CardMatcher where
 
 instance IsThisCard ExtendedCardMatcher where
   isThisCard = basic . isThisCard
+
+{- | Base directory (relative to the backend process's working directory,
+@backend/arkham-api@ in the production container) where the frontend's built
+static audio files live; nginx serves the very same files at @/audio/@. The
+two directories are siblings under @/opt/arkham/src@ in the single combined
+Docker image, so this relative path resolves correctly there.
+-}
+audioBaseDir :: FilePath
+audioBaseDir = "../../frontend/dist/audio"
+
+audioManifestFile :: FilePath
+audioManifestFile = audioBaseDir <> "/manifest.json"
+
+audioExtensions :: [String]
+audioExtensions = [".ogg", ".mp3", ".wav"]
+
+-- | Drop a recognized audio extension (case-insensitively), if present.
+stripAudioExtension :: String -> Maybe String
+stripAudioExtension f =
+  case filter (\ext -> map Char.toLower ext `List.isSuffixOf` map Char.toLower f) audioExtensions of
+    (ext : _) -> Just (take (length f - length ext) f)
+    [] -> Nothing
+
+-- | Strip a trailing " (N)" numbered-variant suffix, e.g. "Cultist (7)" -> "Cultist".
+stripVariantSuffix :: Text -> Text
+stripVariantSuffix t = case T.breakOnEnd " (" t of
+  (prefix, suffix)
+    | not (T.null prefix)
+    , Just digits <- T.stripSuffix ")" suffix
+    , not (T.null digits)
+    , T.all isDigit digits ->
+        T.dropEnd 2 prefix
+  _ -> t
+
+-- Audio filenames often encode apostrophes as underscores (e.g. "I_m"),
+-- while card titles use either straight or curly apostrophes. Normalize those
+-- spellings so cue lookup still matches the intended file.
+normalizeCueName :: Text -> Text
+normalizeCueName = T.toLower . T.map normalizeChar
+ where
+  normalizeChar '_' = '\''
+  normalizeChar '’' = '\''
+  normalizeChar c = c
+
+cueNameMatches :: Text -> Text -> Bool
+cueNameMatches cueName fileBase =
+  normalizeCueName cueName == normalizeCueName (stripVariantSuffix fileBase)
+
+isSafeAudioManifestPath :: Text -> Bool
+isSafeAudioManifestPath path =
+  not (T.null path)
+    && not (T.isPrefixOf "/" path)
+    && not (".." `T.isInfixOf` path)
+    && isJust (stripAudioExtension $ T.unpack path)
+
+resolveAudioCueFromManifest :: Text -> Map.Map Text [Text] -> [Text]
+resolveAudioCueFromManifest key manifest = do
+  let (dirPart, name) = T.breakOnEnd "/" key
+      dir = T.dropEnd 1 dirPart
+  (manifestKey, paths) <- Map.toList manifest
+  let (manifestDirPart, manifestName) = T.breakOnEnd "/" manifestKey
+  guard $ T.dropEnd 1 manifestDirPart == dir
+  guard $ cueNameMatches name manifestName
+  filter isSafeAudioManifestPath paths
+
+pickAudioMatch :: MonadIO m => [Text] -> m (Maybe Text)
+pickAudioMatch = \case
+  [] -> pure Nothing
+  [one] -> pure $ Just one
+  many -> do
+    idx <- liftIO $ getRandomR (0, length many - 1)
+    pure $ Just (many List.!! idx)
+
+resolveAudioCueFromDirectory :: MonadIO m => Text -> m (Maybe Text)
+resolveAudioCueFromDirectory key = liftIO $ do
+  let (dirPart, name) = T.breakOnEnd "/" key
+      dir = audioBaseDir <> "/" <> T.unpack (T.dropEnd 1 dirPart)
+  exists <- doesDirectoryExist dir
+  if not exists
+    then pure Nothing
+    else do
+      entries <- listDirectory dir
+      let matches =
+            mapMaybe
+              (\f -> do
+                base <- stripAudioExtension f
+                guard (cueNameMatches name (T.pack base))
+                pure (dirPart <> T.pack f)
+              )
+              entries
+      pickAudioMatch matches
+
+{- | Resolve a card audio cue key (e.g. \"cards/Specific/playCard/Zeal\" or
+\"cards/Generic/playCard/Spell\") from the generated manifest. The manifest is
+small enough to ship in the app image even when the large audio files are served
+from the CDN or mounted locally. If the manifest is missing (local development),
+fall back to scanning files on disk.
+-}
+resolveAudioCue :: MonadIO m => Text -> m (Maybe Text)
+resolveAudioCue key = do
+  manifest <- liftIO $ Aeson.decodeFileStrict' audioManifestFile
+  case manifest of
+    Just audioManifest -> pickAudioMatch $ resolveAudioCueFromManifest key audioManifest
+    Nothing -> resolveAudioCueFromDirectory key
+
+{- | Send a sound cue for an action performed on/with a card (e.g. \"playCard\",
+\"exhaustCard\"...). Tries the card's exact title first, then falls back to
+one cue per trait the card has, sending the first one that actually resolves
+to a file on disk (see 'resolveAudioCue'). Silently does nothing if none of
+them match anything.
+-}
+sendCardAudio :: (HasGameLogger m, IsCard a) => Text -> a -> m ()
+sendCardAudio action a = do
+  let def = toCardDef a
+      keys =
+        ("cards/Specific/" <> action <> "/" <> def.title)
+          : [ "cards/Generic/" <> action <> "/" <> tshow trait
+            | trait <- toList (toTraits a)
+            ]
+  firstMatch keys >>= traverse_ sendAudio
+ where
+  firstMatch [] = pure Nothing
+  firstMatch (k : ks) =
+    resolveAudioCue k >>= \case
+      Just found -> pure (Just found)
+      Nothing -> firstMatch ks
+
+sendAudioCue :: HasGameLogger m => Text -> m ()
+sendAudioCue key = resolveAudioCue key >>= traverse_ sendAudio

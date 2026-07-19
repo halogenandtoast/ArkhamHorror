@@ -160,6 +160,11 @@ fetch-cards:
 	./scripts/fetch-assets.sh cards
 .PHONY: fetch-cards
 
+## Fetch audio files via CloudFront (requires aws + curl)
+fetch-audio:
+	./scripts/fetch-assets.sh audio
+.PHONY: fetch-audio
+
 ## Fetch English images via Docker (no local aws CLI required)
 fetch-images-docker:
 	docker compose --profile fetch-images run --rm fetch-images
@@ -169,6 +174,11 @@ fetch-images-docker:
 fetch-cards-docker:
 	docker compose --profile fetch-images run --rm fetch-images cards
 .PHONY: fetch-cards-docker
+
+## Fetch audio files via Docker
+fetch-audio-docker:
+	docker compose --profile fetch-audio run --rm fetch-audio
+.PHONY: fetch-audio-docker
 
 ## Regenerate image manifest (run after adding new images, before committing)
 generate-manifest:

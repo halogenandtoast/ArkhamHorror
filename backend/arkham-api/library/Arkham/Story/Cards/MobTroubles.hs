@@ -1,10 +1,10 @@
 module Arkham.Story.Cards.MobTroubles (mobTroubles) where
 
 import Arkham.Ability
-import Arkham.GameValue
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.GameValue
 import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Location.Cards qualified as Locations
@@ -28,7 +28,8 @@ instance HasAbilities MobTroubles where
   getAbilities (MobTroubles a) =
     if a ^. flippedL
       then
-        [ restricted a 1 (Remembered TheDebtHasBeenPaid)
+        [ doesNotProvokeAttacksOfOpportunity
+            $ restricted a 1 (Remembered TheDebtHasBeenPaid)
             $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
         ]
       else []

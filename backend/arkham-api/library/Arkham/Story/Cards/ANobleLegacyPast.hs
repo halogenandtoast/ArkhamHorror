@@ -30,7 +30,7 @@ instance HasAbilities ANobleLegacyPast where
          | 2 `notElem` usedAbilities a
          ]
       <> [ restricted a 3 youAtPastUniversity
-             $ FastAbility (GroupResourceCost (PerPlayer 2) (locationIs Locations.miskatonicUniversityPast))
+             $ FastAbility (GroupResourceCost (PerPlayer 2) Anywhere)
          | 3 `notElem` usedAbilities a
          ]
    where

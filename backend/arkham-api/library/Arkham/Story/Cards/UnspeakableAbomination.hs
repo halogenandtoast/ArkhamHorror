@@ -20,10 +20,11 @@ instance HasAbilities UnspeakableAbomination where
   getAbilities (UnspeakableAbomination a) =
     if a ^. flippedL
       then
-        [ restricted
-            a
-            1
-            (youExist $ InvestigatorAt (LocationWithEnemy $ enemyIs Enemies.tyrthrha))
+        [ doesNotProvokeAttacksOfOpportunity
+            $ restricted
+              a
+              1
+              (youExist $ InvestigatorAt (LocationWithEnemy $ enemyIs Enemies.tyrthrha))
             $ actionAbilityWithCost (ClueCost (Static 1))
         , mkAbility a 2 $ forced $ EnemyDefeated #when Anyone ByAny (enemyIs Enemies.tyrthrha)
         ]

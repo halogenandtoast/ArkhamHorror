@@ -91,14 +91,17 @@ instance RunMessage MachinationsThroughTime where
     Setup -> runScenarioSetup MachinationsThroughTime attrs do
       setup $ ul do
         li "gatherSets"
-        li.nested "placeLocations" do
-          li "corriganIndustries"
-          li "startAt"
+        li "corriganIndustries"
+        li "placeLocations"
+        li "startAt"
         li "nobleLegacy"
         li "machination"
         li "plot"
-        li "doom"
-        unscoped $ li "shuffleRemainder"
+        li.nested "doom" do
+          li.validate (attrs.difficulty == Easy) "easy"
+          li.validate (attrs.difficulty == Hard) "hard"
+          li.validate (attrs.difficulty == Expert) "expert"
+        li "shuffleRemainder"
 
       gather Set.MachinationsThroughTime
       gather Set.MachinationsThroughTimeSingleGroup
@@ -143,7 +146,8 @@ instance RunMessage MachinationsThroughTime where
           :| [Stories.redeemAFormerColleague, Stories.uneasyAlliance]
       placeStory machination
       removeEvery
-        $ deleteFirst machination
+        $ deleteFirst
+          machination
           [Stories.aBitterRivalry, Stories.redeemAFormerColleague, Stories.uneasyAlliance]
 
       if
@@ -188,7 +192,8 @@ instance RunMessage MachinationsThroughTime where
           :| [Stories.mobTroubles, Stories.unspeakableAbomination]
       placeStory plot
       removeEvery
-        $ deleteFirst plot
+        $ deleteFirst
+          plot
           [Stories.anomaliesInSpacetime, Stories.mobTroubles, Stories.unspeakableAbomination]
 
       if

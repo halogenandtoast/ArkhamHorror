@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.ChamberOfSorrows (chamberOfSorrows) where
 
 import Arkham.Ability
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -35,8 +36,15 @@ instance RunMessage ChamberOfSorrows where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       onlyInvestigator <- selectNone $ NotInvestigator (InvestigatorWithId iid)
       investigators <-
-        select $ NotInvestigator (InvestigatorWithId iid) <> InvestigatorAt eitherChamber <> InvestigatorWithClues (atLeast 1)
-      locations <- if onlyInvestigator then select (eitherChamber <> LocationWithClues (atLeast 1)) else pure []
+        select
+          $ NotInvestigator (InvestigatorWithId iid)
+          <> InvestigatorAt eitherChamber
+          <> InvestigatorWithClues (atLeast 1)
+      locations <-
+        if onlyInvestigator
+          then
+            getLocationOf iid >>= maybe (pure []) (select . (<> LocationWithClues (atLeast 1)) . LocationWithId)
+          else pure []
       chooseOneM iid $ scope "chamberOfSorrows" do
         questionLabeled' "takeClue"
         unscoped $ labeled' "skip" nothing

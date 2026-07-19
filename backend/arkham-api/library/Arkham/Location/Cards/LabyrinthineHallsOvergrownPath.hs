@@ -29,10 +29,14 @@ instance RunMessage LabyrinthineHallsOvergrownPath where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       atEndOfRound (attrs.ability 1) do
         investigators <- select $ affectsOthersKnown iid $ NotInvestigator (InvestigatorWithId iid)
-        leaveBehind <- if null investigators then pure [iid] else pure investigators
-        chooseOrRunOneM iid $ scope "labyrinthineHalls" do
-          questionLabeled' "chooseAdditionalActions"
-          targets leaveBehind \iid' ->
-            nextTurnModifier iid' (attrs.ability 1) iid' (AdditionalActions "Labyrinthine Halls" (toSource attrs) 2)
+        for_ (nonEmpty investigators) \others ->
+          chooseOrRunOneM iid $ scope "labyrinthineHalls" do
+            questionLabeled' "chooseAdditionalActions"
+            targets (toList others) \iid' ->
+              nextTurnModifier
+                iid'
+                (attrs.ability 1)
+                iid'
+                (AdditionalActions "Labyrinthine Halls" (toSource attrs) 2)
       pure l
     _ -> LabyrinthineHallsOvergrownPath <$> liftRunMessage msg attrs

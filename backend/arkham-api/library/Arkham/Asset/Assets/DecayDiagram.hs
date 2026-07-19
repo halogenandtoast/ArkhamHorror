@@ -40,13 +40,15 @@ instance RunMessage DecayDiagram where
         targets investigators (`takeControlOfAsset` attrs.id)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      placeTokens (attrs.ability 2) attrs #doom 1
+      chamber <- selectJust $ locationIs Locations.chamberOfDecay
+      placeTokens (attrs.ability 2) chamber #doom 1
       clues <- field InvestigatorClues iid
       when (clues > 0) do
         chooseAmount iid "Clues" "Clues" 0 clues attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+      chamber <- selectJust $ locationIs Locations.chamberOfDecay
       removeTokens (attrs.ability 2) iid #clue n
-      placeTokens (attrs.ability 2) attrs #doom n
+      placeTokens (attrs.ability 2) chamber #doom n
       pure a
     _ -> DecayDiagram <$> liftRunMessage msg attrs

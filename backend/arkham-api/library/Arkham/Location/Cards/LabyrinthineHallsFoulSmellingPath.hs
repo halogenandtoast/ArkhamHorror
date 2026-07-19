@@ -28,9 +28,9 @@ instance RunMessage LabyrinthineHallsFoulSmellingPath where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       atEndOfRound (attrs.ability 1) do
         investigators <- select $ affectsOthersKnown iid $ NotInvestigator (InvestigatorWithId iid)
-        leaveBehind <- if null investigators then pure [iid] else pure investigators
-        chooseOrRunOneM iid $ scope "labyrinthineHalls" do
-          questionLabeled' "chooseDrawCards"
-          targets leaveBehind \iid' -> drawCards iid' (attrs.ability 1) 2
+        for_ (nonEmpty investigators) \others ->
+          chooseOrRunOneM iid $ scope "labyrinthineHalls" do
+            questionLabeled' "chooseDrawCards"
+            targets (toList others) \iid' -> drawCards iid' (attrs.ability 1) 2
       pure l
     _ -> LabyrinthineHallsFoulSmellingPath <$> liftRunMessage msg attrs

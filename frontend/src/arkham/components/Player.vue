@@ -533,6 +533,7 @@ function isHtmlElement(el: Element): el is HTMLElement { return el instanceof HT
 
 function onBeforeEnter(el: Element) {
   if (!isHtmlElement(el)) return
+  if (el.hasAttribute('data-card-movement')) return
   if (el.classList.contains('committed-skills')) return
   const idx = el.dataset.index
   if (!idx || !rectMap.has(idx)) return
@@ -542,6 +543,7 @@ function onBeforeEnter(el: Element) {
 
 function onEnter(el: Element, done: () => void) {
   if (!isHtmlElement(el)) return
+  if (el.hasAttribute('data-card-movement')) { done(); return }
   if (el.classList.contains('committed-skills')) { el.removeAttribute('style'); done(); return }
 
   const idx = el.dataset.index
@@ -580,6 +582,7 @@ function onEnter(el: Element, done: () => void) {
 
 function onLeave(el: Element, done: () => void) {
   if (!isHtmlElement(el)) return
+  if (el.hasAttribute('data-card-movement')) { done(); return }
   if (el.classList.contains('committed-skills')) { done(); return }
   const idx = el.dataset.index
   if (!idx) { done(); return }
@@ -735,7 +738,9 @@ function closeHand() {
           <EnemyView
             v-for="enemy in engagedEnemies"
             :key="enemy.id"
+            data-card-movement="enemy"
             :enemy="enemy"
+            :style="{ viewTransitionName: `enemy-${enemy.id}` }"
             :game="game"
             :data-index="enemy.cardId"
             :playerId="playerId"

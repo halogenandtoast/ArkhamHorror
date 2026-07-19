@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick, type Directive } from 'vue'
+import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import { useAi } from '@/arkham/ai'
 import { Game } from '@/arkham/types/Game'
@@ -10,7 +10,6 @@ import { keyToId } from '@/arkham/types/Key'
 import { useGameChoices } from '@/arkham/composables/useGameChoices'
 import { useGameIndexes } from '@/arkham/composables/useGameIndexes'
 import { useCardFlip } from '@/arkham/composables/useCardFlip'
-import { enemyMovement, investigatorMovement } from '@/arkham/animations/cardMovement'
 import DebugLocation from '@/arkham/components/debug/Location.vue'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import { actionsToList } from '@/arkham/types/Action'
@@ -405,29 +404,6 @@ const investigators = computed(() => {
     .map((i) => props.game.investigators[i])
     .filter((i) => i.placement.tag === 'AtLocation')
 })
-const vInvestigatorMovement: Directive<HTMLElement, string> = {
-  mounted(element, { value: investigatorId }) {
-    investigatorMovement.register(investigatorId, element)
-  },
-  updated(element, { value: investigatorId }) {
-    investigatorMovement.update(investigatorId, element)
-  },
-  beforeUnmount(element, { value: investigatorId }) {
-    investigatorMovement.unregister(investigatorId, element)
-  },
-}
-
-const vEnemyMovement: Directive<HTMLElement, string> = {
-  mounted(element, { value: enemyId }) {
-    enemyMovement.register(enemyId, element)
-  },
-  updated(element, { value: enemyId }) {
-    enemyMovement.update(enemyId, element)
-  },
-  beforeUnmount(element, { value: enemyId }) {
-    enemyMovement.unregister(enemyId, element)
-  },
-}
 
 type SealedChaosTokenLayout = {
   positions: Array<{ '--sealed-x': string; '--sealed-y': string }>
@@ -606,8 +582,8 @@ const hasAnyLocationVehicleAssets = computed(() =>
         <div
           v-for="investigator in investigators"
           :key="investigator.id"
-          v-investigator-movement="investigator.id"
           :data-investigator-mini="investigator.id"
+          :style="{ viewTransitionName: `investigator-${investigator.id}` }"
           class="investigator-mini-mover"
         >
           <Investigator
@@ -840,8 +816,8 @@ const hasAnyLocationVehicleAssets = computed(() =>
         <Enemy
           v-for="enemyId in enemies"
           :key="enemyId"
-          v-enemy-movement="enemyId"
           :enemy="game.enemies[enemyId]"
+          :style="{ viewTransitionName: `enemy-${enemyId}` }"
           :game="game"
           :playerId="playerId"
           :atLocation="true"

@@ -714,6 +714,37 @@ const qPop = () => {
 let decoding = false
 let pendingUpdate: string | null = null
 
+function entitiesMoved(previous: Arkham.Game, current: Arkham.Game) {
+  const placementChanged = (
+    previousEntities: Record<string, { placement: unknown }>,
+    currentEntities: Record<string, { placement: unknown }>,
+  ) => Object.entries(currentEntities).some(([id, entity]) => {
+    const previousEntity = previousEntities[id]
+    return previousEntity && JSON.stringify(previousEntity.placement) !== JSON.stringify(entity.placement)
+  })
+
+  return placementChanged(previous.investigators, current.investigators)
+    || placementChanged(previous.enemies, current.enemies)
+}
+
+function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
+  const nextGame = locked ? { ...updatedGame, question: {} } : updatedGame
+  const previousGame = game.value
+  const apply = async () => {
+    game.value = nextGame
+    await nextTick()
+  }
+  const transitionDocument = document as Document & {
+    startViewTransition?: (callback: () => Promise<void>) => unknown
+  }
+
+  if (previousGame && entitiesMoved(previousGame, nextGame) && transitionDocument.startViewTransition) {
+    transitionDocument.startViewTransition(apply)
+  } else {
+    void apply()
+  }
+}
+
 function scheduleApplyUpdate(payload: string) {
   if (decoding) {
     pendingUpdate = payload
@@ -727,7 +758,7 @@ function scheduleApplyUpdate(payload: string) {
       // Behind a revelation: refresh the board but keep the question hidden so the
       // player can't act until they dismiss it. On unlock the queued GameUpdate is
       // replayed (locked === false) and restores the real question + side effects.
-      game.value = locked ? { ...updatedGame, question: {} } : updatedGame
+      applyGameUpdate(updatedGame, locked)
       updateGameLog(updatedGame.log)
       preloadImages(updatedGame)
       if (!locked) {

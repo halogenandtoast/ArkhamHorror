@@ -7,6 +7,7 @@ import Arkham.Campaign.Option (CampaignOption (PlayAsMiniCampaign))
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Enemy
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Helpers.Query
@@ -32,16 +33,11 @@ newtype TheLabyrinthsOfLunacy = TheLabyrinthsOfLunacy ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- FOURMOLU_DISABLE -}
 theLabyrinthsOfLunacy :: Difficulty -> TheLabyrinthsOfLunacy
 theLabyrinthsOfLunacy difficulty =
-  sideStory
-    TheLabyrinthsOfLunacy
-    "70001"
-    "The Labyrinths of Lunacy"
-    difficulty
-    []
+  sideStory TheLabyrinthsOfLunacy "70001" "The Labyrinths of Lunacy" difficulty []
 
+{- FOURMOLU_DISABLE -}
 standardTokens, hardTokens :: [ChaosTokenFace]
 standardTokens =
   [ PlusOne , Zero , Zero , Zero , MinusOne , MinusOne , MinusOne , MinusTwo , MinusTwo
@@ -73,10 +69,8 @@ instance RunMessage TheLabyrinthsOfLunacy where
     -- Standalone vs. mini-campaign is chosen on the new-game screen and arrives as
     -- a campaign option; record it in the meta before the scenario is set up.
     HandleOption PlayAsMiniCampaign -> do
-      whenM getIsStandalone
-        $ push
-        $ SetScenarioMeta
-        $ toJSON (toResultDefault (initialMeta GroupA) attrs.meta) {miniCampaign = True}
+      whenM getIsStandalone do
+        setScenarioMeta $ (toResultDefault (initialMeta GroupA) attrs.meta) {miniCampaign = True}
       pure s
     PreScenarioSetup -> scope "intro" do
       -- The mode is already set (from the new-game option, or defaults to a single
@@ -141,15 +135,13 @@ instance RunMessage TheLabyrinthsOfLunacy where
 
       case grp of
         GroupA -> do
-          push
-            $ SetLayout
-              [ ".                  chamberOfDecay     abandonedWarehouse"
-              , ".                  labyrinthineHalls1 ."
-              , ".                  chamberOfSecrets   ."
-              , "labyrinthineHalls2 .                  labyrinthineHalls3"
-              ]
-          setActDeck
-            [Acts.sealedInGroupA, Acts.distortionsInTimeGroupA, Acts.theEscapeTheLabyrinthsOfLunacy]
+          setLayout
+            [ ".                  chamberOfDecay     abandonedWarehouse"
+            , ".                  labyrinthineHalls1 ."
+            , ".                  chamberOfSecrets   ."
+            , "labyrinthineHalls2 .                  labyrinthineHalls3"
+            ]
+          setActDeck [Acts.sealedInGroupA, Acts.distortionsInTimeGroupA, Acts.theEscapeTheLabyrinthsOfLunacy]
           setAside [Locations.chamberOfDecay]
           secrets <-
             sample
@@ -159,17 +151,15 @@ instance RunMessage TheLabyrinthsOfLunacy where
           startAt lid
           assetAt_ Assets.keyOfMysteries lid
         GroupB -> do
-          push
-            $ SetLayout
-              [ ".                  chamberOfRain      chamberOfSecrets   chamberOfNight"
-              , ".                  chamberOfSorrows   .                  chamberOfRegret"
-              , "labyrinthineHalls1 labyrinthineHalls2 labyrinthineHalls3 ."
-              , "chamberOfDecay     chamberOfRot       chamberOfHunger    ."
-              , ".                  chamberOfPoison    .                  ."
-              , ".                  abandonedWarehouse .                  ."
-              ]
-          setActDeck
-            [Acts.wateryGraveGroupB, Acts.seepingDeathGroupB, Acts.theEscapeTheLabyrinthsOfLunacy]
+          setLayout
+            [ ".                  chamberOfRain      chamberOfSecrets   chamberOfNight"
+            , ".                  chamberOfSorrows   .                  chamberOfRegret"
+            , "labyrinthineHalls1 labyrinthineHalls2 labyrinthineHalls3 ."
+            , "chamberOfDecay     chamberOfRot       chamberOfHunger    ."
+            , ".                  chamberOfPoison    .                  ."
+            , ".                  abandonedWarehouse .                  ."
+            ]
+          setActDeck [Acts.wateryGraveGroupB, Acts.seepingDeathGroupB, Acts.theEscapeTheLabyrinthsOfLunacy]
           setAside [Assets.keyOfMysteries, Locations.chamberOfRot, Locations.chamberOfPoison]
           rain <- place Locations.chamberOfRain
           sorrows <- place Locations.chamberOfSorrows
@@ -177,22 +167,20 @@ instance RunMessage TheLabyrinthsOfLunacy where
           reveal sorrows
           investigators <- allInvestigators
           for_ (nonEmpty investigators) \is -> do
-            drowning <- sample is
+            (drowning, rest) <- sampleWithRest is
             push $ PlaceInvestigator drowning (AtLocation rain)
-            for_ (filter (/= drowning) investigators) \iid ->
+            for_ rest \iid ->
               push $ PlaceInvestigator iid (AtLocation sorrows)
         GroupC -> do
-          push
-            $ SetLayout
-              [ ".                  chamberOfRegret    ."
-              , ".                  chamberOfNight     ."
-              , ".                  labyrinthineHalls1 ."
-              , ".                  chamberOfHunger    ."
-              , ".                  abandonedWarehouse ."
-              , "labyrinthineHalls2 .                  labyrinthineHalls3"
-              ]
-          setActDeck
-            [Acts.theLeversGroupC, Acts.thePetGroupC, Acts.theEscapeTheLabyrinthsOfLunacy]
+          setLayout
+            [ ".                  chamberOfRegret    ."
+            , ".                  chamberOfNight     ."
+            , ".                  labyrinthineHalls1 ."
+            , ".                  chamberOfHunger    ."
+            , ".                  abandonedWarehouse ."
+            , "labyrinthineHalls2 .                  labyrinthineHalls3"
+            ]
+          setActDeck [Acts.theLeversGroupC, Acts.thePetGroupC, Acts.theEscapeTheLabyrinthsOfLunacy]
           setAside [Assets.keyOfMysteries, Locations.chamberOfHunger]
           night <- place Locations.chamberOfNight
           place_ Locations.chamberOfRegret
@@ -210,16 +198,16 @@ instance RunMessage TheLabyrinthsOfLunacy where
       halls1 <- placeSetAsideLocation Locations.labyrinthineHallsFoulSmellingPath
       halls2 <- placeSetAsideLocation Locations.labyrinthineHallsCorpseFilledPath
       halls3 <- placeSetAsideLocation Locations.labyrinthineHallsOvergrownPath
-      push $ SetLocationLabel halls1 "labyrinthineHalls1"
-      push $ SetLocationLabel halls2 "labyrinthineHalls2"
-      push $ SetLocationLabel halls3 "labyrinthineHalls3"
+      setLocationLabel halls1 "labyrinthineHalls1"
+      setLocationLabel halls2 "labyrinthineHalls2"
+      setLocationLabel halls3 "labyrinthineHalls3"
       case currentGroup meta of
-        GroupA -> void $ placeSetAsideLocation Locations.chamberOfDecay
+        GroupA -> placeSetAsideLocation_ Locations.chamberOfDecay
         GroupB -> do
-          void $ placeSetAsideLocation Locations.chamberOfRot
-          void $ placeSetAsideLocation Locations.chamberOfPoison
+          placeSetAsideLocation_ Locations.chamberOfRot
+          placeSetAsideLocation_ Locations.chamberOfPoison
         GroupC -> do
-          void $ placeSetAsideLocation Locations.chamberOfHunger
+          placeSetAsideLocation_ Locations.chamberOfHunger
           -- Eixodolon's Pet enters play near the Chamber of Hunger, but not
           -- at any location: it is "locked away."
           createSetAsideEnemy_ Enemies.eixodolonsPet Global
@@ -228,7 +216,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
     ScenarioSpecific "act3Setup" _ -> do
       warehouse <- placeSetAsideLocation Locations.abandonedWarehouse
       reveal warehouse
-      selectEach (AnyEnemy) \eid -> push $ DisengageEnemyFromAll eid
+      selectEach AnyEnemy disengageEnemyFromAll
       selectEach UneliminatedInvestigator \iid ->
         push $ PlaceInvestigator iid (AtLocation warehouse)
       createSetAsideEnemy_ Enemies.eixodolon warehouse
@@ -324,8 +312,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
 
 killRemainingInvestigators :: ReverseQueue m => ScenarioAttrs -> m ()
 killRemainingInvestigators attrs =
-  selectEach UneliminatedInvestigator \iid ->
-    push $ InvestigatorKilled (toSource attrs) iid
+  selectEach UneliminatedInvestigator $ push . InvestigatorKilled (toSource attrs)
 
 {- | Record a group's fate into the (standalone) campaign log. Each group is its
 own log section, so the log reflects every group played in the mini-campaign.
@@ -342,7 +329,8 @@ labyrinth, resolving the chosen group's intro flavor text.
 chooseGroup :: (HasI18n, ReverseQueue m) => Meta -> m ()
 chooseGroup meta = do
   let remaining = filter (`notElem` playedGroups meta) [minBound ..]
-  storyWithChooseOneM' (h "title" >> p "chooseGroup") do
+  let chooseGroupTxt = if miniCampaign meta then "chooseGroup" else "chooseGroupSingle"
+  storyWithChooseOneM' (h "title" >> p chooseGroupTxt) do
     for_ remaining \g -> do
       popScope $ labeled' (groupLabel g) do
         push $ SetScenarioMeta $ toJSON meta {currentGroup = g}

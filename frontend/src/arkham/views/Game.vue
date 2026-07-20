@@ -806,7 +806,7 @@ function cropLocationFlipImage(src: string): Promise<{ src: string; halo: string
       const scale = 3
       canvas.width = cropWidth * scale
       canvas.height = cropHeight * scale
-      const context = canvas.getContext('2d')
+      const context = canvas.getContext('2d', { willReadFrequently: true })
       if (!context) {
         resolve(null)
         return
@@ -868,6 +868,9 @@ function entitiesMoved(previous: Arkham.Game, current: Arkham.Game) {
     || placementChanged(previous.enemies, current.enemies)
 }
 
+type ViewTransitionLike = { skipTransition: () => void; finished: Promise<void> }
+let activeViewTransition: ViewTransitionLike | null = null
+
 function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
   const nextGame = locked ? { ...updatedGame, question: {} } : updatedGame
   const previousGame = game.value
@@ -877,11 +880,26 @@ function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
     await nextTick()
   }
   const transitionDocument = document as Document & {
-    startViewTransition?: (callback: () => Promise<void>) => unknown
+    startViewTransition?: (callback: () => Promise<void>) => ViewTransitionLike
+  }
+
+  // Overlapping view transitions (a new game update arriving before the
+  // previous transition finished) can leave duplicate elements sharing the
+  // same view-transition-name in the snapshot, which the browser rejects
+  // with an uncaught "Unexpected duplicate view-transition-name" error. Skip
+  // any in-flight transition first so it settles immediately before starting
+  // the next one.
+  if (activeViewTransition) {
+    activeViewTransition.skipTransition()
+    activeViewTransition = null
   }
 
   if (previousGame && entitiesMoved(previousGame, nextGame) && transitionDocument.startViewTransition) {
-    transitionDocument.startViewTransition(apply)
+    const transition = transitionDocument.startViewTransition(apply)
+    activeViewTransition = transition
+    transition.finished.finally(() => {
+      if (activeViewTransition === transition) activeViewTransition = null
+    })
   } else {
     void apply()
   }

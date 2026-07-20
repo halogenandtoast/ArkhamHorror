@@ -731,11 +731,25 @@ function flippedLocation(previous: Arkham.Game, current: Arkham.Game): string | 
   return null
 }
 
-function locationImageUrl(gameState: Arkham.Game, locationId: string): string | null {
+function locationImageUrl(
+  previousState: Arkham.Game,
+  gameState: Arkham.Game,
+  locationId: string,
+): string | null {
   const location = gameState.locations[locationId]
-  if (!location) return null
+  const previousLocation = previousState.locations[locationId]
+  if (!location || !previousLocation) return null
   if (location.enemyLocation) return cardCodeImage(location.cardCode)
-  return cardCodeImage(location.cardCode, location.revealed ? '' : 'b')
+
+  const nextSide = location.revealed ? '' : 'b'
+  const previousSide = previousLocation.revealed ? '' : 'b'
+  if (location.revealed !== previousLocation.revealed) {
+    // Show the face reached after the flip.
+    return cardCodeImage(location.cardCode, nextSide)
+  }
+
+  // If card face changed without reveal toggle, preview the opposite side.
+  return cardCodeImage(location.cardCode, previousSide)
 }
 
 function sharpenCanvas(context: CanvasRenderingContext2D, width: number, height: number) {
@@ -773,10 +787,10 @@ function cropLocationFlipImage(src: string): Promise<{ src: string; halo: string
     image.onload = () => {
       const referenceWidth = 423
       const referenceHeight = 600
-      const cropX = 8
-      const cropY = 74
-      const cropWidth = 407
-      const cropHeight = 196
+      const cropX = 0
+      const cropY = 0
+      const cropWidth = 423
+      const cropHeight = 270
       const sourceScaleX = image.naturalWidth / referenceWidth
       const sourceScaleY = image.naturalHeight / referenceHeight
       const sourceX = cropX * sourceScaleX
@@ -826,7 +840,7 @@ function clearLocationFlipPreview() {
 function showLocationFlipPreview(previous: Arkham.Game, current: Arkham.Game) {
   const locationId = flippedLocation(previous, current)
   if (!locationId) return
-  const url = locationImageUrl(current, locationId)
+  const url = locationImageUrl(previous, current, locationId)
   if (!url) return
 
   const sequence = ++locationFlipPreviewSequence
@@ -837,7 +851,7 @@ function showLocationFlipPreview(previous: Arkham.Game, current: Arkham.Game) {
     locationFlipPreviewTimer = window.setTimeout(() => {
       if (locationFlipPreview.value?.id === sequence) locationFlipPreview.value = null
       locationFlipPreviewTimer = null
-    }, 1300)
+    }, 3200)
   })
 }
 
@@ -3694,15 +3708,16 @@ button:hover .shortcut {
   justify-content: center;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at center, var(--location-flip-halo, rgba(255, 255, 255, 0.35)), rgba(8, 9, 10, 0) 42%),
-    radial-gradient(ellipse at center, rgba(8, 9, 10, 0.28), rgba(8, 9, 10, 0) 70%);
+    radial-gradient(ellipse at center, rgba(243, 230, 203, 0.36) 0%, rgba(243, 230, 203, 0.22) 32%, rgba(243, 230, 203, 0) 72%),
+    radial-gradient(ellipse at center, rgba(84, 49, 92, 0.16), rgba(84, 49, 92, 0) 68%);
 
   .location-flip-preview-frame {
     position: relative;
-    width: min(96vw, 1221px);
-    height: min(46.2vw, 588px);
+    width: min(92vw, 1269px);
+    aspect-ratio: 423 / 270;
     max-height: 86vh;
     border-radius: 8px;
+    overflow: hidden;
     filter:
       drop-shadow(0 0 3vmin var(--location-flip-halo, rgba(255, 255, 255, 0.45)))
       drop-shadow(0 5vmin 4vmin var(--location-flip-halo, rgba(255, 255, 255, 0.34)))
@@ -3712,14 +3727,6 @@ button:hover .shortcut {
       0 0 54px var(--location-flip-halo, rgba(255, 255, 255, 0.32)),
       0 34px 110px rgba(0, 0, 0, 0.62);
 
-    &::before {
-      content: '';
-      position: absolute;
-      inset: -18px;
-      border-radius: 18px;
-      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0) 48%, var(--location-flip-halo, rgba(255, 255, 255, 0.34)) 74%, rgba(0, 0, 0, 0) 100%);
-      filter: blur(14px);
-    }
   }
 
   img {
@@ -3729,17 +3736,28 @@ button:hover .shortcut {
     height: 100%;
     border-radius: inherit;
     filter: saturate(1.14) contrast(1.12) brightness(1.02);
+    /* Fade all 4 edges independently — each gradient masks one side */
+    -webkit-mask-image:
+      linear-gradient(to right,  transparent 0%, black 12%, black 88%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, black  8%, black 68%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right,  transparent 0%, black 12%, black 88%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, black  8%, black 68%, transparent 100%);
+    mask-composite: intersect;
   }
 }
 
-.location-flip-preview-enter-active,
+.location-flip-preview-enter-active {
+  transition: opacity 0.6s ease;
+}
 .location-flip-preview-leave-active {
-  transition: opacity 420ms ease;
+  transition: opacity 0.8s ease;
 }
 
 .location-flip-preview-enter-active .location-flip-preview-frame {
   animation:
-    location-flip-reveal 1300ms cubic-bezier(0.16, 1, 0.3, 1) both,
+    location-flip-reveal 4s cubic-bezier(0.16, 1, 0.3, 1) both,
     location-flip-glow 4s cubic-bezier(0.55, 0.085, 0.68, 0.53) infinite;
 }
 
@@ -3751,18 +3769,18 @@ button:hover .shortcut {
 @keyframes location-flip-reveal {
   0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(10px) scale(0.97);
   }
-  24% {
-    opacity: 0.94;
+  20% {
+    opacity: 1;
   }
-  72% {
-    opacity: 0.9;
-    transform: translateY(0);
+  80% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
   100% {
-    opacity: 0;
-    transform: translateY(-4px);
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

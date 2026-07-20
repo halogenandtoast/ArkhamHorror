@@ -716,6 +716,10 @@ let decoding = false
 let pendingUpdate: string | null = null
 let locationFlipPreviewTimer: number | null = null
 let locationFlipPreviewSequence = 0
+// Undo restores a previous game state, which looks like a location "flip"
+// (or unflip) to the diffing logic below. Set this before issuing an undo
+// request so the resulting update doesn't replay the flip preview animation.
+let suppressNextFlipPreview = false
 
 const locationFlipPreview = ref<{ id: number; src: string; halo: string } | null>(null)
 
@@ -874,7 +878,13 @@ let activeViewTransition: ViewTransitionLike | null = null
 function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
   const nextGame = locked ? { ...updatedGame, question: {} } : updatedGame
   const previousGame = game.value
-  if (previousGame) showLocationFlipPreview(previousGame, nextGame)
+  if (previousGame) {
+    if (suppressNextFlipPreview) {
+      suppressNextFlipPreview = false
+    } else {
+      showLocationFlipPreview(previousGame, nextGame)
+    }
+  }
   const apply = async () => {
     game.value = nextGame
     await nextTick()
@@ -1673,6 +1683,7 @@ async function undo() {
   uiLock.value = false
   if (undoLock.value) return
   undoLock.value = true
+  suppressNextFlipPreview = true
   try {
     await undoChoice(props.gameId, debug.active)
   } catch (e) {
@@ -1691,6 +1702,7 @@ async function undoScenario() {
   gameCard.value = null
   tarotCards.value = []
   uiLock.value = false
+  suppressNextFlipPreview = true
   undoScenarioChoice(props.gameId)
 }
 
@@ -1704,6 +1716,7 @@ async function undoBoundary(call: (gameId: string) => Promise<void>) {
   tarotCards.value = []
   uiLock.value = false
   undoLock.value = true
+  suppressNextFlipPreview = true
   try {
     await call(props.gameId)
   } catch (e) {

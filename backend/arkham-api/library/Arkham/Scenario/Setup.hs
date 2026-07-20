@@ -170,6 +170,11 @@ placeStory def = do
   removeEvery [def]
   push $ StoryMessage $ PlaceStory card Global
 
+placeStoryCapture :: ReverseQueue m => CardDef -> ScenarioBuilderT m StoryId
+placeStoryCapture def = do
+  placeStory def
+  pure $ StoryId def.cardCode
+
 setAside :: (ReverseQueue m, FindInEncounterDeck a, HasCallStack) => [a] -> ScenarioBuilderT m ()
 setAside = setAsideWith pure
 

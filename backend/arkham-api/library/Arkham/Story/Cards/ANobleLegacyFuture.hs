@@ -17,8 +17,7 @@ newtype ANobleLegacyFuture = ANobleLegacyFuture StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aNobleLegacyFuture :: StoryCard ANobleLegacyFuture
-aNobleLegacyFuture =
-  storyWith ANobleLegacyFuture Cards.aNobleLegacyFuture (flippedL .~ True) & persistStory
+aNobleLegacyFuture = story ANobleLegacyFuture Cards.aNobleLegacyFuture & persistStory
 
 instance HasAbilities ANobleLegacyFuture where
   getAbilities (ANobleLegacyFuture a) =
@@ -82,4 +81,7 @@ instance RunMessage ANobleLegacyFuture where
       lead <- getLead
       addToVictory lead attrs
       pure s
+    FlipThis (isTarget attrs -> True) -> do
+      flippedOver attrs
+      pure $ ANobleLegacyFuture $ attrs & flippedL .~ True
     _ -> ANobleLegacyFuture <$> liftRunMessage msg attrs

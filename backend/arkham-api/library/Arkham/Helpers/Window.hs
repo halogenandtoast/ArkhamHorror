@@ -250,6 +250,13 @@ getTreacheryResolver = \case
   ((windowType -> Window.ResolvesTreachery iid _) : _) -> iid
   (_ : rest) -> getTreacheryResolver rest
 
+getScenarioEvent :: (HasCallStack, FromJSON a) => Text -> [Window] -> a
+getScenarioEvent event = \case
+  ((windowType -> Window.ScenarioEvent event' _ value) : _)
+    | event == event' -> toResult value
+  (_ : rest) -> getScenarioEvent event rest
+  _ -> error "getScenarioEvent: event not found"
+
 getChaosToken :: HasCallStack => [Window] -> ChaosToken
 getChaosToken = \case
   [] -> error "No chaos token drawn"

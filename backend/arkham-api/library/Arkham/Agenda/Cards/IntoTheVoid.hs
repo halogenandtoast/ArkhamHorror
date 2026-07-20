@@ -3,7 +3,6 @@ module Arkham.Agenda.Cards.IntoTheVoid (intoTheVoid) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (AssetDefeated)
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
@@ -32,8 +31,7 @@ getDefeatedAsset (_ : xs) = getDefeatedAsset xs
 instance RunMessage IntoTheVoid where
   runMessage msg a@(IntoTheVoid attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 ws _ -> do
-      cancelWindowBatch ws
-      for_ (getDefeatedAsset ws) (abductDefeatedScientist attrs)
+      for_ (getDefeatedAsset ws) abductById
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       whenM (selectAny $ storyIs Stories.anomaliesInSpacetime) do
@@ -57,16 +55,3 @@ instance RunMessage IntoTheVoid where
       for_ anomalyLocations \lid -> placeTokens attrs lid #horror 1
       pure a
     _ -> IntoTheVoid <$> liftRunMessage msg attrs
-
-abductDefeatedScientist
-  :: (ReverseQueue m, Sourceable source) => source -> AssetId -> m ()
-abductDefeatedScientist source aid = do
-  isEdwin <- aid <=~> assetIs Assets.edwinBennetAstuteAssociate
-  uneasyAllianceInPlay <- selectAny $ storyIs Stories.uneasyAlliance
-  if isEdwin && uneasyAllianceInPlay
-    then do
-      healAllDamageAndHorror source aid
-      agendaId <- selectJust AnyAgenda
-      placeDoom source agendaId 2
-      push AdvanceAgendaIfThresholdSatisfied
-    else abductById aid

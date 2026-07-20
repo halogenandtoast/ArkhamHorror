@@ -70,6 +70,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getIsCommittable)
 import Arkham.Helpers.Window hiding (checkAfter, checkWhen, checkWindows)
 import Arkham.History
+import Arkham.Homebrew.Tokens
 import Arkham.I18n (countVar, withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
@@ -82,7 +83,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Name hiding (labeled)
 import Arkham.Phase
 import Arkham.Placement
-import Arkham.Homebrew.Tokens
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
@@ -1623,7 +1623,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         unless (null searchedDeckCards) $ push $ FoundCards $ Map.singleton Zone.FromDeck searchedDeckCards
 
         if null choices
-          then unless (null searchedDeckCards) $ chooseOne iid [Label "$label.noMatchesFound" cleanup]
+          then
+            unless (null searchedDeckCards)
+              $ chooseOne iid [Label "$label.noMatchesFound" $ SearchNoneFound iid target : cleanup]
           else chooseOne iid choices
       RandomSelect -> do
         let

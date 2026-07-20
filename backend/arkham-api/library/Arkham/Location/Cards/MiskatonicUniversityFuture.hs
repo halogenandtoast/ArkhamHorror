@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.MiskatonicUniversityFuture (miskatonicUniversityFuture) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -23,7 +24,15 @@ instance HasAbilities MiskatonicUniversityFuture where
       [ groupLimit PerGame
           $ restricted a 1 (Here <> exists (AssetWithTitle "Mary Zielinski" <> AssetAt (be a))) actionAbility
       , groupLimit PerGame
-          $ restricted a 2 (Here <> Remembered ATreeSeedHasBeenPlanted) (FastAbility Free)
+          $ restricted
+            a
+            2
+            ( Here
+                <> Remembered ATreeSeedHasBeenPlanted
+                <> youExist can.gain.clues
+                <> exists (at_ (be a) <> AssetWithTrait Scientist)
+            )
+            (FastAbility Free)
       ]
 
 instance RunMessage MiskatonicUniversityFuture where

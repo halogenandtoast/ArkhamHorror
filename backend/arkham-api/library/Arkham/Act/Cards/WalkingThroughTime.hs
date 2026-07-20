@@ -30,9 +30,9 @@ instance HasAbilities WalkingThroughTime where
               #after
               You
               AnySource
-              (LocationWithAsset $ AssetWithTrait Scientist <> AssetWithTrait time)
+              (LocationWithAsset $ AssetWithTrait Scientist <> not_ (mapOneOf AssetWithTrait otherTimes))
               (LocationWithTrait time)
-          | time <- [Past, Present, Future]
+          | (time, otherTimes) <- eachWithRest [Past, Present, Future]
           ]
     , onlyOnce $ restricted a 2 objectiveMet $ Objective $ forced AnyWindow
     ]

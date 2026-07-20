@@ -88,7 +88,7 @@ instance RunMessage MachinationsThroughTime where
         (Window.ScenarioEvent event Nothing $ toJSON aid)
         (Window.ScenarioEvent "abducted" Nothing $ toJSON aid)
       pure s
-    Do (ScenarioSpecific "machinationsThroughTime.abduct" (maybeResult -> Just aid)) -> do
+    DoBatch _ (ScenarioSpecific "machinationsThroughTime.abduct" (maybeResult -> Just aid)) -> do
       card <- fetchCard aid
       removeFromGame (AssetTarget aid)
       setCardAside card

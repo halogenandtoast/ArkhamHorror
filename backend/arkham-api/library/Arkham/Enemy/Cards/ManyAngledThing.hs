@@ -9,8 +9,8 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Future, Past, Present))
 
 newtype ManyAngledThing = ManyAngledThing EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 manyAngledThing :: EnemyCard ManyAngledThing
 manyAngledThing =

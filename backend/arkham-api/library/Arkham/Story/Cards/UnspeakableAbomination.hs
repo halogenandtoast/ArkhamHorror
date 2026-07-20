@@ -25,7 +25,7 @@ instance HasAbilities UnspeakableAbomination where
       *> [ noAOO
              $ restricted a 1 (youExist $ at_ (LocationWithEnemy tyrthrha))
              $ actionAbilityWithCost (ClueCost (Static 1))
-         , mkAbility a 2 $ forced $ EnemyDefeated #when Anyone ByAny tyrthrha
+         , mkAbility a 2 $ Objective $ forced $ IfEnemyDefeated #after Anyone ByAny tyrthrha
          ]
 
 instance RunMessage UnspeakableAbomination where
@@ -42,7 +42,7 @@ instance RunMessage UnspeakableAbomination where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       addToVictory iid attrs
       pure s
-    Flip _ _ (isTarget attrs -> True) -> do
+    FlipThis (isTarget attrs -> True) -> do
       withMatch (locationIs Locations.tindalos) \tindalos -> do
         whenJustM (getSetAsideCardMaybe Enemies.tyrthrha) (`createEnemyAt_` tindalos)
       flippedOver attrs

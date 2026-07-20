@@ -39,6 +39,7 @@ instance HasAbilities ABitterRivalry where
              $ ActionAbility (orActions [#fight, #evade]) Nothing (ActionCost 1)
          , onlyOnce
              $ restricted a 3 (exists $ edwin <> at_ tindalos <> EnemyWithTokens (Static 3) Token.Target)
+             $ Objective
              $ forced AnyWindow
          ]
 

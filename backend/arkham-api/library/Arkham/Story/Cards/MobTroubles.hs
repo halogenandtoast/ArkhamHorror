@@ -44,6 +44,11 @@ instance RunMessage MobTroubles where
     FoundEncounterCardFrom iid (isTarget attrs -> True) _ card -> do
       addToVictory iid card
       pure s
+    SearchNoneFound iid (isTarget attrs -> True) -> do
+      inPlay <- select $ enemyIs Enemies.sheldonGang
+      chooseOrRunOneM iid $ scenarioI18n do
+        targets inPlay $ addToVictory iid
+      pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       addToVictory iid attrs
       pure s

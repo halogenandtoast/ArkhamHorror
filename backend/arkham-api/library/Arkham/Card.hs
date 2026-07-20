@@ -656,7 +656,7 @@ two directories are siblings under @/opt/arkham/src@ in the single combined
 Docker image, so this relative path resolves correctly there.
 -}
 audioBaseDir :: FilePath
-audioBaseDir = "/opt/arkham/src/frontend/dist/audio"
+audioBaseDir = "../../frontend/dist/audio"
 
 audioManifestFile :: FilePath
 audioManifestFile = audioBaseDir <> "/manifest.json"

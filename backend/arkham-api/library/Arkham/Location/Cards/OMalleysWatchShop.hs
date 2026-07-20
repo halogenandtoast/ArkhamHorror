@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.OMalleysWatchShop (oMalleysWatchShop) where
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -19,7 +20,10 @@ oMalleysWatchShop = location OMalleysWatchShop Cards.oMalleysWatchShop 4 (PerPla
 instance HasAbilities OMalleysWatchShop where
   getAbilities (OMalleysWatchShop a) =
     extendRevealed1 a
-      $ restricted a 1 Here
+      $ restricted
+        a
+        1
+        (Here <> oneOf [exists AgendaWithAnyDoom, exists $ assetIs Assets.thomasCorriganPast <> at_ (be a)])
       $ actionAbilityWithCost (SpendTokenCost Token.Time (TargetIs $ toTarget a))
 
 instance RunMessage OMalleysWatchShop where
@@ -27,15 +31,12 @@ instance RunMessage OMalleysWatchShop where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       agenda <- selectJust AnyAgenda
       removeDoom (attrs.ability 1) agenda 1
-      thomas <-
-        selectOne $ AssetWithTitle "Thomas Corrigan" <> AssetAt (be attrs) <> AssetReady
-      for_ thomas \thomas' -> do
-        tickTockClub <- selectOne $ locationIs Cards.tickTockClubPresent
-        for_ tickTockClub \club -> do
+      withMatch (assetIs Assets.thomasCorriganPast <> at_ (be attrs) <> #ready) \thomas -> do
+        withMatch (locationIs Cards.tickTockClubPresent) \club -> do
           chooseOneM iid $ withI18n do
             labeled' "skip" nothing
             scenarioI18n $ labeled' "oMalleysWatchShop.placeTime" do
-              exhaustThis thomas'
+              exhaustThis thomas
               placeTokens (attrs.ability 1) club Token.Time 1
       pure l
     _ -> OMalleysWatchShop <$> liftRunMessage msg attrs

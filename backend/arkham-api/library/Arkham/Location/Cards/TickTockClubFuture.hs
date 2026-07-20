@@ -22,7 +22,7 @@ instance HasAbilities TickTockClubFuture where
           $ actionAbilityWithCost
           $ ExhaustAssetCost (AssetWithTitle "Thomas Corrigan" <> AssetAt (be a))
           <> GroupClueCost (PerPlayer 1) Anywhere
-      , restricted a 2 Here
+      , restricted a 2 (Here <> exists AgendaWithAnyDoom)
           $ actionAbilityWithCost (SpendTokenCost Token.Time (TargetIs $ toTarget a))
       ]
 

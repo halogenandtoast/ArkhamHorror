@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.TickTockClubPresent (tickTockClubPresent) where
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -19,7 +20,12 @@ tickTockClubPresent = location TickTockClubPresent Cards.tickTockClubPresent 4 (
 instance HasAbilities TickTockClubPresent where
   getAbilities (TickTockClubPresent a) =
     extendRevealed1 a
-      $ restricted a 1 Here
+      $ restricted
+        a
+        1
+        ( Here
+            <> oneOf [exists AgendaWithAnyDoom, exists $ assetIs Assets.thomasCorriganPresent <> at_ (be a)]
+        )
       $ actionAbilityWithCost (SpendTokenCost Token.Time (TargetIs $ toTarget a))
 
 instance RunMessage TickTockClubPresent where

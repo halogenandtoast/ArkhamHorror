@@ -1,7 +1,6 @@
 module Arkham.Story.Cards.MobTroubles (mobTroubles) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
@@ -43,12 +42,12 @@ instance RunMessage MobTroubles where
           findEncounterCardIn iid attrs (cardIs Enemies.sheldonGang) [#deck, #discard]
       pure s
     FoundEncounterCardFrom iid (isTarget attrs -> True) _ card -> do
-      addToVictory iid (CardIdTarget $ toCardId card)
+      addToVictory iid card
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       addToVictory iid attrs
       pure s
-    Flip _ _ (isTarget attrs -> True) -> do
+    FlipThis (isTarget attrs -> True) -> do
       gangs <- getSetAsideCardsMatching (cardIs Enemies.sheldonGang)
       shuffleCardsIntoDeck Deck.EncounterDeck gangs
       withMatch (locationIs Locations.tickTockClubPresent) \club -> do

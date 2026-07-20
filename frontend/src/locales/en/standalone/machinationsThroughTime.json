@@ -21,22 +21,22 @@
     "easyStandard": {
       "skull": "-X. X is 1 plus the number of story cards in the victory display.",
       "cultist": "-1. If you are at Tindalos, you automatically fail.",
-      "tablet": "-2 (-4 instead if a {trait:\"Scientist\"} asset is at your location).",
-      "elderThing": "-3. If you fail, deal 1 damage or 1 horror to an {trait:\"Ally\"} asset at your location."
+      "tablet": "-2 (-4 instead if a _Scientist_ asset is at your location).",
+      "elderThing": "-3. If you fail, deal 1 damage or 1 horror to an _Ally_ asset at your location."
     },
     "hardExpert": {
       "skull": "-X. X is 2 plus the number of story cards in the victory display.",
       "cultist": "-2. If you are at Tindalos, you automatically fail.",
-      "tablet": "-3 (-6 instead if a {trait:\"Scientist\"} asset is at your location).",
-      "elderThing": "-4. If you fail, deal 1 damage or 1 horror to an {trait:\"Ally\"} asset at your location."
+      "tablet": "-3 (-6 instead if a _Scientist_ asset is at your location).",
+      "elderThing": "-4. If you fail, deal 1 damage or 1 horror to an _Ally_ asset at your location."
     }
   },
   "label": {
     "oMalleysWatchShop": {
-      "placeTime": "Exhaust Thomas Corrigan to place 1 resource on the {trait:\"Present\"} Tick-Tock Club, as time"
+      "placeTime": "Exhaust Thomas Corrigan to place 1 resource on the _Present_ Tick-Tock Club, as time"
     },
     "tickTockClub": {
-      "placeTime": "Exhaust Thomas Corrigan to place 1 resource on the {trait:\"Future\"} Tick-Tock Club, as time"
+      "placeTime": "Exhaust Thomas Corrigan to place 1 resource on the _Future_ Tick-Tock Club, as time"
     },
     "oldSadieSheldon": {
       "payTheDebt": "Spend 3 resources per investigator, as a group, to add Old Sadie Sheldon to the victory display"
@@ -49,12 +49,12 @@
       "test": "Test {'{'}intellect{'}'} (4). If you succeed, place 1 more of your clues on Edwin Bennet"
     },
     "vanishingHistory": {
-      "discardItem": "Discard a non-story {trait:\"Item\"} asset you control",
+      "discardItem": "Discard a non-story _Item_ asset you control",
       "discardCards": "Choose and discard 3 non-weakness cards from your hand"
     },
     "dimensionalBeamMachine": {
       "investigator": "Move an investigator at your location to any revealed location",
-      "enemy": "Move a non-{trait:\"Elite\"} enemy at your location to any revealed location"
+      "enemy": "Move a non-_Elite_ enemy at your location to any revealed location"
     }
   },
   "resolutions": {

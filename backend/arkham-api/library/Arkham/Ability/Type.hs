@@ -96,6 +96,9 @@ instance IsLabel "action" AbilityType where
 actionAbilityWithCost :: Cost -> AbilityType
 actionAbilityWithCost cost = ActionAbility mempty Nothing (ActionCost 1 <> cost)
 
+doubleActionAbilityWithCost :: Cost -> AbilityType
+doubleActionAbilityWithCost cost = ActionAbility mempty Nothing (ActionCost 2 <> cost)
+
 freeReaction :: WindowMatcher -> AbilityType
 freeReaction window = ReactionAbility window Free mempty
 

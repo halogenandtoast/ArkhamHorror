@@ -22,7 +22,10 @@ newtype AnomaliesInSpacetime = AnomaliesInSpacetime StoryAttrs
 
 instance HasModifiersFor AnomaliesInSpacetime where
   getModifiersFor (AnomaliesInSpacetime a) =
-    modifySelect a Anyone [CannotTriggerAbilityMatching (AbilityOnLocation LocationWithAnyHorror)]
+    modifySelect
+      a
+      Anyone
+      [CannotTriggerAbilityMatching (AbilityOnLocation LocationWithAnyHorror <> not_ BasicAbility)]
 
 anomaliesInSpacetime :: StoryCard AnomaliesInSpacetime
 anomaliesInSpacetime =

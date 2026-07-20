@@ -1,0 +1,136 @@
+{
+  "keywordsAndConcepts": {
+    "title": "Nouveaux Mots-clés et concepts",
+    "entries": [
+      {
+        "title": "Le Codex",
+        "body": "<p>Certaines cartes ont le symbole codex. Pendant la partie, certains effets et capacités de carte peuvent demander aux joueurs de lire une entrée spécifique du codex. Conservez ce Guide de Campagne à portée de main pour vous y référer facilement. Certains lieux, personnages et ennemis ont des entrées du codex. Pour lire une entrée du codex, payez tous les couts et/ou résolvez tous les effets associés avec sa capacité de déclenchement, puis lisez l'entrée correspondante du scénario en cours et résolvez son texte.</p><ul><li>Aucune entrée du codex ne peut être résolue plus d'une fois par scénario, sauf mention contraire.</li><li>Lorsque vous résolvez une entrée du codex, le joueur qui a déclenche cette entrée résout tous les effets (test, dégâts, couts, etc.). S'il n'est pas facile de déterminer qui l'à déclenchée, c'est l'investigateur principal qui la résout.</li><li>Les entrées du codex déclenchées vià un type d'action spécifique (Combattre, Echapper, Discuter, etc.) sont considérées comme des actions de ce type tout au long de leur résolution.</li><li>Lorsqu'il résout une entrée du codex, un joueur lit seulement là section qui correspond à sa situation. Si sa situation ne correspond pas aux prérequis de la premiere section, passez à la suivante.</li><li>Si un effet de carte demande aux joueurs de résoudre une entrée du codex qui n'existe pas pour le scénario en cours, cet effet échoue.</li><li>Après avoir résolu une entrée du codex et applique les changements eventuels sur la partie et/ou dans le Carnet de Campagne, reprenez la partie.</li></ul>"
+      },
+      {
+        "title": "Alerte",
+        "body": "<p>Alerte est une capacité mot-clé. Chaque fois qu'un investigateur échoue à un test de compétence lorsqu'il tente d'échapper à un ennemi redressé ayant le mot-clé Alerte, après avoir applique tous les résultats de ce test, cet ennemi effectue une attaque contre l'investigateur ayant tente de s'échapper. L'ennemi ne s'incline pas après avoir effectue une attaque consecutive au mot-clé Alerte.</p><ul><li>Cette attaque à lieu que l'ennemi soit engagé ou non avec l'investigateur qui tente de lui échapper.</li></ul>"
+      },
+      {
+        "title": "Distant",
+        "body": "<p>Distant est une capacité mot-clé. Un ennemi ayant le mot-clé Distant n'engage pas automatiquement les investigateurs presents dans son lieu.</p><ul><li>Quand un ennemi Distant est genere, il est genere non-engage.</li><li>Un investigateur à le droit d'utiliser l'action Engager ou une capacité de carte pour engager un ennemi Distant.</li><li>Un investigateur ne peut pas attaquer ou échapper à un ennemi Distant tant que celui-ci n'est pas engagé avec un investigateur.</li></ul>"
+      },
+      {
+        "title": "Furtif",
+        "body": "<p>Furtif est une capacité mot-clé. Les ennemis furtifs representent des ennemis qui desirent eviter les investigateurs pour leur propre survie ou pour accomplir leurs propres objectifs. Si un ennemi redressé ayant le mot-clé Furtif attaque ou est attaque, une fois que l'attaque est résolue, cet ennemi se desengagé immediatement de tous les investigateurs, se déplace vers un lieu connexe (sans investigateurs, si possible) et s'incline.</p><ul><li>Cet effet se produit que l'ennemi soit engagé avec l'investigateur attaquant, ou pas.</li></ul>"
+      }
+    ]
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X est le nombre total d'ennemis _Elite_ dans la pile de victoire et sous l'acte.",
+      "cultist": "-1. Si ce test cible un ennemi _Elite_, révélez un autre pion.",
+      "tablet": "-3. Si vous échouez, placez 1 de vos indices sur votre lieu.",
+      "elderThing": "-1 pour chaque indice que vous contrôlez."
+    },
+    "hardExpert": {
+      "skull": "-X. X est egal à 2 de plus que le nombre total d'ennemis _Elite_ dans la pile de victoire et sous l'acte.",
+      "cultist": "-3. Si ce test cible un ennemi _Elite_, révélez un autre pion.",
+      "tablet": "-4. Si vous échouez, placez 1 de vos indices sur votre lieu.",
+      "elderThing": "-2 pour chaque indice que vous contrôlez."
+    }
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants :<section class='encounter-sets grid'><div><img src='{setImgPath}/smoke-and-mirrors.png' /><span>Une Vaste Fumisterie</span></div><div><img src='{setImgPath}/arcane-lock.png' /><span>Verrou Arcanique</span></div><div><img src='{setImgPath}/arkham.png' /><span>Arkham</span></div><div><img src='{setImgPath}/bad-weather.png' /><span>Mauvais Temps</span></div><div><img src='{setImgPath}/dead-ends.png' /><span>Culs-de-Sac</span></div><div><img src='{setImgPath}/flying-terrors.png' /><span>Terreurs Volantes</span></div><div><img src='{setImgPath}/gangs-of-arkham.png' /><span>Gangs d'Arkham</span></div><div><img src='{setImgPath}/people-of-arkham.png' /><span>Habitants d'Arkham</span></div><div><img src='{setImgPath}/whippoorwills2026.png' /><span>Engoulevents</span></div></section>",
+    "placeLocations": "Prenez au hasard l'un des deux lieux Centre-Ville et l'un des deux lieux Quartier Residentiel, puis mettez-les en jeu. Retirez de la partie l'autre exemplaire du Centre-Ville et du Quartier Residentiel. Mettez en jeu les lieux Quartier Nord, Quartier Est, Quartier Marchand, Quartier du Front de Mer, Quartier Sud et French Hill.",
+    "setOutOfPlay": "Réunissez chaque carte du set de rencontre <b>Habitants d'Arkham</b>. Prenez l'une d'elles au hasard et mettez-la de côté, hors jeu, sans la regarder. Melangez les cartes restantes de ce set avec l'ennemi Serviteur de la Flamme et placez 1 carte face cachee sous chacun des lieux suivants : Quartier Nord, Centre-Ville, Quartier Sud, French Hill, Quartier Residentiel et Quartier du Front de Mer.",
+    "checkCampaignLog": "Verifiez votre Carnet de Campagne.",
+    "miskatonicUniversityBurned": "*Si l'Université Miskatonic à brûlé*, mettez en jeu l'Université Miskatonic (*En Flammes*) et retirez de la partie l'autre exemplaire de l'Université Miskatonic.",
+    "savedMiskatonicUniversity": "*Si les investigateurs ont sauvé l'Université Miskatonic*, mettez en jeu l'Université Miskatonic (*Campus Silencieux*) et retirez de la partie l'autre exemplaire de l'Université Miskatonic. Placez 1 fatalité sur l'intrigue.",
+    "startAt": "Chaque investigateur commence la partie dans l'Université Miskatonic.",
+    "placeDoom": "Placez 1 fatalité sur l'intrigue pour chaque investigateur dans la partie.",
+    "bearerOfDrHenryArmitage": "Si un investigateur est le détenteur du soutien d'histoire Dr Henry Armitage, il le cherche dans son deck et le met en jeu sous son contrôle. Il n'occupe pas d'emplacement d'allie pendant ce scénario.",
+    "setAsideMarkOfElokoss": "Mettez de côté chaque exemplaire de la faiblesse Marque d'Elokoss, hors jeu.",
+    "shuffleRemainder": "Melangez les cartes Rencontre restantes pour former le deck Rencontre.",
+    "readyToBegin": "Vous êtes maintenant pret à commencer."
+  },
+  "intro": {
+    "title": "Scénario II : Une Vaste Fumisterie",
+    "body": "<p>Vous suivez le Dr Armitage jusqu'à son appartement. Un voile de fumee noire obscurcit la lune et les etoiles, tandis qu'une brise chaude transporte des cendres et des braises à travers les rues de la ville.</p><p>« Je soupconnais depuis un certain temps que quelque chose de louche se tramait. Plusieurs étudiants ont disparu au cours des dernieres semaines », vous confie le bibliothécaire en chef. « Tous ont commence à adopter des comportements étranges après avoir assiste à une reunion prétendument privee hors du campus il y à peu. Ils se plaignaient d'horribles chuchotements incessants et d'étranges ecchymoses apparues soudainement sur leur peau. Puis ils ont disparu. »</p><p>Craignant le pire, vous lui demandez des nouvelles de votre ami. « Il avait insiste pour que nous nous rencontrions plus tot dans la journee. Il m'à dit qu'une organisation se faisant appeler la Fraternité des Cendres invitait des étudiants et des citoyens impressionnables à ces étranges rassemblements. Votre ami à dresse une liste des personnes qui y ont participe, mais on ne sait pas s'il s'agissait de recrues potentielles ou d'adeptes fideles. Avant de partir, votre ami à parle d'une autre reunion ce soir. Un regroupement de tous les croyants. Je ne sais pas pourquoi, mais cette idee me remplit d'une terreur indicible. Et maintenant, votre ami à disparu », dit-il d'un air sombre.</p><p>Vous decidez d'interroger les suspects figurant sur la liste, puis de vous retrouver avant minuit au Restaurant de Velma. Le bibliothécaire en chef vous suggere de faire preuve de tact plutot que d'adopter une approche plus musclee, qui pourrait alerter la cabale. Cependant, vous craignez de ne pas avoir d'autre choix.</p><ul><li>Ajoutez 2 {'{'}cultist{'}'} à la reserve du Chaos pour le reste de la campagne. (*Notez-le dans votre Carnet de Campagne.*)</li></ul><p class='right basic'>Continuez à la _Mise en place_.</p>"
+  },
+  "tooltips": {
+    "arkhamAlive": {
+      "resign": "_Abandonner_. Vous retournez comparer vos notes avec le Dr Armitage sur la disparition de votre ami."
+    },
+    "emergentEvils": {
+      "resign": "@:brethrenOfAsh.smokeAndMirrors.tooltips.arkhamAlive.resign"
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "<p>_Si aucune conclusion n'a été atteinte (chaque investigateur a abandonné ou a été vaincu)_ : En prenant le taxi en direction du Restaurant de Velma, vous repensez à tout ce que vous avez appris. Malheureusement, votre recherche vous a conduit sur de nombreuses pistes pour de maigres résultats. Vous esperez que le Dr Armitage s'en est mieux sorti que vous.</p>",
+      "harbingerOfElokoss": "Révélez l'ennemi du set de rencontre _Habitants d'Arkham_ qui a été mis de côté au début de la partie. Il s'agit de la veritable identite de l'ennemi Serviteur de la Flamme, un heraut d'Elokoss. Dans votre Carnet de Campagne, inscrivez que *{name} est le heraut d'Elokoss*.",
+      "drawnCard": "Rassemblez chaque ennemi _Elite_ en jeu et/ou sous un lieu quand le scénario s'est termine et melangez-les ensemble face cachee avec le heraut d'Elokoss. Ensuite, piochez l'un d'entre eux au hasard. {name} a été pioche. Si l'ennemi pioche...",
+      "isHarbinger": "...est le heraut d'Elokoss, inscrivez dans votre Carnet de Campagne que *les investigateurs ont découvert le lieu du culte*.",
+      "otherwise": "...est un autre ennemi, inscrivez dans votre Carnet de Campagne que *les investigateurs ont échoue dans leur recherche*.",
+      "servantOfFlame": "Si l'ennemi Serviteur de la Flamme est dans la pile de victoire, inscrivez dans votre Carnet de Campagne que *les investigateurs ont tué le Serviteur de la Flamme*.",
+      "victory": "Chaque investigateur reçoit un total de points d'expérience egal à la somme des valeurs de _Victoire X_ des cartes qui se trouvent dans la pile de victoire, ainsi que 1 point d'expérience bonus pour chaque ennemi sous l'acte quand le scénario s'est termine.",
+      "proceed": "Si le Serviteur de la Flamme etait sous l'acte quand le scénario s'est termine, passez à la _Conclusion 2_. Sinon, continuez au _Scénario III : La Reine des Cendres_."
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<p>_Conclusion 1_ : Vous helez un taxi en direction du Quartier Est et reflechissez à tout ce que vous avez appris. Malgré ses efforts pour dissimuler sa veritable identite, vous avez demasque le veritable coupable. Vous esperez que les informations rassemblees seront suffisantes pour sauver votre ami disparu.</p><ul><li>Dans votre Carnet de Campagne, inscrivez que *les investigateurs ont découvert le lieu du culte*.</li><li>Révélez l'ennemi du set de rencontre _Habitants d'Arkham_ mis de côté au début de la partie. Il s'agit du heraut d'Elokoss. Dans votre Carnet de Campagne, inscrivez que *{name} est le heraut d'Elokoss*.</li><li>Verifiez quels ennemis sont dans la pile de victoire et/ou sous l'acte quand le scénario s'est termine et mettez à jour votre Carnet de Campagne.<ul><li>Si l'ennemi Serviteur de la Flamme est dans la pile de victoire, inscrivez que *les investigateurs ont tué le Serviteur de la Flamme*.</li><li>S'il y à 6 ennemis _Elite_ sous l'acte, inscrivez que *les investigateurs ont passé Arkham au peigne fin à la recherche de réponses*.</li><li>S'il y à 6 ennemis _Elite_ dans la pile de victoire, inscrivez que *les investigateurs ont cherche les ennuis*.</li></ul></li><li>Chaque investigateur reçoit un total de points d'expérience egal à la somme des valeurs de _Victoire X_ des cartes qui se trouvent dans la pile de victoire, ainsi que 1 point d'expérience bonus pour chaque ennemi sous l'acte quand le scénario s'est termine.</li><li>Si le _Serviteur de la Flamme_ etait sous l'acte quand le scénario s'est termine, passez à la _Conclusion 2_. Sinon, continuez au _Scénario III : La Reine des Cendres_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<p>_Conclusion 2_ : En route pour rencontrer le Dr Armitage, vous demandez au taxi de faire un détour par le lieu ou vous aviez enferme votre ennemi inconscient. Une odeur de fumee vous accueille lorsque vous entrez et les sols sont noircis par la suie. Malgré tous vos efforts, la silhouette macabre s'est échappée. Les menottes que vous aviez utilisees pour l'attacher ont été brisées, sans avoir été fondues ni altérées d'une quelconque maniere, ce qui suggere qu'il a bénéficié d'une aide pour s'échapper.</p><ul><li>Dans votre Carnet de Campagne, inscrivez que *le Serviteur de la Flamme s'est échappé*.</li><li>Chaque investigateur reçoit 1 point d'expérience bonus.</li><li>Continuez au _Scénario III : La Reine des Cendres_.</li></ul>"
+    },
+    "xp": {
+      "resolution2": "pour avoir capturé le Serviteur de la Flamme",
+      "bonus": "pour chaque ennemi sous l'acte"
+    }
+  },
+  "label": {
+    "r2": "Le Serviteur de la Flamme etait sous l'acte (→ Conclusion 2)",
+    "r3": "Le Serviteur de la Flamme s'est échappé (→ Conclusion 3)"
+  },
+  "xp": {
+    "resolution2": "pour avoir capturé le Serviteur de la Flamme",
+    "bonus": "pour chaque ennemi sous l'acte"
+  },
+  "codex": {
+    "label": {
+      "addToVictory": "Ajoutez le Serviteur de la Flamme à la pile de victoire. Chaque investigateur pioche 3 cartes.",
+      "placeUnderAct": "Placez le Serviteur de la Flamme sous l'acte. Chaque investigateur gagne 1 indice."
+    },
+    "davidRenfield": {
+      "title": "{'{'}codex{'}'} Codex 1 : David Renfield",
+      "body": "<p>Le hautain M. Renfield tente de vous econduire poliment, mais lorsque vous mentionnez la Fraternité des Cendres, il s'enfuit dans une rue voisine. Vous vous mettez à courir derrière lui, mais l'eschatologue est etonnamment rapide.</p><p class='basic right'>Deplacez David Renfield vers un lieu connexe (sans investigateurs, si possible).</p><p class='basic right'>Placez 1 ressource (*prise dans la reserve de pions*) sur David Renfield, en tant que piste. S'il y à au moins 1 {'{'}perPlayer{'}'} pistes sur lui, continuez de lire. Sinon, n'importe quel investigateur à le droit de déclencher de nouveau ce codex.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.davidRenfield.body <hr><p>Finalement, vous trouvez M. Renfield cache dans une librairie encombree. Après lui avoir explique qui vous êtes et vos intentions, il accepte de repondre à vos questions.</p><p>« Je n'ai assiste à la reunion que par curiosite academique. Ce qui a été dit etait complètement absurde, mais j'ai tout de même retenu quelques informations utiles. Il semble que la Fraternité des Cendres venere un ancien demon nomme Elokoss : une creature animee par les flammes et la destruction, responsable du grand incendie d'Alexandrie, du moins c'est ce qu'ils pretendent. Quand vous avez mentionne la Fraternité, j'ai craint que vous en fassiez partie. Il s'agit d'une armee d'esclaves, tous unis derrière leur reine ! »</p><p class='basic right'>Vous avez interroge ce suspect avec succes.</p><p class='basic right'>Placez David Renfield sous l'acte.</p>"
+    },
+    "corneliaAkely": {
+      "title": "{'{'}codex{'}'} Codex 2 : Cornelia Akely",
+      "body": "<p>Vous trouvez Mme Akely en plein travail dans un garage delabre. Elle semble assez sympathique lorsqu'elle vous offre une cigarette, mais des que vous mentionnez la Fraternité des Cendres, son expression se durcit et elle vous montre la porte.</p><p class='basic right'>Soignez 1 horreur.</p><p class='basic right'>Placez 1 ressource (*prise dans la reserve de pions*) sur Cornelia Akely, en tant que piste. S'il y à au moins 1 {'{'}perPlayer{'}'} pistes sur elle, continuez de lire. Sinon, n'importe quel investigateur à le droit de déclencher de nouveau ce codex.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.corneliaAkely.body <hr><p>Finalement, vos paroles finissent par convaincre la contremaitresse grincheuse. Elle s'excuse et vous invite à vous asseoir. « J'y suis allee parce que deux de mes amis de l'usine NHI m'en avaient parle en bien. Apparemment, cette Fraternité des Cendres preche une glorieuse renaissance pour tous leurs disciples. Je n'ai pas ecoute le reste. Je ne crois pas vraiment à ce genre de charlatanisme. »</p><p>Lorsque vous lui demandez des nouvelles de ses amis, elle secoue la tête. « Aucun des trois ne s'est presente au travail ces dernieres semaines. »</p><p class='basic right'>Vous avez interroge ce suspect avec succes.</p><p class='basic right'>Placez Cornelia Akely sous l'acte.</p>"
+    },
+    "naomiOBannion": {
+      "title": "{'{'}codex{'}'} Codex 3 : Naomi O'Bannion",
+      "body": "<p>La cheffe de la famille O'Bannion n'est pas très interessee par vos questions, bien qu'elle soit plus que disposee à vous debarrasser de la source de vos soucis... moyennant finance. Vous aurez besoin de verser quelques pots-de-vin si vous souhaitez qu'elle vous revele des informations utiles.</p><p class='basic right'>Vous pouvez choisir un ennemi non-*Humanoide* dans n'importe quel lieu. Vainquez automatiquement l'ennemi choisi.</p><p class='basic right'>Placez 1 ressource (*prise dans la reserve de pions*) sur Naomi O'Bannion, en tant que piste. S'il y à au moins 1 {'{'}perPlayer{'}'} pistes sur elle, continuez de lire. Sinon, n'importe quel investigateur à le droit de déclencher de nouveau ce codex.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.naomiOBannion.body <hr><p>Naomi penche la tête en arrière et rit à gorge deployee lorsque vous mentionnez la Fraternité des Cendres. « Cette bande de zinzins ? Je ne les connais pas. Mais deux de mes gars en ont trouve quelques-uns qui fouinaient pres d'un de nos bars à gin. Ils avaient un air très étrange, comme s'ils n'etaient pas tout à fait la. » Vous lui demandez l'endroit exact et elle vous souffle un epais nuage de fumee au visage. « Comme si j'allais vous reveler quoi que ce soit de mes affaires. Maintenant, disparaissez. »</p><p class='basic right'>Vous avez interroge ce suspect avec succes.</p><p class='basic right'>Placez Naomi O'Bannion sous l'acte.</p>"
+    },
+    "sgtEarlMonroe": {
+      "title": "{'{'}codex{'}'} Codex 4 : Sgt Earl Monroe",
+      "body": "<p>Lorsque vous mentionnez la Fraternité des Cendres, l'officier de police brandit sa matraque et vous intime d'aller fouiner autre part. Vous vous preparez à devoir vous battre.</p><p class='basic right'>Soignez 1 dégât.</p><p class='basic right'>Placez 1 ressource (*prise dans la reserve de pions*) sur le Sgt Earl Monroe, en tant que piste. S'il y à au moins 1 {'{'}perPlayer{'}'} pistes sur lui, continuez de lire. Sinon, n'importe quel investigateur à le droit de déclencher de nouveau ce codex.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.sgtEarlMonroe.body <hr><p>Finalement, Monroe se radoucit. « Très bien, très bien. » L'officier crache un peu de sang en portant la main à sa joue meurtrie.</p><p>« Lorsque nous avons consigne la troisieme disparition, quelques-uns d'entre eux sont venus me voir. Ils ont insiste sur le fait que les personnes disparues etaient parties de leur plein gre. Quand j'ai dit que je n'etais pas convaincu, ils m'ont conduit à une de leurs reunions pres des docks. Il y avait quelque chose de louche dans toute cette affaire. Quelque chose dans leurs yeux, comme s'ils etaient hypnotises. Ils ont achete mon silence. Je n'en suis pas fier. Ne le dites à personne... je promets de me tenir à carreau. »</p><p class='basic right'>Vous avez interroge ce suspect avec succes.</p><p class='basic right'>Placez le Sgt Earl Monroe sous l'acte.</p>"
+    },
+    "abigailForeman": {
+      "title": "{'{'}codex{'}'} Codex 5 : Abigail Foreman",
+      "body": "<p>La jeune bibliothécaire elude vos questions en retirant de nouveaux volumes de l'etagere. Là seule facon de la détourner de son travail serait de l'aider à trouver ce qu'elle cherche.</p><p class='basic right'>Piochez 1 carte.</p><p class='basic right'>Placez 1 ressource (*prise dans la reserve de pions*) sur Abigail Foreman, en tant que piste. S'il y à au moins 1 {'{'}perPlayer{'}'} pistes sur elle, continuez de lire. Sinon, n'importe quel investigateur à le droit de déclencher de nouveau ce codex.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.abigailForeman.body <hr><p>Abigail s'affale dans un fauteuil somptueux en poussant un soupir. « Oui, je cherche des informations sur la Fraternité des Cendres depuis que ma colocataire à disparu là semaine derniere. Heureusement j'ai trouve ceci. » Elle ouvre un mince volume orne d'une representation delicate d'un arbre aux fleurs ressemblant à des yeux. À l'interieur se trouvent de nombreux dessins troublants representant des sacrifices violents, des victimes brulees vives et d'étranges symboles inhumains.</p><p>« Plutot macabre, vous ne trouvez pas ? Il semble être ecrit en akkadien. Malheureusement, il faudra des semaines pour le traduire, car tout le departement des langues anciennes est parti en expedition en Egypte. Je suis desolee de ne pas pouvoir vous aider davantage. »</p><p class='basic right'>Vous avez interroge ce suspect avec succes.</p><p class='basic right'>Placez Abigail Foreman sous l'acte.</p>"
+    },
+    "margaretLiu": {
+      "title": "{'{'}codex{'}'} Codex 6 : Margaret Liu",
+      "body": "<p>Margaret Liu, l'une des chanteuses de salon les plus connues de la ville, est complètement absorbee par sa performance. Vous devrez peut-être faire preuve de creativite pour attirer son attention.</p><p class='basic right'>Regardez la carte du dessus du deck Rencontre. Vous pouvez la défausser.</p><p class='basic right'>Placez 1 ressource (*prise dans la reserve de pions*) sur Margaret Liu, en tant que piste. S'il y à au moins 1 {'{'}perPlayer{'}'} pistes sur elle, continuez de lire. Sinon, n'importe quel investigateur à le droit de déclencher de nouveau ce codex.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.margaretLiu.body <hr><p>Vos tentatives pour attirer l'attention de Mme Liu se revelent efficaces, et vous vous retrouvez bientot en coulisses. « Je dois dire que j'ai été très impressionnee par votre petite, euh, performance. Mais qu'êtes-vous vraiment venu chercher ici ? » Son sourire disparait à la mention de la Fraternité des Cendres.</p><p>« Je ne sais pas qui ils sont et je m'en fiche. Je rentrais chez moi il y à une semaine quand j'ai été abordee par deux hommes vetus de capes affreusement laides. Il y avait un symbole très étrange sur leur capuche. » Elle griffonne un sigle grossier sur une serviette : une main avec un oeil incruste. Vous demandez ce qui s'est passe ensuite, et elle fait un signe vers l'armoire à glace qui garde sa porte. « Antonio les à fait fuir. Je ne les ai pas revus depuis. »</p><p class='basic right'>Vous avez interroge ce suspect avec succes.</p><p class='basic right'>Placez Margaret Liu sous l'acte.</p>"
+    },
+    "servantOfFlame": {
+      "title": "{'{'}codex{'}'} Codex Φ : Serviteur de la Flamme",
+      "body": "<p>Votre ennemi jure git, inconscient, à vos pieds. Les flammes qui l'enveloppaient se sont éteintes, mais son habit est miraculeusement intact. Toute tentative pour lui retirer son masque est vaine : vous devrez attendre qu'il reprenne connaissance pour decouvrir qui il est. Vous vous demandez combien de victimes ont peri sous les coups de sa faucille ensanglantee. Peut-être vaudrait-il mieux l'achever ici même pour eviter de futurs bains de sang. Personne n'en saura rien.</p><p class='basic'>Les investigateurs doivent décider (*choisir une option*) :</p><ul><li>*Nous ne pouvons pas prendre le risque de le laissér tuer d'autres personnes. Il est trop dangereux pour le laissér en vie.* Ajoutez le Serviteur de la Flamme à la pile de victoire. Chaque investigateur pioche 3 cartes.</li><li>*Gardons-le prisonnier pour l'interroger plus tard cette nuit.* Placez le Serviteur de la Flamme sous l'acte. Chaque investigateur gagne 1 indice (*pris dans la reserve de pions*).</li></ul>"
+    }
+  }
+}

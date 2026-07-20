@@ -47,6 +47,7 @@ data instance Field Agenda :: Type -> Type where
   AgendaCard :: Field Agenda Card
   AgendaSequence :: Field Agenda AS.AgendaSequence
   AgendaDoom :: Field Agenda Int
+  AgendaDoomThreshold :: Field Agenda (Maybe GameValue)
   AgendaDeckId :: Field Agenda Int
   AgendaAbilities :: Field Agenda [Ability]
   AgendaUsedWheelOfFortuneX :: Field Agenda Bool

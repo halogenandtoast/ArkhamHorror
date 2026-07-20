@@ -15,6 +15,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Phase (MythosPhaseStep)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
@@ -33,6 +34,9 @@ getLead = do
 
 getLeadMay :: (HasCallStack, HasGame m, Tracing m) => m (Maybe InvestigatorId)
 getLeadMay = runMaybeT $ MaybeT (selectOne LeadInvestigator) <|> MaybeT (selectOne $ IncludeEliminated Anyone)
+
+getCurrentMythosPhaseStep :: HasGame m => m (Maybe MythosPhaseStep)
+getCurrentMythosPhaseStep = getMythosPhaseStep
 
 inTurnOrder :: HasGame m => [InvestigatorId] -> m [InvestigatorId]
 inTurnOrder xs =

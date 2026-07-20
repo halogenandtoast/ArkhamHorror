@@ -2,13 +2,16 @@ module Arkham.Scenario.Scenarios.TheLabyrinthsOfLunacy (theLabyrinthsOfLunacy) w
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Types (Field (AgendaDoomThreshold))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option (CampaignOption (PlayAsMiniCampaign))
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -17,9 +20,10 @@ import Arkham.Id (getId)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message (chooseDecks)
+import Arkham.Message (CanAdvance (CanAdvance), chooseDecks)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record)
+import Arkham.Phase (MythosPhaseStep (PlaceDoomOnAgendaStep))
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -190,7 +194,26 @@ instance RunMessage TheLabyrinthsOfLunacy where
               $ Locations.chamberOfSecretsBloodyPrison
               :| [Locations.chamberOfSecretsMysteriousPrison, Locations.chamberOfSecretsEnshroudedPrison]
           placeUnderScenarioReference [secrets]
+    PlaceDoomOnAgenda n canAdvance -> do
+      agendaId <- selectJust UnflippedAgenda
+      doom <- getDoomCount
+      threshold <- traverse getGameValue =<< field AgendaDoomThreshold agendaId
+      mythosStep <- getCurrentMythosPhaseStep
+      lead <- getLead
+      let placeAgendaDoom :: ReverseQueue m => Int -> m ()
+          placeAgendaDoom amount = do
+            placeDoom attrs agendaId amount
+            pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
+      if mythosStep == Just PlaceDoomOnAgendaStep
+        then chooseOneM lead do
+          withI18n $ countVar n $ labeled' "placeAgendaDoom" $ placeAgendaDoom n
+          labeled' "satisfyDoomThreshold"
+            $ placeAgendaDoom
+            $ maybe n (\value -> max 0 $ value - doom) threshold
+        else placeAgendaDoom n
+      pure s
     ScenarioSpecific "act2Setup" _ -> do
+      flavor $ p "act2Setup"
       let meta = toResult attrs.meta
       abductors <- getSetAsideCardsMatching $ cardIs Enemies.facelessAbductor
       shuffleCardsIntoDeck Deck.EncounterDeck abductors
@@ -214,6 +237,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
       push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
       pure s
     ScenarioSpecific "act3Setup" _ -> do
+      flavor $ p "act3Setup"
       warehouse <- placeSetAsideLocation Locations.abandonedWarehouse
       reveal warehouse
       selectEach AnyEnemy disengageEnemyFromAll
@@ -237,7 +261,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         Skull | isHardExpert attrs -> scope "skull" do
-          chooseOneM iid do
+          chooseOneM iid $ unscoped $ countVar 1 do
             labeled' "takeDamage" $ assignDamage iid Skull 1
             labeled' "takeHorror" $ assignHorror iid Skull 1
         Cultist | isEasyStandard attrs -> do
@@ -250,7 +274,9 @@ instance RunMessage TheLabyrinthsOfLunacy where
       let meta = toResult attrs.meta
       let grp = currentGroup meta
       case r of
-        NoResolution -> push R1
+        NoResolution -> do
+          resolution "noResolution"
+          push R1
         Resolution 1 -> do
           let meta' = meta {playedGroups = grp : playedGroups meta}
           push $ SetScenarioMeta $ toJSON meta'
@@ -260,8 +286,17 @@ instance RunMessage TheLabyrinthsOfLunacy where
           if miniCampaign meta && length (playedGroups meta') < 3
             then do
               killRemainingInvestigators attrs
+              resolution "resolution1"
               push $ ScenarioResolutionStep 10 (Resolution 1)
-            else do_ (ScenarioResolutionStep 1 (Resolution 1))
+            else do
+              killRemainingInvestigators attrs
+              case length (survivedGroups meta') of
+                0 -> do
+                  resolution "resolution1"
+                  push GameOver
+                1 -> resolution "resolution2"
+                _ -> resolution "resolution3"
+              endOfScenario
         Resolution 2 -> do
           let meta' =
                 meta
@@ -271,23 +306,16 @@ instance RunMessage TheLabyrinthsOfLunacy where
           push $ SetScenarioMeta $ toJSON meta'
           recordGroupOutcome grp Log.TheGroupEscapedTheLabyrinth
           if miniCampaign meta && length (playedGroups meta') < 3
-            then push $ ScenarioResolutionStep 10 (Resolution 2)
-            else do_ (ScenarioResolutionStep 1 (Resolution 2))
+            then do
+              resolution "resolution2"
+              push $ ScenarioResolutionStep 10 (Resolution 2)
+            else do
+              case length (survivedGroups meta') of
+                1 -> resolution "resolution2"
+                2 -> resolution "resolution3"
+                _ -> resolution "resolution4"
+              endOfScenario
         _ -> error "Invalid resolution"
-      pure s
-    Do (ScenarioResolutionStep 1 (Resolution n)) -> scope "resolutions" do
-      -- Mini-campaign over: the resolution depends on how many groups
-      -- escaped the labyrinth.
-      let meta = toResult attrs.meta
-      when (n == 1) $ killRemainingInvestigators attrs
-      case length (survivedGroups meta) of
-        0 -> do
-          resolution "resolution1"
-          push GameOver
-        1 -> resolution "resolution2"
-        2 -> resolution "resolution3"
-        _ -> resolution "resolution4"
-      endOfScenario
       pure s
     ScenarioResolutionStep 10 _ -> do
       -- Between mini-campaign games, players may swap investigators and/or decks

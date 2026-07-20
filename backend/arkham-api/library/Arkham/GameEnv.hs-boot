@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.GameEnv where
 
 import Arkham.Prelude
@@ -14,9 +15,9 @@ import Arkham.Distance
 import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Settings
 import Arkham.GameT
-import Arkham.Investigator.Types (InvestigatorAttrs)
 import Arkham.History
 import Arkham.Id
+import Arkham.Investigator.Types (InvestigatorAttrs)
 import {-# SOURCE #-} Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
@@ -41,6 +42,7 @@ withoutModifiersFrom :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getActiveAbilities :: HasGame m => m [Ability]
 getPhase :: HasGame m => m Phase
+getMythosPhaseStep :: HasGame m => m (Maybe MythosPhaseStep)
 getEnemyPhaseStep :: HasGame m => m (Maybe EnemyPhaseStep)
 getCurrentBatchId :: HasGame m => m (Maybe BatchId)
 getWindowDepth :: HasGame m => m Int

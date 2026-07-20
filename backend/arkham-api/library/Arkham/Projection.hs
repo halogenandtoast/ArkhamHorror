@@ -12,6 +12,9 @@ class Projection a where
   field :: (HasCallStack, HasGame m, Tracing m) => Field a typ -> EntityId a -> m typ
   project :: (HasCallStack, HasGame m) => EntityId a -> m (Maybe a)
 
+fields :: (HasCallStack, HasGame m, Tracing m, Projection a) => Field a typ -> [EntityId a] -> m [typ]
+fields fld = traverse (field fld)
+
 fieldMay
   :: forall a typ m
    . (HasCallStack, HasGame m, Tracing m, Projection a) => Field a typ -> EntityId a -> m (Maybe typ)

@@ -178,6 +178,12 @@ getDistance l1 l2 = do
 getPhase :: HasGame m => m Phase
 getPhase = gamePhase <$> getGame
 
+getMythosPhaseStep :: HasGame m => m (Maybe MythosPhaseStep)
+getMythosPhaseStep =
+  getGame <&> \g -> case gamePhaseStep g of
+    Just (MythosPhaseStep s) -> Just s
+    _ -> Nothing
+
 getEnemyPhaseStep :: HasGame m => m (Maybe EnemyPhaseStep)
 getEnemyPhaseStep =
   getGame <&> \g -> case gamePhaseStep g of

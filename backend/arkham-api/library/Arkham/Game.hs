@@ -117,13 +117,13 @@ import Arkham.Helpers.Playable
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
-import Arkham.Homebrew.Defs (allActions)
 import Arkham.Helpers.Slot
 import Arkham.Helpers.Source
 import Arkham.Helpers.Target
 import Arkham.Helpers.Use (toStartingUses)
 import Arkham.Helpers.Window (maybeDiscoveredLocation)
 import Arkham.History
+import Arkham.Homebrew.Defs (allActions)
 import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
 import Arkham.Investigator qualified as Investigator
@@ -195,7 +195,6 @@ import Arkham.Queue
 import Arkham.Random
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding (scenario)
-import Arkham.UltimatumsAndBoons (ultimatumOrBoonAbilities)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.HorrorInHighGear.Helpers (getRear)
 import Arkham.Scenarios.WakingNightmare.InfestationBag
@@ -221,6 +220,7 @@ import Arkham.Treachery.Types (
   treacheryDoom,
   treacheryResources,
  )
+import Arkham.UltimatumsAndBoons (ultimatumOrBoonAbilities)
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each, over, set)
@@ -5949,6 +5949,7 @@ instance Projection Agenda where
     case fld of
       AgendaSequence -> pure agendaSequence
       AgendaDoom -> pure agendaDoom
+      AgendaDoomThreshold -> pure agendaDoomThreshold
       AgendaDeckId -> pure agendaDeckId
       AgendaAbilities -> pure $ getAbilities a
       AgendaCard -> pure $ lookupCard (unAgendaId aid) agendaCardId
@@ -6325,6 +6326,7 @@ interleaveSimultaneously seqs
               preMsgs ++ [windowMsg] ++ afterMsg
 
 -- finds the first message in the form `Priority msg` and returns that, otherwise returns the first message
+
 -- | Is this parked question part of deck selection (possibly wrapped)?
 isDeckQuestion :: Question Message -> Bool
 isDeckQuestion = \case

@@ -102,8 +102,8 @@ revalidate:
 		$(EXTRA_STACK_FLAGS)
 	stack clean validate && stack run validate
 
-.PHONY: test
-test:
+.PHONY: test.watch
+test.watch:
 	cd arkham-api && \
 	stack build --pedantic --test --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \

@@ -42,8 +42,7 @@
       "payTheDebt": "Spend 3 resources per investigator, as a group, to add Old Sadie Sheldon to the victory display"
     },
     "mobTroubles": {
-      "searchDiscard": "Search the encounter discard pile for a Sheldon Gang enemy and add it to the victory display",
-      "searchDeck": "Search the encounter deck for a Sheldon Gang enemy and add it to the victory display"
+      "search": "Search the encounter deck or discard pile"
     },
     "uneasyAlliance": {
       "test": "Test {'{'}intellect{'}'} (4). If you succeed, place 1 more of your clues on Edwin Bennet"

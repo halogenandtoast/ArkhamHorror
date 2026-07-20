@@ -189,11 +189,10 @@ const searchedCards = computed<SearchedCardGroup[]>(() => {
 })
 
 const focusedCards = computed(() => {
-  if (searchedCards.value.length > 0) {
-    return []
-  }
-
-  return props.game.focusedCards
+  const searchedCardIds = new Set(
+    searchedCards.value.flatMap((group) => group.cards.map((card) => toCardContents(card).id)),
+  )
+  return props.game.focusedCards.filter((card) => !searchedCardIds.has(toCardContents(card).id))
 })
 
 function zoneTag(zone: unknown): string | null {

@@ -1593,33 +1593,38 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
 
     case strategy of
       LeadChooses -> do
-        -- TODO: show where focused cards are from
-        push
-          $ FocusCards
-          $ map EncounterCard matchingDeckCards
-          <> map EncounterCard matchingDiscards
-          <> map snd voidEnemiesWithCards
-
-        when
-          ( notNull matchingDiscards
-              || notNull matchingDeckCards
-              || notNull voidEnemiesWithCards
-              || notNull matchingVictoryDisplay
-          )
-          do
-            chooseOne iid
-              $ [ targetLabel card [FoundEncounterCardFrom iid target FromDiscard card, UnfocusCards]
-                | card <- matchingDiscards
-                ]
-              <> [ targetLabel card [FoundEncounterCardFrom iid target FromEncounterDeck card, UnfocusCards]
+        let
+          searchedDeckCards =
+            [ EncounterCard card
+            | Zone.FromEncounterDeck `elem` zones
+            , card <- unDeck scenarioEncounterDeck
+            ]
+          cleanup = [UnfocusCards, ClearFound Zone.FromDeck]
+          choices =
+            [ targetLabel card (FoundEncounterCardFrom iid target FromDiscard card : cleanup)
+            | card <- matchingDiscards
+            ]
+              <> [ targetLabel card (FoundEncounterCardFrom iid target FromEncounterDeck card : cleanup)
                  | card <- matchingDeckCards
                  ]
-              <> [ targetLabel card [FoundEncounterCardFrom iid target FromVictoryDisplay card, UnfocusCards]
+              <> [ targetLabel card (FoundEncounterCardFrom iid target FromVictoryDisplay card : cleanup)
                  | card <- matchingVictoryDisplay
                  ]
-              <> [ targetLabel card [FoundEnemyInOutOfPlay Zone.VoidZone iid target eid, UnfocusCards]
+              <> [ targetLabel card (FoundEnemyInOutOfPlay Zone.VoidZone iid target eid : cleanup)
                  | (eid, card) <- voidEnemiesWithCards
                  ]
+
+        when (notNull choices || notNull searchedDeckCards) do
+          push
+            $ FocusCards
+            $ map EncounterCard matchingDeckCards
+            <> map EncounterCard matchingDiscards
+            <> map snd voidEnemiesWithCards
+        unless (null searchedDeckCards) $ push $ FoundCards $ Map.singleton Zone.FromDeck searchedDeckCards
+
+        if null choices
+          then unless (null searchedDeckCards) $ chooseOne iid [Label "$label.noMatchesFound" cleanup]
+          else chooseOne iid choices
       RandomSelect -> do
         let
           choices =

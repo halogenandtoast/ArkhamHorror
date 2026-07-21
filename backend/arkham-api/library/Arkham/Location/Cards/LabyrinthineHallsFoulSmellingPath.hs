@@ -25,12 +25,14 @@ instance HasAbilities LabyrinthineHallsFoulSmellingPath where
 
 instance RunMessage LabyrinthineHallsFoulSmellingPath where
   runMessage msg l@(LabyrinthineHallsFoulSmellingPath attrs) = runQueueT $ scenarioI18n $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      atEndOfRound (attrs.ability 1) do
-        investigators <- select $ affectsOthersKnown iid $ not_ (InvestigatorWithId iid)
-        for_ (nonEmpty investigators) \others ->
-          chooseOrRunOneM iid $ scope "labyrinthineHalls" do
-            questionLabeled' "chooseDrawCards"
-            targets (toList others) \iid' -> drawCards iid' (attrs.ability 1) 2
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      atEndOfRound (attrs.ability 1) $ doStep 1 msg
+      pure l
+    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      investigators <- select $ affectsOthersKnown iid $ not_ (InvestigatorWithId iid)
+      for_ (nonEmpty investigators) \others ->
+        chooseOrRunOneM iid $ scope "labyrinthineHalls" do
+          questionLabeled' "chooseDrawCards"
+          targets (toList others) \iid' -> drawCards iid' (attrs.ability 1) 2
       pure l
     _ -> LabyrinthineHallsFoulSmellingPath <$> liftRunMessage msg attrs

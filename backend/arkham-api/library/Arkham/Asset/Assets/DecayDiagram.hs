@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.DecayDiagram (decayDiagram) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -17,36 +18,29 @@ newtype DecayDiagram = DecayDiagram AssetAttrs
 decayDiagram :: AssetCard DecayDiagram
 decayDiagram = asset DecayDiagram Cards.decayDiagram
 
--- While you are in the Chamber of Decay, it gains: "[action]: Place 1 doom
--- here. Flip any number of your clues to their doom side and place them
--- here."
 instance HasAbilities DecayDiagram where
   getAbilities (DecayDiagram a) =
-    [ restricted a 1 (ControlsThis <> exists (NotInvestigator You))
-        $ forced
-        $ Matcher.InvestigatorDefeated #when ByAny You
+    [ controlled a 1 (exists $ not_ You) $ forced $ Matcher.InvestigatorDefeated #when ByAny You
     , restricted
-        a
+        (proxied (locationIs Locations.chamberOfDecay) a)
         2
-        (ControlsThis <> youExist (InvestigatorAt $ locationIs Locations.chamberOfDecay))
+        (Here <> exists (at_ (locationIs Locations.chamberOfDecay) <> HasMatchingAsset (be a)))
         actionAbility
     ]
 
 instance RunMessage DecayDiagram where
   runMessage msg a@(DecayDiagram attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- select $ NotInvestigator $ InvestigatorWithId iid
-      chooseOrRunOneM iid do
-        targets investigators (`takeControlOfAsset` attrs.id)
+      investigators <- select $ not_ $ InvestigatorWithId iid
+      chooseOrRunOneM iid $ targets investigators (`takeControlOfAsset` attrs.id)
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isProxySource attrs -> True) 2 -> do
       chamber <- selectJust $ locationIs Locations.chamberOfDecay
       placeTokens (attrs.ability 2) chamber #doom 1
       clues <- field InvestigatorClues iid
-      when (clues > 0) do
-        chooseAmount iid "Clues" "Clues" 0 clues attrs
+      when (clues > 0) $ withI18n $ chooseAmount' iid "clues" "$clues" 0 clues attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       chamber <- selectJust $ locationIs Locations.chamberOfDecay
       removeTokens (attrs.ability 2) iid #clue n
       placeTokens (attrs.ability 2) chamber #doom n

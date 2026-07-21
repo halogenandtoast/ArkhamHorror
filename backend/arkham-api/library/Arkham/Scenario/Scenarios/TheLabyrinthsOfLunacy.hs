@@ -2,13 +2,12 @@ module Arkham.Scenario.Scenarios.TheLabyrinthsOfLunacy (theLabyrinthsOfLunacy) w
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Agenda.Types (Field (AgendaDoomThreshold))
+import Arkham.Agenda.Types (Field (AgendaDoom, AgendaDoomThreshold))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option (CampaignOption (PlayAsMiniCampaign))
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (getGameValue)
@@ -38,8 +37,7 @@ newtype TheLabyrinthsOfLunacy = TheLabyrinthsOfLunacy ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theLabyrinthsOfLunacy :: Difficulty -> TheLabyrinthsOfLunacy
-theLabyrinthsOfLunacy difficulty =
-  sideStory TheLabyrinthsOfLunacy "70001" "The Labyrinths of Lunacy" difficulty []
+theLabyrinthsOfLunacy = sideStory_ TheLabyrinthsOfLunacy "70001" "The Labyrinths of Lunacy"
 
 {- FOURMOLU_DISABLE -}
 standardTokens, hardTokens :: [ChaosTokenFace]
@@ -85,18 +83,16 @@ instance RunMessage TheLabyrinthsOfLunacy where
       setChaosTokens $ if isEasyStandard attrs then standardTokens else hardTokens
       pure s
     Setup -> runScenarioSetup TheLabyrinthsOfLunacy attrs do
-      let meta = toResult attrs.meta
-      let grp = currentGroup meta
+      grp <- getGroup
       setup $ ul do
         li "gatherSets"
-        li.validate False "epicMultiplayer"
-        li.validate True "singleGroup"
-        li.validate (grp == GroupA) "actDeckGroupA"
-        li.validate (grp == GroupB) "actDeckGroupB"
-        li.validate (grp == GroupC) "actDeckGroupC"
-        li.validate (grp == GroupA) "chamberOfSecrets"
-        li.validate (grp == GroupB) "chamberOfRainAndSorrows"
-        li.validate (grp == GroupC) "chamberOfNightAndRegret"
+        li.nested "singleGroup" do
+          li.validate (grp == GroupA) "actDeckGroupA"
+          li.validate (grp == GroupB) "actDeckGroupB"
+          li.validate (grp == GroupC) "actDeckGroupC"
+          li.validate (grp == GroupA) "chamberOfSecrets"
+          li.validate (grp == GroupB) "chamberOfRainAndSorrows"
+          li.validate (grp == GroupC) "chamberOfNightAndRegret"
         li "setAside"
         li.validate (grp == GroupA) "keyOfMysteries"
         li.validate (grp == GroupC) "hiddenChamberOfSecrets"
@@ -196,14 +192,14 @@ instance RunMessage TheLabyrinthsOfLunacy where
           placeUnderScenarioReference [secrets]
     PlaceDoomOnAgenda n canAdvance -> do
       agendaId <- selectJust UnflippedAgenda
-      doom <- getDoomCount
+      doom <- field AgendaDoom agendaId
       threshold <- traverse getGameValue =<< field AgendaDoomThreshold agendaId
       mythosStep <- getCurrentMythosPhaseStep
       lead <- getLead
       let placeAgendaDoom :: ReverseQueue m => Int -> m ()
           placeAgendaDoom amount = do
             placeDoom attrs agendaId amount
-            pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
+            when (canAdvance == CanAdvance) $ forTarget agendaId AdvanceAgendaIfThresholdSatisfied
       if mythosStep == Just PlaceDoomOnAgendaStep
         then chooseOneM lead do
           withI18n $ countVar n $ labeled' "placeAgendaDoom" $ placeAgendaDoom n
@@ -212,19 +208,30 @@ instance RunMessage TheLabyrinthsOfLunacy where
             $ maybe n (\value -> max 0 $ value - doom) threshold
         else placeAgendaDoom n
       pure s
-    ScenarioSpecific "act2Setup" _ -> do
-      flavor $ p "act2Setup"
-      let meta = toResult attrs.meta
-      abductors <- getSetAsideCardsMatching $ cardIs Enemies.facelessAbductor
-      shuffleCardsIntoDeck Deck.EncounterDeck abductors
+    ScenarioSpecific "act2Setup" _ -> scope "act2Setup" do
+      grp <- getGroup
+      flavor do
+        h "title"
+        ul do
+          li "shuffleEncounterDeck"
+          li "labyrinthineHalls"
+          case grp of
+            GroupA -> li "chamberOfDecay"
+            GroupB -> li "chambersOfRotAndPoison"
+            GroupC -> do
+              li "chamberOfHunger"
+              li "eixodolonsPet"
+          li "removeDoom"
+      shuffleSetAsideIntoDeck Deck.EncounterDeck (cardIs Enemies.facelessAbductor)
       shuffleEncounterDiscardBackIn
-      halls1 <- placeSetAsideLocation Locations.labyrinthineHallsFoulSmellingPath
-      halls2 <- placeSetAsideLocation Locations.labyrinthineHallsCorpseFilledPath
-      halls3 <- placeSetAsideLocation Locations.labyrinthineHallsOvergrownPath
-      setLocationLabel halls1 "labyrinthineHalls1"
-      setLocationLabel halls2 "labyrinthineHalls2"
-      setLocationLabel halls3 "labyrinthineHalls3"
-      case currentGroup meta of
+
+      placeRandomLocationGroupCards
+        "labyrinthineHalls"
+        [ Locations.labyrinthineHallsFoulSmellingPath
+        , Locations.labyrinthineHallsCorpseFilledPath
+        , Locations.labyrinthineHallsOvergrownPath
+        ]
+      case grp of
         GroupA -> placeSetAsideLocation_ Locations.chamberOfDecay
         GroupB -> do
           placeSetAsideLocation_ Locations.chamberOfRot
@@ -236,8 +243,14 @@ instance RunMessage TheLabyrinthsOfLunacy where
           createSetAsideEnemy_ Enemies.eixodolonsPet Global
       push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
       pure s
-    ScenarioSpecific "act3Setup" _ -> do
-      flavor $ p "act3Setup"
+    ScenarioSpecific "act3Setup" _ -> scope "act3Setup" do
+      flavor do
+        h "title"
+        ul do
+          li "abandonedWarehouse"
+          li "moveInvestigators"
+          li "eixodolon"
+          li "removeDoom"
       warehouse <- placeSetAsideLocation Locations.abandonedWarehouse
       reveal warehouse
       selectEach AnyEnemy disengageEnemyFromAll
@@ -247,7 +260,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
       push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
       pure s
     ResolveChaosToken _ Skull iid -> do
-      push $ DrawAnotherChaosToken iid
+      drawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
       whenM (fieldMap InvestigatorClues (> 0) iid) $ placeCluesOnLocation iid Cultist 1
@@ -271,92 +284,53 @@ instance RunMessage TheLabyrinthsOfLunacy where
         _ -> pure ()
       pure s
     ScenarioResolution r -> scope "resolutions" do
-      let meta = toResult attrs.meta
-      let grp = currentGroup meta
       case r of
         NoResolution -> do
           resolution "noResolution"
           push R1
-        Resolution 1 -> do
-          let meta' = meta {playedGroups = grp : playedGroups meta}
-          push $ SetScenarioMeta $ toJSON meta'
-          recordGroupOutcome grp Log.TheGroupPerished
-          -- Mini-campaign: automatically continue with the next group until all
-          -- three have played, without asking. Otherwise resolve the game.
-          if miniCampaign meta && length (playedGroups meta') < 3
-            then do
-              killRemainingInvestigators attrs
-              resolution "resolution1"
-              push $ ScenarioResolutionStep 10 (Resolution 1)
-            else do
-              killRemainingInvestigators attrs
-              case length (survivedGroups meta') of
-                0 -> do
-                  resolution "resolution1"
-                  push GameOver
-                1 -> resolution "resolution2"
-                _ -> resolution "resolution3"
-              endOfScenario
-        Resolution 2 -> do
-          let meta' =
-                meta
-                  { playedGroups = grp : playedGroups meta
-                  , survivedGroups = grp : survivedGroups meta
-                  }
-          push $ SetScenarioMeta $ toJSON meta'
-          recordGroupOutcome grp Log.TheGroupEscapedTheLabyrinth
-          if miniCampaign meta && length (playedGroups meta') < 3
-            then do
-              resolution "resolution2"
-              push $ ScenarioResolutionStep 10 (Resolution 2)
-            else do
-              case length (survivedGroups meta') of
-                1 -> resolution "resolution2"
-                2 -> resolution "resolution3"
-                _ -> resolution "resolution4"
-              endOfScenario
+        Resolution 1 -> resolveGroup attrs Log.TheGroupPerished
+        Resolution 2 -> resolveGroup attrs Log.TheGroupEscapedTheLabyrinth
         _ -> error "Invalid resolution"
       pure s
     ScenarioResolutionStep 10 _ -> do
-      -- Between mini-campaign games, players may swap investigators and/or decks
-      -- (standalone deck construction; no experience or trauma carries over).
-      -- chooseDecks re-prompts each player, then we restart the scenario through
-      -- the normal standalone path (StartScenario carries the meta across the
-      -- rebuild, so PreScenarioSetup skips the mode prompt and just picks the
-      -- next group).
       players <- allPlayers
       batchId <- getId
+      -- Reset the board before chooseDecks parks the queue waiting for new decks.
       pushAll
-        -- Tear down the previous group's board FIRST. chooseDecks wipes the
-        -- investigators and then parks on the deck prompt; if the group's enemies
-        -- (etc.) were still in play they'd reference now-missing investigators and
-        -- any enemy-matcher scan (or a plain game load) would crash.
         [ ResetGame
         , chooseDecks batchId players [ResetInvestigators, ResetGame, StartScenario attrs.id Nothing]
         ]
-      -- Clear the previous group's decks so only the freshly chosen ones populate.
       pure $ TheLabyrinthsOfLunacy attrs {scenarioPlayerDecks = mempty, scenarioStoryCards = mempty}
     _ -> TheLabyrinthsOfLunacy <$> liftRunMessage msg attrs
 
-killRemainingInvestigators :: ReverseQueue m => ScenarioAttrs -> m ()
-killRemainingInvestigators attrs =
-  selectEach UneliminatedInvestigator $ push . InvestigatorKilled (toSource attrs)
+resolveGroup :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> Log.GroupOutcome -> m ()
+resolveGroup attrs outcome = do
+  meta <- getMeta
+  let survived = outcome == Log.TheGroupEscapedTheLabyrinth
+  let meta' = completeCurrentGroup survived meta
+  setScenarioMeta meta'
+  recordGroupOutcome meta.currentGroup outcome
+  unless survived $ selectEach UneliminatedInvestigator $ push . InvestigatorKilled (toSource attrs)
+  if miniCampaign meta' && not (miniCampaignComplete meta')
+    then resolutionWithChooseOne (resolutionKey meta') do
+      labeled' "endScenario" do
+        when (null meta'.survivedGroups) $ push GameOver
+        endOfScenario
+      labeled' "playAnotherGroup" $ push $ ScenarioResolutionStep 10 (Resolution 1)
+    else do
+      resolution $ resolutionKey meta'
+      when (null meta'.survivedGroups) $ push GameOver
+      endOfScenario
 
-{- | Record a group's fate into the (standalone) campaign log. Each group is its
-own log section, so the log reflects every group played in the mini-campaign.
--}
 recordGroupOutcome :: ReverseQueue m => Group -> Log.GroupOutcome -> m ()
 recordGroupOutcome grp outcome = record $ case grp of
   GroupA -> Log.GroupA outcome
   GroupB -> Log.GroupB outcome
   GroupC -> Log.GroupC outcome
 
-{- | Present the choice of which (as-yet-unplayed) group is trapped in the
-labyrinth, resolving the chosen group's intro flavor text.
--}
 chooseGroup :: (HasI18n, ReverseQueue m) => Meta -> m ()
 chooseGroup meta = do
-  let remaining = filter (`notElem` playedGroups meta) [minBound ..]
+  let remaining = remainingGroups meta
   let chooseGroupTxt = if miniCampaign meta then "chooseGroup" else "chooseGroupSingle"
   storyWithChooseOneM' (h "title" >> p chooseGroupTxt) do
     for_ remaining \g -> do

@@ -77,13 +77,21 @@ const currentTreacheries = computed(() => {
     filter((t) => t.placement.tag === 'Limbo' && t.drawnBy === investigatorId.value && (props.playerId === props.investigator.playerId || !t.peril))
 })
 
-// Enemies mid-spawn are Unplaced (no location yet). Show them like a resolving treachery,
-// next to the threat area of the investigator whose question is currently active, so the
-// player can see the card they're choosing a spawn location for.
+// Enemies mid-spawn are Unplaced (no location yet). Show them like a resolving
+// treachery. Keep the active enemy visible while a choice is being submitted:
+// the client clears the current question before the next one arrives, which
+// otherwise makes multi-step revelation effects briefly remove and re-add it.
 const spawningEnemies = computed(() => {
-  if (!props.game.question[props.investigator.playerId]) return []
+  const hasQuestion = Boolean(props.game.question[props.investigator.playerId])
+  const activeCardId = props.game.activeCard ? CardT.cardId(props.game.activeCard) : null
+  const isResolvingActiveCard =
+    props.game.activeInvestigatorId === investigatorId.value && activeCardId !== null
+
   return Object.values(props.game.enemies).filter(
-    (e) => e.placement.tag === 'OtherPlacement' && e.placement.contents === 'Unplaced'
+    (e) =>
+      e.placement.tag === 'OtherPlacement' &&
+      e.placement.contents === 'Unplaced' &&
+      (hasQuestion || (isResolvingActiveCard && activeCardId === e.cardId))
   )
 })
 

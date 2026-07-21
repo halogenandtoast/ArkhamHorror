@@ -101,3 +101,9 @@ flippedOver :: (FetchCard c, Tracing m, HasGame m, CardGen m) => c -> m ()
 flippedOver c = do
   card <- fetchCard c
   replaceCard card.id (flipCard card)
+
+flippedOverCapture :: (FetchCard c, Tracing m, HasGame m, CardGen m) => c -> m Card
+flippedOverCapture c = do
+  card <- flipCard <$> fetchCard c
+  replaceCard card.id card
+  pure card

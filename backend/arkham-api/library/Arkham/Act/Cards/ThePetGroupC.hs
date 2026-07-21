@@ -23,17 +23,13 @@ instance RunMessage ThePetGroupC where
   runMessage msg a@(ThePetGroupC attrs) = runQueueT $ scenarioI18n $ scope "thePet" $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       defeated <- inVictoryDisplay $ cardIs Enemies.eixodolonsPet
-      if defeated
-        then flavor $ h "title" >> p "victory"
-        else do
-          mPet <- selectOne $ enemyIs Enemies.eixodolonsPet
-          for_ mPet \pet -> do
-            flavor $ h "title" >> p "breaksFree"
-            hunger <- selectJust $ locationIs Locations.chamberOfHunger
-            place pet (AtLocation hunger)
-            investigators <- select $ InvestigatorAt $ locationIs Locations.chamberOfHunger
-            for_ investigators \iid -> initiateEnemyAttack pet attrs iid
-      push $ ScenarioSpecific "act3Setup" Null
+      unless defeated do
+        withMatch (enemyIs Enemies.eixodolonsPet) \pet -> do
+          hunger <- selectJust $ locationIs Locations.chamberOfHunger
+          place pet (AtLocation hunger)
+          investigators <- select $ InvestigatorAt $ locationIs Locations.chamberOfHunger
+          for_ investigators $ initiateEnemyAttack pet attrs
+      scenarioSpecific_ "act3Setup"
       advanceActDeck attrs
       pure a
     _ -> ThePetGroupC <$> liftRunMessage msg attrs

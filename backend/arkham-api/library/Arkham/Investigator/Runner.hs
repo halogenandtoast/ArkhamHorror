@@ -1606,6 +1606,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   HealHorrorDelayed target@(isTarget a -> True) source n | n > 0 -> handleHealHorrorDelayed a target source n msg
   Do (HealHorrorDelayed (isTarget a -> True) source n) -> handleDoHealHorrorDelayed a source n
   Do (HealHorror (isTarget a -> True) source n) -> handleDoHealHorror a source n
+  MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
   MoveTokens s _ (isTarget a -> True) tType amount -> liftRunMessage (PlaceTokens s (toTarget a) tType amount) a
   MoveTokens s (isSource a -> True) _target tType amount | amount > 0 -> do
     case tType of

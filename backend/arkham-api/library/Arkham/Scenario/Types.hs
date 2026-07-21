@@ -120,8 +120,9 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
   , scenarioUseHardExpertReference :: Bool
-  -- ^ Ultimatum of Malevolence: use the Hard/Expert reference side while
-  -- nominally playing Easy/Standard (isEasyStandard/isHardExpert honor this)
+  {- ^ Ultimatum of Malevolence: use the Hard/Expert reference side while
+  nominally playing Easy/Standard (isEasyStandard/isHardExpert honor this)
+  -}
   , scenarioNoRemainingInvestigatorsHandler :: Target
   , scenarioVictoryDisplay :: [Card]
   , scenarioChaosBag :: ChaosBag
@@ -286,6 +287,9 @@ sideStory f cardCode name difficulty layout =
   scenario (f . setSideStory) cardCode name difficulty layout
  where
   setSideStory attrs = attrs {scenarioIsSideStory = True}
+
+sideStory_ :: (ScenarioAttrs -> a) -> CardCode -> Name -> Difficulty -> a
+sideStory_ f cardCode name difficulty = sideStory f cardCode name difficulty []
 
 scenario
   :: (ScenarioAttrs -> a)

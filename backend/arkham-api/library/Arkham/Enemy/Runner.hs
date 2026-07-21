@@ -499,8 +499,9 @@ instance RunMessage EnemyAttrs where
                       atSameLocation <- iid <=~> investigatorAt lid
                       pushAll
                         $ [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not (spawnDetailsUnengaged details)]
+                        <> [EnemyEntered eid lid]
                         <> [EnemyCheckEngagement eid | not atSameLocation && not (spawnDetailsUnengaged details)]
-                        <> [EnemyEntered eid lid, EnemySpawned details]
+                        <> [EnemySpawned details]
                     _ -> do
                       investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
                       lead <- getLeadPlayer

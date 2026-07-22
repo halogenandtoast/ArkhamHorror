@@ -3555,7 +3555,10 @@ runGameMessage msg g = case msg of
     pushAll
       $ if ignoreRevelation
         then
-          [toDiscardBy iid GameSource (TreacheryTarget treacheryId) | needsDiscard]
+          [ if needsDiscard
+              then toDiscardBy iid GameSource (TreacheryTarget treacheryId)
+              else RemoveTreachery treacheryId
+          ]
             <> [ResolvedCard iid (toCard treachery) | needsResolve]
         else
           [ When revelation

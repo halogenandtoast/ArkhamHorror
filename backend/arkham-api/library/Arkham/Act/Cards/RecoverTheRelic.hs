@@ -5,6 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -21,7 +22,8 @@ recoverTheRelic = act (3, A) RecoverTheRelic Cards.recoverTheRelic Nothing
 
 instance HasModifiersFor RecoverTheRelic where
   getModifiersFor (RecoverTheRelic a) = do
-    modifySelect a (EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort) [HealthModifier 2]
+    n <- perPlayer 2
+    modifySelect a (EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort) [HealthModifier n]
 
 instance HasAbilities RecoverTheRelic where
   getAbilities = actAbilities1 \a ->

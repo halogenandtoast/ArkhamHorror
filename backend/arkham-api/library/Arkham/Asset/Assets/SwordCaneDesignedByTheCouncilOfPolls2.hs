@@ -1,17 +1,17 @@
 module Arkham.Asset.Assets.SwordCaneDesignedByTheCouncilOfPolls2 (swordCaneDesignedByTheCouncilOfPolls2) where
 
 import Arkham.Ability
+import Arkham.Actions (orActions)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Actions (orActions)
 import Arkham.Evade.Types
 import Arkham.Fight.Types
 import Arkham.Helpers.CombatTarget
 import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Message.Lifted.Action (narrowTakenActions)
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype SwordCaneDesignedByTheCouncilOfPolls2 = SwordCaneDesignedByTheCouncilOfPolls2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,10 +22,23 @@ swordCaneDesignedByTheCouncilOfPolls2 = asset SwordCaneDesignedByTheCouncilOfPol
 
 instance HasAbilities SwordCaneDesignedByTheCouncilOfPolls2 where
   getAbilities (SwordCaneDesignedByTheCouncilOfPolls2 x) =
-    [ controlled x 1 (any_ [CanEvadeEnemy (x.ability 2), CanFightEnemy (x.ability 2), EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (x.ability 2)])
+    [ controlled
+        x
+        1
+        ( oneOf
+            [ any_
+                [ CanEvadeEnemy (x.ability 2)
+                , CanFightEnemy (x.ability 2)
+                , EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (x.ability 2)
+                ]
+            , exists $ YourLocation <> LocationWithConcealedCard
+            ]
+        )
         $ freeReaction
         $ AssetEntersPlay #after (be x)
-    , displayAsAction $ restricted x 2 ControlsThis $ ActionAbility (orActions [#fight, #evade]) Nothing (exhaust x <> ActionCost 1)
+    , displayAsAction
+        $ restricted x 2 ControlsThis
+        $ ActionAbility (orActions [#fight, #evade]) Nothing (exhaust x <> ActionCost 1)
     ]
 
 instance RunMessage SwordCaneDesignedByTheCouncilOfPolls2 where
@@ -50,11 +63,21 @@ instance RunMessage SwordCaneDesignedByTheCouncilOfPolls2 where
           narrowTakenActions [#fight]
           chooseOneM iid do
             for_ [#willpower, #agility] \sk -> do
-              skillLabeled sk $ chooseEvadeEnemyEdit sid iid source (\ce -> ce {chooseEvadeSkillType = sk, chooseEvadeIsAction = True, chooseEvadePayCost = False})
+              skillLabeled sk
+                $ chooseEvadeEnemyEdit
+                  sid
+                  iid
+                  source
+                  (\ce -> ce {chooseEvadeSkillType = sk, chooseEvadeIsAction = True, chooseEvadePayCost = False})
         when canFight $ labeledI "fight" do
           narrowTakenActions [#evade]
           chooseOneM iid do
             for_ [#willpower, #combat] \sk -> do
-              skillLabeled sk $ chooseFightEnemyEdit sid iid source (\cf -> cf {chooseFightSkillType = sk, chooseFightIsAction = True, chooseFightPayCost = False})
+              skillLabeled sk
+                $ chooseFightEnemyEdit
+                  sid
+                  iid
+                  source
+                  (\cf -> cf {chooseFightSkillType = sk, chooseFightIsAction = True, chooseFightPayCost = False})
       pure a
     _ -> SwordCaneDesignedByTheCouncilOfPolls2 <$> liftRunMessage msg attrs

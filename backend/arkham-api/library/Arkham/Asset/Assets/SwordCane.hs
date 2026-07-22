@@ -1,9 +1,9 @@
 module Arkham.Asset.Assets.SwordCane (swordCane) where
 
 import Arkham.Ability
+import Arkham.Actions (orActions)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Actions (orActions)
 import Arkham.Evade.Types
 import Arkham.Fight.Types
 import Arkham.Helpers.CombatTarget
@@ -30,7 +30,8 @@ instance HasAbilities SwordCane where
         )
         $ freeReaction
         $ AssetEntersPlay #after (be x)
-    , restricted x 2 ControlsThis $ ActionAbility (orActions [#fight, #evade]) Nothing (exhaust x <> ActionCost 1)
+    , restricted x 2 ControlsThis
+        $ ActionAbility (orActions [#fight, #evade]) Nothing (exhaust x <> ActionCost 1)
     ]
 
 instance RunMessage SwordCane where
@@ -47,11 +48,21 @@ instance RunMessage SwordCane where
           narrowTakenActions [#fight]
           chooseOneM iid do
             for_ [#willpower, #agility] \sk -> do
-              skillLabeled sk $ chooseEvadeEnemyEdit sid iid source (\ce -> ce {chooseEvadeSkillType = sk, chooseEvadeIsAction = True, chooseEvadePayCost = False})
+              skillLabeled sk
+                $ chooseEvadeEnemyEdit
+                  sid
+                  iid
+                  source
+                  (\ce -> ce {chooseEvadeSkillType = sk, chooseEvadeIsAction = True, chooseEvadePayCost = False})
         when canFight $ labeledI "fight" do
           narrowTakenActions [#evade]
           chooseOneM iid do
             for_ [#willpower, #combat] \sk -> do
-              skillLabeled sk $ chooseFightEnemyEdit sid iid source (\cf -> cf {chooseFightSkillType = sk, chooseFightIsAction = True, chooseFightPayCost = False})
+              skillLabeled sk
+                $ chooseFightEnemyEdit
+                  sid
+                  iid
+                  source
+                  (\cf -> cf {chooseFightSkillType = sk, chooseFightIsAction = True, chooseFightPayCost = False})
       pure a
     _ -> SwordCane <$> liftRunMessage msg attrs

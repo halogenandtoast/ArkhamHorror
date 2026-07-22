@@ -326,10 +326,11 @@ handleDiscardCard a@InvestigatorAttrs{..} iid source cardId msg = do
       inMulligan <- getInMulligan
       beforeWindowMsg <- checkWindows [mkWhen (Window.Discarded (Just iid) source card)]
       afterWindowMsg <- checkWindows [mkAfter (Window.Discarded (Just iid) source card)]
+      beforeHandWindowMsg <- checkWindows [mkWhen (Window.DiscardedFromHand iid source card)]
       afterHandWindowMsg <- checkWindows [mkAfter (Window.DiscardedFromHand iid source card)]
       if inMulligan
         then push (Do msg)
-        else pushAll [beforeWindowMsg, Do msg, afterWindowMsg, afterHandWindowMsg]
+        else pushAll [beforeWindowMsg, beforeHandWindowMsg, Do msg, afterWindowMsg, afterHandWindowMsg]
     Nothing -> do
       card <- getCard cardId
       beforeWindowMsg <- checkWindows [mkWhen (Window.Discarded (Just iid) source card)]

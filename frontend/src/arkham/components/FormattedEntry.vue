@@ -541,6 +541,12 @@ h3, :deep(h3) {
     background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M9 19l-6-6 1.414-1.414L9 16.172l10.586-10.586L21 7.586z"/%3E%3C/svg%3E');
   }
 
+  /* Red entries add outer spacing; keep their marker aligned with the first line.
+     Excluding list items preserves the marker position used by normal list entries. */
+  &:not(li):has(> div > .red:first-child)::before {
+    margin-top: 20px;
+  }
+
   &:has(> .composite),
   &:has(> ul) {
     display: grid;

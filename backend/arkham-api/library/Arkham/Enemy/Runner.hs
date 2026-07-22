@@ -1661,6 +1661,9 @@ instance RunMessage EnemyAttrs where
               CanOnlyBeDefeatedBy source' -> First (Just source')
               _ -> First Nothing
             mOnlyBeDefeatedByModifier = getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
+          when (amount' > 0) do
+            let (before, _, after) = frame $ Window.PlacedDamage source (toTarget a) amount'
+            pushAll [before, after]
           validDefeat <-
             ( ( canBeDefeated
                   && not hasSwarm

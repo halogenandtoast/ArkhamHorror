@@ -1,6 +1,8 @@
 module Arkham.Treachery.Cards.CaughtInTheCrossfire (caughtInTheCrossfire) where
 
 import Arkham.Ability
+import Arkham.Classes.HasQueue (popMessageMatching)
+import Arkham.DamageEffect (DamageAssignment)
 import Arkham.Helpers.Window (damagedEnemy)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -30,15 +32,23 @@ instance RunMessage CaughtInTheCrossfire where
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 (damagedEnemy -> eid) _ -> do
       sid <- getRandom
+      pendingDamage <-
+        lift
+          $ popMessageMatching
+          $ \case Damaged (EnemyTarget eid') _ -> eid == eid'; _ -> False
       chooseBeginSkillTest sid iid (attrs.ability 1) iid [#intellect, #agility] (Fixed 3)
-      pure $ CaughtInTheCrossfire $ attrs & setMeta (Just eid)
+      let damage = pendingDamage >>= \case Damaged _ assignment -> Just assignment; _ -> Nothing
+      pure $ CaughtInTheCrossfire $ attrs & setMeta ((eid,) <$> damage)
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      for_ (toResultDefault @(Maybe EnemyId) Nothing attrs.meta) \eid ->
+      for_ (toResultDefault @(Maybe (EnemyId, DamageAssignment)) Nothing attrs.meta) \(eid, damage) -> do
         damageModifier (attrs.ability 1) eid (DamageTaken (-1))
+        push $ Damaged (EnemyTarget eid) damage
       directDamage iid (attrs.ability 1) 1
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
+      for_ (toResultDefault @(Maybe (EnemyId, DamageAssignment)) Nothing attrs.meta) \(eid, damage) ->
+        push $ Damaged (EnemyTarget eid) damage
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     _ -> CaughtInTheCrossfire <$> liftRunMessage msg attrs

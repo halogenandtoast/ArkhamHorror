@@ -1094,6 +1094,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , sourceMatches source' sourceMatcher
             , gameValueMatches n valueMatcher
             ]
+        Window.PlacedDamage source' (EnemyTarget enemyId) n | counterMatcher == Matcher.DamageCounter -> do
+          andM
+            [ matches enemyId enemyMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
         _ -> noMatch
     Matcher.PlacedCounterOnAgenda timing agendaMatcher sourceMatcher counterMatcher valueMatcher ->
       guardTiming timing $ \case

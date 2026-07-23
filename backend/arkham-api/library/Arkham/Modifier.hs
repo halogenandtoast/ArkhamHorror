@@ -390,10 +390,11 @@ data ModifierType
   | Persist
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | OtherDoomSubtracts
-  | -- | Like 'ForceSpawn', but only replaces an enemy's normal spawn location
-    -- (a scenario rule, e.g. Dead Heat forcing Ghoul/Risen enemies to a random
-    -- location). A 'ForceSpawn' from a drawing effect (On the Hunt, Kicking the
-    -- Hornet's Nest) takes precedence over this.
+  | {- | Like 'ForceSpawn', but only replaces an enemy's normal spawn location
+    (a scenario rule, e.g. Dead Heat forcing Ghoul/Risen enemies to a random
+    location). A 'ForceSpawn' from a drawing effect (On the Hunt, Kicking the
+    Hornet's Nest) takes precedence over this.
+    -}
     OverwrittenSpawn SpawnAt
   | PlaceOnBottomOfDeckInsteadOfDiscard
   | -- | Player cards that would be discarded are placed beneath the target instead
@@ -427,13 +428,15 @@ data ModifierType
   | ScenarioModifier Text
   | ScenarioModifierValue Text Value
   | SearchDepth Int
-  | -- | When searching, also fold in every other investigator's matching
-    -- deck/hand/discard cards, keyed under the same plain Zone. See Leah Atwood
-    -- Codex 2 (Fate of the Vale).
+  | {- | When searching, also fold in every other investigator's matching
+    deck/hand/discard cards, keyed under the same plain Zone. See Leah Atwood
+    Codex 2 (Fate of the Vale).
+    -}
     SearchAllInvestigators
-  | -- | When searching, also fold this investigator's deck into the FromDeck
-    -- zone (their cards keep pcOwner). Used to extend a search into a single
-    -- chosen deck. See Leah Atwood Codex 2 (Fate of the Vale).
+  | {- | When searching, also fold this investigator's deck into the FromDeck
+    zone (their cards keep pcOwner). Used to extend a search into a single
+    chosen deck. See Leah Atwood Codex 2 (Fate of the Vale).
+    -}
     SearchIncludesDeckOf InvestigatorId
   | Semaphore
   | SetAbilityCost Cost
@@ -480,12 +483,14 @@ data ModifierType
   | VehicleCannotMove
   | WillCancelHorror Int
   | XPModifier Text Int
+  | TreatFullyFloodedAsPartiallyFlooded
   | UIModifier UIModifier
   | BecomeHomunculusWhenDefeated
   | BecomeInvestigator InvestigatorId
   | DrawsEachEncounterCard
-  | -- | When drawing encounter cards (e.g. the mythos draw), present this target
-    -- to click instead of the encounter deck. The draw itself is unchanged.
+  | {- | When drawing encounter cards (e.g. the mythos draw), present this target
+    to click instead of the encounter deck. The draw itself is unchanged.
+    -}
     DrawEncounterCardsVia TargetMatcher
   deriving stock (Show, Eq, Ord, Data)
 
@@ -497,6 +502,7 @@ data UIModifier
   | OverlayCheckmark {left :: Double, top :: Double} -- See The Stakeout for example
   | Rotated Int
   | Positioned {x :: Double, y :: Double} -- player-driven location drag offset (un-zoomed CSS px)
+  | GridOffset {columnOffset :: Double, rowOffset :: Double} -- fractional location-grid cell offset
   | Oversized
   deriving stock (Show, Eq, Ord, Data)
 

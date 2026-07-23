@@ -7,8 +7,8 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (DeepOne))
 
 newtype DrownedShanty = DrownedShanty LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 drownedShanty :: LocationCard DrownedShanty
 drownedShanty = location DrownedShanty Cards.drownedShanty 0 (Static 2)

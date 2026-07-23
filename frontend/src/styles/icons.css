@@ -278,3 +278,27 @@
     content: "\e900";
   }
 }
+
+.rune-V {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\e915";
+  }
+}
+
+.rune-W {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\e916";
+  }
+}
+
+.rune-Z {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\e919";
+  }
+}

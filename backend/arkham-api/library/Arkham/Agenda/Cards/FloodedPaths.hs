@@ -10,7 +10,7 @@ import Arkham.Matcher
 import Arkham.Projection
 
 newtype FloodedPaths = FloodedPaths AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 floodedPaths :: AgendaCard FloodedPaths
@@ -32,7 +32,13 @@ instance HasModifiersFor FloodedPaths where
 
 instance HasAbilities FloodedPaths where
   getAbilities (FloodedPaths a) =
-    [ restricted a 1 (youExist $ at_ FullyFloodedLocation)
+    [ restricted
+        a
+        1
+        ( youExist
+            $ at_ FullyFloodedLocation
+            <> InvestigatorWithoutModifier TreatFullyFloodedAsPartiallyFlooded
+        )
         $ forced
         $ TurnBegins #when You
     ]

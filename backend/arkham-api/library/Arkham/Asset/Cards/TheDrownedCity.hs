@@ -681,49 +681,57 @@ walkInFaith :: CardDef
 walkInFaith =
   permanent
     $ (storyAsset_ "11754a" ("Walk in Faith" <:> "Blind Devotion") Tasks)
-      {cdCardTraits = setFromList [Task, Incomplete]}
+      { cdCardTraits = setFromList [Task, Incomplete]
+      }
 
 toeTheLine :: CardDef
 toeTheLine =
   permanent
     $ (storyAsset_ "11755a" ("Toe the Line" <:> "Disavowed and Disgraced") Tasks)
-      {cdCardTraits = setFromList [Task, Incomplete]}
+      { cdCardTraits = setFromList [Task, Incomplete]
+      }
 
 noPlaceLikeHome :: CardDef
 noPlaceLikeHome =
   permanent
     $ (storyAsset_ "11753a" ("No Place Like Home" <:> "Lost and Uncertain") Tasks)
-      {cdCardTraits = setFromList [Task, Incomplete]}
+      { cdCardTraits = setFromList [Task, Incomplete]
+      }
 
 goodMoney :: CardDef
 goodMoney =
   permanent
     $ (storyAsset_ "11756a" ("Good Money" <:> "The \"Quid\" Part") Tasks)
-      {cdCardTraits = setFromList [Task, Incomplete]}
+      { cdCardTraits = setFromList [Task, Incomplete]
+      }
 
 doNoHarm :: CardDef
 doNoHarm =
   permanent
     $ (storyAsset_ "11758a" ("Do No Harm" <:> "Can You Save Them?") Tasks)
-      {cdCardTraits = setFromList [Task, Incomplete]}
+      { cdCardTraits = setFromList [Task, Incomplete]
+      }
 
 proveYourWorth :: CardDef
 proveYourWorth =
   permanent
     $ (storyAsset_ "11757a" ("Prove Your Worth" <:> "Are You a Burden?") Tasks)
-      {cdCardTraits = setFromList [Task, Incomplete]}
+      { cdCardTraits = setFromList [Task, Incomplete]
+      }
 
 dreamsOfDestruction :: CardDef
 dreamsOfDestruction =
   permanent
     $ (storyAsset_ "11759a" ("Dreams of Destruction" <:> "Visions of a Grim Future") Tasks)
-      {cdCardTraits = setFromList [Task, Incomplete]}
+      { cdCardTraits = setFromList [Task, Incomplete]
+      }
 
 plumbTheDepths :: CardDef
 plumbTheDepths =
   permanent
     $ (storyAsset_ "11760a" ("Plumb the Depths" <:> "Compulsive Research") Tasks)
-      {cdCardTraits = setFromList [Task, Incomplete]}
+      { cdCardTraits = setFromList [Task, Incomplete]
+      }
 
 -- The Drowned City — Expedition story assets
 expeditionGear :: CardDef
@@ -731,6 +739,7 @@ expeditionGear =
   (storyAsset "11761" ("Expedition Gear" <:> "Tough but Reliable") 2 TdcExpedition)
     { cdCardTraits = setFromList [Item, Trait.Supply]
     , cdSkills = [#combat, #agility, #wild]
+    , cdUses = uses Supply 3
     }
 
 laudanum :: CardDef
@@ -738,6 +747,7 @@ laudanum =
   (storyAsset "11762" ("Laudanum" <:> "Desperate Measures") 2 TdcExpedition)
     { cdCardTraits = setFromList [Item, Trait.Supply]
     , cdSkills = [#willpower, #willpower]
+    , cdUses = uses Supply 3
     }
 
 alienTablet :: CardDef
@@ -746,6 +756,8 @@ alienTablet =
     { cdCardTraits = setFromList [Item, Relic, Rlyeh]
     , cdSkills = [#intellect, #intellect]
     , cdSlots = [#hand]
+    , cdUses = uses Secret 4
+    , cdUnique = True
     }
 
 divingSuitTheDrownedCity :: CardDef
@@ -779,49 +791,57 @@ noPlaceLikeHomeCompleted :: CardDef
 noPlaceLikeHomeCompleted =
   permanent
     $ (storyAsset_ "11753b" ("No Place Like Home" <:> "Where Your Heart Is") Tasks)
-      {cdCardTraits = setFromList [Task, Completed]}
+      { cdCardTraits = setFromList [Task, Completed]
+      }
 
 walkInFaithCompleted :: CardDef
 walkInFaithCompleted =
   permanent
     $ (storyAsset_ "11754b" ("Walk in Faith" <:> "Filled with Spirit") Tasks)
-      {cdCardTraits = setFromList [Task, Completed]}
+      { cdCardTraits = setFromList [Task, Completed]
+      }
 
 toeTheLineCompleted :: CardDef
 toeTheLineCompleted =
   permanent
     $ (storyAsset_ "11755b" ("Toe the Line" <:> "Restored and Resolved") Tasks)
-      {cdCardTraits = setFromList [Task, Completed]}
+      { cdCardTraits = setFromList [Task, Completed]
+      }
 
 goodMoneyCompleted :: CardDef
 goodMoneyCompleted =
   permanent
     $ (storyAsset_ "11756b" ("Good Money" <:> "The \"Quo\" Part") Tasks)
-      {cdCardTraits = setFromList [Task, Completed]}
+      { cdCardTraits = setFromList [Task, Completed]
+      }
 
 proveYourWorthCompleted :: CardDef
 proveYourWorthCompleted =
   permanent
     $ (storyAsset_ "11757b" ("Prove Your Worth" <:> "Standing on Your Own") Tasks)
-      {cdCardTraits = setFromList [Task, Completed]}
+      { cdCardTraits = setFromList [Task, Completed]
+      }
 
 doNoHarmCompleted :: CardDef
 doNoHarmCompleted =
   permanent
     $ (storyAsset_ "11758b" ("Do No Harm" <:> "Reliable Support") Tasks)
-      {cdCardTraits = setFromList [Task, Completed]}
+      { cdCardTraits = setFromList [Task, Completed]
+      }
 
 dreamsOfDestructionCompleted :: CardDef
 dreamsOfDestructionCompleted =
   permanent
     $ (storyAsset_ "11759b" ("Dreams of Destruction" <:> "The Future is Not Fixed") Tasks)
-      {cdCardTraits = setFromList [Task, Completed]}
+      { cdCardTraits = setFromList [Task, Completed]
+      }
 
 plumbTheDepthsCompleted :: CardDef
 plumbTheDepthsCompleted =
   permanent
     $ (storyAsset_ "11760b" ("Plumb the Depths" <:> "Mastered Acumen") Tasks)
-      {cdCardTraits = setFromList [Task, Completed]}
+      { cdCardTraits = setFromList [Task, Completed]
+      }
 
 -- The Drowned City — encounter story assets (artifacts / relics / allies)
 obsidianRelic :: CardDef

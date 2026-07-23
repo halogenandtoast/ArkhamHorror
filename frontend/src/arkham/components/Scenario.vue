@@ -295,6 +295,20 @@ const locationOffsets = computed<Record<string, { x: number, y: number }>>(() =>
   return offsets
 })
 
+const locationGridOffsets = computed<Record<string, { column: number, row: number }>>(() => {
+  const offsets: Record<string, { column: number, row: number }> = {}
+  for (const loc of Object.values(props.game.locations)) {
+    for (const m of loc.modifiers ?? []) {
+      if (m.type.tag !== 'UIModifier') continue
+      const c = m.type.contents as any
+      if (c && typeof c === 'object' && c.tag === 'GridOffset') {
+        offsets[loc.id] = { column: c.columnOffset, row: c.rowOffset }
+      }
+    }
+  }
+  return offsets
+})
+
 const hasAnyOffset = computed(() =>
   Object.keys(locationOffsets.value).length > 0
     || Object.keys(pendingOffsets.value).length > 0
@@ -369,7 +383,12 @@ function effectiveOffset(locationId: string): { x: number, y: number } {
 // `.location-cell` so Vue's TransitionGroup FLIP can animate the wrapper
 // without clobbering this transform during rotation reshuffles.
 function locationOffsetStyle(location: { id: string }) {
-  const canonical = effectiveOffset(location.id)
+  const userOffset = effectiveOffset(location.id)
+  const gridOffset = locationGridOffsets.value[location.id] ?? { column: 0, row: 0 }
+  const canonical = {
+    x: userOffset.x + gridOffset.column * (cellDimensions.value.w + 20),
+    y: userOffset.y + gridOffset.row * (cellDimensions.value.h + 20),
+  }
   // Apply the user's current rotation so the offset moves with the rotated
   // layout instead of staying in absolute screen space.
   const off = rotateOffset(canonical, rotationSteps.value)

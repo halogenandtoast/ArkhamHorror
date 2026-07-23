@@ -13,8 +13,8 @@ import Arkham.Tracing
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theWesternWall" a
 
--- A location's vertical "level": its grid row + 1 (row 0 is level 1). Used by the
--- scenario's chaos tokens ("X is your location's level").
+-- A location's vertical "level": row 0 is level 1 and distance from row 0
+-- descends through levels 2–5. This also supports saves made with positive rows.
 getLocationLevel
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m, Tracing m)
   => investigator -> m Int
@@ -22,4 +22,4 @@ getLocationLevel investigator =
   fromMaybe 0 <$> runMaybeT do
     loc <- MaybeT $ getMaybeLocation investigator
     pos <- MaybeT $ field LocationPosition loc
-    pure (pos.row + 1)
+    pure (abs pos.row + 1)

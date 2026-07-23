@@ -595,6 +595,15 @@ h3, :deep(h3) {
   }
 }
 
+/* Keep prose and adjacent lists visually distinct without adding outer list
+   margins that would offset valid/invalid status markers. */
+p + ul, :deep(p + ul),
+div + ul, :deep(div + ul),
+ul + p, :deep(ul + p),
+ul + div, :deep(ul + div) {
+  margin-block-start: 10px;
+}
+
 ul, :deep(ul) {
   list-style-type: "\0059";
   margin-inline: 10px;

@@ -5,8 +5,8 @@ import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
 
 newtype SunkenStairway = SunkenStairway LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sunkenStairway :: LocationCard SunkenStairway
 sunkenStairway = location SunkenStairway Cards.sunkenStairway 0 (Static 2)

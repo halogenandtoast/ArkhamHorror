@@ -1,4 +1,67 @@
 {
+  "intro": {
+    "title": "The Western Wall",
+    "checkCampaignLog": "Check your Campaign Log.",
+    "headedWest": "If the expedition headed west, proceed to _The Western Wall 1_.",
+    "headedEast": "If the expedition headed east, skip to _The Western Wall 2_.",
+    "westernWall1": "_The Western Wall 1_: It becomes increasingly clear as you proceed westward that the beach you are walking along is the top of an ancient ring wall. Fathoms below, the wall forms a sheer drop to a round plaza on the ocean floor. With some planning, you could descend safely to the ocean floor by moving from pocket to pocket of trapped air in the old ruins. If you’re careful, you may just be able to reach the sea floor alive.",
+    "westernWall2": "_The Western Wall 2_: The unsteady foundations of the ancient city shudder as R’lyeh continues to rise. Collapsing layers of crumbling masonry and exposed hallways form a treacherous path up to the surface. In order to safely ascend, you will need to climb the sheer face of the ancient wall by moving from pocket to pocket of trapped air. Knowing the dangers of pressure sickness, you can’t simply float to the top. If you’re careful, you may just be able to reach the surface alive.",
+    "resolveDoNoHarm": "If an investigator has the Do No Harm Task, they resolve their respective story to the right.",
+    "proceedToWesternSetup": "Proceed to _Setup (v.I) - Western Expedition_.",
+    "proceedToEasternSetup": "Proceed to _Setup (v.II) - Eastern Expedition_.",
+    "doNoHarm": {
+      "title": "Task: Do No Harm",
+      "instructions": "_Read only if you have the “Do No Harm” Task:_",
+      "body": "As you prepare to traverse the wall, you spot a body lying prone on the black sand. It is a man in a tattered patchwork cloak. Pushing aside questions of how he got here, you approach and take his pulse. He is still alive, though heavily wounded. Yellow pus oozes from round sucker marks on his neck, arms, and chest. You bandage his wounds as best you can, then wake him with some smelling salts. His eyes flutter open and he rasps one word: “Mother.” You look to the others. This man clearly needs help.",
+      "choose": "You must decide (choose one):",
+      "bringAlong": "“Bring him along. We can still save him.” After setting up this scenario, place 1 doom on the agenda. In your Campaign Log, record _the expedition helped the pilgrim_.",
+      "leaveBehind": "“Leave him behind.” When you reveal the starting location in the next scenario, do not place clues on that location. In your Campaign Log, record _the expedition left the pilgrim behind_."
+    },
+    "label": {
+      "doNoHarm": {
+        "bringAlong": "“Bring him along. We can still save him.”",
+        "leaveBehind": "“Leave him behind.”"
+      }
+    }
+  },
+  "setupV1": {
+    "title": "Setup (v.I) — Western Expedition",
+    "gatherSets": "Gather all cards from the following encounter sets: _The Western Wall_, _Cosmic Legacy_, _Deep Ones_, _Flood_, _R’lyeh_, _Star Spawn_, _The Inescapable_, _Undersea Creatures_, and _Agents of Cthulhu_. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-western-wall.png' /><img src='{setImgPath}/cosmic-legacy.png' /><img src='{setImgPath}/tdc_deep-ones.png' /><img src='{setImgPath}/flood.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/agents-of-cthulhu.png' /></section>",
+    "gatherLocations": "Gather each location in _The Western Wall_ encounter set.",
+    "placeWesternWall": "Put Western Wall into play on Level 1 as shown.",
+    "setLocationsAside": "Set Obsidian Foundations, Drowned Shanty, Sunken Stairway, Shattered Ruins {'{'}runeV{'}'}, and Undersea Vault {'{'}runeZ{'}'} aside, out of play.",
+    "removeWalkways": "Gather each other Walkway location and remove two from the game at random.",
+    "placeUpperWalkways": "Shuffle the five remaining Walkway locations with the set-aside Drowned Shanty, Sunken Stairway, and Shattered Ruins {'{'}runeV{'}'}. Put six of them into play on levels 2–4 below Western Wall, unrevealed side faceup.",
+    "placeBottomWalkways": "Shuffle the two remaining Walkway locations with the set-aside Obsidian Foundations so you do not know which is which and put them into play on level 5, unrevealed side faceup.",
+    "beginAtWesternWall": "Each investigator begins play at Western Wall.",
+    "setCardsAside": "Set the Inescapable enemy, the Hunting Parasite weakness, and the double-sided Seafloor Frieze {'{'}runeW{'}'} treachery aside, out of play.",
+    "setAsideCoralStarSpawn": "Search the _Star Spawn_ encounter set for the Coral Star Spawn enemy and set it aside, out of play. Remove each other card in the _Star Spawn_ encounter set from the game.",
+    "buildActDeck": "Build the act deck using act 1a—“Descend into the Abyss.” Remove the other act from the game.",
+    "chooseExpeditionAsset": "In player order, each player may choose 1 _Item_ asset from the _Expedition_ encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+    "addFloodTokens": "Add the flood tokens to the token pool.",
+    "floodLevelsTwoToFive": "Increase the flood level of each location on levels 2–5.",
+    "fullyFloodLevelsFourAndFive": "Increase the flood level of levels 4 and 5 so that they are fully flooded.",
+    "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck.",
+    "readyToBegin": "You are now ready to begin."
+  },
+  "label": {
+    "setupV1": {
+      "chooseExpeditionAssetQuestion": "Choose an Item asset from the Expedition encounter set to begin in play under your control.",
+      "noExpeditionAsset": "Do not take an Expedition asset."
+    }
+  },
+  "rules": {
+    "locationAdjacency": {
+      "title": "Location Adjacency in The Western Wall",
+      "body": "<p class='basic'>During this scenario, locations are arranged in a set pattern of 5 levels.</p><ul><li>The position of each location has its own level from 1–5, beginning at Western Wall at level 1 and descending to the bottommost locations at level 5.</li><li>Any card effects that refer to a location’s level refer to its numbered row, as shown in the location placement diagram.</li><li>During this scenario, each location is connected to each location in the row above it and the row below it. Locations in the same row are not connected to one another.</li></ul>"
+    }
+  },
+  "specialRules": [
+    {
+      "title": "@:theDrownedCity.theWesternWall.rules.locationAdjacency.title",
+      "body": "@:theDrownedCity.theWesternWall.rules.locationAdjacency.body"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is your location's level.",

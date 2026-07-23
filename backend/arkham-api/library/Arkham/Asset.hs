@@ -3,10 +3,10 @@
 module Arkham.Asset where
 
 import Arkham.Asset.Assets
-import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard (tabooChained, tabooMutated)
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Prelude
 
 createAsset :: (HasCallStack, IsCard a) => a -> AssetId -> Asset
@@ -51,8 +51,9 @@ withAssetCardCode cCode f = case lookup cCode allAssets of
   Just (SomeAssetCard a) -> f a
 
 allAssets :: Map CardCode SomeAssetCard
-allAssets = (mapFromList (concatMap someAssetCardCodes Registry.assets) <>) $
-  mapFromList
+allAssets =
+  (mapFromList (concatMap someAssetCardCodes Registry.assets) <>)
+    $ mapFromList
     $ concatMap
       someAssetCardCodes
       [ -- Night of the Zealot
@@ -1643,7 +1644,11 @@ allAssets = (mapFromList (concatMap someAssetCardCodes Registry.assets) <>) $
         SomeAssetCard mysteriousPhoto
       , SomeAssetCard mysteriousPhotoBack
       , --- The Drowned City
-        SomeAssetCard rubyStandish
+        SomeAssetCard expeditionGear
+      , SomeAssetCard laudanum
+      , SomeAssetCard alienTablet
+      , SomeAssetCard divingSuitTheDrownedCity
+      , SomeAssetCard rubyStandish
       , SomeAssetCard andyVanNortwick
       , SomeAssetCard walkInFaith
       , SomeAssetCard toeTheLine

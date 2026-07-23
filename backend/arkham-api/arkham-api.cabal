@@ -849,6 +849,7 @@ library
       Arkham.Asset.Assets.AliceLuxley
       Arkham.Asset.Assets.AliceLuxley2
       Arkham.Asset.Assets.AlienDevice
+      Arkham.Asset.Assets.AlienTabletPrehistoricWritings
       Arkham.Asset.Assets.AlikiZoniUperetriaTheMaidWithTheScarletSash
       Arkham.Asset.Assets.AltonOConnellGhostHunter
       Arkham.Asset.Assets.AlyssaGraham
@@ -1108,6 +1109,7 @@ library
       Arkham.Asset.Assets.Divination1
       Arkham.Asset.Assets.Divination4
       Arkham.Asset.Assets.DivingSuit
+      Arkham.Asset.Assets.DivingSuitTheDrownedCity
       Arkham.Asset.Assets.DoNoHarm
       Arkham.Asset.Assets.DoNoHarmReliableSupport
       Arkham.Asset.Assets.DorothySimmonsStraightAStudent
@@ -1190,6 +1192,7 @@ library
       Arkham.Asset.Assets.EsotericFormula
       Arkham.Asset.Assets.EvanescentAscensionTheMorningStar
       Arkham.Asset.Assets.ExpeditedTicket
+      Arkham.Asset.Assets.ExpeditionGearToughButReliable
       Arkham.Asset.Assets.ExpeditionJournal
       Arkham.Asset.Assets.ExperimentalPsychology
       Arkham.Asset.Assets.ExtraRations1
@@ -1415,6 +1418,7 @@ library
       Arkham.Asset.Assets.LadyEsprit
       Arkham.Asset.Assets.Lantern
       Arkham.Asset.Assets.Lantern2
+      Arkham.Asset.Assets.LaudanumDesperateMeasures
       Arkham.Asset.Assets.LawrenceCarlisleSculptingHisDreams
       Arkham.Asset.Assets.LeahAtwoodTheValeCook
       Arkham.Asset.Assets.LeatherCoat

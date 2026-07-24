@@ -499,8 +499,9 @@ instance RunMessage EnemyAttrs where
                       atSameLocation <- iid <=~> investigatorAt lid
                       pushAll
                         $ [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not (spawnDetailsUnengaged details)]
+                        <> [EnemyEntered eid lid]
                         <> [EnemyCheckEngagement eid | not atSameLocation && not (spawnDetailsUnengaged details)]
-                        <> [EnemyEntered eid lid, EnemySpawned details]
+                        <> [EnemySpawned details]
                     _ -> do
                       investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
                       lead <- getLeadPlayer
@@ -1660,6 +1661,9 @@ instance RunMessage EnemyAttrs where
               CanOnlyBeDefeatedBy source' -> First (Just source')
               _ -> First Nothing
             mOnlyBeDefeatedByModifier = getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
+          when (amount' > 0) do
+            let (before, _, after) = frame $ Window.PlacedDamage source (toTarget a) amount'
+            pushAll [before, after]
           validDefeat <-
             ( ( canBeDefeated
                   && not hasSwarm

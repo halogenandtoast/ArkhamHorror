@@ -59,6 +59,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (beginSkillTest, getSkillTestDifficulty, getSkillTestTarget)
 import Arkham.Helpers.Target
 import Arkham.Helpers.Window
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
@@ -1109,7 +1110,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       withPayment $ UsesPayment n
     UseCostUpTo assetMatcher uType n m -> do
       assets <- select assetMatcher
-      uses <- sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
+      uses <- getSpendableUseCount assets uType
       let maxUses = min uses m
 
       name <- fieldMap InvestigatorName toTitle iid
@@ -1148,8 +1149,10 @@ payCost msg c iid skipAdditionalCosts cost = do
       if mVal == 1
         then push $ pay (ClueCost (Static 1))
         else
-          push
-            $ questionLabel ("Spend 1-" <> tshow mVal <> " clues, as a group") player
+          withI18n
+            $ countVar mVal
+            $ push
+            $ questionLabel (ikey' "label.cost.clueX") player
             $ DropDown
               [ (tshow n, pay (ClueCost (Static n)))
               | n <- [1 .. mVal]

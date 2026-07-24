@@ -35,6 +35,7 @@ import Arkham.Discover (DiscoverLocation (DiscoverAtLocation))
 import Arkham.ForMovement (ForMovement (..))
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Discover (resolveDiscoverCluesAt, resolveSuccessfulInvestigation)
+import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Source (getSourceController)
 import Arkham.Helpers.Window (checkAfter, checkWindows, frame)
@@ -52,6 +53,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Name (display, toName)
 import Arkham.Prelude
 import Arkham.Projection
@@ -207,27 +209,47 @@ instance RunMessage EnemyLocationAttrs where
     EnemyAttack details | details.enemy == asEnemyId a -> do
       push $ Do (EnemyAttack details)
       pure a
-    -- PerformEnemyAttack reads EnemyHealthDamage/EnemySanityDamage fields from a real
-    -- enemy entity — apply damage directly from attrs instead.
+    -- Keep the attack details in state while the attack window resolves. Reactions
+    -- such as Dodge target the coerced EnemyId and mark these details as cancelled
+    -- before PerformEnemyAttack deals damage.
     Do (EnemyAttack details) | attackEnemy details == asEnemyId a -> do
       let eid = asEnemyId a
-      let hDmg = if attackDealDamage details then a.healthDamage else 0
-      let sDmg = a.sanityDamage
       whenWindow <- checkWindows [Window.mkWhen $ Window.EnemyAttacks details]
       afterAttacksWindow <- checkWindows [Window.mkAfter $ Window.EnemyAttacks details]
       afterWindow <- checkWindows [Window.mkAfter $ Window.EnemyAttacksEvenIfCancelled details]
+      pushAll
+        [ whenWindow
+        , PerformEnemyAttack eid
+        , After (PerformEnemyAttack eid)
+        , afterAttacksWindow
+        , afterWindow
+        ]
+      pure $ a {enemyLocationAttacking = Just details}
+    PerformEnemyAttack eid | eid == asEnemyId a && not a.defeated -> do
+      let details = fromJustNote "missing enemy-location attack details" (enemyLocationAttacking a)
+      let hDmg = if attackDealDamage details then a.healthDamage else 0
+      let sDmg = a.sanityDamage
       let dmgMsg iid' =
             InvestigatorAssignDamage iid' (EnemyAttackSource eid) (attackDamageStrategy details) hDmg sDmg
       let targets = case attackTarget details of
             SingleAttackTarget (InvestigatorTarget iid') -> [iid']
             MassiveAttackTargets ts -> [iid' | InvestigatorTarget iid' <- ts]
             _ -> []
-      pushAll
-        $ [whenWindow]
-        <> [dmgMsg iid' | not details.cancelled, iid' <- targets]
-        <> [afterAttacksWindow]
-        <> [afterWindow]
+      pushAll [dmgMsg iid' | not details.cancelled, iid' <- targets]
       pure a
+    ForTarget target (CancelEachNext mCardId source [AttackMessage]) | isEnemyTarget a target -> do
+      Lifted.checkWhen $ Window.CancelledOrIgnoredCardOrGameEffect source mCardId
+      Lifted.checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect source mCardId
+      case enemyLocationAttacking a of
+        Just details -> pure $ a {enemyLocationAttacking = Just details {attackCancelled = True}}
+        Nothing -> do
+          -- Exports saved while an attack from the old direct-damage implementation
+          -- was pending have no stored attack details. Remove that queued damage so
+          -- cancellation remains backward compatible with those games.
+          lift $ Helpers.removeAllMessagesMatching \case
+            InvestigatorAssignDamage _ (EnemyAttackSource eid) _ _ _ -> eid == asEnemyId a
+            _ -> False
+          pure a
     InitiateEnemyAttack details | details.enemy == asEnemyId a -> do
       unless a.exhausted $ push $ EnemyAttack details
       pure a

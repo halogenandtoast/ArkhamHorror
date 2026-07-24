@@ -27,12 +27,12 @@ instance RunMessage TheRedClockBrokenButReliable2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let charges = attrs.use Charge
       chooseOrRunOneM iid $ cardI18n $ scope "theRedClockBrokenButReliable2" do
-        labeled' "placeChargeHere" do
+        labeled' "place1ChargeHere" do
           addUses (attrs.ability 1) attrs.id Charge 1
           do_ msg
 
         when (charges > 0) do
-          labeled' "takeChargesAsResources"
+          labeled' "takeAllChargesHereAsResources"
             $ moveTokens (attrs.ability 1) attrs (ResourceTarget iid) Charge charges
       pure a
     Do msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do

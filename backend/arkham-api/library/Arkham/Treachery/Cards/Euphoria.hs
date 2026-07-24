@@ -24,9 +24,12 @@ placeAssetOnAbyss iid aid = do
   push $ RemoveFromPlay (toSource aid)
   push $ PutCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck) card
 
+euphoriaAsset :: InvestigatorId -> AssetMatcher
+euphoriaAsset iid = assetControlledBy iid <> AssetNonStory <> not_ PermanentAsset
+
 chooseAssetOnAbyss :: ReverseQueue m => InvestigatorId -> m ()
 chooseAssetOnAbyss iid = do
-  assets <- select $ assetControlledBy iid <> AssetNonStory
+  assets <- select $ euphoriaAsset iid
   chooseOrRunOneM iid $ targets assets $ placeAssetOnAbyss iid
 
 instance RunMessage Euphoria where
@@ -36,7 +39,7 @@ instance RunMessage Euphoria where
       revelationSkillTest sid iid attrs #intellect (Fixed 4)
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      hasAsset <- selectAny $ assetControlledBy iid <> AssetNonStory
+      hasAsset <- selectAny $ euphoriaAsset iid
       chooseOneM iid $ scenarioI18n do
         unscoped $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
         when hasAsset $ labeled' "euphoria.placeAssetOnAbyss" $ chooseAssetOnAbyss iid

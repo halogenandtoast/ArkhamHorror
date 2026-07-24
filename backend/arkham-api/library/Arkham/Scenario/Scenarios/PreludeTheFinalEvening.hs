@@ -357,6 +357,7 @@ instance RunMessage PreludeTheFinalEvening where
               increaseRelationshipLevel JudithPark 1
               awardXp "judithPark" 1
         8 -> scope "theoPeters" do
+          codexFinished 8
           secondThoughts <- getHasRecord TheoIsHavingSecondThoughts
           reconciled <- getHasRecord TheoReconciledWithHelen
           if

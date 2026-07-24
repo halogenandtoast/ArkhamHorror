@@ -19,7 +19,7 @@ import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.FateOfTheVale.Helpers (scenarioI18n)
+import Arkham.Scenarios.FateOfTheVale.Helpers (revealCardsFromAbyss, scenarioI18n)
 import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.Trait (Trait (Cave, Lair))
@@ -55,19 +55,12 @@ resolveTrueSelf source fallback card = do
   scenarioSpecific "returnFromShatteredSelf" owner
 
 revealFromBottomOfAbyss :: ReverseQueue m => Source -> InvestigatorId -> Int -> m ()
-revealFromBottomOfAbyss source iid n = do
+revealFromBottomOfAbyss _source iid n = do
   abyss <- getScenarioDeck AbyssDeck
   let revealed = drop (max 0 (length abyss - n)) abyss
-  unless (null revealed) $ focusCards revealed do
-    chooseOneM iid do
-      targets revealed \card -> do
-        unfocusCards
-        let rest = filter (/= card) revealed
-        for_ revealed \c -> scenarioSpecific "removeFromAbyss" (toCardId c)
-        shuffleCardsIntoTopOfDeck (Deck.ScenarioDeckByKey AbyssDeck) 0 rest
-        if toCardType card == InvestigatorType
-          then resolveTrueSelf source iid card
-          else scenarioSpecific "drawFromAbyss" (iid, card)
+  unless (null revealed)
+    $ revealCardsFromAbyss iid revealed
+    $ ScenarioSpecific "shatteredMemoriesChooseFromRevealedAbyss" (toJSON (iid, revealed))
 
 instance RunMessage ShatteredMemories where
   runMessage msg a@(ShatteredMemories attrs) = runQueueT $ case msg of
@@ -75,6 +68,19 @@ instance RunMessage ShatteredMemories where
       getSkillTest >>= traverse_ \st -> case skillTestResult st of
         SucceededBy _ n | n > 0 -> revealFromBottomOfAbyss (attrs.ability 1) iid n
         _ -> pure ()
+      pure a
+    ScenarioSpecific "shatteredMemoriesChooseFromRevealedAbyss" v -> do
+      let (iid, originallyRevealed) = toResult v :: (InvestigatorId, [Card])
+      abyss <- getScenarioDeck AbyssDeck
+      let revealed = filter ((`elem` map toCardId abyss) . toCardId) originallyRevealed
+      unless (null revealed) $ chooseOneM iid do
+        targets revealed \card -> do
+          let rest = filter (/= card) revealed
+          for_ revealed \c -> scenarioSpecific "removeFromAbyss" (toCardId c)
+          shuffleCardsIntoTopOfDeck (Deck.ScenarioDeckByKey AbyssDeck) 0 rest
+          if toCardType card == InvestigatorType
+            then resolveTrueSelf (attrs.ability 1) iid card
+            else scenarioSpecific "drawFromAbyss" (iid, card)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 2) iid (AnySkillValue 2)

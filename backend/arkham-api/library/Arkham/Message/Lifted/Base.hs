@@ -214,6 +214,9 @@ shuffleCardsIntoDeck deck cards = whenCanShuffleIn deck cards do
   for_ cards $ push . ObtainCard . toCardId
   push $ Msg.shuffleCardsIntoDeck deck cards
 
+shuffleSetAsideIntoDeck :: (ReverseQueue m, IsDeck deck) => deck -> CardMatcher -> m ()
+shuffleSetAsideIntoDeck deck = shuffleCardsIntoDeck deck <=< getSetAsideCardsMatching
+
 chooseAndDiscardAssetMatching
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> AssetMatcher -> m ()
 chooseAndDiscardAssetMatching iid source matcher = push $ ChooseAndDiscardAsset iid (toSource source) matcher

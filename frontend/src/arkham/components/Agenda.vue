@@ -18,6 +18,7 @@ import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import StackIndicator from '@/arkham/components/StackIndicator.vue';
 import * as Arkham from '@/arkham/types/Agenda';
+import { useCardFlip } from '@/arkham/composables/useCardFlip';
 
 const props = defineProps<{
   agenda: Arkham.Agenda
@@ -59,6 +60,7 @@ const image = computed(() => {
   }
   return cardCodeImage(id.value)
 })
+const { displayedImage, flipping } = useCardFlip(image)
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
@@ -240,18 +242,18 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
       :current="currentAgendaPosition"
       :total="totalAgendas"
       :completedCards="completedStack"
-      :currentImage="image"
+      :currentImage="displayedImage"
       :remainingCards="futureStack"
       :groups="groupedAgendaStack"
     />
     <div class="agenda-main">
       <div class="agenda-card">
         <img
-        :class="{ 'agenda--can-progress': interactAction !== -1, 'card--sideways': !isVertical }"
+        :class="{ 'agenda--can-progress': interactAction !== -1, 'card--sideways': !isVertical, 'card--flipping': flipping }"
           class="card card--agenda"
           @click="$emit('choose', interactAction)"
           @load="updateOrientation"
-          :src="image"
+          :src="displayedImage"
         />
         <div class="pool" v-if="!agenda.flipped">
           <template v-if="debug.active">

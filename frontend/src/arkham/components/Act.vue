@@ -18,6 +18,7 @@ import { cardImg, imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Act'
 import { useEventStore } from '@/arkham/stores/event'
 import { actContribution, actSpend } from '@/arkham/types/EpicEvent'
+import { useCardFlip } from '@/arkham/composables/useCardFlip'
 
 const props = defineProps<{
   act: Arkham.Act
@@ -78,6 +79,7 @@ const cardCode = computed(() => {
 const image = computed(() => {
   return cardImg(cardCode.value)
 })
+const { displayedImage, flipping } = useCardFlip(image)
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const viewingUnder = ref(false)
@@ -333,11 +335,12 @@ const nextToScarletKeys = computed(() =>
             'act--can-progress': interactAction !== -1,
             'act--can-interact': canInteract,
             'card--sideways': !isVertical,
+            'card--flipping': flipping,
           }"
           class="card"
           @click="clicked"
           @load="updateOrientation"
-          :src="image"
+          :src="displayedImage"
           ref="frame"
         />
       </div>
@@ -346,7 +349,7 @@ const nextToScarletKeys = computed(() =>
         :current="currentActPosition"
         :total="totalActs"
         :completedCards="completedStack"
-        :currentImage="image"
+        :currentImage="displayedImage"
         :remainingCards="futureStack"
         :groups="groupedActStack"
       />

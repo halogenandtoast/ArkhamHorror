@@ -3,9 +3,11 @@ module Arkham.Scenario.Scenarios.OneLastJob (oneLastJob) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.TheDrownedCity.Import
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Creation
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (connectBothWays)
 import Arkham.I18n
@@ -13,6 +15,7 @@ import Arkham.Investigator.Cards (wendyAdams, wendyAdamsParallel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -111,6 +114,20 @@ instance RunMessage OneLastJob where
         , Enemies.gangEnforcer
         , Enemies.gangEnforcer
         ]
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        ElderThing -> do
+          let n = if isEasyStandard attrs then 3 else 6
+          discardTopOfEncounterDeckAndHandle iid ElderThing n attrs
+        _ -> pure ()
+      pure s
+    DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
+      let enemies = filterCards (#enemy <> CardWithTrait Criminal) cards
+      focusCards cards do
+        chooseTargetM iid enemies \e -> do
+          enemy <- createEnemyCard e (SpawnEngagedWith iid)
+          when (isHardExpert attrs) $ initiateEnemyAttack enemy ElderThing iid
+      pure s
     ScenarioResolution res -> scope "resolutions" do
       discoveredAnAlienLanguage <- getHasRecord TheInvestigatorsDiscoveredAnAlienLanguage
       when discoveredAnAlienLanguage do

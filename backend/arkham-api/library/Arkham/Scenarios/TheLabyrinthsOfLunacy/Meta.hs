@@ -21,3 +21,27 @@ data Meta = Meta
 initialMeta :: Group -> Meta
 initialMeta g =
   Meta {currentGroup = g, playedGroups = [], survivedGroups = [], miniCampaign = False}
+
+allGroups :: [Group]
+allGroups = [minBound .. maxBound]
+
+remainingGroups :: Meta -> [Group]
+remainingGroups meta = filter (`notElem` playedGroups meta) allGroups
+
+completeCurrentGroup :: Bool -> Meta -> Meta
+completeCurrentGroup survived meta =
+  meta
+    { playedGroups = addOnce meta.currentGroup meta.playedGroups
+    , survivedGroups =
+        if survived then addOnce meta.currentGroup meta.survivedGroups else meta.survivedGroups
+    }
+ where
+  addOnce g groups
+    | g `elem` groups = groups
+    | otherwise = g : groups
+
+miniCampaignComplete :: Meta -> Bool
+miniCampaignComplete meta = null $ remainingGroups meta
+
+resolutionKey :: Meta -> Text
+resolutionKey meta = "resolution" <> tshow (length meta.survivedGroups + 1)

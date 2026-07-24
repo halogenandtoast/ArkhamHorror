@@ -17,13 +17,13 @@ import Arkham.Helpers.Message as X hiding (
   InvestigatorResigned,
  )
 import Arkham.Helpers.Query as X
+import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Id as X
 import Arkham.Investigator.Types as X
 import Arkham.Name as X
 import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
-import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Trait as X hiding (Cosmos, Cultist, ElderThing, Haunted)
 import Data.Aeson (Result (..))
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -53,31 +53,18 @@ import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
 import Arkham.Game.Settings (settingsStrictAsIfAt)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Ability (
-  getAbilityLimit,
-  getCanAffordUseWith,
-  isForcedAbility,
- )
-import Arkham.Helpers.Action (
-  getActions,
- )
-import Arkham.Helpers.Card (
-  cardIsFast',
-  getModifiedCardCost,
- )
+import Arkham.Helpers.Ability (getAbilityLimit, getCanAffordUseWith, isForcedAbility)
+import Arkham.Helpers.Action (getActions)
+import Arkham.Helpers.Card (cardIsFast', getModifiedCardCost)
 import Arkham.Helpers.Cost (getAdditionalActionCosts, getCanAffordCost)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
-import Arkham.Helpers.Location (
-  getCanMoveTo,
-  isDiscoveringLastClue,
-  withLocationOf,
- )
+import Arkham.Helpers.Location (getCanMoveTo, isDiscoveringLastClue, withLocationOf)
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Playable (getIsPlayable, getPlayableCards)
+import Arkham.Helpers.Playable (getIsPlayableAfterInitiation, getPlayableCards)
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Slot (
   canPutIntoSlot,
@@ -291,7 +278,9 @@ getWindowSkippable
         $ getCanAffordCost iid pc [#play] ws (ResourceCost $ max 0 $ cost - additionalResources)
       when (not isFast && asAction) do
         liftGuardM $ getCanAffordCost iid pc [#play] ws (ActionCost 1)
-      liftGuardM $ withAlteredGame withoutCanModifiers $ getIsPlayable iid iid Cost.PaidCost ws card
+      liftGuardM
+        $ withAlteredGame withoutCanModifiers
+        $ getIsPlayableAfterInitiation iid iid Cost.PaidCost ws card
 getWindowSkippable
   attrs
   ws
@@ -304,7 +293,7 @@ getWindowSkippable
     -- fight/evade events that are only playable because a reaction such as
     -- Miguel's Knapsack will make the investigator AsIfAt another location; in
     -- that case skipping the trigger would leave the event with no legal target.
-    withAlteredGame withoutCanModifiers $ getIsPlayable iid iid Cost.PaidCost ws card
+    withAlteredGame withoutCanModifiers $ getIsPlayableAfterInitiation iid iid Cost.PaidCost ws card
 getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
   let
     excludeOne [] = []
@@ -867,8 +856,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         _ -> original
       applyMatcherModifiers _ n = n
       canFightMatcher = case overrides of
-        [] -> if choose.overriden then AnyEnemy else CanFightEnemy source
-        [o] -> CanFightEnemyWithOverride o
+        [] -> if choose.overriden then AnyEnemy <> EnemyCanBeAttackedBy source else CanFightEnemy source
+        [o] -> CanFightEnemyWithOverride o <> EnemyCanBeAttackedBy source
         _ -> error "multiple overrides found"
     smods <- filter (== IgnoreAloof) <$> getModifiers choose.skillTest
     enemyIds <-
@@ -1016,8 +1005,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         _ -> original
       applyMatcherModifiers _ n = n
       canEvadeMatcher = case overrides of
-        [] -> if choose.overriden then AnyEnemy else CanEvadeEnemy source
-        [o] -> CanEvadeEnemyWithOverride o
+        [] -> if choose.overriden then AnyEnemy <> EnemyCanBeEvadedBy source else CanEvadeEnemy source
+        [o] -> CanEvadeEnemyWithOverride o <> EnemyCanBeEvadedBy source
         _ -> error "multiple overrides found"
     enemyIds <-
       select
@@ -1617,6 +1606,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   HealHorrorDelayed target@(isTarget a -> True) source n | n > 0 -> handleHealHorrorDelayed a target source n msg
   Do (HealHorrorDelayed (isTarget a -> True) source n) -> handleDoHealHorrorDelayed a source n
   Do (HealHorror (isTarget a -> True) source n) -> handleDoHealHorror a source n
+  MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
   MoveTokens s _ (isTarget a -> True) tType amount -> liftRunMessage (PlaceTokens s (toTarget a) tType amount) a
   MoveTokens s (isSource a -> True) _target tType amount | amount > 0 -> do
     case tType of
@@ -2394,28 +2384,28 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             + sum [x | searchType == Looking, LookAtDepth x <- mods]
         foundCards :: Map Zone [Card] =
           foldl'
-              ( \hmap (cardSource, _) -> case cardSource of
-                  Zone.FromDeck ->
-                    insertWith (<>) Zone.FromDeck (map PlayerCard (unDeck investigatorDeck) <> otherDeck) hmap
-                  Zone.FromHand -> insertWith (<>) Zone.FromHand (investigatorHand <> otherHand) hmap
-                  Zone.FromTopOfDeck n ->
-                    insertWith
-                      (<>)
-                      Zone.FromDeck
-                      (map PlayerCard (take (n + additionalDepth) $ unDeck investigatorDeck) <> otherDeck)
-                      hmap
-                  Zone.FromBottomOfDeck n ->
-                    insertWith
-                      (<>)
-                      Zone.FromDeck
-                      (map PlayerCard (take (n + additionalDepth) . reverse $ unDeck investigatorDeck) <> otherDeck)
-                      hmap
-                  Zone.FromDiscard ->
-                    insertWith (<>) Zone.FromDiscard (map PlayerCard ownDiscard <> otherDiscard) hmap
-                  other -> error $ mconcat ["Zone ", show other, " not yet handled"]
-              )
-              mempty
-              cardSources
+            ( \hmap (cardSource, _) -> case cardSource of
+                Zone.FromDeck ->
+                  insertWith (<>) Zone.FromDeck (map PlayerCard (unDeck investigatorDeck) <> otherDeck) hmap
+                Zone.FromHand -> insertWith (<>) Zone.FromHand (investigatorHand <> otherHand) hmap
+                Zone.FromTopOfDeck n ->
+                  insertWith
+                    (<>)
+                    Zone.FromDeck
+                    (map PlayerCard (take (n + additionalDepth) $ unDeck investigatorDeck) <> otherDeck)
+                    hmap
+                Zone.FromBottomOfDeck n ->
+                  insertWith
+                    (<>)
+                    Zone.FromDeck
+                    (map PlayerCard (take (n + additionalDepth) . reverse $ unDeck investigatorDeck) <> otherDeck)
+                    hmap
+                Zone.FromDiscard ->
+                  insertWith (<>) Zone.FromDiscard (map PlayerCard ownDiscard <> otherDiscard) hmap
+                other -> error $ mconcat ["Zone ", show other, " not yet handled"]
+            )
+            mempty
+            cardSources
 
       when (searchType == Searching) $ do
         pushBatch batchId

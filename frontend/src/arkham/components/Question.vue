@@ -189,11 +189,10 @@ const searchedCards = computed<SearchedCardGroup[]>(() => {
 })
 
 const focusedCards = computed(() => {
-  if (searchedCards.value.length > 0) {
-    return []
-  }
-
-  return props.game.focusedCards
+  const searchedCardIds = new Set(
+    searchedCards.value.flatMap((group) => group.cards.map((card) => toCardContents(card).id)),
+  )
+  return props.game.focusedCards.filter((card) => !searchedCardIds.has(toCardContents(card).id))
 })
 
 function zoneTag(zone: unknown): string | null {
@@ -323,6 +322,7 @@ function targetLabelHandledElsewhere(choice: TargetLabel) {
       case 'SkillTarget': return contents in props.game.skills
       case 'InvestigatorTarget': return contents in props.game.investigators || contents in props.game.otherInvestigators
       case 'ScarletKeyTarget': return contents in props.game.scarletKeys
+      case 'ConcealedCardTarget':
       case 'ConcealedTarget': return contents in props.game.concealed
       case 'CardIdTarget': return visibleCardIds.value.has(contents)
       case 'ChaosTokenFaceTarget': return props.game.focusedChaosTokens.some((token) => token.face === contents)
@@ -631,7 +631,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 </script>
 
 <template>
-  <div class='question-wrapper'>
+  <div class='question-wrapper' data-game-actionable="true">
     <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
     <div v-if="cardPiles.length > 0" class="cardPiles">
       <div v-for="{pile, index} in cardPiles" :key="index" class="card-pile" @click="choose(index)">
@@ -1202,14 +1202,18 @@ button:hover {
   flex-wrap: wrap;
 }
 
-.choices button {
+.choices:has(.amount-modal) {
+  gap: 0;
+}
+
+.choices button:not(.amount-submit) {
   font-size: 1.2em;
   width: 100%;
   white-space: nowrap;
   text-wrap: pretty;
 }
 
-.choices button:before {
+.choices button:not(.amount-submit):before {
   font-family: "ArkhamIcons";
   content: "\E91A";
   margin-right: 10px;
@@ -1364,7 +1368,7 @@ h2 {
   flex-direction: column;
   gap: 16px;
   width: 100%;
-  padding: 22px;
+  padding: 22px 22px 0;
   box-sizing: border-box;
 }
 
@@ -1474,22 +1478,23 @@ h2 {
   outline-offset: 2px;
 }
 
-.amount-submit {
-  width: 100%;
-  margin-top: 2px;
+.choices .amount-form > .amount-submit {
+  width: calc(100% + 44px);
+  margin: 0;
   padding: 0.8em 1em;
+  transform: translateX(-22px);
   background: #3f2f48;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 13px;
+  border: 0;
+  border-radius: 0;
   color: white;
   text-align: center;
 }
 
-.amount-submit:hover {
+.choices .amount-form > .amount-submit:hover {
   background: #2f2238;
 }
 
-.amount-submit[disabled] {
+.choices .amount-form > .amount-submit[disabled] {
   cursor: not-allowed;
 }
 
@@ -1497,7 +1502,7 @@ h2 {
   text-align: center;
 }
 
-.choices button {
+.choices button:not(.amount-submit) {
   transition: all 0.3s ease-in;
   border: 0;
   padding: 10px;
@@ -1509,7 +1514,7 @@ h2 {
   font: Arial, sans-serif;
 }
 
-.choices button:hover {
+.choices button:not(.amount-submit):hover {
   background-color: #311b3e;
 }
 

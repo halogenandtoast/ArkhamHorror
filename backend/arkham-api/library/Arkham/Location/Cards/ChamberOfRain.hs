@@ -16,8 +16,6 @@ newtype ChamberOfRain = ChamberOfRain LocationAttrs
 chamberOfRain :: LocationCard ChamberOfRain
 chamberOfRain = location ChamberOfRain Cards.chamberOfRain 1 (PerPlayer 1)
 
--- The Chamber of Rain is sealed shut while the water flows: while it is act
--- 1, investigators cannot move into or out of this location.
 instance HasModifiersFor ChamberOfRain where
   getModifiersFor (ChamberOfRain a) = do
     step <- getCurrentActStep

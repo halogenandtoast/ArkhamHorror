@@ -17,6 +17,12 @@ api.watch:
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec arkham-api &\"" \
 
+## Like api.watch, but tees output into a size-capped rolling log
+## (.claude/build.log at the repo root) so agents can read compile errors.
+.PHONY: api.watch.log
+api.watch.log:
+	$(MAKE) api.watch 2>&1 | scripts/rolling-log.sh ../.claude/build.log
+
 .PHONY: api.build
 api.build:
 	cd arkham-api && \
@@ -96,8 +102,8 @@ revalidate:
 		$(EXTRA_STACK_FLAGS)
 	stack clean validate && stack run validate
 
-.PHONY: test
-test:
+.PHONY: test.watch
+test.watch:
 	cd arkham-api && \
 	stack build --pedantic --test --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \

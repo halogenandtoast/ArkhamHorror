@@ -558,12 +558,13 @@ getModifiedShroudValueFor :: (HasCallStack, HasGame m, Tracing m) => LocationAtt
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
   base <- getGameValue (fromJustNote "Missing shroud" $ locationShroud attrs)
-  pure $ foldr applyPostModifier (max 0 $ foldr applyModifier base modifiers') modifiers'
+  let modifiedBase = foldr applyBaseModifier base modifiers'
+  pure $ max 0 $ foldr applyModifier modifiedBase modifiers'
  where
+  applyBaseModifier (SetShroud m) _ = m
+  applyBaseModifier _ n = n
   applyModifier (ShroudModifier m) n = n + m
   applyModifier _ n = n
-  applyPostModifier (SetShroud m) _ = m
-  applyPostModifier _ n = n
 
 getInvestigateAllowed :: HasGame m => InvestigatorId -> LocationAttrs -> m Bool
 getInvestigateAllowed iid attrs = do

@@ -1831,8 +1831,9 @@ runGameMessage msg g = case msg of
           mAid <- selectOne $ AssetWithCardId cardId
           aid <- maybe getRandom pure mAid
           -- We need to start the placement as in play area so that CardEnteredPlay triggers only once
+          let sealedTokens = Cost.sealChaosTokenPayments payment
           asset <-
-            overAttrs (\attrs -> attrs {assetController = Just iid})
+            overAttrs (\attrs -> attrs {assetController = Just iid, assetSealedChaosTokens = sealedTokens})
               <$> runMessage
                 (SetOriginalCardCode $ pcOriginalCardCode pc)
                 (createAsset card aid)
@@ -3554,7 +3555,10 @@ runGameMessage msg g = case msg of
     pushAll
       $ if ignoreRevelation
         then
-          [toDiscardBy iid GameSource (TreacheryTarget treacheryId) | needsDiscard]
+          [ if needsDiscard
+              then toDiscardBy iid GameSource (TreacheryTarget treacheryId)
+              else RemoveTreachery treacheryId
+          ]
             <> [ResolvedCard iid (toCard treachery) | needsResolve]
         else
           [ When revelation

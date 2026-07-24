@@ -250,6 +250,13 @@ getTreacheryResolver = \case
   ((windowType -> Window.ResolvesTreachery iid _) : _) -> iid
   (_ : rest) -> getTreacheryResolver rest
 
+getScenarioEvent :: (HasCallStack, FromJSON a) => Text -> [Window] -> a
+getScenarioEvent event = \case
+  ((windowType -> Window.ScenarioEvent event' _ value) : _)
+    | event == event' -> toResult value
+  (_ : rest) -> getScenarioEvent event rest
+  _ -> error "getScenarioEvent: event not found"
+
 getChaosToken :: HasCallStack => [Window] -> ChaosToken
 getChaosToken = \case
   [] -> error "No chaos token drawn"
@@ -1082,6 +1089,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , gameValueMatches n valueMatcher
             ]
         Window.PlacedDoom source' (EnemyTarget enemyId) n | counterMatcher == Matcher.DoomCounter -> do
+          andM
+            [ matches enemyId enemyMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        Window.PlacedDamage source' (EnemyTarget enemyId) n | counterMatcher == Matcher.DamageCounter -> do
           andM
             [ matches enemyId enemyMatcher
             , sourceMatches source' sourceMatcher

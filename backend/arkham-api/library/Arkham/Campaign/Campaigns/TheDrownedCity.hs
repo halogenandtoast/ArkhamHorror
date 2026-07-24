@@ -6,8 +6,10 @@ import Arkham.Campaigns.TheDrownedCity.CampaignSteps
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Card.CardDef (CardDef)
 import Arkham.Helpers.FlavorText
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Trait (Trait (Agency, Criminal, Detective))
 import Data.Text qualified as T
 
 newtype TheDrownedCity = TheDrownedCity CampaignAttrs
@@ -55,7 +57,13 @@ instance RunMessage TheDrownedCity where
       nextCampaignStep
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "anOfferYouCantRefuse" do
-      flavor $ setTitle "title" >> p "interlude1"
+      agencyDetectiveOrCriminal <-
+        selectAny $ mapOneOf InvestigatorWithTrait [Agency, Detective, Criminal]
+      flavor do
+        setTitle "title"
+        p "interlude1"
+        p.validate agencyDetectiveOrCriminal "agencyDetectiveOrCriminal"
+        p "interlude1Continued"
       eachInvestigator (`forInvestigator` msg)
       doStep 2 msg
       pure c

@@ -23,7 +23,8 @@ instance RunMessage PrimordialTerror where
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       when (n > 0) $ assignHorror iid attrs n
-      when (n >= 3) $ findEncounterCard iid attrs $ card_ $ #enemy <> withTrait Dinosaur
+      when (n >= 3) do
+        findEncounterCardIn iid attrs (card_ $ #enemy <> withTrait Dinosaur) [#deck, #discard]
       pure t
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) -> do
       createEnemyWith_ card Unplaced $ createEngagedWith iid

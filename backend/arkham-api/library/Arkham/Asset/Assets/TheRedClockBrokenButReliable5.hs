@@ -28,7 +28,7 @@ instance RunMessage TheRedClockBrokenButReliable5 where
       let charges = attrs.use Charge
       when (charges > 0) do
         chooseOrRunOneM iid $ cardI18n $ scope "theRedClockBrokenButReliable5" do
-          labeled' "takeChargesAsResources"
+          labeled' "takeAllChargesHereAsResources"
             $ moveTokens (attrs.ability 1) attrs (ResourceTarget iid) Charge charges
           labeled' "leaveCharges" nothing
 

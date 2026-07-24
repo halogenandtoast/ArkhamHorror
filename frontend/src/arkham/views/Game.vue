@@ -714,6 +714,37 @@ const qPop = () => {
 let decoding = false
 let pendingUpdate: string | null = null
 
+function entitiesMoved(previous: Arkham.Game, current: Arkham.Game) {
+  const placementChanged = (
+    previousEntities: Record<string, { placement: unknown }>,
+    currentEntities: Record<string, { placement: unknown }>,
+  ) => Object.entries(currentEntities).some(([id, entity]) => {
+    const previousEntity = previousEntities[id]
+    return previousEntity && JSON.stringify(previousEntity.placement) !== JSON.stringify(entity.placement)
+  })
+
+  return placementChanged(previous.investigators, current.investigators)
+    || placementChanged(previous.enemies, current.enemies)
+}
+
+function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
+  const nextGame = locked ? { ...updatedGame, question: {} } : updatedGame
+  const previousGame = game.value
+  const apply = async () => {
+    game.value = nextGame
+    await nextTick()
+  }
+  const transitionDocument = document as Document & {
+    startViewTransition?: (callback: () => Promise<void>) => unknown
+  }
+
+  if (previousGame && entitiesMoved(previousGame, nextGame) && transitionDocument.startViewTransition) {
+    transitionDocument.startViewTransition(apply)
+  } else {
+    void apply()
+  }
+}
+
 function scheduleApplyUpdate(payload: string) {
   if (decoding) {
     pendingUpdate = payload
@@ -727,26 +758,21 @@ function scheduleApplyUpdate(payload: string) {
       // Behind a revelation: refresh the board but keep the question hidden so the
       // player can't act until they dismiss it. On unlock the queued GameUpdate is
       // replayed (locked === false) and restores the real question + side effects.
-      game.value = locked ? { ...updatedGame, question: {} } : updatedGame
+      applyGameUpdate(updatedGame, locked)
       updateGameLog(updatedGame.log)
       preloadImages(updatedGame)
       if (!locked) {
-        // Only re-seat while there is a question to seat against. With an empty
-        // question map every branch below falls back to Object.keys(...)[0] ===
-        // undefined, which blanks the whole view (it renders on `playerId`) until
-        // a reload re-derives it from the API.
-        if (solo.value === true && Object.keys(game.value.question).length > 0) {
-          if (Object.keys(game.value.question).length == 1) {
-            playerId.value = Object.keys(game.value.question)[0]
-          } else if (game.value.activePlayerId !== playerId.value) {
-            if (playerId.value && Object.keys(game.value.question).includes(playerId.value)) {
-              playerId.value = game.value.activePlayerId
-            } else {
-              playerId.value = Object.keys(game.value.question)[0]
-            }
-          } else if (playerId.value && !Object.keys(game.value.question).includes(playerId.value)) {
-            playerId.value = Object.keys(game.value.question)[0]
-          }
+        // PlayerTabs owns in-scenario perspective changes so tab routing and
+        // return navigation remain coordinated. Setup screens do not mount
+        // PlayerTabs, though, so follow their sole question here. Otherwise a
+        // multihanded solo game becomes inert after the first deck is chosen:
+        // the next player's ChooseDeck is present, but the view still has the
+        // previous playerId and therefore cannot answer it.
+        const questionPlayers = Object.keys(updatedGame.question)
+        if (solo.value && questionPlayers.length === 1) {
+          const questionPlayer = questionPlayers[0]
+          const tag = questionTag(updatedGame.question[questionPlayer])
+          if (tag && AI_SETUP_DENYLIST.has(tag)) playerId.value = questionPlayer
         }
         continueSkipAll()
       }
@@ -1735,6 +1761,9 @@ provide('chooseAmounts', chooseAmounts)
 provide('scenarioSpecificAnswer', scenarioSpecificAnswer)
 provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
+provide('spectate', computed(() => props.spectate))
+provide('processing', processing)
+provide('uiLock', uiLock)
 provide('skipAllTriggers', skipAllTriggers)
 provide('skipAllAvailable', skipAllAvailable)
 provide('skipAllInProgress', skipAllInProgress)

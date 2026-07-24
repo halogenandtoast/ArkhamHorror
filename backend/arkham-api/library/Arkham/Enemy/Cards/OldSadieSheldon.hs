@@ -3,17 +3,13 @@ module Arkham.Enemy.Cards.OldSadieSheldon (oldSadieSheldon) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (getLead)
-import Arkham.I18n
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.MachinationsThroughTime.Helpers
 
 newtype OldSadieSheldon = OldSadieSheldon EnemyAttrs
   deriving anyclass IsEnemy
@@ -27,8 +23,7 @@ instance HasModifiersFor OldSadieSheldon where
     modifySelect a (enemyIs Cards.sheldonGang) [EnemyFight 1, EnemyEvade 1]
 
 instance HasAbilities OldSadieSheldon where
-  getAbilities (OldSadieSheldon a) =
-    extend1 a $ restricted a 1 OnSameLocation parleyAction_
+  getAbilities (OldSadieSheldon a) = extend1 a $ restricted a 1 OnSameLocation parleyAction_
 
 instance RunMessage OldSadieSheldon where
   runMessage msg e@(OldSadieSheldon attrs) = runQueueT $ case msg of
@@ -40,16 +35,16 @@ instance RunMessage OldSadieSheldon where
       total <- perPlayer 3
       totalResources <- selectSum InvestigatorResources UneliminatedInvestigator
       when (totalResources >= total) do
-        chooseOneM iid $ withI18n do
-          labeled' "skip" nothing
-          scenarioI18n $ labeled' "oldSadieSheldon.payTheDebt" do
-            iids <- select UneliminatedInvestigator
-            chooseInvestigatorAmounts iid "Resources to spend" total iids attrs
+        select UneliminatedInvestigator >>= \case
+          [iid'] -> do
+            spendResources iid' 3
+            addToVictory iid attrs
+            remember TheDebtHasBeenPaid
+          iids -> chooseInvestigatorAmounts iid "Resources to spend" total iids attrs
       pure e
-    ResolveAmounts _ choices (isTarget attrs -> True) -> do
-      withInvestigatorAmounts choices \iid n -> push $ SpendResources iid n
-      lead <- getLead
-      addToVictory lead attrs
+    ResolveAmounts iid choices (isTarget attrs -> True) -> do
+      withInvestigatorAmounts choices spendResources
+      addToVictory iid attrs
       remember TheDebtHasBeenPaid
       pure e
     _ -> OldSadieSheldon <$> liftRunMessage msg attrs

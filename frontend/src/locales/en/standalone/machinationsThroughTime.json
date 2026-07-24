@@ -1,80 +1,87 @@
 {
   "cluesToSpend": "Clues to spend",
+  "naomiOBannion": {
+    "takeDamage": "Take 1 damage to prevent Naomi O'Bannion from readying",
+    "doNotTakeDamage": "Do not take 1 damage"
+  },
   "intro": {
     "title": "Machinations Through Time",
-    "body": "<p><i>\"The sciences, each straining in its own direction, have hitherto harmed us little; but some day the piecing together of dissociated knowledge will open up such terrifying vistas of reality, and of our frightful position therein, that we shall either go mad from the revelation or flee from the deadly light into the peace and safety of a new dark age.\"</i><br/>– H.P. Lovecraft, The Call of Cthulhu</p><p>The newspaper headline reads, \"Local scientists win Nobel Prize!\" Below it, two elderly physicists are pictured standing proudly in front of a large telescope. You glance at the newspaper's date, your jaw agape. This issue of the Arkham Advertiser is dated December 5, 1956. But how is this possible?</p><p>Surprised and curious, you eagerly read the entire newspaper and learn of two remarkable scientists, Thomas Corrigan and Mary Zielinski, and their journey to winning a Nobel Prize in physics. Over the years, their research progressed with success after success, culminating in the discovery of teleportation. They published their remarkable findings on February 23, 1955, to much acclaim. And now—or rather, thirty years from now—they are being awarded with the Nobel Prize in Physics.</p><p>Though suspect, your intuition tells you this mysterious newspaper is real. In awe of the future notoriety you go to Miskatonic University to meet them. However, you're informed they are not affiliated with the University and, tragically, both of them disappeared years ago.</p><p>Unbeknownst to the rest of the world, a momentous change has occurred. Prominent scientists have vanished without a trace. Notable inventions have become un-invented. A historic discovery has suddenly been undiscovered. Humanity may never be the same.</p><p>Within the portals that riddle Arkham lies the realm of Tindalos, where countless suspended paths, angular and curved, above and below, wind away in all directions. Prowling along these paths are malevolent minions: ghastly satyrs and Hounds of Tindalos, among other monstrosities. The beasts are eager to savage their prey, or, perhaps worse, abduct and imprison them in Tindalos.</p><p>There has been a distortion in time, and its effects have rippled across the ensuing years. These scientists are two such unfortunate souls, and you'll have to find them and repair the broken timeline. Just remember: traveling through time may cause unintended consequences, some of which will have severe repercussions.</p><p class='basic'>If you are playing in *Single Group Mode*, proceed to _Setup for Single Group Mode_.</p><p class='basic'>If you are playing in *Epic Multiplayer Mode*, proceed to _Setup for Epic Multiplayer Mode_.</p>"
+    "body": "<p class='indented'>\"The sciences, each straining in its own direction, have hitherto harmed us little; but some day the piecing together of dissociated knowledge will open up such terrifying vistas of reality, and of our frightful position therein, that we shall either go mad from the revelation or flee from the deadly light into the peace and safety of a new dark age.\"</p><p class='basic right'>– H.P. Lovecraft, *The Call of Cthulhu*</p><p>The newspaper headline reads, \"Local scientists win Nobel Prize!\" Below it, two elderly physicists are pictured standing proudly in front of a large telescope. You glance at the newspaper's date, your jaw agape. This issue of the Arkham Advertiser is dated December 5, 1956. But how is this possible?</p><p>Surprised and curious, you eagerly read the entire newspaper and learn of two remarkable scientists, Thomas Corrigan and Mary Zielinski, and their journey to winning a Nobel Prize in physics. Over the years, their research progressed with success after success, culminating in the discovery of teleportation. They published their remarkable findings on February 23, 1955, to much acclaim. And now—or rather, thirty years from now—they are being awarded with the Nobel Prize in Physics.</p><p>Though suspect, your intuition tells you this mysterious newspaper is real. In awe of the future notoriety you go to Miskatonic University to meet them. However, you're informed they are not affiliated with the University and, tragically, both of them disappeared years ago.</p><p>Unbeknownst to the rest of the world, a momentous change has occurred. Prominent scientists have vanished without a trace. Notable inventions have become un-invented. A historic discovery has suddenly been undiscovered. Humanity may never be the same.</p><p>Within the portals that riddle Arkham lies the realm of Tindalos, where countless suspended paths, angular and curved, above and below, wind away in all directions. Prowling along these paths are malevolent minions: ghastly satyrs and Hounds of Tindalos, among other monstrosities. The beasts are eager to savage their prey, or, perhaps worse, abduct and imprison them in Tindalos.</p><p>There has been a distortion in time, and its effects have rippled across the ensuing years. These scientists are two such unfortunate souls, and you'll have to find them and repair the broken timeline. Just remember: traveling through time may cause unintended consequences, some of which will have severe repercussions.</p><p class='basic valid'>If you are playing in *Single Group Mode*, proceed to _Setup for Single Group Mode_.</p><p class='basic invalid'>If you are playing in *Epic Multiplayer Mode*, proceed to _Setup for Epic Multiplayer Mode_.</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the <i>Machinations Through Time</i> and <i>Single Group Mode</i> encounter sets.",
-    "placeLocations": "Put the Tindalos location into play, using the side with the <i>Single Group Mode</i> encounter set icon. Put the remaining fourteen locations into play.",
+    "gatherSets": "Gather all cards from the <i>Machinations Through Time</i> and <i>Single Group Mode</i> encounter sets. These sets are indicated by these icons:<section class='encounter-sets'><img src='{setImgPath}/machinations-through-time.png'><img src='{setImgPath}/single-group.png'></section>",
     "corriganIndustries": "Set the Corrigan Industries location aside, out of play.",
+    "placeLocations": "Put the Tindalos location into play, using the side with the <i>Single Group Mode</i> encounter set icon. Put the remaining fourteen locations into play. <i>(See the location placements on pages 16–18, ignoring the placement for Tindalos.)</i>",
     "startAt": "Each investigator begins play at Tindalos.",
-    "nobleLegacy": "Put the A Noble Legacy (Past), A Noble Legacy (Present), and A Noble Legacy (Future) story cards into play, one at a time, and resolve the <b>Setup</b> text on each of them.",
+    "nobleLegacy": "Put the A Noble Legacy (Past), A Noble Legacy (Present), and A Noble Legacy (Future) story cards into play, one at a time, and resolve the <b>Setup</b> text on each of them. <i>(Hint—When playing, first focus on completing A Noble Legacy (Past), then focus on A Noble Legacy (Present), and, lastly, A Noble Legacy (Future).)</i>",
     "machination": "Choose one of the three <b>Machination</b> story cards at random, put it into play, and resolve its <b>Setup</b> text. Remove the other two <b>Machination</b> story cards from the game.",
     "plot": "Choose one of the three <b>Plot</b> story cards at random, put it into play, and resolve its <b>Setup</b> text. Remove the other two <b>Plot</b> story cards from the game.",
-    "doom": "Add 1 doom per investigator to agenda 1a. Then, if you are not playing on Standard difficulty, check the difficulty level: if it is Easy difficulty, remove 1 doom from agenda 1a; if it is Hard difficulty, add 1 doom to agenda 1a; if it is Expert difficulty, add 2 doom to agenda 1a."
+    "doom": "Add 1 {'{'}perPlayer{'}'} doom to agenda 1a. Then, if you are not playing on Standard difficulty, check the difficulty level:",
+    "easy": "If it is Easy difficulty, remove 1 doom from agenda 1a.",
+    "hard": "If it is Hard difficulty, add 1 doom to agenda 1a.",
+    "expert": "If it is Expert difficulty, add 2 doom to agenda 1a.",
+    "shuffleRemainder": "Shuffle the remaining 33 encounter cards to form the encounter deck. You are now ready to begin."
   },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is 1 plus the number of story cards in the victory display.",
       "cultist": "-1. If you are at Tindalos, you automatically fail.",
-      "tablet": "-2 (-4 instead if a {trait:\"Scientist\"} asset is at your location).",
-      "elderThing": "-3. If you fail, deal 1 damage or 1 horror to an {trait:\"Ally\"} asset at your location."
+      "tablet": "-2 (-4 instead if a _Scientist_ asset is at your location).",
+      "elderThing": "-3. If you fail, deal 1 damage or 1 horror to an _Ally_ asset at your location."
     },
     "hardExpert": {
       "skull": "-X. X is 2 plus the number of story cards in the victory display.",
       "cultist": "-2. If you are at Tindalos, you automatically fail.",
-      "tablet": "-3 (-6 instead if a {trait:\"Scientist\"} asset is at your location).",
-      "elderThing": "-4. If you fail, deal 1 damage or 1 horror to an {trait:\"Ally\"} asset at your location."
+      "tablet": "-3 (-6 instead if a _Scientist_ asset is at your location).",
+      "elderThing": "-4. If you fail, deal 1 damage or 1 horror to an _Ally_ asset at your location."
     }
   },
   "label": {
     "doneMovingScientists": "Done moving scientists",
     "oMalleysWatchShop": {
-      "placeTime": "Exhaust Thomas Corrigan to place 1 resource on the {trait:\"Present\"} Tick-Tock Club, as time"
+      "placeTime": "Exhaust Thomas Corrigan to place 1 resource on the _Present_ Tick-Tock Club, as time"
     },
     "tickTockClub": {
-      "placeTime": "Exhaust Thomas Corrigan to place 1 resource on the {trait:\"Future\"} Tick-Tock Club, as time"
+      "placeTime": "Exhaust Thomas Corrigan to place 1 resource on the _Future_ Tick-Tock Club, as time"
     },
     "oldSadieSheldon": {
       "payTheDebt": "Spend 3 resources per investigator, as a group, to add Old Sadie Sheldon to the victory display"
     },
     "mobTroubles": {
-      "searchDiscard": "Search the encounter discard pile for a Sheldon Gang enemy and add it to the victory display",
-      "searchDeck": "Search the encounter deck for a Sheldon Gang enemy and add it to the victory display"
+      "search": "Search the encounter deck or discard pile"
     },
     "uneasyAlliance": {
       "test": "Test {'{'}intellect{'}'} (4). If you succeed, place 1 more of your clues on Edwin Bennet"
     },
     "vanishingHistory": {
-      "discardItem": "Discard a non-story {trait:\"Item\"} asset you control",
+      "discardItem": "Discard a non-story _Item_ asset you control",
       "discardCards": "Choose and discard 3 non-weakness cards from your hand"
     },
     "dimensionalBeamMachine": {
       "investigator": "Move an investigator at your location to any revealed location",
-      "enemy": "Move a non-{trait:\"Elite\"} enemy at your location to any revealed location"
+      "enemy": "Move a non-_Elite_ enemy at your location to any revealed location"
     }
   },
   "resolutions": {
     "noResolution": {
       "title": "No Resolution",
-      "body": "<p><i>Countless Hounds burst through the portals and angles of space, cornering you. Bewildered and terrified, you stare down your demise...</i></p><ul><li>Each remaining investigator in all eras is defeated and suffers 1 mental trauma.</li><li>If the Edwin Bennet asset is in play in any era, proceed to <b>Resolution 2</b>.</li><li>If the Edwin Bennet enemy is in play in any era, proceed to <b>Resolution 3</b>.</li><li>Otherwise, proceed to <b>Resolution 4</b>.</li></ul>"
+      "body": "<p>Countless Hounds burst through the portals and angles of space, cornering you. Bewildered and terrified, you stare down your demise...</p><ul><li>Each remaining investigator in all eras is defeated and suffers 1 mental trauma.</li><li>If the Edwin Bennet asset is in play in any era, proceed to <b>Resolution 2</b>.</li><li>If the Edwin Bennet enemy is in play in any era, proceed to <b>Resolution 3</b>.</li><li>Otherwise, proceed to <b>Resolution 4</b>.</li></ul>"
     },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p><i>The discoveries of Thomas Corrigan and Mary Zielinski are highly influential to the advancement of the Sciences. With their help, you're able to seal all portals leading to Tindalos from Arkham, and Edwin Bennet and his machinations are no longer a threat to the world. You purchase a copy of the newspaper depicting the two scientists, and realization strikes you: there is still one thing left to do. You fire up the machine and place the newspaper on the platform. You have to close the loop, or all of this will have been in vain...</i></p><ul><li>For each of the following assets that are in play (Nikola Tesla, Ezra Graves, and Dimensional Beam Machine), any one investigator may choose to add that asset to their deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+      "body": "<p>_Resolution 1:_ The discoveries of Thomas Corrigan and Mary Zielinski are highly influential to the advancement of the Sciences. With their help, you're able to seal all portals leading to Tindalos from Arkham, and Edwin Bennet and his machinations are no longer a threat to the world. You purchase a copy of the newspaper depicting the two scientists, and realization strikes you: there is still one thing left to do. You fire up the machine and place the newspaper on the platform. You have to close the loop, or all of this will have been in vain...</p><ul><li>For each of the following assets that are in play (Nikola Tesla, Ezra Graves, and Dimensional Beam Machine), any one investigator may choose to add that asset to their deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the _Victory X_ value of each card in the victory display.</li></ul>"
     },
     "resolution2": {
       "title": "Resolution 2",
-      "body": "<p><i>Against all odds, you manage to escape the clutches of the beasts, but with them pursuing you, it is impossible for you to repair the broken timeline. Hope is not forsaken. Although leery, you place your trust in Edwin Bennet to repair all that was broken. He has the ability, but does he have the integrity?</i></p><ul><li>For each of the following assets that are in play (Nikola Tesla, Ezra Graves, and Dimensional Beam Machine), any one investigator may choose to add that asset to their deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+      "body": "<p>_Resolution 2_: Against all odds, you manage to escape the clutches of the beasts, but with them pursuing you, it is impossible for you to repair the broken timeline. Hope is not forsaken. Although leery, you place your trust in Edwin Bennet to repair all that was broken. He has the ability, but does he have the integrity?</p><ul><li>For each of the following assets that are in play (Nikola Tesla, Ezra Graves, and Dimensional Beam Machine), any one investigator may choose to add that asset to their deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the _Victory X_ value of each card in the victory display.</li></ul>"
     },
     "resolution3": {
       "title": "Resolution 3",
-      "body": "<p><i>Paralyzed with fear and nauseated by the stench of the baying beasts, you faint. When you next open your eyes, you find yourself in a sickly gloom under a green moon, buried to your neck in fetid soil as permanent residents of Tindalos. Humanity has suffered a profound loss. Thomas Corrigan and Mary Zielinski are also imprisoned on Tindalos, and their lifelong works disappear along with them. Worse still, the conniving Edwin Bennet and his machinations ripple through time, unimpeded. You're repulsed by the thought of what the psychopath is scheming next.</i></p><ul><li>Each surviving investigator is driven <b>insane</b>.</li></ul>"
+      "body": "<p>_Resolution 3_: Paralyzed with fear and nauseated by the stench of the baying beasts, you faint. When you next open your eyes, you find yourself in a sickly gloom under a green moon, buried to your neck in fetid soil as permanent residents of Tindalos. Humanity has suffered a profound loss. Thomas Corrigan and Mary Zielinski are also imprisoned on Tindalos, and their lifelong works disappear along with them. Worse still, the conniving Edwin Bennet and his machinations ripple through time, unimpeded. You're repulsed by the thought of what the psychopath is scheming next.</p><ul><li>Each surviving investigator is driven <b>insane</b>.</li></ul>"
     },
     "resolution4": {
       "title": "Resolution 4",
-      "body": "<p><i>Against all odds, you manage to escape the clutches of the beasts, but with them pursuing you, it is impossible for you to repair the broken timeline. Humanity has suffered a profound loss. Thomas Corrigan and Mary Zielinski are imprisoned on Tindalos, and their lifelong works disappear along with them. The only saving grace is Edwin Bennet is nowhere to be found. His machinations have ceased and the world is for the better. But deep down, one thought lingers: the possibility of his return.</i></p><ul><li>For each of the following assets that are in play (Nikola Tesla, Ezra Graves, and Dimensional Beam Machine), any one investigator may choose to add that asset to their deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+      "body": "<p>_Resolution 4_: Against all odds, you manage to escape the clutches of the beasts, but with them pursuing you, it is impossible for you to repair the broken timeline. Humanity has suffered a profound loss. Thomas Corrigan and Mary Zielinski are imprisoned on Tindalos, and their lifelong works disappear along with them. The only saving grace is Edwin Bennet is nowhere to be found. His machinations have ceased and the world is for the better. But deep down, one thought lingers: the possibility of his return.</p><ul><li>For each of the following assets that are in play (Nikola Tesla, Ezra Graves, and Dimensional Beam Machine), any one investigator may choose to add that asset to their deck. It does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the _Victory X_ value of each card in the victory display.</li></ul>"
     }
   },
   "remembered": {

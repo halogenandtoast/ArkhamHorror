@@ -68,7 +68,7 @@ instance RunMessage TheSheldonGang where
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       advancedWithOther attrs
       pure a
-    AdvanceAct (isSide A attrs -> True) _ _ -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       hibbs <- selectJust $ LocationWithTitle "Hibb's Roadhouse"
       createEnemyAt_ Enemies.naomiOBannion hibbs
       createEnemyAt_ Enemies.gangEnforcer hibbs
@@ -78,7 +78,7 @@ instance RunMessage TheSheldonGang where
       doStep 2 msg
       advanceActDeck attrs
       pure a
-    DoStep 1 (AdvanceAct (isSide A attrs -> True) _ _) -> do
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       withMatch (enemyIs Enemies.sadieSheldon) \sadieSheldon -> do
         clues <- field EnemyClues sadieSheldon
         when (clues >= 1) do

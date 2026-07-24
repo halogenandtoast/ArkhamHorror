@@ -11,7 +11,7 @@ newtype WorryRockTokenOfSafety = WorryRockTokenOfSafety AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 worryRockTokenOfSafety :: AssetCard WorryRockTokenOfSafety
-worryRockTokenOfSafety = asset WorryRockTokenOfSafety Cards.worryRockTokenOfSafety
+worryRockTokenOfSafety = assetWith WorryRockTokenOfSafety Cards.worryRockTokenOfSafety (sanityL ?~ 2)
 
 instance HasAbilities WorryRockTokenOfSafety where
   getAbilities (WorryRockTokenOfSafety a) =

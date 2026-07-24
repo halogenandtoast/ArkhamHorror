@@ -1,19 +1,12 @@
-module Arkham.Event.Events.OccultEvidence (occultEvidence, OccultEvidence (..)) where
+module Arkham.Event.Events.OccultEvidence (occultEvidence) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Investigator
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (Field (..))
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
-import Arkham.Projection
 import Arkham.Trait (Trait (Research))
 
 newtype OccultEvidence = OccultEvidence EventAttrs
@@ -31,19 +24,12 @@ instance HasAbilities OccultEvidence where
     ]
 
 instance RunMessage OccultEvidence where
-  runMessage msg e@(OccultEvidence attrs) = case msg of
+  runMessage msg e@(OccultEvidence attrs) = runQueueT $ case msg of
     InSearch (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      mLocation <- field InvestigatorLocation iid
-      canDiscoverClues <- maybe (pure False) (getCanDiscoverClues NotInvestigate iid) mLocation
-      hasClues <- maybe (pure False) (fieldSome LocationClues) mLocation
-      let source = toAbilitySource attrs 1
-      did <- getRandom
-      pushAll
-        $ [RemoveCardFromSearch iid (toCardId attrs), DrawToHandFrom iid (Deck.toDeck iid) [toCard attrs]]
-        <> [ Msg.DiscoverClues iid $ discoverPure did lid source 1 | canDiscoverClues && hasClues, lid <- toList mLocation
-           ]
+      drawToHandFrom iid iid attrs
+      withLocationOf iid $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure e
-    PlayThisEvent iid eid | eid == toId attrs -> do
-      push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
+    PlayThisEvent iid (is attrs -> True) -> do
+      shuffleIntoDeck iid attrs
       pure e
-    _ -> OccultEvidence <$> runMessage msg attrs
+    _ -> OccultEvidence <$> liftRunMessage msg attrs

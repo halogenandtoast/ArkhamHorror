@@ -4,14 +4,14 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Helpers.Query (getPlayerCount)
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Helpers.SkillTest.Lifted (parley)
-import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
@@ -30,32 +30,34 @@ edwin = enemyIs Enemies.edwinBennetBitterAdversary
 
 instance HasAbilities RedeemAFormerColleague where
   getAbilities (RedeemAFormerColleague a) =
-    [ restricted a 1 (exists edwin) $ actionAbilityWithCost (ActionCost 1)
-    , restricted a 2 (exists (edwin <> EnemyAt YourLocation)) parleyAction_
-    , restricted
-        a
-        3
-        ( exists
-            $ edwin
-            <> EnemyWithTokens (Static 3) Token.Redemption
-            <> EnemyAt
-              ( LocationWithTitle "Miskatonic University"
-                  <> LocationWithAsset (AssetWithTitle "Thomas Corrigan")
-                  <> LocationWithAsset (AssetWithTitle "Mary Zielinski")
-              )
-        )
+    [ restricted a 1 (exists $ edwin <> not_ (at_ YourLocation)) doubleActionAbility
+    , restricted a 2 (exists $ edwin <> at_ YourLocation) parleyAction_
+    , onlyOnce
+        $ restricted
+          a
+          3
+          ( exists
+              $ edwin
+              <> EnemyWithTokens (Static 3) Token.Redemption
+              <> at_
+                ( "Miskatonic University"
+                    <> LocationWithAsset "Thomas Corrigan"
+                    <> LocationWithAsset "Mary Zielinski"
+                )
+          )
+        $ Objective
         $ forced AnyWindow
     ]
 
 instance RunMessage RedeemAFormerColleague where
   runMessage msg s@(RedeemAFormerColleague attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      selectForMaybeM edwin \edwin' -> do
+      withMatch edwin \edwin' -> do
         readyThis edwin'
-        getLocationOf iid >>= traverse_ \lid -> push $ EnemyMove edwin' lid
+        withLocationOf iid $ enemyMoveTo (attrs.ability 1) edwin'
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      selectForMaybeM (edwin <> enemyAtLocationWith iid) \edwin' -> do
+      withMatch edwin \edwin' -> do
         sid <- getRandom
         chooseOneM iid $ withI18n do
           chooseTest #willpower 3 $ parley sid iid (attrs.ability 2) edwin' #willpower (Fixed 3)
@@ -67,16 +69,13 @@ instance RunMessage RedeemAFormerColleague where
       let totalClues = sum (map snd investigatorClues)
       when (totalClues >= total) do
         spendCluesAsAGroup (map fst investigatorClues) total
-        selectForMaybeM edwin \edwin' ->
-          placeTokens (attrs.ability 2) edwin' Token.Redemption 1
+        withMatch edwin \edwin' -> placeTokens (attrs.ability 2) edwin' Token.Redemption 1
       pure s
     UseThisAbility _ (isSource attrs -> True) 3 -> do
-      selectForMaybeM edwin \edwin' -> do
-        mLocation <- getLocationOf edwin'
+      withMatch edwin \edwin' -> do
+        withLocationOf edwin' $ createAssetAt_ Assets.edwinBennetAstuteAssociate . AtLocation
         removeFromGame edwin'
-        for_ mLocation \lid ->
-          createAssetAt_ Assets.edwinBennetAstuteAssociate (AtLocation lid)
-        lead <- getLead
-        addToVictory lead attrs
+      lead <- getLead
+      addToVictory lead attrs
       pure s
     _ -> RedeemAFormerColleague <$> liftRunMessage msg attrs

@@ -234,7 +234,7 @@ instance RunMessage AssetAttrs where
               }
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     SealedChaosToken token _ (isTarget a -> True) -> do
-      pure $ a & sealedChaosTokensL %~ (token :)
+      pure $ a & sealedChaosTokensL %~ (\ts -> if token `elem` ts then ts else token : ts)
     SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
@@ -282,7 +282,17 @@ instance RunMessage AssetAttrs where
             Just iid | tType `elem` [#damage, #horror] -> do
               push $ PlaceTokens source (toTarget iid) tType n
               pure a
-            _ -> pure $ a & tokensL %~ addTokens tType n
+            _ -> do
+              when
+                ( source
+                    == GameSource
+                    && ( (tType == #damage && isJust assetHealth)
+                           || (tType == #horror && isJust assetSanity)
+                       )
+                )
+                $ push
+                $ CheckDefeated source (toTarget a)
+              pure $ a & tokensL %~ addTokens tType n
     InvestigatorDiscardAllClues s iid | a `ownedBy` iid -> do
       runMessage (RemoveAllClues s (toTarget a)) a
     RemoveAllClues s (isTarget a -> True) -> do
@@ -665,7 +675,13 @@ instance RunMessage AssetAttrs where
         pushAll
           $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
           <> [whenEnterMsg, CardEnteredPlay iid (toCard a), afterEnterMsg]
-      pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid & (tokensL %~ Map.unionWith (+) uses . coerce)
+      pure
+        $ a
+        & placementL
+        .~ InPlayArea iid
+        & controllerL
+        ?~ iid
+        & (tokensL %~ Map.unionWith (+) uses . coerce)
     LoseControlOfAsset aid | aid == assetId -> do
       pure $ a & controllerL .~ Nothing
     ReplacedInvestigatorAsset iid aid | aid == assetId -> do

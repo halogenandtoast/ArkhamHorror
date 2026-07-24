@@ -26,6 +26,24 @@ instance HasModifiersFor TemporalDistortion where
 instance HasAbilities TemporalDistortion where
   getAbilities (TemporalDistortion a) = [mkAbility a 1 actionAbility]
 
+testedSkills :: TreacheryAttrs -> [Text]
+testedSkills attrs = toResultDefault [] attrs.meta
+
+chooseTemporalTest :: ReverseQueue m => InvestigatorId -> TreacheryAttrs -> m ()
+chooseTemporalTest iid attrs = do
+  getLocationOf iid >>= traverse_ \lid -> do
+    traits <- field LocationTraits lid
+    let available =
+          [("willpower", #willpower, 2) | Past `member` traits, "willpower" `notElem` testedSkills attrs]
+            <> [("agility", #agility, 3) | Present `member` traits, "agility" `notElem` testedSkills attrs]
+            <> [("combat", #combat, 4) | Future `member` traits, "combat" `notElem` testedSkills attrs]
+    chooseOneM iid $ withI18n do
+      labeled' "doNotTest" nothing
+      for_ available \(label, skill, difficulty) ->
+        chooseTest skill difficulty
+          $ handleTarget iid attrs
+          $ LabeledTarget label (toTarget attrs)
+
 instance RunMessage TemporalDistortion where
   runMessage msg t@(TemporalDistortion attrs) = runQueueT $ case msg of
     Revelation _iid (isSource attrs -> True) -> do
@@ -33,21 +51,21 @@ instance RunMessage TemporalDistortion where
       attachTreachery attrs agenda
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      getLocationOf iid >>= traverse_ \lid -> do
-        traits <- field LocationTraits lid
-        sid <- getRandom
-        chooseOneM iid $ withI18n do
-          when (Past `member` traits)
-            $ chooseTest #willpower 2
-            $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 2)
-          when (Present `member` traits)
-            $ chooseTest #agility 3
-            $ beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
-          when (Future `member` traits)
-            $ chooseTest #combat 4
-            $ beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 4)
+      chooseTemporalTest iid attrs
       pure t
+    HandleTargetChoice iid (isSource attrs -> True) (LabeledTarget label _) -> do
+      let (skill, difficulty) = case label of
+            "willpower" -> (#willpower, 2)
+            "agility" -> (#agility, 3)
+            "combat" -> (#combat, 4)
+            _ -> error "invalid temporal distortion skill"
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid skill (Fixed difficulty)
+      pure $ TemporalDistortion $ attrs & setMeta (label : testedSkills attrs)
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       toDiscard (attrs.ability 1) attrs
+      pure t
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      chooseTemporalTest iid attrs
       pure t
     _ -> TemporalDistortion <$> liftRunMessage msg attrs

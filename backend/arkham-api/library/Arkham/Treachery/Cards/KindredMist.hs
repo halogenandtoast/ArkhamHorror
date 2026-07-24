@@ -2,14 +2,13 @@ module Arkham.Treachery.Cards.KindredMist (kindredMist, KindredMist (..)) where
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.Helpers.Window (getScenarioEvent)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype KindredMist = KindredMist TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -21,11 +20,6 @@ kindredMist = treachery KindredMist Cards.kindredMist
 instance HasAbilities KindredMist where
   getAbilities (KindredMist a) = [restricted a 1 OnSameLocation $ forced $ ScenarioEvent #when (Just You) "shuffleTekelili"]
 
-fromScenarioEvent :: (HasCallStack, FromJSON a) => Text -> [Window] -> a
-fromScenarioEvent _ [] = error "No such scenario event"
-fromScenarioEvent k ((windowType -> Window.ScenarioEvent k' _ json) : _) | k == k' = toResult json
-fromScenarioEvent k (_ : rest) = fromScenarioEvent k rest
-
 instance RunMessage KindredMist where
   runMessage msg t@(KindredMist attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
@@ -36,7 +30,7 @@ instance RunMessage KindredMist where
       iid
       (isSource attrs -> True)
       1
-      (fromScenarioEvent "shuffleTekelili" -> (batchId, cards :: [Card]))
+      (getScenarioEvent "shuffleTekelili" -> (batchId, cards :: [Card]))
       _ -> do
         cancelBatch batchId
         for_ (onlyPlayerCards cards) \card -> do

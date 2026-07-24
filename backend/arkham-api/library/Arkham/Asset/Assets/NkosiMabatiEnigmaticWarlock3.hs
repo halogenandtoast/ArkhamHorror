@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.NkosiMabatiEnigmaticWarlock3 (
-  nkosiMabatiEnigmaticWarlock3,
-  NkosiMabatiEnigmaticWarlock3 (..),
-)
-where
+module Arkham.Asset.Assets.NkosiMabatiEnigmaticWarlock3 (nkosiMabatiEnigmaticWarlock3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.ChaosToken
+import Arkham.Helpers.ChaosBag (getOnlyChaosTokensInBag)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
 import Arkham.Message (MessageType (..))
@@ -21,7 +18,7 @@ nkosiMabatiEnigmaticWarlock3 = ally NkosiMabatiEnigmaticWarlock3 Cards.nkosiMaba
 
 instance HasAbilities NkosiMabatiEnigmaticWarlock3 where
   getAbilities (NkosiMabatiEnigmaticWarlock3 a) =
-    [ restrictedAbility a 1 ControlsThis (freeReaction $ AssetEntersPlay #when (be a))
+    [ controlled_ a 1 (freeReaction $ AssetEntersPlay #when (be a))
     , controlledAbility a 2 tokenFaceCriteria
         $ triggered
           ( RevealChaosToken
@@ -34,7 +31,7 @@ instance HasAbilities NkosiMabatiEnigmaticWarlock3 where
    where
     tokenFaceCriteria = case toResult a.meta of
       Nothing -> Never
-      Just face -> (ChaosTokenCountIs (ChaosTokenFaceIs face) (atLeast 1))
+      Just face -> ChaosTokenCountIs (ChaosTokenFaceIs face) (atLeast 1)
 
 instance RunMessage NkosiMabatiEnigmaticWarlock3 where
   runMessage msg a@(NkosiMabatiEnigmaticWarlock3 attrs) = runQueueT $ case msg of
@@ -49,12 +46,13 @@ instance RunMessage NkosiMabatiEnigmaticWarlock3 where
     UseCardAbility iid (isSource attrs -> True) 2 (getChaosToken -> token) _ -> do
       for_ (toResult @(Maybe ChaosTokenFace) attrs.meta) $ \face -> do
         let source = toAbilitySource attrs 2
+        sigil <- take 1 . filter ((== face) . (.face)) <$> getOnlyChaosTokensInBag
         cancelChaosToken source iid token
         pushAll
-          [ CancelEachNext Nothing source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
-          , ReturnChaosTokens [token]
-          , ForceChaosTokenDraw face
-          , DrawAnotherChaosToken iid
-          ]
+          $ [ CancelEachNext Nothing source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+            , ReturnChaosTokens [token]
+            ]
+          <> map ForceChaosTokenDrawToken sigil
+          <> [DrawAnotherChaosToken iid]
       pure a
     _ -> NkosiMabatiEnigmaticWarlock3 <$> liftRunMessage msg attrs

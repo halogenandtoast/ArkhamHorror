@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards.TheBloodlessMan (theBloodlessMan) where
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
@@ -53,7 +54,11 @@ instance RunMessage TheBloodlessMan where
       withLocationOf attrs \lid -> do
         selectEach (investigatorAt lid) \i -> assignHorror i (attrs.ability 2) 1
         selectEach (AssetWithTrait Guest <> assetAt lid) \aid -> dealAssetHorror aid (attrs.ability 2) 1
-      doStep 2 msg
+      lanternAttached <-
+        selectAny
+          $ AssetAttachedTo (targetIs attrs)
+          <> mapOneOf assetIs [Assets.thePaleLanternHypnoticGlow, Assets.thePaleLanternBeguilingAura]
+      when lanternAttached $ doStep 2 msg
       pure e
     DoStep 2 (UseThisAbility _ (isSource attrs -> True) 2) -> do
       selectEach (AssetWithTrait Guest <> AssetAt (locationWithEnemy attrs)) becomeSpellbound

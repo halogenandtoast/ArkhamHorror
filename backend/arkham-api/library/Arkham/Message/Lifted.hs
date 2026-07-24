@@ -2539,6 +2539,11 @@ healDamageOn
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
 healDamageOn source n target = healDamage target source n
 
+drawToHandFrom :: (ReverseQueue m, IsCard a, IsDeck deck) => InvestigatorId -> deck -> a -> m ()
+drawToHandFrom i (toDeck -> deck) (toCard -> c) = do
+  obtainCard c
+  push $ Msg.drawToHandFrom i deck c
+
 discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do

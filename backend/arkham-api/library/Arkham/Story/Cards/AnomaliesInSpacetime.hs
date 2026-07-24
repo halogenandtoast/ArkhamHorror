@@ -1,12 +1,11 @@
 module Arkham.Story.Cards.AnomaliesInSpacetime (anomaliesInSpacetime) where
 
 import Arkham.Ability
-import Arkham.Helpers.Agenda (getCurrentAgendaStep)
-import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Agenda.Sequence
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Log (remembered)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead)
-import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -14,7 +13,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Name (toTitle)
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.MachinationsThroughTime.Helpers (scenarioI18n)
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 
@@ -27,7 +25,7 @@ instance HasModifiersFor AnomaliesInSpacetime where
     modifySelect
       a
       Anyone
-      [CannotTriggerAbilityMatching (AbilityOnLocation $ LocationWithHorror (atLeast 1))]
+      [CannotTriggerAbilityMatching (AbilityOnLocation LocationWithAnyHorror <> not_ BasicAbility)]
 
 anomaliesInSpacetime :: StoryCard AnomaliesInSpacetime
 anomaliesInSpacetime =
@@ -35,55 +33,35 @@ anomaliesInSpacetime =
 
 instance HasAbilities AnomaliesInSpacetime where
   getAbilities (AnomaliesInSpacetime a) =
-    [ restricted a 1 (youExist $ InvestigatorAt (LocationWithHorror $ atLeast 1)) actionAbility
-    , mkAbility a 2 $ forced $ RoundEnds #when
+    [ restricted a 1 (youExist $ at_ LocationWithAnyHorror)
+        $ actionAbilityWithCost
+        $ OptionalCost ClueCostX
+    , onlyOnce
+        $ restricted a 2 (notExists LocationWithAnyHorror <> exists (AgendaWithSequence $ Sequence 2 A))
+        $ Objective
+        $ forced AnyWindow
     ]
 
 instance RunMessage AnomaliesInSpacetime where
   runMessage msg s@(AnomaliesInSpacetime attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      clues <- iid.clues
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalCluePayment -> n) -> do
       sid <- getRandom
-      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 0 clues attrs
-      chooseOneM iid $ withI18n do
-        chooseTest #willpower 3 $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
-        chooseTest #agility 3 $ beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
-      pure s
-    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) -> do
-      when (n > 0) do
-        spendClues iid n
-        nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue (3 * n))
+      when (n > 0) $ modifyAnySkill sid (attrs.ability 1) iid (3 * n)
+      chooseBeginSkillTest sid iid (attrs.ability 1) iid [#willpower, #agility] (Fixed 3)
       pure s
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      getLocationOf iid >>= traverse_ \lid -> do
+      withLocationOf iid \lid -> do
         let removeCount = if n >= 3 then 2 else 1
         horror <- field LocationHorror lid
         removeTokens (attrs.ability 1) lid #horror (min removeCount horror)
         founded <- remembered CorriganIndustriesHasBeenFounded
         when (n >= 4 && founded) do
-          title <- field LocationName lid
-          others <-
-            select
-              $ LocationWithTitle (toTitle title)
-              <> not_ (LocationWithId lid)
-              <> LocationWithHorror (atLeast 1)
-          when (notNull others) do
-            chooseOrRunOneM iid do
-              targets others \other -> removeTokens (attrs.ability 1) other #horror 1
-      doStep 1 msg
-      pure s
-    DoStep 1 (PassedThisSkillTestBy _ (isAbilitySource attrs 1 -> True) _) -> do
-      checkObjective attrs
+          title <- fieldMap LocationName toTitle lid
+          others <- select $ LocationWithTitle title <> not_ (LocationWithId lid) <> LocationWithAnyHorror
+          chooseOrRunOneM iid $ targets others $ removeTokensOn (attrs.ability 1) #horror 1
       pure s
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      checkObjective attrs
+      lead <- getLead
+      addToVictory lead attrs
       pure s
     _ -> AnomaliesInSpacetime <$> liftRunMessage msg attrs
-
-checkObjective :: ReverseQueue m => StoryAttrs -> m ()
-checkObjective attrs = do
-  step <- getCurrentAgendaStep
-  anyAnomalies <- selectAny $ LocationWithHorror (atLeast 1)
-  when (step == 2 && not anyAnomalies) do
-    lead <- getLead
-    addToVictory lead attrs

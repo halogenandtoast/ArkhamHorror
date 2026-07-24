@@ -20,17 +20,19 @@ instance HasAbilities LabyrinthineHallsFoulSmellingPath where
   getAbilities (LabyrinthineHallsFoulSmellingPath a) =
     extendRevealed1 a
       $ groupLimit PerGame
-      $ restricted a 1 Here
+      $ restricted a 1 (Here <> exists (not_ You))
       $ FastAbility (HandDiscardCost 2 #any)
 
 instance RunMessage LabyrinthineHallsFoulSmellingPath where
   runMessage msg l@(LabyrinthineHallsFoulSmellingPath attrs) = runQueueT $ scenarioI18n $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      atEndOfRound (attrs.ability 1) do
-        investigators <- select $ affectsOthersKnown iid $ NotInvestigator (InvestigatorWithId iid)
-        leaveBehind <- if null investigators then pure [iid] else pure investigators
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      atEndOfRound (attrs.ability 1) $ doStep 1 msg
+      pure l
+    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      investigators <- select $ affectsOthersKnown iid $ not_ (InvestigatorWithId iid)
+      for_ (nonEmpty investigators) \others ->
         chooseOrRunOneM iid $ scope "labyrinthineHalls" do
           questionLabeled' "chooseDrawCards"
-          targets leaveBehind \iid' -> drawCards iid' (attrs.ability 1) 2
+          targets (toList others) \iid' -> drawCards iid' (attrs.ability 1) 2
       pure l
     _ -> LabyrinthineHallsFoulSmellingPath <$> liftRunMessage msg attrs

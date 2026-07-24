@@ -5,6 +5,7 @@ import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import { useDebug } from '@/arkham/debug'
 import { cardImage } from '@/arkham/cardImages'
+import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue'
 import DebugStory from '@/arkham/components/debug/Story.vue'
@@ -28,6 +29,8 @@ const image = computed(() => {
   const { art, flippedArt, flipped } = props.story
   return cardImage(flipped ? flippedArt : art)
 })
+
+const { displayedImage, flipping } = useCardFlip(image)
 
 const id = computed(() => props.story.id)
 
@@ -120,8 +123,8 @@ const hasPool = computed(() => Object.values(storyTokens.value).some((amount) =>
   <div class="story">
     <div class="story-card">
       <div class="image-container">
-        <img :src="image"
-          :class="{'story--can-interact': cardAction !== -1 }"
+        <img :src="displayedImage"
+          :class="{'story--can-interact': cardAction !== -1, 'card--flipping': flipping }"
           :data-crossed-off="crossedOff"
           :data-checkmarks="JSON.stringify(checkmarks)"
           class="card story"

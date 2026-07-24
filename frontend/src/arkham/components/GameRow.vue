@@ -69,7 +69,9 @@ const scenarioIcon = computed(() => {
   const { id: scenarioId } = scenario.value
   if (!scenarioId) return null
   if (scenarioId.startsWith('c:')) {
-    const [, homebrewId, homebrewScenarioId] = scenarioId.match(/^c:([^:]+):([^:]+)$/)
+    const match = scenarioId.match(/^c:([^:]+):([^:]+)$/)
+    if (!match) return null
+    const [, homebrewId, homebrewScenarioId] = match
     return imgsrc(`homebrew/${homebrewId}/sets/${homebrewScenarioId}.png`)
   }
   return imgsrc(`sets/${scenarioId.replace('c', '')}.png`)
@@ -81,7 +83,7 @@ const scenarioIcon = computed(() => {
     <div class="game-details">
       <div class="game-title">
         <div class="main-details">
-          <div class="campaign-icon-container" v-if="campaign">
+          <div class="campaign-icon-container" v-if="campaignIcon">
             <img class="campaign-icon" :src="campaignIcon" />
           </div>
           <div class="campaign-icon-container" v-else-if="scenario">
@@ -99,7 +101,7 @@ const scenarioIcon = computed(() => {
           <router-link v-else class="title" :to="`/games/${game.id}`">{{ game.name }}</router-link>
           <div v-if="game.multiplayerVariant === 'Solo'" class="solo">{{ $t('gameRow.solo') }}</div>
         </div>
-        <div v-if="campaign && scenario" class="scenario-details">
+        <div v-if="campaign && scenario && scenarioIcon" class="scenario-details">
           <img class="scenario-icon" :src="scenarioIcon" />
           <span>{{ scenario.name.title }}</span>
         </div>

@@ -20,7 +20,7 @@ instance HasAbilities MiskatonicUniversityPast where
   getAbilities (MiskatonicUniversityPast a) =
     extendRevealed1 a
       $ restricted a 1 Here
-      $ actionAbilityWithCost (ActionCost 1 <> SpendTokenCost Token.Seed (TargetIs $ toTarget a))
+      $ doubleActionAbilityWithCost (SpendTokenCost Token.Seed (TargetIs $ toTarget a))
 
 instance RunMessage MiskatonicUniversityPast where
   runMessage msg l@(MiskatonicUniversityPast attrs) = runQueueT $ case msg of

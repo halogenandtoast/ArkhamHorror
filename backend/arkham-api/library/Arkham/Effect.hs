@@ -165,6 +165,7 @@ import Arkham.Investigator.Investigators (
   winifredHabbamockEffect,
  )
 import Arkham.Location.Locations (
+  coterieLibrarySanctumEffect,
   cursedShoresEffect,
   enchantedWoodsLostWoodsEffect,
   longWayAroundEffect,
@@ -559,6 +560,7 @@ allEffects =
     , ("09557b", SomeEffect laChicaRojaYourWatchfulShadowEffect)
     , ("09648", SomeEffect theCornicheEffect)
     , ("09680", SomeEffect theShadeReaperEffect)
+    , ("09708", SomeEffect coterieLibrarySanctumEffect)
     , ("10035", SomeEffect eyesOfValusiaTheMothersCunning4Effect)
     , ("10053", SomeEffect steadyHanded1Effect)
     , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)

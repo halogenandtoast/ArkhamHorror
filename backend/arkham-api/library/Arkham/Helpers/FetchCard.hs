@@ -13,6 +13,7 @@ import Arkham.Location.Types qualified as Field
 import Arkham.Matcher.Card
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Story.Types qualified as Field
 import Arkham.Tracing
 import Arkham.Treachery.Types qualified as Field
 import Data.Monoid (First (..))
@@ -81,11 +82,28 @@ instance FetchCard EnemyId where
 instance FetchCard LocationId where
   fetchCardMaybe_ = fieldMap Field.LocationCard Just
 
+instance FetchCard StoryId where
+  fetchCardMaybe_ = fieldMap Field.StoryCard Just
+
 instance FetchCard CardId where
   fetchCardMaybe_ = fmap Just . getCard
 
 instance FetchCard Field.TreacheryAttrs where
   fetchCardMaybe_ = fieldMap Field.TreacheryCard Just . asId
 
+instance FetchCard Field.StoryAttrs where
+  fetchCardMaybe_ = fieldMap Field.StoryCard Just . asId
+
 newtype UniqueFetchCard = UniqueFetchCard CardDef
   deriving newtype (Show, Eq, ToJSON, FromJSON)
+
+flippedOver :: (FetchCard c, Tracing m, HasGame m, CardGen m) => c -> m ()
+flippedOver c = do
+  card <- fetchCard c
+  replaceCard card.id (flipCard card)
+
+flippedOverCapture :: (FetchCard c, Tracing m, HasGame m, CardGen m) => c -> m Card
+flippedOverCapture c = do
+  card <- flipCard <$> fetchCard c
+  replaceCard card.id card
+  pure card

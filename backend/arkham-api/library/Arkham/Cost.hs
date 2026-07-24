@@ -332,6 +332,9 @@ totalActionCost = sumOf (cosmos . _ActionCost)
 totalResourcePayment :: Payment -> Int
 totalResourcePayment = sumOf (cosmos . _ResourcePayment)
 
+sealChaosTokenPayments :: Payment -> [ChaosToken]
+sealChaosTokenPayments = toListOf (cosmos . _SealChaosTokenPayment)
+
 paymentTargets :: Payment -> [Target]
 paymentTargets = toListOf (cosmos . _SpendTokenPayment . _2)
 

@@ -77,13 +77,21 @@ const currentTreacheries = computed(() => {
     filter((t) => t.placement.tag === 'Limbo' && t.drawnBy === investigatorId.value && (props.playerId === props.investigator.playerId || !t.peril))
 })
 
-// Enemies mid-spawn are Unplaced (no location yet). Show them like a resolving treachery,
-// next to the threat area of the investigator whose question is currently active, so the
-// player can see the card they're choosing a spawn location for.
+// Enemies mid-spawn are Unplaced (no location yet). Show them like a resolving
+// treachery. Keep the active enemy visible while a choice is being submitted:
+// the client clears the current question before the next one arrives, which
+// otherwise makes multi-step revelation effects briefly remove and re-add it.
 const spawningEnemies = computed(() => {
-  if (!props.game.question[props.investigator.playerId]) return []
+  const hasQuestion = Boolean(props.game.question[props.investigator.playerId])
+  const activeCardId = props.game.activeCard ? CardT.cardId(props.game.activeCard) : null
+  const isResolvingActiveCard =
+    props.game.activeInvestigatorId === investigatorId.value && activeCardId !== null
+
   return Object.values(props.game.enemies).filter(
-    (e) => e.placement.tag === 'OtherPlacement' && e.placement.contents === 'Unplaced'
+    (e) =>
+      e.placement.tag === 'OtherPlacement' &&
+      e.placement.contents === 'Unplaced' &&
+      (hasQuestion || (isResolvingActiveCard && activeCardId === e.cardId))
   )
 })
 
@@ -533,6 +541,7 @@ function isHtmlElement(el: Element): el is HTMLElement { return el instanceof HT
 
 function onBeforeEnter(el: Element) {
   if (!isHtmlElement(el)) return
+  if (el.hasAttribute('data-card-movement')) return
   if (el.classList.contains('committed-skills')) return
   const idx = el.dataset.index
   if (!idx || !rectMap.has(idx)) return
@@ -542,6 +551,7 @@ function onBeforeEnter(el: Element) {
 
 function onEnter(el: Element, done: () => void) {
   if (!isHtmlElement(el)) return
+  if (el.hasAttribute('data-card-movement')) { done(); return }
   if (el.classList.contains('committed-skills')) { el.removeAttribute('style'); done(); return }
 
   const idx = el.dataset.index
@@ -580,6 +590,7 @@ function onEnter(el: Element, done: () => void) {
 
 function onLeave(el: Element, done: () => void) {
   if (!isHtmlElement(el)) return
+  if (el.hasAttribute('data-card-movement')) { done(); return }
   if (el.classList.contains('committed-skills')) { done(); return }
   const idx = el.dataset.index
   if (!idx) { done(); return }
@@ -735,7 +746,9 @@ function closeHand() {
           <EnemyView
             v-for="enemy in engagedEnemies"
             :key="enemy.id"
+            data-card-movement="enemy"
             :enemy="enemy"
+            :style="{ viewTransitionName: `enemy-${enemy.id}` }"
             :game="game"
             :data-index="enemy.cardId"
             :playerId="playerId"

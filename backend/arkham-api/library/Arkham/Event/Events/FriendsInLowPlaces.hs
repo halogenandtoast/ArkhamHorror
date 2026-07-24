@@ -45,10 +45,12 @@ instance RunMessage FriendsInLowPlaces where
       lookAt iid' attrs iid' lookSources (basic $ mapOneOf CardWithTrait traits) (defer attrs IsNotDraw)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
-      chooseOneM iid do
-        labeledI "shuffleCardsBackIn" $ shuffleDeck iid
-        labeledI "placeOnTopOfDeckInAnyOrder" do
-          push $ UpdateSearchReturnStrategy iid FromDeck PutBackInAnyOrder
+      if attrs `hasCustomization` Clever
+        then chooseOneM iid do
+          labeledI "shuffleCardsBackIn" $ shuffleDeck iid
+          labeledI "placeOnTopOfDeckInAnyOrder" do
+            push $ UpdateSearchReturnStrategy iid FromDeck PutBackInAnyOrder
+        else shuffleDeck iid
       pure e
     SearchFound iid (isTarget attrs -> True) x cards -> do
       n <- getSpendableResources iid

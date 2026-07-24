@@ -25,35 +25,47 @@ instance HasAbilities OldMemory where
           ( oneOf
               [ ScenarioEvent #when Nothing "wouldDrawFromAbyss:mythos"
               , ScenarioEvent #when Nothing "wouldDrawFromAbyss:scenario"
+              , ScenarioEvent #when Nothing "wouldRevealFromAbyss"
               ]
           )
           (GroupClueCost (PerPlayer 1) Anywhere <> RemoveCost (toTarget a))
     ]
 
-{- | The drawn card and whether it came from the Mythos draw (an encounter card
-resolved as a normal draw) or a scenario draw (resolved by the scenario, e.g.
-placing a location or triggering a Resident attack).
+data AbyssCardEvent = MythosDraw | ScenarioDraw | Reveal
+
+{- | The affected card and how it was encountered. Mythos draws resolve as a
+normal encounter draw; scenario draws and cards intercepted while being
+revealed use Fate of the Vale's scenario-specific draw handling.
 -}
-getAbyssDraw :: [Window] -> (Bool, Card)
-getAbyssDraw = \case
-  [] -> error "Old Memory: missing wouldDrawFromAbyss window"
+getAbyssCardEvent :: [Window] -> (AbyssCardEvent, Card)
+getAbyssCardEvent = \case
+  [] -> error "Old Memory: missing Abyss card window"
   ((windowType -> Window.ScenarioEvent key _ value) : _)
-    | key == "wouldDrawFromAbyss:mythos" -> (True, toResult value)
-    | key == "wouldDrawFromAbyss:scenario" -> (False, toResult value)
-  (_ : xs) -> getAbyssDraw xs
+    | key == "wouldDrawFromAbyss:mythos" -> (MythosDraw, toResult value)
+    | key == "wouldDrawFromAbyss:scenario" -> (ScenarioDraw, toResult value)
+    | key == "wouldRevealFromAbyss" -> (Reveal, toResult value)
+  (_ : xs) -> getAbyssCardEvent xs
 
 instance RunMessage OldMemory where
   runMessage msg a@(OldMemory attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
-      let (isMythos, card) = getAbyssDraw ws
+      let (event, card) = getAbyssCardEvent ws
       cancelBatch (getBatchId ws)
+      when (case event of Reveal -> True; _ -> False)
+        $ scenarioSpecific "removeFromAbyss" (toCardId card)
       investigators <- select Anyone
+      highlightCards [card]
       scenarioI18n $ chooseOneM iid do
         labeled' "oldMemory.chooseInvestigator" do
-          chooseOneM iid $ targets investigators \iid' ->
-            if isMythos
-              then drawCard iid' card
-              else scenarioSpecific "drawFromAbyss" (iid', card)
-        labeled' "oldMemory.cancelRevelation" $ removeCardFromGame card
+          chooseOneM iid $ targets investigators \iid' -> do
+            push $ ObtainCard (toCardId card)
+            highlightCards ([] :: [Card])
+            case event of
+              MythosDraw -> drawCard iid' card
+              ScenarioDraw -> scenarioSpecific "drawFromAbyss" (iid', card)
+              Reveal -> scenarioSpecific "drawFromAbyss" (iid', card)
+        labeled' "oldMemory.cancelRevelation" do
+          highlightCards ([] :: [Card])
+          removeCardFromGame card
       pure a
     _ -> OldMemory <$> liftRunMessage msg attrs

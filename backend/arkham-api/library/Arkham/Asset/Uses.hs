@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Asset.Uses (module Arkham.Asset.Uses, module Arkham.Token) where
 
 import Arkham.Prelude

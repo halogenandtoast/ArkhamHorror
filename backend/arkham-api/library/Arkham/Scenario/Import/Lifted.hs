@@ -272,6 +272,7 @@ import Arkham.Scenario.Runner as X (
   scenarioWith,
   setMetaKey,
   sideStory,
+  sideStory_,
   standaloneCampaignLogL,
   startedL,
   tarotDeckL,

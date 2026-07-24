@@ -3,6 +3,7 @@ module Arkham.Helpers.Cost where
 import Arkham.Ability
 import Arkham.Action (Action)
 import Arkham.Asset.Types (Field (..))
+import Arkham.Asset.Uses
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Capability
@@ -51,7 +52,6 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Tracing
 import Arkham.Window (Window (..), mkWhen)
@@ -128,6 +128,32 @@ getCanAffordCost
   -> m Bool
 getCanAffordCost iid source actions windows' cost =
   getCanAffordCost_ iid source actions windows' True cost
+
+{- | Total uses of @uType@ spendable from @assets@, including uses granted by
+other assets/events via @ProvidesUses@/@ProvidesProxyUses@ modifiers.
+-}
+getSpendableUseCount :: (Tracing m, HasGame m) => [AssetId] -> UseType -> m Int
+getSpendableUseCount assets uType =
+  flip evalStateT assets $ do
+    sum <$> for assets \asset -> do
+      mods <- lift $ getModifiers asset
+      alreadyCounted <- get
+      fromOtherSources <-
+        sum <$> for mods \case
+          ProvidesUses uType' (AssetSource s) | uType' == uType -> do
+            if s `elem` alreadyCounted
+              then pure 0
+              else do
+                put $ s : alreadyCounted
+                lift $ fieldMap AssetUses (findWithDefault 0 uType) s
+          ProvidesProxyUses pType uType' (AssetSource s) | uType' == uType -> do
+            if s `elem` alreadyCounted
+              then pure 0
+              else do
+                put $ s : alreadyCounted
+                lift $ fieldMap AssetUses (findWithDefault 0 pType) s
+          _ -> pure 0
+      lift $ fieldMap AssetUses ((+ fromOtherSources) . findWithDefault 0 uType) asset
 
 getCanAffordCost_
   :: (HasCallStack, HasGame m, Tracing m, Sourceable source)
@@ -375,27 +401,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.DiscardableAsset
       UseCost assetMatcher uType n -> do
         assets <- select (Matcher.replaceYouMatcher iid assetMatcher)
-        uses <- flip evalStateT assets $ do
-          sum <$> for assets \asset -> do
-            mods <- lift $ getModifiers asset
-            alreadyCounted <- get
-            fromOtherSources <-
-              sum <$> for mods \case
-                ProvidesUses uType' (AssetSource s) | uType' == uType -> do
-                  if s `elem` alreadyCounted
-                    then pure 0
-                    else do
-                      put $ s : alreadyCounted
-                      lift $ fieldMap AssetUses (findWithDefault 0 uType) s
-                ProvidesProxyUses pType uType' (AssetSource s) | uType' == uType -> do
-                  if s `elem` alreadyCounted
-                    then pure 0
-                    else do
-                      put $ s : alreadyCounted
-                      lift $ fieldMap AssetUses (findWithDefault 0 pType) s
-                _ -> pure 0
-
-            lift $ fieldMap AssetUses ((+ fromOtherSources) . findWithDefault 0 uType) asset
+        uses <- getSpendableUseCount assets uType
         pure $ uses >= n
       EventUseCost eventMatcher uType n -> do
         events <- select eventMatcher
@@ -419,8 +425,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
             pure $ uses >= drawnCardsValue
       UseCostUpTo assetMatcher uType n _ -> do
         assets <- select assetMatcher
-        uses <-
-          sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
+        uses <- getSpendableUseCount assets uType
         pure $ uses >= n
       UnlessFastActionCost n ->
         getCanAffordCost_ iid source actions windows' canModify (ActionCost n)

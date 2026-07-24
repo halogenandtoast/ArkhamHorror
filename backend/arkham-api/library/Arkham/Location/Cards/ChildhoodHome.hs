@@ -26,6 +26,7 @@ instance HasAbilities ChildhoodHome where
               <> Remembered ThomasAndMaryHaveMet
               <> exists (AssetWithTitle "Thomas Corrigan" <> AssetAt (be a))
               <> exists (AssetWithTitle "Mary Zielinski" <> AssetAt (be a))
+              <> not_ (Remembered ThomasAndMaryHaveMarried)
           )
           actionAbility
       , groupLimit PerGame

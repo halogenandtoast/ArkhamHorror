@@ -106,6 +106,7 @@ data EnemyMatcher
   | CanFightEnemy Source
   | CanFightEnemyWith SourceMatcher
   | CanEvadeEnemy Source -- This checks for an ability
+  | EnemyCanBeAttackedBy Source -- This is not checking for an ability
   | EnemyCanBeEvadedBy Source -- This is not checking for an ability
   | EnemyCanBeDefeatedBy Source
   | EnemyCanBeRemovedBy Source

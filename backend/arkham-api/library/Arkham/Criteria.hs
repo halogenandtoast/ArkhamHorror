@@ -182,10 +182,11 @@ data Criterion
   | EventExists EventMatcher
   | ExcludeWindowAssetExists AssetMatcher
   | EventWindowInvestigatorIs InvestigatorMatcher
-  | -- | True when the card being played in the current `PlayCard` window has an
-    -- actual resource cost greater than 0 (accounting for cost modifiers and
-    -- treating X-cost cards as potentially > 0). Used to suppress cost-reduction
-    -- reactions on cards that already cost 0.
+  | {- | True when the card being played in the current `PlayCard` window has an
+    actual resource cost greater than 0 (accounting for cost modifiers and
+    treating X-cost cards as potentially > 0). Used to suppress cost-reduction
+    reactions on cards that already cost 0.
+    -}
     PlayedCardHasNonZeroCost
   | AgendaExists AgendaMatcher
   | AbilityExists AbilityMatcher
@@ -352,6 +353,7 @@ enemyExists = EnemyCriteria . EnemyExists
 
 thisEnemy :: EnemyMatcher -> Criterion
 thisEnemy = EnemyCriteria . ThisEnemy
+
 atYourLocation :: InvestigatorMatcher -> Criterion
 atYourLocation matcher = exists (AtYourLocation <> matcher)
 
@@ -468,7 +470,8 @@ data EnemyCriterion
 
 canFightAtAnyLocation :: Criterion
 canFightAtAnyLocation =
-  EnemyCriteria (ThisEnemy $ CanBeAttackedBy You <> EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone])
+  EnemyCriteria
+    (ThisEnemy $ CanBeAttackedBy You <> EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone])
     <> CanAttack
 
 canEvadeAtAnyLocation :: Criterion
@@ -519,6 +522,7 @@ canDamageEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
           , exists (LocationWithExposableConcealedCard source <> locationMatcher)
           ]
       else exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source <> enemyMatcher)
+
 canEvadeEnemyAtMatch
   :: Sourceable source => source -> LocationMatcher -> EnemyMatcher -> Criterion
 canEvadeEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =

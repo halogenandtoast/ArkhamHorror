@@ -284,6 +284,9 @@
   "takeAdditionalAction": "执行额外行动",
   "takeAdditionalActionThisTurn": "本回合执行1个额外行动",
   "takeResources": "获得1资源 | 获得{count}资源",
+  "ultimatumsAndBoons": {
+    "returnWeakness": "选择一张要放回收藏的弱点"
+  },
   "useCharge": "充能",
   "useNewLocationShroud": "使用新地点的隐蔽值",
   "useOriginalLocationsShroud": "使用原地点的隐蔽值",

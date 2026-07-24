@@ -40,6 +40,6 @@ instance RunMessage DevilsHopYard_253 where
         countVar 1 $ questionLabeled' "chooseInvestigatorToPlaceClue"
         targets investigators \iid' -> do
           chooseOrRunOneM iid' do
-            targets abominations \eid -> moveTokens (attrs.ability 1) iid eid #clue 1
+            targets abominations \eid -> moveTokens (attrs.ability 1) iid' eid #clue 1
       pure l
     _ -> DevilsHopYard_253 <$> liftRunMessage msg attrs

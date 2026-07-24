@@ -15,6 +15,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Phase (MythosPhaseStep)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
@@ -33,6 +34,9 @@ getLead = do
 
 getLeadMay :: (HasCallStack, HasGame m, Tracing m) => m (Maybe InvestigatorId)
 getLeadMay = runMaybeT $ MaybeT (selectOne LeadInvestigator) <|> MaybeT (selectOne $ IncludeEliminated Anyone)
+
+getCurrentMythosPhaseStep :: HasGame m => m (Maybe MythosPhaseStep)
+getCurrentMythosPhaseStep = getMythosPhaseStep
 
 inTurnOrder :: HasGame m => [InvestigatorId] -> m [InvestigatorId]
 inTurnOrder xs =
@@ -95,9 +99,11 @@ getSetAsideCardMaybe :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m (Ma
 getSetAsideCardMaybe def = do
   (\card -> if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id)
     <$$> selectOne (SetAsideCardMatch $ cardIs def)
+
 getSetAsideEncounterSet :: (HasGame m, Tracing m) => EncounterSet -> m [Card]
 getSetAsideEncounterSet encounterSet =
   scenarioFieldMap ScenarioSetAsideCards (filter ((== Just encounterSet) . getEncounterSet))
+
 maybeGetSetAsideCard :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m (Maybe Card)
 maybeGetSetAsideCard def = runMaybeT do
   guardInScenario

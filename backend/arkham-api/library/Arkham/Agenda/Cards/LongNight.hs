@@ -19,8 +19,7 @@ longNight = agenda (2, A) LongNight Cards.longNight (Static 7)
 
 instance HasAbilities LongNight where
   getAbilities (LongNight a) =
-    [ mkAbility a 1
-        $ triggered_ (DiscoveringLastClue #after Anyone (LocationWithTrait Arkham))
+    [ mkAbility a 1 $ triggered_ (DiscoveringLastClue #after Anyone (LocationWithTrait Arkham))
     | onSide A a
     ]
 
@@ -35,9 +34,8 @@ instance RunMessage LongNight where
     UseCardAbility iid (isSource attrs -> True) 1 (getLastClueLocation -> Just lid) _ -> do
       discardTopOfEncounterDeckAndHandle iid (attrs.ability 1) 3 lid
       pure a
-    DiscardedTopOfEncounterDeck _ cards (isSource attrs -> True) (LocationTarget lid) -> do
-      let criminals = filterCards (CardWithTrait Criminal) cards
-      for_ criminals \card ->
+    DiscardedTopOfEncounterDeck _ cards (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
+      for_ (filterCards (CardWithTrait Criminal) cards) \card ->
         createEnemyAtLocationMatching_ card (NearestLocationToLocation lid EmptyLocation)
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do

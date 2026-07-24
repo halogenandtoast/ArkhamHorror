@@ -7167,6 +7167,7 @@ test-suite spec
       Arkham.Asset.Assets.ElderSignAmulet3Spec
       Arkham.Asset.Assets.EmbezzledTreasureSpec
       Arkham.Asset.Assets.Encyclopedia2Spec
+      Arkham.Asset.Assets.FavorOfTheMoon1Spec
       Arkham.Asset.Assets.FireAxeSpec
       Arkham.Asset.Assets.FirstAidSpec
       Arkham.Asset.Assets.FlashlightSpec
@@ -7194,8 +7195,10 @@ test-suite spec
       Arkham.Asset.Assets.MagnifyingGlass1Spec
       Arkham.Asset.Assets.MagnifyingGlassSpec
       Arkham.Asset.Assets.MedicalTextsSpec
+      Arkham.Asset.Assets.MiguelsKnapsackSpec
       Arkham.Asset.Assets.MitchBrownSpec
       Arkham.Asset.Assets.OldBookOfLoreSpec
+      Arkham.Asset.Assets.OldCompass2Spec
       Arkham.Asset.Assets.OnTheirHeels5Spec
       Arkham.Asset.Assets.PatricesViolinSpec
       Arkham.Asset.Assets.PeltShipmentSpec
@@ -7209,6 +7212,7 @@ test-suite spec
       Arkham.Asset.Assets.RabbitsFootSpec
       Arkham.Asset.Assets.ResearchLibrarianSpec
       Arkham.Asset.Assets.Rolands38SpecialSpec
+      Arkham.Asset.Assets.RunicAxeSpec
       Arkham.Asset.Assets.ScavengingSpec
       Arkham.Asset.Assets.ScryingSpec
       Arkham.Asset.Assets.SegmentOfOnyx1Spec
@@ -7218,6 +7222,7 @@ test-suite spec
       Arkham.Asset.Assets.SolemnVowSpec
       Arkham.Asset.Assets.StrayCatSpec
       Arkham.Asset.Assets.SummonedHound1Spec
+      Arkham.Asset.Assets.SurvivalKnifeSpec
       Arkham.Asset.Assets.SwitchbladeSpec
       Arkham.Asset.Assets.TheBlackFan3Spec
       Arkham.Asset.Assets.TheHungeringBlade1Spec
@@ -7272,6 +7277,8 @@ test-suite spec
       Arkham.Event.Events.EvidenceSpec
       Arkham.Event.Events.ExtraAmmunition1Spec
       Arkham.Event.Events.FickleFortune3Spec
+      Arkham.Event.Events.GuerrillaTacticsSpec
+      Arkham.Event.Events.HiddenPocketSpec
       Arkham.Event.Events.HotStreak4Spec
       Arkham.Event.Events.LieInWaitSpec
       Arkham.Event.Events.LookWhatIFoundSpec
@@ -7325,6 +7332,7 @@ test-suite spec
       Arkham.Investigator.Cards.TonyMorganSpec
       Arkham.Investigator.Cards.WendyAdamsSpec
       Arkham.Investigator.Cards.ZoeySamarasSpec
+      Arkham.Investigator.RunnerSpec
       Arkham.Location.Cards.DreamGatePointlessRealitySpec
       Arkham.Location.Cards.DreamGateWondrousJourneySpec
       Arkham.Location.Cards.EnchantedWoodsVillageOfZoogsSpec
@@ -7356,13 +7364,16 @@ test-suite spec
       Arkham.TraitSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.AmnesiaSpec
+      Arkham.Treachery.Cards.BetweenWorldsSpec
       Arkham.Treachery.Cards.BloodlustSpec
+      Arkham.Treachery.Cards.CaughtInTheCrossfireSpec
       Arkham.Treachery.Cards.ClawsOfSteamSpec
       Arkham.Treachery.Cards.CoverUpSpec
       Arkham.Treachery.Cards.DetachedFromRealitySpec
       Arkham.Treachery.Cards.DreadfulMechanismSpec
       Arkham.Treachery.Cards.DreamlandsEclipseSpec
       Arkham.Treachery.Cards.EndOfNegotiationsSpec
+      Arkham.Treachery.Cards.EuphoriaSpec
       Arkham.Treachery.Cards.FinalRhapsodySpec
       Arkham.Treachery.Cards.HauntedSpec
       Arkham.Treachery.Cards.HemophobiaSpec

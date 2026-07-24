@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.MiskatonicUniversityPresent (miskatonicUniversityPresent) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -19,7 +20,15 @@ instance HasAbilities MiskatonicUniversityPresent where
   getAbilities (MiskatonicUniversityPresent a) =
     extendRevealed1 a
       $ groupLimit PerGame
-      $ restricted a 1 (Here <> Remembered ATreeSeedHasBeenPlanted) actionAbility
+      $ restricted
+        a
+        1
+        ( Here
+            <> Remembered ATreeSeedHasBeenPlanted
+            <> youExist can.gain.clues
+            <> exists (at_ (be a) <> AssetWithTrait Scientist)
+        )
+        actionAbility
 
 instance RunMessage MiskatonicUniversityPresent where
   runMessage msg l@(MiskatonicUniversityPresent attrs) = runQueueT $ case msg of

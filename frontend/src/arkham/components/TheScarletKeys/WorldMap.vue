@@ -707,34 +707,27 @@ onUnmounted(() => document.removeEventListener('fullscreenchange', onFullscreenC
       </text>
     </g>
 
-    <!-- Embark view: original overlay drawer inside SVG -->
-    <Transition v-if="embark" name="drawer" mode="out-in">
-      <foreignObject
-        v-if="selectedLocation"
-        :x="(3000 * 0.5) - ((3000 * 0.3) / 2)"
-        :y="1952 * 0.5"
-        :width="3000 * 0.3"
-        :height="1952 * 0.5"
-      >
-        <div class="drawer-container">
-          <div class="drawer">
-            <WorldMapDrawerContent
-              v-if="selectedLocation"
-              :selectedLocation="selectedLocation"
-              :locationData="locationData"
-              :mapData="mapData"
-              :embark="embark"
-              :isFinale="isFinale"
-              @close="closePopup"
-              @travelTo="travelToSelected"
-              @travelVia="travelViaSelected"
-              @travelWithTicket="travelWithTicket"
-            />
-          </div>
-        </div>
-      </foreignObject>
-    </Transition>
   </svg>
+
+  <!-- Keep interactive HTML outside the SVG: Safari on iPad does not reliably
+       render transformed foreignObject content. -->
+  <Transition v-if="embark" name="drawer">
+    <div v-if="selectedLocation" class="embark-drawer-panel">
+      <div class="drawer">
+        <WorldMapDrawerContent
+          :selectedLocation="selectedLocation"
+          :locationData="locationData"
+          :mapData="mapData"
+          :embark="embark"
+          :isFinale="isFinale"
+          @close="closePopup"
+          @travelTo="travelToSelected"
+          @travelVia="travelViaSelected"
+          @travelWithTicket="travelWithTicket"
+        />
+      </div>
+    </div>
+  </Transition>
 
   <!-- HTML overlay button — unaffected by SVG viewBox/coordinate system -->
   <button class="expand-btn" @click.stop="toggleFullScreen" :title="$t('worldMap.toggleFullscreen')">
@@ -921,35 +914,42 @@ use {
   font-size: 0.8rem;
 }
 
-/* ── Embark (foreignObject) drawer ── */
-.drawer-container {
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
-  width: 100%;
-  height: 100%;
-}
-
 /* ── Shared drawer inner shell ── */
 .drawer {
   width: 100%;
   height: 100%;
   background: #1b2635;
   color: #fff;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
   box-shadow: 0 -6px 20px rgba(0,0,0,0.5);
-  font-size: 2rem;
+  font-size: 1rem;
   font-family: "Georgia", serif;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: all 0.1s linear;
-  transform-origin: bottom;
-  transform: translateY(0);
 }
 
-@starting-style {
-  .drawer { transform: translateY(100%); }
+/* The embark drawer is ordinary HTML positioned over the map. This avoids
+   iPad Safari's rendering bugs around animated SVG foreignObject elements. */
+.embark-drawer-panel {
+  position: absolute;
+  left: 35%;
+  bottom: 0;
+  width: 30%;
+  height: 50%;
+  overflow: hidden;
+  border-radius: 0.5rem 0.5rem 0 0;
+  clip-path: inset(0 round 0.5rem 0.5rem 0 0);
+  z-index: var(--z-index-10);
+}
+
+@media (max-width: 900px) {
+  .embark-drawer-panel {
+    left: 5%;
+    width: 90%;
+    height: min(70%, 24rem);
+  }
 }
 
 /* ── Campaign-log HTML panel overrides ── */

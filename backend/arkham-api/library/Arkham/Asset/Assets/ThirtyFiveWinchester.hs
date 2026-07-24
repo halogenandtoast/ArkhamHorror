@@ -55,7 +55,10 @@ instance RunMessage ThirtyFiveWinchesterEffect where
       withSkillTest \sid -> do
         valid <-
           if maybe False (== 1) attrs.metaInt
-            then token <=~> IncludeTokenPool (IncludeSealed $ not_ WithNegativeModifier)
+            then
+              token
+                <=~> IncludeTokenPool
+                  (IncludeSealed WithNonNegativeModifier)
             else
               token <=~> IncludeTokenPool (IncludeSealed $ mapOneOf ChaosTokenFaceIs [PlusOne, Zero, ElderSign])
         when (isTarget sid attrs.target && valid) do

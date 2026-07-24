@@ -7228,6 +7228,7 @@ test-suite spec
       Arkham.Asset.Assets.TheHungeringBlade1Spec
       Arkham.Asset.Assets.TheMuscleUnpracticedSpec
       Arkham.Asset.Assets.TheNecronomiconSpec
+      Arkham.Asset.Assets.ThirtyFiveWinchesterSpec
       Arkham.Asset.Assets.Tonys38LongColtSpec
       Arkham.Asset.Assets.TrueMagickReworkingReality5Spec
       Arkham.Asset.Assets.WendysAmuletSpec

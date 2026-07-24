@@ -5289,6 +5289,12 @@ instance Query ChaosTokenMatcher where
           ChaosTokenValue _ (NegativeModifier _) -> True
           ChaosTokenValue _ (DoubleNegativeModifier _) -> True
           _ -> False
+      WithNonNegativeModifier -> \t -> do
+        iid' <- toId <$> getActiveInvestigator
+        ChaosTokenValue _ modifier <- getChaosTokenValue iid' t.face ()
+        case modifier of
+          NoModifier -> pure False
+          _ -> maybe False (>= 0) <$> chaosTokenModifierToInt modifier
       WithAutoFailModifier -> \t -> do
         iid' <- toId <$> getActiveInvestigator
         getChaosTokenValue iid' t.face () <&> \case

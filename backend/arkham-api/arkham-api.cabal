@@ -7395,6 +7395,7 @@ test-suite spec
       Arkham.Treachery.Cards.SearchingForIzzieSpec
       Arkham.Treachery.Cards.ShockingDiscoverySpec
       Arkham.Treachery.Cards.SmiteTheWickedSpec
+      Arkham.Treachery.Cards.StillBehindYouSpec
       Arkham.Treachery.Cards.WordsOfPowerSpec
       Arkham.Treachery.Cards.WrackedByNightmaresSpec
       Arkham.UltimatumsAndBoons.BoonOfAthenaSpec

@@ -137,27 +137,27 @@ instance RunMessage TheWesternWall where
       pure s
     Setup -> runScenarioSetup TheWesternWall attrs do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      when headedWest do
-        scope "setupV1" $ flavor do
-          setTitle "title"
-          ul do
-            li "gatherSets"
-            li.nested "gatherLocations" do
-              li "placeWesternWall"
-              li "setLocationsAside"
-              li "removeWalkways"
-              li "placeUpperWalkways"
-              li "placeBottomWalkways"
-              li "beginAtWesternWall"
-            li "setCardsAside"
-            li "setAsideCoralStarSpawn"
-            li "buildActDeck"
-            li "chooseExpeditionAsset"
-            li.nested "addFloodTokens" do
-              li "floodLevelsTwoToFive"
-              li "fullyFloodLevelsFourAndFive"
-            li "buildEncounterDeck"
-            li "readyToBegin"
+      let version = scope $ if headedWest then "west" else "east"
+      scope "setup" $ flavor do
+        setTitle $ version "title"
+        ul do
+          li "gatherSets"
+          li.nested "gatherLocations" do
+            li $ if headedWest then "placeWesternWall" else "placeObsidianFoundations"
+            li $ version "setLocationsAside"
+            li "removeWalkways"
+            li $ version "placeUpperWalkways"
+            li $ version "placeBottomWalkways"
+            li $ if headedWest then "beginAtWesternWall" else "beginAtObsidianFoundations"
+          li "setCardsAside"
+          li "setAsideCoralStarSpawn"
+          li $ version "buildActDeck"
+          li "chooseExpeditionAsset"
+          li.nested "addFloodTokens" do
+            li "floodLevelsTwoToFive"
+            li "fullyFloodLevelsFourAndFive"
+          li "buildEncounterDeck"
+          li "readyToBegin"
 
       additionalRules "locationAdjacency"
 
@@ -203,14 +203,19 @@ instance RunMessage TheWesternWall where
           $ remainingPaths
           <> [Locations.drownedShanty, Locations.sunkenStairway, Locations.shatteredRuins]
       let (upperWalkways, bottomWalkways) = splitAt 6 mixedWalkways
-      bottomRow <- shuffleM $ Locations.obsidianFoundations : bottomWalkways
+      bottomRow <-
+        shuffleM
+          $ (if headedWest then Locations.obsidianFoundations else Locations.westernWall_11530)
+          : bottomWalkways
 
       -- V.I descends from Western Wall, so increasing levels use negative rows.
       -- V.II ascends from Western Wall, so increasing levels use positive rows.
       -- Keeping Western Wall at row 0 makes abs(row) + 1 the level in both layouts.
       let rowForLevel level = (if headedWest then negate else id) (level - 1)
           atLevel column level = Pos column (rowForLevel level)
-      westernWall <- placeInGrid (atLevel 1 1) Locations.westernWall_11530
+      startingLocation <-
+        placeInGrid (atLevel 1 1)
+          $ if headedWest then Locations.westernWall_11530 else Locations.obsidianFoundations
       upperLocations <-
         for
           ( zip
@@ -226,13 +231,7 @@ instance RunMessage TheWesternWall where
           $ uncurry placeInGrid
       bottomLocations <-
         for (zip [atLevel 0 5, atLevel 1 5, atLevel 2 5] bottomRow) $ uncurry placeInGrid
-      let obsidianFoundations =
-            snd
-              $ fromJustNote "Missing Obsidian Foundations"
-              $ find ((== Locations.obsidianFoundations) . fst)
-              $ zip bottomRow bottomLocations
-          startingLocation = if headedWest then westernWall else obsidianFoundations
-          levelFourAndFive = drop 3 upperLocations <> bottomLocations
+      let levelFourAndFive = drop 3 upperLocations <> bottomLocations
 
       traverse_ (push . IncreaseFloodLevel) $ upperLocations <> bottomLocations
       traverse_ (push . IncreaseFloodLevel) levelFourAndFive
@@ -241,8 +240,8 @@ instance RunMessage TheWesternWall where
       eachInvestigator (`forInvestigator` Setup)
     ForInvestigator iid Setup -> do
       chooseOneM iid do
-        questionLabeled' "setupV1.chooseExpeditionAssetQuestion"
-        labeled' "setupV1.noExpeditionAsset" nothing
+        questionLabeled' "chooseExpeditionAssetQuestion"
+        labeled' "noExpeditionAsset" nothing
         for_
           [ Assets.expeditionGear
           , Assets.laudanum

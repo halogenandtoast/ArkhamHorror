@@ -3,6 +3,7 @@ module Arkham.Act.Cards.AscendTheWall (ascendTheWall) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 
@@ -19,18 +20,19 @@ instance HasAbilities AscendTheWall where
       a
       [ restricted a 1 (youExist $ at_ FloodedLocation)
           $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)
-      , restricted
-          a
-          2
-          (EachUndefeatedInvestigator (at_ $ LocationWithTitle "Western Wall"))
+      , onlyOnce
+          $ restricted
+            a
+            2
+            (EachUndefeatedInvestigator (at_ $ RevealedLocation <> LocationWithTitle "Western Wall"))
           $ Objective
-          $ forced (RoundEnds #when)
+          $ forced AnyWindow
       ]
 
 instance RunMessage AscendTheWall where
   runMessage msg a@(AscendTheWall attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withLocationOf iid \lid -> push $ DecreaseFloodLevel lid
+      withLocationOf iid decreaseFloodLevel
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

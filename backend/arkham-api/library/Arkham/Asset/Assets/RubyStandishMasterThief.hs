@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.RubyStandishMasterThief (rubyStandish) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
@@ -24,7 +25,9 @@ instance HasAbilities RubyStandishMasterThief where
     [ controlled
         a
         1
-        (not_ $ exists $ ReadyEnemy <> EnemyAt YourLocation)
+        ( not_ (exists $ ReadyEnemy <> EnemyAt YourLocation)
+            <> exists (CanMoveToLocation You (a.ability 1) (AccessibleFrom ForMovement YourLocation))
+        )
         $ FastAbility (exhaust a)
     ]
 

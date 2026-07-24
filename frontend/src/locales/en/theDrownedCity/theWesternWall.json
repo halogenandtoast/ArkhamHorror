@@ -24,19 +24,31 @@
       }
     }
   },
-  "setupV1": {
-    "title": "Setup (v.I) — Western Expedition",
+  "setup": {
+    "west": {
+      "title": "Setup (v.I) — Western Expedition",
+      "setLocationsAside": "Set Obsidian Foundations, Drowned Shanty, Sunken Stairway, Shattered Ruins {'{'}runeV{'}'}, and Undersea Vault {'{'}runeZ{'}'} aside, out of play.",
+      "placeUpperWalkways": "Shuffle the five remaining Walkway locations with the set-aside Drowned Shanty, Sunken Stairway, and Shattered Ruins {'{'}runeV{'}'}. Put six of them into play on levels 2–4 below Western Wall, unrevealed side faceup.",
+      "buildActDeck": "Build the act deck using act 1a—“Descend into the Abyss.” Remove the other act from the game.",
+      "placeBottomWalkways": "Shuffle the two remaining Walkway locations with the set-aside Obsidian Foundations so you do not know which is which and put them into play on level 5, unrevealed side faceup."
+    },
+    "east": {
+      "title": "Setup (v.II) — Western Expedition",
+      "setLocationsAside": "Set Western Wall, Drowned Shanty, Sunken Stairway, Shattered Ruins {'{'}runeV{'}'}, and Undersea Vault {'{'}runeZ{'}'} aside, out of play.",
+      "placeUpperWalkways": "Shuffle the five remaining Walkway locations with the set-aside Drowned Shanty, Sunken Stairway, and Shattered Ruins {'{'}runeV{'}'}. Put six of them into play on levels 2–4 below Obsidian Foundations, unrevealed side faceup.",
+      "buildActDeck": "Build the act deck using act 1a—“Ascend the Wall.” Remove the other act from the game.",
+      "placeBottomWalkways": "Shuffle the two remaining Walkway locations with the set-aside Western Wall so you do not know which is which and put them into play on level 5, unrevealed side faceup."
+
+    },
     "gatherSets": "Gather all cards from the following encounter sets: _The Western Wall_, _Cosmic Legacy_, _Deep Ones_, _Flood_, _R’lyeh_, _Star Spawn_, _The Inescapable_, _Undersea Creatures_, and _Agents of Cthulhu_. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-western-wall.png' /><img src='{setImgPath}/cosmic-legacy.png' /><img src='{setImgPath}/tdc_deep-ones.png' /><img src='{setImgPath}/flood.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/agents-of-cthulhu.png' /></section>",
     "gatherLocations": "Gather each location in _The Western Wall_ encounter set.",
     "placeWesternWall": "Put Western Wall into play on Level 1 as shown.",
-    "setLocationsAside": "Set Obsidian Foundations, Drowned Shanty, Sunken Stairway, Shattered Ruins {'{'}runeV{'}'}, and Undersea Vault {'{'}runeZ{'}'} aside, out of play.",
+    "placeObsidianFoundations": "Put Obsidian Foundations into play on Level 1 as shown.",
     "removeWalkways": "Gather each other Walkway location and remove two from the game at random.",
-    "placeUpperWalkways": "Shuffle the five remaining Walkway locations with the set-aside Drowned Shanty, Sunken Stairway, and Shattered Ruins {'{'}runeV{'}'}. Put six of them into play on levels 2–4 below Western Wall, unrevealed side faceup.",
-    "placeBottomWalkways": "Shuffle the two remaining Walkway locations with the set-aside Obsidian Foundations so you do not know which is which and put them into play on level 5, unrevealed side faceup.",
     "beginAtWesternWall": "Each investigator begins play at Western Wall.",
+    "beginAtObsidianFoundations": "Each investigator begins play at Obsidian Foundations.",
     "setCardsAside": "Set the Inescapable enemy, the Hunting Parasite weakness, and the double-sided Seafloor Frieze {'{'}runeW{'}'} treachery aside, out of play.",
     "setAsideCoralStarSpawn": "Search the _Star Spawn_ encounter set for the Coral Star Spawn enemy and set it aside, out of play. Remove each other card in the _Star Spawn_ encounter set from the game.",
-    "buildActDeck": "Build the act deck using act 1a—“Descend into the Abyss.” Remove the other act from the game.",
     "chooseExpeditionAsset": "In player order, each player may choose 1 _Item_ asset from the _Expedition_ encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
     "addFloodTokens": "Add the flood tokens to the token pool.",
     "floodLevelsTwoToFive": "Increase the flood level of each location on levels 2–5.",
@@ -45,10 +57,8 @@
     "readyToBegin": "You are now ready to begin."
   },
   "label": {
-    "setupV1": {
-      "chooseExpeditionAssetQuestion": "Choose an Item asset from the Expedition encounter set to begin in play under your control.",
-      "noExpeditionAsset": "Do not take an Expedition asset."
-    }
+    "chooseExpeditionAssetQuestion": "Choose an Item asset from the Expedition encounter set to begin in play under your control.",
+    "noExpeditionAsset": "Do not take an Expedition asset."
   },
   "sunkenStairway": {
     "label": {
@@ -96,7 +106,7 @@
     },
     "resolution2": {
       "title": "Resolution 2",
-      "body": "<p>_Resolution 2_: A tremor shakes the ancient city, knocking you down. Ruby curses as you steady yourself on a fallen pillar. The city of R’lyeh continues to rise. Eventually, the tremors subside. Ruby stands next to you and looks out at the perfect circle of the black water bay. “Damn,” she says. “I made a bet with Andy we’d get back first. But that softie wouldn’t dare collect if I pretend I broke my leg, don’t you think?” You sigh and lead the way back to the Cassandra, leaving Ruby to bandage her right calf. It will be good to return.</p>"
+      "body": "<p>_Resolution 2_: A tremor shakes the ancient city, knocking you down. Ruby curses as you steady yourself on a fallen pillar. The city of R’lyeh continues to rise. Eventually, the tremors subside. Ruby stands next to you and looks out at the perfect circle of the black water bay. “Damn,” she says. “I made a bet with Andy we’d get back first. But that softie wouldn’t dare collect if I pretend I broke my leg, don’t you think?” You sigh and lead the way back to the Cassandra, leaving Ruby to bandage her right calf. It will be good to return.</p><ul><li>In your Campaign Log, cross out “The Western Wall” on the R’lyeh map.</li><li>If an investigator has the *Do No Harm* Task, they resolve their respective story on this page.</li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Proceed to _Sepulchre of the Sleeper_.</li></ul>"
     },
     "noResolution": {
       "title": "No Resolution",

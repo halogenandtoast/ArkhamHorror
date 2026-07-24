@@ -1,6 +1,5 @@
 module Arkham.Treachery.Cards.StillBehindYou (stillBehindYou) where
 
-import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
@@ -30,20 +29,25 @@ instance RunMessage StillBehindYou where
           enemyMoveToEdit attrs enemy lid \m -> m {moveMeans = OneAtATime}
           forTarget enemy msg
         Nothing -> do
+          getSetAsideCardMaybe Enemies.theInescapable >>= \case
+            Just card -> drawCard iid card
+            Nothing ->
+              findEncounterCardIn
+                iid
+                attrs
+                (cardIs Enemies.theInescapable)
+                ([FromEncounterDeck, FromEncounterDiscard] <> allOutOfPlayZones)
           addToVictory iid attrs
-          findEncounterCardIn
-            iid
-            attrs
-            (cardIs Enemies.theInescapable)
-            ([FromEncounterDeck, FromEncounterDiscard] <> allOutOfPlayZones)
       pure t
     ForTarget (EnemyTarget enemy) (FailedThisSkillTest iid (isSource attrs -> True)) -> do
       enemyEngageInvestigator enemy iid
       pure t
     FoundEncounterCard iid (isTarget attrs -> True) card -> do
-      withLocationOf iid \lid -> push $ SpawnEnemyAtEngagedWith (EncounterCard card) lid iid
+      drawCard iid card
       pure t
     FoundEnemyInOutOfPlay _ iid (isTarget attrs -> True) enemy -> do
-      push $ EnemySpawnEngagedWith enemy $ InvestigatorWithId iid
+      card <- fetchCard enemy
+      obtainCard card
+      drawCard iid card
       pure t
     _ -> StillBehindYou <$> liftRunMessage msg attrs

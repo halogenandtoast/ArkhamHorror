@@ -6,6 +6,7 @@ import Arkham.Card.CardCode
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
+import Arkham.Placement
 
 newtype CoterieEnforcerA = CoterieEnforcerA EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -17,7 +18,7 @@ coterieEnforcerA = enemy CoterieEnforcerA Cards.coterieEnforcerA
 instance HasAbilities CoterieEnforcerA where
   getAbilities (CoterieEnforcerA a) =
     extend1 a
-      $ mkAbility a 1
+      $ restricted a 1 (thisExists a (EnemyWithPlacement InTheShadows))
       $ forced
       $ mapOneOf
         (\c -> CampaignEvent #after (Just You) ("exposed[" <> unCardCode (toCardCode c) <> "]"))

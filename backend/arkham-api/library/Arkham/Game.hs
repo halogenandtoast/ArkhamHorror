@@ -1948,6 +1948,7 @@ abilityMatches a@Ability {..} = \case
       , abilitySource `sourceMatches` M.EncounterCardSource
       ]
   AbilityOnCard cardMatcher -> sourceMatches abilitySource (M.SourceWithCard cardMatcher)
+  AbilityOnExtendedCard _ | abilityBasic -> pure False
   AbilityOnExtendedCard extendedCardMatcher -> do
     ecards <- select extendedCardMatcher
     sourceMatches abilitySource (M.SourceWithCard $ mapOneOf (CardWithId . toCardId) ecards)
@@ -2043,7 +2044,9 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityOnCard cardMatcher -> filterM (\a -> a.source `sourceMatches` M.SourceWithCard cardMatcher) as
     AbilityOnExtendedCard extendedCardMatcher -> do
       ecards <- select extendedCardMatcher
-      as & filterM \a -> a.source `sourceMatches` M.SourceWithCard (mapOneOf (CardWithId . toCardId) ecards)
+      as
+        & filter (not . abilityBasic)
+        & filterM \a -> a.source `sourceMatches` M.SourceWithCard (mapOneOf (CardWithId . toCardId) ecards)
 
 getGameAbilities :: (HasGame m, Tracing m) => m [Ability]
 getGameAbilities = do

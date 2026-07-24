@@ -58,7 +58,7 @@ instance RunMessage ThirtyFiveWinchesterEffect where
             then
               token
                 <=~> IncludeTokenPool
-                  (IncludeSealed $ not_ $ oneOf [WithNegativeModifier, WithAutoFailModifier])
+                  (IncludeSealed WithNonNegativeModifier)
             else
               token <=~> IncludeTokenPool (IncludeSealed $ mapOneOf ChaosTokenFaceIs [PlusOne, Zero, ElderSign])
         when (isTarget sid attrs.target && valid) do

@@ -1,7 +1,9 @@
 module Arkham.Asset.Assets.ThirtyFiveWinchesterSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Calculation
 import Arkham.Card.PlayerCard qualified as PlayerCard
+import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Investigator.Cards (rolandBanks)
 import Arkham.Matcher
 import Arkham.Taboo.Types
@@ -33,3 +35,26 @@ spec = describe ".35 Winchester" $ do
     applyAllDamage
 
     teammate.damage `shouldReturn` 1
+
+  it "does not deal +2 damage when the token has no modifier" . gameTest $ \self -> do
+    winchesterCard <-
+      genPlayerCardWith Assets.thirtyFiveWinchester
+        $ PlayerCard.setTaboo (Just TabooList18)
+        . setPlayerCardOwner self.id
+    run $ PutCardIntoPlay self.id (toCard winchesterCard) Nothing NoPayment []
+    winchester <- selectJust $ assetIs Assets.thirtyFiveWinchester
+
+    enemy <- testEnemyWith (Enemy.healthL ?~ Fixed 4)
+    location <- testLocation
+    setChaosTokens [ElderThing]
+    enemy `spawnAt` location
+    self `moveTo` location
+
+    [doFight] <- self `getActionsFrom` winchester
+    self `useAbility` doFight
+    chooseTarget enemy
+    run $ ForceChaosTokenDraw ElderThing
+    applyResults
+    applyAllDamage
+
+    enemy.damage `shouldReturn` 1

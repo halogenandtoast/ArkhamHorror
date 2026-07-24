@@ -22,9 +22,16 @@ const { addEntry } = useMenu()
 const placeTokens = ref(false);
 const placeTokenType = ref<Token>("Clue");
 const tokenTypes = Object.values(TokenType);
+const floodLevels: Arkham.FloodLevel[] = ['Unflooded', 'PartiallyFlooded', 'FullyFlooded'];
 
 const isNumber = (value: unknown): value is number => typeof value === 'number';
 const anyTokens = computed(() => Object.values(props.location.tokens).some(t => isNumber(t) && t > 0))
+const canAdjustFloodLevel = computed(() => {
+  const campaignId = props.game.campaign?.id;
+  const scenarioId = props.game.scenario?.id.replace(/^c/, '');
+  return campaignId === '07' || campaignId === '11' || scenarioId?.startsWith('07') || scenarioId?.startsWith('11');
+})
+const currentFloodLevel = computed<Arkham.FloodLevel>(() => props.location.floodLevel ?? 'Unflooded')
 
 addEntry({
   id: `close-debug-${props.location.id}`,
@@ -42,6 +49,10 @@ const image = computed(() => {
 })
 
 const clues = computed(() => props.location.tokens[TokenType.Clue])
+
+const setFloodLevel = (level: Arkham.FloodLevel) => {
+  debug.send(props.game.id, { tag: 'SetFloodLevel', contents: [id.value, level] })
+}
 
 const hasPool = computed(() => {
   return (clues.value ?? 0) > 0;
@@ -89,6 +100,17 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <button @click="placeTokens = false">{{ $t('debug.common.back') }}</button>
       </div>
       <div v-else class="buttons">
+        <div v-if="canAdjustFloodLevel" class="flood-level-controls">
+          <span>{{ $t('debug.location.floodLevel') }}</span>
+          <button
+            v-for="level in floodLevels"
+            :key="level"
+            :disabled="level === currentFloodLevel"
+            @click="setFloodLevel(level)"
+          >
+            {{ $t(`debug.location.floodLevels.${level}`) }}
+          </button>
+        </div>
         <button v-if="location.cardCode == 'c03139'" @click="createModifier({tag: 'LocationTarget', contents: id}, {tag: 'AddTrait', contents: 'Passageway'})">{{ $t('debug.location.addPassageway') }}</button>
         <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">{{ $t('debug.location.reveal') }}</button>
         <button v-if="clues && clues > 0" @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'RemoveTokens_', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', clues]}})">{{ $t('debug.location.removeClues') }}</button>
@@ -123,6 +145,18 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
   justify-content: space-around;
   flex: 1;
   gap: 5px;
+}
+
+.flood-level-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--border-color, #777);
+}
+
+.flood-level-controls span {
+  font-weight: bold;
 }
 
 .location--outer {

@@ -577,6 +577,12 @@
     "location": {
       "title": "Debug Location",
       "addPassageway": "Add Passageway",
+      "floodLevel": "Flood level",
+      "floodLevels": {
+        "Unflooded": "Unflooded",
+        "PartiallyFlooded": "Partially flooded",
+        "FullyFlooded": "Fully flooded"
+      },
       "reveal": "Reveal",
       "removeClues": "Remove Clues",
       "placeClue": "Place Clue",

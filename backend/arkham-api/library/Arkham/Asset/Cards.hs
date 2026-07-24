@@ -1,7 +1,6 @@
 module Arkham.Asset.Cards (module Arkham.Asset.Cards, module X) where
 
 import Arkham.Asset.Cards.AndrePatel as X
-import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Asset.Cards.CarolynFern2 as X
 import Arkham.Asset.Cards.Core2026 as X
 import Arkham.Asset.Cards.EdgeOfTheEarth as X
@@ -10,6 +9,8 @@ import Arkham.Asset.Cards.MiguelDeLaCruz as X
 import Arkham.Asset.Cards.NightOfTheZealot as X
 import Arkham.Asset.Cards.Parallel as X
 import Arkham.Asset.Cards.Promo as X
+import Arkham.Asset.Cards.RedTideRising as X
+import Arkham.Asset.Cards.RelicsOfThePast as X
 import Arkham.Asset.Cards.ReturnTo as X
 import Arkham.Asset.Cards.Standalone as X
 import Arkham.Asset.Cards.Starter as X
@@ -23,10 +24,9 @@ import Arkham.Asset.Cards.TheInnsmouthConspiracy as X
 import Arkham.Asset.Cards.ThePathToCarcosa as X
 import Arkham.Asset.Cards.TheScarletKeys as X
 import Arkham.Asset.Cards.TommyMuldoon2 as X
-import Arkham.Asset.Cards.RedTideRising as X
-import Arkham.Asset.Cards.RelicsOfThePast as X
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Prelude
 
 allPlayerAssetCards :: Map CardCode CardDef
@@ -1076,6 +1076,9 @@ allPlayerAssetCards =
       , zoeysCrossAdvanced
       , drHenryArmitage_SpreadingFlames
       , collector
+      , --- The Drowned City
+        rubyStandish
+      , andyVanNortwick
       , --- Mi-Go Incursion
         universalSolvent
       , petOozeling
@@ -1085,8 +1088,9 @@ allPlayerAssetCards =
 
 -- with encounter backs
 allEncounterAssetCards :: Map CardCode CardDef
-allEncounterAssetCards = (Homebrew.encounterAssetsMap <>) $
-  mapFromList
+allEncounterAssetCards =
+  (Homebrew.encounterAssetsMap <>)
+    $ mapFromList
     $ map
       (toCardCode &&& id)
       [ adamLynch
@@ -1192,8 +1196,6 @@ allEncounterAssetCards = (Homebrew.encounterAssetsMap <>) $
       , laudanum
       , alienTablet
       , divingSuitTheDrownedCity
-      , rubyStandish
-      , andyVanNortwick
       , noPlaceLikeHomeCompleted
       , walkInFaithCompleted
       , toeTheLineCompleted

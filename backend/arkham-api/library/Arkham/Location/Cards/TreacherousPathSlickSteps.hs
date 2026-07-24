@@ -4,21 +4,25 @@ import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.TheWesternWall.Helpers (treacherousPathModifiers)
 
 newtype TreacherousPathSlickSteps = TreacherousPathSlickSteps LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousPathSlickSteps :: LocationCard TreacherousPathSlickSteps
-treacherousPathSlickSteps = location TreacherousPathSlickSteps Cards.treacherousPathSlickSteps 0 (Static 1)
+treacherousPathSlickSteps = withXShroud $ location TreacherousPathSlickSteps Cards.treacherousPathSlickSteps 0 (Static 1)
 
--- A location's row is its grid position row (level = row + 1). The row "above"
--- this location has a lower row number; the row "below" has a higher row number.
+-- V.I uses negative rows below Western Wall and V.II uses positive rows above
+-- it. In both layouts the physically higher adjacent row is row + 1.
 rowAbove :: LocationAttrs -> LocationMatcher
-rowAbove a = LocationInRow (maybe 0 (subtract 1) a.row)
+rowAbove a = LocationInRow (maybe 0 (+ 1) a.row)
 
 rowBelow :: LocationAttrs -> LocationMatcher
-rowBelow a = LocationInRow (maybe 0 (+ 1) a.row)
+rowBelow a = LocationInRow (maybe 0 (subtract 1) a.row)
+
+instance HasModifiersFor TreacherousPathSlickSteps where
+  getModifiersFor (TreacherousPathSlickSteps a) = treacherousPathModifiers a
 
 instance HasAbilities TreacherousPathSlickSteps where
   getAbilities (TreacherousPathSlickSteps a) =

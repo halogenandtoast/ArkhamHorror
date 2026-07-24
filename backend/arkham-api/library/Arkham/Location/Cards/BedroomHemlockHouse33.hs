@@ -16,7 +16,8 @@ newtype BedroomHemlockHouse33 = BedroomHemlockHouse33 LocationAttrs
 
 bedroomHemlockHouse33 :: LocationCard BedroomHemlockHouse33
 bedroomHemlockHouse33 =
-  locationWith BedroomHemlockHouse33 Cards.bedroomHemlockHouse33 0 (PerPlayer 1)
+  withXShroud
+    $ locationWith BedroomHemlockHouse33 Cards.bedroomHemlockHouse33 0 (PerPlayer 1)
     $ connectsToAdjacent
     . (canBeFlippedL .~ True)
 
@@ -27,10 +28,11 @@ instance HasModifiersFor BedroomHemlockHouse33 where
 
 instance HasAbilities BedroomHemlockHouse33 where
   getAbilities (BedroomHemlockHouse33 a) =
-    extendRevealed a
+    extendRevealed
+      a
       [ restricted a 1 Here
           $ freeReaction
-              (PlacedToken #after (SourceUsedBy You) (TargetIs $ toTarget a.id) Resource)
+            (PlacedToken #after (SourceUsedBy You) (TargetIs $ toTarget a.id) Resource)
       ]
 
 instance RunMessage BedroomHemlockHouse33 where

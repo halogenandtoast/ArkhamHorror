@@ -16,7 +16,8 @@ newtype BedroomHemlockHouse34 = BedroomHemlockHouse34 LocationAttrs
 
 bedroomHemlockHouse34 :: LocationCard BedroomHemlockHouse34
 bedroomHemlockHouse34 =
-  locationWith BedroomHemlockHouse34 Cards.bedroomHemlockHouse34 0 (PerPlayer 1)
+  withXShroud
+    $ locationWith BedroomHemlockHouse34 Cards.bedroomHemlockHouse34 0 (PerPlayer 1)
     $ connectsToAdjacent
     . (canBeFlippedL .~ True)
 

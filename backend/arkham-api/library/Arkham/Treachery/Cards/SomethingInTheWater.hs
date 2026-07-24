@@ -1,5 +1,7 @@
 module Arkham.Treachery.Cards.SomethingInTheWater (somethingInTheWater) where
 
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -10,6 +12,10 @@ newtype SomethingInTheWater = SomethingInTheWater TreacheryAttrs
 somethingInTheWater :: TreacheryCard SomethingInTheWater
 somethingInTheWater = treachery SomethingInTheWater Cards.somethingInTheWater
 
--- TODO: abilities
 instance RunMessage SomethingInTheWater where
-  runMessage msg (SomethingInTheWater attrs) = runQueueT $ SomethingInTheWater <$> liftRunMessage msg attrs
+  runMessage msg t@(SomethingInTheWater attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      locations <- select $ NearestLocationTo iid CanHaveFloodLevelIncreased
+      chooseOrRunOneM iid $ targets locations $ push . IncreaseFloodLevel
+      pure t
+    _ -> SomethingInTheWater <$> liftRunMessage msg attrs

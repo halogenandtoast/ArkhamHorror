@@ -16,7 +16,7 @@ newtype TheBlackCore = TheBlackCore LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBlackCore :: LocationCard TheBlackCore
-theBlackCore = location TheBlackCore Cards.theBlackCore 0 (PerPlayer 1)
+theBlackCore = withXShroud $ location TheBlackCore Cards.theBlackCore 0 (PerPlayer 1)
 
 instance HasModifiersFor TheBlackCore where
   getModifiersFor (TheBlackCore attrs) = do

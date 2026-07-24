@@ -3,14 +3,18 @@ module Arkham.Location.Cards.ObsidianFoundations (obsidianFoundations) where
 import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Scenarios.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ObsidianFoundations = ObsidianFoundations LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 obsidianFoundations :: LocationCard ObsidianFoundations
-obsidianFoundations = location ObsidianFoundations Cards.obsidianFoundations 0 (Static 2)
+obsidianFoundations = withXShroud $ location ObsidianFoundations Cards.obsidianFoundations 0 (Static 2)
+
+instance HasModifiersFor ObsidianFoundations where
+  getModifiersFor (ObsidianFoundations a) = cannotEnterFromCluedLocation a
 
 instance HasAbilities ObsidianFoundations where
   getAbilities (ObsidianFoundations a) =

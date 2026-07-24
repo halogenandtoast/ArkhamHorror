@@ -5867,6 +5867,7 @@ library
       Arkham.Story.Cards.RuthlessCharge
       Arkham.Story.Cards.SaveTheCivilians
       Arkham.Story.Cards.ScoutingTheVale
+      Arkham.Story.Cards.SeafloorFrieze
       Arkham.Story.Cards.SeismicStomp
       Arkham.Story.Cards.SickeningReality_65
       Arkham.Story.Cards.SickeningReality_66
@@ -5912,6 +5913,7 @@ library
       Arkham.Story.Cards.TheSyndicateRival
       Arkham.Story.Cards.TheTrialOfKamanThah
       Arkham.Story.Cards.TheTrialOfNasht
+      Arkham.Story.Cards.TheUnderseaVault
       Arkham.Story.Cards.TheUnsealing
       Arkham.Story.Cards.TheUnveiling
       Arkham.Story.Cards.TheWayOut
@@ -7341,6 +7343,7 @@ test-suite spec
       Arkham.Location.Cards.DreamGatePointlessRealitySpec
       Arkham.Location.Cards.DreamGateWondrousJourneySpec
       Arkham.Location.Cards.EnchantedWoodsVillageOfZoogsSpec
+      Arkham.Location.TypesSpec
       Arkham.Matcher.CoveredByAnyInPlayEnemySpec
       Arkham.Matcher.NearestLocationToMostSpec
       Arkham.Matcher.OutOfPlayEnemySpec

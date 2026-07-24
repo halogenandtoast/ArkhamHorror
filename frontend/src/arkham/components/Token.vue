@@ -15,6 +15,15 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['choose'])
 
 const image = computed(() => chaosTokenImage(props.token.face))
+const treatedAsFaces = computed(() =>
+  (props.token.modifiedFaces ?? []).filter((face) => face !== props.token.face)
+)
+const faceLabel = (face: string) => face
+  .replace(/Token$/, '')
+  .replace(/([a-z])([A-Z])/g, '$1 $2')
+const treatmentLabel = computed(() =>
+  `${faceLabel(props.token.face)} is treated as ${treatedAsFaces.value.map(faceLabel).join(' and ')}`
+)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const revealedTokenAction = computed(() => {
@@ -67,6 +76,21 @@ const classObject = computed(() => ({
       class="token back"
       :src="imgsrc('chaos-tokens/ct_blank.png')"
     />
+    <div
+      v-if="treatedAsFaces.length > 0"
+      class="treated-as"
+      :title="treatmentLabel"
+      :aria-label="treatmentLabel"
+    >
+      <span class="treated-as-arrow" aria-hidden="true">→</span>
+      <img
+        v-for="face in treatedAsFaces"
+        :key="face"
+        class="treated-as-token"
+        :src="chaosTokenImage(face)"
+        alt=""
+      />
+    </div>
   </div>
 </template>
 
@@ -139,5 +163,39 @@ const classObject = computed(() => ({
 .token-container {
   width: min(100px, 30vw);
   position: relative;
+}
+
+.treated-as {
+  align-items: center;
+  bottom: -4px;
+  display: flex;
+  filter: drop-shadow(1px 2px 3px var(--neutral-extra-dark));
+  pointer-events: none;
+  position: absolute;
+  right: -8px;
+  z-index: 2;
+}
+
+.treated-as-arrow {
+  align-items: center;
+  background: var(--neutral-dark);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  font-size: 14px;
+  font-weight: 900;
+  height: 22px;
+  justify-content: center;
+  margin-right: -4px;
+  width: 22px;
+  z-index: 1;
+}
+
+.treated-as-token {
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  height: min(42px, calc(8vw + 4px));
+  width: min(42px, calc(8vw + 4px));
 }
 </style>

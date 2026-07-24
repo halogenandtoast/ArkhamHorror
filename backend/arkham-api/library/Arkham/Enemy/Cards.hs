@@ -1,11 +1,17 @@
 module Arkham.Enemy.Cards (module Arkham.Enemy.Cards, module X) where
 
+import Arkham.Enemy.CardDefs.AllOrNothing as X
+import Arkham.Enemy.CardDefs.BadBlood as X
 import Arkham.Enemy.CardDefs.Base as X
-import Arkham.Homebrew.Defs qualified as Homebrew
+import Arkham.Enemy.CardDefs.ByTheBook as X
 import Arkham.Enemy.CardDefs.Core2026 as X
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth as X
+import Arkham.Enemy.CardDefs.EnthrallingEncore as X
+import Arkham.Enemy.CardDefs.LaidToRest as X
 import Arkham.Enemy.CardDefs.NightOfTheZealot as X
 import Arkham.Enemy.CardDefs.Promo as X
+import Arkham.Enemy.CardDefs.ReadOrDie as X
+import Arkham.Enemy.CardDefs.RelicsOfThePast as X
 import Arkham.Enemy.CardDefs.ReturnTo as X
 import Arkham.Enemy.CardDefs.Standalone as X
 import Arkham.Enemy.CardDefs.TheCircleUndone as X
@@ -17,13 +23,7 @@ import Arkham.Enemy.CardDefs.TheForgottenAge as X
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Enemy.CardDefs.ThePathToCarcosa as X
 import Arkham.Enemy.CardDefs.TheScarletKeys as X
-import Arkham.Enemy.CardDefs.ByTheBook as X
-import Arkham.Enemy.CardDefs.AllOrNothing as X
-import Arkham.Enemy.CardDefs.BadBlood as X
-import Arkham.Enemy.CardDefs.LaidToRest as X
-import Arkham.Enemy.CardDefs.EnthrallingEncore as X
-import Arkham.Enemy.CardDefs.ReadOrDie as X
-import Arkham.Enemy.CardDefs.RelicsOfThePast as X
+import Arkham.Homebrew.Defs qualified as Homebrew
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -71,11 +71,13 @@ allPlayerEnemyCards =
       , serpentsOfYigAdvanced
       , felineHybrid
       , bloodDrinker
+      , huntingParasite
       ]
 
 allEncounterEnemyCards :: Map CardCode CardDef
-allEncounterEnemyCards = (Homebrew.enemiesMap <>) $
-  mapFromList
+allEncounterEnemyCards =
+  (Homebrew.enemiesMap <>)
+    $ mapFromList
     $ concatMap
       toCardCodePairs
       [ abarranArrigorriagakoaAbarranUnleashed
@@ -691,7 +693,6 @@ allEncounterEnemyCards = (Homebrew.enemiesMap <>) $
       , gangEnforcer
       , gangInformant
       , deepOneMatron
-      , huntingParasite
       , seafloorLeviathan
       , underseaParasite
       , medusa

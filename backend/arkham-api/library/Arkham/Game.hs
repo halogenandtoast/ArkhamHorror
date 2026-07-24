@@ -637,10 +637,28 @@ instance ToJSON WithDeckSize where
     Object o -> Object $ KeyMap.insert "deckSize" (toJSON $ length $ investigatorDeck $ toAttrs i) o
     _ -> error "failed to serialize investigator"
 
-withSkillTestModifiers :: (HasGame m, Targetable a) => a -> m (With a ModifierData)
-withSkillTestModifiers a = do
-  modifiers' <- getModifiers' (toTarget a)
-  pure $ a `with` ModifierData modifiers'
+withSkillTestModifiers :: HasGame m => ChaosToken -> m (With ChaosToken Value)
+withSkillTestModifiers token = do
+  modifiers' <- getModifiers' (toTarget token)
+  tokenFaces <- getModifiedChaosTokenFace token
+  game <- getGame
+  let investigatorModifiers = case token.revealedBy of
+        Nothing -> []
+        Just iid -> map modifierType $ Map.findWithDefault [] (toTarget iid) (gameModifiers game)
+      modifiedFaces =
+        if tokenFaces == [token.face]
+          then foldl' applyForcedTokenChange tokenFaces investigatorModifiers
+          else tokenFaces
+  pure
+    $ token
+    `with` object
+      [ "modifiers" .= modifiers'
+      , "modifiedFaces" .= modifiedFaces
+      ]
+ where
+  applyForcedTokenChange [face] (ForcedChaosTokenChange original faces)
+    | face == original = faces
+  applyForcedTokenChange faces _ = faces
 
 data PublicGame gid = PublicGame gid Text [Text] Game | FailedToLoadGame Text
   deriving stock Show
@@ -4560,7 +4578,9 @@ instance Projection Location where
       LocationHorror -> pure $ locationHorror attrs
       LocationDamage -> pure $ locationDamage attrs
       LocationDoom -> pure $ locationDoom attrs
-      LocationPrintedShroud -> pure locationShroud
+      LocationPrintedShroud -> case locationShroud of
+        Just ValueX -> Just . Static <$> getModifiedShroudValueFor attrs
+        shroud -> pure shroud
       LocationShroud ->
         if isRevealed l && isJust locationShroud
           then Just <$> getModifiedShroudValueFor attrs

@@ -1,7 +1,7 @@
 module Arkham.Enemy.CardDefs.TheDrownedCity where
 
-import Arkham.Enemy.CardDefs.Import
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
 
 -- One Last Job
@@ -80,7 +80,7 @@ deepOneMatron =
 huntingParasite :: CardDef
 huntingParasite =
   unique
-    $ (enemy "11535" "Hunting Parasite" TheWesternWall 1)
+    $ (weakness "11535" "Hunting Parasite")
       { cdHealthDamage = healthDamage 1
       , cdFight = fight 2
       , cdEvade = evade 2

@@ -16,7 +16,7 @@ newtype OwnersOffice = OwnersOffice LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ownersOffice :: LocationCard OwnersOffice
-ownersOffice = symbolLabel $ location OwnersOffice Cards.ownersOffice 0 (PerPlayer 3)
+ownersOffice = withXShroud $ symbolLabel $ location OwnersOffice Cards.ownersOffice 0 (PerPlayer 3)
 
 instance HasModifiersFor OwnersOffice where
   getModifiersFor (OwnersOffice a) = do

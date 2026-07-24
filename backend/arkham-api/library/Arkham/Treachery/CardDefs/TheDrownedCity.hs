@@ -1,8 +1,8 @@
 module Arkham.Treachery.CardDefs.TheDrownedCity where
 
-import Arkham.Treachery.CardDefs.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Keyword qualified as Keyword
+import Arkham.Treachery.CardDefs.Import
 
 illDoItMyself :: CardDef
 illDoItMyself = (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}
@@ -66,6 +66,7 @@ seafloorFrieze =
     { cdCardTraits = setFromList [Evidence, Glyph]
     , cdOtherSide = Just "11531b"
     , cdDoubleSided = True
+    , cdRevelation = CannotBeCanceledRevelation
     }
 
 lookOut :: CardDef
@@ -91,7 +92,8 @@ alienEggs =
 parasiticTransformation :: CardDef
 parasiticTransformation =
   (treachery "11583" "Parasitic Transformation" TheApiary 4)
-    {cdCardTraits = setFromList [Curse, Hazard]}
+    { cdCardTraits = setFromList [Curse, Hazard]
+    }
 
 -- The Grand Vault
 deadlyMechanisms :: CardDef
@@ -147,7 +149,8 @@ ruinedOrrery =
 cosmicOmen :: CardDef
 cosmicOmen =
   (treachery "11636" "Cosmic Omen" CourtOfTheAncients 4)
-    {cdCardTraits = setFromList [Omen, Power]}
+    { cdCardTraits = setFromList [Omen, Power]
+    }
 
 -- Obsidian Canyons
 erodedFrieze :: CardDef
@@ -169,7 +172,8 @@ acrophobia =
 wingsOfTerror :: CardDef
 wingsOfTerror =
   (treachery "11667" "Wings of Terror" ObsidianCanyons 2)
-    {cdCardTraits = setFromList [Scheme, Terror]}
+    { cdCardTraits = setFromList [Scheme, Terror]
+    }
 
 lostInTheClouds :: CardDef
 lostInTheClouds =
@@ -200,7 +204,8 @@ grossPlasticity =
 arkhamUnderAssault :: CardDef
 arkhamUnderAssault =
   (treachery "11720" "Arkham Under Assault" TheDoomOfArkhamPartII 2)
-    {cdCardTraits = setFromList [Scheme]}
+    { cdCardTraits = setFromList [Scheme]
+    }
 
 -- Stowaways
 infected :: CardDef
@@ -229,7 +234,8 @@ corrosiveFog =
 dreamingMigration :: CardDef
 dreamingMigration =
   (treachery "11734" "Dreaming Migration" UnderseaCreatures 2)
-    {cdCardTraits = setFromList [Hazard]}
+    { cdCardTraits = setFromList [Hazard]
+    }
 
 underseaHunt :: CardDef
 underseaHunt =
@@ -255,7 +261,8 @@ ominousSilence =
 cyclopeanArchitecture :: CardDef
 cyclopeanArchitecture =
   (treachery "11739" "Cyclopean Architecture" Set.Rlyeh 2)
-    {cdCardTraits = setFromList [Terror]}
+    { cdCardTraits = setFromList [Terror]
+    }
 
 crumblingMasonry :: CardDef
 crumblingMasonry =
@@ -291,4 +298,5 @@ deepOneAmbush =
 infernalMachinery :: CardDef
 infernalMachinery =
   (treachery "11752" "Infernal Machinery" AlienMachinery 2)
-    {cdCardTraits = setFromList [Hazard]}
+    { cdCardTraits = setFromList [Hazard]
+    }

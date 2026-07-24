@@ -327,12 +327,22 @@ async function updateLayoutPadding() {
   if (!grid) return
 
   const current = layoutPadding.value
-  const allOffsets: Record<string, { x: number, y: number }> = {
-    ...locationOffsets.value,
-    ...pendingOffsets.value,
+  const allOffsets: Record<string, { x: number, y: number }> = {}
+  const offsetLocationIds = new Set([
+    ...Object.keys(locationOffsets.value),
+    ...Object.keys(pendingOffsets.value),
+    ...Object.keys(locationGridOffsets.value),
+  ])
+  for (const id of offsetLocationIds) {
+    const userOffset = pendingOffsets.value[id] ?? locationOffsets.value[id] ?? { x: 0, y: 0 }
+    const gridOffset = locationGridOffsets.value[id] ?? { column: 0, row: 0 }
+    allOffsets[id] = {
+      x: userOffset.x + gridOffset.column * (cellDimensions.value.w + 20),
+      y: userOffset.y + gridOffset.row * (cellDimensions.value.h + 20),
+    }
   }
 
-  if (Object.keys(allOffsets).length === 0) {
+  if (offsetLocationIds.size === 0) {
     if (current.left || current.right || current.top || current.bottom) {
       layoutPadding.value = { left: 0, right: 0, top: 0, bottom: 0 }
     }
@@ -1397,7 +1407,7 @@ const cosmicEmissaryLayoutSignature = computed(() => {
 })
 watch([cosmicEmissaryLayoutSignature, rotationSteps, locationsZoom], () => nextTick(requestCosmicEmissaryCompact), { flush: 'post' })
 watch(
-  [locationOffsets, pendingOffsets, rotationSteps, locationsZoom, locations, cellDimensions],
+  [locationOffsets, pendingOffsets, locationGridOffsets, rotationSteps, locationsZoom, locations, cellDimensions],
   updateLayoutPadding,
   { flush: 'post', deep: true },
 )

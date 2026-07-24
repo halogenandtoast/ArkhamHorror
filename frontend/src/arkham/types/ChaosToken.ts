@@ -7,6 +7,7 @@ export type ChaosToken = {
   face: TokenFace;
   id: string;
   modifiers?: Modifier[];
+  modifiedFaces?: TokenFace[];
 }
 
 export const tokenOrder = [
@@ -54,7 +55,13 @@ export const chaosTokenDecoder = JsonDecoder.object({
   chaosTokenId: JsonDecoder.string(),
   chaosTokenFace: tokenFaceDecoder,
   modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
-}, 'ChaosToken').map(({chaosTokenId, chaosTokenFace, modifiers}) => ({ id: chaosTokenId, face: chaosTokenFace, modifiers }));
+  modifiedFaces: v2Optional(JsonDecoder.array<TokenFace>(tokenFaceDecoder, 'TokenFace[]')),
+}, 'ChaosToken').map(({chaosTokenId, chaosTokenFace, modifiers, modifiedFaces}) => ({
+  id: chaosTokenId,
+  face: chaosTokenFace,
+  modifiers,
+  modifiedFaces,
+}));
 
 export function chaosTokenImage(face: TokenFace): string {
   switch (face) {

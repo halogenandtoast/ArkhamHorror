@@ -18,7 +18,8 @@ newtype BedroomHemlockHouse32 = BedroomHemlockHouse32 LocationAttrs
 -- HasModifiersFor instance bumps it to floor + 1 dynamically.
 bedroomHemlockHouse32 :: LocationCard BedroomHemlockHouse32
 bedroomHemlockHouse32 =
-  locationWith BedroomHemlockHouse32 Cards.bedroomHemlockHouse32 0 (PerPlayer 1)
+  withXShroud
+    $ locationWith BedroomHemlockHouse32 Cards.bedroomHemlockHouse32 0 (PerPlayer 1)
     $ connectsToAdjacent
     . (canBeFlippedL .~ True)
 
@@ -29,13 +30,14 @@ instance HasModifiersFor BedroomHemlockHouse32 where
 
 instance HasAbilities BedroomHemlockHouse32 where
   getAbilities (BedroomHemlockHouse32 a) =
-    extendRevealed a
+    extendRevealed
+      a
       [ -- "[reaction] After you place a seal on this location: Draw 1 card or
         -- gain 2 resources." Seals are tracked as Resource tokens placed by the
         -- act ability "Place 1 resource on it, as a seal".
         restricted a 1 Here
           $ freeReaction
-              (PlacedToken #after (SourceUsedBy You) (TargetIs $ toTarget a.id) Resource)
+            (PlacedToken #after (SourceUsedBy You) (TargetIs $ toTarget a.id) Resource)
       ]
 
 instance RunMessage BedroomHemlockHouse32 where

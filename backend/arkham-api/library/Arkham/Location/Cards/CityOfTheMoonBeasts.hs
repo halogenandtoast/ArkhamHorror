@@ -13,7 +13,7 @@ newtype CityOfTheMoonBeasts = CityOfTheMoonBeasts LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cityOfTheMoonBeasts :: LocationCard CityOfTheMoonBeasts
-cityOfTheMoonBeasts = location CityOfTheMoonBeasts Cards.cityOfTheMoonBeasts 0 (PerPlayer 1)
+cityOfTheMoonBeasts = withXShroud $ location CityOfTheMoonBeasts Cards.cityOfTheMoonBeasts 0 (PerPlayer 1)
 
 instance HasModifiersFor CityOfTheMoonBeasts where
   getModifiersFor (CityOfTheMoonBeasts attrs) = do

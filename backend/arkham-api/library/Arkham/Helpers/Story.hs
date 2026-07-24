@@ -11,6 +11,7 @@ import Arkham.Message.Lifted
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Target
+import Arkham.Treachery.Types (TreacheryAttrs)
 import Arkham.Window qualified as Window
 
 class Flippable a where
@@ -34,6 +35,9 @@ instance Flippable Card where
   flipThis _ _ = pure ()
 
 instance Flippable AssetAttrs where
+  flipThis _ _ = pure ()
+
+instance Flippable TreacheryAttrs where
   flipThis _ _ = pure ()
 
 readStory

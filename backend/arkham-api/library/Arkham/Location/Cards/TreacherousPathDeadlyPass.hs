@@ -5,13 +5,17 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (increaseThisFloodLevelOr
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.TheWesternWall.Helpers (locationLevel, treacherousPathModifiers)
 
 newtype TreacherousPathDeadlyPass = TreacherousPathDeadlyPass LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousPathDeadlyPass :: LocationCard TreacherousPathDeadlyPass
-treacherousPathDeadlyPass = location TreacherousPathDeadlyPass Cards.treacherousPathDeadlyPass 0 (Static 1)
+treacherousPathDeadlyPass = withXShroud $ location TreacherousPathDeadlyPass Cards.treacherousPathDeadlyPass 0 (Static 1)
+
+instance HasModifiersFor TreacherousPathDeadlyPass where
+  getModifiersFor (TreacherousPathDeadlyPass a) = treacherousPathModifiers a
 
 instance HasAbilities TreacherousPathDeadlyPass where
   getAbilities (TreacherousPathDeadlyPass a) =
@@ -20,7 +24,7 @@ instance HasAbilities TreacherousPathDeadlyPass where
 instance RunMessage TreacherousPathDeadlyPass where
   runMessage msg l@(TreacherousPathDeadlyPass attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let level = maybe 1 (+ 1) attrs.row
+      let level = maybe 1 locationLevel (locationPosition attrs)
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed level)
       pure l

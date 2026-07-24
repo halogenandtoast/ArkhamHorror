@@ -10,6 +10,8 @@ import Arkham.Prelude hiding (fold)
 
 import Arkham.Card
 import Arkham.Id
+import Arkham.Story.Cards.SeafloorFrieze qualified as SeafloorFrieze
+import Arkham.Story.Cards.TheUnderseaVault qualified as UnderseaVault
 import Arkham.Story.Stories
 import Arkham.Story.Types
 import Arkham.Target
@@ -36,7 +38,10 @@ allStories :: Map CardCode SomeStoryCard
 allStories =
   mapFrom
     someStoryCardCode
-    [ -- The Path to Carcosa
+    [ -- The Drowned City
+      SomeStoryCard SeafloorFrieze.seafloorFrieze
+    , SomeStoryCard UnderseaVault.theUnderseaVault
+    , -- The Path to Carcosa
       -- The Last King
       SomeStoryCard sickeningReality_65
     , SomeStoryCard sickeningReality_66

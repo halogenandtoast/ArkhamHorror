@@ -13,7 +13,7 @@ newtype PrisonOfMemories = PrisonOfMemories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prisonOfMemories :: LocationCard PrisonOfMemories
-prisonOfMemories = location PrisonOfMemories Cards.prisonOfMemories 0 (PerPlayer 3)
+prisonOfMemories = withXShroud $ location PrisonOfMemories Cards.prisonOfMemories 0 (PerPlayer 3)
 
 instance HasModifiersFor PrisonOfMemories where
   getModifiersFor (PrisonOfMemories a) = do

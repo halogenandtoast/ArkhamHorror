@@ -407,7 +407,10 @@ instance RunMessage SkillTest where
     PassSkillTest -> do
       push $ Do PassSkillTest
       when (skillTestStep < SkillTestFastWindow2) $ push CheckAllAdditionalCommitCosts
-      pure s
+      pure
+        $ if skillTestStep < RevealChaosTokenStep
+          then s & stepL .~ DetermineInvestigatorsModifiedSkillValueStep
+          else s
     Do PassSkillTest -> do
       modifiedSkillValue' <- totalModifiedSkillValue s
       player <- getPlayer skillTestInvestigator
@@ -423,7 +426,7 @@ instance RunMessage SkillTest where
             & (difficultyL .~ SkillTestDifficulty (Fixed 0))
       results <- calculateSkillTestResultsData s'
       push $ SkillTestResults results
-      pure s'
+      pure $ s' & stepL .~ DetermineSuccessOrFailureOfSkillTestStep
     PassSkillTestBy n -> do
       player <- getPlayer skillTestInvestigator
       removeAllMessagesMatching \case
@@ -442,7 +445,10 @@ instance RunMessage SkillTest where
     FailSkillTest -> do
       push $ Do FailSkillTest
       when (skillTestStep < SkillTestFastWindow2) $ push CheckAllAdditionalCommitCosts
-      pure s
+      pure
+        $ if skillTestStep < RevealChaosTokenStep
+          then s & stepL .~ DetermineInvestigatorsModifiedSkillValueStep
+          else s
     Do FailSkillTest -> do
       resultsData <- autoFailSkillTestResultsData s
       difficulty <- getModifiedSkillTestDifficulty s
@@ -523,7 +529,10 @@ instance RunMessage SkillTest where
         else do
           player <- getPlayer skillTestResolveFailureInvestigator
           pushAll $ handleChoice skillTestResolveFailureInvestigator player
-      pure $ s & resultL .~ FailedBy Automatic difficulty
+      pure
+        $ s
+        & (resultL .~ FailedBy Automatic difficulty)
+        & (stepL .~ DetermineSuccessOrFailureOfSkillTestStep)
     StartSkillTest _ -> do
       windowMsg <- checkWindows [mkWhen Window.FastPlayerWindow]
       pushAll [CheckAllAdditionalCommitCosts, windowMsg, TriggerSkillTest skillTestInvestigator]

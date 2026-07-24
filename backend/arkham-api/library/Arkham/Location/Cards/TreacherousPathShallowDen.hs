@@ -8,13 +8,17 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Phase
+import Arkham.Scenarios.TheWesternWall.Helpers (treacherousPathModifiers)
 
 newtype TreacherousPathShallowDen = TreacherousPathShallowDen LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousPathShallowDen :: LocationCard TreacherousPathShallowDen
-treacherousPathShallowDen = location TreacherousPathShallowDen Cards.treacherousPathShallowDen 0 (Static 1)
+treacherousPathShallowDen = withXShroud $ location TreacherousPathShallowDen Cards.treacherousPathShallowDen 0 (Static 1)
+
+instance HasModifiersFor TreacherousPathShallowDen where
+  getModifiersFor (TreacherousPathShallowDen a) = treacherousPathModifiers a
 
 instance HasAbilities TreacherousPathShallowDen where
   getAbilities (TreacherousPathShallowDen a) =

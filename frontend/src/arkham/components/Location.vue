@@ -506,6 +506,11 @@ const floodLevel = computed(() => {
       return null
   }
 })
+const { displayedImage: displayedFloodLevel, flipping: floodLevelFlipping } = useCardFlip(
+  floodLevel,
+  (nextFloodLevel, previousFloodLevel) =>
+    nextFloodLevel != null && previousFloodLevel != null && nextFloodLevel !== previousFloodLevel,
+)
 
 const debug = useDebug()
 
@@ -674,9 +679,17 @@ const hasAnyLocationVehicleAssets = computed(() =>
             />
           </div>
 
-          <div class="clues pool location-pool" v-if="!flipping && ((clues ?? 0) > 0 || floodLevel)">
+          <div
+            class="clues pool location-pool"
+            v-if="!flipping && ((clues ?? 0) > 0 || displayedFloodLevel)"
+          >
             <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-            <img v-if="floodLevel" :src="floodLevel" class="flood-level" />
+            <img
+              v-if="displayedFloodLevel"
+              :src="displayedFloodLevel"
+              class="flood-level"
+              :class="{ 'card--flipping': floodLevelFlipping }"
+            />
           </div>
 
           <div class="pool location-pool" v-if="!flipping && hasPool">

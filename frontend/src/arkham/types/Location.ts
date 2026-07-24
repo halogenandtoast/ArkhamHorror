@@ -53,11 +53,16 @@ export type Location = {
   concealedCards: string[];
 }
 
-type GameValue = { tag: "Static", contents: number } | { tag: "PerPlayer", contents: number }
+type GameValue =
+  | { tag: "Static", contents: number }
+  | { tag: "PerPlayer", contents: number }
+  | { tag: "ValueX", contents: number }
 
 export const gameValueDecoder = JsonDecoder.oneOf<GameValue>([
   JsonDecoder.object({ tag: JsonDecoder.literal("Static"), contents: JsonDecoder.number() }, 'Static'),
-  JsonDecoder.object({ tag: JsonDecoder.literal("PerPlayer"), contents: JsonDecoder.number() }, 'PerPlayer')
+  JsonDecoder.object({ tag: JsonDecoder.literal("PerPlayer"), contents: JsonDecoder.number() }, 'PerPlayer'),
+  JsonDecoder.object({ tag: JsonDecoder.literal("ValueX") }, 'ValueX')
+    .map(() => ({ tag: "ValueX" as const, contents: 0 }))
 ], 'GameValue')
 
 export const locationDecoder = JsonDecoder.object<Location>(

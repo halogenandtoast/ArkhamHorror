@@ -18,7 +18,7 @@ newtype WayangKulitTheater = WayangKulitTheater LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wayangKulitTheater :: LocationCard WayangKulitTheater
-wayangKulitTheater = symbolLabel $ location WayangKulitTheater Cards.wayangKulitTheater 0 (PerPlayer 1)
+wayangKulitTheater = withXShroud $ symbolLabel $ location WayangKulitTheater Cards.wayangKulitTheater 0 (PerPlayer 1)
 
 instance HasModifiersFor WayangKulitTheater where
   getModifiersFor (WayangKulitTheater a) = do

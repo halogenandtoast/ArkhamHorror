@@ -468,6 +468,10 @@ symbolLabel
   :: (Entity a, EntityAttrs a ~ LocationAttrs) => CardBuilder LocationId a -> CardBuilder LocationId a
 symbolLabel = fmap (overAttrs (\attrs -> attrs & labelL .~ (T.toLower . tshow $ locationSymbol attrs)))
 
+withXShroud
+  :: (Entity a, EntityAttrs a ~ LocationAttrs) => CardBuilder LocationId a -> CardBuilder LocationId a
+withXShroud = fmap (overAttrs (\attrs -> attrs & shroudL ?~ ValueX))
+
 setLabel
   :: (Entity a, EntityAttrs a ~ LocationAttrs)
   => Text -> CardBuilder LocationId a -> CardBuilder LocationId a

@@ -4,14 +4,19 @@ import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheWesternWall.Helpers (getLocationLevel)
+import Arkham.Scenarios.TheWesternWall.Helpers (getLocationLevel, treacherousPathModifiers)
 
 newtype TreacherousPathPrecariousClimb = TreacherousPathPrecariousClimb LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousPathPrecariousClimb :: LocationCard TreacherousPathPrecariousClimb
-treacherousPathPrecariousClimb = location TreacherousPathPrecariousClimb Cards.treacherousPathPrecariousClimb 0 (Static 1)
+treacherousPathPrecariousClimb =
+  withXShroud
+    $ location TreacherousPathPrecariousClimb Cards.treacherousPathPrecariousClimb 0 (Static 1)
+
+instance HasModifiersFor TreacherousPathPrecariousClimb where
+  getModifiersFor (TreacherousPathPrecariousClimb a) = treacherousPathModifiers a
 
 instance HasAbilities TreacherousPathPrecariousClimb where
   getAbilities (TreacherousPathPrecariousClimb a) =

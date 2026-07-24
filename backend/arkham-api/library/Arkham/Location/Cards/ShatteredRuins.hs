@@ -6,13 +6,17 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (record)
+import Arkham.Scenarios.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
 
 newtype ShatteredRuins = ShatteredRuins LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shatteredRuins :: LocationCard ShatteredRuins
-shatteredRuins = location ShatteredRuins Cards.shatteredRuins 0 (Static 2)
+shatteredRuins = withXShroud $ location ShatteredRuins Cards.shatteredRuins 0 (Static 2)
+
+instance HasModifiersFor ShatteredRuins where
+  getModifiersFor (ShatteredRuins a) = cannotEnterFromCluedLocation a
 
 instance HasAbilities ShatteredRuins where
   getAbilities (ShatteredRuins a) =

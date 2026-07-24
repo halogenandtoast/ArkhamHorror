@@ -1,16 +1,22 @@
 import { onBeforeUnmount, ref, watch, type Ref } from 'vue'
 
-export function useCardFlip(image: Readonly<Ref<string>>) {
-  const displayedImage = ref(image.value)
+export function useCardFlip<T>(
+  image: Readonly<Ref<T>>,
+  shouldFlip: (nextImage: T, previousImage: T) => boolean = () => true,
+) {
+  const displayedImage = ref<T>(image.value)
   const flipping = ref(false)
   let imageSwapTimer: number | undefined
   let animationTimer: number | undefined
 
-  watch(image, (nextImage) => {
+  watch(image, (nextImage, previousImage) => {
     window.clearTimeout(imageSwapTimer)
     window.clearTimeout(animationTimer)
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (
+      !shouldFlip(nextImage, previousImage) ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
       displayedImage.value = nextImage
       flipping.value = false
       return

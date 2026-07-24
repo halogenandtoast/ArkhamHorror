@@ -3,9 +3,9 @@ module Arkham.Scenario.Scenarios.TheWesternWall (theWesternWall) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaign.Import.Lifted (setNextCampaignStep)
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (
   pattern SepulchreOfTheSleeper,
+  pattern TheApiary,
   pattern TheDrownedQuarter,
  )
 import Arkham.Campaigns.TheDrownedCity.Import
@@ -15,6 +15,7 @@ import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
   modifiedWith_,
@@ -46,13 +47,13 @@ newtype TheWesternWall = TheWesternWall ScenarioAttrs
 instance HasModifiersFor TheWesternWall where
   getModifiersFor (TheWesternWall attrs) = do
     locations <- select Anywhere
-    positions <- traverse (field LocationPosition) locations
-    let usesNegativeRows = any (maybe False ((< 0) . (.row))) positions
+    underseaVaultPosition <-
+      listToMaybe . catMaybes <$> selectField LocationPosition (locationIs Locations.underseaVault)
     modifySelectMapM attrs Anywhere \lid -> do
       connections <- runDefaultMaybeT [] do
         pos <- MaybeT $ field LocationPosition lid
         lift $ filterM (isAdjacentLevel pos) locations
-      gridOffset <- fieldMap LocationPosition (>>= locationGridOffset usesNegativeRows) lid
+      gridOffset <- fieldMap LocationPosition (>>= locationGridOffset underseaVaultPosition) lid
       for_ gridOffset \(columnOffset, rowOffset) ->
         modifiedWith_ attrs lid setActiveDuringSetup [UIModifier (GridOffset columnOffset rowOffset)]
       for_ connections \connected ->
@@ -64,10 +65,19 @@ instance HasModifiersFor TheWesternWall where
    where
     isAdjacentLevel pos other =
       fieldMap LocationPosition (maybe False ((== 1) . abs . subtract pos.row . (.row))) other
-    locationGridOffset usesNegativeRows pos
-      | usesNegativeRows && pos.row == -2 = Just (0.5, 0)
-      | usesNegativeRows = Nothing
-      | otherwise = Just (if pos.row == 2 then 0.5 else 0, fromIntegral (2 * pos.row - 4))
+    -- Stagger level 3 without changing the grid's vertical orientation. Positive
+    -- rows naturally render above row 0 and negative rows naturally render below it.
+    locationGridOffset underseaVaultPosition pos
+      | Just vaultPos <- underseaVaultPosition
+      , pos.row == vaultPos.row
+      , abs pos.row == 2 =
+          Nothing
+      | Just vaultPos <- underseaVaultPosition
+      , pos.row == vaultPos.row
+      , abs pos.row == 4 =
+          Just (-0.5, 0)
+      | abs pos.row == 2 = Just (0.5, 0)
+      | otherwise = Nothing
 
 theWesternWall :: Difficulty -> TheWesternWall
 theWesternWall difficulty = scenario TheWesternWall "11517" "The Western Wall" difficulty []
@@ -98,7 +108,9 @@ instance RunMessage TheWesternWall where
           li.validate headedWest "headedWest"
           li.validate (not headedWest) "headedEast"
 
-      hasDoNoHarm <- selectAny $ InDeckOf Anyone <> basic (cardIs Assets.doNoHarm)
+      hasDoNoHarm <-
+        anyM (`investigatorHasTask` Assets.doNoHarm)
+          =<< select (IncludeEliminated Anyone)
       flavor do
         setTitle "title"
         p $ if headedWest then "westernWall1" else "westernWall2"
@@ -193,13 +205,27 @@ instance RunMessage TheWesternWall where
       let (upperWalkways, bottomWalkways) = splitAt 6 mixedWalkways
       bottomRow <- shuffleM $ Locations.obsidianFoundations : bottomWalkways
 
-      westernWall <- placeInGrid (Pos 1 0) Locations.westernWall_11530
+      -- V.I descends from Western Wall, so increasing levels use negative rows.
+      -- V.II ascends from Western Wall, so increasing levels use positive rows.
+      -- Keeping Western Wall at row 0 makes abs(row) + 1 the level in both layouts.
+      let rowForLevel level = (if headedWest then negate else id) (level - 1)
+          atLevel column level = Pos column (rowForLevel level)
+      westernWall <- placeInGrid (atLevel 1 1) Locations.westernWall_11530
       upperLocations <-
         for
-          (zip [Pos 1 (-1), Pos 0 (-2), Pos 1 (-2), Pos 0 (-3), Pos 1 (-3), Pos 2 (-3)] upperWalkways)
+          ( zip
+              [ atLevel 1 2
+              , atLevel 0 3
+              , atLevel 1 3
+              , atLevel 0 4
+              , atLevel 1 4
+              , atLevel 2 4
+              ]
+              upperWalkways
+          )
           $ uncurry placeInGrid
       bottomLocations <-
-        for (zip [Pos 0 (-4), Pos 1 (-4), Pos 2 (-4)] bottomRow) $ uncurry placeInGrid
+        for (zip [atLevel 0 5, atLevel 1 5, atLevel 2 5] bottomRow) $ uncurry placeInGrid
       let obsidianFoundations =
             snd
               $ fromJustNote "Missing Obsidian Foundations"
@@ -230,22 +256,66 @@ instance RunMessage TheWesternWall where
         card <- EncounterCard <$> genEncounterCard def
         createAssetAt_ card (InPlayArea iid)
       pure s
+    ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
+      whenM ((== FullyFlooded) <$> getFloodLevelFor iid) $ assignDamage iid Cultist 1
+      pure s
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
+      withLocationOf iid $ push . IncreaseFloodLevel
+      pure s
+    FailedSkillTestWithToken iid Cultist | isEasyStandard attrs -> do
+      whenM ((== FullyFlooded) <$> getFloodLevelFor iid) $ assignDamage iid Cultist 1
+      pure s
+    FailedSkillTestWithToken iid Tablet | isEasyStandard attrs -> do
+      withLocationOf iid $ push . IncreaseFloodLevel
+      pure s
     ScenarioResolution res -> scope "resolutions" do
       -- TODO: cross out "The Western Wall" on the R'lyeh map (needs an R'lyeh-map
       -- campaign-log key/recordable to track which scenarios are completed).
       headedWest <- getHasRecord TheExpeditionHeadedWest
+      let resolveDoNoHarm = eachInvestigator \iid -> do
+            whenM (investigatorHasTask iid Assets.doNoHarm) do
+              helpedThePilgrim <- getHasRecord TheExpeditionHelpedThePilgrim
+              scope "doNoHarmResolution" $ flavor $ compose.green do
+                h3 "title"
+                p "instructions"
+                p.basic "checkCampaignLog"
+                ul do
+                  li.validate helpedThePilgrim "helpedThePilgrim"
+                  li.validate (not helpedThePilgrim) "otherwise"
+                if helpedThePilgrim
+                  then do
+                    p "task1"
+                    ul do
+                      li "task1HuntingParasite"
+                      li "task1Progress"
+                  else do
+                    p "task2"
+                    ul do
+                      li "task2Trauma"
+                      li "task2Progress"
+              if helpedThePilgrim
+                then addCampaignCardToDeck iid DoNotShuffleIn Enemies.huntingParasite
+                else sufferMentalTrauma iid 1
+          chooseResolution3 =
+            storyWithChooseOneM'
+              (compose.resolution $ scope "resolution3" $ setTitle "title" >> p "body")
+              do
+                labeled' "resolution3.drownedQuarter" $ endOfScenarioThen TheDrownedQuarter
+                labeled' "resolution3.apiary" $ endOfScenarioThen TheApiary
       case res of
-        Resolution 1 -> resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
-        Resolution 2 -> resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
-        NoResolution -> resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+        Resolution 1 -> do
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+          resolveDoNoHarm
+          chooseResolution3
+        Resolution 2 -> do
+          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+          resolveDoNoHarm
+          endOfScenarioThen SepulchreOfTheSleeper
+        NoResolution -> do
+          resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+          resolveDoNoHarm
+          if headedWest then chooseResolution3 else endOfScenarioThen SepulchreOfTheSleeper
         _ -> error $ "Unknown resolution: " <> show res
-      -- TODO: the Hunting Parasite weakness and the R'lyeh-map exploration choice.
-      -- West continues the west path; east
-      -- proceeds to Sepulchre of the Sleeper.
-      setNextCampaignStep
-        $ if headedWest
-          then TheDrownedQuarter
-          else SepulchreOfTheSleeper
-      endOfScenario
+      -- TODO: explicit R'lyeh-map and per-investigator Task-progress tracking.
       pure s
     _ -> TheWesternWall <$> liftRunMessage msg attrs

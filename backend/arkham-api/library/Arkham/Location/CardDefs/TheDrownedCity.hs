@@ -19,45 +19,99 @@ laBellaLunaTheDrownedCity =
 -- The Western Wall
 treacherousPathSlickSteps :: CardDef
 treacherousPathSlickSteps =
-  location_ "11521" ("Treacherous Path" <:> "Slick Steps") [Rlyeh, Walkway] TheWesternWall
+  locationWithUnrevealed_
+    "11521"
+    "Treacherous Paths"
+    [Rlyeh, Walkway]
+    ("Treacherous Path" <:> "Slick Steps")
+    [Rlyeh, Walkway]
+    TheWesternWall
 
 treacherousPathErodedShelf :: CardDef
 treacherousPathErodedShelf =
-  location_ "11522" ("Treacherous Path" <:> "Eroded Shelf") [Rlyeh, Walkway] TheWesternWall
+  locationWithUnrevealed_
+    "11522"
+    "Treacherous Paths"
+    [Rlyeh, Walkway]
+    ("Treacherous Path" <:> "Eroded Shelf")
+    [Rlyeh, Walkway]
+    TheWesternWall
 
 treacherousPathPrecariousClimb :: CardDef
 treacherousPathPrecariousClimb =
-  location_ "11523" ("Treacherous Path" <:> "Precarious Climb") [Rlyeh, Walkway] TheWesternWall
+  locationWithUnrevealed_
+    "11523"
+    "Treacherous Paths"
+    [Rlyeh, Walkway]
+    ("Treacherous Path" <:> "Precarious Climb")
+    [Rlyeh, Walkway]
+    TheWesternWall
 
 treacherousPathDeadlyPass :: CardDef
 treacherousPathDeadlyPass =
-  location_ "11524" ("Treacherous Path" <:> "Deadly Pass") [Rlyeh, Walkway] TheWesternWall
+  locationWithUnrevealed_
+    "11524"
+    "Treacherous Paths"
+    [Rlyeh, Walkway]
+    ("Treacherous Path" <:> "Deadly Pass")
+    [Rlyeh, Walkway]
+    TheWesternWall
 
 treacherousPathShallowDen :: CardDef
 treacherousPathShallowDen =
-  location_ "11525" ("Treacherous Path" <:> "Shallow Den") [Rlyeh, Walkway] TheWesternWall
+  locationWithUnrevealed_
+    "11525"
+    "Treacherous Paths"
+    [Rlyeh, Walkway]
+    ("Treacherous Path" <:> "Shallow Den")
+    [Rlyeh, Walkway]
+    TheWesternWall
 
 sunkenStairway :: CardDef
 sunkenStairway =
-  location_ "11526" "Sunken Stairway" [Rlyeh, Walkway] TheWesternWall
+  locationWithUnrevealed_
+    "11526"
+    "Treacherous Paths"
+    [Rlyeh, Walkway]
+    "Sunken Stairway"
+    [Rlyeh, Walkway]
+    TheWesternWall
 
 drownedShanty :: CardDef
 drownedShanty =
-  location_ "11527" "Drowned Shanty" [Rlyeh, Walkway] TheWesternWall
+  locationWithUnrevealed_
+    "11527"
+    "Treacherous Paths"
+    [Rlyeh, Walkway]
+    "Drowned Shanty"
+    [Rlyeh, Walkway]
+    TheWesternWall
 
 shatteredRuins :: CardDef
 shatteredRuins =
-  victory 1 $ location_ "11528" "Shattered Ruins" [Rlyeh, Walkway, Glyph] TheWesternWall
+  victory 1
+    $ locationWithUnrevealed_
+      "11528"
+      "Treacherous Paths"
+      [Rlyeh, Walkway]
+      "Shattered Ruins"
+      [Rlyeh, Walkway, Glyph]
+      TheWesternWall
 
 obsidianFoundations :: CardDef
 obsidianFoundations =
-  location_ "11529" "Obsidian Foundations" [Rlyeh] TheWesternWall
+  locationWithUnrevealed_
+    "11529"
+    "Treacherous Paths"
+    [Rlyeh, Walkway]
+    "Obsidian Foundations"
+    [Rlyeh]
+    TheWesternWall
 
 westernWall_11530 :: CardDef
 westernWall_11530 =
   location_ "11530" "Western Wall" [Rlyeh] TheWesternWall
 
--- TODO: back side of double-sided card (11532b)
 underseaVault :: CardDef
 underseaVault =
   storyOnBack' "11532b"

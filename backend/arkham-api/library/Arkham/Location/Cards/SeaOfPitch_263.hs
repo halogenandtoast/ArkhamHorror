@@ -15,7 +15,7 @@ newtype SeaOfPitch_263 = SeaOfPitch_263 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seaOfPitch_263 :: LocationCard SeaOfPitch_263
-seaOfPitch_263 = location SeaOfPitch_263 Cards.seaOfPitch_263 0 (PerPlayer 1)
+seaOfPitch_263 = withXShroud $ location SeaOfPitch_263 Cards.seaOfPitch_263 0 (PerPlayer 1)
 
 instance HasModifiersFor SeaOfPitch_263 where
   getModifiersFor (SeaOfPitch_263 a) = whenRevealed a do

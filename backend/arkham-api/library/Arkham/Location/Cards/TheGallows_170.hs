@@ -15,7 +15,7 @@ newtype TheGallows_170 = TheGallows_170 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theGallows_170 :: LocationCard TheGallows_170
-theGallows_170 = location TheGallows_170 Cards.theGallows_170 0 (Static 0)
+theGallows_170 = withXShroud $ location TheGallows_170 Cards.theGallows_170 0 (Static 0)
 
 instance HasModifiersFor TheGallows_170 where
   getModifiersFor (TheGallows_170 a) = whenRevealed a do

@@ -4,14 +4,17 @@ import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheWesternWall.Helpers (getLocationLevel)
+import Arkham.Scenarios.TheWesternWall.Helpers (getLocationLevel, treacherousPathModifiers)
 
 newtype TreacherousPathErodedShelf = TreacherousPathErodedShelf LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousPathErodedShelf :: LocationCard TreacherousPathErodedShelf
-treacherousPathErodedShelf = location TreacherousPathErodedShelf Cards.treacherousPathErodedShelf 0 (Static 1)
+treacherousPathErodedShelf = withXShroud $ location TreacherousPathErodedShelf Cards.treacherousPathErodedShelf 0 (Static 1)
+
+instance HasModifiersFor TreacherousPathErodedShelf where
+  getModifiersFor (TreacherousPathErodedShelf a) = treacherousPathModifiers a
 
 instance HasAbilities TreacherousPathErodedShelf where
   getAbilities (TreacherousPathErodedShelf a) =

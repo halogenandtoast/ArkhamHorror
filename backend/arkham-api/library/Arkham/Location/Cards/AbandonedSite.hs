@@ -11,7 +11,7 @@ newtype AbandonedSite = AbandonedSite LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 abandonedSite :: LocationCard AbandonedSite
-abandonedSite = symbolLabel $ location AbandonedSite Cards.abandonedSite 0 (PerPlayer 1)
+abandonedSite = withXShroud $ symbolLabel $ location AbandonedSite Cards.abandonedSite 0 (PerPlayer 1)
 
 instance HasModifiersFor AbandonedSite where
   getModifiersFor (AbandonedSite attrs) = do

@@ -1,7 +1,10 @@
 module Arkham.Location.Cards.AbyssalTrench (abyssalTrench) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (decreaseThisFloodLevel, increaseThisFloodLevel)
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (
+  decreaseThisFloodLevel,
+  increaseThisFloodLevel,
+ )
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -14,7 +17,7 @@ newtype AbyssalTrench = AbyssalTrench LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abyssalTrench :: LocationCard AbyssalTrench
-abyssalTrench = location AbyssalTrench Cards.abyssalTrench 0 (Static 1)
+abyssalTrench = withXShroud $ location AbyssalTrench Cards.abyssalTrench 0 (Static 1)
 
 instance HasModifiersFor AbyssalTrench where
   getModifiersFor (AbyssalTrench a) = whenRevealed a do

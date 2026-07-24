@@ -1,25 +1,43 @@
 module Arkham.Location.Cards.SunkenStairway (sunkenStairway) where
 
+import Arkham.Ability
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (Field (LocationPosition))
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheWesternWall.Helpers (cannotEnterFromCluedLocation, scenarioI18n)
 
 newtype SunkenStairway = SunkenStairway LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sunkenStairway :: LocationCard SunkenStairway
-sunkenStairway = location SunkenStairway Cards.sunkenStairway 0 (Static 2)
+sunkenStairway = withXShroud $ location SunkenStairway Cards.sunkenStairway 0 (Static 2)
+
+instance HasModifiersFor SunkenStairway where
+  getModifiersFor (SunkenStairway a) = cannotEnterFromCluedLocation a
+
+instance HasAbilities SunkenStairway where
+  getAbilities (SunkenStairway a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
 
 instance RunMessage SunkenStairway where
-  runMessage msg (SunkenStairway attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> do
-      -- Forced: After this location is revealed, put the set-aside Undersea
-      -- Vault into play in a row directly above or below this one.
-      -- TODO: let the players choose above (Pos col (row + 1)) vs below; for now
-      -- we always place directly below.
-      for_ (locationPosition attrs) \(Pos row col) -> do
+  runMessage msg l@(SunkenStairway attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      for_ (locationPosition attrs) \(Pos _ row) -> do
         card <- getSetAsideCard Cards.underseaVault
-        placeLocationInGrid_ (Pos (row + 1) col) card
-      SunkenStairway <$> liftRunMessage msg attrs
+        positions <- catMaybes <$> selectField LocationPosition Anywhere
+        let
+          availablePosition targetRow =
+            let usedColumns = [pos.column | pos <- positions, pos.row == targetRow]
+             in Pos
+                  (fromJustNote "No available grid position" $ find (`notElem` usedColumns) [0 ..])
+                  targetRow
+        scenarioI18n $ scope "sunkenStairway" $ chooseOneM iid do
+          labeled' "above" $ placeLocationInGrid_ (availablePosition $ row + 1) card
+          labeled' "below" $ placeLocationInGrid_ (availablePosition $ row - 1) card
+      pure l
     _ -> SunkenStairway <$> liftRunMessage msg attrs

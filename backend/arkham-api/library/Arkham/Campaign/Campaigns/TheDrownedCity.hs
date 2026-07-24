@@ -4,6 +4,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps
 import Arkham.Campaigns.TheDrownedCity.Import
+import Arkham.Card (genPlayerCard)
 import Arkham.Card.CardDef (CardDef)
 import Arkham.Helpers.FlavorText
 import Arkham.Matcher
@@ -98,7 +99,7 @@ instance RunMessage TheDrownedCity where
               li "andyVanNortwick"
               li "westernChaosTokens"
               li "proceedToTheWesternWall"
-          addCampaignCardToDeckChoice_ Assets.andyVanNortwick
+          addCampaignCardToDeckChoice_ =<< genPlayerCard Assets.andyVanNortwick
           setNextCampaignStep TheWesternWall
         labeled' "east" do
           record TheExpeditionHeadedEast
@@ -109,7 +110,7 @@ instance RunMessage TheDrownedCity where
               li "theExpeditionHeadedEast"
               li "rubyStandish"
               li "proceedToObsidianCanyons"
-          addCampaignCardToDeckChoice_ Assets.rubyStandish
+          addCampaignCardToDeckChoice_ =<< genPlayerCard Assets.rubyStandish
           -- TODO: swap a chaos token (remove 1 / add 1) for the remainder of the
           -- campaign, per the Eastern Expedition setup.
           setNextCampaignStep ObsidianCanyons

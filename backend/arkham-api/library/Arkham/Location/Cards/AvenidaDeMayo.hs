@@ -13,7 +13,7 @@ newtype AvenidaDeMayo = AvenidaDeMayo LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 avenidaDeMayo :: LocationCard AvenidaDeMayo
-avenidaDeMayo = setLabel "a" $ location AvenidaDeMayo Cards.avenidaDeMayo 0 (PerPlayer 1)
+avenidaDeMayo = withXShroud $ setLabel "a" $ location AvenidaDeMayo Cards.avenidaDeMayo 0 (PerPlayer 1)
 
 instance HasAbilities AvenidaDeMayo where
   getAbilities (AvenidaDeMayo a) =

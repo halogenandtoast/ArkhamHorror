@@ -20,7 +20,7 @@ newtype TheGallowsSpectral_170 = TheGallowsSpectral_170 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGallowsSpectral_170 :: LocationCard TheGallowsSpectral_170
-theGallowsSpectral_170 = location TheGallowsSpectral_170 Cards.theGallowsSpectral_170 0 (Static 0)
+theGallowsSpectral_170 = withXShroud $ location TheGallowsSpectral_170 Cards.theGallowsSpectral_170 0 (Static 0)
 
 instance HasModifiersFor TheGallowsSpectral_170 where
   getModifiersFor (TheGallowsSpectral_170 a) = whenRevealed a do

@@ -1,15 +1,36 @@
 module Arkham.Enemy.Cards.TheInescapable (theInescapable) where
 
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Import.Lifted hiding (RevealChaosToken)
+import Arkham.ForMovement (ForMovement (NotForMovement))
+import Arkham.Matcher
 
 newtype TheInescapable = TheInescapable EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theInescapable :: EnemyCard TheInescapable
-theInescapable = enemy TheInescapable Cards.theInescapable
+theInescapable =
+  enemyWith TheInescapable Cards.theInescapable
+    $ spawnAtL
+    ?~ SpawnAtFirst
+      [ SpawnAt $ ConnectedLocation NotForMovement <> EmptyLocation
+      , SpawnAt $ ConnectedLocation NotForMovement
+      ]
 
--- TODO: abilities
+instance HasAbilities TheInescapable where
+  getAbilities (TheInescapable a) =
+    extend1 a
+      $ groupLimit PerRound
+      $ mkAbility a 1
+      $ forced
+      $ RevealChaosToken #after Anyone #elderthing
+
 instance RunMessage TheInescapable where
-  runMessage msg (TheInescapable attrs) = runQueueT $ TheInescapable <$> liftRunMessage msg attrs
+  runMessage msg e@(TheInescapable attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      readyThis attrs
+      push $ HunterMove attrs.id
+      pure e
+    _ -> TheInescapable <$> liftRunMessage msg attrs

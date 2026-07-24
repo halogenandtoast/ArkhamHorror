@@ -2895,6 +2895,10 @@ runGameMessage msg g = case msg of
     placement <- case mtarget of
       Just (EnemyTarget eid) -> field EnemyPlacement eid
       Just (AssetTarget aid) -> field AssetPlacement aid
+      -- Treacheries do not have a UI slot that can be visually replaced by a
+      -- story. Focus their story side instead while retaining the treachery as
+      -- StoryOtherSide so its resolution can still target the original card.
+      Just (TreacheryTarget _) -> pure Unplaced
       Just (LocationTarget lid) -> pure (AtLocation lid)
       Just (CardIdTarget _) -> pure Unplaced
       Just _ -> error $ "no known placement for non-enemy target: " <> show mtarget

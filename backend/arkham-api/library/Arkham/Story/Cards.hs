@@ -1,17 +1,18 @@
 module Arkham.Story.Cards where
 
 import Arkham.Card.CardCode
-import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Card.CardDef
-import Arkham.Story.CardDefs.Base
 import Arkham.EncounterSet
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Name
 import Arkham.Prelude
+import Arkham.Story.CardDefs.Base
 import Arkham.Trait
 
 allStoryCards :: Map CardCode CardDef
-allStoryCards = (Homebrew.storiesMap <>) $
-  mapFromList
+allStoryCards =
+  (Homebrew.storiesMap <>)
+    $ mapFromList
     $ map
       (toCardCode &&& id)
       [ sickeningReality_65
@@ -73,6 +74,8 @@ allStoryCards = (Homebrew.storiesMap <>) $
       , offTheGalley
       , ghastlyTunnels
       , theSentry
+      , seafloorFrieze
+      , theUnderseaVault
       , anotherPath
       , aStrangeGhoul
       , scoutingTheVale
@@ -401,6 +404,12 @@ ghastlyTunnels = doubleSided $ story "06254b" "Ghastly Tunnels" PointOfNoReturn
 
 theSentry :: CardDef
 theSentry = doubleSided $ story "06255b" "The Sentry" PointOfNoReturn
+
+seafloorFrieze :: CardDef
+seafloorFrieze = doubleSided $ story "11531b" "Seafloor Frieze" TheWesternWall
+
+theUnderseaVault :: CardDef
+theUnderseaVault = doubleSided $ story "11532b" "The Undersea Vault" TheWesternWall
 
 anotherPath :: CardDef
 anotherPath = doubleSided $ story "06256b" "Another Path" PointOfNoReturn
@@ -739,27 +748,45 @@ usurpTheNight = otherSideIs "83027a" $ story "83027b" "Usurp the Night" TheNight
 
 theTranslatorsEvidence :: CardDef
 theTranslatorsEvidence =
-  victory 1 $ addTrait Evidence $ otherSideIs "83031a" $ story "83031b" "The Translator's Evidence" BrotherhoodOfTheBeast
+  victory 1
+    $ addTrait Evidence
+    $ otherSideIs "83031a"
+    $ story "83031b" "The Translator's Evidence" BrotherhoodOfTheBeast
 
 theSupplicantsEvidence :: CardDef
 theSupplicantsEvidence =
-  victory 1 $ addTrait Evidence $ otherSideIs "83032a" $ story "83032b" "The Supplicant's Evidence" BrotherhoodOfTheBeast
+  victory 1
+    $ addTrait Evidence
+    $ otherSideIs "83032a"
+    $ story "83032b" "The Supplicant's Evidence" BrotherhoodOfTheBeast
 
 thePriestesssEvidence :: CardDef
 thePriestesssEvidence =
-  victory 1 $ addTrait Evidence $ otherSideIs "83033a" $ story "83033b" "The Priestess's Evidence" BrotherhoodOfTheBeast
+  victory 1
+    $ addTrait Evidence
+    $ otherSideIs "83033a"
+    $ story "83033b" "The Priestess's Evidence" BrotherhoodOfTheBeast
 
 theSalesmansEvidence :: CardDef
 theSalesmansEvidence =
-  victory 1 $ addTrait Evidence $ otherSideIs "83034a" $ story "83034b" "The Salesman's Evidence" BrotherhoodOfTheBeast
+  victory 1
+    $ addTrait Evidence
+    $ otherSideIs "83034a"
+    $ story "83034b" "The Salesman's Evidence" BrotherhoodOfTheBeast
 
 theAssassinsEvidence :: CardDef
 theAssassinsEvidence =
-  victory 1 $ addTrait Evidence $ otherSideIs "83035a" $ story "83035b" "The Assassin's Evidence" BrotherhoodOfTheBeast
+  victory 1
+    $ addTrait Evidence
+    $ otherSideIs "83035a"
+    $ story "83035b" "The Assassin's Evidence" BrotherhoodOfTheBeast
 
 theProfessorsEvidence :: CardDef
 theProfessorsEvidence =
-  victory 1 $ addTrait Evidence $ otherSideIs "83036a" $ story "83036b" "The Professor's Evidence" BrotherhoodOfTheBeast
+  victory 1
+    $ addTrait Evidence
+    $ otherSideIs "83036a"
+    $ story "83036b" "The Professor's Evidence" BrotherhoodOfTheBeast
 
 rescueTheChemist :: CardDef
 rescueTheChemist =

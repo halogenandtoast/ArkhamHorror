@@ -11,6 +11,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Investigator.Types (Field (InvestigatorDoom))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
@@ -50,9 +51,16 @@ resolveTrueSelf source fallback card = do
   let owner = fromMaybe fallback $ toCardOwner card
   void $ setOwner owner card
   healAllDamageAndHorror source owner
+  -- Doom placed on the Shattered Self card remains on it as the card flips to
+  -- its Old Memory side (per FFG ruling, issue #5184). returnFromShatteredSelf
+  -- carries the doom back onto the true self, so move it onto Old Memory here.
+  doom <- field InvestigatorDoom owner
   oldMemory <- setOwner owner =<< genCard Assets.oldMemory
-  void $ createAssetAt oldMemory (InPlayArea owner)
+  oldMemoryId <- createAssetAt oldMemory (InPlayArea owner)
   scenarioSpecific "returnFromShatteredSelf" owner
+  when (doom > 0) do
+    removeAllDoom source owner
+    placeDoom source oldMemoryId doom
 
 revealFromBottomOfAbyss :: ReverseQueue m => Source -> InvestigatorId -> Int -> m ()
 revealFromBottomOfAbyss _source iid n = do

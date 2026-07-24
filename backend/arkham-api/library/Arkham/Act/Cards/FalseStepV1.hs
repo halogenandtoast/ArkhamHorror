@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Effect.Window (EffectWindow (EffectHollowWindow))
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
@@ -11,6 +12,7 @@ import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Coterie))
+import Arkham.Window qualified as Window
 
 newtype FalseStepV1 = FalseStepV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -32,7 +34,20 @@ instance RunMessage FalseStepV1 where
       pure a
     UseCardAbility _iid (isSource attrs -> True) 2 ws@(assetLeavingPlay -> aid) _ -> do
       cancelWindowBatch ws
-      setCardAside =<< fetchCard aid
+      card <- fetchCard aid
+      -- Desiderio is set aside out of play "instead" of leaving play normally, so
+      -- a Body Snatched hollow that triggered this window must not tag him as a
+      -- hollow: drop the queued Hollow/"hollowed" modifier effects and the
+      -- "hollowed" campaign-event window before setting him aside plainly.
+      let isHollowedWindow = \case
+            (Window.windowType -> Window.CampaignEvent "hollowed" _ _) -> True
+            _ -> False
+      allMatchingDon't \case
+        CreateWindowModifierEffect (EffectHollowWindow cid) _ _ _ -> cid == card.id
+        CheckWindows ws' -> any isHollowedWindow ws'
+        Do (CheckWindows ws') -> any isHollowedWindow ws'
+        _ -> False
+      setCardAside card
       eachInvestigator \iid -> assignHorror iid (attrs.ability 2) 1
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do

@@ -31,7 +31,7 @@ instance HasAbilities ANobleLegacyPast where
     , restricted a 2 (not_ (Remembered ThomasAndMaryAreInspiredByNikolaTesla) <> scientistsTogether)
         $ actionAbilityWithCost (GroupClueCost (PerPlayer 2) Anywhere)
     , restricted a 3 (youAtPastUniversity <> not_ (Remembered FundingForAnObservatoryHasBegun))
-        $ FastAbility (GroupResourceCost (PerPlayer 2) Anywhere)
+        $ FastAbility (ResourceCost (PerPlayer 2) Anywhere)
     , onlyOnce
         $ restricted
           a

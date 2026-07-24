@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards.NaomiOBannion (naomiOBannion) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheDrownedCity.Helpers (campaignI18n)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.GameValue (perPlayer)
@@ -38,9 +39,8 @@ instance RunMessage NaomiOBannion where
       readyThis attrs
       pure e
     ForTargets (InvestigatorTarget iid : rest) msg'@(UseThisAbility _ (isSource attrs -> True) 1) -> do
-      chooseOneM iid do
-        labeled "Take 1 damage to prevent Naomi O'Bannion from readying"
-          $ assignDamage iid (attrs.ability 1) 1
-        labeled "Do not take 1 damage" $ forTargets rest msg'
+      campaignI18n $ chooseOneM iid do
+        labeled' "naomiOBannion.preventReadying" $ assignDamage iid (attrs.ability 1) 1
+        labeled' "naomiOBannion.doNotTakeDamage" $ forTargets rest msg'
       pure e
     _ -> NaomiOBannion <$> liftRunMessage msg attrs

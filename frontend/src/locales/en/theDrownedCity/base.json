@@ -12,7 +12,15 @@
     { "title": "New Keywords", "body": "@:theDrownedCity.newKeywords.body" }
   ],
   "label": {
-    "noAir": "You did not find air. Take 5 direct damage."
+    "noAir": "You did not find air. Take 5 direct damage.",
+    "naomiOBannion": {
+      "preventReadying": "Take 1 damage to prevent Naomi O’Bannion from readying",
+      "doNotTakeDamage": "Do not take 1 damage"
+    },
+    "dreamingMigration": {
+      "moveNearestEnemy": "Move the nearest enemy to your location and it attacks you",
+      "drawTopmostEnemy": "Draw the topmost enemy in the encounter discard pile"
+    }
   },
   "intro": {
     "title": "The Risen Deep",

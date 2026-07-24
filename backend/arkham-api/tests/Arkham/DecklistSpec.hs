@@ -5,17 +5,28 @@ module Arkham.DecklistSpec (spec) where
 import TestImport
 
 import Arkham.ClassSymbol
+import Arkham.Customization
 import Arkham.Decklist
 import Arkham.Decklist.RandomBasicWeakness
 import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.PlayerCard (randomWeakness)
 import Arkham.Projection (fieldMap)
 import Arkham.Taboo.Types
+import Arkham.Trait (Trait (Ally))
+import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 
 spec :: Spec
 spec = describe "loadDecklist" $ do
+  it "parses a card-code customization choice as ChosenCard, not a homebrew trait" do
+    parseMaybe parseCustomizations "" "4|2|60255"
+      `shouldBe` Just (IntMap.fromList [(4, (2, [ChosenCard "Dreamer's Chronicle"]))])
+
+  it "still parses a real trait customization choice as ChosenTrait" do
+    parseMaybe parseCustomizations "" "1|1|Ally"
+      `shouldBe` Just (IntMap.fromList [(1, (1, [ChosenTrait Ally]))])
+
   it "applies taboo to cards loaded from meta.extra_deck" $ gameTest $ \_ -> do
     decklist <- loadDecklist extraDeckDecklist
 

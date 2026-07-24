@@ -406,7 +406,15 @@ instance RunMessage LocationAttrs where
             | otherwise = FullyFlooded
       locationClueCount <- getModifiedRevealClueCountWithMods mods a
       revealer <- maybe getLead pure miid
-      mFromLid <- join <$> fieldMay InvestigatorPreviousLocation revealer
+      -- `from` marks a "moved into and reveals": only populate it when the
+      -- revealer is actually at the location being revealed (they just moved in).
+      -- Remote reveals (e.g. Dr. Rosa Marquez) leave it Nothing so cards like
+      -- Vale Lantern don't fire on non-movement reveals.
+      revealerHere <- (== Just lid) <$> field InvestigatorLocation revealer
+      mFromLid <-
+        if revealerHere
+          then join <$> fieldMay InvestigatorPreviousLocation revealer
+          else pure Nothing
       whenWindowMsg <- checkWindows [mkWindow Timing.When (Window.RevealLocation revealer lid)]
       revealForcedMsg <-
         checkWindows [mkWindow Timing.When (Window.RevealLocationForcedAbilities revealer lid mFromLid)]

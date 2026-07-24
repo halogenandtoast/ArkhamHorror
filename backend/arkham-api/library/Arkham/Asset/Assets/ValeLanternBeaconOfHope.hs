@@ -43,7 +43,7 @@ instance HasAbilities ValeLanternBeaconOfHope where
                   #when
                   You
                   (LocationWithTrait Forest <> LocationWithAbility AbilityIsForcedAbility)
-                  Nothing
+                  (Just Anywhere)
               ]
           )
           (exhaust a)

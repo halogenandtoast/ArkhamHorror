@@ -29,14 +29,12 @@ flashback _iid f = case f of
     actV2 <- getSetAsideCard Acts.cityOfTheDeepV2
     actV3 <- getSetAsideCard Acts.cityOfTheDeepV3
     lead <- getLead
-    chooseOneM lead do
-      labeled
-        "Help Agent Harper complete her mission. Put the set-aside City of the Deep (v. II) into play next to the current act. It provides a new alternate objective."
+    chooseOneM lead $ scenarioI18n $ scope "flashback14" do
+      labeled' "helpAgentHarper"
         do
           push $ SetActDeckCards 2 [actV2]
           push $ AddAct 2 actV2
-      labeled
-        "Defy Agent Harper. Search each player’s hand, deck, discard pile, and all play areas for Elina Harper and remove her from the game. Put the set-aside City of the Deep (v. III) into play next to the current act. It provides a new alternate objective."
+      labeled' "defyAgentHarper"
         do
           selectEach (assetIs Assets.elinaHarperKnowsTooMuch) removeFromGame
           harperCards <-

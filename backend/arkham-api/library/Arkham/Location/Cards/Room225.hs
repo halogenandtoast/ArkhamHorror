@@ -10,6 +10,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 
 newtype Room225 = Room225 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -20,19 +21,17 @@ room225 = locationWith Room225 Cards.room225 3 (PerPlayer 1) (labelL .~ "room225
 
 instance HasAbilities Room225 where
   getAbilities (Room225 attrs) =
-    withRevealedAbilities
-      attrs
-      [ skillTestAbility
-          $ withTooltip
-            "{action}: Test {willpower} (3). If you succeed, remember that the investigators \"cleaned up the blood.\""
+    scenarioI18n
+      $ withRevealedAbilities
+        attrs
+      $ [ skillTestAbility
+          $ withI18nTooltip "room225.cleanBlood"
           $ restrictedAbility attrs 1 Here actionAbility
       , skillTestAbility
-          $ withTooltip
-            "{action}: Test {combat} (3). If you succeed, remember that the investigators \"hid the body.\""
+          $ withI18nTooltip "room225.hideBody"
           $ restrictedAbility attrs 2 Here actionAbility
       , skillTestAbility
-          $ withTooltip
-            "{action}: Test {intellect} (3). If you succeed, remember that the investigators \"tidied up the room.\""
+          $ withI18nTooltip "room225.tidyRoom"
           $ restrictedAbility attrs 3 Here actionAbility
       ]
 

@@ -25,8 +25,8 @@ lurkingHorrors = agenda (1, A) LurkingHorrors Cards.lurkingHorrors (Static 6)
 
 instance HasAbilities LurkingHorrors where
   getAbilities (LurkingHorrors attrs) =
-    [ withTooltip
-        "During your turn, spend 1 clue: Look at the revealed side of a City Landscape in your column or row. (Limit once per round.)"
+    scenarioI18n
+      [ withI18nTooltip "cityLandscape.look"
         $ playerLimit PerRound
         $ restricted
           attrs
@@ -41,8 +41,7 @@ instance HasAbilities LurkingHorrors where
                 )
           )
         $ FastAbility (ClueCost $ Static 1)
-    , withTooltip
-        "During your turn, spend 3 clues: Move to any location in your column or row. (Limit once per round.)"
+      , withI18nTooltip "cityLandscape.move"
         $ playerLimit PerRound
         $ restricted
           attrs
@@ -55,7 +54,7 @@ instance HasAbilities LurkingHorrors where
                 )
           )
         $ FastAbility (ClueCost $ Static 3)
-    ]
+      ]
 
 instance RunMessage LurkingHorrors where
   runMessage msg a@(LurkingHorrors attrs) = runQueueT $ case msg of

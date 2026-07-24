@@ -196,6 +196,8 @@
   "chooseInvestigatorForKey": "Choose an investigator to take control of the {color} key",
   "whoWillDrive": "Who will drive {name}?",
   "chooseNewDriverFor": "Choose new driver for {name}",
+  "takeKey": "Take {key} key",
+  "placeKey": "Place {key} key",
   "chooseX": "Choose X",
   "leaveCardOnTop": "Leave card on top",
   "leaveVehicleNoReentry": "Leave the vehicle. You cannot enter that vehicle for the remainder of the round",

@@ -3,13 +3,13 @@ module Arkham.Asset.Assets.DecayDiagram (decayDiagram) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers (scenarioI18n)
 
 newtype DecayDiagram = DecayDiagram AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -38,7 +38,8 @@ instance RunMessage DecayDiagram where
       chamber <- selectJust $ locationIs Locations.chamberOfDecay
       placeTokens (attrs.ability 2) chamber #doom 1
       clues <- field InvestigatorClues iid
-      when (clues > 0) $ withI18n $ chooseAmount' iid "clues" "$clues" 0 clues attrs
+      when (clues > 0) do
+        scenarioI18n $ chooseAmount' iid "decayDiagram.cluesToFlip" "$clues" 0 clues attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       chamber <- selectJust $ locationIs Locations.chamberOfDecay

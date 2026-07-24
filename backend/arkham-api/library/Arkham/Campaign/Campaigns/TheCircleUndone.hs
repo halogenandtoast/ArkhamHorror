@@ -16,7 +16,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
-import Arkham.Helpers.Xp (XpBonus (WithBonus), toBonus)
+import Arkham.Helpers.Xp (toBonus)
 import Arkham.I18n
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Matcher
@@ -118,7 +118,7 @@ instance RunMessage TheCircleUndone where
 
       when showThePriceOfProgress5 do
         record TheInvestigatorsRescuedJosef
-        interludeXpAll (WithBonus "Gained insight into the inner workings of the Silver Twilight Lodge" 2)
+        interludeXpAll (toBonus "insight" 2)
         storyWithChooseOneM' (setTitle "title" >> p "thePriceOfProgress5") lodgeChoices
 
       when showThePriceOfProgress6 do

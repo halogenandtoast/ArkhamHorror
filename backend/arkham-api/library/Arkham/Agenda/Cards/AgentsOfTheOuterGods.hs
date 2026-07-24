@@ -8,6 +8,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Prelude
+import Arkham.Scenarios.TheSearchForKadath.Helpers
 import Arkham.Trait (Trait (Port))
 
 newtype AgentsOfTheOuterGods = AgentsOfTheOuterGods AgendaAttrs
@@ -19,12 +20,12 @@ agentsOfTheOuterGods = agenda (2, A) AgentsOfTheOuterGods Cards.agentsOfTheOuter
 
 instance HasAbilities AgentsOfTheOuterGods where
   getAbilities (AgentsOfTheOuterGods x) =
-    [ withTooltip
-        "_Resign_. Venturing into the unknown has become too dangerous, so you return to safety with the information you've gathered."
+    scenarioI18n
+      [ withI18nTooltip "portResign"
         $ restrictedAbility x 1 (exists $ You <> at_ (withTrait Port))
         $ ActionAbility #resign Nothing
         $ ActionCost 1
-    ]
+      ]
 
 instance RunMessage AgentsOfTheOuterGods where
   runMessage msg a@(AgentsOfTheOuterGods attrs) = case msg of

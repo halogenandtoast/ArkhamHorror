@@ -625,7 +625,7 @@ instance RunMessage FateOfTheVale where
             then do
               codexFinishedUntilNewAct 6
               eachInvestigator \iid' ->
-                nextTurnModifier iid' source iid' (AdditionalActions "Gideon Mizrah" source 1)
+                nextTurnModifier iid' source iid' (AdditionalActions (ikey' "additionalActions") source 1)
             else do
               codexFinished 6
               if isFateOfTheValeV1

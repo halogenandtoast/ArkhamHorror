@@ -3,6 +3,7 @@ module Arkham.Location.Cards.Basement (basement) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -11,6 +12,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 import Arkham.Trait (Trait (Humanoid))
 
 newtype Basement = Basement LocationAttrs
@@ -35,7 +37,7 @@ instance HasAbilities Basement where
       ]
 
 instance RunMessage Basement where
-  runMessage msg l@(Basement attrs) = runQueueT $ case msg of
+  runMessage msg l@(Basement attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 1)
@@ -52,7 +54,7 @@ instance RunMessage Basement where
         named <- traverse (\(iid', x) -> (,x) <$> field InvestigatorName iid') iids
         chooseAmounts
           iid
-          "number of clues to move to Tome of Rituals"
+          (ikey' "label.basement.moveClues")
           (MinAmountTarget 0)
           (map (\(name, x) -> (toTitle name, (0, x))) named)
           attrs

@@ -5,6 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Investigator (getSpendableClueCount)
 import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Scenarios.ObsidianCanyons.Helpers (scenarioI18n)
 
 newtype ToTheAncientDome = ToTheAncientDome ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -30,9 +31,9 @@ instance RunMessage ToTheAncientDome where
       -- "[action] Spend X clues" — the player chooses X (bounded by the clues
       -- they can spend) and we deduct them up front.
       n <- getSpendableClueCount iid
-      when (n > 0) $ chooseAmount iid "Clues" "Clues" 0 n attrs
+      when (n > 0) $ scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 0 n attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       spendClues iid n
       -- TODO(Summit deck / open sky): "Reveal X cards from the bottom of the
       -- Summit deck. You may put 1 revealed location into play in an adjacent

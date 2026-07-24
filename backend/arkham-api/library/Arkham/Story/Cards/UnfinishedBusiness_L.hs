@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheWagesOfSin.Helpers (sendBanished)
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Window qualified as Window
@@ -28,7 +29,7 @@ instance RunMessage UnfinishedBusiness_L where
         then do
           batched \_ -> do
             checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
-            send $ format card <> " was \"Banished\""
+            sendBanished $ format card
             addToVictory iid attrs
         else do
           afterStoryResolution attrs do

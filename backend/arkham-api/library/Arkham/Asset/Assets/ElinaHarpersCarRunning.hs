@@ -7,10 +7,10 @@ import Arkham.ForMovement
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
 import Arkham.Helpers.Vehicle
+import Arkham.I18n
 import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Name
 import Arkham.Scenarios.HorrorInHighGear.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (Road))
 import Arkham.Window qualified as Window
@@ -54,8 +54,8 @@ instance RunMessage ElinaHarpersCarRunning where
       attrs' <- liftRunMessage msg attrs
       passengers <- select $ InVehicleMatching (be attrs)
       for_ (headMay passengers) \p -> do
-        chooseOrRunOneM p do
-          questionLabeled $ "Choose new driver for " <> toTitle attrs.name
+        chooseOrRunOneM p $ withI18n do
+          nameVar attrs.name $ questionLabeled' "chooseNewDriverFor"
           targets passengers $ push . SetDriver attrs.id
       pure . ElinaHarpersCarRunning $ attrs' & driverL .~ Nothing
     Flip _ _ (isTarget attrs -> True) -> do

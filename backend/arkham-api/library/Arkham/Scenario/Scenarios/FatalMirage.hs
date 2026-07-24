@@ -80,8 +80,7 @@ instance RunMessage FatalMirage where
         then do
           lead <- getLead
           chooseOneM lead do
-            questionLabeled
-              "The investigators may choose which agenda to use (the higher the agenda number, the less time the investigators will have)."
+            questionLabeled' "chooseAgenda"
             cardLabeled Agendas.etherealTangleV1 (doStep 1 msg)
             cardLabeled Agendas.etherealTangleV2 (doStep 2 msg)
             cardLabeled Agendas.etherealTangleV3 (doStep 3 msg)
@@ -250,7 +249,7 @@ instance RunMessage FatalMirage where
       let step2 = not step3 && ToTheForbiddenPeaks `elem` completed
       let step1 = not step3 && not step2
       story
-        $ setFlavorTitle (if r == NoResolution then "No Resolution" else "Resolution 1")
+        $ setFlavorTitle (ikey' $ if r == NoResolution then "noResolutionTitle" else "title")
         $ flavorText
         $ modifyEntry ResolutionEntry
         $ compose

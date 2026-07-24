@@ -12,6 +12,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message.Lifted.Choose
@@ -62,7 +63,7 @@ instance RunMessage ThePredatoryHouse where
       -- Codex 6 (Gideon Mizrah): cancel the next predation that would take place.
       let bag = predationBag attrs
       let bag' = bag {predationCancelNext = False}
-      send "Predation test canceled (Gideon Mizrah)"
+      send $ scenarioI18n $ ikey' "message.predationCanceled"
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (RequestChaosTokens _ _ (Reveal 1) _) -> do
       let bag = predationBag attrs
@@ -85,7 +86,10 @@ instance RunMessage ThePredatoryHouse where
         $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (ResolveChaosToken {}) | Just token <- attrs.predationBag.currentToken -> do
       let tokenFace = token.face
-      send $ format (asChaosToken token) <> " drawn during predation Test"
+      send
+        $ scenarioI18n
+        $ withVar "token" (String $ format $ asChaosToken token)
+        $ ikey' "message.predationTokenDrawn"
       mods <- getModifiers attrs
       let bag =
             attrs.predationBag

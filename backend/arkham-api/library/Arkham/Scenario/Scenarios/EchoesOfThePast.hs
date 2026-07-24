@@ -170,7 +170,8 @@ setupEchoesOfThePast attrs = do
 
   when fledTheDinnerParty do
     eachInvestigator \iid -> do
-      roundModifier attrs iid $ AdditionalActions "Fleeing the dinner party" (toSource attrs) 1
+      roundModifier attrs iid
+        $ AdditionalActions (scope "setup" $ ikey' "fledDinnerPartyAdditionalAction") (toSource attrs) 1
 
   setAside
     [ Locations.hiddenLibrary

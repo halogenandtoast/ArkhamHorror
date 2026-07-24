@@ -34,9 +34,9 @@ instance RunMessage LabyrinthineHallsOvergrownPath where
             questionLabeled' "chooseAdditionalActions"
             targets (toList others) \iid' ->
               nextTurnModifier
-                iid'
-                (attrs.ability 1)
-                iid'
-                (AdditionalActions "Labyrinthine Halls" (toSource attrs) 2)
+                 iid'
+                 (attrs.ability 1)
+                 iid'
+                (AdditionalActions (ikey' "additionalActions") (toSource attrs) 2)
       pure l
     _ -> LabyrinthineHallsOvergrownPath <$> liftRunMessage msg attrs

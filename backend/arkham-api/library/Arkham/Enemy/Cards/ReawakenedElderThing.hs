@@ -5,6 +5,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyLocation), keysL)
 import Arkham.Investigator.Types (Field (..))
+import Arkham.I18n
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -30,8 +31,8 @@ instance RunMessage ReawakenedElderThing where
   runMessage msg e@(ReawakenedElderThing attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       ks <- field InvestigatorKeys iid
-      chooseOrRunOneM iid do
-        for_ ks \k -> labeled ("Place " <> keyName k) (placeKey attrs k)
+      chooseOrRunOneM iid $ withI18n do
+        for_ ks \k -> keyVar "key" (keyName k) $ labeled' "placeKey" (placeKey attrs k)
       pure e
     Defeated (EnemyTarget eid) _ _ _ | eid == attrs.id -> do
       mloc <- field EnemyLocation attrs.id

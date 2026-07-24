@@ -20,6 +20,7 @@ import Arkham.Helpers.Location (withLocationOf, getLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (questionLabel)
@@ -247,7 +248,7 @@ instance RunMessage TheDepthsOfYoth where
       choiceId <- getRandom
       push
         $ questionLabel
-          "The investigators may choose how many tally marks are under “Yig’s Fury.” The lower the number chosen, the safer and easier the scenario will be."
+          (ikey' "label.chooseYigsFury")
           lead
         $ ChooseAmounts
           "Fury"

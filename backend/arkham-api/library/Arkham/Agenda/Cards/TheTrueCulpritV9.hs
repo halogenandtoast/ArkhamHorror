@@ -10,6 +10,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype TheTrueCulpritV9 = TheTrueCulpritV9 AgendaAttrs
@@ -23,8 +24,8 @@ instance HasAbilities TheTrueCulpritV9 where
   getAbilities (TheTrueCulpritV9 attrs) =
     guard (onSide A attrs)
       *> [ skillTestAbility
-             $ withTooltip
-               "{action} If Tome of Rituals is at this location: Test {willpower} (5) or {intellect} (5). If you succeed, move up to 1 {perPlayer} clues from Tome of Rituals to Harvested Brain."
+             $ scenarioI18n
+             $ withI18nTooltip "theTrueCulprit.room212"
              $ restricted
                (proxied (locationIs Cards.room212) attrs)
                1
@@ -39,7 +40,7 @@ instance HasAbilities TheTrueCulpritV9 where
          ]
 
 instance RunMessage TheTrueCulpritV9 where
-  runMessage msg a@(TheTrueCulpritV9 attrs) = runQueueT $ case msg of
+  runMessage msg a@(TheTrueCulpritV9 attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid source@(ProxySource _ (isSource attrs -> True)) 1 -> do
       sid <- getRandom
       chooseOneM iid do
@@ -51,14 +52,9 @@ instance RunMessage TheTrueCulpritV9 where
       n <- perPlayer 1
       clues <- fieldMap AssetClues (min n) tomeOfRituals
       when (clues > 0) do
-        chooseAmounts
-          iid
-          "Choose amount of clues to move"
-          (MaxAmountTarget n)
-          [("Clues", (0, min n clues))]
-          (toTarget attrs)
+        chooseAmount' iid "theTrueCulpritV9.moveClues" "$clues" 0 (min n clues) attrs
       pure a
-    ResolveAmounts _ (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts _ (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) -> do
       tomeOfRituals <- selectJust $ assetIs Cards.tomeOfRituals
       harvestedBrain <- selectJust $ treacheryIs Cards.harvestedBrain
       moveTokens (attrs.ability 1) tomeOfRituals harvestedBrain #clue n

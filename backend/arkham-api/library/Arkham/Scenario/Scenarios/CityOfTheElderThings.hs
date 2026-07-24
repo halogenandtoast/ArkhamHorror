@@ -390,7 +390,7 @@ instance RunMessage CityOfTheElderThings where
           unless (null ks) do
             withLocationOf iid \lid -> do
               chooseOrRunOneM iid do
-                for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
+                for_ ks \k -> keyVar "key" (keyName k) $ labeled' "placeKey" $ placeKey lid k
         ElderThing -> do
           xs <- selectOrElse (enemyAtLocationWith iid) (NearestEnemyTo iid AnyEnemy)
           chooseTargetM iid xs \x -> do
@@ -406,7 +406,7 @@ instance RunMessage CityOfTheElderThings where
       unless (null ks) do
         withLocationOf iid \lid -> do
           chooseOrRunOneM iid do
-            for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
+            for_ ks \k -> keyVar "key" (keyName k) $ labeled' "placeKey" $ placeKey lid k
       pure s
     ResolveChaosToken _ Tablet iid -> do
       tokens <- map (.face) <$> getSkillTestRevealedChaosTokens

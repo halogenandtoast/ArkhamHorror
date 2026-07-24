@@ -52,6 +52,9 @@
     "stunnedThePriest": "Stunned the priest."
   },
   "label": {
+    "abandonedByTheGods": {
+      "choose": "Choose {count}"
+    },
     "wakeUp": "Wake up",
     "remainOnSurface": "Remain on the surface of the Dreamlands",
     "ventureIntoUnderworld": "Venture into the Underworld to find your companions"

@@ -90,21 +90,9 @@ data Dream
   deriving anyclass (ToJSON, FromJSON)
 
 dreamLabel :: Dream -> Text
-dreamLabel = \case
-  GuardianDream -> "Guardian Dream"
-  SeekerDream -> "Seeker Dream"
-  RogueDream -> "Rogue Dream"
-  MysticDream -> "Mystic Dream"
-  SurvivorDream -> "Survivor Dream"
-  CriminalDream -> "Criminal Dream"
-  DrifterDream -> "Drifter Dream"
-  HunterDream -> "Hunter Dream"
-  MedicOrAssistantDream -> "Medic or Assistant Dream"
-  MiskatonicOrScholarDream -> "Miskatonic or Scholar Dream"
-  VeteranDream -> "Veteran Dream"
-  WayfarerDream -> "Wayfarer Dream"
-  NeutralDream1 -> "Neutral Dream 1"
-  NeutralDream2 -> "Neutral Dream 2"
+dreamLabel dream = case findWithDefault (error "missing dream") dream dreamsMap of
+  FlavorText (Just title) _ -> title
+  _ -> error "missing dream title"
 
 dreamEffect :: ReverseQueue m => InvestigatorId -> Dream -> m ()
 dreamEffect iid = \case

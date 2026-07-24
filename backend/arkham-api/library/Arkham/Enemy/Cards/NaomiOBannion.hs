@@ -5,8 +5,10 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers
+import Arkham.I18n (scope)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.MachinationsThroughTime.Helpers (scenarioI18n)
 
 newtype NaomiOBannion = NaomiOBannion EnemyAttrs
   deriving anyclass IsEnemy
@@ -38,9 +40,9 @@ instance RunMessage NaomiOBannion where
       readyThis attrs
       pure e
     ForTargets (InvestigatorTarget iid : rest) msg'@(UseThisAbility _ (isSource attrs -> True) 1) -> do
-      chooseOneM iid do
-        labeled "Take 1 damage to prevent Naomi O'Bannion from readying"
+      chooseOneM iid $ scenarioI18n $ scope "naomiOBannion" do
+        labeled' "takeDamage"
           $ assignDamage iid (attrs.ability 1) 1
-        labeled "Do not take 1 damage" $ forTargets rest msg'
+        labeled' "doNotTakeDamage" $ forTargets rest msg'
       pure e
     _ -> NaomiOBannion <$> liftRunMessage msg attrs

@@ -6,6 +6,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query (getLead, getSetAsideCard, getSetAsideCardsMatching)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -44,8 +45,8 @@ instance RunMessage ThatWhichHasNoName where
       nameless <- select $ enemyIs Enemies.theNamelessMadness
       lead <- getLead
       let x = min (n * 3) (length nameless)
-      chooseNM lead x do
-        questionLabeled $ "Set " <> tshow x <> " the nameless madness aside"
+      scenarioI18n 2 $ chooseNM lead x do
+        countVar x $ questionLabeled' "setNamelessMadnessAside"
         targets nameless (`place` SetAsideZone)
       doStep 1 msg
       eachInvestigator (discardAllClues attrs)

@@ -7,6 +7,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator (getSpendableClueCount)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheApiary.Helpers (scenarioI18n)
 
 newtype TheHiveMind = TheHiveMind ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -29,9 +30,9 @@ instance RunMessage TheHiveMind where
   runMessage msg a@(TheHiveMind attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- getSpendableClueCount iid
-      when (n > 0) $ chooseAmount iid "Clues" "Clues" 0 n attrs
+      when (n > 0) $ scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 0 n attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       enemies <- select $ EnemyAt (locationWithInvestigator iid) <> NonEliteEnemy
       chooseTargetM iid enemies \enemy -> do
         placeCluesOnLocation iid (attrs.ability 1) n

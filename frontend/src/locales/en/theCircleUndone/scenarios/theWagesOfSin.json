@@ -15,7 +15,8 @@
     }
   },
   "messages": {
-    "understandTheTragicLyrics": "\"You understand the tragic lyrics behind the witch's song\""
+    "understandTheTragicLyrics": "\"You understand the tragic lyrics behind the witch's song\"",
+    "banished": "{card} is banished"
   },
   "tooltips": {
     "hangmansBrook": {

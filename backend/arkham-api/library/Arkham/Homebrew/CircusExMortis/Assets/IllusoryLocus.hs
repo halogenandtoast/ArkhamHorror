@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Assets.IllusoryLocus (illusoryLocus) where
 
 import Arkham.Ability
+import Arkham.Homebrew.CircusExMortis.Helpers (campaignI18n)
 import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Cards
 import Arkham.Asset.Import.Lifted
@@ -29,10 +30,10 @@ instance RunMessage IllusoryLocus where
       iids <- select $ InvestigatorAt (locationWithAsset attrs)
       totalClues <- sum <$> for iids (field InvestigatorClues)
       if totalClues > 0
-        then chooseAmount iid "Clues to spend" "Clues" 0 totalClues attrs
+        then campaignI18n $ chooseAmount' iid "illusoryLocus.cluesToSpend" "$clues" 0 totalClues attrs
         else push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 4) SetAside
       pure a
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) -> do
       when (n > 0) do
         iids <- select $ InvestigatorAt (locationWithAsset attrs)
         push $ SpendClues n iids

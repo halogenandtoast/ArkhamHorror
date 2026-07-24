@@ -13,6 +13,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
+import Arkham.Scenarios.TheBlobThatAteEverything.Helpers (scenarioI18n)
 
 newtype LtWilsonStewart = LtWilsonStewart AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -48,17 +49,17 @@ instance RunMessage LtWilsonStewart where
         countIcon s = count (== SkillIcon s) . skills
         healChoice = do
           when canHealDamage do
-            labeled "Heal 1 damage from Lt. Wilson Stewart" $ healDamage attrs (attrs.ability 1) 1
+            scenarioI18n (labeled' "ltWilsonStewart.healDamage") $ healDamage attrs (attrs.ability 1) 1
           when canHealHorror do
-            labeled "Heal 1 horror from Lt. Wilson Stewart" $ healHorror attrs (attrs.ability 1) 1
+            scenarioI18n (labeled' "ltWilsonStewart.healHorror") $ healHorror attrs (attrs.ability 1) 1
         wildChoice = do
-          labeled "You get +1 skill value for your next skill test" do
+          scenarioI18n (labeled' "ltWilsonStewart.gainSkillValue") do
             nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue 1)
           when canDrawCards do
-            labeled "Draw 1 card" $ drawCards iid (attrs.ability 1) 1
+            scenarioI18n (labeled' "ltWilsonStewart.drawCard") $ drawCards iid (attrs.ability 1) 1
           healChoice
           when canGainResources do
-            labeled "Gain 1 resource" $ gainResources iid (attrs.ability 1) 1
+            scenarioI18n (labeled' "ltWilsonStewart.gainResource") $ gainResources iid (attrs.ability 1) 1
         go card = do
           let wills = countIcon #willpower card
           when (wills > 0) $ nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue wills)

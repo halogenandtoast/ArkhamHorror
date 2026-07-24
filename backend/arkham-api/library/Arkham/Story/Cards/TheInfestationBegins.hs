@@ -8,6 +8,7 @@ import {-# SOURCE #-} Arkham.GameEnv (getDistance)
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getInvestigators, getLead, getPlayerCount)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.WakingNightmare.Helpers
@@ -64,7 +65,10 @@ instance RunMessage TheInfestationBegins where
         $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (ResolveChaosToken {}) | Just token <- attrs.infestationBag.currentToken -> do
       let tokenFace = token.face
-      send $ format (asChaosToken token) <> " drawn during Infestation Test"
+      send
+        $ scenarioI18n
+        $ withVar "token" (String $ format $ asChaosToken token)
+        $ ikey' "message.infestationTokenDrawn"
       mods <- getModifiers attrs
       let bag =
             attrs.infestationBag

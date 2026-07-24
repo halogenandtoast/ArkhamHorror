@@ -133,11 +133,18 @@
   },
   "part2": {
     "label": {
+      "chooseInvestigatorForSeal": "Choose an investigator to take the {seal} seal",
+      "setNamelessMadnessAside": "Set {count} Nameless Madness aside",
       "chooseSealCount": "The investigators may choose how many seals they have:",
       "easierExperienceSeals": "For an easier experience, three random seals are “Placed” and the other two are “Recovered.”",
       "averageExperienceSeals": "For an average experience, two random seals are “Placed,” one is “Recovered,” and the other two are not used.",
       "harderExperienceSeals": "For a harder experience, one random seal is “Placed,” and the other four are not used.",
       "nightmarishExperienceSeals": "For a nightmarish experience, no seals are used."
+    },
+    "tooltips": {
+      "theGateOfYquaa": {
+        "resign": "You retreat, hoping you've done enough to seal away whatever lies beyond the gate. (If you control 1 or more seals, you retain control of them.)"
+      }
     },
     "intro1": {
       "check": "Check the Campaign Log:",

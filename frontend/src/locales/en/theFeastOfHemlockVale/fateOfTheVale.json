@@ -199,6 +199,7 @@
     },
     "gideonMizrah": {
       "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+      "additionalActions": "Gideon Mizrah",
       "act2": "<h3>@:theFeastOfHemlockVale.fateOfTheVale.codex.gideonMizrah.title </h3><p>_If it is Act 2:_</p><p>The many-colored abyss is reflected in the old sailor's eyes. \"T'ain't the first time I seen this,\" he says soberly, but says nothing more.</p><p class='basic right'>Each investigator may take an additional action during their next turn. An investigator may trigger this codex again during a different act.</p>",
       "act3": "<p>_If it is Act 3a: Fate of the Vale (v.I):_</p><p>Gideon holds up a glassy shard. \"It came from the rock. The one the captain threw down the well. But we weren't rid of it. Ne'er were.\"</p><p class='basic right'>Automatically evade the Cosmic Emissary enemy at your location.</p>",
       "otherwise": "<p>_Otherwise:_</p><p>\"If I don' make it out of here, find my niece an' give 'er this. She's all I have left,\" Gideon says, handing you a salt-stained journal.</p><p class='basic right'>Remove 1 doom from the current agenda.</p>"

@@ -7,6 +7,7 @@ import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Projection
+import Arkham.Scenarios.ObsidianCanyons.Helpers (scenarioI18n)
 
 newtype DazzlingSkyline = DazzlingSkyline LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -31,9 +32,9 @@ instance RunMessage DazzlingSkyline where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       -- Spend 1-3 clues, capped at what the investigator can actually pay.
       clues <- field InvestigatorClues iid
-      chooseAmount iid "Clues" "Clues" 1 (min 3 clues) attrs
+      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 1 (min 3 clues) attrs
       pure l
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       spendClues iid n
       -- TODO: Summit deck has no engine support. For each clue spent, reveal the
       -- bottom 3 cards of the Summit deck and place those cards on the top or

@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards.Farid (farid) where
 
 import Arkham.Ability
+import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers (campaignI18n)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
@@ -24,9 +25,9 @@ instance RunMessage Farid where
   runMessage msg e@(Farid attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       resources <- field InvestigatorResources iid
-      chooseAmounts iid "Amount of resources to spend" (MaxAmountTarget 5) [("Resources", (0, min 5 resources))] attrs
+      campaignI18n $ chooseAmount' iid "farid.resourcesToSpend" "$resources" 0 (min 5 resources) attrs
       pure e
-    ResolveAmounts iid (getChoiceAmount "Resources" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$resources" -> n) (isTarget attrs -> True) -> do
       sid <- getRandom
       when (n > 0) $ push $ SpendResources iid n
       beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed $ max 0 (7 - n))

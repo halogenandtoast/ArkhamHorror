@@ -185,11 +185,11 @@ instance RunMessage ElectricNightmare where
 {- | "An investigator may choose to add the K2-PS187 (X%) permanent story asset
 to their deck." Optional; a single investigator may take it.
 -}
-offerK2Reward :: ReverseQueue m => Maybe CardDef -> m ()
+offerK2Reward :: (HasI18n, ReverseQueue m) => Maybe CardDef -> m ()
 offerK2Reward Nothing = pure ()
 offerK2Reward (Just def) = do
   investigators <- allInvestigators
   lead <- getLead
   chooseOneM lead do
-    labeled "No investigator adds it to their deck" nothing
+    labeled' "noInvestigatorAddsK2" nothing
     targets investigators \iid -> addCampaignCardToDeck iid DoNotShuffleIn def

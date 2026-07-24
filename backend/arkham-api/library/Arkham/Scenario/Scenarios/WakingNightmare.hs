@@ -62,17 +62,13 @@ instance RunMessage WakingNightmare where
       setChaosTokens $ initChaosBag TheWebOfDreams attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      storyWithChooseOneM intro1 do
-        labeled
-          "Convince Doctor Maheswaran to come with you while you investigate, for her safety and yours."
-          do
-            story intro2
-            record DrMaheswaranJoinedTheInvestigation
-        labeled
-          "Convince Doctor Maheswaran to stay with the patients and keep them safe while you investigate."
-          do
-            story intro3
-            record DrMaheswaranStayedWithHerPatients
+      scenarioI18n $ storyWithChooseOneM intro1 do
+        labeled' "bringDoctorMaheswaran" do
+          story intro2
+          record DrMaheswaranJoinedTheInvestigation
+        labeled' "leaveDoctorMaheswaranWithPatients" do
+          story intro3
+          record DrMaheswaranStayedWithHerPatients
       pure s
     Setup -> runScenarioSetup WakingNightmare attrs do
       gather Set.WakingNightmare

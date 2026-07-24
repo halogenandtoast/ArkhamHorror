@@ -8,6 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.ObsidianCanyons.Helpers (scenarioI18n)
 
 newtype CentralSpire = CentralSpire LocationAttrs
   deriving anyclass IsLocation
@@ -30,9 +31,9 @@ instance RunMessage CentralSpire where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- Spend 1-3 resources, capped at what the investigator can actually pay.
       resources <- field InvestigatorResources iid
-      chooseAmount iid "Resources" "Resources" 1 (min 3 resources) attrs
+      scenarioI18n $ chooseAmount' iid "resourcesToSpend" "$resources" 1 (min 3 resources) attrs
       pure l
-    ResolveAmounts iid (getChoiceAmount "Resources" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$resources" -> n) (isTarget attrs -> True) | n > 0 -> do
       spendResources iid n
       revealedLocations <- select RevealedLocation
       chooseTargetM iid revealedLocations \lid ->

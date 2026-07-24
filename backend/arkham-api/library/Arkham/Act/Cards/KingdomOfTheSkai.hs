@@ -10,6 +10,7 @@ import Arkham.EncounterSet (EncounterSet (Zoogs))
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
@@ -45,7 +46,7 @@ instance RunMessage KingdomOfTheSkai where
       players <- getAllPlayers
       priests <- getSetAsideCardsMatching "Priest of a Thousand Masks"
 
-      pushAll
+      scenarioI18n $ pushAll
         [ RemoveAllCopiesOfEncounterCardFromGame
             $ oneOf [cardIs Enemies.catsOfUlthar, cardIs Enemies.packOfVooniths, CardFromEncounterSet Zoogs]
         , ShuffleCardsIntoDeck Deck.EncounterDeck priests
@@ -53,18 +54,18 @@ instance RunMessage KingdomOfTheSkai where
         , storyWithChooseOne
             lead
             players
-            (ft "You find a captain willing to grant you passage to the remote regions of the Dreamlands, wherein you may find signs from the gods to point you in the direction of Kadath.")
+            (i18n "kingdomOfTheSkai")
             [ Label
-                "Visit the isle of Oriab to the south. Resolve _Oriab Setup_ in the Campaign Guide."
+                (ikey' "label.visitOriab")
                 [SetScenarioMeta $ toJSON Oriab]
             , Label
-                "Visit the ancient land of Mnar to the west. Resolve _Mnar Setup_ in the Campaign Guide."
+                (ikey' "label.visitMnar")
                 [SetScenarioMeta $ toJSON Mnar]
             , Label
-                "Visit the Forbidden Lands to the north. Resolve _Forbidden Lands Setup_ in the Campaign Guide."
+                (ikey' "label.visitForbiddenLands")
                 [SetScenarioMeta $ toJSON ForbiddenLands]
             , Label
-                "Visit the kingdom of the Timeless Realm to the east. Resolve _Timeless Realm Setup_ in the Campaign Guide."
+                (ikey' "label.visitTimelessRealm")
                 [SetScenarioMeta $ toJSON TimelessRealm]
             ]
         ]

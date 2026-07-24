@@ -5,7 +5,10 @@ module Arkham.Treachery.Cards.AbandonedByTheGods (
 where
 
 import Arkham.Helpers.Message.Discard
+import Arkham.I18n (countVar)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.WhereTheGodsDwell.Helpers (scenarioI18n)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -23,12 +26,10 @@ instance RunMessage AbandonedByTheGods where
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) (min 5 -> n) -> do
-      chooseN
-        iid
-        n
-        [ Label ("Choose " <> tshow x) [HandleAbilityOption iid (toSource attrs) x]
-        | x <- [0 .. 4]
-        ]
+      scenarioI18n $ chooseNM iid n do
+        for_ [0 .. 4] \x ->
+          countVar x $ labeled' "abandonedByTheGods.choose" do
+            push $ HandleAbilityOption iid (toSource attrs) x
       push $ DoStep 1 msg
       pure t
     HandleAbilityOption _ (isSource attrs -> True) n -> do

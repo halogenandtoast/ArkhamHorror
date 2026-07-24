@@ -2,6 +2,7 @@ module Arkham.Location.Cards.ValeSchoolhouseNight (valeSchoolhouseNight) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -31,7 +32,7 @@ instance RunMessage ValeSchoolhouseNight where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       investigators <- select $ InvestigatorAt (be attrs)
       chooseTargetM iid investigators \iid' -> chooseOneM iid do
-        labeled "Heal 1 damage" $ healDamage iid' (attrs.ability 1) 1
-        labeled "Heal 1 horror" $ healHorror iid' (attrs.ability 1) 1
+        withI18n $ countVar 1 $ labeled' "healDamage" $ healDamage iid' (attrs.ability 1) 1
+        withI18n $ countVar 1 $ labeled' "healHorror" $ healHorror iid' (attrs.ability 1) 1
       pure l
     _ -> ValeSchoolhouseNight <$> liftRunMessage msg attrs

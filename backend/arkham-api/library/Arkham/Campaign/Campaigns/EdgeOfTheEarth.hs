@@ -76,13 +76,13 @@ instance RunMessage EdgeOfTheEarth where
           $ CampaignStep PrologueStep
       pure c
     DoStep 2 (CampaignStep PrologueStep) -> do
-      storyWithContinue (i18nWithTitle "prologue2") "Skip to _Prologue 4_"
+      storyWithContinue (i18nWithTitle "prologue2") (ikey' "label.skipToPrologue4")
       record TheInvestigatorsConvincedDyerToAllowTheExpedition
       addChaosToken Cultist
       doStep 4 $ CampaignStep PrologueStep
       pure c
     DoStep 3 (CampaignStep PrologueStep) -> do
-      storyWithContinue (i18nWithTitle "prologue3") "Proceed to _Prologue 4_"
+      storyWithContinue (i18nWithTitle "prologue3") (ikey' "label.proceedToPrologue4")
       record TheInvestigatorsDidNotBelieveDyersReport
       addChaosToken Tablet
       doStep 4 $ CampaignStep PrologueStep

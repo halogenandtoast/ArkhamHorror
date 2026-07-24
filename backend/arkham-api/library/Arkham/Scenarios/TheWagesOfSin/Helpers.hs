@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
+import Arkham.Classes.GameLogger (HasGameLogger, send)
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Enemy.Runner
@@ -31,6 +32,10 @@ import Data.Map.Monoidal.Strict (MonoidalMap)
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theWagesOfSin" a
+
+sendBanished :: HasGameLogger m => Text -> m ()
+sendBanished card =
+  send $ scenarioI18n $ withVar "card" (String card) $ ikey' "messages.banished"
 
 getSpectralDeck :: (HasGame m, Tracing m) => m (Deck EncounterCard)
 getSpectralDeck =

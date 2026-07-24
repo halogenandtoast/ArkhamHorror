@@ -20,7 +20,8 @@ instance RunMessage AerialPursuit where
       withLocationOf iid \destinationId -> do
         enemies <- select $ NearestEnemyTo iid NonEliteEnemy
         chooseTargetM iid enemies \eid -> do
+          unengaged <- select $ NotInvestigator (investigatorEngagedWith eid)
           moveTowards attrs eid destinationId
-          attackIfEngaged eid (Nothing :: Maybe InvestigatorId)
+          for_ unengaged $ attackIfEngaged eid . Just
       pure t
     _ -> AerialPursuit <$> liftRunMessage msg attrs

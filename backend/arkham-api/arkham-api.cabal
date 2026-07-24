@@ -7247,6 +7247,7 @@ test-suite spec
       Arkham.DecklistSpec
       Arkham.EncounterSetSpec
       Arkham.Enemy.Cards.DagonsBroodSpec
+      Arkham.Enemy.Cards.ElderDeepOneSpec
       Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec
       Arkham.Enemy.Cards.JeanDevereuxSeekingClosureSpec
       Arkham.Enemy.Cards.MobEnforcerSpec

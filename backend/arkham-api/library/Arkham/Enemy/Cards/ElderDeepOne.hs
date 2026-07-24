@@ -21,7 +21,10 @@ instance HasModifiersFor ElderDeepOne where
 
 instance HasAbilities ElderDeepOne where
   getAbilities (ElderDeepOne a) =
-    extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)
+    extend1 a
+      $ restricted a 1 (exists $ EnemyWithTrait DeepOne <> not_ (be a) <> EnemyWithAnyDamage)
+      $ forced
+      $ EnemyEngaged #after You (be a)
 
 instance RunMessage ElderDeepOne where
   runMessage msg e@(ElderDeepOne attrs) = runQueueT $ case msg of

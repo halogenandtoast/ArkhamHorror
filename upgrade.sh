@@ -47,7 +47,10 @@ info "Detected install type: $MODE  (in $(pwd))"
 apply_migrations() {
   if command -v docker >/dev/null 2>&1 && docker compose config --services 2>/dev/null | grep -qx migrate; then
     info "Applying migrations (compose migrate service)..."
-    docker compose run --rm migrate
+    # -T + </dev/null: this script is usually run via `curl … | bash`, where stdin
+    # is the pipe — `compose run` would otherwise fail with "the input device is
+    # not a TTY" (and could swallow the rest of the piped script).
+    docker compose run --rm -T migrate </dev/null
   else
     warn "No docker compose 'migrate' service here — apply migrations manually (sqitch/psql)."
   fi
@@ -73,7 +76,7 @@ resync_images() {
 
   info "Re-syncing local images (target: $target)..."
   if [ "$MODE" = "docker" ]; then
-    docker compose --profile fetch-images run --rm fetch-images "$target"
+    docker compose --profile fetch-images run --rm -T fetch-images "$target" </dev/null
   elif [ -x scripts/fetch-assets.sh ] && command -v aws >/dev/null 2>&1; then
     ./scripts/fetch-assets.sh "$target"
   else

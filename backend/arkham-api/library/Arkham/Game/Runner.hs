@@ -1189,6 +1189,9 @@ runGameMessage msg g = case msg of
                 , locationLabel = locationLabel oldAttrs
                 , locationDirections = locationDirections oldAttrs
                 , locationConnectsTo = locationConnectsTo oldAttrs
+                , -- Swap is the same physical card flipped over, so its flood
+                  -- level carries across (Barrier Core, The Drowned Quarter).
+                  locationFloodLevel = locationFloodLevel oldAttrs
                 }
     -- todo: should we just run this in place?
     enemies <- select $ enemyAt lid

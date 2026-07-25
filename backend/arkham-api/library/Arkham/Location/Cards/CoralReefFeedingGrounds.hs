@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.CoralReefFeedingGrounds (coralReefFeedingGrounds) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (increaseThisFloodLevel)
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Cards
@@ -38,8 +39,8 @@ instance RunMessage CoralReefFeedingGrounds where
       spawnEnemyAt_ underseaParasite attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 3 -> do
-      push $ IncreaseFloodLevel attrs.id
-      adjacent <- select $ connectedFrom (be attrs) <> not_ FullyFloodedLocation
-      chooseTargetM iid adjacent $ push . IncreaseFloodLevel . asId
+      increaseThisFloodLevel attrs
+      floodable <- select $ connectedTo (be attrs) <> CanHaveFloodLevelIncreased
+      chooseTargetM iid floodable increaseThisFloodLevel
       pure l
     _ -> CoralReefFeedingGrounds <$> liftRunMessage msg attrs

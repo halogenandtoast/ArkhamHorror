@@ -1,7 +1,10 @@
 module Arkham.Location.Cards.DrownedAcropolisCollapsedRuins (drownedAcropolisCollapsedRuins) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (decreaseThisFloodLevel, increaseThisFloodLevel)
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (
+  decreaseThisFloodLevel,
+  increaseThisFloodLevel,
+ )
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -17,11 +20,14 @@ drownedAcropolisCollapsedRuins = location DrownedAcropolisCollapsedRuins Cards.d
 
 instance HasAbilities DrownedAcropolisCollapsedRuins where
   getAbilities (DrownedAcropolisCollapsedRuins a) =
-    extendRevealed
-      a
-      [ restricted a 1 Here $ forced $ TurnEnds #after You
-      , limited (GroupLimit PerGame 2) $ restricted a 2 Here actionAbility
-      ]
+    if a.revealed
+      then
+        extendRevealed
+          a
+          [ restricted a 1 Here $ forced $ TurnEnds #after You
+          , limited (GroupLimit PerGame 2) $ restricted a 2 Here actionAbility
+          ]
+      else extendUnrevealed1 a $ mkAbility a 3 $ forced $ Enters #when You (be a)
 
 instance RunMessage DrownedAcropolisCollapsedRuins where
   runMessage msg l@(DrownedAcropolisCollapsedRuins attrs) = runQueueT $ case msg of
@@ -35,5 +41,10 @@ instance RunMessage DrownedAcropolisCollapsedRuins where
       increaseThisFloodLevel attrs
       floodedLocations <- select FloodedLocation
       chooseOneM iid $ targets floodedLocations decreaseThisFloodLevel
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      increaseThisFloodLevel attrs
+      floodable <- select $ connectedTo (be attrs) <> CanHaveFloodLevelIncreased
+      chooseTargetM iid floodable increaseThisFloodLevel
       pure l
     _ -> DrownedAcropolisCollapsedRuins <$> liftRunMessage msg attrs

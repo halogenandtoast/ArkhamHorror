@@ -15,7 +15,7 @@ newtype BarrierCoreInactive = BarrierCoreInactive LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 barrierCoreInactive :: LocationCard BarrierCoreInactive
-barrierCoreInactive = location BarrierCoreInactive Cards.barrierCoreInactive 4 (Static 1)
+barrierCoreInactive = location BarrierCoreInactive Cards.barrierCoreInactive 4 (PerPlayer 1)
 
 instance HasAbilities BarrierCoreInactive where
   getAbilities (BarrierCoreInactive a) =
@@ -25,10 +25,16 @@ instance HasAbilities BarrierCoreInactive where
           a
           1
           (LocationCount 6 (RevealedLocation <> LocationWithTrait Seafloor <> not_ FloodedLocation))
-          $ forced
-          $ RoundEnds #when
+          $ forced AnyWindow
       , groupLimit PerRound
-          $ restricted a 2 Here actionAbility
+          $ restricted
+            a
+            2
+            ( Here
+                <> thisExists a FloodedLocation
+                <> exists (connectedTo (be a) <> CanHaveFloodLevelIncreased)
+            )
+            actionAbility
       ]
 
 instance RunMessage BarrierCoreInactive where

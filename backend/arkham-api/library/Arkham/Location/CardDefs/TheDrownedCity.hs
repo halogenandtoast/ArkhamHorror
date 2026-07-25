@@ -119,46 +119,54 @@ underseaVault =
     $ location_ "11532" "Undersea Vault" [Vault, Glyph] TheWesternWall
 
 -- The Drowned Quarter
--- TODO: back side of double-sided card (11540b)
+
+-- | Every Sea Floor location shares the same unrevealed back, "Sea Floor".
+seaFloor :: CardCode -> Name -> CardDef
+seaFloor cardCode name =
+  locationWithUnrevealed_ cardCode "Sea Floor" [Seafloor] name [Seafloor] TheDrownedQuarter
+
+-- Barrier Core has no unrevealed side; it flips between (Inactive) and (Active).
 barrierCoreInactive :: CardDef
 barrierCoreInactive =
-  location_ "11540" ("Barrier Core" <:> "Inactive") [Seafloor, Central] TheDrownedQuarter
+  otherSideIs "11540b"
+    $ location_ "11540" ("Barrier Core" <:> "Inactive") [Seafloor, Central] TheDrownedQuarter
 
 barrierCoreActive :: CardDef
 barrierCoreActive =
-  location_ "11540b" ("Barrier Core" <:> "Active") [Seafloor, Central] TheDrownedQuarter
+  otherSideIs "11540"
+    $ location_ "11540b" ("Barrier Core" <:> "Active") [Seafloor, Central] TheDrownedQuarter
 
 abyssalTrench :: CardDef
 abyssalTrench =
-  location_ "11541" "Abyssal Trench" [Seafloor] TheDrownedQuarter
+  seaFloor "11541" "Abyssal Trench"
 
 drownedAcropolisEphemeralRuins :: CardDef
 drownedAcropolisEphemeralRuins =
-  location_ "11542" ("Drowned Acropolis" <:> "Ephemeral Ruins") [Seafloor] TheDrownedQuarter
+  seaFloor "11542" ("Drowned Acropolis" <:> "Ephemeral Ruins")
 
 drownedAcropolisCollapsedRuins :: CardDef
 drownedAcropolisCollapsedRuins =
-  location_ "11543" ("Drowned Acropolis" <:> "Collapsed Ruins") [Seafloor] TheDrownedQuarter
+  seaFloor "11543" ("Drowned Acropolis" <:> "Collapsed Ruins")
 
 blastedRuinsSunkenCircle :: CardDef
 blastedRuinsSunkenCircle =
-  location_ "11544" ("Blasted Ruins" <:> "Sunken Circle") [Seafloor] TheDrownedQuarter
+  seaFloor "11544" ("Blasted Ruins" <:> "Sunken Circle")
 
 blastedRuinsCrumblingEdifices :: CardDef
 blastedRuinsCrumblingEdifices =
-  location_ "11545" ("Blasted Ruins" <:> "Crumbling Edifices") [Seafloor] TheDrownedQuarter
+  seaFloor "11545" ("Blasted Ruins" <:> "Crumbling Edifices")
 
 coralReefStatuaryGarden :: CardDef
 coralReefStatuaryGarden =
-  victory 1 $ location_ "11546" ("Coral Reef" <:> "Statuary Garden") [Seafloor] TheDrownedQuarter
+  victory 1 $ seaFloor "11546" ("Coral Reef" <:> "Statuary Garden")
 
 coralReefFeedingGrounds :: CardDef
 coralReefFeedingGrounds =
-  victory 1 $ location_ "11547" ("Coral Reef" <:> "Feeding Grounds") [Seafloor] TheDrownedQuarter
+  victory 1 $ seaFloor "11547" ("Coral Reef" <:> "Feeding Grounds")
 
 ancientGallery :: CardDef
 ancientGallery =
-  victory 1 $ location_ "11548" "Ancient Gallery" [Seafloor] TheDrownedQuarter
+  victory 1 $ seaFloor "11548" "Ancient Gallery"
 
 -- The Apiary
 -- TODO: back side of double-sided card (11559b)

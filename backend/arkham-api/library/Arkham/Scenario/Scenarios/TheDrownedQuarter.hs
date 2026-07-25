@@ -6,15 +6,19 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted (setNextCampaignStep)
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (pattern TheApiary, pattern TheWesternWall)
 import Arkham.Campaigns.TheDrownedCity.Import
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheDrownedQuarter.Helpers
@@ -67,6 +71,22 @@ instance RunMessage TheDrownedQuarter where
       pure s
     Setup -> runScenarioSetup TheDrownedQuarter attrs do
       setUsesGrid
+      headedWest <- getHasRecord TheExpeditionHeadedWest
+      scope "setup" $ flavor do
+        setTitle "title"
+        ul do
+          li "gatherSets"
+          li.nested "locationPlacement" do
+            li "placeBarrierCore"
+            li "gatherSeaFloorLocations"
+            li "placeSeaFloorLocations"
+            li "beginAtBarrierCore"
+          li "setCardsAside"
+          li "chooseExpeditionAsset"
+          li.nested "addFloodTokens" do
+            li.validate (not headedWest) "headedEast"
+          li "buildEncounterDeck"
+          li "readyToBegin"
 
       gather Set.TheDrownedQuarter
       gather Set.AlienMachinery
@@ -80,13 +100,69 @@ instance RunMessage TheDrownedQuarter where
       setActDeck [Acts.reactivateTheCore]
       setAgendaDeck [Agendas.theSunkenRuins, Agendas.collapsingDome]
 
-      -- Grid-based undersea dome with the Barrier Core at the centre; the act
-      -- connects each location to every adjacent location.
-      -- TODO: place all Sea Floor locations per the placement diagram (Drowned
-      -- Acropolis / Blasted Ruins / Coral Reef ×2 [remove one at random] / Ancient
-      -- Gallery / Abyssal Trench ×3) and start the investigators at the entrance.
-      barrierCore <- placeInGrid (Pos 1 1) Locations.barrierCoreInactive
+      setAside [Assets.barrierNode, Enemies.underseaParasite, Assets.obsidianRelic]
+
+      -- Consume every gathered scenario location; the layout below creates exactly
+      -- the copies that remain in this game.
+      removeCards =<< amongGathered (CardFromEncounterSet Set.TheDrownedQuarter <> #location)
+
+      acropolis <-
+        sample2 Locations.drownedAcropolisEphemeralRuins Locations.drownedAcropolisCollapsedRuins
+      coralReef <- sample2 Locations.coralReefStatuaryGarden Locations.coralReefFeedingGrounds
+      seaFloor <-
+        shuffleM
+          [ Locations.abyssalTrench
+          , Locations.abyssalTrench
+          , Locations.abyssalTrench
+          , acropolis
+          , Locations.blastedRuinsSunkenCircle
+          , Locations.blastedRuinsCrumblingEdifices
+          , coralReef
+          , Locations.ancientGallery
+          ]
+
+      -- The Barrier Core is the centre of a 3x3 grid and the eight shuffled Sea
+      -- Floor locations fill the ring around it.
+      barrierCore <- placeInGrid (Pos 0 0) Locations.barrierCoreInactive
+      seaFloorIds <-
+        for
+          ( zip
+              [ Pos (-1) 1
+              , Pos 0 1
+              , Pos 1 1
+              , Pos (-1) 0
+              , Pos 1 0
+              , Pos (-1) (-1)
+              , Pos 0 (-1)
+              , Pos 1 (-1)
+              ]
+              seaFloor
+          )
+          $ uncurry placeInGrid
       startAt barrierCore
+
+      unless headedWest do
+        lead <- getLead
+        n <- getPlayerCount
+        chooseNM lead n do
+          questionLabeled' "chooseFloodedSeaFloor"
+          targets seaFloorIds increaseFloodLevel
+
+      eachInvestigator (`forInvestigator` Setup)
+    ForInvestigator iid Setup -> do
+      -- Each Artifact is unique, so one already taken this setup is off the table.
+      artifacts <- filterM (fmap not . selectAny . assetIs) =<< getEarnedArtifacts
+      chooseOneM iid do
+        questionLabeled' "chooseExpeditionAssetQuestion"
+        labeled' "noExpeditionAsset" nothing
+        for_ (artifacts <> expeditionItems) \asset ->
+          cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
+      pure s
+    HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
+      for_ (lookupCardDef cardCode) \def -> do
+        card <- EncounterCard <$> genEncounterCard def
+        createAssetAt_ card (InPlayArea iid)
+      pure s
     ScenarioResolution res -> scope "resolutions" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
       case res of

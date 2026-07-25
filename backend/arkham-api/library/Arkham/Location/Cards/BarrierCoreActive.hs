@@ -20,21 +20,26 @@ instance HasAbilities BarrierCoreActive where
   getAbilities (BarrierCoreActive a) =
     extendRevealed
       a
-      [ restricted a 1 NoRestriction $ forced $ FloodLevelChanged #after Anywhere
+      [ restricted
+          a
+          1
+          (not_ $ LocationCount 6 (LocationWithTrait Seafloor <> not_ FloodedLocation))
+          $ forced AnyWindow
       , restricted a 2 Here
           $ actionAbilityWithCost
-          $ GroupClueCost (PerPlayer 2) (be a)
+          $ GroupClueCost (PerPlayer 2) Anywhere
       ]
 
 instance RunMessage BarrierCoreActive where
   runMessage msg l@(BarrierCoreActive attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      unfloodedSeafloor <- selectCount $ withTrait Seafloor <> not_ FloodedLocation
-      when (unfloodedSeafloor <= 5) do
-        let inactive = lookupCard Cards.barrierCoreInactive attrs.cardId
-        push $ ReplaceLocation attrs.id inactive Swap
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      flipOver iid attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       takeControlOfSetAsideAsset iid =<< getSetAsideCard Assets.barrierNode
+      pure l
+    Flip _ _ (isTarget attrs -> True) -> do
+      let inactive = lookupCard Cards.barrierCoreInactive attrs.cardId
+      push $ ReplaceLocation attrs.id inactive Swap
       pure l
     _ -> BarrierCoreActive <$> liftRunMessage msg attrs

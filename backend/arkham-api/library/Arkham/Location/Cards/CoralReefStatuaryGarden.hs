@@ -1,9 +1,12 @@
 module Arkham.Location.Cards.CoralReefStatuaryGarden (coralReefStatuaryGarden) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (increaseThisFloodLevel)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype CoralReefStatuaryGarden = CoralReefStatuaryGarden LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -14,9 +17,12 @@ coralReefStatuaryGarden = location CoralReefStatuaryGarden Cards.coralReefStatua
 
 instance HasAbilities CoralReefStatuaryGarden where
   getAbilities (CoralReefStatuaryGarden a) =
-    extendRevealed1 a
-      $ groupLimit PerGame
-      $ restricted a 1 Here doubleActionAbility
+    if a.revealed
+      then
+        extendRevealed1 a
+          $ groupLimit PerGame
+          $ restricted a 1 Here doubleActionAbility
+      else extendUnrevealed1 a $ mkAbility a 2 $ forced $ Enters #when You (be a)
 
 instance RunMessage CoralReefStatuaryGarden where
   runMessage msg l@(CoralReefStatuaryGarden attrs) = runQueueT $ case msg of
@@ -25,7 +31,9 @@ instance RunMessage CoralReefStatuaryGarden where
       gainResources iid (attrs.ability 1) 2
       createEnemyAt_ Enemies.underseaParasite attrs
       pure l
-    -- TODO: back side "Forced - When you enter Sea Floor: Increase the flood
-    -- level of this location and an adjacent eligible location." (shared
-    -- unrevealed Seafloor mechanic, not yet implemented for any Seafloor location)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      increaseThisFloodLevel attrs
+      floodable <- select $ connectedTo (be attrs) <> CanHaveFloodLevelIncreased
+      chooseTargetM iid floodable increaseThisFloodLevel
+      pure l
     _ -> CoralReefStatuaryGarden <$> liftRunMessage msg attrs

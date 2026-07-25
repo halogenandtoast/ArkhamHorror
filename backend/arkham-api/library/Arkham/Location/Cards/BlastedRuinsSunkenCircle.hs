@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.BlastedRuinsSunkenCircle (blastedRuinsSunkenCircle) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (increaseThisFloodLevel)
 import Arkham.ForMovement
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -14,19 +15,18 @@ newtype BlastedRuinsSunkenCircle = BlastedRuinsSunkenCircle LocationAttrs
 blastedRuinsSunkenCircle :: LocationCard BlastedRuinsSunkenCircle
 blastedRuinsSunkenCircle = location BlastedRuinsSunkenCircle Cards.blastedRuinsSunkenCircle 2 (Static 1)
 
--- TODO: BACK ("Sea Floor"): when an investigator enters this location face-down
--- (enters Sea Floor), increase this and each adjacent location's flood level.
--- Requires scenario-level Sea Floor placement (TheDrownedQuarter Setup TODO).
-
 instance HasAbilities BlastedRuinsSunkenCircle where
   getAbilities (BlastedRuinsSunkenCircle a) =
-    extendRevealed
-      a
-      [ restricted a 1 Here $ forced $ TurnEnds #after You
-      , groupLimit PerRound
-          $ restricted a 2 (exists $ orConnected NotForMovement a <> FloodedLocation)
-          $ actionAbilityWithCost (GroupResourceCost (Static 5) (be a))
-      ]
+    if a.revealed
+      then
+        extendRevealed
+          a
+          [ restricted a 1 Here $ forced $ TurnEnds #after You
+          , groupLimit PerRound
+              $ restricted a 2 (exists $ orConnected NotForMovement a <> FloodedLocation)
+              $ actionAbilityWithCost (GroupResourceCost (Static 5) (be a))
+          ]
+      else extendUnrevealed1 a $ mkAbility a 3 $ forced $ Enters #when You (be a)
 
 instance RunMessage BlastedRuinsSunkenCircle where
   runMessage msg l@(BlastedRuinsSunkenCircle attrs) = runQueueT $ case msg of
@@ -36,5 +36,10 @@ instance RunMessage BlastedRuinsSunkenCircle where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       locations <- select $ orConnected NotForMovement attrs <> FloodedLocation
       chooseTargetM iid locations \lid -> push $ DecreaseFloodLevel lid
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      increaseThisFloodLevel attrs
+      floodable <- select $ connectedTo (be attrs) <> CanHaveFloodLevelIncreased
+      chooseTargetM iid floodable increaseThisFloodLevel
       pure l
     _ -> BlastedRuinsSunkenCircle <$> liftRunMessage msg attrs

@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.BlastedRuinsCrumblingEdifices (blastedRuinsCrumblingEdifices) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (increaseThisFloodLevel)
 import Arkham.ForMovement
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -16,14 +17,16 @@ blastedRuinsCrumblingEdifices = location BlastedRuinsCrumblingEdifices Cards.bla
 
 instance HasAbilities BlastedRuinsCrumblingEdifices where
   getAbilities (BlastedRuinsCrumblingEdifices a) =
-    extendUnrevealed1 a (mkAbility a 3 $ forced $ Enters #when You (be a))
-      <> extendRevealed
-        a
-        [ restricted a 1 Here $ forced $ TurnEnds #after You
-        , groupLimit PerRound
-            $ restricted a 2 (exists $ orConnected NotForMovement a <> FloodedLocation)
-            $ actionAbilityWithCost (GroupDiscardCost (PerPlayer 1) #any (be a))
-        ]
+    if a.revealed
+      then
+        extendRevealed
+          a
+          [ restricted a 1 Here $ forced $ TurnEnds #after You
+          , groupLimit PerRound
+              $ restricted a 2 (exists $ orConnected NotForMovement a <> FloodedLocation)
+              $ actionAbilityWithCost (GroupDiscardCost (PerPlayer 1) #any (be a))
+          ]
+      else extendUnrevealed1 a $ mkAbility a 3 $ forced $ Enters #when You (be a)
 
 instance RunMessage BlastedRuinsCrumblingEdifices where
   runMessage msg l@(BlastedRuinsCrumblingEdifices attrs) = runQueueT $ case msg of
@@ -35,8 +38,8 @@ instance RunMessage BlastedRuinsCrumblingEdifices where
       chooseTargetM iid locations \lid -> push $ DecreaseFloodLevel lid
       pure l
     UseThisAbility iid (isSource attrs -> True) 3 -> do
-      push $ IncreaseFloodLevel attrs.id
-      adjacent <- select $ connectedFrom (be attrs) <> not_ FullyFloodedLocation
-      chooseTargetM iid adjacent $ push . IncreaseFloodLevel . asId
+      increaseThisFloodLevel attrs
+      floodable <- select $ connectedTo (be attrs) <> CanHaveFloodLevelIncreased
+      chooseTargetM iid floodable increaseThisFloodLevel
       pure l
     _ -> BlastedRuinsCrumblingEdifices <$> liftRunMessage msg attrs

@@ -12,6 +12,26 @@
     "resolveNoPlaceLikeHome": "If an investigator has the No Place Like Home Task, they resolve their respective story on the following page.",
     "proceedToSetup": "Proceed to _Setup_."
   },
+  "setup": {
+    "title": "Setup",
+    "gatherSets": "Gather all cards from the following encounter sets: _The Drowned Quarter_, _Alien Machinery_, _Cosmic Legacy_, _Deep Ones_, _Elder Mist_, _Flood_, _R’lyeh_, and _Undersea Creatures_. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-drowned-quarter.png' /><img src='{setImgPath}/alien-machinery.png' /><img src='{setImgPath}/cosmic-legacy.png' /><img src='{setImgPath}/tdc_deep-ones.png' /><img src='{setImgPath}/elder-mist.png' /><img src='{setImgPath}/flood.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/undersea-creatures.png' /></section>",
+    "locationPlacement": "Location Placement for “The Drowned Quarter”",
+    "placeBarrierCore": "Put the Barrier Core into play, (Inactive) side faceup.",
+    "gatherSeaFloorLocations": "Gather each Sea Floor location and remove one copy of Coral Reef and one copy of Drowned Acropolis from the game at random.",
+    "placeSeaFloorLocations": "Shuffle the eight remaining Sea Floor locations together and put them into play in a 3x3 grid around the Barrier Core as shown in the location placement diagram.",
+    "beginAtBarrierCore": "Each investigator begins play at the Barrier Core.",
+    "setCardsAside": "Set the Barrier Node story asset and the double-sided Undersea Parasite {'{'}runeX{'}'} and Obsidian Relic {'{'}runeY{'}'} cards aside, out of play.",
+    "chooseExpeditionAsset": "In player order, each player may choose 1 earned _Artifact_ asset or 1 _Item_ asset from the _Expedition_ encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+    "addFloodTokens": "Add the flood tokens to the token pool and check your Campaign Log.",
+    "headedEast": "If the expedition headed east, the rising city has shaken the ancient dome. Increase the flood level of 1 {'{'}perPlayer{'}'} Sea Floor locations.",
+    "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck.",
+    "readyToBegin": "You are now ready to begin."
+  },
+  "label": {
+    "chooseFloodedSeaFloor": "Increase the flood level of 1 Sea Floor location per investigator.",
+    "chooseExpeditionAssetQuestion": "Choose an earned Artifact asset, or an Item asset from the Expedition encounter set, to begin in play under your control.",
+    "noExpeditionAsset": "Do not take an Artifact or Expedition asset."
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half the number of revealed locations (rounded down).",

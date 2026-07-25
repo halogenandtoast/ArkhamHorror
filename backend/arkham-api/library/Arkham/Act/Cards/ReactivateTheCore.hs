@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMapM)
 import Arkham.Location.Cards qualified as Locations
@@ -39,7 +40,9 @@ instance HasAbilities ReactivateTheCore where
       , restricted
           a
           2
-          (EachUndefeatedInvestigator (at_ $ LocationWithTitle "Barrier Core" <> locationIs Locations.barrierCoreActive))
+          ( EachUndefeatedInvestigator
+              (at_ $ LocationWithTitle "Barrier Core" <> locationIs Locations.barrierCoreActive)
+          )
           $ Objective
           $ forced (RoundEnds #when)
       ]
@@ -47,12 +50,12 @@ instance HasAbilities ReactivateTheCore where
 instance RunMessage ReactivateTheCore where
   runMessage msg a@(ReactivateTheCore attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withLocationOf iid \lid -> push $ DecreaseFloodLevel lid
+      withLocationOf iid decreaseFloodLevel
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs
       pure a
-    AdvanceAct (isSide A attrs -> True) _ _ -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       controlsBarrierNode <- selectAny $ assetIs Assets.barrierNode <> AssetControlledBy Anyone
       push $ if controlsBarrierNode then R1 else R2
       pure a

@@ -6,19 +6,26 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted (setNextCampaignStep)
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (pattern TheApiary, pattern TheWesternWall)
 import Arkham.Campaigns.TheDrownedCity.Import
+import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (getFloodLevelFor)
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
+import Arkham.Investigator.Projection ()
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.FloodLevel (FloodLevel (..))
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheDrownedQuarter.Helpers
@@ -56,15 +63,49 @@ instance RunMessage TheDrownedQuarter where
           li.validate headedWest "headedWest"
           li.validate (not headedWest) "headedEast"
 
-      hasNoPlaceLikeHome <-
-        anyM (`investigatorHasTask` Assets.noPlaceLikeHome)
-          =<< select (IncludeEliminated Anyone)
+      investigators <- select (IncludeEliminated Anyone)
+      withNoPlaceLikeHome <- filterM (`investigatorHasTask` Assets.noPlaceLikeHome) investigators
       flavor do
         setTitle "title"
         p $ if headedWest then "drownedQuarter2" else "drownedQuarter3"
         p $ if headedWest then "drownedQuarter2Conclusion" else "drownedQuarter3Conclusion"
-        ul $ li.validate hasNoPlaceLikeHome "resolveNoPlaceLikeHome"
+        ul $ li.validate (notNull withNoPlaceLikeHome) "resolveNoPlaceLikeHome"
         p.basic "proceedToSetup"
+
+      for_ withNoPlaceLikeHome \iid -> do
+        hasPhysical <- fieldP InvestigatorPhysicalTrauma (> 0) iid
+        hasMental <- fieldP InvestigatorMentalTrauma (> 0) iid
+        storyWithChooseOneM'
+          ( compose.green do
+              h3 "noPlaceLikeHome.title"
+              p "noPlaceLikeHome.instructions"
+              p "noPlaceLikeHome.body"
+              p "noPlaceLikeHome.question"
+              p.basic "noPlaceLikeHome.choose"
+              ul do
+                li "noPlaceLikeHome.trustHim"
+                li "noPlaceLikeHome.onMyOwn"
+          )
+          do
+            labeled' "noPlaceLikeHome.trustHim" do
+              -- "Heal 1 mental or 1 physical trauma"; only offer what they have.
+              when (hasPhysical || hasMental) do
+                chooseOneM iid do
+                  questionLabeled' "noPlaceLikeHome.healTraumaQuestion"
+                  when hasPhysical
+                    $ labeled' "noPlaceLikeHome.healPhysicalTrauma"
+                    $ push
+                    $ HealTrauma iid 1 0
+                  when hasMental
+                    $ labeled' "noPlaceLikeHome.healMentalTrauma"
+                    $ push
+                    $ HealTrauma iid 0 1
+              decrementRecordCount Key.NoPlaceLikeHome 1
+            labeled' "noPlaceLikeHome.onMyOwn" do
+              incrementRecordCount Key.NoPlaceLikeHome 2
+              sufferMentalTrauma iid 1
+              for_ investigators \iid' ->
+                nextSetupModifier attrs.id attrs iid' (StartingHand (-2))
       pure s
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)
@@ -163,20 +204,50 @@ instance RunMessage TheDrownedQuarter where
         card <- EncounterCard <$> genEncounterCard def
         createAssetAt_ card (InPlayArea iid)
       pure s
+    ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
+      whenM ((/= Unflooded) <$> getFloodLevelFor iid) $ assignDamage iid Cultist 1
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      let doPlaceClues amount = do
+            clues <- iid.clues
+            when (clues > 0) $ placeCluesOnLocation iid token.face (min amount clues)
+      case token.face of
+        Cultist | isEasyStandard attrs -> do
+          whenM ((== FullyFlooded) <$> getFloodLevelFor iid) $ assignDamage iid Cultist 1
+        Tablet -> doPlaceClues $ if isEasyStandard attrs then 1 else n
+        _ -> pure ()
+      pure s
     ScenarioResolution res -> scope "resolutions" do
-      headedWest <- getHasRecord TheExpeditionHeadedWest
       case res of
-        Resolution 1 -> do
-          -- You took the Barrier Node artifact.
-          record BarrierNode
-          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
-        Resolution 2 -> resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
         NoResolution -> do
+          resolution "noResolution"
+          -- "Each investigator must erase 1 progress under their Task, if able."
+          -- Everyone resigned or was defeated to get here, so include eliminated.
+          investigators <- select (IncludeEliminated Anyone)
+          for_ investigators \iid -> do
+            investigatorTasks <- getInvestigatorTasks iid
+            for_ investigatorTasks \(key, _, _) ->
+              whenM ((> 0) <$> getRecordCount key) $ decrementRecordCount key 1
+          push R3
+        Resolution 1 -> do
+          resolution "resolution1"
+          record BarrierNode
+          push R3
+        Resolution 2 -> do
+          resolution "resolution2"
           record ThePowerWasDiverted
-          resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
+          push R3
+        Resolution 3 -> do
+          -- Resolution 2 is the only route that grants the bonus, and it is the
+          -- only place the power is recorded as diverted.
+          powerWasDiverted <- getHasRecord ThePowerWasDiverted
+          resolutionWithXp "resolution3"
+            $ allGainXpWithBonus' attrs
+            $ toBonus "bonus" (if powerWasDiverted then 2 else 0)
+          recordSetInsert RlyehMap [String "The Drowned Quarter"]
+          headedWest <- getHasRecord TheExpeditionHeadedWest
+          if headedWest then setNextCampaignStep TheApiary else setNextCampaignStep TheWesternWall
+          endOfScenario
         _ -> error $ "Unknown resolution: " <> show res
-      -- TODO: cross out "The Drowned Quarter" on the R'lyeh map (R'lyeh-map recordable).
-      if headedWest then setNextCampaignStep TheApiary else setNextCampaignStep TheWesternWall
-      endOfScenario
       pure s
     _ -> TheDrownedQuarter <$> liftRunMessage msg attrs

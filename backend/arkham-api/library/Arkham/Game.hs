@@ -407,6 +407,7 @@ withTreacheryMetadata a = do
       _ -> Keyword.Peril `member` card.keywords
   tmModifiers <- getModifiers' (toTarget a)
   pure $ a `with` TreacheryMetadata {..}
+
 withEnemyMetadata :: (HasGame m, Tracing m) => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
   emModifiers <- getModifiers' (toTarget a)
@@ -4903,6 +4904,7 @@ getEnemyField f e = do
     EnemyClues -> pure $ enemyClues attrs
     EnemyDamage -> pure $ enemyDamage attrs
     EnemyName -> pure $ toName $ toCardDef attrs
+    EnemyMeta -> pure enemyMeta
     EnemySpawnDetails -> pure enemySpawnDetails
     EnemyRemainingHealth -> do
       mTotalHealth <- field EnemyHealth (toId e)

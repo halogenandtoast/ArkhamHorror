@@ -55,6 +55,26 @@ expeditionItems =
   , Assets.divingSuitTheDrownedCity
   ]
 
+-- | Each Task: campaign-log key, the story-asset card, and its i18n label.
+tasks :: [(TheDrownedCityKey, CardDef, Text)]
+tasks =
+  [ (WalkInFaith, Assets.walkInFaith, "walkInFaith")
+  , (ToeTheLine, Assets.toeTheLine, "toeTheLine")
+  , (NoPlaceLikeHome, Assets.noPlaceLikeHome, "noPlaceLikeHome")
+  , (GoodMoney, Assets.goodMoney, "goodMoney")
+  , (DoNoHarm, Assets.doNoHarm, "doNoHarm")
+  , (ProveYourWorth, Assets.proveYourWorth, "proveYourWorth")
+  , (DreamsOfDestruction, Assets.dreamsOfDestruction, "dreamsOfDestruction")
+  , (PlumbTheDepths, Assets.plumbTheDepths, "plumbTheDepths")
+  ]
+
+{- | The Tasks an investigator has taken. Each investigator takes exactly one, but
+this returns a list so callers do not have to assume that.
+-}
+getInvestigatorTasks
+  :: (HasGame m, Tracing m) => InvestigatorId -> m [(TheDrownedCityKey, CardDef, Text)]
+getInvestigatorTasks iid = filterM (\(_, def, _) -> investigatorHasTask iid def) tasks
+
 struggleForAir
   :: (Sourceable a, HasGame m, Tracing m, HasQueue Message m) => a -> InvestigatorId -> m ()
 struggleForAir a iid = do

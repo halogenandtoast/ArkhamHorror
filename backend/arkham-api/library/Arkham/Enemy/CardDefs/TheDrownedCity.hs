@@ -90,18 +90,23 @@ huntingParasite =
       }
 
 -- The Drowned Quarter
+
+{- | Printed on the back of agenda 1a, "The Sunken Ruins", so it enters play only
+when that agenda advances and is never gathered into the encounter deck.
+-}
 seafloorLeviathan :: CardDef
 seafloorLeviathan =
-  (enemy "11537b" ("Seafloor Leviathan" <:> "Giant Aquatic Medusoid") TheDrownedQuarter 1)
-    { cdHealthDamage = healthDamage 1
-    , cdSanityDamage = sanityDamage 1
-    , cdFight = fight 2
-    , cdEvade = evade 2
-    , cdHealth = health 4
-    , cdCardTraits = setFromList [Monster, Abomination, Elite]
-    , cdKeywords = setFromList [Keyword.Massive, Keyword.Patrol (not_ FullyFloodedLocation)]
-    , cdVictoryPoints = Just 2
-    }
+  doubleSided "11537"
+    $ (enemy "11537b" ("Seafloor Leviathan" <:> "Giant Aquatic Medusoid") TheDrownedQuarter 1)
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 2
+      , cdEvade = evade 2
+      , cdHealth = health 4
+      , cdCardTraits = setFromList [Monster, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Massive, Keyword.Patrol (not_ FullyFloodedLocation)]
+      , cdVictoryPoints = Just 2
+      }
 
 underseaParasite :: CardDef
 underseaParasite =

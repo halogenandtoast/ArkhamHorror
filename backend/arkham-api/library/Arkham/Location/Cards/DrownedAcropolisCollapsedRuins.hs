@@ -25,7 +25,8 @@ instance HasAbilities DrownedAcropolisCollapsedRuins where
         extendRevealed
           a
           [ restricted a 1 Here $ forced $ TurnEnds #after You
-          , limited (GroupLimit PerGame 2) $ restricted a 2 Here actionAbility
+          , limited (GroupLimit PerGame 2)
+              $ restricted a 2 (Here <> thisExists a CanHaveFloodLevelIncreased) actionAbility
           ]
       else extendUnrevealed1 a $ mkAbility a 3 $ forced $ Enters #when You (be a)
 

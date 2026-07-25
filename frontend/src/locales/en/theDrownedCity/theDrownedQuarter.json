@@ -10,7 +10,25 @@
     "drownedQuarter3": "_The Drowned Quarter 3_: You follow the expedition past pits of deep water and sunken ruins to the source of the glow and, presumably, the energy field. Inside it, you find a spinning orrery: a complex mechanism of hovering spheres and whirring gears that stir a constant electric current. Locked at its core is an incandescent orb. Ruby gasps. “It’s some kind of pumping station. I’d wager that orb is an important part of it. It’s possible that stealing it could bring the ocean down on our heads.” She smiles rakishly. “So you’d better be ready to run.”",
     "drownedQuarter3Conclusion": "Before you can object, she sets to operating the ancient controls. There may be a way to take the orb without drowning…",
     "resolveNoPlaceLikeHome": "If an investigator has the No Place Like Home Task, they resolve their respective story on the following page.",
-    "proceedToSetup": "Proceed to _Setup_."
+    "proceedToSetup": "Proceed to _Setup_.",
+    "noPlaceLikeHome": {
+      "title": "Task: No Place Like Home",
+      "instructions": "_Read only if you have the No Place Like Home Task:_",
+      "body": "Your head spins as you look up at the alien orrery. The sight brings you back to that first night, the night Tillinghast took you off the streets. The stars that night were bright, and you can’t forget their particular formation, the same formation in front of you now. Away from the constant grind and concerns of your life in Arkham, you’ve done some thinking. Tillinghast’s words were kind, but his tone was harsh, cold, unfeeling. Reflecting on it, you have only garnered the businessman’s attention when you were useful. There was no kindness in his act; when he saved you, he acquired you as yet another lackey in his quiver of debtors.",
+      "question": "This is the umpteenth “last job” you’ve been on. Is Tillinghast really worth his word?",
+      "choose": "You must decide (choose one):",
+      "trustHim": "“Mr. Tillinghast has treated me well. I trust him.” Heal 1 mental or 1 physical trauma from your investigator. Erase 1 progress under _No Place Like Home_ in your Campaign Log.",
+      "onMyOwn": "“I’m on my own. There’s no one I can trust.” Mark 2 progress under _No Place Like Home_ in your Campaign Log and suffer 1 mental trauma. Each investigator begins the next scenario with 2 fewer cards in their starting hand."
+    },
+    "label": {
+      "noPlaceLikeHome": {
+        "trustHim": "“Mr. Tillinghast has treated me well. I trust him.”",
+        "onMyOwn": "“I’m on my own. There’s no one I can trust.”",
+        "healTraumaQuestion": "Heal 1 mental or 1 physical trauma from your investigator.",
+        "healPhysicalTrauma": "Heal 1 physical trauma.",
+        "healMentalTrauma": "Heal 1 mental trauma."
+      }
+    }
   },
   "setup": {
     "title": "Setup",
@@ -50,15 +68,19 @@
     "xp": { "bonus": "for studying the Drowned Quarter at length" },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p>_Resolution 1_: The strange node pulses in your hand, projecting a soft bubble of light that repels the falling debris. You make it to the entrance as the dome bursts like a bubble. The expedition looks on in a mixture of awe and fear as a torrent of seawater reclaims the alien structure. A small prick of pain shoots through your palm, and you look down to see the node bury itself in your palm, sending spidery black hairs radiating out under your skin. They retract painlessly when you pull the node away. Tillinghast will certainly be pleased with this find.</p>"
+      "body": "<p>_Resolution 1_: The strange node pulses in your hand, projecting a soft bubble of light that repels the falling debris. You make it to the entrance as the dome bursts like a bubble. The expedition looks on in a mixture of awe and fear as torrent of seawater reclaims the alien structure. A small prick of pain shoots through your palm, and you look down to see the node bury itself in your palm, sending spidery black hairs radiating out under your skin. They retract painlessly when you pull the node away. Tillinghast will certainly be pleased with this find.</p><ul><li>In the “Artifacts Earned” section of your Campaign Log, check the box next to “Barrier Node.”</li><li>Skip to _Resolution 3_.</li></ul>"
     },
     "resolution2": {
       "title": "Resolution 2",
-      "body": "<p>_Resolution 2_: The reactivated core makes quick work of the flooded dome, draining the water in mere minutes. You survey the perimeter of the sunken ruin with the expedition, marveling at its ancient grandeur. The feeling of walking on a dry ocean floor, with fish flitting beyond the flickering bubble, is like something out of a dream. After several hours, the expedition presses on.</p>"
+      "body": "<p>_Resolution 2_: The reactivated core makes quick work of the flooded dome, draining the water in mere minutes. You survey the perimeter of the sunken ruin with the expedition, marveling at its ancient grandeur. The feeling of walking on a dry ocean floor, with fish flitting beyond the flickering bubble, is like something out of a dream. After several hours, the expedition presses on.</p><ul><li>In your Campaign Log, record _the power was diverted_.</li><li>Each investigator earns 2 bonus experience from studying the Drowned Quarter at length.</li><li>Proceed to _Resolution 3_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: The energy field protecting the tunnel back to the city continues to hold strong. The jagged foundations of R’lyeh continue to break off in pieces as the city rises. It is time to move on.</p><ul><li>In your Campaign Log, cross out “The Drowned Quarter” on the R’lyeh map.</li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li></ul>"
     },
     "noResolution": {
       "title": "No Resolution",
-      "body": "<p>_If no resolution was reached_: On the other side of the dome entrance, you look through the gossamer barrier to the ocean floor. The ocean reclaimed the alien dome in mere seconds. It is a minor miracle that you weren’t swept away. Your failure has distracted you from your goals.</p>"
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: On the other side of the dome entrance, you look through the gossamer barrier to the ocean floor. The ocean reclaimed the alien dome in mere seconds. It is a minor miracle that you weren’t swept away.</p><ul><li>Your failure has distracted you from your goals. Each investigator must erase 1 progress under their Task, if able.</li><li>Skip to _Resolution 3_.</li></ul>"
     }
   }
 }

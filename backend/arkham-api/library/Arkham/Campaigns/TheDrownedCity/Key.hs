@@ -38,6 +38,8 @@ data TheDrownedCityKey
     TheInnerSanctumWasUnsealed
   | -- | Alien Glyphs (translated glyph record; recorded-set of rune letters "A".."Z")
     DiscoveredGlyphs
+  | -- | R'lyeh map (recorded-set of the scenario names crossed off the map)
+    RlyehMap
   | -- | Interlude III: The Awakening / Return to Arkham
     YourAlliesHaveAPlan
   | TheInvestigatorsStoodTogether

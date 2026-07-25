@@ -83,6 +83,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyCardId :: Field Enemy CardId
   EnemyLocation :: Field Enemy (Maybe LocationId)
   EnemyPlacement :: Field Enemy Placement
+  EnemyMeta :: Field Enemy Value
   EnemySealedChaosTokens :: Field Enemy [ChaosToken]
   EnemyKeys :: Field Enemy (Set ArkhamKey)
   EnemySpawnedBy :: Field Enemy (Maybe InvestigatorId)
@@ -139,6 +140,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyCardId" -> pure $ SomeField EnemyCardId
     "EnemyLocation" -> pure $ SomeField EnemyLocation
     "EnemyPlacement" -> pure $ SomeField EnemyPlacement
+    "EnemyMeta" -> pure $ SomeField EnemyMeta
     "EnemySealedChaosTokens" -> pure $ SomeField EnemySealedChaosTokens
     "EnemyKeys" -> pure $ SomeField EnemyKeys
     "EnemySpawnedBy" -> pure $ SomeField EnemySpawnedBy
@@ -287,7 +289,7 @@ pattern EvadeCriteria =
       , EnemyCriteria
           ( ThisEnemy
               (EnemyMatchAll [EnemyIsEngagedWith You, EnemyWithEvade, EnemyWithoutModifier CannotBeEvaded])
-          )
+            )
       ]
 
 instance HasAbilities EnemyAttrs where
@@ -502,6 +504,7 @@ fieldLens = \case
   EnemyCardId -> cardIdL
   EnemyLocation -> virtual
   EnemyPlacement -> placementL
+  EnemyMeta -> metaL
   EnemySealedChaosTokens -> sealedChaosTokensL
   EnemyKeys -> keysL
   EnemySpawnedBy -> spawnedByL

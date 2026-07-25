@@ -250,6 +250,7 @@ import Arkham.Story.Runner as X (
   removeAfterResolutionL,
   story,
   storyWith,
+  storyOtherSide,
  )
 import Arkham.Target as X
 

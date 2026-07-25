@@ -37,8 +37,9 @@ instance RunMessage DrownedAcropolisEphemeralRuins where
       chooseTargetM iid floodable increaseThisFloodLevel
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
+      canFlood <- matches attrs.id CanHaveFloodLevelIncreased
       chooseOrRunOneM iid $ withI18n do
-        labeled' "increaseFloodLevelOfYourLocation" $ increaseThisFloodLevel attrs
+        labeledValidate' canFlood "increaseFloodLevelOfYourLocation" $ increaseThisFloodLevel attrs
         countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 2) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 3 -> do

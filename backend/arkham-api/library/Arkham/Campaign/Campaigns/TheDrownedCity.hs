@@ -5,7 +5,6 @@ import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Card (genPlayerCard)
-import Arkham.Card.CardDef (CardDef)
 import Arkham.Helpers.FlavorText
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -28,19 +27,6 @@ instance IsCampaign TheDrownedCity where
     -- The west/east branch out of Expedition to R'lyeh is pushed explicitly from
     -- that interlude's handler via setNextCampaignStep.
     other -> defaultNextStep other
-
--- Each Task: campaign-log key, the story-asset card, and its i18n label.
-tasks :: [(TheDrownedCityKey, CardDef, Text)]
-tasks =
-  [ (WalkInFaith, Assets.walkInFaith, "walkInFaith")
-  , (ToeTheLine, Assets.toeTheLine, "toeTheLine")
-  , (NoPlaceLikeHome, Assets.noPlaceLikeHome, "noPlaceLikeHome")
-  , (GoodMoney, Assets.goodMoney, "goodMoney")
-  , (DoNoHarm, Assets.doNoHarm, "doNoHarm")
-  , (ProveYourWorth, Assets.proveYourWorth, "proveYourWorth")
-  , (DreamsOfDestruction, Assets.dreamsOfDestruction, "dreamsOfDestruction")
-  , (PlumbTheDepths, Assets.plumbTheDepths, "plumbTheDepths")
-  ]
 
 instance RunMessage TheDrownedCity where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of

@@ -1,11 +1,12 @@
 module Arkham.Enemy.Cards.UnderseaParasite (underseaParasite) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks, pattern EnemyAttacks)
+import Arkham.Helpers.Story
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log (record)
+import Arkham.Scenarios.TheDrownedQuarter.Helpers (UnderseaParasiteFlip (..))
+import Arkham.Story.Cards qualified as Stories
 
 newtype UnderseaParasite = UnderseaParasite EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -23,10 +24,12 @@ instance HasAbilities UnderseaParasite where
       ]
 
 instance RunMessage UnderseaParasite where
-  runMessage msg e@(UnderseaParasite attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) n | n `elem` [1, 2] -> do
-      -- TODO: resolve flipped story side "11549b" (translated word unknown)
-      campaignSpecific "translateGlyph" ("rune_x" :: Text, "Sum" :: Text)
-      record TheInvestigatorsDiscoveredAnAlienLanguage
-      pure e
+  runMessage msg (UnderseaParasite attrs) = runQueueT $ case msg of
+    -- Both abilities flip to the same story back (11549b), whose text branches on
+    -- which one flipped it. Record the reason in meta first; the story reads it
+    -- back off this enemy and resolves the matching half.
+    UseThisAbility iid (isSource attrs -> True) n | n `elem` [1, 2] -> do
+      readStoryWithPlacement iid attrs Stories.underseaParasite (enemyPlacement attrs)
+      let flippedBy = if n == 1 then FlippedByAttack else FlippedByLeavingPlay
+      pure $ UnderseaParasite $ setMeta flippedBy attrs
     _ -> UnderseaParasite <$> liftRunMessage msg attrs

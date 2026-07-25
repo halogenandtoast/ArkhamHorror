@@ -43,14 +43,14 @@ instance RunMessage GuerrillaTactics2 where
       sid <- getRandom
       case getEventMeta @Action attrs of
         Just action | action == #fight -> do
-          skillTestModifier sid attrs iid (SkillModifier #combat 1)
+          skillTestModifier sid attrs iid (SkillModifier #combat 2)
           chooseFightEnemyEdit sid iid attrs \cf ->
             cf
               { chooseFightEnemyMatcher = connectingEnemyMatcher
               , chooseFightOverride = True
               }
         Just action | action == #evade -> do
-          skillTestModifier sid attrs iid (SkillModifier #agility 1)
+          skillTestModifier sid attrs iid (SkillModifier #agility 2)
           chooseEvadeEnemyEdit sid iid attrs \ce ->
             ce
               { chooseEvadeEnemyMatcher = evadeOverride (EnemyAt (orConnected NotForMovement YourLocation))

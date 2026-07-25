@@ -18,7 +18,8 @@ instance HasAbilities InLostCarcosa where
   getAbilities (InLostCarcosa x) =
     withBaseAbilities
       x
-      [ mkAbility x 1
+      [ onlyOnce
+          $ mkAbility x 1
           $ Objective
           $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 2) Anywhere)
       | onSide A x

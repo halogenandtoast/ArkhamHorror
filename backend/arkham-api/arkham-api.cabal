@@ -7165,6 +7165,7 @@ test-suite spec
       Arkham.Asset.Assets.DigDeep2Spec
       Arkham.Asset.Assets.DigDeepSpec
       Arkham.Asset.Assets.DiscOfItzamna2Spec
+      Arkham.Asset.Assets.DreamersChronicleSpec
       Arkham.Asset.Assets.DrHenryArmitage_SpreadingFlamesSpec
       Arkham.Asset.Assets.DrMilanChristopherSpec
       Arkham.Asset.Assets.DukeSpec

@@ -28,7 +28,7 @@ instance HasAbilities DarkKnowledgeV2 where
     extend
       x
       [ fastAbility x 1 Free $ if maybe False (>= 3) (actBreaches x) then NoRestriction else Never
-      , mkAbility x 2 $ Objective $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 3) Anywhere)
+      , onlyOnce $ mkAbility x 2 $ Objective $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 3) Anywhere)
       ]
 
 instance RunMessage DarkKnowledgeV2 where

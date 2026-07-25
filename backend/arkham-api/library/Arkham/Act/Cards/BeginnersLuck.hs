@@ -28,7 +28,8 @@ instance HasAbilities BeginnersLuck where
   getAbilities (BeginnersLuck x) =
     guard (onSide A x)
       *> [ groupLimit PerRound $ mkAbility x 1 $ freeReaction (RevealChaosToken #when You AnyChaosToken)
-         , mkAbility x 2
+         , onlyOnce
+             $ mkAbility x 2
              $ Objective
              $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 4) Anywhere)
          ]

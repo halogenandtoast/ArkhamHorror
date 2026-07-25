@@ -24,12 +24,13 @@ instance HasAbilities UnsettlingSigns where
     extend
       x
       [ restricted x 1 (exists $ InvestigatorWithClues $ atLeast 1) actionAbility
-      , restricted
-          x
-          2
-          (EachUndefeatedInvestigator $ at_ $ withTrait Sanctum)
-          $ Objective
-          $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 2) Anywhere)
+      , onlyOnce
+          $ restricted
+            x
+            2
+            (EachUndefeatedInvestigator $ at_ $ withTrait Sanctum)
+            $ Objective
+            $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 2) Anywhere)
       ]
 
 instance RunMessage UnsettlingSigns where

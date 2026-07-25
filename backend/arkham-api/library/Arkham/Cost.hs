@@ -263,6 +263,12 @@ instance Semigroup Cost where
   a <> Free = a
   ActionCost x <> ActionCost y = ActionCost (x + y)
   ResourceCost x <> ResourceCost y = ResourceCost (x + y)
+  ClueCost x <> ClueCost y = case (x, y) of
+    (Static a, Static b) -> ClueCost (Static (a + b))
+    (PerPlayer a, PerPlayer b) -> ClueCost (PerPlayer (a + b))
+    (Static a, PerPlayer b) -> ClueCost (StaticWithPerPlayer a b)
+    (PerPlayer a, Static b) -> ClueCost (StaticWithPerPlayer b a)
+    _ -> Costs [ClueCost x, ClueCost y]
   Costs xs <> Costs ys = Costs (combineCosts $ sort $ xs <> ys)
   Costs xs <> a = Costs (combineCosts $ sort $ a : xs)
   a <> Costs xs = Costs (combineCosts $ sort $ a : xs)

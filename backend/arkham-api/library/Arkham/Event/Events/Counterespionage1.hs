@@ -24,7 +24,7 @@ instance HasAbilities Counterespionage1 where
         $ triggered (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     , withTooltip
         "{reaction} When you play Counterespionage, increase its cost by 2: Change \"you\" to \"any investigator\"."
-        $ restricted a 2 (can.affect.otherPlayers You)
+        $ restricted a 2 (can.affect.otherPlayers You <> exists (not_ You))
         $ ForcedWhen (EventWindowInvestigatorIs (not_ You))
         $ triggered (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     ]

@@ -716,12 +716,15 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCrit
               Just calc -> (> 0) <$> calculate calc -- MaxDynamicCost: suppress only if max payable is 0
           | otherwise -> maybe False (> 0) <$> getModifiedCardCost iid card
     Criteria.EventWindowInvestigatorIs whoMatcher -> do
+      -- The originating draw window is not always on top of the stack: while the
+      -- "when you play <card>" reactions resolve, the PlayCard window sits above
+      -- it, so only reading the head silently made this False (Counterespionage's
+      -- mandatory +2 never became forced). Walk outward to the nearest draw.
       windows'' <- getWindowStack
-      case windows'' of
-        ((windowType -> x) : _) : _ -> case x of
-          Window.DrawCard iid' _ _ -> iid' <=~> Matcher.replaceYouMatcher iid whoMatcher
-          _ -> pure False
-        _ -> pure False
+      let drawers = [iid' | ws'' <- windows'', w <- ws'', Window.DrawCard iid' _ _ <- [windowType w]]
+      case drawers of
+        iid' : _ -> iid' <=~> Matcher.replaceYouMatcher iid whoMatcher
+        [] -> pure False
     Criteria.ExcludeWindowAssetExists matcher -> case getWindowAsset windows' of
       Nothing -> pure False
       Just aid -> do

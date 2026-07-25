@@ -58,7 +58,11 @@ spec = describe "Dreamer's Chronicle" do
     chooseChronicle
     takeHorror
     applyAllHorror
+    useForcedAbility
     chooseTarget flashlight
     self.clues `shouldReturn` 2
     field LocationClues scienceHall `shouldReturn` 0
     self.hand `shouldReturn` [knife]
+    -- a second discovery window would leave Science Hall's forced ability
+    -- waiting to be triggered again
+    assertHasNoReaction

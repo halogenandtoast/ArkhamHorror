@@ -9,6 +9,7 @@ import Arkham.Campaigns.TheDrownedCity.CampaignSteps (
   pattern TheDrownedQuarter,
  )
 import Arkham.Campaigns.TheDrownedCity.Import
+import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (getFloodLevelFor)
 import Arkham.Card
 import Arkham.ChaosToken
@@ -293,7 +294,9 @@ instance RunMessage TheWesternWall where
                       li "task2Trauma"
                       li "task2Progress"
               if helpedThePilgrim
-                then addCampaignCardToDeck iid DoNotShuffleIn Enemies.huntingParasite
+                then do
+                  addCampaignCardToDeck iid DoNotShuffleIn Enemies.huntingParasite
+                  incrementRecordCount Key.DoNoHarm 2
                 else sufferMentalTrauma iid 1
           chooseResolution3 =
             storyWithChooseOneM'

@@ -38,6 +38,7 @@ data Token
   | Memory
   | Mutation
   | Newspaper
+  | Obligation
   | Offering
   | Overgrowth
   | Pillar
@@ -99,6 +100,9 @@ instance IsLabel "charge" Token where
 
 instance IsLabel "secret" Token where
   fromLabel = Secret
+
+instance IsLabel "obligation" Token where
+  fromLabel = Obligation
 
 instance IsLabel "clue" Token where
   fromLabel = Clue

@@ -33,6 +33,7 @@ export const TOKENS = [
   "Memory",
   "Mutation",
   "Newspaper",
+  "Obligation",
   "Offering",
   "Overgrowth",
   "Pillar",

@@ -60,6 +60,7 @@ const TOKEN_CONFIG: Partial<Record<Token, { type: string; tooltip?: string }>> =
   Mutation: { type: 'resource', tooltip: 'Mutation' },
   Brilliance: { type: 'resource', tooltip: 'Brilliance' },
   Charge: { type: 'resource' },
+  Obligation: { type: 'resource', tooltip: 'Obligation' },
 }
 
 const props = withDefaults(defineProps<{

@@ -710,6 +710,7 @@ doNoHarm =
   permanent
     $ (storyAsset_ "11758a" ("Do No Harm" <:> "Can You Save Them?") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdUses = uses Obligation 5
       }
 
 proveYourWorth :: CardDef

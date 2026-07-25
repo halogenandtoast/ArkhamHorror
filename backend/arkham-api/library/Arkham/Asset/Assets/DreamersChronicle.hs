@@ -33,12 +33,13 @@ instance RunMessage DreamersChronicle where
       canDiscover <-
         selectAny $ locationWithInvestigator iid <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
       when canDiscover do
-        skillTestCardOption attrs do
-          chooseOneM iid do
-            (cardI18n $ labeled' "dreamersChronicle.takeHorror") do
-              assignHorror iid (attrs.ability 1) 1
-              discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
-            labeledI "skip" nothing
+        withSkillTest \sid ->
+          skillTestCardOptionEdit attrs preOriginalOption do
+            chooseOneM iid do
+              (cardI18n $ labeled' "dreamersChronicle.takeHorror") do
+                assignHorror iid (attrs.ability 1) 1
+                skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+              labeledI "skip" nothing
       pure a
     _ -> DreamersChronicle <$> liftRunMessage msg attrs
 

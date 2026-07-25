@@ -1822,7 +1822,13 @@ instance RunMessage EnemyAttrs where
           n <- selectCount $ SwarmOf eid'
           when (n <= 1) $ push $ CheckDefeated source (toTarget eid')
         _ -> pure ()
-      pure a
+      -- Mark defeated here rather than on `After`: disposal above is what takes the enemy
+      -- out of play, and anything that reacts to it can push another `CheckDefeated` at us
+      -- (Smite the Wicked (Advanced) and friends re-check their host when their health
+      -- modifier goes away). Those land before `After`, so leaving the flag until then let
+      -- the whole defeat pipeline — and every "after an enemy is defeated" trigger — run a
+      -- second time. See issue #5242.
+      pure $ a & defeatedL .~ True
     After (Arkham.Message.Defeated (EnemyTarget eid) _ _source _) | eid == toId a -> do
       pure $ a & defeatedL .~ True
     EnemySpawnFromOutOfPlay _ miid lid eid | eid == a.id -> do

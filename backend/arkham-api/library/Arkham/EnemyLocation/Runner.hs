@@ -299,7 +299,9 @@ instance RunMessage EnemyLocationAttrs where
       -- IfEnemyDefeated would resolve against a location that no longer exists and
       -- matchers like Bounty's `EnemyWasAt YourLocation` could never match.
       pushAll =<< Defeat.closeDefeat (asEnemyId a) defeatedBy miid []
-      pure a
+      -- Defeated as of here, matching Arkham.Enemy.Runner: a `CheckDefeated` that arrives
+      -- while the defeat is still resolving must not restart it (issue #5242).
+      pure $ a & defeatedL .~ True
     After (Msg.Defeated (EnemyTarget eid) _ source _) | eid == asEnemyId a -> do
       push $ Msg.EnemyLocationDefeated a.id (toCardId a) source (setToList $ toTraits (toCardDef a))
       pure $ a & defeatedL .~ True

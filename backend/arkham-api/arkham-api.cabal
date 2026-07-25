@@ -7394,6 +7394,7 @@ test-suite spec
       Arkham.Treachery.Cards.RookieMistakeSpec
       Arkham.Treachery.Cards.SearchingForIzzieSpec
       Arkham.Treachery.Cards.ShockingDiscoverySpec
+      Arkham.Treachery.Cards.SmiteTheWickedAdvancedSpec
       Arkham.Treachery.Cards.SmiteTheWickedSpec
       Arkham.Treachery.Cards.StillBehindYouSpec
       Arkham.Treachery.Cards.WordsOfPowerSpec

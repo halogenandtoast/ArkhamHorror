@@ -1,4 +1,17 @@
 {
+  "intro": {
+    "title": "The Drowned Quarter",
+    "drownedQuarter1": "_The Drowned Quarter 1_: The sound of crackling electricity greets you as you enter the undersea dome. Flooded trenches and crumbling ruins cover the round plaza on the seafloor. Try as you might, your eyes keep drifting to the ocean beyond the alien barrier. A bloom of jellyfish floats dreamily through the tenebrous depths. If the energy field were to disappear for any reason, the expedition would surely be swept away.",
+    "checkCampaignLog": "Check your Campaign Log.",
+    "headedWest": "If the expedition headed west, proceed to _The Drowned Quarter 2_.",
+    "headedEast": "If the expedition headed east, skip to _The Drowned Quarter 3_.",
+    "drownedQuarter2": "_The Drowned Quarter 2_: “I think this is the source,” Andy points to the round structure in the center of the plaza. Bolts of electricity lick the shimmering bubble above. The structure is the source of the glow and, presumably, the energy field protecting these ruins from the ocean water. Inside, you find a spinning orrery: a complex mechanism of hovering spheres and whirring gears that stir a constant electric current. Locked at its core is an incandescent orb. Andy fidgets nervously. “It’s powering the machine. I don’t know what’ll happen if we take it out but…it looks like something Mr. Tillinghast would want.”",
+    "drownedQuarter2Conclusion": "Before you can object, he sets to operating the ancient controls. There may be a way to remove the orb without drowning…",
+    "drownedQuarter3": "_The Drowned Quarter 3_: You follow the expedition past pits of deep water and sunken ruins to the source of the glow and, presumably, the energy field. Inside it, you find a spinning orrery: a complex mechanism of hovering spheres and whirring gears that stir a constant electric current. Locked at its core is an incandescent orb. Ruby gasps. “It’s some kind of pumping station. I’d wager that orb is an important part of it. It’s possible that stealing it could bring the ocean down on our heads.” She smiles rakishly. “So you’d better be ready to run.”",
+    "drownedQuarter3Conclusion": "Before you can object, she sets to operating the ancient controls. There may be a way to take the orb without drowning…",
+    "resolveNoPlaceLikeHome": "If an investigator has the No Place Like Home Task, they resolve their respective story on the following page.",
+    "proceedToSetup": "Proceed to _Setup_."
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half the number of revealed locations (rounded down).",

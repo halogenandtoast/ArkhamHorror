@@ -763,8 +763,13 @@ instance RunMessage EnemyAttrs where
             -- ability fires in the enter window and removes it) the `Do EnemyMove`
             -- / `EnemyEntered` guards abort the placement instead of dragging the
             -- removed enemy back into play.
+            -- The destination is always rewritten to *this* move's target. A move
+            -- nested inside an outer move's enter-window (e.g. Elusive fleeing an
+            -- enemy that was just attacked in its own after-enters window) would
+            -- otherwise leave the outer destination recorded, and the outer move's
+            -- deferred `Do EnemyMove` below could not tell it had been superseded.
             mMovement <- case enemyMovement of
-              Just _ -> pure enemyMovement
+              Just m -> pure $ Just m {moveDestination = ToLocation lid}
               Nothing -> do
                 m <- move (toSource eid) (toTarget eid) lid
                 pure $ Just m {moveFromInPlay = isInPlayPlacement enemyPlacement}
@@ -804,7 +809,12 @@ instance RunMessage EnemyAttrs where
             isNothing enemySpawnDetails
               && maybe False moveFromInPlay enemyMovement
               && isOutOfPlayPlacement enemyPlacement
-      if current == Just lid || leftPlayMidMove
+      -- The enemy moved again while this move's enter-windows were open (e.g.
+      -- Elusive fled it elsewhere during the after-enters reaction window).
+      -- `enemyMovement` describes that newer move, so this stale placement write
+      -- must not drag the enemy back to the superseded destination.
+      let supersededMidMove = maybe False ((/= ToLocation lid) . moveDestination) enemyMovement
+      if current == Just lid || leftPlayMidMove || supersededMidMove
         then pure a
         else pure $ a & placementL .~ AtLocation lid
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)

@@ -7247,6 +7247,7 @@ test-suite spec
       Arkham.ChaosTokenFaceSpec
       Arkham.DecklistSpec
       Arkham.EncounterSetSpec
+      Arkham.Enemy.Cards.BatHorrorSpec
       Arkham.Enemy.Cards.DagonsBroodSpec
       Arkham.Enemy.Cards.ElderDeepOneSpec
       Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec

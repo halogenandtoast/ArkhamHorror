@@ -19,8 +19,8 @@ doNoHarm = asset DoNoHarm Cards.doNoHarm
 healed :: WindowMatcher
 healed =
   oneOf
-    $ [InvestigatorHealed #after dt Anyone (SourceOwnedBy You) | dt <- [#damage, #horror]]
-    <> [AssetHealed #after dt #ally (SourceOwnedBy You) | dt <- [#damage, #horror]]
+    $ [InvestigatorHealed #after dt Anyone (SourceUsedBy You) | dt <- [#damage, #horror]]
+    <> [AssetHealed #after dt #ally (SourceUsedBy You) | dt <- [#damage, #horror]]
 
 instance HasAbilities DoNoHarm where
   getAbilities (DoNoHarm a) =

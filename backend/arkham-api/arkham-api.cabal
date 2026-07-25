@@ -7322,6 +7322,7 @@ test-suite spec
       Arkham.HomebrewRegistrySpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec
+      Arkham.Investigator.Cards.CarolynFern2Spec
       Arkham.Investigator.Cards.CarsonSinclairSpec
       Arkham.Investigator.Cards.DaisyWalkerSpec
       Arkham.Investigator.Cards.DianaStanleySpec

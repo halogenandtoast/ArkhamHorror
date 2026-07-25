@@ -23,8 +23,11 @@ instance HasAbilities CarolynFern2 where
         $ selfAbility a 1 (AbleToDiscoverCluesAt YourLocation)
         $ freeReaction
         $ oneOf
-          [ AssetHealed #after #horror (#ally <> AssetControlledBy (affectsOthers Anyone)) (SourceOwnedBy You)
-          , InvestigatorHealed #after #horror (affectsOthers Anyone) (SourceOwnedBy You)
+          -- "After you heal 1 or more horror": the heal only has to be performed by
+          -- us, so it can come from a card we don't own (a location ability, another
+          -- investigator's asset). Hence SourceUsedBy rather than SourceOwnedBy.
+          [ AssetHealed #after #horror (#ally <> AssetControlledBy (affectsOthers Anyone)) (SourceUsedBy You)
+          , InvestigatorHealed #after #horror (affectsOthers Anyone) (SourceUsedBy You)
           ]
     ]
 

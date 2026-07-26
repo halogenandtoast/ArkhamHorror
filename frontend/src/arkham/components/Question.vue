@@ -1717,8 +1717,31 @@ h2 {
     isolation: isolate;
     position: relative;
     .intro-text-body {
+      margin-block: 30px;
+      padding-block: 0;
       max-height: 60vh;
       overflow-y: auto;
+      scrollbar-color: rgba(25, 33, 79, 0.65) transparent;
+      scrollbar-width: thin;
+
+      &::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(25, 33, 79, 0.65);
+        background-clip: content-box;
+        border: 2px solid transparent;
+        border-radius: 999px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(25, 33, 79, 0.8);
+      }
     }
     &::after {
       border: 20px solid #D4CCC3;

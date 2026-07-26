@@ -7359,6 +7359,7 @@ test-suite spec
       Arkham.Modifier.CannotAttackDuringEnemyPhaseSpec
       Arkham.Modifier.SearchAllInvestigatorsSpec
       Arkham.Scenario.DancingMadSpec
+      Arkham.Scenario.Scenarios.DealingsInTheDarkSpec
       Arkham.Scenario.Scenarios.TheThingInTheDepthsSpec
       Arkham.Scenario.SpecHelpers
       Arkham.Scenario.TheMidwinterGalaSpec

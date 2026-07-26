@@ -16,14 +16,13 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Message.Story
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Resolution
@@ -155,8 +154,14 @@ instance RunMessage DealingsInTheDark where
         , Enemies.emissaryFromYuggoth
         ]
 
-      theUnveiling <- genCard Stories.theUnveiling
-      push $ PlaceStory theUnveiling Global
+      theUnveiling <- placeStoryCapture Stories.theUnveiling
+      pc <- getPlayerCount
+      let cluesUnveiled
+            | n <= 10 = 0
+            | n <= 17 = (pc + 1) `div` 2
+            | n <= 24 = pc
+            | otherwise = pc * 2
+      when (cluesUnveiled > 0) $ placeTokens attrs theUnveiling #clue cluesUnveiled
 
       eachInvestigator \iid -> do
         discardUntilFirst iid ScenarioSource Deck.EncounterDeck (basic #cultist)

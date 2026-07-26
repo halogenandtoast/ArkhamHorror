@@ -8,7 +8,7 @@ import Arkham.Classes.HasQueue (HasQueue, push)
 import Arkham.Classes.Query
 import Arkham.Effect.Types (makeEffectBuilder)
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
-import Arkham.Helpers.Log (getHasRecord)
+import Arkham.Helpers.Log (getHasRecord, getSomeRecordSet)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
@@ -17,6 +17,8 @@ import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Tracing
+import Data.Char qualified as C
+import Data.Text qualified as T
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theDrownedCity" a
@@ -86,3 +88,17 @@ decreaseFloodLevel = push . DecreaseFloodLevel
 
 increaseFloodLevel :: ReverseQueue m => LocationId -> m ()
 increaseFloodLevel = push . IncreaseFloodLevel
+
+type Glyph = Text
+
+getKnownGlyphs :: (HasGame m, Tracing m) => m Text
+getKnownGlyphs = getSomeRecordSet DiscoveredGlyphs <&> \xs -> mconcat [x | String x <- xs]
+
+{- | Glyphs are recorded uppercase (@glyphLetter@ upper-cases before inserting into
+the @DiscoveredGlyphs@ set), so normalize both sides: a card asking for @"qxgks"@
+must match a record set holding @"QXGKS"@.
+-}
+getGlyphsAllKnown :: (HasGame m, Tracing m) => String -> m Bool
+getGlyphsAllKnown xs = do
+  ys <- T.toUpper <$> getKnownGlyphs
+  pure $ all ((`T.elem` ys) . C.toUpper) xs

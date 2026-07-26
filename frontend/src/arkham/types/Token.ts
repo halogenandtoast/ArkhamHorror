@@ -16,6 +16,7 @@ export const TOKENS = [
   "DarknessLevel",
   "Depletion",
   "Depth",
+  "Discovery",
   "Doom",
   "Durability",
   "Eclipse",

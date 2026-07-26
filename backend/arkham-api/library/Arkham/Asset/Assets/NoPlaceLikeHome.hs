@@ -1,17 +1,41 @@
 module Arkham.Asset.Assets.NoPlaceLikeHome (noPlaceLikeHome) where
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (RevealLocation)
+import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
+import Arkham.Matcher
+import Arkham.Message.Lifted.Log (incrementRecordCount)
+import Arkham.Token
 
 newtype NoPlaceLikeHome = NoPlaceLikeHome AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- TODO: Task progression — once per scenario the investigator may attempt their
--- Task objective; marking/erasing progress and the completion rewards are
--- prompted by individual scenarios.
 noPlaceLikeHome :: AssetCard NoPlaceLikeHome
 noPlaceLikeHome = asset NoPlaceLikeHome Cards.noPlaceLikeHome
 
+-- When you reveal a location or put a location into play (errata Jul 11, 2025).
+-- PutLocationIntoPlay only opens an #after window, so both use #after.
+revealedOrPutIntoPlay :: WindowMatcher
+revealedOrPutIntoPlay =
+  oneOf [RevealLocation #after You Anywhere, PutLocationIntoPlay #after You Anywhere]
+
+instance HasAbilities NoPlaceLikeHome where
+  getAbilities (NoPlaceLikeHome a) =
+    [ controlled a 1 (if a.use Discovery > 0 then NoRestriction else Never)
+        $ forced revealedOrPutIntoPlay
+    , controlled a 2 (if a.use Discovery <= 1 then NoRestriction else Never)
+        $ forced
+        $ GameEnds #when
+    ]
+
 instance RunMessage NoPlaceLikeHome where
-  runMessage msg (NoPlaceLikeHome attrs) = runQueueT $ NoPlaceLikeHome <$> liftRunMessage msg attrs
+  runMessage msg a@(NoPlaceLikeHome attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      spendUses (attrs.ability 1) attrs Discovery 1
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      incrementRecordCount Key.NoPlaceLikeHome 1
+      pure a
+    _ -> NoPlaceLikeHome <$> liftRunMessage msg attrs

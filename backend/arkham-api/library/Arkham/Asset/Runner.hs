@@ -64,9 +64,10 @@ import Data.Map.Strict qualified as Map
 
 defeated :: (HasGame m, Tracing m) => AssetAttrs -> Source -> m (Maybe DefeatedBy)
 defeated AssetAttrs {assetId, assetAssignedHealthDamage, assetAssignedSanityDamage} source = do
+  canBeDefeated <- withoutModifier assetId CannotBeDefeated
   remainingHealth <- field AssetRemainingHealth assetId
   remainingSanity <- field AssetRemainingSanity assetId
-  pure $ case (remainingHealth, remainingSanity) of
+  pure $ guard canBeDefeated *> case (remainingHealth, remainingSanity) of
     (Just a, Just b)
       | a - assetAssignedHealthDamage <= 0 && b - assetAssignedSanityDamage <= 0 ->
           Just (DefeatedByDamageAndHorror source)
@@ -592,19 +593,23 @@ instance RunMessage AssetAttrs where
       pushAll [RemoveFromPlay $ toSource a, ObtainCard a.cardId]
       pure a
     Discard mInvestigator source target | a `isTarget` target -> do
-      removeFromGame <-
-        if (toCardDef a).doubleSided
-          then pure True
-          else a `hasModifier` RemoveFromGameInsteadOfDiscard
-      afterWindows <- checkAfter $ Window.Discarded mInvestigator source (toCard a)
-      let discardMsg = if removeFromGame then RemoveFromGame (toTarget a) else Discarded (toTarget a) source (toCard a)
-      (batchId, windowMessages) <- wouldWindows $ Window.WouldBeDiscarded (toTarget a)
-      push
-        $ Would batchId
-        $ windowMessages
-        <> map (DiscardedCard . toCardId) a.cardsUnderneath
-        <> [RemoveFromPlay $ toSource a, discardMsg, afterWindows]
-      pure a
+      cannotLeavePlay <- a `hasModifier` CannotLeavePlay
+      if cannotLeavePlay
+        then pure a
+        else do
+          removeFromGame <-
+            if (toCardDef a).doubleSided
+              then pure True
+              else a `hasModifier` RemoveFromGameInsteadOfDiscard
+          afterWindows <- checkAfter $ Window.Discarded mInvestigator source (toCard a)
+          let discardMsg = if removeFromGame then RemoveFromGame (toTarget a) else Discarded (toTarget a) source (toCard a)
+          (batchId, windowMessages) <- wouldWindows $ Window.WouldBeDiscarded (toTarget a)
+          push
+            $ Would batchId
+            $ windowMessages
+            <> map (DiscardedCard . toCardId) a.cardsUnderneath
+            <> [RemoveFromPlay $ toSource a, discardMsg, afterWindows]
+          pure a
     Exile target | a `isTarget` target -> do
       pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
       pure $ a & exiledL .~ True

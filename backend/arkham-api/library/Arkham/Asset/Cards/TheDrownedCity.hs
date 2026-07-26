@@ -696,6 +696,7 @@ noPlaceLikeHome =
   permanent
     $ (storyAsset_ "11753a" ("No Place Like Home" <:> "Lost and Uncertain") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdUses = uses Discovery 8
       }
 
 goodMoney :: CardDef

@@ -21,6 +21,7 @@ data Token
   | DarknessLevel
   | Depletion
   | Depth
+  | Discovery
   | Doom
   | Durability
   | Eclipse
@@ -103,6 +104,9 @@ instance IsLabel "secret" Token where
 
 instance IsLabel "obligation" Token where
   fromLabel = Obligation
+
+instance IsLabel "discovery" Token where
+  fromLabel = Discovery
 
 instance IsLabel "clue" Token where
   fromLabel = Clue

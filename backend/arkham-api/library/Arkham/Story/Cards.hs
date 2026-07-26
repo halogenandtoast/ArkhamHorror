@@ -77,6 +77,7 @@ allStoryCards =
       , seafloorFrieze
       , theUnderseaVault
       , underseaParasite
+      , obsidianRelic
       , anotherPath
       , aStrangeGhoul
       , scoutingTheVale
@@ -416,6 +417,13 @@ theUnderseaVault = doubleSided $ story "11532b" "The Undersea Vault" TheWesternW
 underseaParasite :: CardDef
 underseaParasite =
   (doubleSided $ story "11549b" "Undersea Parasite" TheDrownedQuarter)
+    { cdVictoryPoints = Just 1
+    }
+
+-- | Victory 1 is printed on this side, not on the asset front (11550).
+obsidianRelic :: CardDef
+obsidianRelic =
+  (doubleSided $ story "11550b" "Obsidian Relic" TheDrownedQuarter)
     { cdVictoryPoints = Just 1
     }
 

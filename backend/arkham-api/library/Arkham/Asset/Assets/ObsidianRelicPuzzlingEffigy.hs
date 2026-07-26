@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.ObsidianRelicPuzzlingEffigy (obsidianRelic) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelf)
 import Arkham.Helpers.SkillTest (getSkillTest)
-import Arkham.Message.Lifted.Log (record)
+import Arkham.Helpers.Story
+import Arkham.Story.Cards qualified as Stories
 
 newtype ObsidianRelicPuzzlingEffigy = ObsidianRelicPuzzlingEffigy AssetAttrs
   deriving anyclass IsAsset
@@ -34,15 +34,9 @@ instance RunMessage ObsidianRelicPuzzlingEffigy where
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 8)
       pure a
-    PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
-      -- "Flip this card and resolve its text." The back side (story code 11550b)
-      -- is currently registered only as a placeholder Asset CardDef, not as a
-      -- Story card, so we cannot read it via readStory yet. As a Glyph asset in
-      -- The Drowned City, the known resolvable effect is translating its alien glyph.
-      -- TODO: once 11550b is implemented as the proper story/back side, resolve its
-      -- text here (likely via readStory) instead of (or in addition to) the glyph
-      -- translation below, and verify the actual translated word for glyph "y".
-      record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_y" :: Text, "Knowledge" :: Text)
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      -- "Flip this card and resolve its text." The back (11550b) is a story card,
+      -- which owns the glyph and the victory display.
+      readStory iid attrs Stories.obsidianRelic
       pure a
     _ -> ObsidianRelicPuzzlingEffigy <$> liftRunMessage msg attrs

@@ -71,6 +71,9 @@
       "z": "City"
     }
   },
+  "artifactsEarned": {
+    "title": "Artifacts Earned"
+  },
   "key": {
     "rubyWonTheBet": "Ruby won the bet.",
     "rubyLostTheBet": "Ruby lost the bet.",
@@ -93,6 +96,7 @@
     "tidalTablet": "Tidal Tablet",
     "grislyMask": "Grisly “Mask”",
     "horrorInClay": "Horror in Clay",
+    "rlyehMap": "R’lyeh Map",
     "thePowerWasDiverted": "The power was diverted.",
     "theInnerSanctumWasUnsealed": "The inner sanctum was unsealed.",
     "yourAlliesHaveAPlan": "Your allies have a plan.",

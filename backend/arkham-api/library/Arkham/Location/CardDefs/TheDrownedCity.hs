@@ -169,73 +169,86 @@ ancientGallery =
   victory 1 $ seaFloor "11548" "Ancient Gallery"
 
 -- The Apiary
--- TODO: back side of double-sided card (11559b)
 apiaryEntranceBeckoningLight :: CardDef
 apiaryEntranceBeckoningLight =
-  location_ "11559" ("Apiary Entrance" <:> "Beckoning Light") [Apiary, Central] TheApiary
+  otherSideIs "11559b"
+    $ location
+      "11559"
+      ("Apiary Entrance" <:> "Beckoning Light")
+      [Apiary, Central]
+      Diamond
+      [Moon, Equals, Spade, Circle, Square]
+      TheApiary
 
 apiaryEntranceDangerousExit :: CardDef
 apiaryEntranceDangerousExit =
-  location_ "11559b" ("Apiary Entrance" <:> "Dangerous Exit") [Apiary, Central] TheApiary
+  otherSideIs "11559"
+    $ location
+      "11559b"
+      ("Apiary Entrance" <:> "Dangerous Exit")
+      [Apiary, Central]
+      Diamond
+      [Moon, Equals, Spade, Circle, Square]
+      TheApiary
 
 fleshyPathsEasternBurrows :: CardDef
 fleshyPathsEasternBurrows =
   singleSided
-    $ location_ "11560" ("Fleshy Paths" <:> "Eastern Burrows") [Apiary] TheApiary
+    $ location "11560" ("Fleshy Paths" <:> "Eastern Burrows") [Apiary] Moon [Diamond] TheApiary
 
 fleshyPathsWesternBurrows :: CardDef
 fleshyPathsWesternBurrows =
   singleSided
     $ victory 1
-    $ location_ "11561" ("Fleshy Paths" <:> "Western Burrows") [Apiary, Glyph] TheApiary
+    $ location "11561" ("Fleshy Paths" <:> "Western Burrows") [Apiary, Glyph] Equals [Diamond] TheApiary
 
 growingFields :: CardDef
 growingFields =
   singleSided
-    $ location_ "11562" "Growing Fields" [Apiary] TheApiary
+    $ location "11562" "Growing Fields" [Apiary] Spade [Diamond, Star] TheApiary
 
 churningChasm :: CardDef
 churningChasm =
   singleSided
-    $ location_ "11563" "Churning Chasm" [Apiary] TheApiary
+    $ location "11563" "Churning Chasm" [Apiary] Droplet [Heart] TheApiary
 
 corruptedVault :: CardDef
 corruptedVault =
   singleSided
     $ victory 1
-    $ location_ "11564" "Corrupted Vault" [Apiary, Glyph] TheApiary
+    $ location "11564" "Corrupted Vault" [Apiary, Glyph] Triangle [Circle] TheApiary
 
 luminousTunnels :: CardDef
 luminousTunnels =
   singleSided
-    $ location_ "11565" "Luminous Tunnels" [Apiary, Enclave] TheApiary
+    $ location "11565" "Luminous Tunnels" [Apiary, Enclave] Circle [Diamond, Heart, Triangle] TheApiary
 
 spawningGrounds :: CardDef
 spawningGrounds =
   singleSided
-    $ location_ "11566" "Spawning Grounds" [Apiary, Enclave] TheApiary
+    $ location "11566" "Spawning Grounds" [Apiary, Enclave] Heart [Circle, Square, Droplet] TheApiary
 
 lostCampsite :: CardDef
 lostCampsite =
   singleSided
     $ victory 1
-    $ location_ "11567" "Lost Campsite" [Apiary, Enclave, Sanctum] TheApiary
+    $ location "11567" "Lost Campsite" [Apiary, Enclave, Sanctum] Square [Heart] TheApiary
 
 graspingCorridor :: CardDef
 graspingCorridor =
   singleSided
-    $ location_ "11569" "Grasping Corridor" [Apiary, Nest] TheApiary
+    $ location "11569" "Grasping Corridor" [Apiary, Nest] Circle [Diamond, Heart, Triangle] TheApiary
 
 starvingCorridor :: CardDef
 starvingCorridor =
   singleSided
-    $ location_ "11570" "Starving Corridor" [Apiary, Nest] TheApiary
+    $ location "11570" "Starving Corridor" [Apiary, Nest] Heart [Circle, Square, Droplet] TheApiary
 
 acidicCoelom :: CardDef
 acidicCoelom =
   singleSided
     $ victory 1
-    $ location_ "11571" "Acidic Coelom" [Apiary, Nest, Sanctum] TheApiary
+    $ location "11571" "Acidic Coelom" [Apiary, Nest, Sanctum] Square [Heart, Triangle] TheApiary
 
 centralChamber :: CardDef
 centralChamber =
@@ -246,7 +259,7 @@ hiddenVault :: CardDef
 hiddenVault =
   storyOnBack' "11579b"
     $ victory 1
-    $ location_ "11579" "Hidden Vault" [Apiary, Glyph] TheApiary
+    $ location "11579" "Hidden Vault" [Apiary, Glyph] Star [Spade] TheApiary
 
 -- The Grand Vault
 theGreatStair :: CardDef

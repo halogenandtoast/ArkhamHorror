@@ -279,6 +279,30 @@
   }
 }
 
+.rune-S {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\e912";
+  }
+}
+
+.rune-T {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\e913";
+  }
+}
+
+.rune-U {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\e914";
+  }
+}
+
 .rune-V {
   &:before {
     text-transform: none;

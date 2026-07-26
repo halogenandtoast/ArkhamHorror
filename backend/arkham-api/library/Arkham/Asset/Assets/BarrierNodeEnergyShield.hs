@@ -21,7 +21,7 @@ instance HasModifiersFor BarrierNodeEnergyShield where
 
 instance HasAbilities BarrierNodeEnergyShield where
   getAbilities (BarrierNodeEnergyShield a) =
-    [controlled_ a 1 $ freeReaction $ TurnBegins #when You]
+    [controlled a 1 (thisExists a AssetWithDamage) $ freeReaction $ TurnBegins #when You]
 
 instance RunMessage BarrierNodeEnergyShield where
   runMessage msg a@(BarrierNodeEnergyShield attrs) = runQueueT $ case msg of

@@ -71,6 +71,15 @@
       "z": "City"
     }
   },
+  "rlyehMap": {
+    "rlyehWesternWall": "The Western Wall",
+    "rlyehDrownedQuarter": "The Drowned Quarter",
+    "rlyehApiary": "The Apiary",
+    "rlyehGrandVault": "The Grand Vault",
+    "rlyehCourtOfTheAncients": "Court of the Ancients",
+    "rlyehObsidianCanyons": "Obsidian Canyons",
+    "rlyehSepulchreOfTheSleeper": "Sepulchre of the Sleeper"
+  },
   "artifactsEarned": {
     "title": "Artifacts Earned"
   },
@@ -90,6 +99,7 @@
     "theExpeditionHeadedEast": "The expedition headed east.",
     "theExpeditionHelpedThePilgrim": "The expedition helped the pilgrim.",
     "theExpeditionLeftThePilgrim": "The expedition left the pilgrim.",
+    "theCreatureWasDefeated": "The creature was defeated.",
     "barrierNode": "Barrier Node",
     "obsidianClaw": "Obsidian Claw",
     "shardOfYchlecht": "Shard of Y’ch’lecht",

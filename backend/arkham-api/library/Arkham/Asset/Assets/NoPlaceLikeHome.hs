@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealLocation)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log (incrementRecordCount)
+import Arkham.Message.Lifted.Log (incrementRecordCountForInvestigator)
 import Arkham.Token
 
 newtype NoPlaceLikeHome = NoPlaceLikeHome AssetAttrs
@@ -35,7 +35,7 @@ instance RunMessage NoPlaceLikeHome where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       spendUses (attrs.ability 1) attrs Discovery 1
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      incrementRecordCount Key.NoPlaceLikeHome 1
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      incrementRecordCountForInvestigator iid Key.NoPlaceLikeHome 1
       pure a
     _ -> NoPlaceLikeHome <$> liftRunMessage msg attrs

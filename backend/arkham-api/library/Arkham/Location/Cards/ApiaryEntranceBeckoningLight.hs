@@ -21,9 +21,10 @@ instance HasAbilities ApiaryEntranceBeckoningLight where
   getAbilities (ApiaryEntranceBeckoningLight a) =
     extendRevealed
       a
-      [ restricted a 1 Here $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
+      [ restricted a 1 (Here <> exists (InEncounterDiscard <> basic #location))
+          $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
       , groupLimit PerRound
-          $ restricted a 2 (exists $ FarthestLocationFromLocation a.id Anywhere)
+          $ restricted a 2 (exists $ RevealedLocation <> LocationNotAtClueLimit)
           $ FastAbility Free
       , scenarioI18n $ withI18nTooltip "apiaryEntranceBeckoningLight.resign" $ locationResignAction a
       ]

@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log (incrementRecordCount)
+import Arkham.Message.Lifted.Log (incrementRecordCountForInvestigator)
 import Arkham.Token
 
 newtype DoNoHarm = DoNoHarm AssetAttrs
@@ -36,7 +36,7 @@ instance RunMessage DoNoHarm where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       spendUses (attrs.ability 1) attrs Obligation 1
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      incrementRecordCount Key.DoNoHarm 1
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      incrementRecordCountForInvestigator iid Key.DoNoHarm 1
       pure a
     _ -> DoNoHarm <$> liftRunMessage msg attrs

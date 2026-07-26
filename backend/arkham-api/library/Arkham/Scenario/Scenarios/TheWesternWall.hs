@@ -23,7 +23,6 @@ import Arkham.Helpers.Modifiers (
   modifySelectMapM,
   setActiveDuringSetup,
  )
-import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.FloodLevel (FloodLevel (FullyFlooded))
 import Arkham.Location.Grid (Pos (..))
@@ -138,21 +137,23 @@ instance RunMessage TheWesternWall where
       pure s
     Setup -> runScenarioSetup TheWesternWall attrs do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      let version = scope $ if headedWest then "west" else "east"
+      -- Bind the scope name rather than a partially applied `scope`, which the
+      -- monomorphism restriction would pin to a single builder type.
+      let version = if headedWest then "west" else "east" :: Text
       scope "setup" $ flavor do
-        setTitle $ version "title"
+        scope version $ setTitle "title"
         ul do
           li "gatherSets"
           li.nested "gatherLocations" do
             li $ if headedWest then "placeWesternWall" else "placeObsidianFoundations"
-            li $ version "setLocationsAside"
+            scope version $ li "setLocationsAside"
             li "removeWalkways"
-            li $ version "placeUpperWalkways"
-            li $ version "placeBottomWalkways"
+            scope version $ li "placeUpperWalkways"
+            scope version $ li "placeBottomWalkways"
             li $ if headedWest then "beginAtWesternWall" else "beginAtObsidianFoundations"
           li "setCardsAside"
           li "setAsideCoralStarSpawn"
-          li $ version "buildActDeck"
+          scope version $ li "buildActDeck"
           li "chooseExpeditionAsset"
           li.nested "addFloodTokens" do
             li "floodLevelsTwoToFive"
@@ -269,8 +270,7 @@ instance RunMessage TheWesternWall where
       withLocationOf iid $ push . IncreaseFloodLevel
       pure s
     ScenarioResolution res -> scope "resolutions" do
-      -- TODO: cross out "The Western Wall" on the R'lyeh map (needs an R'lyeh-map
-      -- campaign-log key/recordable to track which scenarios are completed).
+      crossOutRecordSetEntries RlyehMap [toJSON RlyehWesternWall]
       headedWest <- getHasRecord TheExpeditionHeadedWest
       let resolveDoNoHarm = eachInvestigator \iid -> do
             whenM (investigatorHasTask iid Assets.doNoHarm) do
@@ -296,7 +296,7 @@ instance RunMessage TheWesternWall where
               if helpedThePilgrim
                 then do
                   addCampaignCardToDeck iid DoNotShuffleIn Enemies.huntingParasite
-                  incrementRecordCount Key.DoNoHarm 2
+                  incrementRecordCountForInvestigator iid Key.DoNoHarm 2
                 else sufferMentalTrauma iid 1
           chooseResolution3 =
             storyWithChooseOneM'
@@ -306,18 +306,17 @@ instance RunMessage TheWesternWall where
                 labeled' "resolution3.apiary" $ endOfScenarioThen TheApiary
       case res of
         Resolution 1 -> do
-          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           resolveDoNoHarm
           chooseResolution3
         Resolution 2 -> do
-          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           resolveDoNoHarm
           endOfScenarioThen SepulchreOfTheSleeper
         NoResolution -> do
-          resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+          resolutionWithXp "noResolution" $ allGainXp' attrs
           resolveDoNoHarm
           if headedWest then chooseResolution3 else endOfScenarioThen SepulchreOfTheSleeper
         _ -> error $ "Unknown resolution: " <> show res
-      -- TODO: explicit R'lyeh-map and per-investigator Task-progress tracking.
       pure s
     _ -> TheWesternWall <$> liftRunMessage msg attrs

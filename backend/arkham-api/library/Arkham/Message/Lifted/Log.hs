@@ -58,6 +58,19 @@ incrementRecordCount key = push . IncrementRecordCount (toCampaignLogKey key)
 decrementRecordCount :: (ReverseQueue m, IsCampaignLogKey k) => k -> Int -> m ()
 decrementRecordCount key = push . DecrementRecordCount (toCampaignLogKey key)
 
+incrementRecordCountForInvestigator
+  :: (IsCampaignLogKey k, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> k -> Int -> m ()
+incrementRecordCountForInvestigator iid key n =
+  push $ IncrementRecordCountForInvestigator (asId iid) (toCampaignLogKey key) n
+
+-- There is no dedicated decrement-for-investigator message; the handler clamps at
+-- 0, so a negative increment decrements safely.
+decrementRecordCountForInvestigator
+  :: (IsCampaignLogKey k, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> k -> Int -> m ()
+decrementRecordCountForInvestigator iid key n = incrementRecordCountForInvestigator iid key (negate n)
+
 crossOutRecordSetEntries :: (Recordable a, ReverseQueue m, IsCampaignLogKey k) => k -> [a] -> m ()
 crossOutRecordSetEntries _ [] = pure ()
 crossOutRecordSetEntries k xs = push $ Msg.crossOutRecordSetEntries k xs

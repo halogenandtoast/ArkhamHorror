@@ -326,11 +326,26 @@ const TDC_ARTIFACT_KEYS = new Set([
   'HorrorInClay',
 ])
 
+// Tasks are recorded per-investigator (progress counts live in each
+// investigator's log), so exclude them from the shared Campaign Notes; they are
+// shown in the per-investigator sections instead.
+const TDC_TASK_KEYS = new Set([
+  'WalkInFaith',
+  'ToeTheLine',
+  'NoPlaceLikeHome',
+  'GoodMoney',
+  'DoNoHarm',
+  'ProveYourWorth',
+  'DreamsOfDestruction',
+  'PlumbTheDepths',
+])
+
 const recorded = computed(() => {
   return selectedLog.value.recorded
     .filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag))
     .filter((c) => !isSection(c))
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_ARTIFACT_KEYS.has(String((c as any).contents))))
+    .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_TASK_KEYS.has(String((c as any).contents))))
     .map(formatKey)
 })
 
@@ -491,6 +506,7 @@ const sections = computed<SectionModel[]>(() => {
 const recordedSets = computed(() => selectedLog.value.recordedSets as any)
 const recordedCounts = computed(() =>
   selectedLog.value.recordedCounts.filter((r) => {
+    if (r[0].tag === 'TheDrownedCityKey' && TDC_TASK_KEYS.has(String((r[0] as any).contents))) return false
     return (r[0].tag !== 'TheScarletKeysKey' && r[0].contents !== 'Time') && !isSection(r[0])
   })
 )
@@ -619,7 +635,10 @@ const displayRecordValue = (key: string, value: any): string => {
     return t(`edgeOfTheEarth.suppliesRecovered.${supply}`, supply)
   }
 
-  if (key === 'theDrownedCity.key.rlyehMap' && contents) return contents
+  if (key === 'theDrownedCity.key.rlyehMap' && contents) {
+    const scenario = contents.charAt(0).toLowerCase() + contents.slice(1)
+    return t(`theDrownedCity.rlyehMap.${scenario}`, scenario)
+  }
 
   if (isSeal(key)) return ''
 

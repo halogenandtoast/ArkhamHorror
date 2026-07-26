@@ -21,6 +21,8 @@ data TheDrownedCityKey
   | TheExpeditionHeadedEast
   | TheExpeditionHelpedThePilgrim
   | TheExpeditionLeftThePilgrim
+  | -- | The Inescapable, which stalks the expedition across scenarios
+    TheCreatureWasDefeated
   | -- | Artifacts Earned
     BarrierNode
   | ObsidianClaw

@@ -30,6 +30,11 @@ instance IsCampaign TheDrownedCity where
 
 instance RunMessage TheDrownedCity where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of
+    StartCampaign -> do
+      -- The R'lyeh map starts with every scenario on it; each is crossed out as
+      -- that scenario is completed.
+      recordSetInsert RlyehMap $ map toJSON [minBound @RlyehMapEntry ..]
+      lift $ defaultCampaignRunner msg c
     CampaignStep PrologueStep -> do
       -- Intro: the epigraph and the April 15 journal entry that open the campaign.
       scope "intro" $ flavor $ setTitle "title" >> p "body"

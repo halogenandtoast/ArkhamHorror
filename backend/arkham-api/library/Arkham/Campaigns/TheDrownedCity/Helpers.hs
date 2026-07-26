@@ -1,6 +1,8 @@
 module Arkham.Campaigns.TheDrownedCity.Helpers where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLog (campaignLogRecordedCounts)
+import Arkham.CampaignLogKey (IsCampaignLogKey, toCampaignLogKey)
 import Arkham.Campaigns.TheDrownedCity.Key
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -11,10 +13,12 @@ import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.Log (getHasRecord, getSomeRecordSet)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Types (Field (InvestigatorLog))
 import Arkham.Matcher
 import Arkham.Message (Message (CreateEffect, DecreaseFloodLevel, IncreaseFloodLevel))
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
+import Arkham.Projection (fieldMap)
 import Arkham.Source
 import Arkham.Tracing
 import Data.Char qualified as C
@@ -77,6 +81,14 @@ getInvestigatorTasks
   :: (HasGame m, Tracing m) => InvestigatorId -> m [(TheDrownedCityKey, CardDef, Text)]
 getInvestigatorTasks iid = filterM (\(_, def, _) -> investigatorHasTask iid def) tasks
 
+{- | Task progress is recorded in each investigator's own log so it can be shown
+per-investigator; read it back from there rather than the campaign log.
+-}
+getRecordCountForInvestigator
+  :: (HasGame m, Tracing m, IsCampaignLogKey k) => InvestigatorId -> k -> m Int
+getRecordCountForInvestigator iid k =
+  fieldMap InvestigatorLog (findWithDefault 0 (toCampaignLogKey k) . campaignLogRecordedCounts) iid
+
 struggleForAir
   :: (Sourceable a, HasGame m, Tracing m, HasQueue Message m) => a -> InvestigatorId -> m ()
 struggleForAir a iid = do
@@ -88,6 +100,22 @@ decreaseFloodLevel = push . DecreaseFloodLevel
 
 increaseFloodLevel :: ReverseQueue m => LocationId -> m ()
 increaseFloodLevel = push . IncreaseFloodLevel
+
+{- | The scenarios printed on the R'lyeh map. The whole set is recorded at
+campaign start and entries are crossed out as each scenario is completed.
+-}
+data RlyehMapEntry
+  = -- Prefixed because the bare names collide with the CampaignSteps patterns,
+    -- the EncounterSet constructors, and the scenario newtypes.
+    RlyehWesternWall
+  | RlyehDrownedQuarter
+  | RlyehApiary
+  | RlyehGrandVault
+  | RlyehCourtOfTheAncients
+  | RlyehObsidianCanyons
+  | RlyehSepulchreOfTheSleeper
+  deriving stock (Show, Eq, Enum, Bounded, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 type Glyph = Text
 

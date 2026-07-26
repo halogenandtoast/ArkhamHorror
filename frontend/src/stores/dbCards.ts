@@ -58,7 +58,9 @@ export const useDbCardStore = defineStore("dbCards", {
         void this.initDbCards()
       }
 
-      return this.dbCardsIndex.get(code) ?? null
+      // ArkhamDB stores some split-card fronts with an "a" suffix, while the
+      // game runtime refers to the same front using the unsuffixed code.
+      return this.dbCardsIndex.get(code) ?? this.dbCardsIndex.get(`${code}a`) ?? null
     },
 
     getCardName(cardTitle: string, typeCode: string = ""): string {

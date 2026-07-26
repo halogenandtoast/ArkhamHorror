@@ -41,7 +41,9 @@ import Arkham.Helpers.Window (
   windows,
   wouldWindows,
  )
-import Arkham.Investigator.Types (Field (InvestigatorRemainingHealth, InvestigatorRemainingSanity))
+import Arkham.Investigator.Types (
+  Field (InvestigatorLocation, InvestigatorRemainingHealth, InvestigatorRemainingSanity),
+ )
 import Arkham.Matcher (
   AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetCanBeDamagedBySource, AssetWithId),
   EventMatcher (EventAttachedToAsset),
@@ -482,16 +484,30 @@ instance RunMessage AssetAttrs where
       pure a
     InvestigatorEliminated iid -> do
       let
-        shouldRemoveFromGame = case assetPlacement of
+        belongsToEliminated = case assetPlacement of
           InPlayArea iid' -> iid == iid'
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
-          _ -> a.controller == Just iid && not (assetIsStory a)
-      pushWhen shouldRemoveFromGame $ RemoveFromGame (toTarget a)
+          _ -> a.controller == Just iid
+        isStory = assetIsStory a
 
-      let shouldDiscard = a.controller == Just iid && assetIsStory a
-      pushWhen shouldDiscard $ Discard Nothing GameSource (toTarget a)
-      pure a
+      -- Story assets are discarded (which fires the would-leave-play windows, so
+      -- replacement effects can cancel the batch); everything else is removed from
+      -- the game. These must stay mutually exclusive: a RemoveFromGame queued
+      -- behind a cancelled Discard removes the asset anyway (Vale Lantern, #5252).
+      pushWhen (belongsToEliminated && not isStory) $ RemoveFromGame (toTarget a)
+      pushWhen (belongsToEliminated && isStory) $ Discard Nothing GameSource (toTarget a)
+
+      -- Assets are run before investigators in the entity pass, so the eliminated
+      -- investigator is still at their location here. Anchor the asset to it so
+      -- "place it at the nearest location" replacements still have a location once
+      -- the investigator has been unplaced. Same approach as Enemy.Runner uses for
+      -- enemies in an eliminated investigator's threat area.
+      if belongsToEliminated && isStory
+        then do
+          mlid <- join <$> fieldMay InvestigatorLocation iid
+          pure $ maybe a (\lid -> a & placementL .~ AtLocation lid) mlid
+        else pure a
     AddUses source aid useType' n | aid == assetId -> runMessage (PlaceTokens source (toTarget a) useType' n) a
     SpendUses source target useType' n | isTarget a target -> do
       mods <- getModifiers a

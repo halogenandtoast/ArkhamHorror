@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.ValeLanternExtinguishedLightBoon (valeLanternExtingui
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 
@@ -28,7 +28,10 @@ instance RunMessage ValeLanternExtinguishedLightBoon where
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
       cancelWindowBatch ws
-      withLocationOf iid $ place attrs . AtLocation
+      -- "the nearest location" is where the lantern is; the ability is offered to
+      -- every player, and its controller may already have been unplaced (resigned)
+      mlid <- getLocationOf attrs >>= maybe (getLocationOf iid) (pure . Just)
+      for_ mlid $ place attrs . AtLocation
       pure a
     Flip _ _ (isTarget attrs -> True) -> do
       push $ ReplaceAsset attrs.id Cards.valeLanternBeaconOfHope

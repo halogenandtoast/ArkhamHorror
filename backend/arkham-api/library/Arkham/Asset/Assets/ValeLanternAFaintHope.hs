@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
 import Arkham.ForMovement
-import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
+import Arkham.Helpers.Location (getCanMoveTo, getLocationOf, withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modified_)
 import Arkham.I18n
 import Arkham.Matcher
@@ -52,7 +52,10 @@ instance RunMessage ValeLanternAFaintHope where
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
       cancelWindowBatch ws
-      withLocationOf iid $ place attrs . AtLocation
+      -- "the nearest location" is where the lantern is; the ability is offered to
+      -- every player, and its controller may already have been unplaced (resigned)
+      mlid <- getLocationOf attrs >>= maybe (getLocationOf iid) (pure . Just)
+      for_ mlid $ place attrs . AtLocation
       flipOverBy iid (attrs.ability 2) attrs
       pure a
     Flip _ _ (isTarget attrs -> True) -> do

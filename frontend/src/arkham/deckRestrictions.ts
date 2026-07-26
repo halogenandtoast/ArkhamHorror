@@ -167,7 +167,9 @@ function countDeckSlots(deckList: SelectableDeckList, cardCodes: Set<string>): n
   }, 0)
 }
 
-function normalizeCardCode(code: string): string {
+// Game state serialises card codes with a leading 'c' (see the CardCode ToJSON instance);
+// decklists from ArkhamDB / arkham.build use the bare code.
+export function normalizeCardCode(code: string): string {
   return code.replace(/^c/, '')
 }
 

@@ -1,11 +1,14 @@
 module Arkham.Game.ChooseDecksSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign (lookupCampaign)
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Decklist.Type qualified as Decklist
+import Arkham.Difficulty (Difficulty (Easy))
 import Arkham.Game.State
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher qualified as Matcher
+import Arkham.Phase (Phase (InvestigationPhase))
 import Arkham.Projection (field)
 import Arkham.Question
 import Arkham.SimultaneousAsk
@@ -58,6 +61,29 @@ spec = describe "deck selection" do
     pid <- getPlayer (toId self)
     run $ Run [SetGameState (IsChooseDecks [pid]), AskMap (singletonMap pid ChooseDeck)]
     (gameGameState <$> getGame) `shouldReturn` IsChooseDecks [pid]
+
+  -- Regression for #5256. Between scenarios the phase is still whatever the last scenario
+  -- set (StartScenario sets InvestigationPhase and ResetGame drops the scenario from the
+  -- mode without resetting it). Any later request that drains the queue without reaching
+  -- an Ask -- a redundant deck upgrade, in the report -- used to fall into the drain
+  -- branch's investigation-phase resume, which picks a turn player and Asks a PlayerWindow
+  -- over the campaign's parked question. That left the reporter's Dream-Eaters game with no
+  -- scenario and a scenario-only question, which the client renders as a blank screen, and
+  -- every later drain re-created it.
+  it "does not resume the investigation phase between scenarios" . gameTest $ \self -> do
+    pid <- getPlayer (toId self)
+    overTest \g ->
+      g
+        { gameMode = This (lookupCampaign "01" Easy)
+        , gamePhase = InvestigationPhase
+        , gameTurnPlayerInvestigatorId = Nothing
+        }
+    run $ AskMap (singletonMap pid ContinueCampaign)
+    -- A later request drains the queue with the campaign question still parked.
+    tick
+    (fmap stripQuestionWrappers . lookup pid . gameQuestion <$> getGame)
+      `shouldReturn` Just ContinueCampaign
+    (gameTurnPlayerInvestigatorId <$> getGame) `shouldReturn` Nothing
 
   -- Regression for #5173. Two-player Dunwich start where one deck holds In the
   -- Thick of It (PurchaseAnyTrauma 2). That trauma split is an *interactive*

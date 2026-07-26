@@ -777,6 +777,20 @@ function scheduleApplyUpdate(payload: string) {
         continueSkipAll()
       }
     })
+    .catch(async (err) => {
+      // A dropped update used to be an unhandled rejection: the board silently stayed on
+      // the previous state, which looks exactly like "the server ignored me" and invites
+      // the player to submit the same action again (#5256). Re-fetch instead.
+      console.error('Failed to decode game update, refetching', err)
+      await fetchGame(props.gameId, props.spectate)
+        .then(({ game: refetched }) => {
+          applyGameUpdate(refetched, uiLock.value)
+          updateGameLog(refetched.log)
+        })
+        .catch(() => {
+          socketError.value = true
+        })
+    })
     .finally(() => {
       decoding = false
       if (pendingUpdate) {

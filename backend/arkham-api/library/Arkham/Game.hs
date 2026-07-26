@@ -6441,6 +6441,14 @@ runMessages gameId mLogger = do
             -- continuation is gone, so re-push it. A healthy flow never gets
             -- here: its drain happens after DoneChoosingDecks has already run.
             push DoneChoosingDecks >> runMessages gameId mLogger
+      -- The phase is whatever the last scenario left behind: StartScenario sets
+      -- InvestigationPhase and ResetGame drops the scenario from the mode without
+      -- resetting it. Between scenarios a drained queue must therefore NOT resume the
+      -- investigation phase: it would pick a turn player and Ask a PlayerWindow that
+      -- overwrites the campaign's parked ContinueCampaign/ChooseUpgradeDeck question,
+      -- leaving a game with no scenario and a scenario-only question the client cannot
+      -- render -- a blank screen that every later drain re-creates (#5256).
+      Nothing | isNothing (modeScenario (gameMode g)) -> pure ()
       Nothing -> case gamePhase g of
         CampaignPhase {} -> pure ()
         ResolutionPhase {} -> pure ()

@@ -11,8 +11,8 @@ import Prompt from '@/components/Prompt.vue';
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
 import type { XpBreakdownStep } from '@/arkham/types/Xp';
 import Question from '@/arkham/components/Question.vue';
-import { loadUpgradeDeckFromJsonText } from '@/arkham/upgradeDeckUpload';
-import { deckRestrictionError } from '@/arkham/deckRestrictions';
+import { isUsableDecklist, loadUpgradeDeckFromJsonText } from '@/arkham/upgradeDeckUpload';
+import { deckRestrictionError, normalizeCardCode } from '@/arkham/deckRestrictions';
 import { useI18n } from 'vue-i18n';
 
 // TODO should we pass in the investigator
@@ -30,6 +30,10 @@ const questionLabel = computed(() => {
 })
 const model = defineModel()
 const fetching = ref(false)
+// Anything the server or ArkhamDB refused. Kept separate from the `error` computed below,
+// which is client-side deck validation. A failed upgrade changes nothing server-side, so
+// the player must be told rather than left looking at an unchanged screen (#5256).
+const submitError = ref<string | null>(null)
 const props = defineProps<Props>()
 const emit = defineEmits<{ choose: [value: number] }>()
 const choose = (idx: number) => emit('choose', idx)
@@ -144,81 +148,121 @@ function viewDeck() {
   }
 }
 
-async function syncUpgrade() {
-  if(error.value) return
-  if (!investigator.value?.deckUrl) return;
-  let nextUrl: string | null = investigator.value.deckUrl;
-  if (nextUrl) {
-    const arkhamDbApiRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/api\/public\/deck\/([^/]+)/;
-    const matches = nextUrl.match(arkhamDbApiRegex);
-
-    if (matches) {
-      let content: ArkhamDbDecklist | null = null;
-      fetching.value = true;
-
-      do {
-        try {
-          const response = await fetch(nextUrl);
-          const data = (await response.json()) as ArkhamDbDecklist & { next_deck: string | number | null };
-          content = { ...data, url: nextUrl };
-
-          if (data.next_deck != null) {
-            nextUrl = `${localizeArkhamDBBaseUrl()}/api/public/deck/${data.next_deck}`;
-          } else {
-            nextUrl = null;
-          }
-        } catch {
-          nextUrl = null;
-        }
-      } while (nextUrl);
-
-      if (content && content.url) {
-        model.value = content;
-        deckList.value = content;
-        deck.value = content.url;
-        deckUrl.value = content.url;
-        upgrade();
-      }
-    }
-
-    if(!nextUrl) return
-    const arkhamBuildApiRegex = /https:\/\/api.arkham\.build\/v1\/public\/share\/([^/]+)/
-    const abmatches = nextUrl.match(arkhamBuildApiRegex)
-    if (abmatches) {
-      let content: ArkhamDbDecklist | null = null;
-      fetching.value = true;
-
-      do {
-        try {
-          const response = await fetch(nextUrl);
-          const data = (await response.json()) as ArkhamDbDecklist & { next_deck: string | number | null };
-          content = processArkhamBuildDeck(data, nextUrl);
-
-          if (data.next_deck != null) {
-            nextUrl = `https://api.arkham.build/v1/public/share/${data.next_deck}`;
-          } else {
-            nextUrl = null;
-          }
-        } catch {
-          nextUrl = null;
-        }
-      } while (nextUrl);
-
-      if (content && content.url) {
-        model.value = content;
-        deckList.value = content;
-        deck.value = content.url;
-        deckUrl.value = content.url;
-        upgrade();
-      }
-    }
-  }
+// Reads the errorMsg the API returns for a rejected upgrade (Api.Handler.Arkham.Decks
+// answers with a JSONError), falling back to a generic message.
+function submitErrorMessage(e: unknown, fallback: string): string {
+  const msg = (e as { response?: { data?: { errorMsg?: string } } })?.response?.data?.errorMsg
+  return msg ?? fallback
 }
 
-function loadDeck() {
+type ChainDeck = ArkhamDbDecklist & { next_deck?: string | number | null }
+
+const arkhamBuildShareUrl = (id: string | number) => `https://api.arkham.build/v1/public/share/${id}`
+const arkhamDbDeckUrl = (id: string | number) => `${localizeArkhamDBBaseUrl()}/api/public/deck/${id}`
+
+// Fetches one deck, refusing anything that isn't a usable decklist. `fetch` resolves for a
+// 404, and processArkhamBuildDeck turns an error body into {message, slots: {}} -- which used
+// to be sent as the upgrade and come back as an opaque 400 (#5257). Sets submitError and
+// returns null on every failure.
+async function fetchDeckAt(url: string, isArkhamBuild: boolean): Promise<ChainDeck | null> {
+  const source = isArkhamBuild ? 'arkham.build' : 'ArkhamDB'
+  let response: Response
+  try {
+    response = await fetch(url)
+  } catch {
+    submitError.value = t('upgrade.fetchFailed', { deckSource: source })
+    return null
+  }
+
+  let body: unknown = null
+  try {
+    body = await response.json()
+  } catch { /* keep null; handled below */ }
+
+  if (!response.ok) {
+    const message = (body as { message?: string } | null)?.message
+    // arkham.build only knows Share ids, so this is what a private deck link looks like.
+    if (isArkhamBuild && response.status === 404) {
+      submitError.value = t('upgrade.arkhamBuildShareNotFound')
+    } else if (message) {
+      submitError.value = t('upgrade.fetchRejected', { deckSource: source, message })
+    } else {
+      submitError.value = t('upgrade.fetchFailed', { deckSource: source })
+    }
+    return null
+  }
+
+  const processed = isArkhamBuild
+    ? processArkhamBuildDeck(body as ArkhamDbDecklist, url)
+    : { ...(body as ArkhamDbDecklist), url }
+
+  if (!isUsableDecklist(processed)) {
+    submitError.value = t('upgrade.fetchUnusable', { deckSource: source })
+    return null
+  }
+
+  return processed as ChainDeck
+}
+
+// Walks next_deck to the end of the chain. Any failure fails the WHOLE pull: applying the last
+// link that happened to load would silently upgrade to a stale version, which is exactly how a
+// pull could "succeed" while adding no new cards (#5257).
+async function followUpgradeChain(
+  startUrl: string,
+  urlFor: (id: string | number) => string,
+  isArkhamBuild: boolean,
+): Promise<ChainDeck | null> {
+  let url: string | null = startUrl
+  let last: ChainDeck | null = null
+  const seen = new Set<string>()
+
+  while (url) {
+    if (seen.has(url)) break
+    seen.add(url)
+    const fetched = await fetchDeckAt(url, isArkhamBuild)
+    if (!fetched) return null
+    last = fetched
+    url = fetched.next_deck != null ? urlFor(fetched.next_deck) : null
+  }
+
+  return last
+}
+
+async function syncUpgrade() {
+  if(error.value) return
+  const startUrl = investigator.value?.deckUrl
+  if (!startUrl) return;
+  submitError.value = null
+
+  const isArkhamDb = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/api\/public\/deck\/([^/]+)/.test(startUrl)
+  const isArkhamBuild = /https:\/\/api\.arkham\.build\/v1\/public\/share\/([^/]+)/.test(startUrl)
+  if (!isArkhamDb && !isArkhamBuild) return
+
+  fetching.value = true
+  const content = await followUpgradeChain(
+    startUrl,
+    isArkhamBuild ? arkhamBuildShareUrl : arkhamDbDeckUrl,
+    isArkhamBuild,
+  )
+
+  if (!content || !content.url) {
+    // followUpgradeChain has already said why; just release the "Fetching..." panel.
+    fetching.value = false
+    return
+  }
+
+  model.value = content;
+  deckList.value = content;
+  deck.value = content.url;
+  deckUrl.value = content.url;
+  upgrade();
+}
+
+async function loadDeck() {
   if (!deck.value) return
   model.value = null
   deckList.value = null
+  submitError.value = null
 
   const arkhamDbRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
   const arkhamBuildRegex = /https:\/\/arkham\.build\/(?:deck\/view|share)\/([^/?]+)/
@@ -226,35 +270,29 @@ function loadDeck() {
 
   let matches
   let isArkhamBuild = false
-  let fetchUrl: string
   if ((matches = deck.value.match(arkhamDbRegex))) {
     deckUrl.value = `${localizeArkhamDBBaseUrl()}/api/public/${matches[1]}/${matches[4]}`
-    fetchUrl = deckUrl.value
   } else if ((matches = deck.value.match(arkhamBuildRegex))) {
     deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}`
-    fetchUrl = deckUrl.value
     isArkhamBuild = true
   } else if ((matches = deck.value.match(arkhamBuildDecklistRegex))) {
     deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}?type=decklist`
-    fetchUrl = deckUrl.value
     isArkhamBuild = true
   } else {
+    submitError.value = t('upgrade.unrecognizedUrl')
     return
   }
 
-  const url = deckUrl.value
-  const request = fetch(fetchUrl).then((response) => response.json() as Promise<ArkhamDbDecklist>)
+  // Reports its own failure via submitError rather than leaving the field looking accepted.
+  const processed = await fetchDeckAt(deckUrl.value, isArkhamBuild)
+  if (!processed) {
+    deckUrl.value = null
+    return
+  }
 
-  request
-    .then((data) => {
-      if (!data) return
-      const processed: ArkhamDbDecklist = isArkhamBuild
-        ? processArkhamBuildDeck(data, url)
-        : { ...data, url }
-      model.value = processed
-      deckList.value = processed
-      deckInvestigator.value = processed.investigator_code
-    }, () => { model.value = null; deckList.value = null })
+  model.value = processed
+  deckList.value = processed
+  deckInvestigator.value = processed.investigator_code
 }
 
 function pasteDeck(evt: ClipboardEvent) {
@@ -284,14 +322,57 @@ function loadDeckFromFile(e: Event) {
   ;(e.target as HTMLInputElement).value = ''
 }
 
-async function upgrade() {
+/* The cards this decklist would ADD to the campaign deck -- the same notion of an upgrade the
+ * engine uses (UpgradeDeck's deckDiff). Empty means the pull changed nothing. */
+function addedCardCodes(list: ArkhamDbDecklist | null): string[] {
+  if (!list?.slots) return []
+  const iid = originalInvestigatorId.value
+  const campaignDeck = (iid ? props.game.campaign?.decks[iid] : undefined) ?? []
+
+  const owned = new Map<string, number>()
+  for (const card of campaignDeck) {
+    const code = normalizeCardCode(card.cardCode)
+    owned.set(code, (owned.get(code) ?? 0) + 1)
+  }
+
+  return Object.entries(list.slots).flatMap(([rawCode, count]) => {
+    const code = normalizeCardCode(rawCode)
+    // The random basic weakness placeholder is stripped by UpgradeDeck, never "added".
+    if (code === '01000') return []
+    return count > (owned.get(code) ?? 0) ? [code] : []
+  })
+}
+
+/* arkham.build (and ArkhamDB) create the upgraded version the moment you click Upgrade,
+ * BEFORE any XP is spent, so pulling too early applies a deck with no changes and closes the
+ * upgrade window for good -- the whole of #5257. Confirm instead of silently consuming it.
+ * Only when XP is actually unspent, so a genuine no-change upgrade stays quiet. */
+const pendingNoChangeUpgrade = ref(false)
+
+const unspentXp = computed(() => xp.value ?? 0)
+
+function wouldChangeNothing(): boolean {
+  if (!deckList.value) return false
+  return unspentXp.value > 0 && addedCardCodes(deckList.value).length === 0
+}
+
+async function upgrade(force = false) {
   if(error.value) return
+  if (!force && wouldChangeNothing()) {
+    fetching.value = false
+    pendingNoChangeUpgrade.value = true
+    return
+  }
   if ((deckUrl.value || deckList.value) && originalInvestigatorId.value) {
+   submitError.value = null
    fetching.value = true
    upgradeDeck(props.game.id, originalInvestigatorId.value, deckUrl.value ?? undefined, deckList.value).then(() => {
       if(!solo) {
         waiting.value = true
       }
+    }).catch((e) => {
+      // A rejected upgrade left the game untouched, so keep the form usable and say why.
+      submitError.value = submitErrorMessage(e, t('upgrade.upgradeFailed'))
     }).finally(() => {
       fetching.value = false;
       waiting.value = false;
@@ -304,11 +385,16 @@ async function upgrade() {
 
 async function skip() {
   if (!investigatorId.value) { return }
+  submitError.value = null
   upgradeDeck(props.game.id, investigatorId.value).then(() => {
     if(!solo) {
       waiting.value = true
     }
     skipping.value = false
+  }).catch((e) => {
+    skipping.value = false
+    waiting.value = false
+    submitError.value = submitErrorMessage(e, t('upgrade.upgradeFailed'))
   });
 }
 
@@ -359,6 +445,7 @@ const tabooList = function (investigator: Investigator) {
           <div class="content">
             <p class="killed-prompt">{{ $t('upgrade.killed') }}</p>
             <p v-if="error" class="error">{{ error }}</p>
+            <p v-if="submitError" class="error">{{ submitError }}</p>
             <div class="input-row">
               <input
                 type="url"
@@ -367,7 +454,7 @@ const tabooList = function (investigator: Investigator) {
                 @paste.prevent="pasteDeck($event)"
                 v-bind:placeholder="$t('upgrade.deckUrlPlaceholder')"
               />
-              <button class="primary" :class="{disable: error != null || deckInvestigator == null}" :disabled="error != null" @click.prevent="upgrade">{{ $t('upgrade.newInvestigator') }}</button>
+              <button class="primary" :class="{disable: error != null || deckInvestigator == null}" :disabled="error != null" @click.prevent="upgrade()">{{ $t('upgrade.newInvestigator') }}</button>
             </div>
             <label class="file-upload">
               <span class="file-upload-text">{{ $t('upgrade.orUploadJson') }}</span>
@@ -379,6 +466,7 @@ const tabooList = function (investigator: Investigator) {
           <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
           <div class="content">
             <p v-if="error" class="error">{{ error }}</p>
+            <p v-if="submitError" class="error">{{ submitError }}</p>
             <template v-if="fetching">
               <p class="info">{{ $t('upgrade.fetching', {deckSource: deckSource}) }}</p>
             </template>
@@ -406,7 +494,7 @@ const tabooList = function (investigator: Investigator) {
                   @paste.prevent="pasteDeck($event)"
                   v-bind:placeholder="$t('upgrade.deckUrlPlaceholder')"
                 />
-                <button class="primary" @click.prevent="upgrade">{{ originalInvestigatorId && killedInvestigators.includes(originalInvestigatorId) ? $t('upgrade.newInvestigator') : $t('upgrade.Upgrade') }}</button>
+                <button class="primary" @click.prevent="upgrade()">{{ originalInvestigatorId && killedInvestigators.includes(originalInvestigatorId) ? $t('upgrade.newInvestigator') : $t('upgrade.Upgrade') }}</button>
               </div>
               <label class="file-upload">
                 <span class="file-upload-text">{{ $t('upgrade.orUploadJson') }}</span>
@@ -436,6 +524,13 @@ const tabooList = function (investigator: Investigator) {
     v-bind:prompt= "$t('upgrade.skippingPrompt')"
     :yes="skip"
     :no="() => skipping = false"
+  />
+
+  <Prompt
+    v-if="pendingNoChangeUpgrade"
+    v-bind:prompt="$t('upgrade.noChangesPrompt', { xp: unspentXp })"
+    :yes="() => { pendingNoChangeUpgrade = false; upgrade(true) }"
+    :no="() => { pendingNoChangeUpgrade = false }"
   />
 </template>
 

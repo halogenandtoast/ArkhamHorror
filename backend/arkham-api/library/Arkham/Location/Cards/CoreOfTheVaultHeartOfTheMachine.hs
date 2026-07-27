@@ -40,9 +40,9 @@ instance HasAbilities CoreOfTheVaultHeartOfTheMachine where
               $ Costs [ActionCost 2, GroupClueCost (PerPlayer 3) (be a)]
           ]
         else
-          [ -- [Forced] At the end of the round, if each Vault location has been
-            -- activated, reveal Core of the Vault.
-            mkAbility a 3 $ forced $ RoundEnds #when
+          [ restricted a 3 (not_ $ exists $ LocationWithTrait Vault <> LocationWithResources (atMost 0))
+              $ forced
+              $ RoundEnds #when
           ]
 
 instance RunMessage CoreOfTheVaultHeartOfTheMachine where

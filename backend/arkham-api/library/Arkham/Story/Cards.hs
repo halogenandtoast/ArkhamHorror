@@ -81,6 +81,9 @@ allStoryCards =
       , squamousParasite
       , underseaParasite
       , obsidianRelic
+      , ancientVaultO
+      , ancientVaultN
+      , ancientVaultP
       , anotherPath
       , aStrangeGhoul
       , scoutingTheVale
@@ -444,6 +447,27 @@ underseaParasite =
 obsidianRelic :: CardDef
 obsidianRelic =
   (doubleSided $ story "11550b" "Obsidian Relic" TheDrownedQuarter)
+    { cdVictoryPoints = Just 1
+    }
+
+-- | Victory 1 is printed on this side, not on the treachery front (11608).
+ancientVaultO :: CardDef
+ancientVaultO =
+  (doubleSided $ story "11608b" "Ancient Vault" TheGrandVault)
+    { cdVictoryPoints = Just 1
+    }
+
+-- | Victory 1 is printed on this side, not on the treachery front (11609).
+ancientVaultN :: CardDef
+ancientVaultN =
+  (doubleSided $ story "11609b" "Ancient Vault" TheGrandVault)
+    { cdVictoryPoints = Just 1
+    }
+
+-- | Victory 1 is printed on this side, not on the treachery front (11610).
+ancientVaultP :: CardDef
+ancientVaultP =
+  (doubleSided $ story "11610b" "Ancient Vault" TheGrandVault)
     { cdVictoryPoints = Just 1
     }
 

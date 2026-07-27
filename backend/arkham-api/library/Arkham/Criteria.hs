@@ -275,6 +275,11 @@ data Criterion
   | TabooCriteria TabooList Criterion Criterion
   | NotYetRecorded CampaignLogKey
   | HasRecord CampaignLogKey
+  | {- | At least N of the given entries appear in a campaign-log /recorded set/.
+    The campaign-log analogue of 'RememberedAtLeast'; entries are compared
+    against the set's JSON-encoded 'Text' values.
+    -}
+    RecordSetHasAtLeast GameValue CampaignLogKey [Text]
   | HasHistory HistoryType InvestigatorMatcher HistoryMatcher
   | HasScenarioCount ScenarioCountKey ValueMatcher
   | HasCampaignCount CampaignLogKey ValueMatcher
@@ -329,6 +334,9 @@ hasCampaignCount k = HasCampaignCount (toCampaignLogKey k)
 
 hasRecordCriteria :: IsCampaignLogKey k => k -> Criterion
 hasRecordCriteria = HasRecord . toCampaignLogKey
+
+recordSetHasAtLeast :: IsCampaignLogKey k => GameValue -> k -> [Text] -> Criterion
+recordSetHasAtLeast n k = RecordSetHasAtLeast n (toCampaignLogKey k)
 
 _DuringSkillTest :: Prism' Criterion SkillTestMatcher
 _DuringSkillTest = prism' DuringSkillTest $ \case

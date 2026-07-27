@@ -278,41 +278,52 @@ coreOfTheVaultHeartOfTheMachine =
     [Rlyeh, Sanctum, Glyph]
     TheGrandVault
 
+{- | Every Vault Chamber location shares the same unrevealed back, "Vault Chamber".
+Setup shuffles them together facedown, so the unrevealed side keeps the @Vault@
+trait that the scenario's flood and activation effects select on.
+-}
+vaultChamber :: CardCode -> Name -> [Trait] -> CardDef
+vaultChamber cardCode name traits =
+  locationWithUnrevealed_ cardCode "Vault Chamber" [Rlyeh, Vault] name traits TheGrandVault
+
 shroudedCistern :: CardDef
 shroudedCistern =
-  location_ "11596" "Shrouded Cistern" [Rlyeh, Vault] TheGrandVault
+  quantity 2 $ vaultChamber "11596" "Shrouded Cistern" [Rlyeh, Vault]
 
 chamberOfRecordsArm :: CardDef
 chamberOfRecordsArm =
-  victory 1 $ location_ "11598" "Chamber of Records" [Rlyeh, Vault, Glyph] TheGrandVault
+  victory 1 $ vaultChamber "11598" "Chamber of Records" [Rlyeh, Vault, Glyph]
 
 chamberOfRecordsEarth :: CardDef
 chamberOfRecordsEarth =
-  victory 1 $ location_ "11599" "Chamber of Records" [Rlyeh, Vault, Glyph] TheGrandVault
+  victory 1 $ vaultChamber "11599" "Chamber of Records" [Rlyeh, Vault, Glyph]
 
 otherworldlyMechanismsObsidianBulwark :: CardDef
 otherworldlyMechanismsObsidianBulwark =
-  location_ "11600" ("Otherworldly Mechanisms" <:> "Obsidian Bulwark") [Rlyeh, Vault] TheGrandVault
+  vaultChamber "11600" ("Otherworldly Mechanisms" <:> "Obsidian Bulwark") [Rlyeh, Vault]
 
 otherworldlyMechanismsSluiceControl :: CardDef
 otherworldlyMechanismsSluiceControl =
-  location_ "11601" ("Otherworldly Mechanisms" <:> "Sluice Control") [Rlyeh, Vault] TheGrandVault
+  vaultChamber "11601" ("Otherworldly Mechanisms" <:> "Sluice Control") [Rlyeh, Vault]
 
 otherworldlyMechanismsGrimeCoveredGears :: CardDef
 otherworldlyMechanismsGrimeCoveredGears =
-  location_ "11602" ("Otherworldly Mechanisms" <:> "Grime-Covered Gears") [Rlyeh, Vault] TheGrandVault
+  vaultChamber "11602" ("Otherworldly Mechanisms" <:> "Grime-Covered Gears") [Rlyeh, Vault]
 
 otherworldlyMechanismsInscrutableApparatus :: CardDef
 otherworldlyMechanismsInscrutableApparatus =
-  location_
-    "11603"
-    ("Otherworldly Mechanisms" <:> "Inscrutable Apparatus")
-    [Rlyeh, Vault]
-    TheGrandVault
+  vaultChamber "11603" ("Otherworldly Mechanisms" <:> "Inscrutable Apparatus") [Rlyeh, Vault]
 
+-- | Enters play on its unrevealed "Sealed Chamber" side; the act flips it.
 chamberOfTheTabletUnsealed :: CardDef
 chamberOfTheTabletUnsealed =
-  location_ "11604" ("Chamber of the Tablet" <:> "Unsealed") [Rlyeh] TheGrandVault
+  locationWithUnrevealed_
+    "11604"
+    "Sealed Chamber"
+    [Rlyeh]
+    ("Chamber of the Tablet" <:> "Unsealed")
+    [Rlyeh]
+    TheGrandVault
 
 -- Court of the Ancients
 westAntechamber :: CardDef

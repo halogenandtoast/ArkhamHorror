@@ -1,10 +1,10 @@
 module Arkham.Treachery.Cards.AncientVaultP (ancientVaultP) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheDrownedCity.Key
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Story (readStory)
 import Arkham.Location.Types (Field (..))
-import Arkham.Message.Lifted.Log (record)
+import Arkham.Story.Cards qualified as Stories
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -35,12 +35,9 @@ instance RunMessage AncientVaultP where
       flipOver iid attrs
       pure t
     Flip iid _ (isTarget attrs -> True) -> do
-      -- Resolve the flipped side (11610b). The back story is not registered as a
-      -- Story card, so we resolve its known mechanical effects directly: discover
-      -- this glyph, record its translation, and add this card to the victory display.
-      -- TODO: verify the exact glyph word printed on 11610b (placeholder "Weather").
-      record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_p" :: Text, "Weather" :: Text)
-      addToVictory iid attrs
+      -- The back (11610b) is a story card that translates the glyph and adds itself
+      -- to the victory display. A treachery has no UI slot a story can replace, so
+      -- the runner focuses the story card and waits for the player to click it.
+      readStory iid attrs Stories.ancientVaultP
       pure t
     _ -> AncientVaultP <$> liftRunMessage msg attrs

@@ -10,6 +10,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Trait (Trait (Agency, Criminal, Detective))
+import Arkham.Window qualified as Window
 import Data.Text qualified as T
 
 newtype TheDrownedCity = TheDrownedCity CampaignAttrs
@@ -122,6 +123,10 @@ instance RunMessage TheDrownedCity where
     CampaignSpecific "translateGlyph" v -> do
       let (glyph, _word) = toResult v :: (Text, Text)
       for_ (glyphLetter glyph) \letter -> recordSetInsert DiscoveredGlyphs [String letter]
+      -- Cards that react to glyphs being translated (Careful Navigation) watch this
+      -- window. It has to fire after the record above so the reaction's criteria
+      -- see the glyph that just arrived.
+      checkAfter $ Window.CampaignEvent "translateGlyph" Nothing v
       pure c
     _ -> lift $ defaultCampaignRunner msg c
 

@@ -2,14 +2,14 @@ module Arkham.Treachery.Cards.AncientVaultO (ancientVaultO) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (AssetCard))
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Card
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Story (readStory)
 import Arkham.Location.Types (Field (LocationShroud))
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Projection
+import Arkham.Story.Cards qualified as Stories
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -27,15 +27,16 @@ flipped a = toResultDefault False a.meta
 
 instance HasAbilities AncientVaultO where
   getAbilities (AncientVaultO a) = case a.attached.location of
-    Just lid | not (flipped a) ->
-      [ restricted
-          a
-          1
-          ( OnLocation (LocationWithId lid)
-              <> youExist (ControlsAsset DiscardableAsset)
-          )
-          actionAbility
-      ]
+    Just lid
+      | not (flipped a) ->
+          [ restricted
+              a
+              1
+              ( OnLocation (LocationWithId lid)
+                  <> youExist (ControlsAsset DiscardableAsset)
+              )
+              actionAbility
+          ]
     _ -> []
 
 instance RunMessage AncientVaultO where
@@ -43,7 +44,7 @@ instance RunMessage AncientVaultO where
     Revelation iid (isSource attrs -> True) -> do
       -- Revelation cannot be canceled (handled via the card def's
       -- CannotBeCanceledRevelation); attach to your location.
-      withLocationOf iid \lid -> attachTreachery attrs lid
+      withLocationOf iid $ attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- X = the attached location's shroud. Choose and discard assets you
@@ -68,12 +69,11 @@ instance RunMessage AncientVaultO where
                 toDiscard (attrs.ability 1) aid
                 doStep (x - printedCardCost card) inner
       pure t
-    Flip _iid _ (isTarget attrs -> True) -> do
-      -- "Flip this card over and resolve its text." The back side (11608b) is a
-      -- Glyph; the known resolvable effect is translating its alien glyph.
-      -- TODO: confirm the exact glyph letter/translated word printed on 11608b
-      -- (rune_o). Placeholder "Door" used until verified.
-      record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_o" :: Text, "Power" :: Text)
+    Flip iid _ (isTarget attrs -> True) -> do
+      -- "Flip this card over and resolve its text." The back (11608b) is a story
+      -- card that translates the glyph and adds itself to the victory display. A
+      -- treachery has no UI slot a story can replace, so the runner focuses the
+      -- story card and waits for the player to click it.
+      readStory iid attrs Stories.ancientVaultO
       pure $ AncientVaultO $ attrs & setMeta True
     _ -> AncientVaultO <$> liftRunMessage msg attrs

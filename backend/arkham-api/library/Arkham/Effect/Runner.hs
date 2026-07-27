@@ -22,6 +22,7 @@ import Arkham.Matcher.Scenario
 import Arkham.Modifier
 import Arkham.Window (Window)
 import Arkham.Window qualified as Window
+
 isTakeDamage :: EffectAttrs -> Window -> Bool
 isTakeDamage attrs window = case attrs.target of
   EnemyTarget eid -> go eid
@@ -75,6 +76,15 @@ instance RunMessage EffectAttrs where
       -- scenario untouched and only expires once carried forward.
       case effectWindow of
         Just (EffectNextSetupWindow createdInScenarioId) ->
+          selectOne TheScenario >>= traverse_ \currentScenarioId ->
+            pushWhen (createdInScenarioId /= currentScenarioId) (DisableEffect effectId)
+        _ -> pure ()
+      pure a
+    AdvanceAgendaDeck {} -> do
+      -- A next-scenario first-agenda modifier is inert in the scenario that created
+      -- it, so only the *carried-forward* scenario's first advancement expires it.
+      case effectWindow of
+        Just (EffectNextScenarioFirstAgendaWindow createdInScenarioId) ->
           selectOne TheScenario >>= traverse_ \currentScenarioId ->
             pushWhen (createdInScenarioId /= currentScenarioId) (DisableEffect effectId)
         _ -> pure ()

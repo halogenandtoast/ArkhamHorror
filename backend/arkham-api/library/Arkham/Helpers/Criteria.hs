@@ -46,7 +46,7 @@ import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.History (historyMatches)
 import Arkham.Helpers.Investigator (getAsIfInHandCardsNotForPlay)
 import Arkham.Helpers.Location (getCanMoveToMatchingLocations, locationMatches)
-import Arkham.Helpers.Log (getHasRecord, getRecordCount, scenarioCount)
+import Arkham.Helpers.Log (getHasRecord, getRecordCount, getSomeRecordSetJSON, scenarioCount)
 import Arkham.Helpers.Modifiers (getModifiers, hasModifier, withModifiersOf)
 import Arkham.Helpers.Phase (matchPhase)
 import Arkham.Helpers.Placement (onSameLocation)
@@ -268,6 +268,9 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCrit
       recorded <- getHasRecord key
       pure $ not recorded
     Criteria.HasRecord key -> getHasRecord key
+    Criteria.RecordSetHasAtLeast value key entries -> do
+      n <- length . filter (`elem` entries) <$> getSomeRecordSetJSON @Text key
+      gameValueMatches n (Matcher.AtLeast value)
     Criteria.DuringPhase phaseMatcher -> do
       p <- getPhase
       matchPhase p phaseMatcher

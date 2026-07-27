@@ -1,4 +1,52 @@
 {
+  "intro": {
+    "title": "The Grand Vault",
+    "checkCampaignLog": "Check your Campaign Log.",
+    "headedWest": "If the expedition headed west, proceed to _The Grand Vault 1_.",
+    "headedEast": "If the expedition headed east, skip to _The Grand Vault 2_.",
+    "grandVault1": "_The Grand Vault 1_: You hear the echoing churn of great machinery long before you see it. After emerging from the claustrophobic tunnels, you stand on a precipice overlooking a large cavernous expanse. It is so vast that you cannot see the far side. An array of interconnected chambers are laid out like a labyrinth, thrumming with the sound of alien constructs. Amid the clamor is the sound of running water even farther below.",
+    "grandVault2": "_The Grand Vault 2_: You hear the echoing churn of great machinery long before you see it. You reach the bottom of the spiraling staircase to stand on a precipice overlooking a large cavernous expanse. It is so vast that you cannot see the far side. An array of interconnected chambers are laid out like a labyrinth, thrumming with the sound of alien constructs. Amid the clamor is the sound of running water even farther below.",
+    "grandVault3": "_The Grand Vault 3_: This is the pulsing core of R’lyeh. Colossal sluices channel floodwater from the city above, filling and draining vaults like the chambers of a heart. This seems to be some source of power, and the reason for the city’s steady rise. After discussing with the expedition, you resolve to explore the massive complex before moving on. If ever there was a place to find one of those elusive artifacts, it would be here.",
+    "resolveToeTheLine": "If any investigator has the Toe the Line Task, they resolve their respective story on the next page.",
+    "proceedToSetup": "Proceed to _Setup_.",
+    "toeTheLine": {
+      "title": "Task: Toe the Line",
+      "instructions": "_Read only if you have the “Toe the Line” Task:_",
+      "body": "The expedition makes camp before descending into the vault below. Over a bland but filling meal, one of your fellow expedition members reveals they have a history with your former employer. “Wait, you’re the one everyone talks about?” they snort. “Trust me, from the things I’ve heard, you don’t want your old job back. Your old boss still jokes about you. Even if Tillinghast could get you the job, nobody back there respects you. You’re looking at a life of grunt work, pal.”",
+      "reflection": "You finish your meal in silence as you ponder their words. Your old colleagues might not respect you, but with Tillinghast’s connections, you could make them fear you. A few bribes, well-timed threats—even a call from the mob—might put them in their place. It’s not exactly above-board, but if you play the cards right, you could oust your former employer. You have the rest of the expedition to plan your move once you get back to Arkham.",
+      "choose": "You must decide (choose one):",
+      "oldJob": "Take your old job back, at any cost. Erase 1 progress under _Toe the Line_ in your Campaign Log. During the next scenario, you get +1 to each of your skills during the first agenda.",
+      "highRoad": "Take the high road. It ain’t worth it. Mark 2 progress under _Toe the Line_ in your Campaign Log and suffer 1 mental trauma. During the next scenario, you get –1 to each of your skills during the first agenda."
+    },
+    "label": {
+      "toeTheLine": {
+        "oldJob": "Take your old job back, at any cost.",
+        "highRoad": "Take the high road. It ain’t worth it."
+      }
+    }
+  },
+  "setup": {
+    "title": "Setup",
+    "gatherSets": "Gather all cards from the following encounter sets: _The Grand Vault_, _Alien Machinery_, _Flood_, _The Inescapable_, _R’lyeh_, and _Star Spawn_. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-grand-vault.png' /><img src='{setImgPath}/alien-machinery.png' /><img src='{setImgPath}/flood.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /></section>",
+    "placeFixedLocations": "Put the Great Stair, Moving Platform, Sealed Chamber, and Core of the Vault locations into play, as indicated in the location placement diagram.",
+    "removeOtherworldlyMechanisms": "Remove one copy of Otherworldly Mechanisms from the game at random (Otherworldly Mechanisms are on the revealed side of some Vault Chamber locations).",
+    "placeVaultChambers": "Shuffle each remaining copy of Vault Chamber together and put them into play according to the location placement diagram.",
+    "beginAtTheGreatStair": "Each investigator begins at the Great Stair.",
+    "checkCampaignLog": "Check your Campaign Log.",
+    "powerWasDiverted": "If _the power was diverted_, place 1 resource on the bottom left Vault Chamber. This location has been “activated.”",
+    "otherwise": "Otherwise, place one resource on the bottom left, bottom right, and top right Vault Chamber locations. These locations have been “activated.”",
+    "starSpawn": "Shuffle each enemy from the _Star Spawn_ encounter set and remove 2 at random from the game. Set the rest aside, out of play.",
+    "setCardsAside": "Set the following cards aside, out of play: Each copy of the double-sided Ancient Vault treachery, each copy of the Vault Attendant enemy, the Tidal Tablet story asset, and _The Inescapable_ encounter set.",
+    "chooseExpeditionAsset": "In player order, each player may choose 1 earned _Artifact_ asset or 1 _Item_ asset from the _Expedition_ encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+    "addFloodTokens": "Add the flood tokens to the token pool.",
+    "floodBottomRow": "Increase the flood level of the three Vault Chamber locations in the bottom row.",
+    "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck.",
+    "readyToBegin": "You are now ready to begin."
+  },
+  "label": {
+    "chooseExpeditionAssetQuestion": "Choose an earned Artifact asset, or an Item asset from the Expedition encounter set, to begin in play under your control.",
+    "noExpeditionAsset": "Do not take an Artifact or Expedition asset."
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half the number of activated locations (rounded down).",

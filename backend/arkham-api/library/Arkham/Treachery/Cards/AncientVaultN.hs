@@ -1,12 +1,12 @@
 module Arkham.Treachery.Cards.AncientVaultN (ancientVaultN) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Story (readStory)
 import Arkham.Location.Types (Field (..))
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Story.Cards qualified as Stories
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -44,10 +44,12 @@ instance RunMessage AncientVaultN where
       let damage = getChoiceAmount "Damage" choices
       let horror = getChoiceAmount "Horror" choices
       assignDamageAndHorror iid (attrs.ability 1) damage horror
-      -- Flip this card over and resolve its text (the glyph translation).
-      -- TODO: verify the exact glyph identifier string; the recorded word is "Doom".
-      record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_n" :: Text, "Doom" :: Text)
-      addToVictory iid attrs
+      flipOver iid attrs
+      pure t
+    Flip iid _ (isTarget attrs -> True) -> do
+      -- The back (11609b) is a story card that translates the glyph and adds itself
+      -- to the victory display. A treachery has no UI slot a story can replace, so
+      -- the runner focuses the story card and waits for the player to click it.
+      readStory iid attrs Stories.ancientVaultN
       pure t
     _ -> AncientVaultN <$> liftRunMessage msg attrs

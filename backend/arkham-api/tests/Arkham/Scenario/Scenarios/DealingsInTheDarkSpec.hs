@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.DealingsInTheDarkSpec (spec) where
 import Arkham.Campaigns.TheScarletKeys.Key (TheScarletKeysKey (Time))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher qualified as Matcher
+import Arkham.Message.Story qualified as Story
 import Arkham.Projection
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (..))
@@ -29,8 +30,15 @@ spec = describe "Dealings in the Dark" $ do
           void $ addInvestigator Investigators.rolandBanks
           recordCount Time time
           pushAndRun Setup
-          -- Setup pauses on its display-only instructions before processing the
-          -- queued placement messages. Dismiss them and drain the remaining queue.
+          -- Setup pauses on its instructions. Isolate the act prerequisite and
+          -- story messages so the test does not continue into the first turn.
+          queued <- peekQueue
+          let isUnveilingMessage = \case
+                SetActDeck -> True
+                StoryMessage (Story.PlaceStory card _) -> toCardCode card == Stories.theUnveiling.cardCode
+                PlaceTokens _ (StoryTarget sid) _ _ -> sid == StoryId Stories.theUnveiling.cardCode
+                _ -> False
+          setQueue $ filter isUnveilingMessage queued
           overTest (questionL .~ mempty)
           runMessages
           theUnveiling <- selectJust $ Matcher.storyIs Stories.theUnveiling

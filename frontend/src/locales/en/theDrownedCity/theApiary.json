@@ -59,7 +59,10 @@
   },
   "label": {
     "chooseExpeditionAssetQuestion": "Choose an earned Artifact asset, or an Item asset from the Expedition encounter set, to begin in play under your control.",
-    "noExpeditionAsset": "Do not take an Artifact or Expedition asset."
+    "noExpeditionAsset": "Do not take an Artifact or Expedition asset.",
+    "cluesToSpend": "Clues to spend",
+    "moveToConnecting": "Move to a connecting location",
+    "motherAttacks": "Mother attacks you"
   },
   "tokens": {
     "easyStandard": {
@@ -74,11 +77,6 @@
       "tablet": "-5. If you fail, place 1 doom on an enemy at your location (with no doom on it, if able).",
       "elderThing": "-6. If you fail, take 1 damage or 1 horror."
     }
-  },
-  "cluesToSpend": "Clues to spend",
-  "centralChamber": {
-    "moveToConnecting": "Move to a connecting location",
-    "motherAttacks": "Mother attacks you"
   },
   "apiaryEntranceBeckoningLight": {
     "resign": "Resign."

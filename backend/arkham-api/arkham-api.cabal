@@ -5813,6 +5813,7 @@ library
       Arkham.Story.Cards.HastursEnd
       Arkham.Story.Cards.HastursLastStand
       Arkham.Story.Cards.HedgeMaze
+      Arkham.Story.Cards.HiddenVault
       Arkham.Story.Cards.HopeFades
       Arkham.Story.Cards.HurricaneForce
       Arkham.Story.Cards.IfTheUniformFits
@@ -5881,6 +5882,7 @@ library
       Arkham.Story.Cards.SomethingBelow
       Arkham.Story.Cards.SongsThatTheHyadesShallSing
       Arkham.Story.Cards.SpiderInfestedWaters
+      Arkham.Story.Cards.SquamousParasite
       Arkham.Story.Cards.StandingStones
       Arkham.Story.Cards.StarsOfAldebaran
       Arkham.Story.Cards.StepsOfThePalace

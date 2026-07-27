@@ -2,11 +2,11 @@ module Arkham.Location.Cards.HiddenVault (hiddenVault) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Campaigns.TheDrownedCity.Import
+import Arkham.Helpers.Story (readStory)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log (record)
+import Arkham.Story.Cards qualified as Stories
 
 newtype HiddenVault = HiddenVault LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -37,10 +37,9 @@ instance RunMessage HiddenVault where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       when (locationCanBeFlipped attrs) $ flipOver iid attrs
       pure l
-    Flip _iid _ (isTarget attrs -> True) -> do
-      -- "Flip this card and resolve its text." The resolvable effect for a Glyph
-      -- location in The Drowned City is translating its alien glyph.
-      record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_u" :: Text, "Daughters" :: Text)
+    Flip iid _ (isTarget attrs -> True) -> do
+      -- "Flip this card and resolve its text." The back (11579b) is a story card,
+      -- so reading it both shows the flipped side and translates the glyph.
+      readStory iid (toId attrs) Stories.hiddenVault
       pure . HiddenVault $ attrs & canBeFlippedL .~ False
     _ -> HiddenVault <$> liftRunMessage msg attrs

@@ -76,6 +76,8 @@ allStoryCards =
       , theSentry
       , seafloorFrieze
       , theUnderseaVault
+      , hiddenVault
+      , squamousParasite
       , underseaParasite
       , obsidianRelic
       , anotherPath
@@ -412,6 +414,16 @@ seafloorFrieze = doubleSided $ story "11531b" "Seafloor Frieze" TheWesternWall
 
 theUnderseaVault :: CardDef
 theUnderseaVault = doubleSided $ story "11532b" "The Undersea Vault" TheWesternWall
+
+hiddenVault :: CardDef
+hiddenVault = doubleSided $ story "11579b" "Hidden Vault" TheApiary
+
+-- | Victory 1 is printed on this side, not on the enemy front (11580).
+squamousParasite :: CardDef
+squamousParasite =
+  (doubleSided $ story "11580b" "Squamous Parasite" TheApiary)
+    { cdVictoryPoints = Just 1
+    }
 
 -- | Victory 1 is printed on this side, not on the enemy front (11549).
 underseaParasite :: CardDef

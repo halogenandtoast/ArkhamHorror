@@ -12,6 +12,7 @@ import { TokenType } from '@/arkham/types/Token'
 import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage, sourceCardCode } from '@/arkham/cardImages'
 import { useGameChoices, useStickyChoicesSource, useGameChoicesTooltip } from '@/arkham/composables/useGameChoices'
+import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import AiTargetMenu from '@/arkham/components/AiTargetMenu.vue'
@@ -60,6 +61,18 @@ const isTrueForm = computed(() => {
 const imageId = computed(() => cardArt(props.enemy.cardCode, props.enemy.flipped ? 'b' : ''))
 
 const image = computed(() => cardImage(props.enemy.cardCode, props.enemy.flipped ? 'b' : ''))
+
+// A story placed on an enemy is its other side (e.g. the Squamous Parasite's
+// glyph back), so turn it over on the enemy's own <img> rather than swapping
+// components outright. The Story component only takes over once the flip has
+// landed, by which point it is already showing the same art.
+const storyImage = computed(() => {
+  const story = enemyStory.value
+  if (!story) return null
+  return cardImage(story.flipped ? story.flippedArt : story.art)
+})
+const faceImage = computed(() => storyImage.value ?? image.value)
+const { displayedImage, flipping } = useCardFlip(faceImage)
 
 const id = computed(() => props.enemy.id)
 
@@ -349,7 +362,7 @@ function onDrop(event: DragEvent) {
 <template>
   <div class="enemy--outer" :class="{showAbilities, oversized}">
     <div class="enemy">
-      <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
+      <Story v-if="enemyStory && !flipping" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
         <div class="card-frame" ref="frame">
           <div
@@ -364,10 +377,10 @@ function onDrop(event: DragEvent) {
             <span v-if="isCannotBeDamaged" class="cannot-be-damaged-badge" :data-image-id="cannotBeDamagedCardCode">
               <font-awesome-icon icon="shield-heart" />
             </span>
-            <img v-if="isTrueForm" :src="image"
+            <img v-if="isTrueForm" :src="displayedImage"
               class="card enemy"
               v-tooltip="sourceTooltip"
-              :class="{ dragging, 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking, 'ai-target-hover': ai.targeting }"
+              :class="{ dragging, 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking, 'ai-target-hover': ai.targeting, 'card--flipping': flipping }"
               :data-id="id"
               :data-card-code="enemy.cardCode"
               :data-game-id="game.id"
@@ -386,10 +399,10 @@ function onDrop(event: DragEvent) {
             <img v-else
               :draggable="debug.active"
               @dragstart="startDrag($event, enemy)"
-              :src="isSwarm ? imgsrc('backs/back_player.jpg') : image"
+              :src="isSwarm ? imgsrc('backs/back_player.jpg') : displayedImage"
               class="card enemy"
               v-tooltip="sourceTooltip"
-              :class="{ 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking, 'ai-target-hover': ai.targeting }"
+              :class="{ 'enemy--can-interact': canInteract && !hasObjective, 'enemy--can-interact-cursor': canInteract, attached, 'source-highlight': isHighlighted || isAttacking, 'ai-target-hover': ai.targeting, 'card--flipping': flipping }"
               :data-id="id"
               :data-card-code="enemy.cardCode"
               :data-game-id="game.id"

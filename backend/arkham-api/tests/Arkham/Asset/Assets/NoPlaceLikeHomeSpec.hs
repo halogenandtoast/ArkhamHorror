@@ -13,4 +13,5 @@ spec = describe "No Place Like Home" do
     location <- testLocationWith (revealedL .~ False)
     nplh <- self `putAssetIntoPlay` Assets.noPlaceLikeHome
     run $ RevealLocation (Just $ toId self) (toId location)
+    chooseOnlyOption "resolve No Place Like Home's forced ability"
     fieldMap AssetUses (findWithDefault 0 Discovery) nplh `shouldReturn` 7

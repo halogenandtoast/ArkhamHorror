@@ -29,6 +29,10 @@ spec = describe "Dealings in the Dark" $ do
           void $ addInvestigator Investigators.rolandBanks
           recordCount Time time
           pushAndRun Setup
+          -- Setup pauses on its display-only instructions before processing the
+          -- queued placement messages. Dismiss them and drain the remaining queue.
+          overTest (questionL .~ mempty)
+          runMessages
           theUnveiling <- selectJust $ Matcher.storyIs Stories.theUnveiling
           clues <- field StoryClues theUnveiling
           clues `shouldBe` expected

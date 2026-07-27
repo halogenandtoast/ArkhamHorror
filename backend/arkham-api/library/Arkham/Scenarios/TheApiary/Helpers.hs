@@ -56,8 +56,8 @@ apiaryPositions =
   , (Locations.spawningGrounds, Pos 1 (-2))
   , (Locations.starvingCorridor, Pos 1 (-2))
   , (Locations.churningChasm, Pos 2 (-2))
-  , (Locations.lostCampsite, Pos 0 (-3))
-  , (Locations.acidicCoelom, Pos 0 (-3))
+  , (Locations.lostCampsite, Pos 1 (-1))
+  , (Locations.acidicCoelom, Pos 1 (-1))
   ]
 
 apiaryPosition :: HasCardCode a => a -> Maybe Pos

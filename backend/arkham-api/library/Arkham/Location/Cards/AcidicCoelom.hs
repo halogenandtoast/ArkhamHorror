@@ -7,8 +7,8 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype AcidicCoelom = AcidicCoelom LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 acidicCoelom :: LocationCard AcidicCoelom
 acidicCoelom = location AcidicCoelom Cards.acidicCoelom 4 (Static 1)

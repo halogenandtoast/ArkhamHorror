@@ -3,16 +3,20 @@ module Arkham.Asset.Assets.ShardOfYchlechtOtherworldlyRemnant (shardOfYchlecht) 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyAttacks)
+import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Helpers.Window (enteringEnemy, getAttackDetails)
 import Arkham.Matcher
 import Arkham.Trait (Trait (DeepOne, StarSpawn))
 
 newtype ShardOfYchlechtOtherworldlyRemnant = ShardOfYchlechtOtherworldlyRemnant AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shardOfYchlecht :: AssetCard ShardOfYchlechtOtherworldlyRemnant
 shardOfYchlecht = asset ShardOfYchlechtOtherworldlyRemnant Cards.shardOfYchlecht
+
+instance HasModifiersFor ShardOfYchlechtOtherworldlyRemnant where
+  getModifiersFor (ShardOfYchlechtOtherworldlyRemnant a) = artifactModifiers a
 
 starSpawnOrDeepOne :: EnemyMatcher
 starSpawnOrDeepOne = mapOneOf EnemyWithTrait [StarSpawn, DeepOne]
@@ -25,6 +29,7 @@ instance HasAbilities ShardOfYchlechtOtherworldlyRemnant where
           (EnemyAttacks #when You (CancelableEnemyAttack AnyEnemyAttack) starSpawnOrDeepOne)
     , controlled_ a 2
         $ triggered (EnemyEntersYourLocation #when starSpawnOrDeepOne) (exhaust a)
+    , artifactAbility a 3
     ]
 
 instance RunMessage ShardOfYchlechtOtherworldlyRemnant where
@@ -34,5 +39,8 @@ instance RunMessage ShardOfYchlechtOtherworldlyRemnant where
       pure a
     UseCardAbility _iid (isSource attrs -> True) 2 (enteringEnemy -> eid) _ -> do
       exhaustThis eid
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      handOffArtifact iid attrs
       pure a
     _ -> ShardOfYchlechtOtherworldlyRemnant <$> liftRunMessage msg attrs

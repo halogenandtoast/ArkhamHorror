@@ -10,6 +10,7 @@ import Arkham.Prelude hiding (fold)
 
 import Arkham.Card
 import Arkham.Id
+import Arkham.Story.Cards.AncientRelic qualified as AncientRelic
 import Arkham.Story.Cards.HiddenVault qualified as HiddenVault
 import Arkham.Story.Cards.ObsidianRelic qualified as ObsidianRelic
 import Arkham.Story.Cards.SeafloorFrieze qualified as SeafloorFrieze
@@ -48,6 +49,7 @@ allStories =
     , SomeStoryCard UnderseaParasite.underseaParasite
     , SomeStoryCard ObsidianRelic.obsidianRelic
     , SomeStoryCard HiddenVault.hiddenVault
+    , SomeStoryCard AncientRelic.ancientRelic
     , SomeStoryCard SquamousParasite.squamousParasite
     , -- The Path to Carcosa
       -- The Last King

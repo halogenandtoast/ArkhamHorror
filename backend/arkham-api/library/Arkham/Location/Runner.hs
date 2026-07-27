@@ -325,7 +325,10 @@ instance RunMessage LocationAttrs where
       pure a
     PlaceCluesUpToClueValue lid source n | lid == locationId -> do
       clueValue <- getGameValue locationRevealClues
-      let n' = min n (clueValue - locationClues a)
+      -- Clamped at 0: a location already at or over its clue value (a flipped card
+      -- whose other side has a lower one, say) places none rather than going
+      -- negative, which would silently take clues off it.
+      let n' = max 0 $ min n (clueValue - locationClues a)
       push (PlaceClues source (toTarget a) n')
       pure a
     RemoveAllClues _ target | isTarget a target -> do
@@ -547,6 +550,9 @@ instance RunMessage LocationAttrs where
       push $ RemoveLocation (toId a)
       pure a
     ShuffleCardsIntoTopOfDeck _ _ cards | toCard a `elem` cards -> do
+      push $ RemoveLocation (toId a)
+      pure a
+    ShuffleCardsIntoBottomOfDeck _ _ cards | toCard a `elem` cards -> do
       push $ RemoveLocation (toId a)
       pure a
     PlaceConcealedCard _ card (AtLocation lid) | a.id == lid -> do

@@ -54,9 +54,18 @@
   --z-tooltip: var(--z-index-25000);
   --z-card-hover-overlay-over-popover: var(--z-index-30000);
   --z-modal-overlay: var(--z-index-30000);
+  --z-tooltip-over-menus: var(--z-index-100000);
 }
 
 /* Keep FloatingVue tooltips above the card hover preview overlay. */
 .v-popper__popper {
   z-index: var(--z-tooltip);
+}
+
+/* Tooltip text is triggered from menus that themselves sit on the modal-overlay
+ * layer (the abilities menu, for one), so it has to outrank them or it renders
+ * behind the menu that opened it. Other popper themes keep their own layering.
+ */
+.v-popper__popper.v-popper--theme-tooltip {
+  z-index: var(--z-tooltip-over-menus);
 }

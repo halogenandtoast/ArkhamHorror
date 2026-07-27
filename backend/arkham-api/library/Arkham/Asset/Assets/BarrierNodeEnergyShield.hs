@@ -17,15 +17,21 @@ barrierNode = assetWith BarrierNodeEnergyShield Cards.barrierNode (healthL ?~ 1)
 instance HasModifiersFor BarrierNodeEnergyShield where
   getModifiersFor (BarrierNodeEnergyShield a) = do
     bonus <- getGlyphsAllKnown "QXGKS"
-    modifySelf a $ [CannotBeDefeated, CannotLeavePlay] <> [HealthModifier 2 | bonus]
+    artifactModifiers a
+    modifySelf a $ CannotBeDefeated : [HealthModifier 2 | bonus]
 
 instance HasAbilities BarrierNodeEnergyShield where
   getAbilities (BarrierNodeEnergyShield a) =
-    [controlled a 1 (thisExists a AssetWithDamage) $ freeReaction $ TurnBegins #when You]
+    [ controlled a 1 (thisExists a AssetWithDamage) $ freeReaction $ TurnBegins #when You
+    , artifactAbility a 2
+    ]
 
 instance RunMessage BarrierNodeEnergyShield where
   runMessage msg a@(BarrierNodeEnergyShield attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       healDamage attrs (attrs.ability 1) 1
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      handOffArtifact iid attrs
       pure a
     _ -> BarrierNodeEnergyShield <$> liftRunMessage msg attrs

@@ -24,6 +24,7 @@ replaceNonLetters (x : xs) =
       '.' -> replaceNonLetters xs
       _ -> ' ' : replaceNonLetters xs
     else x : replaceNonLetters xs
+
 drawCard :: [a] -> (Maybe a, [a])
 drawCard [] = (Nothing, [])
 drawCard (x : xs) = (Just x, xs)

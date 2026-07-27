@@ -15,7 +15,7 @@ fleshyPathsWesternBurrows = location FleshyPathsWesternBurrows Cards.fleshyPaths
 
 instance HasAbilities FleshyPathsWesternBurrows where
   getAbilities (FleshyPathsWesternBurrows a) =
-    extendRevealed1 a $ restricted a 1 Here actionAbility
+    extendRevealed1 a $ onlyOnce $ restricted a 1 Here actionAbility
 
 instance RunMessage FleshyPathsWesternBurrows where
   runMessage msg l@(FleshyPathsWesternBurrows attrs) = runQueueT $ case msg of

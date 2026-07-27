@@ -404,6 +404,12 @@ instance RunMessage FateOfTheVale where
       let (topCards, rest) = splitAt n $ findWithDefault [] AbyssDeck attrs.decks
       shuffled <- shuffle $ cards <> topCards
       pure $ FateOfTheVale $ attrs & decksL . at AbyssDeck ?~ (shuffled <> rest)
+    ShuffleCardsIntoBottomOfDeck Deck.EncounterDeck n cards -> do
+      let
+        deck = filter (`notElem` cards) $ findWithDefault [] AbyssDeck attrs.decks
+        (rest, bottomCards) = splitAt (length deck - n) deck
+      shuffled <- shuffle $ cards <> bottomCards
+      pure $ FateOfTheVale $ attrs & decksL . at AbyssDeck ?~ (rest <> shuffled)
     PutCardOnTopOfDeck _ Deck.EncounterDeck card -> do
       pure
         $ FateOfTheVale

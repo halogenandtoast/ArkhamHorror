@@ -1059,6 +1059,35 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , gameValueMatches n valueMatcher
             ]
         _ -> noMatch
+    Matcher.PlacedCounterOnInvestigator
+      timing
+      investigatorMatcher
+      sourceMatcher
+      counterMatcher
+      valueMatcher ->
+      guardTiming timing $ \case
+        Window.PlacedHorror source' (InvestigatorTarget iid') n
+          | counterMatcher == Matcher.HorrorCounter -> do
+              andM
+                [ iid' <=~> investigatorMatcher
+                , sourceMatches source' sourceMatcher
+                , gameValueMatches n valueMatcher
+                ]
+        Window.PlacedDamage source' (InvestigatorTarget iid') n
+          | counterMatcher == Matcher.DamageCounter -> do
+              andM
+                [ iid' <=~> investigatorMatcher
+                , sourceMatches source' sourceMatcher
+                , gameValueMatches n valueMatcher
+                ]
+        Window.PlacedDoom source' (InvestigatorTarget iid') n
+          | counterMatcher == Matcher.DoomCounter -> do
+              andM
+                [ iid' <=~> investigatorMatcher
+                , sourceMatches source' sourceMatcher
+                , gameValueMatches n valueMatcher
+                ]
+        _ -> noMatch
     Matcher.PlacedCounterOnLocation timing whereMatcher sourceMatcher counterMatcher valueMatcher ->
       guardTiming timing $ \case
         Window.PlacedClues source' (LocationTarget locationId) n | counterMatcher == Matcher.ClueCounter -> do
@@ -1074,6 +1103,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , gameValueMatches n valueMatcher
             ]
         Window.PlacedDamage source' (LocationTarget locationId) n | counterMatcher == Matcher.DamageCounter -> do
+          andM
+            [ locationMatches iid source window' locationId whereMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        Window.PlacedDoom source' (LocationTarget locationId) n | counterMatcher == Matcher.DoomCounter -> do
           andM
             [ locationMatches iid source window' locationId whereMatcher
             , sourceMatches source' sourceMatcher
@@ -1119,6 +1154,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , gameValueMatches n valueMatcher
             ]
         Window.PlacedDamage source' (AssetTarget assetId) n | counterMatcher == Matcher.DamageCounter -> do
+          andM
+            [ assetId <=~> assetMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        Window.PlacedDoom source' (AssetTarget assetId) n | counterMatcher == Matcher.DoomCounter -> do
           andM
             [ assetId <=~> assetMatcher
             , sourceMatches source' sourceMatcher

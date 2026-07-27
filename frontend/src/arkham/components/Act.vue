@@ -2,7 +2,7 @@
 import { ComputedRef, computed, ref, watch } from 'vue'
 import { useCardStore } from '@/stores/cards'
 import { type Game } from '@/arkham/types/Game'
-import { type Card, cardImage, asCardCode, cardFacedown } from '@/arkham/types/Card'
+import { type Card, cardImage, asCardCode } from '@/arkham/types/Card'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import { useDebug } from '@/arkham/debug'
 import PoolItem from '@/arkham/components/PoolItem.vue'
@@ -10,6 +10,7 @@ import KeyToken from '@/arkham/components/Key.vue'
 import Treachery from '@/arkham/components/Treachery.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue'
 import StackIndicator from '@/arkham/components/StackIndicator.vue'
+import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
@@ -82,10 +83,6 @@ const image = computed(() => {
 const { displayedImage, flipping } = useCardFlip(image)
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
-const viewingUnder = ref(false)
-const viewUnderLabel = computed(() =>
-  viewingUnder.value ? 'Close' : `${props.cardsUnder.length} Cards Underneath`,
-)
 
 function imageForCard(card: Card) {
   return imgsrc(cardImage(card))
@@ -146,14 +143,16 @@ function revealFacedownCard(card: Card): Card {
   }
 }
 
-const cardsUnder = computed(() => props.cardsUnder)
-const visibleCardsUnder = computed(() => {
-  if (debug.active) return props.cardsUnder.map(revealFacedownCard)
-  return props.cardsUnder.filter((card) => !cardFacedown(card))
-})
-const canViewUnder = computed(() => visibleCardsUnder.value.length > 0)
-
-const showCardsUnderAct = () => emits('show', visibleCardsUnder, 'Cards Under Act', false)
+// Two separate piles end up under the act: the scenario's cards under the act *deck*,
+// and cards placed under the act card itself (PlaceUnderneath on the act, e.g. The
+// Apiary's rescued pilgrims). Only the former was being shown, so the latter had no
+// count and no way to view it.
+const cardsUnder = computed(() => [...props.cardsUnder, ...props.act.cardsUnderneath])
+// Facedown cards stay in the list so the count is honest; CardView renders them as
+// backs. Debug turns them over.
+const visibleCardsUnder = computed(() =>
+  debug.active ? cardsUnder.value.map(revealFacedownCard) : cardsUnder.value,
+)
 
 const futureStack = computed(() =>
   props.remainingStack.filter((c) => asCardCode(c) !== props.act.id),
@@ -362,16 +361,14 @@ const nextToScarletKeys = computed(() =>
       position="bottom"
       @choose="chooseAbility"
     />
-    <button
-      v-if="cardsUnder.length > 0 && canViewUnder"
-      class="view-cards-under-button"
-      @click="showCardsUnderAct"
-    >
-      {{ viewUnderLabel }}
-    </button>
-    <button v-else-if="cardsUnder.length > 0" class="view-cards-under-button" disabled>
-      {{ viewUnderLabel }}
-    </button>
+    <CardsUnderIndicator
+      v-if="cardsUnder.length > 0"
+      :cards="visibleCardsUnder"
+      :label="$t('cardsUnderneath', { count: cardsUnder.length })"
+      :game="game"
+      :playerId="playerId"
+      @choose="$emit('choose', $event)"
+    />
     <div class="card-container" v-for="(card, idx) in cardsNextTo" :key="idx">
       <img class="card card--sideways" :src="imageForCard(card)" />
     </div>

@@ -19,7 +19,7 @@ mariaRivera = ally MariaRiveraLostPilgrim Cards.mariaRivera (5, 0)
 instance HasAbilities MariaRiveraLostPilgrim where
   getAbilities (MariaRiveraLostPilgrim a) =
     [ mkAbility a 1
-        $ forced
+        $ SilentForcedAbility
         $ EnemyWouldTakeDamage #when AnySource (EnemyAt (locationWithAsset a) <> EnemyWithTrait Cultist)
     , mkAbility a 2
         $ triggered

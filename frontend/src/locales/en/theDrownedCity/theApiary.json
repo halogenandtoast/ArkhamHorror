@@ -57,6 +57,27 @@
     "buildEncounterDeck": "Shuffle each remaining encounter card to build the encounter deck along with the following set-aside Apiary locations: Growing Fields and both copies of Fleshy Paths.",
     "readyToBegin": "You are now ready to begin."
   },
+  "lostPilgrims": {
+    "title": "Scenario Interlude: Lost Pilgrims",
+    "body": "<p>Coughing weakly, the woman introduces herself as Maria Rivera. She and the others are a collective of pilgrims from all walks of life, led to this place by their dreams. “This is the domain of the drowned god, the dead monarch Cthulhu. We have been instructed by our leader, Lady Dao, to await his return in this ancient city.” The name “Cthulhu” rings in your ears. You have heard it time and again in your dreams.</p><p>Maria continues. “However, there is something malevolent living in these tunnels. Something I fear we awakened by our presence. We sent one of our own to find help, but they haven’t returned.”</p><p>Your discussion is cut short by a dreadful roar. Maria lowers her gaze. “Since we arrived, we’ve been pursued by something…something awful. It hunted us through the streets, the ancient archive, and even through the city’s heart. I hoped it would not follow us to this corrupt and horrible place.” She coughs weakly. “I do not have the strength to lead them out of these tunnels. Please, I beg you, lead us to safety.”</p><p>Another roar echoes through the tunnels, closer this time, accompanied by the trilling of parasites. Andy looks to you, then to Maria and says, “Gather your people. Nobody deserves to die down here.”</p>",
+    "flipApiaryEntrance": "Flip Apiary Entrance to its (*Dangerous Exit*) side.",
+    "gatherCultists": "Search the encounter deck, discard pile, and all in- and out-of-play areas for each non-weakness _Cultist_ enemy. Shuffle them together and place them in a facedown stack beneath Lost Campsite.",
+    "mariaRivera": "Choose an investigator to take control of the set-aside Maria Rivera story asset. (*Remember that Maria is also a _Cultist_ who can be saved!*)",
+    "theInescapable": "Spawn the set-aside The Inescapable enemy, exhausted, at the location farthest from all investigators. Shuffle the rest of *The Inescapable* encounter set into the encounter deck, along with the encounter discard pile.",
+    "placeClues": "Place clues on each revealed location without _victory X_ up to its clue value.",
+    "continuePlaying": "Continue playing."
+  },
+  "theHiveMind": {
+    "title": "Scenario Interlude: The Hive Mind",
+    "body": "<p>You feel the rush of an alien consciousness as a thousand thoughts and memories encroach upon yours. She is your Mother. You feel it deep within. You see a legion of winged, tentacled monstrosities entering an otherworldly vessel. You see Mother, small as a worm, crawl out of her host. You see her enter another host, and then another, laying eggs within their gullets. You feel her need to grow, to spread, to proliferate. Then the taste of alien flesh, of human flesh, of your own flesh as Mother tastes you even now.</p><p>You awaken to see Ruby standing over you, knife in hand. You are in a pulsing, fetid chamber; the cord that linked you to the Mother flails like a lizard’s tail on the ground before you. Embedded in the walls of the chamber is a massive corpse of an alien creature held up like a grisly puppet: Mother herself. You feel her desire to absorb you, to become you, to devour you.</p><p>“We have to kill it,” Ruby growls.</p>",
+    "rearrangeRing": "Rearrange the Apiary Entrance, Grasping Corridor, Starving Corridor, and Acidic Coelom in a circle. Place each other location with _victory X_ and no clues on it in the victory display, discarding all tokens and cards at those locations.",
+    "removeRemainingLocations": "Search the encounter deck, encounter discard pile, and play area for each remaining location and remove them from the game.",
+    "placeCentralChamber": "Find the set-aside Central Chamber location and place it in the central gap, with the bottom edge facing Acidic Coelom.",
+    "spawnMother": "Spawn the set-aside Mother enemy at Central Chamber.",
+    "theInescapable": "If *The Inescapable* encounter set is set aside, spawn The Inescapable enemy at the location farthest from all investigators. Shuffle the rest of *The Inescapable* encounter set into the encounter deck, along with the encounter discard pile.",
+    "placeClues": "Place clues on each revealed location without _victory X_ up to its clue value.",
+    "continuePlaying": "Continue playing."
+  },
   "label": {
     "chooseExpeditionAssetQuestion": "Choose an earned Artifact asset, or an Item asset from the Expedition encounter set, to begin in play under your control.",
     "noExpeditionAsset": "Do not take an Artifact or Expedition asset.",
@@ -78,26 +99,82 @@
       "elderThing": "-6. If you fail, take 1 damage or 1 horror."
     }
   },
-  "apiaryEntranceBeckoningLight": {
-    "resign": "Resign."
+  "tooltips": {
+    "apiaryEntranceBeckoningLight": {
+      "resign": "Resign."
+    },
+    "apiaryEntranceDangerousExit": {
+      "resign": "Resign."
+    }
   },
   "resolutions": {
-    "xp": { "bonus": "for what you learned in the apiary" },
+    "xp": {
+      "bonus": "for saving the pilgrims from near-certain death!"
+    },
+    "investigatorDefeat": {
+      "title": "Investigator Defeat",
+      "body": "<p>_Investigator Defeat_: You don’t feel any pain. In fact, there is no “you” to feel pain. Instead, “you” have become part of an endless interconnected mind that dwells beneath this city. You have always been here. And you always will be.</p>",
+      "killed": "Each defeated investigator is killed. If there are no surviving investigators to continue the campaign, the investigators lose the campaign.",
+      "storyAssets": "If the Andy Van Nortwick or Ruby Standish story asset was in the deck of any investigator who was killed, choose a surviving investigator to add them to their deck for the remainder of the campaign. This card does not count toward that investigator’s deck size.",
+      "otherResolution": "If another resolution was reached, the remaining investigators proceed to that resolution."
+    },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p>_Resolution 1_: The last of the survivors emerges from the fetid tunnels. After thanking you, the pilgrims show you the tunnel they took from the \"heart of the city.\" As you leave, Andy wipes ichor off of his camera lens. \"There's another roll of worthless film. One shot could've made my career. I might as well have thrown all my film overboard on the way here.\"</p>"
+      "body": "<p>_Resolution 1_: The last of the survivors emerges from the fetid tunnels. After thanking you, the pilgrims show you the tunnel they took from the \"heart of the city.\" As you leave, Andy wipes ichor off of his camera lens. \"There's another roll of worthless film. One shot could've made my career. I might as well have thrown all my film overboard on the way here.\"</p>",
+      "updateCampaignLog": "Update your Campaign Log.",
+      "crossOutTheApiary": "Cross out “The Apiary” on the R’lyeh map.",
+      "grislyMask": "If the Grisly “Mask” was under the control of an investigator when the scenario ended, check the box next to Grisly “Mask” under “Artifacts Earned.”",
+      "victory": "Each investigator earns experience equal to the victory X value of each card in the victory display.",
+      "experience": "_Experience_: {xp}",
+      "recordPilgrimsWereSaved": "Record _the pilgrims were saved_.",
+      "bonus": "Each investigator earns 2 bonus experience for saving the pilgrims from near-certain death!",
+      "proceedToTheGrandVault": "Proceed to _The Grand Vault_."
     },
     "resolution2": {
       "title": "Resolution 2",
-      "body": "<p>_Resolution 2_: Shell-shocked, you emerge from the tunnels to find the vast antechamber where you began. If any pilgrims survived, they did not linger. After a long silence, the expedition prepares to move on. Andy narrows his eyes at a trail of blood on the floor, noting that if a pilgrim had been dragged away, it would be much messier. Their trail may lead to \"the city core\" as Maria put it.</p>"
+      "body": "<p>_Resolution 2_: Shell-shocked, you emerge from the tunnels to find the vast antechamber where you began. If any pilgrims survived, they did not linger. After a long silence, the expedition prepares to move on. Andy narrows his eyes at a trail of blood on the floor, noting that if a pilgrim had been dragged away, it would be much messier. Their trail may lead to \"the city core\" as Maria put it.</p>",
+      "updateCampaignLog": "Update your Campaign Log.",
+      "crossOutTheApiary": "Cross out “The Apiary” on the R’lyeh map.",
+      "grislyMask": "If the Grisly “Mask” was under the control of an investigator when the scenario ended, check the box next to Grisly “Mask” under “Artifacts Earned.”",
+      "victory": "Each investigator earns experience equal to the victory X value of each card in the victory display.",
+      "experience": "_Experience_: {xp}",
+      "parasiticTransformation": "Each investigator must search The Apiary encounter set for a copy of Parasitic Transformation and add it to their deck. This card does not count toward their deck size.",
+      "recordPilgrimsWereDevoured": "Record _the pilgrims were devoured_.",
+      "proceedToTheGrandVault": "Proceed to _The Grand Vault_."
     },
     "resolution3": {
       "title": "Resolution 3",
-      "body": "<p>_Resolution 3_: The expedition treks back to the apiary entrance, covered in gore. You scratch a persistent itch on the back of your neck, hoping you weren't infected. Splintered memories from your brief moment as part of the hive mind continue to encroach on your thoughts. You doubt you will ever feel quite the same again.</p>"
+      "body": "<p>_Resolution 3_: The expedition treks back to the apiary entrance, covered in gore. You scratch a persistent itch on the back of your neck, hoping you weren't infected. Splintered memories from your brief moment as part of the hive mind continue to encroach on your thoughts. You doubt you will ever feel quite the same again.</p>",
+      "updateCampaignLog": "Update your Campaign Log.",
+      "crossOutTheApiary": "Cross out “The Apiary” on the R’lyeh map.",
+      "grislyMask": "If the Grisly “Mask” was under the control of an investigator when the scenario ended, check the box next to Grisly “Mask” under “Artifacts Earned.”",
+      "victory": "Each investigator earns experience equal to the victory X value of each card in the victory display.",
+      "experience": "_Experience_: {xp}",
+      "recordParasitesExterminated": "Record _the investigators exterminated the alien parasites_.",
+      "proceedToResolution4": "Proceed to _Resolution 4_."
     },
     "noResolution": {
       "title": "No Resolution",
-      "body": "<p>_If no resolution was reached_: You pull a flailing worm from your neck as you escape the putrid tunnels. Hopefully you aren't infected…</p>"
+      "body": "<p>_If no resolution was reached_: You pull a flailing worm from your neck as you escape the putrid tunnels. Hopefully you aren't infected…</p>",
+      "updateCampaignLog": "Update your Campaign Log.",
+      "crossOutTheApiary": "Cross out “The Apiary” on the R’lyeh map.",
+      "grislyMask": "If the Grisly “Mask” was under the control of an investigator when the scenario ended, check the box next to Grisly “Mask” under “Artifacts Earned.”",
+      "victory": "Each investigator earns experience equal to the victory X value of each card in the victory display.",
+      "experience": "_Experience_: {xp}",
+      "parasiticTransformation": "Each investigator must search The Apiary encounter set for a copy of Parasitic Transformation and add it to their deck. This card does not count toward their deck size.",
+      "checkCampaignLog": "Check your Campaign Log.",
+      "proceedToTheGrandVault": "If the expedition headed west, proceed to _The Grand Vault_.",
+      "proceedToResolution4": "If the expedition headed east, skip to _Resolution 4_."
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: You eventually find your old route. Several more days’ journey brings you to a large round door the size of a bank vault. After pressing several alien glyphs in turn, the door rolls back to reveal a dry path winding along the seafloor toward a softly glowing dome. A shimmering, gossamer energy field holds back the weight of the ocean. As you marvel at the miraculous path and dome, a chunk of obsidian loosens and falls from above onto the dome. Rather than shatter, the dome ripples, pliant, as the rock falls through with a thunderous crash.</p><p>“This is impossible,” gasps Ruby. “Something in that dome is powering the barrier. Looks like it holds back water, but lets other things pass through. Whatever’s doing it could be a good find for Randall.” She looks up the sheer wall leading to the surface.</p><p class='basic'>The investigators must decide (choose one):</p>"
+    },
+    "label": {
+      "resolution4": {
+        "drownedQuarter": "“We came this far. We’re not leaving any stone unturned.”",
+        "westernWall": "“Are you crazy? We need to get out of here!”"
+      }
     }
   }
 }

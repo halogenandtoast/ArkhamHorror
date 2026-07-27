@@ -4,8 +4,8 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
 newtype AbandonedWarehouse = AbandonedWarehouse LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 abandonedWarehouse :: LocationCard AbandonedWarehouse
 abandonedWarehouse = location AbandonedWarehouse Cards.abandonedWarehouse 3 (PerPlayer 2)

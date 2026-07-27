@@ -411,6 +411,12 @@ shuffleCardsIntoTopOfDeck
   => deck -> Int -> cards -> Message
 shuffleCardsIntoTopOfDeck (toDeck -> deck) n = ShuffleCardsIntoTopOfDeck deck n . map toCard . toList
 
+shuffleCardsIntoBottomOfDeck
+  :: (IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
+  => deck -> Int -> cards -> Message
+shuffleCardsIntoBottomOfDeck (toDeck -> deck) n =
+  ShuffleCardsIntoBottomOfDeck deck n . map toCard . toList
+
 findEncounterCard
   :: (Targetable target, IsCardMatcher cardMatcher)
   => InvestigatorId

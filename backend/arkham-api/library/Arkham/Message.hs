@@ -1014,6 +1014,7 @@ data Message
   | ShuffleDeck DeckSignifier
   | ShuffleIntoDeck DeckSignifier Target
   | ShuffleCardsIntoTopOfDeck DeckSignifier Int [Card]
+  | ShuffleCardsIntoBottomOfDeck DeckSignifier Int [Card]
   | SpendClues Int [InvestigatorId]
   | SpendResources InvestigatorId Int
   | SpendUses Source Target UseType Int

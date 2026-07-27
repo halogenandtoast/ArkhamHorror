@@ -26,6 +26,7 @@ import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import AiTargetMenu from '@/arkham/components/AiTargetMenu.vue'
 import Story from '@/arkham/components/Story.vue';
+import { useCardFlip } from '@/arkham/composables/useCardFlip';
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
@@ -306,6 +307,18 @@ const assetStory = computed(() => {
   )
 })
 
+// A story placed on an asset is its other side (e.g. Ancient Relic's glyph back),
+// so turn it over on the asset's own <img> rather than swapping components outright.
+// The Story component only takes over once the flip has landed, by which point it is
+// already showing the same art.
+const storyImage = computed(() => {
+  const story = assetStory.value
+  if (!story) return null
+  return cardImage(story.flipped ? story.flippedArt : story.art)
+})
+const faceImage = computed(() => storyImage.value ?? image.value)
+const { displayedImage, flipping } = useCardFlip(faceImage)
+
 function startDrag(event: DragEvent) {
   dragging.value = true
   if (event.dataTransfer) {
@@ -317,7 +330,7 @@ function startDrag(event: DragEvent) {
 
 <template>
   <div class="asset--outer">
-    <Story v-if="assetStory" :story="assetStory" :game="game" :playerId="playerId" @choose="choose"/>
+    <Story v-if="assetStory && !flipping" :story="assetStory" :game="game" :playerId="playerId" @choose="choose"/>
     <div v-else class="asset" :data-index="asset.cardId">
       <div class="card-frame" ref="frame">
         <div v-if="asset.marketDeck" class="market-deck">
@@ -384,9 +397,9 @@ function startDrag(event: DragEvent) {
             :data-id="id"
             :data-image-id="dataImage"
             :data-is-spirit="isSpirit || undefined"
-            :src="image"
+            :src="displayedImage"
             class="card"
-            :class="{ exhausted, 'ability-target': isHighlighted || isAttackTarget, 'ai-target-hover': ai.targeting }"
+            :class="{ exhausted, 'ability-target': isHighlighted || isAttackTarget, 'ai-target-hover': ai.targeting, 'card--flipping': flipping }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
             :draggable="debug.active"

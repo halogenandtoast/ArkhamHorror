@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.AncientRelicLeeringVisage (ancientRelic) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Story
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log (record)
+import Arkham.Story.Cards qualified as Stories
 
 newtype AncientRelicLeeringVisage = AncientRelicLeeringVisage AssetAttrs
   deriving anyclass IsAsset
@@ -23,7 +23,7 @@ instance HasModifiersFor AncientRelicLeeringVisage where
 instance HasAbilities AncientRelicLeeringVisage where
   getAbilities (AncientRelicLeeringVisage a) =
     [ controlled_ a 1 $ forced $ DealtDamage #after AnySource You
-    , controlled_ a 2 $ forced $ GameEnds #when
+    , controlled_ a 2 $ freeReaction $ GameEnds #when
     ]
 
 instance RunMessage AncientRelicLeeringVisage where
@@ -33,18 +33,8 @@ instance RunMessage AncientRelicLeeringVisage where
       dealAssetDamage attrs.id (attrs.ability 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      flipOver iid attrs
-      pure a
-    Flip _iid _ (isTarget attrs -> True) -> do
-      -- "Flip this card and resolve its text." The back side (story code 11581b)
-      -- is currently registered only as a placeholder Asset CardDef, not as a
-      -- Story card, so we cannot read it via readStory yet. As a Glyph asset in
-      -- The Drowned City, the known resolvable effect is translating its alien glyph.
-      -- TODO: once 11581b is implemented as the proper story/back side, resolve its
-      -- text here (likely via readStory) instead of (or in addition to) the glyph
-      -- translation below, and verify the actual translated word for the rune_s glyph
-      -- (placeholder "Spirit" below).
-      record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_s" :: Text, "Machine" :: Text)
+      -- "Flip this card and resolve its text." The back (11581b) is a story card,
+      -- which owns the glyph and the victory display.
+      readStory iid attrs Stories.ancientRelic
       pure a
     _ -> AncientRelicLeeringVisage <$> liftRunMessage msg attrs

@@ -2427,6 +2427,13 @@ getLocationsMatching lmatcher = do
       matchingLocationIds <- map toId <$> getLocationsMatching matcher
       matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
       pure $ filter ((`elem` matches') . toId) ls
+    FarthestLocationFromLocationMatching startMatcher matcher -> do
+      selectOne startMatcher >>= \case
+        Nothing -> pure []
+        Just start -> do
+          matchingLocationIds <- map toId <$> getLocationsMatching matcher
+          matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
+          pure $ filter ((`elem` matches') . toId) ls
     LocationFartherFrom pivot matcher -> do
       selectOne matcher >>= \case
         Nothing -> pure []
@@ -3204,7 +3211,7 @@ getAssetsMatching matcher = do
       pure $ filter ((`cardMatch` cardMatcher) . toCard) as
     UniqueAsset ->
       pure $ filter ((`cardMatch` CardIsUnique) . toCard) as
-    DiscardableAsset -> pure $ filter canBeDiscarded as
+    DiscardableAsset -> filterMatcher (filter canBeDiscarded as) (AssetWithoutModifier CannotLeavePlay)
     NonWeaknessAsset ->
       pure $ filter (isNothing . cdCardSubType . toCardDef) as
     SingleSidedAsset ->

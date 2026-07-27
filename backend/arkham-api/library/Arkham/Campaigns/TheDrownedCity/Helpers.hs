@@ -1,5 +1,6 @@
 module Arkham.Campaigns.TheDrownedCity.Helpers where
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog (campaignLogRecordedCounts)
 import Arkham.CampaignLogKey (IsCampaignLogKey, toCampaignLogKey)
@@ -11,21 +12,62 @@ import Arkham.Classes.Query
 import Arkham.Effect.Types (makeEffectBuilder)
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.Log (getHasRecord, getSomeRecordSet)
+import Arkham.Helpers.Modifiers (modifySelf)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorLog))
 import Arkham.Matcher
 import Arkham.Message (Message (CreateEffect, DecreaseFloodLevel, IncreaseFloodLevel))
+import Arkham.Message.Lifted (takeControlOfAsset)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Queue
+import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Projection (fieldMap)
 import Arkham.Source
+import Arkham.Target
 import Arkham.Tracing
+import Control.Monad.Writer.Class
 import Data.Char qualified as C
+import Data.Map.Monoidal.Strict (MonoidalMap)
 import Data.Text qualified as T
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theDrownedCity" a
+
+{- | "Artifacts have a unique card back, have no cost, cannot leave play, and cannot
+be chosen to be discarded via scenario effects." Nothing can send one to a discard
+pile it has no back for, so anything that would discard it removes it instead.
+-}
+artifactModifiers
+  :: ( Targetable a
+     , Sourceable a
+     , HasGame m
+     , Tracing m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => a
+  -> m ()
+artifactModifiers a = modifySelf a [CannotLeavePlay, RemoveFromGameInsteadOfDiscard]
+
+{- | "If any investigator in control of an artifact is defeated, give control of it
+to the nearest surviving investigator instead of removing it from the game." Silent
+because there is no decision to make while only one investigator is nearest, and the
+artifact never leaves play either way. Resolve with 'handOffArtifact'.
+-}
+artifactAbility :: (Sourceable a, HasCardCode a) => a -> Int -> Ability
+artifactAbility a n =
+  controlled a n (exists $ not_ You)
+    $ SilentForcedAbility
+    $ InvestigatorDefeated #when ByAny You
+
+-- | Resolves 'artifactAbility'; @iid@ is the investigator being defeated.
+handOffArtifact
+  :: (ReverseQueue m, ToId asset AssetId) => InvestigatorId -> asset -> m ()
+handOffArtifact iid asset = do
+  nearest <-
+    select $ not_ (InvestigatorWithId iid) <> NearestToLocation (locationWithInvestigator iid)
+  chooseOrRunOneM iid $ targets nearest (`takeControlOfAsset` asId asset)
 
 investigatorHasTask
   :: (HasGame m, Tracing m, HasCardDef card) => InvestigatorId -> card -> m Bool

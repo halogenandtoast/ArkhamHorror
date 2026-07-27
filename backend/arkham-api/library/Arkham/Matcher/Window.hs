@@ -216,6 +216,7 @@ data WindowMatcher
   | WouldPlaceClueOnLocation Timing Who Where ValueMatcher
   | WouldAddChaosTokensToChaosBag Timing (Maybe Who) ValueMatcher ChaosTokenFace
   | PlacedCounter Timing Who SourceMatcher CounterMatcher ValueMatcher
+  | PlacedCounterOnInvestigator Timing InvestigatorMatcher SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnLocation Timing Where SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnEnemy Timing EnemyMatcher SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnAgenda Timing AgendaMatcher SourceMatcher CounterMatcher ValueMatcher

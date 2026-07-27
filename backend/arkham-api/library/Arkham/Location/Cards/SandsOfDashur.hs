@@ -6,8 +6,8 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
 newtype SandsOfDashur = SandsOfDashur LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sandsOfDashur :: LocationCard SandsOfDashur
 sandsOfDashur = symbolLabel $ location SandsOfDashur Cards.sandsOfDashur 7 (Static 0)

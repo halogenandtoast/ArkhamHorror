@@ -640,6 +640,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     let (cards', rest) = draw n scenarioEncounterDeck
     shuffled <- shuffleM (cards <> cards')
     pure $ a & encounterDeckL .~ Deck (shuffled <> unDeck rest)
+  ShuffleCardsIntoBottomOfDeck Deck.EncounterDeck n cards -> do
+    let
+      encounterCards = mapMaybe (preview _EncounterCard) cards
+      deck = filter (`notElem` encounterCards) $ unDeck scenarioEncounterDeck
+      (rest, bottomCards) = splitAt (length deck - n) deck
+    shuffled <- shuffleM (encounterCards <> bottomCards)
+    pure $ filterOutCards cards a & encounterDeckL .~ Deck (rest <> shuffled)
   PutCardOnTopOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do
       let
@@ -686,6 +693,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     let (cards', rest) = splitAt n $ fromMaybe [] $ view (decksL . at deckKey) a
     shuffled <- shuffle (cards <> cards')
     pure $ a & decksL . at deckKey ?~ shuffled <> rest
+  ShuffleCardsIntoBottomOfDeck (Deck.ScenarioDeckByKey deckKey) n cards -> do
+    let
+      deck = filter (`notElem` cards) $ fromMaybe [] $ view (decksL . at deckKey) a
+      (rest, bottomCards) = splitAt (length deck - n) deck
+    shuffled <- shuffle (cards <> bottomCards)
+    pure $ filterOutCards cards a & decksL . at deckKey ?~ rest <> shuffled
   PutCardOnBottomOfDeck _ (Deck.ScenarioDeckByKey deckKey) card -> do
     let
       deck = fromMaybe [] $ view (decksL . at deckKey) a

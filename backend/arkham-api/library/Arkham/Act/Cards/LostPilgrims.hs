@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
-import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario (getVictoryDisplay)
 import Arkham.Helpers.SkillTest.Lifted (parley)
@@ -35,7 +35,9 @@ instance HasAbilities LostPilgrims where
       a
       [ skillTestAbility
           $ restricted a 1 (exists $ EnemyWithTrait Cultist <> at_ YourLocation) parleyAction_
-      , mkAbility a 2 $ forced $ PhaseEnds #when #enemy
+      , restricted a 2 (exists $ #cultist <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Stowaway))
+          $ forced
+          $ PhaseEnds #when #enemy
       , mkAbility a 3 $ Objective $ forced $ RoundEnds #when
       ]
 
@@ -47,24 +49,16 @@ instance RunMessage LostPilgrims where
         skillLabeled #intellect $ parley sid iid (attrs.ability 1) attrs #intellect (Fixed 2)
         skillLabeled #combat $ parley sid iid (attrs.ability 1) attrs #combat (Fixed 2)
       pure a
-    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n > 0 -> do
-      let
-        go 0 _ = pure ()
-        go k moved = do
-          cultists <-
-            select
-              $ EnemyWithTrait Cultist
-              <> enemyAtLocationWith iid
-              <> not_ (mapOneOf EnemyWithId moved)
-          case cultists of
-            [] -> pure ()
-            _ -> chooseOrRunOneM iid $ targets cultists \cultist -> do
-              mloc <- getLocationOf cultist
-              for_ mloc \loc -> do
-                connectedLocations <- select $ accessibleFrom ForMovement loc
-                chooseOrRunOneM iid $ targets connectedLocations (enemyMoveTo (attrs.ability 1) cultist)
-              lift $ go (k - 1) (cultist : moved)
-      go n []
+    PassedThisSkillTestBy _iid (isAbilitySource attrs 1 -> True) n -> do
+      doStep n msg
+      pure a
+    DoStep n (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) | n > 0 -> do
+      cultists <- select $ #cultist <> enemyAtLocationWith iid
+      chooseOrRunOneM iid $ targets cultists \cultist -> do
+          withLocationOf cultist \loc -> do
+            connectedLocations <- select $ accessibleFrom ForMovement loc
+            chooseOrRunOneM iid $ targets connectedLocations (enemyMoveTo (attrs.ability 1) cultist)
+          doNextStep msg
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       cultists <- select $ EnemyWithTrait Cultist

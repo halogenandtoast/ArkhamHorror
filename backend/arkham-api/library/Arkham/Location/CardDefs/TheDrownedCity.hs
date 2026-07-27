@@ -248,7 +248,7 @@ acidicCoelom :: CardDef
 acidicCoelom =
   singleSided
     $ victory 1
-    $ location "11571" "Acidic Coelom" [Apiary, Nest, Sanctum] Square [Heart, Triangle] TheApiary
+    $ location "11571" "Acidic Coelom" [Apiary, Nest, Sanctum] Square [Heart, Diamond] TheApiary
 
 centralChamber :: CardDef
 centralChamber =

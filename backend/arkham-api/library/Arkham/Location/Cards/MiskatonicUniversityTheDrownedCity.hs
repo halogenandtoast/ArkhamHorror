@@ -4,8 +4,8 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
 newtype MiskatonicUniversityTheDrownedCity = MiskatonicUniversityTheDrownedCity LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 miskatonicUniversityTheDrownedCity :: LocationCard MiskatonicUniversityTheDrownedCity
 miskatonicUniversityTheDrownedCity = location MiskatonicUniversityTheDrownedCity Cards.miskatonicUniversityTheDrownedCity 5 (Static 1)

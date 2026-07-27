@@ -963,6 +963,11 @@ runGameMessage msg g = case msg of
       $ g
       & (focusedCardsL %~ map (filter (`notElem` cards)))
       & (foundCardsL . each %~ filter (`notElem` cards))
+  ShuffleCardsIntoBottomOfDeck _ _ cards ->
+    pure
+      $ g
+      & (focusedCardsL %~ map (filter (`notElem` cards)))
+      & (foundCardsL . each %~ filter (`notElem` cards))
   FocusChaosTokens tokens -> pure $ g & focusedChaosTokensL <>~ tokens
   SealChaosToken token -> pure $ g & focusedChaosTokensL %~ filter (/= token)
   Msg.RevealChaosToken SkillTestSource {} _ token -> pure $ g & focusedChaosTokensL %~ filter (/= token)

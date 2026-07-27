@@ -25,6 +25,12 @@ instance HasAbilities ApiaryTender where
         [ PlacedCounterOnLocation #after (locationWithEnemy a) AnySource DoomCounter (atLeast 1)
         , PlacedCounterOnEnemy #after (EnemyAt (locationWithEnemy a)) AnySource DoomCounter (atLeast 1)
         , PlacedCounterOnAsset #after (AssetAt (locationWithEnemy a)) AnySource DoomCounter (atLeast 1)
+        , PlacedCounterOnInvestigator
+            #after
+            (InvestigatorAt $ locationWithEnemy a)
+            AnySource
+            DoomCounter
+            (atLeast 1)
         ]
 
 instance RunMessage ApiaryTender where
@@ -32,7 +38,9 @@ instance RunMessage ApiaryTender where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       readyThis attrs
       roundModifier (attrs.ability 1) attrs (RemoveKeyword Aloof)
-      selectOne (investigatorEngagedWith attrs) >>= traverse_ \iid ->
-        initiateEnemyAttack attrs (attrs.ability 1) iid
+      doStep 1 msg
+      pure e
+    DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1) -> do
+      selectEach (investigatorEngagedWith attrs) (initiateEnemyAttack attrs (attrs.ability 1))
       pure e
     _ -> ApiaryTender <$> liftRunMessage msg attrs

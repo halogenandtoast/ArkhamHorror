@@ -22,16 +22,11 @@ instance HasAbilities GraspingCorridor where
 
 instance RunMessage GraspingCorridor where
   runMessage msg l@(GraspingCorridor attrs) = runQueueT $ case msg of
-    Revelation iid (isSource attrs -> True) -> do
+    Revelation _iid (isSource attrs -> True) -> do
       shuffleEncounterDiscardBackIn
       starvingCorridor <- getSetAsideCard Cards.starvingCorridor
       corruptedVault <- getSetAsideCard Cards.corruptedVault
-      -- "Find Starving Corridor and Corrupted Vault and shuffle them into the
-      -- bottom 10 cards of the encounter deck." There is no message for shuffling
-      -- into the bottom N yet, so place them on the bottom of the encounter deck.
-      -- TODO: shuffle into the bottom 10 specifically once a message exists.
-      putCardOnBottomOfDeck iid Deck.EncounterDeck starvingCorridor
-      putCardOnBottomOfDeck iid Deck.EncounterDeck corruptedVault
+      shuffleCardsIntoBottomOfDeck Deck.EncounterDeck 10 [starvingCorridor, corruptedVault]
       GraspingCorridor <$> liftRunMessage msg attrs
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       apiaryEntrance <- getJustLocationByName "Apiary Entrance"

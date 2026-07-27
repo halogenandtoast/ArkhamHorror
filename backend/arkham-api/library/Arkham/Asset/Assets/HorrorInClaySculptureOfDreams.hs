@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.HorrorInClaySculptureOfDreams (horrorInClay) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -22,15 +23,19 @@ horrorInClay = asset HorrorInClaySculptureOfDreams Cards.horrorInClay
 -- gains hunter and "Prey - You." The ForcePrey override both removes the
 -- printed Prey and installs "Prey - You" (relative to this asset's controller).
 instance HasModifiersFor HorrorInClaySculptureOfDreams where
-  getModifiersFor (HorrorInClaySculptureOfDreams a) = for_ a.controller \iid ->
-    modifySelect
-      a
-      (EnemyWithTrait StarSpawn)
-      [LosePatrol, AddKeyword Keyword.Hunter, ForcePrey (Prey $ InvestigatorWithId iid)]
+  getModifiersFor (HorrorInClaySculptureOfDreams a) = do
+    artifactModifiers a
+    for_ a.controller \iid ->
+      modifySelect
+        a
+        (EnemyWithTrait StarSpawn)
+        [LosePatrol, AddKeyword Keyword.Hunter, ForcePrey (Prey $ InvestigatorWithId iid)]
 
 instance HasAbilities HorrorInClaySculptureOfDreams where
   getAbilities (HorrorInClaySculptureOfDreams a) =
-    [restricted a 1 ControlsThis $ FastAbility (exhaust a)]
+    [ restricted a 1 ControlsThis $ FastAbility (exhaust a)
+    , artifactAbility a 2
+    ]
 
 instance RunMessage HorrorInClaySculptureOfDreams where
   runMessage msg a@(HorrorInClaySculptureOfDreams attrs) = runQueueT $ case msg of
@@ -42,5 +47,8 @@ instance RunMessage HorrorInClaySculptureOfDreams where
           labeled' "moveStarSpawn" $ chooseTargetM iid starSpawn \eid -> do
             connecting <- select $ connectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
             chooseTargetM iid connecting $ enemyMoveTo (attrs.ability 1) eid
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      handOffArtifact iid attrs
       pure a
     _ -> HorrorInClaySculptureOfDreams <$> liftRunMessage msg attrs

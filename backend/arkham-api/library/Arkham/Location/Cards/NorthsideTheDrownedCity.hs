@@ -4,8 +4,8 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
 newtype NorthsideTheDrownedCity = NorthsideTheDrownedCity LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 northsideTheDrownedCity :: LocationCard NorthsideTheDrownedCity
 northsideTheDrownedCity = location NorthsideTheDrownedCity Cards.northsideTheDrownedCity 4 (Static 1)

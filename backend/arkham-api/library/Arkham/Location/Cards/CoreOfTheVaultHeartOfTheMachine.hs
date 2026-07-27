@@ -1,12 +1,19 @@
 module Arkham.Location.Cards.CoreOfTheVaultHeartOfTheMachine (coreOfTheVaultHeartOfTheMachine) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheDrownedCity.Key (
+  TheDrownedCityKey (TheCreatureWasDefeated, TheInnerSanctumWasUnsealed),
+ )
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
+import Arkham.Helpers.Xp (toBonus)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (record)
 import Arkham.Scenarios.TheGrandVault.Helpers
 import Arkham.Trait (Trait (Vault))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -36,8 +43,8 @@ instance HasAbilities CoreOfTheVaultHeartOfTheMachine where
               $ EnemyDefeated #when Anyone ByAny (enemyIs Enemies.theInescapable <> enemyAt a)
           , -- [action][action] Spend 3 [per_investigator] clues, as a group.
             restricted a 2 Here
-              $ actionAbilityWithCost
-              $ Costs [ActionCost 2, GroupClueCost (PerPlayer 3) (be a)]
+              $ doubleActionAbilityWithCost
+              $ GroupClueCost (PerPlayer 3) (be a)
           ]
         else
           [ restricted a 3 (not_ $ exists $ LocationWithTrait Vault <> LocationWithResources (atMost 0))
@@ -48,18 +55,30 @@ instance HasAbilities CoreOfTheVaultHeartOfTheMachine where
 instance RunMessage CoreOfTheVaultHeartOfTheMachine where
   runMessage msg l@(CoreOfTheVaultHeartOfTheMachine attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      -- Search all in/out-of-play areas for each Still Behind You copy and remove
-      -- them from the game.
-      stillBehindYous <-
-        select $ IncludeOutOfPlayTreachery $ treacheryIs Treacheries.stillBehindYou
-      for_ stillBehindYous removeFromGame
-      -- TODO: Record `the creature was defeated`. There is no corresponding
-      -- TheDrownedCityKey for this ruling yet; add the key and record it here once
-      -- it exists.
+      -- Search the encounter deck, discard pile, and all in and out of play areas
+      -- for each copy of Still Behind You and remove them from the game. Selecting
+      -- treacheries only finds the ones that exist as entities, so the copies still
+      -- sitting in the encounter deck survived; this message reaches the scenario's
+      -- deck/discard/set-aside as well as the treachery entities.
+      push $ Msg.RemoveAllCopiesOfEncounterCardFromGame (cardIs Treacheries.stillBehindYou)
+      record TheCreatureWasDefeated
       pure l
-    UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      -- TODO: Proceed to Scenario Interlude: The Vault Core. The interlude is not
-      -- yet implemented; the clue-spend cost is paid via the ability cost above.
+    UseThisAbility _iid (isSource attrs -> True) 2 -> scenarioI18n $ scope "theVaultCore" do
+      -- "Proceed to Scenario Interlude: The Vault Core." The clue spend is paid as
+      -- the ability's cost above; play continues either way, so neither branch ends
+      -- the scenario.
+      storyWithChooseOneM'
+        do
+          h "title"
+          p "body"
+          p "node"
+          p.basic "choose"
+          ul do
+            li "pushTheButton"
+            li "leaveItAlone"
+        do
+          labeled' "pushTheButton" $ record TheInnerSanctumWasUnsealed
+          labeled' "leaveItAlone" $ interludeXpAll $ toBonus "leaveItAlone" 1
       pure l
     UseThisAbility _iid (isSource attrs -> True) 3 -> do
       activated <- getActivatedCount

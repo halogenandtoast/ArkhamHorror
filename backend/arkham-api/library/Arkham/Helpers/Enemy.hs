@@ -219,6 +219,10 @@ canEnterLocation eid lid = do
   modifiers' <- (<>) <$> getModifiers lid <*> getModifiers eid
   not <$> flip anyM modifiers' \case
     Modifier.CannotBeEnteredBy matcher -> eid <=~> matcher
+    -- The location-side ban is CannotBeEnteredBy; the enemy-side one is CannotEnter
+    -- (Slitherer in Darkness, Moon Lizard, Ravenous Grizzly). Both have to be read
+    -- here, or such an enemy still follows an investigator out of a legal location.
+    Modifier.CannotEnter lid' -> pure $ lid' == lid
     Modifier.CannotMove -> fieldMap EnemyPlacement isInPlayPlacement eid
     _ -> pure False
 

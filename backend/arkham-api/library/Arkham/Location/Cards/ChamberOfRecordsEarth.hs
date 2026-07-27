@@ -17,8 +17,9 @@ chamberOfRecordsEarth = location ChamberOfRecordsEarth Cards.chamberOfRecordsEar
 
 instance HasAbilities ChamberOfRecordsEarth where
   getAbilities (ChamberOfRecordsEarth a) =
-    extendRevealed a
-      [ restricted a 1 Here actionAbility
+    extendRevealed
+      a
+      [ restricted a 1 (Here <> thisExists a (not_ activatedLocation)) actionAbility
       , mkAbility a 2 $ freeReaction $ DiscoveringLastClue #after You (be a)
       ]
 

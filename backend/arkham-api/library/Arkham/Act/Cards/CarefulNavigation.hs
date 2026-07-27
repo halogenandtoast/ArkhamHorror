@@ -47,7 +47,7 @@ instance RunMessage CarefulNavigation where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs
       pure a
-    AdvanceAct (isSide A attrs -> True) _ _ -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       -- Increase the flood level of each location that can have its flood level
       -- increased.
       selectEach CanHaveFloodLevelIncreased (push . IncreaseFloodLevel)

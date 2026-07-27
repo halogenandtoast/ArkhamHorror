@@ -33,12 +33,16 @@ data EffectWindow
     that scenario's first round (so first-turn action penalties still apply).
     -}
     EffectNextSetupWindow ScenarioId
-  | {- | Carries a modifier to the *next* scenario, where it lasts for that
-    scenario's first agenda. Tagged with the scenario it was created in; inert
-    while that scenario is current, active once a different scenario is, and
-    dismissed the first time that scenario advances its agenda deck.
+  | -- | Lasts until the agenda deck first advances.
+    EffectFirstAgendaWindow
+  | {- | Wraps another window and carries it to the *next* scenario. Tagged with the
+    scenario it was created in: it emits nothing while still wrapped, and the first
+    Setup in a /different/ scenario unwraps it to the inner window, which then
+    behaves exactly as it would have in the scenario it was created in. Unwrapping
+    is also what stops it carrying forward a second time, since the inner window is
+    not itself carried across a scenario boundary.
     -}
-    EffectNextScenarioFirstAgendaWindow ScenarioId
+    EffectForNextScenario ScenarioId EffectWindow
   | EffectTurnWindow InvestigatorId
   | EffectEndOfNextTurnWindow InvestigatorId
   | EffectNextTurnWindow InvestigatorId

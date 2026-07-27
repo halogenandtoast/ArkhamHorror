@@ -856,20 +856,22 @@ nextSetupModifier
   -> m Message
 nextSetupModifier scenarioId source target modifier = createWindowModifierEffect (EffectNextSetupWindow scenarioId) source target [modifier]
 
-{- | Carry a modifier to the /next/ scenario, lasting for that scenario's first
-agenda. Pass the id of the scenario you are currently in; the modifier stays
-inert until a different scenario is current, then applies until that scenario
-advances its agenda deck for the first time.
+{- | Carry a modifier to the /next/ scenario, where it lasts for @effectWindow@.
+Pass the id of the scenario you are currently in; the modifier stays inert until a
+different scenario sets up, then behaves as though @effectWindow@ had been used
+there directly — 'EffectGameWindow' for all of it, 'EffectFirstAgendaWindow' until
+its agenda deck first advances, and so on.
 -}
-nextScenarioFirstAgendaModifier
+forNextScenarioModifier
   :: (Sourceable source, Targetable target, HasGame m, Tracing m)
   => ScenarioId
+  -> EffectWindow
   -> source
   -> target
   -> ModifierType
   -> m Message
-nextScenarioFirstAgendaModifier scenarioId source target modifier =
-  createWindowModifierEffect (EffectNextScenarioFirstAgendaWindow scenarioId) source target [modifier]
+forNextScenarioModifier scenarioId effectWindow source target modifier =
+  createWindowModifierEffect (EffectForNextScenario scenarioId effectWindow) source target [modifier]
 
 abilityModifier
   :: (Sourceable source, Targetable target, HasGame m, Tracing m)

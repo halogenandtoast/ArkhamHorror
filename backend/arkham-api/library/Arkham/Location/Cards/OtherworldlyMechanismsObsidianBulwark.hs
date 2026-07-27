@@ -13,14 +13,20 @@ newtype OtherworldlyMechanismsObsidianBulwark = OtherworldlyMechanismsObsidianBu
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 otherworldlyMechanismsObsidianBulwark :: LocationCard OtherworldlyMechanismsObsidianBulwark
-otherworldlyMechanismsObsidianBulwark = location OtherworldlyMechanismsObsidianBulwark Cards.otherworldlyMechanismsObsidianBulwark 2 (Static 2)
+otherworldlyMechanismsObsidianBulwark =
+  location
+    OtherworldlyMechanismsObsidianBulwark
+    Cards.otherworldlyMechanismsObsidianBulwark
+    2
+    (Static 2)
 
 instance HasAbilities OtherworldlyMechanismsObsidianBulwark where
   getAbilities (OtherworldlyMechanismsObsidianBulwark a) =
     extendRevealed
       a
       [ mkAbility a 1 $ forced $ RevealLocation #when You (be a)
-      , restricted a 2 Here $ actionAbilityWithCost (HandDiscardCost 3 #any)
+      , restricted a 2 (Here <> thisExists a (not_ activatedLocation))
+          $ actionAbilityWithCost (HandDiscardCost 3 #any)
       ]
 
 instance RunMessage OtherworldlyMechanismsObsidianBulwark where

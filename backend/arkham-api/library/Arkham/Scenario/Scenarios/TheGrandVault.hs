@@ -3,17 +3,16 @@ module Arkham.Scenario.Scenarios.TheGrandVault (theGrandVault) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaign.Import.Lifted (setNextCampaignStep)
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (pattern CourtOfTheAncients, pattern TheApiary)
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
@@ -85,11 +84,11 @@ instance RunMessage TheGrandVault where
           do
             labeled' "toeTheLine.oldJob" do
               decrementRecordCountForInvestigator iid Key.ToeTheLine 1
-              nextScenarioFirstAgendaModifier attrs.id attrs iid (AnySkillValue 1)
+              forNextScenarioModifier attrs.id EffectFirstAgendaWindow attrs iid (AnySkillValue 1)
             labeled' "toeTheLine.highRoad" do
               incrementRecordCountForInvestigator iid Key.ToeTheLine 2
               sufferMentalTrauma iid 1
-              nextScenarioFirstAgendaModifier attrs.id attrs iid (AnySkillValue (-1))
+              forNextScenarioModifier attrs.id EffectFirstAgendaWindow attrs iid (AnySkillValue (-1))
       pure s
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)
@@ -208,15 +207,53 @@ instance RunMessage TheGrandVault where
       pure s
     ScenarioResolution res -> scope "resolutions" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      -- Tidal Tablet is earned if an investigator still controls it at the end.
-      whenM (selectAny $ assetIs Assets.tidalTablet) $ record TidalTablet
+      -- Shared by every resolution: cross The Grand Vault off the R'lyeh map, and
+      -- earn the Tidal Tablet if an investigator still controlled it at the end.
+      crossOutRecordSetEntries RlyehMap [toJSON RlyehGrandVault]
+      whenM (selectAny $ assetIs Assets.tidalTablet <> AssetControlledBy Anyone) $ record TidalTablet
+
+      -- "If any investigator has the Good Money Task, have them resolve their
+      -- respective story on this page." Both branches reach into the scenario that
+      -- follows this one, which is what "the next scenario" means in a Task story
+      -- (see The Western Wall's Do No Harm, which contrasts it with "this scenario").
+      let resolveGoodMoney = do
+            withGoodMoney <-
+              filterM (`investigatorHasTask` Assets.goodMoney) =<< select (IncludeEliminated Anyone)
+            for_ withGoodMoney \iid ->
+              storyWithChooseOneM'
+                ( compose.green do
+                    h3 "goodMoney.title"
+                    p "goodMoney.instructions"
+                    p "goodMoney.body"
+                    p "goodMoney.reflection"
+                    p.basic "goodMoney.choose"
+                    ul do
+                      li "goodMoney.playItSafe"
+                      li "goodMoney.playBothSides"
+                )
+                do
+                  labeled' "goodMoney.playItSafe" do
+                    decrementRecordCountForInvestigator iid Key.GoodMoney 1
+                    nextSetupModifier attrs.id attrs iid (StartingResources 3)
+                  labeled' "goodMoney.playBothSides" do
+                    incrementRecordCountForInvestigator iid Key.GoodMoney 2
+                    forNextScenarioModifier attrs.id EffectGameWindow attrs iid DoNotCollectResourcesDuringUpkeep
+
+      -- "Each investigator earns experience equal to the victory X value of each
+      -- card in the victory display" — the plain victory-display total, no bonus.
       case res of
-        Resolution 1 -> resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
-        Resolution 2 -> resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
-        NoResolution -> resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+        Resolution 1 -> do
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+          resolveGoodMoney
+          endOfScenarioThen CourtOfTheAncients
+        Resolution 2 -> do
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          resolveGoodMoney
+          endOfScenarioThen TheApiary
+        NoResolution -> do
+          resolutionWithXp "noResolution" $ allGainXp' attrs
+          resolveGoodMoney
+          endOfScenarioThen $ if headedWest then CourtOfTheAncients else TheApiary
         _ -> error $ "Unknown resolution: " <> show res
-      -- TODO: cross out "The Grand Vault" on the R'lyeh map (R'lyeh-map recordable).
-      if headedWest then setNextCampaignStep CourtOfTheAncients else setNextCampaignStep TheApiary
-      endOfScenario
       pure s
     _ -> TheGrandVault <$> liftRunMessage msg attrs

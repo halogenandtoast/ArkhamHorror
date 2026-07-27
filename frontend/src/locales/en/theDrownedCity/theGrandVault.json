@@ -43,7 +43,27 @@
     "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck.",
     "readyToBegin": "You are now ready to begin."
   },
+  "theVaultCore": {
+    "title": "Scenario Interlude: The Vault Core",
+    "body": "The core of the vault houses an elaborate control station. With the surrounding chambers activated, the control station hums with a sickly green energy. Ancient stylized glyphs portray a warped, shifting facsimile of the city. After some scrutiny, you surmise that the station powers each sector of the city; most notably, there is one familiar area that catches your attention: a pair of massive gates in the base of a towering spire. Their design looks curiously like the obsidian gates where you made landfall.",
+    "node": "A small red node blinks underneath it, as if begging you to press it.",
+    "choose": "You must decide (choose one):",
+    "pushTheButton": "Push the button. In your Campaign Log, record _the inner sanctum was unsealed_. Continue playing.",
+    "leaveItAlone": "Leave it alone. Each investigator earns 1 bonus experience. Continue playing.",
+    "label": {
+      "pushTheButton": "Push the button.",
+      "leaveItAlone": "Leave it alone."
+    },
+    "xp": {
+      "leaveItAlone": "for leaving the button alone"
+    }
+  },
   "label": {
+    "deadlyMechanisms": {
+      "deactivate": "Deactivate the nearest activated Vault location.",
+      "drawAttendant": "Draw 1 of the set-aside Vault Attendant enemies.",
+      "move": "Move to an adjacent location (flooded if able)."
+    },
     "chooseExpeditionAssetQuestion": "Choose an earned Artifact asset, or an Item asset from the Expedition encounter set, to begin in play under your control.",
     "noExpeditionAsset": "Do not take an Artifact or Expedition asset."
   },
@@ -61,27 +81,38 @@
       "elderThing": "-5. If you fail, search the encounter discard pile for a copy of the Still Behind You treachery and draw it."
     }
   },
-  "theGreatStair": {
-    "resign": "You ascend the great stair, leaving the drowned depths behind you."
-  },
-  "deadlyMechanisms": {
-    "deactivate": "Deactivate the nearest activated Vault location.",
-    "drawAttendant": "Draw 1 of the set-aside Vault Attendant enemies.",
-    "move": "Move to an adjacent location (flooded if able)."
+  "tooltips": {
+    "theGreatStair": {
+      "resign": "You venture into darkness, leaving the churning machinery behind."
+    }
   },
   "resolutions": {
-    "xp": { "bonus": "for braving the grand vault" },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p>_Resolution 1_: The expedition members pass the evening sharing stories and cracking jokes. Even in spite of the city's dour atmosphere, spirits seem to be high. You share your findings with Ruby and her companions while Andy attempts to make stew. She describes their difficult route to the vault, and advises you take the path up through the ancient court above, instead of the route she took through the silent factories.</p>"
+      "body": "<p>_Resolution 1_: The expedition members pass the evening sharing stories and cracking jokes. Even in spite of the city’s dour atmosphere, spirits seem to be high. You share your findings with Ruby and her companions while Andy attempts to make stew. She describes their difficult route to the vault, and advises you take the path up through the ancient court above, instead of the route she took through the silent factories.</p><p>“I’m pretty sure the factory collapsed behind us, anyway,” Ruby says. “If you take the path through the court, I’d recommend you steer clear of those ‘pilgrims.’ The whole city’s crawling with ‘em. I saw a whole mob shambling toward the colossal temple overhead. They told me they escaped an underground nest of some kind. Some of ‘em seem to have come down with a pretty nasty fever, so I recommend you keep your distance.”</p><ul><li>Update your Campaign Log.<ul><li>Cross out “The Grand Vault” on the R’lyeh map.</li><li>If the Tidal Tablet was under the control of an investigator when the scenario ended, check the box next to “Tidal Tablet” under “Artifacts Earned.”</li></ul></li><li>If any investigator has the Good Money Task, have them resolve their respective story on this page.</li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Proceed to _Court of the Ancients_.</li></ul>"
     },
     "resolution2": {
       "title": "Resolution 2",
-      "body": "<p>_Resolution 2_: The expedition members pass the evening sharing stories and cracking jokes. Even in spite of the city's dour atmosphere, spirits seem to be high. While Ruby plays poker with the more impulsive expedition members, you share your findings with Andy. He, in turn, recounts their trek down the sunken western wall and through the ancient foundations of the city.</p>"
+      "body": "<p>_Resolution 2_: The expedition members pass the evening sharing stories and cracking jokes. Even in spite of the city’s dour atmosphere, spirits seem to be high. While Ruby plays poker with the more impulsive expedition members, you share your findings with Andy. He, in turn, recounts their trek down the sunken western wall and through the ancient foundations of the city.</p><p>“A rockslide stranded us in some kind of ancient crypt. There were mummified remains of some ghastly creatures—nothing like anything I’ve ever seen before. Otherwise, it’s been pretty uneventful,” Andy says, handing you a bowl of bland stew. “Ah, but actually, a few days back, we ran into someone who was deathly sick. They refused to come with us. Said they were some kind of ‘pilgrim’ and that they came here to worship the god of this ancient city. Something named Cthulhu.”</p><p>The name “Cthulhu” rings in your ears. You have heard it time and again in your dreams. After the meal, you find yourself speaking it, under your breath, as you fall asleep.</p><ul><li>Update your Campaign Log.<ul><li>Cross out “The Grand Vault” on the R’lyeh map.</li><li>If the Tidal Tablet was under the control of an investigator when the scenario ended, check the box next to “Tidal Tablet” under “Artifacts Earned.”</li></ul></li><li>If any investigator has the Good Money Task, have them resolve their respective story on this page.</li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Proceed to _The Apiary_.</li></ul>"
     },
     "noResolution": {
       "title": "No Resolution",
-      "body": "<p>_If no resolution was reached_: You are rescued from the churning water battered and bruised, but thankfully still alive. After returning to the towering precipice where you began, you are pleasantly surprised to find Ruby and Andy chatting over a meal of dry rations. Together, you pass the evening cracking jokes and sharing stories, and compile a crude map of the ancient city.</p>"
+      "body": "<p>_If no resolution was reached (each investigator resigned during act 1 or was defeated)_: You are rescued from the churning water battered and bruised, but thankfully still alive. After returning to the towering precipice where you began, you are pleasantly surprised to find Ruby and Andy chatting over a meal of dry rations. Rather than cut the reunion short, you resolve to make camp. Together, you pass the evening cracking jokes and sharing stories. Before parting ways, Ruby and Andy share their findings and compile a crude map of the ancient city.</p><ul><li>Update your Campaign Log.<ul><li>Cross out “The Grand Vault” on the R’lyeh map.</li><li>If the Tidal Tablet was under the control of an investigator when the scenario ended, check the box next to “Tidal Tablet” under “Artifacts Earned.”</li></ul></li><li>If any investigator has the Good Money Task, have them resolve their respective story on this page.</li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Check your Campaign Log.<ul><li>If the expedition headed west, proceed to _Court of the Ancients_.</li><li>If the expedition headed east, proceed to _The Apiary_.</li></ul></li></ul>"
+    },
+    "goodMoney": {
+      "title": "Task: Good Money",
+      "instructions": "_Read only if you have the “Good Money” Task:_",
+      "body": "You lie awake in the dark for several hours, mulling over your last conversation in Arkham. Carl Sanford, head of the Silver Twilight Lodge, told you he had a deal for you. A better deal than anything Tillinghast would ever give you. All you have to do is present your findings to him instead of Randall. If you skim a few extra relics on the side, maybe swipe some notes and photos of the ancient city, he promised double what Tillinghast would pay, maybe even more.",
+      "reflection": "You didn’t want to get involved in whatever petty feud is unfolding between the two old men. There is certainly risk in playing both sides. That said, you didn’t get the impression Sanford thought he was giving you a choice. If you play your cards right, you could collect from both Sanford and Tillinghast and walk away with triple the reward. Whatever you do, you’ll need to be resolved to see it through.",
+      "choose": "You must decide (choose one):",
+      "playItSafe": "Play it safe. Erase 1 progress under _Good Money_ in your Campaign Log. During the next scenario, you begin the game with 3 additional resources.",
+      "playBothSides": "Play both sides for all they’re worth. Mark 2 progress under _Good Money_ in your Campaign Log. During the next scenario, you cannot gain resources during the upkeep phase."
+    },
+    "label": {
+      "goodMoney": {
+        "playItSafe": "Play it safe.",
+        "playBothSides": "Play both sides for all they’re worth."
+      }
     }
   }
 }

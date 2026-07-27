@@ -15,7 +15,7 @@ backThroughTheMachine = act (2, A) BackThroughTheMachine Cards.backThroughTheMac
 
 instance HasAbilities BackThroughTheMachine where
   getAbilities (BackThroughTheMachine a) =
-    [restricted a 1 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow]
+    [onlyOnce $ restricted a 1 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow]
 
 instance RunMessage BackThroughTheMachine where
   runMessage msg a@(BackThroughTheMachine attrs) = runQueueT $ case msg of

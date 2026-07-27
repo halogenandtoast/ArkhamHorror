@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -15,23 +15,17 @@ newtype GrislyMaskIsItActuallyAlive = GrislyMaskIsItActuallyAlive AssetAttrs
 grislyMask :: AssetCard GrislyMaskIsItActuallyAlive
 grislyMask = asset GrislyMaskIsItActuallyAlive Cards.grislyMask
 
--- | Ability 2 only comes online once the glyphs naming it have been translated.
-glyphsTranslated :: Text
-glyphsTranslated = "grislyMaskGlyphsTranslated"
-
 instance HasModifiersFor GrislyMaskIsItActuallyAlive where
-  getModifiersFor (GrislyMaskIsItActuallyAlive a) = do
-    translated <- getGlyphsAllKnown "JMSCB"
-    artifactModifiers a
-    modifySelf a [ScenarioModifier glyphsTranslated | translated]
+  getModifiersFor (GrislyMaskIsItActuallyAlive a) = artifactModifiers a
 
 instance HasAbilities GrislyMaskIsItActuallyAlive where
   getAbilities (GrislyMaskIsItActuallyAlive x) =
     [ controlled_ x 1 $ FastAbility (exhaust x)
-    , controlled
+    , -- Only usable once the glyphs naming this ability have been translated.
+      controlled
         x
         2
-        ( thisExists x (AssetWithModifier $ ScenarioModifier glyphsTranslated)
+        ( glyphsAllKnown "JMSCB"
             <> exists (at_ YourLocation <> EnemyCanBeDamagedBySource (x.ability 2))
         )
         $ FastAbility (DirectHorrorCost (x.ability 2) You 1 <> exhaust x)

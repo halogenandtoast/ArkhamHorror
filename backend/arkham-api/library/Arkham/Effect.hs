@@ -410,7 +410,7 @@ effectIsForNextGame e = case e.window of
   Just EffectSetupWindow -> True
   Just (EffectScenarioSetupWindow {}) -> True
   Just (EffectNextSetupWindow {}) -> True
-  Just (EffectNextScenarioFirstAgendaWindow {}) -> True
+  Just (EffectForNextScenario {}) -> True
   _ -> False
 
 effectIsForResolution :: Effect -> Bool

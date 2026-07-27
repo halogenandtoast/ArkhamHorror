@@ -13,14 +13,20 @@ newtype OtherworldlyMechanismsGrimeCoveredGears = OtherworldlyMechanismsGrimeCov
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 otherworldlyMechanismsGrimeCoveredGears :: LocationCard OtherworldlyMechanismsGrimeCoveredGears
-otherworldlyMechanismsGrimeCoveredGears = location OtherworldlyMechanismsGrimeCoveredGears Cards.otherworldlyMechanismsGrimeCoveredGears 3 (Static 1)
+otherworldlyMechanismsGrimeCoveredGears =
+  location
+    OtherworldlyMechanismsGrimeCoveredGears
+    Cards.otherworldlyMechanismsGrimeCoveredGears
+    3
+    (Static 1)
 
 instance HasAbilities OtherworldlyMechanismsGrimeCoveredGears where
   getAbilities (OtherworldlyMechanismsGrimeCoveredGears a) =
     extendRevealed
       a
       [ mkAbility a 1 $ forced $ RevealLocation #when You (be a)
-      , restricted a 2 Here $ actionAbilityWithCost (ResourceCost 5)
+      , restricted a 2 (Here <> thisExists a (not_ activatedLocation))
+          $ actionAbilityWithCost (ResourceCost 5)
       ]
 
 instance RunMessage OtherworldlyMechanismsGrimeCoveredGears where

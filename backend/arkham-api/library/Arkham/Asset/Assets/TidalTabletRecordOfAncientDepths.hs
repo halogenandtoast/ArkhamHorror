@@ -28,7 +28,8 @@ instance HasAbilities TidalTabletRecordOfAncientDepths where
   getAbilities (TidalTabletRecordOfAncientDepths a) =
     [ restricted a 1 ControlsThis
         $ triggered (FloodLevelIncreased #after YourLocation) Free
-    , restricted a 2 ControlsThis $ FastAbility $ exhaust a
+    , -- Only usable once the glyphs naming this ability have been translated.
+      restricted a 2 (ControlsThis <> glyphsAllKnown "LKD") $ FastAbility $ exhaust a
     , artifactAbility a 3
     ]
 

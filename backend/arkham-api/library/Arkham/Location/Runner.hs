@@ -589,13 +589,6 @@ getInvestigateAllowed iid attrs = do
   isCannotInvestigate (CannotInvestigateLocation lid) = lid == toId attrs
   isCannotInvestigate _ = False
 
-canEnterLocation :: (HasGame m, Tracing m) => EnemyId -> LocationId -> m Bool
-canEnterLocation eid lid = do
-  modifiers' <- getModifiers lid
-  not <$> flip anyM modifiers' \case
-    CannotBeEnteredBy matcher -> eid <=~> matcher
-    _ -> pure False
-
 withResignAction
   :: (Entity location, EntityAttrs location ~ LocationAttrs)
   => location
@@ -655,6 +648,7 @@ getShouldSpawnNonEliteAtConnectingInstead attrs = do
   pure $ flip any modifiers' $ \case
     SpawnNonEliteAtConnectingInstead {} -> True
     _ -> False
+
 locationEnemiesWithTrait :: (HasGame m, Tracing m) => LocationAttrs -> Trait -> m [EnemyId]
 locationEnemiesWithTrait attrs trait = select $ enemyAt (toId attrs) <> EnemyWithTrait trait
 

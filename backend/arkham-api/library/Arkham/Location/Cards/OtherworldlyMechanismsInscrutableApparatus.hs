@@ -10,19 +10,26 @@ import Arkham.Matcher
 import Arkham.Scenarios.TheGrandVault.Helpers
 import Arkham.Trait (Trait (Glyph))
 
-newtype OtherworldlyMechanismsInscrutableApparatus = OtherworldlyMechanismsInscrutableApparatus LocationAttrs
+newtype OtherworldlyMechanismsInscrutableApparatus
+  = OtherworldlyMechanismsInscrutableApparatus LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-otherworldlyMechanismsInscrutableApparatus :: LocationCard OtherworldlyMechanismsInscrutableApparatus
-otherworldlyMechanismsInscrutableApparatus = location OtherworldlyMechanismsInscrutableApparatus Cards.otherworldlyMechanismsInscrutableApparatus 4 (Static 1)
+otherworldlyMechanismsInscrutableApparatus
+  :: LocationCard OtherworldlyMechanismsInscrutableApparatus
+otherworldlyMechanismsInscrutableApparatus =
+  location
+    OtherworldlyMechanismsInscrutableApparatus
+    Cards.otherworldlyMechanismsInscrutableApparatus
+    4
+    (Static 1)
 
 instance HasAbilities OtherworldlyMechanismsInscrutableApparatus where
   getAbilities (OtherworldlyMechanismsInscrutableApparatus a) =
     extendRevealed
       a
       [ mkAbility a 1 $ forced $ RevealLocation #when You (be a)
-      , restricted a 2 Here actionAbility
+      , restricted a 2 (Here <> thisExists a (not_ activatedLocation)) actionAbility
       ]
 
 instance RunMessage OtherworldlyMechanismsInscrutableApparatus where

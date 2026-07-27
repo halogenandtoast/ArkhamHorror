@@ -10,6 +10,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, push)
 import Arkham.Classes.Query
 import Arkham.Effect.Types (makeEffectBuilder)
+import Arkham.GameValue
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.Log (getHasRecord, getSomeRecordSet)
 import Arkham.Helpers.Modifiers (modifySelf)
@@ -172,3 +173,14 @@ getGlyphsAllKnown :: (HasGame m, Tracing m) => String -> m Bool
 getGlyphsAllKnown xs = do
   ys <- T.toUpper <$> getKnownGlyphs
   pure $ all ((`T.elem` ys) . C.toUpper) xs
+
+{- | Criterion form of 'getGlyphsAllKnown', for abilities that only come online
+once their glyphs have been translated. @HasAbilities@ is pure and cannot query
+the campaign log, so this defers the lookup to criteria evaluation instead of
+round-tripping the answer through a marker modifier. "All of them" is
+'recordSetHasAtLeast' with the (deduplicated) list's own length as the threshold.
+-}
+glyphsAllKnown :: String -> Criterion
+glyphsAllKnown xs = recordSetHasAtLeast (Static $ length letters) DiscoveredGlyphs letters
+ where
+  letters = ordNub $ map (T.singleton . C.toUpper) xs

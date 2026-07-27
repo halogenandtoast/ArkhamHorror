@@ -1352,15 +1352,16 @@ nextSetupModifier
   -> m ()
 nextSetupModifier scenarioId source target modifier = Msg.pushM $ Msg.nextSetupModifier scenarioId source target modifier
 
-nextScenarioFirstAgendaModifier
+forNextScenarioModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => ScenarioId
+  -> EffectWindow
   -> source
   -> target
   -> ModifierType
   -> m ()
-nextScenarioFirstAgendaModifier scenarioId source target modifier =
-  Msg.pushM $ Msg.nextScenarioFirstAgendaModifier scenarioId source target modifier
+forNextScenarioModifier scenarioId effectWindow source target modifier =
+  Msg.pushM $ Msg.forNextScenarioModifier scenarioId effectWindow source target modifier
 
 revelationModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)

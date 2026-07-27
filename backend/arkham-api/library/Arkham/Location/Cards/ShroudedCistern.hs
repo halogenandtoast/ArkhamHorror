@@ -7,7 +7,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheGrandVault.Helpers (activateLocation)
+import Arkham.Scenarios.TheGrandVault.Helpers (activateLocation, activatedLocation)
 import Arkham.Trait (Trait (Vault))
 
 newtype ShroudedCistern = ShroudedCistern LocationAttrs
@@ -22,7 +22,7 @@ instance HasAbilities ShroudedCistern where
     extendRevealed
       a
       [ mkAbility a 1 $ forced $ Matcher.RevealLocation #after Anyone (be a)
-      , restricted a 2 Here actionAbility
+      , restricted a 2 (Here <> thisExists a (not_ activatedLocation)) actionAbility
       ]
 
 instance RunMessage ShroudedCistern where

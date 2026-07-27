@@ -147,7 +147,10 @@ instance RunMessage UnsettlingSigns where
       strays <- findAllCards (`cardMatch` (#location <> not_ (mapOneOf cardIs ring)))
       for_ strays removeCardFromGame
 
+      -- Revealed on placement: the interlude puts it into the ring face up, and its
+      -- connection to the location it faces only exists while it is revealed.
       centralChamber <- placeSetAsideLocation Locations.centralChamber
+      reveal centralChamber
       createSetAsideEnemy_ Enemies.mother centralChamber
 
       -- The eastern expedition leaves The Inescapable in the encounter deck, so it

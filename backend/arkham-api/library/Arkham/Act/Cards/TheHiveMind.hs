@@ -44,6 +44,9 @@ instance RunMessage TheHiveMind where
         ((if heads then "clockwise" else "counterclockwise") :: Text)
       pure a
     UseThisAbility _ (isSource attrs -> True) 3 -> do
+      advancedWithOther attrs
+      pure a
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R3
       pure a
     _ -> TheHiveMind <$> liftRunMessage msg attrs

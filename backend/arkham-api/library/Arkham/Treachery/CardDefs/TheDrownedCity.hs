@@ -91,8 +91,10 @@ alienEggs =
 
 parasiticTransformation :: CardDef
 parasiticTransformation =
-  (treachery "11583" "Parasitic Transformation" TheApiary 4)
+  (weakness "11583" "Parasitic Transformation")
     { cdCardTraits = setFromList [Curse, Hazard]
+    , cdEncounterSet = Just TheApiary
+    , cdEncounterSetQuantity = Just 4
     }
 
 -- The Grand Vault

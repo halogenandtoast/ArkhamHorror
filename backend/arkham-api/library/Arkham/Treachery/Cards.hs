@@ -1,12 +1,13 @@
 {- HLINT ignore "Use camelCase" -}
 module Arkham.Treachery.Cards (module Arkham.Treachery.Cards, module X) where
 
-import Arkham.Treachery.CardDefs.Base as X
 import Arkham.Homebrew.Defs qualified as Homebrew
+import Arkham.Treachery.CardDefs.Base as X
 import Arkham.Treachery.CardDefs.Core2026 as X
 import Arkham.Treachery.CardDefs.EdgeOfTheEarth as X
 import Arkham.Treachery.CardDefs.NightOfTheZealot as X
 import Arkham.Treachery.CardDefs.Promo as X
+import Arkham.Treachery.CardDefs.RelicsOfThePast as X
 import Arkham.Treachery.CardDefs.ReturnTo as X
 import Arkham.Treachery.CardDefs.Standalone as X
 import Arkham.Treachery.CardDefs.TheCircleUndone as X
@@ -18,7 +19,6 @@ import Arkham.Treachery.CardDefs.TheForgottenAge as X
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Treachery.CardDefs.ThePathToCarcosa as X
 import Arkham.Treachery.CardDefs.TheScarletKeys as X
-import Arkham.Treachery.CardDefs.RelicsOfThePast as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -28,8 +28,9 @@ allTreacheryCards :: Map CardCode CardDef
 allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
 
 allPlayerTreacheryCards :: Map CardCode CardDef
-allPlayerTreacheryCards = (Homebrew.playerTreacheriesMap <>) $
-  mapFromList
+allPlayerTreacheryCards =
+  (Homebrew.playerTreacheriesMap <>)
+    $ mapFromList
     $ concatMap
       toCardCodePairs
       [ abandonedAndAlone
@@ -161,11 +162,13 @@ allPlayerTreacheryCards = (Homebrew.playerTreacheriesMap <>) $
       , calledToGuinee
       , hemophobia
       , markOfElokoss
+      , parasiticTransformation
       ]
 
 allEncounterTreacheryCards :: Map CardCode CardDef
-allEncounterTreacheryCards = (Homebrew.treacheriesMap <>) $
-  mapFromList
+allEncounterTreacheryCards =
+  (Homebrew.treacheriesMap <>)
+    $ mapFromList
     $ concatMap
       toCardCodePairs
       [ aBalefulWelcome
@@ -750,7 +753,6 @@ allEncounterTreacheryCards = (Homebrew.treacheriesMap <>) $
       , hungryWalls
       , dangerousCuriosity
       , alienEggs
-      , parasiticTransformation
       , deadlyMechanisms
       , ancientVaultO
       , ancientVaultN

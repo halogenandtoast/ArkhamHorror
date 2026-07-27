@@ -87,6 +87,8 @@ huntingParasite =
       , cdHealth = health 1
       , cdCardTraits = setFromList [Monster, Stowaway]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+      , cdEncounterSet = Just TheWesternWall
+      , cdEncounterSetQuantity = Just 1
       }
 
 -- The Drowned Quarter
@@ -415,7 +417,11 @@ stowawayDrone =
     , cdEvade = evade 2
     , cdHealth = health 1
     , cdCardTraits = setFromList [Monster, Stowaway]
-    , cdKeywords = setFromList [Keyword.Aloof]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Aloof
+          , Keyword.Patrol $ LocationWithEnemy (not_ ThatEnemy <> EnemyWithoutDoom)
+          ]
     }
 
 -- Pilgrims

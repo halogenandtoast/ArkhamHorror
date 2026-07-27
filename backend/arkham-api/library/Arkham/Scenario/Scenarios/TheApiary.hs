@@ -51,8 +51,8 @@ instance HasChaosTokenValue TheApiary where
       pure
         $ ChaosTokenValue Skull (NegativeModifier $ byDifficulty attrs (min 4 (total `div` 2)) (min 8 total))
     Cultist -> pure $ toChaosTokenValue attrs Cultist 1 3
-    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
-    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 4
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 5
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 6
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheApiary where
@@ -234,6 +234,28 @@ instance RunMessage TheApiary where
         . (encounterDeckL .~ Deck (rest <> shuffled))
         . (setAsideCardsL %~ filter (`notElem` cards))
         <$> liftRunMessage msg attrs
+    -- "If there is a Cultist enemy at your location, reveal another token."
+    ResolveChaosToken _ Cultist iid -> do
+      whenM (selectAny $ #cultist <> enemyAtLocationWith iid)
+        $ drawAnotherChaosToken iid
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        -- "Place 1 doom on an enemy at your location with no doom on it." On hard and
+        -- expert the no-doom enemy is only a preference ("if able"), so any enemy
+        -- there will do once they all have doom.
+        Tablet -> do
+          withoutDoom <- select $ EnemyWithoutDoom <> enemyAtLocationWith iid
+          enemies <-
+            if notNull withoutDoom || isEasyStandard attrs
+              then pure withoutDoom
+              else select $ enemyAtLocationWith iid
+          unless (null enemies) $ chooseTargetM iid enemies \eid -> placeDoom Tablet eid 1
+        ElderThing -> chooseOneM iid $ unscoped $ countVar 1 do
+          labeled' "takeDamage" $ assignDamage iid ElderThing 1
+          labeled' "takeHorror" $ assignHorror iid ElderThing 1
+        _ -> pure ()
+      pure s
     -- The Hive Mind act flips a coin each round end and rotates the Central
     -- Chamber; the rotation changes which ring location it "faces" (= connects to).
     ScenarioSpecific "rotateCentralChamber" v -> do
@@ -257,103 +279,125 @@ instance RunMessage TheApiary where
       -- "Before resolving any other resolution, if at least 1 investigator was
       -- defeated: The defeated investigators read Investigator Defeat first."
       defeated <- select DefeatedInvestigator
+      -- Anyone not defeated here and still alive carries the campaign on; resigning
+      -- eliminates an investigator but does not kill them.
+      survivors <-
+        select
+          $ IncludeEliminated
+          $ not_ (mapOneOf InvestigatorWithId defeated)
+          <> not_ KilledInvestigator
+          <> not_ InsaneInvestigator
       unless (null defeated) do
         resolutionOnly defeated $ scope "investigatorDefeat" do
           setTitle "title"
           p "body"
           ul do
             li.nested "killed" $ li "storyAssets"
-            li "otherResolution"
+            li.validate (notNull survivors) "otherResolution"
         -- "If the Andy Van Nortwick or Ruby Standish story asset was in the deck of
         -- any investigator who was killed, choose a surviving investigator to add
-        -- them to their deck for the remainder of the campaign." Done before the
-        -- kills so the survivors are still the ones who were not defeated here.
-        survivors <- select $ not_ (mapOneOf InvestigatorWithId defeated)
+        -- them to their deck for the remainder of the campaign."
         unless (null survivors) do
           storyCards <- getCampaignStoryCards
           for_ defeated \iid ->
             for_ (findWithDefault [] iid storyCards) \card ->
               when (toCardDef card `elem` [Assets.andyVanNortwick, Assets.rubyStandish])
                 $ addCampaignCardToDeckChoice survivors DoNotShuffleIn card
-        -- "Each defeated investigator is killed. If there are no surviving
-        -- investigators to continue the campaign, the investigators lose the
-        -- campaign." kill's own CheckForRemainingInvestigators handles the latter.
+        -- "Each defeated investigator is killed."
         for_ defeated $ kill attrs
 
-      let
-        -- "Each investigator must search The Apiary encounter set for a copy of
-        -- Parasitic Transformation and add it to their deck."
-        addParasiticTransformation = eachInvestigator \iid ->
-          addCampaignCardToDeck iid ShuffleIn Treacheries.parasiticTransformation
-      -- Shared by every resolution: cross The Apiary off the R'lyeh map, and earn the
-      -- Grisly "Mask" if an investigator still controlled it when the scenario ended.
-      earnedGrislyMask <- selectAny $ assetIs Assets.grislyMask <> AssetControlledBy Anyone
-      crossOutRecordSetEntries RlyehMap [toJSON RlyehApiary]
-      when earnedGrislyMask $ record GrislyMask
-
-      case res of
-        Resolution 1 -> do
-          record ThePilgrimsWereSaved
-          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
-          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
-            setTitle "title"
-            p "body"
-            ul do
-              li.nested "updateCampaignLog" do
-                li "recordPilgrimsWereSaved"
-                li "crossOutTheApiary"
-                li.validate earnedGrislyMask "grislyMask"
-              li.nested "victory" do
-                li "experience"
-                li "bonus"
-              li "proceedToTheGrandVault"
-          endOfScenarioThen TheGrandVault
-        Resolution 2 -> do
-          record ThePilgrimsWereDevoured
-          addParasiticTransformation
-          xp <- allGainXp' attrs
-          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution2" do
-            setTitle "title"
-            p "body"
-            ul do
-              li "parasiticTransformation"
-              li.nested "updateCampaignLog" do
-                li "recordPilgrimsWereDevoured"
-                li "crossOutTheApiary"
-                li.validate earnedGrislyMask "grislyMask"
-              li.nested "victory" $ li "experience"
-              li "proceedToTheGrandVault"
-          endOfScenarioThen TheGrandVault
-        Resolution 3 -> do
-          record TheInvestigatorsExterminatedTheAlienParasites
-          xp <- allGainXp' attrs
-          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution3" do
-            setTitle "title"
-            p "body"
-            ul do
-              li.nested "updateCampaignLog" do
-                li "recordParasitesExterminated"
-                li "crossOutTheApiary"
-                li.validate earnedGrislyMask "grislyMask"
-              li.nested "victory" $ li "experience"
-              li "proceedToResolution4"
-          push R4
-        NoResolution -> do
-          addParasiticTransformation
-          xp <- allGainXp' attrs
-          resolutionFlavor $ withVars ["xp" .= xp] $ scope "noResolution" do
-            setTitle "title"
-            p "body"
-            ul do
-              li "parasiticTransformation"
-              li.nested "updateCampaignLog" do
-                li "crossOutTheApiary"
-                li.validate earnedGrislyMask "grislyMask"
-              li.nested "victory" $ li "experience"
-              li.nested "checkCampaignLog" do
-                li.validate headedWest "proceedToTheGrandVault"
-                li.validate (not headedWest) "proceedToResolution4"
-          if headedWest then endOfScenarioThen TheGrandVault else push R4
-        _ -> error $ "Unknown resolution: " <> show res
+      -- "If there are no surviving investigators to continue the campaign, the
+      -- investigators lose the campaign." Only *then* do "the remaining
+      -- investigators proceed to that resolution", so stop here when there are none.
+      -- kill's own CheckForRemainingInvestigators cannot do this for us: it is a
+      -- no-op once the scenario is in its resolution.
+      if null survivors
+        then gameOver
+        else resolveTheApiary res headedWest attrs
       pure s
     _ -> TheApiary <$> liftRunMessage msg attrs
+
+{- | The body of every resolution but Investigator Defeat, which decides on its own
+whether we get this far.
+-}
+resolveTheApiary
+  :: (HasI18n, ReverseQueue m) => Resolution -> Bool -> ScenarioAttrs -> m ()
+resolveTheApiary res headedWest attrs = do
+  -- "Each investigator must search The Apiary encounter set for a copy of Parasitic
+  -- Transformation and add it to their deck." Generated rather than fetched: setup
+  -- sets the printed copies aside, so fetching one hands back the *encounter* card,
+  -- and ReloadDecks only puts player cards from the campaign's story cards into a
+  -- deck, so it would silently never arrive.
+  let addParasiticTransformation = eachInvestigator \iid ->
+        addCampaignCardToDeck iid ShuffleIn
+          =<< genCard Treacheries.parasiticTransformation
+  -- Shared by every resolution: cross The Apiary off the R'lyeh map, and earn the
+  -- Grisly "Mask" if an investigator still controlled it when the scenario ended.
+  earnedGrislyMask <- selectAny $ assetIs Assets.grislyMask <> AssetControlledBy Anyone
+  crossOutRecordSetEntries RlyehMap [toJSON RlyehApiary]
+  when earnedGrislyMask $ record GrislyMask
+
+  case res of
+    Resolution 1 -> do
+      record ThePilgrimsWereSaved
+      xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
+      resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
+        setTitle "title"
+        p "body"
+        ul do
+          li.nested "updateCampaignLog" do
+            li "recordPilgrimsWereSaved"
+            li "crossOutTheApiary"
+            li.validate earnedGrislyMask "grislyMask"
+          li.nested "victory" do
+            li "experience"
+            li "bonus"
+          li "proceedToTheGrandVault"
+      endOfScenarioThen TheGrandVault
+    Resolution 2 -> do
+      record ThePilgrimsWereDevoured
+      addParasiticTransformation
+      xp <- allGainXp' attrs
+      resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution2" do
+        setTitle "title"
+        p "body"
+        ul do
+          li "parasiticTransformation"
+          li.nested "updateCampaignLog" do
+            li "recordPilgrimsWereDevoured"
+            li "crossOutTheApiary"
+            li.validate earnedGrislyMask "grislyMask"
+          li.nested "victory" $ li "experience"
+          li "proceedToTheGrandVault"
+      endOfScenarioThen TheGrandVault
+    Resolution 3 -> do
+      record TheInvestigatorsExterminatedTheAlienParasites
+      xp <- allGainXp' attrs
+      resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution3" do
+        setTitle "title"
+        p "body"
+        ul do
+          li.nested "updateCampaignLog" do
+            li "recordParasitesExterminated"
+            li "crossOutTheApiary"
+            li.validate earnedGrislyMask "grislyMask"
+          li.nested "victory" $ li "experience"
+          li "proceedToResolution4"
+      push R4
+    NoResolution -> do
+      addParasiticTransformation
+      xp <- allGainXp' attrs
+      resolutionFlavor $ withVars ["xp" .= xp] $ scope "noResolution" do
+        setTitle "title"
+        p "body"
+        ul do
+          li "parasiticTransformation"
+          li.nested "updateCampaignLog" do
+            li "crossOutTheApiary"
+            li.validate earnedGrislyMask "grislyMask"
+          li.nested "victory" $ li "experience"
+          li.nested "checkCampaignLog" do
+            li.validate headedWest "proceedToTheGrandVault"
+            li.validate (not headedWest) "proceedToResolution4"
+      if headedWest then endOfScenarioThen TheGrandVault else push R4
+    _ -> error $ "Unknown resolution: " <> show res

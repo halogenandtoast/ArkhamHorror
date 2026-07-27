@@ -28,6 +28,12 @@ instance RunMessage Mother where
     UseCardAbility _ (isSource attrs -> True) 1 (defeatedEnemy -> eid) _ -> do
       moveAllTokens (attrs.ability 1) eid attrs #damage
       hasDoom <- fieldP EnemyDoom (> 0) eid
-      when hasDoom $ shuffleBackIntoEncounterDeck eid
+      when hasDoom do
+        -- The defeat's own disposal is still queued behind this window and would
+        -- discard the enemy (or claim its Victory X) after we shuffled it back in,
+        -- leaving a copy in both piles. Cancel it and let the shuffle stand; the
+        -- defeat windows are kept so other reactions to it still resolve.
+        cancelEnemyDefeatWithWindows eid
+        shuffleBackIntoEncounterDeck eid
       pure e
     _ -> Mother <$> liftRunMessage msg attrs

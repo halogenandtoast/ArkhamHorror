@@ -23,13 +23,14 @@ newtype CentralChamber = CentralChamber LocationAttrs
 centralChamber :: LocationCard CentralChamber
 centralChamber = location CentralChamber Cards.centralChamber 4 (Static 3)
 
--- | The Central Chamber sits in the centre of a 4-location ring and is only
--- connected to the ring location it currently "faces" (the location beneath its
--- bottom edge). The facing lives in the scenario meta and is rotated by the act.
--- We translate the facing into a grid offset (via 'updatePosition', the same
--- function the engine uses) to find the faced location, then emit a bidirectional
--- connection modifier between it and the Central Chamber. We also emit a UI
--- rotation so the card visually points at the location it faces.
+{- | The Central Chamber sits in the centre of a 4-location ring and is only
+connected to the ring location it currently "faces" (the location beneath its
+bottom edge). The facing lives in the scenario meta and is rotated by the act.
+We translate the facing into a grid offset (via 'updatePosition', the same
+function the engine uses) to find the faced location, then emit a bidirectional
+connection modifier between it and the Central Chamber. We also emit a UI
+rotation so the card visually points at the location it faces.
+-}
 getFacedLocation :: (HasGame m, Tracing m) => LocationAttrs -> GridDirection -> m (Maybe LocationId)
 getFacedLocation attrs facing =
   case locationPosition attrs of
@@ -40,12 +41,9 @@ instance HasModifiersFor CentralChamber where
   getModifiersFor (CentralChamber a) = do
     facing <- getCentralChamberFacing
     modifySelf a [UIModifier $ Rotated (facingDegrees facing)]
-    whenRevealed a do
-      getFacedLocation a facing >>= \case
-        Nothing -> pure ()
-        Just faced -> do
-          modifySelf a [ConnectedToWhen (be a) (LocationWithId faced)]
-          modifySelect a (LocationWithId faced) [ConnectedToWhen (LocationWithId faced) (be a)]
+    whenJustM (getFacedLocation a facing) \faced -> do
+      modifySelf a [ConnectedToWhen (be a) (LocationWithId faced)]
+      modifySelect a (LocationWithId faced) [ConnectedToWhen (LocationWithId faced) (be a)]
 
 instance HasAbilities CentralChamber where
   getAbilities (CentralChamber a) =
@@ -62,8 +60,7 @@ instance RunMessage CentralChamber where
       mMother <- selectOne $ enemyIs Enemies.mother
       chooseOneM iid do
         unless (null connecting) do
-          labeled' "moveToConnecting"
-            $ chooseTargetM iid connecting \lid -> moveTo (attrs.ability 1) iid lid
+          labeled' "moveToConnecting" $ chooseTargetM iid connecting $ moveTo (attrs.ability 1) iid
         for_ mMother \mother ->
           labeled' "motherAttacks" $ initiateEnemyAttack mother (attrs.ability 1) iid
       pure l

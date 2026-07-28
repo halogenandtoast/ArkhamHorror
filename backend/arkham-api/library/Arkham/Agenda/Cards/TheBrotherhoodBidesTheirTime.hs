@@ -35,7 +35,7 @@ instance RunMessage TheBrotherhoodBidesTheirTime where
     DoStep 1 (ForTarget (CardIdTarget cid) (AdvanceAgenda (isSide B attrs -> True))) -> do
       card <- getCard cid
       expeditionCamp <- selectJust $ LocationWithTitle "Expedition Camp"
-      locations <- select $ EmptyLocation <> FarthestLocationFromLocation expeditionCamp Anywhere
+      locations <- select $ FarthestLocationFromLocation expeditionCamp EmptyLocation
       lead <- getLead
       chooseOrRunTargetM lead locations \loc -> createEnemyAt_ card loc
       pure a

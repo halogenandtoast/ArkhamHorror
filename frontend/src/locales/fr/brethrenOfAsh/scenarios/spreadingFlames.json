@@ -1,0 +1,85 @@
+{
+  "keywordsAndConcepts": {
+    "title": "Mots-clés et concepts",
+    "entries": [
+      {
+        "title": "Damné",
+        "body": "<p>Damné est une capacité mot-clé. Quand un ennemi ayant le mot-clé Damné est vaincu (soit par un investigateur, soit par un effet de scénario), placez 1 fatalité sur l'intrigue en cours. Cet effet peut faire avancer l'intrigue en cours.</p><ul><li>Un effet qui « défausse » un ennemi n'est pas considéré comme vaincre cet ennemi et ne déclenche pas le mot-clé Damné.</li></ul>"
+      },
+      {
+        "title": "Chasseur",
+        "body": "<p>Chasseur est une capacité mot-clé. Au début de la phase des Ennemis, chaque ennemi redressé non engagé qui a le mot-clé Chasseur se déplace vers un lieu connexe, par le chemin le plus court, en direction de l'investigateur le plus proche. Les ennemis dans un lieu qui contient au moins un investigateur ne se déplacent pas.</p><ul><li>Certains ennemis peuvent cibler des proies spécifiques. (Voir « Proie ».)</li><li>Si plusieurs investigateurs équidistants peuvent être qualifiés d'« investigateur le plus proche », l'ennemi Chasseur se déplace vers celui qui satisfait le mieux à ses instructions Proie. Si aucun ne convient, ou si l'ennemi n'a pas le mot-clé Proie, l'investigateur principal choisit.</li><li>Si un ennemi Chasseur est censé se déplacer vers un lieu, mais est bloqué par une capacité de carte, cet ennemi ne se déplace pas.</li></ul>"
+      },
+      {
+        "title": "Peril",
+        "body": "<p>Peril est une capacité mot-clé. Tant qu'il résout la pioche d'une carte Rencontre ayant le mot-clé Peril, un investigateur ne peut pas discuter avec les autres joueurs. Ceux-ci ne peuvent pas jouer de cartes, déclencher de capacités ou attribuer de cartes au(x) test(s) de compétence de cet investigateur tant que la rencontre Peril est en cours de résolution.</p>"
+      },
+      {
+        "title": "Proie",
+        "body": "<p>Proie est une capacité mot-clé. S'ils en ont l'opportunité, certains ennemis poursuivront un investigateur désigné. Ces ennemis sont identifiés par le mot-clé Proie dans leur boîte de texte, suivi d'une précision entre parenthèses indiquant la cible qu'ils sont censés engager.</p><ul><li>Si un ennemi a le choix entre plusieurs investigateurs équidistants (ou entre plusieurs investigateurs dans son lieu), un ennemi ayant le mot-clé Proie choisit l'investigateur qui satisfait le mieux à ses instructions Proie.</li></ul>"
+      },
+      {
+        "title": "Riposte",
+        "body": "<p>Riposte est une capacité mot-clé. À chaque fois qu'un investigateur échoue à un test de compétence tandis qu'il attaque un ennemi redressé ayant le mot-clé Riposte, après l'application des résultats de ce test de compétence, cet ennemi effectue une attaque contre l'investigateur attaquant. Un ennemi ne s'incline pas après avoir effectué une attaque de riposte.</p><ul><li>Cette attaque se produit que l'ennemi soit engagé ou pas avec l'investigateur attaquant.</li></ul>"
+      },
+      {
+        "title": "Renfort",
+        "body": "<p>Renfort est une capacité mot-clé. Après qu'un investigateur a pioché et résolu une carte Rencontre ayant le mot-clé Renfort, il doit piocher et résoudre une autre carte du deck Rencontre.</p><ul><li>Si un investigateur pioche une carte ayant le mot-clé Renfort pendant la mise en place, il doit résoudre le mot-clé Renfort.</li></ul>"
+      }
+    ]
+  },
+  "tokens": {
+    "hardExpert": {
+      "skull": "-X. X est le numéro de l'acte en cours plus 1.",
+      "tablet": "-2. Révélez un autre pion. En cas d'échec, subissez 1 dégât.",
+      "elderThing": "-4. En cas d'échec, piochez l'exemplaire d'Au Feu ! le plus proche du sommet de la pile défausse Rencontre, si possible."
+    },
+    "easyStandard": {
+      "skull": "-X. X est le numéro de l'acte en cours.",
+      "tablet": "-1. Révélez un autre pion. En cas d'échec, subissez 1 dégât.",
+      "elderThing": "-3. En cas d'échec avec une différence de 2 ou plus, piochez l'exemplaire d'Au Feu ! le plus proche du sommet de la pile défausse Rencontre, si possible."
+    }
+  },
+  "label": {
+    "searchingForDrArmitage": {
+      "drawFromDiscard": "Chercher uniquement dans la défausse",
+      "drawFromBoth": "Chercher dans le deck Rencontre et la défausse"
+    }
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants :<section class='encounter-sets grid'><div><img src='{setImgPath}/spreading-flames.png' /><span>Les Flammes s'Étendent</span></div><div><img src='{setImgPath}/ashen-pilgrims.png' /><span>Pèlerins des Cendres</span></div><div><img src='{setImgPath}/bystanders.png' /><span>Témoins</span></div><div><img src='{setImgPath}/cosmic-evils.png' /><span>Fléaux Cosmiques</span></div><div><img src='{setImgPath}/eldritch-lore.png' /><span>Savoir Occulte</span></div><div><img src='{setImgPath}/fire.png' /><span>Au Feu !</span></div><div><img src='{setImgPath}/hallucinations.png' /><span>Hallucinations</span></div><div><img src='{setImgPath}/mad-science.png' /><span>Science Sans Conscience</span></div><div><img src='{setImgPath}/miskatonic-university.png' /><span>Université Miskatonic</span></div></section>",
+    "placeLocations": "Mettez en jeu le lieu La Chambre de Votre Ami. Mettez chaque autre lieu de côté, hors jeu.",
+    "startAt": "Chaque investigateur commence la partie dans La Chambre de Votre Ami.",
+    "setOutOfPlay": "Mettez de côté les 5 exemplaires de la traîtrise Au Feu !, ainsi que le soutien d'histoire Dr Henry Armitage et l'ennemi Serviteur de la Flamme, hors jeu."
+  },
+  "intro": {
+    "title": "Scénario I : Les Flammes s'Étendent",
+    "body": "<p>Des événements étranges se produisent dans la ville d'Arkham. Une récente série d'incendies et d'« accidents » macabres a mis toute la ville en émoi. Bien que l'Arkham Advertiser ait avancé quelques explications peu convaincantes, vous et vos associés n'êtes pas vraiment rassurés. Des silhouettes encapuchonnées ont été aperçues près des lieux de ces événements étranges, et votre ami commun est convaincu qu'elles en sont responsables. Vous convenez de vous retrouver dans la chambre de votre ami à l'université Miskatonic pour tenter d'élucider cette affaire. Cependant, lorsque vous arrivez, sa chambre est vide et les dortoirs sont étrangement silencieux...</p>"
+  },
+  "resolutions": {
+    "label": {
+      "r2": "Rester et combattre l'incendie ! (→ Conclusion 2)",
+      "r3": "Pas le temps. Nous devons partir. (→ Conclusion 3)"
+    },
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "<p>_Si aucune conclusion n'a été atteinte (chaque investigateur a abandonné ou a été vaincu)_ : Vous vous réveillez à la lisière du campus, les yeux irrités par la fumée, et observez en silence, stupéfait, l'Université Miskatonic en proie aux flammes. Des braises dansent dans le ciel au-dessus de la fournaise comme autant d'étoiles ardentes. Trop épuisé pour apporter votre aide, vous regardez un groupe d'étudiants lutter en vain pour éteindre l'incendie. L'observatoire, puis les dortoirs et enfin le bâtiment des sciences succombent aux flammes. Au milieu du tumulte, vous apercevez le Dr Henry Armitage à l'abri sous un bouleau, qui observe la bibliothèque Orne se consumer. Les flammes lèchent les os du majestueux bâtiment, ne laissant derrière elles qu'un squelette en ruines. Le bibliothécaire en chef est clairement sous le choc. Son visage devient livide lorsque vous lui expliquez les circonstances étranges entourant la disparition de votre ami. Qui était cet ennemi incandescent ? Et que voulaient les silhouettes encapuchonnées qui erraient sur le campus ?</p><ul><li>Dans votre Carnet de Campagne, inscrivez que <b>l'Université Miskatonic a brûlé</b>.</li><li>Chaque investigateur subit 1 traumatisme mental, en raison de la culpabilité écrasante d'avoir laissé brûler l'université.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit 2 points d'expérience bonus en repensant aux événements de cette nuit.<ul><li>_Experience_ : {xp}</li></ul></li></ul>"
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<p>_Conclusion 1_ : Le chaos s'installe alors que des dizaines d'étudiants s'unissent pour lutter contre l'incendie qui fait rage. Votre esprit est envahi par une multitude de questions. Qui était votre poursuivant ? Que voulaient réellement les silhouettes encapuchonnées qui erraient sur le campus ? Et où est votre ami ?</p><p>Le Dr Armitage pose une main sur votre épaule, ce qui vous fait sursauter. « Si nous voulons retrouver votre ami et ses ravisseurs, nous devons partir immédiatement. Je vous expliquerai tout en chemin. » Vous regardez les étudiants, qui luttent courageusement contre les flammes, avant de considérer le bibliothécaire en chef. Vous pourriez rester aider les autres, mais cela vous ferait perdre un temps précieux.</p><ul><li>Dans votre Carnet de Campagne, inscrivez que *les investigateurs ont vaincu leur poursuivant masqué*.</li><li>Choisissez un investigateur qui devient le détenteur du soutien d'histoire Dr Henry Armitage. (*Ajoutez cette carte au deck de cet investigateur, en ignorant les restrictions de construction de deck. Elle ne compte pas dans la taille du deck de cet investigateur.*)</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de _Victoire X_ des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit 3 points d'expérience bonus en repensant aux événements de cette nuit.</li><li>Les investigateurs doivent décider (*choisir une option*) :<ul><li>*Rester et combattre l'incendie !* Continuez à la _Conclusion 2_.</li><li>*« Pas le temps. Nous devons partir. »* Passez à la _Conclusion 3_.</li></ul></li></ul>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<p>_Conclusion 2_ : Vos yeux piquent à cause de l'âpreté de la fumée pendant que vous travaillez main dans la main avec les autres pour éteindre les flammes affamées. Vous parvenez à tenir le feu à distance le temps que les pompiers arrivent sur les lieux. Maintenant que la situation est sous contrôle, vous vous dépêchez de rejoindre le Dr Armitage.</p><ul><li>Dans votre Carnet de Campagne, inscrivez que *les investigateurs ont sauvé l'Université Miskatonic*.</li><li>Chaque investigateur reçoit 1 point d'expérience bonus et subit 1 traumatisme physique à cause des brûlures subies pendant qu'il luttait contre les flammes.</li><li>Continuez au _Scénario II : Une Vaste Fumisterie._</li></ul>"
+    },
+    "resolution3": {
+      "title": "Conclusion 3",
+      "body": "<p>_Conclusion 3_ : Vous sortez du campus en compagnie du Dr Armitage, laissant l'université à son triste sort. Le son des sirènes vous suit où que vous alliez en vous rendant à l'appartement du bibliothécaire en chef.</p><ul><li>Dans votre Carnet de Campagne, inscrivez que *l'Université Miskatonic a brûlé*.</li><li>Chaque investigateur subit 1 traumatisme mental, en raison de la culpabilité écrasante d'avoir laissé brûler l'université.</li><li>Continuez au _Scénario II : Une Vaste Fumisterie._</li></ul>"
+    },
+    "xp": {
+      "resolution2": "pour avoir combattu les flammes",
+      "bonus": "en repensant aux événements de cette nuit"
+    }
+  }
+}

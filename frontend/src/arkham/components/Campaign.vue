@@ -88,6 +88,15 @@ const continueCampaign = computed(() => {
     .some((question) => question?.tag === 'ContinueCampaign')
   if (!hasContinueQuestion) return null
 
+  // A scenario can raise its own continuation mid-scenario (Fortune and Folly's
+  // checkpoint and its part 2 hand-off). The campaign step is still parked on
+  // the StandaloneScenarioStep that will resume the campaign afterwards, so both
+  // are ContinueCampaignSteps at once. The server resolves the scenario's step
+  // first (Entity/Answer.hs, the `These c s` branch), so the campaign screen must
+  // defer to continueScenario or we answer with the campaign's next step and the
+  // scenario never advances.
+  if (props.game.scenario?.campaignStep?.tag === 'ContinueCampaignStep') return null
+
   const step = props.game.campaign.step
   if (step?.tag === 'ContinueCampaignStep') return step.contents
   if (step?.tag === 'StandaloneScenarioStep' && step.contents[1]?.tag === 'ContinueCampaignStep') {

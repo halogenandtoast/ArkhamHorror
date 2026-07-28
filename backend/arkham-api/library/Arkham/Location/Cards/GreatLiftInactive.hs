@@ -22,16 +22,12 @@ greatLiftInactive =
 
 instance HasModifiersFor GreatLiftInactive where
   getModifiersFor (GreatLiftInactive a) =
-    -- "Great Lift cannot move and is connected to the locations to the right
-    -- and left of it, and vice versa." The "cannot move" is the inactive state.
-    case locationPosition a of
-      Nothing -> pure ()
-      Just pos -> do
-        let leftPos = updatePosition pos GridLeft
-        let rightPos = updatePosition pos GridRight
-        modifySelf a [ConnectedToWhen (be a) (mapOneOf LocationInPosition [leftPos, rightPos])]
-        modifySelect a (LocationInPosition leftPos) [ConnectedToWhen (LocationInPosition leftPos) (be a)]
-        modifySelect a (LocationInPosition rightPos) [ConnectedToWhen (LocationInPosition rightPos) (be a)]
+    for_ (locationPosition a) \pos -> do
+      let leftPos = updatePosition pos GridLeft
+      let rightPos = updatePosition pos GridRight
+      modifySelf a [ConnectedToWhen (be a) (mapOneOf LocationInPosition [leftPos, rightPos])]
+      modifySelect a (LocationInPosition leftPos) [ConnectedToWhen (LocationInPosition leftPos) (be a)]
+      modifySelect a (LocationInPosition rightPos) [ConnectedToWhen (LocationInPosition rightPos) (be a)]
 
 instance HasAbilities GreatLiftInactive where
   getAbilities (GreatLiftInactive a) =

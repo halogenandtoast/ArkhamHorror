@@ -341,14 +341,15 @@ twistingCatwalks :: CardDef
 twistingCatwalks =
   location_ "11621" ("Twisting Catwalks" <:> "Western Rise") [Rlyeh] CourtOfTheAncients
 
--- TODO: back side of double-sided card (11622b)
 greatLiftInactive :: CardDef
 greatLiftInactive =
-  location_ "11622" ("Great Lift" <:> "Inactive") [Rlyeh, Lift] CourtOfTheAncients
+  otherSideIs "11622b"
+    $ location_ "11622" ("Great Lift" <:> "Inactive") [Rlyeh, Lift] CourtOfTheAncients
 
 greatLiftActive :: CardDef
 greatLiftActive =
-  location_ "11622b" ("Great Lift" <:> "Active") [Rlyeh, Lift] CourtOfTheAncients
+  otherSideIs "11622"
+    $ location_ "11622b" ("Great Lift" <:> "Active") [Rlyeh, Lift] CourtOfTheAncients
 
 ancientAltar :: CardDef
 ancientAltar =

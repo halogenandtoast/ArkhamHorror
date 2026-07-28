@@ -24,7 +24,7 @@ instance HasAbilities ChapultepecHill_179 where
   getAbilities (ChapultepecHill_179 a) =
     extendRevealed1 a
       $ groupLimit PerPhase
-      $ restricted a 1 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
+      $ restricted a 1 (Here <> canDiscoverCluesAt (be a))
       $ freeReaction
       $ DrawCard #after You (basic $ CardWithTrait Hex) AnyDeck
 

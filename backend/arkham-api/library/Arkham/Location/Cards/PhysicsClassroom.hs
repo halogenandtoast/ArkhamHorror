@@ -20,7 +20,7 @@ instance HasAbilities PhysicsClassroom where
   getAbilities (PhysicsClassroom a) =
     extendRevealed1 a
       $ playerLimit PerRound
-      $ restricted a 1 (CanDiscoverCluesAt $ RevealedLocation <> LocationWithAnyClues <> not_ (be a))
+      $ restricted a 1 (canDiscoverCluesAt $ RevealedLocation <> not_ (be a))
       $ freeReaction
       $ SkillTestResult #after You (WhileInvestigating $ be a)
       $ SuccessResult

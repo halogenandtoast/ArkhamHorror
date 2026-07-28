@@ -90,7 +90,7 @@ workingAHunch2 =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Insight]
     , cdFastWindow = Just $ DuringTurn You
-    , cdCriteria = Just $ exists $ You <> InvestigatorCanDiscoverCluesAt RevealedLocation
+    , cdCriteria = Just $ Criteria.canDiscoverCluesAt RevealedLocation
     , cdLevel = Just 2
     }
 

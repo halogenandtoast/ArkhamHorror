@@ -18,7 +18,8 @@ instance HasModifiersFor FieldAgent2 where
 
 instance HasAbilities FieldAgent2 where
   getAbilities (FieldAgent2 x) =
-    [ controlled x 1 (CanDiscoverCluesAt YourLocation) $ FastAbility (exhaust x <> horrorCost x 1)
+    [ controlled x 1 (canDiscoverCluesAt YourLocation)
+        $ FastAbility (exhaust x <> horrorCost x 1)
     ]
 
 instance RunMessage FieldAgent2 where

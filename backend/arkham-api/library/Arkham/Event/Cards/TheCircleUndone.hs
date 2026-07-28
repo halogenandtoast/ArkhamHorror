@@ -169,13 +169,10 @@ intelReport =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ Criteria.ClueOnLocation <> exists (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+            [ Criteria.canDiscoverCluesAt YourLocation
             , Criteria.CanAffordCostIncrease 2
-                <> exists
-                  ( You
-                      <> InvestigatorCanDiscoverCluesAt
-                        (LocationMatchAny [LocationWithDistanceFrom n YourLocation LocationWithAnyClues | n <- [0 .. 2]])
-                  )
+                <> Criteria.canDiscoverCluesAt
+                  (LocationMatchAny [LocationWithDistanceFrom n YourLocation Anywhere | n <- [0 .. 2]])
             ]
     , cdOutOfPlayEffects = [InHandEffect]
     }

@@ -21,7 +21,7 @@ instance HasAbilities MysteriousRaven where
     [ controlledAbility
         a
         1
-        (ClueOnLocation <> exists (You <> InvestigatorCanDiscoverCluesAt YourLocation))
+        (canDiscoverCluesAt YourLocation)
         $ FastAbility
         $ DiscardCost FromPlay (toTarget a)
         <> HorrorCost (toSource a) YouTarget 1

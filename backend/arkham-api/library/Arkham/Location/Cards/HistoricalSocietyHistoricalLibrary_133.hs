@@ -31,7 +31,7 @@ instance HasAbilities HistoricalSocietyHistoricalLibrary_133 where
               $ reaction
                 a
                 1
-                (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
+                (Here <> canDiscoverCluesAt (be a))
                 (HorrorCost (toSource a) YouTarget 2)
               $ SkillTestResult #after You (whileInvestigating a) #success
           ]

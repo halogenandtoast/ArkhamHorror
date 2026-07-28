@@ -118,14 +118,6 @@ pattern InvestigatorCanDisengage =
   InvestigatorMatches
     [InvestigatorWithoutModifier CannotDisengageEnemies, InvestigatorEngagedWith AnyEnemy]
 
-pattern InvestigatorCanDiscoverCluesAt
-  :: LocationMatcher -> InvestigatorMatcher
-pattern InvestigatorCanDiscoverCluesAt locationMatcher =
-  InvestigatorMatches
-    [ InvestigatorCanDiscoverCluesAtOneOf locationMatcher
-      , InvestigatorWithoutModifier CannotDiscoverClues
-      ]
-
 pattern InvestigatorCanMove :: InvestigatorMatcher
 pattern InvestigatorCanMove <- InvestigatorWithoutModifier CannotMove
   where

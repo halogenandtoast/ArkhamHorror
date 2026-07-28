@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Asset.Uses
 import Arkham.Matcher
-import Arkham.Trait (Trait(Geist))
+import Arkham.Trait (Trait (Geist))
 
 newtype OculusMortuum = OculusMortuum AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,7 +29,7 @@ instance HasAbilities OculusMortuum where
         a
         2
         ( oneOf
-            [ AbleToDiscoverCluesAt YourLocation
+            [ canDiscoverCluesAt YourLocation
             , exists $ AttackingEnemy <> withTrait Geist <> EnemyCanBeDamagedBySource (a.ability 1)
             ]
         )
@@ -45,7 +45,8 @@ instance RunMessage OculusMortuum where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       discoverAtYourLocation NotInvestigate iid (attrs.ability 2) 1
-      mEnemy <- selectOne $ AttackingEnemy <> withTrait Geist <> EnemyCanBeDamagedBySource (attrs.ability 1)
-      for_ mEnemy $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1 
+      mEnemy <-
+        selectOne $ AttackingEnemy <> withTrait Geist <> EnemyCanBeDamagedBySource (attrs.ability 1)
+      for_ mEnemy $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1
       pure a
     _ -> OculusMortuum <$> liftRunMessage msg attrs

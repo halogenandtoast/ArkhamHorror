@@ -21,7 +21,7 @@ instance HasAbilities HistoricalSocietyMeetingRoom where
       $ if a.revealed
         then
           playerLimit PerRound
-            $ restricted a 1 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
+            $ restricted a 1 (Here <> canDiscoverCluesAt (be a))
             $ actionAbilityWithCost (ExhaustAssetCost #ally)
         else mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
 

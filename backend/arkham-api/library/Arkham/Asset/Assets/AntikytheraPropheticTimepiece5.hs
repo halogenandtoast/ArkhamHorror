@@ -19,9 +19,7 @@ instance HasAbilities AntikytheraPropheticTimepiece5 where
     [ controlled
         a
         1
-        ( exists (YourLocation <> LocationWithAnyClues)
-            <> youExist (InvestigatorCanDiscoverCluesAt YourLocation)
-        )
+        (canDiscoverCluesAt YourLocation)
         $ triggered
           (SkillTestResult #after You AnySkillTest $ SuccessResult $ GameValueOneOf [static 1, static 3])
           (exhaust a)

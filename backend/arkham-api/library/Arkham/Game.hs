@@ -38,7 +38,6 @@ import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Helpers (pattern HollowedCard)
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Key.Types hiding (key)
-import Arkham.Campaigns.TheScarletKeys.Modifiers
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -51,6 +50,7 @@ import Arkham.Customization (CustomizationChoice (..))
 import Arkham.Damage
 import Arkham.Debug
 import Arkham.Difficulty
+import Arkham.Discover (IsInvestigate (..))
 import Arkham.Distance
 import Arkham.Effect.Types
 import Arkham.Enemy (lookupDefeatedEnemy)
@@ -1112,16 +1112,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
     IncludeEliminated m -> go as m
     NoOne -> pure noMatch
     DeckIsEmpty -> flip runMatchesM as $ fieldP InvestigatorDeck null . toId
-    InvestigatorCanDiscoverCluesAtOneOf matcher' -> do
+    InvestigatorWithDiscoverableCluesAt matcher' -> do
       locations <- guardYourLocation $ \_ -> select matcher'
-      flip runMatchesM as $ \i -> do
-        let
-          getInvalid acc (CannotDiscoverCluesAt x) = AnyLocationMatcher x <> acc
-          getInvalid acc (CannotDiscoverCluesExceptAsResultOfInvestigation x) = AnyLocationMatcher x <> acc
-          getInvalid acc _ = acc
-        modifiers' <- getModifiers (toTarget i)
-        invalidLocations <- select $ getAnyLocationMatcher $ foldl' getInvalid mempty modifiers'
-        pure $ any (`notElem` invalidLocations) locations
+      flip runMatchesM as $ \i -> anyM (getCanDiscoverClues NotInvestigate (toId i)) locations
     InvestigatorWithSupply s -> flip runMatchesM as $ fieldP InvestigatorSupplies (elem s) . toId
     AliveInvestigator -> flip runMatchesM as $ \i -> do
       let attrs = toAttrs i
@@ -2248,19 +2241,8 @@ getLocationsMatching lmatcher = do
           let lowestShroud = getMin $ foldMap (Min . snd) ls''
           filterM (maybe (pure False) (\v -> (< lowestShroud) <$> getGameValue v) . attr locationShroud) ls
     LocationWithDiscoverableCluesBy whoMatcher -> do
-      ls & filterM \l -> do
-        selectAny
-          $ whoMatcher
-          <> oneOf
-            [ InvestigatorCanDiscoverCluesAt (LocationWithId l.id <> LocationWithAnyClues)
-            , InvestigatorCanDiscoverCluesAt
-                ( LocationWithId l.id
-                    <> LocationWithConcealedCard
-                    <> LocationWithoutModifier NoExposeAt
-                )
-                <> InvestigatorWithoutModifier CannotExpose
-                <> InvestigatorWithoutModifier (noExposeAt l.id)
-            ]
+      iids <- select whoMatcher
+      ls & filterM \l -> anyM (\iid -> getCanDiscoverClues NotInvestigate iid l.id) iids
     LocationWithConcealedCard ->
       ls & filterM \l -> do
         concealedCards <- field LocationConcealedCards (toId l)

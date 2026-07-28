@@ -30,7 +30,7 @@ instance HasAbilities OnTheirHeels5 where
         -- enemy), so the clue can still be discovered if the enemy was defeated
         -- during engagement.
         ( oneOf
-            [ CanDiscoverCluesAt YourLocation
+            [ canDiscoverCluesAt YourLocation
             , exists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (a.ability 1))
             ]
         )

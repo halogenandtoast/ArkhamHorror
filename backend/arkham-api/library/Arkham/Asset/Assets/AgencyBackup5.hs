@@ -31,8 +31,7 @@ instance HasAbilities AgencyBackup5 where
     , (cardI18n $ withI18nTooltip "agencyBackup5.fastExhaustAgency2")
         $ fastAbility a 2 (exhaust a <> horrorCost a 1)
         $ ControlsThis
-        <> CanDiscoverCluesAt YourLocation
-        <> OnLocation LocationWithAnyClues
+        <> canDiscoverCluesAt YourLocation
     ]
 
 instance RunMessage AgencyBackup5 where

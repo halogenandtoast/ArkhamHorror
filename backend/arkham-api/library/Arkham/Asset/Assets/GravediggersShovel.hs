@@ -16,7 +16,7 @@ gravediggersShovel = asset GravediggersShovel Cards.gravediggersShovel
 instance HasAbilities GravediggersShovel where
   getAbilities (GravediggersShovel x) =
     [ fightAbility x 1 mempty ControlsThis
-    , controlled x 2 (youExist $ InvestigatorCanDiscoverCluesAt YourLocation)
+    , controlled x 2 (canDiscoverCluesAt YourLocation)
         $ actionAbilityWithCost (discardCost x)
     ]
 

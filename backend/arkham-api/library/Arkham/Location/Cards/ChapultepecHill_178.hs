@@ -24,11 +24,7 @@ instance HasAbilities ChapultepecHill_178 where
           $ restricted
             a
             2
-            ( Here
-                <> CluesOnThis (atLeast 1)
-                <> CanDiscoverCluesAt (be a)
-                <> youExist (HandWith $ LengthIs $ atLeast 3)
-            )
+            (Here <> canDiscoverCluesAt (be a) <> youExist (HandWith $ LengthIs $ atLeast 3))
           $ actionAbilityWithCost DiscardHandCost
       ]
 

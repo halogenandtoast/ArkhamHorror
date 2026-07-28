@@ -99,14 +99,14 @@ pattern CanAttack <-
   where
     CanAttack = InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotAttack])
 
-pattern CanDiscoverCluesAt :: LocationMatcher -> Criterion
-pattern CanDiscoverCluesAt locationMatcher =
-  InvestigatorExists (InvestigatorMatches [You, InvestigatorCanDiscoverCluesAt locationMatcher])
-
--- TODO: This is too close in name to CanDiscoverCluesAt, need to determine if CanDiscoverCluesAt needs to exist
-pattern AbleToDiscoverCluesAt :: LocationMatcher -> Criterion
-pattern AbleToDiscoverCluesAt locationMatcher =
-  Criteria [OnLocation LocationWithAnyClues, CanDiscoverCluesAt locationMatcher]
+{- | The one way to ask "can this investigator discover a clue at these locations".
+Delegates to 'Arkham.Helpers.Investigator.getCanDiscoverClues' via
+'LocationWithDiscoverableCluesBy', so it covers clue tokens, exposable concealed
+cards, and every CannotDiscoverClues* modifier. Replaced the permission-only
+CanDiscoverCluesAt / AbleToDiscoverCluesAt patterns in #5262.
+-}
+canDiscoverCluesAt :: LocationMatcher -> Criterion
+canDiscoverCluesAt locationMatcher = exists $ locationMatcher <> LocationWithDiscoverableCluesBy You
 
 pattern CanTakeControlOfClues :: Criterion
 pattern CanTakeControlOfClues <-

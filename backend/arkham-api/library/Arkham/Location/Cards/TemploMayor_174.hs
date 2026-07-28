@@ -23,7 +23,7 @@ instance HasAbilities TemploMayor_174 where
       a
       [ mkAbility a 1 $ forced $ PutLocationIntoPlay #after Anyone (be a)
       , groupLimit PerPhase
-          $ restricted a 2 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
+          $ restricted a 2 (Here <> canDiscoverCluesAt (be a))
           $ freeReaction
           $ oneOf
             [ IfEnemyDefeated #after You ByAny (enemyAt a.id <> EnemyWithTrait Serpent)

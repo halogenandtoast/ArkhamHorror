@@ -18,7 +18,7 @@ instance HasModifiersFor GavriellaMizrah where
 
 instance HasAbilities GavriellaMizrah where
   getAbilities (GavriellaMizrah a) =
-    [ controlled a 1 (CanDiscoverCluesAt YourLocation <> OnLocation LocationWithAnyClues)
+    [ controlled a 1 (canDiscoverCluesAt YourLocation)
         $ triggered (EnemyAttacksEvenIfCancelled #after You AnyEnemyAttack AnyEnemy) (exhaust a)
     ]
 

@@ -20,7 +20,7 @@ instance HasAbilities CarolynFern2 where
   getAbilities (CarolynFern2 a) =
     [ playerLimit PerRound
         $ withWindowHighlight
-        $ selfAbility a 1 (AbleToDiscoverCluesAt YourLocation)
+        $ selfAbility a 1 (canDiscoverCluesAt YourLocation)
         $ freeReaction
         $ oneOf
           -- "After you heal 1 or more horror": the heal only has to be performed by

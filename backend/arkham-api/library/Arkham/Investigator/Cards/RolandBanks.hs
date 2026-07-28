@@ -21,7 +21,7 @@ rolandBanks =
 instance HasAbilities RolandBanks where
   getAbilities (RolandBanks attrs) =
     [ playerLimit PerRound
-        $ selfAbility attrs 1 (AbleToDiscoverCluesAt YourLocation)
+        $ selfAbility attrs 1 (canDiscoverCluesAt YourLocation)
         $ freeReaction (IfEnemyDefeated #after You ByAny AnyEnemy)
     ]
 

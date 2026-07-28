@@ -18,7 +18,7 @@ instance HasModifiersFor GreteWagner where
 
 instance HasAbilities GreteWagner where
   getAbilities (GreteWagner a) =
-    [ controlled a 1 (ClueOnLocation <> youExist (InvestigatorCanDiscoverCluesAt YourLocation))
+    [ controlled a 1 (canDiscoverCluesAt YourLocation)
         $ triggered
           (IfEnemyDefeated #after You ByAny AnyEnemy)
           (exhaust a <> DamageCost (a.ability 1) (toTarget a) 1)

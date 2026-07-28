@@ -7183,6 +7183,7 @@ test-suite spec
       Arkham.Asset.Assets.EmbezzledTreasureSpec
       Arkham.Asset.Assets.Encyclopedia2Spec
       Arkham.Asset.Assets.FavorOfTheMoon1Spec
+      Arkham.Asset.Assets.FieldAgent2Spec
       Arkham.Asset.Assets.FireAxeSpec
       Arkham.Asset.Assets.FirstAidSpec
       Arkham.Asset.Assets.FlashlightSpec
@@ -7325,6 +7326,7 @@ test-suite spec
       Arkham.Event.Events.TrapLimitSpec
       Arkham.Event.Events.WardOfProtectionSpec
       Arkham.Event.Events.WillToSurvive3Spec
+      Arkham.Event.Events.WorkingAHunch2Spec
       Arkham.Event.Events.WorkingAHunchSpec
       Arkham.Game.ChooseDecksSpec
       Arkham.Game.DiffSpec
@@ -7360,6 +7362,7 @@ test-suite spec
       Arkham.Location.Cards.EnchantedWoodsVillageOfZoogsSpec
       Arkham.Location.TypesSpec
       Arkham.Matcher.CoveredByAnyInPlayEnemySpec
+      Arkham.Matcher.LegacyJSONSpec
       Arkham.Matcher.NearestLocationToMostSpec
       Arkham.Matcher.OutOfPlayEnemySpec
       Arkham.Modifier.CannotAttackDuringEnemyPhaseSpec

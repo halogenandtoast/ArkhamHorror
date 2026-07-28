@@ -30,7 +30,7 @@ instance HasAbilities TheRedGlovedManHeWasAlwaysThere where
               (SuccessResult $ atLeast 2)
           )
           (exhaust a)
-    , controlled a 1 (CanDiscoverCluesAt YourLocation)
+    , controlled a 1 (canDiscoverCluesAt YourLocation)
         $ triggered
           ( SkillTestResult
               #after

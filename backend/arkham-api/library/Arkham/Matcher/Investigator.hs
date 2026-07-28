@@ -156,7 +156,11 @@ data InvestigatorMatcher
   | NotInvestigator InvestigatorMatcher
   | InvestigatorThatMovedDuringTurn
   | InvestigatorWithSupply Supply
-  | InvestigatorCanDiscoverCluesAtOneOf LocationMatcher -- NOTE: Use matcher above
+  | {- | Investigator-side view of 'LocationWithDiscoverableCluesBy'. Both delegate
+    to 'Arkham.Helpers.Investigator.getCanDiscoverClues', so this asks whether
+    there is actually something to discover, not merely whether it is permitted.
+    -}
+    InvestigatorWithDiscoverableCluesAt LocationMatcher
   | DeckIsEmpty
   | AliveInvestigator
   | IncludeEliminated InvestigatorMatcher
@@ -221,6 +225,10 @@ instance FromJSON InvestigatorMatcher where
   parseJSON = withObject "InvestigatorMatcher" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      -- Renamed from InvestigatorCanDiscoverCluesAtOneOf (#5262). The old matcher
+      -- only checked the CannotDiscoverClues* modifiers and never that a clue was
+      -- there, so saves holding it parse forward into the corrected matcher.
+      "InvestigatorCanDiscoverCluesAtOneOf" -> InvestigatorWithDiscoverableCluesAt <$> o .: "contents"
       "InvestigatorWithHighestSkill" ->
         (uncurry InvestigatorWithHighestSkill <$> o .: "contents")
           <|> (InvestigatorWithHighestSkill <$> o .: "contents" <*> pure UneliminatedInvestigator)

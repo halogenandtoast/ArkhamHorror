@@ -436,11 +436,7 @@ lookWhatIFound2 =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ exists $ LocationMatchAny [YourLocation, ConnectedLocation NotForMovement] <> LocationWithAnyClues
-            , exists
-                $ You
-                <> InvestigatorCanDiscoverCluesAt (LocationMatchAny [YourLocation, ConnectedLocation NotForMovement])
-            ]
+            [Criteria.canDiscoverCluesAt $ LocationMatchAny [YourLocation, ConnectedLocation NotForMovement]]
     , cdFastWindow =
         Just $ SkillTestResult #after You (WhileInvestigating Anywhere) $ FailureResult $ lessThan 4
     }

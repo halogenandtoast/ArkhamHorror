@@ -21,7 +21,7 @@ rexMurphy =
 instance HasAbilities RexMurphy where
   getAbilities (RexMurphy x) =
     [ (if maybe False (>= TabooList15) x.taboo then playerLimit PerRound else id)
-        $ selfAbility x 1 (AbleToDiscoverCluesAt YourLocation)
+        $ selfAbility x 1 (canDiscoverCluesAt YourLocation)
         $ freeReaction (SuccessfulInvestigationResult #after You Anywhere (atLeast 2))
     ]
 

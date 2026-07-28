@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.PennyWhite (pennyWhite) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (controllerGets, ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 
 newtype PennyWhite = PennyWhite AssetAttrs
@@ -18,7 +18,7 @@ instance HasModifiersFor PennyWhite where
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite x) =
-    [ controlled x 1 (CanDiscoverCluesAt YourLocation <> OnLocation LocationWithAnyClues)
+    [ controlled x 1 (canDiscoverCluesAt YourLocation)
         $ triggered (SkillTestResult #after You SkillTestFromRevelation #success) (exhaust x)
     ]
 

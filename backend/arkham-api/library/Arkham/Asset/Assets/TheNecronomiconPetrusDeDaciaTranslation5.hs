@@ -28,7 +28,7 @@ instance HasAbilities TheNecronomiconPetrusDeDaciaTranslation5 where
         $ controlled a 2 CanDrawCards
         $ FastAbility (assetUseCost a #secret 2)
     , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend3Secrets")
-        $ controlled a 3 (CanDiscoverCluesAt Anywhere)
+        $ controlled a 3 (canDiscoverCluesAt Anywhere)
         $ FastAbility (assetUseCost a #secret 3)
     , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend4Secrets")
         $ withCriteria (mkAbility a 4 $ FastAbility $ assetUseCost a #secret 4)

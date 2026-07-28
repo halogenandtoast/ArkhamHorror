@@ -32,23 +32,23 @@ instance HasAbilities EmpiricalHypothesis where
         $ assetUseCost a Evidence 1
     ]
       <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend2Evidence")
-            $ restricted a 3 (exists matcher)
-            $ FastAbility
-            $ assetUseCost a Evidence 2
+             $ restricted a 3 (exists matcher)
+             $ FastAbility
+             $ assetUseCost a Evidence 2
          | a `hasCustomization` ResearchGrant
          ]
       <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend3Evidence")
-            $ restricted a 4 (CanDiscoverCluesAt YourLocation <> exists matcher)
-            $ FastAbility
-            $ assetUseCost a Evidence 3
+             $ restricted a 4 (canDiscoverCluesAt YourLocation <> exists matcher)
+             $ FastAbility
+             $ assetUseCost a Evidence 3
          | a `hasCustomization` IrrefutableProof
          ]
       <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.alternativeHypothesis")
-            $ playerLimit PerWindow
-            $ restricted a 5 (ControlsThis <> alternativeHypothesisCriteria)
-            $ freeReaction
-            $ Exhausts #after You
-            $ TargetIs (toTarget a)
+             $ playerLimit PerWindow
+             $ restricted a 5 (ControlsThis <> alternativeHypothesisCriteria)
+             $ freeReaction
+             $ Exhausts #after You
+             $ TargetIs (toTarget a)
          | a `hasCustomization` AlternativeHypothesis
          ]
    where

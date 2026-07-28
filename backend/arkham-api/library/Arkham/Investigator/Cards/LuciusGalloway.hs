@@ -19,7 +19,7 @@ luciusGalloway =
 instance HasAbilities LuciusGalloway where
   getAbilities (LuciusGalloway a) =
     [ playerLimit PerRound
-        $ restricted a 1 (Self <> AbleToDiscoverCluesAt YourLocation)
+        $ restricted a 1 (Self <> canDiscoverCluesAt YourLocation)
         $ freeReaction (SkillTestResult #after You #evading (SuccessResult $ atLeast 2))
     ]
 

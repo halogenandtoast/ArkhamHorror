@@ -23,7 +23,7 @@ instance HasModifiersFor DetectiveSherman3 where
 
 instance HasAbilities DetectiveSherman3 where
   getAbilities (DetectiveSherman3 a) =
-    [ controlled a 1 (AbleToDiscoverCluesAt YourLocation)
+    [ controlled a 1 (canDiscoverCluesAt YourLocation)
         $ triggered (PlacedToken #after AnySource (AssetTargetMatches $ be a) #damage) (exhaust a)
     ]
 

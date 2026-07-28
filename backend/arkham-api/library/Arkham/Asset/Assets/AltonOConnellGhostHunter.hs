@@ -24,7 +24,7 @@ instance HasAbilities AltonOConnellGhostHunter where
         $ freeReaction
         $ SkillTestResult #after You #any (SuccessResult $ static 3)
     ]
-      <> [ controlled a 2 (AbleToDiscoverCluesAt YourLocation)
+      <> [ controlled a 2 (canDiscoverCluesAt YourLocation)
              $ FastAbility
              $ exhaust a
              <> dynamicAssetUseCost

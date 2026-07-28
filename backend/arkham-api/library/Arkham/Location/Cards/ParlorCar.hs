@@ -30,7 +30,7 @@ instance HasAbilities ParlorCar where
       $ restricted
         attrs
         1
-        (Here <> CluesOnThis (atLeast 1) <> youExist (InvestigatorCanDiscoverCluesAt YourLocation))
+        (Here <> canDiscoverCluesAt (be attrs))
       $ actionAbilityWithCost (ResourceCost 3)
 
 instance RunMessage ParlorCar where

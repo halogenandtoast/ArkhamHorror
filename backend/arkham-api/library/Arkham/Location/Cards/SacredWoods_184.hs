@@ -27,7 +27,7 @@ instance HasAbilities SacredWoods_184 where
       , restricted
           a
           2
-          (Here <> youExist DeckIsEmpty <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
+          (Here <> youExist DeckIsEmpty <> canDiscoverCluesAt (be a))
           actionAbility
       ]
 

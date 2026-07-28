@@ -19,7 +19,7 @@ instance HasModifiersFor GreteWagner3 where
 
 instance HasAbilities GreteWagner3 where
   getAbilities (GreteWagner3 a) =
-    [ controlled a 1 (CanDiscoverCluesAt $ orConnected NotForMovement YourLocation)
+    [ controlled a 1 (canDiscoverCluesAt $ orConnected NotForMovement YourLocation)
         $ triggered (IfEnemyDefeated #after You ByAny AnyEnemy) (exhaust a <> damageCost a 1)
     ]
 

@@ -7320,6 +7320,7 @@ test-suite spec
       Arkham.Event.Events.ScrapeBy1Spec
       Arkham.Event.Events.SearchForTheTruthSpec
       Arkham.Event.Events.SeekingAnswersSpec
+      Arkham.Event.Events.ShedALightSpec
       Arkham.Event.Events.SneakAttackSpec
       Arkham.Event.Events.SureGamble3Spec
       Arkham.Event.Events.ToeToToeSpec

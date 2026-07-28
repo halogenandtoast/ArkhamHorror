@@ -29,7 +29,7 @@ instance HasAbilities TheUndergroundMaze where
             & restrict (oneOf [HasAdjacentLocations LocationCanBeSwapped, exists LocationCanBeSlid])
         , groupLimit PerRound
             $ withI18nTooltip "theUndergroundMaze.slide"
-            $ restricted a 2 (exists LocationCanBeSlid)
+            $ restricted a 2 (exists $ RevealedLocation <> LocationCanBeSlid)
             $ actionAbilityWithCost (CalculatedResourceCost $ GameValueCalculation $ PerPlayer 1)
         , withI18nTooltip "theUndergroundMaze.prismaticShard"
             $ mkAbility a 3 actionAbility
@@ -64,12 +64,12 @@ instance RunMessage TheUndergroundMaze where
           gridLabeled (gridLabel newPos) $ push $ PlaceGrid (GridLocation newPos lid)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      locations <- select LocationCanBeSlid
+      locations <- select $ RevealedLocation <> LocationCanBeSlid
       chooseTargetM iid locations $ handleTarget iid (attrs.ability 2)
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 2 -> True) (LocationTarget lid) -> do
       slideLocations <-
-        matches lid LocationCanBeSlid >>= \case
+        matches lid (RevealedLocation <> LocationCanBeSlid) >>= \case
           False -> pure []
           True -> getEmptyPositions lid
       chooseOneM iid do

@@ -25,6 +25,7 @@ spec = describe "Pursued" $ do
     drawCards self 1
     run . Move =<< move (toSource enemy) (toTarget enemy) (toId here)
     click "trigger Pursued"
+    click "assign the horror to the investigator"
     self.horror `shouldReturn` 1
 
   -- Issue #5277: Dogs of War's The Beast in a Cowl of Crimson cancels its own

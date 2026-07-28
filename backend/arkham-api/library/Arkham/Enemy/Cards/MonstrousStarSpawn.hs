@@ -22,7 +22,9 @@ instance HasAbilities MonstrousStarSpawn where
       $ restricted
         a
         1
-        (DuringSkillTest $ SkillTestOneOf [WhileAttackingAnEnemy $ be a, WhileEvadingAnEnemy $ be a])
+        ( DuringSkillTest (SkillTestOneOf [WhileAttackingAnEnemy $ be a, WhileEvadingAnEnemy $ be a])
+            <> thisExists a EnemyWithAnyDamage
+        )
       $ forced
       $ RevealChaosToken #after You #elderthing
 

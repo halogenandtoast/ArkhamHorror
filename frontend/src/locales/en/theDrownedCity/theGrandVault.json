@@ -65,7 +65,8 @@
       "move": "Move to an adjacent location (flooded if able)."
     },
     "chooseExpeditionAssetQuestion": "Choose an earned Artifact asset, or an Item asset from the Expedition encounter set, to begin in play under your control.",
-    "noExpeditionAsset": "Do not take an Artifact or Expedition asset."
+    "noExpeditionAsset": "Do not take an Artifact or Expedition asset.",
+    "deactivateYourLocation": "Deactivate your location."
   },
   "tokens": {
     "easyStandard": {

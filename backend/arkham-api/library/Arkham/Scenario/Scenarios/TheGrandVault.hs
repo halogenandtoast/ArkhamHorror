@@ -6,14 +6,19 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (pattern CourtOfTheAncients, pattern TheApiary)
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (getFloodLevelFor)
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.I18n
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.FloodLevel (FloodLevel (..))
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -38,8 +43,14 @@ instance HasChaosTokenValue TheGrandVault where
       activated <- getActivatedCount
       pure $ ChaosTokenValue Skull (NegativeModifier $ byDifficulty attrs (activated `div` 2) activated)
     Cultist -> pure $ toChaosTokenValue attrs Cultist 3 4
-    -- TODO: tablet scales with the investigator's location flood (-2/-3/-4 easy, -3/-4/-5 hard).
-    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
+    Tablet -> do
+      -- -2 base, -3 partially flooded, -4 fully flooded (each one worse on hard).
+      extra <-
+        getFloodLevelFor iid <&> \case
+          Unflooded -> 0
+          PartiallyFlooded -> 1
+          FullyFlooded -> 2
+      pure $ ChaosTokenValue Tablet (NegativeModifier $ byDifficulty attrs 2 3 + extra)
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
@@ -205,6 +216,29 @@ instance RunMessage TheGrandVault where
         card <- EncounterCard <$> genEncounterCard def
         createAssetAt_ card (InPlayArea iid)
       pure s
+    -- "If you fail, you must either deactivate your location or take 1 damage or 1
+    -- horror."
+    FailedSkillTestWithToken iid Cultist | isEasyStandard attrs -> do
+      cultistPenalty True iid
+      pure s
+    -- Hard/expert instead resolves "after this test resolves" — win or lose — and
+    -- the alternative is 1 damage *and* 1 horror.
+    ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
+      afterSkillTestQuiet $ cultistPenalty False iid
+      pure s
+    -- "Search the encounter discard pile for a copy of the Still Behind You
+    -- treachery and add it to the victory display" (easy/standard) or "draw it"
+    -- (hard/expert).
+    FailedSkillTestWithToken iid ElderThing -> do
+      findTopOfDiscard (cardIs Treacheries.stillBehindYou) >>= traverse_ \card ->
+        if isEasyStandard attrs
+          then do
+            -- Obtain first: ObtainCard clears the victory display too, so adding
+            -- before obtaining would take the card straight back out again.
+            obtainCard card
+            push $ AddToVictory (Just iid) (CardIdTarget $ toCardId card)
+          else drawCardFrom iid Deck.EncounterDiscard card
+      pure s
     ScenarioResolution res -> scope "resolutions" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
       -- Shared by every resolution: cross The Grand Vault off the R'lyeh map, and
@@ -257,3 +291,23 @@ instance RunMessage TheGrandVault where
         _ -> error $ "Unknown resolution: " <> show res
       pure s
     _ -> TheGrandVault <$> liftRunMessage msg attrs
+
+{- | The Cultist token's penalty: deactivate your location, or take the damage
+instead. Easy/standard offers 1 damage *or* 1 horror; hard/expert makes you take
+both. Deactivating is only on offer while your location actually is activated.
+-}
+cultistPenalty :: (HasI18n, ReverseQueue m) => Bool -> InvestigatorId -> m ()
+cultistPenalty easyStandard iid = do
+  mlid <- selectOne $ locationWithInvestigator iid <> activatedLocation
+  chooseOneM iid do
+    for_ mlid $ labeled' "deactivateYourLocation" . deactivateLocation Cultist
+    withI18n
+      $ if easyStandard
+        then countVar 1 do
+          labeled' "takeDamage" $ assignDamage iid Cultist 1
+          labeled' "takeHorror" $ assignHorror iid Cultist 1
+        else
+          numberVar "damage" 1
+            $ numberVar "horror" 1
+            $ labeled' "takeDamageAndHorror"
+            $ assignDamageAndHorror iid Cultist 1 1

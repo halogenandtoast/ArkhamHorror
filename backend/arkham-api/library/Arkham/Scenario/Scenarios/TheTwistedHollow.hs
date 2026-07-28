@@ -178,7 +178,10 @@ instance RunMessage TheTwistedHollow where
             _ -> error "not enough woods"
         else case woods of
           start : rest -> do
-            startAt =<< placeCardInGrid (Pos 0 0) start
+            startLocation <- placeCardInGrid (Pos 0 0) start
+            -- the starting location is put into play "ignoring any forced effects"
+            setupModifier ScenarioSource (LocationTarget startLocation) Blank
+            startAt startLocation
             shuffle (glimmeringWoods : rest) >>= \case
               north : east : south : west : rest' -> do
                 for_

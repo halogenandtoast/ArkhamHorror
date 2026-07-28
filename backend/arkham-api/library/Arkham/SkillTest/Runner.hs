@@ -14,8 +14,8 @@ import Arkham.ChaosToken.Types
 import Arkham.Classes hiding (matches)
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Game.Utils (maybeLocation)
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.Enemy (ignoredKeywordWindowsForEnemy)
 import Arkham.Helpers.Message
@@ -56,7 +56,8 @@ skillTestTargetToMaybeCard = \case
   ProxyTarget t _ -> skillTestTargetToMaybeCard t
   t -> targetToMaybeCard t
 
-skillTestSourceToMaybeCard :: (HasCallStack, HasGame m, Tracing m, Sourceable source) => source -> m (Maybe Card)
+skillTestSourceToMaybeCard
+  :: (HasCallStack, HasGame m, Tracing m, Sourceable source) => source -> m (Maybe Card)
 skillTestSourceToMaybeCard (toSource -> source) = case source of
   LocationSource lid -> locationTargetToMaybeCard lid
   AbilitySource src _ -> skillTestSourceToMaybeCard src
@@ -108,7 +109,10 @@ instance RunMessage SkillTest where
       pure s
     IncreaseSkillTestDifficulty n -> do
       -- see: faqs/drawing-thin
-      pure $ s & difficultyL %~ \(SkillTestDifficulty d) -> SkillTestDifficulty (SumCalculation [d, Fixed n])
+      -- This alters the test's *inherent* difficulty, so it must also apply to
+      -- the original difficulty a RepeatSkillTest (Live and Learn) restores.
+      let increase (SkillTestDifficulty d) = SkillTestDifficulty (SumCalculation [d, Fixed n])
+      pure $ s & difficultyL %~ increase & originalDifficultyL %~ fmap increase
     ChaosTokenCanceled _ _ token -> do
       let cancelIf t = if t.id == token.id then token {chaosTokenCancelled = True} else t
       pure
@@ -137,7 +141,12 @@ instance RunMessage SkillTest where
       -- the test-scoped ignore modifier is visible.
       ignoreWindows <- case (skillTestAction, skillTestTarget.enemy) of
         (Just Action.Fight, Just eid) ->
-          ignoredKeywordWindowsForEnemy skillTestSource skillTestInvestigator eid Keyword.Retaliate IgnoreRetaliate
+          ignoredKeywordWindowsForEnemy
+            skillTestSource
+            skillTestInvestigator
+            eid
+            Keyword.Retaliate
+            IgnoreRetaliate
         (Just Action.Evade, Just eid) ->
           ignoredKeywordWindowsForEnemy skillTestSource skillTestInvestigator eid Keyword.Alert IgnoreAlert
         _ -> pure []

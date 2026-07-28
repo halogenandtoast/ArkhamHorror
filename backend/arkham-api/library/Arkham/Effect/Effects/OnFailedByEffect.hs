@@ -7,7 +7,7 @@ module Arkham.Effect.Effects.OnFailedByEffect (
 import Arkham.Classes
 import Arkham.Effect.Runner hiding (onFailedByEffect)
 import Arkham.Helpers.GameValue (gameValueMatches)
-import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Matcher hiding (RevealChaosToken, SkillTestEnded)
 import Arkham.Prelude
 
 newtype OnFailedByEffect = OnFailedByEffect EffectAttrs
@@ -60,7 +60,11 @@ instance RunMessage OnFailedByEffect where
             pushAll msgs
           _ -> pure ()
       pure e
-    SkillTestEnds {} -> do
+    -- see: Arkham.Effect.Effects.OnSucceedByEffect, the rider follows a
+    -- repeated skill test and is only disabled once the test truly ends
+    RepeatSkillTest sid stId | Just stId == attrs.skillTest -> do
+      pure . OnFailedByEffect $ attrs {effectSkillTest = Just sid}
+    SkillTestEnded sid | Just sid == attrs.skillTest -> do
       push $ DisableEffect attrs.id
       pure e
     _ -> OnFailedByEffect <$> liftRunMessage msg attrs

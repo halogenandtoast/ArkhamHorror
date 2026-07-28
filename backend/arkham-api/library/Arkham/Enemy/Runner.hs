@@ -752,7 +752,14 @@ instance RunMessage EnemyAttrs where
         push $ EnemyMove eid' lid
         pure a
       _ -> do
-        willMove <- canEnterLocation eid lid
+        enemyLocation <- field EnemyLocation enemyId
+        -- Moving an enemy to the location it already occupies is not movement:
+        -- it must not fire leave/enter/moves windows. Dogs of War's The Beast in
+        -- a Cowl of Crimson cancels its own defeat and moves itself back to the
+        -- Catacombs of Kom el Shoqafa; when it is defeated *at* the Catacombs
+        -- that no-op move used to trigger "after an enemy enters your location"
+        -- effects such as Pursued. (Issue #5277)
+        willMove <- if enemyLocation == Just lid then pure False else canEnterLocation eid lid
         if willMove
           then do
             batchId <- getRandom
@@ -778,7 +785,6 @@ instance RunMessage EnemyAttrs where
               let source = fromMaybe (toSource eid) a.movement.source
               let (whens, _, _) = batchedTimings batchId (Window.EnemyWouldMove eid source from lid)
               lift $ checkWindows [whens]
-            enemyLocation <- field EnemyLocation enemyId
             let leaveWindows = join $ map (\oldId -> windows [Window.EnemyLeaves eid oldId]) (maybeToList enemyLocation)
             afterWindow <- checkAfter $ Window.EnemyMoves eid lid
             pushBatched batchId

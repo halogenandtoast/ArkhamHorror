@@ -7,7 +7,7 @@ module Arkham.Effect.Effects.OnRevealChaosTokenEffect (
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Matcher hiding (RevealChaosToken, SkillTestEnded)
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Window qualified as Window
@@ -81,7 +81,11 @@ instance RunMessage OnRevealChaosTokenEffect where
     SilentRevealChaosToken _ iid token -> do
       handleToken attrs iid token
       pure e
-    SkillTestEnds {} -> do
+    -- see: Arkham.Effect.Effects.OnSucceedByEffect, the rider follows a
+    -- repeated skill test and is only disabled once the test truly ends
+    RepeatSkillTest sid stId | Just stId == attrs.skillTest -> do
+      pure . OnRevealChaosTokenEffect $ attrs {effectSkillTest = Just sid}
+    SkillTestEnded sid | Just sid == attrs.skillTest -> do
       push $ DisableEffect attrs.id
       pure e
     _ -> OnRevealChaosTokenEffect <$> liftRunMessage msg attrs

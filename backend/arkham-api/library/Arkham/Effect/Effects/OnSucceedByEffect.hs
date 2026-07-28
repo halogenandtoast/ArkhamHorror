@@ -8,7 +8,7 @@ import Arkham.Classes
 import Arkham.Effect.Runner hiding (onSucceedByEffect)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.Ref (sourceToMaybeCard)
-import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Matcher hiding (RevealChaosToken, SkillTestEnded)
 import Arkham.Message.Lifted (skillTestCardOption)
 import Arkham.Prelude
 
@@ -68,7 +68,15 @@ instance RunMessage OnSucceedByEffect where
               Nothing -> pushAll msgs
           _ -> pure ()
       pure e
-    SkillTestEnds {} -> do
+    -- The rider follows the test it is attached to when that test is repeated
+    -- (Live and Learn, Daniel Jameson, ...), otherwise Act of Desperation's
+    -- "gain resources" would be dropped before the repeat is even declared.
+    RepeatSkillTest sid stId | Just stId == attrs.skillTest -> do
+      pure . OnSucceedByEffect $ attrs {effectSkillTest = Just sid}
+    -- Disable at SkillTestEnded (ST.8, after the "skill test ended" window)
+    -- rather than SkillTestEnds, which fires before that window and so before
+    -- a repeat can be declared.
+    SkillTestEnded sid | Just sid == attrs.skillTest -> do
       push $ DisableEffect attrs.id
       pure e
     _ -> OnSucceedByEffect <$> liftRunMessage msg attrs

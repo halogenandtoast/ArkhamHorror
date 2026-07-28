@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.FateOfTheVale (fateOfTheVale) where
+module Arkham.Scenario.Scenarios.FateOfTheVale (fateOfTheVale, crossOutUncontrolledResidents) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (ActCard))
@@ -90,11 +90,22 @@ cosmicEmissaryCaveLabels =
 
 {- | Cross out the name of each resident that was not under control of an
 investigator at the end of the game.
+
+Resigning eliminates the investigator, and elimination discards the story assets
+they control (Asset.Runner, InvestigatorEliminated) — so residents who escaped
+with a resigning investigator are already off the board when the resolution
+runs. They still count as controlled at the end of the game, so consult the
+scenario's resigned-with record too (#5279). This matters most for Resolution 5,
+which is only reachable once every undefeated investigator has resigned.
 -}
 crossOutUncontrolledResidents :: ReverseQueue m => m ()
 crossOutUncontrolledResidents =
   for_ [minBound .. maxBound] \resident -> do
-    controlled <- selectAny (assetIs resident <> AssetControlledBy Anyone)
+    controlled <-
+      orM
+        [ selectAny (assetIs resident <> AssetControlledBy Anyone)
+        , resignedWith (toCardDef resident)
+        ]
     unless controlled $ record (crossedOutKey resident)
 
 {- | Cross out the name of each resident that was in the victory display at the

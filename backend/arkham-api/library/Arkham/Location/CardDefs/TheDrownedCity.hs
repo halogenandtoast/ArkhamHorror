@@ -330,9 +330,12 @@ westAntechamber :: CardDef
 westAntechamber =
   location_ "11619" "West Antechamber" [Rlyeh] CourtOfTheAncients
 
+-- East Antechamber and Ancient Altar are the only Court locations with connection
+-- icons; every other location in the scenario is reachable only via the Great
+-- Lift or a card effect.
 eastAntechamber :: CardDef
 eastAntechamber =
-  location_ "11620" "East Antechamber" [Rlyeh] CourtOfTheAncients
+  location "11620" "East Antechamber" [Rlyeh] Heart [Plus] CourtOfTheAncients
 
 twistingCatwalks :: CardDef
 twistingCatwalks =
@@ -349,35 +352,72 @@ greatLiftActive =
 
 ancientAltar :: CardDef
 ancientAltar =
-  victory 1 $ location_ "11623" "Ancient Altar" [Rlyeh] CourtOfTheAncients
+  victory 1 $ location "11623" "Ancient Altar" [Rlyeh] Plus [Heart] CourtOfTheAncients
+
+-- The six archives all share the "Crumbling Archives" unrevealed back; setup
+-- shuffles them, removes one at random, and places the rest face down.
+crumblingArchives :: Name
+crumblingArchives = "Crumbling Archives"
 
 ringLibraryArchiveOfTheStars :: CardDef
 ringLibraryArchiveOfTheStars =
-  location_ "11624" ("Ring Library" <:> "Archive of the Stars") [Rlyeh, Passageway] CourtOfTheAncients
+  locationWithUnrevealed_
+    "11624"
+    crumblingArchives
+    [Rlyeh]
+    ("Ring Library" <:> "Archive of the Stars")
+    [Rlyeh, Passageway]
+    CourtOfTheAncients
 
 ringLibraryArchiveOfTheAncients :: CardDef
 ringLibraryArchiveOfTheAncients =
-  location_ "11625" ("Ring Library" <:> "Archive of the Ancients") [Rlyeh] CourtOfTheAncients
+  locationWithUnrevealed_
+    "11625"
+    crumblingArchives
+    [Rlyeh]
+    ("Ring Library" <:> "Archive of the Ancients")
+    [Rlyeh]
+    CourtOfTheAncients
 
 loftyWalkwayArchiveOfDreams :: CardDef
 loftyWalkwayArchiveOfDreams =
-  location_ "11626" ("Lofty Walkway" <:> "Archive of Dreams") [Rlyeh, Passageway] CourtOfTheAncients
+  locationWithUnrevealed_
+    "11626"
+    crumblingArchives
+    [Rlyeh]
+    ("Lofty Walkway" <:> "Archive of Dreams")
+    [Rlyeh, Passageway]
+    CourtOfTheAncients
 
 loftyWalkwayArchiveOfConflict :: CardDef
 loftyWalkwayArchiveOfConflict =
-  location_ "11627" ("Lofty Walkway" <:> "Archive of Conflict") [Rlyeh] CourtOfTheAncients
+  locationWithUnrevealed_
+    "11627"
+    crumblingArchives
+    [Rlyeh]
+    ("Lofty Walkway" <:> "Archive of Conflict")
+    [Rlyeh]
+    CourtOfTheAncients
 
 luminousArchivesArchiveOfHistory :: CardDef
 luminousArchivesArchiveOfHistory =
-  location_
+  locationWithUnrevealed_
     "11628"
+    crumblingArchives
+    [Rlyeh]
     ("Luminous Archives" <:> "Archive of History")
     [Rlyeh, Passageway]
     CourtOfTheAncients
 
 luminousArchivesArchiveOfMemory :: CardDef
 luminousArchivesArchiveOfMemory =
-  location_ "11629" ("Luminous Archives" <:> "Archive of Memory") [Rlyeh] CourtOfTheAncients
+  locationWithUnrevealed_
+    "11629"
+    crumblingArchives
+    [Rlyeh]
+    ("Luminous Archives" <:> "Archive of Memory")
+    [Rlyeh]
+    CourtOfTheAncients
 
 -- Obsidian Canyons
 rlyehStreets :: CardDef

@@ -21,13 +21,18 @@ instance HasModifiersFor AncientAltar where
     -- Back: "Investigators cannot enter Ancient Altar unless there are 3 or more
     -- Glyph cards in the victory display." and "Entering Ancient Altar from East
     -- Antechamber costs 4 clues (as a group) per investigator."
+    --
+    -- Both modifiers belong on the investigators who might *enter* the Altar, not
+    -- on the ones standing on it: a CannotEnter/AdditionalCostToEnterMatching held
+    -- by someone already here never gates the move in.
     glyphs <- getVictoryGlyphCount
-    modifySelect a (investigator_ $ at_ (be a))
-      $ [CannotEnter (toId a) | glyphs < 3]
-        <> [ AdditionalCostToEnterMatching
-               (LocationWithTitle "East Antechamber")
-               (GroupClueCost (PerPlayer 4) Anywhere)
-           ]
+    when (glyphs < 3) $ modifySelect a Anyone [CannotEnter (toId a)]
+    -- East Antechamber is the Altar's only connection, so the toll is scoped to
+    -- the investigators standing there.
+    modifySelect
+      a
+      (investigator_ $ at_ (locationIs Cards.eastAntechamber))
+      [AdditionalCostToEnterMatching (be a) (GroupClueCost (PerPlayer 4) Anywhere)]
 
 instance HasAbilities AncientAltar where
   getAbilities (AncientAltar a) =

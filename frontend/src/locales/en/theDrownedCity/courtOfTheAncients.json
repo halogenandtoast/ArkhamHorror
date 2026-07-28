@@ -1,4 +1,70 @@
 {
+  "intro": {
+    "title": "Court of the Ancients",
+    "checkCampaignLog": "Check your Campaign Log.",
+    "headedWest": "If the expedition headed west, proceed to _Court of the Ancients 1_.",
+    "headedEast": "If the expedition headed east, skip to _Court of the Ancients 2_.",
+    "courtOfTheAncients1": "_Court of the Ancients 1_: Time seems to slip away as you follow the dark tunnels out of the heart of the city. Eventually the constant churn and thrum of machinery melts away, replaced by an ominous silence. Andy has only just proposed that you turn around to find another route when the endless stairs come to a stop. An intricately carved door is set in the ceiling above you. Pressing a panel in its center reveals a vast, airy structure that vaguely resembles the nave of some ancient alien cathedral. A towering lift dominates the center, surrounded by spiraling ringed floors. The walls are covered in countless alien glyphs, pulsing with green light. You wonder if the great archive might hold anything valuable.",
+    "courtOfTheAncients2": "_Court of the Ancients 2_: You land on the top floor of the towering nave. Twisting stairs and catwalks circle the sprawling structure, revealing more levels below. The walls around you are covered in glowing alien glyphs: hundreds of thousands of symbols covering every surface. You wonder if the great archive might hold anything valuable.",
+    "courtOfTheAncients2Ruby": "“Watch yourself. We’re not the first ones here,” says Ruby. The jewel thief is bent over a prone human body lying in a pool of fresh blood. You’re struck by their colorful patchwork cloak. A deep, rumbling roar reverberates through the chamber. Ruby’s expression turns grave.",
+    "courtOfTheAncients2Conclusion": "“If we’re going to find anything of value, we’d better act quickly.”",
+    "resolvePlumbTheDepths": "If any investigator has the Plumb the Depths Task, they resolve their respective story to the right.",
+    "proceedToSetup": "Proceed to _Setup_.",
+    "plumbTheDepths": {
+      "title": "Task: Plumb the Depths",
+      "instructions": "_Read only if you have the “Plumb the Depths” Task:_",
+      "body": "You can’t help but marvel at the austere grandeur of the ancient structure. Was this an ancient palace? A library? A place of worship? The intricate murals on the walls are a blend of pictograph and alien writing, depicting an ancient migration across the stars. The glyphs glow with a flickering green light, chronicling unknowable histories, ancient secrets hidden from humankind.",
+      "memories": "One image—a nightmarescape of oceanic horrors and sunken cities—catches your attention. You press the eye of a particularly disturbing creature and feel a rush of ancient memories. Thoughts and feelings of an alien being, images of the stygian depths of some distant planet, overwhelm your consciousness. The memories give way to clearer, more defined facts, dates, a history recorded by a prehistoric civilization.",
+      "reflection": "You begin to feel yourself slip away, as though your consciousness were being drawn through a sieve. There is much more you could learn…but should you?",
+      "choose": "You must decide (choose one):",
+      "lookAway": "Look away. Erase 1 progress under _Plumb the Depths_ in your Campaign Log. Each investigator begins the next scenario with 1 clue (from the token pool).",
+      "seekTheTruth": "Seek the truth. Mark 2 progress under _Plumb the Depths_ in your Campaign Log and suffer 1 mental trauma. Each investigator begins the next scenario with 1 fewer card in their opening hand."
+    },
+    "label": {
+      "plumbTheDepths": {
+        "lookAway": "Look away.",
+        "seekTheTruth": "Seek the truth."
+      }
+    }
+  },
+  "setup": {
+    "title": "Setup",
+    "gatherSets": "Gather all cards from the following encounter sets: _Court of the Ancients_, _Domination_, _Dreams_, _Elder Mist_, _The Inescapable_, _R’lyeh_, and _Star Spawn_. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/court-of-the-ancients.png' /><img src='{setImgPath}/domination.png' /><img src='{setImgPath}/dreams.png' /><img src='{setImgPath}/elder-mist.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /></section>",
+    "placeFixedLocations": "Put the Twisting Catwalks, West Antechamber, East Antechamber, and Ancient Altar locations into play according to the location placement diagram.",
+    "placeCrumblingArchives": "Shuffle each copy of Crumbling Archives and remove one of them from the game at random. Put each remaining copy of Crumbling Archives into play as shown in the location placement diagram.",
+    "checkCampaignLogWest": "Check your Campaign Log. If _the expedition headed west_:",
+    "westGreatLift": "Put the Great Lift location into play on level 1, (Inactive) side faceup. (See _The Great Lift and Sliding Locations_.)",
+    "westGatherStowaways": "Gather all cards from the _Stowaways_ encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/stowaways.png' /></section>",
+    "westBuildActAgendaDeck": "Build the act and agenda deck using agenda 1a—“Ruined Archives,” agenda 2a—“Unstable Foundations,” act 1a—“Steps of Giants,” and act 2a—“Escape the Tower (v. I).” Remove each other act and agenda from the game.",
+    "westStarSpawn": "Search the _Star Spawn_ encounter set for the Star Spawn Observer enemy and set it aside, out of play. Remove two other cards in the _Star Spawn_ encounter set from the game at random.",
+    "westBeginAtEastAntechamber": "Each investigator begins play at East Antechamber.",
+    "checkCampaignLogEast": "Check your Campaign Log. If _the expedition headed east_:",
+    "eastGreatLift": "Put the Great Lift location into play on level 4, (Inactive) side faceup. (See _The Great Lift and Sliding Locations_.)",
+    "eastGatherPilgrims": "Gather all cards from the _Pilgrims_ encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/pilgrims.png' /></section>",
+    "eastBuildActAgendaDeck": "Build the act and agenda deck using agenda 1a—“Flooded Archives,” agenda 2a—“Unstable Foundations,” act 1a—“Steps of Giants,” and act 2a—“Escape the Tower (v. II).” Remove each other act and agenda from the game.",
+    "eastAddFloodTokens": "Add the flood tokens to the token pool.",
+    "eastFloodLevelsOneAndTwo": "Increase the flood level of each location on levels 1 and 2.",
+    "eastFullyFloodLevelOne": "Increase the flood level of each location on level 1 so that they are fully flooded.",
+    "eastStarSpawn": "Search the _Star Spawn_ encounter set for the Star Spawn Observer enemy and set it aside, out of play. Remove each other card in the _Star Spawn_ encounter set from the game.",
+    "eastBeginAtTwistingCatwalks": "Each investigator begins play at Twisting Catwalks.",
+    "setCardsAside": "Set the Shard of Y’ch’lecht story asset and the Colossal Tyrant enemy aside, out of play.",
+    "checkCampaignLogInescapable": "Check your Campaign Log.",
+    "creatureWasDefeated": "If _the creature was defeated_, remove _The Inescapable_ encounter set from the game.",
+    "otherwise": "Otherwise, set The Inescapable enemy aside, out of play.",
+    "chooseExpeditionAsset": "In player order, each player may choose 1 earned _Artifact_ asset or 1 _Item_ asset from the _Expedition_ encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+    "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck.",
+    "readyToBegin": "You are now ready to begin."
+  },
+  "rules": {
+    "greatLift": {
+      "title": "The Great Lift and Sliding Locations",
+      "body": "<p class='basic'>During this scenario, the investigators will need to use the Great Lift to explore other levels of the tower.</p><ul><li>Locations are not connected to one another except via the Great Lift, their connection icons, or certain card effects.</li><li>The Great Lift is only connected to the locations to the left and right of it, and vice versa.</li><li>When instructed to slide the Great Lift up or down, move the Great Lift to the level above or below its current level.<ul><li>The Great Lift cannot move above level 4 or below level 1.</li></ul></li><li>When the Great Lift moves, each card and token at that location moves with it.</li></ul>"
+    }
+  },
+  "label": {
+    "chooseExpeditionAssetQuestion": "Choose an earned Artifact asset, or an Item asset from the Expedition encounter set, to begin in play under your control.",
+    "noExpeditionAsset": "Do not take an Artifact or Expedition asset."
+  },
   "additionalActions": "Additional actions to spend",
   "cosmicOmen": {
     "shuffleGlyphIntoEncounterDeck": "Shuffle one Glyph card in play into the encounter deck",

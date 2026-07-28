@@ -5,13 +5,13 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
 import Arkham.ForMovement
-import Arkham.Helpers.Location (getCanMoveTo, getLocationOf, withLocationOf)
+import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modified_)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Message.Lifted.Placement
+import Arkham.Scenarios.TheTwistedHollow.Helpers (placeValeLanternAtNearestLocation)
 import Arkham.Trait (Trait (Dark))
 import Arkham.Window qualified as Window
 
@@ -52,10 +52,7 @@ instance RunMessage ValeLanternAFaintHope where
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
       cancelWindowBatch ws
-      -- "the nearest location" is where the lantern is; the ability is offered to
-      -- every player, and its controller may already have been unplaced (resigned)
-      mlid <- getLocationOf attrs >>= maybe (getLocationOf iid) (pure . Just)
-      for_ mlid $ place attrs . AtLocation
+      placeValeLanternAtNearestLocation iid attrs
       flipOverBy iid (attrs.ability 2) attrs
       pure a
     Flip _ _ (isTarget attrs -> True) -> do

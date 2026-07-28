@@ -546,15 +546,19 @@ instance RunMessage LocationAttrs where
       before <- checkWhen $ Window.TakeControlOfKey iid k
       pushAll [before, PlaceKey (InvestigatorTarget iid) k]
       pure a
+    -- These push a bare RemoveLocation rather than going through 'removeLocation'
+    -- (which resolves the When), so set beingRemoved here. Anything reacting to the
+    -- resulting leave-play windows (Vale Lantern's "place it at the nearest location"
+    -- replacement) has to be able to tell this location is on its way out, #5267.
     RemoveAllCopiesOfEncounterCardFromGame cardMatcher | toCard a `cardMatch` cardMatcher -> do
       push $ RemoveLocation (toId a)
-      pure a
+      pure $ a & beingRemovedL .~ True
     ShuffleCardsIntoTopOfDeck _ _ cards | toCard a `elem` cards -> do
       push $ RemoveLocation (toId a)
-      pure a
+      pure $ a & beingRemovedL .~ True
     ShuffleCardsIntoBottomOfDeck _ _ cards | toCard a `elem` cards -> do
       push $ RemoveLocation (toId a)
-      pure a
+      pure $ a & beingRemovedL .~ True
     PlaceConcealedCard _ card (AtLocation lid) | a.id == lid -> do
       cards <- shuffleM $ nub $ card : locationConcealedCards
       pure $ a & concealedCardsL .~ cards

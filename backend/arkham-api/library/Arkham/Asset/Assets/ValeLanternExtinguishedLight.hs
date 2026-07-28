@@ -3,9 +3,8 @@ module Arkham.Asset.Assets.ValeLanternExtinguishedLight (valeLanternExtinguished
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Matcher
-import Arkham.Message.Lifted.Placement
+import Arkham.Scenarios.TheTwistedHollow.Helpers (placeValeLanternAtNearestLocation)
 
 newtype ValeLanternExtinguishedLight = ValeLanternExtinguishedLight AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,10 +27,7 @@ instance RunMessage ValeLanternExtinguishedLight where
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
       cancelWindowBatch ws
-      -- "the nearest location" is where the lantern is; the ability is offered to
-      -- every player, and its controller may already have been unplaced (resigned)
-      mlid <- getLocationOf attrs >>= maybe (getLocationOf iid) (pure . Just)
-      for_ mlid $ place attrs . AtLocation
+      placeValeLanternAtNearestLocation iid attrs
       pure a
     Flip _ _ (isTarget attrs -> True) -> do
       push $ ReplaceAsset attrs.id Cards.valeLanternAFaintHope

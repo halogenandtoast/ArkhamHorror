@@ -7248,6 +7248,7 @@ test-suite spec
       Arkham.Asset.Assets.ThirtyFiveWinchesterSpec
       Arkham.Asset.Assets.Tonys38LongColtSpec
       Arkham.Asset.Assets.TrueMagickReworkingReality5Spec
+      Arkham.Asset.Assets.ValeLanternExtinguishedLightSpec
       Arkham.Asset.Assets.WendysAmuletSpec
       Arkham.Asset.Assets.ZoeysCrossSpec
       Arkham.Campaign.NightOfTheZealot.ScenariosSpec

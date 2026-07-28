@@ -7,6 +7,7 @@ import Arkham.Decklist.Type
 import Arkham.PlayerCard
 import Arkham.Prelude
 import Arkham.Taboo
+import Data.List.Extra (groupSortOn)
 import Data.Text qualified as T
 
 newtype ArkhamBuildCardPool = ArkhamBuildCardPool [Text]
@@ -48,12 +49,27 @@ randomBasicWeaknessSamplingCandidates ctx =
   let candidates = randomBasicWeaknessCandidates ctx
    in if null candidates then randomBasicWeaknessCandidatesIgnoringCardPool ctx else candidates
 
+{- | The legal candidates grouped by the card they print, so a weakness reprinted in
+Revised Core or Chapter 2 forms one group rather than two or three entries.
+-}
+randomBasicWeaknessSamplingGroups :: RandomBasicWeaknessContext -> [NonEmpty CardDef]
+randomBasicWeaknessSamplingGroups =
+  mapMaybe nonEmpty . groupSortOn canonicalCardCode . randomBasicWeaknessSamplingCandidates
+
+{- | Sample the weakness first, then the printing. Sampling the flat candidate list
+instead would weight a reprinted weakness two or three times as heavily as one that was
+only ever printed once, while grouping the pool up front would drop the only legal
+printing for a card pool restricted to Revised Core or Chapter 2. Printings differ only
+in art, so the second sample keeps that variety.
+-}
 sampleRandomBasicWeakness :: MonadRandom m => RandomBasicWeaknessContext -> m CardDef
-sampleRandomBasicWeakness ctx =
-  sample
-    $ fromJustNote "No random basic weakness candidates"
-    $ nonEmpty
-    $ randomBasicWeaknessSamplingCandidates ctx
+sampleRandomBasicWeakness ctx = do
+  printings <-
+    sample
+      $ fromJustNote "No random basic weakness candidates"
+      $ nonEmpty
+      $ randomBasicWeaknessSamplingGroups ctx
+  sample printings
 
 tabooMutate :: RandomBasicWeaknessContext -> CardDef -> CardDef
 tabooMutate RandomBasicWeaknessContext {rbwDecklist} cardDef =

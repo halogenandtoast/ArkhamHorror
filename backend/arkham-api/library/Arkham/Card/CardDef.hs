@@ -158,6 +158,14 @@ toCardCodePairs c =
       )
       (cdAlternateCardCodes c)
 
+{- | A stable key shared by every printing of a card. 'toCardCodePairs' rewrites
+'cdCardCode' per printing but preserves the full code set on each copy, so the minimum is
+identical across them. Use this to ask "are these the same card?" when the two 'CardDef's
+may be different printings (their derived 'Eq' would say no).
+-}
+canonicalCardCode :: CardDef -> CardCode
+canonicalCardCode c = foldl' min (cdCardCode c) (cdAlternateCardCodes c)
+
 data IsRevelation
   = NoRevelation
   | IsRevelation

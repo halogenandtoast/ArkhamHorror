@@ -402,11 +402,16 @@ morriganWeaknessMessages iid drawWeakness = do
  where
   -- The basic weakness pool is far larger than 3; the fuel only guards
   -- against a pathological sampler.
+  --
+  -- Distinctness is by canonical card code, not 'CardDef' equality: two draws can be
+  -- different printings of the same weakness (Mob Enforcer is 01101 in Core and 01601 in
+  -- Revised Core), and those 'CardDef's are not equal, so the player would be offered the
+  -- same card twice (#5264).
   distinctWeaknesses _ (0 :: Int) acc = pure (reverse acc)
   distinctWeaknesses 0 _ acc = pure (reverse acc)
   distinctWeaknesses fuel n acc = do
     card <- drawWeakness
-    if toCardDef card `elem` map toCardDef acc
+    if canonicalCardCode (toCardDef card) `elem` map (canonicalCardCode . toCardDef) acc
       then distinctWeaknesses (fuel - 1) n acc
       else distinctWeaknesses (fuel - 1) (n - 1) (card : acc)
 

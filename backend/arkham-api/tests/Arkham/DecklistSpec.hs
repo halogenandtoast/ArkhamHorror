@@ -77,10 +77,43 @@ spec = describe "loadDecklist" $ do
     candidateCodes `shouldSatisfy` all (.isChapterTwo)
     candidateCodes `shouldNotContain` ["02037", "04040", "07038"]
 
+  -- Mob Enforcer is 01101 in Core and 01601 in Revised Core, and 'toCardCodePairs' puts
+  -- both printings in 'allBasicWeaknesses'. Sampling that flat list weighted reprinted
+  -- weaknesses twice and let Boon of the Morrigan offer the same card twice (#5264).
+  it "groups reprinted random basic weakness candidates into a single sampling group" do
+    let groups =
+          randomBasicWeaknessSamplingGroups
+            RandomBasicWeaknessContext
+              { rbwInvestigatorClass = Guardian
+              , rbwPlayerCount = 1
+              , rbwDecklist = Nothing
+              , rbwStandalone = False
+              }
+        groupKeys = map (\(d :| _) -> canonicalCardCode d) groups
+
+    groups `shouldSatisfy` notNull
+    groupKeys `shouldBe` ordNub groupKeys
+    map toCardCode (concatMap toList $ groupsContaining "01101" groups)
+      `shouldMatchList` ["01101", "01601"]
+
+  it "keeps the only legal printing when the card pool excludes the original" do
+    let groups =
+          randomBasicWeaknessSamplingGroups
+            RandomBasicWeaknessContext
+              { rbwInvestigatorClass = Guardian
+              , rbwPlayerCount = 1
+              , rbwDecklist = Just revisedCoreCardPoolDecklist
+              , rbwStandalone = False
+              }
+
+    groups `shouldSatisfy` notNull
+    map toCardCode (concatMap toList $ groupsContaining "01601" groups) `shouldBe` ["01601"]
+
   it "uses arkham.build card_pool when LoadDecklist replaces 01000 through InitDeck" $ gameTest $ \self -> do
     placeholder <- genPlayerCard randomWeakness
     liftIO
-      $ map toCardCode
+      $ map
+        toCardCode
         ( randomBasicWeaknessCandidates
             RandomBasicWeaknessContext
               { rbwInvestigatorClass = Guardian
@@ -91,17 +124,25 @@ spec = describe "loadDecklist" $ do
         )
       `shouldBe` ["12102"]
     (deckWithoutPlaceholder, replacementDefs) <-
-      Scenario.addRandomBasicWeaknessIfNeeded Guardian 1 (Just singletonRandomWeaknessDecklist) (Deck [placeholder])
+      Scenario.addRandomBasicWeaknessIfNeeded
+        Guardian
+        1
+        (Just singletonRandomWeaknessDecklist)
+        (Deck [placeholder])
     liftIO do
       map toCardCode (unDeck deckWithoutPlaceholder) `shouldBe` []
       map toCardCode replacementDefs `shouldBe` ["12102"]
 
     initDeckCarriedDecklist <-
       createMessageChecker \case
-        InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDecklist = Just decklist, initDeckDeck = deck} ->
-          iid == "12013"
-            && decklist == singletonRandomWeaknessDecklist
-            && map toCardCode (unDeck deck) == ["01000"]
+        InitDeck
+          InitDeckAttrs {initDeckInvestigator = iid, initDeckDecklist = Just decklist, initDeckDeck = deck} ->
+          iid
+            == "12013"
+            && decklist
+            == singletonRandomWeaknessDecklist
+            && map toCardCode (unDeck deck)
+            == ["01000"]
         _ -> False
 
     run $ LoadDecklist (attr investigatorPlayerId self) singletonRandomWeaknessDecklist
@@ -195,7 +236,8 @@ spec = describe "loadDecklist" $ do
                 }
 
     candidateCodes `shouldSatisfy` notNull
-    ["01596", "08130", "12102", "51011", "52011", "53012", "54014"] `shouldSatisfy` all (`elem` candidateCodes)
+    ["01596", "08130", "12102", "51011", "52011", "53012", "54014"]
+      `shouldSatisfy` all (`elem` candidateCodes)
 
   it "does not treat Echoes of the Past as Edge of the Earth" do
     let candidateCodes =
@@ -267,19 +309,21 @@ spec = describe "loadDecklist" $ do
 
     candidateCodes `shouldContain` ["02037"]
 
-  it "keeps taboo and standalone restrictions when sampling falls back from an empty arkham.build pool" do
-    let candidateCodes =
-          map toCardCode
-            $ randomBasicWeaknessSamplingCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Guardian
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just emptyPackTaboo23CardPoolDecklist
-                , rbwStandalone = True
-                }
+  it
+    "keeps taboo and standalone restrictions when sampling falls back from an empty arkham.build pool"
+    do
+      let candidateCodes =
+            map toCardCode
+              $ randomBasicWeaknessSamplingCandidates
+                RandomBasicWeaknessContext
+                  { rbwInvestigatorClass = Guardian
+                  , rbwPlayerCount = 1
+                  , rbwDecklist = Just emptyPackTaboo23CardPoolDecklist
+                  , rbwStandalone = True
+                  }
 
-    candidateCodes `shouldSatisfy` notNull
-    candidateCodes `shouldNotContain` ["08113"]
+      candidateCodes `shouldSatisfy` notNull
+      candidateCodes `shouldNotContain` ["08113"]
 
   it "applies taboo-mutated restrictions before filtering standalone candidates" do
     let candidateCodes =
@@ -329,7 +373,8 @@ arkhamBuildHunchDecklist =
     , sideSlots = mempty
     , investigator_code = "05002"
     , investigator_name = "Joe Diamond"
-    , meta = Just "{\"attachments_05002\":\"05010,03026,03026,04103,04103,02186,02186,01022,01022,01037,01037\"}"
+    , meta =
+        Just "{\"attachments_05002\":\"05010,03026,03026,04103,04103,02186,02186,01022,01022,01037,01037\"}"
     , taboo_id = Nothing
     , url = Nothing
     , decklist_id = Nothing
@@ -368,6 +413,13 @@ noCardPoolDecklist =
 
 coreCardPoolDecklist :: ArkhamDBDecklist
 coreCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"cycle:core\"}"}
+
+revisedCoreCardPoolDecklist :: ArkhamDBDecklist
+revisedCoreCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"cycle:rcore\"}"}
+
+-- | The sampling groups holding a printing with the given card code.
+groupsContaining :: CardCode -> [NonEmpty CardDef] -> [NonEmpty CardDef]
+groupsContaining cardCode = filter (any ((== cardCode) . toCardCode))
 
 arkhamBuildShortCardPoolDecklist :: ArkhamDBDecklist
 arkhamBuildShortCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"core,dwlp,ptcp,tfap,tcup\"}"}

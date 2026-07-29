@@ -2559,7 +2559,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a
   PlayerWindow iid additionalActions isAdditional immediate | iid == investigatorId -> handlePlayerWindow a iid additionalActions isAdditional immediate
-  PlayerWindow iid additionalActions isAdditional False | iid /= investigatorId && a.inGame -> handlePlayerWindowV2 a iid additionalActions isAdditional
+  -- investigatorSkippedWindow: the seat declined this window via SkipTriggersButton.
+  -- The queue re-pushes PlayerWindow on every drain, so without this guard the skip
+  -- would rebuild the identical question immediately (#5284).
+  PlayerWindow iid additionalActions isAdditional False
+    | iid /= investigatorId && a.inGame && not investigatorSkippedWindow ->
+        handlePlayerWindowV2 a iid additionalActions isAdditional
   EndInvestigation -> do
     pure
       $ a

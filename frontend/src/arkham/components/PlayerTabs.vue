@@ -9,6 +9,7 @@ import { ArrowPathIcon } from '@heroicons/vue/20/solid';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Investigator } from '@/arkham/types/Investigator';
 import type { Question } from '@/arkham/types/Question';
+import { MessageType } from '@/arkham/types/Message';
 import type { TarotCard } from '@/arkham/types/TarotCard';
 import { imgsrc } from '@/arkham/helpers';
 import { gameLocalStorageKey } from '@/arkham/localStorage';
@@ -170,6 +171,28 @@ function humanQuestionPlayers() {
   return Object.keys(props.game.question).filter(pid => !isAiPlayer(pid))
 }
 
+// An out-of-turn fast player window: a PlayerWindowChooseOne carrying that seat's own
+// Skip Triggers button. It is optional by construction and the engine re-offers it at
+// the next player window, so it must not hold the solo perspective on a seat that is
+// not taking a turn -- otherwise ending "Ashcan" Pete's turn strands you on Pete while
+// Rex, the turn player, waits behind a tab (#5284). Reaction windows decode as
+// WindowChooseOne (isPlayerWindow false) and are deliberately NOT covered: those are
+// tied to something that just happened and still deserve focus.
+function isDeclinableFastWindow(playerId: string) {
+  if (!ArkhamGame.activeQuestionIsPlayerWindow(props.game, playerId)) return false
+  return ArkhamGame.choices(props.game, playerId)
+    .some(choice => choice.tag === MessageType.SKIP_TRIGGERS_BUTTON)
+}
+
+// Question seats allowed to claim the perspective. If every seat is a declinable fast
+// window there is nothing better to route to, so fall back to the full list rather than
+// leaving the only answerable question unreachable.
+function focusQuestionPlayers() {
+  const players = humanQuestionPlayers()
+  const focusable = players.filter(pid => !isDeclinableFastWindow(pid))
+  return focusable.length > 0 ? focusable : players
+}
+
 function skillTestPlayerId() {
   if (solo?.value !== true) return undefined
   const investigatorId = props.game.skillTest?.investigator
@@ -206,7 +229,7 @@ function frameIsStillNeeded(frame: SwitchFrame, tabs: Set<string>) {
   }
   if (frame.reason === 'tab-action') return tabs.has(frame.tab)
   if (frame.reason === 'sole-question') {
-    const questionPlayers = humanQuestionPlayers()
+    const questionPlayers = focusQuestionPlayers()
     return questionPlayers.length === 1 && questionPlayers[0] === frame.perspective
   }
   if (frame.reason === 'covered-question') return false
@@ -300,7 +323,7 @@ function inspectActions() {
   manualSelectionAtStep = null
 
   const { tabs, outsideTab } = actionLocations()
-  const questionPlayers = humanQuestionPlayers()
+  const questionPlayers = focusQuestionPlayers()
   const soleQuestionPlayer = questionPlayers.length === 1 ? questionPlayers[0] : null
   const skillTestPlayer = skillTestPlayerId()
   const activeQuestionPlayer = activeInvestigatorPlayerId()

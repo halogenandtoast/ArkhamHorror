@@ -543,7 +543,20 @@ handlePlayerWindowV2 a@InvestigatorAttrs{..} iid additionalActions isAdditional 
             )
             (filter (or . sequence [isFastAbility, not . isActionAbility]) actions)
     player <- getPlayer investigatorId
-    unless (null choices) $ push $ AskPlayer $ Ask player $ PlayerWindowChooseOne choices
+    -- Unlike the turn player's window (which always carries an EndTurnButton), this
+    -- window is pure opt-in for a player who is not taking a turn. Without a way out
+    -- an investigator with a permanently available fast ability -- "Ashcan" Pete's
+    -- ready-Duke, Joey the Rat -- hands their seat a one-option, decline-less
+    -- question every time the turn player gets a window (#5284). SkippedWindow is
+    -- cleared by the next CheckWindows, so declining only suppresses the re-ask until
+    -- something actually happens in the game.
+    unless (null choices)
+      $ push
+      $ AskPlayer
+      $ Ask player
+      $ PlayerWindowChooseOne
+      $ choices
+      <> [SkipTriggersButton investigatorId]
   pure a
 
 handleUseCardAbility a@InvestigatorAttrs{..} iid = do

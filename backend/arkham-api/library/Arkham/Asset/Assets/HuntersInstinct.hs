@@ -13,7 +13,7 @@ newtype HuntersInstinct = HuntersInstinct AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntersInstinct :: AssetCard HuntersInstinct
-huntersInstinct = assetWith HuntersInstinct Cards.huntersInstinct (whenNoUsesL ?~ DiscardWhenNoUses)
+huntersInstinct = assetWith HuntersInstinct Cards.huntersInstinct discardWhenNoUses
 
 instance HasAbilities HuntersInstinct where
   getAbilities (HuntersInstinct a) =

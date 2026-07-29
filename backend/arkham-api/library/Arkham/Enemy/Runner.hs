@@ -594,8 +594,22 @@ instance RunMessage EnemyAttrs where
               (\(iid', eid') -> checkWindows [mkWhen (Window.EnemyEntersYourLocation iid' eid' lid)])
               [(iid', eid') | iid' <- iidsHere, eid' <- entries]
           pushAll (whenWindows <> yourLocationWhens <> [After msg])
+          -- An enemy that is being *moved* out of a threat area leaves it. The
+          -- placement rewrite has to land here rather than in `Do (EnemyMove)`,
+          -- because `EnemyEntered` pushes `After msg` to the front of the queue
+          -- and `After (EnemyEntered)` runs `EnemyCheckEngagement` — which bails
+          -- on a still-engaged enemy, so the enemy would end up at the
+          -- destination silently unengaged (Redeem a Former Colleague pulling an
+          -- engaged Edwin Bennet to another investigator). Issue #5292.
+          --
+          -- Spawns are exempt: they deliberately engage *before* `EnemyEntered`
+          -- so their after-enters windows see the threat area (Doppelgänger
+          -- 11058). A no-op move to the location the enemy already occupies
+          -- never reaches here — `EnemyMove` filters those out (#5277) — so
+          -- engagement-preserving self-moves (Knight of the Inner Circle) are
+          -- unaffected.
           case a.placement of
-            InThreatArea {} -> pure a
+            InThreatArea {} | isJust enemySpawnDetails -> pure a
             _ -> pure $ a & placementL .~ AtLocation lid
     After (EnemyEntered eid lid) | eid == enemyId -> do
       case enemyPlacement of

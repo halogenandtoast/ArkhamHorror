@@ -7274,6 +7274,7 @@ test-suite spec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Enemy.Cards.TonysQuarrySpec
       Arkham.Enemy.Cards.WatcherFromAnotherDimensionSpec
+      Arkham.Enemy.EngagementSpec
       Arkham.Epic.EpicMultiplayerSpec
       Arkham.Event.Events.ActOfDesperationSpec
       Arkham.Event.Events.AstoundingRevelationSpec

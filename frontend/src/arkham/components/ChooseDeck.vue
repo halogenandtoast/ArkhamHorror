@@ -229,6 +229,13 @@ async function addDeck(d: Arkham.Deck) {
   deckId.value = d.id
   unsavedDeckList.value = null
   deckType.value = "UseExistingDeck"
+  // "Save and use" means use it: seat the deck immediately rather than dropping the player
+  // back into the existing-deck list to hunt for what they just made (a filter or search
+  // could even be hiding it). Reset the pool state up front instead of waiting on the
+  // currentDeckList watcher -- it flushes after this function, so a pool left selected on a
+  // PREVIOUS deck would otherwise be applied to this one.
+  resetWeaknessPoolFromDeck()
+  await choose()
 }
 
 async function addUnsavedDeck(dl: ArkhamDbDecklist) {

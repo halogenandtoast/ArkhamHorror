@@ -14,7 +14,7 @@ newtype RiverDocksPresent = RiverDocksPresent LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riverDocksPresent :: LocationCard RiverDocksPresent
-riverDocksPresent = location RiverDocksPresent Cards.riverDocksPresent 1 (PerPlayer 1)
+riverDocksPresent = locationWith RiverDocksPresent Cards.riverDocksPresent 1 (PerPlayer 1) (shroudL ?~ PerPlayer 1)
 
 instance HasAbilities RiverDocksPresent where
   getAbilities (RiverDocksPresent a) =

@@ -982,6 +982,8 @@ i.iconSkillAgility {
 
 .focused-chaos-tokens {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 8px;

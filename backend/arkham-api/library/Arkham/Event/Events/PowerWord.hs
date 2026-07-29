@@ -243,12 +243,13 @@ instance RunMessage PowerWord where
                   ]
             MercyCommand -> do
               let source = attrs.ability 1
+              let atEnemy = at_ (locationWithEnemy eid)
               damage <- field EnemyHealthDamage eid
               horror <- field EnemySanityDamage eid
               horrorInvestigators <-
-                if horror > 0 then select (HealableInvestigator source #horror $ colocatedWith iid) else pure []
+                if horror > 0 then select (HealableInvestigator source #horror atEnemy) else pure []
               damageInvestigators <-
-                if damage > 0 then select (HealableInvestigator source #damage $ colocatedWith iid) else pure []
+                if damage > 0 then select (HealableInvestigator source #damage atEnemy) else pure []
               choices <- forToSnd (nub $ horrorInvestigators <> damageInvestigators) $ \investigator -> capture do
                 chooseOrRunOne iid
                   $ [ Label ("$label.healDamage count=i:" <> tshow damage) [HealDamage (toTarget investigator) source damage]

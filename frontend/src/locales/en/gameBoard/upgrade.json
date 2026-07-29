@@ -17,6 +17,8 @@
     "fetchUnusable": "The deck fetched from {deckSource} has no investigator or no cards, so it cannot be used.",
     "arkhamBuildShareNotFound": "arkham.build has no shared deck at that link. Open the deck on arkham.build and use its Share link — the address bar link to your own deck will not work.",
     "unrecognizedUrl": "That does not look like an ArkhamDB or arkham.build deck url.",
+    "uploadInvalidJson": "That file is not valid JSON. Export the deck from ArkhamDB or arkham.build and upload that file.",
+    "uploadNotADecklist": "That file does not look like a deck export — it has no investigator or no cards.",
     "noChangesPrompt": "This deck adds no new cards and you still have {xp} unspent XP. On arkham.build and ArkhamDB the upgraded version is created BEFORE you spend XP — finish your changes there, then pull again. Upgrade with no changes anyway?",
     "upgradeFailed": "Could not upgrade the deck. Nothing was changed, so you can safely try again.",
 

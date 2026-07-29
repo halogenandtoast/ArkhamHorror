@@ -309,7 +309,9 @@ function loadDeckFromFile(e: Event) {
   const reader = new FileReader()
   reader.onloadend = (e1: ProgressEvent<FileReader>) => {
     if (!e1?.target?.result) return
-    loadUpgradeDeckFromJsonText(e1.target.result.toString(), {
+    submitError.value = null
+    // A rejected file used to do nothing at all, which read as "the upload is broken".
+    const result = loadUpgradeDeckFromJsonText(e1.target.result.toString(), {
       setModel: (data) => { model.value = data },
       setDeckList: (data) => { deckList.value = data },
       setDeckUrl: (url) => { deckUrl.value = url },
@@ -317,6 +319,11 @@ function loadDeckFromFile(e: Event) {
       setDeckInvestigator: (investigatorCode) => { deckInvestigator.value = investigatorCode },
       upgrade,
     })
+    if (!result.ok) {
+      submitError.value = result.reason === 'invalidJson'
+        ? t('upgrade.uploadInvalidJson')
+        : t('upgrade.uploadNotADecklist')
+    }
   }
   reader.readAsText(file)
   ;(e.target as HTMLInputElement).value = ''

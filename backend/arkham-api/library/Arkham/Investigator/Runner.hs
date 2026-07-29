@@ -1499,19 +1499,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         let assetsInSlotsOf aid' = nub $ concat $ filter (elem aid') $ map slotItems $ concat $ toList (a ^. slotsL)
 
         player <- getPlayer iid
-        push
-          $ if null assetsThatCanProvideSlots
-            then InvestigatorPlayedAsset iid aid
-            else
-              chooseOne player
-                $ [ targetLabel
-                      aid'
-                      $ map (toDiscardBy iid GameSource) assets
-                      <> [ InvestigatorPlayAsset iid aid
-                         ]
-                  | aid' <- assetsThatCanProvideSlots
-                  , let assets = assetsInSlotsOf aid'
-                  ]
+        -- Nothing in the missing slot can be discarded to make room, so the investigator cannot
+        -- hold this asset. It still enters play -- the effect that put it there may be mandatory,
+        -- e.g. an act saying to take control of The Black Book -- and is then discarded, since it
+        -- is the one that can leave play and whatever holds the slot (Dendromorphosis, ...) cannot.
+        if null assetsThatCanProvideSlots
+          then pushAll [InvestigatorPlayedAsset iid aid, toDiscardBy iid GameSource aid]
+          else
+            push
+              $ chooseOne player
+              $ [ targetLabel
+                    aid'
+                    $ map (toDiscardBy iid GameSource) assets
+                    <> [InvestigatorPlayAsset iid aid]
+                | aid' <- assetsThatCanProvideSlots
+                , let assets = assetsInSlotsOf aid'
+                ]
     pure a
   InvestigatorPlayedAsset iid aid | iid == investigatorId -> do
     slotTypes <- field AssetSlots aid
@@ -1765,12 +1768,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       fill ((aid, card, slotType) : rs) slots = do
         (availableSlots1, _unused1) <- partitionM (canPutIntoSlot card) (slots ^. at slotType . non [])
         case availableSlots1 of
+          -- N.B. an unplaceable requirement only drops *itself* -- we keep filling the rest.
+          -- Bailing out here (suppose we get dendromorphosis and the king in yellow) stranded
+          -- every requirement queued behind it, silently unslotting unrelated assets.
           [] -> case findWithDefault [] slotType canHoldMap of
-            [] -> pure slots -- suppose we get dendromorphosis and the king in yellow
+            [] -> fill rs slots
             [other] -> do
               (availableSlots2, _unused2) <- partitionM (canPutIntoSlot card) (slots ^. at other . non [])
               case availableSlots2 of
-                [] -> pure slots
+                [] -> fill rs slots
                 _ -> do
                   slots' <- placeInAvailableSlot aid card (slots ^. at other . non [])
                   fill rs (slots & at other . non [] .~ slots')
@@ -1785,21 +1791,32 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       failedSlotTypes' = nub $ concatMap (\s -> s : findWithDefault [] s canHoldMap) failedSlotTypes
       failedAssetIds' = map (\(aid, _, _) -> aid) $ filter (\(_, _, s) -> s `elem` failedSlotTypes') requirements
 
-    failedAssetIds <- selectFilter AssetCanLeavePlayByNormalMeans failedAssetIds'
+    -- `xs` holds the asset currently entering play. It is not offered as something to discard to
+    -- make room for itself, so split it out: `choosable` is what the investigator may actually
+    -- give up, `blocked` is the incoming asset when it turns out to be the only thing in the
+    -- oversubscribed slot that can leave play at all -- e.g. taking control of The Black Book
+    -- while Dendromorphosis, which cannot leave play, holds both hand slots. Previously the
+    -- emptiness check ran before this split, so `blocked` produced a `chooseOne` with no options.
+    (blocked, choosable) <-
+      List.partition (`elem` xs) <$> selectFilter AssetCanLeavePlayByNormalMeans failedAssetIds'
 
     -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
     let assetsInSlotsOf aid = nub $ concat $ filter (elem aid) $ map slotItems $ concat $ toList (a ^. slotsL)
 
-    if null failedAssetIds
+    if null choosable
       then do
-        slots' <- fill requirements (Map.map (map emptySlot) $ a ^. slotsL)
+        -- Nothing can be discarded to free the slot, so `blocked` never gets one. Leave it out of
+        -- the fill: the `Do (InvestigatorPlayAsset)` still queued behind us sees the asset has no
+        -- slot, lets it enter play, and then discards it.
+        let placeable = filter (\(aid', _, _) -> aid' `notElem` blocked) requirements
+        slots' <- fill placeable (Map.map (map emptySlot) $ a ^. slotsL)
         pure $ a & slotsL .~ slots'
       else do
         player <- getPlayer iid
         push
           $ chooseOne player
           $ [ targetLabel aid' $ map (toDiscardBy iid GameSource) assets <> [RefillSlots iid xs]
-            | aid' <- filter (`notElem` xs) failedAssetIds
+            | aid' <- choosable
             , let assets = let ks = assetsInSlotsOf aid' in if null ks then [aid'] else ks
             ]
         pure a

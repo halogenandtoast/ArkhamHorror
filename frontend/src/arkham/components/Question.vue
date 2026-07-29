@@ -732,7 +732,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
       <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
     </div>
 
-    <div v-if="showChoices" class="choices">
+    <div v-if="showChoices && (hasInnerContent || questionChoices.length > 0)" class="choices">
       <div v-if="hasInnerContent" class="question-label">
         <div class="question-image" v-if="questionImage">
           <img :src="questionImage" class="card" />

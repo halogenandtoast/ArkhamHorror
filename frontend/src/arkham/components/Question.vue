@@ -270,6 +270,9 @@ const visibleCardIds = computed(() => new Set([
   ...searchedCards.value.flatMap((group) => group.cards.map((card) => toCardContents(card).id)),
   ...(props.game.scenario?.victoryDisplay ?? []).map((card) => toCardContents(card).id),
   ...Object.values(props.game.assets).flatMap((asset) => asset.cardsUnderneath.map((card) => toCardContents(card).id)),
+  // Committed cards are rendered (and clickable) by CommittedSkills, so a
+  // CardIdTarget on one must not also fall through to a generic Continue button.
+  ...(props.game.skillTest?.committedCards ?? []).map((card) => toCardContents(card).id),
 ]))
 
 function abilityLabelHandledElsewhere(choice: Message) {

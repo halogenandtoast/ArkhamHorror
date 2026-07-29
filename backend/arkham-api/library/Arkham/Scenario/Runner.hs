@@ -2017,7 +2017,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           Nothing -> scenarioGrid
           Just oldPos -> clearGrid oldPos scenarioGrid
         grid = insertGrid gloc gridCleared
-    let getAdjacent = selectOne . Matcher.LocationWithLabel . mkLabel . gridLabel . updatePosition pos
+    -- Neighbours are looked up by grid label, and the mover still carries its old
+    -- label at this point: a location sliding one cell over would otherwise find
+    -- itself sitting in the cell it just vacated and record itself as its own
+    -- neighbour (seen with the Great Lift). The cell it left is empty, so drop it.
+    let getAdjacent dir = do
+          mlid <- selectOne $ Matcher.LocationWithLabel $ mkLabel $ gridLabel $ updatePosition pos dir
+          pure $ if mlid == Just lid then Nothing else mlid
     mTopLocation <- getAdjacent GridUp
     mBottomLocation <- getAdjacent GridDown
     mLeftLocation <- getAdjacent GridLeft

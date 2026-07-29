@@ -63,12 +63,21 @@
   },
   "label": {
     "chooseExpeditionAssetQuestion": "Choose an earned Artifact asset, or an Item asset from the Expedition encounter set, to begin in play under your control.",
-    "noExpeditionAsset": "Do not take an Artifact or Expedition asset."
+    "noExpeditionAsset": "Do not take an Artifact or Expedition asset.",
+    "additionalActions": "Additional actions to spend",
+    "greatLift": {
+      "slideUp": "Slide Great Lift up",
+      "slideDown": "Slide Great Lift down",
+      "slideUpAdditional": "Spend 1 clue per investigator to slide Great Lift up",
+      "slideDownAdditional": "Spend 1 clue per investigator to slide Great Lift down",
+      "doNotSlide": "Do not slide Great Lift"
+    }
   },
-  "additionalActions": "Additional actions to spend",
   "cosmicOmen": {
-    "shuffleGlyphIntoEncounterDeck": "Shuffle one Glyph card in play into the encounter deck",
-    "takeHorrorAndDiscard": "Take 1 direct horror and discard 1 card at random from your hand"
+    "label": {
+      "shuffleGlyphIntoEncounterDeck": "Shuffle one Glyph card in play into the encounter deck",
+      "takeHorrorAndDiscard": "Take 1 direct horror and discard 1 card at random from your hand"
+    }
   },
   "tokens": {
     "easyStandard": {
@@ -83,13 +92,6 @@
       "tablet": "-3. If your location is flooded, reveal another token.",
       "elderThing": "-5. If this token is revealed during an attack or evasion attempt, take 1 damage and 1 horror."
     }
-  },
-  "greatLift": {
-    "slideUp": "Slide Great Lift up",
-    "slideDown": "Slide Great Lift down",
-    "slideUpAdditional": "Spend 1 clue per investigator to slide Great Lift up",
-    "slideDownAdditional": "Spend 1 clue per investigator to slide Great Lift down",
-    "doNotSlide": "Do not slide Great Lift"
   },
   "resolutions": {
     "xp": { "bonus": "for plumbing the court of the ancients" },

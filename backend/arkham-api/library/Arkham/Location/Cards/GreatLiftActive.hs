@@ -15,17 +15,21 @@ import Arkham.Projection
 import Arkham.Scenarios.CourtOfTheAncients.Helpers
 
 newtype GreatLiftActive = GreatLiftActive LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | "Great Lift is connected to the locations to the right and left of it, and
--- vice versa." The directional matchers resolve against the live grid, so the
--- connections recompute automatically whenever the lift slides to a new level.
 greatLiftActive :: LocationCard GreatLiftActive
-greatLiftActive =
-  locationWith GreatLiftActive Cards.greatLiftActive 2 (Static 0)
-    $ connectsToL
-    .~ setFromList [LeftOf, RightOf]
+greatLiftActive = location GreatLiftActive Cards.greatLiftActive 2 (Static 0)
+
+-- "Great Lift is connected to the locations to the right and left of it, and
+-- vice versa." Shared with the (Inactive) face and driven by the lift's live
+-- grid position, so the connections follow it as it slides.
+--
+-- This replaced a static connectsTo [LeftOf, RightOf], which the Swap in
+-- ReplaceLocation overwrote with the (Inactive) side's empty connectsTo the
+-- moment the lift flipped -- leaving the active lift with no connections at all.
+instance HasModifiersFor GreatLiftActive where
+  getModifiersFor (GreatLiftActive a) = greatLiftConnections a
 
 instance HasAbilities GreatLiftActive where
   getAbilities (GreatLiftActive a) =
@@ -33,17 +37,19 @@ instance HasAbilities GreatLiftActive where
       $ restricted a 1 Here
       $ freeReaction (SuccessfulInvestigation #when You (be a))
 
--- | Slide the Great Lift one level in the given direction, carrying all of its
--- cards/tokens/investigators (they stay attached to the same LocationId, so
--- @PlaceGrid@ preserves them). Mirrors @slideGreatLiftDown@ in WestAntechamber.
+{- | Slide the Great Lift one level in the given direction, carrying all of its
+cards/tokens/investigators (they stay attached to the same LocationId, so
+@PlaceGrid@ preserves them). Mirrors @slideGreatLiftDown@ in WestAntechamber.
+-}
 slideGreatLift :: ReverseQueue m => LocationAttrs -> GridDirection -> m ()
 slideGreatLift attrs dir = do
   pos <- fieldJust LocationPosition attrs.id
   push $ PlaceGrid (GridLocation (updatePosition pos dir) attrs.id)
 
--- | The directions the lift may currently slide. The tower is levels 1-4
--- (grid rows 0-3): it cannot slide above level 4 (row 3) or below level 1
--- (row 0).
+{- | The directions the lift may currently slide. The tower is levels 1-4
+(grid rows 0-3): it cannot slide above level 4 (row 3) or below level 1
+(row 0).
+-}
 slideDirections :: ReverseQueue m => LocationAttrs -> m [GridDirection]
 slideDirections attrs = do
   row <- fieldMap LocationPosition (maybe 0 positionRow) attrs.id
@@ -65,24 +71,44 @@ instance RunMessage GreatLiftActive where
       doStep 1 msg
       pure l
     DoStep 1 s@(Successful (Action.Investigate, _) iid _ _ _) -> do
-      -- Slide up or down once (free, mandatory).
+      -- Slide up or down once (free, mandatory). The chosen direction is carried
+      -- into the additional slides via the step number.
       dirs <- slideDirections attrs
       chooseOneM iid $ scenarioI18n do
         for_ dirs \dir ->
-          labeled' (slideLabel dir) $ slideGreatLift attrs dir >> doStep 2 s
+          labeled' (slideLabel dir) $ slideGreatLift attrs dir >> doStep (additionalStep dir) s
       pure l
-    DoStep 2 s@(Successful (Action.Investigate, _) iid _ _ _) -> do
+    DoStep n s@(Successful (Action.Investigate, _) iid _ _ _) | Just dir <- stepDirection n -> do
       -- "You may spend 1 [per_investigator] clues to slide up or down one
-      -- additional time." Repeats as long as the cost can be paid.
+      -- additional time." Each extra slide continues in the direction already
+      -- taken, and is only offered while the lift has somewhere left to go that
+      -- way.
       dirs <- slideDirections attrs
-      chooseOneM iid $ scenarioI18n do
-        for_ dirs \dir ->
+      when (dir `elem` dirs) do
+        chooseOneM iid $ scenarioI18n do
           labeled' (slideAdditionalLabel dir)
             $ withCost iid (GroupClueCost (PerPlayer 1) (be attrs))
-            $ slideGreatLift attrs dir >> doStep 2 s
-        labeled' "greatLift.doNotSlide" nothing
+            $ slideGreatLift attrs dir
+            >> doStep n s
+          labeled' "greatLift.doNotSlide" nothing
       pure l
     _ -> GreatLiftActive <$> liftRunMessage msg attrs
+
+{- | @DoStep@ carries only an @Int@, so the direction of the first (free) slide
+is encoded in the step number to keep the additional slides pointed the same
+way. Re-entering through @doStep@ rather than recursing inside @chooseOneM@ also
+keeps each question flat instead of pre-building a nested choice tree.
+-}
+additionalStep :: GridDirection -> Int
+additionalStep = \case
+  GridUp -> 2
+  _ -> 3
+
+stepDirection :: Int -> Maybe GridDirection
+stepDirection = \case
+  2 -> Just GridUp
+  3 -> Just GridDown
+  _ -> Nothing
 
 slideLabel :: GridDirection -> Text
 slideLabel = \case

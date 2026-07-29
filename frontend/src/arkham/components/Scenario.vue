@@ -2585,9 +2585,13 @@ async function addChaosToken(face: any){
         <div class="location-cards-stage">
         <Connections :game="game" :playerId="playerId" :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation" />
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :css="props.scenario.id !== 'c10651'" :style="locationStyles" @before-leave="beforeLeave">
+          <!-- Keyed by id, not label: a location that changes grid label (the
+               Great Lift sliding between levels) must stay the same element so
+               TransitionGroup FLIP-animates it into its new cell. Keying by
+               label made that read as a leave + enter, so it teleported. -->
           <div
             v-for="location in locations"
-            :key="location.label"
+            :key="location.id"
             class="location-cell"
             :class="{ 'location-cell--can-interact': locationCanInteract(location) }"
             :data-location-id="location.id"

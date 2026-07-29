@@ -116,6 +116,36 @@ if [ "$MODE" = "docker" ]; then
   self_update "$@"
 fi
 
+# ── Postgres password secret ────────────────────────────────────────────────
+#
+# docker-compose.yml mounts config/postgres_password.txt as a secret, which in
+# non-swarm compose is a plain bind mount. When the source path is missing,
+# dockerd materialises it — as an empty DIRECTORY — and Postgres then starts
+# with no usable password. install.sh generates the file, but a git checkout
+# never has it (gitignored) and neither does a hand-made install dir, so
+# upgrade.sh has to guarantee it before touching compose.
+
+ensure_password_file() {
+  local f=config/postgres_password.txt
+  mkdir -p config
+  if [ -d "$f" ]; then
+    rmdir "$f" 2>/dev/null || die "$f is a non-empty directory (Docker created it) — remove it and re-run."
+    warn "$f existed as a directory (Docker created it for the missing secret) — removed."
+  fi
+  [ -s "$f" ] && return 0
+  info "Generating Postgres password ($f)..."
+  # hex, not base64: +/= break DATABASE_URL
+  if command -v openssl >/dev/null 2>&1; then
+    openssl rand -hex 32 > "$f"
+  else
+    head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$f"
+    echo "" >> "$f"
+  fi
+  warn "If the db volume was already initialised with a different password, reset it: docker compose down -v"
+}
+
+if command -v docker >/dev/null 2>&1; then ensure_password_file; fi
+
 # ── Migrations: delegate to the compose one-shot `migrate` service ──────────
 
 apply_migrations() {

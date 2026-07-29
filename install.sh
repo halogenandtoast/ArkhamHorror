@@ -64,7 +64,16 @@ done
 
 # ── Generate Postgres password ────────────────────────────────────────────────
 
-if [ ! -f config/postgres_password.txt ]; then
+# A previous `docker compose up` with the secret missing leaves an empty
+# DIRECTORY here (compose secrets are bind mounts; dockerd auto-creates the
+# source as a dir), which would make the redirect below fail.
+if [ -d config/postgres_password.txt ]; then
+  rmdir config/postgres_password.txt 2>/dev/null \
+    || die "config/postgres_password.txt is a directory — remove it and re-run."
+  warn "config/postgres_password.txt existed as a directory (Docker created it) — removed."
+fi
+
+if [ ! -s config/postgres_password.txt ]; then
   info "Generating Postgres password"
   # Use openssl if available, otherwise fall back to /dev/urandom
   # Use hex to guarantee URL-safe characters (base64 produces +/= which break DATABASE_URL)

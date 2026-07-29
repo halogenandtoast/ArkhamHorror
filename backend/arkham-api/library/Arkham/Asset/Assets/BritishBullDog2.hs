@@ -23,11 +23,7 @@ instance HasModifiersFor BritishBullDog2 where
       a
       (hasUses a)
       (AbilityTarget iid $ AbilityRef (toSource a) 1)
-      [ canFightOverride
-          $ EnemyWithoutModifier CannotBeAttacked
-          <> oneOf
-            [NonEliteEnemy <> at_ (connectedFrom $ locationWithInvestigator iid), enemyAtLocationWith iid]
-      ]
+      [CanModify $ EnemyFightActionCriteria $ CriteriaOverride canFightIgnoreAloof]
 
 instance HasAbilities BritishBullDog2 where
   getAbilities (BritishBullDog2 a) =

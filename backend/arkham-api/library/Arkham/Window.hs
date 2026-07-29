@@ -94,10 +94,11 @@ hasEliminatedWindow = any $ \case
   (windowType -> EndOfGame {}) -> True
   _ -> False
 
--- | Windows that fire constantly during scenario setup as locations and clues
--- are placed, but which cannot trigger any abilities while @gameInSetup@ is
--- @True@. Used by 'Arkham.Game.runMessages' to drop their CheckWindows before
--- the heavy modifier preload pipeline.
+{- | Windows that fire constantly during scenario setup as locations and clues
+are placed, but which cannot trigger any abilities while @gameInSetup@ is
+@True@. Used by 'Arkham.Game.runMessages' to drop their CheckWindows before
+the heavy modifier preload pipeline.
+-}
 isSetupSkippableWindow :: Window -> Bool
 isSetupSkippableWindow w = case windowType w of
   PutLocationIntoPlay {} -> True
@@ -206,6 +207,12 @@ data WindowType
   | DiscardedFromDeck InvestigatorId Source Card
   | WouldDiscardFromHand InvestigatorId Source
   | WouldDiscardFromDeck InvestigatorId Source
+  | {- | Fired once, before any card leaves the encounter deck, carrying the
+    number of cards about to be discarded. Responders that change how many
+    cards are discarded hang off this rather than the per-card 'Discarded'
+    window, so the whole discard stays a single batch.
+    -}
+    WouldDiscardTopOfEncounterDeck InvestigatorId Source Int
   | DiscoverClues InvestigatorId LocationId Source Int
   | WouldDiscoverClues InvestigatorId LocationId DiscoverId Source Int
   | SpentClues InvestigatorId Int
@@ -233,10 +240,11 @@ data WindowType
   | EnemyDisengaged InvestigatorId EnemyId
   | EnemyWouldEngage InvestigatorId EnemyId
   | EnemyEnters EnemyId LocationId
-  | -- | Fires when an enemy enters a location where the given investigator
-    -- was already present (i.e. NOT a simultaneous entry such as an engaged
-    -- enemy following the investigator). Use this in matchers whose flavour
-    -- is "an enemy entered MY location" — Pursued, Cash Cart, etc.
+  | {- | Fires when an enemy enters a location where the given investigator
+    was already present (i.e. NOT a simultaneous entry such as an engaged
+    enemy following the investigator). Use this in matchers whose flavour
+    is "an enemy entered MY location" — Pursued, Cash Cart, etc.
+    -}
     EnemyEntersYourLocation InvestigatorId EnemyId LocationId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyLeaves EnemyId LocationId
@@ -248,13 +256,14 @@ data WindowType
   | EnemyWouldBeDefeated EnemyId
   | EnterPlay Target
   | Entering InvestigatorId LocationId
-  | -- | Fired alongside the after-@Entering@ window, but only when the
-    -- investigator entered a location that had one or more enemies at the moment
-    -- of entry. Because enemies engage (and can be defeated) before the
-    -- after-entering window resolves, the @Entering@ window's current-state enemy
-    -- check is unreliable for "after you enter a location with 1+ enemies"
-    -- triggers (e.g. On Their Heels). This window snapshots that condition at
-    -- entry. See #4813.
+  | {- | Fired alongside the after-@Entering@ window, but only when the
+    investigator entered a location that had one or more enemies at the moment
+    of entry. Because enemies engage (and can be defeated) before the
+    after-entering window resolves, the @Entering@ window's current-state enemy
+    check is unreliable for "after you enter a location with 1+ enemies"
+    triggers (e.g. On Their Heels). This window snapshots that condition at
+    entry. See #4813.
+    -}
     EnteringLocationWithEnemy InvestigatorId LocationId
   | Exhausts Target
   | FailAttackEnemy InvestigatorId EnemyId Int

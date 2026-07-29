@@ -1702,6 +1702,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     push (RequestedEncounterCards target cards)
     pure $ a & encounterDeckL .~ encounterDeck
   DiscardTopOfEncounterDeck iid n source mtarget -> do
+    -- One checkpoint for the whole discard, before any card leaves the deck.
+    -- Responders that change the size of the discard (Ring Library) rewrite the
+    -- queued message below, so the extra cards stay part of this same batch and
+    -- reach whatever handler asked for the discard.
+    checkWhen $ Window.WouldDiscardTopOfEncounterDeck iid source n
     push $ DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget []
     pure a
   DiscardTopOfEncounterDeckWithDiscardedCards iid 0 source mtarget cards -> do

@@ -34,6 +34,9 @@ instance RunMessage LuminousArchivesArchiveOfMemory where
       findEncounterCardIn iid attrs (CardWithTrait Glyph) [FromEncounterDiscard]
       pure l
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) -> do
-      drawCard iid card
+      -- Named deck, not plain 'drawCard': the Glyph treacheries only attach to
+      -- your location when @drawnFrom == Just EncounterDiscard@, and otherwise
+      -- surge and discard.
+      drawCardFrom iid Deck.EncounterDiscard card
       pure l
     _ -> LuminousArchivesArchiveOfMemory <$> liftRunMessage msg attrs

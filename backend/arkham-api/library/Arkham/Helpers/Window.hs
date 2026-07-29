@@ -19,8 +19,8 @@ import Arkham.Effect.Types (Field (..))
 import Arkham.Enemy.Types (Field (EnemyAttacking))
 import Arkham.Event.Types qualified as Field
 import {-# SOURCE #-} Arkham.Game (abilityMatches)
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Game.Settings (settingsStrictAsIfAt)
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act (actMatches)
 import {-# SOURCE #-} Arkham.Helpers.Action (actionMatches)
 import Arkham.Helpers.Card (cardListMatches, extendedCardMatch)
@@ -40,6 +40,10 @@ import {-# SOURCE #-} Arkham.Helpers.SkillTest (skillTestMatches, skillTestValue
 import Arkham.Helpers.SkillType (skillTypeMatches)
 import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Helpers.Target (targetListMatches, targetMatches)
+import Arkham.Helpers.Window.Card as X
+import Arkham.Helpers.Window.Clue as X
+import Arkham.Helpers.Window.Damage as X
+import Arkham.Helpers.Window.Enemy as X
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -63,10 +67,6 @@ import Arkham.Window qualified as Window
 import Control.Lens (over, transform)
 import Control.Monad.Trans.Class
 import Data.Data.Lens (biplate)
-import Arkham.Helpers.Window.Card as X
-import Arkham.Helpers.Window.Enemy as X
-import Arkham.Helpers.Window.Damage as X
-import Arkham.Helpers.Window.Clue as X
 
 checkWindow :: HasGame m => Window -> m Message
 checkWindow = checkWindows . pure
@@ -885,6 +885,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
+    Matcher.WouldDiscardTopOfEncounterDeck timing whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.WouldDiscardTopOfEncounterDeck who source' _ ->
+          andM
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> noMatch
     Matcher.Discarded timing mWhoMatcher sourceMatcher cardMatcher ->
       guardTiming timing $ \case
         Window.Discarded mWho source' card ->
@@ -1065,29 +1073,29 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       sourceMatcher
       counterMatcher
       valueMatcher ->
-      guardTiming timing $ \case
-        Window.PlacedHorror source' (InvestigatorTarget iid') n
-          | counterMatcher == Matcher.HorrorCounter -> do
-              andM
-                [ iid' <=~> investigatorMatcher
-                , sourceMatches source' sourceMatcher
-                , gameValueMatches n valueMatcher
-                ]
-        Window.PlacedDamage source' (InvestigatorTarget iid') n
-          | counterMatcher == Matcher.DamageCounter -> do
-              andM
-                [ iid' <=~> investigatorMatcher
-                , sourceMatches source' sourceMatcher
-                , gameValueMatches n valueMatcher
-                ]
-        Window.PlacedDoom source' (InvestigatorTarget iid') n
-          | counterMatcher == Matcher.DoomCounter -> do
-              andM
-                [ iid' <=~> investigatorMatcher
-                , sourceMatches source' sourceMatcher
-                , gameValueMatches n valueMatcher
-                ]
-        _ -> noMatch
+        guardTiming timing $ \case
+          Window.PlacedHorror source' (InvestigatorTarget iid') n
+            | counterMatcher == Matcher.HorrorCounter -> do
+                andM
+                  [ iid' <=~> investigatorMatcher
+                  , sourceMatches source' sourceMatcher
+                  , gameValueMatches n valueMatcher
+                  ]
+          Window.PlacedDamage source' (InvestigatorTarget iid') n
+            | counterMatcher == Matcher.DamageCounter -> do
+                andM
+                  [ iid' <=~> investigatorMatcher
+                  , sourceMatches source' sourceMatcher
+                  , gameValueMatches n valueMatcher
+                  ]
+          Window.PlacedDoom source' (InvestigatorTarget iid') n
+            | counterMatcher == Matcher.DoomCounter -> do
+                andM
+                  [ iid' <=~> investigatorMatcher
+                  , sourceMatches source' sourceMatcher
+                  , gameValueMatches n valueMatcher
+                  ]
+          _ -> noMatch
     Matcher.PlacedCounterOnLocation timing whereMatcher sourceMatcher counterMatcher valueMatcher ->
       guardTiming timing $ \case
         Window.PlacedClues source' (LocationTarget locationId) n | counterMatcher == Matcher.ClueCounter -> do

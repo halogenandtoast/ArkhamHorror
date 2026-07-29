@@ -2,6 +2,7 @@ module Arkham.Location.Cards.LuminousArchivesArchiveOfHistory (luminousArchivesA
 
 import Arkham.Ability
 import Arkham.Card (toCard)
+import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Investigator.Types (Field (InvestigatorRemainingActions))
 import Arkham.Location.Cards qualified as Cards
@@ -60,7 +61,11 @@ instance RunMessage LuminousArchivesArchiveOfHistory where
       replicateM_ x $ findEncounterCardIn iid attrs (CardWithTrait Glyph) [FromEncounterDiscard]
       pure l
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) -> do
-      drawCard iid card
+      -- Must name the source deck: every Glyph treachery branches on
+      -- @drawnFrom == Just EncounterDiscard@ to decide whether it attaches to
+      -- your location or surges and discards. Plain 'drawCard' records no deck,
+      -- so the card the ability just fished out of the discard would surge.
+      drawCardFrom iid Deck.EncounterDiscard card
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       passageways <- select $ RevealedLocation <> LocationWithTrait Passageway <> not_ (be attrs)

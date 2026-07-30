@@ -7252,6 +7252,7 @@ test-suite spec
       Arkham.Asset.Assets.ValeLanternExtinguishedLightSpec
       Arkham.Asset.Assets.WendysAmuletSpec
       Arkham.Asset.Assets.ZoeysCrossSpec
+      Arkham.Asset.RunnerSpec
       Arkham.Campaign.NightOfTheZealot.ScenariosSpec
       Arkham.Campaign.TheCircleUndone.ScenariosSpec
       Arkham.Campaign.TheDunwichLegacy.ScenariosSpec

@@ -321,7 +321,11 @@ instance RunMessage AssetAttrs where
         NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
       pure $ a & tokensL .~ mempty
     RemoveTokens _ target tType n | isTarget a target -> do
-      when (tType == Clue && assetClues a - n <= 0) do
+      -- Only a clue that was actually there can be the *last* clue removed. Without the
+      -- `> 0` guard every clue-less asset fires this window on `RemoveAllClues`, so a single
+      -- InvestigatorDiscardAllClues broadcast costs one full CheckWindows pass per asset in
+      -- play (#5301). Mirrors the ClearTokens branch above and Location/Runner's guard.
+      when (tType == Clue && assetClues a > 0 && assetClues a - n <= 0) do
         pushAll $ windows [Window.LastClueRemovedFromAsset (toId a)]
       when (tokenIsUse tType) do
         case assetPrintedUses of

@@ -35,7 +35,7 @@ instance HasAbilities RavenousMyconidSentientStrain4 where
             #when
             (f $ at_ (LocationWithShroud $ (if tabooed TabooList25 a then lessThan else atMost) $ a.use Growth))
             (CanCancelRevelationEffect You $ basic $ g NonWeaknessTreachery)
-            EncounterDeck
+            AnyDeck
     ]
 
 instance RunMessage RavenousMyconidSentientStrain4 where

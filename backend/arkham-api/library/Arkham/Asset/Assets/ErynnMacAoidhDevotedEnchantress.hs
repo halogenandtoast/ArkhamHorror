@@ -27,7 +27,7 @@ instance HasAbilities ErynnMacAoidhDevotedEnchantress where
               #when
               You
               (CanCancelRevelationEffect You $ basic $ NonWeaknessTreachery <> oneOf [#curse, CardWithTrait Power])
-              EncounterDeck
+              AnyDeck
           )
           (assetUseCost x Secret 1 <> exhaust x)
     ]

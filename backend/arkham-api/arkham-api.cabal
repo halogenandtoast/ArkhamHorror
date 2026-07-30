@@ -7182,6 +7182,7 @@ test-suite spec
       Arkham.Asset.Assets.ElderSignAmulet3Spec
       Arkham.Asset.Assets.EmbezzledTreasureSpec
       Arkham.Asset.Assets.Encyclopedia2Spec
+      Arkham.Asset.Assets.EyesOfTheDreamerSpec
       Arkham.Asset.Assets.FavorOfTheMoon1Spec
       Arkham.Asset.Assets.FieldAgent2Spec
       Arkham.Asset.Assets.FireAxeSpec

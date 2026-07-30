@@ -7,10 +7,9 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
 import Arkham.ChaosToken.Types
-import Arkham.Game.Settings (activeUltimatumsAndBoons)
-import Arkham.UltimatumsAndBoons.Types
 import Arkham.Classes
 import Arkham.Classes.HasGame
+import Arkham.Game.Settings (activeUltimatumsAndBoons)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.ChaosToken (matchChaosToken)
 import Arkham.Helpers.Message
@@ -29,10 +28,24 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Tracing
+import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (Window (..), mkAfter, mkCancel, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Monad.State.Strict (StateT, execStateT, gets, modify', put, runStateT)
 import Data.Map.Strict qualified as Map
+
+{- | Match a chaos token that has already been drawn/revealed into a step.
+
+'matchChaosToken' is @elem t \<$\> select matcher@, and 'select' for a
+'ChaosTokenMatcher' only considers tokens in the bag/set-aside/revealed. A
+token revealed from a sealed source (parallel Father Mateo resolving a bless
+sealed on himself) is in none of those, so it fails /every/ matcher and is
+silently dropped from choice lists. 'IncludeSealed' widens the pool without
+touching the inner predicate, so this can only add candidates.
+-}
+matchRevealedChaosToken
+  :: (HasGame m, Tracing m) => InvestigatorId -> ChaosToken -> ChaosTokenMatcher -> m Bool
+matchRevealedChaosToken iid t matcher = matchChaosToken iid t (IncludeSealed matcher)
 
 cancelTokenIfShould :: ReverseQueue m => ChaosToken -> m ChaosToken
 cancelTokenIfShould token =
@@ -42,8 +55,9 @@ cancelTokenIfShould token =
     let matchers = mapMaybe (preview _CancelAnyChaosToken) mods
     let drawAnotherMatchers = mapMaybe (preview _CancelAnyChaosTokenAndDrawAnother) mods
     guard $ notNull $ matchers <> drawAnotherMatchers
-    cancelled <- lift $ anyM (matchChaosToken st.investigator token) matchers
-    drawAnotherCancelled <- lift $ anyM (matchChaosToken st.investigator token) drawAnotherMatchers
+    cancelled <- lift $ anyM (matchRevealedChaosToken st.investigator token) matchers
+    drawAnotherCancelled <-
+      lift $ anyM (matchRevealedChaosToken st.investigator token) drawAnotherMatchers
     when drawAnotherCancelled $ lift $ push $ DrawAnotherChaosToken st.investigator
     pure token {chaosTokenCancelled = cancelled || drawAnotherCancelled}
 
@@ -304,7 +318,7 @@ resolveFirstUnresolved source iid strategy = \case
                       matchedGroups <-
                         filterM
                           ( \(_, chosen) ->
-                              chooseFunction (chooseFunction (\t -> lift $ matchChaosToken iid t matcher')) chosen
+                              chooseFunction (chooseFunction (\t -> lift $ matchRevealedChaosToken iid t matcher')) chosen
                           )
                           groups
                       let
@@ -351,7 +365,7 @@ resolveFirstUnresolved source iid strategy = \case
                     if tokenStrategy == ResolveChoice || null tokensThatCannotBeIgnored
                       then matcher
                       else matcher <> foldMap ChaosTokenFaceIsNot tokensThatCannotBeIgnored
-               in anyM (\t -> lift $ matchChaosToken iid t matcher') allChaosTokens
+               in anyM (\t -> lift $ matchRevealedChaosToken iid t matcher') allChaosTokens
           choices' <-
             map snd <$> filterM (\(m, (_, s)) -> isValidMatcher (toStrategy s) m) choices
           let

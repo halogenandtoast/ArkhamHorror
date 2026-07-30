@@ -50,17 +50,20 @@ instance HasModifiersFor WrittenInRock where
     n <- getCurrentActStepMaybe
     when (n == Just 2) do
       selectEach Anywhere \locA -> do
-        pos <- fieldJust LocationPosition locA
-        whenMatch locA (LocationWithoutModifier CannotBeSlidOrSwapped) do
-          unlessM (null <$> getEmptyPositions locA) $ modified_ a locA [CanBeSlid]
-        defA <- field LocationCardDef locA
-        for_ (lookup "rails" (cdMeta defA)) \railsA -> do
-          for_ (toResultDefault [] railsA) \dir -> do
-            selectEach (LocationInPosition $ updatePosition pos dir) \locB -> do
-              defB <- field LocationCardDef locB
-              for_ (lookup "rails" (cdMeta defB)) \rails -> do
-                when (oppositeDirection dir `elem` toResultDefault [] rails) do
-                  modified_ a locA [ConnectedToWhen (LocationWithId locA) (LocationWithId locB)]
+        -- a location that isn't on the grid has no position, and nothing here
+        -- applies to it
+        mpos <- field LocationPosition locA
+        for_ mpos \pos -> do
+          whenMatch locA (LocationWithoutModifier CannotBeSlidOrSwapped) do
+            unlessM (null <$> getEmptyPositions locA) $ modified_ a locA [CanBeSlid]
+          defA <- field LocationCardDef locA
+          for_ (lookup "rails" (cdMeta defA)) \railsA -> do
+            for_ (toResultDefault [] railsA) \dir -> do
+              selectEach (LocationInPosition $ updatePosition pos dir) \locB -> do
+                defB <- field LocationCardDef locB
+                for_ (lookup "rails" (cdMeta defB)) \rails -> do
+                  when (oppositeDirection dir `elem` toResultDefault [] rails) do
+                    modified_ a locA [ConnectedToWhen (LocationWithId locA) (LocationWithId locB)]
 
 instance HasChaosTokenValue WrittenInRock where
   getChaosTokenValue iid tokenFace (WrittenInRock attrs) = case tokenFace of
@@ -260,7 +263,10 @@ instance RunMessage WrittenInRock where
       for_ (zip positions rails) (uncurry placeLocationInGrid_)
       pure s
     DoStep 3 (ScenarioSpecific "theCaveIn" _) -> do
-      shuffleSetAsideEncounterSet Set.WrittenInRock
+      -- every Rail location has been placed by now, so only the remaining
+      -- encounter cards go back in. Never shuffle a location into the encounter
+      -- deck: drawing one puts it into play with no grid position.
+      shuffleSetAsideIntoEncounterDeck $ fromSets [Set.WrittenInRock] <> not_ #location
       shuffleEncounterDiscardBackIn
       pure s
     ScenarioSpecific "codex" v -> scope "codex" do

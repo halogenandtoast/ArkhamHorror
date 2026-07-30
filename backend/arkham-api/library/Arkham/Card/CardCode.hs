@@ -13,6 +13,24 @@ newtype CardCode = CardCode {unCardCode :: Text}
 exceptionCardCodes :: [Text]
 exceptionCardCodes = ["03047a", "03047b", "03047c", "03279a", "03279b"]
 
+-- these card codes end in a/b but are two *distinct printings*, not two sides of
+-- one card, so they must compare exactly. Written in Rock's rail tunnels are
+-- separate cards (or the two quantity-2 copies, which carry different rail
+-- icons); letting them cross-match makes set-aside lookups grab the wrong copy.
+distinctPrintingCardCodes :: [Text]
+distinctPrintingCardCodes =
+  [ "10510a"
+  , "10510b"
+  , "10511a"
+  , "10511b"
+  , "10512a"
+  , "10512b"
+  , "10513a"
+  , "10513b"
+  , "10514a"
+  , "10514b"
+  ]
+
 flippedCardCode :: CardCode -> CardCode
 flippedCardCode (CardCode a) = case T.unsnoc a of
   Just (base, 'b') -> CardCode base
@@ -23,6 +41,8 @@ instance HasField "flipped" CardCode CardCode where
 
 -- We special case the stranger since ADB calls them a b c
 instance Eq CardCode where
+  (CardCode a) == (CardCode b)
+    | a `elem` distinctPrintingCardCodes || b `elem` distinctPrintingCardCodes = a == b
   (CardCode a) == (CardCode b)
     | a `elem` exceptionCardCodes || b `elem` exceptionCardCodes =
         a == b || (a <> "b") == b || a == (b <> "b")

@@ -33,21 +33,27 @@ pattern LocationCanBeSwapped = LocationWithoutModifier CannotBeSlidOrSwapped
 pattern LocationCanBeSlid :: LocationMatcher
 pattern LocationCanBeSlid = LocationWithModifier CanBeSlid
 
+-- A location that never made it onto the grid has no position. That should not
+-- happen, but it must not take the whole game down with it, so every helper
+-- here treats a missing position as "not on the grid, nothing to do".
 swapLocations :: ReverseQueue m => LocationId -> LocationId -> m ()
 swapLocations lid1 lid2 = do
-  pos1 <- fieldJust LocationPosition lid1
-  pos2 <- fieldJust LocationPosition lid2
-  push $ PlaceGrid (GridLocation pos2 lid1)
-  push $ PlaceGrid (GridLocation pos1 lid2)
+  mpos1 <- field LocationPosition lid1
+  mpos2 <- field LocationPosition lid2
+  for_ ((,) <$> mpos1 <*> mpos2) \(pos1, pos2) -> do
+    push $ PlaceGrid (GridLocation pos2 lid1)
+    push $ PlaceGrid (GridLocation pos1 lid2)
 
 clampPositions :: [Pos] -> [Pos]
 clampPositions = filter (\(Pos x y) -> x >= 1 && x <= 5 && y >= 1 && y <= 4)
 
 getEmptyPositions :: (Tracing m, HasGame m) => LocationId -> m [Pos]
 getEmptyPositions lid = do
-  pos <- fieldJust LocationPosition lid
-  let candidates = clampPositions $ adjacentPositions pos
-  filterM (selectNone . LocationInPosition) candidates
+  field LocationPosition lid >>= \case
+    Nothing -> pure []
+    Just pos -> do
+      let candidates = clampPositions $ adjacentPositions pos
+      filterM (selectNone . LocationInPosition) candidates
 
 getRails :: (Tracing m, HasGame m) => LocationId -> m [GridDirection]
 getRails lid = do

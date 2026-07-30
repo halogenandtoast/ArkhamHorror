@@ -7321,6 +7321,7 @@ test-suite spec
       Arkham.Event.Events.OopsSpec
       Arkham.Event.Events.PredatorOrPreySpec
       Arkham.Event.Events.RefineSpec
+      Arkham.Event.Events.Respite2Spec
       Arkham.Event.Events.RightUnderTheirNosesSpec
       Arkham.Event.Events.ScrapeBy1Spec
       Arkham.Event.Events.SearchForTheTruthSpec

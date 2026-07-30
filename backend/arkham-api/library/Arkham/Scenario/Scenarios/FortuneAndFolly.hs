@@ -386,8 +386,14 @@ instance RunMessage FortuneAndFolly where
           chooseOneM params.investigator do
             labeled' "keepHand" $ scenarioSpecific "checkGameIcons" params
             for_ (eachWithRest params.cards) \(card, rest) ->
-              targeting card $ scenarioSpecific "mulligan" params {cards = rest}
+              targeting card
+                $ scenarioSpecific "mulligan" params {cards = rest, setAside = card : params.setAside}
       pure attrs
+    -- Returns the cards a game icon check was holding to the encounter discard,
+    -- after a mid-check reshuffle has consumed the rest of the pile.
+    ScenarioSpecific "restoreGameIconCards" val -> fmap FortuneAndFolly do
+      let params = toResult @CheckGameIcons val
+      pure $ attrs & discardL %~ (checkedCards params <>)
     ScenarioSpecific "checkGameIcons" val -> fmap FortuneAndFolly do
       let params = toResult @CheckGameIcons val
       pcs <- mapMaybeM toPlayingCard params.cards
@@ -406,12 +412,18 @@ instance RunMessage FortuneAndFolly where
               push $ DiscardedCards params.investigator ScenarioSource params.target $ toCard <$> params.cards
           pure attrs
         else case attrs.encounterDeck of
+          Deck [] | scenarioInShuffle attrs -> pure attrs
           Deck [] -> do
-            unless (scenarioInShuffle attrs) do
-              checkWhen Window.EncounterDeckRunsOutOfCards
-              shuffleEncounterDiscardBackIn
-              push msg
-            pure attrs
+            -- "set aside the cards that have already been discarded, shuffle the
+            -- remainder of the discard pile into the encounter deck, then continue
+            -- discarding cards". Hold this check's cards out of the shuffle and put
+            -- them back once it has run.
+            let aside = map (.id) (checkedCards params)
+            checkWhen Window.EncounterDeckRunsOutOfCards
+            shuffleEncounterDiscardBackIn
+            scenarioSpecific "restoreGameIconCards" params
+            push msg
+            pure $ attrs & discardL %~ filter ((`notElem` aside) . (.id))
           Deck (card : deck) -> do
             checkWhen $ Window.Discarded (Just params.investigator) ScenarioSource (toCard card)
             push $ Discarded (CardIdTarget card.id) ScenarioSource (toCard card)

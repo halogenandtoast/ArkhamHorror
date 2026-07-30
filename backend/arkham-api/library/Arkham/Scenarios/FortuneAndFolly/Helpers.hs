@@ -40,6 +40,11 @@ data CheckGameIcons = CheckGameIcons
   , n :: Int
   , cards :: [EncounterCard]
   , mulligan :: Mulligan
+  , setAside :: [EncounterCard]
+  {- ^ Cards removed from the hand by a mulligan. They stay set aside (out of the
+  encounter discard) until the check resolves, so a mid-check reshuffle can't
+  pull them back into the encounter deck.
+  -}
   }
   deriving stock (Eq, Show)
 
@@ -47,10 +52,30 @@ data Mulligan = CanMulligan Int | NoMulligan
   deriving stock (Eq, Show)
 
 decrementMulligan :: Mulligan -> Mulligan
-decrementMulligan (CanMulligan n) | n > 1 = CanMulligan (n -1)
+decrementMulligan (CanMulligan n) | n > 1 = CanMulligan (n - 1)
 decrementMulligan _ = NoMulligan
 
-foldMap (deriveJSON defaultOptions) [''Mulligan, ''CheckGameIcons]
+foldMap (deriveJSON defaultOptions) [''Mulligan]
+deriveToJSON defaultOptions ''CheckGameIcons
+
+-- Hand written so that @setAside@ stays optional: 'CheckGameIcons' is serialized
+-- into the persisted message queue, and games parked mid-check were saved before
+-- the field existed.
+instance FromJSON CheckGameIcons where
+  parseJSON = withObject "CheckGameIcons" \o -> do
+    target <- o .: "target"
+    investigator <- o .: "investigator"
+    n <- o .: "n"
+    cards <- o .: "cards"
+    mulligan <- o .: "mulligan"
+    setAside <- o .:? "setAside" .!= []
+    pure $ CheckGameIcons {target, investigator, n, cards, mulligan, setAside}
+
+{- | All cards this check is holding: the ones checked so far plus anything the
+investigator has set aside with a mulligan.
+-}
+checkedCards :: CheckGameIcons -> [EncounterCard]
+checkedCards params = params.cards <> params.setAside
 
 checkGameIcons
   :: (Targetable target, ReverseQueue m) => target -> InvestigatorId -> Mulligan -> Int -> m ()
@@ -62,6 +87,7 @@ checkGameIcons (toTarget -> target) iid mulligan n =
       , investigator = iid
       , mulligan
       , n
+      , setAside = []
       , target
       }
 
@@ -87,7 +113,8 @@ sequential :: (HasGame m, HasCardDef a) => [a] -> m Bool
 sequential cards = do
   playingCards <- mapMaybeM toPlayingCard cards
   let sortedRanks = sort $ map rankValue playingCards
-  pure $ and $ zipWith (\a b -> b == a + 1) sortedRanks (drop 1 sortedRanks)
+  -- fewer than two ranks is vacuously "in a row", which would be a free win
+  pure $ length sortedRanks > 1 && and (zipWith (\a b -> b == a + 1) sortedRanks (drop 1 sortedRanks))
 
 toPlayingCard :: (HasCardDef a, HasGame m) => a -> m (Maybe PlayingCard)
 toPlayingCard a = do

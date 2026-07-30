@@ -6,8 +6,19 @@ import Arkham.Trait (Trait (Spell))
 import Arkham.Window (defaultWindows)
 import TestImport.New
 
--- | Coverage for the trait-leak guard and the Twila non-regression around
--- True Magick: Reworking Reality (5) (issue #4905).
+{- | The test harness answers a question by pushing the answer's messages
+directly, without the @ClearUI@ that the API pushes ahead of every accepted
+answer (see Api.Handler.Arkham.Games.Shared). So when an answer creates no new
+Ask -- exactly the case for declining a triggers window -- the answered
+question lingers in gameQuestion and assertNoReaction cannot tell "no further
+window" from "stale window". Push it ourselves.
+-}
+skipWindow :: HasCallStack => TestAppT ()
+skipWindow = push ClearUI >> skip
+
+{- | Coverage for the trait-leak guard and the Twila non-regression around
+True Magick: Reworking Reality (5) (issue #4905).
+-}
 spec :: Spec
 spec = describe "True Magick: Reworking Reality (5)" $ do
   -- CASE 3: trait non-leak. With no castable in-hand [Spell] asset, True Magick
@@ -58,3 +69,71 @@ spec = describe "True Magick: Reworking Reality (5)" $ do
 
     -- Twila's reaction to the charge being spent on a [Spell] must still fire.
     useReactionOf twila
+
+  -- CASE 5 (issue #5298): True Magick's own ability is only a wrapper that picks
+  -- which borrowed in-hand ability to resolve -- the borrowed ability is the one
+  -- real activation. Before the fix the wrapper was accounted for as an activate
+  -- action of its own, so a single use recorded TWO activate actions.
+  it "records the borrowed activation as a single activate action" . gameTest $ \self -> do
+    withProp @"horror" 5 self
+    location <- testLocation
+    self `moveTo` location
+
+    trueMagick <- self `putAssetIntoPlay` Assets.trueMagickReworkingReality5
+    inHandSpell <- genMyCard self Assets.clarityOfMind
+    addToHand self inHandSpell
+
+    [tmAction] <- self `getActionsFrom` trueMagick
+    run $ UseAbility (toId self) tmAction (defaultWindows $ toId self)
+    chooseTarget (toCardId inHandSpell)
+    chooseOnlyOption "resolve the borrowed Clarity of Mind [action]"
+
+    -- pre-fix: [[Activate], [Activate]] -- the wrapper plus the borrowed ability
+    fieldAssertLength InvestigatorActionsPerformed 1 self
+
+  -- CASE 6 (issue #5298): the user-visible symptom of CASE 5. Two recorded
+  -- activate actions in a row opened PerformedSameTypeOfAction, so Haste (2)
+  -- offered a free repeat action off a single activation.
+  it "does not trigger Haste (2) off a single borrowed activation" . gameTest $ \self -> do
+    withProp @"horror" 5 self
+    location <- testLocation
+    self `moveTo` location
+
+    _haste <- self `putAssetIntoPlay` Assets.haste2
+    trueMagick <- self `putAssetIntoPlay` Assets.trueMagickReworkingReality5
+    inHandSpell <- genMyCard self Assets.clarityOfMind
+    addToHand self inHandSpell
+
+    [tmAction] <- self `getActionsFrom` trueMagick
+    run $ UseAbility (toId self) tmAction (defaultWindows $ toId self)
+    chooseTarget (toCardId inHandSpell)
+    chooseOnlyOption "resolve the borrowed Clarity of Mind [action]"
+
+    assertNoReaction
+
+  -- CASE 7 (issue #5298): the wrapper opened its own ActivateAbility #after
+  -- window on top of the borrowed ability's, so Sign Magick (3) asked twice for
+  -- one activation. Skipping the (single, correct) prompt must end the window.
+  it "opens only one ActivateAbility window for Sign Magick (3)" . gameTest $ \self -> do
+    withProp @"horror" 5 self
+    location <- testLocation
+    self `moveTo` location
+
+    _signMagick <- self `putAssetIntoPlay` Assets.signMagick3
+    trueMagick <- self `putAssetIntoPlay` Assets.trueMagickReworkingReality5
+    -- a second in-play [Spell] with an [action], so Sign Magick has a legal
+    -- target other than the window asset (True Magick itself)
+    _clarityInPlay <- self `putAssetIntoPlay` Assets.clarityOfMind
+    inHandSpell <- genMyCard self Assets.clarityOfMind3
+    addToHand self inHandSpell
+
+    [tmAction] <- self `getActionsFrom` trueMagick
+    run $ UseAbility (toId self) tmAction (defaultWindows $ toId self)
+    chooseTarget (toCardId inHandSpell)
+    chooseOnlyOption "resolve the borrowed Clarity of Mind (3) [action]"
+
+    -- decline the one correct prompt, from the borrowed ability's activation
+    -- (`skip` fails outright if no triggers window is open at all)
+    skipWindow
+    -- pre-fix: a second, spurious prompt from the wrapper's own window
+    assertNoReaction

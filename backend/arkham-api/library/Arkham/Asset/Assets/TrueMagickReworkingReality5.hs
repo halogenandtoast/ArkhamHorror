@@ -7,6 +7,7 @@ import Arkham.Asset.Import.Lifted hiding (createAsset)
 import Arkham.Asset.Types (Asset (..))
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Constants
 import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.Game
 import {-# SOURCE #-} Arkham.GameEnv
@@ -55,11 +56,19 @@ instance HasModifiersFor TrueMagickReworkingReality5 where
         modifySelf a $ map AddTrait traits
 
 -- This tooltip is handled specially
+--
+-- NonActivateAbility (not index 1): this ability is only a wrapper that picks
+-- which in-hand spell ability to resolve -- the borrowed ability, re-sourced via
+-- ProxySource below, is the one real activation. At a normal index ActiveCost
+-- would account for the wrapper as a second activate action of its own (its own
+-- ActivateAbility/PerformAction windows, FinishAction and TakenActions), so
+-- Sign Magick (3) asked twice and Haste (2) saw two Activates in a row (#5298).
+-- Same idiom as Tony Morgan's Bounty action.
 instance HasAbilities TrueMagickReworkingReality5 where
   getAbilities (TrueMagickReworkingReality5 (With attrs (Metadata Nothing))) =
     [ (cardI18n $ withI18nTooltip "trueMagickReworkingReality5.useTrueMagick")
         $ doesNotProvokeAttacksOfOpportunity
-        $ controlled attrs 1 HasTrueMagick aform
+        $ controlled attrs NonActivateAbility HasTrueMagick aform
     | aform <- [ActionAbility mempty Nothing mempty, FastAbility Free, freeReaction AnyWindow]
     ]
   getAbilities (TrueMagickReworkingReality5 (With _ (Metadata (Just inner)))) = getAbilities inner
@@ -68,7 +77,7 @@ instance RunMessage TrueMagickReworkingReality5 where
   runMessage msg (TrueMagickReworkingReality5 (With attrs meta)) = runQueueT $ case msg of
     Do BeginRound -> do
       pure . TrueMagickReworkingReality5 . (`with` meta) $ attrs & tokensL %~ replenish #charge 1
-    UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
+    UseCardAbility iid (isSource attrs -> True) NonActivateAbility ws _ -> do
       hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
       let adjustCost = overCost (over biplate (const attrs.id))
       choices <- forMaybeM hand \card -> do

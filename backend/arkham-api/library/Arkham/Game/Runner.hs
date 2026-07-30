@@ -3304,6 +3304,15 @@ runGameMessage msg g = case msg of
             )
             (cdLimits $ toCardDef card)
       PlayerEnemyType -> do
+        -- Revelation player enemies never pass through DrewPlayerEnemy, so send the
+        -- "drew enemy" display here or the weakness lands in the threat area silently.
+        investigator <- getInvestigator iid
+        withI18n $ cardNameVar card $ investigatorNameVar investigator do
+          if Keyword.Peril `elem` cdKeywords (toCardDef card)
+            then do
+              pid <- getPlayer iid
+              sendEnemyOnly pid (ikey' "drew") (toJSON $ toCard card)
+            else sendEnemy (ikey' "drew") (toJSON $ toCard card)
         enemyId <- getRandom
         let enemy = createEnemy card enemyId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck

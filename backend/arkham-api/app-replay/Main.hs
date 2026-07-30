@@ -16,6 +16,7 @@ import Api.Arkham.Export
   , ArkhamGameExportData (..)
   )
 import Api.Arkham.Helpers (GameApp (..), runGameApp)
+import Arkham.Classes.GameLogger (ClientMessage (..))
 import Arkham.Classes.HasQueue (newQueue, pushAll)
 import Arkham.Game (Game (..), PublicGame (..), runMessages)
 import Arkham.Game.Diff (diff, patchValueWithRecovery)
@@ -66,6 +67,24 @@ data Opts = Opts
 defaultOpts :: Opts
 defaultOpts = Opts "" Nothing Nothing False 0 Nothing 50 False Nothing 30 False 0
 
+{- | One-line rendering of a client (UI) message. 'ClientMessage' has no 'Show'
+instance, and the embedded card 'Value's are enormous, so keep it terse.
+-}
+formatClientMessage :: ClientMessage -> String
+formatClientMessage = \case
+  ClientText t -> "text " <> T.unpack t
+  ClientError t -> "error " <> T.unpack t
+  ClientCard t v -> "card " <> T.unpack t <> " " <> briefValue v
+  ClientCardOnly pid t v -> "cardOnly[" <> show pid <> "] " <> T.unpack t <> " " <> briefValue v
+  ClientTarot v -> "tarot " <> briefValue v
+  ClientShowDiscard iid -> "showDiscard " <> show iid
+  ClientShowUnder iid -> "showUnder " <> show iid
+  ClientUI t -> "ui " <> T.unpack t
+  ClientAudio t -> "audio " <> T.unpack t
+  ClientPlayabilityReport _ t _ -> "playabilityReport " <> T.unpack t
+ where
+  briefValue v = let s = BL8.unpack (encode v) in if length s > 200 then take 200 s <> "..." else s
+
 usage :: String
 usage =
   unlines
@@ -78,7 +97,8 @@ usage =
     , "  --answers FILE     JSON list of Answer values to apply one at a time"
     , "                     (Answer accepts {\"tag\":\"Raw\",...}, {\"tag\":\"Answer\",...}, etc.)"
     , "  --output FILE      Write final Game state JSON here (default: stdout)"
-    , "  --trace            Print every Message processed to stderr"
+    , "  --trace            Print every Message processed to stderr, plus every client"
+    , "                     (UI) message as \"client> ...\""
     , "  --metrics [FILE]   Record per-span wall-clock timings; dump table to FILE (or stderr)"
     , "  --metrics-top N    Show top-N spans in the metrics table (default 50)"
     , "  --replay-all       Undo to step 0 then replay every step forward, timing each one."
@@ -213,7 +233,14 @@ main = do
   gameRef <- newIORef currentData
   queueRef <- newQueue resumeQueue
   genRef <- newIORef (mkStdGen currentData.gameSeed)
-  let app = GameApp gameRef queueRef genRef (const (pure ())) tracer Nothing
+  -- Client messages (card popups, log lines, UI pokes) never touch the Game
+  -- state, so a bug that only drops one is invisible in --output. Surface them
+  -- on stderr under --trace so they can be asserted on headlessly.
+  let clientLogger m
+        | optTrace opts = hPutStrLn stderr ("client> " <> formatClientMessage m)
+        | otherwise = pure ()
+
+  let app = GameApp gameRef queueRef genRef clientLogger tracer Nothing
 
   -- Drain any pending queue first, then process answers one at a time using
   -- the same dance as Api.Handler.Arkham.Games.Shared.updateGame: resolve the

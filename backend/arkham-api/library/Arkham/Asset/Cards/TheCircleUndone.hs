@@ -445,6 +445,7 @@ gavriellaMizrah =
     { cdSkills = [#combat, #wild]
     , cdCardTraits = setFromList [Ally, Veteran]
     , cdUnique = True
+    , cdSlots = [#ally]
     }
 
 jeromeDavids :: CardDef
@@ -453,6 +454,7 @@ jeromeDavids =
     { cdSkills = [#intellect, #wild]
     , cdCardTraits = setFromList [Ally, Assistant]
     , cdUnique = True
+    , cdSlots = [#ally]
     }
 
 pennyWhite :: CardDef
@@ -461,6 +463,7 @@ pennyWhite =
     { cdSkills = [#willpower, #wild]
     , cdCardTraits = setFromList [Ally, Assistant]
     , cdUnique = True
+    , cdSlots = [#ally]
     }
 
 valentinoRivas :: CardDef
@@ -469,6 +472,7 @@ valentinoRivas =
     { cdSkills = [#agility, #wild]
     , cdCardTraits = setFromList [Ally, Socialite]
     , cdUnique = True
+    , cdSlots = [#ally]
     }
 
 mk1Grenades4 :: CardDef

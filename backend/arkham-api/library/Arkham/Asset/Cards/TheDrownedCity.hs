@@ -277,6 +277,7 @@ obscure2 =
     , cdLimits = [LimitPerInvestigator 1]
     , cdKeywords = setFromList [seal $ chaosToken_ #"0"]
     , cdLevel = Just 2
+    , cdSlots = [#arcane]
     }
 
 robertCastaigneStillHasYourBack4 :: CardDef

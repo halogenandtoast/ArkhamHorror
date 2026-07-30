@@ -778,6 +778,7 @@ nikolaTesla =
   (storyAsset "87014" ("Nikola Tesla" <:> "Renowned Inventor") 1 MachinationsThroughTime)
     { cdCardTraits = setFromList [Scientist, Ally, Past]
     , cdUnique = True
+    , cdSlots = [#ally]
     }
 
 thomasCorriganPresent :: CardDef
@@ -799,6 +800,7 @@ ezraGraves =
   (storyAsset "87023" ("Ezra Graves" <:> "Professor of the Arcane") 3 MachinationsThroughTime)
     { cdCardTraits = setFromList [Scientist, Ally, Present]
     , cdUnique = True
+    , cdSlots = [#ally]
     }
 
 thomasCorriganFuture :: CardDef

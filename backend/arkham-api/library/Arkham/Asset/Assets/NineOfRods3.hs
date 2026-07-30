@@ -20,7 +20,7 @@ instance HasAbilities NineOfRods3 where
         a
         1
         (exhaust a)
-        (DrawCard #when You (CanCancelRevelationEffect You $ basic NonWeaknessTreachery) AnyDeck)
+        (DrawCard #when You (CanCancelRevelationEffect You $ basic $ NonWeakness <> IsEncounterCard) AnyDeck)
         ControlsThis
     , restrictedAbility a 2 InYourHand $ freeReaction (GameBegins #when)
     ]

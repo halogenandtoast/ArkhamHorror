@@ -7213,6 +7213,7 @@ test-suite spec
       Arkham.Asset.Assets.MedicalTextsSpec
       Arkham.Asset.Assets.MiguelsKnapsackSpec
       Arkham.Asset.Assets.MitchBrownSpec
+      Arkham.Asset.Assets.NineOfRods3Spec
       Arkham.Asset.Assets.NoPlaceLikeHomeSpec
       Arkham.Asset.Assets.OldBookOfLoreSpec
       Arkham.Asset.Assets.OldCompass2Spec

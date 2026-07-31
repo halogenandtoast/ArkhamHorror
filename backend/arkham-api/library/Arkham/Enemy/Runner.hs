@@ -232,6 +232,16 @@ isSwarm attrs = case enemyPlacement attrs of
   AsSwarm {} -> True
   _ -> False
 
+{- | How to take an enemy out of the game entirely. An enemy that is still in play
+has to leave play first, so that leave-play windows fire and anything attached to
+it gets cleaned up; one that is already out of play (victory display, removed
+zone) is just dropped.
+-}
+removeFromGameMessage :: EnemyAttrs -> Message
+removeFromGameMessage a
+  | isInPlayPlacement a.placement = RemoveFromPlay (toSource a)
+  | otherwise = RemoveEnemy a.id
+
 getCanReady :: HasGame m => EnemyAttrs -> m Bool
 getCanReady a = do
   mods <- getModifiers a
@@ -2323,11 +2333,15 @@ instance RunMessage EnemyAttrs where
     AssignDamage target | isTarget a target -> do
       pushAll $ map (`checkDefeated` a) (keys enemyAssignedDamage)
       pure a
+    -- Removing from the game is still leaving play, so an in-play enemy has to go
+    -- through RemoveFromPlay (like RemoveFromGame does) rather than a bare
+    -- RemoveEnemy. A bare RemoveEnemy skips the leave-play windows entirely, which
+    -- stranded attached cards such as Rod of Carnamagos' Rots, #5309.
     RemoveAllCopiesOfCardFromGame _ cCode | cCode == toCardCode a -> do
-      push $ RemoveEnemy (toId a)
+      push $ removeFromGameMessage a
       pure a
     RemoveAllCopiesOfEncounterCardFromGame cardMatcher | toCard a `cardMatch` cardMatcher -> do
-      push $ RemoveEnemy (toId a)
+      push $ removeFromGameMessage a
       pure a
     SendMessage (isTarget a -> True) msg' -> liftRunMessage msg' a
     RemoveAllAttachments source target -> do

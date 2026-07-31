@@ -32,6 +32,7 @@ import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.Window
 import Arkham.Matcher (EnemyMatcher (..))
 import Arkham.Message qualified as Msg
@@ -119,6 +120,14 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
     case eventPlacement of
       AttachedToAsset aid' _ | aid == aid' -> do
         push $ toDiscard GameSource a
+      _ -> pure ()
+    pure a
+  -- An event attached to something (e.g. a Rot on an enemy) is discarded when that
+  -- thing leaves play, mirroring attached treacheries and enemies. Without this an
+  -- attachment whose host is removed rather than discarded is stranded in play, #5309.
+  RemovedFromPlay source | not (isSource a source) -> do
+    case placementToAttached eventPlacement of
+      Just target | isTarget target (sourceToTarget source) -> push $ toDiscard GameSource a
       _ -> pure ()
     pure a
   ReadyExhausted -> pure $ a & exhaustedL .~ False

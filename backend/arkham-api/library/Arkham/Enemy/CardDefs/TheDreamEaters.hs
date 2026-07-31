@@ -275,7 +275,7 @@ hordeOfNight =
     , cdHealth = health 1
     , cdCardTraits = setFromList [Monster, Elite]
     , cdVictoryPoints = Just 1
-    , cdKeywords = setFromList [Keyword.Massive, Keyword.Swarming (Static 1)]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Swarming (PerPlayer 1)]
     }
 
 beingsOfIb :: CardDef

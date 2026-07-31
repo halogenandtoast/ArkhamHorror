@@ -7268,6 +7268,7 @@ test-suite spec
       Arkham.Enemy.Cards.DagonsBroodSpec
       Arkham.Enemy.Cards.ElderDeepOneSpec
       Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec
+      Arkham.Enemy.Cards.HordeOfNightSpec
       Arkham.Enemy.Cards.JeanDevereuxSeekingClosureSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
       Arkham.Enemy.Cards.MoonBeastSpec

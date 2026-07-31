@@ -226,6 +226,14 @@ becomeShatteredSelf (Investigator a) =
       , investigatorDiscarding = Nothing
       }
 
+-- | The investigator a Body of a Yithian was made from, per its stored snapshot.
+yithianOriginalCardCode :: Investigator -> Maybe CardCode
+yithianOriginalCardCode (Investigator a) = case cast a of
+  Just (BodyOfAYithian (_ `With` meta)) -> case fromJSON @Investigator meta.originalBody of
+    Success x -> Just $ investigatorCardCode $ toAttrs x
+    _ -> Nothing
+  Nothing -> Nothing
+
 shatteredSelfOriginalCardCode :: Investigator -> Maybe CardCode
 shatteredSelfOriginalCardCode (Investigator a) = case cast a of
   Just (ShatteredSelf (_ `With` meta)) -> case fromJSON @Investigator meta.originalBody of
@@ -260,10 +268,43 @@ returnFromShatteredSelf = flip handleInvestigator \(ShatteredSelf (attrs `With` 
         , investigatorActionsPerformed = investigatorActionsPerformed attrs
         , investigatorEndedTurn = investigatorEndedTurn attrs
         }
-    _ -> error "The shattered self cannot be made whole again"
+    _ ->
+      fromMaybe (error "The shattered self cannot be made whole again")
+        $ rebuildFromAlternateBody attrs
 
 handleInvestigator :: IsInvestigator a => Investigator -> (a -> Investigator) -> Investigator
 handleInvestigator o@(Investigator a) f = maybe o f (cast a)
+
+{- | Rebuild the investigator an alternate body (Body of a Yithian, Shattered Self) was
+made from when the stored snapshot of that investigator can no longer be read. Older
+versions of the engine clobbered the snapshot when the alternate body was transfigured,
+so some saves carry a snapshot of the alternate body instead of the original.
+
+Nothing meaningful is lost: taking on an alternate body keeps the original investigator's
+id, deck, hand, discard, XP, and trauma, so only the printed identity has to come back
+from the card.
+-}
+rebuildFromAlternateBody :: InvestigatorAttrs -> Maybe Investigator
+rebuildFromAlternateBody attrs
+  | toCardCode attrs.id == investigatorCardCode attrs = Nothing
+  | otherwise = Just $ updateAttrs base \b ->
+      attrs
+        { investigatorCardCode = investigatorCardCode b
+        , investigatorArt = investigatorArt b
+        , investigatorName = investigatorName b
+        , investigatorClass = investigatorClass b
+        , investigatorTraits = investigatorTraits b
+        , investigatorHealth = investigatorHealth b
+        , investigatorSanity = investigatorSanity b
+        , investigatorWillpower = investigatorWillpower b
+        , investigatorIntellect = investigatorIntellect b
+        , investigatorCombat = investigatorCombat b
+        , investigatorAgility = investigatorAgility b
+        , investigatorForm = RegularForm
+        , investigatorUsedAbilities = filter onlyCampaignAbilities (investigatorUsedAbilities attrs)
+        }
+ where
+  base = lookupInvestigator attrs.id (investigatorPlayerId attrs)
 
 returnToBody :: Investigator -> Investigator
 returnToBody = flip handleInvestigator \(BodyOfAYithian (attrs `With` meta)) ->
@@ -281,4 +322,6 @@ returnToBody = flip handleInvestigator \(BodyOfAYithian (attrs `With` meta)) ->
         , investigatorKilled = investigatorKilled a
         , investigatorDrivenInsane = investigatorDrivenInsane a
         }
-    _ -> error "Investigator mind is too corrupted to return to their body"
+    _ ->
+      fromMaybe (error "Investigator mind is too corrupted to return to their body")
+        $ rebuildFromAlternateBody attrs

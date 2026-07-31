@@ -21,7 +21,12 @@ instance RunMessage CleanSweep2 where
       skillTestModifier sid attrs iid (AddSkillValue #intellect)
       investigateWith_ #agility sid iid attrs
       pure e
-    PassedThisSkillTest iid (isSource attrs -> True) -> do
+    PassedThisSkillTest _ (isSource attrs -> True) -> do
+      skillTestCardOption attrs $ doStep 1 msg
+      pure e
+    -- See CleanSweep: the destinations are gathered when the option resolves so that a
+    -- location unblocked by the investigation's own clue discovery is still offered.
+    DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
       locations <- getAccessibleLocations iid attrs
       chooseTargetM iid locations $ moveTo attrs iid
       pure e

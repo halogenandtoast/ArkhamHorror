@@ -2,6 +2,7 @@ module Arkham.Event.Events.Transfiguration2Spec (spec) where
 
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Event.Cards qualified as Events
+import Arkham.Investigator.Cards (rolandBanks)
 import TestImport.New
 
 spec :: Spec
@@ -31,6 +32,27 @@ spec = describe "Transfiguration (2)" do
     self.intellect `shouldReturn` 3
     self.combat `shouldReturn` 3
     self.agility `shouldReturn` 3
+
+  -- #5316: a Body of a Yithian stores a snapshot of the investigator it was made from.
+  -- Transfiguration (2) used to overwrite that snapshot with the Yithian's own attrs on
+  -- the very next message, so The City of Archives could never give the mind back and
+  -- the game died with "the original mind of the Yithian is lost".
+  it "does not destroy the original body of a Body of a Yithian" . gameTestWith rolandBanks $ \self -> do
+    run $ BecomeYithian (toId self)
+    originalBody <- yithianOriginalCardCode <$> getInvestigator (toId self)
+    originalBody `shouldBe` Just "01001"
+
+    self `playEvent` Events.transfiguration2
+    chooseHankSamson
+    -- any message resolved while transfigured used to re-seed the snapshot
+    run $ SetInvestigatorForm (toId self) RegularForm
+    stillOriginalBody <- yithianOriginalCardCode <$> getInvestigator (toId self)
+    stillOriginalBody `shouldBe` Just "01001"
+
+    run ResetInvestigators
+    attrs <- toAttrs <$> getInvestigator (toId self)
+    investigatorCardCode attrs `shouldBe` "01001"
+    investigatorCombat attrs `shouldBe` 4
 
 offeredInvestigators :: TestAppT [CardCode]
 offeredInvestigators = do

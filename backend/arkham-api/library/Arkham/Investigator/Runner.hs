@@ -162,14 +162,19 @@ instance RunMessage Investigator where
           -- the form reads and writes its own meta, ours is left alone for our
           -- signature cards. Changing form means a different form, which starts
           -- uninitialized.
-          pure
-            . Investigator
-            $ investigatorFromAttrs @original
+          --
+          -- Rebuild with overAttrs rather than investigatorFromAttrs: our own concrete
+          -- type may carry `With` metadata (Body of a Yithian and Shattered Self hold a
+          -- snapshot of the investigator we used to be) and investigatorFromAttrs would
+          -- re-seed that snapshot from the transfigured attrs, destroying it.
+          let
+            a'' =
               a'
                 { investigatorMeta = investigatorMeta a0
                 , investigatorFormMeta =
                     if investigatorForm a' == investigatorForm a0 then investigatorMeta a' else Null
                 }
+          pure . Investigator $ overAttrs (const a'') a
         _ -> Investigator <$> runMessage msg' a
 
 instance RunMessage InvestigatorAttrs where

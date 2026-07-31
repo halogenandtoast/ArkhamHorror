@@ -24,17 +24,23 @@ instance RunMessage CleanSweep where
       skillTestModifier sid attrs iid (SkillModifier #intellect 2)
       investigate_ sid iid attrs
       pure e
-    PassedThisSkillTest iid (isSource attrs -> True) -> do
+    PassedThisSkillTest _ (isSource attrs -> True) -> do
       runMaybeT_ do
         lid <- MaybeT getSkillTestTargetedLocation
         clues <- lift $ field LocationClues lid
         guard (clues == 1)
-        locations <- lift $ getAccessibleLocations iid attrs
-        guard (notNull locations)
-        lift $ skillTestCardOption attrs do
-          chooseOneM iid do
-            labeledI "doNotMove" nothing
-            labeledI "moveToConnecting" do
-              chooseTargetM iid locations $ moveTo attrs iid
+        lift $ skillTestCardOption attrs $ doStep 1 msg
+      pure e
+    -- The accessible locations must be gathered when the option resolves, not when it is
+    -- registered: taking the last clue can unblock a connecting location (e.g. Passenger
+    -- Car #169, blocked while the location to its left has clues), and the discovery only
+    -- happens once the skill test results are being applied.
+    DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
+      locations <- getAccessibleLocations iid attrs
+      unless (null locations) do
+        chooseOneM iid do
+          labeledI "doNotMove" nothing
+          labeledI "moveToConnecting" do
+            chooseTargetM iid locations $ moveTo attrs iid
       pure e
     _ -> CleanSweep <$> liftRunMessage msg attrs

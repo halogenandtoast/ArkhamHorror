@@ -7293,6 +7293,7 @@ test-suite spec
       Arkham.Event.Events.BountySpec
       Arkham.Event.Events.BuryThemDeepSpec
       Arkham.Event.Events.ButterflyEffect1Spec
+      Arkham.Event.Events.CleanSweepSpec
       Arkham.Event.Events.CloseCall2Spec
       Arkham.Event.Events.Counterespionage1Spec
       Arkham.Event.Events.CrypticResearch4Spec

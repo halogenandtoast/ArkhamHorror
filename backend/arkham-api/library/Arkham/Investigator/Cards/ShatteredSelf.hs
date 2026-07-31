@@ -1,15 +1,15 @@
 module Arkham.Investigator.Cards.ShatteredSelf (ShatteredSelf (..), ShatteredSelfMetadata (..)) where
 
 import Arkham.Ability
-import Arkham.I18n
-import Arkham.Message.Lifted.Choose
 import Arkham.Helpers.Investigator (getHandCount)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window
+import Arkham.I18n
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Data.Aeson (Result (..))
 
 newtype ShatteredSelfMetadata = ShatteredSelfMetadata {originalBody :: Value}
@@ -58,8 +58,17 @@ instance RunMessage ShatteredSelf where
     UseCardAbility _iid (isSource attrs -> True) 1 (getCommittedCard -> card) _ -> do
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) card DoubleSkillIcons
       pure i
-    _ -> case fromJSON @Investigator (originalBody meta) of
-      Error _ -> error "the true self is lost"
-      Success original -> do
+    _ -> case originalInvestigator of
+      Nothing -> error "the true self is lost"
+      Just original -> do
         original' <- liftRunMessage (Blanked msg) (overAttrs (const attrs) original)
         pure $ ShatteredSelf $ toAttrs original' `with` meta
+   where
+    -- see Arkham.Investigator.Cards.BodyOfAYithian: the snapshot can have been
+    -- clobbered, but our id still tells us who we were
+    originalInvestigator = case fromJSON @Investigator (originalBody meta) of
+      Success original -> Just original
+      Error _
+        | unInvestigatorId attrs.id /= investigatorCardCode attrs ->
+            Just $ lookupInvestigator attrs.id (investigatorPlayerId attrs)
+      Error _ -> Nothing

@@ -490,21 +490,32 @@ handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
         -- pre-window pool so the location is revealed (and clues placed)
         -- before the EnemyEnters After window fires — reactions like Glassing
         -- then see the post-reveal state.
+        -- Swarm cards are reported as engaged alongside their host
+        -- (`enemyEngagedInvestigators` recurses through `AsSwarm`), and both
+        -- `EnemyEnteredFollowing` and `DisengageEnemy` redirect a swarm card
+        -- back to its host. Deciding per card therefore lets a swarm card's
+        -- follow message drag a host that was just left behind (#5313), so
+        -- collapse to the host and push one message per group. Swarming X:
+        -- the host and its swarm cards "move, engage, and exhaust as a single
+        -- entity", so any member's CannotMove holds the whole group.
         engagedEnemies <- select $ enemyEngagedWith iid
+        movementUnits <- fmap nub $ for engagedEnemies \eid ->
+          field Field.EnemyPlacement eid <&> \case
+            AsSwarm host _ -> host
+            _ -> eid
+
         (followers, disengagers) <-
           partitionM
             ( \eid -> do
                 keywords <- getModifiedKeywords eid
-                mods <- getModifiers eid
                 canEnter <- canEnterLocation eid lid
-                pure
-                  ( #massive `notElem` keywords
-                      && canEnter
-                      && CannotMove `notElem` mods
-                      && CannotBeMoved `notElem` mods
-                  )
+                swarm <- select $ SwarmOf eid
+                canMove <- flip allM (eid : swarm) \swarmMember -> do
+                  mods <- getModifiers swarmMember
+                  pure $ CannotMove `notElem` mods && CannotBeMoved `notElem` mods
+                pure (#massive `notElem` keywords && canEnter && canMove)
             )
-            engagedEnemies
+            movementUnits
 
         pushAll
           -- Disengage the left-behind enemies BEFORE the investigator enters the

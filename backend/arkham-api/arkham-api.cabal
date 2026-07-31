@@ -7299,6 +7299,7 @@ test-suite spec
       Arkham.Event.Events.CrypticResearch4Spec
       Arkham.Event.Events.CunningDistractionSpec
       Arkham.Event.Events.DarkMemorySpec
+      Arkham.Event.Events.DarkProphecySpec
       Arkham.Event.Events.DodgeSpec
       Arkham.Event.Events.Doppelganger1Spec
       Arkham.Event.Events.DrawnToTheFlameSpec

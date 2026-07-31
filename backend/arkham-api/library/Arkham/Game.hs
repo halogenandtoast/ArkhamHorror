@@ -5206,6 +5206,9 @@ instance Query ChaosTokenMatcher where
           Just st -> do
             iids <- select iMatcher
             pure $ filter (\t -> any (`elem` t.revealedBy) iids) st.revealedChaosTokens
+      _ | Just (preferred, other) <- splitOrElse matcher -> do
+        results <- select preferred
+        if null results then select other else pure results
       _ -> do
         tokenPool :: [ChaosToken] <- getTokenPool `given` includeTokenPool matcher
         tokens :: [ChaosToken] <-
@@ -5215,14 +5218,27 @@ instance Query ChaosTokenMatcher where
             | isInfestation -> getInfestationTokens
             | isOnlyInBag matcher -> getOnlyChaosTokensInBag
             | otherwise -> getBagChaosTokens
-        case matcher of
-          ChaosTokenMatchesOrElse matcher' orElseMatch -> do
-            results <- filterM (go matcher') (tokens <> tokenPool)
-            if null results
-              then filterM (go orElseMatch) (tokens <> tokenPool)
-              else pure results
-          _ -> filterM (go matcher) (tokens <> tokenPool)
+        filterM (go matcher) (tokens <> tokenPool)
    where
+    {- 'ChaosTokenMatchesOrElse' needs the whole candidate pool at once to know
+    whether its preferred branch is satisfiable, so it can only be evaluated
+    here at the top of 'select_' -- 'go' sees a single token and errors on it.
+    Callers do wrap it ('matchRevealedChaosToken' adds 'IncludeSealed'), and
+    the pool-shaping wrappers distribute over both branches, so hoist them out
+    and leave the 'OrElse' outermost. -}
+    splitOrElse = \case
+      ChaosTokenMatchesOrElse m1 m2 -> Just (m1, m2)
+      IncludeSealed m -> bimap IncludeSealed IncludeSealed <$> splitOrElse m
+      IncludeTokenPool m -> bimap IncludeTokenPool IncludeTokenPool <$> splitOrElse m
+      InTokenPool m -> bimap InTokenPool InTokenPool <$> splitOrElse m
+      OnlyInBag m -> bimap OnlyInBag OnlyInBag <$> splitOrElse m
+      ChaosTokenMatches ms
+        | (before, ChaosTokenMatchesOrElse m1 m2 : after) <- break isOrElse ms ->
+            Just (ChaosTokenMatches (before <> (m1 : after)), ChaosTokenMatches (before <> (m2 : after)))
+      _ -> Nothing
+    isOrElse = \case
+      ChaosTokenMatchesOrElse {} -> True
+      _ -> False
     isOnlyInBag = \case
       OnlyInBag _ -> True
       _ -> False

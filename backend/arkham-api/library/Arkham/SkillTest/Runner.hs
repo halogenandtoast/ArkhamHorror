@@ -897,11 +897,19 @@ instance RunMessage SkillTest where
           let passed target =
                 Priority
                   $ PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
+          -- ST.7: every result registers itself as an option (chaos token
+          -- effects, committed card riders, and the initiator's own consequence
+          -- via 'OriginalOptionKind'), then we collect. One result resolves
+          -- straight away; several let the investigator pick the order.
+          --
+          -- The collect must come last so initiators still get to register --
+          -- see the Fight/Evade handlers in "Arkham.Enemy.Runner". Mirrors the
+          -- failure branch below.
           pushAll
             $ cycleN
               successTimes
               ( [passed target | target <- skillTestSubscribers <> tokenSubscribers]
-                  <> [passed (SkillTestInitiatorTarget skillTestTarget)]
+                  <> [passed (SkillTestInitiatorTarget skillTestTarget), CollectSkillTestOptions]
               )
         FailedBy _ n -> do
           investigatorsToResolveFailure <-

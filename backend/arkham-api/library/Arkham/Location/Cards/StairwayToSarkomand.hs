@@ -1,5 +1,6 @@
 module Arkham.Location.Cards.StairwayToSarkomand (stairwayToSarkomand) where
 
+import Arkham.SkillTest.Option
 import Arkham.Ability
 import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
@@ -36,7 +37,9 @@ instance RunMessage StairwayToSarkomand where
       beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      flipOverBy iid (attrs.ability 1) attrs
+      -- reading the story opens its own prompts, so register rather than flip
+      -- outright or any other ST.7 result gets stranded behind it (#5312)
+      skillTestCardOptionEdit attrs originalOption $ flipOverBy iid (attrs.ability 1) attrs
       pure l
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Stories.ruinsOfSarkomand

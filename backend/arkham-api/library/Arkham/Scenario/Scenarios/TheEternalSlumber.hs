@@ -146,7 +146,7 @@ instance RunMessage TheEternalSlumber where
       when (token.face == Cultist) do
         n <- getStrengthOfTheAbyss
         let threshold = if isEasyStandard attrs then 3 else 5
-        when (n <= threshold) $ addStrengthOfTheAbyss 1
+        when (n <= threshold) $ tokenSkillTestOption Cultist $ addStrengthOfTheAbyss 1
       pure s
     ScenarioResolution r -> scope "resolutions" do
       investigators <- allInvestigators

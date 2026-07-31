@@ -3,17 +3,17 @@ module Arkham.Scenario.Scenarios.TheNightsUsurper (theNightsUsurper, TheNightsUs
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Card (toCardCode)
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
 import Arkham.Campaigns.TheForgottenAge.Helpers (ExploreRule (PlaceExplored), explore)
-import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Card (toCardCode)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
@@ -174,13 +174,13 @@ instance RunMessage TheNightsUsurper where
     PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
       when (token.face == ElderThing) do
         n <- getStrengthOfTheAbyss
-        when (n >= 4) $ removeStrengthOfTheAbyss 1
+        when (n >= 4) $ tokenSkillTestOption ElderThing $ removeStrengthOfTheAbyss 1
       pure s
     FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
       when (token.face == Cultist) do
         n <- getStrengthOfTheAbyss
         let threshold = if isEasyStandard attrs then 3 else 5
-        when (n <= threshold) $ addStrengthOfTheAbyss 1
+        when (n <= threshold) $ tokenSkillTestOption Cultist $ addStrengthOfTheAbyss 1
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

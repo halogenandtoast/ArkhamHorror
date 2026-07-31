@@ -8,18 +8,20 @@ import Arkham.Prelude
 import Arkham.Question (UI)
 import Data.Aeson.TH
 
--- | The category of a 'SkillTestOption'. Determines how the option interleaves
--- with the original skill-test option provided by the game engine.
+{- | The category of a 'SkillTestOption'. Determines how the option interleaves
+with the original skill-test option provided by the game engine.
+-}
 data SkillTestOptionKind
-  = OriginalOptionKind
-  -- ^ the original option
-  | AdditionalOptionKind
-  -- ^ an additional option added by an effect
-  | BlockingOptionKind
-  -- ^ an option that blocks the original option
-  -- (e.g. Mariner's Compass should happen before original)
-  | PreOriginalOptionKind
-  -- ^ an option that can only be chosen if the OriginalOptionKind is still available
+  = -- | the original option
+    OriginalOptionKind
+  | -- | an additional option added by an effect
+    AdditionalOptionKind
+  | {- | an option that blocks the original option
+    (e.g. Mariner's Compass should happen before original)
+    -}
+    BlockingOptionKind
+  | -- | an option that can only be chosen if the OriginalOptionKind is still available
+    PreOriginalOptionKind
   deriving stock (Show, Ord, Eq, Generic, Data)
 
 -- | A choice presented to the player as part of skill-test resolution.
@@ -38,6 +40,13 @@ optionWhenExists a = setOptionCriteria (exists a)
 
 preOriginalOption :: SkillTestOption -> SkillTestOption
 preOriginalOption sto = sto {kind = PreOriginalOptionKind}
+
+{- | Mark an option as the consequence the skill test was initiated for, so it
+takes its place in the ST.7 ordering choice instead of pre-empting the other
+results.
+-}
+originalOption :: SkillTestOption -> SkillTestOption
+originalOption sto = sto {kind = OriginalOptionKind}
 
 $(deriveJSON defaultOptions ''SkillTestOptionKind)
 $(deriveJSON defaultOptions ''SkillTestOption)

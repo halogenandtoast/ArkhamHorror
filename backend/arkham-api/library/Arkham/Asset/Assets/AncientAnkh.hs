@@ -21,7 +21,12 @@ instance HasAbilities AncientAnkh where
   getAbilities (AncientAnkh a) =
     [ controlled a 1 (DuringSkillTest $ SkillTestOfInvestigator $ InvestigatorAt YourLocation)
         $ triggered
-          (WouldHaveSkillTestResult #when (InvestigatorAt YourLocation) AnySkillTest (FailureResult $ atLeast 2))
+          ( WouldHaveSkillTestResult
+              #when
+              (InvestigatorAt YourLocation)
+              AnySkillTest
+              (FailureResult $ atLeast 2)
+          )
           (assetUseCost a Charge 1)
     ]
 
@@ -30,7 +35,11 @@ instance RunMessage AncientAnkh where
     UseCardAbility _ (isSource attrs -> True) 1 ws _ -> do
       let mn = listToMaybe [x | (windowType -> Window.WouldFailSkillTest _ x) <- ws]
       for_ mn \n -> do
-        whenJustM getSkillTestId \sid ->
-          skillTestModifier sid (attrs.ability 1) (SkillTestTarget sid) (SkillTestResultValueModifier (n - 1))
+        whenJustM getSkillTestId \sid -> do
+          -- the window carries the current fail by amount and the modifier is
+          -- additive against the raw result, so the delta to land on "fails by
+          -- 1" is (1 - n)
+          skillTestModifier sid (attrs.ability 1) (SkillTestTarget sid) (SkillTestResultValueModifier (1 - n))
+          push RecalculateSkillTestResults
       pure a
     _ -> AncientAnkh <$> liftRunMessage msg attrs

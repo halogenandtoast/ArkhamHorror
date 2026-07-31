@@ -2225,27 +2225,36 @@ oncePerAbility attrs n f = do
 
 insertAfterMatching
   :: (HasCallStack, MonadTrans t, HasQueue Message m) => [Message] -> (Message -> Bool) -> t m ()
-insertAfterMatching msgs p = lift $ withQueue_ \queue ->
+insertAfterMatching msgs p = do
+  inserted <- insertAfterMatchingMaybe msgs p
+  unless inserted $ error $ "no matching message:\n" <> prettyCallStack callStack
+
+{- | Like 'insertAfterMatching' but reports whether an anchor was found instead of
+erroring, so callers can fall back to another anchor.
+-}
+insertAfterMatchingMaybe
+  :: (MonadTrans t, HasQueue Message m) => [Message] -> (Message -> Bool) -> t m Bool
+insertAfterMatchingMaybe msgs p = lift $ withQueue \queue ->
   let (before, rest) = break p queue
    in case rest of
-        (x : xs) -> before <> (x : msgs <> xs)
-        _ -> go [] queue
+        (x : xs) -> (before <> (x : msgs <> xs), True)
+        _ -> maybe (queue, False) (,True) (go [] queue)
  where
-  go _acc [] = error $ "no matching message:\n" <> prettyCallStack callStack
+  go _acc [] = Nothing
   go acc (x : xs) = case x of
     MoveWithSkillTest inner ->
       case inner of
         Run innerMsgs
           | not (null afterInner)
           , (y : ys) <- afterInner ->
-              reverse acc <> (MoveWithSkillTest (Run (beforeInner <> (y : msgs <> ys))) : xs)
+              Just $ reverse acc <> (MoveWithSkillTest (Run (beforeInner <> (y : msgs <> ys))) : xs)
          where
           (beforeInner, afterInner) = break p innerMsgs
         _ -> go (x : acc) xs
     Run innerMsgs
       | not (null afterInner)
       , (y : ys) <- afterInner ->
-          reverse acc <> (Run (beforeInner <> (y : msgs <> ys)) : xs)
+          Just $ reverse acc <> (Run (beforeInner <> (y : msgs <> ys)) : xs)
      where
       (beforeInner, afterInner) = break p innerMsgs
     _ -> go (x : acc) xs
@@ -2378,11 +2387,18 @@ afterSkillTest
      , HasQueue Message (t m)
      , HasGame (t m)
      , ToId investigator InvestigatorId
-     , HasCallStack
      )
   => investigator -> Text -> QueueT Message (t m) a -> t m ()
 afterSkillTest investigator lbl body = do
   msgs <- capture body
+  let
+    option = [AfterSkillTestOption (asId investigator) lbl msgs]
+    -- the anchor may not exist, for instance a skill test begun with `attrs.ability n`
+    -- as its source never queues a `ResolvedAbility`, so fall back to the end of the
+    -- skill test itself
+    insertAfterOr p = do
+      inserted <- insertAfterMatchingMaybe option p
+      unless inserted $ lift $ insertAfterMatchingOrNow option (== EndSkillTestWindow)
   Msg.getSkillTestSource >>= \case
     Just (AbilitySource s n) -> do
       let
@@ -2391,7 +2407,7 @@ afterSkillTest investigator lbl body = do
           MoveWithSkillTest msg -> isEndOfAbility msg
           ResolvedAbility ab -> ab.source == s && ab.index == n
           _ -> False
-      insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] isEndOfAbility
+      insertAfterOr isEndOfAbility
     Just (EventSource e) -> do
       let
         isEndOfEvent = \case
@@ -2400,8 +2416,8 @@ afterSkillTest investigator lbl body = do
           Run msgs' -> any isEndOfEvent msgs'
           FinishedEvent e' -> e == e'
           _ -> False
-      insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] isEndOfEvent
-    _ -> insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== EndSkillTestWindow)
+      insertAfterOr isEndOfEvent
+    _ -> insertAfterOr (== EndSkillTestWindow)
 
 afterSkillTestQuiet
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m), HasCallStack)

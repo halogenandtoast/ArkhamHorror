@@ -1,8 +1,10 @@
 module Arkham.Skill.Cards.Unrelenting1Spec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Calculation
 import Arkham.ChaosBag.Base
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest qualified as ST
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Skill.Cards qualified as Skills
 import Arkham.Target
@@ -101,3 +103,34 @@ spec = describe "Unrelenting (1)" $ do
 
     tokens <- scenarioFieldMap ScenarioChaosBag (map chaosTokenFace . chaosBagChaosTokens)
     liftIO $ tokens `shouldMatchList` [Zero, PlusOne, MinusOne]
+
+  -- stories/acts/agendas can begin a skill test with `attrs.ability n` as the source without
+  -- that ability ever being activated, so no ResolvedAbility is ever queued to anchor to
+  it "returns sealed tokens when the ability sourcing the test was never activated" . gameTest $ \self -> do
+    cards <- testPlayerCards 5
+    withProp @"deck" (Deck cards) self
+    withProp @"combat" 5 self
+    location <- testLocation
+    unrelenting <- genCard Skills.unrelenting1
+    self `addToHand` unrelenting
+    setChaosTokens [Zero, PlusOne, ElderSign, MinusOne]
+
+    sid <- getRandom
+    run $ ST.beginSkillTest sid self.id (toAbilitySource location 1) self #combat (Fixed 1)
+    commit unrelenting
+    startSkillTest
+
+    chooseOptionMatching "seal zero" \case
+      TargetLabel (ChaosTokenFaceTarget Zero) _ -> True
+      _ -> False
+    chooseOptionMatching "seal plus one" \case
+      TargetLabel (ChaosTokenFaceTarget PlusOne) _ -> True
+      _ -> False
+    chooseOptionMatching "seal elder sign" \case
+      TargetLabel (ChaosTokenFaceTarget ElderSign) _ -> True
+      _ -> False
+
+    applyResults
+
+    tokens <- scenarioFieldMap ScenarioChaosBag (map chaosTokenFace . chaosBagChaosTokens)
+    liftIO $ tokens `shouldMatchList` [Zero, PlusOne, ElderSign, MinusOne]

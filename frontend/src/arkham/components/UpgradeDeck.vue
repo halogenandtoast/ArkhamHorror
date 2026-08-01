@@ -331,13 +331,16 @@ function loadDeckFromFile(e: Event) {
 
 /* The cards this decklist would ADD to the campaign deck -- the same notion of an upgrade the
  * engine uses (UpgradeDeck's deckDiff). Empty means the pull changed nothing. */
+function campaignDeck() {
+  const iid = originalInvestigatorId.value
+  return (iid ? props.game.campaign?.decks[iid] : undefined) ?? []
+}
+
 function addedCardCodes(list: ArkhamDbDecklist | null): string[] {
   if (!list?.slots) return []
-  const iid = originalInvestigatorId.value
-  const campaignDeck = (iid ? props.game.campaign?.decks[iid] : undefined) ?? []
 
   const owned = new Map<string, number>()
-  for (const card of campaignDeck) {
+  for (const card of campaignDeck()) {
     const code = normalizeCardCode(card.cardCode)
     owned.set(code, (owned.get(code) ?? 0) + 1)
   }
@@ -350,17 +353,63 @@ function addedCardCodes(list: ArkhamDbDecklist | null): string[] {
   })
 }
 
+function customizationCheckmarks(value: string): Map<number, number> {
+  const result = new Map<number, number>()
+  for (const entry of value.split(',')) {
+    const [rawIndex, rawCount] = entry.split('|')
+    const index = Number(rawIndex)
+    const count = Number(rawCount)
+    if (Number.isInteger(index) && Number.isInteger(count) && count > 0) result.set(index, count)
+  }
+  return result
+}
+
+function hasCustomizationXpChanges(list: ArkhamDbDecklist): boolean {
+  let meta: Record<string, unknown>
+  try {
+    meta = typeof list.meta === 'string' ? JSON.parse(list.meta) : (list.meta ?? {})
+  } catch {
+    return false
+  }
+
+  const current = new Map<string, Map<number, number>>()
+  for (const card of campaignDeck()) {
+    if (!card.customizations) continue
+    current.set(normalizeCardCode(card.cardCode), new Map(
+      card.customizations
+        .filter(([, [count]]) => count > 0)
+        .map(([index, [count]]) => [index, count]),
+    ))
+  }
+
+  const incoming = new Map<string, Map<number, number>>()
+  for (const [key, value] of Object.entries(meta)) {
+    if (!key.startsWith('cus_') || typeof value !== 'string') continue
+    incoming.set(normalizeCardCode(key.slice(4)), customizationCheckmarks(value))
+  }
+
+  const codes = new Set([...current.keys(), ...incoming.keys()])
+  return [...codes].some((code) => {
+    const before = current.get(code) ?? new Map<number, number>()
+    const after = incoming.get(code) ?? new Map<number, number>()
+    const indexes = new Set([...before.keys(), ...after.keys()])
+    return [...indexes].some((index) => before.get(index) !== after.get(index))
+  })
+}
+
 /* arkham.build (and ArkhamDB) create the upgraded version the moment you click Upgrade,
  * BEFORE any XP is spent, so pulling too early applies a deck with no changes and closes the
  * upgrade window for good -- the whole of #5257. Confirm instead of silently consuming it.
- * Only when XP is actually unspent, so a genuine no-change upgrade stays quiet. */
+ * Only when XP is actually unspent and neither cards nor customization XP changed. */
 const pendingNoChangeUpgrade = ref(false)
 
 const unspentXp = computed(() => xp.value ?? 0)
 
 function wouldChangeNothing(): boolean {
   if (!deckList.value) return false
-  return unspentXp.value > 0 && addedCardCodes(deckList.value).length === 0
+  return unspentXp.value > 0
+    && addedCardCodes(deckList.value).length === 0
+    && !hasCustomizationXpChanges(deckList.value)
 }
 
 async function upgrade(force = false) {

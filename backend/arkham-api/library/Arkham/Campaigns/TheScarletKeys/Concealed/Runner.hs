@@ -7,6 +7,7 @@ import Arkham.Calculation
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
@@ -28,12 +29,43 @@ import Arkham.Prelude
 import Arkham.SkillTest.Base
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 
 isEnemyTarget :: ConcealedCard -> Target -> Bool
 isEnemyTarget c target =
   isTarget (EnemyId $ coerce $ unConcealedCardId c.id) target || isActionTarget c target
  where
   isActionTarget a = isTarget a . toProxyTarget
+
+{- | The location a concealed card counts as being at: its own, or the investigator's when it sits
+in the shadows in a grid position.
+-}
+concealedLocationFor
+  :: (HasGame m, Tracing m) => InvestigatorId -> ConcealedCard -> m (Maybe LocationId)
+concealedLocationFor iid c = case c.placement of
+  InPosition _ -> getLocationOf iid
+  AtLocation location -> pure $ Just location
+  _ -> pure Nothing
+
+{- | Difficulty to fight/evade a concealed card: the location's shroud, plus any @EnemyFight@ /
+@EnemyEvade@ modifiers on the card (e.g. Rambling Route, Cliffs of Insanity).
+-}
+concealedTestDifficulty
+  :: HasGame m => (ModifierType -> Maybe Int) -> ConcealedCard -> LocationId -> m GameCalculation
+concealedTestDifficulty toBonus c location = do
+  n <- sum . mapMaybe toBonus <$> getModifiers (toTarget c)
+  let shroud = LocationMaybeFieldCalculation location LocationShroud
+  pure $ if n > 0 then SumCalculation [Fixed n, shroud] else shroud
+
+concealedFightBonus :: ModifierType -> Maybe Int
+concealedFightBonus = \case
+  EnemyFight n -> Just n
+  _ -> Nothing
+
+concealedEvadeBonus :: ModifierType -> Maybe Int
+concealedEvadeBonus = \case
+  EnemyEvade n -> Just n
+  _ -> Nothing
 
 instance RunMessage ConcealedCard where
   runMessage msg c = runQueueT $ case msg of
@@ -47,19 +79,10 @@ instance RunMessage ConcealedCard where
     Do (PlaceConcealedCard _iid cardId placement) | c.id == cardId -> do
       pure $ c {concealedCardPlacement = placement}
     UseThisAbility iid (isSource c -> True) AbilityAttack -> do
-      mlocation <- case c.placement of
-        InPosition _ -> getLocationOf iid
-        AtLocation location -> pure $ Just location
-        _ -> pure Nothing
+      mlocation <- concealedLocationFor iid c
       for_ mlocation \location -> do
         sid <- getRandom
-        mods <- getModifiers (toTarget c)
-        let
-          x = sum [n | EnemyFight n <- mods]
-          difficulty =
-            if x > 0
-              then SumCalculation [Fixed x, LocationMaybeFieldCalculation location LocationShroud]
-              else LocationMaybeFieldCalculation location LocationShroud
+        difficulty <- concealedTestDifficulty concealedFightBonus c location
         beginSkillTestEdit sid iid (c.ability AbilityAttack) c #combat difficulty \st ->
           st {skillTestAction = Just #fight}
       pure c
@@ -68,19 +91,10 @@ instance RunMessage ConcealedCard where
         push $ Flip iid (c.ability AbilityAttack) (toTarget c)
       pure c
     UseThisAbility iid (isSource c -> True) AbilityEvade -> do
-      mlocation <- case c.placement of
-        InPosition _ -> getLocationOf iid
-        AtLocation location -> pure $ Just location
-        _ -> pure Nothing
+      mlocation <- concealedLocationFor iid c
       for_ mlocation \location -> do
         sid <- getRandom
-        mods <- getModifiers (toTarget c)
-        let
-          x = sum [n | EnemyEvade n <- mods]
-          difficulty =
-            if x > 0
-              then SumCalculation [Fixed x, LocationMaybeFieldCalculation location LocationShroud]
-              else LocationMaybeFieldCalculation location LocationShroud
+        difficulty <- concealedTestDifficulty concealedEvadeBonus c location
         beginSkillTestEdit sid iid (c.ability AbilityEvade) c #agility difficulty \st ->
           st {skillTestAction = Just #evade}
       pure c
@@ -147,13 +161,10 @@ instance RunMessage ConcealedCard where
       difficulty <-
         case choose.difficulty of
           DefaultChooseFightDifficulty -> do
-            mlocation <- case c.placement of
-              InPosition _ -> getLocationOf iid
-              AtLocation location -> pure $ Just location
-              _ -> pure Nothing
+            mlocation <- concealedLocationFor iid c
             case mlocation of
               Nothing -> error "invalid placement for concealed card"
-              Just location -> pure $ LocationMaybeFieldCalculation location LocationShroud
+              Just location -> concealedTestDifficulty concealedFightBonus c location
           CalculatedChooseFightDifficulty ccfd -> pure ccfd
 
       fight sid iid source target skillType difficulty
@@ -162,15 +173,12 @@ instance RunMessage ConcealedCard where
       push $ Flip iid source (toTarget c)
       pure c
     TryEvadeEnemy sid iid eid source mTarget skillType | eid == coerce (unConcealedCardId c.id) -> do
-      mlocation <- case c.placement of
-        InPosition _ -> getLocationOf iid
-        AtLocation location -> pure $ Just location
-        _ -> pure Nothing
+      mlocation <- concealedLocationFor iid c
       case mlocation of
         Nothing -> error "invalid placement for concealed card"
         Just location -> do
           let target = maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget
-          let difficulty = LocationMaybeFieldCalculation location LocationShroud
+          difficulty <- concealedTestDifficulty concealedEvadeBonus c location
           evade sid iid source target skillType difficulty
       pure c
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ _ | isEnemyTarget c target -> do

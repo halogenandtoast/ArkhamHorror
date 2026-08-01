@@ -22,14 +22,10 @@ instance HasAbilities RingLibraryArchiveOfTheStars where
   getAbilities (RingLibraryArchiveOfTheStars a) =
     extendRevealed
       a
-      [ -- One response to the whole discard, taken before any card leaves the
-        -- encounter deck. Reactions are already PlayerLimit PerWindow 1, so
-        -- moving off the per-card 'Discarded' window (which re-offered this
-        -- between every single card) is what holds it to a single +2 per batch.
-        reaction
+      [ reaction
           a
           1
-          NoRestriction
+          Here
           (HandDiscardCost 1 #any)
           (WouldDiscardTopOfEncounterDeck #when You AnySource)
       , restricted

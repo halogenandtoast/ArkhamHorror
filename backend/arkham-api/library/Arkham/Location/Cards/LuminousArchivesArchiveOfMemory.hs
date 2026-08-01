@@ -19,8 +19,19 @@ instance HasAbilities LuminousArchivesArchiveOfMemory where
   getAbilities (LuminousArchivesArchiveOfMemory a) =
     extendRevealed
       a
-      [ restricted a 1 (thisExists a LocationWithAnyClues) $ forced $ PhaseEnds #when #investigation
-      , restricted a 2 Here doubleActionAbility
+      [ restricted
+          a
+          1
+          ( thisExists a LocationWithAnyClues
+              <> exists (TreacheryAttachedToLocation (be a) <> TreacheryWithTrait Glyph)
+          )
+          $ forced
+          $ PhaseEnds #when #investigation
+      , restricted
+          a
+          2
+          (Here <> exists (InEncounterDiscard <> basic (CardWithTrait Glyph)))
+          doubleActionAbility
       ]
 
 instance RunMessage LuminousArchivesArchiveOfMemory where

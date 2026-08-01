@@ -201,6 +201,7 @@ data WindowMatcher
   | WouldDiscardFromHand Timing Who SourceMatcher
   | WouldDiscardFromDeck Timing Who SourceMatcher
   | WouldDiscardTopOfEncounterDeck Timing Who SourceMatcher
+  | DiscardedTopOfEncounterDeckBatch Timing Who SourceMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher
   | InvestigatorHealed Timing DamageType InvestigatorMatcher SourceMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher

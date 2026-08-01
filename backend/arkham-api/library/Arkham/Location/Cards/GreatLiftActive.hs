@@ -78,26 +78,23 @@ instance RunMessage GreatLiftActive where
         for_ dirs \dir ->
           labeled' (slideLabel dir) $ slideGreatLift attrs dir >> doStep (additionalStep dir) s
       pure l
-    DoStep n s@(Successful (Action.Investigate, _) iid _ _ _) | Just dir <- stepDirection n -> do
+    DoStep n (Successful (Action.Investigate, _) iid _ _ _) | Just dir <- stepDirection n -> do
       -- "You may spend 1 [per_investigator] clues to slide up or down one
-      -- additional time." Each extra slide continues in the direction already
-      -- taken, and is only offered while the lift has somewhere left to go that
-      -- way.
+      -- additional time." This is a single additional slide in the direction
+      -- already taken, offered only while the lift has somewhere left to go.
       dirs <- slideDirections attrs
       when (dir `elem` dirs) do
         chooseOneM iid $ scenarioI18n do
           labeled' (slideAdditionalLabel dir)
             $ withCost iid (GroupClueCost (PerPlayer 1) (be attrs))
             $ slideGreatLift attrs dir
-            >> doStep n s
           labeled' "greatLift.doNotSlide" nothing
       pure l
     _ -> GreatLiftActive <$> liftRunMessage msg attrs
 
 {- | @DoStep@ carries only an @Int@, so the direction of the first (free) slide
-is encoded in the step number to keep the additional slides pointed the same
-way. Re-entering through @doStep@ rather than recursing inside @chooseOneM@ also
-keeps each question flat instead of pre-building a nested choice tree.
+is encoded in the step number to keep the single additional slide pointed the
+same way.
 -}
 additionalStep :: GridDirection -> Int
 additionalStep = \case

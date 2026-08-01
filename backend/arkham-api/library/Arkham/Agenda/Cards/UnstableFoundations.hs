@@ -2,12 +2,20 @@ module Arkham.Agenda.Cards.UnstableFoundations (unstableFoundations) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
+import Arkham.Direction (GridDirection (GridDown, GridUp))
 import {-# SOURCE #-} Arkham.GameEnv (getPhase)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMapM)
+import Arkham.Helpers.Modifiers (
+  ModifierType (..),
+  modifiedWith_,
+  modifySelectMapM,
+  setActiveDuringSetup,
+ )
+import Arkham.Location.Grid (updatePosition)
 import Arkham.Location.Types (Field (LocationPosition))
 import Arkham.Matcher
 import Arkham.Phase
 import Arkham.Projection
+import Arkham.SortedPair
 import Arkham.Trait (Trait (Lift))
 
 newtype UnstableFoundations = UnstableFoundations AgendaAttrs
@@ -20,18 +28,28 @@ unstableFoundations = agenda (2, A) UnstableFoundations Cards.unstableFoundation
 instance HasModifiersFor UnstableFoundations where
   getModifiersFor (UnstableFoundations a) = do
     -- During the enemy phase, each location is considered connected to the
-    -- location above and below it (the rows directly above/below its grid row).
+    -- location directly above and below it. These temporary connections are
+    -- only for resolving the agenda's effect, so do not draw them in the UI.
     phase <- getPhase
     when (phase == EnemyPhase) do
       modifySelectMapM a Anywhere \loc -> do
         mpos <- field LocationPosition loc
-        pure case mpos of
-          Nothing -> []
-          Just pos ->
-            [ ConnectedToWhen
-                (LocationWithId loc)
-                (mapOneOf LocationInRow [pos.row - 1, pos.row + 1])
-            ]
+        case mpos of
+          Nothing -> pure []
+          Just pos -> do
+            let neighborPositions = map (updatePosition pos) [GridUp, GridDown]
+            neighbors <- select $ mapOneOf LocationInPosition neighborPositions
+            for_ neighbors \neighbor ->
+              modifiedWith_
+                a
+                loc
+                setActiveDuringSetup
+                [DoNotDrawConnection $ sortedPair loc neighbor]
+            pure
+              [ ConnectedToWhen
+                  (LocationWithId loc)
+                  (mapOneOf LocationInPosition neighborPositions)
+              ]
 
 instance RunMessage UnstableFoundations where
   runMessage msg a@(UnstableFoundations attrs) = runQueueT $ case msg of

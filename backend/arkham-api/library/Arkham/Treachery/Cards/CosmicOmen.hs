@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.CosmicOmen (cosmicOmen) where
 
+import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.I18n
 import Arkham.Matcher
@@ -20,10 +21,8 @@ instance RunMessage CosmicOmen where
   runMessage msg t@(CosmicOmen attrs) = runQueueT $ scenarioI18n $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      -- TODO: if the investigators have translated 10+ glyphs this test gets +2
-      -- difficulty. The translated-glyph count is not currently readable, so the
-      -- base difficulty (Fixed 3) is used without the conditional +2.
-      revelationSkillTest sid iid attrs #willpower (Fixed 3)
+      n <- getTranslatedGlyphCount
+      revelationSkillTest sid iid attrs #willpower (Fixed $ if n >= 10 then 5 else 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       glyphs <- select $ TreacheryWithTrait Glyph <> InPlayTreachery

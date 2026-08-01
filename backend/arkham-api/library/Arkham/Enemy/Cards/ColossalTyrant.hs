@@ -25,7 +25,15 @@ instance HasModifiersFor ColossalTyrant where
 instance HasAbilities ColossalTyrant where
   getAbilities (ColossalTyrant a) =
     extend1 a
-      $ restricted a 1 (notExists $ investigatorAt (locationWithEnemy a))
+      $ restricted
+        a
+        1
+        ( notExists (investigatorAt (locationWithEnemy a))
+            <> oneOf
+              [ exists $ AssetWithSanity <> at_ (connectedFrom (locationWithEnemy a))
+              , exists $ InvestigatorAt (connectedFrom (locationWithEnemy a))
+              ]
+        )
       $ forced
       $ PhaseEnds #when #enemy
 

@@ -893,6 +893,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
+    Matcher.DiscardedTopOfEncounterDeckBatch timing whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.DiscardedTopOfEncounterDeckBatch who source' _ ->
+          andM
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> noMatch
     Matcher.Discarded timing mWhoMatcher sourceMatcher cardMatcher ->
       guardTiming timing $ \case
         Window.Discarded mWho source' card ->
@@ -1863,10 +1871,19 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       _ -> noMatch
     Matcher.FastPlayerWindow -> guardTiming #when (pure . (== Window.FastPlayerWindow))
     Matcher.DealtDamageOrHorror timing sourceMatcher whoMatcher -> guardTiming timing $ \case
-      -- NB. an ally (asset) you control taking damage/horror is not "you" being dealt
-      -- damage/horror; use AssetDealtDamageOrHorror for that. See issue #4910.
-      Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _ ->
-        andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      -- The combined would-take window is only emitted at #when timing. At #after,
+      -- match the aggregate take windows so damage/horror assigned to assets still
+      -- counts as having been dealt to the investigator (FAQ 2.12). Both windows are
+      -- checked in one batch, so dealing both damage and horror triggers only once.
+      Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _
+        | timing == #when ->
+            andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      Window.TakeDamage source' _ (InvestigatorTarget iid') _
+        | timing == #after ->
+            andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      Window.TakeHorror source' (InvestigatorTarget iid') _
+        | timing == #after ->
+            andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
       _ -> noMatch
     -- FAQ (2.12): "you" being dealt damage/horror also covers assets you control, so
     -- an attack soaked entirely by an ally still counts. TakeDamage/TakeHorror carry

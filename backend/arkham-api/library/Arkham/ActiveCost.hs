@@ -352,6 +352,9 @@ payCost msg c iid skipAdditionalCosts cost = do
     CostIfEnemy mtchr cost1 cost2 -> do
       hasEnemy <- selectAny mtchr
       payCost msg c iid skipAdditionalCosts $ if hasEnemy then cost1 else cost2
+    CostIfLocation mtchr cost1 cost2 -> do
+      hasLocation <- selectAny mtchr
+      payCost msg c iid skipAdditionalCosts $ if hasLocation then cost1 else cost2
     CostIfRemembered skey cost1 cost2 -> do
       ok <- remembered skey
       payCost msg c iid skipAdditionalCosts $ if ok then cost1 else cost2

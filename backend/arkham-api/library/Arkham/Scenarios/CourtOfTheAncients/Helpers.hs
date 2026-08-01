@@ -4,19 +4,23 @@ import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Card (cardMatch)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor (HasModifiersM)
-import Arkham.Direction (GridDirection (GridLeft, GridRight))
+import Arkham.Classes.HasQueue
+import Arkham.Classes.Query
+import Arkham.Direction
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Helpers.Scenario (getVictoryDisplay)
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Grid (updatePosition)
+import Arkham.Location.Grid
 import Arkham.Location.Types (Field (LocationPosition), LocationAttrs, locationPosition)
 import Arkham.Matcher
+import Arkham.Message (Message (PlaceGrid))
+import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Tracing
-import Arkham.Trait (Trait (Glyph))
+import Arkham.Trait (Trait (Glyph, Lift))
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "courtOfTheAncients" a
@@ -59,3 +63,15 @@ greatLiftConnections a = for_ (locationPosition a) \pos -> do
   modifySelf a [ConnectedToWhen (be a) (mapOneOf LocationInPosition neighbors)]
   for_ neighbors \neighbor ->
     modifySelect a (LocationInPosition neighbor) [ConnectedToWhen (LocationInPosition neighbor) (be a)]
+
+{- | Slide the Great Lift down once: move the Great Lift location down one level
+(toward level 1 = lower grid row), carrying all its cards/tokens/investigators
+(they stay attached to the same LocationId, so @PlaceGrid@ preserves them).
+The lift cannot slide below level 1 (row 0).
+-}
+slideGreatLiftDown :: ReverseQueue m => m ()
+slideGreatLiftDown = do
+  selectOne (LocationWithTrait Lift) >>= traverse_ \greatLift -> do
+    field LocationPosition greatLift >>= traverse_ \pos ->
+      when (positionRow pos > 0) do
+        push $ PlaceGrid (GridLocation (updatePosition pos GridDown) greatLift)

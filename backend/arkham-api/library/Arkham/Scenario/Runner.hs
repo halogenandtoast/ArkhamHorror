@@ -1713,6 +1713,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     when (null scenarioEncounterDeck && not scenarioInShuffle) do
       checkWhen Window.EncounterDeckRunsOutOfCards
       push ShuffleEncounterDiscardBackIn
+    unless (null cards) $ checkAfter $ Window.DiscardedTopOfEncounterDeckBatch iid source cards
     for_ mtarget $ push . DiscardedTopOfEncounterDeck iid cards source
     pure $ a & inShuffleL .~ null scenarioEncounterDeck
   DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget discardedCards -> do

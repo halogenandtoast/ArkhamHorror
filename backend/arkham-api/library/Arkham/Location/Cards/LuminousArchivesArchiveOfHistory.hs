@@ -4,14 +4,11 @@ import Arkham.Ability
 import Arkham.Card (toCard)
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Investigator.Types (Field (InvestigatorRemainingActions))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Projection
-import Arkham.Scenarios.CourtOfTheAncients.Helpers
 import Arkham.Trait (Trait (Glyph, Passageway))
 
 newtype LuminousArchivesArchiveOfHistory = LuminousArchivesArchiveOfHistory LocationAttrs
@@ -38,7 +35,8 @@ instance HasAbilities LuminousArchivesArchiveOfHistory where
         -- to X Glyph cards and draw them one at a time. The 1-action minimum is the
         -- base FastAbility cost; additional actions (up to those remaining) are
         -- chosen on use.
-        restricted a 1 Here $ FastAbility (ActionCost 1)
+        restricted a 1 (Here <> exists (InEncounterDiscard <> basic (CardWithTrait Glyph)))
+          $ FastAbility (AtLeastOne (Fixed 1000) AdditionalActionCost)
       , -- [action] Move: move to a revealed Passageway location.
         restricted a 2 (Here <> exists revealedPassageway)
           $ ActionAbility #move Nothing (ActionCost 1)
@@ -48,17 +46,8 @@ instance HasAbilities LuminousArchivesArchiveOfHistory where
 
 instance RunMessage LuminousArchivesArchiveOfHistory where
   runMessage msg l@(LuminousArchivesArchiveOfHistory attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      -- One action has already been spent as the ability cost (the minimum). Let the
-      -- investigator spend additional actions (up to those remaining) to raise X.
-      remaining <- field InvestigatorRemainingActions iid
-      scenarioI18n $ chooseAmount' iid "additionalActions" "$actions" 0 remaining attrs
-      pure l
-    ResolveAmounts iid (getChoiceAmount "$actions" -> extra) (isTarget attrs -> True) -> do
-      when (extra > 0) $ loseActions iid (attrs.ability 1) extra
-      let x = 1 + extra
-      -- Search the encounter discard pile for up to X Glyph cards and draw them.
-      replicateM_ x $ findEncounterCardIn iid attrs (CardWithTrait Glyph) [FromEncounterDiscard]
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalActionPayment -> n) -> do
+      replicateM_ n $ findEncounterCardIn iid attrs (CardWithTrait Glyph) [FromEncounterDiscard]
       pure l
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) -> do
       -- Must name the source deck: every Glyph treachery branches on

@@ -18,10 +18,7 @@ courtKeeperWeaverOfNightmares = enemy CourtKeeperWeaverOfNightmares Cards.courtK
 
 instance HasModifiersFor CourtKeeperWeaverOfNightmares where
   getModifiersFor (CourtKeeperWeaverOfNightmares a) = do
-    -- TODO: "If the investigators have translated 10 or more glyphs" — the campaign
-    -- translateGlyph handler isn't implemented yet, so there is no readable
-    -- translated-glyph count. Gate on it once that count exists.
-    let translatedGlyphs = 0 :: Int
+    translatedGlyphs <- getTranslatedGlyphCount
     modifySelfWhen
       a
       (translatedGlyphs >= 10)

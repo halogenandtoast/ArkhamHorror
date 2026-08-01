@@ -165,6 +165,9 @@ type Glyph = Text
 getKnownGlyphs :: (HasGame m, Tracing m) => m Text
 getKnownGlyphs = getSomeRecordSet DiscoveredGlyphs <&> \xs -> mconcat [x | String x <- xs]
 
+getTranslatedGlyphCount :: (HasGame m, Tracing m) => m Int
+getTranslatedGlyphCount = length <$> getSomeRecordSet @Value DiscoveredGlyphs
+
 {- | Glyphs are recorded uppercase (@glyphLetter@ upper-cases before inserting into
 the @DiscoveredGlyphs@ set), so normalize both sides: a card asking for @"qxgks"@
 must match a record set holding @"QXGKS"@.

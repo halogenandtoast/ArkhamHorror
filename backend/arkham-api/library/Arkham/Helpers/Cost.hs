@@ -107,6 +107,7 @@ hasSkillTestCost = \case
   CostWhenTreacheryElse _ a b -> hasSkillTestCost a || hasSkillTestCost b
   CostOnlyWhen _ x -> hasSkillTestCost x
   CostIfEnemy _ a b -> hasSkillTestCost a || hasSkillTestCost b
+  CostIfLocation _ a b -> hasSkillTestCost a || hasSkillTestCost b
   CostIfCustomization _ a b -> hasSkillTestCost a || hasSkillTestCost b
   CostIfRemembered _ a b -> hasSkillTestCost a || hasSkillTestCost b
   UpTo _ x -> hasSkillTestCost x
@@ -324,6 +325,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       CostIfEnemy mtchr c1 c2 -> do
         hasEnemy <- selectAny mtchr
         getCanAffordCost_ iid source actions windows' canModify $ if hasEnemy then c1 else c2
+      CostIfLocation mtchr c1 c2 -> do
+        hasLocation <- selectAny mtchr
+        getCanAffordCost_ iid source actions windows' canModify $ if hasLocation then c1 else c2
       CostIfCustomization customization c1 c2 -> do
         case source of
           (CardIdSource cid) -> do

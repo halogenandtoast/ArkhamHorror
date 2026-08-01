@@ -1,6 +1,7 @@
 module Arkham.Scenario.Scenarios.CourtOfTheAncients (courtOfTheAncients) where
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted (setNextCampaignStep)
@@ -16,7 +17,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.Xp
+import Arkham.Helpers.SkillTest (getSkillTestAction)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
@@ -26,6 +27,7 @@ import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CourtOfTheAncients.Helpers
+import Arkham.Trait (Trait (Stowaway))
 
 newtype CourtOfTheAncients = CourtOfTheAncients ScenarioAttrs
   deriving stock Generic
@@ -40,8 +42,13 @@ instance HasChaosTokenValue CourtOfTheAncients where
     Skull -> do
       glyphs <- getVictoryGlyphCount
       pure $ ChaosTokenValue Skull (NegativeModifier $ byDifficulty attrs glyphs (glyphs + 1))
-    -- TODO: cultist -2/-3 becomes -4/-5 with a Stowaway enemy at your location.
-    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
+    Cultist -> do
+      stowawayAtYourLocation <-
+        selectAny $ EnemyWithTrait Stowaway <> enemyAtLocationWith iid
+      pure
+        $ if stowawayAtYourLocation
+          then toChaosTokenValue attrs Cultist 4 5
+          else toChaosTokenValue attrs Cultist 2 3
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
@@ -233,17 +240,37 @@ instance RunMessage CourtOfTheAncients where
         card <- EncounterCard <$> genEncounterCard def
         createAssetAt_ card (InPlayArea iid)
       pure s
+    ResolveChaosToken _ Tablet iid -> do
+      whenAny (locationWithInvestigator iid <> FloodedLocation) $ drawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      action <- getSkillTestAction
+      when (action `elem` [Just Action.Fight, Just Action.Evade]) do
+        if isEasyStandard attrs
+          then chooseOneM iid do
+            damageLabeled iid $ assignDamage iid ElderThing 1
+            horrorLabeled iid $ assignHorror iid ElderThing 1
+          else assignDamageAndHorror iid ElderThing 1 1
+      pure s
     ScenarioResolution res -> scope "resolutions" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      -- Shard of Y'ch'lecht is earned if an investigator still controls it at the end.
-      whenM (selectAny $ assetIs Assets.shardOfYchlecht) $ record ShardOfYchlecht
+      -- Shared by every resolution: cross Court of the Ancients off the R'lyeh map,
+      -- and earn the Shard if an investigator still controlled it when the scenario ended.
+      crossOutRecordSetEntries RlyehMap [toJSON RlyehCourtOfTheAncients]
+      whenM
+        (selectAny $ assetIs Assets.shardOfYchlecht <> AssetControlledBy Anyone)
+        (record ShardOfYchlecht)
       case res of
-        Resolution 1 -> resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
-        Resolution 2 -> resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
-        NoResolution -> resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 0
+        Resolution 1 -> do
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+          setNextCampaignStep ObsidianCanyons
+        Resolution 2 -> do
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          setNextCampaignStep TheGrandVault
+        NoResolution -> do
+          resolutionWithXp "noResolution" $ allGainXp' attrs
+          if headedWest then setNextCampaignStep ObsidianCanyons else setNextCampaignStep TheGrandVault
         _ -> error $ "Unknown resolution: " <> show res
-      -- TODO: cross out "Court of the Ancients" on the R'lyeh map (R'lyeh-map recordable).
-      if headedWest then setNextCampaignStep ObsidianCanyons else setNextCampaignStep TheGrandVault
       endOfScenario
       pure s
     _ -> CourtOfTheAncients <$> liftRunMessage msg attrs

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
+import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Location.Cards qualified as Locations
@@ -36,9 +37,9 @@ instance RunMessage StepsOfGiants where
     DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
       let glyphs = filterCards (CardWithTrait Glyph) cards
       let omens = filterCards (CardWithTrait Omen) cards
-      focusCards (glyphs <> omens) do
-        for_ (take 1 glyphs) (drawCard iid)
-        for_ omens (drawCard iid)
+      unless (null glyphs) $ focusCards glyphs do
+        chooseTargetM iid glyphs $ drawCardFrom iid Deck.EncounterDiscard
+        for_ omens $ drawCardFrom iid Deck.EncounterDiscard
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

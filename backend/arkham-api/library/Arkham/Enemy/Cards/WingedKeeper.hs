@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted.Move (moveTowardsMatching)
+import Arkham.Message.Lifted.Move
 
 newtype WingedKeeper = WingedKeeper EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -27,9 +27,9 @@ instance RunMessage WingedKeeper where
   runMessage msg e@(WingedKeeper attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       preyIds <- select (enemyPrey attrs)
-      moveTowardsMatching
-        (attrs.ability 1)
-        attrs
-        (LocationWithInvestigator $ oneOf $ map InvestigatorWithId preyIds)
+      enemyMoveToMatch (attrs.ability 1) attrs
+        $ LocationWithInvestigator
+        $ oneOf
+        $ map InvestigatorWithId preyIds
       pure e
     _ -> WingedKeeper <$> liftRunMessage msg attrs

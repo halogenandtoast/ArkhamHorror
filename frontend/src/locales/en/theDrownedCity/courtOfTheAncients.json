@@ -97,15 +97,15 @@
     "xp": { "bonus": "for plumbing the court of the ancients" },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p>_Resolution 1_: Steeling yourself for another climb, you put one foot in front of the other as the crumbling tower threatens to collapse under you. Eventually you pull yourself up to rejoin the expedition. You all look down at the dazzling skyline of R'lyeh, its spires suspended in the air above collapsed towers.</p>"
+      "body": "<p>_Resolution 1_: Steeling yourself for another climb, you put one hand above the other, moving from handhold to handhold as the tower threatens to collapse under you. Eventually you pull yourself to the lip of the shattered dome and out to safety. Andy clambers out of the ancient court, followed by the rest of the expedition. You all look down at the dazzling skyline of R’lyeh, which seems to shift and sway strangely in the strong sea winds.</p><ul><li>Update your Campaign Log.<ul><li>Cross out “Court of the Ancients” on the R’lyeh map.</li><li>If the Shard of Y’ch’lecht was under the control of an investigator when the scenario ended, check the box next to “Shard of Y’ch’lecht” under “Artifacts Earned.”</li></ul></li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Proceed to _Obsidian Canyons_.</li></ul>"
     },
     "resolution2": {
       "title": "Resolution 2",
-      "body": "<p>_Resolution 2_: After prodding and twisting at every ridge of the crumbling tower, you leave its ancient secrets behind. Making little progress from where you made landfall, you find a climbable path up to the summit. Using your rope and a little climbing gear, you haul yourself onward.</p>"
+      "body": "<p>_Resolution 2_: After prodding and twisting at every ridge of the dais, it finally slides open. Below, a spiral stairway descending into deep darkness below. Another chunk of rock shatters on the floor of the ancient building. “We have to get out of here!” Ruby shouts. Wasting no time, you descend the stairs, leaving the crumbling tower and its ancient secrets behind.</p><ul><li>Update your Campaign Log.<ul><li>Cross out “Court of the Ancients” on the R’lyeh map.</li><li>If the Shard of Y’ch’lecht was under the control of an investigator when the scenario ended, check the box next to “Shard of Y’ch’lecht” under “Artifacts Earned.”</li></ul></li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Proceed to _The Grand Vault_.</li></ul>"
     },
     "noResolution": {
       "title": "No Resolution",
-      "body": "<p>_If no resolution was reached_: The rest of the expedition tell you they found you standing at the edge of the towering climb as if sleepwalking. You rub your eyes. You have no memory of the alien court.</p>"
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: The rest of the expedition tell you they found you standing at the edge of the towering climb as if sleepwalking. You rub your eyes. You have no memory of the alien court. And, given that it has almost entirely collapsed, you never will.</p><ul><li>Update your Campaign Log.<ul><li>Cross out “Court of the Ancients” on the R’lyeh map.</li><li>If the Shard of Y’ch’lecht was under the control of an investigator when the scenario ended, check the box next to “Shard of Y’ch’lecht” under “Artifacts Earned.”</li></ul></li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Check your Campaign Log.<ul><li>If the expedition headed west, proceed to _Obsidian Canyons_.</li><li>If the expedition headed east, proceed to _The Grand Vault_.</li></ul></li></ul>"
     }
   }
 }

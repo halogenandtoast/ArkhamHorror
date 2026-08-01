@@ -9,7 +9,7 @@ import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
 import Arkham.Asset.Uses
 import Arkham.Attack.Types
-import Arkham.Card (Card, CardId)
+import Arkham.Card (Card, CardId, EncounterCard)
 import Arkham.ChaosToken.Types (ChaosToken, ChaosTokenFace)
 import Arkham.Damage
 import Arkham.DamageEffect (DamageEffect)
@@ -213,6 +213,8 @@ data WindowType
     window, so the whole discard stays a single batch.
     -}
     WouldDiscardTopOfEncounterDeck InvestigatorId Source Int
+  | -- | Fired once after a batch of cards has been discarded from the top of the encounter deck.
+    DiscardedTopOfEncounterDeckBatch InvestigatorId Source [EncounterCard]
   | DiscoverClues InvestigatorId LocationId Source Int
   | WouldDiscoverClues InvestigatorId LocationId DiscoverId Source Int
   | SpentClues InvestigatorId Int

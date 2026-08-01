@@ -2,6 +2,7 @@ module Arkham.Event.Events.ToeToToe (toeToToe, toeToToeEffect) where
 
 import Arkham.Card
 import Arkham.Cost
+import Arkham.Criteria qualified as Criteria
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -63,6 +64,16 @@ instance RunMessage ToeToToeEffect where
             disable attrs
             costModifier attrs (ActiveCostTarget acId) (AdditionalCost $ EnemyAttackCost enemy)
             cardResolutionModifier card attrs attrs.target (MetaModifier $ object ["chosenEnemy" .= enemy])
+            -- The additional cost is an attack by the chosen enemy, which can move
+            -- the enemy away (Elusive) and so invalidate this card's own criteria
+            -- before the post-payment playability re-check in Game.Runner's
+            -- PlayCard. The play is already initiated at this point, so it must
+            -- resolve as completely as possible (FAQ v2.5 Q112, Q086).
+            cardResolutionModifier
+              card
+              attrs
+              attrs.target
+              (CanPlayWithOverride $ Criteria.CriteriaOverride Criteria.NoRestriction)
           _ -> error "invalid before effect meta"
       pure e
     _ -> ToeToToeEffect <$> liftRunMessage msg attrs

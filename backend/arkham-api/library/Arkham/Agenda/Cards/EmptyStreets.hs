@@ -4,8 +4,10 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Spawn
+import Arkham.Trait (Trait (Ghoul, Risen))
 
 newtype EmptyStreets = EmptyStreets AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
@@ -16,7 +18,10 @@ emptyStreets = agenda (2, A) EmptyStreets Cards.emptyStreets (Static 7)
 
 instance HasModifiersFor EmptyStreets where
   getModifiersFor (EmptyStreets a) = do
-    modifySelect a AnyEnemy [OverwrittenSpawn SpawnAtRandomLocation]
+    modifySelect
+      a
+      (mapOneOf EnemyWithTrait [Risen, Ghoul])
+      [AddKeyword Keyword.Hunter, OverwrittenSpawn SpawnAtRandomLocation]
 
 instance RunMessage EmptyStreets where
   runMessage msg a@(EmptyStreets attrs) = runQueueT $ case msg of

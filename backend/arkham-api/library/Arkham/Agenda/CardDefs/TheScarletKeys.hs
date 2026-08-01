@@ -18,7 +18,7 @@ gnashingTeeth :: CardDef
 gnashingTeeth = agenda "09521" "Gnashing Teeth" 1 DeadHeat
 
 emptyStreets :: CardDef
-emptyStreets = agenda "09522" "Empty Steets" 2 DeadHeat
+emptyStreets = agenda "09522" "Empty Streets" 2 DeadHeat
 
 whereIsShe :: CardDef
 whereIsShe = agenda "09546" "Where is She...?" 1 SanguineShadows

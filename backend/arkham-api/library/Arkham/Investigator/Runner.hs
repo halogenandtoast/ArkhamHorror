@@ -235,6 +235,18 @@ onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit use
 getAllAbilitiesSkippable :: (Tracing m, HasGame m) => InvestigatorAttrs -> [Window] -> m Bool
 getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows) windows
 
+{- | The PlayCard/PlayEvent reaction window only carries the play itself. The
+windows the play was *initiated* in (e.g. the successful investigation a fast
+event reacted to) live further down the window stack. Criteria that read them
+-- notably @ReduceBySuccessAmount@ -- would otherwise see nothing and report
+the (already legal) play as unplayable, which suppresses the skip button and
+makes an optional reaction look mandatory.
+-}
+getInitiationWindows :: HasGame m => [Window] -> m [Window]
+getInitiationWindows ws = do
+  stack <- concat <$> getWindowStack
+  pure $ if null stack then ws else nub (ws <> stack)
+
 getWindowSkippable :: (Tracing m, HasGame m) => InvestigatorAttrs -> [Window] -> Window -> m Bool
 getWindowSkippable
   _attrs
@@ -273,6 +285,7 @@ getWindowSkippable
       (resourcesFromAssets +)
         . sum
         <$> traverse (field InvestigatorResources . fst) canHelpPay
+    initiationWindows <- getInitiationWindows ws
 
     runValidT do
       when needsFast $ guard isFast
@@ -285,7 +298,7 @@ getWindowSkippable
         liftGuardM $ getCanAffordCost iid pc [#play] ws (ActionCost 1)
       liftGuardM
         $ withAlteredGame withoutCanModifiers
-        $ getIsPlayableAfterInitiation iid iid Cost.PaidCost ws card
+        $ getIsPlayableAfterInitiation iid iid Cost.PaidCost initiationWindows card
 getWindowSkippable
   attrs
   ws
@@ -298,7 +311,9 @@ getWindowSkippable
     -- fight/evade events that are only playable because a reaction such as
     -- Miguel's Knapsack will make the investigator AsIfAt another location; in
     -- that case skipping the trigger would leave the event with no legal target.
-    withAlteredGame withoutCanModifiers $ getIsPlayableAfterInitiation iid iid Cost.PaidCost ws card
+    initiationWindows <- getInitiationWindows ws
+    withAlteredGame withoutCanModifiers
+      $ getIsPlayableAfterInitiation iid iid Cost.PaidCost initiationWindows card
 getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
   let
     excludeOne [] = []

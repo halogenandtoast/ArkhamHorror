@@ -44,10 +44,15 @@ instance HasModifiersFor RationalThought where
       a
       [CannotHealHorrorOnOtherCards (toTarget a), HealHorrorAsIfOnInvestigator (toTarget a) horror]
 
--- Discard when no horror is on this
+-- Discard when no horror is on this. The ability must be restricted to the
+-- investigator whose threat area this is in, otherwise every investigator sees
+-- the silent forced ability and whoever's window check runs first performs the
+-- discard. That would set treacheryDiscardedBy to the wrong investigator and
+-- break "Fool me once..." which needs TreacheryDiscardedBy You
 instance HasAbilities RationalThought where
   getAbilities (RationalThought (a `With` meta)) = case a.placement of
-    InThreatArea _ -> [mkAbility a 1 Anytime | treacheryHorror a == 0 && not (discarding meta)]
+    InThreatArea _ ->
+      [restricted a 1 InYourThreatArea Anytime | treacheryHorror a == 0 && not (discarding meta)]
     _ -> []
 
 instance RunMessage RationalThought where

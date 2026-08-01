@@ -329,7 +329,10 @@ handleCityOfRemnants attrs v getLocation setLocation = do
       push $ Msg.PlaceGrid (GridLocation pos lid)
       grid <- getGrid
       let positions = filter (`notElem` invalidPositions) (emptyPositionsInDirections grid pos [minBound ..])
-      currentConcealed <- select $ ConcealedCardWithPlacement $ InPosition pos
+      -- c is re-placed below alongside a fresh decoy for the new location's concealed keyword, so it
+      -- must not also be redistributed with the mini-cards displaced by the location we just placed
+      currentConcealed <-
+        filter ((/= c.id) . toId) <$> select (ConcealedCardWithPlacement $ InPosition pos)
       scenarioSpecific "distributeConcealedLocations" (iid, currentConcealed, positions, positions)
 
       newDecoy <- mkConcealedCard Decoy

@@ -457,6 +457,19 @@ function onDrop(event: DragEvent) {
         </div>
 
       </template>
+      <!-- Keys come first: they are pulled up over whatever precedes them (see
+           the negative margin below), so they must overlap the enemy card
+           itself rather than hiding an attached treachery/asset/event. -->
+      <ScarletKey
+        v-for="(skId, idx) in enemy.scarletKeys"
+        :scarletKey="game.scarletKeys[skId]"
+        :game="game"
+        :playerId="playerId"
+        :key="skId"
+        @choose="choose"
+        :attached="true"
+        :style="{ 'z-index': enemy.scarletKeys.length - idx }"
+      />
       <img v-for="card in referenceCards" :src="cardImage(card)" :key="card" class="attached card" />
       <Treachery
         v-for="treacheryId in enemy.treacheries"
@@ -494,16 +507,6 @@ function onDrop(event: DragEvent) {
         :playerId="playerId"
         :attached="true"
         @choose="$emit('choose', $event)"
-      />
-      <ScarletKey
-        v-for="(skId, idx) in enemy.scarletKeys"
-        :scarletKey="game.scarletKeys[skId]"
-        :game="game"
-        :playerId="playerId"
-        :key="skId"
-        @choose="choose"
-        :attached="true"
-        :style="{ 'z-index': enemy.scarletKeys.length - idx }"
       />
       <Story
         v-for="storyId in enemy.stories"

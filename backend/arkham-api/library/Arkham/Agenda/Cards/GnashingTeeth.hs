@@ -36,7 +36,7 @@ instance RunMessage GnashingTeeth where
       shuffleEncounterDiscardBackIn
       eachInvestigator \iid -> do
         chooseOneM iid $ scenarioI18n do
-          labeled' "gnashingTeeth.heal" $ selectEach EliteEnemy $ healDamageOn attrs 1
+          labeled' "gnashingTeeth.heal" $ selectEach EliteEnemy $ healDamageOn attrs 2
           labeled' "gnashingTeeth.slain" $ withLocationOf iid slayCivilian
       advanceAgendaDeck attrs
       pure a

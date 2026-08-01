@@ -33,7 +33,7 @@ instance RunMessage ScholarFromYith where
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      parley sid iid (attrs.ability 2) iid #intellect (Fixed 3)
+      parley sid iid (attrs.ability 2) attrs #intellect (Fixed 3)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       drawCards iid (attrs.ability 2) 1

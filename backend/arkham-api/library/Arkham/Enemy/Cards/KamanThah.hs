@@ -34,7 +34,7 @@ instance RunMessage KamanThah where
       chooseOneM iid do
         for_ [#willpower, #intellect] \kind ->
           skillLabeled kind
-            $ parley sid iid (attrs.ability 1) iid kind (Fixed $ 2 + n)
+            $ parley sid iid (attrs.ability 1) attrs kind (Fixed $ 2 + n)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       flipOverBy iid (attrs.ability 1) attrs

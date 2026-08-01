@@ -32,7 +32,7 @@ instance RunMessage BenignElderThing where
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      parley sid iid (attrs.ability 2) iid #willpower (Fixed 3)
+      parley sid iid (attrs.ability 2) attrs #willpower (Fixed 3)
       pure e
     PassedThisSkillTest _iid (isAbilitySource attrs 2 -> True) -> do
       removeFromGame attrs

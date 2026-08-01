@@ -24,6 +24,8 @@ instance RunMessage JeremiahPierce where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       addToVictory iid attrs
       sid <- getRandom
+      -- target stays the investigator: 'addToVictory' resolves first, so Jeremiah
+      -- is already out of play by the time the test runs
       parley sid iid attrs iid #willpower (Fixed 4)
       pure e
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do

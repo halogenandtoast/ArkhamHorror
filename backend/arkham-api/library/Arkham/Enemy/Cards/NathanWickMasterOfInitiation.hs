@@ -21,7 +21,7 @@ instance RunMessage NathanWickMasterOfInitiation where
   runMessage msg e@(NathanWickMasterOfInitiation attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      parley sid iid (attrs.ability 1) iid #willpower (Fixed 3)
+      parley sid iid (attrs.ability 1) attrs #willpower (Fixed 3)
       pure e
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
       placeTokens (attrs.ability 1) attrs #resource 1

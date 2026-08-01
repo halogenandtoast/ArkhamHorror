@@ -27,7 +27,7 @@ instance RunMessage DrMalaSinhaDaringPhysician where
   runMessage msg e@(DrMalaSinhaDaringPhysician attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      parley sid iid (attrs.ability 1) iid #willpower (Fixed 2)
+      parley sid iid (attrs.ability 1) attrs #willpower (Fixed 2)
       doStep 2 msg
       pure e
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do

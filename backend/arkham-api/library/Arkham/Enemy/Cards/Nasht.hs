@@ -33,7 +33,7 @@ instance RunMessage Nasht where
       sid <- getRandom
       chooseOneM iid do
         for_ [#combat, #agility] \sType ->
-          skillLabeled sType $ parley sid iid (attrs.ability 1) iid sType (Fixed $ 2 + n)
+          skillLabeled sType $ parley sid iid (attrs.ability 1) attrs sType (Fixed $ 2 + n)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       flipOverBy iid (attrs.ability 1) attrs

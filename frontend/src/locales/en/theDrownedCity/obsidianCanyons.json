@@ -114,6 +114,7 @@
       "test": "Test {agility} (2)"
     },
     "searchTheSpires": {
+      "chooseLocation": "Choose a card from the bottom of the Summit deck.",
       "placeNone": "Do not put a revealed location into play",
       "chooseOrder": "Choose the next card to place on top of the Summit deck. The final card chosen will be topmost."
     },

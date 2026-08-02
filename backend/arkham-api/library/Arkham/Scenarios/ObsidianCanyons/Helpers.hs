@@ -466,25 +466,25 @@ searchTheSpires source iid x = when (x > 0) do
   -- An open sky card revealed from the deck is a location card too, but there is
   -- nothing to "put into play" about swapping one patch of sky for another.
   let placeable = filter (not . (`cardMatch` cardIs Locations.openSky)) revealed
-  focusCards revealed do
+  focusCards revealed $ scenarioI18n do
     chooseOrRunOneM iid do
-      when (notNull openSkies) $ for_ placeable \card ->
-        cardLabeled card do
-          chooseTargetM iid openSkies \sky -> do
-            skyCard <- summitDeckCard sky
-            -- This replacement must not use placeInOpenSky: that helper puts the
-            -- old sky on top immediately, before the lead can order it together
-            -- with the other revealed cards.
-            pos <- fieldJust LocationPosition sky
-            removeLocation sky
-            push $ Msg.ObtainCard card.id
-            lid <- placeLocationInGrid pos card
-            -- Return every unplaced card before moving. The move can satisfy the
-            -- act's objective, so advancing first would strand these cards
-            -- outside both play and the Summit deck.
-            chooseSummitTopOrder (skyCard : filter (/= card) revealed)
-            moveTo source iid lid
-      scenarioI18n $ labeled' "searchTheSpires.placeNone" $ chooseSummitTopOrder revealed
+      questionLabeled' "searchTheSpires.chooseLocation"
+      when (notNull openSkies) $ targets placeable \card -> do
+        chooseTargetM iid openSkies \sky -> do
+          skyCard <- summitDeckCard sky
+          -- This replacement must not use placeInOpenSky: that helper puts the
+          -- old sky on top immediately, before the lead can order it together
+          -- with the other revealed cards.
+          pos <- fieldJust LocationPosition sky
+          removeLocation sky
+          push $ Msg.ObtainCard card.id
+          lid <- placeLocationInGrid pos card
+          -- Return every unplaced card before moving. The move can satisfy the
+          -- act's objective, so advancing first would strand these cards
+          -- outside both play and the Summit deck.
+          chooseSummitTopOrder (skyCard : filter (/= card) revealed)
+          moveTo source iid lid
+      labeled' "searchTheSpires.placeNone" $ chooseSummitTopOrder revealed
 
 {- | The Forced printed on every Summit location's unrevealed back (and on Glyph
 Orrery's front):

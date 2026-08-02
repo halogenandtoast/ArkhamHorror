@@ -292,9 +292,9 @@ const focusedCardsForGroups = computed(() => {
   })
 })
 
-const isSummitDeckOrdering = computed(() =>
+const isSummitDeckView = computed(() =>
   question.value?.tag === QuestionType.QUESTION_LABEL
-    && question.value.label.includes('searchTheSpires.chooseOrder')
+    && question.value.label.includes('searchTheSpires.')
 )
 
 const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
@@ -303,7 +303,7 @@ const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
   // Summit order matters. Keep every revealed card in the exact draw order and
   // render them as one set instead of splitting the location and encounter-card
   // orientations into separate visual rows.
-  if (isSummitDeckOrdering.value) {
+  if (isSummitDeckView.value) {
     return [{
       key: 'focused-summit-deck',
       zone: 'SummitDeck',
@@ -580,7 +580,8 @@ const submitAmounts = async () => {
   }
 }
 
-const cardLabelImage = (cardCode: string) => cardCodeImage(cardCode)
+const cardLabelImage = (cardCode: string) =>
+  cardCodeImage(cardCode, isSummitDeckView.value ? 'b' : '')
 
 const questionImage = computed(() => {
   if (!question.value) {

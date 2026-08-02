@@ -151,6 +151,7 @@ allStoryCards =
       , dayThree
       , nightThree
       , westernWinds
+      , easternWinds
       , ruthlessCharge
       , hurricaneForce
       , direGale
@@ -672,8 +673,13 @@ nightThree = story "10679b" "Night Three" TheFinalDay & otherSideIs "10679"
 
 -- The Drowned City
 
+-- Two sides of one story card; Obsidian Canyons puts whichever side the
+-- expedition's heading calls for faceup.
 westernWinds :: CardDef
-westernWinds = doubleSided $ story "11640" "Western Winds" ObsidianCanyons
+westernWinds = story "11640" "Western Winds" ObsidianCanyons & otherSideIs "11640b"
+
+easternWinds :: CardDef
+easternWinds = story "11640b" "Eastern Winds" ObsidianCanyons & otherSideIs "11640"
 
 -- The modular "Cthulhu deck" of action cards (The Doom of Arkham Pt II) shares a
 -- distinct card back.

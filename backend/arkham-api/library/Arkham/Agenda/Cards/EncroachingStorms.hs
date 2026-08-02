@@ -14,26 +14,21 @@ import Arkham.Scenarios.ObsidianCanyons.Helpers
 import Arkham.Trait (Trait (Central))
 
 newtype EncroachingStorms = EncroachingStorms AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 encroachingStorms :: AgendaCard EncroachingStorms
 encroachingStorms = agenda (1, A) EncroachingStorms Cards.encroachingStorms (Static 3)
 
--- | Side A statics that have no engine support yet (they depend on the
--- "open sky" / Summit-deck / sliding-location infrastructure):
---   * "Each non-weakness enemy may enter or leave open sky as if it were a
---     location."
---   * "Each location is connected to each location (and open sky) adjacent to
---     it."
--- TODO: implement these once open sky / sliding locations exist (HasModifiersFor).
+instance HasModifiersFor EncroachingStorms where
+  getModifiersFor (EncroachingStorms a) = when (onSide A a) $ obsidianSkylineRules a
+
 instance HasAbilities EncroachingStorms where
   getAbilities (EncroachingStorms a) =
     -- Forced - When an investigator's location would leave play: Move that
-    -- investigator to any [[Central]] location. They take 2 direct damage.
-    -- The trigger only fires once locations actually leave play via the
-    -- (not-yet-implemented) sliding mechanic, but the response itself maps to
-    -- existing primitives, so we wire it up here.
+    -- investigator to any [[Central]] location. They take 2 direct damage. This
+    -- is what keeps the winds and the act rebuilds from simply defeating anyone
+    -- standing on a swept location.
     [ uncancellable (mkAbility a 1 $ forced $ LocationLeavesPlay #when (LocationWithInvestigator Anyone))
     | onSide A a
     ]
@@ -63,6 +58,8 @@ instance RunMessage EncroachingStorms where
           -- reads back from this agenda's meta.
           lead <- getLead
           discardUntilFirst lead attrs Deck.EncounterDeck #enemy
+          -- "Flip this agenda": the storm keeps building until it hits 6.
+          push $ RevertAgenda attrs.id
           pure $ overAttrs (setMeta $ (storm + 1) <= 3) a
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do
       let spawnExhausted = getMetaDefault False attrs

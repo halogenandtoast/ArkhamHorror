@@ -3,8 +3,11 @@ module Arkham.Act.Cards.ScouringTheSpires (scouringTheSpires) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Helpers.Cost (getSpendableClueCount)
+import Arkham.Helpers.Query (getInvestigators, getSetAsideCardsMatching)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Scenarios.ObsidianCanyons.Helpers
 
 newtype ScouringTheSpires = ScouringTheSpires ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -17,10 +20,8 @@ instance HasAbilities ScouringTheSpires where
   getAbilities (ScouringTheSpires attrs) =
     extend
       attrs
-      [ -- [action] Spend X clues: Reveal X cards from the bottom of the Summit deck...
-        mkAbility attrs 1 $ actionAbilityWithCost ClueCostX
-      , -- Objective - If each surviving investigator is at Central Spire, advance.
-        restricted
+      [ restricted attrs 1 (exists $ InvestigatorWithClues $ atLeast 1) actionAbility
+      , restricted
           attrs
           2
           (notExists $ UneliminatedInvestigator <> not_ (InvestigatorAt $ locationIs Locations.centralSpire))
@@ -28,34 +29,30 @@ instance HasAbilities ScouringTheSpires where
           $ forced AnyWindow
       ]
 
-getClueCount :: Payment -> Int
-getClueCount (CluePayment _ n) = n
-getClueCount (Payments ps) = sum $ map getClueCount ps
-getClueCount _ = 0
-
 instance RunMessage ScouringTheSpires where
   runMessage msg a@(ScouringTheSpires attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 _ (getClueCount -> _x) -> do
-      -- TODO: Reveal _x cards from the BOTTOM of the Summit deck. You may put 1
-      -- revealed location into play in an adjacent open sky and move to it.
-      -- (Place that open sky card and each other revealed card on top of the
-      -- Summit deck in any order.) The Summit deck, "open sky" placeholder
-      -- cards, and sliding/adjacency placement have no engine support yet, so
-      -- the reveal/place/move portion is left unimplemented.
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigators <- getInvestigators
+      total <- getSpendableClueCount investigators
+      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 1 total attrs
+      pure a
+    ResolveAmounts iid (getChoiceAmount "$clues" -> x) (isTarget attrs -> True) | x > 0 -> do
+      investigators <- getInvestigators
+      spendCluesAsAGroup investigators x
+      searchTheSpires (attrs.ability 1) iid x
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      -- Floating Skyline (side B):
-      -- TODO: Remove R'lyeh Streets from the game, ignoring its text box.
-      -- Shuffle each open sky and Summit location in play except for Central
-      -- Spire into the Summit deck. Each card and token at those locations is
-      -- discarded. Put 5 of the set-aside open sky cards into play per the Act 2
-      -- placement diagram, fill rows/columns from the bottom of the Summit deck,
-      -- then shuffle the set-aside Floating Spire and Aerial Waterfall locations
-      -- into the top 3 cards of the Summit deck. Mirrors SearchingTheSpires's
-      -- advance minus the Inescapable spawn; requires Summit-deck/open-sky/
-      -- sliding-location infra that does not exist yet.
+      -- Floating Skyline: the streets fall away and the skyline reforms around
+      -- Central Spire.
+      selectEach (locationIs Locations.rlyehStreets) removeIgnoringTextBox
+      centralSpire <- selectJust $ locationIs Locations.centralSpire
+      rebuildSkyline centralSpire actTwoLayout
+      shuffleIntoSummitTop 3
+        =<< getSetAsideCardsMatching
+          (mapOneOf cardIs [Locations.floatingSpire, Locations.aerialWaterfall])
+      advanceActDeck attrs
       pure a
     _ -> ScouringTheSpires <$> liftRunMessage msg attrs

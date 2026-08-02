@@ -2,10 +2,13 @@ module Arkham.Location.Cards.GlyphOrrery (glyphOrrery) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheDrownedCity.Import
+import Arkham.Card (toCard)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (record)
+import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Window (getBatchId)
 
 newtype GlyphOrrery = GlyphOrrery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,22 +20,29 @@ glyphOrrery =
 
 instance HasAbilities GlyphOrrery where
   getAbilities (GlyphOrrery a) =
-    extendRevealed1 a
-      $ restricted a 1 Here
-      $ actionAbilityWithCost
-      $ GroupClueCost (PerPlayer 1) (be a)
-
--- TODO: front-side Forced effect for the Obsidian Claw entry restriction lives on
--- this card's text but is implemented as the recurring "When you would enter this
--- location, if you do not control the Obsidian Claw" effect; left unimplemented
--- until the entry/cancel-move infra exists.
---
--- TODO: "If it would leave play, set it aside out of play (or the victory display
--- if it has no clues on it)." This is part of the Summit-deck / sliding-location
--- infrastructure which has no engine support yet.
+    extendRevealed
+      a
+      [ restricted a 1 Here $ actionAbilityWithCost $ GroupClueCost (PerPlayer 1) (be a)
+      , -- Unlike the other Summit locations, the Orrery prints the entry toll on
+        -- its front, so it applies even once revealed.
+        summitEntry a 9
+      ]
 
 instance RunMessage GlyphOrrery where
   runMessage msg l@(GlyphOrrery attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 9 (getBatchId -> batchId) _ -> do
+      summitEntryToll attrs 9 iid batchId
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 9 -> True) -> do
+      summitEntryFailed attrs 9 iid
+      pure l
+    -- "If Glyph Orrery would leave play, set it aside, out of play (or in the
+    -- victory display if it has no clues on it)." It is the one Summit card that
+    -- never returns to the Summit deck.
+    When (RemoveLocation lid) | lid == attrs.id -> do
+      noClues <- attrs.id <=~> LocationWithoutClues
+      if noClues then addToVictory_ attrs.id else push (SetAsideCards [toCard attrs])
+      pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       when (locationCanBeFlipped attrs) $ flipOver iid attrs
       pure l

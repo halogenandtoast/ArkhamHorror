@@ -1,4 +1,117 @@
 {
+  "intro": {
+    "title": "Obsidian Canyons",
+    "checkCampaignLog": "Check your Campaign Log.",
+    "headedWest": "If the expedition headed west, proceed to _Obsidian Canyons 1_.",
+    "headedEast": "If the expedition headed east, proceed to _Obsidian Canyons 2_.",
+    "obsidianCanyons1": "_Obsidian Canyons 1_: “Am I dreaming?” Andy looks out at the horizon. Ephemeral shapes coalesce and then dissipate in the mists below. In the distance, you see the Obsidian Gates where you made landfall. The wide expanse between you and it is filled with mind-bending spires and poisonous green mist. Andy curses as he dumps water out of his camera bag. “Mr. Tillinghast assured me this bag was airtight. I told him all I wanted was pictures, maybe a book deal. And now it’s all ruined.”",
+    "obsidianCanyons2": "_Obsidian Canyons 2_: The streets of R’lyeh are flooded with stagnant water and a foul, bilious smell you cannot identify. After spending hours making little progress from where you made landfall, you find a climbable path up to the summit. Using your rope and a little climbing gear, you reach the nearest vantage point. The ancient dome beckons to you in the distance. “Just don’t look down,” Ruby says. “If you fall, I’m not peeling you off the ground.”",
+    "obsidianCanyons3": "_Obsidian Canyons 3_: The alien city sprawls for miles. Chunks of broken spires are suspended in the air above collapsed towers, and colorful reefs hang from the undersides of ancient bridges. Decaying wrecks of ancient ships lean precariously atop the obsidian spires, swaying gently. You and your companions stare in awe at the unbelievable landscape.",
+    "obsidianCanyons3Storm": "A gale-force wind nearly sweeps you off your feet. You steady yourself and look to the south to see dark, angry storm clouds crackling with green energy. The breeze reaches a howling crescendo, then suddenly dies down. The landscape below seems to rearrange as miasmic clouds bend and swirl. Your head swims; when you look back at the horizon, the skyline has changed entirely.",
+    "resolveTasks": "If any investigator has the Dreams of Destruction or Prove Your Worth Tasks, they resolve their respective story on this page.",
+    "setupWest": "If the expedition headed west, proceed to _Setup (v. I) – Western Expedition_.",
+    "setupEast": "If the expedition headed east, proceed to _Setup (v. II) – Eastern Expedition_.",
+    "dreamsOfDestruction": {
+      "title": "Task: Dreams of Destruction",
+      "instructions": "_Read only if you have the “Dreams of Destruction” Task:_",
+      "body": "As you look out at the breathtaking landscape, a cacophony of whispers fills your thoughts. Overwhelmed, you fall to your knees, clutching your hands to your temples.",
+      "vision": "In your mind’s eye, you see a corona of light, a sky filled with tenebrous shadows, and a gargantuan figure writhing in pain, covered in glowing sigils. Is it a vision? Or an ancient memory? You see the city spires bow like blades of grass as meteors fall from the sky.",
+      "sorrow": "Something inside you stirs. You are feeling someone—or something—else’s sorrow. The city buried, serene, doomed to sleep on the ocean floor for vigintillion years. Whatever it is that you feel, it wants to share your burdens, your fears, your desires. You need only to let it in…",
+      "choose": "You must decide (choose one):",
+      "drownOut": "Drown out the whispers. Erase 1 progress under _Dreams of Destruction_ in your Campaign Log and suffer 1 mental trauma. You (and only you) gain 2 bonus experience.",
+      "letItIn": "Let it in. Mark 2 progress under _Dreams of Destruction_ in your Campaign Log. At the beginning of each investigator’s first turn in the Obsidian Canyons scenario, they must draw the top card of the encounter deck."
+    },
+    "proveYourWorth": {
+      "title": "Task: Prove Your Worth",
+      "instructions": "_Read only if you have the “Prove Your Worth” Task:_",
+      "body": "Nobody else on this expedition appreciates your talents. How could they? It’s your duty to help, to show them why you were the perfect choice for this damned expedition. Nobody asked you, but this could be the perfect time to prove your worth.",
+      "choose": "You must decide (choose one):",
+      "ropesAreWrong": "“These ropes are all wrong. I can do much better.” Without consulting them, choose an investigator to help (not yourself, if able). Remember “[your investigator’s name] helped with the ropes” (as well as the chosen investigator’s name). Each investigator begins the next scenario with 2 fewer starting resources.",
+      "trustTheirHandiwork": "“I trust their handiwork.” Each investigator begins the next scenario with 1 additional starting resource."
+    },
+    "xp": {
+      "dreamsOfDestruction": "for drowning out the whispers"
+    },
+    "label": {
+      "dreamsOfDestruction": {
+        "drownOut": "Drown out the whispers.",
+        "letItIn": "Let it in."
+      },
+      "proveYourWorth": {
+        "ropesAreWrong": "“These ropes are all wrong. I can do much better.”",
+        "trustTheirHandiwork": "“I trust their handiwork.”",
+        "chooseInvestigator": "Choose an investigator to help."
+      }
+    }
+  },
+  "setup": {
+    "west": {
+      "title": "Setup (v.I) – Western Expedition",
+      "gatherSets": "Gather all cards from the following encounter sets: _Obsidian Canyons_, _Cosmic Legacy_, _Elder Mist_, _The Inescapable_, _R’lyeh_, _Star Spawn_, _Ancient Evils_, _Chilling Cold_, _Nightgaunts_, and _Striking Fear_. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/obsidian-canyons.png' /><img src='{setImgPath}/cosmic-legacy.png' /><img src='{setImgPath}/elder-mist.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+      "setAsideOpenSky": "Set all 14 cards in the _Ancient Evils_, _Chilling Cold_, and _Striking Fear_ encounter sets aside, out of play, as “open sky” (see _Open Sky_).",
+      "gatherLocations": "Gather each location in the _Obsidian Canyons_ encounter set.",
+      "removeLocations": "Remove Ancient Dome from the game.",
+      "setAsideLocations": "Set R’lyeh Streets, Central Spire, Floating Spire, Aerial Waterfall, Glyph Orrery [tdc_rune_d], and Western Wall aside, out of play.",
+      "buildSummitDeck": "Shuffle each remaining Summit location into a separate deck, unrevealed side faceup. This is the Summit deck. (See _The Summit Deck and Sliding Locations_.)",
+      "placeStart": "Put R’lyeh Streets into play along with four of the set-aside open sky cards according to the location placement diagram for act 1.",
+      "fillGrid": "Fill each empty space in the diagram with the bottom card of the Summit deck above and to the right of R’lyeh Streets until there are 3 rows and 4 columns.",
+      "shuffleInCentralSpire": "Shuffle the set-aside Central Spire into the top three cards of the Summit deck.",
+      "beginAtRlyehStreets": "Each investigator begins play at R’lyeh Streets.",
+      "windsStoryCard": "Find the double-sided Eastern Winds/Western Winds story card and put it into play, Eastern Winds side faceup.",
+      "buildActAgendaDeck": "Build the act and agenda decks using agenda 1a—“Encroaching Storms,” act 1a—“Scouring the Spires,” act 2a—“Deadly Skies,” and act 3a—“Return to the Shoreline.” Remove each other act and agenda from the game.",
+      "stormIntensity": "Place 1 resource on the scenario reference card under _Storm Intensity_.",
+      "starSpawn": "Shuffle each enemy from the _Star Spawn_ encounter set and remove two at random from the game.",
+      "setCardsAside": "Set the double-sided Sky Relic [tdc_rune_f] story asset, Eroded Frieze [tdc_rune_e] treachery, and the Obsidian Claw story asset aside, out of play.",
+      "checkCampaignLogInescapable": "Check your Campaign Log. If _the creature was defeated_, remove _The Inescapable_ encounter set from the game. Otherwise, spawn The Inescapable enemy at the location farthest from all investigators, exhausted.",
+      "chooseExpeditionAsset": "In player order, each player may choose 1 earned _Artifact_ asset or 1 _Item_ asset from the _Expedition_ encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+      "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck.",
+      "readyToBegin": "You are now ready to begin."
+    },
+    "east": {
+      "title": "Setup (v.II) — Eastern Expedition",
+      "gatherSets": "Gather all cards from the following encounter sets: _Obsidian Canyons_, _Cosmic Legacy_, _Elder Mist_, _The Inescapable_, _R’lyeh_, _Star Spawn_, _Chilling Cold_, _Nightgaunts_, and _Striking Fear_. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/obsidian-canyons.png' /><img src='{setImgPath}/cosmic-legacy.png' /><img src='{setImgPath}/elder-mist.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+      "setAsideOpenSky": "Set all 11 cards in the _Chilling Cold_ and _Striking Fear_ encounter sets aside, out of play, as “open sky” (see _Open Sky_).",
+      "gatherLocations": "Gather each location in the _Obsidian Canyons_ encounter set.",
+      "removeLocations": "Remove Western Wall and Floating Spire from the game.",
+      "setAsideLocations": "Set R’lyeh Streets, Central Spire, Aerial Waterfall, Glyph Orrery [tdc_rune_d], and Ancient Dome aside, out of play.",
+      "buildSummitDeck": "Shuffle each remaining Summit location into a separate deck, unrevealed side faceup. This is the Summit deck. (See _The Summit Deck and Sliding Locations_.)",
+      "placeStart": "Put R’lyeh Streets into play along with four of the set-aside open sky cards according to the location placement diagram for act 1.",
+      "fillGrid": "Fill each empty space in the diagram with the bottom card of the Summit deck above and to the right of R’lyeh Streets until there are 3 rows and 4 columns.",
+      "shuffleInCentralSpire": "Shuffle the set-aside Central Spire into the top three cards of the Summit deck.",
+      "beginAtRlyehStreets": "Each investigator begins play at R’lyeh Streets.",
+      "windsStoryCard": "Find the double-sided Eastern Winds/Western Winds story card and put it into play, Western Winds side faceup.",
+      "buildActAgendaDeck": "Build the act and agenda decks using agenda 1a—“Otherworldly Storms,” act 1a—“Searching the Spires,” and act 2a—“To the Ancient Dome!” Remove each other act and agenda from the game.",
+      "stormIntensity": "Place 1 resource on the scenario reference card under _Storm Intensity_.",
+      "starSpawn": "Shuffle each enemy from the _Star Spawn_ encounter set and remove three at random from the game.",
+      "setCardsAside": "Set the double-sided Sky Relic [tdc_rune_f] story asset, Eroded Frieze [tdc_rune_e] treachery, and the Obsidian Claw story asset aside, out of play, along with _The Inescapable_ encounter set.",
+      "removeStarVampire": "Search the _Obsidian Canyons_ encounter set for one copy of the Star Vampire enemy and remove it from the game.",
+      "chooseExpeditionAsset": "In player order, each player may choose 1 _Item_ asset from the _Expedition_ encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+      "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck.",
+      "readyToBegin": "You are now ready to begin."
+    }
+  },
+  "rules": {
+    "openSky": {
+      "title": "Open Sky",
+      "body": "<p class='basic'>Throughout this scenario, you will be instructed to place “open sky” cards by taking the encounter cards gathered during setup and placing them in the indicated positions, facedown.</p><ul><li>Open sky counts as a location for the purposes of card effects, location adjacency, and for determining distance between locations.</li><li>Investigators cannot move into open sky unless otherwise indicated by scenario effects.</li><li>Open sky cannot be investigated and clues cannot be dropped on it. If a clue would be dropped or placed on open sky for any reason, the investigators must choose the nearest revealed location and place that clue on it instead.</li><li>Locations can enter play in a position occupied by an open sky card. Should this happen, the open sky card occupying that position leaves play.</li><li>If open sky leaves play for any reason, place it on the top of the Summit deck. Do not place it in the encounter discard pile. All enemies, tokens, and attachments at that open sky are discarded.</li></ul>"
+    },
+    "summitDeck": {
+      "title": "The Summit Deck and Sliding Locations",
+      "body": "<p class='basic'>During this scenario, locations and open sky will enter and leave play via the Summit deck. This deck is composed of Summit location cards as well as single-sided open sky cards.</p><ul><li>Cards are always drawn from the bottom of the Summit deck.</li><li>Encounter cards from the Summit deck are always placed facedown (unrevealed side faceup if they are locations).</li><li>If a gap between locations and/or open sky is created for any reason and not immediately filled via scenario card instructions, fill that gap with the bottom card of the Summit deck, facedown if it is an encounter card or unrevealed side faceup if it is a location.</li><li>Investigators may be instructed to slide rows to the left or right. To do so, slide each card in that row (locations and open sky) once in the indicated direction. Each card and token at those locations/open sky move as well. Any cards that move outside of the established columns are placed on top of the Summit deck.</li><li>Some locations cannot be moved. If instructed to slide cards in a row and there is a location in that row that cannot be moved, leave that location in its place and “skip” it, moving the card that would enter its space into the nearest gap created.</li></ul>"
+    },
+    "stormIntensity": {
+      "title": "Storm Intensity",
+      "body": "<p class='basic'>Throughout this scenario, the number of resources under “Storm Intensity” on the scenario reference card indicates the strength of the otherworldly gales of R’lyeh. The higher the Storm Intensity, the more hazardous the weather. Storm Intensity has no inherent game effect on its own; however, some scenario effects may change or become stronger depending on the current level of Storm Intensity.</p>"
+    },
+    "locationAdjacency": {
+      "title": "Location Adjacency in this Scenario",
+      "body": "<p class='basic'>During this scenario, locations are arranged in a set grid pattern. Each location is connected to each location adjacent to it.</p><ul><li>Adjacent locations share a side (left, right, above, or below).</li><li>Locations that share only a corner are not considered adjacent.</li></ul>"
+    }
+  },
+  "label": {
+    "chooseExpeditionAssetQuestion": "Choose an asset to begin in play under your control.",
+    "noExpeditionAsset": "Do not take an Artifact or Expedition asset."
+  },
   "cluesToSpend": "Clues to spend",
   "wingsOfTerror": {
     "drawEnemy": "Draw that enemy",
@@ -17,7 +130,8 @@
     "swap": "Choose an open sky up to 2 spaces away and swap Magnetic Spires with it"
   },
   "lostInTheClouds": {
-    "eachInvestigatorTakesHorror": "Each investigator takes 2 direct horror"
+    "eachInvestigatorTakesHorror": "Each investigator takes 2 direct horror",
+    "resolveWinds": "Resolve the Forced effect on the Eastern Winds/Western Winds story card as if you had drawn a non-{eldersign} symbol token"
   },
   "tokens": {
     "easyStandard": {
@@ -34,18 +148,47 @@
     }
   },
   "resolutions": {
-    "xp": { "bonus": "for braving the obsidian canyons" },
+    "xp": {
+      "bonus": "for braving the obsidian canyons"
+    },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p>_Resolution 1_: Andy sits on a glistening boulder, doing his best not to look shaken. \"Well. I thought this trip was going to make my career. But as it turns out—between alien parasites, magnetic storms, and, you know, the Pacific Ocean—my career didn't stand a chance,\" he sighs. \"At least we're back in one piece. Well, mostly,\" he laughs, favoring his bandaged arm.</p>"
+      "body": "<p>_Resolution 1_: Andy sits on a glistening boulder, doing his best not to look shaken. “Well. I thought this trip was going to make my career. But as it turns out—between alien parasites, magnetic storms, and, you know, the Pacific Ocean—my career didn’t stand a chance,” he sighs. “At least we’re back in one piece. Well, mostly,” he laughs, favoring his bandaged arm.</p><p>After the rest of your group are gathered, you make your way back to the beach where you made landfall.</p><ul><li>Update your Campaign Log.<ul><li>If the Obsidian Claw was under the control of an investigator when the scenario ended, check the box next to “Obsidian Claw” in the “Artifacts Earned” section of your Campaign Log.</li><li>In your Campaign Log, cross out Obsidian Canyons on the R’lyeh map.</li></ul></li><li>If any investigator has the Prove Your Worth Task, they resolve their respective story on this page.</li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Proceed to _The Sepulchre of the Sleeper_.</li></ul>"
     },
     "resolution2": {
       "title": "Resolution 2",
-      "body": "<p>_Resolution 2_: You join Ruby at the crest of the ancient court. As you peer down into the depths, you are stunned by the sheer breadth of the structure. Below, a towering lift stands in the center of a cathedral-like nave, surrounded by spiraling ringed floors. Five long apses radiate outward from the central structure like obsidian claws, dominating the otherworldly skyline.</p>"
+      "body": "<p>_Resolution 2_: You join Ruby at the crest of the ancient court. As you peer down into the depths, you are stunned by the sheer breadth of the structure. The shattered dome where you stand is at least a quarter mile in diameter, and caps a vast, airy chamber. Below, a towering lift stands in the center of a cathedral-like nave, surrounded by spiraling ringed floors. Five long apses radiate outward from the central structure like obsidian claws, dominating the otherworldly skyline.</p><p>Ruby stands at the cracked lip and looks down at the vast expanse below. “I don’t even know if I can see the bottom, but I think anything down there is better than that storm.”</p><p>Looking out at the darkening horizon, you have to agree.</p><ul><li>Update your Campaign Log.<ul><li>If the Obsidian Claw was under the control of an investigator when the scenario ended, check the box next to “Obsidian Claw” in the “Artifacts Earned” section of your Campaign Log.</li><li>In your Campaign Log, cross out Obsidian Canyons on the R’lyeh map.</li></ul></li><li>If any investigator has the Prove Your Worth Task, they resolve their respective story on this page.</li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Proceed to _Court of the Ancients_.</li></ul>"
     },
     "noResolution": {
       "title": "No Resolution",
-      "body": "<p>_If no resolution was reached_: The storms scatter the expedition across the obsidian skyline. Battered and disoriented, you eventually regroup at the shoreline, having lost the thread of your purpose among the howling winds.</p>"
+      "body": "<p>_If no resolution was reached (each investigator was defeated)_: The poisonous gales howl through the black stone corridors of the ancient city with all the force of a hurricane. As you are battered on all sides by stinging, sharp winds, the acrid vapors make your head spin with unsettling visions. These unearthly weather patterns seem to blow from somewhere far beyond, from an undimensioned plane of existence.</p><p>You awaken to see your companions gathered around you. As they help you to your feet, you turn away from the brilliant skyline and the churning clouds. You have no memory of passing out. How did you even get here?</p><ul><li>In your Campaign Log, cross out “Obsidian Canyons” on the R’lyeh map.</li><li>Each investigator must search the collection for a random _Madness_ or _Omen_ basic weakness and add it to their deck for the remainder of the campaign.</li><li>If any investigator has the Prove Your Worth Task, they resolve their respective story on this page.</li><li>Each investigator earns experience equal to the victory X value of each card in the victory display.</li><li>Check your Campaign Log.<ul><li>If the expedition headed west, proceed to _The Sepulchre of the Sleeper_.</li><li>If the expedition headed east, proceed to _Court of the Ancients_.</li></ul></li></ul>"
+    },
+    "proveYourWorth": {
+      "title": "Task: Prove Your Worth",
+      "instructions": "_Read only if you have the “Prove Your Worth” Task:_",
+      "checkCampaignLog": "Check your Campaign Log.",
+      "helpedWithTheRopes": "If “[your investigator’s name] helped with the ropes,” proceed to _Task 1_.",
+      "otherwise": "Otherwise, skip to _Task 2_.",
+      "task1": "_Task 1_: You should be proud of what you’ve done. The rest of the expedition was so impressed by your work that you heard one of them chanting your name while you were climbing. They may have been screaming it; you aren’t certain. Whatever it was that happened, they don’t seem inclined to discuss it any further. Sadly, your work with the ropes wasn’t much help. Several of them snapped during the climb, and one of the other expedition members has a broken leg now. What a shame. It must have been some fault of the manufacturer.",
+      "task1Chosen": "The investigator you chose to help earlier suffers 1 physical trauma and gains 2 bonus experience.",
+      "task1Progress": "You are quite pleased with yourself, aren’t you? Mark 2 progress under “Prove Your Worth” in your Campaign Log.",
+      "task2": "_Task 2_: “No, not like that!” Another member of the expedition steps in to assist yet again. You bite back your response. They have no idea how rude they are. Not that they care. Why bother trying to prove yourself to these ingrates? They’re not worth the trouble.",
+      "task2Trauma": "It’s true: you’ll never measure up. Erase 1 progress under “Prove Your Worth” and suffer 1 mental trauma.",
+      "task2OtherInvestigators": "Each other investigator (except you) gains 1 bonus experience.",
+      "xp": {
+        "helped": "for the ropes that snapped",
+        "other": "for putting up with it"
+      }
     }
+  },
+  "searchTheSpires": {
+    "placeNone": "Do not put a revealed location into play"
+  },
+  "summitEntry": {
+    "spendClue": "Spend 1 clue",
+    "test": "Test {agility} (2)"
+  },
+  "summitDeck": {
+    "toBottom": "Place on the bottom of the Summit deck"
   }
 }

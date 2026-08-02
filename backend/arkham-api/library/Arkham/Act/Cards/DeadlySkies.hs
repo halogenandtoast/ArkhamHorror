@@ -3,8 +3,11 @@ module Arkham.Act.Cards.DeadlySkies (deadlySkies) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Helpers.Cost (getSpendableClueCount)
+import Arkham.Helpers.Query (getInvestigators, getSetAsideCardsMatching)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Scenarios.ObsidianCanyons.Helpers
 
 newtype DeadlySkies = DeadlySkies ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -17,7 +20,7 @@ instance HasAbilities DeadlySkies where
   getAbilities (DeadlySkies a) =
     extend
       a
-      [ restricted a 1 (Here <> CanManipulateDeck) $ actionAbilityWithCost ClueCostX
+      [ restricted a 1 (exists $ InvestigatorWithClues $ atLeast 1) actionAbility
       , restricted
           a
           2
@@ -28,30 +31,26 @@ instance HasAbilities DeadlySkies where
 
 instance RunMessage DeadlySkies where
   runMessage msg a@(DeadlySkies attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 _ (totalCluePayment -> _x) -> do
-      -- Spend X clues: reveal X cards from the BOTTOM of the Summit deck; you may
-      -- put 1 revealed location into play in an adjacent open sky and move to it
-      -- (placing the open sky card + the other revealed cards back on top of the
-      -- Summit deck).
-      --
-      -- TODO: The Summit deck, the "open sky" placeholder cards, and "sliding"
-      -- locations have no engine support yet. Once that infra exists, reveal _x
-      -- cards from the bottom of the Summit deck, let the investigator optionally
-      -- place one revealed location into an adjacent open sky and moveTo it, then
-      -- return the open sky card and the remaining revealed cards to the top of
-      -- the Summit deck.
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigators <- getInvestigators
+      total <- getSpendableClueCount investigators
+      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 1 total attrs
+      pure a
+    ResolveAmounts iid (getChoiceAmount "$clues" -> x) (isTarget attrs -> True) | x > 0 -> do
+      investigators <- getInvestigators
+      spendCluesAsAGroup investigators x
+      searchTheSpires (attrs.ability 1) iid x
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      -- Side B: remove Central Spire from play and rebuild the Summit around the
-      -- Floating Spire.
-      --
-      -- TODO: Removing the Central Spire and rebuilding the Summit grid around the
-      -- Floating Spire depends on the unimplemented Summit deck / sliding-location
-      -- infrastructure. Once available, remove Locations.centralSpire from play and
-      -- reconfigure the grid here.
+      -- Defying Gravity: the spire falls away and the skyline reforms around
+      -- Floating Spire, one row taller than before.
+      selectEach (locationIs Locations.centralSpire) removeIgnoringTextBox
+      floatingSpire <- selectJust $ locationIs Locations.floatingSpire
+      rebuildSkyline floatingSpire actThreeLayout
+      shuffleIntoSummitTop 3 =<< getSetAsideCardsMatching (cardIs Locations.westernWall_11651)
       advanceActDeck attrs
       pure a
     _ -> DeadlySkies <$> liftRunMessage msg attrs

@@ -2,7 +2,7 @@
 import { computed, ComputedRef } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import type { Card } from '@/arkham/types/Card';
-import { cardImage } from '@/arkham/types/Card';
+import { cardImage, toCardContents } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
 import { investigatorPortrait as portraitFor } from '@/arkham/cardImages';
 import { MessageType } from '@/arkham/types/Message'
@@ -84,6 +84,16 @@ const deckImage = computed(() => {
       return imgsrc("backs/back_the_longest_night.jpg");
     case 'AbyssDeck':
       return imgsrc("cards/10670b.avif");
+    case 'SummitDeck': {
+      // Summit locations and Open Sky have different backs. Show the actual
+      // top card facedown so returned Open Sky cards are visible on the deck.
+      const topCard = props.deck[1][0]
+      if (topCard) {
+        const contents = toCardContents(topCard)
+        return imgsrc(cardImage({ ...contents, isFlipped: true, facedown: false }))
+      }
+      return imgsrc("cards/11649b.avif")
+    }
     default:
       return imgsrc("backs/back_encounter.jpg");
   }
@@ -109,6 +119,8 @@ const deckLabel = computed(() => {
       return "Monsters"
     case 'LeadsDeck':
       return "Leads"
+    case 'SummitDeck':
+      return "Summit"
     default:
       return null
   }

@@ -507,7 +507,14 @@ instance RunMessage LocationAttrs where
     EndPhase -> do
       pure $ a & breachesL %~ fmap Breach.resetIncursion
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
-    RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= []) . Map.map (filter (/= lid))
+    RemovedLocation lid ->
+      pure
+        $ a
+        & directionsL
+        %~ filterMap (/= [])
+        . Map.map (filter (/= lid))
+        & positionL
+        %~ \position -> if lid == locationId then Nothing else position
     UseResign iid source | isSource a source -> a <$ push (Resign iid)
     InvestigatorDrewEncounterCard _iid ec -> do
       pure $ a & cardsUnderneathL %~ filter ((/= ec.id) . (.id))

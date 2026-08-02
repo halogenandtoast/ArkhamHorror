@@ -38,6 +38,11 @@ data TheDrownedCityKey
     ThePowerWasDiverted
   | -- | The Grand Vault
     TheInnerSanctumWasUnsealed
+  | {- | Obsidian Canyons, Prove Your Worth. Two halves of one "Remember" note:
+    who tied the ropes, and who they chose to help.
+    -}
+    HelpedWithTheRopes
+  | WasHelpedWithTheRopes
   | -- | Alien Glyphs (translated glyph record; recorded-set of rune letters "A".."Z")
     DiscoveredGlyphs
   | -- | R'lyeh map (recorded-set of the scenario names crossed off the map)

@@ -1,10 +1,12 @@
 module Arkham.Location.Cards (module Arkham.Location.Cards, module X) where
 
-import Arkham.Location.CardDefs.Base as X
 import Arkham.Homebrew.Defs qualified as Homebrew
+import Arkham.Location.CardDefs.Base as X
+import Arkham.Location.CardDefs.ByTheBook as X
 import Arkham.Location.CardDefs.Core2026 as X
 import Arkham.Location.CardDefs.EdgeOfTheEarth as X
 import Arkham.Location.CardDefs.NightOfTheZealot as X
+import Arkham.Location.CardDefs.RelicsOfThePast as X
 import Arkham.Location.CardDefs.ReturnTo as X
 import Arkham.Location.CardDefs.Standalone as X
 import Arkham.Location.CardDefs.TheCircleUndone as X
@@ -16,8 +18,6 @@ import Arkham.Location.CardDefs.TheForgottenAge as X
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy as X
 import Arkham.Location.CardDefs.ThePathToCarcosa as X
 import Arkham.Location.CardDefs.TheScarletKeys as X
-import Arkham.Location.CardDefs.ByTheBook as X
-import Arkham.Location.CardDefs.RelicsOfThePast as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -27,8 +27,9 @@ import Arkham.Prelude
 import Arkham.Trait hiding (Circle)
 
 allLocationCards :: Map CardCode CardDef
-allLocationCards = (Homebrew.locationsMap <>) $
-  mapFromList
+allLocationCards =
+  (Homebrew.locationsMap <>)
+    $ mapFromList
     $ map
       (toCardCode &&& id)
       [ aPocketInTime
@@ -1300,7 +1301,7 @@ allLocationCards = (Homebrew.locationsMap <>) $
 
 allSpecialLocationCards :: Map CardCode CardDef
 allSpecialLocationCards =
-  mapFromList $ map (toCardCode &&& id) [betweenWorlds, emptySpace]
+  mapFromList $ map (toCardCode &&& id) [betweenWorlds, emptySpace, openSky]
 
 betweenWorlds :: CardDef
 betweenWorlds =
@@ -1309,3 +1310,13 @@ betweenWorlds =
 emptySpace :: CardDef
 emptySpace =
   location "xempty" "EmptySpace" [] NoSymbol [] BeforeTheBlackThrone
+
+{- | Obsidian Canyons' "open sky". The printed open sky cards are facedown
+Ancient Evils / Chilling Cold / Striking Fear encounter cards, whose only
+mechanical role is to be absent from the encounter deck; setup removes those and
+puts one of these in each open sky position instead, so the grid, the Summit
+deck, and every "swap with an adjacent open sky" effect see a uniform location.
+-}
+openSky :: CardDef
+openSky =
+  location "xsky" "Open Sky" [] NoSymbol [] ObsidianCanyons

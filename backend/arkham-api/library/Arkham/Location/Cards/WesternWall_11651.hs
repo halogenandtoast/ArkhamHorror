@@ -7,9 +7,10 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.ObsidianCanyons.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window (getBatchId)
 
 newtype WesternWall_11651 = WesternWall_11651 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 westernWall_11651 :: LocationCard WesternWall_11651
@@ -20,13 +21,23 @@ instance HasModifiersFor WesternWall_11651 where
 
 instance HasAbilities WesternWall_11651 where
   getAbilities (WesternWall_11651 a) =
-    extendRevealed a
-      [ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
-      , scenarioI18n $ withI18nTooltip "westernWall.resign" $ locationResignAction a
-      ]
+    if a.revealed
+      then
+        extendRevealed
+          a
+          [ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
+          , scenarioI18n $ withI18nTooltip "westernWall.resign" $ locationResignAction a
+          ]
+      else extendUnrevealed1 a (summitEntry a 9)
 
 instance RunMessage WesternWall_11651 where
   runMessage msg l@(WesternWall_11651 attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 9 (getBatchId -> batchId) _ -> do
+      summitEntryToll attrs 9 iid batchId
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 9 -> True) -> do
+      summitEntryFailed attrs 9 iid
+      pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       erodedFrieze <- getSetAsideCard Treacheries.erodedFrieze
       drawCard iid erodedFrieze

@@ -1,7 +1,9 @@
 module Arkham.Treachery.Cards.Acrophobia (acrophobia) where
 
+import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.ObsidianCanyons.Helpers (getAdjacentOpenSky)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -16,10 +18,9 @@ instance RunMessage Acrophobia where
   runMessage msg t@(Acrophobia attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      -- TODO: this test gets +1 difficulty for each "open sky" card adjacent to
-      -- your location. "Open sky" placeholder cards / the Summit deck have no
-      -- engine support yet, so the difficulty is fixed at the base value of 1.
-      revelationSkillTest sid iid attrs #willpower (Fixed 1)
+      -- "This test gets +1 difficulty for each open sky adjacent to your location."
+      openSkies <- maybe (pure []) getAdjacentOpenSky =<< getMaybeLocation iid
+      revelationSkillTest sid iid attrs #willpower (Fixed $ 1 + length openSkies)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       -- For each point you fail by, you must either lose 1 action or take 1

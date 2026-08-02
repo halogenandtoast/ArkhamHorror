@@ -4,7 +4,6 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaign.Import.Lifted (setNextCampaignStep)
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (
   pattern ObsidianCanyons,
   pattern TheGrandVault,
@@ -227,8 +226,7 @@ instance RunMessage CourtOfTheAncients where
 
       eachInvestigator (`forInvestigator` Setup)
     ForInvestigator iid Setup -> do
-      -- Each Artifact is unique, so one already taken this setup is off the table.
-      artifacts <- filterM (fmap not . selectAny . assetIs) =<< getEarnedArtifacts
+      artifacts <- getAvailableArtifacts
       chooseOneM iid do
         questionLabeled' "chooseExpeditionAssetQuestion"
         labeled' "noExpeditionAsset" nothing
@@ -263,14 +261,13 @@ instance RunMessage CourtOfTheAncients where
       case res of
         Resolution 1 -> do
           resolutionWithXp "resolution1" $ allGainXp' attrs
-          setNextCampaignStep ObsidianCanyons
+          endOfScenarioThen ObsidianCanyons
         Resolution 2 -> do
           resolutionWithXp "resolution2" $ allGainXp' attrs
-          setNextCampaignStep TheGrandVault
+          endOfScenarioThen TheGrandVault
         NoResolution -> do
           resolutionWithXp "noResolution" $ allGainXp' attrs
-          if headedWest then setNextCampaignStep ObsidianCanyons else setNextCampaignStep TheGrandVault
+          endOfScenarioThen $ if headedWest then ObsidianCanyons else TheGrandVault
         _ -> error $ "Unknown resolution: " <> show res
-      endOfScenario
       pure s
     _ -> CourtOfTheAncients <$> liftRunMessage msg attrs

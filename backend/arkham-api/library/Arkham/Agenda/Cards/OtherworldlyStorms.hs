@@ -12,18 +12,14 @@ import Arkham.Scenarios.ObsidianCanyons.Helpers
 import Arkham.Trait (Trait (Central))
 
 newtype OtherworldlyStorms = OtherworldlyStorms AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 otherworldlyStorms :: AgendaCard OtherworldlyStorms
 otherworldlyStorms = agenda (1, A) OtherworldlyStorms Cards.otherworldlyStorms (Static 3)
 
--- TODO (open sky / Summit deck): The static text on side A ("each non-weakness
--- enemy may enter or leave open sky as though it were a location; each location
--- is connected to each adjacent location and to open sky") relies on the
--- "open sky" placeholder cards and the sliding/Summit-deck infrastructure, which
--- has no engine support yet. Implement those connection/movement modifiers via
--- HasModifiersFor once open-sky locations exist.
+instance HasModifiersFor OtherworldlyStorms where
+  getModifiersFor (OtherworldlyStorms a) = when (onSide A a) $ obsidianSkylineRules a
 
 instance HasAbilities OtherworldlyStorms where
   getAbilities (OtherworldlyStorms a) =
@@ -50,7 +46,7 @@ instance RunMessage OtherworldlyStorms where
         then
           -- The storms reach their peak: each surviving investigator is defeated
           -- and suffers 1 physical trauma.
-          eachInvestigator \iid -> do
+          selectEach UneliminatedInvestigator \iid -> do
             sufferPhysicalTrauma iid 1
             investigatorDefeated attrs iid
         else do

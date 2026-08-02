@@ -4627,6 +4627,7 @@ library
       Arkham.Location.Cards.OnyxGuardians
       Arkham.Location.Cards.OozyLakebed
       Arkham.Location.Cards.OpenCave
+      Arkham.Location.Cards.OpenSky
       Arkham.Location.Cards.OpenWater10593b
       Arkham.Location.Cards.OpenWater10594b
       Arkham.Location.Cards.OpenWater10595b
@@ -5797,6 +5798,7 @@ library
       Arkham.Story.Cards.DriveOffTheMiGo
       Arkham.Story.Cards.DrKenslersOffice
       Arkham.Story.Cards.DyersClassroom
+      Arkham.Story.Cards.EasternWinds
       Arkham.Story.Cards.EffigyOfNodens
       Arkham.Story.Cards.ElderChamber
       Arkham.Story.Cards.EldritchCall

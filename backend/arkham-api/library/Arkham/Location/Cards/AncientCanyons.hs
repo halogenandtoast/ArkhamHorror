@@ -7,7 +7,9 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.ObsidianCanyons.Helpers
 import Arkham.Trait (Trait (Monster))
+import Arkham.Window (getBatchId)
 
 newtype AncientCanyons = AncientCanyons LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,20 +20,33 @@ ancientCanyons = location AncientCanyons Cards.ancientCanyons 3 (Static 1)
 
 instance HasAbilities AncientCanyons where
   getAbilities (AncientCanyons a) =
-    extendRevealed
-      a
-      [ skillTestAbility $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
-      , restricted a 2 Here actionAbility
-      ]
+    if a.revealed
+      then
+        extendRevealed
+          a
+          [ skillTestAbility $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
+          , restricted a 2 Here actionAbility
+          ]
+      else extendUnrevealed1 a (summitEntry a 9)
 
 instance RunMessage AncientCanyons where
   runMessage msg l@(AncientCanyons attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 9 (getBatchId -> batchId) _ -> do
+      summitEntryToll attrs 9 iid batchId
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 9 -> True) -> do
+      summitEntryFailed attrs 9 iid
+      pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 1)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      findEncounterCardIn iid attrs (#enemy <> CardWithTrait Monster) [FromEncounterDeck, FromEncounterDiscard]
+      findEncounterCardIn
+        iid
+        attrs
+        (#enemy <> CardWithTrait Monster)
+        [FromEncounterDeck, FromEncounterDiscard]
       pure l
     FoundEncounterCard iid (isTarget attrs -> True) card -> do
       withLocationOf iid \lid ->

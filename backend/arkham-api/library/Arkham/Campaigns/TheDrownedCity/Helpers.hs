@@ -90,8 +90,25 @@ artifactAssets =
   , (HorrorInClay, Assets.horrorInClay)
   ]
 
+{- | The earned Artifacts an investigator may still choose to begin play with.
+
+Each def here is the face an Artifact enters play on — the Obsidian Claw's is
+(Speed), per "Enters play (Speed) side faceup" — so choosing one always puts the
+correct side into play, whichever side it happened to end the last scenario on.
+
+Artifacts are unique, so one already in play is off the table. That check has to
+look at both faces: a Claw already flipped to (Power) is a different card code,
+and matching only (Speed) would offer it a second time.
+-}
+getAvailableArtifacts :: (HasGame m, Tracing m) => m [CardDef]
+getAvailableArtifacts = filterM (fmap not . selectAny . artifactInPlay) =<< getEarnedArtifacts
+
 getEarnedArtifacts :: (HasGame m, Tracing m) => m [CardDef]
 getEarnedArtifacts = map snd <$> filterM (getHasRecord . fst) artifactAssets
+
+-- | Matches an Artifact in play on either of its faces.
+artifactInPlay :: CardDef -> AssetMatcher
+artifactInPlay def = mapOneOf assetIs def.defs
 
 {- | The @Item@ assets in the /Expedition/ encounter set. Ruby Standish and Andy
 Van Nortwick are in the set too, but they are @Ally@ assets.

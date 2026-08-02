@@ -7,6 +7,9 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Trait (Trait (Summit))
+import Arkham.Window (getBatchId)
 
 newtype SuspendedReef = SuspendedReef LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,14 +20,23 @@ suspendedReef = location SuspendedReef Cards.suspendedReef 3 (Static 2)
 
 instance HasAbilities SuspendedReef where
   getAbilities (SuspendedReef a) =
-    extendRevealed
-      a
-      [ restricted a 1 Here $ forced $ TurnEnds #after You
-      , restricted a 2 (DuringTurn You) $ FastAbility (ClueCost $ Static 1)
-      ]
+    if a.revealed
+      then
+        extendRevealed
+          a
+          [ restricted a 1 Here $ forced $ TurnEnds #after You
+          , restricted a 2 (DuringTurn You) $ FastAbility (ClueCost $ Static 1)
+          ]
+      else extendUnrevealed1 a (summitEntry a 9)
 
 instance RunMessage SuspendedReef where
   runMessage msg l@(SuspendedReef attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 9 (getBatchId -> batchId) _ -> do
+      summitEntryToll attrs 9 iid batchId
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 9 -> True) -> do
+      summitEntryFailed attrs 9 iid
+      pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasCardsInHand <- selectAny $ inHandOf NotForPlay iid
       chooseOrRunOneM iid $ withI18n do
@@ -34,16 +46,15 @@ instance RunMessage SuspendedReef where
           $ randomDiscardN iid (attrs.ability 1) 1
         countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
       pure l
-    UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      -- The clue is spent via the ability's cost. The swap effect itself —
-      -- "choose an enemy at a Summit location up to 3 connections away and swap
-      -- places with it (ignoring its location's Forced effect)" — has no engine
-      -- primitive: there is no "within N connections" location matcher and no
-      -- investigator<->enemy place-swap message. This also interacts with the
-      -- Summit-deck / open-sky / sliding-location infra which is not yet modeled.
-      -- TODO: once the Summit deck + sliding locations are implemented, target an
-      -- EnemyAt a Summit LocationWithTrait within 3 connections, swap the
-      -- investigator and enemy positions, and suppress the destination's Forced
-      -- "when you would enter" effect.
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      -- "Choose an enemy at a Summit location up to 3 connections away. Swap
+      -- places with the chosen enemy, ignoring its location's Forced effect."
+      -- The clue is spent via the ability cost.
+      enemies <-
+        select
+          $ EnemyAt
+          $ LocationWithTrait Summit
+          <> LocationWithDistanceFromAtMost 3 (be attrs) Anywhere
+      chooseTargetM iid enemies $ swapPlacesWithEnemy iid
       pure l
     _ -> SuspendedReef <$> liftRunMessage msg attrs

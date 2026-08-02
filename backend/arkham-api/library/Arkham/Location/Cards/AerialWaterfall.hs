@@ -8,7 +8,9 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveTo)
+import Arkham.Scenarios.ObsidianCanyons.Helpers
 import Arkham.Trait (Trait (Summit))
+import Arkham.Window (getBatchId)
 
 newtype AerialWaterfall = AerialWaterfall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,21 +21,30 @@ aerialWaterfall = location AerialWaterfall Cards.aerialWaterfall 4 (Static 2)
 
 instance HasAbilities AerialWaterfall where
   getAbilities (AerialWaterfall a) =
-    extendRevealed
-      a
-      [ -- [fast] During your turn, spend 1 clue: choose any revealed Summit
-        -- location and move to it. Limit once per round.
-        playerLimit PerRound
-          $ restricted a 1 (DuringTurn You)
-          $ FastAbility (ClueCost $ Static 1)
-      , -- [action] Spend 1 clue (per investigator): put the set-aside Obsidian
-        -- Claw into play under any investigator's control (Speed side faceup).
-        restricted a 2 Here
-          $ actionAbilityWithCost (ClueCost $ PerPlayer 1)
-      ]
+    if a.revealed
+      then
+        extendRevealed
+          a
+          [ -- [fast] During your turn, spend 1 clue: choose any revealed Summit
+            -- location and move to it. Limit once per round.
+            playerLimit PerRound
+              $ restricted a 1 (DuringTurn You)
+              $ FastAbility (ClueCost $ Static 1)
+          , -- [action] Spend 1 clue (per investigator): put the set-aside Obsidian
+            -- Claw into play under any investigator's control (Speed side faceup).
+            restricted a 2 Here
+              $ actionAbilityWithCost (ClueCost $ PerPlayer 1)
+          ]
+      else extendUnrevealed1 a (summitEntry a 9)
 
 instance RunMessage AerialWaterfall where
   runMessage msg l@(AerialWaterfall attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 9 (getBatchId -> batchId) _ -> do
+      summitEntryToll attrs 9 iid batchId
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 9 -> True) -> do
+      summitEntryFailed attrs 9 iid
+      pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       locations <-
         select $ RevealedLocation <> LocationWithTrait Summit <> not_ (locationWithInvestigator iid)

@@ -7,9 +7,10 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.ObsidianCanyons.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window (getBatchId)
 
 newtype AncientDome = AncientDome LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ancientDome :: LocationCard AncientDome
@@ -20,10 +21,14 @@ instance HasModifiersFor AncientDome where
 
 instance HasAbilities AncientDome where
   getAbilities (AncientDome a) =
-    extendRevealed a
-      [ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
-      , scenarioI18n $ withI18nTooltip "ancientDome.resign" $ locationResignAction a
-      ]
+    if a.revealed
+      then
+        extendRevealed
+          a
+          [ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
+          , scenarioI18n $ withI18nTooltip "ancientDome.resign" $ locationResignAction a
+          ]
+      else extendUnrevealed1 a (summitEntry a 9)
 
 -- TODO: back (unrevealed) side Forced "When you would enter this location, if
 -- you do not control the Obsidian Claw: spend 1 clue or test agility(2), else
@@ -31,6 +36,12 @@ instance HasAbilities AncientDome where
 
 instance RunMessage AncientDome where
   runMessage msg l@(AncientDome attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 9 (getBatchId -> batchId) _ -> do
+      summitEntryToll attrs 9 iid batchId
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 9 -> True) -> do
+      summitEntryFailed attrs 9 iid
+      pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       erodedFrieze <- getSetAsideCard Treacheries.erodedFrieze
       drawCard iid erodedFrieze

@@ -421,61 +421,87 @@ luminousArchivesArchiveOfMemory =
     CourtOfTheAncients
 
 -- Obsidian Canyons
+
+{- | Every Summit location shares one unrevealed back, so they can be shuffled
+into the Summit deck face-down and told apart only once revealed. R'lyeh Streets
+is the exception: it is placed face-up during setup and never enters the deck.
+-}
+summit :: Name
+summit = "Summit"
+
 rlyehStreets :: CardDef
 rlyehStreets =
   location_ "11648" "R'lyeh Streets" [Rlyeh, Central] ObsidianCanyons
 
 centralSpire :: CardDef
 centralSpire =
-  location_ "11649" "Central Spire" [Rlyeh, Central] ObsidianCanyons
+  locationWithUnrevealed_ "11649" summit [Summit] "Central Spire" [Rlyeh, Central] ObsidianCanyons
 
 floatingSpire :: CardDef
 floatingSpire =
-  location_ "11650" "Floating Spire" [Rlyeh, Central] ObsidianCanyons
+  locationWithUnrevealed_ "11650" summit [Summit] "Floating Spire" [Rlyeh, Central] ObsidianCanyons
 
 westernWall_11651 :: CardDef
 westernWall_11651 =
-  location_ "11651" "Western Wall" [Rlyeh, Central] ObsidianCanyons
+  locationWithUnrevealed_ "11651" summit [Summit] "Western Wall" [Rlyeh, Central] ObsidianCanyons
 
 ancientDome :: CardDef
 ancientDome =
-  location_ "11652" "Ancient Dome" [Rlyeh, Central] ObsidianCanyons
+  locationWithUnrevealed_ "11652" summit [Summit] "Ancient Dome" [Rlyeh, Central] ObsidianCanyons
 
 easternAthenaeum :: CardDef
 easternAthenaeum =
-  victory 1 $ location_ "11653" "Eastern Athenaeum" [Rlyeh, Summit, Glyph] ObsidianCanyons
+  victory 1
+    $ locationWithUnrevealed_
+      "11653"
+      summit
+      [Summit]
+      "Eastern Athenaeum"
+      [Rlyeh, Summit, Glyph]
+      ObsidianCanyons
 
 westernAthenaeum :: CardDef
 westernAthenaeum =
-  victory 1 $ location_ "11654" "Western Athenaeum" [Rlyeh, Summit, Glyph] ObsidianCanyons
+  victory 1
+    $ locationWithUnrevealed_
+      "11654"
+      summit
+      [Summit]
+      "Western Athenaeum"
+      [Rlyeh, Summit, Glyph]
+      ObsidianCanyons
 
 obsidianCliffs :: CardDef
 obsidianCliffs =
-  victory 1 $ location_ "11655" "Obsidian Cliffs" [Rlyeh, Summit] ObsidianCanyons
+  victory 1
+    $ locationWithUnrevealed_ "11655" summit [Summit] "Obsidian Cliffs" [Rlyeh, Summit] ObsidianCanyons
 
 suspendedReef :: CardDef
 suspendedReef =
-  location_ "11656" "Suspended Reef" [Rlyeh, Summit] ObsidianCanyons
+  quantity 3
+    $ locationWithUnrevealed_ "11656" summit [Summit] "Suspended Reef" [Rlyeh, Summit] ObsidianCanyons
 
 hangingShip :: CardDef
 hangingShip =
-  location_ "11657" "Hanging Ship" [Summit] ObsidianCanyons
+  quantity 2 $ locationWithUnrevealed_ "11657" summit [Summit] "Hanging Ship" [Summit] ObsidianCanyons
 
 ancientCanyons :: CardDef
 ancientCanyons =
-  location_ "11658" "Ancient Canyons" [Summit] ObsidianCanyons
+  locationWithUnrevealed_ "11658" summit [Summit] "Ancient Canyons" [Summit] ObsidianCanyons
 
 dazzlingSkyline :: CardDef
 dazzlingSkyline =
-  location_ "11659" "Dazzling Skyline" [Summit] ObsidianCanyons
+  quantity 3
+    $ locationWithUnrevealed_ "11659" summit [Summit] "Dazzling Skyline" [Summit] ObsidianCanyons
 
 aerialWaterfall :: CardDef
 aerialWaterfall =
-  location_ "11660" "Aerial Waterfall" [Summit] ObsidianCanyons
+  locationWithUnrevealed_ "11660" summit [Summit] "Aerial Waterfall" [Summit] ObsidianCanyons
 
 magneticSpires :: CardDef
 magneticSpires =
-  location_ "11661" "Magnetic Spires" [Summit] ObsidianCanyons
+  quantity 2
+    $ locationWithUnrevealed_ "11661" summit [Summit] "Magnetic Spires" [Summit] ObsidianCanyons
 
 -- TODO: back side of double-sided card (11662b)
 glyphOrrery :: CardDef

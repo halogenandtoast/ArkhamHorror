@@ -2950,7 +2950,14 @@ runGameMessage msg g = case msg of
   StoryMessage (PlaceStory card placement) -> do
     let storyId = StoryId $ toCardCode card
     let story' = overAttrs (Story.placementL .~ placement) (createStory card Nothing storyId)
-    pure $ g & entitiesL . storiesL . at storyId ?~ story'
+    pure
+      $ g
+      & entitiesL
+      . storiesL
+      . at storyId
+      ?~ story'
+      & entryTicksL
+      %~ insertMap card.id (gameWindowTick g)
   StoryMessage (ResolveStory _ _ sid) -> do
     card <- field StoryCard sid
     pure $ g & focusedCardsL %~ map (filter (/= card))

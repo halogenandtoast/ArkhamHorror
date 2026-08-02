@@ -1,8 +1,13 @@
 module Arkham.Location.Cards.ObsidianCliffs (obsidianCliffs) where
 
 import Arkham.Ability
+import Arkham.Helpers.SkillTest (getSkillTestTargetedLocation)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Window (getBatchId)
 
 newtype ObsidianCliffs = ObsidianCliffs LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -13,26 +18,40 @@ obsidianCliffs = location ObsidianCliffs Cards.obsidianCliffs 4 (Static 1)
 
 instance HasAbilities ObsidianCliffs where
   getAbilities (ObsidianCliffs a) =
-    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
+    if a.revealed
+      then
+        extendRevealed1 a
+          $ skillTestAbility
+          $ restricted
+            a
+            1
+            (Here <> exists (isOpenSky <> LocationWithDistanceFromAtMost 1 (be a) Anywhere))
+            actionAbility
+      else extendUnrevealed1 a (summitEntry a 9)
 
 instance RunMessage ObsidianCliffs where
   runMessage msg l@(ObsidianCliffs attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 9 (getBatchId -> batchId) _ -> do
+      summitEntryToll attrs 9 iid batchId
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 9 -> True) -> do
+      summitEntryFailed attrs 9 iid
+      pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      -- TODO: "Choose an adjacent open sky." The Summit deck and "open sky"
-      -- placeholder cards have no engine support yet, so we cannot present the
-      -- adjacent-open-sky targeting here. Once that infrastructure exists, ask
-      -- the investigator to choose an adjacent open sky before the test and
-      -- thread the choice through to the placement below.
-      sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
+      -- "Choose an adjacent open sky" happens before the test; remember it so the
+      -- Orrery lands where the investigator picked.
+      openSkies <- getAdjacentOpenSky attrs.id
+      chooseTargetM iid openSkies \sky -> do
+        -- The chosen sky rides along as the test's target so the Orrery lands
+        -- where the investigator picked, not somewhere re-derived on success.
+        sid <- getRandom
+        beginSkillTest sid iid (attrs.ability 1) sky #intellect (Fixed 3)
       pure l
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
-      -- Best effort: put the set-aside Glyph Orrery (rune_d) into play. The real
-      -- effect places it into the chosen adjacent open sky and slides that open
-      -- sky onto the top of the Summit deck.
-      -- TODO: place the Glyph Orrery into the chosen open sky and place that
-      -- open sky on top of the Summit deck once Summit-deck/open-sky/sliding
-      -- support exists.
-      placeSetAsideLocation_ Cards.glyphOrrery
+      -- "Put the set-aside Glyph Orrery into play in the chosen open sky (placing
+      -- that open sky on top of the Summit deck)."
+      whenJustM getSkillTestTargetedLocation \sky -> do
+        orrery <- getSetAsideCard Cards.glyphOrrery
+        placeInOpenSky orrery sky
       pure l
     _ -> ObsidianCliffs <$> liftRunMessage msg attrs

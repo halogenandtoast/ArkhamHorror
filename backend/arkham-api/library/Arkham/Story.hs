@@ -253,6 +253,7 @@ allStories =
     , SomeStoryCard unspeakableAbomination
     , -- The Drowned City
       SomeStoryCard westernWinds
+    , SomeStoryCard easternWinds
     , SomeStoryCard ruthlessCharge
     , SomeStoryCard hurricaneForce
     , SomeStoryCard direGale

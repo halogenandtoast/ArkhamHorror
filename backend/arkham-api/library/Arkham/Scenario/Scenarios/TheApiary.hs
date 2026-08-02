@@ -206,8 +206,7 @@ instance RunMessage TheApiary where
       push $ PlaceGrid (GridLocation pos lid)
       pure s
     ForInvestigator iid Setup -> do
-      -- Each Artifact is unique, so one already taken this setup is off the table.
-      artifacts <- filterM (fmap not . selectAny . assetIs) =<< getEarnedArtifacts
+      artifacts <- getAvailableArtifacts
       chooseOneM iid do
         questionLabeled' "chooseExpeditionAssetQuestion"
         labeled' "noExpeditionAsset" nothing

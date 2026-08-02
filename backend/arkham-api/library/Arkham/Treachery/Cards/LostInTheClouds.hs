@@ -23,9 +23,9 @@ instance RunMessage LostInTheClouds where
           $ placeDoomOnAgendaAndCheckAdvance 1
         labeled' "lostInTheClouds.eachInvestigatorTakesHorror" do
           eachInvestigator \iid' -> directHorror iid' attrs 2
-        -- TODO: option (c) "resolve the Western Winds story card's Forced effect as
-        -- if a non-elder-sign token was drawn." The Western Winds story card is a
-        -- placeholder CardDef, not a readable/forced-effect behavior in the engine,
-        -- so this choice cannot be resolved yet.
+        -- "Resolve the Forced effect on the Eastern Winds/Western Winds story
+        -- card as if you had drawn a non-[elder sign] symbol token" — i.e. skip
+        -- straight to the gust, bypassing the reveal.
+        labeled' "lostInTheClouds.resolveWinds" blowWindsFromStory
       pure t
     _ -> LostInTheClouds <$> liftRunMessage msg attrs

@@ -16,6 +16,7 @@ import {
 } from 'vue';
 import { type Game } from '@/arkham/types/Game';
 import { type Scenario } from '@/arkham/types/Scenario';
+import { type Story as StoryAttrs } from '@/arkham/types/Story';
 import { type Enemy } from '@/arkham/types/Enemy';
 import { type ConcealedCard } from '@/arkham/types/ConcealedCard';
 import ConcealedCardView from '@/arkham/components/ConcealedCard.vue';
@@ -1377,6 +1378,12 @@ const activePlayerId = computed(() => props.game.activeInvestigatorId)
 const globalStories = computed(() => Object.values(props.game.stories).filter((story) =>
   story.placement.tag === "OtherPlacement" && story.placement.contents === "Global"
 ))
+
+// Keep both faces of a double-sided story mounted as the same physical card.
+// The backend replaces the story entity when it flips, but a stable key lets
+// Story's image watcher play the card-flip animation instead of remounting.
+const globalStoryKey = (story: StoryAttrs) => [story.art, story.flippedArt].sort().join('/')
+
 const globalAssets = computed(() => Object.values(props.game.assets).filter((asset) => 
   asset.placement.tag === "OtherPlacement" && asset.placement.contents === "Global"
 ))
@@ -2321,7 +2328,7 @@ async function addChaosToken(face: any){
 
         <Story
           v-for="story in globalStories"
-          :key="story.id"
+          :key="globalStoryKey(story)"
           :story="story"
           :game="game"
           :playerId="playerId"

@@ -6,7 +6,7 @@ import { useDebug } from '@/arkham/debug';
 import { useAi } from '@/arkham/ai';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
-import { cardImage } from '@/arkham/cardImages';
+import { cardArt, cardImage } from '@/arkham/cardImages';
 import { cardImage as cardToImage, asCardCode, toCardContents, type Card as ArkhamCard } from '@/arkham/types/Card';
 import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
@@ -116,11 +116,19 @@ const marketDeckSlots = computed(() => {
   })
 })
 
+// A flipped asset shows its real back only when that back has published art —
+// which is exactly the cards the database carries a "<code>b" entry for. Assets
+// flipped to *hide* them (Sophie, the Hemlock allies) have no such entry, so they
+// keep the generic player back and cannot leak what they are.
+const hasBackArt = computed(() =>
+  dbCardStore.getDbCard(`${cardArt(cardCode.value)}b`) !== null
+)
+
 const image = computed(() => {
   if (props.asset.flipped) {
-    if (cardCode.value === "c90052") return cardImage(cardCode.value, 'b')
-    if (cardCode.value === "c88043") return cardImage(cardCode.value, 'b')
-    return imgsrc(`backs/back_player.jpg`)
+    return hasBackArt.value
+      ? cardImage(cardCode.value, 'b')
+      : imgsrc(`backs/back_player.jpg`)
   }
   const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
   return cardImage(cardCode.value, mutated)
@@ -128,11 +136,7 @@ const image = computed(() => {
 
 const dataImage = computed(() => {
   const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
-  if (props.asset.flipped) {
-    if (cardCode.value === "c90052") {
-      return "90052b"
-    }
-  }
+  if (props.asset.flipped && hasBackArt.value) return `${cardArt(cardCode.value)}b`
   return cardCode.value.replace('c', '') + mutated
 })
 const choices = useGameChoices(() => props.game, () => props.playerId)

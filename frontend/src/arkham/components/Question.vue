@@ -81,6 +81,32 @@ const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>
 const question = computed(() => props.game.question[props.playerId])
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 
+// A multi-token reveal opens a separate reaction window for each token. Read the
+// token from that window rather than relying on focused-token order: all revealed
+// tokens can already be focused while an earlier token's window is resolving.
+const scrutinizedChaosTokenId = computed(() => {
+  if (question.value?.tag !== 'ChooseOne' || !question.value.isWindow) return null
+
+  for (const choice of choices.value) {
+    if (choice.tag !== MessageType.ABILITY_LABEL) continue
+
+    for (const window of choice.windows) {
+      if (window.windowType.tag !== 'RevealChaosToken') continue
+      const contents = window.windowType.contents
+      if (!Array.isArray(contents)) continue
+      const token = contents[1]
+      if (!token || typeof token !== 'object') continue
+
+      if ('chaosTokenId' in token && typeof token.chaosTokenId === 'string') {
+        return token.chaosTokenId
+      }
+      if ('id' in token && typeof token.id === 'string') return token.id
+    }
+  }
+
+  return null
+})
+
 type SearchedCardGroup = {
   key: string
   zone: string
@@ -247,11 +273,47 @@ function focusedCardSourceLabel(cardId: string): string | null {
   }
 }
 
+// CardLabel choices already render their cards as the primary, clickable options.
+// Do not repeat those same focused cards in the generic "Cards" summary below.
+// Use counts rather than a Set because multiple copies can share a card code.
+const focusedCardsForGroups = computed(() => {
+  const cardLabelCounts = new Map<string, number>()
+  for (const choice of choices.value) {
+    if (choice.tag !== MessageType.CARD_LABEL) continue
+    cardLabelCounts.set(choice.cardCode, (cardLabelCounts.get(choice.cardCode) ?? 0) + 1)
+  }
+
+  return focusedCards.value.filter((card) => {
+    const cardCode = toCardContents(card).cardCode
+    const remaining = cardLabelCounts.get(cardCode) ?? 0
+    if (remaining === 0) return true
+    cardLabelCounts.set(cardCode, remaining - 1)
+    return false
+  })
+})
+
+const isSummitDeckOrdering = computed(() =>
+  question.value?.tag === QuestionType.QUESTION_LABEL
+    && question.value.label.includes('searchTheSpires.chooseOrder')
+)
+
 const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
-  if (focusedCards.value.length === 0) return []
+  if (focusedCardsForGroups.value.length === 0) return []
+
+  // Summit order matters. Keep every revealed card in the exact draw order and
+  // render them as one set instead of splitting the location and encounter-card
+  // orientations into separate visual rows.
+  if (isSummitDeckOrdering.value) {
+    return [{
+      key: 'focused-summit-deck',
+      zone: 'SummitDeck',
+      label: t('cards'),
+      cards: focusedCardsForGroups.value,
+    }]
+  }
 
   const grouped = new Map<string, ArkhamCard[]>()
-  for (const card of focusedCards.value) {
+  for (const card of focusedCardsForGroups.value) {
     const label = focusedCardSourceLabel(toCardContents(card).id) ?? t('cards')
     grouped.set(label, [...(grouped.get(label) ?? []), card])
   }
@@ -470,7 +532,7 @@ const traumaIconStyle = (text: string) => {
 
 const hasInnerContent = computed(() => {
   return questionImage.value
-    || (focusedCards.value.length > 0 && choices.value.length > 0)
+    || (focusedCardGroups.value.length > 0 && choices.value.length > 0)
     || (searchedCards.value.length > 0 && choices.value.length > 0)
     || paymentAmountsLabel.value
     || amountsLabel.value
@@ -729,7 +791,15 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
         <img :src="questionImage" class="card" />
       </div>
 
-      <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
+      <Token
+        v-for="focusedToken in focusedChaosTokens"
+        :key="focusedToken.id"
+        :token="focusedToken"
+        :playerId="playerId"
+        :game="game"
+        :scrutinized="focusedToken.id === scrutinizedChaosTokenId"
+        @choose="choose"
+      />
     </div>
 
     <div v-if="showChoices && (hasInnerContent || questionChoices.length > 0)" class="choices">
@@ -1341,6 +1411,15 @@ h2 {
   flex-direction: row;
   overflow-x: auto;
   flex-wrap: wrap;
+}
+
+.focused-cards .group-cards {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.focused-cards .searched-card {
+  flex: 0 0 auto;
 }
 
 .question-label:has(.amount-modal),

@@ -70,12 +70,7 @@ instance RunMessage SearchingTheSpires where
       centralSpire <- selectJust $ locationIs Locations.centralSpire
       rebuildSkyline centralSpire actTwoLayout
       -- "along with each remaining set-aside open sky card"
-      shuffleIntoSummitTop 5
-        =<< getSetAsideCardsMatching
-          ( mapOneOf
-              cardIs
-              [Locations.ancientDome, Locations.aerialWaterfall, Locations.openSky]
-          )
+      scenarioSpecific "shuffleSearchingAct2Summit" ()
       advanceActDeck attrs
       pure a
     _ -> SearchingTheSpires <$> liftRunMessage msg attrs

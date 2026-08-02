@@ -1,7 +1,5 @@
 module Arkham.Story.Cards.HiddenVault (hiddenVault) where
 
-import Arkham.Campaigns.TheDrownedCity.Import
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 
@@ -17,7 +15,6 @@ instance RunMessage HiddenVault where
     -- No flavor modal: the player reads this side off the flipped card itself.
     -- The location flips back and clears its flippable flag once this resolves.
     ResolveThisStory _ (is attrs -> True) -> do
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_u" :: Text, "Daughters" :: Text)
       pure s
     _ -> HiddenVault <$> liftRunMessage msg attrs

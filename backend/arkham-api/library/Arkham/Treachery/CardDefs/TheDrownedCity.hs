@@ -161,6 +161,7 @@ erodedFrieze =
     { cdCardTraits = setFromList [Evidence, Glyph]
     , cdOtherSide = Just "11664b"
     , cdDoubleSided = True
+    , cdRevelation = CannotBeCanceledRevelation
     }
 
 stElmosFire :: CardDef

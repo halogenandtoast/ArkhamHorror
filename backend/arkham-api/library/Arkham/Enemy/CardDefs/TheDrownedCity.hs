@@ -269,6 +269,7 @@ primevalTerror =
     , cdEvade = evade 2
     , cdHealth = health 2
     , cdCardTraits = setFromList [Monster]
+    , cdKeywords = singleton $ Keyword.Patrol $ LocationWithTrait Summit <> EmptyLocation
     }
 
 starVampire :: CardDef

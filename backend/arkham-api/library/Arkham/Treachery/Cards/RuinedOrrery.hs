@@ -1,10 +1,8 @@
 module Arkham.Treachery.Cards.RuinedOrrery (ruinedOrrery) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -38,7 +36,6 @@ instance RunMessage RuinedOrrery where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       -- Record "Y'ch'lecht" under rune_h, discovering this alien glyph, and add
       -- this card to the victory display.
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_h" :: Text, "Y'ch'lecht" :: Text)
       addToVictory iid attrs
       pure t

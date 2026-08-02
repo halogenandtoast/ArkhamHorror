@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.SkyRelicErodedByWinds (skyRelic) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelf)
 import Arkham.Helpers.SkillTest (getSkillTest)
-import Arkham.Message.Lifted.Log (record)
+import Arkham.Helpers.Story
+import Arkham.Story.Cards qualified as Stories
 
 newtype SkyRelicErodedByWinds = SkyRelicErodedByWinds AssetAttrs
   deriving anyclass IsAsset
@@ -35,19 +35,8 @@ instance RunMessage SkyRelicErodedByWinds where
       beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 8)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      -- "On success, flip this card and resolve its text." This card can be flipped
-      -- (no CannotBeFlipped modifier), so just trigger the flip here.
-      flipOver iid attrs
+      -- "If you succeed, flip this card and resolve its text." The back (11663b)
+      -- is a story card, which owns the glyph and the victory display.
+      readStory iid attrs Stories.skyRelicStory
       pure a
-    Flip _iid _ (isTarget attrs -> True) -> do
-      -- "Flip this card and resolve its text." The back side (story code 11663b)
-      -- is currently registered only as a placeholder Asset CardDef, not as a
-      -- Story card, so we cannot read it via readStory yet. As a Glyph asset in
-      -- The Drowned City, the known resolvable effect is translating its alien glyph.
-      -- TODO: once 11663b is implemented as the proper story/back side, resolve its
-      -- text here (likely via readStory) instead of (or in addition to) the glyph
-      -- translation below, and verify the actual translated word for glyph "rune_f".
-      record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_f" :: Text, "Stars" :: Text)
-      pure . SkyRelicErodedByWinds $ attrs & flippedL .~ True
     _ -> SkyRelicErodedByWinds <$> liftRunMessage msg attrs

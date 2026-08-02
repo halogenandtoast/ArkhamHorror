@@ -1,9 +1,11 @@
 module Arkham.Treachery.Cards.Acrophobia (acrophobia) where
 
-import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.I18n
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ObsidianCanyons.Helpers (getAdjacentOpenSky)
+import Arkham.Projection
+import Arkham.Scenarios.ObsidianCanyons.Helpers (isOpenSky)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -18,15 +20,17 @@ instance RunMessage Acrophobia where
   runMessage msg t@(Acrophobia attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      -- "This test gets +1 difficulty for each open sky adjacent to your location."
-      openSkies <- maybe (pure []) getAdjacentOpenSky =<< getMaybeLocation iid
-      revelationSkillTest sid iid attrs #willpower (Fixed $ 1 + length openSkies)
+      revelationSkillTest sid iid attrs #willpower
+        $ SumCalculation [Fixed 1, CountLocations (connectedFrom (locationWithInvestigator iid) <> isOpenSky)]
       pure t
-    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      -- For each point you fail by, you must either lose 1 action or take 1
-      -- horror (a separate choice per point of failure).
-      replicateM_ n $ chooseOneM iid $ withI18n do
-        chooseLoseActions iid attrs 1
+    FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
+      doStep n msg
+      pure t
+    DoStep n (FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
+      x <- field InvestigatorRemainingActions iid
+      chooseOrRunOneM iid $ withI18n do
+        when (x > 0) $ chooseLoseActions iid attrs 1
         chooseTakeHorror iid attrs 1
+      doNextStep msg
       pure t
     _ -> Acrophobia <$> liftRunMessage msg attrs

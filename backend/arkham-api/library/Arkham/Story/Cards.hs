@@ -152,6 +152,9 @@ allStoryCards =
       , nightThree
       , westernWinds
       , easternWinds
+      , erodedFriezeStory
+      , glyphOrreryStory
+      , skyRelicStory
       , ruthlessCharge
       , hurricaneForce
       , direGale
@@ -680,6 +683,21 @@ westernWinds = story "11640" "Western Winds" ObsidianCanyons & otherSideIs "1164
 
 easternWinds :: CardDef
 easternWinds = story "11640b" "Eastern Winds" ObsidianCanyons & otherSideIs "11640"
+
+-- The Glyph backs of Obsidian Canyons' double-sided cards, suffixed to keep them
+-- distinct from the front-side defs of the same name in Arkham.Location.Cards and
+-- Arkham.Treachery.Cards.
+erodedFriezeStory :: CardDef
+erodedFriezeStory = doubleSided $ story "11664b" "Eroded Frieze" ObsidianCanyons
+
+glyphOrreryStory :: CardDef
+glyphOrreryStory = doubleSided $ story "11662b" "Glyph Orrery" ObsidianCanyons
+
+-- Victory 1 is printed on this side, as it is on the campaign's other relic backs;
+-- the asset front carries none.
+skyRelicStory :: CardDef
+skyRelicStory =
+  (doubleSided $ story "11663b" "Sky Relic" ObsidianCanyons) {cdVictoryPoints = Just 1}
 
 -- The modular "Cthulhu deck" of action cards (The Doom of Arkham Pt II) shares a
 -- distinct card back.

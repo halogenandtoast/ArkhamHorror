@@ -1,7 +1,5 @@
 module Arkham.Story.Cards.ObsidianRelic (obsidianRelic) where
 
-import Arkham.Campaigns.TheDrownedCity.Import
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 
@@ -16,7 +14,6 @@ instance RunMessage ObsidianRelic where
   runMessage msg s@(ObsidianRelic attrs) = runQueueT $ case msg of
     -- No flavor modal: the player reads this side off the flipped card itself.
     ResolveThisStory iid (is attrs -> True) -> do
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_y" :: Text, "Knowledge" :: Text)
       -- "Add this card to the victory display" means this side, which is where
       -- the Victory 1 is printed; the asset front carries none. The asset side is

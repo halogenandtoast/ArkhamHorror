@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, inject, type Ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -19,6 +19,8 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), { noStory: false })
 const emit = defineEmits(['choose'])
 const { t, te } = useI18n()
+const processing = inject<Ref<boolean>>('processing')
+const isProcessing = computed(() => processing?.value ?? false)
 
 async function choose(idx: number) {
   emit('choose', idx)
@@ -155,7 +157,7 @@ const title = computed(() => {
     click-through-chrome
   >
     <template #handle><h1 v-html="label(title)"></h1></template>
-    <div class='choice-modal-wrapper'>
+    <div class="choice-modal-wrapper" :class="{ 'choice-modal-wrapper--processing': isProcessing }">
       <p class="body" v-if="body" v-html="label(body)"></p>
       <Question v-if="question" :game="game" :playerId="playerId" @choose="choose" />
     </div>
@@ -177,6 +179,10 @@ const title = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.choice-modal-wrapper--processing {
+  pointer-events: none;
 }
 
 .choice-modal-wrapper .body {

@@ -1,12 +1,12 @@
 module Arkham.Treachery.Cards.ErodedFrieze (erodedFrieze) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Story (readStory)
 import Arkham.Message.Lifted.Choose (chooseBeginSkillTest)
-import Arkham.Message.Lifted.Log (record)
+import Arkham.Story.Cards qualified as Stories
 import Arkham.Token (Token (Resource))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -23,15 +23,21 @@ instance HasModifiersFor ErodedFrieze where
   -- card in play (CannotLeavePlay); this also covers the un-cancelable attach.
   getModifiersFor (ErodedFrieze attrs) = modifySelf attrs [CannotLeavePlay]
 
+-- The card flips to its Glyph back once enough resources are on it; track that
+-- in meta so the front-side action is no longer offered afterward.
+flipped :: TreacheryAttrs -> Bool
+flipped a = toResultDefault False a.meta
+
 instance HasAbilities ErodedFrieze where
-  getAbilities (ErodedFrieze a) = [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]
+  getAbilities (ErodedFrieze a) =
+    [skillTestAbility $ restricted a 1 OnSameLocation actionAbility | not (flipped a)]
 
 instance RunMessage ErodedFrieze where
   runMessage msg t@(ErodedFrieze attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      -- Attach to your location. Cannot be canceled (revelations are not
-      -- cancelable here, so no extra handling is required); CannotLeavePlay
-      -- above handles the "set it aside out of play" clause.
+      -- "Attach Eroded Frieze to your location. Cannot be canceled" — the
+      -- un-cancelable part is declared on the card def; CannotLeavePlay above
+      -- handles the "set it aside out of play" clause.
       withLocationOf iid (attachTreachery attrs)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
@@ -50,14 +56,10 @@ instance RunMessage ErodedFrieze where
       when (attrs.resources + 1 >= requiredResources) $ flipOver iid attrs
       pure t
     Flip iid _ (isTarget attrs -> True) -> do
-      -- Back side (story 11664b): "You discover this glyph." Record "Darkness"
-      -- under rune_e on the glyph record; this glyph has been translated. Add
-      -- this card to the victory display.
-      -- TODO: once 11664b is implemented as the proper story/back side, resolve
-      -- its flavor/story text here (likely via readStory) in addition to the
-      -- glyph translation below.
-      record TheInvestigatorsDiscoveredAnAlienLanguage
-      campaignSpecific "translateGlyph" ("rune_e" :: Text, "Darkness" :: Text)
-      addToVictory iid attrs
-      pure t
+      -- "Flip it and resolve its text." The back (11664b) is a story card that
+      -- translates the glyph and adds itself to the victory display. A treachery
+      -- has no UI slot a story can replace, so the runner focuses the story card
+      -- and waits for the player to click it — which is what lets them read it.
+      readStory iid attrs Stories.erodedFriezeStory
+      pure $ ErodedFrieze $ attrs & setMeta True
     _ -> ErodedFrieze <$> liftRunMessage msg attrs

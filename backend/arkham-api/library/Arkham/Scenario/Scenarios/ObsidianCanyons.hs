@@ -16,6 +16,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreation (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier)
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
@@ -330,6 +331,24 @@ instance RunMessage ObsidianCanyons where
     ScenarioSpecific "decreaseStormIntensity" _ -> do
       storm <- getStormIntensity
       removeTokens attrs ScenarioTarget #resource (min 1 storm)
+      pure s
+    ScenarioSpecific "shuffleScouringAct2Summit" _ -> do
+      cards <-
+        getSetAsideCardsMatching
+          $ mapOneOf cardIs [Locations.floatingSpire, Locations.aerialWaterfall]
+      shuffleIntoSummitTop 3 cards
+      pure s
+    ScenarioSpecific "shuffleSearchingAct2Summit" _ -> do
+      cards <-
+        getSetAsideCardsMatching
+          $ mapOneOf
+            cardIs
+            [Locations.ancientDome, Locations.aerialWaterfall, Locations.openSky]
+      shuffleIntoSummitTop 5 cards
+      pure s
+    ScenarioSpecific "shuffleAct3Summit" _ -> do
+      cards <- getSetAsideCardsMatching $ cardIs Locations.westernWall_11651
+      shuffleIntoSummitTop 3 cards
       pure s
     ScenarioResolution res -> scope "resolutions" do
       headedWest <- getHasRecord TheExpeditionHeadedWest

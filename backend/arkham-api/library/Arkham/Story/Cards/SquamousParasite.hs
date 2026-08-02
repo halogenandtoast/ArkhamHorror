@@ -1,7 +1,5 @@
 module Arkham.Story.Cards.SquamousParasite (squamousParasite) where
 
-import Arkham.Campaigns.TheDrownedCity.Import
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 
@@ -16,7 +14,6 @@ instance RunMessage SquamousParasite where
   runMessage msg s@(SquamousParasite attrs) = runQueueT $ case msg of
     -- No flavor modal: the player reads this side off the flipped card itself.
     ResolveThisStory iid (is attrs -> True) -> do
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_t" :: Text, "Air" :: Text)
       -- "Add this card to the victory display" means this side, which is where the
       -- Victory 1 is printed. The enemy front is the same physical card, so it goes

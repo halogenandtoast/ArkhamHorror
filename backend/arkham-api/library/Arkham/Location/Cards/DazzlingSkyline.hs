@@ -1,12 +1,9 @@
 module Arkham.Location.Cards.DazzlingSkyline (dazzlingSkyline) where
 
 import Arkham.Ability
-import Arkham.Capability
-import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Scenarios.ObsidianCanyons.Helpers
 import Arkham.Window (getBatchId)
 
@@ -24,7 +21,7 @@ instance HasAbilities DazzlingSkyline where
         extendRevealed
           a
           [ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
-          , restricted a 2 (Here <> youExist can.spend.clues) actionAbility
+          , restricted a 2 Here $ actionAbilityWithCost $ AtLeastOne (Fixed 3) (ClueCost $ Static 1)
           ]
       else extendUnrevealed1 a (summitEntry a 9)
 
@@ -39,20 +36,12 @@ instance RunMessage DazzlingSkyline where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assignHorror iid (attrs.ability 1) 1
       pure l
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      -- Spend 1-3 clues, capped at what the investigator can actually pay.
-      clues <- field InvestigatorClues iid
-      chooseAmount iid "Clues" "Clues" 1 (min 3 clues) attrs
+    UseCardAbility _iid (isSource attrs -> True) 2 _ (totalCluePayment -> n) -> do
+      doStep n msg
       pure l
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) | n > 0 -> do
-      spendClues iid n
-      -- "For each clue spent, reveal the bottom 3 cards of the Summit deck."
-      -- Resolved one batch at a time so the investigator can react to what the
-      -- last batch turned up before committing the next.
-      replicateM_ n $ forInvestigator iid (DoStep 1 msg)
-      pure l
-    ForInvestigator iid (DoStep 1 (ResolveAmounts _ _ (isTarget attrs -> True))) -> do
+    DoStep n (UseThisAbility iid (isSource attrs -> True) 2) | n > 0 -> do
       revealed <- drawFromSummitBottom 3
       placeOnSummitTopOrBottom iid revealed
+      doNextStep msg
       pure l
     _ -> DazzlingSkyline <$> liftRunMessage msg attrs

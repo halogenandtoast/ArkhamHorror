@@ -3,10 +3,9 @@ module Arkham.Act.Cards.ScouringTheSpires (scouringTheSpires) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Helpers.Cost (getSpendableClueCount)
-import Arkham.Helpers.Query (getInvestigators, getSetAsideCardsMatching)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Scenario.Deck
 import Arkham.Scenarios.ObsidianCanyons.Helpers
 
 newtype ScouringTheSpires = ScouringTheSpires ActAttrs
@@ -17,29 +16,27 @@ scouringTheSpires :: ActCard ScouringTheSpires
 scouringTheSpires = act (1, A) ScouringTheSpires Cards.scouringTheSpires Nothing
 
 instance HasAbilities ScouringTheSpires where
-  getAbilities (ScouringTheSpires attrs) =
+  getAbilities (ScouringTheSpires a) =
     extend
-      attrs
-      [ restricted attrs 1 (exists $ InvestigatorWithClues $ atLeast 1) actionAbility
-      , restricted
-          attrs
-          2
-          (notExists $ UneliminatedInvestigator <> not_ (InvestigatorAt $ locationIs Locations.centralSpire))
+      a
+      [ restricted a 1 (ScenarioDeckWithCard SummitDeck) $ actionAbilityWithCost ClueCostX
+      , onlyOnce
+          $ restricted
+            a
+            2
+            ( exists (undefeated <> InvestigatorAt (locationIs Locations.centralSpire))
+                <> notExists (undefeated <> not_ (InvestigatorAt $ locationIs Locations.centralSpire))
+            )
           $ Objective
           $ forced AnyWindow
       ]
+   where
+    undefeated = UneliminatedInvestigator <> not_ DefeatedInvestigator
 
 instance RunMessage ScouringTheSpires where
   runMessage msg a@(ScouringTheSpires attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- getInvestigators
-      total <- getSpendableClueCount investigators
-      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 1 total attrs
-      pure a
-    ResolveAmounts iid (getChoiceAmount "$clues" -> x) (isTarget attrs -> True) | x > 0 -> do
-      investigators <- getInvestigators
-      spendCluesAsAGroup investigators x
-      searchTheSpires (attrs.ability 1) iid x
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalCluePayment -> n) -> do
+      searchTheSpires (attrs.ability 1) iid n
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advancedWithOther attrs
@@ -50,9 +47,7 @@ instance RunMessage ScouringTheSpires where
       selectEach (locationIs Locations.rlyehStreets) removeIgnoringTextBox
       centralSpire <- selectJust $ locationIs Locations.centralSpire
       rebuildSkyline centralSpire actTwoLayout
-      shuffleIntoSummitTop 3
-        =<< getSetAsideCardsMatching
-          (mapOneOf cardIs [Locations.floatingSpire, Locations.aerialWaterfall])
+      scenarioSpecific "shuffleScouringAct2Summit" ()
       advanceActDeck attrs
       pure a
     _ -> ScouringTheSpires <$> liftRunMessage msg attrs

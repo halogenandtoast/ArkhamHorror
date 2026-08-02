@@ -485,6 +485,10 @@ payCost msg c iid skipAdditionalCosts cost = do
             ResourceCost resources -> do
               availableResources <- getSpendableResources iid
               pure $ min n (availableResources `div` resources)
+            ClueCost gv -> do
+              availableClues <- getSpendableClueCount [iid]
+              clues <- getGameValue gv
+              pure $ min n (availableClues `div` clues)
             SealCost matcher -> selectCount matcher
             _ -> pure n
           name <- fieldMap InvestigatorName toTitle iid

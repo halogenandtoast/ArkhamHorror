@@ -11,7 +11,8 @@ const props = withDefaults(defineProps<{
   playerId: string
   cancelled?: boolean
   selected?: boolean
-}>(), { cancelled: false, selected: false })
+  scrutinized?: boolean
+}>(), { cancelled: false, selected: false, scrutinized: false })
 const emit = defineEmits(['choose'])
 
 const image = computed(() => chaosTokenImage(props.token.face))
@@ -60,7 +61,8 @@ const classObject = computed(() => ({
   'active-token': revealedTokenAction.value !== -1,
   ignored: isIgnored.value,
   selected: props.selected,
-  cancelled: props.cancelled
+  cancelled: props.cancelled,
+  scrutinized: props.scrutinized
 }))
 </script>
 
@@ -107,6 +109,13 @@ const classObject = computed(() => ({
 
 .selected {
   filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(50deg) saturate(1000%) contrast(0.8);
+}
+
+.front.scrutinized {
+  border-radius: 50%;
+  outline: 5px solid #f2cf72;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 3px rgba(242, 207, 114, 0.2), 0 0 24px rgba(242, 207, 114, 0.85);
 }
 
 .token {

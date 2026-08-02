@@ -7,7 +7,6 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log (record)
 
 newtype CourtKeeperWeaverOfNightmares = CourtKeeperWeaverOfNightmares EnemyAttrs
   deriving anyclass IsEnemy
@@ -31,7 +30,6 @@ instance HasAbilities CourtKeeperWeaverOfNightmares where
 instance RunMessage CourtKeeperWeaverOfNightmares where
   runMessage msg e@(CourtKeeperWeaverOfNightmares attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_j" :: Text, "Sleep" :: Text)
       pure e
     _ -> CourtKeeperWeaverOfNightmares <$> liftRunMessage msg attrs

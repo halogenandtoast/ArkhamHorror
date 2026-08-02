@@ -25,7 +25,10 @@ instance HasAbilities ObsidianCliffs where
           $ restricted
             a
             1
-            (Here <> exists (isOpenSky <> LocationWithDistanceFromAtMost 1 (be a) Anywhere))
+            ( Here
+                <> exists (isOpenSky <> LocationWithDistanceFromAtMost 1 (be a) Anywhere)
+                <> SetAsideCardExists (cardIs Cards.glyphOrrery)
+            )
             actionAbility
       else extendUnrevealed1 a (summitEntry a 9)
 

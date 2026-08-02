@@ -7,7 +7,6 @@ import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveTo)
-import Arkham.Scenarios.ObsidianCanyons.Helpers (gridLocationsWithin)
 
 newtype ObsidianClawSpeed = ObsidianClawSpeed AssetAttrs
   deriving anyclass IsAsset
@@ -21,21 +20,20 @@ instance HasModifiersFor ObsidianClawSpeed where
 
 instance HasAbilities ObsidianClawSpeed where
   getAbilities (ObsidianClawSpeed a) =
-    [ -- Only readable once every glyph printed on the card has been translated.
-      restricted a 1 (ControlsThis <> DuringTurn You <> glyphsAllKnown "APMEBC")
-        $ FastAbility
-        $ exhaust a
-    , playerLimit PerRound $ controlled_ a 2 $ FastAbility Free
+    [ playerLimit PerRound $ controlled a 1 (DuringTurn You) $ FastAbility Free
+    , controlled a 2 (glyphsAllKnown "APMEBC") $ freeTrigger $ exhaust a
     , artifactAbility a 3
     ]
 
 instance RunMessage ObsidianClawSpeed where
   runMessage msg a@(ObsidianClawSpeed attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      -- "Choose a location up to 2 connections away: Move to the chosen location."
-      -- Obsidian Canyons measures that on its grid; open sky is a location there
-      -- but cannot be entered, so it drops out of the candidates on its own.
-      locations <- maybe (pure []) (gridLocationsWithin 2) =<< selectOne (locationWithInvestigator iid)
+      locations <-
+        select
+          $ LocationWithDistanceFromAtMost
+            2
+            (locationWithInvestigator iid)
+            (not_ (locationWithInvestigator iid) <> CanEnterLocation (InvestigatorWithId iid))
       canEnter <- filterM (<=~> canEnterLocation iid) locations
       chooseTargetM iid canEnter $ moveTo (attrs.ability 1) iid
       pure a

@@ -7,7 +7,6 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log (record)
 
 newtype CourtKeeperObserverOfDreams = CourtKeeperObserverOfDreams EnemyAttrs
   deriving anyclass IsEnemy
@@ -29,7 +28,6 @@ instance RunMessage CourtKeeperObserverOfDreams where
   runMessage msg e@(CourtKeeperObserverOfDreams attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       -- You discover this glyph (rune_k). Record "Dreams" under rune_k; translated.
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_k" :: Text, "Dreams" :: Text)
       pure e
     _ -> CourtKeeperObserverOfDreams <$> liftRunMessage msg attrs

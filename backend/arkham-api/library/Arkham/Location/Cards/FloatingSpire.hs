@@ -2,12 +2,10 @@ module Arkham.Location.Cards.FloatingSpire (floatingSpire) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Investigator.Types (Field (InvestigatorResources))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
 import Arkham.Scenarios.ObsidianCanyons.Helpers
 import Arkham.Window (getBatchId)
 
@@ -27,7 +25,8 @@ instance HasAbilities FloatingSpire where
       then
         extendRevealed1 a
           $ groupLimit PerRound
-          $ restricted a 1 Here actionAbility
+          $ restricted a 1 Here
+          $ actionAbilityWithCost (AtLeastOne (Fixed 3) (ResourceCost 1))
       else extendUnrevealed1 a (summitEntry a 9)
 
 instance RunMessage FloatingSpire where
@@ -38,13 +37,7 @@ instance RunMessage FloatingSpire where
     FailedThisSkillTest iid (isAbilitySource attrs 9 -> True) -> do
       summitEntryFailed attrs 9 iid
       pure l
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      -- Spend 1-3 resources, capped at what the investigator can actually pay.
-      resources <- field InvestigatorResources iid
-      chooseAmount iid "Resources" "Resources" 1 (min 3 resources) attrs
-      pure l
-    ResolveAmounts iid (getChoiceAmount "Resources" -> n) (isTarget attrs -> True) | n > 0 -> do
-      spendResources iid n
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalResourcePayment -> n) -> do
       revealedLocations <- select RevealedLocation
       chooseTargetM iid revealedLocations \lid ->
         placeClues (attrs.ability 1) lid n

@@ -1,11 +1,9 @@
 module Arkham.Location.Cards.EasternAthenaeum (easternAthenaeum) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Scenarios.ObsidianCanyons.Helpers
 import Arkham.Window (getBatchId)
 
@@ -21,6 +19,7 @@ instance HasAbilities EasternAthenaeum where
     if a.revealed
       then
         extendRevealed1 a
+          $ onlyOnce
           $ restricted a 1 Here
           $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) (be a))
       else extendUnrevealed1 a (summitEntry a 9)
@@ -36,7 +35,6 @@ instance RunMessage EasternAthenaeum where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       -- The GroupClueCost above has already spent 1 clue per investigator.
       -- "You discover this glyph (rune_b)." Record "Plant" under rune_b; translated.
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_b" :: Text, "Plant" :: Text)
       pure l
     _ -> EasternAthenaeum <$> liftRunMessage msg attrs

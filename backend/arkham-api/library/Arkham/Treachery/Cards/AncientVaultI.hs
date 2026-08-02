@@ -1,11 +1,9 @@
 module Arkham.Treachery.Cards.AncientVaultI (ancientVaultI) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -39,7 +37,6 @@ instance RunMessage AncientVaultI where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       -- Record "Cthulhu" under rune_i, discovering this alien glyph, and add
       -- this card to the victory display.
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_i" :: Text, "Cthulhu" :: Text)
       addToVictory iid attrs
       pure t

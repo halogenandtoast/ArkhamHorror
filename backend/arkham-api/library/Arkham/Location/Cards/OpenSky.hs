@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Scenarios.ObsidianCanyons.Helpers (canEnterOpenSky)
 
 newtype OpenSky = OpenSky LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 openSky :: LocationCard OpenSky
@@ -20,6 +20,9 @@ stays visible to ordinary location matchers (unlike Before the Black Throne's
 empty space, which 'getLocationsMatching' filters out by card code). What it
 does not allow is being entered or investigated.
 -}
+instance HasAbilities OpenSky where
+  getAbilities (OpenSky a) = getAbilities a
+
 instance HasModifiersFor OpenSky where
   getModifiersFor (OpenSky a) = do
     modifySelf a [CannotBeFlipped, CannotBeRevealed]

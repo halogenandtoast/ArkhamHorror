@@ -14,9 +14,12 @@ import Arkham.Story.Cards.AncientRelic qualified as AncientRelic
 import Arkham.Story.Cards.AncientVaultN qualified as AncientVaultN
 import Arkham.Story.Cards.AncientVaultO qualified as AncientVaultO
 import Arkham.Story.Cards.AncientVaultP qualified as AncientVaultP
+import Arkham.Story.Cards.ErodedFrieze qualified as ErodedFrieze
+import Arkham.Story.Cards.GlyphOrrery qualified as GlyphOrrery
 import Arkham.Story.Cards.HiddenVault qualified as HiddenVault
 import Arkham.Story.Cards.ObsidianRelic qualified as ObsidianRelic
 import Arkham.Story.Cards.SeafloorFrieze qualified as SeafloorFrieze
+import Arkham.Story.Cards.SkyRelic qualified as SkyRelic
 import Arkham.Story.Cards.SquamousParasite qualified as SquamousParasite
 import Arkham.Story.Cards.TheUnderseaVault qualified as UnderseaVault
 import Arkham.Story.Cards.UnderseaParasite qualified as UnderseaParasite
@@ -254,6 +257,9 @@ allStories =
     , -- The Drowned City
       SomeStoryCard westernWinds
     , SomeStoryCard easternWinds
+    , SomeStoryCard ErodedFrieze.erodedFrieze
+    , SomeStoryCard GlyphOrrery.glyphOrrery
+    , SomeStoryCard SkyRelic.skyRelic
     , SomeStoryCard ruthlessCharge
     , SomeStoryCard hurricaneForce
     , SomeStoryCard direGale

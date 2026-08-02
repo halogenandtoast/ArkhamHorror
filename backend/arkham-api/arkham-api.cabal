@@ -5804,6 +5804,7 @@ library
       Arkham.Story.Cards.EldritchCall
       Arkham.Story.Cards.EndlessSecrets
       Arkham.Story.Cards.EngramsOath
+      Arkham.Story.Cards.ErodedFrieze
       Arkham.Story.Cards.EvilWithin
       Arkham.Story.Cards.ExhumeTheBones
       Arkham.Story.Cards.FamilialPain
@@ -5816,6 +5817,7 @@ library
       Arkham.Story.Cards.GavriellasFate
       Arkham.Story.Cards.GhastlyTunnels
       Arkham.Story.Cards.GhostsOfTheDead
+      Arkham.Story.Cards.GlyphOrrery
       Arkham.Story.Cards.HastursEnd
       Arkham.Story.Cards.HastursLastStand
       Arkham.Story.Cards.HedgeMaze
@@ -5884,6 +5886,7 @@ library
       Arkham.Story.Cards.SickeningReality_69
       Arkham.Story.Cards.SilverTwilightLodgeAllied
       Arkham.Story.Cards.SilverTwilightLodgeRival
+      Arkham.Story.Cards.SkyRelic
       Arkham.Story.Cards.SomberRemains
       Arkham.Story.Cards.SomethingBelow
       Arkham.Story.Cards.SongsThatTheHyadesShallSing

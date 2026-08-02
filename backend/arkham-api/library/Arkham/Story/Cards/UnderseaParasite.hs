@@ -1,13 +1,11 @@
 module Arkham.Story.Cards.UnderseaParasite (underseaParasite) where
 
-import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Enemy.Types (Field (EnemyMeta))
 import Arkham.ForMovement
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Message.Lifted.Move (enemyMoveTo)
 import Arkham.Projection
 import Arkham.Scenarios.TheDrownedQuarter.Helpers (UnderseaParasiteFlip (..))
@@ -41,7 +39,6 @@ instance RunMessage UnderseaParasite where
                 lead <- getLead
                 chooseOrRunOneM lead $ targets destinations (enemyMoveTo attrs eid)
             FlippedByLeavingPlay -> do
-              record TheInvestigatorsDiscoveredAnAlienLanguage
               campaignSpecific "translateGlyph" ("rune_x" :: Text, "Sum" :: Text)
               -- "Add this card to the victory display" means this side, which is
               -- where the Victory 1 is printed. Adding the /enemy/ instead would

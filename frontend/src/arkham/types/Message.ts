@@ -323,10 +323,25 @@ export const portraitLabelDecoder = JsonDecoder.object<PortraitLabel>(
     investigatorId: JsonDecoder.string(),
   }, 'PortraitLabel')
 
+export type AbilityLabelWindow = {
+  windowType: {
+    tag: string
+    contents: unknown
+  }
+}
+
+const abilityLabelWindowDecoder = JsonDecoder.object<AbilityLabelWindow>({
+  windowType: JsonDecoder.object({
+    tag: JsonDecoder.string(),
+    contents: JsonDecoder.succeed(),
+  }, 'AbilityLabelWindowType'),
+}, 'AbilityLabelWindow')
+
 export type AbilityLabel = {
   tag: MessageType.ABILITY_LABEL
   investigatorId: string
   ability: Ability
+  windows: AbilityLabelWindow[]
 }
 
 export const abilityLabelDecoder = JsonDecoder.object<AbilityLabel>(
@@ -334,6 +349,7 @@ export const abilityLabelDecoder = JsonDecoder.object<AbilityLabel>(
     tag: JsonDecoder.literal(MessageType.ABILITY_LABEL),
     investigatorId: JsonDecoder.string(),
     ability: abilityDecoder,
+    windows: JsonDecoder.array(abilityLabelWindowDecoder, 'AbilityLabelWindow[]'),
   }, 'Ability')
 
 export type StartSkillTestButton = {

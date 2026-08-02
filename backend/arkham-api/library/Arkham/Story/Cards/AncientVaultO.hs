@@ -1,7 +1,5 @@
 module Arkham.Story.Cards.AncientVaultO (ancientVaultO) where
 
-import Arkham.Campaigns.TheDrownedCity.Import
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 
@@ -17,7 +15,6 @@ instance RunMessage AncientVaultO where
     -- The treachery reads this side with 'readStory', so it arrives focused in
     -- the UI and only resolves once the player clicks it to dismiss it.
     ResolveThisStory iid (is attrs -> True) -> do
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_o" :: Text, "Power" :: Text)
       -- "Add this card to the victory display" means this side, which is where the
       -- Victory 1 is printed. The treachery front is the same physical card, so it

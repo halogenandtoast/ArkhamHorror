@@ -1,7 +1,5 @@
 module Arkham.Story.Cards.SeafloorFrieze (seafloorFrieze) where
 
-import Arkham.Campaigns.TheDrownedCity.Import
-import Arkham.Message.Lifted.Log (record)
 import Arkham.Projection (field)
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
@@ -17,7 +15,6 @@ seafloorFrieze = story SeafloorFrieze Cards.seafloorFrieze
 instance RunMessage SeafloorFrieze where
   runMessage msg s@(SeafloorFrieze attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
-      record TheInvestigatorsDiscoveredAnAlienLanguage
       campaignSpecific "translateGlyph" ("rune_w" :: Text, "Parasite" :: Text)
       field StoryOtherSide attrs.id >>= traverse_ \case
         TreacheryTarget tid -> push $ RemoveTreachery tid

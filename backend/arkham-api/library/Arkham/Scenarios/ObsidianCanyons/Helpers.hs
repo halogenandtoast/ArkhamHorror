@@ -10,13 +10,14 @@ import Arkham.Classes.HasModifiersFor (HasModifiersM)
 import Arkham.Classes.HasQueue (HasQueue, push)
 import Arkham.Classes.HasQueue qualified as Queue
 import Arkham.Classes.Query
+import Arkham.Deck qualified as Deck
 import Arkham.Direction (GridDirection (..))
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.Modifiers (modifySelect, modifySelectMapM)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario (countScenarioTokens, getScenarioDeck)
 import Arkham.I18n
-import Arkham.Id (BatchId, EnemyId, InvestigatorId, LocationId)
+import Arkham.Id (BatchId, EnemyId, InvestigatorId, LocationId, getPlayer)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), LocationAttrs)
@@ -24,6 +25,7 @@ import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message (
   Message (PlaceEnemy, PlaceGrid, PlaceInvestigator, RemoveFromGame, Run, StoryMessage),
  )
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveTo)
@@ -145,12 +147,18 @@ Open sky in particular must never reach the encounter discard pile.
 @arrange@ orders the returning cards before they go on top; the winds shuffle
 them, everything else keeps them as given.
 -}
+summitDeckCard :: (HasGame m, Tracing m) => LocationId -> m Card
+summitDeckCard lid = do
+  card <- field LocationCard lid
+  revealed <- field LocationRevealed lid
+  pure $ if revealed && not card.singleSided then flipCard card else card
+
 returnToSummitDeckWith
   :: ReverseQueue m => ([Card] -> m [Card]) -> [LocationId] -> m ()
 returnToSummitDeckWith arrange lids = do
   (toVictory, toDeck) <- partitionM canBeClaimedForVictory lids
   for_ toVictory addToVictory_
-  returning <- arrange =<< traverse (field LocationCard) toDeck
+  returning <- arrange =<< traverse summitDeckCard toDeck
   for_ toDeck removeLocation
   deck <- getScenarioDeck SummitDeck
   setScenarioDeck SummitDeck (returning <> deck)
@@ -191,17 +199,6 @@ drawFromSummitBottom n = do
   setScenarioDeck SummitDeck remaining
   pure (reverse bottom)
 
--- | Put cards back on top of the Summit deck, first card given ending up topmost.
-placeOnSummitTop :: ReverseQueue m => [Card] -> m ()
-placeOnSummitTop cards = do
-  deck <- getScenarioDeck SummitDeck
-  setScenarioDeck SummitDeck (cards <> deck)
-
-placeOnSummitBottom :: ReverseQueue m => [Card] -> m ()
-placeOnSummitBottom cards = do
-  deck <- getScenarioDeck SummitDeck
-  setScenarioDeck SummitDeck (deck <> reverse cards)
-
 {- | "Each location is connected to each location (and open sky) adjacent to it",
 from the front of both agendas. Grid adjacency is not connection on its own, so
 the agenda has to declare it.
@@ -234,7 +231,7 @@ blowWinds diagramRows dir = do
   let removed = mapMaybe (.removed) plans
   (toVictory, toDeck) <- partitionM canBeClaimedForVictory removed
   for_ toVictory addToVictory_
-  returning <- shuffleM =<< traverse (field LocationCard) toDeck
+  returning <- shuffleM =<< traverse summitDeckCard toDeck
   for_ toDeck removeLocation
 
   deck <- getScenarioDeck SummitDeck
@@ -381,18 +378,26 @@ rebuildSkyline anchor layout = do
   -- location, and "everything but the anchor" says it more safely than a trait
   -- check would (Central Spire and Floating Spire do not carry Summit on their
   -- revealed faces).
-  sweeping <- select (IncludeEmptySpace Anywhere)
+  sweeping <- select $ oneOf [isOpenSky, LocationWithTrait Summit]
   let leaving = filter (/= anchor) sweeping
-  cards <- traverse (field LocationCard) leaving
+  cards <- traverse summitDeckCard leaving
   for_ leaving removeLocation
-  shuffleIntoSummitDeck cards
+
+  -- Build and draw from the new deck in one step. setScenarioDeck is queued, so
+  -- calling shuffleIntoSummitDeck followed by drawFromSummitBottom here would
+  -- make the draw see the old deck and leave holes in the new skyline.
+  deck <- getScenarioDeck SummitDeck
+  shuffled <- shuffleM (cards <> deck)
+  let fillCount = length layout.fillPositions
+  let (remaining, bottom) = splitAt (max 0 $ length shuffled - fillCount) shuffled
+  setScenarioDeck SummitDeck remaining
 
   push $ PlaceGrid (GridLocation layout.anchorPos anchor)
 
   openSkies <- getSetAsideOpenSky (length layout.openSkyPositions)
   for_ (zip layout.openSkyPositions openSkies) (uncurry placeLocationInGrid_)
 
-  fill <- drawFromSummitBottom (length layout.fillPositions)
+  let fill = reverse bottom
   for_ (zip layout.fillPositions fill) (uncurry placeLocationInGrid_)
 
 {- | Take open sky cards from the set-aside pool. Setup puts every unused open sky
@@ -439,9 +444,21 @@ revealed location into play in an adjacent open sky and move to it. (Place that
 open sky card and each other revealed card on top of the Summit deck in any
 order.)"
 
-The open sky that gets built over goes back on top of the deck as part of leaving
-play, so only the cards that were not placed need putting back here.
+The lead investigator chooses the order of every card returned to the top. Cards
+are selected from bottom to top: each selected card is put on top immediately, so
+the final selection becomes the deck's top card.
 -}
+chooseSummitTopOrder :: ReverseQueue m => [Card] -> m ()
+chooseSummitTopOrder cards = when (notNull cards) do
+  lead <- getLead
+  player <- getPlayer lead
+  (_, choices) <-
+    runChooseT
+      $ targets cards
+      $ putCardOnTopOfDeck lead (Deck.ScenarioDeckByKey SummitDeck)
+  let promptLabel = scenarioI18n $ "$" <> labelKey "searchTheSpires.chooseOrder"
+  focusCards cards $ push $ Msg.chooseOrRunOneAtATimeWithLabel promptLabel player choices
+
 searchTheSpires :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> Int -> m ()
 searchTheSpires source iid x = when (x > 0) do
   revealed <- drawFromSummitBottom x
@@ -454,10 +471,20 @@ searchTheSpires source iid x = when (x > 0) do
       when (notNull openSkies) $ for_ placeable \card ->
         cardLabeled card do
           chooseTargetM iid openSkies \sky -> do
-            placeInOpenSky card sky
-            selectOne (LocationWithCardId $ toCardId card) >>= traverse_ (moveTo source iid)
-          placeOnSummitTop (filter (/= card) revealed)
-      scenarioI18n $ labeled' "searchTheSpires.placeNone" $ placeOnSummitTop revealed
+            skyCard <- summitDeckCard sky
+            -- This replacement must not use placeInOpenSky: that helper puts the
+            -- old sky on top immediately, before the lead can order it together
+            -- with the other revealed cards.
+            pos <- fieldJust LocationPosition sky
+            removeLocation sky
+            push $ Msg.ObtainCard card.id
+            lid <- placeLocationInGrid pos card
+            -- Return every unplaced card before moving. The move can satisfy the
+            -- act's objective, so advancing first would strand these cards
+            -- outside both play and the Summit deck.
+            chooseSummitTopOrder (skyCard : filter (/= card) revealed)
+            moveTo source iid lid
+      scenarioI18n $ labeled' "searchTheSpires.placeNone" $ chooseSummitTopOrder revealed
 
 {- | The Forced printed on every Summit location's unrevealed back (and on Glyph
 Orrery's front):
@@ -502,10 +529,21 @@ any order." Asked one card at a time; each answer settles that card's pile, and
 the order within a pile follows the order they are resolved in.
 -}
 placeOnSummitTopOrBottom :: ReverseQueue m => InvestigatorId -> [Card] -> m ()
-placeOnSummitTopOrBottom iid cards = focusCards cards $ for_ cards \card ->
-  chooseOneM iid $ scenarioI18n do
-    cardLabeled card $ placeOnSummitTop [card]
-    labeled' "summitDeck.toBottom" $ placeOnSummitBottom [card]
+placeOnSummitTopOrBottom iid cards = focusCards cards $ chooseSummitPlacement iid cards
+
+chooseSummitPlacement :: ReverseQueue m => InvestigatorId -> [Card] -> m ()
+chooseSummitPlacement _ [] = pure ()
+chooseSummitPlacement iid remaining = do
+  highlightCards ([] :: [Card])
+  chooseOneM iid $ targets remaining \card -> do
+    highlightCards [card]
+    chooseOneM iid $ scenarioI18n do
+      labeled' "summitDeck.toTop" do
+        putCardOnTopOfDeck iid (Deck.ScenarioDeckByKey SummitDeck) card
+        chooseSummitPlacement iid $ filter (/= card) remaining
+      labeled' "summitDeck.toBottom" do
+        putCardOnBottomOfDeck iid (Deck.ScenarioDeckByKey SummitDeck) card
+        chooseSummitPlacement iid $ filter (/= card) remaining
 
 {- | Suspended Reef's "swap places with the chosen enemy, ignoring its location's
 @Forced@ effect".

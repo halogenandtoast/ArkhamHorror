@@ -67,9 +67,8 @@
     },
     "east": {
       "title": "Setup (v.II) — Eastern Expedition",
-      "gatherSets": "Gather all cards from the following encounter sets: _Obsidian Canyons_, _Cosmic Legacy_, _Elder Mist_, _The Inescapable_, _R’lyeh_, _Star Spawn_, _Chilling Cold_, _Nightgaunts_, and _Striking Fear_. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/obsidian-canyons.png' /><img src='{setImgPath}/cosmic-legacy.png' /><img src='{setImgPath}/elder-mist.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
-      "setAsideOpenSky": "Set all 11 cards in the _Chilling Cold_ and _Striking Fear_ encounter sets aside, out of play, as “open sky” (see _Open Sky_).",
-      "gatherLocations": "Gather each location in the _Obsidian Canyons_ encounter set.",
+      "gatherSets": "Gather all cards from the following encounter sets: *Obsidian Canyons*, *Cosmic Legacy*, *Elder Mist*, *The Inescapable*, *R’lyeh*, *Star Spawn*, *Chilling Cold*, *Nightgaunts*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/obsidian-canyons.png' /><img src='{setImgPath}/cosmic-legacy.png' /><img src='{setImgPath}/elder-mist.png' /><img src='{setImgPath}/the-inescapable.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/striking-fear.png' /></section>Set all 11 cards in the *Chilling Cold* and *Striking Fear* encounter sets aside, out of play, as _“open sky”_ (see _Open Sky_).",
+      "gatherLocations": "Gather each location in the *Obsidian Canyons* encounter set.",
       "removeLocations": "Remove Western Wall and Floating Spire from the game.",
       "setAsideLocations": "Set R’lyeh Streets, Central Spire, Aerial Waterfall, Glyph Orrery{'{'}runeD{'}'}, and Ancient Dome aside, out of play.",
       "buildSummitDeck": "Shuffle each remaining _Summit_ location into a separate deck, unrevealed side faceup. This is the Summit deck. (See _The Summit Deck and Sliding Locations_.)",
@@ -79,11 +78,11 @@
       "beginAtRlyehStreets": "Each investigator begins play at R’lyeh Streets.",
       "windsStoryCard": "Find the double-sided Eastern Winds/Western Winds story card and put it into play, Western Winds side faceup.",
       "buildActAgendaDeck": "Build the act and agenda decks using agenda 1a—“Otherworldly Storms,” act 1a—“Searching the Spires,” and act 2a—“To the Ancient Dome!” Remove each other act and agenda from the game.",
-      "stormIntensity": "Place 1 resource on the scenario reference card under _Storm Intensity_.",
-      "starSpawn": "Shuffle each enemy from the _Star Spawn_ encounter set and remove three at random from the game.",
-      "setCardsAside": "Set the double-sided Sky Relic{'{'}runeF{'}'} story asset, Eroded Frieze{'{'}runeE{'}'} treachery, and the Obsidian Claw story asset aside, out of play, along with _The Inescapable_ encounter set.",
-      "removeStarVampire": "Search the _Obsidian Canyons_ encounter set for one copy of the Star Vampire enemy and remove it from the game.",
-      "chooseExpeditionAsset": "In player order, each player may choose 1 _Item_ asset from the _Expedition_ encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+      "stormIntensity": "Place 1 resource on the scenario reference card under Storm Intensity.",
+      "starSpawn": "Shuffle each enemy from the *Star Spawn* encounter set and remove three at random from the game.",
+      "setCardsAside": "Set the double-sided Sky Relic{'{'}runeF{'}'} story asset, Eroded Frieze{'{'}runeE{'}'} treachery, and the Obsidian Claw story asset aside, out of play, along with *The Inescapable* encounter set.",
+      "removeStarVampire": "Search the *Obsidian Canyons* encounter set for one copy of the Star Vampire enemy and remove it from the game.",
+      "chooseExpeditionAsset": "In player order, each player may choose 1 _Item_ asset from the *Expedition* encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
       "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck.",
       "readyToBegin": "You are now ready to begin."
     }
@@ -103,33 +102,47 @@
     },
     "locationAdjacency": {
       "title": "Location Adjacency in this Scenario",
-      "body": "<p class='basic'>During this scenario, locations are arranged in a set grid pattern. Each location is connected to each location adjacent to it.</p><ul><li>Adjacent locations share a side (left, right, above, or below).</li><li>Locations that share only a corner are not considered adjacent.</li></ul>"
+      "body": "<p class='basic'>During this scenario, locations are arranged in a set grid pattern. _Each location is connected to each location adjacent to it_.</p><ul><li>Adjacent locations share a side (left, right, above, or below).</li><li>Locations that share only a corner are not considered adjacent.</li></ul>"
     }
   },
   "label": {
     "chooseExpeditionAssetQuestion": "Choose an asset to begin in play under your control.",
-    "noExpeditionAsset": "Do not take an Artifact or Expedition asset."
+    "noExpeditionAsset": "Do not take an Artifact or Expedition asset.",
+    "cluesToSpend": "Choose how many clues to spend.",
+    "summitEntry": {
+      "spendClue": "Spend 1 clue",
+      "test": "Test {agility} (2)"
+    },
+    "searchTheSpires": {
+      "placeNone": "Do not put a revealed location into play",
+      "chooseOrder": "Choose the next card to place on top of the Summit deck. The final card chosen will be topmost."
+    },
+    "summitDeck": {
+      "toTop": "Place on the top of the Summit deck",
+      "toBottom": "Place on the bottom of the Summit deck"
+    },
+    "wingsOfTerror": {
+      "drawEnemy": "Draw that enemy",
+      "attack": "That enemy attacks you"
+    },
+    "lostInTheClouds": {
+      "eachInvestigatorTakesHorror": "Each investigator takes 2 direct horror",
+      "resolveWinds": "Resolve the Forced effect on the Eastern Winds/Western Winds story card as if you had drawn a non-{eldersign} symbol token"
+    }
   },
-  "cluesToSpend": "Clues to spend",
-  "wingsOfTerror": {
-    "drawEnemy": "Draw that enemy",
-    "attack": "That enemy attacks you"
-  },
-  "westernWall": {
-    "resign": "You retreat to the western wall and descend from the storm-wracked skyline."
-  },
-  "ancientDome": {
-    "resign": "You clamber down from the ancient dome, descending from the storm-wracked skyline."
+  "tooltips": {
+    "westernWall": {
+      "resign": "You clamber down."
+    },
+    "ancientDome": {
+      "resign": "You clamber down from the ancient dome, descending from the storm-wracked skyline."
+    }
   },
   "hangingShip": {
     "slide": "Slide Hanging Ship into an adjacent open sky"
   },
   "magneticSpires": {
     "swap": "Choose an open sky up to 2 spaces away and swap Magnetic Spires with it"
-  },
-  "lostInTheClouds": {
-    "eachInvestigatorTakesHorror": "Each investigator takes 2 direct horror",
-    "resolveWinds": "Resolve the Forced effect on the Eastern Winds/Western Winds story card as if you had drawn a non-{eldersign} symbol token"
   },
   "tokens": {
     "easyStandard": {
@@ -178,15 +191,5 @@
         "other": "for putting up with it"
       }
     }
-  },
-  "searchTheSpires": {
-    "placeNone": "Do not put a revealed location into play"
-  },
-  "summitEntry": {
-    "spendClue": "Spend 1 clue",
-    "test": "Test {agility} (2)"
-  },
-  "summitDeck": {
-    "toBottom": "Place on the bottom of the Summit deck"
   }
 }

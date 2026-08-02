@@ -25,7 +25,18 @@ instance HasAbilities SuspendedReef where
         extendRevealed
           a
           [ restricted a 1 Here $ forced $ TurnEnds #after You
-          , restricted a 2 (DuringTurn You) $ FastAbility (ClueCost $ Static 1)
+          , restricted
+              a
+              2
+              ( DuringTurn You
+                  <> exists
+                    ( EnemyAt
+                        $ not_ YourLocation
+                        <> LocationWithTrait Summit
+                        <> LocationWithDistanceFromAtMost 3 (be a) Anywhere
+                    )
+              )
+              $ FastAbility (ClueCost $ Static 1)
           ]
       else extendUnrevealed1 a (summitEntry a 9)
 
@@ -53,7 +64,8 @@ instance RunMessage SuspendedReef where
       enemies <-
         select
           $ EnemyAt
-          $ LocationWithTrait Summit
+          $ not_ (locationWithInvestigator iid)
+          <> LocationWithTrait Summit
           <> LocationWithDistanceFromAtMost 3 (be attrs) Anywhere
       chooseTargetM iid enemies $ swapPlacesWithEnemy iid
       pure l

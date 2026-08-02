@@ -163,13 +163,22 @@ function modifierSource(mod: Modifier) {
   return sourceCardCode(mod.source, props.game)
 }
 
+const targetCardId = computed(() => props.skillTest.targetCard ?? props.skillTest.sourceCard)
+
 const targetCard = computed(() => {
-  if (!props.skillTest.targetCard) {
-    if (!props.skillTest.sourceCard) return null
-    return props.game.cards[props.skillTest.sourceCard]
-  }
-  return props.game.cards[props.skillTest.targetCard]
+  if (!targetCardId.value) return null
+  return props.game.cards[targetCardId.value]
 })
+
+const cardIsRevealed = (cardId: string | null | undefined) => {
+  if (!cardId) return true
+  const location = Object.values(props.game.locations).find(
+    (candidate) => candidate.cardId === cardId,
+  )
+  return location?.revealed ?? true
+}
+
+const targetCardRevealed = computed(() => cardIsRevealed(targetCardId.value))
 
 const isConcealed = computed(() => {
   return props.skillTest.source.tag === 'AbilitySource' && props.skillTest.source.contents[0].tag === 'ConcealedCardSource'
@@ -198,8 +207,10 @@ const sourceCard = computed(() => {
   if (props.skillTest.sourceCard === props.skillTest.targetCard) return null
   const card = props.game.cards[props.skillTest.sourceCard]
   if (targetCard.value === card) return null
-  return card  
+  return card
 })
+
+const sourceCardRevealed = computed(() => cardIsRevealed(props.skillTest.sourceCard))
 
 const applyResultsAction = computed(() => {
   return choices.value.findIndex((c) => c.tag === "SkillTestApplyResultsButton");
@@ -322,7 +333,14 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
             <Card :game="game" :card="swarmHost" :revealed="true" playerId="" />
           </div>
         </div>
-        <Card v-else-if="targetCard" :game="game" :card="targetCard" class="target-card" :revealed="true" playerId="" />
+        <Card
+          v-else-if="targetCard"
+          :game="game"
+          :card="targetCard"
+          class="target-card"
+          :revealed="targetCardRevealed"
+          playerId=""
+        />
         <img
           v-else-if="isConcealed"
           :src="imgsrc('mini-cards/concealed-card.jpg')"
@@ -370,7 +388,13 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
             class="portrait"
             :src="investigatorPortrait"
           />
-          <Card v-if="sourceCard" :game="game" :card="sourceCard" :revealed="true" playerId="" />
+          <Card
+            v-if="sourceCard"
+            :game="game"
+            :card="sourceCard"
+            :revealed="sourceCardRevealed"
+            playerId=""
+          />
         </div>
       </div>
       <ChaosBagView

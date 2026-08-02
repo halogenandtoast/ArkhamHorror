@@ -74,8 +74,9 @@ instance RunMessage ObsidianCanyons where
       flavor do
         setTitle "title"
         p $ if headedWest then "obsidianCanyons1" else "obsidianCanyons2"
+      flavor do
+        setTitle "title"
         p "obsidianCanyons3"
-        p "obsidianCanyons3Storm"
         ul do
           li.validate (notNull withDreamsOfDestruction || notNull withProveYourWorth) "resolveTasks"
           li.nested "checkCampaignLog" do
@@ -144,7 +145,7 @@ instance RunMessage ObsidianCanyons where
       scope "setup" $ scope (if headedWest then "west" else "east") $ flavor do
         setTitle "title"
         ul do
-          li.nested "gatherSets" $ li "setAsideOpenSky"
+          li "gatherSets"
           li.nested "gatherLocations" do
             li "removeLocations"
             li "setAsideLocations"

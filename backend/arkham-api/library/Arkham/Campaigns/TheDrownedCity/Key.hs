@@ -62,8 +62,11 @@ data TheDrownedCityKey
   | -- | Sepulchre of the Sleeper
     TheInvestigatorsDidNotConfrontTheNightmare
   | TheInvestigatorsHaltedCthulhusAwakening
-  | -- | The Doom of Arkham
-    CthulhuWasDrivenAway
+  | {- | The Doom of Arkham. @FloodedNeighborhoods@ is a recorded-set of the card
+    codes of each location that was flooded when Part I ended.
+    -}
+    FloodedNeighborhoods
+  | CthulhuWasDrivenAway
   | CthulhuAnnihilatedTheExpedition
   | CthulhuAnnihilatedTheCityOfArkham
   | CthulhuWasBanished

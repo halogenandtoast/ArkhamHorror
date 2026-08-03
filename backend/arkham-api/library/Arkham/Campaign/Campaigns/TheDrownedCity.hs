@@ -31,6 +31,7 @@ instance IsCampaign TheDrownedCity where
     PrologueStep -> continue OneLastJob
     OneLastJob -> continue AnOfferYouCantRefuse
     AnOfferYouCantRefuse -> continue ExpeditionToRlyeh
+    Finale -> continue TheDoomOfArkhamPartI
     -- The west/east branch out of Expedition to R'lyeh is pushed explicitly from
     -- that interlude's handler via setNextCampaignStep.
     other -> defaultNextStep other
@@ -255,7 +256,7 @@ instance RunMessage TheDrownedCity where
       flavor do
         setTitle "title"
         p "awakening4"
-        p.basic "proceedToReturnToArkham"
+        p.basic.right "proceedToReturnToArkham"
       setNextCampaignStep ReturnToArkham
       pure c
     -- Interlude IV: Return to Arkham — resolve every investigator's Task.
@@ -275,7 +276,7 @@ instance RunMessage TheDrownedCity where
             li "gainTaskExperience"
             li "resolveTasks"
       eachInvestigator (`forInvestigator` msg)
-      setNextCampaignStep TheDoomOfArkhamPartI
+      setNextCampaignStep Finale
       pure c
     ForInvestigator iid (CampaignStep (InterludeStep 4 _)) -> scope "returnToArkham" do
       investigatorTasks <- getInvestigatorTasks iid
@@ -339,6 +340,9 @@ instance RunMessage TheDrownedCity where
                 sufferMentalTrauma iid 1
                 addChaosToken Skull
               _ -> pure ()
+      pure c
+    CampaignStep Finale -> scope "finale" do
+      flavor $ setTitle "title" >> p "body"
       pure c
     -- Epilogue. Sepulchre of the Sleeper's Resolution 1 wins the campaign outright
     -- and comes straight here, as do The Doom of Arkham's endings.

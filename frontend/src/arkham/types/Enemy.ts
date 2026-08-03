@@ -54,7 +54,10 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
   evade: JsonDecoder.nullable(calculationDecoder),
   healthDamage: JsonDecoder.number(),
   sanityDamage: JsonDecoder.number(),
-  health: JsonDecoder.fallback(null, calculationDecoder),
+  /* nullable, not fallback: calculationDecoder ends in a catch-all that succeeds on
+     anything, including null, so a fallback never fires and an enemy printing no
+     health at all decoded as OtherCalculation rather than null. Matches fight/evade. */
+  health: JsonDecoder.fallback(null, JsonDecoder.nullable(calculationDecoder)),
   tokens: tokensDecoder,
   assignedDamage: JsonDecoder.array<[boolean, number]>(
     JsonDecoder.tuple(

@@ -6,9 +6,8 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
 import Arkham.Token (Token (Resource))
-import Arkham.Trait (Trait (Artifact, Ruined))
+import Arkham.Trait (Trait (Artifact, Cthulhu, Rooftop, Ruined))
 
 newtype TheFinalSeal = TheFinalSeal AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -17,29 +16,26 @@ newtype TheFinalSeal = TheFinalSeal AgendaAttrs
 theFinalSeal :: AgendaCard TheFinalSeal
 theFinalSeal = agenda (2, A) TheFinalSeal Cards.theFinalSeal (Static 10)
 
--- | A location that has had a sigil (a resource token) placed on it by the
--- ritual action below.
 locationWithSigil :: LocationMatcher
 locationWithSigil = LocationWithToken Resource
 
 instance HasAbilities TheFinalSeal where
   getAbilities (TheFinalSeal a) =
-    [ -- [action] Spend 1 clue (per investigator, as a group) AND place an
-      -- Artifact asset you control in the victory display: place 1 sigil (a
-      -- resource) on your location.
-      scenarioI18n
-        $ withI18nTooltip "placeSigil"
-        $ restricted a 1 (exists $ AssetWithTrait Artifact <> AssetControlledBy You)
+    [ restricted
+        a
+        1
+        ( exists (AssetWithTrait Artifact <> AssetControlledBy You)
+            <> youExist (not_ $ InvestigatorAt $ LocationWithTrait Rooftop)
+        )
         $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
     , -- [Forced] When the enemy phase ends: draw the top card of the Cthulhu
       -- deck. (TODO: Cthulhu deck has no engine support yet.)
       mkAbility a 2 $ forced $ PhaseEnds #when #enemy
-    , -- Objective: if each Cthulhu enemy is in the victory display and there are
-      -- 5 locations with sigils, immediately advance.
-      -- TODO: the "each Cthulhu facet is in the victory display" half is a
-      -- Cthulhu Board interaction with no engine support; only the 5-sigil half
-      -- of the condition is gated here.
-      restricted a 3 (LocationCount 5 locationWithSigil)
+    , onlyOnce
+        $ restricted
+          a
+          3
+          (LocationCount 5 locationWithSigil <> InVictoryDisplay (CardWithTrait Cthulhu) (atLeast 3))
         $ Objective
         $ forced AnyWindow
     ]

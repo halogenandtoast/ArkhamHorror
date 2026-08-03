@@ -5,7 +5,7 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types (Field (..))
+import Arkham.Location.Types (Field (LocationCardsUnderneath))
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -16,17 +16,21 @@ newtype RandallTillinghast = RandallTillinghast EnemyAttrs
 randallTillinghast :: EnemyCard RandallTillinghast
 randallTillinghast = enemy RandallTillinghast Cards.randallTillinghast
 
--- Keywords (Relentless, Retaliate) are defined on the card def.
+{- | "Randall Tillinghast cannot move and gets +1 fight and +1[per_investigator]
+health for each card beneath Tillinghast Esoterica." The stack shrinks as the
+investigators buy their way through it, so he weakens as they take the artifacts.
+Relentless and Retaliate are printed on the card def.
+-}
 instance HasModifiersFor RandallTillinghast where
   getModifiersFor (RandallTillinghast a) = do
-    -- Number of cards beneath the Tillinghast Esoterica location.
     cardsBeneath <-
-      selectOne (locationIs Locations.tillinghastEsoterica) >>= \case
-        Nothing -> pure 0
-        Just lid -> length <$> field LocationCardsUnderneath lid
+      selectOne (locationIs Locations.tillinghastEsotericaEphemeralShop)
+        >>= maybe (pure 0) (fieldMap LocationCardsUnderneath length)
     health <- perPlayer cardsBeneath
     modifySelf a
-      $ [CannotMove] <> [EnemyFight cardsBeneath | cardsBeneath > 0] <> [HealthModifier health | health > 0]
+      $ [CannotMove]
+      <> [EnemyFight cardsBeneath | cardsBeneath > 0]
+      <> [HealthModifier health | health > 0]
 
 instance RunMessage RandallTillinghast where
   runMessage msg (RandallTillinghast attrs) = runQueueT $ RandallTillinghast <$> liftRunMessage msg attrs

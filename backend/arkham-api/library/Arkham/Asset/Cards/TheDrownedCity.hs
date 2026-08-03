@@ -940,6 +940,7 @@ johnRaymondLegrasse :: CardDef
 johnRaymondLegrasse =
   (storyAsset "11687" ("John Raymond Legrasse" <:> "Hunting for Answers") 4 TheDoomOfArkhamPartI)
     { cdCardTraits = setFromList [Ally, Detective]
+    , cdSkills = [#combat, #intellect, #wild]
     , cdSlots = [#ally]
     , cdUnique = True
     }

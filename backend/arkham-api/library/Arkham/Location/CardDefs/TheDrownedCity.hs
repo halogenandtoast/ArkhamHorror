@@ -584,36 +584,84 @@ tillinghastEsotericaEphemeralShop =
 -- The Doom of Arkham, Part II
 northsideTheDrownedCity :: CardDef
 northsideTheDrownedCity =
-  location_ "11692" ("Northside" <:> "Ruined") [Arkham, Ruined] TheDoomOfArkhamPartII
+  location
+    "11692"
+    ("Northside" <:> "Ruined")
+    [Arkham, Ruined]
+    T
+    [Diamond, Triangle, Star]
+    TheDoomOfArkhamPartII
 
 downtown :: CardDef
 downtown =
-  location_ "11693" ("Downtown" <:> "Ruined") [Arkham, Ruined] TheDoomOfArkhamPartII
+  location
+    "11693"
+    ("Downtown" <:> "Ruined")
+    [Arkham, Ruined]
+    Triangle
+    [Moon, T, Star]
+    TheDoomOfArkhamPartII
 
 easttownTheDrownedCity :: CardDef
 easttownTheDrownedCity =
-  location_ "11694" ("Easttown" <:> "Ruined") [Arkham, Ruined] TheDoomOfArkhamPartII
+  location
+    "11694"
+    ("Easttown" <:> "Ruined")
+    [Arkham, Ruined]
+    Moon
+    [Circle, Triangle, Heart]
+    TheDoomOfArkhamPartII
 
 miskatonicUniversityTheDrownedCity :: CardDef
 miskatonicUniversityTheDrownedCity =
-  location_ "11695" ("Miskatonic University" <:> "Ruined") [Arkham, Ruined] TheDoomOfArkhamPartII
+  location
+    "11695"
+    ("Miskatonic University" <:> "Ruined")
+    [Arkham, Ruined]
+    Diamond
+    [T, Plus, Circle, Square, Star]
+    TheDoomOfArkhamPartII
 
 rivertownTheDrownedCity :: CardDef
 rivertownTheDrownedCity =
-  location_ "11696" ("Rivertown" <:> "Ruined") [Arkham, Central, Ruined] TheDoomOfArkhamPartII
+  location
+    "11696"
+    ("Rivertown" <:> "Ruined")
+    [Arkham, Central, Ruined]
+    Circle
+    [Moon, Diamond, Square, Heart]
+    TheDoomOfArkhamPartII
 
 stMarysHospitalTheDrownedCity :: CardDef
 stMarysHospitalTheDrownedCity =
-  location_ "11697" ("St. Mary's Hospital" <:> "Ruined") [Arkham, Ruined] TheDoomOfArkhamPartII
+  location
+    "11697"
+    ("St. Mary's Hospital" <:> "Ruined")
+    [Arkham, Ruined]
+    Plus
+    [Diamond, Square, Star]
+    TheDoomOfArkhamPartII
 
 southside :: CardDef
 southside =
-  location_ "11698" ("Southside" <:> "Ruined") [Arkham, Ruined] TheDoomOfArkhamPartII
+  location
+    "11698"
+    ("Southside" <:> "Ruined")
+    [Arkham, Ruined]
+    Square
+    [Diamond, Plus, Circle, Heart]
+    TheDoomOfArkhamPartII
 
 westernRooftops :: CardDef
 westernRooftops =
-  location_ "11699" "Western Rooftops" [Arkham, Rooftop] TheDoomOfArkhamPartII
+  location "11699" "Western Rooftops" [Arkham, Rooftop] Star [Diamond, T, Plus] TheDoomOfArkhamPartII
 
 easternRooftops :: CardDef
 easternRooftops =
-  location_ "11700" "Eastern Rooftops" [Arkham, Rooftop] TheDoomOfArkhamPartII
+  location
+    "11700"
+    "Eastern Rooftops"
+    [Arkham, Rooftop]
+    Heart
+    [Circle, Square, Moon]
+    TheDoomOfArkhamPartII

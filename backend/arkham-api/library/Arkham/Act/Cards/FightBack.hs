@@ -45,20 +45,16 @@ instance RunMessage FightBack where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      -- "Return each Cthulhu enemy in the victory display to the Cthulhu Board
-      -- non-Enraged."
-      -- TODO: the Cthulhu Board (the shared zone holding the four facets, with
-      -- Enraged / non-Enraged orientation) has no engine support yet, so the
-      -- facets cannot actually be moved back from the victory display onto it.
+      -- "Return each Cthulhu enemy in the victory display to its place on the
+      -- Cthulhu Board, non-Enraged side faceup."
+      returnCthulhuFacetsToBoard
 
-      -- "Increase Cthulhu's Rage by 1." (queued; the meta update happens when
-      -- the scenario processes the message, so reason about the new value
-      -- ourselves rather than re-reading the rage here.)
+      -- "Increase Cthulhu's Rage by 1."
+      increaseCthulhuRage 1
       rage <- getCthulhuRage
-      scenarioSpecific "increaseCthulhuRage" ()
 
-      -- If the new Rage (old + 1) is 4 or less, flip back to act 1a; otherwise
-      -- (Rage 5+) the city is lost (R1).
+      -- If the new Rage is 4 or less, flip back to act 1a; otherwise (Rage 5+)
+      -- the city is lost (R1).
       if rage + 1 <= 4
         then push $ RevertAct attrs.id
         else push R1

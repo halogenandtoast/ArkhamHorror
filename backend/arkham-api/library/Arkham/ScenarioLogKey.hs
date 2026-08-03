@@ -191,6 +191,10 @@ data ScenarioCountKey
   | CiviliansSlain
   | StrengthOfTheAbyss
   | CluesAroundHubDimension
+  | -- | The Doom of Arkham, Part II. Cthulhu's anger toward the investigators;
+    -- the skull token, every action card's test difficulty, and the act ratchet
+    -- all read it.
+    CthulhuRage
   | -- Epic Multiplayer: a per-group mirror of an event-wide shared counter,
     -- keyed by 'Arkham.Epic.Types.sharedKeyText'. Refreshed from the locked
     -- event row at the start of each action so the scenario/enemy can read the
@@ -267,6 +271,7 @@ instance FromJSON ScenarioCountKey where
     String "Distortion" -> pure Distortion
     String "StrengthOfTheAbyss" -> pure StrengthOfTheAbyss
     String "CluesAroundHubDimension" -> pure CluesAroundHubDimension
+    String "CthulhuRage" -> pure CthulhuRage
     Object o -> do
       tag :: Text <- o .: "tag"
       case tag of
@@ -281,6 +286,7 @@ instance FromJSON ScenarioCountKey where
         "CiviliansSlain" -> pure CiviliansSlain
         "StrengthOfTheAbyss" -> pure StrengthOfTheAbyss
         "CluesAroundHubDimension" -> pure CluesAroundHubDimension
+        "CthulhuRage" -> pure CthulhuRage
         _ -> fail "Unknown tag"
     _ -> fail "Expected String or Object"
 

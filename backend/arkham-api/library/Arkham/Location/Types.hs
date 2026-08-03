@@ -481,3 +481,8 @@ setConnectsTo
   :: (Entity a, EntityAttrs a ~ LocationAttrs)
   => Set Direction -> CardBuilder LocationId a -> CardBuilder LocationId a
 setConnectsTo connections = fmap (overAttrs (\a -> a {locationConnectsTo = connections}))
+
+setCostToEnterUnrevealed
+  :: (Entity a, EntityAttrs a ~ LocationAttrs)
+  => Cost -> CardBuilder LocationId a -> CardBuilder LocationId a
+setCostToEnterUnrevealed cost = fmap (overAttrs (\a -> a {locationCostToEnterUnrevealed = cost}))

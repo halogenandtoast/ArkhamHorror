@@ -84,6 +84,8 @@ const deckImage = computed(() => {
       return imgsrc("backs/back_the_longest_night.jpg");
     case 'AbyssDeck':
       return imgsrc("cards/10670b.avif");
+    case 'CthulhuDeck':
+      return imgsrc("backs/back_cthulhu_deck.jpg");
     case 'SummitDeck': {
       // Summit locations and Open Sky have different backs. Show the actual
       // top card facedown so returned Open Sky cards are visible on the deck.
@@ -111,6 +113,8 @@ const topOfDiscardImage = computed(() => {
 
 const deckLabel = computed(() => {
   switch(props.deck[0]) {
+    case 'CthulhuDeck':
+      return "Cthulhu"
     case 'CultistDeck':
       return "Cultists"
     case 'LunaticsDeck':

@@ -1,6 +1,44 @@
 {
-  "blankPrintedText": "Treat this asset's printed text box as if it were blank until the end of the round.",
-  "moveStarSpawn": "Move a Star Spawn enemy once in any direction.",
+  "intro": {
+    "title": "The Doom of Arkham Part I",
+    "intro1": "<p>You awaken from yet another nightmare to a furious knocking at your door. You open it to find a bedraggled-looking Andy and Ruby, along with a sharply dressed inspector who introduces himself as John Raymond Legrasse. The inspector explains that he has been investigating a spate of dreaming cults across the United States and abroad.</p>",
+    "intro2": "<p>You invite them inside as it begins to rain. Once seated, the inspector flashes a photo of a familiar statue. Several months ago, he sent the statue to a colleague in Miskatonic University for analysis. Apparently, Tillinghast’s request that you find his “missing shipment” was nothing more than petty theft. He tells you he arrived in Arkham about a month ago to interrogate Tillinghast and recover the statue.</p>",
+    "intro3": "<p>“Something didn’t sit right with me after we handed off the artifacts,” Andy says darkly. “So a few days later, I headed to the shop. When we got there the shop’d moved. Or so we thought. Ruby finally found it, and we went in to find the inspector arguing with Tillinghast and—things didn’t go so well.”</p>",
+    "intro4": "<p>“That’s putting it mildly,” Legrasse says. “Randall was giving me the runaround when these two appeared. He threw us out, real quick. When we looked around, we weren’t…here.” You ask him what he means, and he shakes his head. “I mean we weren’t here. In Arkham. His shop door led somewhere else entirely. It took us a whole month to return.”</p>",
+    "intro5": "<p>“I think we were somewhere in Tibet, or even farther north. It was…a journey to get back,” sighs Andy. A few months ago, you might’ve found their story hard to believe, but not now. Knowing what you do about Tillinghast, it’s no surprise that he has something far more sinister planned than simple acquisition. But what?</p>",
+    "intro6": "<p>Together with Inspector Legrasse, Ruby, and Andy, you resolve to recover the artifacts and confront Tillinghast, wherever he might be. As you set out, the rain turns to a heavy downpour.</p>",
+    "proceedToSetup": "Proceed to _Setup_."
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Doom of Arkham Part I*, *Deep Ones*, *Domination*, *Dreams*, *Star Spawn*, *Agents of Cthulhu*, and *The Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-doom-of-arkham-part-i.png' /><img src='{setImgPath}/tdc_deep-ones.png' /><img src='{setImgPath}/domination.png' /><img src='{setImgPath}/dreams.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/agents-of-cthulhu.png' /><img src='{setImgPath}/midnight-masks.png' /></section>",
+    "midnightMasksCards": "When gathering the *The Midnight Masks* encounter set, only gather the location and treachery cards. Do not gather the acts or agendas from this set.",
+    "placeLocations": "Find each location in the *The Midnight Masks* encounter set and put them into play as follows:",
+    "randomVersions": "Put one of the two Downtown locations and one of the two Southside locations into play at random and remove the other versions of those locations from the game. Put Northside, Easttown, Rivertown, St. Mary’s Hospital, and Miskatonic University into play according to the location placement diagram.",
+    "setAsideLocations": "Set each other location aside, out of play.",
+    "startAtRivertown": "Each investigator begins play at Rivertown.",
+    "cardsBeneathLocations": "Shuffle the single-sided Tillinghast Esoterica location with each treachery from the *The Midnight Masks* encounter set and place one of them under each location except for Rivertown.",
+    "starSpawn": "Shuffle each enemy from the *Star Spawn* encounter set and remove two at random from the game. (Remove three instead if playing on easy mode.)",
+    "setCardsAside": "Gather all earned artifacts along with the Horror in Clay story asset and set them aside, out of play.",
+    "legrasse": "Choose an investigator to add the John Raymond Legrasse story asset to their deck. This card does not count toward their deck size.",
+    "legrasseInPlay": "Put the John Raymond Legrasse story asset into play under that investigator’s control. He does not take up an ally slot during Part I or Part II of this scenario.",
+    "doomOnAgenda": "Place doom on the agenda equal to the number of investigators.",
+    "floodTokens": "Add the flood tokens to the token pool.",
+    "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck."
+  },
+  "rules": {
+    "partsOfTheDoomOfArkham": {
+      "title": "Part I and Part II in The Doom of Arkham",
+      "body": "<p class='basic'>This scenario is split into two parts. Players may choose to play these parts one at a time (with a break between each part), or they may play both parts together as a longer session. Each part is its own game with its own setup and resolution.</p><p class='basic'>Investigators may upgrade their decks between Part I and Part II.</p>"
+    }
+  },
+  "label": {
+    "chooseLegrasseInvestigator": "Choose an investigator to add John Raymond Legrasse to their deck."
+  },
+  "tooltips": {
+    "theComingStorm": {
+      "resign": "{action}: <b>Resign.</b> You give up your search."
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half the number of locations with no scenario cards beneath them (rounded up).",
@@ -16,18 +54,26 @@
     }
   },
   "resolutions": {
-    "xp": { "bonus": "for recovering the artifacts" },
-    "resolution1": {
-      "title": "Resolution 1",
-      "body": "<p>_Resolution 1_: \"I have worked too hard to see my plans undone,\" Randall seethes. Nightmarish shapes form around the antiquarian's head and shoulders as he grasps at you weakly. Pulse pounding, you run for the shop exit and barrel out into the street. When you turn to look, the shop door has vanished yet again.</p>"
-    },
-    "resolution2": {
-      "title": "Resolution 2",
-      "body": "<p>_Resolution 2_: \"You're too late!\" Randall wheezes, clutching his side. \"The destruction of Arkham is at hand and you are powerless to stop it.\" Tchotchkes and ancient tomes fly off the shelves and hang suspended mid-air. Your vision blurs, then you find yourself back on the street. The shop has vanished yet again.</p>"
+    "xp": { "bonus": "for confronting Randall Tillinghast" },
+    "label": {
+      "readyToFight": "“We’re ready to fight.”",
+      "needMoreTime": "“We need more time.”"
     },
     "noResolution": {
       "title": "No Resolution",
-      "body": "<p>_If no resolution was reached_: The phantom shop slips from your grasp, taking its secrets—and the antiquarian—with it. You are left empty-handed in the storm-lashed streets as the doom of Arkham draws near.</p>"
+      "body": "<p>_If each investigator resigned or was defeated_: A trio of terrified locals bolts down the street past you, followed by a lumbering spawn of Cthulhu. Your blood runs cold. There is no safe place for you to run. You wander the flooded streets, looking for some sign of Ruby, Andy, or Inspector Legrasse.</p><ul><li>Each investigator searches the collection for a random basic _Injury_ or _Madness_ weakness and adds it to their deck. This card does not count toward that investigator’s deck size.</li><li>Proceed to _Resolution 1_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: A disquieting roar shakes the very foundations of Arkham. Standing next to your companions, you look up to see the familiar, hulking form of Cthulhu slouch out of the Miskatonic River. With a single motion, the ancient one tramples an entire borough of Rivertown underfoot. The sound of cracking wood and shattering glass fill the air, followed by a chorus of screams.</p><p>Andy, Ruby, and the Inspector share a grim look as your worst fears are confirmed. “We have to do something!” Andy shouts over the din.</p><ul><li>Update your Campaign Log. Under “Artifacts Earned”:<ul><li>Cross out the name of each _Artifact_ asset that was not under any investigator’s control when the scenario ended.</li><li>If the Horror in Clay was under the control of an investigator when the scenario ended, record “Horror in Clay” under “Artifacts Earned.”</li></ul></li><li>In your Campaign Log, record “Flooded Neighborhoods:” along with a list of each flooded location.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>The investigators must decide (choose one):<ul><li>“We’re ready to fight.” Proceed to _Resolution 2_ if you wish to continue playing immediately.</li><li>“We need more time.” Skip to _Resolution 3_ if you wish to take a break and proceed the next time you play.</li></ul></li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Only you can stand against this grave threat. Arkham needs you now.</p><ul><li>Clean up the game as normal.</li><li>Proceed immediately to _The Doom of Arkham Part II_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: You urge your companions to take the time to prepare and collect yourself for your final stand.</p><ul><li>Clean up the game as normal.</li><li>When you are ready to play again, begin at _The Doom of Arkham Part II_.</li></ul>"
     }
   }
 }

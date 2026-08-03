@@ -65,3 +65,6 @@ pattern TheAwakening = InterludeStep 3 Nothing
 
 pattern ReturnToArkham :: CampaignStep
 pattern ReturnToArkham = InterludeStep 4 Nothing
+
+pattern Finale :: CampaignStep
+pattern Finale = CampaignSpecificStep "finale" Nothing

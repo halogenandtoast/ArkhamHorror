@@ -19,6 +19,7 @@ const tokenImages: Record<string, string> = {
   sanity: 'horror.png',
   card: 'backs/back_encounter.jpg',
   player_card: 'backs/back_player.jpg',
+  artifact_card: 'backs/back_artifact.jpg',
 }
 
 const image = computed(() => {

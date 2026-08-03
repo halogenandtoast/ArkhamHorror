@@ -55,6 +55,8 @@ import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
+import CthulhuBoard from '@/arkham/components/TheDrownedCity/CthulhuBoard.vue';
+import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard';
 import ScenarioDebug from '@/arkham/components/ScenarioDebug.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import Story from '@/arkham/components/Story.vue';
@@ -1475,6 +1477,14 @@ const darknessLevel = computed(() => props.scenario.tokens[TokenType.DarknessLev
 const signOfTheGods = computed(() => props.scenario.counts["SignOfTheGods"])
 const strengthOfTheAbyss = computed(() => props.scenario.counts["StrengthOfTheAbyss"])
 const distortion = computed(() => props.scenario.counts["Distortion"])
+const cthulhuRage = computed(() => props.scenario.counts["CthulhuRage"])
+
+/* The Doom of Arkham Pt II. The three Cthulhu facets are at Cthulhu's location and
+ * engaged with the investigators there, but are displayed on the Cthulhu Board
+ * beside the scenario decks rather than in the location grid or a threat area. */
+const cthulhuBoardEnemies = computed(() =>
+  Object.values(props.game.enemies).filter((e) => isCthulhuBoardEnemy(e.cardCode))
+)
 // Laid to Rest: horror placed on the scenario reference card represents
 // Spiritual Disturbance (defeats everyone at 4). Render it on the scenario card.
 const spiritualDisturbance = computed(() =>
@@ -2174,6 +2184,13 @@ async function addChaosToken(face: any){
             @choose="choose"
           />
         </div>
+        <CthulhuBoard
+          v-if="cthulhuBoardEnemies.length > 0"
+          :game="game"
+          :playerId="playerId"
+          :enemies="cthulhuBoardEnemies"
+          @choose="choose"
+        />
         <ScenarioDeck
           v-for="[,scenarioDeck] in scenarioDecks"
           :key="scenarioDeck[0]"
@@ -2383,6 +2400,13 @@ async function addChaosToken(face: any){
                 type="resource"
                 tooltip="Sign of the Gods"
                 :amount="signOfTheGods"
+              />
+              <PoolItem
+                v-if="cthulhuRage"
+                class="cthulhuRage"
+                type="resource"
+                tooltip="Cthulhu's Rage"
+                :amount="cthulhuRage"
               />
               <PoolItem
                 v-if="distortion"
@@ -3491,7 +3515,7 @@ async function addChaosToken(face: any){
     grid-area: 1 / 1;
   }
 
-  .depth, .civilians-slain, .targets, .scraps, .switches, .darkness-level, .strength-of-the-abyss {
+  .depth, .civilians-slain, .targets, .scraps, .switches, .darkness-level, .strength-of-the-abyss, .cthulhuRage {
     align-self: end;
     justify-self: end;
     pointer-events: none;

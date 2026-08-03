@@ -33,6 +33,7 @@ import { XMarkIcon } from '@heroicons/vue/20/solid';
 import * as Api from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef';
 import { fullName } from '@/arkham/types/Name';
+import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard'
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -104,6 +105,9 @@ const stories = computed(() =>
 const engagedEnemies = computed(() =>
   props.investigator.engagedEnemies.map((e) => props.game.enemies[e]).filter((e) =>
     e && e.placement.tag === "InThreatArea" && e.placement.contents === investigatorId.value
+    /* Cthulhu's facets engage everyone at his location "as a single enemy", but they
+     * are shown on the Cthulhu Board rather than in each threat area. */
+    && !isCthulhuBoardEnemy(e.cardCode)
   )
 )
 

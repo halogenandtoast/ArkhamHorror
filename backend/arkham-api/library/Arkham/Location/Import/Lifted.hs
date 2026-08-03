@@ -258,6 +258,7 @@ import Arkham.Location.Runner as X (
   pushAll,
   revealedConnectedMatchersL,
   setConnectsTo,
+  setCostToEnterUnrevealed,
   setLabel,
   setMeta,
   shroudL,

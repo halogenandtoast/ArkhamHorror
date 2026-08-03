@@ -37,22 +37,28 @@ const cardContents = computed<CardContents>(() => {
   return props.card.tag === "CardContents" ? props.card : ( props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents)
 })
 
+const cardDef = computed(() => cardStore.cards.find((c) => c.cardCode === cardContents.value.cardCode))
+const isPlayerCard = computed(() => {
+  if (props.card.tag === 'CardContents') return true
+  if (props.card.tag === 'VengeanceCard') return props.card.contents.tag === 'PlayerCard'
+  return props.card.tag === 'PlayerCard'
+})
+const backImage = computed(() => {
+  const customBack = cardDef.value?.meta?.customBack
+    ?? (cardDef.value?.cardTraits.includes('Artifact') ? 'back_artifact.jpg' : undefined)
+  return imgsrc(customBack ? `backs/${customBack}` : `backs/${isPlayerCard.value ? 'back_player' : 'back_encounter'}.jpg`)
+})
+
 const isEnemyLocationCard = computed(() => {
   const id = cardContents.value.id
   return Object.values(props.game.locations).some(loc => loc.enemyLocation && loc.cardId === id)
 })
 
 const image = computed(() => {
-  if (props.card.tag === 'VengeanceCard') {
-    const back = props.card.contents.tag === 'PlayerCard' ? 'back_player' : 'back_encounter'
-    return imgsrc(`backs/${back}.jpg`);
-  }
+  if (props.card.tag === 'VengeanceCard') return backImage.value
 
   const { cardCode, isFlipped, mutated } = cardContents.value
-  if (cardFacedown(props.card) && !props.revealed) {
-    const back = props.card.tag === 'PlayerCard' ? 'back_player' : 'back_encounter'
-    return imgsrc(`backs/${back}.jpg`);
-  }
+  if (cardFacedown(props.card) && !props.revealed) return backImage.value
   // c05178 has 6 pairs of (front,back) variants using extended alphabet
   // suffixes: 05178a/b, 05178c/d, ... 05178k/l. The card code points at
   // the back/Unfinished Business side, so when unflipped render the matching
@@ -187,7 +193,6 @@ const modifiers = computed(() => {
 
 const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
 
-const cardDef = computed(() => cardStore.cards.find((c) => c.cardCode === cardContents.value.cardCode))
 const canDebugCustomize = computed(() => debug.active && !!investigatorId.value && (cardDef.value?.customizations?.length ?? 0) > 0)
 
 function debugCustomize() {

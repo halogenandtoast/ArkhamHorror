@@ -3,11 +3,16 @@ module Arkham.Act.Cards.BanishHim (banishHim) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Act.Sequence
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.Query (getPlayerCount)
+import Arkham.Helpers.Query (getPlayerCount, getSetAsideCardsMatching)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
-import Arkham.Trait (Trait (Cthulhu))
+import Arkham.Trait (Trait (Ally, Cthulhu))
 
 newtype BanishHim = BanishHim ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -17,60 +22,57 @@ banishHim :: ActCard BanishHim
 banishHim = act (1, A) BanishHim Cards.banishHim Nothing
 
 instance HasAbilities BanishHim where
-  getAbilities (BanishHim a)
-    | onSide A a =
-        [ -- Fast: deal +1 damage with your attacks against Cthulhu this round.
-          -- TODO: the real cost (spending a sigil) and the Cthulhu-Board restriction
-          -- have no engine support yet; modeled as a free, once-per-round boost.
-          playerLimit PerRound
-            $ restricted a 1 (DuringTurn You)
-            $ FastAbility Free
-        , -- Objective: when three of Cthulhu's facets have been banished to the
-          -- victory display, advance to flip Cthulhu's final form.
-          restricted a 2 (InVictoryDisplay (CardWithTrait Cthulhu) (atLeast 3))
-            $ Objective
-            $ forced
-            $ RoundEnds #when
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \a ->
+    [ playerLimit PerTest
+        $ restricted a 1 attackAtYourLocation
+        $ FastAbility (ClueCost $ Static 1)
+    , restricted a 2 (InVictoryDisplay (CardWithTrait Cthulhu) (atLeast 3))
+        $ Objective
+        $ forced
+        $ RoundEnds #when
+    ]
 
 instance RunMessage BanishHim where
   runMessage msg a@(BanishHim attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      roundModifier (attrs.ability 1) iid (DamageDealt 1)
+      withSkillTest \sid -> do
+        skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs
       pure a
-    AdvanceAct (isSide A attrs -> True) _ _ -> do
-      -- Cthulhu's Rage ratchets up. If it is still low the act simply flips back;
-      -- once it crests, Cthulhu is enraged and the final seal is contested.
-      scenarioSpecific "increaseCthulhuRage" ()
-      rage <- getCthulhuRage
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      returnCthulhuFacetsToBoard
+      increaseCthulhuRage 1
+      rage <- (+ 1) <$> getCthulhuRage
+
       if rage <= 3
-        then do
-          -- TODO: flip the act back to side A (the Cthulhu Board resets); no clean
-          -- "revert act" primitive, so this is scaffolded as a re-advance for now.
-          pure a
+        then push $ RevertAct attrs.id
         else do
-          -- Rage is set to 5 (4 with one or two investigators).
           playerCount <- getPlayerCount
-          scenarioSpecific "setCthulhuRage" (if playerCount <= 2 then 4 :: Int else 5)
-
-          -- TODO: flip each Cthulhu enemy to its Enraged side. This is the Cthulhu
-          -- Board flip and has no clean primitive (the facets are double-sided cards
-          -- and the board-level swap is bespoke).
-
-          -- Place clues on each revealed non-victory location up to its clue value.
+          setCthulhuRage (if playerCount <= 2 then 4 else 5)
           locations <- select $ RevealedLocation <> not_ LocationWithVictory
           for_ locations $ placeCluesUpToClueValue (attrs.ability 2)
+          eachInvestigator (`forInvestigator` msg)
+          agenda <- getSetAsideCard Agendas.theFinalSeal
+          push $ SetCurrentAgendaDeck 1 [agenda]
+          toDiscard attrs attrs
+          placeDoomOnAgenda =<< getPlayerCount
+      pure a
+    DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      lead <- getLead
+      for_ cthulhuFacets \(front, _enraged) ->
+        selectEach (enemyIs front) (flipOver lead)
 
-          -- TODO: each investigator may take a set-aside Ally story asset into play
-          -- without using an ally slot. Deferred with the rest of the ally setup.
-
-          -- TODO: replace this act with "The Final Seal" (11691b) as a special
-          -- agenda and place 1 [per_investigator] doom on it. The act flips to its B
-          -- side here, but the act->special-agenda swap and the per-investigator doom
-          -- on that agenda have no clean primitive yet.
-          pure a
+      pure a
+    ForInvestigator iid (AdvanceAct aid _ _) | aid == attrs.id -> do
+      allies <- getSetAsideCardsMatching (#asset <> CardWithTrait Ally)
+      unless (null allies) do
+        chooseOneM iid $ scenarioI18n do
+          questionLabeled' "chooseAlly"
+          labeled' "noAlly" nothing
+          for_ allies \ally -> cardLabeled ally $ createAssetAt_ ally (InPlayArea iid)
+      pure a
+    RevertAct aid | aid == attrs.id && onSide B attrs -> do
+      pure $ BanishHim $ attrs & sequenceL .~ Sequence 1 A
     _ -> BanishHim <$> liftRunMessage msg attrs

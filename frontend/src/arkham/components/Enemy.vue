@@ -31,6 +31,7 @@ import * as Arkham from '@/arkham/types/Enemy'
 import { Source } from '@/arkham/types/Source'
 import { isManifestedSpiritEnemy } from '@/arkham/spiritVisuals';
 import { type Card as ArkhamCard, toCardContents } from '@/arkham/types/Card';
+import { isUnvaluedCalculation } from '@/arkham/types/Calculation'
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -258,6 +259,13 @@ const cannotBeDamagedModifier = computed(() => {
 
 const isCannotBeDamaged = computed(() => cannotBeDamagedModifier.value !== null)
 
+/* An enemy that cannot be damaged, or that has no health at all (Cthulhu (Ancient
+ * Evil) prints a dash), has no damage pool worth showing. Still show it if damage
+ * has somehow landed, so nothing is ever silently hidden. */
+const showDamage = computed(() =>
+  enemyDamage.value > 0 || (!isCannotBeDamaged.value && !isUnvaluedCalculation(props.enemy.health))
+)
+
 const cannotBeDamagedCardCode = computed<string | null>(() => {
   const m = cannotBeDamagedModifier.value
   if (!m) return null
@@ -421,7 +429,7 @@ function onDrop(event: DragEvent) {
             <div class="keys" v-if="keys.length > 0">
               <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
             </div>
-            <PoolItem v-if="!omnipotent && !attached" type="health" :amount="enemyDamage" />
+            <PoolItem v-if="!omnipotent && !attached && showDamage" type="health" :amount="enemyDamage" />
             <TokenPool :tokens="enemyTokens" />
             <PoolItem v-if="enemy.cardsUnderneath.length > 0" type="card" :amount="enemy.cardsUnderneath.length" />
             <Token

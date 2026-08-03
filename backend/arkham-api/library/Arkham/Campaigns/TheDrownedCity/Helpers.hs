@@ -12,7 +12,7 @@ import Arkham.Classes.Query
 import Arkham.Effect.Types (makeEffectBuilder)
 import Arkham.GameValue
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
-import Arkham.Helpers.Log (getHasRecord, getSomeRecordSet)
+import Arkham.Helpers.Log (getHasCrossedOutRecord, getHasRecord, getSomeRecordSet)
 import Arkham.Helpers.Modifiers (modifySelf)
 import Arkham.I18n
 import Arkham.Id
@@ -112,6 +112,22 @@ getAvailableArtifacts = filterM (fmap not . selectAny . artifactInPlay) =<< getE
 
 getEarnedArtifacts :: (HasGame m, Tracing m) => m [CardDef]
 getEarnedArtifacts = map snd <$> filterM (getHasRecord . fst) artifactAssets
+
+{- | "Artifacts checked/listed and not crossed off under 'Artifacts Earned'." The
+Doom of Arkham Part I crosses out every Artifact no investigator still held when it
+ended, and crossing out does not clear the record, so Part II has to exclude them
+explicitly.
+-}
+getUncrossedArtifacts :: (HasGame m, Tracing m) => m [CardDef]
+getUncrossedArtifacts =
+  map snd
+    <$> filterM (\(k, _) -> andM [getHasRecord k, not <$> getHasCrossedOutRecord k]) artifactAssets
+
+{- | The locations The Doom of Arkham Part I left flooded, recorded by card code.
+Part II increases the flood level of each of them again during setup.
+-}
+getFloodedNeighborhoods :: (HasGame m, Tracing m) => m [CardCode]
+getFloodedNeighborhoods = getSomeRecordSet FloodedNeighborhoods
 
 -- | Matches an Artifact in play on either of its faces.
 artifactInPlay :: CardDef -> AssetMatcher

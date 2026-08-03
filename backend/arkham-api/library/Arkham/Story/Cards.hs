@@ -704,41 +704,43 @@ skyRelicStory =
 cthulhuDeckBack :: Map Text Value
 cthulhuDeckBack = mapFromList [("customBack", String "back_cthulhu_deck.jpg")]
 
-cthulhuDeckCard :: CardCode -> Name -> EncounterSet -> CardDef
-cthulhuDeckCard cCode name encounterSet = (story cCode name encounterSet) {cdMeta = cthulhuDeckBack}
+-- | The quantity is the number of copies in the 18-card Cthulhu deck.
+cthulhuDeckCard :: CardCode -> Name -> Int -> EncounterSet -> CardDef
+cthulhuDeckCard cCode name quantity encounterSet =
+  (story cCode name encounterSet) {cdMeta = cthulhuDeckBack, cdEncounterSetQuantity = Just quantity}
 
 ruthlessCharge :: CardDef
-ruthlessCharge = cthulhuDeckCard "11705" "Ruthless Charge" TheDoomOfArkhamPartII
+ruthlessCharge = cthulhuDeckCard "11705" "Ruthless Charge" 2 TheDoomOfArkhamPartII
 
 hurricaneForce :: CardDef
-hurricaneForce = cthulhuDeckCard "11706" "Hurricane Force" TheDoomOfArkhamPartII
+hurricaneForce = cthulhuDeckCard "11706" "Hurricane Force" 2 TheDoomOfArkhamPartII
 
 direGale :: CardDef
-direGale = cthulhuDeckCard "11707" "Dire Gale" TheDoomOfArkhamPartII
+direGale = cthulhuDeckCard "11707" "Dire Gale" 2 TheDoomOfArkhamPartII
 
 dreadsight :: CardDef
-dreadsight = cthulhuDeckCard "11708" "Dreadsight" TheDoomOfArkhamPartII
+dreadsight = cthulhuDeckCard "11708" "Dreadsight" 2 TheDoomOfArkhamPartII
 
 demolition :: CardDef
-demolition = cthulhuDeckCard "11709" "Demolition" TheDoomOfArkhamPartII
+demolition = cthulhuDeckCard "11709" "Demolition" 1 TheDoomOfArkhamPartII
 
 fifthEye :: CardDef
-fifthEye = cthulhuDeckCard "11710" "Fifth Eye" TheDoomOfArkhamPartII
+fifthEye = cthulhuDeckCard "11710" "Fifth Eye" 1 TheDoomOfArkhamPartII
 
 seismicStomp :: CardDef
-seismicStomp = cthulhuDeckCard "11711" "Seismic Stomp" TheDoomOfArkhamPartII
+seismicStomp = cthulhuDeckCard "11711" "Seismic Stomp" 2 TheDoomOfArkhamPartII
 
 eldritchCall :: CardDef
-eldritchCall = cthulhuDeckCard "11712" "Eldritch Call" TheDoomOfArkhamPartII
+eldritchCall = cthulhuDeckCard "11712" "Eldritch Call" 2 TheDoomOfArkhamPartII
 
 psychicRebuke :: CardDef
-psychicRebuke = cthulhuDeckCard "11713" "Psychic Rebuke" TheDoomOfArkhamPartII
+psychicRebuke = cthulhuDeckCard "11713" "Psychic Rebuke" 1 TheDoomOfArkhamPartII
 
 risingTides :: CardDef
-risingTides = cthulhuDeckCard "11714" "Rising Tides" TheDoomOfArkhamPartII
+risingTides = cthulhuDeckCard "11714" "Rising Tides" 2 TheDoomOfArkhamPartII
 
 hopeFades :: CardDef
-hopeFades = cthulhuDeckCard "11715" "Hope Fades" TheDoomOfArkhamPartII
+hopeFades = cthulhuDeckCard "11715" "Hope Fades" 1 TheDoomOfArkhamPartII
 
 returnToSickeningReality_23 :: CardDef
 returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing

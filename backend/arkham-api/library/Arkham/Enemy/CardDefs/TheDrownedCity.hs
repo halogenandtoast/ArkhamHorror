@@ -327,7 +327,7 @@ cthulhuAncientEvil =
       , cdEvade = evadeStar
       , cdHealth = healthStar
       , cdCardTraits = setFromList [AncientOne, Elite]
-      , cdKeywords = setFromList [Keyword.Massive]
+      , cdKeywords = setFromList [Keyword.Massive, Keyword.Patrol CanHaveFloodLevelIncreased]
       }
 
 cthulhuHoaryWings :: CardDef

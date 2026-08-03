@@ -35,6 +35,7 @@ import { cardFacedown, Card } from '../types/Card'
 import useHighlighter from '@/composable/useHighlighter'
 import { IsMobile } from '@/arkham/isMobile'
 import { useDbCardStore } from '@/stores/dbCards'
+import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard'
 
 export interface Props {
   game: Game
@@ -248,7 +249,9 @@ const enemies = computed(() => {
     (e) =>
       props.game.enemies[e].placement.tag === 'AtLocation' &&
       props.game.enemies[e].placement.contents !== 'AttachedToAsset' &&
-      props.game.enemies[e].asSelfLocation === null,
+      props.game.enemies[e].asSelfLocation === null &&
+      /* Cthulhu's facets are shown on the Cthulhu Board, not in the enemy row. */
+      !isCthulhuBoardEnemy(props.game.enemies[e].cardCode),
   )
 })
 
@@ -284,6 +287,8 @@ const hasAttachments = computed(() => {
     attachedKeys.value.length > 0
   )
 })
+
+const isTillinghastEsoterica = computed(() => props.location.cardCode === 'c11685')
 
 const encounterCardsUnderneath = computed(() => {
   return props.location.cardsUnderneath.filter((c) => c.tag === 'EncounterCard')
@@ -570,10 +575,17 @@ function onDrop(event: DragEvent) {
   }
 }
 
-const cardsUnderneathToShow = computed(() => debug.active ? props.location.cardsUnderneath : playerCardsUnderneath.value)
+const cardsUnderneathToShow = computed(() =>
+  debug.active || isTillinghastEsoterica.value
+    ? props.location.cardsUnderneath
+    : playerCardsUnderneath.value
+)
 const hasFacedownCardsUnderneath = computed(() => props.location.cardsUnderneath.some(cardFacedown))
 const canShowCardsUnderneath = computed(() => {
   if (debug.active) return props.location.cardsUnderneath.length > 0
+  if (isTillinghastEsoterica.value) {
+    return props.location.cardsUnderneath.length > 0 && !hasFacedownCardsUnderneath.value
+  }
   return playerCardsUnderneath.value.length > 0 && !hasFacedownCardsUnderneath.value
 })
 const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, 'Cards Underneath', false, debug.active)
@@ -727,12 +739,17 @@ const hasAnyLocationVehicleAssets = computed(() =>
               :amount="1"
             />
             <PoolItem
-              v-if="encounterCardsUnderneath.length > 0"
+              v-if="isTillinghastEsoterica && location.cardsUnderneath.length > 0"
+              type="artifact_card"
+              :amount="location.cardsUnderneath.length"
+            />
+            <PoolItem
+              v-if="!isTillinghastEsoterica && encounterCardsUnderneath.length > 0"
               type="card"
               :amount="encounterCardsUnderneath.length"
             />
             <PoolItem
-              v-if="playerCardsUnderneath.length > 0"
+              v-if="!isTillinghastEsoterica && playerCardsUnderneath.length > 0"
               type="player_card"
               :amount="playerCardsUnderneath.length"
             />

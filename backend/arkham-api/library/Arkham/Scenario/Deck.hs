@@ -30,6 +30,7 @@ data ScenarioDeckKey
   | ReelDeck -- FilmFatale
   | PropsDeck -- Enthralling Encore
   | SummitDeck -- Obsidian Canyons
+  | CthulhuDeck -- The Doom of Arkham, Part II
   | {- | Open extension point for homebrew scenarios. Do not use directly; each
     homebrew campaign owns pattern synonyms over this (see its
     @ScenarioDeckKeys.hs@). The 'Text' tag is the key name, so serialization
@@ -62,6 +63,7 @@ instance ToDisplay ScenarioDeckKey where
     ReelDeck -> "Reel"
     PropsDeck -> "Props"
     SummitDeck -> "Summit"
+    CthulhuDeck -> "Cthulhu"
     HomebrewScenarioDeckKey t -> pack $ splitCamelCase $ unpack $ fromMaybe t (T.stripSuffix "Deck" t)
 
 {- | Core keys serialize as their bare constructor name (as the derived

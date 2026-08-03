@@ -20,6 +20,10 @@
     "dreamingMigration": {
       "moveNearestEnemy": "Move the nearest enemy to your location and it attacks you",
       "drawTopmostEnemy": "Draw the topmost enemy in the encounter discard pile"
+    },
+    "horrorInClay": {
+      "blankPrintedText": "Treat this asset’s printed text box as if it were blank until the end of the round",
+      "moveStarSpawn": "Move a _Star Spawn_ enemy once in any direction"
     }
   },
   "intro": {
@@ -106,6 +110,7 @@
     "tidalTablet": "Tidal Tablet",
     "grislyMask": "Grisly “Mask”",
     "horrorInClay": "Horror in Clay",
+    "discoveredGlyphs": "Alien Glyphs",
     "rlyehMap": "R’lyeh Map",
     "thePilgrimsWereSaved": "The pilgrims were saved.",
     "thePilgrimsWereDevoured": "The pilgrims were devoured.",
@@ -116,8 +121,18 @@
     "wasHelpedWithTheRopes": "Was helped with the ropes",
     "yourAlliesHaveAPlan": "Your allies have a plan.",
     "theInvestigatorsStoodTogether": "The investigators stood together.",
+    "isStrongInTheirFaith": "Is strong in their faith.",
+    "madeBank": "Made bank.",
+    "understandsTheFuture": "Understands the future.",
+    "foundTheirTrueHome": "Found their true home.",
+    "sworeAnOathToProtectOthers": "Swore an oath to protect others.",
+    "foundNewWork": "Found new work.",
+    "pulledTheirWeight": "Pulled their weight.",
+    "learnedTheSecretTruth": "Learned the secret truth.",
+    "lostTheirFaith": "Lost their faith.",
     "theInvestigatorsDidNotConfrontTheNightmare": "The investigators did not confront the nightmare.",
     "theInvestigatorsHaltedCthulhusAwakening": "The investigators halted Cthulhu’s awakening.",
+    "floodedNeighborhoods": "Flooded Neighborhoods",
     "cthulhuWasDrivenAway": "Cthulhu was driven away.",
     "cthulhuAnnihilatedTheExpedition": "Cthulhu annihilated the expedition.",
     "cthulhuAnnihilatedTheCityOfArkham": "Cthulhu annihilated the city of Arkham.",

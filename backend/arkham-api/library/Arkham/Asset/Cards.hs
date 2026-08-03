@@ -1079,6 +1079,7 @@ allPlayerAssetCards =
       , --- The Drowned City
         rubyStandish
       , andyVanNortwick
+      , johnRaymondLegrasse
       , --- Mi-Go Incursion
         universalSolvent
       , petOozeling
@@ -1214,7 +1215,6 @@ allEncounterAssetCards =
       , skyRelic
       , obsidianClaw
       , obsidianClawPower
-      , johnRaymondLegrasse
       , horrorInClay
       ]
 

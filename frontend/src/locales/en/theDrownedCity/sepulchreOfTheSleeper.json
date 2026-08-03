@@ -1,15 +1,64 @@
 {
-  "tooltips": {
-    "weakenCthulhu": "During your turn, remove 1 doom from an Artifact asset you control: Cthulhu loses _Relentless_ and gets -1 fight and -1 evade until the end of the round. Limit once per asset per round."
+  "intro": {
+    "title": "Sepulchre of the Sleeper",
+    "checkCampaignLog": "Check your Campaign Log.",
+    "sepulchreOfTheSleeper1": "<p>_Sepulchre of the Sleeper 1_: The expedition’s reunion on the beach is decidedly dour, underscored by the rolling fog. One of the crew members you left behind to tend the boat is dead; according to the others, she was murdered when the remaining rations were stolen by starving pilgrims. Thankfully, the Cassandra is intact. You have barely enough food remaining to make it to the mainland. Andy and Ruby discuss their findings as the rest of the expedition bandage wounds and begin loading the Cassandra for the voyage home. Once the ship is loaded, you join Andy and Ruby on the shore.</p>",
+    "proceedToSepulchreOfTheSleeper2": "If at least 1 artifact is checked under “Artifacts Earned,” and at least 10 glyphs are translated in the glyph record, proceed to _Sepulchre of the Sleeper 2_.",
+    "proceedToTheAwakening": "Otherwise, proceed to _Interlude III: The Awakening_.",
+    "sepulchreOfTheSleeper2": "<p>_Sepulchre of the Sleeper 2_: “Just how much of that ugly chicken scratch did you decode?” Ruby asks. Andy is hunched over the obsidian slate, making notes in a leatherbound notebook. In the evening half-light, the glyphs on the slate glow like pale fire. Andy leafs through several waterlogged pages and places a bloody slip of paper on the stone. “Enough to decode this. I found it on the body of one of the pilgrims. It roughly translates to this,” he hastily scribbles the translation on a fresh page and holds it out to you. It reads:</p><p>“That is not dead which can eternal lie<br />and with strange aeons even death may die.”</p>",
+    "proceedToSepulchreOfTheSleeper3": "If all 5 artifacts are checked under “Artifacts Earned,” all 26 glyphs are translated in the glyph record, and the inner sanctum was unsealed, proceed to _Sepulchre of the Sleeper 3_.",
+    "addZeroToken": "Otherwise, add a 0 token to the chaos bag for the remainder of the campaign. Proceed to _Interlude III: The Awakening_.",
+    "sepulchreOfTheSleeper3": "<p>_Sepulchre of the Sleeper 3_: With your own account, Ruby and Andy help you slowly piece together a narrative across the various friezes and artifacts found in the ancient city. A common theme emerges: an alien civilization from far beyond the stars; an ancient war before history itself; the sinking of R’lyeh; the “death” and prophesied return of an ancient god named Cthulhu.</p><p>Andy points to the central spire. The obsidian gates in the base are swung wide open. A faint but sharp smell of decay wafts out of them. “The crew members who stayed behind say those doors opened a week ago. Someone went inside, but they never returned,” Andy says. He shares a few translations he made of rubbings from the gate. “This one describes a glorious rebirth, a risen sleeper, and the return of the great old ones. It claims he will take back what is his: every part of R’lyeh that was stolen, every corner of his domain.</p><p>“This thing—Cthulhu—is dead. Or asleep. I’m not sure; the details are hazy at best. But with the city and everything else in it awakening, I imagine it’s only a matter of time until he awakens as well. He’s called followers here from their dreams. And judging by the smell, he’s in there,” the reporter points to the obsidian gates.</p><p>After a long pause, Ruby stands up.</p><p>“It wouldn’t be much of a heist if we left the doors open,” she winks. “I say we lock this thing up before we sail off into the sunset. Who’s with me?”</p>",
+    "mustDecide": "The investigators must decide (choose one):",
+    "knowBetter": "“We should know better than to disturb whatever is inside.” Each investigator marks 1 progress under their Task in your Campaign Log. In your Campaign Log, record the investigators did not confront the nightmare. Proceed to _Interlude III: The Awakening_.",
+    "layItToRest": "“We should lay it to rest… permanently.” Proceed to _Setup_.",
+    "label": {
+      "knowBetter": "“We should know better than to disturb whatever is inside.”",
+      "layItToRest": "“We should lay it to rest… permanently.”"
+    }
   },
-  "placeAdditionalDoom": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Tidal Tablet",
-  "placeAdditionalDoomOnObsidianClaw": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Obsidian Claw",
-  "placeAdditionalDoomOnBarrierNode": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Barrier Node",
-  "placeAdditionalDoomOnShardOfYchlecht": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Shard of Ychlecht",
-  "placeAdditionalDoomOnGrislyMask": "Spend 1 clue per investigator (as a group) to place 1 more doom on the Grisly Mask",
-  "doNotPlaceAdditionalDoom": "Do not place additional doom",
-  "sigilCarvedAlcoveStoryOfDefiance": {
-    "test": "{action}: Test {agility} (5). If you succeed, place 1 doom on the Grisly Mask. Investigators at this location may additionally spend 1 clue per investigator, as a group, to place 1 more doom on it."
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Sepulchre of the Sleeper*, *Domination*, *Dreams*, *R’lyeh*, *Star Spawn*, *Ancient Evils*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/sepulchre-of-the-sleeper.png' /><img src='{setImgPath}/domination.png' /><img src='{setImgPath}/dreams.png' /><img src='{setImgPath}/rlyeh.png' /><img src='{setImgPath}/star-spawn.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "Put Dreamer’s Rest and each copy of Sigil-Carved Alcove into play.",
+    "startAt": "Each investigator begins play at Dreamer’s Rest.",
+    "chooseExpeditionItem": "In player order, each player may choose 1 _Item_ asset from the *Expedition* encounter set to begin in play under their control. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/tdc_expedition.png' /></section>",
+    "artifacts": "Gather all earned _Artifact_ assets and put each of them into play under an investigator’s control, divided as evenly as possible.",
+    "buildAgendaDeck": "Build a special agenda deck using Beneath the City as the first agenda and Cthulhu Awakened as the second agenda. These replace the act and agenda decks.",
+    "buildEncounterDeck": "Shuffle the remaining encounter cards to build the encounter deck."
+  },
+  "rules": {
+    "disturbance": {
+      "title": "Disturbance",
+      "body": "<p class='basic'>Throughout this scenario, the number of resources under “Disturbance” on the scenario reference card indicate Cthulhu’s awareness of the investigators. The higher the Disturbance, the closer the Sleeper is to awakening. Disturbance has no inherent game effect on its own; however, some encounter card effects may change or become stronger depending on the current level of Disturbance.</p>"
+    }
+  },
+  "label": {
+    "chooseExpeditionItem": "Choose an _Item_ asset to begin in play under your control.",
+    "noExpeditionItem": "Do not take an _Item_ asset.",
+    "chooseArtifactInvestigator": "Choose an investigator to control this _Artifact_.",
+    "placeAdditionalDoomOnObsidianClaw": "Spend 1 {perPlayer} clues, as a group, to place 1 additional doom on the Obsidian Claw",
+    "placeAdditionalDoomOnBarrierNode": "Spend 1 {perPlayer} clues, as a group, to place 1 additional doom on the Barrier Node",
+    "placeAdditionalDoomOnTidalTablet": "Spend 1 {perPlayer} clues, as a group, to place 1 additional doom on the Tidal Tablet",
+    "placeAdditionalDoomOnGrislyMask": "Spend 1 {perPlayer} clues, as a group, to place 1 additional doom on the Grisly “Mask”",
+    "placeAdditionalDoomOnShardOfYchlecht": "Spend 1 {perPlayer} clues, as a group, to place 1 additional doom on the Shard of Y’ch’lecht",
+    "doNotPlaceAdditionalDoom": "Do not place additional doom",
+    "readyCthulhu": "Ready Cthulhu",
+    "eachInvestigatorHereTakesDirectDamage": "Each investigator at Cthulhu’s location takes 1 direct damage"
+  },
+  "tooltips": {
+    "weakenCthulhu": "{fast} During your turn, remove 1 doom from an _Artifact_ asset you control: Cthulhu loses relentless and gets -1 fight and -1 evade until the end of the round. (Limit once per asset per round.)",
+    "sigilCarvedAlcoveStoryOfAmbition": {
+      "test": "{action}: Test {willpower} (5). If you succeed, place 1 doom on Obsidian Claw. Investigators at this location may spend 1 {perPlayer} clues, as a group, to place 1 additional doom on Obsidian Claw."
+    },
+    "sigilCarvedAlcoveStoryOfResilience": {
+      "test": "{action}: Test {combat} (5). If you succeed, place 1 doom on Barrier Node. Investigators at this location may spend 1 {perPlayer} clues, as a group, to place 1 additional doom on Barrier Node."
+    },
+    "sigilCarvedAlcoveStoryOfInfinity": {
+      "test": "{action}: Test {intellect} (5). If you succeed, place 1 doom on Tidal Tablet. Investigators at this location may spend 1 {perPlayer} clues, as a group, to place 1 additional doom on Tidal Tablet."
+    },
+    "sigilCarvedAlcoveStoryOfDefiance": {
+      "test": "{action}: Test {agility} (5). If you succeed, place 1 doom on Grisly “Mask”. Investigators at this location may spend 1 {perPlayer} clues, as a group, to place 1 additional doom on Grisly “Mask”."
+    }
   },
   "tokens": {
     "easyStandard": {
@@ -26,14 +75,16 @@
     }
   },
   "resolutions": {
-    "xp": { "bonus": "for facing the Sleeper" },
+    "xp": { "bonus": "as they prevented an ancient evil from rising to terrorize all of the earth once again" },
+    "investigatorDefeat": {
+      "title": "Investigator Defeat",
+      "body": "<p>_Investigator Defeat_: Broken in both mind and body, you collapse before the great form of Cthulhu. All around you the city quakes, filling your ears with a deafening drone. Cthulhu stares down at you with indifference. You are nothing more to him than a nuisance, an insignificant pest. Your consciousness soon folds in on itself as the frail structure of your mind gives way to the unbound freedom of utter insanity.</p>",
+      "drivenInsane": "Each investigator who was defeated is driven <b>insane</b>. If there are no surviving investigators, the investigators lose the campaign.",
+      "otherResolution": "If another resolution was reached, the remaining investigators proceed to that resolution."
+    },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p>_Resolution 1_: The gargantuan form of Cthulhu falls backwards into the central pool. His flabby clawed hands grasp at the edges of the pool, failing to find purchase, as his form sinks below the black water. The five glowing red eyes, distorted by the water's surface, slowly fade from view. And, just as suddenly as it started, all is quiet and still.</p>"
-    },
-    "noResolution": {
-      "title": "No Resolution",
-      "body": "<p>_If no resolution was reached_: Broken in both mind and body, you collapse before the great form of Cthulhu. The city quakes, filling your ears with a deafening drone. Cthulhu stares down at you with indifference—you are nothing more than a nuisance, an insignificant pest. Your consciousness folds in on itself as your mind gives way to the unbound freedom of utter insanity.</p>"
+      "body": "<p>_Resolution 1_: The gargantuan form of Cthulhu falls backwards into the central pool. His flabby clawed hands grasp at the edges of the pool, failing to find purchase, as his form sinks below the black water. The five glowing red eyes, distorted by the water’s surface, slowly fade from view. And, just as suddenly as it started, all is quiet and still.</p><p>You emerge from the obsidian gates and walk to the edge of the shoreline. At long last, you’re ready to leave this city behind, bring these artifacts back to Arkham, and move on with your life. As you climb aboard the Cassandra, you look back at the blasphemous skyline, outlined against the setting sun like the spine of an ancient beast. The turbid waters churn as the ancient city begins to descend, almost imperceptibly, to be reclaimed by the ocean. Both the dreamer and his house in R’lyeh have been laid to rest.</p><p>“I wonder what Mr. Tillinghast planned to do with those artifacts,” Andy muses. “Probably sell ‘em,” Ruby says, a cigarette clenched between her teeth. Closing your eyes, you turn back to the cabin. Perhaps tonight, for the first time in months, you’ll enjoy a deep, dreamless sleep.</p><ul><li>In your Campaign Log, record the investigators halted Cthulhu’s awakening.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 10 bonus experience, as they prevented an ancient evil from rising to terrorize all of the earth once again.</li><li>Each investigator suffers 2 mental trauma.</li><li>The investigators win the campaign!</li><li>Proceed to _Epilogue_.</li></ul>"
     }
   }
 }

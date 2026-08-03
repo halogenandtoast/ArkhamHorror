@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
 
 newtype DreamersRest = DreamersRest LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -14,6 +15,8 @@ dreamersRest = location DreamersRest Cards.dreamersRest 1 (Static 5)
 
 instance HasAbilities DreamersRest where
   getAbilities (DreamersRest a) =
+    -- [Forced] After an investigator fails a test at this location: place 1
+    -- resource on the scenario reference card, as Disturbance.
     extendRevealed1 a
       $ mkAbility a 1
       $ forced
@@ -21,7 +24,7 @@ instance HasAbilities DreamersRest where
 
 instance RunMessage DreamersRest where
   runMessage msg l@(DreamersRest attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      scenarioSpecific "increaseDisturbance" ()
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      increaseDisturbance
       pure l
     _ -> DreamersRest <$> liftRunMessage msg attrs

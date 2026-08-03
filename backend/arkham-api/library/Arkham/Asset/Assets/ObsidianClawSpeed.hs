@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers
+import Arkham.I18n
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveTo)
@@ -20,8 +21,14 @@ instance HasModifiersFor ObsidianClawSpeed where
 
 instance HasAbilities ObsidianClawSpeed where
   getAbilities (ObsidianClawSpeed a) =
-    [ playerLimit PerRound $ controlled a 1 (DuringTurn You) $ FastAbility Free
-    , controlled a 2 (glyphsAllKnown "APMEBC") $ freeTrigger $ exhaust a
+    [ cardI18n (withI18nTooltip "obsidianClaw.move")
+        $ controlled a 1 (DuringTurn You)
+        $ freeTrigger
+        $ exhaust a
+    , cardI18n (withI18nTooltip "obsidianClaw.flip")
+        $ limited (MaxPer Cards.obsidianClaw PerRound 1)
+        $ controlled a 2 (glyphsAllKnown "APMEBC")
+        $ FastAbility Free
     , artifactAbility a 3
     ]
 

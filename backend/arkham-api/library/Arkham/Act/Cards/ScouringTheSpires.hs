@@ -24,14 +24,12 @@ instance HasAbilities ScouringTheSpires where
           $ restricted
             a
             2
-            ( exists (undefeated <> InvestigatorAt (locationIs Locations.centralSpire))
-                <> notExists (undefeated <> not_ (InvestigatorAt $ locationIs Locations.centralSpire))
+            ( exists UneliminatedInvestigator
+                <> EachUndefeatedInvestigator (at_ $ locationIs Locations.centralSpire <> RevealedLocation)
             )
           $ Objective
           $ forced AnyWindow
       ]
-   where
-    undefeated = UneliminatedInvestigator <> not_ DefeatedInvestigator
 
 instance RunMessage ScouringTheSpires where
   runMessage msg a@(ScouringTheSpires attrs) = runQueueT $ case msg of
@@ -42,8 +40,6 @@ instance RunMessage ScouringTheSpires where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      -- Floating Skyline: the streets fall away and the skyline reforms around
-      -- Central Spire.
       selectEach (locationIs Locations.rlyehStreets) removeIgnoringTextBox
       centralSpire <- selectJust $ locationIs Locations.centralSpire
       rebuildSkyline centralSpire actTwoLayout

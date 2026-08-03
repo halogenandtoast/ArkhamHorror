@@ -21,7 +21,10 @@ instance HasAbilities DeadlySkies where
       a
       [ restricted a 1 (ScenarioDeckWithCard SummitDeck) $ actionAbilityWithCost ClueCostX
       , onlyOnce
-          $ restricted a 2 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.floatingSpire)
+          $ restricted
+            a
+            2
+            (EachUndefeatedInvestigator $ at_ $ locationIs Locations.floatingSpire <> RevealedLocation)
           $ Objective
           $ forced AnyWindow
       ]

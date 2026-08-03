@@ -1425,6 +1425,10 @@
       "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
       "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
+    "obsidianClaw": {
+      "move": "{'{'}fast{'}'} During your turn, exhaust this card and choose a location up to 2 connections away: Move to the chosen location.",
+      "flip": "{'{'}fast{'}'} Flip this card. (Max once per round.)"
+    },
     "oldCompass": {
       "exhaustToRepeat": "Exhaust Old Compass"
     },

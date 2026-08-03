@@ -90,6 +90,13 @@ artifactAssets =
   , (HorrorInClay, Assets.horrorInClay)
   ]
 
+{- | The five Artifacts that can be earned while the expedition is still in R'lyeh.
+The /Horror in Clay/ is only earned back in Arkham, during The Doom of Arkham, so
+the Sepulchre of the Sleeper's "all 5 artifacts" check must not count it.
+-}
+rlyehArtifacts :: [TheDrownedCityKey]
+rlyehArtifacts = [BarrierNode, ObsidianClaw, ShardOfYchlecht, TidalTablet, GrislyMask]
+
 {- | The earned Artifacts an investigator may still choose to begin play with.
 
 Each def here is the face an Artifact enters play on — the Obsidian Claw's is

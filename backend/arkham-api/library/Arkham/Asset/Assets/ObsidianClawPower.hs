@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestSource, getSkillTestTargetedEnemy)
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype ObsidianClawPower = ObsidianClawPower AssetAttrs
@@ -30,7 +31,10 @@ instance HasModifiersFor ObsidianClawPower where
 instance HasAbilities ObsidianClawPower where
   getAbilities (ObsidianClawPower a) =
     [ controlled_ a 1 $ fightActionWithAlternate #agility (exhaust a)
-    , playerLimit PerRound $ controlled_ a 2 $ FastAbility Free
+    , cardI18n (withI18nTooltip "obsidianClaw.flip")
+        $ limited (MaxPer Cards.obsidianClawPower PerRound 1)
+        $ controlled_ a 2
+        $ FastAbility Free
     , artifactAbility a 3
     ]
 

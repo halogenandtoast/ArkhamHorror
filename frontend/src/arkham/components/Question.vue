@@ -580,8 +580,7 @@ const submitAmounts = async () => {
   }
 }
 
-const cardLabelImage = (cardCode: string) =>
-  cardCodeImage(cardCode, isSummitDeckView.value ? 'b' : '')
+const cardLabelImage = (cardCode: string) => cardCodeImage(cardCode)
 
 const questionImage = computed(() => {
   if (!question.value) {
@@ -824,6 +823,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
                       :card="card"
                       :game="game"
                       :playerId="playerId"
+                      :revealed="isSummitDeckView"
                       @choose="$emit('choose', $event)"
                     />
                   </div>

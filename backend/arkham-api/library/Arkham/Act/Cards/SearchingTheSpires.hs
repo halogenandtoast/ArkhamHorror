@@ -7,10 +7,10 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreation (..))
-import Arkham.Helpers.Cost (getSpendableClueCount)
-import Arkham.Helpers.Query (getInvestigators, getSetAsideCardsMatching)
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Scenario.Deck
 import Arkham.Scenarios.ObsidianCanyons.Helpers
 
 newtype SearchingTheSpires = SearchingTheSpires ActAttrs
@@ -24,26 +24,22 @@ instance HasAbilities SearchingTheSpires where
   getAbilities (SearchingTheSpires x) =
     extend
       x
-      [ restricted x 1 (exists $ InvestigatorWithClues $ atLeast 1) actionAbility
-      , restricted
-          x
-          2
-          (EachUndefeatedInvestigator $ at_ (locationIs Locations.centralSpire))
+      [ restricted x 1 (ScenarioDeckWithCard SummitDeck) $ actionAbilityWithCost ClueCostX
+      , onlyOnce
+          $ restricted
+            x
+            2
+            ( exists UneliminatedInvestigator
+                <> EachUndefeatedInvestigator (at_ $ locationIs Locations.centralSpire <> RevealedLocation)
+            )
           $ Objective
           $ forced AnyWindow
       ]
 
 instance RunMessage SearchingTheSpires where
   runMessage msg a@(SearchingTheSpires attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- getInvestigators
-      total <- getSpendableClueCount investigators
-      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 1 total attrs
-      pure a
-    ResolveAmounts iid (getChoiceAmount "$clues" -> cluesSpent) (isTarget attrs -> True) | cluesSpent > 0 -> do
-      investigators <- getInvestigators
-      spendCluesAsAGroup investigators cluesSpent
-      searchTheSpires (attrs.ability 1) iid cluesSpent
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalCluePayment -> n) -> do
+      searchTheSpires (attrs.ability 1) iid n
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

@@ -513,46 +513,61 @@ glyphOrrery =
 -- Sepulchre of the Sleeper
 dreamersRest :: CardDef
 dreamersRest =
-  location_ "11676" "Dreamer's Rest" [Rlyeh, Lair] SepulchreOfTheSleeper
+  location "11676" "Dreamer's Rest" [Rlyeh, Lair] Plus [Star] SepulchreOfTheSleeper
 
 sigilCarvedAlcoveStoryOfAmbition :: CardDef
 sigilCarvedAlcoveStoryOfAmbition =
-  location_
+  locationWithUnrevealedName
     "11677"
+    "Sigil-Carved Alcove"
     ("Sigil-Carved Alcove" <:> "Story of Ambition")
     [Rlyeh, Glyph]
+    Star
+    [Plus]
     SepulchreOfTheSleeper
 
 sigilCarvedAlcoveStoryOfResilience :: CardDef
 sigilCarvedAlcoveStoryOfResilience =
-  location_
+  locationWithUnrevealedName
     "11678"
+    "Sigil-Carved Alcove"
     ("Sigil-Carved Alcove" <:> "Story of Resilience")
     [Rlyeh, Glyph]
+    Star
+    [Plus]
     SepulchreOfTheSleeper
 
 sigilCarvedAlcoveStoryOfInfinity :: CardDef
 sigilCarvedAlcoveStoryOfInfinity =
-  location_
+  locationWithUnrevealedName
     "11679"
+    "Sigil-Carved Alcove"
     ("Sigil-Carved Alcove" <:> "Story of Infinity")
     [Rlyeh, Glyph]
+    Star
+    [Plus]
     SepulchreOfTheSleeper
 
 sigilCarvedAlcoveStoryOfDefiance :: CardDef
 sigilCarvedAlcoveStoryOfDefiance =
-  location_
+  locationWithUnrevealedName
     "11680"
+    "Sigil-Carved Alcove"
     ("Sigil-Carved Alcove" <:> "Story of Defiance")
     [Rlyeh, Glyph]
+    Star
+    [Plus]
     SepulchreOfTheSleeper
 
 sigilCarvedAlcoveStoryOfTheVoyage :: CardDef
 sigilCarvedAlcoveStoryOfTheVoyage =
-  location_
+  locationWithUnrevealedName
     "11681"
+    "Sigil-Carved Alcove"
     ("Sigil-Carved Alcove" <:> "Story of the Voyage")
     [Rlyeh, Glyph]
+    Star
+    [Plus]
     SepulchreOfTheSleeper
 
 -- The Doom of Arkham, Part I

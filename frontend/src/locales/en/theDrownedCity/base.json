@@ -116,8 +116,12 @@
     "wasHelpedWithTheRopes": "Was helped with the ropes",
     "yourAlliesHaveAPlan": "Your allies have a plan.",
     "theInvestigatorsStoodTogether": "The investigators stood together.",
+    "theInvestigatorsDidNotConfrontTheNightmare": "The investigators did not confront the nightmare.",
+    "theInvestigatorsHaltedCthulhusAwakening": "The investigators halted Cthulhu’s awakening.",
     "cthulhuWasDrivenAway": "Cthulhu was driven away.",
     "cthulhuAnnihilatedTheExpedition": "Cthulhu annihilated the expedition.",
-    "cthulhuWasBanished": "Cthulhu was banished."
+    "cthulhuAnnihilatedTheCityOfArkham": "Cthulhu annihilated the city of Arkham.",
+    "cthulhuWasBanished": "Cthulhu was banished.",
+    "arkhamWasDestroyed": "Arkham was destroyed."
   }
 }

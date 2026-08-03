@@ -15,16 +15,22 @@ newtype CthulhuAwakened = CthulhuAwakened AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+{- | The printed doom threshold is deliberately unreachable: every doom placed here
+costs each investigator 1 direct horror, so the investigators break long before the
+agenda does. "Your Inevitable Doom" is the safety net, not the expected ending.
+-}
 cthulhuAwakened :: AgendaCard CthulhuAwakened
 cthulhuAwakened = agenda (2, A) CthulhuAwakened Cards.cthulhuAwakened (Static 100)
 
--- | Marker placed on an Artifact asset (round duration) once it has been used to
--- weaken Cthulhu this round, enforcing the "limit once per asset per round".
+{- | Marker placed on an Artifact asset (round duration) once it has been used to
+weaken Cthulhu this round, enforcing the "limit once per asset per round".
+-}
 usedMarker :: ModifierType
 usedMarker = ScenarioModifier "cthulhuAwakened.weakened"
 
--- | An Artifact asset controlled by the given investigator with doom that hasn't
--- yet weakened Cthulhu this round.
+{- | An Artifact asset controlled by the given investigator with doom that hasn't
+yet weakened Cthulhu this round.
+-}
 availableArtifact :: InvestigatorMatcher -> AssetMatcher
 availableArtifact who =
   AssetWithTrait Artifact
@@ -63,8 +69,9 @@ instance RunMessage CthulhuAwakened where
       push R1
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
-      -- Each surviving investigator is driven insane; the scenario's No Resolution
-      -- records Cthulhu annihilating the expedition.
+      -- "Your Inevitable Doom": each surviving investigator is driven insane. The
+      -- accompanying instruction to remove them from your collection is a physical
+      -- one with no in-game effect; the campaign is lost either way.
       eachInvestigator drivenInsane
       noResolution
       pure a

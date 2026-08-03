@@ -50,9 +50,23 @@ data TheDrownedCityKey
   | -- | Interlude III: The Awakening / Return to Arkham
     YourAlliesHaveAPlan
   | TheInvestigatorsStoodTogether
+  | IsStrongInTheirFaith
+  | MadeBank
+  | UnderstandsTheFuture
+  | FoundTheirTrueHome
+  | SworeAnOathToProtectOthers
+  | FoundNewWork
+  | PulledTheirWeight
+  | LearnedTheSecretTruth
+  | LostTheirFaith
+  | -- | Sepulchre of the Sleeper
+    TheInvestigatorsDidNotConfrontTheNightmare
+  | TheInvestigatorsHaltedCthulhusAwakening
   | -- | The Doom of Arkham
     CthulhuWasDrivenAway
   | CthulhuAnnihilatedTheExpedition
+  | CthulhuAnnihilatedTheCityOfArkham
   | CthulhuWasBanished
+  | ArkhamWasDestroyed
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

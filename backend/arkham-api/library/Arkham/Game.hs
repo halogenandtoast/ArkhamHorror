@@ -6246,6 +6246,7 @@ instance Projection Story where
       StoryFlipped -> pure storyFlipped
       StoryOtherSide -> pure storyOtherSide
       StoryCardsUnderneath -> pure storyCardsUnderneath
+      StorySealedChaosTokens -> pure storySealedChaosTokens
 
 instance Projection Treachery where
   getAttrs tid = toAttrs <$> getTreachery tid

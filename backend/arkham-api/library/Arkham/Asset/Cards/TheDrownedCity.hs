@@ -739,7 +739,7 @@ plumbTheDepths =
 -- The Drowned City — Expedition story assets
 expeditionGear :: CardDef
 expeditionGear =
-  (storyAsset "11761" ("Expedition Gear" <:> "Tough but Reliable") 2 TdcExpedition)
+  (storyAsset "11761" ("Expedition Gear" <:> "Tough but Reliable") 2 TheDrownedCityExpedition)
     { cdCardTraits = setFromList [Item, Trait.Supply]
     , cdSkills = [#combat, #agility, #wild]
     , cdUses = uses Supply 3
@@ -747,7 +747,7 @@ expeditionGear =
 
 laudanum :: CardDef
 laudanum =
-  (storyAsset "11762" ("Laudanum" <:> "Desperate Measures") 2 TdcExpedition)
+  (storyAsset "11762" ("Laudanum" <:> "Desperate Measures") 2 TheDrownedCityExpedition)
     { cdCardTraits = setFromList [Item, Trait.Supply]
     , cdSkills = [#willpower, #willpower]
     , cdUses = uses Supply 3
@@ -755,7 +755,7 @@ laudanum =
 
 alienTablet :: CardDef
 alienTablet =
-  (storyAsset "11763" ("Alien Tablet" <:> "Prehistoric Writings") 3 TdcExpedition)
+  (storyAsset "11763" ("Alien Tablet" <:> "Prehistoric Writings") 3 TheDrownedCityExpedition)
     { cdCardTraits = setFromList [Item, Relic, Rlyeh]
     , cdSkills = [#intellect, #intellect]
     , cdSlots = [#hand]
@@ -765,7 +765,7 @@ alienTablet =
 
 divingSuitTheDrownedCity :: CardDef
 divingSuitTheDrownedCity =
-  (storyAsset "11764" "Diving Suit" 3 TdcExpedition)
+  (storyAsset "11764" "Diving Suit" 3 TheDrownedCityExpedition)
     { cdCardTraits = setFromList [Item, Armor]
     , cdSkills = [#combat]
     , cdSlots = [#body]
@@ -773,7 +773,7 @@ divingSuitTheDrownedCity =
 
 rubyStandish :: CardDef
 rubyStandish =
-  (storyAsset "11765" ("Ruby Standish" <:> "Master Thief") 4 TdcExpedition)
+  (storyAsset "11765" ("Ruby Standish" <:> "Master Thief") 4 TheDrownedCityExpedition)
     { cdCardTraits = setFromList [Ally, Criminal]
     , cdSkills = [#agility, #agility]
     , cdSlots = [#ally]
@@ -782,7 +782,7 @@ rubyStandish =
 
 andyVanNortwick :: CardDef
 andyVanNortwick =
-  (storyAsset "11766" ("Andy Van Nortwick" <:> "Ambitious Journalist") 4 TdcExpedition)
+  (storyAsset "11766" ("Andy Van Nortwick" <:> "Ambitious Journalist") 4 TheDrownedCityExpedition)
     { cdCardTraits = setFromList [Ally, Reporter]
     , cdSkills = [#intellect, #intellect]
     , cdSlots = [#ally]

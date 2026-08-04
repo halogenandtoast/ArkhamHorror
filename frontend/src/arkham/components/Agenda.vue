@@ -16,6 +16,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
+import Story from '@/arkham/components/Story.vue';
 import StackIndicator from '@/arkham/components/StackIndicator.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
@@ -199,6 +200,11 @@ const nextToEvents = computed(() => Object.values(props.game.events).
   filter((t) => t.placement.tag === "NextToAgenda").
   map((t) => t.id))
 
+// Cthulhu deck action cards that stay in play (Fifth Eye, Hope Fades) live here.
+const nextToStories = computed(() => Object.values(props.game.stories).
+  filter((t) => t.placement.tag === "NextToAgenda").
+  map((t) => t.id))
+
 const attachedEnemies = computed(() => Object.values(props.game.enemies).
   filter((t) => t.placement.tag === "AttachedToAgenda").
   map((t) => t.id))
@@ -300,6 +306,14 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
       <Event
         v-for="eventId in nextToEvents"
         :event="game.events[eventId]"
+        :game="game"
+        :playerId="playerId"
+        @choose="$emit('choose', $event)"
+      />
+      <Story
+        v-for="storyId in nextToStories"
+        :key="storyId"
+        :story="game.stories[storyId]"
         :game="game"
         :playerId="playerId"
         @choose="$emit('choose', $event)"

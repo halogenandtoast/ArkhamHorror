@@ -3,6 +3,7 @@
 module Arkham.Story.Types where
 
 import Arkham.Card
+import Arkham.ChaosToken.Types (ChaosToken)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
@@ -48,6 +49,7 @@ data instance Field Story :: Type -> Type where
   StoryFlipped :: Field Story Bool
   StoryOtherSide :: Field Story (Maybe Target)
   StoryCardsUnderneath :: Field Story [Card]
+  StorySealedChaosTokens :: Field Story [ChaosToken]
 
 data StoryAttrs = StoryAttrs
   { storyId :: StoryId
@@ -59,6 +61,7 @@ data StoryAttrs = StoryAttrs
   , storyRemoveAfterResolution :: Bool
   , storyCardsUnderneath :: [Card]
   , storyTokens :: Map Token Int
+  , storySealedChaosTokens :: [ChaosToken]
   , storyArt :: CardCode
   , storyFlippedArt :: CardCode
   }
@@ -96,6 +99,9 @@ instance HasField "tokens" StoryAttrs Tokens where
 instance HasField "token" StoryAttrs (Token -> Int) where
   getField a tkn = countTokens tkn a.tokens
 
+instance HasField "sealedChaosTokens" StoryAttrs [ChaosToken] where
+  getField = storySealedChaosTokens
+
 storyWith
   :: (StoryAttrs -> a)
   -> CardDef
@@ -117,6 +123,7 @@ storyWith f cardDef g =
             , storyRemoveAfterResolution = True
             , storyCardsUnderneath = []
             , storyTokens = mempty
+            , storySealedChaosTokens = []
             , storyArt = cdCardCode cardDef
             , storyFlippedArt = fromMaybe (flippedCardCode $ cdCardCode cardDef) (cdOtherSide cardDef)
             }
@@ -230,6 +237,7 @@ instance FromJSON StoryAttrs where
     storyRemoveAfterResolution <- o .: "removeAfterResolution"
     storyCardsUnderneath <- o .:? "cardsUnderneath" .!= []
     storyTokens <- o .:? "tokens" .!= mempty
+    storySealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
     storyArt <- o .:? "art" .!= toCardCode storyId
     storyFlippedArt <- o .:? "flippedArt" .!= toCardCode storyId
     pure StoryAttrs {..}

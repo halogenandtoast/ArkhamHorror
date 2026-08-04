@@ -76,4 +76,11 @@ instance RunMessage StoryAttrs where
     MoveTokens s _ target tType n | isTarget attrs target -> runMessage (PlaceTokens s (toTarget attrs) tType n) attrs
     RemoveTokens _ target tType n | isTarget attrs target -> do
       pure $ attrs & tokensL %~ subtractTokens tType n
+    SealedChaosToken token _ (isTarget attrs -> True) -> do
+      pure $ attrs & sealedChaosTokensL %~ (\ts -> if token `elem` ts then ts else token : ts)
+    SealedChaosToken token _ _ -> do
+      pure $ attrs & sealedChaosTokensL %~ filter (/= token)
+    UnsealChaosToken token -> pure $ attrs & sealedChaosTokensL %~ filter (/= token)
+    ReturnChaosTokensToPool tokens -> pure $ attrs & sealedChaosTokensL %~ filter (`notElem` tokens)
+    RemoveAllChaosTokens face -> pure $ attrs & sealedChaosTokensL %~ filter ((/= face) . (.face))
     _ -> pure attrs

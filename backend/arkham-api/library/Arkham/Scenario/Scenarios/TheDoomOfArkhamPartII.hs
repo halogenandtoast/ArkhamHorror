@@ -243,6 +243,17 @@ instance RunMessage TheDoomOfArkhamPartII where
       pure s
     ScenarioSpecific "discardCthulhuCard" (toResult -> card) ->
       pure $ TheDoomOfArkhamPartII $ attrs & deckDiscardsL %~ insertWith (<>) CthulhuDeck [card]
+    {- Demolition: "shuffle this card into the Cthulhu deck along with the Cthulhu
+    discard pile." It has already cancelled its own discard, so it arrives here as
+    the card to fold in alongside everything discarded so far. -}
+    ScenarioSpecific "reshuffleCthulhuDeck" (toResult -> card) -> do
+      let discards = findWithDefault [] CthulhuDeck attrs.deckDiscards
+      deck <- shuffleM (card : discards <> findWithDefault [] CthulhuDeck attrs.decks)
+      pure
+        $ TheDoomOfArkhamPartII
+        $ attrs
+        & (decksL %~ insertMap CthulhuDeck deck)
+        & (deckDiscardsL %~ deleteMap CthulhuDeck)
     ScenarioResolution res -> scope "resolutions" do
       case res of
         Resolution 1 -> do

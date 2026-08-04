@@ -62,7 +62,15 @@
     "chooseAllyInvestigator": "Choose an investigator to take control of this ally.",
     "chooseArtifactInvestigator": "Choose an investigator to control this _Artifact_.",
     "chooseAlly": "Choose a set-aside _Ally_ story asset to take control of.",
-    "noAlly": "Do not take control of an _Ally_ story asset."
+    "noAlly": "Do not take control of an _Ally_ story asset.",
+    "chooseInvestigatorToTest": "Choose an investigator to test",
+    "increaseFloodLevel": "Increase the flood level of Cthulhu's location",
+    "dreadsightGroupChoice": "The investigators must decide, as a group",
+    "cthulhuAttacks": "Cthulhu <i>(Wicked Claw)</i> attacks each investigator at its location",
+    "chooseEnemyForDoom": "Choose an enemy on the Cthulhu Board with no doom on it",
+    "chooseSkillForTest": "Choose a skill to test",
+    "chooseCthulhuEnemyToReturn": "Choose a [[Cthulhu]] enemy to return to the Cthulhu Board, [[Enraged]] side faceup",
+    "chooseLocationToFlood": "Choose a location to increase the flood level of"
   },
   "tokens": {
     "easyStandard": {

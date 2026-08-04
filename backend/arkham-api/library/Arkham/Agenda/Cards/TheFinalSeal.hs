@@ -4,8 +4,10 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (drawCthulhuDeckCard)
 import Arkham.Token (Token (Resource))
 import Arkham.Trait (Trait (Artifact, Cthulhu, Rooftop, Ruined))
 
@@ -28,8 +30,7 @@ instance HasAbilities TheFinalSeal where
             <> youExist (not_ $ InvestigatorAt $ LocationWithTrait Rooftop)
         )
         $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
-    , -- [Forced] When the enemy phase ends: draw the top card of the Cthulhu
-      -- deck. (TODO: Cthulhu deck has no engine support yet.)
+    , -- [Forced] When the enemy phase ends: draw the top card of the Cthulhu deck.
       mkAbility a 2 $ forced $ PhaseEnds #when #enemy
     , onlyOnce
         $ restricted
@@ -49,13 +50,10 @@ instance RunMessage TheFinalSeal where
         withLocationOf iid \lid -> placeTokens (attrs.ability 1) lid Resource 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      -- TODO: draw the top card of the Cthulhu deck and resolve it (no engine
-      -- support for the Cthulhu deck of action cards yet).
+      lead <- getLead
+      drawCthulhuDeckCard lead (attrs.ability 2)
       pure a
     UseThisAbility _ (isSource attrs -> True) 3 -> do
-      -- TODO: the real objective also requires every Cthulhu facet to have been
-      -- banished to the victory display (a Cthulhu Board interaction with no
-      -- engine support). The 5-sigil half is gated by the ability restriction.
       advanceAgenda attrs
       pure a
     AdvanceAgendaBy (isSide B attrs -> True) means -> do

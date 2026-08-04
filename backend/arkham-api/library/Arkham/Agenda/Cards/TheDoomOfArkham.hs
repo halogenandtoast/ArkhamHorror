@@ -4,7 +4,9 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
+import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (drawCthulhuDeckCard)
 
 newtype TheDoomOfArkham = TheDoomOfArkham AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -27,7 +29,8 @@ instance RunMessage TheDoomOfArkham where
       -- [Forced] When the enemy phase ends: increase the flood level of
       -- Cthulhu's location, then draw the top card of the Cthulhu deck.
       selectEach (LocationWithEnemy $ enemyIs Enemies.cthulhuAncientEvil) (push . IncreaseFloodLevel)
-      -- TODO: draw the top card of the Cthulhu deck (no engine support yet)
+      lead <- getLead
+      drawCthulhuDeckCard lead (attrs.ability 1)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       -- [Forced] When the round ends: each investigator at a fully flooded

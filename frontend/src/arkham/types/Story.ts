@@ -2,7 +2,7 @@ import * as JsonDecoder from 'ts.data.json';
 import { v2Optional } from '@/arkham/parser';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { Target, targetDecoder } from '@/arkham/types/Target';
-import { ChaosToken, TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
+import { ChaosToken, TokenFace, chaosTokenDecoder, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
@@ -78,6 +78,7 @@ export type Story = {
   flipped: boolean
   meta?: StoryMeta
   tokens: Tokens;
+  sealedChaosTokens: ChaosToken[];
   modifiers: Modifier[];
 }
 
@@ -91,5 +92,6 @@ export const storyDecoder = JsonDecoder.object<Story>({
   flipped: JsonDecoder.boolean(),
   meta: optionalStoryMetaDecoder,
   tokens: tokensDecoder,
+  sealedChaosTokens: JsonDecoder.fallback([], JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]')),
   modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
 }, 'Story');

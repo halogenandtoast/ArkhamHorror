@@ -46,13 +46,12 @@ instance RunMessage DireGale where
       keyword this round, Cthulhu (Wicked Claw) attacks each investigator at its
       location." -}
       whenM (selectAny $ cthulhuFacet Enemies.cthulhuWickedClaw) do
-        patrolled <- cthulhuPatrolledThisRound
-        unless patrolled do
-          getCthulhuLocation >>= traverse_ \lid ->
+        unlessM cthulhuPatrolledThisRound do
+          withCthulhuLocation \lid ->
             selectEach (investigatorAt lid) (void . cthulhuFacetAttacks attrs Enemies.cthulhuWickedClaw)
       pure s
     ForInvestigator iid (ResolveThisStory _ (is attrs -> True)) -> do
-      nonStory <- selectAny $ assetControlledBy iid <> AssetNonStory
+      nonStory <- selectAny $ assetControlledBy iid <> AssetNonStory <> DiscardableAsset
       chooseOneM iid $ sharedI18n $ countVar 1 do
         labeled' "takeHorror" $ assignHorror iid attrs 1
         labeledValidate' nonStory "discardAssets"

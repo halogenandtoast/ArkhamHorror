@@ -7183,6 +7183,7 @@ test-suite spec
       Arkham.Asset.Assets.DigDeepSpec
       Arkham.Asset.Assets.DiscOfItzamna2Spec
       Arkham.Asset.Assets.DreamersChronicleSpec
+      Arkham.Asset.Assets.DreamsOfDestructionSpec
       Arkham.Asset.Assets.DrHenryArmitage_SpreadingFlamesSpec
       Arkham.Asset.Assets.DrMilanChristopherSpec
       Arkham.Asset.Assets.DukeSpec
@@ -7199,6 +7200,7 @@ test-suite spec
       Arkham.Asset.Assets.FortyFiveAutomaticSpec
       Arkham.Asset.Assets.FortyOneDerringerSpec
       Arkham.Asset.Assets.GateBoxSpec
+      Arkham.Asset.Assets.GoodMoneySpec
       Arkham.Asset.Assets.GrotesqueStatue2Spec
       Arkham.Asset.Assets.GrotesqueStatue4Spec
       Arkham.Asset.Assets.GuardDogSpec
@@ -7233,7 +7235,9 @@ test-suite spec
       Arkham.Asset.Assets.PhysicalTraining2Spec
       Arkham.Asset.Assets.PhysicalTrainingSpec
       Arkham.Asset.Assets.PickpocketingSpec
+      Arkham.Asset.Assets.PlumbTheDepthsSpec
       Arkham.Asset.Assets.PoliceBadge2Spec
+      Arkham.Asset.Assets.ProveYourWorthSpec
       Arkham.Asset.Assets.QuickStudy2Spec
       Arkham.Asset.Assets.RabbitsFootSpec
       Arkham.Asset.Assets.ResearchLibrarianSpec
@@ -7255,15 +7259,18 @@ test-suite spec
       Arkham.Asset.Assets.TheMuscleUnpracticedSpec
       Arkham.Asset.Assets.TheNecronomiconSpec
       Arkham.Asset.Assets.ThirtyFiveWinchesterSpec
+      Arkham.Asset.Assets.ToeTheLineSpec
       Arkham.Asset.Assets.Tonys38LongColtSpec
       Arkham.Asset.Assets.TrueMagickReworkingReality5Spec
       Arkham.Asset.Assets.ValeLanternExtinguishedLightSpec
+      Arkham.Asset.Assets.WalkInFaithSpec
       Arkham.Asset.Assets.WendysAmuletSpec
       Arkham.Asset.Assets.ZoeysCrossSpec
       Arkham.Asset.RunnerSpec
       Arkham.Campaign.NightOfTheZealot.ScenariosSpec
       Arkham.Campaign.ReloadDecksSpec
       Arkham.Campaign.TheCircleUndone.ScenariosSpec
+      Arkham.Campaign.TheDrownedCity.TasksSpec
       Arkham.Campaign.TheDunwichLegacy.ScenariosSpec
       Arkham.Campaign.ThePathToCarcosa.ScenariosSpec
       Arkham.Campaign.UsedAbilitiesSpec

@@ -2719,5 +2719,11 @@ takeUpkeepResources a = do
                   [TakeResources (toId a) amount (ResourceSource $ toId a) False]
               ]
           pure a
-        else
-          pure $ a & tokensL %~ addTokens Resource amount
+        else do
+          -- Route through TakeResources rather than adding the tokens directly,
+          -- so the GainsResources windows fire for the upkeep resource too. The
+          -- MayChooseNotToTakeUpkeepResources branch above already does, so
+          -- without this a reaction to "when you gain 1 or more resources"
+          -- (Good Money) triggers in upkeep only for a Dark Horse investigator.
+          push $ TakeResources (toId a) amount (ResourceSource $ toId a) False
+          pure a

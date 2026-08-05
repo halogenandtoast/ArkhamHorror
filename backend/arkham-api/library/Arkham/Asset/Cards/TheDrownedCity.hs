@@ -683,6 +683,8 @@ walkInFaith =
   permanent
     $ (storyAsset_ "11754a" ("Walk in Faith" <:> "Blind Devotion") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdCardSubType = Just Weakness
+      , cdUses = uses Token.Sign 0
       }
 
 toeTheLine :: CardDef
@@ -690,6 +692,7 @@ toeTheLine =
   permanent
     $ (storyAsset_ "11755a" ("Toe the Line" <:> "Disavowed and Disgraced") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdCardSubType = Just Weakness
       }
 
 noPlaceLikeHome :: CardDef
@@ -697,6 +700,7 @@ noPlaceLikeHome =
   permanent
     $ (storyAsset_ "11753a" ("No Place Like Home" <:> "Lost and Uncertain") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdCardSubType = Just Weakness
       , cdUses = uses Discovery 8
       }
 
@@ -705,6 +709,7 @@ goodMoney =
   permanent
     $ (storyAsset_ "11756a" ("Good Money" <:> "The \"Quid\" Part") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdCardSubType = Just Weakness
       }
 
 doNoHarm :: CardDef
@@ -712,6 +717,7 @@ doNoHarm =
   permanent
     $ (storyAsset_ "11758a" ("Do No Harm" <:> "Can You Save Them?") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdCardSubType = Just Weakness
       , cdUses = uses Obligation 5
       }
 
@@ -720,6 +726,8 @@ proveYourWorth =
   permanent
     $ (storyAsset_ "11757a" ("Prove Your Worth" <:> "Are You a Burden?") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdCardSubType = Just Weakness
+      , cdUses = uses Token.Chance 4
       }
 
 dreamsOfDestruction :: CardDef
@@ -727,6 +735,7 @@ dreamsOfDestruction =
   permanent
     $ (storyAsset_ "11759a" ("Dreams of Destruction" <:> "Visions of a Grim Future") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdCardSubType = Just Weakness
       }
 
 plumbTheDepths :: CardDef
@@ -734,6 +743,8 @@ plumbTheDepths =
   permanent
     $ (storyAsset_ "11760a" ("Plumb the Depths" <:> "Compulsive Research") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
+      , cdCardSubType = Just Weakness
+      , cdUses = uses Token.Obsession 5
       }
 
 -- The Drowned City — Expedition story assets
@@ -823,6 +834,7 @@ proveYourWorthCompleted =
   permanent
     $ (storyAsset_ "11757b" ("Prove Your Worth" <:> "Standing on Your Own") Tasks)
       { cdCardTraits = setFromList [Task, Completed]
+      , cdUses = uses Token.Chance 3
       }
 
 doNoHarmCompleted :: CardDef

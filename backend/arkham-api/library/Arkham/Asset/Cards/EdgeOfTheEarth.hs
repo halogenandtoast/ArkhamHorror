@@ -577,6 +577,9 @@ eonChart4 =
     , cdUses = uses Secret 3
     , cdLevel = Just 4
     , cdSlots = [#accessory]
+    , cdErrata =
+        Just
+          "This card’s {fast} ability should now read: “…choose and take 2 different actions of the following, in any order (move, evade, or investigate).”"
     }
 
 divination1 :: CardDef

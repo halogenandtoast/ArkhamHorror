@@ -10,7 +10,7 @@ import {
   onUnmounted,
   type VNodeRef,
 } from 'vue'
-import { cardImg, imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
+import { cardImg, formatContent, imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { homebrewTokenMap } from '@/arkham/homebrewAssets'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useDebug } from '@/arkham/debug'
@@ -1217,7 +1217,7 @@ watchEffect(() => {
 
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
 
-      <p v-if="cardErrata" class="card-errata">Errata: {{ cardErrata }}</p>
+      <p v-if="cardErrata" class="card-errata" v-html="`Errata: ${formatContent(cardErrata)}`"></p>
     </div>
 
     <div

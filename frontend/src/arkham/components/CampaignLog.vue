@@ -15,7 +15,9 @@ import KeysStatus from '@/arkham/components/TheScarletKeys/KeysStatus.vue'
 import WorldMap from '@/arkham/components/TheScarletKeys/WorldMap.vue'
 import Supplies from '@/arkham/components/Supplies.vue'
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue'
-import type { XpBreakdownStep } from '@/arkham/types/Xp'
+import { type XpBreakdown as XpBreakdownType, type XpBreakdownStep, xpBreakdownDecoder } from '@/arkham/types/Xp'
+import { type TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken'
+import * as JsonDecoder from 'ts.data.json'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
 import CampaignLogSpecialRules from '@/arkham/components/CampaignLogSpecialRules.vue'
@@ -147,13 +149,32 @@ const otherModeTitle = computed(() => {
   return title === 'The Dream-Quest' ? 'The Web of Dreams' : 'The Dream-Quest'
 })
 
+// The whole inactive campaign rides along in the meta for the Dream Eaters A/B split
+const otherCampaignAttrs = computed(() => props.game.campaign?.meta?.otherCampaignAttrs ?? null)
+
 // decode the counterpart log if present (Dream Eaters A/B split)
 const otherLog = ref<LogContents | null>(null)
-if (props.game.campaign?.meta?.otherCampaignAttrs?.log) {
+if (otherCampaignAttrs.value?.log) {
   logContentsDecoder
-    .decodePromise(props.game.campaign.meta.otherCampaignAttrs.log)
+    .decodePromise(otherCampaignAttrs.value.log)
     .then(res => { otherLog.value = res })
     .catch(() => { otherLog.value = null })
+}
+
+const otherXpBreakdown = ref<XpBreakdownType | null>(null)
+if (otherCampaignAttrs.value?.xpBreakdown) {
+  xpBreakdownDecoder
+    .decodePromise(otherCampaignAttrs.value.xpBreakdown)
+    .then(res => { otherXpBreakdown.value = res })
+    .catch(() => { otherXpBreakdown.value = null })
+}
+
+const otherChaosBag = ref<TokenFace[] | null>(null)
+if (otherCampaignAttrs.value?.chaosBag) {
+  JsonDecoder.array(tokenFaceDecoder, 'TokenFace[]')
+    .decodePromise(otherCampaignAttrs.value.chaosBag)
+    .then(res => { otherChaosBag.value = res })
+    .catch(() => { otherChaosBag.value = null })
 }
 
 // A mapping of title → LogContents. When there is no split, we expose just the main one.
@@ -181,11 +202,11 @@ watch(logTitles, (titles) => {
 const selectedLog = computed<LogContents>(() => logMap.value[selectedTitle.value] ?? mainLog.value)
 
 // --- Investigators shown depend on which half is selected -----------------------
-const investigators = computed(() => {
-  const mainTitle = dreamModeTitle.value ?? logTitles.value[0]
-  const showingMain = selectedTitle.value === mainTitle
-  return showingMain ? Object.values(props.game.investigators) : Object.values(props.game.otherInvestigators)
-})
+const showingMain = computed(() => selectedTitle.value === (dreamModeTitle.value ?? logTitles.value[0]))
+
+const investigators = computed(() =>
+  showingMain.value ? Object.values(props.game.investigators) : Object.values(props.game.otherInvestigators)
+)
 
 // --- Remembered (scenario-only) -------------------------------------------------
 const remembered = computed(() => {
@@ -282,10 +303,14 @@ watch(additionalLogSections, (sections) => {
 
 const allGameInvestigators = computed(() => ({
   ...props.game.investigators,
+  ...props.game.otherInvestigators,
   ...props.game.killedInvestigators,
 }))
 
 const breakdowns = computed<XpBreakdownStep[]>(() => {
+  if (!showingMain.value) {
+    return otherXpBreakdown.value ?? []
+  }
   if (props.game.campaign?.xpBreakdown) {
     return props.game.campaign.xpBreakdown
   }
@@ -512,7 +537,9 @@ const recordedCounts = computed(() =>
 )
 
 const partners = computed(() => (selectedLog.value as any).partners ?? {})
-const chaosBag = computed(() => props.game.campaign?.chaosBag ?? [])
+const chaosBag = computed(() =>
+  showingMain.value ? (props.game.campaign?.chaosBag ?? []) : (otherChaosBag.value ?? [])
+)
 const hasSupplies = computed(() => Object.values(investigators.value).some(i => i.supplies.length > 0))
 
 // --- Investigator log sections --------------------------------------------------
@@ -761,6 +788,24 @@ onUnmounted(() => {
           <h1>{{ game.name }}</h1>
         </div>
 
+        <div v-if="logTitles.length > 1" class="options campaign-side-options">
+          <div
+            v-for="title in logTitles"
+            :key="title"
+            class="log-title-option"
+            :class="{ checked: title === selectedTitle }"
+          >
+            <input
+              name="log"
+              type="radio"
+              v-model="selectedTitle"
+              :value="title"
+              :id="`log${title}`"
+            />
+            <label :for="`log${title}`">{{ title }}</label>
+          </div>
+        </div>
+
         <nav class="log-tabs">
           <button
             type="button"
@@ -858,24 +903,6 @@ onUnmounted(() => {
         />
 
         <div class="log-categories">
-          <div v-if="logTitles.length > 1" class="options">
-            <div
-              v-for="title in logTitles"
-              :key="title"
-              class="log-title-option"
-              :class="{ checked: title === selectedTitle }"
-            >
-              <input
-                name="log"
-                type="radio"
-                v-model="selectedTitle"
-                :value="title"
-                :id="`log${title}`"
-              />
-              <label :for="`log${title}`">{{ title }}</label>
-            </div>
-          </div>
-
           <div v-if="hasSupplies" class="supplies-container">
             <h2>{{ t('theForgottenAge.supplies.title') }}</h2>
             <div class="supplies-content">
@@ -1193,6 +1220,11 @@ h1 {
 .options {
   display: flex;
   gap: 8px;
+}
+
+/* sits above the tab nav — it switches which campaign every tab describes */
+.campaign-side-options {
+  margin-bottom: 16px;
 }
 
 .log-title-option {

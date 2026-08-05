@@ -686,6 +686,69 @@ gameEnemyAttackTargets g =
   , t <- dets.targets
   ]
 
+{- | An investigator who isn't in play, dressed up so the client can render them in
+the campaign log: no modifiers, no connections, and none of the in-play extras.
+-}
+asPublicInvestigator
+  :: Investigator -> WithDeckSize `With` ModifierData `With` ConnectionData `With` Value
+asPublicInvestigator =
+  (`with` emptyAdditionalData)
+    . (`with` ConnectionData [])
+    . (`with` ModifierData [])
+    . WithDeckSize
+ where
+  emptyAdditionalData =
+    object
+      [ "additionalActions" .= emptyArray
+      , "engagedEnemies" .= emptyArray
+      , "assets" .= emptyArray
+      , "events" .= emptyArray
+      , "skills" .= emptyArray
+      , "treacheries" .= emptyArray
+      ]
+
+{- | The investigators playing the *other* half of a split campaign (currently only
+The Dream-Eaters, which runs The Dream-Quest and The Web of Dreams in parallel).
+
+Both @toEncoding@ and @toJSON@ for 'PublicGame' need this, and they used to carry
+their own copies which drifted — the encoding (the one actually on the wire, see
+@Orphans.toContent@) was left rebuilding investigators from the other side's deck
+list, so it reported them with zero xp and no trauma.
+-}
+publicOtherInvestigators
+  :: GameMode
+  -> Map InvestigatorId (WithDeckSize `With` ModifierData `With` ConnectionData `With` Value)
+publicOtherInvestigators = \case
+  This c -> fromMeta (attr campaignMeta c)
+  That _ -> mempty
+  These c _ -> fromMeta (attr campaignMeta c)
+ where
+  -- otherCampaignPlayers is only populated once the campaign has swapped sides at
+  -- least once, so fall back to the deck-derived list (deck selection, pre-swap).
+  fromMeta j = if null fromPlayers then fromDecks else fromPlayers
+   where
+    fromPlayers = case parse (withObject "" (.: "otherCampaignPlayers")) j of
+      Error _ -> mempty
+      Success (attrs :: Map PlayerId InvestigatorAttrs) ->
+        Map.fromList
+          $ map
+            ( \i ->
+                ( i.id
+                , asPublicInvestigator
+                    $ Investigator.withInvestigatorCardCode
+                      (toCardCode i)
+                      ( \(Investigator.SomeInvestigator @a) -> Investigator.Investigator (Investigator.investigatorFromAttrs @a i)
+                      )
+                )
+            )
+            (Map.elems attrs)
+    fromDecks = case parse (withObject "" (.: "otherCampaignAttrs")) j of
+      Error _ -> mempty
+      Success attrs ->
+        Map.fromList
+          $ map (\iid -> (iid, asPublicInvestigator $ lookupInvestigator iid (PlayerId nil)))
+          $ Map.keys (campaignDecks attrs)
+
 instance ToJSON gid => ToJSON (PublicGame gid) where
   toEncoding (FailedToLoadGame e) = pairs ("tag" .= String "FailedToLoadGame" <> "error" .= toJSON e)
   toEncoding (PublicGame gid name glog g@Game {..}) = flip runReader g do
@@ -770,34 +833,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("turnHistory" .= gameTurnHistory)
       <> ("enemyAttackTargets" .= gameEnemyAttackTargets g)
    where
-    emptyAdditionalData =
-      object
-        [ "additionalActions" .= emptyArray
-        , "engagedEnemies" .= emptyArray
-        , "assets" .= emptyArray
-        , "events" .= emptyArray
-        , "skills" .= emptyArray
-        , "treacheries" .= emptyArray
-        ]
-    otherInvestigators = case gameMode of
-      This c -> campaignOtherInvestigators (toJSON $ attr campaignMeta c)
-      That _ -> mempty
-      These c _ -> campaignOtherInvestigators (toJSON $ attr campaignMeta c)
-    campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
-      Error _ -> mempty
-      Success attrs ->
-        Map.fromList
-          . map
-            ( \iid ->
-                ( iid
-                , (`with` emptyAdditionalData)
-                    . (`with` ConnectionData [])
-                    . (`with` ModifierData [])
-                    . WithDeckSize
-                    $ lookupInvestigator iid (PlayerId nil)
-                )
-            )
-          $ Map.keys (campaignDecks attrs)
+    otherInvestigators = publicOtherInvestigators gameMode
     killedInvestigators = case gameMode of
       This c -> killedInvestigatorsFrom (attr campaignLog c)
       That _ -> mempty
@@ -811,16 +847,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         deadIids = filter (`notElem` activeIids) . map InvestigatorId $ killed <> insane
        in
         Map.fromList
-          . map
-            ( \iid ->
-                ( iid
-                , (`with` emptyAdditionalData)
-                    . (`with` ConnectionData [])
-                    . (`with` ModifierData [])
-                    . WithDeckSize
-                    $ lookupInvestigator iid (PlayerId nil)
-                )
-            )
+          . map (\iid -> (iid, asPublicInvestigator $ lookupInvestigator iid (PlayerId nil)))
           $ deadIids
   toJSON (FailedToLoadGame e) = object ["tag" .= String "FailedToLoadGame", "error" .= toJSON e]
   toJSON (PublicGame gid name glog g@Game {..}) = flip runReader g do
@@ -908,38 +935,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "enemyAttackTargets" .= toJSON (gameEnemyAttackTargets g)
         ]
    where
-    emptyAdditionalData =
-      object
-        [ "additionalActions" .= emptyArray
-        , "engagedEnemies" .= emptyArray
-        , "assets" .= emptyArray
-        , "events" .= emptyArray
-        , "skills" .= emptyArray
-        , "treacheries" .= emptyArray
-        ]
-    otherInvestigators = case gameMode of
-      This c -> campaignOtherInvestigators (attr campaignMeta c)
-      That _ -> mempty
-      These c _ -> campaignOtherInvestigators (attr campaignMeta c)
-    campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignPlayers")) j of
-      Error _ -> mempty
-      Success (attrs :: Map PlayerId InvestigatorAttrs) ->
-        Map.fromList
-          . map
-            ( \i ->
-                ( i.id
-                , (`with` emptyAdditionalData)
-                    . (`with` ConnectionData [])
-                    . (`with` ModifierData [])
-                    $ WithDeckSize
-                      ( Investigator.withInvestigatorCardCode
-                          (toCardCode i)
-                          ( \(Investigator.SomeInvestigator @a) -> Investigator.Investigator (Investigator.investigatorFromAttrs @a i)
-                          )
-                      )
-                )
-            )
-          $ Map.elems attrs
+    otherInvestigators = publicOtherInvestigators gameMode
     killedInvestigators = case gameMode of
       This c -> killedInvestigatorsFrom (attr campaignLog c)
       That _ -> mempty
@@ -953,16 +949,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         deadIids = filter (`notElem` activeIids) . map InvestigatorId $ killed <> insane
        in
         Map.fromList
-          . map
-            ( \iid ->
-                ( iid
-                , (`with` emptyAdditionalData)
-                    . (`with` ConnectionData [])
-                    . (`with` ModifierData [])
-                    . WithDeckSize
-                    $ lookupInvestigator iid (PlayerId nil)
-                )
-            )
+          . map (\iid -> (iid, asPublicInvestigator $ lookupInvestigator iid (PlayerId nil)))
           $ deadIids
 getEffectsMatching :: (HasGame m, Tracing m) => EffectMatcher -> m [Effect]
 getEffectsMatching matcher = do

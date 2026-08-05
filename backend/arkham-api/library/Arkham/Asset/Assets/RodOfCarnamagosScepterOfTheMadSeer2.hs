@@ -26,8 +26,8 @@ rodOfCarnamagosScepterOfTheMadSeer2 =
 
 instance HasAbilities RodOfCarnamagosScepterOfTheMadSeer2 where
   getAbilities (RodOfCarnamagosScepterOfTheMadSeer2 (With attrs _)) =
-    [ restricted attrs 1 (ControlsThis <> DuringSkillTest AnySkillTest)
-        $ FastAbility (ChooseEnemyCost (NonEliteEnemy <> EnemyAt Anywhere) <> exhaust attrs)
+    [ controlled_ attrs 1
+        $ freeTrigger (ChooseEnemyCost (NonEliteEnemy <> EnemyAt Anywhere) <> exhaust attrs)
     ]
 
 instance RunMessage RodOfCarnamagosScepterOfTheMadSeer2 where

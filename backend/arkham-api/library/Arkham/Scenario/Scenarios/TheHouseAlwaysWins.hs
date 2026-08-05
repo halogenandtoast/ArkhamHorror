@@ -94,7 +94,7 @@ instance RunMessage TheHouseAlwaysWins where
 
       setActDeck [Acts.beginnersLuck, Acts.skinGame, Acts.allIn, Acts.fold]
       setAgendaDeck [Agendas.theCloverClub, Agendas.undergroundMuscle, Agendas.chaosInTheCloverClub]
-    ResolveChaosToken _ Tablet iid -> s <$ push (SpendResources iid 3)
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> s <$ push (SpendResources iid 3)
     ResolveChaosToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3
       resourceCount <- getSpendableResources iid

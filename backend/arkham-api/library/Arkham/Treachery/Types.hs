@@ -370,8 +370,8 @@ someTreacheryCardCodes (SomeTreacheryCard CardBuilder {..}) =
 
 makeLensesWith suffixedFields ''TreacheryAttrs
 
-setMeta :: ToJSON a => a -> TreacheryAttrs -> TreacheryAttrs
-setMeta a = metaL .~ toJSON a
+setMeta :: (ToJSON a, Entity b, EntityAttrs b ~ TreacheryAttrs) => a -> b -> b
+setMeta a = overAttrs (metaL .~ toJSON a)
 
 $(deriveToJSON (aesonOptions $ Just "treachery") ''TreacheryAttrs)
 

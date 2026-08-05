@@ -549,5 +549,6 @@
   "discardEachFirearmAsset": "Discard each Firearm asset you control",
   "dealDamageToGeistAtLocation": "Deal {count} damage to a Geist enemy at your location",
   "dealDamageToGeistAtAnyLocation": "Deal {count} damage to a Geist enemy at any location",
-  "ignoreUseSkillTypeInsteadOf": "Ignore use {'{'}{skill}{'}'} instead of {'{'}{replacedSkill}{'}'}"
+  "ignoreUseSkillTypeInsteadOf": "Ignore use {'{'}{skill}{'}'} instead of {'{'}{replacedSkill}{'}'}",
+  "eachInvestigatorTakesDamageOrHorror": "Each investigator takes 1 damage or 1 horror"
 }

@@ -3,6 +3,7 @@ module Arkham.Enemy.EngagementSpec (spec) where
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher qualified as Matcher
+import Arkham.Placement
 import TestImport.New
 
 -- Spawns a swarming host engaged with `self` and returns the host and its one
@@ -45,6 +46,46 @@ spec = describe "Enemy engagement" do
       enemy.location `shouldReturn` Just (toId location2)
       self.engagedEnemies `shouldReturn` []
       other.engagedEnemies `shouldReturn` [toId enemy]
+
+  -- Regression for issue #5332 (The Miskatonic Museum act 2b placing the ready
+  -- Hunting Horror in the Restricted Hall). Spawning engages through the
+  -- `EnemySpawn` flow and moving engages through `After (EnemyEntered)`, but a
+  -- bare `PlaceEnemy` of an *already in play* enemy checked nothing — so the
+  -- enemy sat ready and unengaged in the investigator's location, which also
+  -- swallowed Eon Chart's second basic action (evade was not performable).
+  it "engages an investigator when a card effect places an in-play enemy at their location"
+    . gameTest
+    $ \self -> do
+      location1 <- testLocation
+      location2 <- testLocation
+      self `moveTo` location1
+
+      enemy <- testEnemy
+      enemy `spawnAt` location2
+      self.engagedEnemies `shouldReturn` []
+
+      run $ PlaceEnemy (toId enemy) (AtLocation (toId location1))
+
+      enemy.location `shouldReturn` Just (toId location1)
+      self.engagedEnemies `shouldReturn` [toId enemy]
+
+  -- The engagement check has to stay guarded: an exhausted enemy does not engage
+  -- (RR "Enemy Cards" — only a *ready*, unengaged enemy engages).
+  it "leaves an exhausted enemy unengaged when it is placed at an investigator's location"
+    . gameTest
+    $ \self -> do
+      location1 <- testLocation
+      location2 <- testLocation
+      self `moveTo` location1
+
+      enemy <- testEnemy
+      enemy `spawnAt` location2
+      exhaust enemy
+
+      run $ PlaceEnemy (toId enemy) (AtLocation (toId location1))
+
+      enemy.location `shouldReturn` Just (toId location1)
+      self.engagedEnemies `shouldReturn` []
 
   -- Regression for issue #5313 (Virescent Rot on a Nightriders host). Engaged
   -- swarm cards are reported alongside their host, and their

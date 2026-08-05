@@ -2298,7 +2298,19 @@ instance RunMessage EnemyAttrs where
         AtLocation lid -> do
           let details = mkSpawnDetails enemyId (X.SpawnAtLocation lid)
           if isInPlayPlacement a.placement
-            then handlePlacement placement
+            then do
+              -- A ready, unengaged enemy engages any time it is at the same
+              -- location as an investigator (RR "Enemy Cards") -- including when
+              -- a card effect *places* an already-in-play enemy there rather
+              -- than spawning or moving it. Spawns engage through the
+              -- EnemySpawn flow and moves through After (EnemyEntered), but a
+              -- bare PlaceEnemy had no equivalent, so the enemy arrived
+              -- unengaged (Breaking and Entering putting the Hunting Horror in
+              -- the Restricted Hall, #5332). Pushed before handlePlacement so
+              -- engagement resolves ahead of the after-EnemyPlaced window, as
+              -- with enemy movement.
+              push $ EnemyCheckEngagement enemyId
+              handlePlacement placement
             else do
               pushAll
                 [ Will (EnemySpawn details)

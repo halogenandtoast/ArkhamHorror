@@ -31,6 +31,9 @@ const boardStyle = computed(() => ({
 const slotted = computed(() =>
   CTHULHU_BOARD_SLOTS.map((codes) => props.enemies.find((e) => codes.includes(e.cardCode)) ?? null)
 )
+
+const activeFacet = computed(() => props.game.scenario?.meta?.activeCthulhuFacet ?? null)
+const facetNames = ['hoaryWings', 'fierceVisage', 'wickedClaw']
 </script>
 
 <template>
@@ -46,6 +49,7 @@ const slotted = computed(() =>
         :enemy="enemy"
         :game="game"
         :playerId="playerId"
+        :sourceHighlighted="activeFacet === facetNames[idx]"
         @choose="$emit('choose', $event)"
       />
     </div>
@@ -72,6 +76,8 @@ const slotted = computed(() =>
   width: calc(var(--card-width) / 0.24);
   aspect-ratio: 1565 / 940;
   flex: none;
+  border-radius: 6px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
 
   /* 100% 100% rather than cover: the percentages above are measured against the
      whole image, so it has to fill the box exactly. The slot geometry implies a
@@ -104,5 +110,14 @@ const slotted = computed(() =>
   width: 100%;
   max-width: 100%;
   height: 100%;
+}
+
+.slot :deep(img.card.source-highlight) {
+  box-shadow:
+    0 0 0 3px var(--important),
+    0 0 12px 3px var(--important),
+    0 0 22px 5px var(--important),
+    var(--card-shadow);
+  filter: brightness(1.08);
 }
 </style>

@@ -27,6 +27,7 @@ instance HasModifiersFor CthulhuAncientEvil where
       [ CannotMakeAttacksOfOpportunity
       , CannotBeAttacked
       , CannotBeEvaded
+      , CannotBeDamaged
       ]
 
     facets <- getCthulhuBoardEnemies

@@ -14,6 +14,7 @@ const scenarioDebugCounts: Record<string, ScenarioDebugCount[]> = {
   c83001: [{ key: 'StrengthOfTheAbyss', label: 'Strength of the Abyss' }], // The Eternal Slumber
   c83016: [{ key: 'StrengthOfTheAbyss', label: 'Strength of the Abyss' }], // The Night's Usurper
   c04277: [{ key: 'CurrentDepth', label: 'Depth' }], // The Depths of Yoth
+  c11688a: [{ key: 'CthulhuRage', label: "Cthulhu's Rage" }], // The Doom of Arkham Pt II
 }
 
 export function scenarioDebugCountsFor(scenario: Scenario): ScenarioDebugCount[] {
@@ -21,7 +22,10 @@ export function scenarioDebugCountsFor(scenario: Scenario): ScenarioDebugCount[]
 }
 
 // Scenarios with a bespoke debug section (beyond the generic count editors above).
-const scenariosWithCustomDebugOptions = ['c85001'] // The Blob That Ate Everything
+const scenariosWithCustomDebugOptions = [
+  'c85001', // The Blob That Ate Everything
+  'c11688a', // The Doom of Arkham Pt II
+]
 
 export function scenarioHasDebugOptions(scenario: Scenario): boolean {
   return scenariosWithCustomDebugOptions.includes(scenario.id)

@@ -39,7 +39,8 @@ const props = withDefaults(defineProps<{
   playerId: string
   atLocation?: boolean
   attached?: boolean
-}>(), { atLocation: false, attached: false })
+  sourceHighlighted?: boolean
+}>(), { atLocation: false, attached: false, sourceHighlighted: false })
 
 const emits = defineEmits<{
   choose: [value: number]
@@ -79,6 +80,7 @@ const id = computed(() => props.enemy.id)
 
 const choicesSource = useStickyChoicesSource(() => props.game, () => props.playerId)
 const isHighlighted = computed(() => {
+  if (props.sourceHighlighted) return true
   const source = choicesSource.value
   return source !== null && 'contents' in source && source.contents === props.enemy.id
 })

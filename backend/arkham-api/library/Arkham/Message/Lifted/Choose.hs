@@ -21,6 +21,7 @@ import Arkham.Location.Grid
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
+import Arkham.Matcher.Patterns (pattern InvestigatorCanBeDamaged)
 import Arkham.Message (Message (Would), questionWithSource, uiToRun)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
@@ -525,9 +526,10 @@ questionLabeledI label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = 
 questionLabeledCard :: (ReverseQueue m, HasCardCode a) => a -> ChooseT m ()
 questionLabeledCard a = modify $ \s -> s {Arkham.Message.Lifted.Choose.labelCardCode = Just (toCardCode a)}
 
--- | Attach a source to the question so the client highlights that entity (e.g.
--- the acting enemy during Hunter/Patrol/Warring movement). Honored by
--- 'chooseOneM' and 'chooseOrRunOneM'.
+{- | Attach a source to the question so the client highlights that entity (e.g.
+the acting enemy during Hunter/Patrol/Warring movement). Honored by
+'chooseOneM' and 'chooseOrRunOneM'.
+-}
 questionSourced :: (ReverseQueue m, Sourceable a) => a -> ChooseT m ()
 questionSourced a = modify $ \s -> s {Arkham.Message.Lifted.Choose.source = Just (toSource a)}
 
@@ -617,3 +619,15 @@ chooseDamageEnemy iid source lmatcher ematcher n = do
     targets enemies $ assignEnemyDamage (nonAttack (Just iid) source n)
     when (ematcher == AnyEnemy) do
       for_ concealed \card -> targeting card $ push $ Msg.Flip iid GameSource (ConcealedCardTarget card.id)
+
+assignDamageOrHorror
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
+assignDamageOrHorror _ _ 0 0 = pure ()
+assignDamageOrHorror iid (toSource -> source) 0 horror = assignHorror iid source horror
+assignDamageOrHorror iid (toSource -> source) damage 0 = assignDamage iid source damage
+assignDamageOrHorror iid (toSource -> source) damage horror = do
+  canBeDamaged <- matches iid InvestigatorCanBeDamaged
+  when canBeDamaged do
+    chooseOneM iid $ withI18n $ unscoped do
+      countVar damage $ labeled' "takeDamage" $ assignDamage iid source damage
+      countVar horror $ labeled' "takeHorror" $ assignHorror iid source horror

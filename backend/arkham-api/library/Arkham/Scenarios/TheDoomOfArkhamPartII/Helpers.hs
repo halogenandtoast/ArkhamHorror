@@ -19,18 +19,20 @@ import Arkham.Location.Types (LocationAttrs)
 import Arkham.Matcher
 import Arkham.Message (
   GroupKey (HunterGroup),
-  Message (DrawCards, HandleGroupTarget, ScenarioCountSet, ScenarioSpecific),
+  Message (DrawCards, HandleGroupTarget, ScenarioCountSet, ScenarioSpecific, StoryMessage),
   pattern EnemyWillAttack,
   pattern PatrolMove,
  )
 import Arkham.Message.Lifted (createEnemyAt_)
 import Arkham.Message.Lifted.Card (obtainCard)
 import Arkham.Message.Lifted.Queue
+import Arkham.Message.Story (StoryMessage (RemoveStory))
 import Arkham.Modifier (Modifier)
 import Arkham.Prelude
 import Arkham.Scenario.Deck (ScenarioDeckKey (CthulhuDeck))
 import Arkham.ScenarioLogKey (ScenarioCountKey (CthulhuRage))
 import Arkham.Source (Source (EnemySource), Sourceable)
+import Arkham.Story.Types (StoryAttrs)
 import Arkham.Target (Target (AbilityTarget, EnemyTarget))
 import Arkham.Tracing (Tracing)
 import Arkham.Trait (Trait (Rooftop))
@@ -68,11 +70,11 @@ setCthulhuRage = push . ScenarioCountSet CthulhuRage
 order. The slot is fixed by the card, so "return it to its place on the Cthulhu
 Board" needs no stored state.
 -}
-cthulhuBoardSlots :: [(Int, CardDef)]
+cthulhuBoardSlots :: [(Int, CthulhuFacet)]
 cthulhuBoardSlots =
-  [ (1, Enemies.cthulhuHoaryWings)
-  , (2, Enemies.cthulhuFierceVisage)
-  , (3, Enemies.cthulhuWickedClaw)
+  [ (1, HoaryWings)
+  , (2, FierceVisage)
+  , (3, WickedClaw)
   ]
 
 {- | Each Cthulhu facet paired with its @Enraged@ face. Banish Him! both returns
@@ -89,8 +91,32 @@ cthulhuFacets =
 {- | Matches a Cthulhu facet on either of its faces: a facet flipped to its
 @Enraged@ side is a different card code but the same card.
 -}
-cthulhuFacet :: CardDef -> EnemyMatcher
-cthulhuFacet def = mapOneOf enemyIs def.defs
+cthulhuFacet :: CthulhuFacet -> EnemyMatcher
+cthulhuFacet (toCardDef -> def) = mapOneOf enemyIs def.defs
+
+data CthulhuFacet = HoaryWings | FierceVisage | WickedClaw
+
+cthulhuFacetName :: CthulhuFacet -> Text
+cthulhuFacetName = \case
+  HoaryWings -> "hoaryWings"
+  FierceVisage -> "fierceVisage"
+  WickedClaw -> "wickedClaw"
+
+highlightCthulhuFacet :: ReverseQueue m => CthulhuFacet -> m () -> m ()
+highlightCthulhuFacet facet body = do
+  push $ ScenarioSpecific "setCthulhuActiveFacet" (toJSON $ Just $ cthulhuFacetName facet)
+  body
+  push $ ScenarioSpecific "setCthulhuActiveFacet" (toJSON (Nothing :: Maybe Text))
+
+instance HasCardDef CthulhuFacet where
+  toCardDef = \case
+    HoaryWings -> Enemies.cthulhuHoaryWings
+    FierceVisage -> Enemies.cthulhuFierceVisage
+    WickedClaw -> Enemies.cthulhuWickedClaw
+
+whenCthulhuHas :: ReverseQueue m => CthulhuFacet -> m () -> m ()
+whenCthulhuHas facet body = whenAny (cthulhuFacet facet) do
+  highlightCthulhuFacet facet body
 
 {- | The facets still on the board — in play, rather than banished to the victory
 display. Cthulhu's combined enemy-phase attack sums only these.
@@ -105,23 +131,30 @@ Cthulhu"), so the lookup lives here rather than in eleven card modules.
 getCthulhuLocation :: (HasGame m, Tracing m) => m (Maybe LocationId)
 getCthulhuLocation = selectOne $ LocationWithEnemy (enemyIs Enemies.cthulhuAncientEvil)
 
+getInvestigatorsWithCthulhu :: (HasGame m, Tracing m) => m [InvestigatorId]
+getInvestigatorsWithCthulhu = getCthulhuLocation >>= maybe (pure []) (select . investigatorAt)
+
+eachInvestigatorWithCthulhu :: (HasGame m, Tracing m) => (InvestigatorId -> m ()) -> m ()
+eachInvestigatorWithCthulhu f = getInvestigatorsWithCthulhu >>= traverse_ f
+
 withCthulhuLocation :: (HasGame m, Tracing m) => (LocationId -> m ()) -> m ()
 withCthulhuLocation = whenJustM getCthulhuLocation
 
 -- | The in-play facet matching a definition, on whichever face it is currently showing.
-getCthulhuFacet :: (HasGame m, Tracing m) => CardDef -> m (Maybe EnemyId)
+getCthulhuFacet :: (HasGame m, Tracing m) => CthulhuFacet -> m (Maybe EnemyId)
 getCthulhuFacet = selectOne . cthulhuFacet
 
 {- | "Cthulhu /(X)/ attacks <investigator>." A no-op when that facet has been
 banished to the victory display, which is what "if no attack was made" turns on.
 -}
 cthulhuFacetAttacks
-  :: (ReverseQueue m, Sourceable source) => source -> CardDef -> InvestigatorId -> m Bool
-cthulhuFacetAttacks source def iid =
-  getCthulhuFacet def >>= \case
+  :: (ReverseQueue m, Sourceable source) => source -> CthulhuFacet -> InvestigatorId -> m Bool
+cthulhuFacetAttacks source facet iid =
+  getCthulhuFacet facet >>= \case
     Nothing -> pure False
     Just eid -> do
-      push $ EnemyWillAttack $ enemyAttack eid source iid
+      highlightCthulhuFacet facet do
+        push $ EnemyWillAttack $ enemyAttack eid source iid
       pure True
 
 {- | "Resolve Cthulhu's patrol keyword an additional time." (Hurricane Force, Dire
@@ -166,6 +199,19 @@ retainCthulhuCard :: (MonadTrans t, HasQueue Message m) => Card -> t m ()
 retainCthulhuCard card = lift $ removeAllMessagesMatching \case
   ScenarioSpecific "discardCthulhuCard" v -> v == toJSON card
   _ -> False
+
+{- | "Discard this card", for the action cards that put themselves into play next to
+the agenda deck (Fifth Eye, Hope Fades).
+
+Their automatic discard was cancelled by 'retainCthulhuCard' when they entered play,
+so discarding now has to do both halves by hand: take the story off the table and
+file its card into the Cthulhu discard pile. It cannot go through 'toDiscard' —
+nothing handles @Discard@ for a @StoryTarget@, so that call silently does nothing.
+-}
+discardCthulhuCard :: ReverseQueue m => StoryAttrs -> m ()
+discardCthulhuCard attrs = do
+  push $ ScenarioSpecific "discardCthulhuCard" (toJSON $ toCard attrs)
+  push $ StoryMessage $ RemoveStory attrs.id
 
 {- | Where The Final Seal may place a sigil. Both Rooftop locations print "sigils
 cannot be placed on it", and they are the only locations that do, so the restriction

@@ -1,14 +1,16 @@
 module Arkham.Story.Cards.Demolition (demolition) where
 
+import Arkham.Card
+import Arkham.Helpers.Query (getLead)
+import Arkham.Location.Types (Field (LocationTokens))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
-import Arkham.Card
-import Arkham.Location.Types (Field (LocationTokens))
-import Arkham.Trait (Trait (Rooftop))
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Token (Token (Damage), countTokens)
+import Arkham.Trait (Trait (Rooftop))
 
 newtype Demolition = Demolition StoryAttrs
   deriving anyclass (IsStory, HasAbilities, HasModifiersFor)
@@ -20,31 +22,24 @@ demolition = story Demolition Cards.demolition
 instance RunMessage Demolition where
   runMessage msg s@(Demolition attrs) = runQueueT $ case msg of
     ResolveThisStory _ (is attrs -> True) -> do
-      getCthulhuLocation >>= traverse_ \cthulhuLocation -> do
-        -- "Place 1 damage token on the [[Rooftop]] location nearest to Cthulhu, as a
-        -- ruin token."
-        rooftop <- selectOne $ NearestLocationToLocation cthulhuLocation (LocationWithTrait Rooftop)
-        for_ rooftop \lid -> do
-          placeTokens attrs lid Damage 1
-          ruins <- fieldMap LocationTokens (countTokens Damage) lid
+      withCthulhuLocation \cthulhuLocation -> do
+        rooftops <- select $ NearestLocationToLocation cthulhuLocation (LocationWithTrait Rooftop)
+        lead <- getLead
+        chooseOrRunOneM lead do
+          targets rooftops $ handleTarget lead attrs
+      pure s
+    HandleTargetChoice _iid (isSource attrs -> True) (LocationTarget lid) -> do
+      placeTokens attrs lid Damage 1
+      ruins <- fieldMap LocationTokens ((+ 1) . countTokens Damage) lid
 
-          {- "If there are 2 or more ruin tokens on that location, each investigator is
-          killed and each enemy at that location is discarded. Then, remove that
-          location and this card from the game." The kill is written without a
-          location qualifier, in deliberate contrast to the enemies immediately after
-          it, so it takes the whole party. -}
-          if ruins >= 2
-            then do
-              selectEach UneliminatedInvestigator (kill attrs)
-              selectEach (enemyAt lid) (toDiscard attrs)
-              push $ RemoveLocation lid
-              {- Removed from the game: dropping out of the discard is enough, since
-              the card only ever re-enters play by being reshuffled from there. -}
-              retainCthulhuCard (toCard attrs)
-            else
-              -- "Otherwise, shuffle this card into the Cthulhu deck along with the
-              -- Cthulhu discard pile."
-              retainCthulhuCard (toCard attrs)
-                *> push (ScenarioSpecific "reshuffleCthulhuDeck" (toJSON $ toCard attrs))
+      if ruins >= 2
+        then do
+          selectEach (investigatorAt lid) (kill attrs)
+          selectEach (enemyAt lid) (toDiscard attrs)
+          removeLocation lid
+          retainCthulhuCard (toCard attrs)
+        else do
+          retainCthulhuCard (toCard attrs)
+          scenarioSpecific "reshuffleCthulhuDeck" (toCard attrs)
       pure s
     _ -> Demolition <$> liftRunMessage msg attrs

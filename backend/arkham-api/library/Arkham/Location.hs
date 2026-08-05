@@ -1455,13 +1455,13 @@ allLocations =
       , SomeLocationCard sigilCarvedAlcoveStoryOfDefiance
       , SomeLocationCard sigilCarvedAlcoveStoryOfTheVoyage
       , SomeLocationCard tillinghastEsotericaEphemeralShop
-      , SomeLocationCard northsideTheDrownedCity
-      , SomeLocationCard downtown
-      , SomeLocationCard easttownTheDrownedCity
-      , SomeLocationCard miskatonicUniversityTheDrownedCity
-      , SomeLocationCard rivertownTheDrownedCity
-      , SomeLocationCard stMarysHospitalTheDrownedCity
-      , SomeLocationCard southside
+      , SomeLocationCard northsideRuined
+      , SomeLocationCard downtownRuined
+      , SomeLocationCard easttownRuined
+      , SomeLocationCard miskatonicUniversityRuined
+      , SomeLocationCard rivertownRuined
+      , SomeLocationCard stMarysHospitalRuined
+      , SomeLocationCard southsideRuined
       , SomeLocationCard westernRooftops
       , SomeLocationCard easternRooftops
       ]

@@ -27,11 +27,11 @@ instance HasAbilities TheFinalSeal where
         a
         1
         ( exists (AssetWithTrait Artifact <> AssetControlledBy You)
-            <> youExist (not_ $ InvestigatorAt $ LocationWithTrait Rooftop)
+            <> youExist
+              (not_ $ InvestigatorAt $ oneOf [LocationWithTrait Rooftop, LocationWithResources (atLeast 1)])
         )
         $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
-    , -- [Forced] When the enemy phase ends: draw the top card of the Cthulhu deck.
-      mkAbility a 2 $ forced $ PhaseEnds #when #enemy
+    , mkAbility a 2 $ forced $ PhaseEnds #when #enemy
     , onlyOnce
         $ restricted
           a
@@ -58,10 +58,7 @@ instance RunMessage TheFinalSeal where
       pure a
     AdvanceAgendaBy (isSide B attrs -> True) means -> do
       case means of
-        AgendaAdvancedWithDoom ->
-          -- The doom threshold was reached: Cthulhu's annihilating gaze sweeps
-          -- away the expedition.
-          selectEach UneliminatedInvestigator $ investigatorDefeated attrs
+        AgendaAdvancedWithDoom -> eachInvestigator $ investigatorDefeated attrs
         _ -> do
           ruined <- selectCount $ LocationWithTrait Ruined
           if ruined <= 5 then push R2 else push R3

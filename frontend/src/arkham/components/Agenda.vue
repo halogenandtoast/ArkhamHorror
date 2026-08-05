@@ -63,6 +63,22 @@ const image = computed(() => {
 })
 const { displayedImage, flipping } = useCardFlip(image)
 
+/* Errata that applies only to an agenda's back, so it is shown while the agenda is
+ * flipped and not before. Keyed by agenda id; the overlay picks it up from
+ * `data-errata`. The map holds i18n keys rather than translations so the lookup
+ * stays inside the computed — campaign messages load lazily, and translating at
+ * setup time would bake in the raw key whenever the scenario's file has not
+ * arrived yet. */
+const BACK_ERRATA_KEYS: Record<string, string> = {
+  c11691b: 'theDrownedCity.theDoomOfArkhamPartII.errata.theFinalSeal',
+}
+
+const backErrata = computed(() => {
+  if (!props.agenda.flipped) return null
+  const key = BACK_ERRATA_KEYS[id.value]
+  return key ? t(key) : null
+})
+
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const viewingUnder = ref(false)
@@ -260,6 +276,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
           @click="$emit('choose', interactAction)"
           @load="updateOrientation"
           :src="displayedImage"
+          :data-errata="backErrata ?? undefined"
         />
         <div class="pool" v-if="!agenda.flipped">
           <template v-if="debug.active">

@@ -1288,13 +1288,13 @@ allLocationCards =
       , sigilCarvedAlcoveStoryOfDefiance
       , sigilCarvedAlcoveStoryOfTheVoyage
       , tillinghastEsotericaEphemeralShop
-      , northsideTheDrownedCity
-      , downtown
-      , easttownTheDrownedCity
-      , miskatonicUniversityTheDrownedCity
-      , rivertownTheDrownedCity
-      , stMarysHospitalTheDrownedCity
-      , southside
+      , northsideRuined
+      , downtownRuined
+      , easttownRuined
+      , miskatonicUniversityRuined
+      , rivertownRuined
+      , stMarysHospitalRuined
+      , southsideRuined
       , westernRooftops
       , easternRooftops
       ]

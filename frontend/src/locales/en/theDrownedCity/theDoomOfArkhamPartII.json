@@ -70,7 +70,9 @@
     "chooseEnemyForDoom": "Choose an enemy on the Cthulhu Board with no doom on it",
     "chooseSkillForTest": "Choose a skill to test",
     "chooseCthulhuEnemyToReturn": "Choose a [[Cthulhu]] enemy to return to the Cthulhu Board, [[Enraged]] side faceup",
-    "chooseLocationToFlood": "Choose a location to increase the flood level of"
+    "chooseLocationToFlood": "Choose a location to increase the flood level of",
+    "chooseLocationToRuin": "Choose the fully flooded location Cthulhu moves to",
+    "cluesToPlace": "How many of your clues do you want to place on this location?"
   },
   "tokens": {
     "easyStandard": {
@@ -109,5 +111,8 @@
       "title": "Resolution 3",
       "body": "<p>_Resolution 3_: Just as Cthulhu prepares to strike, the sigils on his body grow blindingly bright, and his limbs suddenly stiffen. Andy steps boldly out onto the street, stumbling through two more guttural stanzas. You and Ruby join him in reciting the chants as the ritual takes form. The ancient one roars again and falls prone, as if bound by invisible cords. A corona of eerie green and golden light cuts through the clouds, then peels back to reveal the night sky above. Nestled in the heart of an emerald and gold nebula is a bright, shining star.</p><p>The starlight intensifies. Before your eyes, the ancient one’s body twists and bends like a broken reflection. For just a moment, you see the spires of R’lyeh shimmering within the broken skyline of Arkham, looking both alien and familiar at once. With a final roar, Cthulhu disappears into the aether.</p><p>The corona of distant stars shrinks, then collapses with a thunderclap. In its wake is a dreadful silence.</p><p>You, Ruby, and Andy climb up to the roof of a nearby building and sit on the edge looking out at the ruined city. The city of Arkham is a portrait of ruin. Rivertown is entirely underwater. Independence Square and the town hall are little more than rubble, and little remains of the city’s other neighborhoods. You can only imagine the death toll. The three of you stare in stricken silence as the storm clouds dissipate, bathing the city in pale moonlight. You look to Ruby and see her in tears.</p><p>“I didn’t think I gave a damn for this city, but here I am, crying like a baby,” she sobs. “What else could we have done?”</p><ul><li>In your Campaign Log, record _Cthulhu was banished_, but _Arkham was destroyed_.</li><li>Each investigator suffers 2 physical trauma and 2 mental trauma from their battle with Cthulhu.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience for dispelling an ancient evil.</li><li>The investigators win the campaign, although Arkham is completely in ruins.</li><li>Proceed to _Epilogue_.</li></ul>"
     }
+  },
+  "errata": {
+    "theFinalSeal": "The first sentence on the back of this agenda should read: “If this agenda advanced by reaching its doom threshold, each investigator is defeated. Otherwise…”"
   }
 }

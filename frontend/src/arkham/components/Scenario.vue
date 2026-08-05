@@ -56,7 +56,7 @@ import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
 import CthulhuBoard from '@/arkham/components/TheDrownedCity/CthulhuBoard.vue';
-import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard';
+import { isCthulhuBoardEnemyInPlay } from '@/arkham/components/TheDrownedCity/cthulhuBoard';
 import ScenarioDebug from '@/arkham/components/ScenarioDebug.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import Story from '@/arkham/components/Story.vue';
@@ -1479,12 +1479,32 @@ const strengthOfTheAbyss = computed(() => props.scenario.counts["StrengthOfTheAb
 const distortion = computed(() => props.scenario.counts["Distortion"])
 const cthulhuRage = computed(() => props.scenario.counts["CthulhuRage"])
 
+const cthulhuDeckStoryCodes = new Set([
+  '11705', '11706', '11707', '11708', '11709', '11710',
+  '11711', '11712', '11713', '11714', '11715',
+])
+const resolvingCthulhuDeckStory = computed(() =>
+  Object.values(props.game.stories).find(story =>
+    story.placement.tag === 'OtherPlacement' &&
+    story.placement.contents === 'Unplaced' &&
+    cthulhuDeckStoryCodes.has(story.id.replace(/^c/, '')),
+  ) ?? null,
+)
+const resolvingCthulhuDeckStoryImage = computed(() => {
+  const story = resolvingCthulhuDeckStory.value
+  return story ? cardCodeImage(story.flipped ? story.flippedArt : story.art) : null
+})
+
 /* The Doom of Arkham Pt II. The three Cthulhu facets are at Cthulhu's location and
  * engaged with the investigators there, but are displayed on the Cthulhu Board
  * beside the scenario decks rather than in the location grid or a threat area. */
 const cthulhuBoardEnemies = computed(() =>
-  Object.values(props.game.enemies).filter((e) => isCthulhuBoardEnemy(e.cardCode))
+  Object.values(props.game.enemies).filter(isCthulhuBoardEnemyInPlay)
 )
+/* The Cthulhu Board is a physical component of The Doom of Arkham Pt II, so it stays
+ * on the table for the whole scenario. Slots empty out as facets are banished to the
+ * victory display and fill again when an act returns them. */
+const showCthulhuBoard = computed(() => props.scenario.id === 'c11688a')
 // Laid to Rest: horror placed on the scenario reference card represents
 // Spiritual Disturbance (defeats everyone at 4). Render it on the scenario card.
 const spiritualDisturbance = computed(() =>
@@ -2184,13 +2204,26 @@ async function addChaosToken(face: any){
             @choose="choose"
           />
         </div>
-        <CthulhuBoard
-          v-if="cthulhuBoardEnemies.length > 0"
-          :game="game"
-          :playerId="playerId"
-          :enemies="cthulhuBoardEnemies"
-          @choose="choose"
-        />
+        <div v-if="showCthulhuBoard" class="cthulhu-board-row">
+          <aside
+            v-if="resolvingCthulhuDeckStory && resolvingCthulhuDeckStoryImage"
+            class="resolving-cthulhu-card"
+            aria-label="Cthulhu deck card currently resolving"
+          >
+            <img
+              class="card"
+              :class="{ 'source-highlight': scenario.meta?.activeCthulhuFacet }"
+              :src="resolvingCthulhuDeckStoryImage"
+              alt=""
+            />
+          </aside>
+          <CthulhuBoard
+            :game="game"
+            :playerId="playerId"
+            :enemies="cthulhuBoardEnemies"
+            @choose="choose"
+          />
+        </div>
         <ScenarioDeck
           v-for="[,scenarioDeck] in scenarioDecks"
           :key="scenarioDeck[0]"
@@ -2232,6 +2265,12 @@ async function addChaosToken(face: any){
               </template>
             </div>
           </div>
+          <div
+            v-else-if="props.scenario.hasEncounterDeck && !hideEncounterDeck"
+            class="encounter-discard-placeholder"
+            style="grid-area: encounterDiscard"
+            aria-hidden="true"
+          ></div>
 
           <EncounterDeck
             :game="game"
@@ -2556,6 +2595,11 @@ async function addChaosToken(face: any){
           </Teleport>
         </div>
 
+        <div
+          v-if="props.scenario.hasEncounterDeck && !hideEncounterDeck"
+          class="scenario-balance-placeholder"
+          aria-hidden="true"
+        ></div>
       </div>
 
 
@@ -3584,6 +3628,20 @@ async function addChaosToken(face: any){
   gap: 10px;
 }
 
+.encounter-discard-placeholder {
+  width: var(--card-width);
+  aspect-ratio: var(--card-aspect);
+  visibility: hidden;
+}
+
+.scenario-balance-placeholder {
+  flex: 0 1 var(--card-width);
+  width: var(--card-width);
+  min-width: 0;
+  aspect-ratio: var(--card-aspect);
+  visibility: hidden;
+}
+
 .empty-grid-position {
   content: " ";
   box-shadow: unset;
@@ -4220,5 +4278,32 @@ async function addChaosToken(face: any){
 .concealed-card-group {
   display: grid;
   place-content: center;
+}
+.cthulhu-board-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: fit-content;
+}
+
+.resolving-cthulhu-card {
+  flex: 0 0 auto;
+  width: var(--card-width);
+
+  img {
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
+
+    &.source-highlight {
+      box-shadow:
+        0 0 0 3px var(--important),
+        0 0 12px 3px var(--important),
+        0 0 22px 5px var(--important),
+        var(--card-shadow);
+      filter: brightness(1.08);
+    }
+  }
 }
 </style>

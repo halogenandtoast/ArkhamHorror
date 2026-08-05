@@ -582,8 +582,8 @@ tillinghastEsotericaEphemeralShop =
       TheDoomOfArkhamPartI
 
 -- The Doom of Arkham, Part II
-northsideTheDrownedCity :: CardDef
-northsideTheDrownedCity =
+northsideRuined :: CardDef
+northsideRuined =
   location
     "11692"
     ("Northside" <:> "Ruined")
@@ -592,8 +592,8 @@ northsideTheDrownedCity =
     [Diamond, Triangle, Star]
     TheDoomOfArkhamPartII
 
-downtown :: CardDef
-downtown =
+downtownRuined :: CardDef
+downtownRuined =
   location
     "11693"
     ("Downtown" <:> "Ruined")
@@ -602,8 +602,8 @@ downtown =
     [Moon, T, Star]
     TheDoomOfArkhamPartII
 
-easttownTheDrownedCity :: CardDef
-easttownTheDrownedCity =
+easttownRuined :: CardDef
+easttownRuined =
   location
     "11694"
     ("Easttown" <:> "Ruined")
@@ -612,8 +612,8 @@ easttownTheDrownedCity =
     [Circle, Triangle, Heart]
     TheDoomOfArkhamPartII
 
-miskatonicUniversityTheDrownedCity :: CardDef
-miskatonicUniversityTheDrownedCity =
+miskatonicUniversityRuined :: CardDef
+miskatonicUniversityRuined =
   location
     "11695"
     ("Miskatonic University" <:> "Ruined")
@@ -622,8 +622,8 @@ miskatonicUniversityTheDrownedCity =
     [T, Plus, Circle, Square, Star]
     TheDoomOfArkhamPartII
 
-rivertownTheDrownedCity :: CardDef
-rivertownTheDrownedCity =
+rivertownRuined :: CardDef
+rivertownRuined =
   location
     "11696"
     ("Rivertown" <:> "Ruined")
@@ -632,8 +632,8 @@ rivertownTheDrownedCity =
     [Moon, Diamond, Square, Heart]
     TheDoomOfArkhamPartII
 
-stMarysHospitalTheDrownedCity :: CardDef
-stMarysHospitalTheDrownedCity =
+stMarysHospitalRuined :: CardDef
+stMarysHospitalRuined =
   location
     "11697"
     ("St. Mary's Hospital" <:> "Ruined")
@@ -642,8 +642,8 @@ stMarysHospitalTheDrownedCity =
     [Diamond, Square, Star]
     TheDoomOfArkhamPartII
 
-southside :: CardDef
-southside =
+southsideRuined :: CardDef
+southsideRuined =
   location
     "11698"
     ("Southside" <:> "Ruined")

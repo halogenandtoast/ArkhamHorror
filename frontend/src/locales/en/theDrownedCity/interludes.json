@@ -16,10 +16,10 @@
   "epilogue": {
     "title": "Epilogue",
     "checkCampaignLog": "Check your Campaign Log.",
-    "proceedToEpilogue1": "If Cthulhu annihilated the city of Arkham, proceed to _Epilogue 1_.",
-    "proceedToEpilogue2": "If Cthulhu was driven away or Cthulhu was banished, but Arkham was destroyed, skip to _Epilogue 2_.",
-    "proceedToEpilogue3": "If Cthulhu was banished, skip to _Epilogue 3_.",
-    "proceedToEpilogue4": "If the investigators halted Cthulhu’s awakening, skip to _Epilogue 4_.",
+    "proceedToEpilogue1": "*If Cthulhu annihilated the city of Arkham*, proceed to _Epilogue 1_.",
+    "proceedToEpilogue2": "*If Cthulhu was driven away* or *Cthulhu was banished, but Arkham was destroyed*, skip to _Epilogue 2_.",
+    "proceedToEpilogue3": "*If Cthulhu was banished*, skip to _Epilogue 3_.",
+    "proceedToEpilogue4": "*If the investigators halted Cthulhu’s awakening*, skip to _Epilogue 4_.",
     "epilogue1": {
       "title": "Epilogue 1: August 20",
       "body": "<p>It has been nearly two months since the destruction of Arkham. According to reports, most of the survivors have been committed to a sanatorium upstate. The remainder were bedridden with the infectious coma that has plagued the city for the past month, and have no clue what really happened. The few accounts we do have attribute the destruction to “a massive behemoth” that rampaged the city, destroying everything in its wake. A dozen other cities along the eastern seaboard and the coast of South America have reported similar phenomena. The locals have taken to calling it a silent rampage, though popular opinion holds that it was an exceptionally strong storm.</p><p>The future is uncertain for Arkham. With few homes and infrastructure to return to, the surviving residents have dispersed to nearby villages in Dunwich, Kingsport, Innsmouth, and Providence. Discussions about whether to salvage what little remains of Miskatonic University are ongoing, but not likely. Arkham is little more than a ghost town.</p><p class='right'>Minnie Klein</p>"

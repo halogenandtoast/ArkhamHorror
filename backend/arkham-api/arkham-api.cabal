@@ -4220,11 +4220,11 @@ library
       Arkham.Location.Cards.Dormitories_MiskatonicUniversity
       Arkham.Location.Cards.DownstairsDoorwayDen
       Arkham.Location.Cards.DownstairsDoorwayParlor
-      Arkham.Location.Cards.Downtown
       Arkham.Location.Cards.DowntownArkhamAsylum
       Arkham.Location.Cards.DowntownArkhamSanatorium
       Arkham.Location.Cards.DowntownFirstBankOfArkham
       Arkham.Location.Cards.DowntownFirstBankOfArkham_Arkham
+      Arkham.Location.Cards.DowntownRuined
       Arkham.Location.Cards.DreamersRest
       Arkham.Location.Cards.DreamGatePointlessReality
       Arkham.Location.Cards.DreamGateWondrousJourney
@@ -4246,7 +4246,7 @@ library
       Arkham.Location.Cards.Easttown
       Arkham.Location.Cards.Easttown_Arkham
       Arkham.Location.Cards.EasttownArkhamPoliceStation
-      Arkham.Location.Cards.EasttownTheDrownedCity
+      Arkham.Location.Cards.EasttownRuined
       Arkham.Location.Cards.EerieGlade
       Arkham.Location.Cards.ElderChamber
       Arkham.Location.Cards.EldritchGate
@@ -4563,7 +4563,7 @@ library
       Arkham.Location.Cards.MiskatonicUniversityPast
       Arkham.Location.Cards.MiskatonicUniversityPresent
       Arkham.Location.Cards.MiskatonicUniversityQuietCampus
-      Arkham.Location.Cards.MiskatonicUniversityTheDrownedCity
+      Arkham.Location.Cards.MiskatonicUniversityRuined
       Arkham.Location.Cards.MistFilledCaverns
       Arkham.Location.Cards.MistPylon_174
       Arkham.Location.Cards.MistPylon_175
@@ -4611,7 +4611,7 @@ library
       Arkham.Location.Cards.NileRiver
       Arkham.Location.Cards.Northside
       Arkham.Location.Cards.Northside_Arkham
-      Arkham.Location.Cards.NorthsideTheDrownedCity
+      Arkham.Location.Cards.NorthsideRuined
       Arkham.Location.Cards.NorthsideTrainStation
       Arkham.Location.Cards.NorthTower_287
       Arkham.Location.Cards.NorthTower_288
@@ -4773,7 +4773,7 @@ library
       Arkham.Location.Cards.Rivertown_292
       Arkham.Location.Cards.Rivertown_293
       Arkham.Location.Cards.RivertownAbandonedWarehouse
-      Arkham.Location.Cards.RivertownTheDrownedCity
+      Arkham.Location.Cards.RivertownRuined
       Arkham.Location.Cards.RiverviewTheatre
       Arkham.Location.Cards.RlyehStreets
       Arkham.Location.Cards.RockyCrags
@@ -4874,12 +4874,12 @@ library
       Arkham.Location.Cards.SnowGraves
       Arkham.Location.Cards.SouthChurch_298
       Arkham.Location.Cards.SouthChurch_299
-      Arkham.Location.Cards.Southside
       Arkham.Location.Cards.Southside_294
       Arkham.Location.Cards.Southside_295
       Arkham.Location.Cards.Southside_Arkham
       Arkham.Location.Cards.SouthsideHistoricalSociety
       Arkham.Location.Cards.SouthsideMasBoardingHouse
+      Arkham.Location.Cards.SouthsideRuined
       Arkham.Location.Cards.SpaceSet
       Arkham.Location.Cards.SpawningGrounds
       Arkham.Location.Cards.StaffAccessHallway
@@ -4893,7 +4893,7 @@ library
       Arkham.Location.Cards.StepsOfYhagharl
       Arkham.Location.Cards.StepsOfYoth
       Arkham.Location.Cards.StMarysHospital
-      Arkham.Location.Cards.StMarysHospitalTheDrownedCity
+      Arkham.Location.Cards.StMarysHospitalRuined
       Arkham.Location.Cards.StoneAltar
       Arkham.Location.Cards.StoneArchways
       Arkham.Location.Cards.StoneBridge

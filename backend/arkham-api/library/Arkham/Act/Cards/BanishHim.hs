@@ -4,11 +4,13 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Act.Sequence
+import Arkham.Card
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (getPlayerCount, getSetAsideCardsMatching)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
@@ -23,7 +25,7 @@ banishHim = act (1, A) BanishHim Cards.banishHim Nothing
 
 instance HasAbilities BanishHim where
   getAbilities = actAbilities \a ->
-    [ playerLimit PerTest
+    [ limitedAbility (MaxPer Cards.banishHim PerTest 1)
         $ restricted a 1 attackAtYourLocation
         $ FastAbility (ClueCost $ Static 1)
     , restricted a 2 (InVictoryDisplay (CardWithTrait Cthulhu) (atLeast 3))
@@ -51,6 +53,12 @@ instance RunMessage BanishHim where
         else do
           playerCount <- getPlayerCount
           setCthulhuRage (if playerCount <= 2 then 4 else 5)
+
+          {- "Flip each [[Cthulhu]] enemy to its [[Enraged]] side, ignoring its Forced
+          effect." This waits a step: the facets returned to the board just above are
+          created by queued messages, so they do not exist yet. -}
+          doStep 2 msg
+
           locations <- select $ RevealedLocation <> not_ LocationWithVictory
           for_ locations $ placeCluesUpToClueValue (attrs.ability 2)
           eachInvestigator (`forInvestigator` msg)
@@ -60,10 +68,18 @@ instance RunMessage BanishHim where
           placeDoomOnAgenda =<< getPlayerCount
       pure a
     DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
-      lead <- getLead
-      for_ cthulhuFacets \(front, _enraged) ->
-        selectEach (enemyIs front) (flipOver lead)
+      {- "ignoring its Forced effect": a facet's own Flip handler raises the
+      EnemyFlipped window that the Enraged side's forced ability keys off, so going
+      through 'flipOver' would fire exactly the effect this is told to skip. Swapping
+      the enemy directly performs the flip without opening that window.
 
+      'enemyIsExact' rather than 'enemyIs' because CardCode equality treats 11702 and
+      11702b as the same code — the loose match would sweep up facets already showing
+      their Enraged side and pointlessly rebuild them. -}
+      for_ cthulhuFacets \(front, enraged) ->
+        selectEach (enemyIsExact front) \eid -> do
+          card <- genCard enraged
+          push $ ReplaceEnemy eid card Swap
       pure a
     ForInvestigator iid (AdvanceAct aid _ _) | aid == attrs.id -> do
       allies <- getSetAsideCardsMatching (#asset <> CardWithTrait Ally)

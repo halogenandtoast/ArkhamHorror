@@ -490,6 +490,8 @@ payCost msg c iid skipAdditionalCosts cost = do
               clues <- getGameValue gv
               pure $ min n (availableClues `div` clues)
             SealCost matcher -> selectCount matcher
+            HandDiscardCost z matcher -> do
+              min n . (`div` z) <$> selectCount (inHandOf NotForPlay iid <> basic DiscardableCard <> matcher)
             _ -> pure n
           name <- fieldMap InvestigatorName toTitle iid
           choiceId <- getRandom

@@ -113,8 +113,6 @@ const topOfDiscardImage = computed(() => {
 
 const deckLabel = computed(() => {
   switch(props.deck[0]) {
-    case 'CthulhuDeck':
-      return "Cthulhu"
     case 'CultistDeck':
       return "Cultists"
     case 'LunaticsDeck':
@@ -137,6 +135,11 @@ const deckLabel = computed(() => {
       <img :src="topOfDiscardImage ?? undefined" class="card" />
       <span class="deck-size">{{ discardPile!.length }}</span>
     </div>
+    <div
+      v-else-if="deck[0] === 'CthulhuDeck'"
+      class="discard-card discard-placeholder"
+      aria-hidden="true"
+    ></div>
     <div class="deck">
       <img
         :src="deckImage"
@@ -171,6 +174,10 @@ const deckLabel = computed(() => {
 
 .deck {
   position: relative;
+
+  > .card {
+    margin-top: 0;
+  }
 }
 
 .discard-card {
@@ -205,6 +212,12 @@ const deckLabel = computed(() => {
     opacity: .85;
     mix-blend-mode: saturation;
   }
+}
+
+.discard-placeholder {
+  width: var(--card-width);
+  aspect-ratio: 0.704;
+  visibility: hidden;
 }
 
 .deck-label {

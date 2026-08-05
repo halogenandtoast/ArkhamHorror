@@ -357,7 +357,7 @@ instance RunMessage TheDrownedCity where
       let epilogue :: Int
           epilogue
             | annihilatedArkham = 1
-            | (drivenAway || banished) && arkhamDestroyed = 2
+            | drivenAway || (banished && arkhamDestroyed) = 2
             | banished = 3
             | haltedAwakening = 4
             | otherwise = 0

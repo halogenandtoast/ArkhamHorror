@@ -35,6 +35,6 @@ instance RunMessage FifthEye where
       chooseOrRunOneM lead $ scenarioI18n do
         questionLabeled' "chooseEnemyForDoom"
         targets candidates \eid -> placeDoom (attrs.ability 1) eid 1
-      toDiscard (attrs.ability 1) attrs
+      discardCthulhuCard attrs
       pure s
     _ -> FifthEye <$> liftRunMessage msg attrs

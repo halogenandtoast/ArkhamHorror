@@ -154,6 +154,15 @@ const clearRealityAcidDebugTokens = () => {
   debug.send(props.game.id, { tag: 'ScenarioSpecific', contents: ['blobClearDebugRealityAcidTokens', null] })
 }
 
+/* The Doom of Arkham Pt II: draw and resolve the top Cthulhu deck card on demand,
+ * which otherwise only happens off the agenda's forced ability at the end of the
+ * enemy phase. */
+const isDoomOfArkhamPartII = computed(() => props.scenario.id === 'c11688a')
+
+const drawCthulhuCard = () => {
+  debug.send(props.game.id, { tag: 'ScenarioSpecific', contents: ['debugDrawCthulhuCard', null] })
+}
+
 const debugCounts = computed(() => scenarioDebugCountsFor(props.scenario))
 
 const countValue = (key: string) => props.scenario.counts[key] ?? 0
@@ -248,6 +257,11 @@ const setCount = (key: string) => {
           <button v-if="realityAcidDebugChoice" type="button" @click="clearRealityAcidDebugTokens">
             Clear (currently {{ realityAcidDebugChoiceLabel }})
           </button>
+        </section>
+
+        <section v-if="isDoomOfArkhamPartII" class="scenario-debug-section">
+          <span class="scenario-debug-label">Cthulhu deck</span>
+          <button type="button" @click="drawCthulhuCard">Draw top card</button>
         </section>
 
         <section v-if="debugCounts.length > 0" class="scenario-debug-section">

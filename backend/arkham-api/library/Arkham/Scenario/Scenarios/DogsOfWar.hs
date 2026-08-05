@@ -333,6 +333,7 @@ instance RunMessage DogsOfWar where
           setBearer Keys.theLightOfPharos
             $ keyWithEnemy Enemies.theClaretKnightHoldsYouInContempt
           resolutionWithXp "resolution8" $ allGainXp' attrs
+          markTime 3
           endOfScenario
         _ -> error "Unknown resolution for Dancing Mad"
       pure s

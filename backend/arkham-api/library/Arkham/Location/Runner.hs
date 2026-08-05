@@ -622,7 +622,7 @@ withDrawCardUnderneathAction x =
 
 instance HasAbilities LocationAttrs where
   getAbilities l =
-    [ basicAbility $ investigateAbility l AbilityInvestigate mempty (onLocation l)
+    [ basicAbility $ investigateAbilityAt l (LocationWithId l.id) AbilityInvestigate mempty (onLocation l)
     , basicAbility
         $ restricted
           l

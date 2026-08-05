@@ -49,7 +49,6 @@ import Arkham.Matcher (
   LocationMatcher (..),
   accessibleTo,
   noModifier,
-  pattern YourLocation,
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
@@ -86,11 +85,12 @@ instance HasAbilities EnemyLocationAttrs where
         $ restricted a AbilityEvade OnSameLocation
         $ ActionAbility #evade #agility (ActionCost 1)
     , basicAbility
-        $ investigateAbility
+        $ investigateAbilityAt
           a
+          (LocationWithId a.id)
           AbilityInvestigate
           mempty
-          (OnSameLocation <> exists (YourLocation <> InvestigatableLocation))
+          OnSameLocation
     , basicAbility
         $ restricted
           a

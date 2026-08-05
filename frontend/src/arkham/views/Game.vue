@@ -455,6 +455,18 @@ function questionTag(q: Question | null | undefined): string | null {
   return q.tag
 }
 
+// PlayerTabs (the in-scenario seat switcher) is mounted only inside Scenario.vue,
+// which Campaign.vue renders under exactly this condition. Read off an explicit
+// game rather than game.value: applyGameUpdate can defer the game.value swap into
+// a view transition, so an incoming update must be inspected directly.
+function scenarioBoardMounted(g: Arkham.Game) {
+  const scenario = g.scenario
+  if (!scenario) return false
+  if (scenario.campaignStep) return false
+  if (!scenario.started) return false
+  return Object.keys(g.investigators).length > 0
+}
+
 const isActualScenarioView = computed(() => {
   const g = game.value
   if (!g?.scenario) return false
@@ -780,16 +792,20 @@ function scheduleApplyUpdate(payload: string) {
       preloadImages(updatedGame)
       if (!locked) {
         // PlayerTabs owns in-scenario perspective changes so tab routing and
-        // return navigation remain coordinated. Setup screens do not mount
-        // PlayerTabs, though, so follow their sole question here. Otherwise a
-        // multihanded solo game becomes inert after the first deck is chosen:
-        // the next player's ChooseDeck is present, but the view still has the
-        // previous playerId and therefore cannot answer it.
+        // return navigation remain coordinated. Campaign/setup screens do not
+        // mount PlayerTabs, though, so follow their sole question here.
+        // Otherwise a multihanded solo game goes inert the moment the engine
+        // asks a seat other than the one in view — the next player's ChooseDeck,
+        // the second investigator's Forgotten Age supplies pick (#5337), a
+        // per-investigator interlude choice: the question is present, but this
+        // view still holds the previous playerId and choose() answers as that
+        // seat, so it can neither render nor answer it.
         const questionPlayers = Object.keys(updatedGame.question)
-        if (solo.value && questionPlayers.length === 1) {
+        if (solo.value && !props.spectate && questionPlayers.length === 1) {
           const questionPlayer = questionPlayers[0]
-          const tag = questionTag(updatedGame.question[questionPlayer])
-          if (tag && AI_SETUP_DENYLIST.has(tag)) playerId.value = questionPlayer
+          if (questionPlayer !== playerId.value && !scenarioBoardMounted(updatedGame)) {
+            playerId.value = questionPlayer
+          }
         }
         continueSkipAll()
       }

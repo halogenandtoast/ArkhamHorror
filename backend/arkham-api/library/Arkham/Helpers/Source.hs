@@ -274,10 +274,16 @@ sourceMatches s = \case
     pure $ go s
   Matcher.SourceIsType t -> member t <$> sourceTypes s
   Matcher.EncounterCardSource ->
+    -- The basic action abilities (fight/evade/engage/move/investigate) are
+    -- anchored on the encounter card they target, so unwrapping them
+    -- unconditionally would classify an investigator's own basic attack as an
+    -- encounter card source (issue #5342 — Poltergeist's "or encounter cards"
+    -- clause let a basic fight damage it). Guard them out, exactly as
+    -- 'Matcher.ScenarioCardSource' below already does.
     let
       check = \case
-        AbilitySource source' _ -> check source'
-        UseAbilitySource _ source' _ -> check source'
+        AbilitySource source' n | notPlayerAbilityIndex n -> check source'
+        UseAbilitySource _ source' n | notPlayerAbilityIndex n -> check source'
         AssetSource aid -> matches aid (Matcher.AssetCardMatch Matcher.IsEncounterCard <> Matcher.UncontrolledAsset)
         ActSource _ -> pure True
         AgendaSource _ -> pure True

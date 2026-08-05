@@ -380,6 +380,10 @@ sourceCanDamageEnemy eid source = do
   not <$> anyM prevents modifiers'
  where
   prevents = \case
+    -- EncounterCardSource covers the printed "or encounter cards" clause that
+    -- Poltergeist / Ghost Light / Miasmatic Shadow carry. It deliberately does
+    -- NOT match the basic action abilities even though those are anchored on the
+    -- encounter card being fought — see Arkham.Helpers.Source and issue #5342.
     CannotBeDamagedByPlayerSourcesExcept matcher ->
       not
         <$> sourceMatches

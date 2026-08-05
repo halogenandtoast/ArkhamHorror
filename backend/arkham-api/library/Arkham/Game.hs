@@ -3818,8 +3818,12 @@ enemyMatcherFilter es matcher' = do
       let inShadows = attr enemyPlacement enemy == InTheShadows
       let adjust = if inShadows then (CannotBeDamagedByPlayerSources AnySource :) else id
       adjust modifiers & allM \case
+        -- Same whitelist as Arkham.Helpers.Enemy.sourceCanDamageEnemy (the
+        -- authority at damage time) so the two never disagree. M.EncounterCardSource
+        -- excludes basic action abilities, so a basic fight no longer slips
+        -- through the "or encounter cards" clause (issue #5342).
         CannotBeDamagedByPlayerSourcesExcept sourceMatcher ->
-          sourceMatches source (oneOf [NotSource SourceIsPlayerCard, sourceMatcher])
+          sourceMatches source (oneOf [M.EncounterCardSource, sourceMatcher])
         -- Only the matcher; see Arkham.Helpers.Enemy.sourceCanDamageEnemy and
         -- issue #4887. A basic attack resolves to an EnemySource, so folding in
         -- NotSource SourceIsPlayerCard here would exclude every fighter, not the

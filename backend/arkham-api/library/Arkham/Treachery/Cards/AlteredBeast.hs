@@ -29,12 +29,7 @@ instance RunMessage AlteredBeast where
         [] -> gainSurge attrs
         xs -> chooseTargetM iid xs \x -> attachTreachery attrs x >> healAllDamage attrs x
       pure t
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      for_ attrs.attached.enemy \eid ->
-        selectEach (InvestigatorAt $ locationWithEnemy eid) \iid ->
-          assignHorror iid attrs 1
-      pure t
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isSource attrs -> True) n | n `elem` [1, 2] -> do
       assignHorror iid attrs 1
       pure t
     _ -> AlteredBeast <$> liftRunMessage msg attrs

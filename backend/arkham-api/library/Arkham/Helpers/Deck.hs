@@ -37,6 +37,23 @@ removeEveryFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
 removeEveryFromDeck deck removals = flip withDeck deck $ \cards ->
   foldl' (\cs m -> filter ((/= m) . toCardDef) cs) cards removals
 
+{- | Split a saved campaign deck into (keep, drop) when reloading it for a scenario.
+A campaign story card supersedes its copy in the saved deck. Matching is by
+'canonicalCardCode' so a different printing of the same card still counts as a
+duplicate -- e.g. the engine rolls the revised core Stubborn Detective (01603) as a
+random basic weakness and the player hand-adds the core printing (01103) to their
+decklist (#5346).
+-}
+partitionReloadedDeck :: [Card] -> [CardCode] -> [PlayerCard] -> ([PlayerCard], [PlayerCard])
+partitionReloadedDeck storyCards invalid =
+  partition \card ->
+    canonicalCardCode (toCardDef card)
+      `notElem` storyKeys
+      && card.cardCode
+      `notElem` invalid
+ where
+  storyKeys = map (canonicalCardCode . toCardDef) storyCards
+
 isDeckEmpty :: (HasGame m, Tracing m, Deck.IsDeck deck) => deck -> m Bool
 isDeckEmpty = fmap null . getDeck . Deck.toDeck
 

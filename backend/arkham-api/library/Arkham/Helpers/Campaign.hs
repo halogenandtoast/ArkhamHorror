@@ -7,6 +7,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers
+import Arkham.Helpers.Deck (partitionReloadedDeck)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
@@ -158,7 +159,6 @@ getCurrentDeck (asId -> iid) =
         Just deck -> do
           allStoryCards <- withStandalone (field CampaignStoryCards) (field ScenarioStoryCards)
           let storyCards = findWithDefault [] iid allStoryCards
-          let storyCardCodes = map toCardCode storyCards
-          let deck' = filter (\card -> card.cardCode `notElem` storyCardCodes) (unDeck deck)
+          let deck' = fst $ partitionReloadedDeck storyCards [] (unDeck deck)
           pure $ Deck $ deck' <> mapMaybe (preview _PlayerCard) storyCards
     deck -> pure deck

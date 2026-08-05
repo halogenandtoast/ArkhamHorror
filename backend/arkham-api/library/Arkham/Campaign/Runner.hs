@@ -364,11 +364,7 @@ defaultCampaignRunner msg a = case msg of
   ReloadDecks -> do
     for_ (mapToList $ campaignDecks $ toAttrs a) \(iid, Deck deck) -> do
       let storyCards = findWithDefault [] iid (campaignStoryCards $ toAttrs a)
-      let storyCardCodes = map toCardCode storyCards
-      let (deck', removals) =
-            partition
-              (\card -> card.cardCode `notElem` storyCardCodes && card.cardCode `notElem` invalidCards a)
-              deck
+      let (deck', removals) = partitionReloadedDeck storyCards (invalidCards a) deck
       for_ removals \c -> removeCard c.id
 
       push (LoadDeck iid . Deck $ deck' <> mapMaybe (preview _PlayerCard) storyCards)

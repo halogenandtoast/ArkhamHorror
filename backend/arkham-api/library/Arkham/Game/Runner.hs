@@ -1307,6 +1307,13 @@ runGameMessage msg g = case msg of
           . ix eid
           %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone})
   RemoveSkill sid -> do
+    -- A skill leaving play returns any chaos tokens it sealed (e.g. Unrelenting
+    -- (1)). RemoveSkill is the quiet removal path used by obtainCard and by
+    -- direct removeSkill calls; it does not route through RemoveFromPlay, so
+    -- unseal here. This mirrors Skill.Runner's RemoveFromPlay handler and is
+    -- idempotent with it and with any card-level afterSkillTest unseal.
+    for_ (preview (entitiesL . skillsL . ix sid) g) \skill ->
+      pushAll [UnsealChaosToken token | token <- skillSealedChaosTokens (toAttrs skill)]
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)
         then do
@@ -1652,6 +1659,10 @@ runGameMessage msg g = case msg of
     case mSkill of
       Just skillId -> do
         card <- field SkillCard skillId
+        -- see RemoveSkill: this branch drops the entity without going through
+        -- RemoveFromPlay, so return any sealed chaos tokens to the bag here
+        for_ (preview (entitiesL . skillsL . ix skillId) g) \skill ->
+          pushAll [UnsealChaosToken token | token <- skillSealedChaosTokens (toAttrs skill)]
         push $ addToHand iid card
         pure $ g & entitiesL . skillsL %~ deleteMap skillId
       Nothing -> pure g

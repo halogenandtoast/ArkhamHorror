@@ -5,12 +5,11 @@ module Arkham.Campaigns.TheFeastOfHemlockVale.Helpers where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Asset
-import Arkham.Campaign.Types (Field (CampaignChaosBag))
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
-import Arkham.ChaosToken.Types (ChaosTokenFace (..), isSymbolChaosToken)
+import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
@@ -28,7 +27,7 @@ import Arkham.Id
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Location.Base
 import Arkham.Matcher
-import Arkham.Message (Message (NextCampaignStep), pattern SetCampaignChaosBag)
+import Arkham.Message (Message (NextCampaignStep))
 import Arkham.Message.Lifted hiding (continue)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (decrementRecordCount, incrementRecordCount, recordCount)
@@ -397,32 +396,13 @@ you are unable to replace a token, repeat this process until a total of 2
 chaos tokens have been replaced.)
 -}
 replaceFatigueChaosTokens :: ReverseQueue m => m ()
-replaceFatigueChaosTokens = do
-  bag <- campaignField CampaignChaosBag
-  (newBag, replaced) <- go (2 :: Int) bag bag []
-  unless (null replaced) $ campaignI18n $ scope "fatigue" $ storyBuild do
-    -- Render each replaced token as a self-contained morph: the frontend shows
-    -- the original face and then flips it in place to the lowered face. Because
-    -- the whole animation lives in a single story entry (one component mount),
-    -- it is immune to the game-state re-render that happens between prompts.
-    setTitle "title"
-    p "body"
-    for_ replaced (uncurry chaosTokenMorph)
-  push $ SetCampaignChaosBag newBag
- where
-  -- @bag@ is the running campaign chaos bag we are mutating; @pool@ is the set
-  -- of tokens we have not yet drawn this process (symbol tokens are simply
-  -- returned, so we only ever draw from the non-symbol tokens left in the pool).
-  -- @acc@ collects each (original, lowered) replacement, newest first.
-  go 0 bag _ acc = pure (bag, reverse acc)
-  go n bag pool acc = case nonEmpty (filter (not . isSymbolChaosToken) pool) of
-    Nothing -> pure (bag, reverse acc)
-    Just nonSymbols -> do
-      face <- sample nonSymbols
-      let pool' = deleteFirstMatch (== face) pool
-      case lowerChaosTokenValue face of
-        Just lowered -> go (n - 1) (replaceFirstMatch face lowered bag) pool' ((face, lowered) : acc)
-        Nothing -> go n bag pool' acc
-  replaceFirstMatch :: ChaosTokenFace -> ChaosTokenFace -> [ChaosTokenFace] -> [ChaosTokenFace]
-  replaceFirstMatch _ _ [] = []
-  replaceFirstMatch x x' (y : ys) = if x == y then x' : ys else y : replaceFirstMatch x x' ys
+replaceFatigueChaosTokens =
+  replaceCampaignChaosTokens 2 lowerChaosTokenValue \replaced ->
+    campaignI18n $ scope "fatigue" $ storyBuild do
+      -- Render each replaced token as a self-contained morph: the frontend shows
+      -- the original face and then flips it in place to the lowered face. Because
+      -- the whole animation lives in a single story entry (one component mount),
+      -- it is immune to the game-state re-render that happens between prompts.
+      setTitle "title"
+      p "body"
+      for_ replaced (uncurry chaosTokenMorph)

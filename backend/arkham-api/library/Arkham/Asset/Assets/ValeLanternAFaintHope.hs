@@ -84,4 +84,5 @@ instance RunMessage ValeLanternAFaintHopeEffect where
         _ -> Nothing
     isRevealAfterWindow w = case w.kind of
       Window.RevealLocation _ loc -> w.timing == #after && Just loc == destLid
+      Window.RevealLocationByGroup loc -> w.timing == #after && Just loc == destLid
       _ -> False

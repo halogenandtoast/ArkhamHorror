@@ -2,13 +2,14 @@ module Arkham.Campaign.Campaigns.TheDrownedCity (theDrownedCity) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
-import Arkham.Campaign.Types (campaignChaosBag)
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Card
 import Arkham.Card.PlayerCard (lookupPlayerCard)
 import Arkham.ChaosToken
+import Arkham.Helpers.Campaign (getTakenBasicWeaknesses, replaceCampaignChaosTokens)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.I18n (ikey)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -17,10 +18,28 @@ import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Source (Source (CampaignSource))
 import Arkham.Trait (Trait (Agency, Criminal, Detective, Injury))
 import Arkham.Window qualified as Window
+import Data.List.Extra (nubOrdOn)
 import Data.Text qualified as T
 
 newtype TheDrownedCity = TheDrownedCity CampaignAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+{- | Walk in Faith's failure: "For the remainder of the campaign, you must treat
+the {elderThing} token as if it were a {tablet} token, instead."
+
+The substitution has to land on the chaos tokens that investigator reveals, not on
+the investigator: skill test resolution reads 'ForcedChaosTokenChange' off
+'ChaosTokenTarget' (via @getModifiedChaosTokenFace@), and the investigator-target
+copy only feeds the client's display. It also has to outlive every scenario, so it
+is derived from the Campaign Log record rather than pushed as a modifier once.
+-}
+instance HasModifiersFor TheDrownedCity where
+  getModifiersFor (TheDrownedCity a) = do
+    getModifiersFor a
+    modifySelect
+      CampaignSource
+      (ChaosTokenRevealedBy $ investigatorWithRecord LostTheirFaith)
+      [ForcedChaosTokenChange ElderThing [Tablet]]
 
 theDrownedCity :: Difficulty -> TheDrownedCity
 theDrownedCity = campaign TheDrownedCity (CampaignId "11") "The Drowned City"
@@ -60,16 +79,20 @@ completedTaskRecord = \case
   PlumbTheDepths -> Just LearnedTheSecretTruth
   _ -> Nothing
 
-lowerChaosToken :: ChaosTokenFace -> Maybe (ChaosTokenFace, ChaosTokenFace)
-lowerChaosToken = \case
-  PlusOne -> Just (PlusOne, MinusOne)
-  Zero -> Just (Zero, MinusTwo)
-  MinusOne -> Just (MinusOne, MinusThree)
-  MinusTwo -> Just (MinusTwo, MinusFour)
-  MinusThree -> Just (MinusThree, MinusFive)
-  MinusFour -> Just (MinusFour, MinusSix)
-  MinusFive -> Just (MinusFive, MinusSeven)
-  MinusSix -> Just (MinusSix, MinusEight)
+{- | The chaos token two values lower, for Toe the Line's failure, or Nothing if it
+cannot be lowered that far (a symbol token, or -7/-8, which have no -9/-10 below
+them).
+-}
+lowerChaosTokenByTwo :: ChaosTokenFace -> Maybe ChaosTokenFace
+lowerChaosTokenByTwo = \case
+  PlusOne -> Just MinusOne
+  Zero -> Just MinusTwo
+  MinusOne -> Just MinusThree
+  MinusTwo -> Just MinusFour
+  MinusThree -> Just MinusFive
+  MinusFour -> Just MinusSix
+  MinusFive -> Just MinusSeven
+  MinusSix -> Just MinusEight
   _ -> Nothing
 
 instance RunMessage TheDrownedCity where
@@ -313,12 +336,27 @@ instance RunMessage TheDrownedCity where
                 recordForInvestigator iid LostTheirFaith
               GoodMoney -> do
                 sufferPhysicalTrauma iid 1
+                -- "Search the collection for an Injury or Criminal basic weakness."
+                -- Anything this investigator already holds is out of their own
+                -- collection, and reprints are distinct CardDefs, so both the
+                -- exclusion and the dedupe key off the canonical code -- otherwise
+                -- Stubborn Detective is offered once per printing, and offered at
+                -- all to a player who already has it. Sorting first makes the
+                -- surviving printing the lowest card code (the original) rather
+                -- than whichever happened to come first.
+                taken <- getTakenBasicWeaknesses iid
                 let weaknesses =
-                      filter
-                        (`cardMatch` (BasicWeaknessCard <> mapOneOf CardWithTrait [Injury, Criminal]))
+                      nubOrdOn (canonicalCardCode . toCardDef)
+                        $ sortOn toCardCode
+                        $ filter ((`notMember` taken) . canonicalCardCode . toCardDef)
+                        $ filter
+                          (`cardMatch` (BasicWeaknessCard <> mapOneOf CardWithTrait [Injury, Criminal]))
                         $ map (`lookupPlayerCard` nullCardId)
                         $ toList allPlayerCards
-                chooseOneM iid $ cardsLabeled weaknesses $ addCampaignCardToDeck iid DoNotShuffleIn
+                unless (null weaknesses)
+                  $ chooseOneM iid
+                  $ cardsLabeled weaknesses
+                  $ addCampaignCardToDeck iid DoNotShuffleIn
               DreamsOfDestruction -> do
                 sufferMentalTrauma iid 1
                 removeChaosToken AutoFail
@@ -332,9 +370,11 @@ instance RunMessage TheDrownedCity where
                 addChaosToken Tablet
               ToeTheLine -> do
                 sufferPhysicalTrauma iid 1
-                let replaceable = mapMaybe lowerChaosToken $ campaignChaosBag $ toAttrs c
-                replacements <- take 2 <$> shuffleM replaceable
-                for_ replacements \(old, new) -> removeChaosToken old >> addChaosToken new
+                replaceCampaignChaosTokens 2 lowerChaosTokenByTwo \replaced ->
+                  scope "tasks" $ scope "toeTheLine" $ scope "tokenReplacement" $ storyBuild do
+                    setTitle "title"
+                    p "body"
+                    for_ replaced (uncurry chaosTokenMorph)
               ProveYourWorth -> sufferMentalTrauma iid 1
               PlumbTheDepths -> do
                 sufferMentalTrauma iid 1
@@ -343,6 +383,9 @@ instance RunMessage TheDrownedCity where
       pure c
     CampaignStep Finale -> scope "finale" do
       flavor $ setTitle "title" >> p "body"
+      -- 'nextStep' routes Finale to The Doom of Arkham, Part I; without this the
+      -- campaign has nothing queued once the flavor is dismissed and hangs.
+      nextCampaignStep
       pure c
     -- Epilogue. Sepulchre of the Sleeper's Resolution 1 wins the campaign outright
     -- and comes straight here, as do The Doom of Arkham's endings.

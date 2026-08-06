@@ -22,7 +22,13 @@ instance HasModifiersFor WalkInFaithFilledWithSpirit where
 
 instance HasAbilities WalkInFaithFilledWithSpirit where
   getAbilities (WalkInFaithFilledWithSpirit a) =
-    [controlled a 1 NoRestriction $ freeReaction (RevealChaosToken #after Anyone #eldersign)]
+    [ controlled a 1 NoRestriction
+        $ freeReaction
+        $ RevealChaosToken
+          #after
+          (InvestigatorAt $ LocationWithInvestigator $ HealableInvestigator (a.ability 1) #horror Anyone)
+          #eldersign
+    ]
 
 {- | "an investigator at that location" — the window only carries the investigator
 who revealed the token, and that investigator's location is the one the token was

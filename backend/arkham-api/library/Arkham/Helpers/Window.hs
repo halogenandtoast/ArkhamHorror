@@ -1189,6 +1189,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             [ matchWho iid who whoMatcher
             , locationMatches iid source window' locationId locationMatcher
             ]
+        -- No specific revealer: every investigator is considered to have revealed
+        -- it, so resolve @Who@ against the investigator being asked. That makes
+        -- @You@ pass for each of them in turn rather than for the lead alone,
+        -- while still letting a narrower matcher (e.g. @InvestigatorAt@) filter.
+        Window.RevealLocationByGroup locationId ->
+          andM
+            [ matchWho iid iid whoMatcher
+            , locationMatches iid source window' locationId locationMatcher
+            ]
         _ -> noMatch
     Matcher.RevealLocationForcedAbilities timing whoMatcher locationMatcher fromLocationMatcher ->
       guardTiming timing \case
@@ -1233,6 +1242,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.PutLocationIntoPlay who locationId ->
           andM
             [ matchWho iid who whoMatcher
+            , locationMatches iid source window' locationId locationMatcher
+            ]
+        -- See 'Window.RevealLocationByGroup': no specific investigator put it into
+        -- play, so each of them counts as having done so.
+        Window.PutLocationIntoPlayByGroup locationId ->
+          andM
+            [ matchWho iid iid whoMatcher
             , locationMatches iid source window' locationId locationMatcher
             ]
         _ -> noMatch

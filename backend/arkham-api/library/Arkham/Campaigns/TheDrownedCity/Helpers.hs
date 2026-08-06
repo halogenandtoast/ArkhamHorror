@@ -70,6 +70,18 @@ handOffArtifact iid asset = do
     select $ not_ (InvestigatorWithId iid) <> NearestToLocation (locationWithInvestigator iid)
   chooseOrRunOneM iid $ targets nearest (`takeControlOfAsset` asId asset)
 
+{- | The window a Task's progress check listens on.
+
+Every Task reads "When the game ends, if …: mark 1 progress under this Task", but a
+Task is an asset in the investigator's play area: it leaves play the moment they
+resign or are defeated, which is *before* the resolution opens the end-of-game
+window. Keyed on 'GameEnds' alone, a resigned investigator's Task is already gone
+and never marks progress. Same reason Hospital Debts and Embezzled Treasure pair
+the two windows.
+-}
+taskEnds :: WindowMatcher
+taskEnds = oneOf [GameEnds #when, InvestigatorEliminated #when You]
+
 investigatorHasTask
   :: (HasGame m, Tracing m, HasCardDef card) => InvestigatorId -> card -> m Bool
 investigatorHasTask iid (toCardDef -> cardDef) = do
@@ -172,10 +184,37 @@ getRecordCountForInvestigator
 getRecordCountForInvestigator iid k =
   fieldMap InvestigatorLog (findWithDefault 0 (toCampaignLogKey k) . campaignLogRecordedCounts) iid
 
+{- | Whether an investigator has progress left to erase under a Task.
+
+Every Task checkpoint is a choice between erasing 1 progress for a small boon and
+marking 2 progress for a cost (usually trauma). Erasing from 0 progress is a
+no-op — 'decrementRecordCountForInvestigator' clamps at 0 — so at 0 the erase
+branch would be a boon for free, which is not the trade the checkpoint offers.
+Pass this to @labeledValidate'@ so the branch shows up disabled rather than
+vanishing, keeping the buttons lined up with the printed choices.
+-}
+canEraseProgress :: (HasGame m, Tracing m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool
+canEraseProgress iid k = (> 0) <$> getRecordCountForInvestigator iid k
+
 struggleForAir
   :: (Sourceable a, HasGame m, Tracing m, HasQueue Message m) => a -> InvestigatorId -> m ()
 struggleForAir a iid = do
   builder <- makeEffectBuilder "struggleForAir" Nothing a iid
+  push $ CreateEffect builder
+
+{- | Walk in Faith's two intro riders, one effect per investigator. Each is spent on
+that investigator's first encounter-deck draw of the scenario.
+-}
+walkInFaithDoubts
+  :: (Sourceable a, HasGame m, Tracing m, HasQueue Message m) => a -> InvestigatorId -> m ()
+walkInFaithDoubts a iid = do
+  builder <- makeEffectBuilder "walkInFaithDoubts" Nothing a iid
+  push $ CreateEffect builder
+
+walkInFaithResolve
+  :: (Sourceable a, HasGame m, Tracing m, HasQueue Message m) => a -> InvestigatorId -> m ()
+walkInFaithResolve a iid = do
+  builder <- makeEffectBuilder "walkInFaithResolve" Nothing a iid
   push $ CreateEffect builder
 
 decreaseFloodLevel :: ReverseQueue m => LocationId -> m ()

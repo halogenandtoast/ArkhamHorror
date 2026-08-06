@@ -43,16 +43,18 @@ data Answer
   | CampaignSettingsAnswer CampaignSettings
   | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
   | DeckListAnswer {deckList :: ArkhamDBDecklist, playerId :: PlayerId}
-  | -- | Trigger for the server to answer this seat's parked question via the AI
-    -- decision engine. Wire shape: @{ "tag": "AiAnswer", "playerId": <uuid> }@.
-    -- Resolved in 'Api.Handler.Arkham.Games.Shared.updateGame'; see the
-    -- 'handleAnswerPure' note below for why it is not handled here.
+  | {- | Trigger for the server to answer this seat's parked question via the AI
+    decision engine. Wire shape: @{ "tag": "AiAnswer", "playerId": <uuid> }@.
+    Resolved in 'Api.Handler.Arkham.Games.Shared.updateGame'; see the
+    'handleAnswerPure' note below for why it is not handled here.
+    -}
     AiAnswer {playerId :: PlayerId}
-  | -- | Trigger for the server to commit a single card from this seat's parked
-    -- /assist/ skill-test window (another investigator is performing the test)
-    -- via the AI decision engine. Wire shape:
-    -- @{ "tag": "AiAssist", "playerId": <uuid> }@. Resolved in
-    -- 'Api.Handler.Arkham.Games.Shared.updateGame' (see 'handleAnswerPure').
+  | {- | Trigger for the server to commit a single card from this seat's parked
+    /assist/ skill-test window (another investigator is performing the test)
+    via the AI decision engine. Wire shape:
+    @{ "tag": "AiAssist", "playerId": <uuid> }@. Resolved in
+    'Api.Handler.Arkham.Games.Shared.updateGame' (see 'handleAnswerPure').
+    -}
     AiAssist {playerId :: PlayerId}
   | PickDestinyAnswer [DestinyDrawing]
   | CampaignSpecificAnswer Text Value
@@ -372,9 +374,10 @@ handleAnswer game playerId = \case
     handled $ deckChosen game playerId dl
   other -> liftIO $ handleAnswerPure game playerId other
 
--- | Like 'handleAnswer' but with no DB access. Returns 'Unhandled' for
--- 'DeckAnswer' / 'DeckListAnswer', which require updating an 'ArkhamPlayer'
--- row. Used by the headless replay CLI.
+{- | Like 'handleAnswer' but with no DB access. Returns 'Unhandled' for
+'DeckAnswer' / 'DeckListAnswer', which require updating an 'ArkhamPlayer'
+row. Used by the headless replay CLI.
+-}
 handleAnswerPure :: Game -> PlayerId -> Answer -> IO Reply
 handleAnswerPure game@Game {..} playerId = \case
   DeckAnswer {} -> unhandled "DeckAnswer requires database access"
@@ -641,18 +644,19 @@ handleAnswerPure game@Game {..} playerId = \case
         (Nothing, msgs'') ->
           [Ask playerId $ f $ ChooseOneAtATime msgs'']
     ChooseOneAtATimeWithAuto k msgs -> do
+      -- Choice 0 is the auto ("resolve everything still listed") option, so the real
+      -- choices are offset by one. The auto option only earns its place while more
+      -- than one is left: against a single option it is a second button that does
+      -- exactly what the first one does.
+      let reask rest = if length rest > 1 then ChooseOneAtATimeWithAuto k rest else ChooseOneAtATime rest
       if qrChoice response == 0
         then map uiToRun msgs
         else do
           let (mm, msgs') = extract (qrChoice response - 1) msgs
           case (mm, msgs') of
             (Just m', []) -> [uiToRun m']
-            (Just m', msgs'') ->
-              if length msgs'' > 1
-                then [uiToRun m', Ask playerId $ f $ ChooseOneAtATimeWithAuto k msgs'']
-                else [uiToRun m', Ask playerId $ f $ ChooseOneAtATime msgs'']
-            (Nothing, msgs'') ->
-              [Ask playerId $ f $ ChooseOneAtATimeWithAuto k msgs'']
+            (Just m', msgs'') -> [uiToRun m', Ask playerId $ f $ reask msgs'']
+            (Nothing, msgs'') -> [Ask playerId $ f $ reask msgs'']
     ChooseSome msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of

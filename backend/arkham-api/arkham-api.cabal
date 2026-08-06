@@ -2103,6 +2103,8 @@ library
       Arkham.Campaigns.TheDrownedCity.CampaignSteps
       Arkham.Campaigns.TheDrownedCity.ChaosBag
       Arkham.Campaigns.TheDrownedCity.Effects.StruggleForAir
+      Arkham.Campaigns.TheDrownedCity.Effects.WalkInFaithDoubts
+      Arkham.Campaigns.TheDrownedCity.Effects.WalkInFaithResolve
       Arkham.Campaigns.TheDrownedCity.Helpers
       Arkham.Campaigns.TheDrownedCity.Import
       Arkham.Campaigns.TheDrownedCity.Key

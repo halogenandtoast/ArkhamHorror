@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.ToeTheLine (toeTheLine) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Campaigns.TheDrownedCity.Helpers (taskEnds)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Investigator.Types (Field (InvestigatorHealth))
 import Arkham.Matcher
@@ -31,8 +32,7 @@ instance HasAbilities ToeTheLine where
             )
             (atLeast 0)
         )
-        $ forced
-        $ GameEnds #when
+        $ forced taskEnds
     ]
 
 instance RunMessage ToeTheLine where

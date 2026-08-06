@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.NoPlaceLikeHome (noPlaceLikeHome) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealLocation)
+import Arkham.Campaigns.TheDrownedCity.Helpers (taskEnds)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.GameValue
 import Arkham.Matcher
@@ -32,8 +33,7 @@ instance HasAbilities NoPlaceLikeHome where
         a
         2
         (HasCalculation (AssetTokenCountCalculation a.id #discovery) (AtMost $ PerPlayer 1))
-        $ forced
-        $ GameEnds #when
+        $ forced taskEnds
     ]
 
 instance RunMessage NoPlaceLikeHome where

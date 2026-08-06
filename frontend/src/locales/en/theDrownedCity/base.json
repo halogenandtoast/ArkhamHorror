@@ -13,6 +13,10 @@
   ],
   "label": {
     "noAir": "You did not find air. Take 5 direct damage.",
+    "walkInFaith": {
+      "drawFromDeck": "Draw 1 card from your deck instead",
+      "drawEncounter": "Draw from the encounter deck as normal"
+    },
     "naomiOBannion": {
       "preventReadying": "Take 1 damage to prevent Naomi O’Bannion from readying",
       "doNotTakeDamage": "Do not take 1 damage"

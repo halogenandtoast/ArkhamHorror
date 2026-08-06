@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.WalkInFaith (walkInFaith) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
+import Arkham.Campaigns.TheDrownedCity.Helpers (taskEnds)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.GameValue
 import Arkham.Matcher
@@ -25,8 +26,7 @@ instance HasAbilities WalkInFaith where
         a
         2
         (HasCalculation (AssetTokenCountCalculation a.id #sign) (GreaterThan $ PerPlayer 1))
-        $ forced
-        $ GameEnds #when
+        $ forced taskEnds
     ]
 
 instance RunMessage WalkInFaith where

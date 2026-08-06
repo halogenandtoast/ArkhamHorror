@@ -84,7 +84,8 @@ instance RunMessage ObsidianCanyons where
             li.validate headedWest "setupWest"
             li.validate (not headedWest) "setupEast"
 
-      for_ withDreamsOfDestruction \iid ->
+      for_ withDreamsOfDestruction \iid -> do
+        canErase <- canEraseProgress iid Key.DreamsOfDestruction
         storyWithChooseOneM'
           ( compose.green do
               h3 "dreamsOfDestruction.title"
@@ -98,7 +99,7 @@ instance RunMessage ObsidianCanyons where
                 li "dreamsOfDestruction.letItIn"
           )
           do
-            labeled' "dreamsOfDestruction.drownOut" do
+            labeledValidate' canErase "dreamsOfDestruction.drownOut" do
               decrementRecordCountForInvestigator iid Key.DreamsOfDestruction 1
               sufferMentalTrauma iid 1
               -- "You (and only you) gain 2 bonus experience."
@@ -131,9 +132,13 @@ instance RunMessage ObsidianCanyons where
                 targets (if null others then [iid] else others) \chosen -> do
                   recordSetInsert Key.HelpedWithTheRopes [unInvestigatorId iid]
                   recordSetInsert Key.WasHelpedWithTheRopes [unInvestigatorId chosen]
-              for_ investigators \iid' -> nextSetupModifier attrs.id attrs iid' (StartingResources (-2))
+              -- "The next scenario" is this one: the story is read in the intro,
+              -- before setup, so the next scenario to begin is the one about to be
+              -- set up. nextSetupModifier is inert while its own scenario is
+              -- current and would silently do nothing here.
+              for_ investigators \iid' -> setupModifier attrs iid' (StartingResources (-2))
             labeled' "proveYourWorth.trustTheirHandiwork" do
-              for_ investigators \iid' -> nextSetupModifier attrs.id attrs iid' (StartingResources 1)
+              for_ investigators \iid' -> setupModifier attrs iid' (StartingResources 1)
       pure s
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)

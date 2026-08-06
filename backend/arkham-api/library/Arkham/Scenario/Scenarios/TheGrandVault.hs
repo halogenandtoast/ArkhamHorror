@@ -80,7 +80,8 @@ instance RunMessage TheGrandVault where
       -- sticks for the remainder of the campaign and not just this scenario.
       addChaosToken ElderThing
 
-      for_ withToeTheLine \iid ->
+      for_ withToeTheLine \iid -> do
+        canErase <- canEraseProgress iid Key.ToeTheLine
         storyWithChooseOneM'
           ( compose.green do
               h3 "toeTheLine.title"
@@ -93,13 +94,21 @@ instance RunMessage TheGrandVault where
                 li "toeTheLine.highRoad"
           )
           do
-            labeled' "toeTheLine.oldJob" do
+            labeledValidate' canErase "toeTheLine.oldJob" do
               decrementRecordCountForInvestigator iid Key.ToeTheLine 1
-              forNextScenarioModifier attrs.id EffectFirstAgendaWindow attrs iid (AnySkillValue 1)
+              createWindowModifierEffect_
+                EffectFirstAgendaWindow
+                attrs
+                iid
+                [SkillModifier st 1 | st <- [minBound ..]]
             labeled' "toeTheLine.highRoad" do
               incrementRecordCountForInvestigator iid Key.ToeTheLine 2
               sufferMentalTrauma iid 1
-              forNextScenarioModifier attrs.id EffectFirstAgendaWindow attrs iid (AnySkillValue (-1))
+              createWindowModifierEffect_
+                EffectFirstAgendaWindow
+                attrs
+                iid
+                [SkillModifier st (-1) | st <- [minBound ..]]
       pure s
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)
@@ -252,7 +261,8 @@ instance RunMessage TheGrandVault where
       let resolveGoodMoney = do
             withGoodMoney <-
               filterM (`investigatorHasTask` Assets.goodMoney) =<< select (IncludeEliminated Anyone)
-            for_ withGoodMoney \iid ->
+            for_ withGoodMoney \iid -> do
+              canErase <- canEraseProgress iid Key.GoodMoney
               storyWithChooseOneM'
                 ( compose.green do
                     h3 "goodMoney.title"
@@ -265,7 +275,7 @@ instance RunMessage TheGrandVault where
                       li "goodMoney.playBothSides"
                 )
                 do
-                  labeled' "goodMoney.playItSafe" do
+                  labeledValidate' canErase "goodMoney.playItSafe" do
                     decrementRecordCountForInvestigator iid Key.GoodMoney 1
                     nextSetupModifier attrs.id attrs iid (StartingResources 3)
                   labeled' "goodMoney.playBothSides" do

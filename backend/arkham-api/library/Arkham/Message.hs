@@ -37,6 +37,9 @@ import Arkham.Action hiding (Explore)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Agenda.Sequence
+import Arkham.Ai.Focus (Focus)
+import Arkham.Ai.Orphans ()
+import Arkham.Ai.State (AiPlayerState)
 import Arkham.Asset.Uses
 import Arkham.Attack.Types
 import Arkham.Campaign.Option
@@ -63,7 +66,6 @@ import Arkham.Decklist.Type
 import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.Discard
-import Arkham.Epic.Types (SharedKey)
 import Arkham.Discover
 import Arkham.Draw.Types
 import {-# SOURCE #-} Arkham.Effect.Types
@@ -72,10 +74,8 @@ import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
 import {-# SOURCE #-} Arkham.Enemy.Types
+import Arkham.Epic.Types (SharedKey)
 import Arkham.Evade.Types
-import Arkham.Ai.Focus (Focus)
-import Arkham.Ai.Orphans ()
-import Arkham.Ai.State (AiPlayerState)
 import Arkham.Exception
 import Arkham.Exhaust
 import Arkham.Field
@@ -485,12 +485,14 @@ data Message
   | SetUltimatumsAndBoonsEnabled Bool
   | -- | Ultimatum of The Scream: ban this ally for the rest of the campaign
     RecordScreamedAlly CardCode
-  | -- | Above-the-table achievement earned; persisted per human player and
-    -- toasted by the API layer (the engine only announces it).
+  | {- | Above-the-table achievement earned; persisted per human player and
+    toasted by the API layer (the engine only announces it).
+    -}
     EarnAchievement Achievement
-  | -- | Checklist items completed toward a cross-playthrough achievement
-    -- (see 'achievementChecklist'); the API layer merges them into the
-    -- per-user progress row and awards the earn when the list is complete.
+  | {- | Checklist items completed toward a cross-playthrough achievement
+    (see 'achievementChecklist'); the API layer merges them into the
+    per-user progress row and awards the earn when the list is complete.
+    -}
     AchievementProgress Achievement [Text]
   | -- AI seat configuration (mutates Settings.settingsAiPlayers)
     RegisterAiPlayer PlayerId AiPlayerState
@@ -600,21 +602,24 @@ data Message
   | Ask PlayerId (Question Message)
   | WindowAsk [Window] PlayerId (Question Message)
   | AskMap (Map PlayerId (Question Message))
-  | -- | Open a multi-seat barrier: park every seat in the map on its own question
-    -- and hold the @[Message]@ continuation in game state (never in the queue) until
-    -- the join policy is satisfied. Each seat then runs a self-contained sub-flow
-    -- that ends in 'SeatResolved'. With no seats the continuation runs immediately.
-    -- See "Arkham.SimultaneousAsk" and @docs/multi-seat-barrier.md@.
+  | {- | Open a multi-seat barrier: park every seat in the map on its own question
+    and hold the @[Message]@ continuation in game state (never in the queue) until
+    the join policy is satisfied. Each seat then runs a self-contained sub-flow
+    that ends in 'SeatResolved'. With no seats the continuation runs immediately.
+    See "Arkham.SimultaneousAsk" and @docs/multi-seat-barrier.md@.
+    -}
     BeginSimultaneousAsk BatchId JoinPolicy (Map PlayerId (Question Message)) [Message]
-  | -- | One seat's sub-flow has finished. Drops that seat's slot, re-parks the seats
-    -- still waiting, and runs the deferred work + continuation once the join
-    -- condition holds.
+  | {- | One seat's sub-flow has finished. Drops that seat's slot, re-parks the seats
+    still waiting, and runs the deferred work + continuation once the join
+    condition holds.
+    -}
     SeatResolved BatchId PlayerId
-  | -- | Run @msgs@ once this seat's barrier releases, rather than inside its sub-flow.
-    -- For the interactive parts of deck setup, which cannot park inside a sub-flow
-    -- without letting another seat's answer drain this seat's tail (see
-    -- "Arkham.SimultaneousAsk"). With no barrier open for the seat this falls back to
-    -- the pre-barrier behaviour: after a queued 'DoneChoosingDecks', else right now.
+  | {- | Run @msgs@ once this seat's barrier releases, rather than inside its sub-flow.
+    For the interactive parts of deck setup, which cannot park inside a sub-flow
+    without letting another seat's answer drain this seat's tail (see
+    "Arkham.SimultaneousAsk"). With no barrier open for the seat this falls back to
+    the pre-barrier behaviour: after a queued 'DoneChoosingDecks', else right now.
+    -}
     DeferPastSimultaneousAsk PlayerId [Message]
   | After Message
   | EvadeMessage EvadeMessage
@@ -925,9 +930,10 @@ data Message
   | PutOnBottomOfDeck InvestigatorId DeckSignifier Target
   | Record CampaignLogKey
   | RecordForInvestigator InvestigatorId CampaignLogKey
-  | -- | Adjust a per-investigator tally in that investigator's own campaign log
-    -- (e.g. Dark Matter "Memories"). Negative values cross off tallies; the
-    -- count never drops below zero.
+  | {- | Adjust a per-investigator tally in that investigator's own campaign log
+    (e.g. Dark Matter "Memories"). Negative values cross off tallies; the
+    count never drops below zero.
+    -}
     IncrementRecordCountForInvestigator InvestigatorId CampaignLogKey Int
   | RecordCount CampaignLogKey Int
   | IncrementRecordCount CampaignLogKey Int
@@ -2733,6 +2739,23 @@ chooseOrRunOneAtATimeWithLabel :: Text -> PlayerId -> [UI Message] -> Message
 chooseOrRunOneAtATimeWithLabel _ _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOrRunOneAtATimeWithLabel _ _ [x] = uiToRun x
 chooseOrRunOneAtATimeWithLabel lbl pid msgs = Ask pid (QuestionLabel lbl Nothing $ ChooseOneAtATime msgs)
+
+{- | 'chooseOrRunOneAtATimeWithLabel' plus a single "resolve everything still
+listed, in the order shown" choice rendered with @autoLbl@.
+
+Use this instead of recursing inside a 'chooseOneM'/'targets' continuation to build
+the same shortcut: the choice list here is built once and stays flat, whereas the
+recursive form materializes the whole permutation tree into one message.
+
+The auto choice is only offered while more than one option exists — one option runs
+outright, and 'Entity.Answer' drops back to a plain 'ChooseOneAtATime' once the
+re-ask is down to its last one.
+-}
+chooseOrRunOneAtATimeWithAutoLabel :: Text -> Text -> PlayerId -> [UI Message] -> Message
+chooseOrRunOneAtATimeWithAutoLabel _ _ _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
+chooseOrRunOneAtATimeWithAutoLabel _ _ _ [x] = uiToRun x
+chooseOrRunOneAtATimeWithAutoLabel lbl autoLbl pid msgs =
+  Ask pid (QuestionLabel lbl Nothing $ ChooseOneAtATimeWithAuto autoLbl msgs)
 
 chooseSome :: PlayerId -> Text -> [UI Message] -> Message
 chooseSome _ _ [] = throw $ InvalidState "No messages for chooseSome"

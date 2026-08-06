@@ -297,7 +297,9 @@ instance RunMessage TheWesternWall where
                 then do
                   addCampaignCardToDeck iid DoNotShuffleIn Enemies.huntingParasite
                   incrementRecordCountForInvestigator iid Key.DoNoHarm 2
-                else sufferMentalTrauma iid 1
+                else do
+                  sufferMentalTrauma iid 1
+                  decrementRecordCountForInvestigator iid Key.DoNoHarm 1
           chooseResolution3 =
             storyWithChooseOneM'
               (compose.resolution $ scope "resolution3" $ setTitle "title" >> p "body")

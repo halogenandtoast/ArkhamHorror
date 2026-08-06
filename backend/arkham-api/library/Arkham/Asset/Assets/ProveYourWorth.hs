@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.ProveYourWorth (proveYourWorth) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Campaigns.TheDrownedCity.Helpers (taskEnds)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (incrementRecordCountForInvestigator)
@@ -20,8 +21,7 @@ instance HasAbilities ProveYourWorth where
         $ forced
         $ SkillTestResult #after You AnySkillTest (FailureResult $ atLeast 2)
     , controlled a 2 (if a.use #chance >= 1 then NoRestriction else Never)
-        $ forced
-        $ GameEnds #when
+        $ forced taskEnds
     ]
 
 instance RunMessage ProveYourWorth where

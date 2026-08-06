@@ -58,6 +58,7 @@ getRevealedLocation :: [Window] -> LocationId
 getRevealedLocation = \case
   [] -> error "No location revealed"
   ((windowType -> Window.RevealLocation _ lid) : _) -> lid
+  ((windowType -> Window.RevealLocationByGroup lid) : _) -> lid
   ((windowType -> Window.RevealLocationForcedAbilities _ lid _) : _) -> lid
   (_ : rest) -> getRevealedLocation rest
 

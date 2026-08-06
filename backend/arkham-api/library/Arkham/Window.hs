@@ -102,6 +102,7 @@ the heavy modifier preload pipeline.
 isSetupSkippableWindow :: Window -> Bool
 isSetupSkippableWindow w = case windowType w of
   PutLocationIntoPlay {} -> True
+  PutLocationIntoPlayByGroup {} -> True
   LocationEntersPlay {} -> True
   PlacedToken _ _ Clue _ -> True
   _ -> False
@@ -341,8 +342,17 @@ data WindowType
   | PlayEvent InvestigatorId EventId
   | PlayAsset InvestigatorId AssetId
   | PutLocationIntoPlay InvestigatorId LocationId
+  | {- | A location put into play or revealed with no specific investigator behind
+    it, i.e. by an act, agenda or other scenario card. "Because acts and agendas
+    are advanced by the players, as a group, each investigator is considered to
+    have put the location(s) into play", so these carry no investigator and the
+    'Arkham.Matcher.PutLocationIntoPlay' / 'Arkham.Matcher.RevealLocation'
+    matchers resolve their @Who@ against whoever is being asked.
+    -}
+    PutLocationIntoPlayByGroup LocationId
   | LocationEntersPlay LocationId
   | RevealLocation InvestigatorId LocationId
+  | RevealLocationByGroup LocationId
   | RevealLocationForcedAbilities InvestigatorId LocationId (Maybe LocationId)
   | UnrevealedRevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId

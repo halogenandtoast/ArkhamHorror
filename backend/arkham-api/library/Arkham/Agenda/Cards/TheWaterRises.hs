@@ -50,6 +50,7 @@ instance RunMessage TheWaterRisesEffect where
     Do (CheckWindows (filter ((== #when) . Window.windowTiming) -> map Window.windowType -> ws)) -> do
       let
         unRevealLocation (Window.RevealLocation _ lid) = First (Just lid)
+        unRevealLocation (Window.RevealLocationByGroup lid) = First (Just lid)
         unRevealLocation _ = First Nothing
       for_ (getFirst $ foldMap unRevealLocation ws) $ push . (`SetFloodLevel` FullyFlooded)
       pure e

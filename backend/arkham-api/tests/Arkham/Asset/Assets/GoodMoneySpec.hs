@@ -6,6 +6,7 @@ import Arkham.Campaigns.TheDrownedCity.Helpers (getRecordCountForInvestigator)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Modifier
 import Arkham.Projection
+import Arkham.Window qualified as Window
 import TestImport.New
 
 spec :: Spec
@@ -34,6 +35,16 @@ spec = describe "Good Money" do
       goodMoney <- self `putAssetIntoPlay` Assets.goodMoney
       run $ PlaceTokens GameSource (toTarget goodMoney) #resource 5
       endGame
+      useForcedAbility
+      getRecordCountForInvestigator (toId self) Key.GoodMoney `shouldReturn` 1
+
+    -- A Task leaves play with its investigator, so by the time the resolution
+    -- opens the end-of-game window a resigned investigator's Task is already
+    -- gone. It has to mark progress off the elimination window instead.
+    it "marks 1 progress when you resign with 5 or more resources on it" . gameTest $ \self -> do
+      goodMoney <- self `putAssetIntoPlay` Assets.goodMoney
+      run $ PlaceTokens GameSource (toTarget goodMoney) #resource 5
+      run $ CheckWindows [Window.mkWhen (Window.InvestigatorEliminated $ toId self)]
       useForcedAbility
       getRecordCountForInvestigator (toId self) Key.GoodMoney `shouldReturn` 1
 

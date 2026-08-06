@@ -67,9 +67,8 @@ instance RunMessage TheApiary where
           li.validate (not headedWest) "headedEast"
 
       isUrsula <- selectAny $ investigatorIs ursulaDowns
-      withWalkInFaith <-
-        filterM (`investigatorHasTask` Assets.walkInFaith)
-          =<< select (IncludeEliminated Anyone)
+      investigators <- select (IncludeEliminated Anyone)
+      withWalkInFaith <- filterM (`investigatorHasTask` Assets.walkInFaith) investigators
       flavor do
         setTitle "title"
         if headedWest
@@ -97,7 +96,8 @@ instance RunMessage TheApiary where
       -- sticks for the remainder of the campaign and not just this scenario.
       addChaosToken (if headedWest then Tablet else Cultist)
 
-      for_ withWalkInFaith \iid ->
+      for_ withWalkInFaith \iid -> do
+        canErase <- canEraseProgress iid Key.WalkInFaith
         storyWithChooseOneM'
           ( compose.green do
               h3 "walkInFaith.title"
@@ -109,13 +109,16 @@ instance RunMessage TheApiary where
                 li "walkInFaith.resolve"
           )
           do
-            -- TODO: both branches also modify the first encounter-deck draw of
-            -- each investigator during this scenario, which The Apiary itself
-            -- does not implement yet.
-            labeled' "walkInFaith.doubts" $ decrementRecordCountForInvestigator iid Key.WalkInFaith 1
+            -- Both riders say "in the next scenario", which for a Task story read
+            -- in the intro is this scenario. One effect per investigator, each
+            -- spent on that investigator's first encounter-deck draw.
+            labeledValidate' canErase "walkInFaith.doubts" do
+              decrementRecordCountForInvestigator iid Key.WalkInFaith 1
+              for_ investigators (walkInFaithDoubts attrs)
             labeled' "walkInFaith.resolve" do
               incrementRecordCountForInvestigator iid Key.WalkInFaith 2
               sufferMentalTrauma iid 1
+              for_ investigators (walkInFaithResolve attrs)
       pure s
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)

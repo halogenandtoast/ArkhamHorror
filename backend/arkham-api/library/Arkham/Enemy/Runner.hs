@@ -95,10 +95,10 @@ import Arkham.Message.Lifted (
   batched,
   capture,
   do_,
+  evasionResult,
   obtainCard,
   placeKey,
   removeEnemy,
-  evasionResult,
   scenarioSpecific,
   selectEach,
   successfulEvasion,
@@ -182,6 +182,9 @@ filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
     x -> Just (Ask pid $ ChooseOneAtATime x)
   ChooseOneAtATimeWithAuto k msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
+    -- Filtering can strip the question down to a single option, at which point the
+    -- auto ("resolve the rest") choice would just duplicate it.
+    [x] -> Just (Ask pid $ ChooseOneAtATime [x])
     x -> Just (Ask pid $ ChooseOneAtATimeWithAuto k x)
   ChooseUpgradeDeck -> Just (Ask pid ChooseUpgradeDeck)
   ChooseDeck -> Just ask'
@@ -248,9 +251,10 @@ getCanReady a = do
   phase <- getPhase
   pure $ CannotReady `notElem` mods && (DoesNotReadyDuringUpkeep `notElem` mods || phase /= #upkeep)
 
--- | Whether an enemy is currently barred from attacking. 'CannotAttack' is
--- unconditional; 'CannotAttackDuringEnemyPhase' only bites in the enemy phase,
--- since @Do EnemiesAttack@ is also pushed by card effects outside of it.
+{- | Whether an enemy is currently barred from attacking. 'CannotAttack' is
+unconditional; 'CannotAttackDuringEnemyPhase' only bites in the enemy phase,
+since @Do EnemiesAttack@ is also pushed by card effects outside of it.
+-}
 getCannotAttackNow :: HasGame m => [ModifierType] -> m Bool
 getCannotAttackNow mods
   | CannotAttack `elem` mods = pure True

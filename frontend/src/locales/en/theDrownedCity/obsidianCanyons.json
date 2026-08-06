@@ -116,7 +116,8 @@
     "searchTheSpires": {
       "chooseLocation": "Choose a card from the bottom of the Summit deck.",
       "placeNone": "Do not put a revealed location into play",
-      "chooseOrder": "Choose the next card to place on top of the Summit deck. The final card chosen will be topmost."
+      "chooseOrder": "Choose the next card to place on top of the Summit deck. The final card chosen will be topmost.",
+      "restOnTop": "Place the remaining cards on top of the Summit deck in any order"
     },
     "summitDeck": {
       "toTop": "Place on the top of the Summit deck",

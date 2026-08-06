@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.GoodMoney (goodMoney) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Campaigns.TheDrownedCity.Helpers (taskEnds)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (incrementRecordCountForInvestigator)
@@ -22,8 +23,7 @@ instance HasAbilities GoodMoney where
       controlled a 1 (youExist InvestigatorWithAnyResources)
         $ freeReaction (GainsResources #after You AnySource (atLeast 1))
     , controlled a 2 (if a.use #resource >= 5 then NoRestriction else Never)
-        $ forced
-        $ GameEnds #when
+        $ forced taskEnds
     ]
 
 instance RunMessage GoodMoney where

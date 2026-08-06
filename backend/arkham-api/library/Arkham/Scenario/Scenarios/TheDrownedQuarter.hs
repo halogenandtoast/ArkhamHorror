@@ -74,6 +74,7 @@ instance RunMessage TheDrownedQuarter where
       for_ withNoPlaceLikeHome \iid -> do
         hasPhysical <- fieldP InvestigatorPhysicalTrauma (> 0) iid
         hasMental <- fieldP InvestigatorMentalTrauma (> 0) iid
+        canErase <- canEraseProgress iid Key.NoPlaceLikeHome
         storyWithChooseOneM'
           ( compose.green do
               h3 "noPlaceLikeHome.title"
@@ -86,7 +87,7 @@ instance RunMessage TheDrownedQuarter where
                 li "noPlaceLikeHome.onMyOwn"
           )
           do
-            labeled' "noPlaceLikeHome.trustHim" do
+            labeledValidate' canErase "noPlaceLikeHome.trustHim" do
               -- "Heal 1 mental or 1 physical trauma"; only offer what they have.
               when (hasPhysical || hasMental) do
                 chooseOneM iid do
@@ -103,8 +104,11 @@ instance RunMessage TheDrownedQuarter where
             labeled' "noPlaceLikeHome.onMyOwn" do
               incrementRecordCountForInvestigator iid Key.NoPlaceLikeHome 2
               sufferMentalTrauma iid 1
-              for_ investigators \iid' ->
-                nextSetupModifier attrs.id attrs iid' (StartingHand (-2))
+              -- "The next scenario" is this one: the story is read in the intro,
+              -- before setup, so the next scenario to begin is the one about to be
+              -- set up. nextSetupModifier is inert while its own scenario is
+              -- current and would silently do nothing here.
+              for_ investigators \iid' -> setupModifier attrs iid' (StartingHand (-2))
       pure s
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)

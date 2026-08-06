@@ -95,6 +95,8 @@ import Arkham.Asset.Assets (
   yaotl1Effect,
  )
 import Arkham.Campaigns.TheDrownedCity.Effects.StruggleForAir (struggleForAirEffect)
+import Arkham.Campaigns.TheDrownedCity.Effects.WalkInFaithDoubts (walkInFaithDoubtsEffect)
+import Arkham.Campaigns.TheDrownedCity.Effects.WalkInFaithResolve (walkInFaithResolveEffect)
 import Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir (noAirEffect)
 import Arkham.Campaigns.TheScarletKeys.Key.Cards.TheWellspringOfFortune (
   theWellspringOfFortuneEffect,
@@ -641,5 +643,7 @@ allEffects =
     , ("abief", SomeEffect abilityEffect)
     , ("noair", SomeEffect noAirEffect)
     , ("struggleForAir", SomeEffect struggleForAirEffect)
+    , ("walkInFaithDoubts", SomeEffect walkInFaithDoubtsEffect)
+    , ("walkInFaithResolve", SomeEffect walkInFaithResolveEffect)
     , ("genef", SomeEffect genericEffect)
     ]

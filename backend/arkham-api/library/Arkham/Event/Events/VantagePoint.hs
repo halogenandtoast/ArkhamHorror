@@ -26,6 +26,8 @@ vantagePointLocation :: [Window] -> LocationId
 vantagePointLocation [] = error "No vantage point found"
 vantagePointLocation ((windowType -> PutLocationIntoPlay _ lid) : _) = lid
 vantagePointLocation ((windowType -> RevealLocation _ lid) : _) = lid
+vantagePointLocation ((windowType -> PutLocationIntoPlayByGroup lid) : _) = lid
+vantagePointLocation ((windowType -> RevealLocationByGroup lid) : _) = lid
 vantagePointLocation (_ : xs) = vantagePointLocation xs
 
 instance RunMessage VantagePoint where
@@ -38,14 +40,14 @@ instance RunMessage VantagePoint where
       pushAll
         $ enabled
         : [ chooseOne player
-            $ Label "$label.doNotMoveClue" []
-            : [ targetLabel
-                lid'
-                [ RemoveClues (toSource attrs) (LocationTarget lid') 1
-                , PlaceClues (toSource attrs) (LocationTarget lid) 1
+              $ Label "$label.doNotMoveClue" []
+              : [ targetLabel
+                    lid'
+                    [ RemoveClues (toSource attrs) (LocationTarget lid') 1
+                    , PlaceClues (toSource attrs) (LocationTarget lid) 1
+                    ]
+                | lid' <- otherLocationsWithClues
                 ]
-              | lid' <- otherLocationsWithClues
-              ]
           | notNull otherLocationsWithClues
           ]
       pure e

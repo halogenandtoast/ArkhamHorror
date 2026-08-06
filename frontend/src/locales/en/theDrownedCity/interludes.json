@@ -123,7 +123,11 @@
         "completed": "<p>“You’ll be in charge of overseeing the construction and eventual management of the new factory.” Your new employer beams, sliding a crisp contract across the table. As you look out the window of your new office, you feel your heart swell. After your success with the expedition, Tillinghast mentioned his connections with the budding New Horizons Industries. Even though the meat-packing magnate has yet to break ground in Arkham, Randall has assured you that you will be well taken care of. All you need to do is sign on the dotted line.</p>",
         "completedEffect": "In your Campaign Log, record (investigator name) found new work. This task is complete (it enters play with its Completed side faceup).",
         "failed": "<p>The room goes silent when you enter. When you asked for your old job back, Tillinghast was more than happy to oblige. As your old supervisor chats away like you never left, you catch your old colleagues’ nervous stares. Whatever small favors the shady businessman pulled must have worked. As you take your seat, you look out at the nervous colleagues you once called friends. You got everything you wanted, even your old desk. Why do you still feel so empty?</p>",
-        "failedEffect": "Permanently remove the “Toe the Line” Task from your deck and suffer 1 physical trauma. Draw tokens from the chaos bag at random until you have 2 non-symbol tokens. Replace each of these tokens with a chaos token of a value 2 lower for the remainder of the campaign. (If you are unable to replace a token, repeat this process until a total of 2 chaos tokens have been replaced.)"
+        "failedEffect": "Permanently remove the “Toe the Line” Task from your deck and suffer 1 physical trauma. Draw tokens from the chaos bag at random until you have 2 non-symbol tokens. Replace each of these tokens with a chaos token of a value 2 lower for the remainder of the campaign. (If you are unable to replace a token, repeat this process until a total of 2 chaos tokens have been replaced.)",
+        "tokenReplacement": {
+          "title": "Toe the Line",
+          "body": "Two non-symbol tokens drawn at random are replaced with a chaos token of a value 2 lower for the remainder of the campaign:"
+        }
       },
       "proveYourWorth": {
         "title": "Task: Prove Your Worth",
@@ -133,7 +137,7 @@
         "completed": "<p>It is several nights after your return to Arkham, and you are looking down on an adoring crowd. It’s no surprise the expedition was a success. It’s all because of you. And after promising Tillinghast a few paltry favors, you’re getting the recognition you so richly deserve. Soon, you’ll see to it that anyone who ever doubted you gets what they deserve, as well. Whoever said humility was a good thing?</p>",
         "completedEffect": "In your Campaign Log, record (investigator name) pulled their weight. This task is complete (it enters play with its Completed side faceup).",
         "failed": "<p>On the night of your return, you find yourself ignominiously shut out of your old crowd. Tillinghast himself spread the worst kinds of rumors about you. What’s worse is that they were all true. You were nothing but a burden on the expedition. You are the laughing stock of your circle. Nothing you’ve achieved was ever on your own merits. You’re as worthless as they said you are.</p>",
-        "failedEffect": "Permanently remove the “Prove Your Worth” Task from your deck and suffer 1 mental trauma. Remove cards of level 1–5 from your deck worth a total of 10 or more experience (remember to purchase new cards to maintain a legal deck size). You cannot purchase those cards again."
+        "failedEffect": "Permanently remove the “Prove Your Worth” Task from your deck and suffer 1 mental trauma. Remove cards of level 1–5 from your deck worth a total of 10 or more experience (remember to purchase new cards to maintain a legal deck size). You cannot purchase those cards again.<br><span style='color:purple'>*Please remove the cards manually in your deck builder.*</span>"
       },
       "plumbTheDepths": {
         "title": "Task: Plumb the Depths",

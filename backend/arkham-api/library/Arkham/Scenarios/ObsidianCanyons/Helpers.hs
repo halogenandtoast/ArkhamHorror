@@ -447,6 +447,16 @@ order.)"
 The lead investigator chooses the order of every card returned to the top. Cards
 are selected from bottom to top: each selected card is put on top immediately, so
 the final selection becomes the deck's top card.
+
+"In any order" means every arrangement is legal, so the question also carries a
+single "put everything still listed on top" choice for when the lead does not care.
+
+That shortcut has to come from 'ChooseOneAtATimeWithAuto' rather than a recursive
+@targets@ continuation that re-asks over the remainder: @targets@ evaluates each
+continuation eagerly, so recursing would materialize all N! orderings into one
+message. Spending 7 clues here reveals 7 cards, and 5040 branches is a request
+timeout. 'Entity.Answer' re-asks with the remainder for us and drops the auto
+choice once one card is left.
 -}
 chooseSummitTopOrder :: ReverseQueue m => [Card] -> m ()
 chooseSummitTopOrder cards = when (notNull cards) do
@@ -457,7 +467,10 @@ chooseSummitTopOrder cards = when (notNull cards) do
       $ targets cards
       $ putCardOnTopOfDeck lead (Deck.ScenarioDeckByKey SummitDeck)
   let promptLabel = scenarioI18n $ "$" <> labelKey "searchTheSpires.chooseOrder"
-  focusCards cards $ push $ Msg.chooseOrRunOneAtATimeWithLabel promptLabel player choices
+      autoLabel = scenarioI18n $ "$" <> labelKey "searchTheSpires.restOnTop"
+  focusCards cards
+    $ push
+    $ Msg.chooseOrRunOneAtATimeWithAutoLabel promptLabel autoLabel player choices
 
 searchTheSpires :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> Int -> m ()
 searchTheSpires source iid x = when (x > 0) do

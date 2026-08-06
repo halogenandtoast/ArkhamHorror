@@ -84,7 +84,8 @@ instance RunMessage CourtOfTheAncients where
       -- sticks for the remainder of the campaign and not just this scenario.
       addChaosToken (if headedWest then Cultist else Tablet)
 
-      for_ withPlumbTheDepths \iid ->
+      for_ withPlumbTheDepths \iid -> do
+        canErase <- canEraseProgress iid Key.PlumbTheDepths
         storyWithChooseOneM'
           ( compose.green do
               h3 "plumbTheDepths.title"
@@ -98,16 +99,19 @@ instance RunMessage CourtOfTheAncients where
                 li "plumbTheDepths.seekTheTruth"
           )
           do
-            -- Both outcomes reach past this scenario: "the next scenario" in a Task
-            -- story is the one *after* the scenario the story is read in, and they
-            -- affect every investigator, not just the one with the Task.
-            labeled' "plumbTheDepths.lookAway" do
+            -- "The next scenario" here is Court of the Ancients itself: this story
+            -- is read in the intro, before setup, so the next scenario to begin is
+            -- the one about to be set up. Hence plain setup modifiers rather than
+            -- nextSetupModifier, which stays inert while its own scenario is
+            -- current and would silently do nothing. Both outcomes affect every
+            -- investigator, not just the one holding the Task.
+            labeledValidate' canErase "plumbTheDepths.lookAway" do
               decrementRecordCountForInvestigator iid Key.PlumbTheDepths 1
-              for_ investigators \iid' -> nextSetupModifier attrs.id attrs iid' (StartingClues 1)
+              for_ investigators \iid' -> setupModifier attrs iid' (StartingClues 1)
             labeled' "plumbTheDepths.seekTheTruth" do
               incrementRecordCountForInvestigator iid Key.PlumbTheDepths 2
               sufferMentalTrauma iid 1
-              for_ investigators \iid' -> nextSetupModifier attrs.id attrs iid' (StartingHand (-1))
+              for_ investigators \iid' -> setupModifier attrs iid' (StartingHand (-1))
       pure s
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)

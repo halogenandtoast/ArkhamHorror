@@ -79,6 +79,27 @@ completedTaskRecord = \case
   PlumbTheDepths -> Just LearnedTheSecretTruth
   _ -> Nothing
 
+{- | A Task's Return to Arkham entry: the completed half or the failed half,
+depending on how much progress was marked. Written against the @tasks.<label>@
+scope, so call it under one.
+
+Factored out because No Place Like Home's failure folds a choice into this same
+story rather than asking separately afterwards.
+-}
+taskStory :: HasI18n => Bool -> FlavorTextBuilder ()
+taskStory completed = compose.green do
+  h3 "title"
+  p.basic "readOnly"
+  compose.validate completed do
+    p "fiveOrMoreProgress"
+    p "completed"
+    ul $ li "completedEffect"
+  hr
+  compose.validate (not completed) do
+    p "otherwise"
+    p "failed"
+    ul $ li "failedEffect"
+
 {- | The chaos token two values lower, for Toe the Line's failure, or Nothing if it
 cannot be lowered that far (a symbol token, or -7/-8, which have no -9/-10 below
 them).
@@ -308,19 +329,15 @@ instance RunMessage TheDrownedCity where
         when (progress > 0) $ gainXp iid CampaignSource (ikey "xp.taskProgress") progress
         let completed = progress >= 5
         scope "tasks" $ scope label do
-          flavor do
-            compose.green do
-              h3 "title"
-              p.basic "readOnly"
-              compose.validate completed do
-                p "fiveOrMoreProgress"
-                p "completed"
-                ul $ li "completedEffect"
-              hr
-              compose.validate (not completed) do
-                p "otherwise"
-                p "failed"
-                ul $ li "failedEffect"
+          -- No Place Like Home's failure is the only Task outcome that asks the
+          -- investigator anything. Same entry as every other Task, but its two
+          -- trauma choices take the place of the Continue button, so the text is
+          -- still above them when the decision is made.
+          if completed || task /= NoPlaceLikeHome
+            then flavor $ taskStory completed
+            else storyWithChooseOneM' (taskStory completed) do
+              unscoped $ countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+              unscoped $ countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
         if completed
           then do
             for_ (completedTask task) \completedCard -> do
@@ -360,15 +377,8 @@ instance RunMessage TheDrownedCity where
               DreamsOfDestruction -> do
                 sufferMentalTrauma iid 1
                 removeChaosToken AutoFail
-              NoPlaceLikeHome -> do
-                -- These two labels only exist at the root of label.json, and
-                -- labelKey prepends the active scope -- so without unscoped they
-                -- resolve to theDrownedCity.returnToArkham.label.suffer*Trauma,
-                -- which is nothing, and the raw key shows up on the button.
-                chooseOneM iid do
-                  unscoped $ countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-                  unscoped $ countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
-                addChaosToken Cultist
+              -- The trauma choice is part of this Task's story entry above.
+              NoPlaceLikeHome -> addChaosToken Cultist
               DoNoHarm -> do
                 sufferMentalTrauma iid 1
                 addChaosToken Tablet

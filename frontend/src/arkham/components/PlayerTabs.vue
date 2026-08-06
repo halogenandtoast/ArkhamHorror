@@ -107,7 +107,13 @@ function selectTab(i: string) {
   resetSwitchStack(i, props.playerId)
 }
 
+// The eye button is the only way to act as another seat, so an explicit perspective
+// switch must outrank automatic routing for the current game step -- otherwise a
+// declinable fast window on the destination seat is filtered out of
+// focusQuestionPlayers() and the sole-question rule immediately routes back to the
+// active investigator, stranding that seat's abilities out of reach (#5350).
 function selectTabExtended(i: string) {
+  manualSelectionAtStep = props.game.scenarioSteps
   selectedTab.value = i
   resetSwitchStack(i, i)
   if (solo?.value && props.playerId !== i && switchInvestigator) {

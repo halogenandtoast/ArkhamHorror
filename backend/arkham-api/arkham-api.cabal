@@ -7405,6 +7405,7 @@ test-suite spec
       Arkham.Scenario.DancingMadSpec
       Arkham.Scenario.Scenarios.DealingsInTheDarkSpec
       Arkham.Scenario.Scenarios.FateOfTheValeSpec
+      Arkham.Scenario.Scenarios.HemlockValeStandaloneSpec
       Arkham.Scenario.Scenarios.TheThingInTheDepthsSpec
       Arkham.Scenario.SpecHelpers
       Arkham.Scenario.TheMidwinterGalaSpec

@@ -64,7 +64,17 @@ instance HasChaosTokenValue TheLostSister where
 
 instance RunMessage TheLostSister where
   runMessage msg s@(TheLostSister attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> scope "intro" do
+    StandaloneSetup -> do
+      day <- getCampaignDay
+      setChaosTokens $ hemlockStandaloneBag day
+      pure s
+    -- The day and time have to be settled before the intro reads them, and
+    -- queued messages only resolve at a step boundary, hence the DoStep.
+    PreScenarioSetup -> do
+      whenM getIsStandalone $ setupStandaloneDayAndTime Nothing
+      doStep 1 PreScenarioSetup
+      pure s
+    DoStep 1 PreScenarioSetup -> scope "intro" do
       day <- getCampaignDay
       time <- getCampaignTime
       let isNight = time == Night

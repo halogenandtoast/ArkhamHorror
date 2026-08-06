@@ -28,6 +28,7 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard, LocationCard)
 import Arkham.Message.Lifted.Choose
@@ -50,6 +51,12 @@ newtype TheTwistedHollow = TheTwistedHollow ScenarioAttrs
 
 theTwistedHollow :: Difficulty -> TheTwistedHollow
 theTwistedHollow difficulty = scenario TheTwistedHollow "10605" "The Twisted Hollow" difficulty []
+
+-- | Standalone Mode.
+standaloneChaosBag :: [ChaosTokenFace]
+standaloneChaosBag =
+  hemlockStandaloneNumbers
+    <> [Skull, Skull, Tablet, ElderThing, ElderThing, ElderSign, AutoFail]
 
 instance HasModifiersFor TheTwistedHollow where
   getModifiersFor (TheTwistedHollow a) = do
@@ -90,10 +97,20 @@ tabletEffect iid = do
 
 instance RunMessage TheTwistedHollow where
   runMessage msg s@(TheTwistedHollow attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "intro1") do
-        labeled' "tellTheTruth" $ doStep 2 PreScenarioSetup
-        labeled' "lie" $ doStep 3 PreScenarioSetup
+    -- Standalone Mode fixes the intro's outcome ("The investigators lost the
+    -- path"), so the intro is skipped and its record made in StandaloneSetup.
+    StandaloneSetup -> do
+      setChaosTokens standaloneChaosBag
+      record TheInvestigatorsLostThePath
+      pure s
+    PreScenarioSetup -> do
+      standalone <- getIsStandalone
+      if standalone
+        then setupStandaloneDayAndTime (Just (Day1, Night))
+        else scope "intro" do
+          storyWithChooseOneM' (setTitle "title" >> p "intro1") do
+            labeled' "tellTheTruth" $ doStep 2 PreScenarioSetup
+            labeled' "lie" $ doStep 3 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       record MotherRachelShowedTheWay
@@ -109,6 +126,7 @@ instance RunMessage TheTwistedHollow where
       setUsesGrid
       showedTheWay <- getHasRecord MotherRachelShowedTheWay
       n <- getPlayerCount
+      standalone <- getIsStandalone
 
       theo <- getRecordCount TheoPetersRelationshipLevel
       judith <- getRecordCount JudithParkRelationshipLevel
@@ -157,14 +175,23 @@ instance RunMessage TheTwistedHollow where
         questionLabeledCard lanternVersion
         portraits investigators (`takeControlOfAsset` lantern)
 
-      setAside [Locations.theTwistedHollow, Locations.glimmeringWoods]
+      -- Standalone Mode: "When setting up the Woods deck, remove only the
+      -- Glimmering Meadow location. Do not remove any other locations regardless
+      -- of player count." Glimmering Woods is the only Glimmering location in
+      -- the set, so that is the one meant.
+      setAside $ Locations.theTwistedHollow : [Locations.glimmeringWoods | not standalone]
+      when standalone $ removeEvery [Locations.glimmeringWoods]
+
       woods <-
-        fmap (drop $ if n >= 3 then 1 else 2)
+        fmap (drop $ if standalone then 0 else if n >= 3 then 1 else 2)
           . shuffle
           . filterCards (not_ $ mapOneOf cardIs [Locations.theTwistedHollow, Locations.glimmeringWoods])
           =<< fromGathered (CardWithTitle "Western Woods")
 
-      glimmeringWoods <- fromSetAside Locations.glimmeringWoods
+      -- Only the campaign ever puts Glimmering Woods back into the layout.
+      mGlimmeringWoods <-
+        if standalone then pure Nothing else Just <$> fromSetAside Locations.glimmeringWoods
+      let glimmeringWoods = fromJustNote "Glimmering Woods is set aside outside standalone" mGlimmeringWoods
 
       if showedTheWay
         then do
@@ -182,7 +209,7 @@ instance RunMessage TheTwistedHollow where
             -- the starting location is put into play "ignoring any forced effects"
             setupModifier ScenarioSource (LocationTarget startLocation) Blank
             startAt startLocation
-            shuffle (glimmeringWoods : rest) >>= \case
+            shuffle (maybeToList mGlimmeringWoods <> rest) >>= \case
               north : east : south : west : rest' -> do
                 for_
                   [(Pos 0 (-1), north), (Pos 1 0, east), (Pos 0 1, south), (Pos (-1) 0, west)]
@@ -193,7 +220,16 @@ instance RunMessage TheTwistedHollow where
 
       -- do this after locations so the reveal does not trigger
       setAgendaDeck [Agendas.deepeningDark]
-      setActDeck [Acts.desperateSearch, Acts.wheresBertie]
+
+      -- Standalone Mode begins at act 2 with the Ursine Hybrid already in
+      -- pursuit, and act 2a's Objective is ignored — there is no escape.
+      if standalone
+        then do
+          setActDeck [Acts.wheresBertie]
+          gameModifier ScenarioSource ScenarioTarget (ScenarioModifier "noEscape")
+          bear <- genCard Enemies.ursineHybridGlowingAbomination
+          createEnemy_ bear (OutOfPlay PursuitZone)
+        else setActDeck [Acts.desperateSearch, Acts.wheresBertie]
 
       when (theo >= 2) $ setAside [Assets.theoPetersJackOfAllTrades]
       when (judith >= 2) $ setAside [Assets.judithParkTheMuscle]
@@ -347,10 +383,20 @@ instance RunMessage TheTwistedHollow where
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
-        NoResolution -> do
-          record BertieWasLostInTheWoods
-          resolution "noResolution"
-          push R3
+        -- Standalone Mode is unwinnable; the only ending is every investigator
+        -- being defeated, and the "score" is the flat darkness level and clue
+        -- total rather than a band.
+        NoResolution ->
+          getIsStandalone >>= \case
+            True -> do
+              let darkness = attrs.token DarknessLevel
+              clues <- getSum <$> selectAgg Sum InvestigatorClues UneliminatedInvestigator
+              withVars ["darkness" .= darkness, "clues" .= clues] $ resolution "standalone"
+              endOfScenario
+            False -> do
+              record BertieWasLostInTheWoods
+              resolution "noResolution"
+              push R3
         Resolution 1 -> do
           record BertieWasRescued
           resolution "resolution1"

@@ -2,6 +2,7 @@ module Arkham.Scenario.Scenarios.WrittenInRock (writtenInRock) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Types (Field (AgendaDoom))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
@@ -86,7 +87,12 @@ instance HasChaosTokenValue WrittenInRock where
 
 instance RunMessage WrittenInRock where
   runMessage msg s@(WrittenInRock attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      day <- getCampaignDay
+      setChaosTokens $ hemlockStandaloneBag day
+      pure s
     PreScenarioSetup -> do
+      whenM getIsStandalone $ setupStandaloneDayAndTime Nothing
       flavor $ scope "intro" do
         h "title"
         p "body"
@@ -96,6 +102,7 @@ instance RunMessage WrittenInRock where
 
       day <- getCampaignDay
       time <- getCampaignTime
+      standalone <- getIsStandalone
 
       setup $ ul do
         li "gatherSets"
@@ -130,8 +137,19 @@ instance RunMessage WrittenInRock where
       gather Set.ChillingCold
       gather Set.Ghouls
 
-      setAgendaDeck [Agendas.undergroundSurvey, Agendas.dangerousRide]
-      setActDeck [Acts.descentIntoTheMines, Acts.theUndergroundMaze]
+      -- Standalone Mode removes agenda 1, act 1 and the Rail Exit, and begins
+      -- with agenda 2 / act 2 already in play via Scenario Interlude: The
+      -- Cave-In (pushed at the end of setup, below).
+      if standalone
+        then do
+          setAgendaDeck [Agendas.dangerousRide]
+          setActDeck [Acts.theUndergroundMaze]
+          removeEvery [Locations.railExit]
+          -- turns on the extra Forced ability the guide grants agenda 2
+          gameModifier ScenarioSource ScenarioTarget (ScenarioModifier "standaloneRailReset")
+        else do
+          setAgendaDeck [Agendas.undergroundSurvey, Agendas.dangerousRide]
+          setActDeck [Acts.descentIntoTheMines, Acts.theUndergroundMaze]
 
       setupHemlockDay day time
       when (time == Day) $ case day of
@@ -155,6 +173,7 @@ instance RunMessage WrittenInRock where
       when (time == Day) $ removeEvery [Enemies.subterraneanBeast]
       setAside =<< fromGathered (CardFromEncounterSet Set.WrittenInRock)
       setAside =<< fromGathered (cardIs Enemies.crystalParasite)
+      when standalone $ scenarioSpecific_ "theCaveIn"
     ResolveChaosToken _ Cultist _iid | isEasyStandard attrs -> do
       n <- getCurrentActStep
       placeTokens Cultist attrs (if n == 1 then Scrap else Switch) 1
@@ -199,6 +218,9 @@ instance RunMessage WrittenInRock where
     ScenarioSpecific "theCaveIn" _ -> do
       let scrap = attrs.token Scrap
       isDay <- (== Day) <$> getCampaignTime
+      -- Standalone Mode starts here, with the Rail Exit removed and a flat 2
+      -- switches on the reference card instead of one per scrap collected.
+      standalone <- getIsStandalone
       flavor do
         setTitle "theCaveIn"
         p "theCaveIn1"
@@ -212,7 +234,7 @@ instance RunMessage WrittenInRock where
       scope "theMineCart" $ flavor $ setTitle "title" >> p "body"
       controlStation <- selectJust $ locationIs Locations.controlStation
       push $ PlaceGrid (GridLocation (Pos 1 1) controlStation)
-      placeLocationInGrid_ (Pos 5 5) =<< fetchCard Locations.railExit
+      unless standalone $ placeLocationInGrid_ (Pos 5 5) =<< fetchCard Locations.railExit
       topOfColumn2 <- placeLocationInGrid (Pos 2 4) =<< fetchCard Locations.sunkenRailA
       atwoods <-
         getSetAsideCardsMatching
@@ -254,7 +276,7 @@ instance RunMessage WrittenInRock where
       pure
         $ WrittenInRock
         $ attrs
-        & (tokensL %~ addTokens Switch (scrap + 1) . removeAllTokens Scrap)
+        & (tokensL %~ addTokens Switch (if standalone then 2 else scrap + 1) . removeAllTokens Scrap)
         & (referenceL %~ flippedCardCode)
         & (gridL %~ deleteInGrid controlStation)
     DoStep 2 (ScenarioSpecific "theCaveIn" _) -> do
@@ -354,7 +376,14 @@ instance RunMessage WrittenInRock where
           record $ AreasSurveyed NorthPointMine
           endOfScenario
 
+      standalone <- getIsStandalone
       case r of
+        -- Standalone Mode is unwinnable; the only ending is every investigator
+        -- being defeated, and the "score" is the flat doom on the agenda.
+        NoResolution | standalone -> do
+          doom <- selectOne AnyAgenda >>= maybe (pure 0) (field AgendaDoom)
+          withVars ["doom" .= doom] $ resolution "standalone"
+          endOfScenario
         NoResolution -> scope "noResolution" do
           time <- getCampaignTime
           day <- getCampaignDay

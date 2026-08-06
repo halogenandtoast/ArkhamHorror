@@ -208,6 +208,14 @@ data ScenarioCountKey
     -- counter ever has to be reset. Lives on the scenario, so it survives the act
     -- being replaced when the deck loops.
     EpicActAdvances Int
+  | -- The Feast of Hemlock Vale, Standalone Mode. There is no campaign to carry
+    -- the day/time, so the scenario settles them during PreScenarioSetup and
+    -- records them here. 1-3 for the day; 1 for Night, 0 (or absent) for Day.
+    -- Read via 'Arkham.Campaigns.TheFeastOfHemlockVale.Helpers.getHemlockMeta'.
+    -- Deliberately NOT a scenario modifier: several Hemlock enemies read the day
+    -- from inside 'HasModifiersFor', so a modifier-backed store would recurse.
+    HemlockStandaloneDay
+  | HemlockStandaloneNight
   deriving stock (Eq, Show, Ord, Data)
 
 instance ToGameLoggerFormat ScenarioLogKey where
@@ -272,6 +280,8 @@ instance FromJSON ScenarioCountKey where
     String "StrengthOfTheAbyss" -> pure StrengthOfTheAbyss
     String "CluesAroundHubDimension" -> pure CluesAroundHubDimension
     String "CthulhuRage" -> pure CthulhuRage
+    String "HemlockStandaloneDay" -> pure HemlockStandaloneDay
+    String "HemlockStandaloneNight" -> pure HemlockStandaloneNight
     Object o -> do
       tag :: Text <- o .: "tag"
       case tag of
@@ -287,6 +297,8 @@ instance FromJSON ScenarioCountKey where
         "StrengthOfTheAbyss" -> pure StrengthOfTheAbyss
         "CluesAroundHubDimension" -> pure CluesAroundHubDimension
         "CthulhuRage" -> pure CthulhuRage
+        "HemlockStandaloneDay" -> pure HemlockStandaloneDay
+        "HemlockStandaloneNight" -> pure HemlockStandaloneNight
         _ -> fail "Unknown tag"
     _ -> fail "Expected String or Object"
 

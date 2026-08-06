@@ -62,6 +62,15 @@ newtype FateOfTheVale = FateOfTheVale ScenarioAttrs
 fateOfTheVale :: Difficulty -> FateOfTheVale
 fateOfTheVale difficulty = scenario FateOfTheVale "10651" "Fate of the Vale" difficulty []
 
+-- | Standalone Mode.
+standaloneChaosBag :: [ChaosTokenFace]
+standaloneChaosBag =
+  hemlockStandaloneNumbers
+    <> replicate 3 Skull
+    <> [Cultist, Tablet, Tablet]
+    <> replicate 3 ElderThing
+    <> [ElderSign, AutoFail]
+
 cosmicEmissaryFormation :: [(Text, CardDef, CardDef)]
 cosmicEmissaryFormation =
   [ ("mirrorNestTop", Enemies.cosmicEmissaryTheAbyss, Locations.mirrorNest_166)
@@ -299,7 +308,11 @@ instance HasChaosTokenValue FateOfTheVale where
 
 instance RunMessage FateOfTheVale where
   runMessage msg s@(FateOfTheVale attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      setChaosTokens standaloneChaosBag
+      pure s
     PreScenarioSetup -> scope "intro" do
+      whenM getIsStandalone $ setupStandaloneDayAndTime (Just (Day3, Night))
       flavor $ h "title" >> p "body"
       pure s
     Setup -> runScenarioSetup (FateOfTheVale . (encounterDeckL .~ mempty)) attrs do

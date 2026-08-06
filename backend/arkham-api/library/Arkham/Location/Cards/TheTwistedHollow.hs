@@ -6,6 +6,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Modifier (ModifierType (ScenarioModifier))
 
 newtype TheTwistedHollow = TheTwistedHollow LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,9 +18,12 @@ theTwistedHollow = locationWith TheTwistedHollow Cards.theTwistedHollow 4 (PerPl
 instance HasAbilities TheTwistedHollow where
   getAbilities (TheTwistedHollow a) =
     extendRevealed1 a
-      $ restricted a 1 (OnAct 2 <> EachUndefeatedInvestigator (at_ (be a)))
+      $ restricted a 1 (OnAct 2 <> noEscape <> EachUndefeatedInvestigator (at_ (be a)))
       $ Objective
       $ triggered (RoundEnds #when) (GroupClueCost (PerPlayer 2) (be a))
+   where
+    -- Standalone Mode: "Ignore the Objective text on Act 2a. There is no escape."
+    noEscape = not_ $ ScenarioExists $ ScenarioWithModifier $ ScenarioModifier "noEscape"
 
 instance RunMessage TheTwistedHollow where
   runMessage msg l@(TheTwistedHollow attrs) = runQueueT $ case msg of

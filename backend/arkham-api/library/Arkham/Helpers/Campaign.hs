@@ -131,6 +131,20 @@ getCampaignMeta = do
     Success a -> pure a
     Error e -> error $ "Failed to parse campaign meta: " <> e
 
+{- | 'getCampaignMeta' for code that also runs in standalone mode, where there is
+no @Campaign@ entity at all and 'campaignField' would throw. A malformed meta is
+still an error; only a missing campaign is @Nothing@.
+-}
+getCampaignMetaMaybe :: forall a m. (HasCallStack, HasGame m, Tracing m, FromJSON a) => m (Maybe a)
+getCampaignMetaMaybe =
+  selectOne TheCampaign >>= \case
+    Nothing -> pure Nothing
+    Just campaignId -> do
+      result <- fromJSON @a <$> field CampaignMeta campaignId
+      case result of
+        Success a -> pure (Just a)
+        Error e -> error $ "Failed to parse campaign meta: " <> e
+
 withCampaignMeta
   :: forall a m r. (HasCallStack, HasGame m, Tracing m, FromJSON a) => (a -> r) -> m r
 withCampaignMeta f = f <$> getCampaignMeta @a

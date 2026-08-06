@@ -1,5 +1,6 @@
 module Arkham.Agenda.Cards.DangerousRide (dangerousRide) where
 
+import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMapM)
@@ -11,13 +12,26 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenarios.WrittenInRock.Helpers
+import Arkham.Trait (Trait (Rail))
 
 newtype DangerousRide = DangerousRide AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dangerousRide :: AgendaCard DangerousRide
 dangerousRide = agenda (2, A) DangerousRide Cards.dangerousRide (Static 14)
+
+{- | Written in Rock's Standalone Mode grants this agenda an extra ability:
+"Forced - When the round ends: Flip each revealed empty Rail location to its
+unrevealed side. (Discard all tokens.)" The scenario flags it with a scenario
+modifier during setup, since 'getAbilities' cannot ask whether we are standalone.
+-}
+instance HasAbilities DangerousRide where
+  getAbilities (DangerousRide a) =
+    [ restricted a 1 (ScenarioExists $ ScenarioWithModifier $ ScenarioModifier "standaloneRailReset")
+        $ forced
+        $ RoundEnds #when
+    ]
 
 instance HasModifiersFor DangerousRide where
   getModifiersFor (DangerousRide a) = do
@@ -36,6 +50,11 @@ instance HasModifiersFor DangerousRide where
 
 instance RunMessage DangerousRide where
   runMessage msg a@(DangerousRide attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      selectEach (RevealedLocation <> EmptyLocation <> LocationWithTrait Rail) \loc -> do
+        push $ RemoveAllTokens (toSource attrs) (toTarget loc)
+        push $ UnrevealLocation loc
+      pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> do
         chooseOneM iid $ withI18n $ countVar 1 do

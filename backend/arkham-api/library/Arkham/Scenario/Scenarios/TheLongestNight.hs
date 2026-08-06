@@ -64,6 +64,15 @@ instance HasModifiersFor TheLongestNight where
 theLongestNight :: Difficulty -> TheLongestNight
 theLongestNight difficulty = scenario TheLongestNight "10626" "The Longest Night" difficulty []
 
+{- | Standalone Mode. The printed bag already accounts for the tokens the intro
+would have added, which is why the intro is skipped in standalone.
+-}
+standaloneChaosBag :: [ChaosTokenFace]
+standaloneChaosBag =
+  hemlockStandaloneNumbers
+    <> replicate 3 Skull
+    <> [Cultist, Tablet, Tablet, ElderThing, ElderThing, ElderSign, AutoFail]
+
 instance HasChaosTokenValue TheLongestNight where
   getChaosTokenValue iid tokenFace (TheLongestNight attrs) = case tokenFace of
     Skull -> do
@@ -76,10 +85,21 @@ instance HasChaosTokenValue TheLongestNight where
 
 instance RunMessage TheLongestNight where
   runMessage msg s@(TheLongestNight attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (h "title" >> p "intro1") do
-        labeled' "confront" $ doStep 2 PreScenarioSetup
-        labeled' "keepHidden" $ doStep 3 PreScenarioSetup
+    -- Standalone Mode fixes the intro's outcome ("The investigators faced the
+    -- longest night alone") and bakes the tokens it would have added into the
+    -- printed bag, so the intro is skipped entirely.
+    StandaloneSetup -> do
+      setChaosTokens standaloneChaosBag
+      record TheInvestigatorsFacedTheLongestNightAlone
+      pure s
+    PreScenarioSetup -> do
+      standalone <- getIsStandalone
+      if standalone
+        then setupStandaloneDayAndTime (Just (Day2, Night))
+        else scope "intro" do
+          storyWithChooseOneM' (h "title" >> p "intro1") do
+            labeled' "confront" $ doStep 2 PreScenarioSetup
+            labeled' "keepHidden" $ doStep 3 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro2"

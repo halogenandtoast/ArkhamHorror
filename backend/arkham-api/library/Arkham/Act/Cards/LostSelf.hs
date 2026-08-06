@@ -289,10 +289,13 @@ instance RunMessage LostSelf where
       canSaveTheVale <-
         (||) <$> getHasRecord TheHemlocksMadeATruce <*> getHasRecord ThePetersFamilyWereReunited
       canBurnItAll <- getHasRecord TheValeIsFullOfFireworks
+      -- Standalone Mode: "investigators may choose any option, ignoring its
+      -- requirements", since there is no campaign log to have earned them.
+      standalone <- getIsStandalone
       chooseOneM lead do
-        when canEndThis $ labeled' "letsEndThis" $ doStep 1 msg
-        when canSaveTheVale $ labeled' "saveTheVale" $ doStep 2 msg
-        when canBurnItAll $ labeled' "burnItAll" $ doStep 3 msg
+        when (standalone || canEndThis) $ labeled' "letsEndThis" $ doStep 1 msg
+        when (standalone || canSaveTheVale) $ labeled' "saveTheVale" $ doStep 2 msg
+        when (standalone || canBurnItAll) $ labeled' "burnItAll" $ doStep 3 msg
         labeled' "escape" $ doStep 4 msg
       pure a
     -- Fate of the Vale 1: "Let's end this."

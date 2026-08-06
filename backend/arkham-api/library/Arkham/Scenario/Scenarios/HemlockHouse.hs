@@ -56,20 +56,19 @@ instance HasChaosTokenValue HemlockHouse where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-{- FOURMOLU_DISABLE -}
-standaloneChaosBag :: [ChaosTokenFace]
-standaloneChaosBag =
-  [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-3" , #"-5"
-  , Cultist , Cultist , Tablet , Tablet , ElderThing , Skull
-  ]
-{- FOURMOLU_ENABLE -}
-
 instance RunMessage HemlockHouse where
   runMessage msg s@(HemlockHouse attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
-      setChaosTokens standaloneChaosBag
+      day <- getCampaignDay
+      setChaosTokens $ hemlockStandaloneBag day
       pure s
-    PreScenarioSetup -> scope "intro" do
+    -- The day and time have to be settled before the intro reads them, and
+    -- queued messages only resolve at a step boundary, hence the DoStep.
+    PreScenarioSetup -> do
+      whenM getIsStandalone $ setupStandaloneDayAndTime Nothing
+      doStep 1 PreScenarioSetup
+      pure s
+    DoStep 1 PreScenarioSetup -> scope "intro" do
       day <- getCampaignDay
       time <- getCampaignTime
       let isNight = time == Night

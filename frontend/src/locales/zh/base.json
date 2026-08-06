@@ -10,7 +10,6 @@
     "support": "Patreon赞助"
   },
   "activeGames": "进行中的游戏",
-  "cancel": "取消",
   "continue": "继续",
   "debugGame": "调试游戏",
   "doDeleteGame": "你确定要删除这场游戏吗？",
@@ -203,7 +202,6 @@
   "drew": "{iname} 抽到了 {name}",
   "Done With Mulligan": "结束选牌",
   "skip": "跳过",
-  "submit": "确定",
   "handSize": "手牌上限",
   "yes": "是",
   "no": "否",

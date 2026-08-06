@@ -401,8 +401,13 @@ instance RunMessage LocationAttrs where
           doPlace
           pure a
     RevealLocation miid lid | lid == locationId && not locationRevealed -> do
-      revealer <- maybe getLead pure miid
-      whenWindowMsg <- checkWindows [mkWindow Timing.When (Window.UnrevealedRevealLocation revealer lid)]
+      -- Same group attribution as the reveal windows below: setup and act/agenda
+      -- reveals arrive with no investigator, so every investigator is the revealer.
+      whenWindowMsg <-
+        checkWindows
+          [ mkWindow Timing.When
+              $ maybe (Window.UnrevealedRevealLocationByGroup lid) (`Window.UnrevealedRevealLocation` lid) miid
+          ]
       pushAll [whenWindowMsg, Do msg]
       pure a
     Do (RevealLocation miid lid) | lid == locationId && not locationRevealed -> do

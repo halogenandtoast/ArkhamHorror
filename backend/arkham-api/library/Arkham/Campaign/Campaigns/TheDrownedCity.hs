@@ -361,9 +361,13 @@ instance RunMessage TheDrownedCity where
                 sufferMentalTrauma iid 1
                 removeChaosToken AutoFail
               NoPlaceLikeHome -> do
+                -- These two labels only exist at the root of label.json, and
+                -- labelKey prepends the active scope -- so without unscoped they
+                -- resolve to theDrownedCity.returnToArkham.label.suffer*Trauma,
+                -- which is nothing, and the raw key shows up on the button.
                 chooseOneM iid do
-                  countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-                  countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+                  unscoped $ countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+                  unscoped $ countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
                 addChaosToken Cultist
               DoNoHarm -> do
                 sufferMentalTrauma iid 1

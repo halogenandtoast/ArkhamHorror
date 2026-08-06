@@ -1219,6 +1219,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             [ matchWho iid who whoMatcher
             , locationMatches iid source window' locationId locationMatcher
             ]
+        -- See 'Window.RevealLocationByGroup': no specific revealer, so each
+        -- investigator counts as the one revealing it.
+        Window.UnrevealedRevealLocationByGroup locationId ->
+          andM
+            [ matchWho iid iid whoMatcher
+            , locationMatches iid source window' locationId locationMatcher
+            ]
         _ -> noMatch
     Matcher.FlipLocation timing whoMatcher locationMatcher ->
       guardTiming timing $ \case

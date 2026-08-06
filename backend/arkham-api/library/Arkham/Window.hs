@@ -355,6 +355,7 @@ data WindowType
   | RevealLocationByGroup LocationId
   | RevealLocationForcedAbilities InvestigatorId LocationId (Maybe LocationId)
   | UnrevealedRevealLocation InvestigatorId LocationId
+  | UnrevealedRevealLocationByGroup LocationId
   | FlipLocation InvestigatorId LocationId
   | RevealChaosToken InvestigatorId ChaosToken
   | RevealChaosTokensDuringSkillTest InvestigatorId SkillTest [ChaosToken]

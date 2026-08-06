@@ -21,14 +21,19 @@ module Helpers.Achievements (
   asReturnToTheCircleUndone,
   asReturnToTheCircleUndoneWith,
   asReturnToTheCircleUndoneScenario,
+  asTheDrownedCity,
+  asTheDrownedCityWith,
+  asTheDrownedCityScenario,
   didEarn,
   didEarnDunwich,
   didEarnCarcosa,
   didEarnForgottenAge,
   didEarnCircle,
+  didEarnDrownedCity,
   didProgressDunwich,
   didProgressCarcosa,
   didProgressCircle,
+  didProgressDrownedCity,
 ) where
 
 import Arkham.Achievement.Types
@@ -114,6 +119,18 @@ asReturnToTheCircleUndone = asReturnToTheCircleUndoneWith Easy
 asReturnToTheCircleUndoneScenario :: CardCode -> TestAppT ()
 asReturnToTheCircleUndoneScenario = asAchievementCampaignScenario "54"
 
+-- The Drowned City's list is printed for the campaign itself, so campaign "11"
+-- is the eligible campaign rather than a Return-to variant.
+
+asTheDrownedCityWith :: Difficulty -> TestAppT ()
+asTheDrownedCityWith = asAchievementCampaign "11"
+
+asTheDrownedCity :: TestAppT ()
+asTheDrownedCity = asTheDrownedCityWith Easy
+
+asTheDrownedCityScenario :: CardCode -> TestAppT ()
+asTheDrownedCityScenario = asAchievementCampaignScenario "11"
+
 didEarn :: NightOfTheZealotAchievement -> TestAppT (IORef Bool)
 didEarn achievement =
   createMessageMatcher $ EarnAchievement $ NightOfTheZealotAchievement achievement
@@ -134,6 +151,10 @@ didEarnCircle :: TheCircleUndoneAchievement -> TestAppT (IORef Bool)
 didEarnCircle achievement =
   createMessageMatcher $ EarnAchievement $ TheCircleUndoneAchievement achievement
 
+didEarnDrownedCity :: TheDrownedCityAchievement -> TestAppT (IORef Bool)
+didEarnDrownedCity achievement =
+  createMessageMatcher $ EarnAchievement $ TheDrownedCityAchievement achievement
+
 -- Checklist progress reports (cross-playthrough achievements); the items must
 -- match exactly, in 'achievementChecklist'-mapping order.
 
@@ -148,3 +169,7 @@ didProgressCarcosa achievement items =
 didProgressCircle :: TheCircleUndoneAchievement -> [Text] -> TestAppT (IORef Bool)
 didProgressCircle achievement items =
   createMessageMatcher $ AchievementProgress (TheCircleUndoneAchievement achievement) items
+
+didProgressDrownedCity :: TheDrownedCityAchievement -> [Text] -> TestAppT (IORef Bool)
+didProgressDrownedCity achievement items =
+  createMessageMatcher $ AchievementProgress (TheDrownedCityAchievement achievement) items

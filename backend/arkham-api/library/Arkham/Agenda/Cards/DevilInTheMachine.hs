@@ -19,7 +19,7 @@ import Arkham.Trait (Trait (StarSpawn))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DevilInTheMachine = DevilInTheMachine AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devilInTheMachine :: AgendaCard DevilInTheMachine
@@ -57,10 +57,19 @@ instance RunMessage DevilInTheMachine where
       struggleForAir attrs iid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
-      -- Search all in- and out-of-play areas for each copy of Still Behind You,
-      -- shuffle them, the set-aside Star Spawn enemy, and the encounter discard
-      -- pile into the encounter deck.
-      stillBehindYou <- getSetAsideCardsMatching $ cardIs Treacheries.stillBehindYou
+      {- "Search all in- and out-of-play areas for each copy of the Still Behind
+      You treachery." Unlike Bowels of the City, which only takes the set-aside
+      copies, this one has to sweep the victory display too: Still Behind You adds
+      ITSELF there whenever its revelation test is failed, and its difficulty
+      scales with the copies sitting in it. The discard pile is folded in by
+      'shuffleEncounterDiscardBackIn' below, and copies already in the encounter
+      deck stay put. 'shuffleCardsIntoDeck' filters the cards out of whatever area
+      they came from, so the victory display is emptied of them as they go back in.
+      -}
+      stillBehindYou <-
+        (<>)
+          <$> getSetAsideCardsMatching (cardIs Treacheries.stillBehindYou)
+          <*> select (VictoryDisplayCardMatch $ basic $ cardIs Treacheries.stillBehindYou)
       starSpawns <- getSetAsideCardsMatching $ CardWithTrait StarSpawn
       randomStarSpawn <- maybe (pure []) (fmap pure . sample) (nonEmpty starSpawns)
       shuffleCardsIntoDeck Deck.EncounterDeck (stillBehindYou <> randomStarSpawn)

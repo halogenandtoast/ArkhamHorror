@@ -95,7 +95,7 @@ instance RunMessage TheSheldonGang where
         repeated n $ chooseOrRunOneM iid $ targets enemies $ moveTokensTo attrs sadieSheldon #clue 1
 
       pure a
-    DoStep 2 (AdvanceAct (isSide A attrs -> True) _ _) -> do
+    DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       selectEach EnemyWithAnyClues disengageFromAll
       pure a
     FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do

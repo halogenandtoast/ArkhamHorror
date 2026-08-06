@@ -39,7 +39,11 @@ spec = describe "Walk in Faith" do
       _ <- self `putAssetIntoPlay` Assets.walkInFaithCompleted
       getModifiers self `shouldContainM` [SkillModifier #willpower 1]
 
+    -- The ability heals "an investigator at that location", so the reaction only
+    -- exists once the revealing investigator actually has a location.
     it "heals 1 horror when an elder sign is revealed" . gameTest $ \self -> do
+      location <- testLocation
+      self `moveTo` location
       _ <- self `putAssetIntoPlay` Assets.walkInFaithCompleted
       self `addHorror` 2
       setChaosTokens [ElderSign]

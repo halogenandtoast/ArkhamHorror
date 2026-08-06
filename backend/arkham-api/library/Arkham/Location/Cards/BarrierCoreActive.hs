@@ -25,7 +25,8 @@ instance HasAbilities BarrierCoreActive where
           1
           (not_ $ LocationCount 6 (LocationWithTrait Seafloor <> not_ FloodedLocation))
           $ forced AnyWindow
-      , restricted a 2 Here
+      , onlyOnce
+          $ restricted a 2 Here
           $ actionAbilityWithCost
           $ GroupClueCost (PerPlayer 2) Anywhere
       ]

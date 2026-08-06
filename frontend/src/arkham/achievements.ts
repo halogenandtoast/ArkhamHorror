@@ -4,7 +4,7 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['50', '51', '52', '53', '54']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['11', '50', '51', '52', '53', '54']
 
 export type AchievementTag =
   | 'TheZealotsRevenge'
@@ -83,6 +83,26 @@ export type AchievementTag =
   | 'FinePrint'
   | 'SpeakTheWordsAloud'
   | 'CircleExpertise'
+  | 'OneFirstLastJob'
+  | 'SeasonTwo'
+  | 'CliffDiver'
+  | 'ThisIsACoup'
+  | 'ThoroughSearch'
+  | 'TidalFlipMinigame'
+  | 'NoAcolyteLeftBehind'
+  | 'KillTheAdds'
+  | 'InTheDeepEnd'
+  | 'SorryDidntSeeYouThere'
+  | 'SkyRider'
+  | 'SkipToTheEnd'
+  | 'AlienSchoolDropout'
+  | 'AlienSchoolGraduate'
+  | 'EmptyHanded'
+  | 'WhyWontYouStayDead'
+  | 'WithYourPowersCombined'
+  | 'Obligations'
+  | 'DrownedCityLineInTheSand'
+  | 'RlyehExpertise'
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string }
 
@@ -123,6 +143,24 @@ export const achievementChecklists: Partial<Record<AchievementTag, string[]>> = 
     'GavriellaMizrah',
     'PennyWhite',
     'JeromeDavids',
+  ],
+  WithYourPowersCombined: [
+    'BarrierNode',
+    'GrislyMask',
+    'ObsidianClaw',
+    'TidalTablet',
+    'ShardOfYchlecht',
+    'HorrorInClay',
+  ],
+  Obligations: [
+    'WalkInFaith',
+    'DreamsOfDestruction',
+    'ToeTheLine',
+    'DoNoHarm',
+    'GoodMoney',
+    'NoPlaceLikeHome',
+    'ProveYourWorth',
+    'PlumbTheDepths',
   ],
 }
 
@@ -203,4 +241,24 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'FinePrint', campaignId: '54' },
   { tag: 'SpeakTheWordsAloud', campaignId: '54' },
   { tag: 'CircleExpertise', campaignId: '54' },
+  { tag: 'OneFirstLastJob', campaignId: '11' },
+  { tag: 'SeasonTwo', campaignId: '11' },
+  { tag: 'CliffDiver', campaignId: '11' },
+  { tag: 'ThisIsACoup', campaignId: '11' },
+  { tag: 'ThoroughSearch', campaignId: '11' },
+  { tag: 'TidalFlipMinigame', campaignId: '11' },
+  { tag: 'NoAcolyteLeftBehind', campaignId: '11' },
+  { tag: 'KillTheAdds', campaignId: '11' },
+  { tag: 'InTheDeepEnd', campaignId: '11' },
+  { tag: 'SorryDidntSeeYouThere', campaignId: '11' },
+  { tag: 'SkyRider', campaignId: '11' },
+  { tag: 'SkipToTheEnd', campaignId: '11' },
+  { tag: 'AlienSchoolDropout', campaignId: '11' },
+  { tag: 'AlienSchoolGraduate', campaignId: '11' },
+  { tag: 'EmptyHanded', campaignId: '11' },
+  { tag: 'WhyWontYouStayDead', campaignId: '11' },
+  { tag: 'WithYourPowersCombined', campaignId: '11' },
+  { tag: 'Obligations', campaignId: '11' },
+  { tag: 'DrownedCityLineInTheSand', campaignId: '11' },
+  { tag: 'RlyehExpertise', campaignId: '11' },
 ]

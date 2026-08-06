@@ -8,6 +8,7 @@
   "settingsToggleDescription": "Track this campaign's official achievements as you play. Unlocks are recorded to your account and shown in the campaign log.",
   "noneEarnedYet": "No achievements earned yet.",
   "campaigns": {
+    "11": "The Drowned City",
     "50": "Return to the Night of the Zealot",
     "51": "Return to the Dunwich Legacy",
     "52": "Return to The Path to Carcosa",
@@ -350,6 +351,104 @@
     "CircleExpertise": {
       "name": "Circle Expertise",
       "text": "Win The Circle Undone campaign on Expert difficulty."
+    },
+    "OneFirstLastJob": {
+      "name": "One First Last Job",
+      "text": "Complete The Drowned City campaign once on any difficulty."
+    },
+    "SeasonTwo": {
+      "name": "Season Two",
+      "text": "Play through the campaign on hard or expert mode using 4 investigators from 4 different previous campaigns. Cannot currently be earned: this requires Epic Campaign Mode, which is not yet implemented."
+    },
+    "CliffDiver": {
+      "name": "Cliff Diver",
+      "text": "Complete the campaign without ever bringing a diving suit along."
+    },
+    "ThisIsACoup": {
+      "name": "This is a Coup",
+      "text": "Defeat both Naomi O’Bannion and Sadie Sheldon in One Last Job using only the act 3a parley ability."
+    },
+    "ThoroughSearch": {
+      "name": "Thorough Search",
+      "text": "End The Western Wall with every location revealed."
+    },
+    "TidalFlipMinigame": {
+      "name": "Tidal Flip Minigame",
+      "text": "Complete The Drowned Quarter with each location revealed and not flooded."
+    },
+    "NoAcolyteLeftBehind": {
+      "name": "No Acolyte Left Behind",
+      "text": "Rescue 5 cultists in The Apiary."
+    },
+    "KillTheAdds": {
+      "name": "Kill the Adds",
+      "text": "Defeat Mother in The Apiary using only her Forced effect."
+    },
+    "InTheDeepEnd": {
+      "name": "In The Deep End",
+      "text": "Escape The Grand Vault with the Tidal Tablet after every location has been fully flooded."
+    },
+    "SorryDidntSeeYouThere": {
+      "name": "Sorry, Didn’t See You There",
+      "text": "Beat Court of the Ancients without moving the Great Lift after the Colossal Tyrant spawns."
+    },
+    "SkyRider": {
+      "name": "Sky Rider",
+      "text": "End your turn in open sky at least 5 times during a single game of Obsidian Canyons."
+    },
+    "SkipToTheEnd": {
+      "name": "Skip to the End",
+      "text": "Defeat Cthulhu in Sepulchre of the Sleeper."
+    },
+    "AlienSchoolDropout": {
+      "name": "Alien School Dropout",
+      "text": "Complete the campaign without translating a single alien glyph."
+    },
+    "AlienSchoolGraduate": {
+      "name": "Alien School Graduate",
+      "text": "Translate all 26 alien glyphs during a single playthrough of The Drowned City campaign."
+    },
+    "EmptyHanded": {
+      "name": "Empty Handed",
+      "text": "Return from R’lyeh without having collected any Artifact story assets."
+    },
+    "WhyWontYouStayDead": {
+      "name": "WHY. WON’T. YOU. STAY. DEAD?!",
+      "text": "Add The Inescapable to the victory display at least 20 times during a single campaign."
+    },
+    "DrownedCityLineInTheSand": {
+      "name": "Line in the Sand",
+      "text": "Win The Drowned City campaign with at least three Ultimatums active."
+    },
+    "RlyehExpertise": {
+      "name": "R’lyeh Expertise",
+      "text": "Win The Drowned City campaign on Expert difficulty."
+    },
+    "WithYourPowersCombined": {
+      "name": "With Your Powers Combined…",
+      "text": "Finish The Drowned City campaign having earned the following artifacts:",
+      "items": {
+        "BarrierNode": "Barrier Node",
+        "GrislyMask": "Grisly “Mask”",
+        "ObsidianClaw": "Obsidian Claw",
+        "TidalTablet": "Tidal Tablet",
+        "ShardOfYchlecht": "Shard of Y’ch’lecht",
+        "HorrorInClay": "Horror in Clay"
+      }
+    },
+    "Obligations": {
+      "name": "Obligations",
+      "text": "Finish The Drowned City campaign with the following tasks completed:",
+      "items": {
+        "WalkInFaith": "Walk in Faith",
+        "DreamsOfDestruction": "Dreams of Destruction",
+        "ToeTheLine": "Toe the Line",
+        "DoNoHarm": "Do No Harm",
+        "GoodMoney": "Good Money",
+        "NoPlaceLikeHome": "No Place Like Home",
+        "ProveYourWorth": "Prove Your Worth",
+        "PlumbTheDepths": "Plumb the Depths"
+      }
     }
   },
   "clearAll": "Clear all",

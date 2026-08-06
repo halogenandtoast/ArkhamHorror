@@ -68,7 +68,7 @@ instance RunMessage TheOBannionGang where
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       advancedWithOther attrs
       pure a
-    AdvanceAct (isSide A attrs -> True) _ _ -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       laBellaLuna <- selectJust $ LocationWithTitle "La Bella Luna"
       createEnemyAt_ Enemies.sadieSheldon laBellaLuna
       createEnemyAt_ Enemies.gangEnforcer laBellaLuna
@@ -78,7 +78,7 @@ instance RunMessage TheOBannionGang where
       doStep 2 msg
       advanceActDeck attrs
       pure a
-    DoStep 1 (AdvanceAct (isSide A attrs -> True) _ _) -> do
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       withMatch (enemyIs Enemies.naomiOBannion) \naomiOBannion -> do
         clues <- field EnemyClues naomiOBannion
         when (clues >= 1) do
@@ -95,7 +95,7 @@ instance RunMessage TheOBannionGang where
         repeated n $ chooseOrRunOneM iid $ targets enemies $ moveTokensTo attrs naomiOBannion #clue 1
 
       pure a
-    DoStep 2 (AdvanceAct (isSide A attrs -> True) _ _) -> do
+    DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       selectEach EnemyWithAnyClues disengageFromAll
       pure a
     FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do

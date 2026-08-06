@@ -17,7 +17,7 @@ underseaVault =
 
 instance HasAbilities UnderseaVault where
   getAbilities (UnderseaVault a) =
-    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
+    extendRevealed1 a $ onlyOnce $ skillTestAbility $ restricted a 1 Here actionAbility
 
 instance RunMessage UnderseaVault where
   runMessage msg l@(UnderseaVault attrs) = runQueueT $ case msg of

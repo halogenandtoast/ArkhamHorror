@@ -133,12 +133,42 @@ data TheCircleUndoneAchievement
 
 $(deriveJSON defaultOptions ''TheCircleUndoneAchievement)
 
+{- | The Drowned City (campaign "11"). The first campaign whose achievement list
+is printed for the campaign itself rather than a Return-to variant, so these are
+earnable in ordinary Drowned City games.
+-}
+data TheDrownedCityAchievement
+  = OneFirstLastJob
+  | SeasonTwo
+  | CliffDiver
+  | ThisIsACoup
+  | ThoroughSearch
+  | TidalFlipMinigame
+  | NoAcolyteLeftBehind
+  | KillTheAdds
+  | InTheDeepEnd
+  | SorryDidntSeeYouThere
+  | SkyRider
+  | SkipToTheEnd
+  | AlienSchoolDropout
+  | AlienSchoolGraduate
+  | EmptyHanded
+  | WhyWontYouStayDead
+  | WithYourPowersCombined
+  | Obligations
+  | DrownedCityLineInTheSand
+  | RlyehExpertise
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
+
+$(deriveJSON defaultOptions ''TheDrownedCityAchievement)
+
 data Achievement
   = NightOfTheZealotAchievement NightOfTheZealotAchievement
   | TheDunwichLegacyAchievement TheDunwichLegacyAchievement
   | ThePathToCarcosaAchievement ThePathToCarcosaAchievement
   | TheForgottenAgeAchievement TheForgottenAgeAchievement
   | TheCircleUndoneAchievement TheCircleUndoneAchievement
+  | TheDrownedCityAchievement TheDrownedCityAchievement
   deriving stock (Eq, Show, Ord, Data)
 
 allAchievements :: [Achievement]
@@ -148,6 +178,7 @@ allAchievements =
     <> map ThePathToCarcosaAchievement [minBound ..]
     <> map TheForgottenAgeAchievement [minBound ..]
     <> map TheCircleUndoneAchievement [minBound ..]
+    <> map TheDrownedCityAchievement [minBound ..]
 
 -- | Flat constructor name; the wire and database representation.
 achievementName :: Achievement -> Text
@@ -157,6 +188,7 @@ achievementName = \case
   ThePathToCarcosaAchievement a -> tshow a
   TheForgottenAgeAchievement a -> tshow a
   TheCircleUndoneAchievement a -> tshow a
+  TheDrownedCityAchievement a -> tshow a
 
 parseAchievement :: Text -> Maybe Achievement
 parseAchievement t = lookup t achievementsByName
@@ -207,6 +239,26 @@ achievementChecklist = \case
       , "PennyWhite"
       , "JeromeDavids"
       ]
+  TheDrownedCityAchievement WithYourPowersCombined ->
+    Just
+      [ "BarrierNode"
+      , "GrislyMask"
+      , "ObsidianClaw"
+      , "TidalTablet"
+      , "ShardOfYchlecht"
+      , "HorrorInClay"
+      ]
+  TheDrownedCityAchievement Obligations ->
+    Just
+      [ "WalkInFaith"
+      , "DreamsOfDestruction"
+      , "ToeTheLine"
+      , "DoNoHarm"
+      , "GoodMoney"
+      , "NoPlaceLikeHome"
+      , "ProveYourWorth"
+      , "PlumbTheDepths"
+      ]
   _ -> Nothing
 
 -- | Campaign ids this achievement can be earned in.
@@ -217,6 +269,7 @@ achievementCampaigns = \case
   ThePathToCarcosaAchievement _ -> ["52"]
   TheForgottenAgeAchievement _ -> ["53"]
   TheCircleUndoneAchievement _ -> ["54"]
+  TheDrownedCityAchievement _ -> ["11"]
 
 -- Flat JSON, mirroring UltimatumOrBoon: the union never leaks its shape.
 instance ToJSON Achievement where

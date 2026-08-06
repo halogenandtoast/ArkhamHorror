@@ -2696,7 +2696,6 @@
     "id": "11",
     "name": "The Drowned City",
     "alpha": true,
-    "dev": true,
     "difficultyLevels": {
       "Easy": [
         "PlusOne",

@@ -336,6 +336,11 @@ data ModifierType
   | IgnoreChaosToken
   | IgnoreChaosTokenEffects
   | IgnoreChaosTokenModifier
+  | {- | The symbol's revealed effects do not resolve, but the token's numeric
+    modifier is untouched, so a replacement value (see The Black Cat (5))
+    still applies. 'IgnoreChaosTokenEffects' would zero the value as well.
+    -}
+    IgnoreChaosTokenSymbolEffects
   | IgnoreCommitOneRestriction
   | IgnoreDoomOnThis Int
   | IgnoreEngagementRequirement

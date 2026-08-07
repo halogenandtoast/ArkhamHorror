@@ -7258,6 +7258,7 @@ test-suite spec
       Arkham.Asset.Assets.SummonedHound1Spec
       Arkham.Asset.Assets.SurvivalKnifeSpec
       Arkham.Asset.Assets.SwitchbladeSpec
+      Arkham.Asset.Assets.TheBlackCat5Spec
       Arkham.Asset.Assets.TheBlackFan3Spec
       Arkham.Asset.Assets.TheGrapevineSpec
       Arkham.Asset.Assets.TheHungeringBlade1Spec

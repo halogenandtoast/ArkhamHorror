@@ -483,15 +483,11 @@ instance RunMessage Scenario where
             then pure x
             else go
         FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
-          modifiers' <- foldMapM getModifiers [toTarget token.face, toTarget token]
-          if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
-            then pure x
-            else go
+          ignored <- chaosTokenSymbolEffectsIgnored token
+          if ignored then pure x else go
         PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
-          modifiers' <- foldMapM getModifiers [toTarget token.face, toTarget token]
-          if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
-            then pure x
-            else go
+          ignored <- chaosTokenSymbolEffectsIgnored token
+          if ignored then pure x else go
         SetupInvestigators -> do
           result <- go
           let isTowerXVI = (== TheTowerXVI) . toTarotArcana

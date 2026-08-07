@@ -24,19 +24,33 @@ instance HasModifiersFor TheBlackCat5 where
 
 instance RunMessage TheBlackCat5 where
   runMessage msg a@(TheBlackCat5 attrs) = runQueueT $ case msg of
+    -- These effects are used *instead of* the symbol's normal effects, so the
+    -- symbol's own effects must be suppressed as well as its value replaced.
     TargetResolveChaosToken (isTarget attrs -> True) token Tablet _ -> do
       withSkillTest \sid -> do
-        skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
+        skillTestModifiers
+          sid
+          attrs
+          token
+          [ChangeChaosTokenModifier $ NegativeModifier 1, IgnoreChaosTokenSymbolEffects]
         push $ DealAssetDirectDamage (toId attrs) (ChaosTokenEffectSource Tablet) 1 0
       pure a
     TargetResolveChaosToken (isTarget attrs -> True) token ElderThing _ -> do
       withSkillTest \sid -> do
-        skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
+        skillTestModifiers
+          sid
+          attrs
+          token
+          [ChangeChaosTokenModifier $ NegativeModifier 1, IgnoreChaosTokenSymbolEffects]
         push $ DealAssetDirectDamage (toId attrs) (ChaosTokenEffectSource Tablet) 0 1
       pure a
     TargetResolveChaosToken (isTarget attrs -> True) token ElderSign _ -> do
       withSkillTest \sid -> do
-        skillTestModifier sid attrs token (ChangeChaosTokenModifier $ PositiveModifier 5)
+        skillTestModifiers
+          sid
+          attrs
+          token
+          [ChangeChaosTokenModifier $ PositiveModifier 5, IgnoreChaosTokenSymbolEffects]
         push $ HealAllDamage (toTarget attrs) (ChaosTokenEffectSource ElderSign)
         push $ HealAllHorror (toTarget attrs) (ChaosTokenEffectSource ElderSign)
       pure a

@@ -56,6 +56,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Ability (getAbilityLimit, getCanAffordUseWith, isForcedAbility)
 import Arkham.Helpers.Action (getActions)
 import Arkham.Helpers.Card (cardIsFast', getModifiedCardCost)
+import Arkham.Helpers.ChaosToken (chaosTokenSymbolEffectsIgnored)
 import Arkham.Helpers.Cost (getAdditionalActionCosts, getCanAffordCost)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
@@ -153,6 +154,17 @@ import Data.Set qualified as Set
 instance RunMessage Investigator where
   runMessage msg i@(Investigator (a :: original)) =
     do
+      -- A symbol whose effects are being ignored or replaced (The Black Cat (5))
+      -- must not resolve the investigator's own elder sign effect either. The
+      -- attrs runner only ever matches InvestigatorTarget for these, so nothing
+      -- is lost by short-circuiting here.
+      symbolIgnored <- case msg of
+        PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> chaosTokenSymbolEffectsIgnored token
+        FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> chaosTokenSymbolEffectsIgnored token
+        _ -> pure False
+      if symbolIgnored then pure i else runInvestigator
+   where
+    runInvestigator = do
       modifiers' <- getModifiers (toTarget i)
       let msg' = if Blank `elem` modifiers' then Blanked msg else msg
       case investigatorForm (toAttrs a) of

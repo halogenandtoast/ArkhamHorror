@@ -16,7 +16,7 @@ newtype LoftyWalkwayArchiveOfDreams = LoftyWalkwayArchiveOfDreams LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 loftyWalkwayArchiveOfDreams :: LocationCard LoftyWalkwayArchiveOfDreams
-loftyWalkwayArchiveOfDreams = location LoftyWalkwayArchiveOfDreams Cards.loftyWalkwayArchiveOfDreams 5 (Static 1)
+loftyWalkwayArchiveOfDreams = location LoftyWalkwayArchiveOfDreams Cards.loftyWalkwayArchiveOfDreams 5 (PerPlayer 1)
 
 instance HasModifiersFor LoftyWalkwayArchiveOfDreams where
   getModifiersFor (LoftyWalkwayArchiveOfDreams a) = do

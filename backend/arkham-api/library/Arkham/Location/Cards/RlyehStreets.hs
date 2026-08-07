@@ -12,7 +12,7 @@ newtype RlyehStreets = RlyehStreets LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rlyehStreets :: LocationCard RlyehStreets
-rlyehStreets = location RlyehStreets Cards.rlyehStreets 2 (Static 3)
+rlyehStreets = location RlyehStreets Cards.rlyehStreets 2 (PerPlayer  3)
 
 instance HasModifiersFor RlyehStreets where
   getModifiersFor (RlyehStreets a) = modifySelf a [CannotBeMoved, CannotLeavePlay]

@@ -1384,15 +1384,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid $ Window.CardPlay card asAction)]
       when shouldAddToHand do
         Lifted.cardResolutionModifier card GameSource iid (AsIfInHandFor NotForPlay card.id)
-      if cdSkipPlayWindows (toCardDef card)
-        then push $ PlayCard iid card mtarget payment windows' asAction
-        else
-          pushAll
-            [ CheckWindows [mkWhen (Window.PlayCard iid $ Window.CardPlay card asAction)]
-            , InitiatePlayCard iid card mtarget payment windows' asAction
-            , afterPlayCard
-            , ResolvedPlayCard iid card
-            ]
+      -- cdSkipPlayWindows suppresses the *#when* window only. The Painted World is its
+      -- sole user: it replaces itself in place with the chosen event and pushes its own
+      -- #when window naming that card, so the one built here would name the wrong card.
+      -- Nothing substitutes for the #after window or ResolvedPlayCard, so they must stay
+      -- on both paths -- this is the only site that opens PlayCard #after, and skipping
+      -- it left "after you play an event" reactions (Marion Tavares) dead, and Shed a
+      -- Light's ResolvedPlayCard anchor missing. Note the #after window here names the
+      -- pre-replacement card; re-deriving it post-resolution is not safe because The
+      -- Painted World has already removed itself from the game by then.
+      pushAll
+        $ [ CheckWindows [mkWhen (Window.PlayCard iid $ Window.CardPlay card asAction)]
+          | not (cdSkipPlayWindows (toCardDef card))
+          ]
+        <> [ InitiatePlayCard iid card mtarget payment windows' asAction
+           , afterPlayCard
+           , ResolvedPlayCard iid card
+           ]
     pure a
   CardEnteredPlay _ card -> do
     pure

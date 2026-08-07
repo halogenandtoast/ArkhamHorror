@@ -50,6 +50,11 @@ instance RunMessage TheGrapevine where
 
       chooseTargetM iid enemies \eid -> do
         withLocationOf eid $ moveUntil iid
-        engageEnemy iid eid
+        forTarget_ eid msg
+      pure a
+    ForTarget (EnemyTarget eid) (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      -- the movement can be stopped short (e.g. Whispers in Your Head (Dread)), and
+      -- engaging from another location would drag the enemy to us instead
+      whenM (eid <=~> enemyAtLocationWith iid) $ engageEnemy iid eid
       pure a
     _ -> TheGrapevine <$> liftRunMessage msg attrs

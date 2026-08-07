@@ -7259,6 +7259,7 @@ test-suite spec
       Arkham.Asset.Assets.SurvivalKnifeSpec
       Arkham.Asset.Assets.SwitchbladeSpec
       Arkham.Asset.Assets.TheBlackFan3Spec
+      Arkham.Asset.Assets.TheGrapevineSpec
       Arkham.Asset.Assets.TheHungeringBlade1Spec
       Arkham.Asset.Assets.TheMuscleUnpracticedSpec
       Arkham.Asset.Assets.TheNecronomiconSpec

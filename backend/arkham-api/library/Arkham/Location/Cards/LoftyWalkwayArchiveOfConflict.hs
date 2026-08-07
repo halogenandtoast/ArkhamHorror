@@ -12,7 +12,7 @@ newtype LoftyWalkwayArchiveOfConflict = LoftyWalkwayArchiveOfConflict LocationAt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 loftyWalkwayArchiveOfConflict :: LocationCard LoftyWalkwayArchiveOfConflict
-loftyWalkwayArchiveOfConflict = location LoftyWalkwayArchiveOfConflict Cards.loftyWalkwayArchiveOfConflict 2 (Static 1)
+loftyWalkwayArchiveOfConflict = location LoftyWalkwayArchiveOfConflict Cards.loftyWalkwayArchiveOfConflict 2 (PerPlayer 1)
 
 instance HasAbilities LoftyWalkwayArchiveOfConflict where
   getAbilities (LoftyWalkwayArchiveOfConflict a) =

@@ -12,7 +12,7 @@ newtype TillinghastEsoterica = TillinghastEsoterica LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tillinghastEsoterica :: LocationCard TillinghastEsoterica
-tillinghastEsoterica = location TillinghastEsoterica Cards.tillinghastEsoterica 3 (Static 1)
+tillinghastEsoterica = location TillinghastEsoterica Cards.tillinghastEsoterica 3 (PerPlayer 1)
 
 instance HasAbilities TillinghastEsoterica where
   getAbilities (TillinghastEsoterica a) =

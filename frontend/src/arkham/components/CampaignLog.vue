@@ -24,7 +24,7 @@ import CampaignLogSpecialRules from '@/arkham/components/CampaignLogSpecialRules
 import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
 import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
-import { achievementCatalog, type AchievementPart } from '@/arkham/achievements'
+import { achievementCatalog, activeAchievementPart, type AchievementPart } from '@/arkham/achievements'
 import CampaignLogChaosBag from '@/arkham/components/CampaignLogChaosBag.vue'
 import CampaignLogUltimatumsAndBoons from '@/arkham/components/CampaignLogUltimatumsAndBoons.vue'
 import CampaignLogAchievements from '@/arkham/components/CampaignLogAchievements.vue'
@@ -149,16 +149,10 @@ const otherModeTitle = computed(() => {
   return title === 'The Dream-Quest' ? 'The Web of Dreams' : 'The Dream-Quest'
 })
 
-/* The mini-campaign being played, when only one half is in play. The Dream-Eaters
-runs as either a full 8-part campaign (FullMode) or one of its two halves
-(PartialMode <part>); campaign.meta is untyped here, so the tagged-sum shape is
-pinned by a backend spec ("campaignMode meta encoding"). Anything unexpected
-falls back to null, i.e. show everything. */
-const activeCampaignPart = computed<AchievementPart | null>(() => {
-  const mode = props.game.campaign?.meta?.campaignMode
-  if (!mode || typeof mode !== 'object' || mode.tag !== 'PartialMode') return null
-  return mode.contents === 'TheDreamQuest' || mode.contents === 'TheWebOfDreams' ? mode.contents : null
-})
+// The mini-campaign being played, when only one half is in play (null = show all).
+const activeCampaignPart = computed<AchievementPart | null>(() =>
+  activeAchievementPart(props.game.campaign?.meta?.campaignMode)
+)
 
 // The whole inactive campaign rides along in the meta for the Dream Eaters A/B split
 const otherCampaignAttrs = computed(() => props.game.campaign?.meta?.otherCampaignAttrs ?? null)

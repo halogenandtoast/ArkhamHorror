@@ -13,6 +13,30 @@ export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '11', '50', '51', '52',
 // Mirrors the backend achievementCampaignPart.
 export type AchievementPart = 'theDreamQuest' | 'theWebOfDreams'
 
+/* The mini-campaign in play, read out of the untyped `campaign.meta`. The
+Dream-Eaters runs as either the full 8-part campaign or one of its halves, which
+the backend encodes as `{tag: 'FullMode'}` or
+`{tag: 'PartialMode', contents: <CampaignPart>}` (pinned by the backend spec
+"campaignMode meta encoding"). Null means "no split in play" — show everything.
+
+The contents are Haskell constructor names, which are NOT the catalog's part
+keys; keeping the mapping here, beside AchievementPart, is what stops the two
+from drifting. `meta` is `any`, so nothing type-checks the read — hence the
+explicit `string` annotation, which forces the lookup instead of letting `any`
+pass straight through as an AchievementPart. */
+const ACHIEVEMENT_PART_BY_CAMPAIGN_PART: Record<string, AchievementPart> = {
+  TheDreamQuest: 'theDreamQuest',
+  TheWebOfDreams: 'theWebOfDreams',
+}
+
+export function activeAchievementPart(campaignMode: unknown): AchievementPart | null {
+  if (!campaignMode || typeof campaignMode !== 'object') return null
+  const mode = campaignMode as { tag?: unknown; contents?: unknown }
+  if (mode.tag !== 'PartialMode' || typeof mode.contents !== 'string') return null
+  const contents: string = mode.contents
+  return ACHIEVEMENT_PART_BY_CAMPAIGN_PART[contents] ?? null
+}
+
 export type AchievementTag =
   | 'TheZealotsRevenge'
   | 'IDontTrustHer'

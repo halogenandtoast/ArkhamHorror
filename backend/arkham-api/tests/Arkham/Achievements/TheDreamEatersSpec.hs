@@ -555,7 +555,6 @@ spec = describe "The Dream-Eaters achievements" $ do
           [ (Locations.burialGround, 1)
           , (Locations.frontPorchEntryway, 1)
           , (Locations.frontPorchEntryway, 2)
-          , (Locations.downstairsDoorwayDen, 1)
           , (Locations.downstairsDoorwayDen, 2)
           , (Locations.downstairsDoorwayParlor, 1)
           , (Locations.upstairsHallway, 1)

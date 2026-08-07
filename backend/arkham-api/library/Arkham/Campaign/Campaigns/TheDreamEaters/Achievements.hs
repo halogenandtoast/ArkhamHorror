@@ -466,17 +466,19 @@ pointOfNoReturnLocations =
   , Locations.seaOfPitch_265
   ]
 
-{- | Every free triggered ability printed on an A Thousand Shapes of Horror
-location, as (location card code, ability index). The Mysterious Stairs are
-excluded by the achievement itself; the Bedroom's two-action ability and the
-Unmarked Tomb's forced objective are not free triggered abilities.
+{- | Every FREE triggered ability printed on an A Thousand Shapes of Horror
+location, as (location card code, ability index). "Free triggered ability" is
+the [fast] symbol specifically — a [reaction] is a triggered ability but not a
+free one, so the Den's "after you successfully investigate, discard 1 card:
+discover an additional clue" (ability 1) is deliberately NOT here. Neither is
+the Bedroom's two-action ability (1), nor the Unmarked Tomb's forced objective.
+The Mysterious Stairs are excluded by the achievement itself.
 -}
 dejaVuAbilities :: [(CardCode, Int)]
 dejaVuAbilities =
   [ (toCardCode Locations.burialGround, 1)
   , (toCardCode Locations.frontPorchEntryway, 1)
   , (toCardCode Locations.frontPorchEntryway, 2)
-  , (toCardCode Locations.downstairsDoorwayDen, 1)
   , (toCardCode Locations.downstairsDoorwayDen, 2)
   , (toCardCode Locations.downstairsDoorwayParlor, 1)
   , (toCardCode Locations.upstairsHallway, 1)

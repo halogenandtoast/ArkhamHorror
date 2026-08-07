@@ -2061,6 +2061,7 @@ library
       Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.TheForgottenAge.Achievements
       Arkham.Campaign.Campaigns.TheInnsmouthConspiracy
+      Arkham.Campaign.Campaigns.TheInnsmouthConspiracy.Achievements
       Arkham.Campaign.Campaigns.ThePathToCarcosa
       Arkham.Campaign.Campaigns.ThePathToCarcosa.Achievements
       Arkham.Campaign.Campaigns.TheScarletKeys
@@ -7004,6 +7005,57 @@ executable arkham-extract
   if flag(library-only)
     buildable: False
 
+executable arkham-fixtures
+  main-is: Main.hs
+  other-modules:
+      Paths_arkham_api
+  hs-source-dirs:
+      app-fixtures
+  default-extensions:
+      AllowAmbiguousTypes
+      BlockArguments
+      DataKinds
+      DeriveAnyClass
+      DerivingStrategies
+      DerivingVia
+      ExtendedDefaultRules
+      FunctionalDependencies
+      GADTs
+      LambdaCase
+      MultiWayIf
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedLabels
+      OverloadedRecordDot
+      OverloadedStrings
+      PatternSynonyms
+      RecordWildCards
+      StrictData
+      TypeFamilies
+      TypeFamilyDependencies
+      TypeOperators
+      UndecidableInstances
+      ViewPatterns
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      cards-discover:cards-discover
+  build-depends:
+      MonadRandom
+    , aeson
+    , arkham-api
+    , base
+    , bytestring
+    , containers
+    , hs-opentelemetry-sdk
+    , monad-logger
+    , persistent
+    , persistent-postgresql
+    , text
+    , time
+  default-language: GHC2021
+  if flag(library-only)
+    buildable: False
+
 executable arkham-ml-export
   main-is: Main.hs
   other-modules:
@@ -7155,6 +7207,7 @@ test-suite spec
       Arkham.Achievements.ReturnToThePathToCarcosaSpec
       Arkham.Achievements.TheDreamEatersSpec
       Arkham.Achievements.TheDrownedCitySpec
+      Arkham.Achievements.TheInnsmouthConspiracySpec
       Arkham.Act.Cards.AFamiliarPatternSpec
       Arkham.Act.Cards.BlackwatersBaneEpicMultiplayerSpec
       Arkham.Act.Cards.ExposeTheAnomalyEpicMultiplayerSpec

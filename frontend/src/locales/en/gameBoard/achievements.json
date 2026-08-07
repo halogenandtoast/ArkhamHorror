@@ -9,6 +9,7 @@
   "noneEarnedYet": "No achievements earned yet.",
   "campaigns": {
     "06": "The Dream-Eaters",
+    "07": "The Innsmouth Conspiracy",
     "11": "The Drowned City",
     "50": "Return to the Night of the Zealot",
     "51": "Return to the Dunwich Legacy",
@@ -562,6 +563,75 @@
     "UnderworldExpertise": {
       "name": "Underworld Expertise",
       "text": "Win The Web of Dreams campaign on Expert difficulty."
+    },
+    "WouldYouJustDieAlready": {
+      "name": "Would You Just Die Already",
+      "text": "Defeat The Amalgam 5 or more times in The Pit of Despair."
+    },
+    "ElementaryDearDawson": {
+      "name": "Elementary, Dear Dawson",
+      "text": "Guess both the correct Suspect and Hideout in The Vanishing of Elina Harper."
+    },
+    "AintNothinGonnaBreakMyStride": {
+      "name": "Ain't Nothin Gonna Break My Stride",
+      "text": "Destroy every barrier in In Too Deep."
+    },
+    "SpeedingTicket": {
+      "name": "Speeding Ticket",
+      "text": "Reach Falcon Point Approach without voluntarily stopping any vehicles, getting out of any vehicles, or entering a copy of Long Way Around in Horror in High Gear."
+    },
+    "YoureLockedInHereWithMe": {
+      "name": "You're Locked In Here With Me",
+      "text": "Complete A Light in the Fog without any investigators getting captured."
+    },
+    "FishOutOfWater": {
+      "name": "Fish Out of Water",
+      "text": "Complete Into the Maelstrom with each investigator still wearing their Diving Suits."
+    },
+    "DontWakeDaddy": {
+      "name": "Don't Wake Daddy",
+      "text": "Complete both The Lair of Dagon and Into the Maelstrom without waking Dagon or Hydra."
+    },
+    "GoneFishing": {
+      "name": "Gone Fishing",
+      "text": "Defeat 20 Deep One enemies."
+    },
+    "FullBuild": {
+      "name": "Full Build",
+      "text": "Equip the Waveworn Idol, Awakened Mantle and Headdress of Y'ha-nthlei at the same time."
+    },
+    "YouWakeUpInARoom": {
+      "name": "“You Wake Up In A Room...”",
+      "text": "Recover each of the following memories throughout The Innsmouth Conspiracy campaign:",
+      "items": {
+        "AMeetingWithThomasDawson": "A meeting with Thomas Dawson.",
+        "ABattleWithAHorrifyingDevil": "A battle with a horrifying devil.",
+        "ADecisionToStickTogether": "A decision to stick together.",
+        "AnEncounterWithASecretCult": "An encounter with a secret cult.",
+        "ADealWithJoeSargent": "A deal with Joe Sargent.",
+        "AFollowedLead": "A followed lead.",
+        "AnIntervention": "An intervention.",
+        "AJailbreak": "A jailbreak.",
+        "DiscoveryOfAStrangeIdol": "Discovery of a strange idol.",
+        "DiscoveryOfAnUnholyMantle": "Discovery of an unholy mantle.",
+        "DiscoveryOfAMysticalRelic": "Discovery of a mystical relic.",
+        "AConversationWithMrMoore": "A conversation with Mr. Moore.",
+        "TheLifecycleOfADeepOne": "The lifecycle of a “Deep One.”",
+        "AStingingBetrayal": "A stinging betrayal.",
+        "TheHorribleTruth": "The horrible truth."
+      }
+    },
+    "BiggerFishToFry": {
+      "name": "Bigger Fish to Fry",
+      "text": "Complete The Innsmouth Conspiracy campaign without defeating a single Deep One enemy."
+    },
+    "InnsmouthLineInTheSand": {
+      "name": "Line in the Sand",
+      "text": "Win The Innsmouth Conspiracy campaign with at least three Ultimatums active."
+    },
+    "InnsmouthExpertise": {
+      "name": "Innsmouth Expertise",
+      "text": "Win The Innsmouth Conspiracy campaign on Expert difficulty."
     }
   },
   "clearAll": "Clear all",

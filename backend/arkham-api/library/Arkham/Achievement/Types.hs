@@ -212,6 +212,28 @@ data TheWebOfDreamsAchievement
 
 $(deriveJSON defaultOptions ''TheWebOfDreamsAchievement)
 
+{- | The Innsmouth Conspiracy (campaign "07"). Like The Drowned City, this list is
+printed for the campaign itself rather than a Return-to variant, so these are
+earnable in ordinary Innsmouth games.
+-}
+data TheInnsmouthConspiracyAchievement
+  = WouldYouJustDieAlready
+  | ElementaryDearDawson
+  | AintNothinGonnaBreakMyStride
+  | SpeedingTicket
+  | YoureLockedInHereWithMe
+  | FishOutOfWater
+  | DontWakeDaddy
+  | GoneFishing
+  | FullBuild
+  | YouWakeUpInARoom
+  | BiggerFishToFry
+  | InnsmouthLineInTheSand
+  | InnsmouthExpertise
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
+
+$(deriveJSON defaultOptions ''TheInnsmouthConspiracyAchievement)
+
 data Achievement
   = NightOfTheZealotAchievement NightOfTheZealotAchievement
   | TheDunwichLegacyAchievement TheDunwichLegacyAchievement
@@ -221,6 +243,7 @@ data Achievement
   | TheDrownedCityAchievement TheDrownedCityAchievement
   | TheDreamQuestAchievement TheDreamQuestAchievement
   | TheWebOfDreamsAchievement TheWebOfDreamsAchievement
+  | TheInnsmouthConspiracyAchievement TheInnsmouthConspiracyAchievement
   deriving stock (Eq, Show, Ord, Data)
 
 allAchievements :: [Achievement]
@@ -233,6 +256,7 @@ allAchievements =
     <> map TheDrownedCityAchievement [minBound ..]
     <> map TheDreamQuestAchievement [minBound ..]
     <> map TheWebOfDreamsAchievement [minBound ..]
+    <> map TheInnsmouthConspiracyAchievement [minBound ..]
 
 -- | Flat constructor name; the wire and database representation.
 achievementName :: Achievement -> Text
@@ -245,6 +269,7 @@ achievementName = \case
   TheDrownedCityAchievement a -> tshow a
   TheDreamQuestAchievement a -> tshow a
   TheWebOfDreamsAchievement a -> tshow a
+  TheInnsmouthConspiracyAchievement a -> tshow a
 
 parseAchievement :: Text -> Maybe Achievement
 parseAchievement t = lookup t achievementsByName
@@ -315,6 +340,24 @@ achievementChecklist = \case
       , "ProveYourWorth"
       , "PlumbTheDepths"
       ]
+  TheInnsmouthConspiracyAchievement YouWakeUpInARoom ->
+    Just
+      [ "AMeetingWithThomasDawson"
+      , "ABattleWithAHorrifyingDevil"
+      , "ADecisionToStickTogether"
+      , "AnEncounterWithASecretCult"
+      , "ADealWithJoeSargent"
+      , "AFollowedLead"
+      , "AnIntervention"
+      , "AJailbreak"
+      , "DiscoveryOfAStrangeIdol"
+      , "DiscoveryOfAnUnholyMantle"
+      , "DiscoveryOfAMysticalRelic"
+      , "AConversationWithMrMoore"
+      , "TheLifecycleOfADeepOne"
+      , "AStingingBetrayal"
+      , "TheHorribleTruth"
+      ]
   _ -> Nothing
 
 -- | Campaign ids this achievement can be earned in.
@@ -330,6 +373,7 @@ achievementCampaigns = \case
   -- 'achievementCampaignPart', a display grouping only.
   TheDreamQuestAchievement _ -> ["06"]
   TheWebOfDreamsAchievement _ -> ["06"]
+  TheInnsmouthConspiracyAchievement _ -> ["07"]
 
 {- | Sub-grouping within a campaign, for lists that are printed per mini-campaign.
 Only The Dream-Eaters has one: its achievements are split between The Dream-Quest

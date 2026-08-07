@@ -27,6 +27,9 @@ module Helpers.Achievements (
   asTheDreamEaters,
   asTheDreamEatersWith,
   asTheDreamEatersScenario,
+  asTheInnsmouthConspiracy,
+  asTheInnsmouthConspiracyWith,
+  asTheInnsmouthConspiracyScenario,
   didEarn,
   didEarnDunwich,
   didEarnCarcosa,
@@ -35,10 +38,12 @@ module Helpers.Achievements (
   didEarnDrownedCity,
   didEarnDreamQuest,
   didEarnWebOfDreams,
+  didEarnInnsmouth,
   didProgressDunwich,
   didProgressCarcosa,
   didProgressCircle,
   didProgressDrownedCity,
+  didProgressInnsmouth,
 ) where
 
 import Arkham.Achievement.Types
@@ -148,6 +153,18 @@ asTheDreamEaters = asTheDreamEatersWith Easy
 asTheDreamEatersScenario :: CardCode -> TestAppT ()
 asTheDreamEatersScenario = asAchievementCampaignScenario "06"
 
+-- The Innsmouth Conspiracy's list is printed for the campaign itself, so
+-- campaign "07" is the eligible campaign rather than a Return-to variant.
+
+asTheInnsmouthConspiracyWith :: Difficulty -> TestAppT ()
+asTheInnsmouthConspiracyWith = asAchievementCampaign "07"
+
+asTheInnsmouthConspiracy :: TestAppT ()
+asTheInnsmouthConspiracy = asTheInnsmouthConspiracyWith Easy
+
+asTheInnsmouthConspiracyScenario :: CardCode -> TestAppT ()
+asTheInnsmouthConspiracyScenario = asAchievementCampaignScenario "07"
+
 didEarn :: NightOfTheZealotAchievement -> TestAppT (IORef Bool)
 didEarn achievement =
   createMessageMatcher $ EarnAchievement $ NightOfTheZealotAchievement achievement
@@ -180,6 +197,10 @@ didEarnWebOfDreams :: TheWebOfDreamsAchievement -> TestAppT (IORef Bool)
 didEarnWebOfDreams achievement =
   createMessageMatcher $ EarnAchievement $ TheWebOfDreamsAchievement achievement
 
+didEarnInnsmouth :: TheInnsmouthConspiracyAchievement -> TestAppT (IORef Bool)
+didEarnInnsmouth achievement =
+  createMessageMatcher $ EarnAchievement $ TheInnsmouthConspiracyAchievement achievement
+
 -- Checklist progress reports (cross-playthrough achievements); the items must
 -- match exactly, in 'achievementChecklist'-mapping order.
 
@@ -198,3 +219,7 @@ didProgressCircle achievement items =
 didProgressDrownedCity :: TheDrownedCityAchievement -> [Text] -> TestAppT (IORef Bool)
 didProgressDrownedCity achievement items =
   createMessageMatcher $ AchievementProgress (TheDrownedCityAchievement achievement) items
+
+didProgressInnsmouth :: TheInnsmouthConspiracyAchievement -> [Text] -> TestAppT (IORef Bool)
+didProgressInnsmouth achievement items =
+  createMessageMatcher $ AchievementProgress (TheInnsmouthConspiracyAchievement achievement) items

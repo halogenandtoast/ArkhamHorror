@@ -4,7 +4,7 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '11', '50', '51', '52', '53', '54']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '07', '11', '50', '51', '52', '53', '54']
 
 // Sub-grouping inside a campaign, for campaigns whose achievement list is
 // printed per mini-campaign. Only The Dream-Eaters has one: its list is split
@@ -162,6 +162,19 @@ export type AchievementTag =
   | 'MasterOfUnlocking'
   | 'WebOfDreamsLineInTheSand'
   | 'UnderworldExpertise'
+  | 'WouldYouJustDieAlready'
+  | 'ElementaryDearDawson'
+  | 'AintNothinGonnaBreakMyStride'
+  | 'SpeedingTicket'
+  | 'YoureLockedInHereWithMe'
+  | 'FishOutOfWater'
+  | 'DontWakeDaddy'
+  | 'GoneFishing'
+  | 'FullBuild'
+  | 'YouWakeUpInARoom'
+  | 'BiggerFishToFry'
+  | 'InnsmouthLineInTheSand'
+  | 'InnsmouthExpertise'
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string; part?: AchievementPart }
 
@@ -227,6 +240,23 @@ export const achievementChecklists: Partial<Record<AchievementTag, string[]>> = 
     'TidalTablet',
     'ShardOfYchlecht',
     'HorrorInClay',
+  ],
+  YouWakeUpInARoom: [
+    'AMeetingWithThomasDawson',
+    'ABattleWithAHorrifyingDevil',
+    'ADecisionToStickTogether',
+    'AnEncounterWithASecretCult',
+    'ADealWithJoeSargent',
+    'AFollowedLead',
+    'AnIntervention',
+    'AJailbreak',
+    'DiscoveryOfAStrangeIdol',
+    'DiscoveryOfAnUnholyMantle',
+    'DiscoveryOfAMysticalRelic',
+    'AConversationWithMrMoore',
+    'TheLifecycleOfADeepOne',
+    'AStingingBetrayal',
+    'TheHorribleTruth',
   ],
   Obligations: [
     'WalkInFaith',
@@ -365,4 +395,17 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'MasterOfUnlocking', campaignId: '06', part: 'theWebOfDreams' },
   { tag: 'WebOfDreamsLineInTheSand', campaignId: '06', part: 'theWebOfDreams' },
   { tag: 'UnderworldExpertise', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'WouldYouJustDieAlready', campaignId: '07' },
+  { tag: 'ElementaryDearDawson', campaignId: '07' },
+  { tag: 'AintNothinGonnaBreakMyStride', campaignId: '07' },
+  { tag: 'SpeedingTicket', campaignId: '07' },
+  { tag: 'YoureLockedInHereWithMe', campaignId: '07' },
+  { tag: 'FishOutOfWater', campaignId: '07' },
+  { tag: 'DontWakeDaddy', campaignId: '07' },
+  { tag: 'GoneFishing', campaignId: '07' },
+  { tag: 'FullBuild', campaignId: '07' },
+  { tag: 'YouWakeUpInARoom', campaignId: '07' },
+  { tag: 'BiggerFishToFry', campaignId: '07' },
+  { tag: 'InnsmouthLineInTheSand', campaignId: '07' },
+  { tag: 'InnsmouthExpertise', campaignId: '07' },
 ]

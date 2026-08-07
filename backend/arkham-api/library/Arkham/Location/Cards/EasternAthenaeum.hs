@@ -21,7 +21,7 @@ instance HasAbilities EasternAthenaeum where
         extendRevealed1 a
           $ onlyOnce
           $ restricted a 1 Here
-          $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) (be a))
+          $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
       else extendUnrevealed1 a (summitEntry a 9)
 
 instance RunMessage EasternAthenaeum where

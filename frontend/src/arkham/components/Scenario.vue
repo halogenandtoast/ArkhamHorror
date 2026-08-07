@@ -1287,7 +1287,11 @@ const enemyGroups = computed(()=>{
       if (p.contents === 'PursuitZone') pursuit.push(e)
     }
     if (p.tag === 'OtherPlacement' && p.contents === 'Global' && e.asSelfLocation === null) global.push(e)
-    if (e.asSelfLocation !== null) asLoc.push(e)
+    // An enemy that IS its own location keeps its asSelfLocation label after it
+    // leaves play, so the placement has to be checked too — otherwise a defeated
+    // Leg of Atlach-Nacha keeps occupying its grid slot. Not narrowed to
+    // AtLocation: Atlach-Nacha itself sits at Global while it is the web's centre.
+    if (e.asSelfLocation !== null && p.tag !== 'OutOfPlay') asLoc.push(e)
   }
   return { outOfPlay, pursuit, global, asLoc, firstVoid }
 })

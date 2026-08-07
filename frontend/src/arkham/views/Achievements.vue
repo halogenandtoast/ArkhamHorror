@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { clearAchievements, fetchAchievements, type ClearAchievementsScope } from '@/arkham/api'
-import { achievementCatalog, achievementChecklists, type AchievementEntry } from '@/arkham/achievements'
+import { achievementCatalog, achievementChecklists, achievementSections, type AchievementEntry } from '@/arkham/achievements'
 import type { Achievement } from '@/arkham/types/Achievement'
 import Prompt from '@/components/Prompt.vue'
 
@@ -68,7 +68,13 @@ const campaigns = computed(() => {
     if (group) group.push(entry)
     else groups.set(entry.campaignId, [entry])
   }
-  return [...groups.entries()].map(([campaignId, entries]) => ({ campaignId, entries }))
+  return [...groups.entries()].map(([campaignId, entries]) => ({
+    campaignId,
+    entries,
+    // The Dream-Eaters prints one list per mini-campaign; every other campaign
+    // comes back as a single unlabelled section.
+    sections: achievementSections(entries),
+  }))
 })
 
 const earnedRow = (entry: AchievementEntry): Achievement | null => {
@@ -130,9 +136,14 @@ const earnedDate = (row: Achievement): string | null => {
             {{ t('achievements.clearCampaign') }}
           </button>
         </summary>
+        <template v-for="section in campaign.sections" :key="section.part ?? 'all'">
+        <h3 v-if="section.part" class="part-header">
+          <span class="part-title">{{ t(`achievements.parts.${section.part}`) }}</span>
+          <span class="part-count">{{ campaignEarnedCount(section) }}/{{ section.entries.length }}</span>
+        </h3>
         <ul class="entry-list">
           <li
-            v-for="entry in campaign.entries"
+            v-for="entry in section.entries"
             :key="entry.tag"
             class="entry"
             :class="{ earned: !!earnedRow(entry) }"
@@ -172,6 +183,7 @@ const earnedDate = (row: Achievement): string | null => {
             </button>
           </li>
         </ul>
+        </template>
       </details>
 
       <Prompt
@@ -330,6 +342,31 @@ h2 {
   margin: 12px 0 0;
   padding: 0;
   list-style: none;
+}
+
+/* Mini-campaign divider (The Dream-Eaters' two printed lists). */
+.part-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 16px 0 0;
+  font-family: teutonic, sans-serif;
+  font-size: 1em;
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.part-title {
+  color: rgba(217, 184, 69, 0.8);
+}
+
+.part-count {
+  color: rgba(255, 255, 255, 0.4);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
 }
 
 .entry {

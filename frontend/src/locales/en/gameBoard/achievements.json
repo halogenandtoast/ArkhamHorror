@@ -8,6 +8,7 @@
   "settingsToggleDescription": "Track this campaign's official achievements as you play. Unlocks are recorded to your account and shown in the campaign log.",
   "noneEarnedYet": "No achievements earned yet.",
   "campaigns": {
+    "06": "The Dream-Eaters",
     "11": "The Drowned City",
     "50": "Return to the Night of the Zealot",
     "51": "Return to the Dunwich Legacy",
@@ -449,6 +450,118 @@
         "ProveYourWorth": "Prove Your Worth",
         "PlumbTheDepths": "Plumb the Depths"
       }
+    },
+    "DoYouAlwaysFollowOrders": {
+      "name": "Do You Always Follow Orders?",
+      "text": "Do not stray from the path in Beyond the Gates of Sleep."
+    },
+    "AwwButTheyreSoCute": {
+      "name": "Aww, But They’re So Cute",
+      "text": "Do not defeat a single Zoog enemy in Beyond the Gates of Sleep."
+    },
+    "LosingMyReligion": {
+      "name": "Losing My Religion",
+      "text": "In a single playthrough, find and uncover all 10 Signs of the Gods in The Search for Kadath."
+    },
+    "FantasyFlightGamesDoesNotCondoneAccomplishingThisAchievement": {
+      "name": "Fantasy Flight Games (®) Does Not Condone Accomplishing This Achievement",
+      "text": "Break the law of Ulthar in The Search for Kadath."
+    },
+    "TacticalEspionageAction": {
+      "name": "Tactical Espionage Action",
+      "text": "Complete Dark Side of the Moon with each investigator’s alarm level at zero."
+    },
+    "MoonLizardsIDontBelieveTheyExist": {
+      "name": "Moon Lizards? I Don’t Believe They Exist",
+      "text": "Defeat the Moon Lizard in Dark Side of the Moon."
+    },
+    "BarkhamHorrorEnthusiast": {
+      "name": "Barkham Horror Enthusiast",
+      "text": "Defeat 1 or more Cats from Saturn using a fight ability on either a cat ally or a dog ally."
+    },
+    "OnlyWayToBeSure": {
+      "name": "Only Way To Be Sure",
+      "text": "Reduce the High Priest Not to Be Described to 1 remaining health, then shove it down a well anyway in Where the Gods Dwell."
+    },
+    "GiveThemSomethingToTalkAbout": {
+      "name": "Give Them Something To Talk About",
+      "text": "In a single round, add every hidden form of Nyarlathotep to the victory display in Where the Gods Dwell."
+    },
+    "ThisIsntEvenMyFinalForm": {
+      "name": "This Isn’t Even My Final Form!",
+      "text": "Expose and then defeat Nyarlathotep’s True Shape in Where the Gods Dwell."
+    },
+    "DontTellAnyoneBut": {
+      "name": "Don’t Tell Anyone, But…",
+      "text": "Using the ability on The Great Hall, give 6 different hidden cards to another investigator in Where the Gods Dwell."
+    },
+    "DreamQuestLineInTheSand": {
+      "name": "Line in the Sand",
+      "text": "Win The Dream-Quest campaign with at least three Ultimatums active."
+    },
+    "DreamlandsExpertise": {
+      "name": "Dreamlands Expertise",
+      "text": "Win The Dream-Quest campaign on Expert difficulty."
+    },
+    "BewareTheBlackCat": {
+      "name": "Beware The Black Cat",
+      "text": "Complete The Dream-Eaters campaign with okay, fine, have it your way then recorded in your Campaign Log."
+    },
+    "ReunitedAndItFeelsSoGood": {
+      "name": "Reunited and it Feels So Good",
+      "text": "Win The Dream-Eaters as an interconnected 8-part campaign, and have both groups reunite during the epilogue."
+    },
+    "EveryonesAFeministUntilThereIsASpiderAround": {
+      "name": "Everyone’s a Feminist Until There Is a Spider Around",
+      "text": "Defeat twenty Spider enemies. (Swarm cards do not count.)"
+    },
+    "TheCarterMethod": {
+      "name": "The Carter Method",
+      "text": "Let every location get infested, then seal all of them in Waking Nightmare."
+    },
+    "TheDoctorIsIn": {
+      "name": "The Doctor is In",
+      "text": "Take Dr. Shivani Maheswaran with you and do not let her take any amount of damage or horror in Waking Nightmare."
+    },
+    "DejaVu": {
+      "name": "Déjà Vu",
+      "text": "Resolve every free triggered ability on every location in A Thousand Shapes of Horror (not counting the Mysterious Stairs during act 2)."
+    },
+    "TheCasaLomaManeuver": {
+      "name": "The Casa Loma Maneuver",
+      "text": "Escape the endless stairs with The Unnamable at the topmost staircase in A Thousand Shapes of Horror."
+    },
+    "IRememberThisPlace": {
+      "name": "I Remember This Place",
+      "text": "Find a way out of the Underworld in Point of No Return."
+    },
+    "BadAdvice": {
+      "name": "Bad Advice",
+      "text": "Flip over every location at least once in Point of No Return."
+    },
+    "MarchOfTheGhouls": {
+      "name": "March of the Ghouls",
+      "text": "Have 4 Ghoul enemies attached to Richard Upton Pickman in Point of No Return."
+    },
+    "TheIshimuraFlex": {
+      "name": "The Ishimura Flex",
+      "text": "In a single round, defeat all 4 Legs of Atlach-Nacha in Weaver of the Cosmos."
+    },
+    "YouSpinMeRightRound": {
+      "name": "You Spin Me Right ’Round",
+      "text": "Ensure that Atlach-Nacha spins a full 360 degrees in a single phase in Weaver of the Cosmos."
+    },
+    "MasterOfUnlocking": {
+      "name": "Master of Unlocking",
+      "text": "Use The Silver Key to cancel a total of at least 10 horror throughout the course of a single scenario."
+    },
+    "WebOfDreamsLineInTheSand": {
+      "name": "Line in the Sand",
+      "text": "Win The Web of Dreams campaign with at least three Ultimatums active."
+    },
+    "UnderworldExpertise": {
+      "name": "Underworld Expertise",
+      "text": "Win The Web of Dreams campaign on Expert difficulty."
     }
   },
   "clearAll": "Clear all",
@@ -456,5 +569,9 @@
   "clearOne": "Clear this achievement",
   "clearAllConfirm": "Clear ALL earned achievements? This cannot be undone.",
   "clearCampaignConfirm": "Clear all earned achievements for {campaign}? This cannot be undone.",
-  "clearOneConfirm": "Clear the achievement \"{name}\"? This cannot be undone."
+  "clearOneConfirm": "Clear the achievement \"{name}\"? This cannot be undone.",
+  "parts": {
+    "theDreamQuest": "The Dream-Quest",
+    "theWebOfDreams": "The Web of Dreams"
+  }
 }

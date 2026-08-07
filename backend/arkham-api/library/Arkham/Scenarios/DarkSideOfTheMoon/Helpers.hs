@@ -32,10 +32,15 @@ reduceAlarmLevel :: (Sourceable source, ReverseQueue m) => source -> Investigato
 reduceAlarmLevel source = reduceAlarmLevelBy 1 source
 {-# INLINE reduceAlarmLevel #-}
 
+{- | Dark Side of the Moon puts no floor on an alarm level: zero is a reachable
+(and achievement-worthy) state. Fortune and Folly's alarm level is the one that
+"cannot be reduced below 1 or raised above 10", so that scenario keeps its own
+clamped copy of this helper rather than sharing this one.
+-}
 reduceAlarmLevelBy :: (Sourceable source, ReverseQueue m) => Int -> source -> InvestigatorId -> m ()
 reduceAlarmLevelBy n (toSource -> source) iid = do
   current <- getAlarmLevel iid
-  let n' = min n (max 0 (current - 1))
+  let n' = min n current
   when (n' > 0) $ removeTokens source iid AlarmLevel n'
 {-# INLINE reduceAlarmLevelBy #-}
 

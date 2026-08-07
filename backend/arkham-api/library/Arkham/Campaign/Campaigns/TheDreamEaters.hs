@@ -1,6 +1,7 @@
 module Arkham.Campaign.Campaigns.TheDreamEaters (theDreamEaters) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Campaigns.TheDreamEaters.Achievements (runTheDreamEatersAchievements)
 import Arkham.Campaign.Option
 import Arkham.Campaign.Runner hiding (story, storyWithChooseOne)
 import Arkham.CampaignLog (optionsL)
@@ -202,6 +203,7 @@ theWebOfDreamsSteps = [WakingNightmare, AThousandShapesOfHorror, PointOfNoReturn
 
 instance RunMessage TheDreamEaters where
   runMessage msg c@(TheDreamEaters attrs) = runQueueT $ withI18n $ do
+    lift $ runTheDreamEatersAchievements msg
     let
       meta = case fromJSON (campaignMeta attrs) of
         Success a -> a
@@ -267,7 +269,9 @@ instance RunMessage TheDreamEaters where
         players <- allPlayers
         pushAll
           $ ChoosingDecks
-          : map (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartA") pid ChooseDeck) players
+          : map
+            (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartA") pid ChooseDeck)
+            players
             <> [DoneChoosingDecks, NextCampaignStep (continue BeyondTheGatesOfSleep)]
         let difficulty = campaignDifficulty attrs
         pure
@@ -285,7 +289,9 @@ instance RunMessage TheDreamEaters where
         players <- allPlayers
         pushAll
           $ ChoosingDecks
-          : map (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartB") pid ChooseDeck) players
+          : map
+            (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartB") pid ChooseDeck)
+            players
             <> [DoneChoosingDecks, NextCampaignStep (continue WakingNightmare)]
         let difficulty = campaignDifficulty attrs
         pure
@@ -369,13 +375,17 @@ instance RunMessage TheDreamEaters where
           players <- allPlayers
           pushAll
             $ ChoosingDecks
-            : map (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartA") pid ChooseDeck) players
+            : map
+              (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartA") pid ChooseDeck)
+              players
               <> [DoneChoosingDecks]
         when (s == WakingNightmare && BeyondTheGatesOfSleep `elem` campaignCompletedSteps attrs) do
           players <- allPlayers
           pushAll
             $ ChoosingDecks
-            : map (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartB") pid ChooseDeck) players
+            : map
+              (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartB") pid ChooseDeck)
+              players
               <> [DoneChoosingDecks]
         lift $ defaultCampaignRunner msg c
       CampaignStep (InterludeStep 1 _) -> do
@@ -416,7 +426,9 @@ instance RunMessage TheDreamEaters where
                 Msg.questionLabel (ikey' "theDreamEaters.question.proceedToWhichScenario") lead
                   $ ChooseOne
                     [ Label "$theDreamEaters.label.theSearchForKadath" [NextCampaignStep (continue TheSearchForKadath)]
-                    , Label "$theDreamEaters.label.aThousandShapesOfHorror" [NextCampaignStep (continue AThousandShapesOfHorror)]
+                    , Label
+                        "$theDreamEaters.label.aThousandShapesOfHorror"
+                        [NextCampaignStep (continue AThousandShapesOfHorror)]
                     ]
               _ -> NextCampaignStep (continue AThousandShapesOfHorror)
 

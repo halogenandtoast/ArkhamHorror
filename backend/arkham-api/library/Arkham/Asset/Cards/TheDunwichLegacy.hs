@@ -40,6 +40,9 @@ duke =
     $ (asset "02014" ("Duke" <:> "Loyal Hound") 2 Neutral)
       { cdCardTraits = setFromList [Ally, Creature]
       , cdUnique = True
+      , -- "Cat" and "Dog" are not printed traits; the tag is how the engine knows
+        -- which allies satisfy The Dream-Eaters' "Barkham Horror Enthusiast".
+        cdTags = ["dog"]
       }
 
 blackjack :: CardDef
@@ -172,8 +175,7 @@ jazzMulligan =
 
 professorWarrenRice :: CardDef
 professorWarrenRice =
-  ( storyAsset "02061" ("Professor Warren Rice" <:> "Professor of Languages") 3 ExtracurricularActivity
-  )
+  (storyAsset "02061" ("Professor Warren Rice" <:> "Professor of Languages") 3 ExtracurricularActivity)
     { cdSkills = [#intellect, #wild]
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True

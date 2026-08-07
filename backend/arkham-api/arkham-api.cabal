@@ -2052,6 +2052,7 @@ library
       Arkham.Campaign.Campaigns.TheCircleUndone
       Arkham.Campaign.Campaigns.TheCircleUndone.Achievements
       Arkham.Campaign.Campaigns.TheDreamEaters
+      Arkham.Campaign.Campaigns.TheDreamEaters.Achievements
       Arkham.Campaign.Campaigns.TheDrownedCity
       Arkham.Campaign.Campaigns.TheDrownedCity.Achievements
       Arkham.Campaign.Campaigns.TheDunwichLegacy
@@ -7152,6 +7153,7 @@ test-suite spec
       Arkham.Achievements.ReturnToTheDunwichLegacySpec
       Arkham.Achievements.ReturnToTheForgottenAgeSpec
       Arkham.Achievements.ReturnToThePathToCarcosaSpec
+      Arkham.Achievements.TheDreamEatersSpec
       Arkham.Achievements.TheDrownedCitySpec
       Arkham.Act.Cards.AFamiliarPatternSpec
       Arkham.Act.Cards.BlackwatersBaneEpicMultiplayerSpec

@@ -5,6 +5,7 @@ module Arkham.Location.Cards.Attic_AThousandShapesOfHorror (
 )
 where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
@@ -28,7 +29,11 @@ instance HasAbilities Attic_AThousandShapesOfHorror where
   getAbilities (Attic_AThousandShapesOfHorror x) =
     extendRevealed
       x
-      [ restrictedAbility x 1 (Here <> not_ (Remembered RecoveredAStrangeKey))
+      [ onlyOnce
+          -- The Parlor remembers the same key, so normally whichever fires first
+          -- hides the other. With achievements on, both stay offerable (once each)
+          -- so "Déjà Vu" can tick both boxes; the second is a no-op.
+          $ restrictedAbility x 1 (Here <> oneOf [AchievementsEnabled, not_ (Remembered RecoveredAStrangeKey)])
           $ FastAbility
           $ GroupClueCost (PerPlayer 1) (LocationWithId $ toId x)
       ]

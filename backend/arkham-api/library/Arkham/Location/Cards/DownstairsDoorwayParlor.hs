@@ -25,12 +25,15 @@ instance HasModifiersFor DownstairsDoorwayParlor where
 instance HasAbilities DownstairsDoorwayParlor where
   getAbilities (DownstairsDoorwayParlor a) =
     extendRevealed1 a
+      $ onlyOnce
       $ restricted
         a
         1
         ( Here
             <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1))
-            <> not_ (Remembered RecoveredAStrangeKey)
+            -- The Attic remembers the same key; see the note there for why
+            -- achievements keep both offerable.
+            <> oneOf [AchievementsEnabled, not_ (Remembered RecoveredAStrangeKey)]
         )
       $ FastAbility Free
 

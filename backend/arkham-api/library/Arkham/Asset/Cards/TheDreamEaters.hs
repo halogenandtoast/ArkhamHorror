@@ -142,6 +142,7 @@ zeal =
       , cdKeywords = singleton (Keyword.Bonded 1 "06030")
       , cdUnique = True
       , cdLevel = Nothing
+      , cdTags = ["cat"]
       }
 
 augur :: CardDef
@@ -494,6 +495,7 @@ summonedHound1 =
     , cdAdditionalCost = Just (ShuffleBondedCost 1 "06283")
     , cdLevel = Just 1
     , cdBondedWith = [(1, "06283")]
+    , cdTags = ["dog"]
     }
 
 theBlackCat5 :: CardDef

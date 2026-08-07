@@ -24,12 +24,17 @@ module Helpers.Achievements (
   asTheDrownedCity,
   asTheDrownedCityWith,
   asTheDrownedCityScenario,
+  asTheDreamEaters,
+  asTheDreamEatersWith,
+  asTheDreamEatersScenario,
   didEarn,
   didEarnDunwich,
   didEarnCarcosa,
   didEarnForgottenAge,
   didEarnCircle,
   didEarnDrownedCity,
+  didEarnDreamQuest,
+  didEarnWebOfDreams,
   didProgressDunwich,
   didProgressCarcosa,
   didProgressCircle,
@@ -131,6 +136,18 @@ asTheDrownedCity = asTheDrownedCityWith Easy
 asTheDrownedCityScenario :: CardCode -> TestAppT ()
 asTheDrownedCityScenario = asAchievementCampaignScenario "11"
 
+-- The Dream-Eaters prints one achievement list per mini-campaign, but both are
+-- earned in campaign "06"; detection is scoped by scenario instead.
+
+asTheDreamEatersWith :: Difficulty -> TestAppT ()
+asTheDreamEatersWith = asAchievementCampaign "06"
+
+asTheDreamEaters :: TestAppT ()
+asTheDreamEaters = asTheDreamEatersWith Easy
+
+asTheDreamEatersScenario :: CardCode -> TestAppT ()
+asTheDreamEatersScenario = asAchievementCampaignScenario "06"
+
 didEarn :: NightOfTheZealotAchievement -> TestAppT (IORef Bool)
 didEarn achievement =
   createMessageMatcher $ EarnAchievement $ NightOfTheZealotAchievement achievement
@@ -154,6 +171,14 @@ didEarnCircle achievement =
 didEarnDrownedCity :: TheDrownedCityAchievement -> TestAppT (IORef Bool)
 didEarnDrownedCity achievement =
   createMessageMatcher $ EarnAchievement $ TheDrownedCityAchievement achievement
+
+didEarnDreamQuest :: TheDreamQuestAchievement -> TestAppT (IORef Bool)
+didEarnDreamQuest achievement =
+  createMessageMatcher $ EarnAchievement $ TheDreamQuestAchievement achievement
+
+didEarnWebOfDreams :: TheWebOfDreamsAchievement -> TestAppT (IORef Bool)
+didEarnWebOfDreams achievement =
+  createMessageMatcher $ EarnAchievement $ TheWebOfDreamsAchievement achievement
 
 -- Checklist progress reports (cross-playthrough achievements); the items must
 -- match exactly, in 'achievementChecklist'-mapping order.

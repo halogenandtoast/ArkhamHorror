@@ -315,6 +315,13 @@ data Criterion
   | ElectrostaticDetonation
   | BearerNotEliminated
   | IsReturnTo
+  | {- | True when achievement tracking is switched on for this game. A handful of
+    cards carry a "don't offer this again, it would do nothing" guard that also
+    makes an official achievement unearnable; those guards are relaxed behind this
+    criterion (paired with 'onlyOnce') so the ability can still be resolved once,
+    as a no-op, when someone is chasing the achievement.
+    -}
+    AchievementsEnabled
   | IfCostsAreIgnored Criterion
   | IgnoreModifiersFrom Source Criterion
   | IfCriteria Criterion Criterion Criterion

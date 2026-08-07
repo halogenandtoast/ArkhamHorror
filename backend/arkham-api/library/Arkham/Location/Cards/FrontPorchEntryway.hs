@@ -28,12 +28,17 @@ instance HasAbilities FrontPorchEntryway where
           )
       , scenarioI18n
           ( withI18nTooltip "frontPorchEntryway.placeUnmarkedTomb"
+              $ onlyOnce
               $ restrictedAbility
                 attrs
                 2
                 ( Here
                     <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1))
-                    <> notExists (LocationWithTitle "Unmarked Tomb")
+                    -- The Library's ability places the same one Unmarked Tomb, so
+                    -- normally whichever fires first hides the other. With
+                    -- achievements on, both stay offerable (once each) so "Déjà Vu"
+                    -- can tick both boxes; the second one resolves as a no-op.
+                    <> oneOf [AchievementsEnabled, notExists (LocationWithTitle "Unmarked Tomb")]
                 )
               $ FastAbility Free
           )
@@ -46,6 +51,7 @@ instance RunMessage FrontPorchEntryway where
       push $ Msg.RevealLocation (Just iid) upstairsHallway
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ PlaceLocationMatching "Unmarked Tomb"
+      alreadyPlaced <- selectAny $ LocationWithTitle "Unmarked Tomb"
+      unless alreadyPlaced $ push $ PlaceLocationMatching "Unmarked Tomb"
       pure l
     _ -> FrontPorchEntryway <$> runMessage msg attrs

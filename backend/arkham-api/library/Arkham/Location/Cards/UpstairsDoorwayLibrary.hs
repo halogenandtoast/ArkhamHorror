@@ -24,12 +24,16 @@ instance HasModifiersFor UpstairsDoorwayLibrary where
 instance HasAbilities UpstairsDoorwayLibrary where
   getAbilities (UpstairsDoorwayLibrary a) =
     extendRevealed1 a
-      $ restricted a 1 (Here <> notExists (LocationWithTitle "Unmarked Tomb"))
+      $ onlyOnce
+      -- The Entryway's ability places the same one Unmarked Tomb; see the note
+      -- there for why achievements keep both offerable.
+      $ restricted a 1 (Here <> oneOf [AchievementsEnabled, notExists (LocationWithTitle "Unmarked Tomb")])
       $ FastAbility (GroupClueCost (PerPlayer 1) (be a))
 
 instance RunMessage UpstairsDoorwayLibrary where
   runMessage msg l@(UpstairsDoorwayLibrary attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ PlaceLocationMatching "Unmarked Tomb"
+      alreadyPlaced <- selectAny $ LocationWithTitle "Unmarked Tomb"
+      unless alreadyPlaced $ push $ PlaceLocationMatching "Unmarked Tomb"
       pure l
     _ -> UpstairsDoorwayLibrary <$> liftRunMessage msg attrs

@@ -21,8 +21,9 @@ import Control.Monad.Fail
 import Data.Aeson.TH
 import Database.Persist.Sql
 
--- | Return to the Night of the Zealot. Official list: these can only be
--- completed while playing with the Return to encounter sets (campaign "50").
+{- | Return to the Night of the Zealot. Official list: these can only be
+completed while playing with the Return to encounter sets (campaign "50").
+-}
 data NightOfTheZealotAchievement
   = TheZealotsRevenge
   | IDontTrustHer
@@ -63,9 +64,10 @@ data TheDunwichLegacyAchievement
 
 $(deriveJSON defaultOptions ''TheDunwichLegacyAchievement)
 
--- | Return to The Path to Carcosa (campaign "52"). Constructor names must stay
--- globally unique, so shared printed names ("Line in the Sand", "<X>
--- Expertise") are disambiguated here even though the printed name is not.
+{- | Return to The Path to Carcosa (campaign "52"). Constructor names must stay
+globally unique, so shared printed names ("Line in the Sand", "<X>
+Expertise") are disambiguated here even though the printed name is not.
+-}
 data ThePathToCarcosaAchievement
   = FairWarning
   | FirstSteps
@@ -87,8 +89,9 @@ data ThePathToCarcosaAchievement
 
 $(deriveJSON defaultOptions ''ThePathToCarcosaAchievement)
 
--- | Return to The Forgotten Age (campaign "53"). The official list gates
--- these to the Return-to encounter sets only.
+{- | Return to The Forgotten Age (campaign "53"). The official list gates
+these to the Return-to encounter sets only.
+-}
 data TheForgottenAgeAchievement
   = WhyDidItHaveToBeSnakes
   | WatchThemUnravel
@@ -110,9 +113,10 @@ data TheForgottenAgeAchievement
 
 $(deriveJSON defaultOptions ''TheForgottenAgeAchievement)
 
--- | Return to The Circle Undone (campaign "54"). Constructor names must stay
--- globally unique, so shared printed names ("<X> Expertise") are disambiguated
--- here even though the printed name is not.
+{- | Return to The Circle Undone (campaign "54"). Constructor names must stay
+globally unique, so shared printed names ("<X> Expertise") are disambiguated
+here even though the printed name is not.
+-}
 data TheCircleUndoneAchievement
   = WhoYouGonnaCall
   | SaviorOfHumanity
@@ -162,6 +166,52 @@ data TheDrownedCityAchievement
 
 $(deriveJSON defaultOptions ''TheDrownedCityAchievement)
 
+{- | The Dream-Quest (campaign "06", side A). The Dream-Eaters prints two
+achievement lists, one per mini-campaign, and both are earnable in the same
+campaign id — the split is a presentation concern ('achievementCampaignPart'),
+not a gating one. A few entries here can only be finished by playing the full
+interconnected campaign; they are still shown under The Dream-Quest because that
+is where they are printed.
+-}
+data TheDreamQuestAchievement
+  = DoYouAlwaysFollowOrders
+  | AwwButTheyreSoCute
+  | LosingMyReligion
+  | FantasyFlightGamesDoesNotCondoneAccomplishingThisAchievement
+  | TacticalEspionageAction
+  | MoonLizardsIDontBelieveTheyExist
+  | BarkhamHorrorEnthusiast
+  | OnlyWayToBeSure
+  | GiveThemSomethingToTalkAbout
+  | ThisIsntEvenMyFinalForm
+  | DontTellAnyoneBut
+  | DreamQuestLineInTheSand
+  | DreamlandsExpertise
+  | BewareTheBlackCat
+  | ReunitedAndItFeelsSoGood
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
+
+$(deriveJSON defaultOptions ''TheDreamQuestAchievement)
+
+-- | The Web of Dreams (campaign "06", side B). See 'TheDreamQuestAchievement'.
+data TheWebOfDreamsAchievement
+  = EveryonesAFeministUntilThereIsASpiderAround
+  | TheCarterMethod
+  | TheDoctorIsIn
+  | DejaVu
+  | TheCasaLomaManeuver
+  | IRememberThisPlace
+  | BadAdvice
+  | MarchOfTheGhouls
+  | TheIshimuraFlex
+  | YouSpinMeRightRound
+  | MasterOfUnlocking
+  | WebOfDreamsLineInTheSand
+  | UnderworldExpertise
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
+
+$(deriveJSON defaultOptions ''TheWebOfDreamsAchievement)
+
 data Achievement
   = NightOfTheZealotAchievement NightOfTheZealotAchievement
   | TheDunwichLegacyAchievement TheDunwichLegacyAchievement
@@ -169,6 +219,8 @@ data Achievement
   | TheForgottenAgeAchievement TheForgottenAgeAchievement
   | TheCircleUndoneAchievement TheCircleUndoneAchievement
   | TheDrownedCityAchievement TheDrownedCityAchievement
+  | TheDreamQuestAchievement TheDreamQuestAchievement
+  | TheWebOfDreamsAchievement TheWebOfDreamsAchievement
   deriving stock (Eq, Show, Ord, Data)
 
 allAchievements :: [Achievement]
@@ -179,6 +231,8 @@ allAchievements =
     <> map TheForgottenAgeAchievement [minBound ..]
     <> map TheCircleUndoneAchievement [minBound ..]
     <> map TheDrownedCityAchievement [minBound ..]
+    <> map TheDreamQuestAchievement [minBound ..]
+    <> map TheWebOfDreamsAchievement [minBound ..]
 
 -- | Flat constructor name; the wire and database representation.
 achievementName :: Achievement -> Text
@@ -189,6 +243,8 @@ achievementName = \case
   TheForgottenAgeAchievement a -> tshow a
   TheCircleUndoneAchievement a -> tshow a
   TheDrownedCityAchievement a -> tshow a
+  TheDreamQuestAchievement a -> tshow a
+  TheWebOfDreamsAchievement a -> tshow a
 
 parseAchievement :: Text -> Maybe Achievement
 parseAchievement t = lookup t achievementsByName
@@ -270,6 +326,21 @@ achievementCampaigns = \case
   TheForgottenAgeAchievement _ -> ["53"]
   TheCircleUndoneAchievement _ -> ["54"]
   TheDrownedCityAchievement _ -> ["11"]
+  -- Both Dream-Eaters lists live in campaign "06"; the mini-campaign split is
+  -- 'achievementCampaignPart', a display grouping only.
+  TheDreamQuestAchievement _ -> ["06"]
+  TheWebOfDreamsAchievement _ -> ["06"]
+
+{- | Sub-grouping within a campaign, for lists that are printed per mini-campaign.
+Only The Dream-Eaters has one: its achievements are split between The Dream-Quest
+and The Web of Dreams, and the UI shows them as two sections even when the pair is
+played as a single interconnected campaign.
+-}
+achievementCampaignPart :: Achievement -> Maybe Text
+achievementCampaignPart = \case
+  TheDreamQuestAchievement _ -> Just "theDreamQuest"
+  TheWebOfDreamsAchievement _ -> Just "theWebOfDreams"
+  _ -> Nothing
 
 -- Flat JSON, mirroring UltimatumOrBoon: the union never leaks its shape.
 instance ToJSON Achievement where

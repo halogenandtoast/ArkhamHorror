@@ -4,7 +4,6 @@
 
 module Arkham.Scenarios.FortuneAndFolly.Helpers (module Arkham.Scenarios.FortuneAndFolly.Helpers, module X) where
 
-import Arkham.Scenarios.FortuneAndFolly.PlayingCard as X
 import Arkham.Ability.Types
 import Arkham.Capability
 import Arkham.Card
@@ -20,9 +19,8 @@ import Arkham.Prelude
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers as X (
   getAlarmLevel,
   getMaxAlarmLevel,
-  reduceAlarmLevel,
-  reduceAlarmLevelBy,
  )
+import Arkham.Scenarios.FortuneAndFolly.PlayingCard as X
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
@@ -145,3 +143,18 @@ raiseAlarmLevel source iids = do
 raiseAlarmLevelOf :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
 raiseAlarmLevelOf source iid = raiseAlarmLevel source [iid]
 {-# INLINE raiseAlarmLevelOf #-}
+
+{- | "An investigator's alarm level cannot be reduced below 1 or raised above 10."
+That floor is Fortune and Folly's alone, which is why this shadows the Dark Side
+of the Moon helper of the same name instead of re-exporting it.
+-}
+reduceAlarmLevelBy :: (Sourceable source, ReverseQueue m) => Int -> source -> InvestigatorId -> m ()
+reduceAlarmLevelBy n (toSource -> source) iid = do
+  current <- getAlarmLevel iid
+  let n' = min n (max 0 (current - 1))
+  when (n' > 0) $ removeTokens source iid AlarmLevel n'
+{-# INLINE reduceAlarmLevelBy #-}
+
+reduceAlarmLevel :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
+reduceAlarmLevel source = reduceAlarmLevelBy 1 source
+{-# INLINE reduceAlarmLevel #-}

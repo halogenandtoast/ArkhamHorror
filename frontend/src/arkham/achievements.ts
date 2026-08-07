@@ -4,7 +4,14 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['11', '50', '51', '52', '53', '54']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '11', '50', '51', '52', '53', '54']
+
+// Sub-grouping inside a campaign, for campaigns whose achievement list is
+// printed per mini-campaign. Only The Dream-Eaters has one: its list is split
+// between The Dream-Quest and The Web of Dreams, and both sections are shown
+// even when the pair is played as one interconnected 8-part campaign.
+// Mirrors the backend achievementCampaignPart.
+export type AchievementPart = 'theDreamQuest' | 'theWebOfDreams'
 
 export type AchievementTag =
   | 'TheZealotsRevenge'
@@ -103,8 +110,53 @@ export type AchievementTag =
   | 'Obligations'
   | 'DrownedCityLineInTheSand'
   | 'RlyehExpertise'
+  | 'DoYouAlwaysFollowOrders'
+  | 'AwwButTheyreSoCute'
+  | 'LosingMyReligion'
+  | 'FantasyFlightGamesDoesNotCondoneAccomplishingThisAchievement'
+  | 'TacticalEspionageAction'
+  | 'MoonLizardsIDontBelieveTheyExist'
+  | 'BarkhamHorrorEnthusiast'
+  | 'OnlyWayToBeSure'
+  | 'GiveThemSomethingToTalkAbout'
+  | 'ThisIsntEvenMyFinalForm'
+  | 'DontTellAnyoneBut'
+  | 'DreamQuestLineInTheSand'
+  | 'DreamlandsExpertise'
+  | 'BewareTheBlackCat'
+  | 'ReunitedAndItFeelsSoGood'
+  | 'EveryonesAFeministUntilThereIsASpiderAround'
+  | 'TheCarterMethod'
+  | 'TheDoctorIsIn'
+  | 'DejaVu'
+  | 'TheCasaLomaManeuver'
+  | 'IRememberThisPlace'
+  | 'BadAdvice'
+  | 'MarchOfTheGhouls'
+  | 'TheIshimuraFlex'
+  | 'YouSpinMeRightRound'
+  | 'MasterOfUnlocking'
+  | 'WebOfDreamsLineInTheSand'
+  | 'UnderworldExpertise'
 
-export type AchievementEntry = { tag: AchievementTag; campaignId: string }
+export type AchievementEntry = { tag: AchievementTag; campaignId: string; part?: AchievementPart }
+
+export type AchievementSection = { part: AchievementPart | null; entries: AchievementEntry[] }
+
+// Split a campaign's entries into its printed sections. Campaigns without a
+// mini-campaign split come back as a single unlabelled section, so callers can
+// render sections unconditionally. Relies on the catalog keeping each part's
+// entries contiguous, which is also their printed order.
+export function achievementSections(entries: AchievementEntry[]): AchievementSection[] {
+  const sections: AchievementSection[] = []
+  for (const entry of entries) {
+    const part = entry.part ?? null
+    const last = sections[sections.length - 1]
+    if (last && last.part === part) last.entries.push(entry)
+    else sections.push({ part, entries: [entry] })
+  }
+  return sections
+}
 
 // Cross-playthrough checklist achievements: item keys mirror the backend
 // achievementChecklist (Arkham.Achievement.Types); the earned row's progress
@@ -261,4 +313,32 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'Obligations', campaignId: '11' },
   { tag: 'DrownedCityLineInTheSand', campaignId: '11' },
   { tag: 'RlyehExpertise', campaignId: '11' },
+  { tag: 'DoYouAlwaysFollowOrders', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'AwwButTheyreSoCute', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'LosingMyReligion', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'FantasyFlightGamesDoesNotCondoneAccomplishingThisAchievement', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'TacticalEspionageAction', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'MoonLizardsIDontBelieveTheyExist', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'BarkhamHorrorEnthusiast', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'OnlyWayToBeSure', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'GiveThemSomethingToTalkAbout', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'ThisIsntEvenMyFinalForm', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'DontTellAnyoneBut', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'DreamQuestLineInTheSand', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'DreamlandsExpertise', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'BewareTheBlackCat', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'ReunitedAndItFeelsSoGood', campaignId: '06', part: 'theDreamQuest' },
+  { tag: 'EveryonesAFeministUntilThereIsASpiderAround', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'TheCarterMethod', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'TheDoctorIsIn', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'DejaVu', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'TheCasaLomaManeuver', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'IRememberThisPlace', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'BadAdvice', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'MarchOfTheGhouls', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'TheIshimuraFlex', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'YouSpinMeRightRound', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'MasterOfUnlocking', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'WebOfDreamsLineInTheSand', campaignId: '06', part: 'theWebOfDreams' },
+  { tag: 'UnderworldExpertise', campaignId: '06', part: 'theWebOfDreams' },
 ]

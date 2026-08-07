@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.ContainingTheOutbreak ( containingTheOutbreak,) where
+module Arkham.Act.Cards.ContainingTheOutbreak (containingTheOutbreak) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -22,20 +22,18 @@ instance HasAbilities ContainingTheOutbreak where
     [ skillTestAbility
         $ withTooltip
           "{action}: Test {willpower} (X) to attempt to seal the rift. X is this location's shroud. Investigators at this location may spend 1 {perPlayer} clues, as a group, to automatically succeed. If you succeed, replace the damage token on this location with a horror token. For the remainder of the game, this location cannot become infested."
-        $ restrictedAbility
+        $ restricted
           (proxied (LocationMatcherSource InfestedLocation) attrs)
           1
           Here
-        $ ActionAbility mempty Nothing (ActionCost 1 <> OptionalCost (GroupClueCost (PerPlayer 1) YourLocation))
-    , restrictedAbility attrs 2 (not_ $ exists InfestedLocation)
+        $ ActionAbility mempty Nothing
+        $ ActionCost 1
+        <> OptionalCost (GroupClueCost (PerPlayer 1) YourLocation)
+    , onlyOnce
+        $ restricted attrs 2 (not_ $ exists InfestedLocation)
         $ Objective
-        $ ForcedAbility AnyWindow
+        $ forced AnyWindow
     ]
-
-getPaidClues :: Payment -> Bool
-getPaidClues (CluePayment _ _) = True
-getPaidClues (Payments ps) = any getPaidClues ps
-getPaidClues _ = False
 
 instance RunMessage ContainingTheOutbreak where
   runMessage msg a@(ContainingTheOutbreak attrs) = runQueueT $ case msg of
@@ -44,9 +42,9 @@ instance RunMessage ContainingTheOutbreak where
       source@(ProxySource (LocationSource lid) (isSource attrs -> True))
       1
       _
-      (getPaidClues -> paidClues) -> do
+      (totalCluePayment -> paidClues) -> do
         sid <- getRandom
-        when paidClues $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
+        when (paidClues > 0) $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
         beginSkillTest sid iid (toAbilitySource source 1) iid #willpower
           $ LocationMaybeFieldCalculation lid LocationShroud
         pure a

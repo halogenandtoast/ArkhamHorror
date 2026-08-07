@@ -24,7 +24,11 @@ instance HasModifiersFor BurialGround where
 
 instance HasAbilities BurialGround where
   getAbilities (BurialGround a) =
-    extendRevealed1 a $ restricted a 1 Here $ FastAbility $ GroupClueCost (PerPlayer 1) (be a)
+    extendRevealed1 a
+      $ onlyOnce
+      $ restricted a 1 Here
+      $ FastAbility
+      $ GroupClueCost (PerPlayer 1) (be a)
 
 instance RunMessage BurialGround where
   runMessage msg l@(BurialGround attrs) = runQueueT $ case msg of

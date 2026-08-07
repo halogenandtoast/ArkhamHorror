@@ -22,12 +22,13 @@ theKingsDecree = act (2, A) TheKingsDecree Cards.theKingsDecree Nothing
 
 instance HasAbilities TheKingsDecree where
   getAbilities (TheKingsDecree x) =
-    [ restrictedAbility x 1 (EachUndefeatedInvestigator $ InvestigatorAt $ LocationWithTrait Port)
+    [ restricted x 1 (EachUndefeatedInvestigator $ InvestigatorAt $ LocationWithTrait Port)
         $ Objective
         $ triggered (RoundEnds #when) Free
-    , restrictedAbility x 2 (HasScenarioCount SignOfTheGods $ atLeast 10)
+    , onlyOnce
+        $ restricted x 2 (HasScenarioCount SignOfTheGods $ atLeast 10)
         $ Objective
-        $ ForcedAbility AnyWindow
+        $ forced AnyWindow
     ]
 
 toOption :: Region -> UI Message
@@ -55,7 +56,7 @@ instance RunMessage TheKingsDecree where
       if null availableRegions
         then push R1
         else push $ chooseOrRunOne lead $ map toOption availableRegions
-      push $ ShuffleEncounterDiscardBackIn
+      push ShuffleEncounterDiscardBackIn
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push R1

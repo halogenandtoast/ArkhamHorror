@@ -7,32 +7,38 @@ import Arkham.Location.Base (
   revealedConnectedMatchersL,
   revealedSymbolL,
   symbolL,
+  revealedL,
  )
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher (LocationWithSymbol))
 import TestImport.New
 
--- | location1 <-> location2 <-> location3
+{- | location1 <-> location2 <-> location3. All revealed: The Grapevine can only
+target an enemy at a revealed location, and test locations default to unrevealed.
+-}
 threeInARow :: TestAppT (Location, Location, Location)
 threeInARow = do
   location1 <-
     testLocationWith
-      $ (symbolL .~ Square)
-        . (revealedSymbolL .~ Square)
-        . (connectedMatchersL .~ [LocationWithSymbol Triangle])
-        . (revealedConnectedMatchersL .~ [LocationWithSymbol Triangle])
+      $ (revealedL .~ True)
+      . (symbolL .~ Square)
+      . (revealedSymbolL .~ Square)
+      . (connectedMatchersL .~ [LocationWithSymbol Triangle])
+      . (revealedConnectedMatchersL .~ [LocationWithSymbol Triangle])
   location2 <-
     testLocationWith
-      $ (symbolL .~ Triangle)
-        . (revealedSymbolL .~ Triangle)
-        . (connectedMatchersL .~ [LocationWithSymbol Square, LocationWithSymbol Moon])
-        . (revealedConnectedMatchersL .~ [LocationWithSymbol Square, LocationWithSymbol Moon])
+      $ (revealedL .~ True)
+      . (symbolL .~ Triangle)
+      . (revealedSymbolL .~ Triangle)
+      . (connectedMatchersL .~ [LocationWithSymbol Square, LocationWithSymbol Moon])
+      . (revealedConnectedMatchersL .~ [LocationWithSymbol Square, LocationWithSymbol Moon])
   location3 <-
     testLocationWith
-      $ (symbolL .~ Moon)
-        . (revealedSymbolL .~ Moon)
-        . (connectedMatchersL .~ [LocationWithSymbol Triangle])
-        . (revealedConnectedMatchersL .~ [LocationWithSymbol Triangle])
+      $ (revealedL .~ True)
+      . (symbolL .~ Moon)
+      . (revealedSymbolL .~ Moon)
+      . (connectedMatchersL .~ [LocationWithSymbol Triangle])
+      . (revealedConnectedMatchersL .~ [LocationWithSymbol Triangle])
   pure (location1, location2, location3)
 
 spec :: Spec

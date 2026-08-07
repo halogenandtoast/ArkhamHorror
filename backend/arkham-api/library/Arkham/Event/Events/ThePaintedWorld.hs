@@ -47,7 +47,13 @@ instance RunMessage ThePaintedWorld where
             , pcMutated = choice.mutated
             , pcOwner = Just iid
             }
-      replaceCard (toCardId attrs) (PlayerCard choiceAsCard)
+      -- Must go through the message: the CardGen `replaceCard` only rewrites the
+      -- card registry, which is enough for `Do (PlayCard ...)` to fetch the
+      -- substituted card, but leaves the original card in hand. The in-hand
+      -- effect entities are preloaded from the hand, so the played event's
+      -- {reaction} abilities (Intel Report, Decoy) would never be offered at the
+      -- play window below.
+      push $ ReplaceCard (toCardId attrs) (PlayerCard choiceAsCard)
       checkWindows [mkWhen (Window.PlayCard iid $ Window.CardPlay (PlayerCard choiceAsCard) True)]
       pure e
     _ -> ThePaintedWorld <$> liftRunMessage msg attrs

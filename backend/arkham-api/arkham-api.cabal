@@ -7360,6 +7360,7 @@ test-suite spec
       Arkham.Event.Events.ShedALightSpec
       Arkham.Event.Events.SneakAttackSpec
       Arkham.Event.Events.SureGamble3Spec
+      Arkham.Event.Events.ThePaintedWorldSpec
       Arkham.Event.Events.ToeToToeSpec
       Arkham.Event.Events.Transfiguration2Spec
       Arkham.Event.Events.TrapLimitSpec

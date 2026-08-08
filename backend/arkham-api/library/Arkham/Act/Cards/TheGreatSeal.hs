@@ -16,7 +16,8 @@ instance HasAbilities TheGreatSeal where
   getAbilities (TheGreatSeal a) =
     extend
       a
-      [ restricted a 1 (exists $ mconcat $ "The Gate of Y'quaa" : map LocationWithActiveSeal [minBound ..])
+      [ onlyOnce
+          $ restricted a 1 (exists $ mconcat $ "The Gate of Y'quaa" : map LocationWithActiveSeal [minBound ..])
           $ Objective
           $ forced AnyWindow
       ]

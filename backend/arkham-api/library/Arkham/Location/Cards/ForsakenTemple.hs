@@ -22,7 +22,7 @@ instance HasAbilities ForsakenTemple where
   getAbilities (ForsakenTemple a) =
     extendRevealed1 a
       $ skillTestAbility
-      $ restricted a 1 (youExist (InvestigatorWithDormantSeal SealC)) actionAbility
+      $ restricted a 1 (Here <> youExist (InvestigatorWithDormantSeal SealC)) actionAbility
 
 instance RunMessage ForsakenTemple where
   runMessage msg l@(ForsakenTemple attrs) = runQueueT $ case msg of

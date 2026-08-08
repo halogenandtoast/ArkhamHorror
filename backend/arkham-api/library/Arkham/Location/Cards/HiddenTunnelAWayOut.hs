@@ -14,9 +14,11 @@ hiddenTunnelAWayOut = location HiddenTunnelAWayOut Cards.hiddenTunnelAWayOut 5 (
 
 instance HasAbilities HiddenTunnelAWayOut where
   getAbilities (HiddenTunnelAWayOut a) =
-    extendRevealed
-      a
-      [restricted a 1 (EachUndefeatedInvestigator $ at_ (be a)) $ Objective $ forced AnyWindow]
+    extendRevealed1 a
+      $ onlyOnce
+      $ restricted a 1 (EachUndefeatedInvestigator $ at_ (be a))
+      $ Objective
+      $ forced AnyWindow
 
 instance RunMessage HiddenTunnelAWayOut where
   runMessage msg l@(HiddenTunnelAWayOut attrs) = runQueueT $ case msg of

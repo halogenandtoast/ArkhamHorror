@@ -33,6 +33,9 @@ module Helpers.Achievements (
   asEdgeOfTheEarth,
   asEdgeOfTheEarthWith,
   asEdgeOfTheEarthScenario,
+  asTheScarletKeys,
+  asTheScarletKeysWith,
+  asTheScarletKeysScenario,
   didEarn,
   didEarnDunwich,
   didEarnCarcosa,
@@ -43,12 +46,14 @@ module Helpers.Achievements (
   didEarnWebOfDreams,
   didEarnInnsmouth,
   didEarnEdgeOfTheEarth,
+  didEarnScarletKeys,
   didProgressDunwich,
   didProgressCarcosa,
   didProgressCircle,
   didProgressDrownedCity,
   didProgressInnsmouth,
   didProgressEdgeOfTheEarth,
+  didProgressScarletKeys,
 ) where
 
 import Arkham.Achievement.Types
@@ -182,6 +187,18 @@ asEdgeOfTheEarth = asEdgeOfTheEarthWith Easy
 asEdgeOfTheEarthScenario :: CardCode -> TestAppT ()
 asEdgeOfTheEarthScenario = asAchievementCampaignScenario "08"
 
+-- The Scarlet Keys' list is printed for the campaign itself, so campaign "09"
+-- is the eligible campaign rather than a Return-to variant.
+
+asTheScarletKeysWith :: Difficulty -> TestAppT ()
+asTheScarletKeysWith = asAchievementCampaign "09"
+
+asTheScarletKeys :: TestAppT ()
+asTheScarletKeys = asTheScarletKeysWith Easy
+
+asTheScarletKeysScenario :: CardCode -> TestAppT ()
+asTheScarletKeysScenario = asAchievementCampaignScenario "09"
+
 didEarn :: NightOfTheZealotAchievement -> TestAppT (IORef Bool)
 didEarn achievement =
   createMessageMatcher $ EarnAchievement $ NightOfTheZealotAchievement achievement
@@ -222,6 +239,10 @@ didEarnEdgeOfTheEarth :: EdgeOfTheEarthAchievement -> TestAppT (IORef Bool)
 didEarnEdgeOfTheEarth achievement =
   createMessageMatcher $ EarnAchievement $ EdgeOfTheEarthAchievement achievement
 
+didEarnScarletKeys :: TheScarletKeysAchievement -> TestAppT (IORef Bool)
+didEarnScarletKeys achievement =
+  createMessageMatcher $ EarnAchievement $ TheScarletKeysAchievement achievement
+
 -- Checklist progress reports (cross-playthrough achievements); the items must
 -- match exactly, in 'achievementChecklist'-mapping order.
 
@@ -248,3 +269,7 @@ didProgressInnsmouth achievement items =
 didProgressEdgeOfTheEarth :: EdgeOfTheEarthAchievement -> [Text] -> TestAppT (IORef Bool)
 didProgressEdgeOfTheEarth achievement items =
   createMessageMatcher $ AchievementProgress (EdgeOfTheEarthAchievement achievement) items
+
+didProgressScarletKeys :: TheScarletKeysAchievement -> [Text] -> TestAppT (IORef Bool)
+didProgressScarletKeys achievement items =
+  createMessageMatcher $ AchievementProgress (TheScarletKeysAchievement achievement) items

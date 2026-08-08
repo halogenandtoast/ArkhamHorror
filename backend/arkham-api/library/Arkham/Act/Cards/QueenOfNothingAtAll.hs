@@ -16,7 +16,7 @@ queenOfNothingAtAll = act (3, A) QueenOfNothingAtAll Cards.queenOfNothingAtAll N
 
 instance HasAbilities QueenOfNothingAtAll where
   getAbilities = actAbilities1 \a ->
-    restricted a 1 (not_ $ exists $ mapOneOf enemyIs enemies) $ forced AnyWindow
+    onlyOnce $ restricted a 1 (not_ $ exists $ mapOneOf enemyIs enemies) $ Objective $ forced AnyWindow
    where
     enemies =
       [ Enemies.amaranthLurkingCorruption

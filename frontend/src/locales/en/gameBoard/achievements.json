@@ -11,6 +11,7 @@
     "06": "The Dream-Eaters",
     "07": "The Innsmouth Conspiracy",
     "08": "Edge of the Earth",
+    "09": "The Scarlet Keys",
     "11": "The Drowned City",
     "50": "Return to the Night of the Zealot",
     "51": "Return to the Dunwich Legacy",
@@ -724,6 +725,111 @@
     "AntarcticExpertise": {
       "name": "Antarctic Expertise",
       "text": "Win the Edge of the Earth campaign on Expert difficulty."
+    },
+    "CluedIn": {
+      "name": "Clued In",
+      "text": "Do not spend or drop a single clue via treachery cards in Riddles and Rain."
+    },
+    "TakeThatGhulat": {
+      "name": "Take That, Ghulat",
+      "text": "Ensure that not a single civilian is slain in Dead Heat."
+    },
+    "WhatsInAName": {
+      "name": "What’s in a Name?",
+      "text": "Tell Amaranth her real name in Dead Heat."
+    },
+    "PorqueNoLosDos": {
+      "name": "Porque No Los Dos?",
+      "text": "Defeat both copies of Desi simultaneously in Dancing Mad."
+    },
+    "LostAndFound": {
+      "name": "Lost and Found",
+      "text": "Take control of the Twisted Antiprism without a single clue on Clues Unveiled in Dealings in the Dark."
+    },
+    "ILikeTowerDefenseGames": {
+      "name": "I Like Tower Defense Games",
+      "text": "Defend The Claret Knight without any Key Locuses being destroyed in Dogs of War v. I."
+    },
+    "PlayWithYourFood": {
+      "name": "Play With Your Food",
+      "text": "Steal The Light of Pharos from either The Claret Knight or The Beast in a Cowl of Crimson while they have exactly 1 health remaining in Dogs of War v. II or v. III."
+    },
+    "MoreLikeDestroyedChimera": {
+      "name": "More Like “Destroyed” Chimera",
+      "text": "Defeat all five forms of the Void Chimera in a single session of On Thin Ice."
+    },
+    "WhoWatchesTheWatcher": {
+      "name": "Who Watches the Watcher?",
+      "text": "Unlock a secret final act in Sanguine Shadows."
+    },
+    "UnderMyUmbrella": {
+      "name": "Under My Umbrella",
+      "text": "Do not let Tzu San Niang devour a single Geist enemy in Shades of Suffering."
+    },
+    "AllHollow": {
+      "name": "All Hollow",
+      "text": "Learn about a place where Outsiders dwell and travel there to unlock Without a Trace."
+    },
+    "RedLooksGoodOnMe": {
+      "name": "Red Looks Good on Me",
+      "text": "Join the Red Coterie in Congress of the Keys."
+    },
+    "BloodyRedRevolution": {
+      "name": "Bloody Red Revolution",
+      "text": "Overthrow the Red Coterie in Congress of the Keys."
+    },
+    "ScarletWithYourPowersCombined": {
+      "name": "With Your Powers Combined…",
+      "text": "Shift 5 keys in a single turn."
+    },
+    "GiftOfGab": {
+      "name": "Gift of Gab",
+      "text": "Ensure that Commissioner Taylor orders you to “talk” 3 times during a single campaign."
+    },
+    "ImJustHereForTheLocalCuisine": {
+      "name": "“I’m Just Here for the Local Cuisine”",
+      "text": "In a single campaign, sample cuisine and/or visit bars or cafes from the following locations: Marrakesh, Havana, Buenos Aires, Tokyo, and Kuala Lumpur."
+    },
+    "SpeedDemon": {
+      "name": "Speed Demon",
+      "text": "Win The Scarlet Keys campaign with only 17 or fewer time passed."
+    },
+    "TrustNobody": {
+      "name": "Trust Nobody",
+      "text": "Win The Scarlet Keys campaign with 4 Elder Thing tokens in the chaos bag and without ever removing any Elder Thing tokens."
+    },
+    "TrustEverybody": {
+      "name": "Trust Everybody",
+      "text": "Win The Scarlet Keys campaign with 4 Tablet tokens in the chaos bag and without ever removing any Tablet tokens."
+    },
+    "HereIsYourBadge": {
+      "name": "Here is Your Badge",
+      "text": "Win The Scarlet Keys campaign and earn yourself a permanent position in the Foundation."
+    },
+    "KeyToMyHeart": {
+      "name": "Key to My Heart",
+      "text": "Collect each of the following keys throughout The Scarlet Keys campaign:",
+      "items": {
+        "TheEyeOfRavens": "The Eye of Ravens",
+        "TheLastBlossom": "The Last Blossom",
+        "TheLightOfPharos": "The Light of Pharos",
+        "TheSableGlass": "The Sable Glass",
+        "TheWeepingLady": "The Weeping Lady",
+        "TheTwistedAntiprism": "The Twisted Antiprism",
+        "TheShadeReaper": "The Shade Reaper",
+        "TheMirroringBlade": "The Mirroring Blade",
+        "TheBaleEngine": "The Bale Engine",
+        "TheRuinousChime": "The Ruinous Chime",
+        "TheWellspringOfFortune": "The Wellspring of Fortune"
+      }
+    },
+    "ScarletLineInTheSand": {
+      "name": "Line in the Sand",
+      "text": "Win The Scarlet Keys campaign with at least three Ultimatums active."
+    },
+    "GlobalExpertise": {
+      "name": "Global Expertise",
+      "text": "Win The Scarlet Keys campaign on Expert difficulty."
     }
   },
   "clearAll": "Clear all",

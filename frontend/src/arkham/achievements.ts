@@ -195,6 +195,29 @@ export type AchievementTag =
   | 'ThereAndBackAgain'
   | 'SnowLineInTheSand'
   | 'AntarcticExpertise'
+  | 'CluedIn'
+  | 'TakeThatGhulat'
+  | 'WhatsInAName'
+  | 'PorqueNoLosDos'
+  | 'LostAndFound'
+  | 'ILikeTowerDefenseGames'
+  | 'PlayWithYourFood'
+  | 'MoreLikeDestroyedChimera'
+  | 'WhoWatchesTheWatcher'
+  | 'UnderMyUmbrella'
+  | 'AllHollow'
+  | 'RedLooksGoodOnMe'
+  | 'BloodyRedRevolution'
+  | 'ScarletWithYourPowersCombined'
+  | 'GiftOfGab'
+  | 'ImJustHereForTheLocalCuisine'
+  | 'SpeedDemon'
+  | 'TrustNobody'
+  | 'TrustEverybody'
+  | 'HereIsYourBadge'
+  | 'KeyToMyHeart'
+  | 'ScarletLineInTheSand'
+  | 'GlobalExpertise'
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string; part?: AchievementPart }
 
@@ -288,6 +311,19 @@ export const achievementChecklists: Partial<Record<AchievementTag, string[]>> = 
     'TheLifecycleOfADeepOne',
     'AStingingBetrayal',
     'TheHorribleTruth',
+  ],
+  KeyToMyHeart: [
+    'TheEyeOfRavens',
+    'TheLastBlossom',
+    'TheLightOfPharos',
+    'TheSableGlass',
+    'TheWeepingLady',
+    'TheTwistedAntiprism',
+    'TheShadeReaper',
+    'TheMirroringBlade',
+    'TheBaleEngine',
+    'TheRuinousChime',
+    'TheWellspringOfFortune',
   ],
   Obligations: [
     'WalkInFaith',
@@ -459,4 +495,27 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'ThereAndBackAgain', campaignId: '08' },
   { tag: 'SnowLineInTheSand', campaignId: '08' },
   { tag: 'AntarcticExpertise', campaignId: '08' },
+  { tag: 'CluedIn', campaignId: '09' },
+  { tag: 'TakeThatGhulat', campaignId: '09' },
+  { tag: 'WhatsInAName', campaignId: '09' },
+  { tag: 'PorqueNoLosDos', campaignId: '09' },
+  { tag: 'LostAndFound', campaignId: '09' },
+  { tag: 'ILikeTowerDefenseGames', campaignId: '09' },
+  { tag: 'PlayWithYourFood', campaignId: '09' },
+  { tag: 'MoreLikeDestroyedChimera', campaignId: '09' },
+  { tag: 'WhoWatchesTheWatcher', campaignId: '09' },
+  { tag: 'UnderMyUmbrella', campaignId: '09' },
+  { tag: 'AllHollow', campaignId: '09' },
+  { tag: 'RedLooksGoodOnMe', campaignId: '09' },
+  { tag: 'BloodyRedRevolution', campaignId: '09' },
+  { tag: 'ScarletWithYourPowersCombined', campaignId: '09' },
+  { tag: 'GiftOfGab', campaignId: '09' },
+  { tag: 'ImJustHereForTheLocalCuisine', campaignId: '09' },
+  { tag: 'SpeedDemon', campaignId: '09' },
+  { tag: 'TrustNobody', campaignId: '09' },
+  { tag: 'TrustEverybody', campaignId: '09' },
+  { tag: 'HereIsYourBadge', campaignId: '09' },
+  { tag: 'KeyToMyHeart', campaignId: '09' },
+  { tag: 'ScarletLineInTheSand', campaignId: '09' },
+  { tag: 'GlobalExpertise', campaignId: '09' },
 ]

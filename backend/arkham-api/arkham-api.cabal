@@ -2066,6 +2066,7 @@ library
       Arkham.Campaign.Campaigns.ThePathToCarcosa
       Arkham.Campaign.Campaigns.ThePathToCarcosa.Achievements
       Arkham.Campaign.Campaigns.TheScarletKeys
+      Arkham.Campaign.Campaigns.TheScarletKeys.Achievements
       Arkham.Campaign.Import.Lifted
       Arkham.Campaign.Option
       Arkham.Campaign.Runner
@@ -7210,6 +7211,7 @@ test-suite spec
       Arkham.Achievements.TheDreamEatersSpec
       Arkham.Achievements.TheDrownedCitySpec
       Arkham.Achievements.TheInnsmouthConspiracySpec
+      Arkham.Achievements.TheScarletKeysSpec
       Arkham.Act.Cards.AFamiliarPatternSpec
       Arkham.Act.Cards.BlackwatersBaneEpicMultiplayerSpec
       Arkham.Act.Cards.ExposeTheAnomalyEpicMultiplayerSpec

@@ -263,6 +263,37 @@ data EdgeOfTheEarthAchievement
 
 $(deriveJSON defaultOptions ''EdgeOfTheEarthAchievement)
 
+{- | The Scarlet Keys (campaign "09"). Printed for the campaign itself rather
+than a Return-to variant, so these are earnable in ordinary Scarlet Keys games.
+-}
+data TheScarletKeysAchievement
+  = CluedIn
+  | TakeThatGhulat
+  | WhatsInAName
+  | PorqueNoLosDos
+  | LostAndFound
+  | ILikeTowerDefenseGames
+  | PlayWithYourFood
+  | MoreLikeDestroyedChimera
+  | WhoWatchesTheWatcher
+  | UnderMyUmbrella
+  | AllHollow
+  | RedLooksGoodOnMe
+  | BloodyRedRevolution
+  | ScarletWithYourPowersCombined
+  | GiftOfGab
+  | ImJustHereForTheLocalCuisine
+  | SpeedDemon
+  | TrustNobody
+  | TrustEverybody
+  | HereIsYourBadge
+  | KeyToMyHeart
+  | ScarletLineInTheSand
+  | GlobalExpertise
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
+
+$(deriveJSON defaultOptions ''TheScarletKeysAchievement)
+
 data Achievement
   = NightOfTheZealotAchievement NightOfTheZealotAchievement
   | TheDunwichLegacyAchievement TheDunwichLegacyAchievement
@@ -274,6 +305,7 @@ data Achievement
   | TheWebOfDreamsAchievement TheWebOfDreamsAchievement
   | TheInnsmouthConspiracyAchievement TheInnsmouthConspiracyAchievement
   | EdgeOfTheEarthAchievement EdgeOfTheEarthAchievement
+  | TheScarletKeysAchievement TheScarletKeysAchievement
   deriving stock (Eq, Show, Ord, Data)
 
 allAchievements :: [Achievement]
@@ -288,6 +320,7 @@ allAchievements =
     <> map TheWebOfDreamsAchievement [minBound ..]
     <> map TheInnsmouthConspiracyAchievement [minBound ..]
     <> map EdgeOfTheEarthAchievement [minBound ..]
+    <> map TheScarletKeysAchievement [minBound ..]
 
 -- | Flat constructor name; the wire and database representation.
 achievementName :: Achievement -> Text
@@ -302,6 +335,7 @@ achievementName = \case
   TheWebOfDreamsAchievement a -> tshow a
   TheInnsmouthConspiracyAchievement a -> tshow a
   EdgeOfTheEarthAchievement a -> tshow a
+  TheScarletKeysAchievement a -> tshow a
 
 parseAchievement :: Text -> Maybe Achievement
 parseAchievement t = lookup t achievementsByName
@@ -402,6 +436,21 @@ achievementChecklist = \case
       , "AveryClaypool"
       , "RoaldEllsworth"
       ]
+  -- The eleven Scarlet Keys, in printed checklist order.
+  TheScarletKeysAchievement KeyToMyHeart ->
+    Just
+      [ "TheEyeOfRavens"
+      , "TheLastBlossom"
+      , "TheLightOfPharos"
+      , "TheSableGlass"
+      , "TheWeepingLady"
+      , "TheTwistedAntiprism"
+      , "TheShadeReaper"
+      , "TheMirroringBlade"
+      , "TheBaleEngine"
+      , "TheRuinousChime"
+      , "TheWellspringOfFortune"
+      ]
   _ -> Nothing
 
 -- | Campaign ids this achievement can be earned in.
@@ -419,6 +468,7 @@ achievementCampaigns = \case
   TheWebOfDreamsAchievement _ -> ["06"]
   TheInnsmouthConspiracyAchievement _ -> ["07"]
   EdgeOfTheEarthAchievement _ -> ["08"]
+  TheScarletKeysAchievement _ -> ["09"]
 
 {- | Sub-grouping within a campaign, for lists that are printed per mini-campaign.
 Only The Dream-Eaters has one: its achievements are split between The Dream-Quest

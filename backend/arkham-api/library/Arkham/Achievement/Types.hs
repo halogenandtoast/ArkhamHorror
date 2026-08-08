@@ -234,6 +234,35 @@ data TheInnsmouthConspiracyAchievement
 
 $(deriveJSON defaultOptions ''TheInnsmouthConspiracyAchievement)
 
+{- | Edge of the Earth (campaign "08"). Printed for the campaign itself rather
+than a Return-to variant, so these are earnable in ordinary Edge of the Earth
+games.
+-}
+data EdgeOfTheEarthAchievement
+  = SafeBet
+  | LookAtAllThisStuff
+  | InYourHead
+  | ChaosChaos
+  | KnockKnock
+  | MadWithPower
+  | ConstructAdditionalPylons
+  | TheSoundOfMadness
+  | SorryImAllOutOfDogPuns
+  | KindOfAHatOnAHat
+  | ThisWasYourIdea
+  | NoRespectForTheDead
+  | WukWukBoom
+  | TheColdNeverBotheredMeAnyway
+  | HellFrozeOver
+  | AbandonedAndAlone
+  | FriendsForever
+  | ThereAndBackAgain
+  | SnowLineInTheSand
+  | AntarcticExpertise
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
+
+$(deriveJSON defaultOptions ''EdgeOfTheEarthAchievement)
+
 data Achievement
   = NightOfTheZealotAchievement NightOfTheZealotAchievement
   | TheDunwichLegacyAchievement TheDunwichLegacyAchievement
@@ -244,6 +273,7 @@ data Achievement
   | TheDreamQuestAchievement TheDreamQuestAchievement
   | TheWebOfDreamsAchievement TheWebOfDreamsAchievement
   | TheInnsmouthConspiracyAchievement TheInnsmouthConspiracyAchievement
+  | EdgeOfTheEarthAchievement EdgeOfTheEarthAchievement
   deriving stock (Eq, Show, Ord, Data)
 
 allAchievements :: [Achievement]
@@ -257,6 +287,7 @@ allAchievements =
     <> map TheDreamQuestAchievement [minBound ..]
     <> map TheWebOfDreamsAchievement [minBound ..]
     <> map TheInnsmouthConspiracyAchievement [minBound ..]
+    <> map EdgeOfTheEarthAchievement [minBound ..]
 
 -- | Flat constructor name; the wire and database representation.
 achievementName :: Achievement -> Text
@@ -270,6 +301,7 @@ achievementName = \case
   TheDreamQuestAchievement a -> tshow a
   TheWebOfDreamsAchievement a -> tshow a
   TheInnsmouthConspiracyAchievement a -> tshow a
+  EdgeOfTheEarthAchievement a -> tshow a
 
 parseAchievement :: Text -> Maybe Achievement
 parseAchievement t = lookup t achievementsByName
@@ -358,6 +390,18 @@ achievementChecklist = \case
       , "AStingingBetrayal"
       , "TheHorribleTruth"
       ]
+  EdgeOfTheEarthAchievement ThereAndBackAgain ->
+    Just
+      [ "DrAmyKensler"
+      , "ProfWilliamDyer"
+      , "Danforth"
+      , "JamesCookieFredericks"
+      , "EliyahAshevak"
+      , "DrMalaSinha"
+      , "TakadaHiroko"
+      , "AveryClaypool"
+      , "RoaldEllsworth"
+      ]
   _ -> Nothing
 
 -- | Campaign ids this achievement can be earned in.
@@ -374,6 +418,7 @@ achievementCampaigns = \case
   TheDreamQuestAchievement _ -> ["06"]
   TheWebOfDreamsAchievement _ -> ["06"]
   TheInnsmouthConspiracyAchievement _ -> ["07"]
+  EdgeOfTheEarthAchievement _ -> ["08"]
 
 {- | Sub-grouping within a campaign, for lists that are printed per mini-campaign.
 Only The Dream-Eaters has one: its achievements are split between The Dream-Quest

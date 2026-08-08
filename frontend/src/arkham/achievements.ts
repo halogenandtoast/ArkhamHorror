@@ -4,7 +4,7 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '07', '11', '50', '51', '52', '53', '54']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '07', '08', '09', '11', '50', '51', '52', '53', '54']
 
 // Sub-grouping inside a campaign, for campaigns whose achievement list is
 // printed per mini-campaign. Only The Dream-Eaters has one: its list is split
@@ -175,6 +175,26 @@ export type AchievementTag =
   | 'BiggerFishToFry'
   | 'InnsmouthLineInTheSand'
   | 'InnsmouthExpertise'
+  | 'SafeBet'
+  | 'LookAtAllThisStuff'
+  | 'InYourHead'
+  | 'ChaosChaos'
+  | 'KnockKnock'
+  | 'MadWithPower'
+  | 'ConstructAdditionalPylons'
+  | 'TheSoundOfMadness'
+  | 'SorryImAllOutOfDogPuns'
+  | 'KindOfAHatOnAHat'
+  | 'ThisWasYourIdea'
+  | 'NoRespectForTheDead'
+  | 'WukWukBoom'
+  | 'TheColdNeverBotheredMeAnyway'
+  | 'HellFrozeOver'
+  | 'AbandonedAndAlone'
+  | 'FriendsForever'
+  | 'ThereAndBackAgain'
+  | 'SnowLineInTheSand'
+  | 'AntarcticExpertise'
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string; part?: AchievementPart }
 
@@ -240,6 +260,17 @@ export const achievementChecklists: Partial<Record<AchievementTag, string[]>> = 
     'TidalTablet',
     'ShardOfYchlecht',
     'HorrorInClay',
+  ],
+  ThereAndBackAgain: [
+    'DrAmyKensler',
+    'ProfWilliamDyer',
+    'Danforth',
+    'JamesCookieFredericks',
+    'EliyahAshevak',
+    'DrMalaSinha',
+    'TakadaHiroko',
+    'AveryClaypool',
+    'RoaldEllsworth',
   ],
   YouWakeUpInARoom: [
     'AMeetingWithThomasDawson',
@@ -408,4 +439,24 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'BiggerFishToFry', campaignId: '07' },
   { tag: 'InnsmouthLineInTheSand', campaignId: '07' },
   { tag: 'InnsmouthExpertise', campaignId: '07' },
+  { tag: 'SafeBet', campaignId: '08' },
+  { tag: 'LookAtAllThisStuff', campaignId: '08' },
+  { tag: 'InYourHead', campaignId: '08' },
+  { tag: 'ChaosChaos', campaignId: '08' },
+  { tag: 'KnockKnock', campaignId: '08' },
+  { tag: 'MadWithPower', campaignId: '08' },
+  { tag: 'ConstructAdditionalPylons', campaignId: '08' },
+  { tag: 'TheSoundOfMadness', campaignId: '08' },
+  { tag: 'SorryImAllOutOfDogPuns', campaignId: '08' },
+  { tag: 'KindOfAHatOnAHat', campaignId: '08' },
+  { tag: 'ThisWasYourIdea', campaignId: '08' },
+  { tag: 'NoRespectForTheDead', campaignId: '08' },
+  { tag: 'WukWukBoom', campaignId: '08' },
+  { tag: 'TheColdNeverBotheredMeAnyway', campaignId: '08' },
+  { tag: 'HellFrozeOver', campaignId: '08' },
+  { tag: 'AbandonedAndAlone', campaignId: '08' },
+  { tag: 'FriendsForever', campaignId: '08' },
+  { tag: 'ThereAndBackAgain', campaignId: '08' },
+  { tag: 'SnowLineInTheSand', campaignId: '08' },
+  { tag: 'AntarcticExpertise', campaignId: '08' },
 ]

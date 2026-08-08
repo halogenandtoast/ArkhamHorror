@@ -10,6 +10,7 @@
   "campaigns": {
     "06": "The Dream-Eaters",
     "07": "The Innsmouth Conspiracy",
+    "08": "Edge of the Earth",
     "11": "The Drowned City",
     "50": "Return to the Night of the Zealot",
     "51": "Return to the Dunwich Legacy",
@@ -632,6 +633,97 @@
     "InnsmouthExpertise": {
       "name": "Innsmouth Expertise",
       "text": "Win The Innsmouth Conspiracy campaign on Expert difficulty."
+    },
+    "SafeBet": {
+      "name": "Safe Bet",
+      "text": "Camp at a location with a shelter value of 8 in Ice and Death, Part I."
+    },
+    "LookAtAllThisStuff": {
+      "name": "Look at All This Stuff!",
+      "text": "Recover all seven supplies in Ice and Death, and carry all of them to The Summit in To the Forbidden Peaks."
+    },
+    "InYourHead": {
+      "name": "In Your Head",
+      "text": "Finish Fatal Mirage with nine story cards in the victory display."
+    },
+    "ChaosChaos": {
+      "name": "Chaos Chaos",
+      "text": "Collect and spend a total of ten or more keys in City of the Elder Things."
+    },
+    "KnockKnock": {
+      "name": "Knock, Knock",
+      "text": "Collect, activate, and place all five seals in The Heart of Madness, Part I."
+    },
+    "MadWithPower": {
+      "name": "Mad With Power",
+      "text": "Simultaneously exhaust fifteen copies of The Nameless Madness in The Heart of Madness, Part II."
+    },
+    "ConstructAdditionalPylons": {
+      "name": "Construct Additional Pylons",
+      "text": "Collapse all five Mist-Pylons and escape with your life in The Heart of Madness, Part II."
+    },
+    "TheSoundOfMadness": {
+      "name": "The Sound of Madness",
+      "text": "Draw ten copies of “Tekeli-li!” during a single game."
+    },
+    "SorryImAllOutOfDogPuns": {
+      "name": "Sorry, I’m All Out of Dog Puns",
+      "text": "Have Anyu and four or more other assets with “Dog” in their title in play at the same time."
+    },
+    "KindOfAHatOnAHat": {
+      "name": "Kind of a Hat on a Hat",
+      "text": "Play a Wooden Sledge from a Backpack, then immediately use its ability to attach a Backpack to it."
+    },
+    "ThisWasYourIdea": {
+      "name": "This Was Your Idea",
+      "text": "Use Professor William Dyer’s ability to heal at least 4 horror from Danforth during a single scenario."
+    },
+    "NoRespectForTheDead": {
+      "name": "No Respect For the Dead",
+      "text": "Control at least five assets from the Memorials of the Lost encounter set at the same time."
+    },
+    "WukWukBoom": {
+      "name": "Wuk Wuk Boom",
+      "text": "Use Dynamite to defeat two Giant Albino Penguins at the same time."
+    },
+    "TheColdNeverBotheredMeAnyway": {
+      "name": "The Cold Never Bothered Me Anyway",
+      "text": "Win the Edge of the Earth campaign with eight Frost tokens in the chaos bag at the end of the campaign."
+    },
+    "HellFrozeOver": {
+      "name": "Hell Froze Over",
+      "text": "Win the Edge of the Earth campaign with zero Frost tokens in the chaos bag at the end of the campaign."
+    },
+    "AbandonedAndAlone": {
+      "name": "Abandoned and Alone",
+      "text": "Win the Edge of the Earth campaign without ever bringing a partner asset along with you during a scenario."
+    },
+    "FriendsForever": {
+      "name": "Friends Forever",
+      "text": "Bring the same partner with you in each scenario, ensure that they have confronted their demons, and win the Edge of the Earth campaign with them still alive."
+    },
+    "ThereAndBackAgain": {
+      "name": "There and Back Again",
+      "text": "Win the Edge of the Earth campaign with each of the following survivors:",
+      "items": {
+        "DrAmyKensler": "Dr. Amy Kensler",
+        "ProfWilliamDyer": "Prof. William Dyer",
+        "Danforth": "Danforth",
+        "JamesCookieFredericks": "James “Cookie” Fredericks",
+        "EliyahAshevak": "Eliyah Ashevak",
+        "DrMalaSinha": "Dr. Mala Sinha",
+        "TakadaHiroko": "Takada Hiroko",
+        "AveryClaypool": "Avery Claypool",
+        "RoaldEllsworth": "Roald Ellsworth"
+      }
+    },
+    "SnowLineInTheSand": {
+      "name": "Line in the…Snow",
+      "text": "Win the Edge of the Earth campaign with at least three Ultimatums active."
+    },
+    "AntarcticExpertise": {
+      "name": "Antarctic Expertise",
+      "text": "Win the Edge of the Earth campaign on Expert difficulty."
     }
   },
   "clearAll": "Clear all",

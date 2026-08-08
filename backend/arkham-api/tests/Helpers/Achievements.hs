@@ -30,6 +30,9 @@ module Helpers.Achievements (
   asTheInnsmouthConspiracy,
   asTheInnsmouthConspiracyWith,
   asTheInnsmouthConspiracyScenario,
+  asEdgeOfTheEarth,
+  asEdgeOfTheEarthWith,
+  asEdgeOfTheEarthScenario,
   didEarn,
   didEarnDunwich,
   didEarnCarcosa,
@@ -39,11 +42,13 @@ module Helpers.Achievements (
   didEarnDreamQuest,
   didEarnWebOfDreams,
   didEarnInnsmouth,
+  didEarnEdgeOfTheEarth,
   didProgressDunwich,
   didProgressCarcosa,
   didProgressCircle,
   didProgressDrownedCity,
   didProgressInnsmouth,
+  didProgressEdgeOfTheEarth,
 ) where
 
 import Arkham.Achievement.Types
@@ -165,6 +170,18 @@ asTheInnsmouthConspiracy = asTheInnsmouthConspiracyWith Easy
 asTheInnsmouthConspiracyScenario :: CardCode -> TestAppT ()
 asTheInnsmouthConspiracyScenario = asAchievementCampaignScenario "07"
 
+-- Edge of the Earth's list is printed for the campaign itself, so campaign "08"
+-- is the eligible campaign rather than a Return-to variant.
+
+asEdgeOfTheEarthWith :: Difficulty -> TestAppT ()
+asEdgeOfTheEarthWith = asAchievementCampaign "08"
+
+asEdgeOfTheEarth :: TestAppT ()
+asEdgeOfTheEarth = asEdgeOfTheEarthWith Easy
+
+asEdgeOfTheEarthScenario :: CardCode -> TestAppT ()
+asEdgeOfTheEarthScenario = asAchievementCampaignScenario "08"
+
 didEarn :: NightOfTheZealotAchievement -> TestAppT (IORef Bool)
 didEarn achievement =
   createMessageMatcher $ EarnAchievement $ NightOfTheZealotAchievement achievement
@@ -201,6 +218,10 @@ didEarnInnsmouth :: TheInnsmouthConspiracyAchievement -> TestAppT (IORef Bool)
 didEarnInnsmouth achievement =
   createMessageMatcher $ EarnAchievement $ TheInnsmouthConspiracyAchievement achievement
 
+didEarnEdgeOfTheEarth :: EdgeOfTheEarthAchievement -> TestAppT (IORef Bool)
+didEarnEdgeOfTheEarth achievement =
+  createMessageMatcher $ EarnAchievement $ EdgeOfTheEarthAchievement achievement
+
 -- Checklist progress reports (cross-playthrough achievements); the items must
 -- match exactly, in 'achievementChecklist'-mapping order.
 
@@ -223,3 +244,7 @@ didProgressDrownedCity achievement items =
 didProgressInnsmouth :: TheInnsmouthConspiracyAchievement -> [Text] -> TestAppT (IORef Bool)
 didProgressInnsmouth achievement items =
   createMessageMatcher $ AchievementProgress (TheInnsmouthConspiracyAchievement achievement) items
+
+didProgressEdgeOfTheEarth :: EdgeOfTheEarthAchievement -> [Text] -> TestAppT (IORef Bool)
+didProgressEdgeOfTheEarth achievement items =
+  createMessageMatcher $ AchievementProgress (EdgeOfTheEarthAchievement achievement) items

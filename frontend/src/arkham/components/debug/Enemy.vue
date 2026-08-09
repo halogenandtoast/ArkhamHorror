@@ -67,6 +67,14 @@ const image = computed(() => {
 const debug = useDebug()
 const damage = computed(() => props.enemy.tokens[TokenType.Damage])
 
+function defeat() {
+  emit('close')
+  debug.send(props.game.id, {
+    tag: 'DefeatEnemy',
+    contents: [id.value, investigatorId.value, { tag: 'InvestigatorSource', contents: investigatorId.value }],
+  })
+}
+
 const hasPool = computed(() => {
   const { health } = props.enemy;
   return cardCode.value == 'c07189' || health
@@ -137,7 +145,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
       <div v-else class="buttons">
         <button v-if="!enemy.exhausted" @click="debug.send(game.id, {tag: 'Exhaust', contents: {tag: 'EnemyTarget', contents: id}})">{{ $t('debug.enemy.exhaust') }}</button>
         <button v-else @click="debug.send(game.id, {tag: 'Ready', contents: {tag: 'EnemyTarget', contents: id}})">{{ $t('debug.enemy.ready') }}</button>
-        <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'InvestigatorSource', contents:investigatorId}]})">{{ $t('debug.enemy.defeat') }}</button>
+        <button @click="defeat">{{ $t('debug.enemy.defeat') }}</button>
         <button @click="debug.send(game.id, {tag: 'EnemyEvaded', contents: [investigatorId, id]})">{{ $t('debug.enemy.evade') }}</button>
         <button
           @click.exact="debug.send(game.id, {tag: 'DamageMessage', contents: {tag: 'DealDamage_', contents: [{tag: 'EnemyTarget', contents: id}, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 1, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]}})"

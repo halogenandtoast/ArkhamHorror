@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { clearAchievements, fetchAchievements, type ClearAchievementsScope } from '@/arkham/api'
-import { achievementCatalog, achievementChecklists, achievementSections, type AchievementEntry } from '@/arkham/achievements'
+import { achievementCatalog, achievementChecklists, achievementSections, compareAchievementCampaignIds, type AchievementEntry } from '@/arkham/achievements'
 import type { Achievement } from '@/arkham/types/Achievement'
 import Prompt from '@/components/Prompt.vue'
 
@@ -68,13 +68,15 @@ const campaigns = computed(() => {
     if (group) group.push(entry)
     else groups.set(entry.campaignId, [entry])
   }
-  return [...groups.entries()].map(([campaignId, entries]) => ({
-    campaignId,
-    entries,
-    // The Dream-Eaters prints one list per mini-campaign; every other campaign
-    // comes back as a single unlabelled section.
-    sections: achievementSections(entries),
-  }))
+  return [...groups.entries()]
+    .sort(([a], [b]) => compareAchievementCampaignIds(a, b))
+    .map(([campaignId, entries]) => ({
+      campaignId,
+      entries,
+      // The Dream-Eaters prints one list per mini-campaign; every other campaign
+      // comes back as a single unlabelled section.
+      sections: achievementSections(entries),
+    }))
 })
 
 const earnedRow = (entry: AchievementEntry): Achievement | null => {

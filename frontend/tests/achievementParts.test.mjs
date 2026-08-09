@@ -41,6 +41,16 @@ test('a partial campaign maps to the catalog part key it filters on', async (t) 
   assert.equal(forPart(dream).length, 15)
 })
 
+test('campaigns sort with Return Tos first, then in release order', async (t) => {
+  const { achievementCatalog, compareAchievementCampaignIds } = await loadAchievements(t)
+  const campaignIds = [...new Set(achievementCatalog.map((entry) => entry.campaignId))]
+
+  assert.deepEqual(
+    campaignIds.sort(compareAchievementCampaignIds),
+    ['50', '51', '52', '53', '54', '06', '07', '08', '09', '10', '11'],
+  )
+})
+
 test('the full campaign and unknown shapes show every section', async (t) => {
   const { activeAchievementPart } = await loadAchievements(t)
 

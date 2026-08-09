@@ -6,6 +6,18 @@
 // Campaign ids whose official achievement list is implemented backend-side.
 export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '07', '08', '09', '10', '11', '50', '51', '52', '53', '54']
 
+// Return To campaigns use ids in the 50s. They appear first on the standalone
+// achievements page; both groups otherwise follow campaign-id/release order.
+export function compareAchievementCampaignIds(a: string, b: string): number {
+  const aId = Number(a)
+  const bId = Number(b)
+  const aIsReturnTo = aId >= 50
+  const bIsReturnTo = bId >= 50
+
+  if (aIsReturnTo !== bIsReturnTo) return aIsReturnTo ? -1 : 1
+  return aId - bId
+}
+
 // Sub-grouping inside a campaign, for campaigns whose achievement list is
 // printed per mini-campaign. Only The Dream-Eaters has one: its list is split
 // between The Dream-Quest and The Web of Dreams, and both sections are shown

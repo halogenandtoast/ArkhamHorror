@@ -312,7 +312,8 @@ async function start() {
   const options = [
     ...enabledRecommendedOptions,
     ...variant,
-    ...(miniCampaign.value ? [{ tag: 'PlayAsMiniCampaign' }] : [])
+    ...(miniCampaign.value ? [{ tag: 'PlayAsMiniCampaign' }] : []),
+    ...(returnTo.value && scenario.value?.returnToVariant ? [{ tag: 'PlayWithTheBlobThatAteEverythingElse' }] : [])
   ]
 
   // AI seats are only meaningful (and only sent) for Solo/multihanded games.
@@ -333,6 +334,7 @@ async function start() {
       scenarioId: scenario.value.id,
       difficulty: selectedDifficulty.value,
       includeTarotReadings: includeTarotReadings.value,
+      playWithBlobElse: returnTo.value && scenario.value?.returnToVariant === true,
       timeLimitMinutes: minutes,
       groups: epicGroups.value.map((g, i) => ({
         name: g.name.trim() === '' ? `Group ${String.fromCharCode(65 + i)}` : g.name.trim(),

@@ -1316,6 +1316,10 @@ allLocations =
       , SomeLocationCard waterTower
       , SomeLocationCard church
       , SomeLocationCard oozyLakebed
+      , SomeLocationCard mainStreet
+      , SomeLocationCard oldBurialHill
+      , SomeLocationCard abandonedWindmill
+      , SomeLocationCard abbatoir
       , SomeLocationCard slimyStreets
       , SomeLocationCard desiccatedFarmland
       , -- War of the Outer Gods

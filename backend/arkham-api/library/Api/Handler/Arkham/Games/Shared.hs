@@ -25,14 +25,17 @@ import Arkham.Ai.Decision (
  )
 import Arkham.Ai.Helpers (lookupAiPlayer)
 import Arkham.Ai.State (aiEnabled, defaultAiPlayerState)
+import Arkham.Asset.Types (Asset, assetController, assetOwner, assetPlacement)
 import Arkham.Campaign.Types (CampaignAttrs)
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
+import Arkham.Card.CardCode (CardCode (..), HasCardCode (toCardCode))
 import Arkham.ClassSymbol
-import Arkham.Classes.Entity (attr, toId)
+import Arkham.Classes.Entity (attr, overAttrs, toAttrs, toId)
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Difficulty
-import Arkham.Entities (entitiesActs)
+import Arkham.Effect.Types (effectTarget)
+import Arkham.Entities (Entities (..), entitiesActs)
 import Arkham.Epic.Types (
   GroupOrdinal (..),
   SharedEventState,
@@ -41,6 +44,7 @@ import Arkham.Epic.Types (
     ActContribution,
     ActSpend,
     AwaitingOrganizer,
+    MainStreetReady,
     SharedActProgress
   ),
   actProgressStages,
@@ -55,17 +59,24 @@ import Arkham.Epic.Types (
   totalInvestigatorsKey,
   updateSharedCounter,
  )
+import Arkham.Event.Types (eventController)
 import Arkham.Game
 import Arkham.Game.Diff
 import Arkham.Game.State
 import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
-import Arkham.Investigator.Types (Investigator, investigatorPlayerId)
+import Arkham.Investigator.Types (Investigator, investigatorPlacement, investigatorPlayerId)
 import Arkham.Message
 import Arkham.Name
+import Arkham.Placement (
+  Placement (AtLocation, AttachedToInvestigator, InPlayArea, InThreatArea, StillInHand),
+ )
 import Arkham.Queue
+import Arkham.Scenario.Types (Scenario, getMetaKeyDefault)
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicShared))
+import Arkham.Target (Target (InvestigatorTarget))
+import Arkham.Treachery.Types (treacheryPlacement)
 import Conduit
 import Control.Concurrent.MVar
 import Control.Concurrent.STM.TBQueue (readTBQueue)
@@ -842,6 +853,254 @@ settled, with that group's post-advance persistence step. Floors only ever
 increase (each settlement runs at a later step), so an unconditional set is
 monotonic.
 -}
+
+{- | Resolve the ELSE! Main Street group swap. InvestigatorAttrs contains the
+investigator's deck, hand, discard, resources, damage, trauma, logs, and
+other personal state. We additionally move every controlled/play-area asset,
+threat-area treachery, controlled event, per-investigator entity cache,
+history, question, and player authorization row. Enemy cards stay behind
+because the printed ability disengages them before publishing readiness.
+
+This writes both games in one transaction, advances both revisions, publishes
+both websocket rooms, and places an undo floor at the new revisions. A swap
+is therefore never half-visible and can never be crossed by ordinary undo.
+-}
+swapMainStreetInvestigators :: ArkhamEpicEventId -> Int -> Int -> Handler ()
+swapMainStreetInvestigators eventId firstOrdinal secondOrdinal = do
+  (firstGameId, secondGameId) <- runDB do
+    groups <-
+      P.selectList
+        [ ArkhamEpicGroupArkhamEpicEventId P.==. eventId
+        , ArkhamEpicGroupOrdinal P.<-. [firstOrdinal, secondOrdinal]
+        ]
+        []
+    let byOrdinal =
+          Map.fromList
+            [ (arkhamEpicGroupOrdinal g, gid)
+            | Entity _ g <- groups
+            , gid <- toList (arkhamEpicGroupArkhamGameId g)
+            ]
+    (,)
+      <$> maybe
+        (error "First Main Street group has no game")
+        pure
+        (Map.lookup firstOrdinal byOrdinal)
+      <*> maybe
+        (error "Second Main Street group has no game")
+        pure
+        (Map.lookup secondOrdinal byOrdinal)
+
+  runDB do
+    firstRaw <- P.getJust firstGameId
+    secondRaw <- P.getJust secondGameId
+    let
+      firstGame = arkhamGameCurrentData firstRaw
+      secondGame = arkhamGameCurrentData secondRaw
+      scenarioReady :: Scenario -> Maybe InvestigatorId
+      scenarioReady scenario = getMetaKeyDefault "mainStreetReady" Nothing (toAttrs scenario)
+      readyInvestigator :: Game -> Maybe InvestigatorId
+      readyInvestigator game = case gameMode game of
+        That scenario -> scenarioReady scenario
+        These _ scenario -> scenarioReady scenario
+        This _ -> Nothing
+      firstIid = fromMaybe (error "First group has not activated Main Street") $ readyInvestigator firstGame
+      secondIid = fromMaybe (error "Second group has not activated Main Street") $ readyInvestigator secondGame
+      mainStreetLocation game =
+        fromMaybe (error "Ready investigator is not at Main Street")
+          $ (.id)
+          <$> find ((== CardCode "89006") . toCardCode) (toList $ entitiesLocations $ gameEntities game)
+      firstDestination = mainStreetLocation secondGame
+      secondDestination = mainStreetLocation firstGame
+      (firstGame', secondGame', firstPid, secondPid) =
+        swapInvestigatorState firstIid firstDestination firstGame secondIid secondDestination secondGame
+      firstStep = arkhamGameStep firstRaw + 1
+      secondStep = arkhamGameStep secondRaw + 1
+    P.update firstGameId [ArkhamGameCurrentData P.=. firstGame', ArkhamGameStep P.=. firstStep]
+    P.update secondGameId [ArkhamGameCurrentData P.=. secondGame', ArkhamGameStep P.=. secondStep]
+    P.update (coerce firstPid) [ArkhamPlayerArkhamGameId P.=. secondGameId]
+    P.update (coerce secondPid) [ArkhamPlayerArkhamGameId P.=. firstGameId]
+
+  runMessagesInGroupWhen
+    (const True)
+    [SpendShared (MainStreetReady $ GroupOrdinal firstOrdinal) 1]
+    firstGameId
+  runMessagesInGroupWhen
+    (const True)
+    [SpendShared (MainStreetReady $ GroupOrdinal secondOrdinal) 1]
+    secondGameId
+  for_ [firstGameId, secondGameId] \gameId -> do
+    raw <- runDB $ P.get404 gameId
+    setGameUndoFloor gameId (arkhamGameStep raw)
+    publishToRoom gameId
+      $ GameUpdate
+      $ PublicGame gameId (arkhamGameName raw) [] (arkhamGameCurrentData raw)
+  broadcastEventChanged eventId
+
+swapInvestigatorState
+  :: InvestigatorId
+  -> LocationId
+  -> Game
+  -> InvestigatorId
+  -> LocationId
+  -> Game
+  -> (Game, Game, PlayerId, PlayerId)
+swapInvestigatorState firstIid firstDestination firstGame secondIid secondDestination secondGame
+  | attr investigatorPlacement firstInvestigator /= AtLocation secondDestination =
+      error "First ready investigator is no longer at Main Street"
+  | attr investigatorPlacement secondInvestigator /= AtLocation firstDestination =
+      error "Second ready investigator is no longer at Main Street"
+  | otherwise =
+      ( install secondIid secondMoved secondOwned secondPid (remove firstIid firstPid firstGame)
+      , install firstIid firstMoved firstOwned firstPid (remove secondIid secondPid secondGame)
+      , firstPid
+      , secondPid
+      )
+ where
+  firstInvestigator =
+    fromMaybe (error "First Main Street investigator is not in its game")
+      $ Map.lookup firstIid (entitiesInvestigators $ gameEntities firstGame)
+  secondInvestigator =
+    fromMaybe (error "Second Main Street investigator is not in its game")
+      $ Map.lookup secondIid (entitiesInvestigators $ gameEntities secondGame)
+  firstPid = attr investigatorPlayerId firstInvestigator
+  secondPid = attr investigatorPlayerId secondInvestigator
+  firstMoved = overAttrs (\a -> a {investigatorPlacement = AtLocation secondDestination}) firstInvestigator
+  secondMoved = overAttrs (\a -> a {investigatorPlacement = AtLocation firstDestination}) secondInvestigator
+  firstOwned = ownedEntities firstIid (gameEntities firstGame)
+  secondOwned = ownedEntities secondIid (gameEntities secondGame)
+
+  remove iid pid game =
+    game
+      { gameEntities = removeOwned iid (gameEntities game)
+      , gamePlayers = filter (/= pid) (gamePlayers game)
+      , gamePlayerOrder = filter (/= iid) (gamePlayerOrder game)
+      , gameInHandEntities = Map.delete iid (gameInHandEntities game)
+      , gameInDiscardEntities = Map.delete iid (gameInDiscardEntities game)
+      , gamePhaseHistory = Map.delete iid (gamePhaseHistory game)
+      , gameTurnHistory = Map.delete iid (gameTurnHistory game)
+      , gameRoundHistory = Map.delete iid (gameRoundHistory game)
+      , gameQuestion = Map.delete pid (gameQuestion game)
+      , gameModifiers = Map.delete (InvestigatorTarget iid) (gameModifiers game)
+      , gameCardUses = Map.map (filter (/= iid)) (gameCardUses game)
+      }
+
+  install iid investigator owned pid game =
+    game
+      { gameEntities = addOwned investigator owned (gameEntities game)
+      , gamePlayers = gamePlayers game <> [pid]
+      , gamePlayerOrder = gamePlayerOrder game <> [iid]
+      , gameInHandEntities =
+          copyMapEntry
+            iid
+            (if iid == firstIid then gameInHandEntities firstGame else gameInHandEntities secondGame)
+            (gameInHandEntities game)
+      , gameInDiscardEntities =
+          copyMapEntry
+            iid
+            (if iid == firstIid then gameInDiscardEntities firstGame else gameInDiscardEntities secondGame)
+            (gameInDiscardEntities game)
+      , gamePhaseHistory =
+          copyMapEntry
+            iid
+            (if iid == firstIid then gamePhaseHistory firstGame else gamePhaseHistory secondGame)
+            (gamePhaseHistory game)
+      , gameTurnHistory =
+          copyMapEntry
+            iid
+            (if iid == firstIid then gameTurnHistory firstGame else gameTurnHistory secondGame)
+            (gameTurnHistory game)
+      , gameRoundHistory =
+          copyMapEntry
+            iid
+            (if iid == firstIid then gameRoundHistory firstGame else gameRoundHistory secondGame)
+            (gameRoundHistory game)
+      , gameQuestion =
+          copyMapEntry
+            pid
+            (if pid == firstPid then gameQuestion firstGame else gameQuestion secondGame)
+            (gameQuestion game)
+      , gameModifiers =
+          copyMapEntry
+            (InvestigatorTarget iid)
+            (if iid == firstIid then gameModifiers firstGame else gameModifiers secondGame)
+            (gameModifiers game)
+      , gameCardUses =
+          transferCardUses
+            iid
+            (if iid == firstIid then gameCardUses firstGame else gameCardUses secondGame)
+            (gameCardUses game)
+      , gameActiveInvestigatorId = replaceId firstIid secondIid iid (gameActiveInvestigatorId game)
+      , gameTurnPlayerInvestigatorId =
+          replaceId firstIid secondIid iid <$> gameTurnPlayerInvestigatorId game
+      , gameLeadInvestigatorId = replaceId firstIid secondIid iid (gameLeadInvestigatorId game)
+      , gameActivePlayerId =
+          if gameActivePlayerId game `elem` [firstPid, secondPid] then pid else gameActivePlayerId game
+      }
+
+  replaceId removedA removedB inserted current
+    | current == removedA || current == removedB = inserted
+    | otherwise = current
+
+transferCardUses
+  :: InvestigatorId
+  -> Map CardCode [InvestigatorId]
+  -> Map CardCode [InvestigatorId]
+  -> Map CardCode [InvestigatorId]
+transferCardUses iid source destination =
+  Map.unionWith
+    (<>)
+    (Map.map (const [iid]) $ Map.filter (elem iid) source)
+    (Map.map (filter (/= iid)) destination)
+
+copyMapEntry :: Ord key => key -> Map key value -> Map key value -> Map key value
+copyMapEntry key source destination = maybe destination (\value -> Map.insert key value destination) (Map.lookup key source)
+
+ownedEntities :: InvestigatorId -> Entities -> Entities
+ownedEntities iid entities =
+  mempty
+    { entitiesAssets = Map.filter (assetBelongsTo iid) (entitiesAssets entities)
+    , entitiesTreacheries =
+        Map.filter
+          ((`elem` [InThreatArea iid, AttachedToInvestigator iid]) . attr treacheryPlacement)
+          (entitiesTreacheries entities)
+    , entitiesEvents = Map.filter ((== iid) . attr eventController) (entitiesEvents entities)
+    , entitiesEffects =
+        Map.filter ((== InvestigatorTarget iid) . attr effectTarget) (entitiesEffects entities)
+    }
+
+removeOwned :: InvestigatorId -> Entities -> Entities
+removeOwned iid entities =
+  entities
+    { entitiesInvestigators = Map.delete iid (entitiesInvestigators entities)
+    , entitiesAssets = Map.filter (not . assetBelongsTo iid) (entitiesAssets entities)
+    , entitiesTreacheries =
+        Map.filter
+          (not . (`elem` [InThreatArea iid, AttachedToInvestigator iid]) . attr treacheryPlacement)
+          (entitiesTreacheries entities)
+    , entitiesEvents = Map.filter ((/= iid) . attr eventController) (entitiesEvents entities)
+    , entitiesEffects =
+        Map.filter ((/= InvestigatorTarget iid) . attr effectTarget) (entitiesEffects entities)
+    }
+
+addOwned :: Investigator -> Entities -> Entities -> Entities
+addOwned investigator owned entities =
+  entities
+    { entitiesInvestigators = Map.insert investigator.id investigator (entitiesInvestigators entities)
+    , entitiesAssets = entitiesAssets owned <> entitiesAssets entities
+    , entitiesTreacheries = entitiesTreacheries owned <> entitiesTreacheries entities
+    , entitiesEvents = entitiesEvents owned <> entitiesEvents entities
+    , entitiesEffects = entitiesEffects owned <> entitiesEffects entities
+    }
+
+assetBelongsTo :: InvestigatorId -> Asset -> Bool
+assetBelongsTo iid asset =
+  attr assetController asset
+    == Just iid
+    || attr assetOwner asset
+    == Just iid
+    || attr assetPlacement asset
+    `elem` [InPlayArea iid, InThreatArea iid, StillInHand iid, AttachedToInvestigator iid]
+
 setGameUndoFloor :: ArkhamGameId -> Int -> Handler ()
 setGameUndoFloor gid step =
   runDB

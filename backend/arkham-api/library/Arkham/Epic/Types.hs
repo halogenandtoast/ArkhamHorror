@@ -104,6 +104,8 @@ data SharedKey
     time-limit countdown began; 0 until then. Set once.
     -}
     TimerStartedAt
+  | MainStreetReady GroupOrdinal
+  | ReplicationPending GroupOrdinal
   deriving stock (Show, Eq, Ord, Generic, Data)
 
 instance ToJSON SharedKey where
@@ -133,6 +135,8 @@ sharedKeyText = \case
   TimeLimitMinutes -> "time-limit-minutes"
   GroupsReadyMask -> "groups-ready-mask"
   TimerStartedAt -> "timer-started-at"
+  MainStreetReady (GroupOrdinal o) -> "main-street-ready:" <> tshow o
+  ReplicationPending (GroupOrdinal o) -> "replication-pending:" <> tshow o
 
 {- | The scenario-count key (under 'EpicShared') that mirrors the event's frozen
 total investigator count into a group's scenario state. Shared between the
@@ -167,6 +171,8 @@ sharedKeyFromText t = case t of
       <|> ((\(n, o) -> ActContribution n (GroupOrdinal o)) <$> stripStageOrdinal "act-contribution:" t)
       <|> ((\(n, o) -> ActSpend n (GroupOrdinal o)) <$> stripStageOrdinal "act-spend:" t)
       <|> (GroupDoom . GroupOrdinal <$> (stripPrefix "group-doom:" t >>= readMaybe . unpack))
+      <|> (MainStreetReady . GroupOrdinal <$> (stripPrefix "main-street-ready:" t >>= readMaybe . unpack))
+      <|> (ReplicationPending . GroupOrdinal <$> (stripPrefix "replication-pending:" t >>= readMaybe . unpack))
 
 {- | Parse a @"\<prefix>\<stage>:\<ordinal>"@ key body into @(stage, ordinal)@ for the
 two-component shared keys ('ActContribution', 'ActSpend').

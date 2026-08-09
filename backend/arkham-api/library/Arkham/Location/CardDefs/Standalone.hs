@@ -776,10 +776,28 @@ desiccatedFarmland =
     { cdEncounterSetQuantity = Just 2
     }
 
+mainStreet :: CardDef
+mainStreet = location_ "89006" "Main Street" [Oozified] TheBlobThatAteEverythingELSE
+
+oldBurialHill :: CardDef
+oldBurialHill = location_ "89007" "Old Burial Hill" [Oozified] TheBlobThatAteEverythingELSE
+
+abandonedWindmill :: CardDef
+abandonedWindmill = location_ "89008" "Abandoned Windmill" [Oozified] TheBlobThatAteEverythingELSE
+
+abbatoir :: CardDef
+abbatoir = location_ "89009" "Abbatoir" [Oozified] TheBlobThatAteEverythingELSE
+
 streetsOfCairo :: CardDef
 streetsOfCairo =
   singleSided
-    $ location "83008" "Streets of Cairo" [Cairo] Equals [Diamond, Triangle, Square, Trefoil] TheEternalSlumber
+    $ location
+      "83008"
+      "Streets of Cairo"
+      [Cairo]
+      Equals
+      [Diamond, Triangle, Square, Trefoil]
+      TheEternalSlumber
 
 cairoBazaar :: CardDef
 cairoBazaar =
@@ -833,7 +851,13 @@ theGreatAbyss =
 tunnelsUnderNgranek :: CardDef
 tunnelsUnderNgranek =
   otherSideIs "83024b"
-    $ location "83024a" "Tunnels under Ngranek" [Otherworld, Dreamlands] Triangle [Square] TheNightsUsurper
+    $ location
+      "83024a"
+      "Tunnels under Ngranek"
+      [Otherworld, Dreamlands]
+      Triangle
+      [Square]
+      TheNightsUsurper
 
 stairwayToSarkomand :: CardDef
 stairwayToSarkomand =
@@ -848,7 +872,13 @@ mistFilledCaverns =
 eldritchGate :: CardDef
 eldritchGate =
   singleSided
-    $ location "83028" "Eldritch Gate" [Expedition, Desert, Ruins] Squiggle [Hourglass, T, Heart] TheNightsUsurper
+    $ location
+      "83028"
+      "Eldritch Gate"
+      [Expedition, Desert, Ruins]
+      Squiggle
+      [Hourglass, T, Heart]
+      TheNightsUsurper
 
 expeditionCampGuardiansOfTheAbyss :: CardDef
 expeditionCampGuardiansOfTheAbyss =
@@ -864,7 +894,13 @@ expeditionCampGuardiansOfTheAbyss =
 nileRiver :: CardDef
 nileRiver =
   singleSided
-    $ location "83038" "Nile River" [Expedition, Desert] Moon [Circle, Star, Heart, Hourglass] SandsOfEgypt
+    $ location
+      "83038"
+      "Nile River"
+      [Expedition, Desert]
+      Moon
+      [Circle, Star, Heart, Hourglass]
+      SandsOfEgypt
 
 sandsOfDashur :: CardDef
 sandsOfDashur =
@@ -901,7 +937,13 @@ facelessSphinx =
 desertOasis :: CardDef
 desertOasis =
   singleSided
-    $ location "83043" "Desert Oasis" [Expedition, Desert] Heart [Star, Moon, Hourglass, Squiggle] SandsOfEgypt
+    $ location
+      "83043"
+      "Desert Oasis"
+      [Expedition, Desert]
+      Heart
+      [Star, Moon, Hourglass, Squiggle]
+      SandsOfEgypt
 
 sandsweptRuins :: CardDef
 sandsweptRuins =
@@ -1000,13 +1042,13 @@ hubDimension =
 
 tindalos :: CardDef
 tindalos =
-  (location
-     "87005"
-     ("Tindalos" <:> "Realm of Angular Time")
-     [Past, Present, Future]
-     NoSymbol
-     []
-     MachinationsThroughTimeSingleGroup
+  ( location
+      "87005"
+      ("Tindalos" <:> "Realm of Angular Time")
+      [Past, Present, Future]
+      NoSymbol
+      []
+      MachinationsThroughTimeSingleGroup
   )
     { cdArt = "87005"
     }
@@ -1028,7 +1070,13 @@ oMalleysWatchShop =
 
 riverDocksPast :: CardDef
 riverDocksPast =
-  location "87009" "River Docks" [Arkham, Portal, Past] Hourglass [Star, Triangle] MachinationsThroughTime
+  location
+    "87009"
+    "River Docks"
+    [Arkham, Portal, Past]
+    Hourglass
+    [Star, Triangle]
+    MachinationsThroughTime
 
 miskatonicUniversityPast :: CardDef
 miskatonicUniversityPast =
@@ -1046,7 +1094,13 @@ childhoodHome =
 
 arkhamAdvertiserPresent :: CardDef
 arkhamAdvertiserPresent =
-  location "87016" "Arkham Advertiser" [Arkham, Portal, Present] Equals [Trefoil] MachinationsThroughTime
+  location
+    "87016"
+    "Arkham Advertiser"
+    [Arkham, Portal, Present]
+    Equals
+    [Trefoil]
+    MachinationsThroughTime
 
 tickTockClubPresent :: CardDef
 tickTockClubPresent =
@@ -1100,7 +1154,13 @@ tickTockClubFuture =
 
 riverDocksFuture :: CardDef
 riverDocksFuture =
-  location "87027" "River Docks" [Arkham, Portal, Future] Spade [Plus, Diamond] MachinationsThroughTime
+  location
+    "87027"
+    "River Docks"
+    [Arkham, Portal, Future]
+    Spade
+    [Plus, Diamond]
+    MachinationsThroughTime
 
 miskatonicUniversityFuture :: CardDef
 miskatonicUniversityFuture =

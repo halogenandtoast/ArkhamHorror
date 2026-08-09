@@ -1613,6 +1613,11 @@ allAssets =
         SomeAssetCard universityChemist
       , SomeAssetCard meteoriteSample
       , SomeAssetCard theMilitarysPlan
+      , SomeAssetCard armoredCar
+      , SomeAssetCard brainCase
+      , SomeAssetCard gMen
+      , SomeAssetCard corrosiveCloud
+      , SomeAssetCard alienInstruments
       , SomeAssetCard universalSolvent
       , SomeAssetCard petOozeling
       , SomeAssetCard miGoWeapon

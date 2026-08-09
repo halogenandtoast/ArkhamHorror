@@ -34,7 +34,7 @@ import Arkham.Scenario.Types (Field (ScenarioTokens))
 import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
 import Arkham.SkillType
 import Arkham.SlotType
-import Arkham.Strategy (IsDraw (..), defer, fromDeck, AfterPlayStrategy(PlaceThisBeneath))
+import Arkham.Strategy (AfterPlayStrategy (PlaceThisBeneath), IsDraw (..), defer, fromDeck)
 import Arkham.Token
 import Arkham.Trait hiding (Trait (Cultist, ElderThing, Evidence, Expert, Supply))
 import Arkham.Treachery.Cards qualified as Cards
@@ -122,19 +122,72 @@ instance RunMessage RealityAcid where
       -- next pair of tokens; it is consumed immediately so later Reality Acid
       -- draws return to normal randomness.
       debugFaces <- getScenarioMetaKeyDefault "debugRealityAcidTokens" []
+      isElse <- getScenarioMetaKeyDefault "blobThatAteEverythingElse" False
       case debugFaces :: [ChaosTokenFace] of
         [face1, face2] -> do
           tokens <- traverse createChaosToken [face1, face2]
           push $ ScenarioSpecific "blobClearDebugRealityAcidTokens" Null
           push $ RequestedChaosTokens (attrs.ability 1) (Just iid) tokens
-        _ -> push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 2) SetAside
+        _ ->
+          push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal $ if isElse then 1 else 2) SetAside
+      pure t
+    -- ELSE! reveals in order. Keep the first token set aside while drawing the
+    -- second; an unlisted face is returned and replaced without disturbing an
+    -- already-valid first token.
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) [token] -> do
+      isElse <- getScenarioMetaKeyDefault "blobThatAteEverythingElse" False
+      if not isElse
+        then error "Reality Acid received one token outside ELSE mode"
+        else do
+          let firstTokenKey = "realityAcidFirstToken:" <> tshow attrs.id
+          firstTokens <- getScenarioMetaKeyDefault (Key.fromText firstTokenKey) []
+          let
+            firstFaces =
+              [ ElderSign
+              , BlessToken
+              , PlusOne
+              , Zero
+              , MinusOne
+              , MinusTwo
+              , MinusThree
+              , MinusFour
+              , MinusFive
+              , MinusSix
+              , MinusSeven
+              , MinusEight
+              , Skull
+              , Cultist
+              , Tablet
+              , ElderThing
+              , AutoFail
+              ]
+            secondFaces = CurseToken : firstFaces
+            validFaces = if null (firstTokens :: [ChaosToken]) then firstFaces else secondFaces
+          if token.face `notElem` validFaces
+            then
+              returnChaosTokens [token]
+                >> push (RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 1) SetAside)
+            else case firstTokens of
+              [] -> do
+                push $ ScenarioSpecific "blobSetMeta" (toJSON (firstTokenKey, toJSON [token]))
+                push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 1) SetAside
+              [firstToken] -> do
+                push $ ScenarioSpecific "blobSetMeta" (toJSON (firstTokenKey, toJSON ([] :: [ChaosToken])))
+                push $ RequestedChaosTokens (attrs.ability 1) (Just iid) [firstToken, token]
+              _ -> error "Reality Acid stored more than one first token"
       pure t
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
+      isElse <- getScenarioMetaKeyDefault "blobThatAteEverythingElse" False
       let
         source = attrs.ability 1
 
         -- An aspect was resolved: return the two consulted tokens to the bag.
-        done = resetChaosTokens source
+        done = do
+          push
+            $ ScenarioSpecific
+              "blobSetMeta"
+              (toJSON ("realityAcidFirstToken:" <> tshow attrs.id, toJSON ([] :: [ChaosToken])))
+          resetChaosTokens source
 
         -- Show a modal with the two revealed tokens (rendered inline) and the
         -- outcome text for the matched chart row. Shown only on a real resolution.
@@ -149,7 +202,7 @@ instance RunMessage RealityAcid where
         -- tokens, then reveal two new ones from the full bag and consult again.
         reroll = do
           done
-          push $ RequestChaosTokens source (Just iid) (Reveal 2) SetAside
+          push $ RequestChaosTokens source (Just iid) (Reveal $ if isElse then 1 else 2) SetAside
 
         -- Used for unlisted combinations and for any aspect that cannot be
         -- devoured: show the revealed pair, the matched aspect's text (when there
@@ -239,7 +292,9 @@ instance RunMessage RealityAcid where
               isTabletElder f = f == Tablet || f == ElderThing
               isSymbol f = f `elem` [Skull, Cultist, Tablet, ElderThing]
               zeroOrPlus f = f == Zero || f == PlusOne
-              handleTokenMatch matchA matchB = (matchA f1 && matchB f2) || (matchA f2 && matchB f1)
+              handleTokenMatch matchA matchB
+                | isElse = matchA f1 && matchB f2
+                | otherwise = (matchA f1 && matchB f2) || (matchA f2 && matchB f1)
 
           let go
                 -- {elderSign} + {skull}/{cultist}: the non-Elite enemy nearest to you.
@@ -391,7 +446,11 @@ instance RunMessage RealityAcid where
                     assets <-
                       select
                         $ AssetWithHighestPrintedCost
-                          (assetControlledBy iid <> AssetCanLeavePlayByNormalMeans <> AssetWithoutModifier CannotLeavePlay <> withTrait Ally)
+                          ( assetControlledBy iid
+                              <> AssetCanLeavePlayByNormalMeans
+                              <> AssetWithoutModifier CannotLeavePlay
+                              <> withTrait Ally
+                          )
                     chooseToDevour iid showOutcome againWith done "ally" assets devourTarget
                 -- {skull} + {cultist}: all event cards in your hand.
                 | handleTokenMatch (== Skull) (== Cultist) = do
@@ -565,7 +624,8 @@ instance RunMessage RealityAcid where
     SearchNoneFound iid (isTarget attrs -> True) -> do
       let source = attrs.ability 1
       resetChaosTokens source
-      push $ RequestChaosTokens source (Just iid) (Reveal 2) SetAside
+      isElse <- getScenarioMetaKeyDefault "blobThatAteEverythingElse" False
+      push $ RequestChaosTokens source (Just iid) (Reveal $ if isElse then 1 else 2) SetAside
       pure t
     -- Continue devouring level 1-5 cards (the "-1 + (-4 to -8)" aspect). The step
     -- number carries the remaining total; this re-entry keeps the choice tree one

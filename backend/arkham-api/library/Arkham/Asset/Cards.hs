@@ -1085,6 +1085,10 @@ allPlayerAssetCards =
       , petOozeling
       , miGoWeapon
       , ltWilsonStewart
+      , --- Mi-Go Incursion II
+        gMen
+      , corrosiveCloud
+      , alienInstruments
       ]
 
 -- with encounter backs
@@ -1177,7 +1181,11 @@ allEncounterAssetCards =
         universityChemist
       , meteoriteSample
       , theMilitarysPlan
-      , mysteriousPhoto
+      , --- Mi-Go Incursion II
+        armoredCar
+      , brainCase
+      , --- Red Tide Rising
+        mysteriousPhoto
       , mysteriousPhotoBack
       , --- Relics of the Past
         jadeCrocodile

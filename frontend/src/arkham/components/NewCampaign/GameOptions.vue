@@ -187,9 +187,10 @@ const showBetaWarning = computed(() => {
 
 const showReturnToToggle = computed(() => {
   return (
-    (props.gameMode === 'Campaign' || fullCampaign.value === 'Standalone') &&
-    !!props.selectedCampaign &&
-    !!props.selectedCampaignReturnTo
+    (props.gameMode === 'SideStory' && props.scenario?.returnToVariant === true) ||
+    ((props.gameMode === 'Campaign' || fullCampaign.value === 'Standalone') &&
+      !!props.selectedCampaign &&
+      !!props.selectedCampaignReturnTo)
   )
 })
 
@@ -614,7 +615,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
           <input type="radio" v-model="returnTo" :value="false" id="normal" />
           <label for="normal">{{ $t('create.normal') }}</label>
           <input type="radio" v-model="returnTo" :value="true" id="returnTo" />
-          <label for="returnTo">{{ $t('create.returnTo') }}</label>
+          <label for="returnTo">{{ scenario?.returnToVariant ? 'The Blob That Ate Everything ELSE!' : $t('create.returnTo') }}</label>
         </div>
       </div>
 

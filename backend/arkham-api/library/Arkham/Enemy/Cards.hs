@@ -669,6 +669,18 @@ allEncounterEnemyCards =
       , miGoHarvester
       , miGoMeddler
       , miGoAbductor
+      , miGoDestroyer
+      , miGoScientist
+      , miGoResearcher
+      , replicatingAberrationA
+      , replicatingAberrationB
+      , replicatingAberrationC
+      , replicatingAberrationD
+      , replicatingAberrationE
+      , replicatingAberrationF
+      , replicatingAberrationG
+      , replicatingAberrationH
+      , replicatingAberrationI
       , --- By the Book
         mrGrey
       , --- All or Nothing

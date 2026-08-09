@@ -197,6 +197,21 @@ watch(
   { immediate: true },
 )
 
+// Main Street can transfer this player's complete investigator state to a
+// sibling game. EventChanged refreshes the roster; follow that authoritative
+// membership so the old websocket is replaced by the destination game's room.
+watch(
+  [() => eventStore.event, () => userStore.currentUser?.username],
+  ([event, username]) => {
+    if (!event || !username || event.role === 'organizer' || props.spectate) return
+    const currentGroup = event.groups.find((group) => group.gameId === props.gameId)
+    if (currentGroup?.players.some((player) => player.username === username)) return
+    const destination = event.groups.find((group) => group.players.some((player) => player.username === username))
+    if (!destination?.gameId) return
+    void router.replace({ name: 'Game', params: { gameId: destination.gameId }, query: { event: event.id } })
+  },
+)
+
 // "Epic Multiplayer" time limit. The event id this game view actively
 // PARTICIPATES in for the timer: a seated player (or an organizer playing a
 // seat), never the organizer's spectate/non-playing view. NOT gated on the local

@@ -275,6 +275,7 @@
     "id": "85001",
     "name": "The Blob That Ate Everything",
     "epicMultiplayer": true,
+    "returnToVariant": true,
     "standaloneDifficulties": ["Standard", "Hard"],
     "difficultyLevels": {
       "Standard": [

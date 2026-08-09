@@ -124,6 +124,12 @@ data ScenarioLogKey
   | TheSecretOfTheOozeWasStolen
   | TheExplosivesWereDefused
   | TheExplosivesWereDetonated
+  | TheCarReachedItsTarget
+  | TheEscortFailed
+  | TheBrainWasRecovered
+  | TheBrainWasTaken
+  | TheMiGoResearchWasStopped
+  | TheMiGoCompletedTheirResearch
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody
@@ -191,9 +197,10 @@ data ScenarioCountKey
   | CiviliansSlain
   | StrengthOfTheAbyss
   | CluesAroundHubDimension
-  | -- | The Doom of Arkham, Part II. Cthulhu's anger toward the investigators;
-    -- the skull token, every action card's test difficulty, and the act ratchet
-    -- all read it.
+  | {- | The Doom of Arkham, Part II. Cthulhu's anger toward the investigators;
+    the skull token, every action card's test difficulty, and the act ratchet
+    all read it.
+    -}
     CthulhuRage
   | -- Epic Multiplayer: a per-group mirror of an event-wide shared counter,
     -- keyed by 'Arkham.Epic.Types.sharedKeyText'. Refreshed from the locked

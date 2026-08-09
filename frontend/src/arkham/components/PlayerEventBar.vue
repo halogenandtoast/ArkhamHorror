@@ -32,6 +32,12 @@ const { groupLabel } = useEpicHelpers()
 
 const countermeasures = computed(() => counterValue(sharedState.value, COUNTERMEASURES))
 const totalInvestigators = computed(() => sharedState.value.sharedTotalInvestigators)
+const mainStreetReadyCount = computed(() =>
+  groupDigests.value.filter((group) => counterValue(sharedState.value, `main-street-ready:${group.ordinal}`) > 0).length,
+)
+const replicationPendingCount = computed(() =>
+  groupDigests.value.filter((group) => counterValue(sharedState.value, `replication-pending:${group.ordinal}`) > 0).length,
+)
 
 // Only groups whose game has been created can be opened.
 const switchableGroups = computed(() => groupDigests.value.filter((g) => g.gameId))
@@ -91,6 +97,14 @@ function openGroup(group: GroupDigest) {
     <div class="bar-metrics">
       <SharedPools :current-act-stage="currentActStage" />
       <EventCountdown />
+      <div v-if="replicationPendingCount" class="bar-metric danger-alert">
+        <span class="bar-label">Replicating</span>
+        <span class="bar-value">{{ replicationPendingCount }} pending</span>
+      </div>
+      <div v-if="mainStreetReadyCount" class="bar-metric variant-alert">
+        <span class="bar-label">Main Street</span>
+        <span class="bar-value">{{ mainStreetReadyCount }} ready</span>
+      </div>
       <div class="bar-metric">
         <span class="bar-label">{{ $t('event.countermeasures') }}</span>
         <span class="bar-value">{{ countermeasures }}</span>
@@ -213,6 +227,14 @@ function openGroup(group: GroupDigest) {
   flex-direction: column;
   align-items: center;
   line-height: 1.1;
+}
+
+.variant-alert {
+  color: var(--important, #d8a657);
+}
+
+.danger-alert {
+  color: var(--danger, #df7777);
 }
 
 .bar-label {

@@ -1122,6 +1122,65 @@ miGoHarvester =
     }
 
 miGoMeddler :: CardDef
+miGoDestroyer :: CardDef
+miGoDestroyer =
+  (enemy "89013" "Mi-Go Destroyer" MiGoIncursionII 1)
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 5
+    , cdEvade = evade 2
+    , cdHealth = health 3
+    , cdCardTraits = setFromList [Monster, MiGo, Elite]
+    }
+
+miGoScientist :: CardDef
+miGoScientist =
+  (enemy "89015" "Mi-Go Scientist" MiGoIncursionII 1)
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 2
+    , cdCardTraits = setFromList [Monster, MiGo, Elite]
+    }
+
+miGoResearcher :: CardDef
+miGoResearcher =
+  (enemy "89018" "Mi-Go Researcher" MiGoIncursionII 2)
+    { cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdFight = fight 3
+    , cdEvade = evade 3
+    , cdHealth = health 2
+    , cdCardTraits = setFromList [Monster, MiGo, Elite]
+    , cdKeywords = setFromList [Keyword.Aloof]
+    }
+
+replicatingAberrationA, replicatingAberrationB, replicatingAberrationC :: CardDef
+replicatingAberrationD, replicatingAberrationE, replicatingAberrationF :: CardDef
+replicatingAberrationG, replicatingAberrationH, replicatingAberrationI :: CardDef
+replicatingAberrationA = replicatingAberration "89010a"
+replicatingAberrationB = replicatingAberration "89010b"
+replicatingAberrationC = replicatingAberration "89010c"
+replicatingAberrationD = replicatingAberration "89010d"
+replicatingAberrationE = replicatingAberration "89010e"
+replicatingAberrationF = replicatingAberration "89010f"
+replicatingAberrationG = replicatingAberration "89010g"
+replicatingAberrationH = replicatingAberration "89010h"
+replicatingAberrationI = replicatingAberration "89010i"
+
+replicatingAberration :: CardCode -> CardDef
+replicatingAberration code =
+  (enemy code "Replicating Aberration" TheBlobThatAteEverythingELSE 1)
+    { cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 2
+    , cdFight = fight 4
+    , cdEvade = evade 4
+    , cdHealth = health 4
+    , cdCardTraits = setFromList [Monster, Ooze, Manifold]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.ScenarioKeywordX "Blob" 3]
+    }
+
 miGoMeddler =
   (enemy "85035" "Mi-Go Meddler" MiGoIncursion 1)
     { cdHealthDamage = healthDamage 1

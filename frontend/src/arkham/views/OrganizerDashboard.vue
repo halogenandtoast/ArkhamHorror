@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { useClipboard } from '@vueuse/core'
-import { deleteEvent, eventTimeUp, resolveEventAdvance } from '@/arkham/api'
+import { deleteEvent, eventTimeUp, replicateAberration, resolveEventAdvance, swapMainStreetInvestigators } from '@/arkham/api'
 import { useEventStore } from '@/arkham/stores/event'
 import { useDbCardStore } from '@/stores/dbCards'
 import { imgsrc, buildShareableUrl } from '@/arkham/helpers'
@@ -156,6 +156,63 @@ async function submitAllocation() {
 function bareCode(investigatorId: string): string {
   return investigatorId.replace(/^c/, '')
 }
+const firstSwapGroup = ref<number | null>(null)
+const secondSwapGroup = ref<number | null>(null)
+const swapping = ref(false)
+const mainStreetReadyGroups = computed(() =>
+  groupDigests.value.filter((group) => counterValue(sharedState.value, `main-street-ready:${group.ordinal}`) > 0),
+)
+async function submitMainStreetSwap() {
+  if (firstSwapGroup.value === null || secondSwapGroup.value === null || swapping.value) return
+  swapping.value = true
+  try {
+    await swapMainStreetInvestigators(props.id, firstSwapGroup.value, secondSwapGroup.value)
+    firstSwapGroup.value = null
+    secondSwapGroup.value = null
+  } catch (e) {
+    console.error(e)
+  } finally {
+    swapping.value = false
+  }
+}
+
+const aberrations = [
+  ['89010a', 'Manifold enemy at exactly 1 remaining health'],
+  ['89010b', 'Oozeling whose spawn location does not exist'],
+  ['89010c', 'Manifold enemy defeated by excess damage'],
+  ['89010d', 'Last clue discovered from an Oozified location'],
+  ['89010e', 'Isolated investigator'],
+  ['89010f', 'Asset defeated by an Ooze attack'],
+  ['89010g', 'Investigator with 3+ resources on It’s got me!'],
+  ['89010h', 'Enemy with Alien Food Chain attached'],
+  ['89010i', 'Location with Sticky Feet attached'],
+] as const
+const replicateGroup = ref<number | null>(null)
+const replicateCard = ref('89010a')
+const replicateTargetIndex = ref(0)
+const replicating = ref(false)
+const selectedReplicateGroup = computed(() => groupDigests.value.find((g) => g.ordinal === replicateGroup.value))
+const selectedReplicateTarget = computed(() => selectedReplicateGroup.value?.replicateTargets[replicateTargetIndex.value])
+watch(groupDigests, (groups) => {
+  if (replicateGroup.value === null && groups.length) replicateGroup.value = groups[0].ordinal
+}, { immediate: true })
+watch(replicateGroup, () => { replicateTargetIndex.value = 0 })
+function replicateTargetLabel(target: GroupDigest['replicateTargets'][number]): string {
+  return `${target.kind}: ${dbStore.getDbCard(target.cardCode)?.name ?? target.cardCode}`
+}
+async function submitReplicate() {
+  const target = selectedReplicateTarget.value
+  if (replicateGroup.value === null || !target || replicating.value) return
+  replicating.value = true
+  try {
+    await replicateAberration(props.id, replicateGroup.value, replicateCard.value, target.target)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    replicating.value = false
+  }
+}
+
 function investigatorName(investigatorId: string): string {
   const code = bareCode(investigatorId)
   return dbStore.getDbCard(code)?.name ?? code
@@ -308,6 +365,64 @@ onUnmounted(() => {
             @click="submitAllocation"
           >
             {{ $t('event.confirmAdvance') }}
+          </button>
+        </div>
+      </section>
+
+      <section v-if="isOrganizer && mainStreetReadyGroups.length" class="advance-panel replicate-panel">
+        <header class="advance-header">
+          <h3>Main Street group swap</h3>
+          <p class="advance-hint">Groups appear here after an investigator activates Main Street. Resolving the swap is a permanent undo barrier.</p>
+        </header>
+        <div class="replicate-controls">
+          <label>
+            First ready group
+            <select v-model.number="firstSwapGroup">
+              <option :value="null">Select group</option>
+              <option v-for="group in mainStreetReadyGroups" :key="group.ordinal" :value="group.ordinal">{{ groupLabel(group) }}</option>
+            </select>
+          </label>
+          <label>
+            Second ready group
+            <select v-model.number="secondSwapGroup">
+              <option :value="null">Select group</option>
+              <option v-for="group in mainStreetReadyGroups" :key="group.ordinal" :value="group.ordinal">{{ groupLabel(group) }}</option>
+            </select>
+          </label>
+          <button type="button" class="advance-submit" :disabled="firstSwapGroup === null || secondSwapGroup === null || firstSwapGroup === secondSwapGroup || swapping" @click="submitMainStreetSwap">
+            Swap investigators
+          </button>
+        </div>
+      </section>
+
+      <section v-if="isOrganizer && event?.playWithBlobElse" class="advance-panel replicate-panel">
+        <header class="advance-header">
+          <h3>Replicating Aberration</h3>
+          <p class="advance-hint">Nominate a spotted condition. The chosen group may spend 1 countermeasure to cancel it.</p>
+        </header>
+        <div class="replicate-controls">
+          <label>
+            Group
+            <select v-model.number="replicateGroup">
+              <option v-for="group in groupDigests" :key="group.ordinal" :value="group.ordinal">{{ groupLabel(group) }}</option>
+            </select>
+          </label>
+          <label>
+            Replicate condition
+            <select v-model="replicateCard">
+              <option v-for="[code, description] in aberrations" :key="code" :value="code">{{ code }} — {{ description }}</option>
+            </select>
+          </label>
+          <label>
+            Target
+            <select v-model.number="replicateTargetIndex">
+              <option v-for="(target, index) in selectedReplicateGroup?.replicateTargets ?? []" :key="`${target.kind}-${target.cardCode}-${index}`" :value="index">
+                {{ replicateTargetLabel(target) }}
+              </option>
+            </select>
+          </label>
+          <button type="button" class="advance-submit" :disabled="!selectedReplicateTarget || replicating" @click="submitReplicate">
+            Offer replication
           </button>
         </div>
       </section>

@@ -88,6 +88,8 @@ spec = describe "Epic Multiplayer shared state" do
             , LeadFaction
             , SharedActProgress 3
             , GroupDoom (GroupOrdinal 2)
+            , MainStreetReady (GroupOrdinal 1)
+            , ReplicationPending (GroupOrdinal 3)
             ]
       for_ ekeys \k -> sharedKeyFromText (sharedKeyText k) `shouldBe` Just k
 

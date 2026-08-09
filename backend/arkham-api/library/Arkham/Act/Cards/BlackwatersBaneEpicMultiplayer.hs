@@ -9,6 +9,7 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Log (scenarioCount, scenarioCountIncrement)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
+import Arkham.Helpers.Scenario (getScenarioMetaKeyDefault)
 import Arkham.Helpers.Story
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -70,11 +71,18 @@ instance RunMessage BlackwatersBaneEpicMultiplayer where
       wave <- scenarioCount (EpicActAdvances 3)
       seed <- scenarioCount (EpicShared (sharedKeyText BlobStorySeed))
       lead <- getLead
-      let chosen = case (seed + wave) `mod` 4 of
-            0 -> Stories.rescueTheChemist
-            1 -> Stories.recoverTheSample
-            2 -> Stories.driveOffTheMiGo
-            _ -> Stories.defuseTheExplosives
+      isElse <- getScenarioMetaKeyDefault "blobThatAteEverythingElse" False
+      let
+        stories =
+          [ Stories.rescueTheChemist
+          , Stories.recoverTheSample
+          , Stories.driveOffTheMiGo
+          , Stories.defuseTheExplosives
+          ]
+            <> if isElse
+              then [Stories.escortTheCar, Stories.reclaimTheBrain, Stories.preventTheirResearch]
+              else []
+        chosen = fromJustNote "non-empty Blob story list" $ stories !!? ((seed + wave) `mod` length stories)
       readStoryWithPlacement_ lead chosen Global
       push $ ResetActDeckToStage 1
       pure a

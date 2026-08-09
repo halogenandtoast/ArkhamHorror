@@ -340,6 +340,23 @@ export const resolveEventAdvance = async (
   await api.post(`arkham/events/${eventId}/resolve-advance`, { stage, allocation })
 }
 
+export const swapMainStreetInvestigators = async (
+  eventId: string,
+  firstGroupOrdinal: number,
+  secondGroupOrdinal: number,
+): Promise<void> => {
+  await api.post(`arkham/events/${eventId}/swap-main-street`, { firstGroupOrdinal, secondGroupOrdinal })
+}
+
+export const replicateAberration = async (
+  eventId: string,
+  groupOrdinal: number,
+  cardCode: string,
+  target: unknown,
+): Promise<void> => {
+  await api.post(`arkham/events/${eventId}/replicate`, { groupOrdinal, cardCode, target })
+}
+
 export const deleteEvent = async (eventId: string): Promise<void> => {
   await api.delete(`arkham/events/${eventId}`)
 }

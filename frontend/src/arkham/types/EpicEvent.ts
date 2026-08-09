@@ -21,6 +21,12 @@ export interface GroupPlayerInfo {
   investigatorId: string | null
 }
 
+export interface ReplicateTarget {
+  target: unknown
+  cardCode: string
+  kind: 'location' | 'investigator' | 'enemy'
+}
+
 export interface GroupDigest {
   ordinal: number
   name: string
@@ -30,6 +36,7 @@ export interface GroupDigest {
   seatCount: number
   youAreSeated: boolean
   players: GroupPlayerInfo[]
+  replicateTargets: ReplicateTarget[]
 }
 
 export interface EventDetails {
@@ -40,6 +47,7 @@ export interface EventDetails {
   createdAt: string
   sharedState: SharedEventState
   totalInvestigators: number
+  playWithBlobElse: boolean
   groups: GroupDigest[]
 }
 
@@ -60,6 +68,7 @@ export interface CreateEventPost {
   scenarioId: string
   difficulty: string
   includeTarotReadings: boolean
+  playWithBlobElse: boolean
   // Minutes for the shared countdown; 0 means "no time limit".
   timeLimitMinutes: number
   groups: CreateEventGroup[]
@@ -186,6 +195,18 @@ export const groupPlayerInfoDecoder = JsonDecoder.object<GroupPlayerInfo>(
   'GroupPlayerInfo',
 )
 
+export const replicateTargetDecoder = JsonDecoder.object<ReplicateTarget>(
+  {
+    target: JsonDecoder.succeed(),
+    cardCode: JsonDecoder.string(),
+    kind: JsonDecoder.oneOf(
+      [JsonDecoder.isExactly('location'), JsonDecoder.isExactly('investigator'), JsonDecoder.isExactly('enemy')],
+      'ReplicateTarget.kind',
+    ),
+  },
+  'ReplicateTarget',
+)
+
 export const groupDigestDecoder = JsonDecoder.object<GroupDigest>(
   {
     ordinal: JsonDecoder.number(),
@@ -196,6 +217,7 @@ export const groupDigestDecoder = JsonDecoder.object<GroupDigest>(
     seatCount: JsonDecoder.number(),
     youAreSeated: JsonDecoder.boolean(),
     players: JsonDecoder.array(groupPlayerInfoDecoder, 'GroupPlayerInfo[]'),
+    replicateTargets: JsonDecoder.array(replicateTargetDecoder, 'ReplicateTarget[]'),
   },
   'GroupDigest',
 )
@@ -209,6 +231,7 @@ export const eventDetailsDecoder = JsonDecoder.object<EventDetails>(
     createdAt: JsonDecoder.string(),
     sharedState: sharedEventStateDecoder,
     totalInvestigators: JsonDecoder.number(),
+    playWithBlobElse: JsonDecoder.boolean(),
     groups: JsonDecoder.array(groupDigestDecoder, 'GroupDigest[]'),
   },
   'EventDetails',

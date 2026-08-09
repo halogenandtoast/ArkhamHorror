@@ -3,14 +3,26 @@ module Arkham.Scenario.Scenarios.TheBlobThatAteEverything (theBlobThatAteEveryth
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Card (Card)
+import Arkham.Campaign.Option (CampaignOption (PlayWithTheBlobThatAteEverythingElse))
+import Arkham.Card (Card (..), lookupCardDef)
+import Arkham.Card.CardCode (CardCode)
+import Arkham.Card.EncounterCard (lookupEncounterCard)
+import Arkham.Card.Id (unsafeMakeCardId)
 import Arkham.DamageEffect (damageAssignmentAmount, nonAttack)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types (Field (EnemyPlacement))
+import Arkham.Epic.Types (
+  GroupOrdinal (..),
+  SharedKey (Countermeasures, ReplicationPending),
+  groupOrdinalKey,
+  sharedKeyText,
+ )
 import Arkham.Helpers.Enemy (getModifiedKeywords)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Log (scenarioCount)
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
-import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
+import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
 import Arkham.Helpers.SkillTest (
   getCommittedCards,
   getSkillTestAction,
@@ -26,15 +38,16 @@ import Arkham.Location.Grid
 import Arkham.Matcher hiding (PhaseStep)
 import Arkham.Message.Lifted.Choose
 import Arkham.Phase
-import Arkham.Placement (Placement (Global))
+import Arkham.Placement (Placement (AtLocation, AttachedToEnemy, Global, InThreatArea))
 import Arkham.Projection
-import Arkham.Epic.Types (SharedKey (Countermeasures), sharedKeyText)
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenario.Types (difficultyL)
+import Arkham.Scenario.Types (Field (ScenarioTokens), difficultyL)
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicShared))
 import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
 import Arkham.Token qualified as Token
+import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.Types (Field (TreacheryPlacement))
 import Data.Aeson.Key qualified as Key
 
 newtype TheBlobThatAteEverything = TheBlobThatAteEverything ScenarioAttrs
@@ -62,6 +75,8 @@ instance RunMessage TheBlobThatAteEverything where
     PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "body"
       pure s
+    HandleOption PlayWithTheBlobThatAteEverythingElse ->
+      pure $ TheBlobThatAteEverything $ attrs & setMetaKey "blobThatAteEverythingElse" (True :: Bool)
     Setup -> do
       -- Epic Multiplayer group games are flagged in scenario meta at creation
       -- (see Api.Handler.Arkham.Events.createGroupGame): the join/setup path has
@@ -70,9 +85,11 @@ instance RunMessage TheBlobThatAteEverything where
       -- event-wide shared state, so we place the epic subject and let the shared
       -- pool seed/reconcile the countermeasures rather than placing local tokens.
       isEpic <- getScenarioMetaKeyDefault "epicMultiplayer" False
+      isElse <- getScenarioMetaKeyDefault "blobThatAteEverythingElse" False
       runScenarioSetup TheBlobThatAteEverything attrs do
         setup $ ul do
           li "gatherSets"
+          li.validate isElse "gatherElseSets"
           li.validate isEpic "epicMultiplayer"
           li.validate (not isEpic) "singleGroup"
           li "setAsideMiGo"
@@ -92,6 +109,7 @@ instance RunMessage TheBlobThatAteEverything where
 
         gather Set.TheBlobThatAteEverything
         gatherAndSetAside Set.MiGoIncursion
+        when isElse $ gatherAndSetAside Set.MiGoIncursionII
         -- Reward assets are single-sided player cards (no encounter back), so
         -- they live in the player pool and are no longer pulled in by the
         -- encounter-set gather above; set them aside explicitly for the stories
@@ -102,6 +120,9 @@ instance RunMessage TheBlobThatAteEverything where
           , Assets.miGoWeapon
           , Assets.ltWilsonStewart
           ]
+        when isElse
+          $ setAside
+            [Assets.armoredCar, Assets.brainCase, Assets.gMen, Assets.corrosiveCloud, Assets.alienInstruments]
 
         placeEnemy (if isEpic then Enemies.subject8L08EpicMultiplayer else Enemies.subject8L08) Global
 
@@ -119,25 +140,37 @@ instance RunMessage TheBlobThatAteEverything where
         -- shared with the single-group deck.
         setActDeck
           $ if isEpic
-            then [Acts.exposeTheAnomalyEpicMultiplayer, Acts.extraterrestrialPhysiology, Acts.blackwatersBaneEpicMultiplayer]
+            then
+              [ Acts.exposeTheAnomalyEpicMultiplayer
+              , Acts.extraterrestrialPhysiology
+              , Acts.blackwatersBaneEpicMultiplayer
+              ]
             else [Acts.exposeTheAnomaly, Acts.extraterrestrialPhysiology, Acts.blackwatersBane]
 
         quarantine <-
           shuffle
-            [ Locations.sewer
-            , Locations.bridge
-            , Locations.waterTower
-            , Locations.church
-            , Locations.oozyLakebed
-            , Locations.oozyLakebed
-            , Locations.slimyStreets
-            , Locations.slimyStreets
-            , Locations.desiccatedFarmland
-            , Locations.desiccatedFarmland
-            ]
+            $ [ Locations.sewer
+              , Locations.bridge
+              , Locations.waterTower
+              , Locations.church
+              , Locations.oozyLakebed
+              , Locations.oozyLakebed
+              , Locations.slimyStreets
+              , Locations.slimyStreets
+              , Locations.desiccatedFarmland
+              , Locations.desiccatedFarmland
+              ]
+            <> if isElse
+              then
+                [ Locations.mainStreet
+                , Locations.oldBurialHill
+                , Locations.abandonedWindmill
+                , Locations.abbatoir
+                ]
+              else []
 
         let
-          quarantine' = drop 1 quarantine -- remove 1 at random
+          quarantine' = drop (if isElse then 5 else 1) quarantine
           (innerQuarantine, rest1) = splitAt 2 quarantine'
           (outerQuarantine, remainingQuarantine) = splitAt 3 rest1
 
@@ -255,8 +288,14 @@ instance RunMessage TheBlobThatAteEverything where
         let blobX = [x | Keyword.ScenarioKeywordX "Blob" x <- toList keywords]
         for_ (listToMaybe blobX) \x -> do
           let extra = sum [n | ScenarioModifierValue "Blob" (maybeResult -> Just n) <- modifiers]
-          subject <- selectJust subject8L08Matcher
-          push $ DealDamage (EnemyTarget subject) (nonAttack Nothing attrs (x + extra))
+          if ScenarioModifier "oldBurialHillBlob" `elem` modifiers
+            then
+              selectOne (locationIs Locations.oldBurialHill) >>= traverse_ \loc -> do
+                lead <- getLead
+                discoverAt NotInvestigate lead (toSource attrs) (x + extra) loc
+            else do
+              subject <- selectJust subject8L08Matcher
+              push $ DealDamage (EnemyTarget subject) (nonAttack Nothing attrs (x + extra))
       pure s
     AdvanceAgendaBy _ _ ->
       pure $ TheBlobThatAteEverything $ attrs & setMetaKey "senseOfTimeActive" (False :: Bool)
@@ -285,6 +324,66 @@ instance RunMessage TheBlobThatAteEverything where
         & setMetaKey (Key.fromText key) (value :: Value)
         & setLightDevoured
         & setFoodAndDrinksActive
+    -- The organizer nominates a Replicating Aberration and a legal in-group
+    -- target. Investigators get the printed countermeasure cancellation choice;
+    -- the actual spawn is a second scenario message so the choice remains a
+    -- normal, persisted game question.
+    ScenarioSpecific "blobMainStreetReady" (maybeResult -> Just iid) ->
+      pure $ TheBlobThatAteEverything $ attrs & setMetaKey "mainStreetReady" (iid :: InvestigatorId)
+    ScenarioSpecific "blobRequestAberration" payload
+      | Just (cardCode, target) <- maybeResult payload -> do
+          countermeasures <- scenarioFieldMap ScenarioTokens (Token.countTokens Token.Resource)
+          lead <- getLead
+          ordinal <- scenarioCount (EpicShared groupOrdinalKey)
+          let
+            pendingKey = ReplicationPending $ GroupOrdinal ordinal
+            spawn = ScenarioSpecific "blobSpawnAberration" (toJSON (cardCode :: CardCode, target :: Target))
+          push $ RaiseShared pendingKey 1
+          if countermeasures > 0
+            then chooseOneM lead do
+              labeled "Spend 1 countermeasure to prevent the replication" do
+                push $ RemoveTokens (toSource attrs) ScenarioTarget Token.Resource 1
+                push $ SpendShared pendingKey 1
+              labeled "Allow the Replicating Aberration to spawn" do
+                push $ SpendShared pendingKey 1
+                push spawn
+            else do
+              push $ SpendShared pendingKey 1
+              push spawn
+          pure s
+    ScenarioSpecific "blobSpawnAberration" payload
+      | Just (cardCode, target) <- maybeResult payload -> do
+          cardDef <-
+            maybe (error "Unknown Replicating Aberration card code") pure $ lookupCardDef (cardCode :: CardCode)
+          cardId <- unsafeMakeCardId <$> getRandom
+          let card = EncounterCard $ lookupEncounterCard cardDef cardId
+          placement <- case target :: Target of
+            LocationTarget lid -> pure $ AtLocation lid
+            InvestigatorTarget iid -> pure $ InThreatArea iid
+            EnemyTarget eid -> do
+              placement' <- field EnemyPlacement eid
+              when (cardCode == "89010a") do
+                lead <- getLead
+                push $ Discard (Just lead) (toSource attrs) (EnemyTarget eid)
+              pure placement'
+            _ -> error "Invalid Replicating Aberration target"
+          eid <- case placement of
+            AtLocation lid -> createEnemyAt card lid
+            InThreatArea iid -> do
+              lid <- fieldMap InvestigatorLocation (fromJustNote "investigator must be at a location") iid
+              eid <- createEnemyAt card lid
+              engageEnemy iid eid
+              pure eid
+            _ -> error "Replicating Aberration target is not in play"
+          exhaustEnemy (toSource attrs) eid
+          when (cardCode == "89010f") $ createTreacheryAt_ Treacheries.alienFoodChain (AttachedToEnemy eid)
+          when (cardCode == "89010h") $ case target of
+            EnemyTarget spottedEnemy -> do
+              foodChains <- select $ treacheryIs Treacheries.alienFoodChain
+              for_ foodChains \foodChain -> whenM (fieldMap TreacheryPlacement (== AttachedToEnemy spottedEnemy) foodChain) do
+                push $ PlaceTreachery foodChain (AttachedToEnemy eid)
+            _ -> pure ()
+          pure s
     ScenarioSpecific "blobSetLightActive" (maybeResult -> Just active) ->
       pure $ TheBlobThatAteEverything $ attrs & setMetaKey "lightActive" (active :: Bool)
     ScenarioSpecific "blobSetDebugRealityAcidTokens" value -> do

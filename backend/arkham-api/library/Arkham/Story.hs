@@ -237,6 +237,9 @@ allStories =
     , SomeStoryCard recoverTheSample
     , SomeStoryCard driveOffTheMiGo
     , SomeStoryCard defuseTheExplosives
+    , SomeStoryCard escortTheCar
+    , SomeStoryCard reclaimTheBrain
+    , SomeStoryCard preventTheirResearch
     , -- Guardians of the Abyss
       SomeStoryCard toTheDreamlands
     , SomeStoryCard fateOfTheDreamers

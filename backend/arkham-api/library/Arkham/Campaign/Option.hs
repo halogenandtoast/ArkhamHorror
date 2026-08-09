@@ -43,6 +43,8 @@ data CampaignOption
   | FatalMiragePart3
   | -- | The Labyrinths of Lunacy
     PlayAsMiniCampaign
+  | -- | The Blob That Ate Everything ELSE!
+    PlayWithTheBlobThatAteEverythingElse
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''CampaignOption)

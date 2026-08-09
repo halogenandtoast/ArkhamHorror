@@ -1195,6 +1195,10 @@ allLocationCards =
       , waterTower
       , church
       , oozyLakebed
+      , mainStreet
+      , oldBurialHill
+      , abandonedWindmill
+      , abbatoir
       , slimyStreets
       , desiccatedFarmland
       , --- By the Book

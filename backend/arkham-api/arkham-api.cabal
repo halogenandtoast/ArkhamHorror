@@ -849,6 +849,7 @@ library
       Arkham.Asset.Assets.AliceLuxley
       Arkham.Asset.Assets.AliceLuxley2
       Arkham.Asset.Assets.AlienDevice
+      Arkham.Asset.Assets.AlienInstruments
       Arkham.Asset.Assets.AlienTabletPrehistoricWritings
       Arkham.Asset.Assets.AlikiZoniUperetriaTheMaidWithTheScarletSash
       Arkham.Asset.Assets.AltonOConnellGhostHunter
@@ -898,6 +899,7 @@ library
       Arkham.Asset.Assets.AriadnesTwine3
       Arkham.Asset.Assets.Armageddon
       Arkham.Asset.Assets.Armageddon4
+      Arkham.Asset.Assets.ArmoredCar
       Arkham.Asset.Assets.ArmorOfArdennes5
       Arkham.Asset.Assets.ArseneRenard
       Arkham.Asset.Assets.ArtisticInspiration
@@ -968,6 +970,7 @@ library
       Arkham.Asset.Assets.BountyContracts
       Arkham.Asset.Assets.BoxingGloves
       Arkham.Asset.Assets.BoxingGloves3
+      Arkham.Asset.Assets.BrainCase
       Arkham.Asset.Assets.BrandOfCthugha1
       Arkham.Asset.Assets.BrandOfCthugha4
       Arkham.Asset.Assets.BreathOfTheSleeper
@@ -1030,6 +1033,7 @@ library
       Arkham.Asset.Assets.CookiesCustom32
       Arkham.Asset.Assets.Cornered2
       Arkham.Asset.Assets.CornHuskDoll
+      Arkham.Asset.Assets.CorrosiveCloud
       Arkham.Asset.Assets.CosmicFlame
       Arkham.Asset.Assets.CosmicFlame5
       Arkham.Asset.Assets.Courage
@@ -1269,6 +1273,7 @@ library
       Arkham.Asset.Assets.GiftOfNodens5
       Arkham.Asset.Assets.GildedVolto
       Arkham.Asset.Assets.GirishKadakiaICPCPunjabDetective4
+      Arkham.Asset.Assets.GMen
       Arkham.Asset.Assets.GoodMoney
       Arkham.Asset.Assets.GoodMoneyTheQuoPart
       Arkham.Asset.Assets.GrandMeresCharm
@@ -2656,11 +2661,14 @@ library
       Arkham.Enemy.Cards.MemoryOfATerribleDiscovery
       Arkham.Enemy.Cards.MiasmaticShadow
       Arkham.Enemy.Cards.MiGoAbductor
+      Arkham.Enemy.Cards.MiGoDestroyer
       Arkham.Enemy.Cards.MiGoDrone
       Arkham.Enemy.Cards.MiGoGeneral
       Arkham.Enemy.Cards.MiGoGuard
       Arkham.Enemy.Cards.MiGoHarvester
       Arkham.Enemy.Cards.MiGoMeddler
+      Arkham.Enemy.Cards.MiGoResearcher
+      Arkham.Enemy.Cards.MiGoScientist
       Arkham.Enemy.Cards.MimeticNemesisInfiltratorOfRealities
       Arkham.Enemy.Cards.MimeticNemesisOtherworldlySubjugator
       Arkham.Enemy.Cards.MindlessDancer
@@ -2749,6 +2757,7 @@ library
       Arkham.Enemy.Cards.ReanimatedDead
       Arkham.Enemy.Cards.ReawakenedElderThing
       Arkham.Enemy.Cards.RelentlessDarkYoung
+      Arkham.Enemy.Cards.ReplicatingAberration
       Arkham.Enemy.Cards.ReturnToHeretic_38
       Arkham.Enemy.Cards.ReturnToHeretic_39
       Arkham.Enemy.Cards.RiftSeeker
@@ -3919,6 +3928,8 @@ library
       Arkham.Location.Cards.AbandonedShack
       Arkham.Location.Cards.AbandonedSite
       Arkham.Location.Cards.AbandonedWarehouse
+      Arkham.Location.Cards.AbandonedWindmill
+      Arkham.Location.Cards.Abbatoir
       Arkham.Location.Cards.AbbeyChurch
       Arkham.Location.Cards.AbbeyTowerSpiresForbidden
       Arkham.Location.Cards.AbbeyTowerThePathIsOpen
@@ -4541,6 +4552,7 @@ library
       Arkham.Location.Cards.LuminousTunnels
       Arkham.Location.Cards.MagneticSpires
       Arkham.Location.Cards.MainPath
+      Arkham.Location.Cards.MainStreet
       Arkham.Location.Cards.MapRoom
       Arkham.Location.Cards.MarrakeshRailwayStation
       Arkham.Location.Cards.MarrakeshRailwayStationAbandoned
@@ -4630,6 +4642,7 @@ library
       Arkham.Location.Cards.Office
       Arkham.Location.Cards.OfficeMurderAtTheExcelsiorHotel
       Arkham.Location.Cards.OfficeSpectral
+      Arkham.Location.Cards.OldBurialHill
       Arkham.Location.Cards.OMalleysWatchShop
       Arkham.Location.Cards.OnyxGates
       Arkham.Location.Cards.OnyxGuardians
@@ -5813,6 +5826,7 @@ library
       Arkham.Story.Cards.EndlessSecrets
       Arkham.Story.Cards.EngramsOath
       Arkham.Story.Cards.ErodedFrieze
+      Arkham.Story.Cards.EscortTheCar
       Arkham.Story.Cards.EvilWithin
       Arkham.Story.Cards.ExhumeTheBones
       Arkham.Story.Cards.FamilialPain
@@ -5867,10 +5881,12 @@ library
       Arkham.Story.Cards.PennysFate
       Arkham.Story.Cards.PersonalEntaglement
       Arkham.Story.Cards.PlayfulShadows
+      Arkham.Story.Cards.PreventTheirResearch
       Arkham.Story.Cards.PrisonersOfConquest
       Arkham.Story.Cards.PrisonOfMemories
       Arkham.Story.Cards.PsychicRebuke
       Arkham.Story.Cards.RealityAcid
+      Arkham.Story.Cards.ReclaimTheBrain
       Arkham.Story.Cards.RecoverTheSample
       Arkham.Story.Cards.RedeemAFormerColleague
       Arkham.Story.Cards.RescueTheChemist

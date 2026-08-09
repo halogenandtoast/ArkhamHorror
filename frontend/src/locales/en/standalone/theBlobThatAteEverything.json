@@ -18,6 +18,7 @@
   },
   "setup": {
     "gatherSets": "Gather all cards from *The Blob That Ate Everything* encounter set. This set is indicated by this icon:<section class='encounter-sets'><img src='{setImgPath}/the-blob-that-ate-everything.png' /></section>",
+    "gatherElseSets": "Gather the *The Blob That Ate Everything Else* and *Mi-Go Incursion II* encounter sets. Set all cards from *Mi-Go Incursion II* aside, out of play. Shuffle the 4 new Quarantine Zone locations together with the original locations and remove 5 at random.",
     "epicMultiplayer": "If you are playing in *Epic Multiplayer Mode*, gather all cards from the Epic Multiplayer encounter set, indicated by this icon. (Remove all cards from the Single Group encounter set from the game.)<section class='encounter-sets'><img src='{setImgPath}/epic-multiplayer.png' /></section>",
     "singleGroup": "If you are playing in *Single Group Mode*, gather all cards from the Single Group encounter set, indicated by this icon. (Remove all cards from the Epic Multiplayer encounter set from the game.)<section class='encounter-sets'><img src='{setImgPath}/single-group.png' /></section>",
     "setAsideMiGo": "Set all cards from the Mi-Go Incursion encounter set aside, out of play. This set is indicated by this icon:<section class='encounter-sets'><img src='{setImgPath}/migo.png' /></section>",

@@ -206,6 +206,9 @@ allStoryCards =
       , recoverTheSample
       , driveOffTheMiGo
       , defuseTheExplosives
+      , escortTheCar
+      , reclaimTheBrain
+      , preventTheirResearch
       , aNobleLegacyPast
       , aNobleLegacyPresent
       , aNobleLegacyFuture
@@ -889,6 +892,15 @@ driveOffTheMiGo =
 defuseTheExplosives :: CardDef
 defuseTheExplosives =
   victory 1 $ addTrait Part1 $ doubleSided $ story "85024" "Defuse the Explosives" MiGoIncursion
+
+escortTheCar :: CardDef
+escortTheCar = victory 1 $ addTrait Part1 $ doubleSided $ story "89011" "Escort the Car" MiGoIncursionII
+
+reclaimTheBrain :: CardDef
+reclaimTheBrain = victory 1 $ addTrait Part1 $ doubleSided $ story "89014" "Reclaim the Brain" MiGoIncursionII
+
+preventTheirResearch :: CardDef
+preventTheirResearch = victory 1 $ addTrait Part1 $ doubleSided $ story "89017" "Prevent Their Research" MiGoIncursionII
 
 aNobleLegacyPast :: CardDef
 aNobleLegacyPast = doubleSided $ story "87006" "A Noble Legacy (Past)" MachinationsThroughTime

@@ -8,7 +8,6 @@ import Api.Arkham.Epic (
   applyEpicDeltasLocked,
   lookupGameEvent,
   mkEpicEnv,
-  modifySharedStateLocked,
   modifySharedStateLockedWith,
  )
 import Api.Arkham.Helpers
@@ -41,7 +40,6 @@ import Arkham.Epic.Types (
     ActAdvanceGen,
     ActContribution,
     ActSpend,
-    AdvanceRequested,
     AwaitingOrganizer,
     SharedActProgress
   ),
@@ -304,6 +302,10 @@ data RunMessagesTimeout = RunMessagesTimeout ArkhamGameId Int
   deriving stock Show
   deriving anyclass Exception
 
+data EpicOrganizerGateBlocked = EpicOrganizerGateBlocked
+  deriving stock Show
+  deriving anyclass Exception
+
 updateGame :: Answer -> ArkhamGameId -> Maybe Room -> Handler ()
 updateGame response gameId mRoom = do
   let broadcast :: Broadcast
@@ -314,11 +316,14 @@ updateGame response gameId mRoom = do
   -- Imitation-learning capture flag, read once from app settings (a pure record
   -- read, no DB). When False the capture below is byte-for-byte inert.
   collectMl <- getsYesod (appCollectMlData . appSettings)
+  let rejectOrganizerGate action =
+        action `catch` \EpicOrganizerGateBlocked ->
+          permissionDenied "This event is waiting for the organizer's clue allocation"
   -- NOTE: not wrapping the whole handler in withSpan_ -- it would rewrap
   -- Yesod's HCContent control-flow exceptions (notFound, notAuthenticated,
   -- sendStatusJSON, etc.) and break 404/401 responses (see Undo.hs note).
   -- The runMessages span below is wrapped where it's safe.
-  (ArkhamGame {..}, oldLogEntries, updatedLog, mSharedUpdate, actAdvanced, newAchievements) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+  (ArkhamGame {..}, oldLogEntries, updatedLog, mSharedUpdate, actAdvanced, newAchievements) <- rejectOrganizerGate $ runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
     -- Read the prior log from the per-room cache when it's in sync with
     -- the just-locked game's step; otherwise fall back to the DB. Avoids
     -- the 217-row-avg getGameLog read on every action in the common case.
@@ -382,6 +387,15 @@ updateGame response gameId mRoom = do
         -- EpicEnv so Shared* messages emitted during the action are captured as
         -- deltas. 'Nothing' (every ordinary game) means zero behavior change.
         mEpicCtx <- lookupGameEvent gameId
+        -- The organizer barrier is a server-side lock, not merely a frontend
+        -- overlay. This also closes direct-API and delayed-click paths that could
+        -- otherwise answer the parked Continue before allocation.
+        for_ mEpicCtx \(Entity _ event, _) -> do
+          let
+            shared = arkhamEpicEventSharedState event
+            gateOpen = any (\stage -> sharedCounter (AwaitingOrganizer stage) shared > 0) (actProgressStages shared)
+            continuesActAdvance = any (\case NextAdvanceActStep {} -> True; _ -> False) answerMessages
+          when (gateOpen && continuesActAdvance) $ liftIO $ throwIO EpicOrganizerGateBlocked
         mEpicEnv <- traverse (uncurry mkEpicEnv) mEpicCtx
 
         -- Epic Multiplayer: mirror the current shared counters into this group's
@@ -528,6 +542,12 @@ updateGame response gameId mRoom = do
   let publishLog = oldLogEntries <> updatedLog
   liftIO $ writeCachedLog mRoom arkhamGameStep publishLog
 
+  -- Publish shared state before the acting game's parked question. In particular,
+  -- a threshold-crossing Act 1 action has already armed AwaitingOrganizer in the
+  -- same event-row write, so clients install the blocking overlay before they can
+  -- see or answer the parked Continue question.
+  for_ mSharedUpdate \(eid, s) -> propagateShared eid (Just gameId) s
+
   publishToRoom gameId
     $ GameUpdate
     $ PublicGame
@@ -540,25 +560,12 @@ updateGame response gameId mRoom = do
   for_ newAchievements \achievement ->
     publishToRoom gameId $ GameAchievement (achievementName achievement)
 
-  -- Epic Multiplayer: propagate a shared-counter change across the event — update
-  -- every client's shared store AND sync the other groups' game-state boards to
-  -- it (so countermeasures / blob health change live in every group, not just on
-  -- that group's next action). The acting group is skipped (already reflected).
-  for_ mSharedUpdate \(eid, s) -> propagateShared eid (Just gameId) s
-
   -- Epic Multiplayer: wall off undo across an IN-GROUP act advance. Each group
   -- advances its own act via the normal AdvanceAct flow (no cross-group injection);
   -- when this action advanced the act, set the per-game undo floor to the committed
   -- step so it can't be locally undone (the other groups follow on their own turns
   -- via 'ActAdvanceGen'). 'arkhamGameStep' here is the post-commit (new) step.
   when actAdvanced $ setGameUndoFloor gameId arkhamGameStep
-
-  -- Epic Multiplayer: PURE-COUNTER coordinator. When a group's act raised
-  -- 'AdvanceRequested', atomically (under the event lock) bump the shared
-  -- 'ActAdvanceGen' exactly once per pool crossing, using the pool reset as the
-  -- once-only token. It touches ONLY shared counters — it never injects messages
-  -- into any group's game (that injection was clobbering followers' encounter draws).
-  for_ mSharedUpdate \(eid, s) -> coordinateEpicActAdvance eid s
 
 {- | Merge reported checklist items into the user's progress row for a
 cross-playthrough achievement (see 'achievementChecklist'); the row's
@@ -731,6 +738,14 @@ broadcastSharedToEvent eid s = do
   gameIds <- getEventGroupGameIds eid
   for_ gameIds \gid -> publishToRoom gid (SharedStateUpdate s)
 
+-- Group roster payloads contain caller-specific fields (role/youAreSeated), so a
+-- membership change broadcasts only an invalidation and each client refetches.
+broadcastEventChanged :: ArkhamEpicEventId -> Handler ()
+broadcastEventChanged eid = do
+  publishToEventRoom eid EventChanged
+  gameIds <- getEventGroupGameIds eid
+  for_ gameIds (`publishToRoom` EventChanged)
+
 {- | The ScenarioCountSet messages that mirror the authoritative shared counters
 into a group's scenario state (as EpicShared counts), keyed by sharedKeyText,
 plus the frozen total and this group's own ordinal. The scenario/enemy
@@ -867,41 +882,12 @@ per-game undo floor. Acts in play is normally a singleton.
 epicActFingerprint :: Game -> [ActId]
 epicActFingerprint game = sort [attr (.id) act | act <- toList (entitiesActs (gameEntities game))]
 
-{- | Epic Multiplayer PURE-COUNTER cross-group coordinator, narrowed to a GATE
-SETTER. Runs POST-COMMIT (in 'updateGame') whenever a group's just-committed action
-raised 'AdvanceRequested'. For each such stage, under the event @FOR UPDATE@ lock:
-if the pool ('SharedActProgress') has reached threshold (@2 * total@) it sets
-@AwaitingOrganizer N = 1@ (idempotent — arming an already-armed gate is a no-op);
-it ALWAYS clears 'AdvanceRequested'. Then broadcasts.
-
-It does NOT reset the pool, bump 'ActAdvanceGen', or floor anything — CONSUMPTION
-now happens at allocation time in the organizer endpoint
-('Api.Handler.Arkham.Events.postApiV1ArkhamEventResolveAdvanceR' →
-'settleOrganizerAdvance'). The gate just raises the organizer overlay. Touches ONLY
-shared counters; never injects a gameplay message into any group.
--}
-coordinateEpicActAdvance :: ArkhamEpicEventId -> SharedEventState -> Handler ()
-coordinateEpicActAdvance eid s =
-  for_ (actProgressStages s) \stage ->
-    when (sharedCounter (AdvanceRequested stage) s > 0) do
-      newState <- runDB $ modifySharedStateLocked eid \st ->
-        let
-          pool = sharedCounter (SharedActProgress stage) st
-          threshold = 2 * sharedTotalInvestigators st
-          gate =
-            if threshold > 0 && pool >= threshold
-              then setSharedCounter (AwaitingOrganizer stage) 1
-              else Import.id
-         in
-          gate (setSharedCounter (AdvanceRequested stage) 0 st)
-      broadcastSharedToEvent eid newState
-
 {- | Floor undo for EVERY group in the event at its CURRENT persistence step,
 making a consuming act advance a global checkpoint: no group can undo across it (so
 no contributor can rewind a now-consumed pool placement), while every group's
 actions AFTER it stay undoable. Floors are monotonic (always set at a later step
-than any prior floor). Called ONLY from the consuming claim in
-'coordinateEpicActAdvance'.
+than any prior floor). Called only after the organizer consumes the pool in
+'settleOrganizerAdvance'.
 -}
 floorAllGroupsAtCurrentStep :: ArkhamEpicEventId -> Handler ()
 floorAllGroupsAtCurrentStep eid = do

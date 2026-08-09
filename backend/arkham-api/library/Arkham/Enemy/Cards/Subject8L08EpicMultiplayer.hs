@@ -38,6 +38,16 @@ healthMultiplierPerInvestigator = 15
 sharedHealthKey :: EnemyAttrs -> SharedKey
 sharedHealthKey _ = SharedEnemyHealth Cards.subject8L08EpicMultiplayer.cardCode
 
+-- Keep the Epic copy behaviorally identical to the ordinary Subject when Reality
+-- Acid devours a referenced entity/card. The shared-health variant is a distinct
+-- card definition, so it cannot rely on the ordinary Subject's message handler.
+devourRef :: (ReverseQueue m, FetchCard ref) => EnemyAttrs -> m () -> ref -> m ()
+devourRef attrs remove ref = do
+  card <- fetchCard ref
+  remove
+  obtainCard card
+  placeUnderneath attrs [card]
+
 instance HasModifiersFor Subject8L08EpicMultiplayer where
   getModifiersFor (Subject8L08EpicMultiplayer a) = do
     -- Health is the FIXED maximum (15 per investigator across the whole event).
@@ -59,6 +69,21 @@ subject8L08EpicMultiplayer =
 
 instance RunMessage Subject8L08EpicMultiplayer where
   runMessage msg e@(Subject8L08EpicMultiplayer attrs) = runQueueT $ case msg of
+    ScenarioSpecific "devour" (maybeResult -> Just target) -> do
+      case target of
+        LocationTarget lid -> unlessM (hasModifier lid CannotLeavePlay) $ devourRef attrs (removeLocation lid) lid
+        AssetTarget aid -> whenM (selectAny $ AssetWithId aid <> AssetCanLeavePlayByNormalMeans) do
+          unlessM (hasModifier aid CannotLeavePlay) $ devourRef attrs (removeAsset aid) aid
+        EnemyTarget eid -> unlessM (hasModifier eid CannotLeavePlay) $ devourRef attrs (removeEnemy eid) eid
+        TreacheryTarget tid -> unlessM (hasModifier tid CannotLeavePlay) $ devourRef attrs (removeTreachery tid) tid
+        CardIdTarget cid -> do
+          assetsInPlay <- select $ AssetWithCardId cid
+          devourableAssets <-
+            filterM (fmap not . (`hasModifier` CannotLeavePlay))
+              =<< select (AssetWithCardId cid <> AssetCanLeavePlayByNormalMeans)
+          unless (notNull assetsInPlay && null devourableAssets) $ devourRef attrs (pure ()) cid
+        _ -> pure ()
+      pure e
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push R2
       pure e
@@ -69,11 +94,30 @@ instance RunMessage Subject8L08EpicMultiplayer where
       -- so every group's board shows the same climbing damage against the fixed
       -- max. If the pool is already exhausted, this group lands no blow yet still
       -- loses its blob: pull-defeat the local copy, which fires the Objective -> R2.
-      maxHealth <- (healthMultiplierPerInvestigator *) <$> scenarioCount (EpicShared totalInvestigatorsKey)
+      maxHealth <-
+        (healthMultiplierPerInvestigator *) <$> scenarioCount (EpicShared totalInvestigatorsKey)
       when (v <= 0 && not (enemyDefeated attrs))
         $ push
         $ Defeated (toTarget attrs) (toCardId attrs) GameSource (setToList $ toTraits attrs)
-      pure $ Subject8L08EpicMultiplayer (attrs & tokensL %~ Token.setTokens Token.Damage (max 0 (maxHealth - v)))
+      let accumulatedDamage = min maxHealth $ max 0 (maxHealth - v)
+      pure
+        $ Subject8L08EpicMultiplayer (attrs & tokensL %~ Token.setTokens Token.Damage accumulatedDamage)
+    -- Some Blob effects (notably Extraterrestrial Physiology) place damage
+    -- directly rather than dealing a DamageAssignment. Mirror those placements
+    -- into the same shared health pool too.
+    PlaceTokens _ (isTarget attrs -> True) Token.Damage n -> do
+      attrs' <- liftRunMessage msg attrs
+      when (n > 0) $ push $ SpendShared (sharedHealthKey attrs) n
+      pure $ Subject8L08EpicMultiplayer attrs'
+    HealDamage (isTarget attrs -> True) _ n -> do
+      attrs' <- liftRunMessage msg attrs
+      let healed = min n attrs.damage
+      when (healed > 0) $ push $ RaiseShared (sharedHealthKey attrs) healed
+      pure $ Subject8L08EpicMultiplayer attrs'
+    HealAllDamage (isTarget attrs -> True) _ -> do
+      attrs' <- liftRunMessage msg attrs
+      when (attrs.damage > 0) $ push $ RaiseShared (sharedHealthKey attrs) attrs.damage
+      pure $ Subject8L08EpicMultiplayer attrs'
     Damaged (isTarget attrs -> True) assignment -> do
       -- Damage to this copy drains the GLOBAL pool by the amount being dealt. We
       -- read it straight off the DamageAssignment: the engine's Damaged handler

@@ -27,11 +27,12 @@ const totalInvestigators = computed(
 // Requirement for the current cycle. Guards divide-by-zero downstream.
 const threshold = computed(() => 2 * totalInvestigators.value)
 
-// The current act participates in the shared-clue pool only when a counter exists
-// for its stage (Blob acts 1 & 3, not act 2) and we have a positive threshold.
+// Only the Blob's Epic Act 1 has a global clue threshold. Checking the stage
+// explicitly also prevents legacy events with a stale act-progress:3 cell from
+// presenting Blackwater's Bane as a clue act.
 const sharedClueActive = computed(
   () =>
-    props.currentActStage !== null &&
+    props.currentActStage === 1 &&
     hasActProgress(sharedState.value, props.currentActStage) &&
     threshold.value > 0,
 )

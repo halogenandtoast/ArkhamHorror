@@ -82,10 +82,9 @@ export const TIMER_STARTED_AT = 'timer-started-at'
 // Total investigators across all groups; the shared-clue requirement scales off it.
 export const TOTAL_INVESTIGATORS = 'total-investigators'
 
-// Shared CUMULATIVE clue progress per act stage. The counter `act-progress:<stage>`
-// exists (seeded to 0) only for acts that advance on a GLOBAL clue threshold
-// (The Blob's acts 1 & 3, not act 2). Within-cycle progress is `value mod threshold`
-// where `threshold = 2 * total-investigators`.
+// Shared clue progress per act stage. The Blob's Epic Act 1 is the only act with
+// a global clue threshold; its pool resets when the organizer resolves an advance.
+// The threshold is `2 * total-investigators`.
 export function actProgressKey(stage: number): string {
   return `act-progress:${stage}`
 }
@@ -99,8 +98,8 @@ export function actProgressValue(state: SharedEventState, stage: number): number
 }
 
 // `awaiting-organizer:<stage>` gates a shared act advance: when the pooled clues
-// exceed the threshold the backend sets it to 1 and waits for the organizer to
-// choose which groups spend (an exact-match pool auto-resolves without it).
+// reaches the threshold the backend sets it to 1 and waits for the organizer to
+// choose which groups supply the exact required spend.
 export const AWAITING_ORGANIZER = 'awaiting-organizer'
 
 export function awaitingOrganizerKey(stage: number): string {

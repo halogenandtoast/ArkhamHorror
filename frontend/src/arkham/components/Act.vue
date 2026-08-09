@@ -288,8 +288,8 @@ const breaches = computed(() => {
 const clues = computed(() => props.act.tokens.Clue ?? 0)
 const resources = computed(() => props.act.tokens.Resource ?? 0)
 
-// Epic Multiplayer: shared-clue acts (The Blob's acts 1 & 3) hold ZERO real clue
-// tokens — clues are spent into the global pool — so the act looks empty. Render a
+// Epic Multiplayer: The Blob's Act 1 holds ZERO real clue tokens — clues are
+// spent into the global pool — so the act looks empty. Render a
 // PSEUDO clue-token pool equal to THIS group's clues still on the act for the current
 // stage = its contribution minus what the organizer allocated it to spend
 // (`act-contribution:<stage>:<ordinal>` − `act-spend:<stage>:<ordinal>`). So the spent
@@ -310,6 +310,7 @@ const sharedContribution = computed(() => {
   const ordinal = thisGroupOrdinal.value
   if (ordinal === null) return 0
   const stage = props.act.sequence.number
+  if (stage !== 1) return 0
   const contributed = actContribution(eventStore.sharedState, stage, ordinal)
   const spent = actSpend(eventStore.sharedState, stage, ordinal)
   return Math.max(0, contributed - spent)

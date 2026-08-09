@@ -7322,6 +7322,7 @@ test-suite spec
       Arkham.Asset.Assets.TheBlackCat5Spec
       Arkham.Asset.Assets.TheBlackFan3Spec
       Arkham.Asset.Assets.TheGrapevineSpec
+      Arkham.Asset.Assets.TheHierophantV3Spec
       Arkham.Asset.Assets.TheHungeringBlade1Spec
       Arkham.Asset.Assets.TheMuscleUnpracticedSpec
       Arkham.Asset.Assets.TheNecronomiconSpec

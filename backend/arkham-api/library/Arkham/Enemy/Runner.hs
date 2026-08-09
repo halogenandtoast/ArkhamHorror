@@ -2333,6 +2333,24 @@ instance RunMessage EnemyAttrs where
         HiddenInHand _ -> do
           obtainCard (toCardId a)
           handlePlacement placement
+        -- Returning an enemy to the shadows cancels an engagement that is still
+        -- queued behind an open `#when EnemyEngaged` window. `Do (EngageEnemy)`
+        -- pushes that window and the threat-area placement together, so a forced
+        -- reaction in the window resolves first: act 1 of Shades of Suffering
+        -- advances off that very window, and its advance puts Tzu San Niang back
+        -- in the shadows and redistributes her concealed mini-cards. The stale
+        -- placement then dragged her into the investigator's threat area, leaving
+        -- her in play twice -- mini-card *and* enemy (#5365). The act's failure
+        -- branch already calls `cancelEnemyEngagement` by hand; this covers every
+        -- other route back into the shadows.
+        InTheShadows -> do
+          mQueuedEngagement <- lift $ findFromQueue \case
+            PlaceEnemy eid' (InThreatArea _) -> eid' == enemyId
+            _ -> False
+          case mQueuedEngagement of
+            Just (PlaceEnemy _ (InThreatArea iid)) -> cancelEnemyEngagement iid enemyId
+            _ -> pure ()
+          handlePlacement placement
         _ -> handlePlacement placement
     Blanked msg' -> liftRunMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do

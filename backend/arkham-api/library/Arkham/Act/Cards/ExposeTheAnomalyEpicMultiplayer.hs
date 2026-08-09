@@ -82,26 +82,40 @@ followerPendingCriterion =
 -- clues (its own contribution minus the organizer-allocated spend) to its OWN
 -- investigators, bumps the local advance count, then advances via the normal flow.
 -- Reads ActSpend (the organizer endpoint mirrors it before release), so it runs from
--- the Continue option / ability 3 -- NOT the AdvanceAct side-B body. NO shared writes.
+-- the Continue option / ability 3 -- NOT the AdvanceAct side-B body. It then
+-- clears this group's per-cycle contribution/spend cells.
 returnLeftoverAndAdvance :: ReverseQueue m => ActAttrs -> m ()
 returnLeftoverAndAdvance attrs = do
   ordinal <- scenarioCount (EpicShared groupOrdinalKey)
   spent <- scenarioCount (EpicShared (sharedKeyText (ActSpend actStage (GroupOrdinal ordinal))))
-  contributed <- scenarioCount (EpicShared (sharedKeyText (ActContribution actStage (GroupOrdinal ordinal))))
-  let leftover = contributed - spent
+  contributed <-
+    scenarioCount (EpicShared (sharedKeyText (ActContribution actStage (GroupOrdinal ordinal))))
+  let leftover = max 0 (contributed - spent)
   scenarioCountIncrement actAdvancesKey
   when (leftover > 0) do
     investigators <- getInvestigators
     case investigators of
       [single] -> gainClues single (toSource attrs) leftover
       _ -> leadChooseOneM $ targets investigators \i -> gainClues i (toSource attrs) leftover
+  -- Contribution/spend counters are per cycle. Clear this group's cells as part
+  -- of its non-undoable act-advance action so a later Act 1 cannot inherit stale
+  -- caps or display already-returned pseudo-clues.
+  when (contributed > 0)
+    $ push
+    $ SpendShared (ActContribution actStage (GroupOrdinal ordinal)) contributed
+  when (spent > 0) $ push $ SpendShared (ActSpend actStage (GroupOrdinal ordinal)) spent
   advancedWithOther attrs
 
 instance HasAbilities ExposeTheAnomalyEpicMultiplayer where
   getAbilities (ExposeTheAnomalyEpicMultiplayer a) =
     -- CONTRIBUTION: fast, per investigator. Spend up to 3 of your clues to the pool.
-    [restricted a 1 (DuringTurn You <> youExist InvestigatorWithAnyClues) $ FastAbility Free]
-      <> [restricted a 2 (wrapCriteria a advanceReadyCriterion) $ Objective $ forced $ RoundBegins #when | onSide A a]
+    [ playerLimit PerRound
+        $ restricted a 1 (DuringTurn You <> youExist InvestigatorWithAnyClues)
+        $ FastAbility Free
+    ]
+      <> [ restricted a 2 (wrapCriteria a advanceReadyCriterion) $ Objective $ forced $ RoundBegins #when
+         | onSide A a
+         ]
       <> [restricted a 3 followerPendingCriterion $ Objective $ forced $ RoundBegins #when | onSide A a]
    where
     -- Gate the first-resolver objective to fire ONCE per advance cycle: ability 2

@@ -4,10 +4,10 @@ module Api.Arkham.Helpers where
 
 import Arkham.Card
 import Arkham.Classes hiding (Entity (..), select)
-import Arkham.Epic.Types (EpicEnv, HasMaybeEpic (..), SharedEventState)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Debug
+import Arkham.Epic.Types (EpicEnv, HasMaybeEpic (..), SharedEventState)
 import Arkham.Game
 import Arkham.Id
 import Arkham.Message
@@ -23,11 +23,11 @@ import Control.Lens hiding (from)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.Random (MonadRandom (..), StdGen)
 import Data.Aeson qualified as Aeson
+import Data.ByteString.Char8 qualified as BS8
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
-import Data.UUID qualified as UUID
-import Data.ByteString.Char8 qualified as BS8
 import Data.Time.Clock.POSIX (getPOSIXTime)
+import Data.UUID qualified as UUID
 import Database.Esqueleto.Experimental
 import Database.Redis (Connection, RedisChannel, hdel, hgetall, hincrby, hset, runRedis)
 import Entity.Arkham.Game
@@ -78,13 +78,17 @@ data ApiResponse
   | GameTarot Aeson.Value
   | GameShowDiscard InvestigatorId
   | GameShowUnder InvestigatorId
-  | -- | Above-the-table achievement unlocked (flat achievement tag); the
-    -- client renders the toast from its i18n catalog.
+  | {- | Above-the-table achievement unlocked (flat achievement tag); the
+    client renders the toast from its i18n catalog.
+    -}
     GameAchievement Text
   | GamePlayabilityInfo {cardId :: CardId, cardCode :: Text, checks :: [(Text, Maybe Text)]}
   | -- Epic Multiplayer: the event's shared state, pushed to a group's own stream
     -- so the shared panel renders from a single source (the group websocket).
     SharedStateUpdate SharedEventState
+  | -- Event membership/group roster changed. Payloads are user-specific, so
+    -- clients refetch EventDetails rather than receiving a shared digest.
+    EventChanged
   deriving stock Generic
 
 instance Aeson.ToJSON ApiResponse where
@@ -113,8 +117,9 @@ data GameApp = GameApp
   , appLogger :: ClientMessage -> IO ()
   , appTracer :: Trace.Tracer
   , appEvent :: Maybe EpicEnv
-  -- ^ present only when this game is a group within an Epic Multiplayer event;
-  -- 'Nothing' (the default for every ordinary game) means zero behavior change.
+  {- ^ present only when this game is a group within an Epic Multiplayer event;
+  'Nothing' (the default for every ordinary game) means zero behavior change.
+  -}
   }
 
 instance HasMaybeEpic GameApp where
@@ -147,6 +152,7 @@ instance HasGameLogger GameAppT where
 instance Tracing GameAppT where
   type SpanType GameAppT = Trace.Span
   type SpanArgs GameAppT = Trace.SpanArguments
+
   -- See note in Arkham.GameT: addAttribute is a no-op so unused thunks
   -- (often `tshow` over deep ADTs) stay unforced.
   addAttribute _ _ _ = pure ()
@@ -161,8 +167,9 @@ runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT
 gameChannel :: ArkhamGameId -> RedisChannel
 gameChannel gameId = "arkham-" <> encodeUtf8 (tshow gameId)
 
--- | Epic Multiplayer: per-event broadcast channel + room helpers, mirroring the
--- per-game ones above but keyed by 'ArkhamEpicEventId' on 'appEventRooms'.
+{- | Epic Multiplayer: per-event broadcast channel + room helpers, mirroring the
+per-game ones above but keyed by 'ArkhamEpicEventId' on 'appEventRooms'.
+-}
 eventChannel :: ArkhamEpicEventId -> RedisChannel
 eventChannel eventId = "arkham-epic-" <> encodeUtf8 (tshow eventId)
 
@@ -193,23 +200,25 @@ getRoom gid = do
           r <- newRoom (gameChannel gid)
           pure (Map.insert gid r rooms, r)
 
--- | Like 'getRoom' but never creates a Room. Use from the publish path so
--- that broadcasting to a game with no listeners doesn't leak an empty
--- Room into 'appGameRooms' that nothing will ever clean up.
+{- | Like 'getRoom' but never creates a Room. Use from the publish path so
+that broadcasting to a game with no listeners doesn't leak an empty
+Room into 'appGameRooms' that nothing will ever clean up.
+-}
 lookupRoom :: (MonadIO m, HasApp m) => ArkhamGameId -> m (Maybe Room)
 lookupRoom gid = do
   roomsVar <- getsApp appGameRooms
   Map.lookup gid <$> liftIO (MVar.readMVar roomsVar)
 
--- | Cross-server room registry. Two parallel Redis hashes:
---
---   * 'roomsHashKey'      gameId -> total WebSocket subscribers
---   * 'roomsSeenHashKey'  gameId -> unix epoch of last activity
---
--- Every subscribe/unsubscribe and a per-pod heartbeat refresh the seen
--- timestamp. On admin read, entries whose seen timestamp is older than
--- 'roomStaleSeconds' (or missing entirely) are treated as crashed-pod
--- cruft, removed from both hashes, and excluded from the response.
+{- | Cross-server room registry. Two parallel Redis hashes:
+
+  * 'roomsHashKey'      gameId -> total WebSocket subscribers
+  * 'roomsSeenHashKey'  gameId -> unix epoch of last activity
+
+Every subscribe/unsubscribe and a per-pod heartbeat refresh the seen
+timestamp. On admin read, entries whose seen timestamp is older than
+'roomStaleSeconds' (or missing entirely) are treated as crashed-pod
+cruft, removed from both hashes, and excluded from the response.
+-}
 roomsHashKey :: ByteString
 roomsHashKey = "arkham:rooms"
 
@@ -246,17 +255,19 @@ withRedis action = do
     WebSocketBroker -> pure ()
     RedisBroker conn _ -> tryRedis_ (action conn)
 
--- | Increment the cross-server client count for a game in Redis and
--- refresh its seen timestamp. No-op without a Redis broker.
+{- | Increment the cross-server client count for a game in Redis and
+refresh its seen timestamp. No-op without a Redis broker.
+-}
 incrRoomMember :: (MonadIO m, HasApp m) => ArkhamGameId -> m ()
 incrRoomMember gameId = withRedis \conn -> runRedis conn do
   void $ hincrby roomsHashKey (roomField gameId) 1
   now <- liftIO currentEpoch
   void $ hset roomsSeenHashKey (roomField gameId) (BS8.pack (show now))
 
--- | Decrement the cross-server client count. When the new count is at or
--- below zero, drop the field from both hashes so the admin view doesn't
--- carry empty rooms; otherwise refresh the seen timestamp.
+{- | Decrement the cross-server client count. When the new count is at or
+below zero, drop the field from both hashes so the admin view doesn't
+carry empty rooms; otherwise refresh the seen timestamp.
+-}
 decrRoomMember :: (MonadIO m, HasApp m) => ArkhamGameId -> m ()
 decrRoomMember gameId = withRedis \conn -> runRedis conn do
   result <- hincrby roomsHashKey (roomField gameId) (-1)
@@ -268,11 +279,12 @@ decrRoomMember gameId = withRedis \conn -> runRedis conn do
       now <- liftIO currentEpoch
       void $ hset roomsSeenHashKey (roomField gameId) (BS8.pack (show now))
 
--- | Aggregate client counts across servers from Redis, filtering out
--- entries whose 'seen' timestamp is older than 'roomStaleSeconds'. Stale
--- entries are also HDEL'd from both hashes so cruft from crashed pods
--- doesn't accumulate. Returns 'Nothing' when no Redis broker is
--- configured (callers fall back to local state).
+{- | Aggregate client counts across servers from Redis, filtering out
+entries whose 'seen' timestamp is older than 'roomStaleSeconds'. Stale
+entries are also HDEL'd from both hashes so cruft from crashed pods
+doesn't accumulate. Returns 'Nothing' when no Redis broker is
+configured (callers fall back to local state).
+-}
 getRedisRoomCounts :: (MonadIO m, HasApp m) => m (Maybe (Map ArkhamGameId Int))
 getRedisRoomCounts = do
   broker <- getsApp appMessageBroker
@@ -309,11 +321,12 @@ sweepStaleRooms conn gameIds = void $ runRedis conn do
   void $ hdel roomsHashKey fields
   void $ hdel roomsSeenHashKey fields
 
--- | Background heartbeat: every 'roomHeartbeatSeconds' refresh the seen
--- timestamp for every game this pod still has live subscribers for. This
--- keeps active games out of the staleness sweep even when nothing else
--- (subscribe / unsubscribe) is writing to Redis. Run once per pod via
--- 'forkIO' from 'makeFoundation'.
+{- | Background heartbeat: every 'roomHeartbeatSeconds' refresh the seen
+timestamp for every game this pod still has live subscribers for. This
+keeps active games out of the staleness sweep even when nothing else
+(subscribe / unsubscribe) is writing to Redis. Run once per pod via
+'forkIO' from 'makeFoundation'.
+-}
 roomHeartbeat :: App -> IO ()
 roomHeartbeat app = case appMessageBroker app of
   WebSocketBroker -> pure ()
@@ -330,18 +343,20 @@ roomHeartbeat app = case appMessageBroker app of
   keepIfActive (gid, room) = do
     n <- roomClientCount room
     pure $ if n > 0 then Just gid else Nothing
+
 lockGame :: ArkhamGameId -> DB ()
 lockGame gameId = void $ select do
   game <- from $ table @ArkhamGame
   where_ $ game.id ==. val gameId
   locking forUpdate
 
--- | One round-trip in the hot path: lock the row AND fetch its data.
--- Replaces the previous lockGame + get404 pair, halving the DB calls
--- for every caller of atomicallyWithGame on the success path.
--- (notFound lives in MonadHandler, but DB is rank-2 over MonadIO; on the
--- rare missing-game path we delegate to get404 to throw the 404, which
--- costs one extra empty SELECT only when the game doesn't exist.)
+{- | One round-trip in the hot path: lock the row AND fetch its data.
+Replaces the previous lockGame + get404 pair, halving the DB calls
+for every caller of atomicallyWithGame on the success path.
+(notFound lives in MonadHandler, but DB is rank-2 over MonadIO; on the
+rare missing-game path we delegate to get404 to throw the 404, which
+costs one extra empty SELECT only when the game doesn't exist.)
+-}
 atomicallyWithGame :: ArkhamGameId -> (ArkhamGame -> DB a) -> DB a
 atomicallyWithGame gameId f = do
   results <- select do
@@ -354,4 +369,3 @@ atomicallyWithGame gameId f = do
       game <- get404 gameId
       f game
     (Entity _ game : _) -> f game
-

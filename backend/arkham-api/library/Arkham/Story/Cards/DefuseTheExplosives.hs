@@ -9,6 +9,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheBlobThatAteEverything.Helpers (subject8L08Matcher)
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Trait (Trait (Oozified))
@@ -89,7 +90,7 @@ instance RunMessage DefuseTheExplosives where
           removeTokens (attrs.ability 2) lid #horror 1
           selectEach (InvestigatorAt $ LocationWithId lid) \iid' -> directDamage iid' attrs 3
           selectEach (AssetAt (LocationWithId lid) <> #ally) \aid -> dealAssetDamage aid (attrs.ability 2) 3
-        selectEach (enemyIs Enemies.subject8L08) \eid -> healDamage eid (attrs.ability 2) 5
+        selectEach subject8L08Matcher \eid -> healDamage eid (attrs.ability 2) 5
         removeFromGame attrs
       pure $ DefuseTheExplosives $ attrs & flippedL .~ True & metaL .~ toJSON False
     _ -> DefuseTheExplosives <$> liftRunMessage msg attrs

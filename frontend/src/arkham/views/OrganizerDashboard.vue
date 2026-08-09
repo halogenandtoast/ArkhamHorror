@@ -55,7 +55,7 @@ const isOrganizer = computed(() => event.value?.role === 'organizer')
 const committed = computed(() => groupDigests.value.some((g) => g.youAreSeated))
 
 // --- Shared act-advance allocation ------------------------------------------
-// When the pooled clues EXCEED the threshold the backend sets
+// When the pooled clues reach the threshold the backend sets
 // `awaiting-organizer:<stage>` and waits for the organizer to choose which groups
 // spend. We detect the stage by scanning the shared counters, and require the
 // chosen spends to total exactly `2 * total-investigators`, each within that

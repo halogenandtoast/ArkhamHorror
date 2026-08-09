@@ -25,6 +25,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
+import Arkham.Name (toTitle)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -117,16 +118,9 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       getCrossedOutResidents >>= traverse_ (obtainCard <=< fetchCard)
 
       pure s
-    ResolveAmounts iid (getChoiceAmount "$actions" -> n) ScenarioTarget -> do
-      boardingHouseInvestigators <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
-      let spendFrom 0 _ = pure ()
-          spendFrom _ [] = pure ()
-          spendFrom remaining (i : is) = do
-            iActions <- field InvestigatorRemainingActions i
-            let toSpend = min remaining iActions
-            when (toSpend > 0) $ spendActions i ScenarioSource toSpend
-            spendFrom (remaining - toSpend) is
-      spendFrom n boardingHouseInvestigators
+    ResolveAmounts iid choices ScenarioTarget -> do
+      let n = sum (map snd choices)
+      withInvestigatorAmounts choices \iid' k -> spendActions iid' ScenarioSource k
       doStep (n + 1) (ScenarioSpecific "codex" (toJSON (iid, ScenarioSource :: Source, 9 :: Int)))
       pure s
     DoStep k (ScenarioSpecific "codex" v) -> do
@@ -279,12 +273,19 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           gideon <- selectAny $ SetAsideCardMatch $ cardIs Assets.gideonMizrahSeasonedSailor
           let optionCount = 1 + (if simeon then 1 else 0) + (if gideon then 1 else 0)
           boardingHouseInvestigators <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
-          totalActions <- sum <$> traverse (field InvestigatorRemainingActions) boardingHouseInvestigators
-          let maxAdditional = min (optionCount - 1) totalActions
+          withActions <-
+            filter ((> 0) . snd)
+              <$> traverse (\i -> (i,) <$> field InvestigatorRemainingActions i) boardingHouseInvestigators
+          let maxAdditional = min (optionCount - 1) (sum $ map snd withActions)
           if maxAdditional > 0
             then do
               entry "boardingHouse"
-              chooseAmount' iid "additionalActions" "$actions" 0 maxAdditional attrs
+              -- the actions are spent as a group, so each investigator at the
+              -- Boarding House gets their own row to decide how many to spend
+              rows <- for withActions \(i, actions) -> do
+                name <- field InvestigatorName i
+                pure (toTitle name, (0, min maxAdditional actions))
+              chooseAmounts iid ("$" <> labelKey "additionalActions") (MaxAmountTarget maxAdditional) rows attrs
             else doStep 1 (ScenarioSpecific "codex" v)
         10 -> do
           codexFinished 10

@@ -1,9 +1,11 @@
 module Arkham.Enemy.EngagementSpec (spec) where
 
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
+import Arkham.Projection
 import TestImport.New
 
 -- Spawns a swarming host engaged with `self` and returns the host and its one
@@ -67,6 +69,51 @@ spec = describe "Enemy engagement" do
       run $ PlaceEnemy (toId enemy) (AtLocation (toId location1))
 
       enemy.location `shouldReturn` Just (toId location1)
+      self.engagedEnemies `shouldReturn` [toId enemy]
+
+  -- Regression for issue #5365 (Shades of Suffering act 1, "The Lady with the
+  -- Red Parasol"). `Do (EngageEnemy)` queues the `#when EnemyEngaged` window and
+  -- the threat-area placement together, so everything that window resolves
+  -- happens *before* the placement — there, the act advance that returns Tzu San
+  -- Niang to the shadows and redistributes her concealed mini-cards. The stale
+  -- placement then dragged her back out of the shadows into the investigator's
+  -- threat area, leaving her on the board twice (mini-card *and* enemy).
+  it "cancels a queued engagement when the enemy is returned to the shadows"
+    . gameTest
+    $ \self -> do
+      location1 <- testLocation
+      location2 <- testLocation
+      self `moveTo` location1
+
+      enemy <- testEnemy
+      enemy `spawnAt` location2
+
+      -- the shape `Do (EngageEnemy)` leaves behind once its `#when EnemyEngaged`
+      -- window returns the enemy to the shadows
+      pushAndRunAll
+        [PlaceEnemy (toId enemy) InTheShadows, PlaceEnemy (toId enemy) (InThreatArea (toId self))]
+
+      field EnemyPlacement (toId enemy) `shouldReturn` InTheShadows
+      self.engagedEnemies `shouldReturn` []
+
+  -- The cancel above must stay scoped to a *pending* engagement: Ghost Light 2b
+  -- flips Tzu San Niang and has her engage the lead investigator straight out of
+  -- the shadows, so an engagement that starts after the enemy is already there
+  -- still resolves.
+  it "still engages an investigator with an enemy that starts in the shadows"
+    . gameTest
+    $ \self -> do
+      location1 <- testLocation
+      location2 <- testLocation
+      self `moveTo` location1
+
+      enemy <- testEnemy
+      enemy `spawnAt` location2
+      run $ PlaceEnemy (toId enemy) InTheShadows
+
+      run $ EnemyEngageInvestigator (toId enemy) (toId self)
+
+      field EnemyPlacement (toId enemy) `shouldReturn` InThreatArea (toId self)
       self.engagedEnemies `shouldReturn` [toId enemy]
 
   -- The engagement check has to stay guarded: an exhausted enemy does not engage

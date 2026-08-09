@@ -1,10 +1,10 @@
 module Arkham.Act.Cards.ExposeTheAnomalyEpicMultiplayerSpec (spec) where
 
+import Arkham.Ability.Types (abilityIndex, abilitySource)
 import Arkham.Act (lookupAct)
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence (ActSide (..))
 import Arkham.Act.Types (Act, Field (ActClues))
-import Arkham.Ability.Types (abilityIndex, abilitySource)
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Entities qualified as Entities
 import Arkham.Epic.Types (GroupOrdinal (..), SharedKey (..))
@@ -68,8 +68,9 @@ realAct def = do
   overTest $ entitiesL . Entities.actsL %~ insertEntity act'
   pure act'
 
--- | Surface the contribution fast ability (index 1) under a during-turn window
--- and spend @amount@ of the investigator's clues into the shared pool.
+{- | Surface the contribution fast ability (index 1) under a during-turn window
+and spend @amount@ of the investigator's clues into the shared pool.
+-}
 contribute :: Investigator -> Act -> Int -> TestAppT ()
 contribute self act amount = do
   let ws = defaultWindows (toId self)
@@ -85,8 +86,9 @@ contribute self act amount = do
         $ expectationFailure
           "expected Expose the Anomaly's contribution ability (1) to be available"
 
--- | Surface an act objective (a forced @RoundBegins #when@ ability) by index and
--- use it under a round-begin window.
+{- | Surface an act objective (a forced @RoundBegins #when@ ability) by index and
+use it under a round-begin window.
+-}
 useObjective :: Investigator -> Act -> Int -> TestAppT ()
 useObjective self act idx = do
   let ws = [mkWhen Window.AtBeginningOfRound]
@@ -102,8 +104,9 @@ useObjective self act idx = do
         <> show idx
         <> ") to be available"
 
--- | The option labels of every currently-pending question (display wrappers
--- stripped). Used to prove the first-resolver genuinely PARKS on its @$continue@.
+{- | The option labels of every currently-pending question (display wrappers
+stripped). Used to prove the first-resolver genuinely PARKS on its @$continue@.
+-}
 pendingLabels :: TestAppT [Text]
 pendingLabels = do
   questions <- toList . gameQuestion <$> getGame
@@ -138,6 +141,18 @@ spec = describe "Expose the Anomaly (Epic Multiplayer)" do
       self.clues `shouldReturn` 0
       field ActClues act.id `shouldReturn` 0
       assertAny $ ActWithSide A
+
+  it "limits each investigator's contribution to once per round"
+    . scenarioTest "85001"
+    $ \self -> do
+      act <- realAct Acts.exposeTheAnomalyEpicMultiplayer
+      run $ PlaceTokens (TestSource mempty) (toTarget self) Clue 4
+      contribute self act 1
+      let ws = defaultWindows (toId self)
+      abilities <-
+        filter (\ab -> abilitySource ab == toSource act && abilityIndex ab == 1)
+          <$> getActions (toId self) ws
+      abilities `shouldBe` []
 
   it "records the group's own contribution under its ordinal so the organizer can cap the spend"
     . scenarioTest "85001"
@@ -181,7 +196,8 @@ spec = describe "Expose the Anomaly (Epic Multiplayer)" do
       assertNone $ ActWithSide B
       scenarioCount (EpicActAdvances 1) `shouldReturn` 0
 
-  it "settles the parked step: returns leftover clues, increments, and advances (contributed 3, spent 2 -> 1 back)"
+  it
+    "settles the parked step: returns leftover clues, increments, and advances (contributed 3, spent 2 -> 1 back)"
     . scenarioTest "85001"
     $ \self -> do
       act <- realAct Acts.exposeTheAnomalyEpicMultiplayer
@@ -203,7 +219,8 @@ spec = describe "Expose the Anomaly (Epic Multiplayer)" do
       assertAny $ ActWithSide B
       assertNone $ ActWithSide A
 
-  it "settles with no leftover when the whole contribution is allocated (contributed 2, spent 2 -> 0 back)"
+  it
+    "settles with no leftover when the whole contribution is allocated (contributed 2, spent 2 -> 0 back)"
     . scenarioTest "85001"
     $ \self -> do
       act <- realAct Acts.exposeTheAnomalyEpicMultiplayer

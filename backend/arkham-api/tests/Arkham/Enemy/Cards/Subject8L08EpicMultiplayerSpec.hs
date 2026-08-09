@@ -2,9 +2,10 @@ module Arkham.Enemy.Cards.Subject8L08EpicMultiplayerSpec (spec) where
 
 import Arkham.DamageEffect (nonAttack)
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (EnemyDamage, EnemyHealth))
+import Arkham.Enemy.Types (Field (EnemyCardsUnderneath, EnemyDamage, EnemyHealth))
 import Arkham.Epic.Types (SharedKey (..))
 import Arkham.Helpers.Scenario (scenarioFieldMap)
+import Arkham.Matcher
 import Arkham.Projection (field)
 import Arkham.Scenario.Types (Field (ScenarioTokens))
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicShared))
@@ -49,6 +50,30 @@ spec = describe "Subject 8L-08 (Epic Multiplayer)" do
       -- 5 < 30 remaining: this group's copy is NOT defeated by its own local
       -- damage (accumulated 0 + 5 < max 30); the global pool decides defeat.
       field EnemyHealth (toId subject) `shouldReturn` Just 30
+
+  it "drains shared health when damage is placed directly" . scenarioTest "85001" $ \_ -> do
+    subject <- testEnemyWithDef Enemies.subject8L08EpicMultiplayer id
+    drained <- createMessageChecker \case
+      SpendShared (SharedEnemyHealth cc) 6 -> cc == "85037"
+      _ -> False
+    run $ PlaceTokens (TestSource mempty) (toTarget subject) Damage 6
+    drained `refShouldBe` True
+
+  it "restores only the damage actually healed to shared health" . scenarioTest "85001" $ \_ -> do
+    subject <- testEnemyWithDef Enemies.subject8L08EpicMultiplayer id
+    run $ PlaceTokens (TestSource mempty) (toTarget subject) Damage 3
+    restored <- createMessageChecker \case
+      RaiseShared (SharedEnemyHealth cc) 3 -> cc == "85037"
+      _ -> False
+    run $ HealDamage (toTarget subject) (TestSource mempty) 5
+    restored `refShouldBe` True
+
+  it "handles Reality Acid devour messages like the ordinary Subject" . scenarioTest "85001" $ \_ -> do
+    subject <- testEnemyWithDef Enemies.subject8L08EpicMultiplayer id
+    victim <- testEnemyWithDef Enemies.miGoDrone id
+    run $ ScenarioSpecific "devour" (toJSON $ toTarget victim)
+    assertNone $ EnemyWithId victim.id
+    (length <$> field EnemyCardsUnderneath subject.id) `shouldReturn` 1
 
   it "reconciles shared countermeasures and emits deltas on gain and spend"
     . scenarioTest "85001"

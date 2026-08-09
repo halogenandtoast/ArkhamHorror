@@ -257,17 +257,28 @@ removeFromSlots aid = fmap (map (removeIfMatches aid))
 data FitsSlots = FitsSlots | MissingSlots [SlotType]
   deriving stock Show
 
+{- | Which slot types may stand in for a given slot type, e.g. The Hierophant • V (3) lets
+arcane and accessory slots cover for each other.
+
+N.B. deliberately deduplicated. Two copies of the same effect grant nothing extra, but the
+alternate-slot branches in RefillSlots match on the shape of this list, and a repeated entry
+used to fall through to an `error` (#5363).
+-}
+toCanHoldMap :: [ModifierType] -> Map SlotType [SlotType]
+toCanHoldMap = Map.map nub . foldr canHold mempty
+ where
+  canHold = \case
+    SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
+    _ -> id
+
+getCanHoldMap :: HasGame m => InvestigatorAttrs -> m (Map SlotType [SlotType])
+getCanHoldMap a = toCanHoldMap <$> getModifiers a
+
 fitsAvailableSlots :: (HasGame m, Tracing m) => AssetId -> InvestigatorAttrs -> m FitsSlots
 fitsAvailableSlots aid a = do
   assetCard <- field Field.AssetCard aid
   slotTypes <- field Field.AssetSlots aid
-  canHoldMap :: Map SlotType [SlotType] <- do
-    mods <- getModifiers a
-    let
-      canHold = \case
-        SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
-        _ -> id
-    pure $ foldr canHold mempty mods
+  canHoldMap <- getCanHoldMap a
 
   -- N.B. we map (const slotType) in order to determine coverage. In other words if
   -- a card like The Hierophant V (3) is in play we have Accessory and Arcane

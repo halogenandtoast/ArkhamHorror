@@ -123,6 +123,7 @@ type ServerResult =
   | { tag: 'GameUI'; contents: string }
   | { tag: 'GameAudio'; contents: string }
   | { tag: 'SharedStateUpdate'; contents: SharedEventState }
+  | { tag: 'EventChanged' }
 
 export interface Props {
   gameId: string
@@ -1247,6 +1248,11 @@ const handleResult = (result: ServerResult) => {
       // live; harmless no-op for ordinary games that never receive this tag.
       eventStore.applySharedState(result.contents)
       return
+    case 'EventChanged': {
+      const eid = resolvedEventId.value
+      if (eid) void eventStore.load(eid).catch((e) => console.error(e))
+      return
+    }
     case 'GameUpdate':
       // Flush the latest state onto the board even while a revelation/modal holds
       // the UI lock, so the table behind it reflects the current situation instead

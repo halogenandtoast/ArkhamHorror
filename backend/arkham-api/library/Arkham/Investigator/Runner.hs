@@ -1520,13 +1520,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     case fitsSlots of
       FitsSlots -> push (InvestigatorPlayedAsset iid aid)
       MissingSlots missingSlotTypes -> do
-        canHoldMap :: Map SlotType [SlotType] <- do
-          mods <- getModifiers a
-          let
-            canHold = \case
-              SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
-              _ -> id
-          pure $ foldr canHold mempty mods
+        canHoldMap <- getCanHoldMap a
         let additionalSlots = concatMap (\k -> findWithDefault [] k canHoldMap) missingSlotTypes
         assetsThatCanProvideSlots <-
           select
@@ -1560,13 +1554,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     slotTypes <- field AssetSlots aid
     assetCard <- field AssetCard aid
 
-    canHoldMap :: Map SlotType [SlotType] <- do
-      mods <- getModifiers a
-      let
-        canHold = \case
-          SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
-          _ -> id
-      pure $ foldr canHold mempty mods
+    canHoldMap <- getCanHoldMap a
     -- we need to figure out which slots are or aren't available
     -- we've claimed we can play this, but we might need to change the slotType
     let
@@ -1772,12 +1760,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let allSlots' :: [(SlotType, Slot)] = concatMap (\(k, vs) -> (k,) . emptySlot <$> vs) $ Map.assocs (a ^. slotsL)
     let allSlots = foldr (\s -> deleteFirstMatch ((== s) . fst)) allSlots' slotsToRemove
 
-    canHoldMap :: Map SlotType [SlotType] <- do
-      let
-        canHold = \case
-          SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
-          _ -> id
-      pure $ foldr canHold mempty mods
+    let canHoldMap = toCanHoldMap mods
 
     let
       lookupSlot :: SlotType -> [(SlotType, Slot)] -> [Slot]
@@ -1788,19 +1771,31 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       go ((aid, card, slotType) : rs) slots = do
         (availableSlots1, unused1) <- partitionM (canPutIntoSlot card) (lookupSlot slotType slots)
         case availableSlots1 of
-          [] -> case findWithDefault [] slotType canHoldMap of
-            [] -> (slotType :) <$> go rs slots
-            [other] -> do
-              (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (lookupSlot other slots)
-              case availableSlots2 of
-                [] -> (slotType :) <$> go rs slots
-                _ -> do
-                  slots' <- placeInAvailableSlot aid card availableSlots2
-                  go rs $ filter ((/= other) . fst) slots <> map (other,) slots' <> map (other,) unused2
-            _ -> error "not designed to work with more than one yet"
+          -- The printed slot type is full, so fall back to whatever may stand in for it (The
+          -- Hierophant V (3)). Walk every candidate rather than assuming there is at most one --
+          -- two copies of the same effect used to reach an `error` here (#5363).
+          [] -> goAlternates aid card slotType rs slots (findWithDefault [] slotType canHoldMap)
           _ -> do
             slots' <- placeInAvailableSlot aid card availableSlots1
             go rs $ filter ((/= slotType) . fst) slots <> map (slotType,) slots' <> map (slotType,) unused1
+
+      goAlternates
+        :: HasGame m
+        => AssetId
+        -> Card
+        -> SlotType
+        -> [(AssetId, Card, SlotType)]
+        -> [(SlotType, Slot)]
+        -> [SlotType]
+        -> m [SlotType]
+      goAlternates _ _ slotType rs slots [] = (slotType :) <$> go rs slots
+      goAlternates aid card slotType rs slots (other : others) = do
+        (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (lookupSlot other slots)
+        case availableSlots2 of
+          [] -> goAlternates aid card slotType rs slots others
+          _ -> do
+            slots' <- placeInAvailableSlot aid card availableSlots2
+            go rs $ filter ((/= other) . fst) slots <> map (other,) slots' <> map (other,) unused2
 
     let
       fill :: HasGame m => [(AssetId, Card, SlotType)] -> Map SlotType [Slot] -> m (Map SlotType [Slot])
@@ -1811,19 +1806,28 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           -- N.B. an unplaceable requirement only drops *itself* -- we keep filling the rest.
           -- Bailing out here (suppose we get dendromorphosis and the king in yellow) stranded
           -- every requirement queued behind it, silently unslotting unrelated assets.
-          [] -> case findWithDefault [] slotType canHoldMap of
-            [] -> fill rs slots
-            [other] -> do
-              (availableSlots2, _unused2) <- partitionM (canPutIntoSlot card) (slots ^. at other . non [])
-              case availableSlots2 of
-                [] -> fill rs slots
-                _ -> do
-                  slots' <- placeInAvailableSlot aid card (slots ^. at other . non [])
-                  fill rs (slots & at other . non [] .~ slots')
-            _ -> error "not designed to work with more than one yet"
+          [] -> fillAlternates aid card rs slots (findWithDefault [] slotType canHoldMap)
           _ -> do
             slots' <- placeInAvailableSlot aid card (slots ^. at slotType . non [])
             fill rs (slots & at slotType . non [] .~ slots')
+
+      -- As with `go` above: try every stand-in slot type in turn, never assume exactly one.
+      fillAlternates
+        :: HasGame m
+        => AssetId
+        -> Card
+        -> [(AssetId, Card, SlotType)]
+        -> Map SlotType [Slot]
+        -> [SlotType]
+        -> m (Map SlotType [Slot])
+      fillAlternates _ _ rs slots [] = fill rs slots
+      fillAlternates aid card rs slots (other : others) = do
+        (availableSlots2, _unused2) <- partitionM (canPutIntoSlot card) (slots ^. at other . non [])
+        case availableSlots2 of
+          [] -> fillAlternates aid card rs slots others
+          _ -> do
+            slots' <- placeInAvailableSlot aid card (slots ^. at other . non [])
+            fill rs (slots & at other . non [] .~ slots')
 
     failedSlotTypes <- nub <$> go requirements allSlots
 

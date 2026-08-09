@@ -52,6 +52,7 @@ export const useEventStore = defineStore('event', () => {
   }
 
   function setEvent(details: EventDetails) {
+    if (eventId.value !== details.id) received.value = false
     eventId.value = details.id
     event.value = details
     groupDigests.value = details.groups
@@ -89,6 +90,8 @@ export const useEventStore = defineStore('event', () => {
           const msg = JSON.parse(e.data)
           if (msg && msg.tag === 'SharedStateUpdate') {
             applySharedState(msg.contents as SharedEventState)
+          } else if (msg && msg.tag === 'EventChanged') {
+            void load(id).catch((err) => console.error(err))
           }
         } catch (err) {
           console.error(err)

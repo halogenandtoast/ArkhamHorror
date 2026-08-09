@@ -16,6 +16,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier
 import Arkham.Projection
+import Arkham.Scenarios.TheBlobThatAteEverything.Helpers (subject8L08Matcher)
 import Arkham.Trait (Trait (Manifold, Oozified))
 
 newtype ExtraterrestrialPhysiology = ExtraterrestrialPhysiology ActAttrs
@@ -53,7 +54,7 @@ discardUntilManifoldsHaveTotalHealthAtLeast pc x = go 0 []
 instance RunMessage ExtraterrestrialPhysiology where
   runMessage msg a@(ExtraterrestrialPhysiology attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getTotalDamage -> n) _ -> do
-      subject8L08 <- selectJust $ enemyIs Enemies.subject8L08
+      subject8L08 <- selectJust subject8L08Matcher
       placeTokens (attrs.ability 1) subject8L08 #damage (2 * n)
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

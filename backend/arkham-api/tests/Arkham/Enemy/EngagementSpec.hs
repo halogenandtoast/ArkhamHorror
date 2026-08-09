@@ -96,6 +96,45 @@ spec = describe "Enemy engagement" do
       field EnemyPlacement (toId enemy) `shouldReturn` InTheShadows
       self.engagedEnemies `shouldReturn` []
 
+  -- The other half of #5365. Exposing a concealed enemy moves it out of the
+  -- shadows, but `Do (EnemyMove)` writes the placement *after* the enter-windows
+  -- — so while act 1 advances inside those windows the enemy is still
+  -- `InTheShadows`, its "return her to the shadows" is a no-op, and the move
+  -- then landed her at the mini-card's location regardless.
+  it "cancels an in-flight move when the enemy is returned to the shadows"
+    . gameTest
+    $ \self -> do
+      location1 <- testLocation
+      location2 <- testLocation
+      self `moveTo` location1
+
+      enemy <- testEnemy
+      enemy `spawnAt` location2
+      run $ PlaceEnemy (toId enemy) InTheShadows
+
+      -- the exposure's deferred placement write, with the act's return-to-the-
+      -- shadows resolving ahead of it
+      pushAndRunAll
+        [PlaceEnemy (toId enemy) InTheShadows, Do (EnemyMove (toId enemy) (toId location1))]
+
+      field EnemyPlacement (toId enemy) `shouldReturn` InTheShadows
+
+  -- ...but an exposure that is *not* cancelled still commits its placement.
+  it "still commits an exposure move that was not cancelled"
+    . gameTest
+    $ \self -> do
+      location1 <- testLocation
+      location2 <- testLocation
+      self `moveTo` location1
+
+      enemy <- testEnemy
+      enemy `spawnAt` location2
+      run $ PlaceEnemy (toId enemy) InTheShadows
+
+      run $ EnemyMove (toId enemy) (toId location1)
+
+      enemy.location `shouldReturn` Just (toId location1)
+
   -- The cancel above must stay scoped to a *pending* engagement: Ghost Light 2b
   -- flips Tzu San Niang and has her engage the lead investigator straight out of
   -- the shadows, so an engagement that starts after the enemy is already there

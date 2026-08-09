@@ -848,7 +848,14 @@ instance RunMessage EnemyAttrs where
       -- `enemyMovement` describes that newer move, so this stale placement write
       -- must not drag the enemy back to the superseded destination.
       let supersededMidMove = maybe False ((/= ToLocation lid) . moveDestination) enemyMovement
-      if current == Just lid || leftPlayMidMove || supersededMidMove
+      -- The enemy was put back in the shadows while this move's enter-windows
+      -- were open, which clears `enemyMovement` (see `PlaceEnemy InTheShadows`).
+      -- `InTheShadows` is an *in-play* placement, so `leftPlayMidMove` above
+      -- cannot see it; without this the exposure's deferred placement write
+      -- drags the enemy straight back out (#5365). A live exposure always still
+      -- has its movement recorded, so it is unaffected.
+      let cancelledIntoShadows = enemyPlacement == InTheShadows && isNothing enemyMovement
+      if current == Just lid || leftPlayMidMove || supersededMidMove || cancelledIntoShadows
         then pure a
         else pure $ a & placementL .~ AtLocation lid
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
@@ -2350,7 +2357,15 @@ instance RunMessage EnemyAttrs where
           case mQueuedEngagement of
             Just (PlaceEnemy _ (InThreatArea iid)) -> cancelEnemyEngagement iid enemyId
             _ -> pure ()
-          handlePlacement placement
+          -- ...and it cancels any in-flight move. Exposing a concealed enemy
+          -- moves it out of the shadows, but `Do (EnemyMove)` commits the
+          -- placement *after* the enter-windows, so the enemy is still
+          -- `InTheShadows` while they run -- which makes this very placement a
+          -- no-op and leaves the move free to land it at the mini-card's
+          -- location anyway. Dropping `enemyMovement` is what `Do (EnemyMove)`
+          -- reads to tell a live exposure from a cancelled one (#5365).
+          a' <- handlePlacement placement
+          pure $ a' & movementL .~ Nothing
         _ -> handlePlacement placement
     Blanked msg' -> liftRunMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do

@@ -12,6 +12,7 @@
     "07": "The Innsmouth Conspiracy",
     "08": "Edge of the Earth",
     "09": "The Scarlet Keys",
+    "10": "The Feast of Hemlock Vale",
     "11": "The Drowned City",
     "50": "Return to the Night of the Zealot",
     "51": "Return to the Dunwich Legacy",
@@ -830,6 +831,117 @@
     "GlobalExpertise": {
       "name": "Global Expertise",
       "text": "Win The Scarlet Keys campaign on Expert difficulty."
+    },
+    "Aperitif": {
+      "name": "Aperitif",
+      "text": "Complete The Feast of Hemlock Vale campaign once on any difficulty."
+    },
+    "Unshattered": {
+      "name": "Unshattered",
+      "text": "Achieve every ending in this campaign.",
+      "items": {
+        "MarquezSacrificedHerself": "Dr. Marquez sacrificed herself for the Vale",
+        "TheInvestigatorsSacrificedThemselves": "The investigators sacrificed themselves for the Vale",
+        "TheValeWasSaved": "The Vale was saved",
+        "TheValeBurned": "The Vale burned",
+        "BarelySurvivedTheFeast": "The investigators barely survived the feast",
+        "BecameTheTrueFeast": "The investigators became the true feast"
+      }
+    },
+    "AStrongSilentType": {
+      "name": "A Strong, Silent Type",
+      "text": "Finish The Feast of Hemlock Vale campaign without voluntarily triggering any codex entries."
+    },
+    "ColourOutsideTheLines": {
+      "name": "Colour Outside the Lines",
+      "text": "Skip both The Twisted Hollow and The Longest Night during a single playthrough."
+    },
+    "LifeOfTheParty": {
+      "name": "Life of the Party",
+      "text": "Complete The Feast of Hemlock Vale campaign with each resident at Relationship Level 2 or higher."
+    },
+    "DancingQueen": {
+      "name": "Dancing Queen",
+      "text": "Share a dance with 4 different residents during The Second Evening prelude."
+    },
+    "AudreyIII": {
+      "name": "Audrey III",
+      "text": "Complete a scenario engaged with a Poisonblossom having 10 or more overgrowth on it."
+    },
+    "HoldOnToYourPotatoes": {
+      "name": "Hold on to your Potatoes!",
+      "text": "Complete Written in Rock with both a resident and the Prismatic Shard asset under your control."
+    },
+    "DreamHomeBreakover": {
+      "name": "Dream Home Breakover",
+      "text": "Complete Hemlock House with 10 locations in the victory display."
+    },
+    "SettlingTheScore": {
+      "name": "Settling the Score",
+      "text": "Defeat the Thing in the Depths in The Thing in the Depths."
+    },
+    "HereCrabbyCrabby": {
+      "name": "“Here, Crabby Crabby!”",
+      "text": "Make the Limulus Hybrid flip at least 8 times during The Lost Sister."
+    },
+    "ADifferentKindOfStingOps": {
+      "name": "A Different Kind of Sting Ops",
+      "text": "Complete The Silent Heath without spawning the Brood Queen."
+    },
+    "WaitTheresNoShroudedShrine": {
+      "name": "Wait, There’s No Shrouded Shrine?",
+      "text": "Survive The Twisted Hollow in Standalone Mode until you reach at least Darkness Level 10."
+    },
+    "BearNecessities": {
+      "name": "Bear Necessities",
+      "text": "Defeat the Ursine Hybrid in The Longest Night using only scenario card effects."
+    },
+    "LetsDoTheTimeWarp": {
+      "name": "Let’s Do the Time Warp!",
+      "text": "Complete the Lambs to the Slaughter Resolution in Prelude: The Final Evening."
+    },
+    "OblivionShmoblivion": {
+      "name": "Oblivion Shmoblivion",
+      "text": "Win the Fate of the Vale with each Cosmic Emissary enemy in the victory display."
+    },
+    "HighDive": {
+      "name": "High Dive",
+      "text": "Sacrifice yourself for the Vale in Fate of the Vale."
+    },
+    "BestFriendsForever": {
+      "name": "Best Friends Forever!",
+      "text": "Reach Relationship Level 6 with the following residents:",
+      "items": {
+        "LeahAtwood": "Leah Atwood",
+        "SimeonAtwood": "Simeon Atwood",
+        "RiverHawthorne": "River Hawthorne",
+        "GideonMizrah": "Gideon Mizrah",
+        "WilliamHemlock": "William Hemlock"
+      }
+    },
+    "KnowYourPlace": {
+      "name": "Know Your Place",
+      "text": "Win The Feast of Hemlock Vale campaign with Mother Rachel at Relationship Level 3 or higher."
+    },
+    "HeartOfSteel": {
+      "name": "Heart of Steel",
+      "text": "Win The Feast of Hemlock Vale campaign with Judith Park at Relationship Level 7."
+    },
+    "HoldingOutForAHimbo": {
+      "name": "Holding Out for a Himbo",
+      "text": "Win The Feast of Hemlock Vale campaign with Theo Peters at Relationship Level 7."
+    },
+    "CaptivatingScream": {
+      "name": "Captivating Scream",
+      "text": "Win The Feast of Hemlock Vale campaign as Patrice Hathaway."
+    },
+    "HemlockLineInTheSand": {
+      "name": "Line in the Sand",
+      "text": "Win The Feast of Hemlock Vale campaign with at least three Ultimatums active."
+    },
+    "HemlockExpertise": {
+      "name": "Hemlock Expertise",
+      "text": "Win The Feast of Hemlock Vale campaign on Expert difficulty."
     }
   },
   "clearAll": "Clear all",

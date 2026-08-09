@@ -2059,6 +2059,7 @@ library
       Arkham.Campaign.Campaigns.TheDunwichLegacy
       Arkham.Campaign.Campaigns.TheDunwichLegacy.Achievements
       Arkham.Campaign.Campaigns.TheFeastOfHemlockVale
+      Arkham.Campaign.Campaigns.TheFeastOfHemlockVale.Achievements
       Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.TheForgottenAge.Achievements
       Arkham.Campaign.Campaigns.TheInnsmouthConspiracy
@@ -7210,6 +7211,7 @@ test-suite spec
       Arkham.Achievements.ReturnToThePathToCarcosaSpec
       Arkham.Achievements.TheDreamEatersSpec
       Arkham.Achievements.TheDrownedCitySpec
+      Arkham.Achievements.TheFeastOfHemlockValeSpec
       Arkham.Achievements.TheInnsmouthConspiracySpec
       Arkham.Achievements.TheScarletKeysSpec
       Arkham.Act.Cards.AFamiliarPatternSpec

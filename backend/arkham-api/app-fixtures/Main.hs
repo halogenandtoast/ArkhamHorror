@@ -44,8 +44,9 @@ import Api.Arkham.Helpers (GameApp (..), GameAppT, runGameApp)
 import Api.Arkham.Types.MultiplayerVariant (MultiplayerVariant (Solo))
 import Arkham.Achievement.Types
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Ai.Decision (decideAi, unwrapQuestion)
-import Arkham.Ai.Decks (rolandCoreDeck)
+import Arkham.Ai.Decks (patriceSurvivorDeck, rolandCoreDeck)
 import Arkham.Ai.State (AiPlayerState, defaultAiPlayerState)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Types (CampaignAttrs (..), logL, metaL, stepL, storeL)
@@ -61,21 +62,34 @@ import Arkham.CampaignStep (CampaignStep (CampaignSpecificStep))
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Partner (expeditionTeam)
 import Arkham.Campaigns.EdgeOfTheEarth.Seal (Seal (..), SealKind (..))
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers qualified as Hemlock
+import Arkham.Campaigns.TheFeastOfHemlockVale.Key qualified as Hemlock
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheScarletKeys.Key qualified as TSK
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher (scarletKeyIs)
 import Arkham.Campaigns.TheScarletKeys.Meta (MapLocationId (..), TheScarletKeysMeta (..), initMeta)
-import Arkham.Card (Card, CardDef, lookupCard, toCardCode, toCardId, unCardCode)
+import Arkham.Card (
+  Card,
+  CardDef,
+  CardType (EnemyLocationCardType),
+  lookupCard,
+  toCardCode,
+  toCardId,
+  toCardType,
+  unCardCode,
+ )
 import Arkham.Card.Id (unsafeMakeCardId)
 import Arkham.ChaosToken.Types (ChaosTokenFace (ElderThing, FrostToken, Tablet))
 import Arkham.Classes.Entity (Entity (overAttrs))
 import Arkham.Classes.HasQueue (newQueue, push, pushAll)
 import Arkham.Classes.Query (select, selectCount, selectOne, selectWithField)
 import Arkham.Deck qualified as Deck
+import Arkham.Decklist.Type (ArkhamDBDecklist)
 import Arkham.Difficulty (Difficulty (..))
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (EnemyDamage, EnemyHealth, EnemyRemainingHealth))
+import Arkham.Enemy.Types (Field (EnemyDamage, EnemyHealth, EnemyRemainingHealth, EnemyTokens))
+import Arkham.EnemyLocation.Cards qualified as EnemyLocations
 import Arkham.Entities (Entities (..))
 import Arkham.Event.Cards qualified as Events
 import Arkham.Exhaust (mkExhaustion)
@@ -100,7 +114,8 @@ import Arkham.Placement (Placement (AtLocation, AttachedToInvestigator, InPlayAr
 import Arkham.Prelude (asks, at, ix, toResultDefault, (%~), (&), (.~), (?~))
 import Arkham.Projection (field)
 import Arkham.Queue (queueToRef)
-import Arkham.Scenario.Types (Field (ScenarioMeta))
+import Arkham.Resolution
+import Arkham.Scenario.Types (Field (ScenarioMeta), ScenarioAttrs (..))
 import Arkham.Scenario.Types qualified as Scenario
 import Arkham.Scenarios.InTooDeep.Helpers qualified as InTooDeep
 import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers qualified as Elina
@@ -109,10 +124,11 @@ import Arkham.Source
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Target
 import Arkham.Token qualified as Token
+import Arkham.Trait (Trait (Emissary))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types (Ultimatum (..), UltimatumOrBoon (..))
 import Control.Exception (SomeException, evaluate, try)
-import Control.Monad (replicateM_, void, when)
+import Control.Monad (replicateM_, unless, void, when)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger (runNoLoggingT)
 import Control.Monad.Random (getRandom, mkStdGen)
@@ -241,6 +257,10 @@ data Fixture = Fixture
   this label, leaving the game sitting ON that prompt. For fixtures whose
   achievement fires from a setup CHOICE, which the AI would otherwise answer.
   -}
+  , fxInvestigator :: (InvestigatorId, ArkhamDBDecklist)
+  {- ^ the seat's investigator and its bundled decklist. Only investigators with a
+  deck in "Arkham.Ai.Decks" can be used, since setup has no deck prompt to answer.
+  -}
   , fxCampaignSeed :: CampaignAttrs -> CampaignAttrs
   {- ^ applied BEFORE setup runs, for state the scenario's own setup reads back.
   Jumping straight to a mid-campaign scenario skips the prologue, so a campaign
@@ -265,6 +285,7 @@ fixture achievement label scenario action =
     , fxStage = pure []
     , fxCampaignEdit = id
     , fxStopAtLabel = Nothing
+    , fxInvestigator = (rolandInvestigatorId, rolandCoreDeck)
     , fxCampaignSeed = id
     , fxAction = action
     }
@@ -285,6 +306,7 @@ eoteFixture achievement label scenario action =
     , fxStage = pure []
     , fxCampaignEdit = id
     , fxStopAtLabel = Nothing
+    , fxInvestigator = (rolandInvestigatorId, rolandCoreDeck)
     , fxCampaignSeed = id
     , fxAction = action
     }
@@ -765,6 +787,7 @@ tskFixture achievement label scenario action =
     , fxStage = pure []
     , fxCampaignEdit = id
     , fxStopAtLabel = Nothing
+    , fxInvestigator = (rolandInvestigatorId, rolandCoreDeck)
     , fxCampaignSeed = id
     , fxAction = action
     }
@@ -1098,12 +1121,549 @@ withScarletKeysMeta attrs = attrs & metaL .~ toJSON initMeta
 earlier campaigns' games are already made and re-running them would only churn
 them.
 -}
+
+-- ---------------------------------------------------------------------------
+-- The Feast of Hemlock Vale
+
+theFeastOfHemlockValeId :: CampaignId
+theFeastOfHemlockValeId = "10"
+
+-- | Fate of the Vale, the campaign's finale, and the prelude before it.
+fateOfTheValeId, preludeTheFinalEveningId, preludeTheSecondEveningId :: ScenarioId
+fateOfTheValeId = "10651"
+preludeTheFinalEveningId = "10679b"
+preludeTheSecondEveningId = "10677a"
+
+theThingInTheDepthsId, theLostSisterId, theSilentHeathId, theLongestNightId :: ScenarioId
+writtenInRockId, hemlockHouseId, theTwistedHollowId :: ScenarioId
+writtenInRockId = "10501"
+hemlockHouseId = "10523"
+theTwistedHollowId = "10605"
+theThingInTheDepthsId = "10588"
+theLostSisterId = "10569"
+theSilentHeathId = "10549"
+theLongestNightId = "10626"
+
+{- | Achievement store keys, mirrored from
+"Arkham.Campaign.Campaigns.TheFeastOfHemlockVale.Achievements".
+-}
+dancePartnersKey, limulusFlipsKey :: Text
+dancePartnersKey = "hemlockAchDancePartners"
+limulusFlipsKey = "hemlockAchLimulusFlips"
+
+-- | A Feast of Hemlock Vale fixture, played as Patrice Hathaway.
+hemlockFixture :: TheFeastOfHemlockValeAchievement -> Text -> ScenarioId -> [Text] -> Fixture
+hemlockFixture achievement label scenario action =
+  Fixture
+    { fxAchievement = TheFeastOfHemlockValeAchievement achievement
+    , fxLabel = label
+    , fxCampaign = theFeastOfHemlockValeId
+    , fxScenario = Just scenario
+    , fxDifficulty = Standard
+    , fxUltimatums = []
+    , fxRecords = []
+    , fxCounts = mempty
+    , fxInvestigatorRecords = []
+    , fxStage = pure []
+    , fxCampaignEdit = id
+    , fxStopAtLabel = Nothing
+    , fxInvestigator = (patriceInvestigatorId, patriceSurvivorDeck)
+    , fxCampaignSeed = id
+    , fxAction = action
+    }
+
+patriceInvestigatorId :: InvestigatorId
+patriceInvestigatorId = "06005"
+
+{- | The day/time meta The Feast of Hemlock Vale initialises at its prologue step.
+A fixture that starts at a later scenario has to put it there itself.
+-}
+withHemlockValeMeta :: CampaignAttrs -> CampaignAttrs
+withHemlockValeMeta attrs = attrs & metaL .~ toJSON Hemlock.initMeta
+
+{- | Relationship Levels for the three residents whose level is its own
+achievement, at exactly the printed thresholds.
+-}
+hemlockRelationships :: Map.Map CampaignLogKey Int
+hemlockRelationships =
+  Map.fromList
+    [ (toCampaignLogKey Hemlock.MotherRachelRelationshipLevel, 3)
+    , (toCampaignLogKey Hemlock.JudithParkRelationshipLevel, 7)
+    , (toCampaignLogKey Hemlock.TheoPetersRelationshipLevel, 7)
+    , -- everyone else at 2, which is all "Life of the Party" asks for
+      (toCampaignLogKey Hemlock.WilliamHemlockRelationshipLevel, 2)
+    , (toCampaignLogKey Hemlock.RiverHawthorneRelationshipLevel, 2)
+    , (toCampaignLogKey Hemlock.SimeonAtwoodRelationshipLevel, 2)
+    , (toCampaignLogKey Hemlock.LeahAtwoodRelationshipLevel, 2)
+    , (toCampaignLogKey Hemlock.GideonMizrahRelationshipLevel, 2)
+    ]
+
+{- | The base state every Hemlock Vale ending fixture shares: Patrice, Expert,
+three Ultimatums, and every resident at a Relationship Level that satisfies the
+level-based achievements (2+ everywhere, with the three named thresholds met).
+-}
+hemlockEnding :: TheFeastOfHemlockValeAchievement -> Text -> [Text] -> GameAppT [Text] -> Fixture
+hemlockEnding achievement label action stage =
+  (hemlockFixture achievement label fateOfTheValeId action)
+    { fxDifficulty = Expert
+    , fxUltimatums =
+        [ Ultimatum UltimatumOfFailure
+        , Ultimatum UltimatumOfHardship
+        , Ultimatum UltimatumOfDread
+        ]
+    , fxCounts = hemlockRelationships
+    , fxCampaignSeed = withHemlockValeMeta
+    , fxStage = stage
+    }
+
+theFeastOfHemlockValeFixtures :: [Fixture]
+theFeastOfHemlockValeFixtures =
+  [ hemlockEnding
+      HighDive
+      "Hemlock Vale - ending: you sacrifice yourselves"
+      [ "Fate of the Vale, one click from Resolution 2. Pick \"do it ourselves\"."
+      , "Earns High Dive, and with it Aperitif, Know Your Place, Heart of Steel,"
+      , "Holding Out for a Himbo, Captivating Scream, Life of the Party,"
+      , "Line in the Sand and Hemlock Expertise - the whole win-time batch."
+      ]
+      stageTheSacrifice
+  , hemlockEnding
+      Unshattered
+      "Hemlock Vale - ending: Marquez sacrifices herself"
+      [ "Fate of the Vale, one click from Resolution 1. Pick \"let Marquez carry"
+      , "out the plan\" - the other option on the same prompt."
+      ]
+      stageTheSacrifice
+  , hemlockEnding
+      Unshattered
+      "Hemlock Vale - ending: the Vale was saved"
+      [ "Fate of the Vale (v. II), parked on its advance. One click resolves it to"
+      , "Resolution 3, where the Vale is saved."
+      ]
+      (stageEndingVia Acts.fateOfTheValeV2)
+  , hemlockEnding
+      Unshattered
+      "Hemlock Vale - ending: the Vale burned"
+      [ "Fate of the Vale (v. III), parked on its advance. One click resolves it to"
+      , "Resolution 4, where the Vale burns."
+      ]
+      (stageEndingVia Acts.fateOfTheValeV3)
+  , hemlockEnding
+      Unshattered
+      "Hemlock Vale - ending: barely survived the feast"
+      [ "Fate of the Vale (v. IV), parked on its advance. One click resolves it to"
+      , "Resolution 5, where you barely survive."
+      ]
+      (stageEndingVia Acts.fateOfTheValeV4)
+  , hemlockEnding
+      Unshattered
+      "Hemlock Vale - ending: you became the true feast"
+      [ "Fate of the Vale with The Spiral parked on its advance. One click kills"
+      , "every investigator, which is the no-resolution ending."
+      ]
+      stageTheTrueFeast
+  , hemlockEnding
+      OblivionShmoblivion
+      "Hemlock Vale - Oblivion Shmoblivion"
+      [ "All four Cosmic Emissaries are already in the victory display, and Fate of"
+      , "the Vale (v. II) is parked on its advance. One click wins the scenario with"
+      , "every emissary defeated."
+      ]
+      ( do
+          emissaries <- stageCosmicEmissaries
+          parked <- stageEndingVia Acts.fateOfTheValeV2
+          pure (emissaries <> parked)
+      )
+  , ( hemlockFixture
+        ColourOutsideTheLines
+        "Hemlock Vale - Colour Outside the Lines"
+        preludeTheSecondEveningId
+        [ "The Twisted Hollow was skipped on night one, and the game is parked at"
+        , "the SECOND EVENING. Play it out and choose \"gather more information\""
+        , "rather than following Dr. Marquez - that skips The Longest Night too,"
+        , "and the achievement fires on that choice."
+        ]
+    )
+      { fxScenario = Nothing
+      , -- park ON the evening's own choice rather than letting setup answer it
+        fxStopAtLabel = Just "gatherMoreInformation"
+      , {- The second evening is a campaign step, not a scenario, and the campaign
+        picks it from the meta: (Day2, Day) is the evening of the second day. -}
+        fxCampaignSeed = \attrs ->
+          attrs
+            & (stepL .~ CampaignSpecificStep "preludeTheSecondEvening" Nothing)
+            & (metaL .~ toJSON Hemlock.initMeta {Hemlock.day = Hemlock.Day2})
+      }
+  , ( hemlockFixture
+        DancingQueen
+        "Hemlock Vale - Dancing Queen"
+        preludeTheSecondEveningId
+        [ "Three residents have already shared a dance with you (Leah, Simeon and"
+        , "Theo). Dance with a fourth and it fires."
+        ]
+    )
+      { fxRecords =
+          [ toCampaignLogKey (Hemlock.LeahAtwoodNotes Hemlock.LeahSharedADance)
+          , toCampaignLogKey (Hemlock.SimeonAtwoodNotes Hemlock.SimeonSharedADance)
+          , toCampaignLogKey (Hemlock.TheoPetersNotes Hemlock.TheoSharedADance)
+          ]
+      , fxCampaignSeed = withHemlockValeMeta
+      , fxStage = do
+          -- The tally is the campaign store's, so it has to match the log.
+          setStore
+            dancePartnersKey
+            ( [ tshow (toCampaignLogKey (Hemlock.LeahAtwoodNotes Hemlock.LeahSharedADance))
+              , tshow (toCampaignLogKey (Hemlock.SimeonAtwoodNotes Hemlock.SimeonSharedADance))
+              , tshow (toCampaignLogKey (Hemlock.TheoPetersNotes Hemlock.TheoSharedADance))
+              ]
+                :: [Text]
+            )
+          runMessages "fixture" Nothing
+          pure ["  three dances banked; the fourth partner earns it"]
+      }
+  , ( hemlockFixture
+        SettlingTheScore
+        "Hemlock Vale - Settling the Score"
+        theThingInTheDepthsId
+        [ "The Thing in the Depths is in play with most of its health gone."
+        , "Defeat it and it fires."
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      , fxStage = stageWoundedEnemy Enemies.thingInTheDepths
+      }
+  , ( hemlockFixture
+        HereCrabbyCrabby
+        "Hemlock Vale - Here, Crabby Crabby!"
+        theLostSisterId
+        [ "The Limulus Hybrid has already flipped seven times this game."
+        , "Flip it once more and it fires."
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      , fxStage = do
+          setStore limulusFlipsKey (7 :: Int)
+          runMessages "fixture" Nothing
+          pure ["  seven flips banked; the eighth earns it"]
+      }
+  , ( hemlockFixture
+        ADifferentKindOfStingOps
+        "Hemlock Vale - A Different Kind of Sting Ops"
+        theSilentHeathId
+        [ "The Brood Queen has not been spawned. Finish The Silent Heath without"
+        , "her coming out - or send {\"tag\":\"EndOfGame\",\"contents\":null}."
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      }
+  , ( hemlockFixture
+        BearNecessities
+        "Hemlock Vale - Bear Necessities"
+        theLongestNightId
+        [ "The Ursine Hybrid is in play, damaged only by scenario effects and one"
+        , "hit from death. Finish it with a SCENARIO effect - any damage from an"
+        , "asset or event of yours disqualifies it."
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      , fxStage = stageWoundedEnemy Enemies.ursineHybridStarvingAbomination
+      }
+  , ( hemlockFixture
+        AStrongSilentType
+        "Hemlock Vale - A Strong, Silent Type"
+        fateOfTheValeId
+        [ "No codex entry has been opened voluntarily. Finish the campaign without"
+        , "using a resident's parley, Dr. Marquez's reaction, or any other ability"
+        , "that opens the codex - the forced ones (Sigma, entry 17, and The Silent"
+        , "Heath's Omega/Psi/Phi) do not count against you."
+        , "  finish with: {\"tag\":\"CampaignStep\",\"contents\":{\"tag\":\"EpilogueStep\"}}"
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      }
+  , ( hemlockFixture
+        AudreyIII
+        "Hemlock Vale - Audrey III"
+        writtenInRockId
+        [ "A Poisonblossom is engaged with you carrying 10 overgrowth."
+        , "Finish the scenario - or send {\"tag\":\"EndOfGame\",\"contents\":null}."
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      , fxStage = stageOvergrownBlossom
+      }
+  , ( hemlockFixture
+        HoldOnToYourPotatoes
+        "Hemlock Vale - Hold on to your Potatoes!"
+        writtenInRockId
+        [ "You control both a resident (Judith Park) and the Prismatic Shard."
+        , "Finish Written in Rock - or send {\"tag\":\"EndOfGame\",\"contents\":null}."
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      , fxStage = stageResidentAndShard
+      }
+  , ( hemlockFixture
+        DreamHomeBreakover
+        "Hemlock Vale - Dream Home Breakover"
+        hemlockHouseId
+        [ "Nine locations are already in the victory display and a tenth is on the"
+        , "table. Claim it, then finish Hemlock House."
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      , fxStage = stageNineRooms
+      }
+  , ( hemlockFixture
+        WaitTheresNoShroudedShrine
+        "Hemlock Vale - Wait, There's No Shrouded Shrine?"
+        theTwistedHollowId
+        [ "The Twisted Hollow at Darkness Level 10. Survive to the end - or send"
+        , "{\"tag\":\"EndOfGame\",\"contents\":null} - and it fires."
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      , fxStage = do
+          push $ PlaceTokens ScenarioSource ScenarioTarget Token.DarknessLevel 10
+          runMessages "fixture" Nothing
+          darkness <- scenarioFieldMap Scenario.ScenarioTokens (Token.countTokens Token.DarknessLevel)
+          pure ["  Darkness Level is " <> tshow darkness]
+      }
+  , ( hemlockFixture
+        LetsDoTheTimeWarp
+        "Hemlock Vale - Let's Do the Time Warp!"
+        preludeTheFinalEveningId
+        [ "Prelude: The Final Evening, parked on Resolution 3's choice. Pick"
+        , "\"replay\" to start the evening over - that is the time warp."
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      , fxStage = stageTheTimeWarp
+      }
+  ]
+    <> bestFriendsFixtures
+
+{- | One file per resident "Best Friends Forever!" names, each with that resident
+one Relationship Level short of 6 and the rest already there, so a single level-up
+completes their box.
+-}
+bestFriendsFixtures :: [Fixture]
+bestFriendsFixtures =
+  [ ( hemlockFixture
+        BestFriendsForever
+        ("Hemlock Vale - Best Friends: " <> name)
+        preludeTheSecondEveningId
+        [ name <> " is at Relationship Level 5; the other four are already at 6."
+        , "Raise " <> name <> " one level, then reach the epilogue:"
+        , "  {\"tag\":\"CampaignStep\",\"contents\":{\"tag\":\"EpilogueStep\"}}"
+        ]
+    )
+      { fxCampaignSeed = withHemlockValeMeta
+      , fxCounts =
+          Map.fromList
+            [ (key, if key == theirKey then 5 else 6)
+            | (_, key) <- bestFriendKeys
+            ]
+      }
+  | (name, theirKey) <- bestFriendKeys
+  ]
+
+-- | The five residents "Best Friends Forever!" names, with their level keys.
+bestFriendKeys :: [(Text, CampaignLogKey)]
+bestFriendKeys =
+  [ ("Leah Atwood", toCampaignLogKey Hemlock.LeahAtwoodRelationshipLevel)
+  , ("Simeon Atwood", toCampaignLogKey Hemlock.SimeonAtwoodRelationshipLevel)
+  , ("River Hawthorne", toCampaignLogKey Hemlock.RiverHawthorneRelationshipLevel)
+  , ("Gideon Mizrah", toCampaignLogKey Hemlock.GideonMizrahRelationshipLevel)
+  , ("William Hemlock", toCampaignLogKey Hemlock.WilliamHemlockRelationshipLevel)
+  ]
+
 allFixtures :: [Fixture]
-allFixtures = fixtures <> edgeOfTheEarthFixtures <> theScarletKeysFixtures
+allFixtures =
+  fixtures <> edgeOfTheEarthFixtures <> theScarletKeysFixtures <> theFeastOfHemlockValeFixtures
 
 -- | What a bare run builds.
 defaultFixtures :: [Fixture]
-defaultFixtures = theScarletKeysFixtures
+defaultFixtures = theFeastOfHemlockValeFixtures
+
+{- | Install a Fate of the Vale act as the current act and advance it, leaving the
+game one click from that act's ending.
+
+Advancing takes two messages. The first flips the act to its B side and parks on a
+confirm-the-advance prompt; the second is what that prompt would send, and it is
+the B-side handler that pushes the resolution (or, for v. I, raises the choice
+between the two sacrifices). @stopAfterFlip@ keeps the game on the confirm prompt
+for the acts whose B side resolves outright, so those are one click too.
+-}
+stageFateAct :: Bool -> CardDef -> GameAppT ()
+stageFateAct stopAfterFlip actDef = do
+  card <- genPlayerCardDef actDef
+  push $ SetCurrentActDeck 1 [card]
+  runMessages "fixture" Nothing
+  let advance = AdvanceAct (ActId $ toCardCode actDef) ScenarioSource AdvancedWithOther
+  push advance
+  runMessages "fixture" Nothing
+  unless stopAfterFlip do
+    push ClearUI
+    push advance
+    runMessages "fixture" Nothing
+
+{- | Park the game on Fate of the Vale's final choice, one click from either
+Resolution 1 (Marquez) or Resolution 2 (the investigators). The act only offers
+"do it ourselves" while someone controls the Prismatic Shard.
+-}
+stageTheSacrifice :: GameAppT [Text]
+stageTheSacrifice = withInvestigator \iid -> do
+  void $ putIntoPlay iid Assets.prismaticShardAlienMeteorite
+  runMessages "fixture" Nothing
+  stageFateAct False Acts.fateOfTheValeV1
+  reportParkedOn "doItOurselves" "the final choice"
+
+{- | Park on the confirm-advance prompt of an act whose B side resolves outright,
+so one click reaches that ending.
+-}
+stageEndingVia :: CardDef -> GameAppT [Text]
+stageEndingVia actDef = do
+  stageFateAct True actDef
+  reportParkedOn (unCardCode $ toCardCode actDef) "the act's advance"
+
+{- | Park on The Spiral's advance, whose B side kills every investigator - the
+no-resolution ending, where the investigators become the true feast.
+-}
+stageTheTrueFeast :: GameAppT [Text]
+stageTheTrueFeast = do
+  card <- genPlayerCardDef Agendas.theSpiral
+  push $ SetCurrentAgendaDeck 1 [card]
+  runMessages "fixture" Nothing
+  push $ AdvanceAgendaBy (AgendaId $ toCardCode Agendas.theSpiral) AgendaAdvancedWithOther
+  runMessages "fixture" Nothing
+  reportParkedOn (unCardCode $ toCardCode Agendas.theSpiral) "The Spiral's advance"
+
+{- | Put all four Cosmic Emissaries into the victory display, which is what
+"Oblivion Shmoblivion" wants at the end of the scenario.
+-}
+stageCosmicEmissaries :: GameAppT [Text]
+stageCosmicEmissaries = do
+  for_
+    [ Enemies.cosmicEmissaryTheAbyss
+    , Enemies.cosmicEmissaryTheMiasma
+    , Enemies.cosmicEmissaryTheBrilliance
+    , Enemies.cosmicEmissaryThePhantasm
+    ]
+    \def -> do
+      mEnemy <- selectOne $ enemyIs def
+      for_ mEnemy $ push . AddToVictory Nothing . EnemyTarget
+  runMessages "fixture" Nothing
+  defeated <- selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTrait Emissary
+  pure ["  " <> tshow defeated <> " Cosmic Emissaries are in the victory display"]
+
+{- | Park the prelude on Resolution 3's choice, one click from replaying the
+evening. Lambs to the Slaughter's objective is what sends the prelude there.
+-}
+stageTheTimeWarp :: GameAppT [Text]
+stageTheTimeWarp = do
+  push $ ScenarioResolution (Resolution 3)
+  runMessages "fixture" Nothing
+  reportParkedOn "replay" "the time-warp choice"
+
+-- | Confirm the game really is parked where the fixture claims, and say so.
+reportParkedOn :: Text -> Text -> GameAppT [Text]
+reportParkedOn needle description = do
+  parked <- asks appGame >>= liftIO . readIORef
+  pure
+    [ if any (T.isInfixOf needle . tshowQuestion) (Map.elems (gameQuestion parked))
+        then "  parked on " <> description <> " - one click away"
+        else "  ! not parked as expected - use the debug message above"
+    ]
+
+{- | Put an enemy into play at the investigator's location with all but one point
+of its health already gone, so a single hit finishes it.
+-}
+stageWoundedEnemy :: CardDef -> GameAppT [Text]
+stageWoundedEnemy def = withInvestigator \iid -> do
+  mlid <- getLocationOf iid
+  case mlid of
+    Nothing -> pure ["  ! the investigator is nowhere - nothing staged"]
+    Just lid -> do
+      card <- getSetAsideCardMaybe def >>= maybe (genPlayerCardDef def) pure
+      (eid, msg) <- createEnemyAt card lid Nothing
+      push msg
+      runMessages "fixture" Nothing
+      health <- fromMaybe 1 <$> field EnemyHealth eid
+      push $ PlaceDamage ScenarioSource (EnemyTarget eid) (max 0 (health - 1))
+      runMessages "fixture" Nothing
+      remaining <- field EnemyRemainingHealth eid
+      pure ["  " <> tshow (toTitle def) <> " has " <> tshow (fromMaybe 0 remaining) <> " health left"]
+
+{- | A Poisonblossom engaged with the investigator, carrying the ten overgrowth
+"Audrey III" wants.
+-}
+stageOvergrownBlossom :: GameAppT [Text]
+stageOvergrownBlossom = withInvestigator \iid -> do
+  mlid <- getLocationOf iid
+  case mlid of
+    Nothing -> pure ["  ! the investigator is nowhere - nothing staged"]
+    Just lid -> do
+      card <-
+        getSetAsideCardMaybe Enemies.poisonblossom >>= maybe (genPlayerCardDef Enemies.poisonblossom) pure
+      (eid, msg) <- createEnemyAt card lid Nothing
+      pushAll [msg, EnemyEngageInvestigator eid iid]
+      runMessages "fixture" Nothing
+      push $ PlaceTokens ScenarioSource (EnemyTarget eid) Token.Overgrowth 10
+      runMessages "fixture" Nothing
+      overgrowth <- Token.countTokens Token.Overgrowth <$> field EnemyTokens eid
+      pure ["  the Poisonblossom is engaged with you and has " <> tshow overgrowth <> " overgrowth"]
+
+{- | A resident asset and the Prismatic Shard, both under the investigator's
+control, which is what "Hold on to your Potatoes!" asks for.
+-}
+stageResidentAndShard :: GameAppT [Text]
+stageResidentAndShard = withInvestigator \iid -> do
+  void $ putIntoPlay iid Assets.judithParkTheMuscle
+  void $ putIntoPlay iid Assets.prismaticShardAlienMeteorite
+  runMessages "fixture" Nothing
+  pure ["  Judith Park and the Prismatic Shard are in your play area"]
+
+{- | Nine rooms in the victory display, so claiming a tenth finishes
+"Dream Home Breakover".
+
+The cards are placed directly rather than by claiming rooms in play: Hemlock House
+only ever has a handful of rooms on the table at once (it reveals them as you go),
+so there are never nine to claim at setup.
+-}
+stageNineRooms :: GameAppT [Text]
+stageNineRooms = do
+  rooms <- traverse genPlayerCardDef (take 9 hemlockHouseRooms)
+  ref <- asks appGame
+  liftIO
+    $ modifyIORef' ref
+    $ modeL %~ second (overAttrs (\a -> a {scenarioVictoryDisplay = scenarioVictoryDisplay a <> rooms}))
+  claimed <-
+    scenarioFieldMap
+      Scenario.ScenarioVictoryDisplay
+      (length . filter ((== EnemyLocationCardType) . toCardType))
+  inPlay <- selectCount Anywhere
+  pure
+    [ "  " <> tshow claimed <> " rooms are in the victory display"
+    , "  " <> tshow inPlay <> " rooms are on the table - claim one more, then finish"
+    ]
+
+{- | Hemlock House's rooms as they appear once CLAIMED: the victory display holds
+each room's other side, an enemy-location card, which is what the achievement
+counts.
+-}
+hemlockHouseRooms :: [CardDef]
+hemlockHouseRooms =
+  [ EnemyLocations.livingBedroomHemlockHouse32
+  , EnemyLocations.livingBedroomHemlockHouse33
+  , EnemyLocations.livingBedroomHemlockHouse34
+  , EnemyLocations.livingBedroomHemlockHouse35
+  , EnemyLocations.livingWashroomHemlockHouse36
+  , EnemyLocations.livingWashroomHemlockHouse37
+  , EnemyLocations.livingWashroomHemlockHouse38
+  , EnemyLocations.livingLibraryHemlockHouse39
+  , EnemyLocations.livingLibraryHemlockHouse40
+  ]
 
 -- ---------------------------------------------------------------------------
 -- Staging helpers
@@ -1562,8 +2122,8 @@ driveSetup app fx = loop
           -- seat's investigator. The seat is already bound to Roland, so the
           -- messages the real handler would produce are built directly.
           (reply, isSettings) <- case question of
-            ChooseUpgradeDeck -> pure (Handled (deckChosen game qpid rolandCoreDeck), False)
-            ChooseDeck -> pure (Handled (deckChosen game qpid rolandCoreDeck), False)
+            ChooseUpgradeDeck -> pure (Handled (deckChosen game qpid (snd (fxInvestigator fx))), False)
+            ChooseDeck -> pure (Handled (deckChosen game qpid (snd (fxInvestigator fx))), False)
             {- The settings answer installs a WHOLE new campaign log, and the first
             campaign step runs in the same drain right behind it - so anything the
             log needs has to be in the log we send, not patched in afterwards.
@@ -1577,7 +2137,8 @@ driveSetup app fx = loop
             _ -> do
               answer <- case question of
                 PickScenarioSettings -> pure $ StandaloneSettingsAnswer []
-                _ -> runGameApp app (decideAi rolandAiState qpid q)
+                _ ->
+                  runGameApp app (decideAi (defaultAiPlayerState (unInvestigatorId (fst (fxInvestigator fx)))) qpid q)
               r <- handleAnswerPure game qpid answer
               pure (r, False)
           case reply of
@@ -1590,7 +2151,7 @@ driveSetup app fx = loop
               -- and is NOT loaded yet at this point, so its id is used directly
               -- rather than read off the game.
               let extraMessages =
-                    [ RecordForInvestigator rolandInvestigatorId k
+                    [ RecordForInvestigator (fst (fxInvestigator fx)) k
                     | isSettings
                     , k <- fxInvestigatorRecords fx
                     ]
@@ -1644,7 +2205,7 @@ buildGame tracer fx pid game0 = do
   let app = GameApp gameRef queueRef genRef (const (pure ())) tracer Nothing
   runGameApp app $ do
     addPlayer pid
-    push (RegisterAiPlayer pid rolandAiState)
+    push (RegisterAiPlayer pid (defaultAiPlayerState (unInvestigatorId (fst (fxInvestigator fx)))))
     runMessages "fixture-setup" Nothing
   driveSetup app fx 600
   extra <- runGameApp app (fxStage fx)

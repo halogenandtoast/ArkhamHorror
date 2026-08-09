@@ -4,7 +4,7 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '07', '08', '09', '11', '50', '51', '52', '53', '54']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '07', '08', '09', '10', '11', '50', '51', '52', '53', '54']
 
 // Sub-grouping inside a campaign, for campaigns whose achievement list is
 // printed per mini-campaign. Only The Dream-Eaters has one: its list is split
@@ -218,6 +218,30 @@ export type AchievementTag =
   | 'KeyToMyHeart'
   | 'ScarletLineInTheSand'
   | 'GlobalExpertise'
+  | 'Aperitif'
+  | 'Unshattered'
+  | 'AStrongSilentType'
+  | 'ColourOutsideTheLines'
+  | 'LifeOfTheParty'
+  | 'DancingQueen'
+  | 'AudreyIII'
+  | 'HoldOnToYourPotatoes'
+  | 'DreamHomeBreakover'
+  | 'SettlingTheScore'
+  | 'HereCrabbyCrabby'
+  | 'ADifferentKindOfStingOps'
+  | 'WaitTheresNoShroudedShrine'
+  | 'BearNecessities'
+  | 'LetsDoTheTimeWarp'
+  | 'OblivionShmoblivion'
+  | 'HighDive'
+  | 'BestFriendsForever'
+  | 'KnowYourPlace'
+  | 'HeartOfSteel'
+  | 'HoldingOutForAHimbo'
+  | 'CaptivatingScream'
+  | 'HemlockLineInTheSand'
+  | 'HemlockExpertise'
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string; part?: AchievementPart }
 
@@ -311,6 +335,21 @@ export const achievementChecklists: Partial<Record<AchievementTag, string[]>> = 
     'TheLifecycleOfADeepOne',
     'AStingingBetrayal',
     'TheHorribleTruth',
+  ],
+  Unshattered: [
+    'MarquezSacrificedHerself',
+    'TheInvestigatorsSacrificedThemselves',
+    'TheValeWasSaved',
+    'TheValeBurned',
+    'BarelySurvivedTheFeast',
+    'BecameTheTrueFeast',
+  ],
+  BestFriendsForever: [
+    'LeahAtwood',
+    'SimeonAtwood',
+    'RiverHawthorne',
+    'GideonMizrah',
+    'WilliamHemlock',
   ],
   KeyToMyHeart: [
     'TheEyeOfRavens',
@@ -518,4 +557,28 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'KeyToMyHeart', campaignId: '09' },
   { tag: 'ScarletLineInTheSand', campaignId: '09' },
   { tag: 'GlobalExpertise', campaignId: '09' },
+  { tag: 'Aperitif', campaignId: '10' },
+  { tag: 'Unshattered', campaignId: '10' },
+  { tag: 'AStrongSilentType', campaignId: '10' },
+  { tag: 'ColourOutsideTheLines', campaignId: '10' },
+  { tag: 'LifeOfTheParty', campaignId: '10' },
+  { tag: 'DancingQueen', campaignId: '10' },
+  { tag: 'AudreyIII', campaignId: '10' },
+  { tag: 'HoldOnToYourPotatoes', campaignId: '10' },
+  { tag: 'DreamHomeBreakover', campaignId: '10' },
+  { tag: 'SettlingTheScore', campaignId: '10' },
+  { tag: 'HereCrabbyCrabby', campaignId: '10' },
+  { tag: 'ADifferentKindOfStingOps', campaignId: '10' },
+  { tag: 'WaitTheresNoShroudedShrine', campaignId: '10' },
+  { tag: 'BearNecessities', campaignId: '10' },
+  { tag: 'LetsDoTheTimeWarp', campaignId: '10' },
+  { tag: 'OblivionShmoblivion', campaignId: '10' },
+  { tag: 'HighDive', campaignId: '10' },
+  { tag: 'BestFriendsForever', campaignId: '10' },
+  { tag: 'KnowYourPlace', campaignId: '10' },
+  { tag: 'HeartOfSteel', campaignId: '10' },
+  { tag: 'HoldingOutForAHimbo', campaignId: '10' },
+  { tag: 'CaptivatingScream', campaignId: '10' },
+  { tag: 'HemlockLineInTheSand', campaignId: '10' },
+  { tag: 'HemlockExpertise', campaignId: '10' },
 ]

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, inject, type Ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import type { Game } from '@/arkham/types/Game';
@@ -24,6 +24,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
+const solo = inject<Ref<boolean>>('solo')
 
 const ownQuestion = computed(() => props.game.question[props.playerId])
 
@@ -44,6 +45,20 @@ const viewerInvestigatorName = computed(() => {
   const targetPlayerId = effectivePlayerId.value
   const inv = Object.values(props.game.investigators).find(i => i.playerId === targetPlayerId)
   return inv?.name.title ?? ''
+})
+
+const choiceInvestigator = computed(() => {
+  if (!solo?.value || props.game.playerCount < 2) return null
+  if (question.value?.tag !== QuestionType.READ) return null
+  if (Object.keys(props.game.question).length < 2 || choices.value.length === 0) return null
+  return Object.values(props.game.investigators).find(
+    (investigator) => investigator.playerId === effectivePlayerId.value,
+  ) ?? null
+})
+
+const choiceInvestigatorPortrait = computed(() => {
+  const investigator = choiceInvestigator.value
+  return investigator ? investigatorPortrait(props.game, investigator.id) : null
 })
 
 const { t } = useI18n()
@@ -161,6 +176,14 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
     </div>
     <template v-else>
     <template v-if="question && question.tag === QuestionType.READ">
+      <div v-if="choiceInvestigator" class="choice-investigator">
+        <img
+          v-if="choiceInvestigatorPortrait"
+          :src="choiceInvestigatorPortrait"
+          :alt="choiceInvestigator.name.title"
+        />
+        <span>{{ choiceInvestigator.name.title }}</span>
+      </div>
       <StoryEntry
         :game="game"
         :playerId="effectivePlayerId"
@@ -333,6 +356,31 @@ const isBuildSpiritDeckQuestion = (q: Question): q is Question & { tag: Question
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   pointer-events: none;
   box-sizing: border-box;
+}
+
+.choice-investigator {
+  align-items: center;
+  align-self: center;
+  background: rgba(0, 0, 0, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #EEE;
+  display: flex;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 0.9em;
+  font-weight: 700;
+  gap: 10px;
+  margin: 14px auto 0;
+  padding: 5px 14px 5px 5px;
+  width: fit-content;
+}
+
+.choice-investigator img {
+  border-radius: 50%;
+  height: 42px;
+  object-fit: cover;
+  object-position: top;
+  width: 42px;
 }
 
 .question-content {

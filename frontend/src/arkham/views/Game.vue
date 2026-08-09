@@ -793,19 +793,33 @@ function scheduleApplyUpdate(payload: string) {
       if (!locked) {
         // PlayerTabs owns in-scenario perspective changes so tab routing and
         // return navigation remain coordinated. Campaign/setup screens do not
-        // mount PlayerTabs, though, so follow their sole question here.
-        // Otherwise a multihanded solo game goes inert the moment the engine
-        // asks a seat other than the one in view — the next player's ChooseDeck,
-        // the second investigator's Forgotten Age supplies pick (#5337), a
-        // per-investigator interlude choice: the question is present, but this
-        // view still holds the previous playerId and choose() answers as that
-        // seat, so it can neither render nor answer it.
+        // mount PlayerTabs, though, so follow another pending question when the
+        // current seat has finished answering. Some sequential group stories
+        // keep an empty Read question parked for every seat, so presence alone
+        // does not mean the current seat still has an answer to give.
         const questionPlayers = Object.keys(updatedGame.question)
-        if (solo.value && !props.spectate && questionPlayers.length === 1) {
-          const questionPlayer = questionPlayers[0]
-          if (questionPlayer !== playerId.value && !scenarioBoardMounted(updatedGame)) {
-            playerId.value = questionPlayer
-          }
+        const actionableQuestionPlayers = questionPlayers.filter(
+          (pid) => ArkhamGame.choices(updatedGame, pid).length > 0,
+        )
+        const currentPlayer = playerId.value ?? ''
+        const currentQuestion = updatedGame.question[currentPlayer]
+        const currentReadIsWaiting =
+          questionTag(currentQuestion) === 'Read' &&
+          ArkhamGame.choices(updatedGame, currentPlayer).length === 0 &&
+          actionableQuestionPlayers.length > 0
+        const nextQuestionPlayer = !questionPlayers.includes(currentPlayer)
+          ? questionPlayers[0]
+          : currentReadIsWaiting
+            ? actionableQuestionPlayers[0]
+            : null
+
+        if (
+          solo.value &&
+          !props.spectate &&
+          nextQuestionPlayer &&
+          !scenarioBoardMounted(updatedGame)
+        ) {
+          playerId.value = nextQuestionPlayer
         }
         continueSkipAll()
       }

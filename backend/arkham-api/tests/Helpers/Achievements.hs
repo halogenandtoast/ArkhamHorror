@@ -36,6 +36,9 @@ module Helpers.Achievements (
   asTheScarletKeys,
   asTheScarletKeysWith,
   asTheScarletKeysScenario,
+  asTheFeastOfHemlockVale,
+  asTheFeastOfHemlockValeWith,
+  asTheFeastOfHemlockValeScenario,
   didEarn,
   didEarnDunwich,
   didEarnCarcosa,
@@ -47,6 +50,7 @@ module Helpers.Achievements (
   didEarnInnsmouth,
   didEarnEdgeOfTheEarth,
   didEarnScarletKeys,
+  didEarnHemlockVale,
   didProgressDunwich,
   didProgressCarcosa,
   didProgressCircle,
@@ -54,6 +58,7 @@ module Helpers.Achievements (
   didProgressInnsmouth,
   didProgressEdgeOfTheEarth,
   didProgressScarletKeys,
+  didProgressHemlockVale,
 ) where
 
 import Arkham.Achievement.Types
@@ -199,6 +204,18 @@ asTheScarletKeys = asTheScarletKeysWith Easy
 asTheScarletKeysScenario :: CardCode -> TestAppT ()
 asTheScarletKeysScenario = asAchievementCampaignScenario "09"
 
+-- The Feast of Hemlock Vale's list is printed for the campaign itself, so campaign
+-- "10" is the eligible campaign rather than a Return-to variant.
+
+asTheFeastOfHemlockValeWith :: Difficulty -> TestAppT ()
+asTheFeastOfHemlockValeWith = asAchievementCampaign "10"
+
+asTheFeastOfHemlockVale :: TestAppT ()
+asTheFeastOfHemlockVale = asTheFeastOfHemlockValeWith Easy
+
+asTheFeastOfHemlockValeScenario :: CardCode -> TestAppT ()
+asTheFeastOfHemlockValeScenario = asAchievementCampaignScenario "10"
+
 didEarn :: NightOfTheZealotAchievement -> TestAppT (IORef Bool)
 didEarn achievement =
   createMessageMatcher $ EarnAchievement $ NightOfTheZealotAchievement achievement
@@ -269,6 +286,14 @@ didProgressInnsmouth achievement items =
 didProgressEdgeOfTheEarth :: EdgeOfTheEarthAchievement -> [Text] -> TestAppT (IORef Bool)
 didProgressEdgeOfTheEarth achievement items =
   createMessageMatcher $ AchievementProgress (EdgeOfTheEarthAchievement achievement) items
+
+didEarnHemlockVale :: TheFeastOfHemlockValeAchievement -> TestAppT (IORef Bool)
+didEarnHemlockVale achievement =
+  createMessageMatcher $ EarnAchievement $ TheFeastOfHemlockValeAchievement achievement
+
+didProgressHemlockVale :: TheFeastOfHemlockValeAchievement -> [Text] -> TestAppT (IORef Bool)
+didProgressHemlockVale achievement items =
+  createMessageMatcher $ AchievementProgress (TheFeastOfHemlockValeAchievement achievement) items
 
 didProgressScarletKeys :: TheScarletKeysAchievement -> [Text] -> TestAppT (IORef Bool)
 didProgressScarletKeys achievement items =

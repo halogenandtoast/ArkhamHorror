@@ -294,6 +294,39 @@ data TheScarletKeysAchievement
 
 $(deriveJSON defaultOptions ''TheScarletKeysAchievement)
 
+{- | The Feast of Hemlock Vale (campaign "10"). Printed for the campaign itself
+rather than a Return-to variant, so these are earnable in ordinary Hemlock Vale
+games.
+-}
+data TheFeastOfHemlockValeAchievement
+  = Aperitif
+  | Unshattered
+  | AStrongSilentType
+  | ColourOutsideTheLines
+  | LifeOfTheParty
+  | DancingQueen
+  | AudreyIII
+  | HoldOnToYourPotatoes
+  | DreamHomeBreakover
+  | SettlingTheScore
+  | HereCrabbyCrabby
+  | ADifferentKindOfStingOps
+  | WaitTheresNoShroudedShrine
+  | BearNecessities
+  | LetsDoTheTimeWarp
+  | OblivionShmoblivion
+  | HighDive
+  | BestFriendsForever
+  | KnowYourPlace
+  | HeartOfSteel
+  | HoldingOutForAHimbo
+  | CaptivatingScream
+  | HemlockLineInTheSand
+  | HemlockExpertise
+  deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
+
+$(deriveJSON defaultOptions ''TheFeastOfHemlockValeAchievement)
+
 data Achievement
   = NightOfTheZealotAchievement NightOfTheZealotAchievement
   | TheDunwichLegacyAchievement TheDunwichLegacyAchievement
@@ -306,6 +339,7 @@ data Achievement
   | TheInnsmouthConspiracyAchievement TheInnsmouthConspiracyAchievement
   | EdgeOfTheEarthAchievement EdgeOfTheEarthAchievement
   | TheScarletKeysAchievement TheScarletKeysAchievement
+  | TheFeastOfHemlockValeAchievement TheFeastOfHemlockValeAchievement
   deriving stock (Eq, Show, Ord, Data)
 
 allAchievements :: [Achievement]
@@ -321,6 +355,7 @@ allAchievements =
     <> map TheInnsmouthConspiracyAchievement [minBound ..]
     <> map EdgeOfTheEarthAchievement [minBound ..]
     <> map TheScarletKeysAchievement [minBound ..]
+    <> map TheFeastOfHemlockValeAchievement [minBound ..]
 
 -- | Flat constructor name; the wire and database representation.
 achievementName :: Achievement -> Text
@@ -336,6 +371,7 @@ achievementName = \case
   TheInnsmouthConspiracyAchievement a -> tshow a
   EdgeOfTheEarthAchievement a -> tshow a
   TheScarletKeysAchievement a -> tshow a
+  TheFeastOfHemlockValeAchievement a -> tshow a
 
 parseAchievement :: Text -> Maybe Achievement
 parseAchievement t = lookup t achievementsByName
@@ -436,6 +472,27 @@ achievementChecklist = \case
       , "AveryClaypool"
       , "RoaldEllsworth"
       ]
+  {- Every ending of the campaign, i.e. every way Fate of the Vale can finish.
+  Accumulated across playthroughs by the API layer.
+  -}
+  TheFeastOfHemlockValeAchievement Unshattered ->
+    Just
+      [ "MarquezSacrificedHerself"
+      , "TheInvestigatorsSacrificedThemselves"
+      , "TheValeWasSaved"
+      , "TheValeBurned"
+      , "BarelySurvivedTheFeast"
+      , "BecameTheTrueFeast"
+      ]
+  -- The five residents "Best Friends Forever!" wants at Relationship Level 6.
+  TheFeastOfHemlockValeAchievement BestFriendsForever ->
+    Just
+      [ "LeahAtwood"
+      , "SimeonAtwood"
+      , "RiverHawthorne"
+      , "GideonMizrah"
+      , "WilliamHemlock"
+      ]
   -- The eleven Scarlet Keys, in printed checklist order.
   TheScarletKeysAchievement KeyToMyHeart ->
     Just
@@ -469,6 +526,7 @@ achievementCampaigns = \case
   TheInnsmouthConspiracyAchievement _ -> ["07"]
   EdgeOfTheEarthAchievement _ -> ["08"]
   TheScarletKeysAchievement _ -> ["09"]
+  TheFeastOfHemlockValeAchievement _ -> ["10"]
 
 {- | Sub-grouping within a campaign, for lists that are printed per mini-campaign.
 Only The Dream-Eaters has one: its achievements are split between The Dream-Quest

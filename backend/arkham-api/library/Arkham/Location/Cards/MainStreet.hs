@@ -1,7 +1,12 @@
 module Arkham.Location.Cards.MainStreet (mainStreet) where
 
 import Arkham.Ability
-import Arkham.Epic.Types (GroupOrdinal (..), SharedKey (MainStreetReady), groupOrdinalKey)
+import Arkham.Epic.Types (
+  GroupOrdinal (..),
+  SharedKey (MainStreetEligible, MainStreetReady),
+  groupOrdinalKey,
+  sharedKeyText,
+ )
 import Arkham.Helpers.Log (scenarioCount)
 import Arkham.Helpers.Modifiers (
   ModifierType (ForMovementConnectedToWhen),
@@ -22,11 +27,17 @@ mainStreet = locationWith MainStreet Cards.mainStreet 3 (PerPlayer 2) connectsTo
 
 instance HasAbilities MainStreet where
   getAbilities (MainStreet a) =
-    [groupLimit PerGame $ restricted a 1 Here actionAbility]
+    [ groupLimit PerGame
+        $ restricted
+          a
+          1
+          (Here <> HasScenarioCount (EpicShared $ sharedKeyText MainStreetEligible) (atLeast 1))
+          actionAbility
+    ]
 
 instance HasModifiersFor MainStreet where
   getModifiersFor (MainStreet a) = do
-    let slimyStreets = LocationWithTitle "Slimy Streets"
+    let slimyStreets = locationIs Cards.slimyStreets
     self <- modifySelf a [ForMovementConnectedToWhen (be a) slimyStreets]
     others <- modifySelect a slimyStreets [ForMovementConnectedToWhen slimyStreets (be a)]
     pure $ self <> others

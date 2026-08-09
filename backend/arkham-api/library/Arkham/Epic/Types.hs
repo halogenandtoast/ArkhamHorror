@@ -104,6 +104,7 @@ data SharedKey
     time-limit countdown began; 0 until then. Set once.
     -}
     TimerStartedAt
+  | MainStreetEligible
   | MainStreetReady GroupOrdinal
   | ReplicationPending GroupOrdinal
   deriving stock (Show, Eq, Ord, Generic, Data)
@@ -135,6 +136,7 @@ sharedKeyText = \case
   TimeLimitMinutes -> "time-limit-minutes"
   GroupsReadyMask -> "groups-ready-mask"
   TimerStartedAt -> "timer-started-at"
+  MainStreetEligible -> "main-street-eligible"
   MainStreetReady (GroupOrdinal o) -> "main-street-ready:" <> tshow o
   ReplicationPending (GroupOrdinal o) -> "replication-pending:" <> tshow o
 
@@ -162,6 +164,7 @@ sharedKeyFromText t = case t of
   "time-limit-minutes" -> Just TimeLimitMinutes
   "groups-ready-mask" -> Just GroupsReadyMask
   "timer-started-at" -> Just TimerStartedAt
+  "main-street-eligible" -> Just MainStreetEligible
   _ ->
     (SharedEnemyHealth . CardCode <$> stripPrefix "enemy-health:" t)
       <|> (SharedActProgress <$> (stripPrefix "act-progress:" t >>= readMaybe . unpack))

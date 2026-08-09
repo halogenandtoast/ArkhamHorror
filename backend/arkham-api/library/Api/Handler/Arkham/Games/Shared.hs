@@ -44,6 +44,7 @@ import Arkham.Epic.Types (
     ActContribution,
     ActSpend,
     AwaitingOrganizer,
+    MainStreetEligible,
     MainStreetReady,
     SharedActProgress
   ),
@@ -67,6 +68,7 @@ import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
 import Arkham.Investigator.Types (Investigator, investigatorPlacement, investigatorPlayerId)
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
 import Arkham.Name
 import Arkham.Placement (
@@ -87,6 +89,7 @@ import Data.Aeson.Types (parse)
 import Data.ByteString.Lazy qualified as BSL
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 import Data.String.Conversions.Monomorphic (toStrictByteString)
 import Data.Text qualified as T
 import Data.These
@@ -557,7 +560,14 @@ updateGame response gameId mRoom = do
   -- a threshold-crossing Act 1 action has already armed AwaitingOrganizer in the
   -- same event-row write, so clients install the blocking overlay before they can
   -- see or answer the parked Continue question.
-  for_ mSharedUpdate \(eid, s) -> propagateShared eid (Just gameId) s
+  -- Main Street's cross-game action is available only while investigators in at
+  -- least two distinct groups are currently at their copies. Movement normally
+  -- emits no shared delta, so derive this presence bit after every persisted
+  -- action rather than relying on card messages.
+  mMainStreetUpdate <- refreshMainStreetEligibility gameId
+  case mMainStreetUpdate of
+    Just (eid, s) -> propagateShared eid Nothing s
+    Nothing -> for_ mSharedUpdate \(eid, s) -> propagateShared eid (Just gameId) s
 
   publishToRoom gameId
     $ GameUpdate
@@ -756,6 +766,40 @@ broadcastEventChanged eid = do
   publishToEventRoom eid EventChanged
   gameIds <- getEventGroupGameIds eid
   for_ gameIds (`publishToRoom` EventChanged)
+
+refreshMainStreetEligibility
+  :: ArkhamGameId -> Handler (Maybe (ArkhamEpicEventId, SharedEventState))
+refreshMainStreetEligibility gameId = do
+  mEvent <- runDB $ lookupGameEvent gameId
+  case mEvent of
+    Nothing -> pure Nothing
+    Just (Entity eid _, _) -> do
+      groups <- runDB $ P.selectList [ArkhamEpicGroupArkhamEpicEventId P.==. eid] []
+      let gameIds = mapMaybe (arkhamEpicGroupArkhamGameId . entityVal) groups
+      games <- runDB $ traverse P.getJust gameIds
+      let
+        groupAtMainStreet rawGame =
+          let
+            game = arkhamGameCurrentData rawGame
+            mainStreets =
+              Map.keysSet
+                $ Map.filter
+                  ((== toCardCode Locations.mainStreet) . toCardCode)
+                  (entitiesLocations $ gameEntities game)
+           in
+            any
+              ( \investigator -> case attr investigatorPlacement investigator of
+                  AtLocation lid -> lid `Set.member` mainStreets
+                  _ -> False
+              )
+              (entitiesInvestigators $ gameEntities game)
+        eligible = length (filter groupAtMainStreet games) >= 2
+      (shared, changed) <- runDB $ modifySharedStateLockedWith eid \s ->
+        let value = if eligible then 1 else 0
+         in if sharedCounter MainStreetEligible s == value
+              then (s, False)
+              else (setSharedCounter MainStreetEligible value s, True)
+      pure $ (eid, shared) <$ guard changed
 
 {- | The ScenarioCountSet messages that mirror the authoritative shared counters
 into a group's scenario state (as EpicShared counts), keyed by sharedKeyText,

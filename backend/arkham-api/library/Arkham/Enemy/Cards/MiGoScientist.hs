@@ -26,13 +26,15 @@ instance HasModifiersFor MiGoScientist where
 
 instance HasAbilities MiGoScientist where
   getAbilities (MiGoScientist a) =
-    [ restricted a 1 (thisExists a ReadyEnemy <> exists (assetIs Assets.brainCase))
-        $ forced
-        $ PhaseBegins #when #enemy
-    , restricted a 2 (exists $ assetIs Assets.brainCase)
-        $ forced
-        $ EnemyMoves #after Anywhere (be a)
-    ]
+    extend
+      a
+      [ restricted a 1 (thisExists a ReadyEnemy <> exists (assetIs Assets.brainCase))
+          $ forced
+          $ PhaseBegins #when #enemy
+      , restricted a 2 (exists $ assetIs Assets.brainCase)
+          $ forced
+          $ EnemyMoves #after Anywhere (be a)
+      ]
 
 instance RunMessage MiGoScientist where
   runMessage msg e@(MiGoScientist attrs) = runQueueT $ case msg of

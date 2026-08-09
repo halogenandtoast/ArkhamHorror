@@ -88,6 +88,7 @@ spec = describe "Epic Multiplayer shared state" do
             , LeadFaction
             , SharedActProgress 3
             , GroupDoom (GroupOrdinal 2)
+            , MainStreetEligible
             , MainStreetReady (GroupOrdinal 1)
             , ReplicationPending (GroupOrdinal 3)
             ]

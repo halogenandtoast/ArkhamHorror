@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { displayTabooList } from '@/arkham/taboo';
-import { ref, computed, inject } from 'vue';
-import { upgradeDeck } from '@/arkham/api';
+import { ref, computed, inject, onUnmounted } from 'vue';
+import { fetchGame, upgradeDeck } from '@/arkham/api';
 import { imgsrc, localizeArkhamDBBaseUrl, processArkhamBuildDeck } from '@/arkham/helpers';
 import { ArkhamDbDecklist } from '@/arkham/types/Deck';
 import { Game } from '@/arkham/types/Game';
@@ -35,9 +35,41 @@ const fetching = ref(false)
 // the player must be told rather than left looking at an unchanged screen (#5256).
 const submitError = ref<string | null>(null)
 const props = defineProps<Props>()
-const emit = defineEmits<{ choose: [value: number] }>()
+const emit = defineEmits<{ choose: [value: number]; update: [game: Game] }>()
 const choose = (idx: number) => emit('choose', idx)
 const waiting = ref(false)
+let waitingPoll: ReturnType<typeof setTimeout> | null = null
+
+function hasUpgradeQuestions(game: Game): boolean {
+  return Object.values(game.question).some((question) =>
+    question.tag === 'ChooseUpgradeDeck'
+      || (question.tag === 'QuestionLabel' && question.question.tag === 'ChooseUpgradeDeck')
+  )
+}
+
+async function pollWaitingGame() {
+  try {
+    const { game } = await fetchGame(props.game.id)
+    emit('update', game)
+    if (hasUpgradeQuestions(game)) {
+      waitingPoll = setTimeout(pollWaitingGame, 1000)
+    } else {
+      waiting.value = false
+      waitingPoll = null
+    }
+  } catch {
+    waitingPoll = setTimeout(pollWaitingGame, 2000)
+  }
+}
+
+function waitForOtherPlayers() {
+  waiting.value = true
+  if (waitingPoll === null) waitingPoll = setTimeout(pollWaitingGame, 500)
+}
+
+onUnmounted(() => {
+  if (waitingPoll !== null) clearTimeout(waitingPoll)
+})
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const deckList = ref<ArkhamDbDecklist | null>(null)
@@ -424,14 +456,13 @@ async function upgrade(force = false) {
    fetching.value = true
    upgradeDeck(props.game.id, originalInvestigatorId.value, deckUrl.value ?? undefined, deckList.value).then(() => {
       if(!solo) {
-        waiting.value = true
+        waitForOtherPlayers()
       }
     }).catch((e) => {
       // A rejected upgrade left the game untouched, so keep the form usable and say why.
       submitError.value = submitErrorMessage(e, t('upgrade.upgradeFailed'))
     }).finally(() => {
       fetching.value = false;
-      waiting.value = false;
     });
     deckUrl.value = null;
     deck.value = null;
@@ -444,7 +475,7 @@ async function skip() {
   submitError.value = null
   upgradeDeck(props.game.id, investigatorId.value).then(() => {
     if(!solo) {
-      waiting.value = true
+      waitForOtherPlayers()
     }
     skipping.value = false
   }).catch((e) => {

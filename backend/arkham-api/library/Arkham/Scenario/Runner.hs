@@ -1933,7 +1933,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   RestartScenario -> do
     standalone <- getIsStandalone
     pushAll
-      $ ResetGame
+      -- Killed/insane investigators cannot be used for the rest of the campaign, so their
+      -- players must pick a replacement before the scenario is set up again. Without this
+      -- they are reset back into play, matchers filter every one of them out, and setup
+      -- ends up in `Begin InvestigationPhase` with no investigators at all (#5367).
+      $ HandleKilledOrInsaneInvestigators
+      : ResetGame
       : [StandaloneSetup | standalone]
         <> [ ChooseLeadInvestigator
            , SetPlayerOrder

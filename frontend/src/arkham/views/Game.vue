@@ -91,6 +91,7 @@ import PlayerEventBar from '@/arkham/components/PlayerEventBar.vue'
 import EventStartBarrier from '@/arkham/components/EventStartBarrier.vue'
 import EventActAdvanceBarrier from '@/arkham/components/EventActAdvanceBarrier.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
+import StoryQuestion from '@/arkham/components/StoryQuestion.vue'
 import AchievementToast from '@/arkham/components/AchievementToast.vue'
 import AiControlPanel from '@/arkham/components/AiControlPanel.vue'
 import AiQuestionsPanel from '@/arkham/components/AiQuestionsPanel.vue'
@@ -463,7 +464,59 @@ const choices = computed(() => {
   return choicesByPlayer.value.get(playerId.value) ?? []
 })
 const gameOver = computed(() => game.value?.gameState.tag === 'IsOver')
-const question = computed(() => (playerId.value ? game.value?.question[playerId.value] : null))
+const questionPlayerId = computed(() => {
+  const currentGame = game.value
+  if (!currentGame) return playerId.value
+  if (playerId.value && currentGame.question[playerId.value]) return playerId.value
+  if (solo.value && currentGame.gameState.tag === 'IsChooseDecks') {
+    return Object.keys(currentGame.question)[0] ?? playerId.value
+  }
+  return playerId.value
+})
+const question = computed(() => {
+  const owner = questionPlayerId.value
+  return owner ? game.value?.question[owner] : null
+})
+
+watch(questionPlayerId, (owner) => {
+  if (owner && owner !== playerId.value) playerId.value = owner
+})
+
+// Replacing a killed or insane investigator is a chain of setup questions
+// (deck, trauma, lead investigator, scenario setup). Some transitions can occur
+// after the upgrade component has unmounted, so its local waiting poll cannot
+// carry the UI through the whole chain. Keep the game view synchronized until
+// the engine leaves IsChooseDecks.
+let chooseDecksPoll: ReturnType<typeof setTimeout> | null = null
+async function pollChooseDecksState() {
+  try {
+    const latest = await fetchGame(props.gameId, props.spectate)
+    game.value = latest.game
+    if (latest.playerId && !latest.game.question[playerId.value ?? '']) {
+      playerId.value = latest.playerId
+    }
+    followPendingUpgradeQuestion(latest.game)
+    if (latest.game.gameState.tag === 'IsChooseDecks') {
+      chooseDecksPoll = setTimeout(pollChooseDecksState, 750)
+    } else {
+      chooseDecksPoll = null
+    }
+  } catch {
+    chooseDecksPoll = setTimeout(pollChooseDecksState, 1500)
+  }
+}
+
+watch(
+  () => game.value?.gameState.tag,
+  (tag) => {
+    if (tag === 'IsChooseDecks' && chooseDecksPoll === null) {
+      chooseDecksPoll = setTimeout(pollChooseDecksState, 500)
+    } else if (tag !== 'IsChooseDecks' && chooseDecksPoll !== null) {
+      clearTimeout(chooseDecksPoll)
+      chooseDecksPoll = null
+    }
+  },
+)
 
 function questionTag(q: Question | null | undefined): string | null {
   if (!q) return null
@@ -475,9 +528,26 @@ function questionTag(q: Question | null | undefined): string | null {
 // which Campaign.vue renders under exactly this condition. Read off an explicit
 // game rather than game.value: applyGameUpdate can defer the game.value swap into
 // a view transition, so an incoming update must be inspected directly.
+function followPendingUpgradeQuestion(g: Arkham.Game) {
+  if (!solo.value || g.gameState.tag !== 'IsChooseDecks') return
+  const currentPlayerId = playerId.value
+  if (currentPlayerId && g.question[currentPlayerId]) return
+
+  // Replacement investigators can produce follow-up trauma and setup questions
+  // after ChooseUpgradeDeck has been answered. Keep following whichever solo
+  // investigator owns the continuation instead of remaining on the answered tab.
+  const pendingPlayer = Object.keys(g.question)[0]
+  if (pendingPlayer) playerId.value = pendingPlayer
+}
+
+watch([game, playerId, solo], ([currentGame]) => {
+  if (currentGame) followPendingUpgradeQuestion(currentGame)
+})
+
 function scenarioBoardMounted(g: Arkham.Game) {
   const scenario = g.scenario
   if (!scenario) return false
+  if (g.gameState.tag !== 'IsActive' && g.gameState.tag !== 'IsOver') return false
   if (scenario.campaignStep) return false
   if (!scenario.started) return false
   return Object.keys(g.investigators).length > 0
@@ -1820,6 +1890,7 @@ function localize(str: string): string {
 
 async function update(state: Arkham.Game) {
   game.value = state
+  followPendingUpgradeQuestion(state)
 }
 
 function switchInvestigator(newPlayerId: string) {
@@ -1944,6 +2015,7 @@ onUnmounted(() => {
   if (focusLightAnimationFrame !== null) cancelAnimationFrame(focusLightAnimationFrame)
   window.removeEventListener('arkham-setting-change', handleSettingChange)
   cancelAllAiTimers()
+  if (chooseDecksPoll !== null) clearTimeout(chooseDecksPoll)
   delete (window as any).sendDebug
   delete (window as any).undo
   delete (window as any).debugChoose
@@ -2451,6 +2523,13 @@ onUnmounted(() => {
           @choose="choose"
           @update="update"
           @toggleRealityAcidLight="toggleRealityAcidLight"
+        />
+        <StoryQuestion
+          v-else-if="question"
+          :game="game"
+          :question="question"
+          :playerId="playerId"
+          @choose="choose"
         />
         <div
           class="sidebar"

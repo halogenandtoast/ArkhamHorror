@@ -40,7 +40,11 @@ export const fetchJoinGame = async (gameId: string): Promise<Game> => {
 }
 
 export const fetchGame = async (gameId: string, spectate = false): Promise<FetchData> => {
-  const { data } = await api.get(`arkham/games/${gameId}${spectate ? '/spectate' : ''}`)
+  const { data } = await api.get(`arkham/games/${gameId}${spectate ? '/spectate' : ''}`, {
+    // Game GETs are also used to recover from missed websocket transitions.
+    // A cache hit here can leave setup on an already-answered question.
+    params: { _: Date.now() },
+  })
   const { playerId, game, multiplayerMode, eventId } = data
   const gameData = await gameDecoder.decodePromise(game)
   return { playerId, game: gameData, multiplayerMode, eventId: eventId ?? null }

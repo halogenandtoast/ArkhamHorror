@@ -87,7 +87,7 @@ export interface Props {
   realityAcidLightActive?: boolean
 }
 const props = defineProps<Props>()
-const emit = defineEmits(['choose', 'toggleRealityAcidLight'])
+const emit = defineEmits(['choose', 'update', 'toggleRealityAcidLight'])
 const debug = useDebug()
 const { addEntry, removeEntry } = useMenu()
 
@@ -95,6 +95,7 @@ const upgradeDeck = computed(() => Object.values(props.game.question).some((q) =
 
 // emit helpers
 const choose = async (idx: number) => emit('choose', idx)
+const update = async (game: Game) => emit('update', game)
 
 //Refs
 const settingsStore = useSettings()
@@ -2006,7 +2007,7 @@ async function addChaosToken(face: any){
 
 <template>
   <div v-if="upgradeDeck" id="game" class="game">
-    <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose"/>
+    <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose" @update="update"/>
   </div>
   <div v-else-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <div class="scenario-body" :class="{'split-view': splitView, 'scenario-body--notifier-overlays': showScenarioNotifierBar }">

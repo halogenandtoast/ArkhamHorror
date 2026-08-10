@@ -274,23 +274,6 @@ spec = describe "deck selection" do
       traumaOf other' `shouldReturn` (2, 0)
       (gameGameState <$> getGame) `shouldReturn` IsActive
 
-    -- chooseDecksWithAi is the real entry point. An AI seat is loaded in place and
-    -- never prompted, so it must never become a slot -- a barrier waiting on a seat
-    -- that is never asked would hang the table forever.
-    it "never puts an ai seat in the barrier" $ do
-      bid <- getRandom :: IO BatchId
-      humanPid <- getRandom
-      aiPid <- getRandom
-      barrierSlotsOf (chooseDecksWithAi bid [humanPid, aiPid] [(aiPid, aiDecklist)] [])
-        `shouldBe` Just (singletonMap humanPid ChooseDeck)
-
-    -- With no human seats the barrier is joined on creation, so it never lands in
-    -- state and the continuation runs immediately.
-    it "opens no seats at all when every seat is ai" $ do
-      bid <- getRandom :: IO BatchId
-      aiPid <- getRandom
-      barrierSlotsOf (chooseDecksWithAi bid [aiPid] [(aiPid, aiDecklist)] []) `shouldBe` Just mempty
-
     -- The continuation is durable state rather than a queued message precisely so
     -- it survives a reload mid-deck-selection.
     it "keeps an open barrier across a save/load" . gameTest $ \self -> do
@@ -347,14 +330,9 @@ spec = describe "deck selection" do
     ChooseAmounts {} -> True
     _ -> False
 
-  barrierSlotsOf :: Message -> Maybe (Map PlayerId (Question Message))
-  barrierSlotsOf = \case
-    Run msgs -> listToMaybe [slots | BeginSimultaneousAsk _ _ slots _ <- msgs]
-    _ -> Nothing
-
   inTheThickOfItDecklist :: Decklist.ArkhamDBDecklist
   inTheThickOfItDecklist =
-    aiDecklist
+    rolandDecklist
       { Decklist.slots = singletonMap "08125" 1
       }
 
@@ -365,8 +343,8 @@ spec = describe "deck selection" do
       , Decklist.investigator_name = "Daisy Walker"
       }
 
-  aiDecklist :: Decklist.ArkhamDBDecklist
-  aiDecklist =
+  rolandDecklist :: Decklist.ArkhamDBDecklist
+  rolandDecklist =
     Decklist.ArkhamDBDecklist
       { Decklist.slots = mempty
       , Decklist.sideSlots = mempty

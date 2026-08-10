@@ -95,13 +95,6 @@ tmp/
 .windsurf/
 skills-lock.json
 
-# ML pipeline artifacts (training data, trained-model output, venv)
-/data/
-ml/.venv/
-ml/__pycache__/
-ml/model/
-*.pyc
-
 # Local homebrew working data (guide transcriptions, codegen maps); the
 # checked-in guide is docs/homebrew.md
 docs/homebrew/

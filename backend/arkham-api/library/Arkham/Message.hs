@@ -37,9 +37,6 @@ import Arkham.Action hiding (Explore)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Agenda.Sequence
-import Arkham.Ai.Focus (Focus)
-import Arkham.Ai.Orphans ()
-import Arkham.Ai.State (AiPlayerState)
 import Arkham.Asset.Uses
 import Arkham.Attack.Types
 import Arkham.Campaign.Option
@@ -494,13 +491,6 @@ data Message
     per-user progress row and awards the earn when the list is complete.
     -}
     AchievementProgress Achievement [Text]
-  | -- AI seat configuration (mutates Settings.settingsAiPlayers)
-    RegisterAiPlayer PlayerId AiPlayerState
-  | SetAiFocusOverride PlayerId (Maybe Focus)
-  | AddAiPriority PlayerId Target
-  | RemoveAiPriority PlayerId Target
-  | SetAiEnabled PlayerId Bool
-  | SetAiResponseDelay PlayerId Int
   | SetLocationOffset LocationId Double Double
   | ResetLocationOffsets
   | SetAsIfAtIgnored InvestigatorId Bool
@@ -2832,36 +2822,15 @@ continuation, so the state flip is likewise driven by the barrier releasing rath
 than by the queue draining to the right position.
 -}
 chooseDecks :: BatchId -> [PlayerId] -> [Message] -> Message
-chooseDecks batchId pids = chooseDecksWithAi batchId pids []
-
-{- | Like 'chooseDecks' but for AI-assisted games. Each AI seat in @aiSeats@ is
-loaded from its bundled decklist in-place and is NOT prompted; only the
-remaining (human) seats receive a 'ChooseDeck' question.
-
-The ordering invariants this preserves:
-
-  * The @LoadDecklist@s run /after/ 'ChoosingDecks' (which wipes investigators)
-    and /before/ the barrier opens, so the loaded AI investigators survive the
-    wipe and are present the instant the game parks on the human deck prompt.
-  * Only human seats enter the barrier, so it never waits on an AI seat. When
-    every seat is AI the barrier has no seats, its join condition holds on
-    creation, and @continuation@ runs immediately.
-
-With @aiSeats == []@ this is exactly @chooseDecks@, so non-AI games are unaffected.
--}
-chooseDecksWithAi :: BatchId -> [PlayerId] -> [(PlayerId, ArkhamDBDecklist)] -> [Message] -> Message
-chooseDecksWithAi batchId pids aiSeats continuation =
+chooseDecks batchId pids continuation =
   Run
-    $ [SetGameState (IsChooseDecks pids), ChoosingDecks]
-    <> [LoadDecklist pid decklist | (pid, decklist) <- aiSeats]
-    <> [ BeginSimultaneousAsk
-           batchId
-           JoinAll
-           (mapFromList (map (,ChooseDeck) humanPids))
-           (DoneChoosingDecks : continuation)
-       ]
- where
-  aiPids = map fst aiSeats
-  humanPids = filter (`notElem` aiPids) pids
+    [ SetGameState (IsChooseDecks pids)
+    , ChoosingDecks
+    , BeginSimultaneousAsk
+        batchId
+        JoinAll
+        (mapFromList (map (,ChooseDeck) pids))
+        (DoneChoosingDecks : continuation)
+    ]
 
 --

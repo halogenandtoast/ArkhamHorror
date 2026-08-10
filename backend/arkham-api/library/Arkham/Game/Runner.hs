@@ -9,8 +9,6 @@ import Arkham.Action qualified as Action
 import Arkham.ActiveCost
 import Arkham.Agenda
 import Arkham.Agenda.Types (Field (..), doomL)
-import Arkham.Ai.Helpers (overAiPlayers, overAiSeat)
-import Arkham.Ai.State (AiPlayerState (..))
 import Arkham.Asset
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
@@ -250,12 +248,6 @@ runGameMessage msg g = case msg of
         { gameSettings =
             g.gameSettings {settingsScreamedAllies = insertSet code (settingsScreamedAllies g.gameSettings)}
         }
-  RegisterAiPlayer pid st -> pure $ overAiPlayers (Map.insert pid st) g
-  SetAiFocusOverride pid mFocus -> pure $ overAiSeat pid (\s -> s {aiFocusOverride = mFocus}) g
-  AddAiPriority pid target -> pure $ overAiSeat pid (\s -> s {aiPriorities = s.aiPriorities <> [target]}) g
-  RemoveAiPriority pid target -> pure $ overAiSeat pid (\s -> s {aiPriorities = filter (/= target) s.aiPriorities}) g
-  SetAiEnabled pid b -> pure $ overAiSeat pid (\s -> s {aiEnabled = b}) g
-  SetAiResponseDelay pid n -> pure $ overAiSeat pid (\s -> s {aiResponseDelayMs = n}) g
   ResetLocationOffsets -> pure $ g & locationOffsetsL .~ mempty
   SetCardOwner cardId iid -> do
     -- Debug: force one card's owner to iid across every representation it lives in

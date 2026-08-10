@@ -43,19 +43,6 @@ data Answer
   | CampaignSettingsAnswer CampaignSettings
   | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
   | DeckListAnswer {deckList :: ArkhamDBDecklist, playerId :: PlayerId}
-  | {- | Trigger for the server to answer this seat's parked question via the AI
-    decision engine. Wire shape: @{ "tag": "AiAnswer", "playerId": <uuid> }@.
-    Resolved in 'Api.Handler.Arkham.Games.Shared.updateGame'; see the
-    'handleAnswerPure' note below for why it is not handled here.
-    -}
-    AiAnswer {playerId :: PlayerId}
-  | {- | Trigger for the server to commit a single card from this seat's parked
-    /assist/ skill-test window (another investigator is performing the test)
-    via the AI decision engine. Wire shape:
-    @{ "tag": "AiAssist", "playerId": <uuid> }@. Resolved in
-    'Api.Handler.Arkham.Games.Shared.updateGame' (see 'handleAnswerPure').
-    -}
-    AiAssist {playerId :: PlayerId}
   | PickDestinyAnswer [DestinyDrawing]
   | CampaignSpecificAnswer Text Value
   | ScenarioSpecificAnswer Text Value
@@ -311,8 +298,6 @@ answerPlayer = \case
   ScenarioSpecificAnswer {} -> Nothing
   DeckAnswer _ pid -> Just pid
   DeckListAnswer _ pid -> Just pid
-  AiAnswer pid -> Just pid
-  AiAssist pid -> Just pid
   PickDestinyAnswer _ -> Nothing
   ExchangeAmountsAnswer {} -> Nothing
   CampaignStepAnswer _ -> Nothing
@@ -382,15 +367,6 @@ handleAnswerPure :: Game -> PlayerId -> Answer -> IO Reply
 handleAnswerPure game@Game {..} playerId = \case
   DeckAnswer {} -> unhandled "DeckAnswer requires database access"
   DeckListAnswer {} -> unhandled "DeckListAnswer requires database access"
-  -- AiAnswer is resolved upstream in updateGame (it runs the AI decision
-  -- engine over the parked game and recurses with the concrete answer).
-  -- Keeping the call out of this module avoids an Entity.Answer <-> Ai.Decision
-  -- import cycle. Reaching here means no server-side AI resolution ran.
-  AiAnswer {} -> unhandled "AiAnswer must be resolved by the server (updateGame)"
-  -- AiAssist is likewise resolved upstream in updateGame (it runs the assist
-  -- decision engine over the parked game and recurses with the concrete commit
-  -- answer). Reaching here means no server-side AI resolution ran.
-  AiAssist {} -> unhandled "AiAssist must be resolved by the server (updateGame)"
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
     handled [SetCampaignLog standaloneCampaignLog]

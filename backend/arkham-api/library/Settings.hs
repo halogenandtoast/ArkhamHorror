@@ -90,11 +90,6 @@ data AppSettings = AppSettings
     , appMailtrapApiToken :: Token
     , appBugsnagApiKey :: Text
     , appAssetHost :: Maybe Text
-    , appCollectMlData :: Bool
-    -- ^ Collect imitation-learning data: when True, 'updateGame' logs one
-    -- @ArkhamMlDecision@ row per human, multi-choice decision. Default False;
-    -- sourced from the @ARKHAM_COLLECT_ML@ env var (see @config/settings.yml@).
-    -- When False the capture is byte-for-byte inert (no extra query/insert).
     }
 
 instance FromJSON AppSettings where
@@ -123,8 +118,6 @@ instance FromJSON AppSettings where
         appMailtrapApiToken <- o .: "mailtrap-api-token"
         appBugsnagApiKey <- o .: "bugsnag-api-token"
         appAssetHost <- o .:? "asset-host"
-        appCollectMlData <- o .:? "collect-ml" .!= False
-
         pure AppSettings {..}
 
 -- | Raw bytes at compile time of @config/settings.yml@

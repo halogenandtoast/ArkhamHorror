@@ -5,8 +5,7 @@ import { imgsrc } from '@/arkham/helpers'
 import { chaosTokenImage, tokenOrder } from '@/arkham/types/ChaosToken'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
-import type { GameMode, MultiplayerVariant, CampaignType, AiFocus, AiSlotConfig } from '@/arkham/types/NewGame'
-import { aiFocuses } from '@/arkham/types/NewGame'
+import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/NewGame'
 import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
 import { useSettings } from '@/stores/settings'
 
@@ -67,68 +66,7 @@ const timeLimitMinutes = defineModel<number>('timeLimitMinutes', { required: tru
 // this is not behind a dev flag.
 const miniCampaign = defineModel<boolean>('miniCampaign', { required: true })
 
-// --- AI-investigator configuration (dev-only, Solo/multihanded only) ----------
-// Emits an `aiPlayers` array (length playerCount) of `AiSlotConfig | null` up to
-// NewCampaign, which forwards it to newGame() only for Solo games.
-const aiPlayers = defineModel<(AiSlotConfig | null)[]>('aiPlayers', { required: true })
-
-// MVP: only Roland Banks is offered as an AI profile (single-option select).
-const aiInvestigatorOptions = [{ code: '01001', name: 'Roland Banks' }]
-const aiFocusOptions: Array<'auto' | AiFocus> = ['auto', ...aiFocuses]
-
-type AiSeat = { enabled: boolean; investigator: string; focus: 'auto' | AiFocus; responseDelayMs: number }
-
-function defaultAiSeat(): AiSeat {
-  return { enabled: false, investigator: aiInvestigatorOptions[0].code, focus: 'auto', responseDelayMs: 1500 }
-}
-
-const aiSeats = ref<AiSeat[]>([])
-
 const settings = useSettings()
-
-// AI-investigator configuration is gated on the dev-only "AI Investigators"
-// settings flag (Settings → danger zone); defaults OFF, never on in production.
-// Available for a true single-player game (the one seat is AI-controlled) and for
-// multihanded solo (an AI takes one of the >1 seats). Never for WithFriends.
-const showAiConfig = computed(
-  () =>
-    settings.aiInvestigatorsEnabled &&
-    (playerCount.value === 1 || (multiplayerVariant.value === 'Solo' && playerCount.value > 1)),
-)
-
-// Keep one seat row per player, preserving anything already configured.
-watch(playerCount, (count) => {
-  const next = aiSeats.value.slice(0, count)
-  while (next.length < count) next.push(defaultAiSeat())
-  aiSeats.value = next
-}, { immediate: true })
-
-// Project the seat rows into the `aiPlayers` model the backend expects. When AI
-// config isn't applicable (non-Solo, or non-dev) we emit an empty array so a
-// previously-configured Solo selection can't leak into a WithFriends game.
-watch([aiSeats, showAiConfig, playerCount], () => {
-  if (!showAiConfig.value) {
-    aiPlayers.value = []
-    return
-  }
-  // A 1-player game hides the Solo/WithFriends selector, but driving its single
-  // seat with the AI needs the Solo (one-client-drives-all) variant so the
-  // creator's client runs the AI and `aiPlayers` is actually sent (NewCampaign
-  // only forwards it for Solo). Enabling the AI flips the solo game to Solo;
-  // disabling restores the default WithFriends.
-  if (playerCount.value === 1) {
-    multiplayerVariant.value = aiSeats.value[0]?.enabled ? 'Solo' : 'WithFriends'
-  }
-  aiPlayers.value = aiSeats.value.slice(0, playerCount.value).map((seat): AiSlotConfig | null =>
-    seat.enabled
-      ? {
-          investigator: seat.investigator,
-          focus: seat.focus === 'auto' ? undefined : seat.focus,
-          responseDelayMs: seat.responseDelayMs,
-        }
-      : null,
-  )
-}, { deep: true, immediate: true })
 
 // The epic play-mode option only appears for an epic-capable side story AND when
 // the dev-only Epic Multiplayer flag is enabled (store value is dev-gated). When
@@ -553,45 +491,6 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
               {{ $t('create.switchingPerspectives') }}
             </div>
             <div class="callout-body" v-html="$t('create.switchingPerspectivesDescription')"></div>
-          </div>
-        </transition>
-
-        <transition name="slide">
-          <div v-if="showAiConfig" class="subcard ai-config">
-            <div class="card-title small ai-config-title">
-              AI Investigators <span class="ai-dev-pill">dev</span>
-            </div>
-            <div class="ai-seats">
-              <div v-for="(seat, index) in aiSeats.slice(0, playerCount)" :key="index" class="ai-seat">
-                <label class="ai-seat-toggle">
-                  <input type="checkbox" v-model="seat.enabled" />
-                  <span>Seat {{ index + 1 }} — AI controlled</span>
-                </label>
-
-                <transition name="slide">
-                  <div v-if="seat.enabled" class="ai-seat-fields">
-                    <label class="ai-field">
-                      <span class="card-title small">Investigator</span>
-                      <select class="text" v-model="seat.investigator">
-                        <option v-for="inv in aiInvestigatorOptions" :key="inv.code" :value="inv.code">
-                          {{ inv.name }}
-                        </option>
-                      </select>
-                    </label>
-                    <label class="ai-field">
-                      <span class="card-title small">Focus</span>
-                      <select class="text" v-model="seat.focus">
-                        <option v-for="focus in aiFocusOptions" :key="focus" :value="focus">{{ focus }}</option>
-                      </select>
-                    </label>
-                    <label class="ai-field">
-                      <span class="card-title small">Response delay (ms)</span>
-                      <input class="text" type="number" min="0" step="100" v-model.number="seat.responseDelayMs" />
-                    </label>
-                  </div>
-                </transition>
-              </div>
-            </div>
           </div>
         </transition>
       </div>
@@ -1250,73 +1149,6 @@ input[type='radio']:checked + label {
 
 .epic-time-limit .epic-field-count {
   width: 120px;
-}
-
-.ai-config-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.ai-dev-pill {
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 1px 6px;
-  border-radius: 999px;
-  border: 1px solid rgba(184, 134, 11, 0.55);
-  background: rgba(184, 134, 11, 0.25);
-  color: rgba(255, 226, 154, 0.95);
-}
-
-.ai-seats {
-  display: grid;
-  gap: 10px;
-}
-
-.ai-seat {
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.12);
-}
-
-.ai-seat-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
-}
-
-.ai-seat-toggle input[type='checkbox'] {
-  width: 15px;
-  height: 15px;
-  accent-color: rgb(110, 134, 64);
-}
-
-.ai-seat-fields {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-@media (max-width: 700px) {
-  .ai-seat-fields {
-    grid-template-columns: 1fr;
-  }
-}
-
-.ai-field {
-  display: grid;
-  gap: 4px;
-}
-
-.ai-field select.text,
-.ai-field input.text {
-  text-transform: capitalize;
 }
 
 .achievements-desc {

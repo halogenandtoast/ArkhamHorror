@@ -12,16 +12,12 @@ module Api.Handler.Arkham.Games (
   deleteApiV1ArkhamGameR,
   putApiV1ArkhamGameRawR,
   postApiV1ArkhamGamePlayabilityR,
-  getApiV1ArkhamGameAiQuestionsR,
 ) where
 
 import Api.Arkham.Epic (lookupGameEvent)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Api.Handler.Arkham.Games.Shared
-import Arkham.Ai.Focus (Focus)
-import Arkham.Ai.Questions (AiQuestion, assessAiQuestions)
-import Arkham.Ai.State (AiPlayerState (..), defaultAiPlayerState)
 import Arkham.Campaign.Option
 import Arkham.Card
 import Arkham.Classes.HasQueue
@@ -40,7 +36,7 @@ import Arkham.UltimatumsAndBoons.Types (UltimatumOrBoon)
 import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Playable (getPlayabilityChecks)
 import Arkham.Id
-import Arkham.Message (Message (HandleOption, RegisterAiPlayer))
+import Arkham.Message (Message (HandleOption))
 import Arkham.Queue
 import Arkham.Source
 import Arkham.Window (mkWhen)
@@ -131,23 +127,6 @@ getApiV1ArkhamGamesR = do
     let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
     pure $ map (\g -> toGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
 
--- | Per-seat AI configuration sent at game creation. Seats are matched to the
--- 'aiPlayers' list by index (a 'Nothing' entry, or an absent index, is a normal
--- human seat). JSON keys: @investigator@, @focus@, @responseDelayMs@.
-data AiSlotConfig = AiSlotConfig
-  { aiscInvestigator :: CardCode
-  , aiscFocus :: Maybe Focus
-  , aiscResponseDelayMs :: Maybe Int
-  }
-  deriving stock (Show, Generic)
-
-instance FromJSON AiSlotConfig where
-  parseJSON = withObject "AiSlotConfig" \o -> do
-    aiscInvestigator <- o .: "investigator"
-    aiscFocus <- o .:? "focus"
-    aiscResponseDelayMs <- o .:? "responseDelayMs"
-    pure AiSlotConfig {..}
-
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]
   , playerCount :: Int
@@ -160,15 +139,13 @@ data CreateGamePost = CreateGamePost
   , options :: Set CampaignOption
   , strictAsIfAt :: Maybe Bool
   , asIfRuling :: Maybe AsIfRuling
-  , aiPlayers :: [Maybe AiSlotConfig]
   , ultimatumsAndBoons :: Set UltimatumOrBoon
   , achievementsEnabled :: Bool
   }
   deriving stock (Show, Generic)
 
--- | Hand-written so 'aiPlayers' can default to @[]@ when absent (existing
--- clients never send it). All other keys keep their previous (derived)
--- semantics: 'Maybe' fields optional, everything else required.
+-- | Hand-written so 'Maybe' fields stay optional and everything else stays
+-- required.
 instance FromJSON CreateGamePost where
   parseJSON = withObject "CreateGamePost" \o -> do
     deckIds <- o .: "deckIds"
@@ -182,7 +159,6 @@ instance FromJSON CreateGamePost where
     options <- o .: "options"
     strictAsIfAt <- o .:? "strictAsIfAt"
     asIfRuling <- o .:? "asIfRuling"
-    aiPlayers <- o .:? "aiPlayers" .!= []
     ultimatumsAndBoons <- o .:? "ultimatumsAndBoons" .!= mempty
     achievementsEnabled <- o .:? "achievementsEnabled" .!= True
     pure CreateGamePost {..}
@@ -223,31 +199,11 @@ postApiV1ArkhamGamesR = do
 
   runDB do
     gameId <- insert ag
-    -- Seats are indexed against aiPlayers. An AI slot binds its row to the chosen
-    -- investigator (e.g. "01001") and is registered + bundled-deck-loaded below;
-    -- absent/Nothing slots stay human ("00000", normal ChooseDeck flow). A
-    -- request without aiPlayers yields all-Nothing, i.e. today's behavior.
-    let seatConfigs = take repeatCount (aiPlayers <> repeat Nothing)
-    seats <- forM seatConfigs \mCfg -> do
-      let investigatorId = maybe "00000" (unCardCode . (.aiscInvestigator)) mCfg
-      pid <- insert $ ArkhamPlayer userId gameId investigatorId
-      pure (pid, mCfg)
-    let pids = map fst seats
+    pids <- replicateM repeatCount $ insert $ ArkhamPlayer userId gameId "00000"
     gameRef <- liftIO $ newIORef game
 
     runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer Nothing) do
       for_ pids \pid -> addPlayer (PlayerId $ coerce pid)
-      -- Register AI seats before StartCampaign. push prepends, so these land
-      -- ahead of the [StartCampaign] the final addPlayer queued; StartCampaign
-      -- then reads settingsAiPlayers to load each AI seat's bundled deck and drop
-      -- it from the deck prompt (see Arkham.Message.chooseDecksWithAi).
-      for_ seats \(pid, mCfg) -> for_ mCfg \cfg -> do
-        let aiState =
-              (defaultAiPlayerState cfg.aiscInvestigator)
-                { aiFocusOverride = cfg.aiscFocus
-                , aiResponseDelayMs = fromMaybe 1500 cfg.aiscResponseDelayMs
-                }
-        push $ RegisterAiPlayer (PlayerId $ coerce pid) aiState
       traverse_ (push . HandleOption) (toList options)
       runMessages (gameIdToText gameId) Nothing
 
@@ -326,16 +282,3 @@ postApiV1ArkhamGamePlayabilityR gameId = do
       , cardCode = unCardCode (toCardCode card)
       , checks
       }
-
--- | Read-only, NON-BLOCKING advisory questions raised by enabled AI seats (e.g.
--- an AI investigator offering to move in and fight a teammate's tough engaged
--- enemy). Evaluated against a pure @ReaderT Game Identity@ snapshot — which is
--- both 'HasGame' and 'Tracing' — exactly like 'Arkham.Ai.Decision.decideAi'.
--- Never mutates game state; the frontend polls it and forwards a chosen
--- option's messages to the raw channel itself.
-getApiV1ArkhamGameAiQuestionsR :: ArkhamGameId -> Handler [AiQuestion]
-getApiV1ArkhamGameAiQuestionsR gameId = do
-  _ <- getRequestUserId
-  g <- runDB $ get404 gameId
-  let gameJson = g.currentData
-  pure $ runIdentity (runReaderT assessAiQuestions gameJson)

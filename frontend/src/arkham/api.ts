@@ -8,7 +8,6 @@ import { Token } from '@/arkham/types/Token';
 import { DestinyDrawing } from '@/arkham/types/Question';
 import { StandaloneSetting } from '@/arkham/types/StandaloneSetting';
 import { CampaignLogSettings, Key, CampaignOption } from '@/arkham/types/CampaignSettings'
-import { AiQuestion } from '@/arkham/types/AiQuestion'
 import { Achievement, achievementDecoder } from '@/arkham/types/Achievement'
 import {
   CreateEventPost,
@@ -202,10 +201,6 @@ export const newGame = async (
   includeTarotReadings: boolean,
   options: NewGame.CampaignOption[],
   strictAsIfAt?: boolean,
-  // Per-seat AI configuration, parallel to `deckIds` and indexed by seat. Omitted
-  // (the default) preserves today's all-human behavior; entries may be `null` for
-  // human seats. Only sent for Solo/multihanded games (see NewCampaign.start).
-  aiPlayers?: (NewGame.AiSlotConfig | null)[],
   // Ultimatums and Boons variant tags (e.g. "BoonOfHades"). Omitted = none.
   ultimatumsAndBoons?: string[],
   // Achievement tracking (only meaningful for campaigns with an achievement
@@ -224,7 +219,6 @@ export const newGame = async (
     options,
     strictAsIfAt,
     asIfRuling: strictAsIfAt == null ? undefined : strictAsIfAt ? 'chapter2' : 'chapter1',
-    aiPlayers,
     ultimatumsAndBoons,
     achievementsEnabled
   })
@@ -290,14 +284,6 @@ export const fetchOpenSeats = async (gameId: string): Promise<string[]> => {
 
 export const claimSeat = async (gameId: string, investigatorId: string): Promise<void> => {
   await api.post(`arkham/games/${gameId}/claim-seat`, { investigatorId })
-}
-
-// Dev-only "AI asks questions": a snapshot of the AI's pending questions. The
-// shared `api` axios instance handles auth/baseURL; the payload is already in
-// the AiQuestion shape so we return it as-is (mirrors fetchOpenSeats).
-export const fetchAiQuestions = async (gameId: string): Promise<AiQuestion[]> => {
-  const { data } = await api.get(`arkham/games/${gameId}/ai-questions`)
-  return data as AiQuestion[]
 }
 
 // "Epic Multiplayer" events ---------------------------------------------------

@@ -3,7 +3,6 @@ import { computed, watch, ref } from 'vue';
 import { Dropdown } from 'floating-vue';
 import useHighlighter from '@/composable/useHighlighter';
 import { useDebug } from '@/arkham/debug';
-import { useAi } from '@/arkham/ai';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import { cardArt, cardImage } from '@/arkham/cardImages';
@@ -24,7 +23,6 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import TokenPool, { type TokenPoolItem } from '@/arkham/components/TokenPool.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
-import AiTargetMenu from '@/arkham/components/AiTargetMenu.vue'
 import Story from '@/arkham/components/Story.vue';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
 import Token from '@/arkham/components/Token.vue';
@@ -48,9 +46,6 @@ const emits = defineEmits<{
 }>()
 
 const id = computed(() => props.asset.id)
-const ai = useAi()
-const aiMenuOpen = ref(false)
-const aiTarget = computed(() => ({ tag: 'AssetTarget', contents: id.value }))
 const exhausted = computed(() => props.asset.exhausted)
 const jammed = computed(() => props.asset.rifleStatus === 'Jammed')
 const highlighter = useHighlighter()
@@ -269,10 +264,6 @@ const choose = (idx: number) => emits('choose', idx)
 const showAbilities = ref<boolean>(false)
 
 async function clicked() {
-  if (ai.targeting) {
-    aiMenuOpen.value = true
-    return
-  }
   if(cardAction.value !== -1) {
     emits('choose', cardAction.value)
   } else if (abilities.value.length > 0) {
@@ -403,7 +394,7 @@ function startDrag(event: DragEvent) {
             :data-is-spirit="isSpirit || undefined"
             :src="displayedImage"
             class="card"
-            :class="{ exhausted, 'ability-target': isHighlighted || isAttackTarget, 'ai-target-hover': ai.targeting, 'card--flipping': flipping }"
+            :class="{ exhausted, 'ability-target': isHighlighted || isAttackTarget, 'card--flipping': flipping }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
             :draggable="debug.active"
@@ -438,15 +429,6 @@ function startDrag(event: DragEvent) {
           :abilities="abilities"
           :game="game"
           @choose="chooseAbility"
-        />
-
-        <AiTargetMenu
-          v-model="aiMenuOpen"
-          :frame="frame"
-          kind="asset"
-          :target="aiTarget"
-          :seat="ai.selectedSeat"
-          :game-id="game.id"
         />
       </div>
       <CardsUnderIndicator
@@ -615,20 +597,6 @@ img.card {
 
 img.card.ability-target {
   box-shadow: 0 0 0 2px var(--highlight), 0 0 6px 1px var(--highlight), var(--card-shadow);
-}
-
-/* Dev-only "AI targeting mode": class is only bound while targeting is on, so
-   normal play is untouched. Green border + pale green wash on hover. */
-.ai-target-hover {
-  cursor: pointer;
-  transition: box-shadow 120ms ease, filter 120ms ease;
-}
-
-.ai-target-hover:hover {
-  border: 2px solid var(--ai-target);
-  border-radius: 5px;
-  box-shadow: 0 0 0 2px var(--ai-target), 0 0 12px 3px rgba(74, 222, 128, 0.55);
-  filter: brightness(1.05) sepia(0.35) hue-rotate(55deg) saturate(1.3);
 }
 
 .deck-size {

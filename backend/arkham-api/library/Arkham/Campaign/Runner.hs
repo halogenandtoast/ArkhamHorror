@@ -8,9 +8,6 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Ability
-import Arkham.Ai.Decks (bundledDeckFor)
-import Arkham.Ai.Helpers (getAiPlayerState)
-import Arkham.Ai.State (aiInvestigatorCode)
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -66,20 +63,13 @@ defaultCampaignRunner msg a = case msg of
     -- [ALERT] StartCampaign
     players <- allPlayers
     lead <- getActivePlayer
-    -- AI seats (registered via RegisterAiPlayer before StartCampaign) skip the
-    -- deck prompt: their bundled decklist is loaded in-place instead. A seat is
-    -- treated as AI here only if it both has registered AI state and resolves to
-    -- a bundled deck; anything else falls through to the normal prompt.
-    aiSeats <- forMaybeM players \pid -> do
-      mState <- getAiPlayerState pid
-      pure $ (pid,) <$> (bundledDeckFor . aiInvestigatorCode =<< mState)
     batchId <- getId
     -- The settings prompt and the first campaign step are the barrier's
     -- continuation: they are held in game state until every seat has finished its
     -- deck setup, rather than queued behind the deck ask where a seat's InitDeck
     -- tail could run past them (#5173).
     push
-      $ chooseDecksWithAi batchId players aiSeats
+      $ chooseDecks batchId players
       $ [Ask lead PickCampaignSettings | (campaignStep (toAttrs a)).unwrap /= PrologueStep]
       <> [CampaignStep $ campaignStep $ toAttrs a]
     pure a

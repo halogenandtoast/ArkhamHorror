@@ -8,7 +8,7 @@ import { useEventStore } from '@/arkham/stores/event'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
 import { storeToRefs } from 'pinia'
-import type { GameMode, MultiplayerVariant, CampaignType, AiSlotConfig } from '@/arkham/types/NewGame'
+import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/NewGame'
 
 import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
 import officialCampaignJSON from '@/arkham/data/campaigns'
@@ -58,7 +58,6 @@ const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
 const returnTo = ref(false)
 
 // Per-seat AI configuration (dev-only, Solo games only); see GameOptions.vue.
-const aiPlayers = ref<(AiSlotConfig | null)[]>([])
 
 const fullCampaignOptionKey = ref<string | null>(null)
 const recommendedOptionState = ref<Record<string, boolean>>({})
@@ -318,9 +317,6 @@ async function start() {
     ...(returnTo.value && scenario.value?.returnToVariant ? [{ tag: 'PlayWithTheBlobThatAteEverythingElse' }] : [])
   ]
 
-  // AI seats are only meaningful (and only sent) for Solo/multihanded games.
-  const aiPlayersForCreate = multiplayerVariant.value === 'Solo' ? aiPlayers.value : undefined
-
   // Epic Multiplayer side story: spin up an event aggregate (N group games +
   // shared state) instead of a single game, and land on the organizer dashboard.
   if (isEpicMode.value && scenario.value && currentCampaignName.value) {
@@ -374,7 +370,6 @@ async function start() {
         includeTarotReadings.value,
         options,
         strictAsIfAt.value,
-        aiPlayersForCreate,
         ultimatumsAndBoons.value,
         achievementsForCreate(campaignId)
       ).then((game) => router.push(`/games/${game.id}`))
@@ -395,7 +390,6 @@ async function start() {
         includeTarotReadings.value,
         options,
         strictAsIfAt.value,
-        aiPlayersForCreate,
         ultimatumsAndBoons.value,
         achievementsForCreate(campaignId)
       ).then((game) => router.push(`/games/${game.id}`))
@@ -447,7 +441,6 @@ async function start() {
           v-model:imposeTimeLimit="imposeTimeLimit"
           v-model:timeLimitMinutes="timeLimitMinutes"
           v-model:miniCampaign="miniCampaign"
-          v-model:aiPlayers="aiPlayers"
           :gameMode="gameMode"
           :campaign="campaign"
           :scenario="scenario"

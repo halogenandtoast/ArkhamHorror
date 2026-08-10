@@ -15,7 +15,7 @@ newtype ShroudedCistern = ShroudedCistern LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shroudedCistern :: LocationCard ShroudedCistern
-shroudedCistern = location ShroudedCistern Cards.shroudedCistern 3 (Static 2)
+shroudedCistern = location ShroudedCistern Cards.shroudedCistern 3 (PerPlayer 2)
 
 instance HasAbilities ShroudedCistern where
   getAbilities (ShroudedCistern a) =

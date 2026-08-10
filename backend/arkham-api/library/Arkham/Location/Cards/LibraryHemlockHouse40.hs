@@ -9,7 +9,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Token (Token (..))
-import Arkham.Tracing
 
 newtype LibraryHemlockHouse40 = LibraryHemlockHouse40 LocationAttrs
   deriving anyclass IsLocation
@@ -21,7 +20,7 @@ libraryHemlockHouse40 =
     $ connectsToAdjacent
     . (canBeFlippedL .~ True)
 
-findSecretPassage :: (HasGame m, Tracing m) => m (Maybe LocationId)
+findSecretPassage :: HasGame m => m (Maybe LocationId)
 findSecretPassage = do
   libs <- select (LocationWithTitle "Library")
   asum <$> traverse (getLocationGlobalMeta @LocationId "secretPassage") libs

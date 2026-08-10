@@ -19,7 +19,6 @@ import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Tracing
 import Data.Map.Strict qualified as Map
 
 scenarioI18n :: Int -> (HasI18n => a) -> a
@@ -74,7 +73,7 @@ camps =
     , (Locations.crystallineCavern.cardCode, Camp_CrystallineCavern)
     ]
 
-getCamp :: (HasGame m, Tracing m) => m (Maybe CardDef)
+getCamp :: HasGame m => m (Maybe CardDef)
 getCamp = do
   rs <- campaignLogRecorded <$> getCampaignLog
   pure $ go rs (Map.toList camps) >>= lookupCardDef
@@ -82,5 +81,5 @@ getCamp = do
   go _ [] = Nothing
   go rs ((cc, k) : xs) = if toCampaignLogKey k `member` rs then Just cc else go rs xs
 
-getCurrentShelterValue :: (HasGame m, Tracing m) => m (Maybe Int)
+getCurrentShelterValue :: HasGame m => m (Maybe Int)
 getCurrentShelterValue = join . fmap getShelterValue <$> getCamp

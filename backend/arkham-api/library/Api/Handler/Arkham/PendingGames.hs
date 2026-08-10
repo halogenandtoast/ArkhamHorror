@@ -30,7 +30,6 @@ import Control.Monad.Random (mkStdGen)
 import Data.Time.Clock
 import Database.Persist ((==.))
 import Entity.Arkham.Step
-import OpenTelemetry.Trace.Monad (MonadTracer (..))
 
 getApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
 getApiV1ArkhamPendingGameR gameId = do
@@ -41,7 +40,6 @@ getApiV1ArkhamPendingGameR gameId = do
 putApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
 putApiV1ArkhamPendingGameR gameId = do
   userId <- getRequestUserId
-  tracer <- getTracer
   now <- liftIO getCurrentTime
   -- A player may occupy seats in only one group of an event. The normal UI
   -- enforces this too, but direct invite URLs/API calls must not be able to move
@@ -93,7 +91,7 @@ putApiV1ArkhamPendingGameR gameId = do
                 _ -> pure ()
             mEpicEnv <- traverse (uncurry mkEpicEnv) mEpicCtx
 
-            runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer mEpicEnv) $ do
+            runGameApp (GameApp gameRef queueRef genRef (pure . const ()) mEpicEnv) $ do
               addPlayer (PlayerId $ coerce pid)
               -- Run setup. For a multiplayer lobby this PAUSES at ChooseDeck
               -- (IsChooseDecks) until players pick decks, so we must NOT run any

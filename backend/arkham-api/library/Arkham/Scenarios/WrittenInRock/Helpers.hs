@@ -16,7 +16,6 @@ import Arkham.Message.Lifted.Queue
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "writtenInRock" a
@@ -47,7 +46,7 @@ swapLocations lid1 lid2 = do
 clampPositions :: [Pos] -> [Pos]
 clampPositions = filter (\(Pos x y) -> x >= 1 && x <= 5 && y >= 1 && y <= 4)
 
-getEmptyPositions :: (Tracing m, HasGame m) => LocationId -> m [Pos]
+getEmptyPositions :: HasGame m => LocationId -> m [Pos]
 getEmptyPositions lid = do
   field LocationPosition lid >>= \case
     Nothing -> pure []
@@ -55,7 +54,7 @@ getEmptyPositions lid = do
       let candidates = clampPositions $ adjacentPositions pos
       filterM (selectNone . LocationInPosition) candidates
 
-getRails :: (Tracing m, HasGame m) => LocationId -> m [GridDirection]
+getRails :: HasGame m => LocationId -> m [GridDirection]
 getRails lid = do
   def <- field LocationCardDef lid
   pure $ maybe [] (toResultDefault []) $ lookup "rails" (cdMeta def)

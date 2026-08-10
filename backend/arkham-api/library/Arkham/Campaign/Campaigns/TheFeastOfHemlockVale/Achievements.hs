@@ -61,13 +61,12 @@ import Arkham.Scenario.Types (Field (ScenarioTokens, ScenarioVictoryDisplay))
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Tracing
 import Arkham.Trait qualified as Trait
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 
 runHemlockValeAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runHemlockValeAchievements msg = whenEligibleCampaign $ case msg of
   {- Endings. Every one records its own outcome, so the record IS the ending; the
   set is banked in the campaign store and reported to the API layer, which
@@ -342,7 +341,7 @@ theLongestNightStep = ScenarioStep theLongestNightId
 {- | The day/time meta, defaulting rather than throwing: the campaign builds it at
 its prologue, so it is absent before then (and in the test harness).
 -}
-hemlockValeMeta :: (HasGame m, Tracing m) => m TheFeastOfHemlockValeMeta
+hemlockValeMeta :: HasGame m => m TheFeastOfHemlockValeMeta
 hemlockValeMeta =
   selectOne TheCampaign
     >>= maybe (pure initMeta) (fieldMap CampaignMeta (toResultDefault initMeta))
@@ -418,7 +417,7 @@ Only the five residents "Best Friends Forever!" names have an item; the others
 have their own achievements instead.
 -}
 reportBestFriend
-  :: (HasGame m, HasQueue Message m, Tracing m) => CampaignLogKey -> Int -> m ()
+  :: (HasGame m, HasQueue Message m) => CampaignLogKey -> Int -> m ()
 reportBestFriend key level = when (level >= 6) do
   for_ (find ((== key) . relationshipKey . fst) bestFriends) \(_, item) -> do
     reached <- nub . (item :) <$> storedTexts bestFriendsKey
@@ -446,7 +445,7 @@ cosmicEmissaries =
   , Enemies.cosmicEmissaryThePhantasm
   ]
 
-inVictoryDisplay :: (HasGame m, Tracing m) => CardDef -> m Bool
+inVictoryDisplay :: HasGame m => CardDef -> m Bool
 inVictoryDisplay def = selectAny $ VictoryDisplayCardMatch $ basic $ cardIs def
 
 {- | Each ending of the campaign paired with its 'achievementChecklist' item key.
@@ -465,7 +464,7 @@ endingItems =
   , (toCampaignLogKey TheInvestigatorsBecameTheTrueFeastOfHemlockVale, "BecameTheTrueFeast")
   ]
 
-whenScenarioIs :: (HasGame m, Tracing m) => ScenarioId -> m () -> m ()
+whenScenarioIs :: HasGame m => ScenarioId -> m () -> m ()
 whenScenarioIs sid body = do
   mSid <- selectOne TheScenario
   when (mSid == Just sid) body
@@ -495,13 +494,13 @@ playedLongestNightKey = "hemlockAchPlayedLongestNight"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedTexts :: (HasCallStack, HasGame m, Tracing m) => Text -> m [Text]
+storedTexts :: (HasCallStack, HasGame m) => Text -> m [Text]
 storedTexts k = fromMaybe [] <$> stored k
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-storedFlag :: (HasCallStack, HasGame m, Tracing m) => Text -> m Bool
+storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k
 
 {- | Each resident whose Relationship Level is an achievement in its own right,

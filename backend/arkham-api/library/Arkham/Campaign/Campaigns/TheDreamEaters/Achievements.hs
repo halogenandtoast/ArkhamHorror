@@ -61,14 +61,13 @@ import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token qualified as Token
-import Arkham.Tracing
 import Arkham.Trait (Trait (Ghoul, Spider, Zoog))
 import Arkham.Treachery.Types qualified as Treachery
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 
 runTheDreamEatersAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
   -- Per-game trackers reset as their scenario is set up, so "during a single
   -- game" stays true even if a scenario is somehow revisited.
@@ -357,12 +356,12 @@ whenEligibleCampaign body = do
   let eligible = achievementCampaigns $ TheDreamQuestAchievement DoYouAlwaysFollowOrders
   when (maybe False (`elem` eligible) mCampaignId) body
 
-whenScenarioIs :: (HasGame m, Tracing m) => ScenarioId -> m () -> m ()
+whenScenarioIs :: HasGame m => ScenarioId -> m () -> m ()
 whenScenarioIs sid body = do
   mSid <- selectOne TheScenario
   when (mSid == Just sid) body
 
-getAlarmLevel :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m Int
+getAlarmLevel :: (HasCallStack, HasGame m) => InvestigatorId -> m Int
 getAlarmLevel = fieldMap InvestigatorTokens (Token.countTokens Token.AlarmLevel)
 
 currentDifficulty :: HasGame m => m (Maybe Difficulty)
@@ -380,7 +379,7 @@ campaign only one half's 'CampaignAttrs' is live at a time; the other rides in
 the metadata. Mirrors the campaign runner's own helper of the same shape.
 -}
 hasRecordIn
-  :: (IsCampaignLogKey k, HasGame m, Tracing m, HasCallStack) => CampaignPart -> k -> m Bool
+  :: (IsCampaignLogKey k, HasGame m, HasCallStack) => CampaignPart -> k -> m Bool
 hasRecordIn part key = do
   meta <- getCampaignMeta @Metadata
   if meta.currentCampaignMode == Just part
@@ -539,14 +538,14 @@ silverKeyHorrorKey = "tdeAchSilverKeyHorror"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-storedFlag :: (HasCallStack, HasGame m, Tracing m) => Text -> m Bool
+storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k
 
-storedList :: (HasCallStack, HasGame m, Tracing m) => Text -> m [CardCode]
+storedList :: (HasCallStack, HasGame m) => Text -> m [CardCode]
 storedList k = fromMaybe [] <$> stored k
 
-storedTexts :: (HasCallStack, HasGame m, Tracing m) => Text -> m [Text]
+storedTexts :: (HasCallStack, HasGame m) => Text -> m [Text]
 storedTexts k = fromMaybe [] <$> stored k

@@ -27,7 +27,6 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.BadBlood.Helpers
 import Arkham.Scenarios.BadBlood.Meta
 import Arkham.Token (Token (Memory), countTokens)
-import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
 import Arkham.Xp
@@ -78,7 +77,7 @@ instance HasChaosTokenValue BadBlood where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 6 8
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-tokenMemoryValue :: (HasGame m, Tracing m) => InvestigatorId -> ChaosTokenFace -> m Int
+tokenMemoryValue :: HasGame m => InvestigatorId -> ChaosTokenFace -> m Int
 tokenMemoryValue lead = \case
   AutoFail -> pure 6
   ElderSign -> pure 6

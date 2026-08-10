@@ -13,7 +13,6 @@ import Arkham.Message (ShuffleIn (..))
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Tracing
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "circusExMortis" a
@@ -21,7 +20,7 @@ campaignI18n a = withI18n $ scope "circusExMortis" a
 -- * Moon tokens
 
 -- | Moon tokens sealed on an investigator's investigator card (guide p1).
-getSealedMoonTokens :: (HasGame m, Tracing m) => InvestigatorId -> m [ChaosToken]
+getSealedMoonTokens :: HasGame m => InvestigatorId -> m [ChaosToken]
 getSealedMoonTokens iid =
   filter ((== MoonToken) . (.face)) <$> field InvestigatorSealedChaosTokens iid
 
@@ -57,14 +56,14 @@ deCultusBestiaeVersions =
 
 -- | Find the owner and current version of a versioned story asset.
 findVersionOwner
-  :: (HasGame m, Tracing m) => [CardDef] -> m (Maybe (InvestigatorId, CardDef))
+  :: HasGame m => [CardDef] -> m (Maybe (InvestigatorId, CardDef))
 findVersionOwner defs =
   listToMaybe . catMaybes <$> for defs \def -> fmap (,def) <$> getOwner def
 
-getAmaltheaWeaverOwner :: (HasGame m, Tracing m) => m (Maybe (InvestigatorId, CardDef))
+getAmaltheaWeaverOwner :: HasGame m => m (Maybe (InvestigatorId, CardDef))
 getAmaltheaWeaverOwner = findVersionOwner amaltheaWeaverVersions
 
-getDeCultusBestiaeOwner :: (HasGame m, Tracing m) => m (Maybe (InvestigatorId, CardDef))
+getDeCultusBestiaeOwner :: HasGame m => m (Maybe (InvestigatorId, CardDef))
 getDeCultusBestiaeOwner = findVersionOwner deCultusBestiaeVersions
 
 {- | Swap a versioned campaign story card for its next version in the same
@@ -85,7 +84,7 @@ West; All Points West reads its Back on Track intro when the side story was
 the most recently completed scenario. Completion itself is recorded by the
 official scenario's resolutions (the TheRougarou* campaign log keys).
 -}
-playedCurseOfTheRougarouEnRoute :: (HasGame m, Tracing m) => m Bool
+playedCurseOfTheRougarouEnRoute :: HasGame m => m Bool
 playedCurseOfTheRougarouEnRoute = do
   steps <- getCompletedSteps
   -- completed steps are stored most-recent-first

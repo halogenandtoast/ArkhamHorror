@@ -25,7 +25,6 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
 import Arkham.Slot
-import Arkham.Tracing
 import GHC.Records
 
 instance HasField "name" InvestigatorId (QueueT Message GameT Name) where
@@ -61,7 +60,7 @@ instance HasField "discardable" InvestigatorId (QueueT Message GameT [Card]) whe
 instance HasField "discard" InvestigatorId (QueueT Message GameT [PlayerCard]) where
   getField = field InvestigatorDiscard
 
-getSlots :: (HasGame m, Tracing m) => SlotType -> InvestigatorId -> m [Slot]
+getSlots :: HasGame m => SlotType -> InvestigatorId -> m [Slot]
 getSlots sType iid = fieldMap InvestigatorSlots (findWithDefault [] sType) iid
 
 instance HasField "labeled" InvestigatorId (QueueT Message GameT (Name.Labeled InvestigatorId)) where

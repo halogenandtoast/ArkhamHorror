@@ -7,10 +7,9 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Source
-import Arkham.Tracing
 
-assetCanHaveHorrorHealed :: (HasGame m, Tracing m, Sourceable a) => a -> AssetId -> m Bool
+assetCanHaveHorrorHealed :: (HasGame m, Sourceable a) => a -> AssetId -> m Bool
 assetCanHaveHorrorHealed a = selectAny . HealableAsset (toSource a) #horror . AssetWithId
 
-assetCanHaveDamageHealed :: (HasGame m, Tracing m, Sourceable a) => a -> AssetId -> m Bool
+assetCanHaveDamageHealed :: (HasGame m, Sourceable a) => a -> AssetId -> m Bool
 assetCanHaveDamageHealed a = selectAny . HealableAsset (toSource a) #damage . AssetWithId

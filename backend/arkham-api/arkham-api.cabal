@@ -5980,7 +5980,6 @@ library
       Arkham.Timing
       Arkham.Token
       Arkham.TokenStrategy
-      Arkham.Tracing
       Arkham.Trait
       Arkham.Treachery
       Arkham.Treachery.CardDefs.Base
@@ -6856,8 +6855,6 @@ library
     , file-embed
     , hashable
     , hedis
-    , hs-opentelemetry-instrumentation-wai
-    , hs-opentelemetry-sdk
     , http-api-data
     , http-client-tls
     , http-conduit
@@ -6870,7 +6867,6 @@ library
     , monad-time
     , monoidal-containers
     , mtl >=2.3.1
-    , opentelemetry
     , parsec
     , path-pieces
     , persistent
@@ -6892,7 +6888,6 @@ library
     , time
     , tls
     , transformers
-    , unix
     , unliftio
     , uri-bytestring
     , uuid
@@ -6999,7 +6994,6 @@ executable arkham-replay
     , arkham-api
     , base
     , bytestring
-    , hs-opentelemetry-sdk
     , text
   default-language: GHC2021
   if flag(library-only)
@@ -7400,12 +7394,9 @@ test-suite spec
       aeson
     , aeson-diff
     , arkham-api
-    , async
     , base
     , containers
     , exceptions
-    , hs-opentelemetry-api
-    , hs-opentelemetry-sdk
     , hspec
     , hspec-expectations-lifted
     , lens

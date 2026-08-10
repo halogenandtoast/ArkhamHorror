@@ -10,7 +10,6 @@ import Arkham.Matcher.Base (mapOneOf)
 import Arkham.Matcher.Card (CardMatcher (CardWithCardCode))
 import Arkham.Matcher.Investigator
 import Arkham.Prelude
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "allOrNothing" a
@@ -18,7 +17,7 @@ scenarioI18n a = withI18n $ standaloneI18n "allOrNothing" a
 skidsOToole :: InvestigatorMatcher
 skidsOToole = InvestigatorWithTitle "\"Skids\" O'Toole"
 
-hasCardInDeck :: (HasGame m, Tracing m) => InvestigatorId -> CardDef -> m Bool
+hasCardInDeck :: HasGame m => InvestigatorId -> CardDef -> m Bool
 hasCardInDeck iid def = do
   let codes = toCardCode def : cdAlternateCardCodes def
   deckCards <- matchingCardsAlreadyInDeck (mapOneOf CardWithCardCode codes)

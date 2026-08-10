@@ -33,14 +33,13 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
 
 data IsFast = IsFast | NotFast
   deriving stock Eq
 
-actionMatches :: (Tracing m, HasGame m) => InvestigatorId -> Action -> ActionMatcher -> m Bool
+actionMatches :: HasGame m => InvestigatorId -> Action -> ActionMatcher -> m Bool
 actionMatches _ _ AnyAction = pure True
 actionMatches _ a (ActionIs a') = pure $ a == a'
 actionMatches iid a (ActionMatches as) = allM (actionMatches iid a) as
@@ -76,10 +75,10 @@ actionMatches iid a RepeatableAction = do
       , canPlay && notNull playableCards && a == #play
       ]
 
-canDo_ :: (HasGame m, Tracing m) => InvestigatorId -> Action -> m Bool
+canDo_ :: HasGame m => InvestigatorId -> Action -> m Bool
 canDo_ iid action = canDo iid action NotFast
 
-canDo :: (HasGame m, Tracing m) => InvestigatorId -> Action -> IsFast -> m Bool
+canDo :: HasGame m => InvestigatorId -> Action -> IsFast -> m Bool
 canDo iid action isFast = do
   mods <- getModifiers iid
   let
@@ -106,7 +105,7 @@ canDo iid action isFast = do
   not <$> anyM prevents mods
 
 additionalActionCovers
-  :: (HasGame m, Tracing m) => Source -> [Action] -> AdditionalAction -> m Bool
+  :: HasGame m => Source -> [Action] -> AdditionalAction -> m Bool
 additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType of
   PlayCardRestrictedAdditionalAction matcher -> case source of
     CardIdSource cid -> elem cid . map toCardId <$> select matcher
@@ -124,7 +123,7 @@ additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType 
   BountyAction -> pure False -- Has to be handled by Tony Morgan
   BobJenkinsAction -> pure False -- Has to be handled by Bob Jenkins
 
-getCanAfford :: (HasGame m, Tracing m) => InvestigatorAttrs -> [Action] -> m Bool
+getCanAfford :: HasGame m => InvestigatorAttrs -> [Action] -> m Bool
 getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
   additionalActions <- getAdditionalActions a
@@ -166,11 +165,11 @@ matchTarget _ (EnemyAction a _) action = action == a
 matchTarget _ (AssetAction a _) action = action == a
 matchTarget _ IsAnyAction _ = True
 
-getActions :: (Tracing m, HasGame m, HasCallStack) => InvestigatorId -> [Window] -> m [Ability]
+getActions :: (HasGame m, HasCallStack) => InvestigatorId -> [Window] -> m [Ability]
 getActions iid ws = getActionsWith iid ws id
 
 getActionsWith
-  :: (HasCallStack, Tracing m, HasGame m)
+  :: (HasCallStack, HasGame m)
   => InvestigatorId
   -> [Window]
   -> (Ability -> Ability)
@@ -314,7 +313,7 @@ getActionsWith iid ws f = do
   pure $ nub $ if bountiesOnly || null forcedActions then actions''' else prioritizedForcedActions
 
 hasFightActions
-  :: (Sourceable source, Tracing m, HasGame m)
+  :: (Sourceable source, HasGame m)
   => InvestigatorId
   -> source
   -> WindowMatcher
@@ -328,7 +327,7 @@ hasFightActions iid requestor window windows' = do
     ]
 
 hasEvadeActions
-  :: (HasCallStack, Sourceable source, Tracing m, HasGame m)
+  :: (HasCallStack, Sourceable source, HasGame m)
   => InvestigatorId
   -> source
   -> WindowMatcher
@@ -342,7 +341,7 @@ hasEvadeActions iid requestor window windows' = do
     ]
 
 hasInvestigateActions
-  :: (Sourceable source, Tracing m, HasGame m)
+  :: (Sourceable source, HasGame m)
   => InvestigatorId
   -> source
   -> WindowMatcher

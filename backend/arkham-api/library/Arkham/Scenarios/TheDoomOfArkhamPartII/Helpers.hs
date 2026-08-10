@@ -34,7 +34,6 @@ import Arkham.ScenarioLogKey (ScenarioCountKey (CthulhuRage))
 import Arkham.Source (Source (EnemySource), Sourceable)
 import Arkham.Story.Types (StoryAttrs)
 import Arkham.Target (Target (AbilityTarget, EnemyTarget))
-import Arkham.Tracing (Tracing)
 import Arkham.Trait (Trait (Rooftop))
 import Control.Monad.Trans.Class (MonadTrans)
 import Control.Monad.Writer.Class (MonadWriter)
@@ -56,7 +55,7 @@ indicate Cthulhu's anger toward the investigators." Rage has no inherent effect,
 but the skull token scales with it and nearly every action card tests against it,
 so it is a first-class scenario count, like the Depths of Yoth's depth.
 -}
-getCthulhuRage :: (HasGame m, Tracing m) => m Int
+getCthulhuRage :: HasGame m => m Int
 getCthulhuRage = scenarioCount CthulhuRage
 
 increaseCthulhuRage :: ReverseQueue m => Int -> m ()
@@ -121,27 +120,27 @@ whenCthulhuHas facet body = whenAny (cthulhuFacet facet) do
 {- | The facets still on the board — in play, rather than banished to the victory
 display. Cthulhu's combined enemy-phase attack sums only these.
 -}
-getCthulhuBoardEnemies :: (HasGame m, Tracing m) => m [EnemyId]
+getCthulhuBoardEnemies :: HasGame m => m [EnemyId]
 getCthulhuBoardEnemies = select $ mapOneOf (cthulhuFacet . snd) cthulhuBoardSlots
 
 {- | Cthulhu's location. Almost every Cthulhu deck action card is written relative
 to it ("each investigator at Cthulhu's location", "the nearest investigator to
 Cthulhu"), so the lookup lives here rather than in eleven card modules.
 -}
-getCthulhuLocation :: (HasGame m, Tracing m) => m (Maybe LocationId)
+getCthulhuLocation :: HasGame m => m (Maybe LocationId)
 getCthulhuLocation = selectOne $ LocationWithEnemy (enemyIs Enemies.cthulhuAncientEvil)
 
-getInvestigatorsWithCthulhu :: (HasGame m, Tracing m) => m [InvestigatorId]
+getInvestigatorsWithCthulhu :: HasGame m => m [InvestigatorId]
 getInvestigatorsWithCthulhu = getCthulhuLocation >>= maybe (pure []) (select . investigatorAt)
 
-eachInvestigatorWithCthulhu :: (HasGame m, Tracing m) => (InvestigatorId -> m ()) -> m ()
+eachInvestigatorWithCthulhu :: HasGame m => (InvestigatorId -> m ()) -> m ()
 eachInvestigatorWithCthulhu f = getInvestigatorsWithCthulhu >>= traverse_ f
 
-withCthulhuLocation :: (HasGame m, Tracing m) => (LocationId -> m ()) -> m ()
+withCthulhuLocation :: HasGame m => (LocationId -> m ()) -> m ()
 withCthulhuLocation = whenJustM getCthulhuLocation
 
 -- | The in-play facet matching a definition, on whichever face it is currently showing.
-getCthulhuFacet :: (HasGame m, Tracing m) => CthulhuFacet -> m (Maybe EnemyId)
+getCthulhuFacet :: HasGame m => CthulhuFacet -> m (Maybe EnemyId)
 getCthulhuFacet = selectOne . cthulhuFacet
 
 {- | "Cthulhu /(X)/ attacks <investigator>." A no-op when that facet has been
@@ -183,7 +182,7 @@ patrol as a round-scoped modifier on himself — round modifiers expire exactly 
 cthulhuPatrolledMarker :: ModifierType
 cthulhuPatrolledMarker = ScenarioModifier "cthulhuPatrolled"
 
-cthulhuPatrolledThisRound :: (HasGame m, Tracing m) => m Bool
+cthulhuPatrolledThisRound :: HasGame m => m Bool
 cthulhuPatrolledThisRound =
   selectAny $ enemyIs Enemies.cthulhuAncientEvil <> EnemyWithModifier cthulhuPatrolledMarker
 
@@ -240,7 +239,6 @@ whoever is standing where they are.
 -}
 rooftopsReachConnecting
   :: ( HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => LocationAttrs -> m ()

@@ -9,7 +9,6 @@ import Arkham.Helpers.Location (getLocationOf, withLocationOf)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
-import Arkham.Tracing
 
 newtype PredatorOrPrey = PredatorOrPrey EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -22,7 +21,7 @@ predatorOrPrey = event PredatorOrPrey Cards.predatorOrPrey
 -- each paired with those destinations. When several enemies tie for nearest, the player
 -- chooses which one to flee from, then moves away from that specific enemy (issue #4643).
 fleeOptions
-  :: (HasGame m, Tracing m)
+  :: HasGame m
   => EventAttrs -> InvestigatorId -> LocationId -> m [(EnemyId, [LocationId])]
 fleeOptions attrs iid loc = do
   nearest <- selectWithField EnemyLocation (NearestEnemyTo iid AnyEnemy)

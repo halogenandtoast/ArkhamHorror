@@ -10,15 +10,14 @@ import Arkham.I18n
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
-import Arkham.Tracing
 
-getConviction :: (HasGame m, Tracing m) => m Int
+getConviction :: HasGame m => m Int
 getConviction = getRecordCount Conviction
 
-getDoubt :: (HasGame m, Tracing m) => m Int
+getDoubt :: HasGame m => m Int
 getDoubt = getRecordCount Doubt
 
-getMoreConvictionThanDoubt :: (HasGame m, Tracing m) => m Bool
+getMoreConvictionThanDoubt :: HasGame m => m Bool
 getMoreConvictionThanDoubt = liftA2 (>) getConviction getDoubt
 
 markConviction :: ReverseQueue m => m ()
@@ -39,14 +38,14 @@ markConvictionN x = do
   n <- getConviction
   recordCount Conviction (n + x)
 
-interviewed :: (HasGame m, Tracing m) => CardDef -> m Bool
+interviewed :: HasGame m => CardDef -> m Bool
 interviewed assetDef =
   elem (recorded $ toCardCode assetDef) <$> getRecordSet VIPsInterviewed
 
-whenInterviewed :: (HasGame m, Tracing m) => CardDef -> m () -> m ()
+whenInterviewed :: HasGame m => CardDef -> m () -> m ()
 whenInterviewed assetDef = whenM (interviewed assetDef)
 
-slain :: (HasGame m, Tracing m, HasCardCode cardCode) => cardCode -> m Bool
+slain :: (HasGame m, HasCardCode cardCode) => cardCode -> m Bool
 slain (toCardCode -> cardCode) = elem (recorded cardCode) <$> getRecordSet VIPsSlain
 
 campaignI18n :: (HasI18n => a) -> a

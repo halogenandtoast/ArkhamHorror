@@ -34,7 +34,6 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
-import Arkham.Tracing
 import Arkham.Window (Window (..), WindowType, defaultWindows, mkAfter, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Monad.Trans
@@ -67,7 +66,7 @@ drawEncounterCardsEdit
 drawEncounterCardsEdit = drawEncounterCardsWith
 
 drawCardsIfCan
-  :: (MonadRandom m, Sourceable source, HasGame m, Tracing m, ToId investigator InvestigatorId)
+  :: (MonadRandom m, Sourceable source, HasGame m, ToId investigator InvestigatorId)
   => investigator
   -> source
   -> Int
@@ -77,7 +76,7 @@ drawCardsIfCan i source n = do
   pure $ guard canDraw $> drawCards (asId i) source n
 
 drawCardsIfCanWith
-  :: (MonadRandom m, Sourceable source, HasGame m, Tracing m, ToId investigator InvestigatorId)
+  :: (MonadRandom m, Sourceable source, HasGame m, ToId investigator InvestigatorId)
   => investigator
   -> source
   -> Int
@@ -282,17 +281,17 @@ placeLocationWith_ :: MonadRandom m => Card -> Update Location -> m Message
 placeLocationWith_ card update = snd <$> placeLocationWith card update
 
 placeSetAsideLocation
-  :: (HasCallStack, MonadRandom m, HasGame m, Tracing m) => CardDef -> m (LocationId, Message)
+  :: (HasCallStack, MonadRandom m, HasGame m) => CardDef -> m (LocationId, Message)
 placeSetAsideLocation = placeLocation <=< getSetAsideCard
 
-placeSetAsideLocation_ :: (MonadRandom m, HasGame m, Tracing m) => CardDef -> m Message
+placeSetAsideLocation_ :: (MonadRandom m, HasGame m) => CardDef -> m Message
 placeSetAsideLocation_ = placeLocation_ <=< getSetAsideCard
 
 placeSetAsideLocationWith_
-  :: (MonadRandom m, HasGame m, Tracing m) => CardDef -> Update Location -> m Message
+  :: (MonadRandom m, HasGame m) => CardDef -> Update Location -> m Message
 placeSetAsideLocationWith_ def update = (`placeLocationWith_` update) =<< getSetAsideCard def
 
-placeSetAsideLocations :: (MonadRandom m, HasGame m, Tracing m) => [CardDef] -> m [Message]
+placeSetAsideLocations :: (MonadRandom m, HasGame m) => [CardDef] -> m [Message]
 placeSetAsideLocations = traverse placeSetAsideLocation_
 
 placeLocationCard :: (CardGen m, HasGame m) => CardDef -> m (LocationId, Message)
@@ -427,7 +426,7 @@ findEncounterCard
 findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) =
   FindEncounterCard iid target zones cardMatcher LeadChooses
 
-placeLabeledLocationCards_ :: (HasGame m, Tracing m, CardGen m) => Text -> [CardDef] -> m [Message]
+placeLabeledLocationCards_ :: (HasGame m, CardGen m) => Text -> [CardDef] -> m [Message]
 placeLabeledLocationCards_ lbl cards = do
   startIndex <- getStartIndex 1
   concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
@@ -446,7 +445,7 @@ placeLabeledLocationCards lbl cards = fmap fold
     (location, placement) <- placeLocationCard card
     pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
 
-placeLabeledLocations_ :: (HasGame m, Tracing m, CardGen m) => Text -> [Card] -> m [Message]
+placeLabeledLocations_ :: (HasGame m, CardGen m) => Text -> [Card] -> m [Message]
 placeLabeledLocations_ lbl cards = do
   startIndex <- getStartIndex 1
   concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
@@ -487,7 +486,7 @@ putCardIntoPlayWithAdditionalCostsAndWindows
 putCardIntoPlayWithAdditionalCostsAndWindows iid (toCard -> card) ws = PutCardIntoPlayWithAdditionalCosts iid card Nothing NoPayment ws
 
 placeLabeledLocation
-  :: (MonadRandom m, HasGame m, Tracing m) => Text -> Card -> m (LocationId, Message)
+  :: (MonadRandom m, HasGame m) => Text -> Card -> m (LocationId, Message)
 placeLabeledLocation lbl card = do
   idx <- getStartIndex (1 :: Int)
   (location, placement) <- placeLocation card
@@ -582,7 +581,7 @@ takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
 takeResources iid (toSource -> source) n = TakeResources iid n source False
 
 gainResourcesIfCan
-  :: (HasGame m, Tracing m, Sourceable source, ToId a InvestigatorId)
+  :: (HasGame m, Sourceable source, ToId a InvestigatorId)
   => a
   -> source
   -> Int

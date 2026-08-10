@@ -28,7 +28,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WarOfTheOuterGods.Helpers
 import Arkham.SkillTest.Base (skillTestCommittedCards)
-import Arkham.Tracing
 import Arkham.Trait (Trait (Hex, Insect, Mutated))
 
 newtype WarOfTheOuterGods = WarOfTheOuterGods ScenarioAttrs
@@ -393,7 +392,7 @@ isPendingWarringAttackChoice = \case
 {- | Keep every non-warring choice, and keep a warring attack only if its
 attacker still has a warring target other than the just-defeated enemy.
 -}
-warringAttackStillValid :: (HasGame m, Tracing m) => EnemyId -> UI Message -> m Bool
+warringAttackStillValid :: HasGame m => EnemyId -> UI Message -> m Bool
 warringAttackStillValid defeatedEid = \case
   TargetLabel _ [ScenarioSpecific "warringAttack" v] -> do
     ts <- getWarringTargets (toResult v)

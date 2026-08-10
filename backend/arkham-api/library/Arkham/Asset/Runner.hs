@@ -54,7 +54,6 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
-import Arkham.Tracing
 import Arkham.Window (mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -64,7 +63,7 @@ import Data.Aeson.Lens (_Bool)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 
-defeated :: (HasGame m, Tracing m) => AssetAttrs -> Source -> m (Maybe DefeatedBy)
+defeated :: HasGame m => AssetAttrs -> Source -> m (Maybe DefeatedBy)
 defeated AssetAttrs {assetId, assetAssignedHealthDamage, assetAssignedSanityDamage} source = do
   canBeDefeated <- withoutModifier assetId CannotBeDefeated
   remainingHealth <- field AssetRemainingHealth assetId

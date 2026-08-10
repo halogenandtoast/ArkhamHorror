@@ -36,7 +36,6 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Treachery.Types
 import Arkham.Window (Window)
@@ -52,12 +51,12 @@ isWeakness c = case toCard c of
   EncounterCard _ -> True -- maybe?
   VengeanceCard _ -> False -- should be an error
 extendedCardMatch
-  :: (HasGame m, Tracing m, IsCard c) => c -> ExtendedCardMatcher -> m Bool
+  :: (HasGame m, IsCard c) => c -> ExtendedCardMatcher -> m Bool
 extendedCardMatch (toCard -> c) matcher =
   selectAny (basic (CardWithId c.id) <> matcher)
 
 class ConvertToCard a where
-  convertToCard :: (HasCallStack, HasGame m, Tracing m) => a -> m Card
+  convertToCard :: (HasCallStack, HasGame m) => a -> m Card
 
 instance ConvertToCard TreacheryId where
   convertToCard = getEntityCard @Treachery
@@ -85,11 +84,11 @@ class (Projection a, Entity a) => CardEntity a where
   cardField :: Field a Card
 
 getEntityCard
-  :: forall a m. (HasCallStack, CardEntity a, HasGame m, Tracing m) => EntityId a -> m Card
+  :: forall a m. (HasCallStack, CardEntity a, HasGame m) => EntityId a -> m Card
 getEntityCard = field (cardField @a)
 
 getEntityCardMaybe
-  :: forall a m. (CardEntity a, HasGame m, Tracing m) => EntityId a -> m (Maybe Card)
+  :: forall a m. (CardEntity a, HasGame m) => EntityId a -> m (Maybe Card)
 getEntityCardMaybe = fieldMay (cardField @a)
 
 instance CardEntity Treachery where
@@ -107,10 +106,10 @@ instance CardEntity Asset where
 instance CardEntity Location where
   cardField = LocationCard
 
-getCardField :: (HasCallStack, ConvertToCard c, HasGame m, Tracing m) => (CardDef -> a) -> c -> m a
+getCardField :: (HasCallStack, ConvertToCard c, HasGame m) => (CardDef -> a) -> c -> m a
 getCardField f c = f . toCardDef <$> convertToCard c
 
-getVictoryPoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m (Maybe Int)
+getVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
 getVictoryPoints c = do
   card <- convertToCard c
   printedVictory <- getPrintedVictoryPoints card
@@ -122,10 +121,10 @@ getVictoryPoints c = do
   applyModifier (GainVictory n) m = Just (n + fromMaybe 0 m)
   applyModifier _ n = n
 
-getHasVictoryPoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m Bool
+getHasVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m Bool
 getHasVictoryPoints c = isJust <$> getVictoryPoints c
 
-getPrintedVictoryPoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m (Maybe Int)
+getPrintedVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
 getPrintedVictoryPoints = getCardField cdVictoryPoints
 
 findJustCard :: HasGame m => (Card -> Bool) -> m Card
@@ -149,7 +148,7 @@ iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
   applyAfter _ ys = ys
 iconsForCard _ = pure []
 
-getCardEntityTarget :: (HasGame m, Tracing m) => Card -> m (Maybe Target)
+getCardEntityTarget :: HasGame m => Card -> m (Maybe Target)
 getCardEntityTarget card = case toCardType card of
   EnemyType -> toTarget <$$> selectOne (EnemyWithCardId $ toCardId card)
   PlayerEnemyType -> toTarget <$$> selectOne (EnemyWithCardId $ toCardId card)
@@ -186,7 +185,7 @@ drawThisCardFrom iid card mdeck = case toCard card of
 --     [Revelation iid (CardIdSource card.id), ResolvedCard iid (PlayerCard card)]
 --   _ -> []
 
-playIsValidAfterSeal :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m Bool
+playIsValidAfterSeal :: HasGame m => InvestigatorId -> Card -> m Bool
 playIsValidAfterSeal iid c = do
   tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
   let
@@ -200,7 +199,7 @@ playIsValidAfterSeal iid c = do
       _ -> Nothing
   allM (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens) sealChaosTokenMatchers
 
-cardListMatches :: (HasGame m, Tracing m) => [Card] -> Matcher.CardListMatcher -> m Bool
+cardListMatches :: HasGame m => [Card] -> Matcher.CardListMatcher -> m Bool
 cardListMatches cards = \case
   Matcher.AnyCards -> pure $ notNull cards
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
@@ -209,7 +208,7 @@ cardListMatches cards = \case
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
   Matcher.NoCards -> pure $ null cards
 
-passesLimits :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m Bool
+passesLimits :: HasGame m => InvestigatorId -> Card -> m Bool
 passesLimits iid c = do
   perLimitOk <- allM go (cdLimits $ toCardDef c)
   -- 'LimitPerTraitPerLocation' is resolved against the candidate play
@@ -290,7 +289,7 @@ perLocationLimitTraits c = [(t, m) | LimitPerTraitPerLocation t m <- cdLimits (t
 
 -- | Every card currently attached to a location (events, assets, treacheries).
 -- Used by the per-trait-per-location limit checks.
-attachedCardsAt :: (HasGame m, Tracing m) => LocationId -> m [Card]
+attachedCardsAt :: HasGame m => LocationId -> m [Card]
 attachedCardsAt lid = do
   let target = TargetIs (toTarget lid)
   eventCards <- traverse (field Field.EventCard) =<< select (EventAttachedTo target)
@@ -303,7 +302,7 @@ attachedCardsAt lid = do
 -- played: the investigator's location plus any locations granted by a
 -- @CanPlayAtLocation@ modifier. The card is allowed if it satisfies the limit
 -- at any one candidate location.
-passesPerLocationLimits :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m Bool
+passesPerLocationLimits :: HasGame m => InvestigatorId -> Card -> m Bool
 passesPerLocationLimits iid c = do
   baseLids <- select (locationWithInvestigator iid)
   -- Vacuously true when the investigator is at no location.
@@ -336,7 +335,7 @@ passesPerLocationLimits iid c = do
 --
 -- Together these guarantee a limited trap is always alone: it cannot be placed
 -- where any trap exists, and no trap can be placed where it sits.
-cardPassesLimitsAtLocation :: (HasGame m, Tracing m) => Card -> LocationId -> m Bool
+cardPassesLimitsAtLocation :: HasGame m => Card -> LocationId -> m Bool
 cardPassesLimitsAtLocation c lid = do
   attached <- attachedCardsAt lid
   let
@@ -360,7 +359,7 @@ cardIsFast' fetchModifiers card = do
       pure $ isJust $ listToMaybe [w | BecomesFast w <- allModifiers]
 
 cardInFastWindows
-  :: (Tracing m, HasGame m, HasCallStack)
+  :: (HasGame m, HasCallStack)
   => InvestigatorId
   -> Source
   -> Card
@@ -404,10 +403,10 @@ getPotentiallyModifiedCardCost iid c@(EncounterCard _) excludeChuckFergus _ = do
 getPotentiallyModifiedCardCost _ (VengeanceCard _) _ _ =
   error "should not check vengeance card"
 
-getModifiedCardCost :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m (Maybe Int)
+getModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m (Maybe Int)
 getModifiedCardCost iid c = fmap (max 0) <$> getUnboundedModifiedCardCost iid c
 
-getUnboundedModifiedCardCost :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m (Maybe Int)
+getUnboundedModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m (Maybe Int)
 getUnboundedModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers iid
   cardModifiers <- getModifiers c.id

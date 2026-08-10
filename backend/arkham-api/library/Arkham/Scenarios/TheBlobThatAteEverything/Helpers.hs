@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "theBlobThatAteEverything" a
@@ -26,11 +25,11 @@ subject8L08Matcher :: EnemyMatcher
 subject8L08Matcher = mapOneOf enemyIs [Cards.subject8L08, Cards.subject8L08EpicMultiplayer]
 
 -- | Subject 8L-08 (either variant). The anomaly itself.
-getSubject8L08 :: (HasGame m, Tracing m) => m (Maybe EnemyId)
+getSubject8L08 :: HasGame m => m (Maybe EnemyId)
 getSubject8L08 = selectOne subject8L08Matcher
 
 -- | The number of cards Subject 8L-08 has devoured (placed beneath it).
-getDevouredCount :: (HasGame m, Tracing m) => m Int
+getDevouredCount :: HasGame m => m Int
 getDevouredCount =
   getSubject8L08 >>= \case
     Nothing -> pure 0
@@ -38,7 +37,7 @@ getDevouredCount =
 
 -- | A location cannot be devoured if removing it would cause another location
 -- to have no valid connections.
-canDevourLocation :: (HasGame m, Tracing m) => LocationId -> m Bool
+canDevourLocation :: HasGame m => LocationId -> m Bool
 canDevourLocation lid = do
   otherLocations <- select $ Anywhere <> not_ (LocationWithId lid)
   not <$> anyM wouldOrphan otherLocations

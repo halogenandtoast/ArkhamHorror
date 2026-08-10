@@ -7,7 +7,6 @@ import Arkham.Classes.HasGame (HasGame)
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.MachinationsThroughTime.Helpers
-import Arkham.Tracing (Tracing)
 
 newtype NikolaTesla = NikolaTesla AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,7 +19,7 @@ instance HasAbilities NikolaTesla where
   getAbilities (NikolaTesla a) =
     [restricted a 1 OnSameLocation $ FastAbility' (exhaust a) #parley]
 
-unusedOptions :: (HasGame m, Tracing m) => m [Text]
+unusedOptions :: HasGame m => m [Text]
 unusedOptions = do
   used <- nikolaTeslaUsedOptions <$> getMachinationsThroughTimeMeta
   pure $ filter (`notMember` used) ["clue", "cards", "resources"]

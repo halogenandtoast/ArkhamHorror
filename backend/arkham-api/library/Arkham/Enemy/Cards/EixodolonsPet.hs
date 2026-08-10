@@ -7,7 +7,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Modifiers (immuneToPlayerEffects)
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Tracing
 
 newtype EixodolonsPet = EixodolonsPet EnemyAttrs
   deriving anyclass (IsEnemy, HasAbilities)
@@ -20,7 +19,7 @@ newtype EixodolonsPet = EixodolonsPet EnemyAttrs
 eixodolonsPet :: EnemyCard EixodolonsPet
 eixodolonsPet = enemy EixodolonsPet Cards.eixodolonsPet
 
-isLockedAway :: (HasGame m, Tracing m) => EnemyId -> m Bool
+isLockedAway :: HasGame m => EnemyId -> m Bool
 isLockedAway eid =
   fieldMap EnemyPlacement (== Global) eid
 

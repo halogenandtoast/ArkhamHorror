@@ -12,12 +12,11 @@ import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.BadBlood.Meta
 import Arkham.Token (Token (Memory))
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "badBlood" a
 
-getBadBloodMeta :: (HasGame m, Tracing m) => m Meta
+getBadBloodMeta :: HasGame m => m Meta
 getBadBloodMeta = scenarioFieldMap ScenarioMeta (toResultDefault emptyMeta)
 
 agnesBaker :: InvestigatorMatcher

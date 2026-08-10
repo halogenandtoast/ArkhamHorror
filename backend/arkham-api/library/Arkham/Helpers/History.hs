@@ -13,9 +13,8 @@ import Arkham.Id
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
 import Arkham.Prelude
-import Arkham.Tracing
 
-historyMatches :: (HasGame m, Tracing m) => Matcher.HistoryMatcher -> History -> m Bool
+historyMatches :: HasGame m => Matcher.HistoryMatcher -> History -> m Bool
 historyMatches = \case
   Matcher.DefeatedEnemiesWithTotalHealth vMatcher ->
     (`gameValueMatches` vMatcher) . sum . map defeatedEnemyHealth . historyEnemiesDefeated
@@ -34,10 +33,10 @@ historyMatches = \case
   Matcher.CluesDiscoveredAt vMatcher lid ->
     (`gameValueMatches` vMatcher) . findWithDefault 0 lid . historyCluesDiscovered
 
-getAllHistoryField :: (HasGame m, Tracing m, Monoid k) => HistoryType -> HistoryField k -> m k
+getAllHistoryField :: (HasGame m, Monoid k) => HistoryType -> HistoryField k -> m k
 getAllHistoryField htype fld = concatMap (viewHistoryField fld) <$> (traverse (getHistory htype) =<< getInvestigators)
 
 hasHistory
-  :: (HasGame m, Tracing m, ToId investigator InvestigatorId)
+  :: (HasGame m, ToId investigator InvestigatorId)
   => HistoryType -> Matcher.HistoryMatcher -> investigator -> m Bool
 hasHistory htype matcher (asId -> iid) = getHistory htype iid >>= historyMatches matcher

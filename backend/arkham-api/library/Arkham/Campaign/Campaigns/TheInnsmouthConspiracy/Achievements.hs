@@ -59,14 +59,13 @@ import Arkham.Scenario.Types (Field (ScenarioMeta))
 import Arkham.ScenarioLogKey (ScenarioCountKey (Barriers))
 import Arkham.Scenarios.InTooDeep.Helpers qualified as InTooDeep
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Trait (Trait (DeepOne, Vehicle))
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 import Data.Map.Strict qualified as Map
 
 runInnsmouthConspiracyAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runInnsmouthConspiracyAchievements msg = whenEligibleCampaign $ case msg of
   -- Enemy defeats. The campaign sees Defeated before the enemy processes it, and
   -- the message already carries the enemy's traits, so nothing has to be looked
@@ -242,7 +241,7 @@ whenEligibleCampaign body = do
   let eligible = achievementCampaigns $ TheInnsmouthConspiracyAchievement GoneFishing
   when (maybe False (`elem` eligible) mCampaignId) body
 
-whenScenarioIs :: (HasGame m, Tracing m) => ScenarioId -> m () -> m ()
+whenScenarioIs :: HasGame m => ScenarioId -> m () -> m ()
 whenScenarioIs sid body = do
   mSid <- selectOne TheScenario
   when (mSid == Just sid) body
@@ -276,12 +275,12 @@ awakenedGods =
 relics :: [CardDef]
 relics = [Assets.wavewornIdol, Assets.awakenedMantle, Assets.headdressOfYhaNthlei]
 
-isLongWayAround :: (HasGame m, Tracing m) => LocationId -> m Bool
+isLongWayAround :: HasGame m => LocationId -> m Bool
 isLongWayAround lid = do
   cardDef <- fieldMap Location.LocationCard toCardDef lid
   pure $ cardDef == Locations.longWayAround
 
-hasDivingSuit :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
+hasDivingSuit :: HasGame m => InvestigatorId -> m Bool
 hasDivingSuit iid =
   selectAny $ assetIs Assets.divingSuit <> AssetControlledBy (InvestigatorWithId iid)
 
@@ -289,7 +288,7 @@ hasDivingSuit iid =
 controller. Only the other two are looked up: this one is not in play yet.
 -}
 checkFullBuild
-  :: (HasGame m, HasQueue Message m, Tracing m) => InvestigatorId -> CardDef -> m ()
+  :: (HasGame m, HasQueue Message m) => InvestigatorId -> CardDef -> m ()
 checkFullBuild iid cardDef = when (cardDef `elem` relics) do
   let others = filter (/= cardDef) relics
   whenM (allM (\def -> selectAny $ assetIs def <> AssetControlledBy (InvestigatorWithId iid)) others) do
@@ -342,8 +341,8 @@ lairOfDagonUndisturbedKey = "ticAchLairOfDagonUndisturbed"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-storedFlag :: (HasCallStack, HasGame m, Tracing m) => Text -> m Bool
+storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k

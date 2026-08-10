@@ -39,11 +39,9 @@ import Arkham.Random
 import Arkham.Scenario.Types
 import Arkham.Skill.Types
 import Arkham.Story.Types
-import Arkham.Tracing
 import Arkham.Treachery.Types
 import Arkham.Zone
 import Control.Monad.Catch (MonadMask)
-import OpenTelemetry.Trace.Monad (MonadTracer)
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
@@ -101,7 +99,7 @@ instance HasChaosTokenValue ()
 
 delve :: Game -> Game
 withoutCanModifiers :: Game -> Game
-abilityMatches :: (HasGame m, Tracing m) => Ability -> AbilityMatcher -> m Bool
+abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
 asIfTurn :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 asActive :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 
@@ -116,13 +114,11 @@ runMessages
      , MonadReader env m
      , HasGameLogger m
      , HasDebugLevel m
-     , MonadTracer m
      , MonadMask m
-     , Tracing m
      )
   => Text
   -> Maybe (Message -> IO ())
   -> m ()
-preloadModifiers :: (HasCallStack, Monad m, Tracing m) => Game -> m Game
-handleTraitRestrictedModifiers :: (Monad m, Tracing m) => Game -> m Game
+preloadModifiers :: (HasCallStack, Monad m) => Game -> m Game
+handleTraitRestrictedModifiers :: Monad m => Game -> m Game
 handleBlanked :: Monad m => Game -> m Game

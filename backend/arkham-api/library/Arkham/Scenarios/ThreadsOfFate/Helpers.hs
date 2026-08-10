@@ -18,9 +18,8 @@ import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Source
-import Arkham.Tracing
 
-getActDecksInPlayCount :: (HasGame m, Tracing m) => m Int
+getActDecksInPlayCount :: HasGame m => m Int
 getActDecksInPlayCount = do
   hasDeckA <- selectAny $ ActOneOf [ActWithSide Act.A, ActWithSide Act.B]
   hasDeckC <- selectAny $ ActOneOf [ActWithSide Act.C, ActWithSide Act.D]
@@ -28,7 +27,7 @@ getActDecksInPlayCount = do
   hasDeckG <- selectAny $ ActOneOf [ActWithSide Act.G, ActWithSide Act.H]
   pure $ count id [hasDeckA, hasDeckC, hasDeckE, hasDeckG]
 
-isIchtacasPrey :: (HasGame m, Tracing m) => EnemyId -> m Bool
+isIchtacasPrey :: HasGame m => EnemyId -> m Bool
 isIchtacasPrey eid = scenarioFieldMap ScenarioRemembered $ any $ \case
   IchtacasPrey (Labeled _ eid' `With` _) -> eid == eid'
   _ -> False

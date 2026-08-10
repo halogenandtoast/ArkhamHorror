@@ -29,7 +29,6 @@ import Arkham.Prelude
 import Arkham.SkillTest.Base
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 
 isEnemyTarget :: ConcealedCard -> Target -> Bool
 isEnemyTarget c target =
@@ -41,7 +40,7 @@ isEnemyTarget c target =
 in the shadows in a grid position.
 -}
 concealedLocationFor
-  :: (HasGame m, Tracing m) => InvestigatorId -> ConcealedCard -> m (Maybe LocationId)
+  :: HasGame m => InvestigatorId -> ConcealedCard -> m (Maybe LocationId)
 concealedLocationFor iid c = case c.placement of
   InPosition _ -> getLocationOf iid
   AtLocation location -> pure $ Just location

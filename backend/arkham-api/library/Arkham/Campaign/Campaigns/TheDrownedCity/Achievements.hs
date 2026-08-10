@@ -56,13 +56,12 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Trait (Trait (Cultist, Lift))
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 
 runDrownedCityAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runDrownedCityAchievements msg = whenEligibleCampaign $ case msg of
   -- Enemy defeats. The campaign sees Defeated before the enemy processes it, so
   -- the entity is still in play and queryable.
@@ -266,7 +265,7 @@ whenEligibleCampaign body = do
   let eligible = achievementCampaigns $ TheDrownedCityAchievement OneFirstLastJob
   when (maybe False (`elem` eligible) mCampaignId) body
 
-whenScenarioIs :: (HasGame m, Tracing m) => ScenarioId -> m () -> m ()
+whenScenarioIs :: HasGame m => ScenarioId -> m () -> m ()
 whenScenarioIs sid body = do
   mSid <- selectOne TheScenario
   when (mSid == Just sid) body
@@ -370,11 +369,11 @@ openSkyTurnEndsKey = "tdcAchOpenSkyTurnEnds"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-storedFlag :: (HasCallStack, HasGame m, Tracing m) => Text -> m Bool
+storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k
 
-storedList :: (HasCallStack, HasGame m, Tracing m) => Text -> m [CardCode]
+storedList :: (HasCallStack, HasGame m) => Text -> m [CardCode]
 storedList k = fromMaybe [] <$> stored k

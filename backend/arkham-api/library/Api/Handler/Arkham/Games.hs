@@ -53,8 +53,6 @@ import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
-import OpenTelemetry.Eventlog (withSpan_)
-import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import Yesod.WebSockets
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
@@ -98,34 +96,29 @@ getApiV1ArkhamGameSpectateR gameId = do
 getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamGamesR = do
   userId <- getRequestUserId
-  -- withSpan_ wraps Yesod's HCContent control-flow exceptions, so it's
-  -- only safe over code paths that don't call notFound/notAuthenticated/etc.
-  -- getRequestUserId is the only HCContent-throwing call; everything below
-  -- is safe to trace.
-  withSpan_ "getApiV1ArkhamGamesR" do
-    games <- runDB $ select do
-      (players :& games) <-
-        distinct
-          $ from
-          $ table @ArkhamPlayer
-          `innerJoin` table @ArkhamGameRaw
-            `on` (\(players :& games) -> players.arkhamGameId ==. toBaseId games.id)
-      where_ $ players.userId ==. val userId
-      -- Epic Multiplayer group games are surfaced through their event (one
-      -- entry), not as standalone games in this list.
-      where_ $ notExists $ do
-        grp <- from $ table @ArkhamEpicGroup
-        where_ $ grp.arkhamGameId ==. just (toBaseId games.id)
-      orderBy [desc games.updatedAt]
-      pure games
-    let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
-    playerCounts <- runDB $ select do
-      p <- from $ table @ArkhamPlayer
-      where_ $ p.arkhamGameId `in_` valList gameIds
-      groupBy p.arkhamGameId
-      pure (p.arkhamGameId, countRows @Int)
-    let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
-    pure $ map (\g -> toGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
+  games <- runDB $ select do
+    (players :& games) <-
+      distinct
+        $ from
+        $ table @ArkhamPlayer
+        `innerJoin` table @ArkhamGameRaw
+          `on` (\(players :& games) -> players.arkhamGameId ==. toBaseId games.id)
+    where_ $ players.userId ==. val userId
+    -- Epic Multiplayer group games are surfaced through their event (one
+    -- entry), not as standalone games in this list.
+    where_ $ notExists $ do
+      grp <- from $ table @ArkhamEpicGroup
+      where_ $ grp.arkhamGameId ==. just (toBaseId games.id)
+    orderBy [desc games.updatedAt]
+    pure games
+  let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
+  playerCounts <- runDB $ select do
+    p <- from $ table @ArkhamPlayer
+    where_ $ p.arkhamGameId `in_` valList gameIds
+    groupBy p.arkhamGameId
+    pure (p.arkhamGameId, countRows @Int)
+  let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
+  pure $ map (\g -> toGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]
@@ -195,14 +188,13 @@ postApiV1ArkhamGamesR = do
     ag = ArkhamGame campaignName game 0 multiplayerVariant now now
     repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
 
-  tracer <- getTracer
 
   runDB do
     gameId <- insert ag
     pids <- replicateM repeatCount $ insert $ ArkhamPlayer userId gameId "00000"
     gameRef <- liftIO $ newIORef game
 
-    runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer Nothing) do
+    runGameApp (GameApp gameRef queueRef genRef (pure . const ()) Nothing) do
       for_ pids \pid -> addPlayer (PlayerId $ coerce pid)
       traverse_ (push . HandleOption) (toList options)
       runMessages (gameIdToText gameId) Nothing
@@ -272,8 +264,7 @@ postApiV1ArkhamGamePlayabilityR gameId = do
   gameRef <- newIORef gameJson
   queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen gameJson.gameSeed
-  tracer <- getTracer
-  runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer Nothing) do
+  runGameApp (GameApp gameRef queueRef genRef (pure . const ()) Nothing) do
     card <- getCard cid
     let duringTurnWindows = [mkWhen (Window.DuringTurn iid)]
     checks <- getPlayabilityChecks iid (toSource iid) (UnpaidCost NeedsAction) duringTurnWindows card

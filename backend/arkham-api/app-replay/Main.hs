@@ -37,12 +37,6 @@ import Data.Ord (Down (..))
 import Data.Text qualified as T
 import Entity.Answer (Reply (..), answerPlayer, handleAnswerPure)
 import Entity.Arkham.Step (ArkhamStep (..), Choice (..))
-import OpenTelemetry.Trace
-  ( detectInstrumentationLibrary
-  , initializeGlobalTracerProvider
-  , makeTracer
-  , tracerOptions
-  )
 import System.Environment (getArgs)
 import System.Exit (die, exitSuccess)
 import System.IO (hPutStrLn, stderr)
@@ -219,9 +213,6 @@ main = do
           (s : _) -> choiceMessages (arkhamStepChoice s)
           _ -> []
 
-  provider <- initializeGlobalTracerProvider
-  let tracer = makeTracer provider $(detectInstrumentationLibrary) tracerOptions
-
   metricsRef <- case optMetrics opts of
     Nothing -> pure Nothing
     Just _ -> Just <$> enableMetrics
@@ -240,7 +231,7 @@ main = do
         | optTrace opts = hPutStrLn stderr ("client> " <> formatClientMessage m)
         | otherwise = pure ()
 
-  let app = GameApp gameRef queueRef genRef clientLogger tracer Nothing
+  let app = GameApp gameRef queueRef genRef clientLogger Nothing
 
   -- Drain any pending queue first, then process answers one at a time using
   -- the same dance as Api.Handler.Arkham.Games.Shared.updateGame: resolve the

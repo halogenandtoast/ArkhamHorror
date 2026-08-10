@@ -14,7 +14,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier (UIModifier (..))
 import Arkham.Scenarios.TheApiary.Helpers
-import Arkham.Tracing (Tracing)
 
 newtype CentralChamber = CentralChamber LocationAttrs
   deriving anyclass IsLocation
@@ -31,7 +30,7 @@ function the engine uses) to find the faced location, then emit a bidirectional
 connection modifier between it and the Central Chamber. We also emit a UI
 rotation so the card visually points at the location it faces.
 -}
-getFacedLocation :: (HasGame m, Tracing m) => LocationAttrs -> GridDirection -> m (Maybe LocationId)
+getFacedLocation :: HasGame m => LocationAttrs -> GridDirection -> m (Maybe LocationId)
 getFacedLocation attrs facing =
   case locationPosition attrs of
     Nothing -> pure Nothing

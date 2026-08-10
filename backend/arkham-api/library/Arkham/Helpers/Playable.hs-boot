@@ -6,12 +6,10 @@ import Arkham.Cost.Status (CostStatus)
 import Arkham.Id
 import Arkham.Prelude
 import Arkham.Source
-import Arkham.Tracing
 import Arkham.Window (Window)
 
 getIsPlayable
   :: ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator
@@ -25,7 +23,6 @@ getIsPlayable
   -> m Bool
 getPlayableCards
   :: ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator
@@ -35,7 +32,6 @@ getPlayableCards
 getIsPlayableWithResources
   :: forall m source investigator
    . ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator

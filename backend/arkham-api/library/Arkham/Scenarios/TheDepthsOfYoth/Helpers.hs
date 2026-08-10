@@ -20,7 +20,6 @@ import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Source
-import Arkham.Tracing
 import Arkham.Window qualified as Window
 import Arkham.Zone
 import Data.Aeson (Result (..))
@@ -37,16 +36,16 @@ incrementDepth = do
   checkWhen Window.AddingToCurrentDepth
   push $ ScenarioCountIncrementBy CurrentDepth 1
 
-getCurrentDepth :: (HasGame m, Tracing m) => m Int
+getCurrentDepth :: HasGame m => m Int
 getCurrentDepth = scenarioCount CurrentDepth
 
-getDepthStart :: (HasGame m, Tracing m) => m LocationId
+getDepthStart :: HasGame m => m LocationId
 getDepthStart = depthLocation <$> getMeta
 
-getCurrentExploreSource :: (HasGame m, Tracing m) => m (Maybe Source)
+getCurrentExploreSource :: HasGame m => m (Maybe Source)
 getCurrentExploreSource = currentExploreSource <$> getMeta
 
-getMeta :: (HasGame m, Tracing m) => m DepthsOfYothMeta
+getMeta :: HasGame m => m DepthsOfYothMeta
 getMeta = do
   v <- scenarioField ScenarioMeta
   case fromJSON v of
@@ -57,7 +56,7 @@ toMeta :: LocationId -> Maybe Source -> Value
 toMeta lid msource = toJSON $ DepthsOfYothMeta lid msource
 
 getInPursuitEnemyWithHighestEvade
-  :: (HasGame m, Tracing m) => m (Set EnemyId)
+  :: HasGame m => m (Set EnemyId)
 getInPursuitEnemyWithHighestEvade = do
   inPursuit <- getInPursuitEnemies
   evadeValue <-
@@ -73,7 +72,7 @@ getInPursuitEnemyWithHighestEvade = do
       )
       (toList inPursuit)
 
-getInPursuitEnemies :: (HasGame m, Tracing m) => m [EnemyId]
+getInPursuitEnemies :: HasGame m => m [EnemyId]
 getInPursuitEnemies = select $ OutOfPlayEnemy PursuitZone AnyEnemy
 
 placePursuitEnemies :: ReverseQueue m => m ()

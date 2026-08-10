@@ -22,13 +22,12 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Trait (Trait)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Zone (knownOutOfPlayZone, overOutOfPlayZones)
 import Data.Proxy
 
-targetTraits :: (HasCallStack, HasGame m, Tracing m) => Target -> m (Set Trait)
+targetTraits :: (HasCallStack, HasGame m) => Target -> m (Set Trait)
 targetTraits = \case
   UltimatumOrBoonTarget _ -> pure mempty
   DiscoverTarget _ -> pure mempty
@@ -91,7 +90,7 @@ targetTraits = \case
   LabeledTarget _ t -> targetTraits t
   ThisTarget -> pure mempty
 
-targetMatches :: forall m. (HasCallStack, HasGame m, Tracing m) => Target -> TargetMatcher -> m Bool
+targetMatches :: forall m. (HasCallStack, HasGame m) => Target -> TargetMatcher -> m Bool
 targetMatches s = \case
   TargetWithHorror ->
     let
@@ -244,7 +243,7 @@ targetMatches s = \case
     _ -> pure False
 
 targetListMatches
-  :: (HasGame m, Tracing m) => [Target] -> Matcher.TargetListMatcher -> m Bool
+  :: HasGame m => [Target] -> Matcher.TargetListMatcher -> m Bool
 targetListMatches targets = \case
   Matcher.AnyTargetList -> pure True
   Matcher.HasTarget targetMatcher ->

@@ -16,7 +16,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Token qualified as Token
-import Arkham.Tracing (Tracing)
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "sepulchreOfTheSleeper" a
@@ -26,7 +25,7 @@ scenarioI18n a = campaignI18n $ scope "sepulchreOfTheSleeper" a
 scenario reference card, so the counter is the scenario's own resource token count
 rather than anything held in the meta. The skull token scales with it.
 -}
-getDisturbance :: (HasGame m, Tracing m) => m Int
+getDisturbance :: HasGame m => m Int
 getDisturbance = countScenarioTokens Token.Resource
 
 -- | Raises the Disturbance by 1; the scenario owns the token on its reference card.

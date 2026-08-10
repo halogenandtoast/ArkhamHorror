@@ -40,7 +40,6 @@ import Arkham.Source
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Target
 import Arkham.Token qualified as Token
-import Arkham.Tracing (Tracing)
 import Arkham.Trait (Trait (Summit))
 
 scenarioI18n :: (HasI18n => a) -> a
@@ -51,7 +50,7 @@ resource on the scenario reference card under "Storm Intensity" and scenario
 effects add and remove them, so the counter is the scenario's own resource token
 count rather than anything held in the meta.
 -}
-getStormIntensity :: (HasGame m, Tracing m) => m Int
+getStormIntensity :: HasGame m => m Int
 getStormIntensity = countScenarioTokens Token.Resource
 
 {- | Marks an investigator who must draw the top card of the encounter deck at the
@@ -94,7 +93,7 @@ while the engine's grid rows count upward from zero. Resolve a diagram row
 against the grid as it currently stands; rows the grid does not have — the act 1
 layout is only three rows tall, and the Winds refer to a fourth — give 'Nothing'.
 -}
-gridRowForDiagramRow :: (HasGame m, Tracing m) => Int -> m (Maybe Int)
+gridRowForDiagramRow :: HasGame m => Int -> m (Maybe Int)
 gridRowForDiagramRow n = do
   rows <- map (.row) <$> getGridPositions
   pure do
@@ -103,11 +102,11 @@ gridRowForDiagramRow n = do
     guard (row `elem` rows)
     pure row
 
-getGridPositions :: (HasGame m, Tracing m) => m [Pos]
+getGridPositions :: HasGame m => m [Pos]
 getGridPositions = catMaybes <$> selectField LocationPosition (IncludeEmptySpace Anywhere)
 
 -- | Everything occupying a grid row, ordered left to right by column.
-getRowOccupants :: (HasGame m, Tracing m) => Int -> m [(Int, LocationId)]
+getRowOccupants :: HasGame m => Int -> m [(Int, LocationId)]
 getRowOccupants row = do
   lids <- select $ IncludeEmptySpace $ LocationInRow row
   cells <- for lids \lid -> fmap ((,lid) . (.column)) <$> field LocationPosition lid
@@ -120,7 +119,7 @@ Every cell of the layout is filled, so connection distance and step distance
 agree.
 -}
 gridLocationsWithin
-  :: (HasGame m, Tracing m) => Int -> LocationId -> m [LocationId]
+  :: HasGame m => Int -> LocationId -> m [LocationId]
 gridLocationsWithin n lid = do
   field LocationPosition lid >>= \case
     Nothing -> pure []
@@ -135,7 +134,7 @@ gridDistance :: Pos -> Pos -> Int
 gridDistance a b = abs (a.column - b.column) + abs (a.row - b.row)
 
 -- | The open sky cards sharing a side with the given location.
-getAdjacentOpenSky :: (HasGame m, Tracing m) => LocationId -> m [LocationId]
+getAdjacentOpenSky :: HasGame m => LocationId -> m [LocationId]
 getAdjacentOpenSky lid = do
   adjacent <- gridLocationsWithin 1 lid
   filterM (<=~> isOpenSky) adjacent
@@ -147,7 +146,7 @@ Open sky in particular must never reach the encounter discard pile.
 @arrange@ orders the returning cards before they go on top; the winds shuffle
 them, everything else keeps them as given.
 -}
-summitDeckCard :: (HasGame m, Tracing m) => LocationId -> m Card
+summitDeckCard :: HasGame m => LocationId -> m Card
 summitDeckCard lid = do
   card <- field LocationCard lid
   revealed <- field LocationRevealed lid
@@ -248,7 +247,7 @@ blowWinds diagramRows dir = do
 {- | "or place them in the victory display instead if they have Victory X and no
 clues on them"
 -}
-canBeClaimedForVictory :: (HasGame m, Tracing m) => LocationId -> m Bool
+canBeClaimedForVictory :: HasGame m => LocationId -> m Bool
 canBeClaimedForVictory lid = do
   victory <- field LocationVictory lid
   noClues <- lid <=~> LocationWithoutClues
@@ -269,7 +268,7 @@ which is exactly "moving the card that would enter its space into the nearest ga
 created". One slidable card leaves, so one of those columns is always left over —
 that is the gap.
 -}
-planRowSlide :: (HasGame m, Tracing m) => GridDirection -> Int -> m RowSlide
+planRowSlide :: HasGame m => GridDirection -> Int -> m RowSlide
 planRowSlide dir row = do
   occupants <- getRowOccupants row
   slidableIds <- map snd <$> filterM ((<=~> slidableLocation) . snd) occupants
@@ -404,7 +403,7 @@ rebuildSkyline anchor layout = do
 card there, so the acts just draw on it as their diagrams call for; placing a
 location already removes its card from set aside.
 -}
-getSetAsideOpenSky :: (HasGame m, Tracing m) => Int -> m [Card]
+getSetAsideOpenSky :: HasGame m => Int -> m [Card]
 getSetAsideOpenSky n = take n <$> select (SetAsideCardMatch $ cardIs Locations.openSky)
 
 {- | "Place 1 doom on the nearest enemy." Ties are the investigator's choice, so

@@ -32,7 +32,6 @@ import Entity.Arkham.Step
 import Import hiding (delete, on, update, (!=.), (<.), (=.), (==.), (>.), (>=.))
 import Json
 import Network.HTTP.Types.Status qualified as Status
-import OpenTelemetry.Eventlog (withSpan_)
 
 jsonError :: Text -> Json.Value
 jsonError msg = object ["error" .= msg]
@@ -204,11 +203,7 @@ putApiV1ArkhamGameUndoR gameId = do
         player <- get404 @_ @_ @ArkhamPlayer $ coerce $ gameActivePlayerId game.currentData
         pure player.userId
       _ -> pure userId'
-  -- NOTE: do not call sendStatusJSON inside withSpan_. withSpan_'s bracket-style
-  -- exception handling rewraps Yesod's HCContent control-flow exception in an
-  -- AnnotatedException, which Yesod cannot unwrap, so the response degrades to
-  -- a generic 500 and the actual error JSON is lost.
-  result <- withSpan_ "stepBack" $ runDB (stepBack isDebug userId gameId)
+  result <- runDB (stepBack isDebug userId gameId)
   case result of
     Left err -> do
       liftIO $ print err
@@ -229,38 +224,37 @@ putApiV1ArkhamGameUndoR gameId = do
 
 putApiV1ArkhamGameUndoScenarioR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoScenarioR =
-  multiStepUndoHandler "stepBackN" stepBackScenario
+  multiStepUndoHandler stepBackScenario
 
 putApiV1ArkhamGameUndoActionR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoActionR =
-  multiStepUndoHandler "stepBackAction" (stepBackToBoundary "gameUndoActionStep")
+  multiStepUndoHandler (stepBackToBoundary "gameUndoActionStep")
 
 putApiV1ArkhamGameUndoTurnR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoTurnR =
-  multiStepUndoHandler "stepBackTurn" (stepBackToBoundary "gameUndoTurnStep")
+  multiStepUndoHandler (stepBackToBoundary "gameUndoTurnStep")
 
 putApiV1ArkhamGameUndoPhaseR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoPhaseR =
-  multiStepUndoHandler "stepBackPhase" (stepBackToBoundary "gameUndoPhaseStep")
+  multiStepUndoHandler (stepBackToBoundary "gameUndoPhaseStep")
 
 putApiV1ArkhamGameUndoRoundR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoRoundR =
-  multiStepUndoHandler "stepBackRound" (stepBackToBoundary "gameUndoRoundStep")
+  multiStepUndoHandler (stepBackToBoundary "gameUndoRoundStep")
 
 {- | Shared handler logic for multi-step undo endpoints. Reseeds the game,
 replaces the row with an updated `updatedAt`, and rebroadcasts the
 truncated game log.
 -}
 multiStepUndoHandler
-  :: ByteString
-  -> (UserId -> ArkhamGameId -> DB (Either Json.Value (ArkhamGame, Maybe (ArkhamEpicEventId, SharedEventState))))
+  :: (UserId -> ArkhamGameId -> DB (Either Json.Value (ArkhamGame, Maybe (ArkhamEpicEventId, SharedEventState))))
   -> ArkhamGameId
   -> Handler ()
-multiStepUndoHandler spanName runStepBack gameId = do
+multiStepUndoHandler runStepBack gameId = do
   userId <- getRequestUserId
   x <- liftIO getRandom
   now <- liftIO getCurrentTime
-  eResult <- withSpan_ spanName $ runDB do
+  eResult <- runDB do
     runExceptT do
       (agame, mPropagate) <- ExceptT $ runStepBack userId gameId
       lift do

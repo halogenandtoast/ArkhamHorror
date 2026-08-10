@@ -5,17 +5,13 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import {-# SOURCE #-} Arkham.Game.Base
 import {-# SOURCE #-} Arkham.Message
-import Arkham.Metrics (withMetric)
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Random
-import Arkham.Tracing
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.Random
 import Data.Dependent.Map (DMap)
 import Data.Dependent.Map qualified as DMap
-import OpenTelemetry.Trace qualified as Trace
-import OpenTelemetry.Trace.Monad (MonadTracer (..), inSpan')
 
 data GameEnv = GameEnv
   { gameEnvGame :: IORef Game
@@ -23,7 +19,6 @@ data GameEnv = GameEnv
   , gameRandomGen :: IORef StdGen
   , gameLogger :: ClientMessage -> IO ()
   , gameCacheRef :: IORef (DMap CacheKey Identity)
-  , gameTracer :: Trace.Tracer
   }
 
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
@@ -39,20 +34,6 @@ newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
     , MonadThrow
     )
 
-instance MonadTracer GameT where
-  getTracer = asks gameTracer
-
-instance Tracing GameT where
-  type SpanType GameT = Trace.Span
-  type SpanArgs GameT = Trace.SpanArguments
-  defaultSpanArgs = Trace.defaultSpanArguments
-  -- `addAttribute` is intentionally a no-op: we have no OTel exporter wired
-  -- up and the Text values fed to it (often `tshow` of a deep ADT) are
-  -- non-trivial to compute. With no consumer the work is pure overhead.
-  -- Since the argument is unused here, GHC's laziness keeps the thunk
-  -- unforced.
-  addAttribute _ _ _ = pure ()
-  doTrace name args action = withMetric name (inSpan' name args action)
 instance HasGame GameT where
   getGame = asks gameEnvGame >>= readIORef
   getCache = GameCache \k build -> do

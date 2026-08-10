@@ -10,12 +10,11 @@ import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Target
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "dogsOfWar" a
 
-keyLocusLocations :: (Tracing m, HasGame m) => m [LocationId]
+keyLocusLocations :: HasGame m => m [LocationId]
 keyLocusLocations = select locationWithKeyLocus
 
 pattern IsKeyLocus :: ModifierType
@@ -24,7 +23,7 @@ pattern IsKeyLocus = ScenarioModifier "keyLocus"
 pattern KeyLocusLocation :: ModifierType
 pattern KeyLocusLocation = ScenarioModifier "keyLocusLocation"
 
-keyLocusTargets :: (Tracing m, HasGame m) => m [Target]
+keyLocusTargets :: HasGame m => m [Target]
 keyLocusTargets = do
   keyLocuses <-
     selectTargets

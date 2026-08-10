@@ -12,7 +12,6 @@ import Arkham.Location.Types (Field (LocationPosition), LocationAttrs)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theWesternWall" a
@@ -34,7 +33,7 @@ treacherousPathModifiers a = do
   for_ a.position \pos -> modifySelf a [SetShroud $ locationLevel pos]
 
 getLocationLevel
-  :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m, Tracing m)
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m)
   => investigator -> m Int
 getLocationLevel investigator =
   fromMaybe 0 <$> runMaybeT do

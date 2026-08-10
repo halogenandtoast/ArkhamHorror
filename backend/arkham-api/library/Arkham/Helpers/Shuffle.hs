@@ -9,14 +9,13 @@ import Arkham.Helpers.Window (DrawnCard)
 import Arkham.Id
 import Arkham.Prelude
 import Arkham.Target
-import Arkham.Tracing
 
 class CanShuffleIn a where
-  getCanShuffleIn :: (HasGame m, Tracing m, Deck.IsDeck deck) => deck -> a -> m Bool
+  getCanShuffleIn :: (HasGame m, Deck.IsDeck deck) => deck -> a -> m Bool
   getCanShuffleIn (Deck.toDeck -> deck) _a =
     andM [emptyDeckCanBeShuffledInto deck, maybe (pure True) getCanShuffleDeckX deck.investigator]
 
-emptyDeckCanBeShuffledInto :: (HasGame m, Tracing m) => Deck.DeckSignifier -> m Bool
+emptyDeckCanBeShuffledInto :: HasGame m => Deck.DeckSignifier -> m Bool
 emptyDeckCanBeShuffledInto Deck.NoDeck = pure False
 emptyDeckCanBeShuffledInto deck
   | preventsShuffleIntoEmptyDeck deck = not <$> isDeckEmpty deck
@@ -41,9 +40,9 @@ instance CanShuffleIn a => CanShuffleIn [a] where
   getCanShuffleIn deck [a] = getCanShuffleIn deck a
   getCanShuffleIn (Deck.toDeck -> deck) _ = maybe (pure True) can.shuffle.deck deck.investigator
 
-getCanShuffleDeckX :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
+getCanShuffleDeckX :: HasGame m => InvestigatorId -> m Bool
 getCanShuffleDeckX = can.shuffle.deck
 
 whenCanShuffleIn
-  :: (HasGame m, Tracing m, CanShuffleIn c, Deck.IsDeck deck) => deck -> c -> m () -> m ()
+  :: (HasGame m, CanShuffleIn c, Deck.IsDeck deck) => deck -> c -> m () -> m ()
 whenCanShuffleIn deck c = whenM (getCanShuffleIn deck c)

@@ -16,15 +16,14 @@ import Arkham.Skill.Types (Field (..))
 import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Treachery.Types (Field (..))
 
-targetToCard :: (HasCallStack, HasGame m, Tracing m) => Target -> m Card
+targetToCard :: (HasCallStack, HasGame m) => Target -> m Card
 targetToCard target = fromMaybe handleMissing <$> targetToMaybeCard target
  where
   handleMissing = error $ "unhandled: " <> show target
 
-targetToMaybeCard :: (HasCallStack, HasGame m, Tracing m) => Target -> m (Maybe Card)
+targetToMaybeCard :: (HasCallStack, HasGame m) => Target -> m (Maybe Card)
 targetToMaybeCard = \case
   ActTarget aid -> fieldMay ActCard aid
   AgendaTarget aid -> fieldMay AgendaCard aid
@@ -44,11 +43,11 @@ targetToMaybeCard = \case
     pure $ aCard <|> bCard
   _ -> pure Nothing
 
-sourceToCard :: (HasCallStack, HasGame m, Tracing m) => Source -> m Card
+sourceToCard :: (HasCallStack, HasGame m) => Source -> m Card
 sourceToCard = targetToCard . sourceToTarget
 
 sourceToMaybeCard
-  :: (HasCallStack, HasGame m, Tracing m, Sourceable source) => source -> m (Maybe Card)
+  :: (HasCallStack, HasGame m, Sourceable source) => source -> m (Maybe Card)
 sourceToMaybeCard (toSource -> source) = case source of
   ProxySource u t -> runMaybeT $ MaybeT (sourceToMaybeCard t) <|> MaybeT (sourceToMaybeCard u)
   IndexedSource _ t -> sourceToMaybeCard t

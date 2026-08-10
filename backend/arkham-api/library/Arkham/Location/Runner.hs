@@ -70,7 +70,6 @@ import Arkham.Projection
 import Arkham.Spawn
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
@@ -107,7 +106,7 @@ extendUnrevealed = withUnrevealedAbilities
 extendUnrevealed1 :: LocationAttrs -> Ability -> [Ability]
 extendUnrevealed1 attrs ability = extendUnrevealed attrs [ability]
 getModifiedRevealClueCountWithMods
-  :: (HasGame m, Tracing m) => [ModifierType] -> LocationAttrs -> m Int
+  :: HasGame m => [ModifierType] -> LocationAttrs -> m Int
 getModifiedRevealClueCountWithMods mods attrs =
   if CannotPlaceClues `elem` mods
     then pure 0
@@ -591,11 +590,11 @@ instance RunMessage LocationAttrs where
       pure $ a & concealedCardsL %~ filter (/= card)
     _ -> pure a
 
-locationInvestigatorsWithClues :: (HasGame m, Tracing m) => LocationAttrs -> m [InvestigatorId]
+locationInvestigatorsWithClues :: HasGame m => LocationAttrs -> m [InvestigatorId]
 locationInvestigatorsWithClues attrs =
   filterM (fieldMap InvestigatorClues (> 0)) =<< select (investigatorAt $ toId attrs)
 
-getModifiedShroudValueFor :: (HasCallStack, HasGame m, Tracing m) => LocationAttrs -> m Int
+getModifiedShroudValueFor :: (HasCallStack, HasGame m) => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
   base <- getGameValue (fromJustNote "Missing shroud" $ locationShroud attrs)
@@ -676,7 +675,7 @@ getShouldSpawnNonEliteAtConnectingInstead attrs = do
     SpawnNonEliteAtConnectingInstead {} -> True
     _ -> False
 
-locationEnemiesWithTrait :: (HasGame m, Tracing m) => LocationAttrs -> Trait -> m [EnemyId]
+locationEnemiesWithTrait :: HasGame m => LocationAttrs -> Trait -> m [EnemyId]
 locationEnemiesWithTrait attrs trait = select $ enemyAt (toId attrs) <> EnemyWithTrait trait
 
 veiled1 :: LocationAttrs -> Ability -> [Ability]

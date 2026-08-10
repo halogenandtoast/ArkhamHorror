@@ -24,7 +24,6 @@ import Arkham.Investigator.Runner (metaL, runWindow)
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Queue (QueueT)
-import Arkham.Tracing
 import Arkham.Window (Window, defaultWindows)
 import Arkham.Window qualified as Window
 
@@ -63,7 +62,7 @@ instance HasChaosTokenValue LukeRobinson where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 getLukePlayable
-  :: (Tracing m, HasGame m) => InvestigatorAttrs -> [Window] -> m [(LocationId, [Card])]
+  :: HasGame m => InvestigatorAttrs -> [Window] -> m [(LocationId, [Card])]
 getLukePlayable attrs windows' = do
   let iid = toId attrs
   connectingLocations <- select (ConnectedLocation NotForMovement)

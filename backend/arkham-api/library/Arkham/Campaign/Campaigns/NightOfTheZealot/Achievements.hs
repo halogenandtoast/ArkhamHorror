@@ -41,14 +41,13 @@ import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Trait (Trait (Cultist, Ghoul))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 
 runNotzAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runNotzAchievements msg = whenEligibleCampaign $ case msg of
   -- "Insurance Doesn't Cover Ghouls": burn your house down in The Gathering.
   -- The Gathering's Resolution 1 is the only writer of this record.
@@ -199,7 +198,7 @@ whenEligibleCampaign body = do
   when (maybe False (`elem` eligible) mCampaignId) body
 
 checkLeftYourHouse
-  :: (HasGame m, HasQueue Message m, Tracing m) => Movement -> m ()
+  :: (HasGame m, HasQueue Message m) => Movement -> m ()
 checkLeftYourHouse movement = whenMidnightMasks $ case (movement.target, movement.destination) of
   (InvestigatorTarget _, ToLocation lid) -> do
     rounds <- storedInt stayedHomeRoundsKey
@@ -208,7 +207,7 @@ checkLeftYourHouse movement = whenMidnightMasks $ case (movement.target, movemen
       unless isHouse $ setStore leftHomeKey True
   _ -> pure ()
 
-whenMidnightMasks :: (HasGame m, Tracing m) => m () -> m ()
+whenMidnightMasks :: HasGame m => m () -> m ()
 whenMidnightMasks body = do
   mSid <- selectOne TheScenario
   when (maybe False (`elem` theMidnightMasksIds) mSid) body
@@ -265,10 +264,10 @@ baseballBatKillsKey = "notzAchBaseballBatKills"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-bumpCounter :: (HasCallStack, HasGame m, HasQueue Message m, Tracing m) => Text -> m ()
+bumpCounter :: (HasCallStack, HasGame m, HasQueue Message m) => Text -> m ()
 bumpCounter k = do
   n <- storedInt k
   setStore k (n + 1)

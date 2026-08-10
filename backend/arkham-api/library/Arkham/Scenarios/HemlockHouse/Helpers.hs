@@ -17,7 +17,6 @@ import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Token (Token (..), countTokens)
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "hemlockHouse" a
@@ -26,7 +25,7 @@ scenarioI18n a = campaignI18n $ scope "hemlockHouse" a
 1st Floor (Parlor/Foyer/Dining) is Y=0 → floor 1.
 The Cellar (Shapeless Cellar enemy-location) is at Y<0 → floor 0.
 -}
-getFloorNumber :: (HasGame m, Tracing m) => LocationId -> m Int
+getFloorNumber :: HasGame m => LocationId -> m Int
 getFloorNumber lid = fieldMayJoin LocationPosition lid <&> \case
     Just (Pos _ y) | y >= 0 -> y + 1
     _ -> 0
@@ -35,12 +34,12 @@ getFloorNumber lid = fieldMayJoin LocationPosition lid <&> \case
 Seals are modeled as Resource tokens placed by the act/agenda's seal action
 ("Place 1 resource on it, as a seal").
 -}
-locationSealCount :: (HasGame m, Tracing m) => LocationId -> m Int
+locationSealCount :: HasGame m => LocationId -> m Int
 locationSealCount lid = do
   ts <- field LocationTokens lid
   pure $ countTokens Resource ts
 
-locationIsUnsealed :: (HasGame m, Tracing m) => LocationId -> m Bool
+locationIsUnsealed :: HasGame m => LocationId -> m Bool
 locationIsUnsealed lid = (== 0) <$> locationSealCount lid
 
 {- | Flip a Hemlock location to its other side, regardless of which side it is
@@ -59,7 +58,7 @@ geometry, so empty spaces left by defeated enemy-locations and extra
 connections (e.g. the Library's secret passage) are accounted for.
 -}
 nearestEnemyLocationTo
-  :: (HasGame m, Tracing m) => InvestigatorId -> m (Maybe LocationId)
+  :: HasGame m => InvestigatorId -> m (Maybe LocationId)
 nearestEnemyLocationTo iid = do
   mStart <- field InvestigatorLocation iid
   case mStart of

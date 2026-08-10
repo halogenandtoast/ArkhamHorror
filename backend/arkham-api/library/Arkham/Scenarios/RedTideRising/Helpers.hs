@@ -10,7 +10,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Prelude
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "redTideRising" a
@@ -21,7 +20,7 @@ victoryRequiresMysteriousPhoto = ScenarioModifier "victoryRequiresMysteriousPhot
 wendyAdams :: InvestigatorMatcher
 wendyAdams = InvestigatorWithTitle "Wendy Adams"
 
-getWendyAdams :: (HasGame m, Tracing m) => m (Maybe InvestigatorId)
+getWendyAdams :: HasGame m => m (Maybe InvestigatorId)
 getWendyAdams = selectOne wendyAdams
 
 perPlayerOneHideouts :: [CardDef]

@@ -62,7 +62,6 @@ import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (StoryClues))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (Window (..))
@@ -71,7 +70,7 @@ import Data.Aeson.Key qualified as Key
 import Data.Aeson.Types (parseMaybe)
 
 runScarletKeysAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runScarletKeysAchievements msg = whenEligibleCampaign $ case msg of
   {- "Trust Nobody" / "Trust Everybody" bookkeeping. The campaign's only routine
   bag change is 'swapTokens', which removes one face and adds the other, so a
@@ -343,7 +342,7 @@ whenEligibleCampaign body = do
   let eligible = achievementCampaigns $ TheScarletKeysAchievement SpeedDemon
   when (maybe False (`elem` eligible) mCampaignId) body
 
-whenScenarioIs :: (HasGame m, Tracing m) => ScenarioId -> m () -> m ()
+whenScenarioIs :: HasGame m => ScenarioId -> m () -> m ()
 whenScenarioIs sid body = do
   mSid <- selectOne TheScenario
   when (mSid == Just sid) body
@@ -440,7 +439,7 @@ cuisineCities = [Marrakesh, Havana, BuenosAires, Tokyo, KualaLumpur]
 {- | Record a city's cuisine moment, earning once all five are collected. Cities
 are stored by name so the set survives across scenarios and interludes.
 -}
-sampled :: (HasGame m, HasQueue Message m, Tracing m) => MapLocationId -> m ()
+sampled :: (HasGame m, HasQueue Message m) => MapLocationId -> m ()
 sampled city = do
   cities <- nub . (tshow city :) <$> storedTexts cuisineKey
   setStore cuisineKey cities
@@ -476,7 +475,7 @@ clueSpendingTreacheries = [Treacheries.pinchInReality, Treacheries.huntingShadow
 {- | Disqualify "Clued In" when the clues that just left an investigator were taken
 by a treachery. Scoped to Riddles and Rain here rather than at both call sites.
 -}
-treacheryTookClues :: (HasGame m, HasQueue Message m, Tracing m) => Source -> m ()
+treacheryTookClues :: (HasGame m, HasQueue Message m) => Source -> m ()
 treacheryTookClues source = whenScenarioIs riddlesAndRainId do
   when (isJust source.treachery) $ setStore cluesLostToTreacheryKey True
 
@@ -505,11 +504,11 @@ trustAchievement = \case
   Tablet -> TrustEverybody
   _ -> TrustNobody
 
-bagCount :: (HasGame m, Tracing m) => ChaosTokenFace -> m Int
+bagCount :: HasGame m => ChaosTokenFace -> m Int
 bagCount face =
   selectOne TheCampaign >>= maybe (pure 0) (fieldMap CampaignChaosBag (count (== face)))
 
-bagContains :: (HasGame m, Tracing m) => ChaosTokenFace -> m Bool
+bagContains :: HasGame m => ChaosTokenFace -> m Bool
 bagContains face = (> 0) <$> bagCount face
 
 -- Campaign store plumbing. Writes go through the queue ('SetGlobal' is handled
@@ -535,14 +534,14 @@ removedKey face = "tskAchRemoved[" <> tshow face <> "]"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedFlag :: (HasCallStack, HasGame m, Tracing m) => Text -> m Bool
+storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-storedTexts :: (HasCallStack, HasGame m, Tracing m) => Text -> m [Text]
+storedTexts :: (HasCallStack, HasGame m) => Text -> m [Text]
 storedTexts k = fromMaybe [] <$> stored k
 
-storedTexts' :: (HasCallStack, HasGame m, Tracing m) => Text -> m [CardCode]
+storedTexts' :: (HasCallStack, HasGame m) => Text -> m [CardCode]
 storedTexts' k = fromMaybe [] <$> stored k

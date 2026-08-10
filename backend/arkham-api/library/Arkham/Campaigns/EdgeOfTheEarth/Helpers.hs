@@ -34,7 +34,6 @@ import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Setup
 import Arkham.Source
-import Arkham.Tracing
 import Arkham.Treachery.Types (Field (TreacheryCard, TreacheryCardId))
 import Arkham.Window (WindowType (ScenarioEvent))
 
@@ -43,7 +42,7 @@ campaignI18n a = withI18n $ scope "edgeOfTheEarth" a
 
 -- ** Shelter Helpers ** --
 
-shelterValue :: (HasGame m, Tracing m, AsId location, IdOf location ~ LocationId) => location -> m (Maybe Int)
+shelterValue :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m (Maybe Int)
 shelterValue location = do
   card <- field LocationCard (asId location)
   pure $ lookup "shelter" (toCardDef card).meta >>= maybeResult
@@ -56,7 +55,7 @@ getShelterValue a = do
 
 -- ** Supply Helpers ** --
 
-hasSupply :: (HasGame m, Tracing m) => Supply -> m Bool
+hasSupply :: HasGame m => Supply -> m Bool
 hasSupply supply = inRecordSet (toJSON supply) SuppliesRecovered
 
 recoverSupply :: ReverseQueue m => Supply -> m ()
@@ -64,13 +63,13 @@ recoverSupply supply = recordSetInsert SuppliesRecovered [toJSON supply]
 
 -- ** Tekeli-li Helpers ** --
 
-getTekelili :: (HasGame m, Tracing m) => Int -> m [Card]
+getTekelili :: HasGame m => Int -> m [Card]
 getTekelili n = take n <$> getScenarioDeck TekeliliDeck
 
 addTekeliliDeck :: ReverseQueue m => ScenarioBuilderT m ()
 addTekeliliDeck = addExtraDeck TekeliliDeck =<< shuffle =<< gatherTekelili
 
-gatherTekelili :: (HasGame m, Tracing m, CardGen m) => m [Card]
+gatherTekelili :: (HasGame m, CardGen m) => m [Card]
 gatherTekelili = do
   storyCards <- concat . toList <$> getCampaignStoryCards
   let storyCardDefs = map toCardDef storyCards

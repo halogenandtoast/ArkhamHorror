@@ -48,13 +48,12 @@ import Arkham.Projection
 import Arkham.Source (Source (..))
 import Arkham.Target
 import Arkham.Token (Token (..))
-import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 
 runCarcosaAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runCarcosaAchievements msg = whenEligibleCampaign $ case msg of
   -- "Say My Name": speak HASTUR aloud seven or more times after heeding
   -- Daniel's warning. The UI button records this by placing the warning's
@@ -205,21 +204,21 @@ whenEligibleCampaign body = do
   let eligible = achievementCampaigns $ ThePathToCarcosaAchievement GetBackHere
   when (maybe False (`elem` eligible) mCampaignId) body
 
-whenScenarioActive :: (HasGame m, Tracing m) => m () -> m ()
+whenScenarioActive :: HasGame m => m () -> m ()
 whenScenarioActive body = whenM (isJust <$> selectOne TheScenario) body
 
-whenScenarioIn :: (HasGame m, Tracing m) => [ScenarioId] -> m () -> m ()
+whenScenarioIn :: HasGame m => [ScenarioId] -> m () -> m ()
 whenScenarioIn sids body = do
   mSid <- selectOne TheScenario
   when (maybe False (`elem` sids) mSid) body
 
-whenCurtainCall :: (HasGame m, Tracing m) => m () -> m ()
+whenCurtainCall :: HasGame m => m () -> m ()
 whenCurtainCall = whenScenarioIn ["03043", "52014"]
 
-whenEchoesOfThePast :: (HasGame m, Tracing m) => m () -> m ()
+whenEchoesOfThePast :: HasGame m => m () -> m ()
 whenEchoesOfThePast = whenScenarioIn ["03120", "52028"]
 
-whenBlackStarsRise :: (HasGame m, Tracing m) => m () -> m ()
+whenBlackStarsRise :: HasGame m => m () -> m ()
 whenBlackStarsRise = whenScenarioIn ["03274", "52054"]
 
 -- VIP bystander asset card code (as recorded in VIPsInterviewed) ->
@@ -261,8 +260,8 @@ spokenHasturKey = "carcosaAchSpokenHastur"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-storedFlag :: (HasCallStack, HasGame m, Tracing m) => Text -> m Bool
+storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k

@@ -15,7 +15,6 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Window
 import Arkham.Window qualified as Window
 import Arkham.Zone
@@ -141,6 +140,6 @@ damagedEnemyAmount = \case
   ((windowType -> Window.DealtDamage _ _ (EnemyTarget _) n) : _) -> n
   _ -> error "Expected DealtDamage window"
 
-enemyMatches :: (HasGame m, Tracing m) => EnemyId -> EnemyMatcher -> m Bool
+enemyMatches :: HasGame m => EnemyId -> EnemyMatcher -> m Bool
 enemyMatches _eid Matcher.AnyEnemy = pure True
 enemyMatches eid matcher = orM [matches eid matcher, matches eid (Matcher.OutOfPlayEnemy RemovedZone matcher)]

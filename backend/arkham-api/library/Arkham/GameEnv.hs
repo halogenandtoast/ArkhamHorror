@@ -37,12 +37,10 @@ import Arkham.Random
 import Arkham.SkillTest.Base
 import {-# SOURCE #-} Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Window
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 import Data.Dependent.Map qualified as DMap
 import Data.Map.Strict qualified as Map
-import OpenTelemetry.Trace.Monad (MonadTracer (..))
 
 -- Some ORPHANS we may want to move
 
@@ -101,7 +99,6 @@ toGameEnv
      , HasStdGen env
      , HasGameLogger m
      , MonadReader env m
-     , MonadTracer m
      )
   => m GameEnv
 toGameEnv = do
@@ -110,7 +107,6 @@ toGameEnv = do
   gameEnvQueue <- messageQueue
   gameCacheRef <- newIORef DMap.empty
   gameLogger <- getLogger
-  gameTracer <- getTracer
   pure $ GameEnv {..}
 
 runWithEnv
@@ -119,7 +115,6 @@ runWithEnv
      , HasStdGen env
      , HasGameLogger m
      , MonadReader env m
-     , MonadTracer m
      )
   => GameT a
   -> m a
@@ -170,7 +165,7 @@ getHistory RoundHistory iid = do
 getHistoryField :: HasGame m => HistoryType -> InvestigatorId -> HistoryField k -> m k
 getHistoryField htype iid fld = viewHistoryField fld <$> getHistory htype iid
 
-getDistance :: (HasGame m, Tracing m) => LocationId -> LocationId -> m (Maybe Distance)
+getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
 getDistance l1 l2 = do
   game <- getGame
   getDistance' game l1 l2
@@ -265,7 +260,7 @@ withActiveInvestigator iid body = do
   runReaderT body $ game & activeInvestigatorIdL .~ iid
 
 withActiveInvestigatorAdjust
-  :: (HasGame m, Tracing m) => InvestigatorId -> ReaderT Game m a -> m a
+  :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 withActiveInvestigatorAdjust iid body = do
   game <- getGame
   game' <-

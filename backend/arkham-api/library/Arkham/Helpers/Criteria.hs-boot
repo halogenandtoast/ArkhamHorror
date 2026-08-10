@@ -1,7 +1,6 @@
 module Arkham.Helpers.Criteria where
 
 import Arkham.Card
-import Arkham.Tracing
 import Arkham.Classes.HasGame
 import Arkham.Cost
 import Arkham.Criteria (Criterion)
@@ -11,7 +10,7 @@ import Arkham.Source
 import Arkham.Window (Window)
 
 passesCriteria
-  :: (HasCallStack, Tracing m, HasGame m)
+  :: (HasCallStack, HasGame m)
   => InvestigatorId
   -> Maybe (Card, CostStatus)
   -> Source

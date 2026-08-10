@@ -31,13 +31,12 @@ import Arkham.Projection
 import Arkham.Scenario.Types (Field (ScenarioCardsUnderScenarioReference))
 import Arkham.ScenarioLogKey
 import Arkham.Source
-import Arkham.Tracing
 import Arkham.Trait (Trait (Cultist))
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n = standaloneI18n "guardiansOfTheAbyss"
 
-getStrengthOfTheAbyss :: (HasGame m, Tracing m) => m Int
+getStrengthOfTheAbyss :: HasGame m => m Int
 getStrengthOfTheAbyss = scenarioCount StrengthOfTheAbyss
 
 addStrengthOfTheAbyss :: ReverseQueue m => Int -> m ()

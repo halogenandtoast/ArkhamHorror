@@ -12,7 +12,6 @@ import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Tracing
 import Arkham.Trait (Trait (Ancient))
 
 scenarioI18n :: (HasI18n => a) -> a
@@ -30,7 +29,7 @@ supplyKey = \case
   Torches -> "supplies.torches"
   _ -> "supplies.chalk"
 
-getPickedSupplies :: (HasGame m, Tracing m) => m (Map InvestigatorId [Supply])
+getPickedSupplies :: HasGame m => m (Map InvestigatorId [Supply])
 getPickedSupplies = scenarioFieldMap ScenarioMeta (toResultDefault mempty)
 
 shuffleAncientAssetsIntoExplorationDeck :: ReverseQueue m => InvestigatorId -> m ()

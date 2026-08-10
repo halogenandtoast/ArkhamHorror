@@ -17,10 +17,9 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Story.Types (Field (..))
-import Arkham.Tracing
 import Arkham.Trait (Trait, toTraits)
 
-sourceTraits :: (HasCallStack, HasGame m, Tracing m) => Source -> m (Set Trait)
+sourceTraits :: (HasCallStack, HasGame m) => Source -> m (Set Trait)
 sourceTraits = \case
   PaymentSource s -> sourceTraits s
   UseAbilitySource _ s _ -> sourceTraits s
@@ -73,7 +72,7 @@ sourceTraits = \case
   ConcealedCardSource _ -> pure mempty
   UltimatumOrBoonSource _ -> pure mempty
 
-getSourceController :: (HasGame m, Tracing m) => Source -> m (Maybe InvestigatorId)
+getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
   AbilitySource s _ -> getSourceController s
   UseAbilitySource iid _ _ -> pure $ Just iid
@@ -95,7 +94,7 @@ ability is additionally credited, so effects performed via a location/encounter 
 count for "you deal/heal/defeat" cards. See issue #4902.
 -}
 checkSourceOwner
-  :: (HasCallStack, HasGame m, Tracing m)
+  :: (HasCallStack, HasGame m)
   => Bool -> Matcher.InvestigatorMatcher -> Source -> m Bool
 checkSourceOwner creditUser whoMatcher = go
  where
@@ -147,7 +146,7 @@ checkSourceOwner creditUser whoMatcher = go
     PaymentSource s' -> go s'
     _ -> pure False
 
-sourceMatches :: (HasCallStack, HasGame m, Tracing m) => Source -> Matcher.SourceMatcher -> m Bool
+sourceMatches :: (HasCallStack, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
 sourceMatches s = \case
   Matcher.SourceIsCancelable sm -> case s of
     CardCostSource _ -> pure False
@@ -372,7 +371,7 @@ sourceMatches s = \case
       Just c -> c `cardMatch` cardMatcher
       Nothing -> False
 
-sourceTypes :: (HasCallStack, Tracing m, HasGame m) => Source -> m (Set CardType)
+sourceTypes :: (HasCallStack, HasGame m) => Source -> m (Set CardType)
 sourceTypes = \case
   PaymentSource s -> sourceTypes s
   UseAbilitySource _ s _ -> sourceTypes s

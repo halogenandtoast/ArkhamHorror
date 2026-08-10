@@ -17,7 +17,6 @@ import Arkham.Source
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Target
 import Arkham.Timing (Timing)
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "wakingNightmare" a
@@ -41,7 +40,7 @@ makeInfestationTest = do
       (StoryTarget theInfestationBegins)
       (RequestChaosTokens (StorySource theInfestationBegins) Nothing (Reveal 1) SetAside)
 
-addInfestationToken :: (HasGame m, Tracing m) => ChaosTokenFace -> m Message
+addInfestationToken :: HasGame m => ChaosTokenFace -> m Message
 addInfestationToken face = do
   theInfestationBegins <- selectJust $ storyIs Stories.theInfestationBegins
   pure $ SendMessage (StoryTarget theInfestationBegins) (AddChaosToken face)

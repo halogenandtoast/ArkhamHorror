@@ -9,25 +9,24 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Tracing
 
-currentAgendaSequenceIs :: (Tracing m, HasGame m) => (AS.AgendaSequence -> Bool) -> m Bool
+currentAgendaSequenceIs :: HasGame m => (AS.AgendaSequence -> Bool) -> m Bool
 currentAgendaSequenceIs f = getCurrentAgenda >>= fieldMap AgendaSequence f
 
-currentAgendaStepIs :: (Tracing m, HasGame m) => (Int -> Bool) -> m Bool
+currentAgendaStepIs :: HasGame m => (Int -> Bool) -> m Bool
 currentAgendaStepIs f = f <$> getCurrentAgendaStep
 
-whenCurrentAgendaStepIs :: (Tracing m, HasGame m) => (Int -> Bool) -> m () -> m ()
+whenCurrentAgendaStepIs :: HasGame m => (Int -> Bool) -> m () -> m ()
 whenCurrentAgendaStepIs f = whenM (f <$> getCurrentAgendaStep)
 
-getCurrentAgendaStep :: (Tracing m, HasGame m) => m Int
+getCurrentAgendaStep :: HasGame m => m Int
 getCurrentAgendaStep = getCurrentAgenda >>= getAgendaStep
 
-getAgendaStep :: (HasGame m, Tracing m) => AgendaId -> m Int
+getAgendaStep :: HasGame m => AgendaId -> m Int
 getAgendaStep = fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep)
 
-getCurrentAgenda :: (Tracing m, HasGame m) => m AgendaId
+getCurrentAgenda :: HasGame m => m AgendaId
 getCurrentAgenda = selectOnlyOne AnyAgenda
 
-getDoomOnAgenda :: (HasGame m, Tracing m) => m Int
+getDoomOnAgenda :: HasGame m => m Int
 getDoomOnAgenda = selectJust AnyAgenda >>= field AgendaDoom

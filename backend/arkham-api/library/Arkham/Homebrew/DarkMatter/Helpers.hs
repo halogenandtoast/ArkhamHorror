@@ -33,7 +33,6 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Setup
 import Arkham.Source
-import Arkham.Tracing
 import Arkham.Window qualified as Window
 
 campaignI18n :: (HasI18n => a) -> a
@@ -44,7 +43,7 @@ campaignI18n a = withI18n $ scope "darkMatter" a
 -- "Memories" are tied to specific investigators and are not shared. They live
 -- as a tally in each investigator's own campaign log section.
 
-getMemories :: (HasGame m, Tracing m) => InvestigatorId -> m Int
+getMemories :: HasGame m => InvestigatorId -> m Int
 getMemories =
   fieldMap InvestigatorLog (findWithDefault 0 (toCampaignLogKey Memories) . campaignLogRecordedCounts)
 
@@ -57,7 +56,7 @@ crossOffMemories iid n = addMemories iid (negate n)
 
 -- ** Impending Doom ** --
 
-getImpendingDoom :: (HasGame m, Tracing m) => m Int
+getImpendingDoom :: HasGame m => m Int
 getImpendingDoom = getRecordCount ImpendingDoom
 
 addImpendingDoom :: ReverseQueue m => Int -> m ()
@@ -101,7 +100,7 @@ addScanningDeck = do
   removeCards cards
   addExtraDeck ScanningDeck =<< shuffle cards
 
-getScanningDeck :: (HasGame m, Tracing m) => m [Card]
+getScanningDeck :: HasGame m => m [Card]
 getScanningDeck = getScenarioDeck ScanningDeck
 
 {- | The Scan action designator; usually, but not always, initiated using the

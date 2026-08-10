@@ -27,7 +27,6 @@ import Arkham.Prelude
 import Arkham.Projection (fieldMap)
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Control.Monad.Writer.Class
 import Data.Char qualified as C
 import Data.Map.Monoidal.Strict (MonoidalMap)
@@ -44,7 +43,6 @@ artifactModifiers
   :: ( Targetable a
      , Sourceable a
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => a
@@ -83,7 +81,7 @@ taskEnds :: WindowMatcher
 taskEnds = oneOf [GameEnds #when, InvestigatorEliminated #when You]
 
 investigatorHasTask
-  :: (HasGame m, Tracing m, HasCardDef card) => InvestigatorId -> card -> m Bool
+  :: (HasGame m, HasCardDef card) => InvestigatorId -> card -> m Bool
 investigatorHasTask iid (toCardDef -> cardDef) = do
   taskInPlay <- selectAny $ AssetControlledBy (InvestigatorWithId iid) <> assetIs cardDef
   campaignCards <- findWithDefault [] iid <$> getCampaignStoryCards
@@ -119,10 +117,10 @@ Artifacts are unique, so one already in play is off the table. That check has to
 look at both faces: a Claw already flipped to (Power) is a different card code,
 and matching only (Speed) would offer it a second time.
 -}
-getAvailableArtifacts :: (HasGame m, Tracing m) => m [CardDef]
+getAvailableArtifacts :: HasGame m => m [CardDef]
 getAvailableArtifacts = filterM (fmap not . selectAny . artifactInPlay) =<< getEarnedArtifacts
 
-getEarnedArtifacts :: (HasGame m, Tracing m) => m [CardDef]
+getEarnedArtifacts :: HasGame m => m [CardDef]
 getEarnedArtifacts = map snd <$> filterM (getHasRecord . fst) artifactAssets
 
 {- | "Artifacts checked/listed and not crossed off under 'Artifacts Earned'." The
@@ -130,7 +128,7 @@ Doom of Arkham Part I crosses out every Artifact no investigator still held when
 ended, and crossing out does not clear the record, so Part II has to exclude them
 explicitly.
 -}
-getUncrossedArtifacts :: (HasGame m, Tracing m) => m [CardDef]
+getUncrossedArtifacts :: HasGame m => m [CardDef]
 getUncrossedArtifacts =
   map snd
     <$> filterM (\(k, _) -> andM [getHasRecord k, not <$> getHasCrossedOutRecord k]) artifactAssets
@@ -138,7 +136,7 @@ getUncrossedArtifacts =
 {- | The locations The Doom of Arkham Part I left flooded, recorded by card code.
 Part II increases the flood level of each of them again during setup.
 -}
-getFloodedNeighborhoods :: (HasGame m, Tracing m) => m [CardCode]
+getFloodedNeighborhoods :: HasGame m => m [CardCode]
 getFloodedNeighborhoods = getSomeRecordSet FloodedNeighborhoods
 
 -- | Matches an Artifact in play on either of its faces.
@@ -173,14 +171,14 @@ tasks =
 this returns a list so callers do not have to assume that.
 -}
 getInvestigatorTasks
-  :: (HasGame m, Tracing m) => InvestigatorId -> m [(TheDrownedCityKey, CardDef, Text)]
+  :: HasGame m => InvestigatorId -> m [(TheDrownedCityKey, CardDef, Text)]
 getInvestigatorTasks iid = filterM (\(_, def, _) -> investigatorHasTask iid def) tasks
 
 {- | Task progress is recorded in each investigator's own log so it can be shown
 per-investigator; read it back from there rather than the campaign log.
 -}
 getRecordCountForInvestigator
-  :: (HasGame m, Tracing m, IsCampaignLogKey k) => InvestigatorId -> k -> m Int
+  :: (HasGame m, IsCampaignLogKey k) => InvestigatorId -> k -> m Int
 getRecordCountForInvestigator iid k =
   fieldMap InvestigatorLog (findWithDefault 0 (toCampaignLogKey k) . campaignLogRecordedCounts) iid
 
@@ -193,11 +191,11 @@ branch would be a boon for free, which is not the trade the checkpoint offers.
 Pass this to @labeledValidate'@ so the branch shows up disabled rather than
 vanishing, keeping the buttons lined up with the printed choices.
 -}
-canEraseProgress :: (HasGame m, Tracing m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool
+canEraseProgress :: (HasGame m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool
 canEraseProgress iid k = (> 0) <$> getRecordCountForInvestigator iid k
 
 struggleForAir
-  :: (Sourceable a, HasGame m, Tracing m, HasQueue Message m) => a -> InvestigatorId -> m ()
+  :: (Sourceable a, HasGame m, HasQueue Message m) => a -> InvestigatorId -> m ()
 struggleForAir a iid = do
   builder <- makeEffectBuilder "struggleForAir" Nothing a iid
   push $ CreateEffect builder
@@ -206,13 +204,13 @@ struggleForAir a iid = do
 that investigator's first encounter-deck draw of the scenario.
 -}
 walkInFaithDoubts
-  :: (Sourceable a, HasGame m, Tracing m, HasQueue Message m) => a -> InvestigatorId -> m ()
+  :: (Sourceable a, HasGame m, HasQueue Message m) => a -> InvestigatorId -> m ()
 walkInFaithDoubts a iid = do
   builder <- makeEffectBuilder "walkInFaithDoubts" Nothing a iid
   push $ CreateEffect builder
 
 walkInFaithResolve
-  :: (Sourceable a, HasGame m, Tracing m, HasQueue Message m) => a -> InvestigatorId -> m ()
+  :: (Sourceable a, HasGame m, HasQueue Message m) => a -> InvestigatorId -> m ()
 walkInFaithResolve a iid = do
   builder <- makeEffectBuilder "walkInFaithResolve" Nothing a iid
   push $ CreateEffect builder
@@ -241,17 +239,17 @@ data RlyehMapEntry
 
 type Glyph = Text
 
-getKnownGlyphs :: (HasGame m, Tracing m) => m Text
+getKnownGlyphs :: HasGame m => m Text
 getKnownGlyphs = getSomeRecordSet DiscoveredGlyphs <&> \xs -> mconcat [x | String x <- xs]
 
-getTranslatedGlyphCount :: (HasGame m, Tracing m) => m Int
+getTranslatedGlyphCount :: HasGame m => m Int
 getTranslatedGlyphCount = length <$> getSomeRecordSet @Value DiscoveredGlyphs
 
 {- | Glyphs are recorded uppercase (@glyphLetter@ upper-cases before inserting into
 the @DiscoveredGlyphs@ set), so normalize both sides: a card asking for @"qxgks"@
 must match a record set holding @"QXGKS"@.
 -}
-getGlyphsAllKnown :: (HasGame m, Tracing m) => String -> m Bool
+getGlyphsAllKnown :: HasGame m => String -> m Bool
 getGlyphsAllKnown xs = do
   ys <- T.toUpper <$> getKnownGlyphs
   pure $ all ((`T.elem` ys) . C.toUpper) xs

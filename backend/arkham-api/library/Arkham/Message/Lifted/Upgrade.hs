@@ -9,11 +9,10 @@ import Arkham.Matcher.Base
 import Arkham.Prelude
 import Arkham.Query
 import Arkham.Target
-import Arkham.Tracing
 
 class Query query => UpgradeTarget query where
   getUpgradeTargets
-    :: (Tracing m, HasGame m, QueryElement query ~ a) => InvestigatorId -> query -> m [a]
+    :: (HasGame m, QueryElement query ~ a) => InvestigatorId -> query -> m [a]
 
 instance UpgradeTarget AssetMatcher where
   getUpgradeTargets iid q = do

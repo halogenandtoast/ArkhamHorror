@@ -13,18 +13,17 @@ import Arkham.Matcher.Location
 import Arkham.Matcher.Source
 import Arkham.Prelude
 import Arkham.Source
-import Arkham.Tracing
 import Data.Function (on)
 
 data ForExpose = ForExpose Source | NotForExpose
 
-getConcealedChoicesAt :: (HasGame m, Tracing m) => ForExpose -> LocationMatcher -> m [ConcealedCard]
+getConcealedChoicesAt :: HasGame m => ForExpose -> LocationMatcher -> m [ConcealedCard]
 getConcealedChoicesAt fe lmatcher = do
   locations <- select lmatcher
   concatForM locations (getConcealedAt fe)
 
 getConcealedAt
-  :: (HasGame m, Tracing m, ToId location LocationId) => ForExpose -> location -> m [ConcealedCard]
+  :: (HasGame m, ToId location LocationId) => ForExpose -> location -> m [ConcealedCard]
 getConcealedAt fe location = do
   concealed <- getConcealedAtAll fe location
   pure
@@ -37,7 +36,7 @@ getConcealedAt fe location = do
      in known <> take 1 unknown
 
 getConcealedAtAll
-  :: (HasGame m, Tracing m, ToId location LocationId) => ForExpose -> location -> m [ConcealedCard]
+  :: (HasGame m, ToId location LocationId) => ForExpose -> location -> m [ConcealedCard]
 getConcealedAtAll fe location = do
   wrap <- case fe of
     ForExpose source -> do

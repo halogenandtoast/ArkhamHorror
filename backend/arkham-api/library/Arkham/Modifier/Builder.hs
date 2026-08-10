@@ -38,7 +38,6 @@ import {-# SOURCE #-} Arkham.Game.Base (Game)
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Target
-import Arkham.Tracing
 import Control.Monad.State.Strict (
   State,
   StateT,
@@ -91,16 +90,6 @@ instance MonadWriter (MonoidalMap Target [Modifier]) ModifierBuilder where
     modify' \s -> s {psSink = before <> f w}
     pure a
 
-{- | 'addAttribute'/'doTrace' are no-ops: the modifier pass does no tracing and
-this keeps 'ModifierBuilder' free of any OpenTelemetry/metrics machinery.
--}
-instance Tracing ModifierBuilder where
-  type SpanType ModifierBuilder = ()
-  type SpanArgs ModifierBuilder = ()
-  defaultSpanArgs = ()
-  addAttribute _ _ _ = pure ()
-  doTrace _ _ action = action ()
-
 {- | Run a modifier-collecting computation against a fixed game with a scoped
 query cache, returning the accumulated modifiers. Drop-in replacement for
 @execWriterT@ over the old transformer stack.
@@ -123,11 +112,10 @@ runCachedQuery :: Game -> ModifierBuilder a -> a
 runCachedQuery g (ModifierBuilder r) =
   evalState (runReaderT r g) (PreloadState DMap.empty mempty)
 
-{- | A scoped query cache layered over an arbitrary base monad @m@, preserving
-@m@'s tracing (unlike 'ModifierBuilder', which no-ops tracing). Run a
+{- | A scoped query cache layered over an arbitrary base monad @m@. Run a
 read-only query (e.g. 'getActions') under 'runCachedQueryT' to memoize
 identical @select@/@getAllAbilities@/accessibility queries against a frozen
-game while still recording metrics through the base monad.
+game.
 -}
 newtype CachedT m a = CachedT (StateT (DMap CacheKey Identity) m a)
   deriving newtype (Functor, Applicative, Monad)
@@ -142,14 +130,6 @@ instance HasGame m => HasGame (CachedT m) where
         !v <- build
         modify' (DMap.insert k (Identity v))
         pure v
-
-instance (Monad m, Tracing m) => Tracing (CachedT m) where
-  type SpanType (CachedT m) = SpanType m
-  type SpanArgs (CachedT m) = SpanArgs m
-  defaultSpanArgs = defaultSpanArgs @m
-  addAttribute sp key value = CachedT (lift (addAttribute sp key value))
-  doTrace name args action = CachedT $ doTrace name args \sp ->
-    case action sp of CachedT st -> st
 
 runCachedQueryT :: Monad m => CachedT m a -> m a
 runCachedQueryT (CachedT s) = evalStateT s DMap.empty
@@ -172,14 +152,6 @@ instance HasGame m => HasGame (CacheReaderT m) where
   getCache = GameCache \k (CacheReaderT rt) ->
     CacheReaderT $ ReaderT \g -> case getCache @m of
       GameCache wc -> wc k (runReaderT rt g)
-
-instance Tracing m => Tracing (CacheReaderT m) where
-  type SpanType (CacheReaderT m) = SpanType m
-  type SpanArgs (CacheReaderT m) = SpanArgs m
-  defaultSpanArgs = defaultSpanArgs @m
-  addAttribute sp key value = CacheReaderT $ ReaderT \_ -> addAttribute sp key value
-  doTrace name args action = CacheReaderT $ ReaderT \r ->
-    doTrace name args \sp -> case action sp of CacheReaderT rt -> runReaderT rt r
 
 runCacheReaderT :: Game -> CacheReaderT m a -> m a
 runCacheReaderT g (CacheReaderT r) = runReaderT r g

@@ -10,7 +10,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Source (Sourceable)
-import Arkham.Tracing (Tracing)
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theGrandVault" a
@@ -59,7 +58,7 @@ token. Effects that reference activated/deactivated locations query this.
 activatedLocation :: LocationMatcher
 activatedLocation = LocationWithResources (atLeast 1)
 
-getActivatedCount :: (HasGame m, Tracing m) => m Int
+getActivatedCount :: HasGame m => m Int
 getActivatedCount = selectCount activatedLocation
 
 {- | "Activate this location" — place a resource token on it (you cannot activate

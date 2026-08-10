@@ -41,13 +41,12 @@ import Arkham.Message qualified as Msg
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 
 runDunwichAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runDunwichAchievements msg = whenEligibleCampaign $ case msg of
   -- "First Rule of Arkham": the lead chose to burn the Necronomicon when act 4
   -- advanced (only The Miskatonic Museum's Resolution 1 writes this record).
@@ -203,24 +202,24 @@ whenEligibleCampaign body = do
   let eligible = achievementCampaigns $ TheDunwichLegacyAchievement AllAboard
   when (maybe False (`elem` eligible) mCampaignId) body
 
-checkHereWeGoAgain :: (HasGame m, HasQueue Message m, Tracing m) => m ()
+checkHereWeGoAgain :: (HasGame m, HasQueue Message m) => m ()
 checkHereWeGoAgain = do
   allInPlay <- and <$> traverse (selectAny . assetIs) professors
   when allInPlay do
     earnAchievement $ TheDunwichLegacyAchievement HereWeGoAgain
 
-checkNoVoidForYou :: (HasGame m, HasQueue Message m, Tracing m) => m ()
+checkNoVoidForYou :: (HasGame m, HasQueue Message m) => m ()
 checkNoVoidForYou = do
   defeated <- fromMaybe False <$> stored @Bool huntingHorrorDefeatedKey
   unless defeated do
     earnAchievement $ TheDunwichLegacyAchievement NoVoidForYou
 
-flagPassengerLeft :: (HasGame m, HasQueue Message m, Tracing m) => AssetId -> m ()
+flagPassengerLeft :: (HasGame m, HasQueue Message m) => AssetId -> m ()
 flagPassengerLeft aid =
   whenM (selectAny $ AssetWithId aid <> assetIs Assets.helplessPassenger) do
     setStore passengerLeftPlayKey True
 
-whenEssexCountyExpress :: (HasGame m, Tracing m) => m () -> m ()
+whenEssexCountyExpress :: HasGame m => m () -> m ()
 whenEssexCountyExpress body = do
   mSid <- selectOne TheScenario
   when (maybe False (`elem` theEssexCountyExpressIds) mSid) body
@@ -252,5 +251,5 @@ whippoorwillKillsKey = "dunwichAchWhippoorwillKills"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k

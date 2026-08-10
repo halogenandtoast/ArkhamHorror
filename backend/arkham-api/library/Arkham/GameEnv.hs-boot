@@ -25,9 +25,7 @@ import Arkham.Random
 import Arkham.SkillTest.Base
 import {-# SOURCE #-} Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Window
-import OpenTelemetry.Trace.Monad (MonadTracer)
 
 withActiveInvestigator
   :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
@@ -50,7 +48,7 @@ getDepthLock :: HasGame m => m Int
 getSkillTest :: HasGame m => m (Maybe SkillTest)
 getSkillTestId :: HasGame m => m (Maybe SkillTestId)
 getActiveCosts :: HasGame m => m [ActiveCost]
-getDistance :: (HasGame m, Tracing m) => LocationId -> LocationId -> m (Maybe Distance)
+getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
 getAllAbilities :: HasGame m => m [Ability]
 getWindowStack :: HasGame m => m [[Window]]
 getCurrentWindowTick :: HasGame m => m (Maybe Int)
@@ -77,7 +75,6 @@ runWithEnv
      , HasStdGen env
      , HasGameLogger m
      , MonadReader env m
-     , MonadTracer m
      )
   => GameT a
   -> m a
@@ -85,7 +82,7 @@ getTurnOrder :: HasGame m => m [InvestigatorId]
 withInvestigatorEdit
   :: HasGame m => InvestigatorId -> (InvestigatorAttrs -> InvestigatorAttrs) -> ReaderT Game m a -> m a
 withActiveInvestigatorAdjust
-  :: (HasGame m, Tracing m) => InvestigatorId -> ReaderT Game m a -> m a
+  :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 
 instance CardGen GameT
 instance MonadRandom GameT

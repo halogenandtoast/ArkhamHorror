@@ -21,16 +21,15 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
-getDiscoverLocation :: (HasGame m, Tracing m) => InvestigatorId -> Discover -> m (Maybe LocationId)
+getDiscoverLocation :: HasGame m => InvestigatorId -> Discover -> m (Maybe LocationId)
 getDiscoverLocation iid d = case d.location of
   DiscoverAtLocation lid' -> pure (Just lid')
   DiscoverYourLocation -> field InvestigatorLocation iid
 
-getDiscoveredTotal :: (HasGame m, Tracing m) => InvestigatorId -> Discover -> m Int
+getDiscoveredTotal :: HasGame m => InvestigatorId -> Discover -> m Int
 getDiscoveredTotal iid d = getDiscoverLocation iid d >>= \case
   Nothing -> pure 0
   Just lid -> do

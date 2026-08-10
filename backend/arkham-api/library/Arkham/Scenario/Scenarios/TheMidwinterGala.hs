@@ -42,7 +42,6 @@ import Arkham.Scenarios.TheMidwinterGala.Faction
 import Arkham.Scenarios.TheMidwinterGala.Helpers
 import Arkham.Scenarios.TheMidwinterGala.Meta
 import Arkham.Story.Cards qualified as Stories
-import Arkham.Tracing
 import Arkham.Trait (Trait (Guest, Leader, Manor, Monster, Private, SecondFloor))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Map.Strict qualified as Map
@@ -107,7 +106,7 @@ instance HasChaosTokenValue TheMidwinterGala where
       pure $ ChaosTokenValue ElderThing (NegativeModifier $ if isEasyStandard attrs then 3 else 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-calculateScore :: (HasGame m, Tracing m) => ScenarioAttrs -> m (Map Tally Int)
+calculateScore :: HasGame m => ScenarioAttrs -> m (Map Tally Int)
 calculateScore attrs = do
   let Meta {rival, ally} = toResult attrs.meta
   manorNoClue <-

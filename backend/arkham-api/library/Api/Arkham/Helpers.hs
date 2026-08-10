@@ -11,10 +11,8 @@ import Arkham.Epic.Types (EpicEnv, HasMaybeEpic (..), SharedEventState)
 import Arkham.Game
 import Arkham.Id
 import Arkham.Message
-import Arkham.Metrics (withMetric)
 import Arkham.Queue
 import Arkham.Random
-import Arkham.Tracing
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar
 import Control.Concurrent.MVar qualified as MVar
@@ -33,9 +31,7 @@ import Database.Redis (Connection, RedisChannel, hdel, hgetall, hincrby, hset, r
 import Entity.Arkham.Game
 import Entity.Arkham.LogEntry
 import GHC.Records
-import Import hiding (appLogger, appTracer, (==.), (>=.))
-import OpenTelemetry.Trace qualified as Trace
-import OpenTelemetry.Trace.Monad (MonadTracer (..), inSpan')
+import Import hiding (appLogger, (==.), (>=.))
 
 newtype GameLog = GameLog {gameLogToLogEntries :: [Text]}
   deriving newtype (Monoid, Semigroup)
@@ -115,7 +111,6 @@ data GameApp = GameApp
   , appQueue :: Queue Message
   , appGen :: IORef StdGen
   , appLogger :: ClientMessage -> IO ()
-  , appTracer :: Trace.Tracer
   , appEvent :: Maybe EpicEnv
   {- ^ present only when this game is a group within an Epic Multiplayer event;
   'Nothing' (the default for every ordinary game) means zero behavior change.
@@ -141,23 +136,10 @@ instance HasGameRef GameApp where
 instance HasQueue Message GameAppT where
   messageQueue = asks appQueue
 
-instance MonadTracer GameAppT where
-  getTracer = asks appTracer
-
 instance HasGameLogger GameAppT where
   getLogger = do
     logger <- asks appLogger
     pure $ \msg -> liftIO $ logger msg
-
-instance Tracing GameAppT where
-  type SpanType GameAppT = Trace.Span
-  type SpanArgs GameAppT = Trace.SpanArguments
-
-  -- See note in Arkham.GameT: addAttribute is a no-op so unused thunks
-  -- (often `tshow` over deep ADTs) stay unforced.
-  addAttribute _ _ _ = pure ()
-  defaultSpanArgs = Trace.defaultSpanArguments
-  doTrace name args action = withMetric name (inSpan' name args action)
 
 gameIdToText :: ArkhamGameId -> Text
 gameIdToText = UUID.toText . coerce

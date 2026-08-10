@@ -57,7 +57,6 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Trait (Trait (Ally))
 import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (mkAfter, revealedChaosTokens)
@@ -222,7 +221,7 @@ screamedAllyCleanupMessages iids = do
 @RunMessage@ catch-all (mirroring how tarot ability uses are dispatched).
 -}
 runUltimatumsAndBoonsMessage
-  :: (HasGame m, HasQueue Message m, Tracing m, CardGen m)
+  :: (HasGame m, HasQueue Message m, CardGen m)
   => Message
   -> m ()
 runUltimatumsAndBoonsMessage msg = case msg of
@@ -385,7 +384,7 @@ the card database), so the choices are independent per player.
 one message shape covers both @InitDeck@ call sites.
 -}
 morriganWeaknessMessages
-  :: (HasGame m, MonadRandom m, Tracing m)
+  :: (HasGame m, MonadRandom m)
   => InvestigatorId
   -> m Card
   -> m [Message]

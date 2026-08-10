@@ -10,13 +10,12 @@ import Arkham.Id
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
-import Arkham.Tracing
 
-getAssetUses :: (HasGame m, Tracing m) => UseType -> AssetId -> m Int
+getAssetUses :: HasGame m => UseType -> AssetId -> m Int
 getAssetUses k = fieldMap AssetUses (findWithDefault 0 k)
 
 toModifiedStartingUses
-  :: (HasCallStack, HasGame m, Tracing m, IsCard a, Targetable a)
+  :: (HasCallStack, HasGame m, IsCard a, Targetable a)
   => a
   -> Uses GameCalculation
   -> m (Map UseType Int)
@@ -34,7 +33,7 @@ toModifiedStartingUses a startingUses = do
   applyModifier m _ = pure m
 
 toStartingUses
-  :: (HasCallStack, HasGame m, Tracing m) => Uses GameCalculation -> m (Map UseType Int)
+  :: (HasCallStack, HasGame m) => Uses GameCalculation -> m (Map UseType Int)
 toStartingUses = fmap toMap . asStartingUses
  where
   toMap = \case
@@ -42,7 +41,7 @@ toStartingUses = fmap toMap . asStartingUses
     UsesWithLimit uType value _ -> singletonMap uType value
     NoUses -> mempty
 
-asStartingUses :: (HasCallStack, Tracing m, HasGame m) => Uses GameCalculation -> m (Uses Int)
+asStartingUses :: (HasCallStack, HasGame m) => Uses GameCalculation -> m (Uses Int)
 asStartingUses (Uses uType gameValue) = Uses uType <$> calculate gameValue
 asStartingUses (UsesWithLimit uType gameValue limitValue) =
   UsesWithLimit uType <$> calculate gameValue <*> calculate limitValue

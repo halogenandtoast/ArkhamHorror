@@ -26,16 +26,15 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (ScenarioTokens))
 import Arkham.Skill.Types (Field (SkillCard))
 import Arkham.Token
-import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "enthrallingEncore" a
 
-getMeasures :: (HasGame m, Tracing m) => m Int
+getMeasures :: HasGame m => m Int
 getMeasures = scenarioFieldMap ScenarioTokens (countTokens Resource)
 
-getPropsDeck :: (HasGame m, Tracing m) => m [Card]
+getPropsDeck :: HasGame m => m [Card]
 getPropsDeck = getScenarioDeck PropsDeck
 
 propsDeckCards :: [CardDef]
@@ -57,7 +56,7 @@ propsDeckCards =
   , Assets.digDeep
   ]
 
-classesAmongControlledCards :: (HasGame m, Tracing m) => InvestigatorId -> m Int
+classesAmongControlledCards :: HasGame m => InvestigatorId -> m Int
 classesAmongControlledCards iid = do
   assets <- traverse (field AssetCard) =<< select (assetControlledBy iid)
   events <- traverse (field EventCard) =<< select (eventControlledBy iid)
@@ -116,12 +115,12 @@ signatureSwaps =
       )
     ]
 
-getSignatureSwap :: (HasGame m, Tracing m) => InvestigatorId -> m (Maybe SignatureSwap)
+getSignatureSwap :: HasGame m => InvestigatorId -> m (Maybe SignatureSwap)
 getSignatureSwap iid = do
   title <- fieldMap InvestigatorName toTitle iid
   pure $ lookup title signatureSwaps
 
-getOwnedCardDefs :: (HasGame m, Tracing m) => InvestigatorId -> m [CardDef]
+getOwnedCardDefs :: HasGame m => InvestigatorId -> m [CardDef]
 getOwnedCardDefs iid =
   selectOne TheCampaign >>= \case
     Just _ -> do

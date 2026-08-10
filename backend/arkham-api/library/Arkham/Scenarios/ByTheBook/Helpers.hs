@@ -20,7 +20,6 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Source
-import Arkham.Tracing
 import Arkham.Trait (Trait (Cultist))
 import Arkham.Xp
 import Control.Monad.Trans.Class (MonadTrans)
@@ -44,7 +43,7 @@ healCultistInsteadOfDefeat source eid = do
   let excess = damage - health + 1
   when (excess > 0) $ healDamage eid source excess
 
-hasDeckCard :: (HasGame m, Tracing m) => InvestigatorId -> CardDef -> m Bool
+hasDeckCard :: HasGame m => InvestigatorId -> CardDef -> m Bool
 hasDeckCard iid def =
   selectAny $ basic (cardIs def) <> OwnedBy (IncludeEliminated $ InvestigatorWithId iid)
 

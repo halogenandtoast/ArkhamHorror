@@ -14,7 +14,6 @@ import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing (Tracing)
 
 {- | The 'Investigatable' behavior for things-that-can-be-investigated
 (locations, enemy-locations, etc.).
@@ -23,7 +22,7 @@ import Arkham.Tracing (Tracing)
 -- | Push an 'Investigate' for a location in response to the player using its
 -- 'AbilityInvestigate' UI ability.
 pushInvestigateAbility
-  :: (HasGame m, HasQueue Message m, MonadRandom m, Sourceable s, Tracing m)
+  :: (HasGame m, HasQueue Message m, MonadRandom m, Sourceable s)
   => LocationId -> InvestigatorId -> s -> m ()
 pushInvestigateAbility lid iid src = do
   sid <- getRandom

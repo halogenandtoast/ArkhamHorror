@@ -282,7 +282,6 @@ import Arkham.Matcher (TreacheryMatcher(..), treacheryInThreatAreaOf)
 import Arkham.Message.Lifted.Placement
 import Arkham.Name
 import Arkham.SkillType
-import Arkham.Tracing
 import Arkham.Treachery.Helpers qualified as Msg
 
 revelationSkillTest
@@ -333,7 +332,7 @@ placeTreachery t = push . Msg.PlaceTreachery (asId t)
 
 gainSurge :: (ReverseQueue m, Sourceable a, Targetable a) => a -> m ()
 gainSurge = push . Msg.gainSurge
-isFirstCopyThisPhase :: (HasGame m, Tracing m, HasCardCode a) => a -> m Bool
+isFirstCopyThisPhase :: (HasGame m, HasCardCode a) => a -> m Bool
 isFirstCopyThisPhase attrs = do
   drawn <- getAllHistoryField #phase HistoryTreacheriesDrawn
   pure $ count (== toCardCode attrs) drawn == 1

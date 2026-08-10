@@ -178,7 +178,6 @@ import Arkham.Slot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), defaultWindows, mkAfter, mkWhen, mkWindow, primaryWindowTarget)
@@ -1313,7 +1312,7 @@ handleHealTrauma a@InvestigatorAttrs{..} iid physical mental = do
     & (mentalTraumaL %~ max 0 . subtract mental)
 
 getHealthDamageableAssets
-  :: (HasGame m, Tracing m)
+  :: HasGame m
   => InvestigatorId
   -> AssetMatcher
   -> Source
@@ -1346,7 +1345,7 @@ getHealthDamageableAssets iid matcher source _ damageTargets horrorTargets = do
   pure $ setFromList $ filter (`notElem` excludes) notFull
 
 getSanityDamageableAssets
-  :: (HasGame m, Tracing m)
+  :: HasGame m
   => InvestigatorId
   -> AssetMatcher
   -> Source
@@ -1377,13 +1376,13 @@ getSanityDamageableAssets iid matcher source _ damageTargets horrorTargets = do
     pure $ remaining - assigned > 0
   pure $ setFromList $ filter (`notElem` excludes) notFull
 
-sourcePerformerHasModifier :: (HasGame m, Tracing m) => Source -> ModifierType -> m Bool
+sourcePerformerHasModifier :: HasGame m => Source -> ModifierType -> m Bool
 sourcePerformerHasModifier source m =
   getSourceController source >>= \case
     Nothing -> pure False
     Just iid -> hasModifier iid m
 
-getFacingDefeat :: (HasGame m, Tracing m) => InvestigatorAttrs -> m Bool
+getFacingDefeat :: HasGame m => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do
   canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
   modifiedHealth <- field InvestigatorHealth (toId a)

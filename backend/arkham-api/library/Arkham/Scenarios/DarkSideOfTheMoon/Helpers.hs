@@ -12,13 +12,12 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Token
-import Arkham.Tracing
 import Arkham.Window
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "darkSideOfTheMoon" a
 
-getAlarmLevel :: (HasGame m, Tracing m) => InvestigatorId -> m Int
+getAlarmLevel :: HasGame m => InvestigatorId -> m Int
 getAlarmLevel = fieldMap InvestigatorTokens (countTokens AlarmLevel)
 {-# INLINE getAlarmLevel #-}
 
@@ -44,7 +43,7 @@ reduceAlarmLevelBy n (toSource -> source) iid = do
   when (n' > 0) $ removeTokens source iid AlarmLevel n'
 {-# INLINE reduceAlarmLevelBy #-}
 
-getMaxAlarmLevel :: (HasGame m, Tracing m) => m Int
+getMaxAlarmLevel :: HasGame m => m Int
 getMaxAlarmLevel = do
   investigators <- getInvestigators
   alarmLevels <- traverse (fieldMap InvestigatorTokens (countTokens AlarmLevel)) investigators

@@ -14,34 +14,33 @@ import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Tracing
 
 -- These can be queried outside of a scenario (e.g. while gathering actions
 -- during the between-scenarios deck-upgrade step, where the scenario has
 -- already been torn out of the game mode). With no scenario there is no chaos
 -- bag, so degrade to "no tokens" rather than crashing on the missing field.
-getOnlyChaosTokensInBag :: (HasGame m, Tracing m) => m [ChaosToken]
+getOnlyChaosTokensInBag :: HasGame m => m [ChaosToken]
 getOnlyChaosTokensInBag = foldMap chaosBagChaosTokens <$> scenarioFieldMaybe ScenarioChaosBag
 
-getBagChaosTokens :: (HasCallStack, HasGame m, Tracing m) => m [ChaosToken]
+getBagChaosTokens :: (HasCallStack, HasGame m) => m [ChaosToken]
 getBagChaosTokens = foldMap allChaosBagChaosTokens <$> scenarioFieldMaybe ScenarioChaosBag
 
-getTokenPool :: (HasGame m, Tracing m) => m [ChaosToken]
+getTokenPool :: HasGame m => m [ChaosToken]
 getTokenPool = foldMap chaosBagTokenPool <$> scenarioFieldMaybe ScenarioChaosBag
 
-getRemainingFrostTokens :: (HasGame m, Tracing m) => m Int
+getRemainingFrostTokens :: HasGame m => m Int
 getRemainingFrostTokens = selectCount $ InTokenPool #frost
 
-hasRemainingFrostTokens :: (HasGame m, Tracing m) => m Bool
+hasRemainingFrostTokens :: HasGame m => m Bool
 hasRemainingFrostTokens = (> 0) <$> getRemainingFrostTokens
 
-getRemainingCurseTokens :: (HasGame m, Tracing m) => m Int
+getRemainingCurseTokens :: HasGame m => m Int
 getRemainingCurseTokens = selectCount $ InTokenPool #curse
 
-getRemainingBlessTokens :: (HasGame m, Tracing m) => m Int
+getRemainingBlessTokens :: HasGame m => m Int
 getRemainingBlessTokens = selectCount $ InTokenPool #bless
 
-getSealedChaosTokens :: (HasGame m, Tracing m) => m [ChaosToken]
+getSealedChaosTokens :: HasGame m => m [ChaosToken]
 getSealedChaosTokens =
   concat
     <$> sequence
@@ -51,13 +50,13 @@ getSealedChaosTokens =
       , selectAgg id InvestigatorSealedChaosTokens Anyone
       ]
 
-getAllChaosTokens :: (HasGame m, Tracing m) => m [ChaosToken]
+getAllChaosTokens :: HasGame m => m [ChaosToken]
 getAllChaosTokens = nub . concat <$> sequence [getBagChaosTokens, getSealedChaosTokens]
 
-getChaosBagChoice :: (HasGame m, Tracing m) => m (Maybe ChaosBagStepState)
+getChaosBagChoice :: HasGame m => m (Maybe ChaosBagStepState)
 getChaosBagChoice = scenarioFieldMap ScenarioChaosBag chaosBagChoice
 
-getChaosBag :: (HasGame m, Tracing m) => m ChaosBag
+getChaosBag :: HasGame m => m ChaosBag
 getChaosBag = scenarioField ScenarioChaosBag
 
 -- | Extract the chain of step-states wrapped in a chaos-bag choice.

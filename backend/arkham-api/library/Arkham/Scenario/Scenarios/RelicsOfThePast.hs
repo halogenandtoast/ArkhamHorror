@@ -28,7 +28,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.RelicsOfThePast.Helpers
-import Arkham.Tracing
 import Arkham.Trait (Trait (Ancient, Serpent))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
@@ -88,17 +87,17 @@ moveNearestSerpentToward iid = do
     chooseOrRunOneM iid $ targets enemies \enemy ->
       push $ MoveToward (toTarget enemy) (locationWithInvestigator iid)
 
-hasCampaignCard :: (HasGame m, Tracing m) => InvestigatorId -> CardDef -> m Bool
+hasCampaignCard :: HasGame m => InvestigatorId -> CardDef -> m Bool
 hasCampaignCard iid def = do
   inDeck <-
     member (toCardCode def) . findWithDefault mempty iid <$> matchingCardsAlreadyInDeck (cardIs def)
   storyCards <- findWithDefault [] iid <$> getCampaignStoryCards
   pure $ inDeck || any ((== def) . toCardDef) storyCards
 
-isMontereyJack :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
+isMontereyJack :: HasGame m => InvestigatorId -> m Bool
 isMontereyJack = fieldMap InvestigatorName ((== "Monterey Jack") . toTitle)
 
-toVictoryEntries :: (ConvertToCard c, HasGame m, Tracing m) => [c] -> m [(Text, Int)]
+toVictoryEntries :: (ConvertToCard c, HasGame m) => [c] -> m [(Text, Int)]
 toVictoryEntries = mapMaybeM \c -> do
   card <- convertToCard c
   mPoints <- getVictoryPoints card

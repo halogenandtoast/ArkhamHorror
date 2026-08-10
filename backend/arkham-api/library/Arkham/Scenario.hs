@@ -32,6 +32,7 @@ import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Matcher qualified as Matcher
+import Arkham.Metrics (withMetric)
 import Arkham.Message
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Name
@@ -41,7 +42,6 @@ import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
 import Arkham.Slot
 import Arkham.Tarot
-import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.UltimatumsAndBoons (runUltimatumsAndBoonsMessage)
 import Arkham.Window (duringTurnWindow, mkWhen)
@@ -128,7 +128,7 @@ instance HasAbilities TarotCard where
     TheWorldXXI -> [restricted (fromTarot c) 1 AffectedByTarot $ forced (Matcher.GameEnds #when)]
     _ -> []
 
-tarotInvestigator :: (HasGame m, Tracing m) => TarotCard -> m (Maybe InvestigatorId)
+tarotInvestigator :: HasGame m => TarotCard -> m (Maybe InvestigatorId)
 tarotInvestigator card = do
   tarotCards <- Map.assocs <$> scenarioField ScenarioTarotCards
   pure $ case find (\(_, vs) -> card `elem` vs) tarotCards of
@@ -265,7 +265,7 @@ isTarotSource ab = case ab.source of
 
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) =
-    withSpan_ ("Scenario[" <> unCardCode (unScenarioId x.id) <> "].runMessage") do
+    withMetric ("Scenario[" <> unCardCode (unScenarioId x.id) <> "].runMessage") do
       case msg of
         UseThisAbility _ source@(TarotSource card@(TarotCard facing TheLoversVI)) 1 -> do
           investigators <- filterM (`affectedByTarot` card) =<< getInvestigators

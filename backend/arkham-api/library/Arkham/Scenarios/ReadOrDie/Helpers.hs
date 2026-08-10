@@ -11,7 +11,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Tracing
 import Arkham.Trait (Trait (Tome))
 
 scenarioI18n :: (HasI18n => a) -> a
@@ -25,7 +24,7 @@ nonWeaknessTomeAsset = CardWithType AssetType <> CardWithTrait Tome <> NonWeakne
 
 -- Checks the investigator's deck, hand, discard, and in-play assets for a
 -- copy of the given card so resolution swaps are only offered when legal.
-hasInPool :: (HasGame m, Tracing m) => InvestigatorId -> CardDef -> m Bool
+hasInPool :: HasGame m => InvestigatorId -> CardDef -> m Bool
 hasInPool iid def = do
   deck <- fieldMap InvestigatorDeck (map toCard . unDeck) iid
   hand <- field InvestigatorHand iid

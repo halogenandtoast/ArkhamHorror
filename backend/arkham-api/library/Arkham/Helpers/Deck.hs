@@ -17,7 +17,6 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Xp
 import Control.Lens (non, _1)
 import Data.Map.Strict qualified as Map
@@ -54,10 +53,10 @@ partitionReloadedDeck storyCards invalid =
  where
   storyKeys = map (canonicalCardCode . toCardDef) storyCards
 
-isDeckEmpty :: (HasGame m, Tracing m, Deck.IsDeck deck) => deck -> m Bool
+isDeckEmpty :: (HasGame m, Deck.IsDeck deck) => deck -> m Bool
 isDeckEmpty = fmap null . getDeck . Deck.toDeck
 
-getDeck :: (HasGame m, Tracing m) => Deck.DeckSignifier -> m [Card]
+getDeck :: HasGame m => Deck.DeckSignifier -> m [Card]
 getDeck = \case
   Deck.NoDeck -> pure []
   Deck.InvestigatorDeck iid -> fieldMap InvestigatorDeck (map PlayerCard . unDeck) iid
@@ -121,7 +120,7 @@ initDeckTrauma deck' iid target = do
     <> [chooseMsg | anyTrauma > 0]
 
 deckMatch
-  :: (HasGame m, Tracing m)
+  :: HasGame m
   => InvestigatorId
   -> Deck.DeckSignifier
   -> Matcher.DeckMatcher

@@ -37,7 +37,6 @@ import Arkham.Scenario.Types hiding (scenario)
 import Arkham.Skill.Types (Skill)
 import Arkham.Story.Types (Story)
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Window (Window)
 import Control.Lens (each)
@@ -260,7 +259,7 @@ maybeConcealedCard cid = preview (entitiesL . concealedL . ix cid) <$> getGame
 getActiveInvestigator :: HasGame m => m Investigator
 getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 
-getCostForCard :: (HasGame m, Tracing m) => InvestigatorId -> Card -> IsPlayAction -> m Cost.Cost
+getCostForCard :: HasGame m => InvestigatorId -> Card -> IsPlayAction -> m Cost.Cost
 getCostForCard iid card isPlayAction = do
   cardMods <- getModifiers card
   investigatorMods <- getModifiers iid
@@ -359,7 +358,7 @@ getCostForCard iid card isPlayAction = do
         <> sealChaosTokenCosts
 
 createActiveCostForCard
-  :: (MonadRandom m, HasGame m, Tracing m)
+  :: (MonadRandom m, HasGame m)
   => InvestigatorId
   -> Card
   -> IsPlayAction

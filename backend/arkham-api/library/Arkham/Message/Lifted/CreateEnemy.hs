@@ -11,7 +11,6 @@ import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Queue
-import Arkham.Tracing
 import Control.Monad.State.Strict
 
 newtype CreateEnemyT m a = CreateEnemyT {unCreateEnemyT :: StateT (EnemyCreation Message) m a}
@@ -23,7 +22,6 @@ newtype CreateEnemyT m a = CreateEnemyT {unCreateEnemyT :: StateT (EnemyCreation
     , MonadTrans
     , MonadState (EnemyCreation Message)
     , MonadRandom
-    , Tracing
     )
 
 instance HasGame m => HasGame (CreateEnemyT m) where

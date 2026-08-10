@@ -6,10 +6,9 @@ import Arkham.Helpers.Modifiers
 import Arkham.Message (Message)
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.UI as X
 
 uiEffect
-  :: (HasGame m, Tracing m, Sourceable source, Targetable target)
+  :: (HasGame m, Sourceable source, Targetable target)
   => source -> target -> UIModifier -> m Message
 uiEffect source target modifier = createWindowModifierEffect EffectUI source target [UIModifier modifier]

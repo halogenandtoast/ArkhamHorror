@@ -27,7 +27,6 @@ import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Tracing
 import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (Window (..), mkAfter, mkCancel, mkWhen)
 import Arkham.Window qualified as Window
@@ -44,7 +43,7 @@ silently dropped from choice lists. 'IncludeSealed' widens the pool without
 touching the inner predicate, so this can only add candidates.
 -}
 matchRevealedChaosToken
-  :: (HasGame m, Tracing m) => InvestigatorId -> ChaosToken -> ChaosTokenMatcher -> m Bool
+  :: HasGame m => InvestigatorId -> ChaosToken -> ChaosTokenMatcher -> m Bool
 matchRevealedChaosToken iid t matcher = matchChaosToken iid t (IncludeSealed matcher)
 
 cancelTokenIfShould :: ReverseQueue m => ChaosToken -> m ChaosToken
@@ -157,7 +156,7 @@ replaceFirstChooseChoice source iid strategy replacement = \case
     replaceFirstChoice source iid strategy replacement (Decided step) : rest
 
 resolveFirstUnresolved
-  :: (HasCallStack, HasGame m, Tracing m, MonadRandom m)
+  :: (HasCallStack, HasGame m, MonadRandom m)
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy
@@ -409,7 +408,7 @@ resolveFirstUnresolved source iid strategy = \case
           pure (Decided $ ChooseMatchChoice steps' tokens' choices, msgs)
 
 resolveFirstChooseUnresolved
-  :: (HasCallStack, HasGame m, Tracing m, MonadRandom m)
+  :: (HasCallStack, HasGame m, MonadRandom m)
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy

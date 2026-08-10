@@ -60,14 +60,13 @@ import Arkham.Projection
 import Arkham.Scenarios.IceAndDeath.Helpers (camps)
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 
 runEdgeOfTheEarthAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runEdgeOfTheEarthAchievements msg = whenEligibleCampaign $ case msg of
   {- "Safe Bet": camping is recording one of the Camp_* keys, which Ice and Death,
   Part I does at its resolution (or when the last investigator resigns). Each key
@@ -343,7 +342,7 @@ whenEligibleCampaign body = do
   let eligible = achievementCampaigns $ EdgeOfTheEarthAchievement SafeBet
   when (maybe False (`elem` eligible) mCampaignId) body
 
-whenScenarioIs :: (HasGame m, Tracing m) => ScenarioId -> m () -> m ()
+whenScenarioIs :: HasGame m => ScenarioId -> m () -> m ()
 whenScenarioIs sid body = do
   mSid <- selectOne TheScenario
   when (mSid == Just sid) body
@@ -393,7 +392,7 @@ atTheSummit = locationIs Locations.theSummit
 {- | Whether a supply has made it to the top: either sitting on The Summit, or
 still in the hands of somebody standing there.
 -}
-supplyAtSummit :: (HasGame m, Tracing m) => CardDef -> m Bool
+supplyAtSummit :: HasGame m => CardDef -> m Bool
 supplyAtSummit def =
   selectAny
     $ assetIs def
@@ -418,7 +417,7 @@ ability/payment wrappers. Getting this wrong silently disabled Wuk Wuk Boom,
 This Was Your Idea and Kind of a Hat on a Hat, all three of which look for an
 asset's own ability.
 -}
-sourceIsAsset :: (HasGame m, Tracing m) => [CardDef] -> Source -> m Bool
+sourceIsAsset :: HasGame m => [CardDef] -> Source -> m Bool
 sourceIsAsset defs source = case source.asset of
   Nothing -> pure False
   Just aid -> do
@@ -426,18 +425,18 @@ sourceIsAsset defs source = case source.asset of
     pure $ maybe False (`elem` map toCardCode defs) mCardCode
 
 -- | Professor William Dyer's ability; both printings heal the same way.
-sourceIsDyersAbility :: (HasGame m, Tracing m) => Source -> m Bool
+sourceIsDyersAbility :: HasGame m => Source -> m Bool
 sourceIsDyersAbility =
   sourceIsAsset
     [ Assets.professorWilliamDyerProfessorOfGeology
     , Assets.professorWilliamDyerProfessorOfGeologyResolute
     ]
 
-isDynamiteSource :: (HasGame m, Tracing m) => Source -> m Bool
+isDynamiteSource :: HasGame m => Source -> m Bool
 isDynamiteSource = sourceIsAsset [Assets.dynamite]
 
 -- | Whether a card is currently sitting underneath a Backpack in play.
-cardIsUnderABackpack :: (HasGame m, Tracing m) => Card -> m Bool
+cardIsUnderABackpack :: HasGame m => Card -> m Bool
 cardIsUnderABackpack card = do
   packs <- select $ mapOneOf assetIs backpacks
   undernearth <- traverse (field Asset.AssetCardsUnderneath) packs
@@ -446,7 +445,7 @@ cardIsUnderABackpack card = do
 {- | Recheck the two "have N of these in play at once" achievements for an
 investigator who just gained an asset.
 -}
-checkAssetBoard :: (HasGame m, HasQueue Message m, Tracing m) => InvestigatorId -> m ()
+checkAssetBoard :: (HasGame m, HasQueue Message m) => InvestigatorId -> m ()
 checkAssetBoard iid = do
   controlled <- select $ assetControlledBy iid
   defs <- traverse (fieldMap Asset.AssetCard toCardDef) controlled
@@ -516,17 +515,17 @@ scenariosPlayedKey = "eoteAchScenariosPlayed"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-storedFlag :: (HasCallStack, HasGame m, Tracing m) => Text -> m Bool
+storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k
 
-storedKeys :: (HasCallStack, HasGame m, Tracing m) => Text -> m [ArkhamKey]
+storedKeys :: (HasCallStack, HasGame m) => Text -> m [ArkhamKey]
 storedKeys k = fromMaybe [] <$> stored k
 
-storedCodes :: (HasCallStack, HasGame m, Tracing m) => Text -> m [CardCode]
+storedCodes :: (HasCallStack, HasGame m) => Text -> m [CardCode]
 storedCodes k = fromMaybe [] <$> stored k
 
-storedScenarios :: (HasCallStack, HasGame m, Tracing m) => Text -> m [ScenarioId]
+storedScenarios :: (HasCallStack, HasGame m) => Text -> m [ScenarioId]
 storedScenarios k = fromMaybe [] <$> stored k

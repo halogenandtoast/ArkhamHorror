@@ -8,18 +8,17 @@ import Arkham.Prelude
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.Source
-import Arkham.Tracing
 
-getSkillTestDifficulty :: (HasCallStack, HasGame m, Tracing m) => m (Maybe Int)
+getSkillTestDifficulty :: (HasCallStack, HasGame m) => m (Maybe Int)
 skillTestMatches
-  :: (HasCallStack, Tracing m, HasGame m)
+  :: (HasCallStack, HasGame m)
   => InvestigatorId
   -> Source
   -> SkillTest
   -> Matcher.SkillTestMatcher
   -> m Bool
 skillTestValueMatches
-  :: (HasGame m, Tracing m)
+  :: HasGame m
   => InvestigatorId
   -> Maybe Action
   -> SkillTestType

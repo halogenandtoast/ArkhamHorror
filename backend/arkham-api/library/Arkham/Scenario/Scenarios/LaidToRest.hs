@@ -27,7 +27,6 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.LaidToRest.Helpers
-import Arkham.Tracing
 import Arkham.Trait (Trait (Ally, Geist, Spectral))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (defaultWindows)
@@ -100,7 +99,7 @@ expertTokens =
 {- FOURMOLU_ENABLE -}
 
 hasCampaignCard
-  :: (HasGame m, Tracing m, HasCardDef def) => InvestigatorId -> def -> m Bool
+  :: (HasGame m, HasCardDef def) => InvestigatorId -> def -> m Bool
 hasCampaignCard iid (toCardDef -> def) = do
   inDeck <- matchingCardsAlreadyInDeck (cardIs def)
   storyCards <- getCampaignStoryCards

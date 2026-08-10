@@ -28,7 +28,6 @@ import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
 
@@ -107,7 +106,7 @@ factionEnemy = mapOneOf enemyIs . factionEnemyDefs
 warringEnemy :: EnemyMatcher
 warringEnemy = EnemyWithKeyword #warring
 
-getEnemyFaction :: (HasGame m, Tracing m) => EnemyId -> m (Maybe Faction)
+getEnemyFaction :: HasGame m => EnemyId -> m (Maybe Faction)
 getEnemyFaction eid = do
   cardCode <- field EnemyCardCode eid
   pure
@@ -156,18 +155,18 @@ factionAgendaCheckThreshold attrs = when (onSide AS.A attrs) do
 
 -- | "If this is the first agenda to advance to 1b" (or 2b). True when no
 -- other faction's agenda deck has already progressed past that stage.
-isFirstAgendaToAdvanceTo :: (HasGame m, Tracing m) => Int -> AgendaAttrs -> m Bool
+isFirstAgendaToAdvanceTo :: HasGame m => Int -> AgendaAttrs -> m Bool
 isFirstAgendaToAdvanceTo n attrs =
   selectNone $ NotAgenda (AgendaWithId attrs.agendaId) <> mapOneOf AgendaWithStep [n + 1 .. 4]
 
-getAgendaStep :: (HasGame m, Tracing m) => AgendaId -> m Int
+getAgendaStep :: HasGame m => AgendaId -> m Int
 getAgendaStep = fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep)
 
 -- | The faction that is "in the lead" is the faction that has advanced the
 -- farthest through their agenda deck, breaking ties by most doom on their
 -- agenda, then by most enemies in play. Multiple factions are returned if
 -- the tie cannot be broken.
-getLeadFactions :: (HasGame m, Tracing m) => m [Faction]
+getLeadFactions :: HasGame m => m [Faction]
 getLeadFactions = do
   entries <- forMaybeM factionOrder \f -> do
     selectOne (factionAgenda f) >>= traverse \agenda -> do
@@ -225,7 +224,7 @@ warIsOver winner = do
 
 -- | Clues "around" Hub Dimension are not on the location and cannot be
 -- discovered by any means.
-getCluesAroundHubDimension :: (HasGame m, Tracing m) => m Int
+getCluesAroundHubDimension :: HasGame m => m Int
 getCluesAroundHubDimension = scenarioCount CluesAroundHubDimension
 
 placeCluesAroundHubDimension :: ReverseQueue m => Int -> m ()
@@ -253,12 +252,12 @@ placeMutations source eid n = placeTokens source (EnemyTarget eid) Mutation n
 removeMutations :: (ReverseQueue m, Sourceable source) => source -> EnemyId -> Int -> m ()
 removeMutations source eid n = removeTokens (toSource source) (EnemyTarget eid) Mutation n
 
-getMutations :: (HasGame m, Tracing m) => EnemyId -> m Int
+getMutations :: HasGame m => EnemyId -> m Int
 getMutations = fieldMap EnemyTokens (countTokens Mutation)
 
 -- | Order enemies green, then blue, then red. Enemies without a faction are
 -- dropped.
-sortEnemiesByFaction :: (HasGame m, Tracing m) => [EnemyId] -> m [EnemyId]
+sortEnemiesByFaction :: HasGame m => [EnemyId] -> m [EnemyId]
 sortEnemiesByFaction eids = do
   withFaction <- for eids \eid -> (,eid) <$> getEnemyFaction eid
   pure [eid | f <- factionOrder, (mf, eid) <- withFaction, mf == Just f]
@@ -267,7 +266,7 @@ sortEnemiesByFaction eids = do
 -- step: ready, unengaged, not already at a location with an enemy of a
 -- different faction, and with some warring enemy of a different faction to
 -- move toward.
-getWarringMovers :: (HasGame m, Tracing m) => m [EnemyId]
+getWarringMovers :: HasGame m => m [EnemyId]
 getWarringMovers = do
   -- Swarm cards move with their host (like normal hunter movement, which guards
   -- `not (isSwarm a)`), so exclude them — otherwise a host with N swarm cards
@@ -288,13 +287,13 @@ getWarringMovers = do
 -- | The warring enemies that would attack during the "resolve enemy
 -- attacks" step: ready, unengaged, and at a location with a warring enemy
 -- of a different faction.
-getWarringAttackers :: (HasGame m, Tracing m) => m [EnemyId]
+getWarringAttackers :: HasGame m => m [EnemyId]
 getWarringAttackers = do
   warring <- select $ warringEnemy <> ReadyEnemy <> UnengagedEnemy
   filterM (fmap notNull . getWarringTargets) warring
 
 -- | The warring enemies of a different faction at the given enemy's location.
-getWarringTargets :: (HasGame m, Tracing m) => EnemyId -> m [EnemyId]
+getWarringTargets :: HasGame m => EnemyId -> m [EnemyId]
 getWarringTargets eid =
   getEnemyFaction eid >>= \case
     Nothing -> pure []

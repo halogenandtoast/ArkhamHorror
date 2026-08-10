@@ -25,7 +25,6 @@ import Arkham.Prelude
 import Arkham.Query
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Control.Lens (each, sumOf)
 import Control.Monad.Writer.Class
 import Data.Aeson
@@ -35,18 +34,18 @@ import Data.Monoid (First (..))
 import GHC.Records
 
 withGrantedAction
-  :: (HasGame m, Tracing m, Sourceable source) => InvestigatorId -> source -> ReaderT Game m a -> m a
+  :: (HasGame m, Sourceable source) => InvestigatorId -> source -> ReaderT Game m a -> m a
 withGrantedAction iid source = withGrantedActions iid source 1
 
 withGrantedActions
-  :: (HasGame m, Tracing m, Sourceable source)
+  :: (HasGame m, Sourceable source)
   => InvestigatorId -> source -> Int -> ReaderT Game m a -> m a
 withGrantedActions iid source n = withModifiersOf iid source [ActionCostModifier (-n)]
 
-ignoreActionCost :: (HasGame m, Tracing m) => InvestigatorId -> ReaderT Game m a -> m a
+ignoreActionCost :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 ignoreActionCost iid = withModifiers iid (toModifiers GameSource [ActionsAreFree])
 
-ignoreCommitOneRestriction :: (HasGame m, Tracing m) => InvestigatorId -> ReaderT Game m a -> m a
+ignoreCommitOneRestriction :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 ignoreCommitOneRestriction iid = withModifiers iid (toModifiers GameSource [IgnoreCommitOneRestriction])
 
 withModifiers
@@ -58,7 +57,7 @@ withModifiers
 withModifiers = withModifiers'
 
 withModifiersOf
-  :: (HasGame m, Tracing m, Targetable target, Sourceable source)
+  :: (HasGame m, Targetable target, Sourceable source)
   => target
   -> source
   -> [ModifierType]
@@ -126,14 +125,13 @@ withoutModifier a m = not <$> hasModifier a m
 withoutModifiers :: (HasGame m, Targetable a) => a -> [ModifierType] -> m Bool
 withoutModifiers a ms = all (`notElem` ms) <$> getModifiers (toTarget a)
 
-toModifier :: (Sourceable a, HasGame m, Tracing m) => a -> ModifierType -> m Modifier
+toModifier :: (Sourceable a, HasGame m) => a -> ModifierType -> m Modifier
 toModifier a mType = Modifier (toSource a) mType False <$> sourceToMaybeCard a
 
 modifySelf
   :: ( Targetable target
      , Sourceable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => target
@@ -159,7 +157,6 @@ immuneToPlayerEffects
   :: ( Targetable target
      , Sourceable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => target
@@ -170,7 +167,6 @@ modifySelf1
   :: ( Targetable target
      , Sourceable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => target
@@ -182,7 +178,6 @@ modifySelfMaybe
   :: ( Targetable target
      , Sourceable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => target
@@ -196,7 +191,6 @@ modifySelfWith
   :: ( Targetable target
      , Sourceable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => target
@@ -209,7 +203,6 @@ modifySelfWhen
   :: ( Targetable target
      , Sourceable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => target
@@ -224,7 +217,6 @@ modifySelfWhenM
   :: ( Targetable target
      , Sourceable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => target
@@ -235,15 +227,14 @@ modifySelfWhenM target cond mods = do
   b <- cond
   modifySelfWhen target b mods
 
-toModifiers :: (HasGame m, Tracing m, Sourceable a) => a -> [ModifierType] -> m [Modifier]
+toModifiers :: (HasGame m, Sourceable a) => a -> [ModifierType] -> m [Modifier]
 toModifiers = traverse . toModifier
 
-modified :: (Sourceable a, HasGame m, Tracing m) => a -> [ModifierType] -> m [Modifier]
+modified :: (Sourceable a, HasGame m) => a -> [ModifierType] -> m [Modifier]
 modified a = toModifiers a
 
 modifyEach
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable a
      , MonadWriter (MonoidalMap Target [Modifier]) m
@@ -258,7 +249,6 @@ modifyEach source xs mTypes = do
 
 modifyEachMap
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable a
      , MonadWriter (MonoidalMap Target [Modifier]) m
@@ -272,7 +262,6 @@ modifyEachMap source xs f = do
 
 modifyEachMapM
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable a
      , MonadWriter (MonoidalMap Target [Modifier]) m
@@ -286,7 +275,6 @@ modifyEachMapM source xs f = do
 
 modifyEachMaybe
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable a
      , MonadWriter (MonoidalMap Target [Modifier]) m
@@ -303,7 +291,6 @@ modifyEachMaybe source xs body = do
 
 modifyEachWith
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable a
      , MonadWriter (MonoidalMap Target [Modifier]) m
@@ -319,7 +306,6 @@ modifyEachWith source xs f mTypes = do
 
 modifySelect
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable el
      , el ~ QueryElement query
@@ -337,7 +323,6 @@ modifySelect source q mtypes = do
 
 modifySelectMap
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable el
      , el ~ QueryElement query
@@ -354,7 +339,6 @@ modifySelectMap source q f = do
 
 modifySelectMapM
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable el
      , el ~ QueryElement query
@@ -371,7 +355,6 @@ modifySelectMapM source q f = do
 
 modifySelectWith
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable el
      , el ~ QueryElement query
@@ -389,7 +372,6 @@ modifySelectWith source q f mtypes = do
 
 modifySelectWhen
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable el
      , el ~ QueryElement query
@@ -405,7 +387,6 @@ modifySelectWhen source cond q mtypes = when cond $ modifySelect source q mtypes
 
 modifySelectMaybe
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable el
      , el ~ QueryElement query
@@ -422,7 +403,6 @@ modifySelectMaybe source q body = do
 
 modifySelectMaybeWith
   :: ( HasGame m
-     , Tracing m
      , Sourceable source
      , Targetable el
      , el ~ QueryElement query
@@ -439,7 +419,7 @@ modifySelectMaybeWith source q f body = do
   for_ xs \x -> maybeModifiedWith_ source x f (body x)
 
 maybeModifySelf
-  :: (Targetable a, Sourceable a, HasGame m, Tracing m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  :: (Targetable a, Sourceable a, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
   => a
   -> MaybeT m [ModifierType]
   -> m ()
@@ -448,7 +428,6 @@ modified_
   :: ( Sourceable a
      , Targetable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => a
@@ -462,7 +441,6 @@ modifiedWhen_
   :: ( Sourceable a
      , Targetable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => a
@@ -479,7 +457,6 @@ modifiedWith_
   :: ( Sourceable a
      , Targetable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => a
@@ -493,7 +470,6 @@ maybeModified_
   :: ( Sourceable a
      , Targetable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => a
@@ -509,7 +485,6 @@ maybeModifiedWith_
   :: ( Sourceable a
      , Targetable target
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => a
@@ -523,12 +498,12 @@ maybeModifiedWith_ a target f body = do
     tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiersWith a f mods
 
 toModifiersWith
-  :: (HasGame m, Tracing m, Sourceable a)
+  :: (HasGame m, Sourceable a)
   => a -> (Modifier -> Modifier) -> [ModifierType] -> m [Modifier]
 toModifiersWith a f xs = traverse (fmap f . toModifier a) xs
 
 skillTestModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => SkillTestId
   -> source
   -> target
@@ -538,7 +513,7 @@ skillTestModifier sid source target modifier =
   skillTestModifiers sid source target [modifier]
 
 skillTestModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => SkillTestId
   -> source
   -> target
@@ -554,7 +529,6 @@ nextSkillTestModifier
      , IdOf investigator ~ InvestigatorId
      , Targetable target
      , HasGame m
-     , Tracing m
      )
   => investigator
   -> source
@@ -569,7 +543,6 @@ nextSkillTestModifiers
      , AsId investigator
      , IdOf investigator ~ InvestigatorId
      , HasGame m
-     , Tracing m
      , Targetable target
      )
   => investigator
@@ -587,16 +560,16 @@ nextSkillTestModifiers investigator (toSource -> source) (toTarget -> target) mo
       target
 
 effectModifiers
-  :: (HasGame m, Tracing m, Sourceable a) => a -> [ModifierType] -> m (EffectMetadata Message)
+  :: (HasGame m, Sourceable a) => a -> [ModifierType] -> m (EffectMetadata Message)
 effectModifiers source ms = EffectModifiers <$> toModifiers source ms
 
 effectModifiersWith
-  :: (HasGame m, Tracing m, Sourceable a)
+  :: (HasGame m, Sourceable a)
   => (Modifier -> Modifier) -> a -> [ModifierType] -> m (EffectMetadata Message)
 effectModifiersWith f source ms = EffectModifiers . map f <$> toModifiers source ms
 
 createWindowModifierEffect
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => EffectWindow
   -> source
   -> target
@@ -611,17 +584,17 @@ createWindowModifierEffect eWindow (toSource -> source) (toTarget -> target) mod
   pure $ CreateWindowModifierEffect eWindow ems source target
 
 createCostModifiers
-  :: (HasGame m, Tracing m, Sourceable source, IsCard card)
+  :: (HasGame m, Sourceable source, IsCard card)
   => source -> card -> [ModifierType] -> m Message
 createCostModifiers source (toCard -> card) modifiers' =
   createWindowModifierEffect (EffectCardCostWindow $ toCardId card) source (toCardId card) modifiers'
 
 reduceCostOf
-  :: (HasGame m, Tracing m, Sourceable source, IsCard card) => source -> card -> Int -> m Message
+  :: (HasGame m, Sourceable source, IsCard card) => source -> card -> Int -> m Message
 reduceCostOf source (toCard -> card) n = createCostModifiers source card [ReduceCostOf (CardWithId $ toCardId card) n]
 
 defeatModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => EnemyId
   -> source
   -> target
@@ -630,7 +603,7 @@ defeatModifier
 defeatModifier eid source target modifier = createWindowModifierEffect (EffectDefeatWindow eid) source target [modifier]
 
 turnModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
@@ -639,7 +612,7 @@ turnModifier
 turnModifier iid source target modifier = createWindowModifierEffect (EffectTurnWindow iid) source target [modifier]
 
 turnModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
@@ -648,7 +621,7 @@ turnModifiers
 turnModifiers iid source target modifiers = createWindowModifierEffect (EffectTurnWindow iid) source target modifiers
 
 nextTurnModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
@@ -657,7 +630,7 @@ nextTurnModifier
 nextTurnModifier iid source target modifier = createWindowModifierEffect (EffectNextTurnWindow iid) source target [modifier]
 
 nextTurnModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
@@ -666,37 +639,37 @@ nextTurnModifiers
 nextTurnModifiers iid source target modifiers = createWindowModifierEffect (EffectNextTurnWindow iid) source target modifiers
 
 createRoundModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> [ModifierType] -> m Message
 createRoundModifier = createWindowModifierEffect EffectRoundWindow
 
 roundModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 roundModifier source target modifier = createWindowModifierEffect EffectRoundWindow source target [modifier]
 
 roundModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> [ModifierType] -> m Message
 roundModifiers = createRoundModifier
 
 actModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 actModifier source target modifier = createWindowModifierEffect EffectActWindow source target [modifier]
 
 gameModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 gameModifier source target modifier = createWindowModifierEffect EffectGameWindow source target [modifier]
 
 resolutionModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 resolutionModifier source target modifier = createWindowModifierEffect EffectResolutionWindow source target [modifier]
 
 nextPhaseModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => Phase
   -> source
   -> target
@@ -705,7 +678,7 @@ nextPhaseModifier
 nextPhaseModifier phase source target modifier = createWindowModifierEffect (EffectPhaseWindowFor phase) source target [modifier]
 
 nextPhaseModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => Phase
   -> source
   -> target
@@ -714,7 +687,7 @@ nextPhaseModifiers
 nextPhaseModifiers phase source target modifiers = createWindowModifierEffect (EffectPhaseWindowFor phase) source target modifiers
 
 endOfPhaseModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => Phase
   -> source
   -> target
@@ -723,7 +696,7 @@ endOfPhaseModifier
 endOfPhaseModifier phase source target modifier = createWindowModifierEffect (EffectUntilEndOfPhaseWindowFor phase) source target [modifier]
 
 endOfNextPhaseModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => Phase
   -> source
   -> target
@@ -732,37 +705,37 @@ endOfNextPhaseModifier
 endOfNextPhaseModifier phase source target modifier = createWindowModifierEffect (EffectUntilEndOfNextPhaseWindowFor phase) source target [modifier]
 
 damageModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 damageModifier source target modifier = createWindowModifierEffect EffectDamageWindow source target [modifier]
 
 enemyAttackModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 enemyAttackModifier source target modifier = createWindowModifierEffect EffectAttackWindow source target [modifier]
 
 enemyAttackModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> [ModifierType] -> m Message
 enemyAttackModifiers source target modifiers = createWindowModifierEffect EffectAttackWindow source target modifiers
 
 costModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 costModifier source target modifier = createWindowModifierEffect EffectCostWindow source target [modifier]
 
 costModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> [ModifierType] -> m Message
 costModifiers source target modifiers = createWindowModifierEffect EffectCostWindow source target modifiers
 
 eventModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 eventModifier source target modifier = createWindowModifierEffect EffectEventWindow source target [modifier]
 
 gainResourcesModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
@@ -771,37 +744,37 @@ gainResourcesModifier
 gainResourcesModifier iid source target modifier = createWindowModifierEffect (EffectGainResourcesWindow iid) source target [modifier]
 
 eventModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> [ModifierType] -> m Message
 eventModifiers source target modifiers = createWindowModifierEffect EffectEventWindow source target modifiers
 
 movementModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 movementModifier source target modifier = createWindowModifierEffect EffectMoveWindow source target [modifier]
 
 thisMovementModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => MovementId -> source -> target -> ModifierType -> m Message
 thisMovementModifier mid source target modifier = createWindowModifierEffect (EffectThisMoveWindow mid) source target [modifier]
 
 phaseModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 phaseModifier source target modifier = createWindowModifierEffect EffectPhaseWindow source target [modifier]
 
 phaseModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> [ModifierType] -> m Message
 phaseModifiers source target modifiers = createWindowModifierEffect EffectPhaseWindow source target modifiers
 
 cardDrawModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => CardDrawId -> source -> target -> ModifierType -> m Message
 cardDrawModifier cid source target modifier = createWindowModifierEffect (EffectCardDrawWindow cid) source target [modifier]
 
 cardResolutionModifier
-  :: (Sourceable source, Targetable target, IsCard card, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, IsCard card, HasGame m)
   => card
   -> source
   -> target
@@ -811,7 +784,7 @@ cardResolutionModifier card source target modifier =
   createWindowModifierEffect (EffectCardResolutionWindow $ toCardId card) source target [modifier]
 
 cardResolutionModifiers
-  :: (Sourceable source, Targetable target, IsCard card, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, IsCard card, HasGame m)
   => card
   -> source
   -> target
@@ -820,22 +793,22 @@ cardResolutionModifiers
 cardResolutionModifiers card source target modifiers = createWindowModifierEffect (EffectCardResolutionWindow $ toCardId card) source target modifiers
 
 searchModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> [ModifierType] -> m Message
 searchModifiers source target modifiers = createWindowModifierEffect EffectSearchWindow source target modifiers
 
 searchModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 searchModifier source target modifier = createWindowModifierEffect EffectSearchWindow source target [modifier]
 
 setupModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source -> target -> ModifierType -> m Message
 setupModifier source target modifier = createWindowModifierEffect EffectSetupWindow source target [modifier]
 
 scenarioSetupModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => ScenarioId
   -> source
   -> target
@@ -848,7 +821,7 @@ you are currently in; the modifier stays inert until a different scenario is
 current, then applies during that scenario's setup and first round.
 -}
 nextSetupModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => ScenarioId
   -> source
   -> target
@@ -863,7 +836,7 @@ there directly — 'EffectGameWindow' for all of it, 'EffectFirstAgendaWindow' u
 its agenda deck first advances, and so on.
 -}
 forNextScenarioModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => ScenarioId
   -> EffectWindow
   -> source
@@ -874,7 +847,7 @@ forNextScenarioModifier scenarioId effectWindow source target modifier =
   createWindowModifierEffect (EffectForNextScenario scenarioId effectWindow) source target [modifier]
 
 abilityModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => AbilityRef
   -> source
   -> target
@@ -911,7 +884,7 @@ getMetaMaybe def target k = do
   pure $ fromMaybe def value
 
 revelationModifiers
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source
   -> target
   -> TreacheryId
@@ -922,7 +895,7 @@ revelationModifiers (toSource -> source) (toTarget -> target) tid modifiers = do
   pure $ CreateWindowModifierEffect (EffectRevelationWindow tid) ems source target
 
 revelationModifier
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source
   -> target
   -> TreacheryId
@@ -935,7 +908,6 @@ controllerGets
   :: ( HasField "controller" source (Maybe InvestigatorId)
      , Sourceable source
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => source
@@ -949,7 +921,6 @@ controllerGetsMaybe
   :: ( HasField "controller" source (Maybe InvestigatorId)
      , Sourceable source
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => source
@@ -963,7 +934,6 @@ controllerGetsWhen
   :: ( HasField "controller" source (Maybe InvestigatorId)
      , Sourceable source
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => source
@@ -976,7 +946,6 @@ controllerGetsWith
   :: ( HasField "controller" source (Maybe InvestigatorId)
      , Sourceable source
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => source
@@ -991,7 +960,6 @@ inThreatAreaGets
   :: ( HasField "placement" source Placement
      , Sourceable source
      , HasGame m
-     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => source
@@ -1005,6 +973,6 @@ pattern CannotMoveTo :: LocationMatcher -> ModifierType
 pattern CannotMoveTo lm = AdditionalCostToEnterMatching lm UnpayableCost
 
 everyoneGets
-  :: (Sourceable source, HasGame m, Tracing m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  :: (Sourceable source, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
   => source -> [ModifierType] -> m ()
 everyoneGets attrs = modifySelect attrs Anyone

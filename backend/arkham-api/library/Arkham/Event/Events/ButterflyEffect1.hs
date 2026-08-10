@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getCommittableCards, getCommittedCards, getSkillTestInvestigator)
-import Arkham.Tracing
 
 newtype ButterflyEffect1 = ButterflyEffect1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -25,7 +24,7 @@ card to hand via a card effect is a different thing entirely. Only cards that
 never left the zone they were committed from (Amanda Sharpe's top card,
 Dayana Esperence's stashed cards) cannot be returned.
 -}
-butterflyEffectOptions :: (HasGame m, Tracing m) => InvestigatorId -> m ([Card], [Card])
+butterflyEffectOptions :: HasGame m => InvestigatorId -> m ([Card], [Card])
 butterflyEffectOptions who = do
   committable <- getCommittableCards who
   returnable <- filterM (`withoutModifier` LeaveCardWhereItIs) =<< getCommittedCards who

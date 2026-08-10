@@ -10,7 +10,6 @@ import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Prelude
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theApiary" a
@@ -76,7 +75,7 @@ newtype ApiaryMeta = ApiaryMeta {centralChamberFacing :: GridDirection}
 initApiaryMeta :: ApiaryMeta
 initApiaryMeta = ApiaryMeta GridDown
 
-getCentralChamberFacing :: (Tracing m, HasGame m) => m GridDirection
+getCentralChamberFacing :: HasGame m => m GridDirection
 getCentralChamberFacing = maybe GridDown centralChamberFacing <$> getScenarioMeta
 
 -- Rotating the card clockwise/counter-clockwise moves which ring location is

@@ -20,10 +20,9 @@ import Arkham.Prelude hiding (Day)
 import Arkham.Projection
 import Arkham.Scenario.Runner ()
 import Arkham.Scenario.Types (ScenarioAttrs)
-import Arkham.Tracing
 
 hemlockPreludeChaosTokenValue
-  :: (HasCallStack, HasGame m, Tracing m)
+  :: (HasCallStack, HasGame m)
   => InvestigatorId -> ChaosTokenFace -> ScenarioAttrs -> m ChaosTokenValue
 hemlockPreludeChaosTokenValue iid tokenFace attrs = case tokenFace of
   Skull -> do

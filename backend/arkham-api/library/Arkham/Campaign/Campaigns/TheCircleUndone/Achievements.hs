@@ -43,12 +43,11 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Trait (Trait (Geist, SilverTwilight, Spectral))
 import Data.Aeson.Key qualified as Key
 
 runCircleAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runCircleAchievements msg = whenEligibleCampaign $ case msg of
   -- "Savior of Humanity": rescue every Silver Twilight enemy in At Death's
   -- Doorstep. Escaping the Spectral Realm (Resolution 1) is the only surviving
@@ -175,7 +174,7 @@ checkCircleExpertise = do
 progressCase :: (HasGame m, HasQueue Message m) => Text -> m ()
 progressCase item = achievementProgress (TheCircleUndoneAchievement CaseClosed) [item]
 
-bumpGeist :: (HasCallStack, HasGame m, HasQueue Message m, Tracing m) => m ()
+bumpGeist :: (HasCallStack, HasGame m, HasQueue Message m) => m ()
 bumpGeist = do
   n <- storedInt geistDefeatsKey
   setStore geistDefeatsKey (n + 1)
@@ -194,7 +193,7 @@ whenEligibleCampaign body = do
   let eligible = achievementCampaigns $ TheCircleUndoneAchievement CircleExpertise
   when (maybe False (`elem` eligible) mCampaignId) body
 
-whenInTheClutchesOfChaos :: (HasGame m, Tracing m) => m () -> m ()
+whenInTheClutchesOfChaos :: HasGame m => m () -> m ()
 whenInTheClutchesOfChaos body = do
   mSid <- selectOne TheScenario
   when (maybe False (`elem` (["05284", "54049"] :: [ScenarioId])) mSid) body
@@ -250,8 +249,8 @@ incursionOccurredKey = "circleAchIncursionOccurred"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-storedFlag :: (HasCallStack, HasGame m, Tracing m) => Text -> m Bool
+storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k

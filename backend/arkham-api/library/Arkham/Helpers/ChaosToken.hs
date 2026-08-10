@@ -13,12 +13,11 @@ import Arkham.Message
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 matchChaosToken
-  :: (HasGame m, Tracing m) => InvestigatorId -> ChaosToken -> Matcher.ChaosTokenMatcher -> m Bool
+  :: HasGame m => InvestigatorId -> ChaosToken -> Matcher.ChaosTokenMatcher -> m Bool
 matchChaosToken _ = (<=~>)
 
 cancelChaosToken :: HasQueue Message m => ChaosToken -> m ()
@@ -66,7 +65,7 @@ chaosTokenSymbolEffectsIgnored token = do
     $ any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken, IgnoreChaosTokenSymbolEffects]
 
 chaosTokenEffect
-  :: (HasGame m, Tracing m, Sourceable source) => source -> ChaosToken -> ModifierType -> m Message
+  :: (HasGame m, Sourceable source) => source -> ChaosToken -> ModifierType -> m Message
 chaosTokenEffect (toSource -> source) token modifier = do
   ems <- effectModifiers source [modifier]
   pure $ CreateChaosTokenEffect ems source token

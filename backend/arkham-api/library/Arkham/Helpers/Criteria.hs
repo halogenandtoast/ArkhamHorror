@@ -70,7 +70,6 @@ import Arkham.Key
 import Arkham.Location.Grid (Pos, isAdjacent)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
-import Arkham.Metrics qualified as Metrics
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Placement
@@ -85,7 +84,6 @@ import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Token qualified as Token
-import Arkham.Tracing
 import Arkham.Trait (Trait (Ritual, Spell))
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkWhen)
@@ -102,7 +100,7 @@ import Data.Typeable
 import Data.UUID qualified as UUID
 
 passesCriteria
-  :: (HasCallStack, Tracing m, HasGame m)
+  :: (HasCallStack, HasGame m)
   => InvestigatorId
   -> Maybe (Card, CostStatus)
   -> Source
@@ -110,8 +108,7 @@ passesCriteria
   -> [Window]
   -> Criterion
   -> m Bool
-passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCriteria/" <> Metrics.messageTag ctr) \currentSpan ->
-  addAttribute currentSpan "criterion" (tshow ctr) >> case ctr of
+passesCriteria iid mcard source' requestor windows' ctr = case ctr of
     Criteria.IfCriteria p a b -> do
       pv <- passesCriteria iid mcard source' requestor windows' p
       passesCriteria iid mcard source' requestor windows' $ if pv then a else b
@@ -540,7 +537,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCrit
       results <- select cardMatcher
 
       let
-        go :: (HasGame n, Tracing n) => Maybe (Card, CostStatus) -> n Int
+        go :: HasGame n => Maybe (Card, CostStatus) -> n Int
         go = \case
           Just (card, AuxiliaryCost aux inner) -> do
             let increase = IncreaseCostOf (Matcher.basic $ Matcher.CardWithId card.id) $ totalResourceCost aux
@@ -602,7 +599,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCrit
         <> Matcher.InDiscardOf (investigatorMatcher <> can.have.cards.leaveDiscard)
     Criteria.CanAffordCostIncrease n -> do
       let
-        go :: (HasGame n, Tracing n) => Maybe (Card, CostStatus) -> n Bool
+        go :: HasGame n => Maybe (Card, CostStatus) -> n Bool
         go = \case
           Just (card, AuxiliaryCost aux inner) -> do
             let increase = IncreaseCostOf (Matcher.basic $ Matcher.CardWithId card.id) $ totalResourceCost aux
@@ -827,7 +824,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCrit
 
 -- | Build a matcher and check the list
 passesEnemyCriteria
-  :: (HasGame m, Tracing m)
+  :: HasGame m
   => InvestigatorId
   -> Source
   -> [Window]
@@ -883,7 +880,7 @@ to the callback. This is the single source of truth shared by both:
   * getTrueMagickInHandAbilities (the abilities surfaced to the matcher DSL).
 -}
 eachTrueMagickHandAbility
-  :: (HasCallStack, Tracing m, HasGame m)
+  :: (HasCallStack, HasGame m)
   => AssetAttrs
   -> InvestigatorId
   -> (Card -> [Ability] -> ReaderT Game m a)
@@ -917,7 +914,7 @@ here would re-enter getGameAbilities (criteria evaluation selects abilities)
 on the hot path. Performability is the consumer's job (AssetWithPerformableAbility
 and Sign Magick (3) both filter with getCanPerformAbility downstream).
 -}
-getTrueMagickInHandAbilities :: (HasCallStack, Tracing m, HasGame m) => m [Ability]
+getTrueMagickInHandAbilities :: (HasCallStack, HasGame m) => m [Ability]
 getTrueMagickInHandAbilities = do
   trueMagicks <- select $ Matcher.assetIs Assets.trueMagickReworkingReality5
   fmap concat $ for trueMagicks \trueMagick -> do
@@ -945,7 +942,7 @@ getCanPerformAbility) so it is safe to call from True Magick's HasModifiersFor
 without re-entering modifier collection. Full performability is still enforced
 when the borrowed ability is offered via getTrueMagickInHandAbilities.
 -}
-getTrueMagickGrantedTraits :: (HasGame m, Tracing m) => AssetAttrs -> m [Trait]
+getTrueMagickGrantedTraits :: HasGame m => AssetAttrs -> m [Trait]
 getTrueMagickGrantedTraits attrs = case attrs.controller of
   Just iid | attrs.isInPlay -> do
     hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid

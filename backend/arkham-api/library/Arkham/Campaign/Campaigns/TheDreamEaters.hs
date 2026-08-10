@@ -28,7 +28,6 @@ import Arkham.Message.Lifted hiding (continue)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
-import Arkham.Tracing
 import Data.Aeson (Result (..))
 
 newtype TheDreamEaters = TheDreamEaters CampaignAttrs
@@ -104,7 +103,7 @@ setCampaignPart part c@(TheDreamEaters attrs) msg = do
             )
 
 getHasRecord
-  :: (IsCampaignLogKey k, HasGame m, Tracing m, HasCallStack) => CampaignPart -> k -> m Bool
+  :: (IsCampaignLogKey k, HasGame m, HasCallStack) => CampaignPart -> k -> m Bool
 getHasRecord part key = do
   isCurrent <- getIsPartialCampaign part
   if isCurrent
@@ -118,7 +117,7 @@ getHasRecord part key = do
           Nothing -> False
 
 whenHasRecord
-  :: (IsCampaignLogKey k, HasGame m, Tracing m, HasCallStack) => CampaignPart -> k -> m () -> m ()
+  :: (IsCampaignLogKey k, HasGame m, HasCallStack) => CampaignPart -> k -> m () -> m ()
 whenHasRecord part key action = whenM (getHasRecord part key) action
 
 instance IsCampaign TheDreamEaters where

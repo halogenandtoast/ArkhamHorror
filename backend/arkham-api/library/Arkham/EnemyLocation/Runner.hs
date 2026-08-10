@@ -57,7 +57,6 @@ import Arkham.Name (display, toName)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Token
-import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
@@ -354,7 +353,7 @@ Not @field EnemyHealth@: an enemy-location registers its modifiers against its
 'LocationTarget' (see 'modifySelf' in e.g. Living Parlor), so the enemy field
 projection over the coerced EnemyId would miss them entirely.
 -}
-getModifiedHealth :: (Tracing m, HasGame m) => EnemyLocationAttrs -> m (Maybe Int)
+getModifiedHealth :: HasGame m => EnemyLocationAttrs -> m (Maybe Int)
 getModifiedHealth a = do
   mHealth <- traverse calculate a.health
   modifiers' <- getModifiers (toTarget a)

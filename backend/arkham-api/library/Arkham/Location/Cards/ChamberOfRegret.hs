@@ -17,7 +17,6 @@ import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers
-import Arkham.Tracing
 
 newtype ChamberOfRegret = ChamberOfRegret LocationAttrs
   deriving anyclass IsLocation
@@ -26,7 +25,7 @@ newtype ChamberOfRegret = ChamberOfRegret LocationAttrs
 chamberOfRegret :: LocationCard ChamberOfRegret
 chamberOfRegret = location ChamberOfRegret Cards.chamberOfRegret 1 (PerPlayer 1)
 
-anyLeverPulled :: (HasGame m, Tracing m) => m Bool
+anyLeverPulled :: HasGame m => m Bool
 anyLeverPulled =
   scenarioFieldMap ScenarioRemembered $ any \case
     PulledTheLeftLever _ -> True

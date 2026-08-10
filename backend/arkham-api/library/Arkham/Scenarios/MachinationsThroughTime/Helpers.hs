@@ -16,7 +16,6 @@ import Arkham.Message.Lifted (ReverseQueue)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Tracing
 import Arkham.Trait (Trait (Future, Item, Past, Present, Scientist))
 import Arkham.Window qualified as Window
 import Control.Monad.Trans
@@ -33,7 +32,7 @@ data MachinationsThroughTimeMeta = MachinationsThroughTimeMeta
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-getMachinationsThroughTimeMeta :: (HasGame m, Tracing m) => m MachinationsThroughTimeMeta
+getMachinationsThroughTimeMeta :: HasGame m => m MachinationsThroughTimeMeta
 getMachinationsThroughTimeMeta =
   toResultDefault (MachinationsThroughTimeMeta mempty) <$> scenarioField ScenarioMeta
 
@@ -77,7 +76,7 @@ abductById aid = do
   push $ ScenarioSpecific "machinationsThroughTime.abduct" (toJSON aid)
 
 -- | All abducted [[Scientist]] assets (set aside, out of play).
-getAbductedScientists :: (HasGame m, Tracing m) => m [Card]
+getAbductedScientists :: HasGame m => m [Card]
 getAbductedScientists =
   filter (`cardMatch` CardWithTrait Scientist) <$> scenarioField ScenarioSetAsideCards
 
@@ -86,7 +85,7 @@ has all three era traits, so it always qualifies. Future Item assets (the
 Dimensional Beam Machine) and assets without an era trait (Edwin Bennet) can
 enter any location.
 -}
-assetCanEnter :: (HasGame m, Tracing m) => AssetId -> LocationId -> m Bool
+assetCanEnter :: HasGame m => AssetId -> LocationId -> m Bool
 assetCanEnter aid lid = do
   assetTraits <- field Asset.AssetTraits aid
   locationTraits <- field Location.LocationTraits lid

@@ -112,7 +112,6 @@ import Arkham.SkillType ()
 import Arkham.Spawn qualified
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
@@ -131,7 +130,7 @@ AsIfAt, so use the investigator's physical placement; under Chapter 1 rules
 AsIfAt applies for the duration of the ability.
 -}
 disengageLocation
-  :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m LocationId
+  :: (HasCallStack, HasGame m) => InvestigatorId -> m LocationId
 disengageLocation iid = do
   settings <- getSettings
   mlid <-
@@ -216,7 +215,7 @@ filterOutEnemyUiMessages eid = \case
   FightLabelWithSkill eid' _ _ | eid == eid' -> Nothing
   other -> Just other
 
-getInvestigatorsAtSameLocation :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]
+getInvestigatorsAtSameLocation :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = do
   field EnemyLocation (toId attrs) >>= \case
     Nothing -> pure []
@@ -261,13 +260,13 @@ getCannotAttackNow mods
   | CannotAttackDuringEnemyPhase `elem` mods = (== #enemy) <$> getPhase
   | otherwise = pure False
 
-getCanEngage :: (HasGame m, Tracing m) => EnemyAttrs -> m Bool
+getCanEngage :: HasGame m => EnemyAttrs -> m Bool
 getCanEngage a = do
   keywords <- getModifiedKeywords a
   unengaged <- selectNone $ investigatorEngagedWith a.id
   pure $ all (`notElem` keywords) [#aloof, #massive] && unengaged
 
-getPaths :: (HasGame m, Tracing m) => EnemyAttrs -> [LocationId] -> m [LocationId]
+getPaths :: HasGame m => EnemyAttrs -> [LocationId] -> m [LocationId]
 getPaths a destinations =
   getLocationOf a >>= \case
     Nothing -> pure []
@@ -295,13 +294,13 @@ getPaths a destinations =
             pure $ if null barricadedPathIds then pathIds' else barricadedPathIds
           else pure pathIds'
 
-getActualAvailablePrey :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]
+getActualAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getActualAvailablePrey a =
   getPreyMatcher a >>= \case
     OnlyPrey m -> select m
     _ -> getAvailablePrey a
 
-getAvailablePrey :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]
+getAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getAvailablePrey a = runDefaultMaybeT [] do
   enemyLocation <- MaybeT $ field EnemyLocation a.id
   iids <- select $ investigatorAt enemyLocation <> InvestigatorCanBeEngagedBy a.id

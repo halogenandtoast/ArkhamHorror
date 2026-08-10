@@ -140,7 +140,6 @@ import Arkham.Target
 import Arkham.Tarot qualified as Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
-import Arkham.Tracing
 import Arkham.Treachery
 import Arkham.Treachery.Types (
   Field (..),
@@ -3767,7 +3766,7 @@ runGameMessage msg g = case msg of
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy
-preloadEntities :: (HasGame m, Tracing m) => Game -> m Game
+preloadEntities :: HasGame m => Game -> m Game
 preloadEntities g = do
   let
     investigators = view (entitiesL . investigatorsL) g

@@ -106,7 +106,6 @@ import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
 import Arkham.Token
-import Arkham.Tracing
 import Arkham.Trait (Trait)
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -780,7 +779,7 @@ drawAnotherChaosToken iid = do
     Just _ -> push $ DrawAnotherChaosToken iid
     Nothing -> push $ RequestAnotherChaosToken iid GameSource
 
-eachInvestigator :: (HasGame m, Tracing m) => (InvestigatorId -> m ()) -> m ()
+eachInvestigator :: HasGame m => (InvestigatorId -> m ()) -> m ()
 eachInvestigator f = do
   inResolution <- getInResolution
   investigators <- if inResolution then allInvestigators else getInvestigators
@@ -796,7 +795,7 @@ forInvestigator' :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m
 forInvestigator' iid = capture >=> traverse_ (forInvestigator iid)
 
 selectEachDiscardable
-  :: (HasCardCode a, HasGame m, Tracing m)
+  :: (HasCardCode a, HasGame m)
   => a -> (forall target. Targetable target => target -> m ()) -> m ()
 selectEachDiscardable (toCardCode -> cardCode) f = do
   selectEach (AssetIs cardCode <> DiscardableAsset) f
@@ -2901,7 +2900,7 @@ chaosTokenEffect
 chaosTokenEffect (toSource -> source) token modifier =
   Msg.pushM $ Msg.chaosTokenEffect source token modifier
 
-whenNotAtMax :: (HasGame m, Tracing m) => CardDef -> Int -> (Int -> m ()) -> m ()
+whenNotAtMax :: HasGame m => CardDef -> Int -> (Int -> m ()) -> m ()
 whenNotAtMax def n f = do
   mEffect <-
     selectOne $ EffectWithCardCode "maxef" <> EffectWithTarget (CardCodeTarget $ toCardCode def)
@@ -3227,7 +3226,7 @@ lookAtTopOfDeck
 lookAtTopOfDeck iid target = push $ LookAtTopOfDeck iid (toTarget target) 1
 
 temporaryModifier
-  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m, Tracing m)
+  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m)
   => target
   -> source
   -> ModifierType
@@ -3236,7 +3235,7 @@ temporaryModifier
 temporaryModifier target source modType = temporaryModifiers target source [modType]
 
 temporaryModifiers
-  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m, Tracing m)
+  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m)
   => target
   -> source
   -> [ModifierType]
@@ -3256,7 +3255,6 @@ temporaryModifiersMany
      , HasQueue Message m
      , MonadRandom m
      , HasGame m
-     , Tracing m
      )
   => source
   -> [(target, [ModifierType])]

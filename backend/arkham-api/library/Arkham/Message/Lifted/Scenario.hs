@@ -112,7 +112,6 @@ import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
 import Arkham.Token
-import Arkham.Tracing
 import Arkham.Trait (Trait)
 import Arkham.Window (Window (..), WindowType, defaultWindows)
 import Arkham.Window qualified as Window

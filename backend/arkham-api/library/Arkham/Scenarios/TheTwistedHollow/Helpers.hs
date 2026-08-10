@@ -20,16 +20,15 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Token
-import Arkham.Tracing
 import Arkham.Zone
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theTwistedHollow" a
 
-getDarknessLevel :: (HasGame m, Tracing m) => m Int
+getDarknessLevel :: HasGame m => m Int
 getDarknessLevel = scenarioFieldMap ScenarioTokens (countTokens DarknessLevel)
 
-pursuitEnemiesWithHighestFight :: (HasGame m, Tracing m) => m [EnemyId]
+pursuitEnemiesWithHighestFight :: HasGame m => m [EnemyId]
 pursuitEnemiesWithHighestFight = do
   enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithFight
   fightValue <-
@@ -44,7 +43,7 @@ pursuitEnemiesWithHighestFight = do
     )
     enemies
 
-pursuitEnemiesWithLowestFight :: (HasGame m, Tracing m) => m [EnemyId]
+pursuitEnemiesWithLowestFight :: HasGame m => m [EnemyId]
 pursuitEnemiesWithLowestFight = do
   enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithFight
   fightValue <-
@@ -59,7 +58,7 @@ pursuitEnemiesWithLowestFight = do
     )
     enemies
 
-pursuitEnemiesWithHighestHealth :: (HasGame m, Tracing m) => m [EnemyId]
+pursuitEnemiesWithHighestHealth :: HasGame m => m [EnemyId]
 pursuitEnemiesWithHighestHealth = do
   enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithHealth
   healthValue <-
@@ -74,7 +73,7 @@ pursuitEnemiesWithHighestHealth = do
     )
     enemies
 
-pursuitEnemiesWithHighestEvade :: (HasGame m, Tracing m) => m [EnemyId]
+pursuitEnemiesWithHighestEvade :: HasGame m => m [EnemyId]
 pursuitEnemiesWithHighestEvade = do
   enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithEvade
   evadeValue <-
@@ -89,7 +88,7 @@ pursuitEnemiesWithHighestEvade = do
     )
     enemies
 
-pursuitEnemiesWithLowestEvade :: (HasGame m, Tracing m) => m [EnemyId]
+pursuitEnemiesWithLowestEvade :: HasGame m => m [EnemyId]
 pursuitEnemiesWithLowestEvade = do
   enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithEvade
   evadeValue <-

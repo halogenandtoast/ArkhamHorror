@@ -21,9 +21,9 @@ import Arkham.Target as X
 import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
+import Arkham.Metrics (withMetric)
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Token (subtractTokens, Token(Clue))
-import Arkham.Tracing
 import Control.Lens (non)
 
 afterStoryResolution :: HasQueue Message m => StoryAttrs -> [Message] -> m ()
@@ -36,12 +36,12 @@ afterStoryResolution (toId -> storyId) = traverse_ (pushAfter isResolution) . re
     MoveWithSkillTest (StoryMessage (ResolvedStory _ story')) -> story' == storyId
     _ -> False
 
-getAlreadyResolved :: (HasGame m, Tracing m) => StoryAttrs -> m Bool
+getAlreadyResolved :: HasGame m => StoryAttrs -> m Bool
 getAlreadyResolved (toId -> storyId) = scenarioFieldMap ScenarioResolvedStories (elem storyId)
 
 instance RunMessage Story where
   runMessage msg x@(Story a) =
-    withSpan_ ("Story[" <> unCardCode (toCardCode x) <> "].runMessage") do
+    withMetric ("Story[" <> unCardCode (toCardCode x) <> "].runMessage") do
       Story <$> runMessage msg a
 
 instance RunMessage StoryAttrs where

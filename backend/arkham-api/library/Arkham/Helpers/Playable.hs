@@ -42,14 +42,12 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Taboo.Types
-import Arkham.Tracing
 import Arkham.Window
 import Control.Lens (over)
 import Data.Data.Lens (biplate)
 
 getPlayableCards
   :: ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator
@@ -73,7 +71,6 @@ getPlayableCardsMatch
   :: ( HasCallStack
      , IsCardMatcher cardMatcher
      , HasGame m
-     , Tracing m
      , Sourceable source
      , AsId investigator
      , IdOf investigator ~ InvestigatorId
@@ -83,7 +80,7 @@ getPlayableCardsMatch source investigator costStatus windows' cardMatcher =
   filterCards cardMatcher <$> getPlayableCards source investigator costStatus windows'
 
 getPlayableDiscards
-  :: (HasGame m, Tracing m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: (HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
 getPlayableDiscards source investigator costStatus windows' = do
   attrs <- getAttrs @Investigator (asId investigator)
@@ -109,7 +106,6 @@ getPlayableDiscards source investigator costStatus windows' = do
 
 filterPlayable
   :: ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator
@@ -126,7 +122,6 @@ filterPlayable investigator source costStatus windows' cards =
 
 getIsPlayable
   :: ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator
@@ -147,7 +142,6 @@ getIsPlayable (asId -> iid) source costStatus windows' c = do
 -- resolving reactions to playing the card, so only that check is omitted.
 getIsPlayableAfterInitiation
   :: ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator
@@ -164,8 +158,7 @@ getIsPlayableAfterInitiation (asId -> iid) source costStatus windows' c = do
   getIsPlayableWithResources' True iid source availableResources costStatus windows' c
 
 withReducedCost
-  :: ( Tracing m
-     , HasGame m
+  :: ( HasGame m
      , Sourceable source
      , ToId investigator InvestigatorId
      )
@@ -175,7 +168,6 @@ withReducedCost (asId -> iid) source n = withModifiersOf iid source [ReduceCostO
 getIsPlayableWithResources
   :: forall m source investigator
    . ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator
@@ -193,7 +185,6 @@ getIsPlayableWithResources = getIsPlayableWithResources' False
 getIsPlayableWithResources'
   :: forall m source investigator
    . ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator
@@ -230,7 +221,7 @@ getIsPlayableWithResources'
             (if ignoreContexts then [] else contexts)
         pure $ or (base : others)
    where
-    go :: forall n. (Tracing n, HasGame n) => n Bool
+    go :: forall n. HasGame n => n Bool
     go =
       all (isNothing . snd)
         -- Boolean path: short-circuit. A card rejected by a cheap check (type,
@@ -248,7 +239,7 @@ getIsPlayableWithResources'
           c
 
 getOtherPlayersPlayableCards
-  :: (Tracing m, HasGame m) => InvestigatorId -> CostStatus -> [Window] -> m [Card]
+  :: HasGame m => InvestigatorId -> CostStatus -> [Window] -> m [Card]
 getOtherPlayersPlayableCards iid costStatus windows' = do
   mods <- getModifiers iid
   forMaybeM mods $ \case
@@ -259,7 +250,6 @@ getOtherPlayersPlayableCards iid costStatus windows' = do
 
 getPlayabilityChecks
   :: ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      , AsId investigator
@@ -274,7 +264,6 @@ getPlayabilityChecks (asId -> iid) source costStatus windows' c = do
 getPlayabilityChecksWithResources
   :: forall m source
    . ( HasCallStack
-     , Tracing m
      , HasGame m
      , Sourceable source
      )

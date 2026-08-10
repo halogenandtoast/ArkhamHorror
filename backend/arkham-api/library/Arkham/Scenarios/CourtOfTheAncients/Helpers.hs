@@ -19,7 +19,6 @@ import Arkham.Message (Message (PlaceGrid))
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Tracing
 import Arkham.Trait (Trait (Glyph, Lift))
 
 scenarioI18n :: (HasI18n => a) -> a
@@ -30,7 +29,7 @@ scenarioI18n a = campaignI18n $ scope "courtOfTheAncients" a
 level via the investigator so the @Projection Location@ instance is visible.
 -}
 getLocationLevel
-  :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m, Tracing m)
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m)
   => investigator -> m Int
 getLocationLevel investigator =
   fromMaybe 0 <$> runMaybeT do
@@ -41,7 +40,7 @@ getLocationLevel investigator =
 {- | The number of [[Glyph]] cards currently in the victory display (drives the
 skull token and several Court effects).
 -}
-getVictoryGlyphCount :: (HasGame m, Tracing m) => m Int
+getVictoryGlyphCount :: HasGame m => m Int
 getVictoryGlyphCount = count (`cardMatch` CardWithTrait Glyph) <$> getVictoryDisplay
 
 {- | "The Great Lift is only connected to the locations to the left and right of

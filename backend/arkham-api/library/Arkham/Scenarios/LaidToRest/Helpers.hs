@@ -11,7 +11,6 @@ import Arkham.Matcher
 import Arkham.Message (Message (ScenarioSpecific))
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "laidToRest" a
@@ -22,13 +21,13 @@ jimCulver = InvestigatorWithTitle "Jim Culver"
 theBeyond :: AssetMatcher
 theBeyond = assetIs Assets.theBeyondBleakNetherworld
 
-cardsAttachedToTheBeyond :: (HasGame m, Tracing m) => m Int
+cardsAttachedToTheBeyond :: HasGame m => m Int
 cardsAttachedToTheBeyond =
   (+)
     <$> selectCount (AssetAttachedToAsset theBeyond)
     <*> selectCount (EnemyAttachedToAsset theBeyond)
 
-hereticsStillInTheBeyond :: (HasGame m, Tracing m) => m Int
+hereticsStillInTheBeyond :: HasGame m => m Int
 hereticsStillInTheBeyond = do
   drawnOut <- selectCount $ EnemyWithTitle "Heretic" <> not_ (EnemyAttachedToAsset theBeyond)
   unfinishedBusiness <- selectCount $ StoryWithTitle "Unfinished Business"

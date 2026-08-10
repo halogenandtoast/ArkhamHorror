@@ -26,7 +26,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Aeson (Result (..))
 import Data.Aeson.Types (parseMaybe)
@@ -70,13 +69,13 @@ instance IsCampaign TheForgottenAge where
 theForgottenAge :: Difficulty -> TheForgottenAge
 theForgottenAge = campaign TheForgottenAge (CampaignId "04") "The Forgotten Age"
 
-initialSupplyPoints :: (HasGame m, Tracing m) => m Int
+initialSupplyPoints :: HasGame m => m Int
 initialSupplyPoints = getPlayerCountValue (ByPlayerCount 10 7 5 4)
 
-initialResupplyPoints :: (HasGame m, Tracing m) => m Int
+initialResupplyPoints :: HasGame m => m Int
 initialResupplyPoints = getPlayerCountValue (ByPlayerCount 8 5 4 3)
 
-getPoisonedInvestigators :: (HasGame m, Tracing m) => CampaignAttrs -> m [InvestigatorId]
+getPoisonedInvestigators :: HasGame m => CampaignAttrs -> m [InvestigatorId]
 getPoisonedInvestigators attrs = do
   -- Only investigators still in the game can be poisoned. An investigator who
   -- was killed/driven insane and replaced still has their Poisoned card recorded

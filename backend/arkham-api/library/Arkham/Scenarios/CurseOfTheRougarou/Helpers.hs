@@ -11,19 +11,18 @@ import Arkham.Json
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Tracing
 import Arkham.Trait
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "curseOfTheRougarou" a
 
-bayouLocations :: (Tracing m, HasGame m) => m [LocationId]
+bayouLocations :: HasGame m => m [LocationId]
 bayouLocations = select $ LocationWithTrait Bayou
 
-nonBayouLocations :: (Tracing m, HasGame m) => m [LocationId]
+nonBayouLocations :: HasGame m => m [LocationId]
 nonBayouLocations = select $ LocationWithoutTrait Bayou
 
-getTheRougarou :: (Tracing m, HasGame m) => m (Maybe EnemyId)
+getTheRougarou :: HasGame m => m (Maybe EnemyId)
 getTheRougarou = selectOne $ enemyIs Cards.theRougarou
 
 locationsWithLabels :: (MonadRandom m, HasTraits a) => Trait -> [a] -> m [(Text, a)]

@@ -27,20 +27,19 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Treachery.Types (Field (..), TreacheryAttrs)
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Data.Aeson.Key qualified as Aeson
 
-getConnectedLocations :: (HasGame m, Tracing m) => LocationId -> m [LocationId]
+getConnectedLocations :: HasGame m => LocationId -> m [LocationId]
 getConnectedLocations = fieldMap LocationConnectedLocations toList
 
-toConnections :: (HasGame m, Tracing m) => LocationId -> m [LocationSymbol]
+toConnections :: HasGame m => LocationId -> m [LocationSymbol]
 toConnections lid =
   fieldMap LocationCard (cdLocationRevealedConnections . toCardDef) lid
 
-getConnectedMatcher :: (HasGame m, Tracing m) => ForMovement -> LocationId -> m LocationMatcher
+getConnectedMatcher :: HasGame m => ForMovement -> LocationId -> m LocationMatcher
 getConnectedMatcher forMovement l = cached (ConnectedMatcherKey l forMovement) $ do
   isRevealed <- field LocationRevealed l
   directionalMatchers <- fieldMap LocationConnectsTo (map (`LocationInDirection` self) . setToList) l
@@ -62,13 +61,13 @@ getConnectedMatcher forMovement l = cached (ConnectedMatcherKey l forMovement) $
   applyModifier current _ = pure current
   self = LocationWithId l
 
-isAt :: (HasGame m, Tracing m, AsId a, IdOf a ~ LocationId) => InvestigatorId -> a -> m Bool
+isAt :: (HasGame m, AsId a, IdOf a ~ LocationId) => InvestigatorId -> a -> m Bool
 isAt iid (asId -> lid) = fieldMap InvestigatorLocation (elem lid) iid
 
-whenAt :: (HasGame m, Tracing m, AsId a, IdOf a ~ LocationId) => InvestigatorId -> a -> m () -> m ()
+whenAt :: (HasGame m, AsId a, IdOf a ~ LocationId) => InvestigatorId -> a -> m () -> m ()
 whenAt iid lid = whenM (isAt iid lid)
 
-placementLocation :: (HasCallStack, HasGame m, Tracing m) => Placement -> m (Maybe LocationId)
+placementLocation :: (HasCallStack, HasGame m) => Placement -> m (Maybe LocationId)
 placementLocation = \case
   AtLocation lid -> pure $ Just lid
   AttachedToLocation lid -> pure $ Just lid
@@ -102,9 +101,9 @@ placementLocation = \case
   InPosition _ -> pure Nothing
 
 class Locateable a where
-  getLocationOf :: (HasGame m, Tracing m) => a -> m (Maybe LocationId)
+  getLocationOf :: HasGame m => a -> m (Maybe LocationId)
 
-withLocationOf :: (Locateable a, HasGame m, Tracing m) => a -> (LocationId -> m ()) -> m ()
+withLocationOf :: (Locateable a, HasGame m) => a -> (LocationId -> m ()) -> m ()
 withLocationOf a f = getLocationOf a >>= traverse_ f
 
 instance Locateable ConcealedCardId where
@@ -134,7 +133,7 @@ instance Locateable TreacheryAttrs where
 instance Locateable Placement where
   getLocationOf = placementLocation
 
-onSameLocation :: (HasGame m, Tracing m, Locateable a, Locateable b) => a -> b -> m Bool
+onSameLocation :: (HasGame m, Locateable a, Locateable b) => a -> b -> m Bool
 onSameLocation a b = do
   mlid1 <- getLocationOf a
   mlid2 <- getLocationOf b
@@ -142,13 +141,13 @@ onSameLocation a b = do
     (Just l1, Just l2) -> l1 == l2
     _ -> False
 
-isDiscoveringLastClue :: (HasGame m, Tracing m) => LocationId -> Int -> m Bool
+isDiscoveringLastClue :: HasGame m => LocationId -> Int -> m Bool
 isDiscoveringLastClue lid n = do
   clues <- field LocationClues lid
   pure $ clues - n <= 0 && clues /= 0
 
 locationMatches
-  :: (HasGame m, Tracing m, HasCallStack)
+  :: (HasGame m, HasCallStack)
   => InvestigatorId
   -> Source
   -> Window
@@ -228,13 +227,13 @@ locationMatches investigatorId source window locationId matcher' = do
     _ -> locationId <=~> matcher
 
 getCanMoveTo
-  :: (Sourceable source, HasGame m, Tracing m) => InvestigatorId -> source -> LocationId -> m Bool
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> LocationId -> m Bool
 getCanMoveTo iid source lid =
   cached (CanMoveToLocationKey iid (toSource source) lid) do
     elem lid <$> getCanMoveToLocations iid source
 
 getCanMoveToLocations
-  :: (Sourceable source, HasGame m, Tracing m) => InvestigatorId -> source -> m [LocationId]
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid (toSource source)) do
   modifiers <- getModifiers iid
   let includeEmpty = if CanEnterEmptySpace `elem` modifiers then IncludeEmptySpace else id
@@ -246,7 +245,7 @@ getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid (toSource s
   getCanMoveToLocations_ iid source ls
 
 getCanMoveToLocations_
-  :: (Sourceable source, HasGame m, Tracing m)
+  :: (Sourceable source, HasGame m)
   => InvestigatorId -> source -> [LocationId] -> m [LocationId]
 getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSource source) ls) do
   canMove <-
@@ -272,7 +271,7 @@ getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSou
     else pure []
 
 getCanMoveToMatchingLocations
-  :: (HasGame m, Tracing m, Sourceable source)
+  :: (HasGame m, Sourceable source)
   => InvestigatorId
   -> source
   -> Matcher.LocationMatcher
@@ -285,20 +284,20 @@ getCanMoveToMatchingLocations iid source matcher = do
 
 -- TODO: CACHE
 getConnectedMoveLocations
-  :: (Sourceable source, HasGame m, Tracing m) => InvestigatorId -> source -> m [LocationId]
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getConnectedMoveLocations iid source =
   getCanMoveToMatchingLocations iid source
     $ Matcher.ConnectedFrom ForMovement (Matcher.locationWithInvestigator iid)
 
 -- TODO: CACHE
 getAccessibleLocations
-  :: (Sourceable source, HasGame m, Tracing m) => InvestigatorId -> source -> m [LocationId]
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getAccessibleLocations iid source =
   getCanMoveToMatchingLocations iid source
     $ Matcher.AccessibleFrom ForMovement (Matcher.locationWithInvestigator iid)
 
 getCanLeaveCurrentLocation
-  :: (Sourceable source, HasGame m, Tracing m) => InvestigatorId -> source -> m Bool
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m Bool
 getCanLeaveCurrentLocation iid source = do
   mLocation <- selectOne $ Matcher.locationWithInvestigator iid
   case mLocation of
@@ -345,7 +344,7 @@ replaceLocation
 replaceLocation location card = push $ Msg.ReplaceLocation (asId location) (toCard card) Msg.DefaultReplace
 
 getLocationGlobalMeta
-  :: (FromJSON a, HasGame m, Tracing m, ToId location LocationId) => Aeson.Key -> location -> m (Maybe a)
+  :: (FromJSON a, HasGame m, ToId location LocationId) => Aeson.Key -> location -> m (Maybe a)
 getLocationGlobalMeta key (asId -> lid) = do
   globalMeta <- field LocationGlobalMeta lid
   pure $ lookup key globalMeta >>= maybeResult

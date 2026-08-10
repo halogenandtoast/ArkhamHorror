@@ -48,7 +48,6 @@ import Arkham.Scenario.Setup (ScenarioBuilderT, addToEncounterDeck)
 import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Window qualified as Window
 import Arkham.Xp
 import Data.Map.Strict qualified as Map
@@ -144,7 +143,7 @@ exposed iid enemy c body = do
   checkAfter $ Window.CampaignEvent idkey (Just iid) Null
   checkAfter $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
 
-getCanExpose :: (Tracing m, HasGame m) => InvestigatorId -> ConcealedCard -> m Bool
+getCanExpose :: HasGame m => InvestigatorId -> ConcealedCard -> m Bool
 getCanExpose iid card = runValidT do
   imods <- lift $ getModifiers iid
   guard $ CannotExpose `notElem` imods
@@ -179,7 +178,7 @@ afterExposed c = CampaignEvent #after Nothing ekey
  where
   ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
 
-allConcealedMiniCards :: (HasGame m, Tracing m) => m [ConcealedCardId]
+allConcealedMiniCards :: HasGame m => m [ConcealedCardId]
 allConcealedMiniCards = concat <$> selectField LocationConcealedCards Anywhere
 
 placeConcealedCard :: ReverseQueue m => InvestigatorId -> ConcealedCardId -> Placement -> m ()
@@ -201,7 +200,7 @@ removeHollow c = do
   obtainCard c
   fetchCard c >>= scenarioSpecific "removedHollow"
 
-keysFor :: (Tracing m, HasGame m, HasCardCode a) => a -> m [CardDef]
+keysFor :: (HasGame m, HasCardCode a) => a -> m [CardDef]
 keysFor a = do
   statuses <- keyStatus <$> getCampaignMeta @TheScarletKeysMeta
   pure $ Map.assocs statuses & mapMaybe \(k, v) -> do

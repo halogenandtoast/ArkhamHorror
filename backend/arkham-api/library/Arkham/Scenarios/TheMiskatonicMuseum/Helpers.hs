@@ -9,24 +9,23 @@ import Arkham.Id
 import Arkham.Layout
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theMiskatonicMuseum" a
 
-getInPlayHuntingHorror :: (Tracing m, HasGame m) => m (Maybe EnemyId)
+getInPlayHuntingHorror :: HasGame m => m (Maybe EnemyId)
 getInPlayHuntingHorror = getHuntingHorrorWith AnyEnemy
 
 -- | Finds the Hunting Horror anywhere, including while it sits in the void
 -- (out of play). Callers rely on reaching the void copy to spawn it back or
 -- keep an attachment on it, so this must opt into out-of-play matching.
-getHuntingHorror :: (Tracing m, HasGame m) => m (Maybe EnemyId)
+getHuntingHorror :: HasGame m => m (Maybe EnemyId)
 getHuntingHorror = getHuntingHorrorWith (IncludeOutOfPlayEnemy AnyEnemy)
 
-getHuntingHorrorWith :: (Tracing m, HasGame m) => EnemyMatcher -> m (Maybe EnemyId)
+getHuntingHorrorWith :: HasGame m => EnemyMatcher -> m (Maybe EnemyId)
 getHuntingHorrorWith matcher = selectOne $ enemyIs Cards.huntingHorror <> matcher
 
-getRestrictedHall :: (Tracing m, HasGame m) => m LocationId
+getRestrictedHall :: HasGame m => m LocationId
 getRestrictedHall = selectJust $ LocationWithFullTitle "Exhibit Hall" "Restricted Hall"
 
 scenarioLayout :: [GridTemplateRow]

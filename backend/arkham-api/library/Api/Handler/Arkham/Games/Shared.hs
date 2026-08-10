@@ -92,7 +92,6 @@ import Import hiding (delete, exists, on, (==.), (>=.))
 import Import qualified as P
 import Json
 import Network.WebSockets (ConnectionException)
-import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import UnliftIO.Async (async, cancel)
 import UnliftIO.Exception hiding (Handler)
 import UnliftIO.Timeout (timeout)
@@ -312,14 +311,9 @@ updateGame response gameId mRoom = do
       broadcast = case mRoom of
         Nothing -> \_ -> pure ()
         Just room -> broadcastToRoom room
-  tracer <- getTracer
   let rejectOrganizerGate action =
         action `catch` \EpicOrganizerGateBlocked ->
           permissionDenied "This event is waiting for the organizer's clue allocation"
-  -- NOTE: not wrapping the whole handler in withSpan_ -- it would rewrap
-  -- Yesod's HCContent control-flow exceptions (notFound, notAuthenticated,
-  -- sendStatusJSON, etc.) and break 404/401 responses (see Undo.hs note).
-  -- The runMessages span below is wrapped where it's safe.
   (ArkhamGame {..}, oldLogEntries, updatedLog, mSharedUpdate, actAdvanced, newAchievements) <- rejectOrganizerGate $ runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
     -- Read the prior log from the per-room cache when it's in sync with
     -- the just-locked game's step; otherwise fall back to the DB. Avoids
@@ -392,7 +386,7 @@ updateGame response gameId mRoom = do
             AchievementProgress a items -> modifyIORef' achievementProgressRef ((a, items) :)
             _ -> pure ()
         mResult <- liftIO $ timeout runMessagesTimeoutMicros do
-          runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) tracer mEpicEnv) do
+          runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) mEpicEnv) do
             runMessages (gameIdToText gameId) (Just collectAchievements)
         case mResult of
           Just () -> pure ()
@@ -781,7 +775,6 @@ read the post-run step (e.g. to set that floor).
 runMessagesInGroupCore
   :: (Game -> Bool) -> [Message] -> ArkhamGameId -> Handler (Maybe ArkhamGame)
 runMessagesInGroupCore p msgs gid = do
-  tracer <- getTracer
   now <- liftIO getCurrentTime
   mUpdate <- runDB $ atomicallyWithGame gid \ArkhamGame {..} ->
     case gameGameState arkhamGameCurrentData of
@@ -792,7 +785,7 @@ runMessagesInGroupCore p msgs gid = do
         queueRef <- liftIO $ newQueue msgs
         genRef <- liftIO $ newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
         liftIO
-          $ runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer Nothing)
+          $ runGameApp (GameApp gameRef queueRef genRef (pure . const ()) Nothing)
           $ runMessages (gameIdToText gid) Nothing
         updatedGame <- liftIO $ readIORef gameRef
         -- The queue left after the run: empty for a pure board sync (it drains to

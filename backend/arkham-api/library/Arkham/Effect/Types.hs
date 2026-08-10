@@ -20,7 +20,6 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Trait
 import Data.Aeson.TH
 import Data.Data
@@ -294,7 +293,7 @@ setEffectMeta :: ToJSON a => a -> EffectAttrs -> EffectAttrs
 setEffectMeta a = extraL .~ toJSON a
 
 makeEffectBuilder
-  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  :: (Sourceable source, Targetable target, HasGame m)
   => CardCode
   -> Maybe (EffectMetadata Message)
   -> source

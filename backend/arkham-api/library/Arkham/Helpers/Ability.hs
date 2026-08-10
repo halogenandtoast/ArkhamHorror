@@ -24,7 +24,6 @@ import Arkham.Helpers.Window (getThatEnemy, windowMatches)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
-import Arkham.Metrics qualified as Metrics
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Prelude
@@ -32,15 +31,14 @@ import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Source
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
-getAbility :: (HasGame m, Tracing m) => AbilityRef -> m (Maybe Ability)
+getAbility :: HasGame m => AbilityRef -> m (Maybe Ability)
 getAbility ref = selectOne (Matcher.AbilityIs ref.source ref.index)
 
 getCanPerformAbility
-  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
+  :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do
   -- can perform an ability means you can afford it
   -- it is in the right window
@@ -81,7 +79,7 @@ getCanPerformAbility !iid !ws !ability = do
         else withActiveInvestigator iid $ passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
 
 preventedByInvestigatorModifiers
-  :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
+  :: HasGame m => InvestigatorId -> Ability -> m Bool
 preventedByInvestigatorModifiers iid ability = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   isForced <- isForcedAbility iid ability
@@ -140,7 +138,7 @@ explicitlyTargetsForcedAbilities = \case
   _ -> False
 
 meetsActionRestrictions
-  :: (Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
+  :: HasGame m => InvestigatorId -> [Window] -> Ability -> m Bool
 meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
  where
   go = \case
@@ -165,11 +163,11 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     ServitorAbility _ -> pure True
     ConstantAbility -> pure False
 
-canDoAction :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
-canDoAction iid ab a = withSpan_ ("canDoAction/" <> Metrics.messageTag a) $ canDoAction' iid ab a
+canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
+canDoAction iid ab a = canDoAction' iid ab a
 
 canDoAction'
-  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
+  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
@@ -298,7 +296,7 @@ canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \ca
       $ lookup (Action.HomebrewAction t) homebrewActionAffordability
 
 getCanAffordAbility
-  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
+  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbility iid ability ws = do
   andM
     [ getCanAffordUse iid ability ws
@@ -306,7 +304,7 @@ getCanAffordAbility iid ability ws = do
     ]
 
 getCanAffordAbilityCost
-  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
+  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} ws = do
   modifiers <- getModifiers (AbilityTarget iid a.ref)
   imods <- getModifiers iid
@@ -436,7 +434,7 @@ getAbilityLimit iid ability = do
 -- that we need to sum uses across all investigators. So we should fix this
 -- soon.
 getCanAffordUse
-  :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> Ability -> [Window] -> m Bool
+  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordUse = getCanAffordUseWith id CanIgnoreAbilityLimit
 
 -- For PerCampaign limits, the ability source can change between scenarios
@@ -444,7 +442,7 @@ getCanAffordUse = getCanAffordUseWith id CanIgnoreAbilityLimit
 -- persists across ResetGame, so we record/query PerCampaign usage there.
 -- During a standalone scenario there is no campaign, so fall back to the
 -- investigators' lists (single-scenario, source UUIDs are stable).
-getPerCampaignUsedAbilities :: (HasGame m, Tracing m) => m [UsedAbility]
+getPerCampaignUsedAbilities :: HasGame m => m [UsedAbility]
 getPerCampaignUsedAbilities =
   selectOne Matcher.TheCampaign >>= \case
     Just cId -> field CampaignUsedAbilities cId
@@ -456,7 +454,7 @@ getPerCampaignUsedAbilities =
 -- Use `f` to modify use count, used for `getWindowSkippable` to exclude the current call
 -- EMAIL: Cards can't react to themselves, i.e. Grotesque Statue (4)
 getCanAffordUseWith
-  :: (HasCallStack, HasGame m, Tracing m)
+  :: (HasCallStack, HasGame m)
   => ([UsedAbility] -> [UsedAbility])
   -> CanIgnoreAbilityLimit
   -> InvestigatorId
@@ -621,10 +619,10 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         let total = sum $ map usedTimes $ filter ((== ability) . usedAbility) usedAbilities'
         pure $ total < n
 
-isForcedAbility :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
+isForcedAbility :: HasGame m => InvestigatorId -> Ability -> m Bool
 isForcedAbility iid Ability {abilitySource, abilityType} = isForcedAbilityType iid abilitySource abilityType
 
-isForcedAbilityType :: (Tracing m, HasGame m) => InvestigatorId -> Source -> AbilityType -> m Bool
+isForcedAbilityType :: HasGame m => InvestigatorId -> Source -> AbilityType -> m Bool
 isForcedAbilityType iid source = \case
   SilentForcedAbility {} -> pure True
   ForcedAbility {} -> pure True

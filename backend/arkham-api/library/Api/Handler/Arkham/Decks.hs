@@ -49,7 +49,6 @@ import Network.HTTP.Conduit (
  )
 import Network.HTTP.Types
 import Network.HTTP.Types.Status qualified as Status
-import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import UnliftIO.Exception (try)
 
 getApiV1ArkhamDecksR :: Handler [Entity ArkhamDeck]
@@ -145,7 +144,6 @@ putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
   userId <- getRequestUserId
   postData <- requireCheckJsonBody
-  tracer <- getTracer
   now <- liftIO getCurrentTime
 
   -- Resolve the deck before opening the game transaction. Fetching inside it held the
@@ -187,7 +185,7 @@ putApiV1ArkhamGameDecksR gameId = do
                 gameRef <- newIORef arkhamGameCurrentData
                 queueRef <- newQueue currentQueue
                 genRef <- newIORef $ mkStdGen gameSeed
-                runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer Nothing) do
+                runGameApp (GameApp gameRef queueRef genRef (pure . const ()) Nothing) do
                   let question' = Map.delete playerId gameQuestion
                   unless (Map.null question') (push $ AskMap question')
                   -- No deck at all is the "continue without upgrading" path: push nothing

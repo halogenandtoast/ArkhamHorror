@@ -14,16 +14,15 @@ import Arkham.Matcher.Card
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Story.Types qualified as Field
-import Arkham.Tracing
 import Arkham.Treachery.Types qualified as Field
 import Data.Monoid (First (..))
 
 class Show a => FetchCard a where
-  fetchCardMaybe :: (HasCallStack, Tracing m, HasGame m, CardGen m) => a -> m (Maybe Card)
+  fetchCardMaybe :: (HasCallStack, HasGame m, CardGen m) => a -> m (Maybe Card)
   fetchCardMaybe = fetchCardMaybe_
-  fetchCardMaybe_ :: (HasCallStack, Tracing m, HasGame m) => a -> m (Maybe Card)
+  fetchCardMaybe_ :: (HasCallStack, HasGame m) => a -> m (Maybe Card)
 
-fetchCard :: (HasCallStack, Tracing m, HasGame m, CardGen m, FetchCard a) => a -> m Card
+fetchCard :: (HasCallStack, HasGame m, CardGen m, FetchCard a) => a -> m Card
 fetchCard a = fromJustNote ("Card not found: " <> show a) <$> fetchCardMaybe a
 
 instance FetchCard UniqueFetchCard where
@@ -97,12 +96,12 @@ instance FetchCard Field.StoryAttrs where
 newtype UniqueFetchCard = UniqueFetchCard CardDef
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
-flippedOver :: (FetchCard c, Tracing m, HasGame m, CardGen m) => c -> m ()
+flippedOver :: (FetchCard c, HasGame m, CardGen m) => c -> m ()
 flippedOver c = do
   card <- fetchCard c
   replaceCard card.id (flipCard card)
 
-flippedOverCapture :: (FetchCard c, Tracing m, HasGame m, CardGen m) => c -> m Card
+flippedOverCapture :: (FetchCard c, HasGame m, CardGen m) => c -> m Card
 flippedOverCapture c = do
   card <- flipCard <$> fetchCard c
   replaceCard card.id card

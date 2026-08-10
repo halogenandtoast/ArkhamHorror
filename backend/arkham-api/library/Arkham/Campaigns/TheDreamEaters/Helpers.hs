@@ -11,9 +11,8 @@ import Arkham.Id
 import Arkham.Message (Message (PlaceSwarmCards))
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
-import Arkham.Tracing
 
-getIsFullCampaign :: (HasGame m, Tracing m) => m Bool
+getIsFullCampaign :: HasGame m => m Bool
 getIsFullCampaign = do
   standalone <- getIsStandalone
   if standalone
@@ -22,7 +21,7 @@ getIsFullCampaign = do
       meta <- getCampaignMeta
       pure $ campaignMode meta == FullMode
 
-getIsPartialCampaign :: (HasGame m, Tracing m) => CampaignPart -> m Bool
+getIsPartialCampaign :: HasGame m => CampaignPart -> m Bool
 getIsPartialCampaign campaignPart = do
   standalone <- getIsStandalone
   if standalone
@@ -31,10 +30,10 @@ getIsPartialCampaign campaignPart = do
       meta <- getCampaignMeta
       pure $ campaignMode meta == PartialMode campaignPart
 
-getIsTheWebOfDreams :: (HasGame m, Tracing m) => m Bool
+getIsTheWebOfDreams :: HasGame m => m Bool
 getIsTheWebOfDreams = getIsPartialCampaign TheWebOfDreams
 
-getIsTheDreamQuest :: (HasGame m, Tracing m) => m Bool
+getIsTheDreamQuest :: HasGame m => m Bool
 getIsTheDreamQuest = getIsPartialCampaign TheDreamQuest
 
 campaignI18n :: (HasI18n => a) -> a

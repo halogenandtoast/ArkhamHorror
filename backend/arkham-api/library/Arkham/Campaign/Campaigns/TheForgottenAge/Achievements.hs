@@ -41,13 +41,12 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Target
-import Arkham.Tracing
 import Arkham.Trait (Trait (Serpent))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Aeson.Key qualified as Key
 
 runForgottenAgeAchievements
-  :: (HasGame m, HasQueue Message m, Tracing m) => Message -> m ()
+  :: (HasGame m, HasQueue Message m) => Message -> m ()
 runForgottenAgeAchievements msg = whenEligibleCampaign $ case msg of
   -- Enemy defeats. The campaign sees Defeated before the enemy processes it,
   -- so the entity is still in play and queryable.
@@ -180,15 +179,15 @@ whenEligibleCampaign body = do
   let eligible = achievementCampaigns $ TheForgottenAgeAchievement WhyDidItHaveToBeSnakes
   when (maybe False (`elem` eligible) mCampaignId) body
 
-whenScenarioIn :: (HasGame m, Tracing m) => [ScenarioId] -> m () -> m ()
+whenScenarioIn :: HasGame m => [ScenarioId] -> m () -> m ()
 whenScenarioIn sids body = do
   mSid <- selectOne TheScenario
   when (maybe False (`elem` sids) mSid) body
 
-whenDepthsOfYoth :: (HasGame m, Tracing m) => m () -> m ()
+whenDepthsOfYoth :: HasGame m => m () -> m ()
 whenDepthsOfYoth = whenScenarioIn ["04277", "53059"]
 
-whenReturnHeartOfTheEldersPart1 :: (HasGame m, Tracing m) => m () -> m ()
+whenReturnHeartOfTheEldersPart1 :: HasGame m => m () -> m ()
 whenReturnHeartOfTheEldersPart1 = whenScenarioIn ["53045"]
 
 -- Winning campaign-log records (the surviving Shattered Aeons resolutions plus
@@ -232,8 +231,8 @@ boughtSupplyKey = "tfaAchBoughtSupply"
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
-storedInt :: (HasCallStack, HasGame m, Tracing m) => Text -> m Int
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
 
-storedFlag :: (HasCallStack, HasGame m, Tracing m) => Text -> m Bool
+storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k

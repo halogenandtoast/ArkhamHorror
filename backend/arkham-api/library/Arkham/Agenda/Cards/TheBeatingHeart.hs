@@ -13,7 +13,6 @@ import Arkham.Helpers.Text
 import Arkham.I18n
 import Arkham.Matcher hiding (AssetDefeated)
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
-import Arkham.Tracing
 
 newtype TheBeatingHeart = TheBeatingHeart AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -38,7 +37,7 @@ partnerScope x
   | isCardCode x Assets.jamesCookieFredericksDubiousChoice = "cookie"
   | otherwise = error "not implemented"
 
-isSaved :: (HasCardCode a, HasGame m, Tracing m) => a -> m Bool
+isSaved :: (HasCardCode a, HasGame m) => a -> m Bool
 isSaved x = getPartnerIsAlive savingPartner
  where
   savingPartner

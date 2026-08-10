@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Tracing
 
 newtype CallForBackup2 = CallForBackup2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -22,7 +21,7 @@ newtype CallForBackup2 = CallForBackup2 EventAttrs
 callForBackup2 :: EventCard CallForBackup2
 callForBackup2 = event CallForBackup2 Cards.callForBackup2
 
-control :: (HasGame m, Tracing m) => InvestigatorId -> [ClassSymbol] -> ClassSymbol -> m Bool
+control :: HasGame m => InvestigatorId -> [ClassSymbol] -> ClassSymbol -> m Bool
 control iid ks k =
   if k `notElem` ks
     then

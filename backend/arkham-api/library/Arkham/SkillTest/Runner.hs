@@ -37,27 +37,26 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Tracing
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
 
-locationTargetToMaybeCard :: (HasCallStack, HasGame m, Tracing m) => LocationId -> m (Maybe Card)
+locationTargetToMaybeCard :: (HasCallStack, HasGame m) => LocationId -> m (Maybe Card)
 locationTargetToMaybeCard lid = do
   mCard <- targetToMaybeCard (LocationTarget lid)
   case mCard of
     Just card -> pure $ Just card
     Nothing -> fmap toCard <$> maybeLocation lid
 
-skillTestTargetToMaybeCard :: (HasCallStack, HasGame m, Tracing m) => Target -> m (Maybe Card)
+skillTestTargetToMaybeCard :: (HasCallStack, HasGame m) => Target -> m (Maybe Card)
 skillTestTargetToMaybeCard = \case
   LocationTarget lid -> locationTargetToMaybeCard lid
   ProxyTarget t _ -> skillTestTargetToMaybeCard t
   t -> targetToMaybeCard t
 
 skillTestSourceToMaybeCard
-  :: (HasCallStack, HasGame m, Tracing m, Sourceable source) => source -> m (Maybe Card)
+  :: (HasCallStack, HasGame m, Sourceable source) => source -> m (Maybe Card)
 skillTestSourceToMaybeCard (toSource -> source) = case source of
   LocationSource lid -> locationTargetToMaybeCard lid
   AbilitySource src _ -> skillTestSourceToMaybeCard src
@@ -67,7 +66,7 @@ skillTestSourceToMaybeCard (toSource -> source) = case source of
   PaymentSource inner -> skillTestSourceToMaybeCard inner
   s -> sourceToMaybeCard s
 
-totalModifiedSkillValue :: (HasGame m, Tracing m) => SkillTest -> m Int
+totalModifiedSkillValue :: HasGame m => SkillTest -> m Int
 totalModifiedSkillValue s = do
   results <- calculateSkillTestResultsData s
   chaosTokenValues <- totalChaosTokenValues s

@@ -9,12 +9,11 @@ import Arkham.Id
 import Arkham.Layout
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theEssexCountyExpress" a
 
-leftmostLocation :: (Tracing m, HasGame m) => m LocationId
+leftmostLocation :: HasGame m => m LocationId
 leftmostLocation = go =<< selectJust (LocationWithTitle "Engine Car")
  where
   go lid = maybe (pure lid) go =<< selectOne (LocationInDirection LeftOf $ LocationWithId lid)

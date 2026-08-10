@@ -15,7 +15,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Taboo
-import Arkham.Tracing
 import Arkham.Window (defaultWindows)
 
 newtype EonChart4 = EonChart4 AssetAttrs
@@ -42,7 +41,7 @@ instance HasAbilities EonChart4 where
         ]
 
 getAvailable
-  :: (Tracing m, HasGame m) => InvestigatorId -> AssetAttrs -> [Action] -> m ([Card], [Ability])
+  :: HasGame m => InvestigatorId -> AssetAttrs -> [Action] -> m ([Card], [Ability])
 getAvailable iid attrs canDoActions = do
   playableCards <-
     if tabooed TabooList20 attrs
@@ -60,7 +59,7 @@ getAvailable iid attrs canDoActions = do
   pure (playableCards, abilities)
 
 getAvailableActionTypes
-  :: (Tracing m, HasGame m) => InvestigatorId -> AssetAttrs -> [Action] -> m [Action]
+  :: HasGame m => InvestigatorId -> AssetAttrs -> [Action] -> m [Action]
 getAvailableActionTypes iid attrs canDoActions = do
   (cards, abilities) <- getAvailable iid attrs canDoActions
   let cActions = nub $ concatMap (.actions) cards

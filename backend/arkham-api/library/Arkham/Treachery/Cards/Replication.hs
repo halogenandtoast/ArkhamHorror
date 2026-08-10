@@ -8,7 +8,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.CreateEnemy
 import Arkham.Projection
-import Arkham.Tracing
 import Arkham.Trait (Trait (Manifold))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -20,12 +19,12 @@ newtype Replication = Replication TreacheryAttrs
 replication :: TreacheryCard Replication
 replication = treachery Replication Cards.replication
 
-getMostDamagedManifold :: (HasGame m, Tracing m) => m (Maybe EnemyId)
+getMostDamagedManifold :: HasGame m => m (Maybe EnemyId)
 getMostDamagedManifold = do
   manifolds <- selectWithField EnemyDamage $ EnemyWithTrait Manifold
   pure $ fst <$> headMay (sortOn (Down . snd) manifolds)
 
-getEnemyPrintedHealth :: (HasGame m, Tracing m, CardGen m) => EnemyId -> m (Maybe Int)
+getEnemyPrintedHealth :: (HasGame m, CardGen m) => EnemyId -> m (Maybe Int)
 getEnemyPrintedHealth eid = runMaybeT do
   card <- MaybeT $ fetchCardMaybe eid
   pc <- lift getPlayerCount

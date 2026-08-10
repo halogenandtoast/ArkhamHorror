@@ -11,7 +11,7 @@ newtype ChamberOfRecordsArm = ChamberOfRecordsArm LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chamberOfRecordsArm :: LocationCard ChamberOfRecordsArm
-chamberOfRecordsArm = location ChamberOfRecordsArm Cards.chamberOfRecordsArm 4 (Static 1)
+chamberOfRecordsArm = location ChamberOfRecordsArm Cards.chamberOfRecordsArm 4 (PerPlayer 1)
 
 instance HasAbilities ChamberOfRecordsArm where
   getAbilities (ChamberOfRecordsArm a) =

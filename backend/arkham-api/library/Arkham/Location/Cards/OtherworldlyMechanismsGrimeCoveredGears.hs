@@ -18,7 +18,7 @@ otherworldlyMechanismsGrimeCoveredGears =
     OtherworldlyMechanismsGrimeCoveredGears
     Cards.otherworldlyMechanismsGrimeCoveredGears
     3
-    (Static 1)
+    (PerPlayer 1)
 
 instance HasAbilities OtherworldlyMechanismsGrimeCoveredGears where
   getAbilities (OtherworldlyMechanismsGrimeCoveredGears a) =

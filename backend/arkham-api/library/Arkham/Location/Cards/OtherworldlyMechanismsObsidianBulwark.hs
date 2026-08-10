@@ -18,7 +18,7 @@ otherworldlyMechanismsObsidianBulwark =
     OtherworldlyMechanismsObsidianBulwark
     Cards.otherworldlyMechanismsObsidianBulwark
     2
-    (Static 2)
+    (PerPlayer 2)
 
 instance HasAbilities OtherworldlyMechanismsObsidianBulwark where
   getAbilities (OtherworldlyMechanismsObsidianBulwark a) =

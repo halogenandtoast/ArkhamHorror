@@ -13,7 +13,7 @@ newtype OtherworldlyMechanismsSluiceControl = OtherworldlyMechanismsSluiceContro
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 otherworldlyMechanismsSluiceControl :: LocationCard OtherworldlyMechanismsSluiceControl
-otherworldlyMechanismsSluiceControl = location OtherworldlyMechanismsSluiceControl Cards.otherworldlyMechanismsSluiceControl 1 (Static 3)
+otherworldlyMechanismsSluiceControl = location OtherworldlyMechanismsSluiceControl Cards.otherworldlyMechanismsSluiceControl 1 (PerPlayer 3)
 
 instance HasAbilities OtherworldlyMechanismsSluiceControl where
   getAbilities (OtherworldlyMechanismsSluiceControl a) =

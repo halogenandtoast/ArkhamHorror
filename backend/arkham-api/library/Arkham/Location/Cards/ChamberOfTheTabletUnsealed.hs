@@ -15,7 +15,7 @@ newtype ChamberOfTheTabletUnsealed = ChamberOfTheTabletUnsealed LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chamberOfTheTabletUnsealed :: LocationCard ChamberOfTheTabletUnsealed
-chamberOfTheTabletUnsealed = location ChamberOfTheTabletUnsealed Cards.chamberOfTheTabletUnsealed 3 (Static 2)
+chamberOfTheTabletUnsealed = location ChamberOfTheTabletUnsealed Cards.chamberOfTheTabletUnsealed 3 (PerPlayer 2)
 
 instance HasModifiersFor ChamberOfTheTabletUnsealed where
   getModifiersFor (ChamberOfTheTabletUnsealed a) = do

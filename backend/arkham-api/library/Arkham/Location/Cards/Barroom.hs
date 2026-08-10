@@ -6,6 +6,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Trait (Trait (Guest))
 
 newtype Barroom = Barroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -30,7 +31,9 @@ instance HasAbilities Barroom where
                     ]
               , exists
                   $ oneOf
-                    [HealableAsset (a.ability 1) kind (AssetAt YourLocation) | kind <- [#damage, #horror]]
+                    [ HealableAsset (a.ability 1) kind (AssetAt YourLocation <> AssetWithTrait Guest)
+                    | kind <- [#damage, #horror]
+                    ]
               ]
         )
       $ FastAbility (ResourceCost 1)
@@ -48,7 +51,7 @@ instance RunMessage Barroom where
       assets <-
         select
           $ oneOf
-            [ HealableAsset source kind (at_ $ locationWithInvestigator iid)
+            [ HealableAsset source kind (at_ (locationWithInvestigator iid) <> AssetWithTrait Guest)
             | kind <- [#damage, #horror]
             ]
       chooseOneM iid do

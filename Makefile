@@ -41,6 +41,13 @@ V2_DO_CLUSTER  ?= arkham-horror-doks
 V2_CACHE_DIR   ?= $(CURDIR)/.buildx-cache/v2
 V2_CACHE_NEXT  ?= $(V2_CACHE_DIR).new
 V2_CACHE_PREV  ?= $(V2_CACHE_DIR).prev
+# A build that dies part-way leaves the .stack-work cache mounts half-written:
+# valid .hi files beside truncated .o files that GHC never notices are stale.
+# scripts/docker-build-api.sh repairs that on the next run, so one retry turns a
+# permanently wedged deploy back into a working one. Anything not matching these
+# signatures (a type error, say) fails immediately instead of building twice.
+V2_CACHE_POISON = ZCMain_main_closure|ld returned 1 exit status|failed in phase .Linker.|file format not recognized|truncated
+
 V2_CACHE_SETUP = CACHE_ARGS="--cache-to type=local,dest=$(V2_CACHE_NEXT),mode=max"; rm -rf "$(V2_CACHE_NEXT)"; if [ -d "$(V2_CACHE_DIR)" ]; then CACHE_ARGS="--cache-from type=local,src=$(V2_CACHE_DIR) $$CACHE_ARGS"; fi
 V2_CACHE_PROMOTE = if [ -d "$(V2_CACHE_NEXT)" ]; then rm -rf "$(V2_CACHE_PREV)"; if [ -d "$(V2_CACHE_DIR)" ]; then mv "$(V2_CACHE_DIR)" "$(V2_CACHE_PREV)"; fi; if mv "$(V2_CACHE_NEXT)" "$(V2_CACHE_DIR)"; then rm -rf "$(V2_CACHE_PREV)"; else if [ -d "$(V2_CACHE_PREV)" ]; then mv "$(V2_CACHE_PREV)" "$(V2_CACHE_DIR)"; fi; exit 1; fi; fi
 
@@ -93,13 +100,23 @@ v2-deploy-committed: v2-buildx-setup v2-kubeconfig-ensure
 	@set -e; \
 	  REF="$(V2_GIT_REF)"; \
 	  TAG=$$(git rev-parse --short "$$REF"); \
-	  $(V2_CACHE_SETUP); \
-	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM)) from committed ref $$REF"; \
-	  git archive --format=tar "$$REF" | docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) $$CACHE_ARGS \
-	    --tag $(V2_IMAGE):$$TAG \
-	    --tag $(V2_IMAGE):latest \
-	    --file Dockerfile \
-	    --push - ; \
+	  LOG=$$(mktemp); STATUS=$$(mktemp); ATTEMPT=1; \
+	  trap 'rm -f "$$LOG" "$$STATUS"' EXIT; \
+	  while :; do \
+	    $(V2_CACHE_SETUP); \
+	    echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM)) from committed ref $$REF (attempt $$ATTEMPT)"; \
+	    ( set +e; git archive --format=tar "$$REF" | docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) $$CACHE_ARGS \
+	        --tag $(V2_IMAGE):$$TAG \
+	        --tag $(V2_IMAGE):latest \
+	        --file Dockerfile \
+	        --push - ; echo $$? > "$$STATUS" ) 2>&1 | tee "$$LOG"; \
+	    if [ "$$(cat "$$STATUS")" = "0" ]; then break; fi; \
+	    if [ "$$ATTEMPT" != "1" ] || ! grep -Eq '$(V2_CACHE_POISON)' "$$LOG"; then \
+	      echo "$(RED)>> build failed$(RESET)"; exit 1; \
+	    fi; \
+	    echo "$(YELLOW)>> build failed on a stale build cache — retrying once; the next run repairs it$(RESET)"; \
+	    ATTEMPT=2; \
+	  done; \
 	  $(V2_CACHE_PROMOTE); \
 	  echo ">> rolling $(V2_DEPLOYMENT) (image stays :latest, restart forces pull)"; \
 	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \

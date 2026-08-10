@@ -106,6 +106,12 @@ RUN --mount=type=cache,id=stack-home-${CACHE_ID},target=/root/.stack \
     stack build --system-ghc --no-terminal --ghc-options '-fno-write-ide-info -j4 +RTS -A128m -n2m -RTS' cards-discover
 
 WORKDIR /opt/arkham/src/backend/arkham-api
+# The build itself lives in scripts/docker-build-api.sh, which repairs a
+# .stack-work cache left dirty by a cancelled build before compiling. Keep this
+# RUN a bare script invocation: BuildKit keys a cache mount's *contents* by the
+# text of the RUN that mounts it, so editing the command here throws away the
+# cached .stack-work and forces a cold rebuild of all ~6800 modules. Editing the
+# script does not.
 RUN --mount=type=cache,id=stack-home-${CACHE_ID},target=/root/.stack \
     --mount=type=cache,id=stack-work-shared-${CACHE_ID},target=/opt/arkham/src/backend/.stack-work \
     --mount=type=cache,id=stack-api-${CACHE_ID},target=/opt/arkham/src/backend/arkham-api/.stack-work \
@@ -114,8 +120,7 @@ RUN --mount=type=cache,id=stack-home-${CACHE_ID},target=/root/.stack \
     --mount=type=cache,id=stack-api-hie-${CACHE_ID},target=/opt/arkham/src/backend/arkham-api/.hie \
     --mount=type=cache,id=stack-validate-hie-${CACHE_ID},target=/opt/arkham/src/backend/validate/.hie \
     --mount=type=cache,id=stack-discover-hie-${CACHE_ID},target=/opt/arkham/src/backend/cards-discover/.hie \
-  stack build --no-terminal --system-ghc --ghc-options '-rtsopts -with-rtsopts=-V0 -j4 +RTS -V0 -A128m -n2m -RTS' && \
-  stack --no-terminal --local-bin-path /opt/arkham/bin install
+  sh /opt/arkham/src/backend/scripts/docker-build-api.sh
 
 FROM ubuntu:22.04 AS app
 

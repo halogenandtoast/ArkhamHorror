@@ -32,10 +32,11 @@ const METADATA_FIELDS = [
   ['cycle_code', 'cycle_name', 'cycles'],
 ]
 
-function buildLocalizedCards(englishCards, translations, metadata = {}) {
+function buildLocalizedCards(englishCards, translations, metadata = {}, overrides = new Map()) {
   const used = new Set()
   let translated = 0
   let reused = 0
+  let overridden = 0
 
   const identityFor = (card) =>
     JSON.stringify([
@@ -83,6 +84,16 @@ function buildLocalizedCards(englishCards, translations, metadata = {}) {
       if (name !== undefined) localized[nameField] = name
     }
 
+    // Applied last, and only by exact code, so a local correction always wins over upstream
+    // and never rides along on a reprint matched by identityFor.
+    const override = overrides.get(card.code)
+    if (override) {
+      overridden += 1
+      for (const field of TRANSLATED_FIELDS) {
+        if (override[field] !== undefined) localized[field] = override[field]
+      }
+    }
+
     return localized
   })
 
@@ -94,6 +105,7 @@ function buildLocalizedCards(englishCards, translations, metadata = {}) {
       reused,
       fallback: englishCards.length - translated - reused,
       unused: translations.size - used.size,
+      overridden,
     },
   }
 }
@@ -124,6 +136,32 @@ function loadTranslations(localeRoot) {
     }
   }
   return translations
+}
+
+// Local corrections layered on top of upstream, so a bad translation we have already fixed does
+// not come back on the next import. See translation-overrides/README.md.
+function loadOverrides(root, sourceLocale) {
+  const overrides = new Map()
+  const file = path.join(root, 'translation-overrides', `${sourceLocale}.json`)
+  if (!fs.existsSync(file)) return overrides
+
+  const cards = JSON.parse(fs.readFileSync(file, 'utf8'))
+  if (!Array.isArray(cards)) throw new Error(`${file} must contain a JSON array`)
+
+  for (const card of cards) {
+    if (!card.code) throw new Error(`${file} contains an override without a code`)
+    if (overrides.has(card.code)) throw new Error(`${file} overrides ${card.code} twice`)
+
+    const unknown = Object.keys(card).filter(
+      (field) => field !== 'code' && !TRANSLATED_FIELDS.includes(field),
+    )
+    if (unknown.length) {
+      throw new Error(`${file} override ${card.code} has untranslatable fields: ${unknown.join(', ')}`)
+    }
+
+    overrides.set(card.code, card)
+  }
+  return overrides
 }
 
 function loadMetadata(localeRoot) {
@@ -180,13 +218,14 @@ function main() {
   const englishCards = JSON.parse(fs.readFileSync(englishFile, 'utf8'))
   const translations = loadTranslations(localeRoot)
   const metadata = loadMetadata(localeRoot)
-  const { cards, stats } = buildLocalizedCards(englishCards, translations, metadata)
+  const overrides = loadOverrides(root, options.sourceLocale)
+  const { cards, stats } = buildLocalizedCards(englishCards, translations, metadata, overrides)
 
   fs.writeFileSync(outputFile, `${JSON.stringify(cards, null, 2)}\n`)
   console.log(
     `${options.sourceLocale} -> ${options.outputLang}: ${stats.translated}/${stats.total} translated, ` +
       `${stats.reused} reprints reused, ${stats.fallback} English fallbacks, ` +
-      `${stats.unused} unused -> ${outputFile}`,
+      `${stats.unused} unused, ${stats.overridden} locally overridden -> ${outputFile}`,
   )
 
   if (options.slim) {
@@ -200,4 +239,4 @@ function main() {
 
 if (require.main === module) main()
 
-module.exports = { buildLocalizedCards, loadMetadata, loadTranslations, parseArgs }
+module.exports = { buildLocalizedCards, loadMetadata, loadOverrides, loadTranslations, parseArgs }

@@ -9,7 +9,6 @@
 module Application (
   getApplicationDev,
   appMain,
-  develMain,
   makeFoundation,
   makeLogWare,
   getAppSettings,
@@ -256,10 +255,6 @@ getApplicationDev = do
 
 getAppSettings :: IO AppSettings
 getAppSettings = loadYamlSettings ["config/settings.yml"] [] useEnv
-
--- | main function for use by yesod devel
-develMain :: IO ()
-develMain = develMainHelper getApplicationDev
 
 -- | The @main@ function for an executable running this site.
 appMain :: IO ()

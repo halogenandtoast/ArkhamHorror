@@ -13,7 +13,7 @@ ghc-options:
   "$targets":       -j +RTS -A128M -n4m -RTS
   "$locals":
     -O0
-    -fwrite-ide-info
+    -fno-write-ide-info
     -hiedir=.hie
     -fhide-source-paths
     -fignore-optim-changes

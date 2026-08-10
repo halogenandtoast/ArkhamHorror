@@ -6,7 +6,6 @@ module Config (
   -- * Locally defined
   configSettingsYml,
   getDevSettings,
-  develMainHelper,
   makeYesodLogger,
 
   -- * Re-exports from Data.Yaml.Config
@@ -23,18 +22,14 @@ module Config (
   requireCustomEnv,
 ) where
 
-import Import.NoFoundation hiding (exitSuccess)
+import Import.NoFoundation
 
-import Control.Concurrent (forkIO, threadDelay)
 import Data.List (lookup)
 import Data.Yaml.Config
 import Network.Wai.Handler.Warp
 import Network.Wai.Logger (clockDateCacher)
-import System.Directory (doesFileExist)
 import System.Environment (getEnvironment)
-import System.Exit (exitSuccess)
 import System.Log.FastLogger (LoggerSet)
-import System.Posix.Signals (Handler (Catch), installHandler, sigINT)
 import Yesod.Core.Types (Logger (Logger))
 
 -- | Location of the default config file.
@@ -51,24 +46,6 @@ getDevSettings settings = do
       pdisplay = fromMaybe p $ lookup "DISPLAY_PORT" env >>= readMaybe
   putStrLn $ "Devel application launched: http://localhost:" ++ show pdisplay
   pure $ setPort p settings
-
--- | Helper for develMain in the scaffolding.
-develMainHelper :: IO (Settings, Application) -> IO ()
-develMainHelper getSettingsApp = do
-  _ <- installHandler sigINT (Catch $ pure ()) Nothing
-  putStrLn "Starting devel application"
-  (settings, app) <- getSettingsApp
-  _ <- forkIO $ runSettings settings app
-  loop
- where
-  loop :: IO ()
-  loop = do
-    threadDelay 100000
-    e <- doesFileExist "yesod-devel/devel-terminate"
-    if e then terminateDevel else loop
-
-  terminateDevel :: IO ()
-  terminateDevel = exitSuccess
 
 {- | Create a 'Logger' value (from yesod-core) out of a 'LoggerSet' (from
  fast-logger).

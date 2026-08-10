@@ -3,7 +3,11 @@ module Arkham.Asset.Assets.BlessingOfIsis3 (blessingOfIsis3) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, withSkillTest)
+import Arkham.Helpers.SkillTest (
+  getSkillTestRevealedChaosTokens,
+  withSkillTest,
+  withSkillTestInvestigator,
+ )
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Matcher qualified as Matcher
@@ -35,7 +39,11 @@ instance RunMessage BlessingOfIsis3 where
         -- Cancelling drops the token from the chaos bag's pending request, so it
         -- would never reach the skill test. Re-reveal it so it resolves with its
         -- modified [elder_sign] face (see parallel Wendy for this pattern).
-        push $ RevealChaosToken (SkillTestSource sid) iid drawnToken
-        push $ RevealSkillTestChaosTokensAgain iid
+        -- Re-reveal for the investigator performing the test, not this card's
+        -- controller: the [elder_sign] effect belongs to the tester, and this
+        -- ability may be used on another investigator's test at your location.
+        withSkillTestInvestigator \tester -> do
+          push $ RevealChaosToken (SkillTestSource sid) tester drawnToken
+          push $ RevealSkillTestChaosTokensAgain tester
       pure a
     _ -> BlessingOfIsis3 <$> liftRunMessage msg attrs

@@ -196,7 +196,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           entry "williamHemlock"
           increaseRelationshipLevel WilliamHemlock 1
           decreaseRelationshipLevel RiverHawthorne 1
-          eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.williamHemlock") 2
+          eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.williamHemlock") 1
           search
             iid
             source
@@ -211,7 +211,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           decreaseRelationshipLevel WilliamHemlock 1
           eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.riverHawthorne") 2
           entry "riverHawthorne"
-          gainResources iid source 3
+          gainResources iid source 4
         6 -> do
           codexFinished 6
           let gideonEntry k = setTitle "title" >> compose.green (p "header" >> p k)

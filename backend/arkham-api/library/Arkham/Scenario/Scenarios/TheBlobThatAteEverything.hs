@@ -76,7 +76,11 @@ instance RunMessage TheBlobThatAteEverything where
       flavor $ h "title" >> p "body"
       pure s
     HandleOption PlayWithTheBlobThatAteEverythingElse ->
-      pure $ TheBlobThatAteEverything $ attrs & setMetaKey "blobThatAteEverythingElse" (True :: Bool)
+      pure
+        $ TheBlobThatAteEverything
+        $ attrs
+        & setMetaKey "blobThatAteEverythingElse" (True :: Bool)
+        & setMetaKey "variant" ("else" :: Text)
     Setup -> do
       -- Epic Multiplayer group games are flagged in scenario meta at creation
       -- (see Api.Handler.Arkham.Events.createGroupGame): the join/setup path has

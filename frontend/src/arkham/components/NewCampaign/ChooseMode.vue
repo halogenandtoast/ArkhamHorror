@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Scenario, Campaign } from '@/arkham/data'
 import { imgsrc } from '@/arkham/helpers'
 
@@ -20,9 +20,13 @@ const gameMode = defineModel<GameMode>('gameMode', { required: true })
 const selectedCampaign = defineModel<string | null>('selectedCampaign', { required: true })
 const selectedScenario = defineModel<string | null>('selectedScenario', { required: true })
 const campaignGroup = defineModel<CampaignGroup>('campaignGroup', { required: true })
-const scenarioGroup = defineModel<ScenarioGroup>('scenarioGroup', { required: true })
-
+const scenarioGroup = ref<ScenarioGroup>('sideStories')
 const emits = defineEmits(['go'])
+
+const isChapter2 = (id: string) => id.startsWith('12')
+const isHomebrew = (id: string) => id.startsWith(':')
+const isChallengeScenario = (scenario: Scenario) =>
+  Boolean(scenario.requiredInvestigator) || Boolean(scenario.deckRequirements?.length)
 
 const chapter1Campaigns = computed(() =>
   props.campaigns.filter((c) => !CHAPTER_2_CAMPAIGN_IDS.has(c.id) && !c.homebrew)
@@ -33,22 +37,18 @@ const chapter2Campaigns = computed(() =>
 const homebrewCampaigns = computed(() =>
   props.campaigns.filter((c) => c.homebrew)
 )
+const chapter1SideStories = computed(() =>
+  props.sideStories.filter((s) => !isChapter2(s.id) && !isHomebrew(s.id))
+)
+const chapter2SideStories = computed(() =>
+  props.sideStories.filter((s) => isChapter2(s.id))
+)
+const homebrewSideStories = computed(() =>
+  props.sideStories.filter((s) => isHomebrew(s.id))
+)
 
 // Homebrew box art may not be present yet; fall back to a styled placeholder tile.
 const missingBoxArt = ref<Record<string, boolean>>({})
-const isChallengeScenario = (scenario: Scenario) =>
-  Boolean(scenario.requiredInvestigator) || Boolean(scenario.deckRequirements?.length)
-
-const sideStoryScenarios = computed(() =>
-  props.sideStories.filter((s) => !isChallengeScenario(s))
-)
-const challengeScenarios = computed(() =>
-  props.sideStories.filter(isChallengeScenario)
-)
-
-const homebrew = computed(() =>
-  import.meta.env.PROD ? [] : [{ id: 'homebrew' as const, label: 'create.homebrewHeading', items: homebrewCampaigns.value }]
-)
 
 function campaignBoxSrc(campaign: Campaign) {
   if (!campaign.homebrew) return imgsrc(`boxes/${campaign.id}.jpg`)
@@ -56,23 +56,63 @@ function campaignBoxSrc(campaign: Campaign) {
   return imgsrc(`homebrew/${homebrewId}/boxes/${homebrewId}.jpg`)
 }
 
-const campaignGroups = computed(() => [
-  { id: 'chapter1' as const, label: 'create.chapter1Heading', items: chapter1Campaigns.value },
-  { id: 'chapter2' as const, label: 'create.chapter2Heading', items: chapter2Campaigns.value },
-  ...homebrew.value
-].filter((group) => group.items.length))
+const chapterGroups = computed(() => [
+  {
+    id: 'chapter1' as const,
+    label: 'create.chapter1Heading',
+    campaigns: chapter1Campaigns.value,
+    sideStories: chapter1SideStories.value,
+  },
+  {
+    id: 'chapter2' as const,
+    label: 'create.chapter2Heading',
+    campaigns: chapter2Campaigns.value,
+    sideStories: chapter2SideStories.value,
+  },
+  ...(!import.meta.env.PROD ? [{
+    id: 'homebrew' as const,
+    label: 'create.homebrewHeading',
+    campaigns: homebrewCampaigns.value,
+    sideStories: homebrewSideStories.value,
+  }] : []),
+].filter((group) => group.campaigns.length || group.sideStories.length))
 
-const scenarioGroups = computed(() => [
-  { id: 'sideStories' as const, label: 'create.sideStoriesHeading', items: sideStoryScenarios.value },
-  { id: 'challengeScenarios' as const, label: 'create.challengeScenariosHeading', items: challengeScenarios.value },
-].filter((group) => group.items.length))
-
-const activeCampaigns = computed(() =>
-  campaignGroups.value.find((group) => group.id === campaignGroup.value)?.items ?? campaignGroups.value[0]?.items ?? []
+const activeGroup = computed(() =>
+  chapterGroups.value.find((group) => group.id === campaignGroup.value) ?? chapterGroups.value[0]
 )
+const activeCampaigns = computed(() => activeGroup.value?.campaigns ?? [])
+const allActiveScenarios = computed(() => activeGroup.value?.sideStories ?? [])
+const scenarioGroups = computed(() => [
+  {
+    id: 'sideStories' as const,
+    label: 'create.sideStoriesHeading',
+    items: allActiveScenarios.value.filter((scenario) => !isChallengeScenario(scenario)),
+  },
+  {
+    id: 'challengeScenarios' as const,
+    label: 'create.challengeScenariosHeading',
+    items: allActiveScenarios.value.filter(isChallengeScenario),
+  },
+].filter((group) => group.items.length))
 const activeScenarios = computed(() =>
   scenarioGroups.value.find((group) => group.id === scenarioGroup.value)?.items ?? scenarioGroups.value[0]?.items ?? []
 )
+const hasCampaigns = computed(() => activeCampaigns.value.length > 0)
+const hasSideStories = computed(() => allActiveScenarios.value.length > 0)
+
+watch(campaignGroup, () => {
+  if (gameMode.value === 'Campaign' && !hasCampaigns.value && hasSideStories.value) {
+    gameMode.value = 'SideStory'
+  } else if (gameMode.value === 'SideStory' && !hasSideStories.value && hasCampaigns.value) {
+    gameMode.value = 'Campaign'
+  }
+})
+
+watch([campaignGroup, gameMode], () => {
+  if (!scenarioGroups.value.some((group) => group.id === scenarioGroup.value)) {
+    scenarioGroup.value = scenarioGroups.value[0]?.id ?? 'sideStories'
+  }
+})
 
 function withViewTransition(fn: () => void) {
   const d = document as Document & { startViewTransition?: (callback: () => void) => void }
@@ -92,22 +132,38 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
 </script>
 
 <template>
-  <div class="mode-toggle segmented segmented-2">
-    <input type="radio" :checked="gameMode === 'Campaign'" id="campaign" @change="selectGameMode('Campaign')" />
-    <label for="campaign">{{ $t('create.campaign') }}</label>
-
-    <input type="radio" :checked="gameMode === 'SideStory'" id="sideStory" @change="selectGameMode('SideStory')" />
-    <label for="sideStory">{{ $t('create.sideStory') }}</label>
-  </div>
-
-  <div v-if="gameMode === 'Campaign'" class="sub-select" :style="{ '--item-count': campaignGroups.length }">
-    <template v-for="group in campaignGroups" :key="group.id">
-      <input :id="`campaign-${group.id}`" v-model="campaignGroup" type="radio" :value="group.id" />
-      <label :for="`campaign-${group.id}`">{{ $t(group.label) }}</label>
+  <div class="chapter-select" :style="{ '--item-count': chapterGroups.length }">
+    <template v-for="group in chapterGroups" :key="group.id">
+      <input :id="`chapter-${group.id}`" v-model="campaignGroup" type="radio" :value="group.id" />
+      <label :for="`chapter-${group.id}`">{{ $t(group.label) }}</label>
     </template>
   </div>
 
-  <div v-else class="sub-select" :style="{ '--item-count': scenarioGroups.length }">
+  <div class="mode-toggle segmented segmented-2">
+    <input
+      id="campaign"
+      type="radio"
+      :checked="gameMode === 'Campaign'"
+      :disabled="!hasCampaigns"
+      @change="selectGameMode('Campaign')"
+    />
+    <label for="campaign">{{ $t('create.campaign') }}</label>
+
+    <input
+      id="sideStory"
+      type="radio"
+      :checked="gameMode === 'SideStory'"
+      :disabled="!hasSideStories"
+      @change="selectGameMode('SideStory')"
+    />
+    <label for="sideStory">{{ $t('create.sideStory') }}</label>
+  </div>
+
+  <div
+    v-if="gameMode === 'SideStory' && scenarioGroups.length > 1"
+    class="scenario-select"
+    :style="{ '--item-count': scenarioGroups.length }"
+  >
     <template v-for="group in scenarioGroups" :key="group.id">
       <input :id="`scenario-${group.id}`" v-model="scenarioGroup" type="radio" :value="group.id" />
       <label :for="`scenario-${group.id}`">{{ $t(group.label) }}</label>
@@ -247,15 +303,15 @@ input[type='radio'] {
 
 .segmented-2 { grid-template-columns: repeat(2, 1fr); }
 
-.sub-select {
+.chapter-select {
   display: grid;
   grid-template-columns: repeat(var(--item-count), 1fr);
   gap: 6px;
-  margin-top: 10px;
+  margin-bottom: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.sub-select label {
+.chapter-select label {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -270,10 +326,67 @@ input[type='radio'] {
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 
-.sub-select label:hover,
-.sub-select input[type='radio']:checked + label {
+.chapter-select label:hover,
+.chapter-select input[type='radio']:checked + label {
   border-bottom-color: var(--button-1);
   color: var(--text);
+}
+
+.scenario-select {
+  display: grid;
+  grid-template-columns: repeat(var(--item-count), 1fr);
+  gap: 4px;
+  width: min(100%, 560px);
+  margin: 14px auto 4px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.18);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.scenario-select label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: rgba(206, 206, 206, 0.58);
+  font-family: Teutonic, sans-serif;
+  font-size: clamp(0.76rem, 1.1vw, 0.9rem);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.scenario-select label::before {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  content: '';
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.scenario-select label:hover {
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.scenario-select input[type='radio']:checked + label {
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.24);
+}
+
+.scenario-select input[type='radio']:checked + label::before {
+  border-color: var(--button-1);
+  background: var(--button-1);
 }
 
 .segmented label {
@@ -297,6 +410,11 @@ input[type='radio'] {
 
 .segmented label:hover {
   color: var(--text);
+}
+
+.segmented input[type='radio']:disabled + label {
+  color: rgba(206, 206, 206, 0.3);
+  cursor: not-allowed;
 }
 
 input[type='radio']:checked + label {

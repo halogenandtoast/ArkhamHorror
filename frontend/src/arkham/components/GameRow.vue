@@ -74,7 +74,9 @@ const scenarioIcon = computed(() => {
     const [, homebrewId, homebrewScenarioId] = match
     return imgsrc(`homebrew/${homebrewId}/sets/${homebrewScenarioId}.png`)
   }
-  return imgsrc(`sets/${scenarioId.replace('c', '')}.png`)
+  const setId = scenarioId.replace('c', '')
+  const variant = scenario.value.variant ? `-${scenario.value.variant}` : ''
+  return imgsrc(`sets/${setId}${variant}.png`)
 })
 </script>
 
@@ -86,8 +88,8 @@ const scenarioIcon = computed(() => {
           <div class="campaign-icon-container" v-if="campaignIcon">
             <img class="campaign-icon" :src="campaignIcon" />
           </div>
-          <div class="campaign-icon-container" v-else-if="scenario">
-            <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
+          <div class="campaign-icon-container" v-else-if="scenarioIcon">
+            <img class="campaign-icon" :src="scenarioIcon" />
           </div>
           <router-link v-if="admin" class="title" :to="`/admin/games/${game.id}`">{{
             game.name

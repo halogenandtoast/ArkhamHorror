@@ -679,7 +679,8 @@ createGroupGame gameName scenarioId difficulty includeTarotReadings playWithBlob
     -- Flag the group's scenario as Epic Multiplayer so it picks its epic setup
     -- branch at Setup time (the join path runs setup with no event context).
     game =
-      setInitialScenarioMeta "blobThatAteEverythingElse" playWithBlobElse
+      (if playWithBlobElse then setInitialScenarioMeta "variant" ("else" :: Text) else id)
+        $ setInitialScenarioMeta "blobThatAteEverythingElse" playWithBlobElse
         $ setInitialScenarioMeta "epicMultiplayer" True
         $ newScenario scenarioId newGameSeed seats difficulty includeTarotReadings
     ag = ArkhamGame gameName game 0 WithFriends now now

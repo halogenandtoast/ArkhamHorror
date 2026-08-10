@@ -256,6 +256,7 @@ data ScenarioDetails = ScenarioDetails
   { id :: ScenarioId
   , difficulty :: Difficulty
   , name :: Name
+  , variant :: Maybe Text
   }
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
@@ -1280,8 +1281,20 @@ toGameDetailsEntry (Entity gameId game) playerCount =
             { id = coerce gameId
             , scenario = case a.gameMode of
                 This _ -> Nothing
-                That s -> Just $ ScenarioDetails s.id s.difficulty s.name
-                These _ s -> Just $ ScenarioDetails s.id s.difficulty s.name
+                That s ->
+                  Just
+                    $ ScenarioDetails
+                      s.id
+                      s.difficulty
+                      s.name
+                      (getMetaKeyDefault "variant" Nothing $ toAttrs s)
+                These _ s ->
+                  Just
+                    $ ScenarioDetails
+                      s.id
+                      s.difficulty
+                      s.name
+                      (getMetaKeyDefault "variant" Nothing $ toAttrs s)
             , campaign = case a.gameMode of
                 This c -> Just $ CampaignDetails c.id c.difficulty c.currentCampaignMode
                 That _ -> Nothing

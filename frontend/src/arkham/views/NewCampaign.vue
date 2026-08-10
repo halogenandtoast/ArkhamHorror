@@ -22,7 +22,6 @@ import GameOptions from '@/arkham/components/NewCampaign/GameOptions.vue'
 
 type Step = 'ChooseMode' | 'GameOptions'
 type CampaignGroup = 'chapter1' | 'chapter2' | 'homebrew'
-type ScenarioGroup = 'sideStories' | 'challengeScenarios'
 
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
@@ -40,7 +39,6 @@ const gate = <T extends { alpha?: boolean; beta?: boolean; dev?: boolean }>(item
 
 const step = ref<Step>('ChooseMode')
 const campaignGroup = ref<CampaignGroup>('chapter1')
-const scenarioGroup = ref<ScenarioGroup>('sideStories')
 const gameMode = ref<GameMode>('Campaign')
 const includeTarotReadings = ref(false)
 const strictAsIfAt = ref(false)
@@ -151,6 +149,10 @@ const defaultCampaignName = computed(() => {
   }
 
   if (gameMode.value === 'SideStory' && scenario.value) {
+    if (returnTo.value && scenario.value.returnToVariant) {
+      return 'The Blob That Ate Everything ELSE!'
+    }
+
     if (scenario.value.scenarios && sideStoryMode.value !== 'campaign') {
       const part = scenario.value.scenarios.find((s) => s.id === sideStoryMode.value)
       if (part) return part.name
@@ -416,7 +418,6 @@ async function start() {
           v-model:selectedCampaign="selectedCampaign"
           v-model:selectedScenario="selectedScenario"
           v-model:campaignGroup="campaignGroup"
-          v-model:scenarioGroup="scenarioGroup"
           :campaigns="campaigns"
           :sideStories="sideStories"
           :campaign="campaign"

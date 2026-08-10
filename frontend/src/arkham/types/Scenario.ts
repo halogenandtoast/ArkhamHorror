@@ -40,6 +40,7 @@ export type ScenarioDetails = {
   id: string;
   difficulty: Difficulty;
   name: ScenarioName;
+  variant?: string;
 }
 
 export type Scenario = {
@@ -94,6 +95,7 @@ export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
   id: JsonDecoder.string(),
   difficulty: difficultyDecoder,
   name: scenarioNameDecoder,
+  variant: v2Optional(JsonDecoder.string()),
 }, 'ScenarioDetails');
 
 export type Remembered=

@@ -53,7 +53,10 @@ instance RunMessage UnexpectedGuests where
       healableInvestigators <-
         select $ HealableInvestigator (toSource attrs) #horror (affectsOthersKnown iid $ colocatedWith iid)
       healableAssets <-
-        select $ HealableAsset (toSource attrs) #horror (AssetAt $ locationWithInvestigator iid)
+        select
+          $ HealableAsset (toSource attrs) #horror
+          $ AssetWithTrait Guest
+          <> AssetAt (locationWithInvestigator iid)
 
       chooseOrRunOneM iid do
         withI18n $ labeled' "skip" nothing

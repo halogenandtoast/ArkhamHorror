@@ -211,6 +211,7 @@
   "minusToYourNextSkillTestThisRound": "You get -{count} to your next skill test this round",
   "move": "Move",
   "moveDamage": "Move 1 damage | Move {count} damage",
+  "moveDoom": "Move 1 doom | Move {count} doom",
   "moveHorror": "Move 1 horror | Move {count} horror",
   "moveTo": "Move to {name}",
   "moveToConnecting": "Move to a connecting location",

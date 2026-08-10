@@ -6,19 +6,29 @@ install-ghc: false
 resolver: nightly-2026-08-09
 compiler: ghc-9.14.1
 notify-if-nix-on-path: false
-build:
-  jobs: 16
 
+# Build-memory notes (measured on a cold 6830-module arkham-api build):
+#
+#   * -c in the RTS block below compacts the oldest generation in place instead
+#     of copying it. GHC's live set here is only ~1.5G, but a copying major GC
+#     needs that much again as to-space, so this roughly halves the footprint
+#     for ~1% of wall time.
+#   * -fwrite-if-simplified-core and -fprefer-byte-code deliberately are NOT in
+#     $locals. They embed simplified Core in every .hi so Template Haskell can
+#     run from byte-code; at this module count that cost 490M of interface
+#     files vs 256M without (Arkham/Matcher/Window.hi alone was 77M, now 0.2M)
+#     and pushed peak GHC residency to 8.8G vs 5.0G, for no wall-time gain.
+#     Don't re-add them without re-measuring.
+#   * -fwrite-if-compression stays at 1; level 3 was slower AND used more
+#     memory, because the extra deduplication tables outweigh the smaller .hi.
 ghc-options:
-  "$targets":       -j +RTS -A128M -n4m -RTS
+  "$targets":       -j +RTS -A128M -n4m -c -RTS
   "$locals":
     -O0
     -fno-write-ide-info
     -hiedir=.hie
     -fhide-source-paths
     -fignore-optim-changes
-    -fwrite-if-simplified-core
-    -fprefer-byte-code
     -fwrite-if-compression=1
     -Weverything
     -Wno-unused-packages

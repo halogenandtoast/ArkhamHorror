@@ -1,3 +1,17 @@
+# Per-developer GHC options, appended after the ones in stack.yaml. Exporting
+# GHC_OPTIONS in your shell overrides this default; the flags that actually
+# bound memory (-c, and the absence of -fwrite-if-simplified-core) live in
+# stack.yaml so they survive that override and apply to Docker and CI too.
+#
+# A cold 6830-module build peaks at ~6.6G of RSS with these settings, down from
+# ~11.2G, at the same wall time. If you need it lower and can spend ~10% more
+# wall time, add "-A64m -F1.5" to the RTS block below -- that trades GC
+# headroom for footprint and lands around ~5.3G:
+#
+#   GHC_OPTIONS="-j12 +RTS -A64m -n4m -qb0 -qg1 -I0 -F1.5 -RTS" make api.watch
+#
+GHC_OPTIONS ?= -j12 +RTS -A128m -n4m -qb0 -qg1 -I0 -RTS
+
 .PHONY: core.watch
 core.watch:
 	cd arkham-api && \

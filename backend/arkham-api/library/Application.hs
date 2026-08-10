@@ -7,7 +7,6 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Application (
-  getApplicationDev,
   appMain,
   makeFoundation,
   makeLogWare,
@@ -243,15 +242,6 @@ warpSettings foundation =
               (toLogStr $ "Exception from Warp: " ++ show e)
       )
       defaultSettings
-
--- | For yesod devel, return the Warp settings and WAI Application.
-getApplicationDev :: IO (Settings, Application)
-getApplicationDev = do
-  settings <- getAppSettings
-  foundation <- makeFoundation settings
-  wsettings <- getDevSettings $ warpSettings foundation
-  app <- makeApplication foundation
-  pure (wsettings, app)
 
 getAppSettings :: IO AppSettings
 getAppSettings = loadYamlSettings ["config/settings.yml"] [] useEnv

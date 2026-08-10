@@ -36,8 +36,8 @@ import Yesod.Core.Types (Logger (Logger))
 configSettingsYml :: FilePath
 configSettingsYml = "config/settings.yml"
 
-{- | Helper for getApplicationDev in the scaffolding. Looks up PORT and
- DISPLAY_PORT and prints appropriate messages.
+{- | Helper for getApplicationRepl. Looks up PORT and DISPLAY_PORT and prints
+ appropriate messages.
 -}
 getDevSettings :: Settings -> IO Settings
 getDevSettings settings = do

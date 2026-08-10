@@ -13,7 +13,7 @@ newtype RingLibraryArchiveOfTheAncients = RingLibraryArchiveOfTheAncients Locati
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ringLibraryArchiveOfTheAncients :: LocationCard RingLibraryArchiveOfTheAncients
-ringLibraryArchiveOfTheAncients = location RingLibraryArchiveOfTheAncients Cards.ringLibraryArchiveOfTheAncients 3 (Static 1)
+ringLibraryArchiveOfTheAncients = location RingLibraryArchiveOfTheAncients Cards.ringLibraryArchiveOfTheAncients 3 (PerPlayer 1)
 
 instance HasAbilities RingLibraryArchiveOfTheAncients where
   getAbilities (RingLibraryArchiveOfTheAncients a) =

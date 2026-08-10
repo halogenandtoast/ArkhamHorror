@@ -27,7 +27,7 @@ instance HasAbilities ShardOfYchlechtOtherworldlyRemnant where
         $ controlled_ a 1
         $ freeReaction
           (EnemyAttacks #when You (CancelableEnemyAttack AnyEnemyAttack) starSpawnOrDeepOne)
-    , controlled_ a 2
+    , controlled a 2 (glyphsAllKnown "BXOK")
         $ triggered (EnemyEntersYourLocation #when starSpawnOrDeepOne) (exhaust a)
     , artifactAbility a 3
     ]

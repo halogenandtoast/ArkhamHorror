@@ -37,7 +37,7 @@ Key files:
 - `web-entrypoint.sh` → sets `ASSET_HOST` + `DATABASE_URL`
 - `prod.nginxconf` → Nginx config (`root /opt/arkham/src/frontend/dist`)
 - `setup.sql` → full PostgreSQL dump (includes `uuid-ossp`)
-- `Dockerfile` → multi-stage build: frontend (Vite) + backend (Stack/GHC 9.12.2)
+- `Dockerfile` → multi-stage build: frontend (Vite) + backend (Stack/GHC 9.14.1)
 
 ## Offline Distribution Architecture
 
@@ -75,7 +75,7 @@ Versions are aligned with `docker-compose.yml` and `Dockerfile`. PostgreSQL uses
 
 | Component | Technology | Version | Source |
 | --- | --- | --- | --- |
-| Backend | Haskell (GHC) | 9.12.2 | `downloads.haskell.org` bindist |
+| Backend | Haskell (GHC) | 9.14.1 | `downloads.haskell.org` bindist |
 | Build Tool | Stack | 3.7.1 | GitHub Releases prebuilt binary |
 | Frontend | Node.js + Vite | 22.12.0 LTS | `nodejs.org` prebuilt binary |
 | Database | PostgreSQL | 14.15 | `ftp.postgresql.org` source build |

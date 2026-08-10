@@ -262,7 +262,7 @@ incrRoomMember :: (MonadIO m, HasApp m) => ArkhamGameId -> m ()
 incrRoomMember gameId = withRedis \conn -> runRedis conn do
   void $ hincrby roomsHashKey (roomField gameId) 1
   now <- liftIO currentEpoch
-  void $ hset roomsSeenHashKey (roomField gameId) (BS8.pack (show now))
+  void $ hset roomsSeenHashKey ((roomField gameId, BS8.pack (show now)) :| [])
 
 {- | Decrement the cross-server client count. When the new count is at or
 below zero, drop the field from both hashes so the admin view doesn't
@@ -273,11 +273,11 @@ decrRoomMember gameId = withRedis \conn -> runRedis conn do
   result <- hincrby roomsHashKey (roomField gameId) (-1)
   case result of
     Right n | n <= 0 -> do
-      void $ hdel roomsHashKey [roomField gameId]
-      void $ hdel roomsSeenHashKey [roomField gameId]
+      void $ hdel roomsHashKey (roomField gameId :| [])
+      void $ hdel roomsSeenHashKey (roomField gameId :| [])
     _ -> do
       now <- liftIO currentEpoch
-      void $ hset roomsSeenHashKey (roomField gameId) (BS8.pack (show now))
+      void $ hset roomsSeenHashKey ((roomField gameId, BS8.pack (show now)) :| [])
 
 {- | Aggregate client counts across servers from Redis, filtering out
 entries whose 'seen' timestamp is older than 'roomStaleSeconds'. Stale
@@ -316,10 +316,10 @@ getRedisRoomCounts = do
     pure (coerce uuid :: ArkhamGameId, n)
 
 sweepStaleRooms :: Connection -> [ArkhamGameId] -> IO ()
-sweepStaleRooms conn gameIds = void $ runRedis conn do
-  let fields = map roomField gameIds
-  void $ hdel roomsHashKey fields
-  void $ hdel roomsSeenHashKey fields
+sweepStaleRooms conn gameIds = for_ (nonEmpty $ map roomField gameIds) \fields ->
+  void $ runRedis conn do
+    void $ hdel roomsHashKey fields
+    void $ hdel roomsSeenHashKey fields
 
 {- | Background heartbeat: every 'roomHeartbeatSeconds' refresh the seen
 timestamp for every game this pod still has live subscribers for. This
@@ -338,7 +338,7 @@ roomHeartbeat app = case appMessageBroker app of
       now <- currentEpoch
       void $ try @SomeException $ runRedis conn do
         for_ active \gid ->
-          void $ hset roomsSeenHashKey (roomField gid) (BS8.pack (show now))
+          void $ hset roomsSeenHashKey ((roomField gid, BS8.pack (show now)) :| [])
  where
   keepIfActive (gid, room) = do
     n <- roomClientCount room

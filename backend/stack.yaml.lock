@@ -18,68 +18,68 @@ packages:
 - completed:
     name: amazonka
     pantry-tree:
-      sha256: fc1bb41150c88a2920d12a058578ad11d827fa43b16274391015260b2fe8c56d
-      size: 1528
-    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
-    size: 34732929
+      sha256: 0cf2d48a5fe43a2173b73ed70db10cbb9b9a062cb2b4ac8d8c78318c8f5a824e
+      size: 1659
+    sha256: e3221cdc50a3bb4f66b3642b358088a960e1d73c5524dfd1ba87cf3f1416fee1
+    size: 34859894
     subdir: lib/amazonka
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
     version: '2.0'
   original:
     subdir: lib/amazonka
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
 - completed:
     name: amazonka-core
     pantry-tree:
-      sha256: e560d220c73068da280e8532d27f4cee341c2c05efd2f5d5b1b0336cb24ccb1b
+      sha256: d6b32681e6bf84c57a7eb9e64a386119ba1015a436fd5a787531e7e930215e65
       size: 3222
-    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
-    size: 34732929
+    sha256: e3221cdc50a3bb4f66b3642b358088a960e1d73c5524dfd1ba87cf3f1416fee1
+    size: 34859894
     subdir: lib/amazonka-core
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
     version: '2.0'
   original:
     subdir: lib/amazonka-core
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
 - completed:
     name: amazonka-sso
     pantry-tree:
-      sha256: f8897d82072d662605f60dc3d18e921c04bbb337b5d7caaeaece36fc8aee7fb9
+      sha256: c4575f7b7cf61c3de65e43d0d77a14dfa14c47ebff5f1a3dcd2f6e1313aaaf0a
       size: 1817
-    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
-    size: 34732929
+    sha256: e3221cdc50a3bb4f66b3642b358088a960e1d73c5524dfd1ba87cf3f1416fee1
+    size: 34859894
     subdir: lib/services/amazonka-sso
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
     version: '2.0'
   original:
     subdir: lib/services/amazonka-sso
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
 - completed:
     name: amazonka-sts
     pantry-tree:
-      sha256: b2a18c0a04c999f9f32e114ad94bf76a89e463dbb16063ebf0899ee28808f898
+      sha256: e0cb89013938230d257a2e546a78170dfdb6d507f37c6cb763a6cdf6290edb66
       size: 2880
-    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
-    size: 34732929
+    sha256: e3221cdc50a3bb4f66b3642b358088a960e1d73c5524dfd1ba87cf3f1416fee1
+    size: 34859894
     subdir: lib/services/amazonka-sts
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
     version: '2.0'
   original:
     subdir: lib/services/amazonka-sts
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
 - completed:
     name: amazonka-s3
     pantry-tree:
-      sha256: 50bb47db3771d94ee26711bad9d91b1dc32e6466a9a580e9333af434728052b1
+      sha256: cab10723dc7e2a3d7096ddd5253e4fc30044ff9a158da24e42bd6be2c4060cdc
       size: 38690
-    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
-    size: 34732929
+    sha256: e3221cdc50a3bb4f66b3642b358088a960e1d73c5524dfd1ba87cf3f1416fee1
+    size: 34859894
     subdir: lib/services/amazonka-s3
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
     version: '2.0'
   original:
     subdir: lib/services/amazonka-s3
-    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    url: https://github.com/brendanhay/amazonka/archive/b562aa3f24845e34b95748daae671860017426be.tar.gz
 - completed:
     hackage: yesod-test-1.6.19@sha256:faac869ab6fa86113cde99d28928e196373a04879c03204071956954ed7ba2a3,3003
     pantry-tree:
@@ -87,6 +87,13 @@ packages:
       size: 630
   original:
     hackage: yesod-test-1.6.19@sha256:faac869ab6fa86113cde99d28928e196373a04879c03204071956954ed7ba2a3,3003
+- completed:
+    hackage: mailtrap-0.1.2.2@sha256:06c8f2711d639ddee59ec914e6963dca7402ea6afd39c75487bbd205b044281a,847
+    pantry-tree:
+      sha256: 6b373e34573af2e26913a87af2a5b7b3ba9de2a03104fc018e78679b55bc6772
+      size: 275
+  original:
+    hackage: mailtrap-0.1.2.2@sha256:06c8f2711d639ddee59ec914e6963dca7402ea6afd39c75487bbd205b044281a,847
 - completed:
     hackage: opentelemetry-plugin-1.1.2@sha256:922bd0c3e0bca12d00e66f55575fb92849484a53f5ed98c1139915cbf5d81ba3,1413
     pantry-tree:
@@ -180,7 +187,7 @@ packages:
     hackage: hs-opentelemetry-instrumentation-wai-0.1.1.0@sha256:d97b4cb3870217e64e95da3f51db814eca62eb57484ee0a6f747366da5940bc2,1371
 snapshots:
 - completed:
-    sha256: a578d98b69e5742eaf2c42d870e9c5011e5f8b5ad216f04ca8f52caadc8bf89c
-    size: 715419
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2025/12/30.yaml
-  original: nightly-2025-12-30
+    sha256: 7a2c05f48e3bb62372a717529bba9734623eb5ca222266a66ee3c2fa92474c0b
+    size: 769868
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2026/8/9.yaml
+  original: nightly-2026-08-09

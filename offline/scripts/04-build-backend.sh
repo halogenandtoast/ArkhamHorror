@@ -117,7 +117,7 @@ summarize_build_log() {
 # ── Build backend ─────────────────────────────────────────────────────────────
 
 build_backend() {
-    step "Building backend (Haskell/GHC 9.12.2)"
+    step "Building backend (Haskell/GHC 9.14.1)"
 
     if [ ! -d "$BACKEND_DIR" ]; then
         die "Backend directory does not exist: $BACKEND_DIR"

@@ -47,8 +47,8 @@ effectWithSource
 effectWithSource source target body = withSource source $ effect target body
 
 instance WithEffect GameT
-instance WithEffect m => WithEffect (QueueT Message m)
-instance WithEffect m => WithEffect (StateT s m)
+instance WithEffect (QueueT Message m)
+instance WithEffect (StateT s m)
 
 withSource :: Sourceable source => source -> ((?source :: source, Sourceable source) => b) -> b
 withSource source inner = let ?source = source in inner

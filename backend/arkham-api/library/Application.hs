@@ -41,6 +41,7 @@ import Database.Persist.Postgresql (
   pgPoolSize,
  )
 import Database.Redis (
+  ConnectAddr (..),
   ConnectInfo (..),
   checkedConnect,
   newPubSubController,
@@ -326,6 +327,15 @@ handler h = getAppSettings >>= makeFoundation >>= flip unsafeHandler h
 db :: ReaderT SqlBackend Handler a -> IO a
 db = handler . runDB
 
+{- | hedis 0.16 replaced ConnectInfo's connectHost/connectPort pair with a
+single connectAddr. Only the host/port form can carry TLS, but keep this
+total by falling back to the socket path.
+-}
+connectAddrHostName :: ConnectAddr -> String
+connectAddrHostName = \case
+  ConnectAddrHostPort host _ -> host
+  ConnectAddrUnixSocket path -> path
+
 -- parse a text url into a redis connection
 fromConnectionUrl :: (MonadFail m, MonadIO m) => Text -> m ConnectInfo
 fromConnectionUrl info = do
@@ -338,7 +348,7 @@ fromConnectionUrl info = do
             $ x
               { connectTLSParams =
                   Just
-                    $ (defaultParamsClient (connectHost x) "")
+                    $ (defaultParamsClient (connectAddrHostName $ connectAddr x) "")
                       { clientSupported = def {supportedCiphers = ciphersuite_strong}
                       , clientShared = def {sharedCAStore = certStore}
                       }

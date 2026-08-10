@@ -55,7 +55,7 @@ services:
     build:
       context: .
       args:
-        - GHC_VERSION=9.12.2
+        - GHC_VERSION=9.14.1
     # ASSET_HOST is auto-detected by web-entrypoint.sh:
     #   unset (default): uses local images if present, CDN otherwise
     # To override, uncomment one of the lines below:

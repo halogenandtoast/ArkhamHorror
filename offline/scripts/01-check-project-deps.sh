@@ -2,7 +2,7 @@
 # =============================================================================
 # 01-check-project-deps.sh - Install project dependencies
 # Versions are kept strictly aligned with docker-compose.yml:
-#   GHC 9.12.2 / PostgreSQL 14.15 / Node.js 22 LTS / Stack latest
+#   GHC 9.14.1 / PostgreSQL 14.15 / Node.js 22 LTS / Stack latest
 #
 # Installation strategy:
 #   - Download prebuilt binaries for GHC / Stack / Node.js from the official sites
@@ -26,11 +26,11 @@ STAMP_PG="${DEPS_DIR}/stamp_postgres_installed"
 STAMP_NGINX="${DEPS_DIR}/stamp_nginx_installed"
 
 # ═════════════════════════════════════════════════════════════════════════════
-# 1. GHC 9.12.2 + Stack (docker-compose.yml: GHC_VERSION=9.12.2)
+# 1. GHC 9.14.1 + Stack (docker-compose.yml: GHC_VERSION=9.14.1)
 # ═════════════════════════════════════════════════════════════════════════════
 
 get_ghc_bindist_info() {
-    local ver="9.12.2"
+    local ver="9.14.1"
     local archive=""
     case "$PLATFORM" in
         macos-arm64)   archive="ghc-${ver}-aarch64-apple-darwin.tar.xz" ;;
@@ -63,7 +63,7 @@ EOF
 }
 
 install_ghc_and_stack() {
-    local GHC_VERSION="9.12.2"
+    local GHC_VERSION="9.14.1"
     step "Installing GHC ${GHC_VERSION} + Stack"
 
     if [ -f "$STAMP_GHC" ]; then

@@ -54,7 +54,7 @@ jsonToToken jwtSecret userId = do
         , jwt = userId
         }
 
-  res <- runJOSE $ signJWT jwk (newJWSHeader ((), HS256)) claims
+  res <- runJOSE $ signJWT jwk (newJWSHeaderProtected HS256) claims
   case res of
     Left (err :: JWTError) -> error $ show err
     Right tkn -> pure $ TL.toStrict $ TL.decodeUtf8 $ encodeCompact tkn
@@ -66,7 +66,7 @@ tokenToJson jwtSecret token = do
     let jwk = fromOctets (encodeUtf8 @Text @BSL.ByteString jwtSecret)
     let audCheck = const True -- should be a proper audience check
     jwt <- decodeCompact $ TL.encodeUtf8 $ TL.fromStrict token
-    verifyJWT (defaultJWTValidationSettings audCheck) jwk jwt
+    verifyJWT (defaultJWTValidationSettings audCheck) jwk (jwt :: SignedJWT)
   pure $ case res of
     Left (err :: JWTError) -> error $ show err
     Right super -> Just (jwt super)

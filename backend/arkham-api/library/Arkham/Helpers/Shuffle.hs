@@ -30,8 +30,8 @@ preventsShuffleIntoEmptyDeck = \case
   _ -> False
 
 instance CanShuffleIn Card
-instance CanShuffleIn a => CanShuffleIn (Only a)
-instance CanShuffleIn a => CanShuffleIn (NonEmpty a)
+instance CanShuffleIn (Only a)
+instance CanShuffleIn (NonEmpty a)
 instance CanShuffleIn EncounterCard
 instance CanShuffleIn PlayerCard
 instance CanShuffleIn DrawnCard

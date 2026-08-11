@@ -3,8 +3,6 @@ module Arkham.Homebrew.CircusExMortis.Content where
 import Arkham.Act.Types (SomeActCard (..))
 import Arkham.Agenda.Types (SomeAgendaCard (..))
 import Arkham.Asset.Types (SomeAssetCard (..))
-import Arkham.Card.CardCode
-import Arkham.EncounterSet (EncounterSet)
 import Arkham.Enemy.Types (SomeEnemyCard (..))
 import Arkham.Homebrew.CircusExMortis.Acts.ForestOfIllusion
 import Arkham.Homebrew.CircusExMortis.Acts.OutAndAway
@@ -73,7 +71,6 @@ import Arkham.Homebrew.CircusExMortis.Treacheries.OminousMoonlight
 import Arkham.Homebrew.CircusExMortis.Treacheries.QuickerThanTheEye
 import Arkham.Homebrew.CircusExMortis.Treacheries.RecklessStunt
 import Arkham.Homebrew.Types
-import Arkham.Id (CampaignId)
 import Arkham.Location.Types (SomeLocationCard (..))
 import Arkham.Treachery.Types (SomeTreacheryCard (..))
 
@@ -160,31 +157,19 @@ treacheries =
   , SomeTreacheryCard recklessStunt
   ]
 
-scenarios :: [(CardCode, HomebrewScenario)]
+scenarios :: HomebrewScenarios
 scenarios =
-  [ (":circus-ex-mortis:001", HomebrewScenario oneNightOnly)
-  , (":circus-ex-mortis:017", HomebrewScenario thePrimrosePath)
-  , (":circus-ex-mortis:042", HomebrewScenario harmsWay)
-  , (":circus-ex-mortis:076", HomebrewScenario allPointsWest)
-  , (":circus-ex-mortis:110", HomebrewScenario piperAtTheGatesOfDawn)
-  , (":circus-ex-mortis:124", HomebrewScenario bacchanalia)
-  , (":circus-ex-mortis:155", HomebrewScenario redSunrise)
-  , (":circus-ex-mortis:192", HomebrewScenario thousandToOne)
+  [ (":circus-ex-mortis:001", HomebrewScenario Sets.OneNightOnly oneNightOnly)
+  , (":circus-ex-mortis:017", HomebrewScenario Sets.ThePrimrosePath thePrimrosePath)
+  , (":circus-ex-mortis:042", HomebrewScenario Sets.HarmsWay harmsWay)
+  , (":circus-ex-mortis:076", HomebrewScenario Sets.AllPointsWest allPointsWest)
+  , (":circus-ex-mortis:110", HomebrewScenario Sets.PiperAtTheGatesOfDawn piperAtTheGatesOfDawn)
+  , (":circus-ex-mortis:124", HomebrewScenario Sets.Bacchanalia bacchanalia)
+  , (":circus-ex-mortis:155", HomebrewScenario Sets.RedSunrise redSunrise)
+  , (":circus-ex-mortis:192", HomebrewScenario Sets.ThousandToOne thousandToOne)
   ]
 
-scenarioSets :: [(CardCode, EncounterSet)]
-scenarioSets =
-  [ (":circus-ex-mortis:001", Sets.OneNightOnly)
-  , (":circus-ex-mortis:017", Sets.ThePrimrosePath)
-  , (":circus-ex-mortis:042", Sets.HarmsWay)
-  , (":circus-ex-mortis:076", Sets.AllPointsWest)
-  , (":circus-ex-mortis:110", Sets.PiperAtTheGatesOfDawn)
-  , (":circus-ex-mortis:124", Sets.Bacchanalia)
-  , (":circus-ex-mortis:155", Sets.RedSunrise)
-  , (":circus-ex-mortis:192", Sets.ThousandToOne)
-  ]
-
-campaigns :: [(CampaignId, HomebrewCampaign)]
+campaigns :: HomebrewCampaigns
 campaigns = [(":circus-ex-mortis", HomebrewCampaign circusExMortis)]
 
 data CircusExMortisContent
@@ -200,6 +185,5 @@ instance IsHomebrewContent CircusExMortisContent where
       , stories = []
       , treacheries = treacheries
       , scenarios = scenarios
-      , scenarioSets = scenarioSets
       , campaigns = campaigns
       }

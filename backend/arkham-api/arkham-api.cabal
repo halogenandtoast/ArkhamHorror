@@ -3632,6 +3632,7 @@ library
       Arkham.Helpers.Xp
       Arkham.History
       Arkham.History.Types
+      Arkham.Homebrew.CardRegistry
       Arkham.Homebrew.CircusExMortis.Acts.ForestOfIllusion
       Arkham.Homebrew.CircusExMortis.Acts.OutAndAway
       Arkham.Homebrew.CircusExMortis.Acts.RatsInACage
@@ -3791,6 +3792,7 @@ library
       Arkham.Homebrew.DarkMatter.CardDefs.Locations
       Arkham.Homebrew.DarkMatter.CardDefs.Stories
       Arkham.Homebrew.DarkMatter.CardDefs.Treacheries
+      Arkham.Homebrew.DarkMatter.CardEntries
       Arkham.Homebrew.DarkMatter.ChaosBag
       Arkham.Homebrew.DarkMatter.Content
       Arkham.Homebrew.DarkMatter.Defs
@@ -4008,6 +4010,8 @@ library
       Arkham.Homebrew.Defs
       Arkham.Homebrew.DefsBase
       Arkham.Homebrew.DefsEntries
+      Arkham.Homebrew.Generate
+      Arkham.Homebrew.Import
       Arkham.Homebrew.Registry
       Arkham.Homebrew.TH
       Arkham.Homebrew.TokenDefs

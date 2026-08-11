@@ -584,7 +584,7 @@ duplicatedScenarios :: [CardCode]
 duplicatedScenarios = ["04205a", "04205b", "08501c", "10677a", "10679a", "10679b"]
 
 homebrewScenarios :: Map CardCode SomeScenario
-homebrewScenarios = mapFromList [(c, SomeScenario f) | (c, HomebrewScenario f) <- Registry.scenarios]
+homebrewScenarios = mapFromList [(c, SomeScenario f) | (c, HomebrewScenario _ f) <- Registry.scenarios]
 
 allScenarios :: Map CardCode SomeScenario
 allScenarios =

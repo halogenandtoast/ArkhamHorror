@@ -16,7 +16,6 @@ import Arkham.Enemy.Types (SomeEnemyCard)
 import Arkham.Homebrew.ContentEntries ()
 import Arkham.Homebrew.TH
 import Arkham.Homebrew.Types as X
-import Arkham.Id (CampaignId)
 import Arkham.Location.Types (SomeLocationCard)
 import Arkham.Prelude ()
 import Arkham.Story.Types (SomeStoryCard)
@@ -46,11 +45,11 @@ stories = allHomebrewContent.stories
 treacheries :: [SomeTreacheryCard]
 treacheries = allHomebrewContent.treacheries
 
-scenarios :: [(CardCode, HomebrewScenario)]
+scenarios :: HomebrewScenarios
 scenarios = allHomebrewContent.scenarios
 
 scenarioSets :: [(CardCode, EncounterSet)]
-scenarioSets = allHomebrewContent.scenarioSets
+scenarioSets = [(cardCode, encounterSet) | (cardCode, HomebrewScenario encounterSet _) <- scenarios]
 
-campaigns :: [(CampaignId, HomebrewCampaign)]
+campaigns :: HomebrewCampaigns
 campaigns = allHomebrewContent.campaigns

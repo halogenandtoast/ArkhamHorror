@@ -9,7 +9,7 @@ import Data.Char
 import Data.DList (DList (..))
 import Data.DList qualified as DList
 import Data.Foldable (for_)
-import Data.List (groupBy, intercalate, sort, stripPrefix)
+import Data.List (elemIndex, groupBy, intercalate, isPrefixOf, nub, sort, stripPrefix)
 import Data.Maybe
 import Data.String
 import System.Directory
@@ -46,15 +46,16 @@ indent i doc = Render do
   let new = (replicate i ' ' <>) <$> execState (unRender doc) mempty
   modify (<> new)
 
-data DiscoverMode = ReExport | InstancesOnly
+data DiscoverMode = ReExport | InstancesOnly | HomebrewContent
 
 discoverCards :: Source -> Destination -> FilePath -> IO ()
 discoverCards src dest cardsDir = discoverCardsWith src dest cardsDir Nothing ReExport
 
--- | 'InstancesOnly' emits @import M ()@ lines (typeclass instances in scope,
--- no names re-exported); an @only@ basename restricts discovery to files with
--- that exact name, skipping files at the scan root (so a same-named central
--- module never imports itself).
+{- | 'InstancesOnly' emits @import M ()@ lines (typeclass instances in scope,
+no names re-exported); an @only@ basename restricts discovery to files with
+that exact name, skipping files at the scan root (so a same-named central
+module never imports itself).
+-}
 discoverCardsWith :: Source -> Destination -> FilePath -> Maybe FilePath -> DiscoverMode -> IO ()
 discoverCardsWith (Source src) (Destination dest) cardsDir only mode = do
   let (dir, _) = splitFileName src
@@ -74,8 +75,13 @@ discoverCardsWith (Source src) (Destination dest) cardsDir only mode = do
     output = case mode of
       ReExport -> renderFile input
       InstancesOnly -> renderInstancesFile input
+      HomebrewContent -> error "HomebrewContent is rendered after reading source files"
 
-  writeFile dest output
+  case mode of
+    HomebrewContent -> do
+      entries <- concat <$> traverse readHomebrewEntries (amfModuleImports input)
+      writeFile dest $ renderHomebrewContentFile (amfModuleBase input) entries
+    _ -> writeFile dest output
 
 getFilesRecursive :: FilePath -> IO [FilePath]
 getFilesRecursive baseDir = sort <$> go []
@@ -126,6 +132,82 @@ renderInstancesFile amf = render do
       "import "
       fromString $ moduleName mod'
       " ()"
+
+data HomebrewEntry = HomebrewEntry
+  { heModule :: Module
+  , heBuilder :: String
+  , heHelper :: String
+  }
+
+-- Card implementation modules conventionally expose their builders with a
+-- one-line signature such as @foo :: EnemyCard Foo@.  Keeping this deliberately
+-- small avoids making cards-discover a Haskell parser while still making an
+-- unrecognised declaration fail closed (it simply is not registered).
+readHomebrewEntries :: Module -> IO [HomebrewEntry]
+readHomebrewEntries mod' = do
+  source <- readFile $ modulePath mod'
+  pure $ mapMaybe (lineEntry mod') (lines source)
+ where
+  lineEntry m line = do
+    let stripped = dropWhile isSpace line
+    guard $ not ("--" `isPrefixOf` stripped)
+    let (lhs, rest) = break (== ':') stripped
+    rhs <- stripPrefix "::" rest
+    helper <- cardHelper $ takeWhile (not . isSpace) $ dropWhile isSpace rhs
+    builder <- case filter (not . isSpace) lhs of
+      name | validBuilder name -> Just name
+      _ -> Nothing
+    pure $ HomebrewEntry m builder helper
+
+  validBuilder [] = False
+  validBuilder (c : cs) = isLower c && all (\x -> isAlphaNum x || x == '_' || x == '\'') cs
+
+  cardHelper = \case
+    "ActCard" -> Just "actContent"
+    "AgendaCard" -> Just "agendaContent"
+    "AssetCard" -> Just "assetContent"
+    "EnemyCard" -> Just "enemyContent"
+    "LocationCard" -> Just "locationContent"
+    "StoryCard" -> Just "storyContent"
+    "TreacheryCard" -> Just "treacheryContent"
+    _ -> Nothing
+
+renderHomebrewContentFile :: Module -> [HomebrewEntry] -> String
+renderHomebrewContentFile base entries = render do
+  let modules = nub $ map heModule entries
+      alias mod' = 1 + fromJust (elemIndex mod' modules)
+  renderLine do
+    "{-# LINE 1 "
+    fromString $ show $ moduleName base
+    " #-}"
+  "{-# OPTIONS_GHC -Wno-unused-imports #-}"
+  ""
+  renderLine do
+    "module "
+    fromString (moduleName base)
+    " where"
+  ""
+  "import Arkham.Homebrew.CardRegistry"
+  "import Arkham.Prelude"
+  for_ (zip [(1 :: Int) ..] modules) \(n, mod') -> renderLine do
+    "import "
+    fromString $ moduleName mod'
+    " qualified as Card"
+    fromString $ show n
+  ""
+  "data DiscoveredHomebrewCards"
+  ""
+  "instance IsHomebrewCard DiscoveredHomebrewCards where"
+  indent 2 "homebrewCard ="
+  indent 4 "mconcat"
+  for_ (zip [(0 :: Int) ..] entries) \(n, HomebrewEntry {..}) -> indent 6 $ renderLine do
+    if n == 0 then "[ " else ", "
+    fromString heHelper
+    " Card"
+    fromString (show $ alias heModule)
+    "."
+    fromString heBuilder
+  indent 6 "]"
 
 data Module = Module
   { moduleName :: String

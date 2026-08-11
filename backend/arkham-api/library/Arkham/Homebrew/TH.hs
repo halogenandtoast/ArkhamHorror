@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskellQuotes #-}
 
 module Arkham.Homebrew.TH (
   discoverInstances,
@@ -102,19 +102,22 @@ declareOpenExtension tyName ctorName mListName names = do
           ]
   pure (concatMap synonyms names <> maybe [] listDecs mListName)
 
--- | @$(declareHomebrewTraits ["AI", ...])@ — pattern synonyms over
--- 'Arkham.Trait.HomebrewTrait' plus a @traits :: [Trait]@ aggregate.
+{- | @$(declareHomebrewTraits ["AI", ...])@ — pattern synonyms over
+'Arkham.Trait.HomebrewTrait' plus a @traits :: [Trait]@ aggregate.
+-}
 declareHomebrewTraits :: [String] -> Q [Dec]
 declareHomebrewTraits = declareOpenExtension ''Trait 'HomebrewTrait (Just "traits")
 
--- | @$(declareHomebrewScenarioDeckKeys ["ScanningDeck", ...])@ — pattern
--- synonyms over 'Arkham.Scenario.Deck.HomebrewScenarioDeckKey'.
+{- | @$(declareHomebrewScenarioDeckKeys ["ScanningDeck", ...])@ — pattern
+synonyms over 'Arkham.Scenario.Deck.HomebrewScenarioDeckKey'.
+-}
 declareHomebrewScenarioDeckKeys :: [String] -> Q [Dec]
 declareHomebrewScenarioDeckKeys = declareOpenExtension ''ScenarioDeckKey 'HomebrewScenarioDeckKey Nothing
 
--- | @$(declareHomebrewActions ["Scan", ...])@ — pattern synonyms over
--- 'Arkham.Action.HomebrewAction' plus an @actions :: [Action]@ aggregate, which
--- a campaign's @Defs.hs@ folds into @Arkham.Homebrew.Defs.allActions@.
+{- | @$(declareHomebrewActions ["Scan", ...])@ — pattern synonyms over
+'Arkham.Action.HomebrewAction' plus an @actions :: [Action]@ aggregate, which
+a campaign's @Defs.hs@ folds into @Arkham.Homebrew.Defs.allActions@.
+-}
 declareHomebrewActions :: [String] -> Q [Dec]
 declareHomebrewActions = declareOpenExtension ''Action 'HomebrewAction (Just "actions")
 

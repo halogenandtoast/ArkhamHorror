@@ -1,9 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.HauntingPast (hauntingPast) where
 
+import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (getMemories)
 import Arkham.Keyword (Keyword (Hidden))
 import Arkham.Matcher
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype HauntingPast = HauntingPast TreacheryAttrs

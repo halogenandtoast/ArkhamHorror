@@ -1,11 +1,11 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.SolarFlare (solarFlare) where
 
 import Arkham.Helpers.Message.Discard (chooseAndDiscardCard)
+import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype SolarFlare = SolarFlare TreacheryAttrs

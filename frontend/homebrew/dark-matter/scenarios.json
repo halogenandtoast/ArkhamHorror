@@ -1,55 +1,55 @@
 [
   {
-    "id": ":dark-matter:013",
+    "id": ":dark-matter:014",
     "name": "The Tatterdemalion",
     "campaign": ":dark-matter",
     "standalone": false,
     "i18n": "theTatterdemalion"
   },
   {
-    "id": ":dark-matter:053",
+    "id": ":dark-matter:054",
     "name": "Electric Nightmare",
     "campaign": ":dark-matter",
     "standalone": false,
     "i18n": "electricNightmare"
   },
   {
-    "id": ":dark-matter:090",
+    "id": ":dark-matter:089",
     "name": "Lost Quantum",
     "campaign": ":dark-matter",
     "standalone": false,
     "i18n": "lostQuantum"
   },
   {
-    "id": ":dark-matter:115",
+    "id": ":dark-matter:112",
     "name": "In the Shadow of Earth",
     "campaign": ":dark-matter",
     "standalone": false,
     "i18n": "inTheShadowOfEarth"
   },
   {
-    "id": ":dark-matter:156",
+    "id": ":dark-matter:153",
     "name": "Strange Moons",
     "campaign": ":dark-matter",
     "standalone": false,
     "i18n": "strangeMoons"
   },
   {
-    "id": ":dark-matter:193",
+    "id": ":dark-matter:190",
     "name": "The Machine in Yellow",
     "campaign": ":dark-matter",
     "standalone": false,
     "i18n": "theMachineInYellow"
   },
   {
-    "id": ":dark-matter:212",
+    "id": ":dark-matter:209",
     "name": "Fragment of Carcosa",
     "campaign": ":dark-matter",
     "standalone": false,
     "i18n": "fragmentOfCarcosa"
   },
   {
-    "id": ":dark-matter:246",
+    "id": ":dark-matter:243",
     "name": "Starfall",
     "campaign": ":dark-matter",
     "standalone": false,

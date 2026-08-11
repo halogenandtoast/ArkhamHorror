@@ -1,9 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Enemies.StalkingByakhee (stalkingByakhee) where
 
 import Arkham.Ability
-import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

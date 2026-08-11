@@ -192,13 +192,14 @@ data CircusExMortisContent
 instance IsHomebrewContent CircusExMortisContent where
   homebrewContent =
     HomebrewContent
-      { hcActs = acts
-      , hcAgendas = agendas
-      , hcAssets = assets
-      , hcEnemies = enemies
-      , hcLocations = locations
-      , hcTreacheries = treacheries
-      , hcScenarios = scenarios
-      , hcScenarioSets = scenarioSets
-      , hcCampaigns = campaigns
+      { acts = acts
+      , agendas = agendas
+      , assets = assets
+      , enemies = enemies
+      , locations = locations
+      , stories = []
+      , treacheries = treacheries
+      , scenarios = scenarios
+      , scenarioSets = scenarioSets
+      , campaigns = campaigns
       }

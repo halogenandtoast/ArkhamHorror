@@ -35,3 +35,10 @@ slot s def = def {cdSlots = s : cdSlots def}
 
 alternateCardCodes :: [CardCode] -> CardDef -> CardDef
 alternateCardCodes codes def = def {cdAlternateCardCodes = codes}
+
+otherSideIs :: CardCode -> CardDef -> CardDef
+otherSideIs ccode def =
+  def
+    { cdDoubleSided = False
+    , cdOtherSide = Just ccode
+    }

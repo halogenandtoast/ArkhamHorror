@@ -5,34 +5,34 @@ import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 
 -- the_tatterdemalion
 eventHorizon :: CardDef
-eventHorizon = act ":dark-matter:017" "Event Horizon" 1 Set.TheTatterdemalion
+eventHorizon = act ":dark-matter:018" "Event Horizon" 1 Set.TheTatterdemalion
 
 artificalInsanity :: CardDef
 artificalInsanity =
-  act ":dark-matter:018" "Artifical Insanity" 2 Set.TheTatterdemalion
+  act ":dark-matter:019" "Artifical Insanity" 2 Set.TheTatterdemalion
 
 reconnected :: CardDef
-reconnected = act ":dark-matter:019" "Reconnected" 3 Set.TheTatterdemalion
+reconnected = act ":dark-matter:020" "Reconnected" 3 Set.TheTatterdemalion
 
 -- electric_nightmare
 publicSchool187V10 :: CardDef
 publicSchool187V10 =
-  act ":dark-matter:056" "Public School 187 (v. 1.0)" 1 Set.ElectricNightmare
+  act ":dark-matter:057" "Public School 187 (v. 1.0)" 1 Set.ElectricNightmare
 
 publicSchool187V20 :: CardDef
 publicSchool187V20 =
-  act ":dark-matter:057" "Public School 187 (v. 2.0)" 1 Set.ElectricNightmare
+  act ":dark-matter:058" "Public School 187 (v. 2.0)" 1 Set.ElectricNightmare
 
 publicSchool187V30 :: CardDef
 publicSchool187V30 =
-  act ":dark-matter:058" "Public School 187 (v. 3.0)" 1 Set.ElectricNightmare
+  act ":dark-matter:059" "Public School 187 (v. 3.0)" 1 Set.ElectricNightmare
 
 psychoanalysis :: CardDef
-psychoanalysis = act ":dark-matter:059" "Psychoanalysis" 2 Set.ElectricNightmare
+psychoanalysis = act ":dark-matter:060" "Psychoanalysis" 2 Set.ElectricNightmare
 
 facingYourFears :: CardDef
 facingYourFears =
-  act ":dark-matter:060" "Facing Your Fears" 3 Set.ElectricNightmare
+  act ":dark-matter:061" "Facing Your Fears" 3 Set.ElectricNightmare
 
 -- lost_quantum
 elbrusStation :: CardDef
@@ -64,7 +64,7 @@ secretsOfTheMind = act ":dark-matter:159" "Secrets of the Mind" 2 Set.StrangeMoo
 
 -- the_machine_in_yellow
 awakening :: CardDef
-awakening = act ":dark-matter:194" "Awakening?" 1 Set.TheMachineInYellow
+awakening = otherSideIs ":dark-matter:194b" $ act ":dark-matter:194" "Awakening?" 1 Set.TheMachineInYellow
 
 theManInThePallidMask :: CardDef
 theManInThePallidMask =

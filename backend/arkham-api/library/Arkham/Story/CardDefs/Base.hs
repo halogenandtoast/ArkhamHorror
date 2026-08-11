@@ -4,13 +4,9 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.EncounterSet
-import Arkham.LocationSymbol qualified as LS
 import Arkham.Name
-import Arkham.Trait
 import Arkham.Prelude
-
-withScanIcons :: [LS.LocationSymbol] -> CardDef -> CardDef
-withScanIcons icons def = def {cdMeta = insertMap "scanIcons" (toJSON icons) def.meta}
+import Arkham.Trait
 
 addTrait :: Trait -> CardDef -> CardDef
 addTrait trait def =

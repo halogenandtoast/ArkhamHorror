@@ -1,8 +1,8 @@
 module Arkham.Homebrew.DarkMatter.Enemies.TheBOOGEYMAN (theBOOGEYMAN) where
 
-import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Keyword qualified as Keyword
 
 newtype TheBOOGEYMAN = TheBOOGEYMAN EnemyAttrs

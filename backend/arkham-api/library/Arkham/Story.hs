@@ -9,6 +9,7 @@ module Arkham.Story (
 import Arkham.Prelude hiding (fold)
 
 import Arkham.Card
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Id
 import Arkham.Story.Cards.AncientRelic qualified as AncientRelic
 import Arkham.Story.Cards.AncientVaultN qualified as AncientVaultN
@@ -46,7 +47,7 @@ withStoryCardCode cCode f = case lookup cCode allStories of
   Just (SomeStoryCard a) -> f a
 
 allStories :: Map CardCode SomeStoryCard
-allStories =
+allStories = (mapFrom someStoryCardCode Registry.stories <>) $
   mapFrom
     someStoryCardCode
     [ -- The Drowned City

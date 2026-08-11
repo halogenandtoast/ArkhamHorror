@@ -6,35 +6,38 @@ import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 -- the_tatterdemalion
 emergencyProcedure :: CardDef
 emergencyProcedure =
-  agenda ":dark-matter:014" "Emergency Procedure" 1 Set.TheTatterdemalion
+  agenda ":dark-matter:015" "Emergency Procedure" 1 Set.TheTatterdemalion
 
 theGhostShip :: CardDef
-theGhostShip = agenda ":dark-matter:015" "The Ghost Ship" 2 Set.TheTatterdemalion
+theGhostShip = agenda ":dark-matter:016" "The Ghost Ship" 2 Set.TheTatterdemalion
 
 riseOfTheMachines :: CardDef
 riseOfTheMachines =
-  agenda ":dark-matter:016" "Rise of the Machines" 3 Set.TheTatterdemalion
+  agenda ":dark-matter:017" "Rise of the Machines" 3 Set.TheTatterdemalion
 
 -- electric_nightmare
 figmentOfYourImagination :: CardDef
 figmentOfYourImagination =
-  agenda ":dark-matter:054" "Figment of Your Imagination" 1 Set.ElectricNightmare
+  agenda ":dark-matter:055" "Figment of Your Imagination" 1 Set.ElectricNightmare
 
 it :: CardDef
-it = agenda ":dark-matter:055" "IT" 2 Set.ElectricNightmare
+it = agenda ":dark-matter:056" "IT" 2 Set.ElectricNightmare
 
 -- lost_quantum
 theQuantumMaelstrom_091 :: CardDef
 theQuantumMaelstrom_091 =
-  otherSideIs ":dark-matter:090ab" $ agenda ":dark-matter:090aa" "The Quantum Maelstrom" 1 Set.LostQuantum
+  otherSideIs ":dark-matter:090ab"
+    $ agenda ":dark-matter:090aa" "The Quantum Maelstrom" 1 Set.LostQuantum
 
 theQuantumMaelstrom_092 :: CardDef
 theQuantumMaelstrom_092 =
-  otherSideIs ":dark-matter:090bb" $ agenda ":dark-matter:090ba" "The Quantum Maelstrom" 1 Set.LostQuantum
+  otherSideIs ":dark-matter:090bb"
+    $ agenda ":dark-matter:090ba" "The Quantum Maelstrom" 1 Set.LostQuantum
 
 theQuantumMaelstrom_093 :: CardDef
 theQuantumMaelstrom_093 =
-  otherSideIs ":dark-matter:090cb" $ agenda ":dark-matter:090ca" "The Quantum Maelstrom" 1 Set.LostQuantum
+  otherSideIs ":dark-matter:090cb"
+    $ agenda ":dark-matter:090ca" "The Quantum Maelstrom" 1 Set.LostQuantum
 
 -- in_the_shadow_of_earth
 theNostalgiaII :: CardDef
@@ -63,7 +66,8 @@ signsFromAldebaran =
 
 flightOfTheByakhees :: CardDef
 flightOfTheByakhees =
-  agenda ":dark-matter:156" "Flight of the Byakhees" 3 Set.StrangeMoons
+  otherSideIs ":dark-matter:156b"
+    $ agenda ":dark-matter:156" "Flight of the Byakhees" 3 Set.StrangeMoons
 
 againstTheSun :: CardDef
 againstTheSun = agenda ":dark-matter:157" "Against the Sun" 4 Set.StrangeMoons

@@ -1,9 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.Anachronism (anachronism) where
 
+import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Anachronism = Anachronism TreacheryAttrs

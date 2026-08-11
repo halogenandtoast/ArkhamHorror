@@ -38,6 +38,7 @@ declareHomebrewTraits
   , "Quantum"
   , "School"
   , "Simulation"
+  , "Sol"
   , "Starship"
   , "Tatterdemalion"
   , "Virtual"

@@ -1,9 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.FutureEvils (futureEvils) where
 
 import Arkham.Ability
+import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window

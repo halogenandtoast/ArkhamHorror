@@ -2,11 +2,11 @@ module Arkham.Homebrew.DarkMatter.Assets.K2PS187100Functionality (k2PS187100Func
 
 import Arkham.Ability
 import Arkham.Action.Additional
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
-import Arkham.Asset.Import.Lifted
 import Arkham.Homebrew.DarkMatter.Helpers (ScanResult (..))
-import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

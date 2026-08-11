@@ -1,9 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Enemies.SystemBug (systemBug) where
 
 import Arkham.Ability
-import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location
+import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 
 newtype SystemBug = SystemBug EnemyAttrs

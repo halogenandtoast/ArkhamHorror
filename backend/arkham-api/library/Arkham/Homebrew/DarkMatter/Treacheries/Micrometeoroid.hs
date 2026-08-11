@@ -1,12 +1,12 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.Micrometeoroid (micrometeoroid) where
 
-import Arkham.Homebrew.DarkMatter.Helpers (campaignI18n)
 import Arkham.Card.CardType
 import Arkham.Helpers.Message.Discard (discardAll)
+import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
+import Arkham.Homebrew.DarkMatter.Helpers (campaignI18n)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Micrometeoroid = Micrometeoroid TreacheryAttrs

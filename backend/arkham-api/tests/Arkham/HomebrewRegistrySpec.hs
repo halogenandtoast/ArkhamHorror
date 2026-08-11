@@ -1,9 +1,9 @@
 module Arkham.HomebrewRegistrySpec (spec) where
 
 import Arkham.Homebrew.Defs qualified as Defs
-import Arkham.Id (unCampaignId)
 import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Homebrew.Tokens qualified as Tokens
+import Arkham.Id (unCampaignId)
 import Data.Map.Strict qualified as Map
 import Test.Hspec
 import Prelude

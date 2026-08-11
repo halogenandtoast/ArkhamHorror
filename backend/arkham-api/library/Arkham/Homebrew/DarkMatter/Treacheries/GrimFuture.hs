@@ -1,9 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.GrimFuture (grimFuture) where
 
 import Arkham.Ability
+import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype GrimFuture = GrimFuture TreacheryAttrs

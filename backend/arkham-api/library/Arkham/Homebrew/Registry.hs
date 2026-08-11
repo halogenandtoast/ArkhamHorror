@@ -19,34 +19,38 @@ import Arkham.Homebrew.Types as X
 import Arkham.Id (CampaignId)
 import Arkham.Location.Types (SomeLocationCard)
 import Arkham.Prelude ()
+import Arkham.Story.Types (SomeStoryCard)
 import Arkham.Treachery.Types (SomeTreacheryCard)
 
 allHomebrewContent :: HomebrewContent
 allHomebrewContent = $(discoverInstances ''IsHomebrewContent 'homebrewContent)
 
 acts :: [SomeActCard]
-acts = hcActs allHomebrewContent
+acts = allHomebrewContent.acts
 
 agendas :: [SomeAgendaCard]
-agendas = hcAgendas allHomebrewContent
+agendas = allHomebrewContent.agendas
 
 assets :: [SomeAssetCard]
-assets = hcAssets allHomebrewContent
+assets = allHomebrewContent.assets
 
 enemies :: [SomeEnemyCard]
-enemies = hcEnemies allHomebrewContent
+enemies = allHomebrewContent.enemies
 
 locations :: [SomeLocationCard]
-locations = hcLocations allHomebrewContent
+locations = allHomebrewContent.locations
+
+stories :: [SomeStoryCard]
+stories = allHomebrewContent.stories
 
 treacheries :: [SomeTreacheryCard]
-treacheries = hcTreacheries allHomebrewContent
+treacheries = allHomebrewContent.treacheries
 
 scenarios :: [(CardCode, HomebrewScenario)]
-scenarios = hcScenarios allHomebrewContent
+scenarios = allHomebrewContent.scenarios
 
 scenarioSets :: [(CardCode, EncounterSet)]
-scenarioSets = hcScenarioSets allHomebrewContent
+scenarioSets = allHomebrewContent.scenarioSets
 
 campaigns :: [(CampaignId, HomebrewCampaign)]
-campaigns = hcCampaigns allHomebrewContent
+campaigns = allHomebrewContent.campaigns

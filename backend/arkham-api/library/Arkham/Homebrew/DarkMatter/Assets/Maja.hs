@@ -1,9 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Assets.Maja (maja) where
 
 import Arkham.Ability
-import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location (getConnectedMoveLocations)
+import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

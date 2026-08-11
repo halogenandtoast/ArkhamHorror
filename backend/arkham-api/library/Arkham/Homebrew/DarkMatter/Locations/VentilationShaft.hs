@@ -14,7 +14,7 @@ newtype VentilationShaft = VentilationShaft LocationAttrs
 -- "Revelation - Put this location into play." is handled by the encounter-draw
 -- runner, which already places a drawn location before resolving its revelation.
 ventilationShaft :: LocationCard VentilationShaft
-ventilationShaft = location VentilationShaft Cards.ventilationShaft 2 (PerPlayer 1)
+ventilationShaft = symbolLabel $ location VentilationShaft Cards.ventilationShaft 2 (PerPlayer 1)
 
 {- | "Forced - When you would enter Ventilation Shaft: Test [agility] (3). If you
 fail, cancel the effects of the move."

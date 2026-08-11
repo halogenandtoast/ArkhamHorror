@@ -12,7 +12,7 @@ newtype CargoHold = CargoHold LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cargoHold :: LocationCard CargoHold
-cargoHold = location CargoHold Cards.cargoHold 2 (Static 1)
+cargoHold = symbolLabel $ location CargoHold Cards.cargoHold 2 (Static 1)
 
 {- | Unrevealed: "The pressure door leading to the back of the ship needs to be
 rewired. As an additional cost to enter the Cargo Hold, investigators in the

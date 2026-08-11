@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
+import Arkham.Homebrew.DarkMatter.Helpers (getSwitchedLocations)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types (Field (LocationShroud))
 import Arkham.Matcher
@@ -37,7 +38,9 @@ instance HasAbilities ShadowOfThoughts where
 
 instance RunMessage ShadowOfThoughts where
   runMessage msg e@(ShadowOfThoughts attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      moveTowardsMatching (attrs.ability 1) attrs (LocationWithInvestigator Anyone)
+    UseCardAbility _ (isSource attrs -> True) 1 (getSwitchedLocations -> Just (x, y)) _ -> do
+      -- only when *this enemy's* location was one of the two that traded places
+      here <- selectAny $ EnemyWithId attrs.id <> EnemyAt (mapOneOf LocationWithId [x, y])
+      when here $ moveTowardsMatching (attrs.ability 1) attrs (LocationWithInvestigator Anyone)
       pure e
     _ -> ShadowOfThoughts <$> liftRunMessage msg attrs

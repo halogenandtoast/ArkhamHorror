@@ -1542,6 +1542,19 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       flip noneM mods $ \case
         CannotBeHuntedBy matcher' -> eid <=~> matcher'
         _ -> pure False
+    InvestigatorWithRecordCount r vm -> flip runMatchesM as $ \i -> do
+      n <- fieldMap InvestigatorLog (findWithDefault 0 r . (.recordedCounts)) (toId i)
+      gameValueMatches n vm
+    InvestigatorWithMostRecordCount r -> flip runMatchesM as $ \i -> do
+      let countFor = fieldMap InvestigatorLog (findWithDefault 0 r . (.recordedCounts))
+      counts <- traverse countFor =<< select UneliminatedInvestigator
+      n <- countFor (toId i)
+      pure $ notNull counts && n == maximumEx counts
+    InvestigatorWithLeastRecordCount r -> flip runMatchesM as $ \i -> do
+      let countFor = fieldMap InvestigatorLog (findWithDefault 0 r . (.recordedCounts))
+      counts <- traverse countFor =<< select UneliminatedInvestigator
+      n <- countFor (toId i)
+      pure $ notNull counts && n == minimumEx counts
     InvestigatorWithRecord r -> flip runMatchesM as $ \i -> do
       ilog <- field InvestigatorLog (toId i)
       pure

@@ -12,4 +12,5 @@ import Arkham.Homebrew.TH (declareHomebrewScenarioDeckKeys)
 
 declareHomebrewScenarioDeckKeys
   [ "ScanningDeck"
+  , "EvidenceDeck"
   ]

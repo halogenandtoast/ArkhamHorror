@@ -32,29 +32,67 @@
     "title": "Desynchronization",
     "body": "<p>An overturned schoolbus gathers dust on the school grounds. As you examine the vandalized windows, you notice a glimpse of your own reflection. However, you no longer recognize the person looking back at you. The frame, the distinct facial features, they all seem so familiar to you, yet you know this is not your body. You stare into the glass in disbelief. The face of your reflection morphs into a blank, pale mask with no mouth, nose or eyes. The virtual reality no longer recognizes your residual self image anymore – the mental projection of your digital self has decayed into nothingness.</p><p class='basic'>You must add the Desync weakness to your deck. This card does not count towards your deck limit.</p>"
   },
-  "jv7Hyades": {
-    "trefoil": "Scan for the clover icon",
-    "t": "Scan for the T icon"
-  },
-  "virtualAccessKey": {
-    "addToDeck": "Add Virtual Access Key to your deck",
-    "doNotAddToDeck": "Do not add it to your deck"
-  },
-  "evaSuit": {
-    "doNotPutIntoPlay": "Do not put EVA Suit into play"
-  },
-  "medicalFoam": {
-    "doNotPutIntoPlay": "Do not put Medical Foam into play"
-  },
-  "mindMachineInterface": {
-    "doNotPutIntoPlay": "Do not put Mind-Machine Interface into play"
-  },
-  "radiationTablets": {
-    "doNotPutIntoPlay": "Do not put Radiation Tablets into play"
-  },
-  "whatTypeOfShipIsThis": {
-    "placeDoom": "Place 1 doom on the current agenda and add this to the victory display",
-    "removeFromGame": "Remove this card from the game"
+  "label": {
+    "biologyLab": {
+      "healDamage": "Heal 1 damage from each investigator at your location",
+      "healHorror": "Heal 1 horror from each investigator at your location"
+    },
+    "contamination": {
+      "discardAlly": "Discard the attached Ally",
+      "placeDoom": "Place 1 doom on the attached Ally"
+    },
+    "desync": {
+      "traumaAndExile": "Suffer 1 mental trauma and add 1 tally mark next to your “Memories”, then exile this card",
+      "returnToDeck": "If your deck has 5 or more cards in it, shuffle this card back into your deck. Otherwise, discard it"
+    },
+    "erwinSimmons": {
+      "fight": "Fight",
+      "evade": "Evade",
+      "investigate": "Investigate"
+    },
+    "evaSuit": {
+      "doNotPutIntoPlay": "Do not put EVA Suit into play"
+    },
+    "jv7Hyades": {
+      "trefoil": "Scan for the clover icon",
+      "t": "Scan for the T icon"
+    },
+    "medicalFoam": {
+      "doNotPutIntoPlay": "Do not put Medical Foam into play"
+    },
+    "micrometeoroid": {
+      "discardEachEvent": "Discard each event in your hand"
+    },
+    "mindMachineInterface": {
+      "doNotPutIntoPlay": "Do not put Mind-Machine Interface into play"
+    },
+    "paleBlueDot": {
+      "takeHorror": "Take 1 horror",
+      "placeDoom": "Add 1 doom to the current agenda and discard this card"
+    },
+    "paradoxicalThreat": {
+      "placeFacedown": "Place the top 3 cards of the encounter deck into your threat area, face-down",
+      "doomAndDraw": "Add 1 doom to the current agenda and draw 3 face-down cards from your threat area"
+    },
+    "radiationTablets": {
+      "doNotPutIntoPlay": "Do not put Radiation Tablets into play"
+    },
+    "sceneShifting": {
+      "placeDoom": "Place 1 doom on the current agenda",
+      "moveEnemies": "Move each enemy 1 location toward you. Each enemy at your location immediately attacks you"
+    },
+    "surprise": {
+      "moveBoogeyman": "Move The Boogeyman to your current location",
+      "boogeymanAttacks": "The Boogeyman immediately attacks you"
+    },
+    "virtualAccessKey": {
+      "addToDeck": "Add Virtual Access Key to your deck",
+      "doNotAddToDeck": "Do not add it to your deck"
+    },
+    "whatTypeOfShipIsThis": {
+      "placeDoom": "Place 1 doom on the current agenda and add this to the victory display",
+      "removeFromGame": "Remove this card from the game"
+    }
   },
   "key": {
     "youWereTransportedToTheVirtualDreamlandsByMaja": "You were transported to the Virtual Dreamlands by Maja.",
@@ -74,6 +112,8 @@
     "youAreNotInGoodStandingWithTheMiGo": "You are not in good standing with the Mi-Go.",
     "youAreAlliedWithTheMiGo": "You are allied with the Mi-Go.",
     "youHaveUncoveredTheCultistsInhumanMethods": "You have uncovered the cultist’s inhuman methods.",
+    "youHaveWitnessedTheUnconsciousPandemonium": "You have witnessed the unconscious pandemonium.",
+    "youHaveWitnessedTheManifestedMadness": "You have witnessed the manifested madness.",
     "theInvestigatorsAreTrappedWithinCarcosa": "The investigators are trapped within Carcosa.",
     "theInvestigatorsKnowOfTheAbjurationOfTheThrone": "The investigators know of the Abjuration of the Throne.",
     "theSunWentSupernovaAndWipedOutMostOfTheSolarSystem": "The sun went supernova and wiped out most of the solar system.",

@@ -23,6 +23,7 @@ damageTypeMatches strategy = \case
     DamageAnyDeferred -> False
     DamageAssetsFirst {} -> False
     HorrorAssetsFirst {} -> False
+    DamageAndHorrorAssetsFirst {} -> False
     DamageFirst _ -> False
     SingleTarget -> False
     DamageEvenly -> False

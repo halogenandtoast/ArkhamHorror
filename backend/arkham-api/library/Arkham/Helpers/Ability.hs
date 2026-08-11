@@ -361,18 +361,18 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
             pure $ [m | not doDelayAdditionalCosts, AdditionalCostToLeave m <- mods]
           _ -> pure []
       else pure []
-  performActionCosts <-
-    getLocationOf iid >>= \case
-      Nothing -> pure []
-      Just lid -> do
-        mods <- getModifiers lid
-        let
-          matchesAction = \case
-            IsAnyAction -> True
-            IsAction act -> act `elem` abilityActions a
-            AnyActionTarget ts -> any matchesAction ts
-            _ -> False
-        pure [c | AdditionalCostToPerformAction t c <- mods, matchesAction t]
+  performActionCosts <- do
+    -- riders can sit on the investigator (a treachery in their threat area) or
+    -- on their location, so both are consulted
+    ownMods <- getModifiers iid
+    locationMods <- getLocationOf iid >>= maybe (pure []) getModifiers
+    let
+      matchesAction = \case
+        IsAnyAction -> True
+        IsAction act -> act `elem` abilityActions a
+        AnyActionTarget ts -> any matchesAction ts
+        _ -> False
+    pure [c | AdditionalCostToPerformAction t c <- ownMods <> locationMods, matchesAction t]
   resignCosts <-
     if #resign `elem` abilityActions a
       then do

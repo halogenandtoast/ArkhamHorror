@@ -836,6 +836,23 @@ runGameMessage msg g = case msg of
             _ -> pure []
         else pure []
 
+    -- Riders declared with 'AdditionalCostToPerformAction' were previously only
+    -- consulted for affordability and never charged; collect them here so they
+    -- are actually paid. Mirrors 'Arkham.Helpers.Ability.performActionCosts'.
+    performActionCosts <-
+      if doDelayAdditionalCosts
+        then pure []
+        else do
+          ownMods <- getModifiers iid
+          locationMods <- getMaybeLocation iid >>= maybe (pure []) getModifiers
+          let
+            matchesAction = \case
+              IsAnyAction -> True
+              IsAction act -> act `elem` abilityActions ability
+              AnyActionTarget ts -> any matchesAction ts
+              _ -> False
+          pure [c | AdditionalCostToPerformAction t c <- ownMods <> locationMods, matchesAction t]
+
     let
       costF =
         case find isSetCost modifiers' of
@@ -863,7 +880,12 @@ runGameMessage msg g = case msg of
               fixEnemy
                 $ mconcat
                   ( costF (abilityCost ability)
-                      : additionalCosts ++ investigateCosts ++ exploreCosts ++ resignCosts ++ [ActionCost 0]
+                      : additionalCosts
+                        ++ investigateCosts
+                        ++ exploreCosts
+                        ++ resignCosts
+                        ++ performActionCosts
+                        ++ [ActionCost 0]
                   )
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability

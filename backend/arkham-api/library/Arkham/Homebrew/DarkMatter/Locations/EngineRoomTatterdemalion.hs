@@ -13,7 +13,7 @@ newtype EngineRoomTatterdemalion = EngineRoomTatterdemalion LocationAttrs
 
 engineRoomTatterdemalion :: LocationCard EngineRoomTatterdemalion
 engineRoomTatterdemalion =
-  location EngineRoomTatterdemalion Cards.engineRoomTatterdemalion 4 (PerPlayer 1)
+  symbolLabel $ location EngineRoomTatterdemalion Cards.engineRoomTatterdemalion 4 (PerPlayer 1)
 
 {- | "Forced - At the end of your turn, if you are at the Engine Room and do not
 control Radiation Tablets: Take 1 damage."

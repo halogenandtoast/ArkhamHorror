@@ -13,7 +13,7 @@ newtype InfirmaryTatterdemalion = InfirmaryTatterdemalion LocationAttrs
 
 infirmaryTatterdemalion :: LocationCard InfirmaryTatterdemalion
 infirmaryTatterdemalion =
-  location InfirmaryTatterdemalion Cards.infirmaryTatterdemalion 3 (PerPlayer 1)
+  symbolLabel $ location InfirmaryTatterdemalion Cards.infirmaryTatterdemalion 3 (PerPlayer 1)
 
 -- "[action]: Scan. Look for medical supplies." (heart icon)
 instance HasAbilities InfirmaryTatterdemalion where

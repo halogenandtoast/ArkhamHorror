@@ -36,6 +36,8 @@ data DarkMatterKey
   | YouAreAlliedWithTheMiGo
   | YouHaveUncoveredTheCultistsInhumanMethods
   | YouHaveWitnessedTheUnconsciousPandemonium
+  | -- | Scenario VI: The Machine in Yellow
+    YouHaveWitnessedTheManifestedMadness
   | -- | Scenario V: Fragment of Carcosa
     TheInvestigatorsAreTrappedWithinCarcosa
   | TheInvestigatorsKnowOfTheAbjurationOfTheThrone

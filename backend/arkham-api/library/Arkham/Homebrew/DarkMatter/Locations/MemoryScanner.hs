@@ -2,21 +2,17 @@ module Arkham.Homebrew.DarkMatter.Locations.MemoryScanner (memoryScanner) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (AssetCard))
-import Arkham.Card.CardDef (toCardType)
-import Arkham.Card.CardType
 import Arkham.GameValue
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (
   brainsAttachedTo,
-  drawScannedCard,
   printedIcons,
+  scan,
   scanAction_,
-  scanWith,
  )
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (Field (LocationPrintedSymbol))
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
@@ -44,12 +40,7 @@ instance RunMessage MemoryScanner where
       symbol <- field LocationPrintedSymbol attrs.id
       chooseTargetM iid brains \aid -> do
         icons <- fieldMap AssetCard printedIcons aid
-        scanWith iid (symbol : icons) \card ->
-          case toCardType card of
-            LocationType ->
-              selectOne (locationIs Cards.realitySimulator) >>= \case
-                Just simulator -> push $ ReplaceLocation simulator card Swap
-                Nothing -> drawScannedCard iid (attrs.ability 1) card
-            _ -> drawScannedCard iid (attrs.ability 1) card
+        -- a scanned location is placed on Reality Simulator by 'drawScannedCard'
+        scan iid (attrs.ability 1) (symbol : icons)
       pure l
     _ -> MemoryScanner <$> liftRunMessage msg attrs

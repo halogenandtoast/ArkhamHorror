@@ -386,6 +386,9 @@ payCost msg c iid skipAdditionalCosts cost = do
       if Blank `elem` mods
         then pure c
         else payCost msg c iid skipAdditionalCosts cost'
+    DiscardEncounterUntilFirstCost matcher -> do
+      push $ DiscardUntilFirst iid (activeCostSource c) Deck.EncounterDeck matcher
+      pure c
     GloriaCost -> do
       mtarget <- getSkillTestTarget
       case mtarget of
@@ -1215,6 +1218,10 @@ payCost msg c iid skipAdditionalCosts cost = do
               [ (tshow n, pay (GroupClueCost (Static n) lm))
               | n <- [sVal .. mVal]
               ]
+      pure c
+    CalculatedGroupClueCost calc locationMatcher -> do
+      n <- calculate calc
+      push $ pay (GroupClueCost (Static n) locationMatcher)
       pure c
     GroupClueCost x locationMatcher -> do
       totalClues <- getPlayerCountValue x

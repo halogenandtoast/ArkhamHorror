@@ -3,6 +3,7 @@ module Arkham.Homebrew.DarkMatter.Scenarios.ElectricNightmare (electricNightmare
 import Arkham.Card
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
@@ -18,6 +19,7 @@ import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier (ModifierType (DoubleModifiersOnChaosTokens))
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -106,11 +108,26 @@ instance RunMessage ElectricNightmare where
           card <- genCard Enemies.cybervirus
           addToHand iid (only card)
     ResolveChaosToken _ Tablet iid -> do
-      -- Reveal another token. ("Double that token's modifier" is a HARD/EXPERT
-      -- clause; doubling the freshly-drawn token requires a per-draw token
-      -- modifier hook the engine does not cleanly expose here.)
-      -- TODO(homebrew): double the modifier of the newly drawn token.
-      push $ DrawAnotherChaosToken iid
+      -- [tablet]: "Reveal another token. Double that token's modifier."
+      --
+      -- The freshly drawn token does not exist yet, so we snapshot the tokens
+      -- already revealed for this test and hand them to a follow-up message.
+      -- Everything 'DrawAnotherChaosToken' queues (RequestAnotherChaosToken ->
+      -- RevealChaosToken -> RevealSkillTestChaosTokens -> ResolveChaosToken) is
+      -- pushed to the front of the queue, so the follow-up runs once the new
+      -- token is on the table but still well before ST.6 computes the result.
+      before <- map (.id) <$> getSkillTestRevealedChaosTokens
+      pushAll [DrawAnotherChaosToken iid, ScenarioSpecific "doubleRevealedToken" (toJSON before)]
+      pure s
+    ScenarioSpecific "doubleRevealedToken" v -> do
+      -- Follow-up for the [tablet] effect above. The token the [tablet] caused
+      -- to be revealed is the first revealed token that was not in the
+      -- snapshot; if that token itself reveals more (bless/curse/frost, or
+      -- another [tablet]), those are later in the list and are left alone.
+      let before = toResult v :: [ChaosTokenId]
+      revealed <- getSkillTestRevealedChaosTokens
+      for_ (find ((`notElem` before) . (.id)) revealed) \token ->
+        chaosTokenEffect Tablet token DoubleModifiersOnChaosTokens
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
@@ -191,5 +208,5 @@ offerK2Reward (Just def) = do
   investigators <- allInvestigators
   lead <- getLead
   chooseOneM lead do
-    labeled "No investigator adds it to their deck" nothing
+    scenarioI18n $ labeled' "noInvestigatorAddsItToTheirDeck" nothing
     targets investigators \iid -> addCampaignCardToDeck iid DoNotShuffleIn def

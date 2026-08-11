@@ -3,6 +3,7 @@ module Arkham.Homebrew.DarkMatter.Locations.EntranceHall (entranceHall) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
+import Arkham.Homebrew.DarkMatter.Helpers (getSwitchedLocations)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -26,8 +27,9 @@ instance HasAbilities EntranceHall where
 
 instance RunMessage EntranceHall where
   runMessage msg l@(EntranceHall attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawCards iid (attrs.ability 1) 1
-      gainResources iid (attrs.ability 1) 1
-      pure l
+    UseCardAbility iid (isSource attrs -> True) 1 (getSwitchedLocations -> Just (x, y)) _
+      | attrs.id `elem` [x, y] -> do
+          drawCards iid (attrs.ability 1) 1
+          gainResources iid (attrs.ability 1) 1
+          pure l
     _ -> EntranceHall <$> liftRunMessage msg attrs

@@ -23,16 +23,23 @@ newtype TheTatterdemalion = TheTatterdemalion ScenarioAttrs
 
 theTatterdemalion :: Difficulty -> TheTatterdemalion
 theTatterdemalion difficulty =
-  scenario TheTatterdemalion ":dark-matter:014" "The Tatterdemalion" difficulty []
+  scenario
+    TheTatterdemalion
+    ":dark-matter:014"
+    "The Tatterdemalion"
+    difficulty
+    [ "moon      moon      .      plus     plus     equals equals"
+    , ".         square    square circle   circle   t      t"
+    , "hourglass hourglass .      triangle triangle .      ."
+    ]
 
 {- | Easy/Standard: [skull] -X where X is the number of [[AI]] encounter cards in
 your threat area; [cultist] -2.
 Hard/Expert: [skull] -X where X is the number of [[AI]] encounter cards in
 play; [cultist] -3.
 
-TODO(homebrew): the cultist rider ("If you fail, place 1 of your clues onto
-your current location") is not modeled; it needs a failed-skill-test rider
-keyed to the revealed token.
+The [cultist] rider ("If you fail, place 1 of your clues onto your current
+location") is handled by the 'FailedSkillTest' case in 'RunMessage' below.
 -}
 instance HasChaosTokenValue TheTatterdemalion where
   getChaosTokenValue iid tokenFace (TheTatterdemalion attrs) = case tokenFace of
@@ -71,6 +78,14 @@ instance RunMessage TheTatterdemalion where
         , Locations.shipsBridge
         ]
       startAt =<< place Locations.cryosleepQuarters
+    -- [cultist]: "If you fail, place 1 of your clues onto your current
+    -- location." The engine clamps the amount to the clues actually available,
+    -- so no separate "has clues" guard is needed.
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist -> placeCluesOnLocation iid Cultist 1
+        _ -> pure ()
+      pure s
     ScenarioResolution r -> do
       case r of
         NoResolution -> record YouWereTransportedToTheVirtualDreamlandsByMaja

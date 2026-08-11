@@ -303,6 +303,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
           _ -> error "Unhandled shuffle attached card into deck cost"
       EnemyAttackCost eid -> selectAny $ Matcher.EnemyWithId eid <> Matcher.EnemyCanAttack (Matcher.InvestigatorWithId iid)
       DrawEncounterCardsCost _n -> can.target.encounterDeck iid
+      DiscardEncounterUntilFirstCost _matcher -> can.target.encounterDeck iid
       CostWhenEnemy mtchr c -> do
         hasEnemy <- selectAny mtchr
         if hasEnemy then getCanAffordCost_ iid source actions windows' canModify c else pure True
@@ -477,6 +478,12 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
             else pure 0
         clues <- field InvestigatorClues iid
         pure $ (clues + z) >= n
+      CalculatedGroupClueCost calc locationMatcher -> do
+        cost <- calculate calc
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        iids <- select $ Matcher.InvestigatorAt lm
+        totalSpendableClues <- getSpendableClueCount iids
+        pure $ totalSpendableClues >= cost
       GroupClueCost n locationMatcher -> do
         cost <- getPlayerCountValue n
         let lm = Matcher.replaceYouMatcher iid locationMatcher

@@ -109,6 +109,8 @@ data Cost
   | GroupDiscardCost GameValue ExtendedCardMatcher LocationMatcher
   | GroupSkillIconCost Int (Set SkillIcon) LocationMatcher
   | GroupClueCost GameValue LocationMatcher
+  | -- | A group clue cost whose size is computed (e.g. reduced by campaign-log entries)
+    CalculatedGroupClueCost GameCalculation LocationMatcher
   | SameLocationGroupClueCost GameValue LocationMatcher
   | GroupClueCostRange (Int, Int) LocationMatcher
   | PlaceClueOnLocationCost GameValue
@@ -203,6 +205,9 @@ data Cost
   | AsIfAtLocationCost LocationId Cost
   | NonBlankedCost Cost
   | DrawEncounterCardsCost Int
+  | -- | Discard from the top of the encounter deck until a matching card is
+    -- discarded, then draw it (Dark Matter's All-Seeing Eye taxes each scan)
+    DiscardEncounterUntilFirstCost ExtendedCardMatcher
   | GloriaCost -- lol, not going to attempt to make this generic
   | ArchiveOfConduitsUnidentifiedCost -- this either
   | LabeledCost Text Cost

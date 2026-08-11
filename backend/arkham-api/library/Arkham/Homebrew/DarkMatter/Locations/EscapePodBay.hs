@@ -13,7 +13,7 @@ newtype EscapePodBay = EscapePodBay LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 escapePodBay :: LocationCard EscapePodBay
-escapePodBay = location EscapePodBay Cards.escapePodBay 3 (PerPlayer 1)
+escapePodBay = symbolLabel $ location EscapePodBay Cards.escapePodBay 3 (PerPlayer 1)
 
 {- | "[reaction] After you succeed at evading an enemy at this location: Defeat
 that enemy. (Group limit 3 times per game.)"

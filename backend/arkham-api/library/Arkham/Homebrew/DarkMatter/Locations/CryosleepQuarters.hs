@@ -9,7 +9,7 @@ newtype CryosleepQuarters = CryosleepQuarters LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cryosleepQuarters :: LocationCard CryosleepQuarters
-cryosleepQuarters = location CryosleepQuarters Cards.cryosleepQuarters 2 (PerPlayer 1)
+cryosleepQuarters = symbolLabel $ location CryosleepQuarters Cards.cryosleepQuarters 2 (PerPlayer 1)
 
 -- "[action]: Resign. Return to your cryo-chamber and hope you wake up from this nightmare."
 instance HasAbilities CryosleepQuarters where

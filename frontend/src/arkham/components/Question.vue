@@ -476,14 +476,14 @@ const chooseAmountsChoices = computed<AmountChoice[]>(() => {
 const amountSelections = ref<Record<string, number>>({})
 
 const setInitialAmounts = () => {
-    const labels = question.value?.tag === QuestionType.CHOOSE_AMOUNTS
-      ? question.value.amountChoices.map((choice) => choice.choiceId)
-      : (paymentAmountsChoices.value ?? []).map((choice) => choice.choiceId)
-    amountSelections.value = labels.reduce<Record<string, number>>((previousValue, currentValue) => {
-      previousValue[currentValue] = 0
-      return previousValue
-    }, {})
-  }
+  const amountChoices = chooseAmountsChoices.value.length > 0
+    ? chooseAmountsChoices.value
+    : paymentAmountsChoices.value
+  amountSelections.value = amountChoices.reduce<Record<string, number>>((selections, choice) => {
+    selections[choice.choiceId] = 0
+    return selections
+  }, {})
+}
 
 const doneLabel = computed(() => {
   const doneIndex = choices.value.findIndex((c) => c.tag === MessageType.DONE)
@@ -544,9 +544,13 @@ onMounted(() => {
   void store.initDbCards()
 })
 
+// Polling while decks are being chosen replaces the decoded question object even
+// when the server-side question has not changed. Reset only when the question
+// version or owner changes so an in-progress amount entry is preserved.
 watch(
-  () => props.game.question[props.playerId],
-  setInitialAmounts)
+  [() => props.game.scenarioSteps, () => props.playerId],
+  setInitialAmounts,
+)
 
 const unmetAmountRequirements = computed(() => {
   const q = question.value

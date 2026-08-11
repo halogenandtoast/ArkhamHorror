@@ -18,6 +18,9 @@ data DamageStrategy
   | DamageDirect
   | DamageAssetsFirst AssetMatcher
   | HorrorAssetsFirst AssetMatcher
+  | -- | Both halves at once, for enemies whose damage *and* horror must be
+    -- assigned to matching assets first (Dark Matter's The Entity)
+    DamageAndHorrorAssetsFirst AssetMatcher
   | DamageFirst CardDef
   | SingleTarget
   | DamageEvenly
@@ -124,6 +127,9 @@ instance FromJSON DamageStrategy where
       "DamageAssetsFirst" -> do
         matcher <- o .:? "contents" .!= AnyAsset
         pure $ DamageAssetsFirst matcher
+      "DamageAndHorrorAssetsFirst" -> do
+        matcher <- o .:? "contents" .!= AnyAsset
+        pure $ DamageAndHorrorAssetsFirst matcher
       _ -> $(mkParseJSON defaultOptions ''DamageStrategy) (Object o)
 
 $(deriveJSON defaultOptions ''ZoneReturnStrategy)

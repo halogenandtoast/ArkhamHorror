@@ -13,7 +13,7 @@ newtype ShipsBridge = ShipsBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shipsBridge :: LocationCard ShipsBridge
-shipsBridge = location ShipsBridge Cards.shipsBridge 3 (PerPlayer 1)
+shipsBridge = symbolLabel $ location ShipsBridge Cards.shipsBridge 3 (PerPlayer 1)
 
 {- | Unrevealed: "Investigators cannot enter the Ship's Bridge from the Mess
 Hall. Your access level is restricted. You will need to find another way

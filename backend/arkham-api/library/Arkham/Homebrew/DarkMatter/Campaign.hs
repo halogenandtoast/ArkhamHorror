@@ -41,6 +41,13 @@ instance IsCampaign DarkMatter where
 
 instance RunMessage DarkMatter where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of
+    {- Scanning is campaign-wide, so the deferred scan announced by
+    'Arkham.Homebrew.DarkMatter.Helpers.scan' resolves here — one handler for
+    every scenario. A "when you would scan" effect cancels it by popping this
+    message before it is reached. -}
+    CampaignSpecific k (maybeResult -> Just pending) | k == doScanKey -> do
+      runPendingScan pending
+      pure c
     CampaignStep PrologueStep -> do
       scope "intro" $ flavor $ setTitle "title" >> p "body"
       scope "additionalRulesAndClarifications" do

@@ -7268,6 +7268,7 @@ test-suite spec
       Arkham.Asset.Assets.ZoeysCrossSpec
       Arkham.Asset.RunnerSpec
       Arkham.Campaign.NightOfTheZealot.ScenariosSpec
+      Arkham.Campaign.RelicOfAgesSpec
       Arkham.Campaign.ReloadDecksSpec
       Arkham.Campaign.TheCircleUndone.ScenariosSpec
       Arkham.Campaign.TheDrownedCity.TasksSpec

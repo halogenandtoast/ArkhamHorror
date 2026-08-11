@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.TheForgottenAge (theForgottenAge, TheForgottenAge (..)) where
+module Arkham.Campaign.Campaigns.TheForgottenAge (theForgottenAge, TheForgottenAge (..), relicOwnedBy) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Campaigns.TheForgottenAge.Achievements (runForgottenAgeAchievements)
@@ -10,6 +10,7 @@ import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue (insertAfterMatchingOrNow)
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Campaign (getOwner)
@@ -93,6 +94,13 @@ getPoisonedInvestigators attrs = do
   storyPoisoned =
     mapToList attrs.storyCards & mapMaybe \(iid, cards) ->
       guard (any (`cardMatch` CardWithTitle "Poisoned") cards) $> iid
+
+{- | The Relic of Ages card recorded against @iid@, whichever of its four printings the
+campaign has reached (04061, 04191, 04303, 04343 all share the title).
+-}
+relicOwnedBy :: InvestigatorId -> CampaignAttrs -> Maybe Card
+relicOwnedBy iid attrs =
+  find (`cardMatch` CardWithTitle "Relic of Ages") $ findWithDefault [] iid attrs.storyCards
 
 instance RunMessage TheForgottenAge where
   runMessage msg c@(TheForgottenAge attrs) = runQueueT $ campaignI18n do
@@ -725,4 +733,34 @@ instance RunMessage TheForgottenAge where
           _ -> error "Invalid meta!"
       HandleOption PlayersDoNotControlStoryAssetClues -> do
         pure $ TheForgottenAge $ attrs & logL . optionsL %~ insertSet PlayersDoNotControlStoryAssetClues
+      ReplaceInvestigator oldIid _ -> do
+        -- Threads of Fate, "The investigators found the missing relic": "For the remainder
+        -- of the campaign, anytime the owner of the Relic of Ages leaves the campaign for any
+        -- reason, choose another investigator and add it to that investigator's deck."
+        --
+        -- Left keyed to the departed investigator the relic is gone for good: ReloadDecks
+        -- only walks campaignDecks, so a storyCards entry whose owner has no deck is never
+        -- dealt in again, and Shattered Aeons' act 3 -- whose every ability needs the relic
+        -- in a deck, discard, or play -- can no longer advance (#5378).
+        --
+        -- Deferred until DoneUpgradingDecks so the choice cannot park a question inside the
+        -- deck window (#5173, #5256), and so the candidates are read once the incoming
+        -- investigator is actually seated. insertAfterMatchingOrNow must run on the real
+        -- queue, not runQueueT's buffer, or it would never see that message.
+        for_ (relicOwnedBy oldIid attrs) \_ ->
+          lift $ insertAfterMatchingOrNow [Do msg] (== DoneUpgradingDecks)
+        lift $ defaultCampaignRunner msg c
+      Do (ReplaceInvestigator oldIid _) -> do
+        for_ (relicOwnedBy oldIid attrs) \relic -> do
+          investigators <- allInvestigators
+          -- No one left to be the new bearer: leave the record alone rather than emitting an
+          -- empty ChooseOne, which would park an unanswerable question.
+          unless (null investigators) do
+            -- Clear the stale entry first: AddCampaignCardToDeck only inserts under the new
+            -- key, and the owner-agnostic getIsAlreadyOwned would still see the old one.
+            removeCardFromDeckForCampaign oldIid relic
+            -- Collapses to a bare AddCampaignCardToDeck (which re-owns the card) when there
+            -- is only one candidate, so solo gets no pointless prompt.
+            forceAddCampaignCardToDeckChoice investigators DoNotShuffleIn relic
+        pure c
       _ -> lift $ defaultCampaignRunner msg c

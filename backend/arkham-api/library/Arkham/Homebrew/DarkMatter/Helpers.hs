@@ -172,7 +172,7 @@ scanAction cost = ActionAbility (SingleAction Scan) Nothing (ActionCost 1 <> cos
 scanAction_ :: AbilityType
 scanAction_ = scanAction mempty
 
-{- | Payload of the @"scan"@ 'Window.ScenarioEvent' fired after every scan,
+{- | Payload of the @"scan"@ 'Window.CampaignEvent' fired after every scan,
 successful or not.
 -}
 data ScanResult = ScanResult
@@ -184,8 +184,29 @@ data ScanResult = ScanResult
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+{- | Fired after every scan, successful or not. Scanning is campaign-wide, so
+this is a 'Window.CampaignEvent' like 'wouldScanEvent'.
+-}
 scanEvent :: Text
 scanEvent = "scan"
+
+{- | Per-icon companion to 'scanEvent': a scan for [Trefoil] also fires
+@scan[Trefoil]@. Cards that care about one icon match that window directly
+instead of triggering on every scan and re-checking the payload — the same
+bracketed-key convention the Scarlet Keys concealed cards use
+(@noConcealed[<kind>]@).
+-}
+scanEventFor :: LocationSymbol -> Text
+scanEventFor icon = scanEvent <> "[" <> tshow icon <> "]"
+
+{- | Announce a finished scan: the general window, then one window per icon
+scanned for.
+-}
+checkScanWindows :: ReverseQueue m => ScanResult -> m ()
+checkScanWindows r = do
+  checkAfter $ Window.CampaignEvent scanEvent (Just $ scannedBy r) (toJSON r)
+  for_ (ordNub $ scannedFor r) \icon ->
+    checkAfter $ Window.CampaignEvent (scanEventFor icon) (Just $ scannedBy r) (toJSON r)
 
 {- | The @#when@ window before any scan resolves. Mount Sinai and Threshold of
 Yuggoth print "When you would scan at <location>: ..." and cancel the scan on a
@@ -246,12 +267,12 @@ runPendingScan (PendingScan iid source icons) = do
   case break matches deck of
     (skipped, []) -> do
       unless (null skipped) $ setScenarioDeck ScanningDeck =<< shuffle skipped
-      checkAfter $ Window.ScenarioEvent scanEvent (Just iid) (toJSON $ ScanResult iid icons Nothing False)
+      checkScanWindows $ ScanResult iid icons Nothing False
     (skipped, x : rest) -> do
       deck' <- if null skipped then pure rest else shuffle (skipped <> rest)
       setScenarioDeck ScanningDeck deck'
       drawScannedCard iid source x
-      checkAfter $ Window.ScenarioEvent scanEvent (Just iid) (toJSON $ ScanResult iid icons (Just x) True)
+      checkScanWindows $ ScanResult iid icons (Just x) True
 
 {- | Motion scanning (In the Shadow of Earth): simply draw the top card of the
 scanning deck. The caller is responsible for the "only while at a location
@@ -263,12 +284,11 @@ scanTopOfScanningDeck iid (toSource -> source) = do
   deck <- getScanningDeck
   case deck of
     [] ->
-      checkAfter $ Window.ScenarioEvent scanEvent (Just iid) (toJSON $ ScanResult iid [] Nothing False)
+      checkScanWindows $ ScanResult iid [] Nothing False
     (x : rest) -> do
       setScenarioDeck ScanningDeck rest
       drawScannedCard iid source x
-      checkAfter
-        $ Window.ScenarioEvent scanEvent (Just iid) (toJSON $ ScanResult iid (scanIcons x) (Just x) True)
+      checkScanWindows $ ScanResult iid (scanIcons x) (Just x) True
 
 {- | Draw a scanned card. A scanned *location* is put into play on top of Reality
 Simulator instead — that location prints "(Reminder - Reality Simulator is not in

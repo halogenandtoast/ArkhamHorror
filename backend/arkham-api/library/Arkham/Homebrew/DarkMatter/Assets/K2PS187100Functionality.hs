@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (ScanResult (..))
+import Arkham.Homebrew.DarkMatter.Helpers (ScanResult (..), scanEvent)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -25,13 +25,13 @@ instance HasAbilities K2PS187100Functionality where
     [ playerLimit PerRound
         $ controlled a 1 (DuringPhase #investigation) (FastAbility Free)
     , playerLimit PerRound
-        $ restricted a 2 ControlsThis (freeReaction (ScenarioEvent #after Nothing "scan"))
+        $ restricted a 2 ControlsThis (freeReaction (CampaignEvent #after Nothing scanEvent))
     ]
 
 getScanResult :: [Window] -> ScanResult
 getScanResult = \case
   [] -> error "missing scan result"
-  ((windowType -> Window.ScenarioEvent "scan" _ v) : _) -> toResult v
+  ((windowType -> Window.CampaignEvent k _ v) : _) | k == scanEvent -> toResult v
   (_ : xs) -> getScanResult xs
 
 instance RunMessage K2PS187100Functionality where

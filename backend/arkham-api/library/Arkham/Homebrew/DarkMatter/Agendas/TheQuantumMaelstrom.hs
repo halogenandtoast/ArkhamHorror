@@ -47,12 +47,12 @@ theQuantumMaelstrom_093 = mkMaelstrom Cards.theQuantumMaelstrom_093
 instance HasAbilities TheQuantumMaelstrom where
   getAbilities (TheQuantumMaelstrom a) =
     [ restricted a 1 NoRestriction scanAction_
-    , mkAbility a 2 $ SilentForcedAbility $ ScenarioEvent #after (Just You) scanEvent
+    , mkAbility a 2 $ SilentForcedAbility $ CampaignEvent #after (Just You) scanEvent
     ]
 
 getScanResult :: [Window] -> Maybe ScanResult
 getScanResult = \case
-  (windowType -> Window.ScenarioEvent key _ v) : _ | key == scanEvent -> Just (toResult v)
+  (windowType -> Window.CampaignEvent key _ v) : _ | key == scanEvent -> Just (toResult v)
   _ : rest -> getScanResult rest
   [] -> Nothing
 

@@ -100,20 +100,32 @@ function getCardName(s: string) {
 
 const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
 
-const scenarioIconId = computed<string | null>(() => {
+const scenarioIcon = computed<string | null>(() => {
   const s = props.step
-  if (s.tag === 'ScenarioStep') return s.contents.replace(/^c/, '')
-  if (s.tag === 'ScenarioStepWithOptions') return s.contents[0].replace(/^c/, '')
-  if (s.tag === 'StandaloneScenarioStep') return s.contents[0].replace(/^c/, '')
-  if (s.tag === 'StandaloneScenarioStepWithOptions') return s.contents[0].replace(/^c/, '')
-  return null
+  const scenarioId = s.tag === 'ScenarioStep'
+    ? s.contents
+    : s.tag === 'ScenarioStepWithOptions'
+      || s.tag === 'StandaloneScenarioStep'
+      || s.tag === 'StandaloneScenarioStepWithOptions'
+      ? s.contents[0]
+      : null
+
+  if (!scenarioId) return null
+
+  const homebrewMatch = scenarioId.match(/^c?:([^:]+):(.+)$/)
+  if (homebrewMatch) {
+    const [, campaignId, setId] = homebrewMatch
+    return imgsrc(`homebrew/${campaignId}/sets/${setId}.png`)
+  }
+
+  return imgsrc(`sets/${scenarioId.replace(/^c/, '')}.png`)
 })
 </script>
 
 <template>
   <div class="breakdown">
     <header class="breakdown-header" @click="collapsed = !collapsed">
-      <img v-if="scenarioIconId" :src="imgsrc(`sets/${scenarioIconId}.png`)" class="scenario-icon" />
+      <img v-if="scenarioIcon" :src="scenarioIcon" class="scenario-icon" />
       <h2 class="title">{{name}}</h2>
       <section class="amounts">
         <div class="investigator-amount" v-for="[investigator, total] in headerInvestigators" :key="investigator.id">

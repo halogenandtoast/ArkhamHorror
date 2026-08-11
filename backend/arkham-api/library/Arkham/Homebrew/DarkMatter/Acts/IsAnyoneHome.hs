@@ -19,11 +19,11 @@ isAnyoneHome = act (1, A) IsAnyoneHome Cards.isAnyoneHome Nothing
 -- "Objective - When you draw a story asset from the scanning deck, advance."
 instance HasAbilities IsAnyoneHome where
   getAbilities (IsAnyoneHome a) =
-    [mkAbility a 1 $ Objective $ forced $ ScenarioEvent #after Nothing scanEvent]
+    [mkAbility a 1 $ Objective $ forced $ CampaignEvent #after Nothing scanEvent]
 
 getScanResult :: [Window] -> Maybe ScanResult
 getScanResult = \case
-  (windowType -> Window.ScenarioEvent key _ v) : _ | key == scanEvent -> Just (toResult v)
+  (windowType -> Window.CampaignEvent key _ v) : _ | key == scanEvent -> Just (toResult v)
   _ : rest -> getScanResult rest
   [] -> Nothing
 

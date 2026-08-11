@@ -19,11 +19,11 @@ cyberCultist = enemy CyberCultist Cards.cyberCultist & setSpawnAt (LocationWithT
 -- | "Forced - After you perform a successful scan: Place 1 doom on Cyber-Cultist."
 instance HasAbilities CyberCultist where
   getAbilities (CyberCultist a) =
-    extend1 a $ mkAbility a 1 $ forced $ ScenarioEvent #after Nothing scanEvent
+    extend1 a $ mkAbility a 1 $ forced $ CampaignEvent #after Nothing scanEvent
 
 getScanResult :: [Window] -> Maybe ScanResult
 getScanResult = \case
-  (windowType -> Window.ScenarioEvent key _ v) : _ | key == scanEvent -> Just (toResult v)
+  (windowType -> Window.CampaignEvent key _ v) : _ | key == scanEvent -> Just (toResult v)
   _ : rest -> getScanResult rest
   [] -> Nothing
 

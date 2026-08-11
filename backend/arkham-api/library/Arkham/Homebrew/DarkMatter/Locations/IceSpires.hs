@@ -26,7 +26,7 @@ instance HasAbilities IceSpires where
     extendRevealed1 a
       $ restricted a 1 Here
       $ forced
-      $ ScenarioEvent #after (Just You) scanEvent
+      $ CampaignEvent #after (Just You) scanEvent
 
 instance RunMessage IceSpires where
   runMessage msg l@(IceSpires attrs) = runQueueT $ case msg of

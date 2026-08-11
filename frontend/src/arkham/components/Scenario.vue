@@ -2323,7 +2323,11 @@ async function addChaosToken(face: any){
         </div>
 
         <div class="scenario-decks" :style="scenarioDeckStyles">
-          <template v-if="Object.values(game.agendas).length > 0">
+          <TransitionGroup
+            v-if="Object.values(game.agendas).length > 0"
+            name="deck-advance"
+            :duration="{ enter: 0, leave: 420 }"
+          >
             <Agenda
               v-for="(agenda, key) in game.agendas"
               :key="key"
@@ -2338,7 +2342,7 @@ async function addChaosToken(face: any){
               @choose="choose"
               @show="doShowCards"
             />
-          </template>
+          </TransitionGroup>
           <div v-else-if="agendaGroupedTreacheries.length > 0" class="treacheries">
             <div v-for="([cCode, treacheries], idx) in agendaGroupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: `calc(var(--z-index-10) * ${agendaGroupedTreacheries.length - idx})` }">
               <div v-for="treacheryId in treacheries" class="treachery-card" :key="treacheryId" >
@@ -2353,20 +2357,22 @@ async function addChaosToken(face: any){
             </div>
           </div>
 
-          <Act
-            v-for="(act, key) in game.acts"
-            :key="key"
-            :act="act"
-            :cardsUnder="cardsUnderAct"
-            :cardsNextTo="cardsNextToAct"
-            :remainingStack="scenario.actStack[act.deckId] || []"
-            :completedStack="scenario.completedActStack[act.deckId] || []"
-            :game="game"
-            :playerId="playerId"
-            :style="{ 'grid-area': `act${act.deckId}`, 'justify-self': 'center' }"
-            @choose="choose"
-            @show="doShowCards"
-          />
+          <TransitionGroup name="deck-advance" :duration="{ enter: 0, leave: 420 }">
+            <Act
+              v-for="(act, key) in game.acts"
+              :key="key"
+              :act="act"
+              :cardsUnder="cardsUnderAct"
+              :cardsNextTo="cardsNextToAct"
+              :remainingStack="scenario.actStack[act.deckId] || []"
+              :completedStack="scenario.completedActStack[act.deckId] || []"
+              :game="game"
+              :playerId="playerId"
+              :style="{ 'grid-area': `act${act.deckId}`, 'justify-self': 'center' }"
+              @choose="choose"
+              @show="doShowCards"
+            />
+          </TransitionGroup>
         </div>
 
         <EnemyView
@@ -3624,6 +3630,28 @@ async function addChaosToken(face: any){
   gap: 5px;
   @media (max-width: 800px) and (orientation: portrait) {
     display:flex !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .deck-advance-leave-active {
+    pointer-events: none;
+    position: relative;
+    z-index: var(--z-index-10);
+  }
+
+  .deck-advance-leave-active :deep(.agenda-card > img.card--agenda),
+  .deck-advance-leave-active :deep(.act-row > .card-container > img.card) {
+    will-change: transform, opacity;
+    transition:
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 320ms ease-in;
+  }
+
+  .deck-advance-leave-to :deep(.agenda-card > img.card--agenda),
+  .deck-advance-leave-to :deep(.act-row > .card-container > img.card) {
+    opacity: 0;
+    transform: translate3d(0, -32px, 0) scale(1.035);
   }
 }
 

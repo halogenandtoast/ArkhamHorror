@@ -357,8 +357,15 @@ const overlayCardCode = computed<string | null>(() => {
   const el = hoveredElement.value
   if (!el) return null
   const direct = normalizedCardCode(el.dataset.cardCode ?? el.dataset.imageId)?.replace(/b$/, '')
-  if (direct) return direct
-  const match = card.value?.match(/\/cards\/c?(\d+)b?\.(?:avif|jpg|jpeg|png|webp)(?:\?.*)?$/i)
+  // Homebrew definitions are not served by the single-card endpoint.
+  if (direct) return direct.startsWith(':') ? null : direct
+
+  const image = card.value
+  // A homebrew image path ends in /cards/<local code>, which otherwise looks
+  // like an official card code to the fallback matcher below.
+  if (!image || image.includes('/homebrew/')) return null
+
+  const match = image.match(/\/cards\/c?(\d+)b?\.(?:avif|jpg|jpeg|png|webp)(?:\?.*)?$/i)
   return match?.[1] ?? null
 })
 /* Card-def errata covers a whole card, but some errata only applies to one face —

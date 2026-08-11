@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (ScanResult (..))
+import Arkham.Homebrew.DarkMatter.Helpers (ScanResult (..), scanEvent)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -24,19 +24,18 @@ instance HasAbilities K2PS18775Functionality where
   getAbilities (K2PS18775Functionality a) =
     [ playerLimit PerRound
         $ controlled a 1 (DuringPhase #investigation) (FastAbility Free)
-    , -- TODO(homebrew): the "scan" ScenarioEvent window carries success/failure only
-      -- in its decoded payload; there is no window-matcher primitive to filter a
-      -- ScenarioEvent by its value, so this reaction is offered after every scan and
-      -- guarded in the handler (it does nothing on a successful scan). A faithful fix
-      -- needs either a distinct unsuccessful-scan window key or a payload predicate on
-      -- the ScenarioEvent matcher.
-      restricted a 2 ControlsThis $ freeReaction (ScenarioEvent #after Nothing "scan")
+    , -- TODO(homebrew): success/failure is only in the decoded payload, not the
+      -- window key, so this reaction is offered after every scan and guarded in the
+      -- handler (it does nothing on a successful scan). 'scanEventFor' shows the
+      -- shape of the fix: fire a distinct key, e.g. @scan[unsuccessful]@, the way
+      -- the per-icon windows do.
+      restricted a 2 ControlsThis $ freeReaction (CampaignEvent #after Nothing scanEvent)
     ]
 
 getScanResult :: [Window] -> ScanResult
 getScanResult = \case
   [] -> error "missing scan result"
-  ((windowType -> Window.ScenarioEvent "scan" _ v) : _) -> toResult v
+  ((windowType -> Window.CampaignEvent k _ v) : _) | k == scanEvent -> toResult v
   (_ : xs) -> getScanResult xs
 
 instance RunMessage K2PS18775Functionality where

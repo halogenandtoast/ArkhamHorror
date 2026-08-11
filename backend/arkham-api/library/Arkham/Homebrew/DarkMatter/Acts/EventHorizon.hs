@@ -1,17 +1,15 @@
 module Arkham.Homebrew.DarkMatter.Acts.EventHorizon (eventHorizon) where
 
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Types (Field (AgendaDoom))
+import Arkham.Helpers.Agenda
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Matcher
-import Arkham.Message (CanAdvance (..))
-import Arkham.Projection
 
 newtype EventHorizon = EventHorizon ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 eventHorizon :: ActCard EventHorizon
 eventHorizon =
@@ -28,9 +26,9 @@ instance RunMessage EventHorizon where
       transfer all doom from agenda 1a to agenda 2a." AdvanceAgendaDeck only
       replaces the agenda card, so unlike a normal agenda advance it sweeps no
       doom off anything; we only have to carry agenda 1a's own doom across. -}
-      doom <- fromMaybe 0 <$> (traverse (field AgendaDoom) =<< selectOne AnyAgenda)
-      push $ AdvanceAgendaDeck 0 (toSource attrs)
-      push $ PlaceDoomOnAgenda doom CanAdvance
+      doom <- getDoomOnAgenda
+      push $ AdvanceAgendaDeck 1 (toSource attrs)
+      placeDoomOnAgendaAndCheckAdvance doom
       advanceActDeck attrs
       pure a
     _ -> EventHorizon <$> liftRunMessage msg attrs

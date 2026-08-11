@@ -66,6 +66,11 @@ data ModifierType
   | NoAdditionalCosts
   | AdditionalPlayCostOf ExtendedCardMatcher Cost
   | AdditionalCostToCommit InvestigatorId Cost
+  | -- | An extra cost to take a particular action while at the location that
+    -- carries this modifier (Dark Matter's Cold Wastes taxes the Scan action).
+    -- Gathered from the acting investigator's location, like
+    -- 'AdditionalCostToResign'.
+    AdditionalCostToPerformAction ActionTarget Cost
   | AdditionalCostToEnter Cost
   | AdditionalCostToEnterMatching LocationMatcher Cost
   | AdditionalCostToExplore Cost

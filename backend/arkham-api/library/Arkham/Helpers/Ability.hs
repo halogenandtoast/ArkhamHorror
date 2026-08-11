@@ -361,6 +361,18 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
             pure $ [m | not doDelayAdditionalCosts, AdditionalCostToLeave m <- mods]
           _ -> pure []
       else pure []
+  performActionCosts <-
+    getLocationOf iid >>= \case
+      Nothing -> pure []
+      Just lid -> do
+        mods <- getModifiers lid
+        let
+          matchesAction = \case
+            IsAnyAction -> True
+            IsAction act -> act `elem` abilityActions a
+            AnyActionTarget ts -> any matchesAction ts
+            _ -> False
+        pure [c | AdditionalCostToPerformAction t c <- mods, matchesAction t]
   resignCosts <-
     if #resign `elem` abilityActions a
       then do
@@ -375,8 +387,8 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
     costF =
       case find isSetCost modifiers of
-        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts) . const c
-        _ -> fixEnemy . fold . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts)
+        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts <> performActionCosts) . const c
+        _ -> fixEnemy . fold . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts <> performActionCosts)
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False

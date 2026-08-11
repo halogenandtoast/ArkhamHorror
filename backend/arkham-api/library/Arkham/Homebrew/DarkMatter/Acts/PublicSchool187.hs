@@ -22,7 +22,8 @@ advance."
 -}
 revealEntranceHall :: ActAttrs -> Ability
 revealEntranceHall a =
-  mkAbility a 1 $ forced
+  mkAbility a 1
+    $ forced
     $ Matcher.RevealLocation #after Anyone (locationIs Locations.entranceHall)
 
 newtype PublicSchool187V10 = PublicSchool187V10 ActAttrs

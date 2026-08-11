@@ -1,17 +1,19 @@
 module Arkham.Homebrew.DarkMatter.Scenarios.ElectricNightmare (electricNightmare) where
 
+import Arkham.Card
+import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
+import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
+import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Stories
+import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Homebrew.DarkMatter.Helpers
 import Arkham.Homebrew.DarkMatter.Key
-import Arkham.Card
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
-import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
-import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Id
-import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -19,8 +21,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Window qualified as Window
 
 newtype ElectricNightmare = ElectricNightmare ScenarioAttrs

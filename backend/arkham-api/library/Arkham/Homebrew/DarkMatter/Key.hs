@@ -35,6 +35,7 @@ data DarkMatterKey
     YouAreNotInGoodStandingWithTheMiGo
   | YouAreAlliedWithTheMiGo
   | YouHaveUncoveredTheCultistsInhumanMethods
+  | YouHaveWitnessedTheUnconsciousPandemonium
   | -- | Scenario V: Fragment of Carcosa
     TheInvestigatorsAreTrappedWithinCarcosa
   | TheInvestigatorsKnowOfTheAbjurationOfTheThrone

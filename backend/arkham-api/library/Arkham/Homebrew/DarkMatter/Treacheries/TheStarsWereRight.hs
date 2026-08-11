@@ -24,7 +24,8 @@ instance HasAbilities TheStarsWereRight where
     [ restricted a 1 (youExist $ at_ (LocationWithTreachery $ TreacheryWithId a.id))
         $ forced
         $ SkillTestResult #after You AnySkillTest (FailureResult $ atLeast 3)
-    , skillTestAbility $ restricted a 2 (youExist $ at_ (LocationWithTreachery $ TreacheryWithId a.id)) actionAbility
+    , skillTestAbility
+        $ restricted a 2 (youExist $ at_ (LocationWithTreachery $ TreacheryWithId a.id)) actionAbility
     ]
 
 instance RunMessage TheStarsWereRight where

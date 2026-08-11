@@ -2,8 +2,8 @@ module Arkham.Homebrew.DarkMatter.Scenarios.InTheShadowOfEarth (inTheShadowOfEar
 
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Scenario.Import.Lifted
 
 -- Skeleton scenario for Dark Matter (homebrew). Chaos-token values, full
@@ -24,7 +24,12 @@ instance RunMessage InTheShadowOfEarth where
   runMessage msg s@(InTheShadowOfEarth attrs) = runQueueT $ case msg of
     Setup -> runScenarioSetup InTheShadowOfEarth attrs do
       gather Set.InTheShadowOfEarth
-      setAgendaDeck [Agendas.theNostalgiaII, Agendas.theThingFromEarth, Agendas.screamOfTheDead, Agendas.itsWeirdAndPissedOff]
+      setAgendaDeck
+        [ Agendas.theNostalgiaII
+        , Agendas.theThingFromEarth
+        , Agendas.screamOfTheDead
+        , Agendas.itsWeirdAndPissedOff
+        ]
       setActDeck [Acts.isAnyoneHome, Acts.saveOurSouls, Acts.theShadowOfEarth]
       startAt =<< place Locations.airlocks
     ScenarioResolution _ -> do

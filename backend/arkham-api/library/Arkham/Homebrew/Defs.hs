@@ -20,19 +20,22 @@ import Arkham.Trait (Trait, coreTraits)
 allHomebrewDefs :: HomebrewDefs
 allHomebrewDefs = $(discoverInstances ''IsHomebrewDefs 'homebrewDefs)
 
--- | The full trait universe: core traits plus every trait every discovered
--- homebrew campaign owns. Use in place of the old @[minBound .. maxBound]@.
+{- | The full trait universe: core traits plus every trait every discovered
+homebrew campaign owns. Use in place of the old @[minBound .. maxBound]@.
+-}
 allTraits :: [Trait]
 allTraits = coreTraits <> ordNub (hdTraits allHomebrewDefs)
 
--- | The full action universe: core actions plus every action every discovered
--- homebrew campaign owns. Use in place of the old @[minBound .. maxBound]@.
+{- | The full action universe: core actions plus every action every discovered
+homebrew campaign owns. Use in place of the old @[minBound .. maxBound]@.
+-}
 allActions :: [Action]
 allActions = coreActions <> ordNub (hdActions allHomebrewDefs)
 
--- | Per-action affordability criteria contributed by homebrew campaigns. Core
--- 'Arkham.Helpers.Ability.canDoAction'' evaluates the entry for a homebrew
--- action (defaulting to always-affordable when absent).
+{- | Per-action affordability criteria contributed by homebrew campaigns. Core
+'Arkham.Helpers.Ability.canDoAction'' evaluates the entry for a homebrew
+action (defaulting to always-affordable when absent).
+-}
 homebrewActionAffordability :: Map Action Criterion
 homebrewActionAffordability = mapFromList (hdActionAffordability allHomebrewDefs)
 
@@ -60,8 +63,14 @@ agendasMap = defMap hdAgendas
 encounterAssetsMap :: Map CardCode CardDef
 encounterAssetsMap = defMap hdEncounterAssets
 
+playerAssetsMap :: Map CardCode CardDef
+playerAssetsMap = defMap hdPlayerAssets
+
 playerSkillsMap :: Map CardCode CardDef
 playerSkillsMap = defMap hdPlayerSkills
 
 storiesMap :: Map CardCode CardDef
 storiesMap = defMap hdStories
+
+playerStoriesMap :: Map CardCode CardDef
+playerStoriesMap = defMap hdPlayerStories

@@ -8,6 +8,10 @@ import Arkham.LocationSymbol qualified as LS
 withScanIcons :: [LS.LocationSymbol] -> CardDef -> CardDef
 withScanIcons icons def = def {cdMeta = insertMap "scanIcons" (toJSON icons) def.meta}
 
+-- | The icon printed on the front of a card; see @Helpers.printedIcons@.
+withPrintedIcons :: [LS.LocationSymbol] -> CardDef -> CardDef
+withPrintedIcons icons def = def {cdMeta = insertMap "printedIcons" (toJSON icons) def.meta}
+
 -- the_tatterdemalion
 virtualAccessKey :: CardDef
 virtualAccessKey =
@@ -99,7 +103,7 @@ tilde =
 william :: CardDef
 william =
   otherSideIs ":dark-matter:063da"
-    $ (storyAsset_ ":dark-matter:066db" ("William" <:> "Intrasolar Navigations") Set.ElectricNightmare)
+    $ (storyAsset_ ":dark-matter:063db" ("William" <:> "Intrasolar Navigations") Set.ElectricNightmare)
       { cdCardTraits = setFromList [Avatar]
       , cdUnique = True
       }
@@ -160,6 +164,7 @@ spaceArtillery =
     { cdCardTraits = setFromList [NostalgiaII, Weapon, Ranged]
     , cdSkills = [#combat, #combat, #combat]
     , cdUnique = True
+    , cdUses = uses Supply 2
     }
 
 adamTanner :: CardDef
@@ -213,21 +218,24 @@ sophie =
 -- strange_moons
 brainCylinder089 :: CardDef
 brainCylinder089 =
-  (storyAsset_ ":dark-matter:160" "Brain Cylinder 089" Set.StrangeMoons)
-    { cdCardTraits = setFromList [Brain]
-    }
+  withPrintedIcons [LS.Square]
+    $ (storyAsset_ ":dark-matter:160" "Brain Cylinder 089" Set.StrangeMoons)
+      { cdCardTraits = setFromList [Brain]
+      }
 
 brainCylinder114 :: CardDef
 brainCylinder114 =
-  (storyAsset_ ":dark-matter:161" "Brain Cylinder 114" Set.StrangeMoons)
-    { cdCardTraits = setFromList [Brain]
-    }
+  withPrintedIcons [LS.Equals]
+    $ (storyAsset_ ":dark-matter:161" "Brain Cylinder 114" Set.StrangeMoons)
+      { cdCardTraits = setFromList [Brain]
+      }
 
 brainCylinder367 :: CardDef
 brainCylinder367 =
-  (storyAsset_ ":dark-matter:162" "Brain Cylinder 367" Set.StrangeMoons)
-    { cdCardTraits = setFromList [Brain]
-    }
+  withPrintedIcons [LS.Diamond]
+    $ (storyAsset_ ":dark-matter:162" "Brain Cylinder 367" Set.StrangeMoons)
+      { cdCardTraits = setFromList [Brain]
+      }
 
 -- fragment_of_carcosa
 bottleOfWhispers :: CardDef

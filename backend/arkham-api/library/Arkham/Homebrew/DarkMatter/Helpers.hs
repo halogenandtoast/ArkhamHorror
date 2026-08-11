@@ -2,33 +2,45 @@ module Arkham.Homebrew.DarkMatter.Helpers where
 
 import Arkham.Ability
 import Arkham.Actions (Actions (..))
+import Arkham.Asset.Types (Field (AssetPlacement))
 import Arkham.CampaignLog (campaignLogRecordedCounts)
 import Arkham.CampaignLogKey (toCampaignLogKey)
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
+import Arkham.Classes.Query (select, selectCount)
 import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Query (getInvestigators)
-import Arkham.Helpers.Scenario (getScenarioDeck)
+import Arkham.Helpers.Scenario (getEncounterDeck, getScenarioDeck)
 import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern ScanningDeck)
+import Arkham.Homebrew.DarkMatter.Traits (pattern Brain)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorLog))
 import Arkham.LocationSymbol
-import Arkham.Matcher (CardMatcher (AnyCard))
+import Arkham.Matcher (AssetMatcher (AssetWithTrait), CardMatcher (AnyCard), TreacheryMatcher (..))
 import Arkham.Message (
-  Message (DrewCards, IncrementRecordCountForInvestigator, ShuffleCardsIntoDeck),
+  Message (
+    DrewCards,
+    IncrementRecordCountForInvestigator,
+    PlaceTreachery,
+    Revelation,
+    ShuffleCardsIntoDeck
+  ),
   ShuffleIn (..),
  )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Setup
@@ -89,6 +101,22 @@ scanIcons a = fromMaybe [] $ lookup "scanIcons" (cdMeta $ toCardDef a) >>= maybe
 hasScanningBack :: HasCardDef a => a -> Bool
 hasScanningBack = notNull . scanIcons
 
+{- | Icons printed on the *front* of a card — Strange Moons' [[Brain]] story
+assets each show one. These are the query side of a scan (the icon you scan
+*for*), where 'scanIcons' is the match side (the icons a scanning back shows).
+-}
+printedIcons :: HasCardDef a => a -> [LocationSymbol]
+printedIcons a = fromMaybe [] $ lookup "printedIcons" (cdMeta $ toCardDef a) >>= maybeResult
+
+{- | The [[Brain]] story assets currently attached to a location. Strange Moons'
+[[Interface]] locations scan for their own icon plus the icon of a brain
+attached to them.
+-}
+brainsAttachedTo :: HasGame m => LocationId -> m [AssetId]
+brainsAttachedTo lid = do
+  assets <- select $ AssetWithTrait Brain
+  filterM (fmap (== AttachedToLocation lid) . field AssetPlacement) assets
+
 {- | Setup: "Create the scanning deck. This is done by taking all the (other)
 encounter cards with icons at the bottom of their back side and shuffling
 them together." Call after setting aside any scanning-back cards that the
@@ -135,7 +163,15 @@ matches, the scan is unsuccessful.
 -}
 scan
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> [LocationSymbol] -> m ()
-scan iid (toSource -> source) icons = do
+scan iid (toSource -> source) icons = scanWith iid icons (drawScannedCard iid source)
+
+{- | 'scan' with a caller-supplied resolution for the matching card. Strange
+Moons' Dream Diagnostics and Memory Scanner put a scanned *location* into play
+on top of Reality Simulator rather than drawing it.
+-}
+scanWith
+  :: ReverseQueue m => InvestigatorId -> [LocationSymbol] -> (Card -> m ()) -> m ()
+scanWith iid icons onFound = do
   deck <- getScanningDeck
   let matches c = all (`elem` scanIcons c) icons
   case break matches deck of
@@ -145,7 +181,7 @@ scan iid (toSource -> source) icons = do
     (skipped, x : rest) -> do
       deck' <- if null skipped then pure rest else shuffle (skipped <> rest)
       setScenarioDeck ScanningDeck deck'
-      drawScannedCard iid source x
+      onFound x
       checkAfter $ Window.ScenarioEvent scanEvent (Just iid) (toJSON $ ScanResult iid icons (Just x) True)
 
 {- | Motion scanning (In the Shadow of Earth): simply draw the top card of the
@@ -186,3 +222,54 @@ the scanning deck instead."
 shuffleIntoScanningDeck :: (ReverseQueue m, IsCard card) => [card] -> m ()
 shuffleIntoScanningDeck cards =
   push $ ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey ScanningDeck) (map toCard cards)
+
+-- ** Face-down encounter cards in a threat area (Lost Quantum) ** --
+
+{- | Scenario IIIa puts encounter cards *face down* into investigators' threat
+areas; they sit there unresolved, are counted by several cards, and are later
+"drawn" — resolved as if just drawn. The zone is
+'Placement.FacedownInThreatArea'; entities are created via @CreateTreacheryAt@
+/ @createEnemyWithPlacement@, which build the entity **without** running its
+revelation.
+-}
+facedownInThreatAreaOf :: InvestigatorId -> TreacheryMatcher
+facedownInThreatAreaOf iid = TreacheryWithPlacement (FacedownInThreatArea iid)
+
+getFacedownCards :: HasGame m => InvestigatorId -> m [TreacheryId]
+getFacedownCards = select . facedownInThreatAreaOf
+
+getFacedownCardCount :: HasGame m => InvestigatorId -> m Int
+getFacedownCardCount = selectCount . facedownInThreatAreaOf
+
+-- | "Place the top card of the encounter deck into your threat area, face-down."
+placeFacedownInThreatArea :: ReverseQueue m => InvestigatorId -> Int -> m ()
+placeFacedownInThreatArea iid n = replicateM_ n do
+  getEncounterDeck >>= \case
+    Deck [] -> pure ()
+    Deck (card : rest) -> do
+      setEncounterDeck (Deck rest)
+      let c = toCard card
+      if toCardType c == EnemyType
+        then push =<< Msg.createEnemyWithPlacement_ c (FacedownInThreatArea iid)
+        else createTreacheryAt_ c (FacedownInThreatArea iid)
+
+{- | "Draw a face-down encounter card in your threat area" — the card leaves the
+face-down zone and resolves as if just drawn.
+-}
+drawFacedownCard :: ReverseQueue m => InvestigatorId -> TreacheryId -> m ()
+drawFacedownCard iid tid = do
+  -- Back to the placement a freshly-created treachery has, so its revelation
+  -- resolves exactly as if it had just been drawn.
+  push $ PlaceTreachery tid Limbo
+  checkAfter $ Window.ScenarioEvent facedownDrawnEvent (Just iid) (toJSON tid)
+  push $ Revelation iid (TreacherySource tid)
+
+{- | Payload is the 'TreacheryId' that was just drawn out of the face-down zone;
+cards that care which card was drawn (Quantum Collapse) match on it.
+-}
+facedownDrawnEvent :: Text
+facedownDrawnEvent = "drewFacedown"
+
+-- | Draw every face-down card in a threat area, one at a time.
+drawAllFacedownCards :: ReverseQueue m => InvestigatorId -> m ()
+drawAllFacedownCards iid = getFacedownCards iid >>= traverse_ (drawFacedownCard iid)

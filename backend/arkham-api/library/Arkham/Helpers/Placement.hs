@@ -22,6 +22,7 @@ placedInThreatArea = \case
   InPlayArea _ -> pure Nothing
   InVehicle _ -> pure Nothing
   InThreatArea iid -> pure $ Just iid
+  FacedownInThreatArea iid -> pure $ Just iid
   StillInHand _ -> pure Nothing
   StillInDiscard _ -> pure Nothing
   StillInEncounterDiscard -> pure Nothing
@@ -76,6 +77,13 @@ onSameLocation iid = \case
         l2 <- join <$> fieldMay InvestigatorLocation iid'
         pure $ isJust l1 && l1 == l2
   InThreatArea iid' ->
+    if iid == iid'
+      then pure True
+      else do
+        l1 <- join <$> fieldMay InvestigatorLocation iid
+        l2 <- join <$> fieldMay InvestigatorLocation iid'
+        pure $ isJust l1 && l1 == l2
+  FacedownInThreatArea iid' ->
     if iid == iid'
       then pure True
       else do

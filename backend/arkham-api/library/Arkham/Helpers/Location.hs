@@ -92,6 +92,8 @@ placementLocation = \case
   StillInEncounterDiscard -> pure Nothing
   AsSwarm eid _ -> fieldMayJoin EnemyLocation eid
   HiddenInHand _ -> pure Nothing
+  -- Face down in a threat area: not in play, so it has no location.
+  FacedownInThreatArea _ -> pure Nothing
   OnTopOfDeck _ -> pure Nothing
   NextToAgenda -> pure Nothing
   NextToAct -> pure Nothing

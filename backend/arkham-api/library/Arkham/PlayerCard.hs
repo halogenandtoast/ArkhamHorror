@@ -5,6 +5,7 @@ module Arkham.PlayerCard (
   randomWeakness,
 ) where
 
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Prelude
 
 import Arkham.Asset.Cards (allPlayerAssetCards, allSpecialPlayerAssetCards)
@@ -34,6 +35,7 @@ allPlayerCards =
     <> allSpecialPlayerAssetCards
     <> allPlayerEventCards
     <> allPlayerSkillCards
+    <> Homebrew.playerStoriesMap
     <> singletonMap "89005" realityAcid
     <> singletonMap "01000" randomWeakness
 

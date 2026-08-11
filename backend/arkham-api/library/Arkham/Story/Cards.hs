@@ -11,7 +11,7 @@ import Arkham.Trait
 
 allStoryCards :: Map CardCode CardDef
 allStoryCards =
-  (Homebrew.storiesMap <>)
+  ((Homebrew.storiesMap <> Homebrew.playerStoriesMap) <>)
     $ mapFromList
     $ map
       (toCardCode &&& id)

@@ -1,10 +1,10 @@
 module Arkham.Homebrew.DarkMatter.Locations.Cafeteria (cafeteria) where
 
 import Arkham.Ability
-import Arkham.GameValue
-import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Investigate
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher

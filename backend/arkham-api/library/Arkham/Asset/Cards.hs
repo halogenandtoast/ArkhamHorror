@@ -31,7 +31,8 @@ import Arkham.Prelude
 
 allPlayerAssetCards :: Map CardCode CardDef
 allPlayerAssetCards =
-  mapFromList
+  (Homebrew.playerAssetsMap <>)
+    $ mapFromList
     $ concatMap
       toCardCodePairs
       [ abbessAllegriaDiBiase

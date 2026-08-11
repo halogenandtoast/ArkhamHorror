@@ -1,7 +1,6 @@
 module Arkham.Homebrew.CircusExMortis.Defs (module Arkham.Homebrew.CircusExMortis.Defs) where
 
 import Arkham.Card.CardDef
-import Arkham.Homebrew.DefsBase
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
@@ -11,6 +10,7 @@ import Arkham.Homebrew.CircusExMortis.CardDefs.Skills qualified as Skills
 import Arkham.Homebrew.CircusExMortis.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Homebrew.CircusExMortis.Traits qualified as Traits
+import Arkham.Homebrew.DefsBase
 
 locations :: [CardDef]
 locations =
@@ -314,8 +314,10 @@ instance IsHomebrewDefs CircusExMortisDefs where
       , hdActs = acts
       , hdAgendas = agendas
       , hdEncounterAssets = encounterAssets
+      , hdPlayerAssets = []
       , hdPlayerSkills = playerSkills
       , hdStories = stories
+      , hdPlayerStories = []
       , hdTraits = Traits.traits
       , hdActions = []
       , hdActionAffordability = []

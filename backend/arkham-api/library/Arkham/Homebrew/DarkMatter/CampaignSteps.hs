@@ -47,8 +47,9 @@ pattern Starfall <- ScenarioStep ":dark-matter:243"
 pattern MissionBriefing :: CampaignStep
 pattern MissionBriefing = InterludeStep 1 Nothing
 
--- | The recurring "The Search for Fragment" choice (guide p10). Reached after
--- each Scenario III until all three traces are done.
+{- | The recurring "The Search for Fragment" choice (guide p10). Reached after
+each Scenario III until all three traces are done.
+-}
 pattern TheSearchForFragment :: CampaignStep
 pattern TheSearchForFragment = InterludeStep 2 Nothing
 

@@ -37,6 +37,10 @@ data TreacheryMatcher
   | TreacheryWithTrait Trait
   | TreacheryInHandOf InvestigatorMatcher
   | TreacheryInThreatAreaOf InvestigatorMatcher
+  | -- | Face *down* in a threat area (Dark Matter, "Lost Quantum").
+    -- Deliberately distinct from 'TreacheryInThreatAreaOf': a face-down card is
+    -- not in play, so ordinary threat-area effects must not see it.
+    TreacheryFacedownInThreatAreaOf InvestigatorMatcher
   | TreacheryIs CardCode
   | TreacheryIsAttachedTo Target
   | TreacheryAttachedToLocation LocationMatcher

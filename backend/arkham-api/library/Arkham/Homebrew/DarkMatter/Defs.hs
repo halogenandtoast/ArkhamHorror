@@ -43,7 +43,9 @@ locations =
   , Locations.escapePodBay
   , Locations.feverDream
   , Locations.flightDeck
+  , Locations.gardensOfThothut
   , Locations.gymnasium
+  , Locations.grandBallroom
   , Locations.hiddenPassage
   , Locations.hope
   , Locations.hydroponics
@@ -53,6 +55,7 @@ locations =
   , Locations.infirmaryTatterdemalion
   , Locations.infirmaryInTheShadowOfEarth
   , Locations.landingCraft
+  , Locations.labyrinthsOfTasylock
   , Locations.library
   , Locations.mainFacility
   , Locations.martianRuins
@@ -62,6 +65,7 @@ locations =
   , Locations.mountSinai
   , Locations.newBrooklyn
   , Locations.olympusTelescope
+  , Locations.palaceGates
   , Locations.omniTransmitters
   , Locations.qCrystalMines
   , Locations.realitySimulator
@@ -69,11 +73,14 @@ locations =
   , Locations.schrodGenerators
   , Locations.shipMainframe
   , Locations.shipsBridge
+  , Locations.sol
   , Locations.stalagmiteForest
+  , Locations.spiralStaircase
   , Locations.surfaceOfFragment
   , Locations.telecoms
   , Locations.theCassilda
   , Locations.theTatterdemalion
+  , Locations.theYellowThrone
   , Locations.thresholdOfYuggoth
   , Locations.ventilationShaft
   , Locations.yuggoth
@@ -89,12 +96,14 @@ enemies =
   , Enemies.domaagTeel
   , Enemies.exoroid
   , Enemies.glitchInTheSystem
+  , Enemies.haita
   , Enemies.houndOfTindalos
   , Enemies.jv7Hyades
   , Enemies.lr02Hali
   , Enemies.manifestedWhispers
   , Enemies.martianCrab
   , Enemies.miGoSentinel
+  , Enemies.miGoScientist
   , Enemies.miGoStabilizer
   , Enemies.mimic
   , Enemies.parasite
@@ -113,6 +122,7 @@ enemies =
   , Enemies.theEntity
   , Enemies.theFeasterFromAfar
   , Enemies.theGreys
+  , Enemies.theStranger
   , Enemies.uplA21Demhe
   , Enemies.viciousByakhee
   , Enemies.virtualByakhee
@@ -265,23 +275,19 @@ agendas =
 encounterAssets :: [CardDef]
 encounterAssets =
   [ Assets.adamTanner
+  , Assets.alma
   , Assets.arNO
-  , Assets.bottleOfWhispers
   , Assets.brainCylinder089
   , Assets.brainCylinder114
   , Assets.brainCylinder367
   , Assets.captainBurr
+  , Assets.david
   , Assets.directorCixin
   , Assets.doctorFeng
   , Assets.erwinSimmonsFading
-  , Assets.erwinSimmonsQuantumPhysicist
   , Assets.evaSuit
   , Assets.heirToCarcosa
   , Assets.k11SurveyUnit
-  , Assets.k2PS187100Functionality
-  , Assets.k2PS18725Functionality
-  , Assets.k2PS18750Functionality
-  , Assets.k2PS18775Functionality
   , Assets.lastHope
   , Assets.ltArcherMichaels
   , Assets.maja
@@ -294,10 +300,23 @@ encounterAssets =
   , Assets.repairingTheThreshold
   , Assets.shieldingDevice
   , Assets.sophie
-  , Assets.spaceArtillery
   , Assets.stasisCube
+  , Assets.tilde
   , Assets.thePallidMask
   , Assets.universalArchives
+  , Assets.william
+  ]
+
+-- | Assets printed on a player card back.
+playerAssets :: [CardDef]
+playerAssets =
+  [ Assets.bottleOfWhispers
+  , Assets.erwinSimmonsQuantumPhysicist
+  , Assets.k2PS187100Functionality
+  , Assets.k2PS18725Functionality
+  , Assets.k2PS18750Functionality
+  , Assets.k2PS18775Functionality
+  , Assets.spaceArtillery
   , Assets.virtualAccessKey
   ]
 
@@ -307,7 +326,6 @@ playerSkills = []
 stories :: [CardDef]
 stories =
   [ Stories.arrivalOfTheKing
-  , Stories.delights
   , Stories.evidenceAdamTanner
   , Stories.evidenceCaptainBurr
   , Stories.evidenceDoctorFeng
@@ -333,6 +351,12 @@ stories =
   , Stories.withoutATrace
   ]
 
+{- | "Delights" is a story card printed on a player card back, so it has to
+resolve as a story entity *and* be legal in a deck.
+-}
+playerStories :: [CardDef]
+playerStories = [Stories.delights]
+
 data DarkMatterDefs
 
 instance IsHomebrewDefs DarkMatterDefs where
@@ -345,8 +369,10 @@ instance IsHomebrewDefs DarkMatterDefs where
       , hdActs = acts
       , hdAgendas = agendas
       , hdEncounterAssets = encounterAssets
+      , hdPlayerAssets = playerAssets
       , hdPlayerSkills = playerSkills
       , hdStories = stories
+      , hdPlayerStories = playerStories
       , hdTraits = Traits.traits
       , hdActions = Actions.actions
       , hdActionAffordability = Actions.actionAffordability

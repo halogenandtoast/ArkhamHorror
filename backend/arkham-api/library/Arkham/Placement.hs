@@ -10,6 +10,7 @@ module Arkham.Placement (
   isInPlayArea,
   treacheryPlacementToPlacement,
   _AtLocation,
+  _FacedownInThreatArea,
   _OutOfPlay,
 ) where
 
@@ -27,6 +28,11 @@ data Placement
   | AttachedToLocation LocationId
   | InPlayArea InvestigatorId
   | InThreatArea InvestigatorId
+  | -- | An encounter card sitting *face down* in an investigator's threat area
+    -- (Dark Matter, "Lost Quantum"). The entity exists but its revelation has
+    -- not resolved; it resolves when the card is later "drawn" from the threat
+    -- area. Face down, so it is not in play.
+    FacedownInThreatArea InvestigatorId
   | StillInHand InvestigatorId
   | HiddenInHand InvestigatorId
   | OnTopOfDeck InvestigatorId
@@ -91,6 +97,7 @@ placementToAttached = \case
   InPlayArea _ -> Nothing
   InVehicle _ -> Nothing
   InThreatArea _ -> Nothing
+  FacedownInThreatArea _ -> Nothing
   AttachedToAsset aid _ -> Just $ AssetTarget aid
   AttachedToAct aid -> Just $ ActTarget aid
   AttachedToAgenda aid -> Just $ AgendaTarget aid
@@ -121,6 +128,7 @@ isInPlayPlacement = \case
   InPlayArea {} -> True
   InVehicle {} -> True
   InThreatArea {} -> True
+  FacedownInThreatArea {} -> False
   StillInHand {} -> False
   StillInDiscard {} -> False
   StillInEncounterDiscard -> False
@@ -147,6 +155,7 @@ isInPlayPlacement = \case
 isHiddenPlacement :: Placement -> Bool
 isHiddenPlacement = \case
   HiddenInHand _ -> True
+  FacedownInThreatArea _ -> True
   _ -> False
 
 isInPlayArea :: Placement -> Bool

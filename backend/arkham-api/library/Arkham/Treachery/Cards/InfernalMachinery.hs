@@ -36,7 +36,7 @@ instance RunMessage InfernalMachinery where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      combinationSkillTest sid iid (attrs.ability 1) iid [#intellect, #agility] (Fixed 4)
+      chooseBeginSkillTest sid iid (attrs.ability 1) iid [#intellect, #agility] (Fixed 4)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

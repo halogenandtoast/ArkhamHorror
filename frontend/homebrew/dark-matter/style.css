@@ -1,0 +1,13 @@
+/* The scan icons are printed along the bottom of each scanning card's back. */
+.scenario-deck-area.dark-matter-scanning-deck .deck-size {
+  top: 6px;
+  right: auto;
+  left: 50%;
+  bottom: auto;
+  transform: translateX(-50%);
+  min-width: 1.7em;
+  width: auto;
+  height: 1.7em;
+  line-height: 1.7em;
+  border-radius: 0.85em;
+}

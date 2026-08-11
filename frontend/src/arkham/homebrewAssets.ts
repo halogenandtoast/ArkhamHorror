@@ -11,6 +11,25 @@
 // requires no registration here.
 import.meta.glob('@homebrew/*/*.css', { eager: true })
 
+export type HomebrewScenarioDeckDisplay = {
+  image?: 'top-card-back'
+  className?: string
+}
+
+const scenarioDeckModules = import.meta.glob('@homebrew/*/scenario-decks.json', { eager: true }) as Record<
+  string,
+  { default: Record<string, HomebrewScenarioDeckDisplay> }
+>
+
+const homebrewScenarioDeckDisplays: Record<string, HomebrewScenarioDeckDisplay> = Object.assign(
+  {},
+  ...Object.values(scenarioDeckModules).map((m) => m.default),
+)
+
+export function homebrewScenarioDeckDisplay(deckKey: string): HomebrewScenarioDeckDisplay | undefined {
+  return homebrewScenarioDeckDisplays[deckKey]
+}
+
 const iconModules = import.meta.glob('@homebrew/*/icons.json', { eager: true }) as Record<
   string,
   { default: Record<string, string> }

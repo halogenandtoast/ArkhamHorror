@@ -4,6 +4,7 @@ import { useDebug } from '@/arkham/debug';
 import type { Card } from '@/arkham/types/Card';
 import { cardImage, toCardContents } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
+import { homebrewScenarioDeckDisplay } from '@/arkham/homebrewAssets';
 import { investigatorPortrait as portraitFor } from '@/arkham/cardImages';
 import { MessageType } from '@/arkham/types/Message'
 import * as ArkhamGame from '@/arkham/types/Game'
@@ -54,8 +55,18 @@ const revealedCards = computed(() => props.deck[1].map(card => {
   return card
 }))
 const showCards = () => emits('show', revealedCards, props.deck[0], false)
+const homebrewDisplay = computed(() => homebrewScenarioDeckDisplay(props.deck[0]))
 
 const deckImage = computed(() => {
+  if (homebrewDisplay.value?.image === 'top-card-back') {
+    const topCard = props.deck[1][0]
+    if (topCard) {
+      const contents = toCardContents(topCard)
+      return imgsrc(cardImage({ ...contents, isFlipped: true, facedown: false }))
+    }
+    return imgsrc("backs/back_encounter.jpg")
+  }
+
   switch(props.deck[0]) {
     case 'UnknownPlacesDeck':
       return imgsrc("cards/05134b.avif");
@@ -130,7 +141,7 @@ const deckLabel = computed(() => {
 </script>
 
 <template>
-  <div class="scenario-deck-area">
+  <div class="scenario-deck-area" :class="homebrewDisplay?.className">
     <div v-if="topOfDiscard" class="discard-card">
       <img :src="topOfDiscardImage ?? undefined" class="card" />
       <span class="deck-size">{{ discardPile!.length }}</span>

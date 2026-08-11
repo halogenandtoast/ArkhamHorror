@@ -2,7 +2,7 @@ module Arkham.Helpers.Target where
 
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
-import Arkham.Card (toCardOwner)
+import Arkham.Card (Card, cardMatch, toCardOwner)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
@@ -15,7 +15,7 @@ import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher hiding (EventCard)
+import Arkham.Matcher hiding (AssetCard, EventCard, SkillCard)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
 import Arkham.Prelude
@@ -89,6 +89,13 @@ targetTraits = \case
   ActiveCostTarget {} -> pure mempty
   LabeledTarget _ t -> targetTraits t
   ThisTarget -> pure mempty
+
+{- | Some encounter cards are registered as player cards so they can enter an
+investigator's play area (see 'allSpecialPlayerAssetCards'), so we go by the
+card type rather than by the 'Card' constructor
+-}
+isEncounter :: Card -> Bool
+isEncounter c = cardMatch c IsEncounterCard
 
 targetMatches :: forall m. (HasCallStack, HasGame m) => Target -> TargetMatcher -> m Bool
 targetMatches s = \case
@@ -237,6 +244,12 @@ targetMatches s = \case
     AgendaTarget _ -> pure True
     ActTarget _ -> pure True
     LocationTarget _ -> pure True
+    StoryTarget _ -> pure True
+    -- encounter cards can end up in an investigator's play area (e.g. Straitjacket),
+    -- so entity type alone isn't enough, we have to look at the card itself
+    AssetTarget aid -> maybe False isEncounter <$> fieldMay AssetCard aid
+    EventTarget eid -> maybe False isEncounter <$> fieldMay EventCard eid
+    SkillTarget sid -> maybe False isEncounter <$> fieldMay SkillCard sid
     ProxyTarget proxyTarget _ -> targetMatches proxyTarget ScenarioCardTarget
     BothTarget left right ->
       orM [targetMatches left ScenarioCardTarget, targetMatches right ScenarioCardTarget]

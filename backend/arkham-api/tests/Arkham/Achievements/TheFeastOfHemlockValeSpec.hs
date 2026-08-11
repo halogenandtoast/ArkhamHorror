@@ -39,13 +39,21 @@ scenario's own end-of-game handling needs it, since those read the meta back.
 withHemlockMeta :: TestAppT ()
 withHemlockMeta = withHemlockMetaOn Hemlock.Day1
 
--- | The same, on a chosen day: the evening skips are day-sensitive.
+-- | The same, on a chosen day.
 withHemlockMetaOn :: Hemlock.Day -> TestAppT ()
-withHemlockMetaOn day = do
+withHemlockMetaOn day = withHemlockMetaAt day Hemlock.Day
+
+{- | The same, at a chosen point of a chosen day: the evening skips are sensitive to
+both, since each dawn also picks the coming scenario.
+-}
+withHemlockMetaAt :: Hemlock.Day -> Hemlock.Time -> TestAppT ()
+withHemlockMetaAt day time = do
   overTest \g ->
     g
       { gameMode =
-          first (overAttrs (Campaign.metaL .~ toJSON Hemlock.initMeta {Hemlock.day = day})) (gameMode g)
+          first
+            (overAttrs (Campaign.metaL .~ toJSON Hemlock.initMeta {Hemlock.day = day, Hemlock.time = time}))
+            (gameMode g)
       }
   tick
 
@@ -239,11 +247,11 @@ spec = describe "The Feast of Hemlock Vale achievements" $ do
   -}
   context "Colour Outside the Lines" $ do
     let skipTo step = run $ NextCampaignStep (continue step)
-        onDay2 = withHemlockMetaOn Hemlock.Day2
+        onSecondEvening = withHemlockMetaAt Hemlock.Day2 Hemlock.Night
 
     it "is earned when the second evening skips The Longest Night" . gameTest $ \_ -> do
       asTheFeastOfHemlockVale
-      onDay2
+      onSecondEvening
       earned <- didEarnHemlockVale ColourOutsideTheLines
       skipTo (ScenarioStep "10501")
       earned `refShouldBe` True
@@ -251,15 +259,25 @@ spec = describe "The Feast of Hemlock Vale achievements" $ do
     -- Choosing to follow Dr. Marquez IS The Longest Night, so it is not skipped.
     it "is not earned when the second evening picks The Longest Night" . gameTest $ \_ -> do
       asTheFeastOfHemlockVale
-      onDay2
+      onSecondEvening
       earned <- didEarnHemlockVale ColourOutsideTheLines
       skipTo (ScenarioStep "10626")
+      earned `refShouldBe` False
+
+    {- The dawn of the second day picks the day's survey scenario, which is another
+    explicit NextCampaignStep on Day 2 — but the evening has not been offered yet.
+    -}
+    it "is not earned when the second day's daytime survey is chosen" . gameTest $ \_ -> do
+      asTheFeastOfHemlockVale
+      withHemlockMetaAt Hemlock.Day2 Hemlock.Day
+      earned <- didEarnHemlockVale ColourOutsideTheLines
+      skipTo (ScenarioStep "10501")
       earned `refShouldBe` False
 
     -- The first evening's skip is not enough on its own; the second is still open.
     it "is not earned on the first evening's skip alone" . gameTest $ \_ -> do
       asTheFeastOfHemlockVale
-      withHemlockMetaOn Hemlock.Day1
+      withHemlockMetaAt Hemlock.Day1 Hemlock.Night
       earned <- didEarnHemlockVale ColourOutsideTheLines
       skipTo (ScenarioStep "10501")
       earned `refShouldBe` False

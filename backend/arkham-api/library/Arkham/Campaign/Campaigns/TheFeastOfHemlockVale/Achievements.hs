@@ -29,6 +29,7 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (
   Day (..),
   Resident (..),
   TheFeastOfHemlockValeMeta (..),
+  Time (Night),
   getRelationshipLevel,
   initMeta,
   relationshipKey,
@@ -152,12 +153,18 @@ runHemlockValeAchievements msg = whenEligibleCampaign $ case msg of
   scenario (skipping it). Once the second evening has picked something OTHER than
   The Longest Night, neither optional scenario can be played this playthrough, so
   there is no reason to make the player wait for the epilogue to find out.
+
+  The day alone does NOT identify that evening: the campaign flips the meta to
+  Day2 as it steps INTO Dawn of the Second Day, and that prelude ends by picking
+  the day's survey scenario, which is another explicit NextCampaignStep. Only the
+  evening preludes set time = Night (each dawn resets it to Day), so the pair is
+  what pins this to the second evening's choice.
   -}
   NextCampaignStep (Just continuation) -> do
     let nextStep = continuation.unwrap.normalize
     when (nextStep /= theLongestNightStep && nextStep /= theTwistedHollowStep) do
-      day <- (.day) <$> hemlockValeMeta
-      when (day == Day2) do
+      meta <- hemlockValeMeta
+      when (meta.day == Day2 && meta.time == Night) do
         playedHollow <- storedFlag playedTwistedHollowKey
         playedNight <- storedFlag playedLongestNightKey
         unless (playedHollow || playedNight) $ earn ColourOutsideTheLines

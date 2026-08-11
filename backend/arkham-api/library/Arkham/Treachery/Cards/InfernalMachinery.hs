@@ -2,8 +2,8 @@ module Arkham.Treachery.Cards.InfernalMachinery (infernalMachinery) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
-import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Trait (Trait (Artifact, Glyph))
 import Arkham.Treachery.Cards qualified as Cards

@@ -17,6 +17,9 @@
         "title": "Resolution 3",
         "body": "<p>Outside, the sun comes out and it appears to be a beautiful spring day. Inside, the halls are clean and orderly, with brightly painted pictures on the walls. The children themselves, who at first appeared dirty and disheveled, now appear clean and neat in school uniforms. They are overjoyed that the Boogeyman and all the bad people are finally gone. They understand that they can never return home and that their families are long dead. But that does not diminish their happiness that there is no more Boogeyman to scare them and that they have a real teacher to take care of them again. The virtual dreamscape is now filled with happy, loving children.</p><ul><li>In your Campaign Log, record that <i>you fully restored the sanity of K2-PS187</i>.</li><li>An investigator may choose to add the K2-PS187 (100% Functionality) permanent story asset to their deck.</li><li>If at least 1 copy of the Reminiscence treachery is in the victory display, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Proceed to <b>Interlude I: Mission Briefing</b>.</li></ul>"
       }
+    },
+    "label": {
+      "noInvestigatorAddsItToTheirDeck": "No investigator adds it to their deck"
     }
   }
 }

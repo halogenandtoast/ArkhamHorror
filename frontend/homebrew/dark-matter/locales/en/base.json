@@ -41,6 +41,14 @@
       "discardAlly": "Discard the attached Ally",
       "placeDoom": "Place 1 doom on the attached Ally"
     },
+    "delights": {
+      "doNotRemoveAToken": "Do not remove a token",
+      "removeSkull": "Remove a Skull token from the chaos bag",
+      "removeCultist": "Remove a Cultist token from the chaos bag",
+      "removeTablet": "Remove a Tablet token from the chaos bag",
+      "removeElderThing": "Remove an Elder Thing token from the chaos bag",
+      "removeElderSign": "Remove an Elder Sign token from the chaos bag"
+    },
     "desync": {
       "traumaAndExile": "Suffer 1 mental trauma and add 1 tally mark next to your “Memories”, then exile this card",
       "returnToDeck": "If your deck has 5 or more cards in it, shuffle this card back into your deck. Otherwise, discard it"
@@ -52,6 +60,15 @@
     },
     "evaSuit": {
       "doNotPutIntoPlay": "Do not put EVA Suit into play"
+    },
+    "fromTheDark": {
+      "takeDamage": "Take {count} damage",
+      "drawAMimic": "Search the encounter deck and discard pile for a Mimic enemy and draw it"
+    },
+    "innocentMishap": {
+      "damageNearestBrain": "Deal 1 damage to the nearest Brain story asset",
+      "damageMiGoScientist": "Deal 2 damage to Mi-Go Scientist",
+      "take2DirectDamage": "Take 2 direct damage"
     },
     "jv7Hyades": {
       "trefoil": "Scan for the clover icon",
@@ -81,6 +98,10 @@
       "placeDoom": "Place 1 doom on the current agenda",
       "moveEnemies": "Move each enemy 1 location toward you. Each enemy at your location immediately attacks you"
     },
+    "solarEclipse": {
+      "take1Horror": "Take 1 horror",
+      "locationGets2Shroud": "Your location gets +2 shroud for this investigation"
+    },
     "surprise": {
       "moveBoogeyman": "Move The Boogeyman to your current location",
       "boogeymanAttacks": "The Boogeyman immediately attacks you"
@@ -92,6 +113,10 @@
     "whatTypeOfShipIsThis": {
       "placeDoom": "Place 1 doom on the current agenda and add this to the victory display",
       "removeFromGame": "Remove this card from the game"
+    },
+    "withoutATrace": {
+      "assumeCommandOfTheShip": "Assume command of the ship",
+      "scavengeTheShipForParts": "Scavenge the ship for parts"
     }
   },
   "key": {

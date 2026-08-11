@@ -1,5 +1,6 @@
 module Arkham.Homebrew.DarkMatter.Scenarios.InTheShadowOfEarth (inTheShadowOfEarth) where
 
+import Arkham.Asset.Types (Field (AssetDamage))
 import Arkham.Card
 import Arkham.Helpers.Card (getVictoryPoints)
 import Arkham.Helpers.Query (allInvestigators, getLead)
@@ -14,14 +15,15 @@ import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern EvidenceDeck)
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.I18n
+import Arkham.Investigator.Types (Field (InvestigatorDamage))
 import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Import.Lifted
-import Arkham.Trait (Trait (Crew))
+import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
+import Arkham.Trait (Trait (Ally, Crew))
 
--- Chaos-token values are still the skeleton's placeholder; the printed values
--- are added by later work.
 newtype InTheShadowOfEarth = InTheShadowOfEarth ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -33,9 +35,41 @@ inTheShadowOfEarth difficulty = scenario InTheShadowOfEarth ":dark-matter:112" "
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "inTheShadowOfEarth" a
 
+{- | Scenario reference card, ":dark-matter:112" \/ z-dark-matter-115
+(docs\/homebrew\/data\/dark-matter-sets\/in_the_shadow_of_earth.md; the front
+block is Easy \/ Standard, the OCR of the back image is Hard \/ Expert):
+
+Easy \/ Standard
+[skull]: -X. X is half the amount of damage on you and assets you control (rounded down).
+[cultist]: -2. If you fail, deal 1 damage or 1 horror to an [[Ally]] asset you control.
+[tablet]: Reveal another token. If you fail, take 1 damage and 1 horror.
+[elder thing]: 0. You must either (choose one): Take 2 damage, or this test automatically fails.
+
+Hard \/ Expert
+[skull]: -X. X is half the amount of damage on you and assets you control (rounded up).
+[cultist]: -3. If you fail, deal 1 damage or 1 horror to an [[Ally]] asset you control.
+[tablet]: -1. Reveal another token. If you fail, take 1 damage and 1 horror.
+[elder thing]: 0. You must either (choose one): Take 3 damage, or this test automatically fails.
+
+Only the /values/ live here; the riders are the 'ResolveChaosToken' and
+'FailedSkillTest' cases in 'RunMessage' below. [tablet] prints no number on Easy
+\/ Standard, which is a modifier of 0, not "no modifier" — the same shape the
+guide uses everywhere else.
+-}
 instance HasChaosTokenValue InTheShadowOfEarth where
   getChaosTokenValue iid tokenFace (InTheShadowOfEarth attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 1 2
+    Skull -> do
+      damage <- field InvestigatorDamage iid
+      assetDamage <- selectSum AssetDamage (assetControlledBy iid)
+      let total = damage + assetDamage
+      -- Rounded down on easy/standard, rounded up on hard/expert.
+      pure
+        $ ChaosTokenValue Skull
+        $ NegativeModifier
+        $ byDifficulty attrs (total `div` 2) ((total + 1) `div` 2)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 0 1
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 0)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 {- | "Put all remaining locations into play." Every [[Nostalgia II]] location
@@ -99,6 +133,34 @@ instance RunMessage InTheShadowOfEarth where
       -- the Airlocks."
       placeAll remainingLocations
       startAt =<< place Locations.airlocks
+    -- [tablet]: "Reveal another token."
+    ResolveChaosToken _ Tablet iid -> do
+      drawAnotherChaosToken iid
+      pure s
+    {- [elder thing]: "0. You must either (choose one): Take 2 damage, or this
+    test automatically fails." (3 damage on hard/expert.) Both options are
+    always available — "you must either" is a mandatory choice, not a may. -}
+    ResolveChaosToken _ ElderThing iid -> do
+      let damage = byDifficulty attrs 2 3
+      chooseOneM iid $ unscoped do
+        countVar damage $ labeled' "takeDamage" $ assignDamage iid ElderThing damage
+        labeled' "automaticallyFailTest" failSkillTest
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        {- [cultist]: "If you fail, deal 1 damage or 1 horror to an [[Ally]]
+        asset you control." Controlled, not "at your location", and mandatory —
+        but only if you control one. -}
+        Cultist -> do
+          allies <- select $ AssetWithTrait Ally <> assetControlledBy iid
+          unless (null allies) do
+            chooseTargetM iid allies \ally -> chooseOneM iid $ unscoped do
+              countVar 1 $ labeled' "dealDamage" $ dealAssetDamage ally Cultist 1
+              countVar 1 $ labeled' "dealHorror" $ dealAssetHorror ally Cultist 1
+        -- [tablet]: "If you fail, take 1 damage and 1 horror."
+        Tablet -> assignDamageAndHorror iid Tablet 1 1
+        _ -> pure ()
+      pure s
     {- Resolution 1: "For each of the story cards [under the scenario reference],
     reveal 1 random chaos token from the chaos bag." One token per card; the
     pairing is by position in the two lists. -}

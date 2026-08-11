@@ -28,7 +28,7 @@ instance HasAbilities CarefulNavigation where
         -- "translateGlyph" window afterwards, so the reaction below sees the glyph
         -- that just landed.
         restricted a 1 (exists (sealedChamber <> UnrevealedLocation) <> translatedThreeGlyphs)
-          $ forced (CampaignEvent #after Nothing "translateGlyph")
+          $ reaction (CampaignEvent #after Nothing "translateGlyph")
       , -- (Objective) When the round ends, if an investigator controls the Tidal
         -- Tablet story asset, advance.
         restricted a 2 (exists $ assetIs Assets.tidalTablet <> AssetControlledBy Anyone)

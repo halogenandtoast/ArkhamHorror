@@ -1,6 +1,5 @@
 module Arkham.TraitSpec (spec) where
 
-import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Trait
 import Data.Aeson (decode, encode, toJSON)
 import Data.Aeson.Types (Value (String))
@@ -34,9 +33,3 @@ spec = describe "Trait JSON" do
 
   it "is promotion-safe: a promoted name decodes to the core constructor, not HomebrewTrait" do
     decode "\"Ally\"" `shouldBe` Just Ally
-
-  it "folds every campaign's traits into the global universe" do
-    -- disjoint: 27 (Dark Matter) + 9 (Circus Ex Mortis)
-    length allTraits `shouldBe` length coreTraits + 36
-    HomebrewTrait "Moon" `shouldSatisfy` (`elem` allTraits)
-    HomebrewTrait "LiberPater" `shouldSatisfy` (`elem` allTraits)

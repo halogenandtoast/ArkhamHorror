@@ -34,7 +34,11 @@ import Arkham.Direction
 import Arkham.Discover (DiscoverLocation (DiscoverAtLocation))
 import Arkham.ForMovement (ForMovement (..))
 import Arkham.Helpers.Calculation (calculate)
-import Arkham.Helpers.Discover (resolveDiscoverCluesAt, resolveSuccessfulInvestigation)
+import Arkham.Helpers.Discover (
+  resolveDiscoverCluesAt,
+  resolveSuccessfulInvestigation,
+  withExposeInsteadOfInvestigating,
+ )
 import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Source (getSourceController)
@@ -133,16 +137,17 @@ instance RunMessage EnemyLocationAttrs where
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = a.clues
       let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
+      option <-
+        withExposeInsteadOfInvestigating iid a.id
+          $ [before | clues == 0]
+          <> [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
+             , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
+             ]
+          <> [after | clues == 0]
       push
         $ SkillTestResultOption
         $ SkillTestOption
-          { option =
-              Label ("Discover Clue at " <> display (toName a))
-                $ [before | clues == 0]
-                <> [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
-                   , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
-                   ]
-                <> [after | clues == 0]
+          { option = Label ("Discover Clue at " <> display (toName a)) option
           , kind = OriginalOptionKind
           , criteria = Nothing
           }

@@ -222,15 +222,23 @@ canDiscoverCluesAtYourLocation isInvestigate iid = do
     Nothing -> pure False
     Just lid -> getCanDiscoverClues isInvestigate iid lid
 
+-- | Whether @iid@ is allowed to expose a concealed mini-card at @lid@ at all.
+getCanExposeAt :: HasGame m => InvestigatorId -> LocationId -> m Bool
+getCanExposeAt iid lid =
+  andM
+    [ matches lid $ LocationWithoutModifier NoExposeAt
+    , matches iid
+        $ InvestigatorWithoutModifier CannotExpose
+        <> InvestigatorWithoutModifier (noExposeAt lid)
+    ]
+
 getCanDiscoverClues
   :: HasGame m => IsInvestigate -> InvestigatorId -> LocationId -> m Bool
 getCanDiscoverClues isInvestigation iid lid = do
   modifiers <- getModifiers iid
   hasClues <- fieldSome LocationClues lid
-  hasConcealed <- matches lid $ LocationWithConcealedCard <> LocationWithoutModifier NoExposeAt
-  canExpose <-
-    matches iid $ InvestigatorWithoutModifier CannotExpose
-      <> InvestigatorWithoutModifier (noExposeAt lid)
+  hasConcealed <- matches lid LocationWithConcealedCard
+  canExpose <- getCanExposeAt iid lid
   (&& or [hasClues, hasConcealed && canExpose]) . not <$> anyM match modifiers
  where
   match CannotDiscoverClues {} = pure True
@@ -570,7 +578,9 @@ isEliminated iid =
   -- that gap the investigator would otherwise still match You/Uneliminated with
   -- an empty hand, firing threat-area forced abilities (e.g. Captivating Gleam).
   orM
-    $ sequence [field InvestigatorResigned, field InvestigatorDefeated, field InvestigatorIsEliminated] iid
+    $ sequence
+      [field InvestigatorResigned, field InvestigatorDefeated, field InvestigatorIsEliminated]
+      iid
 
 getHandCount :: HasGame m => InvestigatorId -> m Int
 getHandCount = fieldMap InvestigatorHand length
@@ -682,14 +692,18 @@ healAdditional (toSource -> source) dType ws' additional = do
     (healedTiming, healedTarget, healedSource) =
       fromJustNote "wrong call" $ getFirst $ foldMap (First . getHealed) ws'
     updateHealingMessage = \case
-      Do (HealDamage t s n) | dType == DamageType && t == healedTarget && s == healedSource ->
-        Do $ HealDamage t s (n + additional)
-      HealDamage t s n | dType == DamageType && t == healedTarget && s == healedSource ->
-        HealDamage t s (n + additional)
-      Do (HealHorror t s n) | dType == HorrorType && t == healedTarget && s == healedSource ->
-        Do $ HealHorror t s (n + additional)
-      HealHorror t s n | dType == HorrorType && t == healedTarget && s == healedSource ->
-        HealHorror t s (n + additional)
+      Do (HealDamage t s n)
+        | dType == DamageType && t == healedTarget && s == healedSource ->
+            Do $ HealDamage t s (n + additional)
+      HealDamage t s n
+        | dType == DamageType && t == healedTarget && s == healedSource ->
+            HealDamage t s (n + additional)
+      Do (HealHorror t s n)
+        | dType == HorrorType && t == healedTarget && s == healedSource ->
+            Do $ HealHorror t s (n + additional)
+      HealHorror t s n
+        | dType == HorrorType && t == healedTarget && s == healedSource ->
+            HealHorror t s (n + additional)
       other -> other
 
   if healedTiming == #when
@@ -762,13 +776,14 @@ getAsIfInHandCardsFor forPlay iid = do
       NotForPlay -> []
   pure $ playableFromOutOfHand <> cardsAddedViaModifiers
 
--- | Cards to load as in-hand effect entities (see 'preloadEntities'). Unlike
--- 'getAsIfInHandCardsFor', this is agnostic to ForPlay/NotForPlay: a card that
--- is only "as if in hand for play" (e.g. an event stashed under Stick to the
--- Plan or Backpack) must still have its in-hand effects ('cdCardInHandEffects')
--- applied -- otherwise e.g. Marksmanship(1)'s targeting modifier never fires
--- while it sits under Stick to the Plan. Cards merely playable from
--- discard/deck are deliberately excluded; those load as their own entities.
+{- | Cards to load as in-hand effect entities (see 'preloadEntities'). Unlike
+'getAsIfInHandCardsFor', this is agnostic to ForPlay/NotForPlay: a card that
+is only "as if in hand for play" (e.g. an event stashed under Stick to the
+Plan or Backpack) must still have its in-hand effects ('cdCardInHandEffects')
+applied -- otherwise e.g. Marksmanship(1)'s targeting modifier never fires
+while it sits under Stick to the Plan. Cards merely playable from
+discard/deck are deliberately excluded; those load as their own entities.
+-}
 getAsIfInHandEffectCards :: (HasCallStack, HasGame m) => InvestigatorId -> m [Card]
 getAsIfInHandEffectCards iid = do
   isSkillTest <- isJust <$> getSkillTest

@@ -37,7 +37,11 @@ import Arkham.Direction
 import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
-import Arkham.Helpers.Discover (resolveDiscoverCluesAt, resolveSuccessfulInvestigation)
+import Arkham.Helpers.Discover (
+  resolveDiscoverCluesAt,
+  resolveSuccessfulInvestigation,
+  withExposeInsteadOfInvestigating,
+ )
 import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, windows, wouldDoEach)
@@ -163,28 +167,32 @@ instance RunMessage LocationAttrs where
         $ Investigate.resolveInvestigate a (LocationMaybeFieldCalculation a.id LocationShroud) investigation
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
+      option <-
+        withExposeInsteadOfInvestigating
+          iid
+          locationId
+          [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
+          , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
+          ]
       push
         $ SkillTestResultOption
           ( SkillTestOption
-              { option =
-                  Label
-                    ("Discover Clue at " <> display (toName a))
-                    [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
-                    , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
-                    ]
+              { option = Label ("Discover Clue at " <> display (toName a)) option
               , kind = OriginalOptionKind
               , criteria = Nothing
               }
           )
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (InitiatorProxy target actual) _ n | isTarget a target -> do
+      option <-
+        withExposeInsteadOfInvestigating
+          iid
+          locationId
+          [Successful (Action.Investigate, toTarget a) iid source actual n]
       push
         $ SkillTestResultOption
           ( SkillTestOption
-              { option =
-                  Label
-                    ("Discover Clue at " <> display (toName a))
-                    [Successful (Action.Investigate, toTarget a) iid source actual n]
+              { option = Label ("Discover Clue at " <> display (toName a)) option
               , kind = OriginalOptionKind
               , criteria = Nothing
               }

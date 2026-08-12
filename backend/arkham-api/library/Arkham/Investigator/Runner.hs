@@ -1295,8 +1295,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             | otherwise = msgs
 
         let
-          defaultDiscover :: Lifted.ReverseQueue n => n ()
-          defaultDiscover =
+          defaultDiscover :: (Lifted.ReverseQueue n, HasGameLogger n) => n ()
+          defaultDiscover = do
             pushAll
               $ [ MoveTokens d.source (toSource lid) (toTarget iid) Clue clueCount
                 ]
@@ -1306,16 +1306,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                  ]
               <> wrapWindows [locationWindowsAfter]
               <> d.discoverThen
+            send $ format a <> " discovered " <> pluralize clueCount "clue"
 
+        -- Investigating and automatically discovering a clue are two separate exposure triggers.
+        -- The investigation one is offered up front at ST.7 (see 'withExposeInsteadOfInvestigating'
+        -- in "Arkham.Helpers.Discover"), so offering it again here would prompt twice for the same
+        -- investigation. (#5387)
+        let exposeHere = d.isInvestigate == NotInvestigate
         if
-          | notNull concealed && clueCount > 0 ->
+          | notNull concealed && exposeHere && clueCount > 0 ->
               Choose.chooseOneM iid do
                 Choose.labeledI "exposeConcealedCard" $ chooseExposeConcealedAt iid iid (LocationWithId lid)
                 Choose.labeledI "discoverNormally" defaultDiscover
-          | notNull concealed -> chooseExposeConcealedAt iid iid (LocationWithId lid)
+          | notNull concealed && exposeHere -> chooseExposeConcealedAt iid iid (LocationWithId lid)
+          -- The investigation declined its exposure prompt, and the location only qualified as
+          -- discoverable because of the concealed card, so there is nothing left to discover.
+          | notNull concealed && clueCount == 0 -> pure ()
           | otherwise -> defaultDiscover
 
-        send $ format a <> " discovered " <> pluralize clueCount "clue"
         pure a
       else pure a
   InvestigatorDiscardAllClues _ iid | iid == investigatorId -> do

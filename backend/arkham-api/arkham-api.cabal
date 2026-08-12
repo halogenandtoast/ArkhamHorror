@@ -7391,6 +7391,7 @@ test-suite spec
       Arkham.Campaign.TheDrownedCity.TasksSpec
       Arkham.Campaign.TheDunwichLegacy.ScenariosSpec
       Arkham.Campaign.ThePathToCarcosa.ScenariosSpec
+      Arkham.Campaign.TheScarletKeys.ConcealedSpec
       Arkham.Campaign.UsedAbilitiesSpec
       Arkham.CampaignLogKeySpec
       Arkham.ChaosTokenFaceSpec

@@ -78,7 +78,11 @@ instance RunMessage WithoutATrace where
       doStep 4 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
+      record AgentQuinnHasYourBack
+      record TheCellThrewAwayTheWhistle
       flavor $ setTitle "title" >> p "intro3"
+      iids <- allInvestigators
+      addCampaignCardToDeckChoice iids ShuffleIn Assets.agentAriQuinnFoundationResearcher
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do

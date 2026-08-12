@@ -15,16 +15,10 @@ engineRoomTatterdemalion :: LocationCard EngineRoomTatterdemalion
 engineRoomTatterdemalion =
   symbolLabel $ location EngineRoomTatterdemalion Cards.engineRoomTatterdemalion 4 (PerPlayer 1)
 
-{- | "Forced - At the end of your turn, if you are at the Engine Room and do not
-control Radiation Tablets: Take 1 damage."
--}
 instance HasAbilities EngineRoomTatterdemalion where
   getAbilities (EngineRoomTatterdemalion a) =
     extendRevealed1 a
-      $ restricted
-        a
-        1
-        (Here <> not_ (exists $ assetIs Assets.radiationTablets <> AssetControlledBy You))
+      $ restricted a 1 (Here <> notExists (assetIs Assets.radiationTablets <> AssetControlledBy You))
       $ forced
       $ TurnEnds #when You
 

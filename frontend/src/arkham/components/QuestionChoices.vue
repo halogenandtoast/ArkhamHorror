@@ -18,6 +18,10 @@ const emit = defineEmits<{
 }>()
 
 const choose = (idx: number) => emit('choose', idx)
+const connectionImage = (connection: string) => {
+  const filename = connection === 'Equals' ? 'slash' : connection.toLowerCase()
+  return `/img/arkham/connections/${filename}.svg`
+}
 
 const { t } = useI18n()
 const label = function(body: string) {
@@ -83,6 +87,14 @@ const drownedCityTaskRecommendation = (body: string) => {
       <template v-else-if="choice.tag === MessageType.TARGET_LABEL">
         <button @click="choose(index)">{{ t('continue') }}</button>
       </template>
+      <button
+        v-else-if="choice.tag === MessageType.CONNECTION_LABEL"
+        class="connection-choice"
+        :aria-label="choice.connection"
+        @click="choose(index)"
+      >
+        <img :src="connectionImage(choice.connection)" alt="" />
+      </button>
       <template v-else-if="choice.tag === MessageType.TOOLTIP_LABEL">
         <button @click="choose(index)" v-tooltip="choice.tooltip">{{ t(choice.label) }}</button>
       </template>
@@ -336,13 +348,61 @@ i.iconSkillAgility:before {
   font-size: 1.3em;
 }
 
+.question-choices > .connection-choice {
+  align-items: center;
+  background-color: var(--select-dark-30) !important;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 50% !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 22%);
+  display: flex !important;
+  flex: 0 0 5rem;
+  height: 5rem;
+  justify-content: center;
+  min-height: 0;
+  padding: 0 !important;
+  transition: background-color 35ms linear, border-color 35ms linear, box-shadow 35ms linear, transform 35ms linear !important;
+  width: 5rem;
+}
+
+.connection-choice::before {
+  display: none;
+}
+
+.connection-choice img {
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 32%));
+  height: 4.6rem;
+  object-fit: contain;
+  width: 4.6rem;
+}
+
+.connection-choice:hover {
+  background-color: rgb(205, 24, 205) !important;
+  border-color: #f8e4ac;
+  box-shadow: 0 0 0 1px rgb(248 228 172 / 12%), 0 3px 8px rgb(0 0 0 / 24%);
+  transform: translateY(-1px);
+}
+
+.connection-choice:active {
+  box-shadow: 0 0 0 1px rgb(248 228 172 / 20%);
+  transform: translateY(0) scale(0.97);
+}
+
 .question-choices {
   display: flex;
   gap: 10px;
   flex-direction: column;
-  &:has(.question-label) {
-    padding: 10px;
-  }
+}
+
+.question-choices:has(> .connection-choice) {
+  align-items: center;
+  flex-direction: row;
+  gap: 1rem !important;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.question-choices:has(.question-label) {
+  padding: 10px;
 }
 
 :deep(.message-label) {

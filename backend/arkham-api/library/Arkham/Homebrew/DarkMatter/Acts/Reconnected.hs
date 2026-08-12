@@ -15,24 +15,12 @@ newtype Reconnected = Reconnected ActAttrs
 reconnected :: ActCard Reconnected
 reconnected = act (3, A) Reconnected Cards.reconnected Nothing
 
-{- | "After an investigator at the Cryosleep Quarters performs a scan matching
-the icon below, regardless of whether it is successful or not, you may
-advance."
-
-The icon is part of the window itself — 'scanEventFor' fires @scan[Trefoil]@
-alongside the general scan window — so the ability is only ever offered for a
-matching scan rather than for every scan made there.
--}
 instance HasAbilities Reconnected where
-  getAbilities (Reconnected a) =
-    [ mkAbility a 1
-        $ Objective
-        $ forced
-        $ CampaignEvent
-          #after
-          (Just $ InvestigatorAt $ locationIs Locations.cryosleepQuarters)
-          (scanEventFor LS.Trefoil)
-    ]
+  getAbilities = actAbilities1 \a ->
+    mkAbility a 1
+      $ Objective
+      $ forced
+      $ CampaignEvent #after (Just $ at_ $ locationIs Locations.cryosleepQuarters) (scanEventFor LS.Trefoil)
 
 instance RunMessage Reconnected where
   runMessage msg a@(Reconnected attrs) = runQueueT $ case msg of

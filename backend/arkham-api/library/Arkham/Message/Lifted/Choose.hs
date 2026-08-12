@@ -18,6 +18,7 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
 import Arkham.Location.Grid
+import Arkham.LocationSymbol (LocationSymbol)
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
@@ -235,6 +236,11 @@ labeled' :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT 
 labeled' label action = unterminated do
   msgs <- lift $ capture action
   tell [Label ("$" <> labelKey label) msgs]
+
+connectionLabeled' :: ReverseQueue m => LocationSymbol -> QueueT Message m () -> ChooseT m ()
+connectionLabeled' sym action = unterminated do
+  msgs <- lift $ capture action
+  tell [ConnectionLabel sym msgs]
 
 info' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m ()
 info' flavor = unterminated $ tell [Info $ buildFlavor flavor]

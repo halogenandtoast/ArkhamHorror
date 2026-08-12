@@ -14,7 +14,7 @@ emergencyProcedure = agenda (1, A) EmergencyProcedure Cards.emergencyProcedure (
 
 instance HasModifiersFor EmergencyProcedure where
   getModifiersFor (EmergencyProcedure a) =
-    modifySelect a Anyone [CannotTakeAction $ IsAction #resign]
+    modifySelect a Anyone [CannotTakeAction #resign]
 
 instance RunMessage EmergencyProcedure where
   runMessage msg a@(EmergencyProcedure attrs) = runQueueT $ case msg of

@@ -16,8 +16,7 @@ finalDestination = story FinalDestination Cards.finalDestination
 instance RunMessage FinalDestination where
   runMessage msg s@(FinalDestination attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
-      colocated <- select $ colocatedWith iid
-      for_ colocated (`addMemories` 1)
+      selectEach (colocatedWith iid) (`addMemories` 1)
       withI18n $ chooseAmount' iid "resources" "$resources" 0 3 attrs
       addToVictory iid attrs
       pure s

@@ -25,9 +25,9 @@ instance RunMessage Jv7Hyades where
       parley sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      chooseOneM iid $ campaignI18n do
-        labeled' "jv7Hyades.trefoil" $ scan iid (attrs.ability 1) [LS.Trefoil]
-        labeled' "jv7Hyades.t" $ scan iid (attrs.ability 1) [LS.T]
+      chooseOneM iid do
+        connectionLabeled' LS.Trefoil $ scan iid (attrs.ability 1) [LS.Trefoil]
+        connectionLabeled' LS.T $ scan iid (attrs.ability 1) [LS.T]
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       initiateEnemyAttack attrs (attrs.ability 1) iid

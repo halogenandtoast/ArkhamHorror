@@ -20,13 +20,9 @@ eventHorizon =
 instance RunMessage EventHorizon where
   runMessage msg a@(EventHorizon attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      doom <- getDoomOnAgenda
       shuffleSetAsideEncounterSetIntoEncounterDeck Set.ArtificialIntelligence
       shuffleEncounterDiscardBackIn
-      {- "Advance to agenda 2a and act 2a. Do not remove doom from play and
-      transfer all doom from agenda 1a to agenda 2a." AdvanceAgendaDeck only
-      replaces the agenda card, so unlike a normal agenda advance it sweeps no
-      doom off anything; we only have to carry agenda 1a's own doom across. -}
-      doom <- getDoomOnAgenda
       push $ AdvanceAgendaDeck 1 (toSource attrs)
       placeDoomOnAgendaAndCheckAdvance doom
       advanceActDeck attrs

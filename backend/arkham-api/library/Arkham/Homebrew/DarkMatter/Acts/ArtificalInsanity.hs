@@ -12,23 +12,19 @@ newtype ArtificalInsanity = ArtificalInsanity ActAttrs
   deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- Advanced by the "K2-PS187 Cybernetic Brains" story card ("Advance to act 2b"),
--- not by clues, hence no advancement cost.
 artificalInsanity :: ActCard ArtificalInsanity
 artificalInsanity = act (2, A) ArtificalInsanity Cards.artificalInsanity Nothing
 
 instance RunMessage ArtificalInsanity where
   runMessage msg a@(ArtificalInsanity attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      card <- getSetAsideCard Assets.virtualAccessKey
-      lead <- getLead
       investigators <- select Anyone
-      chooseOneM lead $ targets investigators \iid -> do
-        createAssetAt_ card (InPlayArea iid)
-        forInvestigator iid msg
+      leadChooseOneM $ targets investigators (`forInvestigator` msg)
       advanceActDeck attrs
       pure a
     ForInvestigator iid (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      card <- fetchCard Assets.virtualAccessKey
+      createAssetAt_ card (InPlayArea iid)
       chooseOneM iid $ campaignI18n do
         labeled' "virtualAccessKey.addToDeck"
           $ addCampaignCardToDeck iid DoNotShuffleIn Assets.virtualAccessKey

@@ -16,16 +16,13 @@ cybervirus = enemy Cybervirus Cards.cybervirus
 instance HasAbilities Cybervirus where
   getAbilities (Cybervirus a) = case a.placement of
     HiddenInHand iid ->
-      [ mkAbility a 1
-          $ forced
-          $ DiscoveringLastClue #after (You <> InvestigatorWithId iid) Anywhere
-      ]
+      [mkAbility a 1 $ forced $ DiscoveringLastClue #after (You <> InvestigatorWithId iid) Anywhere]
     _ -> getAbilities a
 
 instance RunMessage Cybervirus where
   runMessage msg e@(Cybervirus attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      place attrs (HiddenInHand iid)
+      place attrs $ HiddenInHand iid
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ EnemySpawnEngagedWith attrs.id (InvestigatorWithId iid)

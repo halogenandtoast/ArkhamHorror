@@ -13,6 +13,7 @@ import Arkham.Cost (Cost)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
+import Arkham.LocationSymbol (LocationSymbol)
 import Arkham.Prelude hiding (maxBound, minBound)
 import Arkham.SkillType
 import Arkham.Source
@@ -55,7 +56,8 @@ pattern HorrorLabel iid msgs <- ComponentLabel (InvestigatorComponent iid Horror
     HorrorLabel iid msgs = ComponentLabel (InvestigatorComponent iid HorrorToken) msgs
 
 pattern AuxiliaryHorrorLabel :: InvestigatorId -> [msg] -> UI msg
-pattern AuxiliaryHorrorLabel iid msgs <- AuxiliaryComponentLabel (InvestigatorComponent iid HorrorToken) msgs
+pattern AuxiliaryHorrorLabel iid msgs <-
+  AuxiliaryComponentLabel (InvestigatorComponent iid HorrorToken) msgs
   where
     AuxiliaryHorrorLabel iid msgs = AuxiliaryComponentLabel (InvestigatorComponent iid HorrorToken) msgs
 
@@ -87,6 +89,7 @@ data UI msg
   | FightLabelWithSkill {enemyId :: EnemyId, skillType :: SkillType, messages :: [msg]}
   | EngageLabel {enemyId :: EnemyId, messages :: [msg]}
   | GridLabel {gridLabel :: Text, messages :: [msg]}
+  | ConnectionLabel {connection :: LocationSymbol, messages :: [msg]}
   | TarotLabel {tarotCard :: TarotCard, messages :: [msg]}
   | AbilityLabel
       { investigatorId :: InvestigatorId
@@ -128,6 +131,7 @@ uiAnd ui msg = case ui of
   FightLabelWithSkill enemyId sType msgs -> FightLabelWithSkill enemyId sType (msgs <> [msg])
   EngageLabel enemyId msgs -> EngageLabel enemyId (msgs <> [msg])
   GridLabel gridLabel msgs -> GridLabel gridLabel (msgs <> [msg])
+  ConnectionLabel connection msgs -> ConnectionLabel connection (msgs <> [msg])
   TarotLabel tarotCard msgs -> TarotLabel tarotCard (msgs <> [msg])
   AbilityLabel iid ability windows before msgs -> AbilityLabel iid ability windows (before <> [msg]) msgs
   ComponentLabel component msgs -> ComponentLabel component (msgs <> [msg])
@@ -173,10 +177,11 @@ data AmountTarget = MinAmountTarget Int | MaxAmountTarget Int | TotalAmountTarge
 data Question msg
   = ChooseOne {choices :: [UI msg]}
   | PlayerWindowChooseOne {choices :: [UI msg]}
-  | -- | A seat's choices for an open window, built by @runWindow@. The
-    -- @WindowAsk@ handler queues a @Do (CheckWindows ws)@ behind the ask, which
-    -- rebuilds every seat from scratch, so a seat left over after another seat
-    -- answers is stale and must be dropped rather than re-asked (#5160).
+  | {- | A seat's choices for an open window, built by @runWindow@. The
+    @WindowAsk@ handler queues a @Do (CheckWindows ws)@ behind the ask, which
+    rebuilds every seat from scratch, so a seat left over after another seat
+    answers is stale and must be dropped rather than re-asked (#5160).
+    -}
     WindowChooseOne {choices :: [UI msg]}
   | ChooseOneFromEach {groups :: [[UI msg]]}
   | ChooseN {amount :: Int, choices :: [UI msg]}
@@ -206,12 +211,14 @@ data Question msg
   | ChooseUpgradeDeck
   | ChooseDeck
   | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: Question msg}
-  | -- | Wraps any Question with a header that the frontend renders as
-    -- "Pay <cost>", using its own Cost rendering.
+  | {- | Wraps any Question with a header that the frontend renders as
+    "Pay <cost>", using its own Cost rendering.
+    -}
     PayCostQuestion {cost :: Cost, question :: Question msg}
-  | -- | Wraps any Question with the Source that prompted it, which the frontend
-    -- highlights on the board while the question is pending (e.g. an enemy
-    -- fleeing via Elusive), plus an optional tooltip shown on that source.
+  | {- | Wraps any Question with the Source that prompted it, which the frontend
+    highlights on the board while the question is pending (e.g. an enemy
+    fleeing via Elusive), plus an optional tooltip shown on that source.
+    -}
     QuestionWithSource {source :: Source, tooltip :: Maybe Tooltip, question :: Question msg}
   | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg, readCards :: Maybe [CardCode]}
   | PickSupplies

@@ -2662,6 +2662,7 @@ uiToRun = \case
   KeyLabel _ msgs -> Run msgs
   TargetLabel _ msgs -> Run msgs
   GridLabel _ msgs -> Run msgs
+  ConnectionLabel _ msgs -> Run msgs
   TarotLabel _ msgs -> Run msgs
   SkillLabel _ msgs -> Run msgs
   SkillLabelWithLabel _ _ msgs -> Run msgs

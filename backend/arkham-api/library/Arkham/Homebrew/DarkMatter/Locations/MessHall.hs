@@ -13,9 +13,6 @@ newtype MessHall = MessHall LocationAttrs
 messHall :: LocationCard MessHall
 messHall = symbolLabel $ location MessHall Cards.messHall 1 (PerPlayer 2)
 
-{- | "[reaction] When you gain any amount of resources during your turn at the
-Mess Hall: Gain 1 additional resource. (Limit once per round.)"
--}
 instance HasAbilities MessHall where
   getAbilities (MessHall a) =
     extendRevealed1 a

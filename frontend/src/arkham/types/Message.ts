@@ -34,6 +34,7 @@ export enum MessageType {
   EVADE_LABEL_WITH_SKILL = 'EvadeLabelWithSkill',
   ENGAGE_LABEL = 'EngageLabel',
   GRID_LABEL = 'GridLabel',
+  CONNECTION_LABEL = 'ConnectionLabel',
   TAROT_LABEL = 'TarotLabel',
   DONE = 'Done',
   SKIP_TRIGGERS_BUTTON = 'SkipTriggersButton',
@@ -253,6 +254,17 @@ export const gridLabelDecoder = JsonDecoder.object<GridLabel>(
     gridLabel: JsonDecoder.string(),
   }, 'GridLabel')
 
+export type ConnectionLabel = {
+  tag: MessageType.CONNECTION_LABEL
+  connection: string
+}
+
+export const connectionLabelDecoder = JsonDecoder.object<ConnectionLabel>(
+  {
+    tag: JsonDecoder.literal(MessageType.CONNECTION_LABEL),
+    connection: JsonDecoder.string(),
+  }, 'ConnectionLabel')
+
 export type TarotLabel = {
   tag: MessageType.TAROT_LABEL
   tarotCard: TarotCard
@@ -404,7 +416,8 @@ export type Message = MessageCommon & (
   | EvadeLabel
   | EvadeLabelWithSkill
   | EngageLabel
-  | GridLabel 
+  | GridLabel
+  | ConnectionLabel
   | TarotLabel 
   | Done 
   | ChaosTokenGroupChoice 
@@ -559,6 +572,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     evadeLabelWithSkillDecoder,
     engageLabelDecoder,
     gridLabelDecoder,
+    connectionLabelDecoder,
     tarotLabelDecoder,
     scenarioLabelDecoder,
     doneDecoder,
@@ -585,6 +599,7 @@ export function choiceRequiresModal(c: Message) {
     }
     case 'CardLabel': return true;
     case 'ChaosTokenLabel': return true;
+    case 'ConnectionLabel': return true;
     case 'KeyLabel': return false; // expect all keys to be visible
     case 'TarotLabel': return true;
     case 'ChaosTokenGroupChoice': return true;

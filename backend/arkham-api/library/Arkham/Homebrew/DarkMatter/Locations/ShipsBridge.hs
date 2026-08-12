@@ -16,17 +16,10 @@ newtype ShipsBridge = ShipsBridge LocationAttrs
 shipsBridge :: LocationCard ShipsBridge
 shipsBridge = symbolLabel $ location ShipsBridge Cards.shipsBridge 3 (PerPlayer 1)
 
-{- | Unrevealed: "Investigators cannot enter the Ship's Bridge from the Mess
-Hall. Your access level is restricted. You will need to find another way
-inside."
--}
 instance HasModifiersFor ShipsBridge where
   getModifiersFor (ShipsBridge a) =
     modifySelectWhen a (not a.revealed) (InvestigatorAt $ locationIs Cards.messHall) [CannotEnter a.id]
 
-{- | "Forced - After you perform a scan at this location, if there are no clues
-on it: Add 1[per_investigator] clues on it from the token bank."
--}
 instance HasAbilities ShipsBridge where
   getAbilities (ShipsBridge a) =
     extendRevealed1 a

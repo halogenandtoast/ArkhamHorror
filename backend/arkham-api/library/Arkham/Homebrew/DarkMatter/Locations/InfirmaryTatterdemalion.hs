@@ -15,7 +15,6 @@ infirmaryTatterdemalion :: LocationCard InfirmaryTatterdemalion
 infirmaryTatterdemalion =
   symbolLabel $ location InfirmaryTatterdemalion Cards.infirmaryTatterdemalion 3 (PerPlayer 1)
 
--- "[action]: Scan. Look for medical supplies." (heart icon)
 instance HasAbilities InfirmaryTatterdemalion where
   getAbilities (InfirmaryTatterdemalion a) =
     extendRevealed1 a $ restricted a 1 Here scanAction_

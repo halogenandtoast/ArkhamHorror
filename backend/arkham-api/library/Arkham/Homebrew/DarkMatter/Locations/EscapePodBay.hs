@@ -17,7 +17,7 @@ escapePodBay = symbolLabel $ location EscapePodBay Cards.escapePodBay 3 (PerPlay
 instance HasAbilities EscapePodBay where
   getAbilities (EscapePodBay a) =
     extendRevealed1 a
-      $ groupLimit PerGame
+      $ limited (GroupLimit PerGame 3)
       $ restricted a 1 Here
       $ freeReaction
       $ EnemyEvadedSuccessfully #after You AnySource (EnemyAt $ be a)

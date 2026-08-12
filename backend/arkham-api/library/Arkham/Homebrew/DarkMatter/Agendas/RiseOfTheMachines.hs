@@ -17,14 +17,10 @@ newtype RiseOfTheMachines = RiseOfTheMachines AgendaAttrs
 riseOfTheMachines :: AgendaCard RiseOfTheMachines
 riseOfTheMachines = agenda (3, A) RiseOfTheMachines Cards.riseOfTheMachines (Static 9)
 
--- "[action] If there are no clues on your current location: Scan."
 instance HasAbilities RiseOfTheMachines where
   getAbilities (RiseOfTheMachines a) =
     [restricted a 1 (exists $ YourLocation <> LocationWithoutClues) scanAction_]
 
-{- | 3b "Blackout": "Each remaining undefeated investigator is defeated and
-suffers 1 physical trauma."
--}
 instance RunMessage RiseOfTheMachines where
   runMessage msg a@(RiseOfTheMachines attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do

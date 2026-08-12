@@ -18,15 +18,10 @@ newtype TheGhostShip = TheGhostShip AgendaAttrs
 theGhostShip :: AgendaCard TheGhostShip
 theGhostShip = agenda (2, A) TheGhostShip Cards.theGhostShip (Static 7)
 
--- "[action] If there are no clues on your current location: Scan."
 instance HasAbilities TheGhostShip where
   getAbilities (TheGhostShip a) =
     [restricted a 1 (exists $ YourLocation <> LocationWithoutClues) scanAction_]
 
-{- | This agenda has no printed back: the reverse of the physical card is the
-UPL-A21 'Demhe' enemy. Advancing flips it into play at the Cargo Hold and
-continues on to agenda 3a.
--}
 instance RunMessage TheGhostShip where
   runMessage msg a@(TheGhostShip attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do

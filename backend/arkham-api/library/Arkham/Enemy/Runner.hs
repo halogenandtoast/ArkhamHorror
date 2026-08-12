@@ -2012,13 +2012,12 @@ instance RunMessage EnemyAttrs where
             AsSwarm eid' _ -> do
               pushAll [before, EngageEnemy iid eid' mTarget False, after]
             _ -> do
-              massive <- eid <=~> MassiveEnemy
               mlid <- getMaybeLocation iid
               enemyLocation <- field EnemyLocation eid
               canEnter <-
                 maybe (pure False) (\loc -> (enemyLocation == Just loc ||) <$> canEnterLocation enemyId loc) mlid
 
-              when (not massive && canEnter) do
+              when canEnter do
                 Lifted.batched \_ -> do
                   Lifted.checkWhen $ Window.EnemyWouldEngage iid eid
                   Lifted.do_ msg
@@ -2027,8 +2026,19 @@ instance RunMessage EnemyAttrs where
       let (before, _, after) = frame (Window.EnemyEngaged iid eid)
       mlid <- getMaybeLocation iid
       enemyLocation <- field EnemyLocation eid
+      -- A massive enemy can never be placed in a threat area; it is engaged with
+      -- everyone at its location, so a card effect that engages it (Stalked in
+      -- the Dark on a Shadow-spawned Hunting Horror) resolves by moving it to
+      -- that investigator's location instead of being dropped entirely.
+      massive <- eid <=~> MassiveEnemy
+      let
+        placement =
+          if massive
+            then [PlaceEnemy eid (AtLocation lid) | lid <- maybeToList mlid, Just lid /= enemyLocation]
+            else [PlaceEnemy eid (InThreatArea iid)]
       pushAll
-        $ [before, PlaceEnemy eid (InThreatArea iid)]
+        $ [before]
+        <> placement
         <> [EnemyEntered eid lid | lid <- maybeToList mlid, Just lid /= enemyLocation]
         <> [after]
 

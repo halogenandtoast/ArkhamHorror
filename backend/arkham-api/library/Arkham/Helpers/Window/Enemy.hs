@@ -5,10 +5,10 @@
 
 module Arkham.Helpers.Window.Enemy where
 
-import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Attack.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
+import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
@@ -102,6 +102,9 @@ getAttackDetails = \case
 getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
+  ((windowType -> Window.EnemyEvaded _ eid) : _) -> eid
+  ((windowType -> Window.SuccessfulEvadeEnemy _ _ eid _) : _) -> eid
+  ((windowType -> Window.SuccessfulAttackEnemy _ _ eid _) : _) -> eid
   ((windowType -> Window.EnemyDefeated _ _ eid) : _) -> eid
   ((windowType -> Window.IfEnemyDefeated _ _ eid) : _) -> eid
   ((windowType -> Window.EnemyMoves eid _) : _) -> eid

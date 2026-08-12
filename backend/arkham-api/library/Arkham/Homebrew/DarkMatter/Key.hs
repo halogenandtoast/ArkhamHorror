@@ -65,7 +65,8 @@ data DarkMatterKey
   deriving anyclass (ToJSON, FromJSON)
 
 instance IsCampaignLogKey DarkMatterKey where
-  toCampaignLogKey = HomebrewCampaignLogKey . tshow
+  toCampaignLogKey = HomebrewCampaignLogKey . ("darkMatter." <>) . tshow
   fromCampaignLogKey = \case
-    HomebrewCampaignLogKey t -> readMay (unpack t)
+    HomebrewCampaignLogKey t ->
+      readMay . unpack $ fromMaybe t (stripPrefix "darkMatter." t)
     _ -> Nothing

@@ -5,7 +5,7 @@ import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
-import Arkham.Homebrew.DarkMatter.Helpers (scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (earnXp, scenarioI18n)
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.I18n
 import Arkham.Location.Types (Field (LocationClues, LocationRevealClues))
@@ -52,7 +52,7 @@ instance RunMessage FragmentOfCarcosa where
           actStep <- getCurrentActStepMaybe
           push $ ScenarioResolution $ Resolution $ if actStep == Just 3 then 2 else 1
         Resolution 1 -> resolution "resolution1"
-        Resolution n | n `elem` [2, 3] -> resolutionWithXp ("resolution" <> tshow n) $ allGainXp' attrs
+        Resolution n | n `elem` [2, 3] -> earnXp attrs ("resolution" <> tshow n)
         _ -> error "invalid resolution"
       when (r /= NoResolution) endOfScenario
       pure s

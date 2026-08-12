@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
-import Arkham.I18n (cardNameVar, withI18n)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)

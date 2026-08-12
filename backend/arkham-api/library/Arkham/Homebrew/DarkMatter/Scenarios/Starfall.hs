@@ -5,7 +5,6 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.DarkMatter.Helpers (scenarioI18n)
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
-import Arkham.I18n (scope)
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 

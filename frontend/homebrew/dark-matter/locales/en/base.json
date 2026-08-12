@@ -1,5 +1,8 @@
 {
   "name": "Dark Matter",
+  "xp": {
+    "heirToCarcosa": "Heir to Carcosa"
+  },
   "intro": {
     "title": "In Space, No One Can Hear You Scream",
     "body": "<p class='basic'>“He mentioned the establishment of the Dynasty in Carcosa, the lakes which connected Hastur, Aldebaran, and the mystery of the Hyades. He spoke of Cassilda and Camilla, and sounded the cloudy depths of Demhe and the Lake of Hali.”</p><p class='basic right'>– Robert W. Chambers, “The Repairer of Reputations”</p><p>It is 2147, and you have just woken up from cryo-sleep in a seemingly abandoned space ship – and from there on you are thrown into a deep space adventure across the solar system to prevent the extinction of the human race. Based on Call of Cthulhu supplements Ripples from Carcosa by Oscar Rios and the End Time by Dr. Michael C. LaBossiere, <i>Dark Matter</i> is an 8 scenario fan-made campaign for <i>Arkham Horror: The Card Game</i> for 1–4 players, designed by Axolotl. It requires <i>The Path to Carcosa</i> deluxe expansion; for the best experience, it is highly recommended that you have completed <i>The Path to Carcosa</i> before playing.</p>"

@@ -26,7 +26,8 @@ matching scan rather than for every scan made there.
 instance HasAbilities Reconnected where
   getAbilities (Reconnected a) =
     [ mkAbility a 1
-        $ freeReaction
+        $ Objective
+        $ forced
         $ CampaignEvent
           #after
           (Just $ InvestigatorAt $ locationIs Locations.cryosleepQuarters)

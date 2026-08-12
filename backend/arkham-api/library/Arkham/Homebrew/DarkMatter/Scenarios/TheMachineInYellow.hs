@@ -3,9 +3,8 @@ module Arkham.Homebrew.DarkMatter.Scenarios.TheMachineInYellow (theMachineInYell
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.DarkMatter.Helpers (scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (earnXp, earnXpWithBonus, scenarioI18n)
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
-import Arkham.I18n (scope)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -37,8 +36,8 @@ instance RunMessage TheMachineInYellow where
         NoResolution -> do
           resolution "noResolution"
           push $ ScenarioResolution $ Resolution 1
-        Resolution 1 -> resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "resolution1" 2
-        Resolution 2 -> resolutionWithXp "resolution2" $ allGainXp' attrs
+        Resolution 1 -> earnXpWithBonus attrs "resolution1" $ toBonus "resolution1" 2
+        Resolution 2 -> earnXp attrs "resolution2"
         _ -> error "invalid resolution"
       when (r /= NoResolution) endOfScenario
       pure s

@@ -15,7 +15,6 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
-import Arkham.I18n (ikey)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher (cardIs)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)

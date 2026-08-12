@@ -18,6 +18,14 @@ import Arkham.Text
 import Control.Monad.State.Strict
 import GHC.Records
 
+resolutionWithXp :: (HasI18n, ReverseQueue m) => Scope -> m Int -> m ()
+resolutionWithXp s f = do
+  xp <- f
+  resolutionFlavor $ withVars ["xp" .= xp] $ setTitle (s <> ".title") >> p (s <> ".body")
+
+resolution :: (HasI18n, ReverseQueue m) => Scope -> m ()
+resolution s = resolutionFlavor $ setTitle (s <> ".title") >> p (s <> ".body")
+
 setup :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 setup body = scope "setup" $ flavor do
   unscoped $ setTitle "setup"

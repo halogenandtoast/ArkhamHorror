@@ -219,7 +219,7 @@ instance RunMessage InTheShadowOfEarth where
               . concat
               <$> sequence [getRemovedCrew, getCrewAttachedToTheEntity, getCrewInScanningDeck]
           addImpendingDoom $ 1 + (length lost `div` 2)
-          resolutionWithXp "resolution3" $ allGainXp' attrs
+          earnXp attrs "resolution3"
           endOfScenario
         Resolution 4 -> do
           record TheNostalgiaIIHasBeenSaved
@@ -242,8 +242,7 @@ instance RunMessage InTheShadowOfEarth where
           they are added as a bonus. -}
           crew <- select $ AssetWithTrait Crew <> AssetControlledBy Anyone
           rescued <- sum . catMaybes <$> traverse getVictoryPoints crew
-          resolutionWithXp "resolution4"
-            $ allGainXpWithBonus' attrs
+          earnXpWithBonus attrs "resolution4"
             $ if rescued > 0 then WithBonus "Crew of the Nostalgia II rescued" rescued else NoBonus
           endOfScenario
         Resolution 5 -> do
@@ -252,8 +251,7 @@ instance RunMessage InTheShadowOfEarth where
           addImpendingDoom 4
           -- "Each investigator earns 2 additional experience as they have seen
           -- the unthinkable."
-          resolutionWithXp "resolution5"
-            $ allGainXpWithBonus' attrs (WithBonus "They have seen the unthinkable" 2)
+          earnXpWithBonus attrs "resolution5" (WithBonus "They have seen the unthinkable" 2)
           endOfScenario
         _ -> error "invalid resolution"
       pure s

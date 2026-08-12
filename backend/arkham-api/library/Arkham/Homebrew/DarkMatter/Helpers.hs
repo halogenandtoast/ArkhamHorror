@@ -9,7 +9,7 @@ import Arkham.Card
 import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
-import Arkham.Classes.Query (select, selectCount, selectOne)
+import Arkham.Classes.Query (select, selectAny, selectCount, selectOne, selectWithField)
 import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Types (Field (EnemyCardsUnderneath))
@@ -19,9 +19,10 @@ import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Game (getRemovedFromPlayCards)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Query (getInvestigators)
+import Arkham.Helpers.Query (getInvestigators, getLead)
 import Arkham.Helpers.Scenario (getEncounterDeck, getScenarioDeck)
 import Arkham.Helpers.Window (wouldWindows)
+import Arkham.Helpers.Xp
 import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
@@ -32,15 +33,17 @@ import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern EvidenceDeck, patter
 import Arkham.Homebrew.DarkMatter.Traits (pattern Brain, pattern Carcosa)
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Investigator.Types (Field (InvestigatorLog))
+import Arkham.Investigator.Types (Field (InvestigatorLog, InvestigatorMentalTrauma))
 import Arkham.Location.Types (LocationAttrs)
 import Arkham.LocationSymbol
 import Arkham.Matcher (
   AssetMatcher (AssetWithPlacement, AssetWithTrait),
   CardMatcher (AnyCard, CardWithTrait),
   EnemyMatcher (EnemyWithPlacement, IncludeOutOfPlayEnemy),
+  InvestigatorMatcher (InvestigatorCanGainXp),
   LocationMatcher (LocationCanBeFlipped, LocationWithTitle, LocationWithTrait),
   TreacheryMatcher (..),
+  assetIs,
   connectedTo,
   enemyIs,
   locationWithInvestigator,
@@ -78,12 +81,51 @@ import Arkham.Story.Types (StoryAttrs)
 import Arkham.Target
 import Arkham.Trait (Trait (Cave, Crew))
 import Arkham.Window qualified as Window
+import Arkham.Xp
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "darkMatter" a
 
 scenarioI18n :: Scope -> (HasI18n => a) -> a
 scenarioI18n scenarioScope a = campaignI18n $ scope scenarioScope a
+
+-- ** Experience (Heir to Carcosa) ** --
+
+{- | Award scenario-resolution experience, including Heir to Carcosa's reward.
+The reward is handled here rather than as an XP modifier because ties for the
+least mental trauma require a player choice.
+-}
+earnXp :: (HasI18n, ReverseQueue m, Sourceable source) => source -> Scope -> m ()
+earnXp source resolutionKey = earnXpWithBonus source resolutionKey NoBonus
+
+earnXpWithBonus
+  :: (HasI18n, ReverseQueue m, Sourceable source) => source -> Scope -> XpBonus -> m ()
+earnXpWithBonus source resolutionKey bonus = do
+  heirIsInPlay <- selectAny $ assetIs Assets.heirToCarcosa
+  traumas <- selectWithField InvestigatorMentalTrauma InvestigatorCanGainXp
+  case (heirIsInPlay, sortOn snd traumas) of
+    (True, (_, leastTrauma) : _) | leastTrauma > 0 -> do
+      let candidates = map fst $ takeWhile ((== leastTrauma) . snd) $ sortOn snd traumas
+      lead <- getLead
+      chooseOrRunOneM lead $ targets candidates $ awardXp . Just . (,leastTrauma)
+    _ -> awardXp Nothing
+ where
+  awardXp :: (HasI18n, ReverseQueue n) => Maybe (InvestigatorId, Int) -> n ()
+  awardXp heirReward = resolutionWithXp resolutionKey do
+    (initial, details) <- getXpWithBonus' bonus.value
+    let
+      addReward (iid, amount) = map $ \(iid', xp) -> (iid', xp + if iid == iid' then amount else 0)
+      details' = maybe details (`addReward` details) heirReward
+      rewardEntries = case heirReward of
+        Nothing -> mempty
+        Just (iid, amount) ->
+          XpBreakdown
+            [ InvestigatorGainXp iid
+                $ XpDetail XpFromCardEffect "$darkMatter.xp.heirToCarcosa" amount
+            ]
+    Msg.push . Msg.ReportXp . (<> rewardEntries) =<< generateXpReport bonus
+    Msg.pushAll =<< toGainXp source (pure details')
+    pure initial
 
 -- ** Memories (guide p3) ** --
 

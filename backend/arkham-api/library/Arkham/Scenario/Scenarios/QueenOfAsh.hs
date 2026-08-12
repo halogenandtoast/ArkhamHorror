@@ -18,7 +18,6 @@ import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTargetedEnemy, inSkillTest)
 import Arkham.Helpers.Xp
-import Arkham.I18n (ikey)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations

@@ -120,6 +120,10 @@ export function formatKey(key: LogKey): string {
   }
 
   if (typeof key.contents === "string") {
+    const [homebrewScope, homebrewKey] = key.contents.split('.', 2)
+    if (key.tag === 'HomebrewCampaignLogKey' && homebrewKey) {
+      return `${format(homebrewScope)}.key.${format(homebrewKey)}`
+    }
     return `${prefix}.key.${format(key.contents)}`
   }
 

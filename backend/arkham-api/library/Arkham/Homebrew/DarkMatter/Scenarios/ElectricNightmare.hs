@@ -193,13 +193,13 @@ instance RunMessage ElectricNightmare where
             3 -> Just Assets.k2PS18775Functionality
             _ -> Nothing
           addReminiscenceToken
-          resolutionWithXp "resolution2" $ allGainXp' attrs
+          earnXp attrs "resolution2"
           endOfScenario
         Resolution 3 -> do
           record YouFullyRestoredTheSanityOfK2PS187
           offerK2Reward $ Just Assets.k2PS187100Functionality
           addReminiscenceToken
-          resolutionWithXp "resolution3" $ allGainXp' attrs
+          earnXp attrs "resolution3"
           endOfScenario
         _ -> error "Invalid resolution"
       pure s

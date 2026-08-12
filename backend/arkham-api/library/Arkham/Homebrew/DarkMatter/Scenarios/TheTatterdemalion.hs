@@ -9,7 +9,7 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
-import Arkham.Homebrew.DarkMatter.Helpers (addScanningDeck, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (addScanningDeck, earnXp, scenarioI18n)
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Homebrew.DarkMatter.Traits (pattern AI)
@@ -122,7 +122,7 @@ instance RunMessage TheTatterdemalion where
             ]
       when reminiscences $ addChaosToken ElderThing
 
-      resolutionWithXp resolutionKey $ allGainXp' attrs
+      earnXp attrs resolutionKey
       endOfScenario
       pure s
     _ -> TheTatterdemalion <$> liftRunMessage msg attrs

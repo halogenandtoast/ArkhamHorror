@@ -1,0 +1,18 @@
+{
+  "theMachineInYellow": {
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution Was Reached",
+        "body": "<p><b>If no resolution was reached (each investigator resigned or was defeated):</b> Proceed to <b>Resolution 1</b>.</p>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p><b>Resolution 1:</b> You had a dream. A vivid, lucid and all-too-real dream. You escaped the Ward Theatre into the rainy streets of Arkham. You would visit the after-party of the dreadful <i>King in Yellow</i>, and embark along a grand and mind-bending adventure across Arkham which eventually leads to France and into Carcosa itself. When you finally wake up in a cold sweat back in the cryo-chamber, you almost forgot the new reality you had found yourself in. Although the ordeal has been difficult and took much longer than you anticipated, you have finally unlocked that part of your memories that has been kept concealed by your other self—the ritual to locate the Fragment of Carcosa.</p><ul><li>If at least 1 copy of the Reminiscence treachery is in the victory display, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 additional experience for reliving their past memories.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Add 2 tally marks under “Impending Doom” in your Campaign Log.</li><li>Proceed to <b>Scenario V: Fragment of Carcosa</b>.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p><b>Resolution 2:</b> With the infectious tumor that is the cultist’s consciousness finally ejected from your mind, you have unlocked that part of your memories that has been kept concealed by your other self—the ritual to locate the Fragment of Carcosa. Without further ado, you quickly disconnect yourself from the virtual dreamlands and return to form in the Tatterdemalion, ready to confront Tassilda at long last.</p><ul><li>If at least 1 copy of the Reminiscence treachery is in the victory display, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Proceed to <b>Scenario V: Fragment of Carcosa</b>.</li></ul>"
+      }
+    }
+  }
+}

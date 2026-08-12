@@ -1,25 +1,29 @@
 {
   "inTheShadowOfEarth": {
     "resolutions": {
+      "noResolution": {
+        "title": "No Resolution Was Reached",
+        "body": "<p><b>If no resolution was reached (each investigator resigned or was defeated):</b></p><ul><li>If the current act is Act 3, proceed to <b>Resolution 3</b>.</li><li>Otherwise, proceed to <b>Resolution 1</b>.</li></ul>"
+      },
       "resolution1": {
         "title": "Resolution 1",
-        "body": "<p>You barely made it out of the madhouse alive. The horrors you’ve seen of what remains of the crew is almost too much for you to handle.</p>"
+        "body": "<p><b>Resolution 1:</b> You barely made it out of the madhouse alive. The horrors you’ve seen of what remains of the crew is almost too much for you to handle.</p>"
       },
       "resolution2": {
         "title": "Resolution 2",
-        "body": "<p>A horrible scream echoes through the halls of the Tatterdemalion. One of the crew members you’ve brought aboard was an imitation! They revealed themselves and consumed all the crew members you could have saved. You were eventually able to fight it off and eject it through an airlock. However, the damage is considerable and has set back your mission by many months.</p>"
+        "body": "<p><b>Resolution 2:</b> A horrible scream echoes through the halls of the Tatterdemalion. One of the crew members you’ve brought aboard was an imitation! They revealed themselves and consumed all the crew members you could have saved. You were eventually able to fight it off and eject it through an airlock. However, the damage is considerable and has set back your mission by many months.</p>"
       },
       "resolution3": {
         "title": "Resolution 3",
-        "body": "<p>You managed to save some of the crew, and they mourn the lost for several days. Thankfully, none of the crew members you have brought aboard was an imitation. Over time, they describe how the madness only began a few days after they decoded a transmission from Earth — a cryptic poem.</p><blockquote><i>“Let the red dawn surmise<br/>What we shall do,<br/>When this blue starlight dies<br/>And all is through.”</i></blockquote><p>You believe this poem must be what the cultists were after — but it is meaningless to you and doesn’t help you uncover the coordinates of Fragment.</p><p>You finally deliver the remaining crew to a service station in the Martian orbit, and the survivors thank you once more for saving them and bid farewell. Despite all, you must leave this behind you and look forwards towards another lead.</p><p>{xp}</p>"
+        "body": "<p><b>Resolution 3:</b> You managed to save some of the crew, and they mourn the lost for several days. Thankfully, none of the crew members you have brought aboard was an imitation. Over time, they describe how the madness only began a few days after they decoded a transmission from Earth — a cryptic poem.</p><blockquote><i>“Let the red dawn surmise<br/>What we shall do,<br/>When this blue starlight dies<br/>And all is through.”</i></blockquote><p>You believe this poem must be what the cultists were after — but it is meaningless to you and doesn’t help you uncover the coordinates of Fragment.</p><p>You finally deliver the remaining crew to a service station in the Martian orbit, and the survivors thank you once more for saving them and bid farewell. Despite all, you must leave this behind you and look forwards towards another lead.</p><p>{xp}</p>"
       },
       "resolution4": {
         "title": "Resolution 4",
-        "body": "<p>The remaining crew of the Nostalgia II thank you for your help in defeating the abomination. They describe how the madness only began a few days after they decoded a transmission from Earth — a cryptic poem.</p><blockquote><i>“Let the red dawn surmise<br/>What we shall do,<br/>When this blue starlight dies<br/>And all is through.”</i></blockquote><p>You believe this poem must be what the cultists were after — but it is meaningless to you and doesn’t help you uncover the coordinates of Fragment.</p><p>Despite all, you must leave this behind you and look forwards towards another lead.</p><p>{xp}</p>"
+        "body": "<p><b>Resolution 4:</b> The remaining crew of the Nostalgia II thank you for your help in defeating the abomination. They describe how the madness only began a few days after they decoded a transmission from Earth — a cryptic poem.</p><blockquote><i>“Let the red dawn surmise<br/>What we shall do,<br/>When this blue starlight dies<br/>And all is through.”</i></blockquote><p>You believe this poem must be what the cultists were after — but it is meaningless to you and doesn’t help you uncover the coordinates of Fragment.</p><p>Despite all, you must leave this behind you and look forwards towards another lead.</p><p>{xp}</p>"
       },
       "resolution5": {
         "title": "Resolution 5",
-        "body": "<p>You couldn’t save anyone. The one silver lining — during the ordeal, K2-PS187 was able to hack into the mainframe and uncover what the cultists retrieved, a cryptic message received from Earth. You spend some time attempting to decode the message — but to no avail. You must leave this decryption, and the traumatic experiences associated with it, behind for now and look forwards toward another lead.</p><p>{xp}</p>"
+        "body": "<p><b>Resolution 5:</b> You couldn’t save anyone. The one silver lining — during the ordeal, K2-PS187 was able to hack into the mainframe and uncover what the cultists retrieved, a cryptic message received from Earth. You spend some time attempting to decode the message — but to no avail. You must leave this decryption, and the traumatic experiences associated with it, behind for now and look forwards toward another lead.</p><p>{xp}</p>"
       }
     },
     "quarantine": {

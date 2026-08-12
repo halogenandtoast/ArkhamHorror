@@ -1,13 +1,17 @@
 module Arkham.Homebrew.DarkMatter.Scenarios.FragmentOfCarcosa (fragmentOfCarcosa) where
 
+import Arkham.Helpers.Act (getCurrentActStepMaybe)
 import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.DarkMatter.Helpers (scenarioI18n)
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
+import Arkham.I18n
 import Arkham.Location.Types (Field (LocationClues, LocationRevealClues))
 import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 
 -- Skeleton scenario for Dark Matter (homebrew). Chaos-token values, full
@@ -25,7 +29,7 @@ instance HasChaosTokenValue FragmentOfCarcosa where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage FragmentOfCarcosa where
-  runMessage msg s@(FragmentOfCarcosa attrs) = runQueueT $ case msg of
+  runMessage msg s@(FragmentOfCarcosa attrs) = runQueueT $ scenarioI18n "fragmentOfCarcosa" $ case msg of
     Setup -> runScenarioSetup FragmentOfCarcosa attrs do
       gather Set.FragmentOfCarcosa
       setAgendaDeck [Agendas.theShadowsLengthen, Agendas.shallDryAndDie]
@@ -41,7 +45,15 @@ instance RunMessage FragmentOfCarcosa where
       current <- field LocationClues lid
       when (value > current) $ placeClues ScenarioSource lid (value - current)
       pure s
-    ScenarioResolution _ -> do
-      endOfScenario
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          resolution "noResolution"
+          actStep <- getCurrentActStepMaybe
+          push $ ScenarioResolution $ Resolution $ if actStep == Just 3 then 2 else 1
+        Resolution 1 -> resolution "resolution1"
+        Resolution n | n `elem` [2, 3] -> resolutionWithXp ("resolution" <> tshow n) $ allGainXp' attrs
+        _ -> error "invalid resolution"
+      when (r /= NoResolution) endOfScenario
       pure s
     _ -> FragmentOfCarcosa <$> liftRunMessage msg attrs

@@ -13,19 +13,15 @@ newtype FinalDestination = FinalDestination StoryAttrs
 finalDestination :: StoryCard FinalDestination
 finalDestination = story FinalDestination Cards.finalDestination
 
-{- | "Each investigator at your location adds 1 tally mark next to their
-'Memories'. You may gain up to 3 resources. Add this card to the victory
-display. Victory 1."
--}
 instance RunMessage FinalDestination where
   runMessage msg s@(FinalDestination attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
       colocated <- select $ colocatedWith iid
       for_ colocated (`addMemories` 1)
-      withI18n $ chooseAmount' iid "resources" "Resources" 0 3 attrs
+      withI18n $ chooseAmount' iid "resources" "$resources" 0 3 attrs
       addToVictory iid attrs
       pure s
-    ResolveAmounts iid (getChoiceAmount "resources" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$resources" -> n) (isTarget attrs -> True) -> do
       when (n > 0) $ gainResources iid attrs n
       pure s
     _ -> FinalDestination <$> liftRunMessage msg attrs

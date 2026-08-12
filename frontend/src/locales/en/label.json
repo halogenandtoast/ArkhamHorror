@@ -179,6 +179,7 @@
   "flipThisBackOver": "Flip this back over",
   "gainClues": "Gain 1 clue (from the token pool) | Gain {count} clues (from the token pool)",
   "gainResources": "Gain 1 resource | Gain {count} resources",
+  "resources": "Resources",
   "gainSurge": "Gain surge",
   "putOnTopOfEncounterDeck": "Put on top of the encounter deck",
   "putOnBottomOfEncounterDeck": "Put on the bottom of the encounter deck",

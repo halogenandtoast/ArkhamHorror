@@ -1,0 +1,18 @@
+{
+  "strangeMoons": {
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution Was Reached",
+        "body": "<p><b>If no resolution was reached:</b></p><ul><li>If at least 1 investigator resigned, proceed to <b>Resolution 2</b>.</li><li>If each investigator was defeated, proceed to <b>Resolution 1</b>.</li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p><b>Resolution 1:</b> Flapping and screeching, you had no chance against the extraterrestrial swarm that descended onto Titan shortly after you arrived. Fortunately, it seems as though you were not their target. The alien facility has been ransacked and any clues you could have gleaned have been destroyed. At the very least, they left you alone. When the coast is finally clear of the flying monstrosities, you search through the ruins to find several golden disks of various radii. Aboard the Tatterdemalion, you fiddle with these disks and try to combine them in various orientations—but they don’t appear to have any use other than the value of the material itself. There is still much you don’t know, and with resolve, you prepare for the next expedition.</p><ul><li>Record in your Campaign Log that <i>you are not in good standing with the Mi-Go</i>.</li><li>If there are 3 story cards in the victory display, record in your Campaign Log that <i>you have uncovered the cultist’s inhuman methods</i>. Then, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign for catching the eye of the King in Yellow.</li><li>Add 1 tally mark under “Impending Doom” in your Campaign Log, and 1 additional tally mark for each Brain story asset in play.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 additional experience as they gain further understanding of the agents of the King in Yellow.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Return to <b>Search for Fragment</b>.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p><b>Resolution 2:</b> On board the Tatterdemalion, you try to decipher the meaning of the various glimpses you’ve seen within the alien facility, but nothing strikes you as particularly significant. A thorough search of the cargo hold reveals a stack of the golden disks that were exchanged during the transaction. You fiddle with them and try to combine them in various orientations—but they don’t appear to have any use other than the value of the material itself. There is still much you don’t know, and with resolve, you prepare for the next expedition.</p><ul><li>If there are 3 story cards in the victory display, record in your Campaign Log that <i>you have uncovered the cultist’s inhuman methods</i>. Then, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign for catching the eye of the King in Yellow.</li><li>If a copy of Mi-Go Scientist is in the victory display, record in your Campaign Log that <i>you are not in good standing with the Mi-Go</i>. Otherwise, record that <i>you are allied with the Mi-Go</i>.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Add 1 tally mark under “Impending Doom” in your Campaign Log.</li><li>Return to <b>Search for Fragment</b>.</li></ul>"
+      }
+    }
+  }
+}

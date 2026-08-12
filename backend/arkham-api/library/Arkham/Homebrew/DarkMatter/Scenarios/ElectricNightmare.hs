@@ -33,10 +33,6 @@ electricNightmare :: Difficulty -> ElectricNightmare
 electricNightmare difficulty =
   scenario ElectricNightmare ":dark-matter:054" "Electric Nightmare" difficulty []
 
--- | Local scenario i18n scope: darkMatter.electricNightmare.*
-scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = campaignI18n $ scope "electricNightmare" a
-
 instance HasChaosTokenValue ElectricNightmare where
   getChaosTokenValue iid tokenFace (ElectricNightmare attrs) = case tokenFace of
     Skull -> do
@@ -48,7 +44,7 @@ instance HasChaosTokenValue ElectricNightmare where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage ElectricNightmare where
-  runMessage msg s@(ElectricNightmare attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg s@(ElectricNightmare attrs) = runQueueT $ scenarioI18n "electricNightmare" $ case msg of
     PreScenarioSetup -> do
       flavor $ scope "intro" $ h "title" >> p "body"
       -- guide p6: each investigator with 3 or fewer Memories reads
@@ -173,13 +169,23 @@ instance RunMessage ElectricNightmare where
             NoResolution -> if reintegratedCount >= 1 then 2 else 1
             Resolution n -> n
 
-      case resolved of
-        1 -> do
+      when (res == NoResolution) do
+        resolutionFlavor do
+          setTitle "noResolution.title"
+          p "noResolution.body"
+          ul do
+            li.validate (reintegratedCount == 0) "noResolution.proceedToResolution1"
+            li.validate (reintegratedCount >= 1) "noResolution.proceedToResolution2"
+        push $ ScenarioResolution $ Resolution resolved
+
+      case res of
+        NoResolution -> pure ()
+        Resolution 1 -> do
           record YouAreTrappedInAVirtualNightmare
           eachInvestigator drivenInsane
           resolution "resolution1"
           gameOver
-        2 -> do
+        Resolution 2 -> do
           record YouPartiallyRestoredTheSanityOfK2PS187
           offerK2Reward $ case reintegratedCount of
             1 -> Just Assets.k2PS18725Functionality
@@ -189,7 +195,7 @@ instance RunMessage ElectricNightmare where
           addReminiscenceToken
           resolutionWithXp "resolution2" $ allGainXp' attrs
           endOfScenario
-        3 -> do
+        Resolution 3 -> do
           record YouFullyRestoredTheSanityOfK2PS187
           offerK2Reward $ Just Assets.k2PS187100Functionality
           addReminiscenceToken
@@ -208,5 +214,5 @@ offerK2Reward (Just def) = do
   investigators <- allInvestigators
   lead <- getLead
   chooseOneM lead do
-    scenarioI18n $ labeled' "noInvestigatorAddsItToTheirDeck" nothing
+    scenarioI18n "electricNightmare" $ labeled' "noInvestigatorAddsItToTheirDeck" nothing
     targets investigators \iid -> addCampaignCardToDeck iid DoNotShuffleIn def

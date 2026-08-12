@@ -82,6 +82,9 @@ import Arkham.Window qualified as Window
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "darkMatter" a
 
+scenarioI18n :: Scope -> (HasI18n => a) -> a
+scenarioI18n scenarioScope a = campaignI18n $ scope scenarioScope a
+
 -- ** Memories (guide p3) ** --
 
 -- "Memories" are tied to specific investigators and are not shared. They live
@@ -305,17 +308,23 @@ drawScannedCard iid source card = drawScannedCard' iid source card
 
 drawScannedCard' :: ReverseQueue m => InvestigatorId -> Source -> Card -> m ()
 drawScannedCard' iid source card = do
-  focusCards [card] $ chooseTargetM iid [card] \_ -> unfocusCards
-  push
-    $ DrewCards iid
-    $ CardDrew
-      { cardDrewSource = source
-      , cardDrewDeck = Deck.ScenarioDeckByKey ScanningDeck
-      , cardDrewCards = [card]
-      , cardDrewAction = False
-      , cardDrewRules = mempty
-      , cardDrewTarget = Nothing
-      }
+  case card.kind of
+    StoryType -> handleCard
+    _ -> do
+      focusCards [card] $ chooseTargetM iid [card] (const unfocusCards)
+      handleCard
+ where
+  handleCard =
+    push
+      $ DrewCards iid
+      $ CardDrew
+        { cardDrewSource = source
+        , cardDrewDeck = Deck.ScenarioDeckByKey ScanningDeck
+        , cardDrewCards = [card]
+        , cardDrewAction = False
+        , cardDrewRules = mempty
+        , cardDrewTarget = Nothing
+        }
 
 {- | Several Strange Moons story cards end with "shuffle this card back into the
 scanning deck": the story leaves play and its card rejoins the deck.

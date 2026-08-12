@@ -1,0 +1,26 @@
+{
+  "starfall": {
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution Was Reached",
+        "body": "<p><b>If no resolution was reached (each investigator resigned or was defeated):</b> Proceed to <b>Resolution 1</b>.</p>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p><b>Resolution 1:</b> A brilliant light shines over the solar system. The cataclysmic supernova radiates through the void, annihilating all unprotected life and stripping all the heavenly bodies of their precious atmosphere, leaving barren worlds in its wake.</p><ul><li>In your Campaign Log, record that <i>the sun went supernova and wiped out most of the solar system</i>.</li><li>If Repairing the Threshold is in the victory display, record that <i>Mi-Go safely returned to their home world</i>.</li><li>If Last Hope is in the victory display, record that <i>Hope was shielded from the blast</i>. The investigators who resigned in Hope read <b>Beyond Hope</b>.</li><li>If Project Origami is in the victory display, record that <i>the UCC escaped to another galaxy</i>. The investigators who resigned in New Brooklyn read <b>Far, Far Away</b>.</li><li>If none of the story cards mentioned above are in the victory display, the remaining investigators must read <b>The End 1</b>. Otherwise, they read <b>The End 2</b>.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p><b>Resolution 2:</b> The Royal Princess of Carcosa succumbs to your assault and wastes away before you. You have defeated Tassilda, and in doing so have prevented the early collapse of the sun. Suddenly there is a horrific smell wafting down all around you, carried by a blast of chilly air. Before any of you can react, a dark cloud crackling with arcs of yellow and white energy expels from the sun, surrounding the entire ship. Within this cloud hovers a horrific creature. It is enormous, wrinkled, and hunched, with dozens of tentacles, each tipped with a wicked-looking fang. This can only be the being Tassilda spoke of, her sire, the Last King. In an instant, the great abomination begins crushing the hull of the ship inwards. In your final moments, despite being unable to save yourself from the blast, you feel accomplished—and redeemed—by what you have done to save the others.</p><ul><li>Proceed to <b>The End 3</b>.</li></ul>"
+      }
+    },
+    "beyondHope": {
+      "title": "Beyond Hope",
+      "body": "<p>After the blackout finally ended, you and your fellow companions left the underground shelters of Hope to witness a dazzling array of painterly gases, and a faint white sphere—the residual legacy of the sun. Colony researchers have claimed that it would have been impossible for the electromagnetic shield to protect the entire planet from the blast without the unexpected but embraced energy spike originating from the nearby alien ruins. It is the dawn of a new beginning for mankind, the age of the White Sun. You live the rest of your days helping the megapolis sustain itself and recounting the fantasy stories of your life on Earth. And yet you wonder, as you look up to the light of the white dwarf, how long until it too inevitably decays and humanity will once more need to escape extinction…</p><ul><li>In your Campaign Log, record that your investigator <i>lived the remainder of their days, with Hope</i>.</li><li>The investigators win the campaign!</li><li>Proceed to the <b>Epilogue</b>.</li></ul>"
+    },
+    "farFarAway": {
+      "title": "Far, Far Away",
+      "body": "<p>The scientists of Sinai activated the space-time warping device moments before the blast. The colony of New Brooklyn was jaunted along the folds of space-time, towards a new galaxy and a new future. The destination—a prospective binary system of many exoplanets—appears to be safe and far beyond the reach of the Ancient Ones of the old world. You live the rest of your days helping humanity build outposts under the virgin skies of a new home, a planet the settlers will call Paradise. You recount stories of your life on Earth to your descendants, stories that will become fairy tales and eventually legends. The inhabitants upon this new world live and work together in peace and prosperity. It is the dawn of a new beginning for mankind. And yet you wonder, as you look up to the light of your new stars, how long until they too inevitably decay and humanity will once more need to escape extinction…</p><ul><li>In your Campaign Log, record that your investigator <i>lived the remainder of their days, on Paradise</i>.</li><li>The investigators win the campaign!</li><li>Proceed to the <b>Epilogue</b>.</li></ul>"
+    }
+  }
+}

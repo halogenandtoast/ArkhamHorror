@@ -21,7 +21,7 @@ instance RunMessage IntoTheArchives where
     ResolveThisStory iid (is attrs -> True) -> do
       colocated <- select $ colocatedWith iid
       for_ colocated (`addMemories` 1)
-      withI18n $ chooseAmount' iid "horror" "Horror" 0 2 attrs
+      withI18n $ chooseAmount' iid "horror" "$horror" 0 2 attrs
       addToVictory iid attrs
       pure s
     ResolveAmounts iid (getChoiceAmount "horror" -> n) (isTarget attrs -> True) -> do

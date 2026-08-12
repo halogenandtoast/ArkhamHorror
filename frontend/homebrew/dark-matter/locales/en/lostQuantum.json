@@ -1,0 +1,22 @@
+{
+  "lostQuantum": {
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution Was Reached",
+        "body": "<p><b>If no resolution was reached (each investigator resigned or was defeated):</b></p><ul><li>If an investigator resigned with the Erwin Simmons story asset under their control, proceed to <b>Resolution 3</b>.</li><li>Otherwise, proceed to <b>Resolution 1</b>.</li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p><b>Resolution 1:</b> When you finally came back to your senses, you and your companions were inside the Tatterdemalion, and Elbrus appears to have disappeared—possibly lost in space and time within the quantum realm. You don’t remember much of what happened. Despite the initial evidence pointing to the contrary, proof was eventually found that the ordeal had been real: shards of the quantum-behaving crystals were discovered in the cargo bay, which you presumably brought back from Elbrus. Still unsure of why the cultists have come, you prepare for the next destination, which may finally give a few answers rather than pose more questions.</p><ul><li>In your Campaign Log, record that <i>the Elbrus Station has been lost in the quantum realm</i>.</li><li>If it is not already written, record in your Campaign Log that <i>you have witnessed the primordial chaos</i>.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Add 4 tally marks under “Impending Doom” in your Campaign Log.</li><li>Return to <b>Search for Fragment</b>.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p><b>Resolution 2:</b> The physicist is more than grateful for your help. “All this vital research—thank god you came in time. If you ever need to get something done in the Colonial territories, I’ll make sure to put in my good word.” With a nod and an awkward handshake, you depart the facility and return to the Tatterdemalion. The cultists have stolen the quantum shards from Elbrus, but for what purpose, you are still unsure.</p><p>You look into the ephemeral glow of the crystal shard Erwin has gifted you, wondering about the bizarre circumstances you have found yourself in. However, there’s no time to waste on self-reflection—K2-PS187 awaits your next heading.</p><ul><li>In your Campaign Log, record that <i>the Elbrus Station has been fully stabilized</i>.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign for catching the eye of the King in Yellow.</li><li>Add 1 tally mark under “Impending Doom” in your Campaign Log.</li><li>Return to <b>Search for Fragment</b>.</li></ul>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p><b>Resolution 3:</b> A few moments after you return to the Tatterdemalion, Elbrus implodes in a cacophony of ephemeral haze and pops out of existence. The physicist sighs in relief. “Thank god you came in time. It’s a shame about all that research that was lost, but at least everyone is safe. Now please explain to me why we are now in the very ship I remember came to pillage our facility.” You brief Erwin on your quest and discuss what purposes the cultists could have had with the quantum shards. The physicist proposes several ideas of quantum weaponry or tools—but none of which makes any sense. Regardless, he is willing to join you on your quest—out of good will or curiosity, you are unsure. Still unsure of why the cultists have come, you prepare for the next destination, which may finally give a few answers rather than pose more questions.</p><ul><li>In your Campaign Log, record that <i>the Elbrus Station has been lost in the quantum realm</i>.</li><li>An investigator may add the Erwin Simmons <i>(Quantum Physicist)</i> story asset to their deck. This card does not count toward that investigator’s deck limit.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Add 2 tally marks under “Impending Doom” in your Campaign Log.</li><li>Return to <b>Search for Fragment</b>.</li></ul>"
+      }
+    }
+  }
+}

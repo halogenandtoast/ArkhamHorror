@@ -31,10 +31,6 @@ newtype InTheShadowOfEarth = InTheShadowOfEarth ScenarioAttrs
 inTheShadowOfEarth :: Difficulty -> InTheShadowOfEarth
 inTheShadowOfEarth difficulty = scenario InTheShadowOfEarth ":dark-matter:112" "In the Shadow of Earth" difficulty []
 
--- | Local scenario i18n scope: darkMatter.inTheShadowOfEarth.*
-scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = campaignI18n $ scope "inTheShadowOfEarth" a
-
 {- | Scenario reference card, ":dark-matter:112" \/ z-dark-matter-115
 (docs\/homebrew\/data\/dark-matter-sets\/in_the_shadow_of_earth.md; the front
 block is Easy \/ Standard, the OCR of the back image is Hard \/ Expert):
@@ -88,7 +84,7 @@ remainingLocations =
   ]
 
 instance RunMessage InTheShadowOfEarth where
-  runMessage msg s@(InTheShadowOfEarth attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg s@(InTheShadowOfEarth attrs) = runQueueT $ scenarioI18n "inTheShadowOfEarth" $ case msg of
     Setup -> runScenarioSetup InTheShadowOfEarth attrs do
       gather Set.InTheShadowOfEarth
       gather Set.DeepSpace
@@ -189,6 +185,7 @@ instance RunMessage InTheShadowOfEarth where
         Otherwise, proceed to Resolution 1." -}
         NoResolution -> do
           onAct3 <- selectAny $ ActWithStep 3
+          resolution "noResolution"
           push $ if onAct3 then R3 else R1
         Resolution 1 -> do
           resolution "resolution1"

@@ -1,0 +1,22 @@
+{
+  "fragmentOfCarcosa": {
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution Was Reached",
+        "body": "<p><b>If each investigator was defeated:</b></p><ul><li>If it is act 1 or act 2, proceed to <b>Resolution 1</b>.</li><li>If it is act 3, proceed to <b>Resolution 2</b>.</li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p><b>Resolution 1:</b> When you finally awaken, in the distance, the alien spires of a warped city rise into the clouds. Behind you, the dark surface of a lake reflects the glare of two suns. You call out to K2-PS187 for help, but there is no response this time. This isn’t another simulation; you are imprisoned in the realm of Carcosa, with no way out to save the solar system.</p><ul><li>Record in your Campaign Log that <i>the investigators are trapped within Carcosa</i>.</li><li>Each investigator is driven <b>insane</b>.</li><li>The investigators lose the campaign.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p><b>Resolution 2:</b> You wake up in a cold sweat back in the cryo-chamber. While you are confused and disoriented, K2-PS187 explains that you have been in a coma for over 2 months after you decided to enter your own mind. Your experience on that asteroid, the true nature of Hastur—it was too real to be imagined; it must have been forged from fragments of the cultist’s memories. Regardless of the circumstances, you now know of the impending doom of the solar system, and understand what you must do: save as many as you can before the inevitable.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Add 2 tally marks under “Impending Doom” in your Campaign Log.</li><li>Proceed to <b>Scenario VI: Starfall</b>.</li></ul>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p><b>Resolution 3:</b> When you finally regroup back on the Tatterdemalion, all you can think of is all the time you could have saved if only you remembered the real threat you face. The sun only has a few years left to shine, and most of humanity is oblivious to its imminent demise. In the face of this impending doom, you know what you must do: save as many as you can before the inevitable.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Proceed to <b>Scenario VI: Starfall</b>.</li></ul>"
+      }
+    }
+  }
+}

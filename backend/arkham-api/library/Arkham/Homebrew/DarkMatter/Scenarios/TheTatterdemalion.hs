@@ -8,10 +8,11 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
-import Arkham.Homebrew.DarkMatter.Helpers (addScanningDeck)
+import Arkham.Homebrew.DarkMatter.Helpers (addScanningDeck, scenarioI18n)
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Homebrew.DarkMatter.Traits (pattern AI)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
@@ -53,7 +54,7 @@ instance HasChaosTokenValue TheTatterdemalion where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheTatterdemalion where
-  runMessage msg s@(TheTatterdemalion attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheTatterdemalion attrs) = runQueueT $ scenarioI18n "theTatterdemalion" $ case msg of
     Setup -> runScenarioSetup TheTatterdemalion attrs do
       gather Set.TheTatterdemalion
       gather Set.Anachronism
@@ -86,10 +87,14 @@ instance RunMessage TheTatterdemalion where
         Cultist -> placeCluesOnLocation iid Cultist 1
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
-      case r of
-        NoResolution -> record YouWereTransportedToTheVirtualDreamlandsByMaja
-        Resolution 1 -> record YouEnteredTheVirtualDreamlandsByYourOwnMeans
+    ScenarioResolution r -> scope "resolutions" do
+      resolutionKey <- case r of
+        NoResolution -> do
+          record YouWereTransportedToTheVirtualDreamlandsByMaja
+          pure "noResolution"
+        Resolution 1 -> do
+          record YouEnteredTheVirtualDreamlandsByYourOwnMeans
+          pure "resolution1"
         _ -> error "invalid resolution"
 
       {- "If an investigator was defeated, resigned, or ended their game with
@@ -117,7 +122,7 @@ instance RunMessage TheTatterdemalion where
             ]
       when reminiscences $ addChaosToken ElderThing
 
-      allGainXp attrs
+      resolutionWithXp resolutionKey $ allGainXp' attrs
       endOfScenario
       pure s
     _ -> TheTatterdemalion <$> liftRunMessage msg attrs

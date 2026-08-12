@@ -2,6 +2,7 @@ module Arkham.Homebrew.DarkMatter.Scenarios.TheTatterdemalion (theTatterdemalion
 
 import Arkham.Card (toCardDef)
 import Arkham.ChaosToken
+import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
@@ -12,7 +13,6 @@ import Arkham.Homebrew.DarkMatter.Helpers (addScanningDeck, scenarioI18n)
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Homebrew.DarkMatter.Traits (pattern AI)
-import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution

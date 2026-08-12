@@ -20,7 +20,12 @@ endlessBridge = location EndlessBridge Cards.endlessBridge 4 (Static 2)
 
 instance HasAbilities EndlessBridge where
   getAbilities (EndlessBridge a) =
-    extendRevealed1 a $ mkAbility a 1 $ forced $ Leaves #after Anyone (be a)
+    -- Once the bridge is on its way out of play, Another Dimension moving the
+    -- remaining investigators off it must not re-offer this choice, #5388
+    extendRevealed1 a
+      $ mkAbility a 1
+      $ forced
+      $ Leaves #after Anyone (be a <> not_ LocationBeingRemoved)
 
 instance RunMessage EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = runQueueT $ case msg of

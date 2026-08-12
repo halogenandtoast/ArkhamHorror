@@ -237,7 +237,12 @@ instance RunMessage LocationAttrs where
       pure $ a & beingRemovedL .~ True
     RemoveLocation lid | lid == locationId -> do
       liftRunMessage (RemovedFromPlay $ toSource a) a
-    Discard _ source target | isTarget a target -> do
+    -- A location already on its way out must not restart the removal chain: these
+    -- messages go to the FRONT of the queue, jumping ahead of rescue moves that a
+    -- leave-play interrupt (Another Dimension) has already queued for the
+    -- investigators still on it, so RemovedLocation defeats them, #5388. Mirrors the
+    -- `not_ LocationBeingRemoved` guard in Arkham.Message.Lifted.Location.removeLocation.
+    Discard _ source target | isTarget a target && not locationBeingRemoved -> do
       pushAll
         $ windows [Window.WouldBeDiscarded (toTarget a)]
         <> [Discarded (toTarget a) source (toCard a)]

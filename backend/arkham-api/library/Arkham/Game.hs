@@ -5577,10 +5577,9 @@ instance Query ExtendedCardMatcher where
               getSkillTestInvestigator <&> \case
                 Nothing -> False
                 Just iid -> Just iid /= card.owner
-            MustBeCommittedToYourTest ->
-              getSkillTestInvestigator <&> \case
-                Nothing -> False
-                Just iid -> Just iid == card.owner
+            -- a compulsion to commit to your own eligible tests, not a restriction
+            -- on which tests it may be committed to
+            MustBeCommittedToYourTest -> pure True
             OnlyIfYourLocationHasClues ->
               getSkillTestInvestigator >>= \case
                 Nothing -> pure False

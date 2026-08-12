@@ -1,6 +1,5 @@
 module Arkham.Skill.Cards.GutsSpec (spec) where
 
-import Arkham.Classes.HasGame
 import Arkham.Investigator.Cards (rolandBanks)
 import Arkham.Skill.Cards qualified as Skills
 import TestImport.New
@@ -44,21 +43,3 @@ spec = describe "Guts" $ do
       applyResults
       self.hand `shouldReturn` map toCard selfCards
       other.hand `shouldReturn` []
-
-commitFor :: HasCallStack => Investigator -> Card -> TestAppT ()
-commitFor i (toCardId -> cid) = do
-  pid <- getPlayer (toId i)
-  questionMap <- gameQuestion <$> getGame
-  case lookup pid questionMap of
-    Just q -> go q
-    Nothing -> error "no commit question for that investigator"
- where
-  go = \case
-    QuestionLabel _ _ q -> go q
-    ChooseOne msgs -> case find isMatching msgs of
-      Just msg -> push (uiToRun msg) >> runMessages
-      Nothing -> error "card not in commit options"
-    _ -> error "expected ChooseOne for commit question"
-  isMatching = \case
-    TargetLabel (CardIdTarget c) _ -> c == cid
-    _ -> False

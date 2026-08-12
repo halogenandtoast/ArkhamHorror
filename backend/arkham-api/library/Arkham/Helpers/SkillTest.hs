@@ -370,11 +370,12 @@ inAttackSkillTest = (== Just #fight) <$> getSkillTestAction
 inEvasionSkillTest :: HasGame m => m Bool
 inEvasionSkillTest = (== Just #evade) <$> getSkillTestAction
 
--- | The 'skillTestResult' stored on the skill test does not include
--- 'SkillTestResultValueModifier' effects; those are only folded in when the
--- Pass/Fail messages are emitted (see 'Arkham.SkillTest.Runner'). Cards that
--- inspect the succeeded/failed-by margin during the resolution window need this
--- modifier-adjusted value instead of the raw field.
+{- | The 'skillTestResult' stored on the skill test does not include
+'SkillTestResultValueModifier' effects; those are only folded in when the
+Pass/Fail messages are emitted (see 'Arkham.SkillTest.Runner'). Cards that
+inspect the succeeded/failed-by margin during the resolution window need this
+modifier-adjusted value instead of the raw field.
+-}
 getSkillTestResultWithResultModifiers :: HasGame m => m (Maybe SkillTestResult)
 getSkillTestResultWithResultModifiers = runMaybeT do
   st <- MaybeT getSkillTest
@@ -647,7 +648,9 @@ getIsCommittable a c = runValidT do
           OnlyYourTest -> pure $ iid == a
           OnlyTestDuringYourTurn -> iid <=~> TurnInvestigator
           OnlyNotYourTest -> pure $ iid /= a
-          MustBeCommittedToYourTest -> pure $ iid == a
+          -- a compulsion to commit to your own eligible tests, not a restriction
+          -- on which tests it may be committed to
+          MustBeCommittedToYourTest -> pure True
           OnlyIfYourLocationHasClues -> maybe (pure False) (fieldMap LocationClues (> 0)) mlid
           OnlyTestWithActions as -> pure $ maybe False (`elem` as) (skillTestAction skillTest)
           ScenarioAbility -> getIsScenarioAbility

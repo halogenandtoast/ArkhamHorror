@@ -702,6 +702,27 @@ withEach xs f = for_ xs $ withRewind . f
 commit :: (HasCallStack, IsCard card) => card -> TestAppT ()
 commit = chooseTarget . toCardId
 
+{- | Commit a card on behalf of an investigator who is not performing the test.
+Their commit options live under their own key in the question map, so
+'commit' (which looks at the active question) can't reach them.
+-}
+commitFor :: (HasCallStack, IsCard card) => Investigator -> card -> TestAppT ()
+commitFor i (toCardId -> cid) = do
+  pid <- getPlayer (toId i)
+  questionMap <- gameQuestion <$> getGame
+  case lookup pid questionMap of
+    Just q -> go q
+    Nothing -> error "no commit question for that investigator"
+ where
+  go q = case stripQuestionWrappers q of
+    ChooseOne msgs -> case find isMatching msgs of
+      Just msg -> push (uiToRun msg) >> runMessages
+      Nothing -> error "card not in commit options"
+    _ -> error "expected ChooseOne for commit question"
+  isMatching = \case
+    TargetLabel (CardIdTarget c) _ -> c == cid
+    _ -> False
+
 assertNoReaction :: TestAppT ()
 assertNoReaction = do
   questionMap <- gameQuestion <$> getGame
@@ -720,6 +741,25 @@ assertNoReaction = do
   case find isReaction choices of
     Nothing -> pure ()
     Just choice -> expectationFailure $ "expected no reaction, but found:\n\n" <> show choice
+
+{- | Assert that the skill test cannot be started yet, e.g. because a card with
+a compulsion to commit is still uncommitted.
+-}
+assertCannotStartSkillTest :: TestAppT ()
+assertCannotStartSkillTest = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choicesOf question = case stripQuestionWrappers question of
+      ChooseOne msgs -> msgs
+      PlayerWindowChooseOne msgs -> msgs
+      _ -> []
+    isStart = \case
+      StartSkillTestButton {} -> True
+      _ -> False
+  case find isStart (concatMap (choicesOf . snd) (mapToList questionMap)) of
+    Nothing -> pure ()
+    Just choice ->
+      expectationFailure $ "expected to be unable to start the skill test, but found:\n\n" <> show choice
 
 moveAllTo :: Location -> TestAppT ()
 moveAllTo = run . Old.moveAllTo
@@ -923,9 +963,10 @@ assertMaxAmountChoice n = do
     TotalAmountTarget _ -> expectationFailure "expected MaxAmountTarget"
     AmountOneOf _ -> expectationFailure "expected MaxAmountTarget"
 
--- | Resolve a "spend up to" cost (a 'PayCostQuestion' wrapping a single-choice
--- 'ChoosePaymentAmounts', e.g. Watch This' additional cost). Asserts the
--- offered maximum equals @expectedMax@, then pays @amount@ units of it.
+{- | Resolve a "spend up to" cost (a 'PayCostQuestion' wrapping a single-choice
+'ChoosePaymentAmounts', e.g. Watch This' additional cost). Asserts the
+offered maximum equals @expectedMax@, then pays @amount@ units of it.
+-}
 payUpTo :: HasCallStack => Int -> Int -> TestAppT ()
 payUpTo expectedMax amount = do
   questionMap <- gameQuestion <$> getGame

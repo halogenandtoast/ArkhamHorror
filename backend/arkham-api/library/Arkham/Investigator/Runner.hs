@@ -424,7 +424,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       Lifted.checkWhen (Window.ChaosTokenSealed a.id token)
       Lifted.checkAfter (Window.ChaosTokenSealed a.id token)
     pure $ a & sealedChaosTokensL %~ filter (/= token)
-  UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+  UnsealChaosToken token -> do
+    when (token `elem` investigatorSealedChaosTokens) do
+      Lifted.checkWhen (Window.ChaosTokenReleased a.id token)
+      Lifted.checkAfter (Window.ChaosTokenReleased a.id token)
+    pure $ a & sealedChaosTokensL %~ filter (/= token)
   ReturnChaosTokensToPool tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
   RemoveAllChaosTokens face -> do
     pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)

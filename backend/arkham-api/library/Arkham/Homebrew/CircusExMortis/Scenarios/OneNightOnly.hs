@@ -2,7 +2,6 @@ module Arkham.Homebrew.CircusExMortis.Scenarios.OneNightOnly (oneNightOnly) wher
 
 import Arkham.Act.Types (Field (..))
 import Arkham.Card (toCardDef)
-import Arkham.Card.CardDef (CardDef, cdCardCode)
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
@@ -14,6 +13,7 @@ import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Homebrew.CircusExMortis.Key
 import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
@@ -40,17 +40,6 @@ oneNightOnly difficulty =
     , "animalCages animalCages theBigTopSecondRing theBigTopSecondRing theBigTopThirdRing theBigTopThirdRing performerTrailers performerTrailers"
     ]
 
-scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = campaignI18n $ scope "oneNightOnly" a
-
-actOneVariants :: NonEmpty CardDef
-actOneVariants =
-  Acts.ratsInACage_005
-    :| [ Acts.ratsInACage_006
-       , Acts.ratsInACage_007
-       , Acts.ratsInACage_008
-       ]
-
 behindTheCurtainMatcher :: InvestigatorMatcher
 behindTheCurtainMatcher =
   oneOf [investigatorIs Investigators.dexterDrake, InvestigatorWithTrait Performer]
@@ -58,28 +47,27 @@ behindTheCurtainMatcher =
 instance HasChaosTokenValue OneNightOnly where
   getChaosTokenValue iid tokenFace (OneNightOnly attrs) = case tokenFace of
     Skull -> do
-      -- X is the number of Creature enemies in play (Hard/Expert: 1 + that).
       n <- selectCount $ EnemyWithTrait Creature
-      let extra = if isHardExpert attrs then 1 else 0
-      pure $ ChaosTokenValue Skull (NegativeModifier (extra + n))
+      pure $ ChaosTokenValue Skull (NegativeModifier $ if isHardExpert attrs then n + 1 else n)
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
     ElderThing -> do
-      -- Worse when testing against a Creature enemy.
       vsCreature <-
         getSkillTestTarget >>= \case
           Just (EnemyTarget eid) -> eid <=~> EnemyWithTrait Creature
           _ -> pure False
       pure
-        $ toChaosTokenValue attrs ElderThing (if vsCreature then 3 else 1) (if vsCreature then 4 else 2)
+        $ if vsCreature
+          then toChaosTokenValue attrs ElderThing 3 4
+          else toChaosTokenValue attrs ElderThing 1 2
+    MoonToken -> pure moonTokenValue
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage OneNightOnly where
-  runMessage msg s@(OneNightOnly attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg s@(OneNightOnly attrs) = runQueueT $ scenarioI18n "oneNightOnly" $ case msg of
     PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "body"
       behindTheCurtain <- select behindTheCurtainMatcher
-      unless (null behindTheCurtain) do
-        flavor $ setTitle "title" >> p "behindTheCurtain"
+      storyOnlyBuild behindTheCurtain $ setTitle "title" >> p "behindTheCurtain"
       pure s
     Setup -> runScenarioSetup OneNightOnly attrs do
       gather Set.OneNightOnly
@@ -105,18 +93,12 @@ instance RunMessage OneNightOnly where
         , Locations.performerTrailers
         ]
 
-      monstrosity <- enemyAt Enemies.disguisedMonstrosity firstRing
-      exhaustThis monstrosity
+      exhaustThis =<< enemyAt Enemies.disguisedMonstrosity firstRing
 
-      actOne <- sample actOneVariants
+      actOne <- sample (fmap fst ratsInACageVariants)
       setActDeck [actOne, Acts.smokeAndMirrors, Acts.outAndAway]
-      setAgendaDeck
-        [ Agendas.theTrueFace
-        , Agendas.houseOfHorrors
-        , Agendas.mesmericMagic
-        ]
+      setAgendaDeck [Agendas.theTrueFace, Agendas.houseOfHorrors, Agendas.mesmericMagic]
 
-      -- Each investigator chooses a seat (their starting Big Top ring).
       eachInvestigator \iid -> do
         chooseOneM iid $ scope "seats" do
           labeled' "firstRing" $ moveTo_ attrs iid firstRing
@@ -125,33 +107,26 @@ instance RunMessage OneNightOnly where
         behind <- iid <=~> behindTheCurtainMatcher
         when behind $ gainClues iid attrs 1
     FailedSkillTestWithToken iid Cultist -> do
-      -- Move once toward the nearest The Big Top location.
       moveTowardsMatching attrs iid (NearestLocationToYou $ LocationWithTitle "The Big Top")
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          scope "resolution1" $ flavor $ setTitle "title" >> p "body"
+          resolution "resolution1"
           record TheRingmasterDoesNotSuspectYou
-          -- Look at the back of the chosen act 1 and add the listed token.
           actStep <- getCurrentActStep
           when (actStep == 1) do
-            mAct <- selectOne AnyAct
-            for_ mAct \aid -> do
-              cardCode <- fieldMap ActCard (cdCardCode . toCardDef) aid
-              let token
-                    | cardCode `elem` [":circus-ex-mortis:005", ":circus-ex-mortis:006"] = Tablet
-                    | otherwise = Cultist
-              addChaosToken token
-          push $ ScenarioResolution $ Resolution 3
+            selectOne AnyAct >>= traverse_ \aid -> do
+              def <- fieldMap ActCard toCardDef aid
+              for_ (lookupRatsInACage def) (addChaosToken . snd)
+          push R3
         Resolution 2 -> do
-          scope "resolution2" $ flavor $ setTitle "title" >> p "body"
+          resolution "resolution2"
           record TheRingmasterHasHisEyeOnYou
-          push $ ScenarioResolution $ Resolution 3
+          push R3
         Resolution 3 -> do
-          scope "resolution3" $ flavor $ setTitle "title" >> p "body"
-          allGainXp attrs
+          resolutionWithXp "resolution3" $ allGainXp' attrs
           endOfScenario
-        _ -> error "invalid resolution"
+        _ -> error $ "Unknown resolution: " <> show r
       pure s
     _ -> OneNightOnly <$> liftRunMessage msg attrs

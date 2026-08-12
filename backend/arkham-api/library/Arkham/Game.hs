@@ -1913,6 +1913,9 @@ abilityMatches a@Ability {..} = \case
   AbilityOnEnemy enemyMatcher -> case abilitySource.enemy of
     Just eid -> elem eid <$> select enemyMatcher
     _ -> pure False
+  AbilityOnInvestigator investigatorMatcher -> case abilitySource.investigator of
+    Just iid' -> elem iid' <$> select investigatorMatcher
+    _ -> pure False
   AbilityIsAction Action.Activate -> pure $ abilityIsActivate a
   AbilityIsAction action -> pure $ action `elem` abilityActions a
   AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 105)
@@ -2013,6 +2016,9 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
       _ -> pure False
     AbilityOnEnemy enemyMatcher -> flip filterM as \a -> case a.source.enemy of
       Just eid -> elem eid <$> select enemyMatcher
+      _ -> pure False
+    AbilityOnInvestigator investigatorMatcher -> flip filterM as \a -> case a.source.investigator of
+      Just iid' -> elem iid' <$> select investigatorMatcher
       _ -> pure False
     AbilityIsAction Action.Activate -> pure $ filter abilityIsActivate as
     AbilityIsAction action -> pure $ filter (elem action . abilityActions) as

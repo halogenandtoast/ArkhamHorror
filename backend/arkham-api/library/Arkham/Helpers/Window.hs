@@ -1726,6 +1726,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.ChaosTokenSealed who token ->
           andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
         _ -> noMatch
+    Matcher.ChaosTokenReleased timing whoMatcher tokenMatcher ->
+      guardTiming timing $ \case
+        Window.ChaosTokenReleased who token ->
+          andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
+        _ -> noMatch
     Matcher.AddedToVictory timing mWhoMatcher cardMatcher -> guardTiming timing $ \case
       Window.AddedToVictory mWho card ->
         andM

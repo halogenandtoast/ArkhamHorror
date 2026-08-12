@@ -1,21 +1,21 @@
 module Arkham.Homebrew.CircusExMortis.Scenarios.ThePrimrosePath (thePrimrosePath) where
 
-import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
-import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
-import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.CircusExMortis.Helpers
-import Arkham.Homebrew.CircusExMortis.Key
 import Arkham.Card.CardDef
 import Arkham.ChaosBag.Base (ChaosBag (..))
 import Arkham.ChaosToken
-import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Enemies
 import Arkham.Helpers.ChaosBag (getChaosBag)
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (connectBothWays)
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
+import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
+import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.Helpers
+import Arkham.Homebrew.CircusExMortis.Key
+import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -30,9 +30,6 @@ newtype ThePrimrosePath = ThePrimrosePath ScenarioAttrs
 thePrimrosePath :: Difficulty -> ThePrimrosePath
 thePrimrosePath difficulty =
   scenario ThePrimrosePath ":circus-ex-mortis:017" "The Primrose Path" difficulty []
-
-scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = campaignI18n $ scope "thePrimrosePath" a
 
 -- Moonlit Forest variants carrying the red-cross (Victory) symbol; two of these
 -- four are removed from the game at random during setup (guide p6).
@@ -91,7 +88,7 @@ instance HasChaosTokenValue ThePrimrosePath where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage ThePrimrosePath where
-  runMessage msg s@(ThePrimrosePath attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg s@(ThePrimrosePath attrs) = runQueueT $ scenarioI18n "thePrimrosePath" $ case msg of
     PreScenarioSetup -> scope "intro" do
       bag <- getChaosBag
       let moonInBag = any ((== MoonToken) . (.face)) bag.chaosBagChaosTokens

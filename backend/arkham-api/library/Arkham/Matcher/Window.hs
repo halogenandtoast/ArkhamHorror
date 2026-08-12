@@ -191,6 +191,7 @@ data WindowMatcher
   | TokensWouldBeRemovedFromChaosBag Timing ChaosTokenMatcher
   | ResolvesChaosToken Timing Who ChaosTokenMatcher
   | ChaosTokenSealed Timing Who ChaosTokenMatcher
+  | ChaosTokenReleased Timing Who ChaosTokenMatcher
   | CancelChaosToken Timing Who ChaosTokenMatcher
   | IgnoreChaosToken Timing Who ChaosTokenMatcher
   | WouldRevealChaosToken Timing Who

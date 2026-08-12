@@ -1,8 +1,8 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.NewMoonDrudge (newMoonDrudge) where
 
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelf)
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
@@ -20,7 +20,11 @@ instance HasModifiersFor NewMoonDrudge where
       a
       a.ready
       (InvestigatorAt $ locationWithEnemy a)
-      [CannotTriggerAbilityMatching AbilityOnEncounterCard]
+      -- "scenario cards" also covers encounter assets, whose source is not an
+      -- encounter card source (Illusory Locus, Terrified Captives)
+      [ CannotTriggerAbilityMatching
+          $ AbilityOneOf [AbilityOnEncounterCard, AbilityOnCard IsEncounterCard]
+      ]
 
 instance RunMessage NewMoonDrudge where
   runMessage msg (NewMoonDrudge attrs) =

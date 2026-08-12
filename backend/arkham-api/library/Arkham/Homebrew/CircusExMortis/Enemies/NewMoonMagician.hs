@@ -1,10 +1,10 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.NewMoonMagician (newMoonMagician) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Helpers (moonToken, sealMoonTokenOn)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -20,7 +20,7 @@ newMoonMagician =
 
 instance HasModifiersFor NewMoonMagician where
   getModifiersFor (NewMoonMagician a) = do
-    moonInBag <- selectAny $ chaosToken_ (ChaosTokenFaceIs MoonToken)
+    moonInBag <- selectAny moonToken
     if moonInBag
       then modifySelf a [AddKeyword Keyword.Aloof]
       else modifySelf a [AddKeyword Keyword.Hunter, EnemyFight 2]
@@ -28,7 +28,7 @@ instance HasModifiersFor NewMoonMagician where
 instance HasAbilities NewMoonMagician where
   getAbilities (NewMoonMagician a) =
     extend1 a
-      $ restricted a 1 (exists (NearestToEnemy (be a)) <> exists (ChaosTokenFaceIs MoonToken))
+      $ restricted a 1 (exists (NearestToEnemy (be a)) <> exists moonToken)
       $ forced
       $ PhaseEnds #when #enemy
 
@@ -36,7 +36,6 @@ instance RunMessage NewMoonMagician where
   runMessage msg e@(NewMoonMagician attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       investigators <- select $ NearestToEnemy (be attrs)
-      selectOne (chaosToken_ (ChaosTokenFaceIs MoonToken)) >>= traverse_ \token ->
-        leadChooseOneM $ targets investigators \iid -> sealChaosToken iid iid token
+      leadChooseOneM $ targets investigators sealMoonTokenOn
       pure e
     _ -> NewMoonMagician <$> liftRunMessage msg attrs

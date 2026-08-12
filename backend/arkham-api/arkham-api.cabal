@@ -3643,6 +3643,7 @@ library
       Arkham.Homebrew.CircusExMortis.Agendas.SavageNature
       Arkham.Homebrew.CircusExMortis.Agendas.TheTrueFace
       Arkham.Homebrew.CircusExMortis.Assets.IllusoryLocus
+      Arkham.Homebrew.CircusExMortis.Assets.TerrifiedCaptives
       Arkham.Homebrew.CircusExMortis.Campaign
       Arkham.Homebrew.CircusExMortis.CampaignSteps
       Arkham.Homebrew.CircusExMortis.CardDefs.Acts
@@ -3710,13 +3711,18 @@ library
       Arkham.Homebrew.CircusExMortis.Traits
       Arkham.Homebrew.CircusExMortis.Treacheries.EndlessSpawn
       Arkham.Homebrew.CircusExMortis.Treacheries.FeralImpulses
+      Arkham.Homebrew.CircusExMortis.Treacheries.HypnoticGlamour
+      Arkham.Homebrew.CircusExMortis.Treacheries.LostAllControl
       Arkham.Homebrew.CircusExMortis.Treacheries.LunarInfluence
       Arkham.Homebrew.CircusExMortis.Treacheries.MaddeningSpectacle
       Arkham.Homebrew.CircusExMortis.Treacheries.MilkOfShubNiggurath
       Arkham.Homebrew.CircusExMortis.Treacheries.MoonlightIllusion
       Arkham.Homebrew.CircusExMortis.Treacheries.OminousMoonlight
+      Arkham.Homebrew.CircusExMortis.Treacheries.PhantasmalDeception
+      Arkham.Homebrew.CircusExMortis.Treacheries.PrimordialEvils
       Arkham.Homebrew.CircusExMortis.Treacheries.QuickerThanTheEye
       Arkham.Homebrew.CircusExMortis.Treacheries.RecklessStunt
+      Arkham.Homebrew.CircusExMortis.Treacheries.WildHysteria
       Arkham.Homebrew.ContentEntries
       Arkham.Homebrew.DarkMatter.Actions
       Arkham.Homebrew.DarkMatter.Acts.ArtificalInsanity

@@ -91,6 +91,17 @@ instance HasField "asset" Source (Maybe AssetId) where
     PaymentSource s -> s.asset
     _ -> Nothing
 
+instance HasField "investigator" Source (Maybe InvestigatorId) where
+  getField = \case
+    InvestigatorSource iid -> Just iid
+    ProxySource (CardIdSource _) s -> s.investigator
+    IndexedSource _ s -> s.investigator
+    ProxySource s _ -> s.investigator
+    AbilitySource s _ -> s.investigator
+    UseAbilitySource _ s _ -> s.investigator
+    PaymentSource s -> s.investigator
+    _ -> Nothing
+
 instance HasField "event" Source (Maybe EventId) where
   getField = \case
     EventSource eid -> Just eid
@@ -170,7 +181,7 @@ isIndexed _ _ = False
 proxy :: (Sourceable a, Sourceable b) => a -> b -> Source
 proxy a b = ProxySource (toSource a) (toSource b)
 
-indexed :: (Sourceable a) => Int -> a -> Source
+indexed :: Sourceable a => Int -> a -> Source
 indexed n = IndexedSource n . toSource
 
 isIndexedSource :: Sourceable a => Int -> a -> Source -> Bool

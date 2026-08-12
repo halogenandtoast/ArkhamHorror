@@ -6,9 +6,8 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Trait (Trait (Creature, Monster))
 
--- "Moving between The Big Top locations does not provoke attacks of opportunity."
--- The engine never provokes attacks of opportunity on a move action, so this clause
--- is already satisfied; nothing to implement. See report note on the Big Top grouping.
+-- The printed "moving between The Big Top locations does not provoke attacks of
+-- opportunity" needs no code: the engine never provokes on a move action.
 
 newtype TheBigTopFirstRing = TheBigTopFirstRing LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

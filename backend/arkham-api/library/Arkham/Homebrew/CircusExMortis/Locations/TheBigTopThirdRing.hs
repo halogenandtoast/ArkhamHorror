@@ -5,14 +5,14 @@ import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers (campaignI18n)
+import Arkham.I18n
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 
--- "Moving between The Big Top locations does not provoke attacks of opportunity."
--- The engine never provokes attacks of opportunity on a move action, so this clause
--- is already satisfied; nothing to implement. See report note on the Big Top grouping.
+-- The printed "moving between The Big Top locations does not provoke attacks of
+-- opportunity" needs no code: the engine never provokes on a move action.
 
 newtype TheBigTopThirdRing = TheBigTopThirdRing LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -36,13 +36,13 @@ instance RunMessage TheBigTopThirdRing where
       sid <- getRandom
       connected <- select $ accessibleFrom ForMovement (toId attrs)
       canEvade <- selectAny $ enemyCanBeEvadedBy (attrs.ability 1)
-      -- TODO(homebrew): modeled as an immediate free move/evade rather than a granted
-      -- extra action; the AdditionalAction machinery has no combined move-or-evade type.
-      chooseOneM iid $ campaignI18n do
+      -- an immediate free move/evade rather than a granted extra action: the
+      -- AdditionalAction machinery has no combined move-or-evade type
+      chooseOneM iid $ campaignI18n $ scope "theBigTopThirdRing" do
         when (notNull connected) do
-          labeled' "theBigTopThirdRing.takeMove" do
+          labeled' "takeMove" do
             chooseTargetM iid connected $ moveTo (attrs.ability 1) iid
         when canEvade do
-          labeled' "theBigTopThirdRing.takeEvade" $ chooseEvadeEnemy sid iid (attrs.ability 1)
+          labeled' "takeEvade" $ chooseEvadeEnemy sid iid (attrs.ability 1)
       pure l
     _ -> TheBigTopThirdRing <$> liftRunMessage msg attrs

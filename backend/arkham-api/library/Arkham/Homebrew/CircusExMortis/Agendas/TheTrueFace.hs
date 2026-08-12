@@ -1,9 +1,9 @@
 module Arkham.Homebrew.CircusExMortis.Agendas.TheTrueFace (theTrueFace) where
 
-import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Enemies
 import Arkham.Helpers.Query (getLead)
+import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Cards
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -20,8 +20,7 @@ instance RunMessage TheTrueFace where
     AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead
       bigTops <- select $ LocationWithTitle "The Big Top"
-      chooseTargetM lead bigTops \lid ->
-        createSetAsideEnemyWith_ Enemies.disguisedMonstrosity lid id
+      chooseTargetM lead bigTops $ createSetAsideEnemy_ Enemies.disguisedMonstrosity
       advanceAgendaDeck attrs
       pure a
     _ -> TheTrueFace <$> liftRunMessage msg attrs

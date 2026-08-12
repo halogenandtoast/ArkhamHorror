@@ -43,5 +43,31 @@
     "destinies": "Destinies",
     "theNewMoonCircusWasNeverSeenAgain": "The New Moon Circus was never seen again.",
     "theNewMoonCircusMaySomedayReturn": "The New Moon Circus may someday return."
+  },
+  "label": {
+    "sealMoonToken": "Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card"
+  },
+  "theBigTopThirdRing": {
+    "label": {
+      "takeMove": "Immediately take a move action",
+      "takeEvade": "Immediately take an evade action"
+    }
+  },
+  "endlessSpawn": {
+    "label": {
+      "autoSucceed": "Release a {'{'}moon{'}'} token sealed on your investigator card to automatically succeed"
+    }
+  },
+  "lostAllControl": {
+    "label": {
+      "directDamage": "Deal 1 direct damage to that card",
+      "directHorror": "Deal 1 direct horror to that card"
+    }
+  },
+  "primordialEvils": {
+    "label": {
+      "reduceTokens": "Attach Primordial Evils to the scenario reference card. Reduce the modifier of each {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, and {'{'}moon{'}'} token by 1",
+      "placeDoom": "Place 1 doom on the current agenda. This effect can cause the current agenda to advance"
+    }
   }
 }

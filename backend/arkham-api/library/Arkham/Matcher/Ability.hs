@@ -22,6 +22,7 @@ data AbilityMatcher
   | AbilityWithIndex Int
   | AbilityOnAsset AssetMatcher
   | AbilityOnEnemy EnemyMatcher
+  | AbilityOnInvestigator InvestigatorMatcher
   | AbilityOnStory StoryMatcher
   | AbilityWindow WindowMatcher
   | AbilityIsAction Action

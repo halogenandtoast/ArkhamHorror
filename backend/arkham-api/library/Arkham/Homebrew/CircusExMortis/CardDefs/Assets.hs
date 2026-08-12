@@ -187,4 +187,7 @@ terrifiedCaptives =
   (storyAsset_ ":circus-ex-mortis:256" "Terrified Captives" Set.PanickedMasses)
       { cdCardTraits = setFromList [Bystander, Task]
       , cdEncounterSetQuantity = Just 2
+      , cdVictoryPoints = Just 1
+      , cdRevelation = IsRevelation
+      , cdCardType = EncounterAssetType
       }

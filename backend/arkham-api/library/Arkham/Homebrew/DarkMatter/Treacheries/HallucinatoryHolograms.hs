@@ -13,17 +13,12 @@ newtype HallucinatoryHolograms = HallucinatoryHolograms TreacheryAttrs
 hallucinatoryHolograms :: TreacheryCard HallucinatoryHolograms
 hallucinatoryHolograms = treachery HallucinatoryHolograms Cards.hallucinatoryHolograms
 
-{- | "Hidden. Peril. Revelation - Secretly add this card to your hand.
-Forced - At the end of your turn, if there is at least 1 [[AI]] encounter card
-in your threat area: Take 2 horror and discard Hallucinatory Holograms.
-[action][action]: Discard Hallucinatory Holograms."
--}
 instance HasAbilities HallucinatoryHolograms where
   getAbilities (HallucinatoryHolograms a) =
     [ restricted a 1 (youExist $ HasMatchingTreachery $ TreacheryWithTrait AI)
         $ forced
         $ TurnEnds #when You
-    , restricted a 2 OnSameLocation $ doubleActionAbilityWithCost mempty
+    , restricted a 2 (thisExists a $ TreacheryInHandOf You) doubleActionAbility
     ]
 
 instance RunMessage HallucinatoryHolograms where

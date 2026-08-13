@@ -7493,6 +7493,8 @@ test-suite spec
       Arkham.Helpers.EnemySpec
       Arkham.Helpers.InvestigatorSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceCovenantSpec
+      Arkham.Homebrew.DarkMatter.Treacheries.ReminiscencePledgeSpec
+      Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceSecretsSpec
       Arkham.HomebrewRegistrySpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec

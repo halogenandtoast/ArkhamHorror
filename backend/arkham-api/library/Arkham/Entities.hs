@@ -31,6 +31,7 @@ import Arkham.Investigator.Types (Investigator)
 import Arkham.Json
 import Arkham.Location
 import Arkham.Placement
+import Arkham.Metrics (withMetric)
 import Arkham.Prelude
 import Arkham.Scenario ()
 import Arkham.Skill (createSkill)
@@ -251,18 +252,18 @@ instance RunMessage Entities where
       runEntities :: (a ~ RunType a, RunMessage a) => Lens' Entities (EntityMap a) -> GameT (EntityMap a)
       runEntities lensL = traverse (runMessage msg) (entities ^. lensL)
 
-    entitiesActs <- runEntities actsL
-    entitiesAgendas <- runEntities agendasL
-    entitiesTreacheries <- runEntities treacheriesL
-    entitiesEvents <- runEntities eventsL
-    entitiesLocations <- runEntities locationsL
-    entitiesEnemies <- runEntities enemiesL
-    entitiesEnemyLocations <- runEntities enemyLocationsL
-    entitiesEffects <- runEntities effectsL
-    entitiesAssets <- runEntities assetsL
-    entitiesSkills <- runEntities skillsL
-    entitiesStories <- runEntities storiesL
-    entitiesInvestigators <- runEntities investigatorsL
-    entitiesConcealed <- runEntities concealedL
-    entitiesScarletKeys <- runEntities scarletKeysL
+    entitiesActs <- withMetric "fan/acts" $ runEntities actsL
+    entitiesAgendas <- withMetric "fan/agendas" $ runEntities agendasL
+    entitiesTreacheries <- withMetric "fan/treacheries" $ runEntities treacheriesL
+    entitiesEvents <- withMetric "fan/events" $ runEntities eventsL
+    entitiesLocations <- withMetric "fan/locations" $ runEntities locationsL
+    entitiesEnemies <- withMetric "fan/enemies" $ runEntities enemiesL
+    entitiesEnemyLocations <- withMetric "fan/enemyLocations" $ runEntities enemyLocationsL
+    entitiesEffects <- withMetric "fan/effects" $ runEntities effectsL
+    entitiesAssets <- withMetric "fan/assets" $ runEntities assetsL
+    entitiesSkills <- withMetric "fan/skills" $ runEntities skillsL
+    entitiesStories <- withMetric "fan/stories" $ runEntities storiesL
+    entitiesInvestigators <- withMetric "fan/investigators" $ runEntities investigatorsL
+    entitiesConcealed <- withMetric "fan/concealed" $ runEntities concealedL
+    entitiesScarletKeys <- withMetric "fan/scarletKeys" $ runEntities scarletKeysL
     pure Entities {..}

@@ -26,6 +26,10 @@
     },
     "label": {
       "noInvestigatorAddsItToTheirDeck": "No investigator adds it to their deck"
+    },
+    "desynchronization": {
+      "title": "Desynchronization",
+      "body": "<p>An overturned schoolbus gathers dust on the school grounds. As you examine the vandalized windows, you notice a glimpse of your own reflection. However, you no longer recognize the person looking back at you. The frame, the distinct facial features, they all seem so familiar to you, yet you know this is not your body. You stare into the glass in disbelief. The face of your reflection morphs into a blank, pale mask with no mouth, nose or eyes. The virtual reality no longer recognizes your residual self image anymore – the mental projection of your digital self has decayed into nothingness.</p><ul><li>You must add the Desync weakness to your deck. This card does not count towards your deck limit.</li></ul>"
     }
   }
 }

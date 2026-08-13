@@ -17,9 +17,6 @@ artificialGravityMalfunction :: TreacheryCard ArtificialGravityMalfunction
 artificialGravityMalfunction =
   treachery ArtificialGravityMalfunction Cards.artificialGravityMalfunction
 
-{- | "While you are at attached location, each move action and [action] ability
-costs 1 additional action."
--}
 instance HasModifiersFor ArtificialGravityMalfunction where
   getModifiersFor (ArtificialGravityMalfunction a) = case a.attached of
     Just (LocationTarget lid) ->
@@ -29,7 +26,6 @@ instance HasModifiersFor ArtificialGravityMalfunction where
         [AdditionalActionCostOf (AnyActionTarget [IsAction #move, IsAction #activate]) 1]
     _ -> pure ()
 
--- "[reaction] At the end of the round, if you are at attached location: Discard."
 instance HasAbilities ArtificialGravityMalfunction where
   getAbilities (ArtificialGravityMalfunction a) =
     [ restricted a 1 (youExist $ at_ $ LocationWithTreachery (TreacheryWithId a.id))

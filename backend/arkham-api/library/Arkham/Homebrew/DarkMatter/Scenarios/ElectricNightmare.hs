@@ -49,7 +49,11 @@ instance RunMessage ElectricNightmare where
       flavor $ scope "intro" $ h "title" >> p "body"
       -- guide p6: each investigator with 3 or fewer Memories reads
       -- Desynchronization and adds the Desync weakness to their deck.
-      checkDesynchronization
+
+      iids <- filterM (fmap (<= 3) . getMemories) =<< allInvestigators
+      unless (null iids) do
+        scope "desynchronization" $ flavor $ compose.green $ h.noUnderline.center "title" >> p "body"
+        for_ iids \iid -> addCampaignCardToDeck iid ShuffleIn Treacheries.desync
       pure s
     Setup -> runScenarioSetup ElectricNightmare attrs do
       setUsesGrid

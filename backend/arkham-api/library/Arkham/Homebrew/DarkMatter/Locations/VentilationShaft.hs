@@ -11,14 +11,9 @@ newtype VentilationShaft = VentilationShaft LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- "Revelation - Put this location into play." is handled by the encounter-draw
--- runner, which already places a drawn location before resolving its revelation.
 ventilationShaft :: LocationCard VentilationShaft
 ventilationShaft = symbolLabel $ location VentilationShaft Cards.ventilationShaft 2 (PerPlayer 1)
 
-{- | "Forced - When you would enter Ventilation Shaft: Test [agility] (3). If you
-fail, cancel the effects of the move."
--}
 instance HasAbilities VentilationShaft where
   getAbilities (VentilationShaft a) =
     extendRevealed1 a

@@ -13,15 +13,10 @@ newtype WhoAmI = WhoAmI StoryAttrs
 whoAmI :: StoryCard WhoAmI
 whoAmI = story WhoAmI Cards.whoAmI
 
-{- | "Each investigator at your location adds 1 tally mark next to their
-'Memories'. You may search the top 6 cards of your deck for a card and draw it.
-Add this card to the victory display."
--}
 instance RunMessage WhoAmI where
   runMessage msg s@(WhoAmI attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
-      colocated <- select $ colocatedWith iid
-      for_ colocated (`addMemories` 1)
+      selectEach (colocatedWith iid) (`addMemories` 1)
       search iid attrs iid [fromTopOfDeck 6] (basic AnyCard) (DrawFound iid 1)
       addToVictory iid attrs
       pure s

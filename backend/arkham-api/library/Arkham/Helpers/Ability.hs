@@ -19,8 +19,8 @@ import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (getModifiers, withoutModifier)
 import Arkham.Helpers.Query (allInvestigators, getActiveInvestigatorId)
 import Arkham.Helpers.Scenario (getScenarioDeck)
+import Arkham.Helpers.Window (getThatEnemy, getThatInvestigator, windowMatches)
 import Arkham.Homebrew.Defs (homebrewActionAffordability)
-import Arkham.Helpers.Window (getThatEnemy, windowMatches)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
@@ -76,7 +76,9 @@ getCanPerformAbility !iid !ws !ability = do
       active <- getActiveInvestigatorId
       if active == iid
         then passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
-        else withActiveInvestigator iid $ passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
+        else
+          withActiveInvestigator iid
+            $ passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
 
 preventedByInvestigatorModifiers
   :: HasGame m => InvestigatorId -> Ability -> m Bool
@@ -384,11 +386,20 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
       else pure []
   let
     mThatEnemy = getThatEnemy ws
-    fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
+    fixEnemy =
+      (maybe id Matcher.replaceThatInvestigator $ getThatInvestigator ws)
+        . (maybe id Matcher.replaceThatEnemy mThatEnemy)
     costF =
       case find isSetCost modifiers of
-        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts <> performActionCosts) . const c
-        _ -> fixEnemy . fold . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts <> performActionCosts)
+        Just (SetAbilityCost c) ->
+          fixEnemy
+            . fold
+            . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts <> performActionCosts)
+            . const c
+        _ ->
+          fixEnemy
+            . fold
+            . (: investigateCosts <> exploreCosts <> resignCosts <> enterCosts <> leaveCosts <> performActionCosts)
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False
@@ -518,13 +529,14 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         let traitMatchingUsedAbilities = filter (elem trait . usedAbilityTraits) usedAbilities
         let usedCount = sum $ map usedTimes traitMatchingUsedAbilities
         pure $ usedCount < n
-      PlayerLimit lType n | lType `elem` [PerTest, PerTestOrAbility] ->
-        pure
-          . (< n)
-          . maybe 0 usedTimes
-          $ find
-            ((== ability) . usedAbility)
-            usedAbilities
+      PlayerLimit lType n
+        | lType `elem` [PerTest, PerTestOrAbility] ->
+            pure
+              . (< n)
+              . maybe 0 usedTimes
+              $ find
+                ((== ability) . usedAbility)
+                usedAbilities
       PlayerLimit PerRound n -> do
         pure
           $ maybe

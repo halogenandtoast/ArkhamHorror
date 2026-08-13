@@ -94,6 +94,18 @@ spawnedEnemy =
     (windowType -> Window.EnemyAttemptsToSpawnAt eid _) -> Just eid
     _ -> Nothing
 
+{- | The investigator a triggered ability's @ThatInvestigator@ refers to: the one
+the window is *about*, which is not necessarily the one using the ability (a
+reaction to "an investigator at your location would discover clues" is used by
+the card's controller but is about the discoverer).
+-}
+getThatInvestigator :: [Window] -> Maybe InvestigatorId
+getThatInvestigator = \case
+  [] -> Nothing
+  ((windowType -> Window.WouldDiscoverClues who _ _ _ _) : _) -> Just who
+  ((windowType -> Window.DiscoverClues who _ _ _) : _) -> Just who
+  (_ : rest) -> getThatInvestigator rest
+
 getThatEnemy :: [Window] -> Maybe EnemyId
 getThatEnemy = \case
   [] -> Nothing

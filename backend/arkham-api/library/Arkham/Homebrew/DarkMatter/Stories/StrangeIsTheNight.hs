@@ -11,7 +11,6 @@ newtype StrangeIsTheNight = StrangeIsTheNight StoryAttrs
 strangeIsTheNight :: StoryCard StrangeIsTheNight
 strangeIsTheNight = story StrangeIsTheNight Cards.strangeIsTheNight
 
--- "Add 2 tally marks next to your 'Memories'. Add this card to the victory display."
 instance RunMessage StrangeIsTheNight where
   runMessage msg s@(StrangeIsTheNight attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do

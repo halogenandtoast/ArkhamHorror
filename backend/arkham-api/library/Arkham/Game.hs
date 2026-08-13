@@ -6707,6 +6707,7 @@ runMessages gameId mLogger = do
                 if willPreloadModifiers
                   then
                     runWithEnv
+                      $ withMetric "pre/beforeSnapshots"
                       $ (,,)
                       <$> getAsIfLocationMap
                       <*> select AloofEnemy
@@ -6714,8 +6715,8 @@ runMessages gameId mLogger = do
                   else pure (mempty, [], mempty)
 
               runWithEnv $ withMetric ("Msg[" <> messageTag msg <> "]") do
-                overGameM preloadEntities
-                overGameM $ runPreGameMessage msg
+                overGameM $ withMetric "pre/preloadEntities" . preloadEntities
+                overGameM $ withMetric "pre/runPreGameMessage" . runPreGameMessage msg
                 if willPreloadModifiers
                   then do
                     overGameM

@@ -11,9 +11,6 @@ newtype K2PS187CyberneticBrains = K2PS187CyberneticBrains StoryAttrs
 k2PS187CyberneticBrains :: StoryCard K2PS187CyberneticBrains
 k2PS187CyberneticBrains = story K2PS187CyberneticBrains Cards.k2PS187CyberneticBrains
 
-{- | "Each investigator adds 1 tally mark next to their 'Memories', regardless of
-their location. Advance to act 2b. Add this card to the victory display."
--}
 instance RunMessage K2PS187CyberneticBrains where
   runMessage msg s@(K2PS187CyberneticBrains attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do

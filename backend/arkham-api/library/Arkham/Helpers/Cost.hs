@@ -303,7 +303,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
           _ -> error "Unhandled shuffle attached card into deck cost"
       EnemyAttackCost eid -> selectAny $ Matcher.EnemyWithId eid <> Matcher.EnemyCanAttack (Matcher.InvestigatorWithId iid)
       DrawEncounterCardsCost _n -> can.target.encounterDeck iid
-      DiscardEncounterUntilFirstCost _matcher -> can.target.encounterDeck iid
+      DiscardEncounterUntilFirstCost _requester _matcher -> can.target.encounterDeck iid
       CostWhenEnemy mtchr c -> do
         hasEnemy <- selectAny mtchr
         if hasEnemy then getCanAffordCost_ iid source actions windows' canModify c else pure True
@@ -478,6 +478,16 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
             else pure 0
         clues <- field InvestigatorClues iid
         pure $ (clues + z) >= n
+      InvestigatorPlaceClueOnLocationCost investigatorMatcher gv -> do
+        n <- getPlayerCountValue gv
+        -- Unaffordable when the matcher resolves to nobody, so an ability whose
+        -- cost is placed by the window's investigator is not offered when that
+        -- investigator has no clue to place.
+        selectOne (Matcher.replaceYouMatcher iid investigatorMatcher) >>= \case
+          Nothing -> pure False
+          Just placer -> do
+            clues <- field InvestigatorClues placer
+            pure $ clues >= n
       CalculatedGroupClueCost calc locationMatcher -> do
         cost <- calculate calc
         let lm = Matcher.replaceYouMatcher iid locationMatcher

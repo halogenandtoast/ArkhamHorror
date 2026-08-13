@@ -19,14 +19,15 @@ instance RunMessage Anachronism where
       sid <- getRandom
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
-    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      replicateM_ n do
-        hasAssets <- selectAny $ DiscardableAsset <> AssetNonStory <> assetControlledBy iid
-        chooseOneM iid $ withI18n do
-          when hasAssets
-            $ countVar 1
-            $ labeled' "discardAssets"
-            $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
-          chooseTakeHorror iid attrs 1
+    FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
+      doStep n msg
+      pure t
+    DoStep n (FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
+      hasAssets <- selectAny $ DiscardableAsset <> AssetNonStory <> assetControlledBy iid
+      chooseOneM iid $ withI18n do
+        countVar 1
+          $ labeledValidate' hasAssets "discardAssets"
+          $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
+        chooseTakeHorror iid attrs 1
       pure t
     _ -> Anachronism <$> liftRunMessage msg attrs

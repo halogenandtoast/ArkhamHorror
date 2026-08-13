@@ -25,7 +25,7 @@ instance RunMessage RadiationTablets where
     Revelation iid (isSource attrs -> True) -> do
       investigators <- select Anyone
       chooseOneM iid $ campaignI18n do
-        targets investigators \iid' -> putCardIntoPlay iid' attrs
+        targets investigators (`putCardIntoPlay` attrs)
         labeled' "radiationTablets.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do

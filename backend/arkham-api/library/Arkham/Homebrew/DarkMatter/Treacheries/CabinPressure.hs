@@ -12,15 +12,10 @@ newtype CabinPressure = CabinPressure TreacheryAttrs
 cabinPressure :: TreacheryCard CabinPressure
 cabinPressure = treachery CabinPressure Cards.cabinPressure
 
-{- | "Hidden. Peril. Revelation - Secretly add this card to your hand.
-Forced - At the end of your turn, if there are 1 or more clues on your
-location: Take 2 damage and discard Cabin Pressure.
-[action][action]: Discard Cabin Pressure."
--}
 instance HasAbilities CabinPressure where
   getAbilities (CabinPressure a) =
     [ restricted a 1 (youExist $ at_ LocationWithAnyClues) $ forced $ TurnEnds #when You
-    , restricted a 2 OnSameLocation $ doubleActionAbilityWithCost mempty
+    , restricted a 2 OnSameLocation doubleActionAbility
     ]
 
 instance RunMessage CabinPressure where

@@ -872,7 +872,9 @@ runGameMessage msg g = case msg of
     -- like those provided by Shortcut (2) we have to add a 0 value ActionCost
     -- here so that it can add the additional
     let
-      fixEnemy = maybe id replaceThatEnemy $ getThatEnemy windows'
+      fixEnemy =
+        (maybe id replaceThatInvestigator $ getThatInvestigator windows')
+          . (maybe id replaceThatEnemy $ getThatEnemy windows')
       activeCost =
         ActiveCost
           { activeCostId = acId

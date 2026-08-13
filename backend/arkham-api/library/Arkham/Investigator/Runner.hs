@@ -65,7 +65,12 @@ import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Location (getCanMoveTo, isDiscoveringLastClue, withLocationOf)
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Playable (getIsPlayableAfterInitiation, getPlayableCards)
+import Arkham.Helpers.Playable (
+  filterPlayable,
+  getIsPlayableAfterInitiation,
+  getOtherPlayersPlayableCards,
+  getPlayableDiscards,
+ )
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Slot (
   canPutIntoSlot,
@@ -123,6 +128,7 @@ import Arkham.Message.Lifted (takeControlOfAsset)
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Message.Lifted.Move (moveToEdit)
+import Arkham.Metrics (isMetricsEnabled, recordSpan)
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
@@ -149,6 +155,7 @@ import Data.List qualified as List
 import Data.Map.Strict qualified as Map
 import Data.Monoid
 import Data.Set qualified as Set
+import GHC.Clock (getMonotonicTimeNSec)
 
 instance RunMessage Investigator where
   runMessage msg i@(Investigator (a :: original)) =
@@ -409,6 +416,21 @@ runWindow attrs windows actions playableCards = do
               )
               actionsWithMatchingWindows
             <> [SkipTriggersButton iid | skippable]
+
+{- | TEMPORARY profiling instrumentation. 'Arkham.Metrics.withMetric' needs
+'MonadUnliftIO', which @QueueT Message GameT@ is not, so time the span by hand.
+No exception safety: a throwing span is simply not recorded.
+-}
+timedSpan :: MonadIO m => Text -> m a -> m a
+timedSpan name action = do
+  liftIO isMetricsEnabled >>= \case
+    Nothing -> action
+    Just _ -> do
+      t0 <- liftIO getMonotonicTimeNSec
+      result <- action
+      t1 <- liftIO getMonotonicTimeNSec
+      liftIO $ recordSpan name (t1 - t0)
+      pure result
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
@@ -2238,12 +2260,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   Do (CheckWindows windows)
     | not investigatorSkippedWindow
         && (not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows) -> do
-        actions <- getActions a.id windows
+        actions <- timedSpan "window/getActions" $ getActions a.id windows
         playableCards <-
           if not (investigatorDefeated || investigatorResigned)
-            then getPlayableCards a a (UnpaidCost NeedsAction) windows
+            then timedSpan "window/getPlayableCards" $ do
+              -- TEMPORARY: inlined copy of getPlayableCards so each component can
+              -- be timed. Bypasses its `cached` wrapper; restore before shipping.
+              let cs = UnpaidCost NeedsAction
+              asIf <- timedSpan "pc/getAsIfInHandCards" $ getAsIfInHandCards a.id
+              others <- timedSpan "pc/getOtherPlayers" $ getOtherPlayersPlayableCards a.id cs windows
+              discards <- timedSpan "pc/getPlayableDiscards" $ getPlayableDiscards a a.id cs windows
+              hand <- timedSpan "pc/handField" $ field InvestigatorHand a.id
+              handPlayable <- timedSpan "pc/filterPlayable" $ filterPlayable a a cs windows (hand <> asIf)
+              pure $ nub $ handPlayable <> discards <> others
             else pure []
-        runWindow a windows actions playableCards
+        timedSpan "window/runWindow" $ runWindow a windows actions playableCards
         pure a
   SpendActions iid _ _ 0 | iid == investigatorId -> handleSpendActions a iid
   SpendActions iid source mAction n | iid == investigatorId -> handleSpendActionsV2 a iid source mAction n

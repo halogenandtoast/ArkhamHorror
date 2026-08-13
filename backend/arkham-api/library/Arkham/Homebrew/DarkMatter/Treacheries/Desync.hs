@@ -1,5 +1,6 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.Desync (desync) where
 
+import Arkham.Card
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (addMemories, campaignI18n)
 import Arkham.Investigator.Types (Field (InvestigatorDeck))
@@ -14,12 +15,6 @@ newtype Desync = Desync TreacheryAttrs
 desync :: TreacheryCard Desync
 desync = treachery Desync Cards.desync
 
-{- | "Revelation - You must either (choose one):
-- Suffer 1 mental trauma and add 1 tally mark next to your "Memories". Then,
-  exile this card.
-- If your deck has 5 or more cards in it, shuffle this card back into your deck.
-  Otherwise, discard it."
--}
 instance RunMessage Desync where
   runMessage msg t@(Desync attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
@@ -29,6 +24,7 @@ instance RunMessage Desync where
           sufferMentalTrauma iid 1
           addMemories iid 1
           exile attrs
+          removeCardFromDeckForCampaign iid (toCard attrs)
         labeled' "desync.returnToDeck"
           $ if deckSize >= 5
             then shuffleIntoDeck iid attrs

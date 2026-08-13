@@ -19,7 +19,7 @@ import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Game (getRemovedFromPlayCards)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Query (getInvestigators, getLead)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario (getEncounterDeck, getScenarioDeck)
 import Arkham.Helpers.Window (wouldWindows)
 import Arkham.Helpers.Xp
@@ -27,7 +27,6 @@ import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern EvidenceDeck, pattern ScanningDeck)
 import Arkham.Homebrew.DarkMatter.Traits (pattern Brain, pattern Carcosa)
@@ -64,7 +63,6 @@ import Arkham.Message (
     Would
   ),
   ReplaceStrategy (Swap),
-  ShuffleIn (..),
   pattern InvestigatorDrawEnemy,
  )
 import Arkham.Message.Lifted
@@ -150,19 +148,6 @@ getImpendingDoom = getRecordCount ImpendingDoom
 
 addImpendingDoom :: ReverseQueue m => Int -> m ()
 addImpendingDoom = incrementRecordCount ImpendingDoom
-
--- ** Desynchronization (guide p6) ** --
-
-{- | Scenario II intro: each investigator with 3 or fewer Memories must read
-Desynchronization and add the Desync weakness to their deck (it does not
-count towards the deck limit).
--}
-checkDesynchronization :: ReverseQueue m => m ()
-checkDesynchronization = do
-  iids <- filterM (fmap (<= 3) . getMemories) =<< getInvestigators
-  unless (null iids) do
-    campaignI18n $ scope "desynchronization" $ flavor $ setTitle "title" >> p "body"
-    for_ iids \iid -> addCampaignCardToDeck iid ShuffleIn Treacheries.desync
 
 -- ** Scan and the scanning deck (guide p2) ** --
 

@@ -26,7 +26,7 @@ instance RunMessage MindMachineInterface where
     Revelation iid (isSource attrs -> True) -> do
       investigators <- select Anyone
       chooseOneM iid $ campaignI18n do
-        targets investigators \iid' -> putCardIntoPlay iid' attrs
+        targets investigators (`putCardIntoPlay` attrs)
         labeled' "mindMachineInterface.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do

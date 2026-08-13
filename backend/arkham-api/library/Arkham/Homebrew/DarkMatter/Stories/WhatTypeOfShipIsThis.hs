@@ -13,12 +13,6 @@ newtype WhatTypeOfShipIsThis = WhatTypeOfShipIsThis StoryAttrs
 whatTypeOfShipIsThis :: StoryCard WhatTypeOfShipIsThis
 whatTypeOfShipIsThis = story WhatTypeOfShipIsThis Cards.whatTypeOfShipIsThis
 
-{- | "Each investigator at your location adds 1 tally mark next to their
-'Memories'. You must either (choose one):
-- Place 1 doom on the current agenda and add this card to the victory display.
-  This effect may cause the current agenda to advance.
-- Remove this card from the game."
--}
 instance RunMessage WhatTypeOfShipIsThis where
   runMessage msg s@(WhatTypeOfShipIsThis attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do

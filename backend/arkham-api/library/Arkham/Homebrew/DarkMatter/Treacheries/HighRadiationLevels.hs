@@ -4,6 +4,8 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+import Arkham.SkillTest.Base
 import Arkham.Treachery.Import.Lifted
 
 newtype HighRadiationLevels = HighRadiationLevels TreacheryAttrs
@@ -13,18 +15,13 @@ newtype HighRadiationLevels = HighRadiationLevels TreacheryAttrs
 highRadiationLevels :: TreacheryCard HighRadiationLevels
 highRadiationLevels = treachery HighRadiationLevels Cards.highRadiationLevels
 
-{- | "Revelation - Test [agility] or [combat] (3). If you fail, deal 1 direct
-damage to your investigator and to each [[Ally]] asset you control. If you
-control Radiation Tablets, you automatically succeed at this test."
--}
 instance RunMessage HighRadiationLevels where
   runMessage msg t@(HighRadiationLevels attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       hasTablets <- selectAny $ assetIs Assets.radiationTablets <> assetControlledBy iid
-      unless hasTablets do
-        sid <- getRandom
-        chooseOneM iid $ for_ [#agility, #combat] \skill ->
-          skillLabeled skill $ revelationSkillTest sid iid attrs skill (Fixed 3)
+      sid <- getRandom
+      when hasTablets $ skillTestModifier sid attrs sid SkillTestAutomaticallySucceeds
+      chooseBeginSkillTestEdit sid iid attrs iid [#agility, #combat] (Fixed 3) setIsRevelation
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       directDamage iid attrs 1

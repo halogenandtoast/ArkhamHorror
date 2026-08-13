@@ -114,6 +114,13 @@ data Cost
   | SameLocationGroupClueCost GameValue LocationMatcher
   | GroupClueCostRange (Int, Int) LocationMatcher
   | PlaceClueOnLocationCost GameValue
+  | {- | As 'PlaceClueOnLocationCost', but the clues come from (and are placed at
+    the location of) the matched investigator rather than the one paying.
+    Write 'ThatInvestigator' to charge the investigator in the window that
+    triggered the ability (e.g. "when an investigator at your location would
+    discover clues, place 1 of their clues on that location instead").
+    -}
+    InvestigatorPlaceClueOnLocationCost InvestigatorMatcher GameValue
   | ExhaustCost Target
   | ShuffleTopOfScenarioDeckIntoYourDeck Int ScenarioDeckKey
   | ChooseEnemyCost EnemyMatcher
@@ -205,9 +212,14 @@ data Cost
   | AsIfAtLocationCost LocationId Cost
   | NonBlankedCost Cost
   | DrawEncounterCardsCost Int
-  | -- | Discard from the top of the encounter deck until a matching card is
-    -- discarded, then draw it (Dark Matter's All-Seeing Eye taxes each scan)
-    DiscardEncounterUntilFirstCost ExtendedCardMatcher
+  | {- | Discard from the top of the encounter deck until a matching card is
+    discarded, then draw it (Dark Matter's All-Seeing Eye taxes each scan).
+    The 'Source' is what the resulting 'RequestedEncounterCard' is addressed to:
+    additional costs are contributed by a card other than the one performing the
+    action, so the active cost's own source would route the answer to the wrong
+    card.
+    -}
+    DiscardEncounterUntilFirstCost Source ExtendedCardMatcher
   | GloriaCost -- lol, not going to attempt to make this generic
   | ArchiveOfConduitsUnidentifiedCost -- this either
   | LabeledCost Text Cost

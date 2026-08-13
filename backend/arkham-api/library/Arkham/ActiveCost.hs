@@ -386,8 +386,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       if Blank `elem` mods
         then pure c
         else payCost msg c iid skipAdditionalCosts cost'
-    DiscardEncounterUntilFirstCost matcher -> do
-      push $ DiscardUntilFirst iid (activeCostSource c) Deck.EncounterDeck matcher
+    DiscardEncounterUntilFirstCost requester matcher -> do
+      push $ DiscardUntilFirst iid requester Deck.EncounterDeck matcher
       pure c
     GloriaCost -> do
       mtarget <- getSkillTestTarget
@@ -1206,6 +1206,15 @@ payCost msg c iid skipAdditionalCosts cost = do
       n <- getPlayerCountValue x
       push $ InvestigatorPlaceCluesOnLocation iid source n
       withPayment $ CluePayment iid n
+    InvestigatorPlaceClueOnLocationCost investigatorMatcher x -> do
+      n <- getPlayerCountValue x
+      -- The initiator pays, but the clues come from the matched investigator and
+      -- land on *their* location.
+      selectOne (replaceYouMatcher iid investigatorMatcher) >>= \case
+        Nothing -> pure c
+        Just placer -> do
+          push $ InvestigatorPlaceCluesOnLocation placer source n
+          withPayment $ CluePayment placer n
     GroupClueCostRange (sVal, eVal) locationMatcher -> do
       let lm = replaceYouMatcher iid locationMatcher
       mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt lm)

@@ -10,6 +10,7 @@ emergencyProcedure =
 
 theGhostShip :: CardDef
 theGhostShip = agenda ":dark-matter:016" "The Ghost Ship" 2 Set.TheTatterdemalion
+  & otherSideIs ":dark-matter:016b"
 
 riseOfTheMachines :: CardDef
 riseOfTheMachines =

@@ -6,6 +6,7 @@ import * as Arkham from '@/arkham/types/Deck'
 import { fetchDecks, newGame, createEvent } from '@/arkham/api'
 import { useEventStore } from '@/arkham/stores/event'
 import type { Difficulty } from '@/arkham/types/Difficulty'
+import { campaignChapter } from '@/arkham/data'
 import type { Scenario, Campaign } from '@/arkham/data'
 import { storeToRefs } from 'pinia'
 import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/NewGame'
@@ -266,7 +267,7 @@ watch(selectedCampaign, (id) => {
   returnTo.value = false
   recommendedOptionState.value = {}
   ultimatumsAndBoons.value = []
-  strictAsIfAt.value = id != null && id >= '11'
+  strictAsIfAt.value = campaignChapter(campaignJSON.find((c) => c.id === id), id) === 2
 
   if (id === '09') fullCampaign.value = 'FullCampaign'
 })

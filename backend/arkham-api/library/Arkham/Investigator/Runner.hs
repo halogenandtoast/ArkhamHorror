@@ -55,6 +55,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Ability (getAbilityLimit, getCanAffordUseWith, isForcedAbility)
 import Arkham.Helpers.Action (getActions)
+import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.Card (cardIsFast', getModifiedCardCost)
 import Arkham.Helpers.ChaosToken (chaosTokenSymbolEffectsIgnored)
 import Arkham.Helpers.Cost (getAdditionalActionCosts, getCanAffordCost)
@@ -582,6 +583,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         investigatorStartsWith
     let (permanentCards, deck'') =
           partition (\c -> cdPermanent (toCardDef c) && not (cannotPutIntoPlay (toCard c))) (unDeck deck')
+
+    -- An earned campaign story card printed on an encounter back never comes
+    -- back with the deck (deck loading keeps only player cards), so a permanent
+    -- one has to start in play from the campaign's story cards instead —
+    -- otherwise it is lost after the scenario it was earned in.
+    encounterPermanentCards <-
+      filter
+        ( and
+            . sequence
+              [isJust . preview _EncounterCard, cdPermanent . toCardDef, not . cannotPutIntoPlay]
+        )
+        . findWithDefault [] investigatorId
+        <$> getCampaignStoryCards
+
     let deck''' =
           filter
             ( and
@@ -608,11 +623,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       $ startsWithMsgs
       <> [ PutCardIntoPlay
              investigatorId
-             (PlayerCard card)
+             card
              Nothing
              NoPayment
              (Window.defaultWindows investigatorId)
-         | card <- permanentCards
+         | card <- map PlayerCard permanentCards <> encounterPermanentCards
          ]
       <> [TakeStartingResources investigatorId]
     pure $ a & (deckL .~ Deck deck''') & bondedCardsL .~ bondedCards

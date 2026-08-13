@@ -2,6 +2,7 @@
   "id": ":dark-matter",
   "name": "Dark Matter",
   "homebrew": true,
+  "chapter": 1,
   "designer": "Axolotl",
   "difficultyLevels": {
     "Easy": [

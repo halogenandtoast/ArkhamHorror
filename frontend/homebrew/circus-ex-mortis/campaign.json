@@ -2,6 +2,7 @@
   "id": ":circus-ex-mortis",
   "name": "Circus Ex Mortis",
   "homebrew": true,
+  "chapter": 1,
   "designer": "The Beard",
   "difficultyLevels": {
     "Easy": [

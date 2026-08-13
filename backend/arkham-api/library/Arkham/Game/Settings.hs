@@ -62,9 +62,14 @@ asIfRulingFromStrictAsIfAt = \case
   False -> Chapter1AsIfRuling
   True -> Chapter2AsIfRuling
 
+{- | Fallback when the client doesn't send an explicit ruling. Official
+campaigns from @11@ on are Chapter 2. Homebrew campaigns (@:@-prefixed ids,
+which don't order against official ones) declare their chapter in their
+@campaign.json@ and the client sends it; without one they are Chapter 1.
+-}
 defaultAsIfRulingForCampaign :: Maybe Text -> AsIfRuling
 defaultAsIfRulingForCampaign = \case
-  Just cid | cid >= "11" -> Chapter2AsIfRuling
+  Just cid | not (":" `isPrefixOf` cid), cid >= "11" -> Chapter2AsIfRuling
   _ -> Chapter1AsIfRuling
 
 defaultSettings :: Settings

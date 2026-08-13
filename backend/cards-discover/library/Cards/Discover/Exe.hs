@@ -9,7 +9,7 @@ import Data.Char
 import Data.DList (DList (..))
 import Data.DList qualified as DList
 import Data.Foldable (for_)
-import Data.List (elemIndex, groupBy, intercalate, isPrefixOf, nub, sort, stripPrefix)
+import Data.List (dropWhileEnd, elemIndex, groupBy, intercalate, isPrefixOf, nub, sort, stripPrefix)
 import Data.Maybe
 import Data.String
 import System.Directory
@@ -69,7 +69,8 @@ homebrewSpec = \case
         , hsTypeName = "DiscoveredHomebrewCards"
         , hsClassName = "IsHomebrewCard"
         , hsMethodName = "homebrewCard"
-        , hsHelper = \case
+        , -- @foo :: EnemyCard Foo@ — the entity type is the head of the signature
+          hsHelper = \rhs -> case takeWhile (not . isSpace) rhs of
             "ActCard" -> Just "actContent"
             "AgendaCard" -> Just "agendaContent"
             "AssetCard" -> Just "assetContent"
@@ -86,7 +87,8 @@ homebrewSpec = \case
         , hsTypeName = "DiscoveredHomebrewCardDefs"
         , hsClassName = "IsHomebrewCardDefs"
         , hsMethodName = "homebrewCardDefs"
-        , hsHelper = \case
+        , -- the whole signature, so a @CardDef -> CardDef@ helper is not a definition
+          hsHelper = \case
             "CardDef" -> Just "cardDefEntry"
             "PlayerCardDef" -> Just "playerCardDefEntry"
             _ -> Nothing
@@ -184,11 +186,13 @@ data HomebrewEntry = HomebrewEntry
   , heHelper :: String
   }
 
--- Card implementation modules conventionally expose their builders with a
--- one-line signature such as @foo :: EnemyCard Foo@ (card *definition* modules
--- use @foo :: CardDef@).  Keeping this deliberately small avoids making
--- cards-discover a Haskell parser while still making an unrecognised
--- declaration fail closed (it simply is not registered).
+{- Card implementation modules conventionally expose their builders with a
+one-line signature such as @foo :: EnemyCard Foo@ (card *definition* modules use
+@foo :: CardDef@).  Keeping this deliberately small avoids making cards-discover
+a Haskell parser while still making an unrecognised declaration fail closed (it
+simply is not registered).  Each mode is handed the whole right-hand side and
+decides how much of it has to match, so a helper such as
+@permanent :: CardDef -> CardDef@ is not mistaken for a definition. -}
 readHomebrewEntries :: HomebrewSpec -> Module -> IO [HomebrewEntry]
 readHomebrewEntries spec mod' = do
   source <- readFile $ modulePath mod'
@@ -199,7 +203,7 @@ readHomebrewEntries spec mod' = do
     guard $ not ("--" `isPrefixOf` stripped)
     let (lhs, rest) = break (== ':') stripped
     rhs <- stripPrefix "::" rest
-    helper <- hsHelper spec $ takeWhile (not . isSpace) $ dropWhile isSpace rhs
+    helper <- hsHelper spec $ trim rhs
     builder <- case filter (not . isSpace) lhs of
       name | validBuilder name -> Just name
       _ -> Nothing
@@ -207,6 +211,8 @@ readHomebrewEntries spec mod' = do
 
   validBuilder [] = False
   validBuilder (c : cs) = isLower c && all (\x -> isAlphaNum x || x == '_' || x == '\'') cs
+
+  trim = dropWhileEnd isSpace . dropWhile isSpace
 
 renderHomebrewContentFile :: HomebrewSpec -> Module -> [HomebrewEntry] -> String
 renderHomebrewContentFile HomebrewSpec {..} base entries = render do

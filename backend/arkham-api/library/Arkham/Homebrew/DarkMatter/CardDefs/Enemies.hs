@@ -6,8 +6,17 @@ import Arkham.Homebrew.DarkMatter.Traits
 import Arkham.Keyword qualified as Keyword
 import Arkham.LocationSymbol qualified as LS
 
+{- | A scanning back: the icons are printed at the bottom of the card's @b@
+side, so that side is the card's back for display too — not the generic
+encounter back. Mirrors @CardDefs.Stories.withScanIcons@ and the locations'
+'singleSidedWithFlippedBack'.
+-}
 withScanIcons :: [LS.LocationSymbol] -> CardDef -> CardDef
-withScanIcons icons def = def {cdMeta = insertMap "scanIcons" (toJSON icons) def.meta}
+withScanIcons icons def =
+  def
+    { cdMeta = insertMap "scanIcons" (toJSON icons) def.meta
+    , cdOtherSide = Just (flippedCardCode def.cardCode)
+    }
 
 -- deep_space
 theFeasterFromAfar :: CardDef

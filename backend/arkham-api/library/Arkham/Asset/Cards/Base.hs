@@ -27,6 +27,19 @@ storyAsset_ cardCode name encounterSet =
     , cdCost = Nothing
     }
 
+{- | A story asset printed on an *encounter* card back, so it is generated as an
+encounter card and belongs to @allEncounterAssetCards@. 'storyAsset' and its
+siblings leave the def a player card ('AssetType'), which is right only for the
+story assets that are printed on a player back.
+-}
+encounterAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
+encounterAsset cardCode name cost encounterSet =
+  (storyAsset cardCode name cost encounterSet) {cdCardType = EncounterAssetType}
+
+encounterAsset_ :: CardCode -> Name -> EncounterSet -> CardDef
+encounterAsset_ cardCode name encounterSet =
+  (storyAsset_ cardCode name encounterSet) {cdCardType = EncounterAssetType}
+
 storyAssetWithMany :: CardCode -> Name -> Int -> EncounterSet -> Int -> CardDef
 storyAssetWithMany cardCode name cost encounterSet encounterSetCount =
   (baseAsset (Just (encounterSet, encounterSetCount)) cardCode name cost (singleton Neutral))

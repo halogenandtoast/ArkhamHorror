@@ -2,8 +2,7 @@ module Arkham.Homebrew.DarkMatter.Acts.TassildasAwakening (tassildasAwakening) w
 
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
-import Arkham.Card.CardDef (toCardType)
-import Arkham.Card.CardType
+import Arkham.Card (cardMatch)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Scenario (getVictoryDisplay)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
@@ -43,7 +42,8 @@ instance RunMessage TassildasAwakening where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       selectOne (LocationWithMostClues Anywhere) >>= traverse_ \lid ->
         moveTokens (attrs.ability 2) iid lid #clue 1
-      stories <- count ((== AssetType) . toCardType) <$> getVictoryDisplay
+      -- either card back: a story asset is a story asset to the player
+      stories <- count (`cardMatch` (#asset :: CardMatcher)) <$> getVictoryDisplay
       when (stories > 0)
         $ selectOne (enemyIs Enemies.tassilda)
         >>= traverse_ (nonAttackEnemyDamage (Just iid) (attrs.ability 2) stories)

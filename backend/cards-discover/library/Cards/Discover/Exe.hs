@@ -46,7 +46,52 @@ indent i doc = Render do
   let new = (replicate i ' ' <>) <$> execState (unRender doc) mempty
   modify (<> new)
 
-data DiscoverMode = ReExport | InstancesOnly | HomebrewContent
+data DiscoverMode = ReExport | InstancesOnly | HomebrewContent | HomebrewCardDefs
+
+{- | How a discovery mode that reads its inputs renders them: which module
+supplies the registration helpers, which tag type and class instance to emit,
+and how a declared type maps to the helper that registers it.
+-}
+data HomebrewSpec = HomebrewSpec
+  { hsImport :: String
+  , hsTypeName :: String
+  , hsClassName :: String
+  , hsMethodName :: String
+  , hsHelper :: String -> Maybe String
+  }
+
+homebrewSpec :: DiscoverMode -> Maybe HomebrewSpec
+homebrewSpec = \case
+  HomebrewContent ->
+    Just
+      $ HomebrewSpec
+        { hsImport = "Arkham.Homebrew.CardRegistry"
+        , hsTypeName = "DiscoveredHomebrewCards"
+        , hsClassName = "IsHomebrewCard"
+        , hsMethodName = "homebrewCard"
+        , hsHelper = \case
+            "ActCard" -> Just "actContent"
+            "AgendaCard" -> Just "agendaContent"
+            "AssetCard" -> Just "assetContent"
+            "EnemyCard" -> Just "enemyContent"
+            "LocationCard" -> Just "locationContent"
+            "StoryCard" -> Just "storyContent"
+            "TreacheryCard" -> Just "treacheryContent"
+            _ -> Nothing
+        }
+  HomebrewCardDefs ->
+    Just
+      $ HomebrewSpec
+        { hsImport = "Arkham.Homebrew.DefsBase"
+        , hsTypeName = "DiscoveredHomebrewCardDefs"
+        , hsClassName = "IsHomebrewCardDefs"
+        , hsMethodName = "homebrewCardDefs"
+        , hsHelper = \case
+            "CardDef" -> Just "cardDefEntry"
+            "PlayerCardDef" -> Just "playerCardDefEntry"
+            _ -> Nothing
+        }
+  _ -> Nothing
 
 discoverCards :: Source -> Destination -> FilePath -> IO ()
 discoverCards src dest cardsDir = discoverCardsWith src dest cardsDir Nothing ReExport
@@ -75,13 +120,13 @@ discoverCardsWith (Source src) (Destination dest) cardsDir only mode = do
     output = case mode of
       ReExport -> renderFile input
       InstancesOnly -> renderInstancesFile input
-      HomebrewContent -> error "HomebrewContent is rendered after reading source files"
+      _ -> error "this mode is rendered after reading source files"
 
-  case mode of
-    HomebrewContent -> do
-      entries <- concat <$> traverse readHomebrewEntries (amfModuleImports input)
-      writeFile dest $ renderHomebrewContentFile (amfModuleBase input) entries
-    _ -> writeFile dest output
+  case homebrewSpec mode of
+    Just spec -> do
+      entries <- concat <$> traverse (readHomebrewEntries spec) (amfModuleImports input)
+      writeFile dest $ renderHomebrewContentFile spec (amfModuleBase input) entries
+    Nothing -> writeFile dest output
 
 getFilesRecursive :: FilePath -> IO [FilePath]
 getFilesRecursive baseDir = sort <$> go []
@@ -140,11 +185,12 @@ data HomebrewEntry = HomebrewEntry
   }
 
 -- Card implementation modules conventionally expose their builders with a
--- one-line signature such as @foo :: EnemyCard Foo@.  Keeping this deliberately
--- small avoids making cards-discover a Haskell parser while still making an
--- unrecognised declaration fail closed (it simply is not registered).
-readHomebrewEntries :: Module -> IO [HomebrewEntry]
-readHomebrewEntries mod' = do
+-- one-line signature such as @foo :: EnemyCard Foo@ (card *definition* modules
+-- use @foo :: CardDef@).  Keeping this deliberately small avoids making
+-- cards-discover a Haskell parser while still making an unrecognised
+-- declaration fail closed (it simply is not registered).
+readHomebrewEntries :: HomebrewSpec -> Module -> IO [HomebrewEntry]
+readHomebrewEntries spec mod' = do
   source <- readFile $ modulePath mod'
   pure $ mapMaybe (lineEntry mod') (lines source)
  where
@@ -153,7 +199,7 @@ readHomebrewEntries mod' = do
     guard $ not ("--" `isPrefixOf` stripped)
     let (lhs, rest) = break (== ':') stripped
     rhs <- stripPrefix "::" rest
-    helper <- cardHelper $ takeWhile (not . isSpace) $ dropWhile isSpace rhs
+    helper <- hsHelper spec $ takeWhile (not . isSpace) $ dropWhile isSpace rhs
     builder <- case filter (not . isSpace) lhs of
       name | validBuilder name -> Just name
       _ -> Nothing
@@ -162,18 +208,8 @@ readHomebrewEntries mod' = do
   validBuilder [] = False
   validBuilder (c : cs) = isLower c && all (\x -> isAlphaNum x || x == '_' || x == '\'') cs
 
-  cardHelper = \case
-    "ActCard" -> Just "actContent"
-    "AgendaCard" -> Just "agendaContent"
-    "AssetCard" -> Just "assetContent"
-    "EnemyCard" -> Just "enemyContent"
-    "LocationCard" -> Just "locationContent"
-    "StoryCard" -> Just "storyContent"
-    "TreacheryCard" -> Just "treacheryContent"
-    _ -> Nothing
-
-renderHomebrewContentFile :: Module -> [HomebrewEntry] -> String
-renderHomebrewContentFile base entries = render do
+renderHomebrewContentFile :: HomebrewSpec -> Module -> [HomebrewEntry] -> String
+renderHomebrewContentFile HomebrewSpec {..} base entries = render do
   let modules = nub $ map heModule entries
       alias mod' = 1 + fromJust (elemIndex mod' modules)
   renderLine do
@@ -187,7 +223,9 @@ renderHomebrewContentFile base entries = render do
     fromString (moduleName base)
     " where"
   ""
-  "import Arkham.Homebrew.CardRegistry"
+  renderLine do
+    "import "
+    fromString hsImport
   "import Arkham.Prelude"
   for_ (zip [(1 :: Int) ..] modules) \(n, mod') -> renderLine do
     "import "
@@ -195,10 +233,19 @@ renderHomebrewContentFile base entries = render do
     " qualified as Card"
     fromString $ show n
   ""
-  "data DiscoveredHomebrewCards"
+  renderLine do
+    "data "
+    fromString hsTypeName
   ""
-  "instance IsHomebrewCard DiscoveredHomebrewCards where"
-  indent 2 "homebrewCard ="
+  renderLine do
+    "instance "
+    fromString hsClassName
+    " "
+    fromString hsTypeName
+    " where"
+  indent 2 $ renderLine do
+    fromString hsMethodName
+    " ="
   indent 4 "mconcat"
   for_ (zip [(0 :: Int) ..] entries) \(n, HomebrewEntry {..}) -> indent 6 $ renderLine do
     if n == 0 then "[ " else ", "

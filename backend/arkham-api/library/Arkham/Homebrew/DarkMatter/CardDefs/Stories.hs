@@ -3,6 +3,7 @@ module Arkham.Homebrew.DarkMatter.CardDefs.Stories where
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
+import Arkham.Homebrew.DefsBase (PlayerCardDef)
 import Arkham.LocationSymbol qualified as LS
 import Arkham.Prelude
 import Arkham.Story.CardDefs.Base
@@ -112,7 +113,7 @@ arrivalOfTheKing :: CardDef
 arrivalOfTheKing =
   story ":dark-matter:224" "Arrival of the King" Set.FragmentOfCarcosa
 
-delights :: CardDef
+delights :: PlayerCardDef
 delights = story ":dark-matter:225" "Delights" Set.FragmentOfCarcosa
 
 forYouAlone :: CardDef

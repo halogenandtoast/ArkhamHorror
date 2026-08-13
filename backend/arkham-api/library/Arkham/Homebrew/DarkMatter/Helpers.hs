@@ -202,8 +202,8 @@ scanAction cost = ActionAbility (SingleAction Scan) Nothing (ActionCost 1 <> cos
 scanAction_ :: AbilityType
 scanAction_ = scanAction mempty
 
-{- | Payload of the @"scan"@ 'Window.CampaignEvent' fired after every scan,
-successful or not.
+{- | Payload shared by every 'Window.CampaignEvent' in the @scan@ family fired
+after a scan, successful or not. Read it with 'getScanResult'.
 -}
 data ScanResult = ScanResult
   { scannedBy :: InvestigatorId
@@ -220,23 +220,76 @@ this is a 'Window.CampaignEvent' like 'wouldScanEvent'.
 scanEvent :: Text
 scanEvent = "scan"
 
-{- | Per-icon companion to 'scanEvent': a scan for [Trefoil] also fires
-@scan[Trefoil]@. Cards that care about one icon match that window directly
-instead of triggering on every scan and re-checking the payload — the same
-bracketed-key convention the Scarlet Keys concealed cards use
-(@noConcealed[<kind>]@).
--}
-scanEventFor :: LocationSymbol -> Text
-scanEventFor icon = scanEvent <> "[" <> tshow icon <> "]"
+{- | Companions to 'scanEvent'. Every scan fires @scan@ plus one narrower key
+per thing a card might care about, so a card that only reacts to *some* scans
+matches its window directly instead of triggering on every scan and re-checking
+the payload — the same bracketed-key convention the Scarlet Keys concealed cards
+use (@noConcealed[<kind>]@).
 
-{- | Announce a finished scan: the general window, then one window per icon
-scanned for.
+Without these, a reaction is offered (and a forced ability queued) after every
+scan in the campaign and then silently does nothing, which reads to the player
+as a broken card.
+-}
+scanEventKey :: Text -> Text
+scanEventKey key = scanEvent <> "[" <> key <> "]"
+
+-- | A scan for [Trefoil] fires @scan[Trefoil]@.
+scanEventFor :: LocationSymbol -> Text
+scanEventFor = scanEventKey . tshow
+
+-- | @scan[successful]@ / @scan[unsuccessful]@: did the scan find a card?
+successfulScanEvent :: Text
+successfulScanEvent = scanEventKey "successful"
+
+unsuccessfulScanEvent :: Text
+unsuccessfulScanEvent = scanEventKey "unsuccessful"
+
+-- | @scan[<card code>]@: the specific card the scan drew.
+scanEventForCard :: HasCardCode a => a -> Text
+scanEventForCard = scanEventKey . unCardCode . toCardCode
+
+{- | @scan[AssetType]@: the type of the card the scan drew. The card back is not
+part of what a scan cares about — "a story asset" is one thing to a player — so
+'EncounterAssetType' folds into 'AssetType' and both sides of the window agree
+on the single key.
+-}
+scanEventForCardType :: CardType -> Text
+scanEventForCardType =
+  scanEventKey . tshow . \case
+    EncounterAssetType -> AssetType
+    cardType -> cardType
+
+{- | Announce a finished scan. All the keys fire as one window batch so that
+reactions to the same scan are simultaneous, rather than the narrower keys
+resolving after the general one.
 -}
 checkScanWindows :: ReverseQueue m => ScanResult -> m ()
 checkScanWindows r = do
-  checkAfter $ Window.CampaignEvent scanEvent (Just $ scannedBy r) (toJSON r)
-  for_ (ordNub $ scannedFor r) \icon ->
-    checkAfter $ Window.CampaignEvent (scanEventFor icon) (Just $ scannedBy r) (toJSON r)
+  let
+    event key = Window.mkAfter $ Window.CampaignEvent key (Just $ scannedBy r) (toJSON r)
+    ks =
+      scanEvent
+        : (if scanSuccessful r then successfulScanEvent else unsuccessfulScanEvent)
+        : map scanEventFor (ordNub $ scannedFor r)
+          <> concat
+            [ [scanEventForCard card, scanEventForCardType (toCardType card)]
+            | card <- toList (scannedCard r)
+            ]
+  checkWindows $ map event ks
+
+-- | Is this window key @scan@ or one of its narrower @scan[...]@ companions?
+isScanEvent :: Text -> Bool
+isScanEvent key = key == scanEvent || (scanEvent <> "[") `isPrefixOf` key
+
+{- | Read the 'ScanResult' out of whichever scan window triggered an ability.
+Every key in the family carries the same payload, so cards can match the
+narrowest window that fits and still read the details here.
+-}
+getScanResult :: [Window.Window] -> Maybe ScanResult
+getScanResult = \case
+  [] -> Nothing
+  (Window.windowType -> Window.CampaignEvent key _ v) : _ | isScanEvent key -> Just (toResult v)
+  _ : rest -> getScanResult rest
 
 {- | The @#when@ window before any scan resolves. Mount Sinai and Threshold of
 Yuggoth print "When you would scan at <location>: ..." and cancel the scan on a

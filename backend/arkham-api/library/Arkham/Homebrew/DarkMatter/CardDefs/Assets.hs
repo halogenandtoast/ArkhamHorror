@@ -30,7 +30,7 @@ virtualAccessKey =
 evaSuit :: CardDef
 evaSuit =
   withScanIcons [LS.Square, LS.Moon]
-    $ (storyAsset_ ":dark-matter:030" "EVA Suit" Set.TheTatterdemalion)
+    $ (encounterAsset_ ":dark-matter:030" "EVA Suit" Set.TheTatterdemalion)
       { cdCardTraits = setFromList [Armor, Item]
       , cdSlots = [#body]
       }
@@ -39,7 +39,12 @@ heirToCarcosa :: CardDef
 heirToCarcosa =
   withScanIcons [LS.Equals]
     $ permanent
-    $ (storyAsset_ ":dark-matter:032" ("Heir to Carcosa" <:> "Untranslated Runes") Set.TheTatterdemalion)
+    -- player-backed: its revelation adds it to the drawing investigator's deck
+    $ ( storyAsset_
+          ":dark-matter:032"
+          ("Heir to Carcosa" <:> "Untranslated Runes")
+          Set.TheTatterdemalion
+      )
       { cdCardTraits = setFromList [Tome]
       , cdUnique = True
       }
@@ -47,7 +52,7 @@ heirToCarcosa =
 medicalFoam :: CardDef
 medicalFoam =
   withScanIcons [LS.Heart]
-    $ (storyAsset_ ":dark-matter:037" "Medical Foam" Set.TheTatterdemalion)
+    $ (encounterAsset_ ":dark-matter:037" "Medical Foam" Set.TheTatterdemalion)
       { cdCardTraits = setFromList [Medical, Science, Item]
       , cdSlots = [#hand]
       , cdUses = uses Supply 3
@@ -56,14 +61,14 @@ medicalFoam =
 mindMachineInterface :: CardDef
 mindMachineInterface =
   withScanIcons [LS.Triangle, LS.Plus, LS.Hourglass, LS.T]
-    $ (storyAsset_ ":dark-matter:038" "Mind-Machine Interface" Set.TheTatterdemalion)
+    $ (encounterAsset_ ":dark-matter:038" "Mind-Machine Interface" Set.TheTatterdemalion)
       { cdCardTraits = setFromList [Device]
       }
 
 radiationTablets :: CardDef
 radiationTablets =
   withScanIcons [LS.Heart]
-    $ (storyAsset_ ":dark-matter:039" "Radiation Tablets" Set.TheTatterdemalion)
+    $ (encounterAsset_ ":dark-matter:039" "Radiation Tablets" Set.TheTatterdemalion)
       { cdCardTraits = setFromList [Medical, Science, Item]
       , cdUses = uses Supply 3
       }
@@ -71,7 +76,7 @@ radiationTablets =
 -- electric_nightmare
 maja :: CardDef
 maja =
-  (storyAsset_ ":dark-matter:062" ("Maja" <:> "Information Archives") Set.ElectricNightmare)
+  (encounterAsset_ ":dark-matter:062" ("Maja" <:> "Information Archives") Set.ElectricNightmare)
     { cdCardTraits = setFromList [Avatar]
     , cdUnique = True
     }
@@ -79,7 +84,7 @@ maja =
 alma :: CardDef
 alma =
   otherSideIs ":dark-matter:063aa"
-    $ (storyAsset_ ":dark-matter:063ab" ("Alma" <:> "Environmental Controls") Set.ElectricNightmare)
+    $ (encounterAsset_ ":dark-matter:063ab" ("Alma" <:> "Environmental Controls") Set.ElectricNightmare)
       { cdCardTraits = setFromList [Avatar]
       , cdUnique = True
       }
@@ -87,7 +92,7 @@ alma =
 david :: CardDef
 david =
   otherSideIs ":dark-matter:063ba"
-    $ (storyAsset_ ":dark-matter:063bb" ("David" <:> "Engines and System Power") Set.ElectricNightmare)
+    $ (encounterAsset_ ":dark-matter:063bb" ("David" <:> "Engines and System Power") Set.ElectricNightmare)
       { cdCardTraits = setFromList [Avatar]
       , cdUnique = True
       }
@@ -95,7 +100,7 @@ david =
 tilde :: CardDef
 tilde =
   otherSideIs ":dark-matter:063ca"
-    $ (storyAsset_ ":dark-matter:063cb" ("Tilde" <:> "Digital Mainframe") Set.ElectricNightmare)
+    $ (encounterAsset_ ":dark-matter:063cb" ("Tilde" <:> "Digital Mainframe") Set.ElectricNightmare)
       { cdCardTraits = setFromList [Avatar]
       , cdUnique = True
       }
@@ -103,7 +108,7 @@ tilde =
 william :: CardDef
 william =
   otherSideIs ":dark-matter:063da"
-    $ (storyAsset_ ":dark-matter:063db" ("William" <:> "Intrasolar Navigations") Set.ElectricNightmare)
+    $ (encounterAsset_ ":dark-matter:063db" ("William" <:> "Intrasolar Navigations") Set.ElectricNightmare)
       { cdCardTraits = setFromList [Avatar]
       , cdUnique = True
       }
@@ -143,7 +148,7 @@ k2PS187100Functionality =
 -- lost_quantum
 erwinSimmonsFading :: CardDef
 erwinSimmonsFading =
-  (storyAsset_ ":dark-matter:094" ("Erwin Simmons" <:> "Fading") Set.LostQuantum)
+  (encounterAsset_ ":dark-matter:094" ("Erwin Simmons" <:> "Fading") Set.LostQuantum)
     { cdCardTraits = setFromList [Scientist, Human, Ally]
     , cdUnique = True
     }
@@ -170,7 +175,7 @@ spaceArtillery =
 adamTanner :: CardDef
 adamTanner =
   withScanIcons [LS.Diamond, LS.Equals]
-    $ (storyAsset_ ":dark-matter:130" "Adam Tanner" Set.InTheShadowOfEarth)
+    $ (encounterAsset_ ":dark-matter:130" "Adam Tanner" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
@@ -178,7 +183,7 @@ adamTanner =
 captainBurr :: CardDef
 captainBurr =
   withScanIcons [LS.T, LS.Hourglass]
-    $ (storyAsset_ ":dark-matter:131" "Captain Burr" Set.InTheShadowOfEarth)
+    $ (encounterAsset_ ":dark-matter:131" "Captain Burr" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
@@ -186,7 +191,7 @@ captainBurr =
 doctorFeng :: CardDef
 doctorFeng =
   withScanIcons [LS.Trefoil, LS.Diamond]
-    $ (storyAsset_ ":dark-matter:132" "Doctor Feng" Set.InTheShadowOfEarth)
+    $ (encounterAsset_ ":dark-matter:132" "Doctor Feng" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
@@ -194,7 +199,7 @@ doctorFeng =
 ltArcherMichaels :: CardDef
 ltArcherMichaels =
   withScanIcons [LS.Equals, LS.T]
-    $ (storyAsset_ ":dark-matter:133" "Lt. \"Archer\" Michaels" Set.InTheShadowOfEarth)
+    $ (encounterAsset_ ":dark-matter:133" "Lt. \"Archer\" Michaels" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
@@ -202,7 +207,7 @@ ltArcherMichaels =
 muD12Mudbug :: CardDef
 muD12Mudbug =
   withScanIcons [LS.Square, LS.Trefoil]
-    $ (storyAsset_ ":dark-matter:134" "MU-D12 \"Mudbug\"" Set.InTheShadowOfEarth)
+    $ (encounterAsset_ ":dark-matter:134" "MU-D12 \"Mudbug\"" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
@@ -210,7 +215,7 @@ muD12Mudbug =
 sophie :: CardDef
 sophie =
   withScanIcons [LS.Hourglass, LS.Square]
-    $ (storyAsset_ ":dark-matter:135" "Sophie" Set.InTheShadowOfEarth)
+    $ (encounterAsset_ ":dark-matter:135" "Sophie" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
       }
@@ -219,21 +224,21 @@ sophie =
 brainCylinder089 :: CardDef
 brainCylinder089 =
   withPrintedIcons [LS.Square]
-    $ (storyAsset_ ":dark-matter:160" "Brain Cylinder 089" Set.StrangeMoons)
+    $ (encounterAsset_ ":dark-matter:160" "Brain Cylinder 089" Set.StrangeMoons)
       { cdCardTraits = setFromList [Brain]
       }
 
 brainCylinder114 :: CardDef
 brainCylinder114 =
   withPrintedIcons [LS.Equals]
-    $ (storyAsset_ ":dark-matter:161" "Brain Cylinder 114" Set.StrangeMoons)
+    $ (encounterAsset_ ":dark-matter:161" "Brain Cylinder 114" Set.StrangeMoons)
       { cdCardTraits = setFromList [Brain]
       }
 
 brainCylinder367 :: CardDef
 brainCylinder367 =
   withPrintedIcons [LS.Diamond]
-    $ (storyAsset_ ":dark-matter:162" "Brain Cylinder 367" Set.StrangeMoons)
+    $ (encounterAsset_ ":dark-matter:162" "Brain Cylinder 367" Set.StrangeMoons)
       { cdCardTraits = setFromList [Brain]
       }
 
@@ -253,29 +258,29 @@ bottleOfWhispers =
 projectOrigami :: CardDef
 projectOrigami =
   withScanIcons [LS.Diamond]
-    $ storyAsset_ ":dark-matter:267" "Project Origami" Set.Starfall
+    $ encounterAsset_ ":dark-matter:267" "Project Origami" Set.Starfall
 
 lastHope :: CardDef
 lastHope =
   withScanIcons [LS.Circle, LS.Triangle]
-    $ storyAsset_ ":dark-matter:268" "Last Hope" Set.Starfall
+    $ encounterAsset_ ":dark-matter:268" "Last Hope" Set.Starfall
 
 repairingTheThreshold :: CardDef
 repairingTheThreshold =
   withScanIcons [LS.Trefoil]
-    $ storyAsset_ ":dark-matter:269" "Repairing the Threshold" Set.Starfall
+    $ encounterAsset_ ":dark-matter:269" "Repairing the Threshold" Set.Starfall
 
 arNO :: CardDef
 arNO =
   withScanIcons [LS.Diamond]
-    $ (storyAsset_ ":dark-matter:270" ("Ar-NO" <:> "Insufficient Data") Set.Starfall)
+    $ (encounterAsset_ ":dark-matter:270" ("Ar-NO" <:> "Insufficient Data") Set.Starfall)
       { cdCardTraits = setFromList [AI]
       }
 
 directorCixin :: CardDef
 directorCixin =
   withScanIcons [LS.Circle, LS.Triangle]
-    $ (storyAsset_ ":dark-matter:271" ("Director Cixin" <:> "Hope is in Danger") Set.Starfall)
+    $ (encounterAsset_ ":dark-matter:271" ("Director Cixin" <:> "Hope is in Danger") Set.Starfall)
       { cdCardTraits = setFromList [Human]
       , cdUnique = True
       }
@@ -283,14 +288,14 @@ directorCixin =
 miGoCollector :: CardDef
 miGoCollector =
   withScanIcons [LS.Trefoil]
-    $ (storyAsset_ ":dark-matter:272" ("Mi-Go Collector" <:> "Distrustful") Set.Starfall)
+    $ (encounterAsset_ ":dark-matter:272" ("Mi-Go Collector" <:> "Distrustful") Set.Starfall)
       { cdCardTraits = setFromList [MiGo]
       }
 
 thePallidMask :: CardDef
 thePallidMask =
   withScanIcons [LS.Droplet, LS.Plus]
-    $ (storyAsset_ ":dark-matter:276" "The Pallid Mask" Set.Starfall)
+    $ (encounterAsset_ ":dark-matter:276" "The Pallid Mask" Set.Starfall)
       { cdCardTraits = setFromList [Item, Relic]
       , cdUnique = True
       }
@@ -298,14 +303,14 @@ thePallidMask =
 k11SurveyUnit :: CardDef
 k11SurveyUnit =
   withScanIcons [LS.Equals, LS.Hourglass]
-    $ (storyAsset_ ":dark-matter:278" "K-11 Survey Unit" Set.Starfall)
+    $ (encounterAsset_ ":dark-matter:278" "K-11 Survey Unit" Set.Starfall)
       { cdCardTraits = setFromList [Ally, AI]
       }
 
 shieldingDevice :: CardDef
 shieldingDevice =
   withScanIcons [LS.Equals, LS.Diamond]
-    $ (storyAsset_ ":dark-matter:279" ("Shielding Device" <:> "Electromagnetic Barrier") Set.Starfall)
+    $ (encounterAsset_ ":dark-matter:279" ("Shielding Device" <:> "Electromagnetic Barrier") Set.Starfall)
       { cdCardTraits = setFromList [Item]
       , cdUnique = True
       }
@@ -313,7 +318,7 @@ shieldingDevice =
 stasisCube :: CardDef
 stasisCube =
   withScanIcons [LS.Square, LS.Droplet]
-    $ (storyAsset_ ":dark-matter:280" ("Stasis Cube" <:> "Timeless Artifact") Set.Starfall)
+    $ (encounterAsset_ ":dark-matter:280" ("Stasis Cube" <:> "Timeless Artifact") Set.Starfall)
       { cdCardTraits = setFromList [Item, Relic]
       , cdUnique = True
       }
@@ -321,7 +326,7 @@ stasisCube =
 universalArchives :: CardDef
 universalArchives =
   withScanIcons [LS.Moon, LS.Trefoil, LS.Hourglass]
-    $ (storyAsset_ ":dark-matter:281" ("Universal Archives" <:> "Theory of Everything") Set.Starfall)
+    $ (encounterAsset_ ":dark-matter:281" ("Universal Archives" <:> "Theory of Everything") Set.Starfall)
       { cdCardTraits = setFromList [Data]
       , cdUnique = True
       }

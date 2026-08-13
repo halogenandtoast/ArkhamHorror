@@ -3646,6 +3646,7 @@ library
       Arkham.Homebrew.CircusExMortis.Assets.TerrifiedCaptives
       Arkham.Homebrew.CircusExMortis.Campaign
       Arkham.Homebrew.CircusExMortis.CampaignSteps
+      Arkham.Homebrew.CircusExMortis.CardDefEntries
       Arkham.Homebrew.CircusExMortis.CardDefs.Acts
       Arkham.Homebrew.CircusExMortis.CardDefs.Agendas
       Arkham.Homebrew.CircusExMortis.CardDefs.Assets
@@ -3792,6 +3793,7 @@ library
       Arkham.Homebrew.DarkMatter.Assets.VirtualAccessKey
       Arkham.Homebrew.DarkMatter.Campaign
       Arkham.Homebrew.DarkMatter.CampaignSteps
+      Arkham.Homebrew.DarkMatter.CardDefEntries
       Arkham.Homebrew.DarkMatter.CardDefs.Acts
       Arkham.Homebrew.DarkMatter.CardDefs.Agendas
       Arkham.Homebrew.DarkMatter.CardDefs.Assets

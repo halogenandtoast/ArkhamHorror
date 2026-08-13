@@ -11,12 +11,10 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (ScanResult (..), scanEvent)
+import Arkham.Homebrew.DarkMatter.Helpers (ScanResult (..), getScanResult, scanEventForCard)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Story.Import.Lifted
-import Arkham.Window (Window, windowType)
-import Arkham.Window qualified as Window
 
 {- | The six "Evidence" cards clear one crew member of being an imitation. They
 share one rules text, differing only in which crew asset they vouch for:
@@ -64,21 +62,17 @@ clearedCrewMember a
 
 instance HasAbilities Evidence where
   getAbilities (Evidence a) =
-    [mkAbility a 1 $ forced $ CampaignEvent #after Nothing scanEvent]
-
-getScanResult :: [Window] -> Maybe ScanResult
-getScanResult = \case
-  (windowType -> Window.CampaignEvent key _ v) : _ | key == scanEvent -> Just (toResult v)
-  _ : rest -> getScanResult rest
-  [] -> Nothing
+    [ mkAbility a 1
+        $ forced
+        $ CampaignEvent #after Nothing (scanEventForCard $ clearedCrewMember a)
+    ]
 
 instance RunMessage Evidence where
   runMessage msg s@(Evidence attrs) = runQueueT $ case msg of
     ResolveThisStory _ (is attrs -> True) -> do
       push $ StoryMessage $ PlaceStory (toCard attrs) NextToAct
       pure s
-    UseCardAbility _ (isSource attrs -> True) 1 (getScanResult -> Just r) _
-      | maybe False ((== toCardCode (clearedCrewMember attrs)) . toCardCode) (scannedCard r) -> do
-          drawEncounterCard (scannedBy r) (attrs.ability 1)
-          pure s
+    UseCardAbility _ (isSource attrs -> True) 1 (getScanResult -> Just r) _ -> do
+      drawEncounterCard (scannedBy r) (attrs.ability 1)
+      pure s
     _ -> Evidence <$> liftRunMessage msg attrs

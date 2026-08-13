@@ -7,15 +7,20 @@ module Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstrom (
 import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card.CardDef (CardDef)
+import Arkham.Card.CardType (CardType (LocationType))
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (ScanResult (..), scan, scanAction_, scanEvent)
+import Arkham.Homebrew.DarkMatter.Helpers (
+  ScanResult (..),
+  getScanResult,
+  scan,
+  scanAction_,
+  scanEventForCardType,
+ )
 import Arkham.Location.Types (Field (LocationPrintedSymbol))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
-import Arkham.Window (Window, windowType)
-import Arkham.Window qualified as Window
 
 {- | All three printings of agenda 1 are mechanically identical; only the
 starting station layout on the back differs.
@@ -47,14 +52,10 @@ theQuantumMaelstrom_093 = mkMaelstrom Cards.theQuantumMaelstrom_093
 instance HasAbilities TheQuantumMaelstrom where
   getAbilities (TheQuantumMaelstrom a) =
     [ restricted a 1 NoRestriction scanAction_
-    , mkAbility a 2 $ SilentForcedAbility $ CampaignEvent #after (Just You) scanEvent
+    , mkAbility a 2
+        $ SilentForcedAbility
+        $ CampaignEvent #after (Just You) (scanEventForCardType LocationType)
     ]
-
-getScanResult :: [Window] -> Maybe ScanResult
-getScanResult = \case
-  (windowType -> Window.CampaignEvent key _ v) : _ | key == scanEvent -> Just (toResult v)
-  _ : rest -> getScanResult rest
-  [] -> Nothing
 
 instance RunMessage TheQuantumMaelstrom where
   runMessage msg a@(TheQuantumMaelstrom attrs) = runQueueT $ case msg of

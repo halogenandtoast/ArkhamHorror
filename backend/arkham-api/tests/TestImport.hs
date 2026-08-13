@@ -402,6 +402,10 @@ instance UpdateField "resources" Investigator Int where
   updateField resources =
     pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens Resource resources)
 
+instance UpdateField "clues" Investigator Int where
+  updateField clues =
+    pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens Clue clues)
+
 instance UpdateField "fight" Enemy Int where
   updateField fight = pure . overAttrs (\attrs -> attrs {enemyFight = Just (Fixed fight)})
 

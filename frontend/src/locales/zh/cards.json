@@ -4,8 +4,8 @@
       "hunter": "结算场中每个敌人的猎手关键字"
     },
     "aethericCurrentYuggoth": {
-      "exhaust": "横置该敌人并将其移动到任意地点",
-      "skip": "不横置敌人"
+      "exhaustEnemyAndMove": "横置该敌人并将其移动到任意地点",
+      "doNotExhaustEnemy": "不横置敌人"
     },
     "agathaCrane": {
       "cancel": "取消此标记并从其位置抽取另一个标记，如果你这么做，抽取1张卡牌",
@@ -147,6 +147,9 @@
       "resolveBlessToken": "结算{'{'}bless{'}'}标记",
       "resolveCurseToken": "结算{'{'}curse{'}'}标记"
     },
+    "brokenBottle": {
+      "discardForDamage": "弃掉破瓶子以使本次攻击造成伤害+1"
+    },
     "buriedSecrets": {
       "takeHorror": "受到2点恐惧以将被埋葬的秘密洗回你的牌库"
     },
@@ -165,6 +168,13 @@
       "seeker": "{'{'}seeker{'}'}卡牌，发现你所在地点的1个线索",
       "mystic": "{'{'}mystic{'}'}卡牌，治愈任意卡牌的1点恐惧",
       "survivor": "{'{'}survivor{'}'}卡牌，治愈任意卡牌的1点伤害"
+    },
+    "callForBackup2": {
+      "rogueOption": "{'{'}rogue{'}'}卡牌，你可以移动到一个连接地点",
+      "guardianOption": "{'{'}guardian{'}'}卡牌，对你所在地点的一个敌人造成1点伤害",
+      "seekerOption": "{'{'}seeker{'}'}卡牌，发现你所在地点的1个线索",
+      "mysticOption": "{'{'}mystic{'}'}卡牌，治愈任意卡牌的1点恐惧",
+      "survivorOption": "{'{'}survivor{'}'}卡牌，治愈任意卡牌的1点伤害"
     },
     "carolynFern": {
       "doNotHeal": "不治愈任何恐惧"
@@ -264,8 +274,8 @@
       "doNotMoveAnInsight": "不移动_洞察_事件"
     },
     "devilFriendOrFoe2": {
-      "damageConcealedCard": "对隐蔽卡牌造成伤害",
-      "doNotDamageConcealedCard": "不对隐蔽卡牌造成伤害"
+      "damageConcealed": "对隐藏卡牌造成伤害",
+      "doNotDamageConcealed": "不对隐藏卡牌造成伤害"
     },
     "dexterDrake": {
       "skip": "不返回支援"
@@ -519,7 +529,7 @@
       "shuffleItInto": "结算后不弃掉，改为将其洗回你的牌库"
     },
     "handCrankFlashlight": {
-      "discardForDamage": "弃掉手摇式手电筒，以使你的地点得到隐藏值-1，直到本轮结束"
+      "discardForShroud": "弃掉手摇式手电筒，以使你的地点得到隐藏值-1，直到本轮结束"
     },
     "handHook": {
       "discardForDamage": "弃掉1张手牌以造成+1伤害"
@@ -641,7 +651,7 @@
       "remove1Charge": "移除传神佳墨的1充能"
     },
     "localMap": {
-      "exhaust": "横置本地地图以移动到调查的地点"
+      "exhaustAndMove": "横置本地地图以移动到调查的地点"
     },
     "logicalReasoning": {
       "discardTerror": "弃掉一张_恐怖_卡牌"
@@ -764,6 +774,10 @@
     "onTheTrail": {
       "moveTowards": "朝着该敌人移动2次",
       "discoverBetween": "在你与选定敌人间最短路径上的任意无人地点发现1个线索"
+    },
+    "onTheTrail1": {
+      "moveTwiceTowardsEnemy": "朝着该敌人移动2次",
+      "discoverClueBetween": "在你与选定敌人间最短路径上的任意无人地点发现1个线索"
     },
     "onTheirHeels5": {
       "discoverAClueAtYourLocation": "发现你所在地点的1个线索"
@@ -952,9 +966,8 @@
       "returnToHand": "将骇变鱼叉返回你的手牌，以将你所有投入的技能都不弃掉，改为返回你的手牌"
     },
     "searchForTheTruthAdvanced": {
-      "draw": "抽取1张卡牌",
-      "place": "将你的1个线索放回你的所在地点，然后从你的弃牌堆将任意一张牌返回手中",
-      "skip": "不采取任何行动 (结束此卡牌)"
+      "placeClueAndReturnCard": "将你的1个线索放回你的所在地点，然后从你的弃牌堆将任意一张牌返回手中",
+      "doNothingFinish": "不采取任何行动 (结束此卡牌)"
     },
     "secondSight": {
       "spendChargeForClue": "花费1充能以发现你所在地点额外1个线索"
@@ -1014,7 +1027,7 @@
       "useOriginalLocationsShroud": "使用原地点的隐藏值"
     },
     "sledgehammer3": {
-      "exhaustSledgehammer": "横置长柄大锤"
+      "exhaustForDamage": "横置长柄大锤"
     },
     "smuggledGoods": {
       "deck": "查找牌库顶",
@@ -1072,9 +1085,9 @@
       "doneCanceling": "结束取消"
     },
     "taskForce": {
-      "ability": "...结算其控制的支援上的一个{'{'}action{'}'}能力，不支付其{'{'}action{'}'}费用",
-      "move": "...移动到一个连接地点",
-      "discover": "...发现其所在地点的1个线索"
+      "resolveAbilityNoCost": "...结算其控制的支援上的一个{'{'}action{'}'}能力，不支付其{'{'}action{'}'}费用",
+      "moveToConnecting": "...移动到一个连接地点",
+      "discoverClueAtTheirLocation": "...发现其所在地点的1个线索"
     },
     "teachingsOfTheOrder": {
       "defeatANon_elite_EnemyAtYourLocation": "击败一个你所在地点的非_精英_敌人",
@@ -1146,7 +1159,8 @@
       "useIntellect": "使用{'{'}intellect{'}'}"
     },
     "throwTheBookAtThem": {
-      "afterAttack": "在攻击结束后结算所选支援上的一个{'{'}action{'}'}或{'{'}fast{'}'}能力(忽略其{'{'}action{'}'}费用，如有)"
+      "automaticallyEvade": "自动躲避被攻击的敌人",
+      "resolveAbilityOnTome": "在攻击结束后结算所选支援上的一个{'{'}action{'}'}或{'{'}fast{'}'}能力(忽略其{'{'}action{'}'}费用，如有)"
     },
     "tinker": {
       "hand": "手部",
@@ -1183,7 +1197,7 @@
       "doNotChooseLocation": "不选择其他地点"
     },
     "trustyBullwhipAdvanced": {
-      "deal1DamageFor": "自动躲避受到攻击的敌人并使本次攻击+1伤害"
+      "dealDamageAndEvade": "自动躲避受到攻击的敌人并使本次攻击+1伤害"
     },
     "twentyOneOrBust": {
       "stopWith": "以{total}停下",
@@ -1229,10 +1243,6 @@
     }
   },
   "tooltips": {
-    "aethericCurrentYuggoth": {
-      "exhaustEnemyAndMove": "横置该敌人并将其移动到任意地点",
-      "doNotExhaustEnemy": "不横置敌人"
-    },
     "agencyBackup5": {
       "fastExhaustAgency": "{'{'}fast{'}'}横置特工支援并对其造成1点伤害：对你所在地点的一个敌人造成1点伤害",
       "fastExhaustAgency2": "{'{'}fast{'}'}横置特工支援并对其造成1点恐惧：发现你所在地点的1个线索"
@@ -1258,19 +1268,9 @@
       "fastAdd1Doom": "{'{'}fast{'}'}在鲜血盟约上增加1个毁灭标记：你本次技能检定得到+3{'{'}combat{'}'}(每次检定仅限一次。)",
       "fastAdd1Doom2": "{'{'}fast{'}'}在鲜血盟约上增加1个毁灭标记：你本次技能检定得到+3{'{'}willpower{'}'}(每次检定仅限一次。)"
     },
-    "brokenBottle": {
-      "discardForDamage": "弃掉破瓶子以使本次攻击造成伤害+1"
-    },
     "butterflySwords5": {
       "doNotExhaust": "不横置",
       "exhaustForDamage": "横置蝴蝶对剑，以造成+1伤害"
-    },
-    "callForBackup2": {
-      "rogueOption": "{'{'}rogue{'}'}卡牌，你可以移动到一个连接地点",
-      "guardianOption": "{'{'}guardian{'}'}卡牌，对你所在地点的一个敌人造成1点伤害",
-      "seekerOption": "{'{'}seeker{'}'}卡牌，发现你所在地点的1个线索",
-      "mysticOption": "{'{'}mystic{'}'}卡牌，治愈任意卡牌的1点恐惧",
-      "survivorOption": "{'{'}survivor{'}'}卡牌，治愈任意卡牌的1点伤害"
     },
     "combatTraining1": {
       "spendForCombat": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}",
@@ -1296,10 +1296,6 @@
     "decoy": {
       "twoEnemies": "{'{'}reaction{'}'}在你打出诱敌时，提升其费用2点：“\"一个非精英敌人\"”变为“\"最多2个非精英敌人\"”",
       "twoConnections": "{'{'}reaction{'}'}在你打出诱敌时，提升其费用2点：“\"你所在地点\"”变为“\"与你所在地点之间连接次数不超过2的地点\"”"
-    },
-    "devilFriendOrFoe2": {
-      "damageConcealed": "对隐藏卡牌造成伤害",
-      "doNotDamageConcealed": "不对隐藏卡牌造成伤害"
     },
     "digDeep": {
       "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
@@ -1331,9 +1327,6 @@
     "endurance3": {
       "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
       "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
-    },
-    "handCrankFlashlight": {
-      "discardForShroud": "弃掉手摇式手电筒，以使你的地点得到隐藏值-1，直到本轮结束"
     },
     "hardKnocks": {
       "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
@@ -1394,9 +1387,6 @@
       "fastExhaustLivre": "{'{'}fast{'}'}横置伊波恩之书：将你牌库顶的卡牌投入到你所在地点一位调查员执行的符合条件的技能检定中",
       "fastExhaustLivre2": "{'{'}fast{'}'}横置伊波恩之书：用你一张手牌交换你牌库顶的卡牌"
     },
-    "localMap": {
-      "exhaustAndMove": "横置本地地图以移动到调查的地点"
-    },
     "longbow3": {
       "youNockAnotherArrow": "你搭上另一只箭"
     },
@@ -1416,10 +1406,6 @@
     "oldHuntingRifle3": {
       "clearJam": "你解决了卡膛情况。",
       "youClearTheJam": "你解决了卡膛情况。"
-    },
-    "onTheTrail1": {
-      "moveTwiceTowardsEnemy": "朝着该敌人移动2次",
-      "discoverClueBetween": "在你与选定敌人间最短路径上的任意无人地点发现1个线索"
     },
     "ornateBow3": {
       "nockArrow": "你搭上另一只箭",
@@ -1498,9 +1484,6 @@
       "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}(如果是躲避或谈判，改为+2{'{'}agility{'}'})",
       "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}(如果是躲避或谈判，改为+2{'{'}intellect{'}'})"
     },
-    "sledgehammer3": {
-      "exhaustForDamage": "横置长柄大锤"
-    },
     "smallRadio": {
       "partner": "{name}"
     },
@@ -1526,11 +1509,6 @@
     "streetwise3": {
       "fastSpend2Resources": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+3{'{'}agility{'}'}",
       "fastSpend2Resources2": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+3{'{'}intellect{'}'}"
-    },
-    "taskForce": {
-      "resolveAbilityNoCost": "...结算其控制的支援上的一个{'{'}action{'}'}能力，不支付其{'{'}action{'}'}费用",
-      "moveToConnecting": "...移动到一个连接地点",
-      "discoverClueAtTheirLocation": "...发现其所在地点的1个线索"
     },
     "theKeyOfSolomonSecretsOfTheUnknown4": {
       "ifThereAre": "如果混乱袋中{'{'}bless{'}'}标记多于{'{'}curse{'}'}标记，从混乱袋中移除1个{'{'}bless{'}'}标记并横置所罗门之钥：治愈你所在地点的一位调查员或一个_盟友_支援最多2点伤害和/或恐惧。",
@@ -1564,10 +1542,6 @@
       "ifYouAre": "如果你是本载具的司机：抽取遭遇牌库顶的卡牌。然后，将本载具移动到一个连接的_道路_地点。(每轮最多一次)",
       "ifYouAre2": "如果你是本载具的司机：你把车停下。将本载具翻面。"
     },
-    "throwTheBookAtThem": {
-      "automaticallyEvade": "自动躲避被攻击的敌人",
-      "resolveAbilityOnTome": "在攻击结束后结算所选支援上的一个{'{'}action{'}'}或{'{'}fast{'}'}能力(忽略其{'{'}action{'}'}费用，如有)"
-    },
     "timewornBrand5": {
       "actionExhaustTimeworn": "{'{'}action{'}'}横置古旧锈剑：_攻击_。本次攻击将你的{'{'}willpower{'}'}加入你的技能值。本次攻击造成+3伤害。如果本次攻击击败了_精英_敌人，抽取3张卡牌。(每场游戏最多一次)",
       "actionIfTimeworn": "{'{'}action{'}'}如果古旧锈剑处于重整状态：_攻击_。你本次攻击得到+2{'{'}combat{'}'}并造成+1伤害。"
@@ -1582,9 +1556,6 @@
     },
     "trueMagickReworkingReality5": {
       "useTrueMagick": "使用真法魔典"
-    },
-    "trustyBullwhipAdvanced": {
-      "dealDamageAndEvade": "自动躲避受到攻击的敌人并使本次攻击+1伤害"
     },
     "untimelyTransaction1": {
       "noOnePays": "没有人打出",

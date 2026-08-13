@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useAttrs, ref, computed, watch } from 'vue'
+import { useAttrs, inject, ref, computed, watch, type Ref } from 'vue'
 import { cardImg, imgsrc } from '@/arkham/helpers'
 import { CardDef } from '@/arkham/types/CardDef'
 import { ArrowPathIcon } from '@heroicons/vue/20/solid'
@@ -13,7 +13,14 @@ const attrs = useAttrs()
 
 const props = defineProps<{ card: CardDef }>()
 
-const flipped = ref(false)
+// An ancestor (e.g. the card browser) can provide a shared flip state to flip
+// every card it renders at once. Individual flips still work on top of it, and
+// cards rendered later (a new filter) start on the side everything else is on.
+const flipAll = inject<Ref<boolean> | null>('cardFlipAll', null)
+
+const flipped = ref(flipAll?.value ?? false)
+
+if (flipAll) watch(flipAll, (value) => { flipped.value = value })
 
 // A double-sided card whose OWN art is the 'b' side (e.g. an enemy that is the
 // back of an agenda: art "…016b", otherSide "…016"). Its front is the other

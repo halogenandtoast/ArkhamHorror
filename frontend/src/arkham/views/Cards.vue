@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch, ref, computed } from 'vue';
+import { watch, ref, computed, provide, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { fetchCards, fetchHomebrewCards, type CardPoolMode } from '@/arkham/api';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
@@ -101,6 +101,30 @@ const allCards = shallowRef<Arkham.CardDef[] | null>(null)
 const query = ref<string>(queryText)
 const view = ref(route.query.view? toView(route.query.view) : View.List)
 const activeChapter = ref<number>(route.query.chapter ? parseInt(route.query.chapter.toString()) : 1)
+
+// Pressing `f` flips every card currently shown in image view. CardImage picks
+// this up via inject and mirrors it into its own flipped state.
+const flipAll = ref(false)
+provide('cardFlipAll', flipAll)
+
+const isTypingTarget = (target: EventTarget | null) => {
+  const el = target as HTMLElement | null
+  if (!el) return false
+  return el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)
+}
+
+const onKeydown = (event: KeyboardEvent) => {
+  if (event.key !== 'f' && event.key !== 'F') return
+  if (event.metaKey || event.ctrlKey || event.altKey) return
+  if (view.value !== View.Image) return
+  if (isTypingTarget(event.target)) return
+
+  event.preventDefault()
+  flipAll.value = !flipAll.value
+}
+
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 const cardPoolMode = computed<CardPoolMode>(() => {
   const cardPool = route.query.cardPool?.toString()

@@ -1306,9 +1306,14 @@ instance RunMessage EnemyAttrs where
             ]
       pure a
     EnemyEvaded iid eid | eid == enemyId -> do
+      -- The exhaust/disengage lives in `Do msg`, and the whole cascade rides in
+      -- a batch fronted by the EnemyWouldBeEvaded would-windows, so a reaction
+      -- that replaces the evasion (Reminiscence (Covenant)) can CancelBatch and
+      -- leave the enemy engaged and ready.
+      (batchId, wouldMsgs) <- wouldWindows $ Window.EnemyWouldBeEvaded iid enemyId
       whenWindow <- checkWindows [mkWhen $ Window.EnemyEvaded iid enemyId]
       afterWindow <- checkWindows [mkAfter $ Window.EnemyEvaded iid enemyId]
-      pushAll [whenWindow, Do msg, afterWindow]
+      push $ Would batchId $ wouldMsgs <> [whenWindow, Do msg, afterWindow]
       pure a
     Do (EnemyEvaded iid eid) | eid == enemyId -> do
       mods <- getModifiers iid

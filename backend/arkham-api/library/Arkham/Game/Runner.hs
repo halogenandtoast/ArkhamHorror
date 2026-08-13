@@ -1997,7 +1997,10 @@ runGameMessage msg g = case msg of
       CheckWindows [] -> True
       Do (CheckWindows []) -> True
       _ -> False
-    pure g
+    -- The `Would bId []` that would have cleared the current batch was just
+    -- removed, so clear it here; otherwise every window checked for the rest of
+    -- the game is stamped with this dead batch id.
+    pure $ g & currentBatchIdL %~ \c -> if c == Just bId then Nothing else c
   IgnoreBatch bId -> do
     removeAllMessagesMatching $ \case
       Would bId' _ -> bId == bId'

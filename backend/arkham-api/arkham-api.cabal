@@ -4001,7 +4001,9 @@ library
       Arkham.Homebrew.DarkMatter.Treacheries.RadiantCrown
       Arkham.Homebrew.DarkMatter.Treacheries.RadioactiveDecay
       Arkham.Homebrew.DarkMatter.Treacheries.RememberME
-      Arkham.Homebrew.DarkMatter.Treacheries.Reminiscence
+      Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceCovenant
+      Arkham.Homebrew.DarkMatter.Treacheries.ReminiscencePledge
+      Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceSecrets
       Arkham.Homebrew.DarkMatter.Treacheries.SceneShifting
       Arkham.Homebrew.DarkMatter.Treacheries.Scrambled
       Arkham.Homebrew.DarkMatter.Treacheries.SimulationDiscrepancy
@@ -7490,6 +7492,7 @@ test-suite spec
       Arkham.GameSpec
       Arkham.Helpers.EnemySpec
       Arkham.Helpers.InvestigatorSpec
+      Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceCovenantSpec
       Arkham.HomebrewRegistrySpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec

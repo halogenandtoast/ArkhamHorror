@@ -64,6 +64,15 @@ attackingInvestigator =
     (windowType -> Window.FailAttackEnemy iid _ _) -> Just iid
     _ -> Nothing
 
+evadingInvestigator :: HasCallStack => [Window] -> InvestigatorId
+evadingInvestigator =
+  fromMaybe (error "missing investigator") . asum . map \case
+    (windowType -> Window.AttemptToEvadeEnemy _ iid _) -> Just iid
+    (windowType -> Window.EnemyEvaded iid _) -> Just iid
+    (windowType -> Window.EnemyWouldBeEvaded iid _) -> Just iid
+    (windowType -> Window.SuccessfulEvadeEnemy iid _ _ _) -> Just iid
+    _ -> Nothing
+
 attackSource :: HasCallStack => [Window] -> Source
 attackSource =
   fromMaybe (error "missing enemy") . asum . map \case
@@ -74,6 +83,7 @@ evadedEnemy :: HasCallStack => [Window] -> EnemyId
 evadedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyEvaded _ eid) -> Just eid
+    (windowType -> Window.EnemyWouldBeEvaded _ eid) -> Just eid
     (windowType -> Window.SuccessfulEvadeEnemy _ _ eid _) -> Just eid
     _ -> Nothing
 
@@ -103,6 +113,7 @@ getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
   ((windowType -> Window.EnemyEvaded _ eid) : _) -> eid
+  ((windowType -> Window.EnemyWouldBeEvaded _ eid) : _) -> eid
   ((windowType -> Window.SuccessfulEvadeEnemy _ _ eid _) : _) -> eid
   ((windowType -> Window.SuccessfulAttackEnemy _ _ eid _) : _) -> eid
   ((windowType -> Window.EnemyDefeated _ _ eid) : _) -> eid

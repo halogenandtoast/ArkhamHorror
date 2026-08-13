@@ -250,6 +250,12 @@ data WindowType
     -}
     EnemyEntersYourLocation InvestigatorId EnemyId LocationId
   | EnemyEvaded InvestigatorId EnemyId
+  | {- | Batched "would" window fired immediately before an evasion resolves,
+    around the @Do (EnemyEvaded)@ that exhausts and disengages the enemy.
+    Cancelling its batch replaces the evasion: the enemy neither exhausts nor
+    disengages, and the @EnemyEvaded@ windows never fire.
+    -}
+    EnemyWouldBeEvaded InvestigatorId EnemyId
   | EnemyLeaves EnemyId LocationId
   | EnemyWouldSpawnAt EnemyId LocationId
   | EnemySpawns EnemyId LocationId

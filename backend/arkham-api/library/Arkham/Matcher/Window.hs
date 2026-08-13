@@ -186,6 +186,7 @@ data WindowMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | EnemyAttackedSuccessfully Timing Who SourceMatcher EnemyMatcher
   | EnemyEvadedSuccessfully Timing Who SourceMatcher EnemyMatcher
+  | EnemyWouldBeEvaded Timing Who EnemyMatcher
   | RevealChaosToken Timing Who ChaosTokenMatcher
   | RevealChaosTokensDuringSkillTest Timing Who SkillTestMatcher ChaosTokenMatcher
   | TokensWouldBeRemovedFromChaosBag Timing ChaosTokenMatcher

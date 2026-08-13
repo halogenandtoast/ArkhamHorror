@@ -6320,6 +6320,7 @@ withGameM f = readGame >>= f
 getEvadedEnemy :: [Window] -> Maybe EnemyId
 getEvadedEnemy [] = Nothing
 getEvadedEnemy ((windowType -> Window.EnemyEvaded _ eid) : _) = Just eid
+getEvadedEnemy ((windowType -> Window.EnemyWouldBeEvaded _ eid) : _) = Just eid
 getEvadedEnemy (_ : xs) = getEvadedEnemy xs
 
 {- | Split a message sequence at its first CheckWindows.

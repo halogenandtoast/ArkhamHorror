@@ -68,6 +68,7 @@ instance ToJSON Game where
       , "gameEnemyMoving" .= gameEnemyMoving g
       , "gameEnemyEvading" .= gameEnemyEvading g
       , "gameQuestion" .= gameQuestion g
+      , "gameRetainedQuestion" .= gameRetainedQuestion g
       , "gameSimultaneousAsks" .= gameSimultaneousAsks g
       , "gameActionCanBeUndone" .= gameActionCanBeUndone g
       , "gameActionDiff" .= gameActionDiff g
@@ -136,6 +137,7 @@ instance ToJSON Game where
       <> ("gameEnemyMoving" .= gameEnemyMoving g)
       <> ("gameEnemyEvading" .= gameEnemyEvading g)
       <> ("gameQuestion" .= gameQuestion g)
+      <> ("gameRetainedQuestion" .= gameRetainedQuestion g)
       <> ("gameSimultaneousAsks" .= gameSimultaneousAsks g)
       <> ("gameActionCanBeUndone" .= gameActionCanBeUndone g)
       <> ("gameActionDiff" .= gameActionDiff g)
@@ -204,6 +206,8 @@ instance FromJSON Game where
     gameEnemyMoving <- o .: "gameEnemyMoving"
     gameEnemyEvading <- o .: "gameEnemyEvading"
     gameQuestion <- o .: "gameQuestion"
+    -- Games persisted before Retain existed published no retained questions.
+    gameRetainedQuestion <- o .:? "gameRetainedQuestion" .!= False
     -- Games persisted before the multi-seat barrier have no barriers open.
     gameSimultaneousAsks <- o .:? "gameSimultaneousAsks" .!= mempty
     gameActionCanBeUndone <- o .: "gameActionCanBeUndone"

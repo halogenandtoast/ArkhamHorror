@@ -111,6 +111,12 @@ data Game = Game
     -- (@gameQuestion[myPid]@). While a barrier is open this is the projection of
     -- the owning 'SimultaneousAsk''s slots; see 'gameSimultaneousAsks'.
     gameQuestion :: Map PlayerId (Question Message)
+  , -- Was gameQuestion published by a Retain-wrapped ask? If so, a seat
+    -- answering does not drop the seats still parked: they are re-published
+    -- rather than discarded with the ClearUI that consumes the answer. Set at
+    -- publish time and cleared by the next unretained ask, so it always
+    -- describes the question currently on the game (#4787).
+    gameRetainedQuestion :: Bool
   , -- | Open multi-seat barriers, keyed by the batch that owns each one. Holds the
     -- pending seats and the continuation, so "everyone is ready" is a pure
     -- function of state rather than of where the queue happens to have drained to.

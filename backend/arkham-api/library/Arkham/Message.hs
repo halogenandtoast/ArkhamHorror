@@ -54,6 +54,7 @@ import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
 import Arkham.Choose
 import Arkham.ClassSymbol
+import Arkham.Classes.HasQueue (QueueWrapper (..))
 import Arkham.Cost
 import Arkham.Customization
 import Arkham.DamageEffect
@@ -164,7 +165,24 @@ messageType (MovedWithSkillTest _ msg) = messageType msg
 messageType (Do msg) = messageType msg
 messageType (When msg) = messageType msg
 messageType (After msg) = messageType msg
+messageType (Retain msg) = messageType msg
 messageType _ = Nothing
+
+{- | 'Priority' and 'Retain' say /when/ and /how/ a message is delivered; they
+never change what it means, so every queue predicate should see through them.
+
+Deliberately narrow. Every other wrapper /is/ meaningful: ~40 queue predicates
+treat @Do x@ and @x@ as different messages (see
+'Arkham.Enemy.Helpers.cancelEnemyDefeat', 'cancelEndTurn',
+'Arkham.Helpers.Window.replaceWindow'), and unwrapping 'MoveWithSkillTest' is
+load-bearing in 'handleSkillTestNesting'. Widening this silently rewrites the
+semantics of ~150 call sites.
+-}
+instance QueueWrapper Message where
+  stripQueueWrappers (Priority msg) = stripQueueWrappers msg
+  stripQueueWrappers (Retain msg) = stripQueueWrappers msg
+  stripQueueWrappers msg = msg
+
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 
@@ -1158,6 +1176,13 @@ data Message
   | -- UI
     ClearUI
   | Priority Message
+  | -- | Wraps the 'Ask' / 'AskMap' publishing a question whose seats must survive
+    -- another seat's answer. Every accepted answer pushes 'ClearUI', which wipes
+    -- the whole published question map, and 'Entity.Answer' only re-parks the
+    -- seats it knows are durable. A multi-seat ask that is neither rebuilt by the
+    -- queue nor barriered has to say so, or its other seats are silently dropped
+    -- along with their baked messages (#4787).
+    Retain Message
   | Simultaneously [Message]
   | -- Debug
     ClearQueue

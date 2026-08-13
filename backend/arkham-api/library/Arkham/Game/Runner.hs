@@ -2372,7 +2372,10 @@ runGameMessage msg g = case msg of
                   playerId <- getPlayer iid
                   pure $ Just $ singletonMap playerId [Label lbl xs]
                 _ -> pure Nothing
-            push $ AskMap askMap
+            -- Every option was popped off the queue above, so nothing regenerates
+            -- these seats: without Retain, one player answering discards every other
+            -- player's option along with its messages (#4787).
+            push $ Retain (AskMap askMap)
     pure g
   SkillTestResultOption opt -> do
     fromQueue (elem CollectSkillTestOptions) >>= \case

@@ -318,6 +318,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gamePlayerOrder = []
         , gameRemovedFromPlay = mempty
         , gameQuestion = mempty
+        , gameRetainedQuestion = False
         , gameSimultaneousAsks = mempty
         , gameSkillTestResults = Nothing
         , gameEnemyMoving = Nothing
@@ -6532,6 +6533,7 @@ runMessages gameId mLogger = do
             PayForAbility {} -> False
             PayCost {} -> False
             PayCosts {} -> False
+            Retain {} -> False
             Run {} -> False
             Simultaneously {} -> False
             UseAbility {} -> False
@@ -6548,7 +6550,11 @@ runMessages gameId mLogger = do
             SetActivePlayer {} -> False
             Arkham.Helpers.Message.PhaseStep {} -> False
             _ -> True
-          go = \case
+          -- @retained@ rides down from a 'Retain' wrapper to whichever ask this
+          -- message turns out to publish; see 'gameRetainedQuestion'.
+          go = go' False
+          go' retained = \case
+            Retain msg' -> go' True msg'
             Priority msg' -> push msg' >> runMessages gameId mLogger
             Run msgs -> do
               pushAll msgs
@@ -6572,9 +6578,11 @@ runMessages gameId mLogger = do
               if isChooseDecks (gameGameState g) && moreChooseDecks
                 then do
                   let
-                    updateChooseDeck = \case
+                    -- findFromQueue above matches through the transport wrappers, so
+                    -- this has to as well or the two disagree about the same message.
+                    updateChooseDeck other = case stripQueueWrappers other of
                       AskMap askMap | not (null askMap) && ChooseDeck `elem` Map.elems askMap -> AskMap $ insertMap pid q askMap
-                      other -> other
+                      _ -> other
                   withQueue_ (map updateChooseDeck)
                   runMessages gameId mLogger
                 else do
@@ -6600,7 +6608,11 @@ runMessages gameId mLogger = do
                   canAsk <- runReaderT (anyValidChoice q) g
                   if canAsk
                     then
-                      runWithEnv (toExternalGame (g & activePlayerIdL .~ pid & scenarioStepsL +~ 1) (singletonMap pid q))
+                      runWithEnv
+                        ( toExternalGame
+                            (g & activePlayerIdL .~ pid & scenarioStepsL +~ 1 & retainedQuestionL .~ retained)
+                            (singletonMap pid q)
+                        )
                         >>= putGame
                     else runMessages gameId mLogger
             AskMap askMap -> do
@@ -6618,7 +6630,11 @@ runMessages gameId mLogger = do
                 [] -> runMessages gameId mLogger
                 _ -> do
                   let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
-                  runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1) askMap)
+                  runWithEnv
+                    ( toExternalGame
+                        (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1 & retainedQuestionL .~ retained)
+                        askMap
+                    )
                     >>= putGame
             CheckWindows {} | not (gameRunWindows g) -> runMessages gameId mLogger
             Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId mLogger

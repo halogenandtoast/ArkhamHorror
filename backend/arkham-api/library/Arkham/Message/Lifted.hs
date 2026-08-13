@@ -2234,13 +2234,15 @@ erroring, so callers can fall back to another anchor.
 insertAfterMatchingMaybe
   :: (MonadTrans t, HasQueue Message m) => [Message] -> (Message -> Bool) -> t m Bool
 insertAfterMatchingMaybe msgs p = lift $ withQueue \queue ->
-  let (before, rest) = break p queue
+  let (before, rest) = break p' queue
    in case rest of
         (x : xs) -> (before <> (x : msgs <> xs), True)
         _ -> maybe (queue, False) (,True) (go [] queue)
  where
+  -- see 'QueueWrapper': the anchor may be wrapped in Priority/Retain
+  p' = matchesQueued p
   go _acc [] = Nothing
-  go acc (x : xs) = case x of
+  go acc (x : xs) = case stripQueueWrappers x of
     MoveWithSkillTest inner ->
       case inner of
         Run innerMsgs
@@ -2248,14 +2250,14 @@ insertAfterMatchingMaybe msgs p = lift $ withQueue \queue ->
           , (y : ys) <- afterInner ->
               Just $ reverse acc <> (MoveWithSkillTest (Run (beforeInner <> (y : msgs <> ys))) : xs)
          where
-          (beforeInner, afterInner) = break p innerMsgs
+          (beforeInner, afterInner) = break p' innerMsgs
         _ -> go (x : acc) xs
     Run innerMsgs
       | not (null afterInner)
       , (y : ys) <- afterInner ->
           Just $ reverse acc <> (Run (beforeInner <> (y : msgs <> ys)) : xs)
      where
-      (beforeInner, afterInner) = break p innerMsgs
+      (beforeInner, afterInner) = break p' innerMsgs
     _ -> go (x : acc) xs
 
 afterMove

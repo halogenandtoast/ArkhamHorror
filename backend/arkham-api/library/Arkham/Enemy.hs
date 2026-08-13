@@ -27,12 +27,14 @@ instance RunMessage Enemy where
         ReturnLocationToGame {} -> Enemy <$> runMessage msg x
         _ -> pure e
       _ -> do
-        allEnemyIds <- select AnyEnemy
-        modifiers' <-
-          if toId e `elem` allEnemyIds
-            then getModifiers (toTarget e)
-            else pure []
-        let msg' = if Blank `elem` modifiers' then Blanked msg else msg
+        -- See the matching comment in Arkham.Asset.Runner: cheap test first.
+        modifiers' <- getModifiers (toTarget e)
+        msg' <-
+          if Blank `elem` modifiers'
+            then do
+              inPlay <- elem (toId e) <$> select AnyEnemy
+              pure $ if inPlay then Blanked msg else msg
+            else pure msg
         Enemy <$> runMessage msg' x
 
 lookupEnemy :: HasCallStack => CardCode -> EnemyId -> CardId -> Enemy

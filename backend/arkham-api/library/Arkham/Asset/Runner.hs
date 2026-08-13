@@ -86,9 +86,18 @@ instance RunMessage Asset where
         ReturnLocationToGame _ -> Asset <$> runMessage msg a
         _ -> pure x
       else do
-        inPlay <- elem (toId x) <$> select AnyAsset
-        modifiers' <- if inPlay then getModifiers (toTarget x) else pure []
-        let msg' = if any (`elem` modifiers') [Blank, BlankExceptForcedAbilities] then Blanked msg else msg
+        -- Same operands, cheap one first: getModifiers reads the preloaded
+        -- modifier map, while `select AnyAsset` builds and scans the whole
+        -- in-play asset list. This runs for every asset on every message, so
+        -- test the rare condition (a Blank modifier) before confirming the
+        -- asset is in play.
+        modifiers' <- getModifiers (toTarget x)
+        msg' <-
+          if any (`elem` modifiers') [Blank, BlankExceptForcedAbilities]
+            then do
+              inPlay <- elem (toId x) <$> select AnyAsset
+              pure $ if inPlay then Blanked msg else msg
+            else pure msg
         Asset <$> runMessage msg' a
 
 instance RunMessage AssetAttrs where

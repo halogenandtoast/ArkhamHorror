@@ -545,6 +545,7 @@ instance RunMessage CongressOfTheKeys where
       doStep 8 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
+      record TheRedCoterieSparedTheCell
       flavor $ setTitle "title" >> p "theTrial6"
       pure $ CongressOfTheKeys $ attrs & setMetaKey "version" Version3
     DoStep 7 PreScenarioSetup -> scope "intro" do
@@ -747,10 +748,11 @@ instance RunMessage CongressOfTheKeys where
       zipWithM_ drawCard investigators toDraw
       addToEncounterDeck rest
 
-      for_ (Assets.theRedGlovedManHeWasAlwaysThere : conspiratorAssets attrs (/= EerilySilent)) \card -> do
-        leadChooseOneM do
-          questionLabeledCard card
-          portraits investigators $ createAssetAt_ card . InPlayArea
+      whenHasRecord TheRedCoterieSparedTheCell do
+        for_ (Assets.theRedGlovedManHeWasAlwaysThere : conspiratorAssets attrs (/= EerilySilent)) \card -> do
+          leadChooseOneM do
+            questionLabeledCard card
+            portraits investigators $ createAssetAt_ card . InPlayArea
 
       setAside toSetAside
     ResolveChaosToken drawnToken Cultist iid -> do

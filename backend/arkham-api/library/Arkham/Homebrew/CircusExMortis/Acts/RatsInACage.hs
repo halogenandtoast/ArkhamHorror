@@ -23,8 +23,8 @@ advanceRatsInACage attrs = do
   advanceActDeck attrs
 
 newtype RatsInACageInTheLionsDen = RatsInACageInTheLionsDen ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ratsInACage_005 :: ActCard RatsInACageInTheLionsDen
 ratsInACage_005 =
@@ -38,8 +38,8 @@ instance RunMessage RatsInACageInTheLionsDen where
     _ -> RatsInACageInTheLionsDen <$> liftRunMessage msg attrs
 
 newtype RatsInACageInTheHorsesEye = RatsInACageInTheHorsesEye ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ratsInACage_006 :: ActCard RatsInACageInTheHorsesEye
 ratsInACage_006 =
@@ -53,8 +53,8 @@ instance RunMessage RatsInACageInTheHorsesEye where
     _ -> RatsInACageInTheHorsesEye <$> liftRunMessage msg attrs
 
 newtype RatsInACageInThePrizeDisplay = RatsInACageInThePrizeDisplay ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ratsInACage_007 :: ActCard RatsInACageInThePrizeDisplay
 ratsInACage_007 =
@@ -68,8 +68,8 @@ instance RunMessage RatsInACageInThePrizeDisplay where
     _ -> RatsInACageInThePrizeDisplay <$> liftRunMessage msg attrs
 
 newtype RatsInACageInTheMakeupCase = RatsInACageInTheMakeupCase ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ratsInACage_008 :: ActCard RatsInACageInTheMakeupCase
 ratsInACage_008 =

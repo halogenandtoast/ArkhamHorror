@@ -1,0 +1,13 @@
+{
+    "fastPlayerWindow": "{'{'}fast{'}'} SPIELERFENSTER",
+    "determineSkillOfTestStep": "Bestimmte Fertigkeit der Probe. Die Fertigkeitsprobe dieses Typs beginnt.",
+    "commitCardsFromHandToSkillTestStep": "Trage Karten aus der Hand zur Fertigkeitsprobe bei.",
+    "revealChaosTokenStep": "Enthülle Chaosmarker.",
+    "resolveChaosSymbolEffectsStep": "Chaossymbol-Effekt(e) abhandeln.",
+    "determineInvestigatorsModifiedSkillValueStep": "Bestimme modifizierten Fertigkeitswert des Ermittlers.",
+    "determineSuccessOrFailureOfSkillTestStep": "Bestimme Erfolg/Misserfolg der Fertigkeitsprobe.",
+    "applySkillTestResultsStep": "Ergebnisse der Fertigkeitsprobe anwenden.",
+    "skillTestEndsStep": "Fertigkeitsprobe endet.",
+    "skipTriggersActiveNotice": "Trigger überspringen ist aktiviert — schnelle Trigger, die nichts mit dieser Probe zu tun haben, werden nicht angezeigt.",
+    "skipTriggersAdjust": "Anpassen"
+}

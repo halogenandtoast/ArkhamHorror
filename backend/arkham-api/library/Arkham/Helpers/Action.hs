@@ -33,10 +33,8 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Timing (Timing)
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
-import Data.Data (cast, gmapQ)
 
 data IsFast = IsFast | NotFast
   deriving stock Eq
@@ -167,23 +165,6 @@ matchTarget _ (EnemyAction a _) action = action == a
 matchTarget _ (AssetAction a _) action = action == a
 matchTarget _ IsAnyAction _ = True
 
-{- | The 'Timing' a window matcher requires, when it has one.
-
-Nearly every 'WindowMatcher' constructor takes its 'Timing' as the first field
-and immediately gates on it with @guardTiming@, so a matcher whose timing
-matches no window in the list cannot match any of them. Reading that one field
-with 'gmapQ' is far cheaper than entering 'windowMatches', which begins with a
-@Data@-generic 'replaceYouMatcher' traversal before it can dispatch.
-
-'Nothing' means "no leading 'Timing'" (@AnyWindow@, @NotWindow@,
-@OrWindowMatcher@, @WindowWhen@, ...) and falls through to the full check, so
-this can only ever skip calls that would have returned 'False'.
--}
-matcherTiming :: WindowMatcher -> Maybe Timing
-matcherTiming m = case gmapQ cast m of
-  (mTiming : _) -> mTiming
-  [] -> Nothing
-
 getActions :: (HasGame m, HasCallStack) => InvestigatorId -> [Window] -> m [Ability]
 getActions iid ws = getActionsWith iid ws id
 
@@ -240,9 +221,9 @@ getActionsWith iid ws f = do
         -- per act advance, 257 matches), so rejecting on timing first is worth
         -- far more than making the full check faster.
         matched <-
-          if maybe False (\t -> all ((/= t) . windowTiming) ws) (matcherTiming abWindow)
-            then pure False
-            else anyM (\w -> windowMatches iid (abilitySource ability) w abWindow) ws
+          anyM
+            (\w -> windowMatches iid (abilitySource ability) w abWindow)
+            ws
         if not matched
           then pure False
           else do

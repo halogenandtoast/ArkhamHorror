@@ -50,6 +50,7 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Prelude
+import Data.Data (cast, gmapQ)
 import Arkham.Projection
 import Arkham.Search (searchSource)
 import Arkham.Skill.Types qualified as Field
@@ -301,6 +302,12 @@ getEnemyMovedVia = \case
   (_ : rest) -> getEnemyMovedVia rest
   [] -> error "missing enemy moved via"
 
+getDamaged :: [Window] -> [(Target, Int)]
+getDamaged = \case
+  (windowType -> Window.TakeDamage _ _ target n) : rest -> (target, n) : getDamaged rest
+  _ : rest -> getDamaged rest
+  [] -> []
+
 getAsset :: [Window] -> AssetId
 getAsset = \case
   ((windowType -> Window.PlayAsset _ aid) : _) -> aid
@@ -371,6 +378,15 @@ getWindowAsset (_ : xs) = getWindowAsset xs
 inFastWindow :: HasGame m => m Bool
 inFastWindow = any (any (\w -> windowType w == Window.FastPlayerWindow)) <$> getWindowStack
 
+{- | The 'Timing' a window matcher requires, when it has one. See the guard in
+'windowMatches'. 'Nothing' means the constructor has no leading 'Timing', which
+falls through to the full check.
+-}
+matcherTiming :: Matcher.WindowMatcher -> Maybe Timing
+matcherTiming m = case gmapQ cast m of
+  (mTiming : _) -> mTiming
+  [] -> Nothing
+
 windowMatches
   :: (HasGame m, HasCallStack)
   => InvestigatorId
@@ -379,6 +395,16 @@ windowMatches
   -> Matcher.WindowMatcher
   -> m Bool
 windowMatches _ _ (windowType -> Window.DoNotCheckWindow) _ = pure True
+-- Timing rejection, before the Data-generic 'replaceYouMatcher' below. Nearly
+-- every WindowMatcher constructor takes its Timing as the first field and gates
+-- on it with 'guardTiming' (203 such branches, 208 guardTiming uses), so a
+-- matcher whose timing differs from this window's cannot match it. Constructors
+-- with no leading Timing (AnyWindow, NotWindow, OrWindowMatcher, WindowWhen, the
+-- DuringYourAction family) give Nothing and fall through, so this only skips
+-- work that would have returned False. Rejection is the common case: one act
+-- advance ran 9326 ability/window checks for 257 matches.
+windowMatches _ _ window' umtchr
+  | Just t <- matcherTiming umtchr, t /= windowTiming window' = pure False
 windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wType)) umtchr = do
   (source, mcard) <-
     case rawSource of

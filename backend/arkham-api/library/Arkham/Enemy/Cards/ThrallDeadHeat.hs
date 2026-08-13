@@ -25,7 +25,16 @@ instance HasAbilities ThrallDeadHeat where
           $ mkAbility a 0
           $ silent
           $ EnemyWouldSpawnAt (be a) Anywhere
-      , playerLimit PerTurn $ restricted a 1 (EvadeCriteria <> DuringTurn You) $ FastAbility Free
+      , playerLimit PerTurn
+          $ restricted
+            a
+            1
+            ( OnSameLocation
+                <> EnemyCriteria
+                  (ThisEnemy $ EnemyMatchAll [EnemyWithEvade, EnemyWithoutModifier CannotBeEvaded])
+                <> DuringTurn You
+            )
+          $ FastAbility Free
       ]
 
 instance RunMessage ThrallDeadHeat where

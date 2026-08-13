@@ -3635,7 +3635,10 @@ library
       Arkham.Homebrew.CardRegistry
       Arkham.Homebrew.CircusExMortis.Acts.ForestOfIllusion
       Arkham.Homebrew.CircusExMortis.Acts.OutAndAway
-      Arkham.Homebrew.CircusExMortis.Acts.RatsInACage
+      Arkham.Homebrew.CircusExMortis.Acts.RatsInACageInTheHorsesEye
+      Arkham.Homebrew.CircusExMortis.Acts.RatsInACageInTheLionsDen
+      Arkham.Homebrew.CircusExMortis.Acts.RatsInACageInTheMakeupCase
+      Arkham.Homebrew.CircusExMortis.Acts.RatsInACageInThePrizeDisplay
       Arkham.Homebrew.CircusExMortis.Acts.SmokeAndMirrors
       Arkham.Homebrew.CircusExMortis.Agendas.BloodMoon
       Arkham.Homebrew.CircusExMortis.Agendas.HouseOfHorrors
@@ -3737,7 +3740,9 @@ library
       Arkham.Homebrew.DarkMatter.Acts.InLostCarcosa
       Arkham.Homebrew.DarkMatter.Acts.IsAnyoneHome
       Arkham.Homebrew.DarkMatter.Acts.Psychoanalysis
-      Arkham.Homebrew.DarkMatter.Acts.PublicSchool187
+      Arkham.Homebrew.DarkMatter.Acts.PublicSchool187V10
+      Arkham.Homebrew.DarkMatter.Acts.PublicSchool187V20
+      Arkham.Homebrew.DarkMatter.Acts.PublicSchool187V30
       Arkham.Homebrew.DarkMatter.Acts.QuantumZeno
       Arkham.Homebrew.DarkMatter.Acts.Reconnected
       Arkham.Homebrew.DarkMatter.Acts.SaveOurSouls
@@ -3748,23 +3753,41 @@ library
       Arkham.Homebrew.DarkMatter.Acts.TheShadowOfEarth
       Arkham.Homebrew.DarkMatter.Acts.TheUnspeakableTruth
       Arkham.Homebrew.DarkMatter.Acts.Unmasked
+      Arkham.Homebrew.DarkMatter.Agendas.AgainstTheSun
+      Arkham.Homebrew.DarkMatter.Agendas.ANightmare
       Arkham.Homebrew.DarkMatter.Agendas.DarkMatterAgenda
       Arkham.Homebrew.DarkMatter.Agendas.EmergencyProcedure
       Arkham.Homebrew.DarkMatter.Agendas.FigmentOfYourImagination
+      Arkham.Homebrew.DarkMatter.Agendas.FlightOfTheByakhees
       Arkham.Homebrew.DarkMatter.Agendas.It
-      Arkham.Homebrew.DarkMatter.Agendas.NostalgiaAgendas
+      Arkham.Homebrew.DarkMatter.Agendas.ItsWeirdAndPissedOff
+      Arkham.Homebrew.DarkMatter.Agendas.JourneyAcrossSpace
+      Arkham.Homebrew.DarkMatter.Agendas.MoonsOfSaturn
+      Arkham.Homebrew.DarkMatter.Agendas.OutOfMind
+      Arkham.Homebrew.DarkMatter.Agendas.RedSun
       Arkham.Homebrew.DarkMatter.Agendas.RiseOfTheMachines
-      Arkham.Homebrew.DarkMatter.Agendas.SaturnAgendas
+      Arkham.Homebrew.DarkMatter.Agendas.ScreamOfTheDead
       Arkham.Homebrew.DarkMatter.Agendas.ShallDryAndDie
-      Arkham.Homebrew.DarkMatter.Agendas.StarfallAgendas
+      Arkham.Homebrew.DarkMatter.Agendas.SignsFromAldebaran
+      Arkham.Homebrew.DarkMatter.Agendas.Supernova
       Arkham.Homebrew.DarkMatter.Agendas.TheGhostShip
-      Arkham.Homebrew.DarkMatter.Agendas.TheMachineInYellowAgendas
-      Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstrom
+      Arkham.Homebrew.DarkMatter.Agendas.TheNostalgiaII
+      Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstrom_091
+      Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstrom_092
+      Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstrom_093
       Arkham.Homebrew.DarkMatter.Agendas.TheShadowsLengthen
+      Arkham.Homebrew.DarkMatter.Agendas.TheThingFromEarth
+      Arkham.Homebrew.DarkMatter.Agendas.TheThirdAct
       Arkham.Homebrew.DarkMatter.Assets.AdamTanner
+      Arkham.Homebrew.DarkMatter.Assets.Alma
+      Arkham.Homebrew.DarkMatter.Assets.ArNO
       Arkham.Homebrew.DarkMatter.Assets.BottleOfWhispers
-      Arkham.Homebrew.DarkMatter.Assets.BrainCylinders
+      Arkham.Homebrew.DarkMatter.Assets.BrainCylinder089
+      Arkham.Homebrew.DarkMatter.Assets.BrainCylinder114
+      Arkham.Homebrew.DarkMatter.Assets.BrainCylinder367
       Arkham.Homebrew.DarkMatter.Assets.CaptainBurr
+      Arkham.Homebrew.DarkMatter.Assets.David
+      Arkham.Homebrew.DarkMatter.Assets.DirectorCixin
       Arkham.Homebrew.DarkMatter.Assets.DoctorFeng
       Arkham.Homebrew.DarkMatter.Assets.ErwinSimmonsFading
       Arkham.Homebrew.DarkMatter.Assets.ErwinSimmonsQuantumPhysicist
@@ -3775,22 +3798,25 @@ library
       Arkham.Homebrew.DarkMatter.Assets.K2PS18725Functionality
       Arkham.Homebrew.DarkMatter.Assets.K2PS18750Functionality
       Arkham.Homebrew.DarkMatter.Assets.K2PS18775Functionality
+      Arkham.Homebrew.DarkMatter.Assets.LastHope
       Arkham.Homebrew.DarkMatter.Assets.LtArcherMichaels
       Arkham.Homebrew.DarkMatter.Assets.Maja
       Arkham.Homebrew.DarkMatter.Assets.MedicalFoam
+      Arkham.Homebrew.DarkMatter.Assets.MiGoCollector
       Arkham.Homebrew.DarkMatter.Assets.MindMachineInterface
       Arkham.Homebrew.DarkMatter.Assets.MUD12Mudbug
+      Arkham.Homebrew.DarkMatter.Assets.ProjectOrigami
       Arkham.Homebrew.DarkMatter.Assets.RadiationTablets
-      Arkham.Homebrew.DarkMatter.Assets.ReintegrationChildren
+      Arkham.Homebrew.DarkMatter.Assets.RepairingTheThreshold
       Arkham.Homebrew.DarkMatter.Assets.ShieldingDevice
       Arkham.Homebrew.DarkMatter.Assets.Sophie
       Arkham.Homebrew.DarkMatter.Assets.SpaceArtillery
-      Arkham.Homebrew.DarkMatter.Assets.StarfallContacts
-      Arkham.Homebrew.DarkMatter.Assets.StarfallObjectives
       Arkham.Homebrew.DarkMatter.Assets.StasisCube
       Arkham.Homebrew.DarkMatter.Assets.ThePallidMask
+      Arkham.Homebrew.DarkMatter.Assets.Tilde
       Arkham.Homebrew.DarkMatter.Assets.UniversalArchives
       Arkham.Homebrew.DarkMatter.Assets.VirtualAccessKey
+      Arkham.Homebrew.DarkMatter.Assets.William
       Arkham.Homebrew.DarkMatter.Campaign
       Arkham.Homebrew.DarkMatter.CampaignSteps
       Arkham.Homebrew.DarkMatter.CardDefEntries
@@ -3812,8 +3838,8 @@ library
       Arkham.Homebrew.DarkMatter.Enemies.DaemonOfNis
       Arkham.Homebrew.DarkMatter.Enemies.DomaagTeel
       Arkham.Homebrew.DarkMatter.Enemies.Exoroid
-      Arkham.Homebrew.DarkMatter.Enemies.FlightOfTheByakhees
       Arkham.Homebrew.DarkMatter.Enemies.GlitchInTheSystem
+      Arkham.Homebrew.DarkMatter.Enemies.Haita
       Arkham.Homebrew.DarkMatter.Enemies.HoundOfTindalos
       Arkham.Homebrew.DarkMatter.Enemies.Jv7Hyades
       Arkham.Homebrew.DarkMatter.Enemies.Lr02Hali
@@ -3912,13 +3938,15 @@ library
       Arkham.Homebrew.DarkMatter.Locations.Sol
       Arkham.Homebrew.DarkMatter.Locations.SpiralStaircase
       Arkham.Homebrew.DarkMatter.Locations.StalagmiteForest
-      Arkham.Homebrew.DarkMatter.Locations.Starships
       Arkham.Homebrew.DarkMatter.Locations.SurfaceOfFragment
       Arkham.Homebrew.DarkMatter.Locations.Telecoms
+      Arkham.Homebrew.DarkMatter.Locations.TheCassilda
+      Arkham.Homebrew.DarkMatter.Locations.TheTatterdemalionLocation
       Arkham.Homebrew.DarkMatter.Locations.TheYellowThrone
       Arkham.Homebrew.DarkMatter.Locations.ThresholdOfYuggoth
       Arkham.Homebrew.DarkMatter.Locations.VentilationShaft
       Arkham.Homebrew.DarkMatter.Locations.Yuggoth
+      Arkham.Homebrew.DarkMatter.MotionScanning
       Arkham.Homebrew.DarkMatter.ScenarioDeckKeys
       Arkham.Homebrew.DarkMatter.Scenarios.ElectricNightmare
       Arkham.Homebrew.DarkMatter.Scenarios.FragmentOfCarcosa
@@ -3931,13 +3959,21 @@ library
       Arkham.Homebrew.DarkMatter.Sets
       Arkham.Homebrew.DarkMatter.Stories.ArrivalOfTheKing
       Arkham.Homebrew.DarkMatter.Stories.Delights
-      Arkham.Homebrew.DarkMatter.Stories.Evidence
+      Arkham.Homebrew.DarkMatter.Stories.EvidenceAdamTanner
+      Arkham.Homebrew.DarkMatter.Stories.EvidenceCaptainBurr
+      Arkham.Homebrew.DarkMatter.Stories.EvidenceDoctorFeng
+      Arkham.Homebrew.DarkMatter.Stories.EvidenceLtArcherMichaels
+      Arkham.Homebrew.DarkMatter.Stories.EvidenceMUD12Mudbug
+      Arkham.Homebrew.DarkMatter.Stories.EvidenceSophie
       Arkham.Homebrew.DarkMatter.Stories.FinalDestination
       Arkham.Homebrew.DarkMatter.Stories.ForYouAlone
       Arkham.Homebrew.DarkMatter.Stories.IntoTheArchives
       Arkham.Homebrew.DarkMatter.Stories.K2PS187CyberneticBrains
       Arkham.Homebrew.DarkMatter.Stories.LostExpedition
-      Arkham.Homebrew.DarkMatter.Stories.Reintegrated
+      Arkham.Homebrew.DarkMatter.Stories.Reintegrated_062
+      Arkham.Homebrew.DarkMatter.Stories.Reintegrated_063
+      Arkham.Homebrew.DarkMatter.Stories.Reintegrated_064
+      Arkham.Homebrew.DarkMatter.Stories.Reintegrated_065
       Arkham.Homebrew.DarkMatter.Stories.RitualOfTheSun
       Arkham.Homebrew.DarkMatter.Stories.StrangeIsTheNight
       Arkham.Homebrew.DarkMatter.Stories.TheCultist
@@ -3963,14 +3999,18 @@ library
       Arkham.Homebrew.DarkMatter.Treacheries.ComeCLOSER
       Arkham.Homebrew.DarkMatter.Treacheries.Contamination
       Arkham.Homebrew.DarkMatter.Treacheries.CoolantLeak
-      Arkham.Homebrew.DarkMatter.Treacheries.DarkReflections
+      Arkham.Homebrew.DarkMatter.Treacheries.DarkReflectionsMalingerer
+      Arkham.Homebrew.DarkMatter.Treacheries.DarkReflectionsMurderer
+      Arkham.Homebrew.DarkMatter.Treacheries.DarkReflectionsSycophant
+      Arkham.Homebrew.DarkMatter.Treacheries.DarkReflectionsZealot
       Arkham.Homebrew.DarkMatter.Treacheries.Decoherence
       Arkham.Homebrew.DarkMatter.Treacheries.Decompression
       Arkham.Homebrew.DarkMatter.Treacheries.DelusionalMadness
       Arkham.Homebrew.DarkMatter.Treacheries.Desync
       Arkham.Homebrew.DarkMatter.Treacheries.DigitalCorrosion
       Arkham.Homebrew.DarkMatter.Treacheries.Duplication
-      Arkham.Homebrew.DarkMatter.Treacheries.EchoesOfTassilda
+      Arkham.Homebrew.DarkMatter.Treacheries.EchoesOfTassildaMatter
+      Arkham.Homebrew.DarkMatter.Treacheries.EchoesOfTassildaMind
       Arkham.Homebrew.DarkMatter.Treacheries.ElectricSurge
       Arkham.Homebrew.DarkMatter.Treacheries.Entangled
       Arkham.Homebrew.DarkMatter.Treacheries.ExtraterrestrialAssault

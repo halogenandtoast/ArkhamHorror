@@ -31,6 +31,8 @@ data DarkMatterKey
   | TheNostalgiaIIHasBeenSaved
   | YouCouldntSaveTheCrewOfTheNostalgiaII
   | AllInvestigatorsHaveBeenCorruptedByTheEarth
+  | -- | recorded per investigator, by agenda 2b
+    HasBeenCorruptedByTheEarth
   | -- | Scenario IIIc: Strange Moons
     YouAreNotInGoodStandingWithTheMiGo
   | YouAreAlliedWithTheMiGo

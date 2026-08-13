@@ -1,5 +1,17 @@
 {
   "strangeMoons": {
+    "agenda1b": {
+      "title": "Conspiracy Theory",
+      "body": "<p>The thick atmospheric pressure of Titan crushes you down into the ground. The Grey alien waits patiently in the tunnel, observing your every move. You realize that the alien appears to be completely immobile — as if it were a cardboard cut-out.</p>"
+    },
+    "agenda2b": {
+      "title": "They Came from Above!",
+      "body": "<p>A roar of no creature on Earth resounds throughout the facility. A myriad of flying wings blot out the sun, swooping towards the facility. The lights within the chambers take on a darker, blueish hue — what you assume must be the Mi-Go’s equivalent to an alarm. You realize now that you are in the midst of an interstellar assault.</p>"
+    },
+    "agenda4b": {
+      "title": "They are Everywhere!",
+      "body": "<p>The alien forces do not stop. More and more they descend — you can hear nothing other than the constant fluttering of their hideous wings and the shrill of their beaks. It feels as though every time you fend off one of them, another two arrive in its place.</p>"
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution Was Reached",

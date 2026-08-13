@@ -1,5 +1,26 @@
 {
   "inTheShadowOfEarth": {
+    "act1b": {
+      "title": "In Hiding",
+      "body": "<p>One of the crew members stumbles out in fear. “Thank god someone is here to help! I heard your calls but was too scared to answer. There’s something else with us on the ship — it’s already taken some of the crew, but not all of us. I don’t know who to trust!”</p><p>They describe an abomination that has been corrupting and consuming all biological and electronic mass on the ship. The entity is able to take on the form of the bodies and equipment it consumes, becoming a perfect imitation of the original. When it all went downhill, the Nostalgia II enacted a rudimentary quarantine procedure, and the crew have been hiding throughout the ship, waiting for help ever since.</p><p>You can lead the helpless crew member back to the safety of the Tatterdemalion — but if it is true that this abomination is able to create perfect imitations, how would you know if they are truly human?</p>"
+    },
+    "agenda1b": {
+      "title": "In the Open",
+      "body": "<p>You were not prepared to hear the horrible ear-piercing roar of disembodied cries. Your motion scanner bleeps uncontrollably — there is biological movement detected in every direction. Whatever thing that has corrupted this ship has finally noticed your arrival.</p>"
+    },
+    "agenda2b": {
+      "title": "The Lost",
+      "body": "<p>You have come to understand that whatever plague has struck upon Earth has been transmitted to the ship as well. Perhaps the ship was too close to Earth’s atmosphere — or perhaps a crew member had accidentally watched one too many of the undecipherable and corrupting transmissions from Earth.</p><p>Whatever the invisible corruption is, it has begun to affect you as well — for every time you blink, you see visions of the hell left behind on Earth. Masses of flesh appear around you, sculpting into the shapes of people you once knew.</p>"
+    },
+    "agenda3b": {
+      "title": "Hunger",
+      "hunger": "<p>Another unintelligible scream sounds throughout the Nostalgia II, trembling your ears with force — the abomination of Earth is closing upon its next prey.</p>",
+      "theEntityRevealsItself": "<p>The Entity reveals itself! Get ready for a fight!</p>"
+    },
+    "agenda4b": {
+      "title": "Hunger",
+      "body": "<p>The amalgamation catches you off guard — disassembling into a thousand separate entities and reforming itself right behind you.</p>"
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution Was Reached",

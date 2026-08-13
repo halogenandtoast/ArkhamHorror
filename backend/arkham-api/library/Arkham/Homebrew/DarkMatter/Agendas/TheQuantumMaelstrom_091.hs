@@ -1,12 +1,7 @@
-module Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstrom (
-  theQuantumMaelstrom_091,
-  theQuantumMaelstrom_092,
-  theQuantumMaelstrom_093,
-) where
+module Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstrom_091 (theQuantumMaelstrom_091) where
 
 import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
-import Arkham.Card.CardDef (CardDef)
 import Arkham.Card.CardType (CardType (LocationType))
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
@@ -22,8 +17,8 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 
-{- | All three printings of agenda 1 are mechanically identical; only the
-starting station layout on the back differs.
+{- | One of the three printings of agenda 1; they are mechanically identical and
+only the starting station layout on the back differs.
 
 "[action] Scan. Search for the topmost card in the scanning deck with an icon
 matching your current location and draw it. If it is a location, put it into
@@ -33,32 +28,23 @@ Drawing a location card already puts it into play (the encounter-draw path
 places a drawn location), so ability 2 is the silent hook that performs the
 "and move to it" half once the location exists.
 -}
-newtype TheQuantumMaelstrom = TheQuantumMaelstrom AgendaAttrs
+newtype TheQuantumMaelstrom_091 = TheQuantumMaelstrom_091 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-mkMaelstrom :: CardDef -> AgendaCard TheQuantumMaelstrom
-mkMaelstrom def = agenda (1, A) TheQuantumMaelstrom def (Static 3)
+theQuantumMaelstrom_091 :: AgendaCard TheQuantumMaelstrom_091
+theQuantumMaelstrom_091 = agenda (1, A) TheQuantumMaelstrom_091 Cards.theQuantumMaelstrom_091 (Static 3)
 
-theQuantumMaelstrom_091 :: AgendaCard TheQuantumMaelstrom
-theQuantumMaelstrom_091 = mkMaelstrom Cards.theQuantumMaelstrom_091
-
-theQuantumMaelstrom_092 :: AgendaCard TheQuantumMaelstrom
-theQuantumMaelstrom_092 = mkMaelstrom Cards.theQuantumMaelstrom_092
-
-theQuantumMaelstrom_093 :: AgendaCard TheQuantumMaelstrom
-theQuantumMaelstrom_093 = mkMaelstrom Cards.theQuantumMaelstrom_093
-
-instance HasAbilities TheQuantumMaelstrom where
-  getAbilities (TheQuantumMaelstrom a) =
+instance HasAbilities TheQuantumMaelstrom_091 where
+  getAbilities (TheQuantumMaelstrom_091 a) =
     [ restricted a 1 NoRestriction scanAction_
     , mkAbility a 2
         $ SilentForcedAbility
         $ CampaignEvent #after (Just You) (scanEventForCardType LocationType)
     ]
 
-instance RunMessage TheQuantumMaelstrom where
-  runMessage msg a@(TheQuantumMaelstrom attrs) = runQueueT $ case msg of
+instance RunMessage TheQuantumMaelstrom_091 where
+  runMessage msg a@(TheQuantumMaelstrom_091 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \lid -> do
         symbol <- field LocationPrintedSymbol lid
@@ -72,4 +58,4 @@ instance RunMessage TheQuantumMaelstrom where
     AdvanceAgenda (isSide B attrs -> True) -> do
       advanceAgendaDeck attrs
       pure a
-    _ -> TheQuantumMaelstrom <$> liftRunMessage msg attrs
+    _ -> TheQuantumMaelstrom_091 <$> liftRunMessage msg attrs

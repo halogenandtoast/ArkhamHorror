@@ -581,7 +581,8 @@ allScenarioCards =
     (normalizeCardCode c, scenarioCard (normalizeCardCode c) name ecSet)
 
 duplicatedScenarios :: [CardCode]
-duplicatedScenarios = ["04205a", "04205b", "08501c", "10677a", "10679a", "10679b"]
+duplicatedScenarios =
+  ["04205a", "04205b", "08501c", "08648b", "10677a", "10679a", "10679b", "88001b"]
 
 homebrewScenarios :: Map CardCode SomeScenario
 homebrewScenarios = mapFromList [(c, SomeScenario f) | (c, HomebrewScenario _ f) <- Registry.scenarios]

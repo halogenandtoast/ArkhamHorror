@@ -32,6 +32,6 @@ instance RunMessage ElectrostaticDischarge where
                 (oneOf [LocationWithAnyActiveSeal, LocationWithInvestigator InvestigatorWithAnyActiveSeal])
           if active
             then assignDamageAndHorror iid' attrs 1 1
-            else assignDamage iid' attrs 1
+            else assignHorror iid' attrs 1
       pure t
     _ -> ElectrostaticDischarge <$> liftRunMessage msg attrs

@@ -336,7 +336,7 @@ thePaleLanternHypnoticGlow =
     , cdCost = Nothing
     , cdUnique = True
     , cdDoubleSided = True
-    , cdOtherSide = Just "71068b"
+    , cdOtherSide = Just "71046b"
     }
 
 thePaleLanternBeguilingAura :: CardDef
@@ -346,7 +346,7 @@ thePaleLanternBeguilingAura =
     , cdCost = Nothing
     , cdUnique = True
     , cdDoubleSided = True
-    , cdOtherSide = Just "71068"
+    , cdOtherSide = Just "71046"
     , cdVictoryPoints = Just 1
     }
 

@@ -33,7 +33,7 @@ ghoulFromTheDepths =
 narogath :: CardDef
 narogath =
   unique
-    $ doubleSided "50026"
+    $ doubleSided "50026a"
     $ (enemy "50026b" ("Narôgath" <:> "The Charnel Lord") ReturnToTheMidnightMasks 1)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 2

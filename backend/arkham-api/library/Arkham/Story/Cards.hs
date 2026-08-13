@@ -657,7 +657,7 @@ barriersDecoysAndTraps :: CardDef
 barriersDecoysAndTraps = story "10627" "Barriers, Decoys, and Traps" TheLongestNight
 
 theAbyss :: CardDef
-theAbyss = story "10670b" "The Abyss" FateOfTheVale
+theAbyss = story "10670b" "The Abyss" FateOfTheVale & otherSideIs "10670"
 
 dayOne :: CardDef
 dayOne = story "10675" "Day One" TheFirstDay & otherSideIs "10675b"

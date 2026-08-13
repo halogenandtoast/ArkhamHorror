@@ -15,7 +15,33 @@ import Arkham.Investigator.Cards
 import Arkham.PlayerCard
 import Arkham.Scenario
 import Data.Map.Strict qualified as Map
-import Data.Text qualified as T
+import Data.Set qualified as Set
+
+{- | The card defs to list in the card browser.
+
+Two defs that are the two sides of one physical card would otherwise each get
+their own entry, showing the same card twice. Sides are declared with
+'cdOtherSide', and we keep only the earlier one — unsuffixed before @a@ before
+@b@ — since the other side is reachable by flipping it.
+
+A 'cdOtherSide' pointing at a code that has no def of its own (the usual case,
+where the back is only art) hides nothing, and neither do sibling codes such as
+@89010a@..@89010i@ that are distinct cards rather than two sides of one.
+-}
+browsableCardDefs :: Map CardCode CardDef -> [CardDef]
+browsableCardDefs defs = filter (\def -> exactCardCode def `Set.notMember` backSides) (toList defs)
+ where
+  codes :: Set CardCodeExact
+  codes = Set.fromList [exactCardCode def | def <- toList defs]
+
+  backSides :: Set CardCodeExact
+  backSides =
+    Set.fromList
+      [ max (exactCardCode def) (exactCardCode otherSide)
+      | def <- toList defs
+      , Just otherSide <- [cdOtherSide def]
+      , exactCardCode otherSide `Set.member` codes
+      ]
 
 getApiV1ArkhamCardsR :: Handler [CardDef]
 getApiV1ArkhamCardsR = do
@@ -35,71 +61,10 @@ getApiV1ArkhamCardsR = do
       "both" -> allCards
       _ | showEncounter -> allCards
       _ -> playerCards
-    safeBCodes =
-      [ "03047b"
-      , "03084b"
-      , "03276b"
-      , "03279b"
-      , "07174b"
-      , "07175b"
-      , "07176b"
-      , "07177b"
-      , "07204b"
-      , "07205b"
-      , "07206b"
-      , "07207b"
-      , "07208b"
-      , "07209b"
-      , "09586b"
-      , "09716b"
-      , "09726b"
-      , "09727b"
-      , "09747b"
-      , "09748b"
-      , "09749b"
-      , "10510b"
-      , "10511b"
-      , "10644b"
-      , "10645b"
-      , "10647b"
-      , "88035b"
-      , "88036b"
-      , "88037b"
-      , "88038b"
-      , "88039b"
-      , "88040b"
-      , "88041b"
-      , "88042b"
-      , "88046b"
-      , "88047b"
-      , "88049b"
-      , "88050b"
-      , "88051b"
-      , "88052b"
-      , "88053b"
-      , "11691b" -- The Final Seal (special act/agenda, not a card back)
-      ]
-    safeDCodes = ["03084d", "88038d"]
 
   pure
-    $ filter
-      ( and
-          . sequence
-            [ (/= "01000")
-            , or
-                . sequence
-                  [(not . T.isSuffixOf "b" . unCardCode), (`elem` safeBCodes)]
-            , or
-                . sequence
-                  [(not . T.isSuffixOf "d" . unCardCode), (`elem` safeDCodes)]
-            , (not . T.isSuffixOf "f" . unCardCode)
-            , (not . T.isSuffixOf "h" . unCardCode)
-            , (not . T.isSuffixOf "j" . unCardCode)
-            , (not . T.isSuffixOf "l" . unCardCode)
-            ]
-          . toCardCode
-      )
-    $ toList
+    $ filter ((/= "01000") . toCardCode)
+    $ browsableCardDefs
     $ cards
     `Map.difference` allSpecialPlayerAssetCards
 
@@ -116,7 +81,7 @@ getApiV1ArkhamHomebrewCardsR = do
           <> Homebrew.playerSkillsMap
           <> Homebrew.storiesMap
 
-  pure $ Map.elems allHomebrewCards
+  pure $ browsableCardDefs allHomebrewCards
 
 getApiV1ArkhamCardR :: CardCode -> Handler CardDef
 getApiV1ArkhamCardR cCode = do

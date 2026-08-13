@@ -49,7 +49,11 @@ Homebrew uses its own id namespace so it never collides with official content.
 - **Card code**: `:<campaign-id>:<number>` — `:dark-matter:001`,
   `:circus-ex-mortis:042`. Numbers are assigned in pack order and are **stable —
   never renumber**. Double-sided cards use a `b` suffix on the back
-  (`:dark-matter:057b`), same as official cards.
+  (`:dark-matter:057b`), same as official cards. When the back is a card def of
+  its own — an agenda that flips to an enemy, a location whose two faces are
+  different places — point the back's `cdOtherSide` at the front. The card
+  browser lists only the earlier side of a linked pair (unsuffixed before `a`
+  before `b`), so without the link the same card shows up twice.
 - **Scenario id**: the card code of the scenario reference card.
 
 Card art lives under your frontend folder and is served at
@@ -104,6 +108,21 @@ sophie = encounterAsset_ ":dark-matter:135" "Sophie" Set.InTheShadowOfEarth
 spaceArtillery :: CardDef    -- player back
 spaceArtillery = storyAsset ":dark-matter:120" "Space Artillery" 4 Set.InTheShadowOfEarth
 ```
+
+A card whose back is its own `b` side rather than a stock back — Dark Matter's
+scanning backs, with their icons printed at the bottom — says so with
+`cdOtherSide = Just (flippedCardCode def.cardCode)` (locations have
+`singleSidedWithFlippedBack` for this). Without it the card falls back to the
+generic encounter back and the icons never show.
+
+An encounter-backed card can still be *earned*: `addCampaignCardToDeck` records
+it in the campaign's story cards for its owner whichever side it is printed on.
+It will not come back with the deck, though — deck loading keeps only player
+cards — so only a `permanent` one survives the scenario it was earned in.
+`SetupInvestigator` puts those into play from the campaign story cards in the
+same step it plays the deck's own permanents (Dark Matter's Heir to Carcosa).
+Non-permanent encounter-backed earned cards have nowhere to live; give those a
+player back.
 
 Story cards are the one case where card type can't record this (there is no
 player-back story type), so a story printed on a player back — Dark Matter's
@@ -264,7 +283,7 @@ leading colon), discovered the same hands-off way — no registration anywhere:
 
 | File | What it's for |
 |------|---------------|
-| `campaign.json` | your campaign's new-game entry — name, `designer`, difficulty chaos bags. Appears in a dedicated **Homebrew** section of the new-game screen with a "designed by …" credit. |
+| `campaign.json` | your campaign's new-game entry — name, `designer`, `chapter`, difficulty chaos bags. Appears in a dedicated **Homebrew** section of the new-game screen with a "designed by …" credit. |
 | `scenarios.json` | the scenario list; each entry's `i18n` key names its locale scope |
 | `icons.json` | custom icon names, e.g. `{"moon": "moon-icon"}` — hooks `{moon}` into flavor text and `[moon]` into card text |
 | `tokens.json` | custom tokens to show in the scenario **totals bar**, e.g. `[{ "face": ":your-campaign:moon", "tooltip": "Moon Tokens" }]` (counted across the chaos bag and players' sealed tokens) |
@@ -274,6 +293,13 @@ leading colon), discovered the same hands-off way — no registration anywhere:
 
 The directory name camelCases to the i18n message scope (`circus-ex-mortis` →
 `circusExMortis`), which matches the backend's campaign i18n scope.
+
+`campaign.json` also declares which rules chapter your campaign is written
+against: `"chapter": 1` or `"chapter": 2`. Official campaigns derive this from
+their id (`11` and up are Chapter 2), but homebrew ids don't order that way, so
+say it outright. It preselects the Chapter 1/Chapter 2 rules toggle (currently
+the "as if" ruling) on the new-game screen; players can still override it there
+and in game settings. Omit it and you get Chapter 1.
 
 `tokens.json` is a nice small example of a self-configuring feature: list a token
 face there and it appears in the on-screen totals with no code changes.

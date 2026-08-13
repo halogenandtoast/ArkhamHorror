@@ -443,7 +443,7 @@ spectralRaven =
 
 anetteMasonReincarnatedEvil :: CardDef
 anetteMasonReincarnatedEvil =
-  doubleSided "05286"
+  doubleSided "05286a"
     $ (enemy "05286b" ("Anette Mason" <:> "Reincarnated Evil") MusicOfTheDamned 1)
       { cdHealthDamage = healthDamage 3
       , cdSanityDamage = sanityDamage 1
@@ -458,7 +458,7 @@ anetteMasonReincarnatedEvil =
 
 carlSanfordDeathlessFanatic :: CardDef
 carlSanfordDeathlessFanatic =
-  doubleSided "05288"
+  doubleSided "05288a"
     $ (enemy "05288b" ("Carl Sanford" <:> "Deathless Fanatic") SecretsOfTheUniverse 1)
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 3

@@ -414,7 +414,7 @@ theBeastInACowlOfCrimsonWolfInSheepsClothing =
     , cdVictoryPoints = Just 1
     , cdUnique = True
     , cdDoubleSided = True
-    , cdOtherSide = Just "09655b"
+    , cdOtherSide = Just "09655"
     }
 
 scarletBeast :: CardDef

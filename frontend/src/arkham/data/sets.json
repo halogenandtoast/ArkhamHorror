@@ -400,7 +400,7 @@
     "playerCards": 0,
     "code": "fhvc",
     "cycle": 10,
-    "encounterDuplicates": 8
+    "encounterDuplicates": 11
   },
   {
     "name": "The Drowned City Investigator Expansion",
@@ -634,7 +634,7 @@
     "playerCards": 5,
     "code": "blbe",
     "cycle": 70,
-    "encounterDuplicates": 4
+    "encounterDuplicates": 8
   },
   {
     "name": "The Midwinter Gala",

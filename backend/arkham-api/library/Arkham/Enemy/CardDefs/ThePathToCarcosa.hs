@@ -1,8 +1,8 @@
 module Arkham.Enemy.CardDefs.ThePathToCarcosa where
 
+import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
-import Arkham.EncounterSet qualified as EncounterSet
 
 graveyardGhouls :: CardDef
 graveyardGhouls =
@@ -361,7 +361,7 @@ stealthyByakhee =
 
 specterOfDeath :: CardDef
 specterOfDeath =
-  doubleSided "03241a"
+  doubleSided "03241"
     $ (enemy "03241b" ("Specter of Death" <:> "A Force From Beyond") ThePallidMask 1)
       { cdHealthDamage = healthDamage 2
       , cdSanityDamage = sanityDamage 2

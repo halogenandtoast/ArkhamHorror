@@ -150,7 +150,7 @@ rootsOfTheEarth =
 
 electrostaticDischarge :: CardDef
 electrostaticDischarge =
-  (treachery "08670" "Electrostatic Discarge" TheGreatSeal 2)
+  (treachery "08670" "Electrostatic Discharge" TheGreatSeal 2)
     { cdCardTraits = setFromList [Hazard]
     , cdKeywords = setFromList [Keyword.Surge]
     }

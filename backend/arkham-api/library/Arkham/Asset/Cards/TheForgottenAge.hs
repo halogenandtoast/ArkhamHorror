@@ -222,6 +222,7 @@ harlanEarnstone =
     { cdCardTraits = setFromList [Bystander, Miskatonic]
     , cdCost = Nothing
     , cdUnique = True
+    , cdOtherSide = Just "04118"
     }
 
 henryDeveau :: CardDef
@@ -230,6 +231,7 @@ henryDeveau =
     { cdCardTraits = singleton Bystander
     , cdCost = Nothing
     , cdUnique = True
+    , cdOtherSide = Just "04125"
     }
 
 mariaDeSilva :: CardDef
@@ -238,6 +240,7 @@ mariaDeSilva =
     { cdCardTraits = singleton Bystander
     , cdCost = Nothing
     , cdUnique = True
+    , cdOtherSide = Just "04134"
     }
 
 ichtacaTheForgottenGuardian :: CardDef
@@ -591,6 +594,7 @@ merleGarvinUnhelpfulGuide =
     { cdCardTraits = setFromList [Bystander, Wayfarer]
     , cdCost = Nothing
     , cdUnique = True
+    , cdOtherSide = Just "53030"
     }
 
 clintonFreemanShouldHaveStayedHome :: CardDef
@@ -599,6 +603,7 @@ clintonFreemanShouldHaveStayedHome =
     { cdCardTraits = setFromList [Bystander, Wayfarer]
     , cdCost = Nothing
     , cdUnique = True
+    , cdOtherSide = Just "53032"
     }
 
 vedaWhitsleySkilledBotanist :: CardDef

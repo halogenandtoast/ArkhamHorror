@@ -315,6 +315,7 @@ allEncounterTreacheryCards =
       , eagerForDeathUnionAndDisillusion
       , eclipse
       , eldritchAccord
+      , electrostaticDischarge
       , empyreanBrilliance
       , encephalonSignal
       , endlessDescent

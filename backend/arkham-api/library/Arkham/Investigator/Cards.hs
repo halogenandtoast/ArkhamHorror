@@ -599,11 +599,14 @@ hankSamsonResoluteAssistant =
 
 hankSamsonResoluteWarden :: CardDef
 hankSamsonResoluteWarden =
-  investigator
-    "10016b"
-    ("Hank Samson" <:> "The Farmhand")
-    Survivor
-    [Warden, Resolute]
+  ( investigator
+      "10016b"
+      ("Hank Samson" <:> "The Farmhand")
+      Survivor
+      [Warden, Resolute]
+  )
+    { cdOtherSide = Just "10016a"
+    }
 
 marionTavares :: CardDef
 marionTavares =

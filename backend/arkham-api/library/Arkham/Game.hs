@@ -6699,14 +6699,24 @@ runMessages gameId mLogger = do
               -- After we preload check diff, if there is a diff, we need to
               -- manually adjust enemies if they could not enter the new location
 
-              asIfLocations <- runWithEnv getAsIfLocationMap
-              aloofEnemies <- runWithEnv (select AloofEnemy)
-              investigatorSanityHealth <- runWithEnv getInvestigatorSanityHealthMap
+              -- These three are "before" snapshots consumed only by the
+              -- preload branch below; taking them for every message cost ~45ms
+              -- per act advance in a mid-campaign game for nothing.
+              let willPreloadModifiers = shouldPreloadModifiers msg
+              (asIfLocations, aloofEnemies, investigatorSanityHealth) <-
+                if willPreloadModifiers
+                  then
+                    runWithEnv
+                      $ (,,)
+                      <$> getAsIfLocationMap
+                      <*> select AloofEnemy
+                      <*> getInvestigatorSanityHealthMap
+                  else pure (mempty, [], mempty)
 
               runWithEnv $ withMetric ("Msg[" <> messageTag msg <> "]") do
                 overGameM preloadEntities
                 overGameM $ runPreGameMessage msg
-                if shouldPreloadModifiers msg
+                if willPreloadModifiers
                   then do
                     overGameM
                       $ runMessage msg

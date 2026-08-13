@@ -519,13 +519,17 @@ getPlayabilityChecksWithResources
                 pure $ Just $ "Failed: " <> mconcat (intersperse ", " (map tshow failed))
               Just ctr -> pure $ Just $ "Not met: " <> tshow ctr
 
-    -- Limits check
-    limitsOk <- passesLimits (if isBobJenkins then fromMaybe iid c.owner else iid) c
+    -- Limits check (skipped when a cheap check already failed, like the
+    -- fight/evade/investigate checks below)
+    limitsOk <-
+      if cheapFail
+        then pure True
+        else passesLimits (if isBobJenkins then fromMaybe iid c.owner else iid) c
     let limitsDetail = if limitsOk then Nothing else Just "Per-round or per-game limit has been reached"
 
     -- Slots check
     slotsOk <-
-      if null (cdSlots pcDef)
+      if cheapFail || null (cdSlots pcDef)
         then pure True
         else do
           possibleSlots <- getPotentialSlots c iid
@@ -538,8 +542,14 @@ getPlayabilityChecksWithResources
           #evade
             `elem` pcDef.actions
             && not (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` pcDef.actions)
-    attrs <- getAttrs @Investigator iid
-    ac <- getActionCost attrs (pcDef.actions <> [#play | costStatus == UnpaidCost NeedsAction])
+    -- Only the fight/evade checks consume these, and those are gated on
+    -- 'cheapFail' too, so computing them for an already-failed card is waste.
+    ac <-
+      if cheapFail
+        then pure 0
+        else do
+          attrs <- getAttrs @Investigator iid
+          getActionCost attrs (pcDef.actions <> [#play | costStatus == UnpaidCost NeedsAction])
     let
       -- An action-taking context for iid: a genuine DuringTurn window for iid, or
       -- the NonFast window (present during a granted action). See #4894.
@@ -642,14 +652,20 @@ getPlayabilityChecksWithResources
         UnpaidCost NeedsAction -> ac
         AuxiliaryCost _ inner -> goActionCost inner
       actionCost = goActionCost costStatus
+    -- These feed only 'actionCostOk' below, which is itself gated on
+    -- 'cheapFail'. Gathering them for an already-failed card costs a
+    -- 'c <=~> match' query per modifier, per card, per window.
     additionalCosts <-
-      (modifiers <> cardModifiers) & mapMaybeM \case
-        AdditionalCost n -> pure (guard (costStatus /= PaidCost) $> n)
-        AdditionalPlayCostOf match additionalCost -> do
-          isMatch' <- c <=~> match
-          pure $ guard isMatch' $> additionalCost
-        _ -> pure Nothing
+      if cheapFail
+        then pure []
+        else (modifiers <> cardModifiers) & mapMaybeM \case
+          AdditionalCost n -> pure (guard (costStatus /= PaidCost) $> n)
+          AdditionalPlayCostOf match additionalCost -> do
+            isMatch' <- c <=~> match
+            pure $ guard isMatch' $> additionalCost
+          _ -> pure Nothing
     investigateCosts <- runDefaultMaybeT [] do
+      guard $ not cheapFail
       guard $ case costStatus of
         UnpaidCost _ -> True
         _ -> False
@@ -667,6 +683,7 @@ getPlayabilityChecksWithResources
         Keyword.Seal sealing -> if costStatus == PaidCost then Nothing else sealingToCost sealing
         _ -> Nothing
     resignCosts <- runDefaultMaybeT [] do
+      guard $ not cheapFail
       guard $ #resign `elem` pcDef.actions
       lid <- MaybeT $ field InvestigatorLocation iid
       mods <- lift $ getModifiers lid

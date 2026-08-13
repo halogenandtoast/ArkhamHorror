@@ -6,6 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message.Lifted.Log
 import Arkham.Trait (Trait (Suspect))
@@ -19,7 +20,7 @@ rageOfTheDeep = agenda (4, A) RageOfTheDeep Cards.rageOfTheDeep (Static 3)
 
 instance HasModifiersFor RageOfTheDeep where
   getModifiersFor (RageOfTheDeep a) = do
-    enemies <- modifySelect a (EnemyWithTrait Suspect) [IgnoreAloof]
+    enemies <- modifySelect a (EnemyWithTrait Suspect) [RemoveKeyword Aloof]
     investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
     pure $ enemies <> investigators
 

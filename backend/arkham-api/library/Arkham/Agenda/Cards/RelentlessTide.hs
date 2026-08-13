@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query
+import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
 import Arkham.Trait (Trait (Midtown, Suspect))
 
@@ -19,7 +20,7 @@ relentlessTide = agenda (2, A) RelentlessTide Cards.relentlessTide (Static 5)
 
 instance HasModifiersFor RelentlessTide where
   getModifiersFor (RelentlessTide a) = do
-    enemies <- modifySelect a (EnemyWithTrait Suspect) [IgnoreAloof]
+    enemies <- modifySelect a (EnemyWithTrait Suspect) [RemoveKeyword Aloof]
     investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
     pure $ enemies <> investigators
 

@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
 import Arkham.Trait (Trait (Suspect))
 
@@ -17,7 +18,7 @@ floodedStreets = agenda (3, A) FloodedStreets Cards.floodedStreets (Static 4)
 
 instance HasModifiersFor FloodedStreets where
   getModifiersFor (FloodedStreets a) = do
-    enemies <- modifySelect a (EnemyWithTrait Suspect) [IgnoreAloof]
+    enemies <- modifySelect a (EnemyWithTrait Suspect) [RemoveKeyword Aloof]
     investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
     pure $ enemies <> investigators
 

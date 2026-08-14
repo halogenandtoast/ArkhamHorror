@@ -21,7 +21,12 @@ module Application (
   db,
 ) where
 
-import Api.Arkham.Helpers (roomHeartbeat)
+import Api.Arkham.Helpers (
+  markPubSubAlive,
+  pubSubHealthChannel,
+  pubSubSupervisor,
+  roomHeartbeat,
+ )
 import Arkham.Metrics qualified as Metrics
 import Config
 import Control.Concurrent.MVar (newMVar)
@@ -31,6 +36,7 @@ import Data.CaseInsensitive (foldCase, mk)
 import Data.Default.Class (def)
 import Data.List (lookup)
 import Data.Text qualified as T
+import Data.Time.Clock (getCurrentTime)
 import Data.X509.CertificateStore (readCertificateStore)
 import Database.Persist.Postgresql (
   SqlBackend,
@@ -44,7 +50,6 @@ import Database.Redis (
   checkedConnect,
   newPubSubController,
   parseConnectInfo,
-  pubSubForever,
  )
 import Import hiding (newMVar, sendResponse)
 import Language.Haskell.TH.Syntax (qLocation)
@@ -123,13 +128,24 @@ makeFoundation appSettings = do
 
   appGameRooms <- newMVar mempty
   appEventRooms <- newMVar mempty
+  appPubSubHealth <- newTVarIO =<< getCurrentTime
 
   appMessageBroker <- case appRedisConnectionInfo appSettings of
     Nothing -> pure WebSocketBroker
     Just url -> do
       conn <- checkedConnect =<< fromConnectionUrl url
-      ctrl <- newPubSubController [] []
-      _ <- forkIO $ pubSubForever conn ctrl (pure ())
+      -- The health channel is an INITIAL subscription so 'pubSubForever'
+      -- restores it on every reconnect and the controller is never left with
+      -- zero channels. Per-game channels are added and removed on demand by
+      -- 'getRoomIn' / 'releaseRoomIfEmpty'.
+      ctrl <-
+        newPubSubController
+          [(pubSubHealthChannel, const $ markPubSubAlive appPubSubHealth)]
+          []
+      -- Supervised, not bare: 'pubSubForever' exits on connection loss and
+      -- must be restarted to resubscribe, and it cannot see a half-open
+      -- socket at all. See 'pubSubSupervisor'.
+      _ <- forkIO $ pubSubSupervisor appPubSubHealth conn ctrl
       pure $ RedisBroker conn ctrl
 
   -- We need a log function to create a connection pool. We need a connection

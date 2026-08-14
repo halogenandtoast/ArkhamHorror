@@ -738,9 +738,17 @@ const onError = () => {
   }
   socketError.value = true
 }
+let hasConnectedOnce = false
+
 const onConnected = () => {
   socketError.value = false
   processing.value = false
+  // Anything published while the socket was down is gone -- the server drops
+  // updates for rooms with no subscriber rather than buffering them. On a
+  // RECONNECT (not the initial connect, which the page load already fetched
+  // for) pull the current state so we can't sit on a stale board.
+  if (hasConnectedOnce) void resyncGame()
+  hasConnectedOnce = true
 }
 
 const onMessage = (_ws: WebSocket, event: MessageEvent) => {
@@ -894,8 +902,7 @@ function sendSkipFor(targetPlayerId: string, choiceIdx: number) {
   oldQuestion.value = game.value.question
   const questionVersion = game.value.scenarioSteps
   setGameQuestion({})
-  processing.value = true
-  send(
+  sendAnswer(
     JSON.stringify({
       tag: 'Answer',
       contents: { choice: choiceIdx, playerId: targetPlayerId, questionVersion },
@@ -924,11 +931,99 @@ const { send, close } = useWebSocket(websocketUrl, {
   onMessage,
 })
 
+/*
+ * A GameUpdate is the only message carrying new board state, and it reaches us
+ * over a different path than the log lines do: the server broadcasts log lines
+ * in-process, but publishes GameUpdate through Redis pub/sub so it can reach
+ * other pods. When that path breaks, the failure is silent and deeply
+ * confusing -- log lines keep scrolling while the board freezes, so it reads
+ * as "the server ignored my click" and invites the player to click again.
+ *
+ * So don't trust it. Every answer arms a watchdog; if no GameUpdate arrives
+ * within RESYNC_AFTER_MS we refetch over REST and reconcile. This also covers
+ * a reconnect that silently missed updates while the socket was down.
+ */
+const RESYNC_AFTER_MS = 5000
+// A slow action (scenario setup can run for seconds) is not a lost one, so a
+// refetch that finds nothing new re-arms rather than giving up immediately.
+// Bounded so an answer that legitimately advances no step can't poll forever.
+const MAX_RESYNC_ATTEMPTS = 4
+let resyncTimer: number | null = null
+let resyncAttempts = 0
+let resyncing = false
+
+function disarmResync() {
+  if (resyncTimer !== null) {
+    clearTimeout(resyncTimer)
+    resyncTimer = null
+  }
+  resyncAttempts = 0
+}
+
+/*
+ * Pull current state over REST and apply it, but only if the server has
+ * actually committed something past what we already hold.
+ *
+ * The guard matters: an in-flight action has not committed yet, so a refetch
+ * returns the PRE-action state -- including the question the player just
+ * answered. Applying that would put the question back on screen and invite
+ * them to answer it a second time, which is worse than the frozen board we
+ * are trying to fix. `expectingUpdate` distinguishes "waiting on an answer"
+ * (where staleness means keep waiting) from a reconnect (where whatever the
+ * server currently has is authoritative).
+ */
+async function resyncGame(expectingUpdate = false) {
+  if (resyncing) return
+  resyncing = true
+  try {
+    const { game: refetched } = await fetchGame(props.gameId, props.spectate)
+    const current = game.value
+    if (expectingUpdate && current && refetched.scenarioSteps <= current.scenarioSteps) {
+      if (resyncAttempts < MAX_RESYNC_ATTEMPTS) {
+        armResync()
+      } else {
+        console.warn('Gave up waiting for a GameUpdate; leaving the board as-is')
+        processing.value = false
+      }
+      return
+    }
+    applyGameUpdate(refetched, uiLock.value)
+    updateGameLog(refetched.log)
+    processing.value = false
+  } catch (e) {
+    console.error('Resync after missing GameUpdate failed', e)
+  } finally {
+    resyncing = false
+  }
+}
+
+function armResync() {
+  if (resyncTimer !== null) clearTimeout(resyncTimer)
+  resyncAttempts += 1
+  resyncTimer = window.setTimeout(() => {
+    resyncTimer = null
+    console.warn('No GameUpdate arrived after answering; resyncing over REST')
+    void resyncGame(true)
+  }, RESYNC_AFTER_MS)
+}
+
+// Every path that answers a question goes through here so the watchdog can't
+// be forgotten at a new call site.
+function sendAnswer(payload: string) {
+  processing.value = true
+  disarmResync()
+  armResync()
+  send(payload)
+}
+
 const handleResult = (result: ServerResult) => {
   processing.value = false
   switch (result.tag) {
     case 'GameError':
       if (props.spectate) return
+      // The server rejected the action, so no GameUpdate is coming and the
+      // state is unchanged -- resyncing would just be a wasted round trip.
+      disarmResync()
       error.value = result.contents
       if (game.value && oldQuestion.value) {
         setGameQuestion(oldQuestion.value)
@@ -1076,6 +1171,9 @@ const handleResult = (result: ServerResult) => {
       return
     }
     case 'GameUpdate':
+      // The state we were waiting for actually arrived, so stand the resync
+      // watchdog down.
+      disarmResync()
       // Flush the latest state onto the board even while a revelation/modal holds
       // the UI lock, so the table behind it reflects the current situation instead
       // of freezing on the pre-revelation state (issue #4817). Keep it queued so
@@ -1551,8 +1649,7 @@ async function choose(idx: number) {
     if (!shouldPreserveFocusedChaosWindow() && !shouldPreserveFocusedCardChoice()) {
       setGameQuestion({})
     }
-    processing.value = true
-    send(
+    sendAnswer(
       JSON.stringify({
         tag: 'Answer',
         contents: { choice: idx, playerId: playerId.value, questionVersion },
@@ -1565,8 +1662,7 @@ async function chooseDeck(deckId: string): Promise<void> {
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
     setGameQuestion({})
-    processing.value = true
-    send(JSON.stringify({ tag: 'DeckAnswer', deckId, playerId: playerId.value }))
+    sendAnswer(JSON.stringify({ tag: 'DeckAnswer', deckId, playerId: playerId.value }))
   }
 }
 
@@ -1574,8 +1670,7 @@ async function chooseDeckList(deckList: object): Promise<void> {
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
     setGameQuestion({})
-    processing.value = true
-    send(JSON.stringify({ tag: 'DeckListAnswer', deckList, playerId: playerId.value }))
+    sendAnswer(JSON.stringify({ tag: 'DeckListAnswer', deckList, playerId: playerId.value }))
   }
 }
 
@@ -1584,8 +1679,7 @@ async function choosePaymentAmounts(amounts: Record<string, number>): Promise<vo
     oldQuestion.value = game.value.question
     const questionVersion = game.value.scenarioSteps
     setGameQuestion({})
-    processing.value = true
-    send(
+    sendAnswer(
       JSON.stringify({
         tag: 'PaymentAmountsAnswer',
         contents: { amounts, questionVersion, playerId: playerId.value },
@@ -1598,8 +1692,7 @@ async function scenarioSpecificAnswer(key: string, value: unknown): Promise<void
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
     setGameQuestion({})
-    processing.value = true
-    send(JSON.stringify({ tag: 'ScenarioSpecificAnswer', contents: [key, value] }))
+    sendAnswer(JSON.stringify({ tag: 'ScenarioSpecificAnswer', contents: [key, value] }))
   }
 }
 
@@ -1608,8 +1701,7 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
     oldQuestion.value = game.value.question
     const questionVersion = game.value.scenarioSteps
     setGameQuestion({})
-    processing.value = true
-    send(
+    sendAnswer(
       JSON.stringify({
         tag: 'AmountsAnswer',
         contents: { amounts, questionVersion, playerId: playerId.value },

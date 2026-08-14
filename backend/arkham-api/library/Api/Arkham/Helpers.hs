@@ -16,22 +16,36 @@ import Arkham.Random
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar
 import Control.Concurrent.MVar qualified as MVar
-import Control.Exception (try)
+import Control.Exception (throwIO, try)
 import Control.Lens hiding (from)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.Random (MonadRandom (..), StdGen)
 import Data.Aeson qualified as Aeson
 import Data.ByteString.Char8 qualified as BS8
+import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import Data.UUID qualified as UUID
 import Database.Esqueleto.Experimental
-import Database.Redis (Connection, RedisChannel, hdel, hgetall, hincrby, hset, runRedis)
+import Database.Redis (
+  Connection,
+  PubSubController,
+  RedisChannel,
+  addChannels,
+  hdel,
+  hgetall,
+  hincrby,
+  hset,
+  pubSubForever,
+  publish,
+  runRedis,
+ )
 import Entity.Arkham.Game
 import Entity.Arkham.LogEntry
 import GHC.Records
 import Import hiding (appLogger, (==.), (>=.))
+import UnliftIO.Async qualified as UA
 
 newtype GameLog = GameLog {gameLogToLogEntries :: [Text]}
   deriving newtype (Monoid, Semigroup)
@@ -146,6 +160,7 @@ gameIdToText = UUID.toText . coerce
 
 runGameApp :: MonadIO m => GameApp -> GameAppT a -> m a
 runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT
+
 gameChannel :: ArkhamGameId -> RedisChannel
 gameChannel gameId = "arkham-" <> encodeUtf8 (tshow gameId)
 
@@ -155,36 +170,108 @@ per-game ones above but keyed by 'ArkhamEpicEventId' on 'appEventRooms'.
 eventChannel :: ArkhamEpicEventId -> RedisChannel
 eventChannel eventId = "arkham-epic-" <> encodeUtf8 (tshow eventId)
 
-getEventRoom :: (MonadIO m, HasApp m) => ArkhamEpicEventId -> m Room
-getEventRoom eid = do
-  roomsVar <- getsApp appEventRooms
-  liftIO do
-    modifyMVar roomsVar \rooms ->
-      case Map.lookup eid rooms of
-        Just r -> pure (rooms, r)
-        Nothing -> do
-          r <- newRoom (eventChannel eid)
-          pure (Map.insert eid r rooms, r)
+{- | Join a room: look it up (creating it, and its one Redis subscription, when
+this pod isn't serving the channel yet) AND register this WebSocket as a
+subscriber, both in one turn of the rooms lock.
+
+There is exactly ONE subscription per channel per pod and the room owns it;
+every WebSocket on the room is then fed from that single callback. Each
+connection used to open its own Redis connection and subscribe independently,
+which meant every published message was delivered once per connection to
+every connection (N^2 sends for an N-player table) and cost one Redis
+connection per open browser tab.
+
+Look-up and subscribe-to-room have to happen together. 'releaseRoomIfEmpty'
+reads "present in the map with zero subscribers" as "nobody is here", so if a
+connection could hold a room it had not yet registered on, a departing
+connection could release that room out from under it -- leaving the new
+arrival attached to a room whose channel is no longer subscribed, silently
+receiving nothing for the life of the socket. Joining atomically is what makes
+the zero-subscriber reading trustworthy.
+
+'addChannels' only enqueues the SUBSCRIBE onto the controller's queue rather
+than waiting for the ack, which keeps a Redis round-trip (or a controller
+stalled mid-reconnect) from blocking every other connect and disconnect on the
+pod.
+-}
+joinRoomIn
+  :: (MonadIO m, HasApp m, Ord k)
+  => (App -> MVar (Map k Room))
+  -> (k -> RedisChannel)
+  -> k
+  -> m (Room, Int, Subscriber)
+joinRoomIn roomsOf channelFor key = do
+  app <- getApp
+  liftIO $ modifyMVar (roomsOf app) \rooms -> do
+    (rooms', r) <- ensureRoom app channelFor key rooms
+    (subId, sub) <- subscribeToRoom r
+    pure (rooms', (r, subId, sub))
+
+-- | Look up or create a room. Assumes the caller holds the rooms 'MVar'.
+ensureRoom
+  :: Ord k
+  => App -> (k -> RedisChannel) -> k -> Map k Room -> IO (Map k Room, Room)
+ensureRoom app channelFor key rooms = case Map.lookup key rooms of
+  Just r -> pure (rooms, r)
+  Nothing -> do
+    let chn = channelFor key
+    r <- newRoom chn
+    -- Real traffic counts as proof of life too, so a busy pod never trips
+    -- the stall watchdog even if a heartbeat publish happens to fail.
+    let onMessage m = do
+          markPubSubAlive (appPubSubHealth app)
+          broadcastToRoom r (BSL.fromStrict m)
+    unsub <- case appMessageBroker app of
+      WebSocketBroker -> pure (pure ())
+      RedisBroker _ ctrl -> addChannels ctrl [(chn, onMessage)] []
+    atomically $ writeTVar (roomUnsubscribe r) unsub
+    pure (Map.insert key r rooms, r)
+
+{- | Drop a room once its last WebSocket subscriber has left: remove it from the
+map and tear down its Redis subscription, both under the rooms 'MVar'.
+
+The emptiness check belongs under that lock too. Checking first and deleting
+afterwards leaves a window in which a new connection joins the still-present
+room and is then left holding one whose channel we immediately unsubscribe --
+so it silently never receives another update. Returns whether the room was
+actually released.
+-}
+releaseRoomIfEmpty
+  :: (MonadIO m, HasApp m, Ord k) => (App -> MVar (Map k Room)) -> k -> m Bool
+releaseRoomIfEmpty roomsOf key = do
+  app <- getApp
+  liftIO $ modifyMVar (roomsOf app) \rooms -> case Map.lookup key rooms of
+    Nothing -> pure (rooms, False)
+    Just r -> do
+      n <- roomClientCount r
+      if n > 0
+        then pure (rooms, False)
+        else do
+          tryRedis_ $ join $ readTVarIO (roomUnsubscribe r)
+          pure (Map.delete key rooms, True)
+
+joinEventRoom
+  :: (MonadIO m, HasApp m) => ArkhamEpicEventId -> m (Room, Int, Subscriber)
+joinEventRoom = joinRoomIn appEventRooms eventChannel
+
+releaseEventRoomIfEmpty :: (MonadIO m, HasApp m) => ArkhamEpicEventId -> m Bool
+releaseEventRoomIfEmpty = releaseRoomIfEmpty appEventRooms
 
 lookupEventRoom :: (MonadIO m, HasApp m) => ArkhamEpicEventId -> m (Maybe Room)
 lookupEventRoom eid = do
   roomsVar <- getsApp appEventRooms
   Map.lookup eid <$> liftIO (MVar.readMVar roomsVar)
 
-getRoom :: (MonadIO m, HasApp m) => ArkhamGameId -> m Room
-getRoom gid = do
-  roomsVar <- getsApp appGameRooms
-  liftIO do
-    modifyMVar roomsVar \rooms -> do
-      case Map.lookup gid rooms of
-        Just r -> pure (rooms, r)
-        Nothing -> do
-          r <- newRoom (gameChannel gid)
-          pure (Map.insert gid r rooms, r)
+joinGameRoom :: (MonadIO m, HasApp m) => ArkhamGameId -> m (Room, Int, Subscriber)
+joinGameRoom = joinRoomIn appGameRooms gameChannel
 
-{- | Like 'getRoom' but never creates a Room. Use from the publish path so
-that broadcasting to a game with no listeners doesn't leak an empty
-Room into 'appGameRooms' that nothing will ever clean up.
+releaseGameRoomIfEmpty :: (MonadIO m, HasApp m) => ArkhamGameId -> m Bool
+releaseGameRoomIfEmpty = releaseRoomIfEmpty appGameRooms
+
+{- | Like 'joinGameRoom' but never creates a Room and never subscribes. Use
+from the publish path so that broadcasting to a game with no listeners
+doesn't leak an empty Room into 'appGameRooms' that nothing will ever
+clean up.
 -}
 lookupRoom :: (MonadIO m, HasApp m) => ArkhamGameId -> m (Maybe Room)
 lookupRoom gid = do
@@ -325,6 +412,96 @@ roomHeartbeat app = case appMessageBroker app of
   keepIfActive (gid, room) = do
     n <- roomClientCount room
     pure $ if n > 0 then Just gid else Nothing
+
+{- | Channel every pod subscribes to and publishes a heartbeat on, purely to
+prove the pub/sub path is alive end to end.
+
+This is the one subscription that is never removed: it is registered as an
+initial subscription on the 'PubSubController', so 'pubSubForever' restores
+it on every reconnect and the controller never sits at zero channels.
+-}
+pubSubHealthChannel :: RedisChannel
+pubSubHealthChannel = "arkham:pubsub:health"
+
+-- How often each pod publishes a pub/sub heartbeat.
+pubSubHeartbeatSeconds :: Int
+pubSubHeartbeatSeconds = 20
+
+{- | How long the subscriber socket may go without delivering anything before
+we call it dead and reconnect. Three missed beats, so a slow Redis or a GC
+pause can't trip it. Every pod publishes and every pod is subscribed, so a
+healthy pod sees a beat every 'pubSubHeartbeatSeconds' regardless of how
+quiet the games themselves are.
+-}
+pubSubStaleSeconds :: NominalDiffTime
+pubSubStaleSeconds = 70
+
+-- Cap on the reconnect backoff between 'pubSubForever' attempts.
+pubSubMaxBackoffSeconds :: Int
+pubSubMaxBackoffSeconds = 30
+
+-- An attempt that survived this long is treated as healthy, resetting backoff.
+pubSubHealthyRunSeconds :: NominalDiffTime
+pubSubHealthyRunSeconds = 120
+
+-- | Record that the subscriber socket just delivered something.
+markPubSubAlive :: MonadIO m => TVar UTCTime -> m ()
+markPubSubAlive healthVar = liftIO do
+  now <- getCurrentTime
+  atomically $ writeTVar healthVar now
+
+data PubSubStalled = PubSubStalled
+  deriving stock Show
+  deriving anyclass Exception
+
+{- | Own this pod's single pub/sub subscriber connection.
+
+Two distinct failure modes, and 'pubSubForever' alone survives neither:
+
+* It throws on network death and has to be re-called to resubscribe every
+  channel tracked by the controller (hedis documents exactly this). It used
+  to be forked bare, so a single Redis blip would have silently ended all
+  cross-pod delivery for the remaining life of the pod.
+
+* It does not notice a HALF-OPEN socket. An idle TCP connection dropped by a
+  proxy leaves it blocked in @recv@ forever -- still "connected", delivering
+  nothing, throwing nothing. That is what strands a quiet game: the WebSocket
+  stays healthy (its own ping thread keeps it up) and log lines keep flowing,
+  because those are broadcast in-process, while every GameUpdate -- which
+  travels via Redis -- is silently lost.
+
+So each pod publishes to 'pubSubHealthChannel' over the ordinary connection
+pool, meaning the beat travels the exact route a GameUpdate does, and every
+pod is subscribed to it. If nothing at all arrives on the subscriber socket
+for 'pubSubStaleSeconds', we tear the connection down and reconnect. The beat
+doubles as keepalive traffic, so in the common case the idle drop never
+happens in the first place.
+-}
+pubSubSupervisor :: TVar UTCTime -> Connection -> PubSubController -> IO ()
+pubSubSupervisor healthVar conn ctrl = go 1
+ where
+  go backoff = do
+    markPubSubAlive healthVar
+    startedAt <- getCurrentTime
+    outcome <-
+      try @SomeException
+        $ UA.race_ (pubSubForever conn ctrl (markPubSubAlive healthVar)) watchdog
+    endedAt <- getCurrentTime
+    putStrLn $ case outcome of
+      Left e -> "pubsub subscriber died, reconnecting: " <> show e
+      Right () -> "pubsub subscriber stalled, reconnecting"
+    threadDelay (backoff * 1000000)
+    go
+      $ if diffUTCTime endedAt startedAt > pubSubHealthyRunSeconds
+        then 1
+        else min pubSubMaxBackoffSeconds (backoff * 2)
+
+  watchdog = forever do
+    threadDelay (pubSubHeartbeatSeconds * 1000000)
+    tryRedis_ $ runRedis conn $ publish pubSubHealthChannel "ping"
+    now <- getCurrentTime
+    seen <- readTVarIO healthVar
+    when (diffUTCTime now seen > pubSubStaleSeconds) $ throwIO PubSubStalled
 
 lockGame :: ArkhamGameId -> DB ()
 lockGame gameId = void $ select do

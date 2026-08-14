@@ -18,6 +18,13 @@
 #
 GHC_OPTIONS ?= -j12 +RTS -A128m -n4m -qb0 -qg1 -I0 -RTS
 
+# Extra environment prepended to the dev server's exec line. Empty by default;
+# api.watch.redis uses it to point the app at a Redis instance.
+API_ENV ?=
+
+# Where api.watch.redis looks for Redis. Any hedis-parseable URL works.
+REDIS_CONN ?= redis://localhost:6379
+
 .PHONY: core.watch
 core.watch:
 	cd arkham-api && \
@@ -35,13 +42,48 @@ api.watch:
 	  --interleaved-output \
 	  --file-watch \
 		$(EXTRA_STACK_FLAGS) \
-	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec arkham-api &\"" \
+	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true $(API_ENV) stack exec arkham-api &\"" \
 
 ## Like api.watch, but tees output into a size-capped rolling log
 ## (.claude/build.log at the repo root) so agents can read compile errors.
 .PHONY: api.watch.log
 api.watch.log:
 	$(MAKE) api.watch 2>&1 | scripts/rolling-log.sh ../.claude/build.log
+
+## Like api.watch, but with Redis as the websocket message broker.
+##
+## Without REDIS_CONN the app builds a WebSocketBroker, where publishing a
+## GameUpdate is a direct in-process broadcast to the room. Production always
+## has Redis, so there the update instead makes a round trip out to Redis and
+## back through a subscriber before it reaches any socket. That round trip is
+## the part that can break on its own -- a half-open subscriber socket keeps
+## delivering log lines (broadcast in-process) while every GameUpdate vanishes
+## -- and the default local setup cannot reproduce it at all. Use this target
+## when touching anything on the publish/subscribe path.
+##
+## Needs a Redis on $(REDIS_CONN); docker run --rm -p 6379:6379 redis:7-alpine
+.PHONY: api.watch.redis
+api.watch.redis: redis.check
+	$(MAKE) api.watch API_ENV="REDIS_CONN=$(REDIS_CONN)"
+
+## api.watch.redis + the rolling build log (see api.watch.log).
+.PHONY: api.watch.redis.log
+api.watch.redis.log: redis.check
+	$(MAKE) api.watch.log API_ENV="REDIS_CONN=$(REDIS_CONN)"
+
+## Fail early with a useful message rather than letting checkedConnect throw.
+## Skipped when redis-cli isn't installed, since absence of the CLI says
+## nothing about whether a server is listening.
+.PHONY: redis.check
+redis.check:
+	@if command -v redis-cli >/dev/null 2>&1; then \
+	  redis-cli -u "$(REDIS_CONN)" ping >/dev/null 2>&1 || { \
+	    echo "No Redis answering on $(REDIS_CONN)"; \
+	    echo "Start one with: docker run --rm -p 6379:6379 redis:7-alpine"; \
+	    echo "Or point elsewhere: make api.watch.redis REDIS_CONN=redis://host:port"; \
+	    exit 1; \
+	  }; \
+	fi
 
 .PHONY: api.build
 api.build:

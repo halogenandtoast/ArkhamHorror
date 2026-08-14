@@ -35,6 +35,7 @@ import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result (Success), fromJSON)
 import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.ByteString.Lazy qualified as BSL
+import Data.Time.Clock (UTCTime)
 import Data.Traversable (for)
 import Database.Persist.Sql (
   ConnectionPool,
@@ -44,11 +45,8 @@ import Database.Persist.Sql (
  )
 import Database.Redis (
   Connection,
-  MessageCallback,
   PubSubController,
   RedisChannel,
-  addChannels,
-  removeChannels,
  )
 import GHC.Records
 import Network.Bugsnag.Exception (AsException (..))
@@ -75,16 +73,26 @@ data Room = Room
   , roomNextSubId :: TVar Int
   , messageBrokerChannel :: RedisChannel
   , roomLogCache :: TVar (Maybe RoomLogCache)
-  -- ^ In-memory mirror of arkham_log_entries for this game, so updateGame
-  -- doesn't have to re-read the entire log from the DB on every action.
-  -- Validated against the locked game's step on each use; if the step
-  -- doesn't match (another server modified the game), we fall back to
-  -- reading from the DB and refresh the cache.
+  {- ^ In-memory mirror of arkham_log_entries for this game, so updateGame
+  doesn't have to re-read the entire log from the DB on every action.
+  Validated against the locked game's step on each use; if the step
+  doesn't match (another server modified the game), we fall back to
+  reading from the DB and refresh the cache.
+  -}
+  , roomUnsubscribe :: TVar (IO ())
+  {- ^ Tears down this room's single Redis subscription. There is exactly one
+  subscription per channel per pod, owned by the room rather than by any
+  one WebSocket, and it is created and destroyed under the rooms 'MVar'
+  (see 'getRoomIn' / 'releaseRoomIfEmpty') so that "room is in the map"
+  and "channel is subscribed" can never disagree. 'pure ()' when no Redis
+  broker is configured.
+  -}
   }
 
--- | Cache of one game's log entries. 'cacheStep' is the arkham_games.step
--- value at the time we cached. Invalidate (refetch from DB) when the
--- locked game's step doesn't match.
+{- | Cache of one game's log entries. 'cacheStep' is the arkham_games.step
+value at the time we cached. Invalidate (refetch from DB) when the
+locked game's step doesn't match.
+-}
 data RoomLogCache = RoomLogCache
   { cacheStep :: !Int
   , cacheEntries :: ![Text]
@@ -106,7 +114,8 @@ newRoom chn = atomically do
   subs <- newTVar IntMap.empty
   next <- newTVar 0
   cache <- newTVar Nothing
-  pure $ Room subs next chn cache
+  unsub <- newTVar (pure ())
+  pure $ Room subs next chn cache unsub
 
 {- | Register a new WebSocket subscriber on the room. Returns the
 subscription id (used to unsubscribe) and the bounded queue the
@@ -148,20 +157,6 @@ broadcastToRoom room msg = liftIO $ atomically do
 
 data MessageBroker = WebSocketBroker | RedisBroker Connection PubSubController
 
-addChannel :: (MonadIO m, HasApp m) => RedisChannel -> MessageCallback -> m ()
-addChannel chn handleIt = do
-  msgBroker <- getsApp appMessageBroker
-  case msgBroker of
-    WebSocketBroker -> pure ()
-    RedisBroker _ ctrl -> void $ addChannels ctrl [(chn, handleIt)] []
-
-removeChannel :: (MonadIO m, HasApp m) => RedisChannel -> m ()
-removeChannel chn = do
-  msgBroker <- getsApp appMessageBroker
-  case msgBroker of
-    WebSocketBroker -> pure ()
-    RedisBroker _ ctrl -> void $ removeChannels ctrl [chn] []
-
 {- | The foundation datatype for your application. This can be a good place to
 keep settings and values requiring initialization before your application
 starts running, such as database connections. Every handler will have
@@ -176,8 +171,16 @@ data App = App
   , appLogger :: Logger
   , appGameRooms :: !(MVar (Map ArkhamGameId Room))
   , appEventRooms :: !(MVar (Map ArkhamEpicEventId Room))
-  -- ^ Epic Multiplayer: per-event websocket rooms (organizer dashboard feed),
-  -- sibling of 'appGameRooms'.
+  {- ^ Epic Multiplayer: per-event websocket rooms (organizer dashboard feed),
+  sibling of 'appGameRooms'.
+  -}
+  , appPubSubHealth :: !(TVar UTCTime)
+  {- ^ When this pod last saw a message arrive on the pub/sub subscriber
+  socket. A half-open subscriber TCP connection is invisible to hedis --
+  it stays blocked in @recv@ and never throws -- so 'pubSubSupervisor'
+  publishes a heartbeat and watches this timestamp to decide whether the
+  subscription is actually alive. See 'pubSubHealthChannel'.
+  -}
   , appBugsnag :: Bugsnag.Settings
   }
 

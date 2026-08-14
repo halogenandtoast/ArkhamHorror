@@ -91,14 +91,32 @@ import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.), (>=.))
 import Import qualified as P
 import Json
-import Network.WebSockets (ConnectionException)
+import Network.WebSockets (ConnectionException, withPingThread)
 import UnliftIO.Async (async, cancel)
 import UnliftIO.Exception hiding (Handler)
 import UnliftIO.Timeout (timeout)
 import Yesod.WebSockets
 
+{- | How often to ping an idle websocket. Must stay comfortably under Warp's
+'settingsTimeout' (30s by default) -- see 'withKeepAlive'.
+-}
+keepAlivePingSeconds :: Int
+keepAlivePingSeconds = 15
+
+{- | Warp treats a websocket as a raw response and only tickles its idle
+timeout on real socket traffic, so a quiet game (nobody taking a turn) is
+torn down after 'settingsTimeout' seconds and the client silently
+reconnects -- a 30s churn cycle per open tab. A server-side ping well inside
+that window keeps the socket alive, and does the same for any proxy in front
+of it (the Vite dev proxy in development, nginx/CloudFront in production).
+-}
+withKeepAlive :: WebSocketsT Handler a -> WebSocketsT Handler a
+withKeepAlive inner = do
+  conn <- ask
+  withRunInIO \run -> withPingThread conn keepAlivePingSeconds (pure ()) (run inner)
+
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
-gameStream gameId = catchingConnectionException do
+gameStream gameId = catchingConnectionException $ withKeepAlive do
   room <- lift $ getRoom gameId
   broker <- lift $ getsYesod appMessageBroker
   let broadcast = broadcastToRoom room
@@ -178,7 +196,7 @@ with per-game member counting and a log cache.
 -}
 streamRoom
   :: RedisChannel -> Room -> WebSocketsT Handler () -> WebSocketsT Handler ()
-streamRoom channel room onLastLeave = catchingConnectionException do
+streamRoom channel room onLastLeave = catchingConnectionException $ withKeepAlive do
   broker <- lift $ getsYesod appMessageBroker
   let broadcast = broadcastToRoom room
   let cleanup subId = do

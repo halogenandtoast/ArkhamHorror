@@ -27,7 +27,7 @@ import Config
 import Control.Concurrent.MVar (newMVar)
 import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.Bugsnag.Settings qualified as Bugsnag
-import Data.CaseInsensitive (mk)
+import Data.CaseInsensitive (foldCase, mk)
 import Data.Default.Class (def)
 import Data.List (lookup)
 import Data.Text qualified as T
@@ -174,7 +174,22 @@ makeApplication foundation =
 makeMiddleware :: App -> IO Middleware
 makeMiddleware foundation = do
   logWare <- makeLogWare foundation
-  pure $ gzip def . logWare . handleOptions . addCORSHeaders
+  pure $ gzip def . skipWebSocketLogging logWare . handleOptions . addCORSHeaders
+
+{- | Don't run the access logger for websocket upgrades. 'mkRequestLogger' logs
+once @sendResponse@ returns, which for a hijacked connection is when the
+socket *closes*, and a raw response has no HTTP status so every game socket
+shows up as a bogus @500@. Neither is useful, and the game stream is chatty
+enough to bury real requests.
+-}
+skipWebSocketLogging :: Middleware -> Middleware
+skipWebSocketLogging logWare app req sendResponse
+  | isWebSocketUpgrade = app req sendResponse
+  | otherwise = logWare app req sendResponse
+ where
+  isWebSocketUpgrade =
+    maybe False ((== "websocket") . foldCase)
+      $ lookup "Upgrade" (requestHeaders req)
 
 corsResponseHeaders :: ByteString -> [(ByteString, ByteString)]
 corsResponseHeaders origin =

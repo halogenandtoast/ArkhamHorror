@@ -59,6 +59,7 @@ import { useMenu } from '@/composable/menu'
 import useEmitter from '@/composable/useEmitter'
 import { useDebug } from '@/arkham/debug'
 import { cardImg, imgsrc } from '@/arkham/helpers'
+import { cardFaceImages, cardHasDistinctBack } from '@/arkham/cardImages'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
 import * as Arkham from '@/arkham/types/Game'
@@ -1569,12 +1570,41 @@ function preloadImages(game: Arkham.Game): void {
 }
 
 async function loadAllImages(game: Arkham.Game): Promise<void> {
-  const pending: string[] = []
-  for (const card of Object.values(game.cards)) {
+  const cards = Object.values(game.cards)
+  const visibleImages = cards.map((card) => {
     const { cardCode, isFlipped } = toCardContents(card)
-    const url = cardImg(`${cardCode.replace(/^c/, '')}${isFlipped ? 'b' : ''}`)
-    if (!preloaded.has(url) && !preloading.has(url)) pending.push(url)
+    return cardImg(`${cardCode.replace(/^c/, '')}${isFlipped ? 'b' : ''}`)
+  })
+
+  // Start visible art immediately; card definitions may still be loading.
+  const visibleLoad = loadImages(visibleImages)
+  const cardDefs = store.loaded ? store.cards : await store.fetchCards()
+
+  if (cardDefs) {
+    const defsByCode = new Map<string, (typeof cardDefs)[number]>()
+    for (const cardDef of cardDefs) {
+      defsByCode.set(cardDef.cardCode.replace(/^c/, ''), cardDef)
+      defsByCode.set(cardDef.art.replace(/^c/, ''), cardDef)
+    }
+
+    const reverseImages = cards.flatMap((card) => {
+      const cardDef = defsByCode.get(toCardContents(card).cardCode.replace(/^c/, ''))
+      if (!cardDef || !cardHasDistinctBack(cardDef)) return []
+
+      const { front, back } = cardFaceImages(cardDef)
+      return back ? [front, back] : [front]
+    })
+    await Promise.all([visibleLoad, loadImages(reverseImages)])
+    return
   }
+
+  await visibleLoad
+}
+
+async function loadImages(urls: string[]): Promise<void> {
+  const pending = [...new Set(urls)].filter(
+    (url) => !preloaded.has(url) && !preloading.has(url),
+  )
   if (pending.length === 0) return
   pending.forEach((url) => preloading.add(url))
 

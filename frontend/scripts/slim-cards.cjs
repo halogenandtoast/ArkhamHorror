@@ -1,8 +1,8 @@
 // Reads frontend/public/cards_*.json (the full ArkhamDB exports) and writes
 // trimmed copies to frontend/public/cards/cards_*.json containing only the
 // fields the frontend actually consumes (see ArkhamDBCard in
-// src/stores/dbCards.ts). Each output is also pre-compressed to .gz so
-// nginx can serve it via gzip_static.
+// src/stores/dbCards.ts). Each output is also pre-compressed to .gz (served by
+// gzip_static) and .br (served by the Accept-Encoding check in prod.nginxconf).
 //
 // Run after refreshing the source card files:
 //   npm run slim-cards
@@ -11,6 +11,7 @@ const fs = require('fs')
 const path = require('path')
 const zlib = require('zlib')
 const { isCardDataFilename } = require('./card-data-files.cjs')
+const { brotliSync } = require('./precompress.cjs')
 
 const KEEP_FIELDS = [
   'code',
@@ -59,6 +60,7 @@ if (sources.length === 0) {
 let totalIn = 0
 let totalOut = 0
 let totalGz = 0
+let totalBr = 0
 
 for (const file of sources) {
   const src = path.join(publicDir, file)
@@ -78,18 +80,22 @@ for (const file of sources) {
   fs.writeFileSync(dst, json)
   const gz = zlib.gzipSync(json, { level: 9 })
   fs.writeFileSync(dst + '.gz', gz)
+  const br = brotliSync(json)
+  fs.writeFileSync(dst + '.br', br)
 
   const inSize = fs.statSync(src).size
   totalIn += inSize
   totalOut += json.length
   totalGz += gz.length
+  totalBr += br.length
 
   const pct = ((gz.length / inSize) * 100).toFixed(1)
+  const brPct = ((br.length / gz.length) * 100).toFixed(1)
   console.log(
-    `${file}: ${inSize} -> ${json.length} bytes (slim), ${gz.length} bytes (gz, ${pct}% of original)`,
+    `${file}: ${inSize} -> ${json.length} bytes (slim), ${gz.length} bytes (gz, ${pct}% of original), ${br.length} bytes (br, ${brPct}% of gz)`,
   )
 }
 
 console.log(
-  `\nTotal: ${totalIn} -> ${totalOut} bytes (slim), ${totalGz} bytes (gz)`,
+  `\nTotal: ${totalIn} -> ${totalOut} bytes (slim), ${totalGz} bytes (gz), ${totalBr} bytes (br)`,
 )

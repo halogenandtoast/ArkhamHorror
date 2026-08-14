@@ -31,6 +31,21 @@ kubectl -n arkham get pods,svc,hpa
 
 The LB IP is exposed as `load_balancer_ip` once the DigitalOcean LB finishes provisioning. Point your DNS at it.
 
+## HTTP/3
+
+The LB advertises HTTP/3 (QUIC) on UDP 443 alongside the existing HTTPS rule.
+Turn it off with `http3_enabled = false`.
+
+It only covers what the LB itself serves — the frontend bundle and `/api`
+request/response traffic. Two things stay on TCP regardless:
+
+- **The game websocket.** Browsers don't do WebSocket-over-HTTP/3 (RFC 9220
+  extended CONNECT isn't shipped by default), so the `/api` socket keeps using
+  HTTP/1.1 over TLS. Nothing regresses, but the gameplay hot path sees no gain.
+- **Card and location images.** Those come from the `assets.arkhamhorror.app`
+  CloudFront distribution, not this LB. HTTP/3 there is a separate switch
+  (`HttpVersion: http2and3`) and is where the bulk of the bytes actually are.
+
 ## Notes
 
 - The existing AWS Terraform under `infra/terraform/environments/prod/` is unrelated and untouched.

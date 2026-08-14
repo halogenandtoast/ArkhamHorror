@@ -44,4 +44,18 @@ resource "digitalocean_kubernetes_cluster" "arkham" {
   }
 
   tags = local.common_tags
+
+  lifecycle {
+    # auto_upgrade is on, so DO moves the cluster onto newer patch versions on
+    # its own and `version` drifts away from var.k8s_version within weeks. That
+    # attribute forces replacement, so without this the config sits permanently
+    # armed to DESTROY AND RECREATE the production cluster on the next apply
+    # (which also makes every downstream kubernetes_* resource unplannable,
+    # because the endpoint becomes "known after apply").
+    #
+    # var.k8s_version is therefore only the version the cluster is *created*
+    # with. To move an existing cluster deliberately, bump the variable and
+    # temporarily drop `version` from this list.
+    ignore_changes = [version]
+  }
 }

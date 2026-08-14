@@ -28,17 +28,17 @@ import Arkham.Game.Settings (
   AsIfRuling,
   asIfRulingFromStrictAsIfAt,
   defaultAsIfRulingForCampaign,
-  settingsAsIfRuling,
   settingsAchievementsEnabled,
+  settingsAsIfRuling,
   settingsUltimatumsAndBoons,
  )
-import Arkham.UltimatumsAndBoons.Types (UltimatumOrBoon)
 import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Playable (getPlayabilityChecks)
 import Arkham.Id
 import Arkham.Message (Message (HandleOption))
 import Arkham.Queue
 import Arkham.Source
+import Arkham.UltimatumsAndBoons.Types (UltimatumOrBoon)
 import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
 import Conduit
@@ -58,7 +58,7 @@ import Yesod.WebSockets
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
   userId <- getRequestUserId
-  webSockets $ gameStream gameId
+  webSocketsOptions compressedConnectionOptions $ gameStream gameId
   runDB do
     g <- get404 gameId
     gameLog <- getGameLog gameId Nothing
@@ -79,7 +79,7 @@ getApiV1ArkhamGameR gameId = do
 
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
-  webSockets $ gameStream gameId
+  webSocketsOptions compressedConnectionOptions $ gameStream gameId
   runDB do
     g <- get404 gameId
     let Game {..} = g.currentData
@@ -118,7 +118,8 @@ getApiV1ArkhamGamesR = do
     groupBy p.arkhamGameId
     pure (p.arkhamGameId, countRows @Int)
   let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
-  pure $ map (\g -> toGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
+  pure
+    $ map (\g -> toGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]
@@ -137,8 +138,9 @@ data CreateGamePost = CreateGamePost
   }
   deriving stock (Show, Generic)
 
--- | Hand-written so 'Maybe' fields stay optional and everything else stays
--- required.
+{- | Hand-written so 'Maybe' fields stay optional and everything else stays
+required.
+-}
 instance FromJSON CreateGamePost where
   parseJSON = withObject "CreateGamePost" \o -> do
     deckIds <- o .: "deckIds"
@@ -187,7 +189,6 @@ postApiV1ArkhamGamesR = do
         }
     ag = ArkhamGame campaignName game 0 multiplayerVariant now now
     repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
-
 
   runDB do
     gameId <- insert ag
@@ -268,8 +269,9 @@ postApiV1ArkhamGamePlayabilityR gameId = do
     card <- getCard cid
     let duringTurnWindows = [mkWhen (Window.DuringTurn iid)]
     checks <- getPlayabilityChecks iid (toSource iid) (UnpaidCost NeedsAction) duringTurnWindows card
-    pure PlayabilityResponse
-      { cardId = cid
-      , cardCode = unCardCode (toCardCode card)
-      , checks
-      }
+    pure
+      PlayabilityResponse
+        { cardId = cid
+        , cardCode = unCardCode (toCardCode card)
+        , checks
+        }

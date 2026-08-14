@@ -8,6 +8,8 @@
     "serve": "vite serve",
     "prebuild": "node ./scripts/slim-cards.cjs",
     "build": "vite build",
+    "postbuild": "node ./scripts/precompress.cjs",
+    "precompress": "node ./scripts/precompress.cjs",
     "tc": "vue-tsc --noEmit -p tsconfig.json --composite false",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",

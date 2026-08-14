@@ -294,6 +294,17 @@ resource "kubernetes_deployment" "app" {
   depends_on = [
     kubernetes_secret.app,
   ]
+
+  lifecycle {
+    # `make v2-deploy` ships by pushing :latest and running `kubectl rollout
+    # restart`, which stamps this annotation to force the pull. It isn't in the
+    # config, so Terraform plans to strip it — changing the pod template and
+    # triggering a second, pointless rollout on every apply. Ignore it and the
+    # two tools stop undoing each other.
+    ignore_changes = [
+      spec[0].template[0].metadata[0].annotations["kubectl.kubernetes.io/restartedAt"],
+    ]
+  }
 }
 
 resource "kubernetes_service" "app" {

@@ -91,7 +91,15 @@ import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.), (>=.))
 import Import qualified as P
 import Json
-import Network.WebSockets (ConnectionException, withPingThread)
+-- ConnectionOptions, connectionCompressionOptions and defaultConnectionOptions
+-- come in via the Yesod.WebSockets re-export below.
+import Network.WebSockets (
+  CompressionOptions (PermessageDeflateCompression),
+  ConnectionException,
+  PermessageDeflate (clientNoContextTakeover, pdCompressionLevel, serverNoContextTakeover),
+  defaultPermessageDeflate,
+  withPingThread,
+ )
 import UnliftIO.Async (async, cancel)
 import UnliftIO.Exception hiding (Handler)
 import UnliftIO.Timeout (timeout)
@@ -102,6 +110,40 @@ import Yesod.WebSockets
 -}
 keepAlivePingSeconds :: Int
 keepAlivePingSeconds = 15
+
+{- | Connection options shared by every game and event socket.
+
+A game update is the whole 'PublicGame' -- not a delta -- which on a real
+mid-campaign game measures 57-206 KB of JSON, and it went out uncompressed
+until now. permessage-deflate takes a 206 KB payload to ~33 KB (6.3x).
+Browsers offer the extension on every websocket handshake and negotiate it
+themselves, so this needs no client change.
+
+Context takeover is disabled in both directions. Leaving it on (the library
+default) lets each message compress against the previous one's history, but
+deflate's window is 32 KB while our messages are several times that, so the
+previous message is almost entirely evicted before the next one can reference
+it: measured against a real 206 KB payload, takeover bought a further 2%. The
+cost is a zlib deflate+inflate pair (~400 KB) pinned per connection for the
+life of the socket, which across a few hundred concurrent players is real
+memory against the pod's 2Gi limit. Not a trade worth 2%.
+
+The compression level is 6 rather than the library's 8 for the same reason.
+Compression is per connection, so a four-player table deflates the same state
+four times on every action; on a 206 KB payload level 8 measured 4.0 ms and
+32.6 KB against level 6's 2.4 ms and 33.3 KB.
+-}
+compressedConnectionOptions :: ConnectionOptions
+compressedConnectionOptions =
+  defaultConnectionOptions
+    { connectionCompressionOptions =
+        PermessageDeflateCompression
+          defaultPermessageDeflate
+            { serverNoContextTakeover = True
+            , clientNoContextTakeover = True
+            , pdCompressionLevel = 6
+            }
+    }
 
 {- | Warp treats a websocket as a raw response and only tickles its idle
 timeout on real socket traffic, so a quiet game (nobody taking a turn) is

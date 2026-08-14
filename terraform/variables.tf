@@ -17,9 +17,9 @@ variable "region" {
 }
 
 variable "k8s_version" {
-  description = "DigitalOcean Kubernetes version slug. Use `doctl kubernetes options versions` to list."
+  description = "DigitalOcean Kubernetes version slug used at cluster *creation*. Use `doctl kubernetes options versions` to list. Later drift from DO's auto-upgrade is ignored — see the lifecycle block in cluster.tf."
   type        = string
-  default     = "1.35.1-do.5"
+  default     = "1.35.5-do.2"
 }
 
 variable "node_count" {
@@ -114,6 +114,12 @@ variable "acme_email" {
 
 variable "tls_enabled" {
   description = "Provision a DigitalOcean-managed Let's Encrypt cert and terminate TLS at the LB"
+  type        = bool
+  default     = true
+}
+
+variable "http3_enabled" {
+  description = "Advertise HTTP/3 (QUIC) on UDP 443 at the LB. Requires tls_enabled; the HTTPS rule on 443 stays either way, so clients that can't reach UDP 443 fall back to TCP."
   type        = bool
   default     = true
 }

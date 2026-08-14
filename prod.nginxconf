@@ -1,9 +1,36 @@
 events {}
 
 http {
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
   map $http_upgrade $connection_upgrade {
     default upgrade;
     '' close;
+  }
+
+  # How long each class of asset may be cached.
+  #
+  # Vite emits content-hashed filenames under /assets/, so those bytes can
+  # never change behind a URL — they get a year and `immutable`, which also
+  # tells the browser not to revalidate on reload. Card images are addressed by
+  # card code and are equally stable in practice, but aren't hash-named, so
+  # they get a long TTL without `immutable`.
+  #
+  # Everything else revalidates. index.html especially: it names the hashed
+  # bundles, so a stale copy points at asset URLs that no longer exist.
+  map $uri $cache_control {
+    default            "public, max-age=0, must-revalidate";
+    "~^/assets/"       "public, max-age=31536000, immutable";
+    "~^/img/"          "public, max-age=2592000";
+    "~^/audio/"        "public, max-age=2592000";
+  }
+
+  # Does this client accept brotli? Matched as a whole word so it can't be
+  # fooled by a token like "brotli-ish" or a future "xbr".
+  map $http_accept_encoding $accepts_br {
+    default      0;
+    "~*(^|,)\s*br\s*(;|,|$)" 1;
   }
 
   gzip on;
@@ -30,13 +57,89 @@ http {
     server_name .arkhamhorror.app;
     client_max_body_size 5M;
 
-    location / {
-      root /opt/arkham/src/frontend/dist;
-      include  /etc/nginx/mime.types;
-      try_files $uri $uri/ /index.html;
+    root /opt/arkham/src/frontend/dist;
+
+    # Precompressed static delivery for the two directories the build fully
+    # controls (scripts/precompress.cjs writes a .gz and a .br next to every
+    # file in them). Ubuntu's nginx has no brotli module and nginx.org doesn't
+    # package one, so brotli is served by hand:
+    #
+    #   client accepts br + .br exists -> rewrite to it, tag Content-Encoding
+    #   client accepts gzip            -> gzip_static serves the .gz
+    #   neither                        -> the raw file
+    #
+    # The `-f` test is what makes this safe. Content-Encoding is only ever set
+    # on a request that is actually being answered with the .br file, so a file
+    # the build skipped just falls through to gzip rather than being mislabeled.
+    #
+    # `gzip off` matters here: dynamic gzip would otherwise re-compress the
+    # brotli bytes, because add_header sets Content-Encoding too late in the
+    # filter chain for the gzip module to notice. gzip_static is a separate
+    # module and keeps working with gzip off.
+    #
+    # These are split per extension because after the rewrite the filename ends
+    # in .br, which isn't in mime.types — default_type supplies the real type.
+    location ~* ^/assets/.+\.js$ {
+      default_type application/javascript;
+      gzip off;
+
+      set $br "";
+      if ($accepts_br) { set $br "y"; }
+      if (-f "$request_filename.br") { set $br "${br}f"; }
+      if ($br = "yf") {
+        add_header Cache-Control $cache_control always;
+        add_header Vary "Accept-Encoding" always;
+        add_header Content-Encoding "br" always;
+        rewrite ^(.*)$ $1.br break;
+      }
+
+      add_header Cache-Control $cache_control always;
     }
 
-    location /api {
+    location ~* ^/assets/.+\.css$ {
+      default_type text/css;
+      gzip off;
+
+      set $br "";
+      if ($accepts_br) { set $br "y"; }
+      if (-f "$request_filename.br") { set $br "${br}f"; }
+      if ($br = "yf") {
+        add_header Cache-Control $cache_control always;
+        add_header Vary "Accept-Encoding" always;
+        add_header Content-Encoding "br" always;
+        rewrite ^(.*)$ $1.br break;
+      }
+
+      add_header Cache-Control $cache_control always;
+    }
+
+    # The slimmed card database, ~6 MB of JSON per locale and the single
+    # biggest thing a cold client downloads. Not content-hashed, so it
+    # revalidates via ETag rather than caching immutably.
+    location ~* ^/cards/.+\.json$ {
+      default_type application/json;
+      gzip off;
+
+      set $br "";
+      if ($accepts_br) { set $br "y"; }
+      if (-f "$request_filename.br") { set $br "${br}f"; }
+      if ($br = "yf") {
+        add_header Cache-Control $cache_control always;
+        add_header Vary "Accept-Encoding" always;
+        add_header Content-Encoding "br" always;
+        rewrite ^(.*)$ $1.br break;
+      }
+
+      add_header Cache-Control $cache_control always;
+    }
+
+    location / {
+      try_files $uri $uri/ /index.html;
+      add_header Cache-Control $cache_control always;
+    }
+
+    # ^~ so the regex locations above can't intercept an API path.
+    location ^~ /api {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $http_host;
         proxy_redirect off;
@@ -49,7 +152,7 @@ http {
         add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';
     }
 
-    location /health {
+    location ^~ /health {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $http_host;
         proxy_redirect off;

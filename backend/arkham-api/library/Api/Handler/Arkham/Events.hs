@@ -28,6 +28,7 @@ import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant (MultiplayerVariant (WithFriends))
 import Api.Handler.Arkham.Games.Shared (
   broadcastSharedToEvent,
+  compressedConnectionOptions,
   deleteEventRoom,
   deleteRoom,
   getEventGroupContributions,
@@ -78,7 +79,7 @@ import Database.Persist qualified as P
 import Entity.Arkham.Step (ActionDiff (..), ArkhamStep (..), Choice (..))
 import Import hiding (on, (==.))
 import UnliftIO.Exception (catch)
-import Yesod.WebSockets (WebSocketsT, webSockets)
+import Yesod.WebSockets (WebSocketsT, webSocketsOptions)
 
 -- Request bodies --------------------------------------------------------------
 
@@ -318,7 +319,7 @@ postApiV1ArkhamEventsR = do
 getApiV1ArkhamEventR :: ArkhamEpicEventId -> Handler EventDetails
 getApiV1ArkhamEventR eid = do
   userId <- getRequestUserId
-  webSockets $ eventStream eid
+  webSocketsOptions compressedConnectionOptions $ eventStream eid
   void $ requireEventMember userId eid
   buildEventDetails userId eid
 

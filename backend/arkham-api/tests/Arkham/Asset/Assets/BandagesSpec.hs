@@ -1,6 +1,7 @@
 module Arkham.Asset.Assets.BandagesSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Classes.HasGame (getGame)
 import Arkham.Matcher
 import Arkham.Token qualified as Token
 import TestImport.New
@@ -16,6 +17,16 @@ chooseAssignToInvestigator :: HasCallStack => InvestigatorId -> TestAppT ()
 chooseAssignToInvestigator iid = chooseOptionMatching "assign damage to investigator" \case
   DamageLabel iid' _ -> iid' == iid
   _ -> False
+
+-- The targets currently offered by Bandages' "choose up to N to heal" question.
+offeredHealTargets :: HasCallStack => TestAppT [Target]
+offeredHealTargets = do
+  questionMap <- gameQuestion <$> getGame
+  case mapToList questionMap of
+    [(_, question)] -> case stripQuestionWrappers question of
+      ChooseUpToN _ msgs -> pure [target | TargetLabel target _ <- msgs]
+      other -> error $ "expected a ChooseUpToN of heal targets, got: " <> show other
+    other -> error $ "expected exactly one question, got: " <> show other
 
 spec :: Spec
 spec = describe "Bandages" do
@@ -79,3 +90,31 @@ spec = describe "Bandages" do
     beatCop.damage `shouldReturn` 1
     -- The last supply is spent, so Bandages is discarded.
     assert $ selectNone $ assetIs Assets.bandages
+
+  -- Regression for #5394: when every point is soaked by an Ally the investigator
+  -- takes no damage, so Bandages must not offer to heal damage they were already
+  -- carrying. (The engine used to open a TakeDamage window on the investigator
+  -- for the whole assignment, including the points that landed on the Ally.)
+  it "does not offer to heal an investigator who soaked all the damage onto an Ally" . gameTest $ \self -> do
+    location <- testLocation
+    self `moveTo` location
+    beatCop <- self `putAssetIntoPlay` Assets.beatCop
+
+    -- Pre-existing damage, taken before Bandages is in play so it opens no window.
+    run $ InvestigatorDirectDamage self.id (TestSource mempty) 1 0
+    applyAllDamage
+    self.damage `shouldReturn` 1
+
+    bandages <- self `putAssetIntoPlay` Assets.bandages
+
+    run $ InvestigatorAssignDamage self.id (TestSource mempty) DamageAny 1 0
+    chooseAssignToAsset beatCop
+    applyAllDamage
+
+    useReaction
+    offeredHealTargets `shouldReturn` [AssetTarget beatCop]
+
+    chooseTarget beatCop
+    beatCop.damage `shouldReturn` 0
+    self.damage `shouldReturn` 1
+    bandages.uses `shouldReturn` singletonMap Token.Supply 2

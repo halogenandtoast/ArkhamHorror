@@ -428,8 +428,14 @@ finalizeDeferredDamageAssignment a@InvestigatorAttrs {..} iid source damageStrat
     do
       push $ InvestigatorDirectDamage iid source 1 0
 
-  let totalDamage = length damageTargets
-  let totalHorror = length horrorTargets
+  -- The TakeDamage/TakeHorror windows below report what *this* investigator
+  -- received. Points assigned to an Ally asset (or to another investigator) are
+  -- dealt to that card, not to this investigator, so they must not be counted
+  -- here -- otherwise "after you take damage" reactions fire for damage that was
+  -- soaked away entirely (#5394). The per-recipient DealtDamage/DealtHorror
+  -- windows already carry the full breakdown.
+  let totalDamage = count (== toTarget iid) damageTargets
+  let totalHorror = count (== toTarget iid) horrorTargets
 
   pushAll
     $ placementMessages
@@ -490,8 +496,10 @@ finalizeDamageAssignment a@InvestigatorAttrs {..} iid source damageStrategy dama
     do
       push $ InvestigatorDirectDamage iid source 1 0
 
-  let totalDamage = length damageTargets
-  let totalHorror = length horrorTargets
+  -- See the note in 'finalizeDeferredDamageAssignment': only damage that landed
+  -- on this investigator counts toward their TakeDamage/TakeHorror window.
+  let totalDamage = count (== toTarget iid) damageTargets
+  let totalHorror = count (== toTarget iid) horrorTargets
 
   pushAll
     $ whenPlacedWindowMsg

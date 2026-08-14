@@ -1,5 +1,18 @@
 {
   "heading": "Scenario I-B",
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Waking Nightmare*, *Merging Realities*, *Whispers of Hypnos*, *Locked Doors*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/waking-nightmare.png' /><img src='{setImgPath}/merging-realities.png' /><img src='{setImgPath}/whispers-of-hypnos.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "setEncounterSetsAside": "Set aside each of the following encounter sets: *Agents of Atlach-Nacha* and *Spiders*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/agents-of-atlach-nacha.png' /><img src='{setImgPath}/spiders.png' /></section>",
+    "putLocations": "Put the Waiting Room, Emergency Room, Experimental Therapies Ward, and Records Office into play.",
+    "beginInWaitingRoom": "Each investigator begins in the Waiting Room.",
+    "checkCampaignLog": "Check Campaign Log.",
+    "doctorJoined": "*If Dr. Maheswaran joined the investigation*, put Dr. Shivani Maheswaran into play, under the lead investigator’s control.",
+    "doctorStayed": "*If Dr. Maheswaran stayed with her patients*, set Dr. Shivani Maheswaran aside, out of play.",
+    "setRemainingLocationsAside": "Set each of the remaining locations aside, out of play.",
+    "setCardsAside": "Set the following cards aside, out of play: Randolph Carter *(Chained to the Waking World)*, all 3 of the Outbreak treacheries, and both of the Corrupted Orderly enemies.",
+    "setInfestationBeginsAside": "Set the double-sided The Infestation Begins story card aside, out of play. This story card has a different scenario reference card on its other side and will enter play during the natural course of the scenario.",
+    "buildEncounterDeck": "Shuffle each of the remaining encounter cards together to form the encounter deck."
+  },
   "flavorText": {
     "intro1": {
       "title": "Intro 1",

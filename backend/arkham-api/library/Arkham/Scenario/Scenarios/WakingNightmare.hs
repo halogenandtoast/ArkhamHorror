@@ -10,7 +10,7 @@ import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Agenda
-import Arkham.Helpers.FlavorText (buildFlavor, flavor)
+import Arkham.Helpers.FlavorText (buildFlavor, flavor, li, setup, ul)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
@@ -71,6 +71,19 @@ instance RunMessage WakingNightmare where
           record DrMaheswaranStayedWithHerPatients
       pure s
     Setup -> runScenarioSetup WakingNightmare attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li "setEncounterSetsAside"
+          li.nested "putLocations" $ li "beginInWaitingRoom"
+          li.nested "checkCampaignLog" do
+            li "doctorJoined"
+            li "doctorStayed"
+          li "setRemainingLocationsAside"
+          li "setCardsAside"
+          li "setInfestationBeginsAside"
+          li "buildEncounterDeck"
+
       gather Set.WakingNightmare
       gather Set.MergingRealities
       gather Set.WhispersOfHypnos

@@ -20,7 +20,7 @@ dreamersCurse :: TreacheryCard DreamersCurse
 dreamersCurse = treachery DreamersCurse Cards.dreamersCurse
 
 instance RunMessage DreamersCurse where
-  runMessage msg t@(DreamersCurse attrs) = case msg of
+  runMessage msg t@(DreamersCurse attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       -- can't revelation because we need to update the skills map
       -- push $ revelationSkillTest iid attrs #willpower 5
@@ -43,4 +43,4 @@ instance RunMessage DreamersCurse where
     FailedThisSkillTestBy iid (isSource attrs -> True) (min 3 -> n) -> do
       push $ assignDamage iid attrs n
       pure t
-    _ -> DreamersCurse <$> runMessage msg attrs
+    _ -> DreamersCurse <$> liftRunMessage msg attrs

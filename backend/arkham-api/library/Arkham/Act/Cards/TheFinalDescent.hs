@@ -30,7 +30,7 @@ instance HasAbilities TheFinalDescent where
     ]
 
 instance RunMessage TheFinalDescent where
-  runMessage msg a@(TheFinalDescent attrs) = case msg of
+  runMessage msg a@(TheFinalDescent attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 | onSide A attrs -> do
       push $ advancedWithOther attrs
       pure a
@@ -66,4 +66,4 @@ instance RunMessage TheFinalDescent where
             <> [SetEncounterDeck encounterDeck, SetCardAside laboringGug]
             <> [advanceActDeck attrs]
           pure a
-    _ -> TheFinalDescent <$> runMessage msg attrs
+    _ -> TheFinalDescent <$> liftRunMessage msg attrs

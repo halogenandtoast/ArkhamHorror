@@ -26,9 +26,9 @@ instance HasAbilities EnchantedWoodsGreatStoneCircle where
       [mkAbility attrs 1 $ forced $ RevealLocation #after Anyone $ be attrs]
 
 instance RunMessage EnchantedWoodsGreatStoneCircle where
-  runMessage msg l@(EnchantedWoodsGreatStoneCircle attrs) = case msg of
+  runMessage msg l@(EnchantedWoodsGreatStoneCircle attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       laboringGug <- getSetAsideCard Enemies.laboringGug
       pushM $ createEnemyAt_ laboringGug (toId attrs) Nothing
       pure l
-    _ -> EnchantedWoodsGreatStoneCircle <$> runMessage msg attrs
+    _ -> EnchantedWoodsGreatStoneCircle <$> liftRunMessage msg attrs

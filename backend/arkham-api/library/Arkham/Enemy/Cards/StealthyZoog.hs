@@ -23,4 +23,6 @@ stealthyZoog =
 
 instance RunMessage StealthyZoog where
   runMessage msg (StealthyZoog attrs) =
-    StealthyZoog <$> runMessage msg attrs
+    runQueueT
+      $ StealthyZoog
+      <$> liftRunMessage msg attrs

@@ -52,6 +52,8 @@ const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const toChoiceEntry = (c: Message, idx: number): [Message, number] => [c, idx]
 const questionChoices = computed(() => {
+  if (props.game.question[props.playerId]?.tag === QuestionType.CHOOSE_ONE_WIZARD) return []
+
   const withoutDone = choices.value.map(toChoiceEntry).filter(([choice, _]) => {
     const { tag } = choice
     if (tag === MessageType.ABILITY_LABEL) return !abilityLabelHandledElsewhere(choice)
@@ -80,6 +82,35 @@ const questionChoices = computed(() => {
 const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('choosePaymentAmounts')
 const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
 const question = computed(() => props.game.question[props.playerId])
+const wizardQuestion = computed(() =>
+  question.value?.tag === QuestionType.CHOOSE_ONE_WIZARD ? question.value : null
+)
+const wizardSelectedIndex = ref<number | null>(null)
+const wizardFlavorText = computed(() => {
+  if (!wizardQuestion.value) return null
+  if (wizardSelectedIndex.value === null) return wizardQuestion.value.flavorText
+  return wizardQuestion.value.wizardChoices[wizardSelectedIndex.value]?.flavorText ?? null
+})
+const wizardDisplayChoices = computed<[Message, number][]>(() => {
+  if (!wizardQuestion.value) return []
+  const labels = wizardSelectedIndex.value === null
+    ? wizardQuestion.value.wizardChoices.map((choice) => choice.label)
+    : [wizardQuestion.value.confirmLabel, wizardQuestion.value.backLabel]
+  return labels.map((choiceLabel, index) => [
+    { tag: MessageType.LABEL, label: choiceLabel },
+    index,
+  ])
+})
+const chooseWizard = (index: number) => {
+  if (!wizardQuestion.value) return
+  if (wizardSelectedIndex.value === null) {
+    wizardSelectedIndex.value = index
+  } else if (index === 0) {
+    emit('choose', wizardSelectedIndex.value)
+  } else if (index === 1) {
+    wizardSelectedIndex.value = null
+  }
+}
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 
 // A multi-token reveal opens a separate reaction window for each token. Read the
@@ -550,7 +581,10 @@ onMounted(() => {
 // version or owner changes so an in-progress amount entry is preserved.
 watch(
   [() => props.game.scenarioSteps, () => props.playerId],
-  setInitialAmounts,
+  () => {
+    setInitialAmounts()
+    wizardSelectedIndex.value = null
+  },
 )
 
 const unmetAmountRequirements = computed(() => {
@@ -702,6 +736,27 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
 <template>
   <div class='question-wrapper' data-game-actionable="true">
+    <div v-if="wizardFlavorText" class="wizard-question">
+      <div class="wizard-question__content">
+        <h2
+          v-if="wizardFlavorText.title"
+          v-html="label(wizardFlavorText.title)"
+        ></h2>
+        <div class="wizard-question__body">
+          <FormattedEntry
+            v-for="(paragraph, index) in wizardFlavorText.body"
+            :key="index"
+            :entry="paragraph"
+          />
+        </div>
+      </div>
+      <QuestionChoices
+        :choices="wizardDisplayChoices"
+        :game="game"
+        :playerId="playerId"
+        @choose="chooseWizard"
+      />
+    </div>
     <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
     <div v-if="cardPiles.length > 0" class="cardPiles">
       <div v-for="{pile, index} in cardPiles" :key="index" class="card-pile" @click="choose(index)">
@@ -2028,6 +2083,50 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.wizard-question {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  :deep(.question-choices) {
+    padding: 0;
+  }
+}
+
+.wizard-question__content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  color: var(--neutral-extra-dark);
+  background: linear-gradient(#dfdad8, #c9c4c2);
+  background-image: v-bind(grunge);
+  background-size: cover;
+  border-radius: 5px;
+
+  h2 {
+    margin: 0;
+    padding-bottom: 4px;
+    color: var(--green-title);
+    font-family: Teutonic, "Noto Sans", sans-serif;
+    font-weight: 500;
+    text-align: center;
+    border-bottom: 3px double var(--green-title);
+  }
+}
+
+.wizard-question__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: min(50vh, 480px);
+  overflow-y: auto;
+
+  :deep(p) {
+    margin: 0;
+  }
 }
 
 .question-wrapper:has(.haunted) {

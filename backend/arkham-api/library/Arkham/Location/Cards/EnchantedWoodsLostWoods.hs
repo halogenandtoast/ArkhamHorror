@@ -28,11 +28,11 @@ instance HasAbilities EnchantedWoodsLostWoods where
         ]
 
 instance RunMessage EnchantedWoodsLostWoods where
-  runMessage msg l@(EnchantedWoodsLostWoods attrs) = case msg of
+  runMessage msg l@(EnchantedWoodsLostWoods attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push =<< createCardEffect Cards.enchantedWoodsLostWoods Nothing (toAbilitySource attrs 1) iid
       pure l
-    _ -> EnchantedWoodsLostWoods <$> runMessage msg attrs
+    _ -> EnchantedWoodsLostWoods <$> liftRunMessage msg attrs
 
 newtype EnchantedWoodsLostWoodsEffect = EnchantedWoodsLostWoodsEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
@@ -42,7 +42,7 @@ enchantedWoodsLostWoodsEffect :: EffectArgs -> EnchantedWoodsLostWoodsEffect
 enchantedWoodsLostWoodsEffect = cardEffect EnchantedWoodsLostWoodsEffect Cards.enchantedWoodsLostWoods
 
 instance RunMessage EnchantedWoodsLostWoodsEffect where
-  runMessage msg e@(EnchantedWoodsLostWoodsEffect attrs) = case msg of
+  runMessage msg e@(EnchantedWoodsLostWoodsEffect attrs) = runQueueT $ case msg of
     EndRoundWindow -> do
       pushAll [disable attrs, placeDoomOnAgenda]
       pure e
@@ -52,4 +52,4 @@ instance RunMessage EnchantedWoodsLostWoodsEffect where
     After (MoveTo (moveTarget -> InvestigatorTarget iid)) | attrs.target == toTarget iid -> do
       push $ disable attrs
       pure e
-    _ -> EnchantedWoodsLostWoodsEffect <$> runMessage msg attrs
+    _ -> EnchantedWoodsLostWoodsEffect <$> liftRunMessage msg attrs

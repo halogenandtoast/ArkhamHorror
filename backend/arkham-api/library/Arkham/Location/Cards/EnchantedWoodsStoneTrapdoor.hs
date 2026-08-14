@@ -28,4 +28,6 @@ instance HasModifiersFor EnchantedWoodsStoneTrapdoor where
 
 instance RunMessage EnchantedWoodsStoneTrapdoor where
   runMessage msg (EnchantedWoodsStoneTrapdoor attrs) =
-    EnchantedWoodsStoneTrapdoor <$> runMessage msg attrs
+    runQueueT
+      $ EnchantedWoodsStoneTrapdoor
+      <$> liftRunMessage msg attrs

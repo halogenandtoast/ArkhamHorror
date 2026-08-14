@@ -4,6 +4,7 @@ import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.FlavorText (FlavorTextBuilder, p, setTitle)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
@@ -38,6 +39,14 @@ getIsTheDreamQuest = getIsPartialCampaign TheDreamQuest
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theDreamEaters" a
+
+campaignFlavorText :: HasI18n => Scope -> FlavorTextBuilder ()
+campaignFlavorText entry = scope "theDreamEaters" $ scope "flavorText" $ scope entry $ p "body"
+
+campaignTitledFlavorText :: HasI18n => Scope -> FlavorTextBuilder ()
+campaignTitledFlavorText entry = scope "theDreamEaters" $ scope "flavorText" $ scope entry do
+  setTitle "title"
+  p "body"
 
 placeSwarmCards :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m) => enemy -> Int -> m ()
 placeSwarmCards enemy n = do

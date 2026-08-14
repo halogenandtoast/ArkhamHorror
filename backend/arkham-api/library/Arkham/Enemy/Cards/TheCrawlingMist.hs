@@ -32,4 +32,6 @@ instance HasModifiersFor TheCrawlingMist where
 
 instance RunMessage TheCrawlingMist where
   runMessage msg (TheCrawlingMist attrs) =
-    TheCrawlingMist <$> runMessage msg attrs
+    runQueueT
+      $ TheCrawlingMist
+      <$> liftRunMessage msg attrs

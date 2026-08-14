@@ -19,4 +19,6 @@ instance HasModifiersFor EnchantedWoodsMysticalForest where
 
 instance RunMessage EnchantedWoodsMysticalForest where
   runMessage msg (EnchantedWoodsMysticalForest attrs) =
-    EnchantedWoodsMysticalForest <$> runMessage msg attrs
+    runQueueT
+      $ EnchantedWoodsMysticalForest
+      <$> liftRunMessage msg attrs

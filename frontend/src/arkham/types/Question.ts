@@ -29,6 +29,7 @@ export type Question = QuestionCommon & (
   | PayCostQuestion
   | QuestionWithSource
   | Read
+  | ChooseOneWizard
   | PickSupplies 
   | DropDown 
   | PickScenarioSettings 
@@ -62,6 +63,7 @@ export enum QuestionType {
   PAY_COST_QUESTION = 'PayCostQuestion',
   QUESTION_WITH_SOURCE = 'QuestionWithSource',
   READ = 'Read',
+  CHOOSE_ONE_WIZARD = 'ChooseOneWizard',
   PICK_SUPPLIES = 'PickSupplies',
   PICK_DESTINY = 'PickDestiny',
   DROP_DOWN = 'DropDown',
@@ -136,6 +138,20 @@ export type Read = {
   flavorText: FlavorText
   readChoices: ReadChoices
   readCards: string[] | null;
+}
+
+export type WizardChoice = {
+  label: string
+  flavorText: FlavorText
+  messages: unknown[]
+}
+
+export type ChooseOneWizard = {
+  tag: QuestionType.CHOOSE_ONE_WIZARD
+  flavorText: FlavorText
+  wizardChoices: WizardChoice[]
+  confirmLabel: string
+  backLabel: string
 }
 
 type Supply
@@ -447,6 +463,24 @@ export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
   'Read',
 );
 
+export const chooseOneWizardDecoder: JsonDecoder.Decoder<ChooseOneWizard> = JsonDecoder.object<ChooseOneWizard>(
+  {
+    tag: JsonDecoder.literal(QuestionType.CHOOSE_ONE_WIZARD),
+    flavorText: flavorTextDecoder,
+    wizardChoices: JsonDecoder.array(JsonDecoder.object<WizardChoice>(
+      {
+        label: JsonDecoder.string(),
+        flavorText: flavorTextDecoder,
+        messages: JsonDecoder.array(JsonDecoder.succeed(), 'unknown[]'),
+      },
+      'WizardChoice',
+    ), 'WizardChoice[]'),
+    confirmLabel: JsonDecoder.string(),
+    backLabel: JsonDecoder.string(),
+  },
+  'ChooseOneWizard',
+);
+
 export const pickSuppliesDecoder = JsonDecoder.object<PickSupplies>(
   {
     tag: JsonDecoder.literal(QuestionType.PICK_SUPPLIES),
@@ -596,6 +630,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     payCostQuestionDecoder,
     questionWithSourceDecoder,
     readDecoder,
+    chooseOneWizardDecoder,
     pickSuppliesDecoder,
     pickDestinyDecoder,
     pickCampaignSpecificDecoder,

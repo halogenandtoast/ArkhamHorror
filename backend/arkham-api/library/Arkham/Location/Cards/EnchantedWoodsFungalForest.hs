@@ -4,6 +4,8 @@ module Arkham.Location.Cards.EnchantedWoodsFungalForest (
 )
 where
 
+import Arkham.I18n
+import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
 
 import Arkham.ChaosBag.RevealStrategy
@@ -26,14 +28,14 @@ instance HasAbilities EnchantedWoodsFungalForest where
     withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ForcedAbility $ TurnBegins #when You]
 
 instance RunMessage EnchantedWoodsFungalForest where
-  runMessage msg l@(EnchantedWoodsFungalForest attrs) = case msg of
+  runMessage msg l@(EnchantedWoodsFungalForest attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ RequestChaosTokens (toAbilitySource attrs 1) (Just iid) (Reveal 1) SetAside
       pure l
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
-      player <- getPlayer iid
       when (any ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace) tokens) $ do
         pushAll [assignDamage iid (toAbilitySource attrs 1) 1, LoseActions iid (toAbilitySource attrs 1) 1]
-      push $ chooseOne player [Label "$label.continue" [ResetChaosTokens (toAbilitySource attrs 1)]]
+      chooseOrRunOneM iid $ withI18n $ scope "label" do
+        labeled' "continue" $ push $ ResetChaosTokens (toAbilitySource attrs 1)
       pure l
-    _ -> EnchantedWoodsFungalForest <$> runMessage msg attrs
+    _ -> EnchantedWoodsFungalForest <$> liftRunMessage msg attrs

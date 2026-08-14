@@ -16,13 +16,14 @@ zoogBurrow :: TreacheryCard ZoogBurrow
 zoogBurrow = treachery ZoogBurrow Cards.zoogBurrow
 
 instance RunMessage ZoogBurrow where
-  runMessage msg t@(ZoogBurrow attrs) = case msg of
+  runMessage msg t@(ZoogBurrow attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
       push $ revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      zoogs <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm
+      zoogs <-
+        select $ NearestEnemyToFallback iid $ EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm
       if null zoogs
         then push $ findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Zoog
         else do
@@ -30,4 +31,4 @@ instance RunMessage ZoogBurrow where
           lead <- getLead
           push $ chooseOrRunOne player [targetLabel zoog [PlaceSwarmCards lead zoog n] | zoog <- zoogs]
       pure t
-    _ -> ZoogBurrow <$> runMessage msg attrs
+    _ -> ZoogBurrow <$> liftRunMessage msg attrs

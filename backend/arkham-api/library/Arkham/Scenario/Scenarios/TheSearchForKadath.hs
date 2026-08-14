@@ -13,6 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardCode))
 import Arkham.Exception
+import Arkham.Helpers.FlavorText (buildFlavor, flavor)
 import Arkham.Helpers.Modifiers hiding (roundModifier, skillTestModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -28,7 +29,6 @@ import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenarios.TheSearchForKadath.FlavorText
 import Arkham.Scenarios.TheSearchForKadath.Helpers
 import Arkham.Strategy
 import Arkham.Trait (Trait (City))
@@ -94,7 +94,7 @@ readInvestigatorDefeat = do
   defeated <- select DefeatedInvestigator
   unless (null defeated) do
     resigned <- select ResignedInvestigator
-    storyOnly defeated investigatorDefeat
+    storyOnly defeated $ buildFlavor $ scenarioFlavorText "investigatorDefeat"
     for_ defeated $ \iid -> recordForInvestigator iid WasCaptured
     withOwner Assets.randolphCarterExpertDreamer $ \owner -> do
       when ((owner `elem` defeated) && notNull resigned) do
@@ -102,12 +102,12 @@ readInvestigatorDefeat = do
         forceAddCampaignCardToDeckChoice resigned DoNotShuffleIn Assets.randolphCarterExpertDreamer
 
 instance RunMessage TheSearchForKadath where
-  runMessage msg s@(TheSearchForKadath attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheSearchForKadath attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       pure . TheSearchForKadath $ attrs & standaloneCampaignLogL <>~ standaloneCampaignLog
     PreScenarioSetup -> do
-      story intro1
+      flavor $ scenarioFlavorText "intro1"
       blackCatAtYourSide <- getHasRecord TheBlackCatIsAtYourSide
       if blackCatAtYourSide
         then doStep 2 PreScenarioSetup
@@ -116,50 +116,50 @@ instance RunMessage TheSearchForKadath where
           doStep (if withLuke then 3 else 4) PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> do
-      story intro2
+      flavor $ scenarioFlavorText "intro2"
       withLuke <- selectAny $ InvestigatorWithTitle "Luke Robinson"
       doStep (if withLuke then 3 else 4) PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do
-      story intro3
+      flavor $ scenarioFlavorText "intro3"
       parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
       doStep (if parleyed then 5 else 6) PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> do
-      story intro4
+      flavor $ scenarioFlavorText "intro4"
       parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
       doStep (if parleyed then 5 else 6) PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> do
-      storyWithChooseOneM intro5 do
-        labeled "$theDreamEaters.theSearchForKadath.label.leaveEmptyHanded" $ doStep 7 PreScenarioSetup
-        labeled "$theDreamEaters.theSearchForKadath.label.forceIntoTemple" $ doStep 8 PreScenarioSetup
+      storyWithChooseOneM (buildFlavor $ scenarioFlavorText "intro5") do
+        labeled' "label.leaveEmptyHanded" $ doStep 7 PreScenarioSetup
+        labeled' "label.forceIntoTemple" $ doStep 8 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> do
-      story intro6
+      flavor $ scenarioFlavorText "intro6"
       doStep 9 PreScenarioSetup
       pure s
     DoStep 7 PreScenarioSetup -> do
-      story intro7
+      flavor $ scenarioFlavorText "intro7"
       pure s
     DoStep 8 PreScenarioSetup -> do
-      story intro8
+      flavor $ scenarioFlavorText "intro8"
       record TheInvestigatorsForcedTheirWayIntoTheTemple
       doStep 9 PreScenarioSetup
       pure s
     DoStep 9 PreScenarioSetup -> do
       parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
-      story intro9
+      flavor $ scenarioFlavorText "intro9"
       incrementRecordCount EvidenceOfKadath 1
       doStep (if parleyed then 10 else 11) PreScenarioSetup
       pure s
     DoStep 10 PreScenarioSetup -> do
-      story intro10
+      flavor $ scenarioFlavorText "intro10"
       incrementRecordCount EvidenceOfKadath 1
       eachInvestigator \iid -> push $ GainXP iid (toSource attrs) 2
       pure s
     DoStep 11 PreScenarioSetup -> do
-      story intro11
+      flavor $ scenarioFlavorText "intro11"
       pure s
     Setup -> runScenarioSetup TheSearchForKadath attrs do
       gather Set.TheSearchForKadath
@@ -226,7 +226,10 @@ instance RunMessage TheSearchForKadath where
           lift $ roundModifier Cultist lid (ShroudModifier $ if isEasyStandard attrs then 1 else 2)
         Tablet -> do
           chooseOneM iid $ withI18n do
-            numberVar "damage" 1 $ numberVar "horror" 1 $ labeled' "takeDamageAndHorror" $ assignDamageAndHorror iid Tablet 1 1
+            numberVar "damage" 1
+              $ numberVar "horror" 1
+              $ labeled' "takeDamageAndHorror"
+              $ assignDamageAndHorror iid Tablet 1 1
             countVar 1 $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
         _ -> pure ()
       pure s
@@ -242,15 +245,12 @@ instance RunMessage TheSearchForKadath where
       tenebrousNightgaunts <- select $ enemyIs Enemies.tenebrousNightgaunt <> EnemyWithPlacement Unplaced
       when (notNull tenebrousNightgaunts) $ do
         cities <- select $ LocationWithTrait City
-        lead <- getLeadPlayer
-        pushAll $ case cities of
-          [c] -> [PlaceEnemy t $ AtLocation c | t <- tenebrousNightgaunts]
-          _ ->
-            [ Ask lead
-                $ QuestionLabel "$theDreamEaters.theSearchForKadath.label.placeNightgaunt" Nothing
-                $ ChooseOne [targetLabel c [PlaceEnemy t $ AtLocation c] | c <- cities]
-            | t <- tenebrousNightgaunts
-            ]
+        lead <- getLead
+        for_ tenebrousNightgaunts \nightgaunt -> case cities of
+          [location] -> push $ PlaceEnemy nightgaunt $ AtLocation location
+          _ -> chooseOneM lead do
+            questionLabeled' "label.placeNightgaunt"
+            targets cities \location -> push $ PlaceEnemy nightgaunt $ AtLocation location
 
       pure s
     SetScenarioMeta value -> do
@@ -338,13 +338,13 @@ instance RunMessage TheSearchForKadath where
           push $ if anyResigned then R1 else R2
         Resolution n -> do
           let
-            (resolutionText, randolphStatus) = case n of
-              1 -> (resolution1, RandolphEludedCapture)
-              2 -> (resolution2, RandolphWasCaptured)
+            (resolutionKey, randolphStatus) = case n of
+              1 -> ("resolution1", RandolphEludedCapture)
+              2 -> ("resolution2", RandolphWasCaptured)
               other -> throw $ UnknownResolution $ Resolution other
           readInvestigatorDefeat
           evidence <- getSignsOfTheGods
-          story resolutionText
+          flavor $ scenarioFlavorText resolutionKey
           allGainXp attrs
           incrementRecordCount EvidenceOfKadath evidence
           record VirgilWasCaptured

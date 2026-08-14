@@ -60,6 +60,24 @@ spec = do
             $ "stale campaign answer was accepted: "
             <> show messages
 
+  describe "ChooseOneWizard" do
+    it "runs only the finally confirmed choice" . gameTest $ \self -> do
+      pid <- getPlayer (toId self)
+      let question =
+            ChooseOneWizard
+              mempty
+              [ WizardChoice "First" mempty [ClearUI]
+              , WizardChoice "Second" mempty [GameOver]
+              ]
+              "Confirm"
+              "Back"
+      overTest $ \g -> g {gameQuestion = singletonMap pid question}
+
+      game <- getGame
+      liftIO (handleAnswerPure game pid (answerFirstChoice pid)) >>= \case
+        Unhandled reason -> expectationFailure $ "answer rejected: " <> show reason
+        Handled messages -> messages `shouldBe` [Run [ClearUI]]
+
   -- #4787: an after-skill-test AskMap is built from messages already popped off
   -- the queue, so nothing regenerates the seats it publishes. Before Retain, one
   -- player answering discarded every other player's option -- Unrelenting (1)'s

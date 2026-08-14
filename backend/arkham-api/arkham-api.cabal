@@ -2097,7 +2097,6 @@ library
       Arkham.Campaigns.TheCircleUndone.Memento.Helpers
       Arkham.Campaigns.TheDreamEaters.CampaignSteps
       Arkham.Campaigns.TheDreamEaters.ChaosBag
-      Arkham.Campaigns.TheDreamEaters.FlavorText
       Arkham.Campaigns.TheDreamEaters.Helpers
       Arkham.Campaigns.TheDreamEaters.Import
       Arkham.Campaigns.TheDreamEaters.Key
@@ -5747,7 +5746,6 @@ library
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers
-      Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
       Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers
       Arkham.Scenarios.BlackStarsRise.Helpers
       Arkham.Scenarios.BloodOnTheAltar.Helpers
@@ -5835,7 +5833,6 @@ library
       Arkham.Scenarios.TheNightsUsurper.Helpers
       Arkham.Scenarios.ThePallidMask.Helpers
       Arkham.Scenarios.ThePitOfDespair.Helpers
-      Arkham.Scenarios.TheSearchForKadath.FlavorText
       Arkham.Scenarios.TheSearchForKadath.Helpers
       Arkham.Scenarios.TheSecretName.Helpers
       Arkham.Scenarios.TheSilentHeath.Helpers
@@ -5852,7 +5849,6 @@ library
       Arkham.Scenarios.TurnBackTime.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Scenarios.UnionAndDisillusion.Helpers
-      Arkham.Scenarios.WakingNightmare.FlavorText
       Arkham.Scenarios.WakingNightmare.Helpers
       Arkham.Scenarios.WakingNightmare.InfestationBag
       Arkham.Scenarios.WarOfTheOuterGods.Helpers

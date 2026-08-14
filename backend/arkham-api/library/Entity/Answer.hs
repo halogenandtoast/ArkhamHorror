@@ -588,6 +588,9 @@ handleAnswerPure game@Game {..} playerId = \case
     Read t (LeadInvestigatorMustDecide qs) mcs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ Read t (LeadInvestigatorMustDecide qs) mcs]
       Just msg -> [uiToRun msg]
+    ChooseOneWizard flavor qs confirm back -> case qs !!? qrChoice response of
+      Nothing -> [Ask playerId $ f $ ChooseOneWizard flavor qs confirm back]
+      Just WizardChoice {messages} -> [Run messages]
     ChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ ChooseOne qs]
       Just msg -> [uiToRun msg]

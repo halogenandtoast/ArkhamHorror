@@ -27,7 +27,7 @@ instance HasAbilities EnteringTheDreamlands where
   getAbilities _ = []
 
 instance RunMessage EnteringTheDreamlands where
-  runMessage msg a@(EnteringTheDreamlands attrs) = case msg of
+  runMessage msg a@(EnteringTheDreamlands attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ advanceVia #other attrs attrs
       pure a
@@ -42,4 +42,4 @@ instance RunMessage EnteringTheDreamlands where
         $ map (RemoveAllClues (toSource attrs) . toTarget) investigators
         <> [createNasht, createKamanThah, AddChaosToken Skull, advanceActDeck attrs]
       pure a
-    _ -> EnteringTheDreamlands <$> runMessage msg attrs
+    _ -> EnteringTheDreamlands <$> liftRunMessage msg attrs

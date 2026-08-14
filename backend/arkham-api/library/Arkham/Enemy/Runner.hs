@@ -149,6 +149,7 @@ filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
   PayCostQuestion {} -> Just ask'
   QuestionWithSource {} -> Just ask'
   Read {} -> Just ask'
+  ChooseOneWizard {} -> Just ask'
   DropDown {} -> Just ask'
   PickSupplies {} -> Just ask'
   PickDestiny {} -> Just ask'

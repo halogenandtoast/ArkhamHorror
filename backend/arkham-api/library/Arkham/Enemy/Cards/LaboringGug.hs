@@ -24,4 +24,6 @@ instance HasModifiersFor LaboringGug where
 
 instance RunMessage LaboringGug where
   runMessage msg (LaboringGug attrs) =
-    LaboringGug <$> runMessage msg attrs
+    runQueueT
+      $ LaboringGug
+      <$> liftRunMessage msg attrs

@@ -196,6 +196,8 @@ function questionChoices(question: Question): Message[] {
       return questionChoices(question.question);
     case 'Read':
       return question.readChoices.contents;
+    case 'ChooseOneWizard':
+      return question.wizardChoices.map(({ label }) => ({ tag: MessageType.LABEL, label }));
     case 'PickSupplies':
       return question.choices;
     case 'PickDestiny':

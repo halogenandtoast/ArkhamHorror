@@ -153,6 +153,13 @@ data PileCard = PileCard
   }
   deriving stock (Show, Ord, Eq, Data)
 
+data WizardChoice msg = WizardChoice
+  { label :: Text
+  , flavorText :: FlavorText
+  , messages :: [msg]
+  }
+  deriving stock (Show, Ord, Eq, Data)
+
 data PaymentAmountChoice msg = PaymentAmountChoice
   { choiceId :: UUID
   , investigatorId :: InvestigatorId
@@ -221,6 +228,12 @@ data Question msg
     -}
     QuestionWithSource {source :: Source, tooltip :: Maybe Tooltip, question :: Question msg}
   | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg, readCards :: Maybe [CardCode]}
+  | ChooseOneWizard
+      { flavorText :: FlavorText
+      , wizardChoices :: [WizardChoice msg]
+      , confirmLabel :: Text
+      , backLabel :: Text
+      }
   | PickSupplies
       {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg], resupply :: Bool}
   | PickDestiny {drawings :: [DestinyDrawing]}
@@ -296,6 +309,7 @@ concat
   [ deriveJSON defaultOptions ''GameTokenType
   , deriveJSON defaultOptions ''Component
   , deriveJSON defaultOptions ''DestinyDrawing
+  , deriveJSON defaultOptions ''WizardChoice
   , deriveToJSON defaultOptions ''PaymentAmountChoice
   , [d|
       instance FromJSON msg => FromJSON (PaymentAmountChoice msg) where

@@ -7,6 +7,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.GameValue
+import Arkham.Helpers.FlavorText (FlavorTextBuilder, p, setTitle)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message
@@ -20,6 +21,11 @@ import Arkham.Timing (Timing)
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "wakingNightmare" a
+
+scenarioFlavorText :: Scope -> FlavorTextBuilder ()
+scenarioFlavorText entry = scenarioI18n $ scope "flavorText" $ scope entry do
+  setTitle "title"
+  p "body"
 
 pattern InfestedLocation :: LocationMatcher
 pattern InfestedLocation <- (LocationWithDamage (GreaterThan (Static 0)))

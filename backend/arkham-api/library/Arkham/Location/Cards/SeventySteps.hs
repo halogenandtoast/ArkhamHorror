@@ -33,7 +33,7 @@ instance HasAbilities SeventySteps where
       ]
 
 instance RunMessage SeventySteps where
-  runMessage msg l@(SeventySteps attrs) = case msg of
+  runMessage msg l@(SeventySteps attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       handSize <- fieldMap InvestigatorHand length iid
       pushWhen (handSize > 5) $ assignHorror iid (toAbilitySource attrs 1) (handSize - 5)
@@ -41,4 +41,4 @@ instance RunMessage SeventySteps where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ chooseAndDiscardCard iid (toAbilitySource attrs 2)
       pure l
-    _ -> SeventySteps <$> runMessage msg attrs
+    _ -> SeventySteps <$> liftRunMessage msg attrs

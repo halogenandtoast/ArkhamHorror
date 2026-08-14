@@ -30,7 +30,7 @@ instance HasAbilities TheTrialOfNashtAndKamanThah where
   getAbilities _ = []
 
 instance RunMessage TheTrialOfNashtAndKamanThah where
-  runMessage msg a@(TheTrialOfNashtAndKamanThah attrs) = case msg of
+  runMessage msg a@(TheTrialOfNashtAndKamanThah attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ advanceVia #other attrs attrs
       pure a
@@ -48,4 +48,4 @@ instance RunMessage TheTrialOfNashtAndKamanThah where
            , advanceActDeck attrs
            ]
       pure a
-    _ -> TheTrialOfNashtAndKamanThah <$> runMessage msg attrs
+    _ -> TheTrialOfNashtAndKamanThah <$> liftRunMessage msg attrs

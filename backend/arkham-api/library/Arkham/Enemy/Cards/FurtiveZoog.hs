@@ -23,4 +23,6 @@ furtiveZoog =
 
 instance RunMessage FurtiveZoog where
   runMessage msg (FurtiveZoog attrs) =
-    FurtiveZoog <$> runMessage msg attrs
+    runQueueT
+      $ FurtiveZoog
+      <$> liftRunMessage msg attrs

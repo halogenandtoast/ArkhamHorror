@@ -4,7 +4,10 @@ module Arkham.Location.Cards.EnchantedWoodsTheMoonTree (
 )
 where
 
+import Arkham.I18n
+import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
+import Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers
 
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
@@ -25,15 +28,14 @@ instance HasAbilities EnchantedWoodsTheMoonTree where
     withRevealedAbilities a [forcedAbility a 1 $ Enters #after You $ be a]
 
 instance RunMessage EnchantedWoodsTheMoonTree where
-  runMessage msg l@(EnchantedWoodsTheMoonTree attrs) = case msg of
+  runMessage msg l@(EnchantedWoodsTheMoonTree attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       remainingActions <- field InvestigatorRemainingActions iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [Label "$label.takeHorror count=i:2" [assignHorror iid (toAbilitySource attrs 1) 2]]
-        <> [ Label "$theDreamEaters.beyondTheGatesOfSleep.enchantedWoodsTheMoonTree.label.loseAllActions" [SetActions iid (toAbilitySource attrs 1) 0]
-           | remainingActions > 0
-           ]
+      chooseOrRunOneM iid do
+        withI18n $ scope "label" $ countVar 2 do
+          labeled' "takeHorror" $ push $ assignHorror iid (toAbilitySource attrs 1) 2
+        when (remainingActions > 0) do
+          scenarioI18n $ scope "enchantedWoodsTheMoonTree" do
+            labeled' "label.loseAllActions" $ push $ SetActions iid (toAbilitySource attrs 1) 0
       pure l
-    _ -> EnchantedWoodsTheMoonTree <$> runMessage msg attrs
+    _ -> EnchantedWoodsTheMoonTree <$> liftRunMessage msg attrs

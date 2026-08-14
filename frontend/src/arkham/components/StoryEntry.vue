@@ -180,7 +180,10 @@ const flippableCard = (cardCode: string) => {
   <div class="intro-text">
     <div class="entry-row" :class="{ 'task-layout': readChoices.some((choice) => 'label' in choice && !!drownedCityTaskCardCode(choice.label)) }">
       <div class="entry">
-        <h1 v-if="question.flavorText.title">{{maybeFormat(question.flavorText.title)}}</h1>
+        <h1
+          v-if="question.flavorText.title"
+          v-html="formatContent(maybeFormat(question.flavorText.title))"
+        ></h1>
         <section v-if="focusedChaosTokens.length > 0" class="focused-tokens">
           <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
         </section>

@@ -16,7 +16,7 @@ somniphobia :: TreacheryCard Somniphobia
 somniphobia = treachery Somniphobia Cards.somniphobia
 
 instance RunMessage Somniphobia where
-  runMessage msg t@(Somniphobia attrs) = case msg of
+  runMessage msg t@(Somniphobia attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       -- can't revelation because we need to update the skills map
       -- push $ revelationSkillTest iid attrs #willpower 5
@@ -39,4 +39,4 @@ instance RunMessage Somniphobia where
     FailedThisSkillTestBy iid (isSource attrs -> True) (min 3 -> n) -> do
       push $ assignHorror iid attrs n
       pure t
-    _ -> Somniphobia <$> runMessage msg attrs
+    _ -> Somniphobia <$> liftRunMessage msg attrs

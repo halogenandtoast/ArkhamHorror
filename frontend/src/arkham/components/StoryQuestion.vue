@@ -562,17 +562,30 @@ button {
   border: 1px solid var(--select);
 }
 
+.question-content:has(> .scenario-choices) > h2 {
+  color: #f1efe9;
+  font-family: "Noto Sans", sans-serif;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin: 0;
+  padding: 8px 16px;
+  text-align: center;
+}
+
 .scenario-choices {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
-  padding: 20px;
+  padding: 24px;
   max-width: 1000px;
   margin: 0 auto;
 }
 
 .scenario-tile {
   border: 0;
+  margin: 0;
   padding: 0;
   background: var(--neutral-dark);
   border-radius: 12px;
@@ -585,7 +598,7 @@ button {
   display: flex;
   flex-direction: column;
   span {
-    padding: 10px;
+    padding: 12px 16px;
   }
 }
 

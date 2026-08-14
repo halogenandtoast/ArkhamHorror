@@ -560,6 +560,30 @@ investigatorStoryWithChooseOneM' iid builder choices = do
   pid <- getPlayer iid
   playerStoryWithChooseOne pid (buildFlavor builder) choices'
 
+wizardChoice'
+  :: (HasI18n, ReverseQueue m) => Text -> FlavorText -> QueueT Message m () -> m (WizardChoice Message)
+wizardChoice' label flavor action = do
+  messages <- capture action
+  pure $ WizardChoice ("$" <> labelKey label) flavor messages
+
+chooseOneWizard'
+  :: (HasI18n, ReverseQueue m)
+  => InvestigatorId
+  -> FlavorText
+  -> Text
+  -> Text
+  -> [WizardChoice Message]
+  -> m ()
+chooseOneWizard' iid flavor confirm back choices = do
+  pid <- getPlayer iid
+  push
+    $ Msg.Ask pid
+    $ ChooseOneWizard
+      flavor
+      choices
+      ("$" <> labelKey confirm)
+      ("$" <> labelKey back)
+
 playerStoryWithChooseOneM'
   :: ReverseQueue m => PlayerId -> FlavorTextBuilder () -> ChooseT m a -> m ()
 playerStoryWithChooseOneM' pid builder choices = do

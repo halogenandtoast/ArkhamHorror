@@ -6,6 +6,7 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Taboo
 import Arkham.Trait (Trait (Ritual, Spell))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -20,12 +21,13 @@ spiritualEcho2 = event SpiritualEcho2 Cards.spiritualEcho2
 instance HasAbilities SpiritualEcho2 where
   getAbilities (SpiritualEcho2 a) = case a.attachedTo.location of
     Just lid ->
-      [ restricted a 1 OwnsThis
+      [ (if tabooed TabooList25 a then playerLimit PerRound else id)
+          $ restricted a 1 OwnsThis
           $ freeReaction
           $ ActivateAbility #after You
           $ AssetAbility (hasAnyTrait [Spell, Ritual])
           <> oneOf [#action, #fast]
-          <> PerformableAbility [AsIfAt lid]
+          <> PerformableAbility [AsIfAt lid, IgnoreActionCost]
       ]
     Nothing -> []
 
@@ -40,12 +42,6 @@ instance RunMessage SpiritualEcho2 where
       withLocationOf iid $ place attrs . AttachedToLocation
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 ws@(toOriginalAbility -> ability) _ -> do
-      -- Perform the echoed ability, then return Spiritual Echo to hand (printed order).
-      -- While the copy resolves the event is still in play and the copied ability opens
-      -- its own "after you activate" window; without a guard Spiritual Echo's reaction
-      -- would be offered again on its own echo and queue a second ReturnToHand for an
-      -- event that's already gone (crash, issue #4941). Suppressing this event's own
-      -- ability for the duration keeps it single-use while preserving the order.
       case attrs.attachedTo.location of
         Just lid ->
           temporaryModifiers
@@ -54,6 +50,8 @@ instance RunMessage SpiritualEcho2 where
             [AsIfAt lid, CannotTriggerAbilityMatching (AbilityIs (toSource attrs) 1)]
             do push $ UseAbility iid (ignoreActionCost ability) ws
         _ -> pure ()
-      returnToHand iid attrs
+      if tabooed TabooList25 attrs
+        then atEndOfTurn attrs iid $ returnToHand iid attrs
+        else returnToHand iid attrs
       pure e
     _ -> SpiritualEcho2 <$> liftRunMessage msg attrs

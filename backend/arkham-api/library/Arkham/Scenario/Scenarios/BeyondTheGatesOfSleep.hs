@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -26,7 +27,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
+import Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers (scenarioI18n)
 import Arkham.Strategy
 import Arkham.Trait (
   Trait (
@@ -89,22 +90,22 @@ data Dream
   deriving stock (Show, Eq, Ord, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-dreamLabel :: Dream -> Text
-dreamLabel = \case
-  GuardianDream -> "Guardian Dream"
-  SeekerDream -> "Seeker Dream"
-  RogueDream -> "Rogue Dream"
-  MysticDream -> "Mystic Dream"
-  SurvivorDream -> "Survivor Dream"
-  CriminalDream -> "Criminal Dream"
-  DrifterDream -> "Drifter Dream"
-  HunterDream -> "Hunter Dream"
-  MedicOrAssistantDream -> "Medic or Assistant Dream"
-  MiskatonicOrScholarDream -> "Miskatonic or Scholar Dream"
-  VeteranDream -> "Veteran Dream"
-  WayfarerDream -> "Wayfarer Dream"
-  NeutralDream1 -> "Neutral Dream 1"
-  NeutralDream2 -> "Neutral Dream 2"
+dreamKey :: Dream -> Text
+dreamKey = \case
+  GuardianDream -> "guardian"
+  SeekerDream -> "seeker"
+  RogueDream -> "rogue"
+  MysticDream -> "mystic"
+  SurvivorDream -> "survivor"
+  CriminalDream -> "criminal"
+  DrifterDream -> "drifter"
+  HunterDream -> "hunter"
+  MedicOrAssistantDream -> "medicOrAssistant"
+  MiskatonicOrScholarDream -> "miskatonicOrScholar"
+  VeteranDream -> "veteran"
+  WayfarerDream -> "wayfarer"
+  NeutralDream1 -> "neutral1"
+  NeutralDream2 -> "neutral2"
 
 dreamEffect :: ReverseQueue m => InvestigatorId -> Dream -> m ()
 dreamEffect iid = \case
@@ -134,25 +135,6 @@ dreamEffect iid = \case
       $ PlayFound iid 1
   NeutralDream1 -> gainResourcesIfCan iid ScenarioSource 2
   NeutralDream2 -> setupModifier ScenarioSource iid $ StartingHand 1
-
-dreamsMap :: Map Dream FlavorText
-dreamsMap =
-  mapFromList
-    [ (GuardianDream, guardianDream)
-    , (SeekerDream, seekerDream)
-    , (RogueDream, rogueDream)
-    , (MysticDream, mysticDream)
-    , (SurvivorDream, survivorDream)
-    , (CriminalDream, criminalDream)
-    , (DrifterDream, drifterDream)
-    , (HunterDream, hunterDream)
-    , (MedicOrAssistantDream, medicOrAssistantDream)
-    , (MiskatonicOrScholarDream, miskatonicOrScholarDream)
-    , (VeteranDream, veteranDream)
-    , (WayfarerDream, wayfarerDream)
-    , (NeutralDream1, neutralDream1)
-    , (NeutralDream2, neutralDream2)
-    ]
 
 classDreams :: ClassSymbol -> [Dream]
 classDreams Guardian = [GuardianDream, NeutralDream1, NeutralDream2]
@@ -191,14 +173,13 @@ instance HasChaosTokenValue BeyondTheGatesOfSleep where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage BeyondTheGatesOfSleep where
-  runMessage msg s@(BeyondTheGatesOfSleep attrs) = runQueueT $ case msg of
+  runMessage msg s@(BeyondTheGatesOfSleep attrs) = runQueueT $ scenarioI18n $ case msg of
     DrawStartingHands -> do
       void $ liftRunMessage msg attrs
       eachInvestigator \iid -> push $ ForInvestigator iid Setup
       pure s
     ForInvestigator i Setup -> do
-      let
-        usedDreams = toResultDefault @[Dream] [] attrs.meta
+      let usedDreams = toResultDefault @[Dream] [] attrs.meta
       investigatorClass <- field InvestigatorClass i
       traits <- field InvestigatorTraits i
 
@@ -206,23 +187,44 @@ instance RunMessage BeyondTheGatesOfSleep where
         allDreams = classDreams investigatorClass <> traitsDreams (toList traits)
         unusedDreams = allDreams \\ usedDreams
         availableDreams = if null unusedDreams then allDreams else unusedDreams
-        chooseDream dream = labeled (dreamLabel dream) do
-          story $ findWithDefault (error "missing dream") dream dreamsMap
-          push $ SetScenarioMeta $ toJSON $ dream : usedDreams
-          dreamEffect i dream
-
-      chooseOneM i do
-        traverse chooseDream availableDreams
+      choices <- for availableDreams \dream ->
+        wizardChoice'
+          ("options." <> dreamKey dream)
+          ( scope ("dreams." <> dreamKey dream)
+              $ buildFlavor
+              $ setTitle "title"
+              >> ul (li.nested "body" $ li "effect")
+          )
+          do
+            push $ SetScenarioMeta $ toJSON $ dream : usedDreams
+            dreamEffect i dream
+      chooseOneWizard'
+        i
+        (scope "dreamSelection" $ buildFlavor $ setTitle "title" >> p "body")
+        "chooseThisDream"
+        "chooseAnotherDream"
+        choices
       pure s
     StandaloneSetup -> do
       setChaosTokens (initChaosBag TheDreamQuest attrs.difficulty)
       pure s
     Setup -> runScenarioSetup BeyondTheGatesOfSleep attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li "putLocations"
+          li.nested "setCardsAside" $ li "doubleSidedNote"
+          li "setEncounterCardsAside"
+
+      additionalRules "stepsOfSlumber"
+
       startAt =<< place Locations.seventySteps
       place_ Locations.theCavernOfFlame
 
       setAside
-        [ Enemies.nasht
+        [ Assets.randolphCarterExpertDreamer
+        , Enemies.laboringGug
+        , Enemies.nasht
         , Enemies.kamanThah
         , Locations.sevenHundredSteps
         , Locations.baseOfTheSteps
@@ -245,8 +247,8 @@ instance RunMessage BeyondTheGatesOfSleep where
       newWeakness <- genCard =<< getRandomBasicWeakness classSymbol playerCount Nothing
       focusCards cards do
         chooseOneM iid do
-          questionLabeled "$theDreamEaters.beyondTheGatesOfSleep.label.replaceWeaknessQuestion"
-          labeled "$theDreamEaters.beyondTheGatesOfSleep.label.doNotReplace" unfocusCards
+          questionLabeled' "replaceWeaknessQuestion"
+          labeled' "doNotReplace" unfocusCards
           targets cards \card -> do
             unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)
@@ -263,9 +265,8 @@ instance RunMessage BeyondTheGatesOfSleep where
     DoStep n (SearchFound iid (LabeledTarget "Veteran" ScenarioTarget) deck cards) | notNull cards -> do
       focusCards cards do
         chooseOneM iid do
-          questionLabeled
-            (withI18n $ countVar n $ ikey' "theDreamEaters.beyondTheGatesOfSleep.label.chooseUpToTacticSupply")
-          labeled "$theDreamEaters.beyondTheGatesOfSleep.label.doNotTakeAny" unfocusCards
+          countVar n $ questionLabeled' "chooseUpToTacticSupply"
+          labeled' "doNotTakeAny" unfocusCards
           targets cards \card -> do
             unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)

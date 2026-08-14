@@ -10,6 +10,7 @@ import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Agenda
+import Arkham.Helpers.FlavorText (buildFlavor, flavor)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
@@ -18,7 +19,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenarios.WakingNightmare.FlavorText
 import Arkham.Scenarios.WakingNightmare.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Staff))
@@ -57,22 +57,18 @@ instance HasChaosTokenValue WakingNightmare where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage WakingNightmare where
-  runMessage msg s@(WakingNightmare attrs) = runQueueT $ case msg of
+  runMessage msg s@(WakingNightmare attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens $ initChaosBag TheWebOfDreams attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      storyWithChooseOneM intro1 do
-        labeled
-          "Convince Doctor Maheswaran to come with you while you investigate, for her safety and yours."
-          do
-            story intro2
-            record DrMaheswaranJoinedTheInvestigation
-        labeled
-          "Convince Doctor Maheswaran to stay with the patients and keep them safe while you investigate."
-          do
-            story intro3
-            record DrMaheswaranStayedWithHerPatients
+      storyWithChooseOneM (buildFlavor $ scenarioFlavorText "intro1") do
+        labeled' "intro.bringDoctor" do
+          flavor $ scenarioFlavorText "intro2"
+          record DrMaheswaranJoinedTheInvestigation
+        labeled' "intro.leaveDoctor" do
+          flavor $ scenarioFlavorText "intro3"
+          record DrMaheswaranStayedWithHerPatients
       pure s
     Setup -> runScenarioSetup WakingNightmare attrs do
       gather Set.WakingNightmare
@@ -124,7 +120,7 @@ instance RunMessage WakingNightmare where
           steps <- getRecordCount StepsOfTheBridge
           if anyResigned
             then do
-              story noResolution
+              flavor $ scenarioFlavorText "noResolution"
               recordCount StepsOfTheBridge (steps + n)
               record DrMaheswaran'sFateIsUnknown
               record RandolphEscapedTheHospitalOnHisOwn
@@ -137,33 +133,45 @@ instance RunMessage WakingNightmare where
               recordCount StepsOfTheBridge (steps + n)
               push R4
         Resolution 1 -> do
-          story resolution1
+          flavor $ scenarioFlavorText "resolution1"
           record DrMaheswaranIsAlive
           when isFullCampaign $ record TheDreamersGrowWeaker
           record RandolphEscapedTheHospitalWithTheInvestigators
-          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterChainedToTheWakingWorld
+          addCampaignCardToDeckChoice
+            investigators
+            DoNotShuffleIn
+            Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 2 -> do
-          story resolution2
+          flavor $ scenarioFlavorText "resolution2"
           record DrMaheswaranIsMissing
           when isFullCampaign $ record TheDreamersGrowWeaker
           record RandolphEscapedTheHospitalWithTheInvestigators
-          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterChainedToTheWakingWorld
+          addCampaignCardToDeckChoice
+            investigators
+            DoNotShuffleIn
+            Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 3 -> do
-          story resolution3
+          flavor $ scenarioFlavorText "resolution3"
           record DrMaheswaranIsAlive
           record RandolphEscapedTheHospitalWithTheInvestigators
-          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterChainedToTheWakingWorld
+          addCampaignCardToDeckChoice
+            investigators
+            DoNotShuffleIn
+            Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 4 -> do
-          story resolution4
+          flavor $ scenarioFlavorText "resolution4"
           record DrMaheswaranIsMissing
           record RandolphEscapedTheHospitalWithTheInvestigators
-          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterChainedToTheWakingWorld
+          addCampaignCardToDeckChoice
+            investigators
+            DoNotShuffleIn
+            Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 5 -> do
-          story resolution5
+          flavor $ scenarioFlavorText "resolution5"
           allGainXp attrs
           endOfScenario
         _ -> error "Invalid resolution"

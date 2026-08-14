@@ -1,8 +1,5 @@
 module Arkham.Location.Cards.TheEdgeOfTheUniverse (theEdgeOfTheUniverse) where
 
-import Arkham.Ability
-import Arkham.Action qualified as Action
-import Arkham.Actions (actionsToList)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
@@ -13,7 +10,7 @@ import Arkham.Phase
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
   deriving anyclass (IsLocation, RunMessage)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theEdgeOfTheUniverse :: LocationCard TheEdgeOfTheUniverse
 theEdgeOfTheUniverse = location TheEdgeOfTheUniverse Cards.theEdgeOfTheUniverse 2 (PerPlayer 2)
@@ -22,13 +19,7 @@ instance HasModifiersFor TheEdgeOfTheUniverse where
   getModifiersFor (TheEdgeOfTheUniverse a) = do
     phase <- getPhase
     modifySelectWhen a (phase == UpkeepPhase) (investigatorAt a) [CannotDrawCards]
-
--- TODO: This should be some sort of restriction encoded in attrs
-instance HasAbilities TheEdgeOfTheUniverse where
-  getAbilities (TheEdgeOfTheUniverse attrs) = do
-    let actions = getAbilities attrs
-    flip map actions $ \action -> case abilityType action of
-      ActionAbility actions' _ _
-        | Action.Move `elem` actionsToList actions' ->
-            action & abilityCriteriaL <>~ youExist (InvestigatorWithClues (atLeast 2))
-      _ -> action
+    -- "You must have at least 2 clues in order to move to The Edge of the
+    -- Universe." This has to be a modifier rather than criteria on the move
+    -- action, or any other move effect (Safeguard, Elusive, ...) bypasses it.
+    modifySelect a (InvestigatorWithClues $ lessThan 2) [CannotEnter a.id]

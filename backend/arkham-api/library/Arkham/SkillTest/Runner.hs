@@ -701,7 +701,11 @@ instance RunMessage SkillTest where
               other -> other
             _ -> id
 
-      discardMessages <- forMaybeM discards $ \(iid, discard) -> do
+      discardMessages <- forMaybeM discards $ \(committer, discard) -> do
+        -- A committed card returns to its *owner*, not to whoever committed it. These
+        -- differ when an effect lets you commit another investigator's card (e.g. Guided
+        -- by the Unseen (3), which digs into the performing investigator's deck).
+        let iid = fromMaybe committer discard.owner
         mods <- map resultF <$> getModifiers (toCardId discard)
         let mDevourer = listToMaybe [iid' | SetAfterPlay (DevourThis iid') <- mods]
         pure
@@ -711,9 +715,8 @@ instance RunMessage SkillTest where
             | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods ->
                 Just (PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard discard))
             | ReturnToHandAfterTest `elem` mods -> Just $ AddToHand iid [toCard discard]
-            | ShuffleIntoDeckInsteadOfDiscard `elem` mods
-            , Just owner <- discard.owner ->
-                Just $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [toCard discard]
+            | ShuffleIntoDeckInsteadOfDiscard `elem` mods ->
+                Just $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard discard]
             | otherwise -> guard (LeaveCardWhereItIs `notElem` mods) $> AddToDiscard iid discard
 
       modifiers' <- getModifiers (toTarget s)

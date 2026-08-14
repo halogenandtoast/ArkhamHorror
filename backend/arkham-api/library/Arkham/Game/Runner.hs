@@ -1526,19 +1526,18 @@ runGameMessage msg g = case msg of
           _ -> cur
 
         afterPlay = foldl' modifyAfterPlay (skillAfterPlay $ toAttrs skill) mods
+        -- @skillOwner@ is the investigator who committed the card, which is not
+        -- necessarily who owns it (e.g. Guided by the Unseen (3) commits a card out of the
+        -- performing investigator's deck). A committed card always returns to its owner.
+        owner = fromMaybe (skillOwner $ toAttrs skill) card.owner
       pure
         $ if
           | DevourThis iid' <- afterPlay ->
               (Run [ObtainCard (toCard skill).id, Devoured iid' (toCard skill)], Nothing)
           | ReturnToHandAfterTest `elem` mods ->
-              ( ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId)
-              , Nothing
-              )
+              (ReturnToHand owner (SkillTarget skillId), Nothing)
           | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods ->
-              ( PutCardOnBottomOfDeck
-                  (skillOwner $ toAttrs skill)
-                  (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill)
-                  (toCard skill)
+              ( PutCardOnBottomOfDeck owner (Deck.InvestigatorDeck owner) (toCard skill)
               , Just skillId
               )
           | LeaveCardWhereItIs `elem` mods ->
@@ -1546,17 +1545,10 @@ runGameMessage msg g = case msg of
           | CampaignModifier "hollowed" `elem` mods ->
               (RemoveFromGame (SkillTarget skillId), Nothing)
           | ShuffleIntoDeckInsteadOfDiscard `elem` mods ->
-              ( ShuffleIntoDeck
-                  (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill)
-                  (toTarget skill)
-              , Just skillId
-              )
+              (ShuffleIntoDeck (Deck.InvestigatorDeck owner) (toTarget skill), Just skillId)
           | otherwise -> case afterPlay of
               DiscardThis -> case toCard skill of
-                PlayerCard pc ->
-                  ( AddToDiscard (skillOwner $ toAttrs skill) pc
-                  , Just skillId
-                  )
+                PlayerCard pc -> (AddToDiscard owner pc, Just skillId)
                 _ -> error "Unhandled encounter card skill"
               ExileThis -> case toCard skill of
                 PlayerCard _ ->
@@ -1570,11 +1562,9 @@ runGameMessage msg g = case msg of
                 (RemoveFromGame (SkillTarget skillId), Nothing)
               PlaceThisBeneath target -> (Msg.PlaceUnderneath target [toCard skill], Nothing)
               ReturnThisToHand ->
-                (ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId), Nothing)
+                (ReturnToHand owner (SkillTarget skillId), Nothing)
               ShuffleThisBackIntoDeck ->
-                ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
-                , Just skillId
-                )
+                (ShuffleIntoDeck (Deck.InvestigatorDeck owner) (toTarget skill), Just skillId)
               DeferDiscard -> (Noop, Nothing)
 
     -- A committed skill leaving the test must return any chaos tokens it

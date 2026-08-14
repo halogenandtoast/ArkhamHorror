@@ -176,7 +176,7 @@ instance RunMessage BeyondTheGatesOfSleep where
   runMessage msg s@(BeyondTheGatesOfSleep attrs) = runQueueT $ scenarioI18n $ case msg of
     DrawStartingHands -> do
       void $ liftRunMessage msg attrs
-      eachInvestigator \iid -> push $ ForInvestigator iid Setup
+      eachInvestigator (`forInvestigator` Setup)
       pure s
     ForInvestigator i Setup -> do
       let usedDreams = toResultDefault @[Dream] [] attrs.meta
@@ -294,16 +294,17 @@ instance RunMessage BeyondTheGatesOfSleep where
             pushWhen isSwarming $ PlaceSwarmCards iid eid 1
           _ -> pure ()
       pure s
-    ScenarioResolution r -> do
-      record $ case r of
-        NoResolution -> TheInvestigatorsWereSavedByRandolphCarder
-        Resolution 1 -> TheCatsCollectedTheirTributeFromTheZoogs
-        Resolution 2 -> TheInvestigatorsParleyedWithTheZoogs
-        _ -> error "Invalid Resolution"
+    ScenarioResolution r -> scope "resolutions" do
+      let (resolutionKey, campaignRecord) = case r of
+            NoResolution -> ("noResolution", TheInvestigatorsWereSavedByRandolphCarder)
+            Resolution 1 -> ("resolution1", TheCatsCollectedTheirTributeFromTheZoogs)
+            Resolution 2 -> ("resolution2", TheInvestigatorsParleyedWithTheZoogs)
+            _ -> error "Invalid Resolution"
 
+      resolutionWithXp resolutionKey $ allGainXp' attrs
+      record campaignRecord
       investigators <- allInvestigators
       addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterExpertDreamer
-      allGainXp attrs
       endOfScenario
       pure s
     Do (DrawCards _ drawing) | drawing.deck == Deck.EncounterDeck -> do

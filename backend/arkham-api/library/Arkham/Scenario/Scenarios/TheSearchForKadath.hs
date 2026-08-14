@@ -132,8 +132,8 @@ instance RunMessage TheSearchForKadath where
       pure s
     DoStep 5 PreScenarioSetup -> do
       storyWithChooseOneM (buildFlavor $ scenarioFlavorText "intro5") do
-        labeled' "label.leaveEmptyHanded" $ doStep 7 PreScenarioSetup
-        labeled' "label.forceIntoTemple" $ doStep 8 PreScenarioSetup
+        labeled' "leaveEmptyHanded" $ doStep 7 PreScenarioSetup
+        labeled' "forceIntoTemple" $ doStep 8 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> do
       flavor $ scenarioFlavorText "intro6"
@@ -249,7 +249,7 @@ instance RunMessage TheSearchForKadath where
         for_ tenebrousNightgaunts \nightgaunt -> case cities of
           [location] -> push $ PlaceEnemy nightgaunt $ AtLocation location
           _ -> chooseOneM lead do
-            questionLabeled' "label.placeNightgaunt"
+            questionLabeled' "placeNightgaunt"
             targets cities \location -> push $ PlaceEnemy nightgaunt $ AtLocation location
 
       pure s

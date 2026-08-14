@@ -48,6 +48,11 @@ campaignTitledFlavorText entry = scope "theDreamEaters" $ scope "flavorText" $ s
   setTitle "title"
   p "body"
 
+campaignTitledGreenFlavorText :: HasI18n => Scope -> FlavorTextBuilder ()
+campaignTitledGreenFlavorText entry = scope "theDreamEaters" $ scope "flavorText" $ scope entry do
+  setTitle "title"
+  p.green "body"
+
 placeSwarmCards :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m) => enemy -> Int -> m ()
 placeSwarmCards enemy n = do
   lead <- getLead

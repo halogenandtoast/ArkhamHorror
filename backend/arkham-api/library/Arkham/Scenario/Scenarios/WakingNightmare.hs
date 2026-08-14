@@ -110,7 +110,7 @@ instance RunMessage WakingNightmare where
           when (n >= 2) makeInfestationTest
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       investigators <- allInvestigators
       isFullCampaign <- getIsFullCampaign
       case r of
@@ -120,7 +120,7 @@ instance RunMessage WakingNightmare where
           steps <- getRecordCount StepsOfTheBridge
           if anyResigned
             then do
-              flavor $ scenarioFlavorText "noResolution"
+              resolution "noResolution"
               recordCount StepsOfTheBridge (steps + n)
               record DrMaheswaran'sFateIsUnknown
               record RandolphEscapedTheHospitalOnHisOwn
@@ -130,10 +130,11 @@ instance RunMessage WakingNightmare where
                 Assets.randolphCarterChainedToTheWakingWorld
               push R5
             else do
+              resolution "noResolutionDefeated"
               recordCount StepsOfTheBridge (steps + n)
               push R4
         Resolution 1 -> do
-          flavor $ scenarioFlavorText "resolution1"
+          resolution "resolution1"
           record DrMaheswaranIsAlive
           when isFullCampaign $ record TheDreamersGrowWeaker
           record RandolphEscapedTheHospitalWithTheInvestigators
@@ -143,8 +144,10 @@ instance RunMessage WakingNightmare where
             Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 2 -> do
-          flavor $ scenarioFlavorText "resolution2"
+          resolution "resolution2"
           record DrMaheswaranIsMissing
+          lead <- getLead
+          sufferMentalTrauma lead 1
           when isFullCampaign $ record TheDreamersGrowWeaker
           record RandolphEscapedTheHospitalWithTheInvestigators
           addCampaignCardToDeckChoice
@@ -153,7 +156,7 @@ instance RunMessage WakingNightmare where
             Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 3 -> do
-          flavor $ scenarioFlavorText "resolution3"
+          resolution "resolution3"
           record DrMaheswaranIsAlive
           record RandolphEscapedTheHospitalWithTheInvestigators
           addCampaignCardToDeckChoice
@@ -162,17 +165,18 @@ instance RunMessage WakingNightmare where
             Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 4 -> do
-          flavor $ scenarioFlavorText "resolution4"
+          resolution "resolution4"
           record DrMaheswaranIsMissing
-          record RandolphEscapedTheHospitalWithTheInvestigators
+          lead <- getLead
+          sufferMentalTrauma lead 1
+          record RandolphEscapedTheHospitalOnHisOwn
           addCampaignCardToDeckChoice
             investigators
             DoNotShuffleIn
             Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 5 -> do
-          flavor $ scenarioFlavorText "resolution5"
-          allGainXp attrs
+          resolutionWithXp "resolution5" $ allGainXp' attrs
           endOfScenario
         _ -> error "Invalid resolution"
       pure s

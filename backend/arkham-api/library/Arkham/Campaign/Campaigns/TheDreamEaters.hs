@@ -395,6 +395,7 @@ instance RunMessage TheDreamEaters where
               <> [DoneChoosingDecks]
         lift $ defaultCampaignRunner msg c
       CampaignStep (InterludeStep 1 _) -> do
+        flavor $ campaignTitledFlavorText "theBlackCat"
         case campaignMode meta of
           PartialMode TheWebOfDreams -> push $ CampaignStep (InterludeStepPart 1 Nothing 3)
           _ -> push $ CampaignStep (InterludeStepPart 1 Nothing 1)
@@ -441,15 +442,15 @@ instance RunMessage TheDreamEaters where
         flavor $ campaignTitledFlavorText "theBlackCat3"
 
         whenM getIsTheWebOfDreams do
-          flavor $ campaignFlavorText "youAreOnYourOwn"
+          flavor $ campaignTitledGreenFlavorText "youAreOnYourOwn"
           record TheWebOfDreams YouAreOnYourOwn
 
         whenHasRecord TheDreamQuest TheBlackCatSharedKnowledgeOfTheDreamlands do
-          flavor $ campaignFlavorText "theBlackCatSharedKnowledgeOfTheDreamlands"
+          flavor $ campaignTitledGreenFlavorText "theBlackCatSharedKnowledgeOfTheDreamlands"
           recordInBoth TheBlackCatHasAHunch
 
         whenHasRecord TheDreamQuest TheBlackCatDeliveredNewsOfYourPlight do
-          flavor $ campaignFlavorText "theBlackCatDeliveredNewsOfYourPlight"
+          flavor $ campaignTitledGreenFlavorText "theBlackCatDeliveredNewsOfYourPlight"
           pushAll
             [ InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
             , InTheDreamQuest (AddChaosToken ElderThing)
@@ -457,7 +458,7 @@ instance RunMessage TheDreamEaters where
             ]
 
         whenHasRecord TheDreamQuest TheBlackCatWarnedTheOthers do
-          flavor $ campaignFlavorText "theBlackCatWarnedTheOthers"
+          flavor $ campaignTitledGreenFlavorText "theBlackCatWarnedTheOthers"
           pushAll
             [ InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
             , InTheWebOfDreams (AddChaosToken Tablet)
@@ -465,7 +466,7 @@ instance RunMessage TheDreamEaters where
             ]
 
         whenHasRecord TheDreamQuest OkayFineHaveItYourWayThen do
-          flavor $ campaignFlavorText "okayFineHaveItYourWayThen"
+          flavor $ campaignTitledGreenFlavorText "okayFineHaveItYourWayThen"
           recordInBoth YouAskedForIt
         push next
         pure c

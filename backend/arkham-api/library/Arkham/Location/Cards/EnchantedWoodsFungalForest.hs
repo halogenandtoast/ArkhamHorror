@@ -35,7 +35,7 @@ instance RunMessage EnchantedWoodsFungalForest where
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
       when (any ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace) tokens) $ do
         pushAll [assignDamage iid (toAbilitySource attrs 1) 1, LoseActions iid (toAbilitySource attrs 1) 1]
-      chooseOrRunOneM iid $ withI18n $ scope "label" do
+      chooseOrRunOneM iid $ withI18n do
         labeled' "continue" $ push $ ResetChaosTokens (toAbilitySource attrs 1)
       pure l
     _ -> EnchantedWoodsFungalForest <$> liftRunMessage msg attrs

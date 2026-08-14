@@ -96,7 +96,7 @@ import Json
 import Network.WebSockets (
   CompressionOptions (PermessageDeflateCompression),
   ConnectionException,
-  PermessageDeflate (clientNoContextTakeover, pdCompressionLevel, serverNoContextTakeover),
+  PermessageDeflate (pdCompressionLevel),
   defaultPermessageDeflate,
   withPingThread,
  )
@@ -118,31 +118,67 @@ until now. permessage-deflate takes a 206 KB payload to ~33 KB (6.3x).
 Browsers offer the extension on every websocket handshake and negotiate it
 themselves, so this needs no client change.
 
-Context takeover is disabled in both directions. Leaving it on (the library
-default) lets each message compress against the previous one's history, but
-deflate's window is 32 KB while our messages are several times that, so the
-previous message is almost entirely evicted before the next one can reference
-it: measured against a real 206 KB payload, takeover bought a further 2%. The
-cost is a zlib deflate+inflate pair (~400 KB) pinned per connection for the
-life of the socket, which across a few hundred concurrent players is real
-memory against the pod's 2Gi limit. Not a trade worth 2%.
+DO NOT set 'serverNoContextTakeover' (or 'clientNoContextTakeover') here. They
+read like pure memory/ratio knobs and are not: in @websockets@ they select
+between two completely different deflaters.
 
-The compression level is 6 rather than the library's 8 for the same reason.
-Compression is per connection, so a four-player table deflates the same state
-four times on every action; on a 206 KB payload level 8 measured 4.0 ms and
-32.6 KB against level 6's 2.4 ms and 33.3 KB.
+> makeMessageDeflater (Just pmd)
+>     | serverNoContextTakeover pmd = do
+>         return $ \msg -> do
+>             ptr <- initDeflate pmd        -- per MESSAGE
+>             deflateMessageWith (deflateBody ptr) msg
+>     | otherwise = do
+>         ptr <- initDeflate pmd            -- per CONNECTION
+>         return $ \msg -> deflateMessageWith (deflateBody ptr) msg
+
+'initDeflate' is @Zlib.initDeflate level (WindowBits -15)@, a fresh zlib
+arena (~256 KB at level 6 / memLevel 8) malloc'd and initialised. With
+takeover disabled that happens for every outbound frame, on every connection,
+with no minimum-size threshold -- and 'handleMessageLog' broadcasts one frame
+per 'ClientMessage', which during scenario setup is hundreds of ~100 byte log
+lines. Each one paid a 256 KB zlib setup to compress 100 bytes.
+
+That churn is also worse for memory than the thing disabling takeover was
+meant to avoid. Takeover costs a deflate+inflate pair (~400 KB) pinned per
+socket but reused; disabling it allocates and frees ~256 KB per message, as
+foreign memory behind a tiny Haskell object, so the GC has almost no pressure
+signal to run the finalisers promptly. Lower peak, far higher RSS drift -- and
+the HPA scales on memory.
+
+The ratio argument for disabling it was sound but immaterial: deflate's window
+is 32 KB against messages several times that, so the previous message is
+mostly evicted before the next can reference it and takeover bought only ~2%.
+That is a reason not to *expect* much from takeover, not a reason to pay
+per-message zlib setup to avoid it.
+
+Nothing in negotiation re-enables these: @setParam@ only ever sets them from
+the client's offered params, and browsers offer @client_max_window_bits@
+without either takeover flag.
+
+The compression level is 6 rather than the library's 8. Compression is per
+connection, so a four-player table deflates the same state four times on every
+action; on a 206 KB payload level 8 measured 4.0 ms and 32.6 KB against level
+6's 2.4 ms and 33.3 KB.
 -}
 compressedConnectionOptions :: ConnectionOptions
 compressedConnectionOptions =
   defaultConnectionOptions
     { connectionCompressionOptions =
         PermessageDeflateCompression
-          defaultPermessageDeflate
-            { serverNoContextTakeover = True
-            , clientNoContextTakeover = True
-            , pdCompressionLevel = 6
-            }
+          defaultPermessageDeflate {pdCompressionLevel = 6}
     }
+
+{- | 'ConnectionOptions' for a game or event socket, honouring the
+@ARKHAM_WS_COMPRESSION@ kill switch (see 'appWebsocketCompression').
+
+Compression is a per-message CPU and allocation cost on a path that is hard
+to reproduce outside production, so it needs to be switchable there without a
+rebuild: set @ARKHAM_WS_COMPRESSION=false@ and restart to compare.
+-}
+websocketConnectionOptions :: Handler ConnectionOptions
+websocketConnectionOptions = do
+  enabled <- getsYesod $ appWebsocketCompression . appSettings
+  pure $ if enabled then compressedConnectionOptions else defaultConnectionOptions
 
 {- | Warp treats a websocket as a raw response and only tickles its idle
 timeout on real socket traffic, so a quiet game (nobody taking a turn) is

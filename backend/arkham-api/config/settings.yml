@@ -10,3 +10,6 @@ redis-conn: "_env:REDIS_CONN:"
 mailtrap-api-token: "_env:MAILTRAP_API_TOKEN:empty"
 bugsnag-api-token: "_env:BUGSNAG_API_TOKEN:empty"
 asset-host: "_env:ASSET_HOST:"
+# permessage-deflate on the game/event websockets. Kill switch, so a suspected
+# compression regression can be bisected in production with a restart.
+websocket-compression: "_env:ARKHAM_WS_COMPRESSION:true"

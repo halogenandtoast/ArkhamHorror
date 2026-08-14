@@ -943,10 +943,17 @@ const { send, close } = useWebSocket(websocketUrl, {
  * within RESYNC_AFTER_MS we refetch over REST and reconcile. This also covers
  * a reconnect that silently missed updates while the socket was down.
  */
-const RESYNC_AFTER_MS = 5000
-// A slow action (scenario setup can run for seconds) is not a lost one, so a
-// refetch that finds nothing new re-arms rather than giving up immediately.
-// Bounded so an answer that legitimately advances no step can't poll forever.
+/*
+ * Long enough that a healthy-but-slow action never trips it. This is a recovery
+ * path for a broken pub/sub route, not a latency budget: every spurious firing
+ * costs a full fetchGame -- the most expensive endpoint we have -- multiplied by
+ * every client at the table, so erring short turns a rare delivery bug into
+ * steady REST load. Scenario setup alone routinely runs past five seconds.
+ */
+const RESYNC_AFTER_MS = 15000
+// A slow action is not a lost one, so a refetch that finds nothing new re-arms
+// rather than giving up immediately. Bounded so an answer that legitimately
+// advances no step can't poll forever.
 const MAX_RESYNC_ATTEMPTS = 4
 let resyncTimer: number | null = null
 let resyncAttempts = 0

@@ -96,7 +96,8 @@ getActiveGames roomData = runDB do
 
 getApiV1AdminGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1AdminGameR gameId = do
-  webSocketsOptions compressedConnectionOptions $ gameStream gameId
+  wsOptions <- websocketConnectionOptions
+  webSocketsOptions wsOptions $ gameStream gameId
   g <- runDB $ get404 gameId
   let Game {..} = g.currentData
   gameLog <- runDB $ getGameLog gameId Nothing

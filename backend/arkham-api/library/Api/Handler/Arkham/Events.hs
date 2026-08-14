@@ -28,7 +28,6 @@ import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant (MultiplayerVariant (WithFriends))
 import Api.Handler.Arkham.Games.Shared (
   broadcastSharedToEvent,
-  compressedConnectionOptions,
   deleteEventRoom,
   deleteRoom,
   getEventGroupContributions,
@@ -38,6 +37,7 @@ import Api.Handler.Arkham.Games.Shared (
   settleOrganizerAdvance,
   streamRoom,
   swapMainStreetInvestigators,
+  websocketConnectionOptions,
  )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence qualified as Agenda
@@ -318,7 +318,8 @@ postApiV1ArkhamEventsR = do
 getApiV1ArkhamEventR :: ArkhamEpicEventId -> Handler EventDetails
 getApiV1ArkhamEventR eid = do
   userId <- getRequestUserId
-  webSocketsOptions compressedConnectionOptions $ eventStream eid
+  wsOptions <- websocketConnectionOptions
+  webSocketsOptions wsOptions $ eventStream eid
   void $ requireEventMember userId eid
   buildEventDetails userId eid
 

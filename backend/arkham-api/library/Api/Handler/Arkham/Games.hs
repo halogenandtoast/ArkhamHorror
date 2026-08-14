@@ -58,7 +58,8 @@ import Yesod.WebSockets
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
   userId <- getRequestUserId
-  webSocketsOptions compressedConnectionOptions $ gameStream gameId
+  wsOptions <- websocketConnectionOptions
+  webSocketsOptions wsOptions $ gameStream gameId
   runDB do
     g <- get404 gameId
     gameLog <- getGameLog gameId Nothing
@@ -79,7 +80,8 @@ getApiV1ArkhamGameR gameId = do
 
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
-  webSocketsOptions compressedConnectionOptions $ gameStream gameId
+  wsOptions <- websocketConnectionOptions
+  webSocketsOptions wsOptions $ gameStream gameId
   runDB do
     g <- get404 gameId
     let Game {..} = g.currentData

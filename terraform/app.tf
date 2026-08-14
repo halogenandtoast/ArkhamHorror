@@ -363,8 +363,15 @@ resource "kubernetes_deployment" "app" {
     # config, so Terraform plans to strip it — changing the pod template and
     # triggering a second, pointless rollout on every apply. Ignore it and the
     # two tools stop undoing each other.
+    # The HPA owns spec.replicas once it exists, and this resource also declares
+    # it (var.app_replicas). Without ignoring it, every apply scales the
+    # Deployment back down to the baseline and the HPA has to climb out again --
+    # so an apply during load actively re-created the 2-pod condition that made
+    # the 2026-08-15 slowdown possible. app_replicas is the value the Deployment
+    # is CREATED with; app_min_replicas is the floor thereafter.
     ignore_changes = [
       spec[0].template[0].metadata[0].annotations["kubectl.kubernetes.io/restartedAt"],
+      spec[0].replicas,
     ]
   }
 }

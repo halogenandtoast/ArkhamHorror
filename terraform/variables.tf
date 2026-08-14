@@ -59,9 +59,22 @@ variable "app_replicas" {
 }
 
 variable "app_min_replicas" {
-  description = "HPA minimum replicas"
+  description = <<-EOT
+    HPA minimum replicas — and, more importantly, the floor that applies when the
+    HPA is NOT working.
+
+    Raised from 2 to 4 after 2026-08-15. metrics-server was missing, so the HPA
+    failed every evaluation for 13+ days and the Deployment sat at this floor the
+    whole time; 2 pods (x DB_POOL) was a low enough concurrency ceiling that a
+    modest per-action cost increase tipped the site into queueing collapse and
+    30s RunMessagesTimeouts. 4 pods carried above-average load (41 active games)
+    with the busiest pod at ~40% of its CPU limit and no timeouts.
+
+    The HPA is a silent single point of failure, so this floor is the actual
+    safety margin. Keep it at a value measured to carry real traffic on its own.
+  EOT
   type        = number
-  default     = 2
+  default     = 4
 }
 
 variable "app_max_replicas" {

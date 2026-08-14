@@ -16,16 +16,16 @@
   },
   "specialRules": [
     {
-      "title": "@:theScarletKeys.rules.civilians.title",
-      "body": "@:theScarletKeys.rules.civilians.body"
+      "title": "@:theScarletKeys.deadHeat.rules.civilians.title",
+      "body": "@:theScarletKeys.deadHeat.rules.civilians.body"
     },
     {
-      "title": "@:theScarletKeys.rules.choosingARandomLocation.title",
-      "body": "@:theScarletKeys.rules.choosingARandomLocation.body"
+      "title": "@:theScarletKeys.deadHeat.rules.choosingARandomLocation.title",
+      "body": "@:theScarletKeys.deadHeat.rules.choosingARandomLocation.body"
     },
     {
-      "title": "@:theScarletKeys.rules.replacingLocations.title",
-      "body": "@:theScarletKeys.rules.replacingLocations.body"
+      "title": "@:theScarletKeys.deadHeat.rules.replacingLocations.title",
+      "body": "@:theScarletKeys.deadHeat.rules.replacingLocations.body"
     }
   ],
   "tokens": {

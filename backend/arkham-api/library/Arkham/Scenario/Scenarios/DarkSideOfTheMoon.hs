@@ -13,6 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Campaign (getCampaignStoryCard)
+import Arkham.Helpers.FlavorText (additionalRules, li, setup, ul)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
@@ -20,8 +21,8 @@ import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
-import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Log
+import Arkham.Message.Lifted.Move
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (assignEnemyDamage, drawEncounterCard, story)
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
@@ -85,12 +86,30 @@ instance RunMessage DarkSideOfTheMoon where
       whenHasRecord RandolphWasCaptured do
         getCampaignStoryCard Assets.randolphCarterExpertDreamer >>= push . SetAsideCards . pure . toCard
 
-      notCaptured <- selectAny $ not_ (investigatorWithRecord WasCaptured)
+      story $ i18nWithTitle "theDreamEaters.darkSideOfTheMoon.intro"
       captured <- selectAny $ investigatorWithRecord WasCaptured
-      when captured $ story $ i18nWithTitle "theDreamEaters.darkSideOfTheMoon.intro1"
-      when notCaptured $ story $ i18nWithTitle "theDreamEaters.darkSideOfTheMoon.intro2"
+      story
+        $ i18nWithTitle
+        $ if captured
+          then "theDreamEaters.darkSideOfTheMoon.intro1"
+          else "theDreamEaters.darkSideOfTheMoon.intro2"
       pure s
     Setup -> runScenarioSetup DarkSideOfTheMoon attrs do
+      scenarioI18n $ setup do
+        ul do
+          li "gatherSets"
+          li.nested "putLocations" $ li "setOtherLocationsAside"
+          li.nested "checkCaptured" do
+            li "putMoonBeastGalley"
+            li "capturedInvestigatorsBegin"
+            li "otherInvestigatorsBegin"
+          li.nested "checkRandolph" $ li "setRandolphAside"
+          li "setCardsAside"
+          li "placeAlarmLevel"
+          li "buildEncounterDeck"
+
+      scenarioI18n $ additionalRules "alarmLevel"
+
       gather Set.DarkSideOfTheMoon
       gather Set.Corsairs
       gather Set.DreamersCurse
@@ -152,22 +171,20 @@ instance RunMessage DarkSideOfTheMoon where
           lift (assignEnemyDamage (nonAttack (Just iid) ElderThingEffect 2) eid)
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scenarioI18n $ scope "resolutions" do
       case r of
         NoResolution -> do
           lead <- getLead
-          story $ i18n "theDreamEaters.darkSideOfTheMoon.resolutions.noResolution"
+          resolutionWithXp "noResolution" $ allGainXp' attrs
           record TheInvestigatorsWereCarriedToTheColdWastes
           record RandolphCarterDidNotSurviveTheVoyage
           removeCampaignCard Assets.randolphCarterExpertDreamer
           forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Treacheries.falseAwakening
-          allGainXp attrs
           endOfScenario
         Resolution 1 -> do
-          story $ i18n "theDreamEaters.darkSideOfTheMoon.resolutions.resolution1"
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           record TheInvestigatorsTraveledToTheColdWastes
           record RandolphSurvivedTheVoyage
-          allGainXp attrs
           incrementRecordCount EvidenceOfKadath 3
           endOfScenario
         other -> throw $ UnknownResolution other

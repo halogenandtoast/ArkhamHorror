@@ -931,4 +931,58 @@ a.button {
 :deep(div) > :has(.card) {
   flex-shrink: 0;
 }
+
+:deep(.epilogue-table-wrap) {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+:deep(.epilogue-matrix) {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-family: var(--font-family-title);
+  font-size: 0.85em;
+
+  th, td {
+    border: 1px solid rgba(54, 43, 36, 0.35);
+    padding: 10px 12px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  th {
+    background: rgba(54, 43, 36, 0.1);
+    font-weight: 700;
+  }
+
+  tbody th {
+    text-align: left;
+  }
+
+  td {
+    transition: background-color 160ms ease, box-shadow 160ms ease;
+  }
+}
+
+:deep(.epilogue-matrix[data-selected='1'] [data-epilogue='1']),
+:deep(.epilogue-matrix[data-selected='2'] [data-epilogue='2']),
+:deep(.epilogue-matrix[data-selected='3'] [data-epilogue='3']),
+:deep(.epilogue-matrix[data-selected='4'] [data-epilogue='4']),
+:deep(.epilogue-matrix[data-selected='5'] [data-epilogue='5']),
+:deep(.epilogue-matrix[data-selected='6'] [data-epilogue='6']),
+:deep(.epilogue-matrix[data-selected='7'] [data-epilogue='7']),
+:deep(.epilogue-matrix[data-selected='8'] [data-epilogue='8']),
+:deep(.epilogue-matrix[data-selected='9'] [data-epilogue='9']),
+:deep(.epilogue-matrix[data-selected='10'] [data-epilogue='10']),
+:deep(.epilogue-matrix[data-selected='11'] [data-epilogue='11']),
+:deep(.epilogue-matrix[data-selected='12'] [data-epilogue='12']),
+:deep(.epilogue-matrix[data-selected='13'] [data-epilogue='13']),
+:deep(.epilogue-matrix[data-selected='14'] [data-epilogue='14']),
+:deep(.epilogue-matrix[data-selected='15'] [data-epilogue='15']),
+:deep(.epilogue-matrix[data-selected='16'] [data-epilogue='16']) {
+  background: rgba(145, 111, 42, 0.3);
+  box-shadow: inset 0 0 0 2px #795c23;
+  font-weight: 800;
+}
 </style>

@@ -9,6 +9,7 @@ import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText (additionalRules)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
@@ -38,16 +39,16 @@ instance HasAbilities JourneyAcrossTheBridge where
 instance RunMessage JourneyAcrossTheBridge where
   runMessage msg a@(JourneyAcrossTheBridge attrs) = runQueueT $ withI18n $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      story $ i18n "theDreamEaters.weaverOfTheCosmos.theSpiderQueen1"
+      story $ i18nWithTitle "theDreamEaters.weaverOfTheCosmos.theSpiderQueen1"
       survived <- getHasRecord RandolphSurvivedTheDescent
       knowsTheTruth <- getHasRecord TheBlackCatKnowsTheTruth
 
       when (survived && knowsTheTruth) do
-        story $ i18n "theDreamEaters.weaverOfTheCosmos.theSpiderQueen2"
+        story $ i18nWithTitle "theDreamEaters.weaverOfTheCosmos.theSpiderQueen2"
         removeCampaignCard Assets.randolphCarterChainedToTheWakingWorld
 
       when (survived && not knowsTheTruth) do
-        story $ i18n "theDreamEaters.weaverOfTheCosmos.theSpiderQueen3"
+        story $ i18nWithTitle "theDreamEaters.weaverOfTheCosmos.theSpiderQueen3"
         record TheInvestigatorsAreTrappedInAtlachNacha'sRealm
         removeCampaignCard Assets.randolphCarterChainedToTheWakingWorld
         difficulty <- scenarioField ScenarioDifficulty
@@ -57,7 +58,8 @@ instance RunMessage JourneyAcrossTheBridge where
           Hard -> MinusFive
           Expert -> MinusSeven
 
-      story $ i18n "theDreamEaters.weaverOfTheCosmos.theSpiderQueen4"
+      story $ i18nWithTitle "theDreamEaters.weaverOfTheCosmos.theSpiderQueen4"
+      scope "theDreamEaters" $ scope "weaverOfTheCosmos" $ additionalRules "atlachNacha"
 
       notBottom <- select $ not_ (LocationWithLabel "theGreatWeb4")
 

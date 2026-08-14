@@ -10,6 +10,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
+import Arkham.Helpers.FlavorText (li, setup, ul)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
@@ -72,6 +73,7 @@ standaloneChaosTokens =
 instance RunMessage WhereTheGodsDwell where
   runMessage msg s@(WhereTheGodsDwell attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
+      story $ i18nWithTitle "intro"
       carried <- getHasRecord TheInvestigatorsWereCarriedToTheColdWastes
       story $ i18nWithTitle $ if carried then "intro1" else "intro2"
       pure s
@@ -81,6 +83,15 @@ instance RunMessage WhereTheGodsDwell where
       setChaosTokens standaloneChaosTokens
       pure s
     Setup -> runScenarioSetup WhereTheGodsDwell attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li.nested "putLocations" do
+            li "beginAtPlateauOfLeng"
+            li "setForsakenTowersAside"
+          li "setCardsAside"
+          li "buildEncounterDeck"
+
       gather Set.WhereTheGodsDwell
       gather Set.AgentsOfNyarlathotep
       gather Set.DreamersCurse
@@ -141,25 +152,24 @@ instance RunMessage WhereTheGodsDwell where
             $ chooseOne
               iid
               [ targetLabel
-                nyarlathotep
-                [ InitiateEnemyAttack $ enemyAttack nyarlathotep TabletEffect iid
-                , ShuffleBackIntoEncounterDeck GameSource (toTarget nyarlathotep)
-                ]
+                  nyarlathotep
+                  [ InitiateEnemyAttack $ enemyAttack nyarlathotep TabletEffect iid
+                  , ShuffleBackIntoEncounterDeck GameSource (toTarget nyarlathotep)
+                  ]
               | nyarlathotep <- nyarlathoteps
               ]
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          story $ i18n "resolutions.noResolution"
+          resolution "noResolution"
           record Nyarlathotep'sInvasionHasBegun
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 1 -> do
-          story $ i18n "resolutions.resolution1"
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           record TheDreamersEscapedFromNyarlathotep'sGrasp
-          allGainXp attrs
           eachInvestigator (`sufferMentalTrauma` 2)
           lead <- getLead
           knowOfAnotherPath <- getHasRecord TheDreamersKnowOfAnotherPath
@@ -172,9 +182,8 @@ instance RunMessage WhereTheGodsDwell where
                | knowOfAnotherPath
                ]
         Resolution 2 -> do
-          story $ i18n "resolutions.resolution2"
+          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "resolution2" 5
           record TheDreamersBanishedNyarlathotep
-          allGainXpWithBonus attrs $ toBonus "resolution2" 5
           eachInvestigator (`sufferMentalTrauma` 2)
           lead <- getLead
           knowOfAnotherPath <- getHasRecord TheDreamersKnowOfAnotherPath
@@ -187,17 +196,17 @@ instance RunMessage WhereTheGodsDwell where
                | knowOfAnotherPath
                ]
         Resolution 3 -> do
-          story $ i18n "resolutions.resolution3"
+          resolution "resolution3"
           record TheDreamersAwoke
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 4 -> do
-          story $ i18n "resolutions.resolution4"
+          resolution "resolution4"
           record TheDreamersStayedInTheDreamlandsForever
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 5 -> do
-          story $ i18n "resolutions.resolution5"
+          resolution "resolution5"
           record TheDreamersTraveledBeneathTheMonastery
           endOfScenario
         other -> throw $ UnknownResolution other

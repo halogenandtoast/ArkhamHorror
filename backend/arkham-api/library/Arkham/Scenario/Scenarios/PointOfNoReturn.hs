@@ -11,6 +11,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
+import Arkham.Helpers.FlavorText (additionalRules, li, setup, ul)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
@@ -23,6 +24,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (chooseOne, drawCardsIfCan, drawEncounterCard, story)
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.PointOfNoReturn.Helpers (scenarioI18n)
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype PointOfNoReturn = PointOfNoReturn ScenarioAttrs
@@ -76,6 +78,7 @@ standaloneChaosTokens =
 instance RunMessage PointOfNoReturn where
   runMessage msg s@(PointOfNoReturn attrs) = runQueueT $ withI18n $ case msg of
     PreScenarioSetup -> do
+      story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.intro"
       randolphDidNotSurvive <- getHasRecord RandolphDidNotSurviveTheDescent
       if randolphDidNotSurvive
         then story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.intro1"
@@ -86,6 +89,27 @@ instance RunMessage PointOfNoReturn where
       setChaosTokens standaloneChaosTokens
       pure s
     Setup -> runScenarioSetup PointOfNoReturn attrs $ do
+      scenarioI18n $ setup do
+        ul do
+          li "gatherSets"
+          li "setEncounterSetsAside"
+          li.nested "putLocations" do
+            li "beginAtVaultsOfZin"
+            li "setOtherLocationsAside"
+          li "setEnchantedWoodsAside"
+          li "setCardsAside"
+          li.nested "checkAct" do
+            li "useActV1"
+            li "useActV2"
+          li.nested "checkSteps" do
+            li "noSteps"
+            li "oneToFourSteps"
+            li "fiveOrMoreSteps"
+          li "buildEncounterDeck"
+
+      scenarioI18n $ additionalRules "locations"
+      scenarioI18n $ additionalRules "veiled"
+
       gather Set.PointOfNoReturn
       gather Set.CreaturesOfTheUnderworld
       gather Set.WhispersOfHypnos
@@ -158,24 +182,23 @@ instance RunMessage PointOfNoReturn where
           lift $ drawCardsIfCan iid TabletEffect 1
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scenarioI18n $ scope "resolutions" do
       case r of
-        NoResolution -> push R2
+        NoResolution -> do
+          resolution "noResolution"
+          push R2
         Resolution 1 -> do
-          story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.resolutions.resolution1"
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           n <- scenarioCount Distortion
           incrementRecordCount StepsOfTheBridge n
-          allGainXp attrs
           endOfScenario
         Resolution 2 -> do
-          story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.resolutions.resolution2"
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           lead <- getLead
           forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Treacheries.falseAwakening
           n <- scenarioCount Distortion
           incrementRecordCount StepsOfTheBridge n
-          allGainXp attrs
           endOfScenario
-          pure ()
         other -> throw $ UnknownResolution other
       pure s
     _ -> PointOfNoReturn <$> liftRunMessage msg attrs

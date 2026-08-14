@@ -80,18 +80,34 @@ standaloneChaosTokens =
 
 instance RunMessage WeaverOfTheCosmos where
   runMessage msg s@(WeaverOfTheCosmos attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+    PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       record RandolphDidNotSurviveTheDescent
       setChaosTokens standaloneChaosTokens
       pure s
     Setup -> runScenarioSetup WeaverOfTheCosmos attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li.nested "putGreatWebs" do
+            li "beginAtTopmostWeb"
+            li "setOtherWebsAside"
+          li "setCardsAside"
+          li.nested "checkSteps" do
+            li "twoOrFewerSteps"
+            li "threeToFiveSteps"
+            li "sixToEightSteps"
+            li "nineToElevenSteps"
+            li "twelveOrMoreSteps"
+          li "buildEncounterDeck"
+
       gather Set.WeaverOfTheCosmos
       gather Set.AgentsOfAtlachNacha
       gather Set.Spiders
       gather Set.AncientEvils
+      gather Set.ChillingCold
 
       setAgendaDeck [Agendas.theBridgeOfWebs, Agendas.aTrailOfTwists, Agendas.realitiesInterwoven]
       setActDeck [Acts.journeyAcrossTheBridge, Acts.theWeaverOfTheCosmos, Acts.theSchemesDemise]
@@ -177,15 +193,14 @@ instance RunMessage WeaverOfTheCosmos where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          story $ i18nWithTitle "noResolution"
+          resolution "noResolution"
           record TheBridgeWasCompleted
           eachInvestigator $ kill attrs
           whenM getIsTheWebOfDreams $ push GameOver
           endOfScenario
         Resolution 1 -> do
-          resolution "resolution1"
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "resolution1" 5
           record TheBridgeWasDestroyed
-          allGainXpWithBonus attrs $ toBonus "resolution1" 5
           foundAWayOut <- getHasRecord TheInvestigatorsFoundAWayOutOfTheUnderworld
           trapped <- getHasRecord TheInvestigatorsAreTrappedInAtlachNacha'sRealm
           if

@@ -11,6 +11,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
+import Arkham.Helpers.FlavorText (li, setup, ul)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -94,6 +95,13 @@ instance RunMessage AThousandShapesOfHorror where
       setChaosTokens standaloneChaosTokens
       pure s
     Setup -> runScenarioSetup AThousandShapesOfHorror attrs $ do
+      setup do
+        ul do
+          li "gatherSets"
+          li.nested "putLocations" $ li "beginAtBurialGround"
+          li "setCardsAside"
+          li "buildEncounterDeck"
+
       gather Set.AThousandShapesOfHorror
       gather Set.CreaturesOfTheUnderworld
       gather Set.MergingRealities
@@ -157,31 +165,30 @@ instance RunMessage AThousandShapesOfHorror where
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
-        NoResolution -> push R2
+        NoResolution -> do
+          resolution "noResolution"
+          push R2
         Resolution 1 -> do
           investigators <- allInvestigators
-          story $ i18nWithTitle "resolution1"
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           record RandolphSurvivedTheDescent
           record TheInvestigatorsPossessTheSilverKey
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.theSilverKey
-          allGainXp attrs
           addChaosToken Skull
           endOfScenario
         Resolution 2 -> do
           recoveredAStrangeKey <- remembered RecoveredAStrangeKey
-          story $ i18nWithTitle "resolution2"
+          resolution "resolution2"
           push $ if recoveredAStrangeKey then R3 else R4
         Resolution 3 -> do
-          story $ i18nWithTitle "resolution3"
+          resolutionWithXp "resolution3" $ allGainXp' attrs
           record RandolphSurvivedTheDescent
-          allGainXp attrs
           addChaosToken Skull
           endOfScenario
         Resolution 4 -> do
-          story $ i18nWithTitle "resolution4"
+          resolutionWithXp "resolution4" $ allGainXp' attrs
           record RandolphDidNotSurviveTheDescent
           removeCampaignCard Assets.randolphCarterChainedToTheWakingWorld
-          allGainXp attrs
           endOfScenario
         other -> throw $ UnknownResolution other
       pure s

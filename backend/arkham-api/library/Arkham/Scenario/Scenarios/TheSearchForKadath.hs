@@ -13,7 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardCode))
 import Arkham.Exception
-import Arkham.Helpers.FlavorText (buildFlavor, flavor)
+import Arkham.Helpers.FlavorText (additionalRules, buildFlavor, flavor, li, setTitle, setup, ul)
 import Arkham.Helpers.Modifiers hiding (roundModifier, skillTestModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -123,12 +123,14 @@ instance RunMessage TheSearchForKadath where
     DoStep 3 PreScenarioSetup -> do
       flavor $ scenarioFlavorText "intro3"
       parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
-      doStep (if parleyed then 5 else 6) PreScenarioSetup
+      savedByRandolph <- getHasRecord TheInvestigatorsWereSavedByRandolphCarder
+      doStep (if parleyed || savedByRandolph then 5 else 6) PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> do
       flavor $ scenarioFlavorText "intro4"
       parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
-      doStep (if parleyed then 5 else 6) PreScenarioSetup
+      savedByRandolph <- getHasRecord TheInvestigatorsWereSavedByRandolphCarder
+      doStep (if parleyed || savedByRandolph then 5 else 6) PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> do
       storyWithChooseOneM (buildFlavor $ scenarioFlavorText "intro5") do
@@ -162,6 +164,20 @@ instance RunMessage TheSearchForKadath where
       flavor $ scenarioFlavorText "intro11"
       pure s
     Setup -> runScenarioSetup TheSearchForKadath attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li.nested "putLocations" $ li "beginInUlthar"
+          li "setOtherLocationsAside"
+          li "setEnemiesAside"
+          li "spawnVooniths"
+          li "takeControlOfVirgil"
+          li "buildEncounterDeck"
+
+      additionalRules "locations"
+      additionalRules "veiled"
+      additionalRules "swarmingAndVictory"
+
       gather Set.TheSearchForKadath
       gather Set.AgentsOfNyarlathotep
       gather Set.Corsairs
@@ -271,9 +287,18 @@ instance RunMessage TheSearchForKadath where
               [ AbilityLabel leadId (mkAbility (SourceableWithCardCode cc t) 1 $ forced NotAnyWindow) [] [] []
               | (t, cc) <- tenebrousNightgaunts
               ]
+        regionSetup regionKey additionalSteps = scope "regionSetup" $ scope regionKey $ flavor do
+          setTitle "title"
+          ul do
+            li "loseClues"
+            li "removeLocations"
+            li.nested "putLocations" $ li "placeInvestigators"
+            traverse_ li additionalSteps
 
       case region of
         Oriab -> do
+          regionSetup "oriab" ["spawnNightriders", "advanceAct"]
+
           baharna <- placeSetAsideLocation Locations.baharna
           placeSetAsideLocations_ [Locations.mtNgranek, Locations.namelessRuins]
 
@@ -287,6 +312,8 @@ instance RunMessage TheSearchForKadath where
           push $ AdvanceToAct 1 Acts.theIsleOfOriab A (toSource attrs)
           doStep 1 msg
         Mnar -> do
+          regionSetup "mnar" ["spawnBeingsOfIb", "advanceAct"]
+
           kadatheron <- placeSetAsideLocation Locations.kadatheron
           ruinsOfIb <- placeSetAsideLocation Locations.ruinsOfIb
           placeSetAsideLocation_ Locations.sarnath
@@ -300,6 +327,8 @@ instance RunMessage TheSearchForKadath where
           for_ locations removeLocation
           pushAll [AdvanceToAct 1 Acts.theDoomThatCameBefore A (toSource attrs), DoStep 1 msg]
         ForbiddenLands -> do
+          regionSetup "forbiddenLands" ["spawnManticore", "spawnHorde", "advanceAct"]
+
           ilekVad <- placeSetAsideLocation Locations.ilekVad
           forbiddenLands <- placeSetAsideLocation Locations.forbiddenLands
           zulanThek <- placeSetAsideLocation Locations.zulanThek
@@ -315,6 +344,8 @@ instance RunMessage TheSearchForKadath where
           for_ locations removeLocation
           pushAll [AdvanceToAct 1 Acts.seekOutTheNight A (toSource attrs), DoStep 1 msg]
         TimelessRealm -> do
+          regionSetup "timelessRealm" ["shuffleCrawlingMist", "spawnPriests", "advanceAct"]
+
           celephais <- placeSetAsideLocation Locations.celephais
           placeSetAsideLocations_ [Locations.serannian, Locations.hazuthKleg]
 
@@ -331,9 +362,10 @@ instance RunMessage TheSearchForKadath where
           push $ AdvanceToAct 1 Acts.theKingsDecree A (toSource attrs)
           doStep 1 msg
       pure $ TheSearchForKadath $ attrs & metaL .~ toJSON meta'
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
+          resolution "noResolution"
           anyResigned <- selectAny ResignedInvestigator
           push $ if anyResigned then R1 else R2
         Resolution n -> do
@@ -344,8 +376,7 @@ instance RunMessage TheSearchForKadath where
               other -> throw $ UnknownResolution $ Resolution other
           readInvestigatorDefeat
           evidence <- getSignsOfTheGods
-          flavor $ scenarioFlavorText resolutionKey
-          allGainXp attrs
+          resolutionWithXp resolutionKey $ allGainXp' attrs
           incrementRecordCount EvidenceOfKadath evidence
           record VirgilWasCaptured
           record randolphStatus

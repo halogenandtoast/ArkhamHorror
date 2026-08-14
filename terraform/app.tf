@@ -10,6 +10,39 @@ locals {
     digitalocean_database_cluster.redis.private_host,
     digitalocean_database_cluster.redis.port,
   )
+
+  # The app is compiled with `-with-rtsopts=-N` (see arkham-api/package.yaml),
+  # and bare `-N` means "one capability per CPU the kernel reports". A container
+  # under a Kubernetes CPU *limit* is restricted by a CFS quota, not a cpuset, so
+  # the process still SEES every core on the node while only being allowed
+  # limits.cpu worth of runtime. On an s-4vcpu-8gb node with a 2000m limit that is
+  # 4 capabilities inside a 2-core quota.
+  #
+  # The risk is GC: a stop-the-world parallel collection needs every capability to
+  # rendezvous and spin-waits while it does, so once the pod is throttled
+  # mid-collection the unscheduled capabilities stall the rest, process-wide.
+  #
+  # Measured 2026-08-15, this is LATENT, not active -- it was investigated as the
+  # cause of the Aug 14 slowdown and ruled out. On a pod ~21 minutes into its life
+  # /sys/fs/cgroup/cpu.stat read nr_periods 11683, nr_throttled 2,
+  # throttled_usec 4430: 4.4ms of throttling total, against a usage of ~0.88 of the
+  # 2-core quota. The app does not get near its ceiling, so the extra capabilities
+  # cost nothing today. Matching -N to the quota is cheap correctness for the day
+  # that changes -- do not cite it as a fix for a latency problem without
+  # re-reading nr_throttled first.
+  #
+  # Keep this expression tied to var.app_cpu_limit; the two drifting apart is the bug.
+  app_cpu_limit_millicores = (
+    endswith(var.app_cpu_limit, "m")
+    ? tonumber(trimsuffix(var.app_cpu_limit, "m"))
+    : tonumber(var.app_cpu_limit) * 1000
+  )
+
+  # Floor, and never below 1: a fractional limit still needs one capability, and
+  # -N0 is rejected by the RTS.
+  app_rts_capabilities = max(1, floor(local.app_cpu_limit_millicores / 1000))
+
+  app_ghc_rts = trimspace("-N${local.app_rts_capabilities} ${var.app_rts_extra_flags}")
 }
 
 resource "kubernetes_namespace" "arkham" {
@@ -209,6 +242,35 @@ resource "kubernetes_deployment" "app" {
             value = var.asset_host
           }
 
+          # GHCRTS is honoured because the binary is built with -rtsopts, and it
+          # is applied AFTER the baked-in -with-rtsopts, so it wins. See
+          # local.app_ghc_rts for why -N must not be left to the RTS to guess.
+          env {
+            name  = "GHCRTS"
+            value = local.app_ghc_rts
+          }
+
+          # Postgres connections per pod. Without this the app falls back to the
+          # `database-pool-size` default of 10 in arkham-api/config/settings.yml,
+          # which was never a deliberate production choice. Every action holds a
+          # transaction (and a FOR UPDATE lock on the game row) for the whole of
+          # runMessages, so the pool is a hard ceiling on concurrent actions per
+          # pod -- 10 was being reached.
+          #
+          # Budget against the database's max_connections, not the pod: the
+          # ceiling is app_max_replicas * this value, plus room for psql sessions
+          # and migrations. At 6 replicas x 20 = 120 against max_connections 200.
+          env {
+            name  = "DB_POOL"
+            value = tostring(var.app_db_pool)
+          }
+
+          # var.app_secrets keys become env var names here, so a GHCRTS or DB_POOL
+          # placed in there would collide with the two above. Kubernetes resolves
+          # an explicit `env` ahead of `env_from`, so these win -- which is the
+          # right way round (the derived -N should not be silently overridable by
+          # an ad-hoc secret), but it does mean setting either in app_secrets has
+          # no effect. Change the variable instead.
           env_from {
             secret_ref {
               name = kubernetes_secret.app.metadata[0].name

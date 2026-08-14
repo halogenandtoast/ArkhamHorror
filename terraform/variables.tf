@@ -89,9 +89,46 @@ variable "app_cpu_request" {
 }
 
 variable "app_cpu_limit" {
-  description = "Container CPU limit"
+  description = "Container CPU limit. Also sets the RTS capability count (-N) via local.app_ghc_rts — a container sees the node's cores, not its quota, so the RTS cannot work this out for itself."
   type        = string
   default     = "2000m"
+}
+
+variable "app_rts_extra_flags" {
+  description = <<-EOT
+    Extra GHC RTS flags appended after the derived -N. Leave empty for the default.
+
+    `-qg` is the one to reach for first if CPU throttling persists: it disables the
+    parallel GC, trading slightly longer single-threaded collections for the removal
+    of the multi-capability rendezvous that a CFS quota turns into a stall. `-qn2`
+    limits GC threads without touching the mutator's capability count.
+  EOT
+  type        = string
+  default     = ""
+}
+
+variable "metrics_server_enabled" {
+  description = "Install metrics-server. Required for the HPA to compute ANY metric — without it the HPA is stuck at min_replicas. See metrics-server.tf."
+  type        = bool
+  default     = true
+}
+
+variable "metrics_server_chart_version" {
+  description = "metrics-server Helm chart version (kubernetes-sigs.github.io/metrics-server)."
+  type        = string
+  default     = "3.13.1"
+}
+
+variable "metrics_server_kubelet_insecure_tls" {
+  description = "Pass --kubelet-insecure-tls to metrics-server. Not needed on DOKS, whose kubelet serving certs are signed by the cluster CA. Turn on only if metrics-server logs TLS verification errors against the kubelets."
+  type        = bool
+  default     = false
+}
+
+variable "app_db_pool" {
+  description = "Postgres connections per pod (DB_POOL). Budget app_max_replicas * this against the database's max_connections, leaving headroom for psql sessions and migrations."
+  type        = number
+  default     = 20
 }
 
 variable "app_memory_target_utilization" {

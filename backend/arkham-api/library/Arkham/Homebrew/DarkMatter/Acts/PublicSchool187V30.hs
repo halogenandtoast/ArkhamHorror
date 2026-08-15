@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Import.Lifted
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
+import Arkham.Location.Grid
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Matcher qualified as Matcher
 
@@ -26,6 +27,7 @@ publicSchool187V30 = act (1, A) PublicSchool187V30 Cards.publicSchool187V30 Noth
 instance HasAbilities PublicSchool187V30 where
   getAbilities (PublicSchool187V30 a) =
     [ mkAbility a 1
+        $ Objective
         $ forced
         $ Matcher.RevealLocation #after Anyone (locationIs Locations.entranceHall)
     ]
@@ -36,6 +38,13 @@ instance RunMessage PublicSchool187V30 where
       advanceVia #other attrs attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      -- top row
+      placeLocationInGrid_ (Pos (-1) 2) =<< fetchCard Locations.gymnasium
+      placeLocationInGrid_ (Pos 0 2) =<< fetchCard Locations.library
+      placeLocationInGrid_ (Pos 1 2) =<< fetchCard Locations.biologyLab
+      -- middle outside locations
+      placeLocationInGrid_ (Pos (-1) 1) =<< fetchCard Locations.cafeteria
+      placeLocationInGrid_ (Pos 1 1) =<< fetchCard Locations.classroomK2
       advanceActDeck attrs
       pure a
     _ -> PublicSchool187V30 <$> liftRunMessage msg attrs

@@ -17,30 +17,8 @@ newtype SchoolGrounds = SchoolGrounds LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schoolGrounds :: LocationCard SchoolGrounds
-schoolGrounds = location SchoolGrounds Cards.schoolGrounds 1 (PerPlayer 2)
+schoolGrounds = locationWith SchoolGrounds Cards.schoolGrounds 1 (PerPlayer 2) connectsToAdjacent
 
-{- | "While investigating this location, it gains +1 shroud for each of your
-clues.
-
-[free] If there are no clues on School Grounds: Put the set-aside A Shimmer in
-the Wall location into play directly above School Grounds."
-
-Ability 1 is the shroud bump. It has to be a skill-test-scoped modifier rather
-than a standing 'HasModifiersFor' one: "your clues" is the /investigating/
-investigator's clue pile, and a location modifier has no investigator to read.
-Mirrors 'Arkham.Homebrew.DarkMatter.Locations.AbandonedLander' (same campaign)
-and 'Arkham.Location.Cards.ExperimentalTherapiesWard'.
-
-Ability 2 puts "A Shimmer in the Wall" into play. That is not a separate card:
-it is the unrevealed name of Entrance Hall (see
-'Arkham.Homebrew.DarkMatter.CardDefs.Locations.entranceHall'), which the
-scenario sets aside during setup, so it enters play unrevealed and displays as
-A Shimmer in the Wall. The set-aside criterion also makes this naturally
-once-only. Act 1 then arranges the Undefined Rooms around it.
-
-Per 'rules/glossary/ability.md', an investigator may only activate an ability on
-a location they are at, hence 'Here'.
--}
 instance HasAbilities SchoolGrounds where
   getAbilities (SchoolGrounds a) =
     extendRevealed

@@ -167,6 +167,17 @@ getInvestigatorsInOrder = do
   g <- getGame
   pure $ g ^. playerOrderL
 
+{- | The revelation messages to push for a card that is resolving its revelation,
+honouring 'AdditionalRevelations' ("resolve its revelation effect an additional
+time"). Only the revelation itself repeats: callers keep the surrounding
+@When revelation@ and @After revelation@ single, so the card is discarded once,
+marked resolved once, and surges at most once no matter how many times its
+revelation resolves.
+-}
+resolveRevelations :: [ModifierType] -> Message -> [Message]
+resolveRevelations modifiers' revelation =
+  replicate (1 + max 0 (sum [n | AdditionalRevelations n <- modifiers'])) revelation
+
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
   -- ClearUI is pushed exactly once per accepted answer (Api Games.Shared), so
@@ -1844,7 +1855,12 @@ runGameMessage msg g = case msg of
               let revelation = Revelation iid (TreacherySource tid)
               pushAll
                 $ CardEnteredPlay iid card
-                : (guard (not ignoreRevelation) *> [When revelation, revelation, MoveWithSkillTest (After revelation)])
+                : ( guard (not ignoreRevelation)
+                      *> ( [When revelation]
+                             <> resolveRevelations modifiers' revelation
+                             <> [MoveWithSkillTest (After revelation)]
+                         )
+                  )
                   <> [UnsetActiveCard]
               pure
                 $ g
@@ -3611,11 +3627,11 @@ runGameMessage msg g = case msg of
           ]
             <> [ResolvedCard iid (toCard treachery) | needsResolve]
         else
-          [ When revelation
-          , revelation
-          , MoveWithSkillTest $ Run [After revelation, AfterRevelation iid treacheryId]
-          , UnsetActiveCard
-          ]
+          [When revelation]
+            <> resolveRevelations modifiers' revelation
+            <> [ MoveWithSkillTest $ Run [After revelation, AfterRevelation iid treacheryId]
+               , UnsetActiveCard
+               ]
             <> [ResolvedCard iid (toCard treachery) | needsResolve]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   MoveWithSkillTest msg' -> do

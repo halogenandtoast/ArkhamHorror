@@ -2,14 +2,13 @@ module Arkham.Homebrew.DarkMatter.Scenarios.ElectricNightmare (electricNightmare
 
 import Arkham.Card
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
-import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Homebrew.DarkMatter.Helpers
 import Arkham.Homebrew.DarkMatter.Key
@@ -17,13 +16,11 @@ import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Id
 import Arkham.Location.Grid
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier (ModifierType (DoubleModifiersOnChaosTokens))
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Window qualified as Window
 
 newtype ElectricNightmare = ElectricNightmare ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -56,6 +53,19 @@ instance RunMessage ElectricNightmare where
         for_ iids \iid -> addCampaignCardToDeck iid ShuffleIn Treacheries.desync
       pure s
     Setup -> runScenarioSetup ElectricNightmare attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "setAsideBoogeyman"
+        li "randomizeAct"
+        li "setAsideLocations"
+        li.nested "placeSchoolGrounds" do
+          li "startAt"
+        li "attachMaja"
+        li "setAsideStoryAssets"
+        li "checkCampaignLog"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
+
       setUsesGrid
 
       gather Set.ElectricNightmare
@@ -87,12 +97,15 @@ instance RunMessage ElectricNightmare where
       startAt schoolGrounds
       placeAsset_ Assets.maja (AttachedToLocation schoolGrounds)
 
-      -- Avatars (Reintegrated) and the K2-PS187 functionality assets set aside.
+      -- The four children and the K2-PS187 functionality assets set aside. The
+      -- children are set aside Avatar-side up (their backs are the Reintegrated
+      -- stories) because act 2 deals them out as "set aside Avatar story
+      -- assets"; the story side is fetched on flip.
       setAside
-        [ Stories.reintegrated_062
-        , Stories.reintegrated_063
-        , Stories.reintegrated_064
-        , Stories.reintegrated_065
+        [ Assets.alma
+        , Assets.david
+        , Assets.tilde
+        , Assets.william
         , Assets.k2PS18725Functionality
         , Assets.k2PS18750Functionality
         , Assets.k2PS18775Functionality
@@ -149,7 +162,7 @@ instance RunMessage ElectricNightmare where
         case (findInGrid a grid, findInGrid b grid) of
           (Just posA, Just posB) | posA /= posB -> do
             pushAll [PlaceGrid (GridLocation posB a), PlaceGrid (GridLocation posA b)]
-            checkAfter $ Window.ScenarioEvent "switched" Nothing (toJSON (a, b))
+            checkSwitchedWindows a b
           _ -> pure ()
       pure s
     ScenarioResolution res -> scope "resolutions" do
@@ -191,32 +204,33 @@ instance RunMessage ElectricNightmare where
           gameOver
         Resolution 2 -> do
           record YouPartiallyRestoredTheSanityOfK2PS187
+          addReminiscenceToken
+          earnXp attrs "resolution2"
+          -- Which K2-PS187 asset is offered depends on how many children were
+          -- reintegrated (1 -> 25%, 2 -> 50%, 3 -> 75%).
           offerK2Reward $ case reintegratedCount of
             1 -> Just Assets.k2PS18725Functionality
             2 -> Just Assets.k2PS18750Functionality
             3 -> Just Assets.k2PS18775Functionality
             _ -> Nothing
-          addReminiscenceToken
-          earnXp attrs "resolution2"
           endOfScenario
         Resolution 3 -> do
           record YouFullyRestoredTheSanityOfK2PS187
-          offerK2Reward $ Just Assets.k2PS187100Functionality
           addReminiscenceToken
           earnXp attrs "resolution3"
+          offerK2Reward $ Just Assets.k2PS187100Functionality
           endOfScenario
         _ -> error "Invalid resolution"
       pure s
     _ -> ElectricNightmare <$> liftRunMessage msg attrs
 
 {- | "An investigator may choose to add the K2-PS187 (X%) permanent story asset
-to their deck." Optional; a single investigator may take it.
+to their deck." Optional; a single investigator may take it. Uses the shared
+campaign-card choice so the card itself is shown alongside the portraits and the
+decline option reads the same as every other scenario reward.
 -}
 offerK2Reward :: ReverseQueue m => Maybe CardDef -> m ()
 offerK2Reward Nothing = pure ()
 offerK2Reward (Just def) = do
   investigators <- allInvestigators
-  lead <- getLead
-  chooseOneM lead do
-    scenarioI18n "electricNightmare" $ labeled' "noInvestigatorAddsItToTheirDeck" nothing
-    targets investigators \iid -> addCampaignCardToDeck iid DoNotShuffleIn def
+  addCampaignCardToDeckChoice investigators DoNotShuffleIn def

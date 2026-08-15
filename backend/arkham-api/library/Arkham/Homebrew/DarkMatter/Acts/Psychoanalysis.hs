@@ -2,16 +2,15 @@ module Arkham.Homebrew.DarkMatter.Acts.Psychoanalysis (psychoanalysis) where
 
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
-import Arkham.Classes.HasGame
-import Arkham.Helpers.Scenario (getGrid)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
+import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
+import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
+import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.DarkMatter.Traits (pattern School)
 import Arkham.Location.Grid
-import Arkham.Location.Types (Field (LocationPrintedSymbol))
-import Arkham.LocationSymbol
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
+import Arkham.Message.Lifted.Placement
 
 newtype Psychoanalysis = Psychoanalysis ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -20,63 +19,22 @@ newtype Psychoanalysis = Psychoanalysis ActAttrs
 psychoanalysis :: ActCard Psychoanalysis
 psychoanalysis = act (2, A) Psychoanalysis Cards.psychoanalysis Nothing
 
-{- | The printed schematic, read top-left to bottom-right:
-
-@
-  circle  square    triangle
-  cross   slash     moon
-@
-
-Those are the connection symbols of the six [[School]] locations
-(Classroom K2, Cafeteria, Gymnasium / Library, Entrance Hall, Biology Lab);
-"cross" is 'Plus' and "slash" is 'Squiggle'.
--}
-schematic :: [[LocationSymbol]]
-schematic =
-  [ [Circle, Square, Triangle]
-  , [Plus, Squiggle, Moon]
-  ]
-
-{- | True when the School locations currently sit in the printed arrangement.
-Positions are normalised against the top-left-most School location so the
-schematic can match anywhere on the grid.
--}
-matchesSchematic :: HasGame m => m Bool
-matchesSchematic = do
-  locations <- select $ LocationWithTrait School
-  grid <- getGrid
-  placed <- for locations \lid -> do
-    symbol <- field LocationPrintedSymbol lid
-    pure ((,symbol) <$> findInGrid lid grid)
-  case sequence placed of
-    Nothing -> pure False
-    Just entries
-      | length entries /= 6 -> pure False
-      | otherwise -> do
-          let rows = map (positionRow . fst) entries
-              cols = map (positionColumn . fst) entries
-              top = minimumEx rows
-              left = minimumEx cols
-              normalised =
-                [ ((positionRow p - top, positionColumn p - left), s)
-                | (p, s) <- entries
-                ]
-              expected =
-                [ ((r, c), s)
-                | (r, row) <- zip [0 ..] schematic
-                , (c, s) <- zip [0 ..] row
-                ]
-          pure $ sort normalised == sort expected
-
-{- | "[free] Spend 1[per_investigator] clues, as a group: Switch two adjacent
-locations with each other.
-Objective - At the end of the round, if the configuration of [[School]]
-locations correspond to the schematic, advance."
--}
 instance HasAbilities Psychoanalysis where
   getAbilities (Psychoanalysis a) =
     [ mkAbility a 1 $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)
-    , mkAbility a 2 $ Objective $ forced $ RoundEnds #when
+    , restricted
+        a
+        2
+        ( exists (LocationInPosition (Pos (-1) 2) <> locationIs Locations.classroomK2)
+            <> exists (LocationInPosition (Pos 0 2) <> locationIs Locations.cafeteria)
+            <> exists (LocationInPosition (Pos 1 2) <> locationIs Locations.gymnasium)
+            <> exists (LocationInPosition (Pos (-1) 1) <> locationIs Locations.library)
+            <> exists (LocationInPosition (Pos 0 1) <> locationIs Locations.entranceHall)
+            <> exists (LocationInPosition (Pos 1 1) <> locationIs Locations.biologyLab)
+        )
+        $ Objective
+        $ forced
+        $ RoundEnds #when
     ]
 
 instance RunMessage Psychoanalysis where
@@ -89,9 +47,34 @@ instance RunMessage Psychoanalysis where
           push $ ScenarioSpecific "switchLocations" (toJSON (first', second'))
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      whenM matchesSchematic $ advanceVia #other attrs attrs
+      advanceVia #other attrs attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      whenM (selectNone $ enemyIs Enemies.theBOOGEYMAN) do
+        entranceHall <- selectJust $ locationIs Locations.entranceHall
+        createSetAsideEnemy_ Enemies.theBOOGEYMAN entranceHall
+
+      revealMatching UnrevealedLocation
+      doStep 1 msg
       advanceActDeck attrs
+      pure a
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      boogeymanLocation <- selectOne $ LocationWithEnemy (enemyIs Enemies.theBOOGEYMAN)
+      cafeteria <- selectJust $ locationIs Locations.cafeteria
+      avatars <- shuffle =<< fetchCards [Assets.alma, Assets.david, Assets.tilde, Assets.william]
+      locations <-
+        select
+          $ mapOneOf
+            locationIs
+            [Locations.classroomK2, Locations.library, Locations.gymnasium, Locations.biologyLab]
+      for_ (zip avatars locations) \(avatar, lid) ->
+        createAssetAt_ avatar
+          $ AttachedToLocation (if Just lid == boogeymanLocation then cafeteria else lid)
+
+      for_ boogeymanLocation \loc ->
+        selectEach
+          (assetIs Assets.maja <> at_ (be loc <> not_ (be cafeteria)))
+          (`place` AtLocation cafeteria)
+
       pure a
     _ -> Psychoanalysis <$> liftRunMessage msg attrs

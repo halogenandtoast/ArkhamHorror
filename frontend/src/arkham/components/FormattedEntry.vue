@@ -73,7 +73,10 @@ function formatEntry(t: ComposerTranslation, entry: FlavorTextEntry, classes: { 
       } else {
         return h('h3', { class: classes, innerHTML: formatContent(t(entry.key)) })
       }
-    case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
+    // `setImgPath` points at the core encounter-set icons; homebrew campaigns keep
+    // their icons under their own directory (see vite.config.js), so they build the
+    // path from `imgPath` instead: {imgPath}/homebrew/<campaign>/sets/<set>.png
+    case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, imgPath: `${baseUrl}/img/arkham`, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
     case 'ModifyEntry': {
       const styles = entryStyles(entry)
       if (styles.codex) {

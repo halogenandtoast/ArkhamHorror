@@ -74,7 +74,6 @@ import Arkham.Homebrew.Tokens
 import Arkham.I18n (countVar, withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Label (mkLabel)
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
@@ -2028,17 +2027,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           Nothing -> scenarioGrid
           Just oldPos -> clearGrid oldPos scenarioGrid
         grid = insertGrid gloc gridCleared
-    -- Neighbours are looked up by grid label, and the mover still carries its old
-    -- label at this point: a location sliding one cell over would otherwise find
-    -- itself sitting in the cell it just vacated and record itself as its own
-    -- neighbour (seen with the Great Lift). The cell it left is empty, so drop it.
+    -- Neighbours come from the freshly updated grid, never from labels. Labels are
+    -- set by a *queued* SetLocationLabel, so mid-move they lie in both directions:
+    -- the mover still carries its old label (a location sliding one cell over would
+    -- record itself as its own neighbour — the Great Lift), and when two locations
+    -- swap places (Dark Matter's "switch two locations") the second mover finds two
+    -- locations claiming the same label and can pick the wrong one, leaving the pair
+    -- disconnected. `grid` already has the mover in its new cell and its old cell
+    -- cleared, so both cases fall out correctly.
     let getAdjacent dir = do
-          mlid <- selectOne $ Matcher.LocationWithLabel $ mkLabel $ gridLabel $ updatePosition pos dir
-          pure $ if mlid == Just lid then Nothing else mlid
-    mTopLocation <- getAdjacent GridUp
-    mBottomLocation <- getAdjacent GridDown
-    mLeftLocation <- getAdjacent GridLeft
-    mRightLocation <- getAdjacent GridRight
+          GridLocation _ lid' <- viewGrid (updatePosition pos dir) grid
+          guard (lid' /= lid)
+          pure lid'
+        mTopLocation = getAdjacent GridUp
+        mBottomLocation = getAdjacent GridDown
+        mLeftLocation = getAdjacent GridLeft
+        mRightLocation = getAdjacent GridRight
     pushAll
       $ [ LocationMoved lid
         , SetLocationLabel lid (gridLabel pos)

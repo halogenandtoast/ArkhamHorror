@@ -14,23 +14,17 @@ newtype Library = Library LocationAttrs
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- Shroud is X, the number of adjacent locations.
 library :: LocationCard Library
-library = location Library Cards.library 0 (PerPlayer 1)
+library = locationWith Library Cards.library 0 (PerPlayer 1) connectsToAdjacent
 
 instance HasModifiersFor Library where
   getModifiersFor (Library a) = do
     adjacent <- selectCount $ connectedFrom (be a)
     modifySelf a [ShroudModifier adjacent]
 
-{- | "[action] If there are no clues on Library: Switch Library with any other
-[[School]] location and place 1[per_investigator] clues on it, from the token
-bank."
--}
 instance HasAbilities Library where
   getAbilities (Library a) =
-    extendRevealed1 a
-      $ restricted a 1 (Here <> thisExists a LocationWithoutClues) actionAbility
+    extendRevealed1 a $ restricted a 1 (Here <> thisExists a LocationWithoutClues) actionAbility
 
 instance RunMessage Library where
   runMessage msg l@(Library attrs) = runQueueT $ case msg of

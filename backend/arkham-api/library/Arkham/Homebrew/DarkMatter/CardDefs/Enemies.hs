@@ -106,6 +106,9 @@ shadowOfThoughts =
   (enemy ":dark-matter:077" "Shadow of Thoughts" Set.ElectricNightmare 1)
     { cdHealthDamage = healthDamage 1
     , cdSanityDamage = sanityDamage 2
+    , -- X, the shroud of this enemy's location; the value comes from the card's
+      -- own EnemyFight modifier, which needs a printed value to add to
+      cdFight = fightX
     , cdEvade = evade 2
     , cdHealth = health 5
     , cdCardTraits = setFromList [Virtual, Abomination]
@@ -130,6 +133,8 @@ manifestedWhispers =
     , cdEvade = evade 3
     , cdHealth = health 1
     , cdCardTraits = setFromList [Monster]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
+    , cdRevelation = IsRevelation
     }
 
 virtualByakhee :: CardDef

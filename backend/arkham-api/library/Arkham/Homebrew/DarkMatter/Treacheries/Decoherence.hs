@@ -3,7 +3,9 @@ module Arkham.Homebrew.DarkMatter.Treacheries.Decoherence (decoherence) where
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (getMemories)
 import Arkham.I18n
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 import Arkham.Treachery.Import.Lifted
 
 newtype Decoherence = Decoherence TreacheryAttrs
@@ -13,10 +15,6 @@ newtype Decoherence = Decoherence TreacheryAttrs
 decoherence :: TreacheryCard Decoherence
 decoherence = treachery Decoherence Cards.decoherence
 
-{- | "Revelation - Test [agility] (6). Decrease the difficulty of this test by 1
-for each of your 'Memories'. If you fail, you must either take 2 horror or lose
-2 resources."
--}
 instance RunMessage Decoherence where
   runMessage msg t@(Decoherence attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
@@ -25,8 +23,9 @@ instance RunMessage Decoherence where
       revelationSkillTest sid iid attrs #agility (Fixed $ max 0 (6 - memories))
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
+      ok <- fieldSome InvestigatorResources iid
       chooseOneM iid $ withI18n do
         countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
-        countVar 2 $ labeled' "loseResources" $ loseResources iid attrs 2
+        countVar 2 $ labeledValidate' ok "loseResources" $ loseResources iid attrs 2
       pure t
     _ -> Decoherence <$> liftRunMessage msg attrs

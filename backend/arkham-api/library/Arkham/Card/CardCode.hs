@@ -51,8 +51,18 @@ instance Eq CardCode where
    where
     sideSuffixes = "abcd" :: [Char]
     isSideSuffix = (`elem` sideSuffixes)
-    toBase = T.dropWhileEnd isSideSuffix
-    sideOf = listToMaybe . T.unpack . T.takeWhileEnd isSideSuffix
+    -- Only the *final* character designates a side. Eating the whole trailing
+    -- run of letters breaks card numbers that themselves end in one: the four
+    -- children of Public School 187 are cards 63a-63d, so ":dark-matter:063da"
+    -- (William's back) and ":dark-matter:063db" (William's front) must pair with
+    -- each other. With a greedy tail both reduced to base "063" with sides 'd'
+    -- and... 'd', while 063da instead compared equal to 063cb (Tilde's front),
+    -- since 'c' and 'd' complement.
+    splitSide t = case T.unsnoc t of
+      Just (base, c) | isSideSuffix c -> (base, Just c)
+      _ -> (t, Nothing)
+    toBase = fst . splitSide
+    sideOf = snd . splitSide
     complements (Just x) (Just y) = case x of
       'a' -> y == 'b'
       'b' -> y == 'a'

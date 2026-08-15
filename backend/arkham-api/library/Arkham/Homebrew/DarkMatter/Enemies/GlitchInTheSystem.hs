@@ -3,7 +3,7 @@ module Arkham.Homebrew.DarkMatter.Enemies.GlitchInTheSystem (glitchInTheSystem) 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (getSwitchedLocations)
+import Arkham.Homebrew.DarkMatter.Helpers (switchedWindowFor)
 import Arkham.Matcher
 
 newtype GlitchInTheSystem = GlitchInTheSystem EnemyAttrs
@@ -20,13 +20,13 @@ location: Place 1 doom on Glitch in the System."
 -}
 instance HasAbilities GlitchInTheSystem where
   getAbilities (GlitchInTheSystem a) =
-    extend1 a $ mkAbility a 1 $ forced $ ScenarioEvent #after Nothing "switched"
+    -- keyed to *this enemy's* location, so it stays out of the forced-trigger
+    -- ordering for switches elsewhere on the map
+    extend a [mkAbility a 1 $ forced w | w <- toList (switchedWindowFor a.placement)]
 
 instance RunMessage GlitchInTheSystem where
   runMessage msg e@(GlitchInTheSystem attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (getSwitchedLocations -> Just (x, y)) _ -> do
-      -- only when *this enemy's* location was one of the two that traded places
-      here <- selectAny $ EnemyWithId attrs.id <> EnemyAt (mapOneOf LocationWithId [x, y])
-      when here $ placeDoom (attrs.ability 1) attrs 1
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
       pure e
     _ -> GlitchInTheSystem <$> liftRunMessage msg attrs

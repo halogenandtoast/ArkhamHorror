@@ -2,11 +2,10 @@ module Arkham.Homebrew.DarkMatter.Treacheries.NonEuclideanGeometry (nonEuclidean
 
 import Arkham.Ability
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
+import Arkham.Homebrew.DarkMatter.Helpers (switchedEventForInvestigator)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Import.Lifted
-import Arkham.Window (Window, windowType)
-import Arkham.Window qualified as Window
 
 newtype NonEuclideanGeometry = NonEuclideanGeometry TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -22,24 +21,22 @@ Non-Euclidean Geometry."
 -}
 instance HasAbilities NonEuclideanGeometry where
   getAbilities (NonEuclideanGeometry a) =
-    [ restricted a 1 (InThreatAreaOf You) $ forced $ ScenarioEvent #after Nothing "switched"
+    -- the bearer's location is not knowable here, so this matches the
+    -- per-investigator window the scenario fires for everyone standing at
+    -- either of the two switched locations
+    [ restricted a 1 (InThreatAreaOf You)
+        $ forced
+        $ ScenarioEvent #after (Just You) switchedEventForInvestigator
     , skillTestAbility $ restricted a 2 (InThreatAreaOf You) actionAbility
     ]
-
-getSwitched :: [Window] -> Maybe (LocationId, LocationId)
-getSwitched = \case
-  (windowType -> Window.ScenarioEvent "switched" _ v) : _ -> Just (toResult v)
-  _ : rest -> getSwitched rest
-  [] -> Nothing
 
 instance RunMessage NonEuclideanGeometry where
   runMessage msg t@(NonEuclideanGeometry attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 (getSwitched -> Just (a, b)) _ -> do
-      here <- selectAny $ InvestigatorWithId iid <> InvestigatorAt (mapOneOf LocationWithId [a, b])
-      when here $ assignDamage iid (attrs.ability 1) 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

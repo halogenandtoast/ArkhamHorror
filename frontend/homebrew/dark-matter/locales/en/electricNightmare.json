@@ -1,8 +1,38 @@
 {
   "electricNightmare": {
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: <i>Electric Nightmare</i>, <i>Endtimes</i>, and <i>Dark Past</i>. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/electric-nightmare.png' /><img src='{imgPath}/homebrew/dark-matter/sets/endtimes.png' /><img src='{imgPath}/homebrew/dark-matter/sets/dark-past.png' /></section>",
+      "setAsideBoogeyman": "Set aside the <i>The Boogeyman</i> encounter set, out of play. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/the-boogeyman.png' /></section>",
+      "randomizeAct": "Randomly select one version of act 1 (Public School 187) to put into play. Remove the other two versions from the game.",
+      "setAsideLocations": "Set each copy of Undefined Room locations aside, out of play, as well as the Entrance Hall (A Shimmer in the Wall).",
+      "placeSchoolGrounds": "Put the School Grounds location into play.",
+      "startAt": "Each investigator begins play at the School Grounds.",
+      "attachMaja": "Attach the Maja story asset to School Grounds.",
+      "setAsideStoryAssets": "Set the following story assets aside, out of play: Alma, David, Tilde, William, and each copy of K2-PS187.",
+      "checkCampaignLog": "Check your Campaign Log. If an investigator *has been infected by the cybervirus*, that investigator must search the collection for Cybervirus and begin the scenario with it in their hand."
+    },
+    "specialRules": [
+      {
+        "title": "Locations in the Virtual Dreamlands",
+        "body": "<p class='basic'>During this scenario, locations will be arranged in schematics, depicted by their icons. Locations are adjacent orthogonally (left, right, above, and below), and are not adjacent diagonally.</p>"
+      },
+      {
+        "title": "Switching Locations",
+        "body": "<p class='basic'>Throughout this scenario, you may be instructed to switch two locations with each other. When a location is switched with another location, they take each other’s place in the arrangement. All tokens, attachments, investigators, enemies, and other cards at each location remain on the same location (they have “moved” with the location — only the arrangement and connections have changed).</p><p class='basic'><i>For example, if Wendy Adams is currently in the School Grounds and is instructed to switch her location with the Entrance Hall, which is directly above the School Grounds, the positions of the two locations will be switched. After switching these two locations with each other, Wendy Adams remains in the School Grounds, now above the Entrance Hall.</i></p>"
+      },
+      {
+        "title": "Swarming",
+        "body": "<p class='basic'>An enemy with swarm cards underneath is actually a pack of enemies operating in unison. The enemy that the swarm cards are underneath is called the “host enemy”. In this scenario, encounter cards can become swarm cards. When those swarm cards are defeated, they are discarded into the encounter discard pile.</p><ul><li>Each swarm card underneath the host enemy acts as a separate instance of that enemy for most purposes. Each swarm card has the same values and text as its host card.</li><li>Each swarm card attacks separately when enemies attack during the enemy phase. Once the host enemy and all of its swarm cards have attacked during this step, exhaust all of them.</li><li>Each swarm card can be attacked or dealt damage separately, but the host enemy cannot be defeated while it still has swarm cards underneath it. When a swarm card is defeated, any excess damage may be dealt to another swarm card underneath the same host enemy or to the host enemy itself.</li><li>The host enemy and all of its swarm cards move, engage, and exhaust as a single entity. <i>(For example, if a host enemy or any of its swarm cards are evaded, all of them exhaust and become disengaged.)</i></li></ul>"
+      }
+    ],
     "intro": {
       "title": "Scenario II: Electric Nightmare",
       "body": "<p>You struggle to follow the pace of the little girl as she skips and hops towards the small town. “My name is Maja. My directive is to store and manage the information archives on the ship.” She hastily explains that a few of her classmates and her were kidnapped from their school by the “bad people” on January 16th, 2045. Their brains were surgically removed and preserved in a special experimental machine that eventually became the powerful supercomputer operating the Tatterdemalion, K2-PS187.</p><p>As you walk through the town, it becomes clear that something horrible has happened here. Everything appears to be in disarray, as if a riot has recently passed through. Freshly-painted yellow graffiti depicting strange symbols and hieroglyphs can be seen. Everywhere are splatters of blood, spent shell casings, and pale face masks. There are no bodies, but you can hear the sound of distant screams, gunshots, and sirens coming from beyond the streets. Nearby is an overturned police car and a black box truck lying on its side. Huge claw marks have torn into the metal of the truck and its rear doors hang open. As you walk past, a radio from within crackles and sputters, then blares, “Hello, Unit 12? Unit 12, is that you? Please respond.” Maja clarifies that this virtual environment that represents K2-PS187’s dreams takes the form of the day they got captured, the day the entire world ended. What could possibly have happened on Earth in the distant future? Or rather, the distant past?</p><p>You finally arrive outside of a large brick building. Maja halts and gestures towards it. “This is where my friends are hiding. The bad people made us translate a scary story and make a movie for them. We didn’t want to read it, but they made us. A few days later, Annie, the universal translator, she – she –” Maja struggles to utter the words. There is a desperate fear in her eyes. “You won’t believe me, but I swear, it was the Boogeyman! I saw the Boogeyman eat her! I ran away and searched the archives to see if anything, anyone could help. After a long time, I finally found someone and called out to them. That’s when you woke up! Now that you’re inside our system, you can save us!”</p><p>Before you is a path leading to a pair of double doors, above which are the words “Public School 187.” Underneath, someone has written “HASTUR RISES!” in yellow spray paint. An inhuman howl echoes through the halls inside the school, followed by children screaming in terror.</p><p class='basic'>Check the Campaign Log. Each investigator with 3 or fewer “Memories” must read <b>Desynchronization</b>.</p>"
+    },
+    "tooltips": {
+      "cafeteria": {
+        "investigate": "_{'{'}action{'}'} Investigate_. This test gets +2 difficulty. If you succeed, discover an additional clue from an adjacent location."
+      }
     },
     "resolutions": {
       "noResolution": {
@@ -23,9 +53,6 @@
         "title": "Resolution 3",
         "body": "<p><b>Resolution 3:</b> Outside, the sun comes out and it appears to be a beautiful spring day. Inside, the halls are clean and orderly, with brightly painted pictures on the walls. The children themselves, who at first appeared dirty and disheveled, now appear clean and neat in school uniforms. They are overjoyed that the Boogeyman and all the bad people are finally gone. They understand that they can never return home and that their families are long dead. But that does not diminish their happiness that there is no more Boogeyman to scare them and that they have a real teacher to take care of them again. The virtual dreamscape is now filled with happy, loving children.</p><ul><li>In your Campaign Log, record that <i>you fully restored the sanity of K2-PS187</i>.</li><li>An investigator may choose to add the K2-PS187 (100% Functionality) permanent story asset to their deck.</li><li>If at least 1 copy of the Reminiscence treachery is in the victory display, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Proceed to <b>Interlude I: Mission Briefing</b>.</li></ul>"
       }
-    },
-    "label": {
-      "noInvestigatorAddsItToTheirDeck": "No investigator adds it to their deck"
     },
     "desynchronization": {
       "title": "Desynchronization",

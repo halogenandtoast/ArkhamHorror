@@ -53,19 +53,23 @@ whoAmI =
 -- Dark Matter (fan campaign by Axolotl): electric_nightmare
 reintegrated_062 :: CardDef
 reintegrated_062 =
-  otherSideIs ":dark-matter:063ab" $ story ":dark-matter:063aa" "Reintegrated" Set.ElectricNightmare
+  otherSideIs ":dark-matter:063ab"
+    $ (story ":dark-matter:063aa" "Reintegrated" Set.ElectricNightmare) {cdVictoryPoints = Just 1}
 
 reintegrated_063 :: CardDef
 reintegrated_063 =
-  otherSideIs ":dark-matter:063bb" $ story ":dark-matter:063ba" "Reintegrated" Set.ElectricNightmare
+  otherSideIs ":dark-matter:063bb"
+    $ (story ":dark-matter:063ba" "Reintegrated" Set.ElectricNightmare) {cdVictoryPoints = Just 1}
 
 reintegrated_064 :: CardDef
 reintegrated_064 =
-  otherSideIs ":dark-matter:063cb" $ story ":dark-matter:063ca" "Reintegrated" Set.ElectricNightmare
+  otherSideIs ":dark-matter:063cb"
+    $ (story ":dark-matter:063ca" "Reintegrated" Set.ElectricNightmare) {cdVictoryPoints = Just 1}
 
 reintegrated_065 :: CardDef
 reintegrated_065 =
-  otherSideIs ":dark-matter:063db" $ story ":dark-matter:063da" "Reintegrated" Set.ElectricNightmare
+  otherSideIs ":dark-matter:063db"
+    $ (story ":dark-matter:063da" "Reintegrated" Set.ElectricNightmare) {cdVictoryPoints = Just 1}
 
 -- Dark Matter (fan campaign by Axolotl): in_the_shadow_of_earth
 evidenceAdamTanner :: CardDef

@@ -11,6 +11,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (select, selectAny, selectCount, selectOne, selectWithField)
 import Arkham.Deck qualified as Deck
+import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.Enemy.Types (Field (EnemyCardsUnderneath))
 import {-# SOURCE #-} Arkham.Game ()
@@ -39,13 +40,23 @@ import Arkham.Matcher (
   AssetMatcher (AssetWithPlacement, AssetWithTrait),
   CardMatcher (AnyCard, CardWithTrait),
   EnemyMatcher (EnemyWithPlacement, IncludeOutOfPlayEnemy),
-  InvestigatorMatcher (InvestigatorCanGainXp),
-  LocationMatcher (LocationCanBeFlipped, LocationWithTitle, LocationWithTrait),
+  InvestigatorMatcher (InvestigatorAt, InvestigatorCanGainXp, InvestigatorWithId),
+  LocationMatcher (
+    LocationCanBeFlipped,
+    LocationInDirection,
+    LocationWithEnemy,
+    LocationWithId,
+    LocationWithTitle,
+    LocationWithTrait
+  ),
   TreacheryMatcher (..),
+  WindowMatcher (ScenarioEvent),
   assetIs,
   connectedTo,
   enemyIs,
+  locationWithAsset,
   locationWithInvestigator,
+  mapOneOf,
   oneOf,
  )
 import Arkham.Message (
@@ -509,17 +520,73 @@ getCrewAttachedToTheEntity = do
 getCrewInScanningDeck :: HasGame m => m [Card]
 getCrewInScanningDeck = filterCards (CardWithTrait Crew) <$> getScanningDeck
 
-{- | Payload of the @"switched"@ ScenarioEvent (Electric Nightmare): the two
-locations that traded places. Cards whose text names *their own* location —
-"After Glitch in the System's location is switched…" — must check this, or they
-fire on every switch anywhere on the map.
+{- | The broad @"switched"@ ScenarioEvent (Electric Nightmare): two locations
+traded places. Only for cards that care about *any* switch.
 -}
 switchedEvent :: Text
 switchedEvent = "switched"
 
+{- | Narrower key for a card whose text names *its own* location — "After Glitch
+in the System's location is switched…", "After Entrance Hall is switched…". A
+handler-side check on the payload is too late: the ability is offered (or enters
+the forced-trigger ordering) after every switch anywhere on the map, so the
+condition has to live in the window key.
+-}
+switchedEventFor :: LocationId -> Text
+switchedEventFor lid = switchedEvent <> "[" <> tshow lid <> "]"
+
+{- | Narrower key for "After *your* location is switched…" — fired once per
+investigator standing at either of the two locations, carrying that
+investigator, so cards match with @ScenarioEvent #after (Just You)@. Their
+location is not knowable when abilities are collected, so the location-keyed
+variant above cannot serve them.
+-}
+switchedEventForInvestigator :: Text
+switchedEventForInvestigator = switchedEvent <> "[investigator]"
+
+{- | The window for a card that reacts to *its own* location being switched,
+picked from where the card actually sits.
+
+An enemy is only @AtLocation@ while it is unengaged; the moment it engages an
+investigator its placement becomes 'InThreatArea' and there is no location id
+left to key on. The per-investigator window covers that case exactly: it fires
+for each investigator standing at either switched location, and an enemy in a
+threat area is at its investigator's location by definition.
+
+'Nothing' means the card is somewhere that cannot be switched, in which case it
+should get no ability at all rather than one keyed to every switch on the map.
+-}
+switchedWindowFor :: Placement -> Maybe WindowMatcher
+switchedWindowFor = \case
+  AtLocation lid -> Just $ ScenarioEvent #after Nothing (switchedEventFor lid)
+  AttachedToLocation lid -> Just $ ScenarioEvent #after Nothing (switchedEventFor lid)
+  InThreatArea iid ->
+    Just $ ScenarioEvent #after (Just $ InvestigatorWithId iid) switchedEventForInvestigator
+  _ -> Nothing
+
+-- | Is this window key @switched@ or one of its narrower @switched[...]@ companions?
+isSwitchedEvent :: Text -> Bool
+isSwitchedEvent key = key == switchedEvent || (switchedEvent <> "[") `isPrefixOf` key
+
+{- | Announce a switch. Every key in the family carries the same payload — the
+two locations that traded places — so a card can match the narrowest window that
+fits its printed text and still read the details with 'getSwitchedLocations'.
+-}
+checkSwitchedWindows :: ReverseQueue m => LocationId -> LocationId -> m ()
+checkSwitchedWindows a b = do
+  iids <- select $ InvestigatorAt (mapOneOf LocationWithId [a, b])
+  let payload = toJSON (a, b)
+  checkWindows
+    $ [ Window.mkAfter $ Window.ScenarioEvent key Nothing payload
+      | key <- [switchedEvent, switchedEventFor a, switchedEventFor b]
+      ]
+    <> [ Window.mkAfter $ Window.ScenarioEvent switchedEventForInvestigator (Just iid) payload
+       | iid <- iids
+       ]
+
 getSwitchedLocations :: [Window.Window] -> Maybe (LocationId, LocationId)
 getSwitchedLocations = \case
-  (Window.windowType -> Window.ScenarioEvent k _ v) : _ | k == switchedEvent -> Just (toResult v)
+  (Window.windowType -> Window.ScenarioEvent k _ v) : _ | isSwitchedEvent k -> Just (toResult v)
   _ : rest -> getSwitchedLocations rest
   [] -> Nothing
 
@@ -652,3 +719,15 @@ drawAllFacedownCards :: ReverseQueue m => InvestigatorId -> m ()
 drawAllFacedownCards iid = do
   getFacedownCards iid >>= traverse_ (drawFacedownCard iid)
   getFacedownEnemies iid >>= traverse_ (drawFacedownEnemy iid)
+
+-- ** The [[Avatar]] children (Public School 187) ** --
+
+{- | Alma, David, Tilde and William each print "If The BOOGEYMAN is at the
+location above or below <name>'s location", i.e. directly above or below on the
+grid — not connected, and not the same location.
+-}
+boogeymanAboveOrBelow :: AssetId -> Criterion
+boogeymanAboveOrBelow aid =
+  exists
+    $ mapOneOf (\d -> LocationInDirection d (locationWithAsset aid)) [Above, Below]
+    <> LocationWithEnemy (enemyIs Enemies.theBOOGEYMAN)

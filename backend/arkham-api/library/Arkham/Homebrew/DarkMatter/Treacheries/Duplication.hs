@@ -7,7 +7,7 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.DarkMatter.Traits (pattern Virtual)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Placement
+import Arkham.Modifier (ModifierType (AdditionalRevelations))
 import Arkham.Treachery.Import.Lifted
 
 newtype Duplication = Duplication TreacheryAttrs
@@ -17,7 +17,9 @@ newtype Duplication = Duplication TreacheryAttrs
 duplication :: TreacheryCard Duplication
 duplication = treachery Duplication Cards.duplication
 
--- | Deferred hand-off so the swarm placement happens after the enemy has spawned.
+{- | Deferred hand-off: the drawn enemy has to be in play before it can host a
+swarm card.
+-}
 swarmKey :: Text
 swarmKey = "duplicationSwarm"
 
@@ -39,7 +41,7 @@ depthToSecondVirtual = go (0 :: Int) 0
 {- | "Revelation - Discard cards from the top of the encounter deck until 2
 [[Virtual]] encounter cards are discarded. Choose and draw one of the discarded
 [[Virtual]] encounter cards. If it is a treachery, resolve its revelation effect
-an additional time."
+an additional time. If it is an enemy, place this card under it as a swarm card."
 -}
 instance RunMessage Duplication where
   runMessage msg t@(Duplication attrs) = runQueueT $ case msg of
@@ -53,16 +55,26 @@ instance RunMessage Duplication where
       let virtuals = filter isVirtual (map toCard cards)
       focusCards virtuals $ chooseTargetM iid virtuals \card -> do
         unfocusCards
-        drawCard iid card
-        when (toCardType card == EnemyType)
-          $ push
-          $ CampaignSpecific swarmKey (toJSON (attrs.id, toCardId card))
+        -- AdditionalRevelations rides the card into ResolveTreachery, which
+        -- repeats the revelation itself but keeps a single After (Revelation ...)
+        -- around it, so the treachery is still discarded (and resolved) once.
+        if toCardType card == TreacheryType
+          then temporaryModifier card attrs (AdditionalRevelations 1) $ drawCard iid card
+          else do
+            drawCard iid card
+            when (toCardType card == EnemyType)
+              $ push
+              $ CampaignSpecific swarmKey (toJSON (attrs.id, toCardId card))
       pure t
-    -- the drawn enemy has spawned by now, so slide this card under it
+    -- the drawn enemy has spawned by now, so slide this card under it. A swarm
+    -- card is a copy of its host enemy, so this has to leave play as a treachery
+    -- and come back as a swarm enemy; @RemoveTreachery@ also pops the pending
+    -- @After Revelation@ that would otherwise discard the card instead.
     CampaignSpecific k (maybeResult -> Just (tid, cid))
       | k == swarmKey
       , tid == attrs.id -> do
-          selectOne (EnemyWithCardId cid)
-            >>= traverse_ \eid -> push $ PlaceTreachery attrs.id (AsSwarm eid $ toCard attrs)
+          selectOne (EnemyWithCardId cid) >>= traverse_ \eid -> do
+            push $ RemoveTreachery attrs.id
+            push $ PlacedSwarmCard eid (toCard attrs)
           pure t
     _ -> Duplication <$> liftRunMessage msg attrs

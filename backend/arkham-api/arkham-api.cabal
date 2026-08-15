@@ -7441,6 +7441,7 @@ test-suite spec
       Arkham.Campaign.TheScarletKeys.ConcealedSpec
       Arkham.Campaign.UsedAbilitiesSpec
       Arkham.CampaignLogKeySpec
+      Arkham.Card.CardCodeSpec
       Arkham.ChaosTokenFaceSpec
       Arkham.DecklistSpec
       Arkham.EncounterSetSpec

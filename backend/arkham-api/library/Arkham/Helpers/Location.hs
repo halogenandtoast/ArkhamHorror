@@ -263,13 +263,19 @@ getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSou
           mods <- getModifiers lid
           let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
           let barricaded = if CanIgnoreBarriers `elem` imods then [] else concat [xs | Barricades xs <- mods]
+          -- "You cannot enter X except by <source>". This is the only move query that
+          -- knows the moving effect's source, so it is where CannotEnterExcept is honored.
+          let entryExceptions = [(l', sm) | CannotEnterExcept l' sm <- imods]
           ls & filter (and . sequence [(/= lid), (`notElem` barricaded)]) & filterM \l -> do
             mods' <- getModifiers l
             pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
             revealed' <- field LocationRevealed l
             baseEnter <- mwhen (not revealed') <$> field LocationCostToEnterUnrevealed l -- Added for cards like Nimble
             let extraCostsToEnter = baseEnter <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
-            getCanAffordCost iid source [#move] [] (extraCostsToLeave <> extraCostsToEnter)
+            andM
+              [ allM (sourceMatches (toSource source)) [sm | (l', sm) <- entryExceptions, l' == l]
+              , getCanAffordCost iid source [#move] [] (extraCostsToLeave <> extraCostsToEnter)
+              ]
     else pure []
 
 getCanMoveToMatchingLocations

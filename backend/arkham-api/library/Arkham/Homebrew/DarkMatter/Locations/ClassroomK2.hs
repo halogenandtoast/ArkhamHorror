@@ -12,7 +12,7 @@ newtype ClassroomK2 = ClassroomK2 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 classroomK2 :: LocationCard ClassroomK2
-classroomK2 = location ClassroomK2 Cards.classroomK2 3 (PerPlayer 2)
+classroomK2 = locationWith ClassroomK2 Cards.classroomK2 3 (PerPlayer 2) connectsToAdjacent
 
 {- | "[action]: If Classroom K2 is adjacent to 4 other locations: Each
 investigator at Classroom K2 adds 1 tally mark next to their 'Memories'.

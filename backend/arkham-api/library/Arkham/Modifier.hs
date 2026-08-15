@@ -66,10 +66,11 @@ data ModifierType
   | NoAdditionalCosts
   | AdditionalPlayCostOf ExtendedCardMatcher Cost
   | AdditionalCostToCommit InvestigatorId Cost
-  | -- | An extra cost to take a particular action while at the location that
-    -- carries this modifier (Dark Matter's Cold Wastes taxes the Scan action).
-    -- Gathered from the acting investigator's location, like
-    -- 'AdditionalCostToResign'.
+  | {- | An extra cost to take a particular action while at the location that
+    carries this modifier (Dark Matter's Cold Wastes taxes the Scan action).
+    Gathered from the acting investigator's location, like
+    'AdditionalCostToResign'.
+    -}
     AdditionalCostToPerformAction ActionTarget Cost
   | AdditionalCostToEnter Cost
   | AdditionalCostToEnterMatching LocationMatcher Cost
@@ -78,6 +79,12 @@ data ModifierType
   | AdditionalCostToLeave Cost
   | AdditionalCostToResign Cost
   | AdditionalResources Int
+  | {- | "Resolve its revelation effect an additional time." Adds N extra copies
+    of the revelation itself; the surrounding @When@/@After (Revelation ...)@
+    pair still runs exactly once, so the card is still discarded once, marked
+    resolved once, and surges at most once.
+    -}
+    AdditionalRevelations Int
   | AdditionalSlot SlotType
   | AdditionalStartingCards [Card]
   | AdditionalStartingUses Int
@@ -202,6 +209,11 @@ data ModifierType
   | CannotDrawCardsFromPlayerCardEffects
   | CannotEngage InvestigatorId
   | CannotEnter LocationId
+  | {- | "You cannot enter X except by <source>". Unlike 'CannotEnter' this is
+    source-aware, so it is only honored by 'getCanMoveToLocations_', the one
+    move query that knows which effect is doing the moving.
+    -}
+    CannotEnterExcept LocationId SourceMatcher
   | CannotEnterVehicle AssetMatcher
   | CannotEvade EnemyMatcher
   | CannotExplore

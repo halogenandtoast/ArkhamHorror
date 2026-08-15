@@ -13,11 +13,8 @@ newtype BiologyLab = BiologyLab LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 biologyLab :: LocationCard BiologyLab
-biologyLab = location BiologyLab Cards.biologyLab 2 (PerPlayer 1)
+biologyLab = locationWith BiologyLab Cards.biologyLab 2 (PerPlayer 1) connectsToAdjacent
 
-{- | "[action]: Heal 1 damage or 1 horror from each investigator at your location.
-(Group limit once per game.)"
--}
 instance HasAbilities BiologyLab where
   getAbilities (BiologyLab a) =
     extendRevealed1 a $ groupLimit PerGame $ restricted a 1 Here actionAbility

@@ -24,7 +24,12 @@ instance HasAbilities FutureEvils where
   getAbilities (FutureEvils a) =
     [ mkAbility a 1
         $ forced
-        $ PlacedDoomCounter #after (NotSource SourceIsPlayerCard) AnyTarget
+        $ PlacedDoomCounter
+          #after
+          -- the additional doom this ability places is itself a non-player
+          -- source, so without excluding ourselves this retriggers forever
+          (NotSource SourceIsPlayerCard <> NotSource (SourceIsTreacheryEffect $ TreacheryWithId a.id))
+          AnyTarget
     ]
 
 instance RunMessage FutureEvils where

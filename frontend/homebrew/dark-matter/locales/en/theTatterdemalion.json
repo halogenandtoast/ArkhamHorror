@@ -1,5 +1,13 @@
 {
   "theTatterdemalion": {
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: <i>The Tatterdemalion</i>, <i>Anachronism</i>, and <i>Dark Past</i>. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/the-tatterdemalion.png' /><img src='{imgPath}/homebrew/dark-matter/sets/anachronism.png' /><img src='{imgPath}/homebrew/dark-matter/sets/dark-past.png' /></section>",
+      "setAsideArtificialIntelligence": "Set aside the <i>Artificial Intelligence</i> encounter set, out of play. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/artificial-intelligence.png' /></section>",
+      "setAsideVirtualAccessKey": "Set aside the Virtual Access Key story asset, out of play.",
+      "scanningDeck": "Create the scanning deck. This is done by taking all the encounter cards with icons at the bottom of their back side and shuffling them together.",
+      "placeLocations": "Put all remaining locations into play.",
+      "startAt": "Each investigator begins play at the Cryosleep Quarters."
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution Was Reached",

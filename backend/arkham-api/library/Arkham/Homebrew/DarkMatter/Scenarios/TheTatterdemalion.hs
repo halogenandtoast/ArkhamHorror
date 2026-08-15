@@ -56,6 +56,16 @@ instance HasChaosTokenValue TheTatterdemalion where
 instance RunMessage TheTatterdemalion where
   runMessage msg s@(TheTatterdemalion attrs) = runQueueT $ scenarioI18n "theTatterdemalion" $ case msg of
     Setup -> runScenarioSetup TheTatterdemalion attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "setAsideArtificialIntelligence"
+        li "setAsideVirtualAccessKey"
+        li "scanningDeck"
+        li.nested "placeLocations" do
+          li "startAt"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
+
       gather Set.TheTatterdemalion
       gather Set.Anachronism
       gather Set.DarkPast

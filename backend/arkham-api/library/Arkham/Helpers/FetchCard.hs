@@ -25,14 +25,31 @@ class Show a => FetchCard a where
 fetchCard :: (HasCallStack, HasGame m, CardGen m, FetchCard a) => a -> m Card
 fetchCard a = fromJustNote ("Card not found: " <> show a) <$> fetchCardMaybe a
 
+fetchCards :: (HasCallStack, HasGame m, CardGen m, FetchCard a, Traversable t) => t a -> m (t Card)
+fetchCards = traverse fetchCard
+
 instance FetchCard UniqueFetchCard where
   fetchCardMaybe (UniqueFetchCard def) = do
-    findCard ((== def.cardCode) . toCardCode) >>= \case
+    findCardFace def >>= \case
       Nothing -> Just <$> genCard def
-      Just card -> pure $ Just $ if cardCodeExactEq def.cardCode card.cardCode then card else flipCard card
-  fetchCardMaybe_ (UniqueFetchCard def) = do
-    findCard ((== def.cardCode) . toCardCode)
-      <&> fmap (\card -> if cardCodeExactEq def.cardCode card.cardCode then card else flipCard card)
+      Just card -> pure $ Just card
+  fetchCardMaybe_ (UniqueFetchCard def) = findCardFace def
+
+{- | Find the unique card for a def, preferring the face we actually asked for.
+
+Both faces of a double-sided card share a base card code, so a purely loose
+search can return the card registered under the *other* face — whichever sorts
+first by card id — and then hand back a flipped copy of it. The copy shows the
+right card code but carries the other card's identity, so the real card is never
+consumed (it sits set aside forever) and anything that resolves the returned
+card back through the registry, such as the victory display, sees the other face
+instead. Look for an exact match first and only fall back to the flip side.
+-}
+findCardFace :: HasGame m => CardDef -> m (Maybe Card)
+findCardFace def =
+  findCard (cardCodeExactEq def.cardCode . toCardCode) >>= \case
+    Just card -> pure $ Just card
+    Nothing -> fmap flipCard <$> findCard ((== def.cardCode) . toCardCode)
 
 instance FetchCard CardDef where
   fetchCardMaybe def =

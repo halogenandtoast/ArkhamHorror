@@ -500,7 +500,10 @@ instance RunMessage LocationAttrs where
       when (currentFloodLevel /= newFloodLevel) do
         before <-
           checkWhen (Window.FloodLevelChanged lid (fromMaybe Unflooded locationFloodLevel) newFloodLevel)
-        pushAll [before, Do msg]
+        -- Must defer the *clamped* level: `Do msg` would carry the original level
+        -- and write it unclamped, letting effects like The Water Rises fully flood
+        -- a location that cannot be fully flooded (e.g. Underground River).
+        pushAll [before, Do (SetFloodLevel lid newFloodLevel)]
       pure a
     Do (SetFloodLevel lid level) | lid == locationId -> do
       after <- checkAfter (Window.FloodLevelChanged lid (fromMaybe Unflooded locationFloodLevel) level)

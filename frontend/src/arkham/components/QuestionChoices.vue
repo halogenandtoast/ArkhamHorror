@@ -224,7 +224,7 @@ button, a.button {
   color: #DDD;
   font-size: 1.2em;
   font-weight: bold;
-  font-family: Arial, sans-serif;
+  font-family: "Noto Sans", sans-serif;
   padding: 10px;
   text-align: justify;
   transition: all 0.3s ease-in;

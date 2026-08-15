@@ -829,6 +829,13 @@ a.button {
     }
   }
 
+  :deep(div.story-card-rule:has(> img)) {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    flex: 1 1 auto;
+  }
+
   &:deep(.resolution) {
     padding: 40px;
   }

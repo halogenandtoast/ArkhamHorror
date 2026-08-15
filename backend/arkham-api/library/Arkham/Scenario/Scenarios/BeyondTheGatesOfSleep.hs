@@ -192,8 +192,7 @@ instance RunMessage BeyondTheGatesOfSleep where
           ("options." <> dreamKey dream)
           ( scope ("dreams." <> dreamKey dream)
               $ buildFlavor
-              $ setTitle "title"
-              >> ul (li.nested "body" $ li "effect")
+              $ ul (li.nested "body" $ li "effect")
           )
           do
             push $ SetScenarioMeta $ toJSON $ dream : usedDreams

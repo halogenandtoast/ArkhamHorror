@@ -232,6 +232,14 @@ const title = computed(() => {
     return t("Story")
   }
 
+  if (question.value && question.value.tag === QuestionType.CHOOSE_ONE_WIZARD) {
+    if (question.value.flavorText.title) {
+      return handleEmbeddedI18n(question.value.flavorText.title, t)
+    }
+
+    return t("Choose")
+  }
+
   if (question.value && question.value.tag === QuestionType.DROP_DOWN) {
     return t("Choose one")
   }

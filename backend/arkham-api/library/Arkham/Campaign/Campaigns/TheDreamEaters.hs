@@ -16,7 +16,7 @@ import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
-import Arkham.Helpers.FlavorText (buildFlavor, flavor)
+import Arkham.Helpers.FlavorText (compose, buildFlavor, flavor, h3, p, setTitle)
 import Arkham.Helpers.Log hiding (getHasRecord, whenHasRecord)
 import Arkham.Helpers.Log qualified as Lift
 import Arkham.Helpers.Query
@@ -222,7 +222,14 @@ instance RunMessage TheDreamEaters where
           <> [CampaignStep $ campaignStep attrs]
         pure c
       CampaignStep PrologueStep -> do
+        flavor $ campaignTitledFlavorText "prologueOpening"
         flavor $ campaignTitledFlavorText "prologue"
+        flavor $ campaignTitledFlavorText "campaignStructure"
+        campaignI18n $ scope "additionalRulesAndClarifications" do
+          flavor $ setTitle "title" >> compose (scope "alert" $ h3 "title" >> p "body")
+          flavor $ setTitle "title" >> compose (scope "storyCards" $ h3 "title" >> p "body")
+          flavor $ setTitle "title" >> compose (scope "swarming" $ h3 "title" >> p "body")
+          flavor $ setTitle "title" >> compose (scope "hidden" $ h3 "title" >> p "body")
         theDreamQuest <- hasCampaignOption (CampaignVariant "theDreamQuest")
         theWebOfDreams <- hasCampaignOption (CampaignVariant "theWebOfDreams")
 

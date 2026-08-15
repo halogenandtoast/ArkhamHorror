@@ -1387,6 +1387,38 @@ div:has(> img.remove) {
   }
 }
 
+:deep(.story-card-rule) {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+
+  > div {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  > img {
+    flex: 0 1 min(33.333%, 200px);
+    width: min(33.333%, 200px);
+    min-width: 0;
+    max-width: 200px;
+    height: auto;
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 300px) {
+  :deep(.story-card-rule) {
+    flex-direction: column;
+
+    > img {
+      flex-basis: auto;
+      width: 100%;
+      min-width: 0;
+    }
+  }
+}
+
 div:has(.unspendable) {
   border: 2px dashed teal;
   margin-inline: 10px;

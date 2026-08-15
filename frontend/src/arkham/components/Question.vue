@@ -736,13 +736,9 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
 <template>
   <div class='question-wrapper' data-game-actionable="true">
-    <div v-if="wizardFlavorText" class="wizard-question">
-      <div class="wizard-question__content">
-        <h2
-          v-if="wizardFlavorText.title"
-          v-html="label(wizardFlavorText.title)"
-        ></h2>
-        <div class="wizard-question__body">
+    <template v-if="wizardFlavorText">
+      <div class="intro-text">
+        <div class="intro-text-body">
           <FormattedEntry
             v-for="(paragraph, index) in wizardFlavorText.body"
             :key="index"
@@ -756,7 +752,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
         :playerId="playerId"
         @choose="chooseWizard"
       />
-    </div>
+    </template>
     <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
     <div v-if="cardPiles.length > 0" class="cardPiles">
       <div v-for="{pile, index} in cardPiles" :key="index" class="card-pile" @click="choose(index)">
@@ -2083,50 +2079,6 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.wizard-question {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  :deep(.question-choices) {
-    padding: 0;
-  }
-}
-
-.wizard-question__content {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  color: var(--neutral-extra-dark);
-  background: linear-gradient(#dfdad8, #c9c4c2);
-  background-image: v-bind(grunge);
-  background-size: cover;
-  border-radius: 5px;
-
-  h2 {
-    margin: 0;
-    padding-bottom: 4px;
-    color: var(--green-title);
-    font-family: Teutonic, "Noto Sans", sans-serif;
-    font-weight: 500;
-    text-align: center;
-    border-bottom: 3px double var(--green-title);
-  }
-}
-
-.wizard-question__body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: min(50vh, 480px);
-  overflow-y: auto;
-
-  :deep(p) {
-    margin: 0;
-  }
 }
 
 .question-wrapper:has(.haunted) {

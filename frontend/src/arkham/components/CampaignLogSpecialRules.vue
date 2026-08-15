@@ -156,4 +156,35 @@ const scrollToRule = (i: number) => {
 .rule-body :deep(li:last-child) {
   margin-bottom: 0;
 }
+
+.rule-body :deep(.story-card-rule) {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.rule-body :deep(.story-card-rule > div) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rule-body :deep(.story-card-rule > img) {
+  flex: 0 1 min(33.333%, 200px);
+  width: min(33.333%, 200px);
+  min-width: 0;
+  max-width: 200px;
+  height: auto;
+  border-radius: 4%;
+}
+
+@media (max-width: 300px) {
+  .rule-body :deep(.story-card-rule) {
+    flex-direction: column;
+  }
+
+  .rule-body :deep(.story-card-rule > img) {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
 </style>

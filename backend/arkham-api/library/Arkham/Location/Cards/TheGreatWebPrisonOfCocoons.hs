@@ -31,7 +31,7 @@ instance RunMessage TheGreatWebPrisonOfCocoons where
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
       pure l
-    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+    FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       actions <- field InvestigatorRemainingActions iid
       chooseOrRunOne
         iid

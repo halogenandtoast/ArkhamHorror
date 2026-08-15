@@ -49,7 +49,7 @@ instance RunMessage TitanicRamp_185 where
             $ withSkillTest \sid -> skillTestAutomaticallySucceeds (attrs.ability 1) sid
         withI18n $ countVar 1 $ labeled' "doNotSpendClues" nothing
       pure l
-    FailedThisSkillTest iid (isSource attrs -> True) -> do
+    FailedThisSkillTest iid (isIndexedSource 1 attrs -> True) -> do
       cancelMovement attrs iid
       pure l
     _ -> TitanicRamp_185 <$> liftRunMessage msg attrs

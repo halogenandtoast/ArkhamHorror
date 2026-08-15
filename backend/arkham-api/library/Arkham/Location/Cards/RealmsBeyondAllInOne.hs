@@ -62,7 +62,7 @@ instance RunMessage RealmsBeyondAllInOne where
       cancelEnemyMovement enemy
       enemyMoveTo (attrs.ability 2) enemy attrs
       pure l
-    FailedThisSkillTest iid (isSource attrs -> True) -> do
+    FailedThisSkillTest iid ((== toSource attrs) -> True) -> do
       cancelMovement attrs iid
       pure l
     _ -> RealmsBeyondAllInOne <$> liftRunMessage msg attrs

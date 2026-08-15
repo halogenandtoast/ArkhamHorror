@@ -29,5 +29,6 @@ instance RunMessage Anachronism where
           $ labeledValidate' hasAssets "discardAssets"
           $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
         chooseTakeHorror iid attrs 1
+      doNextStep msg
       pure t
     _ -> Anachronism <$> liftRunMessage msg attrs

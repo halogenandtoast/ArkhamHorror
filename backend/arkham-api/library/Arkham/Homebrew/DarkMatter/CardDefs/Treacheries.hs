@@ -2,6 +2,7 @@ module Arkham.Homebrew.DarkMatter.CardDefs.Treacheries where
 
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Homebrew.DarkMatter.Traits
+import Arkham.Keyword qualified as Keyword
 import Arkham.Treachery.CardDefs.Import
 
 -- anachronism
@@ -20,18 +21,21 @@ reminiscencePledge :: CardDef
 reminiscencePledge =
   (treachery ":dark-matter:003" "Reminiscence (Pledge)" Set.DarkPast 1)
     { cdCardTraits = setFromList [Pact]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 reminiscenceSecrets :: CardDef
 reminiscenceSecrets =
   (treachery ":dark-matter:004" "Reminiscence (Secrets)" Set.DarkPast 1)
     { cdCardTraits = setFromList [Pact]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 reminiscenceCovenant :: CardDef
 reminiscenceCovenant =
   (treachery ":dark-matter:005" "Reminiscence (Covenant)" Set.DarkPast 1)
     { cdCardTraits = setFromList [Pact]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 -- deep_space
@@ -39,6 +43,7 @@ callOfTheVoid :: CardDef
 callOfTheVoid =
   (treachery ":dark-matter:008" "Call of the Void" Set.DeepSpace 1)
     { cdCardTraits = setFromList [Omen]
+    , cdKeywords = setFromList [Keyword.Surge]
     }
 
 coldVacuum :: CardDef
@@ -79,6 +84,7 @@ cabinPressure :: CardDef
 cabinPressure =
   (treachery ":dark-matter:045" "Cabin Pressure" Set.TheTatterdemalion 2)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 coolantLeak :: CardDef
@@ -116,6 +122,7 @@ hallucinatoryHolograms :: CardDef
 hallucinatoryHolograms =
   (treachery ":dark-matter:051" "Hallucinatory Holograms" Set.ArtificialIntelligence 2)
     { cdCardTraits = setFromList [Terror]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 predictiveAlgorithm :: CardDef
@@ -168,12 +175,14 @@ rememberME :: CardDef
 rememberME =
   (treachery ":dark-matter:087" "REMEMBER ME?" Set.TheBoogeyman 2)
     { cdCardTraits = setFromList [Nightmare, Terror]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 surprise :: CardDef
 surprise =
   (treachery ":dark-matter:088" "SURPRISE!" Set.TheBoogeyman 2)
     { cdCardTraits = setFromList [Virtual, Nightmare]
+    , cdKeywords = setFromList [Keyword.Peril]
     }
 
 -- lost_quantum
@@ -191,6 +200,7 @@ paradoxicalThreat :: CardDef
 paradoxicalThreat =
   (treachery ":dark-matter:108" "Paradoxical Threat" Set.LostQuantum 2)
     { cdCardTraits = setFromList [Omen]
+    , cdKeywords = setFromList [Keyword.Peril]
     }
 
 quantumCollapse :: CardDef
@@ -252,6 +262,7 @@ scrambled :: CardDef
 scrambled =
   (treachery ":dark-matter:152" "Scrambled" Set.InTheShadowOfEarth 2)
     { cdCardTraits = setFromList [Blunder]
+    , cdKeywords = setFromList [Keyword.Surge]
     }
 
 -- strange_moons
@@ -271,6 +282,7 @@ innocentMishap :: CardDef
 innocentMishap =
   (treachery ":dark-matter:181" "Innocent Mishap" Set.StrangeMoons 2)
     { cdCardTraits = setFromList [Blunder]
+    , cdKeywords = setFromList [Keyword.Peril]
     }
 
 lostInTranslation :: CardDef
@@ -307,30 +319,35 @@ darkReflectionsMalingerer :: CardDef
 darkReflectionsMalingerer =
   (treachery ":dark-matter:199" "Dark Reflections (Malingerer)" Set.TheMachineInYellow 1)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 darkReflectionsMurderer :: CardDef
 darkReflectionsMurderer =
   (treachery ":dark-matter:200" "Dark Reflections (Murderer)" Set.TheMachineInYellow 1)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 darkReflectionsSycophant :: CardDef
 darkReflectionsSycophant =
   (treachery ":dark-matter:201" "Dark Reflections (Sycophant)" Set.TheMachineInYellow 1)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 darkReflectionsZealot :: CardDef
 darkReflectionsZealot =
   (treachery ":dark-matter:202" "Dark Reflections (Zealot)" Set.TheMachineInYellow 1)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 delusionalMadness :: CardDef
 delusionalMadness =
   (treachery ":dark-matter:203" "Delusional Madness" Set.TheMachineInYellow 3)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Surge]
     }
 
 fathomlessRegrets :: CardDef
@@ -353,6 +370,7 @@ perspectiveSwitch :: CardDef
 perspectiveSwitch =
   (treachery ":dark-matter:207" "Perspective Switch" Set.TheMachineInYellow 2)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
     }
 
 -- fragment_of_carcosa
@@ -378,6 +396,7 @@ echoesOfTassildaMatter :: CardDef
 echoesOfTassildaMatter =
   (treachery ":dark-matter:232" "Echoes of Tassilda (Matter)" Set.FragmentOfCarcosa 1)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Peril, Keyword.Hidden]
     , cdVictoryPoints = Just 1
     }
 
@@ -385,6 +404,7 @@ echoesOfTassildaMind :: CardDef
 echoesOfTassildaMind =
   (treachery ":dark-matter:233" "Echoes of Tassilda (Mind)" Set.FragmentOfCarcosa 1)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Peril, Keyword.Hidden]
     , cdVictoryPoints = Just 1
     }
 
@@ -404,6 +424,7 @@ madnessOfCarcosa :: CardDef
 madnessOfCarcosa =
   (treachery ":dark-matter:236" "Madness of Carcosa" Set.FragmentOfCarcosa 1)
     { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Peril, Keyword.Hidden]
     , cdVictoryPoints = Just 2
     }
 
@@ -411,6 +432,7 @@ sceneShifting :: CardDef
 sceneShifting =
   (treachery ":dark-matter:237" "Scene Shifting" Set.FragmentOfCarcosa 3)
     { cdCardTraits = setFromList [Omen]
+    , cdKeywords = setFromList [Keyword.Surge]
     }
 
 songOfYourSoul :: CardDef

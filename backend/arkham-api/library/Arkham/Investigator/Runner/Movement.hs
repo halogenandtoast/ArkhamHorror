@@ -531,10 +531,19 @@ handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
              ]
           <> [After (MoveTo movement)]
 
+        -- Safeguard-style "move with" only covers a move "from your location to
+        -- a connecting location". A card effect that sends the mover to an
+        -- arbitrary location (Pendant of the Queen) is not something a follower
+        -- may tag along with, so gate on the destination actually being
+        -- accessible from where the follower is standing (#5407). `iid` has not
+        -- been re-placed yet here, so every follower selected still shares the
+        -- origin location with them.
         when (movement.means /= Place) do
           moveWith <-
             select (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
-          for_ moveWith \iid' -> push $ ForInvestigator iid' $ ForTarget (LocationTarget lid) (MoveTo movement)
+          for_ moveWith \iid' -> do
+            connected <- lid <=~> AccessibleFrom ForMovement (locationWithInvestigator iid')
+            when connected $ push $ ForInvestigator iid' $ ForTarget (LocationTarget lid) (MoveTo movement)
 
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]

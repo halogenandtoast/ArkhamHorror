@@ -5,9 +5,14 @@ import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.Modifiers (ModifierType (IgnoreRevelation))
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (drawFacedownCardWith, getFacedownCards)
+import Arkham.Homebrew.DarkMatter.Helpers (
+  FacedownEncounterCard (..),
+  drawFacedownCardWith,
+  drawFacedownEncounterCard,
+  getFacedownEncounterCards,
+ )
 import Arkham.I18n
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Treachery.Types (Field (TreacheryCard))
@@ -29,7 +34,7 @@ instance HasAbilities Destabilization where
     [ restricted
         a
         1
-        (exists $ HasMatchingTreachery (TreacheryFacedownInThreatAreaOf You) <> You)
+        (DuringTurn You)
         actionAbility
     , restricted a 2 (not_ $ exists $ UneliminatedInvestigator <> not_ ResignedInvestigator)
         $ Objective
@@ -39,26 +44,31 @@ instance HasAbilities Destabilization where
 instance RunMessage Destabilization where
   runMessage msg a@(Destabilization attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      facedown <- getFacedownCards iid
-      chooseOrRunOneM iid $ targets facedown \tid -> drawFacedownCardWith iid tid do
-        -- The rider is offered with the card face up but before its revelation
-        -- is initiated: "cancel" has to interrupt the effect's initiation.
-        -- IgnoreRevelation is the engine's revelation cancel; ResolveTreachery
-        -- reads it and discards the treachery unresolved, which is what the
-        -- rules require ("the card is still regarded as having been drawn, and
-        -- it is still placed in the encounter discard pile").
-        clues <- getSpendableClueCount [iid]
-        when (clues > 0) do
-          card <- field TreacheryCard tid
-          chooseOneM iid $ withI18n do
-            labeled' "cancelRevelationEffect" do
-              spendClues iid 1
-              cardResolutionModifier card (attrs.ability 1) (CardIdTarget card.id) IgnoreRevelation
-              checkAfter
-                $ Window.CancelledOrIgnoredCardOrGameEffect
-                  (toSource $ attrs.ability 1)
-                  (Just card.id)
-            countVar 1 $ labeled' "doNotSpendClues" nothing
+      facedown <- getFacedownEncounterCards iid
+      for_ (nonEmpty facedown) \cards -> do
+        card <- sample cards
+        case card of
+          FacedownTreachery tid -> drawFacedownCardWith iid tid do
+            -- The rider is offered with the card face up but before its
+            -- revelation is initiated. IgnoreRevelation cancels that effect;
+            -- the card was still drawn and is discarded normally.
+            clues <- getSpendableClueCount [iid]
+            when (clues > 0) do
+              treacheryCard <- field TreacheryCard tid
+              chooseOneM iid $ withI18n do
+                labeled' "cancelRevelationEffect" do
+                  spendClues iid 1
+                  cardResolutionModifier
+                    treacheryCard
+                    (attrs.ability 1)
+                    (CardIdTarget treacheryCard.id)
+                    IgnoreRevelation
+                  checkAfter
+                    $ Window.CancelledOrIgnoredCardOrGameEffect
+                      (toSource $ attrs.ability 1)
+                      (Just treacheryCard.id)
+                countVar 1 $ labeled' "doNotSpendClues" nothing
+          _ -> drawFacedownEncounterCard iid card
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceVia #other attrs attrs

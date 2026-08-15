@@ -6,9 +6,7 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Investigator.Types (Field (InvestigatorHand))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Projection
-import Arkham.Zone (OutOfPlayZone (SetAsideZone))
 
 newtype HoundOfTindalos = HoundOfTindalos EnemyAttrs
   deriving anyclass (IsEnemy, HasAbilities)
@@ -18,7 +16,7 @@ newtype HoundOfTindalos = HoundOfTindalos EnemyAttrs
 location."
 -}
 houndOfTindalos :: EnemyCard HoundOfTindalos
-houndOfTindalos = enemyWith HoundOfTindalos Cards.houndOfTindalos (placementL .~ OutOfPlay SetAsideZone)
+houndOfTindalos = enemyWith HoundOfTindalos Cards.houndOfTindalos (spawnAtL ?~ SpawnAt Nowhere)
 
 {- | "Massive. Alert. Retaliate. / While you have an odd number of cards in your
 hand, Hound of Tindalos is considered to be engaged with you."

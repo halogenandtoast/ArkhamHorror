@@ -2,7 +2,7 @@ module Arkham.Homebrew.DarkMatter.Treacheries.RadioactiveDecay (radioactiveDecay
 
 import Arkham.Ability
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (drawFacedownCard, getFacedownCards)
+import Arkham.Homebrew.DarkMatter.Helpers (drawRandomFacedownCard)
 import Arkham.Matcher
 import Arkham.Treachery.Import.Lifted
 
@@ -30,10 +30,8 @@ instance RunMessage RadioactiveDecay where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      facedown <- getFacedownCards iid
-      case facedown of
-        [] -> assignDamageAndHorror iid (attrs.ability 1) 1 1
-        (tid : _) -> drawFacedownCard iid tid
+      drew <- drawRandomFacedownCard iid
+      unless drew $ assignDamageAndHorror iid (attrs.ability 1) 1 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs

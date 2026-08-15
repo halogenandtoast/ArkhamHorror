@@ -16,7 +16,7 @@ newtype IceSpires = IceSpires LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 iceSpires :: LocationCard IceSpires
-iceSpires = location IceSpires Cards.iceSpires 3 (PerPlayer 1)
+iceSpires = symbolLabel $ location IceSpires Cards.iceSpires 3 (PerPlayer 1)
 
 {- | "Forced - After you scan at this location: Shuffle an empty location without
 a resource token on it back into the scanning deck."

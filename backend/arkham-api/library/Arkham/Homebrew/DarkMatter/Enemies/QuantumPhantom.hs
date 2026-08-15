@@ -37,6 +37,7 @@ instance RunMessage QuantumPhantom where
   runMessage msg e@(QuantumPhantom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cancelEnemyDefeat attrs
+      push $ HealAllDamage (EnemyTarget attrs.id) (attrs.ability 1)
       place attrs (FacedownInThreatArea iid)
       pure e
     _ -> QuantumPhantom <$> liftRunMessage msg attrs

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (drawFacedownCard, getFacedownCards)
+import Arkham.Homebrew.DarkMatter.Helpers (drawRandomFacedownCard, getFacedownCardCount)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -13,7 +13,7 @@ newtype SchrodGenerators = SchrodGenerators LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schrodGenerators :: LocationCard SchrodGenerators
-schrodGenerators = location SchrodGenerators Cards.schrodGenerators 2 (Static 0)
+schrodGenerators = symbolLabel $ location SchrodGenerators Cards.schrodGenerators 2 (Static 0)
 
 -- "Investigators at this location cannot cancel or ignore card effects or game effects."
 instance HasModifiersFor SchrodGenerators where
@@ -36,9 +36,9 @@ instance HasAbilities SchrodGenerators where
 instance RunMessage SchrodGenerators where
   runMessage msg l@(SchrodGenerators attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      facedown <- getFacedownCards iid
-      when (length facedown >= 4) do
-        for_ (take 1 facedown) $ drawFacedownCard iid
+      n <- getFacedownCardCount iid
+      when (n >= 4) do
+        void $ drawRandomFacedownCard iid
         gainClues iid (attrs.ability 1) 2
       pure l
     _ -> SchrodGenerators <$> liftRunMessage msg attrs

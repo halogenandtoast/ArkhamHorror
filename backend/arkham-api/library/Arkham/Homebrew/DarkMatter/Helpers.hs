@@ -34,7 +34,7 @@ import Arkham.Homebrew.DarkMatter.Traits (pattern Brain, pattern Carcosa)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorLog, InvestigatorMentalTrauma))
-import Arkham.Location.Types (LocationAttrs)
+import Arkham.Location.Types (Field (LocationCard), LocationAttrs)
 import Arkham.LocationSymbol
 import Arkham.Matcher (
   AssetMatcher (AssetWithPlacement, AssetWithTrait),
@@ -47,6 +47,7 @@ import Arkham.Matcher (
     LocationWithEnemy,
     LocationWithId,
     LocationWithTitle,
+    LocationWithToken,
     LocationWithTrait
   ),
   TreacheryMatcher (..),
@@ -58,6 +59,8 @@ import Arkham.Matcher (
   locationWithInvestigator,
   mapOneOf,
   oneOf,
+  pattern LocationWithoutEnemies,
+  pattern LocationWithoutInvestigators,
  )
 import Arkham.Message (
   Message (
@@ -88,6 +91,7 @@ import Arkham.Scenario.Setup
 import Arkham.Source
 import Arkham.Story.Types (StoryAttrs)
 import Arkham.Target
+import Arkham.Token qualified as Token
 import Arkham.Trait (Trait (Cave, Crew))
 import Arkham.Window qualified as Window
 import Arkham.Xp
@@ -433,6 +437,18 @@ shuffleIntoScanningDeck :: (ReverseQueue m, IsCard card) => [card] -> m ()
 shuffleIntoScanningDeck cards =
   push $ ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey ScanningDeck) (map toCard cards)
 
+shuffleEmptyUnstabilizedLocations :: ReverseQueue m => m ()
+shuffleEmptyUnstabilizedLocations = do
+  locations <-
+    select
+      $ LocationWithoutInvestigators
+      <> LocationWithoutEnemies
+      <> not_ (LocationWithToken Token.Resource)
+  for_ locations \lid -> do
+    card <- field LocationCard lid
+    shuffleIntoScanningDeck [card]
+    removeLocation lid
+
 -- ** The Evidence deck (In the Shadow of Earth) ** --
 
 {- | Ship Mainframe and Telecoms both print "Draw the top card of the 'Evidence'
@@ -653,22 +669,44 @@ facedownEnemiesOf = EnemyWithPlacement . FacedownInThreatArea
 getFacedownEnemies :: HasGame m => InvestigatorId -> m [EnemyId]
 getFacedownEnemies = select . facedownEnemiesOf
 
--- | Every face-down card in the threat area, treacheries and enemies alike.
+facedownAssetsOf :: InvestigatorId -> AssetMatcher
+facedownAssetsOf = AssetWithPlacement . FacedownInThreatArea
+
+getFacedownAssets :: HasGame m => InvestigatorId -> m [AssetId]
+getFacedownAssets = select . facedownAssetsOf
+
+-- | Every face-down card in the threat area, regardless of its card type.
 getFacedownCardCount :: HasGame m => InvestigatorId -> m Int
 getFacedownCardCount iid =
-  (+) <$> selectCount (facedownInThreatAreaOf iid) <*> selectCount (facedownEnemiesOf iid)
+  sum
+    <$> sequence
+      [ selectCount (facedownInThreatAreaOf iid)
+      , selectCount (facedownEnemiesOf iid)
+      , selectCount (facedownAssetsOf iid)
+      ]
 
 -- | "Place the top card of the encounter deck into your threat area, face-down."
+placeCardFacedownInThreatArea :: ReverseQueue m => InvestigatorId -> Card -> m ()
+placeCardFacedownInThreatArea iid card = case toCardType card of
+  EnemyType -> push =<< Msg.createEnemyWithPlacement_ card placement
+  AssetType -> push =<< Msg.createAssetAt_ card placement
+  _ -> createTreacheryAt_ card placement
+ where
+  placement = FacedownInThreatArea iid
+
+placeCardsFacedownEvenly :: ReverseQueue m => [InvestigatorId] -> [Card] -> m ()
+placeCardsFacedownEvenly investigators cards = unless (null investigators) do
+  shuffled <- shuffle cards
+  for_ (zip shuffled $ cycleN (length shuffled) investigators) \(card, iid) ->
+    placeCardFacedownInThreatArea iid card
+
 placeFacedownInThreatArea :: ReverseQueue m => InvestigatorId -> Int -> m ()
 placeFacedownInThreatArea iid n = replicateM_ n do
   getEncounterDeck >>= \case
     Deck [] -> pure ()
     Deck (card : rest) -> do
       setEncounterDeck (Deck rest)
-      let c = toCard card
-      if toCardType c == EnemyType
-        then push =<< Msg.createEnemyWithPlacement_ c (FacedownInThreatArea iid)
-        else createTreacheryAt_ c (FacedownInThreatArea iid)
+      placeCardFacedownInThreatArea iid (toCard card)
 
 {- | "Draw a face-down encounter card in your threat area" — the card leaves the
 face-down zone and resolves as if just drawn.
@@ -715,10 +753,54 @@ drawFacedownEnemy iid eid = do
   checkAfter $ Window.ScenarioEvent facedownDrawnEvent (Just iid) (toJSON eid)
   Msg.pushAll [InvestigatorDrawEnemy iid eid, Revelation iid (EnemySource eid)]
 
+{- | Encounter assets such as Erwin Simmons can also be among the face-down
+cards. Remove the hidden asset entity, then resolve its card as a fresh
+encounter draw so its revelation creates the normal in-play asset.
+-}
+drawFacedownAsset :: ReverseQueue m => InvestigatorId -> AssetId -> m ()
+drawFacedownAsset iid aid = do
+  card <- field AssetCard aid
+  checkAfter $ Window.ScenarioEvent facedownDrawnEvent (Just iid) (toJSON aid)
+  removeAsset aid
+  push $ Revelation iid (CardIdSource card.id)
+
+data FacedownEncounterCard
+  = FacedownTreachery TreacheryId
+  | FacedownEnemy EnemyId
+  | FacedownAsset AssetId
+  deriving stock (Show, Eq)
+
+getFacedownEncounterCards :: HasGame m => InvestigatorId -> m [FacedownEncounterCard]
+getFacedownEncounterCards iid =
+  concat
+    <$> sequence
+      [ map FacedownTreachery <$> getFacedownCards iid
+      , map FacedownEnemy <$> getFacedownEnemies iid
+      , map FacedownAsset <$> getFacedownAssets iid
+      ]
+
+drawFacedownEncounterCard :: ReverseQueue m => InvestigatorId -> FacedownEncounterCard -> m ()
+drawFacedownEncounterCard iid = \case
+  FacedownTreachery tid -> drawFacedownCard iid tid
+  FacedownEnemy eid -> drawFacedownEnemy iid eid
+  FacedownAsset aid -> drawFacedownAsset iid aid
+
+-- | Randomly draw one face-down encounter card. Returns whether a card existed.
+drawRandomFacedownCard :: ReverseQueue m => InvestigatorId -> m Bool
+drawRandomFacedownCard iid = do
+  cards <- getFacedownEncounterCards iid
+  case nonEmpty cards of
+    Nothing -> pure False
+    Just cards' -> do
+      drawFacedownEncounterCard iid =<< sample cards'
+      pure True
+
+drawFacedownCards :: ReverseQueue m => InvestigatorId -> Int -> m ()
+drawFacedownCards iid n = replicateM_ n $ void $ drawRandomFacedownCard iid
+
 drawAllFacedownCards :: ReverseQueue m => InvestigatorId -> m ()
-drawAllFacedownCards iid = do
-  getFacedownCards iid >>= traverse_ (drawFacedownCard iid)
-  getFacedownEnemies iid >>= traverse_ (drawFacedownEnemy iid)
+drawAllFacedownCards iid =
+  getFacedownEncounterCards iid >>= traverse_ (drawFacedownEncounterCard iid)
 
 -- ** The [[Avatar]] children (Public School 187) ** --
 

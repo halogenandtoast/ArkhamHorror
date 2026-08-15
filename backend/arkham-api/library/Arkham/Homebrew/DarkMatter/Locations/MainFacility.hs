@@ -15,7 +15,7 @@ newtype MainFacility = MainFacility LocationAttrs
 
 -- Shroud is X, the number of connecting locations.
 mainFacility :: LocationCard MainFacility
-mainFacility = location MainFacility Cards.mainFacility 0 (PerPlayer 2)
+mainFacility = symbolLabel $ location MainFacility Cards.mainFacility 0 (PerPlayer 2)
 
 instance HasModifiersFor MainFacility where
   getModifiersFor (MainFacility a) = do

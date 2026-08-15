@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (drawFacedownCard, getFacedownCards)
+import Arkham.Homebrew.DarkMatter.Helpers (drawRandomFacedownCard)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
@@ -29,6 +29,6 @@ instance HasAbilities MiGoStabilizer where
 instance RunMessage MiGoStabilizer where
   runMessage msg e@(MiGoStabilizer attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      getFacedownCards iid >>= traverse_ (drawFacedownCard iid) . take 1
+      void $ drawRandomFacedownCard iid
       pure e
     _ -> MiGoStabilizer <$> liftRunMessage msg attrs

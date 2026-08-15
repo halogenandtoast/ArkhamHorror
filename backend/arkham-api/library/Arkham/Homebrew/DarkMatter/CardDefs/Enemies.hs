@@ -166,6 +166,7 @@ houndOfTindalos =
     , cdEvade = evade 4
     , cdHealth = health 4
     , cdCardTraits = setFromList [Creature, Liminal, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Alert, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     }
 
@@ -177,6 +178,7 @@ miGoStabilizer =
     , cdEvade = evade 1
     , cdHealth = health 2
     , cdCardTraits = setFromList [MiGo, Machine]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 quantumPhantom :: CardDef

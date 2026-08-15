@@ -12,7 +12,7 @@ newtype ColdWastes = ColdWastes LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldWastes :: LocationCard ColdWastes
-coldWastes = location ColdWastes Cards.coldWastes 3 (PerPlayer 1)
+coldWastes = symbolLabel $ location ColdWastes Cards.coldWastes 3 (PerPlayer 1)
 
 {- | "As an additional cost to scan at Cold Wastes, you must either (choose one):
 Spend 2 resources, or choose and discard 2 cards from your hand."

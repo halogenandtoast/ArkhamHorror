@@ -16,7 +16,7 @@ newtype CrystalPeak = CrystalPeak LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crystalPeak :: LocationCard CrystalPeak
-crystalPeak = location CrystalPeak Cards.crystalPeak 3 (PerPlayer 2)
+crystalPeak = symbolLabel $ location CrystalPeak Cards.crystalPeak 3 (PerPlayer 2)
 
 {- | "Forced - At the end of the round, if this location is empty and does not
 have a resource token on it: Shuffle it back into the scanning deck.

@@ -244,6 +244,10 @@ export default defineComponent({
   }
 }
 
+.green.trace, :deep(.green.trace) {
+  margin-block: 20px;
+}
+
 .green, :deep(.green), p.green, :deep(p.green) {
   --color: #213C35;
   --border-color: var(--color);

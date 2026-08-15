@@ -30,7 +30,7 @@ instance HasAbilities QuantumZeno where
             <> not_ (exists $ LocationWithTrait Elbrus <> not_ (LocationWithToken Token.Resource))
         )
         $ Objective
-        $ forced AnyWindow
+        $ FastAbility Free
     ]
 
 instance RunMessage QuantumZeno where
@@ -43,6 +43,6 @@ instance RunMessage QuantumZeno where
       advanceVia #other attrs attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      advanceActDeck attrs
+      push R2
       pure a
     _ -> QuantumZeno <$> liftRunMessage msg attrs

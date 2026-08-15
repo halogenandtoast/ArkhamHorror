@@ -4,6 +4,7 @@ module Arkham.Homebrew.DarkMatter.Assets.ErwinSimmonsQuantumPhysicist (
 
 import Arkham.Ability
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (DoNotTakeUpSlot), modifySelfWhen)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (
   campaignI18n,
@@ -15,12 +16,19 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
 newtype ErwinSimmonsQuantumPhysicist = ErwinSimmonsQuantumPhysicist AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 erwinSimmonsQuantumPhysicist :: AssetCard ErwinSimmonsQuantumPhysicist
 erwinSimmonsQuantumPhysicist =
-  asset ErwinSimmonsQuantumPhysicist Cards.erwinSimmonsQuantumPhysicist
+  assetWith
+    ErwinSimmonsQuantumPhysicist
+    Cards.erwinSimmonsQuantumPhysicist
+    ((healthL ?~ 3) . (sanityL ?~ 1))
+
+instance HasModifiersFor ErwinSimmonsQuantumPhysicist where
+  getModifiersFor (ErwinSimmonsQuantumPhysicist a) =
+    modifySelfWhen a (isNothing a.owner) [DoNotTakeUpSlot #ally]
 
 {- | "[reaction] When your turn begins, put the top card of the encounter deck
 face-down into your threat area: Fight/Evade/Investigate. If you fail, deal 1
@@ -34,7 +42,7 @@ the encounter deck face down" is not expressible as a 'Cost'.
 -}
 instance HasAbilities ErwinSimmonsQuantumPhysicist where
   getAbilities (ErwinSimmonsQuantumPhysicist a) =
-    [ controlled_ a 1 $ freeReaction $ TurnBegins #when You
+    [ restricted a 1 (ControlsThis <> EncounterDeckIsNotEmpty) $ freeReaction $ TurnBegins #when You
     , controlled_ a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]
 

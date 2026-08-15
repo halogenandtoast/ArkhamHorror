@@ -12,7 +12,7 @@ newtype QCrystalMines = QCrystalMines LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 qCrystalMines :: LocationCard QCrystalMines
-qCrystalMines = location QCrystalMines Cards.qCrystalMines 4 (PerPlayer 2)
+qCrystalMines = symbolLabel $ location QCrystalMines Cards.qCrystalMines 4 (PerPlayer 2)
 
 {- | "Forced - After you enter Q-Crystal Mines, place the top card of the
 encounter deck into your threat area, face-down."

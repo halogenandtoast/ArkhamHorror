@@ -12,7 +12,7 @@ newtype OmniTransmitters = OmniTransmitters LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 omniTransmitters :: LocationCard OmniTransmitters
-omniTransmitters = location OmniTransmitters Cards.omniTransmitters 2 (PerPlayer 1)
+omniTransmitters = symbolLabel $ location OmniTransmitters Cards.omniTransmitters 2 (PerPlayer 1)
 
 {- | "[action] Add 1 doom to the current agenda and test [intellect] (2): If you
 succeed, each investigator at this location adds 1 tally mark next to their
@@ -20,7 +20,7 @@ succeed, each investigator at this location adds 1 tally mark next to their
 -}
 instance HasAbilities OmniTransmitters where
   getAbilities (OmniTransmitters a) =
-    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
+    extendRevealed1 a $ groupLimit PerGame $ skillTestAbility $ restricted a 1 Here actionAbility
 
 instance RunMessage OmniTransmitters where
   runMessage msg l@(OmniTransmitters attrs) = runQueueT $ case msg of

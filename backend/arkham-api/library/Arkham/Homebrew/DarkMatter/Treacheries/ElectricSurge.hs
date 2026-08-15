@@ -3,6 +3,7 @@ module Arkham.Homebrew.DarkMatter.Treacheries.ElectricSurge (electricSurge) wher
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.DarkMatter.Traits (pattern AI)
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Treachery.Import.Lifted
 
 newtype ElectricSurge = ElectricSurge TreacheryAttrs
@@ -20,6 +21,7 @@ instance RunMessage ElectricSurge where
         $ SumCalculation
           [ Fixed 2
           , CountTreacheries $ TreacheryWithTrait AI <> TreacheryInThreatAreaOf (InvestigatorWithId iid)
+          , CountEnemies $ EnemyWithTrait AI <> EnemyWithPlacement (InThreatArea iid)
           ]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

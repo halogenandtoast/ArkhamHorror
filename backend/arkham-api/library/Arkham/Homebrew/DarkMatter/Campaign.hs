@@ -62,6 +62,9 @@ instance RunMessage DarkMatter where
       transportedByMaja <- getHasRecord YouWereTransportedToTheVirtualDreamlandsByMaja
       flavor do
         setTitle "title"
+        p "checkCampaignLog"
+      flavor do
+        setTitle "title"
         p $ if transportedByMaja then "missionBriefing1" else "missionBriefing2"
       flavor $ setTitle "title" >> p "missionBriefing3"
       storyWithChooseOneM' (setTitle "title" >> p "simulatedPerformance") do
@@ -73,7 +76,7 @@ instance RunMessage DarkMatter where
     DoStep 1 (CampaignStep (InterludeStep 1 _)) -> scope "heirToCarcosa" do
       flavor $ setTitle "title" >> p "body"
       record YouHaveWatchedThePerformanceOfHeirToCarcosa
-      eachInvestigator \iid -> sufferMentalTrauma iid 1
+      eachInvestigator (`sufferMentalTrauma` 1)
       storyCards <- getCampaignStoryCards
       for_ (mapToList storyCards) \(iid, cards) ->
         when (any ((== Assets.heirToCarcosa) . toCardDef) cards) do
@@ -90,7 +93,7 @@ instance RunMessage DarkMatter where
       storyWithChooseOneM' (setTitle "title" >> p "searchTheTatterdemalion") do
         labeled' "searchTheShip" do
           addImpendingDoom 1
-          eachInvestigator \iid -> addMemories iid 1
+          eachInvestigator (`addMemories` 1)
         labeled' "doNotSearchTheShip" nothing
       -- The side-story option (crossing out Memories instead of paying
       -- experience) is resolved manually; surface the guide text so players

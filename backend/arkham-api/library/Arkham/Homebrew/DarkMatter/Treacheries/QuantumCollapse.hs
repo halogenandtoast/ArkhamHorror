@@ -2,7 +2,11 @@ module Arkham.Homebrew.DarkMatter.Treacheries.QuantumCollapse (quantumCollapse) 
 
 import Arkham.Ability
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (drawFacedownCard, facedownDrawnEvent, getFacedownCards)
+import Arkham.Homebrew.DarkMatter.Helpers (
+  drawAllFacedownCards,
+  facedownDrawnEvent,
+  getFacedownCardCount,
+ )
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 import Arkham.Treachery.Import.Lifted
@@ -34,10 +38,10 @@ drawnTreachery = \case
 instance RunMessage QuantumCollapse where
   runMessage msg t@(QuantumCollapse attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      facedown <- filter (/= attrs.id) <$> getFacedownCards iid
-      if null facedown
+      n <- getFacedownCardCount iid
+      if n == 0
         then place attrs (FacedownInThreatArea iid)
-        else for_ facedown $ drawFacedownCard iid
+        else drawAllFacedownCards iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 (drawnTreachery -> Just tid) _ | tid == attrs.id -> do
       assignHorror iid (attrs.ability 1) 1

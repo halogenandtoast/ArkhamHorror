@@ -3,8 +3,7 @@ module Arkham.Homebrew.DarkMatter.Treacheries.ParadoxicalThreat (paradoxicalThre
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (
   campaignI18n,
-  drawFacedownCard,
-  getFacedownCards,
+  drawFacedownCards,
   placeFacedownInThreatArea,
  )
 import Arkham.Message.Lifted.Choose
@@ -28,7 +27,6 @@ instance RunMessage ParadoxicalThreat where
         labeled' "paradoxicalThreat.placeFacedown" $ placeFacedownInThreatArea iid 3
         labeled' "paradoxicalThreat.doomAndDraw" do
           placeDoomOnAgendaAndCheckAdvanceBy attrs 1
-          facedown <- getFacedownCards iid
-          for_ (take 3 facedown) $ drawFacedownCard iid
+          drawFacedownCards iid 3
       pure t
     _ -> ParadoxicalThreat <$> liftRunMessage msg attrs

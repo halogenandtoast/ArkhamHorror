@@ -14,7 +14,7 @@ newtype ReturnToHangmansBrookSpectral = ReturnToHangmansBrookSpectral LocationAt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToHangmansBrookSpectral :: LocationCard ReturnToHangmansBrookSpectral
-returnToHangmansBrookSpectral = location ReturnToHangmansBrookSpectral Cards.returnToHangmansBrookSpectral 1 (Static 0)
+returnToHangmansBrookSpectral = location ReturnToHangmansBrookSpectral Cards.returnToHangmansBrookSpectral 3 (Static 0)
 
 instance HasAbilities ReturnToHangmansBrookSpectral where
   getAbilities (ReturnToHangmansBrookSpectral a) =

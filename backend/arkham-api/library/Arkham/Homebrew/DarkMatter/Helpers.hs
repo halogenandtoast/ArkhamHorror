@@ -21,7 +21,12 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Game (getRemovedFromPlayCards)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Query (getLead)
-import Arkham.Helpers.Scenario (getEncounterDeck, getScenarioDeck)
+import Arkham.Helpers.Scenario (
+  getAgendaDeckCards,
+  getEncounterDeck,
+  getScenarioDeck,
+  scenarioField,
+ )
 import Arkham.Helpers.Window (wouldWindows)
 import Arkham.Helpers.Xp
 import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
@@ -72,6 +77,7 @@ import Arkham.Message (
     ReplaceLocation,
     ResolveTreachery,
     Revelation,
+    SetCardAside,
     ShuffleCardsIntoDeck,
     StoryMessage,
     Would
@@ -88,6 +94,7 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Setup
+import Arkham.Scenario.Types (Field (ScenarioSetAsideCards))
 import Arkham.Source
 import Arkham.Story.Types (StoryAttrs)
 import Arkham.Target
@@ -448,6 +455,31 @@ shuffleEmptyUnstabilizedLocations = do
     card <- field LocationCard lid
     shuffleIntoScanningDeck [card]
     removeLocation lid
+
+{- | The shared tail of all three printings of The Quantum Maelstrom:
+
+"If there is another agenda below this one, set this agenda aside, out of play.
+Otherwise, add 1 tally mark under \"Impending Doom\" in your Campaign Log and
+shuffle this agenda with each set aside agenda to form a new agenda deck."
+
+Set aside agendas are the printings this scenario has already cycled through,
+so the reformed deck is always all three again.
+-}
+advanceQuantumMaelstrom :: (ReverseQueue m, IsCard card) => card -> m ()
+advanceQuantumMaelstrom (toCard -> card) = do
+  below <- filter ((/= toCardId card) . toCardId) <$> getAgendaDeckCards 1
+  case below of
+    [] -> do
+      addImpendingDoom 1
+      -- Read the set aside pile directly: 'getSetAsideCardsMatching' matches
+      -- against the card registry, and the printings we set aside are the
+      -- agendas' own card values, which do not compare equal to it.
+      setAsideAgendas <- filter ((== AgendaType) . toCardType) <$> scenarioField ScenarioSetAsideCards
+      -- SetCurrentAgendaDeck pulls the new deck back out of the set aside pool
+      setCurrentAgendaDeck =<< shuffle (card : setAsideAgendas)
+    rest -> do
+      push $ SetCardAside card
+      setCurrentAgendaDeck rest
 
 -- ** The Evidence deck (In the Shadow of Earth) ** --
 

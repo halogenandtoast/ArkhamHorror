@@ -158,14 +158,18 @@ const futureStack = computed(() =>
   props.remainingStack.filter((c) => asCardCode(c) !== props.act.id),
 )
 
-const cardStage = (card: Card): number | null => {
-  const code = asCardCode(card)
-  return (
-    cardStore.cards.find(
-      (cardDef) => cardDef.cardCode === code || cardDef.cardCode === code.replace(/^c/, ''),
-    )?.stage ?? null
+const cardDefFor = (code: string) =>
+  cardStore.cards.find(
+    (cardDef) => cardDef.cardCode === code || cardDef.cardCode === code.replace(/^c/, ''),
   )
-}
+
+const cardStage = (code: string): number | null => cardDefFor(code)?.stage ?? null
+
+// Cards sharing a stage are usually branch alternatives (only one of "All In" /
+// "Fold" is ever played), so they share a pip. Same-stage cards that also share
+// a title are variant printings of that act, each of which is played in turn,
+// so those get a pip each.
+const cardTitle = (code: string): string => cardDefFor(code)?.name.title ?? code
 
 type StackIndicatorGroup = {
   label: string
@@ -179,6 +183,7 @@ type StackIndicatorGroup = {
 
 type ActStackGroup = StackIndicatorGroup & {
   stage: number | null
+  titles: Set<string>
   firstIndex: number
 }
 
@@ -186,16 +191,22 @@ const groupedActStack = computed<StackIndicatorGroup[]>(() => {
   const groups: ActStackGroup[] = []
 
   const addToGroup = (
-    stage: number | null,
+    code: string,
     fallbackKey: string,
+    fallbackStage: number | null,
     image: StackIndicatorGroup['images'][number],
     preferredState: StackIndicatorGroup['state'],
     firstIndex: number,
   ) => {
-    const group = groups.find((g) => (stage !== null ? g.stage === stage : g.label === fallbackKey))
+    const stage = cardStage(code) ?? fallbackStage
+    const title = cardTitle(code)
+    const group = groups.find((g) =>
+      stage !== null ? g.stage === stage && !g.titles.has(title) : g.label === fallbackKey,
+    )
 
     if (group) {
       group.images.push(image)
+      group.titles.add(title)
       if (preferredState === 'current') group.state = 'current'
       return
     }
@@ -203,6 +214,7 @@ const groupedActStack = computed<StackIndicatorGroup[]>(() => {
     groups.push({
       label: stage === null ? fallbackKey : `Act ${stage}`,
       stage,
+      titles: new Set([title]),
       firstIndex,
       state: preferredState,
       images: [image],
@@ -210,10 +222,10 @@ const groupedActStack = computed<StackIndicatorGroup[]>(() => {
   }
 
   props.completedStack.forEach((card, i) => {
-    const stage = cardStage(card)
     addToGroup(
-      stage,
+      asCardCode(card),
       `Act ${i + 1}`,
+      null,
       { src: imgsrc(cardImage(card)), passed: true },
       'completed',
       i,
@@ -221,26 +233,27 @@ const groupedActStack = computed<StackIndicatorGroup[]>(() => {
   })
 
   addToGroup(
-    props.act.sequence.number,
+    props.act.id,
     `Act ${props.act.sequence.number}`,
+    props.act.sequence.number,
     { src: image.value, current: true },
     'current',
     props.completedStack.length,
   )
 
   futureStack.value.forEach((card, i) => {
-    const stage = cardStage(card)
     addToGroup(
-      stage,
+      asCardCode(card),
       `Act ${props.completedStack.length + i + 2}`,
+      null,
       { src: imgsrc(cardImage(card)) },
-      stage === props.act.sequence.number ? 'current' : 'remaining',
+      'remaining',
       props.completedStack.length + i + 1,
     )
   })
 
   return groups.sort((a, b) => {
-    if (a.stage !== null && b.stage !== null) return a.stage - b.stage
+    if (a.stage !== null && b.stage !== null && a.stage !== b.stage) return a.stage - b.stage
     return a.firstIndex - b.firstIndex
   })
 })

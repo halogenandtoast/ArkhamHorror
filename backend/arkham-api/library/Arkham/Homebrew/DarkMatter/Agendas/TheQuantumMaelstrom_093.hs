@@ -9,7 +9,7 @@ import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (
   ScanResult (..),
-  addImpendingDoom,
+  advanceQuantumMaelstrom,
   getScanResult,
   placeFacedownInThreatArea,
   scan,
@@ -69,11 +69,6 @@ instance RunMessage TheQuantumMaelstrom_093 where
     DoStep 1 (AdvanceAgenda (isSide B attrs -> True)) -> do
       investigators <- allInvestigators
       for_ investigators (`placeFacedownInThreatArea` 1)
-      agendas <- selectCount AnyAgenda
-      if agendas > 1
-        then advanceAgendaDeck attrs
-        else do
-          addImpendingDoom 1
-          push $ ResetAgendaDeckToStage 1
+      advanceQuantumMaelstrom attrs
       pure a
     _ -> TheQuantumMaelstrom_093 <$> liftRunMessage msg attrs

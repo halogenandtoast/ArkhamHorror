@@ -51,7 +51,7 @@ instance IsCampaign TheFeastOfHemlockVale where
             (Day1, Day) -> continueEdit (CampaignSpecificStep "preludeTheFirstEvening" Nothing) allowOptions
             (Day1, Night) -> continue PreludeDawnOfTheSecondDay
             (Day2, Day) -> continueEdit (CampaignSpecificStep "preludeTheSecondEvening" Nothing) allowOptions
-            (Day2, Night) -> Nothing
+            (Day2, Night) -> continue PreludeDawnOfTheFinalDay
             (Day3, _) -> continueEdit PreludeTheFinalEvening allowOptions
      in case (campaignStep (toAttrs a)).normalize of
           PrologueStep -> continue PreludeWelcomeToHemlockVale

@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.WrittenInRock.Helpers
+import Arkham.Trait (Trait (Ally, Resident))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
-import Arkham.Trait (Trait (Ally, Resident))
 
 newtype WildRide = WildRide TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -30,14 +30,15 @@ instance RunMessage WildRide where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      -- Discard Wild Ride before resolving so the additional moves it triggers
-      -- (and any Warped Rail moves those cause) don't re-trigger its forced
-      -- "when the Mine Cart moves" ability while it is still in play.
+      -- Discard Wild Ride before resolving. The additional moves below are full
+      -- moves, so each one opens its own "when the Mine Cart moves" window (and
+      -- any Warped Rail moves those cause do too); discarding first is what
+      -- keeps them from re-triggering this forced ability.
       toDiscardBy iid (attrs.ability 1) attrs
       chooseOneM iid $ scenarioI18n do
         labeled' "wildRide.moveAgain" do
-          do_ (ScenarioSpecific "moveMineCart" Null)
-          do_ (ScenarioSpecific "moveMineCart" Null)
+          scenarioSpecific_ "moveMineCart"
+          scenarioSpecific_ "moveMineCart"
         labeled' "wildRide.damage" do
           eachInvestigator \iid' -> do
             directDamageAndHorror iid' (attrs.ability 1) 1 1

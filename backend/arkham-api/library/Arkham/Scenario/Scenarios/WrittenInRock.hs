@@ -425,7 +425,9 @@ instance RunMessage WrittenInRock where
           record TheInvestigatorsSurvivedTheHorrorsInTheRock
           resolution "resolution5"
           resolution6
-        Resolution 6 -> error "should be reached above"
+        -- Reached directly from the No Resolution "skip to Resolution 6" branch
+        -- above; Resolutions 1-5 fall into resolution6 inline instead.
+        Resolution 6 -> resolution6
         _ -> error "invalid resolution"
       pure s
     _ -> WrittenInRock <$> liftRunMessage msg attrs

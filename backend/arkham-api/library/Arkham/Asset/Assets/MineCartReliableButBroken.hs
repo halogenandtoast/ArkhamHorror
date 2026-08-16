@@ -12,8 +12,8 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Placement (Placement (..))
 import Arkham.Modifier
+import Arkham.Placement (Placement (..))
 import Arkham.Projection
 import Arkham.Scenarios.WrittenInRock.Helpers
 import Arkham.Token
@@ -56,7 +56,7 @@ instance RunMessage MineCartReliableButBroken where
     UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
       chooseOneM iid $ scenarioI18n do
         labeled' "mineCart.cancelMove" $ cancelWindowBatch ws
-        labeled' "mineCart.moveAgain" $ do_ (ScenarioSpecific "moveMineCart" Null)
+        labeled' "mineCart.moveAgain" $ scenarioSpecific_ "moveMineCart"
       pure a
     ScenarioSpecific "moveMineCart" _ -> do
       batched \_ -> do
@@ -67,6 +67,10 @@ instance RunMessage MineCartReliableButBroken where
         checkWhen $ Window.ScenarioEvent "mineCartMoved" Nothing Null
         do_ msg
       pure a
+    -- The inner step of the batched move above. Nothing else may push this
+    -- directly: doing so skips the VehicleWouldEnter (Cave In) and
+    -- "mineCartMoved" (ability 2, Wild Ride) checks. Every other "move the Mine
+    -- Cart" effect pushes ScenarioSpecific "moveMineCart" instead.
     Do (ScenarioSpecific "moveMineCart" _) -> do
       let dir = toResultDefault East attrs.meta
       withLocationOf attrs \loc -> do

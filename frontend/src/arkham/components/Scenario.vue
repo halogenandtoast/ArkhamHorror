@@ -50,6 +50,8 @@ import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import Connections from '@/arkham/components/Connections.vue';
 import RainOverlay from '@/arkham/components/RainOverlay.vue';
 import { supportsHtmlInCanvas } from '@/arkham/droplets';
+import { createRainAudio, type RainAudioInstance } from '@/arkham/rainAudio';
+import { useSoundsDisabled } from '@/composable/useSoundsDisabled';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { homebrewTotalsTokens } from '@/arkham/homebrewData';
@@ -124,6 +126,31 @@ const rainAvailable = computed(() =>
 )
 
 const showRain = computed(() => rainAvailable.value && rainEnabled.value)
+
+// Ambient rain, tied to the same switch as the visuals and to the global Sounds
+// preference. Built lazily so no AudioContext exists for anyone who never sees
+// the effect.
+const { soundsDisabled } = useSoundsDisabled()
+const rainAudioWanted = computed(() => showRain.value && !soundsDisabled.value)
+let rainAudio: RainAudioInstance | null = null
+let rainAudioUnavailable = false
+
+watch(rainAudioWanted, (wanted) => {
+  if (!wanted) {
+    rainAudio?.stop()
+    return
+  }
+  if (!rainAudio && !rainAudioUnavailable) {
+    rainAudio = createRainAudio()
+    rainAudioUnavailable = rainAudio === null
+  }
+  void rainAudio?.start()
+}, { immediate: true })
+
+onBeforeUnmount(() => {
+  rainAudio?.destroy()
+  rainAudio = null
+})
 
 // From the canvasui playground: slow, thin, sparse. Note this sits at the
 // bottom of the effect's usable range — at intensity 0.2 the first rain layer,
@@ -2691,9 +2718,16 @@ async function addChaosToken(face: any){
         }"
         @dblclick.passive="toggleZoom"
       >
-        <!-- ponytail: fullscreen mirror of the player-zone zoom-control; duplicated markup
-             beats prop-drilling ~10 handlers into a shared child. Keep the two in sync. -->
-        <div v-if="locationsFullscreen" class="zoom-control zoom-control--fullscreen">
+        <!-- ponytail: in-board mirror of the player-zone zoom-control; duplicated markup
+             beats prop-drilling ~10 handlers into a shared child. Keep the two in sync.
+             Used for fullscreen (floating, top right) and for split view, where the
+             player zone is too narrow for it and it docks to the bottom of the board
+             instead. The player-zone copy hides itself in split view. -->
+        <div
+          v-if="locationsFullscreen || splitView"
+          class="zoom-control"
+          :class="locationsFullscreen ? 'zoom-control--fullscreen' : 'zoom-control--docked'"
+        >
           <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
           <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
           <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>
@@ -2715,11 +2749,13 @@ async function addChaosToken(face: any){
             <ArrowUturnLeftIcon class="zoom-btn__icon" />
           </button>
           <button
-            class="zoom-btn zoom-btn--active"
-            @click.stop="locationsFullscreen = false"
-            v-tooltip="'Exit fullscreen locations (Esc)'"
+            class="zoom-btn"
+            :class="{ 'zoom-btn--active': locationsFullscreen }"
+            @click.stop="locationsFullscreen = !locationsFullscreen"
+            v-tooltip="locationsFullscreen ? 'Exit fullscreen locations (Esc)' : 'Expand locations to full screen'"
           >
-            <ArrowsPointingInIcon class="zoom-btn__icon" />
+            <ArrowsPointingInIcon v-if="locationsFullscreen" class="zoom-btn__icon" />
+            <ArrowsPointingOutIcon v-else class="zoom-btn__icon" />
           </button>
         </div>
         <div
@@ -2857,7 +2893,7 @@ async function addChaosToken(face: any){
           :tarotCards="props.scenario.tarotCards"
           @choose="choose"
         >
-          <div class="zoom-control">
+          <div v-if="!splitView" class="zoom-control">
             <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
             <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
             <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>
@@ -3215,6 +3251,22 @@ async function addChaosToken(face: any){
   inset: 0;
   z-index: var(--z-index-50);
   background: var(--background);
+}
+
+/* Split view: docked to the bottom of the locations board. Positioned against
+   .location-cards-container, which is the relative ancestor whether or not the
+   rain overlay is wrapping it. Deliberately does NOT force display, so the
+   coarse-pointer rule on .zoom-control still hides it on touch exactly as the
+   player-zone copy does today. */
+.zoom-control--docked {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  z-index: var(--z-index-10, 10);
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .zoom-control--fullscreen {

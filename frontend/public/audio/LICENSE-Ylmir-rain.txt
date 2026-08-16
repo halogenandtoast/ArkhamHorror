@@ -1,0 +1,14 @@
+Rain (loopable)
+
+Created by Ylmir
+Published on OpenGameArt.org
+
+License: Creative Commons Zero (CC0)
+http://creativecommons.org/publicdomain/zero/1.0/
+Attribution is not required; credited here anyway.
+
+Source: https://opengameart.org/content/rain-loopable
+Included file: rain.ogg
+
+Taken from the "Rain OGG.zip" download (file 3.ogg, 45s), re-encoded from
+160 kbps to 96 kbps Vorbis to halve the download. Unmodified otherwise.

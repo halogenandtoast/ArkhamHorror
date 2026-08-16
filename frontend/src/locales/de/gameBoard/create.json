@@ -1,0 +1,91 @@
+{
+    "newGame": "Neues Spiel",
+    "numberOfPlayers": "Spieleranzahl",
+    "withFriends": "Mit Freunden",
+    "multihandedSolo": "Solo",
+    "switchingPerspectives": "Perspektivwechsel",
+    "switchingPerspectivesDescription": "Beim Solospiel mit mehreren Ermittlern, musst du manchmal aus der Sicht eines bestimmten Ermittlers handeln. Nutze das <strong>Augen</strong>-Symbol in den Spieler-Tabs, um zur Perspektive dieses Ermittlers zu wechseln.",
+    "campaign": "Kampagne",
+    "standalone": "Standalone",
+    "sideStory": "Nebengeschichte",
+    "requiresInvestigator": "Erfordert {name}",
+    "alphaWarning": "Daran wird derzeit gearbeitet. Es funktioniert wahrscheinlich noch nicht und du solltest keine Fehler dafür melden.",
+    "betaWarning": "Dies ist bereit zum Testen, aber erwarte, dass in deinen Spielen oft Fehler auftreten.",
+    "betaWarningScenario": "Dieses Szenario ist bereit zum Testen, aber erwarte, dass in deinen Spielen oft Fehler auftreten.",
+    "normal": "Normal",
+    "returnTo": "Rückkehr zu...",
+    "fullCampaign": "Komplette Kampagne",
+    "bothScenarios": "Beide Szenarien (Kampagne)",
+    "scenarios": "Szenarien",
+    "partialCampaign": "Teilkampagne",
+    "multiplayerVariant": "Multiplayer-Variante",
+    "campaignType": "Kampagnentyp",
+    "pickScenario": "Szenario auswählen",
+    "difficulty": "Schwierigkeit",
+    "Easy": "Einfach",
+    "Standard": "Normal",
+    "Hard": "Schwer",
+    "Expert": "Experte",
+    "includeTarotReadings": "Tarot-Lesungen verwenden",
+    "playMode": "Spielmodus",
+    "singleGroupMode": "Einzelgruppen-Modus",
+    "epicMultiplayerMode": "Epischer Mehrspieler-Modus",
+    "singleScenarioMode": "Einzel-Szenario",
+    "miniCampaignMode": "Mini-Kampagne",
+    "miniCampaignDescription": "<p>Spiele drei aufeinanderfolgende Spiele – eines für jede Gruppe – in einer Reihenfolge deiner Wahl. Im Gegensatz zu einer normalen Kampagne:</p><ul><li>Standalone Deck-Konstruktionsregeln verwenden. Du musst nicht mit 0 Erfahrung beginnen.</li><li>Spieler können Ermittler und/oder Decks zwischen jedem Szenario austauschen.</li><li>Erfahrungspunkte werden zwischen Szenarien nicht verdient oder ausgegeben.</li><li>Es gibt kein Kampagnenlogbuch; Ermittler erleiden kein Trauma, und die getöteten oder wahnsinnig gewordenen können immer noch in anderen Szenarien verwendet werden.</li></ul>",
+    "numberOfGroups": "Anzahl der Gruppen",
+    "groupName": "Gruppenname",
+    "groupPlayers": "Spieler",
+    "imposeTimeLimit": "Zeitlimit festlegen",
+    "timeLimitMinutes": "Zeitlimit (Minuten)",
+    "gameName": "Spielname",
+    "create": "Erstellen",
+    "chooseYourDeck": "Wähle dein Deck | Wähle deine Decks",
+    "tabooList": "Tabuliste: {tabooList}",
+    "useExistingDeck": "Bestehendes Deck verwenden",
+    "loadNewDeck": "Neues Deck laden",
+    "selectADeck": "-- Wähle ein Deck --",
+    "deckUrlPlaceholder": "ArkhamDB oder arkham.build Deck ",
+    "choose": "Auswählen",
+    "variant": "Kampagnenvariante",
+    "fullCampaignOption": {
+      "theDreamEaters": "Die Traumfresser<br><small>8-teilige Kampagne</small>",
+      "theDreamQuest": "Die Traumsuche<br><small>4-teilige Kampagne</small>",
+      "theWebOfDreams": "Das Netz der Träume<br><small>4-teilige Kampagne</small>"
+    },
+    "advancedRulesConfiguration": "Erweiterte Regeleinstellungen",
+    "rulesPresets": "Vorlagen",
+    "presetCustom": "Benutzerdefiniert",
+    "preset": {
+      "chapter1": {
+        "name": "Kapitel 1",
+        "description": "Empfohlen für Kapitel 1 Kampagnen."
+      },
+      "chapter2": {
+        "name": "Kapitel 2",
+        "description": "Empfohlen für Kapitel 2 Kampagnen."
+      }
+    },
+    "chapter1Heading": "Kapitel 1",
+    "chapter2Heading": "Kapitel 2",
+    "homebrewHeading": "Homebrew",
+    "designedBy": "entwickelt von {name}",
+    "sideStoriesHeading": "Nebengeschichten",
+    "challengeScenariosHeading": "Herausforderungsszenario",
+    "asIfAtBehavior": "\"Als Ob\" bei Verhalten",
+    "asIfAtChapter1": "Kapitel 1 Regeln",
+    "asIfAtChapter1Description": "\"Als Ob\" an einem Ort gilt für die Dauer der kompletten Karte oder Fertigkeit, einschließlich Trigger-Fenster anderer Karten.",
+    "asIfAtChapter2": "Kapitel 2 Regeln",
+    "asIfAtChapter2Description": "\"Als Ob\" an einem Ort gilt nur während der Abhandlung der angegebenen Fertigkeit oder Aktion. Andere Karten-Fertigkeiten oder Trigger-Fenster werden mit dem tatsächlichen Sielzustand abgehanelt.",
+    "recommendedOptions": "Empfohlene Einstellungen",
+    "recommendedOption": {
+      "PlayersDoNotControlStoryAssetClues": {
+        "title": "Spieler kontrollieren Hinweise auf Geschichts-Vorteilen nicht",
+        "description": "Da Spieler von Das Fest von Hemlock Vale Hinweise auf von ihnen kontrollierten Vorteilen kontrollieren, hat das unvorhergesehene Auswirkungen in dieser Kampagne. Daher ist es empfohlen, diese Option zu aktivieren, um Geschichts-Vorteile von dieser Regel auszuschließen."
+      },
+      "UseSwarmPlaceholders": {
+        "title": "Platzhalterkarten für Schwärme verwenden",
+        "description": "Anstatt Karten aus dem Deck des Ermittlungsleiters als Schwarm Platzhalter zu verwenden, erzeuge Platzhalterkarten, die zum Deck keines Ermittlers gehören."
+      }
+    }
+}

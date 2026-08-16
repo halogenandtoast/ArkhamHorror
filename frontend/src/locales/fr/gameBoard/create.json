@@ -30,7 +30,7 @@
     "gameName": "Nom de la partie",
     "create": "Créer",
 
-    "chooseYourDeck": "Choisissez votre deck{s}",
+    "chooseYourDeck": "Choisissez votre deck | Choisissez votre decks",
     "tabooList": "Liste des tabous : {tabooList}",
     "useExistingDeck": "Utiliser un deck existant",
     "loadNewDeck": "Charger un nouveau deck",

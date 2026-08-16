@@ -50,7 +50,7 @@
     "gameName": "Game Name",
     "create": "Create",
 
-    "chooseYourDeck": "Choose your deck{s}",
+    "chooseYourDeck": "Choose your deck | Choose your decks",
     "tabooList": "Taboo List: {tabooList}",
     "useExistingDeck": "Use Existing Deck",
     "loadNewDeck": "Load New Deck",

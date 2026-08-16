@@ -191,7 +191,6 @@ import Arkham.Placement qualified as Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Query
-import Arkham.Queue
 import Arkham.Random
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding (scenario)
@@ -356,7 +355,6 @@ to be able to replay a seed without changes
 addPlayer :: (MonadReader env m, HasQueue Message m, HasGameRef env, HasGame m) => PlayerId -> m ()
 addPlayer pid = do
   game <- getGame
-  queueRef <- messageQueue
   let
     seed = game.seed
     playerCount = game.playerCount
@@ -371,7 +369,14 @@ addPlayer pid = do
         then IsPending (pendingPlayers <> [pid])
         else IsActive
     game' = game & playersL <>~ [pid] & gameStateL .~ state' & initialSeedL .~ seed & activePlayerF
-  when (state' == IsActive) $ atomicWriteIORef (queueToRef queueRef) [StartCampaign]
+  -- Append rather than overwrite. A WithFriends game is created with only one seat
+  -- filled, so its campaign options are pushed as HandleOption messages that
+  -- runMessages refuses to consume while the game is IsPending. They sit in the
+  -- persisted queue until the lobby fills, and overwriting here would throw them
+  -- away, starting the campaign with no options set (#5418). pushEnd also matches
+  -- the solo ordering: options fold into the campaign log before StartCampaign runs
+  -- (The Dream-Eaters' StartCampaign asks PickCampaignSettings off the log).
+  when (state' == IsActive) $ pushEnd StartCampaign
   putGame game'
 
 -- TODO: Rename this

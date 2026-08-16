@@ -26,19 +26,25 @@ instance HasAbilities Bandages where
                   #after
                   AnySource
                   (HealableAsset (toSource a) #damage $ AssetAt YourLocation <> #ally)
-              , InvestigatorTakeDamage
+              , -- Matcher.DealtDamage matches the aggregate TakeDamage window *and* the
+                -- per-recipient DealtDamage one, so the ability is offered whenever the
+                -- investigator took anything (an Ally soak included, per FAQ 2.12) while
+                -- still attaching the per-recipient window getHealTargets needs.
+                DealtDamage
                   #after
-                  (HealableInvestigator (toSource a) #damage $ colocatedWithMatch You)
                   AnySource
+                  (HealableInvestigator (toSource a) #damage $ colocatedWithMatch You)
               ]
           )
           Free
     ]
 
+-- Only the per-recipient DealtDamage windows: the aggregate TakeDamage window on the
+-- investigator also covers damage soaked by an Ally they control (FAQ 2.12), so reading
+-- it here would offer to heal an investigator who took nothing (#5394).
 getHealTargets :: [Window] -> [Target]
 getHealTargets = \case
   (windowType -> Window.DealtDamage _ _ target _) : rest -> target : getHealTargets rest
-  (windowType -> Window.TakeDamage _ _ target _) : rest -> target : getHealTargets rest
   _ : rest -> getHealTargets rest
   [] -> []
 
@@ -47,9 +53,8 @@ instance RunMessage Bandages where
     UseCardAbility iid (isSource attrs -> True) 1 (getHealTargets -> rawTargets) _ -> do
       let source = attrs.ability 1
       -- Bandages triggers once per damaged investigator/Ally, not per point of
-      -- damage. The window batch reports the investigator under both a
-      -- TakeDamage and a DealtDamage window, so reduce to the distinct,
-      -- currently-healable entities that took damage this window.
+      -- damage, so reduce to the distinct, currently-healable entities that took
+      -- damage this window.
       healableInvestigators <-
         selectMap InvestigatorTarget $ HealableInvestigator source #damage (colocatedWith iid)
       healableAllies <-

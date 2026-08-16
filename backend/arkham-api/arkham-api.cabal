@@ -7371,6 +7371,7 @@ test-suite spec
       Arkham.Asset.Assets.Hyperawareness2Spec
       Arkham.Asset.Assets.HyperawarenessSpec
       Arkham.Asset.Assets.JennysTwin45sSpec
+      Arkham.Asset.Assets.JimCulver4Spec
       Arkham.Asset.Assets.JimsTrumpetSpec
       Arkham.Asset.Assets.KeyOfMysteriesSpec
       Arkham.Asset.Assets.KnifeSpec

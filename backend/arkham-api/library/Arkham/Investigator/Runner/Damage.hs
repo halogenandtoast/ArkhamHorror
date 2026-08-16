@@ -428,14 +428,19 @@ finalizeDeferredDamageAssignment a@InvestigatorAttrs {..} iid source damageStrat
     do
       push $ InvestigatorDirectDamage iid source 1 0
 
-  -- The TakeDamage/TakeHorror windows below report what *this* investigator
-  -- received. Points assigned to an Ally asset (or to another investigator) are
-  -- dealt to that card, not to this investigator, so they must not be counted
-  -- here -- otherwise "after you take damage" reactions fire for damage that was
-  -- soaked away entirely (#5394). The per-recipient DealtDamage/DealtHorror
-  -- windows already carry the full breakdown.
-  let totalDamage = count (== toTarget iid) damageTargets
-  let totalHorror = count (== toTarget iid) horrorTargets
+  -- The TakeDamage/TakeHorror windows below report what *this* investigator took.
+  -- Per FAQ (2.12) that includes points soaked by assets they control -- "after you
+  -- take damage" still triggers when an Ally ate the whole attack (#5411) -- but not
+  -- points handed to another investigator or to *their* assets, which were dealt to
+  -- them and not to you (#5394). The per-recipient DealtDamage/DealtHorror windows
+  -- carry the exact breakdown when a card needs to know who took what.
+  ownAssets <- select $ assetControlledBy iid
+  let takenByYou = \case
+        InvestigatorTarget iid' -> iid' == iid
+        AssetTarget aid -> aid `elem` ownAssets
+        _ -> False
+  let totalDamage = count takenByYou damageTargets
+  let totalHorror = count takenByYou horrorTargets
 
   pushAll
     $ placementMessages
@@ -496,10 +501,16 @@ finalizeDamageAssignment a@InvestigatorAttrs {..} iid source damageStrategy dama
     do
       push $ InvestigatorDirectDamage iid source 1 0
 
-  -- See the note in 'finalizeDeferredDamageAssignment': only damage that landed
-  -- on this investigator counts toward their TakeDamage/TakeHorror window.
-  let totalDamage = count (== toTarget iid) damageTargets
-  let totalHorror = count (== toTarget iid) horrorTargets
+  -- See the note in 'finalizeDeferredDamageAssignment': damage that landed on this
+  -- investigator or on an asset they control counts toward their TakeDamage/TakeHorror
+  -- window; damage handed to someone else does not.
+  ownAssets <- select $ assetControlledBy iid
+  let takenByYou = \case
+        InvestigatorTarget iid' -> iid' == iid
+        AssetTarget aid -> aid `elem` ownAssets
+        _ -> False
+  let totalDamage = count takenByYou damageTargets
+  let totalHorror = count takenByYou horrorTargets
 
   pushAll
     $ whenPlacedWindowMsg

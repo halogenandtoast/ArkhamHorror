@@ -3614,14 +3614,20 @@ getMaybeOutOfPlayEnemy outOfPlayZone eid = do
     _ -> False
 
 {- | Enemy queries default to enemies that are NOT sitting in an out-of-play
-zone (@OutOfPlay VoidZone/PursuitZone/TheDepths/SetAsideZone/...@). To reach
-those, a matcher must decorate itself (@OutOfPlayEnemy zone@,
-@IncludeOutOfPlayEnemy@, @EnemyWithPlacement (OutOfPlay ...)@, or
-@DefeatedEnemy@); when it does, we leave the full candidate set intact so the
-decorator can find them. This makes @InPlayEnemy@ redundant (a no-op) for its
-one real job of excluding zone-resident enemies. Non-zone placements that are
-also \"not in play\" (hidden-in-hand, limbo, on-top-of-deck, unplaced) are
-left matchable exactly as before -- this only scopes the OutOfPlay zones.
+zone (@OutOfPlay VoidZone/PursuitZone/TheDepths/SetAsideZone/...@) and not
+face-down in a threat area. To reach those, a matcher must decorate itself
+(@OutOfPlayEnemy zone@, @IncludeOutOfPlayEnemy@, @EnemyWithPlacement (OutOfPlay
+...)@, @EnemyWithPlacement (FacedownInThreatArea ...)@, or @DefeatedEnemy@);
+when it does, we leave the full candidate set intact so the decorator can find
+them. This makes @InPlayEnemy@ redundant (a no-op) for its one real job of
+excluding zone-resident enemies. Non-zone placements that are also \"not in
+play\" (hidden-in-hand, limbo, on-top-of-deck, unplaced) are left matchable
+exactly as before -- this only scopes the OutOfPlay zones and face-down cards.
+
+A face-down card in a threat area (Lost Quantum) is an unresolved encounter
+card, not an enemy on the table: The Quantum Maelstrom's "move each
+non-[[Liminal]] enemy" was otherwise dragging face-down Quantum Phantoms out of
+the threat area and into play.
 -}
 restrictToInPlayZones :: EnemyMatcher -> [Enemy] -> [Enemy]
 restrictToInPlayZones matcher es
@@ -3630,6 +3636,7 @@ restrictToInPlayZones matcher es
  where
   isOutOfPlayZone = \case
     OutOfPlay {} -> True
+    FacedownInThreatArea {} -> True
     _ -> False
 
 referencesOutOfPlay :: EnemyMatcher -> Bool

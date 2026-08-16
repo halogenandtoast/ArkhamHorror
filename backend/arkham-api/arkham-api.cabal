@@ -7534,6 +7534,7 @@ test-suite spec
       Arkham.Helpers.EnemySpec
       Arkham.Helpers.InvestigatorSpec
       Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstromSpec
+      Arkham.Homebrew.DarkMatter.FacedownThreatAreaSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceCovenantSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscencePledgeSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceSecretsSpec

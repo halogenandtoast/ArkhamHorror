@@ -9,7 +9,7 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (
   ScanResult (..),
-  addImpendingDoom,
+  advanceQuantumMaelstrom,
   getScanResult,
   getScanningDeck,
   scan,
@@ -78,11 +78,6 @@ instance RunMessage TheQuantumMaelstrom_092 where
       pure a
     DoStep 1 (AdvanceAgenda (isSide B attrs -> True)) -> do
       shuffleEmptyUnstabilizedLocations
-      agendas <- selectCount AnyAgenda
-      if agendas > 1
-        then advanceAgendaDeck attrs
-        else do
-          addImpendingDoom 1
-          push $ ResetAgendaDeckToStage 1
+      advanceQuantumMaelstrom attrs
       pure a
     _ -> TheQuantumMaelstrom_092 <$> liftRunMessage msg attrs

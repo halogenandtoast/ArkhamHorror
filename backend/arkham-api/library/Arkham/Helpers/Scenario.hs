@@ -118,6 +118,18 @@ isHardExpert ScenarioAttrs {scenarioDifficulty, scenarioUseHardExpertReference} 
 getScenarioDeck :: HasGame m => ScenarioDeckKey -> m [Card]
 getScenarioDeck k = scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)
 
+{- | The cards making up act deck @n@, top first. The act currently in play is
+the head of the list, so anything after it is still below it in the deck.
+-}
+getActDeckCards :: HasGame m => Int -> m [Card]
+getActDeckCards n = scenarioFieldMap ScenarioActStack (findWithDefault [] n)
+
+{- | The cards making up agenda deck @n@, top first. As with 'getActDeckCards',
+the agenda in play is the head of the list.
+-}
+getAgendaDeckCards :: HasGame m => Int -> m [Card]
+getAgendaDeckCards n = scenarioFieldMap ScenarioAgendaStack (findWithDefault [] n)
+
 getScenarioMeta :: forall a m. (HasCallStack, HasGame m, FromJSON a) => m a
 getScenarioMeta = scenarioFieldMap ScenarioMeta toResult
 

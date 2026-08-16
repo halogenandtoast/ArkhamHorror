@@ -62,6 +62,8 @@ data instance Field Scenario :: Type -> Type where
   ScenarioCardsNextToActDeck :: Field Scenario [Card]
   ScenarioCardsUnderAgendaDeck :: Field Scenario [Card]
   ScenarioCardsUnderScenarioReference :: Field Scenario [Card]
+  ScenarioActStack :: Field Scenario (IntMap [Card])
+  ScenarioAgendaStack :: Field Scenario (IntMap [Card])
   ScenarioDiscard :: Field Scenario [EncounterCard]
   ScenarioEncounterDeck :: Field Scenario (Deck EncounterCard)
   ScenarioHasEncounterDeck :: Field Scenario Bool

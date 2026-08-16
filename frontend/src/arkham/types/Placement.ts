@@ -8,6 +8,7 @@ export type Position = {
 
 export type Placement
   = { tag: "InThreatArea", contents: string }
+  | { tag: "FacedownInThreatArea", contents: string }
   | { tag: "InPlayArea", contents: string }
   | { tag: "StillInHand", contents: string }
   | { tag: "StillInDiscard", contents: string }
@@ -49,6 +50,7 @@ export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToLocation"), contents: JsonDecoder.string() }, 'AttachedToLocation'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToAsset"), contents: attachedToAssetContentsDecoder }, 'AttachedToAsset'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InThreatArea"), contents: JsonDecoder.string() }, 'InThreatArea'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("FacedownInThreatArea"), contents: JsonDecoder.string() }, 'FacedownInThreatArea'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InPlayArea"), contents: JsonDecoder.string() }, 'InPlayArea'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("StillInHand"), contents: JsonDecoder.string() }, 'StillInHand'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("StillInDiscard"), contents: JsonDecoder.string() }, 'StillInDiscard'),

@@ -111,8 +111,30 @@ const engagedEnemies = computed(() =>
   )
 )
 
+/* Lost Quantum places encounter cards face down in a threat area. Those cards
+ * become enemy/asset/treachery entities placed FacedownInThreatArea, which is an
+ * out-of-play, hidden placement — so they appear in none of the investigator's
+ * entity lists and have to be read off the placement directly. Nobody knows what
+ * they are until they are drawn, so they render as encounter backs for everyone. */
+const facedownThreatCards = computed(() =>
+  [
+    ...Object.values(props.game.enemies),
+    ...Object.values(props.game.assets),
+    ...Object.values(props.game.treacheries),
+  ].filter((e) =>
+    e.placement.tag === "FacedownInThreatArea" && e.placement.contents === investigatorId.value
+  )
+)
+
+const facedownThreatCardImage = (cardId: string) => {
+  if (!debug.active) return ENCOUNTER_BACK
+  const card = props.game.cards[cardId]
+  return card ? imgsrc(CardT.cardImage({ ...toCardContents(card), facedown: false })) : ENCOUNTER_BACK
+}
+
 const hasThreatArea = computed(() =>
   stories.value.length > 0 || engagedEnemies.value.length > 0 || props.investigator.treacheries.length > 0
+    || facedownThreatCards.value.length > 0
 )
 
 const inHandEnemies = computed(() =>
@@ -768,6 +790,15 @@ function closeHand() {
             :playerId="playerId"
             @choose="$emit('choose', $event)"
           />
+
+          <div
+            v-for="facedown in facedownThreatCards"
+            :key="facedown.id"
+            class="card-container"
+            :data-index="facedown.cardId"
+          >
+            <img class="card" :src="facedownThreatCardImage(facedown.cardId)" />
+          </div>
 
           <div v-if="hasThreatArea" :key="'threat-divider'" class="threat-divider" />
 

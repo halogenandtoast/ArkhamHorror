@@ -43,7 +43,7 @@ instance RunMessage SiteOfTheSacrifice where
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       nahab <- getUniqueEnemy Enemies.nahab
       chooseOneM iid $ scenarioI18n do
-        labeled' "placeDoom" $ placeDoom (attrs.ability 3) nahab 1
-        labeled' "nahabAttacks" $ initiateEnemyAttack nahab attrs iid
+        labeled' "siteOfTheSacrifice.placeDoom" $ placeDoom (attrs.ability 3) nahab 1
+        labeled' "siteOfTheSacrifice.nahabAttacks" $ initiateEnemyAttack nahab attrs iid
       pure l
     _ -> SiteOfTheSacrifice <$> liftRunMessage msg attrs

@@ -862,6 +862,7 @@ instance RunMessage TheScarletKeys where
         interludeXpAll (toBonus "bonus" 2)
         flavor $ setTitle "title" >> p "theSafehouse2"
         chooseBearer Keys.theMirroringBlade
+        markTime 1
         campaignStep_ (embark attrs)
         pure c
       DoStep 3 (CampaignStep (InterludeStep 52 _)) -> scope "theSafehouse" do

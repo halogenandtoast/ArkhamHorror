@@ -109,6 +109,8 @@ export type Game = {
   enemies: Record<string, Enemy>;
   stories: Record<string, Story>;
   gameState: GameState;
+  /** False once EndSetup has run, i.e. the scenario is actually under way. */
+  inSetup: boolean;
   investigators: Record<string, Investigator>;
   otherInvestigators: Record<string, Investigator>;
   killedInvestigators: Record<string, Investigator>;
@@ -347,6 +349,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     enemies: JsonDecoder.record<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     stories: JsonDecoder.record<Story>(storyDecoder, 'Dict<UUID, Story>'),
     gameState: gameStateDecoder,
+    inSetup: withDefault(false, JsonDecoder.boolean()),
     investigators: JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     otherInvestigators: JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     killedInvestigators: JsonDecoder.optional(JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>')),

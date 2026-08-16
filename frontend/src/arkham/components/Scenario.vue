@@ -48,6 +48,8 @@ import CardRow from '@/arkham/components/CardRow.vue';
 import KeyToken from '@/arkham/components/Key.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import Connections from '@/arkham/components/Connections.vue';
+import RainOverlay from '@/arkham/components/RainOverlay.vue';
+import { supportsHtmlInCanvas } from '@/arkham/droplets';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { homebrewTotalsTokens } from '@/arkham/homebrewData';
@@ -99,6 +101,47 @@ const update = async (game: Game) => emit('update', game)
 
 //Refs
 const settingsStore = useSettings()
+
+// Riddles and Rain. Only once EndSetup has run, so the rain starts with the
+// scenario rather than over the setup screens. RainOverlay additionally
+// requires html-in-canvas, without which it renders nothing and just passes the
+// board through untouched.
+// Only worth offering a switch where the effect can actually render; without
+// html-in-canvas the drops have nothing to refract and RainOverlay draws
+// nothing at all.
+const rainSupported = supportsHtmlInCanvas()
+const rainEnabled = ref(getGameLocalStorageItem(props.game.id, 'rainEnabled') !== 'false')
+
+watch(rainEnabled, (value) => {
+  setGameLocalStorageItem(props.game.id, 'rainEnabled', value ? 'true' : 'false')
+})
+
+const rainAvailable = computed(() =>
+  props.game.scenario?.id === 'c09501' &&
+  !props.game.inSetup &&
+  rainSupported &&
+  settingsStore.extraAnimations
+)
+
+const showRain = computed(() => rainAvailable.value && rainEnabled.value)
+
+// From the canvasui playground: slow, thin, sparse. Note this sits at the
+// bottom of the effect's usable range — at intensity 0.2 the first rain layer,
+// S(0.25, 0.75, intensity), is exactly zero, so only the second draws and its
+// coverage lands right against the shader's hard S(0.3, 1.0) cull. Lower and
+// the rain disappears rather than thinning; to reduce it further lower `scale`
+// (drop count goes with its square) instead.
+const rainOptions = {
+  intensity: 0.45,
+  speed: 0.4,
+  // Density comes off `scale`, not `intensity`: intensity feeds the
+  // S(0.25, 0.75) and S(0.0, 0.5) layer ramps, and dropping it switches whole
+  // layers off rather than thinning them. Drop count goes with scale squared.
+  scale: 0.28,
+  staticDrops: 0.1,
+  dropWidth: 0.8,
+  fallSpeed: 0.6,
+}
 const { splitView } = storeToRefs(settingsStore)
 const { toggleSplitView, setGameId } = settingsStore
 const needsInit = ref(true)
@@ -1127,7 +1170,11 @@ async function recordSpokenHastur() {
   })
 }
 
-const showScenarioNotifierBar = computed(() => scenarioBadges.value.length > 0 || props.realityAcidLightDevoured === true)
+// The rain switch lives in this bar, so the bar has to appear for it even when
+// there are no other badges and no reality-acid switch.
+const showScenarioNotifierBar = computed(
+  () => scenarioBadges.value.length > 0 || props.realityAcidLightDevoured === true || rainAvailable.value
+)
 
 watch(
   () => [props.realityAcidLightDevoured, props.realityAcidLightActive, scenarioBadges.value.length],
@@ -2568,6 +2615,21 @@ async function addChaosToken(face: any){
               <small v-if="badge.detail">{{ badge.detail }}</small>
             </span>
           </div>
+          <button
+            v-if="rainAvailable"
+            type="button"
+            class="scenario-badge rain-switch"
+            :class="{ 'rain-switch--on': rainEnabled }"
+            :title="rainEnabled ? 'Stop the rain' : 'Let it rain'"
+            @click="rainEnabled = !rainEnabled"
+          >
+            <span class="rain-switch-track" aria-hidden="true">
+              <span class="rain-switch-knob"></span>
+            </span>
+            <span class="scenario-badge-text rain-switch-label">
+              <strong>{{ rainEnabled ? 'Rain on' : 'Rain off' }}</strong>
+            </span>
+          </button>
           <span
             v-if="realityAcidLightDevoured"
             ref="realityAcidLightAnchor"
@@ -2614,6 +2676,7 @@ async function addChaosToken(face: any){
       </div>
 
 
+      <RainOverlay :enabled="showRain" :options="rainOptions">
       <div
         ref="locationCardsContainer"
         class="location-cards-container"
@@ -2782,6 +2845,7 @@ async function addChaosToken(face: any){
         </div>
         </div>
       </div>
+      </RainOverlay>
 
       <div id="player-zone" :class="{ 'player-zone--fullscreen': locationsFullscreen }">
         <PlayerTabs
@@ -3035,7 +3099,14 @@ async function addChaosToken(face: any){
       flex-wrap: wrap;
     }
 
-    .location-cards-container {
+    /* RainOverlay wraps the locations container when html-in-canvas is
+       available, which makes ITS host the grid item. Place both, so the
+       placement survives whether or not the wrapper is present. No :deep()
+       needed — Vue stamps this component's scope id onto a child component's
+       root element, and :deep() would compile to a descendant selector that
+       cannot match a direct child of .scenario-body. */
+    .location-cards-container,
+    .rain-host {
       grid-column: 2;
       grid-row: 1 / 3;
     }
@@ -3476,6 +3547,55 @@ async function addChaosToken(face: any){
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.58rem;
+}
+
+.rain-switch {
+  pointer-events: auto;
+  cursor: pointer;
+  border-color: rgb(255 255 255 / 24%);
+  border-left-color: rgb(150 195 235 / 90%);
+  background: rgb(32 36 42 / 98%);
+  color: #fff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 90%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 65%);
+}
+
+.rain-switch--on {
+  box-shadow:
+    inset 0 0 12px rgb(150 195 235 / 16%),
+    0 0 0 1px rgb(150 195 235 / 14%),
+    0 0 18px rgb(150 195 235 / 32%),
+    0 2px 8px rgb(0 0 0 / 65%);
+}
+
+.rain-switch-track {
+  position: relative;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  background: #48607a;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 35%);
+  transition: background 0.15s ease;
+}
+
+.rain-switch--on .rain-switch-track {
+  background: #8fc0e6;
+}
+
+.rain-switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1d2229;
+  transition: left 0.15s ease;
+}
+
+.rain-switch--on .rain-switch-knob {
+  left: 18px;
 }
 
 .reality-acid-light-switch-anchor {

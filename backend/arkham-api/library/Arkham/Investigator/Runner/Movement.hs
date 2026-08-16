@@ -399,15 +399,18 @@ handleMove a@InvestigatorAttrs{..} movement = do
               <> maybeToList mRunAfterLeaving
   pure $ a & movementL ?~ movement
 
-handleWhenCanMove a@InvestigatorAttrs{..} iid msgs = do
+-- The movement slot is single-valued. A nested move that runs while this one is
+-- parked on an additional-cost skill test (Another Dimension's forced move when
+-- Arcane Barrier's leave cost discards the location) consumes the slot and
+-- clears it in handleDoResolveMovement. Resuming with an empty slot used to push
+-- the whole batch anyway, firing MoveFrom/Entering/Moves windows -- and so
+-- "after you are moved" reactions -- for a move that can no longer happen. See
+-- #5412.
+handleWhenCanMove a@InvestigatorAttrs {..} iid msgs = do
   mods <- getModifiers iid
-  let
-    cannotBeCanceled = maybe False (not . (.cancelable)) investigatorMovement
-    canMove =
-      none
-        (`elem` mods)
-        (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
-  when (canMove || cannotBeCanceled) $ pushAll msgs
+  for_ investigatorMovement \movement -> do
+    let canMove = none (`elem` mods) [CannotMove, CancelMovement movement.id]
+    when (canMove || not movement.cancelable) $ pushAll msgs
   pure a
 
 handleMoveAllTo a@InvestigatorAttrs{..} source lid = do

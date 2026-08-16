@@ -380,7 +380,20 @@ function inspectActions() {
   // on another tab. During a skill test, however, another investigator's fast
   // window does not pull focus away from the test taker unless that
   // investigator's tab is the sole place with an actionable control.
-  if (solo?.value === true && soleQuestionPlayer && (!skillTestPlayer || soleQuestionPlayer === skillTestPlayer)) {
+  //
+  // Only a *declinable* window may be held back that way. game.skillTest stays
+  // populated after the test resolves, while the consequences of the result are
+  // still resolving -- an Arcane Barrier leave cost that fails can discard the
+  // location, move everyone off it, and hand each investigator in turn a forced
+  // ability, all with the failed test still open. A forced ability or reaction
+  // cannot be declined and is the only thing that can advance the game, so it
+  // has to claim the perspective even then; otherwise the sole answerable
+  // question sits behind a tab with no control rendered anywhere on screen.
+  const skillTestHoldsFocus =
+    !!skillTestPlayer
+    && soleQuestionPlayer !== skillTestPlayer
+    && isDeclinableFastWindow(soleQuestionPlayer as string)
+  if (solo?.value === true && soleQuestionPlayer && !skillTestHoldsFocus) {
     if (selectedTab.value !== soleQuestionPlayer || props.playerId !== soleQuestionPlayer) {
       if (!automaticSwitchIsStable(`sole-question:${soleQuestionPlayer}`)) return
       pushAutomaticFrame(soleQuestionPlayer, soleQuestionPlayer, 'sole-question')

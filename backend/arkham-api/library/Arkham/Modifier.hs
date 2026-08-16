@@ -520,6 +520,7 @@ data UIModifier
   = Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast
   | Locus -- from Prophesiae Profana
+  | OnFire -- from Fire!, and anything else that should look like it is burning
   | ImportantToScenario Text
   | OverlayCheckmark {left :: Double, top :: Double} -- See The Stakeout for example
   | Rotated Int

@@ -3,17 +3,24 @@ module Arkham.Treachery.Cards.Fire (fire) where
 import Arkham.Ability
 import Arkham.ForMovement
 import Arkham.Matcher
+import Arkham.Helpers.Modifiers (modified_)
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier (ModifierType (ScenarioModifier))
+import Arkham.Modifier (ModifierType (ScenarioModifier, UIModifier), UIModifier (OnFire))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Fire = Fire TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fire :: TreacheryCard Fire
 fire = treachery Fire Cards.fire
+
+-- Purely cosmetic: tells the UI to set the attached location alight.
+instance HasModifiersFor Fire where
+  getModifiersFor (Fire attrs) = case attrs.attached.location of
+    Just lid -> modified_ attrs lid [UIModifier OnFire]
+    _ -> pure mempty
 
 instance HasAbilities Fire where
   getAbilities (Fire a) = case a.attached.location of

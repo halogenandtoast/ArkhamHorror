@@ -8,6 +8,7 @@ import { gameLocalStorageKey, getGameLocalStorageItem, removeGameLocalStorageIte
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useSettingsFocus } from '@/composable/settingsFocus'
+import { useSettings } from '@/stores/settings'
 
 const props = defineProps<{
   game: Game
@@ -24,6 +25,24 @@ const emit = defineEmits<{
 const showOtherHands = computed({
   get: () => props.showOtherPlayersHands,
   set: (v: boolean) => emit('update:showOtherPlayersHands', v),
+})
+
+const settings = useSettings()
+
+// Global player preference, and a per-scenario override that can defer to it.
+// Both live in the settings store; prefers-reduced-motion is folded in there
+// too, which is why the resolved value can be off while both of these read on.
+const extraAnimationsGlobal = computed({
+  get: () => settings.extraAnimationsGlobal,
+  set: (value: boolean) => settings.setExtraAnimationsGlobal(value),
+})
+
+const extraAnimationsOverride = computed<'default' | 'on' | 'off'>({
+  get: () => {
+    if (settings.extraAnimationsOverride === null) return 'default'
+    return settings.extraAnimationsOverride ? 'on' : 'off'
+  },
+  set: (value) => settings.setExtraAnimationsOverride(value === 'default' ? null : value === 'on'),
 })
 
 const soundsDisabled = ref(localStorage.getItem('arkhamSoundsDisabled') === 'true')
@@ -242,6 +261,40 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">Extra Animations</div>
+              <div class="toggle-desc">
+                Decorative effects like burning locations and the Cosmic Emissary beams. Never
+                affects anything you need to see to play.
+                <template v-if="settings.prefersReducedMotion">
+                  Currently off anyway, because this device asks for reduced motion.
+                </template>
+              </div>
+            </div>
+            <div class="segmented segmented-2 toggle-control">
+              <input type="radio" id="opt-extraAnimations-on" name="opt-extraAnimations" :checked="extraAnimationsGlobal" @change="extraAnimationsGlobal = true" />
+              <label for="opt-extraAnimations-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-extraAnimations-off" name="opt-extraAnimations" :checked="!extraAnimationsGlobal" @change="extraAnimationsGlobal = false" />
+              <label for="opt-extraAnimations-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">Extra Animations (this scenario)</div>
+              <div class="toggle-desc">Override the setting above for this game only.</div>
+            </div>
+            <div class="segmented segmented-3 toggle-control">
+              <input type="radio" id="opt-extraAnimationsScenario-default" name="opt-extraAnimationsScenario" :checked="extraAnimationsOverride === 'default'" @change="extraAnimationsOverride = 'default'" />
+              <label for="opt-extraAnimationsScenario-default">Default</label>
+              <input type="radio" id="opt-extraAnimationsScenario-on" name="opt-extraAnimationsScenario" :checked="extraAnimationsOverride === 'on'" @change="extraAnimationsOverride = 'on'" />
+              <label for="opt-extraAnimationsScenario-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-extraAnimationsScenario-off" name="opt-extraAnimationsScenario" :checked="extraAnimationsOverride === 'off'" @change="extraAnimationsOverride = 'off'" />
+              <label for="opt-extraAnimationsScenario-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
           <div class="toggle-row" v-if="showCosmicEmissaryAnimationSetting">
             <div class="toggle-text">
               <div class="toggle-name">Enable Cosmic Emissary Animation</div>
@@ -452,6 +505,10 @@ onBeforeUnmount(() => {
 
 .segmented-2 {
   grid-template-columns: repeat(2, 1fr);
+}
+
+.segmented-3 {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .segmented input[type='radio'] {

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { onMounted, onBeforeUnmount, computed, ref, nextTick, watch } from 'vue'
 import type {Game} from '@/arkham/types/Game'
+import { createLaserBeam, COSMIC_EMISSARY_STOPS, type LaserBeamInstance } from '@/arkham/laserBeam'
+import { useSettings } from '@/stores/settings'
 
 export interface Props {
   game: Game
@@ -8,7 +10,12 @@ export interface Props {
   enableCosmicEmissaryAnimation?: boolean
 }
 
+// The laser layer is a sibling of the SVG rather than part of it, so this
+// component now has two roots and must not try to inherit attributes.
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps<Props>()
+const settings = useSettings()
 const allLocations = computed(() => Object.values(props.game.locations))
 
 const locations = computed(() =>
@@ -194,12 +201,21 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: stri
   else line.classList.remove('mine-cart-next-line')
 
   if (className === 'fate-of-the-vale-enemy-line') {
-    updateFateGlowLine(connection, line, x1, y1, x2, y2)
-    line.style.filter = ''
-    if (props.enableCosmicEmissaryAnimation === false) {
-      line.removeAttribute('style')
+    // The laser replaces both SVG lines outright, so it is tried first and the
+    // SVG treatment only rebuilt if it declines.
+    if (useLaserBeams.value && updateLaserBeam(connection, x1, y1, x2, y2)) {
+      removeFateSvgDecoration(connection)
+      line.style.display = 'none'
     } else {
-      updateFateOfTheValeEnemyLineGradient(line, connection, x1, y1, x2, y2)
+      removeLaserBeam(connection)
+      line.style.display = ''
+      updateFateGlowLine(connection, line, x1, y1, x2, y2)
+      line.style.filter = ''
+      if (props.enableCosmicEmissaryAnimation === false) {
+        line.removeAttribute('style')
+      } else {
+        updateFateOfTheValeEnemyLineGradient(line, connection, x1, y1, x2, y2)
+      }
     }
   }
 
@@ -273,6 +289,87 @@ function makeOrUpdateMineCartInvalidLine(locationDiv: HTMLElement, direction: Gr
 
 function setSvgAttr(el: SVGElement, name: string, value: string) {
   if (el.getAttribute(name) !== value) el.setAttribute(name, value)
+}
+
+// --- Cosmic Emissary laser beams -------------------------------------------
+//
+// The four emissary connections are drawn as WebGL laser beams instead of the
+// SVG glow + dashed gradient pair. Each beam gets a canvas sized to the
+// connection's length and rotated into place, because the shader always draws
+// along the canvas's horizontal centre line.
+//
+// The SVG treatment is NOT deleted — it stays as the fallback for browsers
+// without WebGL2, for prefers-reduced-motion, and for the extra-animations
+// setting. laserBeamsSupported flips to false the first time a context fails to
+// come up, and every connection falls back together rather than one by one.
+
+// Tall enough that the glow has decayed to nothing well before the canvas
+// border; the shader's edge fade cleans up whatever is left.
+const LASER_BEAM_HEIGHT = 72
+const laserLayerRef = ref<HTMLElement | null>(null)
+const laserBeamsSupported = ref(true)
+const lasersByConn = new Map<string, { canvas: HTMLCanvasElement; instance: LaserBeamInstance }>()
+
+const useLaserBeams = computed(
+  () =>
+    laserBeamsSupported.value &&
+    settings.extraAnimations &&
+    props.enableCosmicEmissaryAnimation !== false,
+)
+
+function updateLaserBeam(connection: string, x1: number, y1: number, x2: number, y2: number): boolean {
+  const layer = laserLayerRef.value
+  if (!layer) return false
+
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const length = Math.hypot(dx, dy)
+  if (length < 1) return false
+
+  let entry = lasersByConn.get(connection)
+  if (!entry) {
+    const canvas = document.createElement('canvas')
+    canvas.className = 'laser-beam'
+    canvas.dataset.connection = connection
+    layer.appendChild(canvas)
+    const instance = createLaserBeam(canvas, { stops: COSMIC_EMISSARY_STOPS })
+    if (!instance) {
+      canvas.remove()
+      laserBeamsSupported.value = false
+      return false
+    }
+    entry = { canvas, instance }
+    lasersByConn.set(connection, entry)
+  }
+
+  const { canvas, instance } = entry
+  canvas.style.width = `${length}px`
+  canvas.style.height = `${LASER_BEAM_HEIGHT}px`
+  canvas.style.left = `${(x1 + x2) / 2 - length / 2}px`
+  canvas.style.top = `${(y1 + y2) / 2 - LASER_BEAM_HEIGHT / 2}px`
+  canvas.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`
+  instance.resize()
+  return true
+}
+
+function removeLaserBeam(connection: string) {
+  const entry = lasersByConn.get(connection)
+  if (!entry) return
+  entry.instance.destroy()
+  entry.canvas.remove()
+  lasersByConn.delete(connection)
+}
+
+function removeAllLaserBeams() {
+  for (const connection of [...lasersByConn.keys()]) removeLaserBeam(connection)
+}
+
+// Drops the SVG glow line and its smoke filter for a connection the laser has
+// taken over.
+function removeFateSvgDecoration(connection: string) {
+  fateGlowLinesByConn.get(connection)?.remove()
+  fateGlowLinesByConn.delete(connection)
+  defsEl?.querySelector(`#fate-of-the-vale-smoke-filter-${connection.replace(/[^a-zA-Z0-9_-]/g, '-')}`)?.remove()
 }
 
 function updateFateSmokeFilter(connection: string, x1: number, y1: number, x2: number, y2: number): string | null {
@@ -556,9 +653,8 @@ function handleConnections(includeFateOfTheVale = true) {
   for (const [conn, el] of linesByConn) {
     if (!live.has(conn)) {
       if (!includeFateOfTheVale && el.classList.contains('fate-of-the-vale-enemy-line')) continue
-      fateGlowLinesByConn.get(conn)?.remove()
-      fateGlowLinesByConn.delete(conn)
-      defsEl?.querySelector(`#fate-of-the-vale-smoke-filter-${conn.replace(/[^a-zA-Z0-9_-]/g, '-')}`)?.remove()
+      removeFateSvgDecoration(conn)
+      removeLaserBeam(conn)
       el.remove()
       linesByConn.delete(conn)
     }
@@ -646,6 +742,12 @@ watch(mineCart, ()=> { requestConnectionUpdate() }, { flush: 'post' })
 watch(isWrittenInRockAct2, ()=> { requestConnectionUpdate() }, { flush: 'post' })
 watch(enemies, ()=> { requestConnectionUpdate() }, { flush: 'post' })
 watch(() => props.enableCosmicEmissaryAnimation, () => { requestConnectionUpdate() }, { flush: 'post' })
+// Turning the beams off has to tear the canvases down, not just stop drawing
+// them; the redraw then rebuilds the SVG lines in their place.
+watch(useLaserBeams, (enabled) => {
+  if (!enabled) removeAllLaserBeams()
+  requestConnectionUpdate()
+}, { flush: 'post' })
 
 onBeforeUnmount(()=> {
   window.removeEventListener('resize', requestConnectionUpdate)
@@ -665,6 +767,7 @@ onBeforeUnmount(()=> {
     el.remove()
   }
   for (const [,el] of fateGlowLinesByConn) el.remove()
+  removeAllLaserBeams()
   linesByConn.clear()
   fateGlowLinesByConn.clear()
   for (const [,el] of chevronsByConn) el.remove()
@@ -683,6 +786,7 @@ onBeforeUnmount(()=> {
     <line ref="protoRef" class="line original" stroke-dasharray="5, 5"/>
     <path ref="chevronProtoRef" class="chevrons original"/>
   </svg>
+  <div ref="laserLayerRef" class="connections-lasers" aria-hidden="true"></div>
 </template>
 
 <style scoped>
@@ -696,6 +800,26 @@ onBeforeUnmount(()=> {
   height: 100%;
   z-index: 0;
   overflow: hidden;
+}
+
+/* Shares the SVG's coordinate space and stacking level, so the beams sit under
+   the location cards exactly like the lines they replace. */
+.connections-lasers{
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.connections-lasers :deep(.laser-beam){
+  position: absolute;
+  max-width: none;
+  transform-origin: 50% 50%;
+  pointer-events: none;
 }
 
 .line{

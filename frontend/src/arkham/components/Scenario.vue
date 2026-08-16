@@ -2727,6 +2727,7 @@ async function addChaosToken(face: any){
           v-if="locationsFullscreen || splitView"
           class="zoom-control"
           :class="locationsFullscreen ? 'zoom-control--fullscreen' : 'zoom-control--docked'"
+          @dblclick.stop
         >
           <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
           <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />

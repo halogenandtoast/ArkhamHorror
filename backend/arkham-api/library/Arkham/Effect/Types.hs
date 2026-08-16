@@ -115,12 +115,31 @@ mapEffectWindow f e = case effectDisableWindow e of
   go (FirstEffectWindow ws) = FirstEffectWindow (map go ws)
   go w = f w
 
+{- | Rewrite the window in /both/ the enable ('effectWindow') and disable
+('effectDisableWindow') fields.
+
+Use this when the rewrite changes whether the effect emits modifiers at all, not just when it
+expires. Emission is gated on 'effectWindow' alone (see 'Arkham.Effect.Effects.GenericEffect'
+and 'Arkham.Effect.Effects.WindowModifierEffect'), so rewriting only the disable window — which
+is what 'mapEffectWindow' does whenever "Arkham.Effect.Builder"'s @during@\/@removeOn@ populated
+one — leaves the effect permanently suppressed.
+-}
+mapEffectWindows :: (EffectWindow -> EffectWindow) -> EffectAttrs -> EffectAttrs
+mapEffectWindows f e =
+  e
+    { effectWindow = go <$> effectWindow e
+    , effectDisableWindow = go <$> effectDisableWindow e
+    }
+ where
+  go (FirstEffectWindow ws) = FirstEffectWindow (map go ws)
+  go w = f w
+
 -- | Advance a staged effect window to the next stage of its lifetime.
 advanceEffectWindow :: EffectWindow -> EffectWindow -> EffectAttrs -> EffectAttrs
 advanceEffectWindow old new = mapEffectWindow \w -> if w == old then new else w
 
 replaceNextSkillTest :: SkillTestId -> InvestigatorId -> EffectAttrs -> EffectAttrs
-replaceNextSkillTest sid iid = mapEffectWindow \case
+replaceNextSkillTest sid iid = mapEffectWindows \case
   EffectNextSkillTestWindow iid' | iid == iid' -> EffectSkillTestWindow sid
   a -> a
 

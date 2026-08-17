@@ -7617,6 +7617,7 @@ test-suite spec
       Arkham.Treachery.Cards.HemophobiaSpec
       Arkham.Treachery.Cards.HospitalDebtsSpec
       Arkham.Treachery.Cards.HypochondriaSpec
+      Arkham.Treachery.Cards.LanguorSpec
       Arkham.Treachery.Cards.LegInjurySpec
       Arkham.Treachery.Cards.MysteriousChantingSpec
       Arkham.Treachery.Cards.ParanoiaSpec

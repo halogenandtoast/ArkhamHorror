@@ -1005,8 +1005,7 @@
       ]
     },
     "returnTo": {
-      "id": "53",
-      "beta": true
+      "id": "53"
     }
   },
   {
@@ -1075,8 +1074,7 @@
       ]
     },
     "returnTo": {
-      "id": "54",
-      "beta": true
+      "id": "54"
     },
     "settings": [
       {
@@ -2604,7 +2602,6 @@
   {
     "id": "10",
     "name": "The Feast of Hemlock Vale",
-    "beta": true,
     "additional": [
       {
         "title": "theFeastOfHemlockVale.campaignLog.map.title",
@@ -2695,7 +2692,7 @@
   {
     "id": "11",
     "name": "The Drowned City",
-    "alpha": true,
+    "beta": true,
     "difficultyLevels": {
       "Easy": [
         "PlusOne",

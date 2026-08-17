@@ -733,12 +733,11 @@ placeCardsFacedownEvenly investigators cards = unless (null investigators) do
     placeCardFacedownInThreatArea iid card
 
 placeFacedownInThreatArea :: ReverseQueue m => InvestigatorId -> Int -> m ()
-placeFacedownInThreatArea iid n = replicateM_ n do
+placeFacedownInThreatArea iid n =
   getEncounterDeck >>= \case
-    Deck [] -> pure ()
-    Deck (card : rest) -> do
+    Deck (splitAt n -> (cards, rest)) -> do
       setEncounterDeck (Deck rest)
-      placeCardFacedownInThreatArea iid (toCard card)
+      for_ cards $ placeCardFacedownInThreatArea iid . toCard
 
 {- | "Draw a face-down encounter card in your threat area" — the card leaves the
 face-down zone and resolves as if just drawn.
@@ -759,7 +758,7 @@ drawFacedownCardWith iid tid afterFlip = do
   -- Back to the placement a freshly-created treachery has, so its revelation
   -- resolves exactly as if it had just been drawn.
   push $ PlaceTreachery tid Limbo
-  checkAfter $ Window.ScenarioEvent facedownDrawnEvent (Just iid) (toJSON tid)
+  checkFacedownDrawnWindows iid tid
   afterFlip
   -- ResolveTreachery, not a bare Revelation: it is the engine's "resolve this
   -- treachery entity as if just drawn" entry point, so it wraps the revelation
@@ -768,11 +767,41 @@ drawFacedownCardWith iid tid afterFlip = do
   -- honours IgnoreRevelation by discarding the treachery unresolved instead.
   push $ ResolveTreachery iid tid
 
-{- | Payload is the 'TreacheryId' that was just drawn out of the face-down zone;
-cards that care which card was drawn (Quantum Collapse) match on it.
+{- | Payload is the id of the entity that was just drawn out of the face-down
+zone. It can be a 'TreacheryId', an 'EnemyId' or an 'AssetId', so no consumer may
+assume a type from the base key alone.
 -}
 facedownDrawnEvent :: Text
 facedownDrawnEvent = "drewFacedown"
+
+{- | @drewFacedown[<entity id>]@. Quantum Collapse prints "After you draw Quantum
+Collapse from your threat area", which is a condition on *which* card was drawn —
+that has to live in the window key, not in the handler, or every face-down copy
+is offered a forced ability on every face-down draw and the player is asked to
+order triggers that all no-op. See the bracketed-key family @checkScanWindows@
+uses.
+-}
+facedownDrawnEventFor :: Show a => a -> Text
+facedownDrawnEventFor entityId = facedownDrawnEvent <> "[" <> tshow entityId <> "]"
+
+{- | Fire the whole family in one 'checkWindows' call so a reaction to the narrow
+key is simultaneous with one to the base key rather than strictly after it.
+-}
+checkFacedownDrawnWindows
+  :: (ReverseQueue m, Show a, ToJSON a) => InvestigatorId -> a -> m ()
+checkFacedownDrawnWindows iid entityId =
+  checkWindows
+    $ map
+      (\key -> Window.mkAfter $ Window.ScenarioEvent key (Just iid) (toJSON entityId))
+      [facedownDrawnEvent, facedownDrawnEventFor entityId]
+
+{- | Is this window key @drewFacedown@ or one of its narrower companions? Every
+key in the family carries the same payload, so a card that moves to a narrow key
+can still read the drawn entity's id.
+-}
+isFacedownDrawnEvent :: Text -> Bool
+isFacedownDrawnEvent key =
+  key == facedownDrawnEvent || (facedownDrawnEvent <> "[") `isPrefixOf` key
 
 -- | Draw every face-down card in a threat area, one at a time.
 
@@ -782,7 +811,7 @@ runs. Mirrors the encounter-draw path in @Arkham.Game.Runner@.
 -}
 drawFacedownEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
 drawFacedownEnemy iid eid = do
-  checkAfter $ Window.ScenarioEvent facedownDrawnEvent (Just iid) (toJSON eid)
+  checkFacedownDrawnWindows iid eid
   Msg.pushAll [InvestigatorDrawEnemy iid eid, Revelation iid (EnemySource eid)]
 
 {- | Encounter assets such as Erwin Simmons can also be among the face-down
@@ -792,7 +821,7 @@ encounter draw so its revelation creates the normal in-play asset.
 drawFacedownAsset :: ReverseQueue m => InvestigatorId -> AssetId -> m ()
 drawFacedownAsset iid aid = do
   card <- field AssetCard aid
-  checkAfter $ Window.ScenarioEvent facedownDrawnEvent (Just iid) (toJSON aid)
+  checkFacedownDrawnWindows iid aid
   removeAsset aid
   push $ Revelation iid (CardIdSource card.id)
 

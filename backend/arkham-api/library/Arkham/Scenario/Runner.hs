@@ -993,8 +993,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         other -> encounterDecksL . at other . non (Deck [], []) . _2
     case unDeck (a ^. deckL') of
       [] -> do
-        when (notNull (a ^. discardL')) $ do
-          pushAll [ShuffleEncounterDiscardBackInByKey key, Do (DrawCards iid drawing)]
+        -- With nothing left to draw from we still report the draw, carrying whatever
+        -- was drawn before the deck ran dry, so that scenarios which replace an
+        -- impossible encounter draw (Lost Quantum) can react to it.
+        if notNull (a ^. discardL')
+          then pushAll [ShuffleEncounterDiscardBackInByKey key, Do (DrawCards iid drawing)]
+          else push $ DrewCards iid $ finalizeDraw drawing drawing.alreadyDrawn
         pure a
       xs -> do
         let (drew, rest) = splitAt drawing.amount xs
@@ -1020,8 +1024,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     key <- getEncounterDeckKey iid
     case unDeck (a ^. deckLens handler) of
       [] -> do
-        when (notNull (a ^. discardLens handler)) $ do
-          pushAll [ShuffleEncounterDiscardBackInByKey key, Do (DrawCards iid drawing)]
+        if notNull (a ^. discardLens handler)
+          then pushAll [ShuffleEncounterDiscardBackInByKey key, Do (DrawCards iid drawing)]
+          else push $ DrewCards iid $ finalizeDraw drawing drawing.alreadyDrawn
         pure a
       xs -> do
         let (drew, rest) = splitAt drawing.amount xs

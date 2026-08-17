@@ -2216,6 +2216,12 @@ runGameMessage msg g = case msg of
           HunterGroup ->
             mapFromList <$> forMaybeM (mapToList targetMap) \(target, msgs) -> runMaybeT do
               eid <- hoistMaybe target.enemy
+              -- An enemy batched into the hunter group can leave play while an
+              -- earlier target's move resolves (Sunken Halls defeating it as it
+              -- enters, a WouldMoveFromHunter reaction, ...), so confirm it is
+              -- still on the table before projecting any of its fields.
+              enemyAttrs <- toAttrs <$> MaybeT (project @Enemy eid)
+              guard $ isInPlayPlacement enemyAttrs.placement && not enemyAttrs.defeated
               kws <- lift $ toList <$> getModifiedKeywords eid
               liftGuardM $ flip anyM kws \case
                 Keyword.Patrol lm -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ replaceThatEnemy eid lm))

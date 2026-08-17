@@ -156,7 +156,7 @@
       ]
     },
     "xp": 2,
-    "alpha": true
+    "beta": true
   },
   {
     "id": "83001",
@@ -227,7 +227,7 @@
       ]
     },
     "xp": 2,
-    "alpha": true
+    "beta": true
   },
   {
     "id": "84001",
@@ -317,8 +317,7 @@
         "ElderSign"
       ]
     },
-    "xp": 2,
-    "beta": true
+    "xp": 2
   },
   {
     "id": "86001",
@@ -395,7 +394,7 @@
       ]
     },
     "xp": 3,
-    "alpha": true
+    "beta": true
   },
   {
     "id": "87001",
@@ -482,7 +481,7 @@
       ]
     },
     "xp": 2,
-    "alpha": true
+    "beta": true
   },
   {
     "id": "88001",

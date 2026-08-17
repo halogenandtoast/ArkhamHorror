@@ -39,19 +39,34 @@ please file a bug.
 * The Innsmouth Conspiracy
 * Edge of the Earth
 * The Scarlet Keys
-* The Feast of Hemlock Vale (Beta)
+* The Feast of Hemlock Vale
+* Brethren of Ash
+* The Drowned City (Beta)
 
 ### Side Stories
 
 * The Curse of the Rougarou
 * Carnevale of Horrors
+* The Labyrinths of Lunacy (Beta)
 * Murder at the Excelsior Hotel
 * Guardians of the Abyss (Beta)
 * The Blob That Ate Everything
 * War of the Outer Gods (Beta)
+* Machinations Through Time (Beta)
 * Fortune and Folly
 * The Midwinter Gala
 * Film Fatale
+
+### Challenge Scenarios
+
+* Read or Die
+* All or Nothing
+* Bad Blood
+* By the Book
+* Red Tide Rising
+* Laid to Rest
+* Relics of the Past
+* Enthralling Encore
 
 ## I just want to try this out on my computer
 

@@ -34,7 +34,7 @@ instance RunMessage Languor where
       discardTopOfDeckAndHandle iid (attrs.ability 1) 1 attrs
       pure t
     DiscardedTopOfDeck iid (card : _) (isAbilitySource attrs 1 -> True) (isTarget attrs -> True) -> do
-      if card.kind == PlayerTreacheryType
+      if cardIsWeakness (toCard card)
         then drawCardFrom iid (InvestigatorDiscard iid) card
         else do
           let mods = case card.kind of

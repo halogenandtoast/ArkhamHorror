@@ -21,18 +21,31 @@ import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Skill.Types (Field (..))
 
--- TODO: IncludeEliminated is bit of a hack, if all investigators are defeated
--- there is no lead investigator so we just get someone from the eliminated. It
--- should just be the last person who was eliminated but we don't really track
--- that
+{- | The investigator the game records as lead, whether or not they are still in
+play. @LeadInvestigator@ matches against @gameLeadInvestigatorId@, but
+'getInvestigatorsMatching' drops eliminated investigators before the matcher
+runs, so the plain matcher goes blank the moment the lead is eliminated.
+-}
+getRecordedLead :: (HasCallStack, HasGame m) => m (Maybe InvestigatorId)
+getRecordedLead = selectOne $ IncludeEliminated LeadInvestigator
+
+-- Once every investigator is eliminated there is no live lead, but the game
+-- still records the most recently appointed one: ChooseLeadInvestigator runs
+-- whenever the current lead is eliminated, and no-ops when nobody is left. Per
+-- FFG, "the most recently appointed lead investigator" resolves instructions
+-- addressed to the lead, so prefer them over an arbitrary eliminated
+-- investigator (which was whoever sorted first by id). See issue #5420. The
+-- final fallback only matters if the recorded lead is no longer an entity at
+-- all.
 getLead :: (HasCallStack, HasGame m) => m InvestigatorId
-getLead = do
-  mLead <- selectOne LeadInvestigator
-  mOthers <- selectOne $ IncludeEliminated Anyone
-  pure $ fromJustNote "No lead found" (mLead <|> mOthers)
+getLead = fromJustNote "No lead found" <$> getLeadMay
 
 getLeadMay :: (HasCallStack, HasGame m) => m (Maybe InvestigatorId)
-getLeadMay = runMaybeT $ MaybeT (selectOne LeadInvestigator) <|> MaybeT (selectOne $ IncludeEliminated Anyone)
+getLeadMay =
+  runMaybeT
+    $ MaybeT (selectOne LeadInvestigator)
+    <|> MaybeT getRecordedLead
+    <|> MaybeT (selectOne $ IncludeEliminated Anyone)
 
 getCurrentMythosPhaseStep :: HasGame m => m (Maybe MythosPhaseStep)
 getCurrentMythosPhaseStep = getMythosPhaseStep

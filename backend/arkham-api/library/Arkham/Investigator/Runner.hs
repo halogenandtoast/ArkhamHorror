@@ -784,7 +784,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushAll [InvestigatorWhenEliminated (toSource a) iid (Just $ Do msg)]
     pure $ a & endedTurnL .~ True
   Do (Msg.InvestigatorResigned iid) | iid == investigatorId -> do
-    isLead <- (== iid) <$> getLead
+    isLead <- (== Just iid) <$> getRecordedLead
     pushWhen isLead ChooseLeadInvestigator
     pure $ a & resignedL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario

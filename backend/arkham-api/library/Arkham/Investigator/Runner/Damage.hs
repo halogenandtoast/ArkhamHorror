@@ -212,7 +212,7 @@ removeInvestigatorTokens token n a = case token of
   _ -> pure $ a & tokensL %~ subtractTokens token n
 
 handleInvestigatorIsDefeated a@InvestigatorAttrs {..} source iid = do
-  isLead <- (== iid) <$> getLead
+  isLead <- (== Just iid) <$> getRecordedLead
   modifiedHealth <- field InvestigatorHealth (toId a)
   modifiedSanity <- field InvestigatorSanity (toId a)
   let
@@ -1311,7 +1311,7 @@ handleInvestigatorWhenDefeated a@InvestigatorAttrs {..} source iid = do
 
 handleInvestigatorKilled a@InvestigatorAttrs {..} source iid = do
   unless investigatorDefeated do
-    isLead <- (== iid) <$> getLead
+    isLead <- (== Just iid) <$> getRecordedLead
     pushAll $ [ChooseLeadInvestigator | isLead] <> [Msg.InvestigatorDefeated source iid]
   pure $ a & defeatedL .~ True & endedTurnL .~ True & killedL .~ True
 

@@ -24,7 +24,7 @@ covertOpsInTheShadows =
 theNecronomiconDrakeTranslation :: CardDef
 theNecronomiconDrakeTranslation =
   (weakness "12012" ("The Necronomicon" <:> "Drake Translation"))
-    { cdCardTraits = setFromList [Item, Tome]
+    { cdCardTraits = setFromList [Item, Tome, Cursed]
     , cdSlots = [#arcane]
     }
 

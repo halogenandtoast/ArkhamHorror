@@ -16,6 +16,7 @@ establishMotive = skill EstablishMotive Cards.establishMotive
 instance RunMessage EstablishMotive where
   runMessage msg s@(EstablishMotive attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      search iid attrs iid [fromTopOfDeck 6] (basic $ #event <> withTrait Insight) (DrawFound iid 1)
+      skillTestCardOption attrs
+        $ search iid attrs iid [fromTopOfDeck 6] (basic $ #event <> withTrait Insight) (DrawFound iid 1)
       pure s
     _ -> EstablishMotive <$> liftRunMessage msg attrs

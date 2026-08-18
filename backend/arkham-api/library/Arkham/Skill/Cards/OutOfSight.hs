@@ -19,7 +19,7 @@ outOfSight = skill OutOfSight Cards.outOfSight
 instance RunMessage OutOfSight where
   runMessage msg s@(OutOfSight attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 2 -> do
-      chooseOneM iid do
+      skillTestCardOption attrs $ chooseOneM iid do
         cardI18n $ scope "outOfSight" $ labeled' "disengageAndMove" $ doStep 1 msg
         withI18n skip_
       pure s

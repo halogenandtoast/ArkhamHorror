@@ -17,7 +17,7 @@ outOfSight3 = skill OutOfSight3 Cards.outOfSight3
 instance RunMessage OutOfSight3 where
   runMessage msg s@(OutOfSight3 attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 1 -> do
-      chooseOneM iid do
+      skillTestCardOption attrs $ chooseOneM iid do
         cardI18n $ scope "outOfSight3" $ labeled' "disengageAndMove2" $ doStep 1 msg
         withI18n skip_
       pure s

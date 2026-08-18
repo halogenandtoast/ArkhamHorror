@@ -16,7 +16,10 @@ literaryAnalysis = skill LiteraryAnalysis Cards.literaryAnalysis
 
 instance RunMessage LiteraryAnalysis where
   runMessage msg s@(LiteraryAnalysis attrs) = runQueueT $ case msg of
-    PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+      skillTestCardOption attrs $ doStep 1 msg
+      pure s
+    DoStep 1 (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do
       tomes <-
         select
           $ withTrait Tome

@@ -7589,6 +7589,7 @@ test-suite spec
       Arkham.ScenarioDeckKeySpec
       Arkham.Skill.Cards.ArroganceSpec
       Arkham.Skill.Cards.DeductionSpec
+      Arkham.Skill.Cards.DoubleOrNothingSpec
       Arkham.Skill.Cards.FearlessSpec
       Arkham.Skill.Cards.GutsSpec
       Arkham.Skill.Cards.ManualDexteritySpec

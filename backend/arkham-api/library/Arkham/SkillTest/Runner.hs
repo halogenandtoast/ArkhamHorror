@@ -883,7 +883,6 @@ instance RunMessage SkillTest where
 
       modifiers' <- getModifiers (toTarget s)
       let
-        successTimes = if DoubleSuccess `elem` modifiers' then 2 else 1
         modifiedSkillTestResult =
           foldl' modifySkillTestResult skillTestResult modifiers'
         modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
@@ -907,12 +906,16 @@ instance RunMessage SkillTest where
           -- The collect must come last so initiators still get to register --
           -- see the Fight/Evade handlers in "Arkham.Enemy.Runner". Mirrors the
           -- failure branch below.
+          --
+          -- Results are DETERMINED once and RESOLVED N times (Double or Nothing
+          -- makes N 2, see 'getSkillTestResolveTimes' at the collect). Repeating
+          -- the determination instead would let riders such as Vicious Blow push
+          -- their 'DamageDealt' modifier once per repeat and stack it, whereas
+          -- the FAQ says to first determine the results of the successful test
+          -- (bonus damage included) and only then resolve those effects twice.
           pushAll
-            $ cycleN
-              successTimes
-              ( [passed target | target <- skillTestSubscribers <> tokenSubscribers]
-                  <> [passed (SkillTestInitiatorTarget skillTestTarget), CollectSkillTestOptions]
-              )
+            $ [passed target | target <- skillTestSubscribers <> tokenSubscribers]
+            <> [passed (SkillTestInitiatorTarget skillTestTarget), CollectSkillTestOptions]
         FailedBy _ n -> do
           investigatorsToResolveFailure <-
             (`notNullOr` [skillTestInvestigator])

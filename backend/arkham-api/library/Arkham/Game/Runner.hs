@@ -2448,7 +2448,16 @@ runGameMessage msg g = case msg of
           isOpt (SkillTestResultOptions _) = True
           isOpt _ = False
        in (filter (not . isOpt) q, concatMap gather q)
-    unless (null collected) $ push $ SkillTestResultOptions collected
+    unless (null collected) do
+      -- Double or Nothing resolves the determined results twice. Each repeat has
+      -- to be its own ordering round, so the extra ones ride inside 'Run': the
+      -- 'SkillTestResultOptions' handler merges with an immediately adjacent
+      -- option message, which would otherwise collapse both rounds into a single
+      -- prompt with duplicated entries.
+      times <- getSkillTestResolveTimes
+      pushAll
+        $ SkillTestResultOptions collected
+        : replicate (times - 1) (Run [SkillTestResultOptions collected])
     pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     replaceCard card.id card

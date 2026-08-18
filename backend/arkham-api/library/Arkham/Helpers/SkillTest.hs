@@ -388,6 +388,19 @@ getSkillTestResultWithResultModifiers = runMaybeT do
     apply r _ = r
   pure $ foldl' apply (skillTestResult st) modifiers'
 
+{- | How many times the ST.7 results of the current skill test are resolved.
+Double or Nothing (02026) grants 'DoubleSuccess', which resolves the determined
+results twice; the determination itself (riders registering their options and
+their bonus damage/clue modifiers) still happens exactly once.
+-}
+getSkillTestResolveTimes :: HasGame m => m Int
+getSkillTestResolveTimes =
+  getSkillTest >>= \case
+    Just st | SucceededBy {} <- skillTestResult st -> do
+      modifiers' <- getModifiers (SkillTestTarget st.id)
+      pure $ if DoubleSuccess `elem` modifiers' then 2 else 1
+    _ -> pure 1
+
 getIsPerilous :: HasGame m => SkillTest -> m Bool
 getIsPerilous skillTest = case skillTestSource skillTest of
   TreacherySource tid -> do

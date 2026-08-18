@@ -15,6 +15,9 @@ doOrDie = skill DoOrDie Cards.doOrDie
 instance RunMessage DoOrDie where
   runMessage msg s@(DoOrDie attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+      skillTestCardOption attrs $ doStep 1 msg
+      pure s
+    DoStep 1 (PassedSkillTest _ _ _ (isTarget attrs -> True) _ _) -> do
       let owner = attrs.owner
       cards <- select $ InDiscardOf (InvestigatorWithId owner) <> oneOf [#asset, #event] <> #survivor
       focusCards cards $ chooseTargetM owner cards $ addToHand owner . only

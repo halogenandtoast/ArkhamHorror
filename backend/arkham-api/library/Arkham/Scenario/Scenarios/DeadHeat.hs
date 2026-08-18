@@ -169,15 +169,13 @@ instance RunMessage DeadHeat where
       time <- getTime
       lead <- getLead
       when (time >= 11 && time <= 17) do
-        chooseNM lead n $ targets locations $ removeTokensOn ScenarioSource Civilian 1
+        chooseNM lead n $ targets locations slayCivilianUnchecked
       when (time >= 18 && time <= 24) do
         if n * 2 >= length locations
           then do
-            for_ locations $ removeTokensOn ScenarioSource Civilian 1
-            chooseNM lead ((n * 2) - length locations)
-              $ targets locations
-              $ removeTokensOn ScenarioSource Civilian 1
-          else chooseNM lead (n * 2) $ targets locations $ removeTokensOn ScenarioSource Civilian 1
+            for_ locations slayCivilianUnchecked
+            chooseNM lead ((n * 2) - length locations) $ targets locations slayCivilianUnchecked
+          else chooseNM lead (n * 2) $ targets locations slayCivilianUnchecked
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

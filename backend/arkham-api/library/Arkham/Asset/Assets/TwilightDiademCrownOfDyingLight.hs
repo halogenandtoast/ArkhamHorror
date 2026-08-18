@@ -25,7 +25,7 @@ instance HasAbilities TwilightDiademCrownOfDyingLight where
   getAbilities (TwilightDiademCrownOfDyingLight x) =
     [ controlledAbility x 1 (DuringSkillTest AnySkillTest)
         $ triggered
-          (RevealChaosToken #when Anyone $ oneOf [#curse, #bless])
+          (RevealChaosToken #when You $ oneOf [#curse, #bless])
           (assetUseCost x Offering 1 <> exhaust x)
     ]
 

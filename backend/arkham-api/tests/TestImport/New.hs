@@ -723,6 +723,28 @@ commitFor i (toCardId -> cid) = do
     TargetLabel (CardIdTarget c) _ -> c == cid
     _ -> False
 
+-- | Like 'assertNoReaction', but scoped to a single source and scanning every
+-- pending question rather than requiring exactly one. Use this when another
+-- investigator may hold the window open, so the absence being asserted is real
+-- rather than an artifact of there being no question at all.
+assertNoReactionOf :: (HasCallStack, Sourceable source) => source -> TestAppT ()
+assertNoReactionOf (toSource -> source) = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choicesOf question = case stripQuestionWrappers question of
+      ChooseOne msgs -> msgs
+      PlayerWindowChooseOne msgs -> msgs
+      WindowChooseOne msgs -> msgs
+      _ -> []
+    isReaction = \case
+      AbilityLabel {ability} -> case abilityType ability of
+        ReactionAbility {} -> abilitySource ability == source
+        _ -> False
+      _ -> False
+  case find isReaction (concatMap (choicesOf . snd) (mapToList questionMap)) of
+    Nothing -> pure ()
+    Just choice -> expectationFailure $ "expected no reaction from " <> show source <> ", but found:\n\n" <> show choice
+
 assertNoReaction :: TestAppT ()
 assertNoReaction = do
   questionMap <- gameQuestion <$> getGame

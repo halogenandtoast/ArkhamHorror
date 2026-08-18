@@ -30,7 +30,7 @@
     "gameName": "Nombre de la Partida",
     "create": "Crear",
 
-    "chooseYourDeck": "Elige tu mazo{s}",
+    "chooseYourDeck": "Elige tu mazo | Elige tu mazos",
     "tabooList": "Lista de Taboo: {tabooList}",
     "useExistingDeck": "Usar Mazo Existente",
     "loadNewDeck": "Cargar Nuevo Mazo",

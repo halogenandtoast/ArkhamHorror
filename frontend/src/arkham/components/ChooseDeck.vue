@@ -363,7 +363,7 @@ const needsReply = computed(() => {
 <template>
   <div class="container scroll-container">
     <div class="investigators">
-      <h2 class="page-title">{{$t('create.chooseYourDeck', {s: players.length > 1 ? 's' : ''})}}</h2>
+      <h2 class="page-title">{{$t('create.chooseYourDeck', players.length)}}</h2>
       <div class="portraits">
         <div class="investigator-row" v-for="player in players" :key="player.id">
           <template v-if="player.tag === 'Chosen'">

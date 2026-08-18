@@ -72,4 +72,5 @@ spec = describe "Double or Nothing" $ do
     commit doubleOrNothing
     startSkillTest
     applyResults
-    self.hand `shouldReturn` map toCard cards
+    hand <- self.hand
+    hand `shouldMatchList` map toCard cards

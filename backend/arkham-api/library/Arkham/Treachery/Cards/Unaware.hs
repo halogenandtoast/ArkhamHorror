@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.Unaware (unaware) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -16,7 +16,7 @@ unaware = treachery Unaware Cards.unaware
 instance HasAbilities Unaware where
   getAbilities (Unaware attrs) =
     [ playerLimit PerTurn
-        $ restrictedAbility attrs 1 (InThreatAreaOf You)
+        $ restrictedAbility attrs 1 (InThreatAreaOf You <> DuringTurn You)
         $ forced
         $ SkillTestResult #after You AnySkillTest #failure
     ]

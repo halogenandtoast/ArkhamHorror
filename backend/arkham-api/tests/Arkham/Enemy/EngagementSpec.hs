@@ -155,6 +155,29 @@ spec = describe "Enemy engagement" do
       field EnemyPlacement (toId enemy) `shouldReturn` InThreatArea (toId self)
       self.engagedEnemies `shouldReturn` [toId enemy]
 
+  -- Regression for issue #5432 ("Get over here!" on a Disciple of the Devourer
+  -- wearing Mask of Umôrdhoth). A card effect that engages an enemy standing at
+  -- another location queues [PlaceEnemy (InThreatArea iid), EnemyEntered], and
+  -- `EnemyEntered` rewrote that placement straight back to `AtLocation`.
+  -- `EnemyCheckEngagement` in the after-enters window re-engaged ordinary enemies
+  -- and hid the damage, but it bails on aloof enemies — so the enemy was pulled
+  -- in and fought while engaged with nobody.
+  it "engages an aloof enemy that a card effect pulls in from another location"
+    . gameTest
+    $ \self -> do
+      location1 <- testLocation
+      location2 <- testLocation
+      self `moveTo` location1
+
+      enemy <- testEnemy
+      enemy `spawnAt` location2
+      run =<< gameModifier (TestSource mempty) (toTarget enemy) #aloof
+
+      run $ EnemyEngageInvestigator (toId enemy) (toId self)
+
+      field EnemyPlacement (toId enemy) `shouldReturn` InThreatArea (toId self)
+      self.engagedEnemies `shouldReturn` [toId enemy]
+
   -- The engagement check has to stay guarded: an exhausted enemy does not engage
   -- (RR "Enemy Cards" — only a *ready*, unengaged enemy engages).
   it "leaves an exhausted enemy unengaged when it is placed at an investigator's location"

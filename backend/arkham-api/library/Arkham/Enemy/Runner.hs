@@ -622,8 +622,22 @@ instance RunMessage EnemyAttrs where
           -- never reaches here — `EnemyMove` filters those out (#5277) — so
           -- engagement-preserving self-moves (Knight of the Inner Circle) are
           -- unaffected.
+          --
+          -- A threat area belonging to an investigator *at* `lid` is also exempt:
+          -- that placement was written by this very entry, not left over from
+          -- wherever the enemy came from. `Do (EngageEnemy)` queues
+          -- [PlaceEnemy (InThreatArea iid), EnemyEntered] whenever a card effect
+          -- engages an enemy standing somewhere else ("Get over here!" on an
+          -- enemy at a connecting location), so rewriting it here undid the
+          -- engagement. `After (EnemyEntered)` re-engaged ordinary enemies via
+          -- `EnemyCheckEngagement` and hid the damage, but that check bails on
+          -- aloof/massive/exhausted/prey-restricted enemies — an Aloof Disciple
+          -- of the Devourer was fought but never engaged. Issue #5432.
           case a.placement of
             InThreatArea {} | isJust enemySpawnDetails -> pure a
+            InThreatArea iid' -> do
+              engagedHere <- (== Just lid) <$> getMaybeLocation iid'
+              pure $ if engagedHere then a else a & placementL .~ AtLocation lid
             _ -> pure $ a & placementL .~ AtLocation lid
     After (EnemyEntered eid lid) | eid == enemyId -> do
       case enemyPlacement of

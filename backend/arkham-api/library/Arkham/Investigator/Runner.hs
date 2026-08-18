@@ -2761,7 +2761,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> liftRunMessage msg' a
   SetInvestigatorForm iid form | iid == toId a -> pure $ a & formL .~ form
-  RemovedLocation lid | investigatorLocation a == Just lid -> handleRemovedLocation a lid
+  RemovedLocation lid | investigatorLocation a == Just lid -> do
+    -- since we handle the would be defeated window in the previous message we
+    -- skip directly to the is defeated message even though we would normally
+    -- not want to do this
+    pushAll $ resolve $ InvestigatorIsDefeated (LocationSource lid) investigatorId
+    handleRemovedLocation a lid
   PlaceInvestigator iid placement | iid == toId a -> do
     case placement of
       AtLocation lid -> do

@@ -1370,22 +1370,24 @@ runGameMessage msg g = case msg of
   When (RemoveLocation lid) -> do
     pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
     pure g
-  RemovedLocation lid -> do
-    push $ Do msg
-    treacheries <- select $ TreacheryAt $ LocationWithId lid
-    pushAll $ concatMap (resolve . toDiscard GameSource) treacheries
-    enemies <- select $ enemyAt lid
-    pushAll $ concatMap (resolve . toDiscard GameSource) enemies
-    events <- select $ eventAt lid
-    pushAll $ concatMap (resolve . toDiscard GameSource) events
-    assets <- select $ assetAt lid
-    pushAll $ concatMap (resolve . toDiscard GameSource) assets
-    investigators <- select $ investigatorAt lid
-    -- since we handle the would be defeated window in the previous message we
-    -- skip directly to the is defeated message even though we would normally
-    -- not want to do this
-    pushAll $ concatMap (resolve . Msg.InvestigatorIsDefeated (toSource lid)) investigators
-    pure g
+  -- Nothing to sweep from here. Each entity notices that its own location left
+  -- play and discards itself (the `RemovedLocation` cases in the Enemy, Event,
+  -- Asset, Treachery and Investigator runners), and anything *attached* to one
+  -- of those entities rides along on its host's removal instead.
+  --
+  -- Do not move the sweep back here. `enemyAt`/`eventAt`/`assetAt` resolve a
+  -- location transitively through `placementLocation`, so an attachment counts
+  -- as being "at" its host's location -- and because `runGameMessage` is not
+  -- inside `runQueueT`, consecutive pushes here prepend and resolve in reverse
+  -- source order. Together that discarded a Rod of Carnamagos Rot before its
+  -- host enemy ever reached its leave-play window, so the Rot's forced
+  -- `EnemyLeavesPlay #when` reaction never fired and it went to the discard
+  -- pile instead of back to the bonded cards, #5426.
+  --
+  -- `Do (RemovedLocation lid)` is queued as a sibling behind this message (see
+  -- `removedLocation` in Arkham.Message.Lifted.Location) so the location entity
+  -- outlives the entities standing on it.
+  RemovedLocation _ -> pure g
   Do (RemovedLocation lid) -> do
     maybeLocation lid >>= \case
       Nothing -> pure g

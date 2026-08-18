@@ -276,5 +276,18 @@ removeLocation (asId -> lid) = do
           =<< field LocationVictory lid
       else pushAll $ resolve (RemoveLocation lid)
 
+{- | Announce that a location has left play, and queue the deletion of the
+location entity *behind* the announcement.
+
+Everything standing on the location discards itself in response to
+@RemovedLocation@ (see the @RemovedLocation@ cases in the Enemy, Event, Asset,
+Treachery and Investigator runners). Those pushes prepend, so they land in front
+of the @Do@ queued here and the location entity survives until they are done.
+Pushing the @Do@ from @runGameMessage@ instead would resolve it first, because
+that fans last -- see #5426.
+-}
+removedLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
+removedLocation (asId -> lid) = pushAll [RemovedLocation lid, Do (RemovedLocation lid)]
+
 setLocationLabel :: (ToId location LocationId, ReverseQueue m) => location -> Text -> m ()
 setLocationLabel location lbl = push $ SetLocationLabel (asId location) lbl

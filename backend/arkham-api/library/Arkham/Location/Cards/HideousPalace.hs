@@ -40,7 +40,7 @@ instance RunMessage HideousPalace where
       investigators <- select $ investigatorAt lid
       card <- field Field.LocationCard lid
       for_ investigators \iid -> moveTo (attrs.ability 1) iid attrs
-      push $ RemovedLocation lid
+      removedLocation lid
       shuffleCardsIntoDeck CosmosDeck (only card)
       pure l
     Do (PlaceCosmos _ (is attrs -> True) cloc) -> do

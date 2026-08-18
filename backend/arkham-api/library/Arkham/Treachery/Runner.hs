@@ -168,6 +168,11 @@ instance RunMessage TreacheryAttrs where
         Just target | isTarget target (sourceToTarget source) -> toDiscard GameSource (toTarget a)
         _ -> pure ()
       pure a
+    -- A treachery attached directly to a location leaves play with it. One
+    -- attached to an enemy or an asset goes when that host does instead, #5426.
+    RemovedLocation lid | isDirectlyAtLocation lid a.placement -> do
+      toDiscard GameSource (toTarget a)
+      pure a
     Exhaust ea | a `isTarget` ea.target -> do
       pure $ a & exhaustedL .~ True
     ReadyExhausted -> pure $ a & exhaustedL .~ False

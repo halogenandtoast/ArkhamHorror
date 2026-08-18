@@ -34,7 +34,7 @@ import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.Window
-import Arkham.Matcher (EnemyMatcher (..))
+import Arkham.Matcher (EnemyMatcher (..), EventMatcher (..))
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Placement
@@ -125,10 +125,28 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
   -- An event attached to something (e.g. a Rot on an enemy) is discarded when that
   -- thing leaves play, mirroring attached treacheries and enemies. Without this an
   -- attachment whose host is removed rather than discarded is stranded in play, #5309.
+  --
+  -- Only while this event is still in play, though. `RemoveEvent` moves the
+  -- entity to `actionRemovedEntities`, which keeps receiving messages, and the
+  -- copy it parks there is read via `getEvent` from the ambient game -- i.e. the
+  -- state as of the *start* of the removing message -- so it keeps its old
+  -- `AttachedToEnemy` placement no matter what the runner sets during that
+  -- message. A Rot that had already returned to the bonded pile via
+  -- `PlaceInBonded` therefore discarded itself when its host enemy left play a
+  -- few messages later, landing in the discard as well, #5426. `select` reads
+  -- only `entitiesL.eventsL`, so it is the liveness test the placement is not.
   RemovedFromPlay source | not (isSource a source) -> do
-    case placementToAttached eventPlacement of
+    stillInPlay <- selectAny $ EventWithId a.id
+    when stillInPlay $ case placementToAttached eventPlacement of
       Just target | isTarget target (sourceToTarget source) -> push $ toDiscard GameSource a
       _ -> pure ()
+    pure a
+  -- An event placed directly on a location leaves play with it. An event
+  -- attached to an enemy or asset is that host's business instead, which is
+  -- what keeps Rod of Carnamagos' Rots alive long enough to react to their
+  -- enemy's leave-play window, #5426.
+  RemovedLocation lid | isDirectlyAtLocation lid eventPlacement -> do
+    push $ toDiscard GameSource a
     pure a
   ReadyExhausted -> pure $ a & exhaustedL .~ False
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False

@@ -673,6 +673,13 @@ instance RunMessage AssetAttrs where
       pure a
     RemovedFromPlay (isSource a -> True) -> do
       pure $ a & placementL .~ OutOfPlay Zone.RemovedZone
+    -- An asset placed directly on a location leaves play with it. An asset in an
+    -- investigator's play area, in a vehicle, or attached to another entity only
+    -- reaches the location through that host and leaves play when the host does,
+    -- #5426.
+    RemovedLocation lid | isDirectlyAtLocation lid a.placement -> do
+      push $ toDiscard GameSource a
+      pure a
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & (keysL %~ insertSet k)
     HealAllDamage (isTarget a -> True) source | assetDamage a > 0 -> do

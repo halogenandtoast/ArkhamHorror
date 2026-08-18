@@ -1957,6 +1957,15 @@ instance RunMessage EnemyAttrs where
         Just target | isTarget target (sourceToTarget source) -> push $ toDiscard GameSource a
         _ -> pure ()
       pure a
+    -- An enemy standing on a location that leaves play goes with it. Only a
+    -- *direct* placement counts: an enemy attached to an asset, swarming a host
+    -- or sitting in a threat area reaches the location through that host, and
+    -- leaves play when the host does. Going through `Discard` (rather than
+    -- being swept from `Game.Runner`) is what gives cards attached to this
+    -- enemy their `EnemyLeavesPlay #when` window before it goes, #5426.
+    RemovedLocation lid | isDirectlyAtLocation lid a.placement -> do
+      push $ toDiscard GameSource a
+      pure a
     ShuffleBackIntoEncounterDeck source (isTarget a -> True) -> do
       mods <- getModifiers (toTarget a)
       blocked <-

@@ -1837,7 +1837,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       $ map
         (mkWhen . Window.InvestigatorWouldBeDefeated (DefeatedByOther $ LocationSource lid))
         investigatorIds
-    push $ RemovedLocation lid
+    -- pushes the deletion of the location entity behind the announcement, so
+    -- everything standing on the location gets to leave play first, #5426
+    pushAll [RemovedLocation lid, Do (RemovedLocation lid)]
     pure $ a & gridL %~ deleteInGrid lid
   RemoveEnemyLocation lid ->
     pure $ a & gridL %~ deleteInGrid lid

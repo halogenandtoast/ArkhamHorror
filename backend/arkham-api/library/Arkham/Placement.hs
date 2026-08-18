@@ -4,6 +4,7 @@ module Arkham.Placement (
   Placement (..),
   IsPlacement (..),
   placementToAttached,
+  isDirectlyAtLocation,
   isOutOfPlayPlacement,
   isInPlayPlacement,
   isHiddenPlacement,
@@ -156,6 +157,16 @@ isHiddenPlacement :: Placement -> Bool
 isHiddenPlacement = \case
   HiddenInHand _ -> True
   FacedownInThreatArea _ -> True
+  _ -> False
+
+-- | Whether this placement sits *directly* on the given location, as opposed to
+-- reaching it transitively through an enemy, asset, treachery, vehicle or
+-- investigator standing there. Those attachments are their host's
+-- responsibility when the host leaves play, see #5426.
+isDirectlyAtLocation :: LocationId -> Placement -> Bool
+isDirectlyAtLocation lid = \case
+  AtLocation lid' -> lid' == lid
+  AttachedToLocation lid' -> lid' == lid
   _ -> False
 
 isInPlayArea :: Placement -> Bool

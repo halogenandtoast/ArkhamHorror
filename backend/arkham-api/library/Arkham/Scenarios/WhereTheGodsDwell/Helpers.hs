@@ -13,8 +13,8 @@ import Arkham.Location.Types (LocationAttrs (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Prelude
-import Arkham.Source
 import Arkham.Projection
+import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
@@ -29,7 +29,8 @@ whichWhisperingChaos attrs = case attrs.label of
 
 forsakenTowerCriteria :: LocationAttrs -> Criterion
 forsakenTowerCriteria attrs =
-  exists (TreacheryInHandOf You <> treacheryIs (whichWhisperingChaos attrs))
+  Here
+    <> exists (TreacheryInHandOf You <> treacheryIs (whichWhisperingChaos attrs))
     <> exists (EnemyInHandOf You <> EnemyWithTitle "Nyarlathotep")
 
 forsakenTowerAbilities :: LocationAttrs -> [Ability]

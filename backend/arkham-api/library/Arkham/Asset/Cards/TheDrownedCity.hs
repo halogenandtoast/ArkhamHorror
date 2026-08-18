@@ -769,7 +769,6 @@ alienTablet =
   (storyAsset "11763" ("Alien Tablet" <:> "Prehistoric Writings") 3 TheDrownedCityExpedition)
     { cdCardTraits = setFromList [Item, Relic, Rlyeh]
     , cdSkills = [#intellect, #intellect]
-    , cdSlots = [#hand]
     , cdUses = uses Secret 4
     , cdUnique = True
     }
@@ -779,7 +778,6 @@ divingSuitTheDrownedCity =
   (storyAsset "11764" "Diving Suit" 3 TheDrownedCityExpedition)
     { cdCardTraits = setFromList [Item, Armor]
     , cdSkills = [#combat]
-    , cdSlots = [#body]
     }
 
 rubyStandish :: CardDef

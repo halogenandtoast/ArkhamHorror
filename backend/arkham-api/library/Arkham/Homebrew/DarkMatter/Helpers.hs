@@ -19,6 +19,7 @@ import {-# SOURCE #-} Arkham.GameEnv (getCurrentBatchId)
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Game (getRemovedFromPlayCards)
+import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario (
@@ -232,6 +233,14 @@ data ScanResult = ScanResult
   , scannedFor :: [LocationSymbol]
   , scannedCard :: Maybe Card
   , scanSuccessful :: Bool
+  , scannedAt :: Maybe LocationId
+  {- ^ Where the scan was performed, captured *before* the scanned card is
+  drawn. A scanned location is put into play and can move the scanning
+  investigator to it, so by the time the @scan@ windows fire "your location"
+  may already be the location the scan produced. 'Maybe' both because an
+  investigator can be nowhere and so window payloads persisted before this
+  field existed still parse.
+  -}
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -258,6 +267,15 @@ scanEventKey key = scanEvent <> "[" <> key <> "]"
 -- | A scan for [Trefoil] fires @scan[Trefoil]@.
 scanEventFor :: LocationSymbol -> Text
 scanEventFor = scanEventKey . tshow
+
+{- | @scan[at:<location id>]@ — the location the scan was performed at. Cards
+printing "After you scan at this location" must match this rather than pairing
+the broad @scan@ key with a 'Here' criterion: a successful scan can put the
+scanned location into play and move the investigator to it, so 'Here' is
+evaluated against wherever the scan *landed* them.
+-}
+scanEventAt :: LocationId -> Text
+scanEventAt lid = scanEventKey ("at:" <> tshow lid)
 
 -- | @scan[successful]@ / @scan[unsuccessful]@: did the scan find a card?
 successfulScanEvent :: Text
@@ -293,6 +311,7 @@ checkScanWindows r = do
       scanEvent
         : (if scanSuccessful r then successfulScanEvent else unsuccessfulScanEvent)
         : map scanEventFor (ordNub $ scannedFor r)
+          <> map scanEventAt (toList $ scannedAt r)
           <> concat
             [ [scanEventForCard card, scanEventForCardType (toCardType card)]
             | card <- toList (scannedCard r)
@@ -368,16 +387,19 @@ card matches, the scan is unsuccessful.
 runPendingScan :: ReverseQueue m => PendingScan -> m ()
 runPendingScan (PendingScan iid source icons) = do
   deck <- getScanningDeck
+  -- Before 'drawScannedCard', which can put a scanned location into play and
+  -- move the investigator onto it.
+  scannedAt' <- getMaybeLocation iid
   let matches c = all (`elem` scanIcons c) icons
   case break matches deck of
     (skipped, []) -> do
       unless (null skipped) $ setScenarioDeck ScanningDeck =<< shuffle skipped
-      checkScanWindows $ ScanResult iid icons Nothing False
+      checkScanWindows $ ScanResult iid icons Nothing False scannedAt'
     (skipped, x : rest) -> do
       deck' <- if null skipped then pure rest else shuffle (skipped <> rest)
       setScenarioDeck ScanningDeck deck'
       drawScannedCard iid source x
-      checkScanWindows $ ScanResult iid icons (Just x) True
+      checkScanWindows $ ScanResult iid icons (Just x) True scannedAt'
 
 {- | Motion scanning (In the Shadow of Earth): simply draw the top card of the
 scanning deck. The caller is responsible for the "only while at a location
@@ -387,13 +409,14 @@ scanTopOfScanningDeck
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 scanTopOfScanningDeck iid (toSource -> source) = do
   deck <- getScanningDeck
+  scannedAt' <- getMaybeLocation iid
   case deck of
     [] ->
-      checkScanWindows $ ScanResult iid [] Nothing False
+      checkScanWindows $ ScanResult iid [] Nothing False scannedAt'
     (x : rest) -> do
       setScenarioDeck ScanningDeck rest
       drawScannedCard iid source x
-      checkScanWindows $ ScanResult iid (scanIcons x) (Just x) True
+      checkScanWindows $ ScanResult iid (scanIcons x) (Just x) True scannedAt'
 
 {- | Draw a scanned card. A scanned *location* is put into play on top of Reality
 Simulator instead — that location prints "(Reminder - Reality Simulator is not in

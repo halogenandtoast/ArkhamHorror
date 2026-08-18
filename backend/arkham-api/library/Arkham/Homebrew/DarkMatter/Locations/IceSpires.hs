@@ -3,7 +3,7 @@ module Arkham.Homebrew.DarkMatter.Locations.IceSpires (iceSpires) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (scanEvent, shuffleIntoScanningDeck)
+import Arkham.Homebrew.DarkMatter.Helpers (scanEventAt, shuffleIntoScanningDeck)
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Types qualified as Loc
 import Arkham.Matcher
@@ -24,9 +24,9 @@ a resource token on it back into the scanning deck."
 instance HasAbilities IceSpires where
   getAbilities (IceSpires a) =
     extendRevealed1 a
-      $ restricted a 1 Here
+      $ mkAbility a 1
       $ forced
-      $ CampaignEvent #after (Just You) scanEvent
+      $ CampaignEvent #after (Just You) (scanEventAt a.id)
 
 instance RunMessage IceSpires where
   runMessage msg l@(IceSpires attrs) = runQueueT $ case msg of

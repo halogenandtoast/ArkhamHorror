@@ -97,7 +97,16 @@ instance RunMessage LostQuantum where
       case r of
         NoResolution -> do
           resolution "noResolution"
-          let erwinResigned = toCardCode Assets.erwinSimmonsFading `elem` attrs.resignedCardCodes
+          -- "...an investigator resigned with the Erwin Simmons story asset under
+          -- their control" — either printing counts. Which one you can be holding
+          -- depends on how act 1 advanced: Quantum Physicist is taken control of
+          -- directly, while Fading only shuffles itself back into the face-down
+          -- cards when there are some left to shuffle into, so it too can still be
+          -- controlled at resign time.
+          let erwinResigned =
+                any
+                  ((`elem` attrs.resignedCardCodes) . toCardCode)
+                  [Assets.erwinSimmonsQuantumPhysicist, Assets.erwinSimmonsFading]
           push $ ScenarioResolution $ Resolution $ if erwinResigned then 3 else 1
         Resolution 1 -> do
           record TheElbrusStationHasBeenLostInTheQuantumRealm
@@ -111,10 +120,10 @@ instance RunMessage LostQuantum where
           earnXp attrs "resolution2"
         Resolution 3 -> do
           record TheElbrusStationHasBeenLostInTheQuantumRealm
-          iids <- allInvestigators
-          addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.erwinSimmonsQuantumPhysicist
           addImpendingDoom 2
           earnXp attrs "resolution3"
+          iids <- allInvestigators
+          addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.erwinSimmonsQuantumPhysicist
         _ -> error "invalid resolution"
       when (r /= NoResolution) endOfScenario
       pure s

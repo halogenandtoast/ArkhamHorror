@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (scanEvent)
+import Arkham.Homebrew.DarkMatter.Helpers (scanEventAt)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -23,9 +23,9 @@ instance HasModifiersFor ShipsBridge where
 instance HasAbilities ShipsBridge where
   getAbilities (ShipsBridge a) =
     extendRevealed1 a
-      $ restricted a 1 (Here <> thisExists a LocationWithoutClues)
+      $ restricted a 1 (thisExists a LocationWithoutClues)
       $ forced
-      $ CampaignEvent #after (Just You) scanEvent
+      $ CampaignEvent #after (Just You) (scanEventAt a.id)
 
 instance RunMessage ShipsBridge where
   runMessage msg l@(ShipsBridge attrs) = runQueueT $ case msg of

@@ -29,7 +29,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Xp
-import Control.Monad.Writer hiding (filterM)
+import Control.Monad.Writer
 import Data.Aeson.TH
 import Data.Aeson.Types (Parser)
 import Data.Data
@@ -224,8 +224,14 @@ instance Entity CampaignAttrs where
   overAttrs f = f
 
 getRandomBasicWeakness :: MonadRandom m => ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> m CardDef
-getRandomBasicWeakness investigatorClass playerCount mDecklist =
-  sampleRandomBasicWeakness
+getRandomBasicWeakness = getRandomBasicWeaknessExcluding []
+
+-- | 'getRandomBasicWeakness', skipping weaknesses whose canonical card code is excluded.
+getRandomBasicWeaknessExcluding
+  :: MonadRandom m => [CardCode] -> ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> m CardDef
+getRandomBasicWeaknessExcluding excluded investigatorClass playerCount mDecklist =
+  sampleRandomBasicWeaknessExcluding
+    excluded
     RandomBasicWeaknessContext
       { rbwInvestigatorClass = investigatorClass
       , rbwPlayerCount = playerCount
@@ -233,14 +239,33 @@ getRandomBasicWeakness investigatorClass playerCount mDecklist =
       , rbwStandalone = False
       }
 
+{- | Replace every random basic weakness placeholder in the deck with an actual weakness.
+Each draw excludes what the earlier draws produced, and the basic weaknesses already in
+the deck, since only one physical copy of each exists (#5424).
+-}
 addRandomBasicWeaknessIfNeeded
-  :: CardGen m => ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> Deck PlayerCard -> m (Deck PlayerCard, [Card])
+  :: CardGen m
+  => ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> Deck PlayerCard -> m (Deck PlayerCard, [Card])
 addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck = do
-  runWriterT do
-    Deck <$> flip filterM (unDeck deck) \card -> do
-      when (toCardDef card == randomWeakness) do
-        getRandomBasicWeakness investigatorClass playerCount mDecklist >>= lift . genCard >>= tell . pure
-      pure $ toCardDef card /= randomWeakness
+  let (placeholders, rest) = partition ((== randomWeakness) . toCardDef) (unDeck deck)
+  weaknesses <- foldM drawWeakness [] placeholders
+  pure (Deck rest, weaknesses)
+ where
+  inDeck = basicWeaknessCodes $ unDeck deck
+  drawWeakness acc _ = do
+    cardDef <-
+      getRandomBasicWeaknessExcluding
+        (inDeck <> basicWeaknessCodes acc)
+        investigatorClass
+        playerCount
+        mDecklist
+    card <- genCard cardDef
+    pure $ acc <> [card]
+
+-- | The canonical card codes of the basic weaknesses among these cards.
+basicWeaknessCodes :: HasCardDef a => [a] -> [CardCode]
+basicWeaknessCodes =
+  map canonicalCardCode . filter ((== Just BasicWeakness) . cdCardSubType) . map toCardDef
 
 campaignWith
   :: forall a

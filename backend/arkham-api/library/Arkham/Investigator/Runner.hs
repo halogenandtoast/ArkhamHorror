@@ -1585,8 +1585,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         -- hold this asset. It still enters play -- the effect that put it there may be mandatory,
         -- e.g. an act saying to take control of The Black Book -- and is then discarded, since it
         -- is the one that can leave play and whatever holds the slot (Dendromorphosis, ...) cannot.
+        -- Unless it cannot leave play either, in which case nothing here is discardable at all: it
+        -- enters play unslotted and the investigator simply sits over their slot limit (#5424).
+        canDiscardIncoming <- aid <=~> DiscardableAsset
         if null assetsThatCanProvideSlots
-          then pushAll [InvestigatorPlayedAsset iid aid, toDiscardBy iid GameSource aid]
+          then
+            pushAll
+              $ InvestigatorPlayedAsset iid aid
+              : [toDiscardBy iid GameSource aid | canDiscardIncoming]
           else
             push
               $ chooseOne player

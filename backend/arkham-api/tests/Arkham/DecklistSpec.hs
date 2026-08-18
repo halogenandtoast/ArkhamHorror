@@ -109,6 +109,40 @@ spec = describe "loadDecklist" $ do
     groups `shouldSatisfy` notNull
     map toCardCode (concatMap toList $ groupsContaining "01601" groups) `shouldBe` ["01601"]
 
+  -- Only one physical copy of each basic weakness exists, so a deck asking for two random
+  -- basic weaknesses must draw two different ones. Dendromorphosis was drawn twice (#5424).
+  it "never draws an excluded weakness" $ gameTest $ \_ -> do
+    let groups = randomBasicWeaknessSamplingGroups standaloneContext
+    case map (\(d :| _) -> canonicalCardCode d) groups of
+      [] -> liftIO $ expectationFailure "expected random basic weakness candidates"
+      target : excluded -> do
+        draws :: [CardDef] <- replicateM 20 $ sampleRandomBasicWeaknessExcluding excluded standaloneContext
+        liftIO $ map canonicalCardCode draws `shouldSatisfy` all (== target)
+
+  it "falls back to the full pool rather than failing when every weakness is excluded"
+    $ gameTest
+    $ \_ -> do
+      let groups = randomBasicWeaknessSamplingGroups standaloneContext
+          codes = map (\(d :| _) -> canonicalCardCode d) groups
+      drawn <- sampleRandomBasicWeaknessExcluding codes standaloneContext
+      liftIO $ canonicalCardCode drawn `shouldSatisfy` (`elem` codes)
+
+  it "draws distinct weaknesses for a deck with two random basic weakness placeholders"
+    $ gameTest
+    $ \_ -> do
+      -- Seed the deck with every legal weakness but two, so only those two can be drawn and
+      -- the assertion does not depend on the sampler's luck.
+      let (kept, seeded) = splitAt 2 $ randomBasicWeaknessSamplingGroups standaloneContext
+          keptCodes = map (\(d :| _) -> canonicalCardCode d) kept
+      seedCards <- traverse (\(d :| _) -> genPlayerCard d) seeded
+      placeholders <- replicateM 2 (genPlayerCard randomWeakness)
+      (deckWithoutPlaceholders, drawn) <-
+        Scenario.addRandomBasicWeaknessIfNeeded Guardian 1 Nothing (Deck $ seedCards <> placeholders)
+      liftIO do
+        length keptCodes `shouldBe` 2
+        map toCardCode (unDeck deckWithoutPlaceholders) `shouldBe` map toCardCode seedCards
+        map canonicalCardCode drawn `shouldMatchList` keptCodes
+
   it "uses arkham.build card_pool when LoadDecklist replaces 01000 through InitDeck" $ gameTest $ \self -> do
     placeholder <- genPlayerCard randomWeakness
     liftIO
@@ -420,6 +454,16 @@ revisedCoreCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"
 -- | The sampling groups holding a printing with the given card code.
 groupsContaining :: CardCode -> [NonEmpty CardDef] -> [NonEmpty CardDef]
 groupsContaining cardCode = filter (any ((== cardCode) . toCardCode))
+
+-- | Matches the context 'Arkham.Helpers.Scenario.addRandomBasicWeaknessIfNeeded' builds.
+standaloneContext :: RandomBasicWeaknessContext
+standaloneContext =
+  RandomBasicWeaknessContext
+    { rbwInvestigatorClass = Guardian
+    , rbwPlayerCount = 1
+    , rbwDecklist = Nothing
+    , rbwStandalone = True
+    }
 
 arkhamBuildShortCardPoolDecklist :: ArkhamDBDecklist
 arkhamBuildShortCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"core,dwlp,ptcp,tfap,tcup\"}"}

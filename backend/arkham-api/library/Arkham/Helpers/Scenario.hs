@@ -29,7 +29,6 @@ import Arkham.Scenario.Types
 import Arkham.Target
 import Arkham.Token (Token, countTokens)
 import Control.Lens (non, _1, _2)
-import Control.Monad.Writer
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types
 import Data.Map.Strict qualified as Map
@@ -78,16 +77,22 @@ inVictoryDisplay matcher = any (`cardMatch` matcher) <$> getVictoryDisplay
 unlessStandalone :: HasGame m => m () -> m ()
 unlessStandalone = unlessM getIsStandalone
 
+{- | Standalone counterpart to 'Arkham.Campaign.Types.addRandomBasicWeaknessIfNeeded'. As
+there, each draw excludes the earlier draws and the deck's existing basic weaknesses,
+since only one physical copy of each exists (#5424).
+-}
 addRandomBasicWeaknessIfNeeded
-  :: MonadRandom m => ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+  :: MonadRandom m
+  => ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
 addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck = do
-  runWriterT do
-    Deck <$> flip filterM (unDeck deck) \card -> do
-      when
-        (toCardDef card == randomWeakness)
-        (sampleRandomBasicWeakness context >>= tell . pure)
-      pure $ toCardDef card /= randomWeakness
+  let (placeholders, rest) = partition ((== randomWeakness) . toCardDef) (unDeck deck)
+  weaknesses <- foldM drawWeakness [] placeholders
+  pure (Deck rest, weaknesses)
  where
+  inDeck = basicWeaknessCodes $ unDeck deck
+  drawWeakness acc _ = do
+    cardDef <- sampleRandomBasicWeaknessExcluding (inDeck <> basicWeaknessCodes acc) context
+    pure $ acc <> [cardDef]
   context =
     RandomBasicWeaknessContext
       { rbwInvestigatorClass = investigatorClass

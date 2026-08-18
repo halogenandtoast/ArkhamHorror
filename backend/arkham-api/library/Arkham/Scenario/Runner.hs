@@ -24,7 +24,12 @@ import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
-import Arkham.Campaign.Types (Field (..), getRandomBasicWeakness)
+import Arkham.Campaign.Types (
+  Field (..),
+  basicWeaknessCodes,
+  getRandomBasicWeakness,
+  getRandomBasicWeaknessExcluding,
+ )
 import Arkham.CampaignLog hiding (optionsL)
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -246,7 +251,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           disaster <- hasUltimatumOrBoon (Ultimatum UltimatumOfDisaster)
           extraWeakness <-
             if disaster
-              then (: []) <$> getRandomBasicWeakness investigatorClass playerCount mDecklist
+              then
+                (: [])
+                  <$> getRandomBasicWeaknessExcluding
+                    (basicWeaknessCodes baseRandomWeaknesses)
+                    investigatorClass
+                    playerCount
+                    mDecklist
               else pure []
           let randomWeaknesses = baseRandomWeaknesses <> extraWeakness
           morrigan <- hasBoon BoonOfTheMorrigan

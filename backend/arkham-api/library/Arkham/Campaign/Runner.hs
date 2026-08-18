@@ -201,7 +201,15 @@ defaultCampaignRunner msg a = case msg of
     disaster <- hasUltimatum UltimatumOfDisaster
     extraWeakness <-
       if disaster
-        then (: []) <$> (genCard =<< getRandomBasicWeakness investigatorClass playerCount mDecklist)
+        then
+          (: [])
+            <$> ( genCard
+                    =<< getRandomBasicWeaknessExcluding
+                      (basicWeaknessCodes baseRandomWeaknesses)
+                      investigatorClass
+                      playerCount
+                      mDecklist
+                )
         else pure []
     let randomWeaknesses = baseRandomWeaknesses <> extraWeakness
     morrigan <- hasBoon BoonOfTheMorrigan

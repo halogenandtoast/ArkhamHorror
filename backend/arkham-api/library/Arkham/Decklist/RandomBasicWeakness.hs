@@ -63,12 +63,28 @@ printing for a card pool restricted to Revised Core or Chapter 2. Printings diff
 in art, so the second sample keeps that variety.
 -}
 sampleRandomBasicWeakness :: MonadRandom m => RandomBasicWeaknessContext -> m CardDef
-sampleRandomBasicWeakness ctx = do
-  printings <-
-    sample
-      $ fromJustNote "No random basic weakness candidates"
-      $ nonEmpty
-      $ randomBasicWeaknessSamplingGroups ctx
+sampleRandomBasicWeakness = sampleRandomBasicWeaknessExcluding []
+
+{- | As 'sampleRandomBasicWeakness', but never draws a weakness whose canonical card code
+is in @excluded@. Only one physical copy of each basic weakness exists, so a deck asking
+for two random basic weaknesses must draw two different ones (#5424).
+
+Exclusions are matched on 'canonicalCardCode' rather than 'CardDef' equality: two
+printings of one weakness are different 'CardDef's (Mob Enforcer is 01101 in Core and
+01601 in Revised Core), so comparing defs would let the same card through twice (#5264).
+
+If the exclusions would empty the pool we fall back to the unrestricted one -- drawing a
+repeat is far better than failing to build a deck at all.
+-}
+sampleRandomBasicWeaknessExcluding
+  :: MonadRandom m => [CardCode] -> RandomBasicWeaknessContext -> m CardDef
+sampleRandomBasicWeaknessExcluding excluded ctx = do
+  let groups =
+        fromJustNote "No random basic weakness candidates"
+          $ nonEmpty
+          $ randomBasicWeaknessSamplingGroups ctx
+      allowed = filter (\(cardDef :| _) -> canonicalCardCode cardDef `notElem` excluded) (toList groups)
+  printings <- sample $ fromMaybe groups (nonEmpty allowed)
   sample printings
 
 tabooMutate :: RandomBasicWeaknessContext -> CardDef -> CardDef

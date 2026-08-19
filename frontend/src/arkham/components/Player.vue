@@ -527,7 +527,25 @@ async function debugAddCardToHand(card: CardDef) {
 const debug = useDebug()
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
 const skills = computed(() => props.investigator.skills.map((e) => props.game.skills[e]).filter(e => e))
-const emptySlots = computed(() => props.investigator.slots.filter((s) => s.empty))
+const emptySlots = computed(() => {
+  const fewer: Record<string, number> = {}
+  for (const m of props.investigator.modifiers ?? []) {
+    if (m.type.tag === 'FewerSlots') {
+      const [slotType, n] = m.type.contents
+      fewer[slotType] = (fewer[slotType] ?? 0) + n
+    }
+  }
+
+  return props.investigator.slots.filter((s) => {
+    if (!s.empty) return false
+    const remaining = fewer[s.tag] ?? 0
+    if (remaining > 0) {
+      fewer[s.tag] = remaining - 1
+      return false
+    }
+    return true
+  })
+})
 type DebugSlotType = 'HeadSlot' | 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
 const debugSlotTypes: { type: DebugSlotType; label: string; icon: string }[] = [
   { type: 'HandSlot', label: 'Hand', icon: 'slots/hand.png' },

@@ -2,7 +2,7 @@ module Arkham.Event.Events.Transfiguration2Spec (spec) where
 
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Cards (rolandBanks)
+import Arkham.Investigator.Cards qualified as Investigators
 import TestImport.New
 
 spec :: Spec
@@ -23,6 +23,24 @@ spec = describe "Transfiguration (2)" do
     self.combat `shouldReturn` 5
     self.agility `shouldReturn` 3
 
+  -- #5448: "You have 1 fewer hand slots" is part of Marion Tavares's card front, so
+  -- Transfiguration copies it along with her skill values and abilities.
+  it "treats the front of your investigator card as the chosen card (slots)" . gameTest $ \self -> do
+    handSlots self `shouldReturn` 2
+    self `playEvent` Events.transfiguration2
+    chooseMarionTavares
+    handSlots self `shouldReturn` 1
+    run $ EndOfGame Nothing
+    handSlots self `shouldReturn` 2
+
+  it "gives back a slot the investigator's own front takes away"
+    . gameTestWith Investigators.marionTavares
+    $ \self -> do
+      handSlots self `shouldReturn` 1
+      self `playEvent` Events.transfiguration2
+      chooseHankSamson
+      handSlots self `shouldReturn` 2
+
   it "only lasts until the end of the game" . gameTest $ \self -> do
     self `playEvent` Events.transfiguration2
     chooseHankSamson
@@ -37,7 +55,7 @@ spec = describe "Transfiguration (2)" do
   -- Transfiguration (2) used to overwrite that snapshot with the Yithian's own attrs on
   -- the very next message, so The City of Archives could never give the mind back and
   -- the game died with "the original mind of the Yithian is lost".
-  it "does not destroy the original body of a Body of a Yithian" . gameTestWith rolandBanks $ \self -> do
+  it "does not destroy the original body of a Body of a Yithian" . gameTestWith Investigators.rolandBanks $ \self -> do
     run $ BecomeYithian (toId self)
     originalBody <- yithianOriginalCardCode <$> getInvestigator (toId self)
     originalBody `shouldBe` Just "01001"
@@ -62,6 +80,15 @@ offeredInvestigators = do
     q -> error $ "expected a single ChooseOne, got: " <> show q
 
 chooseHankSamson :: TestAppT ()
-chooseHankSamson = chooseOptionMatching "choose Hank Samson" \case
-  CardLabel code _ _ -> code == "10015"
+chooseHankSamson = chooseInvestigatorCard "Hank Samson" "10015"
+
+chooseMarionTavares :: TestAppT ()
+chooseMarionTavares = chooseInvestigatorCard "Marion Tavares" "11001"
+
+chooseInvestigatorCard :: String -> CardCode -> TestAppT ()
+chooseInvestigatorCard name cCode = chooseOptionMatching ("choose " <> name) \case
+  CardLabel code _ _ -> code == cCode
   _ -> False
+
+handSlots :: Investigator -> TestAppT Int
+handSlots self = length . findWithDefault [] #hand <$> self.slots

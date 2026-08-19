@@ -5,6 +5,7 @@ import Arkham.Card.PlayerCard
 import Arkham.Customization
 import Arkham.Decklist.Type
 import Arkham.Id
+import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.Prelude hiding (optional, try, (<|>))
@@ -79,14 +80,22 @@ loadExtraDeck decklist = do
       pure $ T.splitOn "," s
 
   case mResult of
-    Nothing -> loadDecklistCards sideSlotsWithoutAttachments decklist
+    Nothing -> loadDecklistCards (withoutInvestigatorCards . sideSlotsWithoutAttachments) decklist
     Just codes -> do
       let convert =
             applyDecklistCardMeta decklist
               . applyCustomizations decklist
               . setPlayerCardOwner (decklistInvestigatorId decklist)
               . setTaboo (fromTabooId $ taboo_id decklist)
-      traverse ((`genPlayerCardWith` convert) . lookupPlayerCardDef . CardCode) codes
+      for (filter (not . isInvestigatorCardCode) $ map CardCode codes) \cardCode ->
+        genPlayerCardWith (lookupPlayerCardDef cardCode) convert
+
+-- side decks may include the investigator's own card, which is not a player card
+isInvestigatorCardCode :: CardCode -> Bool
+isInvestigatorCardCode = (`Map.member` allInvestigatorCards)
+
+withoutInvestigatorCards :: Map CardCode Int -> Map CardCode Int
+withoutInvestigatorCards = Map.filterWithKey \cardCode _ -> not (isInvestigatorCardCode cardCode)
 
 applyDecklistCardMeta :: ArkhamDBDecklist -> PlayerCard -> PlayerCard
 applyDecklistCardMeta decklist pCard = case Map.lookup pCard.cardCode (decklistAttachments decklist) of

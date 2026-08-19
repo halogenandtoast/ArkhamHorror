@@ -64,6 +64,7 @@ export type ModifierType
   | UseEncounterDeck
   | CannotCommitCards
   | DoNotDrawConnection
+  | FewerSlots
   | Difficulty
   | ScenarioModifier
   | RevealAnotherChaosToken
@@ -142,6 +143,11 @@ export type BaseSkill = {
 export type DoNotDrawConnection = {
   tag: "DoNotDrawConnection"
   contents: [string, string]
+}
+
+export type FewerSlots = {
+  tag: "FewerSlots"
+  contents: [string, number]
 }
 
 export type DiscoveredClues = {
@@ -445,6 +451,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('DoNotDrawConnection'),
       contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.string()], 'DoNotDrawConnection')
     }, 'DoNotDrawConnection'),
+  JsonDecoder.object<FewerSlots>(
+    {
+      tag: JsonDecoder.literal('FewerSlots'),
+      contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.number()], 'FewerSlots')
+    }, 'FewerSlots'),
   JsonDecoder.object<AsIfInHand>(
     {
       tag: JsonDecoder.literal('AsIfInHand'),

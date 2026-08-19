@@ -7,6 +7,9 @@ import TestImport.New
 
 spec :: Spec
 spec = describe "Marion Tavares" do
+  it "has one fewer hand slot" . gameTestWith Investigators.marionTavares $ \self ->
+    handSlots self `shouldReturn` 1
+
   context "reaction (after you play an event during your turn)" do
     it "triggers after a normal event play" . gameTestWith Investigators.marionTavares $ \self -> do
       self `loadDeck` [Assets.flashlight]
@@ -31,3 +34,6 @@ spec = describe "Marion Tavares" do
       useReaction
       self.resources `shouldReturn` 3
       asDefs self.hand `shouldReturn` [Assets.flashlight]
+
+handSlots :: Investigator -> TestAppT Int
+handSlots self = length . findWithDefault [] #hand <$> self.slots

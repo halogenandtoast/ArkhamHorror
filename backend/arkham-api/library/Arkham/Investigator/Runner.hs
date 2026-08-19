@@ -2760,7 +2760,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> liftRunMessage msg' a
-  SetInvestigatorForm iid form | iid == toId a -> pure $ a & formL .~ form
+  SetInvestigatorForm iid form | iid == toId a -> do
+    -- the form's card front can carry FewerSlots (Marion Tavares)
+    push $ RefillSlots iid []
+    pure $ a & formL .~ form
   RemovedLocation lid | investigatorLocation a == Just lid -> do
     -- since we handle the would be defeated window in the previous message we
     -- skip directly to the is defeated message even though we would normally

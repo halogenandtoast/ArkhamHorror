@@ -5143,7 +5143,17 @@ instance Projection Investigator where
       InvestigatorClass -> pure investigatorClass
       InvestigatorActionsTaken -> pure investigatorActionsTaken
       InvestigatorActionsPerformed -> pure investigatorActionsPerformed
-      InvestigatorSlots -> pure investigatorSlots
+      InvestigatorSlots -> do
+        mods <- getModifiers attrs
+        let
+          -- take an empty slot first, so an occupied one is never hidden from its asset
+          removeSlots 0 slots = slots
+          removeSlots n slots =
+            removeSlots (n - 1 :: Int) $ case break isEmptySlot slots of
+              (before, _ : after) -> before <> after
+              _ -> drop 1 slots
+          fewer sType n = ix sType %~ removeSlots n
+        pure $ foldr (uncurry fewer) investigatorSlots [(s, n) | FewerSlots s n <- mods]
       InvestigatorUsedAbilities -> pure investigatorUsedAbilities
       InvestigatorTraits -> case investigatorForm of
         TransfiguredForm inner -> case lookup inner allInvestigatorCards of

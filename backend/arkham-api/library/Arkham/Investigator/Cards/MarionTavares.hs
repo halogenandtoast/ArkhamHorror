@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Draw.Types
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith, setActiveDuringSetup)
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Cards qualified as Cards
@@ -11,25 +12,23 @@ import Arkham.Investigator.Import.Lifted hiding (PlayCard)
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
-import Arkham.Slot
 import Arkham.Strategy
 import Arkham.Window (defaultWindows)
 
 newtype MarionTavares = MarionTavares InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor)
+  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
 
-setSlots :: InvestigatorAttrs -> InvestigatorAttrs
-setSlots attrs = attrs & slotsL . at HandSlot ?~ [Slot (InvestigatorSource attrs.id) []]
-
 marionTavares :: InvestigatorCard MarionTavares
 marionTavares =
-  investigatorWith
+  investigator
     MarionTavares
     Cards.marionTavares
     (Stats {health = 8, sanity = 6, willpower = 2, intellect = 3, combat = 4, agility = 3})
-    setSlots
+
+instance HasModifiersFor MarionTavares where
+  getModifiersFor (MarionTavares a) = modifySelfWith a setActiveDuringSetup [FewerSlots #hand 1]
 
 instance HasAbilities MarionTavares where
   getAbilities (MarionTavares a) =
@@ -48,7 +47,6 @@ instance RunMessage MarionTavares where
     ElderSignEffect iid | iid == attrs.id -> do
       search iid ElderSign iid [fromTopOfDeck 3] (basic #event) (DrawFound iid 1)
       pure i
-    ForInvestigators _ ResetGame -> MarionTavares . setSlots <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       drawCardsEdit iid (attrs.ability 1) 1 \c -> c {cardDrawAndThen = Just (DoStep 1 msg)}
       pure i

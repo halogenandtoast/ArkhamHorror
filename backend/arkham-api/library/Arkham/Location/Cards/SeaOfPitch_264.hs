@@ -28,10 +28,9 @@ instance HasAbilities SeaOfPitch_264 where
 instance RunMessage SeaOfPitch_264 where
   runMessage msg l@(SeaOfPitch_264 attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
+      -- Rolling Pits re-enables every Sea of Pitch itself, so this is not special-cased here
       readStory iid (toId attrs) Story.rollingPits
-      pure l
-    LocationMoved lid | lid == attrs.id -> do
-      SeaOfPitch_264 <$> liftRunMessage msg (attrs & canBeFlippedL .~ True)
+      pure . SeaOfPitch_264 $ attrs & canBeFlippedL .~ False
     LookAtRevealed iid _ (isTarget attrs -> True) -> do
       let storyCard = lookupCard Story.rollingPits (toCardId attrs)
       focusCards [storyCard] $ continue_ iid

@@ -17,11 +17,7 @@ instance RunMessage StillSurface where
   runMessage msg s@(StillSurface attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
       -- Look at the other side of another copy of Sea of Pitch.
-      seas <-
-        select
-          $ LocationWithTitle "Sea of Pitch"
-          <> LocationCanBeFlipped
-          <> not_ (locationIs Locations.seaOfPitch_263)
+      seas <- select $ LocationWithTitle "Sea of Pitch" <> not_ (locationIs Locations.seaOfPitch_263)
       unless (null seas) do
         chooseOne iid [targetLabel sea [LookAtRevealed iid (toSource attrs) (toTarget sea)] | sea <- seas]
       pure s

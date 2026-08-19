@@ -36,9 +36,10 @@ instance RunMessage RollingPits where
       -- of Pitch so you do not know which is which (investigators and enemies
       -- remain at their current position).
 
+      -- ...and "Each Sea of Pitch may be flipped over again using their veiled keyword."
       shuffled <- shuffle seas
       for_ (withIndex1 shuffled) \(i, l) -> do
-        pushAll [SetLocationLabel l $ "seaOfPitch" <> tshow i, LocationMoved l]
+        pushAll [SetLocationLabel l $ "seaOfPitch" <> tshow i, LocationMoved l, SetFlippable l True]
 
       eachInvestigator \iid -> do
         withLocationOf iid \loc -> do

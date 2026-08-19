@@ -29,8 +29,7 @@ instance RunMessage SeaOfPitch_262 where
   runMessage msg l@(SeaOfPitch_262 attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.spiderInfestedWaters
-      -- "Flip this card back over" — the location re-veils and may be flipped again
-      pure . SeaOfPitch_262 $ attrs & canBeFlippedL .~ True
+      pure . SeaOfPitch_262 $ attrs & canBeFlippedL .~ False
     LookAtRevealed iid _ (isTarget attrs -> True) -> do
       let storyCard = lookupCard Story.spiderInfestedWaters (toCardId attrs)
       focusCards [storyCard] $ continue_ iid

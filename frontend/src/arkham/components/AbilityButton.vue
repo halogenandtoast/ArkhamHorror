@@ -192,7 +192,12 @@ const abilityLabel = computed(() => {
   if (props.ability.tag === MessageType.ABILITY_LABEL) {
     if (props.ability.ability.displayAs === 'DisplayAsAction') {
       const cost = ability.value ? abilityTypeCost(ability.value.type) : null
-      return cost ? replaceIcons("{action}".repeat(totalActionCost(cost))) : ''
+      const actionIcons = cost ? replaceIcons("{action}".repeat(totalActionCost(cost))) : ''
+      const labelled = labelType.value
+      if (labelled?.tag === "ConstantReaction" || labelled?.tag === "CustomizationReaction") {
+        return `${actionIcons}${labelled.label}`
+      }
+      return actionIcons
     }
     if (props.ability.ability.displayAs === 'DisplayAsCard') {
       return props.ability.ability.tooltip ? formatContent(maybeFormat(props.ability.ability.tooltip)) : ''

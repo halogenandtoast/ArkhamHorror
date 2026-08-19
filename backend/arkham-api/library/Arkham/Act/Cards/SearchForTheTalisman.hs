@@ -3,7 +3,7 @@ module Arkham.Act.Cards.SearchForTheTalisman (searchForTheTalisman) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Agendas
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as ScarletKeys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher

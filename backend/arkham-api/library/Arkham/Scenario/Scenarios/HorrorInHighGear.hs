@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.HorrorInHighGear (horrorInHighGear) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key

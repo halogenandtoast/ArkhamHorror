@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.SepulchreOfTheSleeper (sepulchreOfTheSleeper) where
 
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Agendas
 import Arkham.CampaignStep (CampaignStep (EpilogueStep))
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Card

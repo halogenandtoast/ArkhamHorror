@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Act.Sequence
+import Arkham.Agenda.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Agendas
 import Arkham.Card
-import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (getPlayerCount, getSetAsideCardsMatching)
 import Arkham.Helpers.SkillTest (withSkillTest)

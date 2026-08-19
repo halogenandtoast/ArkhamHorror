@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.ThreadsOfFate (setupThreadsOfFate, threadsOfFat
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as Act
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Key
@@ -12,7 +12,6 @@ import Arkham.Criteria
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Enemy, Field (..))
-import Arkham.Zone
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card hiding (addCampaignCardToDeckChoice, forceAddCampaignCardToDeckChoice)
 import Arkham.Helpers.Doom
@@ -32,6 +31,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Zone
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 

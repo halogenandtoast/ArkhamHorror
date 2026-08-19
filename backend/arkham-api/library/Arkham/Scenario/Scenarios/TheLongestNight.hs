@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheLongestNight (theLongestNight) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
@@ -11,8 +11,8 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Doom (getDoomCount)
-import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith)
 import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
@@ -464,8 +464,10 @@ instance RunMessage TheLongestNight where
       lid <- selectJust $ locationWithInvestigator iid
       hasDecoy <- lid <=~> LocationWithHorror (atLeast 1)
       hasTrap <- lid <=~> LocationWithDamage (atLeast 1)
-      decoyDestinations <- select $ LocationWithoutModifier CannotHaveDecoys <> not_ (LocationWithHorror (atLeast 1))
-      trapDestinations <- select $ LocationWithoutModifier CannotHaveTraps <> not_ (LocationWithDamage (atLeast 1))
+      decoyDestinations <-
+        select $ LocationWithoutModifier CannotHaveDecoys <> not_ (LocationWithHorror (atLeast 1))
+      trapDestinations <-
+        select $ LocationWithoutModifier CannotHaveTraps <> not_ (LocationWithDamage (atLeast 1))
       let canMoveDecoy = hasDecoy && notNull decoyDestinations
       let canMoveTrap = hasTrap && notNull trapDestinations
       connected <- select $ connectedTo (LocationWithId lid)

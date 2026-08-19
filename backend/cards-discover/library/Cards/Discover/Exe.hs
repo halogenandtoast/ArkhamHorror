@@ -3,7 +3,7 @@
 module Cards.Discover.Exe where
 
 import Control.Applicative
-import Control.Monad (filterM, guard)
+import Control.Monad (filterM, guard, unless)
 import Control.Monad.State
 import Data.Char
 import Data.DList (DList (..))
@@ -46,29 +46,44 @@ indent i doc = Render do
   let new = (replicate i ' ' <>) <$> execState (unRender doc) mempty
   modify (<> new)
 
-data DiscoverMode = ReExport | InstancesOnly | HomebrewContent | HomebrewCardDefs
+data DiscoverMode
+  = ReExport
+  | InstancesOnly
+  | HomebrewContent
+  | HomebrewCardDefs
+  | AgendaBuilders
+  | AgendaDefs
 
 {- | How a discovery mode that reads its inputs renders them: which module
 supplies the registration helpers, which tag type and class instance to emit,
 and how a declared type maps to the helper that registers it.
 -}
 data HomebrewSpec = HomebrewSpec
-  { hsImport :: String
-  , hsTypeName :: String
-  , hsClassName :: String
-  , hsMethodName :: String
+  { hsImports :: [String]
+  , hsTarget :: DiscoverTarget
   , hsHelper :: String -> Maybe String
   }
+
+{- | What a reading mode renders its entries into: either a class instance whose
+method @mconcat@s them (homebrew registration), or a plain top-level list
+binding (the core card registries). A helper of @""@ applies no wrapper.
+-}
+data DiscoverTarget
+  = TargetInstance {dtTypeName :: String, dtClassName :: String, dtMethodName :: String}
+  | TargetBinding {dtBindingName :: String, dtBindingType :: String}
 
 homebrewSpec :: DiscoverMode -> Maybe HomebrewSpec
 homebrewSpec = \case
   HomebrewContent ->
     Just
       $ HomebrewSpec
-        { hsImport = "Arkham.Homebrew.CardRegistry"
-        , hsTypeName = "DiscoveredHomebrewCards"
-        , hsClassName = "IsHomebrewCard"
-        , hsMethodName = "homebrewCard"
+        { hsImports = ["Arkham.Homebrew.CardRegistry"]
+        , hsTarget =
+            TargetInstance
+              { dtTypeName = "DiscoveredHomebrewCards"
+              , dtClassName = "IsHomebrewCard"
+              , dtMethodName = "homebrewCard"
+              }
         , -- @foo :: EnemyCard Foo@ — the entity type is the head of the signature
           hsHelper = \rhs -> case takeWhile (not . isSpace) rhs of
             "ActCard" -> Just "actContent"
@@ -83,14 +98,47 @@ homebrewSpec = \case
   HomebrewCardDefs ->
     Just
       $ HomebrewSpec
-        { hsImport = "Arkham.Homebrew.DefsBase"
-        , hsTypeName = "DiscoveredHomebrewCardDefs"
-        , hsClassName = "IsHomebrewCardDefs"
-        , hsMethodName = "homebrewCardDefs"
+        { hsImports = ["Arkham.Homebrew.DefsBase"]
+        , hsTarget =
+            TargetInstance
+              { dtTypeName = "DiscoveredHomebrewCardDefs"
+              , dtClassName = "IsHomebrewCardDefs"
+              , dtMethodName = "homebrewCardDefs"
+              }
         , -- the whole signature, so a @CardDef -> CardDef@ helper is not a definition
           hsHelper = \case
             "CardDef" -> Just "cardDefEntry"
             "PlayerCardDef" -> Just "playerCardDefEntry"
+            _ -> Nothing
+        }
+  AgendaBuilders ->
+    Just
+      $ HomebrewSpec
+        { hsImports = ["Arkham.Agenda.Types"]
+        , hsTarget =
+            TargetBinding
+              { dtBindingName = "allAgendaCardBuilders"
+              , dtBindingType = "[SomeAgendaCard]"
+              }
+        , -- @foo :: AgendaCard Foo@ — head of the signature, so the extra
+          -- @fooEffect :: EffectArgs -> ...@ builders are not registered
+          hsHelper = \rhs -> case takeWhile (not . isSpace) rhs of
+            "AgendaCard" -> Just "SomeAgendaCard"
+            _ -> Nothing
+        }
+  AgendaDefs ->
+    Just
+      $ HomebrewSpec
+        { hsImports = ["Arkham.Card.CardDef"]
+        , hsTarget =
+            TargetBinding
+              { dtBindingName = "allAgendaCardDefs"
+              , dtBindingType = "[CardDef]"
+              }
+        , -- the whole signature, so @agenda :: ... -> CardDef@ in Base.hs and
+          -- @otherSideIs :: CardDef -> CardDef@ are not mistaken for definitions
+          hsHelper = \case
+            "CardDef" -> Just ""
             _ -> Nothing
         }
   _ -> Nothing
@@ -218,6 +266,15 @@ renderHomebrewContentFile :: HomebrewSpec -> Module -> [HomebrewEntry] -> String
 renderHomebrewContentFile HomebrewSpec {..} base entries = render do
   let modules = nub $ map heModule entries
       alias mod' = 1 + fromJust (elemIndex mod' modules)
+      entryLine indentBy n HomebrewEntry {..} = indent indentBy $ renderLine do
+        if n == (0 :: Int) then "[ " else ", "
+        unless (null heHelper) do
+          fromString heHelper
+          " "
+        "Card"
+        fromString (show $ alias heModule)
+        "."
+        fromString heBuilder
   renderLine do
     "{-# LINE 1 "
     fromString $ show $ moduleName base
@@ -229,9 +286,9 @@ renderHomebrewContentFile HomebrewSpec {..} base entries = render do
     fromString (moduleName base)
     " where"
   ""
-  renderLine do
+  for_ hsImports \imp -> renderLine do
     "import "
-    fromString hsImport
+    fromString imp
   "import Arkham.Prelude"
   for_ (zip [(1 :: Int) ..] modules) \(n, mod') -> renderLine do
     "import "
@@ -239,28 +296,38 @@ renderHomebrewContentFile HomebrewSpec {..} base entries = render do
     " qualified as Card"
     fromString $ show n
   ""
-  renderLine do
-    "data "
-    fromString hsTypeName
+  case hsTarget of
+    TargetInstance {..} -> do
+      renderLine do
+        "data "
+        fromString dtTypeName
+      ""
+      renderLine do
+        "instance "
+        fromString dtClassName
+        " "
+        fromString dtTypeName
+        " where"
+      indent 2 $ renderLine do
+        fromString dtMethodName
+        " ="
+      indent 4 "mconcat"
+      for_ (zip [0 ..] entries) (uncurry $ entryLine 6)
+      indent 6 "]"
+    TargetBinding {..} -> do
+      renderLine do
+        fromString dtBindingName
+        " :: "
+        fromString dtBindingType
+      renderLine do
+        fromString dtBindingName
+        " ="
+      if null entries
+        then indent 2 "[]"
+        else do
+          for_ (zip [0 ..] entries) (uncurry $ entryLine 2)
+          indent 2 "]"
   ""
-  renderLine do
-    "instance "
-    fromString hsClassName
-    " "
-    fromString hsTypeName
-    " where"
-  indent 2 $ renderLine do
-    fromString hsMethodName
-    " ="
-  indent 4 "mconcat"
-  for_ (zip [(0 :: Int) ..] entries) \(n, HomebrewEntry {..}) -> indent 6 $ renderLine do
-    if n == 0 then "[ " else ", "
-    fromString heHelper
-    " Card"
-    fromString (show $ alias heModule)
-    "."
-    fromString heBuilder
-  indent 6 "]"
 
 data Module = Module
   { moduleName :: String

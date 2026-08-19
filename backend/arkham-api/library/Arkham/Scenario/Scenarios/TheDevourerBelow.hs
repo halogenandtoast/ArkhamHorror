@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheDevourerBelow (setupTheDevourerBelow, theDevourerBelow, TheDevourerBelow (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
 import Arkham.Campaigns.NightOfTheZealot.Import

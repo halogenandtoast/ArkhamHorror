@@ -3,7 +3,7 @@ module Arkham.Act.Cards.GhostLight (ghostLight) where
 import Arkham.Ability hiding (Haunted)
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Agendas
 import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types

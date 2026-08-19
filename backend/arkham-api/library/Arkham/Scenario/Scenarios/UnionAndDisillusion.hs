@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.UnionAndDisillusion (setupUnionAndDisillusion, 
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack.Types
 import Arkham.CampaignLog

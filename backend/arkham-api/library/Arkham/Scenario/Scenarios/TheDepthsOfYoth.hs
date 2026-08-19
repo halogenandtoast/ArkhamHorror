@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.TheDepthsOfYoth (setupTheDepthsOfYoth, theDepth
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -16,7 +16,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (withLocationOf, getLocationOf)
+import Arkham.Helpers.Location (getLocationOf, withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp

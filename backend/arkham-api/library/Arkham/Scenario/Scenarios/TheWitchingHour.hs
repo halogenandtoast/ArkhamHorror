@@ -3,7 +3,7 @@ module Arkham.Scenario.Scenarios.TheWitchingHour (setupTheWitchingHour, theWitch
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence (ActStep (..), actStep)
 import Arkham.Act.Types (Field (ActSequence))
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheCircleUndone.TheWitchingHour qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheCircleUndone.ChaosBag
 import Arkham.Campaigns.TheCircleUndone.Key

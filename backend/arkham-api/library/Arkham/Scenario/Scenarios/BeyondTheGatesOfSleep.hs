@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.BeyondTheGatesOfSleep (beyondTheGatesOfSleep) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Types (getRandomBasicWeakness)
 import Arkham.Campaigns.TheDreamEaters.ChaosBag

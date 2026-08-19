@@ -2,7 +2,7 @@ module Arkham.Act.Cards.TheLighthouse (TheLighthouse (..), theLighthouse) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Agendas
 import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Enemy.Cards qualified as Enemies

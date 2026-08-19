@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.TheGathering (setupTheGathering, theGathering, 
 
 import Arkham.Achievement (Achievement (..), NightOfTheZealotAchievement (..), earnAchievement)
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.NightOfTheZealot.TheGathering qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.ChaosToken
@@ -74,7 +74,7 @@ setupTheGathering _attrs = do
   setActDeck
     [if isReturnTo then Acts.mysteriousGateway else Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
 
-  cellar <- Locations.cellar `orSampleIfReturnTo`[Locations.returnToCellar]
+  cellar <- Locations.cellar `orSampleIfReturnTo` [Locations.returnToCellar]
   attic <- Locations.attic `orSampleIfReturnTo` [Locations.returnToAttic]
 
   setAside [Enemies.ghoulPriest, Assets.litaChantler, attic, cellar, Locations.parlor]

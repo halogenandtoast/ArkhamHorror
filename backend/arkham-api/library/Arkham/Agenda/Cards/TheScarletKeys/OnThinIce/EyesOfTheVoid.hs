@@ -1,0 +1,32 @@
+module Arkham.Agenda.Cards.TheScarletKeys.OnThinIce.EyesOfTheVoid (eyesOfTheVoid) where
+
+import Arkham.Agenda.CardDefs.TheScarletKeys.OnThinIce qualified as Cards
+import Arkham.Agenda.Import.Lifted
+import Arkham.Asset.Types (Field (..))
+import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Matcher hiding (AssetCard)
+import Arkham.Message.Lifted.Choose
+
+newtype EyesOfTheVoid = EyesOfTheVoid AgendaAttrs
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+eyesOfTheVoid :: AgendaCard EyesOfTheVoid
+eyesOfTheVoid = agenda (2, A) EyesOfTheVoid Cards.eyesOfTheVoid (Static 6)
+
+instance RunMessage EyesOfTheVoid where
+  runMessage msg a@(EyesOfTheVoid attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      eachInvestigator \iid -> do
+        assets <-
+          selectWithField AssetCard
+            $ oneOf [#item, #ally]
+            <> assetControlledBy iid
+            <> AssetCanLeavePlayByNormalMeans
+        cards <- select $ inHandOf NotForPlay iid <> basic (oneOf [#item, #ally])
+        chooseOneM iid do
+          for_ assets \(aid, card) -> targeting aid $ hollow iid card
+          targets cards (hollow iid)
+      advanceAgendaDeck attrs
+      pure a
+    _ -> EyesOfTheVoid <$> liftRunMessage msg attrs

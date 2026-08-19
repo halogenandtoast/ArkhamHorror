@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.MachinationsThroughTime (machinationsThroughTime) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.MachinationsThroughTime qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Field
 import Arkham.EncounterSet qualified as Set

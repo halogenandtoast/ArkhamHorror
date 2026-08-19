@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.CityOfTheElderThings (cityOfTheElderThings) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Calculation
 import Arkham.Campaign.Option

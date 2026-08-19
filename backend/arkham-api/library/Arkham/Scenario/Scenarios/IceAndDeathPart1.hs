@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.IceAndDeathPart1 (iceAndDeathPart1) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers

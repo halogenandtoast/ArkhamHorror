@@ -1,6 +1,6 @@
 module Arkham.Scenarios.WarOfTheOuterGods.Helpers where
 
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.WarOfTheOuterGods qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (AgendaAttrs (..), Field (..), onSide)
 import Arkham.Asset.Types (Field (AssetCard))
@@ -14,11 +14,17 @@ import Arkham.Helpers.Log (scenarioCount)
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (getSetAsideCardMaybe)
 import Arkham.Helpers.Scenario (standaloneI18n)
-import Arkham.Location.Cards qualified as Locations
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Message (AgendaAdvancementMethod (..), Message (..), pattern PlaceDoom, pattern RemoveAllDoomFromPlay, pattern RemoveAsset)
+import Arkham.Message (
+  AgendaAdvancementMethod (..),
+  Message (..),
+  pattern PlaceDoom,
+  pattern RemoveAllDoomFromPlay,
+  pattern RemoveAsset,
+ )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -38,8 +44,9 @@ data Faction = GreenFaction | BlueFaction | RedFaction
   deriving stock (Show, Eq, Ord, Enum, Bounded, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
--- | Green, then blue, then red. This is also the order of the agenda decks
--- from top to bottom as depicted during setup.
+{- | Green, then blue, then red. This is also the order of the agenda decks
+from top to bottom as depicted during setup.
+-}
 factionOrder :: [Faction]
 factionOrder = [GreenFaction, BlueFaction, RedFaction]
 
@@ -91,8 +98,9 @@ factionTreacheryDefs = \case
   BlueFaction -> [Treacheries.deathAndDecay, Treacheries.inevitableEnd]
   RedFaction -> [Treacheries.feastOfLocusts, Treacheries.transmogrify]
 
--- | All encounter cards belonging to a faction. Used when a faction wins the
--- war and the other factions' cards are removed from the game.
+{- | All encounter cards belonging to a faction. Used when a faction wins the
+war and the other factions' cards are removed from the game.
+-}
 factionEncounterCards :: Faction -> CardMatcher
 factionEncounterCards f = mapOneOf cardIs (factionEnemyDefs f <> factionTreacheryDefs f)
 
@@ -114,8 +122,9 @@ getEnemyFaction eid = do
       (\f -> cardCode `elem` concatMap (.cardCodes) (factionEnemyDefs f))
       factionOrder
 
--- | Place doom on "the blue agenda" (and friends). If that faction's agenda
--- is not in play (after the war is over) this does nothing.
+{- | Place doom on "the blue agenda" (and friends). If that faction's agenda
+is not in play (after the war is over) this does nothing.
+-}
 placeDoomOnFactionAgenda :: (ReverseQueue m, Sourceable source) => source -> Faction -> Int -> m ()
 placeDoomOnFactionAgenda source f n =
   selectForMaybeM (factionAgenda f) \agenda -> placeDoom source agenda n
@@ -123,19 +132,21 @@ placeDoomOnFactionAgenda source f n =
 agendaWards :: AgendaAttrs -> Int
 agendaWards = countTokens Ward . agendaTokens
 
--- | When doom would be placed on an agenda, for each ward on that agenda,
--- prevent that amount of doom from being placed. Then remove wards from that
--- agenda equal to the amount of doom prevented.
+{- | When doom would be placed on an agenda, for each ward on that agenda,
+prevent that amount of doom from being placed. Then remove wards from that
+agenda equal to the amount of doom prevented.
+-}
 wardPlaceDoom :: (ReverseQueue m, Sourceable source) => AgendaAttrs -> source -> Int -> m ()
 wardPlaceDoom attrs source n = do
   let prevented = min (agendaWards attrs) n
   removeTokens (toSource attrs) (toTarget attrs) Ward prevented
   when (n > prevented) $ push $ PlaceDoom (toSource source) (toTarget attrs) (n - prevented)
 
--- | Faction agendas have a global doom threshold of 6 (per group, and there
--- is only one group in Single Group Mode). Only doom on the agenda itself
--- counts toward this threshold. When the agenda advances, 6 doom is removed
--- from it and all excess doom moves to the next agenda of that faction.
+{- | Faction agendas have a global doom threshold of 6 (per group, and there
+is only one group in Single Group Mode). Only doom on the agenda itself
+counts toward this threshold. When the agenda advances, 6 doom is removed
+from it and all excess doom moves to the next agenda of that faction.
+-}
 factionAgendaCheckThreshold :: ReverseQueue m => AgendaAttrs -> m ()
 factionAgendaCheckThreshold attrs = when (onSide AS.A attrs) do
   modifiers' <- getModifiers (toTarget attrs)
@@ -146,15 +157,18 @@ factionAgendaCheckThreshold attrs = when (onSide AS.A attrs) do
     threshold = foldl' applyThresholdModifier 6 modifiers'
   when (attrs.doom >= threshold) do
     checkWhen $ Window.AgendaAdvance attrs.agendaId
-    push $ RemoveAllDoomFromPlay $ defaultRemoveDoomMatchers {removeDoomAgendas = AgendaWithId attrs.agendaId}
+    push
+      $ RemoveAllDoomFromPlay
+      $ defaultRemoveDoomMatchers {removeDoomAgendas = AgendaWithId attrs.agendaId}
     push $ AdvanceAgendaBy attrs.agendaId AgendaAdvancedWithDoom
     checkAfter $ Window.AgendaAdvance attrs.agendaId
     let excess = attrs.doom - threshold
     when (excess > 0) do
       push $ ScenarioSpecific "excessDoom" (toJSON (agendaDeckId attrs, excess))
 
--- | "If this is the first agenda to advance to 1b" (or 2b). True when no
--- other faction's agenda deck has already progressed past that stage.
+{- | "If this is the first agenda to advance to 1b" (or 2b). True when no
+other faction's agenda deck has already progressed past that stage.
+-}
 isFirstAgendaToAdvanceTo :: HasGame m => Int -> AgendaAttrs -> m Bool
 isFirstAgendaToAdvanceTo n attrs =
   selectNone $ NotAgenda (AgendaWithId attrs.agendaId) <> mapOneOf AgendaWithStep [n + 1 .. 4]
@@ -162,10 +176,11 @@ isFirstAgendaToAdvanceTo n attrs =
 getAgendaStep :: HasGame m => AgendaId -> m Int
 getAgendaStep = fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep)
 
--- | The faction that is "in the lead" is the faction that has advanced the
--- farthest through their agenda deck, breaking ties by most doom on their
--- agenda, then by most enemies in play. Multiple factions are returned if
--- the tie cannot be broken.
+{- | The faction that is "in the lead" is the faction that has advanced the
+farthest through their agenda deck, breaking ties by most doom on their
+agenda, then by most enemies in play. Multiple factions are returned if
+the tie cannot be broken.
+-}
 getLeadFactions :: HasGame m => m [Faction]
 getLeadFactions = do
   entries <- forMaybeM factionOrder \f -> do
@@ -182,8 +197,9 @@ getLeadFactions = do
     byEnemies = best (\(_, _, e) -> e) byDoom
   pure $ map fst byEnemies
 
--- | The total doom placed in the windows that triggered a "when any amount
--- of doom is placed on a player card" forced ability.
+{- | The total doom placed in the windows that triggered a "when any amount
+of doom is placed on a player card" forced ability.
+-}
 getPlacedDoomAmount :: [Window.Window] -> Int
 getPlacedDoomAmount ws = sum [n | (Window.windowType -> Window.PlacedDoom _ _ n) <- ws]
 
@@ -199,11 +215,12 @@ factionFinalAgenda = \case
   BlueFaction -> Agendas.silenusDescends
   RedFaction -> Agendas.ezelZenRezlEmerges
 
--- | "War is Over": flip Hub Dimension to its (Gateway to Destruction) side
--- (putting it into play if needed), spawn the winning faction's Ancient One
--- there, remove the other factions' encounter cards along with each agenda
--- and act from the game, and put the winning faction's set-aside final
--- agenda into play.
+{- | "War is Over": flip Hub Dimension to its (Gateway to Destruction) side
+(putting it into play if needed), spawn the winning faction's Ancient One
+there, remove the other factions' encounter cards along with each agenda
+and act from the game, and put the winning faction's set-aside final
+agenda into play.
+-}
 warIsOver :: ReverseQueue m => Faction -> m ()
 warIsOver winner = do
   hub <-
@@ -222,8 +239,9 @@ warIsOver winner = do
   finalAgenda <- genCard (factionFinalAgenda winner)
   push $ SetCurrentAgendaDeck (agendaDeckN winner) [finalAgenda]
 
--- | Clues "around" Hub Dimension are not on the location and cannot be
--- discovered by any means.
+{- | Clues "around" Hub Dimension are not on the location and cannot be
+discovered by any means.
+-}
 getCluesAroundHubDimension :: HasGame m => m Int
 getCluesAroundHubDimension = scenarioCount CluesAroundHubDimension
 
@@ -255,17 +273,19 @@ removeMutations source eid n = removeTokens (toSource source) (EnemyTarget eid) 
 getMutations :: HasGame m => EnemyId -> m Int
 getMutations = fieldMap EnemyTokens (countTokens Mutation)
 
--- | Order enemies green, then blue, then red. Enemies without a faction are
--- dropped.
+{- | Order enemies green, then blue, then red. Enemies without a faction are
+dropped.
+-}
 sortEnemiesByFaction :: HasGame m => [EnemyId] -> m [EnemyId]
 sortEnemiesByFaction eids = do
   withFaction <- for eids \eid -> (,eid) <$> getEnemyFaction eid
   pure [eid | f <- factionOrder, (mf, eid) <- withFaction, mf == Just f]
 
--- | The warring enemies that would move during the "hunter enemies move"
--- step: ready, unengaged, not already at a location with an enemy of a
--- different faction, and with some warring enemy of a different faction to
--- move toward.
+{- | The warring enemies that would move during the "hunter enemies move"
+step: ready, unengaged, not already at a location with an enemy of a
+different faction, and with some warring enemy of a different faction to
+move toward.
+-}
 getWarringMovers :: HasGame m => m [EnemyId]
 getWarringMovers = do
   -- Swarm cards move with their host (like normal hunter movement, which guards
@@ -284,9 +304,10 @@ getWarringMovers = do
           then pure False
           else selectAny $ warringEnemy <> not_ (factionEnemy f) <> not_ (EnemyWithId enemy)
 
--- | The warring enemies that would attack during the "resolve enemy
--- attacks" step: ready, unengaged, and at a location with a warring enemy
--- of a different faction.
+{- | The warring enemies that would attack during the "resolve enemy
+attacks" step: ready, unengaged, and at a location with a warring enemy
+of a different faction.
+-}
 getWarringAttackers :: HasGame m => m [EnemyId]
 getWarringAttackers = do
   warring <- select $ warringEnemy <> ReadyEnemy <> UnengagedEnemy
@@ -304,9 +325,10 @@ getWarringTargets eid =
         <> EnemyAt (locationWithEnemy eid)
         <> not_ (EnemyWithId eid)
 
--- | While The Inescapable Maw is in play, anytime an investigator is forced
--- to "decide" by an ability on a blue encounter card, they must choose two
--- options instead of one.
+{- | While The Inescapable Maw is in play, anytime an investigator is forced
+to "decide" by an ability on a blue encounter card, they must choose two
+options instead of one.
+-}
 blueDecide :: ReverseQueue m => InvestigatorId -> ChooseT m () -> m ()
 blueDecide iid options = do
   maw <- selectAny $ enemyIs Enemies.theInescapableMaw

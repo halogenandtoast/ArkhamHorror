@@ -3,7 +3,7 @@ module Arkham.Act.Cards.InTheSearchlight (inTheSearchlight) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheScarletKeys.SanguineShadows qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Enemy.Cards qualified as Enemies

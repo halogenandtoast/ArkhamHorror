@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheGameIsAfoot (theGameIsAfoot) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Agendas
 import Arkham.Agenda.Types (Field (..))
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies

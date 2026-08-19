@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.FortuneAndFolly (fortuneAndFolly, fortuneAndFollyPart2) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.FortuneAndFolly qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetCard, AssetCardCode, AssetPlacement))
 import Arkham.Campaign.Types (Field (..))
@@ -160,7 +160,8 @@ instance HasModifiersFor FortuneAndFolly where
       ]
       \(enemyCode, patrolDestination, patrolDirection) ->
         selectEach (LocationWithEnemy $ enemyIsExact enemyCode) \loc -> do
-          reversed <- selectAny $ enemyIsExact enemyCode <> EnemyWithModifier (ScenarioModifier "reverseDirection")
+          reversed <-
+            selectAny $ enemyIsExact enemyCode <> EnemyWithModifier (ScenarioModifier "reverseDirection")
           sym <- field LocationPrintedSymbol loc
           let newSym = Map.findWithDefault sym sym $ case patrolDirection of
                 Clockwise -> if reversed then counterClockwiseMap else clockwiseMap

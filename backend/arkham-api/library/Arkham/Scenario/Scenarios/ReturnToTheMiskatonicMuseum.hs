@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum (returnToTheMiskatonicMuseum) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set

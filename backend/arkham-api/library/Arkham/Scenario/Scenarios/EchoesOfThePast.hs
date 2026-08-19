@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.EchoesOfThePast (echoesOfThePast, EchoesOfThePast (..), setupEchoesOfThePast) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card

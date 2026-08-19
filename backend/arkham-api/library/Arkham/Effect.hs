@@ -31,11 +31,11 @@ import Arkham.Act.Acts (
   theStrangerUnderTheCityEffect,
   theYithianRelicEffect,
  )
-import Arkham.Agenda.Agendas (
-  awakeningEffect,
-  showbusinessAsUsualEffect,
-  theLoversVIEffect,
-  theRedDepthsEffect,
+import Arkham.Agenda.Cards.FilmFatale.ShowbusinessAsUsual (showbusinessAsUsualEffect)
+import Arkham.Agenda.Cards.TheCircleUndone.UnionAndDisillusion.TheLoversVI (theLoversVIEffect)
+import Arkham.Agenda.Cards.TheForgottenAge.TheDepthsOfYoth.TheRedDepths (theRedDepthsEffect)
+import Arkham.Agenda.Cards.TheInnsmouthConspiracy.ThePitOfDespair.Awakening (awakeningEffect)
+import Arkham.Agenda.Cards.TheInnsmouthConspiracy.ThePitOfDespair.TheWaterRises (
   theWaterRisesEffect,
  )
 import Arkham.Asset.Assets (

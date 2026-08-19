@@ -39,7 +39,7 @@ import Api.Handler.Arkham.Games.Shared (
   swapMainStreetInvestigators,
   websocketConnectionOptions,
  )
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheBlobThatAteEverything qualified as Agendas
 import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (agendaSequence)
 import Arkham.Card.CardCode (CardCode (..), HasCardCode (toCardCode))

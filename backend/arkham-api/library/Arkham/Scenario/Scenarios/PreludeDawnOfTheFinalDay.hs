@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.PreludeDawnOfTheFinalDay (preludeDawnOfTheFinalDay) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.DayOfTheFeast qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Calculation
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps hiding (PreludeDawnOfTheFinalDay)
@@ -362,7 +362,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           when gideonSetAside do
             hemlockChapel <- getJustLocationByName "Hemlock Chapel"
             createAssetAt_ Assets.gideonMizrahSeasonedSailor (AtLocation hemlockChapel)
-          if planUnderway 
+          if planUnderway
             then hideFireworks 11 [#agility] 2
             else codexFinished 11
         13 -> scope "theAtwoodHouse" do

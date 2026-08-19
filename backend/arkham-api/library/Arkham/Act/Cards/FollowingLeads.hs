@@ -3,7 +3,7 @@ module Arkham.Act.Cards.FollowingLeads (followingLeads) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.MurderAtTheExcelsiorHotel qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card

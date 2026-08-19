@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheMidwinterGala (theMidwinterGala) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheMidwinterGala qualified as Agendas
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types (Field (AgendaSequence))
 import Arkham.Asset.Cards qualified as Assets
@@ -410,7 +410,11 @@ instance RunMessage TheMidwinterGala where
         _ -> throw $ UnknownResolution r
       pure s
     ForTarget (InvestigatorTarget iid) (ScenarioResolution (Resolution 1)) -> scope "resolutions" do
-      guests <- selectWithField Field.AssetCard $ AssetWithTrait Guest <> AssetControlledBy Anyone <> SingleSidedAsset
+      guests <-
+        selectWithField Field.AssetCard
+          $ AssetWithTrait Guest
+          <> AssetControlledBy Anyone
+          <> SingleSidedAsset
       when (notNull guests) do
         chooseOneM iid do
           questionLabeled' "chooseGuest"

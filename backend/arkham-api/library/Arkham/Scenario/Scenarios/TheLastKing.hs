@@ -2,7 +2,8 @@ module Arkham.Scenario.Scenarios.TheLastKing (setupTheLastKing, theLastKing, The
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (..))
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.ReturnToThePathToCarcosa.ReturnToTheLastKing qualified as Agendas
+import Arkham.Agenda.CardDefs.ThePathToCarcosa.TheLastKing qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep
 import Arkham.Campaigns.ThePathToCarcosa.Key

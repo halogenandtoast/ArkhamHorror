@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.ALightInTheFog (aLightInTheFog) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field(ActKeys))
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Agendas
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types (Field(AgendaSequence))
 import Arkham.Asset.Cards qualified as Assets
@@ -108,7 +108,7 @@ instance RunMessage ALightInTheFog where
       setAgendaDeck
         [ Agendas.fogOnTheBay
         , Agendas.unchangingAsTheSea
-        , Agendas.theTideRisesALightInTheFog
+        , Agendas.theTideRises
         , Agendas.terrorAtFalconPoint
         ]
       setActDeck [Acts.theLighthouse, Acts.findingThePath, Acts.worshippersOfTheDeep]

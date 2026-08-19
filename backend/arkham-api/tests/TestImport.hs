@@ -56,8 +56,8 @@ import Helpers.Message as X hiding (playEvent)
 import Test.Hspec as X
 
 import Arkham.ActiveCost
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Cards.WhatsGoingOn
+import Arkham.Agenda.CardDefs.NightOfTheZealot.TheGathering qualified as Cards
+import Arkham.Agenda.Cards.NightOfTheZealot.TheGathering.WhatsGoingOn
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types
 import Arkham.Asset.Cards qualified as Cards
@@ -70,8 +70,8 @@ import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Types
 import Arkham.Entities qualified as Entities
-import Arkham.Event.Types
 import Arkham.Epic.Types (HasMaybeEpic (..))
+import Arkham.Event.Types
 import Arkham.Game qualified as Game
 import Arkham.Game.Settings
 import Arkham.Game.State
@@ -694,11 +694,12 @@ skip = chooseOptionMatching "skip" \case
   SkipTriggersButton {} -> True
   _ -> False
 
--- | Peel off display-only question wrappers (source highlight, header label)
--- that the frontend renders but that tests should see through. Also normalizes
--- the window-ask flavors of ChooseOne, which differ from a plain ChooseOne only
--- in whether the queue regenerates the seat (see Entity.Answer), not in how a
--- spec answers them.
+{- | Peel off display-only question wrappers (source highlight, header label)
+that the frontend renders but that tests should see through. Also normalizes
+the window-ask flavors of ChooseOne, which differ from a plain ChooseOne only
+in whether the queue regenerates the seat (see Entity.Answer), not in how a
+spec answers them.
+-}
 stripQuestionWrappers :: Question msg -> Question msg
 stripQuestionWrappers = \case
   QuestionLabel _ _ q -> stripQuestionWrappers q
@@ -838,14 +839,16 @@ gameTestWith investigatorDef body = do
 scenarioTest :: ScenarioId -> (Investigator -> TestAppT ()) -> IO ()
 scenarioTest = scenarioTestWith Investigators.jennyBarnes
 
--- | Like 'scenarioTest' but lets the caller choose which investigator the game
--- is seeded with (rather than the default Jenny Barnes).
+{- | Like 'scenarioTest' but lets the caller choose which investigator the game
+is seeded with (rather than the default Jenny Barnes).
+-}
 scenarioTestWith :: CardDef -> ScenarioId -> (Investigator -> TestAppT ()) -> IO ()
 scenarioTestWith investigatorDef = scenarioTestWithDifficulty investigatorDef Easy
 
--- | Like 'scenarioTestWith' but also lets the caller choose the difficulty
--- (needed for effects that differ between the Easy/Standard and Hard/Expert
--- sides of a scenario reference card).
+{- | Like 'scenarioTestWith' but also lets the caller choose the difficulty
+(needed for effects that differ between the Easy/Standard and Hard/Expert
+sides of a scenario reference card).
+-}
 scenarioTestWithDifficulty
   :: CardDef -> Difficulty -> ScenarioId -> (Investigator -> TestAppT ()) -> IO ()
 scenarioTestWithDifficulty investigatorDef difficulty scenarioId body = do

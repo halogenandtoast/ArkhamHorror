@@ -1,0 +1,35 @@
+module Arkham.Agenda.Cards.TheForgottenAge.TheUntamedWilds.ExpeditionIntoTheWild (expeditionIntoTheWild) where
+
+import Arkham.Ability
+import Arkham.Agenda.CardDefs.TheForgottenAge.TheUntamedWilds qualified as Cards
+import Arkham.Agenda.Import.Lifted
+import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.EncounterSet
+
+newtype ExpeditionIntoTheWild = ExpeditionIntoTheWild AgendaAttrs
+  deriving anyclass (IsAgenda, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+expeditionIntoTheWild :: AgendaCard ExpeditionIntoTheWild
+expeditionIntoTheWild = agenda (1, A) ExpeditionIntoTheWild Cards.expeditionIntoTheWild (Static 6)
+
+instance HasAbilities ExpeditionIntoTheWild where
+  getAbilities (ExpeditionIntoTheWild a) = [mkAbility a 1 exploreAction_]
+
+instance RunMessage ExpeditionIntoTheWild where
+  runMessage msg a@(ExpeditionIntoTheWild attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      runExplore iid (attrs.ability 1)
+      pure a
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
+      shuffleSetAsideEncounterSetIntoEncounterDeck AgentsOfYig
+      eachInvestigator \iid -> do
+        sid <- getRandom
+        beginSkillTest sid iid attrs iid #willpower (Fixed 3)
+      advanceAgendaDeckAfterSkillTest attrs
+      pure a
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      becomePoisonedOr iid $ assignDamageAndHorror iid attrs 1 1
+      pure a
+    _ -> ExpeditionIntoTheWild <$> liftRunMessage msg attrs

@@ -1,8 +1,7 @@
 module Arkham.Scenario.Scenarios.RelicsOfThePast (relicsOfThePast) where
 
-import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.RelicsOfThePast qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -18,6 +17,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorName))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

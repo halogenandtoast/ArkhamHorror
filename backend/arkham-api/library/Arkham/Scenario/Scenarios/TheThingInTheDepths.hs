@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.TheThingInTheDepths (theThingInTheDepths) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key

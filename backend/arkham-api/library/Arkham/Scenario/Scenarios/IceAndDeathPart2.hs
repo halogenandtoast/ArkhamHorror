@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.IceAndDeathPart2 (iceAndDeathPart2) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
 import Arkham.CampaignLog hiding (optionsL)

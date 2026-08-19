@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.ObsidianCanyons (obsidianCanyons) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (
   pattern CourtOfTheAncients,

@@ -2,7 +2,7 @@ module Arkham.Act.Cards.CluesAndCapers (cluesAndCapers) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Agendas
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations

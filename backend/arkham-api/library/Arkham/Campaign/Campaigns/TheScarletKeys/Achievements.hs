@@ -23,7 +23,7 @@ module Arkham.Campaign.Campaigns.TheScarletKeys.Achievements (
 
 import Arkham.Achievement
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheScarletKeys.SanguineShadows qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Asset
 import Arkham.Campaign.Types (Field (CampaignChaosBag), campaignDifficulty)

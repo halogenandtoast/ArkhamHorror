@@ -1,8 +1,7 @@
 module Arkham.Scenario.Scenarios.RedTideRising (redTideRising) where
 
-import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.RedTideRising qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -17,6 +16,7 @@ import Arkham.Helpers.Query (getInvestigators, getLead, getPlayerCount)
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
 import Arkham.Helpers.Xp (toGainXp)
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
@@ -161,10 +161,11 @@ instance RunMessage RedTideRising where
 
       playerCount <- getPlayerCount
       let
-        adjusted = playerCount + case attrs.difficulty of
-          Hard -> 1
-          Expert -> 2
-          _ -> 0
+        adjusted =
+          playerCount + case attrs.difficulty of
+            Hard -> 1
+            Expert -> 2
+            _ -> 0
         monsters =
           [ Enemies.wingedOneFogOverInnsmouth
           , Enemies.huntingNightgaunt
@@ -173,7 +174,9 @@ instance RunMessage RedTideRising where
 
       mExtraMonster <-
         if adjusted >= 4
-          then Just <$> sample (Enemies.wingedOneFogOverInnsmouth :| [Enemies.huntingNightgaunt, Enemies.huntingNightgaunt])
+          then
+            Just
+              <$> sample (Enemies.wingedOneFogOverInnsmouth :| [Enemies.huntingNightgaunt, Enemies.huntingNightgaunt])
           else pure Nothing
 
       placeDoomOnAgenda $ case adjusted of
@@ -274,7 +277,7 @@ gainCustomXp attrs = do
     $ ReportXp
     $ XpBreakdown
       [ InvestigatorGainXp iid
-        $ XpDetail XpFromVictoryDisplay ("$" <> ikey (if isWendy then "xp.wendy" else "xp.other")) n
+          $ XpDetail XpFromVictoryDisplay ("$" <> ikey (if isWendy then "xp.wendy" else "xp.other")) n
       | (iid, isWendy, n) <- details
       ]
   pushAll =<< toGainXp attrs (pure [(iid, n) | (iid, _, n) <- details])

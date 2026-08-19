@@ -1,6 +1,6 @@
 module Arkham.Event.Events.FickleFortune3Spec (spec) where
 
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Agendas
 import Arkham.Agenda.Types (Agenda)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))

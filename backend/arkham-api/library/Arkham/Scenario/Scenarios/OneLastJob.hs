@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.OneLastJob (oneLastJob) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDrownedCity.OneLastJob qualified as Agendas
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Card
 import Arkham.ChaosToken

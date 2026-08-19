@@ -3,7 +3,7 @@ module Arkham.Act.Cards.FindingThePath (FindingThePath (..), findingThePath) whe
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Agendas
 import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Enemy.Cards qualified as Enemies
@@ -64,7 +64,7 @@ instance RunMessage FindingThePath where
 
       shuffleSetAsideIntoEncounterDeck [Treacheries.takenCaptive]
 
-      push $ AdvanceToAgenda 1 Agendas.theTideRisesALightInTheFog Agenda.A (toSource attrs)
+      push $ AdvanceToAgenda 1 Agendas.theTideRises Agenda.A (toSource attrs)
       placeDoomOnAgenda . getSum =<< selectAgg Sum AgendaDoom AnyAgenda
       advanceActDeck attrs
       pure a

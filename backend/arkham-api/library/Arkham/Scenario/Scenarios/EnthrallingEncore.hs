@@ -1,12 +1,12 @@
 module Arkham.Scenario.Scenarios.EnthrallingEncore (enthrallingEncore) where
 
-import Arkham.Id
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.EnthrallingEncore qualified as Agendas
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

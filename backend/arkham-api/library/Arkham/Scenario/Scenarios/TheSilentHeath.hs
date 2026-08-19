@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheSilentHeath (theSilentHeath) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheSilentHeath qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key

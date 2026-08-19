@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.ShatteredAeons (setupShatteredAeons, shatteredA
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheForgottenAge.ShatteredAeons qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetCardsUnderneath))
 import Arkham.CampaignLog

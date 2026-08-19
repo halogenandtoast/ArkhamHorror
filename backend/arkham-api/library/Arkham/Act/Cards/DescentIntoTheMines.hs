@@ -3,7 +3,7 @@ module Arkham.Act.Cards.DescentIntoTheMines (descentIntoTheMines) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Agenda

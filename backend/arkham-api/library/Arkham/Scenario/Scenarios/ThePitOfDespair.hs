@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.ThePitOfDespair (ThePitOfDespair (..), thePitOfDespair) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Agendas
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set

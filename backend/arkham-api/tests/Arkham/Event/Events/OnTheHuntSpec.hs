@@ -1,9 +1,9 @@
 module Arkham.Event.Events.OnTheHuntSpec (spec) where
 
-import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Entities qualified as Entities
+import Arkham.Agenda.CardDefs.TheScarletKeys.DeadHeat qualified as Agendas
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyPlacement))
+import Arkham.Entities qualified as Entities
 import Arkham.Event.Cards qualified as Events
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -37,20 +37,23 @@ spec = describe "On the Hunt" $ do
   -- over the agenda's OverwrittenSpawn. The Ghoul is made Aloof so a plain
   -- location-spawn would not auto-engage, isolating the engagement to On the
   -- Hunt's override.
-  it "spawns a chosen enemy engaged with you even when a scenario forces it to spawn at a random location" . gameTest $ \self -> do
-    _ <- realAgenda Agendas.gnashingTeeth
-    location <- testLocation
-    ghoul <- genEncounterCard Enemies.ghoulMinion
-    swarmOfRats <- genEncounterCard Enemies.swarmOfRats
-    run $ SetEncounterDeck (Deck [ghoul, swarmOfRats])
-    run =<< gameModifier (TestSource mempty) (toTarget ghoul) (AddKeyword Keyword.Aloof)
-    self `moveTo` location
+  it
+    "spawns a chosen enemy engaged with you even when a scenario forces it to spawn at a random location"
+    . gameTest
+    $ \self -> do
+      _ <- realAgenda Agendas.gnashingTeeth
+      location <- testLocation
+      ghoul <- genEncounterCard Enemies.ghoulMinion
+      swarmOfRats <- genEncounterCard Enemies.swarmOfRats
+      run $ SetEncounterDeck (Deck [ghoul, swarmOfRats])
+      run =<< gameModifier (TestSource mempty) (toTarget ghoul) (AddKeyword Keyword.Aloof)
+      self `moveTo` location
 
-    self `playEvent` Events.onTheHunt
-    chooseTarget ghoul
+      self `playEvent` Events.onTheHunt
+      chooseTarget ghoul
 
-    minion <- selectJust $ enemyIs Enemies.ghoulMinion
-    field EnemyPlacement minion `shouldReturn` InThreatArea (toId self)
+      minion <- selectJust $ enemyIs Enemies.ghoulMinion
+      field EnemyPlacement minion `shouldReturn` InThreatArea (toId self)
 
 realAgenda :: CardDef -> TestAppT ()
 realAgenda def = do

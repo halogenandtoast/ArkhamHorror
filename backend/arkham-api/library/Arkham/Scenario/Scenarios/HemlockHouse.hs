@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.HemlockHouse (hemlockHouse) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetLocation))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers

@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheBoundaryBeyond (setupTheBoundaryBeyond, theBoundaryBeyond, TheBoundaryBeyond (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Key
@@ -10,7 +10,6 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Enemy, Field (EnemyDamage, OutOfPlayEnemyField))
-import Arkham.Zone
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosBag
@@ -37,6 +36,7 @@ import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
+import Arkham.Zone
 
 newtype TheBoundaryBeyond = TheBoundaryBeyond ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

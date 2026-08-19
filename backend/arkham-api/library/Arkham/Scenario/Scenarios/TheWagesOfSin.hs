@@ -3,7 +3,7 @@ module Arkham.Scenario.Scenarios.TheWagesOfSin (setupTheWagesOfSin, theWagesOfSi
 import Arkham.Ability qualified as Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Campaigns.TheCircleUndone.Key

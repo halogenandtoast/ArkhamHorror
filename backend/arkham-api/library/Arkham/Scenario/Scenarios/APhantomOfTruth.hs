@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.APhantomOfTruth (setupAPhantomOfTruth, aPhantomOfTruth, APhantomOfTruth (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Card

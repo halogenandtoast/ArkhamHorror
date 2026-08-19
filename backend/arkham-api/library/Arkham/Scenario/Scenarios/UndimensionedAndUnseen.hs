@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.UndimensionedAndUnseen (undimensionedAndUnseen, UndimensionedAndUnseen (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack.Types
 import Arkham.CampaignLog

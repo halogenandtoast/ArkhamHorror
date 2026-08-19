@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheEssexCountyExpress (theEssexCountyExpress, TheEssexCountyExpress (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.ChaosToken
@@ -170,7 +170,7 @@ instance RunMessage TheEssexCountyExpress where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case chaosTokenFace token of
-        Cultist -> 
+        Cultist ->
           whenM (matches iid TurnInvestigator) do
             pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
         ElderThing | isEasyStandard attrs -> do

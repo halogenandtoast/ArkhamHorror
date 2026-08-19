@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.AtDeathsDoorstep (setupAtDeathsDoorstep, atDeathsDoorstep, AtDeathsDoorstep (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Agendas
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep

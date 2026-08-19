@@ -1,0 +1,30 @@
+module Arkham.Agenda.Cards.ThePathToCarcosa.TheUnspeakableOath.LockedInside (lockedInside) where
+
+import Arkham.Agenda.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Cards
+import Arkham.Agenda.Import.Lifted
+import Arkham.Card (setFacedown)
+import Arkham.Helpers.Choose
+import Arkham.Helpers.Query
+import Arkham.Scenario.Deck
+
+newtype LockedInside = LockedInside AgendaAttrs
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+lockedInside :: AgendaCard LockedInside
+lockedInside = agenda (1, A) LockedInside Cards.lockedInside (Static 2)
+
+instance RunMessage LockedInside where
+  runMessage msg a@(LockedInside attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      lead <- getLead
+      shuffleScenarioDeckIntoEncounterDeck LunaticsDeck
+      shuffleEncounterDiscardBackIn
+      randomlyChooseFrom attrs lead MonstersDeck 1
+      advanceAgendaDeck attrs
+      pure a
+    ChoseCards _ chose | isTarget attrs chose.target -> do
+      facedown <- traverse (setFacedown True) chose.cards
+      placeUnderneath ActDeckTarget facedown
+      pure a
+    _ -> LockedInside <$> liftRunMessage msg attrs

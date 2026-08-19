@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.ThePallidMask (setupThePallidMask, thePallidMas
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Campaigns.ThePathToCarcosa.Import
@@ -146,7 +146,7 @@ setupThePallidMask attrs = do
           validStart = \case
             (x : _) -> x /= Locations.researchSite
             _ -> True
-          
+
         shuffled <- retryUntil validStart $ shuffle (Locations.theGateToHell : otherCatacombs)
         case shuffled of
           (x : xs) -> (,xs) <$> placeInGrid (Pos 0 0) x
@@ -181,7 +181,8 @@ instance RunMessage ThePallidMask where
       unableToFindNigel <- getHasRecord YouWereUnableToFindNigel
       let awokeInsideTheCatacombs = didNotEscapeGazeOfThePhantom || unableToFindNigel
 
-      record $ if awokeInsideTheCatacombs then YouAwokeInsideTheCatacombs else YouEnteredTheCatacombsOnYourOwn
+      record
+        $ if awokeInsideTheCatacombs then YouAwokeInsideTheCatacombs else YouEnteredTheCatacombsOnYourOwn
 
       flavor do
         h "title"

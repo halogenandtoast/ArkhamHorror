@@ -3,7 +3,7 @@ module Arkham.Act.Cards.SecretsAndLiesV2 (secretsAndLiesV2) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Agendas
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)

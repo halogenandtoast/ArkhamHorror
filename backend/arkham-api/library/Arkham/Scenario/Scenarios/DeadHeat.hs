@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.DeadHeat (deadHeat) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheScarletKeys.DeadHeat qualified as Agendas
 import Arkham.Attack.Types
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key

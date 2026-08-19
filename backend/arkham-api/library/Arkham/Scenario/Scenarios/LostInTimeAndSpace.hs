@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.LostInTimeAndSpace (lostInTimeAndSpace, LostInTimeAndSpace (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Agendas
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.ChaosToken
@@ -17,9 +17,9 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message (pattern AfterSkillTest)
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
-import Arkham.Message (pattern AfterSkillTest)
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution

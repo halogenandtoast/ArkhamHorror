@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.ExtracurricularActivity (extracurricularActivity, ExtracurricularActivity (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Campaigns.TheDunwichLegacy.Key

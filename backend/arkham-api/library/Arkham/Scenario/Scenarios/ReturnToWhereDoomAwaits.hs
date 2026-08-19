@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits (returnToWhereDoomAwaits) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Deck qualified as Deck
@@ -103,7 +103,6 @@ instance RunMessage ReturnToWhereDoomAwaits where
         Standard -> MinusFive
         Hard -> MinusSix
         Expert -> MinusSeven
-
 
       hasTheInvestigatorsBack <- getHasRecord NaomiHasTheInvestigatorsBacks
       setAside

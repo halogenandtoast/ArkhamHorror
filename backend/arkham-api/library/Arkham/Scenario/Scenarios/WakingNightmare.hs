@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.WakingNightmare (wakingNightmare) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDreamEaters.WakingNightmare qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDreamEaters.ChaosBag
 import Arkham.Campaigns.TheDreamEaters.Helpers

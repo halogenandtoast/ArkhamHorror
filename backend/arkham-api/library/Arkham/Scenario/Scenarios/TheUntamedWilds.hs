@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.TheUntamedWilds (setupTheUntamedWilds, theUntam
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheForgottenAge.TheUntamedWilds qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.Card.CardCode

@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.ForTheGreaterGood (setupForTheGreaterGood, forTheGreaterGood, ForTheGreaterGood (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.Key
@@ -144,7 +144,9 @@ setupForTheGreaterGood _attrs = do
       , Assets.puzzleBox
       , Enemies.summonedBeast
       , Assets.augustLindquist
-      , if membersOfTheLodge then Enemies.nathanWickMasterOfInitiation else Enemies.nathanWickMasterOfIndoctrination
+      , if membersOfTheLodge
+          then Enemies.nathanWickMasterOfInitiation
+          else Enemies.nathanWickMasterOfIndoctrination
       ]
     <> (guard isReturnTo *> [Locations.relicStorage, Locations.shroudedArchive])
 

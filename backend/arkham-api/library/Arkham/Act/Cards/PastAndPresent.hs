@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Agendas
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies

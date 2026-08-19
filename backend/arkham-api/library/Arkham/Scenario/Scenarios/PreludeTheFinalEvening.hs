@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.PreludeTheFinalEvening (preludeTheFinalEvening) where
 
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.DayOfTheFeast qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetLocation))
 import Arkham.Calculation

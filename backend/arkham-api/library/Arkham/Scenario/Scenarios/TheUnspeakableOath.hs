@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheUnspeakableOath (theUnspeakableOath, TheUnspeakableOath (..), setupTheUnspeakableOath) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep
 import Arkham.Campaigns.ThePathToCarcosa.Import

@@ -4,11 +4,11 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Agendas
 import Arkham.Agenda.Sequence qualified as Agendas
-import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.GameValue (perPlayer)

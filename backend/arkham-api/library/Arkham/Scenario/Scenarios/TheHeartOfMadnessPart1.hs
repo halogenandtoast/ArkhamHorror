@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheHeartOfMadnessPart1 (theHeartOfMadnessPart1) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -45,8 +45,12 @@ theHeartOfMadnessPart1 difficulty =
 
 instance HasModifiersFor TheHeartOfMadnessPart1 where
   getModifiersFor (TheHeartOfMadnessPart1 _a) = withSkillTestInvestigator \iid -> do
-    whenM (orM [sealAtLocationOf iid, selectAny (locationWithInvestigator iid <> LocationWithTitle "Mist-Pylon")]) do
-      modifySelect Cultist (ChaosTokenOriginalFaceIs #cultist) [ChaosTokenFaceModifier [#frost]]
+    whenM
+      ( orM
+          [sealAtLocationOf iid, selectAny (locationWithInvestigator iid <> LocationWithTitle "Mist-Pylon")]
+      )
+      do
+        modifySelect Cultist (ChaosTokenOriginalFaceIs #cultist) [ChaosTokenFaceModifier [#frost]]
 
 instance HasChaosTokenValue TheHeartOfMadnessPart1 where
   getChaosTokenValue = getChaosTokenValueFromScenario

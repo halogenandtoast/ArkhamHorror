@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheWesternWall (theWesternWall) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDrownedCity.TheWesternWall qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (
   pattern SepulchreOfTheSleeper,

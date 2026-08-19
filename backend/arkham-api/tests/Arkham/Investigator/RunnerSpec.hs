@@ -1,7 +1,7 @@
 module Arkham.Investigator.RunnerSpec (spec) where
 
+import Arkham.Agenda.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Agendas
 import Arkham.Classes.HasGame (getGame)
-import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Entities qualified as Entities
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Movement

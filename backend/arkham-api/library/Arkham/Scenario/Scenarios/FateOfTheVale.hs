@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.FateOfTheVale (fateOfTheVale, crossOutUncontrol
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (ActCard))
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep (CampaignStep (EpilogueStep))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers

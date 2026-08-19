@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheTwistedHollow (theTwistedHollow) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
@@ -15,7 +15,12 @@ import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith, setActiveDuringSetup)
+import Arkham.Helpers.Modifiers (
+  ModifierType (..),
+  modifySelect,
+  modifySelectWith,
+  setActiveDuringSetup,
+ )
 import Arkham.Helpers.Query (
   allInvestigators,
   getInvestigators,
@@ -26,9 +31,9 @@ import Arkham.Helpers.Query (
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
-import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard, LocationCard)
 import Arkham.Message.Lifted.Choose
@@ -76,7 +81,8 @@ instance HasModifiersFor TheTwistedHollow where
       a
       Anyone
       [ CannotTriggerAbilityMatching
-          $ AbilityIsForcedAbility <> AbilityOnEnemy (OutOfPlayEnemy PursuitZone AnyEnemy)
+          $ AbilityIsForcedAbility
+          <> AbilityOnEnemy (OutOfPlayEnemy PursuitZone AnyEnemy)
       ]
 
 instance HasChaosTokenValue TheTwistedHollow where

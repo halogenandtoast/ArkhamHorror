@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheLairOfDagon (theLairOfDagon) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Agendas
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets

@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (setupBeforeTheBlackThrone, beforeTheBlackThrone, BeforeTheBlackThrone (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card

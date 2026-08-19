@@ -1,7 +1,8 @@
 module Arkham.Scenario.Scenarios.ReturnToTheEssexCountyExpress (returnToTheEssexCountyExpress) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpress qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.FlavorText

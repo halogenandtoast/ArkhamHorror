@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.ToTheForbiddenPeaks (toTheForbiddenPeaks) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -113,7 +113,9 @@ instance RunMessage ToTheForbiddenPeaks where
         chooseOneM lead do
           whenM hasRemainingFrostTokens do
             labeled' "addFrostToken" $ addChaosToken #frost
-          countVar 1 $ labeled' "eachInvestigatorSuffersPhysicalTrauma" $ eachInvestigator (`sufferPhysicalTrauma` 1)
+          countVar 1
+            $ labeled' "eachInvestigatorSuffersPhysicalTrauma"
+            $ eachInvestigator (`sufferPhysicalTrauma` 1)
       doStep 2 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> do
@@ -128,7 +130,9 @@ instance RunMessage ToTheForbiddenPeaks where
         chooseOneM lead do
           whenM hasRemainingFrostTokens do
             labeled' "addFrostToken" $ addChaosToken #frost
-          countVar 1 $ labeled' "eachInvestigatorSuffersMentalTrauma" $ eachInvestigator (`sufferMentalTrauma` 1)
+          countVar 1
+            $ labeled' "eachInvestigatorSuffersMentalTrauma"
+            $ eachInvestigator (`sufferMentalTrauma` 1)
       doStep 3 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do

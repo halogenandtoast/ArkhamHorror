@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.TheDoomOfEztli (theDoomOfEztli, TheDoomOfEztli 
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Campaigns.TheForgottenAge.Helpers

@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.WithoutATrace (withoutATrace) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheScarletKeys.WithoutATrace qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Helpers

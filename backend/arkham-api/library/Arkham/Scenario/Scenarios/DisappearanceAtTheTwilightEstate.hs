@@ -6,7 +6,7 @@ module Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate (
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (..))
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheCircleUndone.DisappearanceAtTheTwilightEstate qualified as Agendas
 import Arkham.Campaigns.TheCircleUndone.ChaosBag
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Campaigns.TheCircleUndone.Key

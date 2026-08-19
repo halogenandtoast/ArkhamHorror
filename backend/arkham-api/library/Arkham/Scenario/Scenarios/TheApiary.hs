@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheApiary (theApiary) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDrownedCity.TheApiary qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetDoom))
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (

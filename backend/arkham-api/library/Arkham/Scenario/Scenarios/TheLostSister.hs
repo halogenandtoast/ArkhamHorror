@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.TheLostSister (theLostSister) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetLocation))
 import Arkham.Calculation
@@ -14,7 +14,6 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith)
-import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
@@ -28,6 +27,7 @@ import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message (pattern PassedThisSkillTest)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record, remember, remembered)
+import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -42,7 +42,11 @@ newtype TheLostSister = TheLostSister ScenarioAttrs
 
 instance HasModifiersFor TheLostSister where
   getModifiersFor (TheLostSister a) = do
-    modifySelectWith a (assetIs Assets.helenPetersTheEldestSister) setActiveDuringSetup [DoNotTakeUpSlot #ally]
+    modifySelectWith
+      a
+      (assetIs Assets.helenPetersTheEldestSister)
+      setActiveDuringSetup
+      [DoNotTakeUpSlot #ally]
     modifySelect
       a
       (InvestigatorAt $ LocationWithTrait Dark)

@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheNightsUsurper (theNightsUsurper, TheNightsUsurper (..)) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers

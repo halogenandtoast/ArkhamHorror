@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.BlackStarsRise (setupBlackStarsRise, blackStars
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.ThePathToCarcosa.BlackStarsRise qualified as Agendas
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.ThePathToCarcosa.Import
@@ -184,7 +184,7 @@ setupBlackStarsRise attrs = do
     Expert -> MinusSeven
 
   setAgendaDeckN 1 [Agendas.theTideRises, agenda2a, Agendas.theCityFloods]
-  setAgendaDeckN 2 [Agendas.theRitualBeginsBlackStarsRise, agenda2c, Agendas.swallowedSky]
+  setAgendaDeckN 2 [Agendas.theRitualBegins, agenda2c, Agendas.swallowedSky]
 
 instance RunMessage BlackStarsRise where
   runMessage msg s@(BlackStarsRise attrs) = runQueueT $ scenarioI18n $ case msg of

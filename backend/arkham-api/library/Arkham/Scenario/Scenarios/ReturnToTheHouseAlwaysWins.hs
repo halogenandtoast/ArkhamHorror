@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.ReturnToTheHouseAlwaysWins (returnToTheHouseAlwaysWins) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies

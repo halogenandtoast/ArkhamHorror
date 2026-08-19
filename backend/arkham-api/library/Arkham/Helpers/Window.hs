@@ -1946,6 +1946,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         | timing == #after ->
             andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
       _ -> noMatch
+    Matcher.InvestigatorDealtDamageOrHorror timing sourceMatcher whoMatcher -> guardTiming timing $ \case
+      Window.DealtDamage source' _ (InvestigatorTarget iid') _ ->
+        andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      Window.DealtHorror source' (InvestigatorTarget iid') _ ->
+        andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      _ -> noMatch
     -- FAQ (2.12): "you" being dealt damage/horror also covers assets you control, so
     -- an attack soaked entirely by an ally still counts. TakeDamage/TakeHorror carry
     -- the total dealt to the investigator however it was assigned, and are raised

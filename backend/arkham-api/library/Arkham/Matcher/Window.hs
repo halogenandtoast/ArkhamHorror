@@ -265,6 +265,7 @@ data WindowMatcher
   | DealtHorror Timing SourceMatcher Who
   | AssignedHorror Timing Who TargetListMatcher
   | DealtDamageOrHorror Timing SourceMatcher Who
+  | InvestigatorDealtDamageOrHorror Timing SourceMatcher Who
   | WouldDrawEncounterCard Timing Who PhaseMatcher
   | WouldDrawCard Timing Who DeckMatcher
   | WouldDrawExactlyOneCard Timing Who DeckMatcher

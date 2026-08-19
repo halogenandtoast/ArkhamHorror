@@ -16,7 +16,7 @@ import GHC.Records
 
 -- | The display key of a custom token: the part after the final colon
 -- (":circus-ex-mortis:moon" -> "moon"). Drives the format tag ("{moon}"),
--- the label ("Moon"), and the frontend icon key (ct_moon.png).
+-- the label ("Moon"), and the frontend icon key (ct-moon.png).
 customTokenKey :: Text -> Text
 customTokenKey slug = case T.splitOn ":" slug of
   [] -> slug

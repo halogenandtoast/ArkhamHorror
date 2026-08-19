@@ -66,6 +66,7 @@ allCampaigns = (homebrewCampaigns <>) $
     , ("54", SomeCampaign returnToTheCircleUndone)
     , ("00", SomeCampaign standaloneCampaign)
     , ("12", SomeCampaign brethrenOfAsh)
+    , ("13", SomeCampaign childrenOfBlood)
     , ("11", SomeCampaign theDrownedCity)
     , ("83", SomeCampaign guardiansOfTheAbyss)
     ]

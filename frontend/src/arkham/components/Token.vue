@@ -76,7 +76,7 @@ const classObject = computed(() => ({
     />
     <img
       class="token back"
-      :src="imgsrc('chaos-tokens/ct_blank.png')"
+      :src="imgsrc('chaos-tokens/ct-blank.png')"
     />
     <div
       v-if="treatedAsFaces.length > 0"

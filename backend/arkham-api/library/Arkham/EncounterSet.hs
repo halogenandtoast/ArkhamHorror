@@ -375,6 +375,24 @@ data EncounterSet
   | TheInescapable
   | Dreams
   | AlienMachinery
+  | RiverOfBlood
+  | NewHorizons
+  | BloodMoney
+  | Afflicted
+  | AgentsOfZnubamoarte
+  | BloodBlight
+  | BloodMoon
+  | Bloodthirst
+  | ChildrenOfBlood
+  | FriendsInLowPlaces
+  | Hunted
+  | Infected
+  | Misinformation
+  | Mongrels
+  | PreyedUpon
+  | SanguineSecrets
+  | Stalked
+  | Vermin
   | Homebrew Text
   | Test
   deriving stock (Show, Eq, Ord, Data)

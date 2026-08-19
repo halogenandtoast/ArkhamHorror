@@ -1,9 +1,10 @@
 module Arkham.Campaign.Campaigns.ChildrenOfBlood (childrenOfBlood) where
 
 import Arkham.Campaign.Import.Lifted
-import Arkham.Campaigns.ChildrenOfBlood.ChaosBag
 import Arkham.Campaigns.ChildrenOfBlood.CampaignSteps
+import Arkham.Campaigns.ChildrenOfBlood.ChaosBag
 import Arkham.Campaigns.ChildrenOfBlood.Helpers
+import Arkham.Helpers.FlavorText
 
 newtype ChildrenOfBlood = ChildrenOfBlood CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -24,7 +25,11 @@ instance IsCampaign ChildrenOfBlood where
 instance RunMessage ChildrenOfBlood where
   runMessage msg c@(ChildrenOfBlood _attrs) = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> do
-      storyI "prologue"
+      scope "intro" $ flavor $ setTitle "title" >> p "body"
+      scope "additionalRulesAndClarifications" do
+        flavor $ setTitle "title" >> p "bloodTokens"
+        flavor $ setTitle "title" >> p "predator"
+      scope "prologue" $ flavor $ setTitle "title" >> p "body"
       nextCampaignStep
       pure c
     _ -> lift $ defaultCampaignRunner msg c

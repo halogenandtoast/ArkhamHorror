@@ -19,7 +19,7 @@ export const tokenOrder = [
 ] as const
 
 // Custom homebrew tokens arrive as slugs like ":circus-ex-mortis:moon"; the
-// segment after the last colon is the icon key (ct_<key>.png).
+// segment after the last colon is the icon key (ct-<key>.png).
 export type TokenFace = typeof tokenOrder[number] | string
 
 const tokenOrderIndex = new Map<string, number>(tokenOrder.map((face, index) => [face, index]))
@@ -108,12 +108,12 @@ const tokenImageNames: Record<typeof tokenOrder[number], string> = {
 /** The single source of truth for chaos token art, homebrew faces included. */
 export function chaosTokenImage(face: TokenFace): string {
   const name = tokenImageNames[face as typeof tokenOrder[number]]
-  if (name) return imgsrc(`chaos-tokens/ct_${name}.png`)
+  if (name) return imgsrc(`chaos-tokens/ct-${name}.png`)
 
   if (face.includes(':')) {
     const [, campaign, key] = face.split(':')
     if (campaign && key) return imgsrc(`homebrew/${campaign}/chaos-tokens/${key}.png`)
   }
 
-  return imgsrc("chaos-tokens/ct_blank.png")
+  return imgsrc("chaos-tokens/ct-blank.png")
 }

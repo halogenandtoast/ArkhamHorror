@@ -132,7 +132,7 @@ const choose = (idx: number) => emit('choose', idx)
       <img
         v-if="tokenAction !== -1"
         class="token token--can-draw"
-        :src="imgsrc('chaos-tokens/ct_blank.png')"
+        :src="imgsrc('chaos-tokens/ct-blank.png')"
         @click="choose(tokenAction)"
       />
       <ChaosBagChoice v-if="chaosBag.choice && 'step' in chaosBag.choice && !game.skillTestResults" :choice="chaosBag.choice.step" :game="game" :playerId="playerId" @choose="choose" />

@@ -473,6 +473,7 @@ library
       Arkham.Agenda.CardDefs.BrethrenOfAsh.SpreadingFlames
       Arkham.Agenda.CardDefs.ByTheBook
       Arkham.Agenda.CardDefs.CarnevaleOfHorrors
+      Arkham.Agenda.CardDefs.ChildrenOfBlood.RiverOfBlood
       Arkham.Agenda.CardDefs.CurseOfTheRougarou
       Arkham.Agenda.CardDefs.EdgeOfTheEarth.CityOfTheElderThings
       Arkham.Agenda.CardDefs.EdgeOfTheEarth.FatalMirage
@@ -597,6 +598,10 @@ library
       Arkham.Agenda.Cards.CarnevaleOfHorrors.ChaosAtTheCarnevale
       Arkham.Agenda.Cards.CarnevaleOfHorrors.TheFestivitiesBegin
       Arkham.Agenda.Cards.CarnevaleOfHorrors.TheShadowOfTheEclipse
+      Arkham.Agenda.Cards.ChildrenOfBlood.RiverOfBlood.TheFirstDay
+      Arkham.Agenda.Cards.ChildrenOfBlood.RiverOfBlood.TheFirstNight
+      Arkham.Agenda.Cards.ChildrenOfBlood.RiverOfBlood.TheSecondDay
+      Arkham.Agenda.Cards.ChildrenOfBlood.RiverOfBlood.TheSecondNight
       Arkham.Agenda.Cards.CurseOfTheRougarou.ACreatureOfTheBayou
       Arkham.Agenda.Cards.CurseOfTheRougarou.TheCurseSpreads
       Arkham.Agenda.Cards.CurseOfTheRougarou.TheRougarouFeeds
@@ -5772,6 +5777,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToUnionAndDisillusion
       Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
       Arkham.Scenario.Scenarios.RiddlesAndRain
+      Arkham.Scenario.Scenarios.RiverOfBlood
       Arkham.Scenario.Scenarios.SanguineShadows
       Arkham.Scenario.Scenarios.SepulchreOfTheSleeper
       Arkham.Scenario.Scenarios.ShadesOfSuffering
@@ -5892,6 +5898,7 @@ library
       Arkham.Scenarios.RedTideRising.Helpers
       Arkham.Scenarios.RelicsOfThePast.Helpers
       Arkham.Scenarios.RiddlesAndRain.Helpers
+      Arkham.Scenarios.RiverOfBlood.Helpers
       Arkham.Scenarios.SanguineShadows.Helpers
       Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
       Arkham.Scenarios.ShadesOfSuffering.Helpers

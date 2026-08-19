@@ -2566,7 +2566,7 @@ async function addChaosToken(face: any){
                 :aria-label="spokenHasturTooltip"
                 @click.stop.prevent="recordSpokenHastur"
               >
-                <img :src="imgsrc('chaos-tokens/ct_cultist.png')" alt="" />
+                <img :src="imgsrc('chaos-tokens/ct-cultist.png')" alt="" />
               </button>
             </div>
           </div>
@@ -2935,10 +2935,10 @@ async function addChaosToken(face: any){
         <div id="totals">
           <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
           <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
-          <PoolItem v-if="blessTokens > 0" type="chaos-tokens/ct_bless" :amount="blessTokens" />
-          <PoolItem v-if="curseTokens > 0" type="chaos-tokens/ct_curse" :amount="curseTokens" />
-          <PoolItem v-if="frostTokens > 0" type="chaos-tokens/ct_frost" :amount="frostTokens" />
-          <PoolItem v-if="bloodTokens > 0" type="chaos-tokens/ct_blood" :amount="bloodTokens" />
+          <PoolItem v-if="blessTokens > 0" type="chaos-tokens/ct-bless" :amount="blessTokens" />
+          <PoolItem v-if="curseTokens > 0" type="chaos-tokens/ct-curse" :amount="curseTokens" />
+          <PoolItem v-if="frostTokens > 0" type="chaos-tokens/ct-frost" :amount="frostTokens" />
+          <PoolItem v-if="bloodTokens > 0" type="chaos-tokens/ct-blood" :amount="bloodTokens" />
           <PoolItem v-for="t in homebrewTotals" :key="t.face" type="custom-token" :image="t.image" :amount="t.count" :tooltip="t.tooltip" />
         </div>
       </div>

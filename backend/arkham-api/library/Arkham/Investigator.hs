@@ -255,8 +255,11 @@ returnFromShatteredSelf = flip handleInvestigator \(ShatteredSelf (attrs `With` 
         , investigatorPlacement = investigatorPlacement attrs
         , investigatorMovement = investigatorMovement attrs
         , investigatorPreviousLocation = investigatorPreviousLocation attrs
-        , investigatorUsedAbilities = filter onlyCampaignAbilities (investigatorUsedAbilities a)
-        , investigatorLog = investigatorLog a
+        , -- Unlike returnToBody, this reversal happens mid-scenario, so anything the
+          -- shattered self accumulated during play has to come across rather than being
+          -- reset to the pre-transformation snapshot.
+          investigatorUsedAbilities = investigatorUsedAbilities attrs
+        , investigatorLog = investigatorLog attrs
         , investigatorKilled = investigatorKilled a
         , investigatorDrivenInsane = investigatorDrivenInsane a
         , investigatorDeck = investigatorDeck attrs

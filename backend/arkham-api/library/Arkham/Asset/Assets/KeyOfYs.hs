@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.SkillType
 
 newtype KeyOfYs = KeyOfYs AssetAttrs
   deriving anyclass IsAsset
@@ -14,7 +15,8 @@ keyOfYs :: AssetCard KeyOfYs
 keyOfYs = assetWith KeyOfYs Cards.keyOfYs (sanityL ?~ 4)
 
 instance HasModifiersFor KeyOfYs where
-  getModifiersFor (KeyOfYs a) = controllerGets a [AnySkillValue a.horror]
+  getModifiersFor (KeyOfYs a) =
+    controllerGetsWhen a (a.horror > 0) [SkillModifier s a.horror | s <- allSkills]
 
 instance HasAbilities KeyOfYs where
   getAbilities (KeyOfYs x) =

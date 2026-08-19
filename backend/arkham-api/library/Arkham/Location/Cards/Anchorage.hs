@@ -18,7 +18,7 @@ instance HasAbilities Anchorage where
   getAbilities (Anchorage a) =
     extendRevealed
       a
-      [ restricted a 1 (Here <> exists HollowedCard) actionAbility
+      [ groupLimit PerRound $ restricted a 1 (Here <> exists HollowedCard) actionAbility
       , scenarioI18n $ withI18nTooltip "anchorage.resign" $ locationResignAction a
       ]
 

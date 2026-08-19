@@ -7,7 +7,7 @@ type GameMode = 'Campaign' | 'SideStory'
 type CampaignGroup = 'chapter1' | 'chapter2' | 'homebrew'
 type ScenarioGroup = 'sideStories' | 'challengeScenarios'
 
-const CHAPTER_2_CAMPAIGN_IDS = new Set(['12'])
+const CHAPTER_2_CAMPAIGN_IDS = new Set(['12', '13'])
 
 const props = defineProps<{
   campaigns: Campaign[]
@@ -23,7 +23,7 @@ const campaignGroup = defineModel<CampaignGroup>('campaignGroup', { required: tr
 const scenarioGroup = ref<ScenarioGroup>('sideStories')
 const emits = defineEmits(['go'])
 
-const isChapter2 = (id: string) => id.startsWith('12')
+const isChapter2 = (id: string) => Number(id.slice(1,2)) >= 12
 const isHomebrew = (id: string) => id.startsWith(':')
 const isChallengeScenario = (scenario: Scenario) =>
   Boolean(scenario.requiredInvestigator) || Boolean(scenario.deckRequirements?.length)

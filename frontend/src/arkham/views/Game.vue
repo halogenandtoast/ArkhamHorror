@@ -58,7 +58,7 @@ import { awaitingOrganizer, type SharedEventState } from '@/arkham/types/EpicEve
 import { useMenu } from '@/composable/menu'
 import useEmitter from '@/composable/useEmitter'
 import { useDebug } from '@/arkham/debug'
-import { cardImg, imgsrc } from '@/arkham/helpers'
+import { cardImg, imgsrc, isTypingTarget } from '@/arkham/helpers'
 import { cardFaceImages, cardHasDistinctBack } from '@/arkham/cardImages'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage'
@@ -1291,6 +1291,7 @@ const feedKonami = (rawKey: string): boolean => {
 // Keyboard Shortcuts
 const handleKeyPress = (event: KeyboardEvent) => {
   if (filingBug.value) return
+  if (isTypingTarget(event.target)) return
   if (event.ctrlKey) return
   if (event.metaKey) return
   if (event.altKey) return
@@ -1981,6 +1982,16 @@ onUnmounted(() => {
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutToggleDebug') }}</div>
                 <div class="shortcut-keys"><kbd>D</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutSelectInvestigator') }}</div>
+                <div class="shortcut-keys"><kbd>1</kbd><span class="chord-arrow">…</span><kbd>4</kbd></div>
+              </div>
+              <div v-if="solo" class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutSwitchPerspective') }}</div>
+                <div class="shortcut-keys">
+                  <kbd>Shift</kbd><span class="chord-arrow">+</span><kbd>1</kbd><span class="chord-arrow">…</span><kbd>4</kbd>
+                </div>
               </div>
               <template v-for="item in menuItems" :key="item.id">
                 <div v-if="item.shortcut" class="shortcut-row">

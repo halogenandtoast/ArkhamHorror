@@ -12,7 +12,7 @@ import { shallowRef } from 'vue';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { isDevBuild } from '@/arkham/displayRules'
 import { homebrewCampaigns } from '@/arkham/homebrewData'
-import { imgsrc } from '@/arkham/helpers'
+import { imgsrc, isTypingTarget } from '@/arkham/helpers'
 
 const { t } = useI18n()
 
@@ -106,12 +106,6 @@ const activeChapter = ref<number>(route.query.chapter ? parseInt(route.query.cha
 // this up via inject and mirrors it into its own flipped state.
 const flipAll = ref(false)
 provide('cardFlipAll', flipAll)
-
-const isTypingTarget = (target: EventTarget | null) => {
-  const el = target as HTMLElement | null
-  if (!el) return false
-  return el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)
-}
 
 const onKeydown = (event: KeyboardEvent) => {
   if (event.key !== 'f' && event.key !== 'F') return

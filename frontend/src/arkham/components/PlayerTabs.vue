@@ -11,7 +11,7 @@ import type { Investigator } from '@/arkham/types/Investigator';
 import type { Question } from '@/arkham/types/Question';
 import { MessageType } from '@/arkham/types/Message';
 import type { TarotCard } from '@/arkham/types/TarotCard';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, isTypingTarget } from '@/arkham/helpers';
 import { gameLocalStorageKey } from '@/arkham/localStorage';
 import { IsMobile } from '@/arkham/isMobile';
 import { useDbCardStore } from '@/stores/dbCards'
@@ -269,6 +269,34 @@ function unwindSwitchStack(tabs: Set<string>) {
   applyFrame(switchStack.value.at(-1)!)
 }
 
+const tabbableInvestigators = computed(() => [...investigators.value, ...inactiveInvestigators.value])
+
+function seatShortcutIndex(event: KeyboardEvent): number | null {
+  const code = /^(?:Digit|Numpad)([1-4])$/.exec(event.code)
+  if (code) return Number(code[1]) - 1
+  if (/^[1-4]$/.test(event.key)) return Number(event.key) - 1
+  return null
+}
+
+function handleSeatShortcut(event: KeyboardEvent) {
+  if (event.ctrlKey || event.metaKey || event.altKey || event.repeat) return
+  if (isTypingTarget(event.target)) return
+
+  const index = seatShortcutIndex(event)
+  if (index === null) return
+
+  const investigator = tabbableInvestigators.value[index]
+  if (!investigator) return
+
+  event.preventDefault()
+  const pid = investigator.playerId
+  if (event.shiftKey && solo?.value && pid !== props.playerId) {
+    selectTabExtended(pid)
+  } else {
+    selectTab(pid)
+  }
+}
+
 let actionObserver: MutationObserver | null = null
 let inspectionFrame: number | null = null
 let automaticSwitchCandidate: string | null = null
@@ -430,9 +458,11 @@ onMounted(() => {
     })
   }
   scheduleActionInspection()
+  document.addEventListener('keydown', handleSeatShortcut)
 })
 
 onBeforeUnmount(() => {
+  document.removeEventListener('keydown', handleSeatShortcut)
   actionObserver?.disconnect()
   if (inspectionFrame !== null) cancelAnimationFrame(inspectionFrame)
 })

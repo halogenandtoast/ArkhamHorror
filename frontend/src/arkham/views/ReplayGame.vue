@@ -6,6 +6,7 @@ import processingJSON from "@/assets/processing.json"
 import { ref, provide, watch, computed, onMounted, onUnmounted } from 'vue'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGameReplay } from '@/arkham/api'
+import { isTypingTarget } from '@/arkham/helpers'
 import GameLog from '@/arkham/components/GameLog.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
@@ -49,6 +50,7 @@ watch(currentStep, nextStep => {
 }, {immediate: true})
 
 const handleKeyPress = (event: KeyboardEvent) => {
+  if (isTypingTarget(event.target)) return
   if (event.key === "ArrowLeft") goBack()
   if (event.key === "ArrowRight") goForward()
   if (event.key === " ") play.value = !play.value

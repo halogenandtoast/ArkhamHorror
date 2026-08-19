@@ -13,6 +13,8 @@
     "shortcutTakeResources": "Take Resources",
     "shortcutEndTurn": "End Turn",
     "shortcutRestartScenario": "Restart Scenario",
+    "shortcutSelectInvestigator": "View investigator board",
+    "shortcutSwitchPerspective": "Switch to investigator's perspective",
 
     "viewSettings": "View Settings",
     "viewHistory": "View History",

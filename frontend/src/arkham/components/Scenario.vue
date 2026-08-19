@@ -2053,6 +2053,7 @@ const blessTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
 ).length)
 const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'CurseToken').length)
 const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'FrostToken').length)
+const bloodTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'BloodToken').length)
 
 // Custom campaign tokens (e.g. the Circus Ex Mortis moon) that opt into the
 // totals bar via their campaign's homebrew tokens.json. Counted across the
@@ -2120,6 +2121,11 @@ async function addChaosToken(face: any){
             <button class="button frost" @click="removeChaosToken('FrostToken')">-</button>
             <span class="frost-icon"></span>
             <button class="button frost" @click="addChaosToken('FrostToken')">+</button>
+          </div>
+          <div class="tri-button blood">
+            <button class="button blood" @click="removeChaosToken('BloodToken')">-</button>
+            <span class="blood-icon"></span>
+            <button class="button blood" @click="addChaosToken('BloodToken')">+</button>
           </div>
           <div class="tri-button">
             <button class="button" @click="removeChaosToken('PlusOne')">-</button>
@@ -2932,6 +2938,7 @@ async function addChaosToken(face: any){
           <PoolItem v-if="blessTokens > 0" type="chaos-tokens/ct_bless" :amount="blessTokens" />
           <PoolItem v-if="curseTokens > 0" type="chaos-tokens/ct_curse" :amount="curseTokens" />
           <PoolItem v-if="frostTokens > 0" type="chaos-tokens/ct_frost" :amount="frostTokens" />
+          <PoolItem v-if="bloodTokens > 0" type="chaos-tokens/ct_blood" :amount="bloodTokens" />
           <PoolItem v-for="t in homebrewTotals" :key="t.face" type="custom-token" :image="t.image" :amount="t.count" :tooltip="t.tooltip" />
         </div>
       </div>
@@ -3966,6 +3973,11 @@ async function addChaosToken(face: any){
 
   .frost {
     background-color: var(--frost);
+  }
+
+  .blood {
+    background-color: var(--blood);
+    color: var(--blood-red)
   }
 
   button {

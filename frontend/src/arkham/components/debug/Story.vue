@@ -2,7 +2,7 @@
 import Draggable from '@/components/Draggable.vue'
 import { computed } from 'vue'
 import * as Arkham from '@/arkham/types/Story'
-import { ChaosToken, chaosTokenImage } from '@/arkham/types/ChaosToken'
+import { ChaosToken, chaosTokenImage, compareTokenFaces } from '@/arkham/types/ChaosToken'
 
 const props = defineProps<{
   story: Arkham.Story
@@ -12,10 +12,8 @@ const emit = defineEmits<{ close: [] }>()
 
 type BagSection = { label: string, tokens: ChaosToken[] }
 
-const tokenOrder = ['PlusOne', 'Zero', 'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight', 'Skull', 'Cultist', 'Tablet', 'ElderThing', 'AutoFail', 'ElderSign', 'CurseToken', 'BlessToken', 'FrostToken']
-
 function sortTokens(a: ChaosToken, b: ChaosToken) {
-  return tokenOrder.indexOf(a.face) - tokenOrder.indexOf(b.face)
+  return compareTokenFaces(a.face, b.face)
 }
 
 const sections = computed<BagSection[]>(() => {

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { chaosTokenImage, tokenOrder, type TokenFace } from '@/arkham/types/ChaosToken'
+import { chaosTokenImage, compareTokenFaces, type TokenFace } from '@/arkham/types/ChaosToken'
 
 const props = defineProps<{ chaosBag: TokenFace[] }>()
 
 const sortedFaces = computed(() =>
-  [...props.chaosBag].sort((a, b) => tokenOrder.indexOf(a as typeof tokenOrder[number]) - tokenOrder.indexOf(b as typeof tokenOrder[number]))
+  [...props.chaosBag].sort(compareTokenFaces)
 )
 </script>
 

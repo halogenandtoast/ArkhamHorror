@@ -15,12 +15,28 @@ export const tokenOrder = [
   'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight',
   'Skull', 'Cultist', 'Tablet', 'ElderThing',
   'AutoFail', 'ElderSign',
-  'CurseToken', 'BlessToken', 'FrostToken',
+  'CurseToken', 'BlessToken', 'FrostToken', 'BloodToken'
 ] as const
 
 // Custom homebrew tokens arrive as slugs like ":circus-ex-mortis:moon"; the
 // segment after the last colon is the icon key (ct_<key>.png).
 export type TokenFace = typeof tokenOrder[number] | string
+
+const tokenOrderIndex = new Map<string, number>(tokenOrder.map((face, index) => [face, index]))
+
+/**
+ * The single source of truth for chaos token ordering. Faces we don't know
+ * about (custom homebrew slugs) sort after every known face.
+ */
+export function compareTokenFaces(a: TokenFace, b: TokenFace): number {
+  return (tokenOrderIndex.get(a) ?? tokenOrder.length) - (tokenOrderIndex.get(b) ?? tokenOrder.length)
+}
+
+/** The standard chaos tokens, i.e. everything before the campaign-specific ones. */
+export const standardTokenFaces: readonly TokenFace[] = tokenOrder.slice(0, tokenOrderIndex.get('CurseToken'))
+
+/** Faces whose art already states their value. */
+export const numericTokenFaces: readonly TokenFace[] = tokenOrder.slice(0, tokenOrderIndex.get('Skull'))
 
 export function customTokenKey(face: string): string | null {
   if (!face.includes(':')) return null
@@ -48,6 +64,7 @@ export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
   JsonDecoder.literal('CurseToken'),
   JsonDecoder.literal('BlessToken'),
   JsonDecoder.literal('FrostToken'),
+  JsonDecoder.literal('BloodToken'),
   JsonDecoder.string(), // custom homebrew token slug
 ], 'TokenFace');
 
@@ -63,53 +80,40 @@ export const chaosTokenDecoder = JsonDecoder.object({
   modifiedFaces,
 }));
 
-export function chaosTokenImage(face: TokenFace): string {
-  switch (face) {
-    case 'PlusOne':
-      return imgsrc("chaos-tokens/ct_plus1.png");
-    case 'Zero':
-      return imgsrc("chaos-tokens/ct_0.png");
-    case 'MinusOne':
-      return imgsrc("chaos-tokens/ct_minus1.png");
-    case 'MinusTwo':
-      return imgsrc("chaos-tokens/ct_minus2.png");
-    case 'MinusThree':
-      return imgsrc("chaos-tokens/ct_minus3.png");
-    case 'MinusFour':
-      return imgsrc("chaos-tokens/ct_minus4.png");
-    case 'MinusFive':
-      return imgsrc("chaos-tokens/ct_minus5.png");
-    case 'MinusSix':
-      return imgsrc("chaos-tokens/ct_minus6.png");
-    case 'MinusSeven':
-      return imgsrc("chaos-tokens/ct_minus7.png");
-    case 'MinusEight':
-      return imgsrc("chaos-tokens/ct_minus8.png");
-    case 'AutoFail':
-      return imgsrc("chaos-tokens/ct_autofail.png");
-    case 'ElderSign':
-      return imgsrc("chaos-tokens/ct_eldersign.png");
-    case 'Skull':
-      return imgsrc("chaos-tokens/ct_skull.png");
-    case 'Cultist':
-      return imgsrc("chaos-tokens/ct_cultist.png");
-    case 'Tablet':
-      return imgsrc("chaos-tokens/ct_tablet.png");
-    case 'ElderThing':
-      return imgsrc("chaos-tokens/ct_elderthing.png");
-    case 'CurseToken':
-      return imgsrc("chaos-tokens/ct_curse.png");
-    case 'BlessToken':
-      return imgsrc("chaos-tokens/ct_bless.png");
-    case 'FrostToken':
-      return imgsrc("chaos-tokens/ct_frost.png");
-    default: {
-      if (face.includes(':')) {
-        const [, campaign, key] = face.split(':')
-        if (campaign && key) return imgsrc(`homebrew/${campaign}/chaos-tokens/${key}.png`)
-      }
-      return imgsrc("chaos-tokens/ct_blank.png");
-    }
-  }
+// Every face in `tokenOrder` must name an image here, so adding a token face
+// fails to compile until its art is wired up.
+const tokenImageNames: Record<typeof tokenOrder[number], string> = {
+  PlusOne: 'plus1',
+  Zero: '0',
+  MinusOne: 'minus1',
+  MinusTwo: 'minus2',
+  MinusThree: 'minus3',
+  MinusFour: 'minus4',
+  MinusFive: 'minus5',
+  MinusSix: 'minus6',
+  MinusSeven: 'minus7',
+  MinusEight: 'minus8',
+  Skull: 'skull',
+  Cultist: 'cultist',
+  Tablet: 'tablet',
+  ElderThing: 'elderthing',
+  AutoFail: 'autofail',
+  ElderSign: 'eldersign',
+  CurseToken: 'curse',
+  BlessToken: 'bless',
+  FrostToken: 'frost',
+  BloodToken: 'blood',
 }
 
+/** The single source of truth for chaos token art, homebrew faces included. */
+export function chaosTokenImage(face: TokenFace): string {
+  const name = tokenImageNames[face as typeof tokenOrder[number]]
+  if (name) return imgsrc(`chaos-tokens/ct_${name}.png`)
+
+  if (face.includes(':')) {
+    const [, campaign, key] = face.split(':')
+    if (campaign && key) return imgsrc(`homebrew/${campaign}/chaos-tokens/${key}.png`)
+  }
+
+  return imgsrc("chaos-tokens/ct_blank.png")
+}

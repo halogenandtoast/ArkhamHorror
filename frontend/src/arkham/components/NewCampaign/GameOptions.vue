@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { imgsrc } from '@/arkham/helpers'
-import { chaosTokenImage, tokenOrder } from '@/arkham/types/ChaosToken'
+import { chaosTokenImage, compareTokenFaces, type TokenFace } from '@/arkham/types/ChaosToken'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
 import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/NewGame'
@@ -181,17 +181,6 @@ const selectionBoxSrc = computed(() => {
 
 const selectionKind = computed(() => selectionSummary.value?.kind ?? null)
 
-type TokenFace =
-  | 'PlusOne' | 'Zero'
-  | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight'
-  | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing'
-  | 'AutoFail' | 'ElderSign'
-  | 'CurseToken' | 'BlessToken' | 'FrostToken'
-
-function sortTokenFaces(a: TokenFace, b: TokenFace) {
-  return tokenOrder.indexOf(a) - tokenOrder.indexOf(b)
-}
-
 const difficultyLevels = computed<Record<Difficulty, TokenFace[]> | null>(() => {
   const opt = selectedFullCampaignOption.value
   if (opt?.difficultyLevels) return opt.difficultyLevels
@@ -208,7 +197,7 @@ const difficultyLevels = computed<Record<Difficulty, TokenFace[]> | null>(() => 
 const chaosTokensForDifficulty = computed<TokenFace[]>(() => {
   const levels = difficultyLevels.value
   if (!levels) return []
-  return (levels[selectedDifficulty.value] ?? []).slice().sort(sortTokenFaces)
+  return (levels[selectedDifficulty.value] ?? []).slice().sort(compareTokenFaces)
 })
 
 const variants = computed<FullCampaignOption[]>(() => {

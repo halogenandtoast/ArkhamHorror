@@ -164,6 +164,15 @@
   }
 }
 
+.blood-icon {
+  &:before {
+    text-transform: none;
+    font-family: "Icons";
+    content: "\E94A";
+  }
+}
+
+
 .seal-a-icon {
   &:before {
     text-transform: none;

@@ -13,6 +13,7 @@ import { chaosTokenEffectKey } from '@/arkham/types/Scenario';
 import { useI18n } from 'vue-i18n';
 import { Dropdown } from 'floating-vue';
 import { chanceOfSuccess } from '@/arkham/chaosBagOdds';
+import { chaosTokenImage, compareTokenFaces, numericTokenFaces } from '@/arkham/types/ChaosToken';
 
 const props = defineProps<{
   game: Game
@@ -24,56 +25,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   choose: [value: number]
 }>()
-
-function imageFor(tokenFace: string) {
-  switch (tokenFace) {
-    case 'PlusOne':
-      return imgsrc("chaos-tokens/ct_plus1.png");
-    case 'Zero':
-      return imgsrc("chaos-tokens/ct_0.png");
-    case 'MinusOne':
-      return imgsrc("chaos-tokens/ct_minus1.png");
-    case 'MinusTwo':
-      return imgsrc("chaos-tokens/ct_minus2.png");
-    case 'MinusThree':
-      return imgsrc("chaos-tokens/ct_minus3.png");
-    case 'MinusFour':
-      return imgsrc("chaos-tokens/ct_minus4.png");
-    case 'MinusFive':
-      return imgsrc("chaos-tokens/ct_minus5.png");
-    case 'MinusSix':
-      return imgsrc("chaos-tokens/ct_minus6.png");
-    case 'MinusSeven':
-      return imgsrc("chaos-tokens/ct_minus7.png");
-    case 'MinusEight':
-      return imgsrc("chaos-tokens/ct_minus8.png");
-    case 'AutoFail':
-      return imgsrc("chaos-tokens/ct_autofail.png");
-    case 'ElderSign':
-      return imgsrc("chaos-tokens/ct_eldersign.png");
-    case 'Skull':
-      return imgsrc("chaos-tokens/ct_skull.png");
-    case 'Cultist':
-      return imgsrc("chaos-tokens/ct_cultist.png");
-    case 'Tablet':
-      return imgsrc("chaos-tokens/ct_tablet.png");
-    case 'ElderThing':
-      return imgsrc("chaos-tokens/ct_elderthing.png");
-    case 'BlessToken':
-      return imgsrc("chaos-tokens/ct_bless.png");
-    case 'CurseToken':
-      return imgsrc("chaos-tokens/ct_curse.png");
-    case 'FrostToken':
-      return imgsrc("chaos-tokens/ct_frost.png");
-    default: {
-      if (tokenFace.includes(':')) {
-        const [, campaign, key] = tokenFace.split(':')
-        if (campaign && key) return imgsrc(`homebrew/${campaign}/chaos-tokens/${key}.png`)
-      }
-      return imgsrc("chaos-tokens/ct_blank.png");
-    }
-  }
-}
 
 const revealedChaosTokens = computed(() => {
   if (props.skillTest) return props.game.skillTestChaosTokens
@@ -91,12 +42,7 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON))
 const debug = useDebug()
 const { t } = useI18n()
-const allTokenFaces = computed(() => props.chaosBag.chaosTokens.map(t => t.face).sort(sortTokenFaces))
-const tokenOrder = ['PlusOne', 'Zero', 'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight', 'Skull', 'Cultist', 'Tablet', 'ElderThing', 'AutoFail', 'ElderSign', 'CurseToken', 'BlessToken', 'FrostToken']
-
-function sortTokenFaces(a: string, b: string) {
-  return tokenOrder.indexOf(a) - tokenOrder.indexOf(b)
-}
+const allTokenFaces = computed(() => props.chaosBag.chaosTokens.map(t => t.face).sort(compareTokenFaces))
 
 // Scenario effect text for the symbol tokens. `false` disables `v-tooltip` on the
 // faces that have none.
@@ -149,7 +95,7 @@ const oddsPercent = computed(() => {
 })
 
 const breakdownRows = computed(() =>
-  [...(breakdown.value?.tokens ?? [])].sort((a, b) => sortTokenFaces(a.face, b.face))
+  [...(breakdown.value?.tokens ?? [])].sort((a, b) => compareTokenFaces(a.face, b.face))
 )
 
 const canForceDraw = computed(() => debug.active && tokenAction.value !== -1)
@@ -157,15 +103,13 @@ const canForceDraw = computed(() => debug.active && tokenAction.value !== -1)
 const forceDraw = (tokenFace: string) =>
   debug.send(props.game.id, {tag: 'ChaosBagMessage', contents: {tag: 'ForceChaosTokenDraw_', contents: tokenFace}})
 
-// Faces whose art already states their value; the rest get a label beneath them.
-const numericFaces = tokenOrder.slice(0, tokenOrder.indexOf('Skull'))
-
 const valuesByFace = computed(
   () => new Map((breakdown.value?.tokens ?? []).map((e) => [e.face, e]))
 )
 
 function faceValueLabel(tokenFace: string) {
-  if (numericFaces.includes(tokenFace) || tokenFace === 'AutoFail') return null
+  // Faces whose art already states their value get no label beneath them.
+  if (numericTokenFaces.includes(tokenFace) || tokenFace === 'AutoFail') return null
   const entry = valuesByFace.value.get(tokenFace)
   if (!entry || entry.value === null) return null
   return entry.value > 0 ? `+${entry.value}` : `${entry.value}`
@@ -206,7 +150,7 @@ const choose = (idx: number) => emit('choose', idx)
         <img
           class="token"
           :class="{'token-big': skillTest === null}"
-          :src="imageFor(tokenFace)"
+          :src="chaosTokenImage(tokenFace)"
         />
       </div>
     </div>
@@ -255,7 +199,7 @@ const choose = (idx: number) => emit('choose', idx)
 
           <div class="stats__table">
             <div v-for="entry in breakdownRows" :key="entry.face" class="stats__row">
-              <img class="stats__token" :src="imageFor(entry.face)" />
+              <img class="stats__token" :src="chaosTokenImage(entry.face)" />
               <span class="stats__multiplier">&times;{{ entry.count }}</span>
               <span class="stats__value">{{ entryValueLabel(entry) }}</span>
             </div>

@@ -56,6 +56,11 @@
 }
 
 @font-face {
+  font-family: "Icons";
+  src: url("/fonts/icon.woff2") format("woff2");
+}
+
+@font-face {
   font-family: "ArkhamEncounters";
   src: url("/fonts/encounters.woff2") format("woff2");
 }

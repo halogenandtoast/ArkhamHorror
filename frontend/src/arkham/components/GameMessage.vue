@@ -1,59 +1,9 @@
 <script lang="ts">
 import { defineComponent, h } from 'vue';
-import { imgsrc } from '@/arkham/helpers';
 import { cardArt } from '@/arkham/cardImages';
 import { Game } from '@/arkham/types/Game';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
-
-function imageFor(tokenFace: string) {
-  switch (tokenFace) {
-    case 'PlusOne':
-      return imgsrc("chaos-tokens/ct_plus1.png");
-    case 'Zero':
-      return imgsrc("chaos-tokens/ct_0.png");
-    case 'MinusOne':
-      return imgsrc("chaos-tokens/ct_minus1.png");
-    case 'MinusTwo':
-      return imgsrc("chaos-tokens/ct_minus2.png");
-    case 'MinusThree':
-      return imgsrc("chaos-tokens/ct_minus3.png");
-    case 'MinusFour':
-      return imgsrc("chaos-tokens/ct_minus4.png");
-    case 'MinusFive':
-      return imgsrc("chaos-tokens/ct_minus5.png");
-    case 'MinusSix':
-      return imgsrc("chaos-tokens/ct_minus6.png");
-    case 'MinusSeven':
-      return imgsrc("chaos-tokens/ct_minus7.png");
-    case 'MinusEight':
-      return imgsrc("chaos-tokens/ct_minus8.png");
-    case 'AutoFail':
-      return imgsrc("chaos-tokens/ct_autofail.png");
-    case 'ElderSign':
-      return imgsrc("chaos-tokens/ct_eldersign.png");
-    case 'Skull':
-      return imgsrc("chaos-tokens/ct_skull.png");
-    case 'Cultist':
-      return imgsrc("chaos-tokens/ct_cultist.png");
-    case 'Tablet':
-      return imgsrc("chaos-tokens/ct_tablet.png");
-    case 'ElderThing':
-      return imgsrc("chaos-tokens/ct_elderthing.png");
-    case 'BlessToken':
-      return imgsrc("chaos-tokens/ct_bless.png");
-    case 'CurseToken':
-      return imgsrc("chaos-tokens/ct_curse.png");
-    case 'FrostToken':
-      return imgsrc("chaos-tokens/ct_frost.png");
-    default: {
-      if (tokenFace.includes(':')) {
-        const [, campaign, key] = tokenFace.split(':')
-        if (campaign && key) return imgsrc(`homebrew/${campaign}/chaos-tokens/${key}.png`)
-      }
-      return imgsrc("chaos-tokens/ct_blank.png");
-    }
-  }
-}
+import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 
 export default defineComponent({
   props: {
@@ -118,7 +68,7 @@ export default defineComponent({
         if (found) {
           const [, token] = found
           if (token) {
-            return h('img', { 'src': imageFor(token), 'width': '23', 'class': 'chaos-token' })
+            return h('img', { 'src': chaosTokenImage(token), 'width': '23', 'class': 'chaos-token' })
           }
         }
       }

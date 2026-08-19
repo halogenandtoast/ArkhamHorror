@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useDebug, scenarioDebugCountsFor } from '@/arkham/debug'
 import type { Game } from '@/arkham/types/Game'
 import type { Scenario } from '@/arkham/types/Scenario'
-import { chaosTokenImage, type TokenFace } from '@/arkham/types/ChaosToken'
+import { chaosTokenImage, standardTokenFaces, type TokenFace } from '@/arkham/types/ChaosToken'
 
 const props = defineProps<{
   game: Game
@@ -16,12 +16,7 @@ const debug = useDebug()
 
 const realityAcidDebugToken1 = ref<TokenFace>('Skull')
 const realityAcidDebugToken2 = ref<TokenFace>('Cultist')
-const realityAcidDebugTokens: TokenFace[] = [
-  'PlusOne', 'Zero',
-  'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight',
-  'Skull', 'Cultist', 'Tablet', 'ElderThing',
-  'AutoFail', 'ElderSign',
-]
+const realityAcidDebugTokens: readonly TokenFace[] = standardTokenFaces
 
 const realityAcidTokenLabel = (token: TokenFace) => {
   switch (token) {

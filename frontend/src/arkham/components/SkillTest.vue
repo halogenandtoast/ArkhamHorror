@@ -6,7 +6,7 @@ import { computed } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import * as Cards from '@/arkham/types/Card';
 import { chaosTokenImage, type TokenFace } from '@/arkham/types/ChaosToken';
-import { scenarioToI18n } from '@/arkham/types/Scenario';
+import { chaosTokenEffectKey, symbolChaosTokenFaces } from '@/arkham/types/Scenario';
 import { Game } from '@/arkham/types/Game';
 import { Enemy } from '@/arkham/types/Enemy';
 import { Modifier, cannotCommitCardsToWords } from '@/arkham/types/Modifier';
@@ -254,23 +254,13 @@ const tokenEffects = computed(() => {
     return displayedToken.modifiedFaces?.length ? displayedToken.modifiedFaces : [token.face]
   })
 
-  const difficulty = ['Easy', 'Standard'].includes(scenario.difficulty) ? 'easyStandard' : 'hardExpert'
-
-  // lowercase the first letter
-  const lowerFirst = (str: string) => str.charAt(0).toLowerCase() + str.slice(1)
-
-  const baseRef = scenario.reference.replace(/b$/, '')
-
-  const tokenScope =
-    baseRef === 'c10501' || baseRef === 'c10502'
-      ? (scenario.reference.endsWith('b') ? '.act2' : '.act1')
-      : ''
-
-
-  return (["Skull", "Cultist", "Tablet", "ElderThing"] as TokenFace[]).filter((face) => faces.includes(face)).map((face) => 
-    `<img src='${chaosTokenImage(face)}' /><span>`
-          + formatContent(t(`${scenarioToI18n(scenario)}${tokenScope}.tokens.${difficulty}.${lowerFirst(face)}`)) + `</span>`
-          )
+  return (symbolChaosTokenFaces as readonly TokenFace[])
+    .filter((face) => faces.includes(face))
+    .flatMap((face) => {
+      const key = chaosTokenEffectKey(scenario, face)
+      if (!key) return []
+      return [`<img src='${chaosTokenImage(face)}' /><span>` + formatContent(t(key)) + `</span>`]
+    })
 })
 
 const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: unknown}) => 

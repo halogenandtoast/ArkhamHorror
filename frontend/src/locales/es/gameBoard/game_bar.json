@@ -20,6 +20,17 @@
 
     "viewChaosBag": "Ver Bolsa de Caos",
     "chaosBag": "Bolsa de Caos",
+    "chaosBagStats": {
+        "tokens": "{count} tokens",
+        "chanceOfSuccess": "chance of success",
+        "showOdds": "Show odds",
+        "skill": "Skill",
+        "difficulty": "Difficulty",
+        "reset": "Reset",
+        "autoFail": "auto fail",
+        "autoSuccess": "auto succeed",
+        "caveat": "Assumes one draw, expanding the extra draw that bless, curse and frost trigger. Card effects that reveal another token, the two-frost auto-fail, and draw-several-pick-one effects are not modeled."
+    },
     "add": "Añadir",
     
     "splitView": "Vista Dividida",

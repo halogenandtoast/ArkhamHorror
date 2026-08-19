@@ -5,6 +5,7 @@ module Arkham.ModifierData (
 import Arkham.Prelude
 
 import Arkham.Campaigns.TheScarletKeys.Key.Id
+import Arkham.ChaosToken.Types (ChaosTokenFace)
 import Arkham.Id
 import Arkham.Json
 import Arkham.Modifier
@@ -89,11 +90,39 @@ instance ToJSON AssetMetadata where
   toJSON = genericToJSON $ aesonOptions $ Just "am"
   toEncoding = genericToEncoding $ aesonOptions $ Just "am"
 
+data ChaosTokenValueEntry = ChaosTokenValueEntry
+  { ctveFace :: ChaosTokenFace
+  , ctveCount :: Int
+  , ctveValue :: Maybe Int
+  , ctveAutoFail :: Bool
+  , ctveAutoSuccess :: Bool
+  , ctveRevealsAnother :: Bool
+  }
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON ChaosTokenValueEntry where
+  toJSON = genericToJSON $ aesonOptions $ Just "ctve"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "ctve"
+
+data SkillTestValueBreakdown = SkillTestValueBreakdown
+  { stvbTokens :: [ChaosTokenValueEntry]
+  , stvbSkillValue :: Int
+  , stvbDifficulty :: Int
+  , stvbFailTies :: Bool
+  , stvbAutoFailIfSucceedByAtLeast :: [Int]
+  }
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON SkillTestValueBreakdown where
+  toJSON = genericToJSON $ aesonOptions $ Just "stvb"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "stvb"
+
 data SkillTestMetadata = SkillTestMetadata
   { stmModifiedSkillValue :: Int
   , stmModifiedDifficulty :: Int
   , stmSkills :: [SkillType]
   , stmModifiers :: [Modifier]
+  , stmValueBreakdown :: Maybe SkillTestValueBreakdown
   }
   deriving stock (Show, Eq, Generic)
 

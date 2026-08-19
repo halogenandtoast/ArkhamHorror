@@ -53,6 +53,9 @@ async function bootstrap() {
         'stack-indicator-popover': {
           $extend: 'dropdown',
         },
+        'chaos-bag-stats-popover': {
+          $extend: 'dropdown',
+        },
       },
     }).
     use(Toast, {}).

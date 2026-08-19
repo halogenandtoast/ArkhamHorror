@@ -2103,7 +2103,7 @@ async function addChaosToken(face: any){
         <button v-if="!forcedShowOutOfPlay" class="close button" @click="showOutOfPlay = false">{{$t('close')}}</button>
       </Draggable>
       <Draggable v-if="showChaosBag">
-        <template #handle><header><h2>{{$t('gameBar.chaosBag')}}</h2></header></template>
+        <template #handle><header><h2>{{$t('gameBar.chaosBag')}} <span class="count-pill">{{ scenario.chaosBag.chaosTokens.length }}</span></h2></header></template>
         <ChaosBag :game="game" :skillTest="null" :chaosBag="scenario.chaosBag" :playerId="playerId" @choose="choose" />
         <div v-if="debug.active" class="buttons buttons-row">
           <div class="tri-button blessed">

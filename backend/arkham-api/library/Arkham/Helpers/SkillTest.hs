@@ -9,6 +9,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Types qualified as Field
 import Arkham.Calculation
 import Arkham.Card
+import Arkham.ChaosBag.Base (chaosBagChaosTokens)
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes.HasChaosTokenValue
@@ -29,6 +30,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Ref (sourceToCard)
+import Arkham.Helpers.Scenario (scenarioFieldMaybe)
 import Arkham.Helpers.Source
 import Arkham.Helpers.Target
 import Arkham.Id
@@ -46,9 +48,11 @@ import Arkham.Message (
   pattern SkillTestEnds,
  )
 import Arkham.Modifier
+import Arkham.ModifierData (ChaosTokenValueEntry (..), SkillTestValueBreakdown (..))
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Scenario.Types (Field (ScenarioChaosBag))
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult
@@ -1014,6 +1018,40 @@ getModifiedChaosTokenValue s t = do
   applyModifier (ChaosTokenValueModifier m) (ChaosTokenValue token (NegativeModifier n)) =
     ChaosTokenValue token (NegativeModifier (max 0 (n - m)))
   applyModifier _ currentChaosTokenValue = currentChaosTokenValue
+
+getSkillTestValueBreakdown :: HasGame m => SkillTest -> m (Maybe SkillTestValueBreakdown)
+getSkillTestValueBreakdown s = do
+  mBag <- scenarioFieldMaybe ScenarioChaosBag
+  for mBag \bag -> do
+    let tokens = chaosBagChaosTokens bag
+    entries <- for tokens.uniqueByFace \tok -> do
+      value <- getModifiedChaosTokenValue s tok
+      ChaosTokenValue _ tokenModifier <- getChaosTokenValue s.investigator tok.face ()
+      -- TODO: need some way for homebrew to  hook into these
+      let autoFail = tokenModifier == AutoFailModifier
+          autoSuccess = tokenModifier == AutoSuccessModifier
+          revealsAnother = tok.face `elem` [#curse, #bless, #frost]
+      pure
+        $ ChaosTokenValueEntry
+          { ctveFace = tok.face
+          , ctveCount = count ((== tok.face) . (.face)) tokens
+          , ctveValue = value <$ guard (not $ autoFail || autoSuccess)
+          , ctveAutoFail = autoFail
+          , ctveAutoSuccess = autoSuccess
+          , ctveRevealsAnother = revealsAnother
+          }
+
+    modifiers' <- getModifiers (SkillTestTarget s.id)
+    skillValue <- getSkillTestModifiedSkillValue
+    difficulty <- getModifiedSkillTestDifficulty s
+    pure
+      $ SkillTestValueBreakdown
+        { stvbTokens = entries
+        , stvbSkillValue = skillValue
+        , stvbDifficulty = difficulty
+        , stvbFailTies = FailTies `elem` modifiers'
+        , stvbAutoFailIfSucceedByAtLeast = [n | AutomaticallyFailIfSucceedByAtLeast n <- modifiers']
+        }
 
 getAdditionalChaosTokenValues :: HasGame m => SkillTest -> m Int
 getAdditionalChaosTokenValues s = do

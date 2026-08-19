@@ -569,6 +569,7 @@ withSkillTestMetadata st = do
   stmSkills <- getSkillTestSkillTypes
   stmModifiedDifficulty <- fromJustNote "withSkillTestMetadata: impossible" <$> getSkillTestDifficulty
   stmModifiers <- getFullModifiers st
+  stmValueBreakdown <- getSkillTestValueBreakdown st
   pure $ st `with` SkillTestMetadata {..}
 
 withInvestigatorConnectionData

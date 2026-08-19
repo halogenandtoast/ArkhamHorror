@@ -23,7 +23,7 @@ instance RunMessage PayYourDues where
         <> EnemyWithRemainingHealth (EqualTo $ Static attrs.payment.resources)
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      disengageEnemy iid eid
+      disengageFromAll eid
       roundModifier attrs eid (AddKeyword Keyword.Aloof)
       discoverAtYourLocation NotInvestigate iid attrs 1
       pure e

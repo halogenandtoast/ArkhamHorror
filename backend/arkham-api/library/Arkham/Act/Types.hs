@@ -295,6 +295,9 @@ instance Entity Act where
   toAttrs (Act a) = toAttrs a
   overAttrs f (Act a) = Act $ overAttrs f a
 
+instance HasCardCode Act where
+  toCardCode = toCardCode . toAttrs
+
 instance Targetable Act where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs

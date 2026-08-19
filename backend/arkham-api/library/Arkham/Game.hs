@@ -53,6 +53,7 @@ import Arkham.Difficulty
 import Arkham.Discover (IsInvestigate (..))
 import Arkham.Distance
 import Arkham.Effect.Types
+import Arkham.EncounterCard (allEncounterCards)
 import Arkham.Enemy (lookupDefeatedEnemy)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), enemyClues, enemyDamage, enemyDoom)
 import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
@@ -188,6 +189,7 @@ import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
 import Arkham.Placement qualified as Placement
+import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Query
@@ -6949,13 +6951,37 @@ applyBlank s = do
         other -> Just other
     modify $ insertMap target modifiers'
 
+{- | Every card code whose 'CardDef' opts into the enemy-ready window via
+'enemyReadyTag'. Derived from the card registry rather than hand-listed so a card only
+has to tag itself to stay visible to the fast path below (see #5440).
+-}
+enemyReadyCardCodes :: Set CardCode
+enemyReadyCardCodes =
+  setFromList
+    [ cdCardCode def
+    | def <- toList (allPlayerCards <> allEncounterCards)
+    , enemyReadyTag `elem` cdTags def
+    ]
+
+{- | Whether any card that reacts to an enemy readying is in play. When nothing is, the
+whole enemy-ready window is skipped. Every card-backed entity map has to be scanned: the
+ability can live on an enemy (Gug Sentinel) just as easily as on an asset or event.
+-}
 hasEnemyReadyAbilities :: Game -> Bool
 hasEnemyReadyAbilities g =
-  any ((`elem` enemyReadyCodes) . toCardCode) (gameEntities g ^. assetsL)
-    || any ((`elem` enemyReadyCodes) . toCardCode) (gameEntities g ^. eventsL)
+  hasCode (e ^. assetsL)
+    || hasCode (e ^. eventsL)
+    || hasCode (e ^. enemiesL)
+    || hasCode (e ^. treacheriesL)
+    || hasCode (e ^. locationsL)
+    || hasCode (e ^. skillsL)
+    || hasCode (e ^. storiesL)
+    || hasCode (e ^. actsL)
+    || hasCode (e ^. agendasL)
  where
-  enemyReadyCodes :: [CardCode]
-  enemyReadyCodes = ["90038", "02031", "03199"]
+  e = gameEntities g
+  hasCode :: HasCardCode a => Map k a -> Bool
+  hasCode = any ((`member` enemyReadyCardCodes) . toCardCode)
 
 delve :: Game -> Game
 delve = over depthLockL (+ 1)

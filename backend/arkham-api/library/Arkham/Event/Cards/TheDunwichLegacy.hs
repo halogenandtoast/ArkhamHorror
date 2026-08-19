@@ -79,6 +79,7 @@ bindMonster2 =
     , cdCardTraits = singleton Spell
     , cdActions = #evade
     , cdLevel = Just 2
+    , cdTags = [enemyReadyTag]
     }
 
 baitAndSwitch :: CardDef

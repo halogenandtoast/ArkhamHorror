@@ -81,6 +81,7 @@ tidalMemento =
     $ (asset "90038" "Tidal Memento" 0 Neutral)
       { cdCardTraits = setFromList [Item, Charm]
       , cdUnique = True
+      , cdTags = [enemyReadyTag]
       }
 
 wendysAmuletAdvanced :: CardDef

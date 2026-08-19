@@ -290,6 +290,7 @@ snareTrap2 =
           $ Criteria.Negate (exists $ "Snare Trap" <> AssetAt YourLocation)
           <> exists (YourLocation <> LocationCanHaveAttachments)
     , cdLevel = Just 2
+    , cdTags = [enemyReadyTag]
     }
 
 manoAMano1 :: CardDef

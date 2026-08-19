@@ -166,6 +166,15 @@ may be different printings (their derived 'Eq' would say no).
 canonicalCardCode :: CardDef -> CardCode
 canonicalCardCode c = foldl' min (cdCardCode c) (cdAlternateCardCodes c)
 
+{- | 'cdTags' marker for cards with an ability that triggers on
+'Arkham.Matcher.EnemyReadies' or 'Arkham.Matcher.EnemyWouldReady'. Any such card MUST
+carry this tag: 'Arkham.Game.hasEnemyReadyAbilities' skips the enemy-ready window
+outright when no tagged card is in play, so an untagged card's ability never fires
+(see #5440).
+-}
+enemyReadyTag :: Text
+enemyReadyTag = "enemy-ready"
+
 data IsRevelation
   = NoRevelation
   | IsRevelation

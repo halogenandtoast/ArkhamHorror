@@ -407,6 +407,7 @@ gugSentinel =
     , cdHealth = health 2
     , cdCardTraits = setFromList [Monster, Gug]
     , cdVictoryPoints = Just 1
+    , cdTags = [enemyReadyTag]
     }
 
 slitheringDhole :: CardDef

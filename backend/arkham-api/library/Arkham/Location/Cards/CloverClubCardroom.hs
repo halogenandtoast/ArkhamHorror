@@ -51,6 +51,7 @@ instance RunMessage CloverClubCardroom where
         CurseToken -> pure ()
         BlessToken -> pure ()
         FrostToken -> pure ()
+        BloodToken -> pure ()
         CustomToken _ -> pure ()
       resetChaosTokens (attrs.ability 1)
       pure l

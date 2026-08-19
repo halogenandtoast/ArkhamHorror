@@ -178,6 +178,7 @@ export function replaceIcons(body: string) {
     replace(/{bless}/g, '<span class="bless-icon"></span>').
     replace(/{curse}/g, '<span class="curse-icon"></span>').
     replace(/{frost}/g, '<span class="frost-icon"></span>').
+    replace(/{blood}/g, '<span class="blood-icon"></span>').
     replace(/{sealA}/g, '<span class="seal-a-icon"></span>').
     replace(/{sealB}/g, '<span class="seal-b-icon"></span>').
     replace(/{sealC}/g, '<span class="seal-c-icon"></span>').

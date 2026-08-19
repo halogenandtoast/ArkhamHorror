@@ -2035,6 +2035,7 @@ library
       Arkham.Campaign
       Arkham.Campaign.Campaigns
       Arkham.Campaign.Campaigns.BrethrenOfAsh
+      Arkham.Campaign.Campaigns.ChildrenOfBlood
       Arkham.Campaign.Campaigns.EdgeOfTheEarth
       Arkham.Campaign.Campaigns.EdgeOfTheEarth.Achievements
       Arkham.Campaign.Campaigns.GuardiansOfTheAbyss
@@ -2075,6 +2076,9 @@ library
       Arkham.Campaigns.BrethrenOfAsh.Helpers
       Arkham.Campaigns.BrethrenOfAsh.Import
       Arkham.Campaigns.BrethrenOfAsh.Key
+      Arkham.Campaigns.ChildrenOfBlood.CampaignSteps
+      Arkham.Campaigns.ChildrenOfBlood.ChaosBag
+      Arkham.Campaigns.ChildrenOfBlood.Helpers
       Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
       Arkham.Campaigns.EdgeOfTheEarth.Helpers
       Arkham.Campaigns.EdgeOfTheEarth.Key

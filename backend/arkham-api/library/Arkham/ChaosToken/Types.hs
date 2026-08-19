@@ -91,6 +91,7 @@ instance ToDisplay ChaosTokenFace where
     CurseToken -> "{curse}"
     BlessToken -> "{bless}"
     FrostToken -> "{frost}"
+    BloodToken -> "{blood}"
     CustomToken slug -> "{" <> customTokenKey slug <> "}"
 
 instance HasField "id" ChaosToken ChaosTokenId where
@@ -128,6 +129,7 @@ data ChaosTokenFace
   | CurseToken
   | BlessToken
   | FrostToken
+  | BloodToken
   | -- | Open constructor for campaign/scenario-specific homebrew tokens,
     -- identified by slug (e.g. @":circus-ex-mortis:moon"@). Display name,
     -- icon key, and JSON form derive from the slug's last segment; reveal
@@ -192,13 +194,16 @@ instance IsLabel "curse" ChaosTokenFace where
 instance IsLabel "frost" ChaosTokenFace where
   fromLabel = FrostToken
 
+instance IsLabel "blood" ChaosTokenFace where
+  fromLabel = BloodToken
+
 -- | All official token faces (custom homebrew faces are open-ended and
 -- deliberately excluded).
 allChaosTokenFaces :: [ChaosTokenFace]
 allChaosTokenFaces =
   [ PlusOne, Zero, MinusOne, MinusTwo, MinusThree, MinusFour, MinusFive
   , MinusSix, MinusSeven, MinusEight, Skull, Cultist, Tablet, ElderThing
-  , AutoFail, ElderSign, CurseToken, BlessToken, FrostToken
+  , AutoFail, ElderSign, CurseToken, BlessToken, FrostToken, BloodToken
   ]
 
 instance HasField "isNumber" ChaosTokenFace Bool where
@@ -279,6 +284,7 @@ isSymbolChaosToken = \case
   CurseToken -> True
   BlessToken -> True
   FrostToken -> True
+  BloodToken -> True
   CustomToken _ -> True
   _ -> False
 
@@ -328,6 +334,7 @@ chaosTokenLabel = \case
   CurseToken -> "Curse"
   BlessToken -> "Bless"
   FrostToken -> "Frost"
+  BloodToken -> "Blood"
   CustomToken slug -> capitalizeFirst (customTokenKey slug)
 
 mconcat

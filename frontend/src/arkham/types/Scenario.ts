@@ -244,6 +244,7 @@ export function campaignIdToI18n(campaignId: string): string | null {
     case "10": return "theFeastOfHemlockVale"
     case "11": return "theDrownedCity"
     case "12": return "brethrenOfAsh"
+    case "13": return "childrenOfBlood"
     case "83": return "standalone.guardiansOfTheAbyss"
     default:
       if (campaignId.startsWith(":")) return homebrewCampaignScope(campaignId)
@@ -434,9 +435,6 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "90054": return "standalone.laidToRest"
     case "90065": return "standalone.relicsOfThePast"
     case "90094": return "standalone.enthrallingEncore"
-    case "12105": return "brethrenOfAsh.spreadingFlames"
-    case "12133": return "brethrenOfAsh.smokeAndMirrors"
-    case "12168": return "brethrenOfAsh.queenOfAsh"
     case "11501": return "theDrownedCity.oneLastJob"
     case "11517": return "theDrownedCity.theWesternWall"
     case "11536": return "theDrownedCity.theDrownedQuarter"
@@ -447,6 +445,12 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "11673": return "theDrownedCity.sepulchreOfTheSleeper"
     case "11682": return "theDrownedCity.theDoomOfArkhamPartI"
     case "11688a": return "theDrownedCity.theDoomOfArkhamPartII"
+    case "12105": return "brethrenOfAsh.spreadingFlames"
+    case "12133": return "brethrenOfAsh.smokeAndMirrors"
+    case "12168": return "brethrenOfAsh.queenOfAsh"
+    case "13001": return "brethrenOfAsh.riverOfBlood"
+    case "13031": return "brethrenOfAsh.newHorizons"
+    case "13068": return "brethrenOfAsh.bloodMoney"
     default: throw new Error(`Unknown scenario id: ${scenarioId}`)
   }
 }

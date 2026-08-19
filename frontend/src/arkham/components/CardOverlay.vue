@@ -949,6 +949,7 @@ const TOKEN_MAP: Record<string, string> = {
   '[bless]': '<span class="bless-icon"></span>',
   '[curse]': '<span class="curse-icon"></span>',
   '[frost]': '<span class="frost-icon"></span>',
+  '[blood]': '<span class="blood-icon"></span>',
   '[per_investigator]': '<span class="per-player"></span>',
   '[seal_a]': '<span class="seal-a-icon"></span>',
   '[seal_b]': '<span class="seal-b-icon"></span>',

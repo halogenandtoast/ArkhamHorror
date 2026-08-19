@@ -9,8 +9,9 @@ import theInnsmouthConspiracy from '@/arkham/data/theInnsmouthConspiracy.json'
 import edgeOfTheEarth from '@/arkham/data/edgeOfTheEarth.json'
 import theScarletKeys from '@/arkham/data/theScarletKeys.json'
 import theFeastOfHemlockVale from '@/arkham/data/theFeastOfHemlockVale.json'
-import brethrenOfAsh from '@/arkham/data/brethrenOfAsh.json'
 import theDrownedCity from '@/arkham/data/theDrownedCity.json'
+import brethrenOfAsh from '@/arkham/data/brethrenOfAsh.json'
+import childrenOfBlood from '@/arkham/data/childrenOfBlood.json'
 import sideStories from '@/arkham/data/side-stories.json'
 
 export default
@@ -24,8 +25,9 @@ export default
   , ...edgeOfTheEarth
   , ...theScarletKeys
   , ...theFeastOfHemlockVale
-  , ...brethrenOfAsh
   , ...theDrownedCity
+  , ...brethrenOfAsh
+  , ...childrenOfBlood
   , ...sideStories
     , ...homebrewScenarios
 ]

@@ -3,11 +3,11 @@ module Arkham.Agenda.Cards.TheFeastOfHemlockVale.HemlockHouse.LivingWalls (livin
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Scenarios.HemlockHouse.Helpers (flipLocationOver, locationSealCount)
+import Arkham.Scenarios.HemlockHouse.Helpers (flipLocationOver, scenarioI18n)
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token (Token (..))
 
@@ -22,9 +22,13 @@ instance HasAbilities LivingWalls where
   getAbilities (LivingWalls a) =
     [ mkAbility a 1 $ forced $ PhaseEnds #when #mythos
     , restricted a 2 (exists YourLocation)
-        $ FastAbility (SameLocationGroupClueCost (PerPlayer 1) YourLocation)
-    , restricted a 3 (exists $ YourLocation <> LocationWithToken Resource)
-        $ FastAbility Free
+        $ freeTrigger
+        $ OrCost
+          [ PlaceClueOnLocationCost (PerPlayer 1)
+          , scenarioI18n
+              $ LabeledCost (ikey' "cost.removeSeal")
+              $ SpendTokenCost Resource (LocationTargetMatches YourLocation)
+          ]
     ]
 
 instance RunMessage LivingWalls where
@@ -34,15 +38,8 @@ instance RunMessage LivingWalls where
       thePredatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
       sendMessage' thePredatoryHouse $ requestChaosTokens lead (attrs.ability 1) 1
       pure a
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       withLocationOf iid \lid -> do
-        readyThis lid
-        flipLocationOver lid
-      pure a
-    UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
-      getMaybeLocation iid >>= traverse_ \lid -> do
-        seals <- locationSealCount lid
-        when (seals > 0) $ removeTokens (attrs.ability 3) lid Resource 1
         readyThis lid
         flipLocationOver lid
       pure a

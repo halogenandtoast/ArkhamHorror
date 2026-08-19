@@ -25,7 +25,7 @@ theHouseStirsV1 = agenda (2, A) TheHouseStirsV1 Cards.theHouseStirsV1 (Static 5)
 instance HasAbilities TheHouseStirsV1 where
   getAbilities (TheHouseStirsV1 a) =
     [ mkAbility a 1 $ forced $ PhaseEnds #when #mythos
-    , restricted a 2 (OnLocation LocationCanBeFlipped)
+    , restricted a 2 (exists YourLocation)
         $ freeTrigger
         $ OrCost
           [ PlaceClueOnLocationCost (PerPlayer 1)
@@ -43,7 +43,9 @@ instance RunMessage TheHouseStirsV1 where
       sendMessage' thePredatoryHouse $ requestChaosTokens lead (attrs.ability 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withLocationOf iid flipLocationOver
+      withLocationOf iid \lid -> do
+        readyThis lid
+        flipLocationOver lid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       shuffleEncounterDiscardBackIn

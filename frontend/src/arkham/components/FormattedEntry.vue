@@ -905,17 +905,23 @@ ul, :deep(ul) {
   }
 
   &.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px 20px;
-    justify-content: stretch;
+    justify-content: center;
+    max-width: 700px;
+    margin-inline: auto;
+    /* flex, not grid: a short last row centers instead of hanging left */
     > div {
+      flex: 0 0 calc((100% - 44px) / 3);
       display: flex;
       flex-direction: row;
       align-items: center;
       gap: 10px;
       img {
         width: 36px;
+        height: 36px;
+        object-fit: contain;
         flex-shrink: 0;
       }
       span {

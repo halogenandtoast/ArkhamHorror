@@ -379,7 +379,7 @@ data EncounterSet
   | NewHorizons
   | BloodMoney
   | Afflicted
-  | AgentsOfZnubamoarte
+  | AgentsOfZburamoarte
   | BloodBlight
   | BloodMoon
   | Bloodthirst

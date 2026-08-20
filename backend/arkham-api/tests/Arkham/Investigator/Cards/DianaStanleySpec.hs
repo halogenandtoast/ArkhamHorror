@@ -8,6 +8,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher (assetIs)
 import Arkham.Modifier
 import Arkham.Projection
+import Arkham.Skill.Cards qualified as Skills
 import Arkham.Window qualified as Window
 import TestImport.New
 
@@ -118,6 +119,19 @@ spec = describe "Diana Stanley" do
         run $ cancelWindow (CardIdSource $ toCardId emergencyCache)
         useReaction
         self.resources `shouldReturn` 4
+
+    it "does not trigger for a card committed from beneath her"
+      . gameTestWith Investigators.dianaStanley
+      $ \self -> do
+        self `loadDeck` [Assets.flashlight]
+        void $ putAssetIntoPlay self Assets.twilightBlade
+        overpower <- genMyCard self Skills.overpower
+        run $ PlaceUnderneath (toTarget self) [overpower]
+        sid <- getRandom
+        run $ beginSkillTest sid self #combat 2
+        commit overpower
+        run $ cancelWindow (CardIdSource $ toCardId overpower)
+        assertNoReactionOf self
 
   context "ignoring an enemy keyword (.45 Automatic (2))" do
     it "triggers when the attack is declared against a retaliate enemy"

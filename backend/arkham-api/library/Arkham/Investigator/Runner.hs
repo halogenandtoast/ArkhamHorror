@@ -433,6 +433,10 @@ timedSpan name action = do
       liftIO $ recordSpan name (t1 - t0)
       pure result
 
+withAssetStillInPlay
+  :: HasGame m => AssetId -> InvestigatorAttrs -> m InvestigatorAttrs -> m InvestigatorAttrs
+withAssetStillInPlay aid a body = fieldMay AssetCardId aid >>= maybe (pure a) (const body)
+
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   ClearAbilityUse ref -> do
@@ -1475,7 +1479,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       , Do (InvestigatorPlayAsset iid aid)
       ]
     pure $ a & slotsL %~ removeFromSlots aid
-  InvestigatorAdjustAssetSlots iid aid | iid == investigatorId -> do
+  InvestigatorAdjustAssetSlots iid aid | iid == investigatorId -> withAssetStillInPlay aid a do
     slots <- field AssetSlots aid
     assetCard <- field AssetCard aid
     let
@@ -1562,7 +1566,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pure (slotType, slots')
     push $ RefillSlots iid xs
     pure $ a & slotsL .~ mapFromList updatedSlots
-  Do (InvestigatorPlayAsset iid aid) | iid == investigatorId -> do
+  Do (InvestigatorPlayAsset iid aid) | iid == investigatorId -> withAssetStillInPlay aid a do
     -- this asset might already be slotted so check first
     fitsSlots <- fitsAvailableSlots aid a
     case fitsSlots of
@@ -1604,7 +1608,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 , let assets = assetsInSlotsOf aid'
                 ]
     pure a
-  InvestigatorPlayedAsset iid aid | iid == investigatorId -> do
+  InvestigatorPlayedAsset iid aid | iid == investigatorId -> withAssetStillInPlay aid a do
     slotTypes <- field AssetSlots aid
     assetCard <- field AssetCard aid
 

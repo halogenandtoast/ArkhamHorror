@@ -434,7 +434,8 @@
     "max": 13119,
     "playerCards": 0,
     "code": "cob",
-    "cycle": 13
+    "cycle": 13,
+    "previewUnimplemented": true
   },
   {
     "name": "Return to Night of the Zealot",

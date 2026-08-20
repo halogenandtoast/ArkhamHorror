@@ -4,7 +4,7 @@ import { useDbCardStore } from '@/stores/dbCards'
 import type { ArkhamDBCard } from '@/stores/dbCards'
 import * as Arkham from '@/arkham/types/CardDef'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
-import sets from '@/arkham/data/sets.json'
+import { cardCost, cardGroupKey as groupKey, cardIcons, cardName, cardSetText, cardTraits, cardType, groupCards, levelText } from '@/arkham/cardDetails'
 
 const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]>, showCounts?: boolean }>(), {
   attachments: () => ({}),
@@ -13,99 +13,13 @@ const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: 
 
 const store = useDbCardStore()
 
-const cardName = (card: Arkham.CardDef) => {
-  const subtitle = card.name.subtitle === null ? "" : `: ${card.name.subtitle}`
-  return `${card.name.title}${subtitle}`
-}
-
-const levelText = (card: Arkham.CardDef) => {
-  if (!card.level || card.level === 0) return ''
-  return ` (${card.level})`
-}
-
-const cardCost = (card: Arkham.CardDef) => {
-  if (card.cost?.tag === "StaticCost") return card.cost.contents
-  if (card.cost?.tag === "DynamicCost") return -2
-  if (card.cost?.tag === "DeferredCost") return -2
-  if (card.cost?.tag === "DiscardAmountCost") return -2
-  return null
-}
-
-const cardType = (card: Arkham.CardDef) => {
-  switch (card.cardType) {
-    case "PlayerTreacheryType": return "Treachery"
-    case "PlayerEnemyType": return "Enemy"
-    default: return card.cardType.replace(/Type$/, '')
-  }
-}
-
-const cardTraits = (card: Arkham.CardDef) => {
-  if (card.cardTraits.length === 0) return ''
-  return `${card.cardTraits.join('. ')}.`
-}
-
-const cardIcons = (card: Arkham.CardDef) => {
-  return card.skills.map((s) => {
-    if (s.tag === "SkillIcon") {
-      switch (s.contents) {
-        case "SkillWillpower": return "willpower"
-        case "SkillIntellect": return "intellect"
-        case "SkillCombat": return "combat"
-        case "SkillAgility": return "agility"
-        default: return "unknown"
-      }
-    }
-    if (s.tag == "WildIcon" || s.tag == "WildMinusIcon") return "wild"
-    return "unknown"
-  })
-}
-
-const cardSetCache = new Map<string, (typeof sets)[number] | undefined>()
-
-const cardSet = (card: Arkham.CardDef) => {
-  const cached = cardSetCache.get(card.art)
-  if (cached !== undefined || cardSetCache.has(card.art)) return cached
-
-  const cardCode = parseInt(card.art)
-  const set = sets.find((s) => cardCode >= s.min && cardCode <= s.max)
-  cardSetCache.set(card.art, set)
-  return set
-}
-
-const cardSetText = (card: Arkham.CardDef) => {
-  const setNumber = parseInt(card.art.slice(2))
+// The set name is localized from the ArkhamDB card data when we have it.
+const setText = (card: Arkham.CardDef) => {
   const language = localStorage.getItem('language') || 'en'
-  let setName = ''
+  if (language === 'en') return cardSetText(card)
 
-  if (language !== 'en') {
-    const match: ArkhamDBCard | null = store.getDbCard(card.art)
-    if (match) setName = match.pack_name
-  }
-
-  if (!setName) {
-    const set = cardSet(card)
-    if (set) setName = set.name
-  }
-
-  if (setName) return `${setName} ${setNumber % 500}`
-  return "Unknown"
-}
-
-const ungroupedWarOfTheOuterGodsCards = new Set(['c86038a', 'c86044a', 'c86049a'])
-
-const groupKey = (card: Arkham.CardDef) => ungroupedWarOfTheOuterGodsCards.has(card.cardCode) ? card.cardCode : card.art
-
-const groupCards = (cards: Arkham.CardDef[]) => {
-  const grouped = new Map<string, { card: Arkham.CardDef; count: number }>()
-
-  for (const card of cards) {
-    const key = groupKey(card)
-    const existing = grouped.get(key)
-    if (existing) existing.count += 1
-    else grouped.set(key, { card, count: 1 })
-  }
-
-  return Array.from(grouped.values())
+  const match: ArkhamDBCard | null = store.getDbCard(card.art)
+  return cardSetText(card, match?.pack_name)
 }
 
 const groupedCards = computed(() => groupCards(props.cards))
@@ -224,7 +138,7 @@ const attachmentHeading = (card: Arkham.CardDef) => {
               <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]"></i>
             </td>
             <td class="traits-col">{{ cardTraits(card) }}</td>
-            <td class="set-col">{{ cardSetText(card) }}</td>
+            <td class="set-col">{{ setText(card) }}</td>
           </tr>
           <tr v-if="attachedCards(card).length > 0" class="attachments-row">
             <td colspan="7">

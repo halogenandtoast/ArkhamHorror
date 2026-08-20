@@ -6,6 +6,7 @@ import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
 import CardListView from '@/arkham/components/CardListView.vue';
 import CardImageView from '@/arkham/components/CardImageView.vue';
+import CardDetailsModal from '@/arkham/components/CardDetailsModal.vue';
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';
@@ -13,6 +14,7 @@ import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { isDevBuild } from '@/arkham/displayRules'
 import { homebrewCampaigns } from '@/arkham/homebrewData'
 import { imgsrc, isTypingTarget } from '@/arkham/helpers'
+import { cardGroupKey, groupCards } from '@/arkham/cardDetails'
 
 const { t } = useI18n()
 
@@ -21,7 +23,7 @@ enum View {
   List = "LIST",
 }
 
-const CHAPTER_2_CYCLES = new Set([12, 61])
+const CHAPTER_2_CYCLES = new Set([12, 13, 61])
 const HOMEBREW_CYCLE = -1
 const dev = isDevBuild()
 
@@ -205,6 +207,9 @@ interface CardSet {
   cycle: number
   encounterDuplicates?: number
   homebrew?: boolean
+  // Show every card code in [min, max] in image view, greying out the ones the
+  // engine hasn't implemented yet. For sets still being built out.
+  previewUnimplemented?: boolean
   // Unused code numbers within [min, max] that don't correspond to a real card,
   // so they aren't counted toward the set total.
   missing?: string[]
@@ -459,6 +464,63 @@ const cardPoolAvailable = (mode: CardPoolMode) => {
 
 const cards = computed(() => filteredCardsIgnoringPool.value.filter((c) => cardInPool(c, cardPoolMode.value)))
 
+// A stand-in for a card the engine doesn't implement yet: enough of a CardDef
+// for CardImage to show its art, and nothing else.
+const unimplementedCard = (code: string, set: CardSet): Arkham.CardDef => ({
+  cardCode: `unimplemented-${code}`,
+  art: code,
+  doubleSided: false,
+  classSymbols: [],
+  cardType: '',
+  level: null,
+  name: { title: code, subtitle: null },
+  cardTraits: [],
+  skills: [],
+  cost: null,
+  otherSide: null,
+  meta: {},
+  errata: null,
+  encounterSet: set.code,
+})
+
+// Placeholders carry no searchable metadata, so they only make sense when the
+// filter is nothing more than "show me this set".
+const previewSets = computed(() => {
+  const { set, cycle, text, level, cardTypes, classes, traits, encounterSets } = filter.value
+  if (text.length || level || cardTypes.length || classes.length || traits.length || encounterSets.length) return []
+  return allSets.filter((s) => {
+    if (!s.previewUnimplemented) return false
+    return set ? s.code === set : cycle ? s.cycle === cycle : false
+  })
+})
+
+const unimplementedCards = computed(() => {
+  if (!allCards.value) return []
+
+  const implemented = new Set(allCards.value.map((c) => c.art.replace(/\D/g, '')))
+
+  return previewSets.value.flatMap((set) => {
+    const missing = new Set(set.missing ?? [])
+    const placeholders: Arkham.CardDef[] = []
+
+    for (let code = set.min; code <= set.max; code++) {
+      const art = String(code)
+      if (implemented.has(art) || missing.has(art)) continue
+      placeholders.push(unimplementedCard(art, set))
+    }
+
+    return placeholders
+  }).filter((c) => cardInPool(c, cardPoolMode.value))
+})
+
+const unimplementedArts = computed(() => new Set(unimplementedCards.value.map((c) => c.art)))
+
+const imageViewCards = computed(() =>
+  unimplementedCards.value.length === 0
+    ? cards.value
+    : sortCards([...cards.value, ...unimplementedCards.value]),
+)
+
 const setFilter = () => {
   router.push({ name: 'Cards', query: { ...route.query, q: query.value }})
   let queryString = query.value
@@ -586,6 +648,7 @@ const cardSet = (card: Arkham.CardDef) => findCardSetByArt(card.art)
 const cycleSets = (cycle: CardCycle) => setsByCycle.get(cycle.cycle) ?? []
 
 const CYCLE_ICON_OVERRIDES: Record<number, string> = {
+  13: 'core',  // Small Campaign Expansions
   50: 'core',  // Return to...
   60: 'core',  // Investigator Starter Decks
   61: 'core',  // Investigator Starter Decks (Chapter 2)
@@ -603,8 +666,14 @@ function homebrewSetImagePath(code: string) {
   return imgsrc(`homebrew/${homebrewId}/sets/${homebrewId}.png`)
 }
 
+// Sets whose icon ships as an SVG rather than the usual PNG.
+const SVG_SET_ICONS = new Set(['cob'])
+
+const setIconPath = (code: string) =>
+  `/img/arkham/encounter-sets/${code}.${SVG_SET_ICONS.has(code) ? 'svg' : 'png'}`
+
 function setIconSrc(set: CardSet) {
-  return set.homebrew ? homebrewSetImagePath(set.code) : `/img/arkham/encounter-sets/${set.code}.png`
+  return set.homebrew ? homebrewSetImagePath(set.code) : setIconPath(set.code)
 }
 
 function cycleIconSrc(cycle: CardCycle) {
@@ -613,7 +682,7 @@ function cycleIconSrc(cycle: CardCycle) {
     return set ? homebrewSetImagePath(set.code) : ''
   }
   const code = cycleIconCode(cycle)
-  return code ? `/img/arkham/encounter-sets/${code}.png` : ''
+  return code ? setIconPath(code) : ''
 }
 
 const setCycle = (cycle: CardCycle) => {
@@ -649,6 +718,25 @@ watch([hasPlayerCards, hasCampaignCards, cardPoolMode], ([hasPlayer, hasCampaign
 
 const showSidebar = ref(false)
 const sidebarCollapsed = ref(false)
+const selectedCard = ref<Arkham.CardDef | null>(null)
+
+// The details modal steps through the cards in the order the grid shows them,
+// which groups two defs that are one physical card into a single tile.
+const navigableCards = computed(() => groupCards(imageViewCards.value).map((entry) => entry.card))
+
+const selectedIndex = computed(() => {
+  if (!selectedCard.value) return -1
+  const key = cardGroupKey(selectedCard.value)
+  return navigableCards.value.findIndex((c) => cardGroupKey(c) === key)
+})
+
+const hasPrevCard = computed(() => selectedIndex.value > 0)
+const hasNextCard = computed(() => selectedIndex.value >= 0 && selectedIndex.value < navigableCards.value.length - 1)
+
+const stepCard = (delta: number) => {
+  const card = navigableCards.value[selectedIndex.value + delta]
+  if (card) selectedCard.value = card
+}
 </script>
 
 <template>
@@ -706,7 +794,13 @@ const sidebarCollapsed = ref(false)
           <li v-for="cycle in displayedCycles" :key="cycle.code">
             <div :class="['nav-row', 'nav-row--cycle', { active: filter.cycle === cycle.cycle }]">
               <i v-if="SET_FONT_CHARS[cycleIconCode(cycle)]" class="set-icon-font">{{ SET_FONT_CHARS[cycleIconCode(cycle)] }}</i>
-              <img v-else-if="cycleIconSrc(cycle)" class="set-icon" :src="cycleIconSrc(cycle)" :alt="cycle.name" />
+              <span
+                v-else-if="cycleIconSrc(cycle)"
+                class="set-icon"
+                :style="{ '--set-icon-url': `url(${cycleIconSrc(cycle)})` }"
+                role="img"
+                :aria-label="cycle.name"
+              ></span>
               <a href="#" @click.prevent="setCycle(cycle)">{{cycle.name}}</a>
               <span class="count">{{cycleCountText(cycle)}}</span>
             </div>
@@ -714,7 +808,13 @@ const sidebarCollapsed = ref(false)
               <li v-for="set in cycleSets(cycle)" :key="set.code">
                 <div :class="['nav-row', 'nav-row--sub', { active: filter.set === set.code }]">
                   <i v-if="SET_FONT_CHARS[set.code]" class="set-icon-font">{{ SET_FONT_CHARS[set.code] }}</i>
-                  <img v-else class="set-icon" :src="setIconSrc(set)" :alt="set.name" />
+                  <span
+                    v-else
+                    class="set-icon"
+                    :style="{ '--set-icon-url': `url(${setIconSrc(set)})` }"
+                    role="img"
+                    :aria-label="set.name"
+                  ></span>
                   <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>
                   <span class="count">{{setCountText(set)}}</span>
                 </div>
@@ -759,9 +859,26 @@ const sidebarCollapsed = ref(false)
           <label for="card-pool-both">{{ $t('cardsView.bothCards') }}</label>
         </div>
       </header>
-      <CardImageView v-if="view == View.Image" :cards="cards" :show-counts="false" />
+      <CardImageView
+        v-if="view == View.Image"
+        :cards="imageViewCards"
+        :unimplemented="unimplementedArts"
+        :show-counts="false"
+        selectable
+        @select="selectedCard = $event"
+      />
       <CardListView v-if="view == View.List" :cards="cards" :show-counts="false" />
     </div>
+    <CardDetailsModal
+      v-if="selectedCard"
+      :card="selectedCard"
+      :unimplemented="unimplementedArts.has(selectedCard.art)"
+      :has-prev="hasPrevCard"
+      :has-next="hasNextCard"
+      @prev="stepCard(-1)"
+      @next="stepCard(1)"
+      @close="selectedCard = null"
+    />
   </div>
 </template>
 
@@ -1057,16 +1174,9 @@ const sidebarCollapsed = ref(false)
     background: rgba(255,255,255,0.075);
 
     a,
+    .set-icon,
     .set-icon-font,
     .count {
-      color: var(--spooky-green);
-    }
-
-    .set-icon:not(.set-icon--homebrew) {
-      filter: brightness(0) saturate(100%) invert(68%) sepia(55%) saturate(391%) hue-rotate(112deg) brightness(89%) contrast(88%);
-    }
-
-    .set-icon--homebrew {
       color: var(--spooky-green);
     }
   }
@@ -1110,13 +1220,17 @@ const sidebarCollapsed = ref(false)
   color: #ccc;
 }
 
+/* Icons are silhouettes masked out of a solid fill, so they take the row's
+   color exactly — matching the font glyphs the other rows use. */
 .set-icon {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  object-fit: contain;
   margin-right: 4px;
-  filter: brightness(0) invert(0.8);
+  color: #ccc;
+  background: currentColor;
+  mask: var(--set-icon-url) center / contain no-repeat;
+  -webkit-mask: var(--set-icon-url) center / contain no-repeat;
 }
 
 .set-icon--homebrew {
@@ -1124,10 +1238,6 @@ const sidebarCollapsed = ref(false)
   height: 18px;
   margin-left: -1px;
   color: #fff;
-  background: currentColor;
-  filter: none;
-  mask: var(--set-icon-url) center / contain no-repeat;
-  -webkit-mask: var(--set-icon-url) center / contain no-repeat;
 }
 
 .nav-row--sub {

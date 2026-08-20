@@ -2,29 +2,29 @@
 import { computed } from 'vue'
 import * as Arkham from '@/arkham/types/CardDef'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
+import { cardGroupKey as groupKey, groupCards } from '@/arkham/cardDetails'
 import CardImage from '@/arkham/components/CardImage.vue'
 
-const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]>, showCounts?: boolean }>(), {
+const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]>, showCounts?: boolean, unimplemented?: Set<string>, selectable?: boolean }>(), {
   attachments: () => ({}),
   showCounts: true,
+  unimplemented: () => new Set(),
+  selectable: false,
 })
 
-const ungroupedWarOfTheOuterGodsCards = new Set(['c86038a', 'c86044a', 'c86049a'])
+// When selectable, clicking a card asks the parent to show its details instead
+// of following the link out to ArkhamDB.
+const emit = defineEmits<{ select: [card: Arkham.CardDef] }>()
 
-const groupKey = (card: Arkham.CardDef) => ungroupedWarOfTheOuterGodsCards.has(card.cardCode) ? card.cardCode : card.art
-
-const groupCards = (cards: Arkham.CardDef[]) => {
-  const grouped = new Map<string, { card: Arkham.CardDef; count: number }>()
-
-  for (const card of cards) {
-    const key = groupKey(card)
-    const existing = grouped.get(key)
-    if (existing) existing.count += 1
-    else grouped.set(key, { card, count: 1 })
-  }
-
-  return Array.from(grouped.values())
+const onCardClick = (event: MouseEvent, card: Arkham.CardDef) => {
+  if (!props.selectable) return
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return
+  event.preventDefault()
+  emit('select', card)
 }
+
+// Cards shown for completeness that the engine doesn't implement yet.
+const isUnimplemented = (card: Arkham.CardDef) => props.unimplemented.has(card.art)
 
 const groupedCards = computed(() => groupCards(props.cards))
 
@@ -92,9 +92,10 @@ const cardName = (card: Arkham.CardDef) => {
       v-for="{ card, count } in groupedCards"
       :key="groupKey(card)"
       class="card-tile"
-      :class="{ 'has-attachments': attachedCards(card).length > 0 }"
+      :class="{ 'has-attachments': attachedCards(card).length > 0, 'card-tile--unimplemented': isUnimplemented(card) }"
+      v-tooltip="isUnimplemented(card) ? 'Not yet implemented' : undefined"
     >
-      <a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">
+      <a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`" @click="onCardClick($event, card)">
         <CardImage :card="card" />
         <span class="card-badges">
           <span v-if="showCounts" class="deck-card-count">x {{ count }}</span>
@@ -177,6 +178,17 @@ const cardName = (card: Arkham.CardDef) => {
     position: relative;
     display: flex;
     justify-content: center;
+  }
+}
+
+.card-tile--unimplemented {
+  opacity: 0.42;
+  filter: grayscale(0.55);
+  transition: opacity 0.15s, filter 0.15s;
+
+  &:hover {
+    opacity: 0.85;
+    filter: grayscale(0);
   }
 }
 

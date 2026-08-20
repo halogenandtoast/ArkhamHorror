@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useAttrs, inject, ref, computed, watch, type Ref } from 'vue'
-import { cardImg, imgsrc } from '@/arkham/helpers'
+import { altFrontImage, cardBackImage, cardFrontImage, hasCardBackArt } from '@/arkham/cardArt'
 import { CardDef } from '@/arkham/types/CardDef'
 import { ArrowPathIcon } from '@heroicons/vue/20/solid'
 
@@ -18,65 +18,30 @@ const props = defineProps<{ card: CardDef }>()
 // cards rendered later (a new filter) start on the side everything else is on.
 const flipAll = inject<Ref<boolean> | null>('cardFlipAll', null)
 
-const flipped = ref(flipAll?.value ?? false)
+const wantsFlip = ref(flipAll?.value ?? false)
 
-if (flipAll) watch(flipAll, (value) => { flipped.value = value })
+if (flipAll) watch(flipAll, (value) => { wantsFlip.value = value })
 
-// A double-sided card whose OWN art is the 'b' side (e.g. an enemy that is the
-// back of an agenda: art "…016b", otherSide "…016"). Its front is the other
-// side, so default to showing that and put its own art on the back.
-const backPrimary = computed(() => {
-  const {otherSide, doubleSided, art} = props.card
-  return !!(doubleSided && otherSide && /b$/.test(art)
-    && otherSide.replace(/^c/, '') === art.replace(/b$/, ''))
-})
+const image = computed(() => cardFrontImage(props.card))
+const backImage = computed(() => cardBackImage(props.card))
 
-const image = computed(() => {
-  const {cardType} = props.card
-  if (cardType == 'LocationType' && props.card.doubleSided)
-    return cardImg(`${props.card.art}b`)
+// Only offer the flip when the back is art of its own rather than a generic
+// card back, and drop it again if that art turns out not to exist.
+const backMissing = ref(false)
+watch(backImage, () => { backMissing.value = false })
 
-  if (backPrimary.value)
-    return cardImg(props.card.otherSide!.replace(/^c/, ''))
+const flippable = computed(() => hasCardBackArt(props.card) && !backMissing.value)
+const flipped = computed(() => wantsFlip.value && flippable.value)
 
-  return cardImg(props.card.art)
-})
-const backImage = computed(() => {
-  const {cardType, otherSide, doubleSided} = props.card
-  if (backPrimary.value)
-    return cardImg(props.card.art)
+// Some cards store their front art as an 'a' side; retry there once.
+const frontSrc = ref(image.value)
+watch(image, (src) => { frontSrc.value = src })
 
-  if (otherSide)
-    return cardImg(otherSide.replace(/^c/, ''))
-
-  if (['ActType', 'AgendaType', 'ScenarioType', 'InvestigatorType'].includes(cardType))
-    return cardImg(`${props.card.art.replace(/a$/, '')}b`)
-
-  if ('LocationType' == cardType) {
-    if (props.card.doubleSided)
-      return cardImg(props.card.art)
-    return imgsrc('backs/back_encounter.jpg')
-  }
-
-  if (['EnemyType', 'StoryType'].includes(cardType) && props.card.doubleSided)
-    return cardImg(`${props.card.art}b`)
-
-  if (doubleSided)
-    return cardImg(`${props.card.art.replace(/a$/, '')}b`)
-
-  if (['EnemyType', 'StoryType', 'TreacheryType', 'EncounterAssetType', 'EncounterEventType'].includes(cardType)) {
-    if (props.card.meta?.customBack)
-      return imgsrc(`backs/${props.card.meta.customBack}`)
-    return imgsrc('backs/back_encounter.jpg')
-  }
-
-  // Player-type cards (e.g. earned Artifact assets) may also define a custom back.
-  if (props.card.meta?.customBack)
-    return imgsrc(`backs/${props.card.meta.customBack}`)
-
-  return imgsrc('backs/back_player.jpg')
-
-})
+function onFrontError() {
+  if (frontSrc.value !== image.value) return
+  const alt = altFrontImage(image.value)
+  if (alt) frontSrc.value = alt
+}
 
 // Full-height backs (an act/agenda that flips to an enemy or location) are stored
 // portrait; act/agenda faces are landscape. Detect from the loaded back image
@@ -97,20 +62,22 @@ const vertical = computed(() => flipped.value && backVertical.value)
       <img
         loading="lazy"
         :class="['card', 'card-front', { flipped }, attrs.class]"
-        :src="image"
+        :src="frontSrc"
+        @error="onFrontError"
         v-bind="attrs"
       />
-      <button @click.prevent="flipped = !flipped"><ArrowPathIcon aria-hidden="true" /></button>
+      <button v-if="flippable" @click.prevent="wantsFlip = !wantsFlip"><ArrowPathIcon aria-hidden="true" /></button>
     </div>
-    <div class="back" :class="{flipped}">
+    <div v-if="flippable" class="back" :class="{flipped}">
       <img
         loading="lazy"
         :class="['card', 'card-back', { flipped }, attrs.class]"
         :src="backImage"
         @load="updateBackOrientation"
+        @error="backMissing = true"
         v-bind="attrs"
       />
-      <button @click.prevent="flipped = !flipped"><ArrowPathIcon aria-hidden="true" /></button>
+      <button @click.prevent="wantsFlip = !wantsFlip"><ArrowPathIcon aria-hidden="true" /></button>
     </div>
   </div>
 </template>

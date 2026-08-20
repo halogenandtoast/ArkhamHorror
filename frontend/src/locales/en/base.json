@@ -311,6 +311,16 @@
     "chapter1": "Chapter 1",
     "chapter2": "Chapter 2"
   },
+  "cardDetails": {
+    "close": "Close",
+    "back": "Back",
+    "code": "Code",
+    "notImplemented": "Not yet implemented",
+    "previous": "Previous card",
+    "next": "Next card",
+    "openInArkhamDB": "ArkhamDB",
+    "openInArkhamBuild": "arkham.build"
+  },
   "cardsList": {
     "name": "Name",
     "class": "Class",

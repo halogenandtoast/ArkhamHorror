@@ -43,6 +43,7 @@ const { displayedImage, flipping } = useCardFlip(face)
       :tabindex="canFlip ? undefined : -1"
       :aria-hidden="canFlip ? undefined : 'true'"
       :aria-label="showingBack ? t('card.front') : t('card.resolvedSide')"
+      data-keep-card-overlay
       @click="showingBack = !showingBack"
     ><ArrowPathIcon /></button>
   </div>
@@ -50,10 +51,11 @@ const { displayedImage, flipping } = useCardFlip(face)
 
 <style scoped>
 .slot {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  width: fit-content;
 }
 
 .slot__card {
@@ -78,9 +80,10 @@ const { displayedImage, flipping } = useCardFlip(face)
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.35), 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
-/* Kept in the layout even when a card cannot flip, so every card in the row
-   still lines up along the same top edge. */
 .slot__flip {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -89,8 +92,8 @@ const { displayedImage, flipping } = useCardFlip(face)
   padding: 0;
   border-radius: 50%;
   border: 1px solid var(--box-border);
-  background: rgba(0, 0, 0, 0.45);
-  color: rgba(255, 255, 255, 0.55);
+  background: rgba(0, 0, 0, 0.7);
+  color: rgba(255, 255, 255, 0.75);
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }

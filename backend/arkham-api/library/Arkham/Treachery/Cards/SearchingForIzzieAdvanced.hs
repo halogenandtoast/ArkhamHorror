@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest.Lifted (investigateLocationEdit_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype SearchingForIzzieAdvanced = SearchingForIzzieAdvanced TreacheryAttrs

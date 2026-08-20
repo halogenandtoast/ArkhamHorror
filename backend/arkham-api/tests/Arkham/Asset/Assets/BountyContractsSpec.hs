@@ -1,7 +1,7 @@
 module Arkham.Asset.Assets.BountyContractsSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyTokens))
 import Arkham.Investigator.Cards (tonyMorgan)
 import Arkham.Projection

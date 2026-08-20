@@ -1,0 +1,29 @@
+module Arkham.Enemy.Cards.NightOfTheZealot.CultOfUmordhoth.PeterWarren (peterWarren) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.NightOfTheZealot.CultOfUmordhoth qualified as Cards
+import Arkham.Enemy.Import.Lifted
+
+newtype PeterWarren = PeterWarren EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+peterWarren :: EnemyCard PeterWarren
+peterWarren =
+  enemyWith
+    PeterWarren
+    Cards.peterWarren
+    (spawnAtL ?~ "Miskatonic University")
+
+instance HasAbilities PeterWarren where
+  getAbilities (PeterWarren attrs) =
+    extend1 attrs
+      $ restricted attrs 1 OnSameLocation
+      $ parleyAction (ClueCost (Static 2))
+
+instance RunMessage PeterWarren where
+  runMessage msg e@(PeterWarren attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
+      pure e
+    _ -> PeterWarren <$> liftRunMessage msg attrs

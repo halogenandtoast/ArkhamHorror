@@ -4,13 +4,14 @@ import Arkham.Act.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Act
 import Arkham.Agenda.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Agendas
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.AgentsOfAzathoth qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.BreachStatus
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToInTheClutchesOfChaos qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -19,7 +20,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Trait qualified as Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
 
 newtype InTheClutchesOfChaos = InTheClutchesOfChaos ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

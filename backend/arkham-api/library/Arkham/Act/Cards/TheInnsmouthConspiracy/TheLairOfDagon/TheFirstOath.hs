@@ -9,11 +9,11 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Key
 import Arkham.Keyword (Keyword (Aloof))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Locations
 import Arkham.Matcher
 import Arkham.ScenarioLogKey
 import Arkham.Trait (Trait (Obstacle, Suspect))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.Syzygy qualified as Treacheries
 
 newtype TheFirstOath = TheFirstOath ActAttrs
   deriving anyclass IsAct

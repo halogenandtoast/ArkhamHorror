@@ -3,17 +3,17 @@ module Arkham.Agenda.Cards.BrethrenOfAsh.QueenOfAsh.ARitual (aRitual) where
 import Arkham.Agenda.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card (flipCard, replaceCard)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Modifiers (modifyEach)
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Modifier (ModifierType (CannotBeDamaged))
 import Arkham.Projection (field)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype ARitual = ARitual AgendaAttrs
   deriving anyclass IsAgenda

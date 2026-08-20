@@ -11,7 +11,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Enemies
 import Arkham.Exception
 import Arkham.Field
 import Arkham.FlavorText
@@ -19,7 +19,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Text
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

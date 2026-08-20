@@ -1,0 +1,42 @@
+module Arkham.Treachery.Cards.TheScarletKeys.SecretWar.MemoryVariant (memoryVariant) where
+
+import Arkham.Ability
+import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Helpers.Window (getPlayedEvent)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Placement
+import Arkham.Treachery.CardDefs.TheScarletKeys.SecretWar qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype MemoryVariant = MemoryVariant TreacheryAttrs
+  deriving anyclass (IsTreachery, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+memoryVariant :: TreacheryCard MemoryVariant
+memoryVariant = treachery MemoryVariant Cards.memoryVariant
+
+instance HasAbilities MemoryVariant where
+  getAbilities (MemoryVariant a) =
+    -- ActiveEvent (not AnyEvent) so we skip events that attached during play (e.g. Breach the Door). See #4574.
+    [ mkAbility a 1 $ forced $ PlayEventDiscarding #after You ActiveEvent
+    , skillTestAbility $ mkAbility a 2 actionAbility
+    ]
+
+instance RunMessage MemoryVariant where
+  runMessage msg t@(MemoryVariant attrs) = runQueueT $ case msg of
+    Revelation _iid (isSource attrs -> True) -> do
+      place attrs NextToAgenda
+      pure t
+    UseCardAbility iid (isSource attrs -> True) 1 ws@(getPlayedEvent -> eid) _ -> do
+      push $ RemoveEvent eid
+      cancelWindowBatch ws
+      hollow iid =<< fetchCard eid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 2) attrs #willpower (Fixed 4)
+      pure t
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      toDiscardBy iid (attrs.ability 2) attrs
+      pure t
+    _ -> MemoryVariant <$> liftRunMessage msg attrs

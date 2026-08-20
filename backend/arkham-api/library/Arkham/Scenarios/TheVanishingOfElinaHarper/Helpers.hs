@@ -7,12 +7,12 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (Message (..))
 import Arkham.Message.Lifted (ReverseQueue, shuffleCardsIntoDeck, shuffleDeck)
@@ -21,7 +21,7 @@ import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Stories
 import Arkham.Target
 import Arkham.Trait (Trait (Suspect))
 

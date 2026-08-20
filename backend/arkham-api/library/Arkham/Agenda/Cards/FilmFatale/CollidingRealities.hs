@@ -7,7 +7,7 @@ import Arkham.Deck
 import Arkham.Draw.Types
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.FilmFatale qualified as Treacheries
 
 newtype CollidingRealities = CollidingRealities AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

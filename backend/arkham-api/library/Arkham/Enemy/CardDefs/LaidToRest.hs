@@ -1,8 +1,21 @@
-{- HLINT ignore "Use camelCase" -}
 module Arkham.Enemy.CardDefs.LaidToRest where
 
 import Arkham.Enemy.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
+
+jeanDevereuxPossessed :: CardDef
+jeanDevereuxPossessed =
+  unique
+    $ doubleSided "90057a"
+    $ (enemy "90057b" ("Jean Devereux" <:> "Possessed") LaidToRest 1)
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 4
+      , cdEvade = evade 2
+      , cdHealth = healthPerInvestigator 3
+      , cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter]
+      }
 
 jeanDevereuxSeekingClosure :: CardDef
 jeanDevereuxSeekingClosure =
@@ -19,20 +32,6 @@ jeanDevereuxSeekingClosure =
             [ Keyword.Aloof
             , Keyword.Patrol (LocationWithCardsUnderneath $ HasCard $ CardWithTitle "Ravenous Spirit")
             ]
-      }
-
-jeanDevereuxPossessed :: CardDef
-jeanDevereuxPossessed =
-  unique
-    $ doubleSided "90057a"
-    $ (enemy "90057b" ("Jean Devereux" <:> "Possessed") LaidToRest 1)
-      { cdHealthDamage = healthDamage 1
-      , cdSanityDamage = sanityDamage 1
-      , cdFight = fight 4
-      , cdEvade = evade 2
-      , cdHealth = healthPerInvestigator 3
-      , cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
-      , cdKeywords = setFromList [Keyword.Hunter]
       }
 
 ravenousSpirit :: CardDef

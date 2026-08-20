@@ -3,7 +3,7 @@ module Arkham.Act.Cards.LaidToRest.LaidToRest (laidToRest) where
 import Arkham.Ability
 import Arkham.Act.CardDefs.LaidToRest qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.LaidToRest qualified as Enemies
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message qualified as Msg

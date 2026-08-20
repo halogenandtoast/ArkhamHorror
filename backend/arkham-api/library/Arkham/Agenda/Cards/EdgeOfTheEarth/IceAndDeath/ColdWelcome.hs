@@ -4,7 +4,7 @@ import Arkham.Agenda.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet (EncounterSet (CreaturesInTheIce))
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
 import Arkham.Helpers.Window (entering)

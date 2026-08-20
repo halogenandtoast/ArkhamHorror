@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.Standalone qualified as Enemies
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
 import Arkham.Helpers.Message (createEnemyWithPlacement_)
@@ -42,7 +42,10 @@ instance HasAbilities TheBeyondBleakNetherworld where
 
 instance HasModifiersFor TheBeyondBleakNetherworld where
   getModifiersFor (TheBeyondBleakNetherworld (With a _)) = for_ a.controller \iid -> do
-    modifySelect a (AssetAttachedToAsset $ be a) [AsIfUnderControlOf iid, IsSpirit iid, DoNotTakeUpSlots]
+    modifySelect
+      a
+      (AssetAttachedToAsset $ be a)
+      [AsIfUnderControlOf iid, IsSpirit iid, DoNotTakeUpSlots]
 
 instance RunMessage TheBeyondBleakNetherworld where
   runMessage msg a@(TheBeyondBleakNetherworld (With attrs meta)) = runQueueT $ case msg of
@@ -158,7 +161,10 @@ instance RunMessage TheBeyondBleakNetherworld where
           _ -> do
             chooseOneM iid $ cardI18n $ scope "theBeyondBleakNetherworld" do
               labeled' "otherDiscardSpirit" $ pushAll discardSpiritMsgs
-      pure . TheBeyondBleakNetherworld $ attrs `with` meta {selectedSpirit = Nothing, selectedEnemySpirit = Nothing}
+      pure
+        . TheBeyondBleakNetherworld
+        $ attrs
+        `with` meta {selectedSpirit = Nothing, selectedEnemySpirit = Nothing}
     DoStep 1 (RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) _) -> do
       case spiritDeck meta of
         [] -> pure a

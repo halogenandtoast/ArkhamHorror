@@ -9,7 +9,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype CrisisOfFaith = CrisisOfFaith TreacheryAttrs
@@ -31,7 +31,9 @@ instance RunMessage CrisisOfFaith where
       x <- getRemainingCurseTokens
       chooseOrRunOne
         iid
-        [ Label "$cards.label.crisisOfFaith.replaceBlessWithCurse" [SwapChaosToken BlessToken CurseToken | x > 0]
+        [ Label
+            "$cards.label.crisisOfFaith.replaceBlessWithCurse"
+            [SwapChaosToken BlessToken CurseToken | x > 0]
         , Label (withI18n $ countVar 1 $ ikey' "label.takeHorror") [Msg.assignHorror iid attrs 1]
         ]
       push $ DoStep (n - 1) msg'

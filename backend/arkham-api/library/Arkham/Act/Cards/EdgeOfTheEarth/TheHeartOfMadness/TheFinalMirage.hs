@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card.CardCode
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelect, modifySelf)
 import Arkham.Helpers.Query (getSetAsideCardMaybe)
 import Arkham.Keyword (Keyword (Hunter))

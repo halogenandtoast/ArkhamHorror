@@ -12,12 +12,12 @@ import Arkham.ChaosToken
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheGrandVault qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheGrandVault qualified as Locations
 import Arkham.Location.FloodLevel (FloodLevel (..))
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
@@ -27,7 +27,8 @@ import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheGrandVault.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDrownedCity.TheGrandVault qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDrownedCity.TheInescapable qualified as Treacheries
 
 newtype TheGrandVault = TheGrandVault ScenarioAttrs
   deriving stock Generic

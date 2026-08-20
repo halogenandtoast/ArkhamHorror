@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Log

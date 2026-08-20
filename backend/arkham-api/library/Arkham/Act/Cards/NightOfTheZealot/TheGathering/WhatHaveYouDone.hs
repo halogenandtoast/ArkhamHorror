@@ -3,7 +3,7 @@ module Arkham.Act.Cards.NightOfTheZealot.TheGathering.WhatHaveYouDone (whatHaveY
 import Arkham.Ability
 import Arkham.Act.CardDefs.NightOfTheZealot.TheGathering qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheGathering.Helpers

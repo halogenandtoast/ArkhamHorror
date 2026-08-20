@@ -5,7 +5,7 @@ import Arkham.Helpers.Window (discoveredClues)
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype CoverUpAdvanced = CoverUpAdvanced TreacheryAttrs

@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheDrownedCity.ObsidianCanyons.DeadlySkies (deadlySkies)
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ObsidianCanyons.Helpers

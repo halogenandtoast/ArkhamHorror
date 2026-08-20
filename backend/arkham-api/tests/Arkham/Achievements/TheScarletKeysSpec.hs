@@ -21,20 +21,25 @@ import Arkham.Campaigns.TheScarletKeys.Key.Id (ScarletKeyId (..))
 import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.ChaosToken
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DancingMad qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DogsOfWar qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.OnThinIce qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Enemies
 import Arkham.Enemy.Types (EnemyAttrs (..))
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Event.Cards qualified as Events
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.DancingMad qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Locations
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Story qualified as Story
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey (ScenarioCountKey (CiviliansSlain))
 import Arkham.Source
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Stories
 import Arkham.Token qualified as Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheScarletKeys.StrangeHappenings qualified as Treacheries
 import Helpers.Achievements
 import Helpers.UltimatumsAndBoons (Ultimatum (..), withUltimatums)
 import TestImport.New

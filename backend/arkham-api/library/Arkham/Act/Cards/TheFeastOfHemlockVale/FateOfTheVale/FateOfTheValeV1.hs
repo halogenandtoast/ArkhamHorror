@@ -9,7 +9,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Helpers.Scenario
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier

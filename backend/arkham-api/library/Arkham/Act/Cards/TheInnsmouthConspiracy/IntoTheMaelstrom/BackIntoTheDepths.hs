@@ -4,10 +4,10 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (DuringTurn)
 
@@ -38,7 +38,7 @@ instance RunMessage BackIntoTheDepths where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       selectEach (not_ $ locationIs Locations.gatewayToYhanthlei) removeLocation
       n <- getPlayerCount
-      lairOfDagonCard <- getSetAsideCard Locations.lairOfDagonIntoTheMaelstrom
+      lairOfDagonCard <- getSetAsideCard Locations.lairOfDagon
       lairOfHydraCard <- getSetAsideCard Locations.lairOfHydra
       sanctums <- shuffle =<< getSetAsideCardsMatching "Y'ha-nthlei Sanctum"
       yhanthlei <- shuffle =<< getSetAsideCardsMatching "Y'ha-nthlei"

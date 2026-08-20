@@ -6,7 +6,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait (Trait (Suspect, ThirdFloor))
 

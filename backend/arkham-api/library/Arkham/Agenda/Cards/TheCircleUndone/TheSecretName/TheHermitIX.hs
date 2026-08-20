@@ -4,7 +4,8 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheSecretName qualified as Enemies
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)

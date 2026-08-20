@@ -33,14 +33,18 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToTheLastKing qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Game.Base
 import Arkham.Game.Settings (activeUltimatumsAndBoons)
 import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.Log (getHasRecord, getRecordCount, getRecordSet)
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToThePallidMask qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Prelude
@@ -48,7 +52,7 @@ import Arkham.Projection
 import Arkham.Source (Source (..))
 import Arkham.Target
 import Arkham.Token (Token (..))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 

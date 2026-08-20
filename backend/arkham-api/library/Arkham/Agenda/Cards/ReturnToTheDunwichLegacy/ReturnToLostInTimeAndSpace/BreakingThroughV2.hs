@@ -3,9 +3,9 @@ module Arkham.Agenda.Cards.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace.B
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (EncounterCardSource)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Enemies
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier

@@ -10,14 +10,14 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (getFloodLevelFor)
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Projection ()
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Locations
 import Arkham.Location.FloodLevel (FloodLevel (..))
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher

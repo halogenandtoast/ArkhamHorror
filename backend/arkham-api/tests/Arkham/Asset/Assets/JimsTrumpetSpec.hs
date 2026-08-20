@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.JimsTrumpetSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
 import TestImport.New
 
 spec :: Spec

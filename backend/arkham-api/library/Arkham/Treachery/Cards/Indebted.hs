@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.Indebted (indebted) where
 import Arkham.Helpers.Modifiers (modifiedWith_)
 import Arkham.Modifier
 import Arkham.Placement
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDunwichLegacy qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Indebted = Indebted TreacheryAttrs

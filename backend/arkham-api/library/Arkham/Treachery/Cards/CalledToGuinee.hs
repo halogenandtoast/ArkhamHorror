@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.CalledToGuinee (calledToGuinee) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype CalledToGuinee = CalledToGuinee TreacheryAttrs

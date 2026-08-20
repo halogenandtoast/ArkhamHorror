@@ -5,7 +5,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher hiding (TreacheryInHandOf)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.ReturnTo qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype UnspeakableOathCuriosity = UnspeakableOathCuriosity TreacheryAttrs

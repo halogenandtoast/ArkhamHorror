@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window

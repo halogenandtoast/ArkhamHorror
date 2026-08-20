@@ -3,7 +3,7 @@ module Arkham.Scenarios.CurtainCall.Helpers where
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Classes
 import Arkham.Classes.HasGame
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Helpers.Message
 import Arkham.I18n
 import Arkham.Id

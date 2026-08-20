@@ -1,0 +1,48 @@
+module Arkham.Treachery.Cards.ThePathToCarcosa.HastursGift.DanceOfTheYellowKing (danceOfTheYellowKing) where
+
+import Arkham.Attack
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Trait
+import Arkham.Treachery.CardDefs.ThePathToCarcosa.HastursGift qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype DanceOfTheYellowKing = DanceOfTheYellowKing TreacheryAttrs
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+danceOfTheYellowKing :: TreacheryCard DanceOfTheYellowKing
+danceOfTheYellowKing = treachery DanceOfTheYellowKing Cards.danceOfTheYellowKing
+
+instance RunMessage DanceOfTheYellowKing where
+  runMessage msg t@(DanceOfTheYellowKing attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      anyLunatics <- selectAny $ EnemyWithTrait Lunatic
+      sid <- getRandom
+      if anyLunatics
+        then revelationSkillTest sid iid attrs #willpower (Fixed 3)
+        else gainSurge attrs
+      pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      lunatics <- select $ NearestEnemyTo iid $ EnemyWithTrait Lunatic
+      withLocationOf iid \lid -> do
+        chooseOrRunOneM iid do
+          targets lunatics \lunatic -> do
+            readyThis lunatic
+            -- Force iid to be the prey for the duration of the move so any
+            -- engagement check along the path picks iid (no choice prompt) when
+            -- iid is at that location, and falls through to normal engagement
+            -- otherwise.
+            temporaryModifier lunatic attrs (ForcePrey $ Prey $ InvestigatorWithId iid) do
+              moveUntil lunatic lid
+            push
+              $ IfEnemyExists
+                (enemyAtLocationWith iid <> EnemyWithId lunatic)
+                [ EnemyEngageInvestigator lunatic iid
+                , EnemyWillAttack $ enemyAttack lunatic attrs iid
+                ]
+      pure t
+    _ -> DanceOfTheYellowKing <$> liftRunMessage msg attrs

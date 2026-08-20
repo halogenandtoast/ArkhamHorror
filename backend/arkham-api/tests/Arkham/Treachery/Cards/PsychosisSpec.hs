@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.PsychosisSpec (spec) where
 
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

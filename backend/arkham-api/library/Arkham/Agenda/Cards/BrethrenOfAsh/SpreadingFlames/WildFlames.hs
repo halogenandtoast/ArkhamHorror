@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Enemies
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario (findTopOfDiscard)
 import Arkham.Helpers.SkillTest.Lifted (parley)
@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
 import Arkham.Scenarios.SpreadingFlames.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype WildFlames = WildFlames AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

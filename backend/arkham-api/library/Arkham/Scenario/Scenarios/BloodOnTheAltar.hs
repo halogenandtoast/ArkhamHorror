@@ -6,13 +6,13 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Card
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (PlaceUnderneath, RevealLocation)
 import Arkham.Message.Lifted.Log

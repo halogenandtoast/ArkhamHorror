@@ -8,7 +8,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.MachinationsThroughTime.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.MachinationsThroughTime qualified as Stories
 import Arkham.Trait (Trait (Scientist))
 import Arkham.Window qualified as Window
 

@@ -4,7 +4,7 @@ import Arkham.Act.CardDefs.TheLabyrinthsOfLunacy qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.Scenario (scenarioFieldMap)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheLabyrinthsOfLunacy qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Name (Labeled (..))

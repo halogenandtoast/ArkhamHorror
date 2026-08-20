@@ -7,7 +7,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone qualified as Treacheries
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

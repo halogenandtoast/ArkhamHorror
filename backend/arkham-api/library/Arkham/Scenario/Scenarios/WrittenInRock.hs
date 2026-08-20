@@ -10,7 +10,8 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.HorrorsInTheRock qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Enemies
 import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
@@ -22,7 +23,7 @@ import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.GameValue
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Scenarios.ThreadsOfFate.Helpers

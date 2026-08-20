@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Constants
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Locations
 import Arkham.Matcher
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheUnspeakableOath.Helpers

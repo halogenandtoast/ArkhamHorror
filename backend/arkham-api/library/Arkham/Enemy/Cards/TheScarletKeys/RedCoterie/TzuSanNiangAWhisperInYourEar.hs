@@ -1,0 +1,39 @@
+module Arkham.Enemy.Cards.TheScarletKeys.RedCoterie.TzuSanNiangAWhisperInYourEar (tzuSanNiangAWhisperInYourEar) where
+
+import Arkham.Ability
+import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
+import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Placement
+
+newtype TzuSanNiangAWhisperInYourEar = TzuSanNiangAWhisperInYourEar EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+tzuSanNiangAWhisperInYourEar :: EnemyCard TzuSanNiangAWhisperInYourEar
+tzuSanNiangAWhisperInYourEar = enemy TzuSanNiangAWhisperInYourEar Cards.tzuSanNiangAWhisperInYourEar
+
+instance HasAbilities TzuSanNiangAWhisperInYourEar where
+  getAbilities (TzuSanNiangAWhisperInYourEar a) =
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ SkillTestResult
+        #when
+        You
+        (oneOf [WhileAttackingAnEnemy (be a), WhileEvadingAnEnemy (be a)])
+        (SuccessResult $ atLeast 2)
+
+instance RunMessage TzuSanNiangAWhisperInYourEar where
+  runMessage msg e@(TzuSanNiangAWhisperInYourEar attrs) = runQueueT $ case msg of
+    InvestigatorDrawEnemy _ eid | eid == attrs.id -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToEnemy attrs.id)
+      TzuSanNiangAWhisperInYourEar <$> liftRunMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)
+      chooseOneAtATimeM iid $ targets skeys shift
+      pure e
+    _ -> TzuSanNiangAWhisperInYourEar <$> liftRunMessage msg attrs

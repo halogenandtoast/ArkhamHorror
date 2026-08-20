@@ -17,7 +17,8 @@ import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Enemies
 import Arkham.ForMovement
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
@@ -31,7 +32,7 @@ import Arkham.Helpers.SkillTest (isFightWith, withSkillTest)
 import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -46,7 +47,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CongressOfTheKeys.Helpers
 import Arkham.Trait (Trait (Outsider))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.StrikingFear qualified as Treacheries
 import Arkham.Window qualified as Window
 import Control.Lens (non, _1)
 import Data.Map.Strict qualified as Map

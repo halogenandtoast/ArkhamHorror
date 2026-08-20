@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.HungerDiagram (hungerDiagram) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheLabyrinthsOfLunacy qualified as Enemies
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheLabyrinthsOfLunacy qualified as Locations
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose

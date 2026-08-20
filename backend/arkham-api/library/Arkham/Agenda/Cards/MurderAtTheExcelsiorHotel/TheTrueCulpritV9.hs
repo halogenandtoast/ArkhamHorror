@@ -6,11 +6,11 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types (Field (..))
 import Arkham.Helpers.GameValue
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.CardDefs.MurderAtTheExcelsiorHotel qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.VileExperiments qualified as Cards
 
 newtype TheTrueCulpritV9 = TheTrueCulpritV9 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

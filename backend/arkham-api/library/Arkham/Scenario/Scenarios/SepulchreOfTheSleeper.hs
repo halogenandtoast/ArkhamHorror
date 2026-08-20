@@ -14,7 +14,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Keyword qualified as Keyword
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record)

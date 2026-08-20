@@ -2,9 +2,9 @@ module Arkham.Act.Cards.TheDreamEaters.DarkSideOfTheMoon.ExploringTheMoon (Explo
 
 import Arkham.Act.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Enemies
 import Arkham.Enemy.Creation
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Locations
 import Arkham.Matcher
 
 newtype ExploringTheMoon = ExploringTheMoon ActAttrs

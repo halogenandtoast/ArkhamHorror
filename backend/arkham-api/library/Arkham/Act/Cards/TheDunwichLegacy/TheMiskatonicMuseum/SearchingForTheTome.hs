@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheDunwichLegacy.TheMiskatonicMuseum.SearchingForTheTome
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers

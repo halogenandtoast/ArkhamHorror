@@ -1,9 +1,9 @@
 module Arkham.Event.Events.RightUnderTheirNosesSpec (spec) where
 
 -- import Arkham.Classes.HasGame (getGame)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Enemies
 import Arkham.Event.Cards qualified as Events
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Locations
 import TestImport.New
 
 spec :: Spec

@@ -3,7 +3,7 @@ module Arkham.Campaign.TheScarletKeys.ConcealedSpec (spec) where
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed (mkConcealedCard)
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.CrimsonConspiracy qualified as Enemies
 import Arkham.Enemy.Types (Enemy)
 import Arkham.Matcher
 import Arkham.Placement

@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheDrownedCity.TheApiary.TheHiveMind (theHiveMind) where
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheDrownedCity.TheApiary qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheApiary qualified as Enemies
 import Arkham.Helpers.Investigator (getSpendableClueCount)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose

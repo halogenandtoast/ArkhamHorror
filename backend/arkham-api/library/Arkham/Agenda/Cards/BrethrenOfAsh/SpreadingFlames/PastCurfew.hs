@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.BrethrenOfAsh.SpreadingFlames.PastCurfew (pastCurfew)
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Enemies
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

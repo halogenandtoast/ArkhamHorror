@@ -17,7 +17,7 @@ import Arkham.Helpers.Story
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Base (revealCluesL)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Locations
 import Arkham.Location.Runner ()
 import Arkham.Location.Types (LocationAttrs)
 import Arkham.Matcher hiding (RevealLocation)
@@ -31,7 +31,7 @@ import Arkham.Queue
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Treacheries
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict
 

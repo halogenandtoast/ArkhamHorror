@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheDunwichLegacy.BloodOnTheAltar.SearchingForAnswers (se
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Enemies
 import Arkham.Matcher hiding (RevealLocation)
 
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs

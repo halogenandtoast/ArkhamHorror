@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Card
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Query (getJustLocationByName)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Locations
 import Arkham.Message.Lifted.Choose
 
 newtype CloseTheRift = CloseTheRift ActAttrs

@@ -3,12 +3,12 @@ module Arkham.Act.Cards.BrethrenOfAsh.QueenOfAsh.StopTheRite (stopTheRite) where
 import Arkham.Ability
 import Arkham.Act.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Trait (Trait (Cultist))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype StopTheRite = StopTheRite ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

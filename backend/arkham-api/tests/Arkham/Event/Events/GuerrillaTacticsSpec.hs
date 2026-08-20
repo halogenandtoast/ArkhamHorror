@@ -1,6 +1,6 @@
 module Arkham.Event.Events.GuerrillaTacticsSpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.Standalone qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import TestImport.New
 

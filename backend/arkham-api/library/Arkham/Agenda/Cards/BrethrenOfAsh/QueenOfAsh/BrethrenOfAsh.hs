@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.BrethrenOfAsh.QueenOfAsh.BrethrenOfAsh (brethrenOfAsh
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Enemies
 import Arkham.Matcher
 
 newtype BrethrenOfAsh = BrethrenOfAsh AgendaAttrs

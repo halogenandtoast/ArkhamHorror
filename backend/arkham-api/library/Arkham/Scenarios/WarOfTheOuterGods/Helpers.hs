@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.WarOfTheOuterGods qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Log (scenarioCount)
 import Arkham.Helpers.Modifiers (getModifiers)
@@ -16,7 +16,7 @@ import Arkham.Helpers.Query (getSetAsideCardMaybe)
 import Arkham.Helpers.Scenario (standaloneI18n)
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.WarOfTheOuterGods qualified as Locations
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message (
   AgendaAdvancementMethod (..),
@@ -34,7 +34,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.WarOfTheOuterGods qualified as Treacheries
 import Arkham.Window qualified as Window
 
 scenarioI18n :: (HasI18n => a) -> a

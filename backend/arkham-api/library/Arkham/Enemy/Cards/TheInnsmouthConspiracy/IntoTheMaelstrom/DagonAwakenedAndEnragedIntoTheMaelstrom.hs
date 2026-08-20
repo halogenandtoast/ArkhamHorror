@@ -1,0 +1,53 @@
+module Arkham.Enemy.Cards.TheInnsmouthConspiracy.IntoTheMaelstrom.DagonAwakenedAndEnragedIntoTheMaelstrom (
+  dagonAwakenedAndEnragedIntoTheMaelstrom,
+)
+where
+
+import Arkham.Ability
+import Arkham.DamageEffect
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
+import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
+import Arkham.Matcher
+import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
+import Arkham.Trait (Trait (Sanctum))
+import Arkham.Window qualified as Window
+
+newtype DagonAwakenedAndEnragedIntoTheMaelstrom = DagonAwakenedAndEnragedIntoTheMaelstrom EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+dagonAwakenedAndEnragedIntoTheMaelstrom :: EnemyCard DagonAwakenedAndEnragedIntoTheMaelstrom
+dagonAwakenedAndEnragedIntoTheMaelstrom =
+  enemyWith
+    DagonAwakenedAndEnragedIntoTheMaelstrom
+    Cards.dagonAwakenedAndEnragedIntoTheMaelstrom
+    (healthL .~ Nothing)
+
+instance HasModifiersFor DagonAwakenedAndEnragedIntoTheMaelstrom where
+  getModifiersFor (DagonAwakenedAndEnragedIntoTheMaelstrom a) = do
+    n <- selectCount $ LocationWithAnyKeys <> withTrait Sanctum
+    modifySelfWhen a (n > 0) [EnemyFight (-n)]
+
+instance HasAbilities DagonAwakenedAndEnragedIntoTheMaelstrom where
+  getAbilities (DagonAwakenedAndEnragedIntoTheMaelstrom a) =
+    extend1 a
+      $ restricted a 1 (exists $ enemyIs Cards.dagonsBrood)
+      $ forced
+      $ oneOf [EnemyDealtDamage #after AnyDamageEffect (be a) AnySource, EnemyEvaded #after Anyone (be a)]
+
+instance RunMessage DagonAwakenedAndEnragedIntoTheMaelstrom where
+  runMessage msg e@(DagonAwakenedAndEnragedIntoTheMaelstrom attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (map Window.windowType -> ws) _ -> do
+      brood <- select $ enemyIs Cards.dagonsBrood
+      for_ ws \case
+        Window.EnemyEvaded eiid _ ->
+          chooseOrRunTargetM iid brood $ push . Msg.EnemyEvaded eiid
+        Window.DealtDamage source damageEffect _ n ->
+          chooseOrRunTargetM iid brood \target ->
+            push $ DealDamage (EnemyTarget target) $ DamageAssignment source n damageEffect False False
+        _ -> pure ()
+
+      pure e
+    _ -> DagonAwakenedAndEnragedIntoTheMaelstrom <$> liftRunMessage msg attrs

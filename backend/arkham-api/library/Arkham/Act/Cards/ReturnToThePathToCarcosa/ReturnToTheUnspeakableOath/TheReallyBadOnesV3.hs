@@ -4,10 +4,10 @@ import Arkham.Act.CardDefs.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath q
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait

@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.SandsOfEgypt qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreationMethod (SpawnViaSpawnInstruction))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Act (getCurrentActStep)

@@ -4,7 +4,7 @@ import Arkham.Card
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype AbandonedAndAloneAdvanced = AbandonedAndAloneAdvanced TreacheryAttrs

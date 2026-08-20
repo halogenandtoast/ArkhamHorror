@@ -41,7 +41,8 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Difficulty
 import Arkham.EncounterSet (EncounterSet (MemorialsOfTheLost, Tekelili))
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.Penguins qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Game.Base
 import Arkham.Game.Settings (activeUltimatumsAndBoons)
@@ -49,7 +50,7 @@ import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.Log (getRecordSet)
 import Arkham.Id
 import Arkham.Key (ArkhamKey)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Locations
 import Arkham.Location.Types qualified as Location
 import Arkham.Matcher hiding (PerformAction, PlaceUnderneath)
 import Arkham.Message

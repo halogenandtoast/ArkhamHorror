@@ -5,7 +5,7 @@ import Arkham.Card
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype TheHarbinger = TheHarbinger TreacheryAttrs

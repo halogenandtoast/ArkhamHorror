@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (AncientOne))

@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.TommyMalloy (tommyMalloy, tommyMalloyEffect) where
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.Standalone qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher

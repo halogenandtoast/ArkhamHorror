@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheDunwichLegacy.WhereDoomAwaits.AscendingTheHillV3 (asc
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers

@@ -1,6 +1,6 @@
 module Arkham.Location.TypesSpec (spec) where
 
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Locations
 import Arkham.Location.Types (Field (LocationPrintedShroud))
 import Arkham.Projection
 import TestImport.New

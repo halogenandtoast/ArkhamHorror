@@ -11,7 +11,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as Enemies
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
@@ -22,7 +22,8 @@ import Arkham.Helpers.Text
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -35,7 +36,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CityOfTheElderThings.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as Treacheries
 import Data.Map.Strict qualified as Map
 
 newtype CityOfTheElderThings = CityOfTheElderThings ScenarioAttrs

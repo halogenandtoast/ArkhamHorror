@@ -3,12 +3,12 @@ module Arkham.Act.Cards.BrethrenOfAsh.SpreadingFlames.WhereTheresSmoke (whereThe
 import Arkham.Ability
 import Arkham.Act.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Enemies
 import Arkham.Helpers.Query (getJustLocationByName, getSetAsideCardsMatching)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.MiskatonicUniversity qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype WhereTheresSmoke = WhereTheresSmoke ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -33,8 +33,8 @@ instance RunMessage WhereTheresSmoke where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       selectEach (AnyEnemy) $ toDiscard attrs
 
-      placeSetAsideLocation_ Locations.dormitories_MiskatonicUniversity
-      placeSetAsideLocation_ Locations.miskatonicQuad_MiskatonicUniversity
+      placeSetAsideLocation_ Locations.dormitories
+      placeSetAsideLocation_ Locations.miskatonicQuad
 
       createSetAsideEnemy_ Enemies.servantOfFlameRagingFury (location_ "Dormitories")
 

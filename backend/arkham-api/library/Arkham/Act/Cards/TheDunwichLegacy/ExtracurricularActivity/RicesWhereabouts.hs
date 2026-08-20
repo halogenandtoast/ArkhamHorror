@@ -5,12 +5,12 @@ import Arkham.Act.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Enemies
 import Arkham.Helpers.Agenda (whenCurrentAgendaStepIs)
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window (cardsDiscarded)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Locations
 import Arkham.Matcher
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs

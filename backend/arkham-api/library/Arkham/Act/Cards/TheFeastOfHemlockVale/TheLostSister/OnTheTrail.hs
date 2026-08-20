@@ -5,9 +5,9 @@ import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Card
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Enemies
 import Arkham.ForMovement
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.HemophobiaSpec (spec) where
 
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.Standalone qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import TestImport.New
 

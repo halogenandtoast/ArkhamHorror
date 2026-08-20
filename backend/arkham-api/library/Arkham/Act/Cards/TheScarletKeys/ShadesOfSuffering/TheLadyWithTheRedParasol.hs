@@ -11,12 +11,12 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Enemies
 import Arkham.Helpers.Agenda (currentAgendaSequenceIs)
 import Arkham.Helpers.Cost (getCanAffordCost, payEffectCost)
 import Arkham.Helpers.Enemy (cancelEnemyEngagement)
 import Arkham.Helpers.FlavorText
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move

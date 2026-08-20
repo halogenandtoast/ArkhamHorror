@@ -11,7 +11,7 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard, RevealChaosToken)
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth qualified as Treacheries
 
 data Metadata = Metadata
   { playedFromTopOfDeck :: Bool

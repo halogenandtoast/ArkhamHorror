@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheUntamedWilds qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 
 newtype Intruders = Intruders AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

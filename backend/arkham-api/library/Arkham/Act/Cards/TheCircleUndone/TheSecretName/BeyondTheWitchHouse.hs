@@ -3,10 +3,10 @@ module Arkham.Act.Cards.TheCircleUndone.TheSecretName.BeyondTheWitchHouse (beyon
 import Arkham.Act.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Agenda.Types (Field (AgendaDoom))
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheSecretName qualified as Enemies
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Projection

@@ -8,7 +8,9 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.Types (Enemy, Field (EnemyDamage, OutOfPlayEnemyField))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
@@ -19,7 +21,8 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToTheBoundaryBeyond qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Locations
 import Arkham.Location.Types (Field (LocationName))
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (..))
@@ -34,7 +37,9 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheBoundaryBeyond.Helpers
 import Arkham.Token
 import Arkham.Trait qualified as Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.TemporalFlux qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Treacheries
 import Arkham.Window qualified as Window
 import Arkham.Zone
 

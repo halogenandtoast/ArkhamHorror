@@ -3,11 +3,11 @@ module Arkham.Treachery.Cards.DetachedFromReality (detachedFromReality) where
 import Arkham.Card
 import Arkham.Helpers.Location
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters qualified as Locations
 import Arkham.Matcher hiding (PutLocationIntoPlay)
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Treachery.Import.Lifted
 import Arkham.Window
 

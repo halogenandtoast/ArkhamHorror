@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheDreamEaters.WhereTheGodsDwell.TheThingInTheRobes (The
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Enemies
 import Arkham.Matcher
 import Arkham.ScenarioLogKey
 

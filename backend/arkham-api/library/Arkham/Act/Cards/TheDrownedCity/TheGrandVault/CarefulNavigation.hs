@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDrownedCity.Key (TheDrownedCityKey (DiscoveredGlyphs))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheGrandVault qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait (Trait (Vault))
 

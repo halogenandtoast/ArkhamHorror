@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as Cards
 import Arkham.Act.Import.Lifted hiding (terror)
 import Arkham.EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Query
 import Arkham.Matcher

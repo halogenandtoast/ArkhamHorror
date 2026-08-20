@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.FilmFatale qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.FilmFatale qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword (Keyword (Elusive))
 import Arkham.Matcher

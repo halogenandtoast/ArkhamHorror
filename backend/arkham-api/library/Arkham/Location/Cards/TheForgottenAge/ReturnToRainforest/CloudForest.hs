@@ -1,0 +1,29 @@
+module Arkham.Location.Cards.TheForgottenAge.ReturnToRainforest.CloudForest (cloudForest) where
+
+import Arkham.Ability
+import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Helpers.Window
+import Arkham.Location.CardDefs.TheForgottenAge.ReturnToRainforest qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+
+newtype CloudForest = CloudForest LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+cloudForest :: LocationCard CloudForest
+cloudForest = symbolLabel $ location CloudForest Cards.cloudForest 3 (PerPlayer 2)
+
+instance HasAbilities CloudForest where
+  getAbilities (CloudForest a) =
+    extendRevealed1 a
+      $ restricted a 1 (not_ $ exists $ at_ (be a) <> InvestigatorWithSupply Torches)
+      $ forced
+      $ EnemyDealtDamage #when AnyDamageEffect (at_ $ be a) AnySource
+
+instance RunMessage CloudForest where
+  runMessage msg l@(CloudForest attrs) = runQueueT $ case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (damagedEnemy -> enemy) _ -> do
+      cancelEnemyDamage enemy
+      pure l
+    _ -> CloudForest <$> liftRunMessage msg attrs

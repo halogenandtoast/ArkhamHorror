@@ -5,7 +5,7 @@ import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheCircleUndone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype TerribleSecret = TerribleSecret TreacheryAttrs

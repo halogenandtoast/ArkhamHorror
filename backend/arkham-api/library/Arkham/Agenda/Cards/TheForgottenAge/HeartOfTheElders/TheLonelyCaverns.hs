@@ -5,7 +5,8 @@ import Arkham.Agenda.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Card
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Log (getRecordCount, whenHasRecord)

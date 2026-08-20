@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as 
 import Arkham.Act.Import.Lifted
 import Arkham.I18n
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.IntoTheMaelstrom.Helpers
@@ -24,7 +24,7 @@ instance HasAbilities CityOfTheDeepV2 where
       [ restricted
           a
           1
-          ( exists (LocationWithoutClues <> locationIs Locations.lairOfDagonIntoTheMaelstrom)
+          ( exists (LocationWithoutClues <> locationIs Locations.lairOfDagon)
               <> exists (LocationWithoutClues <> locationIs Locations.lairOfHydra)
               <> exists (LocationWithoutClues <> locationIs Locations.vaultOfRiches <> LocationWithKey PurpleKey)
           )

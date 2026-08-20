@@ -3,7 +3,8 @@ module Arkham.Act.Cards.ThePathToCarcosa.DimCarcosa.SearchForTheStrangerV3 (sear
 import Arkham.Ability
 import Arkham.Act.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 

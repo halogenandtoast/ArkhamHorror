@@ -3,10 +3,10 @@ module Arkham.Agenda.Cards.TheDunwichLegacy.TheMiskatonicMuseum.ShadowsDeepenSpe
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Agendas
 import Arkham.Agenda.Sequence (AgendaSequence (Sequence), AgendaSide (A, B))
 import Arkham.Agenda.Types (Agenda, AgendaAttrs (..))
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Enemies
 import Arkham.Entities qualified as Entities
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Treacheries
 import TestImport.New
 
 {- | Regression for the FAQ ruling that side-A constant/forced abilities remain

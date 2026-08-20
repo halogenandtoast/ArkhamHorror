@@ -6,7 +6,7 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

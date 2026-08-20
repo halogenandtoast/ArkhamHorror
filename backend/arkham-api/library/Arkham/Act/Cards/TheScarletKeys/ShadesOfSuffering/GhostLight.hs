@@ -8,7 +8,7 @@ import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardsUnderneath))
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)

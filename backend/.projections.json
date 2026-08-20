@@ -180,24 +180,32 @@
   },
   "arkham-api/library/Arkham/Treachery/Cards/*.hs": {
     "type": "treachery",
-    "alternate": "arkham-api/tests/Arkham/Treachery/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Treachery/Cards/{dirname}/{basename}Spec.hs",
     "template": [
-      "module Arkham.Treachery.Cards.{dot} ({dot|snakecase|camelcase}) where",
+      "module Arkham.Treachery.Cards.{dirname|dot}.{basename} ({basename|snakecase|camelcase}) where",
       "",
-      "import Arkham.Treachery.Cards qualified as Cards",
+      "import Arkham.Treachery.CardDefs.{dirname|dot} qualified as Cards",
       "import Arkham.Treachery.Import.Lifted",
       "",
-      "newtype {dot} = {dot} TreacheryAttrs",
+      "newtype {basename} = {basename} TreacheryAttrs",
       "  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
       "",
-      "{dot|snakecase|camelcase} :: TreacheryCard {dot}",
-      "{dot|snakecase|camelcase} = treachery {dot} Cards.{dot|snakecase|camelcase}",
+      "{basename|snakecase|camelcase} :: TreacheryCard {basename}",
+      "{basename|snakecase|camelcase} = treachery {basename} Cards.{basename|snakecase|camelcase}",
       "",
-      "instance RunMessage {dot} where",
-      "  runMessage msg t@({dot} attrs) = runQueueT $ case msg of",
+      "instance RunMessage {basename} where",
+      "  runMessage msg t@({basename} attrs) = runQueueT $ case msg of",
       "    Revelation _iid (isSource attrs -> True) -> pure t",
-      "    _ -> {dot} <$> liftRunMessage msg attrs"
+      "    _ -> {basename} <$> liftRunMessage msg attrs"
+    ]
+  },
+  "arkham-api/library/Arkham/Treachery/CardDefs/*.hs": {
+    "type": "treacherydefs",
+    "template": [
+      "module Arkham.Treachery.CardDefs.{dirname|dot}.{basename} where",
+      "",
+      "import Arkham.Treachery.CardDefs.Import"
     ]
   },
   "arkham-api/library/Arkham/Investigator/Cards/*.hs": {
@@ -233,23 +241,31 @@
   },
   "arkham-api/library/Arkham/Enemy/Cards/*.hs": {
     "type": "enemy",
-    "alternate": "arkham-api/tests/Arkham/Enemy/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Enemy/Cards/{dirname}/{basename}Spec.hs",
     "template": [
-      "module Arkham.Enemy.Cards.{dot} ({dot|snakecase|camelcase}) where",
+      "module Arkham.Enemy.Cards.{dirname|dot}.{basename} ({basename|snakecase|camelcase}) where",
       "",
-      "import Arkham.Enemy.Cards qualified as Cards",
+      "import Arkham.Enemy.CardDefs.{dirname|dot} qualified as Cards",
       "import Arkham.Enemy.Import.Lifted",
       "",
-      "newtype {dot} = {dot} EnemyAttrs",
+      "newtype {basename} = {basename} EnemyAttrs",
       "  deriving anyclass (IsEnemy, HasModifiersFor)",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)",
       "",
-      "{dot|snakecase|camelcase} :: EnemyCard {dot}",
-      "{dot|snakecase|camelcase} = enemy {dot} Cards.{dot|snakecase|camelcase} (0, Static 1, 0) (0, 0)",
+      "{basename|snakecase|camelcase} :: EnemyCard {basename}",
+      "{basename|snakecase|camelcase} = enemy {basename} Cards.{basename|snakecase|camelcase} (0, Static 1, 0) (0, 0)",
       "",
-      "instance RunMessage {dot} where",
-      "  runMessage msg ({dot} attrs) = runQueueT $ case msg of",
-      "    _ -> {dot} <$> liftRunMessage msg attrs"
+      "instance RunMessage {basename} where",
+      "  runMessage msg ({basename} attrs) = runQueueT $ case msg of",
+      "    _ -> {basename} <$> liftRunMessage msg attrs"
+    ]
+  },
+  "arkham-api/library/Arkham/Enemy/CardDefs/*.hs": {
+    "type": "enemydefs",
+    "template": [
+      "module Arkham.Enemy.CardDefs.{dirname|dot}.{basename} where",
+      "",
+      "import Arkham.Enemy.CardDefs.Import"
     ]
   },
   "arkham-api/library/Arkham/Asset/Assets/*.hs": {
@@ -298,27 +314,35 @@
   },
   "arkham-api/library/Arkham/Location/Cards/*.hs": {
     "type": "location",
-    "alternate": "arkham-api/tests/Arkham/Location/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Location/Cards/{dirname}/{basename}Spec.hs",
     "template": [
-      "module Arkham.Location.Cards.{dot} ({dot|snakecase|camelcase}) where",
+      "module Arkham.Location.Cards.{dirname|dot}.{basename} ({basename|snakecase|camelcase}) where",
       "",
-      "import Arkham.Location.Cards qualified as Cards",
+      "import Arkham.Location.CardDefs.{dirname|dot} qualified as Cards",
       "import Arkham.Location.Import.Lifted",
       "",
-      "newtype {dot} = {dot} LocationAttrs",
+      "newtype {basename} = {basename} LocationAttrs",
       "  deriving anyclass (IsLocation, HasModifiersFor)",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
       "",
-      "{dot|snakecase|camelcase} :: LocationCard {dot}",
-      "{dot|snakecase|camelcase} = symbolLabel $ location {dot} Cards.{dot|snakecase|camelcase} 0 (Static 0)",
+      "{basename|snakecase|camelcase} :: LocationCard {basename}",
+      "{basename|snakecase|camelcase} = symbolLabel $ location {basename} Cards.{basename|snakecase|camelcase} 0 (Static 0)",
       "",
-      "instance HasAbilities {dot} where",
-      "  getAbilities ({dot} a) =",
+      "instance HasAbilities {basename} where",
+      "  getAbilities ({basename} a) =",
       "    extendRevealed a []",
       "",
-      "instance RunMessage {dot} where",
-      "  runMessage msg ({dot} attrs) = runQueueT $ case msg of",
-      "    _ -> {dot} <$> liftRunMessage msg attrs"
+      "instance RunMessage {basename} where",
+      "  runMessage msg ({basename} attrs) = runQueueT $ case msg of",
+      "    _ -> {basename} <$> liftRunMessage msg attrs"
+    ]
+  },
+  "arkham-api/library/Arkham/Location/CardDefs/*.hs": {
+    "type": "locationdefs",
+    "template": [
+      "module Arkham.Location.CardDefs.{dirname|dot}.{basename} where",
+      "",
+      "import Arkham.Location.CardDefs.Import"
     ]
   },
   "arkham-api/library/Arkham/Skill/Cards/*.hs": {
@@ -344,25 +368,33 @@
   },
   "arkham-api/library/Arkham/Story/Cards/*.hs": {
     "type": "story",
-    "alternate": "arkham-api/tests/Arkham/Story/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Story/Cards/{dirname}/{basename}Spec.hs",
     "template": [
-      "module Arkham.Story.Cards.{dot} ({dot|snakecase|camelcase}) where",
+      "module Arkham.Story.Cards.{dirname|dot}.{basename} ({basename|snakecase|camelcase}) where",
       "",
-      "import Arkham.Story.Cards qualified as Cards",
+      "import Arkham.Story.CardDefs.{dirname|dot} qualified as Cards",
       "import Arkham.Story.Import.Lifted",
       "",
-      "newtype {dot} = {dot} StoryAttrs",
+      "newtype {basename} = {basename} StoryAttrs",
       "  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
       "",
-      "{dot|snakecase|camelcase} :: StoryCard {dot}",
-      "{dot|snakecase|camelcase} = story {dot} Cards.{dot|snakecase|camelcase}",
+      "{basename|snakecase|camelcase} :: StoryCard {basename}",
+      "{basename|snakecase|camelcase} = story {basename} Cards.{basename|snakecase|camelcase}",
       "",
-      "instance RunMessage {dot} where",
-      "  runMessage msg s@({dot} attrs) = runQueueT $ case msg of",
+      "instance RunMessage {basename} where",
+      "  runMessage msg s@({basename} attrs) = runQueueT $ case msg of",
       "    ResolveThisStory _ (is attrs -> True) -> do",
       "      pure s",
-      "    _ -> {dot} <$> liftRunMessage msg attrs"
+      "    _ -> {basename} <$> liftRunMessage msg attrs"
+    ]
+  },
+  "arkham-api/library/Arkham/Story/CardDefs/*.hs": {
+    "type": "storydefs",
+    "template": [
+      "module Arkham.Story.CardDefs.{dirname|dot}.{basename} where",
+      "",
+      "import Arkham.Story.CardDefs.Import"
     ]
   },
   "arkham-api/library/Arkham/Homebrew/*/Campaign.hs": {

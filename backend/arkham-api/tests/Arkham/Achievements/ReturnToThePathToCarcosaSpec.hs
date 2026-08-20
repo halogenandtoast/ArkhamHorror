@@ -17,13 +17,17 @@ import Arkham.CampaignLogKey (recorded, toCampaignLogKey)
 import Arkham.CampaignStep (CampaignStep (InterludeStep))
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToTheLastKing qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 import Arkham.Location.Base (LocationAttrs (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToThePallidMask qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Locations
 import Arkham.Placement (Placement (HiddenInHand))
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Treacheries
 import Helpers.Achievements
 import Helpers.UltimatumsAndBoons (Ultimatum (..), withUltimatums)
 import TestImport.New

@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.BoughtInBlood (boughtInBlood) where
 
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheForgottenAge qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype BoughtInBlood = BoughtInBlood TreacheryAttrs

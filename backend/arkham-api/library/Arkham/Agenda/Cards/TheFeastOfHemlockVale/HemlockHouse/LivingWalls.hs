@@ -8,7 +8,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Scenarios.HemlockHouse.Helpers (flipLocationOver, scenarioI18n)
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Stories
 import Arkham.Token (Token (..))
 
 newtype LivingWalls = LivingWalls AgendaAttrs

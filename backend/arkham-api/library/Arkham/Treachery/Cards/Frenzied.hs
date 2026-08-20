@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.Frenzied (frenzied) where
 import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Frenzied = Frenzied TreacheryAttrs

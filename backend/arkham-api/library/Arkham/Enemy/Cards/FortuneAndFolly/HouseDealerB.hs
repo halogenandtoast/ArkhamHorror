@@ -1,0 +1,24 @@
+module Arkham.Enemy.Cards.FortuneAndFolly.HouseDealerB (houseDealerB) where
+
+import Arkham.Enemy.CardDefs.FortuneAndFolly qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Matcher
+
+newtype HouseDealerB = HouseDealerB EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+houseDealerB :: EnemyCard HouseDealerB
+houseDealerB = enemy HouseDealerB Cards.houseDealerB
+
+instance HasModifiersFor HouseDealerB where
+  getModifiersFor (HouseDealerB a) = do
+    when a.ready do
+      abilities <- select $ AbilityOnLocation (locationWithEnemy a) <> not_ BasicAbility
+      eachInvestigator \iid -> do
+        for_ abilities \ab ->
+          modified_ a (AbilityTarget iid ab.ref) [ActionCostModifier 1]
+
+instance RunMessage HouseDealerB where
+  runMessage msg (HouseDealerB attrs) = HouseDealerB <$> runMessage msg attrs

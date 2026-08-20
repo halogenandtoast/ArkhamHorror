@@ -5,7 +5,7 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Story qualified as Story
 import Arkham.Projection
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Stories
 import Arkham.Story.Types (Field (..))
 import TestImport.New
 

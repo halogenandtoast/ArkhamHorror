@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheForgottenAge.ShatteredAeons qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ShatteredAeons qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard, PlaceUnderneath)
 import Arkham.Message.Lifted.Choose

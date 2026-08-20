@@ -1,13 +1,14 @@
 module Arkham.Story.Cards.UnfinishedBusinessSpec (spec) where
 
 import Arkham.DefeatedBy
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Enemies
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection (field)
+import Arkham.Story.CardDefs.ReturnToTheCircleUndone.ReturnToTheWagesOfSin qualified as Stories
+import Arkham.Story.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Stories
 import Arkham.Story.Types (Field (StoryFlipped))
-import Arkham.Story.Cards qualified as Stories
 import Arkham.Window qualified as Window
 import TestImport qualified as TI
 import TestImport.New
@@ -15,7 +16,8 @@ import TestImport.New
 spec :: Spec
 spec = describe "Unfinished Business" $ do
   it "links each story side back to its Heretic enemy side" do
-    map (.otherSide)
+    map
+      (.otherSide)
       [ Stories.unfinishedBusiness_B
       , Stories.unfinishedBusiness_D
       , Stories.unfinishedBusiness_F
@@ -46,7 +48,8 @@ spec = describe "Unfinished Business" $ do
     chooseOnlyOption "flip Unfinished Business back over"
     assert $ selectAny (enemyIs Enemies.heretic_A)
 
-  it "resolves into the defeating investigator's threat area when another investigator clicks the forced ability"
+  it
+    "resolves into the defeating investigator's threat area when another investigator clicks the forced ability"
     $ gameTest
     $ \defeatingInvestigator -> do
       clickingInvestigator <- addInvestigator Investigators.rolandBanks
@@ -89,7 +92,9 @@ spec = describe "Unfinished Business" $ do
       ]
       \(storyCard, storyId) -> do
         card <- genCard storyCard
-        run $ StoryMessage $ ReadStoryWithPlacement (toId investigator) card ResolveIt Nothing (InThreatArea $ toId investigator)
+        run
+          $ StoryMessage
+          $ ReadStoryWithPlacement (toId investigator) card ResolveIt Nothing (InThreatArea $ toId investigator)
 
         field StoryFlipped storyId `shouldReturn` False
         chooseOnlyOption "resolve Unfinished Business"

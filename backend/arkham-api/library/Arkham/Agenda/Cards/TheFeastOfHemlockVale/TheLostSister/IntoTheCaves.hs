@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheFeastOfHemlockVale.TheLostSister.IntoTheCaves (int
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Enemies
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

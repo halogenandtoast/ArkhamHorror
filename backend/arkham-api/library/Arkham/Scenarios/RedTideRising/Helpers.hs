@@ -6,7 +6,7 @@ import Arkham.Classes.Query
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Prelude

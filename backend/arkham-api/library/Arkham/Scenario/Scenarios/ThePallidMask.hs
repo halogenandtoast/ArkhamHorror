@@ -9,7 +9,8 @@ import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
 import Arkham.Distance
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.FlavorText
@@ -18,7 +19,8 @@ import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToThePallidMask qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Choose

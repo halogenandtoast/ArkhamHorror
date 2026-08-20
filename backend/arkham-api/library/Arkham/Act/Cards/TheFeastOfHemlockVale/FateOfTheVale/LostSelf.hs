@@ -8,7 +8,8 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.DayOfTheFeast qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyLocation))
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.FlavorText
@@ -17,7 +18,8 @@ import Arkham.Helpers.Query (getInvestigators, getSetAsideCardMaybe, getSetAside
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (InvestigatorDeck, InvestigatorDiscard, InvestigatorHand))
 import Arkham.Layout
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheVale qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveTo)
@@ -28,7 +30,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenarios.FateOfTheVale.Helpers
 import Arkham.SkillTest
 import Arkham.SkillTestResult
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Stories
 import Arkham.Trait (Trait (Cave, Emissary, Lair))
 import Control.Monad.Extra (findM)
 import Data.List (cycle)

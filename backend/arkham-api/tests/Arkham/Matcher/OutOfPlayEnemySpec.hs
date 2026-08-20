@@ -1,6 +1,6 @@
 module Arkham.Matcher.OutOfPlayEnemySpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheSecretName qualified as Enemies
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Zone

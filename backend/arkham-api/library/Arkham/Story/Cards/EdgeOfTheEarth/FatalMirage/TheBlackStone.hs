@@ -1,0 +1,26 @@
+module Arkham.Story.Cards.EdgeOfTheEarth.FatalMirage.TheBlackStone (theBlackStone) where
+
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Enemies
+import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Locations
+import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
+import Arkham.Story.Import.Lifted
+
+newtype TheBlackStone = TheBlackStone StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theBlackStone :: StoryCard TheBlackStone
+theBlackStone = story TheBlackStone Cards.theBlackStone
+
+instance RunMessage TheBlackStone where
+  runMessage msg s@(TheBlackStone attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      handleMemory
+        attrs
+        Assets.averyClaypoolAntarcticGuide
+        Locations.theBlackStone
+        Enemies.memoryOfATerribleDiscovery
+      pure s
+    _ -> TheBlackStone <$> liftRunMessage msg attrs

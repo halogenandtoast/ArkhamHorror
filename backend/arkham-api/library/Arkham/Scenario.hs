@@ -42,7 +42,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
 import Arkham.Slot
 import Arkham.Tarot
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnTo qualified as Treacheries
 import Arkham.UltimatumsAndBoons (runUltimatumsAndBoonsMessage)
 import Arkham.Window (duringTurnWindow, mkWhen)
 import Arkham.Window qualified as Window

@@ -6,7 +6,7 @@ import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.AncientEvils qualified as Treacheries
 
 newtype TheCityFloods = TheCityFloods AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

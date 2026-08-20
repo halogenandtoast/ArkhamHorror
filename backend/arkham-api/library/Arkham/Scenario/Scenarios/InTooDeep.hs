@@ -8,7 +8,9 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Classes.HasGame
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.AgentsOfCthulhu qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Location (getConnectedLocations, getLocationOf, withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMaybe )
@@ -16,7 +18,8 @@ import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -150,19 +153,19 @@ instance RunMessage InTooDeep where
       desolateCoastline <- placeInGrid (Pos 0 0) Locations.desolateCoastline
       shorewardSlums <- placeInGrid (Pos (-1) 0) Locations.shorewardSlumsInTooDeep
       innsmouthJail <- placeInGrid (Pos (-2) 0) Locations.innsmouthJailInTooDeep
-      gilmanHouse <- placeInGrid (Pos (-3) 0) Locations.gilmanHouseInTooDeep
+      gilmanHouse <- placeInGrid (Pos (-3) 0) Locations.gilmanHouse
       sawboneAlley <- placeInGrid (Pos (-4) 0) Locations.sawboneAlleyInTooDeep
 
       -- middle row
       innsmouthHarbour <- placeInGrid (Pos 0 1) Locations.innsmouthHarbourInTooDeep
-      fishStreetBridge <- placeInGrid (Pos (-1) 1) Locations.fishStreetBridgeInTooDeep
-      innsmouthSquare <- placeInGrid (Pos (-2) 1) Locations.innsmouthSquareInTooDeep
-      firstNationalGrocery <- placeInGrid (Pos (-3) 1) Locations.firstNationalGroceryInTooDeep
-      theLittleBookshop <- placeInGrid (Pos (-4) 1) Locations.theLittleBookshopInTooDeep
+      fishStreetBridge <- placeInGrid (Pos (-1) 1) Locations.fishStreetBridge
+      innsmouthSquare <- placeInGrid (Pos (-2) 1) Locations.innsmouthSquare
+      firstNationalGrocery <- placeInGrid (Pos (-3) 1) Locations.firstNationalGrocery
+      theLittleBookshop <- placeInGrid (Pos (-4) 1) Locations.theLittleBookshop
 
       -- top row
       theHouseOnWaterStreet <- placeInGrid (Pos 0 2) Locations.theHouseOnWaterStreetInTooDeep
-      marshRefinery <- placeInGrid (Pos (-1) 2) Locations.marshRefineryInTooDeep
+      marshRefinery <- placeInGrid (Pos (-1) 2) Locations.marshRefinery
       newChurchGreen <- placeInGrid (Pos (-2) 2) Locations.newChurchGreenInTooDeep
       esotericOrderOfDagon <- placeInGrid (Pos (-3) 2) Locations.esotericOrderOfDagonInTooDeep
       railroadStation <- placeInGrid (Pos (-4) 2) Locations.railroadStation

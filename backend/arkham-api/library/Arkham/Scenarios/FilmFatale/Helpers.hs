@@ -1,7 +1,7 @@
 module Arkham.Scenarios.FilmFatale.Helpers where
 
 import Arkham.Classes.Query
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.FilmFatale qualified as Enemies
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id

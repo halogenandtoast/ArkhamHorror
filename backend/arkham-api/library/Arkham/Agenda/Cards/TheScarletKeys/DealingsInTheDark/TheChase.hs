@@ -7,7 +7,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as ScarletKeys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Query (inTurnOrder)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier

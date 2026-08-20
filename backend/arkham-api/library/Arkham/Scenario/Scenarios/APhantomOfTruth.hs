@@ -6,14 +6,17 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import Arkham.Helpers.Doom
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToAPhantomOfTruth qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -22,7 +25,11 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Trait (Trait (Byakhee))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnToThePathToCarcosa.ReturnToAPhantomOfTruth qualified as Treacheries
+import Arkham.Treachery.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Treacheries
+import Arkham.Treachery.CardDefs.ThePathToCarcosa.EvilPortents qualified as Treacheries
 
 newtype APhantomOfTruth = APhantomOfTruth ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

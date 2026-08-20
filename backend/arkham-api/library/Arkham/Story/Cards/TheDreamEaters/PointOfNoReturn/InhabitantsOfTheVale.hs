@@ -1,0 +1,42 @@
+module Arkham.Story.Cards.TheDreamEaters.PointOfNoReturn.InhabitantsOfTheVale (InhabitantsOfTheVale (..), inhabitantsOfTheVale) where
+
+import Arkham.Card
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
+import Arkham.Enemy.Creation
+import Arkham.Helpers.Message qualified as Msg
+import Arkham.Location.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Locations
+import Arkham.Matcher
+import Arkham.Source
+import Arkham.Story.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Cards
+import Arkham.Story.Import.Lifted
+
+newtype InhabitantsOfTheVale = InhabitantsOfTheVale StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+inhabitantsOfTheVale :: StoryCard InhabitantsOfTheVale
+inhabitantsOfTheVale = story InhabitantsOfTheVale Cards.inhabitantsOfTheVale
+
+instance RunMessage InhabitantsOfTheVale where
+  runMessage msg s@(InhabitantsOfTheVale attrs) = runQueueT $ case msg of
+    ResolveThisStory iid (is attrs -> True) -> do
+      peaksOfThok <- selectJust $ locationIs Locations.peaksOfThok
+      findEncounterCard iid attrs (cardIs Enemies.huntingNightgaunt)
+
+      selectEach (investigatorAt peaksOfThok) $ \iid' -> do
+        mDrawing <- Msg.drawCardsIfCan iid' attrs 2
+        for_ mDrawing $ \drawing -> chooseOne iid' [Label "$label.doNotDrawTwoCards" [], Label "$label.drawTwoCards" [drawing]]
+
+      push $ DoStep 1 msg
+      pure s
+    FoundEncounterCard _ target ec | isTarget attrs target -> do
+      valeOfPnath <- selectJust $ locationIs Locations.valeOfPnath
+      createEnemyWith_ (toCard ec) valeOfPnath createExhausted
+      pure s
+    DoStep 1 (ResolveThisStory iid (is attrs -> True)) -> do
+      enemies <- select AnyEnemy
+      chooseOne
+        iid
+        [targetLabel enemy [PlaceClues (toSource attrs) (toTarget enemy) 2] | enemy <- enemies]
+      pure s
+    _ -> InhabitantsOfTheVale <$> liftRunMessage msg attrs

@@ -3,7 +3,7 @@ module Arkham.Act.Cards.ReturnToTheCircleUndone.ReturnToUnionAndDisillusion.Beyo
 import Arkham.Ability
 import Arkham.Act.CardDefs.ReturnToTheCircleUndone.ReturnToUnionAndDisillusion qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWitchingHour qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query (getJustLocationByName)
 import Arkham.Helpers.SkillTest (withSkillTest)

@@ -6,7 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BadBlood qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import Arkham.Exception
 import {-# SOURCE #-} Arkham.GameEnv (findCard)
@@ -16,7 +16,8 @@ import Arkham.Helpers.SkillTest (getSkillTestInvestigator, withSkillTest)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locations
 import Arkham.Location.Types (Field (..), Location, locationPlacedChaosTokens)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -27,7 +28,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.BadBlood.Helpers
 import Arkham.Scenarios.BadBlood.Meta
 import Arkham.Token (Token (Memory), countTokens)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
 import Arkham.Window qualified as Window
 import Arkham.Xp
 

@@ -1,9 +1,9 @@
 module Arkham.Enemy.Cards.Golem (golem) where
 
+import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Campaigns.TheScarletKeys.Helpers
 
 newtype Golem = Golem EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -13,7 +13,7 @@ golem :: EnemyCard Golem
 golem = enemy Golem Cards.golem
 
 instance RunMessage Golem where
-  runMessage msg e@(Golem attrs) = runQueueT $ case msg of 
+  runMessage msg e@(Golem attrs) = runQueueT $ case msg of
     Do (Defeated (EnemyTarget eid) _ _ _) | eid == attrs.id -> do
       removeFromGame attrs
       case toCard attrs of

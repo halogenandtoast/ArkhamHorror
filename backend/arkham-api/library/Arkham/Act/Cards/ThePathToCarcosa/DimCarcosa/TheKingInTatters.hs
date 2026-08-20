@@ -3,7 +3,7 @@ module Arkham.Act.Cards.ThePathToCarcosa.DimCarcosa.TheKingInTatters (theKingInT
 import Arkham.Ability
 import Arkham.Act.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 import Arkham.Helpers.Location
 import Arkham.Matcher
 

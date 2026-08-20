@@ -4,9 +4,10 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Enemies
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 

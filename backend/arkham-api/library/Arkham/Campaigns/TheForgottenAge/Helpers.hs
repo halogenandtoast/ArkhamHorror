@@ -11,7 +11,8 @@ import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Draw.Types
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreation)
 import Arkham.Helpers.Card
 import Arkham.Helpers.Location (getLocationOf, toConnections)
@@ -48,7 +49,8 @@ import Arkham.SkillType (SkillType)
 import Arkham.Source
 import Arkham.Target
 import Arkham.Text (Tooltip (..))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnToTheForgottenAge.ReturnToTheDepthsOfYoth qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Arkham.Window (Result (..), mkAfter)
 import Arkham.Window qualified as Window
 

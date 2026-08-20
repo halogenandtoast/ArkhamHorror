@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.DreadCurse (dreadCurse, DreadCurse (..)) where
 
 import Arkham.Helpers.ChaosBag
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype DreadCurse = DreadCurse TreacheryAttrs

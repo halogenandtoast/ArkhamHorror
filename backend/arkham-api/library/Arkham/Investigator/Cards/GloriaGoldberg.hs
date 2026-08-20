@@ -17,7 +17,7 @@ import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Strategy
 import Arkham.Trait (Trait (Elite))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Treacheries
 
 newtype GloriaGoldberg = GloriaGoldberg InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)

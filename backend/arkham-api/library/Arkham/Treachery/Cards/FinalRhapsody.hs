@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.FinalRhapsody (finalRhapsody) where
 
 import Arkham.ChaosToken
 import Arkham.Message.Lifted.Choose
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDunwichLegacy qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype FinalRhapsody = FinalRhapsody TreacheryAttrs

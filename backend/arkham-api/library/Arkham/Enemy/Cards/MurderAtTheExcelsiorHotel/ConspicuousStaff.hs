@@ -1,0 +1,30 @@
+module Arkham.Enemy.Cards.MurderAtTheExcelsiorHotel.ConspicuousStaff (
+  conspicuousStaff,
+  ConspicuousStaff (..),
+)
+where
+
+import Arkham.Prelude
+
+import Arkham.Classes
+import Arkham.Enemy.CardDefs.MurderAtTheExcelsiorHotel qualified as Cards
+import Arkham.Enemy.Runner
+import Arkham.Matcher
+import Arkham.Trait (Trait (CrimeScene))
+
+newtype ConspicuousStaff = ConspicuousStaff EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+conspicuousStaff :: EnemyCard ConspicuousStaff
+conspicuousStaff =
+  enemyWith
+    ConspicuousStaff
+    Cards.conspicuousStaff
+    ( (preyL .~ Prey MostClues)
+        . (spawnAtL ?~ SpawnAt (NearestLocationToYou $ LocationWithTrait CrimeScene))
+    )
+
+instance RunMessage ConspicuousStaff where
+  runMessage msg (ConspicuousStaff attrs) =
+    ConspicuousStaff <$> runMessage msg attrs

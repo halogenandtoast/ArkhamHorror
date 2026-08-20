@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.EctoplasmicHorror (ectoplasmicHorror) where
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheScarletKeys qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Slot
 import Arkham.Investigator.Types (Field (..))

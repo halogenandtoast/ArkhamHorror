@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.Haunted (haunted) where
 import Arkham.Ability hiding (Haunted, haunted)
 import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.SkillType
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Haunted = Haunted TreacheryAttrs

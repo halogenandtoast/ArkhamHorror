@@ -28,7 +28,9 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Game.Base
 import Arkham.Helpers.Campaign (stored)
@@ -42,7 +44,7 @@ import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Target
 import Arkham.Trait (Trait (Serpent))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Data.Aeson.Key qualified as Key
 
 runForgottenAgeAchievements
@@ -79,7 +81,6 @@ runForgottenAgeAchievements msg = whenEligibleCampaign $ case msg of
   -- "Who Needs Any of This Junk?" bookkeeping: purchasing a supply (at the
   -- prologue or a Resupply Point) pushes PickSupply.
   PickSupply _ _ -> setStore boughtSupplyKey True
-
   -- "Scenario 5-What?": skip Heart of the Elders, Part 1. There is no record
   -- for the skip; Part 1's setup short-circuits (pushing R1 with no play) when
   -- 6 paths are already known. Detect that condition at Part 1 setup. Only the

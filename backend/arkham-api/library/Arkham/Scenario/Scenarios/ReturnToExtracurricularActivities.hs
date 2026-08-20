@@ -4,10 +4,12 @@ import Arkham.Act.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheDunwichLegacy.ReturnToExtracurricularActivities qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Enemies
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.FlavorText
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToExtracurricularActivities qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Locations
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.ExtracurricularActivity
 import Arkham.Scenarios.ExtracurricularActivity.Helpers

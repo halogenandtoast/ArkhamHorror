@@ -1,9 +1,9 @@
 module Arkham.Treachery.Cards.BreakingPoint (breakingPoint) where
 
-import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Import.Lifted
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Treachery.CardDefs.Core2026 qualified as Cards
+import Arkham.Treachery.Import.Lifted
 
 newtype BreakingPoint = BreakingPoint TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

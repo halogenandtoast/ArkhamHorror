@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qual
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword (Keyword (Aloof))

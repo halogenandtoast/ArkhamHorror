@@ -1,7 +1,9 @@
 module Arkham.Asset.Assets.ScryingSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Ghouls qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Enemies
 import Arkham.Helpers.Scenario
 import Arkham.Scenario.Types (Field (..))
 import TestImport.New

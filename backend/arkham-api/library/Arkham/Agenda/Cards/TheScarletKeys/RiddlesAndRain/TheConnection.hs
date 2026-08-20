@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheScarletKeys.RiddlesAndRain.TheConnection (theConne
 import Arkham.Agenda.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.CrimsonConspiracy qualified as Enemies
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

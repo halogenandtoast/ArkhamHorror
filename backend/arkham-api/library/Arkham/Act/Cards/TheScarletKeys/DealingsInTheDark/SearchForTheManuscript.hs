@@ -5,7 +5,8 @@ import Arkham.Act.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.ChaosToken.Types
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.AgentsOfYuggoth qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.I18n

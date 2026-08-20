@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.YourWorstNightmare (yourWorstNightmare) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher

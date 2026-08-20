@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.RedTideRising.TheNewGirl (theNewGirl) where
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.RedTideRising qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
 import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)

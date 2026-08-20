@@ -1,0 +1,37 @@
+module Arkham.Location.Cards.BrethrenOfAsh.QueenOfAsh.SluiceControl (sluiceControl) where
+
+import Arkham.Ability
+import Arkham.GameValue
+import Arkham.Helpers.Message (pattern R3)
+import Arkham.Location.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Cards (sluiceControl)
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose (chooseBeginSkillTest)
+
+newtype SluiceControl = SluiceControl LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+sluiceControl :: LocationCard SluiceControl
+sluiceControl =
+  locationWith SluiceControl Cards.sluiceControl 4 (PerPlayer 2)
+    $ costToEnterUnrevealedL
+    .~ GroupClueCost (PerPlayer 1) Anywhere
+
+instance HasAbilities SluiceControl where
+  getAbilities (SluiceControl a) =
+    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
+
+instance RunMessage SluiceControl where
+  runMessage msg l@(SluiceControl attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      chooseBeginSkillTest sid iid (attrs.ability 1) iid [#combat, #agility] (Fixed 5)
+      pure l
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      enemies <- select AnyEnemy
+      withoutRunWindows do
+        for_ enemies \eid -> defeatEnemy eid iid (attrs.ability 1)
+      push R3
+      pure l
+    _ -> SluiceControl <$> liftRunMessage msg attrs

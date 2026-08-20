@@ -1,0 +1,14 @@
+module Arkham.Enemy.Cards.TheDrownedCity.OneLastJob.GangSoldier (gangSoldier) where
+
+import Arkham.Enemy.CardDefs.TheDrownedCity.OneLastJob qualified as Cards
+import Arkham.Enemy.Import.Lifted
+
+newtype GangSoldier = GangSoldier EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+gangSoldier :: EnemyCard GangSoldier
+gangSoldier = enemy GangSoldier Cards.gangSoldier
+
+instance RunMessage GangSoldier where
+  runMessage msg (GangSoldier attrs) = runQueueT $ GangSoldier <$> liftRunMessage msg attrs

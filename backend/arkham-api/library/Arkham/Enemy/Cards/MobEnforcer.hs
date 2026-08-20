@@ -1,7 +1,7 @@
 module Arkham.Enemy.Cards.MobEnforcer (mobEnforcer) where
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot qualified as Cards
 import Arkham.Enemy.Import.Lifted
 
 newtype MobEnforcer = MobEnforcer EnemyAttrs

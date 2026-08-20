@@ -6,7 +6,7 @@ import Arkham.EnemyLocation.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Stories
 
 newtype LivingBedroomHemlockHouse34 = LivingBedroomHemlockHouse34 EnemyLocationAttrs
   deriving anyclass IsEnemyLocation

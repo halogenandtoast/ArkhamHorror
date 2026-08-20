@@ -5,12 +5,12 @@ import Arkham.Act.CardDefs.FilmFatale qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.FilmFatale qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword (Keyword (Aloof))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.FilmFatale qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message.Lifted.Choose

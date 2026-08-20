@@ -3,14 +3,14 @@ module Arkham.Asset.Assets.BrainCase (brainCase) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheBlobThatAteEverything qualified as Enemies
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (remember)
 import Arkham.Placement (Placement (AtLocation, AttachedToEnemy, AttachedToLocation))
 import Arkham.ScenarioLogKey (ScenarioLogKey (TheBrainWasTaken))
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheBlobThatAteEverything qualified as Stories
 
 newtype BrainCase = BrainCase AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

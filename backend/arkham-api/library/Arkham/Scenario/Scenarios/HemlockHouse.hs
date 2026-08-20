@@ -21,7 +21,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message (pattern AfterSkillTest)
@@ -34,9 +34,10 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.HemlockHouse.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Stories
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.Fire qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Treacheries
 
 newtype HemlockHouse = HemlockHouse ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

@@ -1,6 +1,6 @@
 module Arkham.Enemy.EngagementSpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Cards
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher qualified as Matcher

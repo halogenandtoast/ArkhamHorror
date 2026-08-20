@@ -9,13 +9,14 @@ import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheSecretName qualified as Enemies
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToTheSecretName qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -25,7 +26,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheSecretName.Helpers
 import Arkham.Trait (Trait (Extradimensional))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.TheSecretName qualified as Treacheries
 import Arkham.Zone
 
 newtype TheSecretName = TheSecretName ScenarioAttrs

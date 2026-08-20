@@ -3,8 +3,9 @@ module Arkham.Act.Cards.BrethrenOfAsh.SpreadingFlames.EscapeTheDorms (escapeTheD
 import Arkham.Ability
 import Arkham.Act.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Enemies
+import Arkham.Location.CardDefs.BrethrenOfAsh.MiskatonicUniversity qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 
@@ -20,7 +21,7 @@ instance HasAbilities EscapeTheDorms where
     [ restricted
         a
         1
-        (EachUndefeatedInvestigator $ at_ $ locationIs Locations.miskatonicQuad_MiskatonicUniversity)
+        (EachUndefeatedInvestigator $ at_ $ locationIs Locations.miskatonicQuad)
         $ Objective
         $ forced AnyWindow
     ]
@@ -47,9 +48,9 @@ instance RunMessage EscapeTheDorms where
       selectEach (locationIs Locations.yourFriendsRoom) removeLocation
 
       placeSetAsideLocations_
-        [ Locations.orneLibrary_MiskatonicUniversity
+        [ Locations.orneLibrary
         , Locations.scienceHall
-        , Locations.warrenObservatory_MiskatonicUniversity
+        , Locations.warrenObservatory
         ]
 
       advanceActDeck attrs

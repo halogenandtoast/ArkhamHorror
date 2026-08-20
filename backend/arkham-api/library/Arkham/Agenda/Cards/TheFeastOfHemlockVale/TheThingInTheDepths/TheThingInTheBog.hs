@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheFeastOfHemlockVale.TheThingInTheDepths.TheThingInT
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified as Enemies
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Matcher

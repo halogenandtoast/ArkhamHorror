@@ -4,16 +4,16 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheSecretName qualified as Enemies
 import Arkham.Helpers.Act
 import Arkham.Helpers.Card
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getPlayerCount, getSetAsideCard, getSetAsideCardsMatching)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.TheSecretName qualified as Treacheries
 
 newtype TheFamiliar = TheFamiliar AgendaAttrs
   deriving anyclass IsAgenda

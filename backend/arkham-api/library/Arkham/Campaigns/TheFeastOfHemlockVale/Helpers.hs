@@ -41,7 +41,9 @@ import Arkham.Scenario.Setup (ScenarioBuilderT)
 import Arkham.Scenario.Types (Field (ScenarioCounts))
 import Arkham.ScenarioLogKey (ScenarioCountKey (HemlockStandaloneDay, HemlockStandaloneNight))
 import Arkham.Source
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheFinalDay qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheFirstDay qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheSecondDay qualified as Stories
 import Arkham.Target
 import Arkham.Trait (Trait (Dark))
 import Data.Monoid (First (..))

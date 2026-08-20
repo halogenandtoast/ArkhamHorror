@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheForgottenAge.ShatteredAeons qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (InvestigatorEliminated)
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Enemy.CardDefs.TheForgottenAge.ShatteredAeons qualified as Enemies
+import Arkham.Location.CardDefs.TheForgottenAge.ShatteredAeons qualified as Locations
 import Arkham.Matcher
 
 newtype PendulousThreads = PendulousThreads AgendaAttrs

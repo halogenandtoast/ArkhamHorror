@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheLabyrinthsOfLunacy qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.DamageEffect (nonAttack)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheLabyrinthsOfLunacy qualified as Enemies
 import Arkham.Matcher
 import Arkham.Trait (Trait (Distortion))
 

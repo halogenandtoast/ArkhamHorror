@@ -25,7 +25,7 @@ import Arkham.Classes.Query
 import Arkham.Criteria
 import Arkham.Difficulty qualified as Difficulty
 import Arkham.Effect.Window
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Enemies
 import Arkham.Helpers.Campaign (getCampaignMeta, getCampaignStoryCards)
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (allInvestigators)

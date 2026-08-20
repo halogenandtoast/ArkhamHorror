@@ -26,7 +26,11 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.Whippoorwills qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Base
 import Arkham.Game.Settings (activeUltimatumsAndBoons)
@@ -41,7 +45,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy.Sorcery qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 

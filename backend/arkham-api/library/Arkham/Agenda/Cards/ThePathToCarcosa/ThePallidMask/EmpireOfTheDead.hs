@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.ThePathToCarcosa.ThePallidMask.EmpireOfTheDead (empir
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Enemies
 import Arkham.Helpers.Query
 
 newtype EmpireOfTheDead = EmpireOfTheDead AgendaAttrs

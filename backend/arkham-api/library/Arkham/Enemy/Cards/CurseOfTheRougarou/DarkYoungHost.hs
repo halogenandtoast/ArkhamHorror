@@ -1,0 +1,41 @@
+module Arkham.Enemy.Cards.CurseOfTheRougarou.DarkYoungHost (darkYoungHost) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.CurseOfTheRougarou qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Location
+import Arkham.Matcher
+import Arkham.Trait
+import Arkham.Window (Window (..))
+import Arkham.Window qualified as Window
+
+newtype DarkYoungHost = DarkYoungHost EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+darkYoungHost :: EnemyCard DarkYoungHost
+darkYoungHost =
+  enemy DarkYoungHost Cards.darkYoungHost
+    & setSpawnAt (LocationWithTrait Bayou)
+
+instance HasAbilities DarkYoungHost where
+  getAbilities (DarkYoungHost a) =
+    extend
+      a
+      [ groupLimit PerDepthLevel
+          $ restricted a 1 (prohibit $ getEnemyMetaDefault False a)
+          $ forced
+          $ PlacedCounterOnLocation #when (locationWithEnemy a) AnySource #clue (atLeast 1)
+      , mkAbility a 2 $ forced $ EnemyDefeated #when Anyone ByAny (be a)
+      ]
+
+instance RunMessage DarkYoungHost where
+  runMessage msg e@(DarkYoungHost attrs) = runQueueT $ case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 [windowType -> Window.PlacedClues _ target n] _ -> do
+      removeClues (attrs.ability 1) target n
+      placeClues (attrs.ability 1) attrs n
+      pure e
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      withLocationOf attrs \loc -> moveAllTokens (attrs.ability 2) attrs loc #clue
+      pure $ DarkYoungHost $ attrs & setMeta True
+    _ -> DarkYoungHost <$> liftRunMessage msg attrs

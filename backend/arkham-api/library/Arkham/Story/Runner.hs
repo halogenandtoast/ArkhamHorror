@@ -23,7 +23,7 @@ import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
 import Arkham.Metrics (withMetric)
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Token (subtractTokens, Token(Clue))
+import Arkham.Token (Token (Clue), subtractTokens)
 import Control.Lens (non)
 
 afterStoryResolution :: HasQueue Message m => StoryAttrs -> [Message] -> m ()

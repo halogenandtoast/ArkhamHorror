@@ -8,13 +8,14 @@ import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
 import Arkham.Campaigns.TheForgottenAge.Helpers (ExploreRule (PlaceExplored), explore)
 import Arkham.Card (toCardCode)
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.GuardiansOfTheAbyss.SandsOfEgypt qualified as Locations
+import Arkham.Location.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
@@ -23,7 +24,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheNightsUsurper.Helpers
 import Arkham.SkillType
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.GuardiansOfTheAbyss.SandsOfEgypt qualified as Treacheries
 import Arkham.Window qualified as Window
 
 newtype TheNightsUsurper = TheNightsUsurper ScenarioAttrs
@@ -97,7 +98,7 @@ instance RunMessage TheNightsUsurper where
       setAgendaDeck [Agendas.theBrotherhoodBidesTheirTime, Agendas.schemesInTheDarkBeyond]
       setActDeck [Acts.searchForTheGate, Acts.intoTheGate, Acts.theNightsUsurper]
 
-      startAt =<< place Locations.expeditionCampGuardiansOfTheAbyss
+      startAt =<< place Locations.expeditionCamp
 
       setAside
         [ Assets.khopeshOfTheAbyss

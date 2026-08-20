@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.EnthrallingEncore qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EnthrallingEncore qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck

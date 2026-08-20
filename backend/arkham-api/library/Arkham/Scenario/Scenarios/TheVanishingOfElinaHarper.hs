@@ -8,13 +8,13 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Story (StoryMessage(..))
 import Arkham.Message.Lifted.Choose
@@ -24,8 +24,9 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
-import Arkham.Story.Cards qualified as Stories
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Story.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Stories
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 
 newtype TheVanishingOfElinaHarper = TheVanishingOfElinaHarper ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -113,7 +114,7 @@ instance RunMessage TheVanishingOfElinaHarper where
         , Assets.elinaHarperKnowsTooMuch
         , Enemies.huntingNightgaunt
         , Enemies.huntingNightgaunt
-        , Enemies.wingedOneFogOverInnsmouth
+        , Enemies.wingedOne
         ]
 
       findingAgentHarper <- genCard Stories.findingAgentHarper

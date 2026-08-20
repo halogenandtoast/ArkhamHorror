@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Source
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDunwichLegacy qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype WrackedByNightmares = WrackedByNightmares TreacheryAttrs

@@ -5,7 +5,8 @@ import Arkham.Act.Types (Field (ActResources))
 import Arkham.Agenda.CardDefs.AllOrNothing qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.AllOrNothing qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
@@ -13,7 +14,8 @@ import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (
   Field (InvestigatorClues, InvestigatorName, InvestigatorResources),
  )
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheHouseAlwaysWins qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -24,7 +26,9 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.AllOrNothing.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
+import Arkham.Treachery.CardDefs.Standalone qualified as Treacheries
 
 {- FOURMOLU_DISABLE -}
 easyTokens, standardTokens, hardTokens, expertTokens :: [ChaosTokenFace]

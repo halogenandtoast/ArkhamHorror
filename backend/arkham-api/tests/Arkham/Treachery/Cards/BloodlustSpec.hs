@@ -5,7 +5,7 @@ import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Matcher (TreacheryMatcher (TreacheryIsAttachedTo), assetIs, treacheryIs)
 import Arkham.Projection
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import TestImport.New
 

@@ -10,7 +10,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype SmiteTheWickedAdvanced = SmiteTheWickedAdvanced TreacheryAttrs

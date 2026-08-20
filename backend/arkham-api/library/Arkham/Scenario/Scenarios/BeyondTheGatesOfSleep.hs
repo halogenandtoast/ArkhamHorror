@@ -10,7 +10,7 @@ import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Query
@@ -20,7 +20,7 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Label (mkLabel)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log

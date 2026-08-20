@@ -6,11 +6,11 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.FilmFatale qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Scenario
 import Arkham.Keyword (Keyword (Alert))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.FilmFatale qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement

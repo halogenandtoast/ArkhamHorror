@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Acts
 import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Enemies
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 

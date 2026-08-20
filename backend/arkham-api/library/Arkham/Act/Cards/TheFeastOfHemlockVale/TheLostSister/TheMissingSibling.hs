@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Scenario (getScenarioDeck)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

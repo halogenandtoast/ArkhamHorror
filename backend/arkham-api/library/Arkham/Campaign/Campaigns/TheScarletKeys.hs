@@ -13,7 +13,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Meta hiding (MapLocationType (..))
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators, getLead, getLeadPlayer)
 import Arkham.Helpers.Xp
@@ -26,7 +26,7 @@ import Arkham.Question
 import Arkham.SideStory
 import Arkham.Source
 import Arkham.Trait (Trait (Drifter))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheScarletKeys.Globetrotting qualified as Treacheries
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.Types (Pair)
 import Data.Map.Strict qualified as Map

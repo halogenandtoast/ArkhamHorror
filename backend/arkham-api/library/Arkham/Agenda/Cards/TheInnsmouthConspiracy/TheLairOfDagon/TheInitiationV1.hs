@@ -7,7 +7,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait (Trait (Cultist, Suspect, ThirdFloor))
 

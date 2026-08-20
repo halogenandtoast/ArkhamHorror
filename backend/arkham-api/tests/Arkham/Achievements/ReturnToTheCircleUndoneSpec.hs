@@ -14,7 +14,8 @@ import Arkham.CampaignLogKey (recorded, toCampaignLogKey)
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.SilverTwilightLodge qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Enemies
 import Arkham.Message
 import Arkham.Source
 import Helpers.Achievements

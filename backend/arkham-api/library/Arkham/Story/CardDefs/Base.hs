@@ -36,3 +36,14 @@ story cardCode name encounterSet =
     , cdDoubleSided = False
     , cdLevel = Nothing
     }
+
+victory :: Int -> CardDef -> CardDef
+victory n def = def {cdVictoryPoints = Just n}
+
+cthulhuDeckBack :: Map Text Value
+cthulhuDeckBack = mapFromList [("customBack", String "back_cthulhu_deck.jpg")]
+
+-- | The quantity is the number of copies in the 18-card Cthulhu deck.
+cthulhuDeckCard :: CardCode -> Name -> Int -> EncounterSet -> CardDef
+cthulhuDeckCard cCode name quantity encounterSet =
+  (story cCode name encounterSet) {cdMeta = cthulhuDeckBack, cdEncounterSetQuantity = Just quantity}

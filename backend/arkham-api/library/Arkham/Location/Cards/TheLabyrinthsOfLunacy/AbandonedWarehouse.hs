@@ -1,0 +1,14 @@
+module Arkham.Location.Cards.TheLabyrinthsOfLunacy.AbandonedWarehouse (abandonedWarehouse) where
+
+import Arkham.Location.CardDefs.TheLabyrinthsOfLunacy qualified as Cards
+import Arkham.Location.Import.Lifted
+
+newtype AbandonedWarehouse = AbandonedWarehouse LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+abandonedWarehouse :: LocationCard AbandonedWarehouse
+abandonedWarehouse = location AbandonedWarehouse Cards.abandonedWarehouse 3 (PerPlayer 2)
+
+instance RunMessage AbandonedWarehouse where
+  runMessage msg (AbandonedWarehouse attrs) = AbandonedWarehouse <$> runMessage msg attrs

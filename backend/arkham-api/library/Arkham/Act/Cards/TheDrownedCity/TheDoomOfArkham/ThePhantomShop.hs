@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement

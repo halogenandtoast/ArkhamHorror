@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Enemies
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Matcher
 import Arkham.Scenarios.SepulchreOfTheSleeper.Helpers

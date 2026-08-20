@@ -10,7 +10,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message.Lifted.CreateEnemy
 import Arkham.Placement
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype WheresPa = WheresPa TreacheryAttrs

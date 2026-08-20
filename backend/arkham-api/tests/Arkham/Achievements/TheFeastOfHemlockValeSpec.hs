@@ -17,7 +17,11 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers qualified as Hemlock
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.DamageEffect (nonAttack)
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheSilentHeath qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified as Enemies
 import Arkham.Investigator.Cards qualified as Investigators
 import Helpers.Achievements
 import Helpers.UltimatumsAndBoons (Ultimatum (..), withUltimatums)

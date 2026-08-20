@@ -1,11 +1,11 @@
 module Arkham.Treachery.Cards.ShockingDiscoverySpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Cards
 import Arkham.Investigator.Cards (mandyThompson)
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

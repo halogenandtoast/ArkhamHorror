@@ -1,0 +1,39 @@
+module Arkham.Enemy.Cards.TheScarletKeys.RedCoterie.TheRedGlovedManPurposeUnknown (theRedGlovedManPurposeUnknown) where
+
+import Arkham.Ability
+import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
+import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Placement
+
+newtype TheRedGlovedManPurposeUnknown = TheRedGlovedManPurposeUnknown EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theRedGlovedManPurposeUnknown :: EnemyCard TheRedGlovedManPurposeUnknown
+theRedGlovedManPurposeUnknown =
+  enemy
+    TheRedGlovedManPurposeUnknown
+    Cards.theRedGlovedManPurposeUnknown
+
+instance HasAbilities TheRedGlovedManPurposeUnknown where
+  getAbilities (TheRedGlovedManPurposeUnknown a) =
+    extend1 a
+      $ restricted a 1 (thisExists a $ oneOf [EnemyWithAnyScarletKey, EnemyCanAttack You])
+      $ forced
+      $ CampaignEvent #after (Just You) "stabilizedKey"
+
+instance RunMessage TheRedGlovedManPurposeUnknown where
+  runMessage msg e@(TheRedGlovedManPurposeUnknown attrs) = runQueueT $ case msg of
+    InvestigatorDrawEnemy _ eid | eid == attrs.id -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToEnemy attrs.id)
+      TheRedGlovedManPurposeUnknown <$> liftRunMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      initiateEnemyAttack attrs (attrs.ability 1) iid
+      skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)
+      chooseOneAtATimeM iid $ targets skeys shift
+      pure e
+    _ -> TheRedGlovedManPurposeUnknown <$> liftRunMessage msg attrs

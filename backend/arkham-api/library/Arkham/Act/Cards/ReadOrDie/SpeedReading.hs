@@ -7,7 +7,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection

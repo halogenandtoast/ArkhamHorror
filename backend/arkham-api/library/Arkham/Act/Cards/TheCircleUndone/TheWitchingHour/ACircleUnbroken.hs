@@ -3,9 +3,9 @@ module Arkham.Act.Cards.TheCircleUndone.TheWitchingHour.ACircleUnbroken (aCircle
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheCircleUndone.TheWitchingHour qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWitchingHour qualified as Enemies
 import Arkham.Helpers.Modifiers
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheWitchingHour qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection

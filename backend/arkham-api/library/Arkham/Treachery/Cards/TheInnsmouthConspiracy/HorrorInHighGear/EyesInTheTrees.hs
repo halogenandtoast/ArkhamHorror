@@ -1,0 +1,44 @@
+module Arkham.Treachery.Cards.TheInnsmouthConspiracy.HorrorInHighGear.EyesInTheTrees (eyesInTheTrees, EyesInTheTrees (..)) where
+
+import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.I18n
+import Arkham.Investigator.Types (Field (InvestigatorPlacement))
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Placement
+import Arkham.Projection
+import Arkham.Scenarios.HorrorInHighGear.Helpers (scenarioI18n)
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype EyesInTheTrees = EyesInTheTrees TreacheryAttrs
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+eyesInTheTrees :: TreacheryCard EyesInTheTrees
+eyesInTheTrees = treachery EyesInTheTrees Cards.eyesInTheTrees
+
+instance RunMessage EyesInTheTrees where
+  runMessage msg t@(EyesInTheTrees attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
+      revelationSkillTest sid iid attrs #willpower (Fixed 4)
+      pure t
+    FailedSkillTest iid _ (isSource attrs -> True) target@SkillTestInitiatorTarget {} sType n -> do
+      field InvestigatorPlacement iid >>= \case
+        InVehicle aid -> do
+          selectEach (InVehicleMatching $ AssetWithId aid) \iid' ->
+            doStep n (FailedSkillTest iid' Nothing (toSource attrs) target sType n)
+        _ -> doStep n msg
+      pure t
+    DoStep n (FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
+      assets <- select $ assetControlledBy iid <> DiscardableAsset
+      cards <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
+
+      chooseOneM iid do
+        when cards do
+          withI18n $ countVar n $ labeledI "discardCardsFromHand" $ chooseAndDiscardCards iid attrs n
+        when (notNull assets) do
+          scenarioI18n $ labeled' "discardAsset" $ chooseTargetM iid assets $ toDiscardBy iid attrs
+      pure t
+    _ -> EyesInTheTrees <$> liftRunMessage msg attrs

@@ -4,8 +4,8 @@ import Arkham.Act.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as ScarletKeys
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Enemy.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Enemies
+import Arkham.Location.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
 

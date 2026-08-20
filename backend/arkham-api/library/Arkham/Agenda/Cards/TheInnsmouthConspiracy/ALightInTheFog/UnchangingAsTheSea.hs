@@ -5,17 +5,17 @@ import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Ac
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Investigator.Types (Field (InvestigatorKeys))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Scenarios.ALightInTheFog.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Treacheries
 
 newtype UnchangingAsTheSea = UnchangingAsTheSea AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

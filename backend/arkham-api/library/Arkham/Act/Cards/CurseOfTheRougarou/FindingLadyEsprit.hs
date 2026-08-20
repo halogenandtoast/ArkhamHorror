@@ -6,14 +6,14 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.CurseOfTheRougarou qualified as Enemies
 import Arkham.Helpers.EncounterSet
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.CurseOfTheRougarou qualified as Treacheries
 import Data.Maybe (fromJust)
 import Data.Set qualified as Set
 

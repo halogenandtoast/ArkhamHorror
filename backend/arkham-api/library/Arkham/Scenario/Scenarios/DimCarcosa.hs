@@ -5,7 +5,9 @@ import Arkham.Agenda.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Agendas
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card (genCards, toCard, _PlayerCard)
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.InhabitantsOfCarcosa qualified as Enemies
 import Arkham.Helpers.Card
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log hiding (recordSetInsert)
@@ -16,7 +18,8 @@ import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToDimCarcosa qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -27,7 +30,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Token
 import Arkham.Trait (Trait (AncientOne, Monster))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Treacheries
 
 newtype DimCarcosa = DimCarcosa ScenarioAttrs
   deriving anyclass IsScenario

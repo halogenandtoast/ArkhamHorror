@@ -11,7 +11,7 @@ import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWitchingHour qualified as Enemies
 import Arkham.ForMovement
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
@@ -20,7 +20,10 @@ import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Locations
+import Arkham.Location.CardDefs.ReturnToNightOfTheZealot.ReturnToTheDevourerBelow qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToTheWitchingHour qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheWitchingHour qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log

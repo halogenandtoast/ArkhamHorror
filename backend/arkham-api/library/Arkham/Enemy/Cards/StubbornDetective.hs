@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.StubbornDetective (stubbornDetective) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher

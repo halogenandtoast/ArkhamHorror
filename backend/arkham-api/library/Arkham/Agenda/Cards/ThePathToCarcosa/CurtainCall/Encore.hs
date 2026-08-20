@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.ThePathToCarcosa.CurtainCall.Encore (encore) where
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Matcher
 
 newtype Encore = Encore AgendaAttrs

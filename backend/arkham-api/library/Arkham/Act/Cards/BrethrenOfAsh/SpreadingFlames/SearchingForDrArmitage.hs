@@ -5,15 +5,15 @@ import Arkham.Act.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Enemies
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.MiskatonicUniversity qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier (ModifierType (DoNotTakeUpSlot))
 import Arkham.Scenarios.SpreadingFlames.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype SearchingForDrArmitage = SearchingForDrArmitage ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -43,7 +43,7 @@ instance RunMessage SearchingForDrArmitage where
           gameModifier attrs drArmitage (DoNotTakeUpSlot #ally)
           takeControlOfAsset iid drArmitage
 
-      miskatonicQuad <- selectJust $ locationIs Locations.miskatonicQuad_MiskatonicUniversity
+      miskatonicQuad <- selectJust $ locationIs Locations.miskatonicQuad
 
       selectOne (IncludeOutOfPlayEnemy $ enemyIs Enemies.servantOfFlameRagingFury) >>= \case
         Just eid -> place eid (AtLocation miskatonicQuad)

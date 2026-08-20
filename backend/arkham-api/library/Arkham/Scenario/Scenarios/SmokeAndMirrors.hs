@@ -9,7 +9,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers (Deck (..))
@@ -24,7 +24,7 @@ import Arkham.Helpers.SkillTest.Target (withSkillTestEnemyTarget)
 import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.Arkham qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
   cardIs,
@@ -52,7 +52,7 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.SmokeAndMirrors.Helpers
 import Arkham.Token
 import Arkham.Trait (Trait (Elite, Humanoid))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Treacheries
 
 newtype SmokeAndMirrors = SmokeAndMirrors ScenarioAttrs
   deriving stock Generic
@@ -138,12 +138,12 @@ instance RunMessage SmokeAndMirrors where
         placeLabeled "uptown"
           =<< sampleOneOf (Locations.uptownStMarysHospital, Locations.uptownYeOldeMagickShoppe)
 
-      place_ Locations.easttown_Arkham
-      place_ Locations.merchantDistrict_Arkham
-      northside <- place Locations.northside_Arkham
+      place_ Locations.easttown
+      place_ Locations.merchantDistrict
+      northside <- place Locations.northside
       waterfrontDistrict <- place Locations.waterfrontDistrict
-      southside <- place Locations.southside_Arkham
-      frenchHill <- place Locations.frenchHill_Arkham
+      southside <- place Locations.southside
+      frenchHill <- place Locations.frenchHill
 
       (setAsidePerson, remainingPeople) <-
         sampleWithRest

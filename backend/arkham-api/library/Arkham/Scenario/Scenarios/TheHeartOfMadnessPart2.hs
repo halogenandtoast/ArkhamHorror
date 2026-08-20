@@ -10,7 +10,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.Log ()
@@ -18,7 +18,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Locations
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
@@ -28,7 +28,7 @@ import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (optionsL)
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.StrikingFear qualified as Treacheries
 import Control.Monad.State.Strict (execStateT, modify)
 
 newtype TheHeartOfMadnessPart2 = TheHeartOfMadnessPart2 ScenarioAttrs

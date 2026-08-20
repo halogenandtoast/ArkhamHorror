@@ -1,0 +1,26 @@
+module Arkham.Enemy.Cards.TheForgottenAge.YigsVenom.FangOfYig (fangOfYig) where
+
+import Arkham.Enemy.CardDefs.TheForgottenAge.YigsVenom qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
+
+newtype FangOfYig = FangOfYig EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+fangOfYig :: EnemyCard FangOfYig
+fangOfYig =
+  enemy FangOfYig Cards.fangOfYig
+    & setPrey (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
+
+instance HasModifiersFor FangOfYig where
+  getModifiersFor (FangOfYig a) = do
+    modifySelect
+      a
+      (investigatorEngagedWith a.id <> HasMatchingTreachery (treacheryIs Treacheries.poisoned))
+      [CannotPlay AnyCard, CannotCommitCards AnyCard]
+
+instance RunMessage FangOfYig where
+  runMessage msg (FangOfYig attrs) = FangOfYig <$> runMessage msg attrs

@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpres
 import Arkham.Agenda.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpress qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpress qualified as Enemies
 
 newtype WhereTheresSmoke = WhereTheresSmoke AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

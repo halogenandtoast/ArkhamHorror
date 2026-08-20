@@ -3,7 +3,8 @@ module Arkham.Agenda.Cards.TheInnsmouthConspiracy.InTooDeep.BarricadedStreets (B
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.AgentsOfCthulhu qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher

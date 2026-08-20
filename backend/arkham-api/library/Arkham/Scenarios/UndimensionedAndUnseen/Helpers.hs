@@ -4,7 +4,7 @@ import Arkham.Campaigns.TheDunwichLegacy.Helpers
 import Arkham.Card (Card)
 import Arkham.Classes
 import Arkham.Classes.HasGame
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified as Cards
 import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Id

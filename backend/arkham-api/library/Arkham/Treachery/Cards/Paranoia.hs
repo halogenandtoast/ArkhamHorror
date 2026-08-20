@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.Paranoia (paranoia) where
 
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Paranoia = Paranoia TreacheryAttrs

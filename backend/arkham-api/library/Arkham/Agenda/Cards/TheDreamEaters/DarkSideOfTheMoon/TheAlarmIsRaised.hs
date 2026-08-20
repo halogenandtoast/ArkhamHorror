@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheDreamEaters.DarkSideOfTheMoon.TheAlarmIsRaised (th
 import Arkham.Agenda.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDreamEaters.Key
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Enemies
 import Arkham.Helpers.Log (whenHasRecord)
 import Arkham.Helpers.Query (getInvestigators, getLead)
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers

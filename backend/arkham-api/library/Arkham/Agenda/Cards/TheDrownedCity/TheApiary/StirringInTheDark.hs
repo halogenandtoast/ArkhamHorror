@@ -4,7 +4,7 @@ import Arkham.Agenda.CardDefs.TheDrownedCity.TheApiary qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheApiary qualified as Enemies
 import Arkham.Helpers.Query (getLead, getSetAsideCard)
 import Arkham.Helpers.Scenario (getEncounterDiscard)
 import Arkham.Matcher

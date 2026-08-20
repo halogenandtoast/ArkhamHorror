@@ -7,7 +7,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher

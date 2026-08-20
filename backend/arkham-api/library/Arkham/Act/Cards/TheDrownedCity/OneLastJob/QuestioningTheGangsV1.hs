@@ -3,11 +3,11 @@ module Arkham.Act.Cards.TheDrownedCity.OneLastJob.QuestioningTheGangsV1 (questio
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheDrownedCity.OneLastJob qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.CardDefs.TheDrownedCity qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.OneLastJob qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyForcedRemainingHealth))
 import Arkham.Helpers.Location (connectBothWays)
 import Arkham.Investigator.Types (Field (InvestigatorClues))
-import Arkham.Location.CardDefs.TheDrownedCity qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.OneLastJob qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection (field)

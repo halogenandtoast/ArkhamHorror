@@ -14,7 +14,8 @@ import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.StarSpawn qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheApiary qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDoom))
 import Arkham.Helpers
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
@@ -22,7 +23,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Cards (ursulaDowns)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheApiary qualified as Locations
 import Arkham.Location.Grid (GridLocation (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -32,7 +33,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (setAsideCardsL)
 import Arkham.Scenarios.TheApiary.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDrownedCity.TheApiary qualified as Treacheries
 
 newtype TheApiary = TheApiary ScenarioAttrs
   deriving stock Generic

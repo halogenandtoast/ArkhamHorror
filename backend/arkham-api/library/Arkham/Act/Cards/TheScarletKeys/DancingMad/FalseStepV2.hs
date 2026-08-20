@@ -5,9 +5,9 @@ import Arkham.Act.CardDefs.TheScarletKeys.DancingMad qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DancingMad qualified as Enemies
 import Arkham.Helpers.Window (getTotalDamage)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.DancingMad qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 import Arkham.Strategy

@@ -12,7 +12,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.FortuneAndFolly qualified as Stories
 import Arkham.Story.Types (Field (StoryTokens))
 import Arkham.Token
 import Arkham.Trait (Trait (Game))

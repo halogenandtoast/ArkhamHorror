@@ -8,7 +8,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario (getEncounterDeck)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheSilentHeath qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 

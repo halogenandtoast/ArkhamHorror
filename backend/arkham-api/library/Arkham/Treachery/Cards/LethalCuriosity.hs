@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.LethalCuriosity (lethalCuriosity) where
 import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype LethalCuriosity = LethalCuriosity TreacheryAttrs

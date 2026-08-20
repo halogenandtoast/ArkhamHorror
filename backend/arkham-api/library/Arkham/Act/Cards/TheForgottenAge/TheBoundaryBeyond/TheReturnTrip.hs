@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheForgottenAge.TheBoundaryBeyond.TheReturnTrip (theRetu
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Enemies
 import Arkham.Matcher
 
 newtype TheReturnTrip = TheReturnTrip ActAttrs

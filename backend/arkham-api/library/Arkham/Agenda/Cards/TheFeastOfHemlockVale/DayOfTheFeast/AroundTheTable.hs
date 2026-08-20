@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheFeastOfHemlockVale.DayOfTheFeast.AroundTheTable (a
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.DayOfTheFeast qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.Residents qualified as Enemies
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 

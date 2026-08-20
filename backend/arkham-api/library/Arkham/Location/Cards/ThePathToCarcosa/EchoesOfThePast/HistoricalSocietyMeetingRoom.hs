@@ -1,0 +1,36 @@
+module Arkham.Location.Cards.ThePathToCarcosa.EchoesOfThePast.HistoricalSocietyMeetingRoom (historicalSocietyMeetingRoom) where
+
+import Arkham.Ability
+import Arkham.Discover
+import Arkham.GameValue
+import Arkham.Location.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher hiding (DiscoverClues, RevealLocation)
+
+newtype HistoricalSocietyMeetingRoom = HistoricalSocietyMeetingRoom LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+historicalSocietyMeetingRoom :: LocationCard HistoricalSocietyMeetingRoom
+historicalSocietyMeetingRoom =
+  location HistoricalSocietyMeetingRoom Cards.historicalSocietyMeetingRoom 4 (PerPlayer 1)
+
+instance HasAbilities HistoricalSocietyMeetingRoom where
+  getAbilities (HistoricalSocietyMeetingRoom a) =
+    extend1 a
+      $ if a.revealed
+        then
+          playerLimit PerRound
+            $ restricted a 1 (Here <> canDiscoverCluesAt (be a))
+            $ actionAbilityWithCost (ExhaustAssetCost #ally)
+        else mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+
+instance RunMessage HistoricalSocietyMeetingRoom where
+  runMessage msg l@(HistoricalSocietyMeetingRoom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 | attrs.revealed -> do
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 attrs
+      pure l
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      reveal attrs
+      pure l
+    _ -> HistoricalSocietyMeetingRoom <$> liftRunMessage msg attrs

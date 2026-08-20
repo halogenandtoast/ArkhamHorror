@@ -12,7 +12,7 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.ShatteredAeons qualified as Enemies
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
@@ -24,7 +24,8 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToShatteredAeons qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ShatteredAeons qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -35,7 +36,8 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (victoryDisplayL)
 import Arkham.Scenarios.ShatteredAeons.Helpers
 import Arkham.Trait qualified as Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.AncientEvils qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.ShatteredAeons qualified as Treacheries
 import Arkham.Window qualified as Window
 
 newtype ShatteredAeons = ShatteredAeons ScenarioAttrs

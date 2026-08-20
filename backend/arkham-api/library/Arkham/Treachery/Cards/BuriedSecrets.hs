@@ -9,7 +9,7 @@ import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype BuriedSecrets = BuriedSecrets TreacheryAttrs
@@ -21,7 +21,12 @@ buriedSecrets = treachery BuriedSecrets Cards.buriedSecrets
 
 instance HasAbilities BuriedSecrets where
   getAbilities (BuriedSecrets a) =
-    [restrictedAbility a 1 (OnSameLocation <> exists (YourLocation <> InvestigatableLocation)) investigateAction_]
+    [ restrictedAbility
+        a
+        1
+        (OnSameLocation <> exists (YourLocation <> InvestigatableLocation))
+        investigateAction_
+    ]
 
 instance HasModifiersFor BuriedSecrets where
   getModifiersFor (BuriedSecrets a) = case a.placement of
@@ -49,7 +54,8 @@ instance RunMessage BuriedSecrets where
         when canManipulateDeck $ do
           chooseOne
             iid
-            [ Label "$cards.label.buriedSecrets.takeHorror"
+            [ Label
+                "$cards.label.buriedSecrets.takeHorror"
                 [Msg.assignHorror iid (attrs.ability 1) 2, Msg.shuffleIntoDeck iid attrs]
             , Label "$label.doNothing" []
             ]

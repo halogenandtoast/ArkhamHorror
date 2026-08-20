@@ -1,0 +1,52 @@
+module Arkham.Enemy.Cards.TheInnsmouthConspiracy.IntoTheMaelstrom.DagonsBrood (dagonsBrood, DagonsBrood (..)) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.I18n
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Locations
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers
+
+newtype DagonsBrood = DagonsBrood EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+dagonsBrood :: EnemyCard DagonsBrood
+dagonsBrood =
+  enemyWith DagonsBrood Cards.dagonsBrood
+    $ spawnAtL
+    ?~ SpawnAt
+      ( FarthestLocationFromYou
+          $ mapOneOf locationIs [Locations.lairOfDagon, Locations.gatewayToYhanthlei]
+      )
+
+instance HasAbilities DagonsBrood where
+  getAbilities (DagonsBrood a) =
+    extend1 a
+      $ restricted
+        a
+        1
+        ( exists
+            $ IncludeOmnipotent
+            $ mapOneOf
+              enemyIs
+              [Cards.dagonDeepInSlumberIntoTheMaelstrom, Cards.dagonAwakenedAndEnragedIntoTheMaelstrom]
+        )
+      $ forced
+      $ EnemyEngaged #after You (be a)
+
+instance RunMessage DagonsBrood where
+  runMessage msg e@(DagonsBrood attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      mDagonSlumbering <- selectOne $ IncludeOmnipotent $ enemyIs Cards.dagonDeepInSlumberIntoTheMaelstrom
+      case mDagonSlumbering of
+        Just dagon -> placeDoom (attrs.ability 1) dagon 1
+        Nothing -> do
+          dagon <- selectJust $ IncludeOmnipotent $ enemyIs Cards.dagonAwakenedAndEnragedIntoTheMaelstrom
+          chooseOneM iid $ scenarioI18n $ scope "dagonsBrood" do
+            labeled' "placeDoomOnDagon" $ placeDoom (attrs.ability 1) dagon 1
+            labeled' "dagonAttacksYou" $ initiateEnemyAttack dagon (attrs.ability 1) iid
+      pure e
+    _ -> DagonsBrood <$> liftRunMessage msg attrs

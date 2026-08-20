@@ -4,13 +4,13 @@ import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as C
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Direction
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Enemies
 import Arkham.Helpers.Scenario
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePitOfDespair.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Treacheries
 
 newtype ThePit = ThePit ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

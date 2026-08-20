@@ -4,11 +4,11 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Enemies
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Locations
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype SearchTheSewers = SearchTheSewers ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

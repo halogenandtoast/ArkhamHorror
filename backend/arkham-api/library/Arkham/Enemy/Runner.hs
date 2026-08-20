@@ -1972,7 +1972,7 @@ instance RunMessage EnemyAttrs where
         _ -> pure ()
       pure a
     -- An enemy standing on a location that leaves play goes with it. Only a
-    -- *direct* placement counts: an enemy attached to an asset, swarming a host
+    -- \*direct* placement counts: an enemy attached to an asset, swarming a host
     -- or sitting in a threat area reaches the location through that host, and
     -- leaves play when the host does. Going through `Discard` (rather than
     -- being swept from `Game.Runner`) is what gives cards attached to this

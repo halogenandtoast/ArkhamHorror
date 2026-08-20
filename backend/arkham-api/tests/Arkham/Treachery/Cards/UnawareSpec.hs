@@ -1,8 +1,8 @@
 module Arkham.Treachery.Cards.UnawareSpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Cards
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.Standalone qualified as Treacheries
 import TestImport.New
 
 -- Unaware (60356) has a FORCED ability:

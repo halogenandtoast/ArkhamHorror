@@ -16,8 +16,9 @@ import Arkham.ClassSymbol
 import Arkham.Enemy.Cards (allPlayerEnemyCards)
 import Arkham.Event.Cards (allPlayerEventCards)
 import Arkham.Skill.Cards (allPlayerSkillCards)
-import Arkham.Story.Cards (realityAcid)
+import Arkham.Story.CardDefs.TheBlobThatAteEverythingELSE (realityAcid)
 import Arkham.Treachery.Cards (allPlayerTreacheryCards)
+
 lookupPlayerCardDef :: CardCode -> CardDef
 lookupPlayerCardDef cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)

@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.EncounterCard
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Locations
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

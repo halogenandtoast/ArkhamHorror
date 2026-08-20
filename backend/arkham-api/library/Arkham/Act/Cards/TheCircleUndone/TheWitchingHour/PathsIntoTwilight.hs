@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheWitchingHour qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection

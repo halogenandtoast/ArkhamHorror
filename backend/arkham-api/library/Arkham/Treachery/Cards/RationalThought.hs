@@ -13,7 +13,7 @@ import Arkham.Id
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheCircleUndone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 import Arkham.Window qualified as Window
 import Data.UUID qualified as UUID

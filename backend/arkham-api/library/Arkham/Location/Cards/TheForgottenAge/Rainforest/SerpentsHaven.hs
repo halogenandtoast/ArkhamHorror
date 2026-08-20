@@ -1,0 +1,51 @@
+module Arkham.Location.Cards.TheForgottenAge.Rainforest.SerpentsHaven (serpentsHaven) where
+
+import Arkham.Ability
+import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Location.CardDefs.TheForgottenAge.Rainforest qualified as Cards
+import Arkham.Location.Import.Lifted hiding (PerformAction)
+import Arkham.Matcher
+import Arkham.Trait
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
+
+newtype SerpentsHaven = SerpentsHaven LocationAttrs
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+serpentsHaven :: LocationCard SerpentsHaven
+serpentsHaven = symbolLabel $ location SerpentsHaven Cards.serpentsHaven 2 (PerPlayer 2)
+
+instance HasModifiersFor SerpentsHaven where
+  getModifiersFor (SerpentsHaven a) = do
+    modifySelect a (enemyAt a <> EnemyWithTrait Serpent) [EnemyFight 1]
+
+-- NOTE: Because an explore will move you to Serpent's Haven, it will trigger
+-- the forced ability even if you started the action somewhere else. In order
+-- to fix this we use the meta to track that you started the action at
+-- Serpent's Haven.
+instance HasAbilities SerpentsHaven where
+  getAbilities (SerpentsHaven attrs) =
+    extendRevealed
+      attrs
+      [ restricted attrs 0 activeCriteria $ silent (trigger #when)
+      , restricted attrs 1 criteria $ forced (trigger #after)
+      ]
+   where
+    trigger timing = PerformAction timing You (oneOf [#investigate, #explore])
+    activeCriteria = Here <> exists (treacheryIs Treacheries.poisoned <> TreacheryInThreatAreaOf You)
+    criteria =
+      if getLocationMetaDefault False attrs
+        then activeCriteria
+        else Never
+
+instance RunMessage SerpentsHaven where
+  runMessage msg l@(SerpentsHaven attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 0 -> do
+      pure $ SerpentsHaven $ attrs & setMeta True
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 1
+      pure l
+    FinishAction -> do
+      pure $ SerpentsHaven $ attrs & setMeta False
+    _ -> SerpentsHaven <$> liftRunMessage msg attrs

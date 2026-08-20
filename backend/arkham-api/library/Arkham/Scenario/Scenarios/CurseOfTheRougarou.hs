@@ -9,7 +9,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.CurseOfTheRougarou qualified as Enemies
 import Arkham.ForMovement
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Investigator
@@ -24,7 +24,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (chooseOne, story)
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait hiding (Cultist, ElderThing)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.CurseOfTheRougarou qualified as Treacheries
 import Data.Maybe (fromJust)
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou ScenarioAttrs

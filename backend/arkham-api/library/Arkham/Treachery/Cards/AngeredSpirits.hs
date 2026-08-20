@@ -1,12 +1,12 @@
 module Arkham.Treachery.Cards.AngeredSpirits (angeredSpirits) where
 
-import Control.Lens (cosmos, _head)
 import Arkham.Ability hiding (cosmos)
 import Arkham.Asset.Uses
 import Arkham.Helpers.Ref
 import Arkham.Matcher hiding (FastPlayerWindow)
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.ThePathToCarcosa qualified as Cards
 import Arkham.Treachery.Import.Lifted
+import Control.Lens (cosmos, _head)
 
 newtype AngeredSpirits = AngeredSpirits TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)

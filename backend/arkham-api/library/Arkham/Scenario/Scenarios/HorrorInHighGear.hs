@@ -12,7 +12,7 @@ import Arkham.Exception
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Locations
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log

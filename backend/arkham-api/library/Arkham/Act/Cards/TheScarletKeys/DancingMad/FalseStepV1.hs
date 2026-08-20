@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Effect.Window (EffectWindow (EffectHollowWindow))
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DancingMad qualified as Enemies
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Window
 import Arkham.Matcher

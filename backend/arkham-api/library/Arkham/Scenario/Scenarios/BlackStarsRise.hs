@@ -10,12 +10,16 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.BlackStarsRise qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.InhabitantsOfCarcosa qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToBlackStarsRise qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.BlackStarsRise qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (CanAdvance (..))
 import Arkham.Message.Lifted.Choose

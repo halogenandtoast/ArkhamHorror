@@ -9,7 +9,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.OnThinIce qualified as Enemies
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.FlavorText
 import Arkham.Matcher.Card

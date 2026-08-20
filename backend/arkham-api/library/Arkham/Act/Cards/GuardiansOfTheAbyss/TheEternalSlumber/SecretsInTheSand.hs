@@ -4,11 +4,11 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers (exploreAction_, runExplore)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as Enemies
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getSetAsideCardMaybe)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait (Trait (Cairo, Expedition))
 

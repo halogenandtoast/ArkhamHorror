@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.RookieMistakeSpec (spec) where
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards (tommyMuldoon)
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

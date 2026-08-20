@@ -1,6 +1,7 @@
 module Arkham.Event.Events.CloseCall2Spec (spec) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Cards
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Helpers.Scenario
 import Arkham.Matcher (EnemyMatcher (AnyEnemy, InPlayEnemy))

@@ -13,7 +13,9 @@ import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.Decklist
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.SpectralPredators qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWatcher qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TrappedSpirits qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allPlayers)
 import Arkham.Helpers.Scenario qualified as Scenario
@@ -21,7 +23,8 @@ import Arkham.Helpers.SkillTest
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToAtDeathsDoorstep qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -33,7 +36,9 @@ import Arkham.Scenario.Options
 import Arkham.Scenario.Types (ScenarioAttrs (scenarioTarotDeck))
 import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Helpers
 import Arkham.Tarot
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.ChillingCold qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.InexorableFate qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.SpectralPredators qualified as Treacheries
 import Data.List.NonEmpty qualified as NE
 
 newtype DisappearanceAtTheTwilightEstate = DisappearanceAtTheTwilightEstate ScenarioAttrs
@@ -103,7 +108,7 @@ setupDisappearanceAtTheTwilightEstate attrs = do
   selectForMaybeM (investigatorIs Investigators.gavriellaMizrah) \gavriella -> do
     moveTo_ attrs gavriella victorianHalls
     removeOneOf
-      $ if isReturnTo then Treacheries.fateOfAllFoolsUnspeakableFate else Treacheries.fateOfAllFools
+      $ if isReturnTo then Treacheries.fateOfAllFools else Treacheries.fateOfAllFools
 
   selectForMaybeM (investigatorIs Investigators.jeromeDavids) \jerome -> do
     moveTo_ attrs jerome office

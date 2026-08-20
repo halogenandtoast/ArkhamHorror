@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Acts
 import Arkham.Agenda.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Helpers.Query (getLead, getSetAsideCard, getSetAsideCardsMatching)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

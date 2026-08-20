@@ -7,7 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.DamageEffect (nonAttack)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Enemies
 import Arkham.FlavorText
 import Arkham.Helpers.Message (pushWhen)
 import Arkham.Helpers.Text

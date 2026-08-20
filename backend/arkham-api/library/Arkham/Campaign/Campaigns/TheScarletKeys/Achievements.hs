@@ -40,7 +40,10 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DancingMad qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DogsOfWar qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.OnThinIce qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Enemies
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Game.Base
 import Arkham.Game.Settings (activeUltimatumsAndBoons)
@@ -48,7 +51,8 @@ import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.Log (getRecordCount, scenarioCount)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorClues))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.DancingMad qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Locations
 import Arkham.Location.Types qualified as Location
 import Arkham.Matcher hiding (AssetDefeated, PlaceUnderneath)
 import Arkham.Message
@@ -58,11 +62,12 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.ScenarioLogKey (ScenarioCountKey (CiviliansSlain))
 import Arkham.Source
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Stories
 import Arkham.Story.Types (Field (StoryClues))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheScarletKeys.StrangeHappenings qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window

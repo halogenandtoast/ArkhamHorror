@@ -1,0 +1,41 @@
+module Arkham.Story.Cards.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.FindingAgentHarper (FindingAgentHarper (..), findingAgentHarper) where
+
+import Arkham.Card
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Matcher
+import Arkham.Name
+import Arkham.Story.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Cards
+import Arkham.Story.Import.Lifted
+
+newtype Meta = Meta {crossedOff :: [Text]}
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype FindingAgentHarper = FindingAgentHarper StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+findingAgentHarper :: StoryCard FindingAgentHarper
+findingAgentHarper = story FindingAgentHarper Cards.findingAgentHarper
+
+instance RunMessage FindingAgentHarper where
+  runMessage msg s@(FindingAgentHarper attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      pure s
+    ForTarget (isTarget attrs -> True) (RevealCard cid) -> do
+      card <- getCard cid
+      let meta = toResultDefault (Meta []) attrs.meta
+      pure
+        . FindingAgentHarper
+        $ attrs
+        & metaL
+        .~ toJSON (meta {crossedOff = toTitle card : crossedOff meta})
+    Flip _ _ (isTarget attrs -> True) -> do
+      let angryMob = lookupCard Enemies.angryMob (toCardId attrs)
+      replaceCard (toCardId attrs) angryMob
+      push $ RemoveStory (toId attrs)
+      innsmouthSquare <- selectJust $ location_ "Innsmouth Square"
+      createEnemyAt_ angryMob innsmouthSquare
+      pure s
+    _ -> FindingAgentHarper <$> liftRunMessage msg attrs

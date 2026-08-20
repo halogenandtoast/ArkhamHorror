@@ -7,7 +7,9 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Cost (Payment (NoPayment))
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.LaidToRest qualified as Enemies
+import Arkham.Enemy.CardDefs.Standalone qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign (getCampaignStoryCards, matchingCardsAlreadyInDeck)
 import Arkham.Helpers.Card (ConvertToCard (..), getVictoryPoints)
@@ -16,7 +18,7 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers hiding (roundModifiers)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorTaboo))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Name (toTitle)
@@ -28,7 +30,8 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.LaidToRest.Helpers
 import Arkham.Trait (Trait (Ally, Geist, Spectral))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.Standalone qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy qualified as Treacheries
 import Arkham.Window (defaultWindows)
 import Arkham.Xp
 import Data.Aeson.Types (parseMaybe)

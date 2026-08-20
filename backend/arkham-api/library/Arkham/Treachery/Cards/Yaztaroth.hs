@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.Yaztaroth (yaztaroth, Yaztaroth (..)) where
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Promo qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Yaztaroth = Yaztaroth TreacheryAttrs

@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheScarletKeys.OnThinIce qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.OnThinIce qualified as Enemies
 import Arkham.Helpers.Location (addDirectConnection, withLocationOf)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.OnThinIce qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 

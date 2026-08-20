@@ -3,9 +3,9 @@ module Arkham.Act.Cards.TheDunwichLegacy.TheMiskatonicMuseum.NightAtTheMuseum (n
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Enemies
 import Arkham.Helpers.Window
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers

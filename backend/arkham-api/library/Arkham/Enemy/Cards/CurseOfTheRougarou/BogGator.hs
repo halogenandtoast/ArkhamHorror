@@ -1,0 +1,28 @@
+module Arkham.Enemy.Cards.CurseOfTheRougarou.BogGator (bogGator) where
+
+import Arkham.Classes
+import Arkham.Enemy.CardDefs.CurseOfTheRougarou qualified as Cards
+import Arkham.Enemy.Runner hiding (EnemyEvade)
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+import Arkham.Modifier qualified as Modifier
+import Arkham.Prelude
+import Arkham.Trait
+
+newtype BogGator = BogGator EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+bogGator :: EnemyCard BogGator
+bogGator =
+  enemyWith BogGator Cards.bogGator
+    $ preyL
+    .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
+
+instance HasModifiersFor BogGator where
+  getModifiersFor (BogGator a) = do
+    bayouLocation <- selectAny $ LocationWithTrait Bayou <> locationWithEnemy a
+    modifySelfWhen a (bayouLocation && spawned a) [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
+
+instance RunMessage BogGator where
+  runMessage msg (BogGator attrs) = BogGator <$> runMessage msg attrs

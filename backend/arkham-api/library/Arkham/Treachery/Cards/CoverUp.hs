@@ -4,7 +4,7 @@ import Arkham.Ability hiding (you)
 import Arkham.Matcher
 import Arkham.Script
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Cards
 import Arkham.Treachery.Import.Lifted hiding (DiscoverClues, sufferMentalTrauma)
 
 newtype CoverUp = CoverUp TreacheryAttrs

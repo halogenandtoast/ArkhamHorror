@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Effect.Import
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Matcher
 import Arkham.Scenarios.CurtainCall.Helpers
 

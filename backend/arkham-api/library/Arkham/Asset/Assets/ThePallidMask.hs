@@ -2,7 +2,8 @@ module Arkham.Asset.Assets.ThePallidMask (thePallidMask) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (PlayCard)
 

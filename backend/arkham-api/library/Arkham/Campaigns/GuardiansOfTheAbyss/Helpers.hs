@@ -6,7 +6,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.BrotherhoodOfTheBeast qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardCode))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log hiding (crossOutRecordSetEntries, recordSetInsert, recordSetReplace)

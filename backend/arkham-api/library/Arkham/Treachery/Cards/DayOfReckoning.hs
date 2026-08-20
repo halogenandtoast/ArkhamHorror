@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.DayOfReckoning (dayOfReckoning, DayOfReckoning (..)) where
 
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy qualified as Cards
 import Arkham.Treachery.Helpers qualified as Msg
 import Arkham.Treachery.Import.Lifted
 

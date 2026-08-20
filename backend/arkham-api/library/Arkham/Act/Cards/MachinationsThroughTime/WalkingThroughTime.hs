@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.MachinationsThroughTime qualified as Cards
 import Arkham.Act.Helpers (advancedWithOther)
 import Arkham.Act.Import.Lifted hiding (advancedWithOther)
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.MachinationsThroughTime qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement (place)

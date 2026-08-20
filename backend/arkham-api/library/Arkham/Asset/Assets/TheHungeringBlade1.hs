@@ -8,7 +8,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Treacheries
 
 newtype TheHungeringBlade1 = TheHungeringBlade1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

@@ -3,7 +3,7 @@ module Arkham.Act.Cards.ReturnToNightOfTheZealot.ReturnToTheGathering.Mysterious
 import Arkham.Act.CardDefs.ReturnToNightOfTheZealot.ReturnToTheGathering qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Message.Discard.Lifted
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToNightOfTheZealot.ReturnToTheGathering qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

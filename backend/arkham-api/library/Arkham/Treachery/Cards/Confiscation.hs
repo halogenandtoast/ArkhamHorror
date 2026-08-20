@@ -1,8 +1,8 @@
 module Arkham.Treachery.Cards.Confiscation (confiscation) where
 
-import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Import.Lifted
 import Arkham.Matcher
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Cards
+import Arkham.Treachery.Import.Lifted
 
 newtype Confiscation = Confiscation TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

@@ -5,7 +5,7 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.Helpers (earnXp, earnXpWithBonus, scenarioI18n)
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.CurtainCall qualified as Locations
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 

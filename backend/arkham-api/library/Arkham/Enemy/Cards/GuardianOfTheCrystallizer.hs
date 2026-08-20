@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.GuardianOfTheCrystallizer (guardianOfTheCrystallizer) 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement

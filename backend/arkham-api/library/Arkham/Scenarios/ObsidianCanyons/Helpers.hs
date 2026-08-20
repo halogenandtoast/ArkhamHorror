@@ -37,7 +37,7 @@ import Arkham.Projection
 import Arkham.Queue (QueueT)
 import Arkham.Scenario.Deck (ScenarioDeckKey (SummitDeck))
 import Arkham.Source
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Stories
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait (Summit))

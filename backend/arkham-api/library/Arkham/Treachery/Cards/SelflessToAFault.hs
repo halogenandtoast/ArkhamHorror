@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.SelflessToAFault (selflessToAFault) where
 
 import Arkham.Ability
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheScarletKeys qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype SelflessToAFault = SelflessToAFault TreacheryAttrs

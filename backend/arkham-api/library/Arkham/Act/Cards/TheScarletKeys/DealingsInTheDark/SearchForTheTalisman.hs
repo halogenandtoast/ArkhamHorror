@@ -11,7 +11,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.Direction
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -20,7 +20,7 @@ import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenarios.DealingsInTheDark.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Stories
 
 newtype SearchForTheTalisman = SearchForTheTalisman ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

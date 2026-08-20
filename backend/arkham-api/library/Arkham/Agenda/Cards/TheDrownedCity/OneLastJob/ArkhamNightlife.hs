@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDrownedCity.OneLastJob qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.OneLastJob qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreationMethod (SpawnEngagedWith))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

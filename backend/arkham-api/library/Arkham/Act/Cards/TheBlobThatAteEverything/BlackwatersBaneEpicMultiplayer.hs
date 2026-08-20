@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheBlobThatAteEverything.BlackwatersBaneEpicMultiplayer 
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheBlobThatAteEverything qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheBlobThatAteEverything qualified as Enemies
 import Arkham.Epic.Types (SharedKey (BlobStorySeed), sharedKeyText)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Log (scenarioCount, scenarioCountIncrement)
@@ -15,7 +15,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicActAdvances, EpicShared))
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheBlobThatAteEverything qualified as Stories
 import Arkham.Trait (Trait (Ooze, Oozified))
 
 -- Epic Multiplayer variant of Blackwater's Bane (card 85008). Unlike Expose the

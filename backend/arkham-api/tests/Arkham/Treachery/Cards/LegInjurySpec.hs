@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.LegInjurySpec (spec) where
 
 import Arkham.Matcher qualified as Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

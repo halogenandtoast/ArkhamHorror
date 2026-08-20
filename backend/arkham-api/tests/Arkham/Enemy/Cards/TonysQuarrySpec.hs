@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.TonysQuarrySpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyTokens))
 import Arkham.Investigator.Cards (tonyMorgan)
 import Arkham.Matcher

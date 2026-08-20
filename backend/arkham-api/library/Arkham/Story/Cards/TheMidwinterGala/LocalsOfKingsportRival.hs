@@ -1,0 +1,60 @@
+module Arkham.Story.Cards.TheMidwinterGala.LocalsOfKingsportRival (localsOfKingsportRival) where
+
+import Arkham.Ability
+import Arkham.Deck qualified as Deck
+import Arkham.Enemy.CardDefs.TheMidwinterGala qualified as Enemies
+import Arkham.GameValue
+import Arkham.Helpers.Location
+import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest.Lifted (parley)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Story.CardDefs.TheMidwinterGala qualified as Cards
+import Arkham.Story.Import.Lifted
+import Arkham.Treachery.CardDefs.TheMidwinterGala qualified as Treacheries
+
+newtype LocalsOfKingsportRival = LocalsOfKingsportRival StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+localsOfKingsportRival :: StoryCard LocalsOfKingsportRival
+localsOfKingsportRival = persistStory $ story LocalsOfKingsportRival Cards.localsOfKingsportRival
+
+instance HasAbilities LocalsOfKingsportRival where
+  getAbilities (LocalsOfKingsportRival a) =
+    [ restricted
+        a
+        1
+        (exists $ enemyIs Enemies.williamBainDefiantToTheLast <> at_ YourLocation)
+        parleyAction_
+    , restricted a 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 1 1) $ forced AnyWindow
+    ]
+
+instance RunMessage LocalsOfKingsportRival where
+  runMessage msg s@(LocalsOfKingsportRival attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      unlucky <- getSetAsideCardsMatching $ cardIs Treacheries.unlucky
+      shuffleCardsIntoDeck Deck.EncounterDeck unlucky
+      bain <- getSetAsideCardsMatching $ cardIs Enemies.williamBainDefiantToTheLast
+      lead <- getLead
+      for_ bain $ withLocationOf lead . createEnemyAt_
+      pure s
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      enemy <- selectJust $ enemyIs Enemies.williamBainDefiantToTheLast <> enemyAtLocationWith iid
+      sid <- getRandom
+      chooseOneM iid do
+        for_ [minBound ..] \kind ->
+          skillLabeled kind $ parley sid iid (attrs.ability 1) enemy kind (Fixed 4)
+      pure s
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      whenMatch iid InvestigatorWithAnyClues do
+        moveTokens (attrs.ability 1) iid attrs #clue 1
+      pure s
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      bain <- selectJust $ enemyIs Enemies.williamBainDefiantToTheLast
+      addToVictory iid attrs
+      addToVictory iid bain
+      push $ RemoveAllCopiesOfEncounterCardFromGame (cardIs Treacheries.unlucky)
+      removeStory attrs
+      pure s
+    _ -> LocalsOfKingsportRival <$> liftRunMessage msg attrs

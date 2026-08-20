@@ -10,14 +10,16 @@ import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheCircleUndone.ReturnToAtDeathsDoorstep qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Enemies
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToAtDeathsDoorstep qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
@@ -139,11 +141,11 @@ setupAtDeathsDoorstep attrs = do
   setAgendaDeck [Agendas.justiceXI, Agendas.overTheThreshold]
   setActDeck [Acts.hiddenAgendas, Acts.theSpectralRealm, Acts.escapeTheCage]
 
-  entryHall <- place Locations.entryHallAtDeathsDoorstep
+  entryHall <- place Locations.entryHall
   startAt entryHall
   office <- place Locations.office
   billiardsRoom <- place Locations.billiardsRoom
-  balcony <- place Locations.balconyAtDeathsDoorstep
+  balcony <- place Locations.balcony
   placeAll
     [ Locations.victorianHalls
     , Locations.trophyRoom

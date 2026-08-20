@@ -7,13 +7,15 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
 import Arkham.Campaigns.TheForgottenAge.Helpers (ExploreRule (PlaceExplored), explore)
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.SandsOfEgypt qualified as Enemies
+import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.GuardiansOfTheAbyss.SandsOfEgypt qualified as Locations
+import Arkham.Location.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
@@ -97,7 +99,7 @@ instance RunMessage TheEternalSlumber where
         , Locations.templeCourtyard
         , Locations.museumOfEgyptianAntiquities
         , Locations.cairoBazaar
-        , Locations.expeditionCampGuardiansOfTheAbyss
+        , Locations.expeditionCamp
         ]
 
       setAside

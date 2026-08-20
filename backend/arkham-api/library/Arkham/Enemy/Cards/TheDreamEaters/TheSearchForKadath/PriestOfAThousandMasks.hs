@@ -1,0 +1,29 @@
+module Arkham.Enemy.Cards.TheDreamEaters.TheSearchForKadath.PriestOfAThousandMasks (priestOfAThousandMasks) where
+
+import Arkham.Classes
+import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Cards
+import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Keyword (Keyword (Retaliate))
+import Arkham.Modifier qualified as Mod
+import Arkham.Prelude
+import Arkham.Scenarios.TheSearchForKadath.Helpers
+
+newtype PriestOfAThousandMasks = PriestOfAThousandMasks EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+priestOfAThousandMasks :: EnemyCard PriestOfAThousandMasks
+priestOfAThousandMasks = enemy PriestOfAThousandMasks Cards.priestOfAThousandMasks
+
+instance HasModifiersFor PriestOfAThousandMasks where
+  getModifiersFor (PriestOfAThousandMasks a) = do
+    n <- getSignsOfTheGods
+    modifySelf a
+      $ (guard (n >= 2) *> [Mod.EnemyFight 1, Mod.EnemyEvade 1])
+      <> [HealthModifier 2 | n >= 4]
+      <> (guard (n >= 6) *> [DamageDealt 1, AddKeyword Retaliate])
+
+instance RunMessage PriestOfAThousandMasks where
+  runMessage msg (PriestOfAThousandMasks attrs) =
+    PriestOfAThousandMasks <$> runMessage msg attrs

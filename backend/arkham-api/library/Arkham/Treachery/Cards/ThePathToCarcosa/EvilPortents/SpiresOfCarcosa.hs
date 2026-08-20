@@ -1,0 +1,44 @@
+module Arkham.Treachery.Cards.ThePathToCarcosa.EvilPortents.SpiresOfCarcosa (spiresOfCarcosa) where
+
+import Arkham.Ability
+import Arkham.Action qualified as Action
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.SkillTest.Lifted
+import Arkham.Matcher
+import Arkham.Treachery.CardDefs.ThePathToCarcosa.EvilPortents qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype SpiresOfCarcosa = SpiresOfCarcosa TreacheryAttrs
+  deriving anyclass (IsTreachery, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+spiresOfCarcosa :: TreacheryCard SpiresOfCarcosa
+spiresOfCarcosa = treacheryWith SpiresOfCarcosa Cards.spiresOfCarcosa id
+
+instance HasAbilities SpiresOfCarcosa where
+  getAbilities (SpiresOfCarcosa a) =
+    [investigateAbility a 1 mempty OnSameLocation]
+      <> case a.attached.location of
+        Just lid
+          | toResultDefault True a.meta ->
+              [restricted a 2 (exists $ LocationWithId lid <> LocationWithoutDoom) Anytime]
+        _ -> []
+
+instance RunMessage SpiresOfCarcosa where
+  runMessage msg t@(SpiresOfCarcosa attrs) = runQueueT $ case msg of
+    Revelation iid source | isSource attrs source -> do
+      withLocationOf iid \lid -> do
+        placeDoom attrs lid 2
+        attachTreachery attrs lid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      investigateEdit_ sid iid (attrs.ability 1) (setTarget attrs)
+      pure t
+    Successful (Action.Investigate, _) _ _ (isTarget attrs -> True) _ -> do
+      for_ attrs.attached.location \location -> removeDoom (attrs.ability 1) location 1
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      toDiscardBy iid (attrs.ability 2) attrs
+      pure $ SpiresOfCarcosa $ attrs & setMeta False
+    _ -> SpiresOfCarcosa <$> liftRunMessage msg attrs

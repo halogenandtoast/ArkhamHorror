@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Locations
 import Arkham.Matcher
 
 newtype TheMoonsCore = TheMoonsCore ActAttrs

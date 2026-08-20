@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.WatcherFromAnotherDimension (watcherFromAnotherDimensi
 
 import Arkham.Ability
 import Arkham.Constants
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Enemy
 import Arkham.Matcher

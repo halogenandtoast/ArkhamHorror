@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.BadBlood.HyperboreanBlood (hyperboreanBlood) where
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.BadBlood qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BadBlood qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher

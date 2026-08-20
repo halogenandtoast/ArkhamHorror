@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheDrownedCity.SepulchreOfTheSleeper.CthulhuAwakened 
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher hiding (DuringTurn)

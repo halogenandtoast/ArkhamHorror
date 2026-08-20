@@ -12,7 +12,9 @@ import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWatcher qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWitchingHour qualified as Enemies
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
@@ -21,7 +23,7 @@ import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -31,9 +33,9 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Scenario.Types (setStandaloneCampaignLog)
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Stories
 import Arkham.Trait (Trait (Spectral))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Treacheries
 import Arkham.Zone
 
 newtype UnionAndDisillusion = UnionAndDisillusion ScenarioAttrs
@@ -136,7 +138,7 @@ setupUnionAndDisillusion _attrs = do
         ]
   setAside
     $ [ Locations.theGeistTrap
-      , Treacheries.watchersGazeUnionAndDisillusion
+      , Treacheries.watchersGaze
       , Enemies.anetteMason
       , Enemies.josefMeiger
       ]

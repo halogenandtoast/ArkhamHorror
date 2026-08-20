@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Helpers.Window
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ShatteredAeons qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck

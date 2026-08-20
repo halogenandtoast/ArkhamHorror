@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.OnThinIce qualified as Enemies
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.I18n
 import Arkham.Matcher

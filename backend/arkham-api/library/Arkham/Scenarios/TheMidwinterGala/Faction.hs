@@ -4,7 +4,7 @@ import Arkham.Card
 import Arkham.Helpers.Scenario (standaloneI18n)
 import Arkham.I18n
 import Arkham.Prelude
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheMidwinterGala qualified as Stories
 
 data Faction
   = TheFoundation

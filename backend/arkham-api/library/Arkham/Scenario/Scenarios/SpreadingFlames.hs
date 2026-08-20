@@ -9,13 +9,14 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.MiskatonicUniversity qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Locations
 import Arkham.Matcher (cardIs)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose
@@ -23,7 +24,7 @@ import Arkham.Message.Lifted.Log (record)
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.SpreadingFlames.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype SpreadingFlames = SpreadingFlames ScenarioAttrs
   deriving stock Generic
@@ -82,11 +83,11 @@ instance RunMessage SpreadingFlames where
         [ Enemies.servantOfFlameRagingFury
         , Assets.drHenryArmitage_SpreadingFlames
         , --- Locations
-          Locations.miskatonicQuad_MiskatonicUniversity
-        , Locations.dormitories_MiskatonicUniversity
+          Locations.miskatonicQuad
+        , Locations.dormitories
         , Locations.scienceHall
-        , Locations.warrenObservatory_MiskatonicUniversity
-        , Locations.orneLibrary_MiskatonicUniversity
+        , Locations.warrenObservatory
+        , Locations.orneLibrary
         ]
       setAside =<< amongGathered (cardIs Treacheries.fire1)
       startAt =<< place Locations.yourFriendsRoom

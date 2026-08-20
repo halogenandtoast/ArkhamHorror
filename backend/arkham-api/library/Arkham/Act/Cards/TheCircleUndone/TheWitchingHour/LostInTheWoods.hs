@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheCircleUndone.TheWitchingHour qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.AgentsOfShubNiggurath qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
@@ -15,7 +15,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Movement
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.AgentsOfAzathoth qualified as Treacheries
 import Data.Map.Strict qualified as Map
 
 newtype LostInTheWoods = LostInTheWoods ActAttrs

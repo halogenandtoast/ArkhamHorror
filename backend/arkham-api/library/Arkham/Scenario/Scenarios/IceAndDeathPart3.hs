@@ -8,7 +8,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Investigator (getMaybeLocation)
@@ -17,7 +17,7 @@ import Arkham.Helpers.Shuffle (getCanShuffleIn)
 import Arkham.Helpers.Text
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Locations
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose

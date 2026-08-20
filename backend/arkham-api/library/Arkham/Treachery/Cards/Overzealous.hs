@@ -4,7 +4,7 @@ import Arkham.Card
 import Arkham.Deck
 import Arkham.Keyword qualified as Keyword
 import Arkham.Modifier
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.ThePathToCarcosa qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Overzealous = Overzealous TreacheryAttrs

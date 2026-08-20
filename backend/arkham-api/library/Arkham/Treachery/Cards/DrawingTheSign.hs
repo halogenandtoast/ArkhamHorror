@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.DrawingTheSign (drawingTheSign) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (HandSize), inThreatAreaGets)
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.ThePathToCarcosa qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype DrawingTheSign = DrawingTheSign TreacheryAttrs

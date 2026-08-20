@@ -4,7 +4,7 @@ import Arkham.Classes.HasQueue
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheScarletKeys qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype BurdenOfLeadership = BurdenOfLeadership TreacheryAttrs
@@ -28,7 +28,9 @@ instance RunMessage BurdenOfLeadership where
               chooseOneM iid do
                 whenMatch ally AssetReady $ labeledI "exhaust" $ exhaustWith attrs ally
                 whenMatch ally (oneOf [AssetWithHealth, AssetWithSanity]) do
-                  withI18n $ numberVar "damage" 1 $ numberVar "horror" 1
+                  withI18n
+                    $ numberVar "damage" 1
+                    $ numberVar "horror" 1
                     $ labeled' "dealDirectDamageAndHorror"
                     $ dealAssetDirectDamageAndHorror ally attrs 1 1
       pure t

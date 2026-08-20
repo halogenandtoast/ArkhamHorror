@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Taboo
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.ThePathToCarcosa qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype CrisisOfIdentity = CrisisOfIdentity TreacheryAttrs
@@ -35,6 +35,11 @@ instance RunMessage CrisisOfIdentity where
           discardTopOfDeckAndHandle iid attrs 1 attrs
       pure t
     DiscardedTopOfDeck iid [card] _ (isTarget attrs -> True) -> do
-      investigatorSpecific iid "setRole" $ fromMaybe Neutral . headMay . toList $ cdClassSymbols $ toCardDef card
+      investigatorSpecific iid "setRole"
+        $ fromMaybe Neutral
+        . headMay
+        . toList
+        $ cdClassSymbols
+        $ toCardDef card
       pure t
     _ -> CrisisOfIdentity <$> liftRunMessage msg attrs

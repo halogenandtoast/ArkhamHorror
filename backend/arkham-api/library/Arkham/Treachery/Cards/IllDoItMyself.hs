@@ -1,10 +1,10 @@
 module Arkham.Treachery.Cards.IllDoItMyself (illDoItMyself) where
 
 import Arkham.Ability
-import Arkham.Placement
-import Arkham.Helpers.Modifiers (inThreatAreaGets, ModifierType(..))
+import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Placement
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype IllDoItMyself = IllDoItMyself TreacheryAttrs

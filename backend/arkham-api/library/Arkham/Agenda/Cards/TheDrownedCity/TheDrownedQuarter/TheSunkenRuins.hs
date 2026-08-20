@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Card
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Enemies
 import Arkham.Matcher
 
 newtype TheSunkenRuins = TheSunkenRuins AgendaAttrs

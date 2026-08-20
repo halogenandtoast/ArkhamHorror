@@ -4,7 +4,7 @@ import Arkham.Act.CardDefs.TheForgottenAge.TheUntamedWilds qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.GuardiansOfTime qualified as Treacheries
 
 newtype SearchForTheRuins = SearchForTheRuins ActAttrs
   deriving anyclass IsAct

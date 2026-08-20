@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype FailedExperiment = FailedExperiment TreacheryAttrs
@@ -38,7 +38,8 @@ instance RunMessage FailedExperiment where
       if canPlaceClues && isJust mLocation
         then chooseOneM iid $ withI18n do
           countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
-          countVar 1 $ labeled' "placeCluesOnYourLocation"
+          countVar 1
+            $ labeled' "placeCluesOnYourLocation"
             $ push
             $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1
         else assignHorror iid attrs 1

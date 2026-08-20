@@ -1,0 +1,48 @@
+module Arkham.Enemy.Cards.ReturnToThePathToCarcosa.ReturnToThePallidMask.MalformedSkeleton (malformedSkeleton) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToThePallidMask qualified as Cards
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Query
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+
+newtype MalformedSkeleton = MalformedSkeleton EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+malformedSkeleton :: EnemyCard MalformedSkeleton
+malformedSkeleton = enemy MalformedSkeleton Cards.malformedSkeleton
+
+instance HasModifiersFor MalformedSkeleton where
+  getModifiersFor (MalformedSkeleton a) = modifySelf a [AttackDealsEitherDamageOrHorror]
+
+instance HasAbilities MalformedSkeleton where
+  getAbilities (MalformedSkeleton x) =
+    extend
+      x
+      [ restricted
+          x
+          1
+          ( notExists (InvestigatorAt $ LocationWithDistanceFromAtMost 2 (locationWithEnemy x) Anywhere)
+              <> exists (location_ "Catacombs")
+          )
+          $ forced
+          $ WouldMoveFromHunter #when (be x)
+      , mkAbility x 2
+          $ forced
+          $ EnemyAttacks #when You AnyEnemyAttack (be x)
+      ]
+
+instance RunMessage MalformedSkeleton where
+  runMessage msg e@(MalformedSkeleton attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      traverse_ cancelBatch =<< getCurrentBatchId
+      lead <- getLead
+      chooseSelectM lead (NearestLocationToAny "Catacombs") (enemyMoveTo (attrs.ability 1) attrs)
+      pure e
+    UseThisAbility _ (isSource attrs -> True) 2 -> pure e
+    _ -> MalformedSkeleton <$> liftRunMessage msg attrs

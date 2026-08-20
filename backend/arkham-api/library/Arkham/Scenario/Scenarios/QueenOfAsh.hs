@@ -10,7 +10,8 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
@@ -20,7 +21,7 @@ import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTargetedEnemy, 
 import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Locations
 import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose
@@ -32,7 +33,7 @@ import Arkham.Scenario.Import.Lifted hiding (InvestigatorResigned)
 import Arkham.Scenarios.QueenOfAsh.Helpers
 import Arkham.Strategy (FoundCardsStrategy (..), fromDeck)
 import Arkham.Trait qualified as Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 import Arkham.Xp
 
 newtype QueenOfAsh = QueenOfAsh ScenarioAttrs

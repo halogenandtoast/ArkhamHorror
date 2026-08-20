@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Ca
 import Arkham.Act.Import.Lifted
 import Arkham.Act.Types (Field (..))
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Key

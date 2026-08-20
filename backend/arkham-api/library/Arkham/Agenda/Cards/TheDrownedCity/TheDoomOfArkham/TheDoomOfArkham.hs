@@ -7,7 +7,7 @@ import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Enemies
 import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario (getEncounterDiscard)
 import Arkham.Location.Types (Field (LocationName))

@@ -9,7 +9,8 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DeadHeat qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Enemies
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
@@ -19,7 +20,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.DeadHeat qualified as Locations
 import Arkham.Location.Types (Field (LocationTokens))
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
@@ -31,7 +32,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DeadHeat.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheScarletKeys.DeadHeat qualified as Stories
 import Arkham.Strategy
 import Arkham.Token
 import Arkham.Window qualified as Window

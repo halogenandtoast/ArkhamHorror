@@ -1,0 +1,31 @@
+module Arkham.Location.Cards.TheDreamEaters.PointOfNoReturn.CityOfGugs (cityOfGugs) where
+
+import Arkham.Ability
+import Arkham.GameValue
+import Arkham.Helpers.Story (readStory)
+import Arkham.Location.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Story.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Story
+
+newtype CityOfGugs = CityOfGugs LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+cityOfGugs :: LocationCard CityOfGugs
+cityOfGugs = locationWith CityOfGugs Cards.cityOfGugs 2 (PerPlayer 1) (canBeFlippedL .~ True)
+
+instance HasAbilities CityOfGugs where
+  getAbilities (CityOfGugs a) =
+    let restriction = if locationCanBeFlipped a then NoRestriction else Never
+     in extendRevealed a [restricted a 1 restriction $ forced $ Enters #after You $ be a]
+
+instance RunMessage CityOfGugs where
+  runMessage msg l@(CityOfGugs attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      flipOver iid attrs
+      pure l
+    Flip iid _ (isTarget attrs -> True) -> do
+      readStory iid (toId attrs) Story.theSentry
+      pure . CityOfGugs $ attrs & canBeFlippedL .~ False
+    _ -> CityOfGugs <$> liftRunMessage msg attrs

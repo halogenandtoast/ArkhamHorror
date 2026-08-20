@@ -5,18 +5,19 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers (struggleForAir)
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (needsAir)
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.AlienMachinery qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
 import Arkham.Helpers.Enemy (disengageEnemyFromAll)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMapM)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheGrandVault qualified as Locations
 import Arkham.Location.Types (Field (LocationPosition))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move (enemyMoveTo)
 import Arkham.Projection
 import Arkham.Trait (Trait (StarSpawn))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDrownedCity.TheInescapable qualified as Treacheries
 
 newtype DevilInTheMachine = DevilInTheMachine AgendaAttrs
   deriving anyclass IsAgenda

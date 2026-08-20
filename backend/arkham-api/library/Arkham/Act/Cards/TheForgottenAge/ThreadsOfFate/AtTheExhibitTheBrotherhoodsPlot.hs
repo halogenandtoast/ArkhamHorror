@@ -4,7 +4,7 @@ import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Acts
 import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.PnakoticBrotherhood qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier

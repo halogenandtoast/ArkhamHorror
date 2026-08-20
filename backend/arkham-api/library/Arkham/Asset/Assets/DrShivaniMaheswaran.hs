@@ -4,11 +4,11 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken.Types
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WakingNightmare qualified as Enemies
 import Arkham.Helpers.Window
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Prelude
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheDreamEaters.WakingNightmare qualified as Stories
 
 newtype DrShivaniMaheswaran = DrShivaniMaheswaran AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

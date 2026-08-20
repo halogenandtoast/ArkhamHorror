@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheScarletKeys.SanguineShadows.TheScarletShadow (theScar
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheScarletKeys.SanguineShadows qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.SanguineShadows qualified as Enemies
 import Arkham.Matcher
 
 newtype TheScarletShadow = TheScarletShadow ActAttrs

@@ -1,0 +1,25 @@
+module Arkham.Enemy.Cards.TheDreamEaters.WeaverOfTheCosmos.SwarmOfSpiders (swarmOfSpiders) where
+
+import Arkham.Classes
+import Arkham.Enemy.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Cards
+import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+import Arkham.Modifier qualified as Mods
+import Arkham.Prelude
+
+newtype SwarmOfSpiders = SwarmOfSpiders EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+swarmOfSpiders :: EnemyCard SwarmOfSpiders
+swarmOfSpiders = enemy SwarmOfSpiders Cards.swarmOfSpiders
+
+instance HasModifiersFor SwarmOfSpiders where
+  getModifiersFor (SwarmOfSpiders attrs) = do
+    x <- selectCount $ at_ (locationWithEnemy attrs) <> enemyIs Cards.swarmOfSpiders
+    modifySelf attrs [Mods.EnemyEvade x]
+
+instance RunMessage SwarmOfSpiders where
+  runMessage msg (SwarmOfSpiders attrs) =
+    SwarmOfSpiders <$> runMessage msg attrs

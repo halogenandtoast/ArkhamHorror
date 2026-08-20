@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.AbandonedAndAloneSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

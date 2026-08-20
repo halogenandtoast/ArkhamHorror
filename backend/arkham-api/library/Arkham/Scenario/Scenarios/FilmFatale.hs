@@ -12,7 +12,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.FilmFatale qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (pattern SetCampaignChaosBag)
 import Arkham.Message.Lifted.Choose

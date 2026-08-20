@@ -8,7 +8,7 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, LocationCard)
 import Arkham.Message.Lifted.Move

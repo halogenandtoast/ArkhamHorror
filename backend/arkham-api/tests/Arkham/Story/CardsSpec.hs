@@ -1,13 +1,15 @@
 module Arkham.Story.CardsSpec (spec) where
 
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Stories
+import Arkham.Story.CardDefs.ThePathToCarcosa.TheLastKing qualified as Stories
 import TestImport qualified as TI
 import TestImport.New
 
 spec :: Spec
 spec = describe "Story card definitions" do
   it "links printed story backs to their asset or location sides" do
-    map (.otherSide)
+    map
+      (.otherSide)
       [ Stories.engramsOath
       , Stories.songsThatTheHyadesShallSing
       , Stories.starsOfAldebaran

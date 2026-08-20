@@ -27,7 +27,8 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.TheCityOfArchives qualified as Treacheries
 import Data.Aeson (Result (..))
 import Data.Aeson.Types (parseMaybe)
 import Data.Map qualified as Map

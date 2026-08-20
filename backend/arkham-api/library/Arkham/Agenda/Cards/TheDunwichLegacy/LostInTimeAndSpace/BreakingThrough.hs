@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheDunwichLegacy.LostInTimeAndSpace.BreakingThrough (
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (EncounterCardSource)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
 

@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheForgottenAge.TheCityOfArchives.ExploringPnakotus (exp
 import Arkham.Act.CardDefs.TheForgottenAge.TheCityOfArchives qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.AgentsOfYogSothoth qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Keyword (Keyword (Aloof))

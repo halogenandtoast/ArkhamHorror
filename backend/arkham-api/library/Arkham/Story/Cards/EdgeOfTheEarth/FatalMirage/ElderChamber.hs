@@ -1,0 +1,29 @@
+module Arkham.Story.Cards.EdgeOfTheEarth.FatalMirage.ElderChamber (elderChamber) where
+
+import Arkham.Helpers.Query
+import Arkham.I18n
+import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Locations
+import Arkham.Message.Lifted.Choose
+import Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
+import Arkham.Story.Import.Lifted
+
+newtype ElderChamber = ElderChamber StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+elderChamber :: StoryCard ElderChamber
+elderChamber = story ElderChamber Cards.elderChamber
+
+instance RunMessage ElderChamber where
+  runMessage msg s@(ElderChamber attrs) = runQueueT $ case msg of
+    ResolveThisStory iid (is attrs -> True) -> do
+      mClutteredDormitory <- getSetAsideCardMaybe Locations.clutteredDormitory
+
+      chooseOneM iid do
+        for_ mClutteredDormitory \loc ->
+          withI18n
+            $ keyVar "name" "Cluttered Dormitory"
+            $ labeled' "putSetAsideLocationIntoPlay"
+            $ placeLocation_ loc
+      pure s
+    _ -> ElderChamber <$> liftRunMessage msg attrs

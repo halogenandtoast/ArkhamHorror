@@ -1,7 +1,7 @@
 module Arkham.Enemy.Cards.VengefulHound (vengefulHound) where
 
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.Promo qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher

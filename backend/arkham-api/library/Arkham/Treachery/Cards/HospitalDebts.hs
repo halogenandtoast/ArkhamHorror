@@ -5,7 +5,7 @@ import Arkham.Effect.Builder
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Script
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Cards
 import Arkham.Treachery.Import.Lifted hiding (moveTokens)
 
 newtype HospitalDebts = HospitalDebts TreacheryAttrs

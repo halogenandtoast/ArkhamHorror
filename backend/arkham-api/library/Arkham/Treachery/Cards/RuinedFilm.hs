@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.RuinedFilm (ruinedFilm, RuinedFilm (..)) where
 
 import Arkham.Matcher
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheScarletKeys qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype RuinedFilm = RuinedFilm TreacheryAttrs

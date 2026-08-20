@@ -7,14 +7,14 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message (pattern AfterSkillTest)

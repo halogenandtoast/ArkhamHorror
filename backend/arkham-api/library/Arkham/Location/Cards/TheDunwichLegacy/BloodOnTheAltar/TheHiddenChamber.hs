@@ -1,0 +1,44 @@
+module Arkham.Location.Cards.TheDunwichLegacy.BloodOnTheAltar.TheHiddenChamber (theHiddenChamber) where
+
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (..))
+import Arkham.Card
+import Arkham.GameValue
+import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
+import Arkham.Location.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Name
+import Arkham.Placement
+import Arkham.Projection
+
+newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+theHiddenChamber :: LocationCard TheHiddenChamber
+theHiddenChamber = location TheHiddenChamber Cards.theHiddenChamber 3 (Static 0)
+
+instance HasModifiersFor TheHiddenChamber where
+  getModifiersFor (TheHiddenChamber a) = do
+    selectOne (assetIs Assets.keyToTheChamber) >>= \case
+      Just keyToTheChamber -> do
+        placement <- field AssetPlacement keyToTheChamber
+        modifySelf a [Blocked | placement /= AttachedToLocation a.id]
+      _ -> modifySelf a [Blocked]
+
+instance RunMessage TheHiddenChamber where
+  runMessage msg (TheHiddenChamber attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      connectedLocation <- getJustLocation iid
+      name <- field LocationName connectedLocation
+      push $ PlaceLocation (toId attrs) (toCard attrs)
+      push $ AddDirectConnection (toId attrs) connectedLocation
+      push $ AddDirectConnection connectedLocation (toId attrs)
+      setLocationLabel attrs $ nameToLabel name <> "HiddenChamber"
+      TheHiddenChamber <$> liftRunMessage msg attrs
+    -- Revealing will cause the other location to drop it's known connections
+    -- So we must queue up to add it back
+    _ -> TheHiddenChamber <$> liftRunMessage msg attrs

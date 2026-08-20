@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Ca
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Location (getLocationOf, withLocationOf)
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

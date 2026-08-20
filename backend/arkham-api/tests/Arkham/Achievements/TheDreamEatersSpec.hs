@@ -26,11 +26,19 @@ import Arkham.CampaignStep (CampaignStep (EpilogueStep))
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Difficulty
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Ghouls qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Enemies
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Game.Settings (settingsAchievementsEnabled)
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Locations
 import Arkham.Placement
 import Arkham.ScenarioLogKey (ScenarioCountKey (SignOfTheGods))
 import Arkham.Source
@@ -562,14 +570,14 @@ spec = describe "The Dream-Eaters achievements" $ do
           , (Locations.upstairsHallway, 1)
           , (Locations.upstairsDoorwayLibrary, 1)
           , (Locations.upstairsDoorwayBedroom, 2)
-          , (Locations.attic_AThousandShapesOfHorror, 1)
+          , (Locations.attic, 1)
           ]
         {- These abilities run for real, so the house has to be standing: the
         Entryway reveals the Upstairs Hallway, and the Upstairs Hallway and the
         Entryway/Library pair pull the Attic and the Unmarked Tomb out of the
         set-aside pile. -}
         setUpTheHouse = do
-          setAside <- traverse genCard [Locations.unmarkedTomb, Locations.attic_AThousandShapesOfHorror]
+          setAside <- traverse genCard [Locations.unmarkedTomb, Locations.attic]
           run $ SetAsideCards setAside
           for (nub $ map fst allAbilities) \def -> do
             location <- testLocationWithDef def id

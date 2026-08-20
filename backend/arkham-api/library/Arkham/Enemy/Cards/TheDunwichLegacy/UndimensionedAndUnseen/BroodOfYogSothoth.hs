@@ -1,0 +1,37 @@
+module Arkham.Enemy.Cards.TheDunwichLegacy.UndimensionedAndUnseen.BroodOfYogSothoth (broodOfYogSothoth) where
+
+import Arkham.Asset.Cards.TheDunwichLegacy qualified as Assets
+import Arkham.DamageEffect
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Matcher
+import Arkham.Message qualified as Msg
+
+newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
+broodOfYogSothoth = enemy BroodOfYogSothoth Cards.broodOfYogSothoth
+
+instance HasModifiersFor BroodOfYogSothoth where
+  getModifiersFor (BroodOfYogSothoth a) = do
+    healthModifier <- perPlayer 1
+    modifySelf
+      a
+      [ HealthModifier healthModifier
+      , CanOnlyBeAttackedByAbilityOn $ singleton Assets.esotericFormula.cardCode
+      , CannotBeDamagedByPlayerSourcesExcept (SourceIsAsset (AssetIs Assets.esotericFormula.cardCode))
+      ]
+
+instance RunMessage BroodOfYogSothoth where
+  runMessage msg e@(BroodOfYogSothoth attrs) = runQueueT $ case msg of
+    Msg.DealDamage (EnemyTarget eid) (damageAssignmentSource -> (.asset) -> Just aid) | eid == enemyId attrs -> do
+      isEsotericFormula <- aid <=~> AssetWithTitle "Esoteric Formula"
+      if isEsotericFormula
+        then BroodOfYogSothoth <$> liftRunMessage msg attrs
+        else pure e
+    Msg.DealDamage (EnemyTarget eid) _ | eid == enemyId attrs -> pure e
+    _ -> BroodOfYogSothoth <$> liftRunMessage msg attrs

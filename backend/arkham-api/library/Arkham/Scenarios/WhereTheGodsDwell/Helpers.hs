@@ -16,7 +16,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 
 whichWhisperingChaos :: LocationAttrs -> CardDef

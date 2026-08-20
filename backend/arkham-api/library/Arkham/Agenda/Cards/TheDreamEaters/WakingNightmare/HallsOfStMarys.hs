@@ -10,8 +10,8 @@ import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message.Lifted.Story
 import Arkham.Placement
-import Arkham.Story.Cards qualified as Stories
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Story.CardDefs.TheDreamEaters.WakingNightmare qualified as Stories
+import Arkham.Treachery.CardDefs.TheDreamEaters.WakingNightmare qualified as Treacheries
 
 newtype HallsOfStMarys = HallsOfStMarys AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

@@ -3,8 +3,9 @@ module Arkham.Act.Cards.ThePathToCarcosa.ThePallidMask.ThroughTheCatacombs (thro
 import Arkham.Act.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
+import Arkham.Location.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenarios.ThePallidMask.Helpers
 

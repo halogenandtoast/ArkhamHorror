@@ -11,7 +11,8 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.HorrorsInTheRock qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWith)
 import Arkham.Helpers.Query (allInvestigators, getLead)
@@ -20,7 +21,7 @@ import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (LocationPosition))
 import Arkham.Matcher hiding (RevealLocation)

@@ -1,0 +1,35 @@
+module Arkham.Enemy.Cards.TheScarletKeys.MysteriesAbound.CoterieEnvoy (coterieEnvoy) where
+
+import Arkham.Ability
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
+import Arkham.Campaigns.TheScarletKeys.Modifiers (pattern NoExposeAt)
+import Arkham.Enemy.CardDefs.TheScarletKeys.MysteriesAbound qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Modifiers (modified_)
+import Arkham.Matcher
+
+newtype CoterieEnvoy = CoterieEnvoy EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+coterieEnvoy :: EnemyCard CoterieEnvoy
+coterieEnvoy = enemy CoterieEnvoy Cards.coterieEnvoy
+
+instance HasModifiersFor CoterieEnvoy where
+  getModifiersFor (CoterieEnvoy a) = do
+    when a.ready $ withLocationOf a \lid -> modified_ a lid [NoExposeAt]
+
+instance HasAbilities CoterieEnvoy where
+  getAbilities (CoterieEnvoy a) =
+    extend1 a
+      $ restricted a 1 (exists ConcealedCardAny)
+      $ freeReaction
+      $ EnemyDefeated #after You ByAny (be a)
+
+instance RunMessage CoterieEnvoy where
+  runMessage msg e@(CoterieEnvoy attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseRevealConcealedAt iid (attrs.ability 1) Anywhere
+      pure e
+    _ -> CoterieEnvoy <$> liftRunMessage msg attrs

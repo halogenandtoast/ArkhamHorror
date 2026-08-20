@@ -5,7 +5,7 @@ import Arkham.Agenda.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.MurderAtTheExcelsiorHotel qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.ScenarioLogKey
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.MurderAtTheExcelsiorHotel qualified as Treacheries
 
 newtype TheMurder = TheMurder AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

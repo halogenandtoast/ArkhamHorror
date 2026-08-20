@@ -4,7 +4,7 @@ import Arkham.Agenda.CardDefs.CarnevaleOfHorrors qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.CarnevaleOfHorrors qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Prelude

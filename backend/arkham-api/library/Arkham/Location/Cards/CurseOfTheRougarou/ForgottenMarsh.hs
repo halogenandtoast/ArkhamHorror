@@ -1,0 +1,35 @@
+module Arkham.Location.Cards.CurseOfTheRougarou.ForgottenMarsh (forgottenMarsh) where
+
+import Arkham.Ability
+import Arkham.Classes
+import Arkham.GameValue
+import Arkham.Location.CardDefs.CurseOfTheRougarou qualified as Cards (forgottenMarsh)
+import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Timing qualified as Timing
+
+newtype ForgottenMarsh = ForgottenMarsh LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+forgottenMarsh :: LocationCard ForgottenMarsh
+forgottenMarsh = location ForgottenMarsh Cards.forgottenMarsh 2 (Static 0)
+
+instance HasAbilities ForgottenMarsh where
+  getAbilities (ForgottenMarsh attrs) =
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+            $ ForcedAbility
+            $ Leaves Timing.When You
+            $ LocationWithId
+            $ toId attrs
+        | locationRevealed attrs
+        ]
+
+instance RunMessage ForgottenMarsh where
+  runMessage msg l@(ForgottenMarsh attrs) = case msg of
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ LoseResources iid (attrs.ability 1) 2
+      pure l
+    _ -> ForgottenMarsh <$> runMessage msg attrs

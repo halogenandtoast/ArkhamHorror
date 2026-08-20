@@ -7,7 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option (CampaignOption (PlayAsMiniCampaign))
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheLabyrinthsOfLunacy qualified as Enemies
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (getGameValue)
@@ -17,7 +17,7 @@ import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id (getId)
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheLabyrinthsOfLunacy qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (CanAdvance (CanAdvance), chooseDecks)
 import Arkham.Message.Lifted.Choose

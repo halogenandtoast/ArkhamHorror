@@ -1,0 +1,34 @@
+module Arkham.Location.Cards.TheCircleUndone.InTheClutchesOfChaos.SouthChurch_299 (southChurch_299) where
+
+import Arkham.Ability
+import Arkham.GameValue
+import Arkham.Location.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+
+newtype SouthChurch_299 = SouthChurch_299 LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+southChurch_299 :: LocationCard SouthChurch_299
+southChurch_299 = location SouthChurch_299 Cards.southChurch_299 2 (Static 0)
+
+instance HasAbilities SouthChurch_299 where
+  getAbilities (SouthChurch_299 attrs) =
+    extendRevealed
+      attrs
+      [ restricted attrs 1 (withBreaches attrs Here)
+          $ actionAbilityWithCost (DiscardAssetCost AnyAsset)
+      , scenarioI18n $ withI18nTooltip "southChurch.resign" $ locationResignAction attrs
+      ]
+
+instance RunMessage SouthChurch_299 where
+  runMessage msg l@(SouthChurch_299 attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      let breachCount = countLocationBreaches attrs
+      act <- selectJust AnyAct
+      removeBreaches attrs breachCount
+      placeBreaches act breachCount
+      pure l
+    _ -> SouthChurch_299 <$> liftRunMessage msg attrs

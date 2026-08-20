@@ -1,7 +1,7 @@
 module Arkham.Enemy.Cards.WeepingYurei (weepingYurei) where
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
 

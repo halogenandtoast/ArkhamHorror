@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.ThePaleLanternHypnoticGlow (thePaleLanternHypnoticGlo
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheMidwinterGala qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement

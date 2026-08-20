@@ -1,0 +1,20 @@
+module Arkham.Enemy.Cards.TheDreamEaters.TheSearchForKadath.BeingsOfIb (beingsOfIb) where
+
+import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Matcher
+import Arkham.Trait (Trait (Ruins))
+
+newtype BeingsOfIb = BeingsOfIb EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+beingsOfIb :: EnemyCard BeingsOfIb
+beingsOfIb =
+  enemyWith BeingsOfIb Cards.beingsOfIb \a ->
+    a
+      & (preyL .~ OnlyPrey (Prey $ at_ $ LocationWithTrait Ruins))
+      & (attacksL .~ at_ (locationWithEnemy a))
+
+instance RunMessage BeingsOfIb where
+  runMessage msg (BeingsOfIb attrs) = BeingsOfIb <$> runMessage msg attrs

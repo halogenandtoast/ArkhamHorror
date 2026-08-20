@@ -1,0 +1,30 @@
+module Arkham.Treachery.Cards.TheDreamEaters.DreamersCurse.DeeperSlumber (deeperSlumber) where
+
+import Arkham.Ability
+import Arkham.Helpers.Modifiers
+import Arkham.Treachery.CardDefs.TheDreamEaters.DreamersCurse qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype DeeperSlumber = DeeperSlumber TreacheryAttrs
+  deriving anyclass IsTreachery
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+deeperSlumber :: TreacheryCard DeeperSlumber
+deeperSlumber = treachery DeeperSlumber Cards.deeperSlumber
+
+instance HasModifiersFor DeeperSlumber where
+  getModifiersFor (DeeperSlumber attrs) =
+    inThreatAreaGets attrs [HandSize (-3), CheckHandSizeAfterDraw]
+
+instance HasAbilities DeeperSlumber where
+  getAbilities (DeeperSlumber a) = [restrictedAbility a 1 OnSameLocation doubleActionAbility]
+
+instance RunMessage DeeperSlumber where
+  runMessage msg t@(DeeperSlumber attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      placeInThreatArea attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      toDiscardBy iid (attrs.ability 1) attrs
+      pure t
+    _ -> DeeperSlumber <$> liftRunMessage msg attrs

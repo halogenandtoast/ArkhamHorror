@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnToThePathToCarcosa.ReturnToTheLastKing qualified as Treacheries
 
 newtype BetterNeverThanLate = BetterNeverThanLate AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.MobGoons (mobGoons) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Strategy

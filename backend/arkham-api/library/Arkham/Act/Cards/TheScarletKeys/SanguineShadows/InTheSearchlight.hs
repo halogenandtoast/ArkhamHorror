@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Agenda.CardDefs.TheScarletKeys.SanguineShadows qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.SanguineShadows qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.FlavorText

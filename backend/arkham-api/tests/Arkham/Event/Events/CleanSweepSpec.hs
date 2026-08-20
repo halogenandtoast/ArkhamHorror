@@ -2,7 +2,8 @@ module Arkham.Event.Events.CleanSweepSpec (spec) where
 
 import Arkham.Direction
 import Arkham.Event.Cards qualified as Events
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Locations
 import TestImport.New
 
 spec :: Spec

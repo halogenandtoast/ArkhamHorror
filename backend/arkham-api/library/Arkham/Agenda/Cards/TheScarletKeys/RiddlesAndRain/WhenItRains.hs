@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Acts
 import Arkham.Agenda.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Enemies
 import Arkham.Helpers.Query (getLead)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Locations
 import Arkham.Matcher
 
 newtype WhenItRains = WhenItRains AgendaAttrs

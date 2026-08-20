@@ -1,0 +1,24 @@
+module Arkham.Enemy.Cards.BrethrenOfAsh.SmokeAndMirrors.Whippoorwill2 (whippoorwill2) where
+
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+
+newtype Whippoorwill2 = Whippoorwill2 EnemyAttrs
+  deriving anyclass (IsEnemy, RunMessage)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+whippoorwill2 :: EnemyCard Whippoorwill2
+whippoorwill2 = enemy Whippoorwill2 Cards.whippoorwill2
+
+instance HasModifiersFor Whippoorwill2 where
+  getModifiersFor (Whippoorwill2 a) = do
+    modifySelect
+      a
+      (InvestigatorAt $ locationWithEnemy a)
+      [ SkillModifier #willpower (-1)
+      , SkillModifier #intellect (-1)
+      , SkillModifier #combat (-1)
+      , SkillModifier #agility (-1)
+      ]

@@ -6,8 +6,8 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Effect.Import
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Enemy.CardDefs.TheForgottenAge.ShatteredAeons qualified as Enemies
+import Arkham.Location.CardDefs.TheForgottenAge.ShatteredAeons qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection

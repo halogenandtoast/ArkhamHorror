@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as C
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.Token

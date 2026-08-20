@@ -7,10 +7,10 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet (EncounterSet (Zoogs))
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenarios.TheSearchForKadath.Helpers

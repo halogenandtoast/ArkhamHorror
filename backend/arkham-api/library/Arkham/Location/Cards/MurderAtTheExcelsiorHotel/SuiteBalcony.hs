@@ -1,0 +1,65 @@
+module Arkham.Location.Cards.MurderAtTheExcelsiorHotel.SuiteBalcony (
+  suiteBalcony,
+  SuiteBalcony (..),
+)
+where
+
+import Arkham.Prelude
+
+import Arkham.DamageEffect
+import Arkham.GameValue
+import Arkham.Helpers.Enemy
+import Arkham.Location.CardDefs.MurderAtTheExcelsiorHotel qualified as Cards
+import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message qualified as Msg
+import Arkham.Trait (Trait (Humanoid))
+
+newtype SuiteBalcony = SuiteBalcony LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+suiteBalcony :: LocationCard SuiteBalcony
+suiteBalcony = location SuiteBalcony Cards.suiteBalcony 2 (PerPlayer 1)
+
+instance HasAbilities SuiteBalcony where
+  getAbilities (SuiteBalcony attrs) =
+    withRevealedAbilities
+      attrs
+      [ doesNotProvokeAttacksOfOpportunity
+          $ skillTestAbility
+          $ restrictedAbility
+            attrs
+            1
+            (Here <> exists (enemyAt (toId attrs) <> EnemyWithTrait Humanoid))
+            actionAbility
+      ]
+
+instance RunMessage SuiteBalcony where
+  runMessage msg l@(SuiteBalcony attrs) = case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      enemies <- select $ enemyAt (toId attrs) <> EnemyWithTrait Humanoid
+      player <- getPlayer iid
+      sid <- getRandom
+      let chooseSkill skill enemy =
+            SkillLabel skill [beginSkillTest sid iid (toAbilitySource attrs 1) (toTarget enemy) skill (Fixed 4)]
+      push
+        $ chooseOrRunOne
+          player
+          [ targetLabel enemy [chooseOne player [chooseSkill #combat enemy, chooseSkill #agility enemy]]
+          | enemy <- enemies
+          ]
+      pure l
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      mtarget <- getSkillTestTarget
+      case mtarget of
+        Just (EnemyTarget eid) -> do
+          isElite <- eid <=~> EliteEnemy
+          defeat <- defeatEnemy eid iid (toAbilitySource attrs 1)
+          pushAll $ directHorror iid (toAbilitySource attrs 1) 1
+            : if isElite
+              then [Msg.DealDamage (EnemyTarget eid) $ nonAttack (Just iid) (toAbilitySource attrs 1) 2]
+              else defeat
+        _ -> error "wrong target"
+      pure l
+    _ -> SuiteBalcony <$> runMessage msg attrs

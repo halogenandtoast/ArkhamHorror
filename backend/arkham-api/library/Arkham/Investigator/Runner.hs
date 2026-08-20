@@ -146,7 +146,8 @@ import Arkham.Slot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.UnspeakableFate qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Treacheries
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow, primaryWindowTarget)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -566,7 +567,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   if investigatorId == "05046" && cardDef.cardCode == "05108"
                     then
                       selectOne TheScenario <&> \case
-                        Just "54016" -> Treacheries.fateOfAllFoolsUnspeakableFate
+                        Just "54016" -> Treacheries.fateOfAllFools
                         _ -> cardDef
                     else pure cardDef
                 card <- setOwner investigatorId =<< genCard cardDef'
@@ -608,7 +609,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   [ (`notElem` map toCardCode investigatorStartsWithInHand) . toCardCode
                   , not
                       . ( `cardMatch`
-                            oneOf [cardIs Treacheries.falseAwakening, cardIs Treacheries.falseAwakeningPointOfNoReturn]
+                            oneOf
+                              [cardIs Treacheries.falseAwakening, cardIs Treacheries.falseAwakening]
                         )
                   ]
             )

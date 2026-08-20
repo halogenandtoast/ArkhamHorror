@@ -4,7 +4,8 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Phase

@@ -1,7 +1,7 @@
 module Arkham.UltimatumsAndBoons.UltimatumOfTheBrokenVeilSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Treacheries
 import Helpers.UltimatumsAndBoons
 import TestImport.New
 

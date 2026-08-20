@@ -16,7 +16,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getCanMoveToLocations)
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheVale qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -24,7 +24,7 @@ import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheFirstDay qualified as Stories
 import Arkham.Strategy
 import Arkham.Window (defaultWindows)
 

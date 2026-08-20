@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)

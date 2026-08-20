@@ -10,7 +10,9 @@ import Arkham.CampaignLog
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.AgentsOfNyarlathotep qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.Corsairs qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardCode))
 import Arkham.Exception
 import Arkham.Helpers.FlavorText (additionalRules, buildFlavor, flavor, li, setTitle, setup, ul)
@@ -19,7 +21,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose

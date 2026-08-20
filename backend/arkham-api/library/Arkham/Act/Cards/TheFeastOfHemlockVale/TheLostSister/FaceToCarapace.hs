@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheFeastOfHemlockVale.TheLostSister.FaceToCarapace (face
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Enemies
 import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

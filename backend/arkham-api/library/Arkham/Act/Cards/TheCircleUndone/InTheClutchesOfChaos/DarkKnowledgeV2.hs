@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Act
 import Arkham.Act.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Matcher
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers

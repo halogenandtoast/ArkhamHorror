@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.MobEnforcerSpec (spec)
 where
 
 import Arkham.Ability.Types
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot qualified as Enemies
 import TestImport.New
 
 spec :: Spec

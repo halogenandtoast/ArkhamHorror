@@ -6,7 +6,8 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.SilverTwilightLodge qualified as Enemies
 import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount, getSetAsideCardsMatching)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Brazier

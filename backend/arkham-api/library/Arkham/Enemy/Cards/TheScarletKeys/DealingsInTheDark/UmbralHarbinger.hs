@@ -1,0 +1,31 @@
+module Arkham.Enemy.Cards.TheScarletKeys.DealingsInTheDark.UmbralHarbinger (umbralHarbinger) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+
+newtype UmbralHarbinger = UmbralHarbinger EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+umbralHarbinger :: EnemyCard UmbralHarbinger
+umbralHarbinger = enemy UmbralHarbinger Cards.umbralHarbinger
+
+instance HasAbilities UmbralHarbinger where
+  getAbilities (UmbralHarbinger a) =
+    extend1 a
+      $ restricted a 1 (exists $ enemy_ #cultist)
+      $ forced
+      $ EnemyDealtDamage #when AnyDamageEffect (be a) AnySource
+
+instance RunMessage UmbralHarbinger where
+  runMessage msg e@(UmbralHarbinger attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      withLocationOf attrs \lid -> do
+        cultists <- select $ NearestEnemyToLocationFallback lid #cultist
+        chooseTargetM iid cultists $ placeDoomOn attrs 1
+      pure e
+    _ -> UmbralHarbinger <$> liftRunMessage msg attrs

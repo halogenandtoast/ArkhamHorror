@@ -1,11 +1,11 @@
 module Arkham.Treachery.Cards.SmiteTheWicked (smiteTheWicked) where
 
-import Arkham.Deck qualified as Deck
 import Arkham.Ability
+import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Creation
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDunwichLegacy qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs

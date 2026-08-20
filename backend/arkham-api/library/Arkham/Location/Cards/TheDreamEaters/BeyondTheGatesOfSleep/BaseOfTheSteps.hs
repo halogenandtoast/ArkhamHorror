@@ -1,0 +1,48 @@
+module Arkham.Location.Cards.TheDreamEaters.BeyondTheGatesOfSleep.BaseOfTheSteps (baseOfTheSteps, BaseOfTheSteps (..)) where
+
+import Arkham.Ability
+import Arkham.GameValue
+import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.Helpers.Modifiers
+import Arkham.I18n
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Cards
+import Arkham.Location.Import.Lifted hiding (discardCard)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Projection
+
+newtype BaseOfTheSteps = BaseOfTheSteps LocationAttrs
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+baseOfTheSteps :: LocationCard BaseOfTheSteps
+baseOfTheSteps = location BaseOfTheSteps Cards.baseOfTheSteps 3 (PerPlayer 1)
+
+instance HasModifiersFor BaseOfTheSteps where
+  getModifiersFor (BaseOfTheSteps a) = whenUnrevealed a $ maybeModifySelf a do
+    liftGuardM $ selectAny $ locationIs Cards.sevenHundredSteps <> LocationWithAnyClues
+    pure [Blocked]
+
+instance HasAbilities BaseOfTheSteps where
+  getAbilities (BaseOfTheSteps a) =
+    extendRevealed1 a
+      $ skillTestAbility
+      $ forcedAbility a 1
+      $ Enters #after (You <> HandWith (LengthIs $ atLeast 1)) (be a)
+
+instance RunMessage BaseOfTheSteps where
+  runMessage msg l@(BaseOfTheSteps attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (InvestigatorHandLengthCalculation iid)
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      hand <- field InvestigatorHand iid
+      for_ hand \card -> do
+        focusCard card do
+          chooseOneM iid $ withI18n do
+            labeledI "discard" $ discardCard iid (attrs.ability 1) card
+            countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+      pure l
+    _ -> BaseOfTheSteps <$> liftRunMessage msg attrs

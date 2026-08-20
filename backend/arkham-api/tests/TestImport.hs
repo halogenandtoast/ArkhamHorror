@@ -67,7 +67,7 @@ import Arkham.CampaignLogKey
 import Arkham.Classes.HasGame
 import Arkham.Debug
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Cards
 import Arkham.Enemy.Types
 import Arkham.Entities qualified as Entities
 import Arkham.Epic.Types (HasMaybeEpic (..))
@@ -80,7 +80,8 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types hiding (settingsL)
 import Arkham.Keyword qualified as Keyword
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.CardDefs.NightOfTheZealot.TheGathering qualified as Cards
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Cards
 import Arkham.Location.Types
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)

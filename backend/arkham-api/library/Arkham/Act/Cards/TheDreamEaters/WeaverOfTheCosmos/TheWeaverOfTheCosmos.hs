@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.DamageEffect
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Enemies
 import Arkham.Matcher
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Trait (Trait (AncientOne))

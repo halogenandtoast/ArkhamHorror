@@ -4,7 +4,8 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheForgottenAge.TurnBackTime qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Locations
 import Arkham.Scenario.Deck
 
 newtype IntoTheRuinsOnceAgain = IntoTheRuinsOnceAgain ActAttrs

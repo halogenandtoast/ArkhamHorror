@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.SelfCentered (selfCentered, SelfCentered (..)) whe
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Message
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype SelfCentered = SelfCentered TreacheryAttrs

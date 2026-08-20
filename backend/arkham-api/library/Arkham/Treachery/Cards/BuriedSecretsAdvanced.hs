@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers (inThreatAreaGets, pattern CannotMoveExceptBySce
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype BuriedSecretsAdvanced = BuriedSecretsAdvanced TreacheryAttrs

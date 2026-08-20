@@ -10,7 +10,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.FortuneAndFolly.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.FortuneAndFolly qualified as Stories
 import Arkham.Story.Types (Field (StoryTokens))
 import Arkham.Token
 import Arkham.Trait (Trait (Casino))

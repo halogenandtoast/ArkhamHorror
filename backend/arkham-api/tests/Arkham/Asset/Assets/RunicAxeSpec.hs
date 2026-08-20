@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.RunicAxeSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (AssetAttrs (..))
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.CurseOfTheRougarou qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Placement
 import Arkham.Projection

@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.InHarmsWay (inHarmsWay) where
 
 import Arkham.Ability
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Core2026 qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype InHarmsWay = InHarmsWay TreacheryAttrs

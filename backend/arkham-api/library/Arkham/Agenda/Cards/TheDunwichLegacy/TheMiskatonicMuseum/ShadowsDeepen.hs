@@ -4,11 +4,11 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Treacheries
 
 newtype ShadowsDeepen = ShadowsDeepen AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

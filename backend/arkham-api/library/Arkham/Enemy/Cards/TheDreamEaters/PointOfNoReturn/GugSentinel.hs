@@ -1,0 +1,38 @@
+module Arkham.Enemy.Cards.TheDreamEaters.PointOfNoReturn.GugSentinel (gugSentinel) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+
+newtype GugSentinel = GugSentinel EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+gugSentinel :: EnemyCard GugSentinel
+gugSentinel = enemy GugSentinel Cards.gugSentinel
+
+instance HasModifiersFor GugSentinel where
+  getModifiersFor (GugSentinel attrs) = do
+    health <- perPlayer 2
+    modifySelf attrs [HealthModifier health]
+
+instance HasAbilities GugSentinel where
+  getAbilities (GugSentinel attrs) =
+    extend
+      attrs
+      [ restricted attrs 1 (exists $ InvestigatorAt (locationWithEnemy attrs.id))
+          $ forced
+          $ EnemyReadies #after (be attrs)
+      ]
+
+instance RunMessage GugSentinel where
+  runMessage msg e@(GugSentinel attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      selectEach (InvestigatorAt $ locationWithEnemy $ toId attrs) \iid -> do
+        assignHorror iid (attrs.ability 1) 1
+
+      pure e
+    _ -> GugSentinel <$> liftRunMessage msg attrs

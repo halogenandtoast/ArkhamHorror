@@ -6,7 +6,7 @@ import Arkham.Act.Sequence (ActSide (..))
 import Arkham.Act.Types (Act)
 import Arkham.Entities qualified as Entities
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Locations
 import Arkham.Location.Types (revealedL)
 import Arkham.Matcher
 import Arkham.Token

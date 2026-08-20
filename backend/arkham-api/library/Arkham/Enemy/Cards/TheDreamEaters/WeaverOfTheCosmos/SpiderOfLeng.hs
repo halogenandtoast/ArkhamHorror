@@ -1,0 +1,36 @@
+module Arkham.Enemy.Cards.TheDreamEaters.WeaverOfTheCosmos.SpiderOfLeng (spiderOfLeng) where
+
+import Arkham.Ability
+import Arkham.Classes.HasQueue (execQueueT)
+import Arkham.Enemy.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Query (getLead)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+
+newtype SpiderOfLeng = SpiderOfLeng EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+spiderOfLeng :: EnemyCard SpiderOfLeng
+spiderOfLeng = enemy SpiderOfLeng Cards.spiderOfLeng
+
+instance HasAbilities SpiderOfLeng where
+  getAbilities (SpiderOfLeng x) = extend1 x $ mkAbility x 1 $ forced $ PhaseEnds #when #enemy
+
+instance RunMessage SpiderOfLeng where
+  runMessage msg e@(SpiderOfLeng attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      lead <- getLead
+      swarmsOfSpiders <- select $ enemyIs Cards.swarmOfSpiders <> not_ IsSwarm
+      if null swarmsOfSpiders
+        then findEncounterCard lead attrs Cards.swarmOfSpiders
+        else chooseOneAtATimeM lead $ targets swarmsOfSpiders \eid -> push $ PlaceSwarmCards lead eid 1
+      pure e
+    FoundEncounterCard _iid (isTarget attrs -> True) card -> do
+      (this, msgs) <- execQueueT $ createEnemy card (locationWithEnemy attrs.id)
+      abilityModifier (AbilityRef (toSource attrs) 1) (attrs.ability 1) this NoInitialSwarm
+      pushAll msgs
+      pure e
+    _ -> SpiderOfLeng <$> liftRunMessage msg attrs

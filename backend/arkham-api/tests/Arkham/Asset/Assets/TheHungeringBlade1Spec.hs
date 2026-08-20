@@ -4,7 +4,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Matcher (assetIs)
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

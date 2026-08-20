@@ -1,0 +1,24 @@
+module Arkham.Enemy.Cards.NightOfTheZealot.CultOfUmordhoth.RuthTurner (ruthTurner) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.NightOfTheZealot.CultOfUmordhoth qualified as Cards
+import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
+import Arkham.Matcher
+
+newtype RuthTurner = RuthTurner EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+ruthTurner :: EnemyCard RuthTurner
+ruthTurner = enemyWith RuthTurner Cards.ruthTurner (spawnAtL ?~ "St. Mary's Hospital")
+
+instance HasAbilities RuthTurner where
+  getAbilities (RuthTurner a) =
+    extend1 a $ mkAbility a 1 $ forced $ EnemyEvaded #after Anyone (be a)
+
+instance RunMessage RuthTurner where
+  runMessage msg e@(RuthTurner attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
+      pure e
+    _ -> RuthTurner <$> liftRunMessage msg attrs

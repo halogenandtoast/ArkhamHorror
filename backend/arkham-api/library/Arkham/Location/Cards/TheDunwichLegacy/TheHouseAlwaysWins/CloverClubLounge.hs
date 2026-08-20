@@ -1,0 +1,29 @@
+module Arkham.Location.Cards.TheDunwichLegacy.TheHouseAlwaysWins.CloverClubLounge (cloverClubLounge) where
+
+import Arkham.Ability
+import Arkham.GameValue
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Cards (
+  cloverClubLounge,
+ )
+import Arkham.Location.Import.Lifted
+
+newtype CloverClubLounge = CloverClubLounge LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+cloverClubLounge :: LocationCard CloverClubLounge
+cloverClubLounge = symbolLabel $ location CloverClubLounge Cards.cloverClubLounge 2 (Static 0)
+
+instance HasAbilities CloverClubLounge where
+  getAbilities (CloverClubLounge attrs) =
+    extendRevealed1 attrs
+      $ playerLimit PerGame
+      $ restricted attrs 1 (OnAct 1 <> Here)
+      $ actionAbilityWithCost (HandDiscardCost 1 $ #ally <> #asset)
+
+instance RunMessage CloverClubLounge where
+  runMessage msg l@(CloverClubLounge attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      gainClues iid (attrs.ability 1) 2
+      pure l
+    _ -> CloverClubLounge <$> liftRunMessage msg attrs

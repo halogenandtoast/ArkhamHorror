@@ -1,7 +1,7 @@
 module Arkham.Asset.Assets.SummonedHound1Spec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Locations
 import TestImport.New
 
 spec :: Spec

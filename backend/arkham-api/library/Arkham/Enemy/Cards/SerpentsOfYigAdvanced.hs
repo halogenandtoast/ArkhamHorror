@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.SerpentsOfYigAdvanced (serpentsOfYigAdvanced, SerpentsOfYigAdvanced (..)) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.Standalone qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 

@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheCircleUndone.DisappearanceAtTheTwilightEstate q
 import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.DefeatedBy
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWatcher qualified as Enemies
 import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorCardCode))

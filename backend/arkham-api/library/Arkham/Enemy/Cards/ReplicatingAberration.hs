@@ -11,7 +11,7 @@ module Arkham.Enemy.Cards.ReplicatingAberration (
 ) where
 
 import Arkham.Card.CardDef (CardDef)
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.Standalone qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (RemoveFromGameInsteadOfDiscard), modifySelf)
 

@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.CarnevaleOfHorrors qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.CarnevaleOfHorrors qualified as Enemies
 import Arkham.Helpers.Window (getEnemy)
 import Arkham.Matcher
 import Arkham.Strategy

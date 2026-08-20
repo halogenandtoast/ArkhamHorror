@@ -1,0 +1,31 @@
+module Arkham.Enemy.Cards.MachinationsThroughTime.ManyAngledThing (manyAngledThing) where
+
+import Arkham.Enemy.CardDefs.MachinationsThroughTime qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Keyword qualified as Keyword
+import Arkham.Location.CardDefs.MachinationsThroughTime qualified as Locations
+import Arkham.Matcher
+import Arkham.Trait (Trait (Future, Past, Present))
+
+newtype ManyAngledThing = ManyAngledThing EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+manyAngledThing :: EnemyCard ManyAngledThing
+manyAngledThing =
+  enemy ManyAngledThing Cards.manyAngledThing
+    & setSpawnAt (locationIs Locations.tindalos)
+
+instance HasModifiersFor ManyAngledThing where
+  getModifiersFor (ManyAngledThing a) = do
+    atPast <- selectAny $ locationWithEnemy a.id <> LocationWithTrait Past
+    atPresent <- selectAny $ locationWithEnemy a.id <> LocationWithTrait Present
+    atFuture <- selectAny $ locationWithEnemy a.id <> LocationWithTrait Future
+    modifySelf a
+      $ (guard atPast *> [EnemyEvade 1, AddKeyword Keyword.Alert])
+      <> (guard atPresent *> [DamageDealt 1, HorrorDealt 1])
+      <> (guard atFuture *> [EnemyFight 1, AddKeyword Keyword.Retaliate])
+
+instance RunMessage ManyAngledThing where
+  runMessage msg (ManyAngledThing attrs) = ManyAngledThing <$> runMessage msg attrs

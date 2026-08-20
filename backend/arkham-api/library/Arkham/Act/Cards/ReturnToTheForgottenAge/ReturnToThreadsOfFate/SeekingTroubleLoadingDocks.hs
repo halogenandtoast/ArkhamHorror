@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.ReturnToTheForgottenAge.ReturnToThreadsOfFate qualifi
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToThreadsOfFate qualified as Locations
 import Arkham.Matcher
 
 newtype SeekingTroubleLoadingDocks = SeekingTroubleLoadingDocks ActAttrs

@@ -1,11 +1,15 @@
 module Arkham.Investigator.Cards.MandyThompsonSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Ghouls qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Cards
 import Arkham.Investigator.Cards (mandyThompson, rolandBanks)
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Skills
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot.AncientEvils qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot.Ghouls qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot.LockedDoors qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot.StrikingFear qualified as Cards
 import TestImport.New
 
 spec :: Spec

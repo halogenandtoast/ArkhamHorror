@@ -14,7 +14,7 @@ import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Scenarios.FateOfTheVale.Helpers (scenarioI18n)
 import Arkham.Token (Token (Kindling))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.Fire qualified as Treacheries
 
 newtype FateOfTheValeV3 = FateOfTheValeV3 ActAttrs
   deriving anyclass IsAct

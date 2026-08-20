@@ -4,7 +4,7 @@ import Arkham.Act.CardDefs.ReturnToTheForgottenAge.ReturnToThreadsOfFate qualifi
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Log
 import Arkham.Matcher

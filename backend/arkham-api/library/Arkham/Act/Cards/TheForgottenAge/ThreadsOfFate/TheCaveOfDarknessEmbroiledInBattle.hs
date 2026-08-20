@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Acts
 import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Deck qualified as Deck
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Trait

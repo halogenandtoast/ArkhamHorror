@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as Car
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers (exploreAction_, runExplore)
 import Arkham.Helpers.Query (getSetAsideCardMaybe)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as Locations
 import Arkham.Scenario.Deck
 
 newtype SearchForTheGate = SearchForTheGate ActAttrs

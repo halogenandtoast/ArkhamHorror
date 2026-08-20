@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.SearchingForIzzieSpec (spec) where
 
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDunwichLegacy qualified as Cards
 import Arkham.Treachery.Types (Field (..))
 import TestImport.New
 

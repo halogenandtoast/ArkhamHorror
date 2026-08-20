@@ -11,7 +11,9 @@ import Arkham.ChaosToken
 import Arkham.Cost
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText
@@ -19,7 +21,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
@@ -32,7 +34,7 @@ import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheUnspeakableOath.Helpers
 import Arkham.Trait hiding (Cultist, ElderThing, Expert)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath qualified as Treacheries
 import Arkham.Window qualified as Window
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs

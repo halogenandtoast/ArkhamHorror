@@ -7,13 +7,14 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.AgentsOfYogSothoth qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToTheCityOfArchives qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheCityOfArchives qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log

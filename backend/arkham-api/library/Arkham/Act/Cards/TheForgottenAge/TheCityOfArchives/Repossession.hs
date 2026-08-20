@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheForgottenAge.TheCityOfArchives.Repossession (reposses
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheForgottenAge.TheCityOfArchives qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.AgentsOfYogSothoth qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword

@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheForgottenAge.HeartOfTheElders.OpeningTheMaw (openingT
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Locations
 import Arkham.Matcher
 import Arkham.Token
 

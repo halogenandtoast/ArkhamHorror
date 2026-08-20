@@ -1,7 +1,7 @@
 module Arkham.Enemy.Cards.BlackChamberOperative (blackChamberOperative) where
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.Core2026 qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.Helpers.Location (getLocationOf)

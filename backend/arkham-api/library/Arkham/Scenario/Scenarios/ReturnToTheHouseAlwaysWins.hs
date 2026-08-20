@@ -4,9 +4,10 @@ import Arkham.Act.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Acts
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheHouseAlwaysWins qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Locations
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheHouseAlwaysWins
 import Arkham.Scenarios.TheHouseAlwaysWins.Helpers

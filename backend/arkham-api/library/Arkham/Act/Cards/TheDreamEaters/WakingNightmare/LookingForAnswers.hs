@@ -4,7 +4,7 @@ import Arkham.Act.CardDefs.TheDreamEaters.WakingNightmare qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.WakingNightmare qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenarios.WakingNightmare.Helpers
 

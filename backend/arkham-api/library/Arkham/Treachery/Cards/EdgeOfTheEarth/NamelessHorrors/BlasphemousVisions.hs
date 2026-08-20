@@ -1,0 +1,41 @@
+module Arkham.Treachery.Cards.EdgeOfTheEarth.NamelessHorrors.BlasphemousVisions (blasphemousVisions) where
+
+import Arkham.Ability
+import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.EncounterSet (EncounterSet (Tekelili))
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Shuffle
+import Arkham.Matcher.Card
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth.NamelessHorrors qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype BlasphemousVisions = BlasphemousVisions TreacheryAttrs
+  deriving anyclass IsTreachery
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+blasphemousVisions :: TreacheryCard BlasphemousVisions
+blasphemousVisions = treachery BlasphemousVisions Cards.blasphemousVisions
+
+instance HasModifiersFor BlasphemousVisions where
+  getModifiersFor (BlasphemousVisions a) = inThreatAreaGets a [ResolveEffectsAgainMatch (CardFromEncounterSet Tekelili)]
+
+instance HasAbilities BlasphemousVisions where
+  getAbilities (BlasphemousVisions a) =
+    [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]
+
+instance RunMessage BlasphemousVisions where
+  runMessage msg t@(BlasphemousVisions attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      cards <- getTekelili 1
+      whenCanShuffleIn iid cards do
+        addTekelili iid cards
+        placeInThreatArea attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
+      pure t
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      toDiscardBy iid (attrs.ability 1) attrs
+      pure t
+    _ -> BlasphemousVisions <$> liftRunMessage msg attrs

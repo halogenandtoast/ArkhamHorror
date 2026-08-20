@@ -6,7 +6,7 @@ import Arkham.Agenda.CardDefs.MurderAtTheExcelsiorHotel qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.AlienInterference qualified as Cards
 import Arkham.Fight
 import Arkham.Matcher
 

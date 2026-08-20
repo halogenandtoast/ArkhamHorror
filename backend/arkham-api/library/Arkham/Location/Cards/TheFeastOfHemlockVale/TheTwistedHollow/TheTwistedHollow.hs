@@ -1,0 +1,33 @@
+module Arkham.Location.Cards.TheFeastOfHemlockVale.TheTwistedHollow.TheTwistedHollow (theTwistedHollow) where
+
+import Arkham.Ability
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Acts
+import Arkham.Act.Sequence
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Modifier (ModifierType (ScenarioModifier))
+
+newtype TheTwistedHollow = TheTwistedHollow LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theTwistedHollow :: LocationCard TheTwistedHollow
+theTwistedHollow = locationWith TheTwistedHollow Cards.theTwistedHollow 4 (PerPlayer 1) connectsToAdjacent
+
+instance HasAbilities TheTwistedHollow where
+  getAbilities (TheTwistedHollow a) =
+    extendRevealed1 a
+      $ restricted a 1 (OnAct 2 <> noEscape <> EachUndefeatedInvestigator (at_ (be a)))
+      $ Objective
+      $ triggered (RoundEnds #when) (GroupClueCost (PerPlayer 2) (be a))
+   where
+    -- Standalone Mode: "Ignore the Objective text on Act 2a. There is no escape."
+    noEscape = not_ $ ScenarioExists $ ScenarioWithModifier $ ScenarioModifier "noEscape"
+
+instance RunMessage TheTwistedHollow where
+  runMessage msg l@(TheTwistedHollow attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      push $ AdvanceToAct 1 Acts.wheresBertie B (toSource attrs)
+      pure l
+    _ -> TheTwistedHollow <$> liftRunMessage msg attrs

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Key
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Enemies
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)

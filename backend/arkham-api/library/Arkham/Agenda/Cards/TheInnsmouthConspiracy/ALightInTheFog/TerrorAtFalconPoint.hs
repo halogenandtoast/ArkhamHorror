@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.TheInnsmouthConspiracy.ALightInTheFog.TerrorAtFalconP
 
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher

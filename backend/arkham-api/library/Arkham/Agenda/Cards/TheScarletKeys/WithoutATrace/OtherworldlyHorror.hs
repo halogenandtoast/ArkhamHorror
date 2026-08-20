@@ -4,7 +4,8 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheScarletKeys.WithoutATrace qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.Outsiders qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.WithoutATrace qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getInvestigators, getLead)
 import Arkham.Matcher

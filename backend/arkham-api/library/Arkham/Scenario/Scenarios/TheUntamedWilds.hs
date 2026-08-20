@@ -8,13 +8,15 @@ import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.Card.CardCode
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheUntamedWilds qualified as Enemies
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.Rainforest qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ReturnToRainforest qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheUntamedWilds qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
@@ -23,7 +25,11 @@ import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheUntamedWilds.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Expedition qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.GuardiansOfTime qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Rainforest qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Serpents qualified as Treacheries
 import Arkham.Window qualified as Window
 
 newtype TheUntamedWilds = TheUntamedWilds ScenarioAttrs

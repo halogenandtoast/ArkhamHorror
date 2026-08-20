@@ -8,7 +8,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Stories
 import Arkham.Story.Types (Field (..))
 
 scenarioI18n :: (HasI18n => a) -> a

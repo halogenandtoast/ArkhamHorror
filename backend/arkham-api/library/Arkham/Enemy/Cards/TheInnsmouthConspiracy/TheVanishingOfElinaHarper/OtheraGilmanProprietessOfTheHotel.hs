@@ -1,0 +1,36 @@
+module Arkham.Enemy.Cards.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.OtheraGilmanProprietessOfTheHotel (otheraGilmanProprietessOfTheHotel) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
+
+newtype OtheraGilmanProprietessOfTheHotel = OtheraGilmanProprietessOfTheHotel EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+otheraGilmanProprietessOfTheHotel :: EnemyCard OtheraGilmanProprietessOfTheHotel
+otheraGilmanProprietessOfTheHotel =
+  enemy
+    OtheraGilmanProprietessOfTheHotel
+    Cards.otheraGilmanProprietessOfTheHotel
+
+instance HasAbilities OtheraGilmanProprietessOfTheHotel where
+  getAbilities (OtheraGilmanProprietessOfTheHotel a) =
+    extend1 a $ restricted a 1 OnSameLocation $ parleyAction $ ResourceCost 3
+
+instance RunMessage OtheraGilmanProprietessOfTheHotel where
+  runMessage msg e@(OtheraGilmanProprietessOfTheHotel attrs) = runQueueT $ case msg of
+    Revelation _ (isSource attrs -> True) -> do
+      placeClues attrs attrs =<< perPlayer 1
+      pure $ updateAttrs e (spawnAtL ?~ "Gilman House")
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      moveTokens (attrs.ability 1) attrs iid #clue 1
+      doStep 2 msg
+      pure e
+    DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      whenM (withoutModifier attrs (ScenarioModifier "victoryRequiresMysteriousPhoto")) do
+        when (attrs.token #clue == 0) $ addToVictory iid attrs
+      pure e
+    _ -> OtheraGilmanProprietessOfTheHotel <$> liftRunMessage msg attrs

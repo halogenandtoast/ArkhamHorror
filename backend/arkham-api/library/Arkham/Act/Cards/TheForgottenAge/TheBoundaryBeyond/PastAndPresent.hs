@@ -7,7 +7,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Agendas
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Enemies
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (DefaultReplace))

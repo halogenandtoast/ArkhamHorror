@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.MurderAtTheExcelsiorHotel qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.CardDefs.MurderAtTheExcelsiorHotel qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers

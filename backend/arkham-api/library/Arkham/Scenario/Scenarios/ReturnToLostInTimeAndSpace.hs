@@ -6,9 +6,11 @@ import Arkham.Agenda.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpac
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Agendas
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Locations
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.LostInTimeAndSpace
 import Arkham.Scenarios.LostInTimeAndSpace.Helpers

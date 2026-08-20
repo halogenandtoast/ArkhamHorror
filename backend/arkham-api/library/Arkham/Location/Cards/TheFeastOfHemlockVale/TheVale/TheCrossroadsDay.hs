@@ -1,0 +1,38 @@
+module Arkham.Location.Cards.TheFeastOfHemlockVale.TheVale.TheCrossroadsDay (theCrossroadsDay) where
+
+import Arkham.Ability
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheVale qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move (moveTo)
+
+newtype TheCrossroadsDay = TheCrossroadsDay LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theCrossroadsDay :: LocationCard TheCrossroadsDay
+theCrossroadsDay = symbolLabel $ location TheCrossroadsDay Cards.theCrossroadsDay 2 (Static 0)
+
+instance HasAbilities TheCrossroadsDay where
+  getAbilities (TheCrossroadsDay a) =
+    extendRevealed
+      a
+      [ restricted a 1 (Here <> youCanTriggerCodex 10) actionAbility
+      , groupLimit PerRound
+          $ restricted a 2 (Here <> oneOf (map PlayerCountIs [1, 2]) <> DuringTurn You)
+          $ FastAbility' Free #move
+      ]
+
+instance RunMessage TheCrossroadsDay where
+  runMessage msg l@(TheCrossroadsDay attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      codex iid (attrs.ability 1) 10
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      locations <- getAccessibleLocations iid (attrs.ability 2)
+      chooseTargetM iid locations $ moveTo (attrs.ability 2) iid
+      pure l
+    _ -> TheCrossroadsDay <$> liftRunMessage msg attrs

@@ -1,0 +1,35 @@
+module Arkham.Location.Cards.EdgeOfTheEarth.IceAndDeath.TreacherousPath (treacherousPath, TreacherousPath (..)) where
+
+import Arkham.Ability
+import Arkham.Helpers.Window (getRevealedChaosTokens)
+import Arkham.I18n
+import Arkham.Location.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Cards
+import Arkham.Location.Import.Lifted hiding (RevealChaosToken)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+
+newtype TreacherousPath = TreacherousPath LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+treacherousPath :: LocationCard TreacherousPath
+treacherousPath = symbolLabel $ location TreacherousPath Cards.treacherousPath 2 (PerPlayer 1)
+
+instance HasAbilities TreacherousPath where
+  getAbilities (TreacherousPath attrs) =
+    extendRevealed1 attrs
+      $ restricted attrs 1 (Here <> DuringSkillTest AnySkillTest)
+      $ forced
+      $ RevealChaosToken #after You #frost
+
+instance RunMessage TreacherousPath where
+  runMessage msg l@(TreacherousPath attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (getRevealedChaosTokens -> tokens) _ -> do
+      let n = count ((== #frost) . (.face)) tokens
+      repeated n do
+        chooseOneM iid $ withI18n do
+          countVar 1 $ labeledI "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+          countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+
+      pure l
+    _ -> TreacherousPath <$> liftRunMessage msg attrs

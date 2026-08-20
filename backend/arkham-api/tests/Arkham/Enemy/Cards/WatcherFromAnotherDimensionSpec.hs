@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.WatcherFromAnotherDimensionSpec (spec) where
 
 import Arkham.Action (Action)
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters qualified as Enemies
 import Arkham.Investigator.Cards (patriceHathaway)
 import Arkham.Matcher
 import Arkham.Placement

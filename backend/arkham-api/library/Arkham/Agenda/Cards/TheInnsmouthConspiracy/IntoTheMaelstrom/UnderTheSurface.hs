@@ -3,7 +3,8 @@ module Arkham.Agenda.Cards.TheInnsmouthConspiracy.IntoTheMaelstrom.UnderTheSurfa
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.AgentsOfHydra qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Enemies
 
 newtype UnderTheSurface = UnderTheSurface AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

@@ -1,6 +1,6 @@
 module Arkham.Event.Events.LieInWaitSpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.Whippoorwills qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import TestImport.New
 

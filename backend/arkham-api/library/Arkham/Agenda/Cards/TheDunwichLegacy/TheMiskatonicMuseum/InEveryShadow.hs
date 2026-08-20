@@ -3,9 +3,9 @@ module Arkham.Agenda.Cards.TheDunwichLegacy.TheMiskatonicMuseum.InEveryShadow (i
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Enemies
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Treacheries
 
 newtype InEveryShadow = InEveryShadow AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

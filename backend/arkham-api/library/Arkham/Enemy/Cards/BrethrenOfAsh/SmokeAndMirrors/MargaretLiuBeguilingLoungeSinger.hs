@@ -1,0 +1,31 @@
+module Arkham.Enemy.Cards.BrethrenOfAsh.SmokeAndMirrors.MargaretLiuBeguilingLoungeSinger (margaretLiuBeguilingLoungeSinger) where
+
+import Arkham.Ability
+import Arkham.Campaigns.BrethrenOfAsh.Helpers
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Matcher
+
+newtype MargaretLiuBeguilingLoungeSinger = MargaretLiuBeguilingLoungeSinger EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+margaretLiuBeguilingLoungeSinger :: EnemyCard MargaretLiuBeguilingLoungeSinger
+margaretLiuBeguilingLoungeSinger =
+  enemy
+    MargaretLiuBeguilingLoungeSinger
+    Cards.margaretLiuBeguilingLoungeSinger
+
+instance HasAbilities MargaretLiuBeguilingLoungeSinger where
+  getAbilities (MargaretLiuBeguilingLoungeSinger a) =
+    extend1 a
+      $ mkAbility a 1
+      $ freeReaction
+      $ SkillTestResult #after You (SkillTestAt $ locationWithEnemy a) (SuccessResult $ atLeast 2)
+
+instance RunMessage MargaretLiuBeguilingLoungeSinger where
+  runMessage msg e@(MargaretLiuBeguilingLoungeSinger attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      codex iid (attrs.ability 1) 6
+      pure e
+    _ -> MargaretLiuBeguilingLoungeSinger <$> liftRunMessage msg attrs

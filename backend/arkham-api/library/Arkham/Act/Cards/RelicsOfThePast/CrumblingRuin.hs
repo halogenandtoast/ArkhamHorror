@@ -6,17 +6,17 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.AgentsOfYig qualified as Enemies
 import Arkham.Helpers.GameValue (getGameValue, perPlayer)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.RelicsOfThePast qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Trait (Trait (Ancient, Elite))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.RelicsOfThePast qualified as Treacheries
 
 newtype CrumblingRuin = CrumblingRuin ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

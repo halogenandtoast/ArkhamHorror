@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.AgentFletcher (agentFletcher) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheScarletKeys qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
 import Arkham.Helpers.SkillTest (isEvading)

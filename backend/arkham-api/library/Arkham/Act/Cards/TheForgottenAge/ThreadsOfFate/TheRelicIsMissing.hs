@@ -2,7 +2,7 @@ module Arkham.Act.Cards.TheForgottenAge.ThreadsOfFate.TheRelicIsMissing (theReli
 
 import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locations
 
 newtype TheRelicIsMissing = TheRelicIsMissing ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

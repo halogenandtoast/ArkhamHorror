@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.ArmoredCar (armoredCar) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheBlobThatAteEverything qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDamage))
 import Arkham.Helpers.Location (getConnectedLocations, withLocationOf)
 import Arkham.Helpers.Query (getLead, getPlayerCount)
@@ -13,7 +13,7 @@ import Arkham.Message.Lifted.Log (remember)
 import Arkham.Placement (Placement (AtLocation))
 import Arkham.Projection (field)
 import Arkham.ScenarioLogKey (ScenarioLogKey (TheCarReachedItsTarget))
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheBlobThatAteEverything qualified as Stories
 
 newtype ArmoredCar = ArmoredCar AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

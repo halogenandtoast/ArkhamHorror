@@ -5,9 +5,9 @@ import Arkham.Act.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Enemies
 import Arkham.Helpers.Query (getPlayerCount)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Glyph, Omen))

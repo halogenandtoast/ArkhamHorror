@@ -7,13 +7,13 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath qualified as Treacheries
 
 newtype TheReallyBadOnesV4 = TheReallyBadOnesV4 ActAttrs
   deriving anyclass IsAct

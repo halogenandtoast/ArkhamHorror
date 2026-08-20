@@ -9,7 +9,7 @@ import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.FlavorText (additionalRules, li, setup, ul)
 import Arkham.Helpers.Log
@@ -17,7 +17,8 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction)
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Log
@@ -25,7 +26,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (chooseOne, drawCardsIfCan, drawEncounterCard, story)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.PointOfNoReturn.Helpers (scenarioI18n)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Treacheries
 
 newtype PointOfNoReturn = PointOfNoReturn ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -137,7 +138,7 @@ instance RunMessage PointOfNoReturn where
         , Locations.enchantedWoodsStoneTrapdoor
         , Enemies.gugSentinel
         , Assets.richardUptonPickman
-        , Treacheries.falseAwakeningPointOfNoReturn
+        , Treacheries.falseAwakening
         ]
 
       setAgendaDeck [Agendas.aSinisterRealm, Agendas.besetByMonsters]

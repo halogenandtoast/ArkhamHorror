@@ -1,0 +1,40 @@
+module Arkham.Enemy.Cards.NightOfTheZealot.TheDevourerBelow.Umordhoth (umordhoth) where
+
+import Arkham.Ability
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+
+newtype Umordhoth = Umordhoth EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+umordhoth :: EnemyCard Umordhoth
+umordhoth = enemy Umordhoth Cards.umordhoth
+
+instance HasModifiersFor Umordhoth where
+  getModifiersFor (Umordhoth a) = do
+    healthModifier <- getPlayerCountValue (PerPlayer 4)
+    modifySelf a [HealthModifier healthModifier]
+
+instance HasAbilities Umordhoth where
+  getAbilities (Umordhoth a) = extend a do
+    guard a.isInPlay
+      *> [ mkAbility a 1 $ forced $ TurnEnds #after Anyone
+         , restricted a 2 litaCriteria actionAbility
+         ]
+   where
+    litaCriteria = OnSameLocation <> exists (AssetControlledBy You <> assetIs Cards.litaChantler)
+
+instance RunMessage Umordhoth where
+  runMessage msg e@(Umordhoth attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      readyThis attrs
+      pure e
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      push R3
+      pure e
+    _ -> Umordhoth <$> liftRunMessage msg attrs

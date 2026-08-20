@@ -6,7 +6,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Enemies
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher hiding (AssetCard)

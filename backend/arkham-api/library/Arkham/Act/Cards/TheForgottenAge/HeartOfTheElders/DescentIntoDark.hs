@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 
 newtype DescentIntoDark = DescentIntoDark ActAttrs

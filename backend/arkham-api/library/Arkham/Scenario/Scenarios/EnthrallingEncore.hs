@@ -3,12 +3,13 @@ module Arkham.Scenario.Scenarios.EnthrallingEncore (enthrallingEncore) where
 import Arkham.Act.CardDefs.EnthrallingEncore qualified as Acts
 import Arkham.Agenda.CardDefs.EnthrallingEncore qualified as Agendas
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EnthrallingEncore qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorClues))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.CurtainCall qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection

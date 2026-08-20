@@ -5,14 +5,15 @@ import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified a
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.FloodedCaverns qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Locations
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
@@ -22,7 +23,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ThePitOfDespair.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Treacheries
 import Arkham.Zone
 
 newtype ThePitOfDespair = ThePitOfDespair ScenarioAttrs

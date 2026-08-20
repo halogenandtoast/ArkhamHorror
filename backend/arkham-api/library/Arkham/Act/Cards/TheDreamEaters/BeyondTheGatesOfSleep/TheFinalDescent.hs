@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude

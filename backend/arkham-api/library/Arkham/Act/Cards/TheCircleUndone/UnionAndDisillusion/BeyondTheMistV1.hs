@@ -5,7 +5,8 @@ import Arkham.Act.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Card
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.AnettesCoven qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWitchingHour qualified as Enemies
 import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount, getSetAsideCardsMatching)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Brazier

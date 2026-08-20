@@ -5,7 +5,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Helpers.Campaign (getOwner)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Locations
 import Arkham.Matcher
 
 newtype InTheBellyOfTheMoonBeast = InTheBellyOfTheMoonBeast ActAttrs

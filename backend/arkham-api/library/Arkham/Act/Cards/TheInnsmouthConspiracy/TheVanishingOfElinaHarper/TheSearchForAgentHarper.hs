@@ -19,7 +19,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Stories
 
 newtype TheSearchForAgentHarper = TheSearchForAgentHarper ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

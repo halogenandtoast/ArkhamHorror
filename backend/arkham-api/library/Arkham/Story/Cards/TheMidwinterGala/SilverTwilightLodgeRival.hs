@@ -1,0 +1,58 @@
+module Arkham.Story.Cards.TheMidwinterGala.SilverTwilightLodgeRival (silverTwilightLodgeRival) where
+
+import Arkham.Ability
+import Arkham.Deck qualified as Deck
+import Arkham.Enemy.CardDefs.TheMidwinterGala qualified as Enemies
+import Arkham.GameValue
+import Arkham.Helpers.Location
+import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest.Lifted (parley)
+import Arkham.Matcher
+import Arkham.Story.CardDefs.TheMidwinterGala qualified as Cards
+import Arkham.Story.Import.Lifted
+import Arkham.Treachery.CardDefs.TheMidwinterGala qualified as Treacheries
+
+newtype SilverTwilightLodgeRival = SilverTwilightLodgeRival StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+silverTwilightLodgeRival :: StoryCard SilverTwilightLodgeRival
+silverTwilightLodgeRival = persistStory $ story SilverTwilightLodgeRival Cards.silverTwilightLodgeRival
+
+instance HasAbilities SilverTwilightLodgeRival where
+  getAbilities (SilverTwilightLodgeRival attrs) =
+    [ restricted
+        attrs
+        1
+        (exists $ enemyIs Enemies.carlSanfordIntimidatingPresence <> at_ YourLocation)
+        parleyAction_
+    , restricted attrs 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 1 1)
+        $ forced AnyWindow
+    ]
+
+instance RunMessage SilverTwilightLodgeRival where
+  runMessage msg s@(SilverTwilightLodgeRival attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      ward <- getSetAsideCardsMatching $ cardIs Treacheries.wardOfPreservation
+      shuffleCardsIntoDeck Deck.EncounterDeck ward
+      carl <- getSetAsideCardsMatching $ cardIs Enemies.carlSanfordIntimidatingPresence
+      lead <- getLead
+      for_ carl $ withLocationOf lead . createEnemyAt_
+      pure s
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      enemy <- selectJust $ enemyIs Enemies.carlSanfordIntimidatingPresence <> enemyAtLocationWith iid
+      sid <- getRandom
+      parley sid iid (attrs.ability 1) enemy #willpower (Fixed 3)
+      pure s
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      whenMatch iid InvestigatorWithAnyClues do
+        moveTokens (attrs.ability 1) iid attrs #clue 1
+      pure s
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      carl <- selectJust $ enemyIs Enemies.carlSanfordIntimidatingPresence
+      addToVictory iid attrs
+      addToVictory iid carl
+      push $ RemoveAllCopiesOfEncounterCardFromGame (cardIs Treacheries.wardOfPreservation)
+      removeStory attrs
+      pure s
+    _ -> SilverTwilightLodgeRival <$> liftRunMessage msg attrs

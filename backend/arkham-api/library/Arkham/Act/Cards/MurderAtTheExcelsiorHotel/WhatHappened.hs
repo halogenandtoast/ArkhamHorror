@@ -8,13 +8,16 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Enemy.CardDefs.DarkRituals qualified as Enemies
+import Arkham.Enemy.CardDefs.ExcelsiorManagement qualified as Enemies
+import Arkham.Location.CardDefs.MurderAtTheExcelsiorHotel qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Trait (Trait (Lead))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.AlienInterference qualified as Treacheries
+import Arkham.Treachery.CardDefs.SinsOfThePast qualified as Treacheries
+import Arkham.Treachery.CardDefs.VileExperiments qualified as Treacheries
 
 newtype WhatHappened = WhatHappened ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -60,7 +63,7 @@ instance RunMessage WhatHappened where
           [ Locations.hotelRoof
           , Locations.room212
           , Locations.room245
-          , Locations.officeMurderAtTheExcelsiorHotel
+          , Locations.office
           , Locations.basement
           ]
 

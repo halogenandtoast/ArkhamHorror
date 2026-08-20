@@ -1,0 +1,19 @@
+module Arkham.Treachery.Cards.TheDreamEaters.WhereTheGodsDwell.WhisperingChaosSouth (whisperingChaosSouth, WhisperingChaosSouth (..)) where
+
+import Arkham.Placement
+import Arkham.Treachery.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype WhisperingChaosSouth = WhisperingChaosSouth TreacheryAttrs
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+whisperingChaosSouth :: TreacheryCard WhisperingChaosSouth
+whisperingChaosSouth = treachery WhisperingChaosSouth Cards.whisperingChaosSouth
+
+instance RunMessage WhisperingChaosSouth where
+  runMessage msg t@(WhisperingChaosSouth attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      placeTreachery attrs (HiddenInHand iid)
+      pure t
+    _ -> WhisperingChaosSouth <$> liftRunMessage msg attrs

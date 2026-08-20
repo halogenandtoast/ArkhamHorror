@@ -11,14 +11,14 @@ import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
@@ -26,7 +26,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WeaverOfTheCosmos.Helpers
 import Arkham.Trait (Trait (AncientOne, Spider))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Treacheries
 
 newtype WeaverOfTheCosmos = WeaverOfTheCosmos ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

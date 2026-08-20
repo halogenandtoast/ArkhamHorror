@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DancingMad qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Helpers.Location (placementLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)

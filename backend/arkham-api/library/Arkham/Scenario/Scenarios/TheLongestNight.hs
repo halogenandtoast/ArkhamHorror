@@ -9,7 +9,7 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Enemies
 import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
@@ -20,7 +20,7 @@ import Arkham.Helpers.Window (wouldDo)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
@@ -34,10 +34,12 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLongestNight.Helpers
 import Arkham.SortedPair
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheSecondDay qualified as Stories
 import Arkham.Token
 import Arkham.Trait (Trait (Madness))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.Fire qualified as Treacheries
 import Arkham.Window qualified as Window
 import Control.Lens (non)
 import Data.Map.Strict qualified as Map

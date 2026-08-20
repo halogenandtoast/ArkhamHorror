@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Card.CardType
 import Arkham.Constants
 import Arkham.DamageEffect
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheScarletKeys qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
@@ -53,6 +53,8 @@ instance RunMessage LurkerInTheDark where
       if (amount > 0)
         then
           LurkerInTheDark
-            <$> liftRunMessage (Msg.DealDamage (EnemyTarget eid) $ damageAssignment {damageAssignmentAmount = amount}) attrs
+            <$> liftRunMessage
+              (Msg.DealDamage (EnemyTarget eid) $ damageAssignment {damageAssignmentAmount = amount})
+              attrs
         else pure e
     _ -> LurkerInTheDark <$> liftRunMessage msg attrs

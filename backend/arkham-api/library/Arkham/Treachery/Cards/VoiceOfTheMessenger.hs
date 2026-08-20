@@ -6,7 +6,7 @@ module Arkham.Treachery.Cards.VoiceOfTheMessenger (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheForgottenAge qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype VoiceOfTheMessenger = VoiceOfTheMessenger TreacheryAttrs

@@ -11,7 +11,7 @@ import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
 import Arkham.Field
 import Arkham.Helpers.Calculation
 import Arkham.Keyword qualified as Keyword
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier (ModifierType (AddKeyword, GainVictory))

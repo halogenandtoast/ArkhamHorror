@@ -7,14 +7,14 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.AgentsOfNyarlathotep qualified as Enemies
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Treacheries
 
 newtype BeyondDreams = BeyondDreams ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

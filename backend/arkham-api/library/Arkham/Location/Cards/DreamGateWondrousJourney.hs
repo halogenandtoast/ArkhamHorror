@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -39,7 +39,8 @@ instance RunMessage DreamGateWondrousJourney where
   runMessage msg l@(DreamGateWondrousJourney attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       whenAt iid attrs do
-        revealedLocations <- select $ RevealedLocation <> canEnterLocation iid <> not_ (LocationWithId attrs.id)
+        revealedLocations <-
+          select $ RevealedLocation <> canEnterLocation iid <> not_ (LocationWithId attrs.id)
         chooseTargetM iid revealedLocations $ forcedMoveTo (attrs.ability 1) iid
       removeLocation attrs
       pure l

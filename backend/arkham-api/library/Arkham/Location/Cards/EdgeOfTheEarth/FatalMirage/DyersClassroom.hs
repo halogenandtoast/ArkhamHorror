@@ -1,0 +1,69 @@
+module Arkham.Location.Cards.EdgeOfTheEarth.FatalMirage.DyersClassroom (dyersClassroom) where
+
+import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card.CardDef
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
+import Arkham.Helpers.Modifiers
+import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenario.Deck
+import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Stories
+
+newtype DyersClassroom = DyersClassroom LocationAttrs
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+dyersClassroom :: LocationCard DyersClassroom
+dyersClassroom = location DyersClassroom Cards.dyersClassroom 5 (PerPlayer 2)
+
+mirageCards :: [CardDef]
+mirageCards = [Cards.memoryOfARegretfulVoyage]
+
+instance HasModifiersFor DyersClassroom where
+  getModifiersFor (DyersClassroom a) = do
+    modifySelfWhenM
+      a
+      ( selectAny
+          $ mapOneOf
+            assetIs
+            [ Assets.professorWilliamDyerProfessorOfGeology
+            , Assets.professorWilliamDyerProfessorOfGeologyResolute
+            ]
+          <> at_ (be a)
+      )
+      [ShroudModifier (-2)]
+    clearedOfMirages a mirageCards
+
+instance HasAbilities DyersClassroom where
+  getAbilities (DyersClassroom a) =
+    extendRevealed
+      a
+      [ mirage a 2 mirageCards
+      , restricted
+          a
+          1
+          ( Here
+              <> oneOf
+                [ exists (HealableInvestigator (a.ability 1) #horror (at_ $ be a))
+                , exists (HealableAsset (a.ability 1) #horror (at_ $ be a))
+                ]
+          )
+          $ actionAbilityWithCost
+          $ ShuffleTopOfScenarioDeckIntoYourDeck 1 TekeliliDeck
+      ]
+
+instance RunMessage DyersClassroom where
+  runMessage msg l@(DyersClassroom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = UseAbilitySource iid (toSource attrs) 1
+      investigators <- select $ HealableInvestigator source #horror (at_ $ be attrs)
+      assets <- select $ HealableAsset source #horror (at_ $ be attrs)
+      chooseOneM iid do
+        targets investigators \investigator -> healHorror investigator source 1
+        targets assets \asset -> healHorror asset source 1
+      pure l
+    _ -> DyersClassroom <$> mirageRunner Stories.dyersClassroom mirageCards 2 msg attrs

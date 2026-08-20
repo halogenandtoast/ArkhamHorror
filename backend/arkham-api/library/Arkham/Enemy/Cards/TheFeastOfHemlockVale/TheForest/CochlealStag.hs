@@ -1,0 +1,24 @@
+module Arkham.Enemy.Cards.TheFeastOfHemlockVale.TheForest.CochlealStag (cochlealStag) where
+
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheForest qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Matcher
+import Arkham.SkillType
+
+newtype CochlealStag = CochlealStag EnemyAttrs
+  deriving anyclass (IsEnemy, RunMessage)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+cochlealStag :: EnemyCard CochlealStag
+cochlealStag = enemy CochlealStag Cards.cochlealStag
+
+instance HasModifiersFor CochlealStag where
+  getModifiersFor (CochlealStag a) = do
+    phase <- getPhase
+    when (phase == #mythos) do
+      modifySelect
+        a
+        (InvestigatorAt $ orConnected_ (locationWithEnemy a))
+        [SkillModifier sType (-2) | sType <- allSkills]

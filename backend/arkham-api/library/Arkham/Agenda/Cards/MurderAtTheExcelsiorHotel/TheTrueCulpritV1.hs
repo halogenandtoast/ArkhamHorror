@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.MurderAtTheExcelsiorHotel qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.SinsOfThePast qualified as Cards
 import Arkham.Matcher
 
 newtype TheTrueCulpritV1 = TheTrueCulpritV1 AgendaAttrs

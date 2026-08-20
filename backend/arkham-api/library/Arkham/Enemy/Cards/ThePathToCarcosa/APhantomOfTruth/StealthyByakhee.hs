@@ -1,0 +1,19 @@
+module Arkham.Enemy.Cards.ThePathToCarcosa.APhantomOfTruth.StealthyByakhee (stealthyByakhee) where
+
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers
+import Arkham.Modifier qualified as Modifier
+
+newtype StealthyByakhee = StealthyByakhee EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+stealthyByakhee :: EnemyCard StealthyByakhee
+stealthyByakhee = enemy StealthyByakhee Cards.stealthyByakhee
+
+instance HasModifiersFor StealthyByakhee where
+  getModifiersFor (StealthyByakhee a) = modifySelfWhen a a.exhausted [Modifier.EnemyFight (-3)]
+
+instance RunMessage StealthyByakhee where
+  runMessage msg (StealthyByakhee attrs) = StealthyByakhee <$> runMessage msg attrs

@@ -7,7 +7,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 

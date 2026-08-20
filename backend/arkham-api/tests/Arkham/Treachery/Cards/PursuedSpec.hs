@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.PursuedSpec (spec) where
 
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Movement (move)
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Core2026 qualified as Cards
 import TestImport.New
 
 -- The buggy behaviour left a forced-ability question pending rather than

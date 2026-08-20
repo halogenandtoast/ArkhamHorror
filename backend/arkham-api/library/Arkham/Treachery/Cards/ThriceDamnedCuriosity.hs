@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype ThriceDamnedCuriosity = ThriceDamnedCuriosity TreacheryAttrs

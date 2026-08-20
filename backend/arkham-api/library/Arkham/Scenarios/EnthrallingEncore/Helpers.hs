@@ -4,10 +4,11 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetCard))
 import Arkham.Campaign.Types (Field (CampaignDecks))
 import Arkham.Card
+import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
-import Arkham.ClassSymbol
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.Standalone qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import Arkham.Event.Types (Field (EventCard))
 import Arkham.Helpers (unDeck)
@@ -26,7 +27,10 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (ScenarioTokens))
 import Arkham.Skill.Types (Field (SkillCard))
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Treacheries
+import Arkham.Treachery.CardDefs.Standalone qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy qualified as Treacheries
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "enthrallingEncore" a
@@ -68,7 +72,9 @@ classesAmongControlledCards iid = do
     . length
     . nub
     . filter (`elem` [Guardian, Seeker, Rogue, Mystic, Survivor])
-    $ concatMap (toList . cdClassSymbols . toCardDef) (assets <> events <> skills <> hand <> deck <> discard)
+    $ concatMap
+      (toList . cdClassSymbols . toCardDef)
+      (assets <> events <> skills <> hand <> deck <> discard)
 
 data SignatureSwap = SignatureSwap
   { signatureCard :: CardDef
@@ -80,38 +86,93 @@ data SignatureSwap = SignatureSwap
 signatureSwaps :: Map Text SignatureSwap
 signatureSwaps =
   mapFromList
-    [ ( "Roland Banks"
-      , SignatureSwap Assets.rolands38Special Assets.rolands38SpecialAdvanced Treacheries.coverUp Treacheries.coverUpAdvanced
+    [
+      ( "Roland Banks"
+      , SignatureSwap
+          Assets.rolands38Special
+          Assets.rolands38SpecialAdvanced
+          Treacheries.coverUp
+          Treacheries.coverUpAdvanced
       )
-    , ( "Daisy Walker"
-      , SignatureSwap Assets.daisysToteBag Assets.daisysToteBagAdvanced Assets.theNecronomicon Assets.theNecronomiconAdvanced
+    ,
+      ( "Daisy Walker"
+      , SignatureSwap
+          Assets.daisysToteBag
+          Assets.daisysToteBagAdvanced
+          Assets.theNecronomicon
+          Assets.theNecronomiconAdvanced
       )
-    , ( "\"Skids\" O'Toole"
-      , SignatureSwap Events.onTheLam Events.onTheLamAdvanced Treacheries.hospitalDebts Treacheries.hospitalDebtsAdvanced
+    ,
+      ( "\"Skids\" O'Toole"
+      , SignatureSwap
+          Events.onTheLam
+          Events.onTheLamAdvanced
+          Treacheries.hospitalDebts
+          Treacheries.hospitalDebtsAdvanced
       )
-    , ( "Agnes Baker"
-      , SignatureSwap Assets.heirloomOfHyperborea Assets.heirloomOfHyperboreaAdvanced Events.darkMemory Events.darkMemoryAdvanced
+    ,
+      ( "Agnes Baker"
+      , SignatureSwap
+          Assets.heirloomOfHyperborea
+          Assets.heirloomOfHyperboreaAdvanced
+          Events.darkMemory
+          Events.darkMemoryAdvanced
       )
-    , ( "Wendy Adams"
-      , SignatureSwap Assets.wendysAmulet Assets.wendysAmuletAdvanced Treacheries.abandonedAndAlone Treacheries.abandonedAndAloneAdvanced
+    ,
+      ( "Wendy Adams"
+      , SignatureSwap
+          Assets.wendysAmulet
+          Assets.wendysAmuletAdvanced
+          Treacheries.abandonedAndAlone
+          Treacheries.abandonedAndAloneAdvanced
       )
-    , ( "Zoey Samaras"
-      , SignatureSwap Assets.zoeysCross Assets.zoeysCrossAdvanced Treacheries.smiteTheWicked Treacheries.smiteTheWickedAdvanced
+    ,
+      ( "Zoey Samaras"
+      , SignatureSwap
+          Assets.zoeysCross
+          Assets.zoeysCrossAdvanced
+          Treacheries.smiteTheWicked
+          Treacheries.smiteTheWickedAdvanced
       )
-    , ( "Rex Murphy"
-      , SignatureSwap Events.searchForTheTruth Events.searchForTheTruthAdvanced Treacheries.rexsCurse Treacheries.rexsCurseAdvanced
+    ,
+      ( "Rex Murphy"
+      , SignatureSwap
+          Events.searchForTheTruth
+          Events.searchForTheTruthAdvanced
+          Treacheries.rexsCurse
+          Treacheries.rexsCurseAdvanced
       )
-    , ( "Jenny Barnes"
-      , SignatureSwap Assets.jennysTwin45s Assets.jennysTwin45sAdvanced Treacheries.searchingForIzzie Treacheries.searchingForIzzieAdvanced
+    ,
+      ( "Jenny Barnes"
+      , SignatureSwap
+          Assets.jennysTwin45s
+          Assets.jennysTwin45sAdvanced
+          Treacheries.searchingForIzzie
+          Treacheries.searchingForIzzieAdvanced
       )
-    , ( "Jim Culver"
-      , SignatureSwap Assets.jimsTrumpet Assets.jimsTrumpetAdvanced Treacheries.finalRhapsody Treacheries.finalRhapsodyAdvanced
+    ,
+      ( "Jim Culver"
+      , SignatureSwap
+          Assets.jimsTrumpet
+          Assets.jimsTrumpetAdvanced
+          Treacheries.finalRhapsody
+          Treacheries.finalRhapsodyAdvanced
       )
-    , ( "Father Mateo"
-      , SignatureSwap Assets.theCodexOfAges Assets.theCodexOfAgesAdvanced Enemies.serpentsOfYig Enemies.serpentsOfYigAdvanced
+    ,
+      ( "Father Mateo"
+      , SignatureSwap
+          Assets.theCodexOfAges
+          Assets.theCodexOfAgesAdvanced
+          Enemies.serpentsOfYig
+          Enemies.serpentsOfYigAdvanced
       )
-    , ( "Monterey Jack"
-      , SignatureSwap Assets.trustyBullwhip Assets.trustyBullwhipAdvanced Treacheries.buriedSecrets Treacheries.buriedSecretsAdvanced
+    ,
+      ( "Monterey Jack"
+      , SignatureSwap
+          Assets.trustyBullwhip
+          Assets.trustyBullwhipAdvanced
+          Treacheries.buriedSecrets
+          Treacheries.buriedSecretsAdvanced
       )
     ]
 

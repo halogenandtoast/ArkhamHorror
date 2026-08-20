@@ -1,0 +1,34 @@
+module Arkham.Enemy.Cards.NightOfTheZealot.ReturnCultOfUmordhoth.JeremiahPierce (jeremiahPierce) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.NightOfTheZealot.ReturnCultOfUmordhoth qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted
+
+newtype JeremiahPierce = JeremiahPierce EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+jeremiahPierce :: EnemyCard JeremiahPierce
+jeremiahPierce =
+  enemyWith JeremiahPierce Cards.jeremiahPierce
+    $ spawnAtL
+    ?~ SpawnAtFirst ["Your House", "Rivertown"]
+
+instance HasAbilities JeremiahPierce where
+  getAbilities (JeremiahPierce a) =
+    extend a [skillTestAbility $ restricted a 1 OnSameLocation parleyAction_]
+
+instance RunMessage JeremiahPierce where
+  runMessage msg e@(JeremiahPierce attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
+      sid <- getRandom
+      -- target stays the investigator: 'addToVictory' resolves first, so Jeremiah
+      -- is already out of play by the time the test runs
+      parley sid iid attrs iid #willpower (Fixed 4)
+      pure e
+    FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
+      placeDoomOnAgendaAndCheckAdvance n
+      pure e
+    _ -> JeremiahPierce <$> liftRunMessage msg attrs

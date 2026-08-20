@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.DreamGateWondrousJourneySpec (spec) where
 
 import Arkham.Investigator.Cards (lukeRobinson, rolandBanks)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters qualified as Locations
 import TestImport.New
 
 spec :: Spec

@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.CurseOfTheRougarou qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.CurseOfTheRougarou qualified as Cards
 import Arkham.GameValue
 import Arkham.Matcher
 

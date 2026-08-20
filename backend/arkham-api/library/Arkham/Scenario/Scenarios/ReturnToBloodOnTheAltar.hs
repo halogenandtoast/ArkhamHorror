@@ -6,11 +6,13 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheDunwichLegacy.ReturnToBloodOnTheAltar qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Enemies
 import Arkham.ForMovement
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToBloodOnTheAltar qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck

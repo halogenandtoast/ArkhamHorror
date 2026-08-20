@@ -1,0 +1,47 @@
+module Arkham.Location.Cards.TheDreamEaters.WeaverOfTheCosmos.TheGreatWebPrisonOfCocoons (theGreatWebPrisonOfCocoons) where
+
+import Arkham.Ability
+import Arkham.Direction
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Projection
+
+newtype TheGreatWebPrisonOfCocoons = TheGreatWebPrisonOfCocoons LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theGreatWebPrisonOfCocoons :: LocationCard TheGreatWebPrisonOfCocoons
+theGreatWebPrisonOfCocoons =
+  locationWith
+    TheGreatWebPrisonOfCocoons
+    Cards.theGreatWebPrisonOfCocoons
+    4
+    (PerPlayer 1)
+    (connectsToL .~ setFromList [Above, Below])
+
+instance HasAbilities TheGreatWebPrisonOfCocoons where
+  getAbilities (TheGreatWebPrisonOfCocoons a) =
+    extendRevealed1 a $ skillTestAbility $ forcedAbility a 1 $ Enters #after You (be a)
+
+instance RunMessage TheGreatWebPrisonOfCocoons where
+  runMessage msg l@(TheGreatWebPrisonOfCocoons attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
+      pure l
+    FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
+      actions <- field InvestigatorRemainingActions iid
+      chooseOrRunOne
+        iid
+        $ [ Label ("$label.loseActions count=i:" <> tshow n) [LoseActions iid (attrs.ability 1) n]
+          | actions > 0
+          ]
+        <> [ Label
+               "$theDreamEaters.weaverOfTheCosmos.theGreatWebPrisonOfCocoons.label.placeDoom"
+               [PlaceDoom (attrs.ability 1) (toTarget attrs) 1]
+           ]
+
+      pure l
+    _ -> TheGreatWebPrisonOfCocoons <$> liftRunMessage msg attrs

@@ -5,7 +5,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card
 import Arkham.Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Shuffle (getCanShuffleIn)

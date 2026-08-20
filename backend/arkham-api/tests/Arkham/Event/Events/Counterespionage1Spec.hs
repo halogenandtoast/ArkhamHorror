@@ -4,7 +4,8 @@ import Arkham.Ability.Types
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards (rolandBanks)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.AncientEvils qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.StrikingFear qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

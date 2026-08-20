@@ -42,6 +42,10 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Difficulty
+import Arkham.Enemy.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Enemies
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCard, EnemyPlacement, EnemyRemainingHealth))
 import Arkham.Game.Base
@@ -52,7 +56,8 @@ import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorTokens))
 import Arkham.Label (mkLabel)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Locations
 import Arkham.Location.Types qualified as Location
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message
@@ -485,7 +490,7 @@ dejaVuAbilities =
   , (toCardCode Locations.upstairsHallway, 1)
   , (toCardCode Locations.upstairsDoorwayLibrary, 1)
   , (toCardCode Locations.upstairsDoorwayBedroom, 2)
-  , (toCardCode Locations.attic_AThousandShapesOfHorror, 1)
+  , (toCardCode Locations.attic, 1)
   ]
 
 dejaVuKey :: CardCode -> Int -> Text

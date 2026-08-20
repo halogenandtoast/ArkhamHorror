@@ -1,9 +1,9 @@
 module Arkham.Campaign.ReloadDecksSpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot qualified as Enemies
 import Arkham.Helpers.Deck (partitionReloadedDeck)
 import Arkham.PlayerCard (lookupPlayerCardDef)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Treacheries
 import TestImport
 
 -- 'ReloadDecks' reconciles the saved campaign deck against the campaign's story

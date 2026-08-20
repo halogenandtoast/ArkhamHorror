@@ -1,0 +1,24 @@
+module Arkham.Story.Cards.ThePathToCarcosa.DimCarcosa.SongsThatTheHyadesShallSing (songsThatTheHyadesShallSing) where
+
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Story.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Cards
+import Arkham.Story.Import.Lifted
+
+newtype SongsThatTheHyadesShallSing = SongsThatTheHyadesShallSing StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+songsThatTheHyadesShallSing :: StoryCard SongsThatTheHyadesShallSing
+songsThatTheHyadesShallSing = story SongsThatTheHyadesShallSing Cards.songsThatTheHyadesShallSing
+
+instance RunMessage SongsThatTheHyadesShallSing where
+  runMessage msg s@(SongsThatTheHyadesShallSing attrs) = runQueueT $ case msg of
+    ResolveThisStory iid (is attrs -> True) -> do
+      hastur <- selectJust $ EnemyWithTitle "Hastur"
+      n <- perPlayer 1
+      storyEnemyDamage iid n hastur
+      exhaustWith attrs hastur
+      selectEach (investigatorEngagedWith hastur) (`disengageEnemy` hastur)
+      pure s
+    _ -> SongsThatTheHyadesShallSing <$> liftRunMessage msg attrs

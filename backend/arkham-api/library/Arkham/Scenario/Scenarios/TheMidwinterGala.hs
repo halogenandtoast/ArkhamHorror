@@ -10,7 +10,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheMidwinterGala qualified as Enemies
 import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Exception
 import Arkham.Helpers
@@ -27,7 +27,7 @@ import Arkham.I18n
 import Arkham.Investigator.Types (
   Field (InvestigatorDamage, InvestigatorHand, InvestigatorHorror, InvestigatorResources),
  )
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheMidwinterGala qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record)
@@ -41,9 +41,9 @@ import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Scenarios.TheMidwinterGala.Faction
 import Arkham.Scenarios.TheMidwinterGala.Helpers
 import Arkham.Scenarios.TheMidwinterGala.Meta
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheMidwinterGala qualified as Stories
 import Arkham.Trait (Trait (Guest, Leader, Manor, Monster, Private, SecondFloor))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheMidwinterGala qualified as Treacheries
 import Data.Map.Strict qualified as Map
 
 {- FOURMOLU_DISABLE -}
@@ -213,7 +213,7 @@ instance RunMessage TheMidwinterGala where
       setActDeck [Acts.meetAndGreet, Acts.findingTheJewel]
       setAgendaDeck [Agendas.maskedRevelers, Agendas.unexpectedGuests, Agendas.aKillerParty]
 
-      lobby <- place Locations.lobbyTheMidwinterGala
+      lobby <- place Locations.lobby
       lanternChamber <- place Locations.lanternChamber
       groundFloors <-
         placeGroupCapture "groundFloor"

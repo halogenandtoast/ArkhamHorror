@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Enemies
 import Arkham.Matcher
 
 newtype TheFlood = TheFlood AgendaAttrs

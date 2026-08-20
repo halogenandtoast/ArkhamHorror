@@ -7,7 +7,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.Trait (Trait (Staff))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.VileExperiments qualified as Treacheries
 
 newtype TheTrueCulpritV8 = TheTrueCulpritV8 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

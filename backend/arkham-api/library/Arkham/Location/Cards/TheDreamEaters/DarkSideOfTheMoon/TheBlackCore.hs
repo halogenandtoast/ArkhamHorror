@@ -1,0 +1,53 @@
+module Arkham.Location.Cards.TheDreamEaters.DarkSideOfTheMoon.TheBlackCore (theBlackCore) where
+
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.Location.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
+import Arkham.Location.Runner hiding (chooseOne)
+import Arkham.Matcher
+import Arkham.Message.Lifted
+import Arkham.Prelude
+import Arkham.Projection
+import Arkham.Token
+
+newtype TheBlackCore = TheBlackCore LocationAttrs
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theBlackCore :: LocationCard TheBlackCore
+theBlackCore = withXShroud $ location TheBlackCore Cards.theBlackCore 0 (PerPlayer 1)
+
+instance HasModifiersFor TheBlackCore where
+  getModifiersFor (TheBlackCore attrs) = do
+    n <- fieldMap LocationTokens (countTokens Depth) attrs.id
+    anyClues <-
+      fieldMap LocationClues (> 0) =<< selectJust (locationIs Cards.cavernsBeneathTheMoonDarkSide)
+    modifySelf attrs $ ShroudModifier n : [Blocked | anyClues]
+
+instance HasAbilities TheBlackCore where
+  getAbilities (TheBlackCore attrs) =
+    extendRevealed
+      attrs
+      [ mkAbility attrs 1 $ forced $ RevealLocation #after Anyone $ be attrs
+      , skillTestAbility $ restrictedAbility attrs 2 Here actionAbility
+      ]
+
+instance RunMessage TheBlackCore where
+  runMessage msg l@(TheBlackCore attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      n <- perPlayer 3
+      placeTokens (attrs.ability 1) attrs Depth (3 + n)
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      sid <- getRandom
+      chooseOne
+        iid
+        [ SkillLabel s [Msg.beginSkillTest sid iid (attrs.ability 2) iid s (Fixed 2)]
+        | s <- [#willpower, #combat]
+        ]
+      pure l
+    PassedThisSkillTestBy _ (isAbilitySource attrs 2 -> True) n -> do
+      removeTokens (attrs.ability 2) attrs Depth n
+      pure l
+    _ -> TheBlackCore <$> liftRunMessage msg attrs

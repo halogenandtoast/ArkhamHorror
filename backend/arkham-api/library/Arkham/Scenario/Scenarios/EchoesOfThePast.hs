@@ -6,7 +6,9 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToEchoesOfThePast qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
@@ -16,7 +18,8 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToEchoesOfThePast qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -26,7 +29,7 @@ import Arkham.Scenario.Import.Lifted hiding (replicate)
 import Arkham.Scenarios.EchoesOfThePast.Helpers
 import Arkham.Token
 import Arkham.Trait (Trait (SecondFloor, ThirdFloor))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
 
 newtype EchoesOfThePast = EchoesOfThePast ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

@@ -10,7 +10,8 @@ import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Card
 import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue
@@ -19,7 +20,7 @@ import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.TheLastKing qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -32,10 +33,11 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLastKing.Helpers
-import Arkham.Story.Cards qualified as Story
+import Arkham.Story.CardDefs.ReturnToThePathToCarcosa.ReturnToTheLastKing qualified as Story
+import Arkham.Story.CardDefs.ThePathToCarcosa.TheLastKing qualified as Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnToThePathToCarcosa.ReturnToTheLastKing qualified as Treacheries
 
 newtype TheLastKing = TheLastKing ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

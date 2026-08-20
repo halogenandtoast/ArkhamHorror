@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype SirenCall = SirenCall TreacheryAttrs

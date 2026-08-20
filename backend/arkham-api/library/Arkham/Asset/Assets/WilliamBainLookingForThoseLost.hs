@@ -7,7 +7,7 @@ import Arkham.Helpers.GameValue (GameValue (..), perPlayer)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheMidwinterGala qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
@@ -45,7 +45,7 @@ instance RunMessage WilliamBainLookingForThoseLost where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- perPlayer 1
       push $ SpendResources iid n
-      lobby <- selectJust $ locationIs Locations.lobbyTheMidwinterGala
+      lobby <- selectJust $ locationIs Locations.lobby
       mCard <- listToMaybe <$> getGuestDeck
       for_ mCard \card -> do
         push $ RemoveCardFromScenarioDeck GuestDeck card

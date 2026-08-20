@@ -205,12 +205,12 @@ import Arkham.SkillTestResult
 import Arkham.Source
 import Arkham.Spawn (SpawnAt (..))
 import Arkham.Story
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheDreamEaters.WakingNightmare qualified as Stories
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Trait hiding (Game, Haunted)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone qualified as Treacheries
 import Arkham.Treachery.Types (
   Field (..),
   Treachery,

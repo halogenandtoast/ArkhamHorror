@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.AllOrNothing.EyesAllAroundYou (eyesAllAroundYou) wher
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.AllOrNothing qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenarios.AllOrNothing.Helpers
 

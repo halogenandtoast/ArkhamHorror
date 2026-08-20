@@ -5,7 +5,7 @@ import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardsUnderneath, EnemyLocation))
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Query (getLead)

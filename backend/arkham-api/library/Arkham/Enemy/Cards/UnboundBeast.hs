@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.UnboundBeast (unboundBeast) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose

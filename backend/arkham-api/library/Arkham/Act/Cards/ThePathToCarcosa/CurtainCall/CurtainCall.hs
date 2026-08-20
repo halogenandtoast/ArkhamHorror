@@ -3,8 +3,8 @@ module Arkham.Act.Cards.ThePathToCarcosa.CurtainCall.CurtainCall (curtainCall) w
 import Arkham.Ability
 import Arkham.Act.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
+import Arkham.Location.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.CurtainCall.Helpers

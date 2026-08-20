@@ -1,8 +1,8 @@
 module Arkham.Treachery.CardDefs.Promo where
 
-import Arkham.Treachery.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
 import Arkham.Trait qualified as Trait
+import Arkham.Treachery.CardDefs.Import
 
 theDirgeOfReason :: CardDef
 theDirgeOfReason =

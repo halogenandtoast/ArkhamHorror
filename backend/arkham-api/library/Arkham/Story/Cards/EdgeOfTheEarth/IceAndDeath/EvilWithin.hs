@@ -1,0 +1,23 @@
+module Arkham.Story.Cards.EdgeOfTheEarth.IceAndDeath.EvilWithin (evilWithin) where
+
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Story.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Cards
+import Arkham.Story.Import.Lifted
+import Arkham.Trait (Trait (Eidolon))
+
+newtype EvilWithin = EvilWithin StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+evilWithin :: StoryCard EvilWithin
+evilWithin = story EvilWithin Cards.evilWithin
+
+instance RunMessage EvilWithin where
+  runMessage msg s@(EvilWithin attrs) = runQueueT $ case msg of
+    ResolveThisStory iid (is attrs -> True) -> do
+      eidolons <- select $ EnemyWithTrait Eidolon <> NonEliteEnemy
+      chooseTargetM iid eidolons $ toDiscardBy iid attrs
+      addToVictory iid attrs
+      pure s
+    _ -> EvilWithin <$> liftRunMessage msg attrs

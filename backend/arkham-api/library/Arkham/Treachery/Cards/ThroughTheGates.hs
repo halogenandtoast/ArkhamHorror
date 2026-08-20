@@ -6,7 +6,7 @@ import Arkham.Helpers qualified as Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.ReturnTo qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype ThroughTheGates = ThroughTheGates TreacheryAttrs

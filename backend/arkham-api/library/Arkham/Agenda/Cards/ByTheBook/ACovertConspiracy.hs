@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.ByTheBook qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
 import Arkham.Card (genCard)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ByTheBook qualified as Enemies
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Window.Enemy
 import Arkham.Matcher

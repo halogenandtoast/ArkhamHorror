@@ -14,7 +14,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Scenario
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
@@ -23,7 +23,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.Token
 import Arkham.Trait qualified as Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Treacheries
 import Arkham.Xp
 
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs

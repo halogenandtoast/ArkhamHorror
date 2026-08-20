@@ -5,13 +5,13 @@ import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Ac
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Enemies
 import Arkham.Helpers.Query (getLead)
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Treacheries
 
 newtype FogOnTheBay = FogOnTheBay AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

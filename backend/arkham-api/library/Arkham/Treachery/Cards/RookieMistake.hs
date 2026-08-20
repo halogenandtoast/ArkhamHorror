@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.RookieMistake (rookieMistake) where
 
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype RookieMistake = RookieMistake TreacheryAttrs

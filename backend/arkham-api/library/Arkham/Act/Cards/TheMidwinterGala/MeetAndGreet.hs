@@ -8,7 +8,7 @@ import Arkham.Helpers.Location (connectBothWays)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheMidwinterGala qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.SkillType
@@ -93,7 +93,7 @@ instance RunMessage MeetAndGreet where
           =<< getSetAsideCardsMatching (CardWithTrait SecondFloor)
       case secondFloor of
         (x : _) -> do
-          lobby <- selectJust $ locationIs Locations.lobbyTheMidwinterGala
+          lobby <- selectJust $ locationIs Locations.lobby
           connectBothWays lobby x
         _ -> error "no second floor locations set aside"
 

@@ -3,7 +3,7 @@ module Arkham.Act.Cards.ThePathToCarcosa.EchoesOfThePast.TheOath (theOath) where
 import Arkham.Act.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.EchoesOfThePast.Helpers

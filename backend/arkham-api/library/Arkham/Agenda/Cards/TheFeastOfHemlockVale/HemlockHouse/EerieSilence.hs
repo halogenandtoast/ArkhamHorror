@@ -9,9 +9,9 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Story
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Stories
 import Arkham.Trait (Trait (Dormant))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Treacheries
 
 newtype EerieSilence = EerieSilence AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

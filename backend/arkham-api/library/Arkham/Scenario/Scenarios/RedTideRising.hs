@@ -5,7 +5,9 @@ import Arkham.Agenda.CardDefs.RedTideRising qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Card (getVictoryPoints)
@@ -17,7 +19,7 @@ import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
 import Arkham.Helpers.Xp (toGainXp)
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier (ModifierType (..))
@@ -35,7 +37,9 @@ import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers (
   suspects,
  )
 import Arkham.Trait (Trait (Hideout, Suspect))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
+import Arkham.Treachery.CardDefs.Standalone qualified as Treacheries
 import Arkham.Xp
 
 newtype RedTideRising = RedTideRising ScenarioAttrs
@@ -167,7 +171,7 @@ instance RunMessage RedTideRising where
             Expert -> 2
             _ -> 0
         monsters =
-          [ Enemies.wingedOneFogOverInnsmouth
+          [ Enemies.wingedOne
           , Enemies.huntingNightgaunt
           , Enemies.huntingNightgaunt
           ]
@@ -176,7 +180,7 @@ instance RunMessage RedTideRising where
         if adjusted >= 4
           then
             Just
-              <$> sample (Enemies.wingedOneFogOverInnsmouth :| [Enemies.huntingNightgaunt, Enemies.huntingNightgaunt])
+              <$> sample (Enemies.wingedOne :| [Enemies.huntingNightgaunt, Enemies.huntingNightgaunt])
           else pure Nothing
 
       placeDoomOnAgenda $ case adjusted of

@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as Car
 import Arkham.Act.Import.Lifted
 import Arkham.Act.Sequence
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.GameValue (perPlayer)

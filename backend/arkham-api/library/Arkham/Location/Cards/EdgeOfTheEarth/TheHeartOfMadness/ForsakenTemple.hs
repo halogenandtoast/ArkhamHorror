@@ -1,0 +1,46 @@
+module Arkham.Location.Cards.EdgeOfTheEarth.TheHeartOfMadness.ForsakenTemple (forsakenTemple) where
+
+import Arkham.Ability
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
+import Arkham.Helpers.Cost (getSpendableClueCount)
+import Arkham.Helpers.GameValue
+import Arkham.I18n
+import Arkham.Location.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheHeartOfMadness.Helpers
+
+newtype ForsakenTemple = ForsakenTemple LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+forsakenTemple :: LocationCard ForsakenTemple
+forsakenTemple = location ForsakenTemple Cards.forsakenTemple 3 (PerPlayer 1)
+
+instance HasAbilities ForsakenTemple where
+  getAbilities (ForsakenTemple a) =
+    extendRevealed1 a
+      $ skillTestAbility
+      $ restricted a 1 (Here <> youExist (InvestigatorWithDormantSeal SealC)) actionAbility
+
+instance RunMessage ForsakenTemple where
+  runMessage msg l@(ForsakenTemple attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 3)
+      pure l
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      targetAmount <- perPlayer 1
+      iids <- select $ investigatorAt attrs
+      totalClues <- getSpendableClueCount iids
+      sameSpoke <- getLocationsOnSameSpoke attrs.label UnrevealedLocation
+      chooseOneM iid $ withI18n $ countVar targetAmount do
+        labeledValidate' (totalClues >= targetAmount) "spendCluesToActivate" do
+          push $ SpendClues targetAmount iids
+          activateSeal SealC
+          chooseOneAtATimeM iid $ targets sameSpoke $ lookAtRevealed iid (attrs.ability 1)
+        labeled' "doNotSpendClues" nothing
+
+      pure l
+    _ -> ForsakenTemple <$> liftRunMessage msg attrs

@@ -8,11 +8,11 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.CarnevaleOfHorrors qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.CarnevaleOfHorrors qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message (pattern DealAssetDamage)
 import Arkham.Message.Lifted.Choose

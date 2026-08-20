@@ -56,7 +56,7 @@ import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
 import Arkham.Investigator.Types (Investigator, investigatorPlacement, investigatorPlayerId)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheBlobThatAteEverythingELSE qualified as Locations
 import Arkham.Message
 import Arkham.Name
 import Arkham.Placement (

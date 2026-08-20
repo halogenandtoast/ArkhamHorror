@@ -3,7 +3,7 @@ module Arkham.Act.Cards.WarOfTheOuterGods.WarOfTheOuterGods (warOfTheOuterGods) 
 import Arkham.Ability
 import Arkham.Act.CardDefs.WarOfTheOuterGods qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.WarOfTheOuterGods qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.WarOfTheOuterGods.Helpers

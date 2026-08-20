@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WakingNightmare qualified as Enemies
 import Arkham.Helpers
 import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.Query

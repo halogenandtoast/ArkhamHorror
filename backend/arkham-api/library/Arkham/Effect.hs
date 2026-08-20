@@ -118,13 +118,11 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards.TheWellspringOfFortune (
 import Arkham.Campaigns.TheScarletKeys.Key.Cards.TheShadeReaper (
   theShadeReaperEffect,
  )
-import Arkham.Enemy.Enemies (
-  alejandroVelaEffect,
-  corruptedOrderlyEffect,
-  ichtacaScionOfYigEffect,
-  tommyMalloyEffect,
-  yogSothothEffect,
- )
+import Arkham.Enemy.Cards.TheDreamEaters.WakingNightmare.CorruptedOrderly (corruptedOrderlyEffect)
+import Arkham.Enemy.Cards.TheDunwichLegacy.LostInTimeAndSpace.YogSothoth (yogSothothEffect)
+import Arkham.Enemy.Cards.TheForgottenAge.ShatteredAeons.AlejandroVela (alejandroVelaEffect)
+import Arkham.Enemy.Cards.TheForgottenAge.ShatteredAeons.IchtacaScionOfYig (ichtacaScionOfYigEffect)
+import Arkham.Enemy.Cards.TommyMalloy (tommyMalloyEffect)
 import Arkham.Event.Events (
   atACrossroads1Effect,
   backstab3Effect,
@@ -179,16 +177,24 @@ import Arkham.Investigator.Investigators (
   williamYorickEffect,
   winifredHabbamockEffect,
  )
-import Arkham.Location.Locations (
-  coterieLibrarySanctumEffect,
-  cursedShoresEffect,
-  enchantedWoodsLostWoodsEffect,
-  longWayAroundEffect,
-  restaurantEffect,
-  theCornicheEffect,
+import Arkham.Location.Cards.CurseOfTheRougarou.CursedShores (cursedShoresEffect)
+import Arkham.Location.Cards.MurderAtTheExcelsiorHotel.Restaurant (restaurantEffect)
+import Arkham.Location.Cards.TheCircleUndone.UnionAndDisillusion.UnvisitedIsleMossCoveredSteps (
   unvisitedIsleMossCoveredStepsEffect,
+ )
+import Arkham.Location.Cards.TheCircleUndone.UnionAndDisillusion.UnvisitedIsleStandingStones (
   unvisitedIsleStandingStonesEffect,
  )
+import Arkham.Location.Cards.TheDreamEaters.BeyondTheGatesOfSleep.EnchantedWoodsLostWoods (
+  enchantedWoodsLostWoodsEffect,
+ )
+import Arkham.Location.Cards.TheInnsmouthConspiracy.HorrorInHighGear.LongWayAround (
+  longWayAroundEffect,
+ )
+import Arkham.Location.Cards.TheScarletKeys.CongressOfTheKeys.CoterieLibrarySanctum (
+  coterieLibrarySanctumEffect,
+ )
+import Arkham.Location.Cards.TheScarletKeys.DogsOfWar.TheCorniche (theCornicheEffect)
 import Arkham.Skill.Skills (
   copycat3Effect,
   defiance2Effect,
@@ -201,27 +207,39 @@ import Arkham.Skill.Skills (
   prescientEffect,
   theEyeOfTruth5Effect,
  )
-import Arkham.Story.Stories (
-  gavriellasFateEffect,
-  jeromesFateEffect,
-  josefsPlanEffect,
-  pennysFateEffect,
+import Arkham.Story.Cards.TheCircleUndone.AtDeathsDoorstep.JosefsPlan (josefsPlanEffect)
+import Arkham.Story.Cards.TheCircleUndone.TheWagesOfSin.UnfinishedBusiness_J (
   unfinishedBusiness_JEffect,
-  valentinosFateEffect,
  )
-import Arkham.Treachery.Treacheries (
-  chillingPresenceEffect,
-  mesmerizeEffect,
+import Arkham.Story.Cards.TheCircleUndone.UnionAndDisillusion.GavriellasFate (gavriellasFateEffect)
+import Arkham.Story.Cards.TheCircleUndone.UnionAndDisillusion.JeromesFate (jeromesFateEffect)
+import Arkham.Story.Cards.TheCircleUndone.UnionAndDisillusion.PennysFate (pennysFateEffect)
+import Arkham.Story.Cards.TheCircleUndone.UnionAndDisillusion.ValentinosFate (valentinosFateEffect)
+import Arkham.Treachery.Cards.CarnevaleOfHorrors.Mesmerize (mesmerizeEffect)
+import Arkham.Treachery.Cards.EdgeOfTheEarth.Tekelili.Tekelili_227 (tekelili_227Effect)
+import Arkham.Treachery.Cards.RealityAcid5U21 (realityAcid5U21Effect)
+import Arkham.Treachery.Cards.SinsOfThePast.ChillingPresence (chillingPresenceEffect)
+import Arkham.Treachery.Cards.TheBlobThatAteEverything.RealityAcid (realityAcidEffect)
+import Arkham.Treachery.Cards.TheCircleUndone.SilverTwilightLodge.MysteriesOfTheLodge (
   mysteriesOfTheLodgeEffect,
-  pushedIntoTheBeyondEffect,
-  realityAcid5U21Effect,
-  realityAcidEffect,
+ )
+import Arkham.Treachery.Cards.TheDreamEaters.WhereTheGodsDwell.RestlessJourneyFallacy (
   restlessJourneyFallacyEffect,
+ )
+import Arkham.Treachery.Cards.TheDreamEaters.WhereTheGodsDwell.RestlessJourneyHardship (
   restlessJourneyHardshipEffect,
+ )
+import Arkham.Treachery.Cards.TheDreamEaters.WhereTheGodsDwell.RestlessJourneyLies (
   restlessJourneyLiesEffect,
-  tekelili_227Effect,
-  theKingsEdictEffect,
+ )
+import Arkham.Treachery.Cards.TheDreamEaters.WhispersOfHypnos.WhispersOfHypnos (
   whispersOfHypnosEffect,
+ )
+import Arkham.Treachery.Cards.TheDunwichLegacy.TheBeyond.PushedIntoTheBeyond (
+  pushedIntoTheBeyondEffect,
+ )
+import Arkham.Treachery.Cards.ThePathToCarcosa.CultOfTheYellowSign.TheKingsEdict (
+  theKingsEdictEffect,
  )
 
 noop :: CardCode -> EffectArgs -> NoEffect

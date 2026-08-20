@@ -5,7 +5,8 @@ import Arkham.Agenda.CardDefs.ReadOrDie qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReadOrDie qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.Helpers.Campaign (getOwner)
@@ -17,7 +18,7 @@ import Arkham.Helpers.Xp (getInitialVictory)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Locations
 import Arkham.Matcher hiding (assetAt, enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

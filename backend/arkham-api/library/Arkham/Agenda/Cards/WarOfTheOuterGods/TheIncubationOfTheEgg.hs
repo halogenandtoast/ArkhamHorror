@@ -4,14 +4,14 @@ import Arkham.Agenda.CardDefs.WarOfTheOuterGods qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.ChaosToken
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.WarOfTheOuterGods qualified as Enemies
 import Arkham.Helpers.Query (getSetAsideCardMaybe, getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario (getIsStandalone)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.WarOfTheOuterGods qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (pattern PlaceDoom)
 import Arkham.Scenarios.WarOfTheOuterGods.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.WarOfTheOuterGods qualified as Treacheries
 
 newtype TheIncubationOfTheEgg = TheIncubationOfTheEgg AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

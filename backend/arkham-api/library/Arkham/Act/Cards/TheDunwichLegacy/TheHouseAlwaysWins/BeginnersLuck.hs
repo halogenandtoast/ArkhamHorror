@@ -7,7 +7,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.ChaosBag
 import Arkham.Investigator.Projection ()
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log

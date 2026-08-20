@@ -5,10 +5,10 @@ import Arkham.Agenda.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.UndimensionedAndUnseen

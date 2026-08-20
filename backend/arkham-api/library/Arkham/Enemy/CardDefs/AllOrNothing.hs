@@ -2,6 +2,17 @@ module Arkham.Enemy.CardDefs.AllOrNothing where
 
 import Arkham.Enemy.CardDefs.Import
 
+cloverClubBouncer :: CardDef
+cloverClubBouncer =
+  (enemy "90016" "Clover Club Bouncer" AllOrNothing 4)
+    { cdHealthDamage = healthDamage 2
+    , cdFight = fight 1
+    , cdEvade = evade 1
+    , cdHealth = health 3
+    , cdCardTraits = setFromList [Humanoid, Criminal]
+    , cdVictoryPoints = Just 0
+    }
+
 siobhanRiley :: CardDef
 siobhanRiley =
   unique
@@ -14,14 +25,3 @@ siobhanRiley =
       , cdCardTraits = setFromList [Humanoid, Criminal, Elite]
       , cdVictoryPoints = Just 1
       }
-
-cloverClubBouncer :: CardDef
-cloverClubBouncer =
-  (enemy "90016" "Clover Club Bouncer" AllOrNothing 4)
-    { cdHealthDamage = healthDamage 2
-    , cdFight = fight 1
-    , cdEvade = evade 1
-    , cdHealth = health 3
-    , cdCardTraits = setFromList [Humanoid, Criminal]
-    , cdVictoryPoints = Just 0
-    }

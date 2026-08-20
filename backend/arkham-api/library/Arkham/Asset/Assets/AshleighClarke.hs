@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Story
 import Arkham.Matcher
-import Arkham.Story.Cards qualified as Story
+import Arkham.Story.CardDefs.ThePathToCarcosa.TheLastKing qualified as Story
 
 newtype AshleighClarke = AshleighClarke AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -16,7 +16,9 @@ ashleighClarke = asset AshleighClarke Cards.ashleighClarke
 
 instance HasAbilities AshleighClarke where
   getAbilities (AshleighClarke a) =
-    [ restricted a 1 (OnSameLocation <> CanTakeControlOfClues) $ ActionAbility #parley Nothing $ ActionCost 2
+    [ restricted a 1 (OnSameLocation <> CanTakeControlOfClues)
+        $ ActionAbility #parley Nothing
+        $ ActionCost 2
     , groupLimit PerGame
         $ restricted a 2 (not_ $ exists Story.sickeningReality_69)
         $ forced

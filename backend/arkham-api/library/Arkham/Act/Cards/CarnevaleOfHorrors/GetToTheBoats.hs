@@ -6,7 +6,7 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.CarnevaleOfHorrors qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
 

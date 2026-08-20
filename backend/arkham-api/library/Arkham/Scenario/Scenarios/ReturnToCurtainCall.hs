@@ -1,11 +1,11 @@
 module Arkham.Scenario.Scenarios.ReturnToCurtainCall (returnToCurtainCall) where
 
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Matcher
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.CurtainCall
 import Arkham.Scenarios.CurtainCall.Helpers
-import Arkham.Matcher
 
 newtype ReturnToCurtainCall = ReturnToCurtainCall CurtainCall
   deriving anyclass IsScenario
@@ -31,5 +31,6 @@ returnToCurtainCall difficulty =
 
 instance RunMessage ReturnToCurtainCall where
   runMessage msg (ReturnToCurtainCall curtainCall'@(CurtainCall attrs)) = runQueueT $ scenarioI18n $ case msg of
-    Setup -> runScenarioSetup (ReturnToCurtainCall . CurtainCall) attrs (setIsReturnTo >> setupCurtainCall attrs)
+    Setup ->
+      runScenarioSetup (ReturnToCurtainCall . CurtainCall) attrs (setIsReturnTo >> setupCurtainCall attrs)
     _ -> ReturnToCurtainCall <$> liftRunMessage msg curtainCall'

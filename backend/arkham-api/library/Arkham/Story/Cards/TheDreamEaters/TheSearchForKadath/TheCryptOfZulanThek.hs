@@ -1,0 +1,23 @@
+module Arkham.Story.Cards.TheDreamEaters.TheSearchForKadath.TheCryptOfZulanThek (theCryptOfZulanThek) where
+
+import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Enemies
+import Arkham.Matcher
+import Arkham.ScenarioLogKey
+import Arkham.Story.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Cards
+import Arkham.Story.Import.Lifted
+
+newtype TheCryptOfZulanThek = TheCryptOfZulanThek StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theCryptOfZulanThek :: StoryCard TheCryptOfZulanThek
+theCryptOfZulanThek = story TheCryptOfZulanThek Cards.theCryptOfZulanThek
+
+instance RunMessage TheCryptOfZulanThek where
+  runMessage msg s@(TheCryptOfZulanThek attrs) = runQueueT $ case msg of
+    ResolveThisStory iid (is attrs -> True) -> do
+      push $ ScenarioCountIncrementBy SignOfTheGods 1
+      mHordeOfNight <- selectOne $ enemyIs Enemies.hordeOfNight <> IsHost
+      for_ mHordeOfNight (addToVictory iid)
+      pure s
+    _ -> TheCryptOfZulanThek <$> liftRunMessage msg attrs

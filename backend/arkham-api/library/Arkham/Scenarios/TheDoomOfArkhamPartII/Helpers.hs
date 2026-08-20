@@ -9,7 +9,7 @@ import Arkham.Classes.HasQueue (HasQueue, push, removeAllMessagesMatching)
 import Arkham.Classes.Query
 import Arkham.Constants (pattern AbilityAttack, pattern AbilityEvade)
 import Arkham.Draw.Types (newCardDraw)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Enemies
 import Arkham.Helpers.Log (scenarioCount, scenarioCountIncrementBy)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Scenario (getVictoryDisplay)

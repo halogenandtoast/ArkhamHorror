@@ -7,7 +7,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Deck qualified as Deck
 import Arkham.Direction
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message (toDiscard)

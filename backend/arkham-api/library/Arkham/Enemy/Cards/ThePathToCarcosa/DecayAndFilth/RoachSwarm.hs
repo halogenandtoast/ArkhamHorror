@@ -1,0 +1,25 @@
+module Arkham.Enemy.Cards.ThePathToCarcosa.DecayAndFilth.RoachSwarm (roachSwarm) where
+
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DecayAndFilth qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher
+import Arkham.Modifier qualified as Modifier
+import Arkham.Projection
+
+newtype RoachSwarm = RoachSwarm EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+roachSwarm :: EnemyCard RoachSwarm
+roachSwarm = enemy RoachSwarm Cards.roachSwarm
+
+instance HasModifiersFor RoachSwarm where
+  getModifiersFor (RoachSwarm a) = maybeModifySelf a do
+    lid <- MaybeT $ selectOne $ locationWithEnemy a.id
+    shroud <- MaybeT $ field LocationShroud lid
+    pure [Modifier.EnemyFight shroud]
+
+instance RunMessage RoachSwarm where
+  runMessage msg (RoachSwarm attrs) = RoachSwarm <$> runMessage msg attrs

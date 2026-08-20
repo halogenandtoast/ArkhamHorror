@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.LaidToRest.GatheringMists (gatheringMists) where
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.LaidToRest qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.LaidToRest qualified as Enemies
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario (scenarioFieldMap)

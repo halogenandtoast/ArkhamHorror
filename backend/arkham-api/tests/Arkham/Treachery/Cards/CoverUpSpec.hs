@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.CoverUpSpec (spec) where
 
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Cards
 import TestImport.New
 
 spec :: Spec

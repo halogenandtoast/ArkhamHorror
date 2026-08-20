@@ -1,6 +1,6 @@
 module Arkham.Event.Events.PutrescentRotSpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import Arkham.Matcher (cardIs, eventIs)
 import Arkham.Placement

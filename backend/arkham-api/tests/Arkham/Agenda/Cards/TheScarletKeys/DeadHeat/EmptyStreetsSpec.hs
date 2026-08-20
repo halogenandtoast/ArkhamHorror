@@ -1,7 +1,8 @@
 module Arkham.Agenda.Cards.TheScarletKeys.DeadHeat.EmptyStreetsSpec (spec) where
 
 import Arkham.Agenda.CardDefs.TheScarletKeys.DeadHeat qualified as Agendas
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.AgentsOfYogSothoth qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Ghouls qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Entities qualified as Entities
 import Arkham.Matcher

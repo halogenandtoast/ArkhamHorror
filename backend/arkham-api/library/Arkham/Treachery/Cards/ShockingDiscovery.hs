@@ -5,7 +5,7 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Shuffle
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Treachery.Import.Lifted
 import Arkham.Window (getBatchId)
 

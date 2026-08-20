@@ -1,0 +1,38 @@
+module Arkham.Enemy.Cards.ThePathToCarcosa.APhantomOfTruth.TheOrganistHopelessIDefiedHim (theOrganistHopelessIDefiedHim) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Matcher
+
+newtype TheOrganistHopelessIDefiedHim = TheOrganistHopelessIDefiedHim EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor TheOrganistHopelessIDefiedHim where
+  getModifiersFor (TheOrganistHopelessIDefiedHim attrs) = modifySelf attrs [CannotBeDamaged]
+
+instance HasAbilities TheOrganistHopelessIDefiedHim where
+  getAbilities (TheOrganistHopelessIDefiedHim attrs) =
+    extend1 attrs
+      $ groupLimit PerRound
+      $ mkAbility attrs 1
+      $ forced
+      $ MovedFromHunter #after (be attrs <> UnengagedEnemy)
+
+theOrganistHopelessIDefiedHim :: EnemyCard TheOrganistHopelessIDefiedHim
+theOrganistHopelessIDefiedHim =
+  enemyWith TheOrganistHopelessIDefiedHim Cards.theOrganistHopelessIDefiedHim
+    $ healthL
+    .~ Nothing
+
+instance RunMessage TheOrganistHopelessIDefiedHim where
+  runMessage msg e@(TheOrganistHopelessIDefiedHim attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      isEngaged <- selectAny $ investigatorEngagedWith attrs
+      unless isEngaged do
+        roundModifier (attrs.ability 1) attrs CannotAttack
+        push $ HunterMove attrs.id
+      pure e
+    _ -> TheOrganistHopelessIDefiedHim <$> liftRunMessage msg attrs

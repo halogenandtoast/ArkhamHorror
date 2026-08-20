@@ -8,7 +8,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers.FlavorText (li, setup, ul)
@@ -17,7 +17,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose
@@ -28,7 +28,7 @@ import Arkham.Scenario.Import.Lifted hiding (chooseOne, placeLocationCard, pushA
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.AThousandShapesOfHorror.Helpers
 import Arkham.Trait (Trait (Graveyard))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Treacheries
 
 newtype AThousandShapesOfHorror = AThousandShapesOfHorror ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -125,7 +125,7 @@ instance RunMessage AThousandShapesOfHorror where
         [Locations.upstairsDoorwayBedroom, Locations.upstairsDoorwayLibrary]
 
       setAside
-        [ Locations.attic_AThousandShapesOfHorror
+        [ Locations.attic
         , Locations.unmarkedTomb
         , Locations.mysteriousStairs_183
         , Locations.mysteriousStairs_184

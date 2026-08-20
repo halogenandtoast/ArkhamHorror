@@ -1,0 +1,24 @@
+module Arkham.Enemy.Cards.TheForgottenAge.TheDepthsOfYoth.EaterOfTheDepths (eaterOfTheDepths) where
+
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
+import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+
+newtype EaterOfTheDepths = EaterOfTheDepths EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+eaterOfTheDepths :: EnemyCard EaterOfTheDepths
+eaterOfTheDepths =
+  enemyWith EaterOfTheDepths Cards.eaterOfTheDepths
+    $ spawnAtL
+    ?~ SpawnAtRandomSetAsideLocation
+
+instance HasModifiersFor EaterOfTheDepths where
+  getModifiersFor (EaterOfTheDepths a) = do
+    depth <- getCurrentDepth
+    modifySelfWhen a (depth > 0) [EnemyEvade depth]
+
+instance RunMessage EaterOfTheDepths where
+  runMessage msg (EaterOfTheDepths attrs) = EaterOfTheDepths <$> runMessage msg attrs

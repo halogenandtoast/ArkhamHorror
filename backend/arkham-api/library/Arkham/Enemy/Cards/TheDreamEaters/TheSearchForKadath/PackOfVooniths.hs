@@ -1,0 +1,26 @@
+module Arkham.Enemy.Cards.TheDreamEaters.TheSearchForKadath.PackOfVooniths (packOfVooniths) where
+
+import Arkham.Classes
+import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Cards
+import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+import Arkham.Modifier qualified as Mod
+import Arkham.Prelude
+
+newtype PackOfVooniths = PackOfVooniths EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+packOfVooniths :: EnemyCard PackOfVooniths
+packOfVooniths = enemy PackOfVooniths Cards.packOfVooniths
+
+instance HasModifiersFor PackOfVooniths where
+  getModifiersFor (PackOfVooniths a) = do
+    isHost <- toId a <=~> IsHost
+    noSwarm <- selectNone $ SwarmOf (toId a)
+    modifySelfWhen a (isHost && noSwarm) [Mod.EnemyFight 2, Mod.EnemyEvade 2]
+
+instance RunMessage PackOfVooniths where
+  runMessage msg (PackOfVooniths attrs) =
+    PackOfVooniths <$> runMessage msg attrs

@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.Amnesia (amnesia) where
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Investigator.Types
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Amnesia = Amnesia TreacheryAttrs

@@ -8,7 +8,8 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.SanguineShadows qualified as Enemies
 import Arkham.ForMovement
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.FlavorText
@@ -17,7 +18,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.SanguineShadows qualified as Locations
 import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.RedTideRising.TrailGoesCold (trailGoesCold) where
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.RedTideRising qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (EnemyEvaded)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)

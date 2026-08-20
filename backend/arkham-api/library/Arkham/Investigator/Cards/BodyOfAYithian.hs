@@ -11,7 +11,7 @@ import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Trait (Trait (Yithian))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Treacheries
 import Data.Aeson (Result (..))
 
 newtype YithianMetadata = YithianMetadata {originalBody :: Value}

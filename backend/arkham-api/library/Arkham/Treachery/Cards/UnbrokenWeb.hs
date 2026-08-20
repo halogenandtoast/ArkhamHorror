@@ -6,7 +6,7 @@ import Arkham.Helpers.Discover
 import Arkham.Matcher
 import Arkham.Message.Lifted.Discover
 import Arkham.Modifier
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype UnbrokenWeb = UnbrokenWeb TreacheryAttrs

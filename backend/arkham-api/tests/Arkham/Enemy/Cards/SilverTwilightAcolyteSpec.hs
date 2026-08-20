@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.SilverTwilightAcolyteSpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot qualified as Enemies
 import TestImport.New
 
 spec :: Spec

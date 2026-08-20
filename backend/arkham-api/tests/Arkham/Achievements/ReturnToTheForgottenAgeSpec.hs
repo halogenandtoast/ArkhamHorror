@@ -16,12 +16,13 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply (..))
 import Arkham.DamageEffect (attack)
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Trait (Trait (Serpent))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Helpers.Achievements
 import TestImport.New
 

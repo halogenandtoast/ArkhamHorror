@@ -1,0 +1,28 @@
+module Arkham.Enemy.Cards.TheForgottenAge.ThreadsOfFate.HarlanEarnstoneCrazedByTheCurse (harlanEarnstoneCrazedByTheCurse) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Matcher
+
+newtype HarlanEarnstoneCrazedByTheCurse = HarlanEarnstoneCrazedByTheCurse EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+harlanEarnstoneCrazedByTheCurse :: EnemyCard HarlanEarnstoneCrazedByTheCurse
+harlanEarnstoneCrazedByTheCurse =
+  enemy HarlanEarnstoneCrazedByTheCurse Cards.harlanEarnstoneCrazedByTheCurse
+
+instance HasAbilities HarlanEarnstoneCrazedByTheCurse where
+  getAbilities (HarlanEarnstoneCrazedByTheCurse a) =
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ SkillTestResult #after You (WhileEvadingAnEnemy $ be a) (SuccessResult $ atLeast 3)
+
+instance RunMessage HarlanEarnstoneCrazedByTheCurse where
+  runMessage msg e@(HarlanEarnstoneCrazedByTheCurse attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
+      pure e
+    _ -> HarlanEarnstoneCrazedByTheCurse <$> liftRunMessage msg attrs

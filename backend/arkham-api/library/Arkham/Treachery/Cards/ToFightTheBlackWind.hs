@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.ToFightTheBlackWind (toFightTheBlackWind, ToFightT
 import Arkham.Ability
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Promo qualified as Cards
 import Arkham.Treachery.Helpers qualified as Msg
 import Arkham.Treachery.Import.Lifted
 

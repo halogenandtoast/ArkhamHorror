@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as Enemies
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Matcher qualified as Matcher

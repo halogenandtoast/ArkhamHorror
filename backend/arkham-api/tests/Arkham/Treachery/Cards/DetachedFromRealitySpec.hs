@@ -1,9 +1,9 @@
 module Arkham.Treachery.Cards.DetachedFromRealitySpec (spec) where
 
 import Arkham.Investigator.Cards (lukeRobinson)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters qualified as Locations
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

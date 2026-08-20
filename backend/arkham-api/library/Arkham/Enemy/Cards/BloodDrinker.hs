@@ -1,7 +1,7 @@
 module Arkham.Enemy.Cards.BloodDrinker (bloodDrinker) where
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.Standalone qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
 

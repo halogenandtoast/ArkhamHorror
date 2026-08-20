@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.BiancaDieKatz (biancaDieKatz) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 

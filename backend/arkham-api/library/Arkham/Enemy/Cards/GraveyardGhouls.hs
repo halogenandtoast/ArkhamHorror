@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.GraveyardGhouls (graveyardGhouls) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.ThePathToCarcosa qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher

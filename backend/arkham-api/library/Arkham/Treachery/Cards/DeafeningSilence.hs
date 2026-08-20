@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.DeafeningSilence (deafeningSilence, DeafeningSilen
 
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheScarletKeys qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype DeafeningSilence = DeafeningSilence TreacheryAttrs

@@ -7,7 +7,7 @@ import Arkham.Helpers.Query (getInvestigators, getLead, getSetAsideCardsMatching
 import Arkham.Matcher
 import Arkham.Message.Lifted.Story
 import Arkham.Scenarios.FortuneAndFolly.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.FortuneAndFolly qualified as Stories
 import Arkham.Trait (Trait (Casino))
 
 newtype TheTurn = TheTurn AgendaAttrs

@@ -20,9 +20,15 @@ import Arkham.CampaignStep (CampaignStep (EpilogueStep, InterludeStep))
 import Arkham.Campaigns.TheDrownedCity.Key
 import Arkham.DamageEffect (nonAttack)
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.OneLastJob qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.Pilgrims qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheApiary qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
 import Arkham.Game.Settings (settingsAchievementsEnabled)
 import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Locations
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.FloodLevel (FloodLevel (..))
 import Arkham.Location.Grid (GridLocation (..), Pos (..))

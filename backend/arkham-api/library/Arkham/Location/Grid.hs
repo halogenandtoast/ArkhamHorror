@@ -272,4 +272,3 @@ flattenGrid c =
       xRange = [-leftBy .. rightBy]
       yRange = [-belowBy .. aboveBy]
    in [loc | x <- xRange, y <- yRange, Just loc <- [viewGrid (Pos x y) c]]
-

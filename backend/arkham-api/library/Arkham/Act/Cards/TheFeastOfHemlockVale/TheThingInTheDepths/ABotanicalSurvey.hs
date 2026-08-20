@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified a
 import Arkham.Act.Import.Lifted
 import Arkham.Constants
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified as Enemies
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose

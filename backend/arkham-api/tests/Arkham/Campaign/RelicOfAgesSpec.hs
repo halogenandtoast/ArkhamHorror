@@ -4,7 +4,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Campaigns.TheForgottenAge (relicOwnedBy, theForgottenAge)
 import Arkham.Campaign.Types (storyCardsL)
 import Arkham.Difficulty
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import TestImport
 
 -- The Forgotten Age re-homes the Relic of Ages when its owner leaves the campaign
@@ -22,7 +23,8 @@ spec = describe "relicOwnedBy" do
       liftIO $ (toCardCode <$> relicOwnedBy "04004" (attrsWith [card])) `shouldBe` Just (toCardCode def)
 
   it "ignores the other cards the same investigator earned" $ gameTest \_ -> do
-    cards <- traverse genCard [Assets.ichtacaTheForgottenGuardian, Treacheries.doomed, Treacheries.poisoned]
+    cards <-
+      traverse genCard [Assets.ichtacaTheForgottenGuardian, Treacheries.doomed, Treacheries.poisoned]
     liftIO $ relicOwnedBy "04004" (attrsWith cards) `shouldBe` Nothing
 
   it "picks the relic out of a mixed pile" $ gameTest \_ -> do

@@ -2,7 +2,7 @@ module Arkham.Act.Cards.ReturnToTheForgottenAge.ReturnToThreadsOfFate.SearchForT
 
 import Arkham.Act.CardDefs.ReturnToTheForgottenAge.ReturnToThreadsOfFate qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToThreadsOfFate qualified as Locations
 
 newtype SearchForTheMeaning = SearchForTheMeaning ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.SellYourSoul (sellYourSoul) where
 
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.ReturnTo qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype SellYourSoul = SellYourSoul TreacheryAttrs

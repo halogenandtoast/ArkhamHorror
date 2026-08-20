@@ -6,7 +6,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.History
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheForgottenAge qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Metadata = Metadata {chosenLocation :: Maybe LocationId}

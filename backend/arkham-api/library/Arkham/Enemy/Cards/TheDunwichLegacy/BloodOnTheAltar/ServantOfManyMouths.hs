@@ -1,0 +1,35 @@
+module Arkham.Enemy.Cards.TheDunwichLegacy.BloodOnTheAltar.ServantOfManyMouths (servantOfManyMouths) where
+
+import Arkham.Ability
+import Arkham.Discover
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+
+newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+servantOfManyMouths :: EnemyCard ServantOfManyMouths
+servantOfManyMouths =
+  enemy ServantOfManyMouths Cards.servantOfManyMouths
+    & setSpawnAt EmptyLocation
+
+instance HasAbilities ServantOfManyMouths where
+  getAbilities (ServantOfManyMouths a) =
+    extend1 a
+      $ restricted a 1 (exists $ LocationWithDiscoverableCluesBy You)
+      $ SilentForcedAbility
+      $ EnemyDefeated #after You ByAny (be a)
+
+instance RunMessage ServantOfManyMouths where
+  runMessage msg e@(ServantOfManyMouths attrs) = runQueueT $ case msg of
+    UseThisAbility iid (IndexedSource 1 (isSource attrs -> True)) 1 -> do
+      locationsWithClues <- select $ locationWithDiscoverableCluesBy iid
+      chooseTargetM iid locationsWithClues $ discoverAt NotInvestigate iid (attrs.ability 1) 1
+      pure e
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      deathRattle attrs 1 (exists $ LocationWithDiscoverableCluesBy You)
+      pure e
+    _ -> ServantOfManyMouths <$> liftRunMessage msg attrs

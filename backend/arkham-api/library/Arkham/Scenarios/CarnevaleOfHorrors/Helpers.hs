@@ -2,7 +2,7 @@ module Arkham.Scenarios.CarnevaleOfHorrors.Helpers where
 
 import Arkham.Classes
 import Arkham.Classes.HasGame
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.CarnevaleOfHorrors qualified as Cards
 import Arkham.ForMovement
 import Arkham.Helpers.Scenario
 import Arkham.I18n

@@ -11,14 +11,18 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.DarkCult qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheDevourersCult qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Enemies
 import Arkham.Enemy.Types
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
+import Arkham.Location.CardDefs.ReturnToNightOfTheZealot.ReturnToTheMidnightMasks qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Log

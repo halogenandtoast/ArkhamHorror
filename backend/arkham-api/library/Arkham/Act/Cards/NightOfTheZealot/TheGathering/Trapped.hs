@@ -3,7 +3,7 @@ module Arkham.Act.Cards.NightOfTheZealot.TheGathering.Trapped (trapped) where
 import Arkham.Act.CardDefs.NightOfTheZealot.TheGathering qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Query (enemiesAt, getJustLocationByName)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheGathering qualified as Locations
 import Arkham.Message.Lifted.Move
 
 newtype Trapped = Trapped ActAttrs

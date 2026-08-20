@@ -6,7 +6,9 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.DarkCult qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.SilverTwilightLodge qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDoom))
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.FlavorText
@@ -16,7 +18,8 @@ import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorKeys))
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToForTheGreaterGood qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log

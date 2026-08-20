@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.SacrificialBeast (sacrificialBeast) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.Promo qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Investigators

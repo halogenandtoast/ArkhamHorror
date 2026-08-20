@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.FinalRhapsodySpec (spec) where
 
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDunwichLegacy qualified as Cards
 import TestImport.New hiding (InvestigatorDamage)
 
 spec :: Spec

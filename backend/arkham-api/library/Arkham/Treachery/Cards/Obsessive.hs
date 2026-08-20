@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.Obsessive (obsessive, Obsessive (..)) where
 import Arkham.Ability
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Obsessive = Obsessive TreacheryAttrs
@@ -27,7 +27,8 @@ instance RunMessage Obsessive where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      cards <- select $ inHandOf NotForPlay iid <> basic (NonWeakness <> CardWithoutKeyword Keyword.Hidden)
+      cards <-
+        select $ inHandOf NotForPlay iid <> basic (NonWeakness <> CardWithoutKeyword Keyword.Hidden)
       for_ (nonEmpty cards) $ \cards' -> do
         card <- sample cards'
         push $ DiscardCard iid (attrs.ability 1) card.id

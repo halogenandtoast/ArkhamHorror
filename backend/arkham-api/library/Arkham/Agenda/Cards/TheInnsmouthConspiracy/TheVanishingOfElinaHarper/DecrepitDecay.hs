@@ -6,7 +6,8 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Matcher
@@ -28,7 +29,7 @@ instance HasAbilities DecrepitDecay where
 instance RunMessage DecrepitDecay where
   runMessage msg a@(DecrepitDecay attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      shuffleSetAsideIntoEncounterDeck [Enemies.wingedOneFogOverInnsmouth, Enemies.huntingNightgaunt]
+      shuffleSetAsideIntoEncounterDeck [Enemies.wingedOne, Enemies.huntingNightgaunt]
       shuffleEncounterDiscardBackIn
       whenRecoveredMemory ADecisionToStickTogether do
         lead <- getLead

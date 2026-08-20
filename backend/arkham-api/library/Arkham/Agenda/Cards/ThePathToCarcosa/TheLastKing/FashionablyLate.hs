@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.ThePathToCarcosa.TheLastKing.FashionablyLate (fashion
 
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.TheLastKing qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Cards
 import Arkham.Matcher
 import Arkham.Trait
 

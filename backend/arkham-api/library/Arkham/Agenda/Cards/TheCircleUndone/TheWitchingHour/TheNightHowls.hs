@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheCircleUndone.TheWitchingHour qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Scenario (getIsStandalone)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheWitchingHour qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait (Trait (Curse, Omen, Witch))
 

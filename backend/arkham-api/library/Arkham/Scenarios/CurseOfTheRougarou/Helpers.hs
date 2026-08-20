@@ -3,12 +3,12 @@ module Arkham.Scenarios.CurseOfTheRougarou.Helpers where
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Classes.HasGame
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.CurseOfTheRougarou qualified as Cards
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Json
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.CurseOfTheRougarou qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait

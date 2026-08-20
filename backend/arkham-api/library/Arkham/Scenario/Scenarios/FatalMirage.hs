@@ -14,7 +14,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Enemies
 import Arkham.FlavorText
 import Arkham.Game.Base
 import {-# SOURCE #-} Arkham.Game.Utils
@@ -25,7 +25,7 @@ import Arkham.Helpers.Log hiding (crossOutRecordSetEntries, recordSetInsert)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Shuffle (whenCanShuffleIn)
 import Arkham.Helpers.Text
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg

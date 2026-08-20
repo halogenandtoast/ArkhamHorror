@@ -4,14 +4,14 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Enemies
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers
 import Arkham.Key
 import Arkham.Keyword (Keyword (Aloof))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Locations
 import Arkham.Location.FloodLevel
 import Arkham.Matcher
 import Arkham.ScenarioLogKey

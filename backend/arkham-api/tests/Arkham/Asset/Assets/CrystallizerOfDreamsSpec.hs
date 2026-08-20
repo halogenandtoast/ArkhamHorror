@@ -1,7 +1,7 @@
 module Arkham.Asset.Assets.CrystallizerOfDreamsSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import TestImport.New
 

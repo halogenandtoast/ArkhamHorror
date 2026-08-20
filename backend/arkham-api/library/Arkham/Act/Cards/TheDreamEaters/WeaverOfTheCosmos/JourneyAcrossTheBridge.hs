@@ -8,7 +8,7 @@ import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Direction
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Enemies
 import Arkham.Helpers.FlavorText (additionalRules)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario

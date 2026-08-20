@@ -1,0 +1,26 @@
+module Arkham.Location.Cards.NightOfTheZealot.TheMidnightMasks.SouthsideMasBoardingHouse (southsideMasBoardingHouse) where
+
+import Arkham.Ability
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Cards (
+  southsideMasBoardingHouse,
+ )
+import Arkham.Location.Import.Lifted
+import Arkham.Strategy
+
+newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+southsideMasBoardingHouse :: LocationCard SouthsideMasBoardingHouse
+southsideMasBoardingHouse = location SouthsideMasBoardingHouse Cards.southsideMasBoardingHouse 2 (PerPlayer 1)
+
+instance HasAbilities SouthsideMasBoardingHouse where
+  getAbilities (SouthsideMasBoardingHouse x) =
+    extendRevealed1 x $ playerLimit PerGame $ restricted x 1 Here actionAbility
+
+instance RunMessage SouthsideMasBoardingHouse where
+  runMessage msg l@(SouthsideMasBoardingHouse attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      search iid (attrs.ability 1) iid [fromDeck] #ally $ AddFoundToHand iid 1
+      pure l
+    _ -> SouthsideMasBoardingHouse <$> liftRunMessage msg attrs

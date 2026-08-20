@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Enemies
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

@@ -249,8 +249,8 @@ import Arkham.Story.Runner as X (
   pushWhen,
   removeAfterResolutionL,
   story,
-  storyWith,
   storyOtherSide,
+  storyWith,
  )
 import Arkham.Target as X
 

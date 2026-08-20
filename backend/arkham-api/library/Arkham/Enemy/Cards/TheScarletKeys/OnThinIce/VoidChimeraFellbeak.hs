@@ -1,0 +1,18 @@
+module Arkham.Enemy.Cards.TheScarletKeys.OnThinIce.VoidChimeraFellbeak (voidChimeraFellbeak) where
+
+import Arkham.Enemy.CardDefs.TheScarletKeys.OnThinIce qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+
+newtype VoidChimeraFellbeak = VoidChimeraFellbeak EnemyAttrs
+  deriving anyclass (IsEnemy, RunMessage)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+voidChimeraFellbeak :: EnemyCard VoidChimeraFellbeak
+voidChimeraFellbeak = enemy VoidChimeraFellbeak Cards.voidChimeraFellbeak
+
+instance HasModifiersFor VoidChimeraFellbeak where
+  getModifiersFor (VoidChimeraFellbeak a) = do
+    n <- perPlayer 1
+    modifySelf a [HealthModifier n]

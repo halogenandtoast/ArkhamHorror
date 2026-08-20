@@ -8,13 +8,13 @@ import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Capability
 import Arkham.Criteria
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Cost
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log

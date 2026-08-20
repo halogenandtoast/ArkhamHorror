@@ -10,7 +10,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Location (withLocationOf, getLocationOf)
 import Arkham.Helpers.Log
@@ -21,7 +21,8 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
 import Arkham.Keyword (Keyword(Aloof))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.FloodedCaverns qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
@@ -33,8 +34,8 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ALightInTheFog.Helpers
 import Arkham.SortedPair
-import Arkham.Story.Cards qualified as Stories
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Story.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Stories
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Treacheries
 
 data Meta = Meta
   { captured :: [InvestigatorId]

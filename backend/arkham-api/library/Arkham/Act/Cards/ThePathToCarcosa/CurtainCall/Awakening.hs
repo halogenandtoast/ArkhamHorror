@@ -3,7 +3,7 @@ module Arkham.Act.Cards.ThePathToCarcosa.CurtainCall.Awakening (awakening) where
 import Arkham.Act.CardDefs.ReturnToThePathToCarcosa.ReturnToCurtainCall qualified as Cards
 import Arkham.Act.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
 import Arkham.Name

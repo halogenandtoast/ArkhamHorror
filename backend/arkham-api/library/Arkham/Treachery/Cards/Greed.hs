@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.Greed (greed, Greed (..)) where
 
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Greed = Greed TreacheryAttrs

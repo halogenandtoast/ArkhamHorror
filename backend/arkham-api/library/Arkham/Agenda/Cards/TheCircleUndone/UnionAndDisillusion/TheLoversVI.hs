@@ -5,7 +5,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.Effect.Import
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWatcher qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyTokens))
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Log (getRecordSet)

@@ -5,11 +5,11 @@ import Arkham.Act.CardDefs.TheScarletKeys.DeadHeat qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as ScarletKeys
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DeadHeat qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Story
 import Arkham.Placement
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheScarletKeys.DeadHeat qualified as Stories
 import Arkham.Trait (Trait (RitualSite))
 
 newtype FindAmaranth = FindAmaranth ActAttrs

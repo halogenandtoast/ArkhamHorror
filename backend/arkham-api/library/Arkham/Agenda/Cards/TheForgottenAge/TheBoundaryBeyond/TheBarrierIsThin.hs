@@ -6,7 +6,7 @@ import Arkham.Agenda.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Car
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Location.Types
 import Arkham.Matcher

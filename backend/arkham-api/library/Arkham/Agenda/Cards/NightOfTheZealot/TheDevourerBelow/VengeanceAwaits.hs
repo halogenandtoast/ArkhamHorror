@@ -3,10 +3,10 @@ module Arkham.Agenda.Cards.NightOfTheZealot.TheDevourerBelow.VengeanceAwaits (ve
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Enemies
 import Arkham.Helpers.Enemy (getUniqueEnemyMaybe)
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 

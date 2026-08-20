@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters qualified as Locations
 import Arkham.Matcher hiding (PutLocationIntoPlay)
 import Arkham.Message.Lifted.Move
 import Arkham.Window (WindowType (..))

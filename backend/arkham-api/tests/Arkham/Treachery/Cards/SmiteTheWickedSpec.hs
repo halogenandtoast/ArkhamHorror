@@ -1,10 +1,11 @@
 module Arkham.Treachery.Cards.SmiteTheWickedSpec (spec) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Cards
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot.AncientEvils qualified as Cards
+import Arkham.Treachery.CardDefs.TheDunwichLegacy qualified as Cards
 import TestImport.Lifted qualified as Msg
 import TestImport.New
 

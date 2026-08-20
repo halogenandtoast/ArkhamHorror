@@ -1,8 +1,8 @@
 module Arkham.Event.Events.DrawnToTheFlameSpec (spec) where
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Location.Cards qualified as Cards
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Cards
+import Arkham.Treachery.CardDefs.NightOfTheZealot.Nightgaunts qualified as Cards
 import TestImport.New
 
 spec :: Spec

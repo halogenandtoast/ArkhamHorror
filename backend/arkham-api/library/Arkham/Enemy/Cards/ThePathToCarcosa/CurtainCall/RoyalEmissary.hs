@@ -1,0 +1,50 @@
+module Arkham.Enemy.Cards.ThePathToCarcosa.CurtainCall.RoyalEmissary (royalEmissary) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.ForMovement
+import Arkham.Helpers.GameValue (getGameValue)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
+import Arkham.Helpers.Scenario (getIsReturnTo)
+import Arkham.Matcher
+
+newtype RoyalEmissary = RoyalEmissary EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+royalEmissary :: EnemyCard RoyalEmissary
+royalEmissary =
+  enemy RoyalEmissary Cards.royalEmissary
+    & setPrey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
+
+instance HasModifiersFor RoyalEmissary where
+  getModifiersFor (RoyalEmissary a) = whenM getIsReturnTo do
+    n <- getGameValue (PerPlayer $ a.token #warning)
+    modifySelfWhen a (n > 0) [HealthModifier n]
+
+investigatorMatcher :: EnemyAttrs -> InvestigatorMatcher
+investigatorMatcher a =
+  at_ $ oneOf [locationWithEnemy a, AccessibleFrom NotForMovement $ locationWithEnemy a]
+
+instance HasAbilities RoyalEmissary where
+  getAbilities (RoyalEmissary a) =
+    extend
+      a
+      [ restricted a 1 (exists $ investigatorMatcher a) $ forced $ PhaseEnds #when #enemy
+      , restricted a 2 IsReturnTo $ forced $ AddedToVictory #after Nothing (CardWithId a.cardId)
+      ]
+
+instance RunMessage RoyalEmissary where
+  runMessage msg e@(RoyalEmissary attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      selectEach (investigatorMatcher attrs) \investigator -> assignHorror investigator (attrs.ability 1) 1
+      pure e
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      placeTokens (attrs.ability 2) attrs #warning 1
+      pure e
+    Do (AddToVictory _ (isTarget attrs -> True)) -> do
+      let warnings = attrs.token #warning
+      attrs' <- liftRunMessage msg attrs
+      pure $ RoyalEmissary $ attrs' & tokensL %~ insertMap #warning warnings
+    _ -> RoyalEmissary <$> liftRunMessage msg attrs

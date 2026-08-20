@@ -11,7 +11,9 @@ import Arkham.Campaigns.TheForgottenAge.Meta qualified as CampaignMeta
 import Arkham.Card.CardCode
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.Serpents qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.Types hiding (metaL)
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Campaign
@@ -20,7 +22,8 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Locations
 import Arkham.Location.Types hiding (metaL)
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Choose
@@ -30,7 +33,10 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheDoomOfEztli.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.ChillingCold qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.DeadlyTraps qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.ForgottenRuins qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Arkham.Window qualified as Window
 
 newtype TheDoomOfEztli = TheDoomOfEztli ScenarioAttrs

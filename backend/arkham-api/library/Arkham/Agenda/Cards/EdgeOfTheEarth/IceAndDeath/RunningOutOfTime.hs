@@ -6,7 +6,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Shuffle (whenCanShuffleIn)
 import Arkham.Helpers.Window (entering)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

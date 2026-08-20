@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheInnsmouthConspiracy.IntoTheMaelstrom.CityOfTheDeepV3 
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Enemies
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

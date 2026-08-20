@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.GlimpseTheVoid (glimpseTheVoid) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype GlimpseTheVoid = GlimpseTheVoid TreacheryAttrs

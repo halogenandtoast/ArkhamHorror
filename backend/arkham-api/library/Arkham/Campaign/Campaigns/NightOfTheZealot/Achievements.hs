@@ -24,7 +24,9 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.ReturnCultOfUmordhoth qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Base
 import Arkham.Game.Settings (activeUltimatumsAndBoons)
@@ -32,7 +34,8 @@ import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.Modifiers (getFullModifiers)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
+import Arkham.Location.CardDefs.ReturnToNightOfTheZealot.ReturnToTheMidnightMasks qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
@@ -42,7 +45,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait (Trait (Cultist, Ghoul))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnToNightOfTheZealot.ReturnToTheDevourerBelow qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Data.Aeson.Key qualified as Key
 

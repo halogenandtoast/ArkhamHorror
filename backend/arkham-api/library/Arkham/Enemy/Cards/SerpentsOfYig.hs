@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.SerpentsOfYig (serpentsOfYig, SerpentsOfYig (..)) wher
 
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheForgottenAge qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Scenario (scenarioFieldMap)
 import Arkham.Matcher

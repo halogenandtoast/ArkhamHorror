@@ -6,21 +6,22 @@ import Arkham.Attack
 import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.AgentsOfNyarlathotep qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.FlavorText (li, setup, ul)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WhereTheGodsDwell.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Treacheries
 
 newtype WhereTheGodsDwell = WhereTheGodsDwell ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -107,7 +108,7 @@ instance RunMessage WhereTheGodsDwell where
         , Acts.theDreamEaters -- that's the name of the thing!
         ]
 
-      startAt =<< place Locations.plateauOfLengWhereTheGodsDwell
+      startAt =<< place Locations.plateauOfLeng
       placeAll
         [ Locations.coldWastes
         , Locations.monasteryOfLeng

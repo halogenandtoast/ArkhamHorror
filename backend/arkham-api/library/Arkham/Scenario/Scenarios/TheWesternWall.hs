@@ -14,7 +14,9 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (getFloodLevelFor)
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.StarSpawn qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheWesternWall qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (
@@ -23,7 +25,7 @@ import Arkham.Helpers.Modifiers (
   modifySelectMapM,
   setActiveDuringSetup,
  )
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Locations
 import Arkham.Location.FloodLevel (FloodLevel (FullyFlooded))
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Location.Types (Field (LocationPosition))
@@ -37,7 +39,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheWesternWall.Helpers
 import Arkham.SortedPair
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDrownedCity.TheWesternWall qualified as Treacheries
 
 newtype TheWesternWall = TheWesternWall ScenarioAttrs
   deriving stock Generic

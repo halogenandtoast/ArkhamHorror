@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.FortuneAndFolly qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.FortuneAndFolly qualified as Enemies
 import Arkham.Helpers.Query (getJustLocationByName)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move

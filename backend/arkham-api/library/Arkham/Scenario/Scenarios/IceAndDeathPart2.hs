@@ -9,7 +9,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
 import Arkham.Helpers.Investigator (getMaybeLocation)
@@ -26,7 +26,7 @@ import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IceAndDeath.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Stories
 import Arkham.Trait (Trait (Uncharted))
 import Data.Bitraversable (bimapM)
 import Data.Map.Strict qualified as Map

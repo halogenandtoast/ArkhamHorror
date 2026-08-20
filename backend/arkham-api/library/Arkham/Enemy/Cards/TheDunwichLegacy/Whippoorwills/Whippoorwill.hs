@@ -1,0 +1,24 @@
+module Arkham.Enemy.Cards.TheDunwichLegacy.Whippoorwills.Whippoorwill (whippoorwill, Whippoorwill (..)) where
+
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.Whippoorwills qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+
+newtype Whippoorwill = Whippoorwill EnemyAttrs
+  deriving anyclass (IsEnemy, RunMessage)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+whippoorwill :: EnemyCard Whippoorwill
+whippoorwill = enemy Whippoorwill Cards.whippoorwill
+
+instance HasModifiersFor Whippoorwill where
+  getModifiersFor (Whippoorwill a) = do
+    modifySelect
+      a
+      (InvestigatorAt $ locationWithEnemy a)
+      [ SkillModifier #willpower (-1)
+      , SkillModifier #intellect (-1)
+      , SkillModifier #combat (-1)
+      , SkillModifier #agility (-1)
+      ]

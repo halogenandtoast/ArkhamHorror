@@ -1,0 +1,37 @@
+module Arkham.Enemy.Cards.TheDreamEaters.AgentsOfNyarlathotep.TheCrawlingMist (theCrawlingMist) where
+
+import Arkham.Classes
+import Arkham.Enemy.CardDefs.TheDreamEaters.AgentsOfNyarlathotep qualified as Cards
+import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+import Arkham.Prelude
+
+newtype TheCrawlingMist = TheCrawlingMist EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+theCrawlingMist :: EnemyCard TheCrawlingMist
+theCrawlingMist =
+  enemyWith
+    TheCrawlingMist
+    Cards.theCrawlingMist
+    (preyL .~ Prey MostCardsInHand)
+
+instance HasModifiersFor TheCrawlingMist where
+  getModifiersFor (TheCrawlingMist a) = do
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+        eid <- hoistMaybe st.target.enemy
+        guard $ eid == a.id
+        liftGuardM $ orM [isFighting a, isEvading a]
+        n <- lift $ selectCount $ TreacheryInHandOf (InvestigatorWithId st.investigator)
+        m <- lift $ selectCount $ EnemyInHandOf (InvestigatorWithId st.investigator) <> NonWeaknessEnemy
+        pure [Difficulty $ n + m]
+
+instance RunMessage TheCrawlingMist where
+  runMessage msg (TheCrawlingMist attrs) =
+    runQueueT
+      $ TheCrawlingMist
+      <$> liftRunMessage msg attrs

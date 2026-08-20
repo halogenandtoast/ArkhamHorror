@@ -10,7 +10,7 @@ import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..), discardL)
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheCircleUndone.InexorableFate qualified as Cards
 
 newtype GavriellaMizrah = GavriellaMizrah InvestigatorAttrs
   deriving stock (Show, Eq, Generic, Data)

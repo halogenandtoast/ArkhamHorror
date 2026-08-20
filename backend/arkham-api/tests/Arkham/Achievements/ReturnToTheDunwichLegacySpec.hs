@@ -7,16 +7,24 @@ damage assignment) rather than replaying whole scenarios.
 module Arkham.Achievements.ReturnToTheDunwichLegacySpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey (CampaignLogKey (YouHaveIdentifiedTheSolution), recorded, toCampaignLogKey)
+import Arkham.CampaignLogKey (
+  CampaignLogKey (YouHaveIdentifiedTheSolution),
+  recorded,
+  toCampaignLogKey,
+ )
 import Arkham.CampaignStep (CampaignStep (InterludeStep))
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.Whippoorwills qualified as Enemies
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher (AssetMatcher (AnyAsset))
 import Arkham.Resolution
 import Arkham.Source
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy.Sorcery qualified as Treacheries
 import Helpers.Achievements
 import Helpers.UltimatumsAndBoons (Ultimatum (..), withUltimatums)
 import TestImport.New
@@ -195,7 +203,8 @@ spec = describe "Return to the Dunwich Legacy achievements" $ do
       experiment `spawnAt` location
       concoction <- self `putAssetIntoPlay` Assets.alchemicalConcoction
       earned <- didEarnDunwich WhatIsThisStuffAnyway
-      run $ Defeated (toTarget experiment) (toCardId experiment) (AbilitySource (AssetSource concoction) 1) []
+      run
+        $ Defeated (toTarget experiment) (toCardId experiment) (AbilitySource (AssetSource concoction) 1) []
       earned `refShouldBe` True
 
     -- regression: the concoction removes itself from the game on the passed

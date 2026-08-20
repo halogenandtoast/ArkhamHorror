@@ -3,7 +3,8 @@ module Arkham.Agenda.Cards.TheForgottenAge.TheBoundaryBeyond.TheBoundaryBroken (
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Key
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Helpers.Log (getRecordCount, whenHasRecord)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario (getIsReturnTo)

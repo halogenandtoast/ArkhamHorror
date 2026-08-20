@@ -7,7 +7,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.GuardiansOfTime qualified as Treacheries
 
 newtype TheGuardedRuins = TheGuardedRuins ActAttrs
   deriving anyclass IsAct

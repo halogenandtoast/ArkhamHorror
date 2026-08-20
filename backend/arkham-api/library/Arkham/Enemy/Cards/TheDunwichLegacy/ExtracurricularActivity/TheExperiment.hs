@@ -1,0 +1,41 @@
+module Arkham.Enemy.Cards.TheDunwichLegacy.ExtracurricularActivity.TheExperiment (theExperiment) where
+
+import Arkham.Ability
+import Arkham.Act.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Acts
+import Arkham.Act.Sequence
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+
+newtype TheExperiment = TheExperiment EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theExperiment :: EnemyCard TheExperiment
+theExperiment = enemy TheExperiment Cards.theExperiment
+
+instance HasAbilities TheExperiment where
+  getAbilities (TheExperiment x) =
+    extend
+      x
+      [ restricted x 1 (thisIs x $ enemy_ #exhausted) $ forced $ PhaseBegins #when #enemy
+      , mkAbility x 2 $ Objective $ forced $ EnemyDefeated #when Anyone ByAny (be x)
+      ]
+
+instance HasModifiersFor TheExperiment where
+  getModifiersFor (TheExperiment attrs) = do
+    modifier <- getPlayerCountValue (PerPlayer 3)
+    modifySelf attrs [HealthModifier modifier]
+
+instance RunMessage TheExperiment where
+  runMessage msg e@(TheExperiment attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      readyThis attrs
+      pure e
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      addToVictory iid attrs
+      push $ AdvanceToAct 1 Acts.campusSafety B (toSource attrs)
+      pure e
+    _ -> TheExperiment <$> liftRunMessage msg attrs

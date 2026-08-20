@@ -5,7 +5,7 @@ import Arkham.Act.Runner hiding (advanceActDeck, placeLabeledLocations)
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Direction
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message.Lifted

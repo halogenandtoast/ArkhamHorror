@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DogsOfWar qualified as Enemies
 import Arkham.Matcher
 
 newtype RabbitsWhoRunV3 = RabbitsWhoRunV3 ActAttrs

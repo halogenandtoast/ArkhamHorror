@@ -12,7 +12,7 @@ import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Layout
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted

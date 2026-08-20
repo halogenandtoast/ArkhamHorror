@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.MurderAtTheExcelsiorHotel qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types (Field (..))
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.SinsOfThePast qualified as Cards
 import Arkham.Enemy.Types (Field (EnemyClues, EnemyForcedRemainingHealth))
 import Arkham.Matcher
 import Arkham.Projection

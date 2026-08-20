@@ -9,7 +9,8 @@ import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.Outsiders qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.WithoutATrace qualified as Enemies
 import Arkham.Field
 import Arkham.ForMovement
 import Arkham.Helpers.FlavorText
@@ -20,7 +21,8 @@ import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.BeyondTheBeyond qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.WithoutATrace qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

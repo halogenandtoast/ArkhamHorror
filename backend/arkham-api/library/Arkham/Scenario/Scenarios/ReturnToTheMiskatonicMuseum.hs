@@ -6,12 +6,13 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.FlavorText
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheHouseAlwaysWins qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Locations
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheMiskatonicMuseum
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Treacheries
 
 newtype ReturnToTheMiskatonicMuseum = ReturnToTheMiskatonicMuseum TheMiskatonicMuseum
   deriving anyclass (IsScenario, HasModifiersFor)

@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.DownAndOut (downAndOut) where
 
 import Arkham.Ability
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype DownAndOut = DownAndOut TreacheryAttrs
@@ -20,7 +20,8 @@ instance HasAbilities DownAndOut where
         (InThreatAreaOf You <> youExist (not_ (TakenActionThisRound $ oneOf [#draw, #resource])))
         $ forced
         $ TurnEnds #when You
-    , restricted a 2 OnSameLocation $ actionAbilityWithCost (OrCost [ResourceCost 3, HandDiscardCost 3 #any])
+    , restricted a 2 OnSameLocation
+        $ actionAbilityWithCost (OrCost [ResourceCost 3, HandDiscardCost 3 #any])
     ]
 
 instance RunMessage DownAndOut where

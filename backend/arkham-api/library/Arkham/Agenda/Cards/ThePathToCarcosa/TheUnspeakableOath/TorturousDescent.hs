@@ -4,7 +4,7 @@ import Arkham.Agenda.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as C
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import Arkham.Helpers.Choose
 import Arkham.Helpers.Query
 import Arkham.Scenario.Deck

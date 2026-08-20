@@ -6,9 +6,9 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Effect.Import
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Enemies
 import Arkham.Helpers.Window (evadedEnemy)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
 

@@ -6,7 +6,7 @@ import Arkham.Keyword (Keyword (Peril))
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Promo qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype LiberOmniumFinium = LiberOmniumFinium TreacheryAttrs

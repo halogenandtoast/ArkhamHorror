@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Classes.HasGame
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Cards
+import Arkham.Location.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 

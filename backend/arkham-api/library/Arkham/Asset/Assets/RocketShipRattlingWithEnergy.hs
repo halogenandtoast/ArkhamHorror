@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.ChaosToken.Types
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.FilmFatale qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Location

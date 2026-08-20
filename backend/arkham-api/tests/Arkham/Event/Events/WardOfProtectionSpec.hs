@@ -4,7 +4,8 @@ import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Scenario.Types
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.AncientEvils qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.StrikingFear qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

@@ -1,0 +1,28 @@
+module Arkham.Enemy.Cards.TheDreamEaters.WhereTheGodsDwell.NyarlathotepStalkerAmongTheStars (
+  nyarlathotepStalkerAmongTheStars,
+  NyarlathotepStalkerAmongTheStars (..),
+)
+where
+
+import Arkham.Classes
+import Arkham.Enemy.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Cards
+import Arkham.Enemy.Runner
+import Arkham.Placement
+import Arkham.Prelude
+
+newtype NyarlathotepStalkerAmongTheStars = NyarlathotepStalkerAmongTheStars EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+nyarlathotepStalkerAmongTheStars :: EnemyCard NyarlathotepStalkerAmongTheStars
+nyarlathotepStalkerAmongTheStars =
+  enemy
+    NyarlathotepStalkerAmongTheStars
+    Cards.nyarlathotepStalkerAmongTheStars
+
+instance RunMessage NyarlathotepStalkerAmongTheStars where
+  runMessage msg e@(NyarlathotepStalkerAmongTheStars attrs) = case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      push $ PlaceEnemy attrs.id (HiddenInHand iid)
+      pure e
+    _ -> NyarlathotepStalkerAmongTheStars <$> runMessage msg attrs

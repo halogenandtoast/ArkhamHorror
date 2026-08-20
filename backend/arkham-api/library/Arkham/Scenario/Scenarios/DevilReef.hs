@@ -18,7 +18,7 @@ import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isEvadeWith, isFight
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Locations
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (assetAt)

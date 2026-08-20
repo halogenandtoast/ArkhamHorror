@@ -8,7 +8,7 @@ import Arkham.Helpers.Window (assetLeavingPlay)
 import Arkham.Matcher
 import Arkham.Scenarios.TheMidwinterGala.Helpers (becomeSpellbound)
 import Arkham.Trait
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheMidwinterGala qualified as Treacheries
 
 newtype MaskedRevelers = MaskedRevelers AgendaAttrs
   deriving anyclass IsAgenda

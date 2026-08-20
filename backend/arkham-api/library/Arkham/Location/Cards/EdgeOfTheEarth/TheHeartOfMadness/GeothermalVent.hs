@@ -1,0 +1,45 @@
+module Arkham.Location.Cards.EdgeOfTheEarth.TheHeartOfMadness.GeothermalVent (geothermalVent) where
+
+import Arkham.Ability
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
+import Arkham.Helpers.Cost (getSpendableClueCount)
+import Arkham.Helpers.GameValue
+import Arkham.I18n
+import Arkham.Location.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheHeartOfMadness.Helpers
+
+newtype GeothermalVent = GeothermalVent LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+geothermalVent :: LocationCard GeothermalVent
+geothermalVent = location GeothermalVent Cards.geothermalVent 4 (PerPlayer 1)
+
+instance HasAbilities GeothermalVent where
+  getAbilities (GeothermalVent a) =
+    extendRevealed1 a
+      $ skillTestAbility
+      $ restricted a 1 (youExist (InvestigatorWithDormantSeal SealD)) actionAbility
+
+instance RunMessage GeothermalVent where
+  runMessage msg l@(GeothermalVent attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 3)
+      pure l
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      targetAmount <- perPlayer 1
+      iids <- select $ investigatorAt attrs
+      totalClues <- getSpendableClueCount iids
+      chooseOneM iid $ withI18n $ countVar targetAmount do
+        labeledValidate' (totalClues >= targetAmount) "spendCluesToActivate" do
+          push $ SpendClues targetAmount iids
+          activateSeal SealD
+          removeChaosToken #frost
+        labeled' "doNotSpendClues" nothing
+
+      pure l
+    _ -> GeothermalVent <$> liftRunMessage msg attrs

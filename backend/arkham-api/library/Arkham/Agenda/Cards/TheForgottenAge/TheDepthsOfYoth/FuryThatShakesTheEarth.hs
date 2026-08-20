@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheForgottenAge.TheDepthsOfYoth.FuryThatShakesTheEart
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers

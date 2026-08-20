@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheScarletKeys.RiddlesAndRain.CaughtRedHanded (caughtRed
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 

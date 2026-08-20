@@ -25,7 +25,7 @@ import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Strategy
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype RealityAcid5U21 = RealityAcid5U21 TreacheryAttrs

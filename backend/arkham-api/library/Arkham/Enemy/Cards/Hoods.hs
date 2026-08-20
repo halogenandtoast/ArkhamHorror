@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.Hoods (hoods) where
 
 import Arkham.Ability
 import Arkham.Attack.Types
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheCircleUndone qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Matcher
 

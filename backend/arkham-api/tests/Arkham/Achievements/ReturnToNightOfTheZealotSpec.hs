@@ -17,9 +17,13 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey (recorded, toCampaignLogKey)
 import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.CultOfUmordhoth qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.ReturnCultOfUmordhoth qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Enemies
 import Arkham.Game.Settings (settingsAchievementsEnabled)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
 import Arkham.Resolution
 import Arkham.Source
 import Arkham.Trait (Trait (Cultist, Ghoul, Monster))

@@ -3,8 +3,8 @@ module Arkham.Agenda.Cards.ThePathToCarcosa.CurtainCall.TheThirdAct (theThirdAct
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
+import Arkham.Location.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Matcher
 import Arkham.Zone
 

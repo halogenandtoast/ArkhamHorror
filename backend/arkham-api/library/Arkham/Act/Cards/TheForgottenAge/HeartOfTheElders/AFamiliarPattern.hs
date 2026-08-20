@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Enemies
 import Arkham.Matcher
 
 newtype AFamiliarPattern = AFamiliarPattern ActAttrs

@@ -3,7 +3,8 @@ module Arkham.Agenda.Cards.TheForgottenAge.TheDoomOfEztli.SomethingStirs (someth
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Helpers.Scenario
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

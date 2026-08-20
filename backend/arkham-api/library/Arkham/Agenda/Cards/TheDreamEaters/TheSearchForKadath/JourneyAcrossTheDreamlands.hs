@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Car
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.Corsairs qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Matcher

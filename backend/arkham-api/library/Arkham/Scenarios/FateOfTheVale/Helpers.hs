@@ -5,7 +5,7 @@ import Arkham.Act.Types (Field (ActCard))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card
 import Arkham.Classes.HasQueue (push)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.Residents qualified as Enemies
 import Arkham.Helpers.Act (getCurrentAct)
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.Helpers.Window (wouldDo)

@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.FishingNet (fishingNet) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.CurseOfTheRougarou qualified as Cards
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Keyword
 import Arkham.Matcher

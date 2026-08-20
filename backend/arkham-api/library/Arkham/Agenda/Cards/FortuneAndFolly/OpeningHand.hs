@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.FortuneAndFolly qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.FortuneAndFolly qualified as Enemies
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Matcher
 import Arkham.Scenarios.FortuneAndFolly.Helpers

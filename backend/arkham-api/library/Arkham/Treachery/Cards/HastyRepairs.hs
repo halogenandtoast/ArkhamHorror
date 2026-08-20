@@ -5,7 +5,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestSource)
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype HastyRepairs = HastyRepairs TreacheryAttrs

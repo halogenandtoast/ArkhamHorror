@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.WarOfTheOuterGods.SilenusDescends (silenusDescends) w
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.WarOfTheOuterGods qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.WarOfTheOuterGods qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher

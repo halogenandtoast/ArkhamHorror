@@ -1,0 +1,42 @@
+module Arkham.Treachery.Cards.TheInnsmouthConspiracy.RisingTide.Undertow (undertow) where
+
+import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Location.FloodLevel
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.RisingTide qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype Undertow = Undertow TreacheryAttrs
+  deriving anyclass (IsTreachery, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+undertow :: TreacheryCard Undertow
+undertow = treachery Undertow Cards.undertow
+
+instance HasAbilities Undertow where
+  getAbilities (Undertow a) =
+    [ restricted a 1 (InThreatAreaOf You) $ forced $ Moves #after You AnySource Anywhere Anywhere
+    , skillTestAbility $ restricted a 2 OnSameLocation $ FastAbility $ HandDiscardCost 1 #any
+    ]
+
+instance RunMessage Undertow where
+  runMessage msg t@(Undertow attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      getFloodLevelFor iid >>= \case
+        Unflooded -> gainSurge attrs
+        _ -> placeInThreatArea attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamageAndHorror iid (attrs.ability 1) 2 2
+      toDiscardBy iid (attrs.ability 1) attrs
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      sid <- getRandom
+      chooseBeginSkillTest sid iid (attrs.ability 2) iid [#combat, #agility] (Fixed 3)
+      pure t
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      toDiscardBy iid (attrs.ability 2) attrs
+      pure t
+    _ -> Undertow <$> liftRunMessage msg attrs

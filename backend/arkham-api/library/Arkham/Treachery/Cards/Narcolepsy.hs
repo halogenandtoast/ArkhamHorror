@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.Narcolepsy (narcolepsy) where
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Narcolepsy = Narcolepsy TreacheryAttrs

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.ForMovement
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

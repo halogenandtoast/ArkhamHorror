@@ -8,21 +8,21 @@ import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.WakingNightmare qualified as Enemies
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.FlavorText (buildFlavor, flavor, li, setup, ul)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.WakingNightmare qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WakingNightmare.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheDreamEaters.WakingNightmare qualified as Stories
 import Arkham.Trait (Trait (Staff))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.WakingNightmare qualified as Treacheries
 
 newtype WakingNightmare = WakingNightmare ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

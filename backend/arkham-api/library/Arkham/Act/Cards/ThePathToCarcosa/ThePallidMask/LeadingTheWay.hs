@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Locations
 import Arkham.Matcher
 
 newtype LeadingTheWay = LeadingTheWay ActAttrs

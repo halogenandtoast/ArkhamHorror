@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheBlobThatAteEverything qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheBlobThatAteEverything qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDamage))
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Query (getPlayerCount)

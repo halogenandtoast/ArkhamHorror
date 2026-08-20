@@ -97,7 +97,7 @@ import Arkham.Skill.Types qualified as Field
 import Arkham.Story.Types (Field (..))
 import Arkham.Tarot
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import Arkham.UltimatumsAndBoons (
   Boon (..),
@@ -187,7 +187,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ overAttrs (inResolutionL .~ False) a
   BeginGame -> do
     mFalseAwakeningPointOfNoReturn <-
-      getMaybeCampaignStoryCard Treacheries.falseAwakeningPointOfNoReturn
+      getMaybeCampaignStoryCard Treacheries.falseAwakening
     for_ mFalseAwakeningPointOfNoReturn \falseAwakening -> do
       tid <- getRandom
       pushAll

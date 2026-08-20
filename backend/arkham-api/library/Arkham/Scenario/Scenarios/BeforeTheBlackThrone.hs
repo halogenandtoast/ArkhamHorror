@@ -7,7 +7,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.AgentsOfAzathoth qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText
@@ -19,6 +20,8 @@ import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToBeforeTheBlackThrone qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as Locations
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

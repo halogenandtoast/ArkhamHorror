@@ -5,10 +5,10 @@ import Arkham.Act.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreation (..))
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ObsidianCanyons.Helpers

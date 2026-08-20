@@ -1,0 +1,34 @@
+module Arkham.Enemy.Cards.TheScarletKeys.SecretWar.OtherworldlyMimic (otherworldlyMimic) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.TheScarletKeys.SecretWar qualified as Cards
+import Arkham.Enemy.Import.Lifted hiding (PlayCard)
+import Arkham.Matcher
+
+newtype OtherworldlyMimic = OtherworldlyMimic EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+otherworldlyMimic :: EnemyCard OtherworldlyMimic
+otherworldlyMimic = enemy OtherworldlyMimic Cards.otherworldlyMimic
+
+instance HasAbilities OtherworldlyMimic where
+  getAbilities (OtherworldlyMimic a) =
+    extend1 a
+      $ restricted a 1 (thisExists a ReadyEnemy)
+      $ forced
+      $ oneOf
+        [ CommittedCard #when (You <> InvestigatorAt (locationWithEnemy a)) (CardWithHollowedCopy #any)
+        , PlayCard #when (You <> InvestigatorAt (locationWithEnemy a)) (CardWithHollowedCopy #any)
+        , ActivateAbility
+            #when
+            (You <> InvestigatorAt (locationWithEnemy a))
+            (AbilityOnExtendedCard $ CardWithHollowedCopy #any)
+        ]
+
+instance RunMessage OtherworldlyMimic where
+  runMessage msg e@(OtherworldlyMimic attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      initiateEnemyAttack attrs (attrs.ability 1) iid
+      pure e
+    _ -> OtherworldlyMimic <$> liftRunMessage msg attrs

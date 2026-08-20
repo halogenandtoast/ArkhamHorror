@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheSilentHeath qualified as 
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.ChaosToken
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheSilentHeath qualified as Enemies
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query

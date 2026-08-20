@@ -1,0 +1,31 @@
+module Arkham.Enemy.Cards.TheDreamEaters.AThousandShapesOfHorror.TheUnnamable (theUnnamable) where
+
+import Arkham.Classes
+import Arkham.Enemy.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Cards
+import Arkham.Enemy.Runner
+import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+import Arkham.Modifier qualified as Mod
+import Arkham.Prelude
+import Arkham.ScenarioLogKey
+
+newtype TheUnnamable = TheUnnamable EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+theUnnamable :: EnemyCard TheUnnamable
+theUnnamable =
+  enemyWith TheUnnamable Cards.theUnnamable
+    $ (healthL .~ Nothing)
+    . (spawnAtL ?~ SpawnAt (oneOf ["Attic", "Upstairs Hallway"]))
+
+instance HasModifiersFor TheUnnamable where
+  getModifiersFor (TheUnnamable a) = do
+    n <- countM remembered [FoundACrackedMirror, StudiedADesecratedPortrait, NoticedTheMissingBones]
+    modifySelf a $ CannotBeDefeated
+      : (guard (n > 0) *> [Mod.EnemyFight (-n), Mod.EnemyEvade (-n)])
+
+instance RunMessage TheUnnamable where
+  runMessage msg (TheUnnamable attrs) =
+    TheUnnamable <$> runMessage msg attrs

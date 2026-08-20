@@ -1,0 +1,41 @@
+module Arkham.Treachery.Cards.TheFeastOfHemlockVale.TheForest.WallOfThorns (wallOfThorns) where
+
+import Arkham.Ability
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.TheForest qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype WallOfThorns = WallOfThorns TreacheryAttrs
+  deriving anyclass (IsTreachery, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+wallOfThorns :: TreacheryCard WallOfThorns
+wallOfThorns = treachery WallOfThorns Cards.wallOfThorns
+
+instance HasAbilities WallOfThorns where
+  getAbilities (WallOfThorns a) =
+    [ restricted a 1 (isDayFor You) $ forced $ Enters #when You (locationWithTreachery a)
+    , restricted a 2 (isNightFor You) $ forced $ Enters #when You (locationWithTreachery a)
+    , restricted a 3 (isNightFor You) $ forced $ Leaves #when You (locationWithTreachery a)
+    ]
+
+instance RunMessage WallOfThorns where
+  runMessage msg t@(WallOfThorns attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      ls <- select $ NearestLocationTo iid $ LocationWithoutTreachery (treacheryIs Cards.wallOfThorns)
+      chooseTargetM iid ls $ place attrs . AttachedToLocation
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 2
+      toDiscardBy iid (attrs.ability 1) attrs
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      assignDamage iid (attrs.ability 2) 1
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      assignDamage iid (attrs.ability 3) 1
+      pure t
+    _ -> WallOfThorns <$> liftRunMessage msg attrs

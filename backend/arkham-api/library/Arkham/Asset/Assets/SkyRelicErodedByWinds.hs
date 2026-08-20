@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelf)
 import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Helpers.Story
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Stories
 
 newtype SkyRelicErodedByWinds = SkyRelicErodedByWinds AssetAttrs
   deriving anyclass IsAsset

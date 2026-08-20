@@ -1,8 +1,8 @@
 module Arkham.Campaign.ThePathToCarcosa.ScenariosSpec (spec) where
 
 import Arkham.Campaigns.ThePathToCarcosa.Key
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Scenario.SpecHelpers
-import Arkham.Enemy.Cards qualified as Enemies
 import TestImport
 
 spec :: Spec

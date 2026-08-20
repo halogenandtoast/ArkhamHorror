@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.ProphecyOfTheEnd (prophecyOfTheEnd) where
 
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 -- N.B. This card is handled on Gloria herself
@@ -13,5 +13,5 @@ prophecyOfTheEnd :: TreacheryCard ProphecyOfTheEnd
 prophecyOfTheEnd = treachery ProphecyOfTheEnd Cards.prophecyOfTheEnd
 
 instance RunMessage ProphecyOfTheEnd where
-  runMessage msg (ProphecyOfTheEnd attrs) = 
+  runMessage msg (ProphecyOfTheEnd attrs) =
     ProphecyOfTheEnd <$> runMessage msg attrs

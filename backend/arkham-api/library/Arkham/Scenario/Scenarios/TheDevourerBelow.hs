@@ -9,11 +9,13 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Locations
+import Arkham.Location.CardDefs.ReturnToNightOfTheZealot.ReturnToTheDevourerBelow qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message hiding (chooseOrRunOne, story)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
@@ -30,7 +32,7 @@ import Arkham.Scenario.Import.Lifted hiding (
  )
 import Arkham.Scenarios.TheDevourerBelow.Helpers
 import Arkham.Trait hiding (Cultist, ElderThing)
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnToNightOfTheZealot.ReturnToTheDevourerBelow qualified as Treacheries
 import Arkham.Zone
 
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs

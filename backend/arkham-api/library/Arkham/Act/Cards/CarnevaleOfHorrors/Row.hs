@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.CarnevaleOfHorrors qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.CarnevaleOfHorrors qualified as Enemies
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude

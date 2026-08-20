@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.Unaware (unaware) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Unaware = Unaware TreacheryAttrs

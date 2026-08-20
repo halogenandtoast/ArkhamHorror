@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.NightOfTheZealot.TheGathering qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Placement

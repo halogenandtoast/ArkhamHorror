@@ -1,0 +1,29 @@
+module Arkham.Location.Cards.NightOfTheZealot.TheMidnightMasks.DowntownArkhamAsylum (downtownArkhamAsylum) where
+
+import Arkham.Ability
+import Arkham.GameValue
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Cards (
+  downtownArkhamAsylum,
+ )
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+
+newtype DowntownArkhamAsylum = DowntownArkhamAsylum LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+downtownArkhamAsylum :: LocationCard DowntownArkhamAsylum
+downtownArkhamAsylum = location DowntownArkhamAsylum Cards.downtownArkhamAsylum 4 (PerPlayer 2)
+
+instance HasAbilities DowntownArkhamAsylum where
+  getAbilities (DowntownArkhamAsylum x) =
+    extendRevealed1 x
+      $ playerLimit PerGame
+      $ restricted x 1 (Here <> exists (HealableInvestigator (x.ability 1) #horror You)) actionAbility
+
+instance RunMessage DowntownArkhamAsylum where
+  runMessage msg l@(DowntownArkhamAsylum attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      healHorrorIfCan iid (UseAbilitySource iid (toSource attrs) 1) 3
+      pure l
+    _ -> DowntownArkhamAsylum <$> liftRunMessage msg attrs

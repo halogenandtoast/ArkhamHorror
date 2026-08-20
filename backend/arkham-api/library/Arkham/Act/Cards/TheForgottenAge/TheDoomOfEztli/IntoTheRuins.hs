@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Locations
 import Arkham.Scenario.Deck
 
 newtype IntoTheRuins = IntoTheRuins ActAttrs

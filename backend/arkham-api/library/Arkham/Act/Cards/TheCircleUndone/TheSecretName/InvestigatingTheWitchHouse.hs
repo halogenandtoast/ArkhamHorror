@@ -8,7 +8,7 @@ import Arkham.Constants
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 

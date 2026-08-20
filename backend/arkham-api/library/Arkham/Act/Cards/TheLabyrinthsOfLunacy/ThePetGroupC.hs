@@ -2,9 +2,9 @@ module Arkham.Act.Cards.TheLabyrinthsOfLunacy.ThePetGroupC (thePetGroupC) where
 
 import Arkham.Act.CardDefs.TheLabyrinthsOfLunacy qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheLabyrinthsOfLunacy qualified as Enemies
 import Arkham.Helpers.Scenario (inVictoryDisplay)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheLabyrinthsOfLunacy qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Enemies
 
 newtype PredatorOrPrey = PredatorOrPrey AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

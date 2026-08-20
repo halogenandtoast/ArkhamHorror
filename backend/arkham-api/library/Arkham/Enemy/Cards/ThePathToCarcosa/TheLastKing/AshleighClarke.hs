@@ -1,0 +1,23 @@
+module Arkham.Enemy.Cards.ThePathToCarcosa.TheLastKing.AshleighClarke (ashleighClarke) where
+
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+import Arkham.Phase
+
+newtype AshleighClarke = AshleighClarke EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+ashleighClarke :: EnemyCard AshleighClarke
+ashleighClarke = enemy AshleighClarke Cards.ashleighClarke
+
+instance HasModifiersFor AshleighClarke where
+  getModifiersFor (AshleighClarke a) = do
+    phase <- getPhase
+    modifySelectWhen a (phase == UpkeepPhase) (InvestigatorAt $ locationWithEnemy a) [CannotDrawCards]
+
+instance RunMessage AshleighClarke where
+  runMessage msg (AshleighClarke attrs) = AshleighClarke <$> runMessage msg attrs

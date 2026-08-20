@@ -1,0 +1,20 @@
+module Arkham.Story.Cards.ThePathToCarcosa.TheLastKing.LagneauPerdu (lagneauPerdu) where
+
+import Arkham.Message.Lifted.Log
+import Arkham.ScenarioLogKey
+import Arkham.Story.CardDefs.ThePathToCarcosa.TheLastKing qualified as Cards
+import Arkham.Story.Import.Lifted
+
+newtype LagneauPerdu = LagneauPerdu StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+lagneauPerdu :: StoryCard LagneauPerdu
+lagneauPerdu = story LagneauPerdu Cards.lagneauPerdu
+
+instance RunMessage LagneauPerdu where
+  runMessage msg s@(LagneauPerdu attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      remember InterviewedJordan
+      pure s
+    _ -> LagneauPerdu <$> liftRunMessage msg attrs

@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.CaughtRedHanded (caughtRedHanded) where
 import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheForgottenAge qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype CaughtRedHanded = CaughtRedHanded TreacheryAttrs

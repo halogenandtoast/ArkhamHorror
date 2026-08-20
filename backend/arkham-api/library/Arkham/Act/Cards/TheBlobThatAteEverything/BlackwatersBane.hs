@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheBlobThatAteEverything qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheBlobThatAteEverything qualified as Enemies
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)

@@ -1,7 +1,7 @@
 module Arkham.Enemy.Cards.TheThingThatFollows (theThingThatFollows) where
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.ThePathToCarcosa qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher

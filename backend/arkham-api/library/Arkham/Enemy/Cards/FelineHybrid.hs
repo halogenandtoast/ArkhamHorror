@@ -1,6 +1,6 @@
 module Arkham.Enemy.Cards.FelineHybrid (felineHybrid) where
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.Standalone qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (immuneToPlayerEffects)
 import Arkham.Investigator.Cards qualified as Investigators

@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheCircleUndone.InTheClutchesOfChaos.NewWorldOrder (newW
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Enemies
 import Arkham.Matcher
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 

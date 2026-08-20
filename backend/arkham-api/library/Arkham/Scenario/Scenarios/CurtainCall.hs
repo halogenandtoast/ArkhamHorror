@@ -5,12 +5,13 @@ import Arkham.Act.CardDefs.ThePathToCarcosa.CurtainCall qualified as Acts
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.CurtainCall qualified as Agendas
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToCurtainCall qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.CurtainCall qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

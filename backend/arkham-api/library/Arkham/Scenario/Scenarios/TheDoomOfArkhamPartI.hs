@@ -10,13 +10,14 @@ import Arkham.Card.PlayerCard (setPlayerCardOwner)
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Helpers.Xp
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Locations
 import Arkham.Location.Types (Field (LocationCard))
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message.Lifted.Choose

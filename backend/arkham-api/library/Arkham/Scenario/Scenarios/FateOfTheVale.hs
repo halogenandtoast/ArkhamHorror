@@ -11,7 +11,9 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.HorrorsInTheRock qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.Residents qualified as Enemies
 import Arkham.ForMovement
 import Arkham.Helpers (draw, unDeck)
 import Arkham.Helpers.Act (getCurrentAct, getCurrentActStep)
@@ -27,7 +29,7 @@ import Arkham.Id
 import Arkham.Investigator.Cards qualified as InvestigatorCards
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Layout
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Locations
 import Arkham.Location.Types (Field (LocationCardsUnderneath, LocationLabel))
 import Arkham.Matcher hiding (Discarded, enemyAt)
 import Arkham.Message.Lifted.Choose
@@ -41,7 +43,8 @@ import Arkham.Scenario.Import.Lifted hiding (say, (.=))
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.ScenarioLogKey (ScenarioLogKey (BertieIsFleeing))
 import Arkham.Scenarios.FateOfTheVale.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheFinalDay qualified as Stories
 import Arkham.Strategy (
   FoundCardsStrategy (..),
   IsDraw (..),

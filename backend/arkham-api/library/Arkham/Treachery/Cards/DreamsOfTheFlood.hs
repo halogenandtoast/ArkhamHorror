@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.DreamsOfTheFlood (dreamsOfTheFlood) where
 
 import Arkham.Ability
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Cards
 import Arkham.Treachery.Import.Lifted hiding (DiscoverClues)
 
 newtype DreamsOfTheFlood = DreamsOfTheFlood TreacheryAttrs

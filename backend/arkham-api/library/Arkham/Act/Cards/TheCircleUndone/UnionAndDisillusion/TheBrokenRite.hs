@@ -3,10 +3,10 @@ module Arkham.Act.Cards.TheCircleUndone.UnionAndDisillusion.TheBrokenRite (theBr
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWatcher qualified as Enemies
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Brazier
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Scenarios.UnionAndDisillusion.Helpers

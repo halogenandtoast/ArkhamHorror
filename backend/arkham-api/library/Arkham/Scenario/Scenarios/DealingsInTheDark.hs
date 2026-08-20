@@ -10,7 +10,9 @@ import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.AgentsOfYuggoth qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.RedCoterie qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Agenda
@@ -18,7 +20,7 @@ import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -28,8 +30,8 @@ import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.DealingsInTheDark.Helpers
-import Arkham.Story.Cards qualified as Stories
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Stories
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
 
 newtype DealingsInTheDark = DealingsInTheDark ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

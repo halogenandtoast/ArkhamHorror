@@ -12,7 +12,9 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText
@@ -20,7 +22,7 @@ import Arkham.Helpers.Location (getLocationOf, withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (questionLabel)
 import Arkham.Message.Lifted.Choose
@@ -33,7 +35,8 @@ import Arkham.Scenario.Import.Lifted hiding (getIsReturnTo, questionLabel)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Trait (Trait (Injury, Serpent))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.ReturnToTheForgottenAge.ReturnToTheDepthsOfYoth qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Arkham.Window qualified as Window
 
 newtype TheDepthsOfYoth = TheDepthsOfYoth ScenarioAttrs

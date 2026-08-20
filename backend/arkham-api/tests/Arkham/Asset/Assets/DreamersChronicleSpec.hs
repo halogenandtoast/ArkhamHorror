@@ -1,7 +1,7 @@
 module Arkham.Asset.Assets.DreamersChronicleSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.MiskatonicUniversity qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Projection
 import Arkham.Token

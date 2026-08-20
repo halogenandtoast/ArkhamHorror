@@ -9,7 +9,7 @@ import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Matcher
 import Arkham.Scenarios.HorrorInHighGear.Helpers
 import Arkham.Trait (Trait (Vehicle))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.Malfunction qualified as Treacheries
 
 newtype TheChaseIsOnV2 = TheChaseIsOnV2 AgendaAttrs
   deriving anyclass IsAgenda

@@ -7,7 +7,7 @@ import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as A
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Agenda
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (TokenLoss (..))
 import Arkham.Token

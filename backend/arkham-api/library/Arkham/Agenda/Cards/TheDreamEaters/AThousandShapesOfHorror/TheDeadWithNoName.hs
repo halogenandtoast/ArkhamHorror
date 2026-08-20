@@ -5,7 +5,8 @@ import Arkham.Agenda.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified a
 import Arkham.Agenda.Runner
 import Arkham.Attack
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword (Keyword (Aloof, Massive, Swarming))

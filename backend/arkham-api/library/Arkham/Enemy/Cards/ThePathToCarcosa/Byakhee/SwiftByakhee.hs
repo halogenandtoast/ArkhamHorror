@@ -1,0 +1,46 @@
+module Arkham.Enemy.Cards.ThePathToCarcosa.Byakhee.SwiftByakhee (swiftByakhee) where
+
+import Arkham.Ability
+import Arkham.Distance
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.Byakhee qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Modifier
+
+newtype SwiftByakhee = SwiftByakhee EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+swiftByakhee :: EnemyCard SwiftByakhee
+swiftByakhee =
+  enemy SwiftByakhee Cards.swiftByakhee
+    & setPrey LowestRemainingSanity
+
+instance HasAbilities SwiftByakhee where
+  getAbilities (SwiftByakhee a) = extend1 a $ mkAbility a 1 $ forced $ MovedFromHunter #when (be a)
+
+instance RunMessage SwiftByakhee where
+  runMessage msg e@(SwiftByakhee attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      insteadOfMatching
+        \case
+          EnemyMove eid _ -> eid == attrs.id
+          _ -> False
+        do
+          withLocationOf attrs \loc -> do
+            prey <- select (enemyPrey attrs)
+            preyWithLocationsAndDistances <- forMaybeM prey \preyId -> runMaybeT do
+              lid <- MaybeT $ selectOne $ locationWithInvestigator preyId
+              distance <- lift $ fromMaybe (Distance 1000) <$> getDistance loc lid
+              pure (preyId, lid, distance)
+            chooseOrRunOneM iid do
+              for_ preyWithLocationsAndDistances \(iid', pathId, distance) -> do
+                targeting iid' do
+                  when (unDistance distance > 1) $ phaseModifier attrs attrs CannotAttack
+                  moveUntil attrs pathId
+      pure e
+    _ -> SwiftByakhee <$> liftRunMessage msg attrs

@@ -7,7 +7,7 @@ import Arkham.Classes.HasGame
 import Arkham.Direction
 import Arkham.Helpers.Scenario (getScenarioMeta)
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheApiary qualified as Locations
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Prelude
 

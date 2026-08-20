@@ -6,7 +6,8 @@ import Arkham.Agenda.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.DarkCult qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
 import Arkham.Helpers.Query (getInvestigators)
@@ -18,7 +19,7 @@ import Arkham.Message.Lifted.Placement
 import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
 import Arkham.Scenarios.DealingsInTheDark.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Stories
 import Arkham.Token
 
 newtype AgentsOfTheDark = AgentsOfTheDark AgendaAttrs

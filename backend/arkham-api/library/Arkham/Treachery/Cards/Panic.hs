@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.Panic (panic, Panic (..)) where
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Panic = Panic TreacheryAttrs

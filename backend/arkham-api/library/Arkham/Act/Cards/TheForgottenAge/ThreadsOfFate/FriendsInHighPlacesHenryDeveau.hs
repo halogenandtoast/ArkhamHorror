@@ -7,7 +7,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Enemies
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Placement
 import Arkham.Projection

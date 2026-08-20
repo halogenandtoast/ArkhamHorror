@@ -1,7 +1,7 @@
 module Arkham.Enemy.Cards.Zamacona (zamacona) where
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Cards qualified as Investigators

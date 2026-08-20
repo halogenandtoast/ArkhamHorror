@@ -45,7 +45,13 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Difficulty
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheForest qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheSilentHeath qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Enemies
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Game.Base
 import Arkham.Game.Settings (activeUltimatumsAndBoons)

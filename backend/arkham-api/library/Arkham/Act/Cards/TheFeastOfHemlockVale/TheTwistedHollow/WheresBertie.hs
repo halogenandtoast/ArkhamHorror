@@ -7,12 +7,12 @@ import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified a
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card.CardDef
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Enemies
 import Arkham.ForMovement
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

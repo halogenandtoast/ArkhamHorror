@@ -8,7 +8,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheApiary qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreation, createExhausted)
 import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Cost (getSpendableClueCount)
@@ -18,7 +19,7 @@ import Arkham.Helpers.Query (
   getPlayerCount,
   getSetAsideCardsMatching,
  )
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDrownedCity.TheApiary qualified as Locations
 import Arkham.Location.Grid (GridLocation (..), Pos (..))
 import Arkham.Location.Types (Field (LocationCardId))
 import Arkham.Matcher

@@ -1,0 +1,42 @@
+module Arkham.Location.Cards.EdgeOfTheEarth.ToTheForbiddenPeaks.MapRoom (mapRoom) where
+
+import Arkham.Ability
+import Arkham.Campaigns.EdgeOfTheEarth.Key
+import Arkham.Location.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+
+newtype MapRoom = MapRoom LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+mapRoom :: LocationCard MapRoom
+mapRoom = locationWith MapRoom Cards.mapRoom 2 (PerPlayer 1) connectsToAdjacent
+
+instance HasAbilities MapRoom where
+  getAbilities (MapRoom attrs) =
+    extendRevealed1 attrs
+      $ restricted attrs 1 Here
+      $ actionAbilityWithCost (SpendTokenKeyCost 2 #"-3")
+
+instance RunMessage MapRoom where
+  runMessage msg l@(MapRoom attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      doStep 3 msg
+      record TheTeamReadTheMap
+      pure l
+    DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
+      ls <- select $ not_ "Hidden Tunnel" <> oneOf [UnrevealedLocation, LocationWithAnyClues]
+      chooseTargetM iid ls \lid -> do
+        reveal lid
+        -- Need to delay discovering until after the location has been revealed
+        -- otherwise it will be rejected
+        forTarget lid msg'
+      doStep (n - 1) msg'
+      pure l
+    ForTarget (LocationTarget lid) (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
+      pure l
+    _ -> MapRoom <$> liftRunMessage msg attrs

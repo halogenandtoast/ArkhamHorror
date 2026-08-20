@@ -1,9 +1,10 @@
 module Arkham.Treachery.Cards.SmiteTheWickedAdvancedSpec (spec) where
 
 import Arkham.DamageEffect (nonAttack)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Enemies
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.Standalone qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Treacheries
 import TestImport.New
 
 spec :: Spec

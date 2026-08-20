@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.MorbidCuriosity (morbidCuriosity) where
 import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheDrownedCity qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype MorbidCuriosity = MorbidCuriosity TreacheryAttrs
@@ -21,7 +21,11 @@ instance HasAbilities MorbidCuriosity where
         (InThreatAreaOf You <> youExist (not_ SuccessfullyInvestigatedThisRound))
         $ forced
         $ TurnEnds #when You
-    , restricted a 2 (OnSameLocation <> exists (YourLocation <> InvestigatableLocation)) investigateAction_
+    , restricted
+        a
+        2
+        (OnSameLocation <> exists (YourLocation <> InvestigatableLocation))
+        investigateAction_
     ]
 
 instance RunMessage MorbidCuriosity where

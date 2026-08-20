@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.FinalRhapsodyAdvanced (finalRhapsodyAdvanced) wher
 
 import Arkham.ChaosToken
 import Arkham.Message.Lifted.Choose
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype FinalRhapsodyAdvanced = FinalRhapsodyAdvanced TreacheryAttrs

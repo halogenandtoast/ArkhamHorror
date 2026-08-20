@@ -11,6 +11,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Query (getJustLocationByName)
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as Locations
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Field
 import Arkham.Matcher

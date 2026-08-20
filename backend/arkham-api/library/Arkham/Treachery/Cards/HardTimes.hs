@@ -6,7 +6,7 @@ import Arkham.Discard
 import Arkham.Helpers.Message.Discard
 import Arkham.Helpers.Window (cardsDrawn)
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype HardTimes = HardTimes TreacheryAttrs

@@ -8,14 +8,15 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.HorrorsInTheRock qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheSilentHeath qualified as Enemies
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Xp
 import Arkham.Id
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheSilentHeath qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

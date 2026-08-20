@@ -10,7 +10,7 @@ import Arkham.Card.EncounterCard (lookupEncounterCard)
 import Arkham.Card.Id (unsafeMakeCardId)
 import Arkham.DamageEffect (damageAssignmentAmount, nonAttack)
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheBlobThatAteEverything qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Epic.Types (
   GroupOrdinal (..),
@@ -33,7 +33,8 @@ import Arkham.Helpers.Xp (toBonus)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheBlobThatAteEverything qualified as Locations
+import Arkham.Location.CardDefs.TheBlobThatAteEverythingELSE qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (PhaseStep)
 import Arkham.Message.Lifted.Choose
@@ -46,7 +47,7 @@ import Arkham.Scenario.Types (Field (ScenarioTokens), difficultyL)
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicShared))
 import Arkham.Scenarios.TheBlobThatAteEverything.Helpers
 import Arkham.Token qualified as Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheBlobThatAteEverything qualified as Treacheries
 import Arkham.Treachery.Types (Field (TreacheryPlacement))
 import Data.Aeson.Key qualified as Key
 
@@ -182,7 +183,7 @@ instance RunMessage TheBlobThatAteEverything where
 
         innerDefs <-
           shuffle
-            $ Locations.researchSiteTheBlobThatAteEverything
+            $ Locations.researchSite
             : Locations.temporaryHQ
             : innerQuarantine
         innerIds <- for (zip [Pos 0 1, Pos 0 (-1), Pos 1 0, Pos (-1) 0] innerDefs) \(pos, def) -> do

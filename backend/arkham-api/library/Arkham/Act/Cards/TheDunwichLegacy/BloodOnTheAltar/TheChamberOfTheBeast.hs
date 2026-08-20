@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Cards
 import Arkham.Matcher
 
 newtype TheChamberOfTheBeast = TheChamberOfTheBeast ActAttrs

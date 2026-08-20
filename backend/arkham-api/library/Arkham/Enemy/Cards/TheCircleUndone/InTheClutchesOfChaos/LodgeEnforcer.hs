@@ -1,0 +1,24 @@
+module Arkham.Enemy.Cards.TheCircleUndone.InTheClutchesOfChaos.LodgeEnforcer (lodgeEnforcer) where
+
+import Arkham.Enemy.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+
+newtype LodgeEnforcer = LodgeEnforcer EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+lodgeEnforcer :: EnemyCard LodgeEnforcer
+lodgeEnforcer =
+  enemyWith LodgeEnforcer Cards.lodgeEnforcer
+    $ spawnAtL
+    ?~ SpawnAtFirst
+      [SpawnAt $ MostBreaches $ LocationWithBreaches (AtLeast $ Static 1), "Silver Twilight Lodge"]
+
+instance HasModifiersFor LodgeEnforcer where
+  getModifiersFor (LodgeEnforcer a) = modifySelect a (locationWithEnemy a) [Blank]
+
+instance RunMessage LodgeEnforcer where
+  runMessage msg (LodgeEnforcer attrs) =
+    LodgeEnforcer <$> runMessage msg attrs

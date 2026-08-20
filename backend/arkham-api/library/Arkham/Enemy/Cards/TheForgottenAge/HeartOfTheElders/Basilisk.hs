@@ -1,0 +1,33 @@
+module Arkham.Enemy.Cards.TheForgottenAge.HeartOfTheElders.Basilisk (basilisk) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Cards
+import Arkham.Enemy.Import.Lifted
+import Arkham.Location.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Locations
+import Arkham.Matcher
+import Arkham.Token
+
+newtype Basilisk = Basilisk EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+basilisk :: EnemyCard Basilisk
+basilisk =
+  enemyWith Basilisk Cards.basilisk
+    $ preyL
+    .~ Prey (NearestToLocation $ locationIs Locations.mouthOfKnYanTheCavernsMaw)
+
+instance HasAbilities Basilisk where
+  getAbilities (Basilisk a) =
+    extend1 a
+      $ limitedAbility (MaxPer Cards.basilisk PerRound 1)
+      $ mkAbility a 1
+      $ forced
+      $ PlacedToken #after AnySource (LocationTargetMatches "Mouth of K'n-yan") Pillar
+
+instance RunMessage Basilisk where
+  runMessage msg e@(Basilisk attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      shuffleBackIntoEncounterDeck attrs
+      pure e
+    _ -> Basilisk <$> liftRunMessage msg attrs

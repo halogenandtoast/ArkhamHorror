@@ -6,13 +6,14 @@ import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified a
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.FlavorText
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpress qualified as Locations
+import Arkham.Location.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Modifier
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheEssexCountyExpress
 import Arkham.Scenarios.TheEssexCountyExpress.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Treacheries
 
 newtype ReturnToTheEssexCountyExpress = ReturnToTheEssexCountyExpress TheEssexCountyExpress
   deriving anyclass (IsScenario, HasModifiersFor)

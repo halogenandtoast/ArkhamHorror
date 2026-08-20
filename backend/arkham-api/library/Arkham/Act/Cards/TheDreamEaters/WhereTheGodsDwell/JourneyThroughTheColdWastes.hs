@@ -5,8 +5,8 @@ module Arkham.Act.Cards.TheDreamEaters.WhereTheGodsDwell.JourneyThroughTheColdWa
 
 import Arkham.Act.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Enemy.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Enemies
+import Arkham.Location.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Locations
 import Arkham.Matcher
 
 newtype JourneyThroughTheColdWastes = JourneyThroughTheColdWastes ActAttrs

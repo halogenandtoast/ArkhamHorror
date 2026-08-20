@@ -10,7 +10,8 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Log
@@ -19,7 +20,7 @@ import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -29,7 +30,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioKeys))
 import Arkham.Scenarios.TheLairOfDagon.Helpers
 import Arkham.Trait (Trait (Suspect))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.Syzygy qualified as Treacheries
 
 newtype TheLairOfDagon = TheLairOfDagon ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

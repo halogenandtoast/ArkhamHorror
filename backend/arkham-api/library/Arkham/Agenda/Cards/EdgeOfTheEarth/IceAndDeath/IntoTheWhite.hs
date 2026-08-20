@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.EdgeOfTheEarth.IceAndDeath.IntoTheWhite (IntoTheWhite
 import Arkham.Agenda.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Window (entering)
 import Arkham.Matcher

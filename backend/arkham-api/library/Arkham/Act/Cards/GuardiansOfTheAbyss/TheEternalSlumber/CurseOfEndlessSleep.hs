@@ -12,7 +12,7 @@ import Arkham.Helpers.Log (remembered)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Brotherhood, Cairo, Evidence, Expedition))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.GuardiansOfTheAbyss.SandsOfEgypt qualified as Treacheries
 import Arkham.Window (windowType)
 import Arkham.Window qualified as Window
 

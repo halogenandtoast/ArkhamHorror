@@ -10,7 +10,7 @@ import Arkham.ChaosToken
 import Arkham.DamageEffect
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Campaign (getCampaignStoryCard)
 import Arkham.Helpers.FlavorText (additionalRules, li, setup, ul)
@@ -18,7 +18,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Log
@@ -27,7 +27,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (assignEnemyDamage, drawEncounterCard, story)
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 import Arkham.Token
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Treacheries
 
 newtype DarkSideOfTheMoon = DarkSideOfTheMoon ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

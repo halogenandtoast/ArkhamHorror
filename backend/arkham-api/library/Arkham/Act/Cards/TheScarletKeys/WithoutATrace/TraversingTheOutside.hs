@@ -6,9 +6,9 @@ import Arkham.Act.Import.Lifted hiding (RevealLocation)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Effect.Window
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.WithoutATrace qualified as Enemies
 import Arkham.Enemy.Creation
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheScarletKeys.WithoutATrace qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier

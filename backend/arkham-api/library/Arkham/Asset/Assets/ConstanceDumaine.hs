@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Helpers.Story
 import Arkham.Matcher
-import Arkham.Story.Cards qualified as Story
+import Arkham.Story.CardDefs.ThePathToCarcosa.TheLastKing qualified as Story
 
 newtype ConstanceDumaine = ConstanceDumaine AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

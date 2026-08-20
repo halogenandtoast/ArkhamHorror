@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheCircleUndone.TheSecretName.StoppingTheRitual (stoppin
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheSecretName qualified as Enemies
 import Arkham.Helpers.Enemy (insteadOfDiscarding)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Window (getEnemy)

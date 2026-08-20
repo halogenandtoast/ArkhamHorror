@@ -18,7 +18,7 @@ import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.AgentsOfAzathoth qualified as Treacheries
 
 newtype Metadata = Metadata {locationsMoved :: [LocationId]}
   deriving stock (Show, Eq, Generic)

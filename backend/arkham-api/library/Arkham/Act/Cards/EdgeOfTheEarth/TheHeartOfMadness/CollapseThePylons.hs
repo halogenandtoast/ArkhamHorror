@@ -3,10 +3,10 @@ module Arkham.Act.Cards.EdgeOfTheEarth.TheHeartOfMadness.CollapseThePylons (coll
 import Arkham.Ability
 import Arkham.Act.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Cards
 import Arkham.Act.Import.Lifted hiding (DiscoverClues)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Window (discoveredCluesAt)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

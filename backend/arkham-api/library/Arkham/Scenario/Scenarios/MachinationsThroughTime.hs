@@ -5,21 +5,21 @@ import Arkham.Agenda.CardDefs.MachinationsThroughTime qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Field
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.MachinationsThroughTime qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window (wouldDo)
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.MachinationsThroughTime qualified as Locations
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.MachinationsThroughTime.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.MachinationsThroughTime qualified as Stories
 import Arkham.Trait (Trait (Ally, Scientist))
 import Arkham.Window qualified as Window
 

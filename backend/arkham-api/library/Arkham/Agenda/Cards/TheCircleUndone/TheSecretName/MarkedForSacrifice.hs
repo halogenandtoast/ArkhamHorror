@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheCircleUndone.TheSecretName.MarkedForSacrifice (mar
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheSecretName qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher

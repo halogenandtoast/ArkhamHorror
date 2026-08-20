@@ -4,10 +4,11 @@ import Arkham.Act.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWatcher qualified as Enemies
 import Arkham.Helpers.Location (replaceLocation, withLocationOf)
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToAtDeathsDoorstep qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -23,7 +24,7 @@ hiddenAgendas = act (1, A) HiddenAgendas Cards.hiddenAgendas Nothing
 instance RunMessage HiddenAgendas where
   runMessage msg a@(HiddenAgendas attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      entryHall <- selectJust $ locationIs Locations.entryHallAtDeathsDoorstep
+      entryHall <- selectJust $ locationIs Locations.entryHall
       enemyIds <- select $ enemyAt entryHall
       investigatorIds <- select $ investigatorAt entryHall
 
@@ -34,7 +35,7 @@ instance RunMessage HiddenAgendas where
       replaceLocation entryHall =<< getSetAsideCard Locations.entryHallSpectral
       replaceLocation victorianHalls =<< getSetAsideCard Locations.victorianHallsSpectral
 
-      balcony <- selectJust $ locationIs Locations.balconyAtDeathsDoorstep
+      balcony <- selectJust $ locationIs Locations.balcony
       replaceLocation balcony =<< getSetAsideCard Locations.balconySpectral
 
       office <- selectJust $ locationIs Locations.office

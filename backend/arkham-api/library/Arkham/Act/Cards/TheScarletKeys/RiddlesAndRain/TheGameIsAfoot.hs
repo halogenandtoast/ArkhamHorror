@@ -6,8 +6,8 @@ import Arkham.Act.Import.Lifted
 import Arkham.Agenda.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Agendas
 import Arkham.Agenda.Types (Field (..))
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Enemy.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Enemies
+import Arkham.Location.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 import Arkham.Projection

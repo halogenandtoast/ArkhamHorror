@@ -8,7 +8,9 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.AgentsOfYig qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.Serpents qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Helpers.Campaign (getCampaignStoryCards, matchingCardsAlreadyInDeck)
 import Arkham.Helpers.Card (ConvertToCard, convertToCard, getVictoryPoints)
 import Arkham.Helpers.FlavorText
@@ -19,7 +21,8 @@ import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorName))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.RelicsOfThePast qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Name (toTitle)
@@ -29,7 +32,14 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.RelicsOfThePast.Helpers
 import Arkham.Trait (Trait (Ancient, Serpent))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.LockedDoors qualified as Treacheries
+import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
+import Arkham.Treachery.CardDefs.RelicsOfThePast qualified as Treacheries
+import Arkham.Treachery.CardDefs.Standalone qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.DeadlyTraps qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.ForgottenRuins qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Arkham.Window qualified as Window
 import Arkham.Xp
 

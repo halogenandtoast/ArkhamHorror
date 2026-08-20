@@ -1,0 +1,49 @@
+module Arkham.Story.Cards.TheForgottenAge.ShatteredAeons.YigsMercy (yigsMercy) where
+
+import Arkham.Act.CardDefs.TheForgottenAge.ShatteredAeons qualified as Acts
+import Arkham.Act.Sequence
+import Arkham.Campaigns.TheForgottenAge.Key
+import Arkham.Enemy.CardDefs.TheForgottenAge.ShatteredAeons qualified as Enemies
+import Arkham.Helpers.Log
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+import Arkham.Scenarios.ShatteredAeons.Helpers
+import Arkham.Story.CardDefs.TheForgottenAge.ShatteredAeons qualified as Cards
+import Arkham.Story.Import.Lifted
+import Arkham.Trait qualified as Trait
+
+newtype YigsMercy = YigsMercy StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+yigsMercy :: StoryCard YigsMercy
+yigsMercy = story YigsMercy Cards.yigsMercy
+
+instance RunMessage YigsMercy where
+  runMessage msg s@(YigsMercy attrs) = runQueueT $ case msg of
+    ResolveThisStory iid (is attrs -> True) -> do
+      ichtaca <- selectJust $ enemyIs Enemies.ichtacaScionOfYig
+      yigsFury <- getRecordCount YigsFury
+      chooseOneM iid $ scenarioI18n do
+        if yigsFury >= 16
+          then labeled' "yigsMercy.refuses" nothing
+          else do
+            labeled' "yigsMercy.reject" do
+              exhaustWith attrs ichtaca
+              disengageFromAll ichtaca
+              eachInvestigator \iid' ->
+                gameModifier attrs iid' $ CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig
+            labeled' "yigsMercy.accept" do
+              removeEnemy ichtaca
+              advanceToAct' attrs 1 Acts.paradiseLost A
+              eachInvestigator \iid' ->
+                gameModifiers
+                  attrs
+                  iid'
+                  [ CannotParleyWith $ enemyIs Enemies.alejandroVela
+                  , CannotBeAttackedBy $ EnemyWithTrait Trait.Cultist
+                  , CannotBeEngagedBy $ EnemyWithTrait Trait.Cultist
+                  ]
+      pure s
+    _ -> YigsMercy <$> liftRunMessage msg attrs

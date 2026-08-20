@@ -1,0 +1,58 @@
+module Arkham.Story.Cards.TheMidwinterGala.TheSyndicateRival (theSyndicateRival) where
+
+import Arkham.Ability
+import Arkham.Deck qualified as Deck
+import Arkham.Enemy.CardDefs.TheMidwinterGala qualified as Enemies
+import Arkham.GameValue
+import Arkham.Helpers.Location
+import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest.Lifted (parley)
+import Arkham.Matcher
+import Arkham.Story.CardDefs.TheMidwinterGala qualified as Cards
+import Arkham.Story.Import.Lifted
+import Arkham.Treachery.CardDefs.TheMidwinterGala qualified as Treacheries
+
+newtype TheSyndicateRival = TheSyndicateRival StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theSyndicateRival :: StoryCard TheSyndicateRival
+theSyndicateRival = persistStory $ story TheSyndicateRival Cards.theSyndicateRival
+
+instance HasAbilities TheSyndicateRival where
+  getAbilities (TheSyndicateRival a) =
+    [ restricted
+        a
+        1
+        (exists $ enemyIs Enemies.johnnyValoneHereToCollect <> EnemyAt YourLocation)
+        parleyAction_
+    , restricted a 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 1 1)
+        $ forced AnyWindow
+    ]
+
+instance RunMessage TheSyndicateRival where
+  runMessage msg s@(TheSyndicateRival attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      coldStreak <- getSetAsideCardsMatching $ cardIs Treacheries.coldStreak
+      shuffleCardsIntoDeck Deck.EncounterDeck coldStreak
+      johnny <- getSetAsideCardsMatching $ cardIs Enemies.johnnyValoneHereToCollect
+      lead <- getLead
+      for_ johnny (withLocationOf lead . createEnemyAt_)
+      pure s
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      enemy <- selectJust $ enemyIs Enemies.johnnyValoneHereToCollect <> enemyAtLocationWith iid
+      sid <- getRandom
+      parley sid iid (attrs.ability 1) enemy #agility (Fixed 3)
+      pure s
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      whenMatch iid InvestigatorWithAnyClues do
+        moveTokens (attrs.ability 1) iid attrs #clue 1
+      pure s
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      johnny <- selectJust $ enemyIs Enemies.johnnyValoneHereToCollect
+      addToVictory iid attrs
+      addToVictory iid johnny
+      push $ RemoveAllCopiesOfEncounterCardFromGame (cardIs Treacheries.coldStreak)
+      removeStory attrs
+      pure s
+    _ -> TheSyndicateRival <$> liftRunMessage msg attrs

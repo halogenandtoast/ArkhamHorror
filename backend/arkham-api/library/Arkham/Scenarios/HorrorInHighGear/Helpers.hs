@@ -13,7 +13,7 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Label
 import Arkham.Layout
-import Arkham.Location.Cards qualified as Location
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Location
 import Arkham.Location.Types (Field (..), LocationAttrs)
 import Arkham.Matcher
 import Arkham.Message (

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (Day (..), getCampaignDay)
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified as Enemies
 import Arkham.Helpers.Enemy (getUniqueEnemy)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..))

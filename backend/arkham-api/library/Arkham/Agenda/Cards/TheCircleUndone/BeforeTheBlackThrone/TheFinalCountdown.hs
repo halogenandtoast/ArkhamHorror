@@ -4,12 +4,12 @@ import Arkham.Agenda.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as 
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as Enemies
 import Arkham.Helpers.Log (inRecordSet)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.AgentsOfAzathoth qualified as Treacheries
 
 newtype TheFinalCountdown = TheFinalCountdown AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

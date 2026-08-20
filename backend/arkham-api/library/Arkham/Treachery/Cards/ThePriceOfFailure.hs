@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.ThePriceOfFailure (thePriceOfFailure) where
 
 import Arkham.Card
 import Arkham.Event.Cards qualified as Events
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.TheForgottenAge qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype ThePriceOfFailure = ThePriceOfFailure TreacheryAttrs

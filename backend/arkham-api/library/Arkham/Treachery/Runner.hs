@@ -15,10 +15,10 @@ import Arkham.Helpers.Message as X hiding (
   InvestigatorDamage,
   InvestigatorEliminated,
   RevealChaosToken,
+  addToVictory,
   is,
   toDiscard,
   toDiscardBy,
-  addToVictory,
  )
 import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X

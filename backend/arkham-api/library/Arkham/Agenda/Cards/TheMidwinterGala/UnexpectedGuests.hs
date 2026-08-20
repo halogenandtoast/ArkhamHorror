@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheMidwinterGala.UnexpectedGuests (unexpectedGuests) 
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheMidwinterGala qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheMidwinterGala qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Window (assetLeavingPlay)

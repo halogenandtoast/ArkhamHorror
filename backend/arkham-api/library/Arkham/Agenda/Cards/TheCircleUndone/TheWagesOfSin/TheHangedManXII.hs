@@ -2,13 +2,13 @@ module Arkham.Agenda.Cards.TheCircleUndone.TheWagesOfSin.TheHangedManXII (theHan
 
 import Arkham.Agenda.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWatcher qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Scenario.Deck
 import Arkham.Trait (Trait (Spectral))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheCircleUndone.TheWatcher qualified as Treacheries
 
 newtype TheHangedManXII = TheHangedManXII AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

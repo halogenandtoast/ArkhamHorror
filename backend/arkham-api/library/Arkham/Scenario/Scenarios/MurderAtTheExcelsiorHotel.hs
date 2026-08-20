@@ -6,7 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.MurderAtTheExcelsiorHotel qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
@@ -14,7 +14,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.MurderAtTheExcelsiorHotel qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -27,7 +27,7 @@ import Arkham.Scenario.Types (ScenarioAttrs (..))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 import Arkham.Trait (Trait (Detective, Guest, Innocent, Madness, Police))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.MurderAtTheExcelsiorHotel qualified as Treacheries
 
 newtype MurderAtTheExcelsiorHotel = MurderAtTheExcelsiorHotel ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -111,7 +111,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
       gather Set.MurderAtTheExcelsiorHotel
 
       room225 <- place Locations.room225
-      foyer <- place Locations.foyerMurderAtTheExcelsiorHotel
+      foyer <- place Locations.foyer
 
       placeAll [Locations.suiteBalcony, Locations.secondFloorHall, Locations.restaurant]
 

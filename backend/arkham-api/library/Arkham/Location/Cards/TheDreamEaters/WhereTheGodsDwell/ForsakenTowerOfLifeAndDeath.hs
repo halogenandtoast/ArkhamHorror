@@ -1,0 +1,62 @@
+module Arkham.Location.Cards.TheDreamEaters.WhereTheGodsDwell.ForsakenTowerOfLifeAndDeath (
+  forsakenTowerOfLifeAndDeath,
+  ForsakenTowerOfLifeAndDeath (..),
+)
+where
+
+import Arkham.Action qualified as Action
+import Arkham.Attack
+import Arkham.Fight
+import Arkham.Location.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Scenarios.WhereTheGodsDwell.Helpers
+
+newtype ForsakenTowerOfLifeAndDeath = ForsakenTowerOfLifeAndDeath LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+forsakenTowerOfLifeAndDeath :: LocationCard ForsakenTowerOfLifeAndDeath
+forsakenTowerOfLifeAndDeath =
+  location
+    ForsakenTowerOfLifeAndDeath
+    Cards.forsakenTowerOfLifeAndDeath
+    2
+    (PerPlayer 1)
+
+instance HasAbilities ForsakenTowerOfLifeAndDeath where
+  getAbilities (ForsakenTowerOfLifeAndDeath attrs) =
+    extendRevealed attrs $ forsakenTowerAbilities attrs
+
+instance RunMessage ForsakenTowerOfLifeAndDeath where
+  runMessage msg l@(ForsakenTowerOfLifeAndDeath attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      revealWhisperingChaos attrs
+      nyarlathoteps <- select $ EnemyInHandOf $ InvestigatorWithId iid
+      chooseOne
+        iid
+        [ targetLabel
+            nyarlathotep
+            [HandleTargetChoice iid (attrs.ability 1) (toTarget nyarlathotep)]
+        | nyarlathotep <- nyarlathoteps
+        ]
+      pure l
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
+      sid <- getRandom
+      push
+        $ FightEnemy nyarlathotep
+        $ setTarget attrs
+        $ (mkChooseFightPure sid iid (attrs.ability 1)) {chooseFightSkillType = #willpower}
+      pure l
+    Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
+      discardWhisperingChaos attrs
+      addToVictory iid eid
+      pure l
+    Failed (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
+      shuffleWhisperingChaosBackIntoEncounterDeck attrs
+      pushAll
+        [ InitiateEnemyAttack $ enemyAttack eid (attrs.ability 1) iid
+        , ShuffleBackIntoEncounterDeck GameSource (toTarget eid)
+        ]
+      pure l
+    _ -> ForsakenTowerOfLifeAndDeath <$> liftRunMessage msg attrs

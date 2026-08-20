@@ -5,14 +5,14 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers (struggleForAir)
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (needsAir)
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
 import Arkham.Helpers.Enemy (disengageEnemyFromAll)
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (StarSpawn))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDrownedCity.TheInescapable qualified as Treacheries
 
 newtype BowelsOfTheCity = BowelsOfTheCity AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

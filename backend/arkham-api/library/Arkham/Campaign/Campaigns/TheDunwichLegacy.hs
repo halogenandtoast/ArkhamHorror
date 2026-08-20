@@ -18,7 +18,7 @@ import Arkham.Helpers.Xp
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Treacheries
 import GHC.Records
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs

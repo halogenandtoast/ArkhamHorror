@@ -17,7 +17,9 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
 import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Enemies
+import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.GameT (GameT)
 import Arkham.Helpers (Deck (..))
@@ -30,7 +32,9 @@ import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.Tokens
 import Arkham.Layout
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.Rainforest qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ReturnToRainforest qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -46,7 +50,11 @@ import Arkham.Scenario.Types (
 import Arkham.Scenarios.HeartOfTheElders.Helpers
 import Arkham.Token
 import Arkham.Trait (Trait (Cave))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.DeadlyTraps qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Expedition qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.ForgottenRuins qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Arkham.Window qualified as Window
 
 data HeartOfTheEldersScenarioStep = One | Two

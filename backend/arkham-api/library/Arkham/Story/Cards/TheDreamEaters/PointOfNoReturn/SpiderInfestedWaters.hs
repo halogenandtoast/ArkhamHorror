@@ -1,0 +1,35 @@
+module Arkham.Story.Cards.TheDreamEaters.PointOfNoReturn.SpiderInfestedWaters (SpiderInfestedWaters (..), spiderInfestedWaters) where
+
+import Arkham.Card
+import Arkham.Deck qualified as Deck
+import Arkham.Location.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Locations
+import Arkham.Matcher
+import Arkham.Source
+import Arkham.Story.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Cards
+import Arkham.Story.Import.Lifted
+import Arkham.Trait (Trait (Spider))
+
+newtype SpiderInfestedWaters = SpiderInfestedWaters StoryAttrs
+  deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+spiderInfestedWaters :: StoryCard SpiderInfestedWaters
+spiderInfestedWaters = story SpiderInfestedWaters Cards.spiderInfestedWaters
+
+instance RunMessage SpiderInfestedWaters where
+  runMessage msg s@(SpiderInfestedWaters attrs) = runQueueT $ case msg of
+    ResolveThisStory iid (is attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
+      push
+        $ DiscardUntilFirst
+          iid
+          (toSource attrs)
+          Deck.EncounterDeck
+          (basic $ CardWithTrait Spider <> CardWithType EnemyType)
+      pure s
+    RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do
+      seaOfPitch <- selectJust $ locationIs Locations.seaOfPitch_262
+      spider <- createEnemyAt (toCard ec) seaOfPitch
+      placeClues attrs spider 1
+      pure s
+    _ -> SpiderInfestedWaters <$> liftRunMessage msg attrs

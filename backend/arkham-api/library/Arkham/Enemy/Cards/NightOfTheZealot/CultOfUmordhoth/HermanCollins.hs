@@ -1,0 +1,23 @@
+module Arkham.Enemy.Cards.NightOfTheZealot.CultOfUmordhoth.HermanCollins (hermanCollins) where
+
+import Arkham.Ability
+import Arkham.Enemy.CardDefs.NightOfTheZealot.CultOfUmordhoth qualified as Cards
+import Arkham.Enemy.Import.Lifted
+
+newtype HermanCollins = HermanCollins EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+hermanCollins :: EnemyCard HermanCollins
+hermanCollins = enemyWith HermanCollins Cards.hermanCollins (spawnAtL ?~ "Graveyard")
+
+instance HasAbilities HermanCollins where
+  getAbilities (HermanCollins a) =
+    extend1 a $ restricted a 1 OnSameLocation $ parleyAction (HandDiscardCost 4 #any)
+
+instance RunMessage HermanCollins where
+  runMessage msg e@(HermanCollins attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
+      pure e
+    _ -> HermanCollins <$> liftRunMessage msg attrs

@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Car
 import Arkham.Act.Runner
 import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude

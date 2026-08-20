@@ -3,7 +3,7 @@ module Arkham.Act.Cards.BrethrenOfAsh.SpreadingFlames.BlazeOfGlory (blazeOfGlory
 import Arkham.Ability
 import Arkham.Act.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

@@ -1,7 +1,9 @@
 module Arkham.Event.Events.OnTheHuntSpec (spec) where
 
 import Arkham.Agenda.CardDefs.TheScarletKeys.DeadHeat qualified as Agendas
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Ghouls qualified as Enemies
+import Arkham.Enemy.CardDefs.NightOfTheZealot.Rats qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.CrimsonConspiracy qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Entities qualified as Entities
 import Arkham.Event.Cards qualified as Events

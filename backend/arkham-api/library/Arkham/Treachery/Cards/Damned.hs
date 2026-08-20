@@ -7,7 +7,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.CardDefs.ReturnTo qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype Damned = Damned TreacheryAttrs

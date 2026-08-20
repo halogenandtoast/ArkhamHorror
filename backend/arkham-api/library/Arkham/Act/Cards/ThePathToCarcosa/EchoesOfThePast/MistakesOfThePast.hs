@@ -7,7 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card.CardCode
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario (getIsReturnTo)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 

@@ -2,13 +2,13 @@ module Arkham.Agenda.Cards.BrethrenOfAsh.QueenOfAsh.AGathering (aGathering) wher
 
 import Arkham.Agenda.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Enemies
 import Arkham.Helpers.Modifiers (modifyEach)
 import Arkham.Helpers.Query
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.BrethrenOfAsh.QueenOfAsh qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier (ModifierType (CannotBeDamaged))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype AGathering = AGathering AgendaAttrs
   deriving anyclass IsAgenda

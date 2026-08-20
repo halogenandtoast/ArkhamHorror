@@ -11,7 +11,8 @@ import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ReturnToTheCircleUndone.ReturnToTheWagesOfSin qualified as Enemies
+import Arkham.Enemy.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
@@ -19,7 +20,8 @@ import Arkham.Helpers.Modifiers hiding (roundModifiers)
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.SkillTest
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToTheWagesOfSin qualified as Locations
+import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Placement

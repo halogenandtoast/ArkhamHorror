@@ -8,7 +8,11 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.AlienInterference qualified as Enemies
+import Arkham.Enemy.CardDefs.DarkRituals qualified as Enemies
+import Arkham.Enemy.CardDefs.ExcelsiorManagement qualified as Enemies
+import Arkham.Enemy.CardDefs.MurderAtTheExcelsiorHotel qualified as Enemies
+import Arkham.Enemy.CardDefs.SinsOfThePast qualified as Enemies
 import Arkham.Helpers.Enemy (createWithDoom)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue
@@ -22,7 +26,7 @@ import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 import Arkham.Trait (Trait (CrimeScene, Cultist, Guest, Innocent, Lead, Staff))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.VileExperiments qualified as Treacheries
 
 newtype FollowingLeads = FollowingLeads ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -5,7 +5,7 @@ import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (InvestigatorEliminated)
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheForgottenAge qualified as Treacheries
 
 newtype DarkPact = DarkPact EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

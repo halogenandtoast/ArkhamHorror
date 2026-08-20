@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types (Field (..))
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheScarletKeys.SanguineShadows qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query (getLead, getPlayerCount)

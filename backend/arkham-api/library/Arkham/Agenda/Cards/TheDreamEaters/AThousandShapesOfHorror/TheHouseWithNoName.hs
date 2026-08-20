@@ -4,7 +4,7 @@ import Arkham.Agenda.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified a
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.GameValue
 import Arkham.Prelude

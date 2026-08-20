@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheLabyrinthsOfLunacy.TheEscape (theEscape) where
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheLabyrinthsOfLunacy qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheLabyrinthsOfLunacy qualified as Enemies
 import Arkham.Matcher
 
 newtype TheEscape = TheEscape ActAttrs

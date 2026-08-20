@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.EdwinBennetAstuteAssociate (edwinBennetAstuteAssociat
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.MachinationsThroughTime qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Move
 import Arkham.Trait (Trait (Portal))
@@ -20,7 +20,10 @@ instance HasAbilities EdwinBennetAstuteAssociate where
     [ restricted
         a
         1
-        (OnSameLocation <> DuringTurn You <> InvestigatorExists (You <> InvestigatorAt (LocationWithTrait Portal)))
+        ( OnSameLocation
+            <> DuringTurn You
+            <> InvestigatorExists (You <> InvestigatorAt (LocationWithTrait Portal))
+        )
         $ FastAbility (exhaust a <> ResourceCost 2)
     ]
 

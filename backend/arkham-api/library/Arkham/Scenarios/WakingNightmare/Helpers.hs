@@ -15,7 +15,7 @@ import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheDreamEaters.WakingNightmare qualified as Stories
 import Arkham.Target
 import Arkham.Timing (Timing)
 

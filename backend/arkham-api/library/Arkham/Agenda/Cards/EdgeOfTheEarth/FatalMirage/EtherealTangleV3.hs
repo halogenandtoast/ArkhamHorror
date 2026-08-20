@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.EdgeOfTheEarth.FatalMirage.EtherealTangleV3 (ethereal
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 

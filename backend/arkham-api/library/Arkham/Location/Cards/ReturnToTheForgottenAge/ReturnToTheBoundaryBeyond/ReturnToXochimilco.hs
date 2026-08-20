@@ -1,0 +1,30 @@
+module Arkham.Location.Cards.ReturnToTheForgottenAge.ReturnToTheBoundaryBeyond.ReturnToXochimilco (returnToXochimilco) where
+
+import Arkham.Ability
+import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToTheBoundaryBeyond qualified as Cards
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+
+newtype ReturnToXochimilco = ReturnToXochimilco LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+returnToXochimilco :: LocationCard ReturnToXochimilco
+returnToXochimilco = symbolLabel $ location ReturnToXochimilco Cards.returnToXochimilco 3 (Static 0)
+
+instance HasAbilities ReturnToXochimilco where
+  getAbilities (ReturnToXochimilco a) =
+    extendRevealed1 a
+      $ mkAbility a 1
+      $ freeReaction
+      $ oneOf
+        [ EnemyEvadedSuccessfully #after (You <> at_ (be a)) AnySource AnyEnemy
+        , EnemyAttackedSuccessfully #after (You <> at_ (be a)) AnySource AnyEnemy
+        ]
+
+instance RunMessage ReturnToXochimilco where
+  runMessage msg l@(ReturnToXochimilco attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ Explore iid (attrs.ability 1) $ CardWithPrintedLocationSymbol $ locationSymbol attrs
+      pure l
+    _ -> ReturnToXochimilco <$> liftRunMessage msg attrs

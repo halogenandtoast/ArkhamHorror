@@ -11,7 +11,8 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.TokenHelpers
 import Arkham.Card.CardDef (CardDef, toCardDef)
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.DayOfTheFeast qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.Residents qualified as Enemies
 import Arkham.Helpers.Agenda (getCurrentAgenda)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCards)
@@ -25,7 +26,8 @@ import Arkham.Helpers.Query (
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
 import Arkham.I18n
 import Arkham.Id (InvestigatorId)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.DayOfTheFeast qualified as Locations
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheVale qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (pattern PassedThisSkillTest)
 import Arkham.Message qualified as Msg

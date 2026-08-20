@@ -11,7 +11,7 @@ import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenarios.HemlockHouse.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Stories
 import Arkham.Token (Token (..))
 import Arkham.Trait (Trait (Dormant))
 

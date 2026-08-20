@@ -3,7 +3,7 @@ module Arkham.Scenarios.TheMiskatonicMuseum.Helpers where
 import Arkham.Campaigns.TheDunwichLegacy.Helpers
 import Arkham.Classes
 import Arkham.Classes.HasGame
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Layout
@@ -16,9 +16,10 @@ scenarioI18n a = campaignI18n $ scope "theMiskatonicMuseum" a
 getInPlayHuntingHorror :: HasGame m => m (Maybe EnemyId)
 getInPlayHuntingHorror = getHuntingHorrorWith AnyEnemy
 
--- | Finds the Hunting Horror anywhere, including while it sits in the void
--- (out of play). Callers rely on reaching the void copy to spawn it back or
--- keep an attachment on it, so this must opt into out-of-play matching.
+{- | Finds the Hunting Horror anywhere, including while it sits in the void
+(out of play). Callers rely on reaching the void copy to spawn it back or
+keep an attachment on it, so this must opt into out-of-play matching.
+-}
 getHuntingHorror :: HasGame m => m (Maybe EnemyId)
 getHuntingHorror = getHuntingHorrorWith (IncludeOutOfPlayEnemy AnyEnemy)
 

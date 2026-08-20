@@ -8,7 +8,7 @@ import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.WarOfTheOuterGods qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
@@ -18,7 +18,7 @@ import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorClues))
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.WarOfTheOuterGods qualified as Locations
 import Arkham.Matcher hiding (EnemyAttacks)
 import Arkham.Message (CanAdvance (..), GroupKey (..))
 import Arkham.Message.Lifted.Choose

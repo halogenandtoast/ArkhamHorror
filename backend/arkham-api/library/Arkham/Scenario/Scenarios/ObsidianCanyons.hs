@@ -12,13 +12,15 @@ import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Enemies
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreation (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Locations
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
@@ -29,10 +31,10 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck (ScenarioDeckKey (SummitDeck))
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ObsidianCanyons.Helpers
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Stories
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait (Madness, Omen))
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Treacheries
 
 newtype ObsidianCanyons = ObsidianCanyons ScenarioAttrs
   deriving stock Generic

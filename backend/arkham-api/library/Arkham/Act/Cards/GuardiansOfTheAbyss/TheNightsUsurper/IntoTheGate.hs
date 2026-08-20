@@ -7,10 +7,10 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers (campaignI18n)
 import Arkham.Campaigns.TheForgottenAge.Helpers (exploreAction_, runExplore)
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getSetAsideCardMaybe, getSetAsideCardsMatching)
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 

@@ -3,7 +3,8 @@ module Arkham.Act.Cards.TheForgottenAge.ThreadsOfFate.TrialOfTheHuntress (trialO
 import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
+import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locations
 import Arkham.Matcher
 
 newtype TrialOfTheHuntress = TrialOfTheHuntress ActAttrs

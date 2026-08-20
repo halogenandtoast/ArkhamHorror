@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.ThePathToCarcosa.APhantomOfTruth.TheSecondNight (theS
 
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Scenarios.APhantomOfTruth.Helpers

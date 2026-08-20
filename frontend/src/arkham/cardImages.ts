@@ -11,6 +11,25 @@ export function cardImage(cardCode: string, suffix: string = ''): string {
   return cardImg(cardArt(cardCode, suffix))
 }
 
+// A handful of acts and agendas end their id in a letter that disambiguates two
+// printings rather than naming a side, so the generic strip-the-side rule below
+// would resolve them onto a different card's front.
+const RESOLVED_SIDE_OVERRIDES: Record<string, string> = {
+  '03276a': '03276ab',
+  '03276b': '03276bb',
+  '03279a': '03279ab',
+  '03279b': '03279bb',
+}
+
+// The side an act or agenda was resolved on as it advanced past. Ids carry the
+// side as a trailing letter (a/c/e/g are fronts) and every printed back shares
+// the same `…b` art — including the four-sided Threads of Fate acts, where side
+// d reuses side b's image.
+export function resolvedSideArt(art: string): string {
+  const base = art.replace(/^c/, '')
+  return RESOLVED_SIDE_OVERRIDES[base] ?? `${base.replace(/[aceg]$/, '')}b`
+}
+
 export function cardHasDistinctBack(card: CardDef): boolean {
   return !!(
     card.doubleSided

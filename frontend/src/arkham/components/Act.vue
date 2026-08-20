@@ -2,7 +2,7 @@
 import { ComputedRef, computed, ref, watch } from 'vue'
 import { useCardStore } from '@/stores/cards'
 import { type Game } from '@/arkham/types/Game'
-import { type Card, cardImage, asCardCode } from '@/arkham/types/Card'
+import { type Card, cardImage, asCardCode, toCardContents } from '@/arkham/types/Card'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import { useDebug } from '@/arkham/debug'
 import PoolItem from '@/arkham/components/PoolItem.vue'
@@ -16,6 +16,7 @@ import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Messa
 import { MessageType } from '@/arkham/types/Message'
 import { keyToId } from '@/arkham/types/Key'
 import { cardImg, imgsrc } from '@/arkham/helpers'
+import { resolvedSideArt } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Act'
 import { useEventStore } from '@/arkham/stores/event'
 import { actContribution, actSpend } from '@/arkham/types/EpicEvent'
@@ -171,11 +172,19 @@ const cardStage = (code: string): number | null => cardDefFor(code)?.stage ?? nu
 // so those get a pip each.
 const cardTitle = (code: string): string => cardDefFor(code)?.name.title ?? code
 
+// The face a completed act/agenda was resolved on, so the popover can offer the
+// side that only ever flashed past on advance.
+const resolvedSideImage = (card: Card) => {
+  const art = toCardContents(card).art || asCardCode(card).replace(/^c/, '')
+  return cardImg(resolvedSideArt(art))
+}
+
 type StackIndicatorGroup = {
   label: string
   state: 'completed' | 'current' | 'remaining'
   images: {
     src: string
+    back?: string
     current?: boolean
     passed?: boolean
   }[]
@@ -226,7 +235,7 @@ const groupedActStack = computed<StackIndicatorGroup[]>(() => {
       asCardCode(card),
       `Act ${i + 1}`,
       null,
-      { src: imgsrc(cardImage(card)), passed: true },
+      { src: imgsrc(cardImage(card)), back: resolvedSideImage(card), passed: true },
       'completed',
       i,
     )

@@ -1,3 +1,5 @@
 {
-    "vengeance":"Vengeance {value}"
+    "vengeance":"Vengeance {value}",
+    "resolvedSide": "Resolved side",
+    "front": "Front"
 }

@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { Dropdown } from 'floating-vue'
-import { type Card, cardImage } from '@/arkham/types/Card'
-import { imgsrc } from '@/arkham/helpers'
+import { type Card, cardImage, toCardContents, asCardCode } from '@/arkham/types/Card'
+import { resolvedSideArt } from '@/arkham/cardImages'
+import { cardImg, imgsrc } from '@/arkham/helpers'
+import StackPopoverCard from '@/arkham/components/StackPopoverCard.vue'
 
 type PipState = 'completed' | 'current' | 'remaining'
 
@@ -11,6 +13,10 @@ export type StackIndicatorGroup = {
   state: PipState
   images: {
     src: string
+    // The side this card was resolved on. Completed cards default to it, because
+    // side A is the face you already looked at for a whole phase and side B is
+    // the one that flashed past on advance.
+    back?: string
     current?: boolean
     passed?: boolean
   }[]
@@ -26,6 +32,12 @@ const props = defineProps<{
   placement?: 'top' | 'bottom' | 'left' | 'right'
   groups?: StackIndicatorGroup[]
 }>()
+
+const backImageFor = (card: Card): string => {
+  const contents = toCardContents(card)
+  const art = contents.art || asCardCode(card).replace(/^c/, '')
+  return cardImg(resolvedSideArt(art))
+}
 
 const pips = computed<PipState[]>(() => {
   if (props.groups) return props.groups.map((group) => group.state)
@@ -45,7 +57,7 @@ const popoverGroups = computed<StackIndicatorGroup[]>(() => {
     ...props.completedCards.map((card, i) => ({
       label: `${props.label} ${i + 1}`,
       state: 'completed' as const,
-      images: [{ src: imgsrc(cardImage(card)), passed: true }],
+      images: [{ src: imgsrc(cardImage(card)), back: backImageFor(card), passed: true }],
     })),
     {
       label: `${props.label} ${props.current}`,
@@ -116,15 +128,13 @@ const tooltip = computed(() => {
             {{ group.label }} ×{{ group.images.length }}
           </div>
           <div class="stack-popover__group-cards">
-            <img
+            <StackPopoverCard
               v-for="(image, imageIndex) in group.images"
               :key="`${group.label}-${imageIndex}`"
               :src="image.src"
-              class="card stack-popover__card"
-              :class="{
-                'stack-popover__card--passed': image.passed,
-                'stack-popover__card--current': image.current,
-              }"
+              :back="image.back"
+              :passed="image.passed"
+              :current="image.current"
             />
           </div>
         </div>
@@ -229,32 +239,9 @@ const tooltip = computed(() => {
 .stack-popover__group-cards {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
 }
-
-.stack-popover__card {
-  width: calc(var(--card-width, 100px) * 1.1);
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.38);
-  box-sizing: border-box;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-  cursor: zoom-in;
-  transition: opacity 0.15s ease, border-color 0.15s ease;
-}
-
-.stack-popover__card--passed {
-  opacity: 0.4;
-  filter: grayscale(0.4);
-}
-
-.stack-popover__card--current {
-  border-color: transparent;
-  outline: 2px solid rgba(255, 255, 255, 0.85);
-  outline-offset: 2px;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.35), 0 2px 8px rgba(0, 0, 0, 0.6);
-}
-
 </style>
 
 <style>

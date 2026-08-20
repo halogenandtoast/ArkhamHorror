@@ -4,10 +4,10 @@ import { ComputedRef, computed, ref, watch } from 'vue';
 import { useCardStore } from '@/stores/cards';
 import { useDebug } from '@/arkham/debug';
 import { useI18n } from 'vue-i18n';
-import { imgsrc, groupBy } from '@/arkham/helpers';
+import { cardImg, imgsrc, groupBy } from '@/arkham/helpers';
 import { type Game } from '@/arkham/types/Game';
-import { type Card, cardImage, asCardCode } from '@/arkham/types/Card'
-import { cardImage as cardCodeImage } from '@/arkham/cardImages'
+import { type Card, cardImage, asCardCode, toCardContents } from '@/arkham/types/Card'
+import { cardImage as cardCodeImage, resolvedSideArt } from '@/arkham/cardImages'
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
@@ -139,11 +139,19 @@ const cardStage = (code: string): number | null => cardDefFor(code)?.stage ?? nu
 // pip each.
 const cardTitle = (code: string): string => cardDefFor(code)?.name.title ?? code
 
+// The face a completed act/agenda was resolved on, so the popover can offer the
+// side that only ever flashed past on advance.
+const resolvedSideImage = (card: Card) => {
+  const art = toCardContents(card).art || asCardCode(card).replace(/^c/, '')
+  return cardImg(resolvedSideArt(art))
+}
+
 type StackIndicatorGroup = {
   label: string
   state: 'completed' | 'current' | 'remaining'
   images: {
     src: string
+    back?: string
     current?: boolean
     passed?: boolean
   }[]
@@ -190,7 +198,7 @@ const groupedAgendaStack = computed<StackIndicatorGroup[]>(() => {
   }
 
   props.completedStack.forEach((card, i) => {
-    addToGroup(asCardCode(card), `Agenda ${i + 1}`, null, { src: imgsrc(cardImage(card)), passed: true }, 'completed', i)
+    addToGroup(asCardCode(card), `Agenda ${i + 1}`, null, { src: imgsrc(cardImage(card)), back: resolvedSideImage(card), passed: true }, 'completed', i)
   })
 
   addToGroup(

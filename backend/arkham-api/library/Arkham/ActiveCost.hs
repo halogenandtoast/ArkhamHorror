@@ -1792,7 +1792,17 @@ instance RunMessage ActiveCost where
         ForCost card ->
           pushAll
             [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
-        ForAdditionalCost _ -> pure ()
+        ForAdditionalCost _ -> do
+          -- FAQ 1.1: spending an action provokes an attack of opportunity even
+          -- when the ability that spent it is fast (Olivier Bishop moving out of
+          -- an Arcane Lock location). Inside an action bracket the action itself
+          -- already provoked, so don't fire twice.
+          when (totalActionPayment c.payments > 0) do
+            unlessM getGameInAction do
+              pushAll
+                [ Will (CheckAttackOfOpportunity c.investigator False Nothing)
+                , CheckAttackOfOpportunity c.investigator False Nothing
+                ]
       push PaidAllCosts
       pure c
     Do (DiscardCard _ _ cardId) -> do

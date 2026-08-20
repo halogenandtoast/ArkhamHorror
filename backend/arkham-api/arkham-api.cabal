@@ -8419,6 +8419,7 @@ test-suite spec
       Arkham.Treachery.Cards.AmnesiaSpec
       Arkham.Treachery.Cards.BloodlustSpec
       Arkham.Treachery.Cards.BrethrenOfAsh.QueenOfAsh.LanguorSpec
+      Arkham.Treachery.Cards.BrethrenOfAsh.SmokeAndMirrors.ArcaneLockSpec
       Arkham.Treachery.Cards.CoverUpSpec
       Arkham.Treachery.Cards.DetachedFromRealitySpec
       Arkham.Treachery.Cards.FinalRhapsodySpec
